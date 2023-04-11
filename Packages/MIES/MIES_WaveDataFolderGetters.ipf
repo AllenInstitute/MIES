@@ -7661,10 +7661,11 @@ Function/WAVE GetFormulaGatherWave()
 End
 
 /// @brief Returns variable storage of data browser referenced by dfr
-Function/WAVE GetSFVarStorage(DFREF dfr)
+Function/WAVE GetSFVarStorage(string graph)
 
 	string name = "VariableStorage"
 
+	DFREF dfr = SF_GetBrowserDF(graph)
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/Z/WAVE wv = dfr:$name
 

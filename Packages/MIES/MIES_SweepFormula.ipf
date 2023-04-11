@@ -701,8 +701,7 @@ static Function/WAVE SF_FormulaExecutorStringOrVariable(string graph, variable j
 
 	str = JSON_GetString(jsonID, jsonPath)
 	if(strlen(str) > 1 && char2num(str[0]) == SF_VARIABLE_PREFIX)
-		DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
-		WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+		WAVE/WAVE varStorage = GetSFVarStorage(graph)
 		dim = FindDimLabel(varStorage, ROWS, str[1, inf])
 		SFH_ASSERT(dim != -2, "Unknown variable " + str[1, inf])
 		return varStorage[dim]
@@ -719,7 +718,7 @@ End
 /// @param graph    graph to read from, mainly used by the `data` operation
 /// @param jsonID   JSON object ID from the JSON XOP
 /// @param jsonPath JSON pointer compliant path
-Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string jsonPath])
+static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string jsonPath])
 
 	string opName, str
 	variable JSONType, numArrObjElems, arrayElemJSONType, effectiveArrayDimCount, dim
@@ -1039,10 +1038,10 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 
 	WAVE/WAVE/Z wvXRef = $""
 	if(!IsEmpty(xFormula))
-		WAVE/WAVE wvXRef = SF_ExecuteFormula(xFormula, graph)
+		WAVE/WAVE wvXRef = SF_ExecuteFormula(xFormula, graph, useVariables=0)
 		SFH_ASSERT(WaveExists(wvXRef), "x part of formula returned no result.")
 	endif
-	WAVE/WAVE wvYRef = SF_ExecuteFormula(yFormula, graph)
+	WAVE/WAVE wvYRef = SF_ExecuteFormula(yFormula, graph, useVariables=0)
 	SFH_ASSERT(WaveExists(wvYRef), "y part of formula returned no result.")
 	numResultsY = DimSize(wvYRef, ROWS)
 	if(WaveExists(wvXRef))
@@ -2204,18 +2203,16 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 
-			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
-
 			formula_nb = BSP_GetSFFormula(ba.win)
 			formula = GetNotebookText(formula_nb, mode=2)
 
-			NVAR jsonID = $GetSweepFormulaJSONid(dfr)
+			NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(mainPanel))
 			SVAR result = $GetSweepFormulaParseErrorMessage()
 			result = ""
 			SF_SetStatusDisplay(bsPanel, "", SF_MSG_OK)
 
 			try
-				SF_CheckInputCode(formula, dfr)
+				SF_CheckInputCode(formula, mainPanel)
 			catch
 				SF_SetStatusDisplay(bsPanel, result, SF_MSG_ERROR)
 				JSON_Release(jsonID, ignoreErr = 1)
@@ -2238,12 +2235,12 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 End
 
 /// @brief Checks input code, sets globals for jsonId and error string
-static Function SF_CheckInputCode(string code, DFREF dfr)
+static Function SF_CheckInputCode(string code, string graph)
 
 	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt
 	string jsonPath, xFormula, yFormula, yFormulasRemain, subPath
 
-	NVAR jsonID = $GetSweepFormulaJSONid(dfr)
+	NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(graph))
 	JSON_Release(jsonID, ignoreErr = 1)
 	jsonID = JSON_New()
 	JSON_AddObjects(jsonID, "")
@@ -2341,7 +2338,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 				break
 			endif
 
-			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+			DFREF dfr = SF_GetBrowserDF(mainPanel)
 
 			SVAR result = $GetSweepFormulaParseErrorMessage()
 			result = ""
@@ -2351,7 +2348,7 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 
 			// catch Abort from SFH_ASSERT
 			try
-				preProcCode = SF_ExecuteVariableAssignments(mainPanel, preProcCode, dfr)
+				preProcCode = SF_ExecuteVariableAssignments(mainPanel, preProcCode)
 				if(IsEmpty(preProcCode))
 					break
 				endif
@@ -2536,7 +2533,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_TP, 1)
 
-	WAVE/WAVE wMode = SFH_GetArgument(jsonID, jsonPath, graph, 0)
+	WAVE/WAVE wMode = SF_GetArgument(jsonID, jsonPath, graph, 0)
 	dataType = JWN_GetStringFromWaveNote(wMode, SF_META_DATATYPE)
 
 	allowedTypes = AddListItem(SF_DATATYPE_TPSS, "")
@@ -3167,7 +3164,7 @@ static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string 
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_RANGE)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_RANGE, DimSize(input, ROWS))
 
@@ -3214,7 +3211,7 @@ static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string gr
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_MIN)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_MIN, DimSize(input, ROWS))
 
@@ -3252,7 +3249,7 @@ static Function/WAVE SF_OperationMax(variable jsonId, string jsonPath, string gr
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_MAX)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_MAX, DimSize(input, ROWS))
 
@@ -3289,7 +3286,7 @@ static Function/WAVE SF_OperationAvg(variable jsonId, string jsonPath, string gr
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_AVG)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_AVG, DimSize(input, ROWS))
 
@@ -3327,7 +3324,7 @@ static Function/WAVE SF_OperationRMS(variable jsonId, string jsonPath, string gr
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_RMS)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_RMS, DimSize(input, ROWS))
 
@@ -3362,7 +3359,7 @@ static Function/WAVE SF_OperationVariance(variable jsonId, string jsonPath, stri
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_VARIANCE)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_VARIANCE, DimSize(input, ROWS))
 
@@ -3397,7 +3394,7 @@ static Function/WAVE SF_OperationStdev(variable jsonId, string jsonPath, string 
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_STDEV)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_STDEV, DimSize(input, ROWS))
 
@@ -3431,7 +3428,7 @@ static Function/WAVE SF_OperationDerivative(variable jsonId, string jsonPath, st
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_DERIVATIVE)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_DERIVATIVE, DimSize(input, ROWS))
 
@@ -3466,7 +3463,7 @@ static Function/WAVE SF_OperationIntegrate(variable jsonId, string jsonPath, str
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_INTEGRATE)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_INTEGRATE, DimSize(input, ROWS))
 
@@ -3501,7 +3498,7 @@ static Function/WAVE SF_OperationArea(variable jsonId, string jsonPath, string g
 	SFH_ASSERT(numArgs >= 1, "area requires at least one argument.")
 	SFH_ASSERT(numArgs <= 2, "area requires at most two arguments.")
 
-	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, 0)
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, 0)
 
 	zero = !!SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_AREA, 1, defValue = 1)
 
@@ -3544,7 +3541,7 @@ static Function/WAVE SF_OperationButterworth(variable jsonId, string jsonPath, s
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	SFH_ASSERT(numArgs == 4, "The butterworth filter requires 4 arguments")
 
-	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, 0)
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, 0)
 	WAVE lowPassCutoff = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1, checkExist=1)
 	SFH_ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
 	SFH_ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
@@ -3586,7 +3583,7 @@ static Function/WAVE SF_OperationXValues(variable jsonId, string jsonPath, strin
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_XVALUES)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_XVALUES, DimSize(input, ROWS))
 
@@ -3620,7 +3617,7 @@ static Function/WAVE SF_OperationText(variable jsonId, string jsonPath, string g
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_TEXT)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_TEXT, DimSize(input, ROWS))
 
@@ -3653,7 +3650,7 @@ static Function/WAVE SF_OperationSetScale(variable jsonId, string jsonPath, stri
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	SFH_ASSERT(numArgs < 6, "Maximum number of arguments exceeded.")
 	SFH_ASSERT(numArgs > 1, "At least two arguments.")
-	WAVE/WAVE dataRef = SFH_GetArgument(jsonID, jsonPath, graph, 0)
+	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, 0)
 	WAVE/T dimension = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_SETSCALE, 1, checkExist=1)
 	SFH_ASSERT(IsTextWave(dimension), "Expected d, x, y, z or t as dimension.")
 	SFH_ASSERT(DimSize(dimension, ROWS) == 1 && GrepString(dimension[0], "[d,x,y,z,t]") , "undefined input for dimension")
@@ -3798,7 +3795,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	SFH_ASSERT(numArgs >= 1 && numArgs <= 6, "The powerspectrum operation requires 1 to 6 arguments")
 
-	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, 0)
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, 0)
 	if(numArgs > 1)
 		WAVE/T wUnit = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, checkExist=1)
 		sprintf errMsg, "Second argument (unit) can not be a number. Use %s, %s or %s.", SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED
@@ -4035,8 +4032,8 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	if(!numArgs)
-		WAVE channels = SF_ExecuteFormula("channels()", graph, singleResult=1, checkExist=1)
-		WAVE/Z sweeps = SF_ExecuteFormula("sweeps()", graph, singleResult=1)
+		WAVE channels = SF_ExecuteFormula("channels()", graph, singleResult=1, checkExist=1, useVariables=0)
+		WAVE/Z sweeps = SF_ExecuteFormula("sweeps()", graph, singleResult=1, useVariables=0)
 	else
 		SFH_ASSERT(numArgs >= 2 && numArgs <= 4, "Function requires None, 2 or 3 arguments.")
 		WAVE channels = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 0, checkExist=1)
@@ -4221,7 +4218,7 @@ static Function/WAVE SF_OperationLog(variable jsonId, string jsonPath, string gr
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_LOG)
 	elseif(numArgs == 1)
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	else
 		WAVE/WAVE input = SFH_CreateSFRefWave(graph, SF_OP_LOG, 0)
 	endif
@@ -4261,7 +4258,7 @@ static Function/WAVE SF_OperationLog10(variable jsonId, string jsonPath, string 
 	if(numArgs > 1)
 		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_LOG10)
 	else
-		WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, 0)
+		WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, 0)
 	endif
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_LOG10, DimSize(input, ROWS))
 
@@ -4327,7 +4324,7 @@ static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, str
 	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
 	SFH_ASSERT(numArgs <=3, "Findlevel has 3 arguments at most.")
 	SFH_ASSERT(numArgs > 1, "Findlevel needs at least two arguments.")
-	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, 0)
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, 0)
 	WAVE level = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 1, checkExist=1)
 	SFH_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
 	SFH_ASSERT(IsNumericWave(level), "level parameter must be numeric")
@@ -4361,7 +4358,7 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 	SFH_ASSERT(numArgs <= numArgsMax, "ApFrequency has " + num2istr(numArgsMax) + " arguments at most.")
 	SFH_ASSERT(numArgs >= numArgsMin, "ApFrequency needs at least " + num2istr(numArgsMin) + " argument(s).")
 
-	WAVE/WAVE input = SFH_GetArgument(jsonID, jsonPath, graph, 0)
+	WAVE/WAVE input = SF_GetArgument(jsonID, jsonPath, graph, 0)
 	method = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 1, defValue=SF_APFREQUENCY_FULL, allowedValues={SF_APFREQUENCY_FULL, SF_APFREQUENCY_INSTANTANEOUS, SF_APFREQUENCY_APCOUNT, SF_APFREQUENCY_INSTANTANEOUS_PAIR})
 	level = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, opShort, 2, defValue=0)
 	timeFreq = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 3, defValue=SF_OP_APFREQUENCY_Y_FREQ, allowedValues={SF_OP_APFREQUENCY_Y_TIME, SF_OP_APFREQUENCY_Y_FREQ})
@@ -4563,7 +4560,7 @@ static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string 
 	SFH_ASSERT(IsTextWave(name), "name parameter must be textual")
 	SFH_ASSERT(DimSize(name, ROWS) == 1, "name parameter must be a plain string")
 
-	WAVE/WAVE dataRef = SFH_GetArgument(jsonID, jsonPath, graph, 1)
+	WAVE/WAVE dataRef = SF_GetArgument(jsonID, jsonPath, graph, 1)
 	SFH_ASSERT(DimSize(dataRef, ROWS) == 1, "Multiple dataSets not supported yet for store().")
 	WAVE/Z out = dataRef[0]
 	SFH_ASSERT(WaveExists(out), "No data retrieved for store().")
@@ -4755,23 +4752,30 @@ Function SF_SetFormula(string databrowser, string formula)
 End
 
 /// @brief Executes a given formula without changing the current SweepFormula notebook
+///        supports by default variable assignments
+///        does not support "with" and "and" keywords
 /// @param formula formula string to execute
-/// @param databrowser name of databrowser window
+/// @param graph name of databrowser window
 /// @param singleResult [optional, default 0], if set then the first dataSet is retrieved from the waveRef wave and returned, the waveRef wave is disposed
 /// @param checkExist [optional, default 0], only valid if singleResult=1, if set then the data wave in the single dataSet retrieved must exist
-Function/WAVE SF_ExecuteFormula(string formula, string databrowser[, variable singleResult, variable checkExist])
+/// @param useVariables [optional, default 1], when not set, hint the function that the formula string contains only an expression and no variable definitions
+Function/WAVE SF_ExecuteFormula(string formula, string graph[, variable singleResult, variable checkExist, variable useVariables])
 
 	variable jsonId
 
 	singleResult = ParamIsDefault(singleResult) ? 0 : !!singleResult
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
+	useVariables = ParamIsDefault(useVariables) ? 1 : !!useVariables
 
 	formula = SF_PreprocessInput(formula)
+	if(useVariables)
+		formula = SF_ExecuteVariableAssignments(graph, formula)
+	endif
 	jsonId = SF_ParseFormulaToJSON(formula)
-	WAVE/Z result = SF_FormulaExecutor(databrowser, jsonId)
+	WAVE/Z result = SF_FormulaExecutor(graph, jsonId)
 	JSON_Release(jsonId, ignoreErr=1)
 
-	WAVE/WAVE out = SFH_ParseArgument(result)
+	WAVE/WAVE out = SF_ParseArgument(result)
 	if(singleResult)
 		SFH_ASSERT(DimSize(out, ROWS) == 1, "Expected only a single dataSet")
 		WAVE/Z data = out[0]
@@ -4814,7 +4818,7 @@ static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string 
 		WAVE wv = SFH_GetOutputForExecutorSingle(data, graph, opShort + "_zeroSizedInput")
 	endif
 
-	WAVE/WAVE input = SFH_ParseArgument(wv)
+	WAVE/WAVE input = SF_ParseArgument(wv)
 
 	return input
 End
@@ -5013,12 +5017,12 @@ static Function/S SF_CheckVariableAssignments(string preProcCode, variable jsonI
 	return code
 End
 
-static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode, DFREF dfr)
+static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode)
 
 	variable i, numAssignments, jsonId
 	string code
 
-	WAVE/WAVE varStorage = GetSFVarStorage(dfr)
+	WAVE/WAVE varStorage = GetSFVarStorage(graph)
 	RemoveAllDimLabels(varStorage)
 	Redimension/N=(0, -1) varStorage
 
@@ -5033,7 +5037,7 @@ static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode
 	for(i = 0; i < numAssignments; i += 1)
 		jsonId = SF_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
 		WAVE dataRef = SF_FormulaExecutor(graph, jsonId)
-		WAVE data = SFH_ParseArgument(dataRef)
+		WAVE data = SF_ParseArgument(dataRef)
 		JWN_SetNumberInWaveNote(data, SF_VARIABLE_MARKER, 1)
 		varStorage[i] = dataRef
 		SetDimLabel ROWS, i, $varAssignments[i][%VARNAME], varStorage
@@ -5041,4 +5045,34 @@ static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode
 	endfor
 
 	return code
+End
+
+Function/DF SF_GetBrowserDF(string graph)
+
+	return BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
+End
+
+/// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
+Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string graph, variable argNum)
+
+	WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + num2istr(argNum))
+
+	return SF_ParseArgument(wv)
+End
+
+static Function/WAVE SF_ParseArgument(WAVE input)
+
+	string wName, tmpStr
+
+	ASSERT(IsTextWave(input) && DimSize(input, ROWS) == 1 && DimSize(input, COLS) == 0, "Unknown SF argument input format")
+
+	WAVE/T wvt = input
+	ASSERT(strsearch(wvt[0], SF_WREF_MARKER, 0) == 0, "Marker not found in SF argument")
+
+	tmpStr = wvt[0]
+	wName = tmpStr[strlen(SF_WREF_MARKER), Inf]
+	WAVE/Z out = $wName
+	ASSERT(WaveExists(out), "Referenced wave not found: " + wName)
+
+	return out
 End

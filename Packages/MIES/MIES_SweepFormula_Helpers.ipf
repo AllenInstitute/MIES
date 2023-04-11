@@ -193,7 +193,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 		if(singleResult)
 			WAVE/Z data = SFH_GetArgumentSingle(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
 		else
-			WAVE data = SFH_GetArgument(jsonId, jsonPath, graph, argNum)
+			WAVE data = SF_GetArgument(jsonId, jsonPath, graph, argNum)
 		endif
 
 		return data
@@ -202,32 +202,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
 	SFH_ASSERT(!checkExist, msg)
 
-	return SF_ExecuteFormula(defOp, graph, singleResult = singleResult)
-End
-
-/// @brief Executes the part of the argument part of the JSON and parses the resulting data to a waveRef type
-Function/WAVE SFH_GetArgument(variable jsonId, string jsonPath, string graph, variable argNum)
-
-	WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + num2istr(argNum))
-
-	return SFH_ParseArgument(wv)
-End
-
-Function/WAVE SFH_ParseArgument(WAVE input)
-
-	string wName, tmpStr
-
-	ASSERT(IsTextWave(input) && DimSize(input, ROWS) == 1 && DimSize(input, COLS) == 0, "Unknown SF argument input format")
-
-	WAVE/T wvt = input
-	ASSERT(strsearch(wvt[0], SF_WREF_MARKER, 0) == 0, "Marker not found in SF argument")
-
-	tmpStr = wvt[0]
-	wName = tmpStr[strlen(SF_WREF_MARKER), Inf]
-	WAVE/Z out = $wName
-	ASSERT(WaveExists(out), "Referenced wave not found: " + wName)
-
-	return out
+	return SF_ExecuteFormula(defOp, graph, singleResult = singleResult, useVariables=0)
 End
 
 /// @brief Assertion for sweep formula
@@ -513,9 +488,7 @@ End
 
 Function/DF SFH_GetWorkingDF(string win)
 
-	DFREF dfr = BSP_GetFolder(GetMainWindow(win), MIES_BSP_PANEL_FOLDER)
-
-	return createDFWithAllParents(GetDataFolder(1, dfr) + SFH_WORKING_DF)
+	return createDFWithAllParents(GetDataFolder(1, SF_GetBrowserDF(win)) + SFH_WORKING_DF)
 End
 
 Function/WAVE SFH_CreateSFRefWave(string win, string opShort, variable size)
@@ -626,7 +599,7 @@ Function/WAVE SFH_GetArgumentSingle(variable jsonId, string jsonPath, string gra
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
-	WAVE/WAVE input = SFH_GetArgument(jsonId, jsonPath, graph, argNum)
+	WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, argNum)
 	SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
 	WAVE/Z data = input[0]
 	SFH_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet at operation " + opShort + " arg num " + num2istr(argNum))
@@ -839,7 +812,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
-	WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1)
+	WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1, useVariables=0)
 	if(WaveExists(selectData))
 		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ";")
 	endif
