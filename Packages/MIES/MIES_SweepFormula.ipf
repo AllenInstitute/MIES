@@ -4772,7 +4772,7 @@ Function/WAVE SF_ExecuteFormula(string formula, string graph[, variable singleRe
 	WAVE/Z result = SF_FormulaExecutor(graph, jsonId)
 	JSON_Release(jsonId, ignoreErr=1)
 
-	WAVE/WAVE out = SF_ParseArgument(result)
+	WAVE/WAVE out = SF_ResolveDataset(result)
 	if(singleResult)
 		SFH_ASSERT(DimSize(out, ROWS) == 1, "Expected only a single dataSet")
 		WAVE/Z data = out[0]
@@ -4815,7 +4815,7 @@ static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string 
 		WAVE wv = SFH_GetOutputForExecutorSingle(data, graph, opShort + "_zeroSizedInput")
 	endif
 
-	WAVE/WAVE input = SF_ParseArgument(wv)
+	WAVE/WAVE input = SF_ResolveDataset(wv)
 
 	return input
 End
@@ -5034,7 +5034,7 @@ static Function/S SF_ExecuteVariableAssignments(string graph, string preProcCode
 	for(i = 0; i < numAssignments; i += 1)
 		jsonId = SF_ParseFormulaToJSON(varAssignments[i][%EXPRESSION])
 		WAVE dataRef = SF_FormulaExecutor(graph, jsonId)
-		WAVE data = SF_ParseArgument(dataRef)
+		WAVE data = SF_ResolveDataset(dataRef)
 		JWN_SetNumberInWaveNote(data, SF_VARIABLE_MARKER, 1)
 		varStorage[i] = dataRef
 		SetDimLabel ROWS, i, $varAssignments[i][%VARNAME], varStorage
@@ -5054,10 +5054,10 @@ Function/WAVE SF_GetArgument(variable jsonId, string jsonPath, string graph, var
 
 	WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath + "/" + num2istr(argNum))
 
-	return SF_ParseArgument(wv)
+	return SF_ResolveDataset(wv)
 End
 
-static Function/WAVE SF_ParseArgument(WAVE input)
+static Function/WAVE SF_ResolveDataset(WAVE input)
 
 	string wName, tmpStr
 
