@@ -803,7 +803,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 	// object and array evaluation
 	JSONtype = JSON_GetType(jsonID, jsonPath)
 	if(JSONtype == JSON_NUMERIC)
-		Make/FREE out = { JSON_GetVariable(jsonID, jsonPath) }
+		Make/FREE/D out = { JSON_GetVariable(jsonID, jsonPath) }
 		return SFH_GetOutputForExecutorSingle(out, graph, "ExecutorNumberReturn")
 	elseif(JSONtype == JSON_STRING)
 		return SF_FormulaExecutorStringOrVariable(graph, jsonId, jsonPath)
@@ -816,7 +816,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		SFH_ASSERT(effectiveArrayDimCount <= MAX_DIMENSION_COUNT, "Array in evaluation has more than " + num2istr(MAX_DIMENSION_COUNT) + "dimensions.", jsonId=jsonId)
 		// Check against empty array
 		if(DimSize(topArraySize, ROWS) == 1 && topArraySize[0] == 0)
-			Make/FREE/N=0 out
+			Make/FREE/D/N=0 out
 			return SFH_GetOutputForExecutorSingle(out, graph, "ExecutorNumberReturn")
 		endif
 
