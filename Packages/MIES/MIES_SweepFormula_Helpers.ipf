@@ -193,7 +193,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 		if(singleResult)
 			WAVE/Z data = SFH_GetArgumentSingle(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
 		else
-			WAVE data = SF_GetArgument(jsonId, jsonPath, graph, argNum)
+			WAVE data = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
 		endif
 
 		return data
@@ -599,7 +599,7 @@ Function/WAVE SFH_GetArgumentSingle(variable jsonId, string jsonPath, string gra
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
-	WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, argNum)
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
 	SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
 	WAVE/Z data = input[0]
 	SFH_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet at operation " + opShort + " arg num " + num2istr(argNum))
