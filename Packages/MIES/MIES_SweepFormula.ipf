@@ -837,7 +837,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 
 			// Save indices of operation/subArray evaluations that returned scalar results
 			if(numpnts(subArray) == 1)
-				EnsureLargeEnoughWave(indicesOfOperationsWithScalarResult, indexShouldExist=operationsWithScalarResultCount + 1)
+				EnsureLargeEnoughWave(indicesOfOperationsWithScalarResult, indexShouldExist=operationsWithScalarResultCount)
 				indicesOfOperationsWithScalarResult[operationsWithScalarResultCount] = index
 				operationsWithScalarResultCount += 1
 			endif
@@ -1711,14 +1711,14 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			endfor
 
 			if(!IsEmpty(annotation))
-				EnsureLargeEnoughWave(wAnnotations, indexShouldExist=numAnnotations + 1)
+				EnsureLargeEnoughWave(wAnnotations, indexShouldExist=numAnnotations)
 				wAnnotations[numAnnotations] = annotation
-				EnsureLargeEnoughWave(formulaArgSetup, indexShouldExist=numAnnotations + 1)
+				EnsureLargeEnoughWave(formulaArgSetup, indexShouldExist=numAnnotations)
 				formulaArgSetup[numAnnotations] = plotMetaData.argSetupStack
 				numAnnotations += 1
 			endif
 
-			EnsureLargeEnoughWave(collPlotFormData, indexShouldExist=formulaCounter + 1)
+			EnsureLargeEnoughWave(collPlotFormData, indexShouldExist=formulaCounter)
 			WAVE/T tracesInGraph = plotFormData[0]
 			WAVE/WAVE dataInGraph = plotFormData[1]
 			Redimension/N=(gdIndex, -1) tracesInGraph, dataInGraph
@@ -4586,7 +4586,7 @@ static Function/WAVE SF_SplitCodeToGraphs(string code)
 	do
 		SplitString/E=SF_SWEEPFORMULA_GRAPHS_REGEXP code, group0, group1
 		if(!IsEmpty(group0))
-			EnsureLargeEnoughWave(graphCode, dimension = ROWS, indexShouldExist = graphCount + 1)
+			EnsureLargeEnoughWave(graphCode, dimension = ROWS, indexShouldExist = graphCount)
 			graphCode[graphCount] = group0
 			graphCount += 1
 			code = group1
