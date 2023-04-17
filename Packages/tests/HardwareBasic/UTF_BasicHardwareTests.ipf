@@ -2130,3 +2130,39 @@ static Function CheckDelays_REENTRY([STRUCT IUTF_MDATA &md])
 	val = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(val, 10)
 End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckSweepOrdering([string str])
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	AcquireData_NG(s, str)
+End
+
+static Function CheckSweepOrdering_REENTRY_preAcq(string device)
+
+	// now turn back the sweep counter and try again
+	PGC_SetAndActivateControl(device, "SetVar_Sweep", val = 0)
+End
+
+static Function CheckSweepOrdering_REENTRY([string str])
+
+	STRUCT DAQSettings s
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	// close device
+	KillWindow $str
+	CHECK_NO_RTE()
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                    + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+
+	try
+		AcquireData_NG(s, str)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
