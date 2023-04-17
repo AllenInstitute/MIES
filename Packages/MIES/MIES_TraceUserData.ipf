@@ -301,7 +301,7 @@ static Function TUD_AddTrace(variable jsonID, WAVE/T graphUserData, string trace
 	jsonID = TUD_GetIndexJSON(graphUserData)
 
 	index = GetNumberFromWaveNote(graphUserData, NOTE_INDEX)
-	EnsureLargeEnoughWave(graphUserData, minimumSize = index)
+	EnsureLargeEnoughWave(graphUserData, indexShouldExist = index)
 	graphUserData[index][%traceName] = trace
 	SetNumberInWaveNote(graphUserData, NOTE_INDEX, index + 1)
 

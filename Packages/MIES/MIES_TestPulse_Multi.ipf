@@ -310,7 +310,7 @@ static Function TPM_AddDevice(device)
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
 
 	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
-	EnsureLargeEnoughWave(ActiveDevicesTPMD, minimumSize=idx + 1)
+	EnsureLargeEnoughWave(ActiveDevicesTPMD, indexShouldExist=idx + 1)
 
 	ActiveDevicesTPMD[idx][%DeviceID]     = deviceID
 	ActiveDevicesTPMD[idx][%HardwareType] = GetHardwareType(device)

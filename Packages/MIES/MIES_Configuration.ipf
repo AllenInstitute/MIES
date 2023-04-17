@@ -944,7 +944,7 @@ static Function/WAVE CONF_GetControlArrayList(wName)
 			if(V_Value >= 0)
 				ctrlArrays[V_Row][%CTRLNAMELIST] = AddListItem(ctrlName, ctrlArrays[V_Row][%CTRLNAMELIST])
 			else
-				EnsureLargeEnoughWave(ctrlArrays, dimension = ROWS, minimumSize = numCtrlArrays)
+				EnsureLargeEnoughWave(ctrlArrays, dimension = ROWS, indexShouldExist = numCtrlArrays)
 				ctrlArrays[numCtrlArrays][%ARRAYNAME] = arrayName
 				ctrlArrays[numCtrlArrays][%CTRLNAMELIST] = ctrlName
 				numCtrlArrays += 1

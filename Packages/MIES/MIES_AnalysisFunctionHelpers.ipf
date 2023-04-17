@@ -271,7 +271,7 @@ threadsafe Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	endif
 
 	WAVE/WAVE cache = GetLBNidCache(numericalValues)
-	EnsureLargeEnoughWave(cache, minimumSize = sweepNo, dimension = ROWS)
+	EnsureLargeEnoughWave(cache, indexShouldExist = sweepNo, dimension = ROWS)
 
 	WAVE/Z sweeps = cache[sweepNo][%$RA_ACQ_CYCLE_ID_KEY][0]
 	if(WaveExists(sweeps))
@@ -308,7 +308,7 @@ threadsafe Function/WAVE AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, head
 	endif
 
 	WAVE/WAVE cache = GetLBNidCache(numericalValues)
-	EnsureLargeEnoughWave(cache, minimumSize = sweepNo, dimension = ROWS)
+	EnsureLargeEnoughWave(cache, indexShouldExist = sweepNo, dimension = ROWS)
 
 	WAVE/Z sweeps = cache[sweepNo][%$STIMSET_ACQ_CYCLE_ID_KEY][headstage]
 	if(WaveExists(sweeps))

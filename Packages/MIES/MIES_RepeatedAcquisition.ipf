@@ -479,7 +479,7 @@ static Function RA_PerfAddMark(device, idx)
 
 	WAVE perfWave = GetRAPerfWave(device)
 
-	EnsureLargeEnoughWave(perfWave, minimumSize = idx, initialValue = NaN)
+	EnsureLargeEnoughWave(perfWave, indexShouldExist = idx, initialValue = NaN)
 	perfWave[idx] = RelativeNowHighPrec()
 End
 

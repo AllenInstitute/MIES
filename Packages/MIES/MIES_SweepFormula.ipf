@@ -837,7 +837,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 
 			// Save indices of operation/subArray evaluations that returned scalar results
 			if(numpnts(subArray) == 1)
-				EnsureLargeEnoughWave(indicesOfOperationsWithScalarResult, minimumSize=operationsWithScalarResultCount + 1)
+				EnsureLargeEnoughWave(indicesOfOperationsWithScalarResult, indexShouldExist=operationsWithScalarResultCount + 1)
 				indicesOfOperationsWithScalarResult[operationsWithScalarResultCount] = index
 				operationsWithScalarResultCount += 1
 			endif
@@ -1711,14 +1711,14 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			endfor
 
 			if(!IsEmpty(annotation))
-				EnsureLargeEnoughWave(wAnnotations, minimumSize=numAnnotations + 1)
+				EnsureLargeEnoughWave(wAnnotations, indexShouldExist=numAnnotations + 1)
 				wAnnotations[numAnnotations] = annotation
-				EnsureLargeEnoughWave(formulaArgSetup, minimumSize=numAnnotations + 1)
+				EnsureLargeEnoughWave(formulaArgSetup, indexShouldExist=numAnnotations + 1)
 				formulaArgSetup[numAnnotations] = plotMetaData.argSetupStack
 				numAnnotations += 1
 			endif
 
-			EnsureLargeEnoughWave(collPlotFormData, minimumSize=formulaCounter + 1)
+			EnsureLargeEnoughWave(collPlotFormData, indexShouldExist=formulaCounter + 1)
 			WAVE/T tracesInGraph = plotFormData[0]
 			WAVE/WAVE dataInGraph = plotFormData[1]
 			Redimension/N=(gdIndex, -1) tracesInGraph, dataInGraph
@@ -2718,7 +2718,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 					if(debugMode)
 						CurveFit/Q/K={beginTrail} exp_XOffset, kwCWave=coefWave, sweepData(beginTrail, endTrail)/D=wFitResult; err = getRTError(1)
 						if(!err)
-							EnsureLargeEnoughWave(output, minimumSize=index)
+							EnsureLargeEnoughWave(output, indexShouldExist=index)
 							output[index] = wFitResult
 							index += 1
 							continue
@@ -2747,7 +2747,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 					if(debugMode)
 						CurveFit/Q/K={beginTrail} dblexp_XOffset, kwCWave=coefWave, sweepData(beginTrail, endTrail)/D=wFitResult; err = getRTError(1)
 						if(!err)
-							EnsureLargeEnoughWave(output, minimumSize=index)
+							EnsureLargeEnoughWave(output, indexShouldExist=index)
 							output[index] = wFitResult
 							index += 1
 							continue
@@ -3022,7 +3022,7 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
 			JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
 
-			EnsureLargeEnoughWave(output, minimumSize=index)
+			EnsureLargeEnoughWave(output, indexShouldExist=index)
 			output[index] = out
 			index +=1
 		endfor
@@ -4586,7 +4586,7 @@ static Function/WAVE SF_SplitCodeToGraphs(string code)
 	do
 		SplitString/E=SF_SWEEPFORMULA_GRAPHS_REGEXP code, group0, group1
 		if(!IsEmpty(group0))
-			EnsureLargeEnoughWave(graphCode, dimension = ROWS, minimumSize = graphCount + 1)
+			EnsureLargeEnoughWave(graphCode, dimension = ROWS, indexShouldExist = graphCount + 1)
 			graphCode[graphCount] = group0
 			graphCount += 1
 			code = group1
@@ -4933,8 +4933,8 @@ static Function SF_CollectTraceData(variable &index, WAVE/WAVE graphData, string
 
 	WAVE/T tracesInGraph = graphData[0]
 	WAVE/WAVE dataInGraph = graphData[1]
-	EnsureLargeEnoughWave(tracesInGraph, minimumSize=index)
-	EnsureLargeEnoughWave(dataInGraph, minimumSize=index)
+	EnsureLargeEnoughWave(tracesInGraph, indexShouldExist=index)
+	EnsureLargeEnoughWave(dataInGraph, indexShouldExist=index)
 	tracesInGraph[index] = traceName
 	dataInGraph[index][%WAVEX] = wx
 	dataInGraph[index][%WAVEY] = wy
@@ -4977,7 +4977,7 @@ static Function [WAVE/T varAssignments, string code] SF_GetVariableAssignments(s
 		SFH_ASSERT(IsValidObjectName(varName), "Invalid SF variable name")
 		varPart += line + lineEnd
 
-		EnsureLargeEnoughWave(varAssignments, minimumSize=varCnt)
+		EnsureLargeEnoughWave(varAssignments, indexShouldExist=varCnt)
 		varAssignments[varCnt][dimVarName] = varName
 		varAssignments[varCnt][%EXPRESSION] = formula
 

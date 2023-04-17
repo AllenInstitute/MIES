@@ -1940,7 +1940,7 @@ threadsafe Function/WAVE GetLBRowCache(values)
 			endif
 
 			if(IsFinite(sweepNo))
-				EnsureLargeEnoughWave(wv, minimumSize = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_GET_RANGE)
+				EnsureLargeEnoughWave(wv, indexShouldExist = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_GET_RANGE)
 				first = limit(sweepNo - 1, 0, inf)
 				last = sweepNo
 				Multithread wv[first, last][][] = LABNOTEBOOK_GET_RANGE
@@ -2019,7 +2019,7 @@ threadsafe Function/WAVE GetLBIndexCache(values)
 			endif
 
 			if(IsFinite(sweepNo))
-				EnsureLargeEnoughWave(wv, minimumSize = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
+				EnsureLargeEnoughWave(wv, indexShouldExist = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
 				first = limit(sweepNo - 1, 0, inf)
 				last = sweepNo
 				Multithread wv[first, last][][] = LABNOTEBOOK_UNCACHED_VALUE

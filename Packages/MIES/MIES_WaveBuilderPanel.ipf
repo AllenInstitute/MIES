@@ -2132,7 +2132,7 @@ static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
 		ASSERT(IsFinite(row), "Could not find row in: " + control)
 
 		index = GetNumberFromWaveNote(names, NOTE_INDEX)
-		EnsureLargeEnoughWave(names, minimumSize = index)
+		EnsureLargeEnoughWave(names, indexShouldExist = index)
 
 		if(GrepString(control, WP_CONTROL_REGEXP))
 			names[index] = GetDimLabel(WP, ROWS, row)

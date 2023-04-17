@@ -251,7 +251,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 
 			headstage = num2str(V_value)
 
-			EnsureLargeEnoughWave(channelMap, minimumSize=idx)
+			EnsureLargeEnoughWave(channelMap, indexShouldExist=idx)
 			channelMap[idx][%channel]    = num2str(channelNumber)
 			channelMap[idx][%path]      = path
 			channelMap[idx][%headstage] = headstage
@@ -345,7 +345,7 @@ Function SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
 	WAVE/T map = GetSweepBrowserMap(sweepBrowser)
 
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
-	EnsureLargeEnoughWave(map, minimumSize=index)
+	EnsureLargeEnoughWave(map, indexShouldExist=index)
 
 	Duplicate/FREE/R=[0][]/T map, singleRow
 

@@ -827,8 +827,8 @@ Function FitResistance(string device, variable headstage, [variable showPlot, va
 			continue
 		endif
 
-		EnsureLargeEnoughWave(storageDeltaI, minimumSize = idx, initialValue = NaN)
-		EnsureLargeEnoughWave(storageDeltaV, minimumSize = idx, initialValue = NaN)
+		EnsureLargeEnoughWave(storageDeltaI, indexShouldExist = idx, initialValue = NaN)
+		EnsureLargeEnoughWave(storageDeltaV, indexShouldExist = idx, initialValue = NaN)
 
 		storageDeltaI[idx][] = deltaI[q]
 		storageDeltaV[idx][] = deltaV[q]

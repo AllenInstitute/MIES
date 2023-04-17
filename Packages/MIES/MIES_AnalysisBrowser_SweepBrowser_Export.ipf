@@ -157,7 +157,7 @@ static Function SBE_AddMissingADTraceInfo(traceData)
 				continue
 			endif
 
-			EnsureLargeEnoughWave(newData, minimumSize=cnt)
+			EnsureLargeEnoughWave(newData, indexShouldExist=cnt)
 			newData[cnt][] = traceData[i][q]
 
 			newData[cnt][%traceName]     = ""

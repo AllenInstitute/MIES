@@ -1450,7 +1450,7 @@ static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, v
 		ASSERT(xzero >= 0, "xzero must >= 0")
 		ASSERT(xzero < pa.duration || CheckIfClose(xzero, pa.duration), "xzero must <= pa.duration")
 
-		EnsureLargeEnoughWave(inflectionPoints, minimumSize = idx, dimension = ROWS, initialValue = NaN)
+		EnsureLargeEnoughWave(inflectionPoints, indexShouldExist = idx, dimension = ROWS, initialValue = NaN)
 		inflectionPoints[idx++] = xzero
 	endfor
 
@@ -1810,7 +1810,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
-			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
+			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
 			pulseStartTimes[idx++] = pulseStartTime
 		endfor
 	elseif(pa.mixedFreq)
@@ -1842,7 +1842,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
-			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
+			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
 			pulseStartTimes[idx++] = pulseStartTime
 
 			pulseStartTime += interPulseIntervals[i] + pa.pulseDuration
@@ -1866,7 +1866,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
-			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
+			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
 			pulseStartTimes[idx++] = pulseStartTime
 
 			pulseStartTime += interPulseInterval + pa.pulseDuration

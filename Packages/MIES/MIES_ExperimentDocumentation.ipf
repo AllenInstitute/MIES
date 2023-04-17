@@ -89,15 +89,15 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	values[rowIndex][2][] = timestamp
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
-	EnsureLargeEnoughWave(valuesDat, minimumSize=rowIndex, dimension=ROWS)
+	EnsureLargeEnoughWave(valuesDat, indexShouldExist=rowIndex, dimension=ROWS)
 	valuesDat[rowIndex] = str2num(values[rowIndex][1])
 
 	WAVE valuesSweep = ExtractLogbookSliceSweep(values)
-	EnsureLargeEnoughWave(valuesSweep, minimumSize=rowIndex, dimension=ROWS)
+	EnsureLargeEnoughWave(valuesSweep, indexShouldExist=rowIndex, dimension=ROWS)
 	valuesSweep[rowIndex] = str2num(values[rowIndex][0])
 
 	WAVE valuesNull = ExtractLogbookSliceEmpty(values)
-	EnsureLargeEnoughWave(valuesNull, minimumSize=rowIndex, dimension=ROWS)
+	EnsureLargeEnoughWave(valuesNull, indexShouldExist=rowIndex, dimension=ROWS)
 	// nothing to do
 
 	numCols = DimSize(incomingTextualValues, COLS)
@@ -209,7 +209,7 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 	values[rowIndex][2][] = timestamp
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
-	EnsureLargeEnoughWave(valuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
+	EnsureLargeEnoughWave(valuesDat, indexShouldExist=rowIndex, dimension=ROWS, initialValue=NaN)
 	valuesDat[rowIndex] = values[rowIndex][1]
 
 	numCols = DimSize(incomingNumericalValues, COLS)
@@ -512,7 +512,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 
 		// need to add new entry
 		idx = numKeyCols + numAdditions
-		EnsureLargeEnoughWave(key, minimumSize=idx, dimension=COLS)
+		EnsureLargeEnoughWave(key, indexShouldExist=idx, dimension=COLS)
 		key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
 		indizes[i] = idx
 		numAdditions += 1
@@ -622,12 +622,12 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 	endif
 
 	if(IsNumericWave(values))
-		EnsureLargeEnoughWave(values, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
+		EnsureLargeEnoughWave(values, indexShouldExist=rowIndex, dimension=ROWS, initialValue=NaN)
 		if(numAdditions)
 			values[][numKeyCols,][] = NaN
 		endif
 	else
-		EnsureLargeEnoughWave(values, minimumSize=rowIndex, dimension=ROWS)
+		EnsureLargeEnoughWave(values, indexShouldExist=rowIndex, dimension=ROWS)
 	endif
 
 	return [indizes, rowIndex]
