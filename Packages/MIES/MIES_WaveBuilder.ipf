@@ -2666,6 +2666,10 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 		return ""
 	endif
 
+	if(WB_CheckForEmptyEpochs(tempName))
+		return ""
+	endif
+
 	// we now know that the stimset is valid
 	// let's save it under the desired name and delete the temporary one
 	WB_SaveStimSetParameterWaves(setName, SegWvType, WP, WPT, stimulusType)
@@ -2680,6 +2684,48 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	WB_UpdateEpochCombineList(stimulusType)
 
 	return setName
+End
+
+/// @brief Return a wave with the length of all epochs
+///
+/// @returns wave with epoch lengths or an invalid wave reference in case we don't have any epochs
+Function/WAVE WB_GetEpochLengths(string setName)
+
+	variable numEpochs
+
+	numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
+	ASSERT(IsInteger(numEpochs), "Expected numEpochs to be an integer")
+
+	if(numEpochs <= 0)
+		return $""
+	endif
+
+	Make/FREE/N=(numEpochs)/D epochLengths = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = p)
+
+	return epochLengths
+End
+
+static Function WB_CheckForEmptyEpochs(string setname)
+
+	variable idx
+
+	WAVE/Z epochLengths = WB_GetEpochLengths(setname)
+
+	if(!WaveExists(epochLengths))
+		printf "The stimset has no epochs. Please add at least one non-empty epoch.\r"
+		ControlWindowToFront()
+		return 1
+	endif
+
+	idx = GetRowIndex(epochLengths, val = 0)
+
+	if(idx >= 0)
+		printf "The epoch %d has a duration of zero. Please either remove that epoch or make its duration non-zero.\r", idx
+		ControlWindowToFront()
+		return 1
+	endif
+
+	return 0
 End
 
 Function/S WB_SerializeStimulusType(variable stimulusType)

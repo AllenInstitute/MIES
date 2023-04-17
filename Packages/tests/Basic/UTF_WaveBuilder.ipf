@@ -315,3 +315,45 @@ Function WB_StimsetWithTooLongNameIsNotSaved()
 
 	CHECK_EQUAL_STR(ST_GetStimsetList(searchString = "abcd*"), "")
 End
+
+Function WB_StimsetWithEmptyEpochsAreNotSaved()
+
+	string win, history, basename
+	variable refNum
+
+	win = WBP_CreateWaveBuilderPanel()
+
+	basename = "abcd"
+	PGC_SetAndActivateControl(win, "setvar_WaveBuilder_baseName", str = basename)
+
+	refNum = CaptureHistoryStart()
+	PGC_SetAndActivateControl(win, "button_WaveBuilder_SaveSet")
+	history = CaptureHistory(refNum, 1)
+	CHECK_PROPER_STR(history)
+	CHECK_GT_VAR(strsearch(history, "duration of zero", 0), 0)
+
+	CHECK_EQUAL_STR(ST_GetStimsetList(searchString = basename + "*"), "")
+End
+
+Function WB_StimsetWithNoEpochsAreNotSaved()
+
+	string win, history, basename
+	variable refNum
+
+	win = WBP_CreateWaveBuilderPanel()
+
+	basename = "abcd"
+	PGC_SetAndActivateControl(win, "setvar_WaveBuilder_baseName", str = basename)
+
+	// directly write into the SegWvType as the GUI does not allow no epochs
+	WAVE SegWvType = GetSegmentTypeWave()
+	SegWvType[%$"Total number of epochs"] = 0
+
+	refNum = CaptureHistoryStart()
+	PGC_SetAndActivateControl(win, "button_WaveBuilder_SaveSet")
+	history = CaptureHistory(refNum, 1)
+	CHECK_PROPER_STR(history)
+	CHECK_GT_VAR(strsearch(history, "stimset has no epochs", 0), 0)
+
+	CHECK_EQUAL_STR(ST_GetStimsetList(searchString = basename + "*"), "")
+End
