@@ -321,7 +321,7 @@ static Function	TestSweepFormulaTP(string device)
 
 	// ignore channels that are not AD
 	formula = "tp(tpss(), select(channels(DA), sweeps()))"
-	WAVE/WAVE tpResult = GetMultipleResults(formula, graph)
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(tpResult, ROWS), 0)
 
 	// sweep does not exist -> zero results
