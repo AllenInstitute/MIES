@@ -3170,14 +3170,63 @@ End
 
 static Function/WAVE SF_OperationDiv(variable jsonId, string jsonPath, string graph)
 
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_DIV)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_DIV, DimSize(input, ROWS))
+	variable numArgs, dataSetNum0, dataSetNum1
 
-	output[] = SF_OperationDivImpl(input[p])
+	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	ASSERT(numArgs == 2, "Number of arguments must be 2 for div")
+
+	WAVE/WAVE arg0 = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+	WAVE/WAVE arg1 = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 1)
+	dataSetNum0 = DimSize(arg0, ROWS)
+	dataSetNum1 = DimSize(arg1, ROWS)
+	SFH_ASSERT(dataSetNum0 > 0 && dataSetNum1 > 0, "No input data for div.")
+	if(dataSetNum0 == dataSetNum1)
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_DIV, dataSetNum0)
+		WAVE/WAVE input = arg0
+		output[] = SF_OperationDivImplDataSets(arg0[p], arg1[p])
+	elseif(dataSetNum1 == 1)
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_DIV, dataSetNum0)
+		WAVE/WAVE input = arg0
+		output[] = SF_OperationDivImplDataSets(arg0[p], arg1[0])
+	elseif(dataSetNum0 == 1)
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_DIV, dataSetNum1)
+		WAVE/WAVE input = arg1
+		output[] = SF_OperationDivImplDataSets(arg0[0], arg1[p])
+	else
+		SFH_ASSERT(0, "Can not divide mixed number of datasets.")
+	endif
 
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_DIV, "")
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_DIV, clear=input)
+End
+
+static Function/WAVE SF_OperationDivImplDataSets(WAVE/Z data0, WAVE/Z data1)
+
+	variable divConst
+
+	if(!WaveExists(data0) || !WaveExists(data1))
+		return $""
+	endif
+	SFH_ASSERT(IsNumericWave(data0) && IsNumericWave(data1) , "Operand for / must be numeric.")
+
+	if(numpnts(data1) == 1)
+		divConst = data1[0]
+		MatrixOp/FREE result = data0 / divConst
+		CopyScales data0, result
+		return result
+	endif
+	if(numpnts(data0) == 1)
+		divConst = data0[0]
+		MatrixOp/FREE result = divConst / data1
+		CopyScales data1, result
+		return result
+	endif
+	SFH_ASSERT(EqualWaves(data0, data1, 512), "div: wave size mismatch")
+
+	MatrixOp/FREE result = data0 / data1
+	CopyScales data0, result
+	return result
 End
 
 static Function/WAVE SF_OperationDivImpl(WAVE/Z wv)
