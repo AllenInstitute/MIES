@@ -60,13 +60,13 @@ static Function/WAVE OOD_GetRegionsFromStimset(stimset, prePoints, postPoints)
 
 		if(V_rising)
 
-			EnsureLargeEnoughWave(regions, indexShouldExist = rIndex + 1)
+			EnsureLargeEnoughWave(regions, indexShouldExist = rIndex)
 			regions[rIndex][%STARTPOINT] = max(position - prePoints, 0)
 
 		else
 
 			if(!expectFalling)
-				EnsureLargeEnoughWave(regions, indexShouldExist = rIndex + 1)
+				EnsureLargeEnoughWave(regions, indexShouldExist = rIndex)
 				regions[rIndex][%STARTPOINT] = 0
 			endif
 			regions[rIndex][%ENDPOINT] = min(position + postPoints, size)
