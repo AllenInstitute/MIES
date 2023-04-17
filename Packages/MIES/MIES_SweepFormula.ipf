@@ -783,7 +783,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		Make/FREE/D/N=0 indicesOfOperationsWithScalarResult
 		// Iterate over all subarrays and objects on current level
 		for(index : arrOrObjAt)
-			WAVE subArray = SFH_GetArgumentSingle(jsonID, jsonPath, graph, "ExecutorSubArrayEvaluation", index, checkExist=1)
+			WAVE subArray = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, "ExecutorSubArrayEvaluation", index, checkExist=1)
 			SFH_ASSERT(numpnts(subArray), "Encountered subArray with zero size.")
 			// Type check, decide on type
 			if(IsNumericWave(subArray))
@@ -2479,13 +2479,13 @@ static Function/WAVE SF_OperationTPFit(variable jsonId, string jsonPath, string 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	SFH_ASSERT(numArgs >= 2 && numArgs <= 3, "tpfit has two or three arguments")
 
-	WAVE/T wFitType = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_TPFIT, 0, checkExist=1)
+	WAVE/T wFitType = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_TPFIT, 0, checkExist=1)
 	SFH_ASSERT(IsTextWave(wFitType), "TPFit function argument must be textual.")
 	SFH_ASSERT(DimSize(wFitType, ROWS) == 1, "TPFit function argument must be a single string.")
 	func = wFitType[0]
 	SFH_ASSERT(!CmpStr(func, SF_OP_TPFIT_FUNC_EXP) || !CmpStr(func, SF_OP_TPFIT_FUNC_DEXP), "Fit function must be exp or doubleexp")
 
-	WAVE/T wReturn = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_TPFIT, 1, checkExist=1)
+	WAVE/T wReturn = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_TPFIT, 1, checkExist=1)
 	SFH_ASSERT(IsTextWave(wReturn), "TPFit return what argument must be textual.")
 	SFH_ASSERT(DimSize(wReturn, ROWS) == 1, "TPFit return what argument must be a single string.")
 	retVal = wReturn[0]
@@ -2518,7 +2518,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 	SFH_ASSERT(numArgs >= 1 || numArgs <= 3, "tp requires 1 to 3 arguments")
 
 	if(numArgs == 3)
-		WAVE ignoreTPs = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_TP, 2, checkExist=1)
+		WAVE ignoreTPs = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_TP, 2, checkExist=1)
 		SFH_ASSERT(WaveDims(ignoreTPs) == 1, "ignoreTPs must be one-dimensional.")
 		SFH_ASSERT(IsNumericWave(ignoreTPs), "ignoreTPs parameter must be numeric")
 	else
@@ -2909,7 +2909,7 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 	SFH_ASSERT(numArgs >= 1 && numArgs <= 3, "epochs requires at least 1 and at most 3 arguments")
 
 	if(numArgs == 3)
-		WAVE/T epochType = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_EPOCHS, 2, checkExist=1)
+		WAVE/T epochType = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_EPOCHS, 2, checkExist=1)
 		SFH_ASSERT(DimSize(epochType, ROWS) == 1, "Epoch type must be a single value.")
 		SFH_ASSERT(IsTextWave(epochType), "Epoch type argument must be textual")
 		strswitch(epochType[0])
@@ -2934,7 +2934,7 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_EPOCHS, 1)
 
-	WAVE/T epochPatterns = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_EPOCHS, 0, checkExist=1)
+	WAVE/T epochPatterns = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_EPOCHS, 0, checkExist=1)
 	SFH_ASSERT(IsTextWave(epochPatterns), "Epoch pattern argument must be textual")
 
 	WAVE/WAVE output = SF_OperationEpochsImpl(graph, epochPatterns, selectData, epType, SF_OP_EPOCHS)
@@ -3539,13 +3539,13 @@ static Function/WAVE SF_OperationButterworth(variable jsonId, string jsonPath, s
 	SFH_ASSERT(numArgs == 4, "The butterworth filter requires 4 arguments")
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	WAVE lowPassCutoff = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1, checkExist=1)
+	WAVE lowPassCutoff = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 1, checkExist=1)
 	SFH_ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
 	SFH_ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
-	WAVE highPassCutoff = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 2, checkExist=1)
+	WAVE highPassCutoff = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 2, checkExist=1)
 	SFH_ASSERT(DimSize(highPassCutoff, ROWS) == 1, "Too many input values for parameter highPassCutoff")
 	SFH_ASSERT(IsNumericWave(highPassCutoff), "highPassCutoff parameter must be numeric")
-	WAVE order = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 3, checkExist=1)
+	WAVE order = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_BUTTERWORTH, 3, checkExist=1)
 	SFH_ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
 	SFH_ASSERT(IsNumericWave(order), "order parameter must be numeric")
 
@@ -3648,24 +3648,24 @@ static Function/WAVE SF_OperationSetScale(variable jsonId, string jsonPath, stri
 	SFH_ASSERT(numArgs < 6, "Maximum number of arguments exceeded.")
 	SFH_ASSERT(numArgs > 1, "At least two arguments.")
 	WAVE/WAVE dataRef = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	WAVE/T dimension = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_SETSCALE, 1, checkExist=1)
+	WAVE/T dimension = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_SETSCALE, 1, checkExist=1)
 	SFH_ASSERT(IsTextWave(dimension), "Expected d, x, y, z or t as dimension.")
 	SFH_ASSERT(DimSize(dimension, ROWS) == 1 && GrepString(dimension[0], "[d,x,y,z,t]") , "undefined input for dimension")
 
 	if(numArgs >= 3)
-		WAVE offset = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_SETSCALE, 2, checkExist=1)
+		WAVE offset = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_SETSCALE, 2, checkExist=1)
 		SFH_ASSERT(IsNumericWave(offset) && DimSize(offset, ROWS) == 1, "Expected a number as offset.")
 	else
 		Make/FREE/N=1 offset  = {0}
 	endif
 	if(numArgs >= 4)
-		WAVE delta = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_SETSCALE, 3, checkExist=1)
+		WAVE delta = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_SETSCALE, 3, checkExist=1)
 		SFH_ASSERT(IsNumericWave(delta) && DimSize(delta, ROWS) == 1, "Expected a number as delta.")
 	else
 		Make/FREE/N=1 delta = {1}
 	endif
 	if(numArgs == 5)
-		WAVE/T unit = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_SETSCALE, 4, checkExist=1)
+		WAVE/T unit = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_SETSCALE, 4, checkExist=1)
 		SFH_ASSERT(IsTextWave(unit) && DimSize(unit, ROWS) == 1, "Expected a string as unit.")
 	else
 		Make/FREE/N=1/T unit = {""}
@@ -3738,7 +3738,7 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	WAVE channels = SF_NewChannelsWave(numArgs ? numArgs : 1)
 	for(i = 0; i < numArgs; i += 1)
-		WAVE chanSpec = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_CHANNELS, i, checkExist=1)
+		WAVE chanSpec = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_CHANNELS, i, checkExist=1)
 		channelName = ""
 		if(IsNumericWave(chanSpec))
 			channels[i][%channelNumber] = chanSpec[0]
@@ -3794,7 +3794,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
 	if(numArgs > 1)
-		WAVE/T wUnit = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, checkExist=1)
+		WAVE/T wUnit = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 1, checkExist=1)
 		sprintf errMsg, "Second argument (unit) can not be a number. Use %s, %s or %s.", SF_POWERSPECTRUM_UNIT_DEFAULT, SF_POWERSPECTRUM_UNIT_DB, SF_POWERSPECTRUM_UNIT_NORMALIZED
 		SFH_ASSERT(IsTextWave(wUnit), errMsg)
 		SFH_ASSERT(!DimSize(wUnit, COLS) && DimSize(wUnit, ROWS) == 1, "Second argument (unit) must not be an array with multiple options.")
@@ -3803,7 +3803,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 		SFH_ASSERT(!CmpStr(unit, SF_POWERSPECTRUM_UNIT_DEFAULT) || !CmpStr(unit, SF_POWERSPECTRUM_UNIT_DB) || !CmpStr(unit, SF_POWERSPECTRUM_UNIT_NORMALIZED), errMsg)
 	endif
 	if(numArgs > 2)
-		WAVE/T wAvg = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 2, checkExist=1)
+		WAVE/T wAvg = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 2, checkExist=1)
 		sprintf errMsg, "Third argument (avg) can not be a number. Use %s or %s.", SF_POWERSPECTRUM_AVG_ON, SF_POWERSPECTRUM_AVG_OFF
 		SFH_ASSERT(IsTextWave(wAvg), errMsg)
 		SFH_ASSERT(!DimSize(wAvg, COLS) && DimSize(wAvg, ROWS) == 1, "Third argument (avg) must not be an array with multiple options.")
@@ -3812,7 +3812,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 		SFH_ASSERT(!CmpStr(avg, SF_POWERSPECTRUM_AVG_ON) || !CmpStr(avg, SF_POWERSPECTRUM_AVG_OFF), errMsg)
 	endif
 	if(numArgs > 3)
-		WAVE wRatioFreq = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 3, checkExist=1)
+		WAVE wRatioFreq = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 3, checkExist=1)
 		SFH_ASSERT(IsNumericWave(wRatioFreq), "Fourth argument (frequency for ratio) must be a number.")
 		SFH_ASSERT(!DimSize(wRatioFreq, COLS) && DimSize(wRatioFreq, ROWS) == 1, "Fourth argument (frequency for ratio) must not be an array with multiple options.")
 		ratioFreq = wRatioFreq[0]
@@ -3820,14 +3820,14 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 		SFH_ASSERT(ratioFreq >= 0, errMsg)
 	endif
 	if(numArgs > 4)
-		WAVE wCutoff = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 4, checkExist=1)
+		WAVE wCutoff = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 4, checkExist=1)
 		SFH_ASSERT(IsNumericWave(wCutoff), "Fifth argument (cutoff frequency) must be a number.")
 		SFH_ASSERT(!DimSize(wCutoff, COLS) && DimSize(wCutoff, ROWS) == 1, "Fifth argument (cutoff frequency) must not be an array with multiple options.")
 		cutoff = wCutoff[0]
 		SFH_ASSERT(cutoff > 0, "Fifth argument (cutoff frequency) must be > 0.")
 	endif
 	if(numArgs > 5)
-		WAVE/T wWinf = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 5, checkExist=1)
+		WAVE/T wWinf = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_POWERSPECTRUM, 5, checkExist=1)
 		SFH_ASSERT(IsTextWave(wWinf), "Sixth argument (window function) can not be a number.")
 		SFH_ASSERT(!DimSize(wWinf, COLS) && DimSize(wWinf, ROWS) == 1, "Sixth argument (window function) must not be an array with multiple options.")
 		winFunc = wWinf[0]
@@ -4033,16 +4033,16 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		WAVE/Z sweeps = SF_ExecuteFormula("sweeps()", graph, singleResult=1, useVariables=0)
 	else
 		SFH_ASSERT(numArgs >= 2 && numArgs <= 4, "Function requires None, 2 or 3 arguments.")
-		WAVE channels = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 0, checkExist=1)
+		WAVE channels = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_SELECT, 0, checkExist=1)
 		SFH_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
-		WAVE/Z sweeps = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 1)
+		WAVE/Z sweeps = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_SELECT, 1)
 		if(WaveExists(sweeps))
 			SFH_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 		endif
 
 		if(numArgs > 2)
-			WAVE/T wMode = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 2, checkExist=1)
+			WAVE/T wMode = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_SELECT, 2, checkExist=1)
 			SFH_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
 			SFH_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must not be an array with multiple options.")
 			mode = wMode[0]
@@ -4050,7 +4050,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		endif
 
 		if(numArgs > 3)
-			WAVE/T wClamp = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_SELECT, 3, checkExist=1)
+			WAVE/T wClamp = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_SELECT, 3, checkExist=1)
 			SFH_ASSERT(IsTextWave(wClamp), "clamp parameter can not be a number. Use \"all\",  \"ic\" or \"vc\".")
 			SFH_ASSERT(!DimSize(wClamp, COLS) && DimSize(wClamp, ROWS) == 1, "clamp must not be an array with multiple options.")
 			clamp = wClamp[0]
@@ -4113,7 +4113,7 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 	SFH_ASSERT(numArgs >= 1, "At least one argument is required.")
 
 	if(numArgs == 3)
-		WAVE/T wMode = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, checkExist=1)
+		WAVE/T wMode = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, checkExist=1)
 		SFH_ASSERT(IsTextWave(wMode) && DimSize(wMode, ROWS) == 1 && !DimSize(wMode, COLS), "Last parameter needs to be a string.")
 		strswitch(wMode[0])
 			case "UNKNOWN_MODE":
@@ -4137,7 +4137,7 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 1)
 
-	WAVE/T wLbnKey = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, checkExist=1)
+	WAVE/T wLbnKey = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, checkExist=1)
 	SFH_ASSERT(IsTextWave(wLbnKey) && DimSize(wLbnKey, ROWS) == 1 && !DimSize(wLbnKey, COLS), "First parameter needs to be a string labnotebook key.")
 	lbnKey = wLbnKey[0]
 
@@ -4291,7 +4291,7 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 	else
 		Make/FREE/T/N=(numArgs) wvT
 		for(i = 0; i < numArgs; i += 1)
-			WAVE/T csrName = SFH_GetArgumentSingle(jsonId, jsonPath, graph, SF_OP_CURSORS, i, checkExist=1)
+			WAVE/T csrName = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, SF_OP_CURSORS, i, checkExist=1)
 			SFH_ASSERT(IsTextWave(csrName), "cursors argument at " + num2istr(i) + " must be textual.")
 			wvT[i] = csrName[0]
 		endfor
@@ -4322,11 +4322,11 @@ static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, str
 	SFH_ASSERT(numArgs <=3, "Findlevel has 3 arguments at most.")
 	SFH_ASSERT(numArgs > 1, "Findlevel needs at least two arguments.")
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
-	WAVE level = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 1, checkExist=1)
+	WAVE level = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 1, checkExist=1)
 	SFH_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
 	SFH_ASSERT(IsNumericWave(level), "level parameter must be numeric")
 	if(numArgs == 3)
-		WAVE edge = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 2, checkExist=1)
+		WAVE edge = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_FINDLEVEL, 2, checkExist=1)
 		SFH_ASSERT(DimSize(edge, ROWS) == 1, "Too many input values for parameter edge")
 		SFH_ASSERT(IsNumericWave(edge), "edge parameter must be numeric")
 		SFH_ASSERT(edge[0] == FINDLEVEL_EDGE_BOTH || edge[0] == FINDLEVEL_EDGE_INCREASING ||  edge[0] == FINDLEVEL_EDGE_DECREASING, "edge parameter is invalid")
@@ -4553,7 +4553,7 @@ static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string 
 
 	SFH_ASSERT(SFH_GetNumberOfArguments(jsonID, jsonPath) == 2, "Function accepts only two arguments")
 
-	WAVE/T name = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_STORE, 0)
+	WAVE/T name = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_STORE, 0)
 	SFH_ASSERT(IsTextWave(name), "name parameter must be textual")
 	SFH_ASSERT(DimSize(name, ROWS) == 1, "name parameter must be a plain string")
 
