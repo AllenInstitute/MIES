@@ -2473,7 +2473,7 @@ static Function/WAVE SF_OperationTPFit(variable jsonId, string jsonPath, string 
 
 	variable numArgs, outType
 	string func, retVal
-	variable maxTrailLength = 250 // ms
+	variable maxTrailLength
 	string opShort = SF_OP_TPFIT
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
@@ -2491,13 +2491,7 @@ static Function/WAVE SF_OperationTPFit(variable jsonId, string jsonPath, string 
 	retVal = wReturn[0]
 	SFH_ASSERT(!CmpStr(retVal, SF_OP_TPFIT_RET_TAULARGE) || !CmpStr(retVal, SF_OP_TPFIT_RET_TAUSMALL) || !CmpStr(retVal, SF_OP_TPFIT_RET_AMP) || !CmpStr(retVal, SF_OP_TPFIT_RET_MINAMP) || !CmpStr(retVal, SF_OP_TPFIT_RET_FITQUALITY), "TP fit result must be tau, tausmall, amp, minabsamp, fitq")
 
-	if(numArgs == 3)
-		WAVE wTrailLength = SFH_GetArgumentSingle(jsonID, jsonPath, graph, SF_OP_TPFIT, 2, checkExist=1)
-		SFH_ASSERT(IsNumericWave(wTrailLength), "TPFit maxTrailLength what argument must be a number.")
-		SFH_ASSERT(DimSize(wTrailLength, ROWS) == 1, "TPFit maxTrailLength argument must be a single number.")
-		SFH_ASSERT(wTrailLength[0] > 0, "TPFit maxTrailLength must be > 0.")
-		maxTrailLength = wTrailLength[0]
-	endif
+	maxTrailLength = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_TPFIT, 2, defValue = 250)
 
 	Make/FREE/T fitSettingsT = {func, retVal}
 	SetDimLabel ROWS, 0, FITFUNCTION, fitSettingsT
@@ -2568,7 +2562,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 	string unitKey, epShortName, baselineUnit, xAxisLabel, yAxisLabel, debugGraph, dataType
 	string fitFunc, retWhat, epBaselineTrail, allowedReturns
 
-	variable numTPs, beginTrail, endTrail, endTrailIndex, beginTrailIndex, fitResult
+	variable numTPs, beginTrail, endTrail, endTrailZero, endTrailIndex, beginTrailIndex, fitResult
 	variable debugMode
 
 	STRUCT TPAnalysisInput tpInput
@@ -2690,12 +2684,14 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 				WAVE/Z/T nextEpoch = EP_GetNextEpoch(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epBaselineTrail, 1)
 
 				beginTrail = str2numSafe(epochTPBaselineTrail[0][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+				endTrailZero = str2numSafe(epochTPBaselineTrail[0][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
 				if(WaveExists(nextEpoch) && EP_GetEpochAmplitude(nextEpoch[0][EPOCH_COL_TAGS]) == 0)
 					endTrail = str2numSafe(nextEpoch[0][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
 				else
-					endTrail = str2numSafe(epochTPBaselineTrail[0][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+					endTrail = endTrailZero
 				endif
-				endTrail = min(endTrail, beginTrail + maxTrailLength)
+				endTrail = min(endTrail, endTrailZero + maxTrailLength)
+				SFH_ASSERT(endTrail > beginTrail, "maxTrailLength specified is before TP_B1 start")
 
 #ifdef AUTOMATED_TESTING
 				beginTrails[j] = beginTrail

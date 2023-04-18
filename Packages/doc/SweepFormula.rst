@@ -1116,8 +1116,10 @@ The option ``amp`` returns for the fit function ``exp`` the coefficient :math:`K
 The option ``minabsamp`` returns for the fit function ``exp`` the coefficient :math:`K_1`, for ``doubleexp`` it returns :math:`K_1` if :math:`min(|K_1|, |K_3|) = |K_1|`, :math:`K_3` otherwise.
 The option ``fitq`` returns the fit quality defined as :math:`\sum_0^n{(y_i-y_{fit})^2}/(x_n-x_0)`.
 
-The optional third argument specifies the time in [ms] after the test pulse that is maximal included in the input data for the fit, typically from the next epoch.
-By default if the next epoch on tree level 1 is sufficiently long 250 ms of sweep data is included in the fit.
+The optional third argument specifies the time in [ms] after the test pulse that is included in the input data for the fit.
+The trail starts at the begin of the `TP_B1` epoch. A maxTrail value of zero refers to the end of the `TP_B1` epoch.
+The value of maxTrail can be negative up to the begin of `TP_B1`.
+If maxTrail is not set then the trail range ends at the beginning of the next epoch on tree level 1 or 250 ms after the end of `TP_B1`, whichever occurs first.
 
 log
 """

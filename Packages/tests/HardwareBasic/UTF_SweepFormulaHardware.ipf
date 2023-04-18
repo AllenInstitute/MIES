@@ -431,6 +431,17 @@ static Function	TestSweepFormulaTP(string device)
 		CHECK_EQUAL_WAVES(xValues, {sweepNums[i]}, mode = WAVE_DATA)
 		i += 1
 	endfor
+
+	formula = "tp(tpfit(doubleexp, tausmall, [-1]), select(channels(AD1), sweeps(), all))"
+	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
+
+	try
+		formula = "tp(tpfit(doubleexp, tausmall, [-10]), select(channels(AD1), sweeps(), all))"
+		WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function DirectToFormulaParser(string code)
@@ -480,7 +491,7 @@ static Function SF_TPTest2_REENTRY([str])
 	CHECK_EQUAL_VAR(DimSize(beginTrails, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(endTrails, ROWS), 1)
 	CHECK_EQUAL_VAR(beginTrails[0], 15)
-	CHECK_EQUAL_VAR(endTrails[0], 15 + 250)
+	CHECK_EQUAL_VAR(endTrails[0], 20 + 250)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 
 	formula = "tp(tpfit(doubleexp,tau),select())"
