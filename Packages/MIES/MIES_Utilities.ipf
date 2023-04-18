@@ -417,24 +417,22 @@ End
 /// 	for(...)
 /// 		index = GetNumberFromWaveNote(data, NOTE_INDEX)
 /// 		// ...
-/// 		EnsureLargeEnoughWave(data, dimension = ROWS, minimumSize = index)
+/// 		EnsureLargeEnoughWave(data, dimension = ROWS, indexShouldExist = index)
 /// 		data[index] = ...
 /// 		// ...
 /// 	    SetNumberInWaveNote(data, NOTE_INDEX, ++index)
 /// 	endfor
 /// \endrst
 ///
-/// @param wv              wave to redimension
-/// @param minimumSize 	   [optional, default is implementation defined] the minimum size of the wave.
-///                        The actual size of the wave after the function returns might be larger.
-/// @param dimension       [optional, defaults to ROWS] dimension to resize, all other dimensions are left untouched.
-/// @param initialValue    [optional, defaults to zero] initialValue of the new wave points
-/// @param checkFreeMemory [optional, defaults to false] check if the free memory is enough for increasing the size
+/// @param wv               wave to redimension
+/// @param indexShouldExist [optional, default is implementation defined] the minimum size of the wave.
+///                         The actual size of the wave after the function returns might be larger.
+/// @param dimension        [optional, defaults to ROWS] dimension to resize, all other dimensions are left untouched.
+/// @param initialValue     [optional, defaults to zero] initialValue of the new wave points
+/// @param checkFreeMemory  [optional, defaults to false] check if the free memory is enough for increasing the size
 ///
 /// @return 0 on success, (only for checkFreeMemory = True) 1 if increasing the wave's size would fail due to out of memory
-threadsafe Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue, checkFreeMemory])
-	Wave wv
-	variable minimumSize, dimension, initialValue, checkFreeMemory
+threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, variable dimension, variable initialValue, variable checkFreeMemory])
 
 	if(ParamIsDefault(dimension))
 		dimension = ROWS
@@ -448,28 +446,28 @@ threadsafe Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialVa
 
 	ASSERT_TS(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
 	ASSERT_TS(WaveExists(wv), "Wave does not exist")
-	ASSERT_TS(IsFinite(minimumSize) && minimumSize >= 0, "Invalid minimum size")
+	ASSERT_TS(IsFinite(indexShouldExist) && indexShouldExist >= 0, "Invalid minimum size")
 
-	if(ParamIsDefault(minimumSize))
-		minimumSize = MINIMUM_WAVE_SIZE - 1
+	if(ParamIsDefault(indexShouldExist))
+		indexShouldExist = MINIMUM_WAVE_SIZE - 1
 	else
-		minimumSize = max(MINIMUM_WAVE_SIZE - 1, minimumSize)
+		indexShouldExist = max(MINIMUM_WAVE_SIZE - 1, indexShouldExist)
 	endif
 
-	if(minimumSize < DimSize(wv, dimension))
+	if(indexShouldExist < DimSize(wv, dimension))
 		return 0
 	endif
 
-	minimumSize *= 2
+	indexShouldExist *= 2
 
 	if(checkFreeMemory)
-		if(GetWaveSize(wv) * (minimumSize / DimSize(wv, dimension)) / 1024 / 1024 / 1024 >= GetFreeMemory())
+		if(GetWaveSize(wv) * (indexShouldExist / DimSize(wv, dimension)) / 1024 / 1024 / 1024 >= GetFreeMemory())
 			return 1
 		endif
 	endif
 
 	Make/FREE/L/N=(MAX_DIMENSION_COUNT) targetSizes = -1
-	targetSizes[dimension] = minimumSize
+	targetSizes[dimension] = indexShouldExist
 
 	Make/FREE/L/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(wv,p)
 
@@ -4644,7 +4642,7 @@ Function StoreElapsedTime(referenceTime)
 	WAVE/D elapsedTime = GetElapsedTimeWave()
 
 	count = GetNumberFromWaveNote(elapsedTime, NOTE_INDEX)
-	EnsureLargeEnoughWave(elapsedTime, minimumSize=count, initialValue = NaN)
+	EnsureLargeEnoughWave(elapsedTime, indexShouldExist=count, initialValue = NaN)
 
 	elapsed = GetElapsedTime(referenceTime)
 	elapsedTime[count] = elapsed

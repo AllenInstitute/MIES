@@ -996,8 +996,8 @@ threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceTyp
 
 	WAVE indexWave = GetLBIndexCache(values)
 
-	EnsureLargeEnoughWave(indexWave, minimumSize = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
-	EnsureLargeEnoughWave(indexWave, minimumSize = settingCol, dimension = COLS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
+	EnsureLargeEnoughWave(indexWave, indexShouldExist = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
+	EnsureLargeEnoughWave(indexWave, indexShouldExist = settingCol, dimension = COLS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
 	rowIndex = indexWave[sweepNo][settingCol][entrySourceTypeIndex]
 
 	if(rowIndex >= 0) // entry available and present
@@ -1012,7 +1012,7 @@ threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceTyp
 	elseif(rowIndex == LABNOTEBOOK_UNCACHED_VALUE)
 		// need to search for it
 		WAVE rowCache = GetLBRowCache(values)
-		EnsureLargeEnoughWave(rowCache, minimumSize = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_GET_RANGE)
+		EnsureLargeEnoughWave(rowCache, indexShouldExist = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_GET_RANGE)
 
 		first = rowCache[sweepNo][%first][entrySourceTypeIndex]
 		last  = rowCache[sweepNo][%last][entrySourceTypeIndex]
@@ -2876,7 +2876,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			endif
 
 			if(!ParamIsDefault(bdi))
-				EnsureLargeEnoughWave(bdi.traceWaves, minimumSize = traceCounter + numVertWaves * numHorizWaves)
+				EnsureLargeEnoughWave(bdi.traceWaves, indexShouldExist = traceCounter + numVertWaves * numHorizWaves)
 			endif
 
 			// number of vertically distributed
@@ -3027,7 +3027,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 						if(axisIndex == -1) // create new entry
 							count = GetNumberFromWaveNote(axisLabelCache, NOTE_INDEX)
-							EnsureLargeEnoughWave(axisLabelCache, minimumSize=count)
+							EnsureLargeEnoughWave(axisLabelCache, indexShouldExist=count)
 							axisLabelCache[count][%Axis] = vertAxis
 							axisLabelCache[count][%Lbl]  = axisLabel
 							SetNumberInWaveNote(axisLabelCache, NOTE_INDEX, count + 1)

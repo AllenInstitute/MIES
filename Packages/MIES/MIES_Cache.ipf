@@ -389,9 +389,9 @@ threadsafe static Function CA_MakeSpaceForNewEntry()
 	index = GetNumberFromWaveNote(keys, NOTE_INDEX)
 	ASSERT_TS(index == GetNumberFromWaveNote(values, NOTE_INDEX), "Mismatched indizes in key and value waves")
 
-	EnsureLargeEnoughWave(keys, dimension=ROWS, minimumSize=index)
-	EnsureLargeEnoughWave(values, dimension=ROWS, minimumSize=index)
-	EnsureLargeEnoughWave(stats, dimension=ROWS, minimumSize=index, initialValue = NaN)
+	EnsureLargeEnoughWave(keys, dimension=ROWS, indexShouldExist=index)
+	EnsureLargeEnoughWave(values, dimension=ROWS, indexShouldExist=index)
+	EnsureLargeEnoughWave(stats, dimension=ROWS, indexShouldExist=index, initialValue = NaN)
 	ASSERT_TS(DimSize(keys, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
 	ASSERT_TS(DimSize(stats, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
 

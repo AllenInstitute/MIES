@@ -1772,7 +1772,7 @@ Function/WAVE GetUserdataKeys(string recMacro)
 		pos2 = strsearch(recMacro, USERDATA_SUFFIX, pos1)
 		ASSERT(pos2 != -1, "Invalid recreation macro")
 
-		EnsureLargeEnoughWave(userKeys, minimumSize = count)
+		EnsureLargeEnoughWave(userKeys, indexShouldExist = count)
 		userKeys[count++] = recMacro[pos1 + prefixLength, pos2 - 1]
 
 		pos1 = pos2

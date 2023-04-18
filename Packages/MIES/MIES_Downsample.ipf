@@ -156,9 +156,9 @@ static Function AppendEntries(list, dataRef, rate, startIndex, deviceType, devic
 		WAVE config = GetConfigWave(wv)
 		samplingInterval = GetSamplingInterval(config)
 
-		EnsureLargeEnoughWave(list, minimumSize=idx)
-		EnsureLargeEnoughWave(dataRef, minimumSize=idx)
-		EnsureLargeEnoughWave(rate, minimumSize=idx)
+		EnsureLargeEnoughWave(list, indexShouldExist=idx)
+		EnsureLargeEnoughWave(dataRef, indexShouldExist=idx)
+		EnsureLargeEnoughWave(rate, indexShouldExist=idx)
 
 		convRate = ConvertSamplingIntervalToRate(samplingInterval)
 

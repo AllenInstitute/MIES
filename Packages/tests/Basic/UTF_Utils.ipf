@@ -663,14 +663,14 @@ End
 Function ELE_MinimumSize1()
 
 	Make/FREE/N=100 wv
-	EnsureLargeEnoughWave(wv, minimumSize = 1)
+	EnsureLargeEnoughWave(wv, indexShouldExist = 1)
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 100)
 End
 
 Function ELE_MinimumSize2()
 
 	Make/FREE/N=100 wv
-	EnsureLargeEnoughWave(wv, minimumSize = 100)
+	EnsureLargeEnoughWave(wv, indexShouldExist = 100)
 	CHECK_GT_VAR(DimSize(wv, ROWS), 100)
 End
 
@@ -686,20 +686,20 @@ Function ELE_KeepsMinimumWaveSize2()
 
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
 	Duplicate/FREE wv, refWave
-	EnsureLargeEnoughWave(wv, minimumSize = 1)
+	EnsureLargeEnoughWave(wv, indexShouldExist = 1)
 	CHECK_EQUAL_WAVES(wv, refWave)
 End
 
 Function ELE_KeepsMinimumWaveSize3()
 	// need to check that the index MINIMUM_WAVE_SIZE is now accessible
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
-	EnsureLargeEnoughWave(wv, minimumSize = MINIMUM_WAVE_SIZE)
+	EnsureLargeEnoughWave(wv, indexShouldExist = MINIMUM_WAVE_SIZE)
 	CHECK_GT_VAR(DimSize(wv, ROWS), MINIMUM_WAVE_SIZE)
 End
 
 Function ELE_Returns1WithCheckMem()
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
-	CHECK_EQUAL_VAR(EnsureLargeEnoughWave(wv, minimumSize = 2^50, checkFreeMemory = 1), 1)
+	CHECK_EQUAL_VAR(EnsureLargeEnoughWave(wv, indexShouldExist = 2^50, checkFreeMemory = 1), 1)
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), MINIMUM_WAVE_SIZE)
 End
 
@@ -709,7 +709,7 @@ Function ELE_AbortsWithTooLargeValue()
 	variable err
 
 	try
-		EnsureLargeEnoughWave(wv, minimumSize = 2^50); AbortOnRTE
+		EnsureLargeEnoughWave(wv, indexShouldExist = 2^50); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(1)

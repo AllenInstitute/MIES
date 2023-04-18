@@ -461,7 +461,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
 
-			EnsureLargeEnoughWave(output, minimumSize=index)
+			EnsureLargeEnoughWave(output, indexShouldExist=index)
 			output[index] = rangedSweepData
 			index += 1
 		endfor

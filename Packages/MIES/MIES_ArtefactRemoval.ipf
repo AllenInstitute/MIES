@@ -62,7 +62,7 @@ static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 
 			index = GetNumberFromWaveNote(ranges, NOTE_INDEX)
 			total = index + V_LevelsFound
-			EnsureLargeEnoughWave(ranges, minimumSize=total + 1, initialValue=NaN)
+			EnsureLargeEnoughWave(ranges, indexShouldExist=total, initialValue=NaN)
 
 			ranges[index, total - 1][0] = posLevels[p - index]
 			ranges[index, total - 1][1] = dac
@@ -80,7 +80,7 @@ static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 
 			index = GetNumberFromWaveNote(ranges, NOTE_INDEX)
 			total = index + V_LevelsFound
-			EnsureLargeEnoughWave(ranges, minimumSize=total + 1, initialValue=NaN)
+			EnsureLargeEnoughWave(ranges, indexShouldExist=total, initialValue=NaN)
 
 			ranges[index, total - 1][0] = negLevels[p - index]
 			ranges[index, total - 1][1] = dac

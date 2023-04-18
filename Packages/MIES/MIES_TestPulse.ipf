@@ -79,7 +79,7 @@ Function TP_StoreTP(device, TPWave, tpMarker, hsList)
 	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 
-	ret = EnsureLargeEnoughWave(storedTP, minimumSize=index, checkFreeMemory = 1)
+	ret = EnsureLargeEnoughWave(storedTP, indexShouldExist=index, checkFreeMemory = 1)
 
 	if(ret)
 		HandleOutOfMemory(device, NameOfWave(storedTP))
@@ -1054,7 +1054,7 @@ static Function TP_RecordTP(device, TPResults, now, tpMarker)
 		endfor
 	endif
 
-	ret = EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN, checkFreeMemory = 1)
+	ret = EnsureLargeEnoughWave(TPStorage, indexShouldExist=count, dimension=ROWS, initialValue=NaN, checkFreeMemory = 1)
 
 	if(ret)
 		HandleOutOfMemory(device, NameOfWave(TPStorage))
@@ -1118,7 +1118,7 @@ static Function TP_RecordTP(device, TPResults, now, tpMarker)
 	TP_AnalyzeTP(device, TPStorage, count)
 
 	WAVE TPStorageDat = ExtractLogbookSliceTimeStamp(TPStorage)
-	EnsureLargeEnoughWave(TPStorageDat, minimumSize=count, dimension=ROWS, initialValue=NaN)
+	EnsureLargeEnoughWave(TPStorageDat, indexShouldExist=count, dimension=ROWS, initialValue=NaN)
 	TPStorageDat[count][] = TPStorage[count][q][%TimeStampSinceIgorEpochUTC]
 
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
@@ -1464,7 +1464,7 @@ Function TP_UpdateHoldCmdInTPStorage(device, headStage)
 	WAVE TPStorage = GetTPStorage(device)
 
 	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-	EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
+	EnsureLargeEnoughWave(TPStorage, indexShouldExist=count, dimension=ROWS, initialValue=NaN)
 
 	if(!IsFinite(TPStorage[count][headstage][%Headstage])) // HS not active
 		return NaN

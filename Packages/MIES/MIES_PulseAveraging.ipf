@@ -838,7 +838,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			if(WhichListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP) == -1)
 				sweepList = AddListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP, inf)
 
-				EnsureLargeEnoughWave(headstageRemovalPerSweep, minimumSize = sweepNo)
+				EnsureLargeEnoughWave(headstageRemovalPerSweep, indexShouldExist = sweepNo)
 				headstageRemovalPerSweep[sweepNo] = OVS_GetHeadstageRemoval(win, sweepNo = sweepNo)
 			endif
 
@@ -869,8 +869,8 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			// number of pulses that might be created
 			if(numPulseCreate)
 				numPulseCreate += totalPulseCounter
-				EnsureLargeEnoughWave(properties, minimumSize = numPulseCreate, initialValue = NaN)
-				EnsureLargeEnoughWave(propertiesWaves, minimumSize = numPulseCreate)
+				EnsureLargeEnoughWave(properties, indexShouldExist = numPulseCreate, initialValue = NaN)
+				EnsureLargeEnoughWave(propertiesWaves, indexShouldExist = numPulseCreate)
 			endif
 
 			clampMode = str2num(traceData[idx][lblClampMode])
@@ -914,7 +914,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			endif
 			if(numPulseCreate > 0)
 				idx = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
-				EnsureLargeEnoughWave(setIndizes, minimumSize = idx + numPulseCreate, initialValue = NaN)
+				EnsureLargeEnoughWave(setIndizes, indexShouldExist = idx + numPulseCreate, initialValue = NaN)
 				setIndizes[idx, idx + numPulseCreate - 1][lblIndex] = prevTotalPulseCounter + p - idx
 				SetNumberInWaveNote(setIndizes, NOTE_INDEX, idx + numPulseCreate)
 			endif
@@ -3455,7 +3455,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				xUnits = WaveUnits(set2[0][0], ROWS)
 
 				Make/FREE/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(img, p)
-				EnsureLargeEnoughWave(img, minimumSize = requiredEntries, dimension = COLS, initialValue=NaN)
+				EnsureLargeEnoughWave(img, indexShouldExist = requiredEntries, dimension = COLS, initialValue=NaN)
 				Redimension/N=(refScalePoints, -1) img
 				// inclusive scale must be set after redimension
 				SetScale/P x, refScaleLeft, refScaleDelta, xUnits, img

@@ -32,7 +32,7 @@ static Function PGC_ShowControlInTab(win, control)
 			break
 		endif
 
-		EnsureLargeEnoughWave(tabs, minimumSize = idx)
+		EnsureLargeEnoughWave(tabs, indexShouldExist = idx)
 		tabs[idx][0] = tabnum
 		tabs[idx][1] = tabctrl
 

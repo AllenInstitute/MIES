@@ -620,7 +620,7 @@ Function ASYNC_Execute(dfr)
 	DFREF result = ASYNC_Run_Worker(dfr)
 	WAVE/DF serialExecutionBuffer = GetSerialExecutionBuffer(getAsyncHomeDF())
 	index = GetNumberFromWaveNote(serialExecutionBuffer, NOTE_INDEX)
-	EnsureLargeEnoughWave(serialExecutionBuffer, minimumSize = index)
+	EnsureLargeEnoughWave(serialExecutionBuffer, indexShouldExist = index)
 	serialExecutionBuffer[index] = result
 	SetNumberInWaveNote(serialExecutionBuffer, NOTE_INDEX, ++index)
 #else

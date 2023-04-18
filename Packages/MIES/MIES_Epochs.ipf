@@ -644,7 +644,7 @@ static Function EP_AddEpoch(device, channel, epBegin, epEnd, epTags, epShortName
 	epEnd = limit(epEnd, -Inf, upperlimit)
 
 	i = EP_GetEpochCount(epochWave, channel)
-	EnsureLargeEnoughWave(epochWave, minimumSize = i + 1, dimension = ROWS)
+	EnsureLargeEnoughWave(epochWave, indexShouldExist = i, dimension = ROWS)
 
 	startTimeStr = num2strHighPrec(epBegin * MICRO_TO_ONE, precision = EPOCHTIME_PRECISION)
 	endTimeStr = num2strHighPrec(epEnd * MICRO_TO_ONE, precision = EPOCHTIME_PRECISION)
@@ -933,7 +933,7 @@ Function EP_AppendLBNEpochs(string device, variable sweepNo)
 
 		epochChannelCnt = DimSize(epochChannel, ROWS)
 
-		EnsureLargeEnoughWave(epochWave, dimension = ROWS, minimumSize = epochChannelCnt)
+		EnsureLargeEnoughWave(epochWave, dimension = ROWS, indexShouldExist = epochChannelCnt)
 
 		epochWave[0, epochChannelCnt - 1][][i] = epochChannel[p][q]
 	endfor

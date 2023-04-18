@@ -190,7 +190,7 @@ static Function AS_RecordStateTransition(variable oldAcqState, variable newAcqSt
 	WAVE wv = GetAcqStateTracking()
 	index = GetNumberFromWaveNote(wv, NOTE_INDEX)
 
-	EnsureLargeEnoughWave(wv, dimension = ROWS, minimumSize = index)
+	EnsureLargeEnoughWave(wv, dimension = ROWS, indexShouldExist = index)
 	wv[index][%OLD] = oldAcqState
 	wv[index][%NEW] = newAcqState
 

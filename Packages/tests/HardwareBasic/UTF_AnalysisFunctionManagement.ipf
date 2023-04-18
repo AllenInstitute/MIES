@@ -283,7 +283,7 @@ static Function GenerateAnalysisFunctionTable()
 		for(param : wv)
 			[WAVE/T funcsWithParam, type, help] = GetAnalysisFunctionsForParameter_IGNORE(funcs, param)
 
-			EnsureLargeEnoughWave(output, minimumSize = idx, dimension = ROWS)
+			EnsureLargeEnoughWave(output, indexShouldExist = idx, dimension = ROWS)
 			output[idx][%Name]        = param
 			output[idx][%Type]        = type
 			output[idx][%Optionality] = NameOfWave(wv)

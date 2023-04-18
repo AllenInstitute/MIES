@@ -85,7 +85,7 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 	endif
 
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
-	EnsureLargeEnoughWave(map, minimumSize=index, dimension=ROWS)
+	EnsureLargeEnoughWave(map, indexShouldExist=index, dimension=ROWS)
 
 	// %DiscLocation = full path to file
 	map[index][%DiscLocation] = discLocation
@@ -185,7 +185,7 @@ Function/Wave AB_SaveDeviceList(deviceList, dataFolder)
 	Wave/T deviceListWave = ListToTextWave(deviceList, ";")
 	numDevices = DimSize(deviceListWave, ROWS)
 	if(numDevices > 0)
-		EnsureLargeEnoughWave(wv, minimumSize=numDevices, dimension=ROWS)
+		EnsureLargeEnoughWave(wv, indexShouldExist=numDevices, dimension=ROWS)
 		wv[0, numDevices - 1] = deviceListWave[p]
 	endif
 
@@ -429,7 +429,7 @@ static Function AB_AddExperimentNameIfReq(expName, list, fileType, index)
 		endif
 	endif
 
-	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
+	EnsureLargeEnoughWave(list, indexShouldExist=index, dimension=ROWS)
 	list[index][%file][0] = expName
 	list[index][%type][0] = fileType
 End
@@ -460,7 +460,7 @@ static Function AB_FillListWave(string fileName, string device, string dataFolde
 
 	ASSERT(WaveExists(sweepNums), "sweepNums wave is empty.")
 
-	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
+	EnsureLargeEnoughWave(list, indexShouldExist=index, dimension=ROWS)
 	list[index][%device][0] = device
 
 	numWaves = GetNumberFromWaveNote(sweepNums, NOTE_INDEX)
@@ -472,7 +472,7 @@ static Function AB_FillListWave(string fileName, string device, string dataFolde
 	WAVE  textualValues    = GetAnalysLBTextualValues(dataFolder, device)
 
 	for(i = 0; i < numWaves; i += 1)
-		EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
+		EnsureLargeEnoughWave(list, indexShouldExist=index, dimension=ROWS)
 
 		sweepNo = sweepNums[i]
 		list[index][%sweep][0] = num2str(sweepNo)
@@ -508,7 +508,7 @@ static Function AB_FillListWave(string fileName, string device, string dataFolde
 					continue
 				endif
 
-				EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
+				EnsureLargeEnoughWave(list, indexShouldExist=index, dimension=ROWS)
 				list[index][%'stim sets'][0] = str
 
 				if(WaveExists(settings))
@@ -665,7 +665,7 @@ static Function/WAVE AB_LoadSweepsFromExperiment(discLocation, device)
 
 	// store Sweep Numbers in wave
 	numSweeps = ItemsInList(listSweepConfig)
-	EnsureLargeEnoughWave(sweeps, minimumSize=numSweeps, dimension=ROWS, initialValue = -1)
+	EnsureLargeEnoughWave(sweeps, indexShouldExist=numSweeps, dimension=ROWS, initialValue = -1)
 	for(i = 0; i < numSweeps; i += 1)
 		sweepConfig = StringFromList(i, listSweepConfig)
 		sweepNumber = ExtractSweepNumber(sweepConfig)
@@ -725,7 +725,7 @@ static Function AB_StoreChannelsBySweep(groupID, nwbVersion, channelList, sweeps
 	numChannels = ItemsInList(channelList)
 	numSweeps = GetNumberFromWaveNote(sweeps, NOTE_INDEX)
 
-	EnsureLargeEnoughWave(storage, minimumSize = numSweeps, dimension = ROWS)
+	EnsureLargeEnoughWave(storage, indexShouldExist = numSweeps, dimension = ROWS)
 	storage = ""
 
 	WAVE/Z SweepTableNumber
@@ -747,8 +747,8 @@ static Function AB_StoreChannelsBySweep(groupID, nwbVersion, channelList, sweeps
 		ASSERT(isFinite(sweepNo), "Invalid Sweep Number Associated in " + channelString)
 		if(V_Value == -1)
 			numSweeps += 1
-			EnsureLargeEnoughWave(sweeps, minimumSize = numSweeps, dimension = ROWS, initialValue = -1)
-			EnsureLargeEnoughWave(storage, minimumSize = numSweeps, dimension = ROWS)
+			EnsureLargeEnoughWave(sweeps, indexShouldExist = numSweeps, dimension = ROWS, initialValue = -1)
+			EnsureLargeEnoughWave(storage, indexShouldExist = numSweeps, dimension = ROWS)
 			sweeps[numSweeps - 1] = sweepNo
 			storage[numSweeps - 1] = AddListItem(channelString, "")
 		else
@@ -1821,7 +1821,7 @@ static Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	Wave/Wave channelStorage = GetAnalysisChannelStorage(nwb[%DataFolder], device)
 	numSweeps = GetNumberFromWaveNote(sweeps, NOTE_INDEX)
 	if(numSweeps != GetNumberFromWaveNote(channelStorage, NOTE_INDEX))
-		EnsureLargeEnoughWave(channelStorage, minimumSize = numSweeps, dimension = ROWS)
+		EnsureLargeEnoughWave(channelStorage, indexShouldExist = numSweeps, dimension = ROWS)
 	endif
 	Wave/Z/I configSweep = channelStorage[V_Value][%configSweep]
 	if(!WaveExists(configSweep))

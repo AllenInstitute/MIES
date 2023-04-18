@@ -287,8 +287,8 @@ static Function AD_FillWaves(win, list, info)
 
 			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, headstage, ongoingDAQ)
 
-			EnsureLargeEnoughWave(list, dimension = ROWS, minimumSize = index)
-			EnsureLargeEnoughWave(info, dimension = ROWS, minimumSize = index)
+			EnsureLargeEnoughWave(list, dimension = ROWS, indexShouldExist = index)
+			EnsureLargeEnoughWave(info, dimension = ROWS, indexShouldExist = index)
 
 			list[index][0] = stimset
 			list[index][1] = anaFunc
