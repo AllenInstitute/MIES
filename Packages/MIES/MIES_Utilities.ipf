@@ -6614,3 +6614,11 @@ Function CopySimpleJSONElement(variable srcJsonId, string srcPath, variable tgtJ
 			ASSERT(0, "Unsupported element type")
 	endswitch
 End
+
+/// @brief Update the help and user data of a button used as info/copy button
+Function UpdateInfoButtonHelp(string win, string ctrl, string content)
+
+	string htmlStr = "<pre>" + content + "</pre>"
+
+	Button $ctrl win=$win,help={htmlStr},userdata=content
+End
