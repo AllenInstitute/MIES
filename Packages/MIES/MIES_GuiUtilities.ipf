@@ -780,6 +780,12 @@ Function [STRUCT RGBColor s] GetTraceColor(variable index)
 	endswitch
 End
 
+/// @brief Returns the trace color used for avergae type traces
+Function [STRUCT RGBColor s] GetTraceColorForAverage()
+
+	[s] = GetTraceColor(NUM_HEADSTAGES + 1)
+End
+
 /// @brief Query the axis minimum and maximum values
 ///
 /// For none existing graph or axis

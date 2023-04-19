@@ -2219,7 +2219,7 @@ static Function TestOperationAverage()
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
 
-	[s] = GetTraceColor(NUM_HEADSTAGES + 1)
+	[s] = GetTraceColorForAverage()
 	Make/FREE/D ref = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 	WAVE data = dataRef[0]
 	CHECK_EQUAL_WAVES(data, ref, mode = WAVE_DATA)

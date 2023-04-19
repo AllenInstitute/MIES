@@ -3344,7 +3344,7 @@ static Function/WAVE SF_OperationAvgImplOver(WAVE/WAVE input, string graph, stri
 	WAVE/WAVE avg = MIES_fWaveAverage(avgSet, 1, IGOR_TYPE_64BIT_FLOAT)
 	WAVE avgData = avg[0]
 
-	[s] = GetTraceColor(NUM_HEADSTAGES + 1)
+	[s] = GetTraceColorForAverage()
 	Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
 	JWN_SetWaveInWaveNote(avgData, SF_META_TRACECOLOR, traceColor)
 	JWN_SetNumberInWaveNote(avgData, SF_META_TRACETOFRONT, 1)
