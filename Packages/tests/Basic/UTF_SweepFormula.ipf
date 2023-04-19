@@ -2987,7 +2987,7 @@ static Function ZeroSizedSubArrayTest()
 	CHECK(IsTextWave(wTextRef))
 	CHECK_EQUAL_VAR(DimSize(wTextRef, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wTextRef, COLS), 0)
-	WAVE/WAVE wRefResult = MIES_SF#SF_ParseArgument(wTextRef)
+	WAVE/WAVE wRefResult = MIES_SF#SF_ResolveDataset(wTextRef)
 	CHECK_EQUAL_VAR(DimSize(wRefResult, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(wRefResult, COLS), 0)
 	WAVE wv = wRefResult[0]
@@ -3235,7 +3235,7 @@ static Function TestVariables1([WAVE wv])
 		CHECK_LT_VAR(dim, DimSize(varStorage, ROWS))
 		CHECK_EQUAL_VAR(dim, i)
 		WAVE varContent = varStorage[dim]
-		WAVE data = MIES_SF#SF_ParseArgument(varContent)
+		WAVE data = MIES_SF#SF_ResolveDataset(varContent)
 		CHECK_GT_VAR(DimSize(data, ROWS), 0)
 		i += 1
 	endfor

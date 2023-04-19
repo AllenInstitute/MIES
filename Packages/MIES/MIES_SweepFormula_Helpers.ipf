@@ -44,7 +44,7 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
-		WAVE/Z data = SFH_GetArgumentSingle(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
+		WAVE/Z data = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
 		sprintf msg, "Argument #%d of operation %s: Is a NULL wave reference ", argNum, opShort
 		SFH_ASSERT(WaveExists(data), msg)
 
@@ -109,7 +109,7 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
-		WAVE/T/Z data = SFH_GetArgumentSingle(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
+		WAVE/T/Z data = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
 		sprintf msg, "Argument #%d of operation %s: Is a NULL wave reference ", argNum, opShort
 		SFH_ASSERT(WaveExists(data), msg)
 
@@ -191,9 +191,9 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 
 	if(argNum < numArgs)
 		if(singleResult)
-			WAVE/Z data = SFH_GetArgumentSingle(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
+			WAVE/Z data = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
 		else
-			WAVE data = SF_GetArgument(jsonId, jsonPath, graph, argNum)
+			WAVE data = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
 		endif
 
 		return data
@@ -260,7 +260,7 @@ Function/WAVE SFH_EvaluateRange(variable jsonId, string jsonPath, string graph, 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
-		WAVE range = SFH_GetArgumentSingle(jsonID, jsonPath, graph, opShort, argNum, checkExist=1)
+		WAVE range = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, opShort, argNum, checkExist=1)
 	else
 		return SFH_GetFullRange()
 	endif
@@ -595,11 +595,11 @@ static Function SFH_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win
 End
 
 /// @brief Retrieves from an argument the first dataset and disposes the argument
-Function/WAVE SFH_GetArgumentSingle(variable jsonId, string jsonPath, string graph, string opShort, variable argNum[, variable checkExist])
+Function/WAVE SFH_ResolveDatasetElementFromJSON(variable jsonId, string jsonPath, string graph, string opShort, variable argNum[, variable checkExist])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
-	WAVE/WAVE input = SF_GetArgument(jsonId, jsonPath, graph, argNum)
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
 	SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
 	WAVE/Z data = input[0]
 	SFH_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet at operation " + opShort + " arg num " + num2istr(argNum))
