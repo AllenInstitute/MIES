@@ -25,7 +25,7 @@ static Constant SF_STATE_ARRAY = 8
 static Constant SF_STATE_ARRAYELEMENT = 9
 static Constant SF_STATE_WHITESPACE = 10
 static Constant SF_STATE_NEWLINE = 12
-static Constant SF_STATE_OPERATION = 13
+static Constant SF_STATE_DIVISION = 13
 static Constant SF_STATE_STRING = 14
 static Constant SF_STATE_STRINGTERMINATOR = 15
 
@@ -236,8 +236,8 @@ static Function/S SF_StringifyState(variable state)
 			return "SF_STATE_WHITESPACE"
 		case SF_STATE_NEWLINE:
 			return "SF_STATE_NEWLINE"
-		case SF_STATE_OPERATION:
-			return "SF_STATE_OPERATION"
+		case SF_STATE_DIVISION:
+			return "SF_STATE_DIVISION"
 		case SF_STATE_STRING:
 			return "SF_STATE_STRING"
 		case SF_STATE_STRINGTERMINATOR:
@@ -333,7 +333,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		// state
 		strswitch(token)
 			case "/":
-				state = SF_STATE_OPERATION
+				state = SF_STATE_DIVISION
 				break
 			case "*":
 				state = SF_STATE_MULTIPLICATION
@@ -345,7 +345,8 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				state = SF_STATE_ADDITION
 				break
 			case "…":
-				state = SF_STATE_OPERATION
+				// use SF_STATE_DIVISION because it fulfills the same rules required for the range operation
+				state = SF_STATE_DIVISION
 				break
 			case "(":
 				level += 1
@@ -427,7 +428,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					// resulting in *, /, - are handled as higher order
 					case SF_STATE_ADDITION:
 					case SF_STATE_SUBTRACTION:
-						if(IsEmpty(buffer) || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION || lastCalculation == SF_STATE_OPERATION)
+						if(IsEmpty(buffer) || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION || lastCalculation == SF_STATE_DIVISION)
 							action = SF_ACTION_HIGHERORDER
 							break
 						endif
@@ -443,9 +444,9 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 						ASSERT(0, "Unhandled state")
 
 					case SF_STATE_MULTIPLICATION:
-					case SF_STATE_OPERATION:
+					case SF_STATE_DIVISION:
 
-						if(IsEmpty(buffer) || lastCalculation == SF_STATE_OPERATION)
+						if(IsEmpty(buffer) || lastCalculation == SF_STATE_DIVISION)
 							action = SF_ACTION_HIGHERORDER
 							break
 						endif
@@ -606,7 +607,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		SFH_ASSERT(state != SF_STATE_ADDITION && \
 		state != SF_STATE_SUBTRACTION && \
 		state != SF_STATE_MULTIPLICATION && \
-		state != SF_STATE_OPERATION \
+		state != SF_STATE_DIVISION \
 		, "Expected value after +, -, * or /")
 	endif
 
