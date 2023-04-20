@@ -494,7 +494,6 @@ static Function TestSigns2()
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 End
 
-
 static Function TestSigns3()
 
 	variable jsonID0, jsonID1
@@ -522,6 +521,21 @@ static Function TestSigns3()
 	jsonID0 = JSON_Parse("{\"+\":[1,1]}")
 	jsonID1 = DirectToFormulaParser("(\r +1)\r ++1")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+End
+
+static Function TestSigns4()
+
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	// using as sign for operations
+	TestOperationMinMaxHelper(win, "{\"max\":[1]}", "+max(1)", 1)
+	TestOperationMinMaxHelper(win, "{\"*\":[-1,{\"max\":[1]}]}", "-max(1)", -1)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"max\":[1]},{\"max\":[1]}]}", "+max(1)++max(1)", 2)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"max\":[1]},{\"*\":[-1,{\"max\":[1]}]}]}", "+max(1)+-max(1)", 0)
+	TestOperationMinMaxHelper(win, "[{\"*\":[-1,{\"max\":[1]}]}]", "[-max(1)]", -1)
+	TestOperationMinMaxHelper(win, "{\"*\":[-1,{\"max\":[1]}]}", "(-max(1))", -1)
 End
 
 Function/WAVE InvalidInputs()

@@ -285,7 +285,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 	variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray, subId
 	variable formulaLength, bufferOffset
-	string tempPath
+	string tempPath, functionName
 	string indentation = ""
 	variable action = SF_ACTION_UNINITIALIZED
 	string token = ""
@@ -348,7 +348,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					state = SF_STATE_PARENTHESIS
 					break
 				endif
-				if(GrepString(buffer, "^[A-Za-z]"))
+				if(GrepString(buffer, "^(?i)[+-]?[A-Za-z]+"))
 					state = SF_STATE_FUNCTION
 					break
 				endif
@@ -525,25 +525,29 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				token = ""
 				continue
 			case SF_ACTION_FUNCTION:
+
+				parenthesisStart = strsearch(buffer, "(", 0, 0)
+				functionName = buffer[0, parenthesisStart - 1]
+				if(!CmpStr(functionName[0], "-"))
+					jsonPath = SF_ParserInsertNegation(jsonID, jsonPath, indentLevel)
+				endif
+				if(!CmpStr(functionName[0], "-") || !CmpStr(functionName[0], "+"))
+					functionName = functionName[1, Inf]
+				endif
+
 				tempPath = jsonPath
 				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
 					JSON_AddObjects(jsonID, jsonPath)
 					tempPath += "/" + num2istr(JSON_GetArraySize(jsonID, jsonPath) - 1)
 				endif
-				tempPath += "/"
-				parenthesisStart = strsearch(buffer, "(", 0, 0)
-				tempPath += SF_EscapeJsonPath(buffer[0, parenthesisStart - 1])
+
+				tempPath += "/" + SF_EscapeJsonPath(functionName)
 				subId = SF_FormulaParser(buffer[parenthesisStart + 1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
 				SF_FPAddArray(jsonId, tempPath, subId, wasArrayCreated)
 				break
 			case SF_ACTION_PARENTHESIS:
 				if(!CmpStr(buffer[0], "-"))
-					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser("*-1", indentLevel = indentLevel + 1))
-					if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
-						jsonPath += "/1/*"
-					else
-						jsonPath += "/*"
-					endif
+					jsonPath = SF_ParserInsertNegation(jsonID, jsonPath, indentLevel)
 				endif
 				bufferOffset = !CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-") ? 2 : 1
 				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[bufferOffset, inf], indentLevel = indentLevel + 1))
@@ -640,6 +644,22 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	endif
 
 	return jsonID
+End
+
+static Function/S SF_ParserInsertNegation(variable jsonId, string jsonPath, variable indentLevel)
+
+	variable jsonId1
+
+	jsonId1 = JSON_Parse("{\"*\":[-1]}")
+	JSON_AddJSON(jsonID, jsonPath, jsonId1)
+	JSON_Release(jsonId1)
+	if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
+		jsonPath += "/1/*"
+	else
+		jsonPath += "/*"
+	endif
+
+	return jsonPath
 End
 
 /// @brief Create a new empty array object, add mainId into it at path and return created json, release subId
