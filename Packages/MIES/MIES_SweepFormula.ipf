@@ -275,16 +275,6 @@ static Function/S SF_StringifyAction(variable action)
 	endswitch
 End
 
-static Function SF_IsStateGathering(variable state)
-
-	return state == SF_STATE_COLLECT || state == SF_STATE_WHITESPACE || state == SF_STATE_NEWLINE
-End
-
-static Function SF_IsActionComplex(variable action)
-
-	return action == SF_ACTION_PARENTHESIS|| action == SF_ACTION_FUNCTION || action == SF_ACTION_ARRAY
-End
-
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
@@ -307,6 +297,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	variable arrayLevel = 0
 	variable createdArrayLocal, wasArrayCreated
 	variable lastAction = SF_ACTION_UNINITIALIZED
+	variable collectedSign
 
 	variable jsonID = JSON_New()
 	string jsonPath = ""
@@ -404,23 +395,25 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 		SFH_ASSERT(!(lastState == SF_STATE_ARRAYELEMENT && state == SF_STATE_ARRAYELEMENT), "Found , following a ,")
 		// state transition
+		action = SF_ACTION_COLLECT
 		if(lastState == SF_STATE_STRING && state != SF_STATE_STRINGTERMINATOR)
 			// collect between quotation marks
 			action = SF_ACTION_COLLECT
-		elseif(lastState == SF_STATE_SUBTRACTION && state == SF_STATE_SUBTRACTION)
-			// if we just did a substraction and the next char is another - then it must be a sign
+		elseif(!collectedSign && (state == SF_STATE_ADDITION || state == SF_STATE_SUBTRACTION) && (lastState == SF_STATE_ADDITION || lastState == SF_STATE_SUBTRACTION))
 			action = SF_ACTION_COLLECT
-		elseif(lastState == SF_STATE_ADDITION && state == SF_STATE_ADDITION)
-			// if we just did a addition and the next char is another + then it must be a sign
-			action = SF_ACTION_COLLECT
+			collectedSign = 1
 		elseif(state != lastState)
 
-			// Handle possible sign and collect for numbers as well as for functions
-			if((state == SF_STATE_ADDITION || state == SF_STATE_SUBTRACTION) && \
-				(lastState == SF_STATE_UNINITIALIZED || !(SF_IsStateGathering(lastState) || SF_IsActionComplex(lastAction))))
-				// if we initially start with a (- or +) or we are not after a ")", "]" or function or were not already collecting chars
-				// then it the - or + must be a sign of a number. (The sign char must be the first when we start collecting)
+// Handle possible sign and collect for numbers as well as for functions
+// if we initially start with a - or + or we are after a * or / or ,
+			if(!collectedSign && (state == SF_STATE_ADDITION || state == SF_STATE_SUBTRACTION) && \
+				(lastState == SF_STATE_UNINITIALIZED || \
+			   lastState == SF_STATE_MULTIPLICATION || \
+			   lastState == SF_STATE_DIVISION || \
+				 lastState == SF_STATE_ARRAYELEMENT))
+
 				action = SF_ACTION_COLLECT
+				collectedSign = 1
 			else
 
 				switch(state)
@@ -501,7 +494,9 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				endswitch
 
 			endif
-			lastState = state
+			if(action != SF_ACTION_SKIP)
+				lastState = state
+			endif
 		endif
 
 #ifdef DEBUGGING_ENABLED
@@ -601,6 +596,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		lastAction = action
 		buffer = ""
 		token = ""
+		collectedSign = 0
 	endfor
 
 	if(lastAction != SF_ACTION_UNINITIALIZED)

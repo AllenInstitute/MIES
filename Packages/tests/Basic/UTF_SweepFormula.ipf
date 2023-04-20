@@ -443,12 +443,85 @@ static Function orderOfCalculation()
 	TestOperationMinMaxHelper(win, "{\"*\":[2,{\"/\":[3,4]}]}", "2*3/4", 2 * 3 / 4)
 	TestOperationMinMaxHelper(win, "{\"*\":[{\"/\":[2,3]},4]}", "2/3*4", 2 / 3 * 4)
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[{\"*\":[5,1]},{\"*\":[2,3]}]},{\"+\":[4,{\"*\":[5,20]}]}]}", "5*1+2*3+4+5*20", 5 * 1 + 2 * 3 + 4 + 5 * 20)
+End
 
-	// using - as sign
-	TestOperationMinMaxHelper(win, "{\"+\":[1,-1]}", "1+-1", 0)
-	TestOperationMinMaxHelper(win, "{\"+\":[-1,2]}", "-1+2", 1)
-	TestOperationMinMaxHelper(win, "{\"*\":[-1,2]}", "-1*2", -2)
-	TestOperationMinMaxHelper(win, "{\"+\":[2,{\"*\":[-1,3]}]}", "2+-1*3", -1)
+static Function TestSigns()
+
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	// using as sign after primitive operation
+	TestOperationMinMaxHelper(win, "{\"+\":[1,1]}", "+1++1", +1+(+1))
+	TestOperationMinMaxHelper(win, "{\"+\":[1,-1]}", "+1+-1", +1+-1)
+	TestOperationMinMaxHelper(win, "{\"+\":[-1,1]}", "-1++1", -1+(+1))
+	TestOperationMinMaxHelper(win, "{\"+\":[-1,-1]}", "-1+-1", -1+-1)
+
+	TestOperationMinMaxHelper(win, "{\"-\":[1,1]}", "+1-+1", +1-+1)
+	TestOperationMinMaxHelper(win, "{\"-\":[1,-1]}", "+1--1", +1-(-1))
+	TestOperationMinMaxHelper(win, "{\"-\":[-1,1]}", "-1-+1", -1-+1)
+	TestOperationMinMaxHelper(win, "{\"-\":[-1,-1]}", "-1--1", -1-(-1))
+
+	TestOperationMinMaxHelper(win, "{\"*\":[1,1]}", "+1*+1", +1*+1)
+	TestOperationMinMaxHelper(win, "{\"*\":[1,-1]}", "+1*-1", +1*-1)
+	TestOperationMinMaxHelper(win, "{\"*\":[-1,1]}", "-1*+1", -1*+1)
+	TestOperationMinMaxHelper(win, "{\"*\":[-1,-1]}", "-1*-1", -1*-1)
+
+	TestOperationMinMaxHelper(win, "{\"/\":[1,1]}", "+1/+1", +1/+1)
+	TestOperationMinMaxHelper(win, "{\"/\":[1,-1]}", "+1/-1", +1/-1)
+	TestOperationMinMaxHelper(win, "{\"/\":[-1,1]}", "-1/+1", -1/+1)
+	TestOperationMinMaxHelper(win, "{\"/\":[-1,-1]}", "-1/-1", -1/-1)
+End
+
+static Function TestSigns2()
+
+	variable jsonID0, jsonID1
+
+	jsonID0 = JSON_Parse("[1,1]")
+	jsonID1 = DirectToFormulaParser("[+1,+1]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[1,-1]")
+	jsonID1 = DirectToFormulaParser("[+1,-1]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[-1,1]")
+	jsonID1 = DirectToFormulaParser("[-1,+1]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[-1,-1]")
+	jsonID1 = DirectToFormulaParser("[-1,-1]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+End
+
+
+static Function TestSigns3()
+
+	variable jsonID0, jsonID1
+
+	jsonID0 = JSON_Parse("[-1,-1]")
+	jsonID1 = DirectToFormulaParser("[ -1,-1]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[-1,-1], -1]")
+	jsonID1 = DirectToFormulaParser("[[\r -1,\r -1], -1]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[1,1], 1]")
+	jsonID1 = DirectToFormulaParser("[[\r +1,\r +1], +1]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("{\"-\":[-1,-1]}")
+	jsonID1 = DirectToFormulaParser("(\r -1)\r --1")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("{\"+\":[-1,-1]}")
+	jsonID1 = DirectToFormulaParser("(\r -1)\r +-1")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("{\"+\":[1,1]}")
+	jsonID1 = DirectToFormulaParser("(\r +1)\r ++1")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 End
 
 Function/WAVE InvalidInputs()
