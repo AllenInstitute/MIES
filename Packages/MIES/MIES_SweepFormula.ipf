@@ -535,13 +535,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					functionName = functionName[1, Inf]
 				endif
 
-				tempPath = jsonPath
-				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
-					JSON_AddObjects(jsonID, jsonPath)
-					tempPath += "/" + num2istr(JSON_GetArraySize(jsonID, jsonPath) - 1)
-				endif
-
-				tempPath += "/" + SF_EscapeJsonPath(functionName)
+				tempPath = SF_ParserAdaptSubPath(jsonId, jsonPath, functionName)
 				subId = SF_FormulaParser(buffer[parenthesisStart + 1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
 				SF_FPAddArray(jsonId, tempPath, subId, wasArrayCreated)
 				break
@@ -581,11 +575,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				SF_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
 				break
 			case SF_ACTION_LOWERORDER:
-				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
-					JSON_AddObjects(jsonID, jsonPath) // prepare for decent
-					jsonPath += "/" + num2istr(JSON_GetArraySize(jsonID, jsonPath) - 1)
-				endif
-				jsonPath += "/" + SF_EscapeJsonPath(token)
+				jsonPath = SF_ParserAdaptSubPath(jsonId, jsonPath, token)
 			case SF_ACTION_ARRAYELEMENT:
 				// - "," was encountered, thus we have multiple elements, we need to set an array at current path
 				// The actual content is added in the case fall-through
@@ -660,6 +650,17 @@ static Function/S SF_ParserInsertNegation(variable jsonId, string jsonPath, vari
 	endif
 
 	return jsonPath
+End
+
+static Function/S SF_ParserAdaptSubPath(variable jsonId, string jsonPath, string subPath)
+
+	if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
+		JSON_AddObjects(jsonID, jsonPath)
+		jsonPath += "/" + num2istr(JSON_GetArraySize(jsonID, jsonPath) - 1)
+	endif
+	jsonPath += "/" + SF_EscapeJsonPath(subPath)
+
+	return jsonpath
 End
 
 /// @brief Create a new empty array object, add mainId into it at path and return created json, release subId
