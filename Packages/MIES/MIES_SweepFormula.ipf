@@ -33,12 +33,11 @@ static Constant SF_ACTION_UNINITIALIZED = -1
 static Constant SF_ACTION_SKIP = 0
 static Constant SF_ACTION_COLLECT = 1
 static Constant SF_ACTION_CALCULATION = 2
-static Constant SF_ACTION_SAMECALCULATION = 3
-static Constant SF_ACTION_HIGHERORDER = 4
-static Constant SF_ACTION_ARRAYELEMENT = 5
-static Constant SF_ACTION_PARENTHESIS = 6
-static Constant SF_ACTION_FUNCTION = 7
-static Constant SF_ACTION_ARRAY = 8
+static Constant SF_ACTION_HIGHERORDER = 3
+static Constant SF_ACTION_ARRAYELEMENT = 4
+static Constant SF_ACTION_PARENTHESIS = 5
+static Constant SF_ACTION_FUNCTION = 6
+static Constant SF_ACTION_ARRAY = 7
 
 /// Regular expression which extracts both formulas from `$a vs $b`
 static StrConstant SF_SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
@@ -259,8 +258,6 @@ static Function/S SF_StringifyAction(variable action)
 			return "SF_ACTION_COLLECT"
 		case SF_ACTION_CALCULATION:
 			return "SF_ACTION_CALCULATION"
-		case SF_ACTION_SAMECALCULATION:
-			return "SF_ACTION_SAMECALCULATION"
 		case SF_ACTION_HIGHERORDER:
 			return "SF_ACTION_HIGHERORDER"
 		case SF_ACTION_ARRAYELEMENT:
@@ -416,81 +413,93 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 			// if we just did a addition and the next char is another + then it must be a sign
 			action = SF_ACTION_COLLECT
 		elseif(state != lastState)
-			switch(state)
-				// priority ladder of calculations: +, -, *, /
-				case SF_STATE_ADDITION:
-					if(lastCalculation == SF_STATE_SUBTRACTION)
-						action = SF_ACTION_HIGHERORDER
-						break
-					endif
-				case SF_STATE_SUBTRACTION:
-					// if we initially start with a (- or +) or we are not after a ")", "]" or function or were not already collecting chars
-					// then it the - or + must be a sign of a number. (The sign char must be the first when we start collecting)
-					if(lastState == SF_STATE_UNINITIALIZED || !(SF_IsStateGathering(lastState) || SF_IsActionComplex(lastAction)))
-						action = SF_ACTION_COLLECT
-						break
-					endif
-					if(lastCalculation == SF_STATE_MULTIPLICATION)
-						action = SF_ACTION_HIGHERORDER
-						break
-					endif
-				case SF_STATE_MULTIPLICATION:
-					if(lastCalculation == SF_STATE_OPERATION)
-						action = SF_ACTION_HIGHERORDER
-						break
-					endif
-				case SF_STATE_OPERATION:
-					if(IsEmpty(buffer))
-						action = SF_ACTION_HIGHERORDER
-						break
-					endif
-					action = SF_ACTION_CALCULATION
-					if(state == lastCalculation)
-						action = SF_ACTION_SAMECALCULATION
-					endif
-					if(lastCalculation == SF_STATE_ARRAYELEMENT)
-						action = SF_ACTION_COLLECT
-					endif
-					break
 
-				case SF_STATE_PARENTHESIS:
-					action = SF_ACTION_PARENTHESIS
-					if(lastCalculation == SF_STATE_ARRAYELEMENT)
+			// Handle possible sign and collect for numbers as well as for functions
+			if((state == SF_STATE_ADDITION || state == SF_STATE_SUBTRACTION) && \
+				(lastState == SF_STATE_UNINITIALIZED || !(SF_IsStateGathering(lastState) || SF_IsActionComplex(lastAction))))
+				// if we initially start with a (- or +) or we are not after a ")", "]" or function or were not already collecting chars
+				// then it the - or + must be a sign of a number. (The sign char must be the first when we start collecting)
+				action = SF_ACTION_COLLECT
+			else
+
+				switch(state)
+					// *, / before +, - (as well as *, / here) and /, - are non-commutative
+					// resulting in *, /, - are handled as higher order
+					case SF_STATE_ADDITION:
+					case SF_STATE_SUBTRACTION:
+						if(IsEmpty(buffer) || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION || lastCalculation == SF_STATE_OPERATION)
+							action = SF_ACTION_HIGHERORDER
+							break
+						endif
+						if(lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ADDITION)
+							action = SF_ACTION_CALCULATION
+							break
+						endif
+						if(lastCalculation == SF_STATE_ARRAYELEMENT)
+							action = SF_ACTION_COLLECT
+							break
+						endif
+
+						ASSERT(0, "Unhandled state")
+
+					case SF_STATE_MULTIPLICATION:
+					case SF_STATE_OPERATION:
+
+						if(IsEmpty(buffer) || lastCalculation == SF_STATE_OPERATION)
+							action = SF_ACTION_HIGHERORDER
+							break
+						endif
+						if(lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ADDITION || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION)
+							action = SF_ACTION_CALCULATION
+							break
+						endif
+						if(lastCalculation == SF_STATE_ARRAYELEMENT)
+							action = SF_ACTION_COLLECT
+							break
+						endif
+
+						ASSERT(0, "Unhandled state")
+
+					case SF_STATE_PARENTHESIS:
+						action = SF_ACTION_PARENTHESIS
+						if(lastCalculation == SF_STATE_ARRAYELEMENT)
+							action = SF_ACTION_COLLECT
+						endif
+						break
+					case SF_STATE_FUNCTION:
+						action = SF_ACTION_FUNCTION
+						if(lastCalculation == SF_STATE_ARRAYELEMENT)
+							action = SF_ACTION_COLLECT
+						endif
+						break
+					case SF_STATE_ARRAYELEMENT:
+						SFH_ASSERT(lastState != SF_STATE_UNINITIALIZED, "No value before ,")
+						action = SF_ACTION_ARRAYELEMENT
+						if(lastCalculation != SF_STATE_ARRAYELEMENT)
+							action = SF_ACTION_HIGHERORDER
+						endif
+						break
+					case SF_STATE_ARRAY:
+						action = SF_ACTION_ARRAY
+						break
+					case SF_STATE_NEWLINE:
+					case SF_STATE_WHITESPACE:
+						action = SF_ACTION_SKIP
+						break
+					case SF_STATE_COLLECT:
 						action = SF_ACTION_COLLECT
-					endif
-					break
-				case SF_STATE_FUNCTION:
-					action = SF_ACTION_FUNCTION
-					if(lastCalculation == SF_STATE_ARRAYELEMENT)
+						break
+					case SF_STATE_STRINGTERMINATOR:
+						if(lastState != SF_STATE_STRING)
+							state = SF_STATE_STRING
+						endif
 						action = SF_ACTION_COLLECT
-					endif
-					break
-				case SF_STATE_ARRAYELEMENT:
-					SFH_ASSERT(lastState != SF_STATE_UNINITIALIZED, "No value before ,")
-					action = SF_ACTION_ARRAYELEMENT
-					if(lastCalculation != SF_STATE_ARRAYELEMENT)
-						action = SF_ACTION_HIGHERORDER
-					endif
-					break
-				case SF_STATE_ARRAY:
-					action = SF_ACTION_ARRAY
-					break
-				case SF_STATE_NEWLINE:
-				case SF_STATE_WHITESPACE:
-					action = SF_ACTION_SKIP
-					break
-				case SF_STATE_COLLECT:
-					action = SF_ACTION_COLLECT
-					break
-				case SF_STATE_STRINGTERMINATOR:
-					if(lastState != SF_STATE_STRING)
-						state = SF_STATE_STRING
-					endif
-					action = SF_ACTION_COLLECT
-					break
-				default:
-					SFH_ASSERT(0, "Encountered undefined transition " + num2istr(state), jsonId=jsonId)
-			endswitch
+						break
+					default:
+						SFH_ASSERT(0, "Encountered undefined transition " + num2istr(state), jsonId=jsonId)
+				endswitch
+
+			endif
 			lastState = state
 		endif
 
@@ -583,7 +592,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_HIGHERORDER)), "array element has no value")
 				JSON_AddTreeArray(jsonID, jsonPath)
 				lastCalculation = state
-			case SF_ACTION_SAMECALCULATION:
 			default:
 				if(!IsEmpty(buffer))
 					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))

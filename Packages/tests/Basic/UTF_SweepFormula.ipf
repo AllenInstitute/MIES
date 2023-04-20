@@ -400,16 +400,16 @@ static Function TestArrayExpansionText()
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 End
 
-static Function concatenationOfOperations()
+static Function NoConcatenationOfOperations()
 
 	string win, device
 
 	[win, device] = CreateFakeDataBrowserWindow()
 
-	TestOperationMinMaxHelper(win, "{\"+\":[1,2,3,4]}", "1+2+3+4", 1 + 2 + 3 + 4)
-	TestOperationMinMaxHelper(win, "{\"-\":[1,2,3,4]}", "1-2-3-4", 1 - 2 - 3 - 4)
-	TestOperationMinMaxHelper(win, "{\"/\":[1,2,3,4]}", "1/2/3/4", 1 / 2 / 3 / 4)
-	TestOperationMinMaxHelper(win, "{\"*\":[1,2,3,4]}", "1*2*3*4", 1 * 2 * 3 * 4)
+	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"+\":[2,{\"+\":[3,4]}]}]}", "1+2+3+4", 1 + 2 + 3 + 4)
+	TestOperationMinMaxHelper(win, "{\"-\":[{\"-\":[{\"-\":[1,2]},3]},4]}", "1-2-3-4", 1 - 2 - 3 - 4)
+	TestOperationMinMaxHelper(win, "{\"/\":[{\"/\":[{\"/\":[1,2]},3]},4]}", "1/2/3/4", 1 / 2 / 3 / 4)
+	TestOperationMinMaxHelper(win, "{\"*\":[1,{\"*\":[2,{\"*\":[3,4]}]}]}", "1*2*3*4", 1 * 2 * 3 * 4)
 End
 
 // + > - > * > /
@@ -442,7 +442,7 @@ static Function orderOfCalculation()
 	// * and /
 	TestOperationMinMaxHelper(win, "{\"*\":[2,{\"/\":[3,4]}]}", "2*3/4", 2 * 3 / 4)
 	TestOperationMinMaxHelper(win, "{\"*\":[{\"/\":[2,3]},4]}", "2/3*4", 2 / 3 * 4)
-	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[{\"*\":[5,1]},{\"*\":[2,3]}]},4,{\"*\":[5,20]}]}", "5*1+2*3+4+5*20", 5 * 1 + 2 * 3 + 4 + 5 * 20)
+	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[{\"*\":[5,1]},{\"*\":[2,3]}]},{\"+\":[4,{\"*\":[5,20]}]}]}", "5*1+2*3+4+5*20", 5 * 1 + 2 * 3 + 4 + 5 * 20)
 
 	// using - as sign
 	TestOperationMinMaxHelper(win, "{\"+\":[1,-1]}", "1+-1", 0)
