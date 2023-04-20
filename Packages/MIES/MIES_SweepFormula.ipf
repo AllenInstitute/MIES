@@ -32,7 +32,7 @@ static Constant SF_STATE_STRINGTERMINATOR = 15
 static Constant SF_ACTION_UNINITIALIZED = -1
 static Constant SF_ACTION_SKIP = 0
 static Constant SF_ACTION_COLLECT = 1
-static Constant SF_ACTION_CALCULATION = 2
+static Constant SF_ACTION_LOWERORDER = 2
 static Constant SF_ACTION_HIGHERORDER = 3
 static Constant SF_ACTION_ARRAYELEMENT = 4
 static Constant SF_ACTION_PARENTHESIS = 5
@@ -256,8 +256,8 @@ static Function/S SF_StringifyAction(variable action)
 			return "SF_ACTION_SKIP"
 		case SF_ACTION_COLLECT:
 			return "SF_ACTION_COLLECT"
-		case SF_ACTION_CALCULATION:
-			return "SF_ACTION_CALCULATION"
+		case SF_ACTION_LOWERORDER:
+			return "SF_ACTION_LOWERORDER"
 		case SF_ACTION_HIGHERORDER:
 			return "SF_ACTION_HIGHERORDER"
 		case SF_ACTION_ARRAYELEMENT:
@@ -433,7 +433,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 							break
 						endif
 						if(lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ADDITION)
-							action = SF_ACTION_CALCULATION
+							action = SF_ACTION_LOWERORDER
 							break
 						endif
 						if(lastCalculation == SF_STATE_ARRAYELEMENT)
@@ -451,7 +451,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 							break
 						endif
 						if(lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ADDITION || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION)
-							action = SF_ACTION_CALCULATION
+							action = SF_ACTION_LOWERORDER
 							break
 						endif
 						if(lastCalculation == SF_STATE_ARRAYELEMENT)
@@ -581,7 +581,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				subId = SF_FormulaParser(buffer[1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
 				SF_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
 				break
-			case SF_ACTION_CALCULATION:
+			case SF_ACTION_LOWERORDER:
 				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
 					JSON_AddObjects(jsonID, jsonPath) // prepare for decent
 					jsonPath += "/" + num2istr(JSON_GetArraySize(jsonID, jsonPath) - 1)
