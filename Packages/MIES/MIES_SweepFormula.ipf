@@ -283,7 +283,7 @@ End
 /// @returns a JSONid representation
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
-	variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray, subId
+	variable i, parenthesisStart, subId
 	variable formulaLength, bufferOffset
 	string tempPath, functionName
 	string indentation = ""
@@ -544,7 +544,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					jsonPath = SF_ParserInsertNegation(jsonID, jsonPath, indentLevel)
 				endif
 				bufferOffset = !CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-") ? 2 : 1
-				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[bufferOffset, inf], indentLevel = indentLevel + 1))
+				SF_ParserAddJSON(jsonId, jsonPath, buffer[bufferOffset, inf], indentLevel)
 				break
 			case SF_ACTION_HIGHERORDER:
 				// - called if for the first time a "," is encountered (from SF_STATE_ARRAYELEMENT)
@@ -554,7 +554,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_UNINITIALIZED)), "array element has no value")
 				endif
 				if(!IsEmpty(buffer))
-					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
+					SF_ParserAddJSON(jsonId, jsonPath, buffer, indentLevel)
 				endif
 				jsonPath = SF_EscapeJsonPath(token)
 				if(!cmpstr(jsonPath, ",") || !cmpstr(jsonPath, "]"))
@@ -584,7 +584,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				lastCalculation = state
 			default:
 				if(!IsEmpty(buffer))
-					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
+					SF_ParserAddJSON(jsonId, jsonPath, buffer, indentLevel)
 				endif
 		endswitch
 		lastAction = action
@@ -630,10 +630,21 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 			JSON_AddString(jsonID, jsonPath, buffer)
 		endif
 	else
-		JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
+		subId = SF_FormulaParser(buffer)
+		JSON_AddJSON(jsonID, jsonPath, subId)
+		JSON_Release(subId)
 	endif
 
 	return jsonID
+End
+
+static Function SF_ParserAddJSON(variable jsonId, string jsonPath, string formula, variable indentLevel)
+
+	variable subId
+
+	subId = SF_FormulaParser(formula, indentLevel = indentLevel + 1)
+	JSON_AddJSON(jsonID, jsonPath, subId)
+	JSON_Release(subId)
 End
 
 static Function/S SF_ParserInsertNegation(variable jsonId, string jsonPath, variable indentLevel)
