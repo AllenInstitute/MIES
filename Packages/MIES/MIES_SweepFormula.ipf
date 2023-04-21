@@ -393,7 +393,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		endif
 #endif
 
-		SFH_ASSERT(!(lastState == SF_STATE_ARRAYELEMENT && state == SF_STATE_ARRAYELEMENT), "Found , following a ,")
+		SFH_ASSERT(!(lastState == SF_STATE_ARRAYELEMENT && state == SF_STATE_ARRAYELEMENT), "Found , following a ,", jsonId=jsonId)
 		// state transition
 		action = SF_ACTION_COLLECT
 		if(lastState == SF_STATE_STRING && state != SF_STATE_STRINGTERMINATOR)
@@ -473,7 +473,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 						endif
 						break
 					case SF_STATE_ARRAYELEMENT:
-						SFH_ASSERT(lastState != SF_STATE_UNINITIALIZED, "No value before ,")
+						SFH_ASSERT(lastState != SF_STATE_UNINITIALIZED, "No value before ,", jsonId=jsonId)
 						action = SF_ACTION_ARRAYELEMENT
 						if(lastCalculation != SF_STATE_ARRAYELEMENT)
 							action = SF_ACTION_HIGHERORDER
@@ -516,7 +516,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 			switch(lastAction)
 				case SF_ACTION_ARRAY:
 					// If the last action was the handling of "]" from an array
-					SFH_ASSERT(action == SF_ACTION_ARRAYELEMENT || action == SF_ACTION_HIGHERORDER, "Expected \",\" after \"]\"")
+					SFH_ASSERT(action == SF_ACTION_ARRAYELEMENT || action == SF_ACTION_HIGHERORDER, "Expected \",\" after \"]\"", jsonId=jsonId)
 					break
 				default:
 					break
@@ -547,7 +547,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				// - called if a higher priority calculation, e.g. * over + requires to put array in sub json path
 				lastCalculation = state
 				if(state == SF_STATE_ARRAYELEMENT)
-					SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_UNINITIALIZED)), "array element has no value")
+					SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_UNINITIALIZED)), "array element has no value", jsonId=jsonId)
 				endif
 				if(!IsEmpty(buffer))
 					SF_ParserAddJSON(jsonId, jsonPath, buffer, indentLevel)
@@ -576,7 +576,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 			case SF_ACTION_ARRAYELEMENT:
 				// - "," was encountered, thus we have multiple elements, we need to set an array at current path
 				// The actual content is added in the case fall-through
-				SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_HIGHERORDER)), "array element has no value")
+				SFH_ASSERT(!(IsEmpty(buffer) && (lastAction == SF_ACTION_COLLECT || lastAction == SF_ACTION_SKIP || lastAction == SF_ACTION_HIGHERORDER)), "array element has no value", jsonId=jsonId)
 				JSON_AddTreeArray(jsonID, jsonPath)
 				lastCalculation = state
 			default:
@@ -595,10 +595,10 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		state != SF_STATE_SUBTRACTION && \
 		state != SF_STATE_MULTIPLICATION && \
 		state != SF_STATE_DIVISION \
-		, "Expected value after +, -, * or /")
+		, "Expected value after +, -, * or /", jsonId=jsonId)
 	endif
 
-	SFH_ASSERT(state != SF_STATE_ARRAYELEMENT, "Expected value after \",\"")
+	SFH_ASSERT(state != SF_STATE_ARRAYELEMENT, "Expected value after \",\"", jsonId=jsonId)
 
 	if(!ParamIsDefault(createdArray))
 		if(createdArrayLocal)
