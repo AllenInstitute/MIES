@@ -531,26 +531,16 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				token = ""
 				continue
 			case SF_ACTION_FUNCTION:
-
 				parenthesisStart = strsearch(buffer, "(", 0, 0)
 				functionName = buffer[0, parenthesisStart - 1]
-				if(!CmpStr(functionName[0], "-"))
-					jsonPath = SF_ParserInsertNegation(jsonID, jsonPath, indentLevel)
-				endif
-				if(!CmpStr(functionName[0], "-") || !CmpStr(functionName[0], "+"))
-					functionName = functionName[1, Inf]
-				endif
-
+				[functionName, jsonPath] = SF_ParserEvaluatePossibleSign(jsonId, indentLevel)
 				tempPath = SF_ParserAdaptSubPath(jsonId, jsonPath, functionName)
 				subId = SF_FormulaParser(buffer[parenthesisStart + 1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
 				SF_FPAddArray(jsonId, tempPath, subId, wasArrayCreated)
 				break
 			case SF_ACTION_PARENTHESIS:
-				if(!CmpStr(buffer[0], "-"))
-					jsonPath = SF_ParserInsertNegation(jsonID, jsonPath, indentLevel)
-				endif
-				bufferOffset = !CmpStr(buffer[0], "+") || !CmpStr(buffer[0], "-") ? 2 : 1
-				SF_ParserAddJSON(jsonId, jsonPath, buffer[bufferOffset, inf], indentLevel)
+				[buffer, jsonPath] = SF_ParserEvaluatePossibleSign(jsonId, indentLevel)
+				SF_ParserAddJSON(jsonId, jsonPath, buffer[1, inf], indentLevel)
 				break
 			case SF_ACTION_HIGHERORDER:
 				// - called if for the first time a "," is encountered (from SF_STATE_ARRAYELEMENT)
@@ -576,7 +566,8 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				// If there was no array created, we have to add another outer array around the returned json
 				// An array needs to be also added if the returned json is a simple value as this action requires
 				// to return an array.
-				SFH_ASSERT(!cmpstr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId=jsonId)
+				[buffer, jsonPath] = SF_ParserEvaluatePossibleSign(jsonId, indentLevel)
+				SFH_ASSERT(!CmpStr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId=jsonId)
 				subId = SF_FormulaParser(buffer[1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
 				SF_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
 				break
@@ -642,6 +633,20 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	endif
 
 	return jsonID
+End
+
+static Function [string buffer, string jsonPath] SF_ParserEvaluatePossibleSign(variable jsonId, variable indentLevel)
+
+	ASSERT(strlen(buffer) > 1, "Expected at least two characters.")
+
+	if(!CmpStr(buffer[0], "-"))
+		return [buffer[1, Inf], SF_ParserInsertNegation(jsonID, jsonPath, indentLevel)]
+	endif
+	if(!CmpStr(buffer[0], "+"))
+		return [buffer[1, Inf], jsonPath]
+	endif
+
+	return [buffer, jsonpath]
 End
 
 static Function SF_ParserAddJSON(variable jsonId, string jsonPath, string formula, variable indentLevel)
