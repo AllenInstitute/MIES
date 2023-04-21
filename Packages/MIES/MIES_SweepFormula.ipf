@@ -439,6 +439,12 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					case SF_STATE_MULTIPLICATION:
 					case SF_STATE_DIVISION:
 
+						// if the buffer is empty and we are either at the start of a new parse or at a new array element (which is basically the start of a new parse of a subsequent part)
+						// and the left side is not a function, braces or brackets then we do not allow * and /.
+						SFH_ASSERT(!(IsEmpty(buffer) && \
+						   (lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ARRAYELEMENT) && \
+							!(lastState == SF_STATE_FUNCTION || lastState == SF_STATE_PARENTHESIS || lastState == SF_STATE_ARRAY)), "Unexpected token.",jsonId=jsonId)
+
 						if(IsEmpty(buffer) || lastCalculation == SF_STATE_DIVISION)
 							action = SF_ACTION_HIGHERORDER
 							break
