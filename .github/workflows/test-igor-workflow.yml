@@ -1,0 +1,87 @@
+name: Test Igor Workflow
+run-name: Test Igor Workflow
+env:
+  # if this environment variable is set it will use the igor version from
+  # C:\Program Files\WaveMetrics\Igor Pro 9 Folder\IgorBinaries_x64_${CI_IGOR_REVISION}
+  CI_IGOR_REVISION: "r39935"
+on:
+  workflow_call:
+    inputs:
+      experiment:
+        required: true
+        type: string
+        description: The path to the Igor experiment file
+      target:
+        required: false
+        default: "['self-hosted', 'Windows', 'IgorPro']"
+        type: string
+        description: A JSON string with the tags for the target runner
+      installer_artifact_name:
+        required: false
+        default: BuildInstaller-dev-assets
+        type: string
+        description: The name of the artifact that holds the installer
+      installer_flags:
+        required: false
+        default: "-s installer"
+        type: string
+        description: The flags that should be used for the installer
+      artifact_name:
+        required: true
+        type: string
+        description: The name of the artifact that will be uploaded
+      expensive_checks:
+        required: false
+        default: "0"
+        type: string
+        description: Sets environment variable CI_EXPENSIVE_CHECKS
+      instrument_tests:
+        required: false
+        default: "0"
+        type: string
+        description: Sets environment variable CI_INSTRUMENT_TESTS
+defaults:
+  run:
+    shell: bash
+jobs:
+
+  Test:
+    name: Run
+    runs-on: ${{ fromJson(inputs.target) }}
+    env:
+      CI_EXPENSIVE_CHECKS: ${{ inputs.expensive_checks }}
+      CI_INSTRUMENT_TESTS: ${{ inputs.instrument_tests }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Download artifacts
+        if: inputs.installer_artifact_name != ''
+        uses: actions/download-artifact@v3
+        continue-on-error: false
+        with:
+          name: ${{ inputs.installer_artifact_name }}
+      - name: Clean MIES installation
+        run: tools/clean_mies_installation.sh ${{ inputs.installer_flags }}
+      - name: Test experiment ${{ inputs.experiment }}
+        run: tools/autorun-test.sh -p ${{ inputs.experiment }} -v IP_9_64
+      - name: Gather log files and crash dumps
+        run: tools/gather-logfiles-and-crashdumps.sh
+      - name: Verify JUnit files
+        run: tools/verify-junit-files.sh Packages/tests/**/*.xml
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: |
+            Packages/tests/**/*.htm
+            Packages/tests/**/*-V2.nwb
+            Packages/tests/**/JU_*.xml
+            Packages/tests/**/*.log
+            Diagnostics
+            **/*.jsonl
+          if-no-files-found: error
