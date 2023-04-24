@@ -320,68 +320,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	for(i = 0; i < formulaNumUTF8Chars; i += 1)
 		token = UTF8CharacterAtPosition(formula, i)
 
-		// state
-		strswitch(token)
-			case "/":
-				state = SF_STATE_DIVISION
-				break
-			case "*":
-				state = SF_STATE_MULTIPLICATION
-				break
-			case "-":
-				state = SF_STATE_SUBTRACTION
-				break
-			case "+":
-				state = SF_STATE_ADDITION
-				break
-			case "…":
-				// use SF_STATE_DIVISION because it fulfills the same rules required for the range operation
-				state = SF_STATE_DIVISION
-				break
-			case "(":
-				level += 1
-				break
-			case ")":
-				level -= 1
-				if(GrepString(buffer, "^(?i)[+-]?\\([\s\S]*$"))
-					state = SF_STATE_PARENTHESIS
-					break
-				endif
-				if(GrepString(buffer, "^(?i)[+-]?[A-Za-z]+"))
-					state = SF_STATE_FUNCTION
-					break
-				endif
-				state = SF_STATE_COLLECT
-				break
-			case "[":
-				arrayLevel += 1
-				break
-			case "]":
-				arrayLevel -= 1
-				state = SF_STATE_ARRAY
-				break
-			case ",":
-				state = SF_STATE_ARRAYELEMENT
-				break
-			case "\"":
-				state = SF_STATE_STRINGTERMINATOR
-				break
-			case "\r":
-				state = SF_STATE_NEWLINE
-				break
-			case " ":
-			case "\t":
-				state = SF_STATE_WHITESPACE
-				break
-			default:
-				state = SF_STATE_COLLECT
-				SFH_ASSERT(GrepString(token, "[A-Za-z0-9_\.:;=!$]"), "undefined pattern in formula: " + formula[i, i + 5], jsonId=jsonId)
-		endswitch
-
-		if(level > 0 || arrayLevel > 0)
-			// transfer sub level "as is" to buffer
-			state = SF_STATE_COLLECT
-		endif
+		[state, arrayLevel, level] = SF_ParserGetStateFromToken(token, jsonId, buffer)
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
@@ -627,6 +566,73 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	endif
 
 	return jsonID
+End
+
+static Function [variable state, variable arrayLevel, variable level] SF_ParserGetStateFromToken(string token, variable jsonId, string buffer)
+
+	strswitch(token)
+		case "/":
+			state = SF_STATE_DIVISION
+			break
+		case "*":
+			state = SF_STATE_MULTIPLICATION
+			break
+		case "-":
+			state = SF_STATE_SUBTRACTION
+			break
+		case "+":
+			state = SF_STATE_ADDITION
+			break
+		case "…":
+			// use SF_STATE_DIVISION because it fulfills the same rules required for the range operation
+			state = SF_STATE_DIVISION
+			break
+		case "(":
+			level += 1
+			break
+		case ")":
+			level -= 1
+			if(GrepString(buffer, "^(?i)[+-]?\\([\s\S]*$"))
+				state = SF_STATE_PARENTHESIS
+				break
+			endif
+			if(GrepString(buffer, "^(?i)[+-]?[A-Za-z]+"))
+				state = SF_STATE_FUNCTION
+				break
+			endif
+			state = SF_STATE_COLLECT
+			break
+		case "[":
+			arrayLevel += 1
+			break
+		case "]":
+			arrayLevel -= 1
+			state = SF_STATE_ARRAY
+			break
+		case ",":
+			state = SF_STATE_ARRAYELEMENT
+			break
+		case "\"":
+			state = SF_STATE_STRINGTERMINATOR
+			break
+		case "\r":
+			state = SF_STATE_NEWLINE
+			break
+		case " ":
+		case "\t":
+			state = SF_STATE_WHITESPACE
+			break
+		default:
+			state = SF_STATE_COLLECT
+			SFH_ASSERT(GrepString(token, "[A-Za-z0-9_\.:;=!$]"), "undefined pattern in formula near: " + buffer + token, jsonId=jsonId)
+	endswitch
+
+	if(level > 0 || arrayLevel > 0)
+		// transfer sub level "as is" to buffer
+		state = SF_STATE_COLLECT
+	endif
+
+	return [state, arrayLevel, level]
 End
 
 static Function [string buffer, string jsonPath] SF_ParserEvaluatePossibleSign(variable jsonId, variable indentLevel)
