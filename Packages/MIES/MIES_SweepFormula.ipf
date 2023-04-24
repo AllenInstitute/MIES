@@ -283,7 +283,7 @@ End
 /// @returns a JSONid representation
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
-	variable subId, action, collectedSign
+	variable action, collectedSign
 	string token, indentation
 	string buffer = ""
 	variable state = SF_STATE_UNINITIALIZED
@@ -371,23 +371,29 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		createdArray = createdArrayLocal
 	endif
 
-	if(IsEmpty(buffer))
-		return jsonId
+	if(!IsEmpty(buffer))
+		SF_ParserHandleRemainingBuffer(jsonId, jsonPath, formula, buffer)
 	endif
 
-	// last element (recursion)
+	return jsonID
+End
+
+static Function SF_ParserHandleRemainingBuffer(variable jsonId, string jsonPath, string formula, string buffer)
+
+	variable subId
+
 	if(!cmpstr(buffer, formula))
 		if(GrepString(buffer, "^(?i)[+-]?[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
-			// optionally signed Number
+// optionally signed Number
 			JSON_AddVariable(jsonID, jsonPath, str2num(formula))
 		elseif(!cmpstr(buffer, "\"\"")) // dummy check
-			// empty string with explicit quotation marks
+// empty string with explicit quotation marks
 			JSON_AddString(jsonID, jsonPath, "")
 		elseif(GrepString(buffer, "^\".*\"$"))
-			// non-empty string with quotation marks
+// non-empty string with quotation marks
 			JSON_AddString(jsonID, jsonPath, buffer[1, strlen(buffer) - 2])
 		else
-			// string without quotation marks
+// string without quotation marks
 			JSON_AddString(jsonID, jsonPath, buffer)
 		endif
 	else
@@ -395,8 +401,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		JSON_AddJSON(jsonID, jsonPath, subId)
 		JSON_Release(subId)
 	endif
-
-	return jsonID
 End
 
 static Function [variable jsonId, string jsonPath, variable lastCalculation, variable wasArrayCreated, variable createdArrayLocal] SF_ParserModifyJSON(variable action, variable lastAction, variable state, string buffer, string token, variable indentLevel)
