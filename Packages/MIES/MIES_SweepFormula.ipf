@@ -284,11 +284,10 @@ End
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
 	variable i, parenthesisStart, subId
-	variable formulaLength, bufferOffset
-	string tempPath, functionName
+	variable formulaNumUTF8Chars, bufferOffset
+	string token, tempPath, functionName
 	string indentation = ""
 	variable action = SF_ACTION_UNINITIALIZED
-	string token = ""
 	string buffer = ""
 	variable state = SF_STATE_UNINITIALIZED
 	variable lastState = SF_STATE_UNINITIALIZED
@@ -312,14 +311,14 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	endif
 #endif
 
-	formulaLength = strlen(formula)
+	formulaNumUTF8Chars = UTF8CharactersInString(formula)
 
-	if(formulaLength == 0)
+	if(formulaNumUTF8Chars == 0)
 		return jsonID
 	endif
 
-	for(i = 0; i < formulaLength; i += 1)
-		token += formula[i]
+	for(i = 0; i < formulaNumUTF8Chars; i += 1)
+		token = UTF8CharacterAtPosition(formula, i)
 
 		// state
 		strswitch(token)
@@ -375,9 +374,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				state = SF_STATE_WHITESPACE
 				break
 			default:
-				if(!(char2num(token) > 0))
-					continue
-				endif
 				state = SF_STATE_COLLECT
 				SFH_ASSERT(GrepString(token, "[A-Za-z0-9_\.:;=!$]"), "undefined pattern in formula: " + formula[i, i + 5], jsonId=jsonId)
 		endswitch
@@ -528,7 +524,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 			case SF_ACTION_COLLECT:
 				buffer += token
 			case SF_ACTION_SKIP:
-				token = ""
 				continue
 			case SF_ACTION_FUNCTION:
 				parenthesisStart = strsearch(buffer, "(", 0, 0)
@@ -586,7 +581,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		endswitch
 		lastAction = action
 		buffer = ""
-		token = ""
 		collectedSign = 0
 	endfor
 
