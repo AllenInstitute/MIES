@@ -285,8 +285,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 
 	variable i, parenthesisStart, subId
 	variable bufferOffset
-	string token, tempPath, functionName
-	string indentation = ""
+	string token, tempPath, functionName, indentation
 	variable action = SF_ACTION_UNINITIALIZED
 	string buffer = ""
 	variable state = SF_STATE_UNINITIALIZED
@@ -302,10 +301,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	string jsonPath = ""
 
 #ifdef DEBUGGING_ENABLED
-	for(i = 0; i < indentLevel; i += 1)
-		indentation += "-> "
-	endfor
-
+	indentation = ReplicateString("-> ", indentLevel)
 	if(DP_DebuggingEnabledForCaller())
 		printf "%sformula %s\r", indentation, formula
 	endif
