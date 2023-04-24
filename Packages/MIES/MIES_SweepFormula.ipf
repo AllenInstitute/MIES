@@ -39,6 +39,12 @@ static Constant SF_ACTION_PARENTHESIS = 5
 static Constant SF_ACTION_FUNCTION = 6
 static Constant SF_ACTION_ARRAY = 7
 
+static StrConstant SF_PARSER_REGEX_SIGNED_NUMBER = "^(?i)[+-]?[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"
+static StrConstant SF_PARSER_REGEX_QUOTED_STRING = "^\".*\"$"
+static StrConstant SF_PARSER_REGEX_SIGNED_PARENTHESIS = "^(?i)[+-]?\\([\s\S]*$"
+static StrConstant SF_PARSER_REGEX_SIGNED_FUNCTION = "^(?i)[+-]?[A-Za-z]+"
+static StrConstant SF_PARSER_REGEX_OTHER_VALID_CHARS = "[A-Za-z0-9_\.:;=!$]"
+
 /// Regular expression which extracts both formulas from `$a vs $b`
 static StrConstant SF_SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
 /// Regular expression which extracts formulas pairs from `$a vs $b\rand\r$c vs $d\rand\r...`
@@ -370,13 +376,13 @@ static Function SF_ParserHandleRemainingBuffer(variable jsonId, string jsonPath,
 	variable subId
 
 	if(!cmpstr(buffer, formula))
-		if(GrepString(buffer, "^(?i)[+-]?[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
+		if(GrepString(buffer, SF_PARSER_REGEX_SIGNED_NUMBER))
 			// optionally signed Number
 			JSON_AddVariable(jsonID, jsonPath, str2num(formula))
 		elseif(!cmpstr(buffer, "\"\"")) // dummy check
 			// empty string with explicit quotation marks
 			JSON_AddString(jsonID, jsonPath, "")
-		elseif(GrepString(buffer, "^\".*\"$"))
+		elseif(GrepString(buffer, SF_PARSER_REGEX_QUOTED_STRING))
 			// non-empty string with quotation marks
 			JSON_AddString(jsonID, jsonPath, buffer[1, strlen(buffer) - 2])
 		else
@@ -598,11 +604,11 @@ static Function [variable state, variable arrayLevel, variable level] SF_ParserG
 			break
 		case ")":
 			level -= 1
-			if(GrepString(buffer, "^(?i)[+-]?\\([\s\S]*$"))
+			if(GrepString(buffer, SF_PARSER_REGEX_SIGNED_PARENTHESIS))
 				state = SF_STATE_PARENTHESIS
 				break
 			endif
-			if(GrepString(buffer, "^(?i)[+-]?[A-Za-z]+"))
+			if(GrepString(buffer, SF_PARSER_REGEX_SIGNED_FUNCTION))
 				state = SF_STATE_FUNCTION
 				break
 			endif
@@ -630,7 +636,7 @@ static Function [variable state, variable arrayLevel, variable level] SF_ParserG
 			break
 		default:
 			state = SF_STATE_COLLECT
-			SFH_ASSERT(GrepString(token, "[A-Za-z0-9_\.:;=!$]"), "undefined pattern in formula near: " + buffer + token, jsonId=jsonId)
+			SFH_ASSERT(GrepString(token, SF_PARSER_REGEX_OTHER_VALID_CHARS), "undefined pattern in formula near: " + buffer + token, jsonId=jsonId)
 	endswitch
 
 	if(level > 0 || arrayLevel > 0)
