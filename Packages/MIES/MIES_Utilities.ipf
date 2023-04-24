@@ -6414,3 +6414,31 @@ Function/S UTF8CharacterAtPosition(string str, variable charPos)
 	numBytesInCharacter = NumBytesInUTF8Character(str, byteOffset)
 	return str[byteOffset, byteOffset + numBytesInCharacter - 1]
 End
+
+/// @brief Converts a string in UTF8 encoding to a text wave where each wave element contains one UTF8 characters
+Function/WAVE UTF8StringToTextWave(string str)
+
+	variable charPos, byteOffset, numBytesInCharacter, numBytesInString
+
+	ASSERT(!IsNull(str), "string is null")
+
+	numBytesInString = strlen(str)
+	Make/FREE/T/N=(numBytesInString) wv
+	if(!numBytesInString)
+		return wv
+	endif
+
+	do
+		if(byteOffset >= numBytesInString)
+			break
+		endif
+
+		numBytesInCharacter = NumBytesInUTF8Character(str, byteOffset)
+		wv[charPos] = str[byteOffset, byteOffset + numBytesInCharacter - 1]
+		charPos += 1
+		byteOffset += numBytesInCharacter
+	while(1)
+	Redimension/N=(charPos) wv
+
+	return wv
+End

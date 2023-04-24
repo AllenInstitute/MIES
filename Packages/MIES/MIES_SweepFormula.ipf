@@ -284,7 +284,7 @@ End
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
 	variable i, parenthesisStart, subId
-	variable formulaNumUTF8Chars, bufferOffset
+	variable bufferOffset
 	string token, tempPath, functionName
 	string indentation = ""
 	variable action = SF_ACTION_UNINITIALIZED
@@ -311,14 +311,13 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	endif
 #endif
 
-	formulaNumUTF8Chars = UTF8CharactersInString(formula)
+	WAVE/T wFormula = UTF8StringToTextWave(formula)
 
-	if(formulaNumUTF8Chars == 0)
+	if(!DimSize(wFormula, ROWS))
 		return jsonID
 	endif
 
-	for(i = 0; i < formulaNumUTF8Chars; i += 1)
-		token = UTF8CharacterAtPosition(formula, i)
+	for(token : wFormula)
 
 		[state, arrayLevel, level] = SF_ParserGetStateFromToken(token, jsonId, buffer)
 
