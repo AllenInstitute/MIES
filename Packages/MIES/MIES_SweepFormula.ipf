@@ -284,9 +284,8 @@ End
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
 	variable i, parenthesisStart, subId
-	variable bufferOffset
+	variable bufferOffset, action, collectedSign
 	string token, tempPath, functionName, indentation
-	variable action = SF_ACTION_UNINITIALIZED
 	string buffer = ""
 	variable state = SF_STATE_UNINITIALIZED
 	variable lastState = SF_STATE_UNINITIALIZED
@@ -295,7 +294,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	variable arrayLevel = 0
 	variable createdArrayLocal, wasArrayCreated
 	variable lastAction = SF_ACTION_UNINITIALIZED
-	variable collectedSign
 
 	variable jsonID = JSON_New()
 	string jsonPath = ""
@@ -323,117 +321,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		endif
 #endif
 
-		SFH_ASSERT(!(lastState == SF_STATE_ARRAYELEMENT && state == SF_STATE_ARRAYELEMENT), "Found , following a ,", jsonId=jsonId)
-		// state transition
-		action = SF_ACTION_COLLECT
-		if(lastState == SF_STATE_STRING && state != SF_STATE_STRINGTERMINATOR)
-			// collect between quotation marks
-			action = SF_ACTION_COLLECT
-		elseif(!collectedSign && (state == SF_STATE_ADDITION || state == SF_STATE_SUBTRACTION) && (lastState == SF_STATE_ADDITION || lastState == SF_STATE_SUBTRACTION))
-			action = SF_ACTION_COLLECT
-			collectedSign = 1
-		elseif(state != lastState)
-
-// Handle possible sign and collect for numbers as well as for functions
-// if we initially start with a - or + or we are after a * or / or ,
-			if(!collectedSign && (state == SF_STATE_ADDITION || state == SF_STATE_SUBTRACTION) && \
-				(lastState == SF_STATE_UNINITIALIZED || \
-			   lastState == SF_STATE_MULTIPLICATION || \
-			   lastState == SF_STATE_DIVISION || \
-				 lastState == SF_STATE_ARRAYELEMENT))
-
-				action = SF_ACTION_COLLECT
-				collectedSign = 1
-			else
-
-				switch(state)
-					// *, / before +, - (as well as *, / here) and /, - are non-commutative
-					// resulting in *, /, - are handled as higher order
-					case SF_STATE_ADDITION:
-					case SF_STATE_SUBTRACTION:
-						if(IsEmpty(buffer) || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION || lastCalculation == SF_STATE_DIVISION)
-							action = SF_ACTION_HIGHERORDER
-							break
-						endif
-						if(lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ADDITION)
-							action = SF_ACTION_LOWERORDER
-							break
-						endif
-						if(lastCalculation == SF_STATE_ARRAYELEMENT)
-							action = SF_ACTION_COLLECT
-							break
-						endif
-
-						ASSERT(0, "Unhandled state")
-
-					case SF_STATE_MULTIPLICATION:
-					case SF_STATE_DIVISION:
-
-						// if the buffer is empty and we are either at the start of a new parse or at a new array element (which is basically the start of a new parse of a subsequent part)
-						// and the left side is not a function, braces or brackets then we do not allow * and /.
-						SFH_ASSERT(!(IsEmpty(buffer) && \
-						   (lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ARRAYELEMENT) && \
-							!(lastState == SF_STATE_FUNCTION || lastState == SF_STATE_PARENTHESIS || lastState == SF_STATE_ARRAY)), "Unexpected token.",jsonId=jsonId)
-
-						if(IsEmpty(buffer) || lastCalculation == SF_STATE_DIVISION)
-							action = SF_ACTION_HIGHERORDER
-							break
-						endif
-						if(lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ADDITION || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION)
-							action = SF_ACTION_LOWERORDER
-							break
-						endif
-						if(lastCalculation == SF_STATE_ARRAYELEMENT)
-							action = SF_ACTION_COLLECT
-							break
-						endif
-
-						ASSERT(0, "Unhandled state")
-
-					case SF_STATE_PARENTHESIS:
-						action = SF_ACTION_PARENTHESIS
-						if(lastCalculation == SF_STATE_ARRAYELEMENT)
-							action = SF_ACTION_COLLECT
-						endif
-						break
-					case SF_STATE_FUNCTION:
-						action = SF_ACTION_FUNCTION
-						if(lastCalculation == SF_STATE_ARRAYELEMENT)
-							action = SF_ACTION_COLLECT
-						endif
-						break
-					case SF_STATE_ARRAYELEMENT:
-						SFH_ASSERT(lastState != SF_STATE_UNINITIALIZED, "No value before ,", jsonId=jsonId)
-						action = SF_ACTION_ARRAYELEMENT
-						if(lastCalculation != SF_STATE_ARRAYELEMENT)
-							action = SF_ACTION_HIGHERORDER
-						endif
-						break
-					case SF_STATE_ARRAY:
-						action = SF_ACTION_ARRAY
-						break
-					case SF_STATE_NEWLINE:
-					case SF_STATE_WHITESPACE:
-						action = SF_ACTION_SKIP
-						break
-					case SF_STATE_COLLECT:
-						action = SF_ACTION_COLLECT
-						break
-					case SF_STATE_STRINGTERMINATOR:
-						if(lastState != SF_STATE_STRING)
-							state = SF_STATE_STRING
-						endif
-						action = SF_ACTION_COLLECT
-						break
-					default:
-						SFH_ASSERT(0, "Encountered undefined transition " + num2istr(state), jsonId=jsonId)
-				endswitch
-
-			endif
-			if(action != SF_ACTION_SKIP)
-				lastState = state
-			endif
-		endif
+		[action, lastState, collectedSign] = SF_ParserGetActionFromState(jsonId, state, lastCalculation, IsEmpty(buffer))
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
@@ -561,6 +449,126 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	endif
 
 	return jsonID
+End
+
+static Function [variable action, variable lastState, variable collectedSign] SF_ParserGetActionFromState(variable jsonId, variable state, variable lastCalculation, variable bufferIsEmpty)
+
+	string errMsg
+
+	SFH_ASSERT(!(lastState == SF_STATE_ARRAYELEMENT && state == SF_STATE_ARRAYELEMENT), "Found , following a ,", jsonId=jsonId)
+// state transition
+	action = SF_ACTION_COLLECT
+	if(lastState == SF_STATE_STRING && state != SF_STATE_STRINGTERMINATOR)
+// collect between quotation marks
+		action = SF_ACTION_COLLECT
+	elseif(!collectedSign && (state == SF_STATE_ADDITION || state == SF_STATE_SUBTRACTION) && (lastState == SF_STATE_ADDITION || lastState == SF_STATE_SUBTRACTION))
+		action = SF_ACTION_COLLECT
+		collectedSign = 1
+	elseif(state != lastState)
+
+// Handle possible sign and collect for numbers as well as for functions
+// if we initially start with a - or + or we are after a * or / or ,
+		if(!collectedSign && (state == SF_STATE_ADDITION || state == SF_STATE_SUBTRACTION) && \
+			(lastState == SF_STATE_UNINITIALIZED || \
+			lastState == SF_STATE_MULTIPLICATION || \
+			lastState == SF_STATE_DIVISION || \
+			lastState == SF_STATE_ARRAYELEMENT))
+
+			action = SF_ACTION_COLLECT
+			collectedSign = 1
+		else
+
+			switch(state)
+// *, / before +, - (as well as *, / here) and /, - are non-commutative
+// resulting in *, /, - are handled as higher order
+				case SF_STATE_ADDITION:
+				case SF_STATE_SUBTRACTION:
+					if(bufferIsEmpty || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION || lastCalculation == SF_STATE_DIVISION)
+						action = SF_ACTION_HIGHERORDER
+						break
+					endif
+					if(lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ADDITION)
+						action = SF_ACTION_LOWERORDER
+						break
+					endif
+					if(lastCalculation == SF_STATE_ARRAYELEMENT)
+						action = SF_ACTION_COLLECT
+						break
+					endif
+
+					ASSERT(0, "Unhandled state")
+
+				case SF_STATE_MULTIPLICATION:
+				case SF_STATE_DIVISION:
+
+// if the buffer is empty and we are either at the start of a new parse or at a new array element (which is basically the start of a new parse of a subsequent part)
+// and the left side is not a function, braces or brackets then we do not allow * and /.
+					SFH_ASSERT(!(bufferIsEmpty && \
+					(lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ARRAYELEMENT) && \
+					!(lastState == SF_STATE_FUNCTION || lastState == SF_STATE_PARENTHESIS || lastState == SF_STATE_ARRAY)), "Unexpected token.", jsonId=jsonId)
+
+					if(bufferIsEmpty || lastCalculation == SF_STATE_DIVISION)
+						action = SF_ACTION_HIGHERORDER
+						break
+					endif
+					if(lastCalculation == SF_STATE_UNINITIALIZED || lastCalculation == SF_STATE_ADDITION || lastCalculation == SF_STATE_SUBTRACTION || lastCalculation == SF_STATE_MULTIPLICATION)
+						action = SF_ACTION_LOWERORDER
+						break
+					endif
+					if(lastCalculation == SF_STATE_ARRAYELEMENT)
+						action = SF_ACTION_COLLECT
+						break
+					endif
+
+					ASSERT(0, "Unhandled state")
+
+				case SF_STATE_PARENTHESIS:
+					action = SF_ACTION_PARENTHESIS
+					if(lastCalculation == SF_STATE_ARRAYELEMENT)
+						action = SF_ACTION_COLLECT
+					endif
+					break
+				case SF_STATE_FUNCTION:
+					action = SF_ACTION_FUNCTION
+					if(lastCalculation == SF_STATE_ARRAYELEMENT)
+						action = SF_ACTION_COLLECT
+					endif
+					break
+				case SF_STATE_ARRAYELEMENT:
+					SFH_ASSERT(lastState != SF_STATE_UNINITIALIZED, "No value before ,", jsonId=jsonId)
+					action = SF_ACTION_ARRAYELEMENT
+					if(lastCalculation != SF_STATE_ARRAYELEMENT)
+						action = SF_ACTION_HIGHERORDER
+					endif
+					break
+				case SF_STATE_ARRAY:
+					action = SF_ACTION_ARRAY
+					break
+				case SF_STATE_NEWLINE:
+				case SF_STATE_WHITESPACE:
+					action = SF_ACTION_SKIP
+					break
+				case SF_STATE_COLLECT:
+					action = SF_ACTION_COLLECT
+					break
+				case SF_STATE_STRINGTERMINATOR:
+					if(lastState != SF_STATE_STRING)
+						state = SF_STATE_STRING
+					endif
+					action = SF_ACTION_COLLECT
+					break
+				default:
+					sprintf errMsg, "Encountered undefined transition from %s to %s.", SF_StringifyState(lastState), SF_StringifyState(state)
+					SFH_ASSERT(0, errMsg, jsonId=jsonId)
+			endswitch
+
+		endif
+		if(action != SF_ACTION_SKIP)
+			lastState = state
+		endif
+	endif
+
+	return [action, lastState, collectedSign]
 End
 
 static Function [variable state, variable arrayLevel, variable level] SF_ParserGetStateFromToken(string token, variable jsonId, string buffer)
