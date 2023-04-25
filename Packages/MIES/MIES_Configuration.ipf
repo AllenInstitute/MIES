@@ -491,20 +491,29 @@ End
 static Function CONF_SaveDAEphys(fName)
 	string fName
 
-	variable i, jsonID, saveMask, saveResult
+	variable i, jsonID, saveMask, saveResult, prevJsonId, prevRigJsonId
 	string out, wName, errMsg
+
+	wName = GetMainWindow(GetCurrentWindow())
+	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Current window is no DA_Ephys panel")
+	prevJsonId = CONF_LoadConfigUsedForDAEphysPanel(wName)
+	prevRigJsonId = CONF_LoadConfigUsedForDAEphysPanel(wName, loadRigFile=1)
 
 	AssertOnAndClearRTError()
 	try
-		wName = GetMainWindow(GetCurrentWindow())
-		ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Current window is no DA_Ephys panel")
 
 		saveMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_BUTTONS_ONLY_PRESSED | EXPCONFIG_SAVE_ONLY_RELEVANT
 		jsonID = CONF_AllWindowsToJSON(wName, saveMask, excCtrlTypes = DAEPHYS_EXCLUDE_CTRLTYPES)
 
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK, CONF_DefaultSettings())
+		if(!IsNaN(prevJsonId))
+			CONF_TransferPreviousDAEphysJson(jsonId, prevJsonId)
+		endif
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK, CONF_GetAmplifierSettings(wName))
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_USERPRESSBLOCK, CONF_GetUserPressure(wName))
+		if(!IsNaN(prevRigJsonId))
+			CONF_RemoveRigElementsFromDAEphysJson(jsonId, prevRigJsonId)
+		endif
 
 		out = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
 		JSON_Release(jsonID)
@@ -2450,4 +2459,59 @@ static Function CONF_JoinRigFile(jsonID, rigFileName)
 	jsonIDRig = CONF_ParseJSON(input)
 	SyncJSON(jsonIDRig, jsonID, "", "", rigFileName)
 	JSON_Release(jsonIDRig)
+End
+
+/// @brief Retrieves the JSON original used to restore the DAEphys panel from the disk
+/// @param[in] wName name of DAEphys panel
+/// @param[in] loadRigFile [optional, default 0] when set, load the rig file instead
+///
+/// @returns jsonId or NaN if data was not present
+static Function CONF_LoadConfigUsedForDAEphysPanel(string wName[, variable loadRigFile])
+
+	string fName, txtData, str
+
+	loadRigFile = ParamIsDefault(loadRigFile) ? 0 : !!loadRigFile
+	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Window is no DA_Ephys panel")
+
+	fName = StringFromList(loadRigFile, GetUserData(wName, "", EXPCONFIG_UDATA_SOURCEFILE_PATH), FILE_LIST_SEP)
+	[txtData, str] = LoadTextFile(fName)
+	if(IsEmpty(txtData))
+		return NaN
+	endif
+
+	return JSON_Parse(txtData, ignoreErr=1)
+End
+
+static Function CONF_TransferPreviousDAEphysJson(variable jsonId, variable prevJsonId)
+
+	string jsonPath, entry
+
+	WAVE/T entryList = JSON_GetKeys(jsonId, EXPCONFIG_RESERVED_DATABLOCK)
+	for(entry : entryList)
+		jsonPath = EXPCONFIG_RESERVED_DATABLOCK + "/" + entry
+		CopySimpleJSONElement(prevJsonId, jsonPath, jsonId, jsonPath, ignoreMissingSrcElement=1)
+	endfor
+End
+
+static Function CONF_RemoveRigElementsFromDAEphysJson(variable jsonId, variable rigJsonId[, string jsonPath])
+
+	string newJsonPath, key
+
+	if(ParamIsDefault(jsonpath))
+		jsonPath = ""
+	endif
+
+	ASSERT(JSON_Exists(rigJsonId, jsonPath), "Attempt to access non-existing json path.")
+	WAVE/T keys = JSON_GetKeys(rigJsonId, jsonPath)
+	for(key : keys)
+		newJsonPath = jsonPath + "/" + key
+		switch(JSON_GetType(rigJsonId, newJsonPath))
+			case JSON_OBJECT:
+				CONF_RemoveRigElementsFromDAEphysJson(jsonId, rigJsonId, jsonPath=newJsonPath)
+				break
+			default:
+				JSON_Remove(jsonId, newJsonPath)
+				break
+		endswitch
+	endfor
 End
