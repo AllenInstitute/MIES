@@ -1,5 +1,19 @@
 #!/bin/bash
 
+git --version > /dev/null
+if [ $? -ne 0 ]
+then
+  echo "Could not find git executable"
+  exit 1
+fi
+
+rg --version > /dev/null
+if [ $? -ne 0 ]
+then
+  echo "Could not find rg (ripgrep) executable"
+  exit 1
+fi
+
 top_level=$(git rev-parse --show-toplevel)
 
 cd $top_level
