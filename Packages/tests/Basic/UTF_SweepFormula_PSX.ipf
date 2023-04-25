@@ -2165,3 +2165,158 @@ static Function CheckResultsWavesForAverageFitResult()
 	entry = GetLastSettingTextIndep(textualResultsValues, NaN, name, SWEEP_FORMULA_RESULT)
 	CHECK_EMPTY_STR(entry)
 End
+
+static Function TestBlockIndexLogic()
+
+	string browser, code, psxGraph, win, mainWindow, specialEventPanel, extAllGraph
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nothing")
+
+	ExecuteSweepFormulaCode(browser, code)
+
+	win = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow = GetMainWindow(win)
+	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	specialEventPanel = MIES_PSX#PSX_GetSpecialPanel(win)
+	extAllGraph = MIES_PSX#PSX_GetAllEventGraph(win)
+
+	// not restricted to current combinations aka all combinations
+	CHECK_EQUAL_VAR(GetCheckBoxState(specialEventPanel, "checkbox_restrict_events_to_current_combination"), 0)
+	CHECK_EQUAL_VAR(GetSetVariable(specialEventPanel, "setvar_event_block_size"), 100)
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "0")
+	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000007"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// 50% block size
+	PGC_SetAndActivateControl(specialEventPanel, "setvar_event_block_size", val = 50)
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;1;")
+
+	// first block
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "0")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000000"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// second block
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "1")
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "1")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000001", "T000007"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// 33% block size
+	// reset block index
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "0")
+	PGC_SetAndActivateControl(specialEventPanel, "setvar_event_block_size", val = 33)
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;1;2;")
+
+	// first block
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "0")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000000"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// second block
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "1")
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "1")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000001"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// third block
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "2")
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "2")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000007"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// current combination only
+	PGC_SetAndActivateControl(specialEventPanel, "checkbox_restrict_events_to_current_combination", val = 1)
+	PGC_SetAndActivateControl(specialEventPanel, "setvar_event_block_size", val = 100)
+
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "0")
+	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000000", "T000001"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// 50% block size
+	PGC_SetAndActivateControl(specialEventPanel, "setvar_event_block_size", val = 50)
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;1;")
+
+	// first block
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "0")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000000"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// second block
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "1")
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "1")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000001"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// 33% block size
+	// reset block index
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "0")
+
+	PGC_SetAndActivateControl(specialEventPanel, "setvar_event_block_size", val = 33)
+
+	DoUpdate
+
+	// two few events for 3 blocks
+	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;1;")
+
+	// first block
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "0")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000000"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// second block
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "1")
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "1")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000001"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+End

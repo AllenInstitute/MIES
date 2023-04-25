@@ -91,6 +91,8 @@ static StrConstant PSX_JWN_STATS_POST_PROC = "PostProcessing"
 
 static StrConstant PSX_TUD_EVENT_INDEX_KEY  = "eventIndex"
 
+static StrConstant PSX_UD_NUM_BLOCKS = "NumberOfBlocks"
+
 /// @name State types
 /// @anchor SpecialEventPanelEventTypes
 /// @{
@@ -110,6 +112,7 @@ static StrConstant PSX_TUD_TYPE_AVERAGE     = "average"
 
 static StrConstant PSX_TUD_COMBO_KEY        = "comboKey"
 static StrConstant PSX_TUD_COMBO_INDEX      = "comboIndex"
+static StrConstant PSX_TUD_BLOCK_INDEX      = "blockIndex"
 
 static Constant PSX_GUI_SETTINGS_VERSION = 1
 
@@ -1143,7 +1146,11 @@ Function/S PSX_StateToString(variable state)
 	endswitch
 End
 
-static Function PSX_UpdateAllEventGraph(string win, [variable forceSingleEventUpdate, variable forceAverageUpdate])
+static Function PSX_UpdateAllEventGraph(string win, [variable forceSingleEventUpdate, variable forceAverageUpdate, variable forceBlockIndexUpdate])
+
+	if(PSX_EventGraphSuppressUpdate(win))
+		return NaN
+	endif
 
 	if(ParamIsDefault(forceSingleEventUpdate))
 		forceSingleEventUpdate = 0
@@ -1155,6 +1162,16 @@ static Function PSX_UpdateAllEventGraph(string win, [variable forceSingleEventUp
 		forceAverageUpdate = 0
 	else
 		forceAverageUpdate = !!forceAverageUpdate
+	endif
+
+	if(ParamIsDefault(forceBlockIndexUpdate))
+		forceBlockIndexUpdate = 0
+	else
+		forceBlockIndexUpdate = !!forceBlockIndexUpdate
+	endif
+
+	if(forceBlockIndexUpdate)
+		PSX_UpdateBlockIndizes(win)
 	endif
 
 	PSX_UpdateHideStateInAllEventGraph(win)
@@ -1579,9 +1596,20 @@ static Function/WAVE PSX_LoadEventsFromCache(string comboKey)
 End
 
 /// @brief Return the trace user data keys/values wave for the given trace type
-static Function [WAVE/T keys, WAVE/T values] PSX_GetTraceSelectionWaves(string win, string traceType)
+///
+/// @param win          Window
+/// @param traceType    One of @ref AllEventGraphTraceType
+/// @param respectBlock [optional, defaults to true] Restrict the traces to the currently selected block
+static Function [WAVE/T keys, WAVE/T values] PSX_GetTraceSelectionWaves(string win, string traceType, [variable respectBlock])
 
-	string comboKey
+	string comboKey, blockIndexAsStr, specialEventPanel
+	variable numEntries
+
+	if(ParamIsDefault(respectBlock))
+		respectBlock = 1
+	else
+		respectBlock = !!respectBlock
+	endif
 
 	if(PSX_GetRestrictEventsToCurrentCombo(win))
 		DFREF comboDFR = PSX_GetCurrentComboFolder(win)
@@ -1603,6 +1631,16 @@ static Function [WAVE/T keys, WAVE/T values] PSX_GetTraceSelectionWaves(string w
 			default:
 				ASSERT(0, "Invalid state type")
 		endswitch
+	endif
+
+	if(respectBlock && !cmpstr(traceType, PSX_TUD_TYPE_SINGLE))
+		specialEventPanel = PSX_GetSpecialPanel(win)
+		blockIndexAsStr = GetPopupMenuString(specialEventPanel, "popup_block")
+
+		numEntries = DimSize(keys, ROWS)
+		Redimension/N=(numEntries + 1) keys, values
+		keys[numEntries]   = PSX_TUD_BLOCK_INDEX
+		values[numEntries] = blockIndexAsStr
 	endif
 
 	return [keys, values]
@@ -1662,6 +1700,98 @@ static Function PSX_UpdateHideStateInAllEventGraphImpl(string win, string traceT
 	indexHelper[] = TUD_SetUserData(extAllGraph, traceNames[p], PSX_TUD_TRACE_HIDDEN_KEY, num2str(hideState))
 End
 
+static Function PSX_UpdateBlockIndizes(string win)
+	string extAllGraph, comboKey
+	variable restrictCurrentCombo, numBlocks
+	variable numEntries, i, blockSize, first, last
+
+	extAllGraph = PSX_GetAllEventGraph(win)
+	restrictCurrentCombo = PSX_GetRestrictEventsToCurrentCombo(win)
+	numBlocks = PSX_CalculateNumberOfBlocks(win)
+
+	[WAVE/T keys, WAVE/T values] = PSX_GetTraceSelectionWaves(extAllGraph, PSX_TUD_TYPE_SINGLE, respectBlock = 0)
+
+	WAVE/T/Z traceNames = TUD_GetUserDataAsWave(extAllGraph, "tracename", keys = keys, values = values)
+	ASSERT(WaveExists(traceNames), "Expected at least one entry")
+
+	numEntries = DimSize(traceNames, ROWS)
+
+	Make/FREE/N=(numEntries) indexHelper
+
+	if(numEntries > numBlocks)
+		blockSize = floor(numEntries / numBlocks)
+	else
+		blockSize = 1
+	endif
+
+	for(i = 0; i < numBlocks; i += 1)
+		first = i * blockSize
+
+		if(i == numBlocks - 1)
+			// take the rest of the events into the last block
+			last = numEntries - 1
+		else
+			last = (i + 1) * blockSize - 1
+		endif
+
+		indexHelper[first, last] = TUD_SetUserData(extAllGraph, traceNames[p], PSX_TUD_BLOCK_INDEX, num2str(i))
+
+		if(last >= numEntries - 1)
+			// assigned all events
+			// update numBlocks
+			numBlocks = i + 1
+			break
+		endif
+	endfor
+
+	PSX_WriteBlockNumberAsUserData(win, numBlocks)
+End
+
+static Function PSX_WriteBlockNumberAsUserData(string win, variable numBlocks)
+
+	string specialEventPanel
+	variable selectedBlock, lastValidBlock
+
+	specialEventPanel = PSX_GetSpecialPanel(win)
+
+	SetControlUserData(specialEventPanel, "popup_block", PSX_UD_NUM_BLOCKS, num2istr(numBlocks))
+
+	// check to see if a now invalid block is selected
+	selectedBlock = str2num(GetPopupMenuString(specialEventPanel, "popup_block"))
+	WAVE availableBlocks = ListToNumericWave(PSX_GetAllEventBlockNumbers(win), ";")
+
+	lastValidBlock = WaveMax(availableBlocks)
+
+	if(selectedBlock > lastValidBlock)
+		PGC_SetAndActivateControl(specialEventPanel, "popup_block", val = lastValidBlock)
+	endif
+End
+
+static Function PSX_CalculateNumberOfBlocks(string win)
+
+	string specialEventPanel
+	variable blockSize, numBlocks
+
+	specialEventPanel = PSX_GetSpecialPanel(win)
+	blockSize = GetSetVariable(specialEventPanel, "setvar_event_block_size")
+	ASSERT(blockSize > 0 && blockSize <= 100, "Invalid block size")
+
+	numBlocks = ceil(100 / blockSize)
+
+	return numBlocks
+End
+
+Function/S PSX_GetAllEventBlockNumbers(string win)
+	string specialEventPanel
+	variable numBlocks
+
+	specialEventPanel = PSX_GetSpecialPanel(win)
+	numBlocks = str2num(GetUserData(specialEventPanel, "popup_block", PSX_UD_NUM_BLOCKS))
+	ASSERT(IsInteger(numBlocks) && numBlocks > 0, "Invalid block size")
+
+	return BuildList("%d", 0, 1, numBlocks)
+End
+
 /// @brief Return a bit pattern to match fit/event state
 ///
 /// @param active Wave with at least 3 entries denoting which states are active
@@ -1697,7 +1827,7 @@ static Function PSX_AppendTracesToAllEventGraph(string win)
 		return NaN
 	endif
 
-	Make/FREE/T traceUserDataKeys = {PSX_TUD_EVENT_INDEX_KEY, PSX_TUD_FIT_STATE_KEY, PSX_TUD_EVENT_STATE_KEY, PSX_TUD_TRACE_HIDDEN_KEY, PSX_TUD_TYPE_KEY, PSX_TUD_COMBO_KEY, PSX_TUD_COMBO_INDEX}
+	Make/FREE/T traceUserDataKeys = {PSX_TUD_EVENT_INDEX_KEY, PSX_TUD_FIT_STATE_KEY, PSX_TUD_EVENT_STATE_KEY, PSX_TUD_TRACE_HIDDEN_KEY, PSX_TUD_TYPE_KEY, PSX_TUD_COMBO_KEY, PSX_TUD_BLOCK_INDEX, PSX_TUD_COMBO_INDEX}
 
 	for(DFREF comboDFR : comboFolders)
 
@@ -1718,9 +1848,9 @@ static Function PSX_AppendTracesToAllEventGraph(string win)
 			trace = GetTraceNamePrefix(idx)
 			AppendToGraph/W=$extAllGraph/C=(eventColors[i][0], eventColors[i][1], eventColors[i][2], eventColors[i][3]) singleEvent/TN=$trace
 
-			TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                                                                                                   \
-			                         traceUserDataKeys,                                                                                                                                                                    \
-			                         {num2str(psxEvent[i][%index]), num2str(psxEvent[i][%$"Fit manual QC call"]), num2str(psxEvent[i][%$"Event manual QC call"]), "0", PSX_TUD_TYPE_SINGLE, comboKey, num2str(comboIndex)})
+			TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                                                                                                          \
+			                         traceUserDataKeys,                                                                                                                                                                           \
+			                         {num2str(psxEvent[i][%index]), num2str(psxEvent[i][%$"Fit manual QC call"]), num2str(psxEvent[i][%$"Event manual QC call"]), "0", PSX_TUD_TYPE_SINGLE, comboKey, "NaN", num2str(comboIndex)})
 
 			idx += 1
 		endfor
@@ -1760,21 +1890,21 @@ static Function PSX_AppendAverageTraces(string extAllGraph, DFREF averageDFR, st
 		// don't use any transparency for the average
 		AppendToGraph/W=$extAllGraph/C=(colors[0], colors[1], colors[2]) average/TN=$trace
 
-		TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                              \
-	   	                         traceUserDataKeys,                                                                               \
-	   	                         {"NaN", num2str(state), num2str(state), "0", PSX_TUD_TYPE_AVERAGE, comboKey, num2str(comboIndex)})
-	   	idx += 1
+		TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                      \
+		                         traceUserDataKeys,                                                                                       \
+		                         {"NaN", num2str(state), num2str(state), "0", PSX_TUD_TYPE_AVERAGE, comboKey, "NaN", num2str(comboIndex)})
+		idx += 1
 	endfor
-	
+
 	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
 
 	trace = PSX_GetAverageTraceName(idx, "acceptAverageFit", comboIndex, traceSuffix)
 	idx += 1
 
 	AppendToGraph/W=$extAllGraph acceptedAverageFit/TN=$trace
-	TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                         \
-	                         traceUserDataKeys,                                                                                          \
-	                         {"NaN", num2str(PSX_ACCEPT), num2str(PSX_ACCEPT), "0", PSX_TUD_TYPE_AVERAGE, comboKey, num2str(comboIndex)})
+	TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                                \
+	                         traceUserDataKeys,                                                                                                 \
+	                         {"NaN", num2str(PSX_ACCEPT), num2str(PSX_ACCEPT), "0", PSX_TUD_TYPE_AVERAGE, comboKey, "NaN", num2str(comboIndex)})
 
 	return idx
 End
@@ -2429,6 +2559,8 @@ static Function PSX_StoreGuiState(string win, string browser)
 	endfor
 
 	JSON_SetVariable(jsonID, "/specialEventPanel/popupmenu_state_type", GetPopupMenuIndex(specialEventPanel, "popupmenu_state_type"))
+	JSON_SetVariable(jsonID, "/specialEventPanel/popup_block", GetPopupMenuIndex(specialEventPanel, "popup_block"))
+	JSON_SetVariable(jsonID, "/specialEventPanel/setvar_event_block_size", GetSetVariable(specialEventPanel, "setvar_event_block_size"))
 
 	mainWindow = GetMainWindow(win)
 	JSON_SetVariable(jsonID, "/mainPanel/checkbox_suppress_update", GetCheckBoxState(mainWindow, "checkbox_suppress_update"))
@@ -2449,8 +2581,8 @@ End
 /// @brief Restore the PSX panel GUI state from the window user data of `browser`
 static Function PSX_RestoreGuiState(string win)
 
-	string browser, specialEventPanel, mainWindow, ctrl, jsonDoc, extAllGraph
-	variable jsonID, lastActiveCombo
+	string browser, specialEventPanel, mainWindow, ctrl, jsonDoc, extAllGraph, allBlocks
+	variable jsonID, lastActiveCombo, selectedBlock, lastBlock
 
 	browser = SFH_GetBrowserForFormulaGraph(win)
 
@@ -2474,6 +2606,14 @@ static Function PSX_RestoreGuiState(string win)
 	for(ctrl : controls)
 		SetCheckBoxState(specialEventPanel, ctrl, JSON_GetVariable(jsonID, "/specialEventPanel/" + ctrl))
 	endfor
+
+	// first block size, as that recalculates the number of blocks
+	PGC_SetAndActivateControl(specialEventPanel, "setvar_event_block_size", val = JSON_GetVariable(jsonID, "/specialEventPanel/setvar_event_block_size"))
+
+	selectedBlock = JSON_GetVariable(jsonID, "/specialEventPanel/popup_block")
+	allBlocks = PSX_GetAllEventBlockNumbers(specialEventPanel)
+	lastBlock = str2num(StringFromList(ItemsInList(allBlocks) - 1, allBlocks))
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", val = limit(selectedBlock, 0, lastBlock))
 
 	PGC_SetAndActivateControl(specialEventPanel, "popupmenu_state_type", val = JSON_GetVariable(jsonID, "/specialEventPanel/popupmenu_state_type"))
 
@@ -2809,52 +2949,66 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 	// set the active subwindow so that we can C&P the control code below which does not have a win statement
 	SetActiveSubwindow $extSubWin
 
-	CheckBox checkbox_single_events_accept,pos={11.00,7.00},size={53.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
+	// BEGIN "Copy Commands"
+	CheckBox checkbox_single_events_accept,pos={21.00,33.00},size={53.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_single_events_accept,title="Accept"
 	CheckBox checkbox_single_events_accept,help={"Show accepted events in all events plot"}
 	CheckBox checkbox_single_events_accept,value=1
-	CheckBox checkbox_single_events_reject,pos={11.00,30.00},size={48.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_single_events_reject,pos={21.00,56.00},size={48.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_single_events_reject,title="Reject"
 	CheckBox checkbox_single_events_reject,help={"Show rejected events in all events plot"}
 	CheckBox checkbox_single_events_reject,value=1
-	CheckBox checkbox_single_events_undetermined,pos={11.00,54.00},size={48.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_single_events_undetermined,pos={21.00,79.00},size={48.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_single_events_undetermined,title="Undet"
 	CheckBox checkbox_single_events_undetermined,help={"Show undetermined events in all events plot"}
 	CheckBox checkbox_single_events_undetermined,value=1
-	GroupBox group_average,pos={7.00,69.00},size={77.00,123.00},title="Average"
+	GroupBox group_average,pos={91.00,13.00},size={77.00,122.00},title="Average"
 	GroupBox group_average,help={"Toggle the display of the average traces"}
-	CheckBox checkbox_average_events_undetermined,pos={20.00,128.00},size={48.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_average_events_undetermined,pos={104.00,72.00},size={48.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_average_events_undetermined,title="Undet"
 	CheckBox checkbox_average_events_undetermined,help={"Show average of the undetermined events in all events plot"}
 	CheckBox checkbox_average_events_undetermined,value=0
-	CheckBox checkbox_average_events_reject,pos={20.00,109.00},size={48.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_average_events_reject,pos={104.00,53.00},size={48.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_average_events_reject,title="Reject"
 	CheckBox checkbox_average_events_reject,help={"Show average of the rejected events in all events plot"}
 	CheckBox checkbox_average_events_reject,value=0
-	CheckBox checkbox_average_events_accept,pos={20.00,89.00},size={53.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_average_events_accept,pos={104.00,33.00},size={53.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_average_events_accept,title="Accept"
 	CheckBox checkbox_average_events_accept,help={"Show average of the accepted events in all events plot"}
 	CheckBox checkbox_average_events_accept,value=0
-	CheckBox checkbox_average_events_all,pos={20.00,148.00},size={30.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_average_events_all,pos={104.00,92.00},size={30.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_average_events_all,title="All"
 	CheckBox checkbox_average_events_all,help={"Show average of all events in all events graph"}
 	CheckBox checkbox_average_events_all,value=0
-	CheckBox checkbox_restrict_events_to_current_combination,pos={11.00,190.00},size={56.00,30.00},proc=PSX_CheckboxProcAllEventPlotUpdate
-	CheckBox checkbox_restrict_events_to_current_combination,title="Current\rcombo"
+	CheckBox checkbox_restrict_events_to_current_combination,pos={17.00,143.00},size={97.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_restrict_events_to_current_combination,title="Current combo"
 	CheckBox checkbox_restrict_events_to_current_combination,help={"Show event traces from only the current combination (checked) instead of all combinations (unchecked).\r The current combination can be set in the ListBox below."}
 	CheckBox checkbox_restrict_events_to_current_combination,value=0
-	PopupMenu popupmenu_state_type,pos={6.00,223.00},size={80.00,19.00},proc=PSX_PopupMenuState
+	PopupMenu popupmenu_state_type,pos={17.00,167.00},size={80.00,19.00},proc=PSX_PopupMenuState
 	PopupMenu popupmenu_state_type,mode=1,popvalue="Event State",value=#"PSX_GetEventStateNames()"
-	CheckBox checkbox_average_events_fit,pos={20.00,167.00},size={29.00,15.00},proc=PSX_CheckboxProcFitAcceptAverage
+	CheckBox checkbox_average_events_fit,pos={104.00,111.00},size={29.00,15.00},proc=PSX_CheckboxProcFitAcceptAverage
 	CheckBox checkbox_average_events_fit,title="Fit"
 	CheckBox checkbox_average_events_fit,help={"Fit the accept average with a double exponential and store the outcome in the results wave"}
 	CheckBox checkbox_average_events_fit,value=0
-	Button button_fit_results,pos={53.00,167.00},size={18.00,16.00},proc=PSX_CopyHelpToClipboard
-	Button button_fit_results,title="i",help={PSX_AVERAGE_FIT_RESULT_DEFAULT_HELP},userdata=""
+	Button button_fit_results,pos={137.00,111.00},size={18.00,16.00},proc=PSX_CopyHelpToClipboard
+	Button button_fit_results,title="i"
+	Button button_fit_results,help={"<pre>No fit results available for average accept</pre>"}
+	Button button_fit_results,userdata="No fit results available for average accept"
+	GroupBox group_event,pos={14.00,13.00},size={69.00,122.00},title="Event"
+	GroupBox group_event,help={"Toggle the display of the event traces"}
+	SetVariable setvar_event_block_size,pos={17.00,193.00},size={99.00,18.00},bodyWidth=44,proc=PSX_SetVarBlockSize
+	SetVariable setvar_event_block_size,title="Block size"
+	SetVariable setvar_event_block_size,help={"Allows to restrict the all event graph to only a percentage of the events."}
+	SetVariable setvar_event_block_size,limits={0,100,1},value=_NUM:100
+	PopupMenu popup_block,pos={17.00,218.00},size={82.00,19.00},bodyWidth=50,proc=PSX_PopupMenuBlockNumber
+	PopupMenu popup_block,title="Block"
+	PopupMenu popup_block,help={"Select which of the event blocks to display"}
+	PopupMenu popup_block,mode=1,popvalue="0",value=#("PSX_GetAllEventBlockNumbers(\"" + win + "\")")
+	// END "Copy Commands"
 
 	ModifyPanel/W=$extSubWin fixedSize=0
 
-	DefineGuide/W=$extSubWin leftMenu = {FL, 0.10, FR}
+	DefineGuide/W=$extSubWin leftMenu = {FL, 0.20, FR}
 	DefineGuide/W=$extSubWin horizCenter = {leftMenu, 0.5, FR}
 
 	// single events view
@@ -2895,11 +3049,6 @@ End
 static Function PSX_ApplySpecialPlotProperties(string win, WAVE eventLocationTicks, WAVE eventLocationLabels)
 
 	ModifyGraph/W=$win userticks(eventLocAxis)={eventLocationTicks, eventLocationLabels}
-
-	if(PSX_GetRestrictEventsToCurrentCombo(win))
-		PSX_AdaptColorsInAllEventGraph(win, forceAverageUpdate = 1)
-		PSX_UpdateHideStateInAllEventGraph(win)
-	endif
 End
 
 /// @brief Read the user JWN from results and create a legend from all operation parameters
@@ -3374,9 +3523,7 @@ Function PSX_PostPlot(string win)
 
 	PSX_RestoreGuiState(win)
 
-	PSX_UpdateHideStateInAllEventGraph(win)
-
-	PSX_AdaptColorsInAllEventGraph(win, forceAverageUpdate = 1)
+	PSX_UpdateAllEventGraph(win, forceAverageUpdate = 1, forceSingleEventUpdate = 1, forceBlockIndexUpdate = 1)
 
 	DFREF comboDFR = PSX_GetCurrentComboFolder(win)
 	WAVE eventLocationLabels = GetPSXEventLocationLabels(comboDFR)
@@ -3831,6 +3978,10 @@ static Function PSX_SetCombo(string win, variable comboIndex)
 
 	PSX_ApplySpecialPlotProperties(psxGraph, eventLocationTicks, eventLocationLabels)
 
+	if(PSX_GetRestrictEventsToCurrentCombo(win))
+		PSX_UpdateAllEventGraph(win, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
+	endif
+
 	PSX_MoveAndCenterCursor(psxGraph, 0)
 End
 
@@ -3949,7 +4100,7 @@ Function PSX_CheckboxProcAllEventPlotUpdate(STRUCT WMCheckboxAction &cba) : Chec
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			PSX_UpdateAllEventGraph(cba.win, forceAverageUpdate = 1)
+			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1)
 			break
 	endswitch
 End
@@ -3959,6 +4110,26 @@ Function PSX_CheckboxProcFitAcceptAverage(STRUCT WMCheckboxAction &cba) : Checkb
 	switch(cba.eventCode)
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1)
+			break
+	endswitch
+End
+
+Function PSX_PopupMenuBlockNumber(STRUCT WMPopupAction &cba) : PopupMenuControl
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			PSX_UpdateAllEventGraph(cba.win, forceAverageUpdate = 1)
+			break
+	endswitch
+End
+
+Function PSX_SetVarBlockSize(STRUCT WMSetVariableAction &sva) : SetVariableControl
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			PSX_UpdateAllEventGraph(sva.win, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
 			break
 	endswitch
 End
