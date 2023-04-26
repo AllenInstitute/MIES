@@ -119,3 +119,78 @@ static Function CheckGetDeviceInfoWithInvalid([string str])
 	CHECK_WAVE(wv, NORMAL_WAVE | NUMERIC_WAVE)
 	CHECK(!HasOneValidEntry(wv))
 End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function RestoreAndSaveConfiguration([string str])
+
+	string settingsIPath, settingsFolder, templateFolder, workingFolder
+	string fileList, fName, fContent, fContentRig, wList
+	variable jsonId
+	string templateIPath = "templateConf"
+	string tempIPath = "tempConf"
+	string defaultConfig = "1_DA_Ephys.json"
+	string defaultRigConfig = "1_DA_Ephys_rig.json"
+	string newConfig = "1_DA_Ephys_new.json"
+	string newRigConfig = "1_DA_Ephys_new_rig.json"
+	string stimsetJsonPath = "/Common configuration data/Stim set file name"
+	string hsAssocJsonPath = "/Common configuration data/Headstage Association"
+
+	settingsIPath = MIES_CONF#CONF_GetSettingsPath(0x0)
+	PathInfo $settingsIPath
+	settingsFolder = S_Path
+	templateFolder = GetFolder(settingsFolder) + "Settings_template"
+
+	workingFolder = GetFolder(settingsFolder) + UniqueFileOrFolder(settingsIPath, "RestoreAndSaveConfigurationTest")
+	CreateFolderOnDisk(workingFolder)
+	workingFolder += ":"
+	NewPath/O/Q $tempIPath, workingFolder
+
+	NewPath/O/Q $templateIPath, templateFolder
+	fileList = GetAllFilesRecursivelyFromPath(templateIPath, extension = ".json")
+	WAVE/T wFileList = ListToTextWave(fileList, "|")
+	for(fileName : wFileList)
+		[fContent, fName] = LoadTextFile(fileName)
+		jsonId = JSON_Parse(fContent)
+
+		if(JSON_Exists(jsonId, stimsetJsonPath))
+			FixupJSONConfigImplMain(jsonId, str)
+			fContent = JSON_Dump(jsonId, indent=2)
+		elseif(JSON_Exists(jsonId, hsAssocJsonPath))
+			FixupJSONConfigImplRig(jsonId)
+			fContent = JSON_Dump(jsonId, indent=2)
+		endif
+		JSON_Release(jsonId)
+		SaveTextFile(fContent, workingFolder + GetFile(fileName))
+	endfor
+
+	CONF_AutoLoader(customIPath=tempIPath)
+	CHECK(WindowExists(DATABROWSER_WINDOW_NAME))
+	CHECK(WindowExists(str))
+
+	DoWindow/F $str
+	CONF_SaveWindow("")
+	CHECK(FileExists(workingFolder + newConfig))
+	CHECK(FileExists(workingFolder + newRigConfig))
+
+	[fContent, fName] = LoadTextFile(workingFolder + defaultRigConfig)
+	[fContentRig, fName] = LoadTextFile(workingFolder + newRigConfig)
+	CHECK_EQUAL_STR(fContent, fContentRig)
+
+	wList = AddListItem(DATABROWSER_WINDOW_NAME, "")
+	wList = AddListItem(str, wList)
+	KillWindows(wList)
+
+	fName = workingFolder + defaultRigConfig
+	DeleteFile fName
+	fName = workingFolder + defaultConfig
+	DeleteFile fName
+
+	CONF_AutoLoader(customIPath=tempIPath)
+	CHECK(WindowExists(DATABROWSER_WINDOW_NAME))
+	CHECK(WindowExists(str))
+
+	fName = workingFolder + newRigConfig
+	DeleteFile fName
+	fName = workingFolder + newConfig
+	DeleteFile fName
+End
