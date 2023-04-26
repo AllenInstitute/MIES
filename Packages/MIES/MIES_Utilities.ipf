@@ -4818,11 +4818,16 @@ End
 /// @param[in] fileName fileName to use. If the fileName is empty or invalid a file save dialog will be shown.
 /// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
 /// @param[in] message [optional, default = "Create file"] window title of the save file dialog.
+/// @param[out] savedFileName [optional, default = ""] file name of the saved file
 /// @returns NaN if file open dialog was aborted or an error was encountered, 0 otherwise
-Function SaveTextFile(data, fileName,[ fileFilter, message])
-	string data, fileName, fileFilter, message
+Function SaveTextFile(data, fileName,[ fileFilter, message, savedFileName])
+	string data, fileName, fileFilter, message, &savedFileName
 
 	variable fNum
+
+	if(!ParamIsDefault(savedFileName))
+		savedFileName = ""
+	endif
 
 	if(ParamIsDefault(fileFilter) && ParamIsDefault(message))
 		Open/D=2 fnum as fileName
@@ -4840,6 +4845,9 @@ Function SaveTextFile(data, fileName,[ fileFilter, message])
 
 	Open/Z fnum as S_fileName
 	ASSERT(!V_flag, "Could not open file for writing!")
+	if(!ParamIsDefault(savedFileName))
+		savedFileName = S_fileName
+	endif
 
 	FBinWrite fnum, data
 	Close fnum
