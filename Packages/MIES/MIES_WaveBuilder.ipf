@@ -2697,7 +2697,7 @@ Function WB_ParseStimulusType(string stimulusType)
 End
 
 /// @brief Return the name of a stimulus set build up from the passed parts
-Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix, variable lengthLimit])
+static Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix, variable lengthLimit])
 	string result
 	variable maxLength
 
