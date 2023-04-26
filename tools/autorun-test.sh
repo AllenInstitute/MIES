@@ -5,6 +5,13 @@
 # https://stackoverflow.com/a/246128
 ScriptDir=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
+function finish
+{
+  source ${ScriptDir}/gather-logfiles-and-crashdumps.sh
+}
+
+trap finish exit
+
 usage()
 {
   echo "Usage: $0 [-p <name of pxp to run against>] [-v <igor version string>]" 1>&2
@@ -38,8 +45,6 @@ then
   echo "The Igor Pro Version is empty." 1>&2
   exit 1
 fi
-
-source ${ScriptDir}/cleanup-logfiles.sh
 
 StateFile=$(dirname ${experiment})/DO_AUTORUN.txt
 touch $StateFile
