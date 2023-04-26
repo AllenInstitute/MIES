@@ -176,8 +176,6 @@ End
 
 /// @brief Return the sweep number of the last acquired sweep
 ///
-/// Handles sweep number rollback properly.
-///
 /// @return a non-negative integer sweep number or NaN if there is no data
 Function AFH_GetLastSweepAcquired(device)
 	string device

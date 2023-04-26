@@ -1189,7 +1189,6 @@ Function/Wave GetLBTextualValues(device)
 	SetDimLabel COLS, 3, EntrySourceType           , wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
-	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 
 	return wv
 End
@@ -1369,8 +1368,7 @@ static Function UpgradeLabNotebook(device)
 	endif
 
 	if(WaveVersionIsSmaller(numericalKeys, 39))
-		SetNumberInWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
-		SetNumberInWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
+		// nothing to do
 	endif
 
 	// BEGIN acquisition state
@@ -1418,6 +1416,9 @@ static Function UpgradeLabNotebook(device)
 		Redimension/N=(6, -1) textualKeys
 	endif
 	// END extending rows
+
+	// we don't remove the wavenote entry as we might need to adapt the reading code
+	// in the future to handle labnotebooks with sweep rollback specially.
 End
 
 static Function/S FixInvalidLabnotebookKey(string name)
@@ -1703,7 +1704,6 @@ Function/Wave GetLBNumericalValues(device)
 		SetDimLabel COLS, 3, EntrySourceType           , wv
 
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
-		SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 	endif
 
 	return wv
@@ -1908,14 +1908,13 @@ End
 threadsafe Function/WAVE GetLBRowCache(values)
 	WAVE values
 
-	variable actual, rollbackCount, sweepNo, first, last
+	variable actual, sweepNo, first, last
 	string key, name
 
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 
 	actual        = WaveModCountWrapper(values)
 	name          = GetWavesDataFolder(values, 2)
-	rollbackCount = GetNumberFromWaveNote(values, LABNOTEBOOK_ROLLBACK_COUNT)
 	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RowCache"
@@ -1927,7 +1926,7 @@ threadsafe Function/WAVE GetLBRowCache(values)
 			return wv
 		elseif(!MU_RunningInMainThread() && GetLockState(values) == 1)
 			return wv
-		elseif(rollbackCount == GetNumberFromWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT))
+		else
 			// new entries were added so we need to propagate all entries to LABNOTEBOOK_GET_RANGE
 			// for sweep numbers >= than the currently acquired sweep
 			// this is required as the `last` element of the range can be changed if you add labnotebook
@@ -1962,7 +1961,6 @@ threadsafe Function/WAVE GetLBRowCache(values)
 	SetDimLabel COLS, 1, last,  wv
 
 	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
-	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCount)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -1989,14 +1987,13 @@ End
 threadsafe Function/WAVE GetLBIndexCache(values)
 	WAVE values
 
-	variable actual, rollbackCount, sweepNo, first, last
+	variable actual, sweepNo, first, last
 	string key, name
 
-	variable versionOfNewWave = 4
+	variable versionOfNewWave = 5
 
 	actual        = WaveModCountWrapper(values)
 	name          = GetWavesDataFolder(values, 2)
-	rollbackCount = GetNumberFromWaveNote(values, LABNOTEBOOK_ROLLBACK_COUNT)
 	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_IndexCache"
@@ -2008,7 +2005,7 @@ threadsafe Function/WAVE GetLBIndexCache(values)
 			return wv
 		elseif(!MU_RunningInMainThread() && GetLockState(values) == 1)
 			return wv
-		elseif(rollbackCount == GetNumberFromWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT))
+		else
 			// new entries were added so we need to propagate all entries to uncached values
 			// for sweep numbers >= than the currently acquired sweep
 
@@ -2038,7 +2035,6 @@ threadsafe Function/WAVE GetLBIndexCache(values)
 	Multithread wv = LABNOTEBOOK_UNCACHED_VALUE
 
 	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
-	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCount)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -2061,7 +2057,7 @@ End
 threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	WAVE numericalValues
 
-	variable actual, rollbackCount
+	variable actual
 	string key, name
 
 	variable versionOfNewWave = 3
@@ -2070,7 +2066,6 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 
 	actual        = WaveModCountWrapper(numericalValues)
 	name          = GetWavesDataFolder(numericalValues, 2)
-	rollbackCount = GetNumberFromWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT)
 	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RACidCache"
@@ -2087,8 +2082,6 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 			// update all RAC/SCI cycles which got changed by the new data
 			// and that is not so easy
 		endif
-	elseif(WaveExists(wv))
-		// handle upgrade
 	else
 		Make/FREE/N=(MINIMUM_WAVE_SIZE, 2, NUM_HEADSTAGES)/WAVE wv
 		CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
@@ -2097,7 +2090,6 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	wv = $""
 
 	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
-	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCount)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	SetDimLabel COLS, 0, $RA_ACQ_CYCLE_ID_KEY     , wv

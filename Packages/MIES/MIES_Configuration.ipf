@@ -167,8 +167,6 @@ static StrConstant EXPCONFIG_JSON_PRESSCONSTPOS = "Constant Positive"
 static StrConstant EXPCONFIG_JSON_SAVE_PATH = "Save data to"
 static StrConstant EXPCONFIG_JSON_STIMSET_NAME = "Stim set file name"
 static StrConstant EXPCONFIG_JSON_POSITION_MCC = "Position MCCs"
-static StrConstant EXPCONFIG_JSON_SWEEP_ROLLBACK = "Sweep Rollback allowed"
-static Constant EXPCONFIG_SWEEPROLLBACK_DEFAULT = 0
 static StrConstant EXPCONFIG_JSON_LOGFILE_UPLOAD = "Automatic logfile upload"
 static Constant EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT = 0
 
@@ -234,7 +232,6 @@ static Function CONF_DefaultSettings()
 	JSON_AddString(jsonID, EXPCONFIG_JSON_POSITION_MCC, NONE)
 	JSON_AddString(jsonID, EXPCONFIG_JSON_STIMSET_NAME, "")
 	JSON_AddString(jsonID, EXPCONFIG_JSON_SAVE_PATH, "C:MiesSave")
-	JSON_AddBoolean(jsonID, EXPCONFIG_JSON_SWEEP_ROLLBACK, EXPCONFIG_SWEEPROLLBACK_DEFAULT)
 	JSON_AddBoolean(jsonID, EXPCONFIG_JSON_LOGFILE_UPLOAD, EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT)
 
 	return jsonID
@@ -569,7 +566,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 	string fullFilePath
 	variable middleOfExperiment, forceNewPanel
 
-	variable i, fnum, restoreMask, numPotentialUnlocked, err, winConfigChanged, isTagged, sweepRollback, uploadLogfiles
+	variable i, fnum, restoreMask, numPotentialUnlocked, err, winConfigChanged, isTagged, uploadLogfiles
 	string device, getWName, jsonPath, potentialUnlockedList, winHandle, errMsg
 	string AmpSerialLocal, AmpTitleLocal, deviceToRecreate, StimSetPath, path, filename, rStateSync
 	string input = ""
@@ -663,11 +660,6 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		SaveExperiment /P=SavePath as filename
 
 		KillPath/Z SavePath
-
-		sweepRollback = CONF_GetVariableFromSettings(jsonID, EXPCONFIG_JSON_SWEEP_ROLLBACK, defaultValue = EXPCONFIG_SWEEPROLLBACK_DEFAULT)
-		if(!sweepRollback)
-			SetVariable SetVar_Sweep win=$device, noedit=1, limits={0,0,0}, help={"Sweep rollback is disabled by the configuration."}
-		endif
 
 		uploadLogfiles = CONF_GetVariableFromSettings(jsonID, EXPCONFIG_JSON_LOGFILE_UPLOAD, defaultValue = EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT)
 		if(uploadLogfiles)

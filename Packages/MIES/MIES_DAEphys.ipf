@@ -525,7 +525,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	PopupMenu popup_MoreSettings_Devices WIN=$device, mode=1
 
-	SetVariable SetVar_Sweep WIN = $device, limits={0,0,1}, value= _NUM:0
+	SetVariable SetVar_Sweep WIN = $device, value= _NUM:0
 
 	SetVariable SetVar_DataAcq_dDAQDelay WIN = $device,value= _NUM:0
 	SetVariable setvar_DataAcq_dDAQOptOvPost WIN = $device,value= _NUM:0
@@ -1593,88 +1593,17 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+static Function DAP_UpdateSweepLimitsAndDisplay(string device)
 
-	string device
-	variable sweepNo
+	variable sweep
 
-	switch(sva.eventCode)
-		case 1:
-		case 2:
-		case 3:
-			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
-			DAP_UpdateSweepLimitsAndDisplay(sva.win)
+	sweep = AFH_GetLastSweepAcquired(device) + 1
 
-			device = sva.win
-			sweepNo = AFH_GetLastSweepAcquired(device)
-
-			// avoid setting the LBN entry when we have not yet acquired any sweeps
-			if(IsValidSweepNumber(sweepNo))
-				DAP_SweepRollback(device, sweepNo, sva.dval)
-			endif
-			break
-	endswitch
-
-	return 0
-End
-
-Function DAP_SweepRollback(string device, variable sweepNo, variable newSweepNo)
-
-	variable rollbackCountNum, rollbackCountText
-
-	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
-	vals[0][0][INDEP_HEADSTAGE] = newSweepNo
-	Make/T/FREE/N=(3, 1) keys
-	keys[0] = SWEEP_ROLLBACK_KEY
-	keys[1] = ""
-	keys[2] = "0.1"
-	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, device, UNKNOWN_MODE)
-
-	// upgrade LBNs
-	GetLBNumericalKeys(device)
-	GetLBTextualKeys(device)
-
-	WAVE/Z numericalValues = GetLBNumericalValues(device)
-	rollbackCountNum = GetNumberFromWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT)
-	SetNumberInWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCountNum + 1)
-	WaveClear numericalValues
-
-	WAVE/Z textualValues = GetLBTextualValues(device)
-	rollbackCountText = GetNumberFromWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT)
-	SetNumberInWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCountText + 1)
-	WaveClear textualValues
-
-	ASSERT(rollbackCountNum == rollbackCountText, "Invalid rollback count")
-End
-
-static Function DAP_UpdateSweepLimitsAndDisplay(string device, [variable initial])
-
-	variable sweep, noEditDefault
-
-	if(ParamIsDefault(initial))
-		initial = 0
-	else
-		initial = !!initial
+	if(IsNaN(sweep))
+		return NaN
 	endif
 
-	if(initial)
-		sweep = AFH_GetLastSweepAcquired(device) + 1
-		if(IsFinite(sweep))
-			SetSetVariable(device, "SetVar_Sweep", sweep)
-			DAG_Update(device, "SetVar_Sweep", val = sweep)
-		endif
-	else
-		sweep = DAG_GetNumericalValue(device, "SetVar_Sweep")
-	endif
-
-	noEditDefault = GetControlSettingVar(device, "SetVar_Sweep", "noEdit", defValue = 0)
-
-	SetVariable SetVar_Sweep win = $device, noEdit=noEditDefault
-
-	if(!noEditDefault)
-		SetVariable SetVar_Sweep win = $device, limits = {0, sweep, 1}
-	endif
+	PGC_SetAndActivateControl(device, "SetVar_Sweep", val = sweep)
 End
 
 /// @brief Return the sampling interval in μs with taking the mode,
@@ -1954,6 +1883,27 @@ Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Return true if the sweep ordering is ascending, false otherwise
+static Function DAP_HasAscendingSweepOrdering(string device)
+
+	variable lastAcquiredSweep, nextSweepNumber
+
+	lastAcquiredSweep = AFH_GetLastSweepAcquired(device)
+
+	if(IsNaN(lastAcquiredSweep))
+		// nothing acquired
+		return 1
+	endif
+
+	nextSweepNumber = GetSetVariable(device, "SetVar_Sweep")
+
+	if(nextSweepNumber > lastAcquiredSweep)
+		return 1
+	endif
+
+	return 0
+End
+
 /// @brief Check if all settings are valid to send a test pulse or acquire data
 ///
 /// For invalid settings an informative message is printed into the history area.
@@ -1988,7 +1938,11 @@ Function DAP_CheckSettings(device, mode)
 		return 1
 	endif
 
-	SWS_DeleteDataWaves(device)
+	if(!DAP_HasAscendingSweepOrdering(device))
+		printf "(%s) The sweep number ordering is not strictly ascending.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
 
 	PathInfo home
 	if(V_Flag) // saved experiment
@@ -4475,7 +4429,7 @@ Function DAP_LockDevice(string win)
 		KillOrMoveToTrash(wv = GetDQMActiveDeviceList())
 	endif
 
-	DAP_UpdateSweepLimitsAndDisplay(deviceLocked, initial = 1)
+	DAP_UpdateSweepLimitsAndDisplay(deviceLocked)
 	DAP_AdaptPanelForDeviceSpecifics(deviceLocked)
 
 	WAVE TPSettings = GetTPSettings(deviceLocked)

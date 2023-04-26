@@ -63,7 +63,6 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 
 	SWS_AfterSweepDataChangeHook(device)
 
-	SetSetVariableLimits(device, "SetVar_Sweep", 0, sweepNo + 1, 1)
 	// SetVar_Sweep currently disabled so we have to write manually in the GUIStateWave
 	SetSetVariable(device, "SetVar_Sweep", sweepNo + 1)
 	DAG_Update(device, "SetVar_Sweep", val = sweepNo + 1)
@@ -202,74 +201,6 @@ Function/WAVE SWS_GetChannelGains(device, [timing])
 	endswitch
 
 	return gain
-End
-
-/// @brief Delete all sweep and config waves having a sweep number
-/// of `sweepNo` and higher
-Function SWS_DeleteDataWaves(device)
-	string device
-
-	string list, path, name, absolutePath
-	variable i, numItems, waveSweepNo, sweepNo, refTime
-
-	refTime = DEBUG_TIMER_START()
-
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/Z sweepRollbackUsed = GetSweepsWithSetting(numericalValues, SWEEP_ROLLBACK_KEY)
-
-	if(!WaveExists(sweepRollbackUsed))
-		return NaN
-	endif
-
-	sweepNo   = DAG_GetNumericalValue(device, "SetVar_Sweep")
-	DFREF dfr = GetDeviceDataPath(device)
-	list      = GetListOfObjects(dfr, DATA_SWEEP_REGEXP + "|" + DATA_SWEEP_REGEXP_BAK + "|" + DATA_CONFIG_REGEXP + "|" + DATA_CONFIG_REGEXP_BAK)
-	list     += GetListOfObjects(dfr, ".*", typeFlag=COUNTOBJECTS_DATAFOLDER)
-
-	numItems = ItemsInList(list)
-
-	if(!numItems)
-		return NaN
-	endif
-
-	Make/FREE/N=(numItems) matchesWithNaNs
-	MultiThread matchesWithNaNs[] = ExtractSweepNumber(StringFromList(p, list)) >= sweepNo ? p : NaN
-
-	WAVE/Z matches = ZapNaNs(matchesWithNaNs)
-
-	DEBUGPRINT_ELAPSED(refTime)
-
-	if(!WaveExists(matches))
-		return NaN
-	endif
-
-	path = GetDeviceDataPathAsString(device)
-
-	DFREF deletedFolder = UniqueDataFolder($GetDevicePathAsString(device), "Data_deleted")
-	ASSERT(IsDataFolderEmpty(deletedFolder), "Invalid target datafolder")
-
-	numItems = DimSize(matches, ROWS)
-	for(i = 0; i < numItems; i += 1)
-		absolutePath = path + ":" + StringFromList(matches[i], list)
-
-		WAVE/Z wv = $absolutePath
-		if(WaveExists(wv))
-			MoveWave wv, deletedFolder
-			continue
-		endif
-
-		DFREF folder = $absolutePath
-		if(DataFolderExistsDFR(folder))
-			MoveDataFolder folder, deletedFolder
-			continue
-		endif
-
-		ASSERT(0, "Invalid state when deleting data: " + absolutePath)
-	endfor
-
-	DEBUGPRINT_ELAPSED(refTime)
-
-	SWS_AfterSweepDataChangeHook(device)
 End
 
 /// @brief Return the floating point type for storing the raw data
