@@ -492,12 +492,12 @@ static Function CONF_SaveDAEphys(fName)
 	string fName
 
 	variable i, jsonID, saveMask, saveResult, prevJsonId, prevRigJsonId
-	string out, wName, errMsg
+	string out, wName, errMsg, newFileName, newRigFullFilePath, jsonTxt
 
 	wName = GetMainWindow(GetCurrentWindow())
 	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Current window is no DA_Ephys panel")
-	prevJsonId = CONF_LoadConfigUsedForDAEphysPanel(wName)
-	prevRigJsonId = CONF_LoadConfigUsedForDAEphysPanel(wName, loadRigFile=1)
+	[prevJsonId, jsonTxt] = CONF_LoadConfigUsedForDAEphysPanel(wName)
+	[prevRigJsonId, jsonTxt] = CONF_LoadConfigUsedForDAEphysPanel(wName, loadRigFile=1)
 
 	AssertOnAndClearRTError()
 	try
@@ -520,10 +520,21 @@ static Function CONF_SaveDAEphys(fName)
 
 		PathInfo/S $CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
 
-		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration file for DA_Ephys panel")
+		newFileName = CONF_GetDAEphysConfigurationFileNameSuggestion(wName)
+		fName = SelectString(IsEmpty(newFileName), newFileName, fName)
+
+		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName)
 		if(!IsNaN(saveResult))
-			print "Configuration saved."
+			printf "Configuration saved in %s.\r", newFileName
 		endif
+		if(!IsNaN(prevRigJsonId) && !IsEmpty(newFileName))
+			newRigFullFilePath = GetFolder(newFileName) + GetBaseName(newFileName) + EXPCONFIG_RIGFILESUFFIX
+			saveResult = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName)
+			if(!IsNaN(saveResult))
+				printf "Rig configuration saved in %s.\r", newFileName
+			endif
+		endif
+
 	catch
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
@@ -2466,9 +2477,9 @@ End
 /// @param[in] loadRigFile [optional, default 0] when set, load the rig file instead
 ///
 /// @returns jsonId or NaN if data was not present
-static Function CONF_LoadConfigUsedForDAEphysPanel(string wName[, variable loadRigFile])
+static Function [variable jsonId, string txtData] CONF_LoadConfigUsedForDAEphysPanel(string wName[, variable loadRigFile])
 
-	string fName, txtData, str
+	string fName, str
 
 	loadRigFile = ParamIsDefault(loadRigFile) ? 0 : !!loadRigFile
 	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Window is no DA_Ephys panel")
@@ -2476,10 +2487,10 @@ static Function CONF_LoadConfigUsedForDAEphysPanel(string wName[, variable loadR
 	fName = StringFromList(loadRigFile, GetUserData(wName, "", EXPCONFIG_UDATA_SOURCEFILE_PATH), FILE_LIST_SEP)
 	[txtData, str] = LoadTextFile(fName)
 	if(IsEmpty(txtData))
-		return NaN
+		return [NaN, ""]
 	endif
 
-	return JSON_Parse(txtData, ignoreErr=1)
+	return [JSON_Parse(txtData, ignoreErr=1), txtData]
 End
 
 static Function CONF_TransferPreviousDAEphysJson(variable jsonId, variable prevJsonId)
@@ -2514,4 +2525,18 @@ static Function CONF_RemoveRigElementsFromDAEphysJson(variable jsonId, variable 
 				break
 		endswitch
 	endfor
+End
+
+static Function/S CONF_GetDAEphysConfigurationFileNameSuggestion(string wName)
+
+	string prevFullFilePath
+
+	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Window is no DA_Ephys panel")
+
+	prevFullFilePath = StringFromList(0, GetUserData(wName, "", EXPCONFIG_UDATA_SOURCEFILE_PATH), FILE_LIST_SEP)
+	if(!FileExists(prevFullFilePath))
+		return ""
+	endif
+
+	return GetFolder(prevFullFilePath) + GetBaseName(prevFullFilePath) + "_new.json"
 End
