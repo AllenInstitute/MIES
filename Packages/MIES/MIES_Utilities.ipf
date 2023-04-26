@@ -6324,3 +6324,12 @@ Function/S FormatTextWaveForLegend(WAVE/T input)
 
 	return RemoveEndingRegExp(str, "[[:space:]]*\\r+$")
 End
+
+/// @brief Checks if given lineStyle code is valid (as of Igor Pro 9)
+///
+/// @param lineStyleCode line style code value for a trace
+/// @returns 1 if valid, 0 otherwise
+Function IsValidTraceLineStyle(variable lineStyleCode)
+
+	return IsFinite(lineStyleCode) && lineStyleCode >= 0 && lineStyleCode <= 17
+End

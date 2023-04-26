@@ -4113,7 +4113,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 		if(WaveListHasSameWaveNames(listOfHeadstages, headstage)&& hideSweep)
 			[s] = GetTraceColor(str2num(headstage))
 		else
-			[s] = GetTraceColor(NUM_HEADSTAGES + 1)
+			[s] = GetTraceColorForAverage()
 		endif
 
 		if(IsFinite(first) && IsFinite(last))

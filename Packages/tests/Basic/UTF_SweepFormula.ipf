@@ -2157,6 +2157,78 @@ static Function CheckSweepsMetaData(WAVE/WAVE dataWref, WAVE channelTypes, WAVE 
 	endfor
 End
 
+static Function TestOperationAverage()
+
+	string win, device
+	string str
+	STRUCT RGBColor s
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	CreateFakeSweepData(win, device, sweepNo=0)
+	CreateFakeSweepData(win, device, sweepNo=1)
+
+	str = "avg()"
+	try
+		WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "avg(1, 2, 3)"
+	try
+		WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "avg(1, 2)"
+	try
+		WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "avg(2, in)"
+	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
+	CHECK_WAVE(data, IUTF_WAVETYPE1_NUM)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(data[0], 2)
+
+	str = "avg([1, 2, 3], in)"
+	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(data[0], 2)
+	str = "avg([1, 2, 3])"
+	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, checkExist = 1)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
+	CHECK_EQUAL_VAR(data[0], 2)
+
+	str = "avg(data(cursors(A,B), select(channels(AD), sweeps(), all)), in)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
+	Make/FREE/D ref = {4.5}
+	for(data : dataRef)
+		CHECK_EQUAL_WAVES(data, ref, mode = WAVE_DATA)
+	endfor
+
+	str = "avg(data(cursors(A,B), select(channels(AD), sweeps(), all)), over)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
+
+	[s] = GetTraceColorForAverage()
+	Make/FREE/D ref = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	WAVE data = dataRef[0]
+	CHECK_EQUAL_WAVES(data, ref, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(data, SF_META_TRACETOFRONT), 1)
+	CHECK_EQUAL_VAR(JWN_GetNumberFromWaveNote(data, SF_META_LINESTYLE), 0)
+	WAVE/Z tColor = JWN_GetNumericWaveFromWaveNote(data, SF_META_TRACECOLOR)
+	CHECK_EQUAL_WAVES(tColor, {s.red, s.green, s.blue}, mode = WAVE_DATA)
+End
+
 static Function TestOperationData()
 
 	variable i, j, numChannels, sweepNo, sweepCnt, numResultsRef

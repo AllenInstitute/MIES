@@ -1773,7 +1773,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 				if(pa.showAverage && WaveExists(averageWave))
 
-					[s] = GetTraceColor(NUM_HEADSTAGES + 1)
+					[s] = GetTraceColorForAverage()
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue) averageWave/TN=$traceName
 					pasi.ovlTracesAvg[j][i] = 1
 					plottedAvgTraces = 1

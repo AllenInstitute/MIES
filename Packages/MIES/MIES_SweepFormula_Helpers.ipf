@@ -1183,3 +1183,19 @@ Function/WAVE SFH_FilterSelect(WAVE/Z selectData, variable keepChanType)
 
 	return selectDataFiltered
 End
+
+/// @brief checks the argument count and returns the number of arguments
+Function SFH_CheckArgumentCount(variable jsonId, string jsonPath, string opShort, variable minArgs, [variable maxArgs])
+
+	variable numArgs
+	string errMsg
+
+	maxArgs = ParamIsDefault(maxArgs) ? Inf : maxArgs
+	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+	sprintf errMsg, "%s has %d arguments at most.", opShort, maxArgs
+	SFH_ASSERT(numArgs <= maxArgs, errMsg)
+	sprintf errMsg, "%s needs at least %d argument(s).", opShort, minArgs
+	SFH_ASSERT(numArgs >= minArgs, errMsg)
+
+	return numArgs
+End

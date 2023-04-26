@@ -1911,6 +1911,9 @@ StrConstant SF_META_OPSTACK = "/OperationStack" // string
 StrConstant SF_META_MOD_MARKER = "/Marker" // numeric wave
 StrConstant SF_META_SHOW_LEGEND = "/ShowLegend" // numeric, boolean, defaults to true (1)
 StrConstant SF_META_ARGSETUPSTACK = "/ArgSetupStack" // string
+StrConstant SF_META_TRACECOLOR = "/TraceColor" // numeric wave
+StrConstant SF_META_LINESTYLE = "/LineStyle" // number
+StrConstant SF_META_TRACETOFRONT = "/TraceToFront" // number, boolean, defaults to false (0)
 
 StrConstant SF_DATATYPE_SWEEP = "SweepData"
 StrConstant SF_DATATYPE_FINDLEVEL = "FindLevel"

@@ -132,6 +132,9 @@ static StrConstant SF_OP_APFREQUENCY_NONORM = "nonorm"
 static StrConstant SF_OP_APFREQUENCY_X_COUNT = "count"
 static StrConstant SF_OP_APFREQUENCY_X_TIME = "time"
 
+static StrConstant SF_OP_AVG_INSWEEPS = "in"
+static StrConstant SF_OP_AVG_OVERSWEEPS = "over"
+
 static Constant EPOCHS_TYPE_INVALID = -1
 static Constant EPOCHS_TYPE_RANGE = 0
 static Constant EPOCHS_TYPE_NAME = 1
@@ -1478,7 +1481,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent
-	variable formulaCounter, gdIndex, markerCode, lineCode
+	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName
 	string yFormula, yFormulasRemain
 	STRUCT SF_PlotMetaData plotMetaData
@@ -1748,6 +1751,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				WAVE/Z wvX = dataInGraph[l][%WAVEX]
 				WAVE wvY = dataInGraph[l][%WAVEY]
 				trace = tracesInGraph[l]
+				lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
+				WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_TRACECOLOR)
 
 				if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
 					&& (!WaveExists(wvX) \
@@ -1766,9 +1771,24 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
 					ModifyGraph/W=$win mode($trace)=3,zmrkNum($trace)={customMarker}
 
-				elseif(formulasAreDifferent)
-					ModifyGraph/W=$win lStyle($trace)=lineCode
+				else
+					if(WaveExists(traceColor))
+						ASSERT(DimSize(traceColor, ROWS) == 3, "Need 3-element wave for color specification.")
+						ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
+					endif
+					if(IsValidTraceLineStyle(lineStyle))
+						ModifyGraph/W=$win lStyle($trace)=lineStyle
+					elseif(formulasAreDifferent)
+						ModifyGraph/W=$win lStyle($trace)=lineCode
+					endif
 				endif
+
+				traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
+				traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
+				if(traceToFront)
+					ReorderTraces/W=$win _front_, {$trace}
+				endif
+
 			endfor
 		endfor
 
@@ -3271,25 +3291,64 @@ End
 static Function/WAVE SF_OperationAvg(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
+	string mode
+	string opShort = SF_OP_AVG
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	SFH_ASSERT(numArgs > 0, "avg requires at least one argument")
-	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_AVG)
-	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+	numArgs = SFH_CheckArgumentCount(jsonID, jsonPath, opShort, 1, maxArgs = 2)
+
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
+	mode = SFH_GetArgumentAsText(jsonId, jsonPath, graph, opShort, 1, defValue=SF_OP_AVG_INSWEEPS, allowedValues={SF_OP_AVG_INSWEEPS, SF_OP_AVG_OVERSWEEPS})
+
+	strswitch(mode)
+		case SF_OP_AVG_INSWEEPS:
+			WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
+			output[] = SF_OperationAvgImplIn(input[p])
+			SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, SF_DATATYPE_AVG)
+			return SFH_GetOutputForExecutor(output, graph, opShort, clear=input)
+
+		case SF_OP_AVG_OVERSWEEPS:
+			return SF_OperationAvgImplOver(input, graph, opShort)
+
+		default:
+			ASSERT(0, "Unknown avg operation mode")
+	endswitch
+
+End
+
+static Function/WAVE SF_OperationAvgImplOver(WAVE/WAVE input, string graph, string opShort)
+
+	variable idx
+	STRUCT RGBColor s
+
+	Duplicate/FREE/WAVE input, avgSet
+
+	for(data : input)
+		if(WaveExists(data))
+			SFH_ASSERT(IsNumericWave(data), "avg requires numeric data as input")
+			SFH_ASSERT(DimSize(data, ROWS) > 0, "avg requires at least one data point")
+			avgSet[idx] = data
+			idx += 1
+		endif
+	endfor
+	if(!idx)
+		return SFH_GetOutputForExecutorSingle($"", graph, opShort, discardOpStack=1)
 	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_AVG, DimSize(input, ROWS))
+	Redimension/N=(idx) avgSet
 
-	output[] = SF_OperationAvgImpl(input[p])
+	WAVE/WAVE avg = MIES_fWaveAverage(avgSet, 1, IGOR_TYPE_64BIT_FLOAT)
+	WAVE avgData = avg[0]
 
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_AVG, SF_DATATYPE_AVG)
+	[s] = GetTraceColorForAverage()
+	Make/FREE/W/U traceColor = {s.red, s.green, s.blue}
+	JWN_SetWaveInWaveNote(avgData, SF_META_TRACECOLOR, traceColor)
+	JWN_SetNumberInWaveNote(avgData, SF_META_TRACETOFRONT, 1)
+	JWN_SetNumberInWaveNote(avgData, SF_META_LINESTYLE, 0)
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_AVG, clear=input)
+	return SFH_GetOutputForExecutorSingle(avgData, graph, opShort, discardOpStack=1)
 End
 
 // averages each column, 1d waves are treated like 1 column (n,1)
-static Function/WAVE SF_OperationAvgImpl(WAVE/Z input)
+static Function/WAVE SF_OperationAvgImplIn(WAVE/Z input)
 
 	if(!WaveExists(input))
 		return $""
