@@ -4819,29 +4819,37 @@ End
 /// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
 /// @param[in] message [optional, default = "Create file"] window title of the save file dialog.
 /// @param[out] savedFileName [optional, default = ""] file name of the saved file
+/// @param[in] showDialogOnOverwrite [optional, default = 0] opens save file dialog, if the current fileName would cause an overwrite, to allow user to change fileName
 /// @returns NaN if file open dialog was aborted or an error was encountered, 0 otherwise
-Function SaveTextFile(data, fileName,[ fileFilter, message, savedFileName])
+Function SaveTextFile(data, fileName,[ fileFilter, message, savedFileName, showDialogOnOverwrite])
 	string data, fileName, fileFilter, message, &savedFileName
+	variable showDialogOnOverwrite
 
-	variable fNum
+	variable fNum, dialogCode
 
 	if(!ParamIsDefault(savedFileName))
 		savedFileName = ""
 	endif
 
+#ifdef AUTOMATED_TESTING
+	string S_fileName = fileName
+#else
+	showDialogOnOverwrite = ParamIsDefault(showDialogOnOverwrite) ? 0: !!showDialogOnOverwrite
+	dialogCode = showDialogOnOverwrite && FileExists(fileName) ? 1 : 2
 	if(ParamIsDefault(fileFilter) && ParamIsDefault(message))
-		Open/D=2 fnum as fileName
+		Open/D=(dialogCode) fnum as fileName
 	elseif(ParamIsDefault(fileFilter) && !ParamIsDefault(message))
-		Open/D=2/M=message fnum as fileName
+		Open/D=(dialogCode)/M=message fnum as fileName
 	elseif(!ParamIsDefault(fileFilter) && ParamIsDefault(message))
-		Open/D=2/F=fileFilter fnum as fileName
+		Open/D=(dialogCode)/F=fileFilter fnum as fileName
 	else
-		Open/D=2/F=fileFilter/M=message fnum as fileName
+		Open/D=(dialogCode)/F=fileFilter/M=message fnum as fileName
 	endif
 
 	if(IsEmpty(S_fileName))
 		return NaN
 	endif
+#endif
 
 	Open/Z fnum as S_fileName
 	ASSERT(!V_flag, "Could not open file for writing!")

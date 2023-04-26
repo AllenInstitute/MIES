@@ -523,13 +523,13 @@ static Function CONF_SaveDAEphys(fName)
 		newFileName = CONF_GetDAEphysConfigurationFileNameSuggestion(wName)
 		fName = SelectString(IsEmpty(newFileName), newFileName, fName)
 
-		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName)
+		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 		if(!IsNaN(saveResult))
 			printf "Configuration saved in %s.\r", newFileName
 		endif
 		if(!IsNaN(prevRigJsonId) && !IsEmpty(newFileName))
 			newRigFullFilePath = GetFolder(newFileName) + GetBaseName(newFileName) + EXPCONFIG_RIGFILESUFFIX
-			saveResult = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName)
+			saveResult = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 			if(!IsNaN(saveResult))
 				printf "Rig configuration saved in %s.\r", newFileName
 			endif
