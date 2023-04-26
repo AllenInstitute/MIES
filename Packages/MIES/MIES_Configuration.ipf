@@ -90,6 +90,19 @@
 /// - PopupMenu values are saved as string only
 /// - Buttons are only saved if its userdata Config_PushButtonOnRestore is "1"
 /// - Only most relevant data of a control is saved.
+///
+/// *_rig.json configuration files store settings that are specific to a rig.
+/// When restoring a DAEphys panel the settings from the rig file are joined with the settings in the DAEphys configuration file.
+/// Having entries for the same setting in both files is invalid and an assertion will be thrown.
+///
+/// Saving a DAEphys panel that was originally restored from a configuration file:
+/// - entries from the "Common configuration data" block are updated with the values from the previous configuration,
+///   if they already existed. New entries are set at default values.
+/// - entries defined in an associated rig file are removed from the DAEphys panel configuration because they would appear in
+///   both files
+/// - the previously used rig file is copied to the new location
+/// - By default for both files (DAEphys configuration and rig file) new file names are generated. If the new files already
+///   exist a save dialog is opened to allow the user to modify the path/name.
 ///******************************************************************************************************************************
 
 static StrConstant EXPCONFIG_FIELD_CTRLTYPE = "Type"
