@@ -695,7 +695,7 @@ Function LoadStimsetsIfRequired()
 	string filepath
 	variable needsLoading
 
-	filepath = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
+	filepath = GetTestStimsetFullFilePath()
 	GetFileFolderInfo/Q/Z filePath
 
 	// speedup executing the tests locally
@@ -751,4 +751,13 @@ Function/WAVE GetMIESMacros()
 	allMacros = GrepList(allMacros, "FunctionProfilingPanel", 1)
 
 	return ListToTextWave(allMacros, ";")
+End
+
+Function/S GetTestStimsetFullFilePath()
+
+	string fullPath = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
+
+	ASSERT(FileExists(fullPath), "Stimset File for tests if missing.")
+
+	return fullPath
 End
