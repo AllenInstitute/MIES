@@ -213,7 +213,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P9,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P9,value=_NUM:0
 	SetVariable setvar_WaveBuilder_baseName,pos={23.00,330.00},size={125.00,18.00}
-	SetVariable setvar_WaveBuilder_baseName,help={"Stimulus set name prefix. Max number of characters = 16"}
+	SetVariable setvar_WaveBuilder_baseName,help={"Stimulus set name prefix. Max number of characters = 31"}
 	SetVariable setvar_WaveBuilder_baseName,userdata(ResizeControlsInfo)=A"!!,Bq!!#B_!!#@^!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_WaveBuilder_baseName,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_WaveBuilder_baseName,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"

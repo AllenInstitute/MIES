@@ -2699,7 +2699,6 @@ End
 /// @brief Return the name of a stimulus set build up from the passed parts
 static Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix, variable lengthLimit])
 	string result
-	variable maxLength
 
 	if(ParamIsDefault(suffix))
 		suffix = ""
@@ -2711,12 +2710,10 @@ static Function/S WB_AssembleSetName(string basename, variable stimulusType, var
 		ASSERT(IsInteger(lengthLimit) && lengthLimit > 0, "Invalid length limit")
 	endif
 
-	maxLength = (lengthLimit - 1) / 2
-
 	if(ParamIsDefault(suffix))
-		result = basename[0, maxLength]
+		result = basename[0, lengthLimit]
 	else
-		result = basename[0, (maxLength - strlen(suffix))]
+		result = basename[0, (lengthLimit - strlen(suffix))]
 		result += suffix
 	endif
 
