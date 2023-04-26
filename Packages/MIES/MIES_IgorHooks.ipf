@@ -252,6 +252,10 @@ static Function IgorStartOrNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
 	string miesVersion
+	variable modifiedBefore
+
+	ExperimentModified
+	modifiedBefore = V_flag
 
 	PS_FixPackageLocation(PACKAGE_MIES)
 
@@ -268,6 +272,10 @@ static Function IgorStartOrNewHook(igorApplicationNameStr)
 	StartZeroMQSockets()
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
+
+	if(!modifiedBefore)
+		ExperimentModified 0
+	endif
 
 	return 0
 End
@@ -304,22 +312,22 @@ static Function AfterCompiledHook()
 
 	variable modifiedBefore
 
-	LOG_AddEntry(PACKAGE_MIES, "start")
-
 	ExperimentModified
 	modifiedBefore = V_flag
 
-	ASYNC_Start(threadprocessorCount, disableTask=1)
+	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	if(!modifiedBefore)
-		ExperimentModified 0
-	endif
+	ASYNC_Start(threadprocessorCount, disableTask=1)
 
 	ShowTraceInfoTags()
 
 	MultiThreadingControl setmode=4
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
+
+	if(!modifiedBefore)
+		ExperimentModified 0
+	endif
 End
 
 #endif

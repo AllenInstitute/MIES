@@ -3436,8 +3436,7 @@ End
 
 /// UTF_NOINSTRUMENTATION
 threadsafe static Function NameChecker(string name, variable liberal)
-	// @todo remove the IsEmpty check once this is resolved upstream.
-	return !IsEmpty(name) && !cmpstr(name, CleanupName(name, !!liberal, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
+	return !cmpstr(name, CleanupName(name, !!liberal, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
 End
 
 /// @brief Find an integer `x` which is larger than `a` but the

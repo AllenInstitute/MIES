@@ -157,12 +157,10 @@ static Function TestSetWaveInJSONWaveNote()
 	WAVE data = JWN_GetNumericWaveFromWaveNote(wv, "wave")
 	CHECK_EQUAL_WAVES(wvDataI64, data, mode = WAVE_DATA | DIMENSION_SIZES)
 
-#if (IgorVersion() >= 9.00) && (NumberByKey("BUILD", IgorInfo(0)) >= 39150)
 	Make/FREE/L/U wvDataUI64 = p
 	JWN_SetWaveInWaveNote(wv, "wave", wvDataUI64);
 	WAVE data = JWN_GetNumericWaveFromWaveNote(wv, "wave")
 	CHECK_EQUAL_WAVES(wvDataUI64, data, mode = WAVE_DATA | DIMENSION_SIZES)
-#endif
 
 	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "does_not_exist")
 	CHECK_WAVE(data, NULL_WAVE)
