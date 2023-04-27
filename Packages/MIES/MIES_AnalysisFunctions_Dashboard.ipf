@@ -65,7 +65,7 @@ Function AD_Update(win)
 	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave, helpWave
 
 	if(numEntries > 0)
-		selWave[][][%foreColors] = AD_GetColorForResultMessage(listWave[p][%Result])
+		selWave[][][%$LISTBOX_LAYER_FOREGROUND] = AD_GetColorForResultMessage(listWave[p][%Result])
 
 		helpWave[] = "Result:\r" + listWave[p][%Result]
 	else

@@ -2022,3 +2022,10 @@ Constant EQWAVES_DATAFULLSCALE = 256
 Constant EQWAVES_DIMSIZE = 512
 Constant EQWAVES_ALL = -1
 /// @}
+
+/// @name Igor reserved layer dim labels for ListBox GUI control
+/// @anchor ListBoxLayerDimLabels
+/// @{
+StrConstant LISTBOX_LAYER_FOREGROUND = "foreColors"
+StrConstant LISTBOX_LAYER_BACKGROUND  = "backColors"
+/// @}

@@ -6848,7 +6848,7 @@ Function/WAVE GetAnaFuncDashboardSelWave(dfr)
 		Make/B/N=(MINIMUM_WAVE_SIZE, 4, 2) dfr:dashboardSelWave/Wave=wv
 	endif
 
-	SetDimLabel LAYERS, 1, foreColors, wv
+	SetDimLabel LAYERS, 1, $LISTBOX_LAYER_FOREGROUND, wv
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
