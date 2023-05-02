@@ -2315,6 +2315,12 @@ Function DAP_CheckSettings(device, mode)
 				ControlWindowToFront()
 				return 1
 			endif
+
+			if(IsNaN(headstage)) // unassoc DA
+				if(DAP_CheckStimset(device, CHANNEL_TYPE_DAC, i, NaN))
+					return 1
+				endif
+			endif
 		endfor
 
 		if(DC_GotTPChannelWhileDAQ(device))
