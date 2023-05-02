@@ -2844,7 +2844,40 @@ static Function DAP_CheckStimset(device, channelType, channel, headstage)
 		if(DAP_CheckAnalysisFunctionAndParameter(device, setName))
 			return 1
 		endif
+
+		if(DAP_CheckEpochLengthsOfStimset(device, setName))
+			return 1
+		endif
 	endfor
+End
+
+static Function DAP_CheckEpochLengthsOfStimset(string device, string setName)
+
+	variable sampInt, epochLength, i, numEntries
+
+	if(WB_StimsetIsFromThirdParty(setName))
+		return 0
+	endif
+
+	WAVE/Z epochLengths = WB_GetEpochLengths(setName)
+
+	if(!WaveExists(epochLengths))
+		printf "(%s) The stimset \"%s\" has no epochs.", device, setName
+		ControlWindowToFront()
+		return 1
+	endif
+
+	sampInt = DAP_GetSampInt(device, DATA_ACQUISITION_MODE) * MICRO_TO_MILLI
+
+	numEntries = DimSize(epochLengths, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		if(epochLengths[i] <= sampInt)
+			printf "(%s) Epoch %d of stimset \"%s\" is shorter than the sampling interval. It will therefore not be present in the acquisition.\r", device, i, setName
+			ControlWindowToFront()
+		endif
+	endfor
+
+	return 0
 End
 
 /// @brief Synchronizes the contents of `ChanAmpAssign` and
