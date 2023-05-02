@@ -41,9 +41,6 @@ Function CheckIfAllControlsReferStateWv([str])
 			continue
 		endif
 
-		// normal control
-		print ctrl
-
 		switch(abs(V_Flag))
 			case CONTROL_TYPE_BUTTON:
 			case CONTROL_TYPE_LISTBOX:
