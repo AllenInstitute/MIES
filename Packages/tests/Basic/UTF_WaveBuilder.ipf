@@ -293,3 +293,25 @@ Function ExportAndLoadOfCustomWaves([variable var])
 	WAVE/Z/SDFR=dfr customWave = myCustomWave
 	CHECK_EQUAL_WAVES(customWaveRef, customWave)
 End
+
+Function WB_StimsetWithTooLongNameIsNotSaved()
+
+	string win, history, basename
+	variable refNum
+
+	win = WBP_CreateWaveBuilderPanel()
+
+	PGC_SetAndActivateControl(win, "SetVar_WaveBuilder_P0", val = 100)
+
+	basename = ReplicateString("abcd", 10)
+	PGC_SetAndActivateControl(win, "setvar_WaveBuilder_baseName", str = basename)
+
+	refNum = CaptureHistoryStart()
+	PGC_SetAndActivateControl(win, "button_WaveBuilder_SaveSet")
+	history = CaptureHistory(refNum, 1)
+
+	CHECK_PROPER_STR(history)
+	CHECK_GT_VAR(strsearch(history, "it is too long", 0), 0)
+
+	CHECK_EQUAL_STR(ST_GetStimsetList(searchString = "abcd*"), "")
+End

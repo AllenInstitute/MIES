@@ -2613,6 +2613,10 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 
 	setName = WB_AssembleSetName(baseName, stimulusType, setNumber)
 
+	if(IsEmpty(setName))
+		return ""
+	endif
+
 	if(WBP_IsBuiltinStimset(setName) && !saveAsBuiltin)
 		printf "The stimset %s can not be saved as it violates the naming scheme for user stimsets.\r", setName
 		ControlWindowToFront()
@@ -2697,6 +2701,8 @@ Function WB_ParseStimulusType(string stimulusType)
 End
 
 /// @brief Return the name of a stimulus set build up from the passed parts
+///
+/// @returns complete stimulus set name or an empty string in case the basename is too long
 static Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix, variable lengthLimit])
 	string result
 
@@ -2710,14 +2716,13 @@ static Function/S WB_AssembleSetName(string basename, variable stimulusType, var
 		ASSERT(IsInteger(lengthLimit) && lengthLimit > 0, "Invalid length limit")
 	endif
 
-	if(ParamIsDefault(suffix))
-		result = basename[0, lengthLimit]
-	else
-		result = basename[0, (lengthLimit - strlen(suffix))]
-		result += suffix
+	if(strlen(basename) > lengthLimit)
+		printf "The stimset %s can not be saved as it is too long (%d) compared to the allowed number (%d) of characters.\r", baseName, strlen(basename), lengthLimit
+		ControlWindowToFront()
+		return ""
 	endif
 
-	result += "_" + WB_SerializeStimulusType(stimulusType) + "_" + num2str(setNumber)
+	result = basename + suffix + "_" + WB_SerializeStimulusType(stimulusType) + "_" + num2str(setNumber)
 
 	return CleanupName(result, 0)
 End
