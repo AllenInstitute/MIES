@@ -834,10 +834,6 @@ static Function MSQ_FRE9_PreInit(device)
 	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "MaximumDAScale", var=205)
 End
 
-static Function MSQ_FRE9_PreAcq(string device)
-	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = "4")
-End
-
 // one test with range exceeded and MaximumDAScale analysis parameter
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function MSQ_FRE9([str])
