@@ -659,18 +659,12 @@ static Function CheckSamplingInterval1_REENTRY([str])
 	CHECK_CLOSE_VAR(DimDelta(sweepWave, ROWS), expectedSampInt, tol=1e-6)
 End
 
-static Function CheckSamplingInterval2_PreAcq(device)
-	string device
-
-	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str="8")
-End
-
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function CheckSamplingInterval2([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM8"                   + \
 								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
 
 	AcquireData_NG(s, str)
