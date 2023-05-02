@@ -6333,3 +6333,112 @@ Function IsValidTraceLineStyle(variable lineStyleCode)
 
 	return IsFinite(lineStyleCode) && lineStyleCode >= 0 && lineStyleCode <= 17
 End
+
+/// From DisplayHelpTopic "Character-by-Character Operations"
+/// @brief Returns the number of bytes in the UTF-8 character that starts byteOffset
+///        bytes from the start of str.
+///        NOTE: If byteOffset is invalid this routine returns 0.
+///              Also, if str is not valid UTF-8 text, this routine return 1.
+Function NumBytesInUTF8Character(string str, variable byteOffset)
+
+	variable firstByte
+	variable numBytesInString = strlen(str)
+
+	ASSERT(byteOffset >= 0 || byteOffset < numBytesInString, "Invalid byte offset")
+
+	firstByte = char2num(str[byteOffset]) & 0x00FF
+
+	if(firstByte < 0x80)
+		return 1
+	endif
+
+	if(firstByte >= 0xC2 && firstByte <= 0xDF)
+		return 2
+	endif
+
+	if(firstByte >= 0xE0 && firstByte <= 0xEF)
+		return 3
+	endif
+
+	if(firstByte >= 0xF0 && firstByte <= 0xF4)
+		return 4
+	endif
+
+	// If we are here, str is not valid UTF-8. Treat the first byte as a 1-byte character.
+	return 1
+End
+
+/// From DisplayHelpTopic "Character-by-Character Operations"
+/// @brief Returns the number of UTF8 characters in a string
+Function UTF8CharactersInString(string str)
+
+	variable numCharacters, byteOffset, numBytesInCharacter
+	variable length = strlen(str)
+
+	do
+		if(byteOffset >= length)
+			break
+		endif
+		numBytesInCharacter = NumBytesInUTF8Character(str, byteOffset)
+		ASSERT(numBytesInCharacter > 0, "Bug in CharactersInUTF8String")
+		numCharacters += 1
+		byteOffset += numBytesInCharacter
+	while(1)
+
+	return numCharacters
+End
+
+/// From DisplayHelpTopic "Character-by-Character Operations"
+/// @brief Returns the UTF8 characters in a string at position charPos
+Function/S UTF8CharacterAtPosition(string str, variable charPos)
+
+	variable length, byteOffset, numBytesInCharacter
+
+	if(charPos < 0)
+		return ""
+	endif
+
+	length = strlen(str)
+	do
+		if(byteOffset >= length)
+			return ""
+		endif
+		if(charPos == 0)
+			break
+		endif
+		numBytesInCharacter = NumBytesInUTF8Character(str, byteOffset)
+		byteOffset += numBytesInCharacter
+		charPos -= 1
+	while(1)
+
+	numBytesInCharacter = NumBytesInUTF8Character(str, byteOffset)
+	return str[byteOffset, byteOffset + numBytesInCharacter - 1]
+End
+
+/// @brief Converts a string in UTF8 encoding to a text wave where each wave element contains one UTF8 characters
+Function/WAVE UTF8StringToTextWave(string str)
+
+	variable charPos, byteOffset, numBytesInCharacter, numBytesInString
+
+	ASSERT(!IsNull(str), "string is null")
+
+	numBytesInString = strlen(str)
+	Make/FREE/T/N=(numBytesInString) wv
+	if(!numBytesInString)
+		return wv
+	endif
+
+	do
+		if(byteOffset >= numBytesInString)
+			break
+		endif
+
+		numBytesInCharacter = NumBytesInUTF8Character(str, byteOffset)
+		wv[charPos] = str[byteOffset, byteOffset + numBytesInCharacter - 1]
+		charPos += 1
+		byteOffset += numBytesInCharacter
+	while(1)
+	Redimension/N=(charPos) wv
+
+	return wv
+End
