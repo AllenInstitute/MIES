@@ -255,7 +255,7 @@ Function/S ST_GetStimsetList([variable channelType, string searchString, string 
 	return listAll
 End
 
-/// @brief Create a new empty stimset
+/// @brief Create a new stimset with one square pulse epoch with 1ms duration
 ///
 /// @param baseName      user choosable part of the stimset name
 /// @param stimulusType  one of #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
@@ -280,6 +280,10 @@ Function/S ST_CreateStimSet(string baseName, variable stimulusType, [variable se
 	WAVE WP        = GetWaveBuilderWaveParamAsFree()
 	WAVE/T WPT     = GetWaveBuilderWaveTextParamAsFree()
 	WAVE SegWvType = GetSegmentTypeWaveAsFree()
+
+	ASSERT(SegWvType[%$"Total number of epochs"] == 1, "Unexpected number of epochs")
+	ASSERT(SegWvType[0] == EPOCH_TYPE_SQUARE_PULSE, "Expected square pulse epoch")
+	WP[%Duration][0][%$"Square Pulse"] = 1
 
 	return WB_SaveStimSet(baseName, stimulusType, SegWvType, WP, WPT, setNumber, saveAsBuiltin)
 End
