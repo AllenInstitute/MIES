@@ -478,6 +478,7 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
+			printf "Configuration restore aborted at file %s.", fName
 			Abort
 		endif
 	endtry
