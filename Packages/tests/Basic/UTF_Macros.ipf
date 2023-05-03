@@ -16,11 +16,8 @@ static Function ExecuteAllMacros()
 
 	for(mac : macros)
 		Execute mac + "()"
+		CHECK_NO_RTE()
 	endfor
-
-	// we only get here if all Macros execute without errrors
-	// so in case we get errors the test case fails as it does not have at least one assertion
-	PASS()
 
 	if(!keepDebugPanel)
 		KillWindow/Z DP_DebugPanel
