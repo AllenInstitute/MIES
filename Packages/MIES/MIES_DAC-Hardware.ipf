@@ -776,8 +776,12 @@ Function/S HW_ITC_ListDevices()
 	DEBUGPRINTSTACKINFO()
 
 #ifndef EVIL_KITTEN_EATING_MODE
-#ifdef TESTS_WITH_NI_HARDWARE
+#if defined(TESTS_WITH_NI_HARDWARE)
 	return ""
+#elif defined(TESTS_WITH_ITC18USB_HARDWARE)
+	return HW_ITC_BuildDeviceString("ITC18USB", "0")
+#elif defined(TESTS_WITH_ITC1600_HARDWARE)
+	return HW_ITC_BuildDeviceString("ITC1600", "0")
 #endif
 #endif
 
