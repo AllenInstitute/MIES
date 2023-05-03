@@ -741,3 +741,14 @@ Function/S GetDefaultTraceOptions()
 
 	return traceOptions
 End
+
+Function/WAVE GetMIESMacros()
+
+	string allMacros
+
+	allMacros = MacroList("*", ";", "")
+
+	allMacros = GrepList(allMacros, "FunctionProfilingPanel", 1)
+
+	return ListToTextWave(allMacros, ";")
+End

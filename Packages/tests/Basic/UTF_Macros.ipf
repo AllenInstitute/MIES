@@ -5,20 +5,16 @@
 
 static Function ExecuteAllMacros()
 
-	string mac, allMacros
-	variable i, numEntries, keepDebugPanel
+	string mac
+	variable keepDebugPanel
 
 	// avoid that the default TEST_CASE_BEGIN_OVERRIDE
 	// hook keeps our debug panel open if it did not exist before
 	keepDebugPanel = WindowExists("DP_DebugPanel")
 
-	allMacros = MacroList("*", ";", "")
+	WAVE/T macros = GetMIESMacros()
 
-	allMacros = GrepList(allMacros, "FunctionProfilingPanel", 1)
-
-	numEntries = ItemsInList(allMacros)
-	for(i = 0; i < numEntries; i += 1)
-		mac = StringFromList(i, allMacros)
+	for(mac : macros)
 		Execute mac + "()"
 	endfor
 
