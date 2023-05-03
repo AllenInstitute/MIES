@@ -963,6 +963,8 @@ Window DataBrowser() : Graph
 	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_sweepFormula_parseResult,frame=0
 	SetVariable setvar_sweepFormula_parseResult,limits={-inf,inf,0},value=_STR:"",noedit=1,live=1
+	SetVariable setvar_sweepFormula_parseResult,userdata(Config_DontRestore)="1"
+	SetVariable setvar_sweepFormula_parseResult,userdata(Config_DontSave)="1"
 	ValDisplay status_sweepFormula_parser,pos={14.00,409.00},size={10.00,8.00},bodyWidth=10,disable=3
 	ValDisplay status_sweepFormula_parser,help={"Current parsing status of the entered formula."}
 	ValDisplay status_sweepFormula_parser,userdata(tabnum)="5"
