@@ -2800,7 +2800,7 @@ Function/S GetUniqueSymbolicPath([prefix])
 End
 
 /// @brief Return a list of all files from the given symbolic path
-///        and its subfolders. The list is pipe (`|`) separated as
+///        and its subfolders. The list is pipe (`FILE_LIST_SEP`) separated as
 ///        the semicolon (`;`) is a valid character in filenames.
 ///
 /// Note: This function does *not* work on MacOSX as there filenames are allowed
@@ -2843,9 +2843,9 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 		ASSERT(!V_Flag, "Error in GetFileFolderInfo")
 
 		if(V_isFile)
-			allFiles = AddListItem(S_path, allFiles, "|", INF)
+			allFiles = AddListItem(S_path, allFiles, FILE_LIST_SEP, INF)
 		elseif(V_isFolder)
-			dirs = AddListItem(S_path, dirs, "|", INF)
+			dirs = AddListItem(S_path, dirs, FILE_LIST_SEP, INF)
 		else
 			ASSERT(0, "Unexpected file type")
 		endif
@@ -2859,13 +2859,13 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 			break
 		endif
 
-		dirs = AddListItem(directory, dirs, "|", INF)
+		dirs = AddListItem(directory, dirs, FILE_LIST_SEP, INF)
 	endfor
 
-	numDirs = ItemsInList(dirs, "|")
+	numDirs = ItemsInList(dirs, FILE_LIST_SEP)
 	for(i = 0; i < numDirs; i += 1)
 
-		directory = StringFromList(i, dirs, "|")
+		directory = StringFromList(i, dirs, FILE_LIST_SEP)
 		subFolderPathName = GetUniqueSymbolicPath()
 
 		NewPath/Q/O $subFolderPathName, directory
@@ -2873,12 +2873,12 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 		KillPath/Z $subFolderPathName
 
 		if(!isEmpty(files))
-			allFiles = AddListItem(files, allFiles, "|", INF)
+			allFiles = AddListItem(files, allFiles, FILE_LIST_SEP, INF)
 		endif
 	endfor
 
 	// remove empty entries
-	return ListMatch(allFiles, "!", "|")
+	return ListMatch(allFiles, "!", FILE_LIST_SEP)
 End
 
 /// @brief Convert a text wave to string list

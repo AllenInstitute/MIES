@@ -2412,13 +2412,13 @@ static Function AB_ScanFolder(win)
 	KillPath $path
 
 	// sort combined list for readability
-	list = SortList(pxpList + uxpList + nwbList, "|")
+	list = SortList(pxpList + uxpList + nwbList, FILE_LIST_SEP)
 
 	nwbFileUsedForExport = ROStr(GetNWBFilePathExport())
 
-	numEntries = ItemsInList(list, "|")
+	numEntries = ItemsInList(list, FILE_LIST_SEP)
 	for(i = 0; i < numEntries; i += 1)
-		entry = StringFromList(i, list, "|")
+		entry = StringFromList(i, list, FILE_LIST_SEP)
 
 		if(!cmpstr(entry, nwbFileUsedForExport))
 			printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", nwbFileUsedForExport

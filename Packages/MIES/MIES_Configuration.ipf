@@ -283,7 +283,7 @@ static Function/WAVE CONF_GetConfigFiles()
 		return $""
 	endif
 
-	return ListToTextWave(fileList, "|")
+	return ListToTextWave(fileList, FILE_LIST_SEP)
 End
 
 /// @brief Automatically loads all *.json files from MIES Settings folder and opens and restores the corresponding windows
