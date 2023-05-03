@@ -219,7 +219,6 @@ static Constant CONF_AUTO_LOADER_USER   = 0x1
 /// @}
 
 static StrConstant CONF_AUTO_LOADER_USER_PATH = "C:ProgramData:AllenInstitute:MIES:Settings"
-static StrConstant CONF_FILENAME_SEPARATOR = "|"
 
 /// @brief Creates a json with default experiment configuration block
 ///
@@ -697,12 +696,12 @@ End
 static Function CONF_AddConfigFileUserData(win, fullFilePath, rigFile)
 	string win, fullFilePath, rigFile
 
-	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=fullFilePath + CONF_FILENAME_SEPARATOR + rigFile
+	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=fullFilePath + FILE_LIST_SEP + rigFile
 
 	if(FileExists(rigFile))
-		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + CONF_FILENAME_SEPARATOR + CalcHashForFile(rigFile)
+		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + FILE_LIST_SEP + CalcHashForFile(rigFile)
 	else
-		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + CONF_FILENAME_SEPARATOR
+		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + FILE_LIST_SEP
 	endif
 End
 
