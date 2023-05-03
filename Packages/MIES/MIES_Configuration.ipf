@@ -266,14 +266,18 @@ Function CONF_OpenConfigInNotebook()
 End
 
 /// @brief Return a text wave with absolute paths to the JSON configuration files
-static Function/WAVE CONF_GetConfigFiles()
+static Function/WAVE CONF_GetConfigFiles([string customIPath])
 
 	string settingsPath, fileList
 
-	settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
+	if(ParamIsDefault(customIPath))
+		settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
+	else
+		settingsPath = customIPath
+	endif
 	fileList = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
 
-	if(IsEmpty(fileList))
+	if(IsEmpty(fileList) && !ParamIsDefault(customIPath))
 		settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_USER)
 		fileList = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
 	endif
@@ -287,12 +291,16 @@ End
 
 /// @brief Automatically loads all *.json files from MIES Settings folder and opens and restores the corresponding windows
 ///        Files are restored in case-insensitive alphanumeric order. Associated *_rig.json files are taken into account.
-Function CONF_AutoLoader()
+Function CONF_AutoLoader([string customIPath])
 
 	variable i, numFiles
 	string rigCandidate
 
-	WAVE/T/Z rawFileList = CONF_GetConfigFiles()
+	if(ParamIsDefault(customIPath))
+		WAVE/T/Z rawFileList = CONF_GetConfigFiles()
+	else
+		WAVE/T/Z rawFileList = CONF_GetConfigFiles(customIPath=customIPath)
+	endif
 	if(!WaveExists(rawFileList))
 		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
 		ControlWindowToFront()
