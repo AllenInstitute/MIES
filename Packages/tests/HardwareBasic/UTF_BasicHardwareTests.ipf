@@ -35,9 +35,6 @@
 /// DQ_STOP_REASON_ESCAPE_KEY
 /// - not tested
 
-static StrConstant REF_DAEPHYS_CONFIG_FILE = "DA_Ephys.json"
-static StrConstant REF_TMP1_CONFIG_FILE = "UserConfigTemplate_Temp1.txt"
-
 static Function GlobalPreInit(string device)
 	PASS()
 End
@@ -1197,24 +1194,6 @@ static Function/S RemoveTrailingNumber_IGNORE(str)
 	CHECK_EQUAL_VAR(ItemsInList(str, "_"), 2)
 
 	return StringFromList(0, str, "_")
-End
-
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RestoreDAEphysPanel([str])
-	string str
-
-	string fName, rewrittenConfigPath
-	variable jsonID
-
-	fName = PrependExperimentFolder_IGNORE(REF_DAEPHYS_CONFIG_FILE)
-
-	[jsonID, rewrittenConfigPath] = FixupJSONConfig_IGNORE(fName, str)
-
-	CONF_RestoreDAEphys(jsonID, rewrittenConfigPath)
-	MIES_CONF#CONF_SaveDAEphys(fname)
-
-	CONF_RestoreDAEphys(jsonID, rewrittenConfigPath, middleOfExperiment = 1)
-	MIES_CONF#CONF_SaveDAEphys(fname)
 End
 
 static Function CheckLabnotebookKeys_IGNORE(keys, values)
