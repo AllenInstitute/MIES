@@ -4946,7 +4946,7 @@ Function RemoveTextWaveEntry1D(WAVE/T w, string entry, [variable options, variab
 	return foundOnce ? 0 : 1
 End
 
-/// @brief Checks if a string ends with a specific suffix
+/// @brief Checks if a string ends with a specific suffix. The check is case-insensitive.
 ///
 /// @param[in] str string to check for suffix
 /// @param[in] suffix to check for
