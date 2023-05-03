@@ -416,6 +416,10 @@ Function/S GetSetVariableString(win, control)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
+	if(IsNull(S_Value))
+		return ""
+	endif
+
 	return S_Value
 end
 
@@ -426,6 +430,10 @@ Function/S GetPopupMenuString(win, control)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
+	if(IsNull(S_Value))
+		return ""
+	endif
+
 	return S_Value
 End
 
@@ -505,6 +513,10 @@ Function/S GetValDisplayAsString(win, control)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_VALDISPLAY, "Control is not a val display")
+	if(IsNull(S_Value))
+		return ""
+	endif
+
 	return S_value
 End
 
