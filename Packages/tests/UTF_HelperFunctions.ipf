@@ -24,27 +24,21 @@ Function/S PrependExperimentFolder_IGNORE(filename)
 	return S_path + filename
 End
 
-/// Adapts JSON configuration files for test execution specialities
-///
-/// Returns the full path to the rewritten JSON configuration file the corresponding jsonID.
-Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, string device)
+Function FixupJSONConfigImplMain(variable jsonId, string device)
 
-	string data, fName, jPath, stimSetPath, serialNumStr, rewrittenConfigPath
-	variable serialNum
-
-	[data, fName] = LoadTextFile(path)
-	CHECK_PROPER_STR(data)
-	CHECK_PROPER_STR(fName)
-
-	jsonID = JSON_Parse(data)
-	PathInfo home
-	CHECK_PROPER_STR(S_path)
+	string jPath
 
 	jPath = MIES_CONF#CONF_FindControl(jsonID, "popup_MoreSettings_Devices")
 	JSON_SetString(jsonID, jPath + "/StrValue", device)
+	PathInfo home
 	JSON_SetString(jsonID, "/Common configuration data/Save data to", S_path)
-	stimSetPath = S_path + ":_2017_09_01_192934-compressed.nwb"
-	JSON_SetString(jsonID, "/Common configuration data/Stim set file name", stimSetPath)
+	JSON_SetString(jsonID, "/Common configuration data/Stim set file name", GetTestStimsetFullFilePath())
+End
+
+Function FixupJSONConfigImplRig(variable jsonId)
+
+	string serialNumStr
+	variable serialNum
 
 	// replace stored serial number with present serial number
 	AI_FindConnectedAmps()
@@ -60,6 +54,30 @@ Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, 
 
 	JSON_SetVariable(jsonID, "/Common configuration data/Headstage Association/0/Amplifier/Serial", serialNum)
 	JSON_SetVariable(jsonID, "/Common configuration data/Headstage Association/1/Amplifier/Serial", serialNum)
+End
+
+Function FixupJSONConfigImpl(variable jsonId, string device)
+
+	FixupJSONConfigImplMain(jsonId, device)
+	FixupJSONConfigImplRig(jsonId)
+End
+
+/// Adapts JSON configuration files for test execution specialities
+///
+/// Returns the full path to the rewritten JSON configuration file the corresponding jsonID.
+Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, string device)
+
+	string data, fName, rewrittenConfigPath
+
+	[data, fName] = LoadTextFile(path)
+	CHECK_PROPER_STR(data)
+	CHECK_PROPER_STR(fName)
+
+	jsonID = JSON_Parse(data)
+	PathInfo home
+	CHECK_PROPER_STR(S_path)
+
+	FixupJSONConfigImpl(jsonId, device)
 
 	rewrittenConfigPath = S_Path + "rewritten_config.json"
 	SaveTextFile(JSON_Dump(jsonID), rewrittenConfigPath)
