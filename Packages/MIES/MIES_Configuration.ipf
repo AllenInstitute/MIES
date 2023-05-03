@@ -299,10 +299,9 @@ Function CONF_AutoLoader()
 		Abort
 	endif
 
-	rawFileList[] = LowerStr(rawFileList[p])
 	WAVE/T/Z mainFileList
 	WAVE/T/Z rigFileList
-	[rigFileList, mainFileList] = SplitTextWaveBySuffix(rawFileList, LowerStr(EXPCONFIG_RIGFILESUFFIX))
+	[rigFileList, mainFileList] = SplitTextWaveBySuffix(rawFileList, EXPCONFIG_RIGFILESUFFIX)
 
 	Sort mainFileList, mainFileList
 	numFiles = DimSize(mainFileList, ROWS)
