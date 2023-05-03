@@ -997,9 +997,22 @@ Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
 	variable deviceType, deviceNumber
 	variable flags
 
-	variable deviceID, tries
+	variable deviceID, tries, i
 
 	DEBUGPRINTSTACKINFO()
+
+#ifdef AUTOMATED_TESTING
+	for(i = 0; i < HARDWARE_MAX_DEVICES; i += 1)
+		if(!HW_ITC_SelectDevice(i, flags = HARDWARE_PREVENT_ERROR_MESSAGE))
+
+			WAVE DevInfo = HW_ITC_GetDeviceInfo(i)
+
+			if(DevInfo[0] == deviceType)
+				return i
+			endif
+		endif
+	endfor
+#endif
 
 	do
 		ITCOpenDevice2/DTN=(deviceType)/Z=1 deviceNumber
@@ -1037,6 +1050,10 @@ Function HW_ITC_CloseDevice(deviceID, [flags])
 	variable tries
 
 	DEBUGPRINTSTACKINFO()
+
+#ifdef AUTOMATED_TESTING
+	return NaN
+#endif
 
 	if(HW_ITC_SelectDevice(deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE))
 		do

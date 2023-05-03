@@ -84,10 +84,6 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	DuplicateDataFolder/O=1/Z source, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
 
-#ifndef TESTS_WITH_NI_HARDWARE
-	HW_ITC_CloseAllDevices()
-#endif
-
 	// remove NWB file which will be used for sweep-by-sweep export
 	CloseNwBFile()
 	DeleteFile/Z GetExperimentNWBFileForExport()
@@ -120,8 +116,6 @@ Function TEST_CASE_END_OVERRIDE(name)
 #ifndef TESTS_WITH_NI_HARDWARE
 	DQ_StopOngoingDAQAllLocked(DQ_STOP_REASON_INVALID)
 	TP_StopTestPulseOnAllDevices()
-
-	HW_ITC_CloseAllDevices()
 #endif
 
 	expensiveChecks = DoExpensiveChecks()

@@ -180,6 +180,10 @@ static Function IH_Cleanup()
 		BUG("Caught runtime error or assertion: " + num2istr(err))
 	endtry
 
+#ifdef AUTOMATED_TESTING
+	HW_ITC_CloseAllDevices()
+#endif
+
 	ResetDebuggerState(debuggerState)
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
