@@ -1603,7 +1603,7 @@ static Function DAP_UpdateSweepLimitsAndDisplay(string device)
 		return NaN
 	endif
 
-	PGC_SetAndActivateControl(device, "SetVar_Sweep", val = sweep)
+	PGC_SetAndActivateControl(device, "SetVar_Sweep", val = sweep, mode = PGC_MODE_FORCE_ON_DISABLED)
 End
 
 /// @brief Return the sampling interval in μs with taking the mode,

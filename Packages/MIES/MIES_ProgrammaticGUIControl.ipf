@@ -158,7 +158,8 @@ End
 /// - Setting this control always changes its mode from 'internal number' to 'global expression'
 ///
 /// SetVariable:
-/// - Both `str` and `val` are accepted and converted to the target type
+/// - Both `str` and `val` are accepted and converted to the target type.
+///   Read-only controls can only be set with `mode = PGC_MODE_FORCE_ON_DISABLED`.
 ///
 /// ListBox:
 /// - Setting the column is not supported
@@ -325,6 +326,23 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			break
 		case CONTROL_TYPE_SETVARIABLE:
 			ASSERT(ParamIsDefault(val) + ParamIsDefault(str) == 1, "Needs a variable or string argument")
+
+			if(GetControlSettingVar(S_recreation, "noEdit") == 1)
+				switch(mode)
+					case PGC_MODE_SKIP_ON_DISABLED:
+						return NaN
+					case PGC_MODE_ASSERT_ON_DISABLED:
+						ASSERT(0, "The setvariable control " + control + " in the panel " + win + " is read-only. The control state cannot be changed.")
+						break
+					case PGC_MODE_FORCE_ON_DISABLED:
+						// just continue
+						break
+					default:
+						ASSERT(0, "Invalid mode")
+						break
+				endswitch
+			endif
+
 			variableType = GetInternalSetVariableType(S_recreation)
 
 			if(ParamIsDefault(val))
