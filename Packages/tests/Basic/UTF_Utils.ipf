@@ -6734,3 +6734,30 @@ Function StoreRestoreAxisProps([string str])
 
 	KillWindow $win
 End
+
+static Function NoNullReturnFromGetValDisplayAsString()
+
+	NewPanel/N=testpanelVal
+	ValDisplay vdisp win=testpanelVal
+
+	GetValDisplayAsString("testpanelVal", "vdisp")
+	PASS()
+End
+
+static Function NoNullReturnFromGetPopupMenuString()
+
+	NewPanel/N=testpanelPM
+	PopupMenu pmenu win=testpanelPM
+
+	GetPopupMenuString("testpanelPM", "pmenu")
+	PASS()
+End
+
+static Function NoNullReturnFromGetSetVariableString()
+
+	NewPanel/N=testpanelSV
+	SetVariable svari win=testpanelSV
+
+	GetSetVariableString("testpanelSV", "svari")
+	PASS()
+End
