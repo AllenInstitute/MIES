@@ -3229,23 +3229,6 @@ static Function/WAVE SF_OperationDivImplDataSets(WAVE/Z data0, WAVE/Z data1)
 	return result
 End
 
-static Function/WAVE SF_OperationDivImpl(WAVE/Z wv)
-
-	if(!WaveExists(wv))
-		return $""
-	endif
-	SFH_ASSERT(IsNumericWave(wv), "Operand for / must be numeric.")
-	SFH_ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
-	MatrixOP/FREE out = (row(wv, 0) / productCols(subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
-	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
-	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
-	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
-
-	return out
-End
-
 static Function/WAVE SF_OperationMult(variable jsonId, string jsonPath, string graph)
 
 	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_MULT)
