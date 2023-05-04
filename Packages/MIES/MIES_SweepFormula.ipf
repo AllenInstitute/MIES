@@ -3168,37 +3168,67 @@ static Function/WAVE SF_OperationPlusImpl(WAVE/Z wv)
 	return out
 End
 
-static Function/WAVE SF_OperationDiv(variable jsonId, string jsonPath, string graph)
+static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, string jsonPath, string graph, string opShort)
 
 	variable numArgs, dataSetNum0, dataSetNum1
+	string errMsg
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	ASSERT(numArgs == 2, "Number of arguments must be 2 for div")
+	ASSERT(numArgs == 2, "Number of arguments must be 2 for " + opShort)
 
 	WAVE/WAVE arg0 = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
 	WAVE/WAVE arg1 = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 1)
 	dataSetNum0 = DimSize(arg0, ROWS)
 	dataSetNum1 = DimSize(arg1, ROWS)
-	SFH_ASSERT(dataSetNum0 > 0 && dataSetNum1 > 0, "No input data for div.")
+	SFH_ASSERT(dataSetNum0 > 0 && dataSetNum1 > 0, "No input data for " + opShort)
 	if(dataSetNum0 == dataSetNum1)
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_DIV, dataSetNum0)
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum0)
 		WAVE/WAVE input = arg0
-		output[] = SF_OperationDivImplDataSets(arg0[p], arg1[p])
+		strswitch(opShort)
+			case SF_OPSHORT_DIV:
+				output[] = SF_OperationDivImplDataSets(arg0[p], arg1[p])
+				break
+			default:
+				ASSERT(0, "Unsupported primitive operation")
+		endswitch
 	elseif(dataSetNum1 == 1)
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_DIV, dataSetNum0)
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum0)
 		WAVE/WAVE input = arg0
-		output[] = SF_OperationDivImplDataSets(arg0[p], arg1[0])
+		strswitch(opShort)
+			case SF_OPSHORT_DIV:
+				output[] = SF_OperationDivImplDataSets(arg0[p], arg1[0])
+				break
+			default:
+				ASSERT(0, "Unsupported primitive operation")
+		endswitch
 	elseif(dataSetNum0 == 1)
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_DIV, dataSetNum1)
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum1)
 		WAVE/WAVE input = arg1
-		output[] = SF_OperationDivImplDataSets(arg0[0], arg1[p])
+		strswitch(opShort)
+			case SF_OPSHORT_DIV:
+				output[] = SF_OperationDivImplDataSets(arg0[0], arg1[p])
+				break
+			default:
+				ASSERT(0, "Unsupported primitive operation")
+		endswitch
 	else
-		SFH_ASSERT(0, "Can not divide mixed number of datasets.")
+		sprintf errMsg, "Can not apply %s on mixed number of datasets.", opShort
+		SFH_ASSERT(0, errMsg)
 	endif
 
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_DIV, "")
+	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, "")
 
-	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_DIV, clear=input)
+	SFH_CleanUpInput(arg0)
+	SFH_CleanUpInput(arg1)
+
+	return output
+End
+
+static Function/WAVE SF_OperationDiv(variable jsonId, string jsonPath, string graph)
+
+	WAVE output = SF_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_DIV)
+
+	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_DIV)
 End
 
 static Function/WAVE SF_OperationDivImplDataSets(WAVE/Z data0, WAVE/Z data1)
