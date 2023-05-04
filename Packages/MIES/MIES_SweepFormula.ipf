@@ -3365,15 +3365,7 @@ End
 
 static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs
-
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	SFH_ASSERT(numArgs > 0, "min requires at least one argument")
-	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_MIN)
-	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
-	endif
+	WAVE/WAVE input = SFH_GetNumericVarArgs(jsonId, jsonPath, graph, SF_OP_MIN)
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_MIN, DimSize(input, ROWS))
 
 	output[] = SF_OperationMinImpl(input[p])
@@ -5019,6 +5011,24 @@ static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string 
 	endif
 
 	WAVE/WAVE input = SF_ResolveDataset(wv)
+
+	return input
+End
+
+static Function/WAVE SFH_GetNumericVarArgs(variable jsonId, string jsonPath, string graph, string opShort)
+
+	variable numArgs
+
+	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, opShort, 1)
+	if(numArgs == 1)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+	else
+		WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath)
+		WAVE/WAVE input = SF_ResolveDataset(wv)
+		SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected a single data set")
+		WAVE wNum = input[0]
+		SFH_ASSERT(IsNumericWave(wNum), "Expected numeric wave")
+	endif
 
 	return input
 End
