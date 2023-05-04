@@ -119,11 +119,11 @@ static Function DP_FillDebugPanelWaves()
 
 	path += ":IPNWB"
 	NewPath/Q/O $symbPath, path
-	allProcFiles = AddListItem(allProcFiles, GetAllFilesRecursivelyFromPath(symbPath, extension=".ipf"), "|")
+	allProcFiles = AddListItem(allProcFiles, GetAllFilesRecursivelyFromPath(symbPath, extension=".ipf"), FILE_LIST_SEP)
 
 	KillPath $symbPath
 
-	WAVE/T list = ListToTextWave(allProcFiles, "|")
+	WAVE/T list = ListToTextWave(allProcFiles, FILE_LIST_SEP)
 	// remove path components
 	list = GetFile(list[p])
 	// remove non mies files

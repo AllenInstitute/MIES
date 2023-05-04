@@ -282,7 +282,7 @@ static Function/WAVE CONF_GetConfigFiles()
 		return $""
 	endif
 
-	return ListToTextWave(fileList, "|")
+	return ListToTextWave(fileList, FILE_LIST_SEP)
 End
 
 /// @brief Automatically loads all *.json files from MIES Settings folder and opens and restores the corresponding windows
@@ -696,12 +696,12 @@ End
 static Function CONF_AddConfigFileUserData(win, fullFilePath, rigFile)
 	string win, fullFilePath, rigFile
 
-	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=fullFilePath + "|" + rigFile
+	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=fullFilePath + FILE_LIST_SEP + rigFile
 
 	if(FileExists(rigFile))
-		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + "|" + CalcHashForFile(rigFile)
+		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + FILE_LIST_SEP + CalcHashForFile(rigFile)
 	else
-		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + "|"
+		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + FILE_LIST_SEP
 	endif
 End
 

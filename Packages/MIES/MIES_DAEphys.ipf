@@ -4563,9 +4563,9 @@ static Function DAP_LoadBuiltinStimsets()
 	endif
 
 	files = GetAllFilesRecursivelyFromPath(symbPath, extension = ".nwb")
-	numEntries = ItemsInList(files, "|")
+	numEntries = ItemsInList(files, FILE_LIST_SEP)
 	for(i = 0; i < numEntries; i += 1)
-		filename = StringFromList(i, files, "|")
+		filename = StringFromList(i, files, FILE_LIST_SEP)
 		NWB_LoadAllStimsets(filename = filename, overwrite = 1, loadOnlyBuiltins = 1)
 	endfor
 

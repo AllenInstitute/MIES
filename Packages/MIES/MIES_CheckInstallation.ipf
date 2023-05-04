@@ -91,8 +91,8 @@ static Function CHI_CheckXOP(list, item, name, state, [expectedHash])
 	variable numMatches, i, hashMatches
 	string matches, fileVersion, filepath, existingHash, hashMsg
 
-	matches    = ListMatch(list, "*" + item, "|")
-	numMatches = ItemsInList(matches, "|")
+	matches    = ListMatch(list, "*" + item, FILE_LIST_SEP)
+	numMatches = ItemsInList(matches, FILE_LIST_SEP)
 
 	if(numMatches > 1)
 		if(CheckIfPathsRefIdenticalFiles(matches))
@@ -110,7 +110,7 @@ static Function CHI_CheckXOP(list, item, name, state, [expectedHash])
 			state.numErrors += 1
 			break
 		case 1:
-			filepath = StringFromList(0, matches, "|")
+			filepath = StringFromList(0, matches, FILE_LIST_SEP)
 			fileVersion = GetFileVersion(filepath)
 			if(ParamIsDefault(expectedHash))
 				printf "%s: Found version %s (Nice!)\r", name, fileVersion
@@ -126,7 +126,7 @@ static Function CHI_CheckXOP(list, item, name, state, [expectedHash])
 			printf "%s: Found multiple versions in \"%s\" (Might create problems)\r", name, matches
 			printf "%s: Duplicates are:\r", name
 			for(i = 0; i < numMatches; i += 1)
-				filepath = StringFromList(i, matches, "|")
+				filepath = StringFromList(i, matches, FILE_LIST_SEP)
 				fileVersion = GetFileVersion(filepath)
 				if(ParamIsDefault(expectedHash))
 					printf "%s: Found version %s\r", name, fileVersion
@@ -167,10 +167,10 @@ Function CHI_CheckInstallation()
 
 	KillPath $symbPath
 
-	listOfXOPs = ListMatch(allFilesUser + "|" + allFilesSystem, "*.xop", "|")
-	WAVE/T list = ListToTextWave(listOfXOPs, "|")
+	listOfXOPs = ListMatch(allFilesUser + FILE_LIST_SEP + allFilesSystem, "*.xop", FILE_LIST_SEP)
+	WAVE/T list = ListToTextWave(listOfXOPs, FILE_LIST_SEP)
 	WAVE/T listNoDups = GetUniqueEntries(list)
-	listOfXOPs = TextWaveToList(listNoDups, "|")
+	listOfXOPs = TextWaveToList(listNoDups, FILE_LIST_SEP)
 
 	STRUCT CHI_InstallationState state
 	CHI_InitInstallationState(state)

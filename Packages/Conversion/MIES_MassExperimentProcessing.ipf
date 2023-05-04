@@ -312,9 +312,9 @@ Function StartMultiExperimentProcessWrapper()
 	// 16: Case-insensitive alphanumeric sort that sorts wave0 and wave9 before wave10.
 	// ...
 	// 64: Ignore + and - in the alphanumeric sort so that "Text-09" sorts before "Text-10". Set options to 80 or 81.
-	files = SortList(files, "|", 80)
+	files = SortList(files, FILE_LIST_SEP, 80)
 
-	WAVE/T/Z inputPXPs = ListToTextWave(files, "|")
+	WAVE/T/Z inputPXPs = ListToTextWave(files, FILE_LIST_SEP)
 
 	jsonID = JSON_New()
 	JSON_AddWave(jsonID, "/inputFiles", inputPXPs)

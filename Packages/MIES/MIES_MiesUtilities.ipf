@@ -5149,13 +5149,13 @@ Function CheckIfPathsRefIdenticalFiles(list)
 	variable i, numEntries
 	string path, refHash, newHash
 
-	if(ItemsInList(list, "|") <= 1)
+	if(ItemsInList(list, FILE_LIST_SEP) <= 1)
 		return 1
 	endif
 
-	numEntries = ItemsInList(list, "|")
+	numEntries = ItemsInList(list, FILE_LIST_SEP)
 	for(i = 0; i < numEntries; i += 1)
-		path = StringFromList(i, list, "|")
+		path = StringFromList(i, list, FILE_LIST_SEP)
 
 		if(i == 0)
 			refHash = CalcHashForFile(path)
@@ -7226,8 +7226,8 @@ Function UploadCrashDumps()
 
 	diagSymbPath = GetSymbolicPathForDiagnosticsDirectory()
 
-	WAVE/T files = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".dmp"), "|")
-	WAVE/T logs = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".txt"), "|")
+	WAVE/T files = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".dmp"), FILE_LIST_SEP)
+	WAVE/T logs = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".txt"), FILE_LIST_SEP)
 	numFiles = DimSize(files, ROWS)
 	numLogs = DimSize(logs, ROWS)
 
