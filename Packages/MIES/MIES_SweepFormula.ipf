@@ -3334,46 +3334,33 @@ static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string 
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_RANGE)
-	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
-	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_RANGE, DimSize(input, ROWS))
+	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_RANGE, 1, maxArgs=3)
 
-	output[] = SF_OperationRangeImpl(input[p])
-
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_RANGE, SF_DATATYPE_RANGE)
-
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_RANGE, clear=input)
-End
-
-static Function/WAVE SF_OperationRangeImpl(WAVE/Z input)
-
-	variable numArgs
-
-	if(!WaveExists(input))
-		return $""
-	endif
-
-	SFH_ASSERT(IsNumericWave(input), "range requires numeric data as input")
-	SFH_ASSERT(WaveDims(input) == 1, "range requires 1d data input.")
-	numArgs = DimSize(input, ROWS)
-	if(numArgs == 3)
-		Make/N=(ceil(abs((input[0] - input[1]) / input[2])))/FREE range
-		Multithread range[] = input[0] + p * input[2]
+	WAVE arg0 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 0, checkExist=1)
+	if(numArgs == 1)
+		SFH_ASSERT(IsNumericWave(arg0), "range first argument must be numeric")
+		Make/FREE/D/N=(abs(trunc(arg0[0]))) range
+		MultiThread range = p
 	elseif(numArgs == 2)
-		Make/N=(abs(trunc(input[0])-trunc(input[1])))/FREE range
-		Multithread range[] = input[0] + p
-	elseif(numArgs == 1)
-		Make/N=(abs(trunc(input[0])))/FREE range
-		Multithread range[] = p
-	else
-		SFH_ASSERT(0, "range accepts 1-3 args per specification")
+		WAVE arg1 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 1, checkExist=1)
+		SFH_ASSERT(IsNumericWave(arg1), "range second argument must be numeric")
+		Make/FREE/D/N=(abs(trunc(arg0[0])-trunc(arg1[0]))) range
+		MultiThread range[] = arg0[0] + p
+		SFH_CleanUpInput(arg1)
+	elseif(numArgs == 3)
+		WAVE arg1 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 1, checkExist=1)
+		WAVE arg2 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 2, checkExist=1)
+		SFH_ASSERT(IsNumericWave(arg1), "range second argument must be numeric")
+		SFH_ASSERT(IsNumericWave(arg2), "range third argument must be numeric")
+		Make/FREE/D/N=(ceil(abs((arg0[0] - arg1[0]) / arg2[0]))) range
+		MultiThread range[] = arg0[0] + p * arg2[0]
+		SFH_CleanUpInput(arg1)
+		SFH_CleanUpInput(arg2)
 	endif
 
-	return range
+	SFH_CleanUpInput(arg0)
+
+	return SFH_GetOutputForExecutorSingle(range, graph, SF_OP_RANGE, dataType=SF_DATATYPE_RANGE)
 End
 
 static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)
