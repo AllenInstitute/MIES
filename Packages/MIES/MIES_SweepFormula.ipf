@@ -3141,31 +3141,37 @@ End
 
 static Function/WAVE SF_OperationPlus(variable jsonId, string jsonPath, string graph)
 
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_PLUS)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_PLUS, DimSize(input, ROWS))
+	WAVE output = SF_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_PLUS)
 
-	output[] = SF_OperationPlusImpl(input[p])
-
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_PLUS, "")
-
-	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_PLUS, clear=input)
+	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_PLUS)
 End
 
-static Function/WAVE SF_OperationPlusImpl(WAVE/Z wv)
+static Function/WAVE SF_OperationPlusImplDataSets(WAVE/Z data0, WAVE/Z data1)
 
-	if(!WaveExists(wv))
+	variable addConst
+
+	if(!WaveExists(data0) || !WaveExists(data1))
 		return $""
 	endif
-	SFH_ASSERT(DimSize(wv, ROWS), "Operand for + is empty.")
-	SFH_ASSERT(IsNumericWave(wv), "Operand for + must be numeric.")
-	MatrixOP/FREE out = sumCols(wv)^t
-	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
-	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
-	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	SFH_ASSERT(IsNumericWave(data0) && IsNumericWave(data1) , "Operand for + must be numeric.")
 
-	return out
+	if(numpnts(data1) == 1)
+		addConst = data1[0]
+		MatrixOp/FREE result = data0 + addConst
+		CopyScales data0, result
+		return result
+	endif
+	if(numpnts(data0) == 1)
+		addConst = data0[0]
+		MatrixOp/FREE result = addConst + data1
+		CopyScales data1, result
+		return result
+	endif
+	SFH_ASSERT(EqualWaves(data0, data1, EQWAVES_DIMSIZE), "plus: wave size mismatch")
+
+	MatrixOp/FREE result = data0 + data1
+	CopyScales data0, result
+	return result
 End
 
 static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, string jsonPath, string graph, string opShort)
@@ -3188,6 +3194,9 @@ static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, 
 			case SF_OPSHORT_DIV:
 				output[] = SF_OperationDivImplDataSets(arg0[p], arg1[p])
 				break
+			case SF_OPSHORT_PLUS:
+				output[] = SF_OperationPlusImplDataSets(arg0[p], arg1[p])
+				break
 			default:
 				ASSERT(0, "Unsupported primitive operation")
 		endswitch
@@ -3198,6 +3207,9 @@ static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, 
 			case SF_OPSHORT_DIV:
 				output[] = SF_OperationDivImplDataSets(arg0[p], arg1[0])
 				break
+			case SF_OPSHORT_PLUS:
+				output[] = SF_OperationPlusImplDataSets(arg0[p], arg1[0])
+				break
 			default:
 				ASSERT(0, "Unsupported primitive operation")
 		endswitch
@@ -3207,6 +3219,9 @@ static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, 
 		strswitch(opShort)
 			case SF_OPSHORT_DIV:
 				output[] = SF_OperationDivImplDataSets(arg0[0], arg1[p])
+				break
+			case SF_OPSHORT_PLUS:
+				output[] = SF_OperationPlusImplDataSets(arg0[0], arg1[p])
 				break
 			default:
 				ASSERT(0, "Unsupported primitive operation")
