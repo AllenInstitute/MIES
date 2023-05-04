@@ -3222,7 +3222,7 @@ static Function/WAVE SF_OperationDivImplDataSets(WAVE/Z data0, WAVE/Z data1)
 		CopyScales data1, result
 		return result
 	endif
-	SFH_ASSERT(EqualWaves(data0, data1, 512), "div: wave size mismatch")
+	SFH_ASSERT(EqualWaves(data0, data1, EQWAVES_DIMSIZE), "div: wave size mismatch")
 
 	MatrixOp/FREE result = data0 / data1
 	CopyScales data0, result

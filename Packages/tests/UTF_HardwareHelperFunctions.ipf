@@ -447,7 +447,7 @@ Function CheckLBIndexCache_IGNORE(string device)
 						Duplicate/FREE/RMD=[entry][k] values, settings
 						Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 settings
 
-						if(!EqualWaves(settings, settingsNoCache, WAVE_DATA))
+						if(!EqualWaves(settings, settingsNoCache, EQWAVES_DATA))
 
 							Note/K settings, setting
 

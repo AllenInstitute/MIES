@@ -4304,8 +4304,8 @@ Function/WAVE MergeTwoWaves(wv1, wv2)
 
 	variable numEntries, i, validEntryOne, validEntryTwo
 
-	ASSERT(EqualWaves(wv1, wv2, 512), "Non matching wave dim sizes")
-	ASSERT(EqualWaves(wv1, wv2, 2), "Non matching wave types")
+	ASSERT(EqualWaves(wv1, wv2, EQWAVES_DIMSIZE), "Non matching wave dim sizes")
+	ASSERT(EqualWaves(wv1, wv2, EQWAVES_DATATYPE), "Non matching wave types")
 	ASSERT(IsFloatingPointWave(wv1), "Expected floating point wave")
 	ASSERT(DimSize(wv1, COLS) <= 1, "Expected 1D wave")
 

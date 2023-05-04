@@ -353,7 +353,7 @@ static Function ED_WriteChangedValuesToNote(device, sweepNo)
 
 		ASSERT(DimSize(currentSetting, ROWS) == DimSize(lastSetting, ROWS), "last and current settings must have the same size")
 
-		if(EqualWaves(currentSetting, lastSetting, 1))
+		if(EqualWaves(currentSetting, lastSetting, EQWAVES_DATA))
 			continue
 		endif
 
@@ -442,7 +442,7 @@ static Function ED_WriteChangedValuesToNoteText(device, sweepNo)
 
 		ASSERT(DimSize(currentSetting, ROWS) == DimSize(lastSetting, ROWS), "last and current settings must have the same size")
 
-		if(EqualWaves(currentSetting, lastSetting, 1))
+		if(EqualWaves(currentSetting, lastSetting, EQWAVES_DATA))
 			continue
 		endif
 

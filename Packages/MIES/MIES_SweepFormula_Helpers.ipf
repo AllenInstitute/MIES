@@ -240,7 +240,7 @@ Function SFH_IsEmptyRange(WAVE range)
 	ASSERT(IsNumericWave(range), "Invalid Range wave")
 	WAVE rangeRef = SFH_GetEmptyRange()
 
-	return	EqualWaves(rangeRef, range, 1)
+	return	EqualWaves(rangeRef, range, EQWAVES_DATA)
 End
 
 Function/WAVE SFH_GetFullRange()

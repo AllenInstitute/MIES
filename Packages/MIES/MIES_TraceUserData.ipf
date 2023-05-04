@@ -165,7 +165,7 @@ Function/WAVE TUD_GetUserDataAsWave(string graph, string key, [WAVE/T keys, WAVE
 
 	Make/N=(DimSize(result, ROWS))/FREE matches = p
 
-	ASSERT(EqualWaves(keys, values, 512) == 1, "Unexpected size")
+	ASSERT(EqualWaves(keys, values, EQWAVES_DIMSIZE) == 1, "Unexpected size")
 
 	numEntries = DimSize(keys, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -224,7 +224,7 @@ End
 Function TUD_SetUserDataFromWaves(string graph, string trace, WAVE/T keys, WAVE/T values)
 	variable row, numCols, first, last, numExistingCols
 
-	ASSERT(EqualWaves(keys, values, 512) == 1, "Unexpected size")
+	ASSERT(EqualWaves(keys, values, EQWAVES_DIMSIZE) == 1, "Unexpected size")
 	ASSERT(DimSize(keys, ROWS) > 0, "Unexpected empty wave")
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
