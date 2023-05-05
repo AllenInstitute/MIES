@@ -63,9 +63,7 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 
 	SWS_AfterSweepDataChangeHook(device)
 
-	// SetVar_Sweep currently disabled so we have to write manually in the GUIStateWave
-	SetSetVariable(device, "SetVar_Sweep", sweepNo + 1)
-	DAG_Update(device, "SetVar_Sweep", val = sweepNo + 1)
+	PGC_SetAndActivateControl(device, "SetVar_Sweep", val = sweepNo + 1, mode = PGC_MODE_FORCE_ON_DISABLED)
 
 	AS_HandlePossibleTransition(device, AS_POST_SWEEP, call = !forcedStop)
 
