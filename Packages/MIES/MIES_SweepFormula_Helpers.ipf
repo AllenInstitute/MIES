@@ -784,7 +784,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 
 	ASSERT(!IsEmpty(code), "Unexpected empty code")
 	numCursors = ItemsInList(CURSOR_NAMES)
-	numBasicEntries = 4
+	numBasicEntries = 5
 	numEntries = numBasicEntries + numCursors + hasStoreEntry
 
 	Make/T/FREE/N=(1, numEntries) keys
@@ -794,6 +794,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 	keys[0][1]                                                 = "Sweep Formula sweeps/channels"
 	keys[0][2]                                                 = "Sweep Formula experiment"
 	keys[0][3]                                                 = "Sweep Formula device"
+	keys[0][4]                                                 = "Sweep Formula browser"
 	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
 
 	if(hasStoreEntry)
@@ -821,6 +822,8 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 
 	device = GetPopupMenuString(shPanel, "popup_Device")
 	values[0][%$"Sweep Formula device"][INDEP_HEADSTAGE] = device
+
+	values[0][%$"Sweep Formula browser"][INDEP_HEADSTAGE] = graph
 
 	if(WaveExists(cursorInfos))
 		values[0][numBasicEntries, numBasicEntries + numCursors - 1][INDEP_HEADSTAGE] = cursorInfos[q - numBasicEntries]
