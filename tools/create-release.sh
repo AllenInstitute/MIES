@@ -51,8 +51,8 @@ Date and time of last commit: ${date_of_version}
 Submodule status:
 ${submodule_status}"
 
-case $MSYSTEM in
-  MINGW*)
+case $OS in
+  Windows*)
     export zip_exe=$top_level/tools/zip.exe;;
   *)
     export zip_exe=zip;;

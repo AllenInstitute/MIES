@@ -21,8 +21,8 @@ else
   exit 1
 fi
 
-case $MSYSTEM in
-  MINGW*)
+case $OS in
+  Windows*)
     echo "/c/Program Files/WaveMetrics/Igor Pro $version Folder/$suffix"
     ;;
   *)

@@ -60,8 +60,8 @@ then
   exit 1
 fi
 
-case $MSYSTEM in
-  MINGW*)
+case $OS in
+  Windows*)
       UNZIP_EXE="$top_level/tools/unzip.exe"
       ;;
     *)
