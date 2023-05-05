@@ -124,7 +124,7 @@ For testing compilation manually perform the following steps:
 -  Remove the shortcut ``Packages\MIES_Include.ipf`` in
    ``Igor Procedures``
 -  Close all Igor Pro instances
--  Execute ``tools\check_mies_compilation.sh``
+-  Execute ``tools\autorun-test.sh``
 -  Watch the output
 
 Unit and integration testing
