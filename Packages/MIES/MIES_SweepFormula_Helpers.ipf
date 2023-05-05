@@ -848,7 +848,7 @@ Function/S SFH_GetFormulaGraphForBrowser(string browser)
 
 	string entry
 
-	WAVE/T matches = ListToTextWave(WinList(CleanupName(SF_PLOT_NAME_TEMPLATE, 0) + "*", ";", "WIN:64"), ";") // only panels
+	WAVE/T matches = SFH_GetFormulaGraphs()
 
 	for(entry : matches)
 		if(!cmpstr(SFH_GetBrowserForFormulaGraph(entry), browser))
@@ -857,6 +857,12 @@ Function/S SFH_GetFormulaGraphForBrowser(string browser)
 	endfor
 
 	return ""
+End
+
+/// @brief Return a text wave with all formula graph windows
+Function/WAVE SFH_GetFormulaGraphs()
+
+	return ListToTextWave(WinList(CleanupName(SF_PLOT_NAME_TEMPLATE, 0) + "*", ";", "WIN:64"), ";") // only panels
 End
 
 /// @brief Create a new selectData wave
