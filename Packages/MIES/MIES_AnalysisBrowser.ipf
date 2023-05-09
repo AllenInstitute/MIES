@@ -2441,10 +2441,12 @@ Function/S AB_GetPanelName()
 	return ANALYSIS_BROWSER_NAME
 End
 
-Function/S AB_OpenAnalysisBrowser()
+Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 
+	variable oldFolderListSize, i
 	string panel = AB_GetPanelName()
-	string directory
+
+	restoreSettings = ParamisDefault(restoreSettings) ? 1 : !!restoreSettings
 
 	if(WindowExists(panel))
 		if(HasPanelLatestVersion(panel, ANALYSISBROWSER_PANEL_VERSION))
@@ -2455,22 +2457,39 @@ Function/S AB_OpenAnalysisBrowser()
 		KillWindow/Z $panel
 	endif
 
-	WAVE/T list = GetExperimentBrowserGUIList()
-	list = ""
-	WAVE   sel  = GetExperimentBrowserGUISel()
-	sel = 0
+	AB_ClearAnalysisFolder()
+
+	WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+	WAVE folderSelection = GetAnalysisBrowserGUIFolderSelection()
+	WAVE folderColors = GetAnalysisBrowserGUIFolderColors()
+	if(restoreSettings)
+		NVAR JSONid = $GetSettingsJSONid()
+		WAVE/T oldFolderList = JSON_GetTextWave(jsonID, SETTINGS_AB_FOLDER)
+		oldFolderListSize = DimSize(oldFolderList, ROWS)
+		Redimension/N=(oldFolderListSize, -1, -1) folderList, folderSelection
+		folderList[] = oldFolderList[p]
+		FastOp folderSelection = 0
+	else
+		Redimension/N=(0, -1, -1) folderList, folderSelection
+	endif
 
 	Execute "AnalysisBrowser()"
 	GetMiesVersion()
 
 	AddVersionToPanel(panel, ANALYSISBROWSER_PANEL_VERSION)
 
-	ListBox list_experiment_contents,win=$panel,listWave=list,selWave=sel
+	ListBox listbox_AB_Folders, win=$panel, listWave=folderList, selWave=folderSelection, colorWave=folderColors
 
-	NVAR JSONid = $GetSettingsJSONid()
-	directory = JSON_GetString(jsonID, "/analysisbrowser/directory")
-	SetSetVariableString(panel, "setvar_baseFolder", directory)
+	WAVE/T list = GetExperimentBrowserGUIList()
+	WAVE sel = GetExperimentBrowserGUISel()
+	ListBox list_experiment_contents, win=$panel, listWave=list, selWave=sel
+
 	PS_InitCoordinates(JSONid, panel, "analysisbrowser")
+
+	if(restoreSettings)
+		DoUpdate/W=$panel
+		PGC_SetAndActivateControl(panel, "button_AB_refresh")
+	endif
 
 	return panel
 End
