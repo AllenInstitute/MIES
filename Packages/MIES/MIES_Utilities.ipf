@@ -3904,21 +3904,22 @@ End
 ///
 /// @return a string denoting the selected folder, or an empty string if
 /// nothing was supplied.
-Function/S AskUserForExistingFolder([baseFolder])
-	string baseFolder
+Function/S AskUserForExistingFolder(string baseFolder)
 
 	string symbPath, selectedFolder
+
 	symbPath = GetUniqueSymbolicPath()
 
-	if(!ParamIsDefault(baseFolder))
-		NewPath/O/Q/Z $symbPath baseFolder
-		// preset next undirected NewPath/Open call using the contents of a
-		// *symbolic* folder
-		PathInfo/S $symbPath
-	endif
+	NewPath/O/Q/Z $symbPath baseFolder
+	// preset next undirected NewPath/Open call using the contents of a
+	// *symbolic* folder
+	PathInfo/S $symbPath
 
 	// let the user choose a folder, starts in $baseFolder if supplied
 	NewPath/O/Q/Z $symbPath
+	if(V_flag == -1)
+		return ""
+	endif
 	PathInfo $symbPath
 	selectedFolder = S_path
 	KillPath/Z $symbPath
