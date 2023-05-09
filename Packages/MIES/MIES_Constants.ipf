@@ -2029,3 +2029,12 @@ Constant EQWAVES_ALL = -1
 StrConstant LISTBOX_LAYER_FOREGROUND = "foreColors"
 StrConstant LISTBOX_LAYER_BACKGROUND  = "backColors"
 /// @}
+
+/// @name MIES Settings paths
+/// @anchor SettingsPaths
+/// @{
+StrConstant SETTINGS_AB_FOLDER = "/analysisbrowser/directory"
+StrConstant SETTINGS_AB_FOLDER_DEFAULT = "C:"
+/// @}
+
+StrConstant ANALYSIS_BROWSER_NAME = "AnalysisBrowser"

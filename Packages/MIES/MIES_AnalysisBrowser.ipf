@@ -2438,7 +2438,7 @@ End
 
 Function/S AB_GetPanelName()
 
-	return "AnalysisBrowser"
+	return ANALYSIS_BROWSER_NAME
 End
 
 Function/S AB_OpenAnalysisBrowser()
