@@ -16,17 +16,17 @@ static Constant DEVICE_TREEVIEW_COLUMN     = 2
 static Constant AB_LOAD_SWEEP = 0
 static Constant AB_LOAD_STIMSET = 1
 
-static Function AB_ResetListBoxWaves(variable newSize)
+static Function AB_ResetListBoxWaves()
 
-	variable col, val
+	variable col, val, newSize
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
-
+	newSize = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
 	Redimension/N=(newSize, -1, -1, -1) expBrowserList, expBrowserSel
 
 	if(DimSize(expBrowserSel, ROWS) > 0)
-		expBrowserSel = 0
+		FastOp expBrowserSel = 0
 
 		val = LISTBOX_TREEVIEW | LISTBOX_TREEVIEW_EXPANDED
 
