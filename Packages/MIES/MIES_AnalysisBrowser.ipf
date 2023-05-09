@@ -3344,7 +3344,7 @@ End
 static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 	variable refNum, kind
 	string file, pathName, type, creator
-	string baseFolder, fileSuffix
+	string baseFolder, fileSuffix, entry
 	variable numEntries
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
@@ -3358,20 +3358,20 @@ static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 	Pathinfo $pathName
 	baseFolder = S_path
 
-	AB_OpenAnalysisBrowser()
+	AB_OpenAnalysisBrowser(restoreSettings = 0)
 	// we can not add files to the map if some entries are collapsed
 	// so we have to expand all first.
 	PGC_SetAndActivateControl("AnalysisBrowser", "button_expand_all", val = 1)
 
-	if(AB_AddFile(basefolder, basefolder + file))
+	entry = basefolder + file
+	if(AB_AddFile(entry, entry))
 		// already loaded or error
 		LOG_AddEntry(PACKAGE_MIES, "end")
 		return 1
 	endif
+	AB_AddElementToSourceList(entry)
 
-	WAVE expBrowserList = GetExperimentBrowserGUIList()
-	numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
-	AB_ResetListBoxWaves(numEntries)
+	AB_ResetListBoxWaves()
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 
