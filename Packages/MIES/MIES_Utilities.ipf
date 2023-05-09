@@ -6430,3 +6430,13 @@ Function/WAVE UTF8StringToTextWave(string str)
 
 	return wv
 End
+
+/// @brief Returns the path to the users documents folder
+Function/S GetUserDocumentsFolderPath()
+
+	string userDir = GetEnvironmentVariable("USERPROFILE")
+
+	userDir = ParseFilePath(2, ParseFilePath(5, userDir, ":", 0, 0), ":", 0, 0)
+
+	return userDir + "Documents:"
+End

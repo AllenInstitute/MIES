@@ -2034,7 +2034,7 @@ StrConstant LISTBOX_LAYER_BACKGROUND  = "backColors"
 /// @anchor SettingsPaths
 /// @{
 StrConstant SETTINGS_AB_FOLDER = "/analysisbrowser/directory"
-StrConstant SETTINGS_AB_FOLDER_DEFAULT = "C:"
+StrConstant SETTINGS_AB_FOLDER_OLD_DEFAULT = "C:"
 /// @}
 
 StrConstant ANALYSIS_BROWSER_NAME = "AnalysisBrowser"
