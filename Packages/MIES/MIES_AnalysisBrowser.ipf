@@ -2747,14 +2747,52 @@ Function AB_ButtonProc_LoadStimsets(ba) : ButtonControl
 	return 0
 End
 
-/// @brief Button "Scan folder"
-Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
+/// @brief Button "Refresh"
+Function AB_ButtonProc_Refresh(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
+
+	variable size, index, refreshIndex
+	string entry
 
 	switch(ba.eventCode)
 		case 2: // mouse up
 			AB_CheckPanelVersion(ba.win)
-			AB_ScanFolder(ba.win)
+
+			WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+			WAVE folderSelection = GetAnalysisBrowserGUIFolderSelection()
+			WAVE/Z indices = FindIndizes(folderSelection, col = 0, var = 0x1, prop = PROP_MATCHES_VAR_BIT_MASK)
+			if(!WaveExists(indices))
+				size = DimSize(folderList, ROWS)
+				Make/FREE/N=(size) indices
+				indices = size - 1 - p
+			else
+				Sort/R indices, indices
+			endif
+
+			Make/FREE/T/N=(DimSize(indices, ROWS)) refreshList
+
+			for(index : indices)
+				entry = folderList[index]
+				if(!FileExists(entry) && !FolderExists(entry))
+					AB_RemoveExperimentEntry(ba.win, folderList[index])
+					DeleteWavePoint(folderSelection, ROWS, index)
+					DeleteWavePoint(folderList, ROWS, index)
+				else
+					refreshList[refreshIndex] = entry
+					refreshIndex += 1
+				endif
+			endfor
+			AB_SaveSourceListInSettings()
+			Redimension/N=(refreshIndex) refreshList
+
+			for(entry : refreshList)
+				AB_RemoveExperimentEntry(ba.win, entry)
+			endfor
+			Duplicate/FREE/T refreshList, refreshInverted
+			refreshInverted = refreshList[refreshIndex - 1 - p]
+			AB_AddExperimentEntries(ba.win, refreshInverted)
+
+			AB_UpdateColors()
 		break
 	endswitch
 
