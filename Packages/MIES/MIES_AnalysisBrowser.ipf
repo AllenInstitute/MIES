@@ -2761,28 +2761,184 @@ Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
 	return 0
 End
 
-/// @brief Button "Select directory"
-/// Display dialog box for choosing a folder and call AB_ScanFolder()
-Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
+/// @brief Button "Open folder(s)"
+Function AB_ButtonProc_OpenFolders(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string path, win, baseFolder, folder
+	string symbPath, folder
+	variable size, i
 
 	switch(ba.eventCode)
 		case 2: // mouse up
 			AB_CheckPanelVersion(ba.win)
 
-			win = ba.win
-			baseFolder = GetSetVariableString(win, "setvar_baseFolder")
-			folder = AskUserForExistingFolder(baseFolder=baseFolder)
-			SetSetVariableString(win, "setvar_baseFolder", folder)
-			NVAR JSONid = $GetSettingsJSONid()
-			JSON_SetString(jsonID, "/analysisbrowser/directory", folder)
-			AB_ScanFolder(win)
+			WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+			WAVE folderSelection = GetAnalysisBrowserGUIFolderSelection()
+			size = DimSize(folderSelection, ROWS)
+			symbPath = GetUniqueSymbolicPath()
+			for(i = 0; i < size; i += 1)
+				if(folderSelection[i] == 1)
+					if(FileExists(folderList[i]))
+						folder = GetFolder(folderList[i])
+					elseif(FolderExists(folderList[i]))
+						folder = folderList[i]
+					else
+						continue
+					endif
+					NewPath/O/Q/Z $symbPath folder
+					PathInfo/SHOW $symbPath
+				endif
+			endfor
+			KillPath/Z $symbPath
 			break
 	endswitch
 
 	return 0
+End
+
+/// @brief Button "Remove folder(s)"
+Function AB_ButtonProc_Remove(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	variable size, i
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
+			WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+			WAVE folderSelection = GetAnalysisBrowserGUIFolderSelection()
+			size = DimSize(folderSelection, ROWS)
+			for(i = size - 1; i >= 0; i -= 1)
+				if(folderSelection[i] == 1)
+					AB_RemoveExperimentEntry(ba.win, folderList[i])
+					DeleteWavePoint(folderSelection, ROWS, i)
+					DeleteWavePoint(folderList, ROWS, i)
+				endif
+			endfor
+			AB_SaveSourceListInSettings()
+
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief Button "Add folder"
+/// Display dialog box for choosing a folder and call AB_ScanFolder()
+Function AB_ButtonProc_AddFolder(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string baseFolder, folder
+	variable size
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
+			NVAR JSONid = $GetSettingsJSONid()
+			WAVE/T setFolderList = JSON_GetTextWave(jsonID, SETTINGS_AB_FOLDER)
+			size = DimSize(setFolderList, ROWS)
+			if(size)
+				baseFolder = GetFolder(setFolderList[size - 1])
+			else
+				baseFolder = GetUserDocumentsFolderPath()
+			endif
+			folder = AskUserForExistingFolder(baseFolder)
+			if(IsEmpty(folder))
+				break
+			endif
+			FindValue/TEXT=folder/TXOP=4 setFolderList
+			if(V_Value >= 0)
+				break
+			endif
+
+			AB_AddElementToSourceList(folder)
+
+			Make/FREE/T wFolder = {folder}
+			AB_AddExperimentEntries(ba.win, wFolder)
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief Button "Add files"
+/// Display dialog box for choosing files and call AB_AddFolder()
+Function AB_ButtonProc_AddFiles(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string baseFolder, symbPath, fileFilters, fNum, message, fileList
+	variable i, size, index
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
+			WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+			size = DimSize(folderList, ROWS)
+			if(size)
+				baseFolder = GetFolder(folderList[size - 1])
+			else
+				baseFolder = GetUserDocumentsFolderPath()
+			endif
+
+			symbPath = GetUniqueSymbolicPath()
+			NewPath/O/Q/Z $symbPath baseFolder
+
+			fileFilters = "Data Files (*.pxp,*.nwb,*.uxp):.pxp,.nwb,.uxp;All Files:.*;"
+			message = "Select data file(s)"
+			Open/D/R/MULT=1/F=fileFilters/M=message/P=$symbPath fnum
+			fileList = S_fileName
+			KillPath/Z $symbPath
+			if(IsEmpty(fileList))
+				break
+			endif
+			WAVE/T selFiles = ListToTextWave(fileList, "\r")
+			Duplicate/FREE/T selFiles, newFiles
+
+			WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+			size = DimSize(selFiles, ROWS)
+			for(i = 0; i < size; i += 1)
+				FindValue/TEXT=selFiles[i]/TXOP=4 folderList
+				if(V_Value >= 0)
+					continue
+				endif
+				AB_AddElementToSourceList(selFiles[i])
+				newFiles[index] = selFiles[i]
+				index += 1
+			endfor
+			Redimension/N=(index) newFiles
+
+			AB_AddExperimentEntries(ba.win, newFiles)
+			break
+	endswitch
+
+	return 0
+End
+
+static Function AB_AddElementToSourceList(string entry)
+
+	variable size
+
+	WAVE/T entryList = GetAnalysisBrowserGUIFolderList()
+	size = DimSize(entryList, ROWS)
+	Redimension/N=(size + 1) entryList
+	entryList[size] = entry
+	WAVE folderSelection = GetAnalysisBrowserGUIFolderSelection()
+	Redimension/N=(size + 1, -1, -1) folderSelection
+
+	AB_SaveSourceListInSettings()
+End
+
+static Function AB_SaveSourceListInSettings()
+
+	WAVE/T entryList = GetAnalysisBrowserGUIFolderList()
+
+	Make/FREE/T/N=(DimSize(entryList, ROWS)) setFolderList
+	setFolderList[] = entryList[p]
+	NVAR JSONid = $GetSettingsJSONid()
+	JSON_SetWave(jsonID, SETTINGS_AB_FOLDER, setFolderList)
 End
 
 /// @brief Button "Select same stim set sweeps"
