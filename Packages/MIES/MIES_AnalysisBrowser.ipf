@@ -155,16 +155,17 @@ End
 /// 1: %FileName:      Name of File in experiment column in ExperimentBrowser
 /// 2: %DataFolder     Data folder inside current Igor experiment
 /// 3: %FileType       File Type identifier for routing to loader functions, one of @ref AnalysisBrowserFileTypes
-Function/Wave AB_GetMap(discLocation)
-	string discLocation
+Function/WAVE AB_GetMap(string discLocation)
+
+	variable dim
 
 	WAVE/T map = GetAnalysisBrowserMap()
-
-	FindValue/TXOP=4/TEXT=(discLocation) map
-	ASSERT(V_Value >= 0, "invalid index")
+	dim = FindDimLabel(map, COLS, "DiscLocation")
+	FindValue/TXOP=4/TEXT=(discLocation)/RMD=[][dim] map
+	ASSERT(V_row >= 0, "invalid index")
 
 	Make/FREE/N=4/T wv
-	wv = 	map[V_Value][p]
+	wv = 	map[V_row][p]
 
 	SetDimLabel ROWS, 0, DiscLocation, wv
 	SetDimLabel ROWS, 1, FileName, wv
