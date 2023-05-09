@@ -199,14 +199,15 @@ End
 ///
 /// @return 0 if the file was loaded, or 1 if not (usually due to an error
 ///         or because it was already loaded)
-static Function AB_AddFile(baseFolder, discLocation)
-	string baseFolder, discLocation
+static Function AB_AddFile(string discLocation, string sourceEntry)
 
 	variable mapIndex
 	variable firstMapped, lastMapped
+	string baseFolder
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 
+	baseFolder = SelectString(FileExists(sourceEntry), sourceEntry, GetFolder(sourceEntry))
 	mapIndex = AB_AddMapEntry(baseFolder, discLocation)
 
 	if(mapIndex < 0)
@@ -219,6 +220,7 @@ static Function AB_AddFile(baseFolder, discLocation)
 
 	if(lastMapped >= firstMapped)
 		list[firstMapped, lastMapped][%file][1] = num2str(mapIndex)
+		list[firstMapped, lastMapped][%type][1] = sourceEntry
 	else // experiment could not be loaded
 		AB_RemoveMapEntry(mapIndex)
 		return 1
