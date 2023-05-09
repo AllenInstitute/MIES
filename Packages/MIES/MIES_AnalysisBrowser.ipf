@@ -73,7 +73,7 @@ End
 static Function AB_AddMapEntry(baseFolder, discLocation)
 	string baseFolder, discLocation
 
-	variable index, fileID, nwbVersion
+	variable index, fileID, nwbVersion, dim
 	string dataFolder, fileType, relativePath, extension
 	WAVE/T map = GetAnalysisBrowserMap()
 
@@ -85,7 +85,13 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 	endif
 
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
-	EnsureLargeEnoughWave(map, indexShouldExist=index, dimension=ROWS)
+	dim = FindDimLabel(map, COLS, "DiscLocation")
+	FindValue/TEXT=""/TXOP=4/RMD=[][dim] map
+	if(V_row < index)
+		index = V_row
+	else
+		EnsureLargeEnoughWave(map, indexShouldExist=index, dimension=ROWS)
+	endif
 
 	// %DiscLocation = full path to file
 	map[index][%DiscLocation] = discLocation
