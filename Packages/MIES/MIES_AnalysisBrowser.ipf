@@ -2874,6 +2874,36 @@ Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
 	return 0
 End
 
+static Function AB_UpdateColors()
+
+	variable size, index
+	string fName
+
+	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+	WAVE expBrowserSel = GetExperimentBrowserGUISel()
+	WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+	WAVE folderSelection = GetAnalysisBrowserGUIFolderSelection()
+
+	MultiThread folderSelection[][0][%$LISTBOX_LAYER_BACKGROUND] = 0
+	size = min(GetNumberFromWaveNote(expBrowserList, NOTE_INDEX), DimSize(expBrowserList, ROWS))
+	if(!size)
+		return NaN
+	endif
+	WAVE/Z indizes = FindIndizes(expBrowserSel, col = 0, var = 0x1, prop = PROP_MATCHES_VAR_BIT_MASK, endRow = size - 1)
+	if(!WaveExists(indizes))
+		return NaN
+	endif
+	for(index : indizes)
+		fName = expBrowserList[index][%type][1]
+		if(IsEmpty(fName))
+			continue
+		endif
+		FindValue/TEXT=fName/TXOP=4 folderList
+		ASSERT(V_row >= 0, "Source file not found in folderlist")
+		folderSelection[V_row][0][%$LISTBOX_LAYER_BACKGROUND] = 2
+	endfor
+End
+
 /// @brief Button "Open comment NB"
 Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
