@@ -12,11 +12,14 @@ static Function LoadSweepsFromIgor()
 
 	string win
 
-	win = AB_OpenAnalysisBrowser()
+	NVAR JSONid = $GetSettingsJSONid()
 	PathInfo home
 	REQUIRE_EQUAL_VAR(V_flag, 1)
-	PGC_SetAndActivateControl(win, "setvar_baseFolder", str=S_path)
-	PGC_SetAndActivateControl(win, "button_base_folder_scan")
+	WAVE/T saveSetting = JSON_GetTextWave(jsonID, SETTINGS_AB_FOLDER)
+
+	Make/FREE/T setFolderList = {S_path}
+	JSON_SetWave(jsonID, SETTINGS_AB_FOLDER, setFolderList)
+	win = AB_OpenAnalysisBrowser()
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 	expBrowserSel[0][0][0] = 81
 	PGC_SetAndActivateControl(win, "button_load_sweeps")
@@ -26,4 +29,6 @@ static Function LoadSweepsFromIgor()
 	WAVE sweep = WaveRefIndexed(win, 0, 1)
 	CHECK_EQUAL_VAR(DimSize(sweep, ROWS), 31667)
 	CHECK_CLOSE_VAR(WaveMax(sweep), 1000, tol=1E-2)
+
+	JSON_SetWave(jsonID, SETTINGS_AB_FOLDER, saveSetting)
 End
