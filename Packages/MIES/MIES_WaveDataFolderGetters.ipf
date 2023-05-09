@@ -16,6 +16,9 @@
 /// - Modifying wave getter functions might require to introduce wave versioning, see @ref WaveVersioningSupport
 
 static Constant ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION = 1
+static Constant ANALYSIS_BROWSER_FOLDER_LISTBOX_WAVE_VERSION = 1
+static Constant ANALYSIS_BROWSER_FOLDERCOL_LISTBOX_WAVE_VERSION = 1
+static Constant ANALYSIS_BROWSER_FOLDERSEL_LISTBOX_WAVE_VERSION = 1
 static Constant NUM_COLUMNS_LIST_WAVE   = 12
 static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 
@@ -5170,6 +5173,89 @@ Function/Wave GetAnalysisBrowserMap()
 	SetDimLabel COLS, 1, FileName, wv
 	SetDimLabel COLS, 2, DataFolder, wv
 	SetDimLabel COLS, 3, FileType, wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the text wave used in the folder listbox of the analysis browser
+Function/WAVE GetAnalysisBrowserGUIFolderList()
+
+	string name = "AnaBrowserFolderList"
+	DFREF dfr = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_FOLDER_LISTBOX_WAVE_VERSION
+
+	WAVE/Z/SDFR=dfr/T wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	elseif(WaveExists(wv))
+		// Upgrade here
+	else
+		Make/N=0/T dfr:$name/WAVE=wv
+	endif
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the selection wave used in the folder listbox of the analysis browser
+Function/WAVE GetAnalysisBrowserGUIFolderSelection()
+
+	string name = "AnaBrowserFolderSelection"
+	DFREF dfr = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_FOLDERSEL_LISTBOX_WAVE_VERSION
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	elseif(WaveExists(wv))
+		// Upgrade here
+	else
+		Make/N=(1, 1, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimLabel LAYERS, 1, $LISTBOX_LAYER_FOREGROUND, wv
+	SetDimLabel LAYERS, 2, $LISTBOX_LAYER_BACKGROUND, wv
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the color wave used in the folder listbox of the analysis browser
+Function/WAVE GetAnalysisBrowserGUIFolderColors()
+
+	string name = "AnaBrowserFolderColors"
+	DFREF dfr = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_FOLDERCOL_LISTBOX_WAVE_VERSION
+
+	WAVE/Z/SDFR=dfr/W/U wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	elseif(WaveExists(wv))
+		// Upgrade here
+	else
+		Make/W/U/N=(3, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimLabel COLS, 0, R, wv
+	SetDimLabel COLS, 1, G, wv
+	SetDimLabel COLS, 2, B, wv
+
+	// keep row 0 at {0, 0, 0} for default color
+	wv[1][%R] = 255
+	wv[1][%G] = 229
+	wv[1][%B] = 229
+
+	wv[2][%R] = 229
+	wv[2][%G] = 255
+	wv[2][%B] = 229
+
+	wv = wv << 8
 
 	SetWaveVersion(wv, versionOfWave)
 
