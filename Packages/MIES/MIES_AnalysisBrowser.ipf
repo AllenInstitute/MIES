@@ -1305,8 +1305,8 @@ static Function AB_ExpandListColumn(col)
 			continue
 		endif
 
-		AB_ExpandListEntry(row, col)
 		expBrowserSel[row][col] = SetBit(mask, LISTBOX_TREEVIEW_EXPANDED)
+		AB_ExpandListEntry(row, col)
 	endfor
 End
 
@@ -1332,8 +1332,8 @@ static Function AB_CollapseListColumn(col)
 		row = indizes[i]
 		mask = expBrowserSel[row][col]
 		if(mask & LISTBOX_TREEVIEW_EXPANDED)
-			AB_CollapseListEntry(row, col)
 			expBrowserSel[row][col] = ClearBit(mask, LISTBOX_TREEVIEW_EXPANDED)
+			AB_CollapseListEntry(row, col)
 		endif
 	endfor
 End
@@ -1360,8 +1360,7 @@ static Function/Wave AB_ReturnAndClearGUISelBits()
 End
 
 /// @brief Collapse the given treeview
-static Function AB_CollapseListEntry(row, col)
-	variable row, col
+static Function AB_CollapseListEntry(variable row, variable col)
 
 	variable mask, last, length
 	string str
@@ -1372,7 +1371,7 @@ static Function AB_CollapseListEntry(row, col)
 	WAVE expBrowserSelBak    = CreateBackupWave(expBrowserSel)
 
 	mask = expBrowserSel[row][col]
-	ASSERT(mask & LISTBOX_TREEVIEW && mask & LISTBOX_TREEVIEW_EXPANDED, "listbox entry is not a treeview expansion node or is already collapsed")
+	ASSERT(mask & LISTBOX_TREEVIEW && !(mask & LISTBOX_TREEVIEW_EXPANDED) , "listbox entry is not a treeview expansion node or is already collapsed")
 
 	// contract the list by deleting all rows between the current one
 	// and one before the next one which has a tree view icon in the same column or lower columns
@@ -1389,8 +1388,7 @@ static Function AB_CollapseListEntry(row, col)
 End
 
 /// @brief Expand the given treeview
-static Function AB_ExpandListEntry(row, col)
-	variable row, col
+static Function AB_ExpandListEntry(variable row, variable col)
 
 	variable mask, last, length, sourceRow, targetRow
 	string str
@@ -1401,7 +1399,7 @@ static Function AB_ExpandListEntry(row, col)
 	WAVE expBrowserSelBak    = CreateBackupWave(expBrowserSel)
 
 	mask = expBrowserSel[row][col]
-	ASSERT(mask & LISTBOX_TREEVIEW && !(mask & LISTBOX_TREEVIEW_EXPANDED) , "listbox entry is not a treeview expansion node or already expanded")
+	ASSERT(mask & LISTBOX_TREEVIEW && mask & LISTBOX_TREEVIEW_EXPANDED, "listbox entry is not a treeview expansion node or already expanded")
 
 	// expand the list
 	// - search the backup wave for the row index (sourceRow) with the same contents as row for the contracted list
@@ -1440,8 +1438,8 @@ static Function AB_ExpandIfCollapsed(row, subSectionColumn)
 	endif
 
 	if(!(expBrowserSel[row][subSectionColumn] & LISTBOX_TREEVIEW_EXPANDED))
-		AB_ExpandListEntry(row, subSectionColumn)
 		expBrowserSel[row][subSectionColumn] = expBrowserSel[row][subSectionColumn] | LISTBOX_TREEVIEW_EXPANDED
+		AB_ExpandListEntry(row, subSectionColumn)
 		return 0
 	endif
 End
@@ -3027,17 +3025,20 @@ End
 Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
 	STRUCT WMListboxAction &lba
 
-	variable mask ,last, length, sourceRow, targetRow, numRows, row, col
-	variable i, sweepCol, sweep
-	string str, expFolder, device
+	variable mask, numRows, row, col
 
 	switch(lba.eventCode)
-		case 1: // mouse down
+		case 5: // cell selection + shift key
+		case 4: // cell selection
+			AB_CheckPanelVersion(lba.win)
+			AB_UpdateColors()
+			break
+
+		case 13: // sel wave update
 			AB_CheckPanelVersion(lba.win)
 
 			row = lba.row
 			col = lba.col
-			lba.blockreentry = 1
 
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 			WAVE expBrowserSel = GetExperimentBrowserGUISel()
@@ -3045,22 +3046,23 @@ Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
 			WAVE expBrowserSelBak = CreateBackupWave(expBrowserSel)
 
 			numRows = DimSize(expBrowserSel, ROWS)
-
 			if(row < 0 || row >=  numRows || col < 0 || col >= DimSize(expBrowserSel, COLS))
 				// clicked outside the list
+				AB_UpdateColors()
 				break
 			endif
-
 			mask = expBrowserSel[row][col]
 			if(!(mask & LISTBOX_TREEVIEW)) // clicked cell is not a treeview expansion node
+				AB_UpdateColors()
 				break
 			endif
 
 			if(mask & LISTBOX_TREEVIEW_EXPANDED)
-				AB_CollapseListEntry(row, col)
-			else
 				AB_ExpandListEntry(row, col)
+			else
+				AB_CollapseListEntry(row, col)
 			endif
+			AB_UpdateColors()
 
 			break
 	endswitch
