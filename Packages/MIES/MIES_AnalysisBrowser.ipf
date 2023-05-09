@@ -2389,54 +2389,78 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	return 0
 End
 
-static Function AB_ScanFolder(win)
-	string win
+static Function AB_RemoveExperimentEntry(string win, string entry)
 
-	string baseFolder, path, pxpList, uxpList, nwbList, list, entry
-	string nwbFileUsedForExport
-	variable i, numEntries
+	variable i, size, mapIndex, cnt
 
-	// create new symbolic path
-	baseFolder = GetSetVariableString(win, "setvar_baseFolder")
-	path = UniqueName("scanfolder_path", 12, 1)
-	NewPath/Q/Z $path, baseFolder
+	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
 
-	if(V_flag != 0)
-		printf "Could not create the symbolic path referencing %s, maybe the folder does not exist?\r", baseFolder
-		return naN
-	endif
+	WAVE/T list = GetExperimentBrowserGUIList()
+	WAVE sel = GetExperimentBrowserGUISel()
+	WAVE/T map = GetAnalysisBrowserMap()
 
-	AB_ClearAnalysisFolder()
+	size = GetNumberFromWaveNote(list, NOTE_INDEX)
+	for(i = size - 1; i >= 0; i -= 1)
+		if(!CmpStr(list[i][%type][1], entry, 1))
+			mapIndex = str2num(list[i][%file][1])
+			map[mapIndex][] = ""
+			DeleteWavePoint(list, ROWS, i)
+			DeleteWavePoint(sel, ROWS, i)
+			cnt += 1
+		endif
+	endfor
+	SetNumberInWaveNote(list, NOTE_INDEX, size - cnt)
 
-	// process *.pxp, *.uxp, and *.nwb files
-	pxpList = GetAllFilesRecursivelyFromPath(path, extension=".pxp")
-	uxpList = GetAllFilesRecursivelyFromPath(path, extension=".uxp")
-	nwbList = GetAllFilesRecursivelyFromPath(path, extension=".nwb")
-	KillPath $path
+	AB_ResetListBoxWaves()
+End
 
-	// sort combined list for readability
-	list = SortList(pxpList + uxpList + nwbList, FILE_LIST_SEP)
+static Function AB_AddExperimentEntries(string win, WAVE/T entries)
+
+	string entry, symbPath, fName, nwbFileUsedForExport, panel
+	string pxpList, uxpList, nwbList, title
+	variable sTime
 
 	nwbFileUsedForExport = ROStr(GetNWBFilePathExport())
+	panel = AB_GetPanelName()
 
-	numEntries = ItemsInList(list, FILE_LIST_SEP)
-	for(i = 0; i < numEntries; i += 1)
-		entry = StringFromList(i, list, FILE_LIST_SEP)
+	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
 
-		if(!cmpstr(entry, nwbFileUsedForExport))
-			printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", nwbFileUsedForExport
-			ControlWindowToFront()
+	sTime = stopMSTimer(-2) * MILLI_TO_ONE + 1
+	for(entry : entries)
 
+		if(FolderExists(entry))
+			symbPath = GetUniqueSymbolicPath()
+			NewPath/O/Q/Z $symbPath entry
+			pxpList = GetAllFilesRecursivelyFromPath(symbPath, extension=".pxp")
+			uxpList = GetAllFilesRecursivelyFromPath(symbPath, extension=".uxp")
+			nwbList = GetAllFilesRecursivelyFromPath(symbPath, extension=".nwb")
+			KillPath/Z $symbPath
+			WAVE/T fileList = ListToTextWave(SortList(pxpList + uxpList + nwbList, FILE_LIST_SEP), FILE_LIST_SEP)
+		elseif(FileExists(entry))
+			Make/FREE/T fileList = {entry}
+		else
+			printf "AnalysisBrowser: Can not find location %s. Skipped it.\r", entry
 			continue
 		endif
+		for(fName : fileList)
 
-		// analyse files and save content in global list (GetExperimentBrowserGUIList)
-		AB_AddFile(baseFolder, entry)
+			if(!CmpStr(fName, nwbFileUsedForExport))
+				printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", nwbFileUsedForExport
+				ControlWindowToFront()
+				continue
+			endif
+			if(sTime < stopMSTimer(-2) * MILLI_TO_ONE)
+				sprintf title, "%s, Reading %s", panel, GetFile(fName)
+				DoWindow/T $panel title
+				DoUpdate/W=$panel
+				sTime = stopMSTimer(-2) * MILLI_TO_ONE + 1
+			endif
+			AB_AddFile(fName, entry)
+		endfor
 	endfor
+	DoWindow/T $panel panel
 
-	WAVE expBrowserList = GetExperimentBrowserGUIList()
-	numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
-	AB_ResetListBoxWaves(numEntries)
+	AB_ResetListBoxWaves()
 End
 
 Function/S AB_GetPanelName()
