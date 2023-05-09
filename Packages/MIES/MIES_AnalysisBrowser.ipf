@@ -55,11 +55,11 @@ static Function AB_ClearAnalysisFolder()
 	SetNumberInWaveNote(map, NOTE_INDEX, 0)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
+	WAVE sel = GetExperimentBrowserGUISel()
+	Redimension/N=(MINIMUM_WAVE_SIZE, -1, -1, -1) list, sel
 	list = ""
 	SetNumberInWaveNote(list, NOTE_INDEX, 0)
-
-	WAVE sel = GetExperimentBrowserGUISel()
-	sel = NaN
+	FastOp sel = 0
 
 	DFREF dfr = GetAnalysisFolder()
 	folders = GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath=1)
