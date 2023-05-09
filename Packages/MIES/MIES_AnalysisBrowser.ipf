@@ -2604,10 +2604,7 @@ Function AB_BrowserStartupSettings()
 	HideTools/W=$panel/A
 	SetWindow $panel, userData(panelVersion) = ""
 
-	SetSetVariableString(panel, "setvar_baseFolder", "")
 	SetCheckBoxState(panel, "checkbox_load_overwrite", CHECKBOX_UNSELECTED)
-
-	AB_ResetListBoxWaves(0)
 
 	StoreCurrentPanelsResizeInfo(panel)
 
@@ -2615,6 +2612,7 @@ Function AB_BrowserStartupSettings()
 	print "Do not forget to increase ANALYSISBROWSER_PANEL_VERSION."
 
 	ListBox list_experiment_contents,win=$panel,listWave=$"",selWave=$""
+	ListBox listbox_AB_Folders,win=$panel,listWave=$"",selWave=$""
 
 	Execute/P/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
