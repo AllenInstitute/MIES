@@ -1949,6 +1949,10 @@ Function BSP_WindowHook(s)
 			NVAR JSONid = $GetSettingsJSONid()
 			PS_StoreWindowCoordinate(JSONid, win)
 
+			if(BSP_IsSweepBrowser(win))
+				BSP_MemoryFreeMappedDF(win)
+			endif
+
 			if(!BSP_HasBoundDevice(win))
 				break
 			endif
@@ -2002,4 +2006,17 @@ Function/S BSP_RenameAndSetTitle(string win, string newName)
 	DoWindow/T $win, newTitle
 
 	return win
+End
+
+static Function BSP_MemoryFreeMappedDF(string win)
+
+	variable dim, index
+
+	DFREF sweepBrowserDFR = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	WAVE/T map = GetSweepBrowserMap(sweepBrowserDFR)
+	dim = FindDimLabel(map, COLS, "DataFolder")
+	Duplicate/FREE/RMD=[][dim] map, dfList
+	index = GetNumberFromWaveNote(map, NOTE_INDEX)
+
+	AB_FreeWorkingDFs(dfList, index)
 End

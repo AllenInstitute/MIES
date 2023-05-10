@@ -15,6 +15,8 @@ static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 2
 static Constant AB_LOAD_SWEEP = 0
 static Constant AB_LOAD_STIMSET = 1
+static StrConstant AB_UDATA_WORKINGDF = "datafolder"
+static StrConstant AB_WORKFOLDER_NAME = "workFolder"
 
 static Function AB_ResetListBoxWaves()
 
@@ -44,11 +46,28 @@ static Function AB_ResetListBoxWaves()
 	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
 End
 
-/// @brief Clear all waves of the main experiment browser
-///        and delete all folders inside GetAnalysisFolder().
-static Function AB_ClearAnalysisFolder()
+/// @brief Remove empty working DF from previous AB sessions
+static Function AB_RemoveEmptyWorkingDF()
 
-	string folders
+	string regEx = AB_WORKFOLDER_NAME + "*"
+	DFREF dfrFolder
+
+	DFREF dfr = GetAnalysisFolder()
+	WAVE/T workFolders = ListToTextWave(GetListOfObjects(dfr, regEx, typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath=1), ";")
+	Make/FREE/N=(DimSize(workFolders, ROWS))/DF dfrWork = $workFolders[p]
+	for(dfrFolder : dfrWork)
+		RemoveEmptyDataFolder(dfrFolder)
+	endfor
+End
+
+/// @brief Reset all waves of the main experiment browser
+static Function AB_InitializeAnalysisBrowserWaves()
+
+	WAVE folderColors = GetAnalysisBrowserGUIFolderColors()
+
+	WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+	WAVE folderSelection = GetAnalysisBrowserGUIFolderSelection()
+	Redimension/N=(0, -1, -1) folderList, folderSelection
 
 	WAVE/T map = GetAnalysisBrowserMap()
 	map = ""
@@ -60,10 +79,6 @@ static Function AB_ClearAnalysisFolder()
 	list = ""
 	SetNumberInWaveNote(list, NOTE_INDEX, 0)
 	FastOp sel = 0
-
-	DFREF dfr = GetAnalysisFolder()
-	folders = GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath=1)
-	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, folders)
 End
 
 /// @brief Create relation (map) between file on disk and datafolder in current experiment
@@ -127,11 +142,13 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 			ASSERT(0, "invalid file type")
 	endswitch
 	map[index][%FileType] = fileType
-	// %DataFolder = igor friendly DF name
-	DFREF dfr = GetAnalysisFolder()
+
+	DFREF dfrAB = GetAnalysisFolder()
+	DFREF dfr = dfrAB:$AB_GetUserData(AB_UDATA_WORKINGDF)
 	DFREF expFolder = UniqueDataFolder(dfr, RemoveEnding(relativePath, extension))
-	dataFolder = RemovePrefix(GetDataFolder(1, expFolder), start = GetDataFolder(1, dfr))
+	dataFolder = RemovePrefix(GetDataFolder(1, expFolder), start = GetDataFolder(1, dfrAB))
 	map[index][%DataFolder] = RemoveEnding(dataFolder, ":")
+	RefCounterDFIncrease(expFolder)
 
 	index += 1
 	SetNumberInWaveNote(map, NOTE_INDEX, index)
@@ -139,13 +156,20 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 	return index - 1
 End
 
-static Function AB_RemoveMapEntry(index)
-	variable index
+static Function AB_RemoveMapEntry(variable index)
+
+	string dfABPath, dfPath
 
 	WAVE/T map = GetAnalysisBrowserMap()
 
 	ASSERT(index < DimSize(map, ROWS), "row index out-of-bounds")
 
+	dfABPath = GetDataFolder(1, GetAnalysisFolder())
+	dfPath = map[index][%DataFolder]
+	if(!IsEmpty(dfPath))
+		DFREF dfr = $(dfABPath + dfPath)
+		RefCounterDFDecrease(dfr)
+	endif
 	map[index][] = ""
 
 	if(index + 1 == GetNumberFromWaveNote(map, NOTE_INDEX))
@@ -1488,11 +1512,9 @@ static Function AB_GUIRowIsStimsetsOnly(variable row)
 End
 
 /// @returns 0 if at least one sweep or stimset could be loaded, 1 otherwise
-static Function AB_LoadFromExpandedRange(row, subSectionColumn, AB_LoadType, [overwrite, sweepBrowserDFR])
-	variable row, subSectionColumn, AB_LoadType, overwrite
-	DFREF sweepBrowserDFR
+static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn, variable AB_LoadType, [variable overwrite, DFREF sweepBrowserDFR, WAVE/T dfCollect])
 
-	variable j, endRow, mapIndex, sweep, oneValidLoad
+	variable j, endRow, mapIndex, sweep, oneValidLoad, index
 	string device, discLocation, dataFolder, fileName, fileType
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
@@ -1552,6 +1574,12 @@ static Function AB_LoadFromExpandedRange(row, subSectionColumn, AB_LoadType, [ov
 					continue
 				endif
 				oneValidLoad = 1
+
+				index = GetNumberFromWaveNote(dfCollect, NOTE_INDEX)
+				EnsureLargeEnoughWave(dfCollect, indexShouldExist=index)
+				dfCollect[index] = dataFolder
+				SetNumberInWaveNote(dfCollect, NOTE_INDEX, index + 1)
+
 				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
 				break
 			default:
@@ -1590,7 +1618,7 @@ static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 	variable AB_LoadType
 	DFREF sweepBrowserDFR
 
-	variable mapIndex, sweep, numRows, i, row, overwrite, oneValidLoad
+	variable mapIndex, sweep, numRows, i, row, overwrite, oneValidLoad, index
 	string dataFolder, fileName, discLocation, fileType, device
 
 	if(AB_LoadType == AB_LOAD_SWEEP)
@@ -1607,6 +1635,8 @@ static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	WAVE/T map = GetAnalysisBrowserMap()
 	overwrite = GetCheckBoxState("AnalysisBrowser", "checkbox_load_overwrite")
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE) dfCollect
+	SetNumberInWaveNote(dfCollect, NOTE_INDEX, 0)
 
 	for(i = 0; i < numRows; i += 1)
 		row = indizes[i]
@@ -1624,11 +1654,11 @@ static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 				endif
 				break
 			case AB_LOAD_SWEEP:
-				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, AB_LoadType, sweepBrowserDFR = sweepBrowserDFR, overwrite = overwrite))
+				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, AB_LoadType, sweepBrowserDFR = sweepBrowserDFR, overwrite = overwrite, dfCollect=dfCollect))
 					oneValidLoad = 1
 					continue
 				endif
-				if(!AB_LoadFromExpandedRange(row, DEVICE_TREEVIEW_COLUMN, AB_LoadType, sweepBrowserDFR = sweepBrowserDFR, overwrite = overwrite))
+				if(!AB_LoadFromExpandedRange(row, DEVICE_TREEVIEW_COLUMN, AB_LoadType, sweepBrowserDFR = sweepBrowserDFR, overwrite = overwrite, dfCollect=dfCollect))
 					oneValidLoad = 1
 					continue
 				endif
@@ -1661,14 +1691,51 @@ static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 					continue
 				endif
 				oneValidLoad = 1
+
 				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
+
+				index = GetNumberFromWaveNote(dfCollect, NOTE_INDEX)
+				EnsureLargeEnoughWave(dfCollect, indexShouldExist=index)
+				dfCollect[index] = dataFolder
+				SetNumberInWaveNote(dfCollect, NOTE_INDEX, index + 1)
 				break
 			default:
 				break
 		endswitch
 	endfor
 
+	index = GetNumberFromWaveNote(dfCollect, NOTE_INDEX)
+	AB_AllocWorkingDFs(dfCollect, index)
+
 	return oneValidLoad
+End
+
+Function AB_FreeWorkingDFs(WAVE/T relativeDFPaths, variable actualSize)
+	AB_FreeOrAllocWorkingDF(relativeDFPaths, actualSize, 1)
+End
+
+Function AB_AllocWorkingDFs(WAVE/T relativeDFPaths, variable actualSize)
+	AB_FreeOrAllocWorkingDF(relativeDFPaths, actualSize, 0)
+End
+
+static Function AB_FreeOrAllocWorkingDF(WAVE/T relativeDFPaths, variable actualSize, variable free)
+
+	string dfABPath = GetDataFolder(1, GetAnalysisFolder())
+
+	Redimension/N=(actualSize) relativeDFPaths
+	WAVE/T uniqueDF = GetUniqueEntries(relativeDFPaths, dontDuplicate=1)
+	uniqueDF[] = dfABPath + uniqueDF[p]
+	if(free)
+		for(dfPath : uniqueDF)
+			RefCounterDFDecrease($dfPath)
+		endfor
+
+		return NaN
+	endif
+
+	for(dfPath : uniqueDF)
+		RefCounterDFIncrease($dfPath)
+	endfor
 End
 
 Function AB_LoadStimsetForSweep(string device, variable index, variable sweep)
@@ -2401,13 +2468,12 @@ static Function AB_RemoveExperimentEntry(string win, string entry)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 	WAVE sel = GetExperimentBrowserGUISel()
-	WAVE/T map = GetAnalysisBrowserMap()
 
 	size = GetNumberFromWaveNote(list, NOTE_INDEX)
 	for(i = size - 1; i >= 0; i -= 1)
 		if(!CmpStr(list[i][%type][1], entry, 1))
 			mapIndex = str2num(list[i][%file][1])
-			map[mapIndex][] = ""
+			AB_RemoveMapEntry(mapIndex)
 			DeleteWavePoint(list, ROWS, i)
 			DeleteWavePoint(sel, ROWS, i)
 			cnt += 1
@@ -2472,9 +2538,28 @@ Function/S AB_GetPanelName()
 	return ANALYSIS_BROWSER_NAME
 End
 
+static Function AB_SetUserData(string key, string value)
+
+	string panel = AB_GetPanelName()
+
+	ASSERT(WindowExists(panel), "AnalysisBrowser is not open.")
+
+	SetWindow $panel, userData($key) = value
+End
+
+static Function/S AB_GetUserData(string key)
+
+	string panel = AB_GetPanelName()
+
+	ASSERT(WindowExists(panel), "AnalysisBrowser is not open.")
+
+	return GetUserData(panel, "", key)
+End
+
 Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 
 	variable oldFolderListSize, i
+	string workingDF
 	string panel = AB_GetPanelName()
 
 	restoreSettings = ParamisDefault(restoreSettings) ? 1 : !!restoreSettings
@@ -2488,7 +2573,8 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 		KillWindow/Z $panel
 	endif
 
-	AB_ClearAnalysisFolder()
+	AB_InitializeAnalysisBrowserWaves()
+	AB_RemoveEmptyWorkingDF()
 
 	WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
 	WAVE folderSelection = GetAnalysisBrowserGUIFolderSelection()
@@ -2500,14 +2586,17 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 		Redimension/N=(oldFolderListSize, -1, -1) folderList, folderSelection
 		folderList[] = oldFolderList[p]
 		FastOp folderSelection = 0
-	else
-		Redimension/N=(0, -1, -1) folderList, folderSelection
 	endif
 
 	Execute "AnalysisBrowser()"
 	GetMiesVersion()
 
 	AddVersionToPanel(panel, ANALYSISBROWSER_PANEL_VERSION)
+
+	DFREF dfrAB = GetAnalysisFolder()
+	DFREF workingDFR = UniqueDataFolder(dfrAB, AB_WORKFOLDER_NAME)
+	workingDF = RemovePrefix(GetDataFolder(1, workingDFR), start = GetDataFolder(1, dfrAB))
+	AB_SetUserData(AB_UDATA_WORKINGDF, RemoveEnding(workingDF, ":"))
 
 	ListBox listbox_AB_Folders, win=$panel, listWave=folderList, selWave=folderSelection, colorWave=folderColors
 
@@ -2516,6 +2605,7 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 	ListBox list_experiment_contents, win=$panel, listWave=list, selWave=sel
 
 	PS_InitCoordinates(JSONid, panel, "analysisbrowser")
+	SetWindow $panel, hook(cleanup)=AB_WindowHook
 
 	if(restoreSettings)
 		DoUpdate/W=$panel
@@ -3377,4 +3467,31 @@ Function/S AB_GetStimsetFromPanel(device, sweep)
 	WAVE/T textualValues = GetLBTextualValues(device)
 
 	return AB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
+End
+
+Function AB_WindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_KILL:
+
+			AB_MemoryFreeMappedDF()
+			AB_RemoveEmptyWorkingDF()
+
+			break
+	endswitch
+
+	// return zero so that other hooks are called as well
+	return 0
+End
+
+static Function AB_MemoryFreeMappedDF()
+
+	variable i, size
+
+	WAVE/T map = GetAnalysisBrowserMap()
+	size = GetNumberFromWaveNote(map, NOTE_INDEX)
+	for(i = 0; i < size; i += 1)
+		AB_RemoveMapEntry(i)
+	endfor
 End
