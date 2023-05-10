@@ -2038,3 +2038,5 @@ StrConstant SETTINGS_AB_FOLDER_OLD_DEFAULT = "C:"
 /// @}
 
 StrConstant ANALYSIS_BROWSER_NAME = "AnalysisBrowser"
+
+StrConstant MEMORY_REFCOUNTER_DF = "MemoryReferenceCounterDF"

@@ -6440,3 +6440,25 @@ Function/S GetUserDocumentsFolderPath()
 
 	return userDir + "Documents:"
 End
+
+/// @brief For DF memory management, increase reference count
+///
+/// @param dfr data folder reference of the target df
+Function RefCounterDFIncrease(DFREF dfr)
+
+	NVAR rc = $GetDFReferenceCount(dfr)
+	rc += 1
+End
+
+/// @brief For DF memory management, decrease reference count and kill DF if zero is reached
+///
+/// @param dfr data folder reference of the target df
+Function RefCounterDFDecrease(DFREF dfr)
+
+	NVAR rc = $GetDFReferenceCount(dfr)
+	rc -= 1
+
+	if(rc == 0)
+		KillOrMoveToTrash(dfr=dfr)
+	endif
+End

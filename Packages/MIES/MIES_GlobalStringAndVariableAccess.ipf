@@ -657,3 +657,8 @@ End
 Function /S GetLastSweepFormulaCode(DFREF dfr)
 	return GetSVARAsString(dfr, "lastSweepFormulaCode", initialValue = "")
 End
+
+/// @brief Returns the reference count variable of the given DF
+Function/S GetDFReferenceCount(DFREF dfr)
+	return GetNVARAsString(dfr, MEMORY_REFCOUNTER_DF, initialValue=0)
+End
