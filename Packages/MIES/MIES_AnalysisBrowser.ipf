@@ -1386,8 +1386,7 @@ End
 /// @brief Collapse the given treeview
 static Function AB_CollapseListEntry(variable row, variable col)
 
-	variable mask, last, length
-	string str
+	variable mask, last, i, j, colSize, hasTreeView
 
 	WAVE/T expBrowserList    = GetExperimentBrowserGUIList()
 	WAVE expBrowserSel       = GetExperimentBrowserGUISel()
@@ -1397,25 +1396,30 @@ static Function AB_CollapseListEntry(variable row, variable col)
 	mask = expBrowserSel[row][col]
 	ASSERT(mask & LISTBOX_TREEVIEW && !(mask & LISTBOX_TREEVIEW_EXPANDED) , "listbox entry is not a treeview expansion node or is already collapsed")
 
-	// contract the list by deleting all rows between the current one
-	// and one before the next one which has a tree view icon in the same column or lower columns
 	last  = AB_GetRowWithNextTreeView(expBrowserSel, row, col)
-	last -= 1
-
-	row += 1
-	length = last - row + 1
-
-	sprintf str, "range=[%d, %d], length=%d", row, last, length
-	DEBUGPRINT("contract listbox:", str=str)
-
-	DeletePoints/M=(ROWS) row, length, expBrowserList, expBrowserSel
+	colSize = DimSize(expBrowserSel, COLS)
+	for(i = last - 1; i >= row; i -= 1)
+		hasTreeView = i == row
+		for(j = col + 1; j < colSize; j += 1)
+			mask = expBrowserSel[i][j]
+			if(mask & (LISTBOX_TREEVIEW | LISTBOX_TREEVIEW_EXPANDED))
+				expBrowserSel[i][j] = ClearBit(mask, LISTBOX_TREEVIEW_EXPANDED)
+				hasTreeView = 1
+			endif
+		endfor
+		if(!hasTreeView)
+			DeleteWavePoint(expBrowserSel, ROWS, i)
+			DeleteWavePoint(expBrowserList, ROWS, i)
+		endif
+	endfor
 End
 
 /// @brief Expand the given treeview
 static Function AB_ExpandListEntry(variable row, variable col)
 
-	variable mask, last, length, sourceRow, targetRow
-	string str
+	variable mask, last, length
+	variable sourceRowStart, sourceRowEnd, targetRow
+	variable i, j, colSize, val, lastExpandedRow
 
 	WAVE/T expBrowserList    = GetExperimentBrowserGUIList()
 	WAVE expBrowserSel       = GetExperimentBrowserGUISel()
@@ -1425,28 +1429,36 @@ static Function AB_ExpandListEntry(variable row, variable col)
 	mask = expBrowserSel[row][col]
 	ASSERT(mask & LISTBOX_TREEVIEW && mask & LISTBOX_TREEVIEW_EXPANDED, "listbox entry is not a treeview expansion node or already expanded")
 
-	// expand the list
-	// - search the backup wave for the row index (sourceRow) with the same contents as row for the contracted list
-	// - search the next tree view icon in the same or lower columns in the backup selection wave
-	// - calculate the required new rows and insert them
-	// - copy the contents from the backup waves
-	targetRow = row + 1
-	sourceRow = GetRowWithSameContent(expBrowserListBak, expBrowserList, row)
+	lastExpandedRow = NaN
+	last = AB_GetRowWithNextTreeView(expBrowserSel, row, col)
+	colSize = DimSize(expBrowserSel, COLS)
+	for(i = last - 1; i >= row; i -= 1)
+		for(j = colSize - 1; j >= col; j -= 1)
+			val = i == row && j == col ? ClearBit(mask, LISTBOX_TREEVIEW_EXPANDED) : expBrowserSel[i][j]
+			if(!(val & LISTBOX_TREEVIEW))
+				continue
+			endif
 
-	last = AB_GetRowWithNextTreeView(expBrowserSelBak, sourceRow, col)
-	last -= 1
+			if(val & LISTBOX_TREEVIEW_EXPANDED)
+				lastExpandedRow = i
+				continue
+			endif
 
-	sourceRow += 1
-	length = last - sourceRow + 1
-
-	sprintf str, "sourceRow=%d, targetRow=%d, last=%d", sourceRow, targetRow, last
-	DEBUGPRINT("expand listbox:", str=str)
-
-	if(length > 0)
-		InsertPoints/M=(ROWS) targetRow, length, expBrowserList, expBrowserSel
-		expBrowserList[targetRow, targetRow + length - 1][][] = expBrowserListBak[sourceRow - targetRow + p][q][r]
-		expBrowserSel[targetRow, targetRow + length - 1][]    = expBrowserSelBak[sourceRow - targetRow + p][q]
-	endif
+			if(lastExpandedRow != i)
+				sourceRowStart = GetRowWithSameContent(expBrowserListBak, expBrowserList, i) + 1
+				sourceRowEnd = AB_GetRowWithNextTreeView(expBrowserSelBak, sourceRowStart - 1, j) - 1
+				length = sourceRowEnd - sourceRowStart + 1
+				if(length > 0)
+					targetRow = i + 1
+					InsertPoints targetRow, length, expBrowserList, expBrowserSel
+					expBrowserList[targetRow, targetRow + length - 1][][] = expBrowserListBak[sourceRowStart - targetRow + p][q][r]
+					expBrowserSel[targetRow, targetRow + length - 1][]    = expBrowserSelBak[sourceRowStart - targetRow + p][q]
+				endif
+				lastExpandedRow = i
+			endif
+			expBrowserSel[i][j] = SetBit(val, LISTBOX_TREEVIEW_EXPANDED)
+		endfor
+	endfor
 End
 
 /// @returns 0 if the treeview could be expanded, zero otherwise
@@ -2666,6 +2678,7 @@ Function AB_ButtonProc_CollapseAll(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2:
 			AB_CheckPanelVersion(ba.win)
+			AB_CollapseListColumn(DEVICE_TREEVIEW_COLUMN)
 			AB_CollapseListColumn(EXPERIMENT_TREEVIEW_COLUMN)
 			break
 	endswitch
