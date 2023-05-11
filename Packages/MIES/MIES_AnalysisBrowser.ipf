@@ -354,7 +354,7 @@ static Function AB_LoadFile(discLocation)
 
 	numDevices = GetNumberFromWaveNote(deviceWave, NOTE_INDEX)
 	if(!numDevices && AB_FileHasStimsets(map))
-		AB_FillListWave(map[%FileName], "",map[%DataFolder], map[%FileType], $"")
+		AB_FillListWave(map[%DiscLocation], map[%FileName], "",map[%DataFolder], map[%FileType], $"")
 		return NaN
 	endif
 	for(i = 0; i < numDevices; i += 1)
@@ -376,7 +376,7 @@ static Function AB_LoadFile(discLocation)
 		endswitch
 
 		Wave/I sweeps = GetAnalysisChannelSweepWave(map[%DataFolder], device)
-		AB_FillListWave(map[%FileName], device, map[%DataFolder], map[%FileType], sweeps)
+		AB_FillListWave(map[%DiscLocation], map[%FileName], device, map[%DataFolder], map[%FileType], sweeps)
 	endfor
 End
 
@@ -443,48 +443,32 @@ static Function/S AB_GetSettingNumFiniteVals(wv, device, sweepNo, name)
 	endif
 End
 
-/// @brief Add an experiment entry into the list
-///        if there is none yet.
-static Function AB_AddExperimentNameIfReq(expName, list, fileType, index)
-	string expName
-	WAVE/T list
-	string fileType
-	variable index
-
-	variable lastIndex
-
-	WAVE/Z indizes = FindIndizes(list, colLabel="file", str=expName)
-
-	if(WaveExists(indizes))
-		lastIndex = indizes[DimSize(indizes, ROWS) - 1]
-		if(!cmpstr(list[lastIndex][%file][0], expName))
-			return NaN
-		endif
-	endif
-
-	EnsureLargeEnoughWave(list, indexShouldExist=index, dimension=ROWS)
-	list[index][%file][0] = expName
-	list[index][%type][0] = fileType
-End
-
 /// @brief Creates list-view for AnalysisBrowser
 ///
 /// Depends on LabNoteBook to be loaded prior to call.
 ///
-/// @param fileName   current Project's filename
-/// @param device     current device, if device is empty only the experiment name is added
-/// @param dataFolder current Project's Lab Notebook DataFolder reference
-/// @param fileType   current Project's file type, one of @ref AnalysisBrowserFileTypes
-/// @param sweepNums  Wave containing all sweeps actually present for device
-static Function AB_FillListWave(string fileName, string device, string dataFolder, string fileType, WAVE/Z sweepNums)
+/// @param diskLocation full file path of Project file
+/// @param fileName     current Project's filename
+/// @param device       current device, if device is empty only the experiment name is added
+/// @param dataFolder   current Project's Lab Notebook DataFolder reference
+/// @param fileType     current Project's file type, one of @ref AnalysisBrowserFileTypes
+/// @param sweepNums    Wave containing all sweeps actually present for device
+static Function AB_FillListWave(string diskLocation, string fileName, string device, string dataFolder, string fileType, WAVE/Z sweepNums)
 
-	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
+	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount, dim
 	string str
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 
-	AB_AddExperimentNameIfReq(fileName, list, fileType, index)
+	dim = FindDimLabel(list, COLS, "device")
+	FindValue/TXOP=4/TEXT=diskLocation/RMD=[0, index - 1][dim][1] list
+	if(V_value == -1)
+		EnsureLargeEnoughWave(list, indexShouldExist=index, dimension=ROWS)
+		list[index][%file][0] = fileName
+		list[index][%type][0] = fileType
+		list[index][%device][1] = diskLocation
+	endif
 
 	if(IsEmpty(device))
 		SetNumberInWaveNote(list, NOTE_INDEX, index + 1)
