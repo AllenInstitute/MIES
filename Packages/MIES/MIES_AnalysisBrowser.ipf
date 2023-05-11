@@ -12,7 +12,7 @@
 /// Has no dependencies on any hardware related functions.
 
 static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
-static Constant DEVICE_TREEVIEW_COLUMN     = 2
+static Constant DEVICE_TREEVIEW_COLUMN     = 3
 static Constant AB_LOAD_SWEEP = 0
 static Constant AB_LOAD_STIMSET = 1
 static StrConstant AB_UDATA_WORKINGDF = "datafolder"
