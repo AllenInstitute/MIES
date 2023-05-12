@@ -3,13 +3,20 @@
 # Script to upload the release package and the installer to gitub
 #
 # Expectations:
-# - ~/.credentials/github_api_token is a file with the github OAuth token
+# - Github OAuth token is provided as the first argument. (automatically set when running on CI)
 # - $public_mies_repo exists and its origin remote is the github repository
 # - The deployment key is setup correctly for that repository in Github. See also $public_mies_repo/.git/config and ~/.ssh/config
 # - The release and installer packages are in the working tree root
 # - Either the main or a release branch are checked out
 
 set -e
+
+if [ "$#" -eq 0 ]; then
+  echo "Missing github api token parementer." 1>&2
+  exit 1
+fi
+
+github_token="$1"
 
 git --version > /dev/null
 if [ $? -ne 0 ]
@@ -80,12 +87,4 @@ case "$branch" in
     ;;
 esac
 
-credentials=~/.credentials/github_api_token
-
-if [ ! -f $credentials ]
-then
-  echo "Could not find the file $credentials with the Github OAuth token"
-  exit 1
-fi
-
-./tools/upload-github-release-asset-helper.sh github_api_token=$(cat $credentials) owner=AllenInstitute repo=MIES tag=$tag filename=$zipfile filename=$installerfile
+./tools/upload-github-release-asset-helper.sh github_api_token=$github_token owner=AllenInstitute repo=MIES tag=$tag filename=$zipfile filename=$installerfile
