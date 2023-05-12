@@ -149,8 +149,8 @@ For executing the tests manually perform the followings steps:
 - Call ``RunWithOpts()``
 - Watch the output
 
-The environment variables ``BAMBOO_INSTRUMENT_TESTS``/``BAMBOO_EXPENSIVE_CHECKS``
-allow to tweak test execution. By default we do expensive tests in CI and
+The environment variables ``CI_INSTRUMENT_TESTS``/``CI_EXPENSIVE_CHECKS`` allow
+to tweak test execution. By default we do expensive tests in CI and
 instrumentation in CI for the main branch. Accepted are all numbers but the
 values ``0``/``1`` are suggested.
 

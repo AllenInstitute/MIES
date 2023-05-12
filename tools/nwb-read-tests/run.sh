@@ -14,7 +14,7 @@ fi
 
 top_level=$(git rev-parse --show-toplevel)
 
-bamboo_agent_home=$(echo "$top_level" | cut -d "/" -f -4)
+ci_agent_home=$(echo "$top_level" | cut -d "/" -f -4)
 
 list_of_files=$(find $top_level -iname "*-V2.nwb")
 
@@ -29,4 +29,4 @@ docker build --build-arg USERID=$(id -u)                     \
              -t $tag $top_level/tools/nwb-read-tests
 
 # use 'docker run -it ..' for interactive debugging
- docker run --rm -v $bamboo_agent_home:$bamboo_agent_home -v $top_level:/home/ci $tag python3 $top_level/tools/nwb-read-tests/nwbv2-read-test.py $list_of_files
+ docker run --rm -v $ci_agent_home:$ci_agent_home -v $top_level:/home/ci $tag python3 $top_level/tools/nwb-read-tests/nwbv2-read-test.py $list_of_files
