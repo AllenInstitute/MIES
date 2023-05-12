@@ -79,7 +79,8 @@ case "$branch" in
     cd $top_level
     ;;
   release/*)
-    tag=$(git tag --list "Release_*" | tail -1)
+    version="$(echo "$branch" | grep -Po "(?<=release/).*")"
+    tag=$(git tag --list "Release_${version}_*" | tail -1)
     ;;
   *)
     echo "Skipping outdated release asset deployment."
