@@ -455,11 +455,12 @@ End
 /// @param sweepNums    Wave containing all sweeps actually present for device
 static Function AB_FillListWave(string diskLocation, string fileName, string device, string dataFolder, string fileType, WAVE/Z sweepNums)
 
-	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount, dim
+	variable index, startIndex, numWaves, i, j, sweepNo, numRows, numCols, setCount, dim
 	string str
 
 	WAVE/T list = GetExperimentBrowserGUIList()
-	index = GetNumberFromWaveNote(list, NOTE_INDEX)
+	startIndex = GetNumberFromWaveNote(list, NOTE_INDEX)
+	index = startIndex
 
 	dim = FindDimLabel(list, COLS, "device")
 	FindValue/TXOP=4/TEXT=diskLocation/RMD=[0, index - 1][dim][1] list
@@ -540,6 +541,14 @@ static Function AB_FillListWave(string diskLocation, string fileName, string dev
 	endfor
 
 	SetNumberInWaveNote(list, NOTE_INDEX, index)
+	list[startIndex, index - 1][%sweep][1] = AB_GetRowHash(list, p)
+End
+
+static Function/S AB_GetRowHash(WAVE/T list, variable row)
+
+	Duplicate/FREE/RMD=[row][][] list, rowWave
+
+	return WaveHash(rowWave, 4)
 End
 
 /// @brief Load waves from a packed/unpacked experiment file
@@ -1429,7 +1438,7 @@ static Function AB_ExpandListEntry(variable row, variable col)
 			endif
 
 			if(lastExpandedRow != i)
-				sourceRowStart = GetRowWithSameContent(expBrowserListBak, expBrowserList, i) + 1
+				sourceRowStart = AB_GetListRowWithSameHash(expBrowserListBak, expBrowserList[i][%sweep][1]) + 1
 				sourceRowEnd = AB_GetRowWithNextTreeView(expBrowserSelBak, sourceRowStart - 1, j) - 1
 				length = sourceRowEnd - sourceRowStart + 1
 				if(length > 0)
@@ -1443,6 +1452,15 @@ static Function AB_ExpandListEntry(variable row, variable col)
 			expBrowserSel[i][j] = SetBit(val, LISTBOX_TREEVIEW_EXPANDED)
 		endfor
 	endfor
+End
+
+static Function AB_GetListRowWithSameHash(WAVE/T list, string h)
+
+	variable dim = FindDimLabel(list, COLS, "sweep")
+	FindValue/TXOP=4/TEXT=h/RMD=[][dim][1] list
+	ASSERT(V_row >= 0, "List row not found")
+
+	return V_row
 End
 
 /// @returns 0 if the treeview could be expanded, zero otherwise
