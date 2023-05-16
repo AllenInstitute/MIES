@@ -6622,3 +6622,8 @@ Function UpdateInfoButtonHelp(string win, string ctrl, string content)
 
 	Button $ctrl win=$win,help={htmlStr},userdata=content
 End
+
+/// @brief Acts like the `limit` builtin but replaces values outside the valid range instead of clipping them
+threadsafe Function LimitWithReplace(variable val, variable low, variable high, variable replacement)
+	return (val >= low && val <= high) ? val : replacement
+End
