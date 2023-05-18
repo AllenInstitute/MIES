@@ -506,12 +506,27 @@ Function EnableDangerousDebugging()
 	variable/G root:V_debugDangerously = 1
 End
 
-threadsafe static Function ReportBugToLogfile(string msg)
+threadsafe static Function ReportBugToLogfile(string msg, WAVE/T/Z keys, WAVE/T/Z values)
 
-	LOG_AddEntry(PACKAGE_MIES, "report",   \
-	             stacktrace = 1,           \
-	             keys = {LOG_MESSAGE_KEY}, \
-	             values = {msg})
+	variable size
+
+	if(!WaveExists(keys) || !WaveExists(values))
+		Make/FREE/T/N=0 keys, values
+	endif
+
+	ASSERT_TS(IsTextWave(keys) && IsTextWave(values), "keys and values must be text waves")
+
+	size = DimSize(keys, ROWS)
+	ASSERT_TS(size == DimSize(values, ROWS), "keys and values must have matching sizes")
+
+	Redimension/N=(size + 1) keys, values
+	keys[size]       = LOG_MESSAGE_KEY
+	values[size]     = msg
+
+	LOG_AddEntry(PACKAGE_MIES, "report", \
+	             stacktrace = 1,         \
+	             keys = keys,            \
+	             values = values)
 End
 
 /// @brief Complain and ask the user to report the error
@@ -520,8 +535,7 @@ End
 ///
 /// If a testcase wants to trigger a BUG message *and* needs to treat that as non-fatal,
 /// it needs to set `bugCount` to NaN before.
-Function BUG(msg)
-	string msg
+Function BUG(string msg, [WAVE/T keys, WAVE/T values])
 
 	string func, line, file
 	FindFirstOutsideCaller(func, line, file)
@@ -534,7 +548,7 @@ Function BUG(msg)
 		printf "BUG: %s\r", msg
 	endif
 
-	ReportBugToLogfile(msg)
+	ReportBugToLogfile(msg, keys, values)
 
 	ControlWindowToFront()
 
@@ -547,12 +561,12 @@ Function BUG(msg)
 End
 
 /// @brief Threadsafe variant of BUG()
-threadsafe Function BUG_TS(string msg)
+threadsafe Function BUG_TS(string msg, [WAVE/T keys, WAVE/T values])
 	variable bugCount
 
 	msg = RemoveEnding(msg, "\r")
 
-	ReportBugToLogfile(msg)
+	ReportBugToLogfile(msg, keys, values)
 
 	printf "BUG_TS: %s\r", msg
 
