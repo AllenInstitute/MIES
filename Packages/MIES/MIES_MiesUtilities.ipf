@@ -2940,7 +2940,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 						if(dDAQEnabled)
 							// fallback to manual calculation
-							// for versions prior to 17b49b63 (DC_PlaceDataInITCDataWave: Document stim set length, 2016-05-12)
+							// for versions prior to bb2d2bd6 (DC_PlaceDataInITCDataWave: Document stim set length, 2016-05-12)
 							if(!IsFinite(stimSetLength))
 								stimSetLength = (DimSize(wv, ROWS) - (delayOnsetUser + delayOnsetAuto + delayTermination + delaydDAQ * (numADCs - 1))) /  numADCs
 								DEBUGPRINT("Stim set length (manually calculated)", var=stimSetLength)
