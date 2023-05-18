@@ -1061,7 +1061,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	WAVE/T/Z stimSets = GetLastSetting(s.textualValues, s.sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	ASSERT_TS(WaveExists(stimSets), "Labnotebook is too old for NWB export.")
 
-	// 95402da6 (NWB: Allow documenting the physical electrode, 2016-08-05)
+	// b1575214 (NWB: Allow documenting the physical electrode, 2016-08-05)
 	WAVE/Z/T electrodeNames = GetLastSetting(s.textualValues, s.sweep, "Electrode", DATA_ACQUISITION_MODE)
 	if(!WaveExists(electrodeNames))
 		Make/FREE/T/N=(NUM_HEADSTAGES) electrodeNames = GetDefaultElectrodeName(p)
