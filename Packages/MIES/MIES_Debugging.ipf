@@ -506,6 +506,13 @@ Function EnableDangerousDebugging()
 	variable/G root:V_debugDangerously = 1
 End
 
+threadsafe static Function ReportBugToLogfile(string msg, string caller)
+
+	LOG_AddEntry_TS(PACKAGE_MIES, "report", caller, \
+	                keys = {"msg", "stacktrace"},   \
+	                values = {msg, GetStackTrace()})
+End
+
 /// @brief Complain and ask the user to report the error
 ///
 /// In nearly all cases ASSERT() is the more appropriate method to use.
@@ -526,9 +533,7 @@ Function BUG(msg)
 		printf "BUG: %s\r", msg
 	endif
 
-	LOG_AddEntry(PACKAGE_MIES, "report",            \
-	             keys = {"msg", "stacktrace"},      \
-	             values = {msg, GetStackTrace()})
+	ReportBugToLogfile(msg, "BUG")
 
 	ControlWindowToFront()
 
@@ -543,15 +548,10 @@ End
 /// @brief Threadsafe variant of BUG()
 threadsafe Function BUG_TS(string msg)
 	variable bugCount
-	string stacktrace
 
 	msg = RemoveEnding(msg, "\r")
 
-	stacktrace = GetStackTrace()
-
-	LOG_AddEntry_TS(PACKAGE_MIES, "report", "BUG_TS",  \
-	                keys = {"msg", "stacktrace"},      \
-	                values = {msg, stacktrace})
+	ReportBugToLogfile(msg, "BUG_TS")
 
 	printf "BUG_TS: %s\r", msg
 
