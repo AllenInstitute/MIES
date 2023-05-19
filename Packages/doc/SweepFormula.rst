@@ -1182,7 +1182,9 @@ The operation returns the data argument unchanged.
 
    store("fancy feature", [10, 100])
 
-adds the entry "Sweep Formula store [fancy feature]" with a serialized version of given array.
+adds the entry "Sweep Formula store [fancy feature]" with a serialized version
+of given array. The serialization format is JSON as described in the
+preliminary `specification <https://github.com/AllenInstitute/ZeroMQ-XOP/#wave-serialization-format>`__.
 
 Plotting
 ^^^^^^^^

@@ -776,14 +776,10 @@ Function/S SFH_FormatResultsKey(variable resultType, string name)
 	return "Sweep Formula " + SFH_ResultTypeToString(resultType) + " [" + name + "]"
 End
 
-Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph, string code, [variable serializationMode, WAVE data, string name, variable resultType])
+Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph, string code, [WAVE data, string name, variable resultType])
 
 	variable numEntries, numOptParams, hasStoreEntry, numCursors, numBasicEntries
 	string shPanel, dataFolder, device, str
-
-	if(ParamIsDefault(serializationMode))
-		serializationMode = SER_MODE_IP
-	endif
 
 	numOptParams = ParamIsDefault(data) + ParamIsDefault(name)
 	ASSERT(numOptParams == 0 || numOptParams == 2, "Invalid optional parameters data and name")
@@ -833,47 +829,12 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 	endif
 
 	if(hasStoreEntry)
-		switch(serializationMode)
-			case SER_MODE_IP:
-				str = SFH_PrepareDataForResultsWaveAsIP(data)
-				break
-			case SER_MODE_JSON:
-				str = WaveToJSON(data)
-				break
-			default:
-				ASSERT(0, "Invalid serialization mode")
-		endswitch
-
-		values[0][numEntries - 1][INDEP_HEADSTAGE] = str
+		// since bdee94c6 (Merge pull request #1713 from AllenInstitute/bugfix/1713-correct-referenced-commits-in-code, 2023-05-18)
+		// we always store in JSON format, before we used the format defined by TextWaveToList() for the store operation.
+		values[0][numEntries - 1][INDEP_HEADSTAGE] = WaveToJSON(data)
 	endif
 
 	return [keys, values]
-End
-
-/// @brief Serialization of wave without metadata as nested Igor style string lists
-///
-/// Also limits the number of entries.
-static Function/S SFH_PrepareDataForResultsWaveAsIP(WAVE data)
-	variable numEntries, maxEntries
-
-	if(IsNumericWave(data))
-		Make/T/FREE/N=(DimSize(data, ROWS), DimSize(data, COLS), DimSize(data, LAYERS), DimSize(data, CHUNKS)) dataTxT
-		MultiThread dataTxT[][][][] = num2strHighPrec(data[p][q][r][s], precision = MAX_DOUBLE_PRECISION, shorten = 1)
-	else
-		WAVE/T dataTxT = data
-	endif
-
-	// assuming 100 sweeps on average
-	maxEntries = 100 * NUM_HEADSTAGES * 10 // NOLINT
-	numEntries = numpnts(dataTxT)
-
-	if(numpnts(dataTxT) > maxEntries)
-		printf "The store operation received too much data to store, it will only store the first %d entries\r.", maxEntries
-		ControlWindowToFront()
-		numEntries = maxEntries
-	endif
-
-	return TextWaveToList(dataTxT, ";", maxElements = numEntries)
 End
 
 /// @brief Return the SweepBrowser/DataBrowser from which the given

@@ -3069,13 +3069,8 @@ static Function StoreWorks([WAVE wv])
 	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [ABCD]", SWEEP_FORMULA_RESULT)
 	CHECK_PROPER_STR(results)
 
-	if(IsTextWave(wv))
-		WAVE/T/Z resultsTextWave = ListToTextWaveMD(results, 1)
-		CHECK_EQUAL_TEXTWAVES(wv, resultsTextWave, mode = WAVE_DATA)
-	else
-		WAVE/Z resultsWave = ListToNumericWave(results, ";")
-		CHECK_EQUAL_WAVES(wv, resultsWave, mode = WAVE_DATA)
-	endif
+	WAVE/Z resultsWave = JSONToWave(results)
+	CHECK_EQUAL_TEXTWAVES(wv, resultsWave, mode = WAVE_DATA)
 
 	// check sweep formula y wave
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
@@ -3113,7 +3108,7 @@ End
 // data acquired with model cell, 45% baseline
 // the data is the inserted TP plus 10ms flat stimset
 static Function TPWithModelCell()
-	string win, device, bsPanel, results, ref
+	string win, device, str
 
 	device = HW_ITC_BuildDeviceString("ITC18USB", "0")
 
@@ -3131,13 +3126,17 @@ static Function TPWithModelCell()
 
 	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
-	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [ss]", SWEEP_FORMULA_RESULT)
-	ref = "183.03771820448884;"
-	CHECK_EQUAL_STR(ref, results)
+	str = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [ss]", SWEEP_FORMULA_RESULT)
+	WAVE/Z results = JSONToWave(str)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	Make/D/FREE ref = {183.037718204489}
+	CHECK_EQUAL_WAVES(ref, results, mode = WAVE_DATA)
 
-	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [inst]", SWEEP_FORMULA_RESULT)
-	ref = "17.366739401496286;"
-	CHECK_EQUAL_STR(ref, results)
+	str = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [inst]", SWEEP_FORMULA_RESULT)
+	WAVE/Z results = JSONToWave(str)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	Make/D/FREE ref = {17.3667394014963}
+	CHECK_EQUAL_WAVES(ref, results, mode = WAVE_DATA)
 End
 
 static Function NonExistingOperation()

@@ -1976,13 +1976,6 @@ Constant HARDWARE_ITC_STUCK_FIFO_TICKS = 120 // 2s
 StrConstant SF_PLOT_NAME_TEMPLATE = "SweepFormula plot"
 StrConstant SFH_USER_DATA_BROWSER = "browser"
 
-/// @name Available serialization modes for SFH_CreateResultsWaveWithCode()
-/// @anchor ResultsSerializationModes
-/// @{
-Constant SER_MODE_IP   = 0x01
-Constant SER_MODE_JSON = 0x02
-/// @}
-
 /// @name Available result types for SFH_CreateResultsWaveWithCode()
 /// @anchor ResultTypes
 /// @{
