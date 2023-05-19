@@ -844,6 +844,7 @@ end
 static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] PSX_GetStatsResults(WAVE allEvents, WAVE/T allComboKeys, variable state, string prop)
 
 	string stateType
+	variable numEntries
 
 	// use the correct event/fit state for the property
 	strswitch(prop)
@@ -868,11 +869,18 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 		return [$"", $"", $"", $""]
 	endif
 
-	Make/D/FREE/N=(Dimsize(indizes, ROWS)) results
-	Make/FREE/N=(Dimsize(indizes, ROWS)) marker, eventIndex
-	Make/FREE/N=(Dimsize(indizes, ROWS))/T comboKeys
+	numEntries = Dimsize(indizes, ROWS)
+	Make/D/FREE/N=(numEntries) results
+	Make/FREE/N=(numEntries) marker, eventIndex
+	Make/FREE/N=(numEntries)/T comboKeys
 
-	Multithread results[]    = allEvents[indizes[p]][%$prop]
+	if(!cmpstr(prop, "isi") && numEntries >= 2)
+		// recalculate the isi as that might have changed due to in-between events being not selected
+		Multithread results[0, numEntries - 1] = allEvents[indizes[p]][%dc_peak_time] - (p >= 1 ? allEvents[indizes[p - 1]][%dc_peak_time] : NaN)
+	else
+		Multithread results[] = allEvents[indizes[p]][%$prop]
+	endif
+
 	Multithread eventIndex[] = allEvents[indizes[p]][%index]
 	MultiThread comboKeys[]  = allComboKeys[indizes[p]]
 	Multithread marker[]     = PSX_SelectMarker(allEvents[indizes[p]][%$stateType])

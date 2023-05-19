@@ -569,7 +569,7 @@ Function/WAVE StatsTest_GetInput()
 	input[%state]    = "undetermined"
 	input[%postProc] = "log10"
 
-	JWN_SetWaveInWaveNote(input, "/results", {3.301029995663981, 3.778151250383643, 3.954242509439325})
+	JWN_SetWaveInWaveNote(input, "/results", {NaN, log(600 - 200), log(900 - 600)})
 	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
 	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
 
