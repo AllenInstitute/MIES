@@ -128,6 +128,26 @@
 ///
 /// See also :ref:`epoch_time_specialities`.
 /// \endrst
+///
+/// Textual results entries stored by the sweep formula ``store`` operation with the names ``Sweep Formula store [XXX]``:
+///
+/// \rst
+///
+/// .. List of names generated via `git grep -hPiIo '(?U)\bstore\(\\"\K.*(?=\\")' MIES_AnalysisFunctions_*`
+///
+/// ==================================== ==================
+/// Name                                 Analysis function
+/// ==================================== ==================
+/// Steady state resistance              PB
+/// Steady state resistance (group A)    PB
+/// Steady state resistance (group B)    PB
+/// Average U_BLS0                       VM
+/// Average U_BLS1                       VM
+/// Steady state resistance              AR
+/// Peak resistance                      AR
+/// ==================================== ==================
+///
+/// \endrst
 
 static Constant PSQ_BL_PRE_PULSE   = 0x0
 static Constant PSQ_BL_POST_PULSE  = 0x1
