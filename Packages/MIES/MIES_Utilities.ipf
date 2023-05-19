@@ -4867,7 +4867,8 @@ End
 /// @returns loaded string data and full path fileName
 Function [string data, string fName] LoadTextFile(string fileName[, string fileFilter, string message])
 
-	variable fNum, zFlag
+	variable fNum, zFlag, fSize
+	string fullFilePath, errMsg
 
 	zFlag = GetOpenZFlag()
 
@@ -4880,18 +4881,26 @@ Function [string data, string fName] LoadTextFile(string fileName[, string fileF
 	else
 		Open/R/Z=(zFlag)/F=fileFilter/M=message fnum as fileName
 	endif
+	fullFilePath = S_fileName
 
-	if(IsEmpty(S_fileName) || V_flag)
+	if(IsEmpty(fullFilePath) || V_flag)
 		return ["", ""]
 	endif
 
-	FStatus fnum
+	fSize = GetFileSize(fullFilePath)
+
 	data = ""
-	data = PadString(data, V_logEOF, 0x20)
+	AssertOnAndClearRTError()
+	try
+		data = PadString(data, fSize, 0x20); AbortOnRTE
+	catch
+		sprintf errMsg, "PadString can not pad %f bytes.", fSize
+		ASSERT(0, errMsg)
+	endtry
 	FBinRead fnum, data
 	Close fnum
 
-	return [data, S_Path + S_fileName]
+	return [data, fullFilePath]
 End
 
 /// @brief Removes found entry from a text wave
@@ -5038,7 +5047,12 @@ Function GetFileSize(string filepath)
 
 	filepath = ResolveAlias(filepath)
 
-	GetFileFolderInfo/Q/Z filepath
+	AssertOnAndClearRTError()
+	try
+		GetFileFolderInfo/Q/Z filepath; AbortOnRTE
+	catch
+		ASSERT(0, "Error getting file info for file: " + filePath)
+	endtry
 
 	if(V_flag || !V_isFile)
 		return NaN
