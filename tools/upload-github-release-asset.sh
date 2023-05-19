@@ -4,8 +4,6 @@
 #
 # Expectations:
 # - Github OAuth token is provided as the first argument. (automatically set when running on CI)
-# - $public_mies_repo exists and its origin remote is the github repository
-# - The deployment key is setup correctly for that repository in Github. See also $public_mies_repo/.git/config and ~/.ssh/config
 # - The release and installer packages are in the working tree root
 # - Either the main or a release branch are checked out
 
@@ -55,28 +53,18 @@ then
   exit 1
 fi
 
-public_mies_repo=~/devel/public-mies-igor
-
-if [ ! -d $public_mies_repo ]
-then
-  echo "The folder $public_mies_repo does not exist"
-  exit 1
-fi
-
 branch=$(git rev-parse --abbrev-ref HEAD)
 
 case "$branch" in
   main)
     tag=latest
 
-    cd $public_mies_repo
-
     git stash || true
     git fetch --all
     git tag --force ${tag} origin/main
     git push --force origin ${tag}
+    git stash pop || true
 
-    cd $top_level
     ;;
   release/*)
     version="$(echo "$branch" | grep -Po "(?<=release/).*")"
