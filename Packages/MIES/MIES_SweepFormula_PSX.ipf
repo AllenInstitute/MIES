@@ -128,6 +128,11 @@ static StrConstant PSX_AVERAGE_FIT_RESULT_DEFAULT_HELP = "No fit results availab
 
 static Constant PSX_DEFAULT_PEAK_SEARCH_RANGE_MS = 5
 
+static StrConstant PSX_EVENT_JSON_GOBAL_SETTINGS = "/global"
+
+static Constant PSX_STATS_TAU_FACTOR = 10
+static Constant PSX_STATS_AMP_FACTOR = 100
+
 Menu "GraphMarquee"
 	"PSX: Accept Event && Fit", /Q, PSX_MouseEventSelection(PSX_ACCEPT, PSX_STATE_EVENT | PSX_STATE_FIT)
 	"PSX: Reject Event && Fit", /Q, PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_EVENT | PSX_STATE_FIT)
@@ -885,7 +890,7 @@ End
 static Function/WAVE PSX_OperationStatsImpl(string graph, WAVE rangeParam, WAVE selectData, string prop, string stateAsStr, string postProc)
 
 	string propLabel, propLabelAxis, comboKey
-	variable numRows, numCols, i, j, k, index, sweepNo, chanNr, chanType, state, numRanges
+	variable numRows, numCols, i, j, k, index, sweepNo, chanNr, chanType, state, numRanges, lowerBoundary, upperBoundary, temp
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_STATS, MINIMUM_WAVE_SIZE)
 
@@ -1020,7 +1025,40 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, WAVE rangeParam, WAVE 
 						break
 					case "hist":
 						Make/FREE/N=0/D results
-						Histogram/DP/B=5/DEST=results resultsRaw
+
+						// truncate the input data to get usable histogram bins
+						// using allEvents assumes that the same psxKernel was used for
+						// all input events, which sounds reasonable.
+						if(!cmpstr(prop, "tau") || !cmpstr(prop, "amp"))
+							if(!cmpstr(prop, "tau"))
+								lowerBoundary = 0
+								upperBoundary = PSX_STATS_TAU_FACTOR * JWN_GetNumberFromWaveNote(allEvents, PSX_EVENT_JSON_GOBAL_SETTINGS + "/User/Parameters/psxKernel/decayTau")
+								ASSERT(IsFinite(upperBoundary) && upperBoundary > 0, "Upper boundary for tau must be finite and positive")
+							elseif(!cmpstr(prop, "amp"))
+								temp = PSX_STATS_AMP_FACTOR * JWN_GetNumberFromWaveNote(allEvents, PSX_EVENT_JSON_GOBAL_SETTINGS + "/User/Parameters/psxKernel/amp")
+								lowerBoundary = -abs(temp)
+								upperBoundary = +abs(temp)
+								ASSERT(IsFinite(lowerBoundary) && IsFinite(upperBoundary), "Lower/Upper boundary for amp must be finite")
+							endif
+
+							resultsRaw[] = LimitWithReplace(resultsRaw[p], lowerBoundary, upperBoundary, NaN)
+						endif
+
+						WAVE/Z resultsRawClean = ZapNaNs(resultsRaw)
+
+						if((!WaveExists(resultsRawClean) && WaveExists(resultsRaw))         \
+						   || (DimSize(resultsRawClean, ROWS) != DimSize(resultsRaw, ROWS)))
+							if(!AlreadyCalledOnce(CO_PSX_CLIPPED_STATS))
+								printf "psxStats removed out-of-range input data for histogram generation.\r"
+								ControlWindowToFront()
+							endif
+						endif
+
+						if(!WaveExists(resultsRawClean))
+							continue
+						endif
+
+						Histogram/DP/B=5/DEST=results resultsRawClean
 						break
 					case "log10":
 						MatrixOp/FREE results = log(resultsRaw)
@@ -2709,7 +2747,7 @@ End
 /// Takes care of existing combination data due to other `psx` calls in the same code
 static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, variable offset, variable numCombos)
 
-	variable i, j, numEvents
+	variable i, j, numEvents, resultsJSON, psxEventJSON
 	string key
 
 	WAVE/Z/SDFR=workDFR psxAnalysis
@@ -2720,6 +2758,8 @@ static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, v
 	else
 		Concatenate/NP=(ROWS) {results[%psxAnalysis][1]}, psxAnalysis
 	endif
+
+	resultsJSON = JWN_GetWaveNoteAsJSON(results)
 
 	for(i = 0; i < numCombos; i += 1)
 
@@ -2751,6 +2791,11 @@ static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, v
 		MoveWave results[%$key][1], dfr:psxEvent
 		WAVE/SDFR=dfr psxEvent
 
+		/// @todo prefer JSON_Sync once available
+		psxEventJSON = JWN_GetWaveNoteAsJSON(psxEvent)
+		JSON_AddJSON(psxEventJSON, PSX_EVENT_JSON_GOBAL_SETTINGS, resultsJSON)
+		JWN_SetWaveNoteFromJSON(psxEvent, psxEventJSON)
+
 		numEvents = DimSize(psxEvent, ROWS)
 
 		key = PSX_GenerateKey("eventFit", i)
@@ -2776,6 +2821,8 @@ static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, v
 
 		PSX_CreateSingleEventWaves(dfr, psxEvent, sweepDataFiltOff)
 	endfor
+
+	JSON_Release(resultsJSON)
 End
 
 /// @brief Extract a single wave for each event from sweepDataFiltOff

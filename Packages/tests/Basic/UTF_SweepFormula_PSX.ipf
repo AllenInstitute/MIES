@@ -636,8 +636,8 @@ End
 
 Function/WAVE StatsTestSpecialCases_GetInput()
 
-	Make/T/FREE/N=(6) template
-	SetDimensionLabels(template, "prop;state;postProc;refNumOutputRows;numEventsCombo0;numEventsCombo1", ROWS)
+	Make/T/FREE/N=(7) template
+	SetDimensionLabels(template, "prop;state;postProc;refNumOutputRows;numEventsCombo0;numEventsCombo1;outOfRange", ROWS)
 
 	// wv0
 	// every
@@ -650,6 +650,7 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	input[%refNumOutputRows]= "3"
 	input[%numEventsCombo0] = "5"
 	input[%numEventsCombo1] = "3"
+	input[%outOfRange]      = "0"
 
 	JWN_CreatePath(input, "/0")
 	JWN_SetWaveInWaveNote(input, "/0/results", {PSX_ACCEPT, PSX_ACCEPT, PSX_ACCEPT})
@@ -677,6 +678,7 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	input[%refNumOutputRows]= "0"
 	input[%numEventsCombo0] = "1"
 	input[%numEventsCombo1] = "1"
+	input[%outOfRange]      = "0"
 
 	// wv2
 	// histogram works also with just one point
@@ -689,14 +691,46 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	input[%refNumOutputRows]= "1"
 	input[%numEventsCombo0] = "1"
 	input[%numEventsCombo1] = "0"
+	input[%outOfRange]      = "0"
 
 	JWN_CreatePath(input, "/0")
 	JWN_SetWaveInWaveNote(input, "/0/results", {PSX_REJECT})
 	// no x values
 	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
 
+	// wv3
+	// histogram with no match as the tau values are out-of-range
+	Duplicate/FREE/T template, wv3
+	WAVE/T input = wv3
+
+	input[%prop]            = "tau"
+	input[%state]           = "undetermined"
+	input[%postProc]        = "hist"
+	input[%refNumOutputRows]= "0"
+	input[%numEventsCombo0] = "3"
+	input[%numEventsCombo1] = "0"
+	input[%outOfRange]      = "1"
+
+	// wv4
+	// histogram with match but cut out data
+	Duplicate/FREE/T template, wv4
+	WAVE/T input = wv4
+
+	input[%prop]            = "amp"
+	input[%state]           = "all"
+	input[%postProc]        = "hist"
+	input[%refNumOutputRows]= "1"
+	input[%numEventsCombo0] = "3"
+	input[%numEventsCombo1] = "0"
+	input[%outOfRange]      = "1"
+
+	JWN_CreatePath(input, "/0")
+	JWN_SetWaveInWaveNote(input, "/0/results", {PSX_REJECT})
+	// no xValues
+	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
+
 	// end
-	Make/FREE/WAVE results = {wv0 , wv1, wv2}
+	Make/FREE/WAVE results = {wv0 , wv1, wv2, wv3, wv4}
 
 	return results
 End
@@ -705,8 +739,8 @@ End
 /// UTF_TD_GENERATOR w0:StatsTestSpecialCases_GetInput
 static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 
-	string prop, stateAsStr, postProc, browser, device, formulaGraph, comboKey, pathPrefix
-	variable numEventsCombo0, numEventsCombo1, idx, refNumRows
+	string prop, stateAsStr, postProc, browser, device, formulaGraph, comboKey, pathPrefix, history
+	variable numEventsCombo0, numEventsCombo1, idx, refNumRows, outOfRange, refNum
 
 	WAVE/T input = m.w0
 
@@ -716,6 +750,7 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 	refNumRows      = str2num(input[%refNumOutputRows])
 	numEventsCombo0 = str2num(input[%numEventsCombo0])
 	numEventsCombo1 = str2num(input[%numEventsCombo1])
+	outOfRange      = str2num(input[%outOfRange])
 
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
@@ -732,6 +767,9 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 	selectDataComboIndex0[0][%SWEEP] = 1
 	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectDataComboIndex0, range)
 	JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
+	JWN_CreatePath(psxEvent, "/global/User/Parameters/psxKernel/")
+	JWN_SetNumberInWaveNote(psxEvent, "/global/User/Parameters/psxKernel/decayTau", 1e-8)
+	JWN_SetNumberInWaveNote(psxEvent, "/global/User/Parameters/psxKernel/amp", 0.1)
 
 	// 2nd event wave
 	WAVE/Z psxEvent = CreateEventWaveInComboFolder_IGNORE(comboIndex = 1)
@@ -750,8 +788,20 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 
 	Concatenate/NP=(ROWS) {selectDataComboIndex0, selectDataComboIndex1, selectDataComboIndex2}, allSelectData
 
+	if(outOfRange)
+		refNum = CaptureHistoryStart()
+	else
+		refNum = NaN
+	endif
+
 	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, range, allSelectData, prop, stateAsStr, postProc)
 	CHECK_WAVE(output, WAVE_WAVE)
+
+	if(outOfRange)
+		history = CaptureHistory(refNum, 1)
+		CHECK_PROPER_STR(history)
+		CHECK_GE_VAR(strsearch(history, "out-of-range", 0), 0)
+	endif
 
 	Make/FREE/N=4 dims = DimSize(output, p)
 	Make/FREE/N=4 refDims = {refNumRows, 0, 0, 0}
