@@ -41,7 +41,7 @@ fi
 cd $top_level
 
 zipfile=$(ls Release_*.zip)
-installerfile=$(ls MIES-Release*.exe)
+installerfile=$(find -name "MIES-Release*.exe")
 
 if [ ! -f $zipfile ]
 then
@@ -75,5 +75,7 @@ case "$branch" in
     exit 0
     ;;
 esac
+
+echo "Upload release for tag: $tag"
 
 ./tools/upload-github-release-asset-helper.sh github_api_token=$github_token owner=AllenInstitute repo=MIES tag=$tag filename=$zipfile filename=$installerfile
