@@ -4,23 +4,13 @@ top_level=$(git rev-parse --show-toplevel)
 branch=$(git rev-parse --abbrev-ref HEAD)
 version=$(git describe --always --tags --match "Release_*")
 
-function Passed {
-  cp "$top_level/tools/JU_Passed.xml" "$top_level/Packages/tests"
-  exit 0
-}
-
-function Failed {
-  cp "$top_level/tools/JU_Failed.xml" "$top_level/Packages/tests"
-  exit 1
-}
-
 case $(uname) in
     Linux)
       ;;
     *)
       # install the correct packages
       # this is more convenient for users
-      pip install -r $top_level/tools/docker/requirements.txt > /dev/null || Failed
+      pip install -r $top_level/tools/docker/requirements.txt > /dev/null || exit 1
       ;;
 esac
 
@@ -46,7 +36,7 @@ then
   echo "Errors building the documentation" 1>&2
   echo "Doxygen says: "                    1>&2
   echo "$output"                           1>&2
-  Failed
+  exit 1
 fi
 
 if hash dot 2>/dev/null; then
@@ -67,7 +57,7 @@ if hash dot 2>/dev/null; then
 else
   echo "Errors building the documentation" 1>&2
   echo "dot/graphviz could not be found, see https://graphviz.org/download/#windows for Windows installer packages."   1>&2
-  Failed
+  exit 1
 fi
 
 cd "$top_level/Packages/MIES"
@@ -109,7 +99,7 @@ if hash breathe-apidoc 2>/dev/null; then
 else
   echo "Errors building the documentation" 1>&2
   echo "breathe-apidoc could not be found" 1>&2
-  Failed
+  exit 1
 fi
 
 # Add labels to each group and each file
@@ -148,13 +138,13 @@ if hash sphinx-build 2>/dev/null; then
     echo "Errors building the documentation" 1>&2
     echo "sphinx-build says: "               1>&2
     cat sphinx-output.log                    1>&2
-    Failed
+    exit 1
   fi
 
 else
   echo "Errors building the documentation" 1>&2
   echo "sphinx-build could not be found"   1>&2
-  Failed
+  exit 1
 fi
 
 echo "Start zipping the results"
@@ -162,8 +152,4 @@ rm -f mies-docu*.zip
 "$ZIP_EXE" -qr0 mies-docu-$version.zip html
 "$ZIP_EXE" -qd mies-docu-$version.zip "html/.doctrees/*" > /dev/null
 
-Passed
-
-# handle cases where we are called with plain sh
-# which does not know about functions
-exit 1
+exit 0

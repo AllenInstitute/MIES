@@ -1,0 +1,157 @@
+name: Build Release
+run-name: Build ${{ github.ref_name }} 🚀
+on:
+  push:
+    branches:
+      - main
+      - release/*
+defaults:
+  run:
+    shell: bash
+jobs:
+
+  TestCompilation:
+    name: 🧪 Test Compilation
+    uses: ./.github/workflows/test-igor-workflow.yml
+    with:
+      experiment: Packages/tests/Compilation/CompilationTester.pxp
+      installer_artifact_name: '' # this disables artifact download
+      installer_flags: -s git
+      artifact_name: TestCompilation-assets
+
+  TestBasic:
+    name: 🧪 Test Basic
+    uses: ./.github/workflows/test-igor-workflow.yml
+    with:
+      experiment: Packages/tests/Basic/Basic.pxp
+      installer_artifact_name: '' # this disables artifact download
+      installer_flags: -s git
+      artifact_name: TestBasic-assets
+
+  Documentation:
+    name: 👷 Documentation
+    runs-on: [ self-hosted, Linux, Docker ]
+    if: github.ref_name == 'main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Build documentation
+        run: tools/docker/build-documentation.sh
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: Documentation-assets
+          path: |
+            Packages/doc/*.zip
+          if-no-files-found: error
+
+  BuildInstaller:
+    name: 🏗 Installer
+    runs-on: [ self-hosted, Windows, Certificate ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0 # load all commits
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Create release package and installer
+        run: tools/create-installer.sh
+      - name: Sign installer
+        run: tools/sign-installer.sh -p "${{ secrets.GHA_MIES_CERTIFICATE_PIN }}"
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: BuildInstaller-assets
+          path: |
+            *.zip
+            tools/installer/MIES-*.exe
+          if-no-files-found: error
+
+  DeployDocumentation:
+    name: ✈️ Deploy documentation
+    runs-on: [ self-hosted, Linux, Docker ]
+    if: github.ref_name == 'main'
+    permissions: write-all
+    needs:
+      - TestCompilation
+      - TestBasic
+      - Documentation
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0 # load all commits
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          name: Documentation-assets
+      - name: Deploy documentation to github pages
+        run: tools/publish-docs-on-github.sh
+
+  DeployInstaller:
+    name: ✈️ Deploy Installer
+    runs-on: [ self-hosted, Linux, Docker ]
+    permissions: write-all
+    needs:
+      - TestCompilation
+      - TestBasic
+      - BuildInstaller
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0 # load all commits
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          name: BuildInstaller-assets
+      - name: Deploy release assets to github
+        run: tools/upload-github-release-asset.sh "${{ github.token }}"
+
+  FTPUpload:
+    name: 📦 FTP Upload Artifacts
+    runs-on: [ self-hosted, Linux, Docker ]
+    if: always()
+    needs:
+      # All jobs that create new artifacts
+      - TestCompilation
+      - TestBasic
+      - Documentation
+      - BuildInstaller
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Download all artifacts
+        id: download
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          path: artifacts
+      - name: Flatten artifact structure
+        run: |
+          find "${{ steps.download.outputs.download-path }}" -mindepth 1 -maxdepth 1 -type d |\
+            xargs -I {} tools/ftp-upload/flatten-files.sh "{}"
+      - name: Upload artifacts using FTP
+        run: |
+          tools/ftp-upload/upload-files.sh \
+            -s "${{ vars.GHA_MIES_FTP_ARTEFACT_STORAGE_DNS }}" \
+            -u "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_USER }}" \
+            -p "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_PWD }}" \
+            -d "${{ steps.download.outputs.download-path }}" \
+            -t "deploy/$(echo "${{ github.ref_name }}" | sed "s@/@_@g")/${{ github.sha }}/${{ github.run_attempt }}"

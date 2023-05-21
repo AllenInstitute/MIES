@@ -1,5 +1,23 @@
 #!/bin/sh
 
+# check if script is running on Github
+if [ -f "$GITHUB_PATH" ]; then
+    # setup github runner
+    case $OS in
+        Windows*)
+            cat <<EOF >> $GITHUB_PATH
+/usr/local/bin
+/usr/bin
+/bin
+EOF
+            ;;
+        *)
+            ;;
+    esac
+fi
+
+# setup git
+
 git config --local filter.compress.clean "gzip -3 --no-name --stdout"
 git config --local filter.compress.smudge "gzip --decompress --stdout"
 

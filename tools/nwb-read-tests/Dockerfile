@@ -29,7 +29,7 @@ ARG USERID
 ARG GROUPID
 
 # add normal user
-RUN groupadd -g $USERID ci
+RUN groupadd -g $GROUPID ci
 RUN useradd -u $USERID -g $GROUPID -ms /bin/bash ci
 
 USER ci

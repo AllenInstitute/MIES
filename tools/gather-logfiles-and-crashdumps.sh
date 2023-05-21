@@ -5,6 +5,7 @@ IFS=$'\n'
 set -e
 
 files=$(find "$APPDATA/WaveMetrics" -type f -iname Log.jsonl)
+echo "files: $files"
 
 for i in $files
 do
@@ -13,6 +14,7 @@ do
 done
 
 folders=$(find "$APPDATA/WaveMetrics" -type d -iname Diagnostics)
+echo "folders: $folder"
 
 for i in $folders
 do
@@ -22,7 +24,9 @@ done
 
 # now that we have successfully copied both logfiles and diagnostics, we can
 # safely remove them
-rm --verbose $files
+if [ ! "$files" = "" ]; then
+  rm --verbose $files
+fi
 
 for i in $folders
 do

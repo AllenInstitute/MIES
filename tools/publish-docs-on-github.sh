@@ -6,8 +6,6 @@ set -e
 #
 # Expectations:
 # - Called from the MIES repository (full clone)
-# - $public_mies_repo exists and its origin remote is the github repository
-# - The deployment key is setup correctly for that repository in Github. See also $public_mies_repo/.git/config and ~/.ssh/config
 # - The boundary commit on the gh-pages branch exists. This commit separates
 #   the commits we can throw away (old documentation) from the ones we want to keep
 #   (setup and stuff).
@@ -23,9 +21,6 @@ then
   exit 1
 fi
 
-project_version=$(git describe --tags --always --match "Release_*")
-public_mies_repo=~/devel/public-mies-igor
-
 top_level=$(git rev-parse --show-toplevel)
 
 if [ -z "$top_level" ]
@@ -34,16 +29,15 @@ then
   exit 1
 fi
 
-if [ ! -d "$public_mies_repo" ]
-then
-  echo "The folder $public_mies_repo does not exist"
-  exit 1
-fi
-
 branch=$(git rev-parse --abbrev-ref HEAD)
 
 case "$branch" in
-  main|release/*)
+  main)
+    project_version=$(git describe --tags --always --match "Release_*")
+    ;;
+  release/*)
+    version="$(echo "$branch" | grep -Po "(?<=release/).*")"
+    project_version=$(git describe --tags --always --match "Release_${version}_*")
     ;;
   *)
     echo "Skipping outdated documentation deployment."
@@ -51,9 +45,14 @@ case "$branch" in
     ;;
 esac
 
-unzip -o mies-docu*.zip
+tmpdir="$(mktemp -d)"
+function cleanup {
+  rm -rf "$tmpdir"
+}
+trap cleanup EXIT
 
-cd $public_mies_repo
+unzip -o mies-docu*.zip
+mv ${top_level}/html "$tmpdir/"
 
 git stash || true
 git checkout gh-pages
@@ -62,7 +61,7 @@ boundary=$(git log --grep="EMPTY_BOUNDARY_COMMIT_FOR_REWRITE" --pretty=format:%H
 git reset --hard $boundary
 git clean -ffdx
 
-cp -r ${top_level}/html/* .
+cp -r ${tmpdir}/html/* .
 
 git add -A
 git commit --author="MIES Deployment <mies-deploy@linux-mint-box.seattle>" -m "Updating documentation to ${project_version}"

@@ -208,13 +208,13 @@ Function DoInstrumentation()
 
 	variable instru
 
-	instru = GetEnvironmentVariableAsBoolean("BAMBOO_INSTRUMENT_TESTS")
+	instru = GetEnvironmentVariableAsBoolean("CI_INSTRUMENT_TESTS")
 
 	if(IsFinite(instru))
 		return instru
 	endif
 
-	return !cmpstr(GetEnvironmentVariable("bamboo_repository_git_branch"), "main")
+	return !cmpstr(GetEnvironmentVariable("GITHUB_REF_NAME"), "main")
 End
 
 Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
@@ -570,7 +570,7 @@ Function/WAVE GetTrackSweepCounts()
 End
 
 Function IsRunningInCI()
-	return !IsEmpty(GetEnvironmentVariable("bamboo_repository_git_branch"))
+	return !IsEmpty(GetEnvironmentVariable("CI"))
 End
 
 static Function RetrieveAllWindowsInCI()

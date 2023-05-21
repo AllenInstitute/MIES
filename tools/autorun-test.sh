@@ -58,6 +58,8 @@ echo "Running experiment $experiment"
 MSYS_NO_PATHCONV=1 "${igorProPath}" /UNATTENDED /N /I "$experiment"
 ret=$?
 
+echo "Igor returned with status code $ret"
+
 rm -f $StateFile
 
 exit $ret

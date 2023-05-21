@@ -97,7 +97,7 @@ Function DoExpensiveChecks()
 	return 1
 #endif
 
-	expensive = GetEnvironmentVariableAsBoolean("BAMBOO_EXPENSIVE_CHECKS")
+	expensive = GetEnvironmentVariableAsBoolean("CI_EXPENSIVE_CHECKS")
 
 	if(IsFinite(expensive))
 		return expensive

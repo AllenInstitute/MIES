@@ -1,0 +1,215 @@
+name: Build Pull Request
+run-name: Build PR ${{ github.event.number }} «${{ github.event.pull_request.title }}» (${{ github.actor}})
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+defaults:
+  run:
+    shell: bash
+jobs:
+
+  BuildInstaller:
+    name: 🏗 Build ${{ matrix.kind }} installer
+    strategy:
+      matrix:
+        kind:
+          # the normal installer
+          - user
+          # This installer is *only* indentend for developer internal use!
+          - dev
+    runs-on: [ self-hosted, Windows, Certificate ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0 # load all commits
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Create release package and installer
+        run: tools/create-installer.sh ${{ fromJSON('["", "dev"]')[ matrix.kind == 'dev' ] }}
+      - name: Sign installer
+        run: tools/sign-installer.sh -p "${{ secrets.GHA_MIES_CERTIFICATE_PIN }}"
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: BuildInstaller-${{ matrix.kind }}-assets
+          path: |
+            tools/installer/MIES-*.exe
+          if-no-files-found: error
+
+  Linting:
+    name: 🔎 Linting
+    runs-on: [ self-hosted, Linux, Docker ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Code Checks
+        run: tools/check-code.sh
+
+  CompilationTest:
+    name: |
+      👩🏾‍🔬 Compilation: ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
+    needs:
+      - BuildInstaller
+      - Linting
+    strategy:
+      matrix:
+        source: [ git, installer ]
+        hardware: [ false, true ]
+        exclude:
+          # the git source is always checked with hardware support
+          - source: git
+            hardware: false
+    uses: ./.github/workflows/test-igor-workflow.yml
+    with:
+      experiment: Packages/tests/Compilation/CompilationTester.pxp
+      installer_artifact_name: BuildInstaller-dev-assets
+      installer_flags: ${{ fromJSON('["-x skipHardwareXOPs",""]')[matrix.hardware] }} -s ${{ matrix.source }}
+      artifact_name: CompilationTest-${{ matrix.source }}-${{ fromJSON('["no-hardware","hardware"]')[matrix.hardware] }}-assets
+      expensive_checks: "1"
+
+  Documentation:
+    name: 👷 Documentation
+    runs-on: [ self-hosted, Linux, Docker ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Build documentation
+        run: tools/docker/build-documentation.sh
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: Documentation-assets
+          path: |
+            Packages/doc/*.zip
+          if-no-files-found: error
+
+  TestWithoutHardware:
+    name: 🧪 Test ${{ matrix.name }}
+    needs:
+      - BuildInstaller
+      - CompilationTest
+    strategy:
+      matrix:
+        include:
+          - experiment: Packages/tests/Basic/Basic.pxp
+            name: Basic
+          - experiment: Packages/tests/PAPlot/PAPlot.pxp
+            name: PAPlot
+    uses: ./.github/workflows/test-igor-workflow.yml
+    with:
+      experiment: ${{ matrix.experiment }}
+      artifact_name: test-without-hw-assets
+      expensive_checks: "1"
+
+  TestNI:
+    name: 🧪 Test NI ${{ matrix.name }}
+    needs:
+      - BuildInstaller
+      - CompilationTest
+    strategy:
+      matrix:
+        include:
+          - experiment: Packages/tests/HardwareBasic/HardwareBasic-NI.pxp
+            name: HardwareBasic
+          - experiment: Packages/tests/HardwareAnalysisFunctions/HardwareAnalysisFunctions-NI.pxp
+            name: HardwareAnalysisFunctions
+    uses: ./.github/workflows/test-igor-workflow.yml
+    with:
+      experiment: ${{ matrix.experiment }}
+      target: "[ 'self-hosted', 'Windows', 'IgorPro', 'NI' ]"
+      artifact_name: test-ni-assets
+      expensive_checks: "1"
+
+  TestITC:
+    name: 🧪 Test ITC ${{ matrix.name }}
+    needs:
+      - BuildInstaller
+      - CompilationTest
+    strategy:
+      matrix:
+        include:
+          - experiment: Packages/tests/HardwareBasic/HardwareBasic.pxp
+            name: HardwareBasic
+          - experiment: Packages/tests/HardwareAnalysisFunctions/HardwareAnalysisFunctions.pxp
+            name: HardwareAnalysisFunctions
+    uses: ./.github/workflows/test-igor-workflow.yml
+    with:
+      experiment: ${{ matrix.experiment }}
+      target: "[ 'self-hosted', 'Windows', 'IgorPro', 'ITC' ]"
+      artifact_name: test-itc-assets
+      expensive_checks: "1"
+
+  ValidateNwb:
+    name: 👮🏼 Validate NWBv2
+    runs-on: [ self-hosted, Linux, Docker ]
+    needs:
+      - TestITC
+      - TestNI
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Download ITC artifacts
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          name: test-ITC-assets
+      - name: Download NI artifacts
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          name: test-ni-assets
+      - name: Validate and read NWBv2 files
+        run: tools/nwb-read-tests/run.sh
+
+  FTPUpload:
+    name: 📦 FTP Upload Artifacts
+    runs-on: [ self-hosted, Linux, Docker ]
+    if: always()
+    needs:
+      # All jobs that create new artifacts
+      - BuildInstaller
+      - CompilationTest
+      - Documentation
+      - TestWithoutHardware
+      - TestNI
+      - TestITC
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Download all artifacts
+        id: download
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          path: artifacts
+      - name: Flatten artifact structure
+        run: |
+          find "${{ steps.download.outputs.download-path }}" -mindepth 1 -maxdepth 1 -type d |\
+            xargs -I {} tools/ftp-upload/flatten-files.sh "{}"
+      - name: Compress NWB artifacts
+        run: find -name "*.nwb" | while read file; do tar -czvf $file.tar.gz --remove-files $file; done
+        working-directory: ${{ steps.download.outputs.download-path }}
+      - name: Upload artifacts using FTP
+        run: |
+          tools/ftp-upload/upload-files.sh \
+            -s "${{ vars.GHA_MIES_FTP_ARTEFACT_STORAGE_DNS }}" \
+            -u "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_USER }}" \
+            -p "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_PWD }}" \
+            -d "${{ steps.download.outputs.download-path }}" \
+            -t "pr/$(echo "${{ github.event.pull_request.head.ref }}" | sed "s@/@_@g")/${{ github.event.pull_request.head.sha }}/${{ github.run_attempt }}"

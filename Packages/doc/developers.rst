@@ -73,10 +73,8 @@ Cutting a new release
    -  ``git checkout -b release/X.Y``
    -  ``git push --no-verify -u origin release/X.Y``
 
--  Change the bamboo plans using release branches to use the branch
-   release/X.Y
--  Create a new release on github and check that the bamboo job correctly
-   uploads the artifacts
+-  Create a new release on github and check that the Github Actions job
+   correctly uploads the artifacts
 
 Creating a release package manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,28 +91,25 @@ Creating a release package manually
 Continuous integration server
 -----------------------------
 
-Our `CI server <http://bamboo.corp.alleninstitute.org/browse/MIES>`__,
-called bamboo, provides the following services for MIES:
+Our `CI server <https://github.com/AllenInstitute/MIES/actions>`__, called
+Github Actions, provides the following services for MIES:
 
 Automatic release package building
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  The release branch, ``release/$number`` with the highest ``$number``,
-   is polled every 3 minutes for changes
--  If changes are detected, a clone is fetched, and inside a checked out
-   git working tree, the release script ``tools/create-release.sh`` is
-   executed.
--  The result of the release script, called an artifact in CI-speech, is
-   then available as zip package from the `Package
-   section <http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful>`__.
--  The release packaging job can be run on a windows box with git for windows installed.
-   This is ensured by a platform requirement for the job.
+-  If a commit is added to the ``main`` or any ``release/*`` branch a CI
+   pipeline is started
+-  In this pipeline are some basic tests executed and a new installer is build.
+   The installer is uploaded to the corresponging release (``latest`` for
+   ``main``).
+-  If the commit is added to the ``main`` branch the CI will also create a new
+   version of the documentation and deploy it to Github Pages.
 
 Compilation testing
 ~~~~~~~~~~~~~~~~~~~
 
-The full MIES installation with and without hardware XOPs are IGOR Pro
-compile tested using a bamboo job. This allows to catch compile time errors
+The full MIES installation with and without hardware XOPs are IGOR Pro compile
+tested using a Github Actions job. This allows to catch compile time errors
 early on.
 
 For testing compilation manually perform the following steps:
@@ -124,15 +119,15 @@ For testing compilation manually perform the following steps:
 -  Remove the shortcut ``Packages\MIES_Include.ipf`` in
    ``Igor Procedures``
 -  Close all Igor Pro instances
--  Execute ``tools\check_mies_compilation.sh``
+-  Execute ``tools\autorun-test.sh``
 -  Watch the output
 
 Unit and integration testing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A couple of our bamboo jobs are responsible for executing tests. All
-tests are written using the `Igor Pro Universal Testing
-Framework <https://docs.byte-physics.de/igortest>`__.
+A couple of our Github Actions jobs are responsible for executing tests. All
+tests are written using the `Igor Pro Universal Testing Framework
+<https://docs.byte-physics.de/igortest>`__.
 
 The folders in ``Packages\tests`` follow a common naming scheme. Each folder
 holds a separate Igor Experiment with tests. The tests in folders starting with
@@ -149,16 +144,17 @@ For executing the tests manually perform the followings steps:
 - Call ``RunWithOpts()``
 - Watch the output
 
-The environment variables ``BAMBOO_INSTRUMENT_TESTS``/``BAMBOO_EXPENSIVE_CHECKS``
-allow to tweak test execution. By default we do expensive tests in CI and
+The environment variables ``CI_INSTRUMENT_TESTS``/``CI_EXPENSIVE_CHECKS`` allow
+to tweak test execution. By default we do expensive tests in CI and
 instrumentation in CI for the main branch. Accepted are all numbers but the
 values ``0``/``1`` are suggested.
 
 Documentation building
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The documentation for the main branch is automatically built and
-uploaded by `this <http://bamboo.corp.alleninstitute.org/browse/MIES-CM>`__ bamboo job.
+The documentation for the main branch is automatically built and uploaded by
+`this <https://github.com/AllenInstitute/MIES/actions/workflows/build-main.yml>`__
+Github Actions job.
 
 Setting up a continuous integration server (Linux)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -196,39 +192,18 @@ Install required software
 -  ``apt install adoptopenjdk-8-hotspot-jre``
 -  ``update-alternatives --config java`` and select version 8
 
-Setup bamboo agent
-^^^^^^^^^^^^^^^^^^
+Setup Github Actions runner
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
--  Install the bamboo agent according to the
-   `instructions <http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action>`__
-   and run it once to create the ``bamboo-agent-home`` directory
--  Create a file ``/etc/systemd/system/bamboo.service`` with the following contents
+-  Install the Github Actions runner according to the
+   `instructions <https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners>`__
+-  Execute the steps described `here <https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/configuring-the-self-hosted-runner-application-as-a-service>`__
+   to setup the as a service.
+-  Reboot the system and check that the runner runs
+-  Add a fitting label to the agent in the repository settings at
+   Github (see `detailed description <https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/using-labels-with-self-hosted-runners>`)
 
-   .. code:: text
-
-      [Unit]
-      Description=Atlassian Bamboo
-      After=syslog.target network.target
-
-      [Service]
-      Type=forking
-      User=ci
-      ExecStart=/home/ci/bamboo-agent-home/bin/bamboo-agent.sh start
-      ExecStop=/home/ci/bamboo-agent-home/bin/bamboo-agent.sh stop
-      SuccessExitStatus=143
-      Environment="PATH=/home/ci/.local/bin:/usr/local/bin:/usr/bin:/bin"
-
-      [Install]
-      WantedBy=multi-user.target
-
--  Enable it with ``systemctl enable bamboo.service``
--  Reboot the system and check that the agent runs
--  Add a fitting ``Linux`` capability to the agent in bamboo.
--  Make the agent dedicated to the ``MIES-Igor`` project.
--  Be sure that the "git" capability and the "bash" executable capability are
-   present as well
-
-Setting up a continuous integration server (Windows, ``ITC`` and ``NI``)
+Setting up a continuous integration runner (Windows, ``ITC`` and ``NI``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Windows 10 with "Remote Desktop" enabled user
@@ -242,22 +217,13 @@ Setting up a continuous integration server (Windows, ``ITC`` and ``NI``)
    -  NIDAQ-mx XOP from WaveMetrics
    -  HEKA Harware Drivers 2014-03 Windows.zip
    -  Igor Pro (latest required versions)
-   -  Install bamboo remote agent according to
-      http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action.
+   -  Github Actions runner as described above
 
 -  Start Igor Pro and open a DA\_Ephys panel, lock the device. This will
    not work, so follow the posted suggestions to get it working (registry fix and ASLR fix).
--  Add a fitting ``MIES_AgentType`` capability to the agent in bamboo.
--  Make the agent dedicated to the ``MIES-Igor`` project.
--  Be sure that the "git" capability and the "bash" executable capability are
-   present as well
--  Create the folder ``$HOME/.credentials`` and place the file ``github_api_token`` from an existing CI machine there
--  Copy ``tools/start-bamboo-agent-windows.sh`` and ``tools/start-bamboo-agent-windows.bat`` to ``$HOME``
--  Edit ``tools/start-bamboo-agent-windows.bat`` so that it points to the existing Git location
--  Add shortcuts to ``$HOME/start-bamboo-agent-windows.bat`` and ``MC700B.exe`` into ``C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp``
-- (Only for Code signing machine): Also add a shortcut to ``$HOME/start-bamboo-agent-windows.bat`` in the ``Startup`` folder
+-  Add shortcuts to ``MC700B.exe`` into ``C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp``
 
-Setting up a continuous integration server (Windows, ``IgorPro``)
+Setting up a continuous integration runner (Windows, ``IgorPro``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Windows 10 with "Remote Desktop" enabled user
@@ -269,57 +235,47 @@ Setting up a continuous integration server (Windows, ``IgorPro``)
    -  Igor Pro (latest required versions)
    -  Multiclamp Commander (the MCC library is required to run the non-hardware tests,
       but the application itself does not have to run)
-   -  Install bamboo remote agent according to
-      http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action.
-
--  Add a ``MIES_AgentType`` capability with ``IgorPro`` to the agent in bamboo.
--  Make the agent dedicated to the ``MIES-Igor`` project.
--  Be sure that the "git" capability and the "bash" executable capability are
-   present as well
--  Create the folder ``$HOME/.credentials`` and place the file ``github_api_token`` from an existing CI machine there
--  Copy ``tools/start-bamboo-agent-windows.sh`` and ``tools/start-bamboo-agent-windows.bat`` to ``$HOME``
--  Edit ``tools/start-bamboo-agent-windows.bat`` so that it points to the existing Git location
--  Add shortcuts to ``$HOME/start-bamboo-agent-windows.bat`` into ``C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp``
+   -  Github Actions runner as described above
 
 Available CI servers
 ~~~~~~~~~~~~~~~~~~~~
 
-Distributing jobs to agents in bamboo is done via our ``MIES_AgentType`` capability.
+Distributing jobs to agents in Github Actions is done via runner labels. A
+runner can have more than one label at the same time and the runner capabilities
+is described by the sum of its labels.
 
-The following capabilities are in use:
+The following labels are in use:
 
-- ``Linux``: Two agents run on Linux with
+- ``Linux``: Agents run on Linux with
 
   - Debian 10 (buster)
   - No Hardware
   - No Igor Pro
-  - Docker
 
-- ``CodeSigning``: Agent can sign installer packages
+- ``Docker``: Agents can run docker containers
+
+- ``Windows``: Agents run on Windows with
 
   - Windows 10
+
+- ``Certificate``: Agent can sign installer packages
+
   - EV certificate on USB stick
-
-- ``ITC``: Agent can execute hardware tests with ITC18USB hardware
-
-  - Windows 10
-  - ITC18-USB hardware, 2 AD/DA channels are looped
-  - MCC demo amplifier only
-  - Igor Pro (latest required versions)
-
-- ``NI``: Agent can execute hardware tests with NI/ITC1600 hardware
-
-  - Windows 10
-  - ITC-1600 hardware with one rack, 2 AD/DA channels are looped
-  - NI PCIe-6343, 2 AD/DA channels are looped
-  - MCC demo amplifier only
-  - Igor Pro (latest required versions)
 
 - ``IgorPro``: Can run Igor Pro
 
-  - Windows 10
-  - No Hardware
   - Igor Pro (latest required versions)
+
+- ``ITC``: Agent can execute hardware tests with ITC18USB hardware
+
+  - ITC18-USB hardware, 2 AD/DA channels are looped
+  - MCC demo amplifier only
+
+- ``NI``: Agent can execute hardware tests with NI/ITC1600 hardware
+
+  - ITC-1600 hardware with one rack, 2 AD/DA channels are looped
+  - NI PCIe-6343, 2 AD/DA channels are looped
+  - MCC demo amplifier only
 
 Branch naming scheme
 ~~~~~~~~~~~~~~~~~~~~

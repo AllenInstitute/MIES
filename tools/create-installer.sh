@@ -22,8 +22,8 @@ if ! hash sed 2>/dev/null; then
 fi
 
 # Get zip executable
-case $MSYSTEM in
-  MINGW*)
+case $OS in
+  Windows*)
     export unzip_exe=$top_level/tools/unzip.exe;;
   *)
     export unzip_exe=unzip;;
