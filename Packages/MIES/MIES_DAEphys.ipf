@@ -4948,8 +4948,8 @@ Function DAP_CheckProc_RandomRA(cba) : CheckBoxControl
 		case 2:
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			if(cba.checked)
-				DisableControl(cba.win, "SetVar_DataAcq_skipAhead")
 				PGC_SetAndActivateControl(cba.win, "SetVar_DataAcq_skipAhead", val=0)
+				DisableControl(cba.win, "SetVar_DataAcq_skipAhead")
 			else
 				EnableControl(cba.win, "SetVar_DataAcq_skipAhead")
 			endif
