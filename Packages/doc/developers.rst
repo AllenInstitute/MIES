@@ -159,47 +159,18 @@ Github Actions job.
 Setting up a continuous integration server (Linux)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Preliminaries
-^^^^^^^^^^^^^
-
--  Linux box with fixed IP
--  Choose a user, here named ``ci``, for running the tests.
--  Make sure that the user is **not** a member of the ``wheel`` group so that
-   it can not gain root access.
--  Install the bare-minimum packages and use the latest debian stable
-
-Enable SSH access
-^^^^^^^^^^^^^^^^^
-
--  Setup remote SSH access with public keys. On the client (your PC!)
-   try logging into using SSH.
--  Disable password authentication in ``/etc/ssh/sshd_config``
-
 Install required software
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 -  Install `Docker <https://docker.io>`__
--  Misc required software: ``apt install git cron-apt xmllint``
--  Enable automatic updates: ``echo "dist-upgrade -y -o APT::Get::Show-Upgraded=true" > /etc/cron-apt/action.d/4-upgrade``
--  Install OpenJDK 8 by adding a file with the following
-   sources in ``/etc/apt/sources.list.d/``:
-
-   .. code:: text
-
-      deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ buster main
-
--  ``apt update``
--  ``apt install adoptopenjdk-8-hotspot-jre``
--  ``update-alternatives --config java`` and select version 8
+-  Misc required software: ``dnf install git rg``
 
 Setup Github Actions runner
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 -  Install the Github Actions runner according to the
    `instructions <https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners>`__
--  Execute the steps described `here <https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/configuring-the-self-hosted-runner-application-as-a-service>`__
-   to setup the as a service.
--  Reboot the system and check that the runner runs
+-  Don't install the runner as a service but use the local user
 -  Add a fitting label to the agent in the repository settings at
    Github (see `detailed description <https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/using-labels-with-self-hosted-runners>`)
 
@@ -209,14 +180,13 @@ Setting up a continuous integration runner (Windows, ``ITC`` and ``NI``)
 -  Windows 10 with "Remote Desktop" enabled user
 -  Install the folllowing programs:
 
-   -  Java 8
    -  Git (choose the installer option which will make the Unix tools
       available in cmd as well)
    -  Multiclamp Commander
    -  NIDAQ-mx driver package 19.0 or later
    -  NIDAQ-mx XOP from WaveMetrics
    -  HEKA Harware Drivers 2014-03 Windows.zip
-   -  Igor Pro (latest required versions)
+   -  Igor Pro (latest required versions), the binary folder needs to be named ``IgorBinaries_x64_r$revision``
    -  Github Actions runner as described above
 
 -  Start Igor Pro and open a DA\_Ephys panel, lock the device. This will
@@ -229,10 +199,9 @@ Setting up a continuous integration runner (Windows, ``IgorPro``)
 -  Windows 10 with "Remote Desktop" enabled user
 -  Install the folllowing programs:
 
-   -  Java 8
    -  Git (choose the installer option which will make the Unix tools
       available in cmd as well)
-   -  Igor Pro (latest required versions)
+   -  Igor Pro (latest required versions), the binary folder needs to be named ``IgorBinaries_x64_r$revision``
    -  Multiclamp Commander (the MCC library is required to run the non-hardware tests,
       but the application itself does not have to run)
    -  Github Actions runner as described above
@@ -246,9 +215,11 @@ is described by the sum of its labels.
 
 The following labels are in use:
 
+- ``self-hosted``: Always use this label to use our own runners
+
 - ``Linux``: Agents run on Linux with
 
-  - Debian 10 (buster)
+  - Rocky Linux release 8.6 (Green Obsidian)
   - No Hardware
   - No Igor Pro
 
