@@ -1513,7 +1513,7 @@ End
 
 static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventStartTime, WAVE eventStopTime)
 
-	string specialEventPanel, str, htmlStr, rawCode, browser, msg
+	string specialEventPanel, str, htmlStr, rawCode, browser, msg, fitFunc
 	variable err, numAveragePoints, start, stop
 
 	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
@@ -1535,8 +1535,6 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventSta
 		return NaN
 	endif
 
-	Make/FREE/D/N=5 coefWave
-
 	Redimension/N=(numAveragePoints) acceptedAverageFit
 	FastOp acceptedAverageFit = (NaN)
 	CopyScales average, acceptedAverageFit
@@ -1545,7 +1543,21 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventSta
 	stop  = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), mean(eventStopTime))
 
 	AssertOnAndClearRTError()
-	CurveFit/M=0/Q/N=2 dblexp_peak, kwCWave=coefWave, average(start, stop)/D=acceptedAverageFit; err = GetRTError(1)
+	fitFunc = GetPopupMenuString(specialEventPanel, "popupmenu_accept_fit_function")
+	strswitch(fitFunc)
+		case "dblexp_peak":
+			Make/FREE/D/N=5 coefWave
+			Make/FREE/T coeffNames = {"y0", "A", "tau1", "tau2", "X0"}
+			CurveFit/M=0/Q/N=2 dblexp_peak, kwCWave=coefWave, average(start, stop)/D=acceptedAverageFit; err = GetRTError(1)
+			break
+		case "dblexp_XOffset":
+			Make/FREE/D/N=5 coefWave
+			Make/FREE/T coeffNames = {"y0", "A1", "tau1", "A2", "tau2"}
+			CurveFit/M=0/Q/N=2 dblexp_XOffset, kwCWave=coefWave, average(start, stop)/D=acceptedAverageFit; err = GetRTError(1)
+			break
+		default:
+			ASSERT(0, "Unknown fit function")
+	endswitch
 
 	sprintf msg, "Fit in the range [%g, %g] finished with %d (%s)\r", start, stop, err, GetErrMessage(err)
 	DEBUGPRINT(msg)
@@ -1556,9 +1568,7 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventSta
 
 	Make/FREE/T/N=(9, 2) input
 
-	Make/FREE/T coeffNames = {"y0", "A", "tau1", "tau2", "X0"}
-
-	input[0][0,1]    = {{"Function"}, {"dblexp_peak"}}
+	input[0][0,1]    = {{"Function"}, {fitFunc}}
 	input[1][0,1]    = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
 	input[2, 6][0]   = coeffNames[p - 2]
 	input[2, 6][1]   = num2strHighPrec(coefWave[p - 2])
@@ -2596,6 +2606,7 @@ static Function PSX_StoreGuiState(string win, string browser)
 		JSON_SetVariable(jsonID, "/specialEventPanel/" + ctrl, GetCheckBoxState(specialEventPanel, ctrl))
 	endfor
 
+	JSON_SetVariable(jsonID, "/specialEventPanel/popupmenu_accept_fit_function", GetPopupMenuIndex(specialEventPanel, "popupmenu_accept_fit_function"))
 	JSON_SetVariable(jsonID, "/specialEventPanel/popupmenu_state_type", GetPopupMenuIndex(specialEventPanel, "popupmenu_state_type"))
 	JSON_SetVariable(jsonID, "/specialEventPanel/popup_block", GetPopupMenuIndex(specialEventPanel, "popup_block"))
 	JSON_SetVariable(jsonID, "/specialEventPanel/setvar_event_block_size", GetSetVariable(specialEventPanel, "setvar_event_block_size"))
@@ -2653,6 +2664,7 @@ static Function PSX_RestoreGuiState(string win)
 	lastBlock = str2num(StringFromList(ItemsInList(allBlocks) - 1, allBlocks))
 	PGC_SetAndActivateControl(specialEventPanel, "popup_block", val = limit(selectedBlock, 0, lastBlock))
 
+	PGC_SetAndActivateControl(specialEventPanel, "popupmenu_accept_fit_function", val = JSON_GetVariable(jsonID, "/specialEventPanel/popupmenu_accept_fit_function"))
 	PGC_SetAndActivateControl(specialEventPanel, "popupmenu_state_type", val = JSON_GetVariable(jsonID, "/specialEventPanel/popupmenu_state_type"))
 
 	mainWindow = GetMainWindow(win)
@@ -2875,6 +2887,11 @@ Function/S PSX_GetEventStateNames()
 	return PSX_TUD_EVENT_STATE_KEY + ";" + PSX_TUD_FIT_STATE_KEY
 End
 
+Function/S PSX_GetAverageFitAcceptNames()
+
+	return "dblexp_peak;dblexp_XOffset"
+End
+
 static Function/S PSX_GetUIControlHelp()
 	return "<html><pre>"                                                                                              + \
 	       "The following keyboard shortcuts work for either the psx or the psxstats graphs.\r"                       + \
@@ -3027,12 +3044,14 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 	CheckBox checkbox_average_events_all,title="All"
 	CheckBox checkbox_average_events_all,help={"Show average of all events in all events graph"}
 	CheckBox checkbox_average_events_all,value=0
-	CheckBox checkbox_restrict_events_to_current_combination,pos={17.00,143.00},size={97.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_restrict_events_to_current_combination,pos={12.00,143.00},size={97.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_restrict_events_to_current_combination,title="Current combo"
 	CheckBox checkbox_restrict_events_to_current_combination,help={"Show event traces from only the current combination (checked) instead of all combinations (unchecked).\r The current combination can be set in the ListBox below."}
 	CheckBox checkbox_restrict_events_to_current_combination,value=0
-	PopupMenu popupmenu_state_type,pos={17.00,167.00},size={80.00,19.00},proc=PSX_PopupMenuState
+	PopupMenu popupmenu_state_type,pos={113.00,143.00},size={64.00,19.00},proc=PSX_PopupMenuState
 	PopupMenu popupmenu_state_type,mode=1,popvalue="Event State",value=#"PSX_GetEventStateNames()"
+	PopupMenu popupmenu_accept_fit_function,pos={25.00,167.00},size={102.00,19.00},bodywidth=115,proc=PSX_PopupFitAcceptAverageFunc
+	PopupMenu popupmenu_accept_fit_function,mode=1,value=#"PSX_GetAverageFitAcceptNames()"
 	CheckBox checkbox_average_events_fit,pos={104.00,111.00},size={29.00,15.00},proc=PSX_CheckboxProcFitAcceptAverage
 	CheckBox checkbox_average_events_fit,title="Fit"
 	CheckBox checkbox_average_events_fit,help={"Fit the accept average with a double exponential and store the outcome in the results wave"}
@@ -4177,6 +4196,15 @@ Function PSX_SetVarBlockSize(STRUCT WMSetVariableAction &sva) : SetVariableContr
 		case 2: // Enter key
 		case 3: // Live update
 			PSX_UpdateAllEventGraph(sva.win, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
+			break
+	endswitch
+End
+
+Function PSX_PopupFitAcceptAverageFunc(STRUCT WMPopupAction &cba) : PopupMenuControl
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			PSX_UpdateAllEventGraph(cba.win, forceAverageUpdate = 1)
 			break
 	endswitch
 End
