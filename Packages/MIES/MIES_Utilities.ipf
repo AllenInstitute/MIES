@@ -2811,11 +2811,11 @@ End
 Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 	string pathName, extension
 
-	string fileOrPath, directory, subFolderPathName
-	string files
+	string fileOrPath, folders, subFolderPathName, fileName
+	string files, allFilesList
 	string allFiles = ""
-	string dirs = ""
-	variable i, numDirs
+	string foldersFromAlias = ""
+	variable err
 
 	PathInfo $pathName
 	ASSERT(V_flag, "Given symbolic path does not exist")
@@ -2824,15 +2824,12 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 		extension = "????"
 	endif
 
-	for(i = 0; ;i += 1)
-		fileOrPath = IndexedFile($pathName, i, extension)
+	AssertOnAndClearRTError()
+	allFilesList = IndexedFile($pathName, -1, extension, "????", FILE_LIST_SEP); err = GetRTError(1)
+	WAVE/T allFilesInDir = ListToTextWave(allFilesList, FILE_LIST_SEP)
+	for(fileName : allFilesInDir)
 
-		if(isEmpty(fileOrPath))
-			// no more files
-			break
-		endif
-
-		fileOrPath = ResolveAlias(fileOrPath, pathName = pathName)
+		fileOrPath = ResolveAlias(fileName, pathName = pathName)
 
 		if(isEmpty(fileOrPath))
 			// invalid shortcut, try next file
@@ -2843,42 +2840,32 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 		ASSERT(!V_Flag, "Error in GetFileFolderInfo")
 
 		if(V_isFile)
-			allFiles = AddListItem(S_path, allFiles, FILE_LIST_SEP, INF)
+			allFiles = AddListItem(S_path, allFiles, FILE_LIST_SEP, Inf)
 		elseif(V_isFolder)
-			dirs = AddListItem(S_path, dirs, FILE_LIST_SEP, INF)
+			foldersFromAlias = AddListItem(S_path, foldersFromAlias, FILE_LIST_SEP, Inf)
 		else
 			ASSERT(0, "Unexpected file type")
 		endif
 	endfor
 
-	for(i = 0; ; i += 1)
+	AssertOnAndClearRTError()
+	folders = IndexedDir($pathName, -1, 1, FILE_LIST_SEP); err = GetRTError(1)
+	folders = folders + foldersFromAlias
+	WAVE/T wFolders = ListToTextWave(folders, FILE_LIST_SEP)
+	for(folder : wFolders)
 
-		directory = IndexedDir($pathName, i, 1)
-
-		if(isEmpty(directory))
-			break
-		endif
-
-		dirs = AddListItem(directory, dirs, FILE_LIST_SEP, INF)
-	endfor
-
-	numDirs = ItemsInList(dirs, FILE_LIST_SEP)
-	for(i = 0; i < numDirs; i += 1)
-
-		directory = StringFromList(i, dirs, FILE_LIST_SEP)
 		subFolderPathName = GetUniqueSymbolicPath()
 
-		NewPath/Q/O $subFolderPathName, directory
+		NewPath/Q/O $subFolderPathName, folder
 		files = GetAllFilesRecursivelyFromPath(subFolderPathName, extension=extension)
 		KillPath/Z $subFolderPathName
 
 		if(!isEmpty(files))
-			allFiles = AddListItem(files, allFiles, FILE_LIST_SEP, INF)
+			allFiles = AddListItem(files, allFiles, FILE_LIST_SEP, Inf)
 		endif
 	endfor
 
-	// remove empty entries
-	return ListMatch(allFiles, "!", FILE_LIST_SEP)
+	return allFiles
 End
 
 /// @brief Convert a text wave to string list
