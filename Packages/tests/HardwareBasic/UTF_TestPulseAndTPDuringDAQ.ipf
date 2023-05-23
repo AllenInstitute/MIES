@@ -74,7 +74,6 @@ Function CheckTPBaseline_PreAcq(string device)
 	CHECK(NVAR_Exists(TPBaseline))
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = TPBaseline)
-	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = 1)
 
 	CtrlNamedBackGround StopTP, start=(ticks + 100), period=1, proc=StopTPWhenWeHaveOne
 End
@@ -88,7 +87,7 @@ static Function CheckTPBaseline([STRUCT IUTF_MDATA &md])
 	variable/G TPbaseline = md.v0
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1"                + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	AcquireData_NG(s, device)
@@ -331,14 +330,10 @@ static Function CheckTPEntriesFromLBN_REENTRY([string str])
 	CHECK_EQUAL_VAR(Sum(validWaves), 0)
 End
 
-static Function TPCachingWorks_PreAcq(string device)
-	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val=CHECKBOX_SELECTED)
-End
-
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function TPCachingWorks([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1_SIM4"                 + \
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1_SIM4_STP1"            + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
@@ -946,8 +941,6 @@ static Function TPDuringDAQTPStoreCheck_PreAcq(device)
 	string device
 
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
-
-	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = 1)
 End
 
 static Constant TP_WAIT_TIMEOUT = 5
@@ -957,7 +950,7 @@ static Function TPDuringDAQTPStoreCheck([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1_STP1"               + \
 								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"            + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:PulseTrain_10Hz_DA_0:" + \
 								 "__HS2_DA2_AD2_CM:VC:_ST:TestPulse:")
@@ -1018,8 +1011,6 @@ static Constant TP_DURATION_S = 5
 static Function CheckThatTPsCanBeFound_PreAcq(device)
 	string device
 
-	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = 1)
-
 	PrepareForPublishTest()
 End
 
@@ -1028,7 +1019,7 @@ static Function CheckThatTPsCanBeFound([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                   + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1"                   + \
 								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"    + \
 								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 

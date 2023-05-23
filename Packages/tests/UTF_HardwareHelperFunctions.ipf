@@ -1095,7 +1095,7 @@ End
 
 Structure DAQSettings
 	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP, ITP, FAR
-	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM
+	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM, STP
 
 	WAVE hs, da, ad, cm, ttl, aso
 	WAVE/T st, ist, af, st_ttl, iaf
@@ -1212,6 +1212,8 @@ Function InitDAQSettingsFromString(s, str)
 	s.daq = ParseNumber(str, "_DAQ", defValue = NaN)
 
 	s.tp = ParseNumber(str, "_TP", defValue = NaN)
+
+	s.stp = ParseNumber(str, "_STP", defValue = 0)
 
 	// default to DAQ if nothing is choosen
 	if(IsNaN(s.daq) && IsNaN(s.tp))
@@ -1351,6 +1353,7 @@ End
 /// - Inserted TP checkbox (ITP: 1/0)
 /// - Fail on Abort/RTE: (FAR: 1/0), defaults to 1
 /// - Sampling interval multiplier (SIM: 1, 2, 4, ..., 64), defaults to 1
+/// - Save TP: (STP: 1/0), defaults to 0
 ///
 /// HeadstageConfig:
 /// - Full specification: __HSXX_ADXX_DAXX_CM:XX:_ST:XX:_IST:XX:_AF:XX:_IAF:XX:_ASOXX
@@ -1517,6 +1520,7 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 	endif
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
+	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = s.STP)
 
 	s.preAcquireFunc(device)
 	s.globalPreAcquireFunc(device)
