@@ -11,15 +11,11 @@ static Function GlobalPreAcq(string device)
 	PASS()
 End
 
-static Function CheckCalculatedTPEntries_PreAcq(string device)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
-End
-
 /// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function CheckCalculatedTPEntries([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM2"                     + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM2_TBP25"                     + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
@@ -70,10 +66,6 @@ static Function CheckCalculatedTPEntries_REENTRY([string str])
 End
 
 Function CheckTPBaseline_PreAcq(string device)
-	NVAR/Z TPBaseline
-	CHECK(NVAR_Exists(TPBaseline))
-
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = TPBaseline)
 
 	CtrlNamedBackGround StopTP, start=(ticks + 100), period=1, proc=StopTPWhenWeHaveOne
 End
@@ -82,13 +74,14 @@ End
 /// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
 static Function CheckTPBaseline([STRUCT IUTF_MDATA &md])
 	string device
+	variable TPbaseline
 
 	device = md.s0
-	variable/G TPbaseline = md.v0
+	TPbaseline = md.v0
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1"                + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1_TBP" + num2str(TPBaseline) + \
+	                          "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	AcquireData_NG(s, device)
 End
@@ -128,7 +121,6 @@ End
 static Function CheckTPEntriesFromLBN_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPDuration", val = 15)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 30)
 
 	PGC_SetAndActivateControl(device, "setvar_Settings_TP_RTolerance", val = 2)
 	PGC_SetAndActivateControl(device, "setvar_Settings_TPBuffer", val = 3)
@@ -170,7 +162,7 @@ End
 static Function CheckTPEntriesFromLBN([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI5"           + \
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI5_TBP30"          + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
@@ -1081,17 +1073,12 @@ static Function CheckThatTPsCanBeFound_REENTRY([str])
 	CheckStartStopMessages("tp", "stopping")
 End
 
-static Function TPDuringDAQWithTTL_PreAcq(string device)
-
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
-End
-
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function TPDuringDAQWithTTL([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                    + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP25"                   + \
 								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
 								 "__TTL0_ST:StimulusSetA_TTL_0:")
