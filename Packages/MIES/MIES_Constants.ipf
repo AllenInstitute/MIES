@@ -2042,3 +2042,4 @@ StrConstant ANALYSIS_BROWSER_NAME = "AnalysisBrowser"
 StrConstant MEMORY_REFCOUNTER_DF = "MemoryReferenceCounterDF"
 
 StrConstant LOG_ACTION_ASSERT = "assert"
+StrConstant LOG_MESSAGE_KEY = "msg"
