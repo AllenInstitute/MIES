@@ -5642,40 +5642,45 @@ Function/S CreateTestPanel_IGNORE()
 End
 
 Function GCP_Var_Works()
-	string win
-	variable var
+	string win, recMacro
+	variable var, controlType
 
 	win = CreateTestPanel_IGNORE()
+	[recMacro, controlType] = GetRecreationMacroAndType(win, "setVar0")
+	CHECK_EQUAL_VAR(controlType, CONTROL_TYPE_SETVARIABLE)
 
 	// existing
-	var = GetControlSettingVar(win, "setVar0", "noEdit")
+	var = GetControlSettingVar(recMacro, "noEdit")
 	CHECK_EQUAL_VAR(var, 1)
 
 	// non-present, default defValue
-	var = GetControlSettingVar(win, "setVar0", "I DONT EXIST")
+	var = GetControlSettingVar(recMacro, "I DONT EXIST")
 	CHECK_EQUAL_VAR(var, NaN)
 
 	// non-present, custom defValue
-	var = GetControlSettingVar(win, "setVar0", "I DONT EXIST", defValue = 123)
+	var = GetControlSettingVar(recMacro, "I DONT EXIST", defValue = 123)
 	CHECK_EQUAL_VAR(var, 123)
 End
 
 Function GCP_Str_Works()
-	string win, ref, str
+	string win, ref, str, recMacro
+	variable controlType
 
 	win = CreateTestPanel_IGNORE()
+	[recMacro, controlType] = GetRecreationMacroAndType(win, "setVar0")
+	CHECK_EQUAL_VAR(controlType, CONTROL_TYPE_SETVARIABLE)
 
 	// existing
-	str = GetControlSettingStr(win, "setVar0", "format")
+	str = GetControlSettingStr(recMacro, "format")
 	ref = "%g"
 	CHECK_EQUAL_STR(str, ref)
 
 	// non-present, default defValue
-	str = GetControlSettingStr(win, "setVar0", "I DONT EXIST")
+	str = GetControlSettingStr(recMacro, "I DONT EXIST")
 	CHECK_EMPTY_STR(str)
 
 	// non-present, custom defValue
-	str = GetControlSettingStr(win, "setVar0", "I DONT EXIST", defValue = "123")
+	str = GetControlSettingStr(recMacro, "I DONT EXIST", defValue = "123")
 	ref = "123"
 	CHECK_EQUAL_STR(str, ref)
 End

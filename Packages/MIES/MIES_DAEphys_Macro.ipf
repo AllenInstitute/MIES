@@ -920,6 +920,8 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_Sweep,fSize=24,fStyle=1,valueColor=(65535,65535,65535)
 	SetVariable SetVar_Sweep,valueBackColor=(0,0,0),limits={0,inf,0},value=_NUM:0
+	SetVariable SetVar_Sweep,userdata(Config_DontRestore)="1"
+	SetVariable SetVar_Sweep,userdata(Config_DontSave)="1"
 	CheckBox Check_Settings_UseDoublePrec,pos={246.00,258.00},size={161.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
 	CheckBox Check_Settings_UseDoublePrec,title="Use Double Precision Floats"
 	CheckBox Check_Settings_UseDoublePrec,help={"Enable the saving of the raw data in double precision. If unchecked the raw data will be saved in single precision, which should be good enough for most use cases"}

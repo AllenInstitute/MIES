@@ -2166,3 +2166,39 @@ static Function CheckSweepOrdering_REENTRY([string str])
 		PASS()
 	endtry
 End
+
+static Function RandomAcq_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_DataAcq_RepAcqRandom", val = 1)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function RandomAcq([string str])
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_ITP0"                     + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	AcquireData_NG(s, str)
+End
+
+static Function RandomAcq_REENTRY([string str])
+
+	variable numSweeps = 3
+	variable i
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), numSweeps)
+
+	Make/FREE/N=(numSweeps) maxDA = NaN
+
+	for(i = 0; i < 3; i += 1)
+		WAVE/Z sweep = GetSweepWave(str, i)
+		CHECK_WAVE(sweep, NUMERIC_WAVE)
+
+		WAVE/Z DA = AFH_ExtractOneDimDataFromSweep(str, sweep, 0, XOP_CHANNEL_TYPE_DAC)
+		maxDA[i] = WaveMax(DA)
+	endfor
+
+	// check that we acquired every sweep of the stimulus set exactly once
+	Sort maxDA, maxDA
+	CHECK_EQUAL_WAVES(maxDA, {1, 2, 3})
+End

@@ -737,6 +737,65 @@ static Function PGCT_SetVariableStrWorks()
 	CHECK_EQUAL_STR(refString, setVarStr)
 End
 
+static Function PGCT_SetVariableChecksNoEdit()
+
+	variable refValue
+
+	SVAR/SDFR=root: panel
+
+	ControlInfo/W=$panel setvar_num_ctrl
+	refValue = V_Value
+	CHECK_EMPTY_STR(S_Value)
+
+	SetVariable setvar_num_ctrl win=$panel, noEdit=1
+
+	// default
+	try
+		PGC_SetAndActivateControl(panel, "setvar_num_ctrl", val = refValue + 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	ControlInfo/W=$panel setvar_num_ctrl
+	CHECK_EQUAL_VAR(refValue, V_Value)
+
+	// assert
+	try
+		PGC_SetAndActivateControl(panel, "setvar_num_ctrl", val = refValue + 1, mode = PGC_MODE_ASSERT_ON_DISABLED)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	ControlInfo/W=$panel setvar_num_ctrl
+	CHECK_EQUAL_VAR(refValue, V_Value)
+
+	// force
+	try
+		PGC_SetAndActivateControl(panel, "setvar_num_ctrl", val = refValue + 1, mode = PGC_MODE_FORCE_ON_DISABLED)
+		PASS()
+	catch
+		FAIL()
+	endtry
+
+	refValue += 1
+
+	ControlInfo/W=$panel setvar_num_ctrl
+	CHECK_EQUAL_VAR(refValue, V_Value)
+
+	// skip
+	try
+		PGC_SetAndActivateControl(panel, "setvar_num_ctrl", val = refValue + 1, mode = PGC_MODE_SKIP_ON_DISABLED)
+		PASS()
+	catch
+		FAIL()
+	endtry
+
+	ControlInfo/W=$panel setvar_num_ctrl
+	CHECK_EQUAL_VAR(refValue, V_Value)
+End
+
 static Function PGCT_ListboxWorks()
 
 	SVAR/SDFR=root: panel

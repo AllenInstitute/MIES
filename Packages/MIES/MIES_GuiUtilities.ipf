@@ -2137,7 +2137,7 @@ Function [string recMacro, variable type] GetRecreationMacroAndType(string win, 
 End
 
 /// @brief Query a numeric GUI control property
-Function GetControlSettingVar(string win, string control, string setting, [variable defValue])
+Function GetControlSettingVar(string recMacro, string setting, [variable defValue])
 	string match
 	variable found
 
@@ -2145,7 +2145,7 @@ Function GetControlSettingVar(string win, string control, string setting, [varia
 		defValue = NaN
 	endif
 
-	[match, found] = GetControlSettingImpl(win, control, setting)
+	[match, found] = GetControlSettingImpl(recMacro, setting)
 
 	if(!found)
 		return defValue
@@ -2155,7 +2155,7 @@ Function GetControlSettingVar(string win, string control, string setting, [varia
 End
 
 /// @brief Query a string GUI control property
-Function/S GetControlSettingStr(string win, string control, string setting, [string defValue])
+Function/S GetControlSettingStr(string recMacro, string setting, [string defValue])
 	string match
 	variable found
 
@@ -2163,7 +2163,7 @@ Function/S GetControlSettingStr(string win, string control, string setting, [str
 		defValue = ""
 	endif
 
-	[match, found] = GetControlSettingImpl(win, control, setting)
+	[match, found] = GetControlSettingImpl(recMacro, setting)
 
 	if(!found)
 		return defValue
@@ -2172,11 +2172,8 @@ Function/S GetControlSettingStr(string win, string control, string setting, [str
 	return PossiblyUnquoteName(match, "\"")
 End
 
-static Function [string match, variable found] GetControlSettingImpl(string win, string control, string setting)
-	string recMacro, str
-	variable controlType
-
-	[recMacro, controlType] = GetRecreationMacroAndType(win, control)
+static Function [string match, variable found] GetControlSettingImpl(string recMacro, string setting)
+	string str
 
 	SplitString/E=("(?i)\\Q" + setting + "\\E[[:space:]]*=[[:space:]]*([^,]+)") recMacro, str
 

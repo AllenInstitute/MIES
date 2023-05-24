@@ -9,7 +9,7 @@ Function CheckIfAllControlsReferStateWv([str])
 
 	string list, ctrl, stri, expected, lbl, uniqueControls
 	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
-	variable err, inputModified
+	variable err, inputModified, mode
 
 	CreateLockedDAEphys(str)
 
@@ -41,9 +41,6 @@ Function CheckIfAllControlsReferStateWv([str])
 			continue
 		endif
 
-		// normal control
-		print ctrl
-
 		switch(abs(V_Flag))
 			case CONTROL_TYPE_BUTTON:
 			case CONTROL_TYPE_LISTBOX:
@@ -67,12 +64,18 @@ Function CheckIfAllControlsReferStateWv([str])
 				PGC_SetAndActivateControl(str, ctrl, val = oldVal)
 				break
 			case CONTROL_TYPE_SETVARIABLE:
+				if(GetControlSettingVar(S_recreation, "noEdit") == 1)
+					mode = PGC_MODE_FORCE_ON_DISABLED
+				else
+					mode = PGC_MODE_ASSERT_ON_DISABLED
+				endif
+
 				if(DoesControlHaveInternalString(S_recreation))
 					stri = NONE
 					KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(str))
 
 					try
-						PGC_SetAndActivateControl(str, ctrl, str = stri); err = GetRTError(1)
+						PGC_SetAndActivateControl(str, ctrl, str = stri, mode = mode); err = GetRTError(1)
 					catch
 						// do nothing
 					endtry
@@ -87,7 +90,7 @@ Function CheckIfAllControlsReferStateWv([str])
 					KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(str))
 
 					try
-						inputModified = PGC_SetAndActivateControl(str, ctrl, val = val); err = GetRTError(1)
+						inputModified = PGC_SetAndActivateControl(str, ctrl, val = val, mode = mode); err = GetRTError(1)
 					catch
 						// do nothing
 					endtry
