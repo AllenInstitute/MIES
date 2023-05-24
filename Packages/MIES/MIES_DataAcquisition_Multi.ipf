@@ -67,7 +67,7 @@ Function DQM_FIFOMonitor(s)
 				catch
 					errMsg = GetRTErrMessage()
 					err = ClearRTError()
-					LOG_AddEntry(PACKAGE_MIES, "hardware error")
+					LOG_AddEntry(PACKAGE_MIES, "hardware error", stacktrace = 1)
 					DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR, startTPAfterDAQ = 0)
 					if(err == 18)
 						ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
@@ -93,9 +93,9 @@ Function DQM_FIFOMonitor(s)
 						printf "Trying to restart data acquisition to cope with FIFO timeout issues, keep fingers crossed (%d/%d)\r", s.threadDeadCount, DAQ_MD_THREAD_DEAD_MAX_RETRIES
 						ControlWindowToFront()
 
-						LOG_AddEntry(PACKAGE_MIES, "begin restart DAQ", keys = {"device", "reason"}, values = {device, "FIFO timeout"})
+						LOG_AddEntry(PACKAGE_MIES, "begin restart DAQ", stacktrace = 1, keys = {"device", "reason"}, values = {device, "FIFO timeout"})
 						DQ_RestartDAQ(device, DAQ_BG_MULTI_DEVICE)
-						LOG_AddEntry(PACKAGE_MIES, "end restart DAQ", keys = {"device", "reason"}, values = {device, "FIFO timeout"})
+						LOG_AddEntry(PACKAGE_MIES, "end restart DAQ", stacktrace = 1, keys = {"device", "reason"}, values = {device, "FIFO timeout"})
 					endif
 
 					continue
@@ -107,9 +107,9 @@ Function DQM_FIFOMonitor(s)
 						printf "Trying to restart data acquisition to cope with stuck FIFO, keep fingers crossed (%d/%d)\r", s.threadDeadCount, DAQ_MD_THREAD_DEAD_MAX_RETRIES
 						ControlWindowToFront()
 
-						LOG_AddEntry(PACKAGE_MIES, "begin restart DAQ", keys = {"device", "reason"}, values = {device, "stuck FIFO"})
+						LOG_AddEntry(PACKAGE_MIES, "begin restart DAQ", stacktrace = 1, keys = {"device", "reason"}, values = {device, "stuck FIFO"})
 						DQ_RestartDAQ(device, DAQ_BG_MULTI_DEVICE)
-						LOG_AddEntry(PACKAGE_MIES, "end restart DAQ", keys = {"device", "reason"}, values = {device, "stuck FIFO"})
+						LOG_AddEntry(PACKAGE_MIES, "end restart DAQ", stacktrace = 1, keys = {"device", "reason"}, values = {device, "stuck FIFO"})
 					endif
 
 					continue
@@ -183,11 +183,11 @@ Function DQM_TerminateOngoingDAQHelper(device)
 	catch
 		if(hardwareType == HARDWARE_ITC_DAC)
 			print "Stopping data acquisition was not successfull, trying to close and reopen the device"
-			LOG_AddEntry(PACKAGE_MIES, "begin closing/opening device", keys = {"device", "reason"}, values = {device, "stopping DAQ failed"})
+			LOG_AddEntry(PACKAGE_MIES, "begin closing/opening device", stacktrace = 1, keys = {"device", "reason"}, values = {device, "stopping DAQ failed"})
 			HW_CloseDevice(HARDWARE_ITC_DAC, deviceID)
 			HW_OpenDevice(device, returnedHardwareType)
 			ASSERT(returnedHardwareType == HARDWARE_ITC_DAC, "Error opening the device again")
-			LOG_AddEntry(PACKAGE_MIES, "end closing/opening device", keys = {"device", "reason"}, values = {device, "stopping DAQ failed"})
+			LOG_AddEntry(PACKAGE_MIES, "end closing/opening device", stacktrace = 1, keys = {"device", "reason"}, values = {device, "stopping DAQ failed"})
 		endif
 	endtry
 

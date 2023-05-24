@@ -120,13 +120,20 @@ End
 ///
 /// @param package package name, this determines the log file
 /// @param action  additional string, can be something like `start` or `end`
+/// @param stacktrace [optional, defaults to false] add the stacktrace to the log
 /// @param keys    [optional, defaults to $""] Additional key-value pairs to be written into the log file. Same size as
 ///                                            values. Either both `keys` and `values` are present or none.
 /// @param values  [optional, defaults to $""] Additional key-value pairs to be written into the log file. Same size as
 ///                                            keys. Either both `keys` and `values` are present or none.
-threadsafe Function LOG_AddEntry(string package, string action, [WAVE/T/Z keys, WAVE/T/Z values])
+threadsafe Function LOG_AddEntry(string package, string action, [variable stacktrace, WAVE/T/Z keys, WAVE/T/Z values])
 	variable JSONid, numAdditionalEntries
 	string caller
+
+	if(ParamIsDefault(stacktrace))
+		stacktrace = 0
+	else
+		stacktrace = !!stacktrace
+	endif
 
 	if(WaveExists(keys) && WaveExists(values))
 		numAdditionalEntries = DimSize(keys, ROWS)
@@ -141,8 +148,18 @@ threadsafe Function LOG_AddEntry(string package, string action, [WAVE/T/Z keys, 
 		Make/FREE/N=(numAdditionalEntries) indexHelper = JSON_AddString(JSONid, "/" + keys[p], values[p])
 	endif
 
+	if(stacktrace)
+		LOG_AddStackTrace(JSONid)
+	endif
+
 	ASSERT_TS(LOG_HasRequiredKeys(JSONid), "Some mandatory object keys are missing")
 	LOG_AddEntryWithoutChecks(package, JSONid)
 
 	JSON_Release(JSONid)
+End
+
+threadsafe static Function LOG_AddStackTrace(variable JSONid)
+
+	WAVE/T stacktrace = ListToTextWave(GetStackTrace(), "\r")
+	JSON_AddWave(JSONid, "/stacktrace", stacktrace)
 End

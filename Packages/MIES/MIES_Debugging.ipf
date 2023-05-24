@@ -508,9 +508,10 @@ End
 
 threadsafe static Function ReportBugToLogfile(string msg)
 
-	LOG_AddEntry(PACKAGE_MIES, "report",         \
-	             keys = {"msg", "stacktrace"},   \
-	             values = {msg, GetStackTrace()})
+	LOG_AddEntry(PACKAGE_MIES, "report",  \
+	             stacktrace = 1,          \
+	             keys = {"msg"},          \
+	             values = {msg})
 End
 
 /// @brief Complain and ask the user to report the error
