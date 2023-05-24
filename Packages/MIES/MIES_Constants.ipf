@@ -2006,3 +2006,19 @@ Constant MODIFY_GRAPH_LOG_MODE_LOG2   = 2
 /// @}
 
 StrConstant FILE_LIST_SEP = "|"
+
+/// @name Constants for EqualWaves mode
+/// @anchor EqualWavesConstants
+/// @{
+Constant EQWAVES_DATA = 1
+Constant EQWAVES_DATATYPE = 2
+Constant EQWAVES_SCALING = 4
+Constant EQWAVES_DATAUNITS = 8
+Constant EQWAVES_DIMUNITS = 16
+Constant EQWAVES_DIMLABELS = 32
+Constant EQWAVES_WAVENOTE = 64
+Constant EQWAVES_LOCKSTATE = 128
+Constant EQWAVES_DATAFULLSCALE = 256
+Constant EQWAVES_DIMSIZE = 512
+Constant EQWAVES_ALL = -1
+/// @}

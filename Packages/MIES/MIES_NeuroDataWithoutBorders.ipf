@@ -709,7 +709,7 @@ Function NWB_CheckForMissingSweeps(string device, WAVE/T sweepNames)
 		Make/FREE/N=(DimSize(sweepNames, ROWS)) sweepsFromDFR = ExtractSweepNumber(sweepNames[p])
 	endif
 
-	if(EqualWaves(sweepsfromLBN, sweepsFromDFR, 1) == 1)
+	if(EqualWaves(sweepsfromLBN, sweepsFromDFR, EQWAVES_DATA) == 1)
 		return 0
 	endif
 

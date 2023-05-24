@@ -43,7 +43,7 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string dev
 	WAVE stimsetAcqCycleIDPrev = GetLastSetting(numericalValues, sweepNo - 1, "Stimset Acq Cycle ID", DATA_ACQUISITION_MODE)
 	WAVE stimsetAcqCycleID     = GetLastSetting(numericalValues, sweepNo, "Stimset Acq Cycle ID", DATA_ACQUISITION_MODE)
 
-	if(EqualWaves(setSweepCountPrev, setSweepCount, 1) && EqualWaves(stimsetAcqCycleIDPrev, stimsetAcqCycleID, 1))
+	if(EqualWaves(setSweepCountPrev, setSweepCount, EQWAVES_DATA) && EqualWaves(stimsetAcqCycleIDPrev, stimsetAcqCycleID, EQWAVES_DATA))
 		trialsLBN[0, NUM_HEADSTAGES - 1] += (statusHS[p] == 1)
 	else
 		trialsLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1 ? 0 : NaN)

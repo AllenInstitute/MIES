@@ -1484,7 +1484,7 @@ static Function PAT_ExtendedDeconvCheckTau()
 			CHECK(PAT_CheckIfTracesAreFront(traceListAll, traceName, patest.channels[i], patest.regions[j], 0))
 			// layout note: channel is Y, region is X, low channels start on top at yPos to 100%
 			WAVE pData = TraceNameToWaveRef(graph, traceName)
-			CHECK(!EqualWaves(refData[i][j], pData, 1, 10))
+			CHECK(!EqualWaves(refData[i][j], pData, EQWAVES_DATA, 10))
 		endfor
 	endfor
 End
@@ -1523,7 +1523,7 @@ static Function PAT_ExtendedDeconvCheckSmooth()
 			CHECK(PAT_CheckIfTracesAreFront(traceListAll, traceName, patest.channels[i], patest.regions[j], 0))
 			// layout note: channel is Y, region is X, low channels start on top at yPos to 100%
 			WAVE pData = TraceNameToWaveRef(graph, traceName)
-			CHECK(!EqualWaves(refData[i][j], pData, 1, 10))
+			CHECK(!EqualWaves(refData[i][j], pData, EQWAVES_DATA, 10))
 		endfor
 	endfor
 End

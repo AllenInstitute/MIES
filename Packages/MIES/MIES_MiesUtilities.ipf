@@ -7494,7 +7494,7 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 	WAVE/Z sweepsFromText = GetSweepsWithSetting(textualValues, "SweepNum")
 
 	// consistency check
-	ASSERT(WaveExists(sweepsFromNum) && WaveExists(sweepsFromText) && EqualWaves(sweepsFromNum, sweepsFromText, 1), "Unexpected numerical/textual LBN entries")
+	ASSERT(WaveExists(sweepsFromNum) && WaveExists(sweepsFromText) && EqualWaves(sweepsFromNum, sweepsFromText, EQWAVES_DATA), "Unexpected numerical/textual LBN entries")
 
 	WAVE sweeps = sweepsFromNum
 

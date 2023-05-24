@@ -1101,7 +1101,7 @@ static Function AD_SelectResult(win, [index])
 	if(!BSP_IsDataBrowser(win) && WaveExists(sweeps))
 		WAVE allSweeps = GetPlainSweepList(win)
 		WAVE/Z presentSweeps = GetSetIntersection(allSweeps, sweeps)
-		if(!WaveExists(presentSweeps) || EqualWaves(presentSweeps, sweeps, 1) != 1)
+		if(!WaveExists(presentSweeps) || EqualWaves(presentSweeps, sweeps, EQWAVES_DATA) != 1)
 			printf "Some requested sweeps can not be displayed, as they are not loaded into this sweepbrowser.\r"
 			ControlWindowToFront()
 		endif

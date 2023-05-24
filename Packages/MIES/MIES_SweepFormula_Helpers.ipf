@@ -240,7 +240,7 @@ Function SFH_IsEmptyRange(WAVE range)
 	ASSERT(IsNumericWave(range), "Invalid Range wave")
 	WAVE rangeRef = SFH_GetEmptyRange()
 
-	return	EqualWaves(rangeRef, range, 1)
+	return	EqualWaves(rangeRef, range, EQWAVES_DATA)
 End
 
 Function/WAVE SFH_GetFullRange()
@@ -545,7 +545,7 @@ Function SFH_AddToArgSetupStack(WAVE output, WAVE/Z input, string argSetupStr, [
 	JSON_Release(argStackId)
 End
 
-Function/WAVE SFH_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, variable discardOpStack, WAVE clear])
+Function/WAVE SFH_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, variable discardOpStack, WAVE clear, string dataType])
 
 	discardOpStack = ParamIsDefault(discardOpStack) ? 0 : !!discardOpStack
 	if(!ParamIsDefault(clear))
@@ -553,6 +553,9 @@ Function/WAVE SFH_GetOutputForExecutorSingle(WAVE/Z data, string graph, string o
 	endif
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 1)
+	if(!ParamIsDefault(dataType))
+		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, dataType)
+	endif
 	if(WaveExists(data))
 		output[0] = data
 	endif

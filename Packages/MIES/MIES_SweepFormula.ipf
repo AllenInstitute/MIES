@@ -803,7 +803,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 	// object and array evaluation
 	JSONtype = JSON_GetType(jsonID, jsonPath)
 	if(JSONtype == JSON_NUMERIC)
-		Make/FREE out = { JSON_GetVariable(jsonID, jsonPath) }
+		Make/FREE/D out = { JSON_GetVariable(jsonID, jsonPath) }
 		return SFH_GetOutputForExecutorSingle(out, graph, "ExecutorNumberReturn")
 	elseif(JSONtype == JSON_STRING)
 		return SF_FormulaExecutorStringOrVariable(graph, jsonId, jsonPath)
@@ -816,7 +816,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		SFH_ASSERT(effectiveArrayDimCount <= MAX_DIMENSION_COUNT, "Array in evaluation has more than " + num2istr(MAX_DIMENSION_COUNT) + "dimensions.", jsonId=jsonId)
 		// Check against empty array
 		if(DimSize(topArraySize, ROWS) == 1 && topArraySize[0] == 0)
-			Make/FREE/N=0 out
+			Make/FREE/D/N=0 out
 			return SFH_GetOutputForExecutorSingle(out, graph, "ExecutorNumberReturn")
 		endif
 
@@ -3108,122 +3108,225 @@ End
 
 static Function/WAVE SF_OperationMinus(variable jsonId, string jsonPath, string graph)
 
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_MINUS)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_MINUS, DimSize(input, ROWS))
+	WAVE output = SF_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_MINUS)
 
-	output[] = SF_OperationMinusImpl(input[p])
-
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_MINUS, "")
-
-	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_MINUS, clear=input)
+	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_MINUS)
 End
 
-static Function/WAVE SF_OperationMinusImpl(WAVE/Z wv)
+static Function/WAVE SF_OperationMinusImplDataSets(WAVE/Z data0, WAVE/Z data1)
 
-	if(!WaveExists(wv))
+	variable minusConst
+
+	if(!WaveExists(data0) || !WaveExists(data1))
 		return $""
 	endif
-	SFH_ASSERT(DimSize(wv, ROWS), "Operand for - is empty.")
-	SFH_ASSERT(IsNumericWave(wv), "Operand for - must be numeric.")
-	if(DimSize(wv, ROWS) == 1)
-		MatrixOP/FREE out = sumCols((-1) * wv)^t
-	else
-		MatrixOP/FREE out = (row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
-	endif
-	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
-	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
-	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	SFH_ASSERT(IsNumericWave(data0) && IsNumericWave(data1) , "Operand for - must be numeric.")
 
-	return out
+	if(numpnts(data1) == 1)
+		minusConst = data1[0]
+		MatrixOp/FREE result = data0 - minusConst
+		CopyScales data0, result
+		return result
+	endif
+	if(numpnts(data0) == 1)
+		minusConst = data0[0]
+		MatrixOp/FREE result = minusConst - data1
+		CopyScales data1, result
+		return result
+	endif
+	SFH_ASSERT(EqualWaves(data0, data1, EQWAVES_DIMSIZE), "minus: wave size mismatch")
+
+	MatrixOp/FREE result = data0 - data1
+	CopyScales data0, result
+	return result
 End
 
 static Function/WAVE SF_OperationPlus(variable jsonId, string jsonPath, string graph)
 
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_PLUS)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_PLUS, DimSize(input, ROWS))
+	WAVE output = SF_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_PLUS)
 
-	output[] = SF_OperationPlusImpl(input[p])
-
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_PLUS, "")
-
-	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_PLUS, clear=input)
+	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_PLUS)
 End
 
-static Function/WAVE SF_OperationPlusImpl(WAVE/Z wv)
+static Function/WAVE SF_OperationPlusImplDataSets(WAVE/Z data0, WAVE/Z data1)
 
-	if(!WaveExists(wv))
+	variable addConst
+
+	if(!WaveExists(data0) || !WaveExists(data1))
 		return $""
 	endif
-	SFH_ASSERT(DimSize(wv, ROWS), "Operand for + is empty.")
-	SFH_ASSERT(IsNumericWave(wv), "Operand for + must be numeric.")
-	MatrixOP/FREE out = sumCols(wv)^t
-	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
-	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
-	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	SFH_ASSERT(IsNumericWave(data0) && IsNumericWave(data1) , "Operand for + must be numeric.")
 
-	return out
+	if(numpnts(data1) == 1)
+		addConst = data1[0]
+		MatrixOp/FREE result = data0 + addConst
+		CopyScales data0, result
+		return result
+	endif
+	if(numpnts(data0) == 1)
+		addConst = data0[0]
+		MatrixOp/FREE result = addConst + data1
+		CopyScales data1, result
+		return result
+	endif
+	SFH_ASSERT(EqualWaves(data0, data1, EQWAVES_DIMSIZE), "plus: wave size mismatch")
+
+	MatrixOp/FREE result = data0 + data1
+	CopyScales data0, result
+	return result
+End
+
+static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, string jsonPath, string graph, string opShort)
+
+	variable numArgs, dataSetNum0, dataSetNum1
+	string errMsg
+
+	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
+	ASSERT(numArgs == 2, "Number of arguments must be 2 for " + opShort)
+
+	WAVE/WAVE arg0 = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+	WAVE/WAVE arg1 = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 1)
+	dataSetNum0 = DimSize(arg0, ROWS)
+	dataSetNum1 = DimSize(arg1, ROWS)
+	SFH_ASSERT(dataSetNum0 > 0 && dataSetNum1 > 0, "No input data for " + opShort)
+	if(dataSetNum0 == dataSetNum1)
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum0)
+		WAVE/WAVE input = arg0
+		strswitch(opShort)
+			case SF_OPSHORT_DIV:
+				output[] = SF_OperationDivImplDataSets(arg0[p], arg1[p])
+				break
+			case SF_OPSHORT_PLUS:
+				output[] = SF_OperationPlusImplDataSets(arg0[p], arg1[p])
+				break
+			case SF_OPSHORT_MINUS:
+				output[] = SF_OperationMinusImplDataSets(arg0[p], arg1[p])
+				break
+			case SF_OPSHORT_MULT:
+				output[] = SF_OperationMultImplDataSets(arg0[p], arg1[p])
+				break
+			default:
+				ASSERT(0, "Unsupported primitive operation")
+		endswitch
+	elseif(dataSetNum1 == 1)
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum0)
+		WAVE/WAVE input = arg0
+		strswitch(opShort)
+			case SF_OPSHORT_DIV:
+				output[] = SF_OperationDivImplDataSets(arg0[p], arg1[0])
+				break
+			case SF_OPSHORT_PLUS:
+				output[] = SF_OperationPlusImplDataSets(arg0[p], arg1[0])
+				break
+			case SF_OPSHORT_MINUS:
+				output[] = SF_OperationMinusImplDataSets(arg0[p], arg1[0])
+				break
+			case SF_OPSHORT_MULT:
+				output[] = SF_OperationMultImplDataSets(arg0[p], arg1[0])
+				break
+			default:
+				ASSERT(0, "Unsupported primitive operation")
+		endswitch
+	elseif(dataSetNum0 == 1)
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, dataSetNum1)
+		WAVE/WAVE input = arg1
+		strswitch(opShort)
+			case SF_OPSHORT_DIV:
+				output[] = SF_OperationDivImplDataSets(arg0[0], arg1[p])
+				break
+			case SF_OPSHORT_PLUS:
+				output[] = SF_OperationPlusImplDataSets(arg0[0], arg1[p])
+				break
+			case SF_OPSHORT_MINUS:
+				output[] = SF_OperationMinusImplDataSets(arg0[0], arg1[p])
+				break
+			case SF_OPSHORT_MULT:
+				output[] = SF_OperationMultImplDataSets(arg0[0], arg1[p])
+				break
+			default:
+				ASSERT(0, "Unsupported primitive operation")
+		endswitch
+	else
+		sprintf errMsg, "Can not apply %s on mixed number of datasets.", opShort
+		SFH_ASSERT(0, errMsg)
+	endif
+
+	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, "")
+
+	SFH_CleanUpInput(arg0)
+	SFH_CleanUpInput(arg1)
+
+	return output
 End
 
 static Function/WAVE SF_OperationDiv(variable jsonId, string jsonPath, string graph)
 
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_DIV)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_DIV, DimSize(input, ROWS))
+	WAVE output = SF_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_DIV)
 
-	output[] = SF_OperationDivImpl(input[p])
-
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_DIV, "")
-
-	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_DIV, clear=input)
+	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_DIV)
 End
 
-static Function/WAVE SF_OperationDivImpl(WAVE/Z wv)
+static Function/WAVE SF_OperationDivImplDataSets(WAVE/Z data0, WAVE/Z data1)
 
-	if(!WaveExists(wv))
+	variable divConst
+
+	if(!WaveExists(data0) || !WaveExists(data1))
 		return $""
 	endif
-	SFH_ASSERT(IsNumericWave(wv), "Operand for / must be numeric.")
-	SFH_ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
-	MatrixOP/FREE out = (row(wv, 0) / productCols(subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
-	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
-	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
-	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	SFH_ASSERT(IsNumericWave(data0) && IsNumericWave(data1) , "Operand for / must be numeric.")
 
-	return out
+	if(numpnts(data1) == 1)
+		divConst = data1[0]
+		MatrixOp/FREE result = data0 / divConst
+		CopyScales data0, result
+		return result
+	endif
+	if(numpnts(data0) == 1)
+		divConst = data0[0]
+		MatrixOp/FREE result = divConst / data1
+		CopyScales data1, result
+		return result
+	endif
+	SFH_ASSERT(EqualWaves(data0, data1, EQWAVES_DIMSIZE), "div: wave size mismatch")
+
+	MatrixOp/FREE result = data0 / data1
+	CopyScales data0, result
+	return result
 End
 
 static Function/WAVE SF_OperationMult(variable jsonId, string jsonPath, string graph)
 
-	WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OPSHORT_MULT)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OPSHORT_MULT, DimSize(input, ROWS))
+	WAVE output = SF_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_MULT)
 
-	output[] = SF_OperationMultImpl(input[p])
-
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OPSHORT_MULT, "")
-
-	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_MULT, clear=input)
+	return SFH_GetOutputForExecutor(output, graph, SF_OPSHORT_MULT)
 End
 
-static Function/WAVE SF_OperationMultImpl(WAVE/Z wv)
+static Function/WAVE SF_OperationMultImplDataSets(WAVE/Z data0, WAVE/Z data1)
 
-	if(!WaveExists(wv))
+	variable multConst
+
+	if(!WaveExists(data0) || !WaveExists(data1))
 		return $""
 	endif
-	SFH_ASSERT(DimSize(wv, ROWS), "Operand for * is empty.")
-	SFH_ASSERT(IsNumericWave(wv), "Operand for * must be numeric.")
-	MatrixOP/FREE out = productCols(wv)^t
-	SF_FormulaWaveScaleTransfer(wv, out, SF_TRANSFER_ALL_DIMS, NaN)
-	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
-	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	SFH_ASSERT(IsNumericWave(data0) && IsNumericWave(data1) , "Operand for * must be numeric.")
 
-	return out
+	if(numpnts(data1) == 1)
+		multConst = data1[0]
+		MatrixOp/FREE result = data0 * multConst
+		CopyScales data0, result
+		return result
+	endif
+	if(numpnts(data0) == 1)
+		multConst = data0[0]
+		MatrixOp/FREE result = multConst * data1
+		CopyScales data1, result
+		return result
+	endif
+	SFH_ASSERT(EqualWaves(data0, data1, EQWAVES_DIMSIZE), "mult: wave size mismatch")
+
+	MatrixOp/FREE result = data0 * data1
+	CopyScales data0, result
+	return result
 End
 
 /// range (start[, stop[, step]])
@@ -3231,59 +3334,38 @@ static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string 
 
 	variable numArgs
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_RANGE)
-	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
-	endif
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_RANGE, DimSize(input, ROWS))
+	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_RANGE, 1, maxArgs=3)
 
-	output[] = SF_OperationRangeImpl(input[p])
-
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_RANGE, SF_DATATYPE_RANGE)
-
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_RANGE, clear=input)
-End
-
-static Function/WAVE SF_OperationRangeImpl(WAVE/Z input)
-
-	variable numArgs
-
-	if(!WaveExists(input))
-		return $""
-	endif
-
-	SFH_ASSERT(IsNumericWave(input), "range requires numeric data as input")
-	SFH_ASSERT(WaveDims(input) == 1, "range requires 1d data input.")
-	numArgs = DimSize(input, ROWS)
-	if(numArgs == 3)
-		Make/N=(ceil(abs((input[0] - input[1]) / input[2])))/FREE range
-		Multithread range[] = input[0] + p * input[2]
+	WAVE arg0 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 0, checkExist=1)
+	if(numArgs == 1)
+		SFH_ASSERT(IsNumericWave(arg0), "range first argument must be numeric")
+		Make/FREE/D/N=(abs(trunc(arg0[0]))) range
+		MultiThread range = p
 	elseif(numArgs == 2)
-		Make/N=(abs(trunc(input[0])-trunc(input[1])))/FREE range
-		Multithread range[] = input[0] + p
-	elseif(numArgs == 1)
-		Make/N=(abs(trunc(input[0])))/FREE range
-		Multithread range[] = p
-	else
-		SFH_ASSERT(0, "range accepts 1-3 args per specification")
+		WAVE arg1 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 1, checkExist=1)
+		SFH_ASSERT(IsNumericWave(arg1), "range second argument must be numeric")
+		Make/FREE/D/N=(abs(trunc(arg0[0])-trunc(arg1[0]))) range
+		MultiThread range[] = arg0[0] + p
+		SFH_CleanUpInput(arg1)
+	elseif(numArgs == 3)
+		WAVE arg1 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 1, checkExist=1)
+		WAVE arg2 = SFH_ResolveDatasetElementFromJSON(jsonId, jsonpath, graph, SF_OP_RANGE, 2, checkExist=1)
+		SFH_ASSERT(IsNumericWave(arg1), "range second argument must be numeric")
+		SFH_ASSERT(IsNumericWave(arg2), "range third argument must be numeric")
+		Make/FREE/D/N=(ceil(abs((arg0[0] - arg1[0]) / arg2[0]))) range
+		MultiThread range[] = arg0[0] + p * arg2[0]
+		SFH_CleanUpInput(arg1)
+		SFH_CleanUpInput(arg2)
 	endif
 
-	return range
+	SFH_CleanUpInput(arg0)
+
+	return SFH_GetOutputForExecutorSingle(range, graph, SF_OP_RANGE, dataType=SF_DATATYPE_RANGE)
 End
 
 static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs
-
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	SFH_ASSERT(numArgs > 0, "min requires at least one argument")
-	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_MIN)
-	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
-	endif
+	WAVE/WAVE input = SFH_GetNumericVarArgs(jsonId, jsonPath, graph, SF_OP_MIN)
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_MIN, DimSize(input, ROWS))
 
 	output[] = SF_OperationMinImpl(input[p])
@@ -4929,6 +5011,24 @@ static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string 
 	endif
 
 	WAVE/WAVE input = SF_ResolveDataset(wv)
+
+	return input
+End
+
+static Function/WAVE SFH_GetNumericVarArgs(variable jsonId, string jsonPath, string graph, string opShort)
+
+	variable numArgs
+
+	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, opShort, 1)
+	if(numArgs == 1)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+	else
+		WAVE wv = SF_FormulaExecutor(graph, jsonID, jsonPath = jsonPath)
+		WAVE/WAVE input = SF_ResolveDataset(wv)
+		SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected a single data set")
+		WAVE wNum = input[0]
+		SFH_ASSERT(IsNumericWave(wNum), "Expected numeric wave")
+	endif
 
 	return input
 End

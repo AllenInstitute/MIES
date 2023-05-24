@@ -3462,7 +3462,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				Make/FREE/N=(MAX_DIMENSION_COUNT) newSizes = DimSize(img, p)
 
 				if(!(mode != POST_PLOT_ADDED_SWEEPS                                        \
-				   || !EqualWaves(oldSizes, newSizes, 1)                                 \
+				   || !EqualWaves(oldSizes, newSizes, EQWAVES_DATA)         \
 				   || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP						\
 				   || scaleChanged                                          \
 				   || layoutChanged))
