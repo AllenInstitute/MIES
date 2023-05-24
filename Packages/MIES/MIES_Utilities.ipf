@@ -168,6 +168,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
 			stacktrace = GetStackTrace()
+			print "Stacktrace:"
 			print stacktrace
 
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -250,6 +251,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 			print "################################"
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 			stacktrace = GetStackTrace()
+			print "Stacktrace:"
 			print stacktrace
 
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -4144,10 +4146,14 @@ threadsafe Function/S GetStackTrace([prefix])
 
 	if(numCallers < 3)
 		// our caller was called directly
-		return "Stacktrace not available"
+		return "Not available"
 	endif
 
-	output = prefix + "Stacktrace:\r"
+	if(IsEmpty(prefix))
+		output = prefix
+	else
+		output = prefix + "\r"
+	endif
 
 	for(i = 0; i < numCallers - 2; i += 1)
 		entry = StringFromList(i, stacktrace)
