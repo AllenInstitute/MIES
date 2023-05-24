@@ -523,9 +523,9 @@ threadsafe static Function ReportBugToLogfile(string msg, WAVE/T/Z keys, WAVE/T/
 	keys[size]       = LOG_MESSAGE_KEY
 	values[size]     = msg
 
-	LOG_AddEntry(PACKAGE_MIES, "report", \
-	             stacktrace = 1,         \
-	             keys = keys,            \
+	LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_REPORT, \
+	             stacktrace = 1,                  \
+	             keys = keys,                     \
 	             values = values)
 End
 
