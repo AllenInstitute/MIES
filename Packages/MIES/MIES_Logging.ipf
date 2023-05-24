@@ -28,6 +28,7 @@ End
 /// - `ts`: ISO8601 timestamp
 /// - `source`: Source of the log entry, usually the function issuing the add entry
 /// - `exp`: Name of the Igor Pro experiment
+/// - `id`: Igor Pro instance identifier, see also GetIgorInstanceID()
 threadsafe static Function LOG_HasRequiredKeys(variable JSONid)
 	WAVE/T/Z keys = JSON_GetKeys(JSONid, "", ignoreErr = 1)
 
