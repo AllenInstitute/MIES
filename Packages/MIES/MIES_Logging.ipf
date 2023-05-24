@@ -25,7 +25,6 @@ End
 /// @brief Check that the given JSON document has the required top level keys
 ///
 /// Currently we require:
-/// - `ts`: ISO8601 timestamp
 /// - `source`: Source of the log entry, usually the function issuing the add entry
 /// - `exp`: Name of the Igor Pro experiment
 /// - `id`: Igor Pro instance identifier, see also GetIgorInstanceID()
@@ -36,7 +35,7 @@ threadsafe static Function LOG_HasRequiredKeys(variable JSONid)
 		return 0
 	endif
 
-	Make/FREE/T requiredKeys = {"ts", "source", "exp", "id"}
+	Make/FREE/T requiredKeys = {"source", "exp", "id"}
 
 	WAVE/Z intersection = GetSetIntersection(keys, requiredKeys)
 
@@ -50,7 +49,6 @@ threadsafe Function LOG_GenerateEntryTemplate(string source)
 	variable JSONid
 
 	JSONid = JSON_New()
-	JSON_AddString(JSONid, "/ts", GetISO8601TimeStamp(numFracSecondsDigits = 3, localTimeZone = 1))
 	JSON_AddString(JSONid, "/source", source)
 	JSON_AddString(JSONid, "/exp", GetExperimentName())
 	JSON_AddString(JSONid, "/id", GetIgorInstanceID()[0, 6])
