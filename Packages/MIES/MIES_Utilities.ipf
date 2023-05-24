@@ -183,7 +183,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			print miesVersionStr
 			print "################################"
 
-			LOG_AddEntry(PACKAGE_MIES, "assert", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
+			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
 
 			ControlWindowToFront()
 		endif
@@ -260,7 +260,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
 			print "################################"
 
-			LOG_AddEntry(PACKAGE_MIES, "assert", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
+			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
 		endif
 
 		AbortOnValue 1, 1
