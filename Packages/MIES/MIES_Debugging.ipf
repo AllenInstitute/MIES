@@ -506,11 +506,11 @@ Function EnableDangerousDebugging()
 	variable/G root:V_debugDangerously = 1
 End
 
-threadsafe static Function ReportBugToLogfile(string msg, string caller)
+threadsafe static Function ReportBugToLogfile(string msg)
 
-	LOG_AddEntry_TS(PACKAGE_MIES, "report", caller, \
-	                keys = {"msg", "stacktrace"},   \
-	                values = {msg, GetStackTrace()})
+	LOG_AddEntry(PACKAGE_MIES, "report",         \
+	             keys = {"msg", "stacktrace"},   \
+	             values = {msg, GetStackTrace()})
 End
 
 /// @brief Complain and ask the user to report the error
@@ -533,7 +533,7 @@ Function BUG(msg)
 		printf "BUG: %s\r", msg
 	endif
 
-	ReportBugToLogfile(msg, "BUG")
+	ReportBugToLogfile(msg)
 
 	ControlWindowToFront()
 
@@ -551,7 +551,7 @@ threadsafe Function BUG_TS(string msg)
 
 	msg = RemoveEnding(msg, "\r")
 
-	ReportBugToLogfile(msg, "BUG_TS")
+	ReportBugToLogfile(msg)
 
 	printf "BUG_TS: %s\r", msg
 

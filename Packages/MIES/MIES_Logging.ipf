@@ -91,6 +91,10 @@ End
 
 /// @brief Add entry for the current function into the log file.
 ///
+/// Before LOG_AddEntry can be used the symbolic path must have been
+/// initialized via PS_Initialize or PS_FixPackageLocation. This is best done
+/// from the AfterCompiledHook().
+///
 /// Usage:
 /// \rst
 /// .. code-block:: igorpro
@@ -120,42 +124,16 @@ End
 ///                                            values. Either both `keys` and `values` are present or none.
 /// @param values  [optional, defaults to $""] Additional key-value pairs to be written into the log file. Same size as
 ///                                            keys. Either both `keys` and `values` are present or none.
-Function LOG_AddEntry(string package, string action, [WAVE/T keys, WAVE/T values])
-
-	// create the folder if it does not exist
-	PathInfo PackageFolder
-	if(!V_flag)
-		PS_GetSettingsFolder(package)
-	endif
-
-	if(ParamIsDefault(keys) && ParamIsDefault(values))
-		return LOG_AddEntryImp(package, action, GetRTStackInfo(2), $"", $"")
-	else
-		return LOG_AddEntryImp(package, action, GetRTStackInfo(2), keys, values)
-	endif
-End
-
-/// @brief Threadsafe version of LOG_AddEntry()
-///
-/// Callers need to write the calling function name into `caller`.
-/// @todo IP10 merge with LOG_AddEntry once SpecialDirPath is threadsafe
-threadsafe Function LOG_AddEntry_TS(string package, string action, string caller, [WAVE/T keys, WAVE/T values])
-
-	if(ParamIsDefault(keys) && ParamIsDefault(values))
-		return LOG_AddEntryImp(package, action, caller, $"", $"")
-	else
-		return LOG_AddEntryImp(package, action, caller, keys, values)
-	endif
-End
-
-threadsafe static Function LOG_AddEntryImp(string package, string action, string caller, WAVE/T/Z keys, WAVE/T/Z values)
+threadsafe Function LOG_AddEntry(string package, string action, [WAVE/T/Z keys, WAVE/T/Z values])
 	variable JSONid, numAdditionalEntries
+	string caller
 
 	if(WaveExists(keys) && WaveExists(values))
 		numAdditionalEntries = DimSize(keys, ROWS)
 		ASSERT_TS(numAdditionalEntries == DimSize(values, ROWS), "Non-matching dimension sizes")
 	endif
 
+	caller = GetRTStackInfo(2)
 	JSONid = LOG_GenerateEntryTemplate(caller)
 	JSON_AddString(JSONid, "/action", action)
 
