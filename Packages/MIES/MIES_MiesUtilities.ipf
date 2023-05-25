@@ -7218,15 +7218,19 @@ End
 /// @brief Return JSON text with default entries for upload
 ///
 /// Caller is responsible for releasing JSON text.
-Function GenerateJSONTemplateForUpload()
+Function GenerateJSONTemplateForUpload([string timeStamp])
 
 	variable jsonID
+
+	if(ParamIsDefault(timeStamp))
+		timeStamp = GetISO8601TimeStamp()
+	endif
 
 	jsonID = JSON_New()
 
 	JSON_AddString(jsonID, "/computer", GetEnvironmentVariable("COMPUTERNAME"))
 	JSON_AddString(jsonID, "/user", IgorInfo(7))
-	JSON_AddString(jsonID, "/timestamp", GetISO8601TimeStamp())
+	JSON_AddString(jsonID, "/timestamp", timeStamp)
 	AddPayloadEntries(jsonID, {"version.txt"}, {ROStr(GetMiesVersion())}, isBinary = 1)
 
 	return jsonID
