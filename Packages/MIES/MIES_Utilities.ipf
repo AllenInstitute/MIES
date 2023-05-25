@@ -4904,6 +4904,39 @@ Function [string data, string fName] LoadTextFile(string fileName[, string fileF
 	return [data, S_Path + S_fileName]
 End
 
+/// @brief Load data from a file to a text wave.
+///
+/// @param[in] fullFilePath full path to the file to be loaded
+/// @param[in] sep          separator string that splits the file data to the wave cells, typically the line ending
+/// @returns free text wave with the data, a null wave if the file could not be found or there was a problem reading the file
+Function/WAVE LoadTextFileToWave(string fullFilePath, string sep)
+
+	variable loadFlags, err
+
+	if(!FileExists(fullFilePath))
+		return $""
+	endif
+
+	loadFlags = LOADWAVE_V_FLAGS_DISABLELINEPRECOUNTING | LOADWAVE_V_FLAGS_DISABLEUNESCAPEBACKSLASH | LOADWAVE_V_FLAGS_DISABLESUPPORTQUOTEDSTRINGS
+	AssertOnAndClearRTError()
+	DFREF saveDFR = GetDataFolderDFR()
+	SetDataFolder NewFreeDataFolder()
+
+	LoadWave/Q/H/A/J/K=2/V={sep, "", 0, loadFlags} fullFilePath; err=GetRTError(1)
+	if(!V_flag)
+		SetDataFolder saveDFR
+		return $""
+	elseif(V_flag > 1)
+		SetDataFolder saveDFR
+		ASSERT(0, "Expected to load a single text wave")
+	endif
+
+	WAVE/T wv = $StringFromList(0, S_waveNames)
+	SetDataFolder saveDFR
+
+	return wv
+End
+
 /// @brief Removes found entry from a text wave
 ///
 /// @param w       text wave

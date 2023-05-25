@@ -6872,3 +6872,43 @@ static Function TestLimitWithReplace([STRUCT IUTF_mData &mData])
 
 	CHECK_EQUAL_VAR(LimitWithReplace(val, low, high, repl), result)
 End
+
+static Function TestLoadTextFileToWave1()
+
+	variable i, cnt, fNum
+	string line
+	string tmpFile = GetFolder(FunctionPath("")) + "LoadTextWave.txt"
+
+	line = PadString("", MEGABYTE - 1, 0x20) + "\n"
+	cnt = ceil(STRING_MAX_SIZE / MEGABYTE + 1)
+	Open fNum as tmpFile
+	for(i = 0; i < cnt; i += 1)
+		FBinWrite fnum, line
+	endfor
+	Close fNum
+
+	WAVE/T input = LoadTextFileToWave(tmpFile, "\n")
+	CHECK_WAVE(input, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(input, ROWS), cnt)
+
+	DeleteFile tmpFile
+End
+
+static Function TestLoadTextFileToWave2()
+
+	variable fNum
+	string tmpFile = GetFolder(FunctionPath("")) + "LoadTextWave.txt"
+
+	Open fNum as tmpFile
+	Close fNum
+	WAVE/T input = LoadTextFileToWave(tmpFile, "\n")
+	CHECK_WAVE(input, NULL_WAVE)
+
+	DeleteFile tmpFile
+End
+
+static Function TestLoadTextFileToWave3()
+
+	WAVE/T input = LoadTextFileToWave("", "")
+	CHECK_WAVE(input, NULL_WAVE)
+End
