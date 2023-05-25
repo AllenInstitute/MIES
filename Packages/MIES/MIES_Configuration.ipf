@@ -1845,7 +1845,7 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 					s = ConvertTextEncoding(uData, TextEncodingCode("UTF-8"), TextEncodingCode("UTF-8"), 1, 0); AbortOnRTE
 				catch
 					ClearRTError()
-					uData = Base64Encode(udata)
+					uData = Base64EncodeSafe(udata)
 					JSON_AddString(jsonID, udataPath + EXPCONFIG_FIELD_BASE64PREFIX + uDataKey, "1")
 				endtry
 				JSON_AddString(jsonID, udataPath + uDataKey, uData)
