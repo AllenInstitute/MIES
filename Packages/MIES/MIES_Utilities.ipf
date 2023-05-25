@@ -4869,7 +4869,7 @@ Function SaveTextFile(data, fileName,[ fileFilter, message, savedFileName, showD
 	return 0
 End
 
-/// @brief Load string data from file
+/// @brief Load data from file to a string. The file size must be < 2GB.
 ///
 /// @param[in] fileName fileName to use. If the fileName is empty or invalid a file load dialog will be shown.
 /// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
