@@ -6666,3 +6666,57 @@ End
 threadsafe Function IsFunctionCalledRecursively()
 	return ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(2))) > 1
 End
+
+/// @brief Splits a text wave (with e.g. log entries) into parts. The parts are limited by a size in bytes such that each part
+///        contains only complete lines and is smaller than the given size limit. A possible separator for line endings
+///        is considered in the size calculation.
+///
+/// @param logData       text wave
+/// @param sep           separator string that is considered in the length calculation. This is useful if the resulting waves are later converted
+///                      to strings with TextWaveToList, where the size grows by lines * separatorLength.
+/// @param lim           size limit for each part in bytes
+/// @param lastIndex     [optional, default DimSize(logData, ROWS) - 1] When set, only elements in logData from index 0 to lastIndex are considered. lastIndex is included.
+///                      lastIndex is limited between 0 and DimSize(logData, ROWS) - 1.
+/// @param firstPartSize [optional, default lim] When set then the first parts size limit is firstPartSize instead of lim
+/// @returns wave reference wave containing text waves that are consecutive and sequential parts of logdata
+Function/WAVE SplitLogDataBySize(WAVE/T logData, string sep, variable lim, [variable lastIndex, variable firstPartSize])
+
+	variable lineCnt, sepLen, i, size, elemSize
+	variable first, sizeLimit, resultCnt
+
+	lineCnt = DimSize(logData, ROWS)
+	firstPartSize = ParamIsDefault(firstPartSize) ? lim : firstPartSize
+	lastIndex = ParamIsDefault(lastIndex) ? lineCnt - 1 : limit(lastIndex, 0, lineCnt - 1)
+	sepLen = strlen(sep)
+	Make/FREE/D/N=(lastIndex + 1) logSizes
+	MultiThread logSizes[0, lastIndex] = strlen(logData[p])
+
+	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE) result
+
+	sizeLimit = firstPartSize
+	for(i = 0; i <= lastIndex; i += 1)
+		elemSize = logSizes[i] + sepLen
+		ASSERT(elemSize <= sizeLimit, "input element larger than size limit " + num2istr(elemSize) + " / " + num2istr(sizeLimit))
+		size += elemSize
+		if(size > sizeLimit)
+
+			Duplicate/FREE/T/RMD=[first, i - 1] logData, logPart
+			EnsureLargeEnoughWave(result, indexShouldExist=resultCnt)
+			result[resultCnt] = logPart
+			resultCnt += 1
+
+			sizeLimit = lim
+			first = i
+			size = elemSize
+		endif
+	endfor
+
+	Duplicate/FREE/T/RMD=[first, i - 1] logData, logPart
+	EnsureLargeEnoughWave(result, indexShouldExist=resultCnt)
+	result[resultCnt] = logPart
+	resultCnt += 1
+
+	Redimension/N=(resultCnt) result
+
+	return result
+End

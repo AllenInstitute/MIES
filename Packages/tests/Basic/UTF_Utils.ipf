@@ -6993,3 +6993,95 @@ static Function TestLoadTextFileToWave3()
 	WAVE/T input = LoadTextFileToWave("", "")
 	CHECK_WAVE(input, NULL_WAVE)
 End
+
+static Function TestSplitLogDataBySize()
+
+	string str = PadString("", 10, 0x41)
+
+	Make/FREE/T logData = {str, str, str}
+
+	try
+		WAVE/WAVE result = SplitLogDataBySize(logData, "", 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE/WAVE result = SplitLogDataBySize(logData, "\n", strlen(str))
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE/WAVE result = SplitLogDataBySize(logData, "", strlen(str), firstPartSize = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/T strData = {str}
+	Make/FREE/WAVE ref = {strData, strData, strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 10)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	for(resultContent : result)
+		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
+	endfor
+
+	Make/FREE/T strData = {str}
+	Make/FREE/T strData2 = {str, str}
+	Make/FREE/WAVE ref = {strData2, strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 20)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	CHECK_EQUAL_WAVES(result[0], ref[0], mode = -1 %^ WAVE_SCALING)
+	CHECK_EQUAL_WAVES(result[1], ref[1], mode = -1 %^ WAVE_SCALING)
+
+	Make/FREE/T strData = {str, str, str}
+	Make/FREE/WAVE ref = {strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 30)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	CHECK_EQUAL_WAVES(result[0], strData)
+
+	Make/FREE/T strData = {str}
+	Make/FREE/WAVE ref = {strData, strData, strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "\n", 11)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	for(resultContent : result)
+		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
+	endfor
+
+	Make/FREE/T strData = {str}
+	Make/FREE/WAVE ref = {strData, strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 10, lastIndex = 1)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	for(resultContent : result)
+		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
+	endfor
+
+	Make/FREE/T strData = {str}
+	Make/FREE/WAVE ref = {strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 10, lastIndex = -1)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	for(resultContent : result)
+		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
+	endfor
+
+	Make/FREE/T strData = {str}
+	Make/FREE/WAVE ref = {strData, strData, strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 10, lastIndex = inf)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	for(resultContent : result)
+		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
+	endfor
+
+	Make/FREE/T strData = {str}
+	Make/FREE/T strData2 = {str, str}
+	Make/FREE/WAVE ref = {strData, strData2}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 20, firstPartSize = 10)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	WAVE data = result[0]
+	CHECK_EQUAL_WAVES(result[0], ref[0], mode = -1 %^ WAVE_SCALING)
+	WAVE data = result[1]
+	CHECK_EQUAL_WAVES(result[1], ref[1], mode = -1 %^ WAVE_SCALING)
+End
