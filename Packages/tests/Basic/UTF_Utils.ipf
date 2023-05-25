@@ -5797,58 +5797,61 @@ Function PU_Works([WAVE/T wv])
 	CHECK_EQUAL_STR(unit, unit)
 End
 
-Function FBD_CheckParams()
+static Function FBD_CheckParams()
+
+	variable lastIndex
 
 	Make/FREE/N=0/T input = {""}
 
+	WAVE/Z/T filtered = $""
+
 	try
-		FilterByDate(input, NaN, 0)
+		[filtered, lastIndex] = FilterByDate(input, NaN, 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		FilterByDate(input, 0, NaN)
+		[filtered, lastIndex] = FilterByDate(input, 0, NaN)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		FilterByDate(input, 0, -1)
+		[filtered, lastIndex] = FilterByDate(input, 0, -1)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		FilterByDate(input, -1, 0)
+		[filtered, lastIndex] = FilterByDate(input, -1, 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		FilterByDate(input, 2, 1)
+		[filtered, lastIndex] = FilterByDate(input, 2, 1)
 		FAIL()
 	catch
 		PASS()
 	endtry
 End
 
-Function FBD_Works()
+static Function FBD_Works()
 	variable last, first
+
+	variable lastIndex
+
+	WAVE/Z/T result = $""
 
 	// empty gives null
 	Make/FREE/T/N=0 input
-	WAVE/Z result = FilterByDate(input, 0, 1)
+	[result, lastIndex] = FilterByDate(input, 0, 1)
 	CHECK_WAVE(result, NULL_WAVE)
-
-	// non-matching entries are included
-	Make/FREE/T input = {"a", "{}", "{\"ts\" : \"2022\"}"}
-	WAVE/Z result = FilterByDate(input, 0, 1)
-	CHECK_EQUAL_TEXTWAVES(result, input)
 
 	Make/FREE/T input = {"{\"ts\" : \"2021-12-24T00:00:00Z\", \"stuff\" : \"abcd\"}", \
 	                     "{\"ts\" : \"2022-01-20T00:00:00Z\", \"stuff\" : \"efgh\"}", \
@@ -5860,8 +5863,9 @@ Function FBD_Works()
 
 	first = 0
 	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
-	WAVE/Z result = FilterByDate(input, first, last)
+	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, ref)
+	CHECK_EQUAL_VAR(lastIndex, 1)
 
 	// borders are included (2)
 	Make/FREE/T ref = {"{\"ts\" : \"2021-12-24T00:00:00Z\", \"stuff\" : \"abcd\"}", \
@@ -5869,20 +5873,97 @@ Function FBD_Works()
 
 	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
 	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
-	WAVE/Z result = FilterByDate(input, first, last)
+	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, ref)
+	CHECK_EQUAL_VAR(lastIndex, 1)
 
 	// will result null if nothing is in range (1)
 	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z") + 1
 	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z") - 1
-	WAVE/Z result = FilterByDate(input, first, last)
+	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_WAVE(result, NULL_WAVE)
 
 	// will result null if nothing is in range (2)
 	first = ParseIsO8601TimeStamp("2020-01-01T00:00:00Z")
 	last  = ParseIsO8601TimeStamp("2020-12-31T00:00:00Z")
-	WAVE/Z result = FilterByDate(input, first, last)
+	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_WAVE(result, NULL_WAVE)
+End
+
+static Function FBD_WorksWithInvalidTimeStamp()
+
+	variable last, first
+	variable lastIndex
+
+	WAVE/Z/T result = $""
+
+	Make/FREE/T input2 = {"{}", "{}", "{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
+						"{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+						"{}", "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
+						"{}", "{}"}
+
+	Make/FREE/T input3 = {"{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}"}
+
+	// invalid ts at borders are included (2)
+	Make/FREE/T ref = {"{}", "{}", "{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
+					   "{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+					   "{}", "{}"}
+
+	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	[result, lastIndex] = FilterByDate(input2, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, ref)
+	CHECK_EQUAL_VAR(lastIndex, 7)
+
+	// left boundary
+	first = 0
+	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	[result, lastIndex] = FilterByDate(input2, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, ref)
+	CHECK_EQUAL_VAR(lastIndex, 7)
+
+	// right boundary
+	Make/FREE/T ref = {"{}", "{}", "{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
+					   "{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+					  "{}", "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
+					   "{}", "{}"}
+
+	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last  = Inf
+	[result, lastIndex] = FilterByDate(input2, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, ref)
+	CHECK_EQUAL_VAR(lastIndex, DimSize(input2, ROWS) - 1)
+
+	// all invalid ts
+	first = 0
+	last  = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	[result, lastIndex] = FilterByDate(input3, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, input3)
+	CHECK_EQUAL_VAR(lastIndex, DimSize(input3, ROWS) - 1)
+
+	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	[result, lastIndex] = FilterByDate(input3, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, input3)
+	CHECK_EQUAL_VAR(lastIndex, DimSize(input3, ROWS) - 1)
+
+	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last  = Inf
+	[result, lastIndex] = FilterByDate(input3, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, input3)
+	CHECK_EQUAL_VAR(lastIndex, DimSize(input3, ROWS) - 1)
+
+	// right boundary with invalid ts
+	Make/FREE/T input4 = {"{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
+					   "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+					  "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
+					   "{}"}
+
+	first = 0
+	last  = ParseIsO8601TimeStamp("2022-01-25T00:00:00Z")
+	[result, lastIndex] = FilterByDate(input4, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, input4)
+	CHECK_EQUAL_VAR(lastIndex, DimSize(input4, ROWS) - 1)
 End
 
 Function ESFP_CheckParams()

@@ -7366,62 +7366,6 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 	endif
 End
 
-/// @brief Filter the entries text wave so that the result only includes entries between first and last
-///
-/// @param entries 1D wave with a JSON document in each entry. Each JSON must contain a `ts` object with a ISO8601 timestamp.
-/// @param first   Seconds since igor epoch in UTC of the first entry to include
-/// @param last    Seconds since igor epoch in UTC of the last entry to include
-Function/WAVE FilterByDate(WAVE/T entries, variable first, variable last)
-
-	variable i, numRows, include
-	string entry, dat
-	variable ts, idx
-
-	ASSERT(!IsNaN(first) && !IsNaN(last), "first and last can not be NaN.")
-	ASSERT(first >= 0 && last >= 0 && first < last, "first and last must not be negative and first < last.")
-
-	numRows = DimSize(entries, ROWS)
-
-	if(numRows == 0)
-		return $""
-	endif
-
-	Make/T/FREE/N=(numRows) filtered
-
-	for(entry : entries)
-
-		dat = GetDateOfLogEntry(entry)
-
-		include = 0
-
-		if(IsEmpty(dat))
-			// include entries without ts
-			include = 1
-		else
-			ts = ParseISO8601TimeStamp(dat)
-
-			if(IsNaN(ts))
-				// include entries with invalid ts
-				include = 1
-			elseif(ts >= first && ts <= last)
-				include = 1
-			endif
-		endif
-
-		if(include)
-			filtered[idx++] = entry
-		endif
-	endfor
-
-	if(idx == 0)
-		return $""
-	endif
-
-	Redimension/N=(idx) filtered
-
-	return filtered
-End
-
 static Function/S GetDateOfLogEntry(string entry)
 
 	variable jsonId
@@ -7440,14 +7384,18 @@ static Function/S GetDateOfLogEntry(string entry)
 End
 
 static Function [WAVE/T keys, WAVE/T values] FilterLogfileByDate(string file, variable firstDate, variable lastDate)
+
 	string data, path
+	variable lastIndex
 
 	WAVE/Z/T contents = LoadTextFileToWave(file, "\n")
 
 	ASSERT(WaveExists(contents), "Missing contents")
-	WAVE/Z filteredContents = FilterByDate(contents, firstDate, lastDate)
 
-	if(!WaveExists(filteredContents))
+	WAVE/Z/T filteredContents = $""
+	[filteredContents, lastIndex] = FilterByDate(contents, firstDate, lastDate)
+
+	if(!DimSize(filteredContents, ROWS))
 		data = "{}"
 	else
 		data = TextWaveToList(filteredContents, "\n")
@@ -7912,4 +7860,94 @@ Function AlreadyCalledOnce(string name)
 	var = 1
 	// not yet called
 	return 0
+End
+
+Function [WAVE/T filtered, variable lastIndex] FilterByDate(WAVE/T entries, variable first, variable last)
+
+	variable firstIndex
+
+	ASSERT(!IsNaN(first) && !IsNaN(last), "first and last can not be NaN.")
+	ASSERT(first >= 0 && last >= 0 && first < last, "first and last must not be negative and first < last.")
+
+	firstIndex = FindFirstLogEntryElementByDate(entries, first)
+	lastIndex = FindLastLogEntryElementByDate(entries, last)
+	if(lastIndex < firstIndex)
+		return [$"", NaN]
+	endif
+
+	Duplicate/FREE/T/RMD=[firstIndex, lastIndex] entries, filtered
+
+	return [filtered, lastIndex]
+End
+
+/// @brief Find the index of the first log file line that is from a time greater or equal than timeStamp
+///        The algorithm is a binary search that requires ascending order of time stamps of the log file entries.
+///        entries is a text wave where each line contains a log file entry as JSON.
+///        This JSON can contain a timestamp but can also contain no or an invalid timestamp.
+///        If the binary search hits an invalid timestamp the current search index is moved by a linear search
+///        to lower indices until a valid timestamp or the lower boundary is reached.
+///
+/// @param entries   text wave where each line contains a log file entry as serialized JSON with ascending order of time stamps
+/// @param timeStamp time stamp that is searched
+/// @returns index + 1 of the last entry with a time stamp lower than timeStamp
+static Function FindFirstLogEntryElementByDate(WAVE/T entries, variable timeStamp)
+
+	variable l, r, m, ts
+
+	r = DimSize(entries, ROWS)
+	for(;l < r;)
+		m = trunc((l + r) / 2)
+		ts =  ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
+		if(IsNaN(ts))
+			for(m = m - 1; m > l; m -= 1)
+				ts = ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
+				if(!IsNaN(ts))
+					break
+				endif
+			endfor
+		endif
+		if(ts < timeStamp)
+			l = m + 1
+		else
+			r = m
+		endif
+	endfor
+
+	return l
+End
+
+/// @brief Find the index of the last log file line that is from a time smaller or equal than timeStamp
+///        The algorithm is a binary search that requires ascending order of time stamps of the log file entries.
+///        entries is a text wave where each line contains a log file entry as JSON.
+///        This JSON can contain a timestamp but can also contain no or an invalid timestamp.
+///        If the binary search hits an invalid timestamp the current search index is moved by a linear search
+///        to higher indices until a valid timestamp or the higher boundary is reached.
+///
+/// @param entries   text wave where each line contains a log file entry as serialized JSON with ascending order of time stamps
+/// @param timeStamp time stamp that is searched
+/// @returns index - 1 of the first entry with a time stamp greater than timeStamp
+static Function FindLastLogEntryElementByDate(WAVE/T entries, variable timeStamp)
+
+	variable l, r, m, ts
+
+	r = DimSize(entries, ROWS)
+	for(;l < r;)
+		m = trunc((l + r) / 2)
+		ts = ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
+		if(IsNaN(ts))
+			for(m = m + 1; m < r; m += 1)
+				ts =  ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
+				if(!IsNaN(ts))
+					break
+				endif
+			endfor
+		endif
+		if(ts > timeStamp)
+			r = m
+		else
+			l = m + 1
+		endif
+	endfor
+
+	return r - 1
 End
