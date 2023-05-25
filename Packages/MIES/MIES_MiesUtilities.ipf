@@ -7442,10 +7442,8 @@ End
 static Function [WAVE/T keys, WAVE/T values] FilterLogfileByDate(string file, variable firstDate, variable lastDate)
 	string data, path
 
-	[data, path] = LoadTextFile(file)
+	WAVE/Z/T contents = LoadTextFileToWave(file, "\n")
 
-	data = NormalizeToEOL(data, "\n")
-	WAVE/Z contents = ListToTextWave(data, "\n")
 	ASSERT(WaveExists(contents), "Missing contents")
 	WAVE/Z filteredContents = FilterByDate(contents, firstDate, lastDate)
 
@@ -7455,7 +7453,7 @@ static Function [WAVE/T keys, WAVE/T values] FilterLogfileByDate(string file, va
 		data = TextWaveToList(filteredContents, "\n")
 	endif
 
-	Make/FREE/T keys = {GetFile(path)}
+	Make/FREE/T keys = {GetFile(file)}
 	// remove duplicated empty entries
 	Make/FREE/T values = {ReplaceString("{}\n{}\n", data, "")}
 
