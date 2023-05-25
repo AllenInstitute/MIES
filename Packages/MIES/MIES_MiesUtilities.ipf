@@ -7372,7 +7372,8 @@ End
 /// @param first   Seconds since igor epoch in UTC of the first entry to include
 /// @param last    Seconds since igor epoch in UTC of the last entry to include
 Function/WAVE FilterByDate(WAVE/T entries, variable first, variable last)
-	variable i, numRows, jsonID, include
+
+	variable i, numRows, include
 	string entry, dat
 	variable ts, idx
 
@@ -7387,17 +7388,9 @@ Function/WAVE FilterByDate(WAVE/T entries, variable first, variable last)
 
 	Make/T/FREE/N=(numRows) filtered
 
-	for(i = 0; i < numRows; i += 1)
-		entry = entries[i]
+	for(entry : entries)
 
-		jsonID = JSON_Parse(entry, ignoreErr = 1)
-		if(IsNaN(jsonID))
-			// include invalid entries
-			dat = ""
-		else
-			dat = JSON_GetString(jsonID, "ts", ignoreErr=1)
-			JSON_Release(jsonID)
-		endif
+		dat = GetDateOfLogEntry(entry)
 
 		include = 0
 
@@ -7427,6 +7420,23 @@ Function/WAVE FilterByDate(WAVE/T entries, variable first, variable last)
 	Redimension/N=(idx) filtered
 
 	return filtered
+End
+
+static Function/S GetDateOfLogEntry(string entry)
+
+	variable jsonId
+	string dat
+
+	jsonID = JSON_Parse(entry, ignoreErr = 1)
+	if(IsNaN(jsonID))
+		// include invalid entries
+		return ""
+	endif
+
+	dat = JSON_GetString(jsonID, "ts", ignoreErr=1)
+	JSON_Release(jsonID)
+
+	return dat
 End
 
 static Function [WAVE/T keys, WAVE/T values] FilterLogfileByDate(string file, variable firstDate, variable lastDate)
