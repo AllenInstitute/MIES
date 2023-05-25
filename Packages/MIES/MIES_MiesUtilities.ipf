@@ -7300,16 +7300,13 @@ End
 ///                  Both `firstDate` and `lastDate` must be present for filtering. The timestamps are in seconds since Igor Pro epoch.
 /// @param lastDate  [optional, defaults to false] See `firstDate`
 Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate])
-	string file, ticket, path, data, location, basePath
-	variable jsonID, numEntries, i, doFilter, isBinary
+
+	string logPartStr, fNamePart, file, ticket, timeStamp
+	string path, location, basePath, out
+	variable jsonID, numFiles, i, j, doFilter, isBinary, lastIndex, jsonIndex, partCnt, sumSize, fSize
 
 	isBinary = 1
-
-	if(ParamIsDefault(verbose))
-		verbose = 1
-	else
-		verbose = !!verbose
-	endif
+	verbose = ParamIsDefault(verbose) ? 1 : !!verbose
 
 	if(ParamIsDefault(firstDate) && ParamIsDefault(lastDate))
 		doFilter = 0
@@ -7319,35 +7316,71 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		ASSERT(0, "Invalid firstDate/lastDate combination")
 	endif
 
-	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile(), GetITCXOP2Logfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist", "ITC-XOP2-log-file-does-not-exist"}}
-	jsonID = GenerateJSONTemplateForUpload()
+	UploadLogFilesPrint("Just a moment, Uploading log files to improve MIES... (only once per day)\r", verbose)
+	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile(), GetITCXOP2Logfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist", "ITC-XOP2-log-file-does-not-exist"}, {"MIES log file", "ZeroMQ log file", "ITCXOP2 log file"}}
+	timeStamp = GetISO8601TimeStamp()
+	ticket = GenerateRFC4122UUID()
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) jsonIDs
 
-	numEntries = DimSize(files, ROWS)
-	for(i = 0; i < numEntries; i += 1)
+	numFiles = DimSize(files, ROWS)
+	for(i = 0; i < numFiles; i += 1)
 		file = files[i][0]
 
-		if(!FileExists(file))
+		fSize = GetFileSize(file)
+		WAVE/Z/T logData = $""
+		if(!IsNaN(fSize))
+			sprintf out, "Loading %s (%.1f MB)", files[i][2], fSize / MEGABYTE
+			UploadLogFilesPrint(out, verbose)
+			WAVE/Z/T logData = LoadTextFileToWave(file, "\n")
+		endif
+		if(!WaveExists(logData))
+			jsonID = GenerateJSONTemplateForUpload(timeStamp = timeStamp)
+			AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
 			AddPayloadEntries(jsonID, {file}, {files[i][1]}, isBinary = isBinary)
+			EnsureLargeEnoughWave(jsonIDs, indexShouldExist=jsonIndex)
+			jsonIDs[jsonIndex] = jsonID
+			jsonIndex += 1
 			continue
 		endif
 
 		if(doFilter)
-			WAVE/T/Z keys, values
-			[keys, values] = FilterLogfileByDate(file, firstDate, lastDate)
-
-			AddPayloadEntries(jsonID, keys, values, isBinary = isBinary)
+			UploadLogFilesPrint(" -> Filtering", verbose)
+			WAVE/Z/T uploadData = $""
+			[uploadData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
+			if(!WaveExists(uploadData))
+				UploadLogFilesPrint(" -> No new entries to upload here.\r", verbose)
+				continue
+			endif
 		else
-			AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = isBinary)
+			WAVE/T uploadData = logData
 		endif
+
+		UploadLogFilesPrint(" -> Splitting", verbose)
+		WAVE/WAVE splitContents = SplitLogDataBySize(uploadData, "\n", LOGUPLOAD_PAYLOAD_SPLITSIZE)
+		partCnt = 0
+		for(logPart : splitContents)
+			jsonID = GenerateJSONTemplateForUpload(timeStamp = timeStamp)
+			AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
+			if(doFilter)
+				AddPayloadEntries(jsonID, {"firstDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = firstDate)}, isBinary = isBinary)
+				AddPayloadEntries(jsonID, {"lastDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = lastDate)}, isBinary = isBinary)
+			endif
+
+			logPartStr = TextWaveToList(logPart, "\n")
+			logPartStr = ReplaceString("{}\n{}\n", logPartStr, "")
+			sprintf fNamePart, "%s_part%03d.%s", GetBaseName(file), partCnt, GetFileSuffix(file)
+
+			AddPayloadEntries(jsonID, {fNamePart}, {logPartStr}, isBinary = isBinary)
+			sumSize += strlen(logPartStr)
+			EnsureLargeEnoughWave(jsonIDs, indexShouldExist=jsonIndex)
+			jsonIDs[jsonIndex] = jsonID
+			jsonIndex += 1
+			partCnt += 1
+			UploadLogFilesPrint(".", verbose)
+		endfor
+		UploadLogFilesPrint("\r", verbose)
 	endfor
-
-	if(doFilter)
-		AddPayloadEntries(jsonID, {"firstDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = firstDate)}, isBinary = isBinary)
-		AddPayloadEntries(jsonID, {"lastDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = lastDate)}, isBinary = isBinary)
-	endif
-
-	ticket = GenerateRFC4122UUID()
-	AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
+	Redimension/N=(jsonIndex) jsonIDs
 
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
@@ -7355,18 +7388,36 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		path = SpecialDirPath("Temporary", 0, 0, 1) + "MIES:"
 		NewPath/C/Q/O/Z $basePath path
 
-		location = path + UniqueFileOrFolder(basePath, "logfiles", suffix = ".json")
-		SaveTextFile(JSON_dump(jsonID, indent=4), location)
+		for(jsonID : jsonIDs)
+			location = path + UniqueFileOrFolder(basePath, "logfiles", suffix = ".json")
+			SaveTextFile(JSON_dump(jsonID, indent=4), location)
 
-		printf "Stored the logfile JSON in %s.\r", location
+			printf "Stored the logfile JSON in %s.\r", location
+		endfor
 	endif
 #endif // DEBUGGING_ENABLED
 
-	UploadJSONPayload(jsonID)
-	JSON_Release(jsonID)
+	if(DimSize(jsonIDs, ROWS))
+		sumsize = Base64EncodeSize(sumSize)
+		sprintf out, "Uploading %.0f MB (~%d Bytes)", sumSize / MEGABYTE, sumSize
+		UploadLogFilesPrint(out, verbose)
+		for(jsonID : jsonIDs)
+			UploadJSONPayload(jsonID)
+			JSON_Release(jsonID)
+			UploadLogFilesPrint(".", verbose)
+		endfor
+		UploadLogFilesPrint("\r", verbose)
+	endif
+	UploadLogFilesPrint("Done.\r", verbose)
+
+	sprintf out, "Successfully uploaded the MIES, ZeroMQ-XOP and ITCXOP2 logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+	UploadLogFilesPrint(out, verbose)
+End
+
+static Function UploadLogFilesPrint(string str, variable verbose)
 
 	if(verbose)
-		printf "Successfully uploaded the MIES, ZeroMQ-XOP and ITCXOP2 logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+		printf "%s", str
 	endif
 End
 
@@ -7385,31 +7436,6 @@ static Function/S GetDateOfLogEntry(string entry)
 	JSON_Release(jsonID)
 
 	return dat
-End
-
-static Function [WAVE/T keys, WAVE/T values] FilterLogfileByDate(string file, variable firstDate, variable lastDate)
-
-	string data, path
-	variable lastIndex
-
-	WAVE/Z/T contents = LoadTextFileToWave(file, "\n")
-
-	ASSERT(WaveExists(contents), "Missing contents")
-
-	WAVE/Z/T filteredContents = $""
-	[filteredContents, lastIndex] = FilterByDate(contents, firstDate, lastDate)
-
-	if(!DimSize(filteredContents, ROWS))
-		data = "{}"
-	else
-		data = TextWaveToList(filteredContents, "\n")
-	endif
-
-	Make/FREE/T keys = {GetFile(file)}
-	// remove duplicated empty entries
-	Make/FREE/T values = {ReplaceString("{}\n{}\n", data, "")}
-
-	return [keys, values]
 End
 
 /// @brief Update the logging template used by the ZeroMQ-XOP and ITCXOP2

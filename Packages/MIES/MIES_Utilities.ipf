@@ -6731,3 +6731,12 @@ threadsafe Function/S Base64EncodeSafe(string data)
 
 	return Base64Encode(data)
 End
+
+/// @brief Calculated the size of Base64 encoded data from the unencoded size
+///
+/// @param unencodedSize unencoded size
+/// @returns encoded size
+threadsafe Function Base64EncodeSize(variable unencodedSize)
+
+	return (unencodedSize + 2 - mod(unencodedSize + 2, 3)) / 3 * 4
+End
