@@ -6746,14 +6746,26 @@ End
 Function UpgradeSettings(JSONid)
 	variable JSONid
 
+	string oldPath
+	string documentsFolder = GetUserDocumentsFolderPath()
+
 	if(!JSON_Exists(JSONid, "/analysisbrowser"))
 		JSON_AddTreeObject(JSONid, "/analysisbrowser")
-		JSON_AddString(JSONid, "/analysisbrowser/directory", "C:")
+		JSON_AddString(JSONid, SETTINGS_AB_FOLDER, documentsFolder)
 	endif
 
 	if(!JSON_Exists(JSONid, "/logfiles"))
 		JSON_AddTreeObject(JSONid, "/logfiles")
 		JSON_AddString(JSONid, "/logfiles/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch=0))
+	endif
+
+	if(JSON_GetType(JSONid, SETTINGS_AB_FOLDER) == JSON_STRING)
+		oldPath = JSON_GetString(JSONid, SETTINGS_AB_FOLDER)
+		if(!CmpStr(oldPath, SETTINGS_AB_FOLDER_OLD_DEFAULT))
+			oldPath = documentsFolder
+		endif
+		Make/FREE/T wvt = {oldPath}
+		JSON_SetWave(JSONid, SETTINGS_AB_FOLDER, wvt)
 	endif
 End
 

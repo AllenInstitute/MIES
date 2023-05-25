@@ -3904,21 +3904,22 @@ End
 ///
 /// @return a string denoting the selected folder, or an empty string if
 /// nothing was supplied.
-Function/S AskUserForExistingFolder([baseFolder])
-	string baseFolder
+Function/S AskUserForExistingFolder(string baseFolder)
 
 	string symbPath, selectedFolder
+
 	symbPath = GetUniqueSymbolicPath()
 
-	if(!ParamIsDefault(baseFolder))
-		NewPath/O/Q/Z $symbPath baseFolder
-		// preset next undirected NewPath/Open call using the contents of a
-		// *symbolic* folder
-		PathInfo/S $symbPath
-	endif
+	NewPath/O/Q/Z $symbPath baseFolder
+	// preset next undirected NewPath/Open call using the contents of a
+	// *symbolic* folder
+	PathInfo/S $symbPath
 
 	// let the user choose a folder, starts in $baseFolder if supplied
 	NewPath/O/Q/Z $symbPath
+	if(V_flag == -1)
+		return ""
+	endif
 	PathInfo $symbPath
 	selectedFolder = S_path
 	KillPath/Z $symbPath
@@ -6428,4 +6429,36 @@ Function/WAVE UTF8StringToTextWave(string str)
 	Redimension/N=(charPos) wv
 
 	return wv
+End
+
+/// @brief Returns the path to the users documents folder
+Function/S GetUserDocumentsFolderPath()
+
+	string userDir = GetEnvironmentVariable("USERPROFILE")
+
+	userDir = ParseFilePath(2, ParseFilePath(5, userDir, ":", 0, 0), ":", 0, 0)
+
+	return userDir + "Documents:"
+End
+
+/// @brief For DF memory management, increase reference count
+///
+/// @param dfr data folder reference of the target df
+Function RefCounterDFIncrease(DFREF dfr)
+
+	NVAR rc = $GetDFReferenceCount(dfr)
+	rc += 1
+End
+
+/// @brief For DF memory management, decrease reference count and kill DF if zero is reached
+///
+/// @param dfr data folder reference of the target df
+Function RefCounterDFDecrease(DFREF dfr)
+
+	NVAR rc = $GetDFReferenceCount(dfr)
+	rc -= 1
+
+	if(rc == 0)
+		KillOrMoveToTrash(dfr=dfr)
+	endif
 End

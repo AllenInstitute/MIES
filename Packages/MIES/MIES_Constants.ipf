@@ -21,7 +21,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 2
 Constant DA_EPHYS_PANEL_VERSION           = 60
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 46
 Constant WAVEBUILDER_PANEL_VERSION        = 13
-Constant ANALYSISBROWSER_PANEL_VERSION    =  1
+Constant ANALYSISBROWSER_PANEL_VERSION    =  2
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 9
@@ -2022,3 +2022,21 @@ Constant EQWAVES_DATAFULLSCALE = 256
 Constant EQWAVES_DIMSIZE = 512
 Constant EQWAVES_ALL = -1
 /// @}
+
+/// @name Igor reserved layer dim labels for ListBox GUI control
+/// @anchor ListBoxLayerDimLabels
+/// @{
+StrConstant LISTBOX_LAYER_FOREGROUND = "foreColors"
+StrConstant LISTBOX_LAYER_BACKGROUND  = "backColors"
+/// @}
+
+/// @name MIES Settings paths
+/// @anchor SettingsPaths
+/// @{
+StrConstant SETTINGS_AB_FOLDER = "/analysisbrowser/directory"
+StrConstant SETTINGS_AB_FOLDER_OLD_DEFAULT = "C:"
+/// @}
+
+StrConstant ANALYSIS_BROWSER_NAME = "AnalysisBrowser"
+
+StrConstant MEMORY_REFCOUNTER_DF = "MemoryReferenceCounterDF"
