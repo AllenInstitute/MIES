@@ -12,7 +12,6 @@ static Function GlobalPreAcq(string device)
 End
 
 static Function CheckCalculatedTPEntries_PreAcq(string device)
-	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = "2")
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
 End
 
@@ -20,7 +19,7 @@ End
 static Function CheckCalculatedTPEntries([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                     + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM2"                     + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
@@ -334,13 +333,12 @@ End
 
 static Function TPCachingWorks_PreAcq(string device)
 	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val=CHECKBOX_SELECTED)
-	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str="4")
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function TPCachingWorks([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1"                 + \
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1_SIM4"                 + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 

@@ -114,6 +114,19 @@ static Function CreateStimSetWorks()
 	CHECK(WB_StimsetExists(returned))
 End
 
+// ST_CreateStimSet
+static Function CheckInitialStimset()
+
+	string name
+
+	name = ST_CreateStimSet("setA", CHANNEL_TYPE_DAC)
+	CHECK_NON_EMPTY_STR(name)
+
+	CHECK_EQUAL_VAR(ST_GetStimsetParameterAsVariable(name, "Total number of epochs"), 1)
+	CHECK_EQUAL_VAR(ST_GetStimsetParameterAsVariable(name, "Type of Epoch 0"), EPOCH_TYPE_SQUARE_PULSE)
+	CHECK_EQUAL_VAR(ST_GetStimsetParameterAsVariable(name, "Duration", epochIndex = 0), 1)
+End
+
 // ST_RemoveStimSet
 static Function RemoveStimSetWorks()
 	string name, returned

@@ -1095,7 +1095,7 @@ End
 
 Structure DAQSettings
 	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP, ITP, FAR
-	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL
+	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM
 
 	WAVE hs, da, ad, cm, ttl, aso
 	WAVE/T st, ist, af, st_ttl, iaf
@@ -1232,6 +1232,8 @@ Function InitDAQSettingsFromString(s, str)
 
 	s.far = ParseNumber(str, "_FAR", defValue = 1)
 
+	s.sim = ParseNumber(str, "_SIM", defValue = 1)
+
 	WAVE/T/Z hsConfig = ListToTextWave(str, "__")
 
 	if(WaveExists(hsConfig))
@@ -1345,6 +1347,7 @@ End
 /// - TP during ITI checkbox (TPI: 1/0)
 /// - Inserted TP checkbox (ITP: 1/0)
 /// - Fail on Abort/RTE: (FAR: 1/0), defaults to 1
+/// - Sampling interval multiplier (SIM: 1, 2, 4, ..., 64), defaults to 1
 ///
 /// HeadstageConfig:
 /// - Full specification: __HSXX_ADXX_DAXX_CM:XX:_ST:XX:_IST:XX:_AF:XX:_IAF:XX:_ASOXX
@@ -1374,9 +1377,9 @@ End
 /// button is pressed. The global functions, which are still per test suite,
 /// must be called `GlobalPreAcq`/`GlobalPreInit` and the per test case ones
 /// `${testcase}_PreAcq`/`${testcase}_PreInit`. They must all be static.
-Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
-	string device, ctrl
-	variable i, j, numEntries, activeHS
+Function AcquireData_NG(STRUCT DAQSettings &s, string device)
+	string ctrl
+	variable i, activeHS
 
 	if(s.amp)
 		EnsureMCCIsOpen()
@@ -1388,134 +1391,129 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string devices)
 	KillOrMoveToTrash(wv = GetTrackActiveSetCount())
 	KillOrMoveToTrash(wv = TrackAnalysisFunctionCalls())
 
-	numEntries = ItemsInList(devices)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, devices)
+	s.preInitFunc(device)
+	s.globalPreInitFunc(device)
 
-		s.preInitFunc(device)
-		s.globalPreInitFunc(device)
+	CreateLockedDAEphys(device)
 
-		CreateLockedDAEphys(device)
+	REQUIRE(WindowExists(device))
 
-		REQUIRE(WindowExists(device))
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		for(j = 0; j < NUM_HEADSTAGES; j += 1)
+		PGC_SetAndActivateControl(device, "Popup_Settings_Headstage", val = i)
+		PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 
-			PGC_SetAndActivateControl(device, "Popup_Settings_Headstage", val = j)
+		if(!s.hs[i])
+			ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+			PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_UNSELECTED, switchTab = 1)
+			continue
+		endif
+
+		PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = num2str(s.da[i]))
+		PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = num2str(s.da[i]))
+		PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = num2str(s.ad[i]))
+		PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = num2str(s.ad[i]))
+
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+		PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_SELECTED, switchTab = 1)
+
+		if(s.amp && activeHS < 2)
+			// first entry is none
+			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1 + activeHS)
+
+			PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+		endif
+
+		if(IsEmpty(s.st[i]))
+			CHECK(s.TP)
+		else
+			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			PGC_SetAndActivateControl(device, ctrl, str = s.st[i])
+		endif
+
+		if(!IsEmpty(s.ist[i]))
+			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			PGC_SetAndActivateControl(device, ctrl, str = s.ist[i])
+
+			if(!IsEmpty(s.iaf[i]))
+				ST_SetStimsetParameter(s.ist[i], "Analysis function (Generic)", str = s.iaf[i])
+			endif
+		endif
+
+		if(!IsEmpty(s.af[i]))
+			ST_SetStimsetParameter(s.st[i], "Analysis function (Generic)", str = s.af[i])
+		endif
+
+		ctrl = DAP_GetClampModeControl(s.cm[i], i)
+		PGC_SetAndActivateControl(device, ctrl, val = 1)
+		DoUpdate/W=$device
+
+		if(!s.aso[i])
+			// clear the headstages channel connection and make the DA and AD channels unassociated
 			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 
-			if(!s.hs[j])
-				ctrl = GetPanelControl(j, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-				PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_UNSELECTED, switchTab = 1)
-				continue
-			endif
-
-			PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = num2str(s.da[j]))
-			PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = num2str(s.da[j]))
-			PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = num2str(s.ad[j]))
-			PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = num2str(s.ad[j]))
-
-			ctrl = GetPanelControl(j, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-			PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_SELECTED, switchTab = 1)
-
-			if(s.amp && activeHS < 2)
-				// first entry is none
-				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1 + activeHS)
-
-				PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
-			endif
-
-			if(IsEmpty(s.st[j]))
-				CHECK(s.TP)
-			else
-				ctrl = GetPanelControl(s.da[j], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-				PGC_SetAndActivateControl(device, ctrl, str = s.st[j])
-			endif
-
-			if(!IsEmpty(s.ist[j]))
-				ctrl = GetPanelControl(s.da[j], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-				PGC_SetAndActivateControl(device, ctrl, str = s.ist[j])
-
-				if(!IsEmpty(s.iaf[j]))
-					ST_SetStimsetParameter(s.ist[j], "Analysis function (Generic)", str = s.iaf[j])
-				endif
-			endif
-
-			if(!IsEmpty(s.af[j]))
-				ST_SetStimsetParameter(s.st[j], "Analysis function (Generic)", str = s.af[j])
-			endif
-
-			ctrl = DAP_GetClampModeControl(s.cm[j], j)
-			PGC_SetAndActivateControl(device, ctrl, val = 1)
-			DoUpdate/W=$device
-
-			if(!s.aso[j])
-				// clear the headstages channel connection and make the DA and AD channels unassociated
-				PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-				ctrl = GetPanelControl(j, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-				PGC_SetAndActivateControl(device, ctrl , val=CHECKBOX_UNSELECTED)
-			endif
-
-			activeHS += 1
-		endfor
-
-		for(j = 0; j < NUM_DA_TTL_CHANNELS; j += 1)
-
-			if(!s.ttl[j])
-				continue
-			endif
-
-			if(j >= NUM_ITC_TTL_BITS_PER_RACK                 \
-			   && (GetHardwareType(device) == HARDWARE_NI_DAC \
-			       || HW_ITC_GetNumberOfRacks(device) < 2))
-				// ignore unavailable TTLs
-				continue
-			endif
-
-			ctrl = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
-			PGC_SetAndActivateControl(device, ctrl, val=s.ttl[j])
-
-			if(!IsEmpty(s.st_ttl[j]))
-				ctrl = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-				PGC_SetAndActivateControl(device, ctrl, str = s.st_ttl[j])
-			endif
-		endfor
-
-		PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = (s.amp ? CHECKBOX_SELECTED : CHECKBOX_UNSELECTED))
-		PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
-		PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
-		PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
-		PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-
-		PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = s.dDAQ)
-		PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = s.oodDAQ)
-
-		PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = s.od)
-		PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = s.td)
-		PGC_SetAndActivateControl(device, "Setvar_DataAcq_dDAQDelay", val = s.ddl)
-
-		PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = s.gsi)
-
-		// these don't have good defaults
-		if(IsFinite(s.iti))
-			PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = s.iti)
+			ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+			PGC_SetAndActivateControl(device, ctrl , val=CHECKBOX_UNSELECTED)
 		endif
 
-		PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = s.tpi)
-
-		PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = s.itp)
-
-		if(!s.MD)
-			PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-		else
-			CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
-		endif
-
-		PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
+		activeHS += 1
 	endfor
 
-	device = devices
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!s.ttl[i])
+			continue
+		endif
+
+		if(i >= NUM_ITC_TTL_BITS_PER_RACK                 \
+		   && (GetHardwareType(device) == HARDWARE_NI_DAC \
+		       || HW_ITC_GetNumberOfRacks(device) < 2))
+			// ignore unavailable TTLs
+			continue
+		endif
+
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
+		PGC_SetAndActivateControl(device, ctrl, val=s.ttl[i])
+
+		if(!IsEmpty(s.st_ttl[i]))
+			ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+			PGC_SetAndActivateControl(device, ctrl, str = s.st_ttl[i])
+		endif
+	endfor
+
+	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = (s.amp ? CHECKBOX_SELECTED : CHECKBOX_UNSELECTED))
+	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = s.dDAQ)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = s.oodDAQ)
+
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = s.od)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = s.td)
+	PGC_SetAndActivateControl(device, "Setvar_DataAcq_dDAQDelay", val = s.ddl)
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = s.gsi)
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = num2str(s.sim))
+
+	// these don't have good defaults
+	if(IsFinite(s.iti))
+		PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = s.iti)
+	endif
+
+	PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = s.tpi)
+
+	PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = s.itp)
+
+	if(!s.MD)
+		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
+	else
+		CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
+	endif
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
 
 	s.preAcquireFunc(device)
 	s.globalPreAcquireFunc(device)

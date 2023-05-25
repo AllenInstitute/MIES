@@ -3,6 +3,14 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=DAEphysPanel
 
+static Function GlobalPreInit(string device)
+	PASS()
+End
+
+static Function GlobalPreAcq(string device)
+	PASS()
+End
+
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 Function CheckIfAllControlsReferStateWv([str])
 	string str
@@ -330,4 +338,61 @@ Function CheckIfConfigurationRestoresMCCFilterGain([str])
 	CHECK_EQUAL_VAR(val, filterFreq)
 	val = AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
 	CHECK_EQUAL_VAR(val, gain)
+End
+
+static Function ComplainsAboutVanishingEpoch_preAcq(string device)
+
+	string setname = "StimulusSetA_DA_0"
+
+	ST_SetStimsetParameter(setname, "Total number of epochs", var = 2)
+	ST_SetStimsetParameter(setname, "Total number of sweeps", var = 1)
+
+	ST_SetStimsetParameter(setname, "Type of Epoch 0", var = EPOCH_TYPE_SQUARE_PULSE)
+	ST_SetStimsetParameter(setname, "Duration", epochIndex = 0, var = 0.010) // 10us
+	ST_SetStimsetParameter(setname, "Amplitude", epochIndex = 0, var = 1)
+
+	// second epoch is required as the stimset itself must have a certain length
+	ST_SetStimsetParameter(setname, "Type of Epoch 1", var = EPOCH_TYPE_SQUARE_PULSE)
+	ST_SetStimsetParameter(setname, "Duration", epochIndex = 1, var = 10)
+	ST_SetStimsetParameter(setname, "Amplitude", epochIndex = 1, var = 0)
+End
+
+// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+static Function ComplainsAboutVanishingEpoch([STRUCT IUTF_MDATA &md])
+
+	variable refNum
+	string history
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM8"                 + \
+	                          "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+
+	refNum = CaptureHistoryStart()
+	AcquireData_NG(s, md.s0)
+	history = CaptureHistory(refNum, 1)
+
+	CHECK_PROPER_STR(history)
+	CHECK_GT_VAR(strsearch(history, "shorter than the sampling interval", 0), 0)
+End
+
+static Function ComplainsAboutVanishingEpoch_REENTRY([STRUCT IUTF_MDATA &md])
+
+	string device    = md.s0
+	variable DAC     = 0
+	variable sweepNo = 0
+
+	CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(device), sweepNo)
+
+	WAVE/Z numericalValues = GetLBNumericalValues(device)
+	CHECK_WAVE(numericalValues, NUMERIC_WAVE)
+
+	WAVE/Z textualValues = GetLBTextualValues(device)
+	CHECK_WAVE(textualValues, TEXT_WAVE)
+
+	// check that we have info for the vanished epoch
+	WAVE/T/Z e0 = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "E0")
+	CHECK_WAVE(e0, FREE_WAVE | TEXT_WAVE)
+
+	WAVE/T/Z e1 = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "E1")
+	CHECK_WAVE(e1, FREE_WAVE | TEXT_WAVE)
 End
