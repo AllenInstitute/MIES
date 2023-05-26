@@ -6260,6 +6260,8 @@ Function/WAVE JSONToWave(string str, [string path])
 	waveNote = JSON_GetString(jsonID, path + "/note", ignoreErr = 1)
 	Note/K data, waveNote
 
+	JSON_Release(jsonID)
+
 	return data
 End
 
