@@ -1173,8 +1173,8 @@ data
   a data wave.
 
 The entries are written to the textual results wave for documentation purposes and
-later querying. The second parameter which can be any numerical/textual array
-is serialized and stored under the given name.
+later querying. The second parameter which can be any numerical/textual array,
+or output from other operations, is serialized and stored under the given name.
 
 The operation returns the data argument unchanged.
 
