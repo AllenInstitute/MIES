@@ -278,6 +278,7 @@ Function HW_ReadDigital(hardwareType, deviceID, channel, [line, flags])
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			realDeviceOrPressure = HW_GetDeviceName(HARDWARE_ITC_DAC, deviceID, flags = flags)
+			HW_ITC_AssertOnInvalid(realDeviceOrPressure)
 			ttlBit     = channel
 			rack       = HW_ITC_GetRackForTTLBit(realDeviceOrPressure, ttlBit)
 			xopChannel = HW_ITC_GetITCXOPChannelForRack(realDeviceOrPressure, rack)
@@ -316,6 +317,7 @@ Function HW_WriteDigital(hardwareType, deviceID, channel, value, [line, flags])
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			realDeviceOrPressure = HW_GetDeviceName(HARDWARE_ITC_DAC, deviceID, flags = flags)
+			HW_ITC_AssertOnInvalid(realDeviceOrPressure)
 			ttlBit     = channel
 			rack       = HW_ITC_GetRackForTTLBit(realDeviceOrPressure, ttlBit)
 			xopChannel = HW_ITC_GetITCXOPChannelForRack(realDeviceOrPressure, rack)
@@ -2041,6 +2043,25 @@ Function HW_ITC_GetNumberOfRacks(device)
 
 	return deviceInfo[%Rack]
 End
+
+/// @brief Assert on using an invalid ITC device name
+///
+/// @param deviceName ITC device name
+Function HW_ITC_AssertOnInvalid(deviceName)
+	string deviceName
+
+	ASSERT(HW_ITC_IsValidDeviceName(deviceName), "Invalid ITC device name")
+End
+
+/// @brief Check wether the given ITC device name is valid
+///
+/// Currently a device name is valid if it is not empty.
+Function HW_ITC_IsValidDeviceName(deviceName)
+	string deviceName
+
+	return !isEmpty(deviceName)
+End
+
 /// @}
 /// @}
 
