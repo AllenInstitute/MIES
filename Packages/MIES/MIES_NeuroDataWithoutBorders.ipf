@@ -1856,7 +1856,7 @@ static Function NWB_AppendLogFileToString(string path, string &str)
 		return NaN
 	endif
 
-	WAVE/Z/T logData = LoadTextFileToWave(path, "\n")
+	WAVE/Z/T logData = LoadTextFileToWave(path, LOG_FILE_LINE_END)
 	if(WaveExists(logData))
 		now = GetISO8601TimeStamp()
 		firstDate = ParseISO8601TimeStamp(now[0, 9] + "T00:00:00Z")
@@ -1864,11 +1864,11 @@ static Function NWB_AppendLogFileToString(string path, string &str)
 		WAVE/Z/T partData = $""
 		[partData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
 		if(WaveExists(partData))
-			WAVE/WAVE splitContents = SplitLogDataBySize(partData, "\n", STRING_MAX_SIZE - MEGABYTE)
+			WAVE/WAVE splitContents = SplitLogDataBySize(partData, LOG_FILE_LINE_END, STRING_MAX_SIZE - MEGABYTE)
 			if(DimSize(splitContents, ROWS) > 1)
 				BUG("NWB log file larger than 2 GB, only adding first part")
 			endif
-			data = TextWaveToList(splitContents[0], "\n")
+			data = TextWaveToList(splitContents[0], LOG_FILE_LINE_END)
 		endif
 	endif
 

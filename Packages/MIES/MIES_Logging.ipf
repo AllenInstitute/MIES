@@ -76,7 +76,7 @@ threadsafe static Function LOG_AddEntryWithoutChecks(string package, variable JS
 
 	file = LOG_GetFile(package)
 
-	str = JSON_Dump(JSONid, indent = -1) + "\n"
+	str = JSON_Dump(JSONid, indent = -1) + LOG_FILE_LINE_END
 
 	Open/A/Z=1 refnum as file
 	if(V_flag)

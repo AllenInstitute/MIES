@@ -7338,7 +7338,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		if(!IsNaN(fSize))
 			sprintf out, "Loading %s (%.1f MB)", files[i][2], fSize / MEGABYTE
 			UploadLogFilesPrint(out, verbose)
-			WAVE/Z/T logData = LoadTextFileToWave(file, "\n")
+			WAVE/Z/T logData = LoadTextFileToWave(file, LOG_FILE_LINE_END)
 		endif
 		if(!WaveExists(logData))
 			jsonID = GenerateJSONTemplateForUpload(timeStamp = timeStamp)
@@ -7367,7 +7367,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		ArchiveLogFile(logData, file, lastIndex)
 
 		UploadLogFilesPrint(" -> Splitting", verbose)
-		WAVE/WAVE splitContents = SplitLogDataBySize(uploadData, "\n", LOGUPLOAD_PAYLOAD_SPLITSIZE)
+		WAVE/WAVE splitContents = SplitLogDataBySize(uploadData, LOG_FILE_LINE_END, LOGUPLOAD_PAYLOAD_SPLITSIZE)
 		partCnt = 0
 		for(logPart : splitContents)
 			jsonID = GenerateJSONTemplateForUpload(timeStamp = timeStamp)
@@ -7378,7 +7378,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 			endif
 
 			logPartStr = TextWaveToList(logPart, "\n")
-			logPartStr = ReplaceString("{}\n{}\n", logPartStr, "")
+			logPartStr = ReplaceString("{}" + LOG_FILE_LINE_END + "{}" + LOG_FILE_LINE_END, logPartStr, "")
 			sprintf fNamePart, "%s_part%03d.%s", GetBaseName(file), partCnt, GetFileSuffix(file)
 
 			AddPayloadEntries(jsonID, {fNamePart}, {logPartStr}, isBinary = isBinary)
@@ -7451,12 +7451,12 @@ static Function ArchiveLogFile(WAVE/T logData, string fullFilePath, variable ind
 	if(!IsEmpty(lastFileExists))
 		sizeLeft = LOG_ARCHIVING_SPLITSIZE - GetFileSize(lastFileExists)
 		if(sizeLeft > LOG_MAX_LINESIZE)
-			WAVE/WAVE logParts = SplitLogDataBySize(logData, "\n", LOG_ARCHIVING_SPLITSIZE, lastIndex = index, firstPartSize = sizeLeft)
+			WAVE/WAVE logParts = SplitLogDataBySize(logData, LOG_FILE_LINE_END, LOG_ARCHIVING_SPLITSIZE, lastIndex = index, firstPartSize = sizeLeft)
 			Open/Z/A fnum as lastFileExists
 			ASSERT(!V_flag, "Could not open file for writing! " + lastFileExists)
 
 			WAVE/T logPart = logParts[0]
-			format = "%s" + "\n"
+			format = "%s" + LOG_FILE_LINE_END
 			wfprintf fNum, format, logPart
 			Close fnum
 			partIdx += 1
@@ -7465,14 +7465,14 @@ static Function ArchiveLogFile(WAVE/T logData, string fullFilePath, variable ind
 		numPart = ReplaceString(filePrefix, lastFileExists, "")
 		fileIndex = str2num(RemoveEnding(numPart, fileSuffix)) + 1
 	else
-		WAVE/WAVE logParts = SplitLogDataBySize(logData, "\n", LOG_ARCHIVING_SPLITSIZE, lastIndex = index)
+		WAVE/WAVE logParts = SplitLogDataBySize(logData, LOG_FILE_LINE_END, LOG_ARCHIVING_SPLITSIZE, lastIndex = index)
 	endif
 
 	format = "%s%s" + ARCHIVEDLOG_SUFFIX + "%04d.%s"
 	numParts = DimSize(logParts, ROWS)
 	for(partIdx = partIdx; partIdx < numParts; partIdx += 1)
 		sprintf newFullFilePath, format, fileFolder, fileBase, fileIndex, fileSuffix
-		strData = TextWaveToList(logParts[partIdx], "\n")
+		strData = TextWaveToList(logParts[partIdx], LOG_FILE_LINE_END)
 		SaveTextFile(strData, newFullFilePath)
 		fileIndex += 1
 	endfor
@@ -7496,8 +7496,9 @@ static Function SaveRemainingLog(WAVE/T logData, variable index, string fullFile
 		return NaN
 	endif
 
+	format = "%s" + LOG_FILE_LINE_END
 	Open fnum as fullFilePath
-	wfprintf fNum, "%s\n"/R=[index + 1, Inf], logData
+	wfprintf fNum, format/R=[index + 1, Inf], logData
 	Close fNum
 
 	if(isZMQLogFile)
