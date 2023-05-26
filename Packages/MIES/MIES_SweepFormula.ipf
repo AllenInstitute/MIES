@@ -4753,13 +4753,10 @@ static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string 
 	SFH_ASSERT(DimSize(name, ROWS) == 1, "name parameter must be a plain string")
 
 	WAVE/WAVE dataRef = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 1)
-	SFH_ASSERT(DimSize(dataRef, ROWS) == 1, "Multiple dataSets not supported yet for store().")
-	WAVE/Z out = dataRef[0]
-	SFH_ASSERT(WaveExists(out), "No data retrieved for store().")
 
 	[rawCode, preProcCode] = SF_GetCode(graph)
 
-	[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0], resultType = SFH_RESULT_TYPE_STORE)
+	[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(graph, rawCode, data = dataRef, name = name[0], resultType = SFH_RESULT_TYPE_STORE)
 
 	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_RESULT)
 

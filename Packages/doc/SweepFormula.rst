@@ -1170,7 +1170,7 @@ name
   name suffix for the labnotebook entry. The full entry name is  "Sweep Formula store [name]" without brackets.
 
 data
-  a data wave. Currently multiple data waves are not supported as input.
+  a data wave.
 
 The entries are written to the textual results wave for documentation purposes and
 later querying. The second parameter which can be any numerical/textual array

@@ -3069,7 +3069,9 @@ static Function StoreWorks([WAVE wv])
 	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [ABCD]", SWEEP_FORMULA_RESULT)
 	CHECK_PROPER_STR(results)
 
-	WAVE/Z resultsWave = JSONToWave(results)
+	WAVE/WAVE/Z container = JSONToWave(results)
+	CHECK_WAVE(container, WAVE_WAVE)
+	WAVE/Z resultsWave = container[0]
 	CHECK_EQUAL_TEXTWAVES(wv, resultsWave, mode = WAVE_DATA)
 
 	// check sweep formula y wave
@@ -3078,6 +3080,35 @@ static Function StoreWorks([WAVE wv])
 	CHECK_EQUAL_VAR(DimSize(sweepFormulaY, COLS), 1)
 	Redimension/N=(-1, 0) sweepFormulaY
 	CHECK_EQUAL_WAVES(wv, sweepFormulaY, mode = WAVE_DATA)
+End
+
+static Function StoreWorksWithMultipleDataSets()
+	string str, results
+
+	string textKey = LABNOTEBOOK_USER_PREFIX + "TEXTKEY"
+	string textValue = "TestText"
+
+	string win, device
+	variable numSweeps, numChannels
+
+	device = HW_ITC_BuildDeviceString("ITC18USB", "0")
+
+	SVAR lockedDevices = $GetLockedDevices()
+	lockedDevices = device
+	win = DB_GetBoundDataBrowser(device)
+
+	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_ADC, textKey, textValue)
+
+	str = "store(\"ABCD\", data(cursors(A, B), select(channels(), sweeps())))"
+	CHECK(ExecuteSweepFormulaInDB(str, win))
+
+	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
+
+	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [ABCD]", SWEEP_FORMULA_RESULT)
+	CHECK_PROPER_STR(results)
+
+	WAVE/Z resultsWave = JSONToWave(results)
+	CHECK_WAVE(resultsWave, WAVE_WAVE)
 End
 
 static Function/WAVE TestHelpNotebookGetter_IGNORE()
@@ -3127,13 +3158,17 @@ static Function TPWithModelCell()
 	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
 	str = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [ss]", SWEEP_FORMULA_RESULT)
-	WAVE/Z results = JSONToWave(str)
+	WAVE/WAVE/Z container = JSONToWave(str)
+	CHECK_WAVE(container, WAVE_WAVE)
+	WAVE/Z results = container[0]
 	CHECK_WAVE(results, NUMERIC_WAVE)
 	Make/D/FREE ref = {183.037718204489}
 	CHECK_EQUAL_WAVES(ref, results, mode = WAVE_DATA)
 
 	str = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [inst]", SWEEP_FORMULA_RESULT)
-	WAVE/Z results = JSONToWave(str)
+	WAVE/WAVE/Z container = JSONToWave(str)
+	CHECK_WAVE(container, WAVE_WAVE)
+	WAVE/Z results = container[0]
 	CHECK_WAVE(results, NUMERIC_WAVE)
 	Make/D/FREE ref = {17.3667394014963}
 	CHECK_EQUAL_WAVES(ref, results, mode = WAVE_DATA)

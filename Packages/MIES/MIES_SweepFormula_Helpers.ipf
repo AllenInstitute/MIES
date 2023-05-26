@@ -800,6 +800,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
 
 	if(hasStoreEntry)
+		ASSERT(IsWaveRefWave(data), "Expected a wave reference wave")
 		SFH_ASSERT(!ParamIsDefault(resultType), "Missing type")
 		SFH_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
 		keys[0][numEntries - 1] = SFH_FormatResultsKey(resultType, name)
