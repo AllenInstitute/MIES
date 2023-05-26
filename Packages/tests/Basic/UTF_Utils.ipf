@@ -6529,6 +6529,16 @@ Function JSONWaveSerializationWorksNoDimLabels()
 	CHECK_EQUAL_WAVES(wv, serialized)
 End
 
+Function JSONWaveInvalidWaveRefRoundTrips()
+
+	string str
+
+	WAVE/Z input
+	str = WaveToJSON(input)
+	WAVE/Z result = JSONToWave(str)
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
 Function JSONWaveSerializationWorksWithPath()
 
 	string str, path

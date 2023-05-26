@@ -6223,6 +6223,12 @@ Function/WAVE JSONToWave(string str, [string path])
 		return $""
 	endif
 
+	if(JSON_GetType(jsonID, path) == JSON_NULL)
+		// invalid wave reference
+		JSON_Release(jsonID)
+		return $""
+	endif
+
 	type = JSON_GetString(jsonID, path + "/type", ignoreErr = 1)
 
 	// we only support FP64 for now
