@@ -2514,8 +2514,8 @@ Function P_ButtonProc_UserPressure(ba) : ButtonControl
 					// the device is the same for all headstages
 					deviceID = pressureDataWv[0][%UserPressureDeviceID]
 					hardwareType = pressureDataWv[0][%UserPressureDeviceHWType]
-					HW_CloseDevice(deviceID, hardwareType, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
-					HW_DeRegisterDevice(deviceID, hardwareType)
+					HW_CloseDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
+					HW_DeRegisterDevice(hardwareType, deviceID)
 				endif
 
 				pressureDataWv[][%UserPressureDeviceID]     = NaN
