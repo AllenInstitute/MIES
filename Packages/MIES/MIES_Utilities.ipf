@@ -6169,6 +6169,28 @@ threadsafe Function ChangeFreeWaveName(WAVE wv, string name)
 	MoveWave wv, dfr:$name
 End
 
+/// @brief Returns the wave type as constant
+///
+/// Same constant as WaveType with selector zero (default) and Redimension/Y.
+///
+Function WaveTypeStringToNumber(string type)
+
+	strswitch(type)
+		case "NT_FP64":
+			return 0x04
+		case "NT_FP32":
+			return 0x02
+		case "NT_I32":
+			return 0x20
+		case "NT_I16":
+			return 0x10
+		case "NT_I8":
+			return 0x08
+		default:
+			ASSERT(0, "Type is not supported: " + type)
+	endswitch
+End
+
 /// @brief Serialize a wave as JSON and return it as string
 ///
 /// The format is documented [here](https://github.com/AllenInstitute/ZeroMQ-XOP/#wave-serialization-format).
