@@ -1146,7 +1146,7 @@ static Function ParseNumber(string str, string name, [variable defValue])
 	string output
 	variable var
 
-	SplitString/E=(name + "([[:digit:]]+)") str, output
+	SplitString/E=(name + "([[:digit:]]+(\.[[:digit:]]+)?)") str, output
 
 	if(V_Flag == 1)
 		var = str2num(output)
