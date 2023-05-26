@@ -38,6 +38,8 @@ static StrConstant MSQ_SC_LBN_PREFIX  = "Spike Control"
 static StrConstant LBN_UNASSOC_REGEXP_LEGACY = "^(.*) UNASSOC_[[:digit:]]+$"
 static StrConstant LBN_UNASSOC_REGEXP = "^(.*) u_(AD|DA)[[:digit:]]+$"
 
+static StrConstant ARCHIVEDLOG_SUFFIX = "_old_"
+
 Menu "GraphMarquee"
 	"Horiz Expand (VisX)", /Q, HorizExpandWithVisX()
 End
@@ -7321,6 +7323,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 	endif
 
 	UploadLogFilesPrint("Just a moment, Uploading log files to improve MIES... (only once per day)\r", verbose)
+
 	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile(), GetITCXOP2Logfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist", "ITC-XOP2-log-file-does-not-exist"}, {"MIES log file", "ZeroMQ log file", "ITCXOP2 log file"}}
 	timeStamp = GetISO8601TimeStamp()
 	ticket = GenerateRFC4122UUID()
@@ -7357,7 +7360,11 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 			endif
 		else
 			WAVE/T uploadData = logData
+			lastIndex = DimSize(logData, ROWS) - 1
 		endif
+
+		UploadLogFilesPrint(" -> Archive", verbose)
+		ArchiveLogFile(logData, file, lastIndex)
 
 		UploadLogFilesPrint(" -> Splitting", verbose)
 		WAVE/WAVE splitContents = SplitLogDataBySize(uploadData, "\n", LOGUPLOAD_PAYLOAD_SPLITSIZE)
@@ -7423,6 +7430,105 @@ static Function UploadLogFilesPrint(string str, variable verbose)
 	if(verbose)
 		printf "%s", str
 	endif
+End
+
+static Function ArchiveLogFile(WAVE/T logData, string fullFilePath, variable index)
+
+	string fileFolder, fileBase, fileSuffix, filePrefix, newFullFilePath, lastFileExists, numPart
+	string format, strData
+	variable partIdx, numParts, fNum, sizeLeft, fileIndex
+
+	if(!index)
+		return NaN
+	endif
+
+	fileFolder = GetFolder(fullFilePath)
+	fileBase = GetBaseName(fullFilePath)
+	fileSuffix = GetFileSuffix(fullFilePath)
+	filePrefix = fileFolder + fileBase + ARCHIVEDLOG_SUFFIX
+
+	lastFileExists = LastArchivedLogFile(fullFilePath)
+	if(!IsEmpty(lastFileExists))
+		sizeLeft = LOG_ARCHIVING_SPLITSIZE - GetFileSize(lastFileExists)
+		if(sizeLeft > LOG_MAX_LINESIZE)
+			WAVE/WAVE logParts = SplitLogDataBySize(logData, "\n", LOG_ARCHIVING_SPLITSIZE, lastIndex = index, firstPartSize = sizeLeft)
+			Open/Z/A fnum as lastFileExists
+			ASSERT(!V_flag, "Could not open file for writing! " + lastFileExists)
+
+			WAVE/T logPart = logParts[0]
+			format = "%s" + "\n"
+			wfprintf fNum, format, logPart
+			Close fnum
+			partIdx += 1
+		endif
+
+		numPart = ReplaceString(filePrefix, lastFileExists, "")
+		fileIndex = str2num(RemoveEnding(numPart, fileSuffix)) + 1
+	else
+		WAVE/WAVE logParts = SplitLogDataBySize(logData, "\n", LOG_ARCHIVING_SPLITSIZE, lastIndex = index)
+	endif
+
+	format = "%s%s" + ARCHIVEDLOG_SUFFIX + "%04d.%s"
+	numParts = DimSize(logParts, ROWS)
+	for(partIdx = partIdx; partIdx < numParts; partIdx += 1)
+		sprintf newFullFilePath, format, fileFolder, fileBase, fileIndex, fileSuffix
+		strData = TextWaveToList(logParts[partIdx], "\n")
+		SaveTextFile(strData, newFullFilePath)
+		fileIndex += 1
+	endfor
+
+	SaveRemainingLog(logData, index, fullFilePath)
+End
+
+static Function SaveRemainingLog(WAVE/T logData, variable index, string fullFilePath)
+
+	string format
+	variable flags, isZMQLogFile, fNum
+
+	isZMQLogFile = !CmpStr(GetZeroMQXOPLogfile(), fullFilePath)
+	if(isZMQLogFile)
+		flags = ZeroMQ_SET_FLAGS_DEFAULT
+		zeromq_set(flags)
+	endif
+
+	if(index == DimSize(logData, ROWS) - 1)
+		DeleteFile fullFilePath
+		return NaN
+	endif
+
+	Open fnum as fullFilePath
+	wfprintf fNum, "%s\n"/R=[index + 1, Inf], logData
+	Close fNum
+
+	if(isZMQLogFile)
+		flags = GetZeroMQXOPFlags()
+		zeromq_set(flags)
+	endif
+End
+
+static Function/S LastArchivedLogFile(string fullFilePath)
+
+	string pathName, fileFolder, fileBase, fileSuffix, allFilesList, allArchivedFiles, regex
+	variable err
+
+	fileFolder = GetFolder(fullFilePath)
+	fileBase = GetBaseName(fullFilePath)
+	fileSuffix = GetFileSuffix(fullFilePath)
+
+	pathName = GetUniqueSymbolicPath()
+	NewPath/Q/O $pathName, fileFolder
+
+	AssertOnAndClearRTError()
+	allFilesList = IndexedFile($pathName, -1, "." + fileSuffix, "????", FILE_LIST_SEP); err = GetRTError(1)
+	KillPath/Z $pathName
+
+	regex = "^" + fileBase + ARCHIVEDLOG_SUFFIX + "[0-9]{4}." + fileSuffix
+	allArchivedFiles = GrepList(allFilesList, regex, 0, FILE_LIST_SEP)
+	if(IsEmpty(allArchivedFiles))
+		return ""
+	endif
+
+	return fileFolder + StringFromList(0, SortList(allArchivedFiles, FILE_LIST_SEP, 1), FILE_LIST_SEP)
 End
 
 static Function/S GetDateOfLogEntry(string entry)
