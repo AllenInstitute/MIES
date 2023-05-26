@@ -813,7 +813,7 @@ Function P_UpdateTTLstate(device, headStage, ONorOFFA, ONorOFFB)
 	deviceID = PressureDataWv[headStage][%DAC_DevID]
 	ttlBitA  = PressureDataWv[headStage][%TTL_A]
 	ttlBitB  = PressureDataWv[headStage][%TTL_B]
-	deviceName = HW_GetDeviceName(hwType, deviceID)
+	deviceName = HW_GetDeviceName(hwType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 
 	ASSERT(IsFinite(ttlBitA), "TTL A must be finite")
 
@@ -1072,7 +1072,7 @@ Function P_DeviceIsUsedForPressureCtrl(device, pressureDevice)
 		hwType   = pressureDataWv[i][%HW_DAC_Type]
 
 		if(isFinite(deviceID) && isFinite(hwType))
-			if(!cmpstr(HW_GetDeviceName(hwType, deviceID), pressureDevice))
+			if(!cmpstr(HW_GetDeviceName(hwType, deviceID, flags = HARDWARE_ABORT_ON_ERROR), pressureDevice))
 				return 1
 			endif
 		endif
@@ -1122,7 +1122,7 @@ static Function P_DataAcq(device, headStage)
 		HW_WriteDigital(HARDWARE_NI_DAC, deviceID, 0, 0, line=TTL)
 
 		// @todo write proper wrappers once we finalized the functionality
-		pressureDevice = HW_GetDeviceName(hwType, deviceID)
+		pressureDevice = HW_GetDeviceName(hwType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 		sprintf str, "%s, %d/Diff;", GetWavesDataFolder(ad, 2), ADC
 		sprintf pfi, "/%s/pfi0", pressureDevice
 		sprintf endFunc, "P_NI_StopDAQ(\"%s\", %d)", device, headStage
