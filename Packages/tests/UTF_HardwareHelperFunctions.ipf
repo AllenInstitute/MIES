@@ -1167,11 +1167,14 @@ End
 
 static Function/S ParseString(string str, string name, [string defValue])
 
-	string output
+	string output, trailingSep
 
-	SplitString/E=(name + ":([^:]+):(?=_|$)") str, output
+	SplitString/E=(name + ":([^:]+)(:)(?=_|$)") str, output, trailingSep
 
 	if(V_Flag == 1)
+		INFO("Missing trailing colon for \"%s\" in \"%s\".", s0 = name, s1 = str)
+		FAIL()
+	elseif(V_Flag == 2)
 		return output
 	endif
 
