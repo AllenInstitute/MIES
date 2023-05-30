@@ -75,7 +75,7 @@ Function AD_Update(win)
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage, variable ongoingDAQ)
+static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage, variable ongoingDAQ)
 	variable stopReason
 
 	if(passed)
@@ -151,21 +151,21 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 		case MSQ_FAST_RHEO_EST:
 			return AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
 		case PSQ_ACC_RES_SMOKE:
-			return AD_GetPerSweepFailMessage(PSQ_ACC_RES_SMOKE, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_AR_NUM_SWEEPS_PASS)
+			return AD_GetPerSweepFailMessage(PSQ_ACC_RES_SMOKE, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_AR_NUM_SWEEPS_PASS)
 		case PSQ_CHIRP:
-			return AD_GetChirpFailMsg(numericalValues, textualValues, sweepNo, headstage)
+			return AD_GetChirpFailMsg(numericalValues, textualValues, sweepNo, sweepDFR, headstage)
 		case PSQ_DA_SCALE:
-			return AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
+			return AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, sweepDFR, headstage)
 		case PSQ_RAMP:
-			return AD_GetPerSweepFailMessage(PSQ_RAMP, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_RA_NUM_SWEEPS_PASS)
+			return AD_GetPerSweepFailMessage(PSQ_RAMP, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_RA_NUM_SWEEPS_PASS)
 		case PSQ_PIPETTE_BATH:
-			return AD_GetPerSweepFailMessage(PSQ_PIPETTE_BATH, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_PB_NUM_SWEEPS_PASS)
+			return AD_GetPerSweepFailMessage(PSQ_PIPETTE_BATH, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_PB_NUM_SWEEPS_PASS)
 		case PSQ_RHEOBASE:
-			return AD_GetRheobaseFailMsg(numericalValues, textualValues, sweepNo, headstage)
+			return AD_GetRheobaseFailMsg(numericalValues, textualValues, sweepNo, sweepDFR, headstage)
 		case PSQ_SEAL_EVALUATION:
-			return AD_GetPerSweepFailMessage(PSQ_SEAL_EVALUATION, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_SE_NUM_SWEEPS_PASS)
+			return AD_GetPerSweepFailMessage(PSQ_SEAL_EVALUATION, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_SE_NUM_SWEEPS_PASS)
 		case PSQ_TRUE_REST_VM:
-			return AD_GetPerSweepFailMessage(PSQ_TRUE_REST_VM, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_VM_NUM_SWEEPS_PASS)
+			return AD_GetPerSweepFailMessage(PSQ_TRUE_REST_VM, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_VM_NUM_SWEEPS_PASS)
 		case PSQ_SQUARE_PULSE:
 			return AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 		case SC_SPIKE_CONTROL:
@@ -202,8 +202,11 @@ static Function AD_FillWaves(win, list, info)
 	if(BSP_IsDataBrowser(win))
 		device = BSP_GetDevice(win)
 		acqState = ROVar(GetAcquisitionState(device))
+		DFREF sweepDFR = GetDeviceDataPath(device)
 	else
 		acqState = AS_INACTIVE
+		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(win)
+		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
 	endif
 
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
@@ -285,7 +288,11 @@ static Function AD_FillWaves(win, list, info)
 				ongoingDAQ = IsNaN(passed) && (acqState != AS_INACTIVE)
 			endif
 
-			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, headstage, ongoingDAQ)
+			if(BSP_IsSweepBrowser(win))
+				DFREF sweepDFR = SB_GetSweepDataFolder(sweepMap, sweepNo = sweepNo)
+			endif
+
+			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, sweepDFR, headstage, ongoingDAQ)
 
 			EnsureLargeEnoughWave(list, dimension = ROWS, indexShouldExist = index)
 			EnsureLargeEnoughWave(info, dimension = ROWS, indexShouldExist = index)
@@ -433,10 +440,11 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 	return "Failure"
 End
 
-static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
+static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, sweepDFR, headstage)
 	WAVE numericalValues
 	WAVE/T textualValues
 	variable sweepNo
+	DFREF sweepDFR
 	variable headstage
 
 	string msg, key, fISlopeStr
@@ -455,7 +463,7 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 	ASSERT(WaveExists(DASCales), "analysis function parameters don't have a DAScales entry")
 	numRequiredPasses = DimSize(DAScales, ROWS)
 
-	msg = AD_GetPerSweepFailMessage(PSQ_DA_SCALE, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = numRequiredPasses)
+	msg = AD_GetPerSweepFailMessage(PSQ_DA_SCALE, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = numRequiredPasses)
 	if(!IsEmpty(msg))
 		return msg
 	endif
@@ -479,10 +487,10 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 	return "Failure"
 End
 
-static Function/S AD_GetRheobaseFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
+static Function/S AD_GetRheobaseFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
 	string key, prefix, msg
 
-	prefix = AD_GetPerSweepFailMessage(PSQ_RHEOBASE, numericalValues, textualValues, sweepNo, headstage)
+	prefix = AD_GetPerSweepFailMessage(PSQ_RHEOBASE, numericalValues, textualValues, sweepNo, sweepDFR, headstage)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 	WAVE/Z spikeDetect = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
@@ -519,12 +527,12 @@ static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualVa
 	return "Failure as we ran out of sweeps"
 End
 
-static Function/S AD_GetChirpFailMsg(WAVE numericalValues,WAVE/T textualValues, variable sweepNo, variable headstage)
+static Function/S AD_GetChirpFailMsg(WAVE numericalValues,WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
 	string key, msg, str
 	string text = ""
 	variable i, numSweeps, setPassed, maxOccurences
 
-	msg = AD_GetPerSweepFailMessage(PSQ_CHIRP, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_CR_NUM_SWEEPS_PASS)
+	msg = AD_GetPerSweepFailMessage(PSQ_CHIRP, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_CR_NUM_SWEEPS_PASS)
 
 	if(!IsEmpty(msg))
 		return msg
@@ -683,11 +691,12 @@ End
 /// @param numericalValues   numerical labnotebook
 /// @param textualValues     textual labnotebook
 /// @param refSweepNo        reference sweep number
+/// @param sweepDFR          datafolder reference to the folder holding the sweep data
 /// @param headstage         headstage
 /// @param numRequiredPasses [optional, defaults to off] allows to determine the set failure state by not having reached enough passing sets
 ///
 /// @sa AD_GetResultMessage()
-static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numericalValues, WAVE/T textualValues, variable refSweepNo, variable headstage, [variable numRequiredPasses])
+static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numericalValues, WAVE/T textualValues, variable refSweepNo, DFREF sweepDFR, variable headstage, [variable numRequiredPasses])
 	string key, msg, str
 	string text = ""
 	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass, accessRestPass, resistanceRatio
