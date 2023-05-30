@@ -571,14 +571,12 @@ End
 /// @param numericalValues Numerical labnotebook
 /// @param sweepNo         Sweep number
 /// @param headstage       Headstage
-static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
-	variable anaFuncType, sweepNo
-	WAVE numericalValues
-	variable headstage
-
+///
+/// @retval qc  0/1 for failing or passing, NaN in case it could not be determined
+/// @retval msg error message for the failure case
+static Function [variable qc, string msg] AD_GetBaselineFailMsg(variable anaFuncType, WAVE numericalValues, variable sweepNo, variable headstage)
 	variable i, chunkQC
 	string key
-	string msg = ""
 
 	switch(anaFuncType)
 		case PSQ_ACC_RES_SMOKE:
@@ -592,71 +590,67 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQC = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
-			if(anaFuncType == PSQ_CHIRP && !WaveExists(baselineQC))
-				// we did not evaluate the baseline completely but aborted earlier
-				return ""
-			endif
-
 			if(!WaveExists(baselineQC))
-				BUG("Missing baseline QC LBN entry")
-				return ""
+				return [NaN, ""]
 			endif
 
-			if(!baselineQC[headstage])
-				for(i = 0; ;i += 1)
-					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_CHUNK_PASS, query = 1, chunk = i)
-					chunkQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+			if(baselineQC[headstage])
+				return [1, ""]
+			endif
 
-					if(IsNaN(chunkQC))
-						// no more chunks
-						break
-					endif
+			for(i = 0; ;i += 1)
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_CHUNK_PASS, query = 1, chunk = i)
+				chunkQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
-					if(!chunkQC)
-						// baseline chunks fail due to one of the four QC tests failing:
-						//
-						// RMS short
-						// RMS long
-						// target voltage
-						// leak current
-						//
-						// These are executed in order and failure of one of them results
-						// the others ones not being executed.
-						msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_RMS_SHORT_PASS, "RMS short")
-						if(!IsEmpty(msg))
-							return msg
-						endif
-
-						msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_RMS_LONG_PASS, "RMS long")
-						if(!IsEmpty(msg))
-							return msg
-						endif
-
-						msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_TARGETV_PASS, "target voltage")
-						if(!IsEmpty(msg))
-							return msg
-						endif
-
-						msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_LEAKCUR_PASS, "leak current")
-						if(!IsEmpty(msg))
-							return msg
-						endif
-
-						BUG("Unknown chunk test failed")
-						return ""
-					endif
-				endfor
-
-				if(IsEmpty(msg))
-					BUG("Could not find a failing chunk")
+				if(IsNaN(chunkQC))
+					// no more chunks
+					break
 				endif
+
+				if(!chunkQC)
+					// baseline chunks fail due to one of the four QC tests failing:
+					//
+					// RMS short
+					// RMS long
+					// target voltage
+					// leak current
+					//
+					// These are executed in order and failure of one of them results
+					// the others ones not being executed.
+					msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_RMS_SHORT_PASS, "RMS short")
+					if(!IsEmpty(msg))
+						return [0, msg]
+					endif
+
+					msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_RMS_LONG_PASS, "RMS long")
+					if(!IsEmpty(msg))
+						return [0, msg]
+					endif
+
+					msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_TARGETV_PASS, "target voltage")
+					if(!IsEmpty(msg))
+						return [0, msg]
+					endif
+
+					msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_LEAKCUR_PASS, "leak current")
+					if(!IsEmpty(msg))
+						return [0, msg]
+					endif
+
+					BUG("Unknown chunk test failed")
+					return [NaN, ""]
+				endif
+			endfor
+
+			if(IsEmpty(msg))
+				BUG("Could not find a failing chunk")
 			endif
 			break
 		default:
 			BUG("No support for analysis function type: " + num2str(anaFuncType))
 	endswitch
 
-	return ""
+	return [NaN, ""]
 End
 
 static Function/S AD_GetBaselineChunkFailMsg(variable anaFuncType, WAVE numericalValues, variable sweepNo, variable headstage, variable chunk, string subkey, string testname)
@@ -700,7 +694,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 	string key, msg, str
 	string text = ""
 	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass, accessRestPass, resistanceRatio
-	variable avgCheckPass, stopReason, stimsetQC
+	variable avgCheckPass, stopReason, stimsetQC, baselineQC
 	string perSweepFailedMessage = ""
 
 	if(!ParamIsDefault(numRequiredPasses))
@@ -742,7 +736,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 
 		switch(anaFuncType)
 			case PSQ_ACC_RES_SMOKE:
-				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+				[baselineQC, msg] = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
 
 				if(!IsEmpty(msg))
 					sprintf text, "Sweep %d failed: %s", sweepNo, msg
@@ -777,7 +771,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 					break
 				endif
 
-				msg = AD_GetBaselineFailMsg(PSQ_CHIRP, numericalValues, sweepNo, headstage)
+				[baselineQC, msg] = AD_GetBaselineFailMsg(PSQ_CHIRP, numericalValues, sweepNo, headstage)
 
 				if(!IsEmpty(msg))
 					sprintf text, "Sweep %d failed: %s", sweepNo, msg
@@ -806,7 +800,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				endif
 				break
 			case PSQ_DA_SCALE:
-				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+				[baselineQC, msg] = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
 
 				if(!IsEmpty(msg))
 					sprintf text, "Sweep %d failed: %s", sweepNo, msg
@@ -830,7 +824,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				endif
 				break
 			case PSQ_PIPETTE_BATH:
-				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+				[baselineQC, msg] = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
 
 				if(!IsEmpty(msg))
 					sprintf text, "Sweep %d failed: %s", sweepNo, msg
@@ -846,7 +840,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				endif
 				break
 			case PSQ_RAMP:
-				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+				[baselineQC, msg] = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
 
 				if(!IsEmpty(msg))
 					sprintf text, "Sweep %d failed: %s", sweepNo, msg
@@ -854,19 +848,21 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				endif
 				break
 			case PSQ_RHEOBASE:
-				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+				[baselineQC, msg] = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
 
 				if(!IsEmpty(msg))
 					sprintf text, "Sweep %d failed: %s", sweepNo, msg
 					break
 				endif
 
-				// Speciality: Rheobase does not have a Sweep QC entry and only
-				//             baseline QC determines a passing sweep
-				sprintf text, "Sweep %d passed", sweeps[i]
+				if(baselineQC == 1 && IsEmpty(msg))
+					// Speciality: Rheobase does not have a Sweep QC entry and only
+					//             baseline QC determines a passing sweep
+					sprintf text, "Sweep %d passed", sweeps[i]
+				endif
 				break
 			case PSQ_SEAL_EVALUATION:
-				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+				[baselineQC, msg] = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
 
 				if(!IsEmpty(msg))
 					sprintf text, "Sweep %d failed: %s", sweepNo, msg
@@ -882,7 +878,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				endif
 				break
 			case PSQ_TRUE_REST_VM:
-				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+				[baselineQC, msg] = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
 
 				if(!IsEmpty(msg))
 					sprintf text, "Sweep %d failed: %s", sweepNo, msg
@@ -922,6 +918,11 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 
 		if(IsEmpty(text))
 			text = AD_HasAsyncQCFailed(numericalValues, textualValues, anaFuncType, sweepNo, headstage)
+		endif
+
+		if(IsNaN(stopReason) && IsEmpty(text))
+			msg = AD_HasPrematureStopLegacy(numericalValues, textualValues, anaFuncType, sweepNo, sweepDFR, headstage)
+			sprintf text, "Sweep %d failed: %s", sweepNo, msg
 		endif
 
 		if(IsEmpty(text))
@@ -986,6 +987,32 @@ static Function/S AD_HasAsyncQCFailed(WAVE numericalValues, WAVE/T textualValues
 	sprintf msg, "Sweep %d failed: The asynchronous channel QC check failed (%s).", sweepNo, RemoveEnding(text, ",")
 
 	return msg
+End
+
+// Early stopped analysis functions prior to 87f9cbfa (DAQ: Add stopping reason to the labnotebook, 2021-05-13)
+// need to be handled specially as we can only see if it was stopped early or not, but not why
+static Function/S AD_HasPrematureStopLegacy(WAVE numericalValues, WAVE/T textualValues, variable anaFuncType, variable sweepNo, DFREF sweepDFR, variable headstage)
+	variable once
+
+	DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
+	WAVE/WAVE ADData = GetDAQDataSingleColumnWaves(singleSweepDFR, XOP_CHANNEL_TYPE_ADC)
+
+	for(WAVE/Z AD : ADData)
+		if(WaveExists(AD))
+			once = 1
+			ASSERT(DimSize(AD, ROWS) > 0, "Empty sweepNo: " + num2istr(sweepNo))
+
+			FindValue/FNAN/R AD
+
+			if(V_Value >= 0)
+				return "DAQ was stopped early (n.a.)"
+			endif
+		endif
+	endfor
+
+	ASSERT(once, "Expected at least one AD channel for sweepNo: " + num2istr(sweepNo))
+
+	return ""
 End
 
 /// @brief Show the sweeps of the given `index` entry into the listbox
