@@ -1980,11 +1980,11 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 
 	variable i, j, k, l, channelType, channelNumber, sweepNo, sweepNoT, outIndex
 	variable numSweeps, numInChannels, numSettings, maxChannels, activeChannel, numActiveChannels
-	variable isSweepBrowser, cIndex
+	variable isSweepBrowser
 	variable dimPosSweep, dimPosChannelNumber, dimPosChannelType
 	variable dimPosTSweep, dimPosTChannelNumber, dimPosTChannelType
 	variable numTraces
-	string setting, settingList, msg, device, dataFolder, singleSweepDFStr
+	string setting, settingList, msg, device, singleSweepDFStr
 
 	if(!WaveExists(sweeps) || !DimSize(sweeps, ROWS))
 		return $""
@@ -2078,14 +2078,10 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 
 		if(!fromDisplayed)
 			if(isSweepBrowser)
-				cIndex = FindDimLabel(sweepMap, COLS, "Sweep")
-				FindValue/RMD=[][cIndex]/TEXT=num2istr(sweepNo)/TXOP=4 sweepMap
-				if(V_value == -1)
+				DFREF deviceDFR = SB_GetSweepDataFolder(sweepMap, sweepNo = sweepNo)
+				if(!DataFolderExistsDFR(deviceDFR))
 					continue
 				endif
-				dataFolder = sweepMap[V_row][%DataFolder]
-				device     = sweepMap[V_row][%Device]
-				DFREF deviceDFR  = GetAnalysisSweepPath(dataFolder, device)
 			else
 				if(DB_SplitSweepsIfReq(graph, sweepNo))
 					continue

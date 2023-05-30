@@ -33,6 +33,31 @@ Function SB_TranslateSBMapIndexToABMapIndex(string win, variable sbIndex)
 	return V_row
 End
 
+/// @brief Return the sweep data folder
+Function/DF SB_GetSweepDataFolder(WAVE/T sweepMap, [variable sweepNo, variable index])
+
+	string dataFolder, device
+	variable cIndex
+
+	if(!ParamIsDefault(index) && ParamIsDefault(sweepNo))
+		ASSERT(index >= 0 && index < DimSize(sweepMap, ROWS), "Invalid index")
+	elseif(ParamIsDefault(index) && !ParamIsDefault(sweepNo))
+		cIndex = FindDimLabel(sweepMap, COLS, "Sweep")
+		FindValue/RMD=[][cIndex]/TEXT=num2istr(sweepNo)/TXOP=4 sweepMap
+
+		if(V_row == -1)
+			return $""
+		endif
+
+		index = V_row
+	endif
+
+	dataFolder = sweepMap[index][%DataFolder]
+	device     = sweepMap[index][%Device]
+
+	return GetAnalysisSweepPath(dataFolder, device)
+End
+
 static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
 	DFREF sweepBrowserDFR
 	variable mapIndex
