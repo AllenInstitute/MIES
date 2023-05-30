@@ -964,10 +964,10 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				msg = "The used sampling frequency did not match the \"SamplingFrequency\" analysis parameter."
 				sprintf text, "Sweep %d failed: %s", sweepNo, msg
 			endif
+		endif
 
-			if(IsEmpty(text))
-				text = AD_HasAsyncQCFailed(numericalValues, textualValues, anaFuncType, sweepNo, headstage)
-			endif
+		if(IsEmpty(text))
+			text = AD_HasAsyncQCFailed(numericalValues, textualValues, anaFuncType, sweepNo, headstage)
 		endif
 
 		if(IsEmpty(text))
