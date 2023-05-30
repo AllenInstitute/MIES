@@ -945,7 +945,17 @@ static Function/S AD_HasAsyncQCFailed(WAVE numericalValues, WAVE/T textualValues
 	endif
 
 	WAVE/T params = GetLastSetting(textualValues, sweepNo, "Function params (encoded)", DATA_ACQUISITION_MODE)
-	WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", params[headstage])
+	WAVE/Z asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", params[headstage])
+
+	if(!WaveExists(asyncChannelQC))
+		if(WaveExists(asyncChannels))
+			// sweep finished early
+			return ""
+		endif
+
+		// async labnotebook entries present since 3d450a44 (PSQ_AccessResistanceSmoke: Support async alarms, 2022-05-18)
+		return ""
+	endif
 
 	for(chan: asyncChannels)
 		sprintf key, "Async Alarm %d State", chan
