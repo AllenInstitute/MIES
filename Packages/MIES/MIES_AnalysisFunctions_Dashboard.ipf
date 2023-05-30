@@ -389,11 +389,6 @@ static Function AD_LabnotebookEntryExistsAndIsTrue(WAVE/Z data)
 	return WaveExists(reduced) && Sum(reduced) > 0
 End
 
-/// @brief Return an appropriate error message for why #PSQ_SQUARE_PULSE failed
-///
-/// @param numericalValues Numerical labnotebook
-/// @param sweepNo         Sweep number
-/// @param headstage       Headstage
 static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 	variable sweepNo
 	WAVE numericalValues
@@ -438,12 +433,6 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 	return "Failure"
 End
 
-/// @brief Return an appropriate error message for why #PSQ_DA_SCALE failed
-///
-/// @param numericalValues Numerical labnotebook
-/// @param textualValues   Textual labnotebook
-/// @param sweepNo         Sweep number
-/// @param headstage       Headstage
 static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
 	WAVE numericalValues
 	WAVE/T textualValues
@@ -530,12 +519,6 @@ static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualVa
 	return "Failure as we ran out of sweeps"
 End
 
-/// @brief Return an appropriate error message for why #PSQ_CHIRP failed
-///
-/// @param numericalValues Numerical labnotebook
-/// @param textualValues   Textual labnotebook
-/// @param sweepNo         Sweep number
-/// @param headstage       Headstage
 static Function/S AD_GetChirpFailMsg(WAVE numericalValues,WAVE/T textualValues, variable sweepNo, variable headstage)
 	string key, msg, str
 	string text = ""
