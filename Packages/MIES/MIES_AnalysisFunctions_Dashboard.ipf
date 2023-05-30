@@ -488,14 +488,16 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 End
 
 static Function/S AD_GetRheobaseFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
-	string key, prefix, msg
+	string key, prefix, msg, pattern
 
 	prefix = AD_GetPerSweepFailMessage(PSQ_RHEOBASE, numericalValues, textualValues, sweepNo, sweepDFR, headstage)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 	WAVE/Z spikeDetect = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	pattern = RemoveEnding(NumericWaveToList(spikeDetect, ", ", format="%g"), ", ")
+	pattern = SelectString(IsEmpty(pattern), pattern, "n.a.")
 
-	sprintf msg, "%s\rWe were not able to find the correct on/off spike pattern (%s)", prefix, RemoveEnding(NumericWaveToList(spikeDetect, ", ", format="%g"), ", ")
+	sprintf msg, "%s\rWe were not able to find the correct on/off spike pattern (%s)", prefix, pattern
 	return msg
 End
 
