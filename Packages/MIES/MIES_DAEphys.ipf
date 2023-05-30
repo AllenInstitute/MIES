@@ -2800,7 +2800,7 @@ static Function DAP_CheckStimset(device, channelType, channel, headstage)
 			ControlWindowToFront()
 			return 1
 		elseif(!CmpStr(setName, setNameEnd))
-			printf "(%s) Please select a different indexing end setimset for %s channel %d referenced by headstage %g\r", device, channelTypeStr, channel, headStage
+			printf "(%s) Please select a different indexing end stimset for %s channel %d referenced by headstage %g\r", device, channelTypeStr, channel, headStage
 			return 1
 		endif
 	endif
