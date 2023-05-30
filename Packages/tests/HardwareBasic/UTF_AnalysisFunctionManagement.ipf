@@ -978,7 +978,7 @@ static Function AFT8([str])
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                    + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
-								 "__TTL0:_ST:AnaFuncTTLNot_TTL_0:")
+								 "__TTL0_ST:AnaFuncTTLNot_TTL_0:")
 	AcquireData_NG(s, str)
 End
 

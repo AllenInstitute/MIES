@@ -1146,7 +1146,9 @@ static Function ParseNumber(string str, string name, [variable defValue])
 	string output
 	variable var
 
-	SplitString/E=(name + "([[:digit:]]+(\.[[:digit:]]+)?)") str, output
+	SplitString/E=(name + "([[:digit:]]+(\.[[:digit:]]+)?)(?=_|$)") str, output
+
+	INFO("Name: \"%s\", config string: \"%s\"", s0 = name, s1 = str)
 
 	if(V_Flag == 1)
 		var = str2num(output)
@@ -1158,6 +1160,8 @@ static Function ParseNumber(string str, string name, [variable defValue])
 		FAIL()
 	endif
 
+	PASS()
+
 	return defValue
 End
 
@@ -1165,7 +1169,7 @@ static Function/S ParseString(string str, string name, [string defValue])
 
 	string output
 
-	SplitString/E=(name + ":([^:]+):") str, output
+	SplitString/E=(name + ":([^:]+):(?=_|$)") str, output
 
 	if(V_Flag == 1)
 		return output
