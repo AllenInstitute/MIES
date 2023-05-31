@@ -849,6 +849,7 @@ End
 /// @return 0 on success, 1 otherwise
 threadsafe Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 	variable flags, ITCError, ITCXOPError
+	string msg
 
 	variable outputErrorMessage, tries
 
@@ -878,13 +879,15 @@ threadsafe Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 		print "- Reseating all connections between the DAC and the computer has also helped in the past."
 		printf "Responsible function: %s\r", GetRTStackInfo(2)
 		printf "Complete call stack: %s\r", GetRTStackInfo(3)
-		BUG_TS("The ITC XOP returned an error!")
+
+		BUG_TS("The ITC XOP returned an error!", keys = {"ITCError", "ITCErrorMessage"}, values = {num2str(itcError, "%#x"), S_errorMessage})
 	elseif(ITCXOPError != 0 && outputErrorMessage)
+		msg = HW_ITC_GetXOPErrorMessage(ITCXOPError)
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
-		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
+		printf "XOP error message: %s\r", msg
 		printf "Responsible function: %s\r", GetRTStackInfo(2)
 		printf "Complete call stack: %s\r", GetRTStackInfo(3)
-		BUG_TS("The ITC XOP was called incorrectly!")
+		BUG_TS("The ITC XOP was called incorrectly!", keys = {"ITCXOPError", "ITCXOPErrorMessage"}, values = {num2str(itcXOPError), msg})
 	endif
 
 #ifndef EVIL_KITTEN_EATING_MODE

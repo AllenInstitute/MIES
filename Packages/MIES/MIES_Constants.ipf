@@ -2033,3 +2033,7 @@ StrConstant SETTINGS_AB_FOLDER_OLD_DEFAULT = "C:"
 StrConstant ANALYSIS_BROWSER_NAME = "AnalysisBrowser"
 
 StrConstant MEMORY_REFCOUNTER_DF = "MemoryReferenceCounterDF"
+
+StrConstant LOG_ACTION_ASSERT = "assert"
+StrConstant LOG_MESSAGE_KEY = "msg"
+StrConstant LOG_ACTION_REPORT = "report"

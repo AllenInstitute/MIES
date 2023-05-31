@@ -1691,6 +1691,7 @@ Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable ax
 			err    = GetRTError(1)
 
 			LOG_AddEntry(PACKAGE_MIES, "querying amplifier failed",            \
+			                           stacktrace = 1,                         \
 			                           keys = {"error code", "error message"}, \
 			                           values = {num2str(err), errMsg})
 

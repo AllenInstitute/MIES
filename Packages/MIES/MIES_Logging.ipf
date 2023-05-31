@@ -25,9 +25,9 @@ End
 /// @brief Check that the given JSON document has the required top level keys
 ///
 /// Currently we require:
-/// - `ts`: ISO8601 timestamp
 /// - `source`: Source of the log entry, usually the function issuing the add entry
 /// - `exp`: Name of the Igor Pro experiment
+/// - `id`: Igor Pro instance identifier, see also GetIgorInstanceID()
 threadsafe static Function LOG_HasRequiredKeys(variable JSONid)
 	WAVE/T/Z keys = JSON_GetKeys(JSONid, "", ignoreErr = 1)
 
@@ -35,7 +35,7 @@ threadsafe static Function LOG_HasRequiredKeys(variable JSONid)
 		return 0
 	endif
 
-	Make/FREE/T requiredKeys = {"ts", "source", "exp", "id"}
+	Make/FREE/T requiredKeys = {"source", "exp", "id"}
 
 	WAVE/Z intersection = GetSetIntersection(keys, requiredKeys)
 
@@ -49,7 +49,6 @@ threadsafe Function LOG_GenerateEntryTemplate(string source)
 	variable JSONid
 
 	JSONid = JSON_New()
-	JSON_AddString(JSONid, "/ts", GetISO8601TimeStamp(numFracSecondsDigits = 3, localTimeZone = 1))
 	JSON_AddString(JSONid, "/source", source)
 	JSON_AddString(JSONid, "/exp", GetExperimentName())
 	JSON_AddString(JSONid, "/id", GetIgorInstanceID()[0, 6])
@@ -92,6 +91,10 @@ End
 
 /// @brief Add entry for the current function into the log file.
 ///
+/// Before LOG_AddEntry can be used the symbolic path must have been
+/// initialized via PS_Initialize or PS_FixPackageLocation. This is best done
+/// from the AfterCompiledHook().
+///
 /// Usage:
 /// \rst
 /// .. code-block:: igorpro
@@ -117,46 +120,27 @@ End
 ///
 /// @param package package name, this determines the log file
 /// @param action  additional string, can be something like `start` or `end`
+/// @param stacktrace [optional, defaults to false] add the stacktrace to the log
 /// @param keys    [optional, defaults to $""] Additional key-value pairs to be written into the log file. Same size as
 ///                                            values. Either both `keys` and `values` are present or none.
 /// @param values  [optional, defaults to $""] Additional key-value pairs to be written into the log file. Same size as
 ///                                            keys. Either both `keys` and `values` are present or none.
-Function LOG_AddEntry(string package, string action, [WAVE/T keys, WAVE/T values])
-
-	// create the folder if it does not exist
-	PathInfo PackageFolder
-	if(!V_flag)
-		PS_GetSettingsFolder(package)
-	endif
-
-	if(ParamIsDefault(keys) && ParamIsDefault(values))
-		return LOG_AddEntryImp(package, action, GetRTStackInfo(2), $"", $"")
-	else
-		return LOG_AddEntryImp(package, action, GetRTStackInfo(2), keys, values)
-	endif
-End
-
-/// @brief Threadsafe version of LOG_AddEntry()
-///
-/// Callers need to write the calling function name into `caller`.
-/// @todo IP10 merge with LOG_AddEntry once SpecialDirPath is threadsafe
-threadsafe Function LOG_AddEntry_TS(string package, string action, string caller, [WAVE/T keys, WAVE/T values])
-
-	if(ParamIsDefault(keys) && ParamIsDefault(values))
-		return LOG_AddEntryImp(package, action, caller, $"", $"")
-	else
-		return LOG_AddEntryImp(package, action, caller, keys, values)
-	endif
-End
-
-threadsafe static Function LOG_AddEntryImp(string package, string action, string caller, WAVE/T/Z keys, WAVE/T/Z values)
+threadsafe Function LOG_AddEntry(string package, string action, [variable stacktrace, WAVE/T/Z keys, WAVE/T/Z values])
 	variable JSONid, numAdditionalEntries
+	string caller
+
+	if(ParamIsDefault(stacktrace))
+		stacktrace = 0
+	else
+		stacktrace = !!stacktrace
+	endif
 
 	if(WaveExists(keys) && WaveExists(values))
 		numAdditionalEntries = DimSize(keys, ROWS)
 		ASSERT_TS(numAdditionalEntries == DimSize(values, ROWS), "Non-matching dimension sizes")
 	endif
 
+	caller = GetRTStackInfo(2)
 	JSONid = LOG_GenerateEntryTemplate(caller)
 	JSON_AddString(JSONid, "/action", action)
 
@@ -164,8 +148,18 @@ threadsafe static Function LOG_AddEntryImp(string package, string action, string
 		Make/FREE/N=(numAdditionalEntries) indexHelper = JSON_AddString(JSONid, "/" + keys[p], values[p])
 	endif
 
+	if(stacktrace)
+		LOG_AddStackTrace(JSONid)
+	endif
+
 	ASSERT_TS(LOG_HasRequiredKeys(JSONid), "Some mandatory object keys are missing")
 	LOG_AddEntryWithoutChecks(package, JSONid)
 
 	JSON_Release(JSONid)
+End
+
+threadsafe static Function LOG_AddStackTrace(variable JSONid)
+
+	WAVE/T stacktrace = ListToTextWave(GetStackTrace(), "\r")
+	JSON_AddWave(JSONid, "/stacktrace", stacktrace)
 End

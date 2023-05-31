@@ -166,7 +166,7 @@ Function TPM_BkrdTPFuncMD(s)
 						catch
 							errMsg = GetRTErrMessage()
 							err = ClearRTError()
-							LOG_AddEntry(PACKAGE_MIES, "hardware error")
+							LOG_AddEntry(PACKAGE_MIES, "hardware error", stacktrace = 1)
 							DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR)
 							if(err == 18)
 								ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")

@@ -168,6 +168,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
 			stacktrace = GetStackTrace()
+			print "Stacktrace:"
 			print stacktrace
 
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -182,7 +183,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			print miesVersionStr
 			print "################################"
 
-			LOG_AddEntry(PACKAGE_MIES, "assert", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
+			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, stacktrace = 1, keys = {LOG_MESSAGE_KEY}, values = {errorMsg})
 
 			ControlWindowToFront()
 		endif
@@ -250,6 +251,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 			print "################################"
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 			stacktrace = GetStackTrace()
+			print "Stacktrace:"
 			print stacktrace
 
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -258,7 +260,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
 			print "################################"
 
-			LOG_AddEntry_TS(PACKAGE_MIES, "assert", "ASSERT_TS", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
+			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, stacktrace = 1, keys = {LOG_MESSAGE_KEY}, values = {errorMsg})
 		endif
 
 		AbortOnValue 1, 1
@@ -4144,10 +4146,14 @@ threadsafe Function/S GetStackTrace([prefix])
 
 	if(numCallers < 3)
 		// our caller was called directly
-		return "Stacktrace not available"
+		return "Not available"
 	endif
 
-	output = prefix + "Stacktrace:\r"
+	if(IsEmpty(prefix))
+		output = prefix
+	else
+		output = prefix + "\r"
+	endif
 
 	for(i = 0; i < numCallers - 2; i += 1)
 		entry = StringFromList(i, stacktrace)

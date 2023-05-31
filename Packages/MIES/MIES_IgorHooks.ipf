@@ -319,6 +319,8 @@ static Function AfterCompiledHook()
 	ExperimentModified
 	modifiedBefore = V_flag
 
+	PS_FixPackageLocation(PACKAGE_MIES)
+
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
 	ASYNC_Start(threadprocessorCount, disableTask=1)
