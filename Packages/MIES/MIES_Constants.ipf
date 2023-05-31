@@ -44,15 +44,15 @@ Constant RESULTS_VERSION     = 2
 
 /// @name Analysis function versions
 /// @{
-Constant PSQ_PIPETTE_BATH_VERSION    = 3
-Constant PSQ_ACC_RES_SMOKE_VERSION   = 1
+Constant PSQ_PIPETTE_BATH_VERSION    = 4
+Constant PSQ_ACC_RES_SMOKE_VERSION   = 2
 Constant PSQ_CHIRP_VERSION           = 13
 Constant PSQ_DA_SCALE_VERSION        = 5
 Constant PSQ_RAMP_VERSION            = 6
 Constant PSQ_RHEOBASE_VERSION        = 5
 Constant PSQ_SQUARE_PULSE_VERSION    = 4
 Constant PSQ_SEAL_EVALUATION_VERSION = 3
-Constant PSQ_TRUE_REST_VM_VERSION    = 1
+Constant PSQ_TRUE_REST_VM_VERSION    = 2
 Constant MSQ_FAST_RHEO_EST_VERSION   = 1
 Constant MSQ_DA_SCALE_VERSION        = 1
 Constant SC_SPIKE_CONTROL_VERSION    = 1
@@ -1975,13 +1975,6 @@ Constant HARDWARE_ITC_STUCK_FIFO_TICKS = 120 // 2s
 
 StrConstant SF_PLOT_NAME_TEMPLATE = "SweepFormula plot"
 StrConstant SFH_USER_DATA_BROWSER = "browser"
-
-/// @name Available serialization modes for SFH_CreateResultsWaveWithCode()
-/// @anchor ResultsSerializationModes
-/// @{
-Constant SER_MODE_IP   = 0x01
-Constant SER_MODE_JSON = 0x02
-/// @}
 
 /// @name Available result types for SFH_CreateResultsWaveWithCode()
 /// @anchor ResultTypes

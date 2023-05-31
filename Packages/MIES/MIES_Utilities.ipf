@@ -6169,6 +6169,28 @@ threadsafe Function ChangeFreeWaveName(WAVE wv, string name)
 	MoveWave wv, dfr:$name
 End
 
+/// @brief Returns the wave type as constant
+///
+/// Same constant as WaveType with selector zero (default) and Redimension/Y.
+///
+Function WaveTypeStringToNumber(string type)
+
+	strswitch(type)
+		case "NT_FP64":
+			return 0x04
+		case "NT_FP32":
+			return 0x02
+		case "NT_I32":
+			return 0x20
+		case "NT_I16":
+			return 0x10
+		case "NT_I8":
+			return 0x08
+		default:
+			ASSERT(0, "Type is not supported: " + type)
+	endswitch
+End
+
 /// @brief Serialize a wave as JSON and return it as string
 ///
 /// The format is documented [here](https://github.com/AllenInstitute/ZeroMQ-XOP/#wave-serialization-format).
@@ -6186,7 +6208,7 @@ End
 /// @sa WaveToJSON
 Function/WAVE JSONToWave(string str, [string path])
 
-	variable jsonID, dim, i, j, k
+	variable jsonID, dim, i, j, k, numEntries, size
 	string unit, type, dataUnit, waveNote
 
 	if(ParamIsDefault(path))
@@ -6201,11 +6223,35 @@ Function/WAVE JSONToWave(string str, [string path])
 		return $""
 	endif
 
+	if(JSON_GetType(jsonID, path) == JSON_NULL)
+		// invalid wave reference
+		JSON_Release(jsonID)
+		return $""
+	endif
+
 	type = JSON_GetString(jsonID, path + "/type", ignoreErr = 1)
 
-	// we only support FP64 for now
-	ASSERT(!cmpstr(type, "NT_FP64"), "Type is not supported")
-	WAVE/D/Z data = JSON_GetWave(jsonID, path + "/data/raw")
+	strswitch(type)
+		case "NT_FP64":
+		case "NT_FP32":
+		case "NT_I32":
+		case "NT_I16":
+		case "NT_I8":
+			WAVE/Z data = JSON_GetWave(jsonID, path + "/data/raw")
+			Redimension/Y=(WaveTypeStringToNumber(type)) data
+			break
+		case "TEXT_WAVE_TYPE":
+			WAVE/Z data = JSON_GetTextWave(jsonID, path + "/data/raw")
+			break
+		case "WAVE_TYPE":
+			size = JSON_GetArraySize(jsonID, path + "/data/raw")
+			Make/N=(size)/FREE/WAVE container = JSONToWave(str, path = path + "/data/raw/" + num2str(p))
+			WAVE data = container
+			break
+		default:
+			ASSERT(0, "Type is not supported: " + type)
+	endswitch
+
 	ASSERT(WaveExists(data), "Missing data")
 
 	WAVE/D/Z dimSizes = JSON_GetWave(jsonID, path + "/dimension/size", ignoreErr = 1)
@@ -6216,10 +6262,52 @@ Function/WAVE JSONToWave(string str, [string path])
 	Redimension/N=(newSizes[0], newSizes[1], newSizes[2], newSizes[3]) data
 
 	WAVE/D/Z dimDeltas = JSON_GetWave(jsonID, path + "/dimension/delta", ignoreErr = 1)
-	ASSERT(!WaveExists(dimDeltas), "dimension deltas are not supported")
-
 	WAVE/D/Z dimOffsets = JSON_GetWave(jsonID, path + "/dimension/offset", ignoreErr = 1)
-	ASSERT(!WaveExists(dimOffsets), "dimension offsets are not supported")
+	WAVE/T/Z dimUnits = JSON_GetTextWave(jsonID, path + "/dimension/unit", ignoreErr = 1)
+
+	if(WaveExists(dimDeltas) || WaveExists(dimOffsets) || WaveExists(dimUnits))
+
+		if(WaveExists(dimDeltas))
+			numEntries = DimSize(dimDeltas, ROWS)
+		elseif(WaveExists(dimOffsets))
+			numEntries = DimSize(dimOffsets, ROWS)
+		elseif(WaveExists(dimUnits))
+			numEntries = DimSize(dimUnits, ROWS)
+		endif
+
+		if(!WaveExists(dimDeltas))
+			Make/D/FREE/N=(numEntries) dimDeltas = 1
+		endif
+
+		if(!WaveExists(dimOffsets))
+			Make/D/FREE/N=(numEntries) dimOffsets = 0
+		endif
+
+		if(!WaveExists(dimUnits))
+			Make/T/FREE/N=(numEntries) dimUnits
+		endif
+
+		for(i = 0; i < numEntries; i += 1)
+
+			// @todo avoid switch once SetScale supports strings for the dimension
+			switch(i)
+				case 0:
+					SetScale/P x, dimOffsets[i], dimDeltas[i], dimUnits[i], data
+					break
+				case 1:
+					SetScale/P y, dimOffsets[i], dimDeltas[i], dimUnits[i], data
+					break
+				case 2:
+					SetScale/P z, dimOffsets[i], dimDeltas[i], dimUnits[i], data
+					break
+				case 3:
+					SetScale/P t, dimOffsets[i], dimDeltas[i], dimUnits[i], data
+					break
+				default:
+					ASSERT(0, "Unsupported dimension")
+			endswitch
+		endfor
+	endif
 
 	WAVE/T/Z dimLabelsFull = JSON_GetTextWave(jsonID, path + "/dimension/label/full", ignoreErr = 1)
 
@@ -6242,9 +6330,6 @@ Function/WAVE JSONToWave(string str, [string path])
 		endfor
 	endif
 
-	WAVE/T/Z dimUnits = JSON_GetWave(jsonID, path + "/dimension/unit", ignoreErr = 1)
-	ASSERT(!WaveExists(dimUnits), "dimension units are not supported")
-
 	// no way to restore the modification date
 
 	WAVE/D/Z dataFullScale = JSON_GetWave(jsonID, path + "/data/fullScale", ignoreErr = 1)
@@ -6259,6 +6344,8 @@ Function/WAVE JSONToWave(string str, [string path])
 
 	waveNote = JSON_GetString(jsonID, path + "/note", ignoreErr = 1)
 	Note/K data, waveNote
+
+	JSON_Release(jsonID)
 
 	return data
 End

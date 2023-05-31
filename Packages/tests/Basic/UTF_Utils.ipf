@@ -6471,6 +6471,9 @@ Function/WAVE GetTestWaveForSerialization()
 
 	Note wv, "abcd"
 
+	SetScale/P x, 0, 1, "1122", wv
+	SetScale/P y, 2, 3, "3344", wv
+
 	SetScale d, 7, 8, "efgh", wv
 
 	SetDimLabel ROWS, -1, $"ijkl", wv
@@ -6494,6 +6497,25 @@ Function JSONWaveSerializationWorks()
 
 	WAVE/Z serialized = JSONToWave(str)
 	CHECK_WAVE(serialized, NUMERIC_WAVE | FREE_WAVE, minorType = DOUBLE_WAVE)
+
+	CHECK_EQUAL_WAVES(wv, serialized)
+End
+
+Function JSONWaveSerializationWorksText()
+
+	string str
+
+	Make/FREE/T wv = {{"1", "2", "3"}, {"4", "5", "6"}}
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 2)
+
+	SetScale/P x, 0, 1, "1122", wv
+
+	str = WaveToJSON(wv)
+	CHECK_PROPER_STR(str)
+
+	WAVE/Z serialized = JSONToWave(str)
+	CHECK_WAVE(serialized, TEXT_WAVE | FREE_WAVE)
 
 	CHECK_EQUAL_WAVES(wv, serialized)
 End
@@ -6529,6 +6551,16 @@ Function JSONWaveSerializationWorksNoDimLabels()
 	CHECK_EQUAL_WAVES(wv, serialized)
 End
 
+Function JSONWaveInvalidWaveRefRoundTrips()
+
+	string str
+
+	WAVE/Z input
+	str = WaveToJSON(input)
+	WAVE/Z result = JSONToWave(str)
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
 Function JSONWaveSerializationWorksWithPath()
 
 	string str, path
@@ -6556,6 +6588,41 @@ Function JSONWaveSerializationWorksWithPath()
 	CHECK_WAVE(serialized, NUMERIC_WAVE | FREE_WAVE, minorType = DOUBLE_WAVE)
 
 	CHECK_EQUAL_WAVES(wv, serialized)
+End
+
+static Function/WAVE GetSupportedWaveTypes()
+
+	Make/FREE/T input = {"NT_FP64", "NT_FP32", "NT_I32", "NT_I16", "NT_I8", "TEXT_WAVE", "WAVE_WAVE"}
+	SetDimensionLabels(input, TextWaveToList(input, ";"), ROWS)
+
+	return input
+End
+
+/// UTF_TD_GENERATOR s0:GetSupportedWaveTypes
+Function JSONWaveCreatesCorrectWaveTypes([STRUCT IUTF_mData &m])
+	string str, typeStr
+	variable type
+
+	typeStr = m.s0
+
+	strswitch(typeStr)
+		case "TEXT_WAVE":
+			Make/FREE/T dataText
+			WAVE data = dataText
+			break
+		case "WAVE_WAVE":
+			Make/FREE/WAVE dataWave
+			WAVE data = dataWave
+			break
+		default:
+			type = WaveTypeStringToNumber(typeStr)
+			Make/FREE/Y=(type) data
+			break
+	endswitch
+
+	str = WaveToJSON(data)
+	WAVE/Z result = JSONToWave(str)
+	CHECK_EQUAL_WAVES(data, result, mode = WAVE_DATA | WAVE_DATA_TYPE)
 End
 
 Function GetMarqueeHelperWorks()
