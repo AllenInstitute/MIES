@@ -7,6 +7,17 @@ env:
 on:
   workflow_call:
     inputs:
+      job_name:
+        required: false
+        type: string
+        default: Run
+        description: The name of the main job
+      overwrite_job_name:
+        required: false
+        type: boolean
+        default: false
+        description: |
+          If set to true it will replace the name of the main job with the content of job_name
       experiment:
         required: true
         type: string
@@ -46,7 +57,7 @@ defaults:
 jobs:
 
   Test:
-    name: Run
+    name: ${{ inputs.overwrite_job_name && inputs.job_name || 'Run' }}
     runs-on: ${{ fromJson(inputs.target) }}
     env:
       CI_EXPENSIVE_CHECKS: ${{ inputs.expensive_checks }}
