@@ -7,6 +7,17 @@ env:
 on:
   workflow_call:
     inputs:
+      job_name:
+        required: false
+        type: string
+        default: Run
+        description: The name of the main job
+      overwrite_job_name:
+        required: false
+        type: boolean
+        default: false
+        description: |
+          If set to true it will replace the name of the main job with the content of job_name
       experiment:
         required: true
         type: string
@@ -46,7 +57,7 @@ defaults:
 jobs:
 
   Test:
-    name: Run
+    name: ${{ inputs.overwrite_job_name && inputs.job_name || 'Run' }}
     runs-on: ${{ fromJson(inputs.target) }}
     env:
       CI_EXPENSIVE_CHECKS: ${{ inputs.expensive_checks }}
@@ -69,9 +80,8 @@ jobs:
       - name: Test experiment ${{ inputs.experiment }}
         run: tools/autorun-test.sh -p ${{ inputs.experiment }} -v IP_9_64
       - name: Gather log files and crash dumps
+        if: always()
         run: tools/gather-logfiles-and-crashdumps.sh
-      - name: Verify JUnit files
-        run: tools/verify-junit-files.sh Packages/tests/**/*.xml
       - name: upload artifacts
         uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -81,6 +91,7 @@ jobs:
             Packages/tests/**/*.htm
             Packages/tests/**/*-V2.nwb
             Packages/tests/**/JU_*.xml
+            Packages/tests/**/Cobertura_*.xml
             Packages/tests/**/*.log
             Diagnostics
             **/*.jsonl

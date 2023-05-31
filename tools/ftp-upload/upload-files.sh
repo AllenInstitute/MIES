@@ -54,6 +54,6 @@ echo "##[endgroup]"
 # upload
 echo "##[group]Upload files using ftp"
 docker run --rm -v "$directory:/data" ftp-upload \
-    lftp -e "set ssl:verify-certificate no; mirror -R /data \"$target\"; quit" \
+    lftp -e "set ssl:verify-certificate no; mirror --verbose=3 -R /data \"$target\"; quit" \
         -u "$user_name,$password" $server_name
 echo "##[endgroup]"

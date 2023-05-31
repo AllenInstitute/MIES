@@ -3,8 +3,30 @@ run-name: Build PR ${{ github.event.number }} «${{ github.event.pull_request.ti
 on:
   pull_request:
     types:
-      - opened
       - synchronize
+  workflow_call:
+    inputs:
+      is_called_workflow:
+        required: true
+        default: false
+        type: boolean
+        description: |
+          Should be set to true. This is used to determine of this workflow was called directly or
+          from another workflow.
+      do_instrumentation:
+        required: false
+        default: false
+        type: boolean
+        description: |
+          Set to true to enable instrumentation of Igor code. The execution will be approx. 30%
+          slower.
+    secrets:
+      GHA_MIES_CERTIFICATE_PIN:
+        required: true
+      GHA_MIES_FTP_ARTEFACT_STORAGE_USER:
+        required: true
+      GHA_MIES_FTP_ARTEFACT_STORAGE_PWD:
+        required: true
 defaults:
   run:
     shell: bash
@@ -66,6 +88,9 @@ jobs:
             hardware: false
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
+      job_name: |
+        👩🏾‍🔬 Compilation: ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
+      overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: Packages/tests/Compilation/CompilationTester.pxp
       installer_artifact_name: BuildInstaller-dev-assets
       installer_flags: ${{ fromJSON('["-x skipHardwareXOPs",""]')[matrix.hardware] }} -s ${{ matrix.source }}
@@ -107,9 +132,12 @@ jobs:
             name: PAPlot
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
+      job_name: 🧪 Test ${{ matrix.name }}
+      overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
       artifact_name: test-without-hw-assets
       expensive_checks: "1"
+      instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
 
   TestNI:
     name: 🧪 Test NI ${{ matrix.name }}
@@ -125,10 +153,13 @@ jobs:
             name: HardwareAnalysisFunctions
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
+      job_name: 🧪 Test NI ${{ matrix.name }}
+      overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
       target: "[ 'self-hosted', 'Windows', 'IgorPro', 'NI' ]"
       artifact_name: test-ni-assets
       expensive_checks: "1"
+      instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
 
   TestITC:
     name: 🧪 Test ITC ${{ matrix.name }}
@@ -144,10 +175,13 @@ jobs:
             name: HardwareAnalysisFunctions
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
+      job_name: 🧪 Test ITC ${{ matrix.name }}
+      overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
       target: "[ 'self-hosted', 'Windows', 'IgorPro', 'ITC' ]"
       artifact_name: test-itc-assets
       expensive_checks: "1"
+      instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
 
   ValidateNwb:
     name: 👮🏼 Validate NWBv2
@@ -178,7 +212,7 @@ jobs:
   FTPUpload:
     name: 📦 FTP Upload Artifacts
     runs-on: [ self-hosted, Linux, Docker ]
-    if: always()
+    if: always() && !inputs.is_called_workflow
     needs:
       # All jobs that create new artifacts
       - BuildInstaller

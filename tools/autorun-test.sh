@@ -5,13 +5,6 @@
 # https://stackoverflow.com/a/246128
 ScriptDir=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
-function finish
-{
-  source ${ScriptDir}/gather-logfiles-and-crashdumps.sh
-}
-
-trap finish exit
-
 usage()
 {
   echo "Usage: $0 [-p <name of pxp to run against>] [-v <igor version string>]" 1>&2
@@ -51,15 +44,26 @@ touch $StateFile
 
 igorProPath=$(${ScriptDir}/get-igor-path.sh ${igorProVersion})
 
-echo "Running experiment $experiment"
+echo "##[group]Running experiment $experiment"
 
 # we don't want MSYS path conversion, as that would break the /X options,
 # see https://github.com/git-for-windows/build-extra/blob/master/ReleaseNotes.md
 MSYS_NO_PATHCONV=1 "${igorProPath}" /UNATTENDED /N /I "$experiment"
 ret=$?
 
+echo "##[endgroup]"
+
 echo "Igor returned with status code $ret"
 
 rm -f $StateFile
+
+if [ ! $ret = 0 ]; then
+  exit $ret
+fi
+
+echo "##[group]Verify JUnit files"
+tools/verify-junit-files.sh Packages/tests/**/JU_*.xml
+ret=$?
+echo "##[endgroup]"
 
 exit $ret

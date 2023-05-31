@@ -2,6 +2,8 @@
 [![Signed Installer](https://img.shields.io/badge/Signed%20Installer-Yes-success?style=plastic)](https://alleninstitute.github.io/MIES/developers.html#signed-installer)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/AllenInstitute/MIES?style=plastic)](https://github.com/AllenInstitute/MIES/releases)
 [![Documentation](https://img.shields.io/badge/docs-doxygen%2Fbreathe%2Fsphinx-blue.svg?style=plastic)](https://alleninstitute.github.io/MIES/user.html)
+[![Build Main](https://github.com/AllenInstitute/MIES/actions/workflows/build-release.yml/badge.svg?branch=main)](https://github.com/AllenInstitute/MIES/actions/workflows/build-release.yml)
+[![Coverage](https://byte-physics.de/public-downloads/aistorage/transfer/report/coverage/badge_combined.svg)](https://byte-physics.de/public-downloads/aistorage/transfer/report/coverage/)
 
 MIES is a proven \[[1](https://www.science.org/stoken/author-tokens/ST-374/full),
 [2](https://doi.org/10.1038/s41586-021-03813-8),
