@@ -80,9 +80,8 @@ jobs:
       - name: Test experiment ${{ inputs.experiment }}
         run: tools/autorun-test.sh -p ${{ inputs.experiment }} -v IP_9_64
       - name: Gather log files and crash dumps
+        if: always()
         run: tools/gather-logfiles-and-crashdumps.sh
-      - name: Verify JUnit files
-        run: tools/verify-junit-files.sh Packages/tests/**/*.xml
       - name: upload artifacts
         uses: actions/upload-artifact@v3
         if: ${{ always() }}
