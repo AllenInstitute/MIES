@@ -362,13 +362,13 @@ Function CALLABLE_PROTO(device)
 End
 
 Function LoadStimsets()
-	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
+	string filename = GetTestStimsetFullFilePath()
 	NWB_LoadAllStimsets(filename = filename, overwrite = 1)
 End
 
 Function SaveStimsets()
 
-	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
+	string filename = GetTestStimsetFullFilePath()
 	DeleteFile filename
 	NWB_ExportAllStimsets(2, overrideFilePath = filename)
 End

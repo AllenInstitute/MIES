@@ -4818,28 +4818,44 @@ End
 /// @param[in] fileName fileName to use. If the fileName is empty or invalid a file save dialog will be shown.
 /// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
 /// @param[in] message [optional, default = "Create file"] window title of the save file dialog.
+/// @param[out] savedFileName [optional, default = ""] file name of the saved file
+/// @param[in] showDialogOnOverwrite [optional, default = 0] opens save file dialog, if the current fileName would cause an overwrite, to allow user to change fileName
 /// @returns NaN if file open dialog was aborted or an error was encountered, 0 otherwise
-Function SaveTextFile(data, fileName,[ fileFilter, message])
-	string data, fileName, fileFilter, message
+Function SaveTextFile(data, fileName,[ fileFilter, message, savedFileName, showDialogOnOverwrite])
+	string data, fileName, fileFilter, message, &savedFileName
+	variable showDialogOnOverwrite
 
-	variable fNum
+	variable fNum, dialogCode
 
+	if(!ParamIsDefault(savedFileName))
+		savedFileName = ""
+	endif
+
+#ifdef AUTOMATED_TESTING
+	string S_fileName = fileName
+#else
+	showDialogOnOverwrite = ParamIsDefault(showDialogOnOverwrite) ? 0: !!showDialogOnOverwrite
+	dialogCode = showDialogOnOverwrite && FileExists(fileName) ? 1 : 2
 	if(ParamIsDefault(fileFilter) && ParamIsDefault(message))
-		Open/D=2 fnum as fileName
+		Open/D=(dialogCode) fnum as fileName
 	elseif(ParamIsDefault(fileFilter) && !ParamIsDefault(message))
-		Open/D=2/M=message fnum as fileName
+		Open/D=(dialogCode)/M=message fnum as fileName
 	elseif(!ParamIsDefault(fileFilter) && ParamIsDefault(message))
-		Open/D=2/F=fileFilter fnum as fileName
+		Open/D=(dialogCode)/F=fileFilter fnum as fileName
 	else
-		Open/D=2/F=fileFilter/M=message fnum as fileName
+		Open/D=(dialogCode)/F=fileFilter/M=message fnum as fileName
 	endif
 
 	if(IsEmpty(S_fileName))
 		return NaN
 	endif
+#endif
 
 	Open/Z fnum as S_fileName
 	ASSERT(!V_flag, "Could not open file for writing!")
+	if(!ParamIsDefault(savedFileName))
+		savedFileName = S_fileName
+	endif
 
 	FBinWrite fnum, data
 	Close fnum
@@ -4930,7 +4946,7 @@ Function RemoveTextWaveEntry1D(WAVE/T w, string entry, [variable options, variab
 	return foundOnce ? 0 : 1
 End
 
-/// @brief Checks if a string ends with a specific suffix
+/// @brief Checks if a string ends with a specific suffix. The check is case-insensitive.
 ///
 /// @param[in] str string to check for suffix
 /// @param[in] suffix to check for
@@ -6548,4 +6564,47 @@ Function RefCounterDFDecrease(DFREF dfr)
 	if(rc == 0)
 		KillOrMoveToTrash(dfr=dfr)
 	endif
+End
+
+/// @brief Copies a single element of a primitive type from a source json to a target json
+///        By default if the element at the source path does not exist an ASSERTion is thrown
+///        Elements at the targetPath are overwritten, independent of their type
+Function CopySimpleJSONElement(variable srcJsonId, string srcPath, variable tgtJsonId, string tgtPath[, variable ignoreMissingSrcElement])
+
+	variable val
+	string str
+
+	ignoreMissingSrcElement = ParamIsDefault(ignoreMissingSrcElement) ? 0 : !!ignoreMissingSrcElement
+
+	ASSERT(!IsNull(srcPath), "source path is null.")
+	ASSERT(!IsNull(tgtPath), "target path is null.")
+	ASSERT(!IsNaN(srcJsonId), "Source JSON does not exist.")
+	ASSERT(!IsNaN(tgtJsonId), "Target JSON does not exist.")
+
+	if(!JSON_Exists(srcJsonId, srcPath))
+		if(ignoreMissingSrcElement)
+			return NaN
+		endif
+		ASSERT(0, "Source element does not exist.")
+	endif
+
+	switch(JSON_GetType(srcJsonId, srcPath))
+		case JSON_NULL:
+			JSON_SetNull(tgtJsonId, tgtPath)
+			break
+		case JSON_BOOL:
+			val = JSON_GetVariable(srcJsonId, srcPath)
+			JSON_SetBoolean(tgtJsonId, tgtPath, val)
+			break
+		case JSON_NUMERIC:
+			val = JSON_GetVariable(srcJsonId, srcPath)
+			JSON_SetVariable(tgtJsonId, tgtPath, val)
+			break
+		case JSON_STRING:
+			str = JSON_GetString(srcJsonId, srcPath)
+			JSON_SetString(tgtJsonId, tgtPath, str)
+			break
+		default:
+			ASSERT(0, "Unsupported element type")
+	endswitch
 End

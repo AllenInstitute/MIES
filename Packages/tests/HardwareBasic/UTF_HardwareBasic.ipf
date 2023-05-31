@@ -9,6 +9,7 @@
 #include "UTF_AnalysisFunctionManagement"
 #include "UTF_AutoTestpulse"
 #include "UTF_BasicHardwareTests"
+#include "UTF_ConfigurationHardware"
 #include "UTF_DAEphys"
 #include "UTF_Dashboard"
 #include "UTF_Databrowser"
@@ -86,6 +87,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list, ";", inf)
 	list = AddListItem("UTF_TrackSweepCounts.ipf", list, ";", inf)
 	list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", inf)
+	list = AddListItem("UTF_ConfigurationHardware.ipf", list, ";", inf)
 	list = AddListItem("UTF_SweepSkipping.ipf", list, ";", inf)
 	list = AddListItem("UTF_TestPulseAndTPDuringDAQ.ipf", list, ";", inf)
 	list = AddListItem("UTF_DAEphys.ipf", list, ";", inf)

@@ -6,13 +6,13 @@
           "Serial": 0,
           "Title": "0,1",
           "Channel": 1
-        },
-        "1": {
-          "Amplifier": {
-            "Serial": 0,
-            "Title": "0,1",
-            "Channel": 2
-          }
+        }
+      },
+      "1": {
+        "Amplifier": {
+          "Serial": 0,
+          "Title": "0,1",
+          "Channel": 2
         }
       }
     }

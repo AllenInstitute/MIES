@@ -90,6 +90,19 @@
 /// - PopupMenu values are saved as string only
 /// - Buttons are only saved if its userdata Config_PushButtonOnRestore is "1"
 /// - Only most relevant data of a control is saved.
+///
+/// *_rig.json configuration files store settings that are specific to a rig.
+/// When restoring a DAEphys panel the settings from the rig file are joined with the settings in the DAEphys configuration file.
+/// Having entries for the same setting in both files is invalid and an assertion will be thrown.
+///
+/// Saving a DAEphys panel that was originally restored from a configuration file:
+/// - entries from the "Common configuration data" block are updated with the values from the previous configuration,
+///   if they already existed. New entries are set at default values.
+/// - entries defined in an associated rig file are removed from the DAEphys panel configuration because they would appear in
+///   both files
+/// - the previously used rig file is copied to the new location
+/// - By default for both files (DAEphys configuration and rig file) new file names are generated. If the new files already
+///   exist a save dialog is opened to allow the user to modify the path/name.
 ///******************************************************************************************************************************
 
 static StrConstant EXPCONFIG_FIELD_CTRLTYPE = "Type"
@@ -266,14 +279,18 @@ Function CONF_OpenConfigInNotebook()
 End
 
 /// @brief Return a text wave with absolute paths to the JSON configuration files
-static Function/WAVE CONF_GetConfigFiles()
+static Function/WAVE CONF_GetConfigFiles([string customIPath])
 
 	string settingsPath, fileList
 
-	settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
+	if(ParamIsDefault(customIPath))
+		settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
+	else
+		settingsPath = customIPath
+	endif
 	fileList = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
 
-	if(IsEmpty(fileList))
+	if(IsEmpty(fileList) && !ParamIsDefault(customIPath))
 		settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_USER)
 		fileList = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
 	endif
@@ -287,22 +304,25 @@ End
 
 /// @brief Automatically loads all *.json files from MIES Settings folder and opens and restores the corresponding windows
 ///        Files are restored in case-insensitive alphanumeric order. Associated *_rig.json files are taken into account.
-Function CONF_AutoLoader()
+Function CONF_AutoLoader([string customIPath])
 
 	variable i, numFiles
 	string rigCandidate
 
-	WAVE/T/Z rawFileList = CONF_GetConfigFiles()
+	if(ParamIsDefault(customIPath))
+		WAVE/T/Z rawFileList = CONF_GetConfigFiles()
+	else
+		WAVE/T/Z rawFileList = CONF_GetConfigFiles(customIPath=customIPath)
+	endif
 	if(!WaveExists(rawFileList))
 		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
 		ControlWindowToFront()
 		Abort
 	endif
 
-	rawFileList[] = LowerStr(rawFileList[p])
 	WAVE/T/Z mainFileList
 	WAVE/T/Z rigFileList
-	[rigFileList, mainFileList] = SplitTextWaveBySuffix(rawFileList, LowerStr(EXPCONFIG_RIGFILESUFFIX))
+	[rigFileList, mainFileList] = SplitTextWaveBySuffix(rawFileList, EXPCONFIG_RIGFILESUFFIX)
 
 	Sort mainFileList, mainFileList
 	numFiles = DimSize(mainFileList, ROWS)
@@ -479,6 +499,7 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
+			printf "Configuration restore aborted at file %s.", fName
 			Abort
 		endif
 	endtry
@@ -491,30 +512,50 @@ End
 static Function CONF_SaveDAEphys(fName)
 	string fName
 
-	variable i, jsonID, saveMask, saveResult
-	string out, wName, errMsg
+	variable i, jsonID, saveMask, saveResult, prevJsonId, prevRigJsonId
+	string out, wName, errMsg, newFileName, newRigFullFilePath, jsonTxt
+
+	wName = GetMainWindow(GetCurrentWindow())
+	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Current window is no DA_Ephys panel")
+	[prevJsonId, jsonTxt] = CONF_LoadConfigUsedForDAEphysPanel(wName)
+	[prevRigJsonId, jsonTxt] = CONF_LoadConfigUsedForDAEphysPanel(wName, loadRigFile=1)
 
 	AssertOnAndClearRTError()
 	try
-		wName = GetMainWindow(GetCurrentWindow())
-		ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Current window is no DA_Ephys panel")
 
 		saveMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_BUTTONS_ONLY_PRESSED | EXPCONFIG_SAVE_ONLY_RELEVANT
 		jsonID = CONF_AllWindowsToJSON(wName, saveMask, excCtrlTypes = DAEPHYS_EXCLUDE_CTRLTYPES)
 
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK, CONF_DefaultSettings())
+		if(!IsNaN(prevJsonId))
+			CONF_TransferPreviousDAEphysJson(jsonId, prevJsonId)
+		endif
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK, CONF_GetAmplifierSettings(wName))
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_USERPRESSBLOCK, CONF_GetUserPressure(wName))
+		if(!IsNaN(prevRigJsonId))
+			CONF_RemoveRigElementsFromDAEphysJson(jsonId, prevRigJsonId)
+		endif
 
 		out = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
 		JSON_Release(jsonID)
 
 		PathInfo/S $CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
 
-		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration file for DA_Ephys panel")
+		newFileName = CONF_GetDAEphysConfigurationFileNameSuggestion(wName)
+		fName = SelectString(IsEmpty(newFileName), newFileName, fName)
+
+		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 		if(!IsNaN(saveResult))
-			print "Configuration saved."
+			printf "Configuration saved in %s.\r", newFileName
 		endif
+		if(!IsNaN(prevRigJsonId) && !IsEmpty(newFileName))
+			newRigFullFilePath = GetFolder(newFileName) + GetBaseName(newFileName) + EXPCONFIG_RIGFILESUFFIX
+			saveResult = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
+			if(!IsNaN(saveResult))
+				printf "Rig configuration saved in %s.\r", newFileName
+			endif
+		endif
+
 	catch
 		errMsg = getRTErrMessage()
 		if(ClearRTError())
@@ -2450,4 +2491,73 @@ static Function CONF_JoinRigFile(jsonID, rigFileName)
 	jsonIDRig = CONF_ParseJSON(input)
 	SyncJSON(jsonIDRig, jsonID, "", "", rigFileName)
 	JSON_Release(jsonIDRig)
+End
+
+/// @brief Retrieves the JSON original used to restore the DAEphys panel from the disk
+/// @param[in] wName name of DAEphys panel
+/// @param[in] loadRigFile [optional, default 0] when set, load the rig file instead
+///
+/// @returns jsonId or NaN if data was not present
+static Function [variable jsonId, string txtData] CONF_LoadConfigUsedForDAEphysPanel(string wName[, variable loadRigFile])
+
+	string fName, str
+
+	loadRigFile = ParamIsDefault(loadRigFile) ? 0 : !!loadRigFile
+	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Window is no DA_Ephys panel")
+
+	fName = StringFromList(loadRigFile, GetUserData(wName, "", EXPCONFIG_UDATA_SOURCEFILE_PATH), FILE_LIST_SEP)
+	[txtData, str] = LoadTextFile(fName)
+	if(IsEmpty(txtData))
+		return [NaN, ""]
+	endif
+
+	return [JSON_Parse(txtData, ignoreErr=1), txtData]
+End
+
+static Function CONF_TransferPreviousDAEphysJson(variable jsonId, variable prevJsonId)
+
+	string jsonPath, entry
+
+	WAVE/T entryList = JSON_GetKeys(jsonId, EXPCONFIG_RESERVED_DATABLOCK)
+	for(entry : entryList)
+		jsonPath = EXPCONFIG_RESERVED_DATABLOCK + "/" + entry
+		CopySimpleJSONElement(prevJsonId, jsonPath, jsonId, jsonPath, ignoreMissingSrcElement=1)
+	endfor
+End
+
+static Function CONF_RemoveRigElementsFromDAEphysJson(variable jsonId, variable rigJsonId[, string jsonPath])
+
+	string newJsonPath, key
+
+	if(ParamIsDefault(jsonpath))
+		jsonPath = ""
+	endif
+
+	ASSERT(JSON_Exists(rigJsonId, jsonPath), "Attempt to access non-existing json path.")
+	WAVE/T keys = JSON_GetKeys(rigJsonId, jsonPath)
+	for(key : keys)
+		newJsonPath = jsonPath + "/" + key
+		switch(JSON_GetType(rigJsonId, newJsonPath))
+			case JSON_OBJECT:
+				CONF_RemoveRigElementsFromDAEphysJson(jsonId, rigJsonId, jsonPath=newJsonPath)
+				break
+			default:
+				JSON_Remove(jsonId, newJsonPath)
+				break
+		endswitch
+	endfor
+End
+
+static Function/S CONF_GetDAEphysConfigurationFileNameSuggestion(string wName)
+
+	string prevFullFilePath
+
+	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Window is no DA_Ephys panel")
+
+	prevFullFilePath = StringFromList(0, GetUserData(wName, "", EXPCONFIG_UDATA_SOURCEFILE_PATH), FILE_LIST_SEP)
+	if(!FileExists(prevFullFilePath))
+		return ""
+	endif
+
+	return GetFolder(prevFullFilePath) + GetBaseName(prevFullFilePath) + "_new.json"
 End
