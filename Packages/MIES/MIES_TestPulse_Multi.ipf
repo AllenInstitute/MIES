@@ -133,7 +133,7 @@ Function TPM_BkrdTPFuncMD(s)
 	for(i = 0; i < GetNumberFromWaveNote(ActiveDeviceList, NOTE_INDEX); i += 1) // NOLINT
 		deviceID = ActiveDeviceList[i][%DeviceID]
 		hardwareType = ActiveDeviceList[i][%HardwareType]
-		device = HW_GetMainDeviceName(hardwareType, deviceID)
+		device = HW_GetMainDeviceName(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 
 		WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 

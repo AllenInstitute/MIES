@@ -222,7 +222,7 @@ Function HW_WriteDAC(hardwareType, deviceID, channel, value, [flags])
 			HW_ITC_WriteDAC(deviceID, channel, value, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			HW_NI_WriteAnalogSingleAndSlow(realDeviceOrPressure, channel, value, flags=flags)
 			break
@@ -249,7 +249,7 @@ Function HW_ReadADC(hardwareType, deviceID, channel, [flags])
 			return HW_ITC_ReadADC(deviceID, channel, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			return HW_NI_ReadAnalogSingleAndSlow(realDeviceOrPressure, channel, flags=flags)
 			break
@@ -277,14 +277,15 @@ Function HW_ReadDigital(hardwareType, deviceID, channel, [line, flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			realDeviceOrPressure = HW_GetDeviceName(HARDWARE_ITC_DAC, deviceID)
+			realDeviceOrPressure = HW_GetDeviceName(HARDWARE_ITC_DAC, deviceID, flags = flags)
+			HW_ITC_AssertOnInvalid(realDeviceOrPressure)
 			ttlBit     = channel
 			rack       = HW_ITC_GetRackForTTLBit(realDeviceOrPressure, ttlBit)
 			xopChannel = HW_ITC_GetITCXOPChannelForRack(realDeviceOrPressure, rack)
 			return HW_ITC_ReadDigital(deviceID, xopChannel, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			if(ParamisDefault(line))
 				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort=channel, flags=flags)
@@ -315,14 +316,15 @@ Function HW_WriteDigital(hardwareType, deviceID, channel, value, [line, flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			realDeviceOrPressure = HW_GetDeviceName(HARDWARE_ITC_DAC, deviceID)
+			realDeviceOrPressure = HW_GetDeviceName(HARDWARE_ITC_DAC, deviceID, flags = flags)
+			HW_ITC_AssertOnInvalid(realDeviceOrPressure)
 			ttlBit     = channel
 			rack       = HW_ITC_GetRackForTTLBit(realDeviceOrPressure, ttlBit)
 			xopChannel = HW_ITC_GetITCXOPChannelForRack(realDeviceOrPressure, rack)
 			HW_ITC_WriteDigital(deviceID, xopChannel, value, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			if(ParamisDefault(line))
 				HW_NI_WriteDigital(realDeviceOrPressure, value, DIOPort=channel, flags=flags)
@@ -414,7 +416,7 @@ Function HW_IsRunning(hardwareType, deviceID, [flags])
 			return HW_ITC_IsRunning(deviceID, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			return HW_NI_IsRunning(realDeviceOrPressure)
 			break
@@ -439,7 +441,7 @@ Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
 			return HW_ITC_GetDeviceInfo(deviceID, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			return HW_NI_GetDeviceInfo(realDeviceOrPressure, flags=flags)
 			break
@@ -582,7 +584,7 @@ Function HW_ResetDevice(hardwareType, deviceID, [flags])
 			// no equivalent functionality
 			break
 		case HARDWARE_NI_DAC:
-			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			HW_NI_ResetDevice(realDeviceOrPressure, flags=flags)
 			break
@@ -672,8 +674,9 @@ End
 ///
 /// @param deviceID     device identifier
 /// @param hardwareType One of @ref HardwareDACTypeConstants
-Function/S HW_GetMainDeviceName(hardwareType, deviceID)
-	variable hardwareType, deviceID
+/// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function/S HW_GetMainDeviceName(hardwareType, deviceID, [flags])
+	variable hardwareType, deviceID, flags
 
 	string mainDevice
 
@@ -682,7 +685,17 @@ Function/S HW_GetMainDeviceName(hardwareType, deviceID)
 	WAVE/T devMap = GetDeviceMapping()
 
 	mainDevice = devMap[deviceID][hardwareType][%MainDevice]
-	ASSERT(!isEmpty(mainDevice), "Empty main device")
+
+	if(IsEmpty(mainDevice))
+		if(!(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
+			printf "The main device for hardwareType %s and deviceID %d is empty!\r", StringFromList(hardwareType, HARDWARE_DAC_TYPES)
+			ControlWindowToFront()
+		endif
+
+		ASSERT(!(flags & HARDWARE_ABORT_ON_ERROR), "Empty main device")
+
+		return ""
+	endif
 
 	return mainDevice
 End
@@ -693,8 +706,9 @@ End
 ///
 /// @param deviceID     device identifier
 /// @param hardwareType One of @ref HardwareDACTypeConstants
-Function/S HW_GetDeviceName(hardwareType, deviceID)
-	variable hardwareType, deviceID
+/// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function/S HW_GetDeviceName(hardwareType, deviceID, [flags])
+	variable hardwareType, deviceID, flags
 
 	string mainDevice, pressureDevice
 
@@ -703,7 +717,18 @@ Function/S HW_GetDeviceName(hardwareType, deviceID)
 	WAVE/T devMap = GetDeviceMapping()
 
 	mainDevice = devMap[deviceID][hardwareType][%MainDevice]
-	ASSERT(!isEmpty(mainDevice), "Empty main device")
+
+	if(IsEmpty(mainDevice))
+		if(!(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
+			printf "The main device for hardwareType %s and deviceID %d is empty!\r", StringFromList(hardwareType, HARDWARE_DAC_TYPES)
+			ControlWindowToFront()
+		endif
+
+		ASSERT(!(flags & HARDWARE_ABORT_ON_ERROR), "Empty main device")
+
+		return ""
+	endif
+
 	pressureDevice = devMap[deviceID][hardwareType][%PressureDevice]
 
 	if(!IsEmpty(pressureDevice))
@@ -1183,7 +1208,7 @@ Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, f
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	if(zeroDAC)
-		device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+		device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID, flags = flags)
 
 		if(ParamIsDefault(config))
 			if(ParamIsDefault(configFunc))
@@ -1279,7 +1304,7 @@ Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID, flags = flags)
 
 	if(ParamIsDefault(config))
 		if(ParamIsDefault(configFunc))
@@ -1508,7 +1533,7 @@ Function HW_ITC_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, 
 
 	DEBUGPRINTSTACKINFO()
 
-	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID, flags = flags)
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
@@ -1632,7 +1657,7 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 
 	DEBUGPRINTSTACKINFO()
 
-	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID, flags = flags)
 
 	if(ParamIsDefault(ADChannelToMonitor))
 		NVAR ADChannelToMonitor_NVAR = $GetADChannelToMonitor(device)
@@ -2019,12 +2044,8 @@ End
 
 /// @brief Get the number of racks for the given device
 ///
-/// ITC:
 /// - ITC1600 can have 1 or 2 racks
 /// - other device types have 1
-///
-/// NI:
-/// - NaN (concept is not applicable)
 Function HW_ITC_GetNumberOfRacks(device)
 	string device
 
@@ -2032,6 +2053,25 @@ Function HW_ITC_GetNumberOfRacks(device)
 
 	return deviceInfo[%Rack]
 End
+
+/// @brief Assert on using an invalid ITC device name
+///
+/// @param deviceName ITC device name
+Function HW_ITC_AssertOnInvalid(deviceName)
+	string deviceName
+
+	ASSERT(HW_ITC_IsValidDeviceName(deviceName), "Invalid ITC device name")
+End
+
+/// @brief Check wether the given ITC device name is valid
+///
+/// Currently a device name is valid if it is not empty.
+Function HW_ITC_IsValidDeviceName(deviceName)
+	string deviceName
+
+	return !isEmpty(deviceName)
+End
+
 /// @}
 /// @}
 
@@ -2117,8 +2157,8 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		repeat = 0
 	endif
 
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
+	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 	SVAR scanStr = $GetNI_AISetup(device)
 	fifoName = GetNIFIFOName(deviceID)
 	AssertOnAndClearRTError()
@@ -2178,8 +2218,8 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 
 	DEBUGPRINTSTACKINFO()
 
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
+	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
@@ -2670,10 +2710,10 @@ Function HW_NI_StopADC(deviceID, [flags])
 	variable ret
 	string realDeviceOrPressure, device
 
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 	NVAR taskIDADC = $GetNI_ADCTaskID(device)
 	if(!isNaN(taskIDADC))
-		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 		ret = fDAQmx_ScanStop(realDeviceOrPressure)
 		if(ret)
 			print fDAQmx_ErrorString()
@@ -2700,10 +2740,10 @@ Function HW_NI_StopDAC(deviceID, [flags])
 	variable ret
 	string realDeviceOrPressure, device
 
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 	NVAR taskIDDAC = $GetNI_DACTaskID(device)
 	if(!isNaN(taskIDDAC))
-		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 		ret = fDAQmx_WaveformStop(realDeviceOrPressure)
 		if(ret)
 			print fDAQmx_ErrorString()
@@ -2729,10 +2769,10 @@ Function HW_NI_StopTTL(deviceID, [flags])
 	variable ret
 	string realDeviceOrPressure, device
 
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 	NVAR taskIDTTL = $GetNI_TTLTaskID(device)
 	if(!isNaN(taskIDTTL))
-		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 		ret = fDAQmx_DIO_Finished(realDeviceOrPressure, taskIDTTL)
 		if(ret)
 			print fDAQmx_ErrorString()
@@ -2758,8 +2798,8 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 	string realDeviceOrPressure, device, paraStr
 	variable channels, i
 
-	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 	WAVE config = GetDAQConfigWave(device)
 
 	paraStr = ""
@@ -2794,7 +2834,7 @@ Function HW_NI_KillFifo(deviceID)
 	string fifoName, errMsg, device
 	variable err
 
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
 	fifoName = GetNIFIFOName(deviceID)
 
 	FIFOStatus/Q $fifoName
@@ -2906,11 +2946,17 @@ End
 Function HW_NI_CloseDevice(deviceID, [flags])
 	variable deviceID, flags
 
-	string deviceType, deviceNumber
+	string deviceType, deviceNumber, deviceName
 
 	DEBUGPRINTSTACKINFO()
 
-	ASSERT(ParseDeviceString(HW_GetDeviceName(HARDWARE_NI_DAC, deviceID), deviceType, deviceNumber), "Error parsing device string!")
+	deviceName = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
+
+	if(IsEmpty(deviceName))
+		return NaN
+	endif
+
+	ASSERT(ParseDeviceString(deviceName, deviceType, deviceNumber), "Error parsing device string!")
 
 	if(HW_NI_IsRunning(deviceType))
 		HW_NI_StopAcq(deviceID, flags=flags)

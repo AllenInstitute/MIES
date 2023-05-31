@@ -31,7 +31,7 @@ Function DQM_FIFOMonitor(s)
 	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1) // NOLINT
 		deviceID   = ActiveDeviceList[i][%DeviceID]
 		hardwareType = ActiveDeviceList[i][%HardwareType]
-		device = HW_GetMainDeviceName(hardwareType, deviceID)
+		device = HW_GetMainDeviceName(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 
 		WAVE TPSettingsCalc = GetTPSettingsCalculated(device)
 

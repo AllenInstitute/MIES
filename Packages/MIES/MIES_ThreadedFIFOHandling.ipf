@@ -40,7 +40,7 @@ static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode)
 
 	string device
 
-	device = HW_GetMainDeviceName(hwType, deviceID)
+	device = HW_GetMainDeviceName(hwType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(device)
@@ -68,7 +68,7 @@ Function TFH_StopFIFODaemon(hwType, deviceID)
 
 	string device
 
-	device = HW_GetMainDeviceName(hwType, deviceID)
+	device = HW_GetMainDeviceName(hwType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 	NVAR tgID = $GetThreadGroupIDFifo(device)
 
 	TS_StopThreadGroup(tgID)
