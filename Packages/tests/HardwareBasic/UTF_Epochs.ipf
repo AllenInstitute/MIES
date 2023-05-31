@@ -844,7 +844,6 @@ End
 
 static Function EP_EpochTest15_PreAcq(string device)
 
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 43.59)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPDuration", val =10)
 End
 
@@ -853,7 +852,7 @@ static Function EP_EpochTest15([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59"                + \
 	       						   "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
 
 	AcquireData_NG(s, str)

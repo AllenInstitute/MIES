@@ -1840,16 +1840,11 @@ static Function ExportOnlyCommentsIntoNWB([string str])
 	H5_CloseFile(fileID)
 End
 
-static Function CheckPulseInfoGathering_PreAcq(string device)
-
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
-End
-
 /// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function CheckPulseInfoGathering([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                             + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP25"                       + \
 								 "__HS0_DA0_AD0_CM:VC:_ST:Y4_SRecovery_50H_DA_0:")
 
 	AcquireData_NG(s, str)
@@ -2080,18 +2075,13 @@ Function HandlesStuckFIFOProperly_REENTRY([str])
 	CHECK_EQUAL_VAR(stopReason, DQ_STOP_REASON_FINISHED)
 End
 
-static Function CheckDelays_PreAcq(string device)
-
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc",  val = 25)
-End
-
 // UTF_TD_GENERATOR v0:InsertedTPPossibilities
 // UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
 static Function CheckDelays([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1_ITP" + num2str(md.v0) + "_TD100_OD50_dDAQ1_DDL10" + \
-				                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"                               + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1_ITP" + num2str(md.v0) + "_TD100_OD50_dDAQ1_DDL10_TBP25" + \
+				                 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"                                     + \
 	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:")
 	AcquireData_NG(s, md.s0)
 End

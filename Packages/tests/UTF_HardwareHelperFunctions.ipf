@@ -1095,7 +1095,7 @@ End
 
 Structure DAQSettings
 	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP, ITP, FAR
-	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM
+	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM, STP, TBP
 
 	WAVE hs, da, ad, cm, ttl, aso
 	WAVE/T st, ist, af, st_ttl, iaf
@@ -1144,27 +1144,37 @@ End
 static Function ParseNumber(string str, string name, [variable defValue])
 
 	string output
+	variable var
 
-	SplitString/E=(name + "([[:digit:]]+)") str, output
+	SplitString/E=(name + "([[:digit:]]+(\.[[:digit:]]+)?)(?=_|$)") str, output
+
+	INFO("Name: \"%s\", config string: \"%s\"", s0 = name, s1 = str)
 
 	if(V_Flag == 1)
-		return str2num(output)
+		var = str2num(output)
+		CHECK_NO_RTE()
+		return var
 	endif
 
 	if(ParamIsDefault(defValue))
 		FAIL()
 	endif
 
+	PASS()
+
 	return defValue
 End
 
 static Function/S ParseString(string str, string name, [string defValue])
 
-	string output
+	string output, trailingSep
 
-	SplitString/E=(name + ":([^:]+):") str, output
+	SplitString/E=(name + ":([^:]+)(:)(?=_|$)") str, output, trailingSep
 
 	if(V_Flag == 1)
+		INFO("Missing trailing colon for \"%s\" in \"%s\".", s0 = name, s1 = str)
+		FAIL()
+	elseif(V_Flag == 2)
 		return output
 	endif
 
@@ -1209,6 +1219,10 @@ Function InitDAQSettingsFromString(s, str)
 	s.daq = ParseNumber(str, "_DAQ", defValue = NaN)
 
 	s.tp = ParseNumber(str, "_TP", defValue = NaN)
+
+	s.stp = ParseNumber(str, "_STP", defValue = 0)
+
+	s.tbp = ParseNumber(str, "_TBP", defValue = NaN)
 
 	// default to DAQ if nothing is choosen
 	if(IsNaN(s.daq) && IsNaN(s.tp))
@@ -1348,6 +1362,8 @@ End
 /// - Inserted TP checkbox (ITP: 1/0)
 /// - Fail on Abort/RTE: (FAR: 1/0), defaults to 1
 /// - Sampling interval multiplier (SIM: 1, 2, 4, ..., 64), defaults to 1
+/// - Save TP: (STP: 1/0), defaults to 0
+/// - TP Baseline Percentage: (TBP: [25, 49])
 ///
 /// HeadstageConfig:
 /// - Full specification: __HSXX_ADXX_DAXX_CM:XX:_ST:XX:_IST:XX:_AF:XX:_IAF:XX:_ASOXX
@@ -1514,6 +1530,11 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 	endif
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
+	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = s.STP)
+
+	if(IsFinite(s.TBP))
+		PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = s.TBP)
+	endif
 
 	s.preAcquireFunc(device)
 	s.globalPreAcquireFunc(device)
