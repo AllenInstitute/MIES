@@ -734,7 +734,7 @@ Function/S GetDefaultTraceOptions()
 
 	traceOptions = ReplaceNumberByKey(UTF_KEY_REGEXP, traceOptions, 1)
 
-	if(!IsRunningInCI())
+	if(!IsRunningInCI() || !CmpStr("1", GetEnvironmentVariable("CI_INSTRUMENT_TESTS")))
 		traceOptions = ReplaceNumberByKey(UTF_KEY_HTMLCREATION, traceOptions, 0)
 		traceOptions = ReplaceNumberByKey(UTF_KEY_COBERTURA, traceOptions, 1)
 	endif

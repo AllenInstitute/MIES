@@ -91,6 +91,7 @@ jobs:
             Packages/tests/**/*.htm
             Packages/tests/**/*-V2.nwb
             Packages/tests/**/JU_*.xml
+            Packages/tests/**/Cobertura_*.xml
             Packages/tests/**/*.log
             Diagnostics
             **/*.jsonl
