@@ -17,7 +17,6 @@ jobs:
       is_called_workflow: true
       do_instrumentation: ${{ github.ref_name == 'main' }}
     secrets: inherit
-    if: false
 
   DeployDocumentation:
     name: ✈️ Deploy documentation
