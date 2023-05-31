@@ -10,68 +10,14 @@ defaults:
     shell: bash
 jobs:
 
-  TestCompilation:
-    name: 🧪 Test Compilation
-    uses: ./.github/workflows/test-igor-workflow.yml
+  CallPR:
+    name: ⚙ Run PR Workflow
+    uses: ./.github/workflows/build-pr.yml
     with:
-      experiment: Packages/tests/Compilation/CompilationTester.pxp
-      installer_artifact_name: '' # this disables artifact download
-      installer_flags: -s git
-      artifact_name: TestCompilation-assets
-
-  TestBasic:
-    name: 🧪 Test Basic
-    uses: ./.github/workflows/test-igor-workflow.yml
-    with:
-      experiment: Packages/tests/Basic/Basic.pxp
-      installer_artifact_name: '' # this disables artifact download
-      installer_flags: -s git
-      artifact_name: TestBasic-assets
-
-  Documentation:
-    name: 👷 Documentation
-    runs-on: [ self-hosted, Linux, Docker ]
-    if: github.ref_name == 'main'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Initial repo config
-        run: tools/initial-repo-config.sh
-      - name: Build documentation
-        run: tools/docker/build-documentation.sh
-      - name: upload artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ always() }}
-        with:
-          name: Documentation-assets
-          path: |
-            Packages/doc/*.zip
-          if-no-files-found: error
-
-  BuildInstaller:
-    name: 🏗 Installer
-    runs-on: [ self-hosted, Windows, Certificate ]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          fetch-depth: 0 # load all commits
-      - name: Initial repo config
-        run: tools/initial-repo-config.sh
-      - name: Create release package and installer
-        run: tools/create-installer.sh
-      - name: Sign installer
-        run: tools/sign-installer.sh -p "${{ secrets.GHA_MIES_CERTIFICATE_PIN }}"
-      - name: upload artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ always() }}
-        with:
-          name: BuildInstaller-assets
-          path: |
-            *.zip
-            tools/installer/MIES-*.exe
-          if-no-files-found: error
+      is_called_workflow: true
+      do_instrumentation: ${{ github.ref_name == 'main' }}
+    secrets: inherit
+    if: false
 
   DeployDocumentation:
     name: ✈️ Deploy documentation
@@ -79,9 +25,7 @@ jobs:
     if: github.ref_name == 'main'
     permissions: write-all
     needs:
-      - TestCompilation
-      - TestBasic
-      - Documentation
+      - CallPR
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -103,9 +47,7 @@ jobs:
     runs-on: [ self-hosted, Linux, Docker ]
     permissions: write-all
     needs:
-      - TestCompilation
-      - TestBasic
-      - BuildInstaller
+      - CallPR
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -118,7 +60,7 @@ jobs:
         uses: actions/download-artifact@v3
         continue-on-error: true
         with:
-          name: BuildInstaller-assets
+          name: BuildInstaller-user-assets
       - name: Deploy release assets to github
         run: tools/upload-github-release-asset.sh "${{ github.token }}"
 
@@ -128,10 +70,7 @@ jobs:
     if: always()
     needs:
       # All jobs that create new artifacts
-      - TestCompilation
-      - TestBasic
-      - Documentation
-      - BuildInstaller
+      - CallPR
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
