@@ -64,6 +64,65 @@ jobs:
       - name: Deploy release assets to github
         run: tools/upload-github-release-asset.sh "${{ github.token }}"
 
+  GenerateReport:
+    name: 📊 Generate Reports
+    runs-on: [ self-hosted, Linux, Docker ]
+    if: always()
+    needs:
+      - CallPR
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Download all artifacts
+        id: download
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          path: artifacts
+      - name: 📥 Download report cache from FTP
+        id: cache-download
+        run: |
+          tools/ftp-upload/download-files.sh \
+            -s "${{ vars.GHA_MIES_FTP_ARTEFACT_STORAGE_DNS }}" \
+            -u "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_USER }}" \
+            -p "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_PWD }}" \
+            -d "history" \
+            -t "cache/coverage-history"
+      - name: 📊 Generate Reports
+        id: gen
+        run: |
+          tools/report-generator/build.sh \
+            -s "$(pwd)" \
+            -d "${{ steps.download.outputs.download-path }}" \
+            -h "${{ steps.cache-download.outputs.data }}" \
+            -o report
+      - name: 📤 Upload latest report to FTP
+        run: |
+          tools/ftp-upload/upload-files.sh \
+            -s "${{ vars.GHA_MIES_FTP_ARTEFACT_STORAGE_DNS }}" \
+            -u "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_USER }}" \
+            -p "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_PWD }}" \
+            -d "${{ steps.gen.outputs.report }}" \
+            -t "report/coverage"
+      - name: 📤 Upload report cache to FTP
+        run: |
+          tools/ftp-upload/upload-files.sh \
+            -s "${{ vars.GHA_MIES_FTP_ARTEFACT_STORAGE_DNS }}" \
+            -u "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_USER }}" \
+            -p "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_PWD }}" \
+            -d "${{ steps.gen.outputs.history }}" \
+            -t "cache/coverage-history"
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: report-artifacts
+          path: |
+            ${{ steps.gen.outputs.report }}
+          if-no-files-found: warn
+
   FTPUpload:
     name: 📦 FTP Upload Artifacts
     runs-on: [ self-hosted, Linux, Docker ]
@@ -71,6 +130,7 @@ jobs:
     needs:
       # All jobs that create new artifacts
       - CallPR
+      - GenerateReport
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
