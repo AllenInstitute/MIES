@@ -147,6 +147,9 @@ jobs:
         run: |
           find "${{ steps.download.outputs.download-path }}" -mindepth 1 -maxdepth 1 -type d |\
             xargs -I {} tools/ftp-upload/flatten-files.sh "{}"
+      - name: Compress NWB artifacts
+        run: find -name "*.nwb" | while read file; do tar -czvf $file.tar.gz --remove-files $file; done
+        working-directory: ${{ steps.download.outputs.download-path }}
       - name: Upload artifacts using FTP
         run: |
           tools/ftp-upload/upload-files.sh \
