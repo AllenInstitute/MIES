@@ -101,11 +101,12 @@ then
 
   # requires an installer which does not trigger UAC
   # installer always installs for all available and supported IP versions
+  installPath="$(find "$base_folder" -name "MIES-*.exe")"
   if [ "$skipHardwareXOPs" = "1" ]
   then
-    MSYS_NO_PATHCONV=1 $base_folder/MIES-*.exe /S /CIS /SKIPHWXOPS
+    MSYS_NO_PATHCONV=1 $installPath /S /CIS /SKIPHWXOPS
   else
-    MSYS_NO_PATHCONV=1 $base_folder/MIES-*.exe /S /CIS
+    MSYS_NO_PATHCONV=1 $installPath /S /CIS
   fi
 fi
 
