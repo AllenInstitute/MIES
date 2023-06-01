@@ -3,6 +3,7 @@ run-name: Build PR ${{ github.event.number }} «${{ github.event.pull_request.ti
 on:
   pull_request:
     types:
+      - opened
       - synchronize
   workflow_call:
     inputs:
