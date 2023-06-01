@@ -8103,3 +8103,37 @@ static Function FindLastLogEntryElementByDate(WAVE/T entries, variable timeStamp
 
 	return r - 1
 End
+
+Function ToggleUserPingSetting()
+
+	variable isEnabled
+
+	NVAR JSONid = $GetSettingsJSONid()
+	isEnabled = GetUserPingEnabled()
+
+	JSON_SetBoolean(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/enabled", !isEnabled)
+	PS_WriteSettings(PACKAGE_MIES, JSONid)
+	printf "Changed daily ping setting to %s.\r", ToOnOff(!IsEnabled)
+	printf "Saved settings.\r"
+End
+
+Function GetUserPingEnabled()
+
+	NVAR JSONid = $GetSettingsJSONid()
+	return !!JSON_GetVariable(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/enabled")
+End
+
+Function/S GetUserPingTimestamp()
+
+	NVAR JSONid = $GetSettingsJSONid()
+	return JSON_GetString(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/last upload")
+End
+
+Function SetUserPingTimestamp(variable timeStamp)
+
+	string isoTS
+
+	isoTS = GetISO8601TimeStamp(secondsSinceIgorEpoch = timeStamp)
+	NVAR JSONid = $GetSettingsJSONid()
+	JSON_SetString(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/last upload", isoTS)
+End
