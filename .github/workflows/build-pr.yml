@@ -60,6 +60,7 @@ jobs:
         with:
           name: BuildInstaller-${{ matrix.kind }}-assets
           path: |
+            *.zip
             tools/installer/MIES-*.exe
           if-no-files-found: error
 
