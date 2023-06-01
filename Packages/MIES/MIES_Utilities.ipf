@@ -4900,8 +4900,8 @@ Function [string data, string fName] LoadTextFile(string fileName[, string fileF
 	endif
 
 	FStatus fnum
-	data = ""
-	data = PadString(data, V_logEOF, 0x20)
+	ASSERT(V_logEOF < STRING_MAX_SIZE, "Can't load " + num2istr(V_logEOF) + " bytes to string.")
+	data = PadString("", V_logEOF, 0x20)
 	FBinRead fnum, data
 	Close fnum
 
