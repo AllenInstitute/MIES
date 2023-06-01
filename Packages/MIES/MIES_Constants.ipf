@@ -1658,6 +1658,7 @@ Constant HW_NI_CONFIG_PSEUDO_DIFFERENTIAL = 8 //< Pseudodifferential terminal co
 
 StrConstant PACKAGE_SETTINGS_JSON = "Settings.json"
 StrConstant PACKAGE_SETTINGS_USERPING = "userping"
+Constant PACKAGE_SETTINGS_USERPING_DEFAULT = 1
 
 StrConstant LOGFILE_NAME = "Log.jsonl"
 
