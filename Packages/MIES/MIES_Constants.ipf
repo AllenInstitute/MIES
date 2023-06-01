@@ -2092,3 +2092,5 @@ Constant THURSDAY = 5
 Constant FRIDAY = 6
 Constant SATURDAY = 7
 /// @}
+
+Constant SECONDS_PER_DAY = 86400

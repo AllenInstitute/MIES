@@ -6801,7 +6801,7 @@ Function UploadCrashDumpsDaily()
 
 		lastWrite = ParseISO8601TimeStamp(JSON_GetString(jsonID, "/diagnostics/last upload"))
 
-		if((lastWrite + 24 * 3600) > DateTimeInUTC())
+		if(lastWrite + SECONDS_PER_DAY > DateTimeInUTC())
 			// nothing to do
 			return NaN
 		endif
@@ -6835,7 +6835,7 @@ Function UploadLogFilesDaily()
 		lastWrite = ParseISO8601TimeStamp(ts)
 		now = DateTimeInUTC()
 
-		if((lastWrite + 24 * 3600) > now)
+		if(lastWrite + SECONDS_PER_DAY > now)
 			// nothing to do
 			return NaN
 		endif
