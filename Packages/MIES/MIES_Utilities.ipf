@@ -5051,7 +5051,12 @@ Function FileExists(filepath)
 	string filepath
 
 	filepath = ResolveAlias(filepath)
-	GetFileFolderInfo/Q/Z filepath
+	AssertOnAndClearRTError()
+	try
+		GetFileFolderInfo/Q/Z filepath; AbortOnRTE
+	catch
+		ASSERT(0, "Error: " + GetRTErrMessage())
+	endtry
 
 	return !V_Flag && V_IsFile
 End
@@ -5061,7 +5066,12 @@ Function FolderExists(folderpath)
 	string folderpath
 
 	folderpath = ResolveAlias(folderpath)
-	GetFileFolderInfo/Q/Z folderpath
+	AssertOnAndClearRTError()
+	try
+		GetFileFolderInfo/Q/Z folderpath; AbortOnRTE
+	catch
+		ASSERT(0, "Error: " + GetRTErrMessage())
+	endtry
 
 	return !V_Flag && V_isFolder
 End
@@ -5071,7 +5081,12 @@ Function/S GetFileVersion(filepath)
 	string filepath
 
 	filepath = ResolveAlias(filepath)
-	GetFileFolderInfo/Q/Z filepath
+	AssertOnAndClearRTError()
+	try
+		GetFileFolderInfo/Q/Z filepath; AbortOnRTE
+	catch
+		ASSERT(0, "Error: " + GetRTErrMessage())
+	endtry
 
 	if(V_flag || !V_isFile)
 		return ""
@@ -5085,7 +5100,12 @@ Function GetFileSize(string filepath)
 
 	filepath = ResolveAlias(filepath)
 
-	GetFileFolderInfo/Q/Z filepath
+	AssertOnAndClearRTError()
+	try
+		GetFileFolderInfo/Q/Z filepath; AbortOnRTE
+	catch
+		ASSERT(0, "Error: " + GetRTErrMessage())
+	endtry
 
 	if(V_flag || !V_isFile)
 		return NaN
