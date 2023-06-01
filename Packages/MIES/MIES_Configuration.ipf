@@ -700,7 +700,13 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 
 		uploadLogfiles = CONF_GetVariableFromSettings(jsonID, EXPCONFIG_JSON_LOGFILE_UPLOAD, defaultValue = EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT)
 		if(uploadLogfiles)
-			UploadLogFilesDaily()
+			AssertOnAndClearRTError()
+			try
+				UploadLogFilesDaily(); AbortOnRTE
+			catch
+				ClearRTError()
+				BUG("Error uploading logfiles -> skipped.")
+			endtry
 		endif
 
 		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0, switchTab = 1)
