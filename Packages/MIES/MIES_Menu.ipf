@@ -21,7 +21,7 @@ Menu "Mies Panels"
 	"-"
 	SubMenu "Automation"
 		"Load Standard Configuration/1"        , /Q, CONF_AutoLoader()
-		"Load Window Configuration"            , /Q, CONF_RestoreWindow("", usePanelTypeFromFile = 1)
+		"Load Window Configuration"            , /Q, CONF_RestoreWindow("")
 		"Save Window Configuration"            , /Q, CONF_SaveWindow("")
 		"Blowout/8"                            , /Q, BWO_SelectDevice()
 		"Save and Clear Experiment"            , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)

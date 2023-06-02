@@ -136,7 +136,7 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	KillWindow $str
 
-	CONF_RestoreWindow(rewrittenConfig, usePanelTypeFromFile=1)
+	CONF_RestoreWindow(rewrittenConfig)
 
 	gain = 5
 	filterFreq = 6
