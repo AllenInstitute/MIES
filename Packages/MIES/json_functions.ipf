@@ -1,9 +1,35 @@
 #pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma IgorVersion=8.00
 
 // This file describes the wrapper functions, mentioned in the API.
+
+// Error constants for JSON XOP
+Constant JSON_OLD_IGOR = 10001
+Constant JSON_UNHANDLED_CPP_EXCEPTION = 10002
+Constant JSON_CPP_EXCEPTION = 10003
+Constant JSON_ERR_ASSERT = 10004
+Constant JSON_ERR_CONVERT = 10012
+Constant JSON_ERR_INVALID_TYPE = 10011
+
+// Invalid JSON id.
+Constant JSON_ERR_INVALID_ID = 10005
+
+// Could not create object in path.
+Constant JSON_ERR_INVALID_PATH = 10006
+
+// Exactly one input value of either type /A /B /I /N /T or /V must be specified.
+Constant JSON_ERR_NONE_MULTIPLE_INPUT = 10007
+
+// JSON member object already exists
+Constant JSON_ERR_OBJECT_EXISTS = 10008
+
+// Error when parsing string to JSON
+Constant JSON_ERR_PARSE = 10009
+
+// Dumping JSON to string failed (This may happen if a string in a JSON value is not UTF8 encoded).
+Constant JSON_ERR_DUMP = 10010
 
 // If user creates the specific defines JSON_IGNORE_ERRORS or JSON_UNQUIET
 // he can change the defaults for error handling (/Z flag) and output (/Q flag)
@@ -30,6 +56,18 @@ Constant JSON_STRING    = 3
 Constant JSON_BOOL      = 4
 Constant JSON_NULL      = 5
 /// @}
+
+/// @addtogroup JSON_SYNC_OPTIONS
+/// @{
+// if element in source exists, but not in target, then add element in target
+Constant JSON_SYNC_ADD_TO_TARGET = 0x0
+// if element in target exists, but not in source, then remove element in target
+Constant JSON_SYNC_REMOVE_IN_TARGET = 0x1
+// if element in source exists and in target, then overwrite element in target
+Constant JSON_SYNC_OVERWRITE_IN_TARGET = 0x2
+/// @}
+
+static Constant IGOR_STRING_MAX_SIZE = 2147483647
 
 /// @addtogroup JSONXOP_Parse
 /// @{
@@ -145,7 +183,7 @@ End
 /// @param jsonPath   RFC 6901 compliant JSON Pointer
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns 0 on success, NaN otherwise
-threadsafe Function JSON_Remove(jsonID, jsonPath [ignoreErr])
+threadsafe Function JSON_Remove(jsonID, jsonPath, [ignoreErr])
 	Variable jsonID
 	String jsonPath
 	Variable ignoreErr
@@ -343,6 +381,33 @@ End
 
 /// @addtogroup JSONXOP_GetValue
 /// @{
+
+/// @brief Get new JSON object from a json path of an existing JSON object.
+///        The original jsonID is not freed and stays valid.
+///        The new jsonID contains a copy of the JSON object referenced by jsonpath in the existing jsonID.
+///
+/// @param jsonID     numeric identifier of the JSON object
+/// @param jsonPath   RFC 6901 compliant JSON Pointer
+/// @param ignoreErr  [optional, default 0] set to ignore runtime errors
+/// @returns a new jsonID containing a copy of the JSON object referenced by jsonpath in jsonID
+threadsafe Function JSON_GetJSON(jsonID, jsonPath, [ignoreErr])
+	Variable jsonID
+	String jsonPath
+	Variable ignoreErr
+
+	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
+
+	JSONXOP_GetValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/J jsonID, jsonPath
+	if(V_flag)
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
+	endif
+
+	return V_Value
+End
 
 /// @brief Get a text entity as string variable from a JSON object
 ///
@@ -723,7 +788,7 @@ End
 ///
 /// @param jsonID     numeric identifier of the main object
 /// @param jsonPath   RFC 6901 compliant JSON Pointer
-/// @param jsonID2    numeric identifier of the merged object
+/// @param jsonID2    numeric identifier of the merged object, the merged JSON object is NOT freed by JSON_AddJSON. The caller keeps ownership of it.
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddJSON(jsonID, jsonPath, jsonID2, [ignoreErr])
 	Variable jsonID
@@ -1112,6 +1177,224 @@ End
 Function JSON_UnsetIgnoreErrors()
 	Execute/P/Q "SetIgorOption poundUnDefine=JSON_IGNORE_ERRORS"
 	Execute/P/Q "COMPILEPROCEDURES "
+End
+
+/// @}
+
+/// @addtogroup JSON_SyncJSON
+/// @{
+
+/// @brief Syncs data from a source json into a target json.
+///
+/// @param[in] srcJsonId    json Id of source object
+/// @param[in] tgtJsonId    json Id of target object
+/// @param[in] srcPath root path for sync in source
+/// @param[in] tgtPath root path for sync in target
+/// @param[in] syncOptions  defines how source-target differences are handled by the synchronisation @sa JSON_SYNC_OPTIONS
+/// @param[in] ignoreErr    [optional, default 0] set to ignore runtime errors
+threadsafe Function JSON_SyncJSON(variable srcJsonId, variable tgtJsonId, string srcPath, string tgtPath, variable syncOptions, [variable ignoreErr])
+
+	variable srcExists, tgtExists, srcType, tgtType, arraySize
+	variable valSrc, valTgt
+	variable i, size
+	string strSrc, strTgt
+
+	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
+
+	if(!(syncOptions >= 0 && syncOptions <= JSON_SYNC_ADD_TO_TARGET | JSON_SYNC_REMOVE_IN_TARGET | JSON_SYNC_OVERWRITE_IN_TARGET) || \
+		numtype(strlen(srcPath)) == 2 || \
+		numtype(strlen(tgtPath)) == 2)
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, 1
+	endif
+
+	srcExists = JSON_Exists(srcJsonId, srcPath)
+	tgtExists = JSON_Exists(tgtJsonId, tgtPath)
+	if(srcExists && !tgtExists)
+		JSON_AddArrayElementToParentIfArray(tgtJsonId, tgtPath)
+		JSON_CopyJSON(srcJsonId, tgtJsonId, srcPath, tgtPath)
+		return 0
+	elseif(!srcExists && !tgtExists)
+		return 0
+	elseif(!srcExists && tgtExists)
+		if(syncOptions & JSON_SYNC_REMOVE_IN_TARGET)
+			JSON_Remove(tgtJsonId, tgtPath)
+		endif
+		return 0
+	endif
+
+	srcType = JSON_GetType(srcJsonId, srcPath)
+	tgtType = JSON_GetType(tgtJsonId, tgtPath)
+	if(srcType != tgtType)
+		if(syncOptions & JSON_SYNC_OVERWRITE_IN_TARGET)
+			JSON_CopyJSON(srcJsonId, tgtJsonId, srcPath, tgtPath)
+		endif
+		return 0
+	endif
+
+	switch(srcType)
+		case JSON_OBJECT:
+			WAVE/T srcKeys = JSON_GetKeys(srcJsonId, srcPath)
+			size = DimSize(srcKeys, 0)
+			for(i = 0; i < size; i += 1)
+				JSON_SyncJSON(srcJsonId, tgtJsonId, srcPath + "/" + srcKeys[i], tgtPath + "/" + srcKeys[i], syncOptions, ignoreErr=ignoreErr)
+			endfor
+
+			if(syncOptions & JSON_SYNC_REMOVE_IN_TARGET)
+				WAVE/T tgtKeys = JSON_GetKeys(tgtJsonId, tgtPath)
+				size = DimSize(tgtKeys, 0)
+				for(i = 0; i < size; i += 1)
+					JSON_SyncJSON(srcJsonId, tgtJsonId, srcPath + "/" + tgtKeys[i], tgtPath + "/" + tgtKeys[i], syncOptions, ignoreErr=ignoreErr)
+				endfor
+			endif
+
+			break
+		case JSON_ARRAY:
+			arraySize = max(JSON_GetArraySize(srcJsonId, srcPath), JSON_GetArraySize(tgtJsonId, tgtPath))
+			for(i = 0; i < arraySize; i += 1)
+				JSON_SyncJSON(srcJsonId, tgtJsonId, srcPath + "/" + num2istr(i), tgtPath + "/" + num2istr(i), syncOptions, ignoreErr=ignoreErr)
+			endfor
+
+			break
+		case JSON_STRING:
+			if(syncOptions & JSON_SYNC_OVERWRITE_IN_TARGET)
+				strSrc = JSON_GetString(srcJsonId, srcPath)
+				strTgt = JSON_GetString(tgtJsonId, tgtPath)
+				if(CmpStr(strSrc, strTgt, 1))
+					JSON_CopyJSON(srcJsonId, tgtJsonId, srcPath, tgtPath)
+				endif
+			endif
+			break
+		case JSON_NUMERIC: // fallthrough-by-design
+		case JSON_BOOL:
+			if(syncOptions & JSON_SYNC_OVERWRITE_IN_TARGET)
+				valSrc = JSON_GetVariable(srcJsonId, srcPath)
+				valTgt = JSON_GetVariable(tgtJsonId, tgtPath)
+				if(valSrc != valTgt)
+					JSON_CopyJSON(srcJsonId, tgtJsonId, srcPath, tgtPath)
+				endif
+			endif
+			break
+		case JSON_NULL:
+			return 0
+			break
+		case JSON_INVALID: // fallthrough-by-design
+		default:
+			if(ignoreErr)
+				return NaN
+			endif
+
+			AbortOnValue 1, 1
+	endswitch
+
+	return 0
+End
+
+/// @}
+
+threadsafe static Function JSON_AddArrayElementToParentIfArray(variable jsonId, string jsonPath)
+
+	string parentPath = jsonPath[0, strsearch(jsonPath, "/", Inf, 1) - 1]
+	if(JSON_GetType(jsonId, parentPath) == JSON_ARRAY)
+		JSON_AddNull(jsonId, parentPath)
+	endif
+End
+
+threadsafe static Function JSON_CopyJSON(variable srcJsonId, variable tgtJsonId, string srcPath, string tgtPath)
+
+	variable jsonTmp
+
+	jsonTmp = JSON_GetJSON(srcJsonId, srcPath)
+	JSON_SetJSON(tgtJsonId, tgtPath, jsonTmp)
+	JSON_Release(jsonTmp)
+End
+
+/// @addtogroup JSON_LoadSave
+/// @{
+
+/// @brief Loads a text file and parses it to JSON, then returns jsonId
+///
+/// @param[in] fullFilepath full file path of the text file
+/// @param[in] ignoreErr    [optional, default 0] set to ignore runtime errors
+/// @returns jsonId of the parsed text data or NaN if unsuccessful
+threadsafe Function JSON_Load(string fullFilepath, [variable ignoreErr])
+
+	variable fNum
+	string data
+
+	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
+
+	if(numtype(strlen(fullFilePath)) == 2)
+		if(ignoreErr)
+			return NaN
+		endif
+		AbortOnValue 1, 1
+	endif
+
+	Open/R/Z fNum as fullFilepath
+	if(V_flag)
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
+	endif
+
+	FStatus fNum
+	if(numtype(V_logEOF) == 2 || V_logEOF > IGOR_STRING_MAX_SIZE)
+		Close fNum
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, 1
+	endif
+	if(V_logEOF == 0)
+		Close fNum
+		return NaN
+	endif
+
+	data = PadString("", V_logEOF, 0x20)
+	FBinRead fnum, data
+	Close fNum
+
+	return JSON_Parse(data, ignoreErr=ignoreErr)
+End
+
+/// @brief Saves a JSON to a text file. If the target file exists it is overwritten.
+///
+/// @param[in] jsonId       jsonId of the json data to save
+/// @param[in] fullFilepath full file path of a file to be written
+/// @param[in] ignoreErr    [optional, default 0] set to ignore runtime errors
+/// @returns 0 if the save was successful or NaN if there was an error
+threadsafe Function JSON_Save(variable jsonId, string fullFilepath, [variable ignoreErr])
+
+	variable fNum
+	string data
+
+	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
+
+	data = JSON_Dump(jsonId, ignoreErr=ignoreErr)
+	if(!(strlen(data) > 0) && ignoreErr)
+		return NaN
+	endif
+
+	Open/Z fNum as fullFilepath
+	if(V_flag)
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
+	endif
+
+	FBinWrite fnum, data
+	Close fNum
+
+	return 0
 End
 
 /// @}
