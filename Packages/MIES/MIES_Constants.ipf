@@ -2054,3 +2054,9 @@ StrConstant LOG_ACTION_REPORT = "report"
 
 /// Poorly understood difference required for vertical direction for MoveSubWindow
 Constant SUBWINDOW_MOVE_CORRECTION = 5
+
+/// @name Constants for Hash/WaveHash
+/// @anchor HashMethods
+/// @{
+Constant HASH_SHA2_256 = 1
+/// @}

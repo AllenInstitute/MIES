@@ -5122,8 +5122,8 @@ End
 /// @brief Calculate a cryptographic hash for the file contents of path
 ///
 /// @param path   absolute path to a file
-/// @param method [optional, defaults to SHA-2 with 256 bytes]
-///               Type of cryptographic hash function
+/// @param method [optional, defaults to #HASH_SHA2_256]
+///               Type of cryptographic hash function, one of @ref HASH_SHA2_256
 Function/S CalcHashForFile(path, [method])
 	string path
 	variable method
@@ -5131,7 +5131,7 @@ Function/S CalcHashForFile(path, [method])
 	string contents, loadedFilePath
 
 	if(ParamIsDefault(method))
-		method = 1
+		method = HASH_SHA2_256
 	endif
 
 	ASSERT(FileExists(path), "Expected a file")
