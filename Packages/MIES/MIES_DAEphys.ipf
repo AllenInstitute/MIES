@@ -3621,6 +3621,8 @@ Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2:
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+			device = cba.win
+			AdaptDependentControls(device, "Check_Settings_UnassocDADoTP", cba.checked, CHECKBOX_SELECTED, DEP_CTRLS_INVERT)
 			DAP_UpdateOnsetDelay(cba.win)
 		break
 	endswitch
