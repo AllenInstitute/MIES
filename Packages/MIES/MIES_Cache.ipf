@@ -373,7 +373,7 @@ Function/S CA_HardwareDataTPKey(s)
 	return num2istr(crc) + "HW Datawave Testpulse Version 2"
 End
 
-Function/S CA_PSXKernelKey(variable riseTau, variable decayTau, variable amp, variable numPoints, variable dt, WAVE range)
+Function/S CA_PSXKernelOperationKey(variable riseTau, variable decayTau, variable amp, variable numPoints, variable dt, WAVE range)
 	variable crc
 
 	crc = StringCRC(crc, num2strHighPrec(riseTau, precision = MAX_DOUBLE_PRECISION))
@@ -384,6 +384,29 @@ Function/S CA_PSXKernelKey(variable riseTau, variable decayTau, variable amp, va
 	crc = WaveCRC(crc, range)
 
 	return num2istr(crc) + "PSX Kernel Version 1"
+End
+
+static Function/S CA_PSXBaseKey(string comboKey, string psxParameters)
+
+	ASSERT(!IsEmpty(comboKey), "Invalid comboKey")
+	ASSERT(!IsEmpty(psxParameters), "Invalid psxParameters")
+
+	return comboKey + Hash(psxParameters, HASH_SHA2_256)
+End
+
+/// @brief Generate the key for the cache and the results wave for psxEvent
+///        data of the `psx` SweepFormula operation
+///
+/// @param comboKey      combination key, see PSX_GenerateComboKey()
+/// @param psxParameters JSON dump of the psx/psxKernel operation parameters
+Function/S CA_PSXEventsKey(string comboKey, string psxParameters)
+
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Events " + ":Version 1"
+End
+
+Function/S CA_PSXOperationKey(string comboKey, string psxParameters)
+
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Operation " + ":Version 1"
 End
 
 /// @}

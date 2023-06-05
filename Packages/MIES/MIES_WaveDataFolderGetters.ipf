@@ -7816,35 +7816,6 @@ End
 /// @name SweepFormula PSX
 /// @{
 
-/// @brief Return the analysis results wave for the EP_Operation
-///
-/// ROWS:
-/// - One entry for every analyzed sweep/channel
-///
-/// COLS:
-/// - 0: Sweep Number
-/// - 1: Baseline/Offset
-/// - 2: Sigma of the gauss fit of the histogram of the deconvoluted data
-/// - 3: Number of crossings
-/// - 4: Average amplitude of the events
-/// - 5: Average time between event peaks
-Function/WAVE GetPSXAnalysisWaveAsFree()
-
-	Make/D/FREE=1/N=(MINIMUM_WAVE_SIZE,6) psxAnalysis = NaN
-	WAVE wv = psxAnalysis
-
-	SetDimLabel 1, 0, sweep, wv
-	SetDimLabel 1, 1, baseline, wv
-	SetDimLabel 1, 2, sigma, wv
-	SetDimLabel 1, 3, crossing, wv
-	SetDimLabel 1, 4, avgAmp, wv
-	SetDimLabel 1, 5, avgIsi, wv
-
-	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
-
-	return wv
-end
-
 static Constant PSX_WAVE_VERSION       = 1
 static Constant PSX_EVENT_WAVE_COLUMNS = 13
 
@@ -7864,19 +7835,19 @@ End
 /// - count
 ///
 /// Cols:
-/// -   0: Event index
-/// -   1: Event time [ms]
-/// -   2: Event amplitude [y unit of data]
-/// -   3: Minimum of filtered and offsetted data in the range [time, time + 2ms]
-/// -   4: X location of [2]
-/// -   5: Maximum of filtered and offsetted data in the range [time - 2ms, time], averaged over +/- 0.1 ms
-/// -   6: X location of [5]
-/// -   7: Relative amplitude: [2] - [4]
-/// -   8: Time difference to previous event [ms]
-/// -   9: Decay constant tau of exponential fit
-/// -  10: Fit manual QC call, One of @ref PSXStates
-/// -  11: Fit result (0/1)
-/// -  12: Event manual QC call, One of @ref PSXStates
+/// -  0/index: Event index
+/// -  1/dc_peak_time: Event time [ms]
+/// -  2/dc_amp: Event amplitude [y unit of data]
+/// -  3/i_peak: Minimum of filtered and offsetted data in the range [time, time + 2ms]
+/// -  4/i_peak_t: X location of [2]
+/// -  5/pre_min: Maximum of filtered and offsetted data in the range [time - 2ms, time], averaged over +/- 0.1 ms
+/// -  6/pre_min_t: X location of [5]
+/// -  7/i_amp: Relative amplitude: [2] - [4]
+/// -  8/isi: Time difference to previous event [ms]
+/// -  9/tau: Decay constant tau of exponential fit
+/// - 10/Fit manual QC call: One of @ref PSXStates
+/// - 11/Fit result: (0/1)
+/// - 12/Event manual QC call: One of @ref PSXStates
 Function/WAVE GetPSXEventWaveAsFree()
 
 	variable versionOfWave = PSX_WAVE_VERSION

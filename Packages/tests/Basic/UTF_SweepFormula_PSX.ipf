@@ -51,7 +51,7 @@ End
 
 static Function/WAVE CreateEventWaveInComboFolder_IGNORE([variable comboIndex])
 
-	string win
+	string win, userData
 
 	if(ParamIsDefault(comboIndex))
 		comboIndex = 0
@@ -62,8 +62,13 @@ static Function/WAVE CreateEventWaveInComboFolder_IGNORE([variable comboIndex])
 	WAVE psxEvent = GetPSXEventWaveAsFree()
 	CHECK_WAVE(psxEvent, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 
+	JWN_CreatePath(psxEvent, SF_META_USER_GROUP + "Parameters/psx")
+	JWN_SetStringInWaveNote(psxEvent, SF_META_USER_GROUP + "Parameters/psx/id", "myId")
+	JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, "fake combo key")
+
 	win = GetCurrentWindow()
-	DFREF workDFR = BSP_GetFolder(win, MIES_PSX#PSX_GetUserDataForWorkingFolder(), versionCheck = 0)
+	userData =  MIES_PSX#PSX_GetUserDataForWorkingFolder()
+	DFREF workDFR = BSP_GetFolder(win, userData, versionCheck = 0)
 
 	DFREF dfr = GetPSXFolderForCombo(workDFR, comboIndex)
 	CHECK(DataFolderExistsDFR(dfr))
@@ -399,7 +404,7 @@ End
 static Function StatsComplainsWithoutEvents()
 
 	string formulaGraph, browser, device, result, stateAsStr, postProc, prop
-	string error
+	string error, id
 
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
@@ -408,9 +413,22 @@ static Function StatsComplainsWithoutEvents()
 	prop = "tau"
 	stateAsStr = MIES_PSX#PSX_StateToString(PSX_ACCEPT)
 	postProc = "nothing"
+	id = "myID"
 
+	// matching id but no events
 	try
-		MIES_PSX#PSX_OperationStatsImpl(browser, range, selectData, prop, stateAsStr, postProc)
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, range, selectData, prop, stateAsStr, postProc)
+		FAIL()
+	catch
+		error = ROStr(GetSweepFormulaParseErrorMessage())
+		CHECK_EQUAL_STR(error, "Could not find any PSX events for all given combinations.")
+	endtry
+
+	id = "I_DONT_EXIST"
+
+	// mismatched id
+	try
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, range, selectData, prop, stateAsStr, postProc)
 		FAIL()
 	catch
 		error = ROStr(GetSweepFormulaParseErrorMessage())
@@ -418,7 +436,9 @@ static Function StatsComplainsWithoutEvents()
 	endtry
 End
 
-static Function FillEventWave_IGNORE(WAVE psxEvent)
+static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
+
+	variable jsonID
 
 	CHECK_EQUAL_VAR(DimSize(psxEvent, COLS), 13) // test needs update if that fails
 
@@ -429,7 +449,7 @@ static Function FillEventWave_IGNORE(WAVE psxEvent)
 	psxEvent[][%i_peak_t]                = -10 * p
 	psxEvent[][%pre_min]                 = NaN
 	psxEvent[][%pre_min_t]               = NaN
-	psxEvent[][%i_amp]                   = 10 * p
+	psxEvent[][%i_amp]                   = p == 0 ? NaN : 10 * p
 	psxEvent[][%isi]                     = 1000 * p
 	psxEvent[][%tau]                     = 1e-6 * p
 	// PSX_ACCEPT:1
@@ -443,6 +463,12 @@ static Function FillEventWave_IGNORE(WAVE psxEvent)
 	psxEvent[][%$"Fit manual QC call"]   = refFitState[p]
 	psxEvent[][%$"Event manual QC call"] = refEventState[p]
 	psxEvent[][%$"Fit result"]           = refFitResult[p]
+
+	jsonID = JSON_New()
+	JSON_AddTreeObject(jsonID, "/User/Parameters/psx")
+	JSON_SetString(jsonID, "/User/Parameters/psx/id", id)
+	JSON_SetString(jsonID, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
+	JWN_SetWaveNoteFromJSON(psxEvent, jsonID)
 End
 
 Function/WAVE StatsTest_GetInput()
@@ -567,8 +593,8 @@ End
 /// UTF_TD_GENERATOR w0:StatsTest_GetInput
 static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
-	string formulaGraph, browser, device, stateAsStr, postProc, prop, name
-	string error, ref, comboKey
+	string formulaGraph, browser, device, stateAsStr, postProc, prop
+	string error, ref, comboKey, id
 
 	WAVE/T input = m.w0
 
@@ -590,13 +616,11 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 	ref = "Range[100, 200], Sweep [1], Channel [AD3], Device [ITC16_Dev_0]"
 	CHECK_EQUAL_STR(comboKey, ref)
 
-	JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
+	id = "myID"
+	FillEventWave_IGNORE(psxEvent, id, comboKey)
+	MIES_PSX#PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, psxEvent, id)
 
-	FillEventWave_IGNORE(psxEvent)
-	name = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
-	MIES_PSX#PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX, psxEvent, name)
-
-	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, range, selectData, prop, stateAsStr, postProc)
+	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, range, selectData, prop, stateAsStr, postProc)
 	CHECK_WAVE(output, WAVE_WAVE)
 
 	Make/FREE/N=4 dims = DimSize(output, p)
@@ -694,7 +718,7 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	input[%outOfRange]      = "0"
 
 	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {PSX_REJECT})
+	JWN_SetWaveInWaveNote(input, "/0/results", {1})
 	// no x values
 	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
 
@@ -725,12 +749,47 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	input[%outOfRange]      = "1"
 
 	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {PSX_REJECT})
+	JWN_SetWaveInWaveNote(input, "/0/results", {1})
 	// no xValues
 	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
 
+	// wv5
+	// avg ignores NaN
+	Duplicate/FREE/T template, wv5
+	WAVE/T input = wv5
+
+	input[%prop]            = "amp"
+	input[%state]           = "all"
+	input[%postProc]        = "avg"
+	input[%refNumOutputRows]= "1"
+	input[%numEventsCombo0] = "2"
+	input[%numEventsCombo1] = "2"
+	input[%outOfRange]      = "0"
+
+	JWN_CreatePath(input, "/0")
+	JWN_SetWaveInWaveNote(input, "/0/results", {10})
+	// no xValues
+	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
+
+	// wv6
+	// avg ignores NaN and with all data NaN we don't get anything
+	Duplicate/FREE/T template, wv6
+	WAVE/T input = wv6
+
+	input[%prop]            = "amp"
+	input[%state]           = "all"
+	input[%postProc]        = "avg"
+	input[%refNumOutputRows]= "0"
+	input[%numEventsCombo0] = "1"
+	input[%numEventsCombo1] = "1"
+	input[%outOfRange]      = "0"
+
+	// no results
+	// no xValues
+	// no marker
+
 	// end
-	Make/FREE/WAVE results = {wv0 , wv1, wv2, wv3, wv4}
+	Make/FREE/WAVE results = {wv0, wv1, wv2, wv3, wv4, wv5, wv6}
 
 	return results
 End
@@ -739,7 +798,7 @@ End
 /// UTF_TD_GENERATOR w0:StatsTestSpecialCases_GetInput
 static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 
-	string prop, stateAsStr, postProc, browser, device, formulaGraph, comboKey, pathPrefix, history
+	string prop, stateAsStr, postProc, browser, device, formulaGraph, comboKey, pathPrefix, history, id
 	variable numEventsCombo0, numEventsCombo1, idx, refNumRows, outOfRange, refNum
 
 	WAVE/T input = m.w0
@@ -756,31 +815,30 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 
 	[WAVE range, WAVE selectData] = GetFakeRangeAndSelectData()
 
+	Duplicate/FREE selectData, selectDataComboIndex0
+
 	// 1st event wave
 	// comboIndex 0 already exists
 	WAVE/Z psxEvent = GetEventWave(comboIndex = 0)
 	Redimension/N=(numEventsCombo0, -1) psxEvent
-	FillEventWave_IGNORE(psxEvent)
-
-	Duplicate/FREE selectData, selectDataComboIndex0
+	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectDataComboIndex0, range)
+	id = "myID"
+	FillEventWave_IGNORE(psxEvent, id, comboKey)
 
 	selectDataComboIndex0[0][%SWEEP] = 1
-	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectDataComboIndex0, range)
-	JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
-	JWN_CreatePath(psxEvent, "/global/User/Parameters/psxKernel/")
-	JWN_SetNumberInWaveNote(psxEvent, "/global/User/Parameters/psxKernel/decayTau", 1e-8)
-	JWN_SetNumberInWaveNote(psxEvent, "/global/User/Parameters/psxKernel/amp", 0.1)
+	JWN_CreatePath(psxEvent, "/User/Parameters/psxKernel/")
+	JWN_SetNumberInWaveNote(psxEvent, "/User/Parameters/psxKernel/decayTau", 1e-8)
+	JWN_SetNumberInWaveNote(psxEvent, "/User/Parameters/psxKernel/amp", 0.1)
 
 	// 2nd event wave
 	WAVE/Z psxEvent = CreateEventWaveInComboFolder_IGNORE(comboIndex = 1)
 	Redimension/N=(numEventsCombo1, -1) psxEvent
-	FillEventWave_IGNORE(psxEvent)
 
 	Duplicate/FREE selectData, selectDataComboIndex1
-
 	selectDataComboIndex1[0][%SWEEP] = 2
 	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectDataComboIndex1, range)
-	JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
+	id = "myID"
+	FillEventWave_IGNORE(psxEvent, id, comboKey)
 
 	Duplicate/FREE selectData, selectDataComboIndex2
 	// invalid sweep numbers are silently ignored
@@ -794,7 +852,7 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 		refNum = NaN
 	endif
 
-	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, range, allSelectData, prop, stateAsStr, postProc)
+	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, range, allSelectData, prop, stateAsStr, postProc)
 	CHECK_WAVE(output, WAVE_WAVE)
 
 	if(outOfRange)
@@ -828,6 +886,8 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 		// we do write a float wave into the json wave note, but it is read always as double
 		CHECK_WAVE(markerRead, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 		CHECK_EQUAL_WAVES(markerRead, marker)
+
+		CHECK_EQUAL_WAVES(resultsRead, results, mode = WAVE_DATA, tol = 1e-5)
 
 		idx += 1
 	endfor
@@ -917,16 +977,15 @@ static Function TestOperationPSX()
 	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
 	CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
 
-	str = "psx(psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 0.01, 100, 0)"
+	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 0.01, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
-	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 2 * 7 + 1)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 2 * 7)
 
 	// check dimension labels
-	Make/FREE=1/N=15/T dimlabels = GetDimLabel(dataWref, ROWS, p)
+	Make/FREE=1/N=14/T dimlabels = GetDimLabel(dataWref, ROWS, p)
 	CHECK_EQUAL_TEXTWAVES(dimlabels, {"sweepData_0", "sweepDataFiltOff_0", "sweepDataFiltOffDeconv_0", "peakX_0", "peakY_0", "psxEvent_0", "eventFit_0", \
-	                                  "sweepData_1", "sweepDataFiltOff_1", "sweepDataFiltOffDeconv_1", "peakX_1", "peakY_1", "psxEvent_1", "eventFit_1", \
-	                                  "psxAnalysis"})
+	                                  "sweepData_1", "sweepDataFiltOff_1", "sweepDataFiltOffDeconv_1", "peakX_1", "peakY_1", "psxEvent_1", "eventFit_1"})
 
 	CheckEventDataHelper(dataWref, 0)
 	CheckEventDataHelper(dataWref, 1)
@@ -940,7 +999,7 @@ static Function TestOperationPSX()
 
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX)
 	CHECK_WAVE(params, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(params, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(params, ROWS), 4)
 	JSON_Release(jsonID)
 End
 
@@ -1028,7 +1087,7 @@ static Function MouseSelectionPSX()
 
 	browser = MIES_DB#DB_LockToDevice(browser, device)
 
-	code  = "psx(psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 0.01, 100, 0)"
+	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 0.01, 100, 0)"
 
 	// combo0 is the current one
 
@@ -1249,7 +1308,7 @@ static Function/WAVE GetTracesHelper(string win, variable options)
 	return ListToTextWave(SortList(TraceNameList(win, ";", options)), ";")
 End
 
-static Function 	CheckTraceColors(string win, WAVE/T traces, variable state)
+static Function CheckTraceColors(string win, WAVE/T traces, variable state)
 
 	string tInfo, rgbValue, trace
 	variable numEntries
@@ -1296,9 +1355,9 @@ static Function/S GetTestCode(string postProc)
 
 	string code
 
-	code  = "psx(psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 0.01, 100, 0)"
+	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 0.01, 100, 0)"
 	code += "\r and \r"
-	code += "psxStats([50, 150], select(channels(AD6), [0, 2], all), xpos, all, "+ postProc + ")"
+	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), xpos, all, "+ postProc + ")"
 
 	return code
 End
@@ -1313,11 +1372,11 @@ static Function/WAVE GetCodeVariations()
 	code  = ""
 
 	// one sweep per operation separated with `with`
-	code  = "psx(psxKernel([50, 150], select(channels(AD6), [0], all)), 0.01, 100, 0)"
+	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0], all)), 0.01, 100, 0)"
 	code += "\r with \r"
-	code += "psx(psxKernel([50, 150], select(channels(AD6), [2], all)), 0.01, 100, 0)"
+	code += "psx(myId, psxKernel([50, 150], select(channels(AD6), [2], all)), 0.01, 100, 0)"
 	code += "\r and \r"
-	code += "psxStats([50, 150], select(channels(AD6), [0, 2], all), xpos, all, nothing)"
+	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), xpos, all, nothing)"
 	wv[1] = code
 	code  = ""
 
