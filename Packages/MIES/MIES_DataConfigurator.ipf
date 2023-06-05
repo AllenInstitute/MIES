@@ -1029,6 +1029,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 	DC_DocumentChannelProperty(device, "Save amplifier settings", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "check_Settings_SaveAmpSettings"))
 	DC_DocumentChannelProperty(device, "Require amplifier", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn"))
 	DC_DocumentChannelProperty(device, "Skip Ahead", INDEP_HEADSTAGE, NaN, NaN, var=s.skipAhead)
+	DC_DocumentChannelProperty(device, TPONUNASSOCDA_ENTRY_KEY, INDEP_HEADSTAGE, NaN, NaN, var=s.doTPonUnassocDA)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
