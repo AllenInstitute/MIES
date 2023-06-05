@@ -1304,6 +1304,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	s.distributedDAQOptPost = DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPost")
 	s.powerSpectrum         = DAG_GetNumericalValue(device, "check_settings_show_power")
 	s.skipAhead             = DAG_GetNumericalValue(device, "SetVar_DataAcq_skipAhead")
+	s.doTPonUnassocDA       = DAG_GetNumericalValue(device, "Check_Settings_UnassocDADoTP")
 
 	// MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
 	// whereas the source data generated waves for ITC min sample rate are at 200 kHz
