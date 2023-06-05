@@ -14,6 +14,14 @@ static StrConstant SFH_WORKING_DF = "FormulaData"
 static StrConstant SFH_ARGSETUP_OPERATION_KEY = "Operation"
 static StrConstant SFH_ARGSETUP_EMPTY_OPERATION_VALUE = "NOOP"
 
+threadsafe Function SFH_StringChecker_Prototype(string str)
+	ASSERT_TS(0, "Can't call prototype function")
+End
+
+threadsafe Function SFH_NumericChecker_Prototype(variable var)
+	ASSERT_TS(0, "Can't call prototype function")
+End
+
 /// @brief Convenience helper function to get a numeric SweepFormula operation argument
 ///
 /// Given the operation `fetchBeer(variable numBottles, [variable size])` one can fetch both parameters via:
@@ -30,10 +38,10 @@ static StrConstant SFH_ARGSETUP_EMPTY_OPERATION_VALUE = "NOOP"
 /// Here `numBottles` is argument number 0 and mandatory as `defValue` is not present.
 ///
 /// The second argument `size` is optional with 0.5 as default and also defines a list of valid values.
-Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues])
+Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues, FUNCREF SFH_NumericChecker_Prototype checkFunc])
 
 	string msg, sep, allowedValuesAsStr
-	variable checkExist, numArgs, result, idx
+	variable checkExist, numArgs, result, idx, ret
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -74,6 +82,15 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 		endif
 	endif
 
+	if(!ParamIsDefault(checkFunc))
+		ret = !!checkFunc(result)
+
+		if(!ret)
+			sprintf msg, "Argument #%d of operation %s: The numeric argument \"%g\" does not meet the requirements of \"%s\"", argNum, opShort, result, StringByKey("NAME", FuncRefInfo(checkFunc))
+			SFH_ASSERT(0, msg)
+		endif
+	endif
+
 	return result
 End
 
@@ -95,10 +112,10 @@ End
 /// The second argument `type` is optional with `steam train` as default and a list of allowed values.
 ///
 /// The text argument can be abbreviated as long as it is unique, the unabbreviated result is returned in all cases.
-Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues])
+Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues, FUNCREF SFH_StringChecker_Prototype checkFunc])
 
 	string msg, result, sep, allowedValuesAsStr
-	variable checkExist, numArgs, idx
+	variable checkExist, numArgs, idx, ret
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -146,6 +163,15 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 			ASSERT(DimSize(matches, ROWS) == 1, "Unexpected match")
 			// replace abbreviated argument with the full name
 			result = matches[0]
+		endif
+	endif
+
+	if(!ParamIsDefault(checkFunc))
+		ret = !!checkFunc(result)
+
+		if(!ret)
+			sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" does not meet the requirements of \"%s\"", argNum, opShort, result, StringByKey("NAME", FuncRefInfo(checkFunc))
+			SFH_ASSERT(0, msg)
 		endif
 	endif
 
