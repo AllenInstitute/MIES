@@ -1190,7 +1190,7 @@ End
 
 static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfigurationResult &s)
 	variable i, tpAmp, cutOff, channel, headstage, DAScale, singleSetLength, stimsetCol, startOffset
-	variable lastValidRow
+	variable lastValidRow, isUnAssociated
 
 	WAVE config = GetDAQConfigWave(device)
 
@@ -1236,6 +1236,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 			singleSetLength = s.setLength[i]
 			stimsetCol = s.setColumn[i]
 			startOffset = s.insertStart[i]
+			isUnAssociated = IsNaN(headstage)
 
 			switch(s.hardwareType)
 				case HARDWARE_ITC_DAC:
@@ -1245,7 +1246,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						  SIGNED_INT_16BIT_MIN,                                                        \
 						  SIGNED_INT_16BIT_MAX); AbortOnRTE
 
-					if(s.globalTPInsert)
+					if(s.globalTPInsert && !(isUnAssociated && !s.doTPonUnassocDA))
 						// space in ITCDataWave for the testpulse is allocated via an automatic increase
 						// of the onset delay
 						MultiThread ITCDataWave[0, s.testPulseLength - 1][i] =                        \
@@ -1269,7 +1270,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						  NI_DAC_MIN,                                                                                          \
 						  NI_DAC_MAX); AbortOnRTE
 
-					if(s.globalTPInsert)
+					if(s.globalTPInsert && !(isUnAssociated && !s.doTPonUnassocDA))
 						// space in ITCDataWave for the testpulse is allocated via an automatic increase
 						// of the onset delay
 						MultiThread NIChannel[0, s.testPulseLength - 1] = \
