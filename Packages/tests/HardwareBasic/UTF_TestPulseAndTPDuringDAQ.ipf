@@ -642,33 +642,22 @@ static Function TPDuringDAQOnlyTPAndIndexing_REENTRY([STRUCT IUTF_MDATA &md])
 	// generic properties are checked in TPDuringDAQOnlyTP
 End
 
-static Function TPDuringDAQTPAndAssoc_PreAcq(device)
-	string device
-
-	// cut association
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", str = "1")
-	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-	// disable HS1
-	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
-End
-
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TPDuringDAQTPAndAssoc([str])
+static Function TPDuringDAQTPAndUnAssoc([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1"             + \
 								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"  + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
 
 	AcquireData_NG(s, str)
 End
 
-static Function TPDuringDAQTPAndAssoc_REENTRY([str])
+static Function TPDuringDAQTPAndUnAssoc_REENTRY([str])
 	string str
 
-	variable sweepNo, col, channelTypeUnassoc, stimScaleUnassoc
+	variable sweepNo, col, channelTypeUnassoc, stimScaleUnassoc, stimSetLengthRef
 	string ctrl, stimsetUnassoc, stimsetUnassocRef, key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
@@ -680,7 +669,8 @@ static Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	CHECK_WAVE(sweepWave, NORMAL_WAVE)
 
 	CHECK_EQUAL_VAR(2 * GetMinSamplingInterval(unit = "ms"), DimDelta(sweepWave, ROWS))
-	CHECK_EQUAL_VAR(DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) / 1000, TIME_TP_ONLY_ON_DAQ)
+	stimSetLengthRef = 0.958336 // length of StimulusSetA_DA_0
+	CHECK_CLOSE_VAR(DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) / 1000, stimSetLengthRef, tol = 1E-3)
 
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
@@ -692,7 +682,7 @@ static Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	Redimension/N=-1 channelTypes
 
 	// the unassociated AD channel is in DAQ mode
-	CHECK_EQUAL_WAVES(channelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(channelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ}, mode = WAVE_DATA)
 
 	WAVE/T units = AFH_GetChannelUnits(configWave)
 	CHECK_EQUAL_TEXTWAVES(units, {"mV", "mV", "pA", "pA"}, mode = WAVE_DATA)
@@ -711,7 +701,7 @@ static Function TPDuringDAQTPAndAssoc_REENTRY([str])
 
 	key = CreateLBNUnassocKey("DA ChannelType", 1, XOP_CHANNEL_TYPE_DAC)
 	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_TP)
+	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
 
 	key = CreateLBNUnassocKey("AD ChannelType", 1, XOP_CHANNEL_TYPE_ADC)
 	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
@@ -724,14 +714,14 @@ static Function TPDuringDAQTPAndAssoc_REENTRY([str])
 
 	key = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1, XOP_CHANNEL_TYPE_DAC)
 	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_VAR(stimScaleUnassoc, 0.0)
+	CHECK_EQUAL_VAR(stimScaleUnassoc, 1.0)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 
 	key = CreateLBNUnassocKey(STIM_WAVE_NAME_KEY, 1, XOP_CHANNEL_TYPE_DAC)
 	stimsetUnassoc = GetLastSettingTextIndep(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	stimsetUnassocRef = "TestPulse"
+	stimsetUnassocRef = "StimulusSetA_DA_0"
 	CHECK_EQUAL_STR(stimsetUnassoc, stimsetUnassocRef)
 End
 
