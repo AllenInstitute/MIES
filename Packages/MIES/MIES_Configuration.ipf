@@ -469,6 +469,10 @@ Function CONF_RestoreWindow(string fName[, string rigFile])
 				wName = GetMainWindow(GetCurrentWindow())
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
 				print "Data Browser restored in window \"" + wName + "\""
+			elseif(!CmpStr(panelType, PANELTAG_WAVEBUILDER))
+				WBP_CreateWaveBuilderPanel()
+				wName = GetMainWindow(GetCurrentWindow())
+				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
 			else
 				ASSERT(0, "Configuration file entry for panel type has an unknown type (" + panelType + ").")
 			endif
