@@ -473,6 +473,10 @@ Function CONF_RestoreWindow(string fName[, string rigFile])
 				WBP_CreateWaveBuilderPanel()
 				wName = GetMainWindow(GetCurrentWindow())
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
+			elseif(!CmpStr(panelType, PANELTAG_ANALYSISBROWSER))
+				AB_OpenAnalysisBrowser()
+				wName = GetMainWindow(GetCurrentWindow())
+				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
 			else
 				ASSERT(0, "Configuration file entry for panel type has an unknown type (" + panelType + ").")
 			endif

@@ -114,6 +114,7 @@ Window AnalysisBrowser() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#EIJ,hu%zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin,userdata(Config_PanelType)="AnalysisBrowser"
 	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)="1"
 	SetWindow kwTopWin,userdata(JSONSettings_WindowName)="analysisbrowser"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)="splitGuide;UGVL;"
