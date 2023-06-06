@@ -2812,6 +2812,11 @@ static Function DAP_CheckStimset(device, channelType, channel, headstage)
 		setName = stimsets[i]
 
 		if(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
+			if(IsNaN(headstage))
+				printf "(%s) Channel %d is an unassociated DA channel. Selection of the \"Test Pulse\" stimset for TP during DAQ is not allowed on unassociated DA channels.\r", device, channel
+				ControlWindowToFront()
+				return 1
+			endif
 			continue
 		endif
 
