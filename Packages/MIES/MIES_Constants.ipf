@@ -1469,6 +1469,7 @@ StrConstant PANELTAG_DAEPHYS = "DA_Ephys"
 StrConstant PANELTAG_DATABROWSER = "DataBrowser"
 StrConstant PANELTAG_WAVEBUILDER = "WaveBuilder"
 StrConstant PANELTAG_ANALYSISBROWSER = "AnalysisBrowser"
+StrConstant PANELTAG_IVSCCP = "IVSCControlPanel"
 /// @}
 
 StrConstant EXPCONFIG_UDATA_SOURCEFILE_PATH = "Config_FileName"

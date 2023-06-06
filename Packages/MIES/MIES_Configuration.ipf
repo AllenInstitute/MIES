@@ -477,6 +477,10 @@ Function CONF_RestoreWindow(string fName[, string rigFile])
 				AB_OpenAnalysisBrowser()
 				wName = GetMainWindow(GetCurrentWindow())
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
+			elseif(!CmpStr(panelType, PANELTAG_IVSCCP))
+				IVS_CreatePanel()
+				wName = GetMainWindow(GetCurrentWindow())
+				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
 			else
 				ASSERT(0, "Configuration file entry for panel type has an unknown type (" + panelType + ").")
 			endif
