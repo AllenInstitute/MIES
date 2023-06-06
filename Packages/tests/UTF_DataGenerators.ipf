@@ -250,3 +250,15 @@ static Function/WAVE SF_TestVariablesGen()
 	Make/FREE/WAVE wv = {t1, t2, t3, t4}
 	return wv
 End
+
+Function/WAVE GetMiesMacrosWithPanelType()
+	WAVE/T allMiesMacros = GetMIESMacros()
+
+	Make/FREE/T panelsWithoutType = {"ID_Headstage_Panel", "ID_Popup_Panel", "DP_DebugPanel", "SBE_ExportSettingsPanel"}
+
+	WAVE/T matches = GetSetDifference(allMiesMacros, panelsWithoutType)
+
+	SetDimensionLabels(matches, TextWaveToList(matches, ";"), ROWS)
+
+	return matches
+End
