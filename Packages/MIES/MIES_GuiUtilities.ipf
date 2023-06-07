@@ -1888,6 +1888,11 @@ static Function GetAllWindowsImpl(wName, windowList)
 	endfor
 End
 
+Function IsSubwindow(string win)
+
+	return ItemsInList(win, "#") > 1
+End
+
 /// @brief Checks if a window is tagged as certain type
 ///
 /// @param[in] device Window name to check
