@@ -2130,6 +2130,23 @@ static Function CheckSweepOrdering_REENTRY([string str])
 	endtry
 End
 
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function DoNotAllowTestPulseOnUnassocDA([string str])
+
+	STRUCT DAQSettings s
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                    + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:_ASO0")
+
+	try
+		AcquireData_NG(s, str)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 static Function RandomAcq_preAcq(string device)
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_RepAcqRandom", val = 1)
