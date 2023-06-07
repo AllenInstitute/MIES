@@ -103,7 +103,7 @@ docker run --rm \
         "-reporttypes:Html;HtmlChart;JsonSummary;PngChart;Badges;MarkdownDeltaSummary" \
         -historydir:/home/ci/history \
         -title:MIES \
-        -tag:$(git rev-parse --short HEAD) \
+        "-tag:$(git log -1 --pretty=reference)" \
         $license
 echo "##[endgroup]"
 
