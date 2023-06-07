@@ -6991,6 +6991,7 @@ Function StoreWindowCoordinatesHook(s)
 	string win
 
 	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_SUBWINDOWKILL:
 		case EVENT_WINDOW_HOOK_KILL:
 			win = s.winName
 			NVAR JSONid = $GetSettingsJSONid()

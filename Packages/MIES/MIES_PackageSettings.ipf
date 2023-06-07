@@ -136,7 +136,12 @@ static Function PS_ApplyStoredWindowCoordinate(variable JSONid, string win)
 
 	AssertOnAndClearRTError()
 	try
-		MoveWindow/W=$win left, top, right, bottom; AbortOnRTE
+		if(IsSubWindow(win))
+			// correct for pixel/points confusion
+			MoveSubWindow/W=$win fnum=(0, PointsToPixel(bottom - top), PointsToPixel(right - left), 0); AbortOnRTE
+		else
+			MoveWindow/W=$win left, top, right, bottom; AbortOnRTE
+		endif
 	catch
 		err = ClearRTError()
 		printf "Applying window coordinates for %s failed with %d\r", win, err
@@ -156,27 +161,33 @@ End
 /// The windows must have been registered beforehand with PS_InitCoordinates().
 static Function PS_StoreWindowCoordinates(variable JSONid)
 
-	string list, win, part
-	variable i, numEntries, store
+	string list, win, part, subWindows, subWin
+	variable i, j, numEntries, store, numSubWindows
 
 	list = WinList("*", ";", "WIN:65") // Graphs + Panels
 
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		win = StringFromList(i, list)
-		store = str2num(GetUserData(win, "", PS_STORE_COORDINATES))
 
-		if(IsNaN(store) || store == 0)
-			continue
-		endif
+		subWindows = GetAllWindows(win)
 
-		AssertOnAndClearRTError()
-		try
-			PS_StoreWindowCoordinate(JSONid, win); AbortOnRTE
-		catch
-			ClearRTError()
-			// silently ignore
-		endtry
+		for(j = 0; j < numSubWindows; j += 1)
+			subWin = StringFromList(j, subWindows)
+			store = str2num(GetUserData(subWin, "", PS_STORE_COORDINATES))
+
+			if(IsNaN(store) || store == 0)
+				continue
+			endif
+
+			AssertOnAndClearRTError()
+			try
+				PS_StoreWindowCoordinate(JSONid, win); AbortOnRTE
+			catch
+				ClearRTError()
+				// silently ignore
+			endtry
+		endfor
 	endfor
 End
 
@@ -186,6 +197,13 @@ End
 Function PS_StoreWindowCoordinate(variable JSONid, string win)
 
 	string path, name
+	variable store
+
+	store = str2num(GetUserData(win, "", PS_STORE_COORDINATES))
+
+	if(IsNaN(store) || store == 0)
+		return NaN
+	endif
 
 	name = GetUserData(win, "", PS_WINDOW_NAME)
 	ASSERT(!IsEmpty(name), "Invalid empty name")
