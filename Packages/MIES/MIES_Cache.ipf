@@ -592,7 +592,7 @@ Function CA_OutputCacheStatistics()
 	printf "---------------------------------------------------\r"
 
 	for(i = 0; i < index; i += 1)
-		printf "%6d | %6d | %s  | %6d\r", stats[i][%Hits] , stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch=stats[i][%ModificationTimestamp]), stats[i][%Size] / 1024 / 1024
+		printf "%6d | %6d | %s  | %6d\r", stats[i][%Hits] , stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch=stats[i][%ModificationTimestamp], numFracSecondsDigits = 3), stats[i][%Size] / 1024 / 1024
 	endfor
 
 	printf "\r"
