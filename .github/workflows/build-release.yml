@@ -95,7 +95,8 @@ jobs:
             -s "$(pwd)" \
             -d "${{ steps.download.outputs.download-path }}" \
             -h "${{ steps.cache-download.outputs.data }}" \
-            -o report
+            -o report \
+            -l "${{ secrets.GHA_MIES_REPORTGENERATOR_LICENSE }}"
       - name: 📤 Upload latest report to FTP
         run: |
           tools/ftp-upload/upload-files.sh \
