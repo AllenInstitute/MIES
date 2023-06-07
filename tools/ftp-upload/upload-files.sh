@@ -48,12 +48,16 @@ top_level=$(git rev-parse --show-toplevel)
 
 # build containter
 echo "##[group]Build Docker container 'ftp-upload'"
-docker build --build-arg FTP_SERVER=$server_name -t ftp-upload $top_level/tools/ftp-upload
+docker build \
+    --build-arg UID=$(id -u) \
+    --build-arg GID=$(id -g) \
+    -t ftp-upload \
+    $top_level/tools/ftp-upload
 echo "##[endgroup]"
 
 # upload
 echo "##[group]Upload files using ftp"
 docker run --rm -v "$directory:/data" ftp-upload \
-    lftp -e "set ssl:verify-certificate no; mirror --verbose=3 -R /data \"$target\"; quit" \
+    lftp -e "mirror --verbose=3 -R /data \"$target\"; quit" \
         -u "$user_name,$password" $server_name
 echo "##[endgroup]"

@@ -9,9 +9,18 @@ RUN DEBIAN_FRONTEND=noninteractive \
         openssl && \
     apt-get clean
 
-ARG FTP_SERVER
-RUN echo \
-        | openssl s_client -servername ${FTP_SERVER} -connect ${FTP_SERVER}:21 -starttls ftp -prexit 2>&1 \
-        | sed -ne '/-BEGIN\ CERTIFICATE-/,/-END\ CERTIFICATE-/p' \
-        > /usr/local/share/ca-certificates/${FTP_SERVER}.crt && \
-    update-ca-certificates
+ARG UNAME=ci
+ARG UID=1000
+ARG GID=1000
+
+RUN groupadd -g ${GID} -o ${UNAME} && \
+    useradd -m -u ${UID} -g ${GID} -o -s /bin/bash ${UNAME}
+
+USER ${UNAME}
+
+RUN mkdir ~/.lftp &&                                      \
+    echo "set ssl:check-hostname false" >> ~/.lftp/rc &&  \
+    echo "set ftp:ssl-force true" >> ~/.lftp/rc &&        \
+    echo "set ftp:ssl-protect-data true" >> ~/.lftp/rc && \
+    echo "set ftp:ssl-protect-fxp true" >> ~/.lftp/rc &&  \
+    echo "set ftp:ssl-protect-list true" >> ~/.lftp/rc
