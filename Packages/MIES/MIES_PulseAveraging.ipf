@@ -3692,8 +3692,7 @@ static Function PA_ResizeColorScalePanel(string imageGraph)
 	GetWindow $imageGraph, wsizeDC
 
 	// height in points of image graph
-	// 5 compensates for a poorly understood difference
-	graphHeight = V_bottom - V_top + 5
+	graphHeight = V_bottom - V_top + SUBWINDOW_MOVE_CORRECTION
 
 	MoveSubWindow/W=$colorScalePanel fnum=(0, 0, PA_COLORSCALE_PANEL_WIDTH, graphHeight)
 End
