@@ -11,6 +11,7 @@
 
 static StrConstant PS_STORE_COORDINATES = "JSONSettings_StoreCoordinates"
 static StrConstant PS_WINDOW_NAME = "JSONSettings_WindowName"
+static StrConstant PS_COORDINATE_SAVING_HOOK = "windowCoordinateSaving"
 
 /// @brief Initialize the `PackageFolder` symbolic path
 Function PS_Initialize(string package)
@@ -249,7 +250,7 @@ Function PS_InitCoordinates(variable JSONid, string win, string name, [variable 
 	PS_ApplyStoredWindowCoordinate(JSONid, win)
 
 	if(addHook)
-		SetWindow $win, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
+		SetWindow $win, hook($PS_COORDINATE_SAVING_HOOK)=StoreWindowCoordinatesHook
 	endif
 End
 
