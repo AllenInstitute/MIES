@@ -5967,7 +5967,7 @@ End
 
 /// @brief If the layout of an panel was changed, this function calls the
 ///        ResizeControlsPanel module functions of the Igor Pro native package
-///        to store the changed resize info. The original inteded way to do this
+///        to store the changed resize info. The originally intended way to do this
 ///        was through the Packages GUI, which is clunky for some workflows.
 Function StoreCurrentPanelsResizeInfo(string panel)
 
