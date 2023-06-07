@@ -157,6 +157,15 @@ static Function PS_RegisterForCoordinateSaving(string win, string name)
 	SetWindow $win, userdata($PS_WINDOW_NAME) = name
 End
 
+/// @brief Remove user data related to coordinate saving
+Function PS_RemoveCoordinateSaving(string win)
+
+	SetWindow $win, userdata($PS_STORE_COORDINATES) = ""
+	SetWindow $win, userdata($PS_WINDOW_NAME) = ""
+
+	SetWindow $win, hook($PS_COORDINATE_SAVING_HOOK)=$""
+End
+
 /// @brief Store the coordinates of all registered windows in the JSON settings file
 ///
 /// The windows must have been registered beforehand with PS_InitCoordinates().
