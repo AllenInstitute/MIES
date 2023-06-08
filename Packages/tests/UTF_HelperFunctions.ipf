@@ -781,3 +781,60 @@ Function/S GetTestStimsetFullFilePath()
 
 	return fullPath
 End
+
+Function/S LoadSweeps(string winAB)
+
+	PGC_SetAndActivateControl(winAB, "button_load_sweeps")
+
+	return StringFromList(0, WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH)))
+End
+
+/// @brief Open the given files, located relative to the symbolic path `home`, into an analysis browser
+Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps])
+
+	variable idx
+	string filePath, fullFilePath
+
+	if(ParamIsDefault(loadSweeps))
+		loadSweeps = 0
+	else
+		loadSweeps = !!loadSweeps
+	endif
+
+	PathInfo home
+	REQUIRE_EQUAL_VAR(V_flag, 1)
+
+	Duplicate/FREE/T files, filesWithPath
+	filesWithPath[] = S_path + files[p]
+
+	abWin = AB_OpenAnalysisBrowser(restoreSettings = 0)
+	CHECK_PROPER_STR(abWin)
+
+	for(fullFilePath : filesWithPath)
+		REQUIRE(FileExists(fullFilePath))
+		MIES_AB#AB_AddElementToSourceList(fullFilePath)
+	endfor
+
+	PGC_SetAndActivateControl(abWin, "button_AB_refresh")
+
+	if(!loadSweeps)
+		return [abWin, ""]
+	endif
+
+	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+	WAVE expBrowserSel = GetExperimentBrowserGUISel()
+
+	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_NON_EMPTY)
+	INFO("Trying to load files @%s", s = files)
+	CHECK_WAVE(indizes, NUMERIC_WAVE)
+
+	for(idx : indizes)
+		expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
+		PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+	endfor
+
+	sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
+	CHECK_PROPER_STR(sweepBrowsers)
+
+	return [abWin, sweepBrowsers]
+End
