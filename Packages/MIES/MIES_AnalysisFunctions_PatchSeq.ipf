@@ -2640,7 +2640,7 @@ Function PSQ_SquarePulse(device, s)
 					key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
 					WAVE spikeWithDAScaleZero = GetLastSettingIndepEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 					WAVE spikeWithDAScaleZeroReduced = ZapNaNs(spikeWithDAScaleZero)
-					if(DimSize(spikeWithDAScaleZeroReduced, ROWS) == PSQ_NUM_MAX_DASCALE_ZERO)
+					if(DimSize(spikeWithDAScaleZeroReduced, ROWS) == PSQ_SP_MAX_DASCALE_ZERO)
 						PSQ_ForceSetEvent(device, s.headstage)
 						RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 					endif
