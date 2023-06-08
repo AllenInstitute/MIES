@@ -75,7 +75,7 @@ Function AD_Update(win)
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage, variable ongoingDAQ)
+static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage, variable ongoingDAQ, variable waMode)
 	variable stopReason
 
 	if(passed)
@@ -167,7 +167,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 		case PSQ_TRUE_REST_VM:
 			return AD_GetPerSweepFailMessage(PSQ_TRUE_REST_VM, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_VM_NUM_SWEEPS_PASS)
 		case PSQ_SQUARE_PULSE:
-			return AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
+			return AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage, waMode)
 		case SC_SPIKE_CONTROL:
 			return AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case INVALID_ANALYSIS_FUNCTION:
@@ -186,7 +186,7 @@ static Function AD_FillWaves(win, list, info)
 	WAVE/T list, info
 
 	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ, acqState
-	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid
+	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid, waMode
 	string key, anaFunc, stimset, msg, device
 
 	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
@@ -273,7 +273,7 @@ static Function AD_FillWaves(win, list, info)
 				endif
 			endif
 
-			anaFuncType = anaFuncTypes[headstage]
+			[anaFuncType, waMode] = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
 			anaFunc = anaFuncs[headstage]
 			stimset = stimsets[headstage]
 
@@ -283,7 +283,7 @@ static Function AD_FillWaves(win, list, info)
 				ASSERT(WaveExists(lastSweepStimsetCycleIDs), "Missing last sweep SCIs")
 				ongoingDAQ = (lastSweepStimsetCycleIDs[headstage] == stimsetCycleID) && (acqState != AS_INACTIVE)
 			else
-				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1, waMode = waMode)
 				passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 				ongoingDAQ = IsNaN(passed) && (acqState != AS_INACTIVE)
 			endif
@@ -292,7 +292,7 @@ static Function AD_FillWaves(win, list, info)
 				DFREF sweepDFR = SB_GetSweepDataFolder(sweepMap, sweepNo = sweepNo)
 			endif
 
-			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, sweepDFR, headstage, ongoingDAQ)
+			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, sweepDFR, headstage, ongoingDAQ, waMode)
 
 			EnsureLargeEnoughWave(list, dimension = ROWS, indexShouldExist = index)
 			EnsureLargeEnoughWave(info, dimension = ROWS, indexShouldExist = index)
@@ -321,7 +321,7 @@ static Function AD_FillWaves(win, list, info)
 				case MSQ_FAST_RHEO_EST:
 				case SC_SPIKE_CONTROL:
 				case PSQ_TRUE_REST_VM:
-					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1, waMode = waMode)
 					WAVE/Z sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE, defValue = 0)
 
 					if(!WaveExists(sweepPass))
@@ -380,6 +380,36 @@ static Function AD_FillWaves(win, list, info)
 	return index
 End
 
+/// @brief Return the analysis function type and a bit-mask of possible workarounds for CreateAnaFuncLBNKey()
+///
+/// @param numericalValues numeric labnotebook
+/// @param anaFuncTypes    wave with the analysis function types as derived from MapAnaFuncToConstant()
+/// @param sweepNo         sweep number
+/// @param headstage       headstage
+static Function [variable anaFuncType, variable waMode] AD_GetAnalysisFunctionType(WAVE numericalValues, WAVE anaFuncTypes, variable sweepNo, variable headstage)
+
+	string key
+	variable passed
+
+	anaFuncType = anaFuncTypes[headstage]
+
+	if(anaFuncType == PSQ_SQUARE_PULSE)
+		// querying the analysis function version would have been a more generic choice
+		// but that is only available since c2b1e0fb (Add a version labnotebook entry for
+		// all PSQ/MSQ analysis functions, 2021-06-18)
+		key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
+		passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+		if(IsNaN(passed))
+			// labnotebook entries of PSQ_SquarePulse are stored with PSQ_SEAL_EVALUATION name, see
+			// be830309 (CreateAnaFuncLBNKey: Add missing break after PSQ_SQUARE_PULSE, 2022-05-20)
+			return [anaFuncType, PSQ_LBN_WA_SP_SE]
+		endif
+	endif
+
+	return [anaFuncType, PSQ_LBN_WA_NONE]
+End
+
 static Function/S AD_FormatListKey(variable stimsetCycleID, variable headstage)
 
 	return num2strHighPrec(stimsetCycleID, shorten = 1) + "_HS" + num2str(headstage)
@@ -396,15 +426,15 @@ static Function AD_LabnotebookEntryExistsAndIsTrue(WAVE/Z data)
 	return WaveExists(reduced) && Sum(reduced) > 0
 End
 
-static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
+static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage, waMode)
 	variable sweepNo
 	WAVE numericalValues
-	variable headstage
+	variable headstage, waMode
 
 	string msg, key
 	variable stepSize
 
-	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1, waMode = waMode)
 	WAVE/Z spikeWithDAScaleZero = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	// Prior to 1e2f38ba (Merge pull request #1073 in ENG/mies-igor from
 	// ~THOMASB/mies-igor:feature/larger-fifo-for-NI to master, 2019-02-09)
@@ -416,7 +446,7 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 		endif
 	endif
 
-	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1, waMode = waMode)
 	stepSize = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	if(!IsFinite(stepSize))
 		BUG("Missing DAScale stepsize LBN entry")
@@ -428,7 +458,7 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 		return msg
 	endif
 
-	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1, waMode = waMode)
 	WAVE/Z spikeDetection = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	if(!spikeDetection[headstage])

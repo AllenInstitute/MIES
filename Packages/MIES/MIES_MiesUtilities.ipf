@@ -7081,9 +7081,16 @@ End
 /// @param formatString                        One of  @ref PatchSeqLabnotebookFormatStrings or @ref MultiPatchSeqLabnotebookFormatStrings
 /// @param chunk [optional]                    Some format strings expect a chunk number
 /// @param query [optional, defaults to false] If the key is to be used for setting or querying the labnotebook
-Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
-	variable type, chunk, query
+/// @param waMode [optional, defaults to PSQ_LBN_WA_NONE] One of @ref LBNWorkAroundFlags
+Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query, waMode])
+	variable type, chunk, query, waMode
 	string formatString
+
+	if(ParamIsDefault(waMode))
+		waMode = PSQ_LBN_WA_NONE
+	else
+		ASSERT(waMode == PSQ_LBN_WA_NONE || waMode == PSQ_LBN_WA_SP_SE, "Invalid waMode")
+	endif
 
 	string str, prefix
 
@@ -7113,7 +7120,11 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 			prefix = PSQ_RB_LBN_PREFIX
 			break
 		case PSQ_SQUARE_PULSE:
-			prefix = PSQ_SP_LBN_PREFIX
+			if(waMode == PSQ_LBN_WA_SP_SE)
+				prefix = PSQ_SE_LBN_PREFIX
+			else
+				prefix = PSQ_SP_LBN_PREFIX
+			endif
 			break
 		case PSQ_SEAL_EVALUATION:
 			prefix = PSQ_SE_LBN_PREFIX
