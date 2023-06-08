@@ -404,7 +404,7 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 	// this labnotebook key does not exist
 	if(WaveExists(spikeWithDAScaleZero))
 		WAVE spikeWithDAScaleZeroReduced = ZapNaNs(spikeWithDAScaleZero)
-		if(DimSize(spikeWithDAScaleZeroReduced, ROWS) == 3)
+		if(DimSize(spikeWithDAScaleZeroReduced, ROWS) == PSQ_NUM_MAX_DASCALE_ZERO)
 			return "Failure as we did had three spikes with a DAScale of 0.0pA."
 		endif
 	endif
