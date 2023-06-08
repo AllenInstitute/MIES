@@ -23,7 +23,6 @@ static Function LoadSweepsFromIgor()
 	string win
 
 	NVAR JSONid = $GetSettingsJSONid()
-	WAVE/T saveSetting = JSON_GetTextWave(jsonID, SETTINGS_AB_FOLDER)
 
 	PathInfo home
 	REQUIRE_EQUAL_VAR(V_flag, 1)
@@ -42,8 +41,6 @@ static Function LoadSweepsFromIgor()
 	CHECK_EQUAL_VAR(DimSize(sweep, ROWS), 31667)
 	CHECK_CLOSE_VAR(WaveMax(sweep), 1000, tol=1E-2)
 	KillWindow $win
-
-	JSON_SetWave(jsonID, SETTINGS_AB_FOLDER, saveSetting)
 End
 
 static Function CheckRefCount()
@@ -52,7 +49,6 @@ static Function CheckRefCount()
 	string sBrowser1, sBrowser2
 
 	NVAR JSONid = $GetSettingsJSONid()
-	WAVE/T saveSetting = JSON_GetTextWave(jsonID, SETTINGS_AB_FOLDER)
 
 	PathInfo home
 	REQUIRE_EQUAL_VAR(V_flag, 1)
@@ -77,8 +73,6 @@ static Function CheckRefCount()
 	CHECK_EQUAL_VAR(rc, 1)
 	KillWindow $sBrowser2
 	CHECK_EQUAL_VAR(DataFolderExists(dfPath), 0)
-
-	JSON_SetWave(jsonID, SETTINGS_AB_FOLDER, saveSetting)
 End
 
 static Function TryLoadingDifferentFiles()
@@ -86,13 +80,11 @@ static Function TryLoadingDifferentFiles()
 	string win, sBrowser1
 
 	NVAR JSONid = $GetSettingsJSONid()
-	WAVE/T saveSetting = JSON_GetTextWave(jsonID, SETTINGS_AB_FOLDER)
 
 	PathInfo home
 	REQUIRE_EQUAL_VAR(V_flag, 1)
 
 	Make/FREE/T setFolderList = {S_path + PXP2_FILENAME, S_path + NWB1_FILENAME, S_path + NWB2_FILENAME}
-	JSON_SetWave(jsonID, SETTINGS_AB_FOLDER, setFolderList)
 	win = AB_OpenAnalysisBrowser()
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 
@@ -119,6 +111,4 @@ static Function TryLoadingDifferentFiles()
 
 	KillWindow $win
 	KillWindow $sBrowser1
-
-	JSON_SetWave(jsonID, SETTINGS_AB_FOLDER, saveSetting)
 End
