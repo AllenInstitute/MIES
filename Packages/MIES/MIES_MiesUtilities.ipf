@@ -5547,6 +5547,10 @@ Function/S RemoveUnassocLBNKeySuffix(string name)
 	return name
 End
 
+Function GetZeroMQXOPFlags()
+	return ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV
+End
+
 /// @brief Start the ZeroMQ sockets and the message handler
 ///
 /// Debug note: Tracking the connection state can be done via
@@ -5576,7 +5580,7 @@ Function StartZeroMQSockets([variable forceRestart])
 
 	zeromq_stop()
 
-	flags = ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV
+	flags = GetZeroMQXOPFlags()
 
 	zeromq_set(flags)
 
