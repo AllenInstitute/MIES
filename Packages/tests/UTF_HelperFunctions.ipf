@@ -762,11 +762,13 @@ End
 
 Function/WAVE GetMIESMacros()
 
-	string allMacros
+	string win
+	string allMacros = ""
 
-	allMacros = MacroList("*", ";", "")
-
-	allMacros = GrepList(allMacros, "FunctionProfilingPanel", 1)
+	WAVE/T miesWindows = ListToTextWave(WinList("MIES_*.ipf", ";", "WIN:128"), ";")
+	for(win : miesWindows)
+		allMacros += MacroList("*", ";", "WIN:" + win)
+	endfor
 
 	return ListToTextWave(allMacros, ";")
 End

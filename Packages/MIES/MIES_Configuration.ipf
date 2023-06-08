@@ -333,7 +333,7 @@ Function CONF_AutoLoader([string customIPath])
 		if(V_Value == -1)
 			rigCandidate = ""
 		endif
-		CONF_RestoreWindow(mainFileList[i], rigFile = rigCandidate, usePanelTypeFromFile = 1)
+		CONF_RestoreWindow(mainFileList[i], rigFile = rigCandidate)
 	endfor
 End
 
@@ -423,20 +423,16 @@ Function CONF_SaveWindow(fName)
 	endtry
 End
 
-/// @brief Restores the GUI state of window and all of its subwindows from a configuration file
+/// @brief Restores the GUI state of window and all of its subwindows from a configuration file. If the configuration file contains a panel type string then
+///        a new window of that type is opened and restored.
 ///
 /// @param fName file name of configuration file to read configuration
-/// @param usePanelTypeFromFile [optional, default = 0] if set to 1 then the panel type from the json is interpreted and a new panel of that type is opened
 /// @param rigFile [optional, default = ""] name of secondary rig configuration file with complementary data. This parameter is valid when loading for a DA_Ephys panel
-Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
-	string fName
-	variable usePanelTypeFromFile
-	string rigFile
+Function CONF_RestoreWindow(string fName[, string rigFile])
 
 	variable jsonID, restoreMask
 	string input, wName, errMsg, fullFilePath, panelType
 
-	usePanelTypeFromFile = ParamIsDefault(usePanelTypeFromFile) ? 0 : !!usePanelTypeFromFile
 	rigFile = SelectString(ParamIsDefault(rigFile), rigFile, "")
 
 	PathInfo/S $CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
@@ -445,14 +441,24 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 	restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED
 	AssertOnAndClearRTError()
 	try
-		if(usePanelTypeFromFile)
-			[input, fullFilePath] = LoadTextFile(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file")
-			if(IsEmpty(input))
-				return 0
+		[input, fullFilePath] = LoadTextFile(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file")
+		if(IsEmpty(input))
+			return 0
+		endif
+		jsonID = CONF_ParseJSON(input)
+		panelType = JSON_GetString(jsonID, "/" + EXPCONFIG_RESERVED_TAGENTRY)
+		if(IsEmpty(panelType))
+			wName = GetMainWindow(GetCurrentWindow())
+			if(PanelIsType(wName, PANELTAG_DAEPHYS))
+				if(!IsEmpty(rigFile))
+					CONF_JoinRigFile(jsonID, rigFile)
+				endif
+				wName = CONF_RestoreDAEphys(jsonID, fullFilePath)
+			else
+				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
+				print "Configuration restored for " + wName
 			endif
-			jsonID = CONF_ParseJSON(input)
-			panelType = JSON_GetString(jsonID, "/" + EXPCONFIG_RESERVED_TAGENTRY)
-			ASSERT(!IsEmpty(panelType), "Configuration file entry for panel type (" + EXPCONFIG_RESERVED_TAGENTRY + ") is empty.")
+		else
 			if(!CmpStr(panelType, PANELTAG_DAEPHYS))
 				if(!IsEmpty(rigFile))
 					CONF_JoinRigFile(jsonID, rigFile)
@@ -462,31 +468,21 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 				DB_OpenDataBrowser()
 				wName = GetMainWindow(GetCurrentWindow())
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
-				print "Configuration restored for " + wName
-			else
-				ASSERT(0, "Configuration file entry for panel type has an unknown panel tag (" + panelType + ").")
-			endif
-
-		else
-			wName = GetMainWindow(GetCurrentWindow())
-			if(PanelIsType(wName, PANELTAG_DAEPHYS))
-				[input, fullFilePath] = LoadTextFile(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file for DA_Ephys panel")
-				if(IsEmpty(input))
-					return 0
-				endif
-				jsonID = CONF_ParseJSON(input)
-				if(!IsEmpty(rigFile))
-					CONF_JoinRigFile(jsonID, rigFile)
-				endif
-				wName = CONF_RestoreDAEphys(jsonID, fullFilePath)
-			else
-				[input, fullFilePath] = LoadTextFile(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file for frontmost window")
-				if(IsEmpty(input))
-					return 0
-				endif
-				jsonID = CONF_ParseJSON(input)
+				print "Data Browser restored in window \"" + wName + "\""
+			elseif(!CmpStr(panelType, PANELTAG_WAVEBUILDER))
+				WBP_CreateWaveBuilderPanel()
+				wName = GetMainWindow(GetCurrentWindow())
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
-				print "Configuration restored for " + wName
+			elseif(!CmpStr(panelType, PANELTAG_ANALYSISBROWSER))
+				AB_OpenAnalysisBrowser()
+				wName = GetMainWindow(GetCurrentWindow())
+				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
+			elseif(!CmpStr(panelType, PANELTAG_IVSCCP))
+				IVS_CreatePanel()
+				wName = GetMainWindow(GetCurrentWindow())
+				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
+			else
+				ASSERT(0, "Configuration file entry for panel type has an unknown type (" + panelType + ").")
 			endif
 		endif
 

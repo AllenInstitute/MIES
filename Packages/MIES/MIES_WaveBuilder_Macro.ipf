@@ -1224,6 +1224,7 @@ Window WaveBuilder() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)="UGH1;UGV0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)="NAME:UGH1;WIN:WaveBuilder;TYPE:User;HORIZONTAL:1;POSITION:237.00;GUIDE1:FT;GUIDE2:;RELPOSITION:237;"
 	SetWindow kwTopWin,userdata(panelVersion)="12"
+	SetWindow kwTopWin,userdata(Config_PanelType)="WaveBuilder"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)="NAME:UGV0;WIN:WaveBuilder;TYPE:User;HORIZONTAL:0;POSITION:187.00;GUIDE1:FL;GUIDE2:;RELPOSITION:187;"
 	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)="1"
 	SetWindow kwTopWin,userdata(JSONSettings_WindowName)="wavebuilder"

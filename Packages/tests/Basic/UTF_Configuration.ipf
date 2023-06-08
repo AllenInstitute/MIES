@@ -344,3 +344,17 @@ static Function TCONF_SaveNotebookAndRestore()
 	nbText = GetNotebookText(wName, mode=2)
 	CHECK_EQUAL_STR(nbTextRef2, nbText)
 End
+
+/// @brief Checks if every (qualified) panel has a panel type set
+///
+/// UTF_TD_GENERATOR GetMiesMacrosWithPanelType
+static Function TCONF_CheckMacrosForPanelType([string str])
+
+	string win, panelType
+
+	Execute/Q str + "()"
+	win = WinName(0, -1)
+	panelType = GetUserData(win, "", EXPCONFIG_UDATA_PANELTYPE)
+	INFO("Panel: " + win)
+	CHECK_PROPER_STR(panelType)
+End

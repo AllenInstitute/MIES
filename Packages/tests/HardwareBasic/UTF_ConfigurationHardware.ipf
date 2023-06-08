@@ -136,7 +136,7 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	KillWindow $str
 
-	CONF_RestoreWindow(rewrittenConfig, usePanelTypeFromFile=1)
+	CONF_RestoreWindow(rewrittenConfig)
 
 	gain = 5
 	filterFreq = 6
@@ -148,4 +148,35 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 	CHECK_EQUAL_VAR(val, filterFreq)
 	val = AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
 	CHECK_EQUAL_VAR(val, gain)
+End
+
+/// @brief Checks if every typed panel restores with auto opening
+///
+/// IUTF_TD_GENERATOR s0:GetMiesMacrosWithPanelType
+/// IUTF_TD_GENERATOR s1:DeviceNameGenerator
+static Function TCONF_CheckTypedPanelRestore([STRUCT IUTF_mData &md])
+
+	string win, winRestored
+	string fName = GetFolder(FunctionPath("")) + "CheckTypedPanelRestore.json"
+
+	Execute/Q md.s0 + "()"
+	win = WinName(0, -1)
+	if(!CmpStr(win, BASE_WINDOW_NAME))
+		// special handling for DAEphys
+		KillWindow $win
+		CreateLockedDAEphys(md.s1)
+		win = WinName(0, -1)
+		PGC_SetAndActivateControl(win, "check_Settings_RequireAmpConn", val=0)
+		PGC_SetAndActivateControl(win, "Check_DataAcqHS_00",val=1)
+		PGC_SetAndActivateControl(win, "Gain_DA_00",val=20)
+		PGC_SetAndActivateControl(win, "setvar_Settings_VC_DAgain",val=20)
+		PGC_SetAndActivateControl(win, "Gain_AD_00",val=0.0025)
+		PGC_SetAndActivateControl(win, "setvar_Settings_VC_ADgain",val=0.0025)
+	endif
+	CONF_SaveWindow(fName)
+	KillWindow $win
+	CONF_RestoreWindow(fName)
+	winRestored = WinName(0, -1)
+	DeleteFile fName
+	CHECK_EQUAL_STR(win, winRestored)
 End
