@@ -132,6 +132,8 @@ jobs:
             name: Basic
           - experiment: Packages/tests/PAPlot/PAPlot.pxp
             name: PAPlot
+          - experiment: Packages/tests/HistoricData/HistoricData.pxp
+            name: HistoricData
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
       job_name: 🧪 Test ${{ matrix.name }}

@@ -4,3 +4,4 @@
 #pragma ModuleName=TestingConstants
 
 Constant PSQ_TEST_HEADSTAGE = 2
+StrConstant ZSTD_SUFFIX     = ".zst"
