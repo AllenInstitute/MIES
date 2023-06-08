@@ -2697,7 +2697,7 @@ Function PSQ_SquarePulse(device, s)
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
 
-			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SQUARE_PULSE, s.sweepNo, s.headstage) >= 1
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SQUARE_PULSE, s.sweepNo, s.headstage) >= PSQ_SP_NUM_SWEEPS_PASS
 
 			if(!setPassed)
 				PSQ_ForceSetEvent(device, s.headstage)

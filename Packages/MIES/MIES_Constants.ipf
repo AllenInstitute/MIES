@@ -1181,6 +1181,7 @@ Constant PSQ_SP_INIT_AMP_m50     = -50e-12
 Constant PSQ_SP_INIT_AMP_p100    = +100e-12
 Constant PSQ_SP_INIT_AMP_p10     = +10e-12
 Constant PSQ_SP_MAX_DASCALE_ZERO = 3
+Constant PSQ_SP_NUM_SWEEPS_PASS  = 1
 /// @}
 
 /// @name PatchSeq Rheobase
