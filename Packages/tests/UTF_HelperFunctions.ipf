@@ -10,6 +10,7 @@
 // "UserAnalysisFunctions.ipf" and not the one from "Packages/tests"
 #include "UserAnalysisFunctions", version >= 10000
 
+#include "UTF_Constants"
 #include "UTF_DataGenerators"
 
 /// @file UTF_HelperFunctions.ipf
