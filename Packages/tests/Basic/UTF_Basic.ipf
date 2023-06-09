@@ -43,7 +43,7 @@ End
 // - RunWithOpts()
 // - RunWithOpts(testsuite = "UTF_Configuration.ipf")
 // - RunWithOpts(testcase = "TestFindLevel")
-Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable keepDataFolder])
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable keepDataFolder, variable enableJU])
 
 	variable debugMode
 	string traceOptions
@@ -68,6 +68,12 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 		instru = 0
 	else
 		instru = !!instru
+	endif
+
+	if(ParamIsDefault(enableJU))
+		enableJU = IsRunningInCI()
+	else
+		enableJU = !!enableJU
 	endif
 
 	if(ParamIsDefault(traceWinList))
@@ -119,9 +125,9 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder)
 	else
-		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder)
 	endif
 End
 
