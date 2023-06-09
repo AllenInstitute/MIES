@@ -4,7 +4,7 @@ set -e
 
 function usage ()
 {
-    echo "Usage: $0 [-s <source dir>] [-d <cobertura dir>] [-h <history dir>] [-o <output dir>]" 1>&2
+    echo "Usage: $0 [-s <source dir>] [-d <cobertura dir>] [-h <history dir>] [-o <output dir>] [-l <license>]" 1>&2
     exit 1
 }
 
@@ -13,7 +13,7 @@ directory="$(pwd)"
 history="$(pwd)/history"
 output="$(date -Id)"
 
-while getopts ":s:d:h:o:" key; do
+while getopts ":s:d:h:o:l:" key; do
     case "${key}" in
         s)
             source="${OPTARG}"
@@ -26,6 +26,9 @@ while getopts ":s:d:h:o:" key; do
             ;;
         o)
             output="${OPTARG}"
+            ;;
+        l)
+            license=" \"-license:${OPTARG}\""
             ;;
         *)
             usage
@@ -100,7 +103,8 @@ docker run --rm \
         "-reporttypes:Html;HtmlChart;JsonSummary;PngChart;Badges;MarkdownDeltaSummary" \
         -historydir:/home/ci/history \
         -title:MIES \
-        -tag:$(git rev-parse --short HEAD)
+        "-tag:$(git log -1 --pretty=reference)" \
+        $license
 echo "##[endgroup]"
 
 # output some variables (this makes CI integration easier)
