@@ -51,6 +51,7 @@ Menu "Mies Panels"
 	"About MIES"                               , /Q, MEN_OpenAboutDialog()
 	"-"
 	SubMenu "Advanced"
+		MEN_GetUserPingMenuString()                , /Q, ToggleUserPingSetting()
 		"Restart ZeroMQ Sockets and Message Handler", /Q, StartZeroMQSockets(forceRestart = 1)
 		"Turn off ASLR (requires UAC elevation)"   , /Q, TurnOffASLR()
 		"Enable Independent Module editing"        , /Q, SetIgorOption IndependentModuleDev=1
@@ -224,6 +225,11 @@ Function MEN_OpenPackageSettingsAsNotebook()
 	NVAR JSONid = $GetSettingsJSONid()
 	PS_OpenNotebook(PACKAGE_MIES, JSONid)
 	JSONid = NaN
+End
+
+Function/S MEN_GetUserPingMenuString()
+
+	return  "Periodically ping" + SelectString(GetUserPingEnabled(), "", "!")
 End
 
 /// @brief Generic routine for displaying a logfile in a notebook

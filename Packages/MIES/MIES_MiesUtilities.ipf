@@ -8113,7 +8113,7 @@ Function ToggleUserPingSetting()
 
 	JSON_SetBoolean(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/enabled", !isEnabled)
 	PS_WriteSettings(PACKAGE_MIES, JSONid)
-	printf "Changed daily ping setting to %s.\r", ToOnOff(!IsEnabled)
+	printf "Changed periodically ping setting to %s.\r", ToOnOff(!IsEnabled)
 	printf "Saved settings.\r"
 End
 
