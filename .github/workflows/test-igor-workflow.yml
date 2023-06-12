@@ -88,7 +88,6 @@ jobs:
         with:
           name: ${{ inputs.artifact_name }}
           path: |
-            Packages/tests/**/*.htm
             Packages/tests/**/*-V2.nwb
             Packages/tests/**/JU_*.xml
             Packages/tests/**/Cobertura_*.xml
