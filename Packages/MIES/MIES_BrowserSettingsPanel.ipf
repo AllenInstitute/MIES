@@ -1599,7 +1599,7 @@ End
 /// @brief Debug function to add traces with epoch information
 Function BSP_AddTracesForEpochs(string win)
 
-	variable i, j, k, numEntries, start_x, start_y, end_x, end_y, yOffset
+	variable i, j, numEntries, start_x, start_y, end_x, end_y, yOffset
 	variable headstage, channelType, channelNumber, channelNumberDA, yLevelOffset, level, idx, numTraces, numEpochs
 	variable sweepNumber, traceIndex
 	STRUCT RGBColor c
@@ -1637,19 +1637,19 @@ Function BSP_AddTracesForEpochs(string win)
 	traceIndex = GetNextTraceIndex(win)
 
 	numTraces = DimSize(traceInfos, ROWS)
-	for(j = 0; j < numTraces; j += 1)
-		yaxis = traceInfos[j][%YAXIS]
-		xaxis = traceInfos[j][%XAXIS]
+	for(i = 0; i < numTraces; i += 1)
+		yaxis = traceInfos[i][%YAXIS]
+		xaxis = traceInfos[i][%XAXIS]
 
 		// use our own y axis
 		// need to replace for both AD and DA cases
 		yaxis = ReplaceString("_DA", yaxis, DB_AXIS_PART_EPOCHS + "_DA")
 		yaxis = ReplaceString("_AD", yaxis, DB_AXIS_PART_EPOCHS + "_DA")
 
-		headstage   = str2num(traceInfos[j][%headstage])
-		sweepNumber = str2num(traceInfos[j][%sweepNumber])
-		channelType = WhichListItem(traceInfos[j][%channelType], XOP_CHANNEL_NAMES)
-		channelNumber = str2num(traceInfos[j][%channelNumber])
+		headstage   = str2num(traceInfos[i][%headstage])
+		sweepNumber = str2num(traceInfos[i][%sweepNumber])
+		channelType = WhichListItem(traceInfos[i][%channelType], XOP_CHANNEL_NAMES)
+		channelNumber = str2num(traceInfos[i][%channelNumber])
 
 		switch(channelType)
 			case XOP_CHANNEL_TYPE_ADC:
@@ -1693,13 +1693,13 @@ Function BSP_AddTracesForEpochs(string win)
 		levels_y = NaN
 		SetStringInWaveNote(levels_y, "EpochInfo", GetWavesDataFolder(epochs, 2))
 
-		for(k = 0; k < numEpochs; k += 1)
+		for(j = 0; j < numEpochs; j += 1)
 
-			start_x = str2num(epochs[k][0]) * ONE_TO_MILLI
-			end_x   = str2num(epochs[k][1]) * ONE_TO_MILLI
+			start_x = str2num(epochs[j][0]) * ONE_TO_MILLI
+			end_x   = str2num(epochs[j][1]) * ONE_TO_MILLI
 
 			// handle EPOCH_USER_LEVEL being -1
-			level = str2num(epochs[k][3]) + 1
+			level = str2num(epochs[j][3]) + 1
 
 			start_y = yOffset - yLevelOffset * level  - 0.1 * yLevelOffset * currentLevel[level]
 			end_y = start_y
@@ -1708,25 +1708,25 @@ Function BSP_AddTracesForEpochs(string win)
 			levels_x[idx][level][0] = start_x
 			levels_x[idx + 1][level][0] = end_x
 			levels_x[idx + 2][level][0] = NaN
-			levels_x[idx, idx + 2][level][1] = k
+			levels_x[idx, idx + 2][level][1] = j
 
 			levels_y[idx][level][0] = start_y
 			levels_y[idx + 1][level][0] = end_y
 			levels_y[idx + 2][level][0] = NaN
-			levels_y[idx, idx + 2][level][1] = k
+			levels_y[idx, idx + 2][level][1] = j
 
 			indexInLevel[level] = idx + 3
 
 			currentLevel[level] += 1
 		endfor
 
-		for(k = 0; k < BSP_EPOCH_LEVELS; k += 1)
-			sprintf level_x_trace, "%s_level%d_x_%s", GetTraceNamePrefix(traceIndex++), k, idPart
+		for(j = 0; j < BSP_EPOCH_LEVELS; j += 1)
+			sprintf level_x_trace, "%s_level%d_x_%s", GetTraceNamePrefix(traceIndex++), j, idPart
 
-			AppendToGraph/W=$win/L=$yAxis levels_y[][k]/TN=$level_x_trace vs levels_x[][k]
+			AppendToGraph/W=$win/L=$yAxis levels_y[][j]/TN=$level_x_trace vs levels_x[][j]
 			TUD_SetUserDataFromWaves(win, level_x_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
-			[c] = GetTraceColor(k)
+			[c] = GetTraceColor(j)
 			ModifyGraph/W=$win marker($level_x_trace)=10, mode($level_x_trace)=4, rgb($level_x_trace)=(c.red, c.green, c.blue)
 		endfor
 
