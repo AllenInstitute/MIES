@@ -201,7 +201,7 @@ jobs:
       - name: Download ITC artifacts
         uses: actions/download-artifact@v3
         with:
-          name: test-ITC-assets
+          name: test-itc-assets
       - name: Download NI artifacts
         uses: actions/download-artifact@v3
         with:
