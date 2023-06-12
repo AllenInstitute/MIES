@@ -94,4 +94,5 @@ jobs:
             Packages/tests/**/*.log
             Diagnostics
             **/*.jsonl
+            !Packages/tests/**/input
           if-no-files-found: error
