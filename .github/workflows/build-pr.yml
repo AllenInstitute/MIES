@@ -200,12 +200,10 @@ jobs:
         run: tools/initial-repo-config.sh
       - name: Download ITC artifacts
         uses: actions/download-artifact@v3
-        continue-on-error: true
         with:
           name: test-ITC-assets
       - name: Download NI artifacts
         uses: actions/download-artifact@v3
-        continue-on-error: true
         with:
           name: test-ni-assets
       - name: Validate and read NWBv2 files
@@ -231,7 +229,6 @@ jobs:
       - name: Download all artifacts
         id: download
         uses: actions/download-artifact@v3
-        continue-on-error: true
         with:
           path: artifacts
       - name: Flatten artifact structure
