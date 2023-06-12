@@ -8,8 +8,6 @@
 #include "UTF_TestNWBExportV1"
 #include "UTF_TestNWBExportV2"
 
-Constant PSQ_TEST_HEADSTAGE = 2
-
 /// @file UTF_HardwareHelperFunctions.ipf
 /// @brief This file holds helper functions for the hardware tests
 

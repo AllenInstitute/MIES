@@ -564,7 +564,7 @@ End
 
 static Function/S TestFileExport()
 
-	string baseFolder, nwbFile, discLocation
+	string baseFolder, nwbFile, discLocation, abWin, sweepBrowser
 
 	PathInfo home
 	baseFolder = S_path
@@ -572,16 +572,9 @@ static Function/S TestFileExport()
 	nwbFile = GetExperimentName() + "-V1.nwb"
 	discLocation = baseFolder + nwbFile
 
-	KillWindow/Z $AB_GetPanelName()
-	KillOrMoveToTrash(dfr = GetAnalysisFolder())
-
 	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath=discLocation, overwrite = 1)
 
-	GetFileFolderInfo/P=home/Q/Z nwbFile
-	CHECK(V_IsFile)
-
-	AB_OpenAnalysisBrowser(restoreSettings=0)
-	CHECK_EQUAL_VAR(MIES_AB#AB_AddFile(discLocation, baseFolder), 0)
+	[abWin, sweepBrowser] = OpenAnalysisBrowser({nwbFile})
 
 	return discLocation
 End

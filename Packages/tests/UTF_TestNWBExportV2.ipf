@@ -613,7 +613,7 @@ End
 
 static Function/S TestFileExport()
 
-	string baseFolder, nwbFile, discLocation
+	string baseFolder, nwbFile, discLocation, abWin, sweepBrowser
 
 	[baseFolder, nwbFile] = GetUniqueNWBFileForExport(NWB_VERSION)
 	discLocation = baseFolder + nwbFile
@@ -623,11 +623,7 @@ static Function/S TestFileExport()
 
 	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath=discLocation, overwrite = 1)
 
-	GetFileFolderInfo/Q/Z discLocation
-	REQUIRE(V_IsFile)
-
-	AB_OpenAnalysisBrowser(restoreSettings=0)
-	CHECK_EQUAL_VAR(MIES_AB#AB_AddFile(discLocation, baseFolder), 0)
+	[abWin, sweepBrowser] = OpenAnalysisBrowser({nwbFile})
 
 	return discLocation
 End

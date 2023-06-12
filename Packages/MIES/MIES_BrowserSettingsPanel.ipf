@@ -1294,7 +1294,7 @@ End
 Function BSP_ButtonProc_RestoreData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string bspPanel, bsPanel, graph, device, datafolder
+	string bspPanel, bsPanel, graph, device
 	variable numEntries, i, sweepNo
 
 	switch(ba.eventCode)
@@ -1327,10 +1327,7 @@ Function BSP_ButtonProc_RestoreData(ba) : ButtonControl
 
 				numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
 				for(i = 0; i < numEntries; i += 1)
-					dataFolder = sweepMap[i][%DataFolder]
-					device     = sweepMap[i][%Device]
-					sweepNo    = str2num(sweepMap[i][%Sweep])
-					DFREF sweepDFR = GetAnalysisSweepPath(dataFolder, device)
+					DFREF sweepDFR = SB_GetSweepDataFolder(sweepMap, index = i)
 					DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
 					ReplaceWaveWithBackupForAll(singleSweepDFR)
 				endfor

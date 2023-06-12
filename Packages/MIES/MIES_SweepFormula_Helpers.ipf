@@ -397,14 +397,11 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 		chanType = selectData[i][%CHANNELTYPE]
 
 		if(isSweepBrowser)
-			cIndex = FindDimLabel(sweepMap, COLS, "Sweep")
-			FindValue/RMD=[][cIndex]/TEXT=num2istr(sweepNo)/TXOP=4 sweepMap
-			if(V_value == -1)
+			DFREF deviceDFR = SB_GetSweepDataFolder(sweepMap, sweepNo = sweepNo)
+
+			if(!DataFolderExistsDFR(deviceDFR))
 				continue
 			endif
-			dataFolder = sweepMap[V_row][%DataFolder]
-			device     = sweepMap[V_row][%Device]
-			DFREF deviceDFR  = GetAnalysisSweepPath(dataFolder, device)
 		else
 			if(DB_SplitSweepsIfReq(graph, sweepNo))
 				continue

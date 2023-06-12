@@ -49,11 +49,11 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts "^(Str)?Constant\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_Constants.ipf' ':^*/MIES_ConversionConstants.ipf' ':^*/UTF_HardwareHelperFunctions.ipf')
+matches=$(git grep $opts "^(Str)?Constant\b" '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_Constants.ipf' ':^*/MIES_ConversionConstants.ipf' ':^*/UTF_Constants.ipf')
 
 if [[ -n "$matches" ]]
 then
-  echo "Global constants are only allowed in MIES_Constants.ipf, MIES_ConversionConstants.ipf and UTF_HardwareHelperFunctions.ipf:"
+  echo "Global constants are only allowed in MIES_Constants.ipf, MIES_ConversionConstants.ipf and UTF_Constants.ipf:"
   echo "$matches"
   ret=1
 fi
