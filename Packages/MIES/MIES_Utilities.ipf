@@ -4282,6 +4282,13 @@ Function/S ToTrueFalse(var)
 	return SelectString(var, "False", "True")
 End
 
+// @brief Convert a number to the strings `On` (!= 0) or `Off` (0).
+Function/S ToOnOff(var)
+	variable var
+
+	return SelectString(var, "Off", "On")
+End
+
 /// @brief Return true if not all wave entries are NaN, false otherwise.
 ///
 /// UTF_NOINSTRUMENTATION
