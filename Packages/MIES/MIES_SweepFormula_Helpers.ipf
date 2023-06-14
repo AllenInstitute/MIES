@@ -126,11 +126,19 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
-		WAVE/T/Z data = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
-		sprintf msg, "Argument #%d of operation %s: Is a NULL wave reference ", argNum, opShort
+		WAVE/WAVE/Z input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		sprintf msg, "Argument #%d of operation %s: input is a NULL wave reference", argNum, opShort
+		SFH_ASSERT(WaveExists(input), msg)
+
+		sprintf msg, "Argument #%d of operation %s: Expected only one dataset", argNum, opShort
+		SFH_ASSERT(DimSize(input, ROWS) == 1, msg)
+
+		WAVE/T/Z data = input[0]
+		SFH_CleanUpInput(input)
+		sprintf msg, "Argument #%d of operation %s: Is a NULL wave reference", argNum, opShort
 		SFH_ASSERT(WaveExists(data), msg)
 
-		sprintf msg, "Argument #%d of operation %s: Must be text ", argNum, opShort
+		sprintf msg, "Argument #%d of operation %s: Must be text", argNum, opShort
 		SFH_ASSERT(IsTextWave(data), msg)
 
 		sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
@@ -216,10 +224,16 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+
 		if(singleResult)
-			WAVE/Z data = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
+			sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
+			SFH_ASSERT(DimSize(input, ROWS) == 1, msg)
+
+			WAVE/Z data = input[0]
+			SFH_CleanUpInput(input)
 		else
-			WAVE data = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+			WAVE data = input
 		endif
 
 		return data
