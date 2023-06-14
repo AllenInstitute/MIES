@@ -1318,6 +1318,13 @@ StrConstant MSQ_FMT_LBN_RERUN_TRIAL          = "%s Rerun Trials"
 StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC      = "%s Rerun Trials exceeded"
 /// @}
 
+/// @name Workaround flags for CreateAnaFuncLBNKey()
+/// @anchor LBNWorkAroundFlags
+/// @{
+Constant PSQ_LBN_WA_NONE  = 0x0
+Constant PSQ_LBN_WA_SP_SE = 0x1
+/// @}
+
 Constant TP_MD_THREAD_DEAD_MAX_RETRIES  = 10
 Constant DAQ_MD_THREAD_DEAD_MAX_RETRIES = 10
 
