@@ -7223,7 +7223,7 @@ Function/WAVE GetPulseInfoWave()
 	return pulseInfo
 End
 
-/// @brief Return the wave used for storing mock data for the analysis function tests
+/// @brief Return the wave used for storing mock data for tests
 ///
 /// This wave is created by MSQ_CreateOverrideResults(),
 /// PSQ_CreateOverrideResults() or TP_CreateOverrideResults() and does also not
