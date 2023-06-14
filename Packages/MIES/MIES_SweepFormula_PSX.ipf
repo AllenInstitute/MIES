@@ -596,6 +596,17 @@ static Function PSX_FitEventDecay(WAVE sweepDataFiltOff, WAVE psxEvent, WAVE/WAV
 
 //	SetDataFolder currDFR
 
+#ifdef AUTOMATED_TESTING
+	WAVE/Z overrideResults = GetOverrideResults()
+
+	if(WaveExists(overrideResults))
+		comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+
+		err = !overrideResults[eventIndex][%$comboKey]
+		ASSERT(IsFinite(err), "err needs to be finite")
+	endif
+#endif
+
 	if(err)
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
 		psxEvent[eventIndex][%$"Fit result"] = 0
@@ -611,6 +622,31 @@ static Function PSX_FitEventDecay(WAVE sweepDataFiltOff, WAVE psxEvent, WAVE/WAV
 
 	return coefWave[2]
 end
+
+/// @brief Create the override results 2D wave
+///
+/// ROWS:
+///  - event number
+///
+/// COLS:
+///  - combination
+///
+/// The wave contains the fit result (0/1).
+static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos)
+
+	variable numCombos
+
+	KillOrMoveToTrash(wv = GetOverrideResults())
+
+	numCombos = DimSize(combos, ROWS)
+
+	Make/D/N=(numEvents, numCombos) root:overrideResults/Wave=wv
+	SetDimensionLabels(wv, TextWaveToList(combos, ";"), COLS)
+
+	wv[] = NaN
+
+	return wv
+End
 
 /// @brief Implementation of psx operation
 ///
@@ -657,11 +693,11 @@ static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, stri
 		WAVE psxEvent = GetPSXEventWaveAsFree()
 		WAVE eventFit = GetPSXEventFitWaveAsFree()
 
-		PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakX, peakY, kernelAmp, writeIndex, psxEvent, eventFit)
-
 		JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
 		JWN_SetStringInWaveNote(psxEvent, PSX_X_DATA_UNIT, WaveUnits(sweepData, ROWS))
 		JWN_SetStringInWaveNote(psxEvent, PSX_Y_DATA_UNIT, WaveUnits(sweepData, -1))
+
+		PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakX, peakY, kernelAmp, writeIndex, psxEvent, eventFit)
 
 		Make/FREE/WAVE/N=(7) psxOperation
 		SetDimensionLabels(psxOperation, "sweepData;sweepDataFiltOff;sweepDataFiltOffDeconv;peakX;peakY;psxEvent;eventFit", ROWS)

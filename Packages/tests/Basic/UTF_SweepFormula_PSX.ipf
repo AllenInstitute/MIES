@@ -972,6 +972,13 @@ static Function TestOperationPSX()
 	string win, device, str
 	variable jsonID
 
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	// all decay fits are successfull
+	overrideResults[][] = 1
+
 	[win, device] = CreateFakeDataBrowserWindow()
 
 	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
@@ -1078,6 +1085,13 @@ End
 static Function MouseSelectionPSX()
 
 	string browser, device, code, psxPlot
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	// all decay fits are successfull
+	overrideResults[][] = 1
 
 	browser = DB_OpenDataBrowser()
 	device  = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
@@ -1800,6 +1814,13 @@ static Function KeyboardInteractions()
 
 	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
 
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	// all decay fits are successfull
+	overrideResults[][] = 1
+
 	browser = SetupDatabrowserWithSomeData()
 
 	code = GetTestCode("nothing")
@@ -2008,6 +2029,13 @@ End
 static Function KeyboardInteractionsStats()
 
 	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	// all decay fits are successfull
+	overrideResults[][] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
