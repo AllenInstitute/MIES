@@ -7846,7 +7846,9 @@ End
 /// -  8/isi: Time difference to previous event [ms]
 /// -  9/tau: Decay constant tau of exponential fit
 /// - 10/Fit manual QC call: One of @ref PSXStates
-/// - 11/Fit result: (0/1)
+/// - 11/Fit result: 1 for success, everything smaller than 0 is failure:
+///       - `]-10000, 0[`: CurveFit error codes
+///       - `]inf, -10000]`: Custom error codes, one of @ref FitEventDecayCustomErrors
 /// - 12/Event manual QC call: One of @ref PSXStates
 Function/WAVE GetPSXEventWaveAsFree()
 

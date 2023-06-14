@@ -3433,6 +3433,12 @@ threadsafe Function IsValidObjectName(string name)
 	return NameChecker(name, 0)
 End
 
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsStrictlyPositiveAndFinite(variable var)
+
+	return var > 0 && var < inf
+End
+
 /// @brief Check if a name for an object adheres to the liberal naming rules
 ///
 /// @see `DisplayHelpTopic "Liberal Object Names"`

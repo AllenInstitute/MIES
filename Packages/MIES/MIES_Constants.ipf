@@ -2152,3 +2152,9 @@ StrConstant PSX_EVENTS_COMBO_KEY_WAVE_NOTE = "comboKey"
 Constant PSX_MARKER_ACCEPT = 19
 Constant PSX_MARKER_REJECT = 23
 Constant PSX_MARKER_UNDET  = 18
+
+/// @name Custom error codes for PSX_FitEventDecay()
+/// @anchor FitEventDecayCustomErrors
+/// @{
+Constant PSX_DECAY_FIT_ERROR = -10000
+/// @}

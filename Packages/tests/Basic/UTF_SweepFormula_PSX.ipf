@@ -977,7 +977,7 @@ static Function TestOperationPSX()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	// all decay fits are successfull
-	overrideResults[][] = 1
+	overrideResults[][][%$"Fit Result"] = 1
 
 	[win, device] = CreateFakeDataBrowserWindow()
 
@@ -1006,8 +1006,36 @@ static Function TestOperationPSX()
 
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX)
 	CHECK_WAVE(params, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(params, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(params, ROWS), 5)
 	JSON_Release(jsonID)
+End
+
+static Function TestOperationPSXTooLargeDecayTau()
+	string win, device, str
+	variable jsonID
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(2, combos)
+
+	// all decay fits are successfull
+	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%Tau] = 1000
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
+	CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
+
+	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0], all), 1, 15, (-5)), 0.01, 100, 0)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+
+	WAVE psxEvent = dataWref[%$"psxEvent_0"]
+
+	Duplicate/FREE/RMD=[][FindDimLabel(psxEvent, COLS, "Fit Result")] psxEvent, fitResult
+	Redimension/N=(DimSize(fitResult, ROWS)) fitResult
+
+	CHECK_EQUAL_WAVES(fitResult, {PSX_DECAY_FIT_ERROR, PSX_DECAY_FIT_ERROR}, mode = WAVE_DATA)
 End
 
 static Function CheckEventDataHelper(WAVE/WAVE/Z dataWref, variable index)
