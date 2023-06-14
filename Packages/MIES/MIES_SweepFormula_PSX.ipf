@@ -491,18 +491,17 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 		if(i == 0)
 			isi = NaN
 			h_time = NaN
-			pre_min = NaN
-			pre_min_t = NaN
 		else
 			h_time = peakX[i - 1] // previous event's time of peak
 			isi = i_time - h_time
-			h_time = psxEvent[i - 1][3] // update previous events time to be time of i peak
-			WaveStats/Q/R=(i_time - 2, i_time) sweepDataFiltOff
-			pre_min = V_max
-			pre_min_t = V_maxloc
-			WaveStats/Q/R=(pre_min_t - 0.1, pre_min_t + 0.1) sweepDataFiltOff
-			pre_min = V_avg
+			h_time = psxEvent[i - 1][%i_peak] // update previous events time to be time of i peak
 		endif
+
+		WaveStats/Q/R=(i_time - 2, i_time) sweepDataFiltOff
+		pre_min = V_max
+		pre_min_t = V_maxloc
+		WaveStats/Q/R=(pre_min_t - 0.1, pre_min_t + 0.1) sweepDataFiltOff
+		pre_min = V_avg
 
 		psxEvent[i][%index] = i
 		psxEvent[i][%dc_peak_time] = i_time
