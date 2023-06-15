@@ -2320,11 +2320,11 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		// up to three blocks
 
 		// (?<! is a negative look behind assertion
-		regex = ".*(?<!EP_)DA$"
+		sprintf regex, ".*(?<!%s_)DA$", DB_AXIS_PART_EPOCHS
 		WAVE/T/Z DAaxes = GrepWave(allVerticalAxes, regex)
 		numBlocksDA = WaveExists(DAaxes) ? DimSize(DAaxes, ROWS) : 0
 
-		regex = ".*EP_DA$"
+		sprintf regex, ".*%s_DA$", DB_AXIS_PART_EPOCHS
 		WAVE/T/Z Epochaxes = GrepWave(allVerticalAxes, regex)
 		numBlocksEpoch = WaveExists(Epochaxes) ? DimSize(Epochaxes, ROWS) : 0
 
@@ -2393,7 +2393,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	numBlocksDA = WaveExists(axes) ? DimSize(axes, ROWS) : 0
 
 	// epoch info for associated DA channels
-	regex = ".*col0_EP_DA_(?:[[:digit:]]{1,2})_HS_(?:[[:digit:]]{1,2})$"
+	sprintf regex, ".*col0%s_DA_(?:[[:digit:]]{1,2})_HS_(?:[[:digit:]]{1,2})$", DB_AXIS_PART_EPOCHS
 	WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
 	numBlocksEpoch = WaveExists(axes) ? DimSize(axes, ROWS) : 0
 
@@ -2429,7 +2429,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	for(i = 0; i < numBlocksHS; i += 1)
 		headstage = headstages[i]
 		// (?<! is a negative look behind assertion
-		regex = ".*(?<!EP_)DA_(?:[[:digit:]]{1,2})_HS_" + num2str(headstage)
+		sprintf regex, ".*(?<!%s_)DA_(?:[[:digit:]]{1,2})_HS_%d", DB_AXIS_PART_EPOCHS, headstage
 		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
 
 		lastFreeAxis = last
@@ -2438,7 +2438,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 			EnableAxis(graph, axes, spacePerSlot, first, last)
 		endif
 
-		regex = ".*EP_DA_(?:[[:digit:]]{1,2})_HS_" + num2str(headstage)
+		sprintf regex, ".*%s_DA_(?:[[:digit:]]{1,2})_HS_%d", DB_AXIS_PART_EPOCHS, headstage
 		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
 
 		if(WaveExists(axes))

@@ -1633,8 +1633,8 @@ Function BSP_AddTracesForEpochs(string win)
 
 		// use our own y axis
 		// need to replace for both AD and DA cases
-		yaxis = ReplaceString("_DA", yaxis, "_EP_DA")
-		yaxis = ReplaceString("_AD", yaxis, "_EP_DA")
+		yaxis = ReplaceString("_DA", yaxis, DB_AXIS_PART_EPOCHS + "_DA")
+		yaxis = ReplaceString("_AD", yaxis, DB_AXIS_PART_EPOCHS + "_DA")
 
 		headstage   = str2num(traceInfos[j][%headstage])
 		sweepNumber = str2num(traceInfos[j][%sweepNumber])

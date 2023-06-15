@@ -2094,3 +2094,9 @@ Constant SATURDAY = 7
 /// @}
 
 Constant SECONDS_PER_DAY = 86400
+
+/// @name DataBrowser visualisation constants
+/// @anchor DataBrowserVisualizationConstants
+/// @{
+Strconstant DB_AXIS_PART_EPOCHS = "_EP"
+/// @}
