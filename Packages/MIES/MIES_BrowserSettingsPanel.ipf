@@ -1598,7 +1598,7 @@ End
 Function BSP_AddTracesForEpochs(string win)
 
 	variable i, j, k, numEntries, start_x, start_y, end_x, end_y, yOffset
-	variable headstage, yLevelOffset, level, idx, numTraces, numEpochs
+	variable headstage, channelType, channelNumber, channelNumberDA, yLevelOffset, level, idx, numTraces, numEpochs
 	variable sweepNumber, traceIndex
 	STRUCT RGBColor c
 	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, epochInfoStr
@@ -1638,29 +1638,33 @@ Function BSP_AddTracesForEpochs(string win)
 
 		headstage   = str2num(traceInfos[j][%headstage])
 		sweepNumber = str2num(traceInfos[j][%sweepNumber])
+		channelType = WhichListItem(traceInfos[j][%channelType], XOP_CHANNEL_NAMES)
+		channelNumber = str2num(traceInfos[j][%channelNumber])
+
+		switch(channelType)
+			case XOP_CHANNEL_TYPE_ADC:
+				channelNumberDA = SFH_GetDAChannel(win, sweepNumber, channelType, channelNumber)
+				break
+			case XOP_CHANNEL_TYPE_DAC:
+				channelNumberDA = channelNumber
+				break
+			default:
+				ASSERT(0, "Unsupported channelType")
+		endswitch
 
 		WAVE/Z/T textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
 		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
-
+		WAVE/Z/T numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNumber)
+		ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
 		// present since a2172f03 (Added generations of epoch information wave, 2019-05-22)
-		WAVE/T/Z epochLBEntries = GetLastSetting(textualValues, sweepNumber, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
-
-		if(!WaveExists(epochLBEntries))
+		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, channelNumberDA, XOP_CHANNEL_TYPE_DAC)
+		if(!WaveExists(epochsFromLBN))
 			continue
 		endif
-
-		epochInfoStr = epochLBEntries[headstage]
-
-		if(IsEmpty(epochInfoStr))
-			continue
-		endif
-
-		WAVE/T epochs = EP_EpochStrToWave(epochInfoStr)
-		SetEpochsDimensionLabels(epochs)
 
 		sprintf name, "epochs_sweep%d_HS%d", sweepNumber, headstage
 
-		Duplicate/O/T epochs, dfr:$name/Wave=epochs
+		Duplicate/O/T epochsFromLBN, dfr:$name/Wave=epochs
 
 		yLevelOffset = 10
 		yOffset = - yLevelOffset
