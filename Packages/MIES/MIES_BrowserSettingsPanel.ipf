@@ -1601,7 +1601,7 @@ Function BSP_AddTracesForEpochs(string win)
 	variable headstage, channelType, channelNumber, channelNumberDA, yLevelOffset, level, idx, numTraces, numEpochs
 	variable sweepNumber, traceIndex
 	STRUCT RGBColor c
-	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, epochInfoStr
+	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, epochInfoStr, idPart
 	string level_0_trace, level_1_trace, level_2_trace, level_3_trace, level_4_trace
 
 	if(!BSP_IsDataBrowser(win) && !BSP_IsSweepBrowser(win))
@@ -1613,15 +1613,24 @@ Function BSP_AddTracesForEpochs(string win)
 	DFREF dfr = GetEpochsVisualizationFolder(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
 	BSP_RemoveTraces(win)
 
-	WAVE/T/Z traceInfos = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"AD", "1"})
+	WAVE/T/Z traceInfosHS = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"AD", "1"})
 
-	if(!WaveExists(traceInfos))
+	if(!WaveExists(traceInfosHS))
 		// fallback to DA traces
-		WAVE/T/Z traceInfos = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
+		WAVE/T/Z traceInfosHS = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
+	endif
 
-		if(!WaveExists(traceInfos))
-			return NaN
-		endif
+	WAVE/T/Z traceInfosUnassocDA = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "0"})
+
+	if(!WaveExists(traceInfosHS) && !WaveExists(traceInfosUnassocDA))
+		return NaN
+	elseif(!WaveExists(traceInfosHS))
+		WAVE/T traceInfos = traceInfosUnassocDA
+	elseif(!WaveExists(traceInfosUnassocDA))
+		WAVE/T traceInfos = traceInfosHS
+	else
+		Concatenate/FREE/T/NP=(ROWS) {traceInfosUnassocDA}, traceInfosHS
+		WAVE/T traceInfos = traceInfosHS
 	endif
 
 	traceIndex = GetNextTraceIndex(win)
@@ -1662,7 +1671,8 @@ Function BSP_AddTracesForEpochs(string win)
 			continue
 		endif
 
-		sprintf name, "epochs_sweep%d_HS%d", sweepNumber, headstage
+		sprintf idPart, "_sweep%d_chan%d_type%d_HS%d", sweepNumber, channelNumber, channelType, headstage
+		sprintf name, "epochs_%s", idPart
 
 		Duplicate/O/T epochsFromLBN, dfr:$name/Wave=epochs
 
@@ -1673,11 +1683,11 @@ Function BSP_AddTracesForEpochs(string win)
 
 		Make/FREE/N=(5) currentLevel, indexInLevel
 
-		sprintf levels_x_name, "levels_x_sweep%d_HS%d", sweepNumber, headstage
+		sprintf levels_x_name, "levels_x_%s", idpart
 		Make/O/N=(numEpochs * 3, 5, 2) dfr:$levels_x_name/WAVE=levels_x
 		levels_x = NaN
 
-		sprintf levels_y_name, "levels_y_sweep%d_HS%d", sweepNumber, headstage
+		sprintf levels_y_name, "levels_y_%s", idPart
 		Make/O/N=(numEpochs * 3, 5, 2) dfr:$levels_y_name/WAVE=levels_y
 		levels_y = NaN
 		SetStringInWaveNote(levels_y, "EpochInfo", GetWavesDataFolder(epochs, 2))
@@ -1709,11 +1719,11 @@ Function BSP_AddTracesForEpochs(string win)
 			currentLevel[level] += 1
 		endfor
 
-		sprintf level_0_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 0, sweepNumber, headstage
-		sprintf level_1_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 1, sweepNumber, headstage
-		sprintf level_2_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 2, sweepNumber, headstage
-		sprintf level_3_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 3, sweepNumber, headstage
-		sprintf level_4_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 4, sweepNumber, headstage
+		sprintf level_0_trace, "%s_level%d_x_%s", GetTraceNamePrefix(traceIndex++), 0, idPart
+		sprintf level_1_trace, "%s_level%d_x_%s", GetTraceNamePrefix(traceIndex++), 1, idPart
+		sprintf level_2_trace, "%s_level%d_x_%s", GetTraceNamePrefix(traceIndex++), 2, idPart
+		sprintf level_3_trace, "%s_level%d_x_%s", GetTraceNamePrefix(traceIndex++), 3, idPart
+		sprintf level_4_trace, "%s_level%d_x_%s", GetTraceNamePrefix(traceIndex++), 4, idPart
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][0]/TN=$level_0_trace vs levels_x[][0]
 		TUD_SetUserDataFromWaves(win, level_0_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})

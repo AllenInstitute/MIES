@@ -2392,8 +2392,8 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
 	numBlocksDA = WaveExists(axes) ? DimSize(axes, ROWS) : 0
 
-	// epoch info for associated DA channels
-	sprintf regex, ".*col0%s_DA_(?:[[:digit:]]{1,2})_HS_(?:[[:digit:]]{1,2})$", DB_AXIS_PART_EPOCHS
+	// epoch info slots for associated and unassociated DA channels
+	sprintf regex, ".*col0%s_DA_(?:[[:digit:]]{1,2})_HS_(?:([[:digit:]]{1,2}|NaN))$", DB_AXIS_PART_EPOCHS
 	WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
 	numBlocksEpoch = WaveExists(axes) ? DimSize(axes, ROWS) : 0
 
@@ -2462,10 +2462,17 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 	// unassoc DA
 	for(i = 0; i < numBlocksUnassocDA; i += 1)
-		regex = ".*DA_" + num2str(unassocDA[i]) + "_HS_NaN"
+		sprintf regex, ".*(?<!%s)_DA_%d_HS_NaN", DB_AXIS_PART_EPOCHS, unassocDA[i]
 		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
 		EnableAxis(graph, axes, spacePerSlot, first, last)
+
+		sprintf regex, ".*%s_DA_%d_HS_NaN", DB_AXIS_PART_EPOCHS, unassocDA[i]
+		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+
+		if(WaveExists(axes))
+			EnableAxis(graph, axes, EPOCH_SLOT_MULTIPLIER * spacePerSlot, first, last)
+		endif
 	endfor
 
 	// unassoc AD
@@ -2475,9 +2482,6 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
 		EnableAxis(graph, axes, ADC_SLOT_MULTIPLIER * spacePerSlot, first, last)
 	endfor
-
-	// BSP_AddTracesForEpochs ignores unassociated DA channels
-	// so we don't have epoch axes here
 
 	// TTLs
 	for(i = 0; i < numBlocksTTL; i += 1)
