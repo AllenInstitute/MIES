@@ -35,7 +35,6 @@ jobs:
         run: tools/initial-repo-config.sh
       - name: Download artifacts
         uses: actions/download-artifact@v3
-        continue-on-error: true
         with:
           name: Documentation-assets
       - name: Deploy documentation to github pages
@@ -57,7 +56,6 @@ jobs:
         run: tools/initial-repo-config.sh
       - name: Download artifacts
         uses: actions/download-artifact@v3
-        continue-on-error: true
         with:
           name: BuildInstaller-user-assets
       - name: Deploy release assets to github
@@ -76,7 +74,6 @@ jobs:
       - name: Download all artifacts
         id: download
         uses: actions/download-artifact@v3
-        continue-on-error: true
         with:
           path: artifacts
       - name: 📥 Download report cache from FTP
@@ -138,7 +135,6 @@ jobs:
       - name: Download all artifacts
         id: download
         uses: actions/download-artifact@v3
-        continue-on-error: true
         with:
           path: artifacts
       - name: Flatten artifact structure
@@ -146,7 +142,11 @@ jobs:
           find "${{ steps.download.outputs.download-path }}" -mindepth 1 -maxdepth 1 -type d |\
             xargs -I {} tools/ftp-upload/flatten-files.sh "{}"
       - name: Compress NWB artifacts
-        run: find -name "*.nwb" | while read file; do tar -czvf $file.tar.gz --remove-files $file; done
+        run: |
+          for dir in test-itc-assets test-ni-assets
+          do
+            tar --remove-files --use-compress-program=zstd -cvf $dir/NWB.tar.zst $dir/*nwb
+          done
         working-directory: ${{ steps.download.outputs.download-path }}
       - name: Upload artifacts using FTP
         run: |
