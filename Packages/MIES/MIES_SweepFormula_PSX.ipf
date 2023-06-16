@@ -458,7 +458,7 @@ end
 /// @brief Analyze the peaks
 static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE peakX, WAVE peakY, variable maxTauFactor, variable kernelAmp, variable index, WAVE psxEvent, WAVE eventFit)
 
-	variable i, i_time, h_time, i_amp, dc_amp, dc_peak_t, isi, i_peak, i_peak_t, pre_min, pre_min_t, numCrossings
+	variable i, i_time, i_amp, dc_amp, dc_peak_t, isi, i_peak, i_peak_t, pre_min, pre_min_t, numCrossings
 	variable peak_end_search
 
 	numCrossings = DimSize(peakX, ROWS)
@@ -492,10 +492,8 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 
 		if(i == 0)
 			isi = NaN
-			h_time = NaN
 		else
-			h_time = peakX[i - 1] // previous event's time of peak
-			isi = i_time - h_time
+			isi = i_time - psxEvent[i - 1][%dc_peak_time]
 		endif
 
 		WaveStats/Q/R=(i_time - 2, i_time) sweepDataFiltOff
