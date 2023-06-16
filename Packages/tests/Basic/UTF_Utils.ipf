@@ -6833,3 +6833,42 @@ static Function NoNullReturnFromGetSetVariableString()
 	GetSetVariableString("testpanelSV", "svari")
 	PASS()
 End
+
+static Function/WAVE GetLimitValues()
+
+	Make/WAVE/FREE/N=6 comb
+
+	// value, low, high, replacement, result
+
+	Make/FREE wv0 = {1, 0, 2, NaN, 1}
+	comb[0] = wv0
+
+	Make/FREE wv1 = {1, 1, 2, NaN, 1}
+	comb[1] = wv1
+
+	Make/FREE wv2 = {2, 1, 2, NaN, 2}
+	comb[2] = wv2
+
+	Make/FREE wv3 = {0, 1, 2, NaN, NaN}
+	comb[3] = wv3
+
+	Make/FREE wv4 = {3, 1, 2, NaN, NaN}
+	comb[4] = wv4
+
+	Make/FREE wv5 = {3, 1, 2, -1, -1}
+	comb[5] = wv5
+
+	return comb
+End
+
+// IUTF_TD_GENERATOR w0:GetLimitValues
+static Function TestLimitWithReplace([STRUCT IUTF_mData &mData])
+
+	variable val    = mData.w0[0]
+	variable low    = mData.w0[1]
+	variable high   = mData.w0[2]
+	variable repl   = mData.w0[3]
+	variable result = mData.w0[4]
+
+	CHECK_EQUAL_VAR(LimitWithReplace(val, low, high, repl), result)
+End

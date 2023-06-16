@@ -1230,7 +1230,7 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			ASSERT(0, "invalid type")
 	endswitch
 
-	WAVE/D/Z/SDFR=root: wv = overrideResults
+	WAVE/D/Z wv = GetOverrideResults()
 
 	if(WaveExists(wv))
 		Redimension/D/N=(numRows, numCols, numLayers, numChunks) wv

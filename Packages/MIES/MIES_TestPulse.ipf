@@ -287,9 +287,7 @@ static Function/WAVE TP_CreateOverrideResults(string device, variable type)
 			ASSERT(0, "Invalid type")
 	endswitch
 
-	WAVE/D/Z/SDFR=root: wv = overrideResults
-
-	KillOrMoveToTrash(wv = wv)
+	KillOrMoveToTrash(wv = GetOverrideResults())
 
 	Make/D/N=(numRows, numCols, numLayers) root:overrideResults/Wave=wv
 

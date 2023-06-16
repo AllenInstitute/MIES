@@ -1361,9 +1361,7 @@ Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable f
 		return NaN
 	endif
 
-	// 0: holds all calling functions
-	// 1: is the current function
-	ASSERT(ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) == 1 , "Recursion detected, aborting")
+	ASSERT(!IsFunctionCalledRecursively(), "Recursion detected, aborting")
 
 	if(DAG_GetNumericalValue(device, "check_Settings_MD"))
 		TPM_StartTestPulseMultiDevice(device)

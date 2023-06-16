@@ -14,6 +14,14 @@ static StrConstant SFH_WORKING_DF = "FormulaData"
 static StrConstant SFH_ARGSETUP_OPERATION_KEY = "Operation"
 static StrConstant SFH_ARGSETUP_EMPTY_OPERATION_VALUE = "NOOP"
 
+threadsafe Function SFH_StringChecker_Prototype(string str)
+	ASSERT_TS(0, "Can't call prototype function")
+End
+
+threadsafe Function SFH_NumericChecker_Prototype(variable var)
+	ASSERT_TS(0, "Can't call prototype function")
+End
+
 /// @brief Convenience helper function to get a numeric SweepFormula operation argument
 ///
 /// Given the operation `fetchBeer(variable numBottles, [variable size])` one can fetch both parameters via:
@@ -30,10 +38,10 @@ static StrConstant SFH_ARGSETUP_EMPTY_OPERATION_VALUE = "NOOP"
 /// Here `numBottles` is argument number 0 and mandatory as `defValue` is not present.
 ///
 /// The second argument `size` is optional with 0.5 as default and also defines a list of valid values.
-Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues])
+Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues, FUNCREF SFH_NumericChecker_Prototype checkFunc])
 
 	string msg, sep, allowedValuesAsStr
-	variable checkExist, numArgs, result, idx
+	variable checkExist, numArgs, result, idx, ret
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -74,6 +82,15 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 		endif
 	endif
 
+	if(!ParamIsDefault(checkFunc))
+		ret = !!checkFunc(result)
+
+		if(!ret)
+			sprintf msg, "Argument #%d of operation %s: The numeric argument \"%g\" does not meet the requirements of \"%s\"", argNum, opShort, result, StringByKey("NAME", FuncRefInfo(checkFunc))
+			SFH_ASSERT(0, msg)
+		endif
+	endif
+
 	return result
 End
 
@@ -95,10 +112,10 @@ End
 /// The second argument `type` is optional with `steam train` as default and a list of allowed values.
 ///
 /// The text argument can be abbreviated as long as it is unique, the unabbreviated result is returned in all cases.
-Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues])
+Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues, FUNCREF SFH_StringChecker_Prototype checkFunc])
 
 	string msg, result, sep, allowedValuesAsStr
-	variable checkExist, numArgs, idx
+	variable checkExist, numArgs, idx, ret
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -109,11 +126,19 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
-		WAVE/T/Z data = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
-		sprintf msg, "Argument #%d of operation %s: Is a NULL wave reference ", argNum, opShort
+		WAVE/WAVE/Z input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		sprintf msg, "Argument #%d of operation %s: input is a NULL wave reference", argNum, opShort
+		SFH_ASSERT(WaveExists(input), msg)
+
+		sprintf msg, "Argument #%d of operation %s: Expected only one dataset", argNum, opShort
+		SFH_ASSERT(DimSize(input, ROWS) == 1, msg)
+
+		WAVE/T/Z data = input[0]
+		SFH_CleanUpInput(input)
+		sprintf msg, "Argument #%d of operation %s: Is a NULL wave reference", argNum, opShort
 		SFH_ASSERT(WaveExists(data), msg)
 
-		sprintf msg, "Argument #%d of operation %s: Must be text ", argNum, opShort
+		sprintf msg, "Argument #%d of operation %s: Must be text", argNum, opShort
 		SFH_ASSERT(IsTextWave(data), msg)
 
 		sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
@@ -146,6 +171,15 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 			ASSERT(DimSize(matches, ROWS) == 1, "Unexpected match")
 			// replace abbreviated argument with the full name
 			result = matches[0]
+		endif
+	endif
+
+	if(!ParamIsDefault(checkFunc))
+		ret = !!checkFunc(result)
+
+		if(!ret)
+			sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" does not meet the requirements of \"%s\"", argNum, opShort, result, StringByKey("NAME", FuncRefInfo(checkFunc))
+			SFH_ASSERT(0, msg)
 		endif
 	endif
 
@@ -190,10 +224,16 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
+		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+
 		if(singleResult)
-			WAVE/Z data = SFH_ResolveDatasetElementFromJSON(jsonId, jsonPath, graph, opShort, argNum, checkExist = checkExist)
+			sprintf msg, "Argument #%d of operation %s: Too many input values", argNum, opShort
+			SFH_ASSERT(DimSize(input, ROWS) == 1, msg)
+
+			WAVE/Z data = input[0]
+			SFH_CleanUpInput(input)
 		else
-			WAVE data = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+			WAVE data = input
 		endif
 
 		return data
@@ -784,7 +824,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 
 	ASSERT(!IsEmpty(code), "Unexpected empty code")
 	numCursors = ItemsInList(CURSOR_NAMES)
-	numBasicEntries = 4
+	numBasicEntries = 5
 	numEntries = numBasicEntries + numCursors + hasStoreEntry
 
 	Make/T/FREE/N=(1, numEntries) keys
@@ -794,6 +834,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 	keys[0][1]                                                 = "Sweep Formula sweeps/channels"
 	keys[0][2]                                                 = "Sweep Formula experiment"
 	keys[0][3]                                                 = "Sweep Formula device"
+	keys[0][4]                                                 = "Sweep Formula browser"
 	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
 
 	if(hasStoreEntry)
@@ -822,6 +863,8 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 	device = GetPopupMenuString(shPanel, "popup_Device")
 	values[0][%$"Sweep Formula device"][INDEP_HEADSTAGE] = device
 
+	values[0][%$"Sweep Formula browser"][INDEP_HEADSTAGE] = graph
+
 	if(WaveExists(cursorInfos))
 		values[0][numBasicEntries, numBasicEntries + numCursors - 1][INDEP_HEADSTAGE] = cursorInfos[q - numBasicEntries]
 	endif
@@ -848,7 +891,7 @@ Function/S SFH_GetFormulaGraphForBrowser(string browser)
 
 	string entry
 
-	WAVE/T matches = ListToTextWave(WinList(CleanupName(SF_PLOT_NAME_TEMPLATE, 0) + "*", ";", "WIN:64"), ";") // only panels
+	WAVE/T matches = SFH_GetFormulaGraphs()
 
 	for(entry : matches)
 		if(!cmpstr(SFH_GetBrowserForFormulaGraph(entry), browser))
@@ -857,6 +900,12 @@ Function/S SFH_GetFormulaGraphForBrowser(string browser)
 	endfor
 
 	return ""
+End
+
+/// @brief Return a text wave with all formula graph windows
+Function/WAVE SFH_GetFormulaGraphs()
+
+	return ListToTextWave(WinList(CleanupName(SF_PLOT_NAME_TEMPLATE, 0) + "*", ";", "WIN:64"), ";") // only panels
 End
 
 /// @brief Create a new selectData wave

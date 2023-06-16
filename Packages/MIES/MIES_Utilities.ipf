@@ -110,7 +110,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 #endif // AUTOMATED_TESTING
 
 		// Recursion detection, if ASSERT appears multiple times in StackTrace
-		if (ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) > 1)
+		if(IsFunctionCalledRecursively())
 
 			// Happens e.g. when ASSERT is encounterd in cleanup functions
 			print "Double Assertion Fail encountered !"
@@ -236,7 +236,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 #endif // AUTOMATED_TESTING
 
 		// Recursion detection, if ASSERT_TS appears multiple times in StackTrace
-		if (ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) > 1)
+		if(IsFunctionCalledRecursively())
 
 			print "Double threadsafe assertion Fail encountered !"
 
@@ -5967,7 +5967,7 @@ End
 
 /// @brief If the layout of an panel was changed, this function calls the
 ///        ResizeControlsPanel module functions of the Igor Pro native package
-///        to store the changed resize info. The original inteded way to do this
+///        to store the changed resize info. The originally intended way to do this
 ///        was through the Packages GUI, which is clunky for some workflows.
 Function StoreCurrentPanelsResizeInfo(string panel)
 
@@ -6613,4 +6613,23 @@ Function CopySimpleJSONElement(variable srcJsonId, string srcPath, variable tgtJ
 		default:
 			ASSERT(0, "Unsupported element type")
 	endswitch
+End
+
+/// @brief Update the help and user data of a button used as info/copy button
+Function UpdateInfoButtonHelp(string win, string ctrl, string content)
+
+	string htmlStr = "<pre>" + content + "</pre>"
+
+	Button $ctrl win=$win,help={htmlStr},userdata=content
+End
+
+/// @brief Acts like the `limit` builtin but replaces values outside the valid range instead of clipping them
+threadsafe Function LimitWithReplace(variable val, variable low, variable high, variable replacement)
+	return (val >= low && val <= high) ? val : replacement
+End
+
+/// @brief Return true if the calling function is called recursively, i.e. it
+///        is present multiple times in the call stack
+threadsafe Function IsFunctionCalledRecursively()
+	return ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(2))) > 1
 End
