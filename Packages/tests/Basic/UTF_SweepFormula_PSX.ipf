@@ -530,11 +530,12 @@ Function/WAVE StatsTest_GetInput()
 
 	input[%prop]     = "amp"
 	input[%state]    = "accept"
-	input[%postProc] = "avg"
+	input[%postProc] = "stats"
 
-	JWN_SetWaveInWaveNote(input, "/results", {(10 + 30 + 50 + 70) / 4})
-	// no xValues
-	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT})
+	JWN_SetWaveInWaveNote(input, "/results", {40, 40, 20, 25.81988897471611, 0, -2.0775})
+	JWN_SetWaveInWaveNote(input, "/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, \
+	                                         PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
 
 	// wv5
 	Duplicate/FREE/T template, wv5
@@ -605,6 +606,12 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 	WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(input, "/xValues")
 	WAVE/Z marker  = JWN_GetNumericWaveFromWaveNote(input, "/marker")
 
+	if(WaveExists(xValues) && !HasOneValidEntry(xValues))
+		WaveClear xValues
+
+		WAVE/Z xValues = JWN_GetTextWaveFromWaveNote(input, "/xValues")
+	endif
+
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
 	[WAVE range, WAVE selectData] = GetFakeRangeAndSelectData()
@@ -637,12 +644,25 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	CHECK_EQUAL_WAVES(resultsRead, results, mode = WAVE_DATA, tol = 1e-5)
 
-	WAVE/Z xValuesRead = JWN_GetNumericWaveFromWaveNote(resultsRead, SF_META_XVALUES)
+	WAVE/Z xValuesReadNumeric = JWN_GetNumericWaveFromWaveNote(resultsRead, SF_META_XVALUES)
+
+	if(WaveExists(xValuesReadNumeric) && !HasOneValidEntry(xValuesReadNumeric))
+		WaveClear xValuesReadNumeric
+
+		WAVE/Z xValuesReadText = JWN_GetTextWaveFromWaveNote(resultsRead, SF_META_XVALUES)
+	endif
+
 	if(WaveExists(xValues))
-		CHECK_WAVE(xValuesRead, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
-		CHECK_EQUAL_WAVES(xValuesRead, xValues, mode = WAVE_DATA)
+		if(IsNumericWave(xValuesReadNumeric))
+			CHECK_WAVE(xValuesReadNumeric, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+			CHECK_EQUAL_WAVES(xValuesReadNumeric, xValues, mode = WAVE_DATA)
+		elseif(IsTextWave(xValuesReadText))
+			CHECK_WAVE(xValuesReadText, TEXT_WAVE)
+			CHECK_EQUAL_WAVES(xValuesReadText, xValues, mode = WAVE_DATA)
+		endif
 	else
-		CHECK_WAVE(xValuesRead, NULL_WAVE)
+		CHECK_WAVE(xValuesReadNumeric, NULL_WAVE)
+		CHECK_WAVE(xValuesReadText, NULL_WAVE)
 		CHECK_WAVE(xValues, NULL_WAVE)
 	endif
 
@@ -754,31 +774,32 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
 
 	// wv5
-	// avg ignores NaN
+	// stats ignores NaN
 	Duplicate/FREE/T template, wv5
 	WAVE/T input = wv5
 
 	input[%prop]            = "amp"
 	input[%state]           = "all"
-	input[%postProc]        = "avg"
+	input[%postProc]        = "stats"
 	input[%refNumOutputRows]= "1"
 	input[%numEventsCombo0] = "2"
 	input[%numEventsCombo1] = "2"
 	input[%outOfRange]      = "0"
 
 	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {10})
-	// no xValues
-	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT})
+	JWN_SetWaveInWaveNote(input, "/0/results", {10, 0, 0, 0, NaN, NaN})
+	JWN_SetWaveInWaveNote(input, "/0/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
+	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT, \
+	                                           PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
 
 	// wv6
-	// avg ignores NaN and with all data NaN we don't get anything
+	// stats ignores NaN and with all data NaN we don't get anything
 	Duplicate/FREE/T template, wv6
 	WAVE/T input = wv6
 
 	input[%prop]            = "amp"
 	input[%state]           = "all"
-	input[%postProc]        = "avg"
+	input[%postProc]        = "stats"
 	input[%refNumOutputRows]= "0"
 	input[%numEventsCombo0] = "1"
 	input[%numEventsCombo1] = "1"

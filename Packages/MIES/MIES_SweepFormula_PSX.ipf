@@ -949,7 +949,8 @@ End
 static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeParam, WAVE selectData, string prop, string stateAsStr, string postProc)
 
 	string propLabel, propLabelAxis, comboKey
-	variable numRows, numCols, i, j, k, index, sweepNo, chanNr, chanType, state, numRanges, lowerBoundary, upperBoundary, temp
+	variable numRows, numCols, i, j, k, index, sweepNo, chanNr, chanType, state, numRanges, lowerBoundary, upperBoundary, temp, err
+	variable refMarker
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_STATS, MINIMUM_WAVE_SIZE)
 
@@ -1080,14 +1081,32 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 
 						JWN_SetWaveInWaveNote(results, SF_META_XVALUES, eventIndex)
 						break
-					case "avg":
+					case "stats":
 						WAVE/Z resultsRawClean = ZapNaNs(resultsRaw)
 
 						if(!WaveExists(resultsRawClean))
 							continue
 						endif
 
-						MatrixOp/FREE results = mean(resultsRawClean)
+						WaveStats/Q/M=2 resultsRawClean
+
+						Make/FREE/D results = {V_avg, NaN, V_adev, V_sdev, V_skew, V_kurt}
+
+						AssertonAndClearRTError()
+						StatsQuantiles/Q/Z resultsRawClean; err = GetRTError(1)
+
+						if(!err)
+							results[1] = V_Median
+						endif
+
+						WAVE/T statsLabels = ListToTextWave(PSX_STATS_LABELS, ";")
+						JWN_SetWaveInWaveNote(results, SF_META_XVALUES, statsLabels)
+						SetDimensionLabels(results, PSX_STATS_LABELS, ROWS)
+
+						// resize markers
+						Redimension/N=(DimSize(results, ROWS)) marker
+						refMarker= marker[0]
+						marker[] = refMarker
 
 						break
 					case "count":
@@ -1151,7 +1170,6 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 				Redimension/N=(DimSize(results, ROWS)) marker, comboKeys
 
 				JWN_SetWaveInWaveNote(results, SF_META_MOD_MARKER, marker)
-
 				JWN_CreatePath(results, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
 				JWN_SetWaveInWaveNote(results, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME, comboKeys)
 
@@ -1177,9 +1195,8 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Event")
 			JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, propLabelAxis)
 			break
-		case "avg":
-			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "NA")
-			JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, "Averaged " + LowerStr(propLabelAxis))
+		case "stats":
+			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Statistical properties of " + LowerStr(propLabelAxis))
 			break
 		case "count":
 			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "NA")
@@ -3812,7 +3829,7 @@ Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 
 	prop       = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 3, allowedValues = {"amp", "xpos", "xinterval", "tau", "estate", "fstate", "fitresult"})
 	stateAsStr = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 4, allowedValues = {"accept", "reject", "undetermined", "all", "every"})
-	postProc   = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 5, defValue = "nothing", allowedValues = {"nothing", "avg", "count", "hist", "log10"})
+	postProc   = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 5, defValue = "nothing", allowedValues = {"nothing", "stats", "count", "hist", "log10"})
 
 	WAVE/WAVE output = PSX_OperationStatsImpl(graph, id, range, selectData, prop, stateAsStr, postProc)
 
