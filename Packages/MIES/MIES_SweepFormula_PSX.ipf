@@ -496,7 +496,6 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 		else
 			h_time = peakX[i - 1] // previous event's time of peak
 			isi = i_time - h_time
-			h_time = psxEvent[i - 1][%i_peak] // update previous events time to be time of i peak
 		endif
 
 		WaveStats/Q/R=(i_time - 2, i_time) sweepDataFiltOff
