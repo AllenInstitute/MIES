@@ -1641,7 +1641,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY)
 
 				if(!WaveExists(wvResultX) && !IsEmpty(plotMetaData.xAxisLabel))
-					WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
+					WAVE/Z wvResultX = JWN_GetTextWaveFromWaveNote(wvResultY, SF_META_XVALUES)
+
+					if(!WaveExists(wvResultX))
+						WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
+					endif
 				endif
 
 				if(WaveExists(wvResultX))

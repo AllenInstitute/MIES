@@ -711,8 +711,13 @@ Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE outpu
 		if(!WaveExists(inData) || !WaveExists(outData))
 			continue
 		endif
+
 		if(keepX)
-			WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(outData, SF_META_XVALUES)
+			WAVE/Z xValues = JWN_GetTextWaveFromWaveNote(outData, SF_META_XVALUES)
+
+			if(!WaveExists(xValues))
+				WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(outData, SF_META_XVALUES)
+			endif
 		endif
 
 		Note/K outData, note(inData)
