@@ -4321,6 +4321,15 @@ Function PSX_CheckboxProcAllEventPlotUpdate(STRUCT WMCheckboxAction &cba) : Chec
 	endswitch
 End
 
+Function PSX_CheckboxProcChangeRestrictCurrentCombo(STRUCT WMCheckboxAction &cba) : CheckboxControl
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
+			break
+	endswitch
+End
+
 Function PSX_CheckboxProcFitAcceptAverage(STRUCT WMCheckboxAction &cba) : CheckboxControl
 
 	switch(cba.eventCode)
@@ -4578,7 +4587,7 @@ Window PSXPanel() : Panel
 	CheckBox checkbox_average_events_all,title="All"
 	CheckBox checkbox_average_events_all,help={"Show average of all events in all events graph"}
 	CheckBox checkbox_average_events_all,value=0
-	CheckBox checkbox_restrict_events_to_current_combination,pos={12.00,143.00},size={97.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
+	CheckBox checkbox_restrict_events_to_current_combination,pos={12.00,143.00},size={97.00,15.00},proc=PSX_CheckboxProcChangeRestrictCurrentCombo
 	CheckBox checkbox_restrict_events_to_current_combination,title="Current combo"
 	CheckBox checkbox_restrict_events_to_current_combination,help={"Show event traces from only the current combination (checked) instead of all combinations (unchecked).\r The current combination can be set in the ListBox below."}
 	CheckBox checkbox_restrict_events_to_current_combination,value=0
