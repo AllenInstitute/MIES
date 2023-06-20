@@ -297,8 +297,8 @@ static Function TestEpochsGeneric(device)
 	string device
 
 	variable numEntries, endTimeDAC, endTimeEpochs, samplingInterval
-	variable i, lastPoint
-	string list, epochStr
+	variable i, lastPoint, index
+	string list, setNameLBEntry
 
 	string sweeps, configs
 	variable sweepNo
@@ -356,17 +356,20 @@ static Function TestEpochsGeneric(device)
 	lastPoint = DimSize(sweep, ROWS)
 	endTimeDAC = samplingInterval * lastPoint
 
-	WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
-	WAVE/T setNameLBEntries = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-
 	for(i = 0; i < numEntries; i += 1)
-		epochStr = epochLBEntries[i]
-		if(WB_StimsetIsFromThirdParty(setNameLBEntries[i]) || !cmpstr(setNameLBEntries[i], STIMSET_TP_WHILE_DAQ))
-			CHECK_EMPTY_STR(epochStr)
+
+		WAVE/Z/T epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, DACs[i], XOP_CHANNEL_TYPE_DAC)
+
+		[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, DACs[i], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+		CHECK_WAVE(setting, TEXT_WAVE)
+		WAVE/T settingText = setting
+		setNameLBEntry = settingText[index]
+		if(WB_StimsetIsFromThirdParty(setNameLBEntry) || !cmpstr(setNameLBEntry, STIMSET_TP_WHILE_DAQ))
+			CHECK_WAVE(epochChannel, NULL_WAVE)
 			continue
 		endif
+		CHECK_WAVE(epochChannel, TEXT_WAVE)
 
-		WAVE/T epochChannel = EP_EpochStrToWave(epochStr)
 		Make/FREE/D/N=(DimSize(epochChannel, ROWS)) endT
 
 		// preserve epochs wave in CDF
