@@ -2888,6 +2888,7 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 	string entry, seps
 	string list = ""
 	variable i, j, k, l, lasti, lastj, lastk, lastl, numRows, numCols, numLayers, numChunks, count, done
+	variable numColsLoop, numLayersLoop, numChunksLoop
 
 	if(!WaveExists(txtWave))
 		return ""
@@ -2927,15 +2928,17 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 	if(numRows == 0)
 		return list
 	endif
-
-	numCols = max(1, DimSize(txtWave, COLS))
-	numLayers = max(1, DimSize(txtWave, LAYERS))
-	numChunks = max(1, DimSize(txtWave, CHUNKS))
+	numCols = DimSize(txtWave, COLS)
+	numLayers = DimSize(txtWave, LAYERS)
+	numChunks = DimSize(txtWave, CHUNKS)
+	numColsLoop = max(1, numCols)
+	numLayersLoop = max(1, numLayers)
+	numChunksLoop = max(1, numChunks)
 
 	for(i = 0; i < numRows; i += 1)
-		for(j = 0; j < numCols; j += 1)
-			for(k = 0; k < numLayers; k += 1)
-				for(l = 0; l < numChunks; l += 1)
+		for(j = 0; j < numColsLoop; j += 1)
+			for(k = 0; k < numLayersLoop; k += 1)
+				for(l = 0; l < numChunksLoop; l += 1)
 					entry = txtWave[i][j][k][l]
 
 					if(stopOnEmpty && IsEmpty(entry))
@@ -2993,15 +2996,15 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 		return list
 	endif
 
-	if(numChunks > 1)
+	if(numChunks)
 		list += chunkSep
 	endif
 
-	if(numLayers > 1)
+	if(numLayers)
 		list += layerSep
 	endif
 
-	if(numCols > 1)
+	if(numCols)
 		list += colSep
 	endif
 

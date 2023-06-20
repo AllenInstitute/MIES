@@ -2787,6 +2787,32 @@ Function TWTLMaxElements()
 	CHECK_EQUAL_STR(list, refList)
 End
 
+static Function TWTLSingleElementNDSeparators()
+
+	string list
+	string refList
+
+	Make/FREE/T/N=(1, 1, 1, 1) wt = "test"
+	list = TextWaveToList(wt, ";")
+	refList = "test/:,;"
+	CHECK_EQUAL_STR(list, refList)
+
+	Make/FREE/T/N=(1, 1, 1) wt = "test"
+	list = TextWaveToList(wt, ";")
+	refList = "test:,;"
+	CHECK_EQUAL_STR(list, refList)
+
+	Make/FREE/T/N=(1, 1) wt = "test"
+	list = TextWaveToList(wt, ";")
+	refList = "test,;"
+	CHECK_EQUAL_STR(list, refList)
+
+	Make/FREE/T/N=(1) wt = "test"
+	list = TextWaveToList(wt, ";")
+	refList = "test;"
+	CHECK_EQUAL_STR(list, refList)
+End
+
 Function/WAVE SomeTextWaves()
 	Make/WAVE/FREE/N=5 all
 
