@@ -25,6 +25,7 @@ static StrConstant SHORTNAMEKEY_SEP = "="
 static StrConstant EPOCH_SN_BL_ONSETDELAYUSER = "B0_OD"
 static StrConstant EPOCH_SN_BL_DDAQ = "B0_DD"
 static StrConstant EPOCH_SN_BL_TERMINATIONDELAY = "B0_TD"
+static StrConstant EPOCH_SN_BL_UNASSOC_NOTP_BASELINE = "B0_TP"
 static StrConstant EPOCH_SN_BL_DDAQOPT = "B0_DO"
 static StrConstant EPOCH_SN_BL_DDAQTRAIL = "B0_TR"
 static StrConstant EPOCH_SN_TP = "TP"
@@ -63,7 +64,7 @@ End
 Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 
 	variable i, channel, singleSetLength, epochOffset, epochBegin, epochEnd
-	variable stimsetCol, startOffset, stopCollectionPoint
+	variable stimsetCol, startOffset, stopCollectionPoint, isUnAssociated, testPulseLength
 	string tags
 
 	if(s.dataAcqOrTP != DATA_ACQUISITION_MODE)
@@ -85,6 +86,7 @@ Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 		singleSetLength = s.setLength[i]
 		WAVE singleStimSet = s.stimSet[i]
 		stimsetCol = s.setColumn[i]
+		isUnAssociated = IsNaN(s.headstageDAC[i])
 
 		// epoch for onsetDelayAuto is assumed to be a globalTPInsert which is added as epoch below
 		if(s.onsetDelayUser)
@@ -136,10 +138,16 @@ Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 			EP_AddEpoch(device, channel, epochBegin * s.samplingInterval, stopCollectionPoint * s.samplingInterval, tags, EPOCH_SN_BL_DDAQTRAIL, 0)
 		endif
 
+		testPulseLength = s.testPulseLength * s.samplingInterval
 		if(s.globalTPInsert)
-			// space in ITCDataWave for the testpulse is allocated via an automatic increase
-			// of the onset delay
-			EP_AddEpochsFromTP(device, channel, s.baselinefrac, s.testPulseLength * s.samplingInterval, 0, s.DACAmp[i][%TPAMP])
+			if(!(isUnAssociated && !s.doTPonUnassocDA))
+				// space in ITCDataWave for the testpulse is allocated via an automatic increase
+				// of the onset delay
+				EP_AddEpochsFromTP(device, channel, s.baselinefrac, testPulseLength, 0, s.DACAmp[i][%TPAMP])
+			else
+				tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+				EP_AddEpoch(device, channel, 0, testPulseLength, tags, EPOCH_SN_BL_UNASSOC_NOTP_BASELINE, 0)
+			endif
 		endif
 	endfor
 End
