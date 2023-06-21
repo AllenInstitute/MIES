@@ -547,7 +547,7 @@ static Function EP_SortEpochs(device)
 	WAVE/T epochWave = GetEpochsWave(device)
 	channelCnt = DimSize(epochWave, LAYERS)
 	for(channel = 0; channel < channelCnt; channel += 1)
-		epochCnt = EP_GetEpochCount(epochWave, channel)
+		epochCnt = EP_GetEpochCount(epochWave, channel, XOP_CHANNEL_TYPE_DAC)
 		if(epochCnt == 0)
 			continue
 		endif
@@ -576,13 +576,14 @@ End
 
 /// @brief Returns the number of epoch in the epochsWave for the given channel
 ///
-/// @param[in] epochWave wave with epoch info
-/// @param[in] channel   number of DA channel
+/// @param[in] epochWave   wave with epoch info
+/// @param[in] channel     number of DA/TTL channel
+/// @param[in] channelType type of channel (DA or TTL)
 ///
 /// @return number of epochs for channel
-static Function EP_GetEpochCount(WAVE/T epochWave, variable channel)
+static Function EP_GetEpochCount(WAVE/T epochWave, variable channel, variable channelType)
 
-	FindValue/Z/RMD=[][][channel]/TXOP=4/TEXT="" epochWave
+	FindValue/Z/RMD=[][][channel][channelType]/TXOP=4/TEXT="" epochWave
 	return V_row == -1 ? DimSize(epochWave, ROWS) : V_row
 End
 
@@ -653,7 +654,7 @@ static Function EP_AddEpoch(device, channel, channelType, epBegin, epEnd, epTags
 	epBegin = limit(epBegin, lowerlimit, Inf)
 	epEnd = limit(epEnd, -Inf, upperlimit)
 
-	i = EP_GetEpochCount(epochWave, channel)
+	i = EP_GetEpochCount(epochWave, channel, channelType)
 	EnsureLargeEnoughWave(epochWave, indexShouldExist = i, dimension = ROWS)
 
 	startTimeStr = num2strHighPrec(epBegin * MICRO_TO_ONE, precision = EPOCHTIME_PRECISION)
@@ -845,7 +846,7 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 
 		epochCnt = DimSize(epochInfo, ROWS)
 	else
-		epochCnt = EP_GetEpochCount(epochsWave, channelNumber)
+		epochCnt = EP_GetEpochCount(epochsWave, channelNumber, channelType)
 
 		if(epochCnt == 0)
 			return $""
