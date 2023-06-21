@@ -826,7 +826,7 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	variable index, epochCnt, midSweep
 	string regexp
 
-	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Only channelType XOP_CHANNEL_TYPE_DAC is supported")
+	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_TTL, "Only channelType XOP_CHANNEL_TYPE_DAC and XOP_CHANNEL_TYPE_TTL is supported")
 	treelevel = ParamIsDefault(treelevel) ? NaN : treelevel
 
 	if(ParamIsDefault(epochsWave) || !WaveExists(epochsWave))
