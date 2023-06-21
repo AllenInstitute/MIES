@@ -30,8 +30,8 @@ static Function [WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] 
 
 	Make/N=(1, 1)/T keys = "Epochs"
 	Make/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
-	values[0][0][0] = EP_EpochWaveToStr(epochsWave, 2)
-	values[0][0][1] = EP_EpochWaveToStr(epochsWave, 3)
+	values[0][0][0] = EP_EpochWaveToStr(epochsWave, 2, XOP_CHANNEL_TYPE_DAC)
+	values[0][0][1] = EP_EpochWaveToStr(epochsWave, 3, XOP_CHANNEL_TYPE_DAC)
 
 	ED_AddEntriesToLabnotebook(values, keys, 0, device, DATA_ACQUISITION_MODE)
 
