@@ -762,51 +762,65 @@ End
 /// @param acquiredTime  Last acquired time point [s]
 /// @param plannedTime   Last time point in the sweep [s]
 static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acquiredTime, variable plannedTime)
-	variable i, channel, epoch, numEntries, endTime, startTime, epochCnt
-	string tags
 
-	WAVE/T epochWave = GetEpochsWave(device)
+	variable i, hwChannelNumber, numEntries, chanType
 
 	numEntries = DimSize(configWave, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		if(configWave[i][%ChannelType] != XOP_CHANNEL_TYPE_DAC)
-			// no more DACs, we are done
-			break
+		chanType = configWave[i][%ChannelType]
+		if(chanType != XOP_CHANNEL_TYPE_DAC)
+			continue
 		endif
 
 		if(configWave[i][%DAQChannelType] != DAQ_CHANNEL_TYPE_DAQ)
 			// skip all other channel types
 			 continue
 		endif
-
-		channel = configWave[i][%ChannelNumber]
-
-		epochCnt = EP_GetEpochCount(epochWave, channel)
-
-		for(epoch = 0; epoch < epochCnt; epoch += 1)
-			startTime = str2num(epochWave[epoch][%StartTime][channel])
-			endTime   = str2num(epochWave[epoch][%EndTime][channel])
-
-			if(acquiredTime >= endTime)
-				continue
-			endif
-
-			if(acquiredTime < startTime || abs(acquiredTime - startTime) <= 10^(-EPOCHTIME_PRECISION))
-				// lies completely outside the acquired region
-				// mark it for deletion
-				epochWave[epoch][%StartTime][channel] = "NaN"
-				epochWave[epoch][%EndTime][channel]   = "NaN"
-			else
-				// epoch was cut off
-				epochWave[epoch][%EndTime][channel] = num2strHighPrec(acquiredTime, precision = EPOCHTIME_PRECISION)
-			endif
-		endfor
-
-		// add unacquired epoch
-		// relies on EP_AddEpoch ignoring single point epochs
-		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, acquiredTime * ONE_TO_MICRO , plannedTime * ONE_TO_MICRO, tags , EPOCH_SN_UNACQUIRED, 0)
+		hwChannelNumber = configWave[i][%ChannelNumber]
+		EP_AdaptEpochInfoChannel(device, hwChannelNumber, XOP_CHANNEL_TYPE_DAC, acquiredTime, plannedTime)
 	endfor
+
+	WAVE statusFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		if(!statusFiltered[i])
+			continue
+		endif
+		EP_AdaptEpochInfoChannel(device, i, XOP_CHANNEL_TYPE_TTL, acquiredTime, plannedTime)
+	endfor
+End
+
+static Function EP_AdaptEpochInfoChannel(string device, variable channelNumber, variable channelType, variable acquiredTime, variable plannedTime)
+
+	variable epochCnt, epoch, startTime, endTime
+	string tags
+
+	WAVE/T epochWave = GetEpochsWave(device)
+
+	epochCnt = EP_GetEpochCount(epochWave, channelNumber, channelType)
+
+	for(epoch = 0; epoch < epochCnt; epoch += 1)
+		startTime = str2num(epochWave[epoch][%StartTime][channelNumber][channelType])
+		endTime   = str2num(epochWave[epoch][%EndTime][channelNumber][channelType])
+
+		if(acquiredTime >= endTime)
+			continue
+		endif
+
+		if(acquiredTime < startTime || abs(acquiredTime - startTime) <= 10^(-EPOCHTIME_PRECISION))
+			// lies completely outside the acquired region
+			// mark it for deletion
+			epochWave[epoch][%StartTime][channelNumber][channelType] = "NaN"
+			epochWave[epoch][%EndTime][channelNumber][channelType]   = "NaN"
+		else
+			// epoch was cut off
+			epochWave[epoch][%EndTime][channelNumber][channelType] = num2strHighPrec(acquiredTime, precision = EPOCHTIME_PRECISION)
+		endif
+	endfor
+
+	// add unacquired epoch
+	// relies on EP_AddEpoch ignoring single point epochs
+	tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+	EP_AddEpoch(device, channelNumber, channelType, acquiredTime * ONE_TO_MICRO , plannedTime * ONE_TO_MICRO, tags , EPOCH_SN_UNACQUIRED, 0)
 End
 
 /// @brief Get epochs from the LBN filtered by given parameters
