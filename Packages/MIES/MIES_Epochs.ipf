@@ -904,7 +904,7 @@ threadsafe Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualVa
 	variable index
 
 	/// @todo we don't yet write epoch info into the LBN
-	if(channelType != XOP_CHANNEL_TYPE_DAC)
+	if(channelType != XOP_CHANNEL_TYPE_DAC && channelType != XOP_CHANNEL_TYPE_TTL)
 		return $""
 	endif
 
