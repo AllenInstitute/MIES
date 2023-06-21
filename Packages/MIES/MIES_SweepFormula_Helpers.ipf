@@ -501,8 +501,8 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 				rangeEnd = limit(rangeEnd, -inf, lastx)
 			endif
 
-			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
-			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < lastx), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd > leftx(sweep) && rangeEnd <= lastx), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
 
 			JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, {rangeStart, rangeEnd})
