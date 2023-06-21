@@ -530,7 +530,7 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 	endif
 End
 
-/// @brief Sorts all epochs per channel in EpochsWave
+/// @brief Sorts all epochs per channel number / channel type in EpochsWave
 ///
 /// Removes epochs marked for removal, those with NaN as StartTime and EndTime, as well.
 ///
@@ -540,37 +540,39 @@ End
 /// - Ascending tree level
 ///
 /// @param[in] device title of device panel
-static Function EP_SortEpochs(device)
-	string device
+static Function EP_SortEpochs(string device)
 
-	variable channel, channelCnt, epochCnt
+	variable channel, channelCnt, epochCnt, channelType
+
 	WAVE/T epochWave = GetEpochsWave(device)
 	channelCnt = DimSize(epochWave, LAYERS)
-	for(channel = 0; channel < channelCnt; channel += 1)
-		epochCnt = EP_GetEpochCount(epochWave, channel, XOP_CHANNEL_TYPE_DAC)
-		if(epochCnt == 0)
-			continue
-		endif
+	for(channelType = 0; channelType < XOP_CHANNEL_TYPE_COUNT; channelType += 1)
+		for(channel = 0; channel < channelCnt; channel += 1)
+			epochCnt = EP_GetEpochCount(epochWave, channel, channelType)
+			if(epochCnt == 0)
+				continue
+			endif
 
-		Duplicate/FREE/T/RMD=[, epochCnt - 1][][channel] epochWave, epochChannel
-		Redimension/N=(-1, -1, 0) epochChannel
+			Duplicate/FREE/T/RMD=[, epochCnt - 1][][channel][channelType] epochWave, epochChannel
+			Redimension/N=(-1, -1, 0, 0) epochChannel
 
-		epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
-		SortColumns/DIML/KNDX={EPOCH_COL_STARTTIME, EPOCH_COL_ENDTIME, EPOCH_COL_TREELEVEL} sortWaves={epochChannel}
-		epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
+			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
+			SortColumns/DIML/KNDX={EPOCH_COL_STARTTIME, EPOCH_COL_ENDTIME, EPOCH_COL_TREELEVEL} sortWaves={epochChannel}
+			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
 
-		// remove epochs marked for removal
-		// first column needs to be StartTime
-		ASSERT(EPOCH_COL_STARTTIME == 0, "First column changed")
-		RemoveTextWaveEntry1D(epochChannel, "NaN", all = 1)
+			// remove epochs marked for removal
+			// first column needs to be StartTime
+			ASSERT(EPOCH_COL_STARTTIME == 0, "First column changed")
+			RemoveTextWaveEntry1D(epochChannel, "NaN", all = 1)
 
-		epochCnt = DimSize(epochChannel, ROWS)
+			epochCnt = DimSize(epochChannel, ROWS)
 
-		if(epochCnt > 0)
-			epochWave[, epochCnt - 1][][channel] = epochChannel[p][q]
-		endif
+			if(epochCnt > 0)
+				epochWave[, epochCnt - 1][][channel][channelType] = epochChannel[p][q]
+			endif
 
-		epochWave[epochCnt, *][][channel] = ""
+			epochWave[epochCnt, *][][channel][channelType] = ""
+		endfor
 	endfor
 End
 
