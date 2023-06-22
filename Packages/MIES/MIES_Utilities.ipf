@@ -2924,13 +2924,17 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 	stopOnEmpty = ParamIsDefault(stopOnEmpty) ? 0 : !!stopOnEmpty
 
 	numRows = DimSize(txtWave, ROWS)
-
 	if(numRows == 0)
 		return list
 	endif
 	numCols = DimSize(txtWave, COLS)
 	numLayers = DimSize(txtWave, LAYERS)
 	numChunks = DimSize(txtWave, CHUNKS)
+
+	if(!stopOnEmpty && maxElements == inf && !numLayers && !numChunks)
+		return WaveToListFast(txtWave, "%s", rowSep, colSep)
+	endif
+
 	numColsLoop = max(1, numCols)
 	numLayersLoop = max(1, numLayers)
 	numChunksLoop = max(1, numChunks)
@@ -3130,7 +3134,7 @@ threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, c
 	return output
 End
 
-/// @brief Convert a numeric wave to string list
+/// @brief Convert a 1D or 2D numeric wave to string list
 ///
 /// Counterpart @see ListToNumericWave
 /// @see TextWaveToList
@@ -3140,11 +3144,15 @@ End
 /// @param colSep [optional, default = `,`] separator for column entries
 /// @param format [optional, defaults to `%g`] sprintf conversion specifier
 threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, string colSep])
-	string list = ""
-	string fullFormat
-	variable numCols
 
 	if(!WaveExists(wv))
+		return ""
+	endif
+
+	ASSERT_TS(IsNumericWave(wv), "Expected a numeric wave")
+	ASSERT_TS(DimSize(wv, LAYERS) <= 1, "Unexpected layer count")
+	ASSERT_TS(DimSize(wv, CHUNKS) <= 1, "Unexpected chunk count")
+	if(!DimSize(wv, ROWS))
 		return ""
 	endif
 
@@ -3152,24 +3160,27 @@ threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, s
 		format = "%g"
 	endif
 
+	ASSERT_TS(!IsEmpty(sep), "Expected a non-empty row list separator")
 	if(ParamIsDefault(colSep))
 		colSep = ","
 	else
 		ASSERT_TS(!IsEmpty(colSep), "Expected a non-empty column list separator")
 	endif
 
-	ASSERT_TS(IsNumericWave(wv), "Expected a numeric wave")
-	ASSERT_TS(DimSize(wv, LAYERS) <= 1, "Unexpected layer count")
+	return WaveToListFast(wv, format, sep, colSep)
+End
 
-	numCols = DimSize(wv, COLS)
+threadsafe static Function/S WaveToListFast(WAVE wv, string format, string sep, string colSep)
 
-	if(numCols > 1)
-		fullFormat = ReplicateString(format + colSep, numCols) + sep
+	string list
+
+	if(DimSize(wv, COLS) > 0)
+		format = ReplicateString(format + colSep, DimSize(wv, COLS)) + sep
 	else
-		fullFormat = format + sep
+		format += sep
 	endif
 
-	wfprintf list, fullFormat, wv
+	wfprintf list, format, wv
 
 	return list
 End
