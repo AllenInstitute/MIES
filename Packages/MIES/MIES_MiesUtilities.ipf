@@ -40,6 +40,10 @@ static StrConstant LBN_UNASSOC_REGEXP = "^(.*) u_(AD|DA)[[:digit:]]+$"
 
 static StrConstant ARCHIVEDLOG_SUFFIX = "_old_"
 
+static StrConstant EXPCONFIG_JSON_HWDEVBLOCK = "DAQHardwareDevices"
+
+static StrConstant UPLOAD_BLOCK_USERPING = "UserPing"
+
 Menu "GraphMarquee"
 	"Horiz Expand (VisX)", /Q, HorizExpandWithVisX()
 End
@@ -6864,6 +6868,64 @@ Function UploadLogFilesDaily()
 		ClearRTError()
 		ASSERT(0, "Could not upload logfiles!")
 	endtry
+End
+
+Function UploadPingPeriodically()
+
+	variable lastPing, now, today, lastWeekDay
+
+#ifdef AUTOMATED_TESTING
+	return NaN
+#endif
+
+	if(!GetUserPingEnabled())
+		return NaN
+	endif
+
+	now = DateTimeInUTC()
+	lastPing = ParseISO8601TimeStamp(GetUserPingTimestamp())
+	if(now - lastPing < SECONDS_PER_DAY * 7)
+		today = GetDayOfWeek(now)
+		lastWeekDay = GetDayOfWeek(lastPing)
+		if(today == lastWeekDay || \
+			(today > lastWeekDay && lastWeekDay > SUNDAY) || \
+			(today < lastWeekDay && today < MONDAY))
+			return NaN
+		endif
+	endif
+
+	if(!UploadPing())
+		SetUserPingTimestamp(now)
+	endif
+End
+
+static function UploadPing()
+
+	variable jsonID, jsonID2, err
+	string payLoad, jsonPath
+
+	jsonId2 = JSON_GetIgorInfo()
+	jsonPath = "/" + EXPCONFIG_JSON_HWDEVBLOCK
+	JSON_AddTreeObject(jsonId2, jsonPath)
+	WAVE/T NIDevices = ListToTextWave(DAP_GetNIDeviceList(), ";")
+	JSON_AddWave(jsonId2, jsonPath + "/NI", NIDevices)
+	WAVE/T ITCDevices = ListToTextWave(DAP_GetITCDeviceList(), ";")
+	JSON_AddWave(jsonId2, jsonPath + "/ITC", ITCDevices)
+
+	payLoad = JSON_Dump(jsonId2, indent=2)
+	JSON_Release(jsonId2)
+
+	jsonID = GenerateJSONTemplateForUpload()
+	AddPayloadEntries(jsonID, {UPLOAD_BLOCK_USERPING}, {payload}, isBinary = 0)
+	AssertOnAndClearRTError()
+	try
+		UploadJSONPayload(jsonID); AbortOnRTE
+	catch
+		err = ClearRTError()
+	endtry
+	JSON_Release(jsonID)
+
+	return err
 End
 
 /// @brief Return the graph user data as 2D text wave
