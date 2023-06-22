@@ -2117,7 +2117,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 37
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 38
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2661,9 +2661,9 @@ Function/Wave GetSweepSettingsTextKeyWave(device)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 42, 0) wv
+		Redimension/N=(-1, 50, 0) wv
 	else
-		Make/T/N=(1, 42) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 50) newDFR:$newName/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -2712,6 +2712,14 @@ Function/Wave GetSweepSettingsTextKeyWave(device)
 	wv[0][39] = "TTL rack one set cycle counts"
 	wv[0][40] = "TTL set cycle counts"
 	wv[0][41] = "Device"
+	wv[0][42] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 0)
+	wv[0][43] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 1)
+	wv[0][44] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 2)
+	wv[0][45] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 3)
+	wv[0][46] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 4)
+	wv[0][47] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 5)
+	wv[0][48] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 6)
+	wv[0][49] = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, 7)
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

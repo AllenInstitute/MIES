@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(70,6)	labnotebook_textual_description
+WAVES/T/N=(78,6)	labnotebook_textual_description
 BEGIN
 	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"TimeStamp"	"s"	"-"	"Time Stamp: Seconds since Igor epoch (1/1/1904) in local time zone with millisecond precision. Written at time of labnotebook entry."	"ALL"	""
@@ -71,6 +71,14 @@ BEGIN
 	"Async AD5 Unit"	""	"-"	"User-defined unit of indicated asynchronous channel."	"INDEP"	""
 	"Async AD6 Unit"	""	"-"	"User-defined unit of indicated asynchronous channel."	"INDEP"	""
 	"Async AD7 Unit"	""	"-"	"User-defined unit of indicated asynchronous channel."	"INDEP"	""
+	"TTL Epochs Channel 0"	""	"-"	"Epochs of TTL Channel 0"	"INDEP"	""
+	"TTL Epochs Channel 1"	""	"-"	"Epochs of TTL Channel 1"	"INDEP"	""
+	"TTL Epochs Channel 2"	""	"-"	"Epochs of TTL Channel 2"	"INDEP"	""
+	"TTL Epochs Channel 3"	""	"-"	"Epochs of TTL Channel 3"	"INDEP"	""
+	"TTL Epochs Channel 4"	""	"-"	"Epochs of TTL Channel 4"	"INDEP"	""
+	"TTL Epochs Channel 5"	""	"-"	"Epochs of TTL Channel 5"	"INDEP"	""
+	"TTL Epochs Channel 6"	""	"-"	"Epochs of TTL Channel 6"	"INDEP"	""
+	"TTL Epochs Channel 7"	""	"-"	"Epochs of TTL Channel 7"	"INDEP"	""
 END
 X SetScale/P x 0,1,"", labnotebook_textual_description; SetScale/P y 0,1,"", labnotebook_textual_description; SetScale d 0,0,"", labnotebook_textual_description
 X Note labnotebook_textual_description, "WAVE_LAYOUT_VERSION:1;"
