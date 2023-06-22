@@ -394,7 +394,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 
 	variable i, j, rangeStart, rangeEnd, DAChannel, sweepNo
 	variable chanNr, chanType, cIndex, isSweepBrowser
-	variable numSelected, index, numEpochPatterns, numRanges, numEpochs, epIndex
+	variable numSelected, index, numEpochPatterns, numRanges, numEpochs, epIndex, lastx
 	string dimLabel, device, dataFolder
 	string	allEpochsRegex = "^.*$"
 
@@ -488,9 +488,21 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 		for(j = 0; j < numRanges; j += 1)
 			rangeStart = adaptedRange[0][j]
 			rangeEnd   = adaptedRange[1][j]
+			lastx = rightx(sweep) - DimDelta(sweep, ROWS)
+			// Release 8c6e5da (EP_WriteEpochInfoIntoSweepSettings: Handle unacquired data, 2021-07-13) and before:
+			// we did not cap epoch ranges properly on aborted/shortened sweeps
+			// we also did not calculate the sampling points for TP and Stimesets exactly the same way
+			// Thus, if necessary we clip the data here.
+			if(WaveExists(epochNames))
+				// complete epoch starting at or beyond sweep end
+				if(rangeStart >= lastx)
+					continue
+				endif
+				rangeEnd = limit(rangeEnd, -inf, lastx)
+			endif
 
-			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
-			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < lastx), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd > leftx(sweep) && rangeEnd <= lastx), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
 
 			JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, {rangeStart, rangeEnd})
