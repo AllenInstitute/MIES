@@ -262,3 +262,24 @@ Function/WAVE GetMiesMacrosWithPanelType()
 
 	return matches
 End
+
+static Function/WAVE EpochTestTTL_TP_Gen()
+
+	Make/FREE w = {0, 1}
+
+	return w
+End
+
+static Function/WAVE EpochTestTTL_TD_Gen()
+
+	Make/FREE w = {0, 25}
+
+	return w
+End
+
+static Function/WAVE EpochTestTTL_OD_Gen()
+
+	Make/FREE w = {0, 15}
+
+	return w
+End

@@ -22,6 +22,7 @@ static StrConstant EPOCHNAME_SEP = ";"
 static StrConstant STIMSETKEYNAME_SEP = "="
 static StrConstant SHORTNAMEKEY_SEP = "="
 
+static StrConstant EPOCH_SN_BL_TOTALONSETDELAY = "B0_TO"
 static StrConstant EPOCH_SN_BL_ONSETDELAYUSER = "B0_OD"
 static StrConstant EPOCH_SN_BL_DDAQ = "B0_DD"
 static StrConstant EPOCH_SN_BL_TERMINATIONDELAY = "B0_TD"
@@ -68,6 +69,7 @@ Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 	endif
 
 	EP_CollectEpochInfoDA(device, s)
+	EP_CollectEpochInfoTTL(device, s)
 End
 
 static Function EP_CollectEpochInfoDA(string device, STRUCT DataConfigurationResult &s)
@@ -152,6 +154,67 @@ static Function EP_CollectEpochInfoDA(string device, STRUCT DataConfigurationRes
 				EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, 0, testPulseLength, tags, EPOCH_SN_BL_UNASSOC_NOTP_BASELINE, 0)
 			endif
 		endif
+	endfor
+End
+
+static Function EP_CollectEpochInfoTTL(string device, STRUCT DataConfigurationResult &s)
+
+	variable i, channel, singleSetLength, stimsetCol, stopCollectionPoint
+	variable epochBegin, epochEnd
+	string tags
+
+	stopCollectionPoint = ROVar(GetStopCollectionPoint(device))
+
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusTTLFiltered[i])
+			continue
+		endif
+
+		if(WB_StimsetIsFromThirdParty(s.TTLsetName[i]))
+			continue
+		endif
+
+		WAVE singleStimSet = s.TTLstimSet[i]
+		singleSetLength = s.TTLsetLength[i]
+		stimsetCol = s.TTLsetColumn[i]
+
+		if(s.globalTPInsert)
+			// s.testPulseLength is a synonym for s.onsetDelayAuto
+			epochBegin = 0
+			epochEnd = s.testPulseLength
+			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+			EP_AddEpoch(device, i, XOP_CHANNEL_TYPE_TTL, epochBegin * s.samplingInterval, epochEnd * s.samplingInterval, tags, EPOCH_SN_BL_UNASSOC_NOTP_BASELINE, 0)
+		endif
+		if(s.onsetDelayUser)
+			epochBegin = s.onsetDelayAuto
+			// s.onsetDelay = s.onsetDelayUser + s.onsetDelayAuto
+			epochEnd = s.onsetDelay
+
+			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+			EP_AddEpoch(device, i, XOP_CHANNEL_TYPE_TTL, epochBegin * s.samplingInterval, epochEnd * s.samplingInterval, tags, EPOCH_SN_BL_ONSETDELAYUSER, 0)
+		endif
+
+		epochBegin = s.onSetDelay
+		EP_AddEpochsFromStimSetNote(device, i, XOP_CHANNEL_TYPE_TTL, singleStimSet, epochBegin * s.samplingInterval, singleSetLength * s.samplingInterval, stimsetCol, NaN)
+
+		if(s.terminationDelay)
+			epochBegin = s.onSetDelay + singleSetLength
+			epochEnd = epochBegin + s.terminationDelay
+
+			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+			EP_AddEpoch(device, i, XOP_CHANNEL_TYPE_TTL, epochBegin * s.samplingInterval, epochEnd * s.samplingInterval, tags, EPOCH_SN_BL_TERMINATIONDELAY, 0)
+		endif
+
+		epochBegin = s.onSetDelay + singleSetLength + s.terminationDelay
+		if(stopCollectionPoint > epochBegin)
+			epochEnd = stopCollectionPoint
+			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+			EP_AddEpoch(device, i, XOP_CHANNEL_TYPE_TTL, epochBegin * s.samplingInterval, epochEnd * s.samplingInterval, tags, EPOCH_SN_BL_DDAQTRAIL, 0)
+		endif
+
 	endfor
 End
 

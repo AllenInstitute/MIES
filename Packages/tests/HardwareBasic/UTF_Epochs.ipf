@@ -174,10 +174,7 @@ static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_a
 	endfor
 End
 
-static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
-	WAVE/T e
-	WAVE DAChannel
-	variable activeDAChannel
+static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 
 	variable i, j, epochCnt, rowCnt, beginInt, endInt, epochNr, amplitude, center, DAAmp
 	variable first, last, level, range, ret
@@ -293,17 +290,33 @@ static Function TestEpochGaps(WAVE startTall, WAVE endTall, WAVE isOodDAQ, WAVE 
 	endfor
 End
 
-static Function TestEpochsGeneric(device)
-	string device
+static Function GetHWChannelNumber(WAVE config, variable channelType, variable index)
 
-	variable numEntries, endTimeDAC, endTimeEpochs, samplingInterval
-	variable i, lastPoint, index
-	string list, setNameLBEntry
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC:
+			WAVE DACs = GetDACListFromConfig(config)
+			return index < DimSize(DACs, ROWS) ? DACs[index] : NaN
+		case XOP_CHANNEL_TYPE_ADC:
+			WAVE ADCs = GetDACListFromConfig(config)
+			return index < DimSize(ADCs, ROWS) ? ADCs[index] : NaN
+		case XOP_CHANNEL_TYPE_TTL:
+			WAVE TTLs = GetTTLListFromConfig(config)
+			return index < DimSize(TTLs, ROWS) ? TTLs[index] : NaN
+		default:
+			FAIL()
+	endswitch
+End
+
+static Function TestEpochsGeneric(string device)
+
+	variable numEntries, endTimeDAC, endTimeEpochs, samplingInterval, hwType
+	variable i, lastPoint, channelType, channelNumber, index, hwChannelNumber, hwChannelIndex, first, last, ttlBits
+	string setName, sweepChannelName
 
 	string sweeps, configs
 	variable sweepNo
 
-	Make/FREE/N=(NUM_DA_TTL_CHANNELS) chanMarker
+	hwType = GetHardwareType(device)
 
 	// retrieve generic information
 	sweeps  = GetListOfObjects(GetDeviceDataPath(device), DATA_SWEEP_REGEXP, fullPath = 1)
@@ -319,34 +332,18 @@ static Function TestEpochsGeneric(device)
 	WAVE/Z config = $StringFromList(0, configs)
 	CHECK_WAVE(config, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
-	WAVE DACs = GetDACListFromConfig(config)
-	CHECK_GT_VAR(DimSize(DACs, ROWS), 0)
 
 	WAVE/T textualValues   = GetLBTextualValues(device)
 	WAVE   numericalValues = GetLBNumericalValues(device)
+
+	DFREF dfr = UniqueDataFolder(GetDataFolderDFR(), "epochTestSweepChannels")
+	SplitSweepIntoComponents(numericalValues, sweepNo, sweep, config, TTL_RESCALE_ON, targetDFR = dfr)
 
 	// basic check of internal epoch wave
 	WAVE/T epochs = GetEpochsWave(device)
 	CHECK_EQUAL_VAR(DimSize(epochs, COLS), 4)
 	CHECK_EQUAL_VAR(DimSize(epochs, LAYERS), NUM_DA_TTL_CHANNELS)
-	numEntries = DimSize(DACs, ROWS)
-	CHECK_GT_VAR(numEntries, 0)
-	for(i = 0; i < numEntries; i += 1)
-		Duplicate/FREE/T/RMD=[][][DACs[i]] epochs, epochChannel
-		Redimension/N=(-1, -1, 0) epochChannel
-		TestEpochChannelTight(epochChannel)
-		chanMarker[i] = 1
-	endfor
-	// all other channels must have empty epochs list
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		if(!chanMarker[i])
-			Duplicate/FREE/T/RMD=[][][i] epochs, epochChannel
-			Redimension/N=(-1, -1, 0) epochChannel
-			Duplicate/T/FREE epochChannel, refChannel
-			refChannel = ""
-			CHECK_EQUAL_WAVES(epochChannel, refChannel)
-		endif
-	endfor
+	CHECK_EQUAL_VAR(DimSize(epochs, CHUNKS), ItemsInList(XOP_CHANNEL_NAMES))
 
 	// further checks of data from LabNotebook Entries
 	WAVE/Z samplInt = GetLastSetting(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
@@ -356,41 +353,120 @@ static Function TestEpochsGeneric(device)
 	lastPoint = DimSize(sweep, ROWS)
 	endTimeDAC = samplingInterval * lastPoint
 
-	for(i = 0; i < numEntries; i += 1)
+	WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+	WAVE/T setNameLBEntries = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 
-		WAVE/Z/T epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, DACs[i], XOP_CHANNEL_TYPE_DAC)
+	Make/FREE/D channelTypes = {XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_TYPE_TTL}
+	Make/FREE/T channelTypePrefix = {"DA", "TTL"}
+	Make/FREE/D/N=(NUM_DA_TTL_CHANNELS, XOP_CHANNEL_TYPE_COUNT) chanMarker
 
-		[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, DACs[i], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-		CHECK_WAVE(setting, TEXT_WAVE)
-		WAVE/T settingText = setting
-		setNameLBEntry = settingText[index]
-		if(WB_StimsetIsFromThirdParty(setNameLBEntry) || !cmpstr(setNameLBEntry, STIMSET_TP_WHILE_DAQ))
-			CHECK_WAVE(epochChannel, NULL_WAVE)
+	for(channelType : channelTypes)
+		hwChannelIndex = 0
+		WAVE/Z activeChannels = GetActiveChannels(numericalValues, textualValues, sweepNo, channelType)
+		if(!WaveExists(activeChannels))
 			continue
 		endif
-		CHECK_WAVE(epochChannel, TEXT_WAVE)
+		for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
 
-		Make/FREE/D/N=(DimSize(epochChannel, ROWS)) endT
+			if(IsNaN(activeChannels[channelNumber]))
+				continue
+			endif
 
-		// preserve epochs wave in CDF
-		Duplicate epochChannel, $("epochChannel" + num2str(i))
+			if(channelType == XOP_CHANNEL_TYPE_TTL && hwType == HARDWARE_ITC_DAC)
+				if(MIES_DC#DC_AreTTLsInRackChecked(device, RACK_ZERO))
+					HW_ITC_GetRackRange(RACK_ZERO, first, last)
+					if(channelNumber >= first && channelNumber <= last)
+						hwChannelIndex = 0
+					endif
+				elseif(MIES_DC#DC_AreTTLsInRackChecked(device, RACK_ONE))
+					HW_ITC_GetRackRange(RACK_ONE, first, last)
+					if(channelNumber >= first && channelNumber <= last)
+						hwChannelIndex = 1
+					endif
+				endif
+			endif
 
-		// does the latest end time exceed the 'acquiring part of the' DA wave?
-		endT[] = str2num(epochChannel[p][1])
-		endTimeEpochs = WaveMax(endT)
-		// allow endTimeEpochs to exceed range by less than one sample point
-		CHECK_LE_VAR(endTimeEpochs, endTimeDAC + samplingInterval)
-		Duplicate/FREE/RMD=[][i] sweep, DAchannel
-		Redimension/N=(-1, 0) DAchannel
+			hwChannelNumber = GetHWChannelNumber(config, channelType, hwChannelIndex)
+			hwChannelIndex += 1
 
-		TestEpochsMonotony(epochChannel, DAchannel, i)
+			if(IsNaN(hwChannelNumber))
+				continue
+			endif
 
-		TestUnacquiredEpoch(sweep, epochChannel)
+			if(channelType == XOP_CHANNEL_TYPE_TTL)
+				if(hwType == HARDWARE_ITC_DAC)
+					WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber, splitTTLBits = 1, ttlBit = mod(channelNumber, NUM_ITC_TTL_BITS_PER_RACK))
+				elseif(hwType == HARDWARE_NI_DAC)
+					WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber)
+				else
+					FAIL()
+				endif
+				if(!WaveExists(sweepChannel))
+					continue
+				endif
 
-		TestNaming(epochChannel)
+				WAVE/T stimSets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, sweepNo)
+				setName = stimSets[channelNumber]
+			elseif(channelType == XOP_CHANNEL_TYPE_DAC)
+				WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber)
+				if(!WaveExists(sweepChannel))
+					continue
+				endif
 
-		TestTrigonometricEpochs(sweep, epochChannel, DAChannel)
+				[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, channelNumber, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+				REQUIRE_WAVE(setting, FREE_WAVE)
+
+				WAVE/T settingText = setting
+				setName = settingText[index]
+			endif
+
+			CHECK_WAVE(sweepChannel, NUMERIC_WAVE)
+
+			WAVE/Z/T epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+			if(WB_StimsetIsFromThirdParty(setName) || !CmpStr(setName, STIMSET_TP_WHILE_DAQ))
+				CHECK_WAVE(epochChannel, NULL_WAVE)
+				continue
+			endif
+			CHECK_WAVE(epochChannel, TEXT_WAVE)
+
+			TestEpochChannelTight(epochChannel)
+
+			Make/FREE/D/N=(DimSize(epochChannel, ROWS)) endT
+
+			// preserve epochs wave in CDF
+			Duplicate epochChannel, $("epochChannel_" + num2istr(channelType) + "_" + num2istr(channelNumber))
+
+			// does the latest end time exceed the 'acquiring part of the' DA wave?
+			endT[] = str2num(epochChannel[p][1])
+			endTimeEpochs = WaveMax(endT)
+			// allow endTimeEpochs to exceed range by less than one sample point
+			CHECK_LE_VAR(endTimeEpochs, endTimeDAC + samplingInterval)
+
+			TestEpochsMonotony(epochChannel, sweepChannel)
+
+			TestUnacquiredEpoch(sweep, epochChannel)
+
+			TestNaming(epochChannel)
+
+			TestTrigonometricEpochs(sweep, epochChannel, sweepChannel)
+
+			chanMarker[channelNumber][channelType] = 1
+		endfor
+		i += 1
 	endfor
+
+	for(channelType = 0; channelType < XOP_CHANNEL_TYPE_COUNT; channelType += 1)
+		for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
+			if(!chanMarker[channelNumber][channelType])
+				Duplicate/FREE/T/RMD=[][][channelNumber][channelType] epochs, epochChannel
+				Redimension/N=(-1, -1, 0, 0) epochChannel
+				Duplicate/T/FREE epochChannel, refChannel
+				refChannel = ""
+				CHECK_EQUAL_WAVES(epochChannel, refChannel)
+			endif
+		endfor
+	endfor
+
 End
 
 static Function TestUnacquiredEpoch(WAVE sweep, WAVE epochChannel)
@@ -906,4 +982,65 @@ static Function EP_EpochTestUnassocDA_REENTRY([str])
 	CHECK_EQUAL_STR(epochChannel0[tpIndex[0]][%EndTime], epochChannel2[tpBaseIndex[0]][%EndTime])
 
 	TestEpochsGeneric(str)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestTTL_TP_Gen
+// IUTF_TD_GENERATOR v1:DataGenerators#EpochTestTTL_TD_Gen
+// IUTF_TD_GENERATOR v2:DataGenerators#EpochTestTTL_OD_Gen
+static Function EP_EpochTestTTL([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup
+
+	sprintf dynSetup, "_ITP%d_TD%d_OD%d", mData.v0, mData.v1, mData.v2
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup				+ \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+								 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+								 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+								 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
+								 "__TTL7_ST:StimulusSetB_TTL_0:")
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTestTTL_REENTRY([STRUCT IUTF_mData &mData])
+
+	variable epCount, size
+	variable ttlChannel = 3
+
+	TestEpochsGeneric(mData.s0)
+
+	WAVE/T epochs = GetEpochsWave(mData.s0)
+	epCount = MIES_EP#EP_GetEpochCount(epochs, ttlChannel, XOP_CHANNEL_TYPE_TTL)
+	Duplicate/FREE/T/RMD=[][EPOCH_COL_TAGS][ttlChannel][XOP_CHANNEL_TYPE_TTL] epochs, epochTags
+	Redimension/N=(epCount) epochTags
+	Duplicate/FREE/T epochTags, epochShortNames
+	epochShortNames[] = EP_GetShortName(epochTags[p])
+
+	Make/FREE/T nameRef = {"E0_PT_P0_P", "E0_PT_P0", "ST", "E0", "E0_PT_P0_B", "E0_PT_P1_P", "E0_PT_P1",        \
+								"E0_PT_P1_B", "E0_PT_P2_P", "E0_PT_P2", "E0_PT_P2_B", "E0_PT_P3_P", "E0_PT_P3", "E0_PT_P3_B", \
+								"E0_PT_P4_P", "E0_PT_P4", "E0_PT_P4_B", "E0_PT_P5_P", "E0_PT_P5", "E0_PT_P5_B", "E0_PT_P6_P", \
+								"E0_PT_P6", "E0_PT_P6_B", "E0_PT_P7_P", "E0_PT_P7", "E0_PT_P7_B", "E0_PT_P8_P", "E0_PT_P8",   \
+								"E0_PT_P8_B", "E0_PT_P9", "E0_PT_P9_P"}
+	if(mData.v2)
+		InsertPoints/M=(ROWS) 0, 1, nameRef
+		nameref[0] = "B0_OD"
+	endif
+	if(mData.v0)
+		InsertPoints/M=(ROWS) 0, 1, nameRef
+		nameref[0] = "B0_TP"
+	endif
+
+	size = DimSize(nameRef, ROWS)
+	if(mData.v1)
+		Redimension/N=(size + 1) nameRef
+		nameref[size] = "B0_TD"
+		size += 1
+	endif
+	Redimension/N=(size + 1) nameRef
+	nameref[size] = "B0_TR"
+
+	CHECK_EQUAL_WAVES(epochShortNames, nameRef, mode = WAVE_DATA)
 End
