@@ -1328,7 +1328,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	WAVE s.ADCList = GetADCListFromConfig(config)
 	WAVE s.TTLList = GetTTLListFromConfig(config)
 
-	s.numTTLEntries = DimSize(s.DACList, ROWS)
+	s.numTTLEntries = DimSize(s.TTLList, ROWS)
 
 	s.numDACEntries = DimSize(s.DACList, ROWS)
 	Make/D/FREE/N=(s.numDACEntries) s.insertStart, s.setLength, s.setColumn, s.headstageDAC, s.setCycleCount
