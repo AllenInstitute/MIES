@@ -2670,6 +2670,10 @@ threadsafe Function ParseISO8601TimeStamp(timestamp)
 	string year, month, day, hour, minute, second, regexp, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute
 	variable secondsSinceEpoch, timeOffset
 
+	if(IsEmpty(timestamp))
+		return NaN
+	endif
+
 	regexp = "^([[:digit:]]+)-([[:digit:]]+)-([[:digit:]]+)[T ]{1}([[:digit:]]+):([[:digit:]]+)(?::([[:digit:]]+)([.,][[:digit:]]+)?)?(?:Z|([\+-])([[:digit:]]{2})(?::?([[:digit:]]{2}))?)?$"
 	SplitString/E=regexp timestamp, year, month, day, hour, minute, second, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute
 
@@ -4884,7 +4888,7 @@ Function SaveTextFile(data, fileName,[ fileFilter, message, savedFileName, showD
 	return 0
 End
 
-/// @brief Load string data from file
+/// @brief Load data from file to a string. The file size must be < 2GB.
 ///
 /// @param[in] fileName fileName to use. If the fileName is empty or invalid a file load dialog will be shown.
 /// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
@@ -4911,12 +4915,45 @@ Function [string data, string fName] LoadTextFile(string fileName[, string fileF
 	endif
 
 	FStatus fnum
-	data = ""
-	data = PadString(data, V_logEOF, 0x20)
+	ASSERT(V_logEOF < STRING_MAX_SIZE, "Can't load " + num2istr(V_logEOF) + " bytes to string.")
+	data = PadString("", V_logEOF, 0x20)
 	FBinRead fnum, data
 	Close fnum
 
 	return [data, S_Path + S_fileName]
+End
+
+/// @brief Load data from a file to a text wave.
+///
+/// @param[in] fullFilePath full path to the file to be loaded
+/// @param[in] sep          separator string that splits the file data to the wave cells, typically the line ending
+/// @returns free text wave with the data, a null wave if the file could not be found or there was a problem reading the file
+Function/WAVE LoadTextFileToWave(string fullFilePath, string sep)
+
+	variable loadFlags, err
+
+	if(!FileExists(fullFilePath))
+		return $""
+	endif
+
+	loadFlags = LOADWAVE_V_FLAGS_DISABLELINEPRECOUNTING | LOADWAVE_V_FLAGS_DISABLEUNESCAPEBACKSLASH | LOADWAVE_V_FLAGS_DISABLESUPPORTQUOTEDSTRINGS
+	AssertOnAndClearRTError()
+	DFREF saveDFR = GetDataFolderDFR()
+	SetDataFolder NewFreeDataFolder()
+
+	LoadWave/Q/H/A/J/K=2/V={sep, "", 0, loadFlags} fullFilePath; err=GetRTError(1)
+	if(!V_flag)
+		SetDataFolder saveDFR
+		return $""
+	elseif(V_flag > 1)
+		SetDataFolder saveDFR
+		ASSERT(0, "Expected to load a single text wave")
+	endif
+
+	WAVE/T wv = $StringFromList(0, S_waveNames)
+	SetDataFolder saveDFR
+
+	return wv
 End
 
 /// @brief Removes found entry from a text wave
@@ -5029,7 +5066,12 @@ Function FileExists(filepath)
 	string filepath
 
 	filepath = ResolveAlias(filepath)
-	GetFileFolderInfo/Q/Z filepath
+	AssertOnAndClearRTError()
+	try
+		GetFileFolderInfo/Q/Z filepath; AbortOnRTE
+	catch
+		ASSERT(0, "Error: " + GetRTErrMessage())
+	endtry
 
 	return !V_Flag && V_IsFile
 End
@@ -5039,7 +5081,12 @@ Function FolderExists(folderpath)
 	string folderpath
 
 	folderpath = ResolveAlias(folderpath)
-	GetFileFolderInfo/Q/Z folderpath
+	AssertOnAndClearRTError()
+	try
+		GetFileFolderInfo/Q/Z folderpath; AbortOnRTE
+	catch
+		ASSERT(0, "Error: " + GetRTErrMessage())
+	endtry
 
 	return !V_Flag && V_isFolder
 End
@@ -5049,7 +5096,12 @@ Function/S GetFileVersion(filepath)
 	string filepath
 
 	filepath = ResolveAlias(filepath)
-	GetFileFolderInfo/Q/Z filepath
+	AssertOnAndClearRTError()
+	try
+		GetFileFolderInfo/Q/Z filepath; AbortOnRTE
+	catch
+		ASSERT(0, "Error: " + GetRTErrMessage())
+	endtry
 
 	if(V_flag || !V_isFile)
 		return ""
@@ -5063,7 +5115,12 @@ Function GetFileSize(string filepath)
 
 	filepath = ResolveAlias(filepath)
 
-	GetFileFolderInfo/Q/Z filepath
+	AssertOnAndClearRTError()
+	try
+		GetFileFolderInfo/Q/Z filepath; AbortOnRTE
+	catch
+		ASSERT(0, "Error: " + GetRTErrMessage())
+	endtry
 
 	if(V_flag || !V_isFile)
 		return NaN
@@ -5488,7 +5545,7 @@ Function AddPayloadEntries(variable jsonID, WAVE/T keys, WAVE/T values, [variabl
 
 		if(isBinary)
 			JSON_AddString(jsonID, jsonpath + "encoding", "base64")
-			JSON_AddString(jsonID, jsonpath + "contents", Base64Encode(values[i]))
+			JSON_AddString(jsonID, jsonpath + "contents", Base64EncodeSafe(values[i]))
 		else
 			JSON_AddString(jsonID, jsonpath + "contents", values[i])
 		endif
@@ -6647,4 +6704,74 @@ End
 ///        is present multiple times in the call stack
 threadsafe Function IsFunctionCalledRecursively()
 	return ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(2))) > 1
+End
+
+/// @brief Splits a text wave (with e.g. log entries) into parts. The parts are limited by a size in bytes such that each part
+///        contains only complete lines and is smaller than the given size limit. A possible separator for line endings
+///        is considered in the size calculation.
+///
+/// @param logData       text wave
+/// @param sep           separator string that is considered in the length calculation. This is useful if the resulting waves are later converted
+///                      to strings with TextWaveToList, where the size grows by lines * separatorLength.
+/// @param lim           size limit for each part in bytes
+/// @param lastIndex     [optional, default DimSize(logData, ROWS) - 1] When set, only elements in logData from index 0 to lastIndex are considered. lastIndex is included.
+///                      lastIndex is limited between 0 and DimSize(logData, ROWS) - 1.
+/// @param firstPartSize [optional, default lim] When set then the first parts size limit is firstPartSize instead of lim
+/// @returns wave reference wave containing text waves that are consecutive and sequential parts of logdata
+Function/WAVE SplitLogDataBySize(WAVE/T logData, string sep, variable lim, [variable lastIndex, variable firstPartSize])
+
+	variable lineCnt, sepLen, i, size, elemSize
+	variable first, sizeLimit, resultCnt
+
+	lineCnt = DimSize(logData, ROWS)
+	firstPartSize = ParamIsDefault(firstPartSize) ? lim : firstPartSize
+	lastIndex = ParamIsDefault(lastIndex) ? lineCnt - 1 : limit(lastIndex, 0, lineCnt - 1)
+	sepLen = strlen(sep)
+	Make/FREE/D/N=(lastIndex + 1) logSizes
+	MultiThread logSizes[0, lastIndex] = strlen(logData[p])
+
+	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE) result
+
+	sizeLimit = firstPartSize
+	for(i = 0; i <= lastIndex; i += 1)
+		elemSize = logSizes[i] + sepLen
+		ASSERT(elemSize <= sizeLimit, "input element larger than size limit " + num2istr(elemSize) + " / " + num2istr(sizeLimit))
+		size += elemSize
+		if(size > sizeLimit)
+
+			Duplicate/FREE/T/RMD=[first, i - 1] logData, logPart
+			EnsureLargeEnoughWave(result, indexShouldExist=resultCnt)
+			result[resultCnt] = logPart
+			resultCnt += 1
+
+			sizeLimit = lim
+			first = i
+			size = elemSize
+		endif
+	endfor
+
+	Duplicate/FREE/T/RMD=[first, i - 1] logData, logPart
+	EnsureLargeEnoughWave(result, indexShouldExist=resultCnt)
+	result[resultCnt] = logPart
+	resultCnt += 1
+
+	Redimension/N=(resultCnt) result
+
+	return result
+End
+
+threadsafe Function/S Base64EncodeSafe(string data)
+
+	ASSERT_TS(strlen(data) <= BASE64ENCODE_INPUT_MAX_SIZE, "Input string too larger for Base64Encode")
+
+	return Base64Encode(data)
+End
+
+/// @brief Calculated the size of Base64 encoded data from the unencoded size
+///
+/// @param unencodedSize unencoded size
+/// @returns encoded size
+threadsafe Function Base64EncodeSize(variable unencodedSize)
+
+	return (unencodedSize + 2 - mod(unencodedSize + 2, 3)) / 3 * 4
 End

@@ -38,6 +38,8 @@ static StrConstant MSQ_SC_LBN_PREFIX  = "Spike Control"
 static StrConstant LBN_UNASSOC_REGEXP_LEGACY = "^(.*) UNASSOC_[[:digit:]]+$"
 static StrConstant LBN_UNASSOC_REGEXP = "^(.*) u_(AD|DA)[[:digit:]]+$"
 
+static StrConstant ARCHIVEDLOG_SUFFIX = "_old_"
+
 Menu "GraphMarquee"
 	"Horiz Expand (VisX)", /Q, HorizExpandWithVisX()
 End
@@ -5547,6 +5549,10 @@ Function/S RemoveUnassocLBNKeySuffix(string name)
 	return name
 End
 
+Function GetZeroMQXOPFlags()
+	return ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV
+End
+
 /// @brief Start the ZeroMQ sockets and the message handler
 ///
 /// Debug note: Tracking the connection state can be done via
@@ -5576,7 +5582,7 @@ Function StartZeroMQSockets([variable forceRestart])
 
 	zeromq_stop()
 
-	flags = ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV
+	flags = GetZeroMQXOPFlags()
 
 	zeromq_set(flags)
 
@@ -7218,15 +7224,19 @@ End
 /// @brief Return JSON text with default entries for upload
 ///
 /// Caller is responsible for releasing JSON text.
-Function GenerateJSONTemplateForUpload()
+Function GenerateJSONTemplateForUpload([string timeStamp])
 
 	variable jsonID
+
+	if(ParamIsDefault(timeStamp))
+		timeStamp = GetISO8601TimeStamp()
+	endif
 
 	jsonID = JSON_New()
 
 	JSON_AddString(jsonID, "/computer", GetEnvironmentVariable("COMPUTERNAME"))
 	JSON_AddString(jsonID, "/user", IgorInfo(7))
-	JSON_AddString(jsonID, "/timestamp", GetISO8601TimeStamp())
+	JSON_AddString(jsonID, "/timestamp", timeStamp)
 	AddPayloadEntries(jsonID, {"version.txt"}, {ROStr(GetMiesVersion())}, isBinary = 1)
 
 	return jsonID
@@ -7296,16 +7306,13 @@ End
 ///                  Both `firstDate` and `lastDate` must be present for filtering. The timestamps are in seconds since Igor Pro epoch.
 /// @param lastDate  [optional, defaults to false] See `firstDate`
 Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate])
-	string file, ticket, path, data, location, basePath
-	variable jsonID, numEntries, i, doFilter, isBinary
+
+	string logPartStr, fNamePart, file, ticket, timeStamp
+	string path, location, basePath, out
+	variable jsonID, numFiles, i, j, doFilter, isBinary, lastIndex, jsonIndex, partCnt, sumSize, fSize
 
 	isBinary = 1
-
-	if(ParamIsDefault(verbose))
-		verbose = 1
-	else
-		verbose = !!verbose
-	endif
+	verbose = ParamIsDefault(verbose) ? 1 : !!verbose
 
 	if(ParamIsDefault(firstDate) && ParamIsDefault(lastDate))
 		doFilter = 0
@@ -7315,35 +7322,76 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		ASSERT(0, "Invalid firstDate/lastDate combination")
 	endif
 
-	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile(), GetITCXOP2Logfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist", "ITC-XOP2-log-file-does-not-exist"}}
-	jsonID = GenerateJSONTemplateForUpload()
+	UploadLogFilesPrint("Just a moment, Uploading log files to improve MIES... (only once per day)\r", verbose)
 
-	numEntries = DimSize(files, ROWS)
-	for(i = 0; i < numEntries; i += 1)
+	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile(), GetITCXOP2Logfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist", "ITC-XOP2-log-file-does-not-exist"}, {"MIES log file", "ZeroMQ log file", "ITCXOP2 log file"}}
+	timeStamp = GetISO8601TimeStamp()
+	ticket = GenerateRFC4122UUID()
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) jsonIDs
+
+	numFiles = DimSize(files, ROWS)
+	for(i = 0; i < numFiles; i += 1)
 		file = files[i][0]
 
-		if(!FileExists(file))
+		fSize = GetFileSize(file)
+		WAVE/Z/T logData = $""
+		if(!IsNaN(fSize))
+			sprintf out, "Loading %s (%.1f MB)", files[i][2], fSize / MEGABYTE
+			UploadLogFilesPrint(out, verbose)
+			WAVE/Z/T logData = LoadTextFileToWave(file, LOG_FILE_LINE_END)
+		endif
+		if(!WaveExists(logData))
+			jsonID = GenerateJSONTemplateForUpload(timeStamp = timeStamp)
+			AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
 			AddPayloadEntries(jsonID, {file}, {files[i][1]}, isBinary = isBinary)
+			EnsureLargeEnoughWave(jsonIDs, indexShouldExist=jsonIndex)
+			jsonIDs[jsonIndex] = jsonID
+			jsonIndex += 1
 			continue
 		endif
 
 		if(doFilter)
-			WAVE/T/Z keys, values
-			[keys, values] = FilterLogfileByDate(file, firstDate, lastDate)
-
-			AddPayloadEntries(jsonID, keys, values, isBinary = isBinary)
+			UploadLogFilesPrint(" -> Filtering", verbose)
+			WAVE/Z/T uploadData = $""
+			[uploadData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
+			if(!WaveExists(uploadData))
+				UploadLogFilesPrint(" -> No new entries to upload here.\r", verbose)
+				continue
+			endif
 		else
-			AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = isBinary)
+			WAVE/T uploadData = logData
+			lastIndex = DimSize(logData, ROWS) - 1
 		endif
+
+		UploadLogFilesPrint(" -> Archive", verbose)
+		ArchiveLogFile(logData, file, lastIndex)
+
+		UploadLogFilesPrint(" -> Splitting", verbose)
+		WAVE/WAVE splitContents = SplitLogDataBySize(uploadData, LOG_FILE_LINE_END, LOGUPLOAD_PAYLOAD_SPLITSIZE)
+		partCnt = 0
+		for(logPart : splitContents)
+			jsonID = GenerateJSONTemplateForUpload(timeStamp = timeStamp)
+			AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
+			if(doFilter)
+				AddPayloadEntries(jsonID, {"firstDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = firstDate)}, isBinary = isBinary)
+				AddPayloadEntries(jsonID, {"lastDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = lastDate)}, isBinary = isBinary)
+			endif
+
+			logPartStr = TextWaveToList(logPart, "\n")
+			logPartStr = ReplaceString("{}" + LOG_FILE_LINE_END + "{}" + LOG_FILE_LINE_END, logPartStr, "")
+			sprintf fNamePart, "%s_part%03d.%s", GetBaseName(file), partCnt, GetFileSuffix(file)
+
+			AddPayloadEntries(jsonID, {fNamePart}, {logPartStr}, isBinary = isBinary)
+			sumSize += strlen(logPartStr)
+			EnsureLargeEnoughWave(jsonIDs, indexShouldExist=jsonIndex)
+			jsonIDs[jsonIndex] = jsonID
+			jsonIndex += 1
+			partCnt += 1
+			UploadLogFilesPrint(".", verbose)
+		endfor
+		UploadLogFilesPrint("\r", verbose)
 	endfor
-
-	if(doFilter)
-		AddPayloadEntries(jsonID, {"firstDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = firstDate)}, isBinary = isBinary)
-		AddPayloadEntries(jsonID, {"lastDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = lastDate)}, isBinary = isBinary)
-	endif
-
-	ticket = GenerateRFC4122UUID()
-	AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
+	Redimension/N=(jsonIndex) jsonIDs
 
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
@@ -7351,105 +7399,154 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		path = SpecialDirPath("Temporary", 0, 0, 1) + "MIES:"
 		NewPath/C/Q/O/Z $basePath path
 
-		location = path + UniqueFileOrFolder(basePath, "logfiles", suffix = ".json")
-		SaveTextFile(JSON_dump(jsonID, indent=4), location)
+		for(jsonID : jsonIDs)
+			location = path + UniqueFileOrFolder(basePath, "logfiles", suffix = ".json")
+			SaveTextFile(JSON_dump(jsonID, indent=4), location)
 
-		printf "Stored the logfile JSON in %s.\r", location
+			printf "Stored the logfile JSON in %s.\r", location
+		endfor
 	endif
 #endif // DEBUGGING_ENABLED
 
-	UploadJSONPayload(jsonID)
-	JSON_Release(jsonID)
+	if(DimSize(jsonIDs, ROWS))
+		sumsize = Base64EncodeSize(sumSize)
+		sprintf out, "Uploading %.0f MB (~%d Bytes)", sumSize / MEGABYTE, sumSize
+		UploadLogFilesPrint(out, verbose)
+		for(jsonID : jsonIDs)
+			UploadJSONPayload(jsonID)
+			JSON_Release(jsonID)
+			UploadLogFilesPrint(".", verbose)
+		endfor
+		UploadLogFilesPrint("\r", verbose)
+	endif
+	UploadLogFilesPrint("Done.\r", verbose)
+
+	sprintf out, "Successfully uploaded the MIES, ZeroMQ-XOP and ITCXOP2 logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+	UploadLogFilesPrint(out, verbose)
+End
+
+static Function UploadLogFilesPrint(string str, variable verbose)
 
 	if(verbose)
-		printf "Successfully uploaded the MIES, ZeroMQ-XOP and ITCXOP2 logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+		printf "%s", str
 	endif
 End
 
-/// @brief Filter the entries text wave so that the result only includes entries between first and last
-///
-/// @param entries 1D wave with a JSON document in each entry. Each JSON must contain a `ts` object with a ISO8601 timestamp.
-/// @param first   Seconds since igor epoch in UTC of the first entry to include
-/// @param last    Seconds since igor epoch in UTC of the last entry to include
-Function/WAVE FilterByDate(WAVE/T entries, variable first, variable last)
-	variable i, numRows, jsonID, include
-	string entry, dat
-	variable ts, idx
+static Function ArchiveLogFile(WAVE/T logData, string fullFilePath, variable index)
 
-	ASSERT(!IsNaN(first) && !IsNaN(last), "first and last can not be NaN.")
-	ASSERT(first >= 0 && last >= 0 && first < last, "first and last must not be negative and first < last.")
+	string fileFolder, fileBase, fileSuffix, filePrefix, newFullFilePath, lastFileExists, numPart
+	string format, strData
+	variable partIdx, numParts, fNum, sizeLeft, fileIndex
 
-	numRows = DimSize(entries, ROWS)
-
-	if(numRows == 0)
-		return $""
+	if(!index)
+		return NaN
 	endif
 
-	Make/T/FREE/N=(numRows) filtered
+	fileFolder = GetFolder(fullFilePath)
+	fileBase = GetBaseName(fullFilePath)
+	fileSuffix = GetFileSuffix(fullFilePath)
+	filePrefix = fileFolder + fileBase + ARCHIVEDLOG_SUFFIX
 
-	for(i = 0; i < numRows; i += 1)
-		entry = entries[i]
+	lastFileExists = LastArchivedLogFile(fullFilePath)
+	if(!IsEmpty(lastFileExists))
+		sizeLeft = LOG_ARCHIVING_SPLITSIZE - GetFileSize(lastFileExists)
+		if(sizeLeft > LOG_MAX_LINESIZE)
+			WAVE/WAVE logParts = SplitLogDataBySize(logData, LOG_FILE_LINE_END, LOG_ARCHIVING_SPLITSIZE, lastIndex = index, firstPartSize = sizeLeft)
+			Open/Z/A fnum as lastFileExists
+			ASSERT(!V_flag, "Could not open file for writing! " + lastFileExists)
 
-		jsonID = JSON_Parse(entry, ignoreErr = 1)
-		if(IsNaN(jsonID))
-			// include invalid entries
-			dat = ""
-		else
-			dat = JSON_GetString(jsonID, "ts", ignoreErr=1)
-			JSON_Release(jsonID)
+			WAVE/T logPart = logParts[0]
+			format = "%s" + LOG_FILE_LINE_END
+			wfprintf fNum, format, logPart
+			Close fnum
+			partIdx += 1
 		endif
 
-		include = 0
+		numPart = ReplaceString(filePrefix, lastFileExists, "")
+		fileIndex = str2num(RemoveEnding(numPart, fileSuffix)) + 1
+	else
+		WAVE/WAVE logParts = SplitLogDataBySize(logData, LOG_FILE_LINE_END, LOG_ARCHIVING_SPLITSIZE, lastIndex = index)
+	endif
 
-		if(IsEmpty(dat))
-			// include entries without ts
-			include = 1
-		else
-			ts = ParseISO8601TimeStamp(dat)
-
-			if(IsNaN(ts))
-				// include entries with invalid ts
-				include = 1
-			elseif(ts >= first && ts <= last)
-				include = 1
-			endif
-		endif
-
-		if(include)
-			filtered[idx++] = entry
-		endif
+	format = "%s%s" + ARCHIVEDLOG_SUFFIX + "%04d.%s"
+	numParts = DimSize(logParts, ROWS)
+	for(partIdx = partIdx; partIdx < numParts; partIdx += 1)
+		sprintf newFullFilePath, format, fileFolder, fileBase, fileIndex, fileSuffix
+		strData = TextWaveToList(logParts[partIdx], LOG_FILE_LINE_END)
+		SaveTextFile(strData, newFullFilePath)
+		fileIndex += 1
 	endfor
 
-	if(idx == 0)
-		return $""
-	endif
-
-	Redimension/N=(idx) filtered
-
-	return filtered
+	SaveRemainingLog(logData, index, fullFilePath)
 End
 
-static Function [WAVE/T keys, WAVE/T values] FilterLogfileByDate(string file, variable firstDate, variable lastDate)
-	string data, path
+static Function SaveRemainingLog(WAVE/T logData, variable index, string fullFilePath)
 
-	[data, path] = LoadTextFile(file)
+	string format
+	variable flags, isZMQLogFile, fNum
 
-	data = NormalizeToEOL(data, "\n")
-	WAVE/Z contents = ListToTextWave(data, "\n")
-	ASSERT(WaveExists(contents), "Missing contents")
-	WAVE/Z filteredContents = FilterByDate(contents, firstDate, lastDate)
-
-	if(!WaveExists(filteredContents))
-		data = "{}"
-	else
-		data = TextWaveToList(filteredContents, "\n")
+	isZMQLogFile = !CmpStr(GetZeroMQXOPLogfile(), fullFilePath)
+	if(isZMQLogFile)
+		flags = ZeroMQ_SET_FLAGS_DEFAULT
+		zeromq_set(flags)
 	endif
 
-	Make/FREE/T keys = {GetFile(path)}
-	// remove duplicated empty entries
-	Make/FREE/T values = {ReplaceString("{}\n{}\n", data, "")}
+	if(index == DimSize(logData, ROWS) - 1)
+		DeleteFile fullFilePath
+		return NaN
+	endif
 
-	return [keys, values]
+	format = "%s" + LOG_FILE_LINE_END
+	Open fnum as fullFilePath
+	wfprintf fNum, format/R=[index + 1, Inf], logData
+	Close fNum
+
+	if(isZMQLogFile)
+		flags = GetZeroMQXOPFlags()
+		zeromq_set(flags)
+	endif
+End
+
+static Function/S LastArchivedLogFile(string fullFilePath)
+
+	string pathName, fileFolder, fileBase, fileSuffix, allFilesList, allArchivedFiles, regex
+	variable err
+
+	fileFolder = GetFolder(fullFilePath)
+	fileBase = GetBaseName(fullFilePath)
+	fileSuffix = GetFileSuffix(fullFilePath)
+
+	pathName = GetUniqueSymbolicPath()
+	NewPath/Q/O $pathName, fileFolder
+
+	AssertOnAndClearRTError()
+	allFilesList = IndexedFile($pathName, -1, "." + fileSuffix, "????", FILE_LIST_SEP); err = GetRTError(1)
+	KillPath/Z $pathName
+
+	regex = "^" + fileBase + ARCHIVEDLOG_SUFFIX + "[0-9]{4}." + fileSuffix
+	allArchivedFiles = GrepList(allFilesList, regex, 0, FILE_LIST_SEP)
+	if(IsEmpty(allArchivedFiles))
+		return ""
+	endif
+
+	return fileFolder + StringFromList(0, SortList(allArchivedFiles, FILE_LIST_SEP, 1), FILE_LIST_SEP)
+End
+
+static Function/S GetDateOfLogEntry(string entry)
+
+	variable jsonId
+	string dat
+
+	jsonID = JSON_Parse(entry, ignoreErr = 1)
+	if(IsNaN(jsonID))
+		// include invalid entries
+		return ""
+	endif
+
+	dat = JSON_GetString(jsonID, "ts", ignoreErr=1)
+	JSON_Release(jsonID)
+
+	return dat
 End
 
 /// @brief Update the logging template used by the ZeroMQ-XOP and ITCXOP2
@@ -7904,4 +8001,94 @@ Function AlreadyCalledOnce(string name)
 	var = 1
 	// not yet called
 	return 0
+End
+
+Function [WAVE/T filtered, variable lastIndex] FilterByDate(WAVE/T entries, variable first, variable last)
+
+	variable firstIndex
+
+	ASSERT(!IsNaN(first) && !IsNaN(last), "first and last can not be NaN.")
+	ASSERT(first >= 0 && last >= 0 && first < last, "first and last must not be negative and first < last.")
+
+	firstIndex = FindFirstLogEntryElementByDate(entries, first)
+	lastIndex = FindLastLogEntryElementByDate(entries, last)
+	if(lastIndex < firstIndex)
+		return [$"", NaN]
+	endif
+
+	Duplicate/FREE/T/RMD=[firstIndex, lastIndex] entries, filtered
+
+	return [filtered, lastIndex]
+End
+
+/// @brief Find the index of the first log file line that is from a time greater or equal than timeStamp
+///        The algorithm is a binary search that requires ascending order of time stamps of the log file entries.
+///        entries is a text wave where each line contains a log file entry as JSON.
+///        This JSON can contain a timestamp but can also contain no or an invalid timestamp.
+///        If the binary search hits an invalid timestamp the current search index is moved by a linear search
+///        to lower indices until a valid timestamp or the lower boundary is reached.
+///
+/// @param entries   text wave where each line contains a log file entry as serialized JSON with ascending order of time stamps
+/// @param timeStamp time stamp that is searched
+/// @returns index + 1 of the last entry with a time stamp lower than timeStamp
+static Function FindFirstLogEntryElementByDate(WAVE/T entries, variable timeStamp)
+
+	variable l, r, m, ts
+
+	r = DimSize(entries, ROWS)
+	for(;l < r;)
+		m = trunc((l + r) / 2)
+		ts =  ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
+		if(IsNaN(ts))
+			for(m = m - 1; m > l; m -= 1)
+				ts = ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
+				if(!IsNaN(ts))
+					break
+				endif
+			endfor
+		endif
+		if(ts < timeStamp)
+			l = m + 1
+		else
+			r = m
+		endif
+	endfor
+
+	return l
+End
+
+/// @brief Find the index of the last log file line that is from a time smaller or equal than timeStamp
+///        The algorithm is a binary search that requires ascending order of time stamps of the log file entries.
+///        entries is a text wave where each line contains a log file entry as JSON.
+///        This JSON can contain a timestamp but can also contain no or an invalid timestamp.
+///        If the binary search hits an invalid timestamp the current search index is moved by a linear search
+///        to higher indices until a valid timestamp or the higher boundary is reached.
+///
+/// @param entries   text wave where each line contains a log file entry as serialized JSON with ascending order of time stamps
+/// @param timeStamp time stamp that is searched
+/// @returns index - 1 of the first entry with a time stamp greater than timeStamp
+static Function FindLastLogEntryElementByDate(WAVE/T entries, variable timeStamp)
+
+	variable l, r, m, ts
+
+	r = DimSize(entries, ROWS)
+	for(;l < r;)
+		m = trunc((l + r) / 2)
+		ts = ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
+		if(IsNaN(ts))
+			for(m = m + 1; m < r; m += 1)
+				ts =  ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
+				if(!IsNaN(ts))
+					break
+				endif
+			endfor
+		endif
+		if(ts > timeStamp)
+			r = m
+		else
+			l = m + 1
+		endif
+	endfor
+
+	return r - 1
 End

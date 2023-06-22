@@ -5823,58 +5823,61 @@ Function PU_Works([WAVE/T wv])
 	CHECK_EQUAL_STR(unit, unit)
 End
 
-Function FBD_CheckParams()
+static Function FBD_CheckParams()
+
+	variable lastIndex
 
 	Make/FREE/N=0/T input = {""}
 
+	WAVE/Z/T filtered = $""
+
 	try
-		FilterByDate(input, NaN, 0)
+		[filtered, lastIndex] = FilterByDate(input, NaN, 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		FilterByDate(input, 0, NaN)
+		[filtered, lastIndex] = FilterByDate(input, 0, NaN)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		FilterByDate(input, 0, -1)
+		[filtered, lastIndex] = FilterByDate(input, 0, -1)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		FilterByDate(input, -1, 0)
+		[filtered, lastIndex] = FilterByDate(input, -1, 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		FilterByDate(input, 2, 1)
+		[filtered, lastIndex] = FilterByDate(input, 2, 1)
 		FAIL()
 	catch
 		PASS()
 	endtry
 End
 
-Function FBD_Works()
+static Function FBD_Works()
 	variable last, first
+
+	variable lastIndex
+
+	WAVE/Z/T result = $""
 
 	// empty gives null
 	Make/FREE/T/N=0 input
-	WAVE/Z result = FilterByDate(input, 0, 1)
+	[result, lastIndex] = FilterByDate(input, 0, 1)
 	CHECK_WAVE(result, NULL_WAVE)
-
-	// non-matching entries are included
-	Make/FREE/T input = {"a", "{}", "{\"ts\" : \"2022\"}"}
-	WAVE/Z result = FilterByDate(input, 0, 1)
-	CHECK_EQUAL_TEXTWAVES(result, input)
 
 	Make/FREE/T input = {"{\"ts\" : \"2021-12-24T00:00:00Z\", \"stuff\" : \"abcd\"}", \
 	                     "{\"ts\" : \"2022-01-20T00:00:00Z\", \"stuff\" : \"efgh\"}", \
@@ -5886,8 +5889,9 @@ Function FBD_Works()
 
 	first = 0
 	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
-	WAVE/Z result = FilterByDate(input, first, last)
+	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, ref)
+	CHECK_EQUAL_VAR(lastIndex, 1)
 
 	// borders are included (2)
 	Make/FREE/T ref = {"{\"ts\" : \"2021-12-24T00:00:00Z\", \"stuff\" : \"abcd\"}", \
@@ -5895,20 +5899,97 @@ Function FBD_Works()
 
 	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
 	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
-	WAVE/Z result = FilterByDate(input, first, last)
+	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, ref)
+	CHECK_EQUAL_VAR(lastIndex, 1)
 
 	// will result null if nothing is in range (1)
 	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z") + 1
 	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z") - 1
-	WAVE/Z result = FilterByDate(input, first, last)
+	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_WAVE(result, NULL_WAVE)
 
 	// will result null if nothing is in range (2)
 	first = ParseIsO8601TimeStamp("2020-01-01T00:00:00Z")
 	last  = ParseIsO8601TimeStamp("2020-12-31T00:00:00Z")
-	WAVE/Z result = FilterByDate(input, first, last)
+	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_WAVE(result, NULL_WAVE)
+End
+
+static Function FBD_WorksWithInvalidTimeStamp()
+
+	variable last, first
+	variable lastIndex
+
+	WAVE/Z/T result = $""
+
+	Make/FREE/T input2 = {"{}", "{}", "{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
+						"{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+						"{}", "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
+						"{}", "{}"}
+
+	Make/FREE/T input3 = {"{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}"}
+
+	// invalid ts at borders are included (2)
+	Make/FREE/T ref = {"{}", "{}", "{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
+					   "{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+					   "{}", "{}"}
+
+	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	[result, lastIndex] = FilterByDate(input2, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, ref)
+	CHECK_EQUAL_VAR(lastIndex, 7)
+
+	// left boundary
+	first = 0
+	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	[result, lastIndex] = FilterByDate(input2, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, ref)
+	CHECK_EQUAL_VAR(lastIndex, 7)
+
+	// right boundary
+	Make/FREE/T ref = {"{}", "{}", "{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
+					   "{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+					  "{}", "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
+					   "{}", "{}"}
+
+	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last  = Inf
+	[result, lastIndex] = FilterByDate(input2, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, ref)
+	CHECK_EQUAL_VAR(lastIndex, DimSize(input2, ROWS) - 1)
+
+	// all invalid ts
+	first = 0
+	last  = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	[result, lastIndex] = FilterByDate(input3, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, input3)
+	CHECK_EQUAL_VAR(lastIndex, DimSize(input3, ROWS) - 1)
+
+	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	[result, lastIndex] = FilterByDate(input3, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, input3)
+	CHECK_EQUAL_VAR(lastIndex, DimSize(input3, ROWS) - 1)
+
+	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last  = Inf
+	[result, lastIndex] = FilterByDate(input3, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, input3)
+	CHECK_EQUAL_VAR(lastIndex, DimSize(input3, ROWS) - 1)
+
+	// right boundary with invalid ts
+	Make/FREE/T input4 = {"{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
+					   "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+					  "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
+					   "{}"}
+
+	first = 0
+	last  = ParseIsO8601TimeStamp("2022-01-25T00:00:00Z")
+	[result, lastIndex] = FilterByDate(input4, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, input4)
+	CHECK_EQUAL_VAR(lastIndex, DimSize(input4, ROWS) - 1)
 End
 
 Function ESFP_CheckParams()
@@ -6897,4 +6978,136 @@ static Function TestLimitWithReplace([STRUCT IUTF_mData &mData])
 	variable result = mData.w0[4]
 
 	CHECK_EQUAL_VAR(LimitWithReplace(val, low, high, repl), result)
+End
+
+static Function TestLoadTextFileToWave1()
+
+	variable i, cnt, fNum
+	string line
+	string tmpFile = GetFolder(FunctionPath("")) + "LoadTextWave.txt"
+
+	line = PadString("", MEGABYTE - 1, 0x20) + "\n"
+	cnt = ceil(STRING_MAX_SIZE / MEGABYTE + 1)
+	Open fNum as tmpFile
+	for(i = 0; i < cnt; i += 1)
+		FBinWrite fnum, line
+	endfor
+	Close fNum
+
+	WAVE/T input = LoadTextFileToWave(tmpFile, "\n")
+	CHECK_WAVE(input, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(input, ROWS), cnt)
+
+	DeleteFile tmpFile
+End
+
+static Function TestLoadTextFileToWave2()
+
+	variable fNum
+	string tmpFile = GetFolder(FunctionPath("")) + "LoadTextWave.txt"
+
+	Open fNum as tmpFile
+	Close fNum
+	WAVE/T input = LoadTextFileToWave(tmpFile, "\n")
+	CHECK_WAVE(input, NULL_WAVE)
+
+	DeleteFile tmpFile
+End
+
+static Function TestLoadTextFileToWave3()
+
+	WAVE/T input = LoadTextFileToWave("", "")
+	CHECK_WAVE(input, NULL_WAVE)
+End
+
+static Function TestSplitLogDataBySize()
+
+	string str = PadString("", 10, 0x41)
+
+	Make/FREE/T logData = {str, str, str}
+
+	try
+		WAVE/WAVE result = SplitLogDataBySize(logData, "", 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE/WAVE result = SplitLogDataBySize(logData, "\n", strlen(str))
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE/WAVE result = SplitLogDataBySize(logData, "", strlen(str), firstPartSize = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/T strData = {str}
+	Make/FREE/WAVE ref = {strData, strData, strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 10)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	for(resultContent : result)
+		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
+	endfor
+
+	Make/FREE/T strData = {str}
+	Make/FREE/T strData2 = {str, str}
+	Make/FREE/WAVE ref = {strData2, strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 20)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	CHECK_EQUAL_WAVES(result[0], ref[0], mode = -1 %^ WAVE_SCALING)
+	CHECK_EQUAL_WAVES(result[1], ref[1], mode = -1 %^ WAVE_SCALING)
+
+	Make/FREE/T strData = {str, str, str}
+	Make/FREE/WAVE ref = {strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 30)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	CHECK_EQUAL_WAVES(result[0], strData)
+
+	Make/FREE/T strData = {str}
+	Make/FREE/WAVE ref = {strData, strData, strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "\n", 11)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	for(resultContent : result)
+		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
+	endfor
+
+	Make/FREE/T strData = {str}
+	Make/FREE/WAVE ref = {strData, strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 10, lastIndex = 1)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	for(resultContent : result)
+		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
+	endfor
+
+	Make/FREE/T strData = {str}
+	Make/FREE/WAVE ref = {strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 10, lastIndex = -1)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	for(resultContent : result)
+		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
+	endfor
+
+	Make/FREE/T strData = {str}
+	Make/FREE/WAVE ref = {strData, strData, strData}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 10, lastIndex = inf)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	for(resultContent : result)
+		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
+	endfor
+
+	Make/FREE/T strData = {str}
+	Make/FREE/T strData2 = {str, str}
+	Make/FREE/WAVE ref = {strData, strData2}
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 20, firstPartSize = 10)
+	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
+	WAVE data = result[0]
+	CHECK_EQUAL_WAVES(result[0], ref[0], mode = -1 %^ WAVE_SCALING)
+	WAVE data = result[1]
+	CHECK_EQUAL_WAVES(result[1], ref[1], mode = -1 %^ WAVE_SCALING)
 End

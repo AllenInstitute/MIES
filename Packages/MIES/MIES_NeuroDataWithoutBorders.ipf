@@ -1847,37 +1847,32 @@ threadsafe Function NWB_Flush(variable locationID)
 End
 
 static Function NWB_AppendLogFileToString(string path, string &str)
-	string data, fname, today
-	variable pos1, pos2
+
+	string now
+	variable lastIndex, firstDate, lastDate
+	string data = "{}"
 
 	if(!FileExists(path))
 		return NaN
 	endif
 
-	[data, fname] = LoadTextFile(path)
-
-	// normalizing EOLs is only necessary because
-	// someone might have edited the log file by hand
-	data = NormalizeToEOL(data, "\n")
-
-	// only use entries from the same day
-	today = "\"ts\":\"" + GetISO8601TimeStamp(localTimeZone = 1)[0, 10]
-
-	pos1 = strsearch(data, today, 0)
-
-	if(pos1 > 0)
-		pos2 = strsearch(data, "\n", pos1, -1)
-		if(pos2 > 0)
-			data = data[pos2, inf]
-		else
-			// no previous entries take everything
+	WAVE/Z/T logData = LoadTextFileToWave(path, LOG_FILE_LINE_END)
+	if(WaveExists(logData))
+		now = GetISO8601TimeStamp()
+		firstDate = ParseISO8601TimeStamp(now[0, 9] + "T00:00:00Z")
+		lastDate = Inf
+		WAVE/Z/T partData = $""
+		[partData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
+		if(WaveExists(partData))
+			WAVE/WAVE splitContents = SplitLogDataBySize(partData, LOG_FILE_LINE_END, STRING_MAX_SIZE - MEGABYTE)
+			if(DimSize(splitContents, ROWS) > 1)
+				BUG("NWB log file larger than 2 GB, only adding first part")
+			endif
+			data = TextWaveToList(splitContents[0], LOG_FILE_LINE_END)
 		endif
-	else
-		// no entries from today
-		// just add an empty JSON object
-		data = "{}"
 	endif
 
+	ASSERT(strlen(data) + strlen(str) + 2 + strlen(LOGFILE_NWB_MARKER) < STRING_MAX_SIZE, "NWB log file string too bad.")
 	str += "\n" + LOGFILE_NWB_MARKER + "\n" + data
 End
 

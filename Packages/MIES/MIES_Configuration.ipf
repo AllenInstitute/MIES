@@ -700,7 +700,13 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 
 		uploadLogfiles = CONF_GetVariableFromSettings(jsonID, EXPCONFIG_JSON_LOGFILE_UPLOAD, defaultValue = EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT)
 		if(uploadLogfiles)
-			UploadLogFilesDaily()
+			AssertOnAndClearRTError()
+			try
+				UploadLogFilesDaily(); AbortOnRTE
+			catch
+				ClearRTError()
+				BUG("Error uploading logfiles -> skipped.")
+			endtry
 		endif
 
 		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0, switchTab = 1)
@@ -1845,7 +1851,7 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 					s = ConvertTextEncoding(uData, TextEncodingCode("UTF-8"), TextEncodingCode("UTF-8"), 1, 0); AbortOnRTE
 				catch
 					ClearRTError()
-					uData = Base64Encode(udata)
+					uData = Base64EncodeSafe(udata)
 					JSON_AddString(jsonID, udataPath + EXPCONFIG_FIELD_BASE64PREFIX + uDataKey, "1")
 				endtry
 				JSON_AddString(jsonID, udataPath + uDataKey, uData)
