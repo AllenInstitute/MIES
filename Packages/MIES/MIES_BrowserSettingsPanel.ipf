@@ -1234,6 +1234,7 @@ Function [STRUCT TiledGraphSettings tgs] BSP_GatherTiledGraphSettings(string win
 	tgs.dDAQDisplayMode      = GetCheckBoxState(bsPanel, "check_BrowserSettings_dDAQ")
 	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(bsPanel, "slider_BrowserSettings_dDAQ")
 	tgs.hideSweep            = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
+	tgs.visualizeEpochs       = GetCheckBoxState(bsPanel, "check_BrowserSettings_VisEpochs")
 
 	if(tgs.overlayChannels)
 		tgs.splitTTLBits = 0
