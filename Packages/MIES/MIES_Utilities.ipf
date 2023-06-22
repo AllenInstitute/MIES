@@ -2888,6 +2888,7 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 	string entry, seps
 	string list = ""
 	variable i, j, k, l, lasti, lastj, lastk, lastl, numRows, numCols, numLayers, numChunks, count, done
+	variable numColsLoop, numLayersLoop, numChunksLoop
 
 	if(!WaveExists(txtWave))
 		return ""
@@ -2923,19 +2924,25 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 	stopOnEmpty = ParamIsDefault(stopOnEmpty) ? 0 : !!stopOnEmpty
 
 	numRows = DimSize(txtWave, ROWS)
-
 	if(numRows == 0)
 		return list
 	endif
+	numCols = DimSize(txtWave, COLS)
+	numLayers = DimSize(txtWave, LAYERS)
+	numChunks = DimSize(txtWave, CHUNKS)
 
-	numCols = max(1, DimSize(txtWave, COLS))
-	numLayers = max(1, DimSize(txtWave, LAYERS))
-	numChunks = max(1, DimSize(txtWave, CHUNKS))
+	if(!stopOnEmpty && maxElements == inf && !numLayers && !numChunks)
+		return WaveToListFast(txtWave, "%s", rowSep, colSep)
+	endif
+
+	numColsLoop = max(1, numCols)
+	numLayersLoop = max(1, numLayers)
+	numChunksLoop = max(1, numChunks)
 
 	for(i = 0; i < numRows; i += 1)
-		for(j = 0; j < numCols; j += 1)
-			for(k = 0; k < numLayers; k += 1)
-				for(l = 0; l < numChunks; l += 1)
+		for(j = 0; j < numColsLoop; j += 1)
+			for(k = 0; k < numLayersLoop; k += 1)
+				for(l = 0; l < numChunksLoop; l += 1)
 					entry = txtWave[i][j][k][l]
 
 					if(stopOnEmpty && IsEmpty(entry))
@@ -2993,15 +3000,15 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 		return list
 	endif
 
-	if(numChunks > 1)
+	if(numChunks)
 		list += chunkSep
 	endif
 
-	if(numLayers > 1)
+	if(numLayers)
 		list += layerSep
 	endif
 
-	if(numCols > 1)
+	if(numCols)
 		list += colSep
 	endif
 
@@ -3127,7 +3134,7 @@ threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, c
 	return output
 End
 
-/// @brief Convert a numeric wave to string list
+/// @brief Convert a 1D or 2D numeric wave to string list
 ///
 /// Counterpart @see ListToNumericWave
 /// @see TextWaveToList
@@ -3137,11 +3144,15 @@ End
 /// @param colSep [optional, default = `,`] separator for column entries
 /// @param format [optional, defaults to `%g`] sprintf conversion specifier
 threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, string colSep])
-	string list = ""
-	string fullFormat
-	variable numCols
 
 	if(!WaveExists(wv))
+		return ""
+	endif
+
+	ASSERT_TS(IsNumericWave(wv), "Expected a numeric wave")
+	ASSERT_TS(DimSize(wv, LAYERS) <= 1, "Unexpected layer count")
+	ASSERT_TS(DimSize(wv, CHUNKS) <= 1, "Unexpected chunk count")
+	if(!DimSize(wv, ROWS))
 		return ""
 	endif
 
@@ -3149,24 +3160,27 @@ threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, s
 		format = "%g"
 	endif
 
+	ASSERT_TS(!IsEmpty(sep), "Expected a non-empty row list separator")
 	if(ParamIsDefault(colSep))
 		colSep = ","
 	else
 		ASSERT_TS(!IsEmpty(colSep), "Expected a non-empty column list separator")
 	endif
 
-	ASSERT_TS(IsNumericWave(wv), "Expected a numeric wave")
-	ASSERT_TS(DimSize(wv, LAYERS) <= 1, "Unexpected layer count")
+	return WaveToListFast(wv, format, sep, colSep)
+End
 
-	numCols = DimSize(wv, COLS)
+threadsafe static Function/S WaveToListFast(WAVE wv, string format, string sep, string colSep)
 
-	if(numCols > 1)
-		fullFormat = ReplicateString(format + sep, numCols) + colSep
+	string list
+
+	if(DimSize(wv, COLS) > 0)
+		format = ReplicateString(format + colSep, DimSize(wv, COLS)) + sep
 	else
-		fullFormat = format + sep
+		format += sep
 	endif
 
-	wfprintf list, fullFormat, wv
+	wfprintf list, format, wv
 
 	return list
 End
@@ -3187,7 +3201,8 @@ threadsafe Function/WAVE ListToNumericWave(list, sep, [type])
 		type = IGOR_TYPE_64BIT_FLOAT
 	endif
 
-	Make/FREE/Y=(type)/N=(ItemsInList(list, sep)) wv = str2num(StringFromList(p, list, sep))
+	Make/FREE/Y=(type)/N=(ItemsInList(list, sep)) wv
+	MultiThread wv = str2num(StringFromList(p, list, sep))
 
 	return wv
 End

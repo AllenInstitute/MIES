@@ -852,7 +852,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 
 	WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult=1, useVariables=0)
 	if(WaveExists(selectData))
-		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ";")
+		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ",", colSep = ";")
 	endif
 
 	shPanel = LBV_GetSettingsHistoryPanel(graph)
