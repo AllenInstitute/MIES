@@ -4154,7 +4154,7 @@ Function NWLWorks()
 
 	Make/FREE dataFP = {{1, 2, 3}, {4, 5, 6}}
 	result = NumericWaveToList(dataFP, ";")
-	expected = "1;4;,2;5;,3;6;,"
+	expected = "1,4,;2,5,;3,6,;"
 	CHECK_EQUAL_STR(result, expected)
 
 	Make/FREE/N=0 dataEmpty

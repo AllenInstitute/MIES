@@ -3164,7 +3164,7 @@ threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, s
 	numCols = DimSize(wv, COLS)
 
 	if(numCols > 1)
-		fullFormat = ReplicateString(format + sep, numCols) + colSep
+		fullFormat = ReplicateString(format + colSep, numCols) + sep
 	else
 		fullFormat = format + sep
 	endif
