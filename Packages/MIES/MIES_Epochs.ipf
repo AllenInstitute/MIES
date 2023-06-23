@@ -934,6 +934,9 @@ threadsafe Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualVa
 	endif
 
 	WAVE/T settingText = setting
+	if(IsEmpty(settingText[index]))
+		return $""
+	endif
 	WAVE/T epochs = EP_EpochStrToWave(settingText[index])
 	ASSERT_TS(DimSize(epochs, ROWS) > 0, "Invalid epochs")
 	SetEpochsDimensionLabelsSingleChannel(epochs)
@@ -944,7 +947,7 @@ End
 
 /// @brief Append epoch information from the labnotebook to the newly cleared epoch wave
 Function EP_AppendLBNEpochs(string device, variable sweepNo)
-	variable i, epochCnt, epochChannelCnt
+	variable i, j, epochCnt, epochChannelCnt, chanType
 
 	EP_ClearEpochs(device)
 
@@ -953,18 +956,22 @@ Function EP_AppendLBNEpochs(string device, variable sweepNo)
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
+	Make/FREE/D channelTypes = {XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_TYPE_TTL}
+
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		WAVE/T/Z epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, i, XOP_CHANNEL_TYPE_DAC)
+		for(chanType : channelTypes)
+			WAVE/T/Z epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, i, chanType)
 
-		if(!WaveExists(epochChannel))
-			continue
-		endif
+			if(!WaveExists(epochChannel))
+				continue
+			endif
 
-		epochChannelCnt = DimSize(epochChannel, ROWS)
+			epochChannelCnt = DimSize(epochChannel, ROWS)
 
-		EnsureLargeEnoughWave(epochWave, dimension = ROWS, indexShouldExist = epochChannelCnt)
+			EnsureLargeEnoughWave(epochWave, dimension = ROWS, indexShouldExist = epochChannelCnt)
 
-		epochWave[0, epochChannelCnt - 1][][i] = epochChannel[p][q]
+			epochWave[0, epochChannelCnt - 1][][i][chanType] = epochChannel[p][q]
+		endfor
 	endfor
 End
 
