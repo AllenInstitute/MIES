@@ -1342,17 +1342,25 @@ static Function PSX_UpdateSingleEventGraph(string win, variable index)
 
 	DFREF comboDFR = PSX_GetCurrentComboFolder(win)
 
-	WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
-	[first, last] = PSX_GetSingleEventRange(psxEvent, index)
+	PSX_UpdateDisplayedFit(comboDFR, index)
 
 	extSingleGraph = PSX_GetSingleEventGraph(win)
 
+	PSX_UpdateSingleEventTextbox(extSingleGraph, eventIndex = index)
+
+	WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
+	[first, last] = PSX_GetSingleEventRange(psxEvent, index)
+
+	WAVE singleEventFit = GetPSXSingleEventFitWaveFromDFR(comboDFR)
+
+	if(DimSize(singleEventFit, ROWS) > 0 && HasOneValidEntry(singleEventFit))
+		// ensure that the fit is shown
+		first = min(first, leftx(singleEventFit))
+		last  = max(last, rightx(singleEventFit))
+	endif
+
 	SetAxis/W=$extSingleGraph bottom, first, last
 	SetAxis/W=$extSingleGraph/A=2 left
-
-	PSX_UpdateDisplayedFit(comboDFR, index)
-
-	PSX_UpdateSingleEventTextbox(extSingleGraph, eventIndex = index)
 End
 
 /// @brief Update the displayed fit in the single event graph
