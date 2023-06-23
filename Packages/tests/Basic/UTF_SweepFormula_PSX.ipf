@@ -809,8 +809,26 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	// no xValues
 	// no marker
 
+	// wv7
+	// xinterval with multiple combos
+	Duplicate/FREE/T template, wv7
+	WAVE/T input = wv7
+
+	input[%prop]            = "xinterval"
+	input[%state]           = "accept"
+	input[%postProc]        = "nothing"
+	input[%refNumOutputRows]= "1"
+	input[%numEventsCombo0] = "5"
+	input[%numEventsCombo1] = "5"
+	input[%outOfRange]      = "0"
+
+	JWN_CreatePath(input, "/0")
+	JWN_SetWaveInWaveNote(input, "/0/results", {NaN, 200, NaN, 200})
+	JWN_SetWaveInWaveNote(input, "/0/xValues", {1, 3, 1, 3})
+	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
+
 	// end
-	Make/FREE/WAVE results = {wv0, wv1, wv2, wv3, wv4, wv5, wv6}
+	Make/FREE/WAVE results = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7}
 
 	return results
 End

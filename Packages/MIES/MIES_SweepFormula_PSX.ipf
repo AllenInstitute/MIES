@@ -841,10 +841,10 @@ static Function [WAVE kernel, WAVE kernelFFT] PSX_CreatePSXKernel(variable riseT
 end
 
 /// @brief Return the data/index/marker/comboKeys of the events matching the given state and property
-static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] PSX_GetStatsResults(WAVE allEvents, WAVE/T allComboKeys, variable state, string prop)
+static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] PSX_GetStatsResults(WAVE/WAVE allEvents, variable state, string prop)
 
 	string stateType
-	variable numEntries
+	variable numEntries, hasData
 
 	// use the correct event/fit state for the property
 	strswitch(prop)
@@ -863,29 +863,53 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 			ASSERT(0, "Unknown prop")
 	endswitch
 
-	WAVE/Z indizes = FindIndizes(allEvents, var = state, colLabel = stateType, prop = PROP_MATCHES_VAR_BIT_MASK)
+	Make/FREE/N=0 allEventIndex, allMarkers
+	Make/FREE/N=0/D allResults
+	Make/FREE/T/N=0 allComboKeys
 
-	if(!WaveExists(indizes))
+	Make/D/FREE/N=0 results
+	Make/FREE/N=0 marker, eventIndex
+	Make/FREE/N=0/T comboKeys
+
+	for(WAVE events: allEvents)
+		WAVE/Z indizes = FindIndizes(events, var = state, colLabel = stateType, prop = PROP_MATCHES_VAR_BIT_MASK)
+
+		if(!WaveExists(indizes))
+			continue
+		endif
+
+		numEntries = Dimsize(indizes, ROWS)
+
+		Redimension/N=(numEntries) results, marker, eventIndex, comboKeys
+
+		if(!cmpstr(prop, "isi") && numEntries >= 2)
+			// recalculate the isi as that might have changed due to in-between events being not selected
+			Multithread results[0, numEntries - 1] = events[indizes[p]][%dc_peak_time] - (p >= 1 ? events[indizes[p - 1]][%dc_peak_time] : NaN)
+		else
+			Multithread results[] = events[indizes[p]][%$prop]
+		endif
+
+		Multithread eventIndex[] = events[indizes[p]][%index]
+		Multithread marker[]     = PSX_SelectMarker(events[indizes[p]][%$stateType])
+
+		Make/FREE/T/N=(numEntries) comboKeys = JWN_GetStringFromWaveNote(events, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+
+		Concatenate/FREE/NP=(ROWS) {eventIndex}, allEventIndex
+		Concatenate/FREE/NP=(ROWS)/T {comboKeys}, allComboKeys
+		Concatenate/FREE/NP=(ROWS) {marker}, allMarkers
+		Concatenate/FREE/NP=(ROWS) {results}, allResults
+
+		if(!hasData)
+			Note/K allEvents, note(events)
+			hasData = 1
+		endif
+	endfor
+
+	if(!hasData)
 		return [$"", $"", $"", $""]
 	endif
 
-	numEntries = Dimsize(indizes, ROWS)
-	Make/D/FREE/N=(numEntries) results
-	Make/FREE/N=(numEntries) marker, eventIndex
-	Make/FREE/N=(numEntries)/T comboKeys
-
-	if(!cmpstr(prop, "isi") && numEntries >= 2)
-		// recalculate the isi as that might have changed due to in-between events being not selected
-		Multithread results[0, numEntries - 1] = allEvents[indizes[p]][%dc_peak_time] - (p >= 1 ? allEvents[indizes[p - 1]][%dc_peak_time] : NaN)
-	else
-		Multithread results[] = allEvents[indizes[p]][%$prop]
-	endif
-
-	Multithread eventIndex[] = allEvents[indizes[p]][%index]
-	MultiThread comboKeys[]  = allComboKeys[indizes[p]]
-	Multithread marker[]     = PSX_SelectMarker(allEvents[indizes[p]][%$stateType])
-
-	return [results, eventIndex, marker, comboKeys]
+	return [allResults, allEventIndex, allMarkers, allComboKeys]
 End
 
 /// @brief Build the dimension label used for the sweep equivalence wave
@@ -958,7 +982,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 
 	string propLabel, propLabelAxis, comboKey
 	variable numRows, numCols, i, j, k, index, sweepNo, chanNr, chanType, state, numRanges, lowerBoundary, upperBoundary, temp, err
-	variable refMarker
+	variable refMarker, idx
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_STATS, MINIMUM_WAVE_SIZE)
 
@@ -980,11 +1004,10 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 	endif
 	WaveClear rangeParam
 
-	WAVE allEvents = GetPSXEventWaveAsFree()
-	Make/FREE/T/N=(0) allComboKeys
-
 	WAVE/Z eventContainerFromResults = PSX_GetEventContainerFromResults(id)
 	WAVE/Z eventContainer            = PSX_GetEventContainer(graph, requestID = id)
+
+	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE) allEvents
 
 	// iteration order: different chanType/chanNr (equivalence classes), range, sweepNo
 	for(i = 0; i < numRows; i += 1)
@@ -1019,39 +1042,33 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 					continue
 				endif
 
-				if(DimSize(allEvents, ROWS) == 0)
-					Note/K allEvents, note(events)
-				endif
+				EnsureLargeEnoughWave(allEvents, indexShouldExist = idx)
+				allEvents[idx] = events
+				idx += 1
 
-				ASSERT(DimSize(events, COLS) == DimSize(allEvents, COLS), "Mismatched columns")
-				Concatenate/FREE/NP=(ROWS) {events}, allEvents
-
-				Make/FREE/T/N=(DimSize(events, ROWS)) comboKeys = comboKey
-				Concatenate/FREE/NP=(ROWS)/T {comboKeys}, allComboKeys
-
-				WaveClear events, comboKeys
+				WaveClear events
 			endfor
 
-			ASSERT(DimSize(allEvents, ROWS) == DimSize(allComboKeys, ROWS), "Unmatched all events/combo sizes")
+			Redimension/N=(idx) allEvents
 
 			SFH_ASSERT(DimSize(allEvents, ROWS) > 0, "Could not find any PSX events for all given combinations.")
 
 			strswitch(prop)
 				case "amp":
 					propLabel     = "i_amp"
-					propLabelAxis = "Amplitude" + " (" + JWN_GetStringFromWaveNote(allEvents, PSX_Y_DATA_UNIT) + ")"
+					propLabelAxis = "Amplitude" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_Y_DATA_UNIT) + ")"
 					break
 				case "xpos":
 					propLabel     = "dc_peak_time"
-					propLabelAxis = "Event time" + " (" + JWN_GetStringFromWaveNote(allEvents, PSX_X_DATA_UNIT) + ")"
+					propLabelAxis = "Event time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 					break
 				case "xinterval":
 					propLabel     = "isi"
-					propLabelAxis = "Event interval" + " (" + JWN_GetStringFromWaveNote(allEvents, PSX_X_DATA_UNIT) + ")"
+					propLabelAxis = "Event interval" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 					break
 				case "tau":
 					propLabel     = "tau"
-					propLabelAxis = "Decay tau" + " (" + JWN_GetStringFromWaveNote(allEvents, PSX_X_DATA_UNIT) + ")"
+					propLabelAxis = "Decay tau" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 					break
 				case "estate":
 					propLabel     = "Event manual QC call"
@@ -1077,7 +1094,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 
 			for(state : allStates)
 
-				[WAVE resultsRaw, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] = PSX_GetStatsResults(allEvents, allComboKeys, state, propLabel)
+				[WAVE resultsRaw, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] = PSX_GetStatsResults(allEvents, state, propLabel)
 
 				if(!WaveExists(resultsRaw))
 					continue
