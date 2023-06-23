@@ -169,7 +169,7 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 			SFH_ASSERT(0, msg)
 		else
 			ASSERT(DimSize(matches, ROWS) == 1, "Unexpected match")
-			// replace abbreviated argument with the full name
+			// replace possibly abbreviated argument with its full name
 			result = matches[0]
 		endif
 	endif
