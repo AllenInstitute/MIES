@@ -946,7 +946,7 @@ threadsafe Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualVa
 End
 
 /// @brief Append epoch information from the labnotebook to the newly cleared epoch wave
-Function EP_AppendLBNEpochs(string device, variable sweepNo)
+Function EP_CopyLBNEpochsToEpochsWave(string device, variable sweepNo)
 	variable i, j, epochCnt, epochChannelCnt, chanType
 
 	EP_ClearEpochs(device)

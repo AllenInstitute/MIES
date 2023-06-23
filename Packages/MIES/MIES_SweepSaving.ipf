@@ -55,7 +55,7 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 	// Add labnotebook entries for the acquired sweep
 	ED_createWaveNoteTags(device, sweepNo)
 
-	EP_AppendLBNEpochs(device, sweepNo)
+	EP_CopyLBNEpochsToEpochsWave(device, sweepNo)
 
 	if(DAG_GetNumericalValue(device, "Check_Settings_NwbExport"))
 		NWB_AppendSweepDuringDAQ(device, sweepWave, configWave, sweepNo, str2num(DAG_GetTextualValue(device, "Popup_Settings_NwbVersion")))
