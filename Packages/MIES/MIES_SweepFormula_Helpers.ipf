@@ -377,7 +377,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 	variable i, j, rangeStart, rangeEnd, sweepNo
 	variable chanNr, chanType, cIndex, isSweepBrowser
 	variable numSelected, index, numEpochPatterns, numRanges, numEpochs, epIndex, lastx
-	string dimLabel, device, dataFolder
+	string dimLabel, device, dataFolder, epochTag, epochShortName
 	string	allEpochsRegex = "^.*$"
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
@@ -454,11 +454,24 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 			endif
 			numEpochs = DimSize(epIndices, ROWS)
 			WAVE adaptedRange = SFH_GetEmptyRange()
+
+			Make/FREE/T/N=(numEpochs) epochRangeNames
+
 			Redimension/N=(-1, numEpochs) adaptedRange
 			for(j = 0; j < numEpochs; j += 1)
 				epIndex = epIndices[j]
 				adaptedRange[0][j] = str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
 				adaptedRange[1][j] = str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+
+				epochTag = epochInfo[epIndex][EPOCH_COL_TAGS]
+
+				epochShortName = EP_GetShortName(epochTag)
+
+				if(IsEmpty(epochShortName))
+					epochRangeNames[j] = epochTag
+				else
+					epochRangeNames[j] = epochShortName
+				endif
 			endfor
 		else
 			Duplicate/FREE range, adaptedRange
@@ -488,7 +501,13 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd > leftx(sweep) && rangeEnd <= lastx), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
 
-			JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, {rangeStart, rangeEnd})
+			if(WaveExists(epochRangeNames))
+				Make/FREE/T entry = {epochRangeNames[j]}
+				JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, entry)
+			else
+				JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, {rangeStart, rangeEnd})
+			endif
+
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
@@ -922,7 +941,13 @@ End
 /// @brief Recreate a **single** select data wave and range stored in the JSON wavenote from SFH_GetSweepsForFormula()
 Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sweepData)
 
-	WAVE range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
+	WAVE/Z range = JWN_GetTextWaveFromWaveNote(sweepData, SF_META_RANGE)
+
+	if(!WaveExists(range))
+		WAVE range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
+	endif
+
+	ASSERT(HasOneValidEntry(range), "Empty range")
 
 	WAVE selectData = SFH_NewSelectDataWave(1, 1)
 
