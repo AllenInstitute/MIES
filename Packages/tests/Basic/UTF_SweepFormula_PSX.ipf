@@ -1432,13 +1432,17 @@ static Function CheckTraceColors(string win, WAVE/T traces, variable state)
 End
 
 // two sweeps in one operation
-static Function/S GetTestCode(string postProc)
+static Function/S GetTestCode(string postProc, [string eventState])
 
 	string code
 
+	if(ParamIsDefault(eventState))
+		eventState = "all"
+	endif
+
 	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 0.01, 100, 0)"
 	code += "\r and \r"
-	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), xpos, all, "+ postProc + ")"
+	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), xpos, " + eventState + ", "+ postProc + ")"
 
 	return code
 End
@@ -2204,13 +2208,20 @@ static Function KeyboardInteractionsStats()
 
 	DoUpdate
 
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	// we don't wrap-around in the stats graph
+	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+
+	// correct for below tests assuming a certain position
+	SendKey(psxStatsGraph, RIGHT_KEY)
+	SendKey(psxStatsGraph, RIGHT_KEY)
+
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
 
 	SendKey(psxStatsGraph, -1)
 
@@ -2311,6 +2322,71 @@ static Function KeyboardInteractionsStats()
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
+End
+
+static Function KeyboardInteractionsStatsSpecial()
+
+	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	// all decay fits are successfull
+	overrideResults[][] = 1
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nothing", eventState = "accept")
+
+	ExecuteSweepFormulaCode(browser, code)
+
+	win = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow = GetMainWindow(win)
+	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+
+	SetActiveSubwindow $psxGraph
+
+	SendKey(psxGraph, UP_KEY)
+	SendKey(psxGraph, DOWN_KEY)
+	SendKey(psxGraph, UP_KEY)
+
+	// replot so that stats now has data
+	ExecuteSweepFormulaCode(browser, code)
+
+	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
+
+	REQUIRE(WindowExists(psxStatsGraph))
+
+	SetActiveSubwindow $psxStatsGraph
+
+	tracenames = TraceNameList(psxStatsGraph, ";", 1)
+	trace = StringFromList(0, tracenames)
+	CHECK_PROPER_STR(trace)
+
+	Cursor/W=$psxStatsGraph/P A, $trace, 0
+
+	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+
+	// going one right, moves two events
+	SendKey(psxGraph, RIGHT_KEY)
+
+	DoUpdate
+
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 1)
+
+	// and left as well
+	SendKey(psxGraph, LEFT_KEY)
+
+	DoUpdate
+
+	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
 End
 
 static Function NoEventsAtAll()

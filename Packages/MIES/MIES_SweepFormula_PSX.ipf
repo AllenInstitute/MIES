@@ -3268,18 +3268,31 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 	UpdateInfoButtonHelp(mainWindow, "button_psx_info", str)
 End
 
-/// @brief Return the current event and combo index
+/// @brief Return the event, wave and combo index
 ///
-/// @param win window, can be an `psx` graph or an `psxStats` graph.
-static Function [variable eventIndex, variable waveIndex, variable comboIndex] PSX_GetCurrentEventIndexAndComboIndex(string win)
+/// Direction is taken into account.
+///
+/// @param win       window, can be an `psx`/`psxStats` graph
+/// @param direction [optional, defaults to 0] offset from the current position
+///
+/// @retval eventIndex event index
+/// @retval waveIndex  index into the y wave of the cursor
+/// @retval comboIndex combination index
+static Function [variable eventIndex, variable waveIndex, variable comboIndex] PSX_GetEventIndexAndComboIndex(string win, [variable direction])
 
 	string psxGraph, info, trace
-	variable idx, yPointNumber
+	variable idx, yPointNumber, numEntries
 
 	psxGraph = PSX_GetPSXGraph(win)
 
+	if(ParamIsDefault(direction))
+		direction = 0
+	else
+		ASSERT(IsFinite(direction), "Invalid direction")
+	endif
+
 	if(!cmpstr(win, psxGraph))
-		idx = PSX_GetCurrentEventIndex(psxGraph)
+		idx = PSX_GetCurrentEventIndex(psxGraph) + direction
 		return [idx, idx, PSX_GetCurrentComboIndex(win)]
 	endif
 
@@ -3321,6 +3334,10 @@ static Function [variable eventIndex, variable waveIndex, variable comboIndex] P
 
 	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(yWave, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
 
+	numEntries = DimSize(yWave, ROWS)
+	ASSERT(numEntries == DimSize(xWave, ROWS), "Unmatching wave sizes")
+	yPointNumber = limit(yPointNumber + direction, 0, numEntries - 1)
+
 	eventIndex = xWave[yPointNumber]
 	comboIndex = PSX_GetComboIndexForComboKey(win, comboKeys[yPointNumber])
 
@@ -3332,7 +3349,7 @@ End
 /// Works with `psx` and `psxStats` graphs.
 Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 
-	variable direction, pntIndex, loc, comboIndex, keyboardDir, waveIndex
+	variable direction, eventIndex, loc, comboIndex, keyboardDir, waveIndex
 	string psxGraph, info, msg, browser, win, mainWindow, trace
 
 	switch(s.eventCode)
@@ -3344,16 +3361,16 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 			endif
 
 			win = s.winName
-			pntIndex = s.pointNumber
+			eventIndex = s.pointNumber
 
 			psxGraph = PSX_GetPSXGraph(win)
 
 			if(!cmpstr(win, psxGraph))
-				PSX_UpdateSingleEventGraph(psxGraph, pntIndex)
+				PSX_UpdateSingleEventGraph(psxGraph, eventIndex)
 			else
-				[pntIndex, waveIndex, comboIndex] = PSX_GetCurrentEventIndexAndComboIndex(win)
+				[eventIndex, waveIndex, comboIndex] = PSX_GetEventIndexAndComboIndex(win)
 
-				if(IsNaN(pntIndex) || IsNaN(waveIndex) || IsNaN(comboIndex))
+				if(IsNaN(eventIndex) || IsNaN(waveIndex) || IsNaN(comboIndex))
 					break
 				endif
 
@@ -3362,11 +3379,12 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 					PGC_SetAndActivateControl(mainWindow, "listbox_select_combo", val = comboIndex)
 				endif
 
-				PSX_MoveAndCenterCursor(psxGraph, pntIndex)
+				PSX_MoveAndCenterCursor(psxGraph, eventIndex)
 
 				trace = StringByKey("TNAME", CsrInfo(A, win))
 
 				// x-coordinates are not unique in a stats graph as we can have multiple combos
+				// and we therefore have to set waveIndex
 				PSX_MoveCursor(win, trace, waveIndex, 0)
 			endif
 
@@ -3381,29 +3399,46 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 
 			psxGraph = PSX_GetPSXGraph(win)
 
-			[pntIndex, waveIndex, comboIndex] = PSX_GetCurrentEventIndexAndComboIndex(win)
+			[eventIndex, waveIndex, comboIndex] = PSX_GetEventIndexAndComboIndex(win)
 
-			if(IsNaN(pntIndex) || IsNaN(waveIndex) || IsNaN(comboIndex))
+			if(IsNaN(eventIndex) || IsNaN(waveIndex) || IsNaN(comboIndex))
 				break
 			endif
 
-			if(PSX_GetCurrentComboIndex(win) != comboIndex)
-				mainWindow = GetMainWindow(win)
-				PGC_SetAndActivateControl(mainWindow, "listbox_select_combo", val = comboIndex)
-			endif
-
-			direction = PSX_ReactToKeyPress(psxGraph, s.keyCode, comboIndex, pntIndex, moveCursor = 1)
-
-			if(direction == 0)
-				PSX_MoveAndCenterCursor(psxGraph, pntIndex)
-			endif
-
-			if(cmpstr(win, psxGraph))
+			if(!cmpstr(win, psxGraph))
+				ASSERT(waveIndex == eventIndex, "Mismatched indizes")
+				PSX_ReactToKeyPressWithoutMouse(psxGraph, s.keyCode, comboIndex, eventIndex)
+				PSX_MoveMouseForKeyPress(psxGraph, s.keyCode, comboIndex, eventIndex)
+			else
 				// psxStats
+				// adapt the event state of the *current event* according to the key press
+				PSX_ReactToKeyPressWithoutMouse(psxGraph, s.keyCode, comboIndex, eventIndex)
+
+				// calculate the next eventIndex from our current waveIndex
+				// that new eventIndex might be something totally different as a stats plot will usually
+				// only display a subset of the event data or combine multiple combos
+
+				direction = PSX_GetDirectionFromKeyCode(psxGraph, s.keyCode)
+				[eventIndex, waveIndex, comboIndex] = PSX_GetEventIndexAndComboIndex(win, direction = direction)
+
+				ASSERT(IsFinite(eventIndex) && IsFinite(waveIndex) && IsFinite(comboIndex), "Invalid event index")
+
+				if(PSX_GetCurrentComboIndex(win) != comboIndex)
+					mainWindow = GetMainWindow(win)
+					PGC_SetAndActivateControl(mainWindow, "listbox_select_combo", val = comboIndex)
+				endif
+
+				// undo the movement as the mouse cursor logic needs to know the direction as well
+				PSX_MoveMouseForKeyPress(psxGraph, s.keyCode, comboIndex, eventIndex - direction)
+
+				if(direction == 0)
+					PSX_MoveAndCenterCursor(psxGraph, eventIndex)
+				endif
+
 				trace = StringByKey("TNAME", CsrInfo(A, win))
 
 				if(!IsEmpty(trace))
-					PSX_MoveCursor(win, trace, waveIndex, direction)
+					PSX_MoveCursor(win, trace, waveIndex, 0)
 				endif
 			endif
 
@@ -3485,67 +3520,69 @@ Function PSX_AllEventGraphHook(STRUCT WMWinHookStruct &s)
 				break
 			endif
 
-			PSX_ReactToKeyPress(win, s.keyCode, comboIndex, eventIndex)
+			PSX_ReactToKeyPressWithoutMouse(win, s.keyCode, comboIndex, eventIndex)
 
 			return 1
 			break
 	endswitch
 End
 
-/// @brief React to keyboard presses
-///
-/// @return Return the direction of cursor movement (+1/-1) or 0 if the cursor was not moved
-static Function PSX_ReactToKeyPress(string win, variable keyCode, variable comboIndex, variable eventIndex, [variable moveCursor])
+static Function PSX_GetDirectionFromKeyCode(string psxGraph, variable keyCode)
 
-	variable direction, keyboardDir
+	switch(keycode)
+		case LEFT_KEY:
+			return -1
+		case RIGHT_KEY:
+			return +1
+		case UP_KEY:
+		case DOWN_KEY:
+			return PSX_GetMoveDirection(psxGraph)
+		default:
+			return 0
+	endswitch
+End
+
+static Function PSX_MoveMouseForKeyPress(string win, variable keyCode, variable comboIndex, variable eventIndex)
+
+	variable direction
+
+	switch(keycode)
+		case LEFT_KEY:
+		case RIGHT_KEY:
+		case UP_KEY:
+		case DOWN_KEY:
+			direction = PSX_GetDirectionFromKeyCode(win, keyCode)
+			PSX_MoveAndCenterCursor(win, eventIndex, direction = direction)
+			break
+		default:
+			// unsupported key
+			break
+	endswitch
+End
+
+static Function PSX_ReactToKeyPressWithoutMouse(string win, variable keyCode, variable comboIndex, variable eventIndex)
+
+	variable keyboardDir
 	string psxGraph
-
-	if(ParamIsDefault(moveCursor))
-		moveCursor = 0
-	else
-		moveCursor = !!moveCursor
-	endif
 
 	switch(keycode)
 		case LEFT_KEY:
 			DEBUGPRINT("left")
 
-			if(moveCursor)
-				direction = -1
-				PSX_MoveAndCenterCursor(win, eventIndex, direction = direction)
-			endif
 			break
 		case RIGHT_KEY:
 			DEBUGPRINT("right")
 
-			if(moveCursor)
-				direction = +1
-				PSX_MoveAndCenterCursor(win, eventIndex, direction = direction)
-			endif
 			break
 		case UP_KEY:
 			DEBUGPRINT("up")
 
 			PSX_UpdateEventWaves(win, val = PSX_ACCEPT, index = eventIndex, stateType = PSX_STATE_BOTH, comboIndex = comboIndex)
-
-			if(moveCursor)
-				psxGraph = PSX_GetPSXGraph(win)
-				direction = PSX_GetMoveDirection(psxGraph)
-				PSX_MoveAndCenterCursor(win, eventIndex, direction = direction)
-			endif
-
 			break
 		case DOWN_KEY:
 			DEBUGPRINT("down")
 
-			if(moveCursor)
-				psxGraph = PSX_GetPSXGraph(win)
-				direction = PSX_GetMoveDirection(psxGraph)
-				PSX_MoveAndCenterCursor(win, eventIndex, direction = direction)
-			endif
-
 			PSX_UpdateEventWaves(win, val = PSX_REJECT, index = eventIndex, stateType = PSX_STATE_BOTH, comboIndex = comboIndex)
-
 			break
 		case SPACE_KEY:
 			DEBUGPRINT("space")
@@ -3555,9 +3592,7 @@ static Function PSX_ReactToKeyPress(string win, variable keyCode, variable combo
 		case C_KEY:
 			DEBUGPRINT("center (c)")
 
-			if(moveCursor)
-				PSX_CenterCursor(win, eventIndex, 1)
-			endif
+			PSX_CenterCursor(win, eventIndex, 1)
 			break
 		case E_KEY:
 			DEBUGPRINT("toggle event state (e)")
@@ -3572,22 +3607,20 @@ static Function PSX_ReactToKeyPress(string win, variable keyCode, variable combo
 		case R_KEY:
 			DEBUGPRINT("reverse direction (c)")
 
-			if(moveCursor)
-				keyboardDir = PSX_GetKeyboardDirection(win)
+			keyboardDir = PSX_GetKeyboardDirection(win)
 
-				switch(keyboardDir)
-					case PSX_KEYBOARD_DIR_RL:
-						keyboardDir = PSX_KEYBOARD_DIR_LR
-						break
-					case PSX_KEYBOARD_DIR_LR:
-						keyboardDir = PSX_KEYBOARD_DIR_RL
-						break
-					default:
-						ASSERT(0, "Unknown direction")
-				endswitch
+			switch(keyboardDir)
+				case PSX_KEYBOARD_DIR_RL:
+					keyboardDir = PSX_KEYBOARD_DIR_LR
+					break
+				case PSX_KEYBOARD_DIR_LR:
+					keyboardDir = PSX_KEYBOARD_DIR_RL
+					break
+				default:
+					ASSERT(0, "Unknown direction")
+			endswitch
 
-				PSX_SetKeyboardDirection(win, keyboardDir)
-			endif
+			PSX_SetKeyboardDirection(win, keyboardDir)
 			break
 		case Z_KEY:
 			DEBUGPRINT("accept event and fail fit (z)")
@@ -3599,8 +3632,6 @@ static Function PSX_ReactToKeyPress(string win, variable keyCode, variable combo
 			// unsupported key
 			break
 	endswitch
-
-	return direction
 End
 
 /// @brief Return a free text wave with all combo keys
