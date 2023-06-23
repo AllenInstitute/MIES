@@ -69,7 +69,7 @@ echo "##[endgroup]"
 echo "##[group]Download files using ftp"
 mkdir -p "$directory"
 directory="$(realpath "$directory")"
-command="set ssl:verify-certificate no; mirror --verbose=3 --continue"
+command="mirror --verbose=3 --continue"
 for i in $(seq 0 $(( $includeCnt - 1 ))); do
     command="$command --include-glob=${include[$i]}"
 done
