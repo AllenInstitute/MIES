@@ -1676,6 +1676,7 @@ Function DC_DocumentChannelProperty(device, entry, headstage, channelNumber, cha
 	string ua_entry
 
 	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Exactly one of var or str has to be supplied")
+	ASSERT(!IsEmpty(entry), "Entry must be non-empty")
 
 	WAVE sweepDataLNB         = GetSweepSettingsWave(device)
 	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(device)
