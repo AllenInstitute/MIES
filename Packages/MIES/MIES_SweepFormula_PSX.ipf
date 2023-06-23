@@ -2159,7 +2159,13 @@ static Function PSX_UpdateSingleEventTextbox(string win, [variable eventIndex])
 
 	str = "\F'Consolas'" + FormatTextWaveForLegend(input)
 
+	WAVE/Z annoInfo = GetAnnotationInfo(extSingleGraph)
+
 	Textbox/W=$extSingleGraph/C/N=description/X=61/Y=-6/A=LB str
+
+	if(WaveExists(annoInfo))
+		RestoreAnnotationPositions(extSingleGraph, annoInfo)
+	endif
 End
 
 /// @brief Return the cursor info of cursor A from the psxGraph
