@@ -1771,9 +1771,6 @@ static Function DC_ITC_MakeTTLWave(device, rackNo)
 	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	WAVE/T allSetNamesIndexingEnd = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 
-	WAVE sweepDataLNB      = GetSweepSettingsWave(device)
-	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(device)
-
 	HW_ITC_GetRackRange(rackNo, first, last)
 
 	for(i = first; i <= last; i += 1)
@@ -1834,21 +1831,21 @@ static Function DC_ITC_MakeTTLWave(device, rackNo)
 	endfor
 
 	if(rackNo == RACK_ZERO)
-		sweepDataLNB[0][%$"TTL rack zero bits"][INDEP_HEADSTAGE]                = bits
-		sweepDataTxTLNB[0][%$"TTL rack zero stim sets"][INDEP_HEADSTAGE]        = listOfSets
-		sweepDataTxTLNB[0][%$"TTL rack zero set sweep counts"][INDEP_HEADSTAGE] = setSweepCounts
-		sweepDataTxTLNB[0][%$"TTL rack zero set cycle counts"][INDEP_HEADSTAGE] = setCycleCounts
+		DC_DocumentChannelProperty(device, "rack zero bits", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, var=bits)
+		DC_DocumentChannelProperty(device, "rack zero stim sets", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=listOfSets)
+		DC_DocumentChannelProperty(device, "rack zero set sweep counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=setSweepCounts)
+		DC_DocumentChannelProperty(device, "rack zero set cycle counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=setCycleCounts)
 	else
-		sweepDataLNB[0][%$"TTL rack one bits"][INDEP_HEADSTAGE]                = bits
-		sweepDataTxTLNB[0][%$"TTL rack one stim sets"][INDEP_HEADSTAGE]        = listOfSets
-		sweepDataTxTLNB[0][%$"TTL rack one set sweep counts"][INDEP_HEADSTAGE] = setSweepCounts
-		sweepDataTxTLNB[0][%$"TTL rack one set cycle counts"][INDEP_HEADSTAGE] = setCycleCounts
+		DC_DocumentChannelProperty(device, "rack one bits", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, var=bits)
+		DC_DocumentChannelProperty(device, "rack one stim sets", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=listOfSets)
+		DC_DocumentChannelProperty(device, "rack one set sweep counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=setSweepCounts)
+		DC_DocumentChannelProperty(device, "rack one set cycle counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=setCycleCounts)
 	endif
 
-	sweepDataTxTLNB[0][%$"TTL Indexing End stimset"][INDEP_HEADSTAGE] = indexingEndStimset
-	sweepDataTxTLNB[0][%$"TTL Stimset wave note"][INDEP_HEADSTAGE]    = stimSetWaveNote
-	sweepDataTxTLNB[0][%$"TTL Stim Wave Checksum"][INDEP_HEADSTAGE]   = stimSetChecksum
-	sweepDataTxTLNB[0][%$"TTL Stim set length"][INDEP_HEADSTAGE]      = stimSetLength
+	DC_DocumentChannelProperty(device, "Indexing End stimset", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=indexingEndStimset)
+	DC_DocumentChannelProperty(device, "Stimset wave note", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=stimSetWaveNote)
+	DC_DocumentChannelProperty(device, "Stim Wave Checksum", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=stimSetChecksum)
+	DC_DocumentChannelProperty(device, "Stim set length", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=stimSetLength)
 End
 
 static Function DC_NI_MakeTTLWave(device)
@@ -1869,8 +1866,6 @@ static Function DC_NI_MakeTTLWave(device)
 	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	WAVE/T allSetNamesIndexingEnd = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 	WAVE/WAVE TTLWave = GetTTLWave(device)
-
-	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(device)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
@@ -1907,14 +1902,14 @@ static Function DC_NI_MakeTTLWave(device)
 		TTLWave[i] = TTLWaveSingle
 	endfor
 
-	sweepDataTxTLNB[0][%$"TTL channels"][INDEP_HEADSTAGE]             = channels
-	sweepDataTxTLNB[0][%$"TTL stim sets"][INDEP_HEADSTAGE]            = listOfSets
-	sweepDataTxTLNB[0][%$"TTL set sweep counts"][INDEP_HEADSTAGE]     = setSweepCounts
-	sweepDataTxTLNB[0][%$"TTL set cycle counts"][INDEP_HEADSTAGE]     = setCycleCounts
-	sweepDataTxTLNB[0][%$"TTL Indexing End stimset"][INDEP_HEADSTAGE] = indexingEndStimset
-	sweepDataTxTLNB[0][%$"TTL Stimset wave note"][INDEP_HEADSTAGE]    = stimSetWaveNote
-	sweepDataTxTLNB[0][%$"TTL Stim Wave Checksum"][INDEP_HEADSTAGE]   = stimSetChecksum
-	sweepDataTxTLNB[0][%$"TTL Stim set length"][INDEP_HEADSTAGE]      = stimSetLength
+	DC_DocumentChannelProperty(device, "channels", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=channels)
+	DC_DocumentChannelProperty(device, "stim sets", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=listOfSets)
+	DC_DocumentChannelProperty(device, "set sweep counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=setSweepCounts)
+	DC_DocumentChannelProperty(device, "set cycle counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=setCycleCounts)
+	DC_DocumentChannelProperty(device, "Indexing End stimset", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=indexingEndStimset)
+	DC_DocumentChannelProperty(device, "Stimset wave note", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=stimSetWaveNote)
+	DC_DocumentChannelProperty(device, "Stim Wave Checksum", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=stimSetChecksum)
+	DC_DocumentChannelProperty(device, "Stim set length", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=stimSetLength)
 End
 
 /// @brief Returns column number/step of the stimulus set, independent of the times the set is being cycled through
