@@ -829,6 +829,25 @@ static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP
 	endif
 End
 
+static Function DC_MakeTTLWave(string device, variable hardwareType)
+
+	switch(hardwareType)
+		case HARDWARE_NI_DAC:
+			DC_NI_MakeTTLWave(device)
+			break
+		case HARDWARE_ITC_DAC:
+			if(DC_AreTTLsInRackChecked(device, RACK_ZERO))
+				DC_ITC_MakeTTLWave(device, RACK_ZERO)
+			endif
+			if(DC_AreTTLsInRackChecked(device, RACK_ONE))
+				DC_ITC_MakeTTLWave(device, RACK_ONE)
+			endif
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type specified")
+	endswitch
+End
+
 static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurationResult &s)
 	variable i, startOffset, ttlIndex, singleSetLength, numRows
 
@@ -847,7 +866,6 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, s.dataAcqOrTP)
 
 			WAVE/WAVE TTLWaveNI = GetTTLWave(device)
-			DC_NI_MakeTTLWave(device)
 
 			numRows = DimSize(config, ROWS)
 			for(i = 0; i < numRows; i += 1)
@@ -868,7 +886,6 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 
 			// Place TTL waves into ITCDataWave
 			if(DC_AreTTLsInRackChecked(device, RACK_ZERO))
-				DC_ITC_MakeTTLWave(device, RACK_ZERO)
 				singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, device, DATA_ACQUISITION_MODE)
 				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
 				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
@@ -876,7 +893,6 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 			endif
 
 			if(DC_AreTTLsInRackChecked(device, RACK_ONE))
-				DC_ITC_MakeTTLWave(device, RACK_ONE)
 				singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, device, DATA_ACQUISITION_MODE)
 				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
 				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
@@ -1329,6 +1345,9 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	WAVE s.TTLList = GetTTLListFromConfig(config)
 
 	s.numTTLEntries = DimSize(s.TTLList, ROWS)
+	if(s.numTTLEntries)
+		DC_MakeTTLWave(device, s.hardwareType)
+	endif
 
 	s.numDACEntries = DimSize(s.DACList, ROWS)
 	Make/D/FREE/N=(s.numDACEntries) s.insertStart, s.setLength, s.setColumn, s.headstageDAC, s.setCycleCount
