@@ -4282,6 +4282,13 @@ Function/S ToTrueFalse(var)
 	return SelectString(var, "False", "True")
 End
 
+// @brief Convert a number to the strings `On` (!= 0) or `Off` (0).
+Function/S ToOnOff(var)
+	variable var
+
+	return SelectString(var, "Off", "On")
+End
+
 /// @brief Return true if not all wave entries are NaN, false otherwise.
 ///
 /// UTF_NOINSTRUMENTATION
@@ -6774,4 +6781,19 @@ End
 threadsafe Function Base64EncodeSize(variable unencodedSize)
 
 	return (unencodedSize + 2 - mod(unencodedSize + 2, 3)) / 3 * 4
+End
+
+/// @brief Returns the day of the week, where 1 == Sunday, 2 == Monday ... 7 == Saturday
+Function GetDayOfWeek(variable seconds)
+
+	string dat, regex, dayOfWeek
+
+	ASSERT(seconds >= -1094110934400 && seconds <= 973973807999, "seconds input out of range")
+	dat = Secs2Date(seconds, -1)
+
+	regex = "^.*\(([0-9])\)"
+	SplitString/E=regex dat, dayOfWeek
+	ASSERT(V_flag == 1, "Error parsing date: " + dat)
+
+	return str2num(dayOfWeek)
 End

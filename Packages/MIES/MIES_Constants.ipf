@@ -1657,6 +1657,8 @@ Constant HW_NI_CONFIG_PSEUDO_DIFFERENTIAL = 8 //< Pseudodifferential terminal co
 /// @}
 
 StrConstant PACKAGE_SETTINGS_JSON = "Settings.json"
+StrConstant PACKAGE_SETTINGS_USERPING = "userping"
+Constant PACKAGE_SETTINGS_USERPING_DEFAULT = 1
 
 StrConstant LOGFILE_NAME = "Log.jsonl"
 
@@ -2078,3 +2080,17 @@ Constant LOG_ARCHIVING_SPLITSIZE = 524288000
 Constant LOG_MAX_LINESIZE = 65536
 
 StrConstant LOG_FILE_LINE_END = "\n"
+
+/// @name Igor Pro week days
+/// @anchor WeekDays
+/// @{
+Constant SUNDAY = 1
+Constant MONDAY = 2
+Constant TUESDAY = 3
+Constant WEDNESDAY = 4
+Constant THURSDAY = 5
+Constant FRIDAY = 6
+Constant SATURDAY = 7
+/// @}
+
+Constant SECONDS_PER_DAY = 86400

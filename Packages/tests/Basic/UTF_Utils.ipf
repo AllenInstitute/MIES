@@ -7111,3 +7111,33 @@ static Function TestSplitLogDataBySize()
 	WAVE data = result[1]
 	CHECK_EQUAL_WAVES(result[1], ref[1], mode = -1 %^ WAVE_SCALING)
 End
+
+static Function GetDayOfWeekTest()
+
+	variable i, day
+
+	Make/FREE days = {FRIDAY, SATURDAY, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY}
+	for(day : days)
+		CHECK_EQUAL_VAR(GetDayOfWeek(i * SECONDS_PER_DAY), day)
+		i += 1
+	endfor
+
+	try
+		GetDayOfWeek(NaN)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	try
+		GetDayOfWeek(inf)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	try
+		GetDayOfWeek(-inf)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End

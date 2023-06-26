@@ -40,6 +40,10 @@ static StrConstant LBN_UNASSOC_REGEXP = "^(.*) u_(AD|DA)[[:digit:]]+$"
 
 static StrConstant ARCHIVEDLOG_SUFFIX = "_old_"
 
+static StrConstant EXPCONFIG_JSON_HWDEVBLOCK = "DAQHardwareDevices"
+
+static StrConstant UPLOAD_BLOCK_USERPING = "UserPing"
+
 Menu "GraphMarquee"
 	"Horiz Expand (VisX)", /Q, HorizExpandWithVisX()
 End
@@ -6752,7 +6756,7 @@ End
 Function UpgradeSettings(JSONid)
 	variable JSONid
 
-	string oldPath
+	string oldPath, jsonPath
 	string documentsFolder = GetUserDocumentsFolderPath()
 
 	if(!JSON_Exists(JSONid, "/analysisbrowser"))
@@ -6773,6 +6777,17 @@ Function UpgradeSettings(JSONid)
 		Make/FREE/T wvt = {oldPath}
 		JSON_SetWave(JSONid, SETTINGS_AB_FOLDER, wvt)
 	endif
+
+	jsonPath = "/" + PACKAGE_SETTINGS_USERPING
+	if(!JSON_Exists(JSONid, jsonPath))
+		JSON_AddTreeObject(JSONid, jsonPath)
+	endif
+	if(!JSON_Exists(JSONid, jsonPath + "/enabled"))
+		JSON_AddBoolean(JSONid, jsonPath + "/enabled", PACKAGE_SETTINGS_USERPING_DEFAULT)
+	endif
+	if(!JSON_Exists(JSONid, jsonPath + "/last upload"))
+		JSON_AddString(JSONid, jsonPath + "/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch=0))
+	endif
 End
 
 /// @brief Call UploadCrashDumps() if we haven't called it since at least a day.
@@ -6790,7 +6805,7 @@ Function UploadCrashDumpsDaily()
 
 		lastWrite = ParseISO8601TimeStamp(JSON_GetString(jsonID, "/diagnostics/last upload"))
 
-		if((lastWrite + 24 * 3600) > DateTimeInUTC())
+		if(lastWrite + SECONDS_PER_DAY > DateTimeInUTC())
 			// nothing to do
 			return NaN
 		endif
@@ -6824,7 +6839,7 @@ Function UploadLogFilesDaily()
 		lastWrite = ParseISO8601TimeStamp(ts)
 		now = DateTimeInUTC()
 
-		if((lastWrite + 24 * 3600) > now)
+		if(lastWrite + SECONDS_PER_DAY > now)
 			// nothing to do
 			return NaN
 		endif
@@ -6853,6 +6868,64 @@ Function UploadLogFilesDaily()
 		ClearRTError()
 		ASSERT(0, "Could not upload logfiles!")
 	endtry
+End
+
+Function UploadPingPeriodically()
+
+	variable lastPing, now, today, lastWeekDay
+
+#ifdef AUTOMATED_TESTING
+	return NaN
+#endif
+
+	if(!GetUserPingEnabled())
+		return NaN
+	endif
+
+	now = DateTimeInUTC()
+	lastPing = ParseISO8601TimeStamp(GetUserPingTimestamp())
+	if(now - lastPing < SECONDS_PER_DAY * 7)
+		today = GetDayOfWeek(now)
+		lastWeekDay = GetDayOfWeek(lastPing)
+		if(today == lastWeekDay || \
+			(today > lastWeekDay && lastWeekDay > SUNDAY) || \
+			(today < lastWeekDay && today < MONDAY))
+			return NaN
+		endif
+	endif
+
+	if(!UploadPing())
+		SetUserPingTimestamp(now)
+	endif
+End
+
+static function UploadPing()
+
+	variable jsonID, jsonID2, err
+	string payLoad, jsonPath
+
+	jsonId2 = JSON_GetIgorInfo()
+	jsonPath = "/" + EXPCONFIG_JSON_HWDEVBLOCK
+	JSON_AddTreeObject(jsonId2, jsonPath)
+	WAVE/T NIDevices = ListToTextWave(DAP_GetNIDeviceList(), ";")
+	JSON_AddWave(jsonId2, jsonPath + "/NI", NIDevices)
+	WAVE/T ITCDevices = ListToTextWave(DAP_GetITCDeviceList(), ";")
+	JSON_AddWave(jsonId2, jsonPath + "/ITC", ITCDevices)
+
+	payLoad = JSON_Dump(jsonId2, indent=2)
+	JSON_Release(jsonId2)
+
+	jsonID = GenerateJSONTemplateForUpload()
+	AddPayloadEntries(jsonID, {UPLOAD_BLOCK_USERPING}, {payload}, isBinary = 0)
+	AssertOnAndClearRTError()
+	try
+		UploadJSONPayload(jsonID); AbortOnRTE
+	catch
+		err = ClearRTError()
+	endtry
+	JSON_Release(jsonID)
+
+	return err
 End
 
 /// @brief Return the graph user data as 2D text wave
@@ -8091,4 +8164,38 @@ static Function FindLastLogEntryElementByDate(WAVE/T entries, variable timeStamp
 	endfor
 
 	return r - 1
+End
+
+Function ToggleUserPingSetting()
+
+	variable isEnabled
+
+	NVAR JSONid = $GetSettingsJSONid()
+	isEnabled = GetUserPingEnabled()
+
+	JSON_SetBoolean(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/enabled", !isEnabled)
+	PS_WriteSettings(PACKAGE_MIES, JSONid)
+	printf "Changed periodically ping setting to %s.\r", ToOnOff(!IsEnabled)
+	printf "Saved settings.\r"
+End
+
+Function GetUserPingEnabled()
+
+	NVAR JSONid = $GetSettingsJSONid()
+	return !!JSON_GetVariable(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/enabled")
+End
+
+Function/S GetUserPingTimestamp()
+
+	NVAR JSONid = $GetSettingsJSONid()
+	return JSON_GetString(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/last upload")
+End
+
+Function SetUserPingTimestamp(variable timeStamp)
+
+	string isoTS
+
+	isoTS = GetISO8601TimeStamp(secondsSinceIgorEpoch = timeStamp)
+	NVAR JSONid = $GetSettingsJSONid()
+	JSON_SetString(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/last upload", isoTS)
 End

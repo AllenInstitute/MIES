@@ -403,6 +403,8 @@ Function/DF SB_OpenSweepBrowser([variable mode])
 		ASSERT(mode == BROWSER_MODE_USER || mode == BROWSER_MODE_AUTOMATION || mode == BROWSER_MODE_ALL, "Invalid mode")
 	endif
 
+	UploadPingPeriodically()
+
 	Execute "DataBrowser()"
 
 	mainWin = GetMainWindow(GetCurrentWindow())

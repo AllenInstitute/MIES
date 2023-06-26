@@ -153,6 +153,8 @@ static StrConstant EXPCONFIG_EXCLUDE_CTRLTYPES = "12;9;10;"
 
 static StrConstant EXPCONFIG_SETTINGS_AMPTITLE = "0,1;2,3;4,5;6,7"
 
+static StrConstant EXPCONFIG_JSON_GLOBALPACKAGESETTINGBLOCK = "Global Package Settings"
+
 static StrConstant EXPCONFIG_JSON_HSASSOCBLOCK = "Headstage Association"
 static StrConstant EXPCONFIG_JSON_AMPBLOCK = "Amplifier"
 static StrConstant EXPCONFIG_JSON_ICBLOCK = "IC"
@@ -239,6 +241,7 @@ static StrConstant CONF_AUTO_LOADER_USER_PATH = "C:ProgramData:AllenInstitute:MI
 static Function CONF_DefaultSettings()
 
 	variable jsonID
+	string jsonPath
 
 	jsonID = JSON_New()
 
@@ -246,6 +249,10 @@ static Function CONF_DefaultSettings()
 	JSON_AddString(jsonID, EXPCONFIG_JSON_STIMSET_NAME, "")
 	JSON_AddString(jsonID, EXPCONFIG_JSON_SAVE_PATH, "C:MiesSave")
 	JSON_AddBoolean(jsonID, EXPCONFIG_JSON_LOGFILE_UPLOAD, EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT)
+
+	jsonpath = "/" + EXPCONFIG_JSON_GLOBALPACKAGESETTINGBLOCK + "/" + PACKAGE_SETTINGS_USERPING
+	JSON_AddTreeObject(jsonID, jsonPath)
+	JSON_AddBoolean(jsonID, jsonPath + "/enabled", PACKAGE_SETTINGS_USERPING_DEFAULT)
 
 	return jsonID
 End
@@ -2562,4 +2569,34 @@ static Function/S CONF_GetDAEphysConfigurationFileNameSuggestion(string wName)
 	endif
 
 	return GetFolder(prevFullFilePath) + GetBaseName(prevFullFilePath) + "_new.json"
+End
+
+/// @brief Loads through all config json files and synchronizes global package settings in config files (if present) to user package settings with overwrite.
+Function CONF_UpdatePackageSettingsFromConfigFiles(variable jsonIdPkg)
+
+	string fName, input, fullFilePath, globalSettingsPath
+	variable jsonIdConf
+
+	WAVE/T/Z configFiles = CONF_GetConfigFiles()
+	if(WaveExists(configFiles))
+		globalSettingsPath = "/" + EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_GLOBALPACKAGESETTINGBLOCK
+		for(fName : configFiles)
+
+			[input, fullFilePath] = LoadTextFile(fName)
+			if(IsEmpty(input))
+				continue
+			endif
+
+			jsonIdConf = JSON_Parse(input, ignoreErr=1)
+			if(IsNaN(jsonIdConf))
+				continue
+			endif
+
+			if(!JSON_Exists(jsonIdConf, globalSettingsPath))
+				continue
+			endif
+
+			JSON_SyncJSON(jsonIdConf, jsonIdPkg, globalSettingsPath, "", JSON_SYNC_OVERWRITE_IN_TARGET)
+		endfor
+	endif
 End

@@ -99,6 +99,8 @@ End
 
 Function/S WBP_CreateWaveBuilderPanel()
 
+	UploadPingPeriodically()
+
 	if(windowExists(panel))
 		DoWindow/F $panel
 		return panel

@@ -4068,6 +4068,8 @@ Function/S DAP_CreateDAEphysPanel()
 
 	string panel
 
+	UploadPingPeriodically()
+
 	if(!WindowExists("HistoryCarbonCopy"))
 		CreateHistoryNotebook()
 	endif

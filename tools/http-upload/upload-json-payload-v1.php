@@ -114,6 +114,13 @@ $timestamp = get_array_value($input, "timestamp", "unknown");
 
 $folder = create_unique_folder("uploads/" . sanitize_filename($computer . "-" . $user . "-" . $timestamp));
 
+$filename = tempnam($folder, "ip_");
+$ret = file_put_contents($filename, $_SERVER['REMOTE_ADDR']);
+if($ret == 0 || $ret == FALSE)
+{
+  die("Problem writing file " . $filename);
+}
+
 foreach($input["payload"] as $elem)
 {
   if(array_key_exists("name", $elem) and array_key_exists("contents", $elem))
