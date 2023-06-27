@@ -123,9 +123,9 @@ static Function EP_CollectEpochInfoDA(string device, STRUCT DataConfigurationRes
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
 			EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochBegin + epochOffset, tags, EPOCH_SN_BL_DDAQOPT, 0)
-			EP_AddEpochsFromStimSetNote(device, channel, singleStimSet, epochBegin + epochOffset, singleSetLength * s.samplingInterval - epochOffset, stimsetCol, s.DACAmp[i][%DASCALE])
+			EP_AddEpochsFromStimSetNote(device, channel, XOP_CHANNEL_TYPE_DAC, singleStimSet, epochBegin + epochOffset, singleSetLength * s.samplingInterval - epochOffset, stimsetCol, s.DACAmp[i][%DASCALE])
 		else
-			EP_AddEpochsFromStimSetNote(device, channel, singleStimSet, epochBegin, singleSetLength * s.samplingInterval, stimsetCol, s.DACAmp[i][%DASCALE])
+			EP_AddEpochsFromStimSetNote(device, channel, XOP_CHANNEL_TYPE_DAC, singleStimSet, epochBegin, singleSetLength * s.samplingInterval, stimsetCol, s.DACAmp[i][%DASCALE])
 		endif
 
 		if(s.distributedDAQOptOv)
@@ -231,17 +231,14 @@ End
 /// @brief Adds epochs for a stimset and sub epochs for stimset components
 /// currently adds also sub sub epochs for pulse train components
 /// @param[in] device   title of device panel
-/// @param[in] channel      number of DA channel
+/// @param[in] channel      number of DA or TTL channel
+/// @param[in] channelType  type of channel
 /// @param[in] stimset      stimset wave
 /// @param[in] stimsetBegin offset time in micro seconds where stim set begins
 /// @param[in] setLength    length of stimset in micro seconds
 /// @param[in] sweep        number of sweep
 /// @param[in] scale        scale factor between the stimsets internal amplitude to the DA wave without gain
-static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBegin, setLength, sweep, scale)
-	string device
-	variable channel
-	WAVE stimset
-	variable stimsetBegin, setLength, sweep, scale
+static Function EP_AddEpochsFromStimSetNote(string device, variable channel, variable channelType, WAVE stimset, variable stimsetBegin, variable setLength, variable sweep, variable scale)
 
 	variable stimsetEnd, stimsetEndLogical, functionType
 	variable epochBegin, epochEnd, subEpochBegin, subEpochEnd
@@ -258,9 +255,11 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 
 	ASSERT(!IsEmpty(stimNote), "Stimset note is empty.")
 
+	scale = channelType == XOP_CHANNEL_TYPE_TTL ? 1 : scale
+
 	stimsetEnd = stimsetBegin + setLength
 	epSweepTags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Stimset", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, stimsetBegin, stimsetEnd, epSweepTags, EPOCH_SN_STIMSET, 0)
+	EP_AddEpoch(device, channel, channelType, stimsetBegin, stimsetEnd, epSweepTags, EPOCH_SN_STIMSET, 0)
 
 	epochCount = WB_GetWaveNoteEntryAsNumber(stimNote, STIMSET_ENTRY, key="Epoch Count")
 	ASSERT(IsFinite(epochCount), "Could not find Epoch Count in stimset wave note.")
@@ -328,7 +327,7 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 		endif
 
 		shortNameEp = EPOCH_SN_EPOCH + num2istr(epochNr)
-		EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epSubTags, shortNameEp, 1, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+		EP_AddEpoch(device, channel, channelType, epochBegin, epochEnd, epSubTags, shortNameEp, 1, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 
 		// Add Sub Sub Epochs
 		if(epochType == EPOCH_TYPE_PULSE_TRAIN)
@@ -379,11 +378,11 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 						   && subEpochBegin > epochBegin && subEpochBegin > stimsetBegin)
 
 							tags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubTags, EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-							EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, subEpochBegin, tags, shortNameEpTypePTPulseBT, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+							EP_AddEpoch(device, channel, channelType, epochBegin, subEpochBegin, tags, shortNameEpTypePTPulseBT, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 						endif
 
 						epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-						EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTypePTPulse, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+						EP_AddEpoch(device, channel, channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTypePTPulse, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 
 						// active
 						subsubEpochBegin = subEpochBegin
@@ -405,7 +404,7 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 
 							epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 							epSubSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubSubTags, "Pulse", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-							EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseP, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+							EP_AddEpoch(device, channel, channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseP, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 
 							// baseline
 							subsubEpochBegin = subsubEpochEnd
@@ -418,14 +417,14 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 							else
 								epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 								epSubSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubSubTags, EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-								EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseB, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+								EP_AddEpoch(device, channel, channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseB, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 							endif
 						endif
 					endif
 				endfor
 			else
 				tags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-				EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, tags, shortNameEpTypePTBaseline, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+				EP_AddEpoch(device, channel, channelType, epochBegin, epochEnd, tags, shortNameEpTypePTBaseline, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 			endif
 		elseif(epochType == EPOCH_TYPE_SIN_COS)
 			WAVE inflectionPoints = WB_GetInflectionPoints(stimset, sweep, epochNr)
@@ -448,7 +447,7 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 					subEpochEnd   = epochEnd
 					shortNameEpTRIGIncomplete = shortNameEpTypeTRIG_I + num2istr(incompleteCycleNr)
 					epSubSubTags = ReplaceNumberByKey(EPOCH_INCOMPLETE_CYCLE_KEY, epSubTags, incompleteCycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-					EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGIncomplete, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+					EP_AddEpoch(device, channel, channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGIncomplete, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
 					incompleteCycleNr++
 				continue
 			endif
@@ -492,7 +491,7 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 					if(subEpochBegin != subEpochEnd)
 						shortNameEpTRIGIncomplete = shortNameEpTypeTRIG_I + num2istr(incompleteCycleNr)
 						epSubSubTags = ReplaceNumberByKey(EPOCH_INCOMPLETE_CYCLE_KEY, epSubTags, incompleteCycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-						EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGIncomplete, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+						EP_AddEpoch(device, channel, channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGIncomplete, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
 						incompleteCycleNr++
 					endif
 				endif
@@ -503,7 +502,7 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 					subEpochEnd   = epochBegin + inflectionPoints[i + 2]
 					shortNameEpTRIGCycle = shortNameEpTypeTRIG_C + num2istr(cycleNr)
 					epSubSubTags = ReplaceNumberByKey(EPOCH_CYCLE_KEY, epSubTags, cycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-					EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGCycle, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+					EP_AddEpoch(device, channel, channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGCycle, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
 
 					// add half cycles, only for full cycles
 					for(j = 0; j < 2; j += 1)
@@ -514,7 +513,7 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 						shortNameEpTRIGHalfCycle = shortNameEpTRIGCycle + "_" + EPOCH_SN_TRIG_HALF_CYCLE + num2istr(halfCycleNr)
 						epSubSubTags = ReplaceNumberByKey(EPOCH_CYCLE_KEY, epSubTags, cycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 						epSubSubTags = ReplaceNumberByKey(EPOCH_HALF_CYCLE_KEY, epSubSubTags, halfCycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-						EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTRIGHalfCycle, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
+						EP_AddEpoch(device, channel, channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTRIGHalfCycle, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
 					endfor
 				endif
 			endfor
@@ -529,7 +528,7 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 	// therefore we must add a baseline epoch after all defined epochs
 	if(stimsetEnd > stimsetEndLogical)
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, stimsetEndLogical, stimsetEnd, tags, EPOCH_SN_STIMSET + "_" + EPOCH_SN_STIMSETBLTRAIL, 1)
+		EP_AddEpoch(device, channel, channelType, stimsetEndLogical, stimsetEnd, tags, EPOCH_SN_STIMSET + "_" + EPOCH_SN_STIMSETBLTRAIL, 1)
 	endif
 End
 
