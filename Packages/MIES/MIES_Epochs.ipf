@@ -844,6 +844,7 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 			return $""
 		endif
 
+		Duplicate/FREE/T/RMD=[][][][channelType] epochInfo, epochInfoChannel
 		epochCnt = DimSize(epochInfo, ROWS)
 	else
 		epochCnt = EP_GetEpochCount(epochsWave, channelNumber, channelType)
@@ -852,10 +853,10 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 			return $""
 		endif
 
-		Duplicate/FREE/T/RMD=[0, epochCnt - 1][][channelNumber] epochsWave, epochInfo
+		Duplicate/FREE/T/RMD=[0, epochCnt - 1][][channelNumber][channelType] epochsWave, epochInfoChannel
 	endif
 
-	Make/FREE/T/N=(epochCnt) shortnames = EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS])
+	Make/FREE/T/N=(epochCnt) shortnames = EP_GetShortName(epochInfoChannel[p][EPOCH_COL_TAGS])
 
 	regexp = "(?i)" + shortname
 	WAVE/Z indizesName = FindIndizes(shortnames, str = regexp, prop = PROP_GREP)
@@ -868,7 +869,7 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 
 		// fallback to previous tag name formats without shortname
 		regexp = "(?i)(^|;)" + shortname + "($|;)"
-		WAVE/Z indizesName = FindIndizes(epochInfo, col = EPOCH_COL_TAGS, str = regexp, prop = PROP_GREP)
+		WAVE/Z indizesName = FindIndizes(epochInfoChannel, col = EPOCH_COL_TAGS, str = regexp, prop = PROP_GREP)
 
 		if(!WaveExists(indizesName))
 			return $""
@@ -878,7 +879,7 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	if(IsNaN(treelevel))
 		WAVE indizes = indizesName
 	else
-		WAVE/Z indizesLevel = FindIndizes(epochInfo, col = EPOCH_COL_TREELEVEL, var = treelevel)
+		WAVE/Z indizesLevel = FindIndizes(epochInfoChannel, col = EPOCH_COL_TREELEVEL, var = treelevel)
 
 		if(!WaveExists(indizesLevel))
 			return $""
@@ -890,11 +891,11 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 		endif
 	endif
 
-	Make/FREE/T/N=(DimSize(indizes, ROWS), DimSize(epochInfo, COLS)) matches = epochInfo[indizes[p]][q]
+	Make/FREE/T/N=(DimSize(indizes, ROWS), DimSize(epochInfoChannel, COLS)) matches = epochInfoChannel[indizes[p]][q]
 
 	SortColumns/KNDX={EPOCH_COL_STARTTIME} sortWaves={matches}
 
-	CopyDimLabels/COLS=(COLS) epochInfo, matches
+	CopyDimLabels/COLS=(COLS) epochInfoChannel, matches
 
 	return matches
 End

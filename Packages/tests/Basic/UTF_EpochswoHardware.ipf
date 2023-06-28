@@ -46,7 +46,7 @@ static Function EP_GetEpochsAssertsOnError()
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
 	try
-		EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_TTL, 0, ".*")
+		EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_COUNT, 0, ".*")
 		FAIL()
 	catch
 		PASS()
