@@ -456,7 +456,17 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 		endif
 
 		if(WaveExists(epochNames))
-			DAChannel = SFH_GetDAChannel(graph, sweepNo, chanType, chanNr)
+			switch(chanType)
+				case XOP_CHANNEL_TYPE_ADC:
+					DAChannel = SFH_GetDAChannel(graph, sweepNo, chanType, chanNr)
+					SFH_ASSERT(!IsNaN(DAChannel), "No epochs for unassoc AD channel AD" + num2istr(chanNr))
+					break
+				case XOP_CHANNEL_TYPE_DAC:
+					DAChannel = chanNr
+					break
+				default:
+					ASSERT(0, "Unsupported channelType")
+			endswitch
 			WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
 			WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 			SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))

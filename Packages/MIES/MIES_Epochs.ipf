@@ -61,7 +61,8 @@ End
 /// @param device device
 /// @param s          struct holding all input
 Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
-	variable i, channel, headstage, singleSetLength, epochOffset, epochBegin, epochEnd
+
+	variable i, channel, singleSetLength, epochOffset, epochBegin, epochEnd
 	variable stimsetCol, startOffset, stopCollectionPoint
 	string tags
 
@@ -80,7 +81,6 @@ Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 		endif
 
 		channel = s.DACList[i]
-		headstage = s.headstageDAC[i]
 		startOffset = s.insertStart[i]
 		singleSetLength = s.setLength[i]
 		WAVE singleStimSet = s.stimSet[i]

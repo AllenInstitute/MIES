@@ -770,3 +770,45 @@ static Function SF_InsertedTPVersusTP_REENTRY([str])
 	CHECK_EQUAL_WAVES(steadyStateInsertedHS1, steadyStateTPStorage_HS1, mode = WAVE_DATA, tol = 0.1)
 	CHECK_EQUAL_WAVES(instInsertedHS1, instTPStorage_HS1, mode = WAVE_DATA, tol = 0.1)
 End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function SF_UnassociatedDATTL_Epochs([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:"      + \
+								 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
+								 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+								 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+								 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
+								 "__TTL7_ST:StimulusSetB_TTL_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function SF_UnassociatedDATTL_Epochs_REENTRY([string str])
+
+	string graph, formula, bsPanel
+
+	graph = DB_OpenDataBrowser()
+	bsPanel = BSP_GetPanel(graph)
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DAC", val=1)
+
+	formula = "data(\"E0_PT_*\",select(channels(DA2),sweeps()))"
+	WAVE/WAVE data = SF_ExecuteFormula(formula, graph, useVariables=0)
+	CHECK_WAVE(data, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 29)
+	WAVE epochData = data[0]
+	CHECK_WAVE(epochData, NUMERIC_WAVE)
+	CHECK_GT_VAR(DimSize(epochData, ROWS), 1)
+
+	formula = "epochs(\"E0_PT_*\",select(channels(DA2),sweeps()),name)"
+	WAVE/WAVE data = SF_ExecuteFormula(formula, graph, useVariables=0)
+	CHECK_WAVE(data, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 29)
+	WAVE/T epochDataT = data[0]
+	CHECK_WAVE(epochDataT, TEXT_WAVE)
+	CHECK_EQUAL_STR(epochDataT[0], "E0_PT_P0_P")
+End
