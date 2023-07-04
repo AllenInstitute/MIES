@@ -849,7 +849,9 @@ static Function DC_MakeTTLWave(string device, variable hardwareType)
 End
 
 static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurationResult &s)
-	variable i, startOffset, ttlIndex, singleSetLength, numRows
+
+	variable i, startOffset, ttlOffset, singleSetLength
+	variable ITCRackZeroChecked
 
 	if(s.numTTLEntries == 0)
 		return NaN
@@ -857,44 +859,37 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 
 	// reset to the default value without distributedDAQ
 	startOffset = s.onSetDelay
-	ttlIndex = s.numDACEntries + s.numADCEntries
+	ttlOffset = s.numDACEntries + s.numADCEntries
 
 	WAVE config = GetDAQConfigWave(device)
 
 	switch(s.hardwareType)
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, s.dataAcqOrTP)
-
 			WAVE/WAVE TTLWaveNI = GetTTLWave(device)
 
-			numRows = DimSize(config, ROWS)
-			for(i = 0; i < numRows; i += 1)
-				if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
-					WAVE NIChannel = NIDataWave[ttlIndex]
-					WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
-					singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, device, DATA_ACQUISITION_MODE)
-					MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
-					limit(TTLWaveSingle[trunc(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
-					ttlIndex += 1
-				endif
+			for(i = 0; i < s.numTTLEntries; i += 1)
+				WAVE TTLWaveSingle = TTLWaveNI[config[i + ttlOffset][%ChannelNumber]]
+				singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, device, DATA_ACQUISITION_MODE)
+				WAVE NIChannel = NIDataWave[i + ttlOffset]
+				MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
+				limit(TTLWaveSingle[trunc(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
 			endfor
 			break
 		case HARDWARE_ITC_DAC:
 			WAVE ITCDataWave = GetDAQDataWave(device, s.dataAcqOrTP)
-
 			WAVE TTLWaveITC = GetTTLWave(device)
+			singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, device, DATA_ACQUISITION_MODE)
 
 			// Place TTL waves into ITCDataWave
-			if(DC_AreTTLsInRackChecked(device, RACK_ZERO))
-				singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, device, DATA_ACQUISITION_MODE)
-				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
+			ITCRackZeroChecked = !!DC_AreTTLsInRackChecked(device, RACK_ZERO)
+			if(ITCRackZeroChecked)
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset] = \
 				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-				ttlIndex += 1
 			endif
 
 			if(DC_AreTTLsInRackChecked(device, RACK_ONE))
-				singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, device, DATA_ACQUISITION_MODE)
-				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset + ITCRackZeroChecked] = \
 				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 			endif
 			break
