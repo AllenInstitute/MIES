@@ -1343,11 +1343,11 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	WAVE s.DACList = GetDACListFromConfig(config)
 	WAVE s.ADCList = GetADCListFromConfig(config)
 	WAVE s.TTLList = GetTTLListFromConfig(config)
-
 	s.numTTLEntries = DimSize(s.TTLList, ROWS)
-	if(s.numTTLEntries)
-		DC_MakeTTLWave(device, s.hardwareType)
-	endif
+
+	Make/D/FREE/N=(NUM_DA_TTL_CHANNELS) s.TTLsetLength, s.TTLsetColumn, s.TTLcycleCount
+	Make/T/FREE/N=(NUM_DA_TTL_CHANNELS) s.TTLsetName
+	Make/WAVE/FREE/N=(NUM_DA_TTL_CHANNELS) s.TTLstimSet
 
 	s.numDACEntries = DimSize(s.DACList, ROWS)
 	Make/D/FREE/N=(s.numDACEntries) s.insertStart, s.setLength, s.setColumn, s.headstageDAC, s.setCycleCount
@@ -1455,6 +1455,8 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 		endif
 	endfor
 
+	DC_SetupConfigurationTTLstimSets(device, s)
+
 	// for distributedDAQOptOv create temporary reduced input waves holding DAQ types channels only (removing TP typed channels from TPwhileDAQ), put results back to unreduced waves
 	if(s.distributedDAQOptOv && s.dataAcqOrTP == DATA_ACQUISITION_MODE)
 		Duplicate/FREE/WAVE s.stimSet, reducedStimSet
@@ -1532,6 +1534,31 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 			s.insertStart[] = s.onsetDelay
 		endif
 	endif
+End
+
+/// @brief fills in TTL stimset wave references in DataConfigurationResult structure
+///        needs: s.hardwareType, s.numXXXEntries fields
+static Function DC_SetupConfigurationTTLstimSets(string device, STRUCT DataConfigurationResult &s)
+
+	variable i, col, setCycleCount
+
+	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		if(!statusTTLFiltered[i])
+			continue
+		endif
+		s.TTLsetName[i] = allSetNames[i]
+		s.TTLstimSet[i] = WB_CreateAndGetStimSet(s.TTLsetName[i])
+		s.TTLsetLength[i] = DC_CalculateStimsetLength(s.TTLstimSet[i], device, DATA_ACQUISITION_MODE)
+
+		[col, setCycleCount] = DC_CalculateChannelColumnNo(device, s.TTLsetName[i], i, CHANNEL_TYPE_TTL)
+		s.TTLsetColumn[i] = col
+		s.TTLcycleCount[i] = setCycleCount
+	endfor
+
+	DC_MakeTTLWave(device, s)
 End
 
 /// @brief Document hardware type/name/serial number into the labnotebook
