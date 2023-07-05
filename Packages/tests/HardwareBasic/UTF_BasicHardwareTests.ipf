@@ -364,8 +364,8 @@ End
 static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 	string str
 
-	string device, sweeps, configs, unit, expectedStr
-	variable numEntries, i, j, k, numSweeps, numRacks, hardwareType
+	string device, sweeps, configs, unit, expectedStr, stimSetLengths2
+	variable numEntries, i, j, k, numSweeps, numRacks, hardwareType, index
 
 	numSweeps = 1
 
@@ -439,7 +439,16 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			WAVE/Z ttlStimSets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, j)
 			WAVE/T/Z foundIndexingEndStimSets = GetLastSetting(textualValues, j, "TTL Indexing End stimset", DATA_ACQUISITION_MODE)
 			WAVE/T/Z stimWaveChecksums = GetLastSetting(textualValues, j, "TTL Stim Wave Checksum", DATA_ACQUISITION_MODE)
+
 			WAVE/Z stimSetLengths = GetLastSetting(textualValues, j, "TTL Stim set length", DATA_ACQUISITION_MODE)
+			WAVE/Z settings = $""
+			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "TTL Stim set length", 1, XOP_CHANNEL_TYPE_TTL, DATA_ACQUISITION_MODE)
+			CHECK_WAVE(settings, TEXT_WAVE)
+			CHECK_EQUAL_VAR(index, INDEP_HEADSTAGE)
+			WAVE/T settingsT = settings
+			stimSetLengths2 = settingsT[index]
+			WAVE/T stimSetLengthsT = stimSetLengths
+			CHECK_EQUAL_STR(stimSetLengths2, stimSetLengthsT[INDEP_HEADSTAGE])
 
 			switch(hardwareType)
 				case HARDWARE_ITC_DAC:
@@ -565,8 +574,6 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			// hardware agnostic TTL entries
 			WAVE/Z settings = GetLastSetting(textualValues, j, "TTL Stimset wave note", DATA_ACQUISITION_MODE)
 			CHECK_WAVE(settings, TEXT_WAVE)
-
-			Variable index
 
 			// fetch some labnotebook entries, the last channel is unassociated
 			for(k = 0; k < DimSize(ADCs, ROWS); k += 1)

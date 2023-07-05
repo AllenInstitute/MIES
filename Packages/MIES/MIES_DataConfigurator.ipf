@@ -1683,6 +1683,11 @@ Function DC_DocumentChannelProperty(device, entry, headstage, channelNumber, cha
 	WAVE/T sweepDataLNBKey    = GetSweepSettingsKeyWave(device)
 	WAVE/T sweepDataTxTLNBKey = GetSweepSettingsTextKeyWave(device)
 
+	if(channelType == XOP_CHANNEL_TYPE_TTL)
+		ASSERT(headstage == INDEP_HEADSTAGE, "sweepNB entry for TTL must target INDEP_HEADSTAGE")
+		entry = CreateTTLChannelLBNKey(entry, channelNumber)
+	endif
+
 	if(!ParamIsDefault(var))
 		colData = FindDimLabel(sweepDataLNB, COLS, entry)
 		colKey  = FindDimLabel(sweepDataLNBKey, COLS, entry)
