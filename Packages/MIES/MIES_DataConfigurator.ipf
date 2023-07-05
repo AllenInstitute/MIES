@@ -1833,7 +1833,7 @@ static Function DC_ITC_MakeTTLWave(string device, STRUCT DataConfigurationResult
 			continue
 		endif
 
-		setLength[i] = num2istr(DimSize(s.TTLStimSet[i], ROWS))
+		setLength[i] = num2istr(s.TTLsetLength[i])
 		indexingEndStimSet[i] = allSetNamesIndexingEnd[i]
 		waveNote[i] = URLEncode(note(s.TTLstimSet[i]))
 		checksum[i] = num2istr(WB_GetStimsetChecksum(s.TTLstimSet[i], s.TTLsetName[i], DATA_ACQUISITION_MODE))
@@ -1880,7 +1880,7 @@ static Function DC_NI_MakeTTLWave(string device, STRUCT DataConfigurationResult 
 			continue
 		endif
 
-		setLength[i] = num2istr(DimSize(s.TTLStimSet[i], ROWS))
+		setLength[i] = num2istr(s.TTLsetLength[i])
 		setName[i] = s.TTLsetName[i]
 		setColumn[i] = num2istr(s.TTLsetColumn[i])
 		cycleCount[i] = num2istr(s.TTLcycleCount[i])

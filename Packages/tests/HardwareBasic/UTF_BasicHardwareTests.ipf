@@ -542,9 +542,9 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 					// Stim set length
 					if(numRacks == 2)
-						CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;190001;;185001;"})
+						CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";38000;;37000;;38000;;37000;"})
 					else
-						CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;;;;"})
+						CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";38000;;37000;;;;;"})
 					endif
 
 					break
@@ -566,7 +566,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 					CHECK_EQUAL_TEXTWAVES(foundIndexingEndStimSets, {"", "", "", "", "", "", "", "", ";- none -;;- none -;;- none -;;- none -;"})
 					CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;"))
-					CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;190001;;185001;"})
+					CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";158334;;154167;;158334;;154167;"})
 
 					break
 			endswitch
