@@ -4710,10 +4710,10 @@ threadsafe static Function/WAVE GetTTLChannelsOrBits(WAVE numericalValues, WAVE 
 
 	if(WaveExists(ttlChannels))
 		// NI hardware
-		return ListToNumericWave(ttlChannels[index], ";", type = IGOR_TYPE_32BIT_FLOAT)
+		return ListToNumericWave(ttlChannels[index], ";")
 	elseif(WaveExists(ttlBitsRackZero) || WaveExists(ttlBitsRackOne))
 		// ITC hardware
-		Make/FREE/Y=(IGOR_TYPE_32BIT_FLOAT)/N=(NUM_DA_TTL_CHANNELS) entries = NaN
+		Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) entries = NaN
 
 		if(WaveExists(ttlBitsRackZero))
 			HW_ITC_GetRackRange(RACK_ZERO, first, last)
