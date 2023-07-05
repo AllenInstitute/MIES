@@ -462,6 +462,7 @@ Structure DataConfigurationResult
 	variable distributedDAQOptPost
 	variable multiDevice
 	variable powerSpectrum
+	variable doTPonUnassocDA
 	WAVE statusHS
 	/// @}
 

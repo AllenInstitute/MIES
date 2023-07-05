@@ -3155,7 +3155,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_MD,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_MD,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_MD,userdata(oldDisabledState)="2",value=1
-	CheckBox Check_Settings_InsertTP,pos={168.00,84.00},size={61.00,15.00},disable=1,proc=DAP_CheckProc_InsertTP
+	CheckBox Check_Settings_InsertTP,pos={127.00,84.00},size={61.00,15.00},disable=1,proc=DAP_CheckProc_InsertTP
 	CheckBox Check_Settings_InsertTP,title="Insert TP"
 	CheckBox Check_Settings_InsertTP,help={"Inserts a test pulse at the front of each sweep in a set."}
 	CheckBox Check_Settings_InsertTP,userdata(tabnum)="5",userdata(tabcontrol)="ADC"
@@ -3604,7 +3604,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_settings_TP_show_peak,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_settings_TP_show_peak,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_settings_TP_show_peak,value=1
-	CheckBox check_settings_TP_show_steady,pos={168.00,132.00},size={165.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
+	CheckBox check_settings_TP_show_steady,pos={160.00,132.00},size={165.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
 	CheckBox check_settings_TP_show_steady,title="Show steady state resistance"
 	CheckBox check_settings_TP_show_steady,help={"Show the steady state resistance curve during the testpulse"}
 	CheckBox check_settings_TP_show_steady,userdata(tabnum)="5"
@@ -3694,7 +3694,7 @@ Window DA_Ephys() : Panel
 	Button button_DataAcq_OpenCommentNB,userdata(ResizeControlsInfo)=A"!!,I3!!#DR^]6\\4!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataAcq_OpenCommentNB,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_DataAcq_OpenCommentNB,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_TPAfterDAQ,pos={168.00,108.00},size={130.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
+	CheckBox check_Settings_TPAfterDAQ,pos={160.00,108.00},size={130.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
 	CheckBox check_Settings_TPAfterDAQ,title="Activate TP after DAQ"
 	CheckBox check_Settings_TPAfterDAQ,help={"Immediately start a test pulse after DAQ finishes"}
 	CheckBox check_Settings_TPAfterDAQ,userdata(tabnum)="5"
@@ -4331,6 +4331,16 @@ Window DA_Ephys() : Panel
 	CheckBox Radio_ClampMode_AllIClamp,userdata(Config_RestorePriority)="29"
 	CheckBox Radio_ClampMode_AllIClamp,userdata(Config_NiceName)="Headstage_All_IC"
 	CheckBox Radio_ClampMode_AllIClamp,value=0,mode=1
+	CheckBox Check_Settings_UnassocDADoTP,pos={192.00,84.00},size={95.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
+	CheckBox Check_Settings_UnassocDADoTP,title="TP on unassoc."
+	CheckBox Check_Settings_UnassocDADoTP,help={"Insert test pulse on unassociated DA channels"}
+	CheckBox Check_Settings_UnassocDADoTP,userdata(tabnum)="5"
+	CheckBox Check_Settings_UnassocDADoTP,userdata(tabcontrol)="ADC"
+	CheckBox Check_Settings_UnassocDADoTP,userdata(ResizeControlsInfo)=A"!!,G<!!#?c!!#?-!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_Settings_UnassocDADoTP,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox Check_Settings_UnassocDADoTP,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox Check_Settings_UnassocDADoTP,userdata(Config_RestorePriority)="60"
+	CheckBox Check_Settings_UnassocDADoTP,value=1
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,hook(windowCoordinateSaving)=StoreWindowCoordinatesHook

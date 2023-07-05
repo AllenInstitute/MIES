@@ -18,7 +18,7 @@
 Constant DAQ_CONFIG_WAVE_VERSION = 2
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION           = 60
+Constant DA_EPHYS_PANEL_VERSION           = 61
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 46
 Constant WAVEBUILDER_PANEL_VERSION        = 14
 Constant ANALYSISBROWSER_PANEL_VERSION    =  3
@@ -38,7 +38,7 @@ Constant SWEEP_EPOCH_VERSION = 7
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 69
+Constant LABNOTEBOOK_VERSION = 70
 Constant RESULTS_VERSION     = 2
 /// @}
 
@@ -934,6 +934,7 @@ StrConstant STIMSET_SCALE_FACTOR_KEY  = "Stim Scale Factor"
 StrConstant STIMSET_WAVE_NOTE_KEY     = "Stim Wave Note"
 StrConstant EPOCHS_ENTRY_KEY          = "Epochs"
 StrConstant CLAMPMODE_ENTRY_KEY       = "Clamp Mode"
+StrConstant TPONUNASSOCDA_ENTRY_KEY   = "Global TP insert on unassociated DA channels"
 StrConstant TP_AMPLITUDE_VC_ENTRY_KEY = "TP Amplitude VC"
 StrConstant TP_AMPLITUDE_IC_ENTRY_KEY = "TP Amplitude IC"
 

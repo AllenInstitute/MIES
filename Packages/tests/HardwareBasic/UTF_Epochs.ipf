@@ -297,8 +297,8 @@ static Function TestEpochsGeneric(device)
 	string device
 
 	variable numEntries, endTimeDAC, endTimeEpochs, samplingInterval
-	variable i, lastPoint
-	string list, epochStr
+	variable i, lastPoint, index
+	string list, setNameLBEntry
 
 	string sweeps, configs
 	variable sweepNo
@@ -356,17 +356,20 @@ static Function TestEpochsGeneric(device)
 	lastPoint = DimSize(sweep, ROWS)
 	endTimeDAC = samplingInterval * lastPoint
 
-	WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
-	WAVE/T setNameLBEntries = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-
 	for(i = 0; i < numEntries; i += 1)
-		epochStr = epochLBEntries[i]
-		if(WB_StimsetIsFromThirdParty(setNameLBEntries[i]) || !cmpstr(setNameLBEntries[i], STIMSET_TP_WHILE_DAQ))
-			CHECK_EMPTY_STR(epochStr)
+
+		WAVE/Z/T epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, DACs[i], XOP_CHANNEL_TYPE_DAC)
+
+		[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, DACs[i], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+		CHECK_WAVE(setting, TEXT_WAVE)
+		WAVE/T settingText = setting
+		setNameLBEntry = settingText[index]
+		if(WB_StimsetIsFromThirdParty(setNameLBEntry) || !cmpstr(setNameLBEntry, STIMSET_TP_WHILE_DAQ))
+			CHECK_WAVE(epochChannel, NULL_WAVE)
 			continue
 		endif
+		CHECK_WAVE(epochChannel, TEXT_WAVE)
 
-		WAVE/T epochChannel = EP_EpochStrToWave(epochStr)
 		Make/FREE/D/N=(DimSize(epochChannel, ROWS)) endT
 
 		// preserve epochs wave in CDF
@@ -860,6 +863,91 @@ End
 
 static Function EP_EpochTest15_REENTRY([str])
 	string str
+
+	TestEpochsGeneric(str)
+End
+
+static Function EP_EpochTestUnassocDA_PreAcq(string device)
+
+	PGC_SetAndActivateControl(device, "Check_Settings_UnassocDADoTP", val = 0)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTestUnassocDA([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:"      + \
+								 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
+								 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+								 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+								 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
+								 "__TTL7_ST:StimulusSetB_TTL_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function EP_EpochTestUnassocDA_REENTRY([str])
+	string str
+
+	variable cbState
+
+	WAVE/T textualValues   = GetLBTextualValues(str)
+	WAVE   numericalValues = GetLBNumericalValues(str)
+	WAVE/T epochChannel0 = EP_FetchEpochs(numericalValues, textualValues, 0, 0, XOP_CHANNEL_TYPE_DAC)
+	WAVE/T epochChannel2 = EP_FetchEpochs(numericalValues, textualValues, 0, 2, XOP_CHANNEL_TYPE_DAC)
+	Make/FREE/T/N=(DimSize(epochChannel0, ROWS)) epochNames0 = EP_GetShortName(epochChannel0[p][%Tags])
+	Make/FREE/T/N=(DimSize(epochChannel2, ROWS)) epochNames2 = EP_GetShortName(epochChannel2[p][%Tags])
+	WAVE tpIndex = FindIndizes(epochNames0, str="TP")
+	CHECK_EQUAL_VAR(DimSize(tpIndex, ROWS), 1)
+	WAVE tpBaseIndex = FindIndizes(epochNames2, str="B0_TP")
+	CHECK_EQUAL_VAR(DimSize(tpBaseIndex, ROWS), 1)
+	WAVE/Z tpMissing = FindIndizes(epochNames2, str="TP*", prop = PROP_WILDCARD)
+	CHECK_WAVE(tpMissing, NULL_WAVE)
+
+	CHECK_EQUAL_STR(epochChannel0[tpIndex[0]][%StartTime], epochChannel2[tpBaseIndex[0]][%StartTime])
+	CHECK_EQUAL_STR(epochChannel0[tpIndex[0]][%EndTime], epochChannel2[tpBaseIndex[0]][%EndTime])
+
+	cbState = GetLastSettingIndep(numericalValues, 0, TPONUNASSOCDA_ENTRY_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
+	CHECK_EQUAL_VAR(cbState, 0)
+
+	TestEpochsGeneric(str)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTestUnassocDADefault([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:"      + \
+								 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
+								 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+								 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+								 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
+								 "__TTL7_ST:StimulusSetB_TTL_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function EP_EpochTestUnassocDADefault_REENTRY([str])
+	string str
+
+	variable cbState
+
+	WAVE/T textualValues   = GetLBTextualValues(str)
+	WAVE   numericalValues = GetLBNumericalValues(str)
+	WAVE/T epochChannel2 = EP_FetchEpochs(numericalValues, textualValues, 0, 2, XOP_CHANNEL_TYPE_DAC)
+	Make/FREE/T/N=(DimSize(epochChannel2, ROWS)) epochNames2 = EP_GetShortName(epochChannel2[p][%Tags])
+	WAVE tpExisting = FindIndizes(epochNames2, str="TP")
+	CHECK_EQUAL_VAR(DimSize(tpExisting, ROWS), 1)
+
+	WAVE   numericalValues = GetLBNumericalValues(str)
+	cbState = GetLastSettingIndep(numericalValues, 0, TPONUNASSOCDA_ENTRY_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
+	CHECK_EQUAL_VAR(cbState, 1)
 
 	TestEpochsGeneric(str)
 End
