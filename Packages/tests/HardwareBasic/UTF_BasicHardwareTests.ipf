@@ -398,24 +398,34 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			switch(hardwareType)
 				case HARDWARE_ITC_DAC:
 					if(numRacks == 2)
-						CHECK_EQUAL_VAR(DimSize(config, ROWS), 8)
+						CHECK_EQUAL_VAR(DimSize(config, ROWS), 3 + 3 + 2)
 					else
-						CHECK_EQUAL_VAR(DimSize(config, ROWS), 7)
+						CHECK_EQUAL_VAR(DimSize(config, ROWS), 3 + 3 + 1)
 					endif
 					break
 				case HARDWARE_NI_DAC:
-					CHECK_EQUAL_VAR(DimSize(config, ROWS), 8)
+					CHECK_EQUAL_VAR(DimSize(config, ROWS), 3 + 3 + 4)
 					break
 			endswitch
 
 			// check channel types
-			CHECK_EQUAL_VAR(config[0][0], XOP_CHANNEL_TYPE_DAC)
-			CHECK_EQUAL_VAR(config[1][0], XOP_CHANNEL_TYPE_DAC)
-			CHECK_EQUAL_VAR(config[2][0], XOP_CHANNEL_TYPE_DAC)
-			CHECK_EQUAL_VAR(config[3][0], XOP_CHANNEL_TYPE_ADC)
-			CHECK_EQUAL_VAR(config[4][0], XOP_CHANNEL_TYPE_ADC)
-			CHECK_EQUAL_VAR(config[5][0], XOP_CHANNEL_TYPE_ADC)
-			CHECK_EQUAL_VAR(config[6][0], XOP_CHANNEL_TYPE_TTL)
+			CHECK_EQUAL_VAR(config[0][%ChannelType], XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[1][%ChannelType], XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[2][%ChannelType], XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[3][%ChannelType], XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[4][%ChannelType], XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[5][%ChannelType], XOP_CHANNEL_TYPE_ADC)
+			if(hardwareType == HARDWARE_ITC_DAC && numRacks == 1)
+				CHECK_EQUAL_VAR(config[6][%ChannelType], XOP_CHANNEL_TYPE_TTL)
+			elseif(hardwareType == HARDWARE_ITC_DAC && numRacks == 2)
+				CHECK_EQUAL_VAR(config[6][%ChannelType], XOP_CHANNEL_TYPE_TTL)
+				CHECK_EQUAL_VAR(config[7][%ChannelType], XOP_CHANNEL_TYPE_TTL)
+			elseif(hardwareType == HARDWARE_NI_DAC)
+				CHECK_EQUAL_VAR(config[6][%ChannelType], XOP_CHANNEL_TYPE_TTL)
+				CHECK_EQUAL_VAR(config[7][%ChannelType], XOP_CHANNEL_TYPE_TTL)
+				CHECK_EQUAL_VAR(config[8][%ChannelType], XOP_CHANNEL_TYPE_TTL)
+				CHECK_EQUAL_VAR(config[9][%ChannelType], XOP_CHANNEL_TYPE_TTL)
+			endif
 
 			// check channel numbers
 			WAVE DACs = GetDACListFromConfig(config)
@@ -427,14 +437,18 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			WAVE TTLs = GetTTLListFromConfig(config)
 
 			WAVE/Z ttlStimSets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, j)
-			if(numRacks == 2)
-				CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0"})
-			else
-				CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "", "", ""})
-			endif
+			WAVE/T/Z foundIndexingEndStimSets = GetLastSetting(textualValues, j, "TTL Indexing End stimset", DATA_ACQUISITION_MODE)
+			WAVE/T/Z stimWaveChecksums = GetLastSetting(textualValues, j, "TTL Stim Wave Checksum", DATA_ACQUISITION_MODE)
+			WAVE/Z stimSetLengths = GetLastSetting(textualValues, j, "TTL Stim set length", DATA_ACQUISITION_MODE)
 
 			switch(hardwareType)
 				case HARDWARE_ITC_DAC:
+					if(numRacks == 2)
+						CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0"})
+					else
+						CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "", "", ""})
+					endif
+
 					// check TTL LBN keys
 					if(numRacks == 2)
 						CHECK_EQUAL_WAVES(TTLs, {HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO), \
@@ -503,52 +517,54 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 						CHECK_WAVE(cycleCounts, NULL_WAVE)
 					endif
 
+					// Indexing End stimset
+					if(numRacks == 2)
+						CHECK_EQUAL_TEXTWAVES(foundIndexingEndStimSets, {"", "", "", "", "", "", "", "", ";- none -;;- none -;;- none -;;- none -;"})
+					else
+						CHECK_EQUAL_TEXTWAVES(foundIndexingEndStimSets, {"", "", "", "", "", "", "", "", ";- none -;;- none -;;;;;"})
+					endif
+
+					// Stim Wave Checksum
+					if(numRacks == 2)
+						CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;"))
+					else
+						CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;;;;"))
+					endif
+
+					// Stim set length
+					if(numRacks == 2)
+						CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;190001;;185001;"})
+					else
+						CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;;;;"})
+					endif
+
 					break
 				case HARDWARE_NI_DAC:
-					CHECK_EQUAL_WAVES(TTLs, {1, 3}, mode = WAVE_DATA)
+					CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0"})
+					CHECK_EQUAL_WAVES(TTLs, {1, 3, 5, 7}, mode = WAVE_DATA)
 
 					WAVE/T/Z channelsTxT = GetLastSetting(textualValues, j, "TTL channels", DATA_ACQUISITION_MODE)
-					CHECK_EQUAL_TEXTWAVES(channelsTxT, {"", "", "", "", "", "", "", "", ";1;;3;;;;;"}, mode = WAVE_DATA)
+					CHECK_EQUAL_TEXTWAVES(channelsTxT, {"", "", "", "", "", "", "", "", ";1;;3;;5;;7;"}, mode = WAVE_DATA)
 
 					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL stim sets", DATA_ACQUISITION_MODE)
-					CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;;;;;"})
+					CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;;StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
 
 					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL set sweep counts", DATA_ACQUISITION_MODE)
-					CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;;;;;"})
+					CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;;0;;0;"})
 
 					WAVE/T/Z cycleCounts = GetLastSetting(textualValues, j, "TTL set cycle counts", DATA_ACQUISITION_MODE)
-					CHECK_EQUAL_TEXTWAVES(cycleCounts, {"", "", "", "", "", "", "", "", ";0;;0;;;;;"})
+					CHECK_EQUAL_TEXTWAVES(cycleCounts, {"", "", "", "", "", "", "", "", ";0;;0;;0;;0;"})
+
+					CHECK_EQUAL_TEXTWAVES(foundIndexingEndStimSets, {"", "", "", "", "", "", "", "", ";- none -;;- none -;;- none -;;- none -;"})
+					CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;"))
+					CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;190001;;185001;"})
 
 					break
 			endswitch
 
 			// hardware agnostic TTL entries
-			WAVE/T/Z foundIndexingEndStimSets = GetLastSetting(textualValues, j, "TTL Indexing End stimset", DATA_ACQUISITION_MODE)
-
-			if(numRacks == 2)
-				CHECK_EQUAL_TEXTWAVES(foundIndexingEndStimSets, {"", "", "", "", "", "", "", "", ";- none -;;- none -;;- none -;;- none -;"})
-			else
-				CHECK_EQUAL_TEXTWAVES(foundIndexingEndStimSets, {"", "", "", "", "", "", "", "", ";- none -;;- none -;;;;;"})
-			endif
-
 			WAVE/Z settings = GetLastSetting(textualValues, j, "TTL Stimset wave note", DATA_ACQUISITION_MODE)
 			CHECK_WAVE(settings, TEXT_WAVE)
-
-			WAVE/T/Z stimWaveChecksums = GetLastSetting(textualValues, j, "TTL Stim Wave Checksum", DATA_ACQUISITION_MODE)
-
-			if(numRacks == 2)
-				CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;"))
-			else
-				CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;;;;"))
-			endif
-
-			WAVE/Z stimSetLengths = GetLastSetting(textualValues, j, "TTL Stim set length", DATA_ACQUISITION_MODE)
-
-			if(numRacks == 2)
-				CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;190001;;185001;"})
-			else
-				CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";190001;;185001;;;;;"})
-			endif
 
 			Variable index
 
@@ -582,25 +598,28 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			WAVE AD  = GetActiveChannels(numericalValues, textualValues, j, XOP_CHANNEL_TYPE_ADC)
 			CHECK_EQUAL_WAVES(AD, {0, 1, 2, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN})
 
-			WAVE TTL = GetActiveChannels(numericalValues, textualValues, j, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_DAEPHYS_CHANNEL)
-			CHECK_EQUAL_WAVES(TTL, {NaN, 1, NaN, 3, NaN, NaN, NaN, NaN})
-
-			WAVE TTL = GetActiveChannels(numericalValues, textualValues, j, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_HARDWARE_CHANNEL)
+			WAVE guiTTLChannels = GetActiveChannels(numericalValues, textualValues, j, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_DAEPHYS_CHANNEL)
+			WAVE hwTTLChannels = GetActiveChannels(numericalValues, textualValues, j, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_HARDWARE_CHANNEL)
 
 			if(hardwareType == HARDWARE_NI_DAC)
-				Make/FREE/D TTLRef = {NaN, 1, NaN, 3, NaN, NaN, NaN, NaN}
+				Make/FREE/D hwTTLRef = {NaN, 1, NaN, 3, NaN, 5, NaN, 7}
+				WAVE/D guiTTLRef = hwTTLRef
 			else
-				Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) TTLRef = NaN
+				Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) hwTTLRef = NaN
 				index = HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)
-				TTLRef[index] = index
+				hwTTLRef[index] = index
 
 				if(numRacks == 2)
 					index = HW_ITC_GetITCXOPChannelForRack(device, RACK_ONE)
-					TTLRef[index] = index
+					hwTTLRef[index] = index
+					Make/FREE/D guiTTLRef = {NaN, 1, NaN, 3, NaN, 5, NaN, 7}
+				else
+					Make/FREE/D guiTTLRef = {NaN, 1, NaN, 3, NaN, NaN, NaN, NaN}
 				endif
 			endif
 
-			CHECK_EQUAL_WAVES(TTL, TTLRef)
+			CHECK_EQUAL_WAVES(guiTTLChannels, guiTTLRef)
+			CHECK_EQUAL_WAVES(hwTTLChannels, hwTTLRef)
 		endfor
 	endfor
 
