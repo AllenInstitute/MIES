@@ -1480,9 +1480,9 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 		endif
 
 		if(i >= NUM_ITC_TTL_BITS_PER_RACK                 \
-		   && (GetHardwareType(device) == HARDWARE_NI_DAC \
-		       || HW_ITC_GetNumberOfRacks(device) < 2))
-			// ignore unavailable TTLs
+		   && GetHardwareType(device) == HARDWARE_ITC_DAC \
+			   && HW_ITC_GetNumberOfRacks(device) < 2)
+			// ignore unavailable TTLs on single-rack ITC setup
 			continue
 		endif
 
