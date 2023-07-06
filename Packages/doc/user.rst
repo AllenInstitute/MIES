@@ -12,6 +12,7 @@ User documentation
   daephys
   testpulse
   auto_testpulse_tuning
+  SweepFormula
   labnotebook-descriptions
   analysis-function-parameters
 
