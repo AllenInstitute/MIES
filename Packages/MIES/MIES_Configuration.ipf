@@ -2517,6 +2517,13 @@ static Function [variable jsonId, string txtData] CONF_LoadConfigUsedForDAEphysP
 	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Window is no DA_Ephys panel")
 
 	fName = StringFromList(loadRigFile, GetUserData(wName, "", EXPCONFIG_UDATA_SOURCEFILE_PATH), FILE_LIST_SEP)
+	if(IsEmpty(fName))
+		return [NaN, ""]
+	endif
+	if(!FileExists(fName))
+		printf "Info: Tried to load former configuration file saved in DAEphys user data, but file does not exist: %s\rUsing default settings.\r", fName
+		return [NaN, ""]
+	endif
 	[txtData, str] = LoadTextFile(fName)
 	if(IsEmpty(txtData))
 		return [NaN, ""]
