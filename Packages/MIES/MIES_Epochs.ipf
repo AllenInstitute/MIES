@@ -67,7 +67,6 @@ Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 		return NaN
 	endif
 
-	WAVE config = GetDAQConfigWave(device)
 	EP_CollectEpochInfoDA(device, s)
 End
 
