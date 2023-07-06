@@ -180,3 +180,72 @@ static Function TCONF_CheckTypedPanelRestore([STRUCT IUTF_mData &md])
 	DeleteFile fName
 	CHECK_EQUAL_STR(win, winRestored)
 End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckIfConfigurationRestoresDAEphysWithUnassocDA([string str])
+
+	string rewrittenConfig, fName
+	variable hardwareType, jsonID, numRacks, DAState
+
+	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresDAEphysWithUnassocDA.json")
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_ASO0" + \
+								 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
+								 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+								 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+								 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
+								 "__TTL7_ST:StimulusSetB_TTL_0:")
+
+	AcquireData_NG(s, str)
+
+	CONF_SaveWindow(fName)
+
+	[jsonID, rewrittenConfig] = FixupJSONConfig_IGNORE(fName, str)
+	JSON_Release(jsonID)
+
+	KillWindow $str
+	KillOrMoveToTrash(dfr=root:MIES)
+
+	CONF_RestoreWindow(rewrittenConfig)
+	PGC_SetAndActivateControl(str, "StartTestPulseButton")
+
+	WAVE DACState = DAG_GetChannelState(str, CHANNEL_TYPE_DAC)
+	CHECK_EQUAL_WAVES(DACState, {1, 1, 1, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE ADCState = DAG_GetChannelState(str, CHANNEL_TYPE_ADC)
+	CHECK_EQUAL_WAVES(ADCState, {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE TTLState = DAG_GetChannelState(str, CHANNEL_TYPE_TTL)
+	hardwareType = GetHardwareType(str)
+	if(hardwareType == HARDWARE_ITC_DAC)
+		numRacks = HW_ITC_GetNumberOfRacks(str)
+		if(numRacks == 2)
+			CHECK_EQUAL_WAVES(TTLState, {0, 1, 0, 1, 0, 1, 0, 1}, mode = WAVE_DATA)
+		else
+			CHECK_EQUAL_WAVES(TTLState, {0, 1, 0, 1, 0, 0, 0, 0}, mode = WAVE_DATA)
+		endif
+	elseif(hardwareType == HARDWARE_NI_DAC)
+		CHECK_EQUAL_WAVES(TTLState, {0, 1, 0, 1, 0, 1, 0, 1}, mode = WAVE_DATA)
+	else
+		FAIL()
+	endif
+
+	WAVE HSState = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
+	CHECK_EQUAL_WAVES(HSState, {1, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	// switch off unassoc DA channels
+	PGC_SetAndActivateControl(str, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK), val = 0)
+	PGC_SetAndActivateControl(str, GetPanelControl(2, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK), val = 0)
+
+	// switch on HS1, then if correctly unassoc, DA1 must stay off
+	PGC_SetAndActivateControl(str, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
+	DAState = GetCheckBoxState(str, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK))
+	CHECK_EQUAL_VAR(DAState, 0)
+
+	PGC_SetAndActivateControl(str, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
+	DAState = GetCheckBoxState(str, GetPanelControl(2, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK))
+	CHECK_EQUAL_VAR(DAState, 0)
+End

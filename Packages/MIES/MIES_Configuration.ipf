@@ -680,18 +680,32 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		winHandle = num2istr(GetUniqueInteger())
 		SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE) = winHandle
 		isTagged = 1
-		device = CONF_JSONToWindow(device, restoreMask, jsonID)
-		isTagged = 0
-		SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE) = ""
+
+		WAVE/T winNames = CONF_GetWindowNames(jsonID)
+		ASSERT(DimSize(winNames, ROWS) == 1, "DAEPhys configuration file contains configurations for more than one window.")
+
 		if(restoreMask & EXPCONFIG_MINIMIZE_ON_RESTORE)
 			SetWindow $device, hide=1
 		endif
+
+		jsonPath = winNames[0] + "/Generic ControlGroup/popup_MoreSettings_Devices"
+		ASSERT(JSON_Exists(jsonID, jsonPath), "Missing critical JSON entry: " + jsonPath)
+		CONF_RestoreControl(device, restoreMask, jsonID, "popup_MoreSettings_Devices", jsonPath = jsonPath)
+		jsonPath = winNames[0] + "/Generic ControlGroup/button_SettingsPlus_LockDevice"
+		ASSERT(JSON_Exists(jsonID, jsonPath), "Missing critical JSON entry: " + jsonPath)
+		CONF_RestoreControl(device, restoreMask, jsonID, "button_SettingsPlus_LockDevice", jsonPath = jsonPath)
+		device = CONF_FindWindow(winHandle, uKey = DAEPHYS_UDATA_WINHANDLE)
+
+		CONF_RestoreHeadstageAssociation(device, jsonID, middleOfExperiment)
+
+		device = CONF_JSONToWindow(device, restoreMask, jsonID)
+		isTagged = 0
+		SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE) = ""
 
 		if(middleOfExperiment)
 			ModifyControl $"check_Settings_SyncMiesToMCC", win=$device, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)=rStateSync
 		endif
 
-		CONF_RestoreHeadstageAssociation(device, jsonID, middleOfExperiment)
 		CONF_RestoreUserPressure(device, jsonID)
 
 		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
@@ -1997,6 +2011,7 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 		if(type == JSON_NULL)
 			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
 			PGC_SetAndActivateControl(device, "popup_Settings_Pressure_dev", str = NONE)
+			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 		elseif(type == JSON_OBJECT)
 			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
 			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
