@@ -532,6 +532,7 @@ static Function CONF_SaveDAEphys(fName)
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK, CONF_DefaultSettings())
 		if(!IsNaN(prevJsonId))
 			CONF_TransferPreviousDAEphysJson(jsonId, prevJsonId)
+			JSON_Release(prevJsonId)
 		endif
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK, CONF_GetAmplifierSettings(wName))
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_USERPRESSBLOCK, CONF_GetUserPressure(wName))
@@ -552,6 +553,7 @@ static Function CONF_SaveDAEphys(fName)
 			printf "Configuration saved in %s.\r", newFileName
 		endif
 		if(!IsNaN(prevRigJsonId) && !IsEmpty(newFileName))
+			JSON_Release(prevRigJsonId)
 			newRigFullFilePath = GetFolder(newFileName) + GetBaseName(newFileName) + EXPCONFIG_RIGFILESUFFIX
 			saveResult = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 			if(!IsNaN(saveResult))
