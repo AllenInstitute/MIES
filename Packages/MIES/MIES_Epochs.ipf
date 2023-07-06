@@ -63,15 +63,19 @@ End
 /// @param s          struct holding all input
 Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 
-	variable i, channel, singleSetLength, epochOffset, epochBegin, epochEnd
-	variable stimsetCol, startOffset, stopCollectionPoint, isUnAssociated, testPulseLength
-	string tags
-
 	if(s.dataAcqOrTP != DATA_ACQUISITION_MODE)
 		return NaN
 	endif
 
 	WAVE config = GetDAQConfigWave(device)
+	EP_CollectEpochInfoDA(device, s)
+End
+
+static Function EP_CollectEpochInfoDA(string device, STRUCT DataConfigurationResult &s)
+
+	variable i, channel, singleSetLength, epochOffset, epochBegin, epochEnd
+	variable stimsetCol, startOffset, stopCollectionPoint, isUnAssociated, testPulseLength
+	string tags
 
 	stopCollectionPoint = ROVar(GetStopCollectionPoint(device))
 
