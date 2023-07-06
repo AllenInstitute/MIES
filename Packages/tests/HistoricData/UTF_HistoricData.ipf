@@ -8,12 +8,12 @@
 /// Adding new files:
 /// - Assuming your new file is name `abcd.pxp`
 /// - Copy `abcd.pxp` into the folder `Packages/tests/HistoricData/input`
-/// - Adapt `files`/`sizes` in GetFiles()
+/// - Adapt `files` in GetHistoricDataFiles()
 /// - Verify that the test passes
 /// - Compress the file by calling CompressFile("abcd.pxp"), takes a long time, so do something else in-between
-/// - Upload `abcd.pxp.zst` to the FTP (Account: `allentestdata`, ask Thomas if in doubt)
+/// - Upload `abcd.pxp.zst` to the FTP into the folder `MIES-HistoricData` (Account: `allentestdata`, ask Thomas if in doubt)
 /// - Rename `abcd.pxp` to `abcd.pxp.tmp` in `Packages/tests/HistoricData/input`
-/// - Verify that the test works, now with downloading and decompression the file
+/// - Verify that the test works, now with downloading and decompression of the file
 
 // Data stored in this folder is subject to https://alleninstitute.org/terms-of-use
 static StrConstant HTTP_FOLDER_URL = "https://www.byte-physics.de/Downloads/allensdk-test-data/MIES-HistoricData/"
