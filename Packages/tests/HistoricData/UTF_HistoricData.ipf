@@ -130,7 +130,7 @@ End
 Function/S GetInputPath()
 
 	PathInfo home
-	CHECK(V_Flag)
+	ASSERT(V_flag, "Not a saved experiment")
 
 	return S_path + "input:"
 End
