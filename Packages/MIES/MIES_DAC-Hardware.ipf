@@ -1987,6 +1987,8 @@ threadsafe Function HW_ITC_GetRackRange(rack, first, last)
 	else
 		ASSERT_TS(0, "Invalid rack parameter")
 	endif
+
+	ASSERT_TS(last - first + 1 ==  NUM_ITC_TTL_BITS_PER_RACK, "Rack channel range must be NUM_ITC_TTL_BITS_PER_RACK for each rack")
 End
 
 /// @brief Clip the ttlBit to adapt for differences in notation
