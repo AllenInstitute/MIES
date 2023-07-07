@@ -1603,7 +1603,7 @@ Function BSP_AddTracesForEpochs(string win)
 	variable headstage, channelType, channelNumber, channelNumberDA, yLevelOffset, level, idx, numTraces, numEpochs
 	variable sweepNumber, traceIndex
 	STRUCT RGBColor c
-	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, epochInfoStr, idPart, level_x_trace
+	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, idPart, level_x_trace
 
 	if(!BSP_IsDataBrowser(win) && !BSP_IsSweepBrowser(win))
 		printf "The current window is neither a databrowser nor a sweepbrowser windows.\r"
