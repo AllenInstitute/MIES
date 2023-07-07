@@ -714,6 +714,13 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 		DC_DocumentChannelProperty(device, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=entry)
 	endfor
 
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		entry = EP_EpochWaveToStr(epochsWave, i, XOP_CHANNEL_TYPE_TTL)
+		if(!IsEmpty(entry))
+			DC_DocumentChannelProperty(device, EPOCHS_ENTRY_KEY, INDEP_HEADSTAGE, i, XOP_CHANNEL_TYPE_TTL, str=entry)
+		endif
+	endfor
+
 	DC_DocumentChannelProperty(device, "Epochs Version", INDEP_HEADSTAGE, NaN, NaN, var=SWEEP_EPOCH_VERSION)
 End
 
