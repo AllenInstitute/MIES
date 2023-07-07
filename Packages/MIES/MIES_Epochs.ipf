@@ -28,7 +28,7 @@ static StrConstant EPOCH_SN_BL_DDAQ = "B0_DD"
 static StrConstant EPOCH_SN_BL_TERMINATIONDELAY = "B0_TD"
 static StrConstant EPOCH_SN_BL_UNASSOC_NOTP_BASELINE = "B0_TP"
 static StrConstant EPOCH_SN_BL_DDAQOPT = "B0_DO"
-static StrConstant EPOCH_SN_BL_DDAQTRAIL = "B0_TR"
+static StrConstant EPOCH_SN_BL_GENERALTRAIL = "B0_TR"
 static StrConstant EPOCH_SN_TP = "TP"
 static StrConstant EPOCH_SN_TP_PULSE = "TP_P"
 static StrConstant EPOCH_SN_TP_BLFRONT = "TP_B0"
@@ -140,7 +140,7 @@ static Function EP_CollectEpochInfoDA(string device, STRUCT DataConfigurationRes
 		epochBegin = startOffset + singleSetLength + s.terminationDelay
 		if(stopCollectionPoint > epochBegin)
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin * s.samplingInterval, stopCollectionPoint * s.samplingInterval, tags, EPOCH_SN_BL_DDAQTRAIL, 0)
+			EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin * s.samplingInterval, stopCollectionPoint * s.samplingInterval, tags, EPOCH_SN_BL_GENERALTRAIL, 0)
 		endif
 
 		testPulseLength = s.testPulseLength * s.samplingInterval
@@ -212,7 +212,7 @@ static Function EP_CollectEpochInfoTTL(string device, STRUCT DataConfigurationRe
 		if(stopCollectionPoint > epochBegin)
 			epochEnd = stopCollectionPoint
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(device, i, XOP_CHANNEL_TYPE_TTL, epochBegin * s.samplingInterval, epochEnd * s.samplingInterval, tags, EPOCH_SN_BL_DDAQTRAIL, 0)
+			EP_AddEpoch(device, i, XOP_CHANNEL_TYPE_TTL, epochBegin * s.samplingInterval, epochEnd * s.samplingInterval, tags, EPOCH_SN_BL_GENERALTRAIL, 0)
 		endif
 
 	endfor
