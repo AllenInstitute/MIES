@@ -1275,8 +1275,14 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 				case "check_BrowserSettings_VisEpochs":
 					if(checked)
 						DisableControls(bsPanel, "check_Display_EqualYrange;check_Display_EqualYignore")
+						AdaptDependentControls(bsPanel, "check_BrowserSettings_splitTTL", CHECKBOX_SELECTED, CHECKBOX_SELECTED, DEP_CTRLS_SAME)
 					else
 						EnableControls(bsPanel, "check_Display_EqualYrange;check_Display_EqualYignore")
+					endif
+					break
+				case "check_BrowserSettings_splitTTL":
+					if(!checked)
+						PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_VisEpochs", val = 0)
 					endif
 					break
 				default:
@@ -1600,10 +1606,10 @@ End
 Function BSP_AddTracesForEpochs(string win)
 
 	variable i, j, numEntries, start_x, start_y, end_x, end_y, yOffset
-	variable headstage, channelType, channelNumber, channelNumberDA, yLevelOffset, level, idx, numTraces, numEpochs
-	variable sweepNumber, traceIndex
+	variable headstage, yLevelOffset, level, idx, numTraces, numEpochs
+	variable sweepNumber, traceIndex, channelType, hwChannelNumber, guiChannelNumber, ttlBit, fetchChanType
 	STRUCT RGBColor c
-	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, idPart, level_x_trace
+	string device, xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, idPart, level_x_trace
 
 	if(!BSP_IsDataBrowser(win) && !BSP_IsSweepBrowser(win))
 		printf "The current window is neither a databrowser nor a sweepbrowser windows.\r"
@@ -1615,23 +1621,29 @@ Function BSP_AddTracesForEpochs(string win)
 	BSP_RemoveTraces(win)
 
 	WAVE/T/Z traceInfosHS = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"AD", "1"})
-
 	if(!WaveExists(traceInfosHS))
 		// fallback to DA traces
 		WAVE/T/Z traceInfosHS = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
 	endif
 
 	WAVE/T/Z traceInfosUnassocDA = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "0"})
+	WAVE/T/Z traceInfosTTL = GetTraceInfos(win, addFilterKeys = {"channelType"}, addFilterValues = {"TTL"})
 
-	if(!WaveExists(traceInfosHS) && !WaveExists(traceInfosUnassocDA))
+	if(!WaveExists(traceInfosHS) && !WaveExists(traceInfosUnassocDA) && !WaveExists(traceInfosTTL))
 		return NaN
-	elseif(!WaveExists(traceInfosHS))
-		WAVE/T traceInfos = traceInfosUnassocDA
-	elseif(!WaveExists(traceInfosUnassocDA))
-		WAVE/T traceInfos = traceInfosHS
 	else
-		Concatenate/FREE/T/NP=(ROWS) {traceInfosUnassocDA}, traceInfosHS
-		WAVE/T traceInfos = traceInfosHS
+		WAVE/T traceInfosFull = GetGraphUserData(win)
+		Duplicate/FREE/T traceInfosFull, traceInfos
+		Redimension/N=(0, -1) traceInfos
+		if(WaveExists(traceInfosHS))
+			Concatenate/FREE/T/NP=(ROWS) {traceInfosHS}, traceInfos
+		endif
+		if(WaveExists(traceInfosUnassocDA))
+			Concatenate/FREE/T/NP=(ROWS) {traceInfosUnassocDA}, traceInfos
+		endif
+		if(WaveExists(traceInfosTTL))
+			Concatenate/FREE/T/NP=(ROWS) {traceInfosTTL}, traceInfos
+		endif
 	endif
 
 	traceIndex = GetNextTraceIndex(win)
@@ -1645,36 +1657,44 @@ Function BSP_AddTracesForEpochs(string win)
 		// need to replace for both AD and DA cases
 		yaxis = ReplaceString("_DA", yaxis, DB_AXIS_PART_EPOCHS + "_DA")
 		yaxis = ReplaceString("_AD", yaxis, DB_AXIS_PART_EPOCHS + "_DA")
+		yaxis = ReplaceString("_TTL", yaxis, DB_AXIS_PART_EPOCHS + "_TTL")
 
 		headstage   = str2num(traceInfos[i][%headstage])
 		sweepNumber = str2num(traceInfos[i][%sweepNumber])
 		channelType = WhichListItem(traceInfos[i][%channelType], XOP_CHANNEL_NAMES)
-		channelNumber = str2num(traceInfos[i][%channelNumber])
+		hwChannelNumber = str2num(traceInfos[i][%channelNumber])
 
+		WAVE/Z/T numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNumber)
+		ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
+		WAVE/Z/T textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
+		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
+
+		fetchChanType = channelType
 		switch(channelType)
 			case XOP_CHANNEL_TYPE_ADC:
-				channelNumberDA = SFH_GetDAChannel(win, sweepNumber, channelType, channelNumber)
+				guiChannelNumber = SFH_GetDAChannel(win, sweepNumber, channelType, hwChannelNumber)
+				fetchChanType = XOP_CHANNEL_TYPE_DAC
 				break
 			case XOP_CHANNEL_TYPE_DAC:
-				channelNumberDA = channelNumber
+				guiChannelNumber = hwChannelNumber
+				break
+			case XOP_CHANNEL_TYPE_TTL:
+				ttlBit = str2num(traceInfos[i][%TTLBit])
+				device = BSP_GetDevice(win)
+				guiChannelNumber = GetChannelNumberTTL(device, hwChannelNumber, ttlBit)
 				break
 			default:
 				ASSERT(0, "Unsupported channelType")
 		endswitch
 
-		WAVE/Z/T textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
-		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
-		WAVE/Z/T numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNumber)
-		ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
 		// present since a2172f03 (Added generations of epoch information wave, 2019-05-22)
-		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, channelNumberDA, XOP_CHANNEL_TYPE_DAC)
+		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, guiChannelNumber, fetchChanType)
 		if(!WaveExists(epochsFromLBN))
 			continue
 		endif
 
-		sprintf idPart, "_sweep%d_chan%d_type%d_HS%d", sweepNumber, channelNumber, channelType, headstage
+		sprintf idPart, "_sweep%d_chan%d_type%d_HS%.0g", sweepNumber, guiChannelNumber, channelType, headstage
 		sprintf name, "epochs_%s", idPart
-
 		Duplicate/O/T epochsFromLBN, dfr:$name/Wave=epochs
 
 		yLevelOffset = 10
