@@ -839,7 +839,7 @@ Function/WAVE GetNIDAQChannelWave(device, channel, mode)
 	return wv
 End
 
-static Constant EPOCHS_WAVE_VERSION = 2
+static Constant EPOCHS_WAVE_VERSION = 3
 
 /// @brief Return the epochs text wave
 ///
@@ -854,8 +854,11 @@ static Constant EPOCHS_WAVE_VERSION = 2
 /// - 2: Tags
 /// - 3: Tree Level
 ///
-/// Layers:
+/// Layers: index the GUI channel numbers
 /// - NUM_DA_TTL_CHANNELS
+///
+/// Chunks: index the XOP channel types
+/// - XOP_CHANNEL_TYPE_COUNT
 ///
 /// ## Version History
 ///
@@ -863,6 +866,7 @@ static Constant EPOCHS_WAVE_VERSION = 2
 ///
 /// - 1: Initial version
 /// - 2: Renamed column `Name` to `Tags`
+/// - 3: Added chunks dimension indexing over channel types
 ///
 /// ### Tags format
 ///
@@ -888,18 +892,30 @@ Function/Wave GetEpochsWave(device)
 	if(ExistsWithCorrectLayoutVersion(wv, EPOCHS_WAVE_VERSION))
 	   return wv
 	elseif(WaveExists(wv))
-	   Redimension/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS) wv
+		if(WaveVersionIsSmaller(wv, 2))
+		   Redimension/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS) wv
+		endif
+		if(WaveVersionIsSmaller(wv, 3))
+		   Redimension/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS, XOP_CHANNEL_TYPE_COUNT) wv
+		   wv[][][][XOP_CHANNEL_TYPE_DAC] = wv[p][q][r][0]
+		   wv[][][][0] = ""
+		endif
 	else
-	  Make/T/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS) dfr:EpochsWave/Wave=wv
+	  Make/T/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS, XOP_CHANNEL_TYPE_COUNT) dfr:EpochsWave/Wave=wv
 	endif
 
-	SetEpochsDimensionLabels(wv)
+	SetEpochsDimensionLabelsSingleChannel(wv)
+
+	SetDimLabel CHUNKS, XOP_CHANNEL_TYPE_ADC, ADC, wv
+	SetDimLabel CHUNKS, XOP_CHANNEL_TYPE_DAC, DAC, wv
+	SetDimLabel CHUNKS, XOP_CHANNEL_TYPE_TTL, TTL, wv
+
 	SetWaveVersion(wv, EPOCHS_WAVE_VERSION)
 
 	return wv
 End
 
-threadsafe Function SetEpochsDimensionLabels(WAVE wv)
+threadsafe Function SetEpochsDimensionLabelsSingleChannel(WAVE wv)
 	SetDimLabel COLS, EPOCH_COL_STARTTIME, StartTime, wv
 	SetDimLabel COLS, EPOCH_COL_ENDTIME, EndTime, wv
 	SetDimLabel COLS, EPOCH_COL_TAGS, Tags, wv

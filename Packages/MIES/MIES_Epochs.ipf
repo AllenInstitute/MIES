@@ -915,7 +915,7 @@ threadsafe Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualVa
 	WAVE/T settingText = setting
 	WAVE/T epochs = EP_EpochStrToWave(settingText[index])
 	ASSERT_TS(DimSize(epochs, ROWS) > 0, "Invalid epochs")
-	SetEpochsDimensionLabels(epochs)
+	SetEpochsDimensionLabelsSingleChannel(epochs)
 	epochs[][%Tags] = RemoveEnding(epochs[p][%Tags], ";") + ";"
 
 	return epochs
