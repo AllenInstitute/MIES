@@ -8,12 +8,12 @@
 /// Adding new files:
 /// - Assuming your new file is name `abcd.pxp`
 /// - Copy `abcd.pxp` into the folder `Packages/tests/HistoricData/input`
-/// - Adapt `files`/`sizes` in GetFiles()
+/// - Adapt `files` in GetHistoricDataFiles()
 /// - Verify that the test passes
 /// - Compress the file by calling CompressFile("abcd.pxp"), takes a long time, so do something else in-between
-/// - Upload `abcd.pxp.zst` to the FTP (Account: `allentestdata`, ask Thomas if in doubt)
+/// - Upload `abcd.pxp.zst` to the FTP into the folder `MIES-HistoricData` (Account: `allentestdata`, ask Thomas if in doubt)
 /// - Rename `abcd.pxp` to `abcd.pxp.tmp` in `Packages/tests/HistoricData/input`
-/// - Verify that the test works, now with downloading and decompression the file
+/// - Verify that the test works, now with downloading and decompression of the file
 
 // Data stored in this folder is subject to https://alleninstitute.org/terms-of-use
 static StrConstant HTTP_FOLDER_URL = "https://www.byte-physics.de/Downloads/allensdk-test-data/MIES-HistoricData/"
@@ -130,7 +130,7 @@ End
 Function/S GetInputPath()
 
 	PathInfo home
-	CHECK(V_Flag)
+	ASSERT(V_flag, "Not a saved experiment")
 
 	return S_path + "input:"
 End
@@ -177,8 +177,8 @@ Function/WAVE GetHistoricDataFiles()
 	                     "Chat-IRES-Cre-neo;Ai14-582723.15.10.01.pxp",        \
 	                     "Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp",           \
 	                     "Sst-IRES-Cre;Ai14-554002.08.06.02.pxp",             \
-								"Sst-IRES-Cre;Th-P2A-FlpO;Ai65-561491.09.09.02.pxp", \
-								"epoch_clipping_2022_03_08_140256.pxp"}
+	                     "Sst-IRES-Cre;Th-P2A-FlpO;Ai65-561491.09.09.02.pxp", \
+	                     "epoch_clipping_2022_03_08_140256.pxp"}
 
 	/// @TODO use hashes to verify files once IP supports strings > 2GB
 

@@ -4,7 +4,7 @@
 #
 # Expectations:
 # - Github OAuth token is provided as the first argument. (automatically set when running on CI)
-# - The release and installer packages are in the working tree root
+# - The installer package is in the working tree root
 # - Either the main or a release branch are checked out
 
 set -e
@@ -40,14 +40,9 @@ fi
 
 cd $top_level
 
-zipfile=$(ls Release_*.zip)
 installerfile=$(find -name "MIES-Release*.exe")
 
-if [ ! -f $zipfile ]
-then
-  echo "File $zipfile does not exist"
-  exit 1
-elif [ ! -f $installerfile ]
+if [ ! -f $installerfile ]
 then
   echo "File $installerfile does not exist"
   exit 1
@@ -78,4 +73,4 @@ esac
 
 echo "Upload release for tag: $tag"
 
-./tools/upload-github-release-asset-helper.sh github_api_token=$github_token owner=AllenInstitute repo=MIES tag=$tag filename=$zipfile filename=$installerfile
+./tools/upload-github-release-asset-helper.sh github_api_token=$github_token owner=AllenInstitute repo=MIES tag=$tag filename=$installerfile

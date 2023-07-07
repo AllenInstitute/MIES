@@ -172,7 +172,7 @@ static Function ScreenShotsForDataBrowser()
 	DoUpdate
 	SavePICT/E=-5/P=$path/Win=$sweepControl/SNAP=1/O as "Browser-SweepControl.png"
 
-	settingsHistoryPanel = DB_GetSettingsHistoryPanel(browser)
+	settingsHistoryPanel = LBV_GetSettingsHistoryPanel(browser)
 
 	PGC_SetAndActivateControl(settingsHistoryPanel, "button_clearlabnotebookgraph")
 
@@ -181,7 +181,7 @@ static Function ScreenShotsForDataBrowser()
 	pa.eventCode = 2
 
 	pa.popStr = "Stim Scale Factor"
-	DB_PopMenuProc_LabNotebook(pa)
+	LBV_PopMenuProc_LabNotebookAndResults(pa)
 
 	DoUpdate
 	SavePICT/E=-5/P=$path/Win=$settingsHistoryPanel/SNAP=1/O as "Browser-SettingsHistory.png"

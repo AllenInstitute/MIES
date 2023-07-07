@@ -16,7 +16,6 @@ Table of Contents
   todo
   deprecated
   CalculateTPLikePropsFromSweep
-  SweepFormula
   IPNWB/index
   TPAnalysis_algorithm
   asyncframework
