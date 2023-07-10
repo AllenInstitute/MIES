@@ -633,7 +633,6 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox Check_Settings_BackgrndDataAcq WIN = $device, value= 1
 
 	CheckBox Check_Settings_InsertTP WIN = $device,value= 1
-	CheckBox Check_Settings_UnassocDADoTP WIN = $device,value= 1
 	CheckBox Check_DataAcq_Get_Set_ITI WIN = $device, value = 1
 	CheckBox check_Settings_TP_SaveTP WIN = $device, value = 0
 	CheckBox check_settings_TP_show_steady WIN = $device, value = 1
@@ -3622,7 +3621,6 @@ Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
 		case 2:
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			device = cba.win
-			AdaptDependentControls(device, "Check_Settings_UnassocDADoTP", cba.checked, CHECKBOX_SELECTED, DEP_CTRLS_INVERT)
 			DAP_UpdateOnsetDelay(cba.win)
 		break
 	endswitch

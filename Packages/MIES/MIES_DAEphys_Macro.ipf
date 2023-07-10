@@ -4331,16 +4331,6 @@ Window DA_Ephys() : Panel
 	CheckBox Radio_ClampMode_AllIClamp,userdata(Config_RestorePriority)="29"
 	CheckBox Radio_ClampMode_AllIClamp,userdata(Config_NiceName)="Headstage_All_IC"
 	CheckBox Radio_ClampMode_AllIClamp,value=0,mode=1
-	CheckBox Check_Settings_UnassocDADoTP,pos={192.00,84.00},size={95.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
-	CheckBox Check_Settings_UnassocDADoTP,title="TP on unassoc."
-	CheckBox Check_Settings_UnassocDADoTP,help={"Insert test pulse on unassociated DA channels"}
-	CheckBox Check_Settings_UnassocDADoTP,userdata(tabnum)="5"
-	CheckBox Check_Settings_UnassocDADoTP,userdata(tabcontrol)="ADC"
-	CheckBox Check_Settings_UnassocDADoTP,userdata(ResizeControlsInfo)=A"!!,G<!!#?c!!#?-!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox Check_Settings_UnassocDADoTP,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox Check_Settings_UnassocDADoTP,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_UnassocDADoTP,userdata(Config_RestorePriority)="60"
-	CheckBox Check_Settings_UnassocDADoTP,value=1
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
