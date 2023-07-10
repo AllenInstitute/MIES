@@ -934,7 +934,6 @@ StrConstant STIMSET_SCALE_FACTOR_KEY  = "Stim Scale Factor"
 StrConstant STIMSET_WAVE_NOTE_KEY     = "Stim Wave Note"
 StrConstant EPOCHS_ENTRY_KEY          = "Epochs"
 StrConstant CLAMPMODE_ENTRY_KEY       = "Clamp Mode"
-StrConstant TPONUNASSOCDA_ENTRY_KEY   = "Global TP insert on unassociated DA channels"
 StrConstant TP_AMPLITUDE_VC_ENTRY_KEY = "TP Amplitude VC"
 StrConstant TP_AMPLITUDE_IC_ENTRY_KEY = "TP Amplitude IC"
 

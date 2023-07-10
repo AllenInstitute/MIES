@@ -2248,7 +2248,6 @@ End
 /// - 57: Save amplifier settings
 /// - 58: Require amplifier
 /// - 59: Skip Ahead
-/// - 60: Global TP insert on unassociated DA channels
 Function/Wave GetSweepSettingsKeyWave(device)
 	string device
 
@@ -2267,9 +2266,9 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 61) wv
+		Redimension/N=(-1, 60) wv
 	else
-		Make/T/N=(3, 61) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 60) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -2517,10 +2516,6 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Parameter][59] = "Skip Ahead"
 	wv[%Units][59]     = ""
 	wv[%Tolerance][59] = "1"
-
-	wv[%Parameter][60] = TPONUNASSOCDA_ENTRY_KEY
-	wv[%Units][60]     = ""
-	wv[%Tolerance][60] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

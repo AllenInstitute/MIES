@@ -140,7 +140,7 @@ Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 
 		testPulseLength = s.testPulseLength * s.samplingInterval
 		if(s.globalTPInsert)
-			if(!(isUnAssociated && !s.doTPonUnassocDA))
+			if(!isUnAssociated)
 				// space in ITCDataWave for the testpulse is allocated via an automatic increase
 				// of the onset delay
 				EP_AddEpochsFromTP(device, channel, s.baselinefrac, testPulseLength, 0, s.DACAmp[i][%TPAMP])

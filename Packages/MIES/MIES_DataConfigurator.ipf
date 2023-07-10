@@ -1040,7 +1040,6 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 	DC_DocumentChannelProperty(device, "Save amplifier settings", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "check_Settings_SaveAmpSettings"))
 	DC_DocumentChannelProperty(device, "Require amplifier", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn"))
 	DC_DocumentChannelProperty(device, "Skip Ahead", INDEP_HEADSTAGE, NaN, NaN, var=s.skipAhead)
-	DC_DocumentChannelProperty(device, TPONUNASSOCDA_ENTRY_KEY, INDEP_HEADSTAGE, NaN, NaN, var=s.doTPonUnassocDA)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1258,7 +1257,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						  SIGNED_INT_16BIT_MIN,                                                        \
 						  SIGNED_INT_16BIT_MAX); AbortOnRTE
 
-					if(s.globalTPInsert && !(isUnAssociated && !s.doTPonUnassocDA))
+					if(s.globalTPInsert && !isUnAssociated)
 						// space in ITCDataWave for the testpulse is allocated via an automatic increase
 						// of the onset delay
 						MultiThread ITCDataWave[0, s.testPulseLength - 1][i] =                        \
@@ -1282,7 +1281,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						  NI_DAC_MIN,                                                                                          \
 						  NI_DAC_MAX); AbortOnRTE
 
-					if(s.globalTPInsert && !(isUnAssociated && !s.doTPonUnassocDA))
+					if(s.globalTPInsert && !isUnAssociated)
 						// space in ITCDataWave for the testpulse is allocated via an automatic increase
 						// of the onset delay
 						MultiThread NIChannel[0, s.testPulseLength - 1] = \
@@ -1317,7 +1316,6 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	s.distributedDAQOptPost = DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPost")
 	s.powerSpectrum         = DAG_GetNumericalValue(device, "check_settings_show_power")
 	s.skipAhead             = DAG_GetNumericalValue(device, "SetVar_DataAcq_skipAhead")
-	s.doTPonUnassocDA       = DAG_GetNumericalValue(device, "Check_Settings_UnassocDADoTP")
 
 	// MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
 	// whereas the source data generated waves for ITC min sample rate are at 200 kHz
