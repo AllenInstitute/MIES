@@ -1556,8 +1556,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
-	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront
-	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName
+	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
+	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info
 	string yFormula, yFormulasRemain
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor color
@@ -1734,7 +1734,26 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 						if(mod(max(yPoints, xPoints), splitTraces) == 0)
 							DebugPrint("Unmatched Data Alignment in ROWS.")
 						endif
+
 						for(i = 0; i < numTraces; i += 1)
+							if(WindowExists(win) && WhichListItem("bottom", AxisList(win)) >= 0)
+								info = AxisInfo(win, "bottom")
+							   isCategoryAxis = NumberByKey("ISCAT", info) == 1
+
+							   if(isCategoryAxis)
+									/// @todo workaround IP9 bug #4492, CATWAVEDF is empty
+							   		DFREF catDFR = $StringByKey("CWAVEDF", info)
+							   		WAVE/Z/SDFR=catDFR categoryWave = $StringByKey("CATWAVE", info)
+							   		ASSERT(WaveExists(categoryWave), "Expected category axis")
+
+							   		if(EqualWaves(categoryWave, wvX, EQWAVES_DATA))
+							   			// we can't, but also don't need, to append the same category axis again
+							   			// so let's just reuse the existing one
+							   			WAVE wvX = categoryWave
+							   		endif
+							   	endif
+							endif
+
 							SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
 							splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
 							splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
