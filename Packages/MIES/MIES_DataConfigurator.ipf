@@ -1418,7 +1418,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 			endif
 		else // unassoc channel
 			channelMode = NaN
-			s.DACAmp[i][%TPAMP] = 0.0
+			s.DACAmp[i][%TPAMP] = NaN
 		endif
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
