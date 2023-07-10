@@ -533,12 +533,15 @@ Structure DataConfigurationResult
 
 	/// Stimulus set name
 	WAVE/T setName
+	WAVE/T TTLsetName
 
 	/// Stimulus set wave (2D)
 	WAVE/WAVE stimSet
+	WAVE/WAVE TTLstimSet
 
 	/// @sa DC_CalculateStimsetLength()
 	WAVE/D setLength
+	WAVE/D TTLsetLength
 
 	/// Headstage of DAC if associated, `NaN` iff unassociated
 	WAVE/D headstageDAC
@@ -546,7 +549,9 @@ Structure DataConfigurationResult
 	/// @sa DC_CalculateChannelColumnNo()
 	/// @{
 	WAVE/D setColumn
+	WAVE/D TTLsetColumn
 	WAVE/D setCycleCount
+	WAVE/D TTLcycleCount
 	/// @}
 
 	/// Offset in points where the stimulus set starts in the DAQ data wave

@@ -876,7 +876,7 @@ End
 ///
 /// @sa GetLastSettingChannel
 threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE numericalValues, WAVE values, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
-	string entryName
+	string entryName, settingTTL
 	variable headstage, indep
 
 	switch(channelType)
@@ -885,6 +885,21 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 			break
 		case XOP_CHANNEL_TYPE_ADC:
 			entryName = "ADC"
+			break
+		case XOP_CHANNEL_TYPE_TTL:
+			settingTTL = CreateTTLChannelLBNKey(setting, channelNumber)
+			WAVE/Z settings = GetLastSetting(values, sweepNo, settingTTL, entrySourceType)
+			if(WaveExists(settings))
+				return [settings, INDEP_HEADSTAGE]
+			endif
+
+			WAVE/Z settings = GetLastSetting(values, sweepNo, setting, entrySourceType)
+			if(WaveExists(settings))
+				return [settings, INDEP_HEADSTAGE]
+			endif
+
+			return [$"", NaN]
+
 			break
 		default:
 			ASSERT_TS(0, "Unsupported channelType")
@@ -5530,6 +5545,18 @@ threadsafe Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
 	endif
 
 	return key
+End
+
+/// @brief Create a LBN key for TTL channels
+threadsafe Function/S CreateTTLChannelLBNKey(string entry, variable channelNumber)
+
+	if(IsNaN(channelNumber))
+		return "TTL " + entry
+	endif
+
+	sprintf entry, "TTL %s Channel %d", entry, channelNumber
+
+	return entry
 End
 
 /// @brief Check if the given labnotebook entry is from an unassociated DA/AD channel

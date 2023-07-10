@@ -829,8 +829,28 @@ static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP
 	endif
 End
 
+static Function DC_MakeTTLWave(string device, STRUCT DataConfigurationResult &s)
+
+	if(s.numTTLEntries == 0)
+		return NaN
+	endif
+
+	switch(s.hardwareType)
+		case HARDWARE_NI_DAC:
+			DC_NI_MakeTTLWave(device, s)
+			break
+		case HARDWARE_ITC_DAC:
+			DC_ITC_MakeTTLWave(device, s)
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type specified")
+	endswitch
+End
+
 static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurationResult &s)
-	variable i, startOffset, ttlIndex, singleSetLength, numRows
+
+	variable i, startOffset, ttlOffset, singleSetLength, bitMask
+	variable ITCRackZeroChecked
 
 	if(s.numTTLEntries == 0)
 		return NaN
@@ -838,48 +858,39 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 
 	// reset to the default value without distributedDAQ
 	startOffset = s.onSetDelay
-	ttlIndex = s.numDACEntries + s.numADCEntries
+	ttlOffset = s.numDACEntries + s.numADCEntries
 
 	WAVE config = GetDAQConfigWave(device)
 
 	switch(s.hardwareType)
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, s.dataAcqOrTP)
-
 			WAVE/WAVE TTLWaveNI = GetTTLWave(device)
-			DC_NI_MakeTTLWave(device)
 
-			numRows = DimSize(config, ROWS)
-			for(i = 0; i < numRows; i += 1)
-				if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
-					WAVE NIChannel = NIDataWave[ttlIndex]
-					WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
-					singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, device, DATA_ACQUISITION_MODE)
-					MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
-					limit(TTLWaveSingle[trunc(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
-					ttlIndex += 1
-				endif
+			for(i = 0; i < s.numTTLEntries; i += 1)
+				WAVE TTLWaveSingle = TTLWaveNI[config[i + ttlOffset][%ChannelNumber]]
+				singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, device, DATA_ACQUISITION_MODE)
+				WAVE NIChannel = NIDataWave[i + ttlOffset]
+				MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
+				limit(TTLWaveSingle[trunc(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
 			endfor
 			break
 		case HARDWARE_ITC_DAC:
 			WAVE ITCDataWave = GetDAQDataWave(device, s.dataAcqOrTP)
-
 			WAVE TTLWaveITC = GetTTLWave(device)
+			singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, device, DATA_ACQUISITION_MODE)
 
 			// Place TTL waves into ITCDataWave
-			if(DC_AreTTLsInRackChecked(device, RACK_ZERO))
-				DC_ITC_MakeTTLWave(device, RACK_ZERO)
-				singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, device, DATA_ACQUISITION_MODE)
-				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
-				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-				ttlIndex += 1
+			ITCRackZeroChecked = !!DC_AreTTLsInRackChecked(device, RACK_ZERO)
+			bitMask = 1 << NUM_ITC_TTL_BITS_PER_RACK - 1
+			if(ITCRackZeroChecked)
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset] = \
+				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))] & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 			endif
 
 			if(DC_AreTTLsInRackChecked(device, RACK_ONE))
-				DC_ITC_MakeTTLWave(device, RACK_ONE)
-				singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, device, DATA_ACQUISITION_MODE)
-				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
-				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset + ITCRackZeroChecked] = \
+				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))] >> NUM_ITC_TTL_BITS_PER_RACK & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 			endif
 			break
 	endswitch
@@ -1327,8 +1338,11 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	WAVE s.DACList = GetDACListFromConfig(config)
 	WAVE s.ADCList = GetADCListFromConfig(config)
 	WAVE s.TTLList = GetTTLListFromConfig(config)
+	s.numTTLEntries = DimSize(s.TTLList, ROWS)
 
-	s.numTTLEntries = DimSize(s.DACList, ROWS)
+	Make/D/FREE/N=(NUM_DA_TTL_CHANNELS) s.TTLsetLength, s.TTLsetColumn, s.TTLcycleCount
+	Make/T/FREE/N=(NUM_DA_TTL_CHANNELS) s.TTLsetName
+	Make/WAVE/FREE/N=(NUM_DA_TTL_CHANNELS) s.TTLstimSet
 
 	s.numDACEntries = DimSize(s.DACList, ROWS)
 	Make/D/FREE/N=(s.numDACEntries) s.insertStart, s.setLength, s.setColumn, s.headstageDAC, s.setCycleCount
@@ -1436,6 +1450,8 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 		endif
 	endfor
 
+	DC_SetupConfigurationTTLstimSets(device, s)
+
 	// for distributedDAQOptOv create temporary reduced input waves holding DAQ types channels only (removing TP typed channels from TPwhileDAQ), put results back to unreduced waves
 	if(s.distributedDAQOptOv && s.dataAcqOrTP == DATA_ACQUISITION_MODE)
 		Duplicate/FREE/WAVE s.stimSet, reducedStimSet
@@ -1513,6 +1529,31 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 			s.insertStart[] = s.onsetDelay
 		endif
 	endif
+End
+
+/// @brief fills in TTL stimset wave references in DataConfigurationResult structure
+///        needs: s.hardwareType, s.numXXXEntries fields
+static Function DC_SetupConfigurationTTLstimSets(string device, STRUCT DataConfigurationResult &s)
+
+	variable i, col, setCycleCount
+
+	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		if(!statusTTLFiltered[i])
+			continue
+		endif
+		s.TTLsetName[i] = allSetNames[i]
+		s.TTLstimSet[i] = WB_CreateAndGetStimSet(s.TTLsetName[i])
+		s.TTLsetLength[i] = DC_CalculateStimsetLength(s.TTLstimSet[i], device, DATA_ACQUISITION_MODE)
+
+		[col, setCycleCount] = DC_CalculateChannelColumnNo(device, s.TTLsetName[i], i, CHANNEL_TYPE_TTL)
+		s.TTLsetColumn[i] = col
+		s.TTLcycleCount[i] = setCycleCount
+	endfor
+
+	DC_MakeTTLWave(device, s)
 End
 
 /// @brief Document hardware type/name/serial number into the labnotebook
@@ -1676,11 +1717,17 @@ Function DC_DocumentChannelProperty(device, entry, headstage, channelNumber, cha
 	string ua_entry
 
 	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Exactly one of var or str has to be supplied")
+	ASSERT(!IsEmpty(entry), "Entry must be non-empty")
 
 	WAVE sweepDataLNB         = GetSweepSettingsWave(device)
 	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(device)
 	WAVE/T sweepDataLNBKey    = GetSweepSettingsKeyWave(device)
 	WAVE/T sweepDataTxTLNBKey = GetSweepSettingsTextKeyWave(device)
+
+	if(channelType == XOP_CHANNEL_TYPE_TTL)
+		ASSERT(headstage == INDEP_HEADSTAGE, "sweepNB entry for TTL must target INDEP_HEADSTAGE")
+		entry = CreateTTLChannelLBNKey(entry, channelNumber)
+	endif
 
 	if(!ParamIsDefault(var))
 		colData = FindDimLabel(sweepDataLNB, COLS, entry)
@@ -1741,174 +1788,121 @@ End
 /// @brief Combines the TTL stimulus sweeps across different TTL channels into a single wave
 ///
 /// @param device  panel title
-/// @param rackNo      Front TTL rack aka number of ITC devices. Only the ITC1600
-///                    has two racks, see @ref RackConstants. Rack number for all other devices is
-///                    #RACK_ZERO.
-static Function DC_ITC_MakeTTLWave(device, rackNo)
-	string device
-	variable rackNo
+/// @param s       DataConfigurationResult structure
+static Function DC_ITC_MakeTTLWave(string device, STRUCT DataConfigurationResult &s)
 
-	variable first, last, i, col, maxRows, lastIdx, bit, bits, setCycleCount
-	variable setLength, setChecksum
-
-	string set
-	string listOfSets = ""
-	string setSweepCounts = ""
-	string indexingEndStimset = ""
-	string stimSetWaveNote = ""
-	string stimSetchecksum = ""
-	string stimSetLength = ""
-	string setCycleCounts = ""
+	variable i, first, last, rackIndex, rackNo
+	variable bits, maxRows, lastIdx, bit
+	string rackLNBPrefix
 
 	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
-
-	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	WAVE/T allSetNamesIndexingEnd = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 
-	WAVE sweepDataLNB      = GetSweepSettingsWave(device)
-	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(device)
+	Make/FREE/D racks = {RACK_ZERO, RACK_ONE}
+	for(rackNo : racks)
+		if(DC_AreTTLsInRackChecked(device, rackNo))
+			bits = 0
+			HW_ITC_GetRackRange(rackNo, first, last)
+			Make/FREE/T/N=(NUM_ITC_TTL_BITS_PER_RACK) sets, setSweepCount, cycleCount
+			for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+				if(!statusTTLFiltered[i])
+					continue
+				endif
 
-	HW_ITC_GetRackRange(rackNo, first, last)
+				if(i >= first && i <= last)
+					maxRows = max(maxRows, DimSize(s.TTLstimSet[i], ROWS))
+					rackIndex = i - first
+					bits += 2^rackIndex
 
-	for(i = first; i <= last; i += 1)
+					setSweepCount[rackindex] = num2istr(s.TTLsetColumn[i])
+					cycleCount[rackindex] = num2istr(s.TTLcycleCount[i])
+					sets[rackIndex] = s.TTLsetName[i]
+				endif
+			endfor
+			rackLNBPrefix = SelectString(rackNo == RACK_ZERO, "rack one", "rack zero")
+			DC_DocumentChannelProperty(device, rackLNBPrefix + " bits", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, var=bits)
+			DC_DocumentChannelProperty(device, rackLNBPrefix + " stim sets", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(sets, ";"))
+			DC_DocumentChannelProperty(device, rackLNBPrefix + " set sweep counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(setSweepCount, ";"))
+			DC_DocumentChannelProperty(device, rackLNBPrefix + " set cycle counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(cycleCount, ";"))
+		endif
+	endfor
 
+	Make/FREE/T/N=(NUM_DA_TTL_CHANNELS) setLength, indexingEndStimSet, waveNote, checksum
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		if(!statusTTLFiltered[i])
-			listOfSets = AddListItem("", listOfSets, ";", inf)
 			continue
 		endif
 
-		set = allSetNames[i]
-		WAVE wv = WB_CreateAndGetStimSet(set)
-		maxRows = max(maxRows, DimSize(wv, ROWS))
-		bits += 2^(i - first)
-		listOfSets = AddListItem(set, listOfSets, ";", inf)
+		setLength[i] = num2istr(s.TTLsetLength[i])
+		indexingEndStimSet[i] = allSetNamesIndexingEnd[i]
+		waveNote[i] = URLEncode(note(s.TTLstimSet[i]))
+		checksum[i] = num2istr(WB_GetStimsetChecksum(s.TTLstimSet[i], s.TTLsetName[i], DATA_ACQUISITION_MODE))
 	endfor
+
+	DC_DocumentChannelProperty(device, "Stim set length", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(setLength, ";"))
+	DC_DocumentChannelProperty(device, "Indexing End stimset", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(indexingEndStimSet, ";"))
+	DC_DocumentChannelProperty(device, "Stimset wave note", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(waveNote, ";"))
+	DC_DocumentChannelProperty(device, "Stim Wave Checksum", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(checksum, ";"))
 
 	ASSERT(maxRows > 0, "Expected stim set of non-zero size")
 	WAVE TTLWave = GetTTLWave(device)
 	Redimension/N=(maxRows) TTLWave
 	FastOp TTLWave = 0
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-
-		if(!statusTTLFiltered[i])
-			if(i >= first && i <= last)
-				setSweepCounts = AddListItem("", setSweepCounts, ";", inf)
-				setCycleCounts = AddListItem("", setCycleCounts, ";", inf)
-			endif
-
-			indexingEndStimset = AddListItem("", indexingEndStimset, ";", inf)
-			stimSetWaveNote = AddListItem("", stimSetWaveNote, ";", inf)
-			stimSetChecksum = AddListItem("", stimSetChecksum, ";", inf)
-			stimSetLength = AddListItem("", stimSetLength, ";", inf)
-			continue
-		endif
-
-		set = allSetNames[i]
-		WAVE TTLStimSet = WB_CreateAndGetStimSet(set)
-
-		setLength = DimSize(TTLStimSet, ROWS)
-		setChecksum = WB_GetStimsetChecksum(TTLStimSet, set, DATA_ACQUISITION_MODE)
-
-		indexingEndStimset = AddListItem(allSetNamesIndexingEnd[i], indexingEndStimset, ";", inf)
-		stimSetWaveNote = AddListItem(URLEncode(note(TTLStimSet)), stimSetWaveNote, ";", inf)
-		stimSetChecksum = AddListItem(num2istr(setChecksum), stimSetChecksum, ";", inf)
-		stimSetLength = AddListItem(num2istr(setLength), stimSetLength, ";", inf)
-
-		if(i >= first && i <= last)
-			// part of this rack
-			[col, setCycleCount] = DC_CalculateChannelColumnNo(device, set, i, CHANNEL_TYPE_TTL)
-
-			lastIdx = setLength - 1
-			bit = 2^(i - first)
-			MultiThread TTLWave[0, lastIdx] += bit * TTLStimSet[p][col]
-			setSweepCounts = AddListItem(num2str(col), setSweepCounts, ";", inf)
-			setCycleCounts = AddListItem(num2str(setCycleCount), setCycleCounts, ";", inf)
+	for(rackNo : racks)
+		if(DC_AreTTLsInRackChecked(device, rackNo))
+			HW_ITC_GetRackRange(rackNo, first, last)
+			for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+				if(!statusTTLFiltered[i])
+					continue
+				endif
+				if(i >= first && i <= last)
+					bit = 1 << i
+					WAVE TTLStimSet = s.TTLstimSet[i]
+					lastIdx = DimSize(TTLStimSet, ROWS) - 1
+					MultiThread TTLWave[0, lastIdx] += bit * TTLStimSet[p][s.TTLsetColumn[i]]
+				endif
+			endfor
 		endif
 	endfor
-
-	if(rackNo == RACK_ZERO)
-		sweepDataLNB[0][%$"TTL rack zero bits"][INDEP_HEADSTAGE]                = bits
-		sweepDataTxTLNB[0][%$"TTL rack zero stim sets"][INDEP_HEADSTAGE]        = listOfSets
-		sweepDataTxTLNB[0][%$"TTL rack zero set sweep counts"][INDEP_HEADSTAGE] = setSweepCounts
-		sweepDataTxTLNB[0][%$"TTL rack zero set cycle counts"][INDEP_HEADSTAGE] = setCycleCounts
-	else
-		sweepDataLNB[0][%$"TTL rack one bits"][INDEP_HEADSTAGE]                = bits
-		sweepDataTxTLNB[0][%$"TTL rack one stim sets"][INDEP_HEADSTAGE]        = listOfSets
-		sweepDataTxTLNB[0][%$"TTL rack one set sweep counts"][INDEP_HEADSTAGE] = setSweepCounts
-		sweepDataTxTLNB[0][%$"TTL rack one set cycle counts"][INDEP_HEADSTAGE] = setCycleCounts
-	endif
-
-	sweepDataTxTLNB[0][%$"TTL Indexing End stimset"][INDEP_HEADSTAGE] = indexingEndStimset
-	sweepDataTxTLNB[0][%$"TTL Stimset wave note"][INDEP_HEADSTAGE]    = stimSetWaveNote
-	sweepDataTxTLNB[0][%$"TTL Stim Wave Checksum"][INDEP_HEADSTAGE]   = stimSetChecksum
-	sweepDataTxTLNB[0][%$"TTL Stim set length"][INDEP_HEADSTAGE]      = stimSetLength
 End
 
-static Function DC_NI_MakeTTLWave(device)
-	string device
+static Function DC_NI_MakeTTLWave(string device, STRUCT DataConfigurationResult &s)
 
-	variable col, i, setCycleCount, setLength, setChecksum
-	string set
-	string listOfSets = ""
-	string setSweepCounts = ""
-	string channels = ""
-	string indexingEndStimset = ""
-	string stimSetWaveNote = ""
-	string stimSetChecksum = ""
-	string stimSetLength = ""
-	string setCycleCounts = ""
+	variable i
 
 	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
-	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	WAVE/T allSetNamesIndexingEnd = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 	WAVE/WAVE TTLWave = GetTTLWave(device)
 
-	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(device)
-
+	Make/FREE/T/N=(NUM_DA_TTL_CHANNELS) setLength, setName, setColumn, cycleCount, channels, indexingEndStimSet, waveNote, checksum
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-
 		if(!statusTTLFiltered[i])
-			listOfSets = AddListItem("", listOfSets, ";", inf)
-			setSweepCounts = AddListItem("", setSweepCounts, ";", inf)
-			setCycleCounts = AddListItem("", setCycleCounts, ";", inf)
-			channels = AddListItem("", channels, ";", inf)
-			indexingEndStimset = AddListItem("", indexingEndStimset, ";", inf)
-			stimSetWaveNote = AddListItem("", stimSetWaveNote, ";", inf)
-			stimSetChecksum = AddListItem("", stimSetChecksum, ";", inf)
-			stimSetLength = AddListItem("", stimSetLength, ";", inf)
 			continue
 		endif
 
-		set = allSetNames[i]
-		WAVE TTLStimSet = WB_CreateAndGetStimSet(set)
-		[col, setCycleCount] = DC_CalculateChannelColumnNo(device, set, i, CHANNEL_TYPE_TTL)
+		setLength[i] = num2istr(s.TTLsetLength[i])
+		setName[i] = s.TTLsetName[i]
+		setColumn[i] = num2istr(s.TTLsetColumn[i])
+		cycleCount[i] = num2istr(s.TTLcycleCount[i])
+		channels[i] = num2istr(i)
+		indexingEndStimSet[i] = allSetNamesIndexingEnd[i]
+		waveNote[i] = note(s.TTLstimSet[i])
+		checksum[i] = num2istr(WB_GetStimsetChecksum(s.TTLstimSet[i], s.TTLsetName[i], DATA_ACQUISITION_MODE))
 
-		setLength = DimSize(TTLStimSet, ROWS)
-		setChecksum = WB_GetStimsetChecksum(TTLStimSet, set, DATA_ACQUISITION_MODE)
-
-		listOfSets = AddListItem(set, listOfSets, ";", inf)
-		setSweepCounts = AddListItem(num2str(col), setSweepCounts, ";", inf)
-		setCycleCounts = AddListItem(num2str(setCycleCount), setCycleCounts, ";", inf)
-		channels = AddListItem(num2str(i), channels, ";", inf)
-		indexingEndStimset = AddListItem(allSetNamesIndexingEnd[i], indexingEndStimset, ";", inf)
-		stimSetWaveNote = AddListItem(URLEncode(note(TTLStimSet)), stimSetWaveNote, ";", inf)
-		stimSetChecksum = AddListItem(num2istr(setChecksum), stimSetChecksum, ";", inf)
-		stimSetLength = AddListItem(num2istr(setLength), stimSetLength, ";", inf)
-
-		Make/FREE/B/U/N=(setLength) TTLWaveSingle
-		MultiThread TTLWaveSingle[] = TTLStimSet[p][col]
+		WAVE TTLStimSet = s.TTLstimSet[i]
+		Make/FREE/B/U/N=(DimSize(TTLStimSet, ROWS)) TTLWaveSingle
+		MultiThread TTLWaveSingle[] = TTLStimSet[p][s.TTLsetColumn[i]]
 		TTLWave[i] = TTLWaveSingle
 	endfor
 
-	sweepDataTxTLNB[0][%$"TTL channels"][INDEP_HEADSTAGE]             = channels
-	sweepDataTxTLNB[0][%$"TTL stim sets"][INDEP_HEADSTAGE]            = listOfSets
-	sweepDataTxTLNB[0][%$"TTL set sweep counts"][INDEP_HEADSTAGE]     = setSweepCounts
-	sweepDataTxTLNB[0][%$"TTL set cycle counts"][INDEP_HEADSTAGE]     = setCycleCounts
-	sweepDataTxTLNB[0][%$"TTL Indexing End stimset"][INDEP_HEADSTAGE] = indexingEndStimset
-	sweepDataTxTLNB[0][%$"TTL Stimset wave note"][INDEP_HEADSTAGE]    = stimSetWaveNote
-	sweepDataTxTLNB[0][%$"TTL Stim Wave Checksum"][INDEP_HEADSTAGE]   = stimSetChecksum
-	sweepDataTxTLNB[0][%$"TTL Stim set length"][INDEP_HEADSTAGE]      = stimSetLength
+	DC_DocumentChannelProperty(device, "Stim set length", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(setLength, ";"))
+	DC_DocumentChannelProperty(device, "channels", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(channels, ";"))
+	DC_DocumentChannelProperty(device, "stim sets", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(setName, ";"))
+	DC_DocumentChannelProperty(device, "set sweep counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(setColumn, ";"))
+	DC_DocumentChannelProperty(device, "set cycle counts", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(cycleCount, ";"))
+	DC_DocumentChannelProperty(device, "Indexing End stimset", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(indexingEndStimSet, ";"))
+	DC_DocumentChannelProperty(device, "Stimset wave note", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(waveNote, ";"))
+	DC_DocumentChannelProperty(device, "Stim Wave Checksum", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(checksum, ";"))
 End
 
 /// @brief Returns column number/step of the stimulus set, independent of the times the set is being cycled through

@@ -716,13 +716,8 @@ static Function Test_GetHeadstageForChannel()
 	CHECK_EQUAL_VAR(hs, NaN)
 
 	channel = 6
-	try
-		hs = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_TTL, channel, DATA_ACQUISITION_MODE); AbortOnRTE
-		FAIL()
-	catch
-		PASS()
-		ClearRTError()
-	endtry
+	hs = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_TTL, channel, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(hs, INDEP_HEADSTAGE)
 	hs = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_DAC, channel, TEST_PULSE_MODE)
 	CHECK_EQUAL_VAR(hs, NaN)
 	hs = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_ADC, channel, UNKNOWN_MODE)
