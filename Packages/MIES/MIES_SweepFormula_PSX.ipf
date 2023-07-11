@@ -634,6 +634,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataFiltOff, WAVE psxEvent, variable
 
 	ChangeFreeWaveName(fit, "expoffset_fit_event_" + num2str(eventIndex))
 
+	ASSERT(WaveExists(fit), "Expected fit wave")
 	eventFit[eventIndex] = fit
 	psxEvent[eventIndex][%$"Fit result"] = 1
 	psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_UNDET
