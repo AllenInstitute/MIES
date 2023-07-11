@@ -65,6 +65,7 @@ static Function/WAVE CreateEventWaveInComboFolder_IGNORE([variable comboIndex])
 	JWN_CreatePath(psxEvent, SF_META_USER_GROUP + "Parameters/psx")
 	JWN_SetStringInWaveNote(psxEvent, SF_META_USER_GROUP + "Parameters/psx/id", "myId")
 	JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, "fake combo key")
+	JWN_CreatePath(psxEvent, SF_META_USER_GROUP + "Parameters/psxRiseTime")
 
 	win = GetCurrentWindow()
 	userData =  MIES_PSX#PSX_GetUserDataForWorkingFolder()
@@ -440,7 +441,7 @@ static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 
 	variable jsonID
 
-	CHECK_EQUAL_VAR(DimSize(psxEvent, COLS), 13) // test needs update if that fails
+	CHECK_EQUAL_VAR(DimSize(psxEvent, COLS), 14) // test needs update if that fails
 
 	psxEvent[][%index]                   = p
 	psxEvent[][%dc_peak_time]            = 100 * p
@@ -452,6 +453,7 @@ static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 	psxEvent[][%i_amp]                   = p == 0 ? NaN : 10 * p
 	psxEvent[][%isi]                     = 1000 * p
 	psxEvent[][%tau]                     = 1e-6 * p
+	psxEvent[][%$"Rise Time"]            = p == 0 ? NaN : 0.1 * p
 	// PSX_ACCEPT:1
 	// PSX_REJECT:2
 	// PSX_UNDET: 4
@@ -468,6 +470,7 @@ static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 	JSON_AddTreeObject(jsonID, "/User/Parameters/psx")
 	JSON_SetString(jsonID, "/User/Parameters/psx/id", id)
 	JSON_SetString(jsonID, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
+	JSON_AddTreeObject(jsonID, "/User/Parameters/psxRiseTime")
 	JWN_SetWaveNoteFromJSON(psxEvent, jsonID)
 End
 
@@ -585,8 +588,20 @@ Function/WAVE StatsTest_GetInput()
 	JWN_SetWaveInWaveNote(input, "/xValues", {1, 3, 5, 7, 9})
 	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
 
+	// wv8
+	Duplicate/FREE/T template, wv9
+	WAVE/T input = wv9
+
+	input[%prop]     = "risetime"
+	input[%state]    = "undetermined"
+	input[%postProc] = "nothing"
+
+	JWN_SetWaveInWaveNote(input, "/results", {0.2, 0.6, 0.9})
+	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
+
 	// end
-	Make/FREE/WAVE results = {wv0, wv1 , wv2, wv3, wv4, wv5, wv6, wv7, wv8}
+	Make/FREE/WAVE results = {wv0, wv1 , wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9}
 
 	return results
 End
@@ -1046,6 +1061,11 @@ static Function TestOperationPSX()
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX)
 	CHECK_WAVE(params, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(params, ROWS), 5)
+
+	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX_RISETIME)
+	CHECK_WAVE(params, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(params, ROWS), 2)
+
 	JSON_Release(jsonID)
 End
 
@@ -2599,4 +2619,63 @@ static Function TestBlockIndexLogic()
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
 	Make/FREE/T dispTracesRef = {"T000001"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+End
+
+static Function [variable lowerThreshold, variable upperThreshold] TestRiseTimeContainer(WAVE/WAVE dataWref)
+
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
+	WAVE/Z data = dataWref[0]
+	CHECK_WAVE(data, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 2)
+
+	upperThreshold = data[%$"Upper Threshold"]
+	CHECK(BetweenZeroAndOneExc(upperThreshold))
+	lowerThreshold = data[%$"Lower Threshold"]
+	CHECK(BetweenZeroAndOneExc(lowerThreshold))
+
+	return [lowerThreshold, upperThreshold]
+End
+
+static Function TestOperationRiseTime()
+
+	string win, device, str
+	variable lowerThreshold, upperThreshold
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	str = "psxRiseTime()"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	[lowerThreshold, upperThreshold] = TestRiseTimeContainer(dataWref)
+	CHECK_EQUAL_VAR(lowerThreshold, 0.2)
+	CHECK_EQUAL_VAR(upperThreshold, 0.8)
+
+	str = "psxRiseTime(10)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	[lowerThreshold, upperThreshold] = TestRiseTimeContainer(dataWref)
+	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
+	CHECK_EQUAL_VAR(upperThreshold, 0.8)
+
+	str = "psxRiseTime(10, 90)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	[lowerThreshold, upperThreshold] = TestRiseTimeContainer(dataWref)
+	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
+	CHECK_EQUAL_VAR(upperThreshold, 0.9)
+
+	// checks parameters
+	try
+		str = "psxRiseTime(110, 90)"
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		str = "psxRiseTime(10, -10)"
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
 End

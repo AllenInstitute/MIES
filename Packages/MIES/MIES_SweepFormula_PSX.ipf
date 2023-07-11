@@ -135,6 +135,13 @@ static Constant PSX_DEFAULT_MAX_TAU_FACTOR = 10
 
 static StrConstant PSX_PANEL_MACRO = "PSXPanel"
 
+/// @name Different ways to derive cache key from the parameters JSON
+/// @anchor PSXCacheKeyType
+/// @{
+static Constant PSX_CACHE_KEY_EVENTS   = 0x1
+static Constant PSX_CACHE_KEY_RISETIME = 0x2
+/// @}
+
 Menu "GraphMarquee"
 	"PSX: Accept Event && Fit", /Q, PSX_MouseEventSelection(PSX_ACCEPT, PSX_STATE_EVENT | PSX_STATE_FIT)
 	"PSX: Reject Event && Fit", /Q, PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_EVENT | PSX_STATE_FIT)
@@ -671,9 +678,9 @@ End
 /// @brief Implementation of psx operation
 ///
 /// @return 1 if data could be extracted, zero if not
-static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, string psxParameters, string id, variable peakThresh, variable filterLow, variable filterHigh, variable maxTauFactor, variable kernelAmp, variable readIndex, variable writeIndex, WAVE/WAVE output)
+static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, variable parameterJSONID, string id, variable peakThresh, variable filterLow, variable filterHigh, variable maxTauFactor, WAVE riseTimeParams, variable kernelAmp, variable readIndex, variable writeIndex, WAVE/WAVE output)
 
-	string comboKey, key, psxOperationKey
+	string comboKey, key, psxOperationKey, psxParametersEvents
 
 	key = PSX_GenerateKey("psxKernelFFT", readIndex)
 	WAVE psxKernelFFT = psxKernelDataset[%$key]
@@ -684,7 +691,8 @@ static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, stri
 	[WAVE selectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
 	comboKey = PSX_GenerateComboKey(graph, selectData, range)
 
-	psxOperationKey = CA_PSXOperationKey(comboKey, psxParameters)
+	psxParametersEvents = PSX_GetPSXParameters(parameterJSONID, PSX_CACHE_KEY_EVENTS)
+	psxOperationKey = CA_PSXOperationKey(comboKey, psxParametersEvents)
 	WAVE/WAVE/Z psxOperationFromCache = CA_TryFetchingEntryFromCache(psxOperationKey)
 
 	if(WaveExists(psxOperationFromCache))
@@ -695,8 +703,6 @@ static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, stri
 		WAVE peakY                  = psxOperationFromCache[%peakY]
 		WAVE psxEvent               = psxOperationFromCache[%psxEvent]
 		WAVE eventFit               = psxOperationFromCache[%eventFit]
-
-		UpgradePSXEventWave(psxEvent)
 	else
 		[WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] = PSX_Analysis(sweepData, psxKernelFFT, filterLow, filterHigh, writeIndex)
 
@@ -732,7 +738,7 @@ static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, stri
 		CA_StoreEntryIntoCache(psxOperationKey, psxOperation)
 	endif
 
-	WAVE/Z psxEventFromCache = PSX_LoadEventsFromCache(comboKey, psxParameters)
+	WAVE/Z psxEventFromCache = PSX_LoadEventsFromCache(comboKey, psxParametersEvents)
 
 	if(WaveExists(psxEventFromCache))
 		WAVE psxEvent = psxEventFromCache
@@ -746,6 +752,13 @@ static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, stri
 			WAVE psxEvent = psxEventFromResults
 		endif
 	endif
+
+	UpgradePSXEventWave(psxEvent)
+
+	WAVE riseTime = PSX_CalculateRiseTime(psxEvent, sweepDataFiltOff, parameterJsonID, riseTimeParams[%$"Lower Threshold"], riseTimeParams[%$"Upper Threshold"])
+	ASSERT(DimSize(riseTime, ROWS) == DimSize(psxEvent, ROWS), "Unmatched number of rows for rise time")
+	psxEvent[][%$"Rise Time"] = riseTime[p]
+	WaveClear riseTime
 
 	WAVE/T labels = ListToTextWave(PSX_EVENT_DIMENSION_LABELS, ";")
 	ASSERT(DimSize(labels, ROWS) == PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY, "Mismatched label wave")
@@ -842,15 +855,45 @@ end
 /// @brief Return the data/index/marker/comboKeys of the events matching the given state and property
 static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] PSX_GetStatsResults(WAVE/WAVE allEvents, variable state, string prop)
 
-	string stateType
+	string stateType, propLabel
 	variable numEntries, hasData
 
-	// use the correct event/fit state for the property
 	strswitch(prop)
+		case "amp":
+			propLabel = "i_amp"
+			break
+		case "xpos":
+			propLabel = "dc_peak_time"
+			break
+		case "xinterval":
+			propLabel = "isi"
+			break
+		case "tau":
+			propLabel = "tau"
+			break
+		case "estate":
+			propLabel = "Event manual QC call"
+			break
+		case "fstate":
+			propLabel = "Fit manual QC call"
+			break
+		case "fitresult":
+			propLabel = "Fit result"
+			break
+		case "risetime":
+			propLabel = "Rise Time"
+			break
+		default:
+			ASSERT(0, "Impossible prop")
+	endswitch
+
+	// use the correct event/fit state for the property
+	strswitch(propLabel)
 		case "i_amp":
 		case "dc_peak_time":
 		case "isi":
 		case "Event manual QC call":
+		case "Rise Time":
 			stateType = "Event manual QC call"
 			break
 		case "Fit result":
@@ -859,7 +902,7 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 			stateType = "Fit manual QC call"
 			break
 		default:
-			ASSERT(0, "Unknown prop")
+			ASSERT(0, "Unknown propLabel")
 	endswitch
 
 	Make/FREE/N=0 allEventIndex, allMarkers
@@ -881,11 +924,11 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 
 		Redimension/N=(numEntries) results, marker, eventIndex, comboKeys
 
-		if(!cmpstr(prop, "isi") && numEntries >= 2)
+		if(!cmpstr(propLabel, "isi") && numEntries >= 2)
 			// recalculate the isi as that might have changed due to in-between events being not selected
 			Multithread results[0, numEntries - 1] = events[indizes[p]][%dc_peak_time] - (p >= 1 ? events[indizes[p - 1]][%dc_peak_time] : NaN)
 		else
-			Multithread results[] = events[indizes[p]][%$prop]
+			Multithread results[] = events[indizes[p]][%$propLabel]
 		endif
 
 		Multithread eventIndex[] = events[indizes[p]][%index]
@@ -979,7 +1022,7 @@ End
 /// @brief Helper function of the `psxStats` operation
 static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeParam, WAVE selectData, string prop, string stateAsStr, string postProc)
 
-	string propLabel, propLabelAxis, comboKey
+	string propLabelAxis, comboKey
 	variable numRows, numCols, i, j, k, index, sweepNo, chanNr, chanType, state, numRanges, lowerBoundary, upperBoundary, temp, err
 	variable refMarker, idx
 
@@ -1054,32 +1097,28 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 
 			strswitch(prop)
 				case "amp":
-					propLabel     = "i_amp"
 					propLabelAxis = "Amplitude" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_Y_DATA_UNIT) + ")"
 					break
 				case "xpos":
-					propLabel     = "dc_peak_time"
 					propLabelAxis = "Event time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 					break
 				case "xinterval":
-					propLabel     = "isi"
 					propLabelAxis = "Event interval" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 					break
 				case "tau":
-					propLabel     = "tau"
 					propLabelAxis = "Decay tau" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 					break
 				case "estate":
-					propLabel     = "Event manual QC call"
 					propLabelAxis = "Event manual QC" + " (enum)"
 					break
 				case "fstate":
-					propLabel     = "Fit manual QC call"
 					propLabelAxis = "Fit manual QC" + " (enum)"
 					break
 				case "fitresult":
-					propLabel     = "Fit result"
 					propLabelAxis = "Fit result" + " (0/1)"
+					break
+				case "risetime":
+					propLabelAxis = "Rise time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
 					break
 				default:
 					ASSERT(0, "Impossible prop")
@@ -1093,7 +1132,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 
 			for(state : allStates)
 
-				[WAVE resultsRaw, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] = PSX_GetStatsResults(allEvents, state, propLabel)
+				[WAVE resultsRaw, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] = PSX_GetStatsResults(allEvents, state, prop)
 
 				if(!WaveExists(resultsRaw))
 					continue
@@ -1239,6 +1278,82 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 	endswitch
 
 	return output
+End
+
+static Function/WAVE PSX_CalculateRiseTime(WAVE psxEvent, WAVE sweepDataFiltOff, variable parameterJsonID, variable lowerThreshold, variable upperThreshold)
+
+	string psxParameters, comboKey, cacheKey
+	variable numEvents
+
+	psxParameters = PSX_GetPSXParameters(parameterJsonID, PSX_CACHE_KEY_RISETIME)
+	comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+
+	cacheKey = CA_PSXRiseTimeKey(comboKey, psxParameters)
+	WAVE/Z riseTimeFromCache = CA_TryFetchingEntryFromCache(cacheKey)
+
+	if(WaveExists(riseTimeFromCache))
+		return riseTimeFromCache
+	endif
+
+	numEvents = DimSize(psxEvent, ROWS)
+
+	Make/D/FREE/N=(numEvents) riseTime
+
+	riseTime[] = PSX_CalculateRiseTimeImpl(psxEvent, sweepDataFiltOff, psxEvent[p][%index], lowerThreshold, upperThreshold)
+
+	CA_StoreEntryIntoCache(cacheKey, riseTime)
+
+	return riseTime
+End
+
+static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDataFiltOff, variable index, variable lowerThreshold, variable upperThreshold)
+
+	variable dY, xStart, xEnd, yStart, yEnd, xlt, xupt, lowerLevel, upperLevel, riseTime
+	variable printDebug
+	string comboKey
+
+	xStart = psxEvent[index][%dc_peak_time]
+	yStart = sweepDataFiltOff(xStart)
+
+	xEnd = psxEvent[index][%i_peak_t]
+	yEnd = psxEvent[index][%i_peak]
+
+	dY = abs(yStart - yEnd)
+
+	lowerLevel = min(yStart, yEnd) + lowerThreshold * dY
+	upperLevel = min(yStart, yEnd) + upperThreshold * dY
+
+	riseTime = NaN
+	xlt = NaN
+	xupt = NaN
+
+	FindLevel/R=(xStart, xEnd)/Q sweepDataFiltOff, lowerLevel
+
+	if(!V_flag)
+		xlt = V_levelX
+	else
+		printDebug = 1
+	endif
+
+	FindLevel/R=(xStart, xEnd)/Q sweepDataFiltOff, upperLevel
+
+	if(!V_flag)
+		xupt = V_levelX
+	else
+		printDebug = 1
+	endif
+
+	riseTime = xlt - xupt
+
+#ifdef DEBUGGING_ENABLED
+	if(printDebug)
+		comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+
+		printf "comboKey: %s, x: [%g, %g], y: [%g, %g], index: %d, dY: %g, thresholds: [%g, %g], levels: [%g, %g], risetime: %g, xlt: %g, xupt: %g\r", comboKey, xStart, xEnd, yStart, yEnd, index, dY, lowerThreshold, upperThreshold, lowerLevel, upperLevel, risetime, xlt, xupt
+	endif
+#endif
+
+	return riseTime
 End
 
 /// @brief Return all possible fit/event states
@@ -1823,13 +1938,27 @@ static Function PSX_StoreIntoResultsWave(string browser, variable resultType, WA
 	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_PSX)
 End
 
-static Function/S PSX_GetPSXParameters(variable jsonID)
+static Function/S PSX_GetPSXParameters(variable jsonID, variable cacheKeyType)
+
 	string psxParameters
 	variable subJsonID
 
 	subJsonID = JSON_GetJSON(jsonID, SF_META_USER_GROUP + PSX_JWN_PARAMETERS, ignoreErr = 1)
+
+	switch(cacheKeyType)
+		case PSX_CACHE_KEY_EVENTS:
+			// remove riseTime as that does not influence the found events
+			JSON_Remove(subJsonID, SF_OP_PSX_RISETIME)
+			break
+		case PSX_CACHE_KEY_RISETIME:
+			// do nothing
+			break
+		default:
+			ASSERT(0, "Unknown cache key type")
+	endswitch
+
 	psxParameters = JSON_Dump(subJsonID, indent = -1)
-	ASSERT(!IsEmpty(psxParameters), "Could not fetch the psx parameters from the wave note")
+	ASSERT(!IsEmpty(psxParameters), "Could not dump the psx parameters")
 
 	JSON_Release(subJsonID)
 
@@ -1843,7 +1972,7 @@ static Function PSX_StoreEventsIntoCache(WAVE psxEvent)
 	comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
 	jsonID = JWN_GetWaveNoteAsJSON(psxEvent)
 	ASSERT(jsonID >= 0, "Invalid JSON document")
-	psxParameters = PSX_GetPSXParameters(jsonID)
+	psxParameters = PSX_GetPSXParameters(jsonID, PSX_CACHE_KEY_EVENTS)
 	JSON_Release(jsonID)
 	cacheKey = CA_PSXEventsKey(comboKey, psxParameters)
 
@@ -2231,17 +2360,18 @@ static Function PSX_UpdateSingleEventTextbox(string win, [variable eventIndex])
 	DFREF comboDFR = PSX_GetCurrentComboFolder(win)
 	WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
 
-	Make/FREE/T/N=(7, 2) input
+	Make/FREE/T/N=(8, 2) input
 
-	input[0][0] = {"Event State:", "Fit State:", "Fit Result:", "Event:", "Position:", "IsI:", "Amp (rel.):", "Tau:"}
+	input[0][0] = {"Event State:", "Fit State:", "Fit Result:", "Event:", "Position:", "IsI:", "Amp (rel.):", "Tau:", "Rise time:"}
 	input[0][1] = {PSX_StateToString(psxEvent[eventIndex][%$"Event manual QC call"]), \
-				   PSX_StateToString(psxEvent[eventIndex][%$"Fit manual QC call"]),   \
-				   PSX_FitResultToString(psxEvent[eventIndex][%$"Fit Result"]),   \
-				   num2istr(eventIndex),                                              \
-				   num2str(psxEvent[eventIndex][%dc_peak_time], "%8.02f") + " [ms]", \
-				   num2str(psxEvent[eventIndex][%isi], "%8.02f") + " " + yUnit,      \
-				   num2str(psxEvent[eventIndex][%i_amp], "%8.02f") + " " + yUnit,    \
-				   num2str(psxEvent[eventIndex][%tau], "%8.02f") + " [ms]"}
+	               PSX_StateToString(psxEvent[eventIndex][%$"Fit manual QC call"]),   \
+	               PSX_FitResultToString(psxEvent[eventIndex][%$"Fit Result"]),       \
+	               num2istr(eventIndex),                                              \
+	               num2str(psxEvent[eventIndex][%dc_peak_time], "%8.02f") + " [ms]",  \
+	               num2str(psxEvent[eventIndex][%isi], "%8.02f") + " " + yUnit,       \
+	               num2str(psxEvent[eventIndex][%i_amp], "%8.02f") + " " + yUnit,     \
+	               num2str(psxEvent[eventIndex][%tau], "%8.02f") + " [ms]",           \
+	               num2str(psxEvent[eventIndex][%$"Rise Time"], "%8.02f") + " [ms]"}
 
 	str = "\F'Consolas'" + FormatTextWaveForLegend(input)
 
@@ -3874,10 +4004,12 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 	WAVE/WAVE psxKernelDataset = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_PSX, 1,  defOp = "psxKernel()")
 
 	try
-		peakThresh   = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = 0.01, checkFunc = IsStrictlyPositiveAndFinite)
-		filterLow    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW)
-		filterHigh   = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH)
-		maxTauFactor = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
+		peakThresh    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = 0.01, checkFunc = IsStrictlyPositiveAndFinite)
+		filterLow     = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW)
+		filterHigh    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH)
+		maxTauFactor  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
+		WAVE riseTime = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 6, defOp = "psxRiseTime()", singleResult = 1)
+		ASSERT(IsNumericWave(riseTime), "Invalid return from psxRiseTime")
 
 		parameterJsonID = JWN_GetWaveNoteAsJSON(psxKernelDataset)
 		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX
@@ -3887,25 +4019,23 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/filterLow", filterLow)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/filterHigh", filterHigh)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/maxTauFactor", maxTauFactor)
-
-		psxParameters = PSX_GetPSXParameters(parameterJsonID)
-		JSON_Release(jsonID)
+		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_RISETIME
+		JSON_AddTreeObject(parameterJsonID, parameterPath)
+		JSON_AddVariable(parameterJsonID, parameterPath + "/upperThreshold", riseTime[%$"Upper Threshold"])
+		JSON_AddVariable(parameterJsonID, parameterPath + "/lowerThreshold", riseTime[%$"Lower Threshold"])
 
 		numCombos = DimSize(psxKernelDataset, ROWS) / PSX_KERNEL_OUTPUTWAVES_PER_ENTRY
 		ASSERT(IsInteger(numCombos) && numCombos > 0, "Invalid number of input sets from psxKernel()")
 
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX, numCombos * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY)
 
-		JWN_SetWaveNoteFromJSON(output, parameterJsonID)
-		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_PSX)
-		JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_PSX, ""))
-
 		kernelAmp = JWN_GetNumberFromWaveNote(psxKernelDataset, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL + "/amp")
 		ASSERT(IsFinite(kernelAmp), "psxKernel amplitude must be finite")
 
 		for(i = 0; i < numCombos; i += 1)
 			readIndex = i
-			addedData = PSX_OperationImpl(graph, psxKernelDataset, psxParameters, id, peakThresh, filterLow, filterHigh, maxTauFactor, kernelAmp, readIndex, writeIndex, output)
+			addedData = PSX_OperationImpl(graph, psxKernelDataset, parameterJsonID, id, peakThresh, filterLow, filterHigh, maxTauFactor, \
+			                              riseTime, kernelAmp, readIndex, writeIndex, output)
 			writeIndex += addedData
 		endfor
 
@@ -3915,9 +4045,15 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 			SFH_CleanUpInput(output)
 		endif
 
+		JSON_Release(parameterJsonID)
+
 		SFH_CleanUpInput(psxKernelDataset)
 		Abort
 	endtry
+
+	JWN_SetWaveNoteFromJSON(output, parameterJsonID)
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_PSX)
+	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_PSX, ""))
 
 	SFH_CleanUpInput(psxKernelDataset)
 
@@ -3991,9 +4127,28 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_KERNEL)
 End
 
+Function/WAVE PSX_OperationRiseTime(variable jsonId, string jsonPath, string graph)
+
+	variable lowerThreshold, upperThreshold
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_RISETIME, 0, maxArgs = 2)
+
+	lowerThreshold = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_RISETIME, 0, defValue = 20, checkFunc = BetweenZeroAndOneHoundredExc)
+	upperThreshold = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_RISETIME, 1, defValue = 80, checkFunc = BetweenZeroAndOneHoundredExc)
+
+	Make/D/FREE thresholds = {lowerThreshold / ONE_TO_PERCENT, upperThreshold / ONE_TO_PERCENT}
+	SetDimensionLabels(thresholds, "Lower Threshold;Upper Threshold", ROWS)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_RISETIME, 1)
+
+	output[0] = thresholds
+
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_RISETIME)
+End
+
 Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 
-	string stateAsStr, prop, postProc, id
+	string stateAsStr, postProc, id, prop
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
@@ -4002,9 +4157,12 @@ Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 2)
 	SFH_Assert(WaveExists(selectData), "Missing select data")
 
-	prop       = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 3, allowedValues = {"amp", "xpos", "xinterval", "tau", "estate", "fstate", "fitresult"})
-	stateAsStr = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 4, allowedValues = {"accept", "reject", "undetermined", "all", "every"})
-	postProc   = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 5, defValue = "nothing", allowedValues = {"nothing", "stats", "count", "hist", "log10"})
+	Make/FREE/T allProps = {"amp", "xpos", "xinterval", "tau", "estate", "fstate", "fitresult", "risetime"}
+	prop = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 3, allowedValues = allProps)
+	Make/FREE/T allStates = {"accept", "reject", "undetermined", "all", "every"}
+	stateAsStr = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 4, allowedValues = allStates)
+	Make/FREE/T allPostProc = {"nothing", "stats", "count", "hist", "log10"}
+	postProc = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 5, defValue = "nothing", allowedValues = allPostProc)
 
 	WAVE/WAVE output = PSX_OperationStatsImpl(graph, id, range, selectData, prop, stateAsStr, postProc)
 

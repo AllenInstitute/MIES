@@ -7817,7 +7817,7 @@ End
 /// @{
 
 static Constant PSX_WAVE_VERSION       = 1
-static Constant PSX_EVENT_WAVE_COLUMNS = 13
+static Constant PSX_EVENT_WAVE_COLUMNS = 14
 
 Function UpgradePSXEventWave(WAVE psxEvent)
 
@@ -7850,6 +7850,7 @@ End
 ///       - `]-10000, 0[`: CurveFit error codes
 ///       - `]inf, -10000]`: Custom error codes, one of @ref FitEventDecayCustomErrors
 /// - 12/Event manual QC call: One of @ref PSXStates
+/// - 13/Rise Time: rise time as calculated by PSX_CalculateRiseTime()
 Function/WAVE GetPSXEventWaveAsFree()
 
 	variable versionOfWave = PSX_WAVE_VERSION
@@ -7870,6 +7871,7 @@ Function/WAVE GetPSXEventWaveAsFree()
 	SetDimLabel COLS, 10, $"Fit manual QC call", wv
 	SetDimLabel COLS, 11, $"Fit result", wv
 	SetDimLabel COLS, 12, $"Event manual QC call", wv
+	SetDimLabel COLS, 13, $"Rise Time", wv
 
 	SetWaveVersion(wv, versionOfWave)
 

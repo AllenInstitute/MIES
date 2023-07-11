@@ -409,6 +409,11 @@ Function/S CA_PSXOperationKey(string comboKey, string psxParameters)
 	return CA_PSXBaseKey(comboKey, psxParameters) + " Operation " + ":Version 1"
 End
 
+Function/S CA_PSXRiseTimeKey(string comboKey, string psxParameters)
+
+	return CA_PSXBaseKey(comboKey, psxParameters) + " PSX Rise time " + ":Version 1"
+End
+
 /// @}
 
 /// @brief Make space for one new entry in the cache waves
