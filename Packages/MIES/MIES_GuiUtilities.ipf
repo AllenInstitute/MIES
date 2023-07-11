@@ -2241,6 +2241,9 @@ Function AdaptDependentControls(string win, string controls, variable defaultMai
 
 			// invalidate old state
 			SetControlUserData(win, ctrl, "oldState", "")
+			if(IsNaN(oldState))
+				continue
+			endif
 
 			// set old state
 			PGC_SetAndActivateControl(win, ctrl, val = oldState)
@@ -2254,7 +2257,7 @@ Function AdaptDependentControls(string win, string controls, variable defaultMai
 	for(i = 0; i < numControls; i += 1)
 		ctrl = StringFromList(i, controls)
 		// store current state
-		oldState = DAG_GetNumericalValue(win, ctrl)
+		oldState = GetCheckBoxState(win, ctrl)
 		SetControlUserData(win, ctrl, "oldState", num2str(oldState))
 
 		// and apply new state
