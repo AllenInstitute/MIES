@@ -3380,7 +3380,7 @@ End
 /// Works with `psx` and `psxStats` graphs.
 Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 
-	variable direction, eventIndex, loc, comboIndex, keyboardDir, waveIndex
+	variable direction, eventIndex, loc, comboIndex, keyboardDir, waveIndex, first, last
 	string psxGraph, info, msg, browser, win, mainWindow, trace
 
 	switch(s.eventCode)
@@ -3473,6 +3473,18 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 				endif
 			endif
 
+#ifdef DEBUGGING_ENABLED
+			DFREF workDFR = PSX_GetWorkingFolder(win)
+			WAVE/DF comboFolders = PSX_GetAllCombinationFolders(workDFR)
+			DFREF comboDFR = comboFolders[comboIndex]
+
+			WAVE sweepDataFiltOff = GetPSXSweepDataFiltOffWaveFromDFR(comboDFR)
+			WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
+			[first, last] = PSX_GetEventFitRange(sweepDataFiltOff, psxEvent, eventIndex)
+
+			sprintf msg, "Fit range for event %d: [%g, %g]", eventIndex, first, last
+			DEBUGPRINT(msg)
+#endif
 			return 1
 		case EVENT_WINDOW_HOOK_MOUSEUP:
 			win = s.winName
