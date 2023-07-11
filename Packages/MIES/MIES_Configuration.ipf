@@ -2539,7 +2539,7 @@ static Function CONF_TransferPreviousDAEphysJson(variable jsonId, variable prevJ
 	WAVE/T entryList = JSON_GetKeys(jsonId, EXPCONFIG_RESERVED_DATABLOCK)
 	for(entry : entryList)
 		jsonPath = EXPCONFIG_RESERVED_DATABLOCK + "/" + entry
-		CopySimpleJSONElement(prevJsonId, jsonPath, jsonId, jsonPath, ignoreMissingSrcElement=1)
+		JSON_SyncJSON(prevJsonId, jsonId, jsonPath, jsonPath, JSON_SYNC_ADD_TO_TARGET | JSON_SYNC_OVERWRITE_IN_TARGET)
 	endfor
 End
 
