@@ -6651,49 +6651,6 @@ Function RefCounterDFDecrease(DFREF dfr)
 	endif
 End
 
-/// @brief Copies a single element of a primitive type from a source json to a target json
-///        By default if the element at the source path does not exist an ASSERTion is thrown
-///        Elements at the targetPath are overwritten, independent of their type
-Function CopySimpleJSONElement(variable srcJsonId, string srcPath, variable tgtJsonId, string tgtPath[, variable ignoreMissingSrcElement])
-
-	variable val
-	string str
-
-	ignoreMissingSrcElement = ParamIsDefault(ignoreMissingSrcElement) ? 0 : !!ignoreMissingSrcElement
-
-	ASSERT(!IsNull(srcPath), "source path is null.")
-	ASSERT(!IsNull(tgtPath), "target path is null.")
-	ASSERT(!IsNaN(srcJsonId), "Source JSON does not exist.")
-	ASSERT(!IsNaN(tgtJsonId), "Target JSON does not exist.")
-
-	if(!JSON_Exists(srcJsonId, srcPath))
-		if(ignoreMissingSrcElement)
-			return NaN
-		endif
-		ASSERT(0, "Source element does not exist.")
-	endif
-
-	switch(JSON_GetType(srcJsonId, srcPath))
-		case JSON_NULL:
-			JSON_SetNull(tgtJsonId, tgtPath)
-			break
-		case JSON_BOOL:
-			val = JSON_GetVariable(srcJsonId, srcPath)
-			JSON_SetBoolean(tgtJsonId, tgtPath, val)
-			break
-		case JSON_NUMERIC:
-			val = JSON_GetVariable(srcJsonId, srcPath)
-			JSON_SetVariable(tgtJsonId, tgtPath, val)
-			break
-		case JSON_STRING:
-			str = JSON_GetString(srcJsonId, srcPath)
-			JSON_SetString(tgtJsonId, tgtPath, str)
-			break
-		default:
-			ASSERT(0, "Unsupported element type")
-	endswitch
-End
-
 /// @brief Update the help and user data of a button used as info/copy button
 Function UpdateInfoButtonHelp(string win, string ctrl, string content)
 
