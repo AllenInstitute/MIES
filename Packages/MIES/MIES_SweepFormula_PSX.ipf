@@ -1297,6 +1297,21 @@ Function/S PSX_StateToString(variable state)
 	endswitch
 End
 
+Function/S PSX_FitResultToString(variable fitResult)
+
+	if(fitResult == 1)
+		return "Success"
+	elseif(fitResult > -10000 && fitResult < 0)
+		// CurveFitError codes, IP errors are also positive
+		return UpperCaseFirstChar(GetErrMessage(abs(fitResult)))
+	elseif(fitResult == PSX_DECAY_FIT_ERROR)
+		return "Too large tau"
+	endif
+
+	BUG("Unknown fitResult")
+	return "Unknown fitResult: " + num2str(fitResult)
+End
+
 static Function PSX_UpdateAllEventGraph(string win, [variable forceSingleEventUpdate, variable forceAverageUpdate, variable forceBlockIndexUpdate])
 
 	if(PSX_EventGraphSuppressUpdate(win))
@@ -2149,9 +2164,10 @@ static Function PSX_UpdateSingleEventTextbox(string win, [variable eventIndex])
 
 	Make/FREE/T/N=(7, 2) input
 
-	input[0][0] = {"Event State:", "Fit State:", "Event:", "Position:", "IsI:", "Amp (rel.):", "Tau:"}
+	input[0][0] = {"Event State:", "Fit State:", "Fit Result:", "Event:", "Position:", "IsI:", "Amp (rel.):", "Tau:"}
 	input[0][1] = {PSX_StateToString(psxEvent[eventIndex][%$"Event manual QC call"]), \
 				   PSX_StateToString(psxEvent[eventIndex][%$"Fit manual QC call"]),   \
+				   PSX_FitResultToString(psxEvent[eventIndex][%$"Fit Result"]),   \
 				   num2istr(eventIndex),                                              \
 				   num2str(psxEvent[eventIndex][%dc_peak_time], "%8.02f") + " [ms]", \
 				   num2str(psxEvent[eventIndex][%isi], "%8.02f") + " " + yUnit,      \
