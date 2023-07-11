@@ -2560,6 +2560,7 @@ static Function CONF_RemoveRigElementsFromDAEphysJson(variable jsonId, variable 
 				CONF_RemoveRigElementsFromDAEphysJson(jsonId, rigJsonId, jsonPath=newJsonPath)
 				break
 			default:
+				ASSERT(JSON_Exists(jsonId, newJsonPath), "JSON path from previous rig file not found in current DAEPhys JSON: " + newJsonPath)
 				JSON_Remove(jsonId, newJsonPath)
 				break
 		endswitch
