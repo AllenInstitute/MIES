@@ -6760,3 +6760,23 @@ Function GetDayOfWeek(variable seconds)
 
 	return str2num(dayOfWeek)
 End
+
+/// @brief Return the truth if `val` is in the range `]0, 1[`
+threadsafe Function BetweenZeroAndOneExc(variable val)
+	return val > 0.0 && val < 1.0
+End
+
+/// @brief Return the truth if `val` is in the range `[0, 1]`
+threadsafe Function BetweenZeroAndOne(variable val)
+	return val >= 0.0 && val <= 1.0
+End
+
+/// @brief Return the truth if `val` is in the range `]0, 100[`
+threadsafe Function BetweenZeroAndOneHoundredExc(variable val)
+	return val > 0.0 && val < 100.0
+End
+
+/// @brief Return the truth if `val` is in the range `[0, 100]`
+threadsafe Function BetweenZeroAndOneHoundred(variable val)
+	return val >= 0.0 && val <= 100.0
+End
