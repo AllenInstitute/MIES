@@ -523,8 +523,6 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 end
 
 /// @brief Return the x-axis range useful for displaying and extracting a single event
-///
-/// x-zero is taken from sweepData
 static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psxEvent, variable index)
 
 	variable numEvents
@@ -1312,7 +1310,7 @@ Function/S PSX_FitResultToString(variable fitResult)
 	return "Unknown fitResult: " + num2str(fitResult)
 End
 
-static Function PSX_UpdateAllEventGraph(string win, [variable forceSingleEventUpdate, variable forceAverageUpdate, variable forceBlockIndexUpdate])
+static Function PSX_UpdateAllEventGraph(string win, [variable forceSingleEventUpdate, variable forceAverageUpdate, variable forceBlockIndexUpdate, variable forceSingleEventOffsetUpdate])
 
 	if(PSX_EventGraphSuppressUpdate(win))
 		return NaN
@@ -1336,8 +1334,18 @@ static Function PSX_UpdateAllEventGraph(string win, [variable forceSingleEventUp
 		forceBlockIndexUpdate = !!forceBlockIndexUpdate
 	endif
 
+	if(ParamIsDefault(forceSingleEventOffsetUpdate))
+		forceSingleEventOffsetUpdate = 0
+	else
+		forceSingleEventOffsetUpdate = !!forceSingleEventOffsetUpdate
+	endif
+
 	if(forceBlockIndexUpdate)
 		PSX_UpdateBlockIndizes(win)
+	endif
+
+	if(forceSingleEventOffsetUpdate)
+		PSX_UpdateOffsetInAllEventGraph(win)
 	endif
 
 	PSX_UpdateHideStateInAllEventGraph(win)
@@ -1395,6 +1403,67 @@ static Function PSX_UpdateDisplayedFit(DFREF comboDFR, variable index)
 	else
 		FastOp singleEventFit = (NaN)
 	endif
+End
+
+static Function PSX_UpdateOffsetInAllEventGraph(string win)
+
+	string extAllGraph, specialEventPanel
+	variable i, numEvents, offsetMode, first, last, xOffset, yOffset
+
+	extAllGraph = PSX_GetAllEventGraph(win)
+
+	if(!WindowExists(extAllGraph))
+		return NaN
+	endif
+
+	if(PSX_EventGraphSuppressUpdate(win))
+		return NaN
+	endif
+
+	DFREF workDFR = PSX_GetWorkingFolder(win)
+	WAVE/DF/Z comboFolders = PSX_GetAllCombinationFolders(workDFR)
+
+	if(!WaveExists(comboFolders))
+		return NaN
+	endif
+
+	specialEventPanel = PSX_GetSpecialPanel(win)
+
+	offsetMode = GetPopupMenuIndex(specialEventPanel, "popupmenu_event_offset")
+
+	for(DFREF comboDFR : comboFolders)
+		WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
+		numEvents = DimSize(psxEvent, ROWS)
+
+		WAVE sweepDataFiltOff = GetPSXSweepDataFiltOffWaveFromDFR(comboDFR)
+
+		DFREF singleEventDFR = GetPSXSingleEventFolder(comboDFR)
+
+		for(i = 0; i < numEvents; i += 1)
+			WAVE/SDFR=singleEventDFR/Z singleEvent = $GetIndexedObjNameDFR(singleEventDFR, COUNTOBJECTS_WAVES, i)
+			ASSERT(WaveExists(singleEvent), "Non-existing single event wave")
+
+			[first, last] = PSX_GetSingleEventRange(psxEvent, i)
+
+			Duplicate/FREE/R=(first, last) sweepDataFiltOff, singleEventRaw
+
+			switch(offsetMode)
+				case PSX_HORIZ_OFFSET_ONSET:
+					xOffset = 0
+					yOffset = sweepDataFiltOff(psxEvent[i][%dc_peak_time])
+					break
+				case PSX_HORIZ_OFFSET_PEAK:
+					xOffset = first - psxEvent[i][%i_peak_t]
+					yOffset = 0
+					break
+				default:
+					ASSERT(0, "Invalid offset mode")
+			endswitch
+
+			MultiThread singleEvent[] = singleEventRaw[p] - yOffset
+			SetScale/P x, xOffset, DimDelta(singleEvent, ROWS), singleEvent
+		endfor
+	endfor
 End
 
 /// @brief Update trace colors in all event graph
@@ -2779,6 +2848,12 @@ static Function/WAVE PSX_GetSpecialEventPanelCheckboxes(string specialEventPanel
 	return ListToTextWave(ControlNameList(specialEventPanel, ";", "checkbox*"), ";")
 End
 
+static Function/WAVE PSX_GetSpecialEventPanelPopups(string specialEventPanel)
+
+	// ignore popup_block as that needs special handling on restore
+	return ListToTextWave(ControlNameList(specialEventPanel, ";", "popupmenu*"), ";")
+End
+
 /// @brief Store the PSX panel GUI state in the window user data of `browser`
 static Function PSX_StoreGuiState(string win, string browser)
 
@@ -2808,8 +2883,12 @@ static Function PSX_StoreGuiState(string win, string browser)
 		JSON_SetVariable(jsonID, "/specialEventPanel/" + ctrl, GetCheckBoxState(specialEventPanel, ctrl))
 	endfor
 
-	JSON_SetVariable(jsonID, "/specialEventPanel/popupmenu_accept_fit_function", GetPopupMenuIndex(specialEventPanel, "popupmenu_accept_fit_function"))
-	JSON_SetVariable(jsonID, "/specialEventPanel/popupmenu_state_type", GetPopupMenuIndex(specialEventPanel, "popupmenu_state_type"))
+	WAVE/T popups = PSX_GetSpecialEventPanelPopups(specialEventPanel)
+
+	for(ctrl : popups)
+		JSON_SetVariable(jsonID, "/specialEventPanel/" + ctrl, GetPopupMenuIndex(specialEventPanel, ctrl))
+	endfor
+
 	JSON_SetVariable(jsonID, "/specialEventPanel/popup_block", GetPopupMenuIndex(specialEventPanel, "popup_block"))
 	JSON_SetVariable(jsonID, "/specialEventPanel/setvar_event_block_size", GetSetVariable(specialEventPanel, "setvar_event_block_size"))
 
@@ -2830,7 +2909,7 @@ End
 /// @brief Restore the PSX panel GUI state from the window user data of `browser`
 static Function PSX_RestoreGuiState(string win)
 
-	string browser, specialEventPanel, mainWindow, ctrl, jsonDoc, extAllGraph, allBlocks
+	string browser, specialEventPanel, mainWindow, ctrl, jsonDoc, extAllGraph, allBlocks, popMenu
 	variable jsonID, lastActiveCombo, selectedBlock, lastBlock
 
 	browser = SFH_GetBrowserForFormulaGraph(win)
@@ -2864,8 +2943,11 @@ static Function PSX_RestoreGuiState(string win)
 	lastBlock = str2num(StringFromList(ItemsInList(allBlocks) - 1, allBlocks))
 	PGC_SetAndActivateControl(specialEventPanel, "popup_block", val = limit(selectedBlock, 0, lastBlock))
 
-	PGC_SetAndActivateControl(specialEventPanel, "popupmenu_accept_fit_function", val = JSON_GetVariable(jsonID, "/specialEventPanel/popupmenu_accept_fit_function"))
-	PGC_SetAndActivateControl(specialEventPanel, "popupmenu_state_type", val = JSON_GetVariable(jsonID, "/specialEventPanel/popupmenu_state_type"))
+	WAVE/T popups = PSX_GetSpecialEventPanelPopups(specialEventPanel)
+
+	for(popMenu : popups)
+		PGC_SetAndActivateControl(specialEventPanel, popMenu, val = JSON_GetVariable(jsonID, "/specialEventPanel/" + popMenu))
+	endfor
 
 	mainWindow = GetMainWindow(win)
 	SetCheckBoxState(mainWindow, "checkbox_suppress_update", JSON_GetVariable(jsonID, "/mainPanel/checkbox_suppress_update"))
@@ -3052,7 +3134,7 @@ End
 /// @brief Extract a single wave for each event from sweepDataFiltOff
 static Function PSX_CreateSingleEventWaves(DFREF comboDFR, WAVE psxEvent, WAVE sweepDataFiltOff)
 
-	variable i, numEvents, first, last, offset, eventOnset
+	variable i, numEvents, first, last, offset
 	string name
 
 	numEvents = DimSize(psxEvent, ROWS)
@@ -3064,12 +3146,6 @@ static Function PSX_CreateSingleEventWaves(DFREF comboDFR, WAVE psxEvent, WAVE s
 		[first, last] = PSX_GetSingleEventRange(psxEvent, i)
 
 		Duplicate/FREE/R=(first, last) sweepDataFiltOff, singleEvent
-		// zero in x direction
-		SetScale/P x, 0, DimDelta(singleEvent, ROWS), singleEvent
-
-		// remove baseline from event onset position
-		offset = sweepDataFiltOff(psxEvent[i][%dc_peak_time])
-		MultiThread singleEvent[] = singleEvent[p] - offset
 
 		Note/K singleEvent
 
@@ -3763,7 +3839,7 @@ Function PSX_PostPlot(string win)
 
 	PSX_RestoreGuiState(win)
 
-	PSX_UpdateAllEventGraph(win, forceAverageUpdate = 1, forceSingleEventUpdate = 1, forceBlockIndexUpdate = 1)
+	PSX_UpdateAllEventGraph(win, forceAverageUpdate = 1, forceSingleEventUpdate = 1, forceBlockIndexUpdate = 1, forceSingleEventOffsetUpdate = 1)
 
 	DFREF comboDFR = PSX_GetCurrentComboFolder(win)
 	WAVE eventLocationLabels = GetPSXEventLocationLabels(comboDFR)
@@ -4396,9 +4472,12 @@ End
 
 Function PSX_PopupMenuState(STRUCT WMPopupAction &cba) : PopupMenuControl
 
+	variable forceSingleEventOffsetUpdate
+
 	switch(cba.eventCode)
 		case 2: // mouse up
-			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1)
+			forceSingleEventOffsetUpdate = !cmpstr(cba.ctrlName, "popupmenu_event_offset")
+			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1, forceSingleEventOffsetUpdate = forceSingleEventOffsetUpdate)
 			break
 	endswitch
 End
@@ -4590,7 +4669,7 @@ End
 
 Window PSXPanel() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(1379,772,2379,1695) as "SweepFormula plot from <Browser>"
+	NewPanel /K=1 /W=(1251,700,2391,1532) as "SweepFormula plot from <Browser>"
 	SetDrawLayer UserBack
 	SetDrawEnv pop
 	DrawText 47,475,"UI"
@@ -4642,11 +4721,11 @@ Window PSXPanel() : Panel
 	SetWindow kwTopWin,hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin,hook(ctrl)=PSX_PlotInteractionHook
 	SetWindow kwTopWin,hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#E5!!#E!^]4?7zzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#EIJ,hu6zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={750,360,inf,inf}" // sizeLimit requires Igor 7 or later
-	NewPanel/HOST=#/EXT=3/W=(0,246,1000,0) /K=2  as " "
+	NewPanel/HOST=#/EXT=3/W=(0,241,1154,0) /K=2  as " "
 	ModifyPanel fixedSize=0
 	CheckBox checkbox_single_events_accept,pos={21.00,33.00},size={53.00,15.00},proc=PSX_CheckboxProcAllEventPlotUpdate
 	CheckBox checkbox_single_events_accept,title="Accept"
@@ -4697,7 +4776,7 @@ Window PSXPanel() : Panel
 	Button button_fit_results,userdata="- none -"
 	GroupBox group_event,pos={14.00,13.00},size={69.00,122.00},title="Event"
 	GroupBox group_event,help={"Toggle the display of the event traces"}
-	SetVariable setvar_event_block_size,pos={17.00,193.00},size={99.00,18.00},bodyWidth=44,proc=PSX_SetVarBlockSize
+	SetVariable setvar_event_block_size,pos={0.00,193.00},size={120.00,18.00},bodyWidth=44,proc=PSX_SetVarBlockSize
 	SetVariable setvar_event_block_size,title="Block size [%]"
 	SetVariable setvar_event_block_size,help={"Allows to restrict the all event graph to only a percentage of the events."}
 	SetVariable setvar_event_block_size,limits={0,100,1},value=_NUM:100
@@ -4706,9 +4785,13 @@ Window PSXPanel() : Panel
 	PopupMenu popup_block,help={"Select which of the event blocks to display"}
 	PopupMenu popup_block,userdata(NumberOfBlocks)="1"
 	PopupMenu popup_block,mode=1,popvalue="",value=#"\"\""
+	PopupMenu popupmenu_event_offset,pos={136.00,168.00},size={53.00,19.00},proc=PSX_PopupMenuState
+	PopupMenu popupmenu_event_offset,help={"Select the time point in x direction for aligning the single event traces in the all event graph"}
+	PopupMenu popupmenu_event_offset,mode=1,popvalue="Onset",value=#"\"Onset;Peak\""
 	DefineGuide leftMenu={FL,0.2,FR},horizCenter={leftMenu,0.5,FR}
 	SetWindow kwTopWin,hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin,hook(ctrl)=PSX_AllEventGraphHook
+	SetWindow kwTopWin,hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={750,200.25,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(225,62,675,188)/FG=(horizCenter,FT,FR,FB)/HOST=#
 	RenameWindow #,Single

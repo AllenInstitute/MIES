@@ -2160,3 +2160,13 @@ Constant PSX_DECAY_FIT_ERROR = -10000
 /// @}
 
 StrConstant PSX_STATS_LABELS = "Average;Median;Average Deviation;Standard deviation;Skewness;Kurtosis"
+
+/// @name Horizontal offset modes in all event graph
+///
+/// Corresponds to zero-based indizes of popup_event_offset
+///
+/// @anchor HorizOffsetModesAllEvent
+/// @{
+Constant PSX_HORIZ_OFFSET_ONSET = 0
+Constant PSX_HORIZ_OFFSET_PEAK  = 1
+/// @}
