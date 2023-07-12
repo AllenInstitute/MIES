@@ -2201,35 +2201,45 @@ static Function [string match, variable found] GetControlSettingImpl(string recM
 	return [str, !!V_flag]
 End
 
-/// @brief Set the checked/unchecked and enabled/disabled state of the given list of controls
+/// @brief Dependent on a control state set the state of a list of checkboxes
 ///
-/// Allows to set a number of related checkbox controls depending on the state of the main control.
+/// newMainState: state of the main control after the user interaction, in an event handler typically the cba.checked value
+/// restoreOnState: If the newMainState is different from the restoreOnState then the states of the dependent checkboxes is saved.
+///                 If the newMainState is the same as the restoreOnState then the states of the dependent checkboxes are restored
+/// mode: DEP_CTRLS_SAME or DEP_CTRLS_INVERT, defines if the dependent checkbox state follows the newMainState or the inverted newMainState
+///
+/// When the dependent checkboxes are in the dependent state they are disabled.
+/// Example: if checkbox A is on, then checkbox B must be on as well and if checkbox A is off, then any state of checkbox B is valid
+///          and if checkbox A is changed to off then the state of checkbox B when A was in the off state before should be restored.
+///          results in: newMainState -> CHECKBOX_SELECTED (when A is switched on, then B is also switched according to mode and gets disabled, as a dependent checkbox)
+///                      mode -> DEP_CTRLS_SAME (A -> on then B -> on)
+///                      restoreOnState -> CHECKBOX_UNSELECTED (A -> off then B gets independent and restored, A -> on then B gets dependent and B's state saved)
 ///
 /// \rst
 ///
-/// ============== ========== ======== ======================
-///  Main default   Main new   Mode     Action on controls
-/// ============== ========== ======== ======================
-///      ON           OFF      same     unchecked & disabled
-///      ON           OFF      invert   checked & disabled
-///      ON           ON        ?       enabled & restored
-/// -------------- ---------- -------- ----------------------
-///      OFF          ON       same     checked & disabled
-///      OFF          ON       invert   unchecked & disabled
-///      OFF          OFF       ?       enabled & restored
-/// ============== ========== ======== ======================
+/// ================== ========== ================== ==================================
+///  Restore on State   Main new   Mode               Action on dependent checkboxes
+/// ================== ========== ================== ==================================
+///      ON               OFF      DEP_CTRLS_SAME     state saved, unchecked, disabled
+///      ON               OFF      DEP_CTRLS_INVERT   state saved, checked, disabled
+///      ON               ON        ignored           state restored, enabled
+/// ------------------ ---------- ------------------ ----------------------------------
+///      OFF              ON       DEP_CTRLS_SAME     state saved, checked, disabled
+///      OFF              ON       DEP_CTRLS_INVERT   state saved, unchecked, disabled
+///      OFF              OFF       ignored           state restored, enabled
+/// ================== ========== ================== ==================================
 ///
 /// \endrst
-Function AdaptDependentControls(string win, string controls, variable defaultMainState, variable newMainState, variable mode)
+Function AdaptDependentControls(string win, string controls, variable restoreOnState, variable newMainState, variable mode)
 
 	variable numControls, oldState, i, newState
 	string ctrl
 
-	defaultMainState = !!defaultMainState
+	restoreOnState = !!restoreOnState
 	newMainState = !!newMainState
 	numControls = ItemsInList(controls)
 
-	if(defaultMainState == newMainState)
+	if(restoreOnState == newMainState)
 		// enabled controls and restore the previous state
 		EnableControls(win, controls)
 
@@ -2241,6 +2251,9 @@ Function AdaptDependentControls(string win, string controls, variable defaultMai
 
 			// invalidate old state
 			SetControlUserData(win, ctrl, "oldState", "")
+			if(IsNaN(oldState))
+				continue
+			endif
 
 			// set old state
 			PGC_SetAndActivateControl(win, ctrl, val = oldState)
@@ -2254,7 +2267,7 @@ Function AdaptDependentControls(string win, string controls, variable defaultMai
 	for(i = 0; i < numControls; i += 1)
 		ctrl = StringFromList(i, controls)
 		// store current state
-		oldState = DAG_GetNumericalValue(win, ctrl)
+		oldState = GetCheckBoxState(win, ctrl)
 		SetControlUserData(win, ctrl, "oldState", num2str(oldState))
 
 		// and apply new state
