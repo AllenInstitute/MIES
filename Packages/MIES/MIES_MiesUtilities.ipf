@@ -4810,6 +4810,148 @@ threadsafe static Function/WAVE GetTTLChannels(WAVE numericalValues, WAVE textua
 	return $""
 End
 
+/// @brief Return a wave with the requested TTL channel information defined by TTLmode
+///
+/// @param numericalValues Numerical labnotebook values
+/// @param textualValues   Text labnotebook values
+/// @param sweep           Sweep number
+/// @param TTLmode         One of @ref ActiveChannelsTTLMode.
+threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE textualValues, variable sweep, variable TTLmode)
+
+	variable i, index, first, last, haveRackZero, haveRackOne, numHWTTLChannels, bits, hwChannel
+
+	index = GetIndexForHeadstageIndepData(numericalValues)
+
+	WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
+	if(WaveExists(ttlChannels))
+		// NI hardware
+		switch(TTLmode)
+			case TTL_HARDWARE_CHANNEL: // intended drop-through
+			case TTL_DAEPHYS_CHANNEL:
+				return ListToNumericWave(ttlChannels[index], ";")
+			case TTL_GUITOHW_CHANNEL:
+				WAVE channelMapGUIToHW = GetActiveChannelMapTTLGUIToHW()
+				WAVE NIChannelNumbersHW = ListToNumericWave(ttlChannels[index], ";")
+				channelMapGUIToHW[][%HWCHANNEL] = NIChannelNumbersHW[p]
+
+				return channelMapGUIToHW
+			case TTL_HWTOGUI_CHANNEL:
+				WAVE channelMapHWToGUI = GetActiveChannelMapTTLHWToGUI()
+
+				WAVE NIChannelNumbersHW = ListToNumericWave(ttlChannels[index], ";")
+				channelMapHWToGUI[][] = NIChannelNumbersHW[p]
+
+				return channelMapHWToGUI
+			default:
+				ASSERT_TS(0, "Invalid TTLmode")
+		endswitch
+	endif
+
+	// ITC hardware
+	switch(TTLmode)
+		case TTL_HARDWARE_CHANNEL:
+
+			WAVE/Z ttlChannelRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlChannelRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
+			if(WaveExists(ttlChannelRackZero) || WaveExists(ttlChannelRackOne))
+				numHWTTLChannels = max(HARDWARE_ITC_TTL_1600_RACK_ONE + 1, NUM_DA_TTL_CHANNELS)
+				Make/FREE/D/N=(numHWTTLChannels) entries = NaN
+				if(WaveExists(ttlChannelRackZero))
+					hwChannel = ttlChannelRackZero[index]
+					entries[hwChannel] = hwChannel
+				endif
+
+				if(WaveExists(ttlChannelRackOne))
+					hwChannel = ttlChannelRackOne[index]
+					entries[hwChannel] = hwChannel
+				endif
+
+				return entries
+			endif
+
+			break
+		case TTL_DAEPHYS_CHANNEL:
+
+			WAVE/Z ttlBitsRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero bits", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlBitsRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
+			if(WaveExists(ttlBitsRackZero) || WaveExists(ttlBitsRackOne))
+				Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) entries = NaN
+
+				if(WaveExists(ttlBitsRackZero))
+					HW_ITC_GetRackRange(RACK_ZERO, first, last)
+					bits = ttlBitsRackZero[index]
+					entries[first, last] = (bits & 1 << p) != 0 ? p : NaN
+				endif
+
+				if(WaveExists(ttlBitsRackOne))
+					HW_ITC_GetRackRange(RACK_ONE, first, last)
+					bits = ttlBitsRackOne[index]
+					entries[first, last] = (bits & 1 << (p - NUM_ITC_TTL_BITS_PER_RACK)) != 0 ? p : NaN
+				endif
+
+				return entries
+			endif
+
+			break
+		case TTL_GUITOHW_CHANNEL:
+			WAVE channelMapGUIToHW = GetActiveChannelMapTTLGUIToHW()
+
+			WAVE/Z ttlChannelRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlChannelRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlBitsRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero bits", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlBitsRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
+			haveRackZero = WaveExists(ttlBitsRackZero) && WaveExists(ttlChannelRackZero)
+			haveRackOne = WaveExists(ttlBitsRackOne) && WaveExists(ttlChannelRackOne)
+			if(haveRackZero)
+				HW_ITC_GetRackRange(RACK_ZERO, first, last)
+				bits = ttlBitsRackZero[index]
+				hwChannel = ttlChannelRackZero[index]
+				channelMapGUIToHW[first, last][%TTLBITNR] = (bits & 1 << p) != 0 ? p : NaN
+				channelMapGUIToHW[first, last][%HWCHANNEL] = IsNaN(channelMapGUIToHW[p][%TTLBITNR]) ? NaN : hwChannel
+			endif
+			if(haveRackOne)
+				HW_ITC_GetRackRange(RACK_ONE, first, last)
+				bits = ttlBitsRackOne[index]
+				hwChannel = ttlChannelRackOne[index]
+				channelMapGUIToHW[first, last][%TTLBITNR] = (bits & 1 << (p - NUM_ITC_TTL_BITS_PER_RACK)) != 0 ? p : NaN
+				channelMapGUIToHW[first, last][%HWCHANNEL] = IsNaN(channelMapGUIToHW[p][%TTLBITNR]) ? NaN : hwChannel
+			endif
+			if(haveRackZero || haveRackOne)
+				return channelMapGUIToHW
+			endif
+			break
+		case TTL_HWTOGUI_CHANNEL:
+			WAVE channelMapHWToGUI = GetActiveChannelMapTTLHWToGUI()
+
+			WAVE/Z ttlChannelRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlChannelRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlBitsRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero bits", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlBitsRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
+			haveRackZero = WaveExists(ttlBitsRackZero) && WaveExists(ttlChannelRackZero)
+			haveRackOne = WaveExists(ttlBitsRackOne) && WaveExists(ttlChannelRackOne)
+			if(haveRackZero)
+				HW_ITC_GetRackRange(RACK_ZERO, first, last)
+				bits = ttlBitsRackZero[index]
+				hwChannel = ttlChannelRackZero[index]
+				channelMapHWToGUI[hwChannel][first, last] = (bits & 1 << q) != 0 ? q : NaN
+			endif
+			if(haveRackOne)
+				HW_ITC_GetRackRange(RACK_ONE, first, last)
+				bits = ttlBitsRackOne[index]
+				hwChannel = ttlChannelRackOne[index]
+				channelMapHWToGUI[hwChannel][first - NUM_ITC_TTL_BITS_PER_RACK, last - NUM_ITC_TTL_BITS_PER_RACK] = (bits & 1 << q) != 0 ? q + NUM_ITC_TTL_BITS_PER_RACK : NaN
+			endif
+			if(haveRackZero || haveRackOne)
+				return channelMapHWToGUI
+			endif
+			break
+		default:
+			ASSERT_TS(0, "Invalid TTLmode")
+	endswitch
+
+	return $""
+End
+
 /// @brief Return a fixed size wave with the the active channels for the given channel type
 ///
 /// The function takes into account unassociated DA/AD channels as well. It returns fixed size waves with the active
@@ -4839,10 +4981,15 @@ End
 /// - ``TTL``:
 ///
 ///   - NI hardware (regardless of TTLmode): ``{NaN, NaN, 2, 3, ...}``
-///   - ITC hardware (ITC18 specifically) with TTLmode:
+///   - ITC hardware with TTLmode, example for two active racks:
 ///
-///     - ``TTL_DAEPHYS_CHANNEL``: ``{NaN, NaN, 2, 3, ...}``
-///     - ``TTL_HARDWARE_CHANNEL``: ``{NaN, 1, NaN, NaN, ...}``
+///     - ``TTL_DAEPHYS_CHANNEL``: ``{NaN, NaN, 2, 3, NaN, 5, NaN, NaN}``
+///     - ``TTL_HARDWARE_CHANNEL``: ``{0, NaN, NaN, 3, NaN, NaN, Nan, NaN}``
+///     - ``TTL_GUITOHW_CHANNEL``: returns a 2D wave that allows to index by GUI channel (row) and retrieve hardware channel number and ttlbit number.
+///       The columns are %HWCHANNEL and %TTLBITNR. The %TTLBITNR column is only valid for ITC hardware.
+///     - ``TTL_HWTOGUI_CHANNEL``: returns a 2D wave that allows to index by hardware channel number and TTL bit number and retrieve the GUI channel number.
+///       The hardware channel is indexed in the row and the TTL bit number in the column dimension. For NI hardware the TTL bit index should be zero.
+///       Inactive hardware channel/ttlbit combinations return NaN.
 ///
 /// \endrst
 ///
@@ -4870,14 +5017,7 @@ threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualVal
 			key = "ADC"
 			break
 		case XOP_CHANNEL_TYPE_TTL:
-			switch(TTLmode)
-				case TTL_HARDWARE_CHANNEL:
-					return GetTTLChannels(numericalValues, textualValues, sweepNo)
-				case TTL_DAEPHYS_CHANNEL:
-					return GetTTLChannelsOrBits(numericalValues, textualValues, sweepNo)
-				default:
-					ASSERT_TS(0, "Invalid TTLmode")
-			endswitch
+			return GetActiveChannelsTTL(numericalValues, textualValues, sweepNo, TTLmode)
 		default:
 			ASSERT_TS(0, "Unexpected channelType")
 	endswitch

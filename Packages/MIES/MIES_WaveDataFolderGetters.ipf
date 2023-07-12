@@ -7789,3 +7789,26 @@ Function/WAVE GetSFVarAssignments()
 
 	return varAssignments
 End
+
+/// @brief Returns a wave where GetActiveChannels fills in the mapping between GUI and hardware TTL channels
+///        The wave is initialized here with no active channels
+threadsafe Function/WAVE GetActiveChannelMapTTLGUIToHW()
+
+	Make/FREE/D/N=(NUM_DA_TTL_CHANNELS, 2) channelMapGUIToHW = NaN
+	SetDimlabel COLS, 0, HWCHANNEL, channelMapGUIToHW
+	SetDimlabel COLS, 1, TTLBITNR, channelMapGUIToHW
+
+	return channelMapGUIToHW
+End
+
+/// @brief Returns a wave where GetActiveChannels fills in the mapping between hardware and GUI TTL channels
+///        The wave is initialized here with no active channels
+threadsafe Function/WAVE GetActiveChannelMapTTLHWToGUI()
+
+	variable numHWTTLChannels
+
+	numHWTTLChannels = max(HARDWARE_ITC_TTL_1600_RACK_ONE + 1, NUM_DA_TTL_CHANNELS)
+	Make/FREE/D/N=(numHWTTLChannels, NUM_ITC_TTL_BITS_PER_RACK) channelMapHWToGUI = NaN
+
+	return channelMapHWToGUI
+End
