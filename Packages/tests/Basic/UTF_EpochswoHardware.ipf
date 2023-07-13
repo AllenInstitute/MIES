@@ -13,25 +13,25 @@ static Function [WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] 
 	CHECK_WAVE(epochsWave, TEXT_WAVE)
 
 	DAC = 2 // HS 0
-	MIES_EP#EP_AddEpoch(device, DAC, 1, 3, "someDesc", "EP0", 0)
-	MIES_EP#EP_AddEpoch(device, DAC, 4, 5, "someDesc", "EP_0a", 0)
-	MIES_EP#EP_AddEpoch(device, DAC, 10, 20, "someDesc", "EP_0b", 0)
-	MIES_EP#EP_AddEpoch(device, DAC, 1, 2, "someDesc", "EP1", 1)
-	MIES_EP#EP_AddEpoch(device, DAC, 2, 3, "someDesc", "EP_1a", 1)
+	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 1, 3, "someDesc", "EP0", 0)
+	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 4, 5, "someDesc", "EP_0a", 0)
+	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 10, 20, "someDesc", "EP_0b", 0)
+	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 1, 2, "someDesc", "EP1", 1)
+	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 2, 3, "someDesc", "EP_1a", 1)
 	// intentional gap
-	MIES_EP#EP_AddEpoch(device, DAC, 4, 5, "someDesc", "EP_1b", 1)
-	MIES_EP#EP_AddEpoch(device, DAC, 10, 20, "otherDesc", "EP2", 2)
+	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 4, 5, "someDesc", "EP_1b", 1)
+	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 10, 20, "otherDesc", "EP2", 2)
 
 	DAC = 3 // HS 1
-	MIES_EP#EP_AddEpoch(device, DAC, 100, 200, "someDesc", "EP_1", 1)
-	MIES_EP#EP_AddEpoch(device, DAC, 1000, 2000, "otherDesc", "EP_2", -1)
+	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 100, 200, "someDesc", "EP_1", 1)
+	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 1000, 2000, "otherDesc", "EP_2", -1)
 
 	[key, keyText] = PrepareLBN_IGNORE(device)
 
 	Make/N=(1, 1)/T keys = "Epochs"
 	Make/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
-	values[0][0][0] = EP_EpochWaveToStr(epochsWave, 2)
-	values[0][0][1] = EP_EpochWaveToStr(epochsWave, 3)
+	values[0][0][0] = EP_EpochWaveToStr(epochsWave, 2, XOP_CHANNEL_TYPE_DAC)
+	values[0][0][1] = EP_EpochWaveToStr(epochsWave, 3, XOP_CHANNEL_TYPE_DAC)
 
 	ED_AddEntriesToLabnotebook(values, keys, 0, device, DATA_ACQUISITION_MODE)
 
@@ -46,7 +46,7 @@ static Function EP_GetEpochsAssertsOnError()
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
 	try
-		EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_TTL, 0, ".*")
+		EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_COUNT, 0, ".*")
 		FAIL()
 	catch
 		PASS()

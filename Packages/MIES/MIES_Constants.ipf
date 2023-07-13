@@ -26,8 +26,8 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  3
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 9
 
-/// Version of the epoch information for DA data
-Constant SWEEP_EPOCH_VERSION = 7
+/// Version of the epoch information for DA+TTL data
+Constant SWEEP_EPOCH_VERSION = 8
 
 /// Version of the labnotebooks and results (numerical and textual) waves
 ///
@@ -137,6 +137,7 @@ StrConstant XOP_CHANNEL_NAMES = "AD;DA;;TTL"
 Constant XOP_CHANNEL_TYPE_ADC = 0
 Constant XOP_CHANNEL_TYPE_DAC = 1
 Constant XOP_CHANNEL_TYPE_TTL = 3
+Constant XOP_CHANNEL_TYPE_COUNT = 4 // last channel type + 1
 /// @}
 
 /// @name DAQ Channel Type constants used in DAQConfigWave

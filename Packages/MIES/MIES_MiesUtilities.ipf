@@ -2310,7 +2310,7 @@ End
 /// For overlayed channels we have up to three blocks (DA, AD, TTL) in that order.
 Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
-	variable i, numSlots, headstage,  numBlocksTTL, numBlocks, numBlocksEpoch, spacePerSlot
+	variable i, numSlots, headstage,  numBlocksTTL, numBlocks, numBlocksEpochDA, numBlocksEpochTTL, spacePerSlot
 	variable numBlocksDA, numBlocksAD, first, firstFreeAxis, lastFreeAxis, orientation
 	variable numBlocksUnassocDA, numBlocksUnassocAD, numBlocksHS
 	string graph, regex, freeAxis, axis
@@ -2341,18 +2341,22 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 		sprintf regex, ".*%s_DA$", DB_AXIS_PART_EPOCHS
 		WAVE/T/Z Epochaxes = GrepWave(allVerticalAxes, regex)
-		numBlocksEpoch = WaveExists(Epochaxes) ? DimSize(Epochaxes, ROWS) : 0
+		numBlocksEpochDA = WaveExists(Epochaxes) ? DimSize(Epochaxes, ROWS) : 0
 
 		regex = ".*AD$"
 		WAVE/T/Z ADaxes = GrepWave(allVerticalAxes, regex)
 		numBlocksAD = WaveExists(ADaxes) ? DimSize(ADaxes, ROWS) : 0
 
-		regex = ".*TTL$"
+		sprintf regex, ".*(?<!%s)_TTL$", DB_AXIS_PART_EPOCHS
 		WAVE/T/Z TTLaxes = GrepWave(allVerticalAxes, regex)
 		numBlocksTTL = WaveExists(TTLaxes) ? DimSize(TTLaxes, ROWS) : 0
 
-		numBlocks = numBlocksAD + numBlocksDA + numBlocksTTL + numBlocksEpoch
-		numSlots = ADC_SLOT_MULTIPLIER * numBlocksAD + numBlocksDA + numBlocksTTL + EPOCH_SLOT_MULTIPLIER * numBlocksEpoch
+		sprintf regex, ".*%s_TTL$", DB_AXIS_PART_EPOCHS
+		WAVE/T/Z Epochaxes = GrepWave(allVerticalAxes, regex)
+		numBlocksEpochTTL = WaveExists(Epochaxes) ? DimSize(Epochaxes, ROWS) : 0
+
+		numBlocks = numBlocksAD + numBlocksDA + numBlocksTTL + numBlocksEpochDA + numBlocksEpochTTL
+		numSlots = ADC_SLOT_MULTIPLIER * numBlocksAD + numBlocksDA + numBlocksTTL + EPOCH_SLOT_MULTIPLIER * (numBlocksEpochDA + numBlocksEpochTTL)
 
 		spacePerSlot = (1.0 - (numBlocks - 1) * GRAPH_DIV_SPACING) / numSlots
 
@@ -2410,7 +2414,20 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	// epoch info slots for associated and unassociated DA channels
 	sprintf regex, ".*col0%s_DA_(?:[[:digit:]]{1,2})_HS_(?:([[:digit:]]{1,2}|NaN))$", DB_AXIS_PART_EPOCHS
 	WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
-	numBlocksEpoch = WaveExists(axes) ? DimSize(axes, ROWS) : 0
+	numBlocksEpochDA = WaveExists(axes) ? DimSize(axes, ROWS) : 0
+
+	// epoch info for TTL channels
+	if(tgs.visualizeEpochs && tgs.splitTTLbits)
+		sprintf regex, ".*col0%s_TTL_(?:[[:digit:]]{1,2})_(?:[[:digit:]])_HS_NaN$", DB_AXIS_PART_EPOCHS
+		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		numBlocksEpochTTL = WaveExists(axes) ? DimSize(axes, ROWS) : 0
+		if(!numBlocksEpochTTL)
+			// NI Hardware
+			sprintf regex, ".*col0%s_TTL_(?:[[:digit:]]{1,2})_NaN_HS_NaN$", DB_AXIS_PART_EPOCHS
+			WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+			numBlocksEpochTTL = WaveExists(axes) ? DimSize(axes, ROWS) : 0
+		endif
+	endif
 
 	// associated AD channels
 	regex = ".*col0_AD_(?:[[:digit:]]{1,2})_HS_(?:[[:digit:]]{1,2})$"
@@ -2434,8 +2451,8 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	// Unassoc DA: 4 slots
 	// TTL: 1 slot per ttlsWithBits
 
-	numBlocks = numBlocksAD + numBlocksDA + numBlocksUnassocDA + numBlocksUnassocAD + numBlocksTTL + numBlocksEpoch
-	numSlots = ADC_SLOT_MULTIPLIER * numBlocksAD + numBlocksDA + numBlocksUnassocDA + ADC_SLOT_MULTIPLIER * numBlocksUnassocAD + numBlocksTTL + EPOCH_SLOT_MULTIPLIER * numBlocksEpoch
+	numBlocks = numBlocksAD + numBlocksDA + numBlocksUnassocDA + numBlocksUnassocAD + numBlocksTTL + numBlocksEpochDA + numBlocksEpochTTL
+	numSlots = ADC_SLOT_MULTIPLIER * numBlocksAD + numBlocksDA + numBlocksUnassocDA + ADC_SLOT_MULTIPLIER * numBlocksUnassocAD + numBlocksTTL + EPOCH_SLOT_MULTIPLIER * (numBlocksEpochDA + numBlocksEpochTTL)
 
 	spacePerSlot = (1.0 - (numBlocks - 1) * GRAPH_DIV_SPACING) / numSlots
 
@@ -2500,7 +2517,15 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 	// TTLs
 	for(i = 0; i < numBlocksTTL; i += 1)
-		regex = ttlsWithBits[i]
+
+		if(tgs.visualizeEpochs && tgs.splitTTLBits)
+			regex = DB_AXIS_PART_EPOCHS + "_" + ttlsWithBits[i]
+			WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+			ASSERT(WaveExists(axes), "Unexpected number of matches")
+			EnableAxis(graph, axes, EPOCH_SLOT_MULTIPLIER * spacePerSlot, first, last)
+		endif
+
+		sprintf regex, ".*(?<!%s)_%s", DB_AXIS_PART_EPOCHS, ttlsWithBits[i]
 		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
 		EnableAxis(graph, axes, spacePerSlot, first, last)
@@ -8229,4 +8254,37 @@ Function SetUserPingTimestamp(variable timeStamp)
 	isoTS = GetISO8601TimeStamp(secondsSinceIgorEpoch = timeStamp)
 	NVAR JSONid = $GetSettingsJSONid()
 	JSON_SetString(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/last upload", isoTS)
+End
+
+/// @brief Converts a TTL hardware channel number and ttlBit information to a GUI channel number
+///        If the hardware device is NI then ttlBit is ignored.
+///
+/// @param[in] device          Hardware device
+/// @param[in] hwChannelNumber Hardware channel number
+/// @param[in] ttlBit          Number fo the TTL bit in the ITC rack in the range 0 to NUM_ITC_TTL_BITS_PER_RACK - 1
+/// @returns TTL GUI channel number
+Function GetChannelNumberTTL(string device, variable hwChannelNumber, variable ttlBit)
+
+	variable hwType
+
+	hwType = GetHardwareType(device)
+	if(hwType == HARDWARE_NI_DAC)
+		return hwChannelNumber
+	elseif(hwType == HARDWARE_ITC_DAC)
+		if(IsITC1600(device))
+			if(hwChannelNumber == HARDWARE_ITC_TTL_1600_RACK_ZERO)
+				return ttlBit
+			elseif(hwChannelNumber == HARDWARE_ITC_TTL_1600_RACK_ONE)
+				return ttlBit + NUM_ITC_TTL_BITS_PER_RACK
+			else
+				ASSERT(0, "Unknown ITC1600 TTL hardware channel number")
+			endif
+		elseif(hwChannelNumber == HARDWARE_ITC_TTL_DEF_RACK_ZERO)
+			return ttlBit
+		else
+			ASSERT(0, "Unknown single rack ITC TTL hardware channel number")
+		endif
+	else
+		ASSERT(0, "Unsupported hardware type")
+	endif
 End

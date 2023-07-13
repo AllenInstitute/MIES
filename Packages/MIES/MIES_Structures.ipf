@@ -165,6 +165,7 @@ Structure TiledGraphSettings
 	int16 dDAQDisplayMode
 	int16 dDAQHeadstageRegions
 	int16 hideSweep
+	int16 visualizeEpochs
 EndStructure
 
 /// @brief Helper structure for formula parsing of the Wavebuilder combine epoch
