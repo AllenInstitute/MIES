@@ -1673,7 +1673,8 @@ Function BSP_AddTracesForEpochs(string win)
 		fetchChanType = channelType
 		switch(channelType)
 			case XOP_CHANNEL_TYPE_ADC:
-				guiChannelNumber = SFH_GetDAChannel(win, sweepNumber, channelType, hwChannelNumber)
+				guiChannelNumber = hwChannelNumber
+				guiChannelNumber = SFH_GetDAChannel(win, sweepNumber, channelType, guiChannelNumber)
 				fetchChanType = XOP_CHANNEL_TYPE_DAC
 				break
 			case XOP_CHANNEL_TYPE_DAC:
