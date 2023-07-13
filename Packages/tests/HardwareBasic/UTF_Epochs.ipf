@@ -867,11 +867,6 @@ static Function EP_EpochTest15_REENTRY([str])
 	TestEpochsGeneric(str)
 End
 
-static Function EP_EpochTestUnassocDA_PreAcq(string device)
-
-	PGC_SetAndActivateControl(device, "Check_Settings_UnassocDADoTP", val = 0)
-End
-
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function EP_EpochTestUnassocDA([str])
 	string str
@@ -909,45 +904,6 @@ static Function EP_EpochTestUnassocDA_REENTRY([str])
 
 	CHECK_EQUAL_STR(epochChannel0[tpIndex[0]][%StartTime], epochChannel2[tpBaseIndex[0]][%StartTime])
 	CHECK_EQUAL_STR(epochChannel0[tpIndex[0]][%EndTime], epochChannel2[tpBaseIndex[0]][%EndTime])
-
-	cbState = GetLastSettingIndep(numericalValues, 0, TPONUNASSOCDA_ENTRY_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
-	CHECK_EQUAL_VAR(cbState, 0)
-
-	TestEpochsGeneric(str)
-End
-
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTestUnassocDADefault([str])
-	string str
-
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:"      + \
-								 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
-								 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
-								 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
-								 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
-								 "__TTL7_ST:StimulusSetB_TTL_0:")
-
-	AcquireData_NG(s, str)
-End
-
-static Function EP_EpochTestUnassocDADefault_REENTRY([str])
-	string str
-
-	variable cbState
-
-	WAVE/T textualValues   = GetLBTextualValues(str)
-	WAVE   numericalValues = GetLBNumericalValues(str)
-	WAVE/T epochChannel2 = EP_FetchEpochs(numericalValues, textualValues, 0, 2, XOP_CHANNEL_TYPE_DAC)
-	Make/FREE/T/N=(DimSize(epochChannel2, ROWS)) epochNames2 = EP_GetShortName(epochChannel2[p][%Tags])
-	WAVE tpExisting = FindIndizes(epochNames2, str="TP")
-	CHECK_EQUAL_VAR(DimSize(tpExisting, ROWS), 1)
-
-	WAVE   numericalValues = GetLBNumericalValues(str)
-	cbState = GetLastSettingIndep(numericalValues, 0, TPONUNASSOCDA_ENTRY_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
-	CHECK_EQUAL_VAR(cbState, 1)
 
 	TestEpochsGeneric(str)
 End
