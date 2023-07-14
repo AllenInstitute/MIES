@@ -8319,36 +8319,3 @@ Function SetUserPingTimestamp(variable timeStamp)
 	NVAR JSONid = $GetSettingsJSONid()
 	JSON_SetString(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/last upload", isoTS)
 End
-
-/// @brief Converts a TTL hardware channel number and ttlBit information to a GUI channel number
-///        If the hardware device is NI then ttlBit is ignored.
-///
-/// @param[in] device          Hardware device
-/// @param[in] hwChannelNumber Hardware channel number
-/// @param[in] ttlBit          Number fo the TTL bit in the ITC rack in the range 0 to NUM_ITC_TTL_BITS_PER_RACK - 1
-/// @returns TTL GUI channel number
-Function GetChannelNumberTTL(string device, variable hwChannelNumber, variable ttlBit)
-
-	variable hwType
-
-	hwType = GetHardwareType(device)
-	if(hwType == HARDWARE_NI_DAC)
-		return hwChannelNumber
-	elseif(hwType == HARDWARE_ITC_DAC)
-		if(IsITC1600(device))
-			if(hwChannelNumber == HARDWARE_ITC_TTL_1600_RACK_ZERO)
-				return ttlBit
-			elseif(hwChannelNumber == HARDWARE_ITC_TTL_1600_RACK_ONE)
-				return ttlBit + NUM_ITC_TTL_BITS_PER_RACK
-			else
-				ASSERT(0, "Unknown ITC1600 TTL hardware channel number")
-			endif
-		elseif(hwChannelNumber == HARDWARE_ITC_TTL_DEF_RACK_ZERO)
-			return ttlBit
-		else
-			ASSERT(0, "Unknown single rack ITC TTL hardware channel number")
-		endif
-	else
-		ASSERT(0, "Unsupported hardware type")
-	endif
-End
