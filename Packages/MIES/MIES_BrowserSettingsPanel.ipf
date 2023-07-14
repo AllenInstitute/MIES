@@ -1606,11 +1606,11 @@ End
 /// @brief Debug function to add traces with epoch information
 Function BSP_AddTracesForEpochs(string win)
 
-	variable i, j, numEntries, start_x, start_y, end_x, end_y, yOffset
+	variable i, j, start_x, start_y, end_x, end_y, yOffset
 	variable headstage, yLevelOffset, level, idx, numTraces, numEpochs
 	variable sweepNumber, traceIndex, channelType, hwChannelNumber, guiChannelNumber, ttlBit, fetchChanType
 	STRUCT RGBColor c
-	string device, xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, idPart, level_x_trace
+	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, idPart, level_x_trace
 
 	if(!BSP_IsDataBrowser(win) && !BSP_IsSweepBrowser(win))
 		printf "The current window is neither a databrowser nor a sweepbrowser windows.\r"
@@ -1673,7 +1673,8 @@ Function BSP_AddTracesForEpochs(string win)
 		fetchChanType = channelType
 		switch(channelType)
 			case XOP_CHANNEL_TYPE_ADC:
-				guiChannelNumber = SFH_GetDAChannel(win, sweepNumber, channelType, hwChannelNumber)
+				guiChannelNumber = hwChannelNumber
+				guiChannelNumber = SFH_GetDAChannel(win, sweepNumber, channelType, guiChannelNumber)
 				fetchChanType = XOP_CHANNEL_TYPE_DAC
 				break
 			case XOP_CHANNEL_TYPE_DAC:
@@ -1681,8 +1682,10 @@ Function BSP_AddTracesForEpochs(string win)
 				break
 			case XOP_CHANNEL_TYPE_TTL:
 				ttlBit = str2num(traceInfos[i][%TTLBit])
-				device = BSP_GetDevice(win)
-				guiChannelNumber = GetChannelNumberTTL(device, hwChannelNumber, ttlBit)
+				WAVE/Z channelMapHWToGUI = GetActiveChannels(numericalValues, textualValues, sweepNumber, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_HWTOGUI_CHANNEL)
+				ASSERT(WaveExists(channelMapHWToGUI), "Expected TTL channel(s) for sweep " + num2istr(sweepNumber) + " in LNB, but none found.")
+				guiChannelNumber = channelMapHWToGUI[hwChannelNumber][IsNaN(ttlBit) ? 0 : ttlBit]
+				ASSERT(IsFinite(guiChannelNumber), "Could not retrieve GUI channel number for TTL hardware channel/ttlBits")
 				break
 			default:
 				ASSERT(0, "Unsupported channelType")

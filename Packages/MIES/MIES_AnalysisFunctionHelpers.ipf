@@ -103,7 +103,7 @@ End
 ///
 /// @param DAQConfigWave DAQ configuration wave, most users need to call
 ///                      `GetDAQConfigWave(device)` to get that wave.
-/// @param channelNumber channel number (0-based)
+/// @param channelNumber hardware channel number
 /// @param channelType   channel type, one of @ref XopChannelConstants
 threadsafe Function AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
 	WAVE DAQConfigWave
@@ -156,7 +156,7 @@ End
 ///
 /// @param DAQConfigWave DAQ configuration wave, most users need to call
 ///                      `GetDAQConfigWave(device)` to get that wave.
-/// @param channelNumber channel number (0-based)
+/// @param channelNumber hardware channel number
 /// @param channelType   channel type, one of @ref XopChannelConstants
 Function/S AFH_GetChannelUnit(DAQConfigWave, channelNumber, channelType)
 	WAVE DAQConfigWave

@@ -159,6 +159,8 @@ Constant TIME_TP_ONLY_ON_DAQ = 1
 /// @{
 Constant TTL_HARDWARE_CHANNEL  = 0x0
 Constant TTL_DAEPHYS_CHANNEL   = 0x1
+Constant TTL_GUITOHW_CHANNEL   = 0x2
+Constant TTL_HWTOGUI_CHANNEL   = 0x3
 /// @}
 
 Constant MINIMUM_WAVE_SIZE = 64

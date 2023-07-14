@@ -630,6 +630,49 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 		endfor
 	endfor
 
+	WAVE channelGUItoHW = GetActiveChannels(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_GUITOHW_CHANNEL)
+	WAVE channelGUItoHWRef = GetActiveChannelMapTTLGUIToHW()
+	WAVE channelHWtoGUI = GetActiveChannels(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_HWTOGUI_CHANNEL)
+	WAVE channelHWtoGUIRef = GetActiveChannelMapTTLHWToGUI()
+	if(hardwareType == HARDWARE_NI_DAC)
+		channelGUItoHWRef[1][%HWCHANNEL] = 1
+		channelGUItoHWRef[3][%HWCHANNEL] = 3
+		channelGUItoHWRef[5][%HWCHANNEL] = 5
+		channelGUItoHWRef[7][%HWCHANNEL] = 7
+		CHECK_EQUAL_WAVES(channelGUItoHWRef, channelGUItoHW)
+		channelHWtoGUIRef[1][] = 1
+		channelHWtoGUIRef[3][] = 3
+		channelHWtoGUIRef[5][] = 5
+		channelHWtoGUIRef[7][] = 7
+		CHECK_EQUAL_WAVES(channelHWtoGUIRef, channelHWtoGUI)
+	elseif(hardwareType == HARDWARE_ITC_DAC)
+		if(IsITC1600(device))
+			channelGUItoHWRef[1][%HWCHANNEL] = HARDWARE_ITC_TTL_1600_RACK_ZERO
+			channelGUItoHWRef[3][%HWCHANNEL] = HARDWARE_ITC_TTL_1600_RACK_ZERO
+			channelGUItoHWRef[5][%HWCHANNEL] = HARDWARE_ITC_TTL_1600_RACK_ONE
+			channelGUItoHWRef[7][%HWCHANNEL] = HARDWARE_ITC_TTL_1600_RACK_ONE
+			channelGUItoHWRef[1][%TTLBITNR] = 1
+			channelGUItoHWRef[3][%TTLBITNR] = 3
+			channelGUItoHWRef[5][%TTLBITNR] = 1
+			channelGUItoHWRef[7][%TTLBITNR] = 3
+			CHECK_EQUAL_WAVES(channelGUItoHWRef, channelGUItoHW)
+			channelHWtoGUIRef[HARDWARE_ITC_TTL_1600_RACK_ZERO][1] = 1
+			channelHWtoGUIRef[HARDWARE_ITC_TTL_1600_RACK_ZERO][3] = 3
+			channelHWtoGUIRef[HARDWARE_ITC_TTL_1600_RACK_ONE][1] = 5
+			channelHWtoGUIRef[HARDWARE_ITC_TTL_1600_RACK_ONE][3] = 7
+			CHECK_EQUAL_WAVES(channelHWtoGUIRef, channelHWtoGUI)
+		else
+			channelGUItoHWRef[1][%HWCHANNEL] = HARDWARE_ITC_TTL_DEF_RACK_ZERO
+			channelGUItoHWRef[3][%HWCHANNEL] = HARDWARE_ITC_TTL_DEF_RACK_ZERO
+			channelGUItoHWRef[1][%TTLBITNR] = 1
+			channelGUItoHWRef[3][%TTLBITNR] = 3
+			CHECK_EQUAL_WAVES(channelGUItoHWRef, channelGUItoHW)
+			channelHWtoGUIRef[HARDWARE_ITC_TTL_DEF_RACK_ZERO][1] = 1
+			channelHWtoGUIRef[HARDWARE_ITC_TTL_DEF_RACK_ZERO][3] = 3
+			CHECK_EQUAL_WAVES(channelHWtoGUIRef, channelHWtoGUI)
+		endif
+	endif
+
 	if(DoExpensiveChecks())
 		TestNwbExportV1()
 		TestNwbExportV2()
