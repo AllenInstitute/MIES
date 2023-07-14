@@ -680,14 +680,12 @@ static Function DC_PlaceDataInDAQConfigWave(device, dataAcqOrTP)
 		variable hardwareType = GetHardwareType(device)
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
-				WAVE sweepDataLNB = GetSweepSettingsWave(device)
-
 				if(DC_AreTTLsInRackChecked(device, RACK_ZERO))
 					DAQConfigWave[j][%ChannelType] = XOP_CHANNEL_TYPE_TTL
 
 					channel = HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)
 					DAQConfigWave[j][%ChannelNumber] = channel
-					sweepDataLNB[0][10][INDEP_HEADSTAGE] = channel
+					DC_DocumentChannelProperty(device, "rack zero channel", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, var=channel)
 					DAQConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
 
 					j += 1
@@ -698,7 +696,7 @@ static Function DC_PlaceDataInDAQConfigWave(device, dataAcqOrTP)
 
 					channel = HW_ITC_GetITCXOPChannelForRack(device, RACK_ONE)
 					DAQConfigWave[j][%ChannelNumber] = channel
-					sweepDataLNB[0][11][INDEP_HEADSTAGE] = channel
+					DC_DocumentChannelProperty(device, "rack one channel", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, var=channel)
 					DAQConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
 				endif
 				break
