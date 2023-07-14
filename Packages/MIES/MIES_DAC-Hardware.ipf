@@ -207,7 +207,7 @@ End
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
-/// @param channel      channel number
+/// @param channel      hardware channel number
 /// @param value        value to write in volts
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function HW_WriteDAC(hardwareType, deviceID, channel, value, [flags])
@@ -233,7 +233,7 @@ End
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
-/// @param channel      channel number
+/// @param channel      hardware channel number
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return value in volts
