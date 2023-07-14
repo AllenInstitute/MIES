@@ -2110,7 +2110,7 @@ End
 ///
 /// @param sweepDFR      datafolder holding 1D waves
 /// @param channelType   One of @ref XopChannelConstants
-/// @param channelNumber channel number
+/// @param channelNumber hardware channel number
 /// @param splitTTLBits  [optional, defaults to false] return a single bit of the TTL wave
 /// @param ttlBit        [optional] number specifying the TTL bit
 Function/WAVE GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNumber, [splitTTLBits, ttlBit])
