@@ -310,7 +310,7 @@ End
 static Function TestEpochsGeneric(string device)
 
 	variable numEntries, endTimeDAC, endTimeEpochs, samplingInterval, hwType
-	variable i, lastPoint, channelType, channelNumber, index, hwChannelNumber, hwChannelIndex, first, last, ttlBits
+	variable i, lastPoint, channelType, channelNumber, index, hwChannelNumber, first, last, ttlBit
 	string setName, sweepChannelName
 
 	string sweeps, configs
@@ -360,8 +360,9 @@ static Function TestEpochsGeneric(string device)
 	Make/FREE/T channelTypePrefix = {"DA", "TTL"}
 	Make/FREE/D/N=(NUM_DA_TTL_CHANNELS, XOP_CHANNEL_TYPE_COUNT) chanMarker
 
+	WAVE/Z channelMapTTLGUIToHW = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_GUITOHW_CHANNEL)
+
 	for(channelType : channelTypes)
-		hwChannelIndex = 0
 		WAVE/Z activeChannels = GetActiveChannels(numericalValues, textualValues, sweepNo, channelType)
 		if(!WaveExists(activeChannels))
 			continue
@@ -372,46 +373,23 @@ static Function TestEpochsGeneric(string device)
 				continue
 			endif
 
-			if(channelType == XOP_CHANNEL_TYPE_TTL && hwType == HARDWARE_ITC_DAC)
-				if(MIES_DC#DC_AreTTLsInRackChecked(device, RACK_ZERO))
-					HW_ITC_GetRackRange(RACK_ZERO, first, last)
-					if(channelNumber >= first && channelNumber <= last)
-						hwChannelIndex = 0
-					endif
-				elseif(MIES_DC#DC_AreTTLsInRackChecked(device, RACK_ONE))
-					HW_ITC_GetRackRange(RACK_ONE, first, last)
-					if(channelNumber >= first && channelNumber <= last)
-						hwChannelIndex = 1
-					endif
-				endif
-			endif
-
-			hwChannelNumber = GetHWChannelNumber(config, channelType, hwChannelIndex)
-			hwChannelIndex += 1
-
-			if(IsNaN(hwChannelNumber))
-				continue
-			endif
-
 			if(channelType == XOP_CHANNEL_TYPE_TTL)
+				REQUIRE_WAVE(channelMapTTLGUIToHW, NUMERIC_WAVE)
+				ttlBit = channelMapTTLGUIToHW[channelNumber][%TTLBITNR]
+				hwChannelNumber = channelMapTTLGUIToHW[channelNumber][%HWCHANNEL]
 				if(hwType == HARDWARE_ITC_DAC)
-					WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber, splitTTLBits = 1, ttlBit = mod(channelNumber, NUM_ITC_TTL_BITS_PER_RACK))
+					WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber, splitTTLBits = 1, ttlBit = ttlBit)
 				elseif(hwType == HARDWARE_NI_DAC)
 					WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber)
 				else
 					FAIL()
 				endif
-				if(!WaveExists(sweepChannel))
-					continue
-				endif
 
 				WAVE/T stimSets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, sweepNo)
 				setName = stimSets[channelNumber]
 			elseif(channelType == XOP_CHANNEL_TYPE_DAC)
+				hwChannelNumber = channelNumber
 				WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber)
-				if(!WaveExists(sweepChannel))
-					continue
-				endif
 
 				[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, channelNumber, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 				REQUIRE_WAVE(setting, FREE_WAVE)
@@ -419,8 +397,7 @@ static Function TestEpochsGeneric(string device)
 				WAVE/T settingText = setting
 				setName = settingText[index]
 			endif
-
-			CHECK_WAVE(sweepChannel, NUMERIC_WAVE)
+			REQUIRE_WAVE(sweepChannel, NUMERIC_WAVE)
 
 			WAVE/Z/T epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, channelType)
 			if(WB_StimsetIsFromThirdParty(setName) || !CmpStr(setName, STIMSET_TP_WHILE_DAQ))
