@@ -1274,9 +1274,9 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					endif
 					break
 				case "check_BrowserSettings_VisEpochs":
+					AdaptDependentControls(bsPanel, "check_BrowserSettings_splitTTL", CHECKBOX_UNSELECTED, checked, DEP_CTRLS_SAME)
 					if(checked)
 						DisableControls(bsPanel, "check_Display_EqualYrange;check_Display_EqualYignore")
-						AdaptDependentControls(bsPanel, "check_BrowserSettings_splitTTL", CHECKBOX_SELECTED, CHECKBOX_SELECTED, DEP_CTRLS_SAME)
 					else
 						EnableControls(bsPanel, "check_Display_EqualYrange;check_Display_EqualYignore")
 					endif
