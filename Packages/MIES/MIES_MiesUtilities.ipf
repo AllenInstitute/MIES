@@ -2530,10 +2530,8 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
 		EnableAxis(graph, axes, spacePerSlot, first, last)
 
-		if(tgs.splitTTLBits)
-			axis = axes[0]
-			ModifyGraph/W=$graph nticks($axis)=2, manTick($axis)={0,1,0,0}, manMinor($axis)={0,50}
-		endif
+		axis = axes[0]
+		ModifyGraph/W=$graph nticks($axis)=2, manTick($axis)={0,1,0,0}, manMinor($axis)={0,50}
 	endfor
 
 	ASSERT(first < 1e-15, "Left over space")
