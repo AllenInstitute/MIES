@@ -2652,7 +2652,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
-	variable moreData, chan, numHorizWaves, numVertWaves, idx
+	variable moreData, chan, guiChannelNumber, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, headstage, channelType
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
@@ -2667,7 +2667,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",               \
 			  					"textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType", \
-								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage"}
+								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage", "GUIChannelNumber"}
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -2693,6 +2693,10 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	numDACs = DimSize(DACs, ROWS)
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
+	if(numTTLs > 0)
+		WAVE/Z channelMapHWToGUI = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_HWTOGUI_CHANNEL)
+		ASSERT(WaveExists(channelMapHWToGUI), "Can not find LNB entries for active TTL channels from config wave.")
+	endif
 
 	hardwareType           = GetUsedHWDACFromLNB(numericalValues, sweepNo)
 	WAVE/Z ttlRackZeroBits = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
@@ -2939,6 +2943,12 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					name = channelID + num2str(chan)
 				endif
 
+				if(channelType == XOP_CHANNEL_TYPE_TTL)
+					guiChannelNumber = channelMapHWToGUI[chan][IsNaN(ttlBit) ? 0 : ttlBit]
+				else
+					guiChannelNumber = chan
+				endif
+
 				DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
 
 				ASSERT(DataFolderExistsDFR(singleSweepDFR), "Missing singleSweepDFR")
@@ -3114,7 +3124,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),   \
 					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                \
 								              num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep",             \
-												  num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage))})
+												  num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage)),       \
+												  num2istr(guiChannelNumber)})
 				endfor
 			endfor
 

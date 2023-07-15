@@ -103,8 +103,8 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
 			channelNumber = channels[i][j]
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
-									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber)})
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber)})
 			values[connections[j]] = channelNumber
 			config[j][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
 			config[j][%ChannelNumber] = channelNumber
@@ -2517,8 +2517,8 @@ static Function TestOperationData()
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
-									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo)})
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), StringFromList(j, channelNumberList)})
 		endfor
 	endfor
 
