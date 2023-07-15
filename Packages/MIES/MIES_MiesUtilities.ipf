@@ -2933,19 +2933,14 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			// waves per channel type
 			for(j = 0; j < numVertWaves; j += 1)
 
-				if(!cmpstr(channelID, "TTL") && tgs.splitTTLBits)
-					ttlBit = j
-					name = channelID + num2str(chan) + "_" + num2str(ttlBit)
-				else
-					ttlBit = NaN
-					name = channelID + num2str(chan)
-				endif
+				ttlBit = channelType == XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits ? j : NaN
 
 				if(channelType == XOP_CHANNEL_TYPE_TTL)
 					guiChannelNumber = channelMapHWToGUI[chan][IsNaN(ttlBit) ? 0 : ttlBit]
 				else
 					guiChannelNumber = chan
 				endif
+				name = channelID + num2istr(guiChannelNumber)
 
 				DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
 
