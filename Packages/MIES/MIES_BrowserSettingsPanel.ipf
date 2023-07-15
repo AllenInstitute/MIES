@@ -1608,7 +1608,7 @@ Function BSP_AddTracesForEpochs(string win)
 
 	variable i, j, start_x, start_y, end_x, end_y, yOffset
 	variable headstage, yLevelOffset, level, idx, numTraces, numEpochs
-	variable sweepNumber, traceIndex, channelType, hwChannelNumber, guiChannelNumber, ttlBit, fetchChanType
+	variable sweepNumber, traceIndex, channelType, channelNumber, fetchEpChanType, fetchEpChannelNumber
 	STRUCT RGBColor c
 	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, idPart, level_x_trace
 
@@ -1663,41 +1663,23 @@ Function BSP_AddTracesForEpochs(string win)
 		headstage   = str2num(traceInfos[i][%headstage])
 		sweepNumber = str2num(traceInfos[i][%sweepNumber])
 		channelType = WhichListItem(traceInfos[i][%channelType], XOP_CHANNEL_NAMES)
-		hwChannelNumber = str2num(traceInfos[i][%channelNumber])
+		channelNumber = str2num(traceInfos[i][%GUIChannelNumber])
 
 		WAVE/Z/T numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNumber)
 		ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
 		WAVE/Z/T textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
 		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
 
-		fetchChanType = channelType
-		switch(channelType)
-			case XOP_CHANNEL_TYPE_ADC:
-				guiChannelNumber = hwChannelNumber
-				guiChannelNumber = SFH_GetDAChannel(win, sweepNumber, channelType, guiChannelNumber)
-				fetchChanType = XOP_CHANNEL_TYPE_DAC
-				break
-			case XOP_CHANNEL_TYPE_DAC:
-				guiChannelNumber = hwChannelNumber
-				break
-			case XOP_CHANNEL_TYPE_TTL:
-				ttlBit = str2num(traceInfos[i][%TTLBit])
-				WAVE/Z channelMapHWToGUI = GetActiveChannels(numericalValues, textualValues, sweepNumber, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_HWTOGUI_CHANNEL)
-				ASSERT(WaveExists(channelMapHWToGUI), "Expected TTL channel(s) for sweep " + num2istr(sweepNumber) + " in LNB, but none found.")
-				guiChannelNumber = channelMapHWToGUI[hwChannelNumber][IsNaN(ttlBit) ? 0 : ttlBit]
-				ASSERT(IsFinite(guiChannelNumber), "Could not retrieve GUI channel number for TTL hardware channel/ttlBits")
-				break
-			default:
-				ASSERT(0, "Unsupported channelType")
-		endswitch
+		fetchEpChanType = channelType == XOP_CHANNEL_TYPE_ADC ? XOP_CHANNEL_TYPE_DAC : channelType
+		fetchEpChannelNumber = channelType == XOP_CHANNEL_TYPE_ADC ? SFH_GetDAChannel(win, sweepNumber, channelType, channelNumber) : channelNumber
 
 		// present since a2172f03 (Added generations of epoch information wave, 2019-05-22)
-		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, guiChannelNumber, fetchChanType)
+		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, fetchEpChannelNumber, fetchEpChanType)
 		if(!WaveExists(epochsFromLBN))
 			continue
 		endif
 
-		sprintf idPart, "_sweep%d_chan%d_type%d_HS%.0g", sweepNumber, guiChannelNumber, channelType, headstage
+		sprintf idPart, "_sweep%d_chan%d_type%d_HS%.0g", sweepNumber, channelNumber, channelType, headstage
 		sprintf name, "epochs_%s", idPart
 		Duplicate/O/T epochsFromLBN, dfr:$name/Wave=epochs
 
