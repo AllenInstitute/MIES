@@ -2653,7 +2653,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
 	variable moreData, chan, numHorizWaves, numVertWaves, idx
-	variable numTTLBits, headstage
+	variable numTTLBits, headstage, channelType
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
 	variable numRegions, numEntries, numRangesPerEntry, traceCounter
@@ -2843,7 +2843,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		// iterate over all channel types in order DA, AD, TTL
 		// and take the first active channel from the list of channels per type
 		for(i = 0; i < NUM_CHANNEL_TYPES; i += 1)
-			switch(channelTypes[i])
+			channelType = channelTypes[i]
+			switch(channelType)
 				case XOP_CHANNEL_TYPE_DAC:
 					if(!tgs.displayDAC)
 						continue
@@ -2909,12 +2910,12 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 			// ignore TP during DAQ channels
 			if(WaveExists(status) && IsFinite(headstage))
-				if(channelTypes[i] == XOP_CHANNEL_TYPE_DAC              \
+				if(channelType == XOP_CHANNEL_TYPE_DAC              \
 				   && WaveExists(daChannelType)                         \
 				   && daChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
 						activeChanCount[i] += 1
 						continue
-				elseif(channelTypes[i] == XOP_CHANNEL_TYPE_ADC              \
+				elseif(channelType == XOP_CHANNEL_TYPE_ADC              \
 				       && WaveExists(adChannelType)                         \
 				       && adChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
 						activeChanCount[i] += 1
@@ -2942,7 +2943,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 				ASSERT(DataFolderExistsDFR(singleSweepDFR), "Missing singleSweepDFR")
 
-				WAVE/Z wv = GetDAQDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
+				WAVE/Z wv = GetDAQDataSingleColumnWave(singleSweepDFR, channelType, chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
 				if(!WaveExists(wv))
 					continue
 				endif
@@ -2983,7 +2984,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						vertAxis += "_HS_" + num2str(headstage)
 					endif
 
-					if(tgs.dDAQDisplayMode && channelTypes[i] != XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
+					if(tgs.dDAQDisplayMode && channelType != XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
 
 						if(dDAQEnabled)
 							// fallback to manual calculation
@@ -3058,7 +3059,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 					if(k == 0) // first column, add labels
 						if(hasPhysUnit)
-							unit = AFH_GetChannelUnit(config, chan, channelTypes[i])
+							unit = AFH_GetChannelUnit(config, chan, channelType)
 						else
 							unit = "a.u."
 						endif
