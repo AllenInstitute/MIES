@@ -1979,12 +1979,12 @@ End
 static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z channels, WAVE/Z sweeps, variable fromDisplayed, variable clampMode)
 
 	variable i, j, k, l, channelType, channelNumber, sweepNo, sweepNoT, outIndex
-	variable numSweeps, numInChannels, numSettings, maxChannels, activeChannel, numActiveChannels
+	variable numSweeps, numInChannels, numActiveChannels, index
 	variable isSweepBrowser
 	variable dimPosSweep, dimPosChannelNumber, dimPosChannelType
-	variable dimPosTSweep, dimPosTChannelNumber, dimPosTChannelType
+	variable dimPosTSweep, dimPosTChannelNumber, dimPosTChannelType, dimPosTClampMode
 	variable numTraces
-	string setting, settingList, msg, device, singleSweepDFStr
+	string msg, device, singleSweepDFStr
 
 	if(!WaveExists(sweeps) || !DimSize(sweeps, ROWS))
 		return $""
@@ -1997,11 +1997,7 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 	fromDisplayed = !!fromDisplayed
 
 	if(fromDisplayed)
-		if(clampMode == SF_OP_SELECT_CLAMPCODE_ALL)
-			WAVE/T/Z traces = GetTraceInfos(graph)
-		else
-			WAVE/T/Z traces = GetTraceInfos(graph, addFilterKeys = {"clampMode"}, addFilterValues={num2istr(clampMode)})
-		endif
+		WAVE/T/Z traces = GetTraceInfos(graph)
 		if(!WaveExists(traces))
 			return $""
 		endif
@@ -2018,12 +2014,14 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 		numSweeps = DimSize(sweeps, ROWS)
 
 		WAVE selectDisplayed = SFH_NewSelectDataWave(numTraces, 1)
+		Make/FREE/D/N=(numTraces) clampModeDisplayed
 		dimPosSweep = FindDimLabel(selectDisplayed, COLS, "SWEEP")
 		dimPosChannelType = FindDimLabel(selectDisplayed, COLS, "CHANNELTYPE")
 		dimPosChannelNumber = FindDimLabel(selectDisplayed, COLS, "CHANNELNUMBER")
 
 		dimPosTChannelType = FindDimLabel(traces, COLS, "channelType")
-		dimPosTChannelNumber = FindDimLabel(traces, COLS, "channelNumber")
+		dimPosTChannelNumber = FindDimLabel(traces, COLS, "GUIChannelNumber")
+		dimPosTClampMode = FindDimLabel(traces, COLS, "clampMode")
 		for(i = 0; i < numSweeps; i += 1)
 			sweepNo = sweeps[i]
 			for(j = 0; j < numTraces; j += 1)
@@ -2032,6 +2030,7 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 					selectDisplayed[outIndex][dimPosSweep] = sweepNo
 					selectDisplayed[outIndex][dimPosChannelType] = WhichListItem(traces[j][dimPosTChannelType], XOP_CHANNEL_NAMES)
 					selectDisplayed[outIndex][dimPosChannelNumber] = str2num(traces[j][dimPosTChannelNumber])
+					clampModeDisplayed[outIndex] = str2num(traces[j][dimPosTClampMode])
 					outIndex += 1
 				endif
 				if(outIndex == numTraces)
@@ -2043,6 +2042,7 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 			endif
 		endfor
 		Redimension/N=(outIndex, -1) selectDisplayed
+		Redimension/N=(outIndex) clampModeDisplayed
 		numTraces = outIndex
 
 		outIndex = 0
@@ -2062,7 +2062,7 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 	numSweeps = DimSize(sweeps, ROWS)
 	numInChannels = DimSize(channels, ROWS)
 
-	WAVE selectData = SFH_NewSelectDataWave(numSweeps, NUM_DA_TTL_CHANNELS + NUM_AD_CHANNELS)
+	WAVE selectData = SFH_NewSelectDataWave(numSweeps, NUM_DA_TTL_CHANNELS + NUM_AD_CHANNELS + NUM_DA_TTL_CHANNELS)
 	if(!fromDisplayed)
 		dimPosSweep = FindDimLabel(selectData, COLS, "SWEEP")
 		dimPosChannelType = FindDimLabel(selectData, COLS, "CHANNELTYPE")
@@ -2096,6 +2096,10 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 			if(!WaveExists(numericalValues))
 				continue
 			endif
+			WAVE/Z/T textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+			if(!WaveExists(textualValues))
+				continue
+			endif
 		endif
 
 		for(j = 0; j < numInChannels; j += 1)
@@ -2104,94 +2108,49 @@ static Function/WAVE SF_GetActiveChannelNumbersForSweeps(string graph, WAVE/Z ch
 			channelNumber = channels[j][%channelNumber]
 
 			if(IsNaN(channelType))
-				settingList = "ADC;DAC;"
+				Make/FREE/D channelTypes = {XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_TTL}
 			else
-				switch(channelType)
-					case XOP_CHANNEL_TYPE_DAC:
-						settingList = "DAC;"
-						break
-					case XOP_CHANNEL_TYPE_ADC:
-						settingList = "ADC;"
-						break
-					default:
-						sprintf msg, "Unhandled channel type %g in channels() at position %d", channelType, j
-						SFH_ASSERT(0, msg)
-				endswitch
+				sprintf msg, "Unhandled channel type %g in channels() at position %d", channelType, j
+				SFH_ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC || channelType == XOP_CHANNEL_TYPE_TTL, msg)
+				Make/FREE/D channelTypes = {channelType}
 			endif
 
-			numSettings = ItemsInList(settingList)
-			for(k = 0; k < numSettings; k += 1)
-				setting = StringFromList(k, settingList)
-				strswitch(setting)
-					case "DAC":
-						channelType = XOP_CHANNEL_TYPE_DAC
-						maxChannels = NUM_DA_TTL_CHANNELS
-						break
-					case "ADC":
-						channelType = XOP_CHANNEL_TYPE_ADC
-						maxChannels = NUM_AD_CHANNELS
-						break
-					default:
-						SFH_ASSERT(0, "Unexpected setting entry for channel type resolution.")
-						break
-				endswitch
+			for(channelType : channelTypes)
 
 				if(fromDisplayed)
 					for(l = 0; l < numTraces; l += 1)
-						if(IsNaN(channelNumber))
-							if(sweepNo == selectDisplayed[l][dimPosSweep] && channelType == selectDisplayed[l][dimPosChannelType])
-								activeChannel = selectDisplayed[l][dimPosChannelNumber]
-								if(activeChannel < maxChannels)
-									selectData[outIndex][dimPosSweep] = sweepNo
-									selectData[outIndex][dimPosChannelType] = channelType
-									selectData[outIndex][dimPosChannelNumber] = selectDisplayed[l][dimPosChannelNumber]
-									outIndex += 1
-								endif
+						if(sweepNo == selectDisplayed[l][dimPosSweep] && channelType == selectDisplayed[l][dimPosChannelType] && (IsNaN(channelNumber) || channelNumber == selectDisplayed[l][dimPosChannelNumber]))
+							if(clampMode != SF_OP_SELECT_CLAMPCODE_ALL && (channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC) && clampMode != clampModeDisplayed[l])
+								continue
 							endif
-						else
-							if(sweepNo == selectDisplayed[l][dimPosSweep] && channelType == selectDisplayed[l][dimPosChannelType] && channelNumber == selectDisplayed[l][dimPosChannelNumber] && channelNumber < maxChannels)
-								selectData[outIndex][dimPosSweep] = sweepNo
-								selectData[outIndex][dimPosChannelType] = channelType
-								selectData[outIndex][dimPosChannelNumber] = channelNumber
-								outIndex += 1
-							endif
+							selectData[outIndex][dimPosSweep] = sweepNo
+							selectData[outIndex][dimPosChannelType] = channelType
+							selectData[outIndex][dimPosChannelNumber] = selectDisplayed[l][dimPosChannelNumber]
+							outIndex += 1
 						endif
 					endfor
 				else
-					WAVE/Z activeChannels = GetLastSetting(numericalValues, sweepNo, setting, DATA_ACQUISITION_MODE)
+					WAVE/Z activeChannels = GetActiveChannels(numericalValues, textualValues, sweepNo, channelType)
 					if(!WaveExists(activeChannels))
 						continue
 					endif
-					if(clampMode != SF_OP_SELECT_CLAMPCODE_ALL)
-						WAVE/Z clampModes = GetLastSetting(numericalValues, sweepNo, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
-						if(!WaveExists(clampModes))
+					// faster than ZapNaNs due to no mem alloc
+					numActiveChannels = DimSize(activeChannels, ROWS)
+					for(l = 0; l < numActiveChannels; l += 1)
+						if(IsNan(activeChannels[l]) || (!IsNaN(channelNumber) && channelNumber != l))
 							continue
 						endif
-					endif
-					if(IsNaN(channelNumber))
-						// faster than ZapNaNs due to no mem alloc
-						numActiveChannels = DimSize(activeChannels, ROWS)
-						for(l = 0; l < numActiveChannels; l += 1)
-							if(clampMode != SF_OP_SELECT_CLAMPCODE_ALL && clampMode != clampModes[l])
+						if(clampMode != SF_OP_SELECT_CLAMPCODE_ALL && (channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC))
+							[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, CLAMPMODE_ENTRY_KEY, l, channelType, DATA_ACQUISITION_MODE)
+							if(!WaveExists(setting) || (WaveExists(setting) && clampMode != setting[index]))
 								continue
 							endif
-							activeChannel = activeChannels[l]
-							if(!IsNaN(activeChannel) && activeChannel < maxChannels)
-								selectData[outIndex][dimPosSweep] = sweepNo
-								selectData[outIndex][dimPosChannelType] = channelType
-								selectData[outIndex][dimPosChannelNumber] = activeChannel
-								outIndex += 1
-							endif
-						endfor
-					elseif(channelNumber < maxChannels)
-						FindValue/V=(channelNumber) activeChannels
-						if(V_Value >= 0 && (clampMode == SF_OP_SELECT_CLAMPCODE_ALL || clampMode == clampModes[V_Value]))
-							selectData[outIndex][dimPosSweep] = sweepNo
-							selectData[outIndex][dimPosChannelType] = channelType
-							selectData[outIndex][dimPosChannelNumber] = channelNumber
-							outIndex += 1
 						endif
-					endif
+						selectData[outIndex][dimPosSweep] = sweepNo
+						selectData[outIndex][dimPosChannelType] = channelType
+						selectData[outIndex][dimPosChannelNumber] = l
+						outIndex += 1
+					endfor
 				endif
 
 			endfor
