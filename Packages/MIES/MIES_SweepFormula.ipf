@@ -3013,15 +3013,11 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 			continue
 		endif
 
-		[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, chanNr, chanType, DATA_ACQUISITION_MODE)
-		if(!WaveExists(settings))
+		WAVE/Z/T epochInfo = EP_FetchEpochs(numericalValues, textualValues, sweepNo, chanNr, chanType)
+		if(!WaveExists(epochInfo))
 			continue
 		endif
 
-		WAVE/T settingsT = settings
-		epEntry = settingsT[settingsIndex]
-		SFH_ASSERT(!IsEmpty(epEntry), "Encountered sweep/channel without epoch information.")
-		WAVE/T epochInfo = EP_EpochStrToWave(epEntry)
 		WAVE/T epNames = SFH_GetEpochNamesFromInfo(epochInfo)
 		WAVE/Z epIndices = SFH_GetEpochIndicesByWildcardPatterns(epNames, epochPatterns)
 		if(!WaveExists(epIndices))
