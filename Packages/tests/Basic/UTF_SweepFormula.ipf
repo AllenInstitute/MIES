@@ -2449,7 +2449,9 @@ static Function TestOperationData()
 	variable rangeEnd1 = 8
 	string channelTypeList = "DA;AD;DA;AD;"
 	string channelNumberList = "2;6;3;7;"
-	Make/FREE/T/N=(1, 1) epochKeys = EPOCHS_ENTRY_KEY
+	Make/FREE/T/N=(3, 1, 1) epochKeys, epochTTLKeys
+	epochKeys[0][0][0] = EPOCHS_ENTRY_KEY
+	epochKeys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
 
 	[win, device] = CreateFakeDataBrowserWindow()
 
@@ -2457,6 +2459,8 @@ static Function TestOperationData()
 
 	CreateFakeSweepData(win, device, sweepNo=sweepNo)
 	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 2)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 3)
 
 	epochStr = "0.00" + num2istr(rangeStart0) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch,0,:"
 	epochStr += "0.00" + num2istr(rangeStart1) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch1,0,:"
@@ -2467,9 +2471,27 @@ static Function TestOperationData()
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = epochStr
 	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, sweepNo + 1, device, mode)
 
+	epochStr = "0.00" + num2istr(rangeStart1) + ",0.00" + num2istr(rangeEnd1) + ",ShortName=TestEpoch2,0"
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = epochStr
+	epochTTLKeys[0][0][0] = "TTL Epochs Channel " + num2istr(2)
+	epochTTLKeys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+	ED_AddEntriesToLabnotebook(epochInfo, epochTTLKeys, sweepNo + 3, device, mode)
+
 	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 	Make/FREE/N=0 sweepTemplate
 	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+	WAVE sweepRef3 = FakeSweepDataGeneratorDefault(sweepTemplate, 5)
+	sweepRef3[][4] = (sweepRef3[p][4] & 1 << 2) != 0
+
+	sweepCnt = 1
+	str = "data(TestEpoch2,select(channels(TTL2),[" + num2istr(3) + "],all))"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
+	numResultsRef = sweepCnt * 1
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[][0] = rangeStart1
+	ranges[][1] = rangeEnd1
+	CheckSweepsFromData(dataWref, sweepRef3, numResultsref, {5}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {3}, {2}, {3}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
 	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "],all))"
@@ -2568,7 +2590,7 @@ static Function TestOperationData()
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing sweep
-	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo + 2) + "],all))"
+	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo + 1337) + "],all))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
@@ -2597,7 +2619,7 @@ static Function TestOperationData()
 
 	// One sweep does not exist, it is not result of select, we end up with one sweep
 	sweepCnt = 1
-	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 2) + "],all))"
+	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1337) + "],all))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	numResultsRef = sweepCnt * numChannels / 2
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})

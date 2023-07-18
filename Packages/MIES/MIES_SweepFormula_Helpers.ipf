@@ -392,8 +392,8 @@ End
 /// @param opShort    operation name (short)
 Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData, string opShort)
 
-	variable i, j, rangeStart, rangeEnd, DAChannel, sweepNo
-	variable chanNr, chanType, cIndex, isSweepBrowser
+	variable i, j, rangeStart, rangeEnd, sweepNo
+	variable chanNr, chanType, cIndex, isSweepBrowser, fetchEpChanType, fetchEpChannelNumber
 	variable numSelected, index, numEpochPatterns, numRanges, numEpochs, epIndex, lastx
 	string dimLabel, device, dataFolder
 	string	allEpochsRegex = "^.*$"
@@ -448,29 +448,25 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 			endif
 		endif
 
+		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
+
 		DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 
-		WAVE/Z sweep = GetDAQDataSingleColumnWave(sweepDFR, chanType, chanNr)
+		WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, chanType, chanNr)
 		if(!WaveExists(sweep))
 			continue
 		endif
 
 		if(WaveExists(epochNames))
-			switch(chanType)
-				case XOP_CHANNEL_TYPE_ADC:
-					DAChannel = SFH_GetDAChannel(graph, sweepNo, chanType, chanNr)
-					SFH_ASSERT(!IsNaN(DAChannel), "No epochs for unassoc AD channel AD" + num2istr(chanNr))
-					break
-				case XOP_CHANNEL_TYPE_DAC:
-					DAChannel = chanNr
-					break
-				default:
-					ASSERT(0, "Unsupported channelType")
-			endswitch
-			WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-			WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
-			SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
-			WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAChannel, allEpochsRegex)
+
+			fetchEpChanType = chanType == XOP_CHANNEL_TYPE_ADC ? XOP_CHANNEL_TYPE_DAC : chanType
+			fetchEpChannelNumber = chanType == XOP_CHANNEL_TYPE_ADC ? SFH_GetDAChannel(graph, sweepNo, chanType, chanNr) : chanNr
+			if(IsNaN(fetchEpChannelNumber))
+				continue
+			endif
+			WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, fetchEpChanType, fetchEpChannelNumber, allEpochsRegex)
 			if(!WaveExists(epochInfo))
 				continue
 			endif
