@@ -67,7 +67,7 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	string name, trace
 
 	numSweeps = 10
-	numChannels = 5
+	numChannels = 4
 
 	Variable dataSize = 128
 	Variable mode = DATA_ACQUISITION_MODE
@@ -80,7 +80,7 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	KillWaves numericalKeys, numericalValues
 
 	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
-	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
+	Make/U/I/N=(numChannels) connections = {7,5,3,1}
 	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = lbnTextValue
