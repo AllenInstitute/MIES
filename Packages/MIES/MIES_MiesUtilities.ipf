@@ -2104,6 +2104,42 @@ Function/WAVE GetDAQDataSingleColumnWaves(sweepDFR, channelType)
 	return matches
 End
 
+/// @brief Return a 1D sweep data wave previously created by SplitSweepIntoComponents()
+///
+/// Returned wave reference can be null.
+///
+/// @param numericalValues  numerical labnotebook
+/// @param textualValues    textual labnotebook
+/// @param sweepNo          sweep number
+/// @param sweepDFR         datafolder holding 1D waves
+/// @param channelType      One of @ref XopChannelConstants
+/// @param GUIchannelNumber GUI channel number
+Function/WAVE GetDAQDataSingleColumnWaveNG(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable channelType, variable GUIchannelNumber)
+
+	variable hwChannelNumber, ttlBit, hwDACType
+
+	if(channelType == XOP_CHANNEL_TYPE_TTL)
+		WAVE/Z guiToHWChannelMap = GetActiveChannels(numericalValues, textualValues, sweepNo, channelType, TTLMode = TTL_GUITOHW_CHANNEL)
+		if(!WaveExists(guiToHWChannelMap))
+			return $""
+		endif
+
+		hwChannelNumber = guiToHWChannelMap[GUIchannelNumber][%HWCHANNEL]
+		hwDACType = GetUsedHWDACFromLNB(numericalValues, sweepNo)
+		ASSERT_TS(hwDACType == HARDWARE_ITC_DAC || hwDACType == HARDWARE_NI_DAC, "Unsupported hardware dac type")
+
+		if(hwDACType == HARDWARE_NI_DAC)
+			return GetDAQDataSingleColumnWave(sweepDFR, channelType, hwChannelNumber)
+		endif
+
+		ttlBit = guiToHWChannelMap[GUIchannelNumber][%TTLBITNR]
+		return GetDAQDataSingleColumnWave(sweepDFR, channelType, hwChannelNumber, splitTTLBits = 1, ttlBit = ttlBit)
+	endif
+
+	hwChannelNumber = GUIchannelNumber
+	return GetDAQDataSingleColumnWave(sweepDFR, channelType, hwChannelNumber)
+End
+
 /// @brief Return a 1D data wave previously created by SplitSweepIntoComponents()
 ///
 /// Returned wave reference can be invalid.
