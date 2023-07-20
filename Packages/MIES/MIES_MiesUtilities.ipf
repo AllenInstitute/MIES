@@ -4746,6 +4746,7 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 
 	index = GetIndexForHeadstageIndepData(numericalValues)
 
+	// present since 2f56481a (DC_MakeNITTLWave: Document TTL settings and rework it completely, 2018-09-06)
 	WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
 	if(WaveExists(ttlChannels))
 		// NI hardware
@@ -4772,6 +4773,9 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 	endif
 
 	// ITC hardware
+	//
+	// LBN entries are present since c54d32a1 (Rework sweep settings
+	// labnotebook interaction and add TTL info, 2015-07-03)
 	switch(TTLmode)
 		case TTL_HARDWARE_CHANNEL:
 

@@ -518,26 +518,27 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		FAIL()
 	endif
 
+	// introduced in 18e1406b (Labnotebook: Add DA/AD ChannelType, 2019-02-15)
+	[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DA ChannelType", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
+
 	// epochs
-	// @todo TTL support
-	if(params.channelType == XOP_CHANNEL_TYPE_DAC && clampMode != I_EQUAL_ZERO_MODE)
+	if(((params.channelType == XOP_CHANNEL_TYPE_DAC   \
+		 && clampMode != I_EQUAL_ZERO_MODE            \
+		 && WaveExists(setting)                       \
+		 && setting[index] == DAQ_CHANNEL_TYPE_DAQ))  \
+		|| params.channelType == XOP_CHANNEL_TYPE_TTL)
 
-		// introduced in 18e1406b (Labnotebook: Add DA/AD ChannelType, 2019-02-15)
-		[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DA ChannelType", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
+		CHECK_WAVE(epochs, WAVE_WAVE)
 
-		if(WaveExists(setting) && setting[index] == DAQ_CHANNEL_TYPE_DAQ)
-			CHECK_WAVE(epochs, WAVE_WAVE)
+		idx = FindDimlabel(epochs, ROWS, channel)
+		CHECK_GE_VAR(idx, 0)
 
-			idx = FindDimlabel(epochs, ROWS, channel)
-			CHECK_GE_VAR(idx, 0)
+		WAVE/T/Z epochsSingleChannel = WaveRef(epochs, row=idx)
+		CHECK_WAVE(epochsSingleChannel, TEXT_WAVE)
 
-			WAVE/T/Z epochsSingleChannel = WaveRef(epochs, row=idx)
-			CHECK_WAVE(epochsSingleChannel, TEXT_WAVE)
-
-			WAVE/Z epochsLBN = EP_FetchEpochs(numericalValues, textualValues, sweep, params.channelNumber, params.channelType)
-			CHECK_WAVE(epochsLBN, TEXT_WAVE)
-			CHECK_EQUAL_TEXTWAVES(epochsLBN, epochsSingleChannel)
-		endif
+		WAVE/Z epochsLBN = EP_FetchEpochs(numericalValues, textualValues, sweep, params.channelNumber, params.channelType)
+		CHECK_WAVE(epochsLBN, TEXT_WAVE)
+		CHECK_EQUAL_TEXTWAVES(epochsLBN, epochsSingleChannel)
 	endif
 End
 
