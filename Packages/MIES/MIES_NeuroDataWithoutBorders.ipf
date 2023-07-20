@@ -289,27 +289,27 @@ threadsafe static Function NWB_AddDevice(STRUCT NWBAsyncParameters &s)
 End
 
 threadsafe static Function/S NWB_GenerateDeviceDescription(string device, WAVE numericalValues, WAVE/T textualValues)
-	variable hardwareType, sweepNo
+
+	variable hardwareType, sweepNo, err
 	string desc, deviceType, deviceNumber, hardwareName
 
 	// digitizer info is fixed per "device" device
 	sweepNo = 0
 
-	hardwareType = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", UNKNOWN_MODE)
-
-	if(IsNaN(hardwareType))
-		// if we don't have a hardware type this must be ITC hardware
-		hardwareType = HARDWARE_ITC_DAC
-
-		ASSERT_TS(ParseDeviceString(device, deviceType, deviceNumber), "Could not parse device")
-		hardwareName = deviceType
-	else
-		// present since e2302f5d (DC_PlaceDataInHardwareDataWave: Add hardware name and serial numbers to the labnotebook, 2019-02-22)
-		hardwareName = GetLastSettingTextIndep(textualValues, sweepNo, "Digitizer Hardware Name", UNKNOWN_MODE)
-
-		if(IsEmpty(hardwareName))
-			hardwareName = device
-		endif
+	hardwareType = GetUsedHWDACFromLNB(numericalValues, sweepNo)
+	// present since e2302f5d (DC_PlaceDataInHardwareDataWave: Add hardware name and serial numbers to the labnotebook, 2019-02-22)
+	hardwareName = GetLastSettingTextIndep(textualValues, sweepNo, "Digitizer Hardware Name", UNKNOWN_MODE)
+	if(IsEmpty(hardwareName))
+		switch(hardwareType)
+			case HARDWARE_ITC_DAC:
+				err = !ParseDeviceString(device, deviceType, deviceNumber)
+				ASSERT_TS(!err, "Error parsing device string!")
+				hardwareName = deviceType
+				break
+			default:
+				hardwareName = device
+				break
+		endswitch
 	endif
 
 	switch(hardwareType)
@@ -1133,9 +1133,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 
 	NWB_ClearWriteChannelParams(params)
 
-	// introduced in db531d20 (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
-	// before that we only had ITC hardware
-	hardwareType = GetLastSettingIndep(s.numericalValues, s.sweep, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
+	hardwareType = GetUsedHWDACFromLNB(s.numericalValues, s.sweep)
 	WAVE/Z/T ttlStimsets = GetTTLLabnotebookEntry(s.textualValues, LABNOTEBOOK_TTL_STIMSETS, s.sweep)
 
 	// i has the following meaning:

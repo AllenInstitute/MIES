@@ -2694,19 +2694,16 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
 
-	// introduced in db531d20 (DC_PlaceDataIn ITCDataWave: Document the digitizer hardware type, 2018-07-30)
-	// before that we only had ITC hardware
-	hardwareType           = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
+	hardwareType           = GetUsedHWDACFromLNB(numericalValues, sweepNo)
 	WAVE/Z ttlRackZeroBits = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackOneBits  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
-	WAVE/Z/T ttlChannels   = GetLastSetting(textualValues, sweepNo, "TTL channels", DATA_ACQUISITION_MODE)
 
 	if(tgs.splitTTLBits && numTTLs > 0)
 		if(!WaveExists(ttlRackZeroBits) && !WaveExists(ttlRackOneBits) && hardwareType == HARDWARE_ITC_DAC)
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
 			ControlWindowToFront()
 			tgs.splitTTLBits = 0
-		elseif(WaveExists(ttlChannels))
+		elseif(hardwareType == HARDWARE_NI_DAC)
 			// NI hardware does use one channel per bit so we don't need that here
 			tgs.splitTTLBits = 0
 		endif
@@ -4734,6 +4731,18 @@ threadsafe Function GetTTLBits(numericalValues, sweep, channel)
 	return ttlBits[index]
 End
 
+/// @brief Returns the used hardware DAC type from the LNB
+///
+/// @param numericalValues Numerical labnotebook values
+/// @param sweep           Sweep number
+/// @returns used hardware dac type @sa HardwareDACTypeConstants
+threadsafe Function GetUsedHWDACFromLNB(WAVE numericalValues, variable sweep)
+
+	// introduced in db531d20 (DC_PlaceDataIn ITCDataWave: Document the digitizer hardware type, 2018-07-30)
+	// before that we only had ITC hardware
+	return GetLastSettingIndep(numericalValues, sweep, "Digitizer Hardware Type", UNKNOWN_MODE, defValue = HARDWARE_ITC_DAC)
+End
+
 /// @brief Return a wave with the requested TTL channel information defined by TTLmode
 ///
 /// @param numericalValues Numerical labnotebook values
@@ -4742,14 +4751,19 @@ End
 /// @param TTLmode         One of @ref ActiveChannelsTTLMode.
 threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE textualValues, variable sweep, variable TTLmode)
 
-	variable i, index, first, last, haveRackZero, haveRackOne, numHWTTLChannels, bits, hwChannel
+	variable i, index, first, last, haveRackZero, haveRackOne, numHWTTLChannels, bits, hwChannel, hwDACType
 
 	index = GetIndexForHeadstageIndepData(numericalValues)
 
-	// present since 2f56481a (DC_MakeNITTLWave: Document TTL settings and rework it completely, 2018-09-06)
-	WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
-	if(WaveExists(ttlChannels))
-		// NI hardware
+	hwDACType = GetUsedHWDACFromLNB(numericalValues, sweep)
+	ASSERT_TS(hwDACType == HARDWARE_ITC_DAC || hwDACType == HARDWARE_NI_DAC, "Unsupported hardware dac type")
+
+	if(hwDACType == HARDWARE_NI_DAC)
+		// present since 2f56481a (DC_MakeNITTLWave: Document TTL settings and rework it completely, 2018-09-06)
+		WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
+		if(!WaveExists(ttlChannels))
+			return $""
+		endif
 		switch(TTLmode)
 			case TTL_HARDWARE_CHANNEL: // intended drop-through
 			case TTL_DAEPHYS_CHANNEL:
