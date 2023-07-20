@@ -780,7 +780,7 @@ End
 
 Function/WAVE SFH_GetEpochNamesFromInfo(WAVE/T epochInfo)
 
-	string epName, epShortName
+	string epName, epShortName, epLongName
 	variable i
 	variable numEpochs = DimSize(epochInfo, ROWS)
 
@@ -788,7 +788,8 @@ Function/WAVE SFH_GetEpochNamesFromInfo(WAVE/T epochInfo)
 	for(i = 0; i < numEpochs; i += 1)
 		epName = epochInfo[i][EPOCH_COL_TAGS]
 		epShortName = EP_GetShortName(epName)
-		epNames[i] = SelectString(IsEmpty(epShortName), epShortName, epName)
+		epLongName = RemoveEnding(epName, ";")
+		epNames[i] = SelectString(IsEmpty(epShortName), epShortName, epLongName)
 	endfor
 
 	return epNames

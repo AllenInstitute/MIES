@@ -2894,7 +2894,7 @@ End
 static Function TestOperationEpochs()
 
 	variable i, j, sweepNumber, channelNumber, numResultsRef, numSweeps, numChannels
-	string str, trace, key, name, win, device, epoch2, textKey, textValue
+	string str, trace, key, name, win, device, epoch2, textKey, textValue, epochLongName
 	variable activeChannelsDA = 4
 
 	[win, device] = CreateFakeDataBrowserWindow()
@@ -2986,7 +2986,8 @@ static Function TestOperationEpochs()
 	endfor
 
 	// find epoch without shortname
-	str = "epochs(\"" + epoch2 + "\", select(channels(DA), 0))"
+	epochLongName = RemoveEnding(epoch2, ";")
+	str = "epochs(\"" + epochLongName + "\", select(channels(DA), 0))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
 
