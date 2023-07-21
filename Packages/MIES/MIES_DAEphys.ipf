@@ -2404,8 +2404,8 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 	string unit, ADUnit, DAUnit
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, DAGain, ADGain, realMode
 	variable gain, scale, clampMode, i, j, ampConnState, needResetting, ADConfig
-	variable DAGainMCC, ADGainMCC, numEntries
-	string DAUnitMCC, ADUnitMCC
+	variable DAGainMCC, ADGainMCC, numEntries, gainAtChannel
+	string DAUnitMCC, ADUnitMCC, unitAtChannel, clampModeStr
 
 	if(DAP_DeviceIsUnlocked(device))
 		printf "(%s) Device is unlocked. Please lock the device.\r", device
@@ -2490,6 +2490,28 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 			DAP_UpdateChanAmpAssignPanel(device)
 			DAP_SyncChanAmpAssignToActiveHS(device)
 			return 2
+		endif
+	else
+		clampModeStr = ConvertAmplifierModeShortStr(clampMode)
+		unitAtChannel = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DACchannel)
+		if(CmpStr(unitAtChannel, DAUnit))
+			printf "(%s) The DA unit for the DA channel %d is different from the DA unit for headstage %d in the Hardware tab (clampMode %s).\r", device, DACchannel, headstage, clampModeStr
+			return 1
+		endif
+		unitAtChannel = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), index = ADCchannel)
+		if(CmpStr(unitAtChannel, ADUnit))
+			printf "(%s) The AD unit for the AD channel %d is different from the AD unit for headstage %d in the Hardware tab (clampMode %s).\r", device, ADCchannel, headstage, clampModeStr
+			return 1
+		endif
+		gainAtChannel = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN), index = DACchannel)
+		if(!CheckIfClose(DAGain, gainAtChannel, tol=1e-4))
+			printf "(%s) The DA gain for the DA channel %d is different from the DA gain for headstage %d in the Hardware tab (clampMode %s).\r", device, ADCchannel, headstage, clampModeStr
+			return 1
+		endif
+		gainAtChannel = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN), index = ADCchannel)
+		if(!CheckIfClose(ADGain, gainAtChannel, tol=1e-4))
+			printf "(%s) The AD gain for the AD channel %d is different from the AD gain for headstage %d in the Hardware tab (clampMode %s).\r", device, ADCchannel, headstage, clampModeStr
+			return 1
 		endif
 	endif
 
