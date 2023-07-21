@@ -2143,12 +2143,12 @@ static Function CONF_GetAmplifierSettings(device)
 
 		ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
 		ampChannelID = ChanAmpAssign[%AmpChannelID][i]
-		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
 
 		if(IsFinite(ampSerial) && IsFinite(ampChannelID))
 
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL, ampSerial)
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL, ampChannelID)
+			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
 
 			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK
 			JSON_AddTreeObject(jsonID, jsonPath)
