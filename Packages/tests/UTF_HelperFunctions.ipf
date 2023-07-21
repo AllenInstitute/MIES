@@ -58,6 +58,9 @@ Function FixupJSONConfigImplRig(variable jsonId)
 		if(!JSON_Exists(jsonID, jsonPath))
 			continue
 		endif
+		if(JSON_GetType(jsonID, jsonPath) == JSON_NULL)
+			continue
+		endif
 
 		JSON_SetVariable(jsonID, jsonPath, serialNum)
 	endfor

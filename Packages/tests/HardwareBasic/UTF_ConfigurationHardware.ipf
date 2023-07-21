@@ -249,3 +249,127 @@ static Function CheckIfConfigurationRestoresDAEphysWithUnassocDA([string str])
 	DAState = GetCheckBoxState(str, GetPanelControl(2, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK))
 	CHECK_EQUAL_VAR(DAState, 0)
 End
+
+static Function CheckIfConfigurationRestoresDAEphysWithoutAmp_PreAcq(device)
+	string device
+
+	string hs1Ctrl
+	string unit = "testunit"
+	variable gain = 19
+
+	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", str = "1")
+	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
+	PGC_SetAndActivateControl(device, "SetVar_Hardware_VC_DA_Unit", str = unit)
+	PGC_SetAndActivateControl(device, "SetVar_Hardware_VC_AD_Unit", str = unit)
+	PGC_SetAndActivateControl(device, "SetVar_Hardware_IC_DA_Unit", str = unit)
+	PGC_SetAndActivateControl(device, "SetVar_Hardware_IC_AD_Unit", str = unit)
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_DAgain", val = gain)
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_ADgain", val = gain)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_DAgain", val = gain)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_ADgain", val = gain)
+	hs1Ctrl = GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+	PGC_SetAndActivateControl(device, hs1Ctrl, val = 0)
+	PGC_SetAndActivateControl(device, hs1Ctrl, val = 1)
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 1)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = 9.5)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckIfConfigurationRestoresDAEphysWithoutAmp([string str])
+
+	string rewrittenConfig, fName
+	variable jsonID
+
+	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresDAEphysWithoutAmp.json")
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+								 "__HS0_DA3_AD2_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+								 "__HS1_DA1_AD0_CM:VC:_ST:StimulusSetC_DA_0:"      + \
+								 "__HS2_DA2_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
+
+	AcquireData_NG(s, str)
+
+	CONF_SaveWindow(fName)
+
+	[jsonID, rewrittenConfig] = FixupJSONConfig_IGNORE(fName, str)
+	JSON_Release(jsonID)
+
+	KillWindow $str
+	KillOrMoveToTrash(dfr=root:MIES)
+
+	CONF_RestoreWindow(rewrittenConfig)
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+End
+
+static Function CheckIfConfigurationRestoresDAEphysWithoutAmp_REENTRY([string str])
+
+	WAVE/Z numericalValues = GetLBNumericalValues(str)
+	CHECK_WAVE(numericalValues, NUMERIC_WAVE)
+	WAVE/Z DACs = GetLastSetting(numericalValues, NaN, "DAC", TEST_PULSE_MODE)
+	WAVE DACRef = LBN_GetNumericWave(defValue = NaN)
+	DACRef[0] = 3
+	DACRef[1] = 1
+	CHECK_EQUAL_WAVES(DACs, DACRef, mode = WAVE_DATA)
+	WAVE/Z ADCs = GetLastSetting(numericalValues, NaN, "ADC", TEST_PULSE_MODE)
+	WAVE ADCRef = LBN_GetNumericWave(defValue = NaN)
+	ADCRef[0] = 2
+	ADCRef[1] = 0
+	CHECK_EQUAL_WAVES(ADCs, ADCRef, mode = WAVE_DATA)
+
+	PGC_SetAndActivateControl(str, "DataAcquireButton")
+	RegisterReentryFunction("ConfigurationHardwareTesting#CheckIfConfigurationRestoresDAEphysWithoutAmp2")
+End
+
+static Function CheckIfConfigurationRestoresDAEphysWithoutAmp2_REENTRY([string str])
+
+	variable sweepNo = 0
+	string strTmp
+
+	WAVE/Z numericalValues = GetLBNumericalValues(str)
+	CHECK_WAVE(numericalValues, NUMERIC_WAVE)
+	WAVE/Z/T textualValues = GetLBTextualValues(str)
+	CHECK_WAVE(textualValues, TEXT_WAVE)
+
+	WAVE/Z/T ADUnit = GetLastSetting(textualValues, sweepNo, "AD Unit", DATA_ACQUISITION_MODE)
+	WAVE/T ADUnitRef = LBN_GetTextWave()
+	ADUnitRef[0] = "pA"
+	ADUnitRef[1] = "testunit"
+	CHECK_EQUAL_WAVES(ADUnit, ADUnitRef, mode = WAVE_DATA)
+
+	WAVE/Z/T DAUnit = GetLastSetting(textualValues, sweepNo, "DA Unit", DATA_ACQUISITION_MODE)
+	WAVE/T DAUnitRef = LBN_GetTextWave()
+	DAUnitRef[0] = "mV"
+	DAUnitRef[1] = "testunit"
+	CHECK_EQUAL_WAVES(DAUnit, DAUnitRef, mode = WAVE_DATA)
+
+	WAVE/Z ADGain = GetLastSetting(numericalValues, sweepNo, "AD Gain", DATA_ACQUISITION_MODE)
+	WAVE ADGainRef = LBN_GetNumericWave(defValue = NaN)
+	ADGainRef[0] = 0.0025
+	ADGainRef[1] = 19
+	CHECK_EQUAL_WAVES(ADGain, ADGainRef, mode = WAVE_DATA)
+
+	WAVE/Z DAGain = GetLastSetting(numericalValues, sweepNo, "DA Gain", DATA_ACQUISITION_MODE)
+	WAVE DAGainRef = LBN_GetNumericWave(defValue = NaN)
+	DAGainRef[0] = 20
+	DAGainRef[1] = 19
+	CHECK_EQUAL_WAVES(DAGain, DAGainRef, mode = WAVE_DATA)
+
+	WAVE/Z serialNum = GetLastSetting(numericalValues, sweepNo, "Serial Number", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(serialNum, NUMERIC_WAVE)
+	CHECK(IsFinite(serialNum[0]))
+	CHECK_EQUAL_VAR(serialNum[1], NaN)
+
+	WAVE/Z channelID = GetLastSetting(numericalValues, sweepNo, "Channel ID", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(channelID, NUMERIC_WAVE)
+	CHECK(IsFinite(channelID[0]))
+	CHECK_EQUAL_VAR(channelID[1], NaN)
+
+	WAVE/Z/T hwTypeString = GetLastSetting(textualValues, sweepNo, "HardwareTypeString", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(hwTypeString, TEXT_WAVE)
+	strTmp = hwTypeString[0]
+	CHECK_PROPER_STR(strTmp)
+	CHECK_EQUAL_STR(hwTypeString[1], "")
+End

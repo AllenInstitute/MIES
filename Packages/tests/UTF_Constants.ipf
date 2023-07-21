@@ -5,3 +5,4 @@
 
 Constant PSQ_TEST_HEADSTAGE = 2
 StrConstant ZSTD_SUFFIX     = ".zst"
+Constant TP_DURATION_S = 5

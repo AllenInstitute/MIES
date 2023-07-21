@@ -1966,7 +1966,7 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 	variable jsonID, midExp
 
 	variable i, type, numRows, ampSerial, ampChannel, index, value, warnMissingMCCSync
-	string jsonPath, jsonBasePath
+	string jsonPath, jsonBasePath, jsonPathAmpBlock
 	string ampSerialList = ""
 	string ampTitleList = ""
 
@@ -1977,12 +1977,14 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		jsonBasePath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK + "/" + num2istr(i)
-		jsonPath = jsonBasePath
-		type = JSON_GetType(jsonID, jsonPath)
+		type = JSON_GetType(jsonID, jsonBasePath)
 		if(type == JSON_NULL)
 			continue
 		elseif(type == JSON_OBJECT)
 			jsonPath = jsonBasePath  + "/" + EXPCONFIG_JSON_AMPBLOCK
+			if(JSON_GetType(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL) == JSON_NULL)
+				continue
+			endif
 			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
 
 			if(IsNaN(ampSerial))
@@ -2013,30 +2015,40 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = i)
 
 		jsonBasePath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK + "/" + num2istr(i)
-		jsonPath = jsonBasePath
-		type = JSON_GetType(jsonID, jsonPath)
+		type = JSON_GetType(jsonID, jsonBasePath)
 
 		if(type == JSON_NULL)
 			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
 			PGC_SetAndActivateControl(device, "popup_Settings_Pressure_dev", str = NONE)
 			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 		elseif(type == JSON_OBJECT)
-			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
-			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
-			ampChannel = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPCHANNEL)
+			jsonPathAmpBlock = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
+			ampSerial = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPSERIAL)
+			ampChannel = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPCHANNEL)
 
 			if(IsFinite(ampSerial) && IsFinite(ampChannel))
 				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampChannel))
-
-				jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK + "/"
-				PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA))
-				PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD))
-
-				jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK + "/"
-				PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA))
-				PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD))
 				PGC_SetAndActivateControl(device,"button_Hardware_AutoGainAndUnit")
+			else
+				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
+				jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
+				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAGAIN)
+				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADGAIN)
+				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAUNIT)
+				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADUNIT)
+
+				jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_ICBLOCK + "/"
+				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAGAIN)
+				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADGAIN)
+				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT)
+				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT)
 			endif
+			jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
+			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_VC_DA", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA)
+			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_VC_AD", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD)
+			jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_ICBLOCK + "/"
+			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_IC_DA", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA)
+			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_IC_AD", jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD)
 
 			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_PRESSUREBLOCK + "/"
 			PGC_SetAndActivateControl(device, "popup_Settings_Pressure_dev", str = JSON_GetString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDEV))
@@ -2079,6 +2091,34 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 	endfor
 	PGC_SetAndActivateControl(device, "button_Hardware_P_Enable")
 
+End
+
+static Function CONF_OnExistSetAndActivateControlVar(string win, string ctrl, variable jsonId, string jsonPath)
+
+	if(JSON_Exists(jsonId, jsonPath))
+		PGC_SetAndActivateControl(win, ctrl, val = JSON_GetVariable(jsonID, jsonPath))
+	endif
+End
+
+static Function CONF_OnExistSetAndActivateControlStr(string win, string ctrl, variable jsonId, string jsonPath)
+
+	if(JSON_Exists(jsonId, jsonPath))
+		PGC_SetAndActivateControl(win, ctrl, str = JSON_GetString(jsonID, jsonPath))
+	endif
+End
+
+static Function CONF_SetDAEPhysChannelPopup(string device, string ctrl, variable jsonId, string jsonPath)
+
+	variable channelNumber
+
+	if(JSON_Exists(jsonId, jsonPath))
+		channelNumber = JSON_GetVariable(jsonID, jsonPath)
+		if(IsNaN(channelNumber))
+			PGC_SetAndActivateControl(device, ctrl, str = NONE)
+		else
+			PGC_SetAndActivateControl(device, ctrl, val = channelNumber)
+		endif
+	endif
 End
 
 /// @brief Retrieves current User Pressure settings to json
