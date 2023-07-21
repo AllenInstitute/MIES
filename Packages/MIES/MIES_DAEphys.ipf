@@ -4762,18 +4762,18 @@ static Function DAP_UpdateChanAmpAssignStorWv(device)
 	HeadStageNo = str2num(GetPopupMenuString(device,"Popup_Settings_HeadStage"))
 
 	// Assigns V-clamp settings for a particular headstage
-	ChanAmpAssign[%VC_DA][HeadStageNo]     = str2num(GetPopupMenuString(device, "Popup_Settings_VC_DA"))
+	ChanAmpAssign[%VC_DA][HeadStageNo]     = str2numSafe(GetPopupMenuString(device, "Popup_Settings_VC_DA"))
 	ChanAmpAssign[%VC_DAGain][HeadStageNo] = GetSetVariable(device, "setvar_Settings_VC_DAgain")
 	ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo]      = GetSetVariableString(device, "SetVar_Hardware_VC_DA_Unit")
-	ChanAmpAssign[%VC_AD][HeadStageNo]     = str2num(GetPopupMenuString(device, "Popup_Settings_VC_AD"))
+	ChanAmpAssign[%VC_AD][HeadStageNo]     = str2numSafe(GetPopupMenuString(device, "Popup_Settings_VC_AD"))
 	ChanAmpAssign[%VC_ADGain][HeadStageNo] = GetSetVariable(device, "setvar_Settings_VC_ADgain")
 	ChanAmpAssignUnit[%VC_ADUnit][HeadStageNo]      = GetSetVariableString(device, "SetVar_Hardware_VC_AD_Unit")
 
 	//Assigns I-clamp settings for a particular headstage
-	ChanAmpAssign[%IC_DA][HeadStageNo]     = str2num(GetPopupMenuString(device, "Popup_Settings_IC_DA"))
+	ChanAmpAssign[%IC_DA][HeadStageNo]     = str2numSafe(GetPopupMenuString(device, "Popup_Settings_IC_DA"))
 	ChanAmpAssign[%IC_DAGain][HeadStageNo] = GetSetVariable(device, "setvar_Settings_IC_DAgain")
 	ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo]      = GetSetVariableString(device, "SetVar_Hardware_IC_DA_Unit")
-	ChanAmpAssign[%IC_AD][HeadStageNo]     = str2num(GetPopupMenuString(device, "Popup_Settings_IC_AD"))
+	ChanAmpAssign[%IC_AD][HeadStageNo]     = str2numSafe(GetPopupMenuString(device, "Popup_Settings_IC_AD"))
 	ChanAmpAssign[%IC_ADGain][HeadStageNo] = GetSetVariable(device, "setvar_Settings_IC_ADgain")
 	ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]      = GetSetVariableString(device, "SetVar_Hardware_IC_AD_Unit")
 
@@ -4805,7 +4805,7 @@ static Function DAP_UpdateChanAmpAssignPanel(device)
 
 	// VC DA settings
 	channel = ChanAmpAssign[%VC_DA][HeadStageNo]
-	Popupmenu Popup_Settings_VC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
+	Popupmenu Popup_Settings_VC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
 	Setvariable setvar_Settings_VC_DAgain, win = $device, value = _num:ChanAmpAssign[%VC_DAGain][HeadStageNo]
 	Setvariable SetVar_Hardware_VC_DA_Unit, win = $device, value = _str:ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo]
 
@@ -4817,7 +4817,7 @@ static Function DAP_UpdateChanAmpAssignPanel(device)
 
 	// IC DA settings
 	channel = ChanAmpAssign[%IC_DA][HeadStageNo]
-	Popupmenu Popup_Settings_IC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
+	Popupmenu Popup_Settings_IC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
 	Setvariable setvar_Settings_IC_DAgain, win = $device, value = _num:ChanAmpAssign[%IC_DAGain][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_DA_Unit, win = $device, value = _str:ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo]
 
