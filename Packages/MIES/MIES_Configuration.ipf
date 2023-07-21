@@ -164,9 +164,17 @@ static StrConstant EXPCONFIG_JSON_AMPSERIAL = "Serial"
 static StrConstant EXPCONFIG_JSON_AMPTITLE = "Title"
 static StrConstant EXPCONFIG_JSON_AMPCHANNEL = "Channel"
 static StrConstant EXPCONFIG_JSON_AMPVCDA = "DA"
+static StrConstant EXPCONFIG_JSON_AMPVCDAGAIN = "DA gain"
+static StrConstant EXPCONFIG_JSON_AMPVCDAUNIT = "DA unit"
 static StrConstant EXPCONFIG_JSON_AMPVCAD = "AD"
+static StrConstant EXPCONFIG_JSON_AMPVCADGAIN = "AD gain"
+static StrConstant EXPCONFIG_JSON_AMPVCADUNIT = "AD unit"
 static StrConstant EXPCONFIG_JSON_AMPICDA = "DA"
+static StrConstant EXPCONFIG_JSON_AMPICDAGAIN = "DA gain"
+static StrConstant EXPCONFIG_JSON_AMPICDAUNIT = "DA unit"
 static StrConstant EXPCONFIG_JSON_AMPICAD = "AD"
+static StrConstant EXPCONFIG_JSON_AMPICADGAIN = "AD gain"
+static StrConstant EXPCONFIG_JSON_AMPICADUNIT = "AD unit"
 static StrConstant EXPCONFIG_JSON_PRESSDEV = "Device"
 static StrConstant EXPCONFIG_JSON_PRESSDA = "DA"
 static StrConstant EXPCONFIG_JSON_PRESSAD = "AD"
@@ -2139,20 +2147,40 @@ static Function CONF_GetAmplifierSettings(device)
 
 		jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK
 		JSON_AddTreeObject(jsonID, jsonPath)
+
+		jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK
+		JSON_AddTreeObject(jsonID, jsonPath)
 		jsonPath += "/"
+
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA, str2numsafe(GetPopupMenuString(device, "Popup_Settings_VC_DA")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD, str2numsafe(GetPopupMenuString(device, "Popup_Settings_VC_AD")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAGAIN, GetSetVariable(device, "setvar_Settings_VC_DAgain"))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADGAIN, GetSetVariable(device, "setvar_Settings_VC_ADgain"))
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAUNIT, GetSetVariableString(device, "SetVar_Hardware_VC_DA_Unit"))
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADUNIT, GetSetVariableString(device, "SetVar_Hardware_VC_AD_Unit"))
+
+		jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK
+		JSON_AddTreeObject(jsonID, jsonPath)
+		jsonPath += "/"
+
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA, str2num(GetPopupMenuString(device, "Popup_Settings_IC_DA")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD, str2num(GetPopupMenuString(device, "Popup_Settings_IC_AD")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAGAIN, GetSetVariable(device, "setvar_Settings_IC_DAgain"))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICADGAIN, GetSetVariable(device, "setvar_Settings_IC_ADgain"))
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT, GetSetVariableString(device, "SetVar_Hardware_IC_DA_Unit"))
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT, GetSetVariableString(device, "SetVar_Hardware_IC_AD_Unit"))
 
 		ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
 		ampChannelID = ChanAmpAssign[%AmpChannelID][i]
-
 		if(IsFinite(ampSerial) && IsFinite(ampChannelID))
 
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
+
+			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL, ampSerial)
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL, ampChannelID)
-			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
 
-			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK
-			JSON_AddTreeObject(jsonID, jsonPath)
-			jsonPath += "/"
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK + "/"
 
 			// read VC settings
 			DAP_ChangeHeadStageMode(device, V_CLAMP_MODE, i, DO_MCC_MIES_SYNCING)
@@ -2170,16 +2198,11 @@ static Function CONF_GetAmplifierSettings(device)
 			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_RS_COMP_ENABLE, DAG_GetNumericalValue(device, "check_DatAcq_RsCompEnable"))
 			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_COMP_CHAIN, DAG_GetNumericalValue(device, "check_DataAcq_Amp_Chain"))
 
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA, str2num(GetPopupMenuString(device, "Popup_Settings_VC_DA")))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD, str2num(GetPopupMenuString(device, "Popup_Settings_VC_AD")))
-
 			// MCC settings without GUI control
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_GAIN, AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN))
 
-			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK
-			JSON_AddTreeObject(jsonID, jsonPath)
-			jsonPath += "/"
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK + "/"
 
 			// read IC settings
 			DAP_ChangeHeadStageMode(device, I_CLAMP_MODE, i, DO_MCC_MIES_SYNCING)
@@ -2200,9 +2223,6 @@ static Function CONF_GetAmplifierSettings(device)
 
 			JSON_AddVariable(jsonID,  jsonPath + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC, DAG_GetNumericalValue(device, "setvar_DataAcq_PipetteOffset_IC"))
 
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA, str2num(GetPopupMenuString(device, "Popup_Settings_IC_DA")))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD, str2num(GetPopupMenuString(device, "Popup_Settings_IC_AD")))
-
 			// MCC settings without GUI control
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_GAIN, AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN))
@@ -2211,6 +2231,7 @@ static Function CONF_GetAmplifierSettings(device)
 				DAP_ChangeHeadStageMode(device, clampMode, i, DO_MCC_MIES_SYNCING)
 			endif
 		else
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
 			JSON_AddNull(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL)
 			JSON_AddNull(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL)
 		endif
