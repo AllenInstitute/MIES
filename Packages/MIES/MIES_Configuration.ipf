@@ -510,7 +510,7 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
-			printf "Configuration restore aborted at file %s.", fName
+			printf "Configuration restore aborted at file %s.", fullFilePath
 			Abort
 		endif
 	endtry
