@@ -2495,7 +2495,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 	endif
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
-		printf "(%s) Please select a valid DA and AD channel in \"DAC Channel and Device Associations\" in the Hardware tab.\r", device
+		printf "(%s) Please select a valid DA and AD channel in \"DAC Channel and Device Associations\" in the Hardware tab for headstage %d.\r", device, headstage
 		ControlWindowToFront()
 		return 1
 	endif
