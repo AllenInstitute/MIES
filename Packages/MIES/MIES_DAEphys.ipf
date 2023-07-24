@@ -4792,48 +4792,55 @@ static Function DAP_UpdateChanAmpAssignStorWv(device)
 	endif
 End
 
-static Function DAP_UpdateChanAmpAssignPanel(device)
-	string device
+/// @brief Update the Device Association Group in the Hardware Tab. The controls are set with the data from the
+///        channel-anmplifier-association wave.
+static Function DAP_UpdateChanAmpAssignPanel(string device)
 
-	variable HeadStageNo, channel, ampSerial, ampChannelID
-	string entry
+	variable headStageNo, channel, ampSerial, ampChannelID
+	string entry, channelStr
 
-	Wave ChanAmpAssign       = GetChanAmpAssign(device)
-	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
+	WAVE chanAmpAssign       = GetChanAmpAssign(device)
+	WAVE/T chanAmpAssignUnit = GetChanAmpAssignUnit(device)
+	Duplicate/FREE chanAmpAssign, chanAmpAssignCpy
+	Duplicate/FREE/T chanAmpAssignUnit, chanAmpAssignUnitCpy
 
-	HeadStageNo = str2num(GetPopupMenuString(device,"Popup_Settings_HeadStage"))
+	headStageNo = str2num(GetPopupMenuString(device,"Popup_Settings_HeadStage"))
 
 	// VC DA settings
-	channel = ChanAmpAssign[%VC_DA][HeadStageNo]
-	Popupmenu Popup_Settings_VC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
-	Setvariable setvar_Settings_VC_DAgain, win = $device, value = _num:ChanAmpAssign[%VC_DAGain][HeadStageNo]
-	Setvariable SetVar_Hardware_VC_DA_Unit, win = $device, value = _str:ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo]
+	channel = chanAmpAssignCpy[%VC_DA][headStageNo]
+	channelStr = SelectString(IsFinite(channel), NONE, num2str(channel))
+	PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = channelStr)
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_DAgain", val = chanAmpAssignCpy[%VC_DAGain][headStageNo])
+	PGC_SetAndActivateControl(device, "SetVar_Hardware_VC_DA_Unit", str = chanAmpAssignUnitCpy[%VC_DAUnit][headStageNo])
 
 	// VC AD settings
-	channel = ChanAmpAssign[%VC_AD][HeadStageNo]
-	Popupmenu Popup_Settings_VC_AD, win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
-	Setvariable setvar_Settings_VC_ADgain, win = $device, value = _num:ChanAmpAssign[%VC_ADGain][HeadStageNo]
-	Setvariable SetVar_Hardware_VC_AD_Unit, win = $device, value = _str:ChanAmpAssignUnit[%VC_ADUnit][HeadStageNo]
+	channel = chanAmpAssignCpy[%VC_AD][headStageNo]
+	channelStr = SelectString(IsFinite(channel), NONE, num2str(channel))
+	PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = channelStr)
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_ADgain", val = chanAmpAssignCpy[%VC_ADGain][headStageNo])
+	PGC_SetAndActivateControl(device, "SetVar_Hardware_VC_AD_Unit", str = chanAmpAssignUnitCpy[%VC_ADUnit][headStageNo])
 
 	// IC DA settings
-	channel = ChanAmpAssign[%IC_DA][HeadStageNo]
-	Popupmenu Popup_Settings_IC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
-	Setvariable setvar_Settings_IC_DAgain, win = $device, value = _num:ChanAmpAssign[%IC_DAGain][HeadStageNo]
-	Setvariable SetVar_Hardware_IC_DA_Unit, win = $device, value = _str:ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo]
+	channel = chanAmpAssignCpy[%IC_DA][headStageNo]
+	channelStr = SelectString(IsFinite(channel), NONE, num2str(channel))
+	PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = channelStr)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_DAgain", val = chanAmpAssignCpy[%IC_DAGain][headStageNo])
+	PGC_SetAndActivateControl(device, "SetVar_Hardware_IC_DA_Unit", str = chanAmpAssignUnitCpy[%IC_DAUnit][headStageNo])
 
 	// IC AD settings
-	channel = ChanAmpAssign[%IC_AD][HeadStageNo]
-	Popupmenu  Popup_Settings_IC_AD, win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
-	Setvariable setvar_Settings_IC_ADgain, win = $device, value = _num:ChanAmpAssign[%IC_ADGain][HeadStageNo]
-	Setvariable SetVar_Hardware_IC_AD_Unit, win = $device, value = _str:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
+	channel = chanAmpAssignCpy[%IC_AD][headStageNo]
+	channelStr = SelectString(IsFinite(channel), NONE, num2str(channel))
+	PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = channelStr)
+	PGC_SetAndActivateControl(device, "setvar_Settings_IC_ADgain", val = chanAmpAssignCpy[%IC_ADGain][headStageNo])
+	PGC_SetAndActivateControl(device, "SetVar_Hardware_IC_AD_Unit", str = chanAmpAssignUnitCpy[%IC_ADUnit][headStageNo])
 
-	ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
-	ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
+	ampSerial    = chanAmpAssignCpy[%AmpSerialNo][headStageNo]
+	ampChannelID = chanAmpAssignCpy[%AmpChannelID][headStageNo]
 	if(isFinite(ampSerial) && isFinite(ampChannelID))
 		entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
-		Popupmenu popup_Settings_Amplifier, win = $device, popmatch=entry
+		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = entry)
 	else
-		Popupmenu popup_Settings_Amplifier, win = $device, popmatch=NONE
+		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
 	endif
 End
 
