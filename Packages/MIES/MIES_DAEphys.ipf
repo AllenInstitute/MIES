@@ -4415,6 +4415,7 @@ Function DAP_LockDevice(string win)
 
 	DoWindow/W=$win/C $deviceLocked
 
+	KillOrMoveToTrash(wv = GetChannelClampMode(deviceLocked))
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(deviceLocked))
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(deviceLocked))
 	// initial fill of the GUI state wave
