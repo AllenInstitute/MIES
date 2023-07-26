@@ -1926,7 +1926,7 @@ static Function PSX_StoreIntoResultsWave(string browser, variable resultType, WA
 
 	if(DimSize(formulaGraphs, ROWS) > 1)
 		WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
-		lastBrowser = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula browser", SWEEP_FORMULA_PSX)
+		lastBrowser = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula browser", UNKNOWN_MODE)
 
 		if(cmpstr(browser, lastBrowser))
 			// don't add an entry as the last entry was from another sweepbrowser/formula graph
@@ -2901,7 +2901,7 @@ static Function/WAVE PSX_GetEventContainerFromResults(string id)
 	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
 	name = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_EVENTS, id)
-	entry = GetLastSettingTextIndep(textualResultsValues, NaN, name, SWEEP_FORMULA_PSX)
+	entry = GetLastSettingTextIndep(textualResultsValues, NaN, name, UNKNOWN_MODE)
 
 	if(IsEmpty(entry))
 		return $""
