@@ -926,14 +926,12 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	endif
 
 	if(!midsweep)
-		WAVE/T/Z epochInfo =  EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, channelType)
-
-		if(!WaveExists(epochInfo))
+		WAVE/T/Z epochInfoChannel =  EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+		if(!WaveExists(epochInfoChannel))
 			return $""
 		endif
 
-		Duplicate/FREE/T/RMD=[][][][channelType] epochInfo, epochInfoChannel
-		epochCnt = DimSize(epochInfo, ROWS)
+		epochCnt = DimSize(epochInfoChannel, ROWS)
 	else
 		epochCnt = EP_GetEpochCount(epochsWave, channelNumber, channelType)
 
