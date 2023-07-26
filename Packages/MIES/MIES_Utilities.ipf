@@ -6516,6 +6516,15 @@ Function IsValidTraceLineStyle(variable lineStyleCode)
 	return IsFinite(lineStyleCode) && lineStyleCode >= 0 && lineStyleCode <= 17
 End
 
+/// @brief Checks if given trace display code is valid (as of Igor Pro 9)
+///
+/// @param traceDisplayCode line style code value for a trace
+/// @returns 1 if valid, 0 otherwise
+Function IsValidTraceDisplayMode(variable traceDisplayCode)
+
+	return IsFinite(traceDisplayCode) && traceDisplayCode >= TRACE_DISPLAY_MODE_LINES && traceDisplayCode <= TRACE_DISPLAY_MODE_LAST_VALID
+End
+
 /// From DisplayHelpTopic "Character-by-Character Operations"
 /// @brief Returns the number of bytes in the UTF-8 character that starts byteOffset
 ///        bytes from the start of str.

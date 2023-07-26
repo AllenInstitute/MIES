@@ -231,6 +231,21 @@ Constant EVENT_WINDOW_HOOK_TABLEENTRYCANCELLED = 25
 Constant EVENT_WINDOW_HOOK_EARLYKEYBOARD       = 26
 /// @}
 
+/// @name Trace Display Types
+/// @anchor TraceDisplayTypes
+/// @{
+Constant TRACE_DISPLAY_MODE_LINES          = 0
+Constant TRACE_DISPLAY_MODE_STICKS         = 1
+Constant TRACE_DISPLAY_MODE_DOTS           = 2
+Constant TRACE_DISPLAY_MODE_MARKERS        = 3
+Constant TRACE_DISPLAY_MODE_LINES_MARKERS  = 4
+Constant TRACE_DISPLAY_MODE_BARS           = 5
+Constant TRACE_DISPLAY_MODE_CITY           = 6
+Constant TRACE_DISPLAY_MODE_FILL           = 7
+Constant TRACE_DISPLAY_MODE_STICKS_MARKERS = 8
+Constant TRACE_DISPLAY_MODE_LAST_VALID     = 8
+/// @}
+
 /// Used by CheckName and UniqueName
 Constant CONTROL_PANEL_TYPE = 9
 
