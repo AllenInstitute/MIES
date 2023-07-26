@@ -916,7 +916,7 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	variable index, epochCnt, midSweep
 	string regexp
 
-	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_TTL, "Only channelType XOP_CHANNEL_TYPE_DAC and XOP_CHANNEL_TYPE_TTL is supported")
+	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC || channelType == XOP_CHANNEL_TYPE_TTL, "Unsupported channel type")
 	treelevel = ParamIsDefault(treelevel) ? NaN : treelevel
 
 	if(ParamIsDefault(epochsWave) || !WaveExists(epochsWave))
@@ -990,10 +990,20 @@ End
 ///
 /// See GetEpochsWave() for the wave layout.
 threadsafe Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualValues, variable sweep, variable channelNumber, variable channelType)
+
 	variable index
 
-	if(channelType != XOP_CHANNEL_TYPE_DAC && channelType != XOP_CHANNEL_TYPE_TTL)
-		return $""
+	ASSERT_TS(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC || channelType == XOP_CHANNEL_TYPE_TTL, "Unsupported channel type")
+	if(channelType == XOP_CHANNEL_TYPE_ADC)
+		[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", channelNumber, XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
+		if(!WaveExists(setting))
+			return $""
+		endif
+		channelType = XOP_CHANNEL_TYPE_DAC
+		channelNumber = setting[index]
+		if(!(IsFinite(channelNumber) && index < NUM_HEADSTAGES))
+			return $""
+		endif
 	endif
 
 	[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, EPOCHS_ENTRY_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)

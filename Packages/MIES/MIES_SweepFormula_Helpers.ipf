@@ -363,24 +363,6 @@ Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable swe
 	return range
 End
 
-Function SFH_GetDAChannel(string graph, variable sweep, variable channelType, variable channelNumber)
-
-	variable DAC, index
-
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
-	if(!WaveExists(numericalValues))
-		return NaN
-	endif
-	[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", channelNumber, channelType, DATA_ACQUISITION_MODE)
-	if(WaveExists(settings))
-		DAC = settings[index]
-		ASSERT(IsFinite(DAC) && index < NUM_HEADSTAGES, "Only associated channels are supported.")
-		return DAC
-	endif
-
-	return NaN
-End
-
 /// @brief Return a wave reference wave with the requested sweep data
 ///
 /// All wave input parameters should are treated as const and are thus *not* modified.
@@ -393,7 +375,7 @@ End
 Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData, string opShort)
 
 	variable i, j, rangeStart, rangeEnd, sweepNo
-	variable chanNr, chanType, cIndex, isSweepBrowser, fetchEpChanType, fetchEpChannelNumber
+	variable chanNr, chanType, cIndex, isSweepBrowser
 	variable numSelected, index, numEpochPatterns, numRanges, numEpochs, epIndex, lastx
 	string dimLabel, device, dataFolder
 	string	allEpochsRegex = "^.*$"
@@ -461,12 +443,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 
 		if(WaveExists(epochNames))
 
-			fetchEpChanType = chanType == XOP_CHANNEL_TYPE_ADC ? XOP_CHANNEL_TYPE_DAC : chanType
-			fetchEpChannelNumber = chanType == XOP_CHANNEL_TYPE_ADC ? SFH_GetDAChannel(graph, sweepNo, chanType, chanNr) : chanNr
-			if(IsNaN(fetchEpChannelNumber))
-				continue
-			endif
-			WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, fetchEpChanType, fetchEpChannelNumber, allEpochsRegex)
+			WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, chanType, chanNr, allEpochsRegex)
 			if(!WaveExists(epochInfo))
 				continue
 			endif

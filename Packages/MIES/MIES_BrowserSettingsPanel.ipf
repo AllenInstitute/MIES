@@ -1608,7 +1608,7 @@ Function BSP_AddTracesForEpochs(string win)
 
 	variable i, j, start_x, start_y, end_x, end_y, yOffset
 	variable headstage, yLevelOffset, level, idx, numTraces, numEpochs
-	variable sweepNumber, traceIndex, channelType, channelNumber, fetchEpChanType, fetchEpChannelNumber
+	variable sweepNumber, traceIndex, channelType, channelNumber
 	STRUCT RGBColor c
 	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, idPart, level_x_trace
 
@@ -1670,11 +1670,8 @@ Function BSP_AddTracesForEpochs(string win)
 		WAVE/Z/T textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
 		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
 
-		fetchEpChanType = channelType == XOP_CHANNEL_TYPE_ADC ? XOP_CHANNEL_TYPE_DAC : channelType
-		fetchEpChannelNumber = channelType == XOP_CHANNEL_TYPE_ADC ? SFH_GetDAChannel(win, sweepNumber, channelType, channelNumber) : channelNumber
-
 		// present since a2172f03 (Added generations of epoch information wave, 2019-05-22)
-		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, fetchEpChannelNumber, fetchEpChanType)
+		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, channelNumber, channelType)
 		if(!WaveExists(epochsFromLBN))
 			continue
 		endif

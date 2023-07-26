@@ -241,3 +241,20 @@ static Function EP_GetNextEpochsWithGapHasMatch()
 	CHECK_EQUAL_STR(str, expected)
 	CHECK_EQUAL_VAR(str2num(result[0][%TreeLevel]), 1)
 End
+
+static Function EP_CheckADCToDACMApping()
+	string str, expected
+
+	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
+
+	// HS0 ADC6 -> DAC2
+	WAVE/T/Z result = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_ADC, 6, "EP_1a")
+	CHECK_WAVE(result, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
+	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 2e-6)
+	CHECK_EQUAL_VAR(str2num(result[0][%EndTime]), 3e-6)
+	str = result[0][%Tags]
+	expected = "someDesc;ShortName=EP_1a;"
+	CHECK_EQUAL_STR(str, expected)
+	CHECK_EQUAL_VAR(str2num(result[0][%TreeLevel]), 1)
+End
