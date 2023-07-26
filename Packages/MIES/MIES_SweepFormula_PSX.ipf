@@ -4893,7 +4893,9 @@ Function ApplyMacroToExistingPanel(string win, string mac)
 	// EndMacro
 	//
 	// from the end
-	macroCode[0,2] = ""
+	FindValue/TEXT="NewPanel" macroCode
+	ASSERT(V_row > 0, "Could not find NewPanel")
+	macroCode[0, V_row] = ""
 	macroCode[inf] = ""
 
 	currWindow = GetCurrentWindow()
