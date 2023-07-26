@@ -2722,3 +2722,100 @@ static Function TestOperationPrep()
 		CHECK_NO_RTE()
 	endtry
 End
+
+static Function TestStoreAndLoad()
+
+	string browser, code, psxGraph, win, mainWindow, specialEventPanel, extAllGraph, bsPanel
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	// all decay fits are successfull
+	overrideResults[][] = 1
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nothing")
+
+	ExecuteSweepFormulaCode(browser, code)
+
+	win = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow = GetMainWindow(win)
+	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	bsPanel = BSP_GetPanel(browser)
+
+	SetActiveSubwindow $psxGraph
+
+	SendKey(psxGraph, SPACE_KEY)
+
+	DoUpdate/W=$psxGraph
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+
+	PGC_SetAndActivateControl(mainWindow, "button_store")
+
+	SendKey(psxGraph, SPACE_KEY)
+
+	DoUpdate/W=$psxGraph
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+
+	PGC_SetAndActivateControl(mainWindow, "button_load")
+
+	DoUpdate/W=$psxGraph
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	// now it is accepted again
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+
+	// reject it again
+	SendKey(psxGraph, SPACE_KEY)
+
+	DoUpdate/W=$psxGraph
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+
+	// redisplaying still gives reject as we load the last state from the cache
+	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+
+	DoUpdate/W=$psxGraph
+
+	SetActiveSubwindow $psxGraph
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+
+	// but if we clear the cache we load the last results data
+	CA_FLushCache()
+
+	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+
+	DoUpdate/W=$psxGraph
+
+	SetActiveSubwindow $psxGraph
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+End
