@@ -4593,7 +4593,11 @@ Function PSX_ButtonProc_LoadEvents(STRUCT WMButtonAction &ba) : ButtonControl
 			id = PSX_GetID(graph)
 
 			WAVE/Z eventContainerFromResults = PSX_GetEventContainerFromResults(id)
-			ASSERT(WaveExists(eventContainerFromResults), "Could not fetch events from the results wave with id: " + id)
+			if(!WaveExists(eventContainerFromResults))
+				printf "Could not fetch events from the results wave with id: %s\r", id
+				ControlWindowToFront()
+				break
+			endif
 
 			DFREF workDFR = PSX_GetWorkingFolder(graph)
 
