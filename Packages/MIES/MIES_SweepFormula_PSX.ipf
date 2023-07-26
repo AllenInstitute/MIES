@@ -1232,6 +1232,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 				ASSERT(DimSize(results, ROWS) <= DimSize(marker, ROWS), "results wave got larger unexpectedly")
 				Redimension/N=(DimSize(results, ROWS)) marker, comboKeys
 
+				JWN_SetNumberInWaveNote(results, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_MARKERS)
 				JWN_SetWaveInWaveNote(results, SF_META_MOD_MARKER, marker)
 				JWN_CreatePath(results, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
 				JWN_SetWaveInWaveNote(results, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME, comboKeys)
