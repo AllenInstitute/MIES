@@ -1870,7 +1870,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				WAVE wvY = dataInGraph[l][%WAVEY]
 				trace = tracesInGraph[l]
 				lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
+
 				WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_TRACECOLOR)
+				if(WaveExists(traceColor))
+					ASSERT(DimSize(traceColor, ROWS) == 3, "Need 3-element wave for color specification.")
+					ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
+				endif
 
 				if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
 					&& (!WaveExists(wvX) \
@@ -1890,10 +1895,6 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					ModifyGraph/W=$win mode($trace)=3,zmrkNum($trace)={customMarker}
 
 				else
-					if(WaveExists(traceColor))
-						ASSERT(DimSize(traceColor, ROWS) == 3, "Need 3-element wave for color specification.")
-						ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
-					endif
 					if(IsValidTraceLineStyle(lineStyle))
 						ModifyGraph/W=$win lStyle($trace)=lineStyle
 					elseif(formulasAreDifferent)
