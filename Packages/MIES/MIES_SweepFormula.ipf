@@ -1555,7 +1555,7 @@ End
 /// @param dmMode  [optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged
 static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
 
-	string trace
+	string trace, customLegend
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
@@ -1834,16 +1834,25 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 		yAxisLabel = SF_CombineYUnits(yUnits)
 
-		if(showLegend && numAnnotations)
-			annotation = ""
-			for(k = 0; k < numAnnotations; k += 1)
-				wAnnotations[k] = SF_ShrinkLegend(wAnnotations[k])
-			endfor
-			Redimension/N=(numAnnotations) wAnnotations, formulaArgSetup
-			formulasAreDifferent = SFH_EnrichAnnotations(wAnnotations, formulaArgSetup)
-			annotation = TextWaveToList(wAnnotations, "\r")
-			annotation = UnPadString(annotation, char2num("\r"))
-			Legend/W=$win/C/N=metadata/F=2 annotation
+		if(showLegend)
+			customLegend = JWN_GetStringFromWaveNote(formulaResults, SF_META_CUSTOM_LEGEND)
+
+			if(!IsEmpty(customLegend))
+				annotation = customLegend
+			elseif(numAnnotations > 0)
+				annotation = ""
+				for(k = 0; k < numAnnotations; k += 1)
+					wAnnotations[k] = SF_ShrinkLegend(wAnnotations[k])
+				endfor
+				Redimension/N=(numAnnotations) wAnnotations, formulaArgSetup
+				formulasAreDifferent = SFH_EnrichAnnotations(wAnnotations, formulaArgSetup)
+				annotation = TextWaveToList(wAnnotations, "\r")
+				annotation = UnPadString(annotation, char2num("\r"))
+			endif
+
+			if(!IsEmpty(annotation))
+				Legend/W=$win/C/N=metadata/F=2 annotation
+			endif
 		endif
 
 		for(k = 0; k < formulaCounter; k += 1)
