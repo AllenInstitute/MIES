@@ -1482,7 +1482,7 @@ End
 /// The passed event index is from the *current* combo.
 static Function PSX_UpdateSingleEventGraph(string win, variable index)
 
-	string extSingleGraph
+	string extSingleGraph, msg
 	variable first, last
 
 	if(PSX_EventGraphSuppressUpdate(win))
@@ -1507,6 +1507,9 @@ static Function PSX_UpdateSingleEventGraph(string win, variable index)
 		first = min(first, leftx(singleEventFit))
 		last  = max(last, rightx(singleEventFit))
 	endif
+
+	sprintf msg, "comboIndex %g, index %g", PSX_GetComboIndexFromDFR(comboDFR), index
+	DEBUGPRINT(msg)
 
 	SetAxis/W=$extSingleGraph bottom, first, last
 	SetAxis/W=$extSingleGraph/A=2 left
