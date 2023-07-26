@@ -7193,3 +7193,12 @@ static Function BetweenZeroAndOneHoundredX()
 	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(100.0), 0)
 	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(102.0), 0)
 End
+
+static Function TestUpperCaseFirstChar()
+
+	string ret = UpperCaseFirstChar("")
+	CHECK_EMPTY_STR(ret)
+	CHECK_EQUAL_STR(UpperCaseFirstChar("1a"), "1a")
+	CHECK_EQUAL_STR(UpperCaseFirstChar("a1a"), "A1a")
+	CHECK_EQUAL_STR(UpperCaseFirstChar("b"), "B")
+End

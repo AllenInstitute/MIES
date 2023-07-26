@@ -6780,3 +6780,17 @@ End
 threadsafe Function BetweenZeroAndOneHoundred(variable val)
 	return val >= 0.0 && val <= 100.0
 End
+
+/// @brief Upper case the first character in an ASCII string
+threadsafe Function/S UpperCaseFirstChar(string str)
+
+	variable len
+
+	len = strlen(str)
+
+	if(len == 0)
+		return str
+	endif
+
+	return UpperStr(str[0]) + str[1, len - 1]
+End
