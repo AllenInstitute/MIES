@@ -2679,3 +2679,46 @@ static Function TestOperationRiseTime()
 		CHECK_NO_RTE()
 	endtry
 End
+
+static Function TestOperationPrep()
+
+	string win, device, code, psxCode
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
+
+	psxCode = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 0.01, 100, 0)"
+	sprintf code, "psxPrep(%s)", psxCode
+
+	WAVE/WAVE dataWref = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 3)
+
+	WAVE hist = dataWref[0]
+	CHECK_GT_VAR(DimSize(hist, ROWS), 0)
+
+	WAVE fit  = dataWref[1]
+	CHECK_EQUAL_VAR(DimSize(fit, ROWS), 200)
+
+	WAVE threshold = dataWref[2]
+	CHECK_EQUAL_VAR(DimSize(threshold, ROWS), 1)
+	CHECK_EQUAL_VAR(threshold[0], 0) // because the input data is BS
+
+	// checks parameters
+	try
+		sprintf code, "psxPrep(%s, 0)", psxCode
+		WAVE/WAVE dataWref = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		sprintf code, "psxPrep(%s, -1)", psxCode
+		WAVE/WAVE dataWref = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End

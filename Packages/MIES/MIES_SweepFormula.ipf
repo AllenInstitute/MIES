@@ -207,7 +207,7 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
 	                  SF_OP_CHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP,         \
 	                  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM, SF_OP_TPSS, SF_OP_TPBASE, SF_OP_TPINST, SF_OP_TPFIT,        \
-	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME}
+	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP}
 
 	return wt
 End
@@ -1095,6 +1095,9 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 			break
 		case SF_OP_PSX_RISETIME:
 			WAVE out = PSX_OperationRiseTime(jsonId, jsonPath, graph)
+			break
+		case SF_OP_PSX_PREP:
+			WAVE out = PSX_OperationPrep(jsonId, jsonPath, graph)
 			break
 		default:
 			SFH_ASSERT(0, "Undefined Operation", jsonId=jsonId)

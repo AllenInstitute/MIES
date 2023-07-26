@@ -379,11 +379,20 @@ end
 /// Fit the given wave with a gaussian where K0, y offset, is fixed at zero.
 static Function [WAVE coef, WAVE fit] PSX_FitHistogram(WAVE input)
 
+	variable err
+
 	Make/D/FREE/N=4 coefWave
 	K0 = 0
-	CurveFit/H="1000"/Q gauss, kwCWave=coefWave, input/D
 
-	return coefWave
+	AssertOnAndClearRTError()
+	CurveFit/H="1000"/Q/TBOX/X=1 gauss, kwCWave=coefWave, input/D; err = GetRTError(1)
+	WAVE/Z fit = $("fit_" + NameOfWave(input))
+
+	if(err > 0 || !WaveExists(fit))
+		return [$"", $""]
+	endif
+
+	return [coefWave, MakeWaveFree(fit)]
 end
 
 /// Full analysis cycle:
@@ -4170,6 +4179,74 @@ Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_PSX_STATS, ""))
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_STATS)
+End
+
+Function/WAVE PSX_OperationPrep(variable jsonId, string jsonPath, string graph)
+
+	variable numSDs, threshold, numCombos
+	string msg, dataUnit
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_PREP, 1, maxArgs = 2)
+
+	WAVE/WAVE results = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_PSX_PREP, 0)
+
+	numCombos = PSX_GetNumberOfCombinations(results)
+
+	if(!numCombos)
+		return SFH_CreateSFRefWave(graph, SF_OP_PSX_PREP, 0)
+	endif
+
+	numSDs = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_PREP, 1, defValue = 2.5, checkFunc = IsStrictlyPositiveAndFinite)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_PREP, 3)
+	SetDimensionLabels(output, "Histogram;Fit;Thresholds;", ROWS)
+
+	// Concatenate all input waves
+	Make/FREE/N=(numCombos)/WAVE input = results[%$PSX_GenerateKey("sweepDataFiltOffDeconv", p)]
+	Concatenate/NP/FREE {input}, sweepDataFiltOffDeconv
+
+	WAVE hist = PSX_CreateHistogramOfDeconvSweepData(sweepDataFiltOffDeconv)
+
+	WAVE/Z coef, fit
+	[coef, fit] = PSX_FitHistogram(hist)
+
+	Make/FREE=1/N=1 sdThresholdX, sdThresholdY
+
+	if(WaveExists(coef) && WaveExists(fit))
+		threshold = RoundNumber(coef[3] * numSDs, 3)
+	else
+		threshold = NaN
+	endif
+
+	sprintf msg, "Threshold=%g;", threshold
+	Note/K sdThresholdY, msg
+
+	sdThresholdX[] = threshold
+	JWN_SetWaveInWaveNote(sdThresholdY, SF_META_XVALUES, sdThresholdX)
+
+	output[%$"Histogram"]  = hist
+	output[%$"Fit"]        = fit
+	output[%$"Thresholds"] = sdThresholdY
+
+	// colors
+	JWN_SetWaveInWaveNote(hist, SF_META_TRACECOLOR, {0, 0, 0}) // black
+	// keep default red for fit
+	JWN_SetWaveInWaveNote(sdThresholdY, SF_META_TRACECOLOR, {0, 40000, 0}) // green
+
+	// modes
+	JWN_SetNumberInWaveNote(hist, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES_MARKERS)
+	JWN_SetNumberInWaveNote(fit, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
+	JWN_SetNumberInWaveNote(sdThresholdY, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_MARKERS)
+
+	dataUnit = WaveUnits(sweepDataFiltOffDeconv, -1)
+	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Data (" + dataUnit  + ")")
+	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, "All points histogram with Gaussian fit")
+
+	/// @todo: Don't hardcode trace names
+	sprintf msg, "Number of SDs: %g\r\\s(T000000d0_X) Histogram\r\\s(T000001d1_X) Fit\r\\s(T000002d2_X) Peak threshold: %g (%s)", numSDs, threshold, dataUnit
+	JWN_SetStringInWaveNote(output, SF_META_CUSTOM_LEGEND, msg)
+
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_PREP)
 End
 
 /// @brief Menu item for selecting event inside a marquee and changing their state
