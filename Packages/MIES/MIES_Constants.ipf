@@ -1962,6 +1962,7 @@ StrConstant SF_META_CUSTOM_LEGEND = "/CustomLegend" // string with custom legend
 StrConstant SF_META_ARGSETUPSTACK = "/ArgSetupStack" // string
 StrConstant SF_META_TRACECOLOR = "/TraceColor" // numeric wave, applies to markers and lines
 StrConstant SF_META_LINESTYLE = "/LineStyle" // number
+StrConstant SF_META_TRACE_MODE = "/TraceMode" // number
 StrConstant SF_META_TRACETOFRONT = "/TraceToFront" // number, boolean, defaults to false (0)
 
 StrConstant SF_META_USER_GROUP = "/User/" // custom metadata for individual operations,

@@ -1869,7 +1869,6 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				WAVE/Z wvX = dataInGraph[l][%WAVEX]
 				WAVE wvY = dataInGraph[l][%WAVEY]
 				trace = tracesInGraph[l]
-				lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
 
 				WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_TRACECOLOR)
 				if(WaveExists(traceColor))
@@ -1877,16 +1876,17 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
 				endif
 
-				if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
-					&& (!WaveExists(wvX) \
-					|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
+				ModifyGraph/W=$win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
 
-					WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
-					if(!WaveExists(customMarkerAsFree))
-						ModifyGraph/W=$win mode($trace)=3,marker($trace)=markerCode
-						continue
-					endif
+				lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
+				if(IsValidTraceLineStyle(lineStyle))
+					ModifyGraph/W=$win lStyle($trace)=lineStyle
+				elseif(formulasAreDifferent)
+					ModifyGraph/W=$win lStyle($trace)=lineCode
+				endif
 
+				WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
+				if(WaveExists(customMarkerAsFree))
 					DFREF dfrWork = SFH_GetWorkingDF(graph)
 					wvName = UniqueWaveName(dfr, "customMarker_" + NameOfWave(wvY))
 					MoveWave customMarkerAsFree, dfrWork:$wvName
@@ -1894,11 +1894,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
 					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
 				else
-					if(IsValidTraceLineStyle(lineStyle))
-						ModifyGraph/W=$win lStyle($trace)=lineStyle
-					elseif(formulasAreDifferent)
-						ModifyGraph/W=$win lStyle($trace)=lineCode
-					endif
+					ModifyGraph/W=$win marker($trace)=markerCode
 				endif
 
 				traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
@@ -1955,6 +1951,24 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			endif
 		endfor
 	endif
+End
+
+static Function SF_DeriveTraceDisplayMode(WAVE/Z wvX, WAVE wvY)
+
+	variable traceMode
+
+	traceMode = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACE_MODE)
+	if(IsValidTraceDisplayMode(traceMode))
+		return traceMode
+	endif
+
+	if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS          \
+	   && (!WaveExists(wvX)                                       \
+		   || DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
+		return TRACE_DISPLAY_MODE_MARKERS
+	endif
+
+	return TRACE_DISPLAY_MODE_LINES
 End
 
 static Function SF_GetShowLegend(WAVE wv)
