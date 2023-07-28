@@ -2687,7 +2687,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
 	variable moreData, chan, guiChannelNumber, numHorizWaves, numVertWaves, idx
-	variable numTTLBits, headstage, channelType
+	variable numTTLBits, headstage, channelType, isTTLSplitted
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
 	variable numRegions, numEntries, numRangesPerEntry, traceCounter
@@ -2924,8 +2924,10 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 					if(hardwareType == HARDWARE_ITC_DAC)
 						numVertWaves = tgs.splitTTLBits ? NUM_ITC_TTL_BITS_PER_RACK : 1
+						isTTLSplitted = tgs.splitTTLBits
 					else
 						numVertWaves = 1
+						isTTLSplitted = 1
 					endif
 
 					numChannels = numTTLs
@@ -2996,7 +2998,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 				// 15:    TTL bits (sum) rack one
 				// 16-19: TTL bits (single) rack one
 
-				[s] = GetHeadstageColor(headstage, channelType = channelID, activeChannelCount = activeChanCount[i], channelSubNumber = j)
+				[s] = GetHeadstageColor(headstage, channelType = channelType, channelNumber = guiChannelNumber, isSplitted = isTTLSplitted)
 				first = 0
 
 				// number of horizontally distributed
@@ -3335,19 +3337,28 @@ End
 
 /// @brief Return the color of the given headstage
 ///
-/// @param headstage          Headstage, can be NaN for non-associated channels
-/// @param channelType        [optional, empty by default] The channel type for non-associated channels, currently only "TTL" is supported
-/// @param activeChannelCount [optional, empty by default] For plotting "TTL" channels only
-/// @param channelSubNumber   [optional, empty by default] For plotting "TTL" channels only, "TTL Bit" information when plotting each on its own
-Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [string channelType, variable activeChannelCount, variable channelSubNumber])
+/// @param headstage     Headstage, Use "NaN" for non-associated channels
+/// @param channelType   [optional, empty by default] The channel type for non-associated channels, currently only XOP_CHANNEL_TYPE_TTL is evaluated
+/// @param channelNumber [optional, empty by default] For plotting "TTL" channels only, GUI channel number
+/// @param isSplitted    [optional, default 1] For plotting "TTL" channels only, Flag if the color for a splitted or unsplitted channel should be returned
+Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [variable channelType, variable channelNumber, variable isSplitted])
 
 	string str
-	variable colorIndex
+	variable colorIndex, blockSizeTTL, activeChannelIndexAsOfITC, ttlBitAsOfITC, blockOffsetTTL
+	variable offsetTTL = 10
+
+	isSplitted = ParamIsDefault(isSplitted) ? 1 : !!isSplitted
 
 	if(IsFinite(headstage))
 		colorIndex = headstage
-	elseif(!ParamIsDefault(channelType) && !cmpstr(channelType, "TTL"))
-		colorIndex = 10 + activeChannelCount * 5 + channelSubNumber
+	elseif(!ParamIsDefault(channelType) && channelType == XOP_CHANNEL_TYPE_TTL)
+		// The mapping is based on ITC hardware with unsplitted and splitted TTL channels in the following index order
+		// Unsplit0, Split0_0, Split0_1, Split0_2, Split0_3, Unsplit1, Split1_0, Split1_1, Split1_2, Split1_3
+		blockSizeTTL = NUM_ITC_TTL_BITS_PER_RACK + 1
+		activeChannelIndexAsOfITC = trunc(channelNumber / NUM_ITC_TTL_BITS_PER_RACK)
+		ttlBitAsOfITC = mod(channelNumber, NUM_ITC_TTL_BITS_PER_RACK)
+		blockOffsetTTL = isSplitted ? 1 + ttlBitAsOfITC : 0
+		colorIndex = offsetTTL + activeChannelIndexAsOfITC * blockSizeTTL + blockOffsetTTL
 	else
 		colorIndex = NUM_HEADSTAGES
 	endif
