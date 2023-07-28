@@ -152,7 +152,7 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 				if(averageWaveType == IGOR_TYPE_32BIT_FLOAT)
 					MatrixOP/FREE AveW = fp32(sumRows(fp64(fullWave)) / numWaves)
 				elseif(averageWaveType == IGOR_TYPE_64BIT_FLOAT)
-					MatrixOP/FREE AveW = sumRows(fp64(fullWave)) / numWaves)
+					MatrixOP/FREE AveW = sumRows(fp64(fullWave)) / numWaves
 				else
 					ASSERT_TS(0, "Not supported")
 				endif
@@ -160,8 +160,8 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 		else
 			if(ignoreNaNs)
 				if(averageWaveType == IGOR_TYPE_32BIT_FLOAT)
-					MatrixOP/FREE SumW = sumRows(replaceNaNs(fp64(fullWave), 0)
-					MatrixOP/FREE CntW = sumRows(equal(numtype(fullWave), 0)))
+					MatrixOP/FREE SumW = sumRows(replaceNaNs(fp64(fullWave), 0))
+					MatrixOP/FREE CntW = sumRows(equal(numtype(fullWave), 0))
 					if(gotPrevAvgData)
 						WAVE prevCnt = prevAvgData[1]
 						MatrixOp/FREE CntW = CntW + prevCnt - 1

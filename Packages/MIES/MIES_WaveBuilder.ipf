@@ -1321,7 +1321,7 @@ static Function WB_NoiseSegment(pa)
 		// do nothing
 	endif
 
-	MatrixOp/FREE scaleFactor = pa.amplitude / (maxVal(segmentWave) - minVal(segmentWave)))
+	MatrixOp/FREE scaleFactor = pa.amplitude / (maxVal(segmentWave) - minVal(segmentWave))
 	MultiThread segmentWave[] = segmentWave[p] * scaleFactor[0] // ScaleFactor is a 1x1 matrix
 
 	DEBUGPRINT_ELAPSED(referenceTime)
