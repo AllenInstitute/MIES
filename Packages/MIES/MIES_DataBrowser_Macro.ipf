@@ -937,7 +937,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_splitTTL,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_splitTTL,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_splitTTL,userdata(Config_RestorePriority)="20"
-	CheckBox check_BrowserSettings_splitTTL,value=0
+	CheckBox check_BrowserSettings_splitTTL,value=1
 	PopupMenu popup_DB_lockedDevices,pos={54.00,301.00},size={205.00,19.00},bodyWidth=100,proc=DB_PopMenuProc_LockDBtoDevice
 	PopupMenu popup_DB_lockedDevices,title="Device assignment:"
 	PopupMenu popup_DB_lockedDevices,help={"Select a data acquistion device to display data"}
