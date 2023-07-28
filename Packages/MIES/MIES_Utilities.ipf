@@ -846,7 +846,7 @@ End
 /// @param wv             wave reference, can be numeric or text
 /// @param caseSensitive  [optional, default = 1] Indicates whether comparison should be case sensitive. Applies only if the input wave is a text wave
 /// @param dontDuplicate  [optional, default = 0] for a single element input wave no new free wave is created but the input wave is returned.
-threadsafe Function/WAVE GetUniqueEntries(WAVE wv[, variable caseSensitive, variable dontDuplicate])
+threadsafe Function/WAVE GetUniqueEntries(WAVE wv, [variable caseSensitive, variable dontDuplicate])
 
 	variable numRows
 
@@ -909,7 +909,7 @@ End
 /// @param dontDuplicate  [optional, default = 0] for a single element input wave no new free wave is created but the input wave is returned.
 ///
 /// @return free wave with unique entries
-threadsafe static Function/WAVE GetUniqueTextEntries(WAVE/T wv[, variable caseSensitive, variable dontDuplicate])
+threadsafe static Function/WAVE GetUniqueTextEntries(WAVE/T wv, [variable caseSensitive, variable dontDuplicate])
 
 	variable numEntries, numDuplicates, i
 
@@ -1825,7 +1825,7 @@ Function CreateFolderOnDisk(absPath)
 
 		ASSERT(!FileExists(partialPath), "The path which we should create exists, but points to a file")
 
-		NewPath/O/C/Q/Z $tempPath partialPath
+		NewPath/O/C/Q/Z $tempPath, partialPath
 	endfor
 
 	KillPath/Z $tempPath
@@ -3931,7 +3931,7 @@ Function/S AskUserForExistingFolder(string baseFolder)
 
 	symbPath = GetUniqueSymbolicPath()
 
-	NewPath/O/Q/Z $symbPath baseFolder
+	NewPath/O/Q/Z $symbPath, baseFolder
 	// preset next undirected NewPath/Open call using the contents of a
 	// *symbolic* folder
 	PathInfo/S $symbPath
@@ -4682,7 +4682,7 @@ Function GetPlotArea(win, s)
 		return NaN
 	endif
 
-	GetWindow $win psizeDC
+	GetWindow $win, psizeDC
 
 	s.left   = V_left
 	s.right  = V_right
@@ -4901,7 +4901,7 @@ End
 /// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
 /// @param[in] message [optional, default = "Select file"] window title of the save file dialog.
 /// @returns loaded string data and full path fileName
-Function [string data, string fName] LoadTextFile(string fileName[, string fileFilter, string message])
+Function [string data, string fName] LoadTextFile(string fileName, [string fileFilter, string message])
 
 	variable fNum, zFlag
 
@@ -6186,7 +6186,7 @@ End
 /// @param input   Wave to perform FFT on
 /// @param winFunc [optional, defaults to NONE] FFT window function
 /// @param padSize [optional, defaults to the next power of 2 of the input wave row size] Target size used for padding
-threadsafe Function/WAVE DoFFT(WAVE input[, string winFunc, variable padSize])
+threadsafe Function/WAVE DoFFT(WAVE input, [string winFunc, variable padSize])
 
 	if(ParamIsDefault(padSize))
 		padSize = TP_GetPowerSpectrumLength(DimSize(input, ROWS))
@@ -6656,7 +6656,7 @@ Function UpdateInfoButtonHelp(string win, string ctrl, string content)
 
 	string htmlStr = "<pre>" + content + "</pre>"
 
-	Button $ctrl win=$win,help={htmlStr},userdata=content
+	Button $ctrl, win=$win,help={htmlStr},userdata=content
 End
 
 /// @brief Acts like the `limit` builtin but replaces values outside the valid range instead of clipping them

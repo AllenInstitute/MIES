@@ -112,38 +112,38 @@ Function MEN_OpenAboutDialog()
 	NewNotebook /F=1 /N=MiesVersionNB/FG=(FL,FT,FR,FB)/HOST=#/OPTS=3
 	nb = panel + "#" + nb
 
-	Notebook $nb defaultTab=36, magnification=100
-	Notebook $nb showRuler=0, rulerUnits=2, updating={1, 1},writeProtect=1
-	Notebook $nb newRuler=Normal, justification=0, margins={0,0,468}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
-	Notebook $nb ruler=Normal, text="MIES is a sweep based data acquisition tool written in Igor Pro.\r"
-	Notebook $nb text="\r"
+	Notebook $nb, defaultTab=36, magnification=100
+	Notebook $nb, showRuler=0, rulerUnits=2, updating={1, 1},writeProtect=1
+	Notebook $nb, newRuler=Normal, justification=0, margins={0,0,468}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
+	Notebook $nb, ruler=Normal, text="MIES is a sweep based data acquisition tool written in Igor Pro.\r"
+	Notebook $nb, text="\r"
 
 	version = ROStr(GetMiesVersion())
 	version = StringFromList(0, version, "\r")
 	version = RemovePrefix(version, start = "Release_")
-	Notebook $nb text="Version: " + version  + "\r"
-	Notebook $nb text="\r"
+	Notebook $nb, text="Version: " + version  + "\r"
+	Notebook $nb, text="\r"
 	NotebookAction/W=$nb name=Action1, title="Report an Issue/Enhancement proposal", ignoreErrors=1
 	NotebookAction/W=$nb name=Action1, commands="MEN_CreateIssueOnGithub()"
-	Notebook $nb text="\r"
-	Notebook $nb text="\r"
-	Notebook $nb text="Location: "
+	Notebook $nb, text="\r"
+	Notebook $nb, text="\r"
+	Notebook $nb, text="Location: "
 	NotebookAction/W=$nb name=Action2, title="github.com/AllenInstitute/MIES", ignoreErrors=1
 	NotebookAction/W=$nb name=Action2, commands="BrowseURL(\"https://github.com/AllenInstitute/MIES\")"
-	Notebook $nb text="\r"
-	Notebook $nb text="\r"
-	Notebook $nb text="License: "
+	Notebook $nb, text="\r"
+	Notebook $nb, text="\r"
+	Notebook $nb, text="License: "
 	NotebookAction/W=$nb name=Action0, title="2-clause BSD license plus a third clause", ignoreErrors=1
 	NotebookAction/W=$nb name=Action0, commands="BrowseURL(\"https://github.com/AllenInstitute/MIES/blob/main/LICENSE\")"
-	Notebook $nb text="\r"
-	Notebook $nb text="\r"
-	Notebook $nb text="Sponsors: "
+	Notebook $nb, text="\r"
+	Notebook $nb, text="\r"
+	Notebook $nb, text="Sponsors: "
 	NotebookAction/W=$nb name=Action3, title="www.alleninstitute.org", ignoreErrors=1
 	NotebookAction/W=$nb name=Action3, commands="BrowseURL(\"https://www.alleninstitute.org\")"
-	Notebook $nb text="\r"
-	Notebook $nb text="\r"
-	Notebook $nb text="Data products:"
-	Notebook $nb text="\r"
+	Notebook $nb, text="\r"
+	Notebook $nb, text="\r"
+	Notebook $nb, text="Data products:"
+	Notebook $nb, text="\r"
 	NotebookAction/W=$nb name=Action5, title="", showmode=3, linkStyle=0, scaling={40.0 * sfactor, 40.0 * sfactor}, procPICTName=SynPhys, ignoreErrors=1, padding={0,0,0,0,5}, commands="BrowseURL(\"https://portal.brain-map.org/explore/connectivity/synaptic-physiology\")"
 	NotebookAction/W=$nb name=Action6, title="", showmode=3, linkStyle=0, scaling={40.0 * sfactor, 40.0 * sfactor}, procPICTName=CellTypes, ignoreErrors=1, padding={0,0,0,0,0}, commands="BrowseURL(\"http://celltypes.brain-map.org/\")"
 	SetActiveSubwindow ##

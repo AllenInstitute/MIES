@@ -1813,16 +1813,16 @@ Function P_UpdatePressureModeTabs(device, headStage)
 	string highlightSpec = "\\f01\\Z11"
 
 	if(pressureMode == PRESSURE_METHOD_ATM)
-		TabControl tab_DataAcq_Pressure win=$device, tabLabel(0) = "Auto"
-		TabControl tab_DataAcq_Pressure win=$device, tabLabel(1) = "Manual"
+		TabControl tab_DataAcq_Pressure, win=$device, tabLabel(0) = "Auto"
+		TabControl tab_DataAcq_Pressure, win=$device, tabLabel(1) = "Manual"
 	elseif(pressureMode == PRESSURE_METHOD_MANUAL)
 		PGC_SetAndActivateControl(device, "tab_DataAcq_Pressure", val = 1)
-		TabControl tab_DataAcq_Pressure win=$device, tabLabel(0) = "Auto"
-		TabControl tab_DataAcq_Pressure win=$device, tabLabel(1) = highlightSpec + "Manual"
+		TabControl tab_DataAcq_Pressure, win=$device, tabLabel(0) = "Auto"
+		TabControl tab_DataAcq_Pressure, win=$device, tabLabel(1) = highlightSpec + "Manual"
 	else
 		PGC_SetAndActivateControl(device, "tab_DataAcq_Pressure", val = 0)
-		TabControl tab_DataAcq_Pressure win=$device, tabLabel(0) = highlightSpec + "Auto"
-		TabControl tab_DataAcq_Pressure win=$device, tabLabel(1) = "Manual"
+		TabControl tab_DataAcq_Pressure, win=$device, tabLabel(0) = highlightSpec + "Auto"
+		TabControl tab_DataAcq_Pressure, win=$device, tabLabel(1) = "Manual"
 	endif
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = pressureWave[headStage][%ManSSPressure])
@@ -1840,68 +1840,68 @@ Function P_ValidatePressureSetHeadstage(device, headStageNo)
 	string msg
 
 	if(!isFinite(PressureDataWv[headStageNo][%HW_DAC_Type]))
-		sprintf msg, "DAC Type is not configured for headStage %d"  headStageNo
+		sprintf msg, "DAC Type is not configured for headStage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
 
 	if(!isFinite(PressureDataWv[headStageNo][%DAC_DevID]))
-		sprintf msg, "DAC device ID is not configured for headstage %d"  headStageNo
+		sprintf msg, "DAC device ID is not configured for headstage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
 
 	// TTL_B is optional
 	if(!isFinite(PressureDataWv[headStageNo][%TTL_A]))
-		sprintf msg, "TTL A is not configured for headstage %d"  headStageNo
+		sprintf msg, "TTL A is not configured for headstage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
 
 	if(!isFinite(PressureDataWv[headStageNo][%DAC_Gain]))
-		sprintf msg, "DAC gain is not configured for headstage %d"  headStageNo
+		sprintf msg, "DAC gain is not configured for headstage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
 
 	if(!isFinite(PressureDataWv[headStageNo][%ADC_Gain]))
-		sprintf msg, "ADC Type is not configured for headstage %d"  headStageNo
+		sprintf msg, "ADC Type is not configured for headstage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
 
 	if(!isFinite(PressureDataWv[headStageNo][%PSI_air]))
-		sprintf msg, "Approach pressure in air is not configured for headstage %d"  headStageNo
+		sprintf msg, "Approach pressure in air is not configured for headstage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
 
 	if(!isFinite(PressureDataWv[headStageNo][%PSI_solution]))
-		sprintf msg, "Approach pressure in solution is not configured for headstage %d"  headStageNo
+		sprintf msg, "Approach pressure in solution is not configured for headstage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
 
 	if(!isFinite(PressureDataWv[headStageNo][%PSI_slice]))
-		sprintf msg, "Approach pressure in slice is not configured for headstage %d"  headStageNo
+		sprintf msg, "Approach pressure in slice is not configured for headstage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
 
 	if(!isFinite(PressureDataWv[headStageNo][%PSI_nearCell]))
-		sprintf msg, "Approach pressure in slice is not configured for headstage %d"  headStageNo
+		sprintf msg, "Approach pressure in slice is not configured for headstage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
 
 	if(!isFinite(PressureDataWv[HeadStageNo][%PSI_SealInitial]))
-		sprintf msg, "Initial seal pressure is not configured for headstage %d"  headStageNo
+		sprintf msg, "Initial seal pressure is not configured for headstage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
 
 	if(!isFinite(PressureDataWv[headStageNo][%PSI_SealMax]))
-		sprintf msg, "Maximum seal pressure is not configured for headstage %d"  headStageNo
+		sprintf msg, "Maximum seal pressure is not configured for headstage %d",  headStageNo
 		DEBUGPRINT(msg)
 		return 0
 	endif
@@ -1990,10 +1990,10 @@ Function P_PressureDisplayHighlite(device, hilite)
 	variable Bh = str2num(stringFromList(2,High))
 
 	string controlName
-	sprintf controlName, "valdisp_DataAcq_P_LED_%d" pressureDataWv[0][%userSelectedHeadStage]
-	ValDisplay $controlName zeroColor=(Rz, Gz, Bz), lowColor=(Rl, Gl, Bl), highColor=(Rh, Gh, Bh), win=$device
+	sprintf controlName, "valdisp_DataAcq_P_LED_%d", pressureDataWv[0][%userSelectedHeadStage]
+	ValDisplay $controlName, zeroColor=(Rz, Gz, Bz), lowColor=(Rl, Gl, Bl), highColor=(Rh, Gh, Bh), win=$device
 
-	sprintf controlName, "valdisp_DataAcq_P_%d" pressureDataWv[0][%userSelectedHeadStage]
+	sprintf controlName, "valdisp_DataAcq_P_%d", pressureDataWv[0][%userSelectedHeadStage]
 	ChangeControlValueColor(device, controlName, RGB, RGB, RGB)
 
 //	sprintf controlName, "valdisp_DataAcq_P_%d" pressureDataWv[0][%userSelectedHeadStage]
@@ -2084,7 +2084,7 @@ static Function P_Enable()
 			P_LoadPressureButtonState(lockedDevice)
 			P_SetLEDValueAssoc(lockedDevice)
 		else
-			printf "No devices are presently assigned for pressure regulation on: %s\r" LockedDevice
+			printf "No devices are presently assigned for pressure regulation on: %s\r", LockedDevice
 		endif
 
 		LOG_AddEntry(PACKAGE_MIES, "pressure",                           \
@@ -2565,7 +2565,7 @@ static Function P_SetLEDValueAssoc(device)
 	variable i, col
 
 	for(i = 0; i < NUM_HEADSTAGES;i += 1)
-		sprintf pathAndCell, "%s[%d]" stringPath, i
+		sprintf pathAndCell, "%s[%d]", stringPath, i
 		controlName = stringfromlist(i, PRESSURE_CONTROL_LED_DASHBOARD)
 		SetValDisplay(device, controlName, str=pathAndCell)
 	endfor
@@ -2574,7 +2574,7 @@ static Function P_SetLEDValueAssoc(device)
 	for(i = 0; i < 4; i += 1)
 		controlName = stringFromList(i,PRESSURE_CONTROL_USER_CHECBOXES)
 		col = FindDimlabel(GuiState, COLS, controlName)
-		sprintf pathAndCell, "%s[0][%d]" stringPath, col
+		sprintf pathAndCell, "%s[0][%d]", stringPath, col
 		controlName = stringFromList(i,PRESSURE_CONTROL_LED_MODE_USER)
 		SetValDisplay(device, controlName, str=pathAndCell)
 	endfor

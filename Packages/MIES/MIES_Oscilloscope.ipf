@@ -182,7 +182,7 @@ Function SCOPE_UpdateGraph(device, dataAcqOrTP)
 			endif
 		endif
 
-		SetAxis/W=$graph $leftAxis statsMin - spacing / 2.0, statsMax + spacing / 2.0
+		SetAxis/W=$graph $leftAxis, statsMin - spacing / 2.0, statsMax + spacing / 2.0
 	endfor
 End
 
@@ -328,13 +328,13 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 				ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.3}, freePos($rightAxis)={0, kwFraction}
 				ModifyGraph/W=$graph lblPosMode($rightAxis) = 4, lblPos($rightAxis) = 60, lblRot($rightAxis) = 180
 				ModifyGraph/W=$graph nticks($rightAxis) = 2, tickUnit($AXIS_SCOPE_TP_TIME)=1
-				Label/W=$graph $rightAxis "(MΩ)"
+				Label/W=$graph $rightAxis, "(MΩ)"
 
 				if(!oneTimeInitDone)
 					sprintf str, "\\[1\\K(%d, %d, %d)R\\Bss\\M(MΩ)\\]1\\K(%d, %d,%d)\r\\[1\\K(0, 26122, 0)R\\Bpeak\\M(MΩ)\\]1\\K(0, 0, 0)", steadyColor.red, steadyColor.green, steadyColor.blue, peakColor.red, peakColor.green, peakColor.blue
 					TextBox/W=$graph/F=0/B=1/X=0.62/Y=0.36/E=2  str
 
-					Label/W=$graph $AXIS_SCOPE_TP_TIME "Relative time (s)"
+					Label/W=$graph $AXIS_SCOPE_TP_TIME, "Relative time (s)"
 					SetAxis/W=$graph/A=2 $rightAxis
 
 					if(!isNaN(axisMinTop))
@@ -384,7 +384,7 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 		Label/W=$graph bottomDAQ "Time DAQ (\\U)"
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 		sampInt = DAP_GetSampInt(device, DATA_ACQUISITION_MODE) * MICRO_TO_MILLI
-		SetAxis/W=$graph bottomDAQ 0, stopCollectionPoint * sampInt
+		SetAxis/W=$graph bottomDAQ, 0, stopCollectionPoint * sampInt
 		ModifyGraph/W=$graph freePos(bottomDAQ)=-35
 	endif
 End
@@ -428,7 +428,7 @@ Function SCOPE_SetADAxisLabel(device, dataAcqOrTP, activeHeadStage)
 
 		[s] = GetHeadstageColor(headstage)
 
-		sprintf color, "\K(%d,%d,%d)" s.red, s.green, s.blue
+		sprintf color, "\K(%d,%d,%d)", s.red, s.green, s.blue
 		if(activeHeadStage == headStage)
 			style = "\f05"
 		else
@@ -719,8 +719,8 @@ static Function SCOPE_ITC_UpdateOscilloscope(device, dataAcqOrTP, chunk, fifoPos
 				Display/N=DAQDataWaveTPMD DAQDataWave[][1]
 			endif
 
-			Cursor/W=DAQDataWaveTPMD/H=2/P A $NameOfWave(DAQDataWave) first
-			Cursor/W=DAQDataWaveTPMD/H=2/P B $NameOfWave(DAQDataWave) last
+			Cursor/W=DAQDataWaveTPMD/H=2/P A, $NameOfWave(DAQDataWave), first
+			Cursor/W=DAQDataWaveTPMD/H=2/P B, $NameOfWave(DAQDataWave), last
 		endif
 #endif
 

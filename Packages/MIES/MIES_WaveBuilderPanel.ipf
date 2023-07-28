@@ -398,7 +398,7 @@ static Function WBP_UpdatePanelIfAllowed()
 			endif
 
 			maxDuration = WBP_ReturnPulseDurationMax()
-			SetVariable SetVar_WaveBuilder_P8 win=$panel, limits = {0, maxDuration, 0.1}
+			SetVariable SetVar_WaveBuilder_P8, win=$panel, limits = {0, maxDuration, 0.1}
 			if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDuration)
 				SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDuration)
 			endif
@@ -457,7 +457,7 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 		customWaveName = WPT[0][segment][EPOCH_TYPE_CUSTOM]
 		WAVE/Z customWave = $customWaveName
 		if(WaveExists(customWave))
-			GroupBox group_WaveBuilder_FolderPath win=$panel, title=GetWavesDataFolder(customWave, 1)
+			GroupBox group_WaveBuilder_FolderPath, win=$panel, title=GetWavesDataFolder(customWave, 1)
 			PopupMenu popup_WaveBuilder_ListOfWaves, win=$panel, popMatch=NameOfWave(customWave)
 		endif
 	elseif(stimulusType == EPOCH_TYPE_PULSE_TRAIN)
@@ -518,7 +518,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 			ST_RemoveStimSet(setWaveToDelete)
 
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
-			PopupMenu popup_WaveBuilder_SetList win=$panel, mode = 1
+			PopupMenu popup_WaveBuilder_SetList, win=$panel, mode = 1
 			break
 	endswitch
 
@@ -757,7 +757,7 @@ static Function WBP_LowPassDeltaLimits()
 
 	if(LowPassDelta > 0)
 		DeltaLimit = trunc(100000 / numSweeps)
-		SetVariable SetVar_WaveBuilder_P21 win=$panel, limits = {-inf, DeltaLimit, 1}
+		SetVariable SetVar_WaveBuilder_P21, win=$panel, limits = {-inf, DeltaLimit, 1}
 		if(LowPassDelta > DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P21", DeltaLimit)
 		endif
@@ -765,7 +765,7 @@ static Function WBP_LowPassDeltaLimits()
 
 	if(LowPassDelta < 0)
 		DeltaLimit = trunc(-((LowPassCutOff/numSweeps) -1))
-		SetVariable SetVar_WaveBuilder_P21 win=$panel, limits = {DeltaLimit, 99999, 1}
+		SetVariable SetVar_WaveBuilder_P21, win=$panel, limits = {DeltaLimit, 99999, 1}
 		if(LowPassDelta < DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P21", DeltaLimit)
 		endif
@@ -784,7 +784,7 @@ static Function WBP_HighPassDeltaLimits()
 
 	if(HighPassDelta > 0)
 		DeltaLimit = trunc((100000 - HighPassCutOff) / numSweeps) - 1
-		SetVariable SetVar_WaveBuilder_P23 win=$panel, limits = { -inf, DeltaLimit, 1}
+		SetVariable SetVar_WaveBuilder_P23, win=$panel, limits = { -inf, DeltaLimit, 1}
 		if(HighPassDelta > DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P23", DeltaLimit)
 		endif
@@ -792,7 +792,7 @@ static Function WBP_HighPassDeltaLimits()
 
 	if(HighPassDelta < 0)
 		DeltaLimit = trunc(HighPassCutOff / numSweeps) + 1
-		SetVariable SetVar_WaveBuilder_P23 win=$panel, limits = {DeltaLimit, 99999, 1}
+		SetVariable SetVar_WaveBuilder_P23, win=$panel, limits = {DeltaLimit, 99999, 1}
 		if(HighPassDelta < DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P23", DeltaLimit)
 		endif
@@ -820,7 +820,7 @@ static Function WBP_ChangeWaveType()
 
 		WP[1,6][][] = 0
 
-		SetVariable SetVar_WaveBuilder_P2 win = $panel, limits = {0,1,1}
+		SetVariable SetVar_WaveBuilder_P2, win = $panel, limits = {0,1,1}
 		DisableControls(panel, list)
 
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P2", var = 0)
@@ -828,7 +828,7 @@ static Function WBP_ChangeWaveType()
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P4", var = 0)
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P5", var = 0)
 	elseif(stimulusType == CHANNEL_TYPE_DAC)
-		SetVariable SetVar_WaveBuilder_P2 win =$panel, limits = {-inf,inf,1}
+		SetVariable SetVar_WaveBuilder_P2, win =$panel, limits = {-inf,inf,1}
 		EnableControls(panel, list)
 	else
 		ASSERT(0, "Unknown stimulus type")
@@ -1037,7 +1037,7 @@ static Function WBP_UpdateEpochControls()
 	currentEpoch = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch")
 	numEpochs = SegWvType[100]
 
-	SetVariable setvar_WaveBuilder_CurrentEpoch win=$panel, limits = {0, numEpochs - 1, 1}
+	SetVariable setvar_WaveBuilder_CurrentEpoch, win=$panel, limits = {0, numEpochs - 1, 1}
 
 	if(currentEpoch >= numEpochs)
 		PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_CurrentEpoch", val = numEpochs - 1)
@@ -1149,9 +1149,9 @@ Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
 				endif
 			endif
 
-			GroupBox group_WaveBuilder_FolderPath win=$panel, title = path
-			PopupMenu popup_WaveBuilder_FolderList win=$panel, mode = 1
-			PopupMenu popup_WaveBuilder_ListOfWaves win=$panel, mode = 1
+			GroupBox group_WaveBuilder_FolderPath, win=$panel, title = path
+			PopupMenu popup_WaveBuilder_FolderList, win=$panel, mode = 1
+			PopupMenu popup_WaveBuilder_ListOfWaves, win=$panel, mode = 1
 			ControlUpdate/W=$panel popup_WaveBuilder_ListOfWaves
 			break
 	endswitch
@@ -1629,18 +1629,18 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	Duplicate/FREE segmentWave, input
 
 	ASSERT(!cmpstr(WaveUnits(input, ROWS), "ms"), "Unexpected data units for row dimension")
-	SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT * MILLI_TO_ONE, "s", input
+	SetScale/P x, 0, WAVEBUILDER_MIN_SAMPINT * MILLI_TO_ONE, "s", input
 	FFT/FREE/DEST=cmplxFFT input
 
 	MultiThread cmplxFFT = r2polar(cmplxFFT)
 
-	Duplicate/O cmplxFFT dfr:$(SEGMENTWAVE_SPECTRUM_PREFIX + "Mag_" + num2str(sweep))/WAVE=spectrumMag
+	Duplicate/O cmplxFFT, dfr:$(SEGMENTWAVE_SPECTRUM_PREFIX + "Mag_" + num2str(sweep))/WAVE=spectrumMag
 	Redimension/R spectrumMag
 
 	MultiThread spectrumMag = 20 * log(real(cmplxFFT[p]))
 	SetScale y, 0, 0, "dB", spectrumMag
 
-	Duplicate/O cmplxFFT dfr:$(SEGMENTWAVE_SPECTRUM_PREFIX + "Phase_" + num2str(sweep))/WAVE=spectrumPhase
+	Duplicate/O cmplxFFT, dfr:$(SEGMENTWAVE_SPECTRUM_PREFIX + "Phase_" + num2str(sweep))/WAVE=spectrumPhase
 	Redimension/R spectrumPhase
 
 	MultiThread spectrumPhase = imag(cmplxFFT[p]) * 180 / Pi
@@ -1875,7 +1875,7 @@ static Function WBP_ToggleAnalysisParamGUI()
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={785,233,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewNotebook /F=0 /N=nb_param_value /W=(16,76,216,120)/FG=(UGFL1,UGFT1,UGFR1,UGFB1) /HOST=# /OPTS=3
 	Notebook kwTopWin, defaultTab=20, autoSave= 0, magnification=100
-	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
+	Notebook kwTopWin, font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetActiveSubwindow ##
 
 	WBP_UpdateParameterWave()

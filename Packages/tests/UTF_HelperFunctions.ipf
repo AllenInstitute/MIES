@@ -598,7 +598,7 @@ static Function RetrieveAllWindowsInCI()
 		return NaN
 	endif
 
-	DoIgorMenu "Control" "Retrieve All Windows"
+	DoIgorMenu "Control", "Retrieve All Windows"
 End
 
 Function TestBeginCommon()

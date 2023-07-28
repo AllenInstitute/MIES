@@ -2847,7 +2847,7 @@ Function HW_NI_KillFifo(deviceID)
 	AssertOnAndClearRTError()
 	try
 		if(V_FIFORunning)
-			CtrlFIFO $fifoName stop; AbortOnRTE
+			CtrlFIFO $fifoName, stop; AbortOnRTE
 		endif
 		DoXOPIdle
 		KillFIFO $fifoName; AbortOnRTE

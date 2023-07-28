@@ -308,7 +308,7 @@ Function Enforce_VC(device, eventType, DAQDataWave, headStage, realDataLength)
 		variable DAC = AFH_GetDACFromHeadstage(device, headstage)
 
 		string stimSetName = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
-		printf "%s on DAC %d of headstage %d requires voltage clamp mode. Change clamp mode to voltage clamp to allow data acquistion\r" stimSetName, DAC, headStage
+		printf "%s on DAC %d of headstage %d requires voltage clamp mode. Change clamp mode to voltage clamp to allow data acquistion\r", stimSetName, DAC, headStage
 		return 1
 	endif
 
@@ -328,7 +328,7 @@ Function Enforce_IC(device, eventType, DAQDataWave, headStage, realDataLength)
 	if(DAG_GetHeadstageMode(device, headStage) != I_CLAMP_MODE)
 		variable DAC = AFH_GetDACFromHeadstage(device, headstage)
 		string stimSetName = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
-		printf "Stimulus set: %s on DAC: %d of headstage: %d requires current clamp mode. Change clamp mode to current clamp to allow data acquistion\r" stimSetName, DAC, headStage
+		printf "Stimulus set: %s on DAC: %d of headstage: %d requires current clamp mode. Change clamp mode to current clamp to allow data acquistion\r", stimSetName, DAC, headStage
 		return 1
 	endif
 

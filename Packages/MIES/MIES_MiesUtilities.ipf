@@ -269,7 +269,7 @@ static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, var
 	Note/K slice
 
 	if(!cmpstr(entryName, "TimeStamp") || !cmpstr(entryName, "TimeStampSinceIgorEpochUTC"))
-		SetScale d, 0, 0, "dat" slice
+		SetScale d, 0, 0, "dat", slice
 	endif
 
 	ASSERT(!isEmpty(entryName), "entryName must not be empty")
@@ -2489,7 +2489,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		NewFreeAxis/W=$graph $freeAxis
 		ModifyGraph/W=$graph standoff($freeAxis)=0, lblPosMode($freeAxis)=2, axRGB($freeAxis)=(65535,65535,65535,0), tlblRGB($freeAxis)=(65535,65535,65535,0), alblRGB($freeAxis)=(0,0,0), lblMargin($freeAxis)=0, lblLatPos($freeAxis)=0
 		ModifyGraph/W=$graph axisEnab($freeAxis)={firstFreeAxis, lastFreeAxis}
-		Label/W=$graph $freeAxis "HS" + num2str(headstage)
+		Label/W=$graph $freeAxis, "HS" + num2str(headstage)
 	endfor
 
 	// unassoc DA
@@ -2648,7 +2648,7 @@ End
 /// @param experiment      name of the experiment the sweep stems from
 /// @param channelSelWave  channel selection wave
 /// @param bdi [optional, default = n/a] initialized BufferedDrawInfo structure, when given draw calls are buffered instead for later execution @sa OVS_EndIncrementalUpdate
-Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues,  WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave[, STRUCT BufferedDrawInfo &bdi])
+Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues,  WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave, [STRUCT BufferedDrawInfo &bdi])
 
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
@@ -3872,8 +3872,8 @@ Function TimeAlignHandleCursorDisplay(win)
 		posA = NumberByKey("POINT", csrA)
 		posB = NumberByKey("POINT", csrB)
 	endif
-	Cursor/W=$graph/A=1/N=1/P A $trace posA
-	Cursor/W=$graph/A=1/N=1/P B $trace posB
+	Cursor/W=$graph/A=1/N=1/P A, $trace, posA
+	Cursor/W=$graph/A=1/N=1/P B, $trace, posB
 End
 
 /// @brief Enable/Disable TimeAlignment Controls and Cursors
@@ -7478,7 +7478,7 @@ Function UploadCrashDumps()
 	diagPath = S_path
 
 	basePath = GetUniqueSymbolicPath()
-	NewPath/Q/O/Z $basePath diagPath + ":"
+	NewPath/Q/O/Z $basePath, diagPath + ":"
 
 #ifdef DEBUGGING_ENABLED
 	SaveTextFile(JSON_dump(jsonID, indent=4), diagPath + ":" + UniqueFileOrFolder(basePath, "crash-dumps", suffix = ".json"))
@@ -7594,7 +7594,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 	if(DP_DebuggingEnabledForCaller())
 		basePath = GetUniqueSymbolicPath()
 		path = SpecialDirPath("Temporary", 0, 0, 1) + "MIES:"
-		NewPath/C/Q/O/Z $basePath path
+		NewPath/C/Q/O/Z $basePath, path
 
 		for(jsonID : jsonIDs)
 			location = path + UniqueFileOrFolder(basePath, "logfiles", suffix = ".json")

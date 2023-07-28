@@ -170,7 +170,7 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 			// rest is zero already
 		endif
 
-		GetWindow $mainWin wsize
+		GetWindow $mainWin, wsize
 		left   = V_right + width_spacing
 		top    = V_top
 		right  = left + width
@@ -205,10 +205,10 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 
 		switch(displayMode)
 			case PA_DISPLAYMODE_IMAGES:
-				SetWindow $win hook(resizeHookAndScalebar)=PA_ImageWindowHook
+				SetWindow $win, hook(resizeHookAndScalebar)=PA_ImageWindowHook
 				break
 			case PA_DISPLAYMODE_TRACES:
-				SetWindow $win hook(resizeHookAndScalebar)=PA_TraceWindowHook
+				SetWindow $win, hook(resizeHookAndScalebar)=PA_TraceWindowHook
 				break
 			default:
 				ASSERT(0, "Invalid display mode")
@@ -2695,11 +2695,11 @@ static Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconv
 		if(DimOffset(average, ROWS) != DimOffset(cache, ROWS))
 			CopyScales/P average, cache
 		endif
-		Duplicate/O cache outputDFR:$outputWaveName/WAVE=wv
+		Duplicate/O cache, outputDFR:$outputWaveName/WAVE=wv
 		return wv
 	endif
 
-	Duplicate/O/R=[0, DimSize(smoothed, ROWS) - 2] smoothed outputDFR:$outputWaveName/WAVE=wv
+	Duplicate/O/R=[0, DimSize(smoothed, ROWS) - 2] smoothed, outputDFR:$outputWaveName/WAVE=wv
 	step = deconvolution.tau / DimDelta(average, 0)
 	MultiThread wv = step * (smoothed[p + 1] - smoothed[p]) + smoothed[p]
 
@@ -3126,7 +3126,7 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 			sprintf msg, "traceName %s, minimum %g, maximum %g\r", traceName, minimum, maximum
 			DEBUGPRINT(msg)
 
-			ModifyImage/W=$graph $traceName ctab= {minimum, maximum, $(pa.imageColorScale), 0}, minRGB=0,maxRGB=(65535,0,0)
+			ModifyImage/W=$graph $traceName, ctab= {minimum, maximum, $(pa.imageColorScale), 0}, minRGB=0,maxRGB=(65535,0,0)
 		endfor
 	endfor
 
@@ -3663,7 +3663,7 @@ static Function PA_SetColorScale(string win, string colScale)
 		numImages = ItemsInList(images)
 		for(j = 0; j < numImages; j += 1)
 			image = StringFromList(j, images)
-			ModifyImage/W=$graph $image ctab={,,$colScale,0}
+			ModifyImage/W=$graph $image, ctab={,,$colScale,0}
 		endfor
 	endfor
 End

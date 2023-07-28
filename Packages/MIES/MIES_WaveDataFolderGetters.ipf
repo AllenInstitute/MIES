@@ -4229,7 +4229,7 @@ Function/Wave GetSegmentWave([duration])
 		Redimension/N=(numPoints) SegmentWave
 	endif
 
-	SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT, "ms", SegmentWave
+	SetScale/P x, 0, WAVEBUILDER_MIN_SAMPINT, "ms", SegmentWave
 
 	return SegmentWave
 End
@@ -4448,7 +4448,7 @@ Function/S P_GetDevicePressureFolderAS(device)
 	string 	DeviceType
 	ParseDeviceString(device, deviceType, deviceNumber)
 	string 	FolderPathString
-	sprintf FolderPathString, "%s:Pressure:%s:Device_%s" GetMiesPathAsString(), DeviceType, DeviceNumber
+	sprintf FolderPathString, "%s:Pressure:%s:Device_%s", GetMiesPathAsString(), DeviceType, DeviceNumber
 	return FolderPathString
 End
 

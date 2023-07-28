@@ -342,7 +342,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 			Redimension/N=(numRows, numActiveChannels) ITCDataWave
 
 			FastOp ITCDataWave = 0
-			SetScale/P x 0, samplingInterval * MICRO_TO_MILLI, "ms", ITCDataWave
+			SetScale/P x, 0, samplingInterval * MICRO_TO_MILLI, "ms", ITCDataWave
 
 			return [ITCDataWave, $""]
 			break
@@ -350,7 +350,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, dataAcqOrTP)
 			Redimension/N=(numActiveChannels) NIDataWave
 
-			SetScale/P x 0, samplingInterval * MICRO_TO_MILLI, "ms", NIDataWave
+			SetScale/P x, 0, samplingInterval * MICRO_TO_MILLI, "ms", NIDataWave
 
 			Make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(device)
 			WAVE config = GetDAQConfigWave(device)
@@ -381,7 +381,7 @@ static Function/WAVE DC_MakeNIChannelWave(device, numRows, samplingInterval, ind
 	WAVE NIChannel = GetNIDAQChannelWave(device, index, dataAcqOrTP)
 	Redimension/N=(numRows)/Y=(type) NIChannel
 	FastOp NIChannel= 0
-	SetScale/P x 0, samplingInterval * MICRO_TO_MILLI, "ms", NIChannel
+	SetScale/P x, 0, samplingInterval * MICRO_TO_MILLI, "ms", NIChannel
 
 	return NIChannel
 End

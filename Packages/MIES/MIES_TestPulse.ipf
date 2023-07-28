@@ -468,8 +468,8 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 			ModifyGraph axisEnab(left)={0,0.65},axisEnab(res)={0.7,1},freePos(res)=0
 		endif
 
-		Cursor/W=AutoTPDebugging A $NameOfWave(displayedData) first
-		Cursor/W=AutoTPDebugging B $NameOfWave(displayedData) last
+		Cursor/W=AutoTPDebugging A, $NameOfWave(displayedData), first
+		Cursor/W=AutoTPDebugging B, $NameOfWave(displayedData), last
 
 		WAVE data = root:AutoTPDebuggingData
 		WAVE residuals = root:Res_AutoTPDebuggingData
@@ -900,8 +900,8 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 
 #if defined(TP_ANALYSIS_DEBUGGING)
 	DEBUGPRINT_TS("Marker: ", var = marker)
-	Duplicate data dfrOut:colors
-	Duplicate data dfrOut:data
+	Duplicate data, dfrOut:colors
+	Duplicate data, dfrOut:data
 	WAVE colors = dfrOut:colors
 	colors = 0
 	colors[0, lengthTPInPoints - 1] = 100

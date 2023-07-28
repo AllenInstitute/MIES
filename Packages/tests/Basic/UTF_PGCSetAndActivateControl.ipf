@@ -29,7 +29,7 @@ Function CreatePGCTestPanel_IGNORE()
 	NewPanel /K=1 /W=(265,784,820,987)
 	String/G root:panel = S_name
 
-	PopupMenu popup_ctrl proc=PGCT_PopMenuProc,value=#("\"" + PGCT_POPUPMENU_ENTRIES + "\""), mode = 1
+	PopupMenu popup_ctrl, proc=PGCT_PopMenuProc,value=#("\"" + PGCT_POPUPMENU_ENTRIES + "\""), mode = 1
 	PopupMenu popup_ctrl_colortable,pos={68.00,114.00},size={200.00,19.00},proc=PGCT_PopMenuProc
 	PopupMenu popup_ctrl_colortable,mode=2,value= #"\"*COLORTABLEPOP*\""
 
@@ -747,7 +747,7 @@ static Function PGCT_SetVariableChecksNoEdit()
 	refValue = V_Value
 	CHECK_EMPTY_STR(S_Value)
 
-	SetVariable setvar_num_ctrl win=$panel, noEdit=1
+	SetVariable setvar_num_ctrl, win=$panel, noEdit=1
 
 	// default
 	try

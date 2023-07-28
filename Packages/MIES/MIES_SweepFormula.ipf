@@ -1442,7 +1442,7 @@ static Function SF_CommonWindowSetup(string win, string graph)
 	NVAR JSONid = $GetSettingsJSONid()
 	PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
 
-	SetWindow $win hook(resetScaling)=IH_ResetScaling, userData($SFH_USER_DATA_BROWSER)=graph
+	SetWindow $win, hook(resetScaling)=IH_ResetScaling, userData($SFH_USER_DATA_BROWSER)=graph
 
 	newTitle = BSP_GetFormulaGraphTitle(graph)
 	DoWindow/T $win, newTitle
@@ -1635,7 +1635,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 					WAVE wvX = GetSweepFormulaX(dfr, dataCnt)
 					if(WaveType(wvResultX, 1) == WaveType(wvX, 1))
-						Duplicate/O wvResultX $GetWavesDataFolder(wvX, 2)
+						Duplicate/O wvResultX, $GetWavesDataFolder(wvX, 2)
 					else
 						MoveWaveWithOverWrite(wvX, wvResultX)
 					endif
@@ -1652,7 +1652,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 				WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
 				if(WaveType(wvResultY, 1) == WaveType(wvY, 1))
-					Duplicate/O wvResultY $GetWavesDataFolder(wvY, 2)
+					Duplicate/O wvResultY, $GetWavesDataFolder(wvY, 2)
 				else
 					MoveWaveWithOverWrite(wvY, wvResultY)
 				endif
@@ -4080,7 +4080,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_POWERSPECTRUM, clear=input)
 End
 
-static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, variable deltaHz[, WAVE fitData])
+static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, variable deltaHz, [WAVE fitData])
 
 	string sLeft, sRight, maxSigma, minAmp
 	variable err, left, right, minFreq, maxFreq, endFreq, base
@@ -4944,7 +4944,7 @@ End
 /// @param singleResult [optional, default 0], if set then the first dataSet is retrieved from the waveRef wave and returned, the waveRef wave is disposed
 /// @param checkExist [optional, default 0], only valid if singleResult=1, if set then the data wave in the single dataSet retrieved must exist
 /// @param useVariables [optional, default 1], when not set, hint the function that the formula string contains only an expression and no variable definitions
-Function/WAVE SF_ExecuteFormula(string formula, string graph[, variable singleResult, variable checkExist, variable useVariables])
+Function/WAVE SF_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables])
 
 	variable jsonId
 

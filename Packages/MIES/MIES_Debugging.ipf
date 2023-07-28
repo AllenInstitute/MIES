@@ -706,7 +706,7 @@ Function DEBUG_STOREFUNCTION()
 	WAVE/Z wv = root:functionids
 	if(!WaveExists(wv))
 		WAVE/T functionids = ListToTextWave(FunctionList("*", ";", "KIND:18,WIN:"), ";")
-		Duplicate functionids root:functionids/WAVE=wv
+		Duplicate functionids, root:functionids/WAVE=wv
 	endif
 	WAVE/Z count = root:functioncount
 	if(!WaveExists(count))

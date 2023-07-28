@@ -114,7 +114,7 @@ static Function BSP_UnHideSettingsPanel(mainPanel)
 
 	bsPanel = BSP_GetPanel(mainPanel)
 
-	SetWindow $bsPanel hide=0, needUpdate=1
+	SetWindow $bsPanel, hide=0, needUpdate=1
 End
 
 /// @brief open bottom Panel
@@ -130,7 +130,7 @@ static Function BSP_UnHideSweepControls(mainPanel)
 	scPanel = BSP_GetSweepControlsPanel(mainPanel)
 	ASSERT(WindowExists(scPanel), "SweepControl panel does not exist")
 
-	SetWindow $scPanel hide=0, needUpdate=1
+	SetWindow $scPanel, hide=0, needUpdate=1
 End
 
 /// @brief dynamic settings for bottom panel at initialization
@@ -154,7 +154,7 @@ static Function BSP_DynamicSweepControls(mainPanel)
 		EnableControls(scPanel, SWEEPCONTROL_CONTROLS_DATABROWSER)
 		DisableControls(scPanel, SWEEPCONTROL_CONTROLS_SWEEPBROWSER)
 	else
-		PopupMenu popup_SweepControl_Selector win=$scPanel, value= #("SB_GetSweepList(\"" + mainPanel + "\")")
+		PopupMenu popup_SweepControl_Selector, win=$scPanel, value= #("SB_GetSweepList(\"" + mainPanel + "\")")
 		SetControlProcedures(scPanel, "popup_SweepControl_Selector;", "SB_PopupMenuSelectSweep")
 		EnableControls(scPanel, SWEEPCONTROL_CONTROLS_SWEEPBROWSER)
 		DisableControls(scPanel, SWEEPCONTROL_CONTROLS_DATABROWSER)
@@ -234,7 +234,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	else
 		DisableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
 	endif
-	PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
+	PopupMenu popup_TimeAlignment_Master, win=$bsPanel, value = #("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
 
 	BSP_InitMainCheckboxes(bsPanel)
 
@@ -293,7 +293,7 @@ Function BSP_UnsetDynamicStartupSettings(mainPanel)
 	ASSERT(WindowExists(bsPanel), "external BrowserSettings panel not found")
 	SetWindow $bsPanel, userData(panelVersion) = ""
 	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value=""
-	PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = ""
+	PopupMenu popup_TimeAlignment_Master, win=$bsPanel, value = ""
 	ListBox list_of_ranges, win=$bsPanel, listWave=$"", selWave=$""
 	ListBox list_of_ranges1, win=$bsPanel, listWave=$"", selWave=$""
 	ListBox list_dashboard, win=$bsPanel, listWave=$"", colorWave=$"", selWave=$"", helpWave=$""
@@ -680,7 +680,7 @@ static Function BSP_HidePanel(string win)
 	currentWindow = GetMainWindow(GetCurrentWindow())
 
 	mainPanel = GetMainWindow(win)
-	SetWindow $win hide=1
+	SetWindow $win, hide=1
 
 	DoWindow/F $currentWindow
 
@@ -1077,7 +1077,7 @@ End
 
 Function/S BSP_GetFormulaGraphTitle(string win)
 
-	GetWindow $win wtitle
+	GetWindow $win, wtitle
 
 	return SF_PLOT_NAME_TEMPLATE + " from <" + S_Value + ">"
 End
@@ -1581,7 +1581,7 @@ static Function BSP_UnHideSettingsHistory(win)
 
 	settingsHistoryPanel = LBV_GetSettingsHistoryPanel(win)
 	if(WindowExists(settingsHistoryPanel))
-		SetWindow $settingsHistoryPanel hide=0, needUpdate=1
+		SetWindow $settingsHistoryPanel, hide=0, needUpdate=1
 	endif
 End
 
@@ -1754,7 +1754,7 @@ Function BSP_AddTracesForEpochs(string win)
 			ModifyGraph/W=$win marker($level_x_trace)=10, mode($level_x_trace)=4, rgb($level_x_trace)=(c.red, c.green, c.blue)
 		endfor
 
-		SetWindow $win tooltipHook(hook) = BSP_EpochGraphToolTip
+		SetWindow $win, tooltipHook(hook) = BSP_EpochGraphToolTip
 
 		SetAxis/W=$win/A
 	endfor
@@ -1840,7 +1840,7 @@ Function BSP_SFHelpWindowHook(s)
 			contentCRC = GetNotebookCRC(sfWin)
 			if(!CmpStr(sfWin, s.winName) && refContentCRC != contentCRC)
 				BSP_SFFormulaColoring(sfWin)
-				SetWindow $mainWin userData($BSP_USER_DATA_SF_CONTENT_CRC)=num2istr(contentCRC)
+				SetWindow $mainWin, userData($BSP_USER_DATA_SF_CONTENT_CRC)=num2istr(contentCRC)
 			endif
 			break
 	endswitch

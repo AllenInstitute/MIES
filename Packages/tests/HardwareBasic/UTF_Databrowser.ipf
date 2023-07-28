@@ -64,7 +64,7 @@ Function RestoreButtonWorks([string str])
 	CHECK(!IsControlHidden(win, "button_BSP_open"))
 
 	// subwindow is hidden
-	GetWindow $subWindow hide
+	GetWindow $subWindow, hide
 	CHECK_EQUAL_VAR(V_Value, 0x1)
 
 	// restoring
@@ -72,7 +72,7 @@ Function RestoreButtonWorks([string str])
 	CHECK(WindowExists(subWindow))
 
 	// subwindow is not hidden
-	GetWindow $subWindow hide
+	GetWindow $subWindow, hide
 	CHECK_EQUAL_VAR(V_Value, 0x0)
 
 	// but the button is hidden again

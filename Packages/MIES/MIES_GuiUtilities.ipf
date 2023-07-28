@@ -25,7 +25,7 @@ Function ShowControl(win, control)
 		return NaN
 	endif
 
-	ModifyControl $control win=$win, disable=(V_disable & ~HIDDEN_CONTROL_BIT)
+	ModifyControl $control, win=$win, disable=(V_disable & ~HIDDEN_CONTROL_BIT)
 End
 
 /// @brief Show a list of GUI controls in the given window
@@ -52,7 +52,7 @@ Function HideControl(win, control)
 		return NaN
 	endif
 
-	ModifyControl $control win=$win, disable=(V_disable | HIDDEN_CONTROL_BIT)
+	ModifyControl $control, win=$win, disable=(V_disable | HIDDEN_CONTROL_BIT)
 End
 
 /// @brief Hide a list of GUI controls in the given window
@@ -79,7 +79,7 @@ Function EnableControl(win, control)
 		return NaN
 	endif
 
-	ModifyControl $control win=$win, disable=(V_disable & ~DISABLE_CONTROL_BIT)
+	ModifyControl $control, win=$win, disable=(V_disable & ~DISABLE_CONTROL_BIT)
 End
 
 /// @brief Enable a list of GUI controls in the given window
@@ -106,7 +106,7 @@ Function DisableControl(win, control)
 		return NaN
 	endif
 
-	ModifyControl $control win=$win, disable=(V_disable | DISABLE_CONTROL_BIT)
+	ModifyControl $control, win=$win, disable=(V_disable | DISABLE_CONTROL_BIT)
 End
 
 /// @brief Disable a list of GUI controls in the given window
@@ -144,7 +144,7 @@ Function SetControlTitle(win, controlName, newTitle)
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName WIN = $win, title = newTitle
+	ModifyControl $ControlName, WIN = $win, title = newTitle
 End
 
 /// @brief Set the procedure of a list of controls
@@ -168,7 +168,7 @@ Function SetControlProcedure(win, controlName, newProcedure)
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName WIN = $win, proc = $newProcedure
+	ModifyControl $ControlName, WIN = $win, proc = $newProcedure
 End
 
 /// @brief Return the title of a control
@@ -222,7 +222,7 @@ Function SetControlTitleColor(win, controlName, R, G, B) ///@todo store color in
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName WIN = $win, fColor = (R,G,B)
+	ModifyControl $ControlName, WIN = $win, fColor = (R,G,B)
 End
 
 /// @brief Change color of a control
@@ -233,7 +233,7 @@ Function ChangeControlColor(win, controlName, R, G, B)
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName WIN = $win, fColor = (R,G,B)
+	ModifyControl $ControlName, WIN = $win, fColor = (R,G,B)
 
 End
 
@@ -245,7 +245,7 @@ Function ChangeControlValueColor(win, controlName, R, G, B)
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName WIN = $win, valueColor = (R,G,B)
+	ModifyControl $ControlName, WIN = $win, valueColor = (R,G,B)
 
 End
 
@@ -287,7 +287,7 @@ Function SetControlBckgColor(win, controlName, R, G, B, [Alpha])
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B,Alpha)
+	ModifyControl $ControlName, WIN = $win, valueBackColor = (R,G,B,Alpha)
 End
 
 /// @brief Change the background color of a list of controls
@@ -458,7 +458,7 @@ Function SetPopupMenuIndex(win, control, index)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
 	ASSERT(index >= 0,"Invalid index")
-	PopupMenu $control win=$win, mode=index
+	PopupMenu $control, win=$win, mode=index
 End
 
 /// @brief Sets the popupmenu value
@@ -470,7 +470,7 @@ Function SetPopupMenuVal(string win, string control, [string list, string func])
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
 
 	if(!ParamIsDefault(list))
-		sprintf output, "\"%s\"" List
+		sprintf output, "\"%s\"", List
 		ASSERT(strlen(output) < MAX_COMMANDLINE_LENGTH, "Popup menu list is greater than MAX_COMMANDLINE_LENGTH characters")
 	elseif(!ParamIsDefault(func))
 		output = func
@@ -478,7 +478,7 @@ Function SetPopupMenuVal(string win, string control, [string list, string func])
 		ASSERT(!IsEmpty(allEntries), "func does not generate a non-empty string list.")
 	endif
 
-	PopupMenu $control win=$win, value=#output
+	PopupMenu $control, win=$win, value=#output
 End
 
 /// @brief Sets the popupmenu string
@@ -497,7 +497,7 @@ Function/S SetPopupMenuString(win, control, str)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
-	PopupMenu $control win=$win, popmatch = str
+	PopupMenu $control, win=$win, popmatch = str
 
 	result = GetPopupMenuString(win, control)
 
@@ -548,7 +548,7 @@ Function SetSliderPositionIndex(win, control, index)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SLIDER, "Control is not a slider")
-	Slider $control win=$win, value = index
+	Slider $control, win=$win, value = index
 End
 
 /// @brief Set a ValDisplay
@@ -591,7 +591,7 @@ Function SetValDisplay(win, control, [var, str, format])
 		return NaN
 	endif
 
-	ValDisplay $control win=$win, value=#formattedString
+	ValDisplay $control, win=$win, value=#formattedString
 End
 
 /// @brief Check if a given control exists
@@ -688,7 +688,7 @@ Function SetControlUserData(win, control, key, value)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
-	ModifyControl $control win=$win, userdata($key)=value
+	ModifyControl $control, win=$win, userdata($key)=value
 End
 
 /// @brief Get distinctive trace colors for a given index
@@ -925,7 +925,7 @@ End
 /// @param[in] orientation [optional: default not set] filter orientation of axes see @ref AxisOrientationConstants
 /// @param[in] mode [optional: default #AXIS_RANGE_DEFAULT] filter returned axis information by mode see @ref AxisPropModeConstants
 /// @return free wave with rows = axes, cols = axes info, dimlabel of rows is axis name
-Function/Wave GetAxesProperties(graph[, axesRegexp, orientation, mode])
+Function/Wave GetAxesProperties(graph, [axesRegexp, orientation, mode])
 	string graph, axesRegexp
 	variable orientation, mode
 
@@ -990,7 +990,7 @@ End
 /// @param[in] axesRegexp [optional: default not set] filter axes names list by this optional regular expression
 /// @param[in] orientation [optional: default not set] filter orientation of axes see @ref AxisOrientationConstants
 /// @param[in] mode [optional: default 0] axis set mode see @ref AxisPropModeConstants
-Function SetAxesProperties(graph, props[, axesRegexp, orientation, mode])
+Function SetAxesProperties(graph, props, [axesRegexp, orientation, mode])
 	string graph
 	Wave props
 	string axesRegexp
@@ -1728,7 +1728,7 @@ Function/S GetNotebookText(string win, [variable mode])
 		mode = 1
 	endif
 
-	Notebook $win getData=mode
+	Notebook $win, getData=mode
 
 	return S_Value
 End
@@ -1739,10 +1739,10 @@ Function ReplaceNotebookText(win, text)
 
 	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
 
-	Notebook $win selection={startOfFile, endOfFile}
+	Notebook $win, selection={startOfFile, endOfFile}
 	ASSERT(!V_Flag, "Illegal selection")
 
-	Notebook $win setData=text
+	Notebook $win, setData=text
 End
 
 /// @brief Append to a notebook
@@ -1751,10 +1751,10 @@ Function AppendToNotebookText(win, text)
 
 	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
 
-	Notebook $win selection={endOfFile, endOfFile}
+	Notebook $win, selection={endOfFile, endOfFile}
 	ASSERT(!V_Flag, "Illegal selection")
 
-	Notebook $win setData=text
+	Notebook $win, setData=text
 End
 
 /// @brief Select the end in the given notebook.
@@ -1765,7 +1765,7 @@ Function NotebookSelectionAtEnd(win)
 
 	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
 
-	Notebook $win selection={endOfFile,endOfFile}, findText={"",1}
+	Notebook $win, selection={endOfFile,endOfFile}, findText={"",1}
 End
 
 /// @brief Retrieves named userdata keys from a recreation macro string
@@ -2282,20 +2282,20 @@ End
 Function ReflowNotebookText(string win)
 	variable width
 
-	GetWindow $win wsizeDC
+	GetWindow $win, wsizeDC
 	width = V_right - V_left
 	// make it a bit shorter
 	width -= 10
 	// pixel -> points
 	width = width * (72/ScreenResolution)
 	// redefine ruler
-	Notebook $win ruler=Normal, rulerUnits=0, margins={0, 0, width}
+	Notebook $win, ruler=Normal, rulerUnits=0, margins={0, 0, width}
 	// select everything
-	Notebook $win selection={startOfFile, endOfFile}
+	Notebook $win, selection={startOfFile, endOfFile}
 	// apply ruler to selection
-	Notebook $win ruler=Normal
+	Notebook $win, ruler=Normal
 	// deselect selection
-	Notebook $win selection={endOfFile, endOfFile}
+	Notebook $win, selection={endOfFile, endOfFile}
 End
 
 /// @brief In a formatted notebook sets a location where keyWord appear to the given color

@@ -6056,9 +6056,9 @@ Function GSFWNR_Works()
 	// wave ref, matching
 	Make/WAVE/FREE/N=2 wref
 	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
-	Note/K wref "abcd:123"
-	Note/K wref[0] "abcd:123"
-	Note/K wref[1] "abcd:123"
+	Note/K wref, "abcd:123"
+	Note/K wref[0], "abcd:123"
+	Note/K wref[1], "abcd:123"
 
 	ref = "123"
 	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
@@ -6067,11 +6067,11 @@ Function GSFWNR_Works()
 	// wave ref 2D, matching
 	Make/WAVE/FREE/N=(2, 2) wref
 	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
-	Note/K wref "abcd:123"
-	Note/K wref[0] "abcd:123"
-	Note/K wref[1] "abcd:123"
-	Note/K wref[2] "abcd:123"
-	Note/K wref[3] "abcd:123"
+	Note/K wref, "abcd:123"
+	Note/K wref[0], "abcd:123"
+	Note/K wref[1], "abcd:123"
+	Note/K wref[2], "abcd:123"
+	Note/K wref[3], "abcd:123"
 
 	ref = "123"
 	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
@@ -6080,9 +6080,9 @@ Function GSFWNR_Works()
 	// wave ref, not-matching (wref has a different one)
 	Make/WAVE/FREE/N=2 wref
 	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
-	Note/K wref "abcde:123"
-	Note/K wref[0] "abcd:123"
-	Note/K wref[1] "abcd:123"
+	Note/K wref, "abcde:123"
+	Note/K wref[0], "abcd:123"
+	Note/K wref[1], "abcd:123"
 
 	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EMPTY_STR(str)
@@ -6090,9 +6090,9 @@ Function GSFWNR_Works()
 	// wave ref, not-matching (first contained has a different one)
 	Make/WAVE/FREE/N=2 wref
 	wref[] = NewFreeWave(IGOR_TYPE_32BIT_FLOAT, 0)
-	Note/K wref "abcd:123"
-	Note/K wref[0] "abcde:123"
-	Note/K wref[1] "abcd:123"
+	Note/K wref, "abcd:123"
+	Note/K wref[0], "abcde:123"
+	Note/K wref[1], "abcd:123"
 
 	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
 	CHECK_EMPTY_STR(str)

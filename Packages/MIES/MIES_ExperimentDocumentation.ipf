@@ -372,15 +372,15 @@ static Function ED_WriteChangedValuesToNote(device, sweepNo)
 			endif
 
 			if(i < NUM_HEADSTAGES)
-				sprintf frontLabel, "HS#%d:" i
+				sprintf frontLabel, "HS#%d:", i
 			else
 				frontLabel = ""
 			endif
 
 			if (!cmpstr(factor, LABNOTEBOOK_NO_TOLERANCE))
-				sprintf text, "%s%s: %s\r" frontLabel, key, SelectString(currentSetting[i], "Off", "On")
+				sprintf text, "%s%s: %s\r", frontLabel, key, SelectString(currentSetting[i], "Off", "On")
 			else
-				sprintf text, "%s%s: %.2f %s\r" frontLabel, key, currentSetting[i], unit
+				sprintf text, "%s%s: %.2f %s\r", frontLabel, key, currentSetting[i], unit
 			endif
 
 			str += text
@@ -453,12 +453,12 @@ static Function ED_WriteChangedValuesToNoteText(device, sweepNo)
 			endif
 
 			if(i < NUM_HEADSTAGES)
-				sprintf frontLabel, "HS#%d:" i
+				sprintf frontLabel, "HS#%d:", i
 			else
 				frontLabel = ""
 			endif
 
-			sprintf text, "%s%s: " frontLabel, key
+			sprintf text, "%s%s: ", frontLabel, key
 			str += text + currentSetting[i] + "\r"
 		endfor
 	endfor

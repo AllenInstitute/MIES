@@ -76,7 +76,7 @@ static Function BWO_CheckGlobalSettings(device)
 	// check that data acquisition is not running
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 	if(dataAcqRunMode != DAQ_NOT_RUNNING)
-		printf "Please terminate ongoing data acquisition on %s \r" device
+		printf "Please terminate ongoing data acquisition on %s \r", device
 		return 0
 	endif
 	// check that blowout protocol exists
@@ -209,7 +209,7 @@ static Function BWO_CheckAndClearPipettes(device)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = 0)
 
 		if(TPResults[%ResistanceSteadyState][i] > BWO_MAX_RESISTANCE)
-			printf "Unable to clear pipette on headstage %d with %g psi\r" i, PressureTracking[i]
+			printf "Unable to clear pipette on headstage %d with %g psi\r", i, PressureTracking[i]
 		endif
 	endfor
 End

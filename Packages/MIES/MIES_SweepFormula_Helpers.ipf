@@ -253,7 +253,7 @@ End
 /// All programmer error checks must still use ASSERT().
 ///
 /// UTF_NOINSTRUMENTATION
-Function SFH_ASSERT(variable condition, string message[, variable jsonId])
+Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 
 	if(!condition)
 		if(!ParamIsDefault(jsonId))
@@ -604,7 +604,7 @@ Function SFH_AddToArgSetupStack(WAVE output, WAVE/Z input, string argSetupStr, [
 	JSON_Release(argStackId)
 End
 
-Function/WAVE SFH_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort[, variable discardOpStack, WAVE clear, string dataType])
+Function/WAVE SFH_GetOutputForExecutorSingle(WAVE/Z data, string graph, string opShort, [variable discardOpStack, WAVE clear, string dataType])
 
 	discardOpStack = ParamIsDefault(discardOpStack) ? 0 : !!discardOpStack
 	if(!ParamIsDefault(clear))
@@ -627,7 +627,7 @@ Function/WAVE SFH_GetOutputForExecutorSingle(WAVE/Z data, string graph, string o
 	return SFH_GetOutputForExecutor(output, graph, opShort)
 End
 
-Function/WAVE SFH_GetOutputForExecutor(WAVE output, string win, string opShort[, WAVE clear])
+Function/WAVE SFH_GetOutputForExecutor(WAVE output, string win, string opShort, [WAVE clear])
 
 	if(!ParamIsDefault(clear))
 		SFH_CleanUpInput(clear)
@@ -657,7 +657,7 @@ static Function SFH_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win
 End
 
 /// @brief Retrieves from an argument the first dataset and disposes the argument
-Function/WAVE SFH_ResolveDatasetElementFromJSON(variable jsonId, string jsonPath, string graph, string opShort, variable argNum[, variable checkExist])
+Function/WAVE SFH_ResolveDatasetElementFromJSON(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
@@ -679,7 +679,7 @@ End
 /// @param newDataType data type of output
 /// @param argSetup [optional, default=$""] 2d text wave with argument setup of operation @sa SFH_GetNewArgSetupWave
 /// @param keepX [optional, default=0] When set then xvalues and xlabel of output are kept.
-Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType[, WAVE/T argSetup, variable keepX])
+Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE output, string opShort, string newDataType, [WAVE/T argSetup, variable keepX])
 
 	variable sweepNo, numResults, i, setXLabel, size
 	string opStack, argSetupStr, inDataType

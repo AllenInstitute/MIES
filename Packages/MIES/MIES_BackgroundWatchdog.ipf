@@ -59,7 +59,7 @@ static Function SetValDisplay(win, control, [var, str, format])
 		return NaN
 	endif
 
-	ValDisplay $control win=$win, value=#formattedString
+	ValDisplay $control, win=$win, value=#formattedString
 End
 
 static Function/S GetValDisplayAsString(win, control)
@@ -131,13 +131,13 @@ Function BW_PanelUpdate()
 			colb = basecol * 0.4
 		endif
 		ctrl = base + "_NAME"
-		TitleBox $ctrl win=$PANEL, pos={0, ypos}, anchor=lc, fixedsize=1, size={6 * XGRID, YGRID}, labelBack=(colr, colg, colb), title=StringByKey("NAME", taskinfo), help={"name of task\rgreen - currently running\rred - stopped"}
+		TitleBox $ctrl, win=$PANEL, pos={0, ypos}, anchor=lc, fixedsize=1, size={6 * XGRID, YGRID}, labelBack=(colr, colg, colb), title=StringByKey("NAME", taskinfo), help={"name of task\rgreen - currently running\rred - stopped"}
 		ctrl = base + "_PROCESS"
-		Button $ctrl win=$PANEL, pos={6 * XGRID, ypos}, size={9 * XGRID, YGRID}, fColor=(colr, colg, colb), title=StringByKey("PROC", taskinfo), proc=BW_ButtonProc_ShowTask, help={"function of task\rpress to open code"}
+		Button $ctrl, win=$PANEL, pos={6 * XGRID, ypos}, size={9 * XGRID, YGRID}, fColor=(colr, colg, colb), title=StringByKey("PROC", taskinfo), proc=BW_ButtonProc_ShowTask, help={"function of task\rpress to open code"}
 
 		state = NumberByKey("PERIOD", taskinfo)
 		ctrl = base + "_PERIOD"
-		ValDisplay $ctrl win=$PANEL, format="%1d", pos={3 * xgrid + xoffs, ypos}, size={2.5 * XGRID, YGRID}, title="Period", value= #"0", help={"task is executed every period ticks"}
+		ValDisplay $ctrl, win=$PANEL, format="%1d", pos={3 * xgrid + xoffs, ypos}, size={2.5 * XGRID, YGRID}, title="Period", value= #"0", help={"task is executed every period ticks"}
 
 		SetValDisplay(PANEL, ctrl, var=state)
 		state = NumberByKey("NEXT", taskinfo)
@@ -156,7 +156,7 @@ Function BW_PanelUpdate()
 			colb = basecol
 			helpstr = "task was last run at <> ticks"
 		endif
-		ValDisplay $ctrl win=$PANEL, format="%1d", pos={6 * xgrid + xoffs, ypos},size={3.5 * XGRID, YGRID}, valueBackColor=(colr, colg, colb), title=title,value= #"0", help={helpstr}
+		ValDisplay $ctrl, win=$PANEL, format="%1d", pos={6 * xgrid + xoffs, ypos},size={3.5 * XGRID, YGRID}, valueBackColor=(colr, colg, colb), title=title,value= #"0", help={helpstr}
 		SetValDisplay(PANEL, ctrl, var=state)
 
 		if(NumberByKey("QUIT", taskinfo))
@@ -169,7 +169,7 @@ Function BW_PanelUpdate()
 			colb = basecol * 0.7
 		endif
 		ctrl = base + "_QUIT"
-		Button $ctrl win=$PANEL ,pos={10 * XGRID + XOFFS, ypos}, size={2 * XGRID, YGRID}, fColor=(colr, colg, colb), title="QUIT", proc=BW_ButtonProc_QuitTask, help={"red - task returned nonzero value\rgrey - task returned zero (OK)"}
+		Button $ctrl, win=$PANEL ,pos={10 * XGRID + XOFFS, ypos}, size={2 * XGRID, YGRID}, fColor=(colr, colg, colb), title="QUIT", proc=BW_ButtonProc_QuitTask, help={"red - task returned nonzero value\rgrey - task returned zero (OK)"}
 
 		if(NumberByKey("FUNCERR", taskinfo))
 			colr = basecol
@@ -181,9 +181,9 @@ Function BW_PanelUpdate()
 			colb = basecol * 0.7
 		endif
 		ctrl = base + "_ERROR"
-		TitleBox $ctrl win=$PANEL, anchor=mc, fixedsize=1, pos={12 * XGRID + XOFFS, ypos}, size={2 * XGRID, YGRID}, labelBack=(colr, colg, colb), title="ERROR", help={"red - task function was not or could not be executed\rgrey - task function could be executed"}
+		TitleBox $ctrl, win=$PANEL, anchor=mc, fixedsize=1, pos={12 * XGRID + XOFFS, ypos}, size={2 * XGRID, YGRID}, labelBack=(colr, colg, colb), title="ERROR", help={"red - task function was not or could not be executed\rgrey - task function could be executed"}
 	endfor
-	GetWindow $PANEL wsize
+	GetWindow $PANEL, wsize
 	MoveWindow /W=$PANEL V_Left, V_Top, V_Left + 14 * XGRID + XOFFS, V_Top + ypos + YGRID
 End
 
