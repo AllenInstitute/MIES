@@ -1275,7 +1275,12 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	endif
 
 	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	if(WaveExists(numericalValues))
+	if(!WaveExists(numericalValues))
+		return [s]
+	endif
+	if(channelType == XOP_CHANNEL_TYPE_TTL)
+		[s] = GetHeadstageColor(NaN, channelType = channelType, channelNumber = channelNumber)
+	else
 		headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
 		[s] = GetHeadstageColor(headstage)
 	endif
