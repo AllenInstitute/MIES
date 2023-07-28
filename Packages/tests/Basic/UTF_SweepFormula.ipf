@@ -2227,7 +2227,7 @@ static Function TestOperationSelect()
 
 End
 
-static Function CheckSweepsFromData(WAVE/WAVE dataWref, WAVE sweepRef, variable numResults, WAVE chanIndex[, WAVE ranges])
+static Function CheckSweepsFromData(WAVE/WAVE dataWref, WAVE sweepRef, variable numResults, WAVE chanIndex, [WAVE ranges])
 
 	variable i
 

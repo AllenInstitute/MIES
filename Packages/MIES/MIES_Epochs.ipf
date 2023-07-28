@@ -693,7 +693,7 @@ End
 /// @param[in] level       level of epoch
 /// @param[in] lowerlimit  [optional, default = -Inf] epBegin is limited between lowerlimit and Inf, epEnd must be > this limit
 /// @param[in] upperlimit  [optional, default = Inf] epEnd is limited between -Inf and upperlimit, epBegin must be < this limit
-static Function EP_AddEpoch(device, channel, channelType, epBegin, epEnd, epTags, epShortName, level[, lowerlimit, upperlimit])
+static Function EP_AddEpoch(device, channel, channelType, epBegin, epEnd, epTags, epShortName, level, [lowerlimit, upperlimit])
 	string device
 	variable channel, channelType
 	variable epBegin, epEnd
@@ -911,7 +911,7 @@ End
 ///                        This is required for callers who want to read epochs during MID_SWEEP_EVENT in analysis functions.
 ///
 /// @returns Text wave with epoch information, only rows fitting the input parameters are returned. Can also be a null wave.
-Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname[, variable treelevel, WAVE/T epochsWave])
+Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, [variable treelevel, WAVE/T epochsWave])
 
 	variable index, epochCnt, midSweep
 	string regexp
@@ -1087,7 +1087,7 @@ static Function/WAVE EP_GetGaps(WAVE numericalValues, WAVE textualValues, variab
 End
 
 /// @brief Returns the following epoch of a given epoch name in a specified tree level
-Function/WAVE EP_GetNextEpoch(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, variable treelevel[, variable ignoreGaps])
+Function/WAVE EP_GetNextEpoch(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, variable treelevel, [variable ignoreGaps])
 
 	variable currentEnd, dim
 

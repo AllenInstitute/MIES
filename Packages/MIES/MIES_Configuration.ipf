@@ -435,7 +435,7 @@ End
 ///
 /// @param fName file name of configuration file to read configuration
 /// @param rigFile [optional, default = ""] name of secondary rig configuration file with complementary data. This parameter is valid when loading for a DA_Ephys panel
-Function CONF_RestoreWindow(string fName[, string rigFile])
+Function CONF_RestoreWindow(string fName, [string rigFile])
 
 	variable jsonID, restoreMask
 	string input, wName, errMsg, fullFilePath, panelType
@@ -1216,7 +1216,7 @@ End
 /// @param winHandle window handle
 /// @param uKey      [optional, default = EXPCONFIG_UDATA_WINHANDLE] userdata key that stores the handle value
 /// @returns Window name of the window with the given handle; empty string if not found.
-static Function/S CONF_FindWindow(winHandle[, uKey])
+static Function/S CONF_FindWindow(winHandle, [uKey])
 	string winHandle, uKey
 
 	variable i, j, numWin, numSubWin
@@ -1249,7 +1249,7 @@ End
 /// @param ctrlName    Control name
 /// @param jsonPath    [optional, default = n/a] When given: the control is expected to be a named json object (with the control nice name)
 ///                    If not given: the jsons second level (assuming default format) is searched for the associated object. This is slower.
-static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName[, jsonPath])
+static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName, [jsonPath])
 	string wName
 	variable restoreMask, jsonID
 	string ctrlName, jsonPath
@@ -1468,7 +1468,7 @@ End
 /// @param[in] saveMask bit pattern based configuration setting for saving @sa WindowControlSavingMask
 /// @param[in] excCtrlTypes [optional, default = ""], list of control type codes for excluded control types for saving e.g. "1;6;" to exclude all buttons and charts
 /// @returns json ID of object where all controls where serialized into
-Function CONF_AllWindowsToJSON(wName, saveMask[, excCtrlTypes])
+Function CONF_AllWindowsToJSON(wName, saveMask, [excCtrlTypes])
 	string wName
 	variable saveMask
 	string excCtrlTypes
@@ -1529,7 +1529,7 @@ End
 /// @param saveMask            Bit mask which properties are saved from WindowControlSavingMask constants
 /// @param excCtrlTypes        [optional, default = ""] List of excluded control types that are ignored
 /// @returns jsonID            ID of json containing the serialized GUI data
-Function CONF_WindowToJSON(wName, saveMask[, excCtrlTypes])
+Function CONF_WindowToJSON(wName, saveMask, [excCtrlTypes])
 	string wName
 	variable saveMask
 	string excCtrlTypes
@@ -2509,7 +2509,7 @@ End
 /// @param[in] loadRigFile [optional, default 0] when set, load the rig file instead
 ///
 /// @returns jsonId or NaN if data was not present
-static Function [variable jsonId, string txtData] CONF_LoadConfigUsedForDAEphysPanel(string wName[, variable loadRigFile])
+static Function [variable jsonId, string txtData] CONF_LoadConfigUsedForDAEphysPanel(string wName, [variable loadRigFile])
 
 	string fName, str
 
@@ -2543,7 +2543,7 @@ static Function CONF_TransferPreviousDAEphysJson(variable jsonId, variable prevJ
 	endfor
 End
 
-static Function CONF_RemoveRigElementsFromDAEphysJson(variable jsonId, variable rigJsonId[, string jsonPath])
+static Function CONF_RemoveRigElementsFromDAEphysJson(variable jsonId, variable rigJsonId, [string jsonPath])
 
 	string newJsonPath, key
 

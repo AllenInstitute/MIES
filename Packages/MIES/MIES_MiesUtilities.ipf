@@ -2648,7 +2648,7 @@ End
 /// @param experiment      name of the experiment the sweep stems from
 /// @param channelSelWave  channel selection wave
 /// @param bdi [optional, default = n/a] initialized BufferedDrawInfo structure, when given draw calls are buffered instead for later execution @sa OVS_EndIncrementalUpdate
-Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues,  WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave[, STRUCT BufferedDrawInfo &bdi])
+Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues,  WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave, [STRUCT BufferedDrawInfo &bdi])
 
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType

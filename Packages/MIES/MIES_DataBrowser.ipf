@@ -596,7 +596,7 @@ End
 /// @param win Name of the DataBrowser
 /// @param index Index of the sweep
 /// @param bdi [optional, default = n/a] BufferedDrawInfo structure, when given buffered draw is used.
-Function DB_AddSweepToGraph(string win, variable index[, STRUCT BufferedDrawInfo &bdi])
+Function DB_AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo &bdi])
 	STRUCT TiledGraphSettings tgs
 
 	variable sweepNo, traceIndex

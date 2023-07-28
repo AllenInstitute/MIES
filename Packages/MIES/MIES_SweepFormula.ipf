@@ -4080,7 +4080,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_POWERSPECTRUM, clear=input)
 End
 
-static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, variable deltaHz[, WAVE fitData])
+static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, variable deltaHz, [WAVE fitData])
 
 	string sLeft, sRight, maxSigma, minAmp
 	variable err, left, right, minFreq, maxFreq, endFreq, base
@@ -4944,7 +4944,7 @@ End
 /// @param singleResult [optional, default 0], if set then the first dataSet is retrieved from the waveRef wave and returned, the waveRef wave is disposed
 /// @param checkExist [optional, default 0], only valid if singleResult=1, if set then the data wave in the single dataSet retrieved must exist
 /// @param useVariables [optional, default 1], when not set, hint the function that the formula string contains only an expression and no variable definitions
-Function/WAVE SF_ExecuteFormula(string formula, string graph[, variable singleResult, variable checkExist, variable useVariables])
+Function/WAVE SF_ExecuteFormula(string formula, string graph, [variable singleResult, variable checkExist, variable useVariables])
 
 	variable jsonId
 

@@ -583,7 +583,7 @@ End
 /// @param[in] menuList 1d text wave with menu items
 /// @param[in] method [optional, default = PEXT_SUBSPLIT_DEFAULT] sets how the menu items are split to sub menus @sa PEXT_SubMenuSplitting
 /// @returns 1d text wave where each element contains a list of menu items. Each element represents a sub menu.
-Function/WAVE PEXT_SplitToSubMenus(menuList[, method])
+Function/WAVE PEXT_SplitToSubMenus(menuList, [method])
 	WAVE/T/Z menuList
 	variable method
 
@@ -662,7 +662,7 @@ End
 ///
 /// @param[in] splitMenu 1d text wave with menu item lists for sub menus as returned by PEXT_SplitToSubMenus()
 /// @param[in] method [optional, default = PEXT_SUBNAMEGEN_DEFAULT] sets how the sub menu names are generated @sa PEXT_SubMenuNameGeneration
-Function PEXT_GenerateSubMenuNames(splitMenu[, method])
+Function PEXT_GenerateSubMenuNames(splitMenu, [method])
 	WAVE/T/Z splitMenu
 	variable method
 

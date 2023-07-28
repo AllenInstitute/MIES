@@ -925,7 +925,7 @@ End
 /// @param[in] orientation [optional: default not set] filter orientation of axes see @ref AxisOrientationConstants
 /// @param[in] mode [optional: default #AXIS_RANGE_DEFAULT] filter returned axis information by mode see @ref AxisPropModeConstants
 /// @return free wave with rows = axes, cols = axes info, dimlabel of rows is axis name
-Function/Wave GetAxesProperties(graph[, axesRegexp, orientation, mode])
+Function/Wave GetAxesProperties(graph, [axesRegexp, orientation, mode])
 	string graph, axesRegexp
 	variable orientation, mode
 
@@ -990,7 +990,7 @@ End
 /// @param[in] axesRegexp [optional: default not set] filter axes names list by this optional regular expression
 /// @param[in] orientation [optional: default not set] filter orientation of axes see @ref AxisOrientationConstants
 /// @param[in] mode [optional: default 0] axis set mode see @ref AxisPropModeConstants
-Function SetAxesProperties(graph, props[, axesRegexp, orientation, mode])
+Function SetAxesProperties(graph, props, [axesRegexp, orientation, mode])
 	string graph
 	Wave props
 	string axesRegexp
