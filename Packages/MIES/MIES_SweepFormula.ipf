@@ -1442,7 +1442,7 @@ static Function SF_CommonWindowSetup(string win, string graph)
 	NVAR JSONid = $GetSettingsJSONid()
 	PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
 
-	SetWindow $win hook(resetScaling)=IH_ResetScaling, userData($SFH_USER_DATA_BROWSER)=graph
+	SetWindow $win, hook(resetScaling)=IH_ResetScaling, userData($SFH_USER_DATA_BROWSER)=graph
 
 	newTitle = BSP_GetFormulaGraphTitle(graph)
 	DoWindow/T $win, newTitle
@@ -1635,7 +1635,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 					WAVE wvX = GetSweepFormulaX(dfr, dataCnt)
 					if(WaveType(wvResultX, 1) == WaveType(wvX, 1))
-						Duplicate/O wvResultX $GetWavesDataFolder(wvX, 2)
+						Duplicate/O wvResultX, $GetWavesDataFolder(wvX, 2)
 					else
 						MoveWaveWithOverWrite(wvX, wvResultX)
 					endif
@@ -1652,7 +1652,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 				WAVE wvY = GetSweepFormulaY(dfr, dataCnt)
 				if(WaveType(wvResultY, 1) == WaveType(wvY, 1))
-					Duplicate/O wvResultY $GetWavesDataFolder(wvY, 2)
+					Duplicate/O wvResultY, $GetWavesDataFolder(wvY, 2)
 				else
 					MoveWaveWithOverWrite(wvY, wvResultY)
 				endif

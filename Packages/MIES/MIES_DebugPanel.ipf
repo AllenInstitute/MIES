@@ -65,7 +65,7 @@ Function/S DP_OpenDebugPanel()
 
 	WAVE/T listWave  = GetDebugPanelListWave()
 	WAVE listSelWave = GetDebugPanelListSelWave()
-	ListBox listbox_mies_files win=$PANEL, listWave=listWave, selWave=listSelWave
+	ListBox listbox_mies_files, win=$PANEL, listWave=listWave, selWave=listSelWave
 
 	debugMode = QuerySetIgorOption("DEBUGGING_ENABLED", globalSymbol = 1)
 	SetCheckBoxState(PANEL, "check_debug_mode",  debugMode == 1)

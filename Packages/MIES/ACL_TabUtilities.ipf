@@ -52,7 +52,7 @@ Function ACL_SetControlDisableStatus(panel, currentControl, tabControlName, newT
 	ControlInfo/W=$(panel) $(currentControl)
 	// tabs are a special case since we want to change the value, not the disable status
 	if (abs(V_flag == 8) && cmpstr(currentControl, tabControlName) == 0)		// this control is a tab
-		TabControl $(currentControl) win=$(panel), value=(newTabNum)
+		TabControl $(currentControl), win=$(panel), value=(newTabNum)
 	elseif (abs(V_flag) > 0)		// the control exists--this should always be positive unless it's a window
 		// see if this control is "controlled" by the current tab control
 		// and if so, change it's disable status.  If it's not controlled by the current
@@ -107,22 +107,22 @@ Function ACL_SetControlDisableStatus(panel, currentControl, tabControlName, newT
 			default:
 				controllingTab = GetUserData(potentialWindowName, "", "tabcontrol")
 				tabNumber = str2num(GetUserData(potentialWindowName, "", "tabnum"))
-				GetWindow $(potentialWindowName) hide
+				GetWindow $(potentialWindowName), hide
 				windowHide = V_Value
 				if (cmpstr(tabControlName, controllingTab) == 0)
 					if (numtype(tabNumber) == 0)	// tabnumber userdata is defined
-						SetWindow $(potentialWindowName) hide=((tabNumber == newTabNum) ? (windowHide & ~0x1) : (windowHide | 0x1)), needUpdate=1		// clear the hide bit/set the hide bit and force update of window
+						SetWindow $(potentialWindowName), hide=((tabNumber == newTabNum) ? (windowHide & ~0x1) : (windowHide | 0x1)), needUpdate=1		// clear the hide bit/set the hide bit and force update of window
 					else		// display the control since it's controlled by this tab but should be visible whenever the controlling tab control is visible
-						SetWindow $(potentialWindowName) hide=(windowHide & ~0x1), needUpdate=1		// clear the hide bit and force update of window
+						SetWindow $(potentialWindowName), hide=(windowHide & ~0x1), needUpdate=1		// clear the hide bit and force update of window
 					endif
 				elseif (cmpstr(controllingTab, "") != 0)
 					// determine status of controlling tab
 					ControlInfo/W=$(panel) $(controllingTab)
 					if (abs(V_Flag == 8))		// this is really a tab
 						if (V_disable & 0x1)		// if hide bit is set
-							SetWindow $(potentialWindowName) hide=(windowHide | 0x1), needUpdate=1	// set the hide bit and force update of window
+							SetWindow $(potentialWindowName), hide=(windowHide | 0x1), needUpdate=1	// set the hide bit and force update of window
 						else
-							SetWindow $(potentialWindowName) hide=((tabNumber == V_Value) ? (windowHide & ~0x1) : (windowHide | 0x1)), needUpdate=1		// clear the hide bit/set the hide bit and force update of window
+							SetWindow $(potentialWindowName), hide=((tabNumber == V_Value) ? (windowHide & ~0x1) : (windowHide | 0x1)), needUpdate=1		// clear the hide bit/set the hide bit and force update of window
 						endif
 					endif
 				EndIf
@@ -214,7 +214,7 @@ Function ACL_DisplayTab(tca): TabControl
 						// the tab itself has already changed, so we have to reset the selected tab to the value
 						// stored in the tab controls userdata(currenttab)
 						Variable originalTab = str2num(GetUserData(panel, tabControlName, "currenttab"))
-						TabControl $(tabControlName) win=$(panel), value=originalTab		// reset selected tab
+						TabControl $(tabControlName), win=$(panel), value=originalTab		// reset selected tab
 						return 1
 					endif
 			EndIf
@@ -251,7 +251,7 @@ Function ACL_DisplayTab(tca): TabControl
 	EndFor
 	// write the value of the currently displayed tab into the userdata(currenttab) of tab control
 	if (newTabNum >= 0)
-		TabControl $(tabControlName) win=$(panel), userdata(currenttab)=num2str(newTabNum)
+		TabControl $(tabControlName), win=$(panel), userdata(currenttab)=num2str(newTabNum)
 	EndIf
 
 	//	This function supports setting a separate hook function for a tab control that will be executed after the

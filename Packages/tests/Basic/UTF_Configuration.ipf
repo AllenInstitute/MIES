@@ -45,7 +45,7 @@ Window MainPanel() : Panel
 	CheckBox CheckBox,userdata(Config_RestorePriority)=  "10"
 	CheckBox CheckBox,userdata(Config_NiceName)=  "Check Me"
 	CheckBox CheckBox,userdata(Config_JSONPath)=  "The real important controls"
-	CheckBox CheckBox proc=TCONF_CheckProc
+	CheckBox CheckBox, proc=TCONF_CheckProc
 	PopupMenu popup,pos={138.00,0.00},size={77.00,19.00},title="popup"
 	PopupMenu popup,mode=1,popvalue="Yes",value= #"\"Yes;No;Maybe\""
 	ValDisplay valdisp,pos={225.00,0.00},size={93.00,17.00},title="valdisp"
@@ -73,7 +73,7 @@ Window MainPanel() : Panel
 	CheckBox Radio2,value= 0,mode=1
 	CheckBox Radio3,pos={290.00,259.00},size={52.00,15.00},title="Radio3"
 	CheckBox Radio3,value= 1,mode=1
-	CheckBox Radio3 proc=TCONF_CheckProc
+	CheckBox Radio3, proc=TCONF_CheckProc
 	NewPanel/W=(11,203,273,387)/HOST=#
 	ModifyPanel cbRGB=(32768,40777,65535)
 	CheckBox checkbox1,pos={10.00,10.00},size={70.00,15.00},title="TrueColor"
@@ -136,14 +136,14 @@ Function TCONF_CheckProc(cba) : CheckBoxControl
 End
 
 static Function TCONF_ChangeGUIValues_IGNORE()
-	CheckBox CheckBox value=0
-	PopupMenu popup popvalue="Maybe"
-	ValDisplay valdisp value= _NUM:0
-	TabControl tab value=1
-	CheckBox Radio3 value=0
-	SetVariable setvar value=setvarTest
-	CheckBox checkbox3 win=#SubPanel, value=0
-	PopupMenu popup win=#SubPanel, popvalue="Atari ST"
+	CheckBox CheckBox, value=0
+	PopupMenu popup, popvalue="Maybe"
+	ValDisplay valdisp, value= _NUM:0
+	TabControl tab, value=1
+	CheckBox Radio3, value=0
+	SetVariable setvar, value=setvarTest
+	CheckBox checkbox3, win=#SubPanel, value=0
+	PopupMenu popup, win=#SubPanel, popvalue="Atari ST"
 End
 
 /// @brief Saves a json to a text file in home path
@@ -218,11 +218,11 @@ static Function TCONF_AllStates()
 
 	wName = GetMainWindow(GetCurrentWindow())
 	saveMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POSITION | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_CTRLTYPE
-	ModifyControl valdisp win=$wName, userdata(testdata)="testdata"
-	ModifyControl valdisp win=$wName, userdata(testdatabase64)="\u0000"
+	ModifyControl valdisp, win=$wName, userdata(testdata)="testdata"
+	ModifyControl valdisp, win=$wName, userdata(testdatabase64)="\u0000"
 	jsonID = CONF_AllWindowsToJSON(wName, saveMask)
 
-	ModifyControl valdisp win=$wName, align=1, size={100, 100}, pos={10, 10}
+	ModifyControl valdisp, win=$wName, align=1, size={100, 100}, pos={10, 10}
 	DisableControl(wName, "valdisp")
 	CONF_JSONToWindow(wName, saveMask, jsonID)
 	jsonID2 = CONF_AllWindowsToJSON(wName, saveMask)
@@ -256,7 +256,7 @@ static Function TCONF_DupNiceName()
 	string wName
 
 	wName = GetMainWindow(GetCurrentWindow())
-	CheckBox CheckBox win=$wName, userdata(Config_NiceName)=  "BUTTON"
+	CheckBox CheckBox, win=$wName, userdata(Config_NiceName)=  "BUTTON"
 	try
 		CONF_SaveWindow(PrependExperimentFolder_IGNORE(REF_TMP1_CONFIG_FILE))
 		FAIL()
@@ -271,7 +271,7 @@ static Function TCONF_ReservedNiceName()
 	string wName
 
 	wName = GetMainWindow(GetCurrentWindow())
-	CheckBox CheckBox win=$wName, userdata(Config_NiceName)=  "BUTTON ControlGroup"
+	CheckBox CheckBox, win=$wName, userdata(Config_NiceName)=  "BUTTON ControlGroup"
 	try
 		CONF_SaveWindow(PrependExperimentFolder_IGNORE(REF_TMP1_CONFIG_FILE))
 		FAIL()
@@ -286,7 +286,7 @@ static Function TCONF_DupCtrlArrayName()
 	string wName
 
 	wName = GetMainWindow(GetCurrentWindow())
-	CheckBox CheckBox win=$wName, userdata(ControlArray)=  "BUTTON"
+	CheckBox CheckBox, win=$wName, userdata(ControlArray)=  "BUTTON"
 	try
 		CONF_SaveWindow(PrependExperimentFolder_IGNORE(REF_TMP1_CONFIG_FILE))
 		FAIL()

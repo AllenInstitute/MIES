@@ -344,7 +344,7 @@ Function ST_GetStimsetParameterAsVariable(string setName, string entry, [variabl
 	endif
 
 	if(ST_UpgradeStimset(setName))
-		printf "The stimset %s does not exist\r." setName
+		printf "The stimset %s does not exist\r.", setName
 		ControlwindowToFront()
 		return NaN
 	endif
@@ -375,7 +375,7 @@ Function/S ST_GetStimsetParameterAsString(string setName, string entry, [variabl
 	endif
 
 	if(ST_UpgradeStimset(setName))
-		printf "The stimset %s does not exist\r." setName
+		printf "The stimset %s does not exist\r.", setName
 		ControlwindowToFront()
 		return ""
 	endif
@@ -434,7 +434,7 @@ Function ST_SetStimsetParameter(string setName, string entry, [variable epochInd
 	endif
 
 	if(ST_UpgradeStimset(setName))
-		printf "The stimset %s does not exist\r." setName
+		printf "The stimset %s does not exist\r.", setName
 		ControlwindowToFront()
 		return 1
 	endif

@@ -869,7 +869,7 @@ Function AI_OpenMCCs(ampSerialNumList, [ampTitleList])
 		endfor
 
 		if(failedToOpenCount > 0)
-			printf "%g MCCs failed to open on attempt count %g\r" failedTOopenCount, j
+			printf "%g MCCs failed to open on attempt count %g\r", failedTOopenCount, j
 			ControlWindowToFront()
 		endif
 

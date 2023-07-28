@@ -215,7 +215,7 @@ Function RA_Counter(device)
 	RA_PerfAddMark(device, count)
 #endif
 
-	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
+	sprintf str, "count=%d, activeSetCount=%d\r", count, activeSetCount
 	DEBUGPRINT(str)
 
 	RA_StepSweepsRemaining(device)
@@ -313,7 +313,7 @@ Function RA_CounterMD(device)
 	RA_PerfAddMark(device, count)
 #endif
 
-	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
+	sprintf str, "count=%d, activeSetCount=%d\r", count, activeSetCount
 	DEBUGPRINT(str)
 
 	RA_StepSweepsRemaining(device)

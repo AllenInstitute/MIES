@@ -536,7 +536,7 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 		lbl += "\r(" + unit + ")"
 	endif
 
-	Label/W=$graph $axis lbl
+	Label/W=$graph $axis, lbl
 
 	ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
 	ModifyGraph/W=$graph mode = 3
@@ -704,7 +704,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 		endfor
 
 		if(!IsEmpty(traceList))
-			Label/W=$graph $axis lbl
+			Label/W=$graph $axis, lbl
 
 			ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
 			ModifyGraph/W=$graph mode = 3

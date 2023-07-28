@@ -353,7 +353,7 @@ Function IH_ResetScaling(struct WMWinHookStruct &s)
 			// first try if the selected window is a graph
 
 			graph = GetMainWindow(s.winName)
-			GetWindow $graph activeSW
+			GetWindow $graph, activeSW
 			activeSW = S_Value
 
 			if(WinType(activeSW) == WINTYPE_GRAPH)

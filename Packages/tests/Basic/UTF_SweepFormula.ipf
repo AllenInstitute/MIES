@@ -1143,14 +1143,14 @@ static Function TestOperationSetscale()
 	str = "setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"
 	WAVE wv = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
 	Make/N=(10) waveX = p
-	SetScale x 0, 2, "unit", waveX
+	SetScale x, 0, 2, "unit", waveX
 	REQUIRE_EQUAL_WAVES(waveX, wv, mode = WAVE_DATA)
 
 	str = "setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"
 	WAVE wv = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
 	Make/N=(10, 10) waveXY = p + q
-	SetScale/P x 0, 2, "unitX", waveXY
-	SetScale/P y 0, 4, "unitX", waveXY
+	SetScale/P x, 0, 2, "unitX", waveXY
+	SetScale/P y, 0, 4, "unitX", waveXY
 	REQUIRE_EQUAL_WAVES(waveXY, wv, mode = WAVE_DATA | WAVE_SCALING | DATA_UNITS)
 
 	Make/O/D/N=(2, 2, 2, 2) input = p + 2 * q + 4 * r + 8 * s

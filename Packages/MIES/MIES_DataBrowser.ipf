@@ -87,7 +87,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	DB_ClearAllGraphs()
 	LBV_ClearGraph(device)
 
-	Checkbox check_BrowserSettings_OVS WIN = $bsPanel, value= 0
+	Checkbox check_BrowserSettings_OVS, WIN = $bsPanel, value= 0
 
 	BSP_InitPanel(device)
 	BSP_RemoveWindowHooks(device)
@@ -110,120 +110,120 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SetWindow $device,tooltiphook(hook)=$""
 
 	// static defaults for SweepControl subwindow
-	PopupMenu Popup_SweepControl_Selector WIN = $scPanel, mode=1,popvalue=" ", value= #"\" \""
-	CheckBox check_SweepControl_AutoUpdate WIN = $scPanel, value= 1
+	PopupMenu Popup_SweepControl_Selector, WIN = $scPanel, mode=1,popvalue=" ", value= #"\" \""
+	CheckBox check_SweepControl_AutoUpdate, WIN = $scPanel, value= 1
 
 	// static defaults for BrowserSettings subwindow
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
-	CheckBox check_overlaySweeps_disableHS WIN = $bsPanel, value= 0
-	CheckBox check_overlaySweeps_non_commula WIN = $bsPanel, value= 0
+	CheckBox check_overlaySweeps_disableHS, WIN = $bsPanel, value= 0
+	CheckBox check_overlaySweeps_non_commula, WIN = $bsPanel, value= 0
 	PopupMenu popup_overlaySweeps_select, WIN = $bsPanel, mode=1
-	SetVariable setvar_overlaySweeps_offset WIN = $bsPanel, value= _NUM:0
-	SetVariable setvar_overlaySweeps_step WIN = $bsPanel, value= _NUM:1
-	CheckBox check_channelSel_DA_0 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_DA_1 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_DA_2 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_DA_3 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_DA_4 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_DA_5 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_DA_6 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_DA_7 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_DA_ALL WIN = $bsPanel, value= 0
-	CheckBox check_channelSel_HEADSTAGE_0 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_HEADSTAGE_1 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_HEADSTAGE_2 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_HEADSTAGE_3 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_HEADSTAGE_4 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_HEADSTAGE_5 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_HEADSTAGE_6 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_HEADSTAGE_7 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_HEADSTAGE_ALL WIN = $bsPanel, value= 0
-	CheckBox check_channelSel_AD_0 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_1 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_2 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_3 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_4 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_5 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_6 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_7 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_8 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_9 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_10 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_11 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_12 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_13 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_14 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_15 WIN = $bsPanel, value= 1
-	CheckBox check_channelSel_AD_ALL WIN = $bsPanel, value= 0
-	SetVariable setvar_cutoff_length_after WIN = $bsPanel, value= _NUM:0.2
-	SetVariable setvar_cutoff_length_before WIN = $bsPanel, value= _NUM:0.1
-	CheckBox check_auto_remove WIN = $bsPanel, value= 0
-	CheckBox check_highlightRanges WIN = $bsPanel, value= 0
+	SetVariable setvar_overlaySweeps_offset, WIN = $bsPanel, value= _NUM:0
+	SetVariable setvar_overlaySweeps_step, WIN = $bsPanel, value= _NUM:1
+	CheckBox check_channelSel_DA_0, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_1, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_2, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_3, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_4, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_5, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_6, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_7, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_ALL, WIN = $bsPanel, value= 0
+	CheckBox check_channelSel_HEADSTAGE_0, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_1, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_2, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_3, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_4, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_5, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_6, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_7, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_ALL, WIN = $bsPanel, value= 0
+	CheckBox check_channelSel_AD_0, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_1, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_2, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_3, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_4, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_5, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_6, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_7, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_8, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_9, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_10, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_11, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_12, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_13, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_14, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_15, WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_ALL, WIN = $bsPanel, value= 0
+	SetVariable setvar_cutoff_length_after, WIN = $bsPanel, value= _NUM:0.2
+	SetVariable setvar_cutoff_length_before, WIN = $bsPanel, value= _NUM:0.1
+	CheckBox check_auto_remove, WIN = $bsPanel, value= 0
+	CheckBox check_highlightRanges, WIN = $bsPanel, value= 0
 
 	// BEGIN PA
-	CheckBox check_pulseAver_showTraces WIN = $bsPanel, value= 1
-	SetVariable setvar_pulseAver_vert_scale_bar WIN = $bsPanel, value= _NUM:1
+	CheckBox check_pulseAver_showTraces, WIN = $bsPanel, value= 1
+	SetVariable setvar_pulseAver_vert_scale_bar, WIN = $bsPanel, value= _NUM:1
 
-	CheckBox check_pulseAver_ShowImage WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_drawXZeroLine WIN = $bsPanel, value= 0
-	SetVariable setvar_pulseAver_overridePulseLength WIN = $bsPanel, value= _NUM:10
-	PopupMenu popup_pulseAver_colorscales WIN= $bsPanel, mode=8 // Terrain
-	PopupMenu popup_pulseAver_pulseSortOrder WIN= $bsPanel, mode=1
+	CheckBox check_pulseAver_ShowImage, WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_drawXZeroLine, WIN = $bsPanel, value= 0
+	SetVariable setvar_pulseAver_overridePulseLength, WIN = $bsPanel, value= _NUM:10
+	PopupMenu popup_pulseAver_colorscales, WIN= $bsPanel, mode=8 // Terrain
+	PopupMenu popup_pulseAver_pulseSortOrder, WIN= $bsPanel, mode=1
 
-	CheckBox check_pulseAver_deconv WIN = $bsPanel, value= 0
-	SetVariable setvar_pulseAver_deconv_tau WIN = $bsPanel, value= _NUM:15
-	SetVariable setvar_pulseAver_deconv_smth WIN = $bsPanel, value= _NUM:1000
-	SetVariable setvar_pulseAver_deconv_range WIN = $bsPanel, value= _NUM:inf
+	CheckBox check_pulseAver_deconv, WIN = $bsPanel, value= 0
+	SetVariable setvar_pulseAver_deconv_tau, WIN = $bsPanel, value= _NUM:15
+	SetVariable setvar_pulseAver_deconv_smth, WIN = $bsPanel, value= _NUM:1000
+	SetVariable setvar_pulseAver_deconv_range, WIN = $bsPanel, value= _NUM:inf
 
-	CheckBox check_pulseAver_zero WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_timeAlign WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_showAver WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_multGraphs WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_indPulses WIN = $bsPanel, value= 1
+	CheckBox check_pulseAver_zero, WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_timeAlign, WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_showAver, WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_multGraphs, WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_indPulses, WIN = $bsPanel, value= 1
 
-	SetVariable setvar_pulseAver_startPulse WIN = $bsPanel, value= _NUM:0
-	SetVariable setvar_pulseAver_endPulse WIN = $bsPanel, value= _NUM:inf
-	CheckBox check_pulseAver_fixedPulseLength WIN = $bsPanel, value= 0
-	SetVariable setvar_pulseAver_overridePulseLength WIN = $bsPanel, value= _NUM:10
+	SetVariable setvar_pulseAver_startPulse, WIN = $bsPanel, value= _NUM:0
+	SetVariable setvar_pulseAver_endPulse, WIN = $bsPanel, value= _NUM:inf
+	CheckBox check_pulseAver_fixedPulseLength, WIN = $bsPanel, value= 0
+	SetVariable setvar_pulseAver_overridePulseLength, WIN = $bsPanel, value= _NUM:10
 
-	CheckBox check_pulseAver_searchFailedPulses WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_hideFailedPulses WIN = $bsPanel, value= 0
-	SetVariable setvar_pulseAver_failedPulses_level WIN = $bsPanel, value= _NUM:0
-	SetVariable setvar_pulseAver_numberOfSpikes WIN = $bsPanel, value= _NUM:NaN
+	CheckBox check_pulseAver_searchFailedPulses, WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_hideFailedPulses, WIN = $bsPanel, value= 0
+	SetVariable setvar_pulseAver_failedPulses_level, WIN = $bsPanel, value= _NUM:0
+	SetVariable setvar_pulseAver_numberOfSpikes, WIN = $bsPanel, value= _NUM:NaN
 
 	// END PA
 
-	CheckBox check_BrowserSettings_OVS WIN = $bsPanel, value= 0
-	CheckBox check_BrowserSettings_AR WIN = $bsPanel, value= 0
-	CheckBox check_BrowserSettings_PA WIN = $bsPanel, value= 0
-	CheckBox check_BrowserSettings_DAC WIN = $bsPanel, value= 0
-	CheckBox check_BrowserSettings_ADC WIN = $bsPanel, value= 1
-	CheckBox check_BrowserSettings_TTL WIN = $bsPanel, value= 0
-	CheckBox check_BrowserSettings_splitTTL WIN = $bsPanel, value= 0,disable=DISABLE_CONTROL_BIT
-	CheckBox check_BrowserSettings_OChan WIN = $bsPanel, value= 0
-	CheckBox check_BrowserSettings_dDAQ WIN = $bsPanel, value= 0
-	CheckBox check_Calculation_ZeroTraces WIN = $bsPanel, value= 0
-	CheckBox check_Calculation_AverageTraces WIN = $bsPanel, value= 0
-	CheckBox check_BrowserSettings_TA WIN = $bsPanel, value= 0
-	CheckBox check_ovs_clear_on_new_ra_cycle WIN = $bsPanel, value= 0
-	CheckBox check_ovs_clear_on_new_stimset_cycle WIN = $bsPanel, value= 0
-	PopupMenu popup_TimeAlignment_Mode WIN = $bsPanel, mode=1, popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
-	SetVariable setvar_TimeAlignment_LevelCross WIN = $bsPanel, value= _NUM:0
-	CheckBox check_Display_VisibleXrange WIN = $bsPanel, value= 0
-	CheckBox check_Display_EqualYrange WIN = $bsPanel, value= 0, disable=0
-	CheckBox check_Display_EqualYignore WIN = $bsPanel, value= 0, disable=0
-	SetVariable setvar_Display_EqualYlevel WIN = $bsPanel, value= _NUM:0
-	Slider slider_BrowserSettings_dDAQ WIN = $bsPanel, value= -1,disable=DISABLE_CONTROL_BIT
-	CheckBox check_SweepControl_HideSweep WIN = $bsPanel, value= 0
-	CheckBox check_BrowserSettings_DS WIN = $bsPanel, value= 0
-	CheckBox check_BrowserSettings_DB_Passed WIN = $bsPanel, value= 0,disable=DISABLE_CONTROL_BIT | HIDDEN_CONTROL_BIT
-	CheckBox check_BrowserSettings_DB_Failed WIN = $bsPanel, value= 0,disable=DISABLE_CONTROL_BIT | HIDDEN_CONTROL_BIT
-	CheckBox check_BrowserSettings_SF WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_OVS, WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_AR, WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_PA, WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_DAC, WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_ADC, WIN = $bsPanel, value= 1
+	CheckBox check_BrowserSettings_TTL, WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_splitTTL, WIN = $bsPanel, value= 0,disable=DISABLE_CONTROL_BIT
+	CheckBox check_BrowserSettings_OChan, WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_dDAQ, WIN = $bsPanel, value= 0
+	CheckBox check_Calculation_ZeroTraces, WIN = $bsPanel, value= 0
+	CheckBox check_Calculation_AverageTraces, WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_TA, WIN = $bsPanel, value= 0
+	CheckBox check_ovs_clear_on_new_ra_cycle, WIN = $bsPanel, value= 0
+	CheckBox check_ovs_clear_on_new_stimset_cycle, WIN = $bsPanel, value= 0
+	PopupMenu popup_TimeAlignment_Mode, WIN = $bsPanel, mode=1, popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
+	SetVariable setvar_TimeAlignment_LevelCross, WIN = $bsPanel, value= _NUM:0
+	CheckBox check_Display_VisibleXrange, WIN = $bsPanel, value= 0
+	CheckBox check_Display_EqualYrange, WIN = $bsPanel, value= 0, disable=0
+	CheckBox check_Display_EqualYignore, WIN = $bsPanel, value= 0, disable=0
+	SetVariable setvar_Display_EqualYlevel, WIN = $bsPanel, value= _NUM:0
+	Slider slider_BrowserSettings_dDAQ, WIN = $bsPanel, value= -1,disable=DISABLE_CONTROL_BIT
+	CheckBox check_SweepControl_HideSweep, WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_DS, WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_DB_Passed, WIN = $bsPanel, value= 0,disable=DISABLE_CONTROL_BIT | HIDDEN_CONTROL_BIT
+	CheckBox check_BrowserSettings_DB_Failed, WIN = $bsPanel, value= 0,disable=DISABLE_CONTROL_BIT | HIDDEN_CONTROL_BIT
+	CheckBox check_BrowserSettings_SF, WIN = $bsPanel, value= 0
 
-	CheckBox check_BrowserSettings_VisEpochs WIN = $bsPanel, value=0, disable=0
+	CheckBox check_BrowserSettings_VisEpochs, WIN = $bsPanel, value=0, disable=0
 
 	// settings history
-	CheckBox check_limit_x_selected_sweeps WIN = $shPanel, value=0
+	CheckBox check_limit_x_selected_sweeps, WIN = $shPanel, value=0
 
 	SF_SetFormula(device, "data(\rcursors(A,B),\rselect(channels(AD),sweeps())\r)")
 
@@ -241,7 +241,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SetWindow $descNB, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)="1"
 	SetWindow $descNB, userdata($EXPCONFIG_UDATA_EXCLUDE_SAVE)="1"
 
-	SetVariable setvar_sweepFormula_parseResult WIN = $bsPanel, value=_STR:""
+	SetVariable setvar_sweepFormula_parseResult, WIN = $bsPanel, value=_STR:""
 	ValDisplay status_sweepFormula_parser, WIN = $bsPanel, value=1
 
 	SearchForInvalidControlProcs(device)

@@ -1982,7 +1982,7 @@ static Function AB_LoadSweepFromNWBgeneric(h5_groupID, nwbVersion, channelList, 
 					// always fake TTL base wave (bitwise sum of all TTL channels)
 					wave/Z/I base = sweepDFR:$channelName
 					if(!WaveExists(base))
-						Duplicate loaded sweepDFR:$channelName/wave=base
+						Duplicate loaded, sweepDFR:$channelName/wave=base
 						base = 0
 						fakeConfigWave = 1
 						SetNumberInWaveNote(base, "fake", 1)
@@ -2285,7 +2285,7 @@ static Function AB_LoadStimsetRAW(expFilePath, stimset, overwrite)
 		return 1
 	endif
 
-	MoveWave newDFR:$stimset setDFR
+	MoveWave newDFR:$stimset, setDFR
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return 0
@@ -2517,7 +2517,7 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 
 		if(FolderExists(entry))
 			symbPath = GetUniqueSymbolicPath()
-			NewPath/O/Q/Z $symbPath entry
+			NewPath/O/Q/Z $symbPath, entry
 			pxpList = GetAllFilesRecursivelyFromPath(symbPath, extension=".pxp")
 			uxpList = GetAllFilesRecursivelyFromPath(symbPath, extension=".uxp")
 			nwbList = GetAllFilesRecursivelyFromPath(symbPath, extension=".nwb")
@@ -2538,14 +2538,14 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 			endif
 			if(sTime < stopMSTimer(-2) * MILLI_TO_ONE)
 				sprintf title, "%s, Reading %s", panel, GetFile(fName)
-				DoWindow/T $panel title
+				DoWindow/T $panel, title
 				DoUpdate/W=$panel
 				sTime = stopMSTimer(-2) * MILLI_TO_ONE + 1
 			endif
 			AB_AddFile(fName, entry)
 		endfor
 	endfor
-	DoWindow/T $panel panel
+	DoWindow/T $panel, panel
 
 	AB_ResetListBoxWaves()
 End
@@ -2815,7 +2815,7 @@ Function AB_ButtonProc_OpenFolders(ba) : ButtonControl
 					else
 						continue
 					endif
-					NewPath/O/Q/Z $symbPath folder
+					NewPath/O/Q/Z $symbPath, folder
 					PathInfo/SHOW $symbPath
 				endif
 			endfor
@@ -2914,7 +2914,7 @@ Function AB_ButtonProc_AddFiles(ba) : ButtonControl
 			endif
 
 			symbPath = GetUniqueSymbolicPath()
-			NewPath/O/Q/Z $symbPath baseFolder
+			NewPath/O/Q/Z $symbPath, baseFolder
 
 			fileFilters = "Data Files (*.pxp,*.nwb,*.uxp):.pxp,.nwb,.uxp;All Files:.*;"
 			message = "Select data file(s)"

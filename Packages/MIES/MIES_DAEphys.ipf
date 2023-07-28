@@ -187,463 +187,463 @@ Function DAP_EphysPanelStartUpSettings()
 	SetWindow $device, userdata(Config_FileName) = ""
 	SetWindow $device, userdata(Config_FileHash) = ""
 
-	CheckBox Check_AD_00 WIN = $device,value= 0
-	CheckBox Check_AD_01 WIN = $device,value= 0
-	CheckBox Check_AD_02 WIN = $device,value= 0
-	CheckBox Check_AD_03 WIN = $device,value= 0
-	CheckBox Check_AD_04 WIN = $device,value= 0
-	CheckBox Check_AD_05 WIN = $device,value= 0
-	CheckBox Check_AD_06 WIN = $device,value= 0
-	CheckBox Check_AD_07 WIN = $device,value= 0
-	CheckBox Check_AD_08 WIN = $device,value= 0
-	CheckBox Check_AD_09 WIN = $device,value= 0
-	CheckBox Check_AD_10 WIN = $device,value= 0
-	CheckBox Check_AD_11 WIN = $device,value= 0
-	CheckBox Check_AD_12 WIN = $device,value= 0
-	CheckBox Check_AD_13 WIN = $device,value= 0
-	CheckBox Check_AD_14 WIN = $device,value= 0
-	CheckBox Check_AD_15 WIN = $device,value= 0
-	CheckBox Check_AD_All WIN = $device,value= 0
+	CheckBox Check_AD_00, WIN = $device,value= 0
+	CheckBox Check_AD_01, WIN = $device,value= 0
+	CheckBox Check_AD_02, WIN = $device,value= 0
+	CheckBox Check_AD_03, WIN = $device,value= 0
+	CheckBox Check_AD_04, WIN = $device,value= 0
+	CheckBox Check_AD_05, WIN = $device,value= 0
+	CheckBox Check_AD_06, WIN = $device,value= 0
+	CheckBox Check_AD_07, WIN = $device,value= 0
+	CheckBox Check_AD_08, WIN = $device,value= 0
+	CheckBox Check_AD_09, WIN = $device,value= 0
+	CheckBox Check_AD_10, WIN = $device,value= 0
+	CheckBox Check_AD_11, WIN = $device,value= 0
+	CheckBox Check_AD_12, WIN = $device,value= 0
+	CheckBox Check_AD_13, WIN = $device,value= 0
+	CheckBox Check_AD_14, WIN = $device,value= 0
+	CheckBox Check_AD_15, WIN = $device,value= 0
+	CheckBox Check_AD_All, WIN = $device,value= 0
 
-	CheckBox Check_DA_00 WIN = $device,value= 0
-	CheckBox Check_DA_01 WIN = $device,value= 0
-	CheckBox Check_DA_02 WIN = $device,value= 0
-	CheckBox Check_DA_03 WIN = $device,value= 0
-	CheckBox Check_DA_04 WIN = $device,value= 0
-	CheckBox Check_DA_05 WIN = $device,value= 0
-	CheckBox Check_DA_06 WIN = $device,value= 0
-	CheckBox Check_DA_07 WIN = $device,value= 0
-	CheckBox Check_DA_All WIN = $device,value= 0
-	CheckBox Check_DA_AllVClamp WIN = $device,value= 0
-	CheckBox Check_DA_AllIClamp WIN = $device,value= 0
+	CheckBox Check_DA_00, WIN = $device,value= 0
+	CheckBox Check_DA_01, WIN = $device,value= 0
+	CheckBox Check_DA_02, WIN = $device,value= 0
+	CheckBox Check_DA_03, WIN = $device,value= 0
+	CheckBox Check_DA_04, WIN = $device,value= 0
+	CheckBox Check_DA_05, WIN = $device,value= 0
+	CheckBox Check_DA_06, WIN = $device,value= 0
+	CheckBox Check_DA_07, WIN = $device,value= 0
+	CheckBox Check_DA_All, WIN = $device,value= 0
+	CheckBox Check_DA_AllVClamp, WIN = $device,value= 0
+	CheckBox Check_DA_AllIClamp, WIN = $device,value= 0
 
-	CheckBox Check_TTL_00 WIN = $device,value= 0
-	CheckBox Check_TTL_01 WIN = $device,value= 0
-	CheckBox Check_TTL_02 WIN = $device,value= 0
-	CheckBox Check_TTL_03 WIN = $device,value= 0
-	CheckBox Check_TTL_04 WIN = $device,value= 0
-	CheckBox Check_TTL_05 WIN = $device,value= 0
-	CheckBox Check_TTL_06 WIN = $device,value= 0
-	CheckBox Check_TTL_07 WIN = $device,value= 0
-	CheckBox Check_TTL_All WIN = $device,value= 0
+	CheckBox Check_TTL_00, WIN = $device,value= 0
+	CheckBox Check_TTL_01, WIN = $device,value= 0
+	CheckBox Check_TTL_02, WIN = $device,value= 0
+	CheckBox Check_TTL_03, WIN = $device,value= 0
+	CheckBox Check_TTL_04, WIN = $device,value= 0
+	CheckBox Check_TTL_05, WIN = $device,value= 0
+	CheckBox Check_TTL_06, WIN = $device,value= 0
+	CheckBox Check_TTL_07, WIN = $device,value= 0
+	CheckBox Check_TTL_All, WIN = $device,value= 0
 
-	CheckBox Check_DataAcqHS_00 WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_01 WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_02 WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_03 WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_04 WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_05 WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_06 WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_07 WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_All WIN = $device,value= 0
+	CheckBox Check_DataAcqHS_00, WIN = $device,value= 0
+	CheckBox Check_DataAcqHS_01, WIN = $device,value= 0
+	CheckBox Check_DataAcqHS_02, WIN = $device,value= 0
+	CheckBox Check_DataAcqHS_03, WIN = $device,value= 0
+	CheckBox Check_DataAcqHS_04, WIN = $device,value= 0
+	CheckBox Check_DataAcqHS_05, WIN = $device,value= 0
+	CheckBox Check_DataAcqHS_06, WIN = $device,value= 0
+	CheckBox Check_DataAcqHS_07, WIN = $device,value= 0
+	CheckBox Check_DataAcqHS_All, WIN = $device,value= 0
 
 	PGC_SetAndActivateControl(device, "ADC", val = 6)
 	DoUpdate/W=$device
 
-	SetVariable Gain_AD_00 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_01 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_02 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_03 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_04 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_05 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_06 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_07 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_08 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_09 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_10 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_11 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_12 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_13 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_14 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_15 WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_00, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_01, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_02, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_03, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_04, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_05, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_06, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_07, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_08, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_09, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_10, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_11, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_12, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_13, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_14, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_15, WIN = $device, value = _NUM:0.00
 
-	SetVariable Gain_DA_00 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_01 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_02 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_03 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_04 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_05 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_06 WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_07 WIN = $device, value = _NUM:0.00
+	SetVariable Gain_DA_00, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_DA_01, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_DA_02, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_DA_03, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_DA_04, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_DA_05, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_DA_06, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_DA_07, WIN = $device, value = _NUM:0.00
 
 	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC)
-	PopupMenu Wave_DA_00 WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_01 WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_02 WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_03 WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_04 WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_05 WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_06 WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_07 WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_All WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_AllVClamp WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_AllIClamp WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_00, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_01, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_02, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_03, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_04, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_05, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_06, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_07, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_All, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_AllVClamp, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_AllIClamp, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
 
-	SetVariable Scale_DA_00 WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_01 WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_02 WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_03 WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_04 WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_05 WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_06 WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_07 WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_All WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_AllVClamp WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_AllIClamp WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_00, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_01, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_02, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_03, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_04, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_05, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_06, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_07, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_All, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_AllVClamp, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_AllIClamp, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
 
-	SetVariable SetVar_DataAcq_Comment WIN = $device,value= _STR:""
+	SetVariable SetVar_DataAcq_Comment, WIN = $device,value= _STR:""
 
-	CheckBox Check_DataAcq1_RepeatAcq Win = $device, value = 1
-	CheckBox Check_DataAcq1_DistribDaq Win = $device, value = 0
-	CheckBox Check_DataAcq1_dDAQOptOv Win = $device, value = 0
+	CheckBox Check_DataAcq1_RepeatAcq, Win = $device, value = 1
+	CheckBox Check_DataAcq1_DistribDaq, Win = $device, value = 0
+	CheckBox Check_DataAcq1_dDAQOptOv, Win = $device, value = 0
 
-	SetVariable SetVar_DataAcq_ITI WIN = $device, value = _NUM:0
+	SetVariable SetVar_DataAcq_ITI, WIN = $device, value = _NUM:0
 
-	SetVariable SetVar_DataAcq_TPDuration  WIN = $device,value= _NUM:10
-	SetVariable SetVar_DataAcq_TPBaselinePerc  WIN = $device,value= _NUM:35
+	SetVariable SetVar_DataAcq_TPDuration,  WIN = $device,value= _NUM:10
+	SetVariable SetVar_DataAcq_TPBaselinePerc,  WIN = $device,value= _NUM:35
 
-	Checkbox Check_TP_SendToAllHS WIN = $device, value=1
+	Checkbox Check_TP_SendToAllHS, WIN = $device, value=1
 
 	/// needs to be in sync with GetTPSettings()
 	/// @{
 	WAVE TPSettingsRef = GetTPSettingsFree()
-	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $device,value= _NUM:TPSettingsRef[%amplitudeVC][0]
-	SetVariable SetVar_DataAcq_TPAmplitudeIC WIN = $device,value= _NUM:TPSettingsRef[%amplitudeIC][0]
+	SetVariable SetVar_DataAcq_TPAmplitude,  WIN = $device,value= _NUM:TPSettingsRef[%amplitudeVC][0]
+	SetVariable SetVar_DataAcq_TPAmplitudeIC, WIN = $device,value= _NUM:TPSettingsRef[%amplitudeIC][0]
 
-	Checkbox check_DataAcq_AutoTP WIN = $device, labelBack=0, value=TPSettingsRef[%autoTPEnable][0]
-	SetVariable setvar_DataAcq_IinjMax WIN = $device, value= _NUM:TPSettingsRef[%autoAmpMaxCurrent][0]
-	SetVariable setvar_DataAcq_targetVoltage WIN = $device, value= _NUM:TPSettingsRef[%autoAmpVoltage][0]
-	SetVariable setvar_DataAcq_targetVoltageRange WIN = $device, value= _NUM:TPSettingsRef[%autoAmpVoltageRange][0]
+	Checkbox check_DataAcq_AutoTP, WIN = $device, labelBack=0, value=TPSettingsRef[%autoTPEnable][0]
+	SetVariable setvar_DataAcq_IinjMax, WIN = $device, value= _NUM:TPSettingsRef[%autoAmpMaxCurrent][0]
+	SetVariable setvar_DataAcq_targetVoltage, WIN = $device, value= _NUM:TPSettingsRef[%autoAmpVoltage][0]
+	SetVariable setvar_DataAcq_targetVoltageRange, WIN = $device, value= _NUM:TPSettingsRef[%autoAmpVoltageRange][0]
 	/// @}
 
-	SetVariable setvar_Settings_autoTP_int WIN = $device, value = _NUM:0
-	SetVariable setvar_Settings_autoTP_perc WIN = $device, value = _NUM:90
+	SetVariable setvar_Settings_autoTP_int, WIN = $device, value = _NUM:0
+	SetVariable setvar_Settings_autoTP_perc, WIN = $device, value = _NUM:90
 
 	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL)
-	PopupMenu Wave_TTL_00 Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_01 Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_02 Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_03 Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_04 Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_05 Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_06 Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_07 Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_All Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_00, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_01, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_02, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_03, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_04, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_05, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_06, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_07, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_All, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
 
-	CheckBox Check_Settings_TrigOut Win = $device, value = 0
-	CheckBox Check_Settings_TrigIn Win = $device, value = 0
+	CheckBox Check_Settings_TrigOut, Win = $device, value = 0
+	CheckBox Check_Settings_TrigIn, Win = $device, value = 0
 
-	SetVariable SetVar_DataAcq_SetRepeats WIN = $device,value= _NUM:1
+	SetVariable SetVar_DataAcq_SetRepeats, WIN = $device,value= _NUM:1
 
-	CheckBox Check_Settings_UseDoublePrec WIN = $device, value= 0
-	CheckBox Check_Settings_SkipAnalysFuncs WIN = $device, value= 0
-	PopupMenu Popup_Settings_SampIntMult WIN = $device, mode = 1
+	CheckBox Check_Settings_UseDoublePrec, WIN = $device, value= 0
+	CheckBox Check_Settings_SkipAnalysFuncs, WIN = $device, value= 0
+	PopupMenu Popup_Settings_SampIntMult, WIN = $device, mode = 1
 
-	CheckBox Check_AsyncAD_00 WIN = $device,value= 0
-	CheckBox Check_AsyncAD_01 WIN = $device,value= 0
-	CheckBox Check_AsyncAD_02 WIN = $device,value= 0
-	CheckBox Check_AsyncAD_03 WIN = $device,value= 0
-	CheckBox Check_AsyncAD_04 WIN = $device,value= 0
-	CheckBox Check_AsyncAD_05 WIN = $device,value= 0
-	CheckBox Check_AsyncAD_06 WIN = $device,value= 0
-	CheckBox Check_AsyncAD_07 WIN = $device,value= 0
+	CheckBox Check_AsyncAD_00, WIN = $device,value= 0
+	CheckBox Check_AsyncAD_01, WIN = $device,value= 0
+	CheckBox Check_AsyncAD_02, WIN = $device,value= 0
+	CheckBox Check_AsyncAD_03, WIN = $device,value= 0
+	CheckBox Check_AsyncAD_04, WIN = $device,value= 0
+	CheckBox Check_AsyncAD_05, WIN = $device,value= 0
+	CheckBox Check_AsyncAD_06, WIN = $device,value= 0
+	CheckBox Check_AsyncAD_07, WIN = $device,value= 0
 
-	SetVariable Gain_AsyncAD_00 WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_01 WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_02 WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_03 WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_04 WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_05 WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_06 WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_07 WIN = $device,value= _NUM:1
+	SetVariable Gain_AsyncAD_00, WIN = $device,value= _NUM:1
+	SetVariable Gain_AsyncAD_01, WIN = $device,value= _NUM:1
+	SetVariable Gain_AsyncAD_02, WIN = $device,value= _NUM:1
+	SetVariable Gain_AsyncAD_03, WIN = $device,value= _NUM:1
+	SetVariable Gain_AsyncAD_04, WIN = $device,value= _NUM:1
+	SetVariable Gain_AsyncAD_05, WIN = $device,value= _NUM:1
+	SetVariable Gain_AsyncAD_06, WIN = $device,value= _NUM:1
+	SetVariable Gain_AsyncAD_07, WIN = $device,value= _NUM:1
 
-	SetVariable Title_AsyncAD_00 WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_01 WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_02 WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_03 WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_04 WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_05 WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_06 WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_07 WIN = $device,value= _STR:""
+	SetVariable Title_AsyncAD_00, WIN = $device,value= _STR:""
+	SetVariable Title_AsyncAD_01, WIN = $device,value= _STR:""
+	SetVariable Title_AsyncAD_02, WIN = $device,value= _STR:""
+	SetVariable Title_AsyncAD_03, WIN = $device,value= _STR:""
+	SetVariable Title_AsyncAD_04, WIN = $device,value= _STR:""
+	SetVariable Title_AsyncAD_05, WIN = $device,value= _STR:""
+	SetVariable Title_AsyncAD_06, WIN = $device,value= _STR:""
+	SetVariable Title_AsyncAD_07, WIN = $device,value= _STR:""
 
-	SetVariable Unit_AsyncAD_00 WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_01 WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_02 WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_03 WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_04 WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_05 WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_06 WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_07 WIN = $device,value= _STR:""
+	SetVariable Unit_AsyncAD_00, WIN = $device,value= _STR:""
+	SetVariable Unit_AsyncAD_01, WIN = $device,value= _STR:""
+	SetVariable Unit_AsyncAD_02, WIN = $device,value= _STR:""
+	SetVariable Unit_AsyncAD_03, WIN = $device,value= _STR:""
+	SetVariable Unit_AsyncAD_04, WIN = $device,value= _STR:""
+	SetVariable Unit_AsyncAD_05, WIN = $device,value= _STR:""
+	SetVariable Unit_AsyncAD_06, WIN = $device,value= _STR:""
+	SetVariable Unit_AsyncAD_07, WIN = $device,value= _STR:""
 
-	CheckBox Radio_ClampMode_0 WIN = $device,value= 1,mode=1
+	CheckBox Radio_ClampMode_0, WIN = $device,value= 1,mode=1
 
 	// Sets MIES headstage to V-Clamp
-	CheckBox Radio_ClampMode_0 WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_1 WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_2 WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_3 WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_4 WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_5 WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_6 WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_7 WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_8 WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_9 WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_10 WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_11 WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_12 WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_13 WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_14 WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_15 WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_1IZ WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_3IZ WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_5IZ WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_7IZ WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_9IZ WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_11IZ WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_13IZ WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_15IZ WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_0, WIN = $device, value= 1,mode=1
+	CheckBox Radio_ClampMode_1, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_2, WIN = $device, value= 1,mode=1
+	CheckBox Radio_ClampMode_3, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_4, WIN = $device, value= 1,mode=1
+	CheckBox Radio_ClampMode_5, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_6, WIN = $device, value= 1,mode=1
+	CheckBox Radio_ClampMode_7, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_8, WIN = $device, value= 1,mode=1
+	CheckBox Radio_ClampMode_9, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_10, WIN = $device, value= 1,mode=1
+	CheckBox Radio_ClampMode_11, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_12, WIN = $device, value= 1,mode=1
+	CheckBox Radio_ClampMode_13, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_14, WIN = $device, value= 1,mode=1
+	CheckBox Radio_ClampMode_15, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_1IZ, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_3IZ, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_5IZ, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_7IZ, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_9IZ, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_11IZ, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_13IZ, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_15IZ, WIN = $device, value= 0,mode=1
 
 	// clamp mode sub tab
 	PGC_SetAndActivateControl(device, "tab_DataAcq_Amp", val = 0)
 	PGC_SetAndActivateControl(device, "ADC", val = 6)
 
-	CheckBox Radio_ClampMode_AllVClamp WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_AllIClamp WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_AllIZero WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_AllVClamp, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_AllIClamp, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_AllIZero, WIN = $device, value= 0,mode=1
 
-	CheckBox Check_DataAcq_SendToAllAmp WIN = $device, value= 0
+	CheckBox Check_DataAcq_SendToAllAmp, WIN = $device, value= 0
 
-	SetVariable SetVar_Settings_VC_DAgain WIN = $device, value= _NUM:20
-	SetVariable SetVar_Settings_VC_ADgain WIN = $device, value= _NUM:0.00999999977648258
-	SetVariable SetVar_Settings_IC_ADgain WIN = $device, value= _NUM:0.00999999977648258
+	SetVariable SetVar_Settings_VC_DAgain, WIN = $device, value= _NUM:20
+	SetVariable SetVar_Settings_VC_ADgain, WIN = $device, value= _NUM:0.00999999977648258
+	SetVariable SetVar_Settings_IC_ADgain, WIN = $device, value= _NUM:0.00999999977648258
 
-	PopupMenu Popup_Settings_VC_DA WIN = $device, mode=1
-	PopupMenu Popup_Settings_VC_AD WIN = $device, mode=1
-	PopupMenu Popup_Settings_IC_AD WIN = $device, mode=1
-	PopupMenu Popup_Settings_HeadStage WIN = $device, mode=1
-	PopupMenu Popup_Settings_IC_DA WIN = $device, mode=1
-	PopupMenu Popup_Settings_IC_DA WIN = $device, mode=1
+	PopupMenu Popup_Settings_VC_DA, WIN = $device, mode=1
+	PopupMenu Popup_Settings_VC_AD, WIN = $device, mode=1
+	PopupMenu Popup_Settings_IC_AD, WIN = $device, mode=1
+	PopupMenu Popup_Settings_HeadStage, WIN = $device, mode=1
+	PopupMenu Popup_Settings_IC_DA, WIN = $device, mode=1
+	PopupMenu Popup_Settings_IC_DA, WIN = $device, mode=1
 
-	SetVariable SetVar_Settings_IC_DAgain WIN = $device, value= _NUM:400
+	SetVariable SetVar_Settings_IC_DAgain, WIN = $device, value= _NUM:400
 
-	SetVariable Search_DA_00 WIN = $device, value= _STR:""
-	SetVariable Search_DA_01 WIN = $device, value= _STR:""
-	SetVariable Search_DA_02 WIN = $device, value= _STR:""
-	SetVariable Search_DA_03 WIN = $device, value= _STR:""
-	SetVariable Search_DA_04 WIN = $device, value= _STR:""
-	SetVariable Search_DA_05 WIN = $device, value= _STR:""
-	SetVariable Search_DA_06 WIN = $device, value= _STR:""
-	SetVariable Search_DA_07 WIN = $device, value= _STR:""
-	SetVariable Search_DA_All WIN = $device, value= _STR:""
-	SetVariable Search_DA_AllVClamp WIN = $device, value= _STR:""
-	SetVariable Search_DA_AllIClamp WIN = $device, value= _STR:""
+	SetVariable Search_DA_00, WIN = $device, value= _STR:""
+	SetVariable Search_DA_01, WIN = $device, value= _STR:""
+	SetVariable Search_DA_02, WIN = $device, value= _STR:""
+	SetVariable Search_DA_03, WIN = $device, value= _STR:""
+	SetVariable Search_DA_04, WIN = $device, value= _STR:""
+	SetVariable Search_DA_05, WIN = $device, value= _STR:""
+	SetVariable Search_DA_06, WIN = $device, value= _STR:""
+	SetVariable Search_DA_07, WIN = $device, value= _STR:""
+	SetVariable Search_DA_All, WIN = $device, value= _STR:""
+	SetVariable Search_DA_AllVClamp, WIN = $device, value= _STR:""
+	SetVariable Search_DA_AllIClamp, WIN = $device, value= _STR:""
 
-	SetVariable Search_TTL_00 WIN = $device, value= _STR:""
-	SetVariable Search_TTL_01 WIN = $device, value= _STR:""
-	SetVariable Search_TTL_02 WIN = $device, value= _STR:""
-	SetVariable Search_TTL_03 WIN = $device, value= _STR:""
-	SetVariable Search_TTL_04 WIN = $device, value= _STR:""
-	SetVariable Search_TTL_05 WIN = $device, value= _STR:""
-	SetVariable Search_TTL_06 WIN = $device, value= _STR:""
-	SetVariable Search_TTL_07 WIN = $device, value= _STR:""
-	SetVariable Search_TTL_All WIN = $device, value= _STR:""
+	SetVariable Search_TTL_00, WIN = $device, value= _STR:""
+	SetVariable Search_TTL_01, WIN = $device, value= _STR:""
+	SetVariable Search_TTL_02, WIN = $device, value= _STR:""
+	SetVariable Search_TTL_03, WIN = $device, value= _STR:""
+	SetVariable Search_TTL_04, WIN = $device, value= _STR:""
+	SetVariable Search_TTL_05, WIN = $device, value= _STR:""
+	SetVariable Search_TTL_06, WIN = $device, value= _STR:""
+	SetVariable Search_TTL_07, WIN = $device, value= _STR:""
+	SetVariable Search_TTL_All, WIN = $device, value= _STR:""
 
 	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC)
-	PopupMenu IndexEnd_DA_00 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_01 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_02 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_03 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_04 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_05 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_06 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_07 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_All WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_AllVClamp WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_AllICLamp WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_00, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_01, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_02, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_03, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_04, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_05, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_06, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_07, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_All, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_AllVClamp, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_AllICLamp, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
 
 	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL)
-	PopupMenu IndexEnd_TTL_00 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_01 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_02 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_03 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_04 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_05 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_06 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_07 WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_All WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_00, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_01, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_02, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_03, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_04, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_05, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_06, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_07, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_All, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
 
 	PopupMenu popup_Settings_Amplifier,mode=1,popvalue="- none -"
 	// don't make the scope subwindow part of the recreation macro
-	CheckBox check_Settings_ShowScopeWindow WIN = $device, value= 0
+	CheckBox check_Settings_ShowScopeWindow, WIN = $device, value= 0
 	SCOPE_KillScopeWindowIfRequest(device)
-	CheckBox check_Settings_ShowScopeWindow WIN = $device, value= 1
+	CheckBox check_Settings_ShowScopeWindow, WIN = $device, value= 1
 
-	CheckBox check_Settings_ITITP WIN = $device, value= 1
-	CheckBox check_Settings_TPAfterDAQ WIN = $device, value= 0
+	CheckBox check_Settings_ITITP, WIN = $device, value= 1
+	CheckBox check_Settings_TPAfterDAQ, WIN = $device, value= 0
 
-	CheckBox Check_Settings_NwbExport WIN = $device,value= 0
-	PopupMenu Popup_Settings_NwbVersion WIN = $device, mode=2, popvalue="2"
+	CheckBox Check_Settings_NwbExport, WIN = $device,value= 0
+	PopupMenu Popup_Settings_NwbVersion, WIN = $device, mode=2, popvalue="2"
 
 	PopupMenu Popup_Settings_DecMethod, mode=2, popvalue="MinMax"
 
-	SetVariable min_AsyncAD_00 WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_00 WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_00  WIN = $device,value= 0
+	SetVariable min_AsyncAD_00, WIN = $device,value= _NUM:0
+	SetVariable max_AsyncAD_00, WIN = $device,value= _NUM:0
+	CheckBox check_AsyncAlarm_00,  WIN = $device,value= 0
 
-	SetVariable min_AsyncAD_01 WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_01 WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_01  WIN = $device,value= 0
+	SetVariable min_AsyncAD_01, WIN = $device,value= _NUM:0
+	SetVariable max_AsyncAD_01, WIN = $device,value= _NUM:0
+	CheckBox check_AsyncAlarm_01,  WIN = $device,value= 0
 
-	SetVariable min_AsyncAD_02 WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_02 WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_02  WIN = $device,value= 0
+	SetVariable min_AsyncAD_02, WIN = $device,value= _NUM:0
+	SetVariable max_AsyncAD_02, WIN = $device,value= _NUM:0
+	CheckBox check_AsyncAlarm_02,  WIN = $device,value= 0
 
-	SetVariable min_AsyncAD_03 WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_03 WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_03  WIN = $device,value= 0
+	SetVariable min_AsyncAD_03, WIN = $device,value= _NUM:0
+	SetVariable max_AsyncAD_03, WIN = $device,value= _NUM:0
+	CheckBox check_AsyncAlarm_03,  WIN = $device,value= 0
 
-	SetVariable min_AsyncAD_04 WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_04 WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_04  WIN = $device,value= 0
+	SetVariable min_AsyncAD_04, WIN = $device,value= _NUM:0
+	SetVariable max_AsyncAD_04, WIN = $device,value= _NUM:0
+	CheckBox check_AsyncAlarm_04,  WIN = $device,value= 0
 
-	SetVariable min_AsyncAD_05 WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_05 WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_05  WIN = $device,value= 0
+	SetVariable min_AsyncAD_05, WIN = $device,value= _NUM:0
+	SetVariable max_AsyncAD_05, WIN = $device,value= _NUM:0
+	CheckBox check_AsyncAlarm_05,  WIN = $device,value= 0
 
-	SetVariable min_AsyncAD_06 WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_06 WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_06  WIN = $device,value= 0
+	SetVariable min_AsyncAD_06, WIN = $device,value= _NUM:0
+	SetVariable max_AsyncAD_06, WIN = $device,value= _NUM:0
+	CheckBox check_AsyncAlarm_06,  WIN = $device,value= 0
 
-	SetVariable min_AsyncAD_07 WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_07 WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_07  WIN = $device,value= 0
+	SetVariable min_AsyncAD_07, WIN = $device,value= _NUM:0
+	SetVariable max_AsyncAD_07, WIN = $device,value= _NUM:0
+	CheckBox check_AsyncAlarm_07,  WIN = $device,value= 0
 
-	CheckBox check_DataAcq_RepAcqRandom WIN = $device,value= 0
-	CheckBox check_Settings_Option_3 WIN = $device,value= 0
-	CheckBox check_Settings_ScalingZero WIN = $device,value= 0
-	CheckBox check_Settings_SetOption_04 WIN = $device,fColor=(65280,43520,0),value= 0
+	CheckBox check_DataAcq_RepAcqRandom, WIN = $device,value= 0
+	CheckBox check_Settings_Option_3, WIN = $device,value= 0
+	CheckBox check_Settings_ScalingZero, WIN = $device,value= 0
+	CheckBox check_Settings_SetOption_04, WIN = $device,fColor=(65280,43520,0),value= 0
 
-	PopupMenu popup_MoreSettings_Devices WIN=$device, mode=1
+	PopupMenu popup_MoreSettings_Devices, WIN=$device, mode=1
 
-	SetVariable SetVar_Sweep WIN = $device, value= _NUM:0
+	SetVariable SetVar_Sweep, WIN = $device, value= _NUM:0
 
-	SetVariable SetVar_DataAcq_dDAQDelay WIN = $device,value= _NUM:0
-	SetVariable setvar_DataAcq_dDAQOptOvPost WIN = $device,value= _NUM:0
-	SetVariable setvar_DataAcq_dDAQOptOvPre WIN = $device,value= _NUM:0
-	SetVariable SetVar_DataAcq_OnsetDelayUser WIN = $device,value= _NUM:0
-	ValDisplay valdisp_DataAcq_OnsetDelayAuto WIN = $device,value= _NUM:0
-	ValDisplay valdisp_DataAcq_SweepsInSet WIN = $device,value= _NUM:1
-	ValDisplay valdisp_DataAcq_SweepsActiveSet WIN = $device,value= _NUM:1
-	ValDisplay valdisp_DataAcq_TrialsCountdown WIN = $device,value= _NUM:1
-	ValDisplay valdisp_DataAcq_ITICountdown WIN = $device,value= _NUM:0
+	SetVariable SetVar_DataAcq_dDAQDelay, WIN = $device,value= _NUM:0
+	SetVariable setvar_DataAcq_dDAQOptOvPost, WIN = $device,value= _NUM:0
+	SetVariable setvar_DataAcq_dDAQOptOvPre, WIN = $device,value= _NUM:0
+	SetVariable SetVar_DataAcq_OnsetDelayUser, WIN = $device,value= _NUM:0
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto, WIN = $device,value= _NUM:0
+	ValDisplay valdisp_DataAcq_SweepsInSet, WIN = $device,value= _NUM:1
+	ValDisplay valdisp_DataAcq_SweepsActiveSet, WIN = $device,value= _NUM:1
+	ValDisplay valdisp_DataAcq_TrialsCountdown, WIN = $device,value= _NUM:1
+	ValDisplay valdisp_DataAcq_ITICountdown, WIN = $device,value= _NUM:0
 
-	SetVariable SetVar_DataAcq_TerminationDelay WIN = $device,value= _NUM:0
+	SetVariable SetVar_DataAcq_TerminationDelay, WIN = $device,value= _NUM:0
 
-	CheckBox check_Settings_SetOption_5 WIN = $device,value= 1
-	CheckBox Check_DataAcq1_IndexingLocked WIN = $device, value= 0
-	CheckBox Check_DataAcq_Indexing WIN = $device, value= 0
+	CheckBox check_Settings_SetOption_5, WIN = $device,value= 1
+	CheckBox Check_DataAcq1_IndexingLocked, WIN = $device, value= 0
+	CheckBox Check_DataAcq_Indexing, WIN = $device, value= 0
 
-	SetVariable SetVar_DataAcq_ListRepeats WIN = $device,limits={1,inf,1},value= _NUM:1
+	SetVariable SetVar_DataAcq_ListRepeats, WIN = $device,limits={1,inf,1},value= _NUM:1
 
-	SetVariable setvar_Settings_TPBuffer WIN = $device, value= _NUM:1
+	SetVariable setvar_Settings_TPBuffer, WIN = $device, value= _NUM:1
 
-	CheckBox check_DataAcq_IndexRandom WIN = $device, fColor=(65280,43520,0),value= 0
+	CheckBox check_DataAcq_IndexRandom, WIN = $device, fColor=(65280,43520,0),value= 0
 
-	ValDisplay ValDisp_DataAcq_SamplingInt win = $device, value= _NUM:0
+	ValDisplay ValDisp_DataAcq_SamplingInt, win = $device, value= _NUM:0
 
-	SetVariable SetVar_Hardware_VC_DA_Unit WIN = $device,value= _STR:"mV"
-	SetVariable SetVar_Hardware_IC_DA_Unit WIN = $device,value= _STR:"pA"
-	SetVariable SetVar_Hardware_VC_AD_Unit WIN = $device,value= _STR:"pA"
-	SetVariable SetVar_Hardware_IC_AD_Unit WIN = $device,value= _STR:"mV"
+	SetVariable SetVar_Hardware_VC_DA_Unit, WIN = $device,value= _STR:"mV"
+	SetVariable SetVar_Hardware_IC_DA_Unit, WIN = $device,value= _STR:"pA"
+	SetVariable SetVar_Hardware_VC_AD_Unit, WIN = $device,value= _STR:"pA"
+	SetVariable SetVar_Hardware_IC_AD_Unit, WIN = $device,value= _STR:"mV"
 
-	SetVariable Unit_DA_00 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_01 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_02 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_03 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_04 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_05 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_06 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_07 WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_00, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_01, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_02, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_03, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_04, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_05, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_06, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_07, WIN = $device,limits={0,inf,1},value= _STR:""
 
-	SetVariable Unit_AD_00 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_01 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_02 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_03 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_04 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_05 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_06 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_07 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_08 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_09 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_10 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_11 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_12 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_13 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_14 WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_15 WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_00, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_01, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_02, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_03, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_04, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_05, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_06, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_07, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_08, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_09, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_10, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_11, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_12, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_13, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_14, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_15, WIN = $device,limits={0,inf,1},value= _STR:""
 
-	SetVariable SetVar_DataAcq_Hold_IC WIN = $device, value= _NUM:0
-	SetVariable Setvar_DataAcq_PipetteOffset_VC WIN = $device, value= _NUM:0
-	SetVariable Setvar_DataAcq_PipetteOffset_IC WIN = $device, value= _NUM:0
-	SetVariable SetVar_DataAcq_BB WIN = $device,limits={0,inf,1},value= _NUM:0
-	SetVariable SetVar_DataAcq_CN WIN = $device,limits={-8,16,1},value= _NUM:0
+	SetVariable SetVar_DataAcq_Hold_IC, WIN = $device, value= _NUM:0
+	SetVariable Setvar_DataAcq_PipetteOffset_VC, WIN = $device, value= _NUM:0
+	SetVariable Setvar_DataAcq_PipetteOffset_IC, WIN = $device, value= _NUM:0
+	SetVariable SetVar_DataAcq_BB, WIN = $device,limits={0,inf,1},value= _NUM:0
+	SetVariable SetVar_DataAcq_CN, WIN = $device,limits={-8,16,1},value= _NUM:0
 
-	CheckBox check_DatAcq_HoldEnable WIN = $device,value= 0
-	CheckBox check_DatAcq_RsCompEnable WIN = $device,value= 0
-	CheckBox check_DatAcq_CNEnable WIN = $device,value= 0
+	CheckBox check_DatAcq_HoldEnable, WIN = $device,value= 0
+	CheckBox check_DatAcq_RsCompEnable, WIN = $device,value= 0
+	CheckBox check_DatAcq_CNEnable, WIN = $device,value= 0
 
-	Slider slider_DataAcq_ActiveHeadstage  WIN = $device,value= 0
-	CheckBox check_DataAcq_AutoBias WIN = $device,value= 0
+	Slider slider_DataAcq_ActiveHeadstage,  WIN = $device,value= 0
+	CheckBox check_DataAcq_AutoBias, WIN = $device,value= 0
 
 	// auto bias default: -70 plus/minus 0.5 mV @ 200 pA
-	SetVariable SetVar_DataAcq_AutoBiasV      WIN = $device, value = _NUM:-70
-	SetVariable SetVar_DataAcq_AutoBiasVrange WIN = $device, value = _NUM:0.5
-	SetVariable setvar_DataAcq_IbiasMax       WIN = $device, value = _NUM:200
+	SetVariable SetVar_DataAcq_AutoBiasV,      WIN = $device, value = _NUM:-70
+	SetVariable SetVar_DataAcq_AutoBiasVrange, WIN = $device, value = _NUM:0.5
+	SetVariable setvar_DataAcq_IbiasMax,       WIN = $device, value = _NUM:200
 
 	// settings tab
-	SetVariable setvar_Settings_AutoBiasPerc  WIN = $device, value = _NUM:15
-	SetVariable setvar_Settings_AutoBiasInt   WIN = $device, value = _NUM:1
+	SetVariable setvar_Settings_AutoBiasPerc,  WIN = $device, value = _NUM:15
+	SetVariable setvar_Settings_AutoBiasInt,   WIN = $device, value = _NUM:1
 
-	SetVariable SetVar_DataAcq_Hold_VC WIN = $device,value= _NUM:0
-	CheckBox check_DatAcq_HoldEnableVC WIN = $device,value= 0
-	SetVariable SetVar_DataAcq_WCR WIN = $device,value= _NUM:0
-	CheckBox check_DatAcq_WholeCellEnable WIN = $device,value= 0
-	SetVariable SetVar_DataAcq_WCC  WIN = $device,value= _NUM:0
-	SetVariable SetVar_DataAcq_RsCorr WIN = $device,value= _NUM:0
-	SetVariable SetVar_DataAcq_RsPred WIN = $device,value= _NUM:0
-	CheckBox Check_Settings_AlarmPauseAcq WIN = $device,value= 0
-	CheckBox Check_Settings_AlarmAutoRepeat WIN = $device,value= 0
-	CheckBox check_Settings_AmpMCCdefault WIN = $device,value= 0
-	CheckBox check_Settings_SyncMiesToMCC WIN = $device,value= 0
-	CheckBox check_DataAcq_Amp_Chain WIN = $device,value= 0
-	CheckBox check_DatAcq_BBEnable WIN = $device,value= 0
-	CheckBox check_Settings_MD WIN = $device,value= 1
+	SetVariable SetVar_DataAcq_Hold_VC, WIN = $device,value= _NUM:0
+	CheckBox check_DatAcq_HoldEnableVC, WIN = $device,value= 0
+	SetVariable SetVar_DataAcq_WCR, WIN = $device,value= _NUM:0
+	CheckBox check_DatAcq_WholeCellEnable, WIN = $device,value= 0
+	SetVariable SetVar_DataAcq_WCC,  WIN = $device,value= _NUM:0
+	SetVariable SetVar_DataAcq_RsCorr, WIN = $device,value= _NUM:0
+	SetVariable SetVar_DataAcq_RsPred, WIN = $device,value= _NUM:0
+	CheckBox Check_Settings_AlarmPauseAcq, WIN = $device,value= 0
+	CheckBox Check_Settings_AlarmAutoRepeat, WIN = $device,value= 0
+	CheckBox check_Settings_AmpMCCdefault, WIN = $device,value= 0
+	CheckBox check_Settings_SyncMiesToMCC, WIN = $device,value= 0
+	CheckBox check_DataAcq_Amp_Chain, WIN = $device,value= 0
+	CheckBox check_DatAcq_BBEnable, WIN = $device,value= 0
+	CheckBox check_Settings_MD, WIN = $device,value= 1
 	EnableControls(device, "check_Settings_MD")
-	SetVariable setvar_Settings_TP_RTolerance WIN = $device,value= _NUM:1
-	CheckBox check_Settings_SaveAmpSettings WIN = $device,value= 0
-	CheckBox check_Settings_AmpIEQZstep WIN = $device,value= 0
-	CheckBox Check_Settings_ITImanualStart WIN = $device,value= 0
+	SetVariable setvar_Settings_TP_RTolerance, WIN = $device,value= _NUM:1
+	CheckBox check_Settings_SaveAmpSettings, WIN = $device,value= 0
+	CheckBox check_Settings_AmpIEQZstep, WIN = $device,value= 0
+	CheckBox Check_Settings_ITImanualStart, WIN = $device,value= 0
 
 	SetControlUserData(device, "Check_Settings_BkgTP", "oldState", "")
 	SetControlUserData(device, "Check_Settings_BackgrndDataAcq", "oldState", "")
 	SetControlUserData(device, "check_Settings_TP_SaveTP", "oldState", "")
 	SetControlUserData(device, "check_Settings_SaveAmpSettings", "oldState", "")
 
-	CheckBox Check_Settings_BkgTP WIN = $device,value= 1
-	CheckBox Check_Settings_BackgrndDataAcq WIN = $device, value= 1
+	CheckBox Check_Settings_BkgTP, WIN = $device,value= 1
+	CheckBox Check_Settings_BackgrndDataAcq, WIN = $device, value= 1
 
-	CheckBox Check_Settings_InsertTP WIN = $device,value= 1
-	CheckBox Check_DataAcq_Get_Set_ITI WIN = $device, value = 1
-	CheckBox check_Settings_TP_SaveTP WIN = $device, value = 0
-	CheckBox check_settings_TP_show_steady WIN = $device, value = 1
-	CheckBox check_settings_TP_show_peak WIN = $device, value = 1
-	CheckBox check_Settings_DisablePressure WIN = $device, value = 0
-	CheckBox check_Settings_RequireAmpConn WIN = $device, value = 1
+	CheckBox Check_Settings_InsertTP, WIN = $device,value= 1
+	CheckBox Check_DataAcq_Get_Set_ITI, WIN = $device, value = 1
+	CheckBox check_Settings_TP_SaveTP, WIN = $device, value = 0
+	CheckBox check_settings_TP_show_steady, WIN = $device, value = 1
+	CheckBox check_settings_TP_show_peak, WIN = $device, value = 1
+	CheckBox check_Settings_DisablePressure, WIN = $device, value = 0
+	CheckBox check_Settings_RequireAmpConn, WIN = $device, value = 1
 	// Oscilloscope section in setting tab
-	CheckBox check_settings_show_power WIN = $device, value = 0
+	CheckBox check_settings_show_power, WIN = $device, value = 0
 	SetVariable setvar_Settings_OsciUpdInt, win=$device, value= _NUM:500
 	SetVariable setvar_Settings_OsciUpdExt, win=$device, value= _NUM:10
-	PopupMenu Popup_Settings_OsciUpdMode WIN = $device, value=DAP_GetOsciUpdModes(), mode=3
+	PopupMenu Popup_Settings_OsciUpdMode, WIN = $device, value=DAP_GetOsciUpdModes(), mode=3
 	EnableControls(device, "Popup_Settings_OsciUpdMode")
 
 	// defaults are also hardcoded in P_GetPressureDataWaveRef
@@ -682,22 +682,22 @@ Function DAP_EphysPanelStartUpSettings()
 
 	// user pressure
 	PGC_SetAndActivateControl(device, "tab_DataAcq_Pressure", val = 0, switchtab = 1)
-	PopupMenu popup_Settings_UserPressure WIN = $device, mode=1,value= #"\"- none -;\""
+	PopupMenu popup_Settings_UserPressure, WIN = $device, mode=1,value= #"\"- none -;\""
 	EnableControl(device, "popup_Settings_UserPressure")
-	PopupMenu Popup_Settings_UserPressure_ADC  WIN = $device, mode=1
+	PopupMenu Popup_Settings_UserPressure_ADC,  WIN = $device, mode=1
 	EnableControl(device, "Popup_Settings_UserPressure_ADC")
 	EnableControl(device, "button_Hardware_PUser_Enable")
 	DisableControl(device, "button_Hardware_PUser_Disable")
 	PGC_SetAndActivateControl(device, "ADC", val = 6)
 
-	ValDisplay valdisp_DataAcq_P_LED_0 WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_1 WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_2 WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_3 WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_4 WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_5 WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_6 WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_7 WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_0, WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_1, WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_2, WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_3, WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_4, WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_5, WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_6, WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_7, WIN = $device, value= _NUM:-1
 
 	ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_1,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
@@ -725,24 +725,24 @@ Function DAP_EphysPanelStartUpSettings()
 	ValDisplay valdisp_DataAcq_P_7,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_7,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 
-	ValDisplay valdisp_DataAcq_P_LED_Approach WIN = $device, value= _NUM:0
-	ValDisplay valdisp_DataAcq_P_LED_Seal WIN = $device, value= _NUM:0
-	ValDisplay valdisp_DataAcq_P_LED_Breakin WIN = $device, value= _NUM:0
-	ValDisplay valdisp_DataAcq_P_LED_Clear WIN = $device, value= _NUM:0
+	ValDisplay valdisp_DataAcq_P_LED_Approach, WIN = $device, value= _NUM:0
+	ValDisplay valdisp_DataAcq_P_LED_Seal, WIN = $device, value= _NUM:0
+	ValDisplay valdisp_DataAcq_P_LED_Breakin, WIN = $device, value= _NUM:0
+	ValDisplay valdisp_DataAcq_P_LED_Clear, WIN = $device, value= _NUM:0
 
-	CheckBox check_Settings_UserP_Approach WIN = $device, value=0
-	CheckBox check_Settings_UserP_BreakIn WIN = $device, value=0
-	CheckBox check_Settings_UserP_Seal WIN = $device, value=0
-	CheckBox check_Settings_UserP_Clear WIN = $device, value=0
-	CheckBox check_DataACq_Pressure_AutoOFF WIN = $device, value=0
-	CheckBox check_DataACq_Pressure_User WIN = $device, value=0
-	CheckBox check_DA_applyOnModeSwitch WIN = $device, value=0
+	CheckBox check_Settings_UserP_Approach, WIN = $device, value=0
+	CheckBox check_Settings_UserP_BreakIn, WIN = $device, value=0
+	CheckBox check_Settings_UserP_Seal, WIN = $device, value=0
+	CheckBox check_Settings_UserP_Clear, WIN = $device, value=0
+	CheckBox check_DataACq_Pressure_AutoOFF, WIN = $device, value=0
+	CheckBox check_DataACq_Pressure_User, WIN = $device, value=0
+	CheckBox check_DA_applyOnModeSwitch, WIN = $device, value=0
 
-	PopupMenu Popup_Settings_SampIntMult WIN = $device, mode=1
-	PopupMenu Popup_Settings_FixedFreq WIN = $device, mode=1
+	PopupMenu Popup_Settings_SampIntMult, WIN = $device, mode=1
+	PopupMenu Popup_Settings_FixedFreq, WIN = $device, mode=1
 	EnableControls(device, "Popup_Settings_SampIntMult;Popup_Settings_FixedFreq")
 
-	SetVariable setvar_dataAcq_skipAhead win=$device,limits={0,0,1},value= _NUM:0
+	SetVariable setvar_dataAcq_skipAhead, win=$device,limits={0,0,1},value= _NUM:0
 	EnableControl(device, "button_Hardware_P_Enable")
 	DisableControl(device, "button_Hardware_P_Disable")
 	EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
@@ -885,14 +885,14 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			popupValue = DAP_FormatStimSetPopupValue(channelType, searchString = searchString)
 
 			ctrl = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE)
-			PopupMenu $ctrl win=$device, value=#popupValue, userdata($USER_DATA_MENU_EXP)=listOfWaves
+			PopupMenu $ctrl, win=$device, value=#popupValue, userdata($USER_DATA_MENU_EXP)=listOfWaves
 			sel = GetPopupMenuString(device, ctrl)
-			PopupMenu $ctrl win=$device, popmatch=sel
+			PopupMenu $ctrl, win=$device, popmatch=sel
 
 			ctrl = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_INDEX_END)
-			PopupMenu $ctrl win=$device, value=#popupValue
+			PopupMenu $ctrl, win=$device, value=#popupValue
 			sel = GetPopupMenuString(device, ctrl)
-			PopupMenu $ctrl win=$device, popmatch=sel
+			PopupMenu $ctrl, win=$device, popmatch=sel
 
 			if(DAP_IsAllControl(channelIndex))
 				numSuppChannels = GetNumberFromType(var=channelType)
@@ -908,14 +908,14 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 					DAG_Update(device, ctrl, str = str)
 
 					ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-					PopupMenu $ctrl win=$device, value=#popupValue, userdata($USER_DATA_MENU_EXP)=listOfWaves
+					PopupMenu $ctrl, win=$device, value=#popupValue, userdata($USER_DATA_MENU_EXP)=listOfWaves
 					sel = GetPopupMenuString(device, ctrl)
-					PopupMenu $ctrl win=$device, popmatch=sel
+					PopupMenu $ctrl, win=$device, popmatch=sel
 
 					ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_INDEX_END)
-					PopupMenu $ctrl win=$device, value=#popupValue
+					PopupMenu $ctrl, win=$device, value=#popupValue
 					sel = GetPopupMenuString(device, ctrl)
-					PopupMenu $ctrl win=$device, popmatch=sel
+					PopupMenu $ctrl, win=$device, popmatch=sel
 				endfor
 			endif
 			break
@@ -2837,7 +2837,7 @@ static Function DAP_CheckStimset(device, channelType, channel, headstage)
 						 "row dimension offset of zero and row unit \"ms\".\r", device, setName, channelTypeStr, headstage, WAVEBUILDER_MIN_SAMPINT
 			DEBUGPRINT(str)
 			DEBUGPRINT("The stim set is now automatically fixed")
-			SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT, "ms", stimSet
+			SetScale/P x, 0, WAVEBUILDER_MIN_SAMPINT, "ms", stimSet
 		endif
 
 		if(DAG_GetNumericalValue(device, "Check_Settings_SkipAnalysFuncs") || channelType != CHANNEL_TYPE_DAC)
@@ -3346,9 +3346,9 @@ static Function DAP_UpdateClampmodeTabs(device, headStage, clampMode)
 		AI_SyncGUIToAmpStorageAndMCCApp(device, headStage, clampMode)
 	endif
 
-	TabControl tab_DataAcq_Amp win=$device, tabLabel(V_CLAMP_MODE)      = SelectString(clampMode == V_CLAMP_MODE,      "", highlightSpec) + "V-Clamp"
-	TabControl tab_DataAcq_Amp win=$device, tabLabel(I_CLAMP_MODE)      = SelectString(clampMode == I_CLAMP_MODE,      "", highlightSpec) + "I-Clamp"
-	TabControl tab_DataAcq_Amp win=$device, tabLabel(I_EQUAL_ZERO_MODE) = SelectString(clampMode == I_EQUAL_ZERO_MODE, "", highlightSpec) + "I = 0"
+	TabControl tab_DataAcq_Amp, win=$device, tabLabel(V_CLAMP_MODE)      = SelectString(clampMode == V_CLAMP_MODE,      "", highlightSpec) + "V-Clamp"
+	TabControl tab_DataAcq_Amp, win=$device, tabLabel(I_CLAMP_MODE)      = SelectString(clampMode == I_CLAMP_MODE,      "", highlightSpec) + "I-Clamp"
+	TabControl tab_DataAcq_Amp, win=$device, tabLabel(I_EQUAL_ZERO_MODE) = SelectString(clampMode == I_EQUAL_ZERO_MODE, "", highlightSpec) + "I = 0"
 End
 
 static Function DAP_ChangeHeadstageState(device, headStageCtrl, enabled)
@@ -3438,7 +3438,7 @@ Function DAP_ToggleAcquisitionButton(device, mode)
 		text = "\\Z14\\f01Acquire\rData"
 	endif
 
-	Button DataAcquireButton title=text, win = $device
+	Button DataAcquireButton, title=text, win = $device
 End
 
 /// @brief Set the testpulse button text
@@ -3459,7 +3459,7 @@ Function DAP_ToggleTestpulseButton(device, mode)
 		text = "\\Z14\\f01Start Test \rPulse"
 	endif
 
-	Button StartTestPulseButton title=text, win = $device
+	Button StartTestPulseButton, title=text, win = $device
 End
 
 Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
@@ -4370,7 +4370,7 @@ static Function DAP_UpdateDataFolderDisplay(device, locked)
 		title = "Lock a device to generate device folder structure"
 	endif
 
-	GroupBox group_Hardware_FolderPath win = $device, title = title
+	GroupBox group_Hardware_FolderPath, win = $device, title = title
 End
 
 Function DAP_LockDevice(string win)
@@ -4805,35 +4805,35 @@ static Function DAP_UpdateChanAmpAssignPanel(device)
 
 	// VC DA settings
 	channel = ChanAmpAssign[%VC_DA][HeadStageNo]
-	Popupmenu Popup_Settings_VC_DA win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
-	Setvariable setvar_Settings_VC_DAgain win = $device, value = _num:ChanAmpAssign[%VC_DAGain][HeadStageNo]
-	Setvariable SetVar_Hardware_VC_DA_Unit win = $device, value = _str:ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo]
+	Popupmenu Popup_Settings_VC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
+	Setvariable setvar_Settings_VC_DAgain, win = $device, value = _num:ChanAmpAssign[%VC_DAGain][HeadStageNo]
+	Setvariable SetVar_Hardware_VC_DA_Unit, win = $device, value = _str:ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo]
 
 	// VC AD settings
 	channel = ChanAmpAssign[%VC_AD][HeadStageNo]
-	Popupmenu Popup_Settings_VC_AD win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
-	Setvariable setvar_Settings_VC_ADgain win = $device, value = _num:ChanAmpAssign[%VC_ADGain][HeadStageNo]
-	Setvariable SetVar_Hardware_VC_AD_Unit win = $device, value = _str:ChanAmpAssignUnit[%VC_ADUnit][HeadStageNo]
+	Popupmenu Popup_Settings_VC_AD, win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
+	Setvariable setvar_Settings_VC_ADgain, win = $device, value = _num:ChanAmpAssign[%VC_ADGain][HeadStageNo]
+	Setvariable SetVar_Hardware_VC_AD_Unit, win = $device, value = _str:ChanAmpAssignUnit[%VC_ADUnit][HeadStageNo]
 
 	// IC DA settings
 	channel = ChanAmpAssign[%IC_DA][HeadStageNo]
-	Popupmenu Popup_Settings_IC_DA win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
-	Setvariable setvar_Settings_IC_DAgain win = $device, value = _num:ChanAmpAssign[%IC_DAGain][HeadStageNo]
-	Setvariable SetVar_Hardware_IC_DA_Unit win = $device, value = _str:ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo]
+	Popupmenu Popup_Settings_IC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
+	Setvariable setvar_Settings_IC_DAgain, win = $device, value = _num:ChanAmpAssign[%IC_DAGain][HeadStageNo]
+	Setvariable SetVar_Hardware_IC_DA_Unit, win = $device, value = _str:ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo]
 
 	// IC AD settings
 	channel = ChanAmpAssign[%IC_AD][HeadStageNo]
-	Popupmenu  Popup_Settings_IC_AD win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
-	Setvariable setvar_Settings_IC_ADgain win = $device, value = _num:ChanAmpAssign[%IC_ADGain][HeadStageNo]
-	Setvariable SetVar_Hardware_IC_AD_Unit win = $device, value = _str:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
+	Popupmenu  Popup_Settings_IC_AD, win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
+	Setvariable setvar_Settings_IC_ADgain, win = $device, value = _num:ChanAmpAssign[%IC_ADGain][HeadStageNo]
+	Setvariable SetVar_Hardware_IC_AD_Unit, win = $device, value = _str:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
 
 	ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
 	ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
 	if(isFinite(ampSerial) && isFinite(ampChannelID))
 		entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
-		Popupmenu popup_Settings_Amplifier win = $device, popmatch=entry
+		Popupmenu popup_Settings_Amplifier, win = $device, popmatch=entry
 	else
-		Popupmenu popup_Settings_Amplifier win = $device, popmatch=NONE
+		Popupmenu popup_Settings_Amplifier, win = $device, popmatch=NONE
 	endif
 End
 

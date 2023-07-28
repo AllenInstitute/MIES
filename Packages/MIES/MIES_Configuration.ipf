@@ -662,7 +662,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		if(middleOfExperiment)
 			PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = CHECKBOX_UNSELECTED)
 			rStateSync = GetUserData(device, "check_Settings_SyncMiesToMCC", EXPCONFIG_UDATA_EXCLUDE_RESTORE)
-			ModifyControl $"check_Settings_SyncMiesToMCC" win=$device, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)="1"
+			ModifyControl $"check_Settings_SyncMiesToMCC", win=$device, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)="1"
 			winConfigChanged = 1
 		endif
 
@@ -688,7 +688,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		endif
 
 		if(middleOfExperiment)
-			ModifyControl $"check_Settings_SyncMiesToMCC" win=$device, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)=rStateSync
+			ModifyControl $"check_Settings_SyncMiesToMCC", win=$device, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)=rStateSync
 		endif
 
 		CONF_RestoreHeadstageAssociation(device, jsonID, middleOfExperiment)
@@ -731,7 +731,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		if(!IsEmpty(device) && WindowExists(device))
 			SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE) = ""
 			if(middleOfExperiment & winConfigChanged)
-				ModifyControl $"check_Settings_SyncMiesToMCC" win=$device, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)=rStateSync
+				ModifyControl $"check_Settings_SyncMiesToMCC", win=$device, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)=rStateSync
 			endif
 			SetWindow $device, hide=0, needUpdate=1
 		endif
@@ -1300,7 +1300,7 @@ static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName[, jsonP
 			VTop = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSTOP)
 			VPos = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSPOS)
 			VAlign = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSALIGN)
-			ModifyControl $ctrlName win=$wName, align=VAlign, size={VWidth, VHeight}, pos={VPos, VTop}
+			ModifyControl $ctrlName, win=$wName, align=VAlign, size={VWidth, VHeight}, pos={VPos, VTop}
 		endif
 		if(restoreMask & EXPCONFIG_SAVE_DISABLED)
 			FindValue/TXOP=4/TEXT=EXPCONFIG_FIELD_CTRLDISABLED ctrlPropList
@@ -1344,9 +1344,9 @@ static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName[, jsonP
 						uData = Base64Decode(uData)
 					endif
 					if(IsEmpty(uKey))
-						ModifyControl $ctrlName win=$wName, userdata=uData
+						ModifyControl $ctrlName, win=$wName, userdata=uData
 					else
-						ModifyControl $ctrlName win=$wName, userdata($uKey)=uData
+						ModifyControl $ctrlName, win=$wName, userdata($uKey)=uData
 					endif
 				endfor
 			endif
@@ -1366,11 +1366,11 @@ static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName[, jsonP
 				else
 					str = JSON_GetString(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLSDF)
 					if(IsEmpty(str))
-						SetVariable $ctrlName win=$wName, value=$""
+						SetVariable $ctrlName, win=$wName, value=$""
 					else
 						varTypeGlobal = exists(str)
 						if(varTypeGlobal == EXISTS_AS_WAVE || varTypeGlobal == EXISTS_AS_VAR_OR_STR)
-							SetVariable $ctrlName win=$wName, value=$str
+							SetVariable $ctrlName, win=$wName, value=$str
 						endif
 					endif
 				endif
@@ -1424,11 +1424,11 @@ static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName[, jsonP
 				if(setVarType == SET_VARIABLE_BUILTIN_STR)
 					PGC_SetAndActivateControl(wName, ctrlName, str = str, mode = PGC_MODE_SKIP_ON_DISABLED)
 				elseif(IsEmpty(str))
-					SetVariable $ctrlName win=$wName, value=$""
+					SetVariable $ctrlName, win=$wName, value=$""
 				else
 					varTypeGlobal = exists(str)
 					if(varTypeGlobal == EXISTS_AS_WAVE || varTypeGlobal == EXISTS_AS_VAR_OR_STR)
-						SetVariable $ctrlName win=$wName, value=$str
+						SetVariable $ctrlName, win=$wName, value=$str
 					endif
 				endif
 			endif

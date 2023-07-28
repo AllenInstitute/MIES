@@ -240,7 +240,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 
 			if(!ParamIsDefault(val))
 				ASSERT(val >= 0 && val < ItemsInList(popupMenuList), "Invalid value for popupmenu: " + num2str(val))
-				PopupMenu $control win=$win, mode=(val + 1)
+				PopupMenu $control, win=$win, mode=(val + 1)
 			elseif(!ParamIsDefault(str))
 				switch(popupMenuType)
 					case POPUPMENULIST_TYPE_BUILTIN:
@@ -248,7 +248,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 						ASSERT(val >= 0 && val < ItemsInList(popupMenuList), "Invalid value for popupmenu: " + num2str(val))
 
 						// popmatch does not work with these
-						PopupMenu $control win=$win, mode=(WhichListItem(str, popupMenuList) + 1)
+						PopupMenu $control, win=$win, mode=(WhichListItem(str, popupMenuList) + 1)
 						break
 					case POPUPMENULIST_TYPE_OTHER:
 						// the return value might be different due to wildcard expansion
@@ -307,7 +307,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			break
 		case CONTROL_TYPE_TAB:
 			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
-			TabControl $control win=$win, value=val
+			TabControl $control, win=$win, value=val
 
 			// @todo add range check
 
@@ -386,7 +386,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
 			ASSERT(GetLimitConstrainedSetVar(S_recreation, val) == val, "Value " + num2str(val) + " is out of range.")
 
-			Slider $control win=$win, value = val
+			Slider $control, win=$win, value = val
 
 			if(isEmpty(procedure))
 				break
@@ -414,7 +414,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 
 			ASSERT(val >= 0 && val < DimSize(listWave, ROWS), "val is out of range")
 
-			ListBox $control win=$win, row = val, selRow = val
+			ListBox $control, win=$win, row = val, selRow = val
 
 			if(IsEmpty(procedure))
 				break

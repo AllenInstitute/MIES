@@ -209,7 +209,7 @@ Function PopMenuSelectPanel(pa) : PopupMenuControl
 			ACL_SetupListControlWaves(pa.win, pa.popStr)
 
 			// put value of selected panel in the (unnamed) userdata of the window that contains the PopMenu box
-			SetWindow $(pa.win) userdata=pa.popStr
+			SetWindow $(pa.win), userdata=pa.popStr
 
 			break
 	endswitch
@@ -457,7 +457,7 @@ Function PopMenuSelectControlType(pa) : PopupMenuControl
 
 			// put V_flag type of newly selected control type into userdata of this popup control
 			Variable controlType = str2num(controlTypes[pa.popNum][1])
-			PopupMenu $(pa.ctrlName) win=$(pa.win), userdata(controlType) = num2str(controlType)
+			PopupMenu $(pa.ctrlName), win=$(pa.win), userdata(controlType) = num2str(controlType)
 
 			// simulate a click on the Select Panel popmenu that will force a refresh of the list of controls
 
@@ -515,7 +515,7 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 				if (numtype(lastSortCol) != 0)
 					lastSortCol = -1
 				endif
-				ListBox $(lba.ctrlName) win=$(lba.win), userdata(sortCol) = num2str(lba.col)		// indicate which column to sort by
+				ListBox $(lba.ctrlName), win=$(lba.win), userdata(sortCol) = num2str(lba.col)		// indicate which column to sort by
 
 				// now, toggle the ascending/descending sort flag for this column (but only if this column was already selected)
 				Variable sortOrder = str2num(GetUserData(lba.win, lba.ctrlName, "order"+num2str(lba.col)))
@@ -524,7 +524,7 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 				elseif (lastSortCol == lba.col)
 					sortOrder = !sortOrder
 				endif
-				ListBox $(lba.ctrlName) win=$(lba.win), userdata($("order" + num2str(lba.col)))=num2str(sortOrder)
+				ListBox $(lba.ctrlName), win=$(lba.win), userdata($("order" + num2str(lba.col)))=num2str(sortOrder)
 
 				// now change the dimension labels of the list box text wave so that the column controlling the
 				// sort has the up or down arrow icon on it, depending on the order of the sort
@@ -674,7 +674,7 @@ Function ACL_FitListToWindow(win, ctrlName)
 	// modified from original Wavemetrics function
 	String win, ctrlName
 
-	GetWindow $win wsize
+	GetWindow $win, wsize
 	Variable winHeight= V_bottom-V_top	// points
 	Variable winWidth = V_right-V_left
 	winHeight *= ScreenResolution/72	// points to pixels
@@ -716,7 +716,7 @@ Function ACL_MinWindowSize(winName,minwidth,minheight)
 	String winName
 	Variable minwidth,minheight
 
-	GetWindow $winName wsize
+	GetWindow $winName, wsize
 	Variable width= max(V_right-V_left,minwidth)
 	Variable height= max(V_bottom-V_top,minheight)
 	MoveWindow/W=$winName V_left, V_top, V_left+width, V_top+height

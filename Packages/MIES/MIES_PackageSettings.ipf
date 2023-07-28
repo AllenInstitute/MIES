@@ -224,7 +224,7 @@ Function PS_StoreWindowCoordinate(variable JSONid, string win)
 		JSON_AddTreeObject(JSONid, path)
 	endif
 
-	GetWindow $win wsizeRM
+	GetWindow $win, wsizeRM
 
 	JSON_SetVariable(JSONid, path + "/left", V_left)
 	JSON_SetVariable(JSONid, path + "/right", V_right)

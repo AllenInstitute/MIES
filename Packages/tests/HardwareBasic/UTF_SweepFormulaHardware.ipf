@@ -615,8 +615,8 @@ static Function TestSweepFormulaCodeResults_REENTRY([string str])
 	// set cursors and execute formula again
 	graph = DB_FindDataBrowser(str)
 	trace = StringFromList(0, TraceNameList(graph, ";", 1))
-	Cursor/W=$graph A $trace 0
-	Cursor/W=$graph J $trace 50
+	Cursor/W=$graph A, $trace, 0
+	Cursor/W=$graph J, $trace, 50
 
 	bsPanel = BSP_GetPanel(graph)
 	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")

@@ -477,7 +477,7 @@ static Function/Wave WB_GetStimSet([setName])
 	FastOp stimSet = 0
 
 // note: here the stimset generation is coupled to the ITC minimum sample interval which is 200 kHz wheras for NI it is 500 kHz
-	SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT, "ms", stimset
+	SetScale/P x, 0, WAVEBUILDER_MIN_SAMPINT, "ms", stimset
 
 	for(i = 0; i < numSweeps; i += 1)
 		WAVE wv = data[i]
@@ -1267,7 +1267,7 @@ static Function WB_NoiseSegment(pa)
 
 	Make/FREE/D/C/N=(samples / 2 + 1) magphase
 	FastOp magphase = 0
-	SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT_HZ/samples, "Hz" magphase
+	SetScale/P x, 0, WAVEBUILDER_MIN_SAMPINT_HZ/samples, "Hz", magphase
 
 	// we can't use Multithread here as this creates non-reproducible data
 	switch(pa.noiseType)

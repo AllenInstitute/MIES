@@ -1825,7 +1825,7 @@ Function CreateFolderOnDisk(absPath)
 
 		ASSERT(!FileExists(partialPath), "The path which we should create exists, but points to a file")
 
-		NewPath/O/C/Q/Z $tempPath partialPath
+		NewPath/O/C/Q/Z $tempPath, partialPath
 	endfor
 
 	KillPath/Z $tempPath
@@ -3931,7 +3931,7 @@ Function/S AskUserForExistingFolder(string baseFolder)
 
 	symbPath = GetUniqueSymbolicPath()
 
-	NewPath/O/Q/Z $symbPath baseFolder
+	NewPath/O/Q/Z $symbPath, baseFolder
 	// preset next undirected NewPath/Open call using the contents of a
 	// *symbolic* folder
 	PathInfo/S $symbPath
@@ -4682,7 +4682,7 @@ Function GetPlotArea(win, s)
 		return NaN
 	endif
 
-	GetWindow $win psizeDC
+	GetWindow $win, psizeDC
 
 	s.left   = V_left
 	s.right  = V_right
@@ -6656,7 +6656,7 @@ Function UpdateInfoButtonHelp(string win, string ctrl, string content)
 
 	string htmlStr = "<pre>" + content + "</pre>"
 
-	Button $ctrl win=$win,help={htmlStr},userdata=content
+	Button $ctrl, win=$win,help={htmlStr},userdata=content
 End
 
 /// @brief Acts like the `limit` builtin but replaces values outside the valid range instead of clipping them

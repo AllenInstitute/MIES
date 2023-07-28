@@ -239,7 +239,7 @@ Function SBE_ShowExportPanel(sourceWindow)
 	endif
 
 	ControlUpdate/W=$panel popup_sweep_export_source_graph
-	PopupMenu popup_sweep_export_source_graph win=$panel, popmatch=GetMainWindow(sourceWindow)
+	PopupMenu popup_sweep_export_source_graph, win=$panel, popmatch=GetMainWindow(sourceWindow)
 End
 
 /// @brief Return a list of possible target graphs for the export panel

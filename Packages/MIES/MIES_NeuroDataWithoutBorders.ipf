@@ -685,7 +685,7 @@ Function NWB_ASYNC_FinishWriting(string device)
 			return NaN
 		endif
 
-		sprintf msg, "Waiting for NWB writing thread %d/%d.\r" i + 1, NWB_ASYNC_MAX_ITERATIONS
+		sprintf msg, "Waiting for NWB writing thread %d/%d.\r", i + 1, NWB_ASYNC_MAX_ITERATIONS
 		BUG(msg)
 	endfor
 End
