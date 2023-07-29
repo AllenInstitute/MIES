@@ -1534,7 +1534,7 @@ static Function DC_SetupConfigurationTTLstimSets(string device, STRUCT DataConfi
 	variable i, col, setCycleCount
 
 	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, s.dataAcqOrTP, CHANNEL_TYPE_TTL)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		if(!statusTTLFiltered[i])
@@ -1542,7 +1542,8 @@ static Function DC_SetupConfigurationTTLstimSets(string device, STRUCT DataConfi
 		endif
 		s.TTLsetName[i] = allSetNames[i]
 		s.TTLstimSet[i] = WB_CreateAndGetStimSet(s.TTLsetName[i])
-		s.TTLsetLength[i] = DC_CalculateStimsetLength(s.TTLstimSet[i], device, DATA_ACQUISITION_MODE)
+		ASSERT(WaveExists(s.TTLstimSet[i]), "Can't retrieve TTL stimset " + s.TTLsetName[i])
+		s.TTLsetLength[i] = DC_CalculateStimsetLength(s.TTLstimSet[i], device,  s.dataAcqOrTP)
 
 		[col, setCycleCount] = DC_CalculateChannelColumnNo(device, s.TTLsetName[i], i, CHANNEL_TYPE_TTL)
 		s.TTLsetColumn[i] = col
