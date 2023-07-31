@@ -2251,3 +2251,22 @@ static Function RandomAcq_REENTRY([string str])
 	Sort maxDA, maxDA
 	CHECK_EQUAL_WAVES(maxDA, {1, 2, 3})
 End
+
+static Function CheckIfNoTTLonTP_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val = 1)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckIfNoTTLonTP([string str])
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1"                     + \
+										"__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	AcquireData_NG(s, str)
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 60 * 3), period=60, proc=StopTP_IGNORE
+End
+
+static Function CheckIfNoTTLonTP_REENTRY([string str])
+	PASS()
+End
