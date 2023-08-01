@@ -1189,6 +1189,43 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 						marker[] = refMarker
 
 						break
+					case "nonfinite":
+						// map:
+						// -inf -> -1
+						// NaN  ->  0
+						// +inf -> +1
+						// finite -> NaN
+						Duplicate/FREE resultsRaw, results
+						Multithread results[] = resultsRaw[p] == -inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : (resultsRaw[p] == +inf ? +1 : NaN))
+
+						WAVE/Z resultsClean = ZapNaNs(results)
+
+						if(!WaveExists(resultsClean))
+							continue
+						endif
+
+						eventIndex[] = IsFinite(results[p]) ? eventIndex[p] : NaN
+						marker[] = IsFinite(results[p]) ? marker[p] : NaN
+						comboKeys[] = SelectString(IsFinite(results[p]), "", comboKeys[p])
+
+						WAVE markerClean = ZapNaNs(marker)
+						WAVE eventIndexClean = ZapNaNs(eventIndex)
+						RemoveTextWaveEntry1D(comboKeys, "", all = 1)
+
+						// y-data will be eventIndex, and x the numeric categories of non-finiteness
+						WAVE marker  = markerClean
+						WAVE results = eventIndexClean
+						WAVE xValues = resultsClean
+
+						Redimension/D results
+
+						JWN_SetWaveInWaveNote(results, SF_META_XVALUES, xValues)
+
+						Make/FREE/T nonFiniteTickLabels = {num2str(-inf), num2str(NaN), num2str(+inf)}
+						JWN_SetWaveInWaveNote(results, SF_META_XTICKLABELS, nonFiniteTickLabels)
+						JWN_SetWaveInWaveNote(results, SF_META_XTICKPOSITIONS, {-1, 0, 1})
+
+						break
 					case "count":
 						MatrixOP/FREE results = numRows(resultsRaw)
 						break
@@ -1278,6 +1315,9 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 			break
 		case "stats":
 			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Statistical properties of " + LowerStr(propLabelAxis))
+			break
+		case "nonfinite":
+			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Non-finite values of " + LowerStr(propLabelAxis))
 			break
 		case "count":
 			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "NA")
@@ -3532,7 +3572,7 @@ End
 /// @retval comboIndex combination index
 static Function [variable eventIndex, variable waveIndex, variable comboIndex] PSX_GetEventIndexAndComboIndex(string win, [variable direction])
 
-	string psxGraph, info, trace
+	string psxGraph, info, trace, postProc
 	variable idx, yPointNumber, numEntries
 
 	psxGraph = PSX_GetPSXGraph(win)
@@ -3578,6 +3618,8 @@ static Function [variable eventIndex, variable waveIndex, variable comboIndex] P
 		return [NaN, NaN, NaN]
 	endif
 
+	postProc = JWN_GetStringFromWaveNote(yWave, SF_META_USER_GROUP + PSX_JWN_STATS_POST_PROC)
+
 	WAVE/Z xWave = XWaveRefFromTrace(win, trace)
 
 	if(!WaveExists(xWave))
@@ -3588,10 +3630,22 @@ static Function [variable eventIndex, variable waveIndex, variable comboIndex] P
 
 	numEntries = DimSize(yWave, ROWS)
 	ASSERT(numEntries == DimSize(xWave, ROWS), "Unmatching wave sizes")
-	yPointNumber = limit(yPointNumber + direction, 0, numEntries - 1)
 
-	eventIndex = xWave[yPointNumber]
+	yPointNumber = limit(yPointNumber + direction, 0, numEntries - 1)
 	comboIndex = PSX_GetComboIndexForComboKey(win, comboKeys[yPointNumber])
+
+	strswitch(postProc)
+		case "nothing":
+		case "log10":
+			eventIndex = xWave[yPointNumber]
+			break
+		case "nonfinite":
+			eventIndex = yWave[yPointNumber]
+			break
+		default:
+			// unsupported post-processing
+			return [NaN, NaN, NaN]
+	endswitch
 
 	return [eventIndex, yPointNumber, comboIndex]
 End
@@ -4176,7 +4230,7 @@ Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 	prop = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 3, allowedValues = allProps)
 	Make/FREE/T allStates = {"accept", "reject", "undetermined", "all", "every"}
 	stateAsStr = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 4, allowedValues = allStates)
-	Make/FREE/T allPostProc = {"nothing", "stats", "count", "hist", "log10"}
+	Make/FREE/T allPostProc = {"nothing", "stats", "count", "hist", "log10", "nonfinite"}
 	postProc = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 5, defValue = "nothing", allowedValues = allPostProc)
 
 	WAVE/WAVE output = PSX_OperationStatsImpl(graph, id, range, selectData, prop, stateAsStr, postProc)

@@ -1054,13 +1054,16 @@ state
 
 postproc
   post process the results, defaults to `nothing`
-  Choices are: `nothing`, `stats`, `count`, `hist`, `log10`
+  Choices are: `nothing`, `stats`, `nonfinite`, `count`, `hist`, `log10`
 
   nothing
     no post processing
 
   stats
     calculate various statistical properties of the data
+
+  nonfinite
+    selects non-finite values (`-inf`/`NaN`/`inf`)
 
   count
     count the number of data elements

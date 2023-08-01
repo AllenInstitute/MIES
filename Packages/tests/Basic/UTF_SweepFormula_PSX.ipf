@@ -600,8 +600,23 @@ Function/WAVE StatsTest_GetInput()
 	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
 	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
 
+	// wv10
+	Duplicate/FREE/T template, wv10
+	WAVE/T input = wv10
+
+	input[%prop]     = "xpos"
+	input[%state]    = "all"
+	input[%postProc] = "nonfinite"
+
+	JWN_SetWaveInWaveNote(input, "/results", {1, 3, 5, 7, 9})
+	JWN_SetWaveInWaveNote(input, "/xValues", {0, -1, +1, 0, -1})
+	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_UNDET})
+	Make/FREE/T lbl = {"-inf", "NaN", "inf"}
+	JWN_SetWaveInWaveNote(input, "/XTickLabels", lbl)
+	JWN_SetWaveInWaveNote(input, "/XTickPositions", {-1, 0, 1})
+
 	// end
-	Make/FREE/WAVE results = {wv0, wv1 , wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9}
+	Make/FREE/WAVE results = {wv0, wv1 , wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9, wv10}
 
 	return results
 End
@@ -614,12 +629,14 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	WAVE/T input = m.w0
 
-	prop           = input[%prop]
-	stateAsStr     = input[%state]
-	postProc       = input[%postProc]
-	WAVE/Z results = JWN_GetNumericWaveFromWaveNote(input, "/results")
-	WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(input, "/xValues")
-	WAVE/Z marker  = JWN_GetNumericWaveFromWaveNote(input, "/marker")
+	prop                  = input[%prop]
+	stateAsStr            = input[%state]
+	postProc              = input[%postProc]
+	WAVE/Z results        = JWN_GetNumericWaveFromWaveNote(input, "/results")
+	WAVE/Z xValues        = JWN_GetNumericWaveFromWaveNote(input, "/xValues")
+	WAVE/Z marker         = JWN_GetNumericWaveFromWaveNote(input, "/marker")
+	WAVE/Z xTickLabels    = JWN_GetTextWaveFromWaveNote(input, "/XTickLabels")
+	WAVE/Z XTickPositions = JWN_GetNumericWaveFromWaveNote(input, "/XTickPositions")
 
 	if(WaveExists(xValues) && !HasOneValidEntry(xValues))
 		WaveClear xValues
@@ -640,6 +657,13 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	id = "myID"
 	FillEventWave_IGNORE(psxEvent, id, comboKey)
+
+	if(!cmpstr(postProc, "nonfinite"))
+		// overwrite peak_t data
+		Make/FREE/D peak_t = {10, NaN, 20, -inf, 30, +inf, 40, NaN, 50, -inf}
+		psxEvent[][%peak_t] = peak_t[p]
+	endif
+
 	MIES_PSX#PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, psxEvent, id)
 
 	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, range, selectData, prop, stateAsStr, postProc)
@@ -690,6 +714,23 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 	else
 		CHECK_WAVE(markerRead, NULL_WAVE)
 		CHECK_WAVE(marker, NULL_WAVE)
+	endif
+
+	WAVE/Z xTickPositionsRead = JWN_GetNumericWaveFromWaveNote(resultsRead, SF_META_XTICKPOSITIONS)
+	WAVE/Z xTickLabelsRead = JWN_GetTextWaveFromWaveNote(resultsRead, SF_META_XTICKLABELS)
+
+	if(WaveExists(xTickPositions))
+		CHECK_EQUAL_WAVES(xTickPositionsRead, xTickPositions, mode = WAVE_DATA)
+	else
+		CHECK_WAVE(xTickPositionsRead, NULL_WAVE)
+		CHECK_WAVE(xTickPositions, NULL_WAVE)
+	endif
+
+	if(WaveExists(xTickLabels))
+		CHECK_EQUAL_WAVES(xTickLabelsRead, xTickLabels, mode = WAVE_DATA)
+	else
+		CHECK_WAVE(xTickLabelsRead, NULL_WAVE)
+		CHECK_WAVE(xTickLabels, NULL_WAVE)
 	endif
 End
 
@@ -1275,6 +1316,7 @@ End
 
 static Function/WAVE SupportedPostProcForEventSelection()
 
+	// nonfinite is tested elsewhere
 	Make/FREE/T wv = {"nothing", "log10"}
 	SetDimensionLabels(wv, AddPrefixToEachListItem("PostProc=", TextWavetoList(wv, ";")), ROWS)
 
@@ -1452,7 +1494,7 @@ static Function CheckTraceColors(string win, WAVE/T traces, variable state)
 End
 
 // two sweeps in one operation
-static Function/S GetTestCode(string postProc, [string eventState])
+static Function/S GetTestCode(string postProc, [string eventState, string prop])
 
 	string code
 
@@ -1460,9 +1502,13 @@ static Function/S GetTestCode(string postProc, [string eventState])
 		eventState = "all"
 	endif
 
+	if(ParamIsDefault(prop))
+		prop = "xpos"
+	endif
+
 	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 0.01, 100, 0)"
 	code += "\r and \r"
-	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), xpos, " + eventState + ", "+ postProc + ")"
+	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), " + prop + ", " + eventState + ", "+ postProc + ")"
 
 	return code
 End
@@ -2407,6 +2453,67 @@ static Function KeyboardInteractionsStatsSpecial()
 	DoUpdate
 
 	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
+End
+
+static Function KeyboardInteractionsStatsPostProcNonFinite()
+
+	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[1][%$combos[0]][%$"Fit Result"] = 1
+	overrideResults[1][%$combos[0]][%$"Tau"]        = -inf
+
+	overrideResults[0][%$combos[0]][%$"Fit Result"] = 0
+	overrideResults[0][%$combos[0]][%$"Tau"]        = NaN
+
+	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
+	overrideResults[0][%$combos[1]][%$"Tau"]        = +inf
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nonfinite", eventState = "all", prop = "tau")
+
+	ExecuteSweepFormulaCode(browser, code)
+
+	win = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow = GetMainWindow(win)
+	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
+
+	REQUIRE(WindowExists(psxStatsGraph))
+
+	SetActiveSubwindow $psxStatsGraph
+
+	tracenames = TraceNameList(psxStatsGraph, ";", 1)
+	trace = StringFromList(0, tracenames)
+	CHECK_PROPER_STR(trace)
+
+	Cursor/W=$psxStatsGraph/P A, $trace, 0
+
+	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+
+	SendKey(psxStatsGraph, UP_KEY)
+	SendKey(psxStatsGraph, DOWN_KEY)
+	SendKey(psxStatsGraph, UP_KEY)
+
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
 End
 
 static Function NoEventsAtAll()
