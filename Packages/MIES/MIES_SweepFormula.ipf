@@ -1891,7 +1891,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				WAVE/Z customMarkerAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_MOD_MARKER)
 				if(WaveExists(customMarkerAsFree))
 					DFREF dfrWork = SFH_GetWorkingDF(graph)
-					wvName = UniqueWaveName(dfr, "customMarker_" + NameOfWave(wvY))
+					wvName = UniqueWaveName(dfrWork, "customMarker_" + NameOfWave(wvY))
 					MoveWave customMarkerAsFree, dfrWork:$wvName
 					WAVE/SDFR=dfrWork customMarker = $wvName
 					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
