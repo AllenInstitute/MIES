@@ -61,7 +61,6 @@ static Constant PSX_NUM_PEAKS_MAX = 2000
 
 static Constant PSX_PLOT_DEFAULT_X_RANGE = 200
 
-static Constant PSX_DEFAULT_DECAY_FIT_LENGTH = 30
 static Constant PSX_DEFAULT_X_START_OFFSET = 2
 
 static StrConstant USER_DATA_KEYBOARD_DIR = "keyboard_direction"
@@ -549,7 +548,7 @@ static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psx
 
 	if(index == numEvents - 1)
 		first = psxEvent[index][%peak_t] - PSX_DEFAULT_X_START_OFFSET
-		last  = psxEvent[index][%post_min_t] + PSX_DEFAULT_DECAY_FIT_LENGTH
+		last  = psxEvent[index][%post_min_t] + PSX_DEFAULT_X_START_OFFSET
 	else
 		first = psxEvent[index][%peak_t] - PSX_DEFAULT_X_START_OFFSET
 		last  = psxEvent[index + 1][%peak_t] - 0.5
@@ -563,20 +562,27 @@ End
 /// x-zero is taken from sweepData
 static Function [variable start, variable stop] PSX_GetEventFitRange(WAVE sweepDataFiltOff, WAVE psxEvent, variable eventIndex)
 
-	variable post_min_t, n_min_t, calcLength
+	variable calcLength, maxLength
 
-	post_min_t = psxEvent[eventIndex][%post_min_t]
+	start = psxEvent[eventIndex][%post_min_t]
+
+	maxLength = 10 * JWN_GetNumberFromWaveNote(psxEvent, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
 
 	if(eventIndex == (DimSize(psxEvent, ROWS) - 1))
-		n_min_t = min(post_min_t + PSX_DEFAULT_DECAY_FIT_LENGTH, IndexToScale(sweepDataFiltOff, DimSize(sweepDataFiltOff, ROWS), ROWS))
+		calcLength = maxLength
 	else
-		calcLength = min((psxEvent[eventIndex + 1][%post_min_t] - post_min_t) * 0.9, PSX_DEFAULT_DECAY_FIT_LENGTH)
-		n_min_t = post_min_t + (calcLength == 0 ? PSX_DEFAULT_DECAY_FIT_LENGTH : calcLength)
+		calcLength = min((psxEvent[eventIndex + 1][%post_min_t] - start) * 0.9, maxLength)
 	endif
 
-	ASSERT(post_min_t < n_min_t, "Invalid fit range calculation")
+	if(calcLength == 0)
+		calcLength = maxLength
+	endif
 
-	return [post_min_t, n_min_t]
+	stop = min(start + calcLength, IndexToScale(sweepDataFiltOff, DimSize(sweepDataFiltOff, ROWS), ROWS))
+
+	ASSERT(start < stop, "Invalid fit range calculation")
+
+	return [start, stop]
 End
 
 /// @brief Return the decay coefficient tau by fitting the filtered and
