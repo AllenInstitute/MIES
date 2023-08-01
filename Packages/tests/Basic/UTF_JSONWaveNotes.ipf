@@ -191,6 +191,8 @@ static Function TestWaveNoteFromJSON()
 	Make/FREE wv
 	Note/K wv, ("efgh" + WAVE_NOTE_JSON_SEPARATOR)
 	JWN_SetWaveNoteFromJSON(wv, jsonID)
+
+	// releases by default
 	CHECK(!JSON_IsValid(jsonID))
 
 	// existing wave note is preserved
@@ -198,6 +200,11 @@ static Function TestWaveNoteFromJSON()
 
 	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "/abcd")
 	CHECK_EQUAL_WAVES(data, {1, 2}, mode = WAVE_DATA)
+
+	// but we can also not release
+	jsonID = JSON_Parse("{ \"efgh\" : [3, 4]}")
+	JWN_SetWaveNoteFromJSON(wv, jsonID, release = 0)
+	CHECK(JSON_IsValid(jsonID))
 End
 
 static Function TestCreatePath()

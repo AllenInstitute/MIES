@@ -6,6 +6,8 @@
 #pragma ModuleName=MIES_JSONWAVENOTE
 #endif
 
+static Constant JWN_DEFAULT_RELEASE = 1
+
 /// @brief Gets the JSON wave note part as string
 threadsafe Function/S JWN_GetWaveNoteAsString(WAVE wv)
 
@@ -32,12 +34,18 @@ threadsafe Function JWN_GetWaveNoteAsJSON(WAVE wv)
 	return JSON_Parse(JWN_GetWaveNoteAsString(wv))
 End
 
-/// @brief Set the JSON json document as JSON wave note. Releases json.
-threadsafe Function JWN_SetWaveNoteFromJSON(WAVE wv, variable jsonID)
+/// @brief Set the JSON json document as JSON wave note. Releases json if `release` is true (default).
+threadsafe Function JWN_SetWaveNoteFromJSON(WAVE wv, variable jsonID, [variable release])
 
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 
-	JWN_WriteWaveNote(wv, JWN_GetWaveNoteHeader(wv), jsonID)
+	if(ParamIsDefault(release))
+		release = JWN_DEFAULT_RELEASE
+	else
+		release = !!release
+	endif
+
+	JWN_WriteWaveNote(wv, JWN_GetWaveNoteHeader(wv), jsonID, release = release)
 End
 
 /// @brief Return the numerical value at jsonPath found in the wave note
@@ -126,12 +134,21 @@ threadsafe Function/S JWN_GetWaveNoteHeader(WAVE/Z wv)
 	return StringFromList(0, note(wv), WAVE_NOTE_JSON_SEPARATOR)
 End
 
-/// @brief Writes a wave note from header string and json back. Releases json.
-threadsafe static Function JWN_WriteWaveNote(WAVE wv, string header, variable jsonID)
+/// @brief Writes a wave note from header string and json back. Releases json if `release` is true (default).
+threadsafe static Function JWN_WriteWaveNote(WAVE wv, string header, variable jsonID, [variable release])
+
+	if(ParamIsDefault(release))
+		release = JWN_DEFAULT_RELEASE
+	else
+		release = !!release
+	endif
 
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 	Note/K wv, header + WAVE_NOTE_JSON_SEPARATOR + JSON_Dump(jsonID)
-	JSON_Release(jsonID)
+
+	if(release)
+		JSON_Release(jsonID)
+	endif
 End
 
 /// @brief Updates the numeric value of `key` found in the wave note as jsonPath
