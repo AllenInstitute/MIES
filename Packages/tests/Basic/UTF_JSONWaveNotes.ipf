@@ -185,13 +185,13 @@ End
 
 static Function TestWaveNoteFromJSON()
 
-	variable jsonID = JSON_PARSE("{ \"abcd\" : [1, 2]}")
+	variable jsonID = JSON_Parse("{ \"abcd\" : [1, 2]}")
 	CHECK_GE_VAR(jsonID, 0)
 
 	Make/FREE wv
 	Note/K wv, ("efgh" + WAVE_NOTE_JSON_SEPARATOR)
 	JWN_SetWaveNoteFromJSON(wv, jsonID)
-	CHECK_EQUAL_VAR(NaN, JSON_Release(jsonID, ignoreErr =  1))
+	CHECK(!JSON_IsValid(jsonID))
 
 	// existing wave note is preserved
 	CHECK_EQUAL_VAR(strsearch(note(wv), "efgh", 0), 0)
