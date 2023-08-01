@@ -2376,14 +2376,14 @@ static Function PSX_UpdateSingleEventTextbox(string win, [variable eventIndex])
 	Make/FREE/T/N=(8, 2) input
 
 	input[0][0] = {"Event State:", "Fit State:", "Fit Result:", "Event:", "Position:", "IsI:", "Amp (rel.):", "Tau:", "Rise time:"}
-	input[0][1] = {PSX_StateToString(psxEvent[eventIndex][%$"Event manual QC call"]), \
-	               PSX_StateToString(psxEvent[eventIndex][%$"Fit manual QC call"]),   \
-	               PSX_FitResultToString(psxEvent[eventIndex][%$"Fit Result"]),       \
-	               num2istr(eventIndex),                                              \
-	               num2str(psxEvent[eventIndex][%peak_t], "%8.02f") + " [ms]",        \
-	               num2str(psxEvent[eventIndex][%isi], "%8.02f") + " " + yUnit,       \
-	               num2str(psxEvent[eventIndex][%rel_peak], "%8.02f") + " " + yUnit,  \
-	               num2str(psxEvent[eventIndex][%tau], "%8.02f") + " [ms]",           \
+	input[0][1] = {PSX_StateToString(psxEvent[eventIndex][%$"Event manual QC call"]),       \
+	               PSX_StateToString(psxEvent[eventIndex][%$"Fit manual QC call"]),         \
+	               PSX_FitResultToString(psxEvent[eventIndex][%$"Fit Result"]),             \
+	               num2istr(eventIndex),                                                    \
+	               num2str(psxEvent[eventIndex][%peak_t], "%8.02f") + " [ms]",              \
+	               num2str(psxEvent[eventIndex][%isi], "%8.02f") + " [" + yUnit + "]",      \
+	               num2str(psxEvent[eventIndex][%rel_peak], "%8.02f") + " [" + yUnit + "]", \
+	               num2str(psxEvent[eventIndex][%tau], "%8.02f") + " [ms]",                 \
 	               num2str(psxEvent[eventIndex][%$"Rise Time"], "%8.02f") + " [ms]"}
 
 	str = "\F'Consolas'" + FormatTextWaveForLegend(input)
