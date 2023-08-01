@@ -3248,6 +3248,9 @@ static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, v
 		eventLocationTicks[] = peakX[p]
 
 		PSX_CreateSingleEventWaves(dfr, psxEvent, sweepDataFiltOff)
+
+		// create all waves which need to exist for combo changing
+		WAVE singleEventFit = GetPSXSingleEventFitWaveFromDFR(dfr)
 	endfor
 
 	JSON_Release(resultsJSON)
