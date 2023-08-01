@@ -443,17 +443,17 @@ static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 
 	CHECK_EQUAL_VAR(DimSize(psxEvent, COLS), 14) // test needs update if that fails
 
-	psxEvent[][%index]                   = p
-	psxEvent[][%dc_peak_time]            = 100 * p
-	psxEvent[][%dc_amp]                  = NaN
-	psxEvent[][%i_peak]                  = NaN
-	psxEvent[][%i_peak_t]                = -10 * p
-	psxEvent[][%pre_min]                 = NaN
-	psxEvent[][%pre_min_t]               = NaN
-	psxEvent[][%i_amp]                   = p == 0 ? NaN : 10 * p
-	psxEvent[][%isi]                     = 1000 * p
-	psxEvent[][%tau]                     = 1e-6 * p
-	psxEvent[][%$"Rise Time"]            = p == 0 ? NaN : 0.1 * p
+	psxEvent[][%index]        = p
+	psxEvent[][%peak_t]       = 100 * p
+	psxEvent[][%peak]         = NaN
+	psxEvent[][%post_min]     = NaN
+	psxEvent[][%post_min_t]   = -10 * p
+	psxEvent[][%pre_max]      = NaN
+	psxEvent[][%pre_max_t]    = NaN
+	psxEvent[][%rel_peak]     = p == 0 ? NaN : 10 * p
+	psxEvent[][%isi]          = 1000 * p
+	psxEvent[][%tau]          = 1e-6 * p
+	psxEvent[][%$"Rise Time"] = p == 0 ? NaN : 0.1 * p
 	// PSX_ACCEPT:1
 	// PSX_REJECT:2
 	// PSX_UNDET: 4
