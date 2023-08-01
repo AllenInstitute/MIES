@@ -1563,7 +1563,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
-	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info
+	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info, xAxis
 	string yFormula, yFormulasRemain
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor color
@@ -1898,6 +1898,21 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
 				else
 					ModifyGraph/W=$win marker($trace)=markerCode
+				endif
+
+				WAVE/Z xTickLabelsAsFree = JWN_GetTextWaveFromWaveNote(wvY, SF_META_XTICKLABELS)
+				WAVE/Z xTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_XTICKPOSITIONS)
+
+				if(WaveExists(xTickLabelsAsFree) && WaveExists(xTickPositionsAsFree))
+					DFREF dfrWork = SFH_GetWorkingDF(graph)
+					wvName = "xTickLabels_" + NameOfWave(wvY)
+					WAVE xTickLabels = MoveFreeWaveToPermanent(xTickLabelsAsFree, dfrWork, wvName)
+
+					wvName = "xTickPositions_" + NameOfWave(wvY)
+					WAVE xTickPositions = MoveFreeWaveToPermanent(xTickPositionsAsFree, dfrWork, wvName)
+
+					xAxis = StringByKey("XAXIS", TraceInfo(win, trace, 0))
+					ModifyGraph/W=$win userticks($xAxis)={xTickPositions, xTickLabels}
 				endif
 
 				traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
