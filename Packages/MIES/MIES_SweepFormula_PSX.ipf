@@ -726,6 +726,8 @@ static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, vari
 		endif
 
 		WAVE psxEvent = GetPSXEventWaveAsFree()
+		JWN_SetWaveNoteFromJSON(psxEvent, parameterJsonID, release = 0)
+
 		WAVE eventFit = GetPSXEventFitWaveAsFree()
 
 		JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
@@ -3184,10 +3186,8 @@ End
 /// Takes care of existing combination data due to other `psx` calls in the same code
 static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, variable offset, variable numCombos)
 
-	variable i, j, numEvents, resultsJSON, psxEventJSON
+	variable i, j, numEvents, psxEventJSON
 	string key
-
-	resultsJSON = JWN_GetWaveNoteAsJSON(results)
 
 	for(i = 0; i < numCombos; i += 1)
 
@@ -3219,11 +3219,6 @@ static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, v
 		MoveWave results[%$key][1], dfr:psxEvent
 		WAVE/SDFR=dfr psxEvent
 
-		psxEventJSON = JWN_GetWaveNoteAsJSON(psxEvent)
-		JSON_AddTreeObject(psxEventJSON, SF_META_USER_GROUP + PSX_JWN_PARAMETERS)
-		JSON_SyncJSON(resultsJSON, psxEventJSON, SF_META_USER_GROUP + PSX_JWN_PARAMETERS, SF_META_USER_GROUP + PSX_JWN_PARAMETERS, JSON_SYNC_ADD_TO_TARGET)
-		JWN_SetWaveNoteFromJSON(psxEvent, psxEventJSON)
-
 		numEvents = DimSize(psxEvent, ROWS)
 
 		key = PSX_GenerateKey("eventFit", i)
@@ -3252,8 +3247,6 @@ static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, v
 		// create all waves which need to exist for combo changing
 		WAVE singleEventFit = GetPSXSingleEventFitWaveFromDFR(dfr)
 	endfor
-
-	JSON_Release(resultsJSON)
 
 	PSX_CheckForUniqueIDs(workDFR)
 End
