@@ -57,6 +57,8 @@ static Constant PSX_COLOR_UNDET_B = 48059
 static Constant PSX_KEYBOARD_DIR_RL = 0
 static Constant PSX_KEYBOARD_DIR_LR = 1
 
+static Constant PSX_NUMBER_OF_SDS_DEFAULT = 2.5
+
 static Constant PSX_NUM_PEAKS_MAX = 2000
 
 static Constant PSX_PLOT_DEFAULT_X_RANGE = 200
@@ -137,8 +139,9 @@ static StrConstant PSX_PANEL_MACRO = "PSXPanel"
 /// @name Different ways to derive cache key from the parameters JSON
 /// @anchor PSXCacheKeyType
 /// @{
-static Constant PSX_CACHE_KEY_EVENTS   = 0x1
-static Constant PSX_CACHE_KEY_RISETIME = 0x2
+static Constant PSX_CACHE_KEY_EVENTS        = 0x1
+static Constant PSX_CACHE_KEY_RISETIME      = 0x2
+static Constant PSX_CACHE_KEY_ANALYZE_PEAKS = 0x3
 /// @}
 
 static Constant EVENT_INDEX_HORIZONTAL = 0x1
@@ -693,18 +696,64 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 	return wv
 End
 
+static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDataset, variable parameterJsonID, variable filterLow, variable filterHigh, variable index, WAVE/WAVE output)
+
+	string key, comboKey, psxParametersAnalyzePeaks, cacheKey
+
+	key = PSX_GenerateKey("psxKernelFFT", index)
+	WAVE psxKernelFFT = psxKernelDataset[%$key]
+
+	key = PSX_GenerateKey("sweepData", index)
+	WAVE sweepData = psxKernelDataset[%$key]
+
+	[WAVE selectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
+	comboKey = PSX_GenerateComboKey(graph, selectData, range)
+
+	psxParametersAnalyzePeaks = PSX_GetPSXParameters(parameterJSONID, PSX_CACHE_KEY_ANALYZE_PEAKS)
+	cacheKey = CA_PSXAnalyzePeaks(comboKey, psxParametersAnalyzePeaks)
+	WAVE/WAVE/Z psxAnalyzePeaksFromCache = CA_TryFetchingEntryFromCache(cacheKey)
+
+	if(WaveExists(psxAnalyzePeaksFromCache))
+		WAVE sweepDataFiltOff       = psxAnalyzePeaksFromCache[%sweepDataFiltOff]
+		WAVE sweepDataFiltOffDeconv = psxAnalyzePeaksFromCache[%sweepDataFiltOffDeconv]
+	else
+		[WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] = PSX_Analysis(sweepData, psxKernelFFT, filterLow, filterHigh)
+
+		Make/FREE/WAVE/N=(2) psxAnalyzePeaks
+		SetDimensionLabels(psxAnalyzePeaks, "sweepDataFiltOff;sweepDataFiltOffDeconv", ROWS)
+		psxAnalyzePeaks[%sweepDataFiltOff]       = sweepDataFiltOff
+		psxAnalyzePeaks[%sweepDataFiltOffDeconv] = sweepDataFiltOffDeconv
+
+		CA_StoreEntryIntoCache(cacheKey, psxAnalyzePeaks)
+	endif
+
+	key = PSX_GenerateKey("sweepData", index)
+	output[%$key] = sweepData
+
+	key = PSX_GenerateKey("sweepDataFiltOff", index)
+	output[%$key] = sweepDataFiltOff
+
+	key = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
+	output[%$key] = sweepDataFiltOffDeconv
+End
+
 /// @brief Implementation of psx operation
-///
-/// @return 1 if data could be extracted, zero if not
-static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, variable parameterJSONID, string id, variable peakThresh, variable filterLow, variable filterHigh, variable maxTauFactor, WAVE riseTimeParams, variable kernelAmp, variable readIndex, variable writeIndex, WAVE/WAVE output)
+static Function PSX_OperationImpl(string graph, variable parameterJSONID, string id, variable peakThresh, variable maxTauFactor, WAVE riseTimeParams, variable kernelAmp, variable index, WAVE/WAVE output)
 
 	string comboKey, key, psxOperationKey, psxParametersEvents
 
-	key = PSX_GenerateKey("psxKernelFFT", readIndex)
-	WAVE psxKernelFFT = psxKernelDataset[%$key]
+	key = PSX_GenerateKey("sweepData", index)
+	WAVE sweepData = output[%$key]
 
-	key = PSX_GenerateKey("sweepData", readIndex)
-	WAVE sweepData = psxKernelDataset[%$key]
+	key = PSX_GenerateKey("sweepDataFiltOff", index)
+	WAVE/Z sweepDataFiltOff = output[%$key]
+
+	key = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
+	WAVE/Z sweepDataFiltOffDeconv = output[%$key]
+
+	if(!WaveExists(sweepDataFiltOff) || !WaveExists(sweepDataFiltOffDeconv))
+		return NaN
+	endif
 
 	[WAVE selectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
 	comboKey = PSX_GenerateComboKey(graph, selectData, range)
@@ -714,24 +763,15 @@ static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, vari
 	WAVE/WAVE/Z psxOperationFromCache = CA_TryFetchingEntryFromCache(psxOperationKey)
 
 	if(WaveExists(psxOperationFromCache))
-		WAVE sweepData              = psxOperationFromCache[%sweepData]
-		WAVE sweepDataFiltOff       = psxOperationFromCache[%sweepDataFiltOff]
-		WAVE sweepDataFiltOffDeconv = psxOperationFromCache[%sweepDataFiltOffDeconv]
-		WAVE peakX                  = psxOperationFromCache[%peakX]
-		WAVE peakY                  = psxOperationFromCache[%peakY]
-		WAVE psxEvent               = psxOperationFromCache[%psxEvent]
-		WAVE eventFit               = psxOperationFromCache[%eventFit]
+		WAVE peakX    = psxOperationFromCache[%peakX]
+		WAVE peakY    = psxOperationFromCache[%peakY]
+		WAVE psxEvent = psxOperationFromCache[%psxEvent]
+		WAVE eventFit = psxOperationFromCache[%eventFit]
 	else
-		[WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] = PSX_Analysis(sweepData, psxKernelFFT, filterLow, filterHigh)
-
-		if(!WaveExists(sweepDataFiltOff) || !WaveExists(sweepDataFiltOffDeconv))
-			return 0
-		endif
-
 		[WAVE peakX, WAVE peakY] = PSX_FindPeaks(sweepDataFiltOffDeconv, peakThresh)
 
 		if(!WaveExists(peakX) || !WaveExists(peakY))
-			return 0
+			return NaN
 		endif
 
 		WAVE psxEvent = GetPSXEventWaveAsFree()
@@ -745,15 +785,12 @@ static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, vari
 
 		PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakX, peakY, maxTauFactor, kernelAmp, psxEvent, eventFit)
 
-		Make/FREE/WAVE/N=(7) psxOperation
-		SetDimensionLabels(psxOperation, "sweepData;sweepDataFiltOff;sweepDataFiltOffDeconv;peakX;peakY;psxEvent;eventFit", ROWS)
-		psxOperation[%sweepData]              = sweepData
-		psxOperation[%sweepDataFiltOff]       = sweepDataFiltOff
-		psxOperation[%sweepDataFiltOffDeconv] = sweepDataFiltOffDeconv
-		psxOperation[%peakX]                  = peakX
-		psxOperation[%peakY]                  = peakY
-		psxOperation[%psxEvent]               = psxEvent
-		psxOperation[%eventFit]               = eventFit
+		Make/FREE/WAVE/N=(4) psxOperation
+		SetDimensionLabels(psxOperation, "peakX;peakY;psxEvent;eventFit", ROWS)
+		psxOperation[%peakX]    = peakX
+		psxOperation[%peakY]    = peakY
+		psxOperation[%psxEvent] = psxEvent
+		psxOperation[%eventFit] = eventFit
 
 		CA_StoreEntryIntoCache(psxOperationKey, psxOperation)
 	endif
@@ -780,34 +817,19 @@ static Function PSX_OperationImpl(string graph, WAVE/WAVE psxKernelDataset, vari
 	psxEvent[][%$"Rise Time"] = riseTime[p]
 	WaveClear riseTime
 
-	WAVE/T labels = ListToTextWave(PSX_EVENT_DIMENSION_LABELS, ";")
-	ASSERT(DimSize(labels, ROWS) == PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY, "Mismatched label wave")
-
-	labels[] = PSX_GenerateKey(labels[p], writeIndex)
-	SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = writeIndex * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY)
-
-	key = PSX_GenerateKey("sweepData", writeIndex)
-	output[%$key] = sweepData
-
-	key = PSX_GenerateKey("sweepDataFiltOff", writeIndex)
-	output[%$key] = sweepDataFiltOff
-
-	key = PSX_GenerateKey("sweepDataFiltOffDeconv", writeIndex)
-	output[%$key] = sweepDataFiltOffDeconv
-
-	key = PSX_GenerateKey("peakX", writeIndex)
+	key = PSX_GenerateKey("peakX", index)
 	output[%$key] = peakX
 
-	key = PSX_GenerateKey("peakY", writeIndex)
+	key = PSX_GenerateKey("peakY", index)
 	output[%$key] = peakY
 
-	key = PSX_GenerateKey("psxEvent", writeIndex)
+	key = PSX_GenerateKey("psxEvent", index)
 	output[%$key] = psxEvent
 
-	key = PSX_GenerateKey("eventFit", writeIndex)
+	key = PSX_GenerateKey("eventFit", index)
 	output[%$key] = eventFit
 
-	return 1
+	return NaN
 End
 
 /// @brief Generate the dimension label for the output wave reference waves
@@ -2011,7 +2033,8 @@ static Function/S PSX_GetPSXParameters(variable jsonID, variable cacheKeyType)
 
 	switch(cacheKeyType)
 		case PSX_CACHE_KEY_EVENTS:
-			// remove riseTime as that does not influence the found events
+		case PSX_CACHE_KEY_ANALYZE_PEAKS:
+			// remove riseTime as that does not influence the found events or the results from PSX_AnalyzePeaks
 			JSON_Remove(subJsonID, SF_OP_PSX_RISETIME)
 			break
 		case PSX_CACHE_KEY_RISETIME:
@@ -4067,16 +4090,16 @@ End
 // ...
 Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
-	variable peakThresh, filterLow, filterHigh, parameterJsonID, numCombos, i, writeIndex, readIndex, addedData, kernelAmp
-	variable maxTauFactor
-	string parameterPath, id, psxParameters
+	variable numberOfSDs, filterLow, filterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
+	variable maxTauFactor, peakThresh
+	string parameterPath, id, psxParameters, dataUnit
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
 	WAVE/WAVE psxKernelDataset = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_PSX, 1,  defOp = "psxKernel()")
 
 	try
-		peakThresh    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = 0.01, checkFunc = IsStrictlyPositiveAndFinite)
+		numberOfSDs   = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
 		filterLow     = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW)
 		filterHigh    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH)
 		maxTauFactor  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
@@ -4087,7 +4110,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX
 		JSON_AddTreeObject(parameterJsonID, parameterPath)
 		JSON_AddString(parameterJsonID, parameterPath + "/id", id)
-		JSON_AddVariable(parameterJsonID, parameterPath + "/peakThres", peakThresh)
+		JSON_AddVariable(parameterJsonID, parameterPath + "/numberOfSDs", numberOfSDs)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/filterLow", filterLow)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/filterHigh", filterHigh)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/maxTauFactor", maxTauFactor)
@@ -4104,14 +4127,26 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		kernelAmp = JWN_GetNumberFromWaveNote(psxKernelDataset, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL + "/amp")
 		ASSERT(IsFinite(kernelAmp), "psxKernel amplitude must be finite")
 
+		WAVE/T labelsTemplate = ListToTextWave(PSX_EVENT_DIMENSION_LABELS, ";")
+		ASSERT(DimSize(labelsTemplate, ROWS) == PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY, "Mismatched label wave")
+		Duplicate/FREE/T labelsTemplate, labels
+
+		// generate dimension labels for all potential output
 		for(i = 0; i < numCombos; i += 1)
-			readIndex = i
-			addedData = PSX_OperationImpl(graph, psxKernelDataset, parameterJsonID, id, peakThresh, filterLow, filterHigh, maxTauFactor, \
-			                              riseTime, kernelAmp, readIndex, writeIndex, output)
-			writeIndex += addedData
+			labels[] = PSX_GenerateKey(labelsTemplate[p], i)
+			SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = i * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY)
 		endfor
 
-		Redimension/N=(writeIndex * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY) output
+		for(i = 0; i < numCombos; i += 1)
+			PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, filterLow, filterHigh, i, output)
+		endfor
+
+		[WAVE hist, WAVE fit, peakThresh, dataUnit] = PSX_CalculatePeakThreshold(output, numCombos, numberOfSDs)
+		WaveClear hist, fit
+
+		for(i = 0; i < numCombos; i += 1)
+			PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, i, output)
+		endfor
 	catch
 		if(WaveExists(output))
 			SFH_CleanUpInput(output)
@@ -4258,7 +4293,7 @@ Function/WAVE PSX_OperationPrep(variable jsonId, string jsonPath, string graph)
 		return SFH_CreateSFRefWave(graph, SF_OP_PSX_PREP, 0)
 	endif
 
-	numSDs = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_PREP, 1, defValue = 2.5, checkFunc = IsStrictlyPositiveAndFinite)
+	numSDs = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_PREP, 1, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_PREP, 3)
 	SetDimensionLabels(output, "Histogram;Fit;Thresholds;", ROWS)

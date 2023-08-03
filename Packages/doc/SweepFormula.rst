@@ -893,7 +893,7 @@ The `psx` operation allows to classify miniature PSC/PSP's interactively.
 
 .. code-block:: bash
 
-   psx(id, [psxKernel(), peakThresh, filterLow, filterHigh, maxTauFactor, psxRiseTime()])
+   psx(id, [psxKernel(), numSDs, filterLow, filterHigh, maxTauFactor, psxRiseTime()])
 
 The function accepts one to seven arguments.
 
@@ -904,8 +904,8 @@ id
 psxKernel
   result from the `psxKernel` operation
 
-peakThresh
-  threshold for the peak search, defaults to 0.01
+numSDs
+  Number of standard deviations for the gaussian fit of the all points histogram, defaults to 2.5
 
 filterLow
   low threshold for the bandpass filter, defaults to 550 Hz
@@ -926,7 +926,7 @@ operations can only be separated by `with` and not `and`.
 .. code-block:: bash
 
    psx(myID)
-   psx(psxkernel(), 0.2, 400, 100)
+   psx(psxkernel(), 3, 400, 100)
 
 See :ref:`sweepformula_psx` for an in-depth explanation of the available user
 interface for acceptance/rejectance.

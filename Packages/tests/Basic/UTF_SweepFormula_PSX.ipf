@@ -1079,7 +1079,7 @@ static Function TestOperationPSX()
 	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
 	CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
 
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 0.01, 100, 0)"
+	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 2.5, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 2 * 7)
@@ -1126,7 +1126,7 @@ static Function TestOperationPSXTooLargeDecayTau()
 	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
 	CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
 
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0], all), 1, 15, (-5)), 0.01, 100, 0)"
+	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0], all), 1, 15, (-5)), 1.5, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
@@ -1229,7 +1229,7 @@ static Function MouseSelectionPSX()
 
 	browser = MIES_DB#DB_LockToDevice(browser, device)
 
-	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 0.01, 100, 0)"
+	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 1.5, 100, 0)"
 
 	// combo0 is the current one
 
@@ -1572,7 +1572,7 @@ static Function/S GetTestCode(string postProc, [string eventState, string prop])
 		prop = "xpos"
 	endif
 
-	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 0.01, 100, 0)"
+	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 1.5, 100, 0)"
 	code += "\r and \r"
 	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), " + prop + ", " + eventState + ", "+ postProc + ")"
 
@@ -1589,9 +1589,9 @@ static Function/WAVE GetCodeVariations()
 	code  = ""
 
 	// one sweep per operation separated with `with`
-	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0], all)), 0.01, 100, 0)"
+	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0], all)), 1.8, 100, 0)"
 	code += "\r with \r"
-	code += "psx(myId, psxKernel([50, 150], select(channels(AD6), [2], all)), 0.01, 100, 0)"
+	code += "psx(myId, psxKernel([50, 150], select(channels(AD6), [2], all)), 8, 100, 0)"
 	code += "\r and \r"
 	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), xpos, all, nothing)"
 	wv[1] = code
@@ -2861,7 +2861,7 @@ static Function TestOperationPrep()
 
 	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
 
-	psxCode = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 0.01, 100, 0)"
+	psxCode = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 2.5, 100, 0)"
 	sprintf code, "psxPrep(%s)", psxCode
 
 	WAVE/WAVE dataWref = SF_ExecuteFormula(code, win, useVariables = 0)
