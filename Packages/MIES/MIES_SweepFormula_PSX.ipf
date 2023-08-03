@@ -4263,22 +4263,10 @@ Function/WAVE PSX_OperationPrep(variable jsonId, string jsonPath, string graph)
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_PREP, 3)
 	SetDimensionLabels(output, "Histogram;Fit;Thresholds;", ROWS)
 
-	// Concatenate all input waves
-	Make/FREE/N=(numCombos)/WAVE input = results[%$PSX_GenerateKey("sweepDataFiltOffDeconv", p)]
-	Concatenate/NP/FREE {input}, sweepDataFiltOffDeconv
-
-	WAVE hist = PSX_CreateHistogramOfDeconvSweepData(sweepDataFiltOffDeconv)
-
-	WAVE/Z coef, fit
-	[coef, fit] = PSX_FitHistogram(hist)
+	WAVE/Z hist, fit
+	[hist, fit, threshold, dataUnit] = PSX_CalculatePeakThreshold(results, numCombos, numSDs)
 
 	Make/FREE=1/N=1 sdThresholdX, sdThresholdY
-
-	if(WaveExists(coef) && WaveExists(fit))
-		threshold = RoundNumber(coef[3] * numSDs, 3)
-	else
-		threshold = NaN
-	endif
 
 	sprintf msg, "Threshold=%g;", threshold
 	Note/K sdThresholdY, msg
@@ -4300,7 +4288,6 @@ Function/WAVE PSX_OperationPrep(variable jsonId, string jsonPath, string graph)
 	JWN_SetNumberInWaveNote(fit, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
 	JWN_SetNumberInWaveNote(sdThresholdY, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_MARKERS)
 
-	dataUnit = WaveUnits(sweepDataFiltOffDeconv, -1)
 	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Data (" + dataUnit  + ")")
 	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, "All points histogram with Gaussian fit")
 
@@ -4309,6 +4296,27 @@ Function/WAVE PSX_OperationPrep(variable jsonId, string jsonPath, string graph)
 	JWN_SetStringInWaveNote(output, SF_META_CUSTOM_LEGEND, msg)
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_PREP)
+End
+
+static Function [WAVE hist, WAVE fit, variable peakThresh, string dataUnit] PSX_CalculatePeakThreshold(WAVE/WAVE results, variable numCombos, variable numSDs)
+
+	// Concatenate all input waves
+	Make/FREE/N=(numCombos)/WAVE input = results[%$PSX_GenerateKey("sweepDataFiltOffDeconv", p)]
+	Concatenate/NP/FREE {input}, sweepDataFiltOffDeconv
+
+	WAVE hist = PSX_CreateHistogramOfDeconvSweepData(sweepDataFiltOffDeconv)
+
+	WAVE/Z coef, fit
+	[coef, fit] = PSX_FitHistogram(hist)
+
+	if(WaveExists(coef) && WaveExists(fit))
+		peakThresh = RoundNumber(coef[3] * numSDs, 3)
+		dataUnit = WaveUnits(sweepDataFiltOffDeconv, -1)
+
+		return [hist, fit, peakThresh, dataUnit]
+	endif
+
+	return [$"", $"", NaN, ""]
 End
 
 /// @brief Menu item for selecting event inside a marquee and changing their state
