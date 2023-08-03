@@ -363,24 +363,6 @@ Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable swe
 	return range
 End
 
-Function SFH_GetDAChannel(string graph, variable sweep, variable channelType, variable channelNumber)
-
-	variable DAC, index
-
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
-	if(!WaveExists(numericalValues))
-		return NaN
-	endif
-	[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", channelNumber, channelType, DATA_ACQUISITION_MODE)
-	if(WaveExists(settings))
-		DAC = settings[index]
-		ASSERT(IsFinite(DAC) && index < NUM_HEADSTAGES, "Only associated channels are supported.")
-		return DAC
-	endif
-
-	return NaN
-End
-
 /// @brief Return a wave reference wave with the requested sweep data
 ///
 /// All wave input parameters should are treated as const and are thus *not* modified.
@@ -392,7 +374,7 @@ End
 /// @param opShort    operation name (short)
 Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData, string opShort)
 
-	variable i, j, rangeStart, rangeEnd, DAChannel, sweepNo
+	variable i, j, rangeStart, rangeEnd, sweepNo
 	variable chanNr, chanType, cIndex, isSweepBrowser
 	variable numSelected, index, numEpochPatterns, numRanges, numEpochs, epIndex, lastx
 	string dimLabel, device, dataFolder
@@ -448,29 +430,20 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 			endif
 		endif
 
+		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
+
 		DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 
-		WAVE/Z sweep = GetDAQDataSingleColumnWave(sweepDFR, chanType, chanNr)
+		WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, chanType, chanNr)
 		if(!WaveExists(sweep))
 			continue
 		endif
 
 		if(WaveExists(epochNames))
-			switch(chanType)
-				case XOP_CHANNEL_TYPE_ADC:
-					DAChannel = SFH_GetDAChannel(graph, sweepNo, chanType, chanNr)
-					SFH_ASSERT(!IsNaN(DAChannel), "No epochs for unassoc AD channel AD" + num2istr(chanNr))
-					break
-				case XOP_CHANNEL_TYPE_DAC:
-					DAChannel = chanNr
-					break
-				default:
-					ASSERT(0, "Unsupported channelType")
-			endswitch
-			WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-			WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
-			SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
-			WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAChannel, allEpochsRegex)
+
+			WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, chanType, chanNr, allEpochsRegex)
 			if(!WaveExists(epochInfo))
 				continue
 			endif
@@ -784,7 +757,7 @@ End
 
 Function/WAVE SFH_GetEpochNamesFromInfo(WAVE/T epochInfo)
 
-	string epName, epShortName
+	string epName, epShortName, epLongName
 	variable i
 	variable numEpochs = DimSize(epochInfo, ROWS)
 
@@ -792,7 +765,8 @@ Function/WAVE SFH_GetEpochNamesFromInfo(WAVE/T epochInfo)
 	for(i = 0; i < numEpochs; i += 1)
 		epName = epochInfo[i][EPOCH_COL_TAGS]
 		epShortName = EP_GetShortName(epName)
-		epNames[i] = SelectString(IsEmpty(epShortName), epShortName, epName)
+		epLongName = RemoveEnding(epName, ";")
+		epNames[i] = SelectString(IsEmpty(epShortName), epShortName, epLongName)
 	endfor
 
 	return epNames

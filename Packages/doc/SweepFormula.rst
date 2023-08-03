@@ -900,7 +900,7 @@ It is intended to be used with operations like `data`, `labnotebook`, `epochs` a
 The function accepts none, two, three or four arguments.
 
 channels
-  array with channel specification from `channels` operation. When channels is not specified, it defaults to `channels()`.
+  array with channel specification from `channels` operation. When channels is not specified, it defaults to `channels()`. The input channel numbers are treated as GUI channel numbers.
 
 sweeps
   array with sweep number, typically from `sweeps` operation. When sweeps is not specified, it defaults to `sweeps()`.
@@ -909,13 +909,13 @@ mode
   string specifying which sweeps are selected. Possible strings are `displayed` and `all` that refer to the currently displayed sweeps or all acquired sweeps. When mode is not specified it defaults to `displayed`.
 
 clampMode
-  string specifying which clamp mode is selected. Possible strings are `all`, `vc`, `ic` and  `izero`. When clampMode is not specified it defaults to `all`.
+  string specifying which clamp mode is selected. Possible strings are `all`, `vc`, `ic` and  `izero`. When clampMode is not specified it defaults to `all`. The clampMode selection is only applied for associated AD/DA channels.
 
 To retrieve a correct array of channels the `channels` function must be used.
 
 If a given channel/sweep combination does not exist it is omitted in the output.
 
-The output is a N x 3 array where the columns are sweep number, channel type, channel number.
+The output is a N x 3 array where the columns are sweep number, channel type, GUI channel number.
 
 The output is sorted. The order is sweep -> channel type -> channel number.
 e.g. for two sweeps numbered 0, 1 that have channels AD0, AD1, DA6, DA7:

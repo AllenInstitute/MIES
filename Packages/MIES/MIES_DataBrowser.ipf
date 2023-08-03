@@ -117,6 +117,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
 	CheckBox check_overlaySweeps_disableHS, WIN = $bsPanel, value= 0
 	CheckBox check_overlaySweeps_non_commula, WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_splitTTL, WIN = $bsPanel, value= 1
 	PopupMenu popup_overlaySweeps_select, WIN = $bsPanel, mode=1
 	SetVariable setvar_overlaySweeps_offset, WIN = $bsPanel, value= _NUM:0
 	SetVariable setvar_overlaySweeps_step, WIN = $bsPanel, value= _NUM:1

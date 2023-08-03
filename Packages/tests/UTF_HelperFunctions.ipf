@@ -238,13 +238,15 @@ End
 
 Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 
-	variable sweepNo
+	variable sweepNo, hwType
+	string strVal
 
 	key    = LABNOTEBOOK_USER_PREFIX + "some key"
 	keyTxt = LABNOTEBOOK_USER_PREFIX + "other key"
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
+	hwType = GetHardwareType(device)
 
 	// prepare the LBN
 	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values, valuesDAC, valuesADC
@@ -430,6 +432,76 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[0][0][0] = keyTxt
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	sweepNo = 3
+
+	// HS0 with DA1 and AD0
+	valuesDAC[]  = NaN
+	valuesDAC[0][0][0] = 1
+	keys[0][0][0] = "DAC"
+	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	valuesADC[]  = NaN
+	valuesADC[0][0][0] = 0
+	keys[0][0][0] = "ADC"
+	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Create unassoc AD1 and DA0
+	values[] = NaN
+	values[0][0][INDEP_HEADSTAGE] = 1
+	keys[0][0][0] = CreateLBNUnassocKey("ADC", 1, XOP_CHANNEL_TYPE_ADC)
+	keys[2][0][0] = "0.1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	values[] = NaN
+	values[0][0][INDEP_HEADSTAGE] = 0
+	keys[0][0][0] = CreateLBNUnassocKey("DAC", 0, XOP_CHANNEL_TYPE_DAC)
+	keys[2][0][0] = "0.1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	values[]  = 0
+	values[0][0][0] = 1
+	keys[0][0][0] = "Headstage Active"
+	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	values[] = NaN
+	values[0][0][0] = V_CLAMP_MODE
+	keys[0][0][0] = CLAMPMODE_ENTRY_KEY
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// indep headstage
+	values[] = NaN
+	values[0][0][INDEP_HEADSTAGE] = hwType
+	keys[0][0][0] = "Digitizer Hardware Type"
+	keys[2][0][0] = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	if(hwType == HARDWARE_NI_DAC)
+		Make/FREE/T/N=(NUM_DA_TTL_CHANNELS) ttlChannels
+		ttlChannels[2] = "2"
+		strVal = TextWaveToList(ttlChannels, ";")
+		valuesTxt[] = ""
+		valuesTxt[0][0][INDEP_HEADSTAGE] = strVal
+		keys[0][0][0] = "TTL channels"
+		keys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+		ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	elseif(hwType == HARDWARE_ITC_DAC)
+
+		values[] = NaN
+		keys = ""
+		values[0][0][INDEP_HEADSTAGE] = IsITC1600(device) ? HARDWARE_ITC_TTL_1600_RACK_ZERO : HARDWARE_ITC_TTL_DEF_RACK_ZERO
+		keys[0][0][0] = "TTL rack zero channel"
+		keys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+		ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+		values[] = NaN
+		keys = ""
+		values[0][0][INDEP_HEADSTAGE] = 1 << 2
+		keys[0][0][0] = "TTL rack zero bits"
+		keys[1][0][0] = "bit mask"
+		keys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+		ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	endif
+
 	return [key, keyTxt]
 End
 
@@ -449,7 +521,7 @@ End
 Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCREF FakeSweepDataGeneratorProto sweepGen])
 
 	string list, key, keyTxt
-	variable numChannels
+	variable numChannels, hwType
 
 	sweepNo = ParamIsDefault(sweepNo) ? 0: sweepNo
 	if(ParamIsDefault(sweepGen))
@@ -459,26 +531,63 @@ Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCR
 	GetDAQDeviceID(device)
 
 	[key, keyTxt] = PrepareLBN_IGNORE(device)
-	numChannels = 4 // from LBN creation in PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 
 	WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-	WAVE sweep = sweepGen(sweepTemplate, numChannels)
-
 	WAVE config = GetDAQConfigWave(device)
-	Redimension/N=(4, -1) config
-	// creates HS 0 with DAC 2 and ADC 6
-	config[0][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
-	config[0][%ChannelNumber] = 2
+	hwType = GetHardwareType(device)
+	switch(sweepNo)
+		case 0: // intended drop through
+		case 1:
+		case 2:
+			numChannels = 4 // from LBN creation in PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
+			WAVE sweep = sweepGen(sweepTemplate, numChannels)
+			// config channel order: DAC, ADC, TTL
+			Redimension/N=(numChannels, -1) config
+			// creates HS 0 with DAC 2
+			config[0][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
+			config[0][%ChannelNumber] = 2
 
-	config[1][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
-	config[1][%ChannelNumber] = 6
+			// creates HS 1 with DAC 3
+			config[1][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
+			config[1][%ChannelNumber] = 3
 
-	// creates HS 1 with DAC 3 and ADC 7
-	config[2][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
-	config[2][%ChannelNumber] = 3
+			// creates HS 0 with ADC 6
+			config[2][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
+			config[2][%ChannelNumber] = 6
 
-	config[3][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
-	config[3][%ChannelNumber] = 7
+			// creates HS 1 with ADC 7
+			config[3][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
+			config[3][%ChannelNumber] = 7
+			break
+		case 3:
+			numChannels = 5 // from LBN creation in PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
+			WAVE sweep = sweepGen(sweepTemplate, numChannels)
+
+			Redimension/N=(numChannels, -1) config
+			// creates HS 0 with DAC 1
+			config[0][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
+			config[0][%ChannelNumber] = 1
+
+			// DAC 0 unassoc
+			config[1][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
+			config[1][%ChannelNumber] = 0
+
+			// creates HS 0 with ADC 0
+			config[2][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
+			config[2][%ChannelNumber] = 0
+
+			// ADC 1 unassoc
+			config[3][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
+			config[3][%ChannelNumber] = 1
+			// TTL 2
+			config[4][%ChannelType]   = XOP_CHANNEL_TYPE_TTL
+			config[4][%ChannelNumber] = hwType == HARDWARE_NI_DAC ? 2 : IsITC1600(device) ? HARDWARE_ITC_TTL_1600_RACK_ZERO : HARDWARE_ITC_TTL_DEF_RACK_ZERO
+			break
+		default:
+			INFO("Unsupported sweep number in test setup")
+			FAIL()
+			return NaN
+	endswitch
 
 	DFREF dfr = GetDeviceDataPath(device)
 	MoveWave sweep, dfr:$GetSweepWaveName(sweepNo)

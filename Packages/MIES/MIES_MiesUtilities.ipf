@@ -2104,6 +2104,42 @@ Function/WAVE GetDAQDataSingleColumnWaves(sweepDFR, channelType)
 	return matches
 End
 
+/// @brief Return a 1D sweep data wave previously created by SplitSweepIntoComponents()
+///
+/// Returned wave reference can be null.
+///
+/// @param numericalValues  numerical labnotebook
+/// @param textualValues    textual labnotebook
+/// @param sweepNo          sweep number
+/// @param sweepDFR         datafolder holding 1D waves
+/// @param channelType      One of @ref XopChannelConstants
+/// @param GUIchannelNumber GUI channel number
+Function/WAVE GetDAQDataSingleColumnWaveNG(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable channelType, variable GUIchannelNumber)
+
+	variable hwChannelNumber, ttlBit, hwDACType
+
+	if(channelType == XOP_CHANNEL_TYPE_TTL)
+		WAVE/Z guiToHWChannelMap = GetActiveChannels(numericalValues, textualValues, sweepNo, channelType, TTLMode = TTL_GUITOHW_CHANNEL)
+		if(!WaveExists(guiToHWChannelMap))
+			return $""
+		endif
+
+		hwChannelNumber = guiToHWChannelMap[GUIchannelNumber][%HWCHANNEL]
+		hwDACType = GetUsedHWDACFromLNB(numericalValues, sweepNo)
+		ASSERT_TS(hwDACType == HARDWARE_ITC_DAC || hwDACType == HARDWARE_NI_DAC, "Unsupported hardware dac type")
+
+		if(hwDACType == HARDWARE_NI_DAC)
+			return GetDAQDataSingleColumnWave(sweepDFR, channelType, hwChannelNumber)
+		endif
+
+		ttlBit = guiToHWChannelMap[GUIchannelNumber][%TTLBITNR]
+		return GetDAQDataSingleColumnWave(sweepDFR, channelType, hwChannelNumber, splitTTLBits = 1, ttlBit = ttlBit)
+	endif
+
+	hwChannelNumber = GUIchannelNumber
+	return GetDAQDataSingleColumnWave(sweepDFR, channelType, hwChannelNumber)
+End
+
 /// @brief Return a 1D data wave previously created by SplitSweepIntoComponents()
 ///
 /// Returned wave reference can be invalid.
@@ -2530,10 +2566,8 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
 		EnableAxis(graph, axes, spacePerSlot, first, last)
 
-		if(tgs.splitTTLBits)
-			axis = axes[0]
-			ModifyGraph/W=$graph nticks($axis)=2, manTick($axis)={0,1,0,0}, manMinor($axis)={0,50}
-		endif
+		axis = axes[0]
+		ModifyGraph/W=$graph nticks($axis)=2, manTick($axis)={0,1,0,0}, manMinor($axis)={0,50}
 	endfor
 
 	ASSERT(first < 1e-15, "Left over space")
@@ -2652,8 +2686,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
-	variable moreData, chan, numHorizWaves, numVertWaves, idx
-	variable numTTLBits, headstage
+	variable moreData, chan, guiChannelNumber, numHorizWaves, numVertWaves, idx
+	variable numTTLBits, headstage, channelType, isTTLSplitted
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
 	variable numRegions, numEntries, numRangesPerEntry, traceCounter
@@ -2667,7 +2701,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",               \
 			  					"textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType", \
-								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage"}
+								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage", "GUIChannelNumber"}
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -2693,20 +2727,21 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	numDACs = DimSize(DACs, ROWS)
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
+	if(numTTLs > 0)
+		WAVE/Z channelMapHWToGUI = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_HWTOGUI_CHANNEL)
+		ASSERT(WaveExists(channelMapHWToGUI), "Can not find LNB entries for active TTL channels from config wave.")
+	endif
 
-	// introduced in db531d20 (DC_PlaceDataIn ITCDataWave: Document the digitizer hardware type, 2018-07-30)
-	// before that we only had ITC hardware
-	hardwareType           = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
+	hardwareType           = GetUsedHWDACFromLNB(numericalValues, sweepNo)
 	WAVE/Z ttlRackZeroBits = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackOneBits  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
-	WAVE/Z/T ttlChannels   = GetLastSetting(textualValues, sweepNo, "TTL channels", DATA_ACQUISITION_MODE)
 
 	if(tgs.splitTTLBits && numTTLs > 0)
 		if(!WaveExists(ttlRackZeroBits) && !WaveExists(ttlRackOneBits) && hardwareType == HARDWARE_ITC_DAC)
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
 			ControlWindowToFront()
 			tgs.splitTTLBits = 0
-		elseif(WaveExists(ttlChannels))
+		elseif(hardwareType == HARDWARE_NI_DAC)
 			// NI hardware does use one channel per bit so we don't need that here
 			tgs.splitTTLBits = 0
 		endif
@@ -2846,7 +2881,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		// iterate over all channel types in order DA, AD, TTL
 		// and take the first active channel from the list of channels per type
 		for(i = 0; i < NUM_CHANNEL_TYPES; i += 1)
-			switch(channelTypes[i])
+			channelType = channelTypes[i]
+			switch(channelType)
 				case XOP_CHANNEL_TYPE_DAC:
 					if(!tgs.displayDAC)
 						continue
@@ -2888,8 +2924,10 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 					if(hardwareType == HARDWARE_ITC_DAC)
 						numVertWaves = tgs.splitTTLBits ? NUM_ITC_TTL_BITS_PER_RACK : 1
+						isTTLSplitted = tgs.splitTTLBits
 					else
 						numVertWaves = 1
+						isTTLSplitted = 1
 					endif
 
 					numChannels = numTTLs
@@ -2912,12 +2950,12 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 			// ignore TP during DAQ channels
 			if(WaveExists(status) && IsFinite(headstage))
-				if(channelTypes[i] == XOP_CHANNEL_TYPE_DAC              \
+				if(channelType == XOP_CHANNEL_TYPE_DAC              \
 				   && WaveExists(daChannelType)                         \
 				   && daChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
 						activeChanCount[i] += 1
 						continue
-				elseif(channelTypes[i] == XOP_CHANNEL_TYPE_ADC              \
+				elseif(channelType == XOP_CHANNEL_TYPE_ADC              \
 				       && WaveExists(adChannelType)                         \
 				       && adChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
 						activeChanCount[i] += 1
@@ -2933,19 +2971,20 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			// waves per channel type
 			for(j = 0; j < numVertWaves; j += 1)
 
-				if(!cmpstr(channelID, "TTL") && tgs.splitTTLBits)
-					ttlBit = j
-					name = channelID + num2str(chan) + "_" + num2str(ttlBit)
+				ttlBit = channelType == XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits ? j : NaN
+
+				if(channelType == XOP_CHANNEL_TYPE_TTL)
+					guiChannelNumber = channelMapHWToGUI[chan][IsNaN(ttlBit) ? 0 : ttlBit]
 				else
-					ttlBit = NaN
-					name = channelID + num2str(chan)
+					guiChannelNumber = chan
 				endif
+				name = channelID + num2istr(guiChannelNumber)
 
 				DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
 
 				ASSERT(DataFolderExistsDFR(singleSweepDFR), "Missing singleSweepDFR")
 
-				WAVE/Z wv = GetDAQDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
+				WAVE/Z wv = GetDAQDataSingleColumnWave(singleSweepDFR, channelType, chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
 				if(!WaveExists(wv))
 					continue
 				endif
@@ -2959,7 +2998,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 				// 15:    TTL bits (sum) rack one
 				// 16-19: TTL bits (single) rack one
 
-				[s] = GetHeadstageColor(headstage, channelType = channelID, activeChannelCount = activeChanCount[i], channelSubNumber = j)
+				[s] = GetHeadstageColor(headstage, channelType = channelType, channelNumber = guiChannelNumber, isSplitted = isTTLSplitted)
 				first = 0
 
 				// number of horizontally distributed
@@ -2986,7 +3025,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						vertAxis += "_HS_" + num2str(headstage)
 					endif
 
-					if(tgs.dDAQDisplayMode && channelTypes[i] != XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
+					if(tgs.dDAQDisplayMode && channelType != XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
 
 						if(dDAQEnabled)
 							// fallback to manual calculation
@@ -3061,7 +3100,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 					if(k == 0) // first column, add labels
 						if(hasPhysUnit)
-							unit = AFH_GetChannelUnit(config, chan, channelTypes[i])
+							unit = AFH_GetChannelUnit(config, chan, channelType)
 						else
 							unit = "a.u."
 						endif
@@ -3116,7 +3155,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),   \
 					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                \
 								              num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep",             \
-												  num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage))})
+												  num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage)),       \
+												  num2istr(guiChannelNumber)})
 				endfor
 			endfor
 
@@ -3297,19 +3337,28 @@ End
 
 /// @brief Return the color of the given headstage
 ///
-/// @param headstage          Headstage, can be NaN for non-associated channels
-/// @param channelType        [optional, empty by default] The channel type for non-associated channels, currently only "TTL" is supported
-/// @param activeChannelCount [optional, empty by default] For plotting "TTL" channels only
-/// @param channelSubNumber   [optional, empty by default] For plotting "TTL" channels only, "TTL Bit" information when plotting each on its own
-Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [string channelType, variable activeChannelCount, variable channelSubNumber])
+/// @param headstage     Headstage, Use "NaN" for non-associated channels
+/// @param channelType   [optional, empty by default] The channel type for non-associated channels, currently only XOP_CHANNEL_TYPE_TTL is evaluated
+/// @param channelNumber [optional, empty by default] For plotting "TTL" channels only, GUI channel number
+/// @param isSplitted    [optional, default 1] For plotting "TTL" channels only, Flag if the color for a splitted or unsplitted channel should be returned
+Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [variable channelType, variable channelNumber, variable isSplitted])
 
 	string str
-	variable colorIndex
+	variable colorIndex, blockSizeTTL, activeChannelIndexAsOfITC, ttlBitAsOfITC, blockOffsetTTL
+	variable offsetTTL = 10
+
+	isSplitted = ParamIsDefault(isSplitted) ? 1 : !!isSplitted
 
 	if(IsFinite(headstage))
 		colorIndex = headstage
-	elseif(!ParamIsDefault(channelType) && !cmpstr(channelType, "TTL"))
-		colorIndex = 10 + activeChannelCount * 5 + channelSubNumber
+	elseif(!ParamIsDefault(channelType) && channelType == XOP_CHANNEL_TYPE_TTL)
+		// The mapping is based on ITC hardware with unsplitted and splitted TTL channels in the following index order
+		// Unsplit0, Split0_0, Split0_1, Split0_2, Split0_3, Unsplit1, Split1_0, Split1_1, Split1_2, Split1_3
+		blockSizeTTL = NUM_ITC_TTL_BITS_PER_RACK + 1
+		activeChannelIndexAsOfITC = trunc(channelNumber / NUM_ITC_TTL_BITS_PER_RACK)
+		ttlBitAsOfITC = mod(channelNumber, NUM_ITC_TTL_BITS_PER_RACK)
+		blockOffsetTTL = isSplitted ? 1 + ttlBitAsOfITC : 0
+		colorIndex = offsetTTL + activeChannelIndexAsOfITC * blockSizeTTL + blockOffsetTTL
 	else
 		colorIndex = NUM_HEADSTAGES
 	endif
@@ -4734,6 +4783,18 @@ threadsafe Function GetTTLBits(numericalValues, sweep, channel)
 	return ttlBits[index]
 End
 
+/// @brief Returns the used hardware DAC type from the LNB
+///
+/// @param numericalValues Numerical labnotebook values
+/// @param sweep           Sweep number
+/// @returns used hardware dac type @sa HardwareDACTypeConstants
+threadsafe Function GetUsedHWDACFromLNB(WAVE numericalValues, variable sweep)
+
+	// introduced in db531d20 (DC_PlaceDataIn ITCDataWave: Document the digitizer hardware type, 2018-07-30)
+	// before that we only had ITC hardware
+	return GetLastSettingIndep(numericalValues, sweep, "Digitizer Hardware Type", UNKNOWN_MODE, defValue = HARDWARE_ITC_DAC)
+End
+
 /// @brief Return a wave with the requested TTL channel information defined by TTLmode
 ///
 /// @param numericalValues Numerical labnotebook values
@@ -4742,14 +4803,19 @@ End
 /// @param TTLmode         One of @ref ActiveChannelsTTLMode.
 threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE textualValues, variable sweep, variable TTLmode)
 
-	variable i, index, first, last, haveRackZero, haveRackOne, numHWTTLChannels, bits, hwChannel
+	variable i, index, first, last, haveRackZero, haveRackOne, numHWTTLChannels, bits, hwChannel, hwDACType
 
 	index = GetIndexForHeadstageIndepData(numericalValues)
 
-	// present since 2f56481a (DC_MakeNITTLWave: Document TTL settings and rework it completely, 2018-09-06)
-	WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
-	if(WaveExists(ttlChannels))
-		// NI hardware
+	hwDACType = GetUsedHWDACFromLNB(numericalValues, sweep)
+	ASSERT_TS(hwDACType == HARDWARE_ITC_DAC || hwDACType == HARDWARE_NI_DAC, "Unsupported hardware dac type")
+
+	if(hwDACType == HARDWARE_NI_DAC)
+		// present since 2f56481a (DC_MakeNITTLWave: Document TTL settings and rework it completely, 2018-09-06)
+		WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
+		if(!WaveExists(ttlChannels))
+			return $""
+		endif
 		switch(TTLmode)
 			case TTL_HARDWARE_CHANNEL: // intended drop-through
 			case TTL_DAEPHYS_CHANNEL:

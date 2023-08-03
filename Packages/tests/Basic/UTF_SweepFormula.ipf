@@ -63,11 +63,11 @@ End
 /// Add 10 sweeps from various AD/DA channels to the fake databrowser
 static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeDatabrowserWindow(string win, string device, variable channelTypeNumeric, string lbnTextKey, string lbnTextValue)
 
-	variable i, j, channelNumber, sweepNumber
+	variable i, j, channelNumber, sweepNumber, clampMode
 	string name, trace
 
 	numSweeps = 10
-	numChannels = 5
+	numChannels = 4
 
 	Variable dataSize = 128
 	Variable mode = DATA_ACQUISITION_MODE
@@ -80,7 +80,7 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	KillWaves numericalKeys, numericalValues
 
 	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
-	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
+	Make/U/I/N=(numChannels) connections = {7,5,3,1}
 	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = lbnTextValue
@@ -99,12 +99,13 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 		for(j = 0; j < numChannels; j += 1)
 			name = UniqueName("data", 1, 0)
 			trace = "trace_" + name
+			clampMode = mod(sweepNumber, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
 			channelNumber = channels[i][j]
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
-									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber)})
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
 			values[connections[j]] = channelNumber
 			config[j][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
 			config[j][%ChannelNumber] = channelNumber
@@ -2015,6 +2016,8 @@ static Function TestOperationSelect()
 
 	CreateFakeSweepData(win, device, sweepNo=sweepNo)
 	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 2)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 3)
 
 	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 	Make/FREE/N=0 sweepTemplate
@@ -2047,9 +2050,46 @@ static Function TestOperationSelect()
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	// non-existing sweeps are ignored
-	str = "select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 2) + "],all)"
+	str = "select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1337) + "],all)"
 	WAVE data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(1, 3) dataRef
+	dataRef[][0] = 3
+	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {0} // DA0 (unassoc)
+	str = "select(channels(DA0),[" + num2istr(3) + "],all)"
+	WAVE data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(1, 3) dataRef
+	dataRef[][0] = 3
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {1} // AD1 (unassoc)
+	str = "select(channels(AD1),[" + num2istr(3) + "],all)"
+	WAVE data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(1, 3) dataRef
+	dataRef[][0] = 3
+	dataRef[][1] = WhichListItem("TTL", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {2} // TTL2
+	str = "select(channels(TTL2),[" + num2istr(3) + "],all)"
+	WAVE data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	// clamp mode set filters has no effect on TTL
+	str = "select(channels(TTL2),[" + num2istr(3) + "],all,vc)"
+	WAVE data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	// clamp mode set filters on DA/AD
+	str = "select(channels(AD1),[" + num2istr(3) + "],all,vc)"
+	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	CHECK_WAVE(data, NULL_WAVE)
+	str = "select(channels(DA0),[" + num2istr(3) + "],all,vc)"
+	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	CHECK_WAVE(data, NULL_WAVE)
 
 	Make/FREE/N=(4, 3) dataRef
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1} // sweep 0, 1 with 2 AD channels each
@@ -2077,7 +2117,7 @@ static Function TestOperationSelect()
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	// No existing sweeps
-	str = "select(channels(AD6, DA),[" + num2istr(sweepNo + 2) + "],all)"
+	str = "select(channels(AD6, DA),[" + num2istr(sweepNo + 1337) + "],all)"
 	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
 	REQUIRE(!WaveExists(data))
 
@@ -2108,8 +2148,8 @@ static Function TestOperationSelect()
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode"},         \
-									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode)})
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode", "GUIChannelNumber"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode), StringFromList(j, channelNumberList)})
 		endfor
 	endfor
 
@@ -2183,7 +2223,7 @@ static Function TestOperationSelect()
 	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	// No existing sweeps
-	str = "select(channels(AD6, DA),[" + num2istr(sweepNo + 2) + "])"
+	str = "select(channels(AD6, DA),[" + num2istr(sweepNo + 1337) + "])"
 	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
 	REQUIRE(!WaveExists(data))
 
@@ -2225,6 +2265,64 @@ static Function TestOperationSelect()
 		PASS()
 	endtry
 
+	// Setup graph for unassoc DA/AD and TTL
+	numSweeps = 1
+	channelTypeList = "DA;AD;TTL;"
+	channelNumberList = "0;1;2;"
+
+	RemoveTracesFromGraph(win)
+	TUD_Clear(win)
+
+	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
+	for(i = 0; i < numSweeps; i += 1)
+		sweepNo = i
+		for(j = 0; j < numChannels; j += 1)
+			name = UniqueName("data", 1, 0)
+			trace = "trace_" + name
+			clampMode = NaN
+			Extract input, $name, q == i && r == j
+			WAVE wv = $name
+			AppendToGraph/W=$win wv/TN=$trace
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode", "GUIChannelNumber", "AssociatedHeadstage"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode), StringFromList(j, channelNumberList), num2istr(0)})
+		endfor
+	endfor
+
+	Make/FREE/N=(1, 3) dataRef
+	dataRef[][0] = {0}
+	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {0}
+	str = "select(channels(DA0),sweeps(),displayed)"
+	WAVE data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(1, 3) dataRef
+	dataRef[][0] = {0}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {1}
+	str = "select(channels(AD1),sweeps(),displayed)"
+	WAVE data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	Make/FREE/N=(1, 3) dataRef
+	dataRef[][0] = {0}
+	dataRef[][1] = WhichListItem("TTL", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {2}
+	str = "select(channels(TTL2),sweeps(),displayed)"
+	WAVE data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	// clamp mode set filters has no effect on TTL
+	str = "select(channels(TTL2),sweeps(),displayed,vc)"
+	WAVE data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	// clamp mode set filters on DA/AD
+	str = "select(channels(AD1),sweeps(),displayed,vc)"
+	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	CHECK_WAVE(data, NULL_WAVE)
+	str = "select(channels(DA0),sweeps(),displayed,vc)"
+	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	CHECK_WAVE(data, NULL_WAVE)
 End
 
 static Function CheckSweepsFromData(WAVE/WAVE dataWref, WAVE sweepRef, variable numResults, WAVE chanIndex, [WAVE ranges])
@@ -2339,7 +2437,7 @@ End
 
 static Function TestOperationData()
 
-	variable i, j, numChannels, sweepNo, sweepCnt, numResultsRef
+	variable i, j, numChannels, sweepNo, sweepCnt, numResultsRef, clampMode
 	string str, epochStr, name, trace
 	string win, device
 	variable mode = DATA_ACQUISITION_MODE
@@ -2351,7 +2449,9 @@ static Function TestOperationData()
 	variable rangeEnd1 = 8
 	string channelTypeList = "DA;AD;DA;AD;"
 	string channelNumberList = "2;6;3;7;"
-	Make/FREE/T/N=(1, 1) epochKeys = EPOCHS_ENTRY_KEY
+	Make/FREE/T/N=(3, 1, 1) epochKeys, epochTTLKeys
+	epochKeys[0][0][0] = EPOCHS_ENTRY_KEY
+	epochKeys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
 
 	[win, device] = CreateFakeDataBrowserWindow()
 
@@ -2359,6 +2459,8 @@ static Function TestOperationData()
 
 	CreateFakeSweepData(win, device, sweepNo=sweepNo)
 	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 2)
+	CreateFakeSweepData(win, device, sweepNo=sweepNo + 3)
 
 	epochStr = "0.00" + num2istr(rangeStart0) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch,0,:"
 	epochStr += "0.00" + num2istr(rangeStart1) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch1,0,:"
@@ -2369,9 +2471,27 @@ static Function TestOperationData()
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = epochStr
 	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, sweepNo + 1, device, mode)
 
+	epochStr = "0.00" + num2istr(rangeStart1) + ",0.00" + num2istr(rangeEnd1) + ",ShortName=TestEpoch2,0"
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = epochStr
+	epochTTLKeys[0][0][0] = "TTL Epochs Channel " + num2istr(2)
+	epochTTLKeys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+	ED_AddEntriesToLabnotebook(epochInfo, epochTTLKeys, sweepNo + 3, device, mode)
+
 	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 	Make/FREE/N=0 sweepTemplate
 	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+	WAVE sweepRef3 = FakeSweepDataGeneratorDefault(sweepTemplate, 5)
+	sweepRef3[][4] = (sweepRef3[p][4] & 1 << 2) != 0
+
+	sweepCnt = 1
+	str = "data(TestEpoch2,select(channels(TTL2),[" + num2istr(3) + "],all))"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
+	numResultsRef = sweepCnt * 1
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[][0] = rangeStart1
+	ranges[][1] = rangeEnd1
+	CheckSweepsFromData(dataWref, sweepRef3, numResultsref, {5}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {3}, {2}, {3}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
 	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "],all))"
@@ -2470,7 +2590,7 @@ static Function TestOperationData()
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing sweep
-	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo + 2) + "],all))"
+	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo + 1337) + "],all))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
@@ -2499,7 +2619,7 @@ static Function TestOperationData()
 
 	// One sweep does not exist, it is not result of select, we end up with one sweep
 	sweepCnt = 1
-	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 2) + "],all))"
+	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1337) + "],all))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	numResultsRef = sweepCnt * numChannels / 2
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
@@ -2514,11 +2634,12 @@ static Function TestOperationData()
 		for(j = 0; j < numChannels; j += 1)
 			name = UniqueName("data", 1, 0)
 			trace = "trace_" + name
+			clampMode = mod(sweepNo, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
-									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo)})
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), StringFromList(j, channelNumberList), num2istr(clampMode)})
 		endfor
 	endfor
 
@@ -2773,7 +2894,7 @@ End
 static Function TestOperationEpochs()
 
 	variable i, j, sweepNumber, channelNumber, numResultsRef, numSweeps, numChannels
-	string str, trace, key, name, win, device, epoch2, textKey, textValue
+	string str, trace, key, name, win, device, epoch2, textKey, textValue, epochLongName
 	variable activeChannelsDA = 4
 
 	[win, device] = CreateFakeDataBrowserWindow()
@@ -2865,7 +2986,8 @@ static Function TestOperationEpochs()
 	endfor
 
 	// find epoch without shortname
-	str = "epochs(\"" + epoch2 + "\", select(channels(DA), 0))"
+	epochLongName = RemoveEnding(epoch2, ";")
+	str = "epochs(\"" + epochLongName + "\", select(channels(DA), 0))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
 
