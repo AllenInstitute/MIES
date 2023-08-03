@@ -1446,6 +1446,72 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
 End
 
+static Function MouseSelectionStatsPostProcNonFinite()
+
+	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[1][%$combos[0]][%$"Fit Result"] = 1
+	overrideResults[1][%$combos[0]][%$"Tau"]        = -inf
+
+	overrideResults[0][%$combos[0]][%$"Fit Result"] = 0
+	overrideResults[0][%$combos[0]][%$"Tau"]        = NaN
+
+	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
+	overrideResults[0][%$combos[1]][%$"Tau"]        = +inf
+
+	browser = SetupDatabrowserWithSomeData()
+
+	code = GetTestCode("nonfinite", eventState = "all", prop = "tau")
+
+	ExecuteSweepFormulaCode(browser, code)
+
+	win = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow = GetMainWindow(win)
+	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
+
+	REQUIRE(WindowExists(psxStatsGraph))
+
+	SetActiveSubwindow $psxStatsGraph
+
+	tracenames = TraceNameList(psxStatsGraph, ";", 1)
+	trace = StringFromList(0, tracenames)
+	CHECK_PROPER_STR(trace)
+
+	Cursor/W=$psxStatsGraph/P A, $trace, 0
+
+	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+
+	// select event 0 from combo 1
+	SetActiveSubwindow $psxStatsGraph
+	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left 0.5, 0.25, 1.5, -0.5
+
+	PSX_MouseEventSelection(PSX_ACCEPT, PSX_STATE_EVENT | PSX_STATE_FIT)
+
+	// refetch the changed waves after each selection
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
+
+	// unchanged
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+
+	// changed
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+End
+
 static Function/WAVE GetTracesHelper(string win, variable options)
 
 	return ListToTextWave(SortList(TraceNameList(win, ";", options)), ";")

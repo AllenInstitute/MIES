@@ -141,6 +141,9 @@ static Constant PSX_CACHE_KEY_EVENTS   = 0x1
 static Constant PSX_CACHE_KEY_RISETIME = 0x2
 /// @}
 
+static Constant EVENT_INDEX_HORIZONTAL = 0x1
+static Constant EVENT_INDEX_VERTICAL   = 0x2
+
 Menu "GraphMarquee"
 	"PSX: Accept Event && Fit", /Q, PSX_MouseEventSelection(PSX_ACCEPT, PSX_STATE_EVENT | PSX_STATE_FIT)
 	"PSX: Reject Event && Fit", /Q, PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_EVENT | PSX_STATE_FIT)
@@ -4316,7 +4319,7 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 
 	string win, bottomLabel, bsPanel, browser
 	variable left, right, filtOffTop, filtOffBottom, filtOffDeconvTop, filtOffDeconvBottom, bottom, top
-	variable numMatches, numEntries, i, needsUpdate
+	variable numMatches, numEntries, i, needsUpdate, indexOrient
 
 	[left, right] = GetMarqueeHelper("bottom", horiz = 1, doAssert = 1, win = win)
 
@@ -4328,6 +4331,11 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 	endif
 
 	bottomLabel = AxisLabel(win, "bottom")
+
+	// remove the dynamic part of the bottom label
+	if(strsearch(bottomLabel, "Non-finite values", 0) == 0)
+		bottomLabel = "Non-finite values"
+	endif
 
 	strswitch(bottomLabel)
 		// PSX decision plot
@@ -4370,9 +4378,12 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 			break
 		// PSX stats plot
 		case "Event":
+		case "Non-finite values":
 			[bottom, top] = GetMarqueeHelper("left", vert = 1, doAssert = 0, kill = 1)
 
-			WAVE/WAVE/Z result = PSX_GetEventsInsideMarqueeForStatsPlot(win, left, top, right, bottom)
+			indexOrient = PSX_GetIndexOrientation(bottomLabel)
+
+			WAVE/WAVE/Z result = PSX_GetEventsInsideMarqueeForStatsPlot(win, indexOrient, left, top, right, bottom)
 
 			if(!WaveExists(result))
 				return NaN
@@ -4402,6 +4413,20 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 	endif
 End
 
+static Function PSX_GetIndexOrientation(string axisLbl)
+
+	strswitch(axisLbl)
+		case "Event":
+			return EVENT_INDEX_HORIZONTAL
+			break
+		case "Non-finite values":
+			return EVENT_INDEX_VERTICAL
+			break
+		default:
+			ASSERT(0, "Not supported")
+	endswitch
+End
+
 /// @brief Returns a 2D wave reference wave with event indices/comboKey entries in each column
 ///
 /// ROWS:
@@ -4413,7 +4438,7 @@ End
 /// - 1 (comboIndex)
 ///   Combo index for the events in column 0
 ///   Always only one element!
-static Function/WAVE PSX_GetEventsInsideMarqueeForStatsPlot(string win, variable left, variable top, variable right, variable bottom)
+static Function/WAVE PSX_GetEventsInsideMarqueeForStatsPlot(string win, variable indexOrient, variable left, variable top, variable right, variable bottom)
 
 	string traces, comboKey, trace
 	variable numTraces, i, idx
@@ -4428,8 +4453,10 @@ static Function/WAVE PSX_GetEventsInsideMarqueeForStatsPlot(string win, variable
 		trace = StringFromList(i, traces)
 
 		WAVE xWave = XWaveRefFromTrace(win, trace)
+		WAVE yWave = TraceNameToWaveRef(win, trace)
 
-		// xWave holds event numbers
+		// xWave holds event numbers for EVENT_INDEX_HORIZONTAL
+		// yWave holds event numbers for EVENT_INDEX_VERTICAL
 		// xWave, yWave and comboKeys have corresponding indices
 		Extract/FREE/INDX xWave, matches, xWave >= left && xWave <= right
 
@@ -4450,8 +4477,6 @@ static Function/WAVE PSX_GetEventsInsideMarqueeForStatsPlot(string win, variable
 			continue
 		endif
 
-		WAVE yWave = TraceNameToWaveRef(win, trace)
-
 		WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(yWave, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
 		// comboKeysMatches hold the comboKeys of all matches
 		Make/T/FREE/N=(DimSize(matchesClean, ROWS)) comboKeysMatches = comboKeys[matchesClean[p]]
@@ -4465,8 +4490,18 @@ static Function/WAVE PSX_GetEventsInsideMarqueeForStatsPlot(string win, variable
 			// now get all indizes from that comboKey
 			WAVE indizes = FindIndizes(comboKeysMatches, str = comboKey)
 
-			// now convert the matching indizes into matchesClean into an index into xWave and then into the xWave values themselves
-			MatrixOP/FREE eventIndizes = waveMap(xWave, waveMap(matchesClean, indizes))
+			// now convert the matching indizes into matchesClean into an index into xWave/yWave and then into the xWave/yWave values themselves
+
+			switch(indexOrient)
+				case EVENT_INDEX_HORIZONTAL:
+					MatrixOP/FREE eventIndizes = waveMap(xWave, waveMap(matchesClean, indizes))
+					break
+				case EVENT_INDEX_VERTICAL:
+					MatrixOP/FREE eventIndizes = waveMap(yWave, waveMap(matchesClean, indizes))
+					break
+				default:
+					ASSERT(0, "Unsupported index orientation")
+			endswitch
 
 			EnsureLargeEnoughWave(result, indexShouldExist = idx)
 
@@ -4492,7 +4527,7 @@ End
 Function PSX_JumpToEvents()
 
 	variable left, right, bottom, top, foundComboIndex, refComboIndex, currentComboIndex, numResults, i, numEvents
-	variable lowest, highest
+	variable lowest, highest, indexOrient
 	string win, bottomLabel, mainWindow, psxGraph
 
 	[left, right] = GetMarqueeHelper("bottom", horiz = 1, doAssert = 1, win = win)
@@ -4514,7 +4549,9 @@ Function PSX_JumpToEvents()
 				return NaN
 			endif
 
-			WAVE/WAVE/Z result = PSX_GetEventsInsideMarqueeForStatsPlot(win, left, top, right, bottom)
+			indexOrient = PSX_GetIndexOrientation(bottomLabel)
+
+			WAVE/WAVE/Z result = PSX_GetEventsInsideMarqueeForStatsPlot(win, indexOrient, left, top, right, bottom)
 
 			if(!WaveExists(result))
 				return NaN
