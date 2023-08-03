@@ -792,7 +792,7 @@ static Function LBV_AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/
 			endif
 
 			[s] = GetHeadstageColor(j)
-			sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", s.red, s.green, s.blue, j + 1
+			sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", s.red, s.green, s.blue, j
 			text = ReplaceString("\\", text, "\\\\")
 			tagString = tagString + tmp + text + "\r"
 		endfor
