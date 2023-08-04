@@ -4327,6 +4327,15 @@ Function/WAVE ConvertFreeWaveToPermanent(WAVE freeWave, DFREF dfr, string wName)
 	return permWave
 End
 
+Function/WAVE MoveFreeWaveToPermanent(WAVE freeWave, DFREF dfr, string wvName)
+
+	wvName = UniqueWaveName(dfr, wvName)
+	MoveWave freeWave, dfr:$wvName
+	WAVE/SDFR=dfr permWave = $wvName
+
+	return permWave
+End
+
 /// @brief Zero all given traces
 static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 	string graph

@@ -3433,6 +3433,12 @@ threadsafe Function IsValidObjectName(string name)
 	return NameChecker(name, 0)
 End
 
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsStrictlyPositiveAndFinite(variable var)
+
+	return var > 0 && var < inf
+End
+
 /// @brief Check if a name for an object adheres to the liberal naming rules
 ///
 /// @see `DisplayHelpTopic "Liberal Object Names"`
@@ -6510,6 +6516,15 @@ Function IsValidTraceLineStyle(variable lineStyleCode)
 	return IsFinite(lineStyleCode) && lineStyleCode >= 0 && lineStyleCode <= 17
 End
 
+/// @brief Checks if given trace display code is valid (as of Igor Pro 9)
+///
+/// @param traceDisplayCode line style code value for a trace
+/// @returns 1 if valid, 0 otherwise
+Function IsValidTraceDisplayMode(variable traceDisplayCode)
+
+	return IsFinite(traceDisplayCode) && traceDisplayCode >= TRACE_DISPLAY_MODE_LINES && traceDisplayCode <= TRACE_DISPLAY_MODE_LAST_VALID
+End
+
 /// From DisplayHelpTopic "Character-by-Character Operations"
 /// @brief Returns the number of bytes in the UTF-8 character that starts byteOffset
 ///        bytes from the start of str.
@@ -6753,4 +6768,38 @@ Function GetDayOfWeek(variable seconds)
 	ASSERT(V_flag == 1, "Error parsing date: " + dat)
 
 	return str2num(dayOfWeek)
+End
+
+/// @brief Return the truth if `val` is in the range `]0, 1[`
+threadsafe Function BetweenZeroAndOneExc(variable val)
+	return val > 0.0 && val < 1.0
+End
+
+/// @brief Return the truth if `val` is in the range `[0, 1]`
+threadsafe Function BetweenZeroAndOne(variable val)
+	return val >= 0.0 && val <= 1.0
+End
+
+/// @brief Return the truth if `val` is in the range `]0, 100[`
+threadsafe Function BetweenZeroAndOneHoundredExc(variable val)
+	return val > 0.0 && val < 100.0
+End
+
+/// @brief Return the truth if `val` is in the range `[0, 100]`
+threadsafe Function BetweenZeroAndOneHoundred(variable val)
+	return val >= 0.0 && val <= 100.0
+End
+
+/// @brief Upper case the first character in an ASCII string
+threadsafe Function/S UpperCaseFirstChar(string str)
+
+	variable len
+
+	len = strlen(str)
+
+	if(len == 0)
+		return str
+	endif
+
+	return UpperStr(str[0]) + str[1, len - 1]
 End

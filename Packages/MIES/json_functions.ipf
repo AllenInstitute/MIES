@@ -1398,3 +1398,23 @@ threadsafe Function JSON_Save(variable jsonId, string fullFilepath, [variable ig
 End
 
 /// @}
+
+/// @addtogroup JSON_IsValid
+/// @{
+
+/// @brief Check if the given JSON identifier refers to an open JSON document
+///
+/// @param jsonID numeric identifier of the main object
+///
+/// @returns 0 if the JSON identifier refers to an open JSON document, 1 otherwise
+threadsafe Function JSON_IsValid(variable jsonID)
+
+	if(numType(jsonID) != 0 || jsonID < 0)
+		return 0
+	endif
+
+	JSONXOP_GetType/Z=1/Q=(JSON_QFLAG_DEFAULT) jsonID, ""
+	return !V_flag
+End
+
+/// @}

@@ -231,6 +231,21 @@ Constant EVENT_WINDOW_HOOK_TABLEENTRYCANCELLED = 25
 Constant EVENT_WINDOW_HOOK_EARLYKEYBOARD       = 26
 /// @}
 
+/// @name Trace Display Types
+/// @anchor TraceDisplayTypes
+/// @{
+Constant TRACE_DISPLAY_MODE_LINES          = 0
+Constant TRACE_DISPLAY_MODE_STICKS         = 1
+Constant TRACE_DISPLAY_MODE_DOTS           = 2
+Constant TRACE_DISPLAY_MODE_MARKERS        = 3
+Constant TRACE_DISPLAY_MODE_LINES_MARKERS  = 4
+Constant TRACE_DISPLAY_MODE_BARS           = 5
+Constant TRACE_DISPLAY_MODE_CITY           = 6
+Constant TRACE_DISPLAY_MODE_FILL           = 7
+Constant TRACE_DISPLAY_MODE_STICKS_MARKERS = 8
+Constant TRACE_DISPLAY_MODE_LAST_VALID     = 8
+/// @}
+
 /// Used by CheckName and UniqueName
 Constant CONTROL_PANEL_TYPE = 9
 
@@ -363,6 +378,7 @@ Constant UNKNOWN_MODE            = NaN
 Constant DATA_ACQUISITION_MODE   = 0
 Constant TEST_PULSE_MODE         = 1
 Constant SWEEP_FORMULA_RESULT    = 2
+Constant SWEEP_FORMULA_PSX       = 3
 /// @}
 
 Constant NUMBER_OF_LBN_DAQ_MODES = 4
@@ -713,6 +729,20 @@ Constant COMMON_CONTROL_GROUP_COUNT_TXT = 10
 
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32
+
+/// Window hook key constants
+/// @{
+Constant LEFT_KEY  =  28
+Constant RIGHT_KEY =  29
+Constant UP_KEY    =  30
+Constant DOWN_KEY  =  31
+Constant SPACE_KEY =  32
+Constant C_KEY     =  99
+Constant E_KEY     = 101
+Constant F_KEY     = 102
+Constant R_KEY     = 114
+Constant Z_KEY     = 122
+/// @}
 
 Constant MAX_COMMANDLINE_LENGTH = 2500
 
@@ -1909,6 +1939,7 @@ Constant DFREF_FREE = 0x2
 /// @{
 StrConstant CO_EMPTY_DAC_LIST = "emptyDACList"
 StrConstant CO_SF_TOO_MANY_TRACES = "SF_tooManyTraces"
+StrConstant CO_PSX_CLIPPED_STATS = "psx_clippedStats"
 /// @}
 
 /// @name Constants for SweepFormula Meta data in JSON format
@@ -1922,15 +1953,22 @@ StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber" // number
 StrConstant SF_META_ISAVERAGED = "/IsAveraged" // number
 StrConstant SF_META_AVERAGED_FIRST_SWEEP = "/AveragedFirstSweep" // number
 StrConstant SF_META_XVALUES = "/XValues" // numeric wave
+StrConstant SF_META_XTICKLABELS = "/XTickLabels" // text wave
+StrConstant SF_META_XTICKPOSITIONS = "/XTickPositions" // numeric wave
 StrConstant SF_META_XAXISLABEL = "/XAxisLabel" // string
 StrConstant SF_META_YAXISLABEL = "/YAxisLabel" // string
 StrConstant SF_META_OPSTACK = "/OperationStack" // string
 StrConstant SF_META_MOD_MARKER = "/Marker" // numeric wave
 StrConstant SF_META_SHOW_LEGEND = "/ShowLegend" // numeric, boolean, defaults to true (1)
+StrConstant SF_META_CUSTOM_LEGEND = "/CustomLegend" // string with custom legend text, honours /ShowLegend
 StrConstant SF_META_ARGSETUPSTACK = "/ArgSetupStack" // string
-StrConstant SF_META_TRACECOLOR = "/TraceColor" // numeric wave
+StrConstant SF_META_TRACECOLOR = "/TraceColor" // numeric wave, applies to markers and lines
 StrConstant SF_META_LINESTYLE = "/LineStyle" // number
+StrConstant SF_META_TRACE_MODE = "/TraceMode" // number
 StrConstant SF_META_TRACETOFRONT = "/TraceToFront" // number, boolean, defaults to false (0)
+
+StrConstant SF_META_USER_GROUP = "/User/" // custom metadata for individual operations,
+                                          // top-level group with individual entries
 
 StrConstant SF_DATATYPE_SWEEP = "SweepData"
 StrConstant SF_DATATYPE_FINDLEVEL = "FindLevel"
@@ -1954,6 +1992,7 @@ StrConstant SF_DATATYPE_TPINST = "TestPulseMode_Instantaneous"
 StrConstant SF_DATATYPE_TPBASE = "TestPulseMode_Baseline"
 StrConstant SF_DATATYPE_TPFIT = "TestPulseMode_Fit"
 StrConstant SF_DATATYPE_POWERSPECTRUM = "Powerspectrum"
+StrConstant SF_DATATYPE_PSX = "PSX"
 
 StrConstant SF_WREF_MARKER = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
@@ -1998,8 +2037,9 @@ StrConstant SFH_USER_DATA_BROWSER = "browser"
 /// @name Available result types for SFH_CreateResultsWaveWithCode()
 /// @anchor ResultTypes
 /// @{
-Constant SFH_RESULT_TYPE_STORE = 0x01
-Constant SFH_RESULT_TYPE_EPSP  = 0x02
+Constant SFH_RESULT_TYPE_STORE      = 0x01
+Constant SFH_RESULT_TYPE_PSX_EVENTS = 0x02
+Constant SFH_RESULT_TYPE_PSX_MISC   = 0x04
 /// @}
 
 /// @name Constants used in the wave note JSON support
@@ -2102,4 +2142,52 @@ Constant SECONDS_PER_DAY = 86400
 /// @anchor DataBrowserVisualizationConstants
 /// @{
 Strconstant DB_AXIS_PART_EPOCHS = "_EP"
+/// @}
+
+StrConstant SF_OP_PSX          = "psx"
+StrConstant SF_OP_PSX_KERNEL   = "psxKernel"
+StrConstant SF_OP_PSX_STATS    = "psxStats"
+StrConstant SF_OP_PSX_RISETIME = "psxRiseTime"
+StrConstant SF_OP_PSX_PREP     = "psxPrep"
+
+/// @name Available PSX states
+/// @anchor PSXStates
+/// @{
+Constant PSX_ACCEPT = 0x01
+Constant PSX_REJECT = 0x02
+Constant PSX_UNDET  = 0x04
+Constant PSX_LAST   = 0x04 // neeeds to be the same as the last valid state
+Constant PSX_ALL    = 0x07
+/// @}
+
+/// @name Available PSX state types
+/// @anchor PSXStateTypes
+/// @{
+Constant PSX_STATE_EVENT = 0x1
+Constant PSX_STATE_FIT   = 0x2
+Constant PSX_STATE_BOTH  = 0x3
+/// @}
+
+StrConstant PSX_EVENTS_COMBO_KEY_WAVE_NOTE = "comboKey"
+
+Constant PSX_MARKER_ACCEPT = 19
+Constant PSX_MARKER_REJECT = 23
+Constant PSX_MARKER_UNDET  = 18
+
+/// @name Custom error codes for PSX_FitEventDecay()
+/// @anchor FitEventDecayCustomErrors
+/// @{
+Constant PSX_DECAY_FIT_ERROR = -10000
+/// @}
+
+StrConstant PSX_STATS_LABELS = "Average;Median;Average Deviation;Standard deviation;Skewness;Kurtosis"
+
+/// @name Horizontal offset modes in all event graph
+///
+/// Corresponds to zero-based indizes of popup_event_offset
+///
+/// @anchor HorizOffsetModesAllEvent
+/// @{
+Constant PSX_HORIZ_OFFSET_ONSET = 0
+Constant PSX_HORIZ_OFFSET_PEAK  = 1
 /// @}

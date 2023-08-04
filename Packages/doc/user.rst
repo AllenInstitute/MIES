@@ -15,6 +15,7 @@ User documentation
   SweepFormula
   labnotebook-descriptions
   analysis-function-parameters
+  SweepFormula_PSX
 
 MIES is a sweep based data acquisition tool written in Igor Pro.
 

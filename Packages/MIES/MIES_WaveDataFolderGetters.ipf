@@ -7812,3 +7812,253 @@ threadsafe Function/WAVE GetActiveChannelMapTTLHWToGUI()
 
 	return channelMapHWToGUI
 End
+
+/// @name SweepFormula PSX
+/// @{
+
+static Constant PSX_WAVE_VERSION       = 2
+static Constant PSX_EVENT_WAVE_COLUMNS = 14
+
+Function UpgradePSXEventWave(WAVE psxEvent)
+
+	if(WaveVersionIsAtLeast(psxEvent, PSX_WAVE_VERSION))
+		// latest version
+	elseif(WaveVersionIsAtLeast(psxEvent, 1))
+		SetPSXEventDimensionLabels(psxEvent)
+	else
+		ASSERT(0, "Missing upgrade path")
+	endif
+End
+
+/// @brief Return a 2D events wave as free wave
+///
+/// Rows:
+/// - count
+///
+/// Cols:
+/// -  0/index: Event index
+/// -  1/peak_t: Event time [ms]
+/// -  2/peak: Event amplitude in deconvoluted data [y unit of data]
+/// -  3/post_min: Minimum of filtered and offsetted data in the range [time, time + 2ms]
+/// -  4/post_min_t: X location of [2]
+/// -  5/pre_max: Maximum of filtered and offsetted data in the range [time - 2ms, time], averaged over +/- 0.1 ms
+/// -  6/pre_max_t: X location of [5]
+/// -  7/rel_peak: Relative amplitude: [2] - [4]
+/// -  8/isi: Time difference to previous event [ms]
+/// -  9/tau: Decay constant tau of exponential fit
+/// - 10/Fit manual QC call: One of @ref PSXStates
+/// - 11/Fit result: 1 for success, everything smaller than 0 is failure:
+///       - `]-10000, 0[`: CurveFit error codes
+///       - `]inf, -10000]`: Custom error codes, one of @ref FitEventDecayCustomErrors
+/// - 12/Event manual QC call: One of @ref PSXStates
+/// - 13/Rise Time: rise time as calculated by PSX_CalculateRiseTime()
+Function/WAVE GetPSXEventWaveAsFree()
+
+	variable versionOfWave = PSX_WAVE_VERSION
+
+	Make/D/FREE=1/N=(0, PSX_EVENT_WAVE_COLUMNS) psxEvent = NaN
+	WAVE wv = psxEvent
+
+	SetPSXEventDimensionLabels(wv)
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+Function SetPSXEventDimensionLabels(WAVE wv)
+
+	SetDimLabel COLS,  0, index, wv
+	SetDimLabel COLS,  1, peak_t, wv
+	SetDimLabel COLS,  2, peak, wv
+	SetDimLabel COLS,  3, post_min, wv
+	SetDimLabel COLS,  4, post_min_t, wv
+	SetDimLabel COLS,  5, pre_max, wv
+	SetDimLabel COLS,  6, pre_max_t, wv
+	SetDimLabel COLS,  7, rel_peak, wv
+	SetDimLabel COLS,  8, isi, wv
+	SetDimLabel COLS,  9, tau, wv
+	SetDimLabel COLS, 10, $"Fit manual QC call", wv
+	SetDimLabel COLS, 11, $"Fit result", wv
+	SetDimLabel COLS, 12, $"Event manual QC call", wv
+	SetDimLabel COLS, 13, $"Rise Time", wv
+End
+
+Function/WAVE GetPSXSingleEventFitWaveFromDFR(DFREF dfr)
+
+	WAVE/D/SDFR=dfr/Z wv = singleEventFit
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(0) dfr:singleEventFit/WAVE=wv
+
+	return wv
+End
+
+Function/WAVE GetPSXEventFitWaveAsFree()
+
+	variable versionOfWave = 1
+
+	Make/WAVE/FREE=1/N=(0) eventFit
+	WAVE wv = eventFit
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+Function/WAVE GetPSXEventColorsWaveAsFree(variable numEvents)
+
+	Make/FREE/N=(numEvents, 4)/FREE=1 eventColors
+
+	return eventColors
+End
+
+Function/WAVE GetPSXEventMarkerWaveAsFree(variable numEvents)
+
+	Make/FREE/N=(numEvents)/FREE=1 eventMarker
+
+	return eventMarker
+End
+
+static Function/WAVE GetWaveFromFolder(DFREF dfr, string name)
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+
+	WAVE/SDFR=dfr/Z wv = $name
+	ASSERT(WaveExists(wv), "Missing wave:" + name)
+
+	return wv
+End
+
+Function/WAVE GetPSXEventWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "psxEvent")
+End
+
+Function/WAVE GetPSXPeakXWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "peakX")
+End
+
+Function/WAVE GetPSXPeakYWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "peakY")
+End
+
+Function/WAVE GetPSXPeakYAtFiltWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "peakYAtFilt")
+End
+
+Function/WAVE GetPSXEventColorsWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "eventColors")
+End
+
+Function/WAVE GetPSXEventMarkerWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "eventMarker")
+End
+
+Function/WAVE GetPSXEventFitWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "eventFit")
+End
+
+Function/WAVE GetPSXSweepDataWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "sweepData")
+End
+
+Function/WAVE GetPSXSweepDataFiltOffWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "sweepDataFiltOff")
+End
+
+Function/WAVE GetPSXSweepDataFiltOffDeconvWaveFromDFR(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "sweepDataFiltOffDeconv")
+End
+
+Function/WAVE GetPSXEventLocationLabels(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "eventLocationLabels")
+End
+
+Function/WAVE GetPSXEventLocationTicks(DFREF dfr)
+
+	return GetWaveFromFolder(dfr, "eventLocationTicks")
+End
+
+Function/S GetPSXFolderForComboAsString(DFREF dfr, variable index)
+
+	return GetDataFolder(1, dfr) + "combo_" + num2istr(index)
+End
+
+Function/DF GetPSXFolderForCombo(DFREF dfr, variable index)
+
+	return createDFWithAllParents(GetPSXFolderForComboAsString(dfr, index))
+End
+
+Function/WAVE GetPSXComboListBox(DFREF dfr)
+
+	string name = "combinations"
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	WAVE wv = PSX_CreateCombinationsListBoxWaveAsFree(dfr)
+
+	MoveWave wv, dfr:$name
+
+	return wv
+End
+
+Function/S GetPSXSingleEventFolderAsString(DFREF comboDFR)
+
+	return GetDataFolder(1, comboDFR) + "singleEvent"
+End
+
+Function/DF GetPSXSingleEventFolder(DFREF comboDFR)
+
+	return createDFWithAllParents(GetPSXSingleEventFolderAsString(comboDFR))
+End
+
+/// @brief Return the average wave of the given state for the PSX event plot
+///
+/// `dfr` can be either `singleEventDFR` for the per-combo averages or `workDFR`
+/// for the average over all events disregarding the combo.
+Function/WAVE GetPSXAverageWave(DFREF dfr, variable state)
+
+	string name = "average" + PSX_StateToString(state)
+
+	WAVE/D/SDFR=dfr/Z wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=0 dfr:$name/WAVE=wv
+
+	return wv
+End
+
+Function/WAVE GetPSXAcceptedAverageFitWaveFromDFR(DFREF dfr)
+
+	WAVE/D/SDFR=dfr/Z wv = acceptedAverageFit
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(0) dfr:acceptedAverageFit/WAVE=wv
+
+	return wv
+End
+
+/// @}

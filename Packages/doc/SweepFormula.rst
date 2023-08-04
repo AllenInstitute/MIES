@@ -884,6 +884,201 @@ If input data type is `SF_DATATYPE_SWEEP` from the data operation and non-averag
 
    powerspectrum(data(cursors(A,B),select(channels(AD),sweeps(),all)),dB,avg,60) // db units, averaging on, determine power ratio at 60 Hz
 
+.. _sf_op_psx:
+
+psx
+"""
+
+The `psx` operation allows to classify miniature PSC/PSP's interactively.
+
+.. code-block:: bash
+
+   psx(id, [psxKernel(), numSDs, filterLow, filterHigh, maxTauFactor, psxRiseTime()])
+
+The function accepts one to seven arguments.
+
+id
+  identifier string, must adhere to strict igor object names.
+  Used for identifying the data to store/query the results wave
+
+psxKernel
+  result from the `psxKernel` operation
+
+numSDs
+  Number of standard deviations for the gaussian fit of the all points histogram, defaults to 2.5
+
+filterLow
+  low threshold for the bandpass filter, defaults to 550 Hz
+
+filterHigh
+  high threshold for the bandpass filter, defaults to 0 Hz
+
+maxTauFactor
+  maximum tau factor, the decay tau from fitting the event must be smaller than the fit range
+  times maxTauFactor, defaults to 10
+
+psxRiseTime
+  results from the `psxRiseTime` operation
+
+The plotting is implemented in a custom way. Due to that multiple `psx`
+operations can only be separated by `with` and not `and`.
+
+.. code-block:: bash
+
+   psx(myID)
+   psx(psxkernel(), 3, 400, 100)
+
+See :ref:`sweepformula_psx` for an in-depth explanation of the available user
+interface for acceptance/rejectance.
+
+psxkernel
+=========
+
+Helper operation for `psx` which allows to create a custom kernel and choose
+the subset of data to work on.
+
+.. code-block:: bash
+
+   psxkernel(array range[, array selectData, riseTau, decayTau, amp])
+
+The function accepts one to five arguments.
+
+range
+  either an explicit array in milliseconds, `cursors` or a text array with one
+  or multiple epoch names, see also `data`
+
+select
+  sweep and channels to operate on from the `select` operation
+
+riseTau
+  Time constant for kernel, defaults to 1
+
+decayTau
+  Time constant for kernel, defaults to 15
+
+amp
+   Amplitude for kernel, defaults to -5
+
+.. code-block:: bash
+
+   psxkernel([100, 200])
+   psxkernel([E0, E1]) # list of epoch names
+   psxkernel(cursors(), select(channels(AD10), [49, 50], all), 2, 13, 2)
+
+psxPrep
+"""""""
+
+The `psxPrep` operation outputs the peak threshold to be used for `psx` event searching.
+
+   psxPrep(psx(), [numberOfSDs])
+
+The function accepts one to two arguments.
+
+psx
+   results of the `psx` operation
+
+numberOfSDs
+   Number of standard deviations of the gaussian fit to return as threshold
+
+.. code-block:: bash
+
+   psxPrep(psx(psxKernel(E0, select()), 0.2, 400, 100, 12))
+
+psxRiseTime
+"""""""""""
+
+The `psxRiseTime` operation is a helper operation for `psx` to manage the lower and upper thresholds for the rise time calculation.
+
+   psxRiseTime([lowerThreshold, upperThreshold])
+
+The function accepts zero to two arguments.
+
+lowerThreshold
+   defaults to 20%
+
+upperThreshold
+   defaults to 80%
+
+.. code-block:: bash
+
+   psxRiseTime(0.5)
+   psxRiseTime(0.5, 0.9)
+
+psxstats
+""""""""
+
+Plot properties of the result waves of a miniature PSC/PSP classification. The
+operation combines the data from all input sweeps.
+
+The operation allows to visualize `psx` data from the results wave or locally,
+i.e. from an `psx` operation from another formula separated by `and`. The
+local results are prefered over the results wave.
+
+The traces are colored using the common headstage colors. The markers are the
+same as used for visualizing the event state in `psx` (accepted -> circle,
+rejected -> triangle, undetermined -> square).
+
+.. code-block:: bash
+
+   psxstats(id, array range, array selectData, prop, state, [postproc])
+
+The function accepts five or six arguments.
+
+id
+  identifier string, must adhere to strict igor object names.
+  Used for identifying the data to query, also from the results wave
+
+range
+  either an explicit array in milliseconds, `cursors` or a text array with one
+  or multiple epoch names, see also `data`
+
+select
+  sweep and channels to operate on from the `select` operation
+
+prop
+  column of the `psx` event results waves to plot.
+  Choices are: `amp`, `xpos`, `xinterval`, `tau`, `estate`, `fstate`, `fitresult`, `risetime`
+
+state
+  QC state to select the events.
+  Choices are: `accept`/`reject`/`undetermined`/`all`/`every`
+
+  The used QC state depends on `prop`:
+
+  - Event state QC -> `amp`/`xpos`/`xinterval`/`estate`/`risetime`
+  - Fit state QC -> `tau`/`fstate`/`fitresult`
+
+  The difference between `all` and `every` is that `all` plots the events from
+  all possible states in **one** trace whereas `every` creates **multiple**
+  traces, one for each state.
+
+postproc
+  post process the results, defaults to `nothing`
+  Choices are: `nothing`, `stats`, `nonfinite`, `count`, `hist`, `log10`
+
+  nothing
+    no post processing
+
+  stats
+    calculate various statistical properties of the data
+
+  nonfinite
+    selects non-finite values (`-inf`/`NaN`/`inf`)
+
+  count
+    count the number of data elements
+
+  hist
+    create a histogram from the data
+
+  log10
+    apply the decadic logarithm (base 10) to each data point
+
+.. code-block:: bash
+
+   psxstats(myID, [100, 200], select(channels(AD10), [49, 50], all), amp, accept)
+   psxstats(otherID, [E0], select(channels(AD7), 40...60, all), xpos, every, log10)
+
 Utility Functions
 ^^^^^^^^^^^^^^^^^
 
