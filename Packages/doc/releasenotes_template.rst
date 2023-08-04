@@ -127,6 +127,10 @@ MIESUtils XOP
 -------------
 
 
+JSON XOP
+--------
+
+
 Labnotebook
 -----------
 
@@ -152,6 +156,14 @@ Renamed numerical entries
 
 
 Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Removed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Removed textual entries
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 
