@@ -930,7 +930,7 @@ Window DataBrowser() : Graph
 	CheckBox check_SweepControl_HideSweep,value=0
 	CheckBox check_BrowserSettings_splitTTL,pos={170.00,56.00},size={58.00,15.00},disable=2,proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_BrowserSettings_splitTTL,title="sep. TTL"
-	CheckBox check_BrowserSettings_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
+	CheckBox check_BrowserSettings_splitTTL help={"Display the TTL channel data as single traces for each TTL bit (ITC hardware only, for other hardware types this is always the case regardless of this checkbox)"}
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabnum)="0"
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabcontrol)="Settings"
 	CheckBox check_BrowserSettings_splitTTL,userdata(ResizeControlsInfo)=A"!!,G:!!#>n!!#?!!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
