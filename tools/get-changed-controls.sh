@@ -21,7 +21,7 @@ do
   do
     output=controls_${file}_${revision}
     echo $output
-    git show $revision:Packages/MIES/$file | grep -i -P                                                                      \
+    (git show $revision:Packages/MIES/$file 2> /dev/null || echo "") | grep -i -P                                            \
        "\b(Button|Checkbox|PopupMenu|ValDisplay|SetVariable|Chart|Slider|Tab|GroupBox|Titlebox|ListBox|CustomControl)\b.*" | \
        cut -f 1 -d "," | cut -f 2 -d " " | sort | uniq > $output
   done
