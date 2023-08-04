@@ -988,8 +988,6 @@ static Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	endfor
 End
 
-static Constant TP_DURATION_S = 5
-
 static Function CheckThatTPsCanBeFound_PreAcq(device)
 	string device
 

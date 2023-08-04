@@ -38,8 +38,8 @@ End
 
 Function FixupJSONConfigImplRig(variable jsonId)
 
-	string serialNumStr
-	variable serialNum
+	string serialNumStr, jsonPath
+	variable serialNum, i
 
 	// replace stored serial number with present serial number
 	AI_FindConnectedAmps()
@@ -53,8 +53,17 @@ Function FixupJSONConfigImplRig(variable jsonId)
 		serialNum = str2num(serialNumStr)
 	endif
 
-	JSON_SetVariable(jsonID, "/Common configuration data/Headstage Association/0/Amplifier/Serial", serialNum)
-	JSON_SetVariable(jsonID, "/Common configuration data/Headstage Association/1/Amplifier/Serial", serialNum)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		sprintf jsonPath, "/Common configuration data/Headstage Association/%d/Amplifier/Serial", i
+		if(!JSON_Exists(jsonID, jsonPath))
+			continue
+		endif
+		if(JSON_GetType(jsonID, jsonPath) == JSON_NULL)
+			continue
+		endif
+
+		JSON_SetVariable(jsonID, jsonPath, serialNum)
+	endfor
 End
 
 Function FixupJSONConfigImpl(variable jsonId, string device)

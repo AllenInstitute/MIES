@@ -164,9 +164,17 @@ static StrConstant EXPCONFIG_JSON_AMPSERIAL = "Serial"
 static StrConstant EXPCONFIG_JSON_AMPTITLE = "Title"
 static StrConstant EXPCONFIG_JSON_AMPCHANNEL = "Channel"
 static StrConstant EXPCONFIG_JSON_AMPVCDA = "DA"
+static StrConstant EXPCONFIG_JSON_AMPVCDAGAIN = "DA gain"
+static StrConstant EXPCONFIG_JSON_AMPVCDAUNIT = "DA unit"
 static StrConstant EXPCONFIG_JSON_AMPVCAD = "AD"
+static StrConstant EXPCONFIG_JSON_AMPVCADGAIN = "AD gain"
+static StrConstant EXPCONFIG_JSON_AMPVCADUNIT = "AD unit"
 static StrConstant EXPCONFIG_JSON_AMPICDA = "DA"
+static StrConstant EXPCONFIG_JSON_AMPICDAGAIN = "DA gain"
+static StrConstant EXPCONFIG_JSON_AMPICDAUNIT = "DA unit"
 static StrConstant EXPCONFIG_JSON_AMPICAD = "AD"
+static StrConstant EXPCONFIG_JSON_AMPICADGAIN = "AD gain"
+static StrConstant EXPCONFIG_JSON_AMPICADUNIT = "AD unit"
 static StrConstant EXPCONFIG_JSON_PRESSDEV = "Device"
 static StrConstant EXPCONFIG_JSON_PRESSDA = "DA"
 static StrConstant EXPCONFIG_JSON_PRESSAD = "AD"
@@ -502,7 +510,7 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
-			printf "Configuration restore aborted at file %s.", fName
+			printf "Configuration restore aborted at file %s.", fullFilePath
 			Abort
 		endif
 	endtry
@@ -680,18 +688,32 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		winHandle = num2istr(GetUniqueInteger())
 		SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE) = winHandle
 		isTagged = 1
-		device = CONF_JSONToWindow(device, restoreMask, jsonID)
-		isTagged = 0
-		SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE) = ""
+
+		WAVE/T winNames = CONF_GetWindowNames(jsonID)
+		ASSERT(DimSize(winNames, ROWS) == 1, "DAEPhys configuration file contains configurations for more than one window.")
+
 		if(restoreMask & EXPCONFIG_MINIMIZE_ON_RESTORE)
 			SetWindow $device, hide=1
 		endif
+
+		jsonPath = winNames[0] + "/Generic ControlGroup/popup_MoreSettings_Devices"
+		ASSERT(JSON_Exists(jsonID, jsonPath), "Missing critical JSON entry: " + jsonPath)
+		CONF_RestoreControl(device, restoreMask, jsonID, "popup_MoreSettings_Devices", jsonPath = jsonPath)
+		jsonPath = winNames[0] + "/Generic ControlGroup/button_SettingsPlus_LockDevice"
+		ASSERT(JSON_Exists(jsonID, jsonPath), "Missing critical JSON entry: " + jsonPath)
+		CONF_RestoreControl(device, restoreMask, jsonID, "button_SettingsPlus_LockDevice", jsonPath = jsonPath)
+		device = CONF_FindWindow(winHandle, uKey = DAEPHYS_UDATA_WINHANDLE)
+
+		CONF_RestoreHeadstageAssociation(device, jsonID, middleOfExperiment)
+
+		device = CONF_JSONToWindow(device, restoreMask, jsonID)
+		isTagged = 0
+		SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE) = ""
 
 		if(middleOfExperiment)
 			ModifyControl $"check_Settings_SyncMiesToMCC", win=$device, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)=rStateSync
 		endif
 
-		CONF_RestoreHeadstageAssociation(device, jsonID, middleOfExperiment)
 		CONF_RestoreUserPressure(device, jsonID)
 
 		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
@@ -1944,7 +1966,7 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 	variable jsonID, midExp
 
 	variable i, type, numRows, ampSerial, ampChannel, index, value, warnMissingMCCSync
-	string jsonPath, jsonBasePath
+	string jsonPath, jsonBasePath, jsonPathAmpBlock
 	string ampSerialList = ""
 	string ampTitleList = ""
 
@@ -1955,12 +1977,14 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		jsonBasePath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK + "/" + num2istr(i)
-		jsonPath = jsonBasePath
-		type = JSON_GetType(jsonID, jsonPath)
+		type = JSON_GetType(jsonID, jsonBasePath)
 		if(type == JSON_NULL)
 			continue
 		elseif(type == JSON_OBJECT)
 			jsonPath = jsonBasePath  + "/" + EXPCONFIG_JSON_AMPBLOCK
+			if(JSON_GetType(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL) == JSON_NULL)
+				continue
+			endif
 			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
 
 			if(IsNaN(ampSerial))
@@ -1991,29 +2015,40 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = i)
 
 		jsonBasePath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK + "/" + num2istr(i)
-		jsonPath = jsonBasePath
-		type = JSON_GetType(jsonID, jsonPath)
+		type = JSON_GetType(jsonID, jsonBasePath)
 
 		if(type == JSON_NULL)
 			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
 			PGC_SetAndActivateControl(device, "popup_Settings_Pressure_dev", str = NONE)
+			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 		elseif(type == JSON_OBJECT)
-			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
-			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
-			ampChannel = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPCHANNEL)
+			jsonPathAmpBlock = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
+			ampSerial = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPSERIAL)
+			ampChannel = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPCHANNEL)
 
 			if(IsFinite(ampSerial) && IsFinite(ampChannel))
 				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampChannel))
-
-				jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK + "/"
-				PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA))
-				PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD))
-
-				jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK + "/"
-				PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA))
-				PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD))
 				PGC_SetAndActivateControl(device,"button_Hardware_AutoGainAndUnit")
+			else
+				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
+				jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
+				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAGAIN)
+				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADGAIN)
+				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAUNIT)
+				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADUNIT)
+
+				jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_ICBLOCK + "/"
+				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAGAIN)
+				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADGAIN)
+				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT)
+				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT)
 			endif
+			jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
+			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_VC_DA", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA)
+			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_VC_AD", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD)
+			jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_ICBLOCK + "/"
+			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_IC_DA", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA)
+			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_IC_AD", jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD)
 
 			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_PRESSUREBLOCK + "/"
 			PGC_SetAndActivateControl(device, "popup_Settings_Pressure_dev", str = JSON_GetString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDEV))
@@ -2056,6 +2091,34 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 	endfor
 	PGC_SetAndActivateControl(device, "button_Hardware_P_Enable")
 
+End
+
+static Function CONF_OnExistSetAndActivateControlVar(string win, string ctrl, variable jsonId, string jsonPath)
+
+	if(JSON_Exists(jsonId, jsonPath))
+		PGC_SetAndActivateControl(win, ctrl, val = JSON_GetVariable(jsonID, jsonPath))
+	endif
+End
+
+static Function CONF_OnExistSetAndActivateControlStr(string win, string ctrl, variable jsonId, string jsonPath)
+
+	if(JSON_Exists(jsonId, jsonPath))
+		PGC_SetAndActivateControl(win, ctrl, str = JSON_GetString(jsonID, jsonPath))
+	endif
+End
+
+static Function CONF_SetDAEPhysChannelPopup(string device, string ctrl, variable jsonId, string jsonPath)
+
+	variable channelNumber
+
+	if(JSON_Exists(jsonId, jsonPath))
+		channelNumber = JSON_GetVariable(jsonID, jsonPath)
+		if(IsNaN(channelNumber))
+			PGC_SetAndActivateControl(device, ctrl, str = NONE)
+		else
+			PGC_SetAndActivateControl(device, ctrl, val = channelNumber)
+		endif
+	endif
 End
 
 /// @brief Retrieves current User Pressure settings to json
@@ -2124,20 +2187,40 @@ static Function CONF_GetAmplifierSettings(device)
 
 		jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK
 		JSON_AddTreeObject(jsonID, jsonPath)
+
+		jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK
+		JSON_AddTreeObject(jsonID, jsonPath)
 		jsonPath += "/"
+
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA, str2numsafe(GetPopupMenuString(device, "Popup_Settings_VC_DA")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD, str2numsafe(GetPopupMenuString(device, "Popup_Settings_VC_AD")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAGAIN, GetSetVariable(device, "setvar_Settings_VC_DAgain"))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADGAIN, GetSetVariable(device, "setvar_Settings_VC_ADgain"))
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAUNIT, GetSetVariableString(device, "SetVar_Hardware_VC_DA_Unit"))
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADUNIT, GetSetVariableString(device, "SetVar_Hardware_VC_AD_Unit"))
+
+		jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK
+		JSON_AddTreeObject(jsonID, jsonPath)
+		jsonPath += "/"
+
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA, str2num(GetPopupMenuString(device, "Popup_Settings_IC_DA")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD, str2num(GetPopupMenuString(device, "Popup_Settings_IC_AD")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAGAIN, GetSetVariable(device, "setvar_Settings_IC_DAgain"))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICADGAIN, GetSetVariable(device, "setvar_Settings_IC_ADgain"))
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT, GetSetVariableString(device, "SetVar_Hardware_IC_DA_Unit"))
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT, GetSetVariableString(device, "SetVar_Hardware_IC_AD_Unit"))
 
 		ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
 		ampChannelID = ChanAmpAssign[%AmpChannelID][i]
-		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
-
 		if(IsFinite(ampSerial) && IsFinite(ampChannelID))
 
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
+
+			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL, ampSerial)
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL, ampChannelID)
 
-			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK
-			JSON_AddTreeObject(jsonID, jsonPath)
-			jsonPath += "/"
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK + "/"
 
 			// read VC settings
 			DAP_ChangeHeadStageMode(device, V_CLAMP_MODE, i, DO_MCC_MIES_SYNCING)
@@ -2155,16 +2238,11 @@ static Function CONF_GetAmplifierSettings(device)
 			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_RS_COMP_ENABLE, DAG_GetNumericalValue(device, "check_DatAcq_RsCompEnable"))
 			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_COMP_CHAIN, DAG_GetNumericalValue(device, "check_DataAcq_Amp_Chain"))
 
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA, str2num(GetPopupMenuString(device, "Popup_Settings_VC_DA")))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD, str2num(GetPopupMenuString(device, "Popup_Settings_VC_AD")))
-
 			// MCC settings without GUI control
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_GAIN, AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN))
 
-			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK
-			JSON_AddTreeObject(jsonID, jsonPath)
-			jsonPath += "/"
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK + "/"
 
 			// read IC settings
 			DAP_ChangeHeadStageMode(device, I_CLAMP_MODE, i, DO_MCC_MIES_SYNCING)
@@ -2185,9 +2263,6 @@ static Function CONF_GetAmplifierSettings(device)
 
 			JSON_AddVariable(jsonID,  jsonPath + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC, DAG_GetNumericalValue(device, "setvar_DataAcq_PipetteOffset_IC"))
 
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA, str2num(GetPopupMenuString(device, "Popup_Settings_IC_DA")))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD, str2num(GetPopupMenuString(device, "Popup_Settings_IC_AD")))
-
 			// MCC settings without GUI control
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_GAIN, AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN))
@@ -2196,6 +2271,7 @@ static Function CONF_GetAmplifierSettings(device)
 				DAP_ChangeHeadStageMode(device, clampMode, i, DO_MCC_MIES_SYNCING)
 			endif
 		else
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
 			JSON_AddNull(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL)
 			JSON_AddNull(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL)
 		endif
