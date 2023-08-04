@@ -16,7 +16,7 @@ Building the documentation
 
 - The script ``tools/build-documentation.sh`` allows to build the documentation locally
 - This command also installs the required pip packages, so using a dedicated virtual environment is advised
-- Linux users might directly execute the docker version in ``tools/docker/build-documentation.sh``
+- Linux users might directly execute the docker version in ``tools/documentation/run.sh``
 
 Updating documentation
 ~~~~~~~~~~~~~~~~~~~~~~
