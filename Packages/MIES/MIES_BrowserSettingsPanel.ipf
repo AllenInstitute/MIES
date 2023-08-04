@@ -1267,23 +1267,20 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					endif
 					break
 				case "check_BrowserSettings_TTL":
-					if(checked)
+					if(checked && !GetCheckBoxState(bsPanel, "check_BrowserSettings_VisEpochs"))
 						EnableControl(bsPanel, "check_BrowserSettings_splitTTL")
 					else
 						DisableControl(bsPanel, "check_BrowserSettings_splitTTL")
 					endif
 					break
 				case "check_BrowserSettings_VisEpochs":
-					AdaptDependentControls(bsPanel, "check_BrowserSettings_splitTTL", CHECKBOX_UNSELECTED, checked, DEP_CTRLS_SAME)
+					if(GetCheckBoxState(bsPanel, "check_BrowserSettings_TTL"))
+						AdaptDependentControls(bsPanel, "check_BrowserSettings_splitTTL", CHECKBOX_UNSELECTED, checked, DEP_CTRLS_SAME)
+					endif
 					if(checked)
 						DisableControls(bsPanel, "check_Display_EqualYrange;check_Display_EqualYignore")
 					else
 						EnableControls(bsPanel, "check_Display_EqualYrange;check_Display_EqualYignore")
-					endif
-					break
-				case "check_BrowserSettings_splitTTL":
-					if(!checked)
-						PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_VisEpochs", val = 0)
 					endif
 					break
 				default:
