@@ -776,6 +776,7 @@ data
 
 method
   the method can be either
+
   * `0` for "full"
   * `1` for "instantaneous"
   * `2` for apcount
@@ -788,11 +789,13 @@ level
 
 resultType
   the result type defines what result(s) the apfrequency operation returns if the method `3` (instantaneous pair) is set.
+
   * `time` returns time intervals
   * `freq` returns frequencies.
 
 normalize
   sets the way the results get normalized
+
   * `nonorm`: no normalzation is applied (default)
   * `normoversweepsmin`: normalizes over all sweeps based on the minimum result value in all sweeps based on the current method
   * `normoversweepsmax`: normalizes over all sweeps based on the maximum result value in all sweeps based on he current method
@@ -803,6 +806,7 @@ normalize
 
 xAxisType
   if the method `3` (instantaneous pair) is set then xAxisType defines the x-axis of the data display.
+
   * `time`: the x-axis shows the occurence in time of the first peak of the pair(s), default
   * `count`: the x-axis counts the pair(s)
 
