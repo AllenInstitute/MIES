@@ -10,7 +10,7 @@ case $(uname) in
     *)
       # install the correct packages
       # this is more convenient for users
-      pip install -r $top_level/tools/docker/requirements.txt > /dev/null || exit 1
+      pip install -r $top_level/tools/documentation/requirements.txt > /dev/null || exit 1
       ;;
 esac
 
