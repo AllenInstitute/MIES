@@ -118,7 +118,7 @@ jobs:
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Build documentation
-        run: tools/docker/build-documentation.sh
+        run: tools/documentation/run.sh
       - name: upload artifacts
         uses: actions/upload-artifact@v3
         if: ${{ always() }}

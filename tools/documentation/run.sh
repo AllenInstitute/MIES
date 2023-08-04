@@ -16,7 +16,7 @@ top_level=$(git rev-parse --show-toplevel)
 
 # build containter
 echo "Start building Docker container 'mies-documentation'"
-docker build --build-arg USERID=$(id -u) --build-arg GROUPID=$(id -g) -t mies-documentation $top_level/tools/docker
+docker build --build-arg USERID=$(id -u) --build-arg GROUPID=$(id -g) -t mies-documentation $top_level/tools/documentation
 
 # execute build script
 # use 'docker run -it ..' for interactive debugging
