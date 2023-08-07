@@ -2133,14 +2133,15 @@ End
 /// @brief Enable show trace info tags globally
 Function ShowTraceInfoTags()
 
-	DoIgorMenu/C "Graph", "Show Trace Info Tags"
-
-	if(cmpStr(S_value,"Hide Trace Info Tags"))
-		// add graph so that the menu item is available
-		Display
+	Display
+	// Window must not be hidden
+	// Returns in S_value the state before toggling
+	DoIgorMenu/OVRD "Graph", "Show Trace Info Tags"
+	if(CmpStr(S_value,"Show Trace Info Tags"))
+		// toggled to "Show Trace Info Tags", need to toggle back
 		DoIgorMenu/OVRD "Graph", "Show Trace Info Tags"
-		KillWindow/Z $S_name
 	endif
+	KillWindow/Z $S_name
 End
 
 /// @brief Return the recreation macro and the type of the given control
