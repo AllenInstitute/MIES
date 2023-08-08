@@ -146,7 +146,7 @@ End
 #include "MIES_AcquisitionStateHandling"
 #include "MIES_AmplifierInteraction"
 #include "MIES_AnalysisBrowser"
-#include "MIES_AnalysisBrowserMacro"
+#include "MIES_AnalysisBrowser_Macro"
 #include "MIES_AnalysisBrowser_SweepBrowser"
 #include "MIES_AnalysisBrowser_SweepBrowser_Export"
 #include "MIES_AnalysisFunctionHelpers"
