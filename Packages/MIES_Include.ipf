@@ -198,6 +198,7 @@ End
 #include "MIES_Indexing"
 #include "MIES_InputDialog"
 #include "MIES_IVSCC"
+#include "MIES_IVSCC_Macro"
 #include "MIES_JSONWaveNotes"
 #include "MIES_Labnotebook"
 #include "MIES_LogbookViewer"
