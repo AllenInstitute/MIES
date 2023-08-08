@@ -197,6 +197,7 @@ End
 #include "MIES_IgorHooks"
 #include "MIES_Indexing"
 #include "MIES_InputDialog"
+#include "MIES_InputDialog_Macro"
 #include "MIES_IVSCC"
 #include "MIES_IVSCC_Macro"
 #include "MIES_JSONWaveNotes"
