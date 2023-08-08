@@ -10,7 +10,7 @@ static Function ExecuteAllMacros()
 
 	// avoid that the default TEST_CASE_BEGIN_OVERRIDE
 	// hook keeps our debug panel open if it did not exist before
-	keepDebugPanel = WindowExists("DP_DebugPanel")
+	keepDebugPanel = WindowExists("DebugPanel")
 
 	WAVE/T macros = GetMIESMacros()
 
@@ -20,7 +20,7 @@ static Function ExecuteAllMacros()
 	endfor
 
 	if(!keepDebugPanel)
-		KillWindow/Z DP_DebugPanel
+		KillWindow/Z DebugPanel
 	endif
 End
 

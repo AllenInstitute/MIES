@@ -186,6 +186,7 @@ End
 #include "MIES_DataConfigurator"
 #include "MIES_Debugging"
 #include "MIES_DebugPanel"
+#include "MIES_DebugPanel_Macro"
 #include "MIES_Downsample"
 #include "MIES_Epochs"
 #include "MIES_EnhancedWMRoutines"
