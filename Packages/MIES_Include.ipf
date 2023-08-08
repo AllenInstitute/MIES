@@ -149,6 +149,7 @@ End
 #include "MIES_AnalysisBrowser_Macro"
 #include "MIES_AnalysisBrowser_SweepBrowser"
 #include "MIES_AnalysisBrowser_SweepBrowser_Export"
+#include "MIES_AnalysisBrowser_SweepBrowser_Export_Macro"
 #include "MIES_AnalysisFunctionHelpers"
 #include "MIES_AnalysisFunctionManagement"
 #include "MIES_AnalysisFunctions_PatchSeq"

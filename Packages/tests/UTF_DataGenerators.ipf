@@ -254,7 +254,7 @@ End
 Function/WAVE GetMiesMacrosWithPanelType()
 	WAVE/T allMiesMacros = GetMIESMacros()
 
-	Make/FREE/T panelsWithoutType = {"ID_Headstage_Panel", "ID_Popup_Panel", "DP_DebugPanel", "SBE_ExportSettingsPanel", "PSXPanel"}
+	Make/FREE/T panelsWithoutType = {"ID_Headstage_Panel", "ID_Popup_Panel", "DP_DebugPanel", "ExportSettingsPanel", "PSXPanel"}
 
 	WAVE/T matches = GetSetDifference(allMiesMacros, panelsWithoutType)
 
