@@ -224,6 +224,7 @@ End
 #include "MIES_SweepFormula"
 #include "MIES_SweepFormula_Helpers"
 #include "MIES_SweepFormula_PSX"
+#include "MIES_SweepFormula_PSX_Macro"
 #include "MIES_SweepSaving"
 #include "MIES_ThreadedFIFOHandling"
 #include "MIES_ThreadsafeDataSharing"
