@@ -7,6 +7,18 @@ Controls
 All added, removed or renamed controls of the main GUIs are listed. These lists are intended to help upgrading the JSON
 configuration files. Controls, like GroupBox'es, which can not be read/written with the configuration code are not included.
 
+AnalysisBrowser
+~~~~~~~~~~~~~~~
+
+Added
+^^^^^
+
+Removed
+^^^^^^^
+
+Renamed
+^^^^^^^
+
 DA\_Ephys
 ~~~~~~~~~
 
@@ -115,6 +127,10 @@ MIESUtils XOP
 -------------
 
 
+JSON XOP
+--------
+
+
 Labnotebook
 -----------
 
@@ -140,6 +156,14 @@ Renamed numerical entries
 
 
 Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Removed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Removed textual entries
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 

@@ -3,6 +3,483 @@ Release notes
 
 .. toctree::
 
+Release 2.7
+===========
+
+Controls
+--------
+
+All added, removed or renamed controls of the main GUIs are listed. These lists are intended to help upgrading the JSON
+configuration files. Controls, like GroupBox'es, which can not be read/written with the configuration code are not included.
+
+AnalysisBrowser
+~~~~~~~~~~~~~~~
+
+Added
+^^^^^
+
+- ``listbox_AB_Folders``
+- ``button_AB_AddFiles``
+- ``button_AB_Remove``
+- ``button_AB_Open``
+
+Removed
+^^^^^^^
+
+- ``setvar_baseFolder``
+
+Renamed
+^^^^^^^
+
+- ``button_base_folder_scan`` -> ``button_AB_refresh``
+- ``button_select_directory`` -> ``button_AB_AddFolder``
+
+DA\_Ephys
+~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+- ``button_Hardware_AddFollower``
+- ``button_Hardware_Independent``
+- ``button_Hardware_Lead1600``
+- ``button_Hardware_RemoveYoke``
+- ``group_Hardware_Yoke``
+- ``group_Hardware_YokeInner``
+- ``popup_Hardware_AvailITC1600s``
+- ``popup_Hardware_YokedDACs``
+- ``setvar_Hardware_Status``
+- ``setvar_Hardware_YokeList``
+- ``title_hardware_1600inst``
+
+Renamed
+^^^^^^^
+
+None
+
+Databrowser
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Wavebuilder
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Sweep Formula
+-------------
+
+- Completely rework the internals to handle multiple datasets with different
+  sampling intervals in all cases. This change should not affect user code.
+
+- ``merge``: Remove it as it is not needed anymore
+
+- ``store``:
+
+  - Make stored sweeps and channel unambiguous in the results wave, we now store the full 2D wave
+  - Change serialization format to use `JSON wave serialization <https://github.com/AllenInstitute/ZeroMQ-XOP/#wave-serialization-format>`__.
+    This allows to store multiple waves with all metadata.
+
+- ``select``:
+
+  - Fix data gathering for cases where we did not yet have splitted sweep data
+  - Add support for TTL channels and unassociated channels
+  - Add an optional fourth argument that allows to query sweeps with a specific clamp mode
+
+- ``data``:
+
+  - Silently ignore non-existing epochs when requesting data from multiple sweeps
+  - Clip too large epoch ranges for old data instead of asserting out
+
+- ``powerspectrum``: Add it
+- Fix parser issues with signed numbers/arrays
+- Fix buggy computation for formulas like ``(1)/(1)/(1)/(1)``
+- Make the sweep brower retrievable from the plot via the context menu
+- Add ``with`` keyword to plot multiple y formulas against the same x formula/axis
+- ``epochs``: Only return the full tag if no shortname is present
+- ``epochs``/``data``:  Add support for multiple epochs in wildcard syntax, e.g. ``["TP_*", "E1*"]``
+- ``apfrequency``: Add `more modes <https://alleninstitute.github.io/MIES/SweepFormula.html#apfrequency>`__ for normalization
+- Add `variable support <https://alleninstitute.github.io/MIES/SweepFormula.html#variables>`__ for faster and shorter formulas
+- ``avg``: Add support for two different averaging modes
+
+- ``tp``:
+
+  - Fix property calculation
+  - Add ``tpss``, ``tpinst``, ``tpbase``, ``tpfit`` modes
+
+- ``/``/``+``/``-``/``*``: Add support for working with multiple datasets
+
+- Add operations ``psx``/``psxprep``/``psxstats``/``psxkernel``/``psxrisetime`` for miniature analysis. The below instructional video should help you get started. There is also extensive documentation for the `operations <https://alleninstitute.github.io/MIES/SweepFormula.html#psx>`__ and the `gui <https://alleninstitute.github.io/MIES/SweepFormula_PSX.html>`__ available.
+
+.. youtube:: O2WxPzBsEfc
+
+- Plotter:
+
+  - Add more support for customization by operations: ``SF_META_XAXISLABEL``/``SF_META_XVALUES``/``SF_META_MOD_MARKER``/``SF_META_SHOW_LEGEND``/``SF_META_XTICKLABELS``/``SF_META_XTICKPOSITIONS``/``SF_META_TRACE_MODE``/``SF_META_CUSTOM_LEGEND``
+  - Remove partially broken support for plotting multidimensional text waves
+  - Enhance legend by adding more information on the applied operations, but also compress the text output
+  - Adapt logic how x-waves are mapped to y-waves
+  - Warn by more than 1000 traces and forbid more than 10000 traces. Please file an issue if that breaks your code.
+  - Use our standard trace coloring for averaged sweeps
+  - Restore axes ranges, cursors and annotations positions afte replotting the same SF code
+  - Automatically use different markers or line styles if formulas are different in the same plot
+
+AnalysisBrowser
+---------------
+
+- Allow to load all Stimsets from files containing only stimsets
+- Revise GUI to allow loading single files and open multiple folders
+- Handle loading NWBv1 with duplicated sweeps better
+
+DataBrowser
+-----------
+
+None
+
+DataBrowser/SweepBrowser
+------------------------
+
+- LogbookViewer: Update plot for textual entries in case the labnotebook got resized
+- LogbookViewer: Avoid plotting the same entry again within a sweep
+- Always enable tooltips for epoch visualization
+- Add support for creating a browser in automation mode without additional external subwindows
+- Improve hiding/showing of the subwindows
+- Show epoch information also for unassociated DA and TTL channels
+- Use the GUI channel numbers for TTL data plots in the axis labels
+- Use the correct `colors <https://alleninstitute.github.io/MIES/databrowser.html#relevant-colors>`__ for TTL channels
+- Output correct headstage when viewing textual labnotebook entries
+
+Dashboard
+~~~~~~~~~
+
+- Fix rare case of not updating the display due to incorrect cache key deriviation
+- Handle sweeps without analysis functions better
+- Accept broken sweeps from PSQ_SquarePulse without PRE_SET_EVENT labnotebook entries
+- Handle data from previous PSQ analysis function versions better
+
+DA\_Ephys
+---------
+
+- Be less chatty when no amplifier is connected to a headstage
+- Support NI hardware USB-6346
+- Output a help message in case no hardware was found when scanning
+- Support acquisition without amplifier better
+- Improve the version check for old NIDAQmx XOPs to not result in an compilation error
+- Don't bug out when having oodDAQ enabled and only "TP during DAQ" channels present
+- Retry amplifier calls on error automatically after waiting 100ms
+- Make data acquisition more robust in edge cases with ITC hardware
+- Unify "Delay onset auto" calcuation to avoid epoch gaps at treelevel 0
+- Fix the search fields for DA/TTL stimsets
+- Warn about too short stimset epochs before DAQ/TP
+- Check also unassociated DA channels before DAQ/TP
+- Fix acquisition with random option
+- Disallow "TP during DAQ" on unassociated channels
+- Fix adding empty TTL related labnotebook entries without active TTL channels
+- Add ``none`` entries for the DA/AD channel selection on the hardware tab instead of using an invalid index
+
+JSON Configuration
+------------------
+
+- Support saving and restore of plaintext notebook windows
+- Support saving and restore of MCC gain values
+- Support upgrading old configuration files. Just load an old configuration
+  file and save it under a new name. All settings from the old files are taken
+  over. Rig files are also supported.
+- Allow saving and restoring of all major MIES GUIs
+- Support saving and restoring DA\_Ephys panels with headstages without associated amplifier
+
+Downsample
+----------
+
+None
+
+Analysis Functions
+------------------
+
+- ``PSQ_Chirp``:
+
+  - Rework chirp cycle code completely as the old heuristic did fail in various occasions
+  - Fix spike detection and add ``Chirp Spike Evaluation`` user epoch for visual inspection
+  - Add analysis function parameter ``BaselineTargetVThreshold``
+
+- ``PSQ_DAScale``:
+
+  - Add analysis function parameter ``BaselineTargetVThreshold``
+
+- ``PSQ_Ramp``:
+
+  - Add analysis function parameter ``BaselineTargetVThreshold``
+
+- ``PSQ_Rheobase``:
+
+  - Add analysis function parameter ``BaselineTargetVThreshold``
+
+- ``SetControlInEvent``:
+
+  - Support setting notebooks in general and not only for special cases
+  - Add ``XXX_CheckParam`` function to catch errors earlier
+
+- Create the databrowser in automation mode for SweepFormula execution to not
+  interfere with other open databrowsers for the following analysis functions:
+
+  - ``PSQ_PipetteInBath``
+  - ``PSQ_SealEvaluation``
+  - ``PSQ_TrueRestingMembranePotential``
+  - ``PSQ_AccessResistanceSmoke``
+
+Foreign Function interface
+--------------------------
+
+None
+
+Pulse Average Plot
+------------------
+
+None
+
+Publisher
+---------
+
+None
+
+General
+-------
+
+- Add version checking for ITCXOP2
+- Add generic functions for dealing with JSON formatted wave notes, see ``MIES_JSONWaveNotes.ipf``
+- EP_GetEpochs: Add support for old epoch tag formats
+- Better handle cases in IgorBeforeQuitHook/IgorBeforeNewHook where an
+  experiment was opened from a read-only location
+- Add table with all `analysis parameters <https://alleninstitute.github.io/MIES/analysis-function-parameters.html>`__
+- Allow multithreading also in preemptive threads
+- Upload the ITCXOP2 logfile as well when uploading logfiles
+- Add documentation for dDAQ and oodDAQ
+- Fix wave leaks found with latest IP9 and igortest's new `wave leak detection <https://docs.byte-physics.de/igortest/basic.html?highlight=runtest#function-definition-of-runtest>`__ support
+- Add support for wildcard matching in FindIndizes
+- Make graph menu option ``HorizExpandWithVisX`` more reliable
+- Remove support for yoking with ITC hardware
+- Require a newer IP9 build, r39935, to avoid a bogus save dialog on creating a
+  new experiment
+- Remove workarounds for fixed IP9 bugs
+- Revise JSON layout for MIES log files
+- Teach ``GetActiveChannels`` to return the GUI/HW channel mapping for TTL channels for all hardware types
+- Add routines ``JSONToWave`` and ``WaveToJSON`` for igor `wave serialization <https://github.com/AllenInstitute/ZeroMQ-XOP/#wave-serialization-format>`__ to JSON and back
+- The complete `Sweep Rollback` feature was removed as maintaining it and keeping it working 100% reliable was too difficult
+- Add user ping support (enabled by default), can be disabled via config file or menu option permanently
+- Don't deploy the release packages anymore. All users should by now either use the installer or do an installation from git
+
+TUF XOP
+-------
+
+- Add `TUF XOP <https://docs.byte-physics.de/tuf-xop/>`__
+
+ITC XOP 2
+----------
+
+- Error out when free waves can not be used in certain cases
+- Rewrite ITCCloseAll2 to be more robust
+- Add support for JSON newlines formatted logfiles
+- Make debugging flag global instead of local to the thread
+
+ZeroMQ XOP
+----------
+
+- Enhance wave serialization examples in Readme.md
+- Add timesteamp in XOP when creating a logfile entry
+- Fix dimension label serialization with empty entries in between
+
+MCC XOP
+-------
+
+None
+
+MIESUtils XOP
+-------------
+
+None
+
+JSON XOP
+--------
+
+- Update to `version 875 <https://docs.byte-physics.de/json-xop/changelog.html>`__
+
+Labnotebook
+-----------
+
+- Improve labnotebook key upgrade for IP9 compatibility with existing data
+- Add `descriptions <https://alleninstitute.github.io/MIES/labnotebook-descriptions.html#id2>`__ for the textual labnotebook entries
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- ``PSQ_FMT_LBN_TARGETV_THRESHOLD``
+- ``PSQ_FMT_LBN_CR_STIMSET_QC``
+- ``Skip Sweeps source``: Reason for the sweep skipping
+- ``Skip Ahead``: Number of ahead skipped sweeps
+- ``Double precision data``
+- ``Save amplifier settings``
+- ``Require amplifier``
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- ``Device``: DAEphys device used for acquisition
+- ``TTL Epochs Channel 0-7``: TTL epoch information
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``TTL Stim set length``: Holds now the decimanted length instead of the undecimated
+
+Renamed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Removed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``Sweep Rollback``: The complete `Sweep Rollback` feature was removed as maintaining it was too difficult
+- ``PSQ_FMT_LBN_CR_CYCLES``: Replaced with user epoch ``Chirp Cycle Evaluation``/``U_CR_CE``
+
+Removed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``PSQ_FMT_LBN_CR_STIMSET_QC``
+
+Epoch information
+-----------------
+
+- Add ``Chirp Cycle Evaluation``/``U_CR_CE`` for ``PSQ_Chirp``
+- Add epoch information for new trigonometric epoch types: `Ex_TG_Cx, Ex_TG_Cx_Hx, Ex_TG_Ix <https://alleninstitute.github.io/MIES/epoch_information.html#naming>`__
+- Add epoch information for TTL channels
+
+NWB/IPNWB
+---------
+
+- Raise pynwb version used for read test CI to 2.4.0
+- IPNWB: Minor API fixes
+- IPNWB: Fix reading very old data (pre NWBv1.0.5)
+- Avoid bogus warning about third-part stimsets when custom waves are present in the DA/TTL stimset folder
+
+File format
+~~~~~~~~~~~
+
+None
+
+Pressure Control
+----------------
+
+None
+
+WaveBuilder
+-----------
+
+- Improve calculation of the inflection points for trigonometric stimsets
+- Allow longer stimulus set names, the new maximum is 31 characters
+- Don't allow to save empty stimsets or stimsets with empty epochs
+
+Work Sequencing Engine
+----------------------
+
+None
+
+Internal
+--------
+
+- Add support for the ListBox GUI type to PGC_SetAndActivateControl
+- Make MIES version gathering for git checkouts compatible with git 2.38 and higher
+- Add ``AccelerateHideTracesPerTrace``/``AccelerateHideTracesAndColor`` together with IP code generating this code
+- ``check-code.sh``: Warn about function statements in for loops and fix most of those cases
+- Rename confusing ``minimumSize`` argument of ``EnsureLargeEnoughWave``
+- Use DC_DocumentChannelProperty now also exclusively for TTL labnotebook entries
+- Start using pip package hashes for the documentation packages to enforce
+  better software supply chain security
+
+Tests
+-----
+
+- Add CheckThatZeroMQMessagingWorks to abort early on ZMQ transport problems
+- PGC_SetAndActivateControl: Enhance test coverage
+- Tests: Add ScaleZeroWithCycling
+- Tests: Add single/multi device tests with RA and a single sweep
+- Add SWEEPFORMULA_DEBUG define to check_mies_compilation.sh
+- Check in all experiments for bug messages
+- Reorganize test folders
+- Add improved AcquireData_NG to make hardware test parmeterization easier and shorter, also with documentation
+- Allow tweaking test execution more fine-grained
+- Make tests work with ITC1600 again
+- Fix adapting the number of usable async channels to the data acquisition hardware
+- Adopt latest version of `igortest <https://github.com/byte-physics/igortest>`__ and remove workarounds for fixed bugs
+- Add some for the AnalysisBrowser
+- Add tests for checking various acquisition delays
+- Drop confusing tests which used ``override`` functions
+- Enhance the hardware tests exceution speed a bit by caching the list of available hardware devices
+- Prefer igortest compilation test support instead of our own hack
+- Switch to cobertura as output format for coverage information, see also the `coverage history <https://byte-physics.de/public-downloads/aistorage/transfer/report/coverage/>`__
+- Gather logfiles and the IP diagnostics folder after each CI run with Igor Pro
+- Make ITC testing more robust and avoid often occurring crashes
+- Move to github actions for CI and say good-bye to our old on-premise bamboo instance
+- Add tests with historic MIES data
+- Add `pre-commit <https://pre-commit.com>`__ config and CI
+
+Async Framework
+---------------
+
+None
+
+Logging
+-------
+
+- Handle logfiles larger than 2GB better when uploading them. Also split them for faster access above a certain threshold.
+
+Installer
+---------
+
+- Remove old MIES installations with developer (`/CIS`) installer
+
 Release 2.6
 ===========
 

@@ -1,4 +1,4 @@
-From d8bae7390a0dd02af065fb3a9c4be43be05af063 Mon Sep 17 00:00:00 2001
+From 442b099da06bd393b5ae53211ae2c8026dcef869 Mon Sep 17 00:00:00 2001
 From: Thomas Braun <thomas.braun@byte-physics.de>
 Date: Wed, 29 Mar 2023 18:18:04 +0200
 Subject: [PATCH 1/1] WIP: fast sphinx compilation without breathe
@@ -9,7 +9,7 @@ Subject: [PATCH 1/1] WIP: fast sphinx compilation without breathe
  2 files changed, 3 insertions(+), 30 deletions(-)
 
 diff --git a/Packages/doc/conf.py b/Packages/doc/conf.py
-index ad61b69d9..13385ff36 100644
+index ad61b69d90..13385ff369 100644
 --- a/Packages/doc/conf.py
 +++ b/Packages/doc/conf.py
 @@ -16,11 +16,11 @@ def get_version():
@@ -36,10 +36,10 @@ index ad61b69d9..13385ff36 100644
  cpp_id_attributes = [ 'threadsafe' ]
  
 diff --git a/tools/build-documentation.sh b/tools/build-documentation.sh
-index 1ef95581d..f0ffe5619 100755
+index 1375d65a07..f709100c55 100755
 --- a/tools/build-documentation.sh
 +++ b/tools/build-documentation.sh
-@@ -101,33 +101,6 @@ trap "rm -rf ${top_level}/Packages/doc/IPNWB" EXIT
+@@ -91,33 +91,6 @@ trap "rm -rf ${top_level}/Packages/doc/IPNWB" EXIT
  # workaround https://github.com/sphinx-contrib/images/pull/31
  mkdir _video_thumbnail
  
@@ -51,7 +51,7 @@ index 1ef95581d..f0ffe5619 100755
 -else
 -  echo "Errors building the documentation" 1>&2
 -  echo "breathe-apidoc could not be found" 1>&2
--  Failed
+-  exit 1
 -fi
 -
 -# Add labels to each group and each file
@@ -74,5 +74,5 @@ index 1ef95581d..f0ffe5619 100755
  grep "IgorPro[0-9]Nightly" $top_level/Packages/MIES_Include.ipf \
    | sed -e "s/^\/\/ //"                                         \
 -- 
-2.40.0.windows.1
+2.42.0.rc0.windows.1
 
