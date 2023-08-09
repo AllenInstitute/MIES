@@ -25,16 +25,17 @@ LICENSE whitespace=cr-at-eol
 *.tex eol=lf
 *.awk eol=lf
 
-.git*                 export-ignore
-*.sh                  export-ignore
-tools                 export-ignore
-Packages/*/tools     -export-ignore
-Packages/tests        export-ignore
-.mailmap              export-ignore
-CODEOWNERS            export-ignore
-ctags.cnf             export-ignore
-.editorconfig         export-ignore
-Packages/Artwork      export-ignore
+.git*                   export-ignore
+.pre-commit-config.yaml export-ignore
+*.sh                    export-ignore
+tools                   export-ignore
+Packages/*/tools        -export-ignore
+Packages/tests          export-ignore
+.mailmap                export-ignore
+CODEOWNERS              export-ignore
+ctags.cnf               export-ignore
+.editorconfig           export-ignore
+Packages/Artwork        export-ignore
 
 *.dot !diff
 
