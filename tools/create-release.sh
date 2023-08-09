@@ -68,7 +68,7 @@ git --git-dir=$git_dir archive -o $output_file HEAD
 git --git-dir=$git_dir submodule --quiet foreach "cd \$toplevel; \$zip_exe -qru \$toplevel/$output_file \$path"
 # delete .git files from submodules
 # but these are only present on linux and not on windows ...
-git --git-dir=$git_dir submodule --quiet foreach "cd \$toplevel; \$zip_exe -qd \$toplevel/$output_file \$path/.git || :" > /dev/null
+git --git-dir=$git_dir submodule --quiet foreach "cd \$toplevel; \$zip_exe -qd \$toplevel/$output_file \$path/.git* \$path/conf.py \$path/make.bat \$path/Makefile \$path/update_specifications.sh || :" > /dev/null
 /bin/echo -e "$full_version" | $zip_exe -qu $output_file -z
 
 version_file=$top_level/version.txt
