@@ -64,6 +64,7 @@ jobs:
   GenerateReport:
     name: 📊 Generate Reports
     runs-on: [ self-hosted, Linux, Docker ]
+    if: github.ref_name == 'main'
     needs:
       - CallPR
     steps:
