@@ -250,6 +250,8 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
 	CHI_CheckXOP(listOfXOPs, "TUF-64.xop", "TUF XOP", state)
+	CHI_CheckXOP(listOfXOPs, "MiesUtils-64.xop", "MiesUtils XOP", state)
+	CHI_CheckXOP(listOfXOPs, "mies-nwb2-compound-XOP-64.xop", "NWBv2 compound XOP", state)
 
 	CHI_CheckJSONXOPVersion(state)
 	CHI_CheckITCXOPVersion(state)
