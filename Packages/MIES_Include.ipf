@@ -16,7 +16,8 @@
 // These are sphinx substitutions destined for Packages/doc/installation_subst.txt.
 // They are defined here so that we can parse them from within IP.
 //
-// .. |IgorPro9Nightly| replace:: `Igor Pro 9 <https://www.byte-physics.de/Downloads/WinIgor9_01APR2023.zip>`__
+// .. |IgorPro9WindowsNightly| replace:: `Igor Pro 9 (Windows) <https://www.byte-physics.de/Downloads/WinIgor9_01APR2023.zip>`__
+// .. |IgorPro9MacOSXNightly| replace:: `Igor Pro 9 (MacOSX) <https://www.byte-physics.de/Downloads/MacIgor9_18Aug2023.dmg>`__
 
 #pragma IgorVersion=9.00
 
@@ -53,12 +54,20 @@ End
 
 static Function/S GetDownloadLink()
 
-	string igorMajorVersion, text, lineWithLink, url
+	string igorMajorVersion, text, lineWithLink, url, os
 
 	igorMajorVersion = StringByKey("IGORVERS", IgorInfo(0))[0]
 
+#if defined(WINDOWS)
+	os = "Windows"
+#elif defined(MACINTHOSH)
+	os = "MacOSX"
+#else
+	ASSERT_TS(0, "Unsupported OS")
+#endif
+
 	text = ProcedureText("", 0, "MIES_Include.ipf")
-	lineWithLink = GrepList(text, "\\Q|IgorPro" + igorMajorVersion + "Nightly|\\E", 0, "\r")
+	lineWithLink = GrepList(text, "\\Q|IgorPro" + igorMajorVersion + os + "Nightly|\\E", 0, "\r")
 	SplitString/E=".*<(.*)>.*" lineWithLink, url
 
 	if(V_Flag != 1)
