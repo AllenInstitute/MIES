@@ -6733,3 +6733,17 @@ threadsafe Function FindRightMostHighBit(uint64 value)
 
 	return NaN
 End
+
+#ifdef MACINTOSH
+
+threadsafe Function MU_RunningInMainThread()
+	TUFXOP_RunningInMainThread
+
+	return V_value
+End
+
+threadsafe Function MU_GetFreeDiskSpace(string path)
+	ASSERT_TS(0, "Not implemented")
+End
+
+#endif
