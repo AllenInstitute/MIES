@@ -111,7 +111,7 @@ Function AdditionalExperimentCleanup()
 			continue
 		endif
 
-		if(!cmpstr(win, "DP_DebugPanel"))
+		if(!cmpstr(win, "DebugPanel"))
 			reopenDebugPanel = 1
 		endif
 

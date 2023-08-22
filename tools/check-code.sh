@@ -67,6 +67,15 @@ then
   ret=1
 fi
 
+matches=$(git grep $opts "^(Window|Macro)\b" '*/MIES_*.ipf' ':^*/MIES_*_Macro.ipf' ':^*/MIES_Include.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "Macros are only allowed in separate files:"
+  echo "$matches"
+  ret=1
+fi
+
 matches=$(git grep $opts "\bbutton_SettingsPlus_LockDevice\b" '*/UTF_*.ipf' ':^*/UTF_HardwareHelperFunctions.ipf')
 
 if [[ -n "$matches" ]]
