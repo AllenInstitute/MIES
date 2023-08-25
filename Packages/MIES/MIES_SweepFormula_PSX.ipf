@@ -4099,10 +4099,10 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 	WAVE/WAVE psxKernelDataset = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_PSX, 1,  defOp = "psxKernel()")
 
 	try
-		numberOfSDs   = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
-		sweepFilterLow     = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW)
-		sweepFilterHigh    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH)
-		maxTauFactor  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
+		numberOfSDs = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
+		sweepFilterLow = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW, checkFunc = IsNullOrPositiveAndFinite)
+		sweepFilterHigh = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH, checkFunc = IsNullOrPositiveAndFinite)
+		maxTauFactor = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
 		WAVE riseTime = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 6, defOp = "psxRiseTime()", singleResult = 1)
 		ASSERT(IsNumericWave(riseTime), "Invalid return from psxRiseTime")
 
