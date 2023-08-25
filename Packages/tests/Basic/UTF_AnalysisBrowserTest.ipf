@@ -37,7 +37,10 @@ static Function CheckRefCount()
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 	expBrowserSel[0][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
 
-	dfPath = GetAnalysisFolderAS() + ":workFolder:" + CleanupName(RemoveEnding(PXP2_FILENAME, ".pxp"), 0)
+	DFREF dfr = $(GetAnalysisFolderAS() + ":workFolder:")
+	WAVE/T workFolders = ListToTextWave(GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath=1), ";")
+	CHECK_WAVE(workFolders, TEXT_WAVE)
+	dfPath = workFolders[0]
 	CHECK_EQUAL_VAR(DataFolderExists(dfPath), 1)
 
 	NVAR rc = $GetDFReferenceCount($dfPath)
