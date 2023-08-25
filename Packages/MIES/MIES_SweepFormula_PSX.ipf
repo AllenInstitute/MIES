@@ -406,11 +406,11 @@ end
 /// - deconvolution
 /// - histogram of deconvolution
 /// - gaussian fit of histogram
-static Function [WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] PSX_Analysis(WAVE sweepData, WAVE psxKernelFFT, variable filterLow, variable filterHigh)
+static Function [WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] PSX_Analysis(WAVE sweepData, WAVE psxKernelFFT, variable sweepFilterLow, variable sweepFilterHigh)
 
 	variable offset
 
-	WAVE sweepDataFilt = PSX_FilterSweepData(sweepData, filterLow, filterHigh)
+	WAVE sweepDataFilt = PSX_FilterSweepData(sweepData, sweepFilterLow, sweepFilterHigh)
 
 	WAVE/ZZ sweepDataFiltOff
 	[sweepDataFiltOff, offset] = PSX_OffsetSweepData(sweepDataFilt)
@@ -696,7 +696,7 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 	return wv
 End
 
-static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDataset, variable parameterJsonID, variable filterLow, variable filterHigh, variable index, WAVE/WAVE output)
+static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDataset, variable parameterJsonID, variable sweepFilterLow, variable sweepFilterHigh, variable index, WAVE/WAVE output)
 
 	string key, comboKey, psxParametersAnalyzePeaks, cacheKey
 
@@ -717,7 +717,7 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 		WAVE sweepDataFiltOff       = psxAnalyzePeaksFromCache[%sweepDataFiltOff]
 		WAVE sweepDataFiltOffDeconv = psxAnalyzePeaksFromCache[%sweepDataFiltOffDeconv]
 	else
-		[WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] = PSX_Analysis(sweepData, psxKernelFFT, filterLow, filterHigh)
+		[WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] = PSX_Analysis(sweepData, psxKernelFFT, sweepFilterLow, sweepFilterHigh)
 
 		Make/FREE/WAVE/N=(2) psxAnalyzePeaks
 		SetDimensionLabels(psxAnalyzePeaks, "sweepDataFiltOff;sweepDataFiltOffDeconv", ROWS)
@@ -4090,7 +4090,7 @@ End
 // ...
 Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
-	variable numberOfSDs, filterLow, filterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
+	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
 	variable maxTauFactor, peakThresh
 	string parameterPath, id, psxParameters, dataUnit
 
@@ -4100,8 +4100,8 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	try
 		numberOfSDs   = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
-		filterLow     = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW)
-		filterHigh    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH)
+		sweepFilterLow     = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW)
+		sweepFilterHigh    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH)
 		maxTauFactor  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
 		WAVE riseTime = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 6, defOp = "psxRiseTime()", singleResult = 1)
 		ASSERT(IsNumericWave(riseTime), "Invalid return from psxRiseTime")
@@ -4111,8 +4111,8 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		JSON_AddTreeObject(parameterJsonID, parameterPath)
 		JSON_AddString(parameterJsonID, parameterPath + "/id", id)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/numberOfSDs", numberOfSDs)
-		JSON_AddVariable(parameterJsonID, parameterPath + "/filterLow", filterLow)
-		JSON_AddVariable(parameterJsonID, parameterPath + "/filterHigh", filterHigh)
+		JSON_AddVariable(parameterJsonID, parameterPath + "/sweepFilterLow", sweepFilterLow)
+		JSON_AddVariable(parameterJsonID, parameterPath + "/sweepFilterHigh", sweepFilterHigh)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/maxTauFactor", maxTauFactor)
 		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_RISETIME
 		JSON_AddTreeObject(parameterJsonID, parameterPath)
@@ -4138,7 +4138,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		endfor
 
 		for(i = 0; i < numCombos; i += 1)
-			PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, filterLow, filterHigh, i, output)
+			PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilterLow, sweepFilterHigh, i, output)
 		endfor
 
 		[WAVE hist, WAVE fit, peakThresh, dataUnit] = PSX_CalculatePeakThreshold(output, numCombos, numberOfSDs)
