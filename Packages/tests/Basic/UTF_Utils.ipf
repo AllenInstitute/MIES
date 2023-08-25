@@ -3890,15 +3890,32 @@ End
 Function FR_FileExistsWorks()
 
 	CHECK(FileExists(FunctionPath("")))
-	CHECK(!FileExists("C:\\I_DON_EXIST"))
+
+#if defined(WINDOWS)
+	CHECK(!FileExists("C:\\I_DONT_EXIST"))
 	CHECK(!FileExists("C:\\"))
+#elif defined(MACINTOSH)
+	CHECK(!FileExists("Macintosh HD:I_DONT_EXIST"))
+	CHECK(!FileExists("Macintosh HD:"))
+#else
+	FAIL()
+#endif
 End
 
 Function FR_FolderExistsWorks()
 
 	CHECK(!FolderExists(FunctionPath("")))
-	CHECK(!FolderExists("C:\\I_DON_EXIST"))
+
+#if defined(WINDOWS)
+	CHECK(!FolderExists("C:\\I_DONT_EXIST"))
 	CHECK(FolderExists("C:\\"))
+	CHECK(FolderExists("C:"))
+#elif defined(MACINTOSH)
+	CHECK(!FolderExists("Macintosh HD:I_DONT_EXIST"))
+	CHECK(FolderExists("Macintosh HD:"))
+#else
+	FAIL()
+#endif
 End
 
 Function FR_WorksWithAliasFiles()
