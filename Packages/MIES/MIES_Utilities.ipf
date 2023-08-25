@@ -5127,6 +5127,30 @@ Function GetFileSize(string filepath)
 	return V_logEOF
 End
 
+/// @brief Convert a HFS path (`:`) to a POSIX path (`/`)
+///
+/// The path *must* exist.
+Function/S HFSPathToPosix(string path)
+	return ParseFilePath(9, path, "*", 0, 0)
+End
+
+/// @brief Convert a HFS path (`:`) to a Windows path (`\\`)
+Function/S HFSPathToWindows(string path)
+	return ParseFilePath(5, path, "\\", 0, 0)
+End
+
+/// @brief Convert HFS path (`:`) to OS native path (`\\` or `/`)
+Function/S HFSPathToNative(string path)
+
+#if defined(MACINTOSH)
+	return HFSPathToPosix(path)
+#elif defined(WINDOWS)
+	return HFSPathToWindows(path)
+#else
+	ASSERT(0, "Unsupported OS")
+#endif
+End
+
 /// @brief wrapper to `ScaleToIndex`
 ///
 /// `ScaleToIndex` treats input `inf` to @p scale always as the last point in a
