@@ -6,10 +6,10 @@
 /// @file UTF_AnalysisBrowserTest.ipf
 /// @brief __ANALYSISBROWSER_Test__ This file holds the tests for the Analysis Browser Tests
 
-static StrConstant PXP_FILENAME = "input/AB_LoadSweepsFromIgorData.pxp"
-static StrConstant PXP2_FILENAME = "input/AB_SweepsFromMultipleDevices.pxp"
-static StrConstant NWB1_FILENAME = "input/AB_SweepsFromMultipleDevices-compressed-V1.nwb"
-static StrConstant NWB2_FILENAME = "input/AB_SweepsFromMultipleDevices-compressed-V2.nwb"
+static StrConstant PXP_FILENAME = "input:AB_LoadSweepsFromIgorData.pxp"
+static StrConstant PXP2_FILENAME = "input:AB_SweepsFromMultipleDevices.pxp"
+static StrConstant NWB1_FILENAME = "input:AB_SweepsFromMultipleDevices-compressed-V1.nwb"
+static StrConstant NWB2_FILENAME = "input:AB_SweepsFromMultipleDevices-compressed-V2.nwb"
 
 static Function LoadSweepsFromIgor()
 
@@ -31,6 +31,8 @@ static Function CheckRefCount()
 
 	string abWin, dfPath, sweepBrowsers
 	string sBrowser1, sBrowser2
+
+	KillOrMoveToTrash(dfr = GetAnalysisFolder())
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({PXP2_FILENAME})
 

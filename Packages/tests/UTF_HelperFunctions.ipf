@@ -928,7 +928,7 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	REQUIRE_EQUAL_VAR(V_flag, 1)
 
 	Duplicate/FREE/T files, filesWithPath
-	filesWithPath[] = S_path + files[p]
+	filesWithPath[] = S_path + GetHFSPath(files[p])
 
 	abWin = AB_OpenAnalysisBrowser(restoreSettings = 0)
 	CHECK_PROPER_STR(abWin)
