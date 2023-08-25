@@ -2992,3 +2992,97 @@ static Function TestStoreAndLoad()
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
 End
+
+static Function [variable filterLow, variable filterHigh, variable filterOrder] TestDevonvFilterContainer(WAVE/WAVE dataWref)
+
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
+	WAVE/Z data = dataWref[0]
+	CHECK_WAVE(data, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 3)
+
+	filterLow = data[%$"Filter Low"]
+	if(IsNaN(filterLow))
+		PASS()
+	else
+		CHECK(IsNullOrPositiveAndFinite(filterLow))
+	endif
+
+	filterHigh = data[%$"Filter High"]
+	if(IsNaN(filterHigh))
+		PASS()
+	else
+		CHECK(IsNullOrPositiveAndFinite(filterHigh))
+	endif
+
+	filterOrder = data[%$"Filter Order"]
+
+	if(IsNaN(filterOrder))
+		PASS()
+	else
+		CHECK(IsOdd(filterOrder))
+	endif
+
+	return [filterLow, filterHigh, filterOrder]
+End
+
+static Function TestOperationDeconvFilter()
+
+	string win, device, str
+	variable filterLow, filterHigh, filterOrder
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	str = "psxDeconvFilter()"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
+	CHECK_EQUAL_VAR(filterLow, NaN)
+	CHECK_EQUAL_VAR(filterHigh, NaN)
+	CHECK_EQUAL_VAR(filterOrder, NaN)
+
+	str = "psxDeconvFilter(40)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
+	CHECK_EQUAL_VAR(filterLow, 40)
+	CHECK_EQUAL_VAR(filterHigh, NaN)
+	CHECK_EQUAL_VAR(filterOrder, NaN)
+
+	str = "psxDeconvFilter(40, 50)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
+	CHECK_EQUAL_VAR(filterLow, 40)
+	CHECK_EQUAL_VAR(filterHigh, 50)
+	CHECK_EQUAL_VAR(filterOrder, NaN)
+
+	str = "psxDeconvFilter(40, 50, 11)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	[filterLow, filterHigh, filterOrder] = TestDevonvFilterContainer(dataWref)
+	CHECK_EQUAL_VAR(filterLow, 40)
+	CHECK_EQUAL_VAR(filterHigh, 50)
+	CHECK_EQUAL_VAR(filterOrder, 11)
+
+	// check parameters
+	try
+		str = "psxDeconvFilter(-1)"
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		str = "psxDeconvFilter(1, -1)"
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		str = "psxDeconvFilter(1, 1, 2)"
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End

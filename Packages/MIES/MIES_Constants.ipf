@@ -2145,11 +2145,12 @@ Constant SECONDS_PER_DAY = 86400
 Strconstant DB_AXIS_PART_EPOCHS = "_EP"
 /// @}
 
-StrConstant SF_OP_PSX          = "psx"
-StrConstant SF_OP_PSX_KERNEL   = "psxKernel"
-StrConstant SF_OP_PSX_STATS    = "psxStats"
-StrConstant SF_OP_PSX_RISETIME = "psxRiseTime"
-StrConstant SF_OP_PSX_PREP     = "psxPrep"
+StrConstant SF_OP_PSX               = "psx"
+StrConstant SF_OP_PSX_KERNEL        = "psxKernel"
+StrConstant SF_OP_PSX_STATS         = "psxStats"
+StrConstant SF_OP_PSX_RISETIME      = "psxRiseTime"
+StrConstant SF_OP_PSX_PREP          = "psxPrep"
+StrConstant SF_OP_PSX_DECONV_FILTER = "psxDeconvFilter"
 
 /// @name Available PSX states
 /// @anchor PSXStates
@@ -2192,3 +2193,7 @@ StrConstant PSX_STATS_LABELS = "Average;Median;Average Deviation;Standard deviat
 Constant PSX_HORIZ_OFFSET_ONSET = 0
 Constant PSX_HORIZ_OFFSET_PEAK  = 1
 /// @}
+
+Constant PSX_DECONV_FILTER_DEF_LOW   = 0.002
+Constant PSX_DECONV_FILTER_DEF_HIGH  = 0.004
+Constant PSX_DECONV_FILTER_DEF_ORDER = 101
