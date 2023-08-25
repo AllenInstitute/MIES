@@ -30,6 +30,7 @@
 #include "UTF_WaveBuilder"
 #include "UTF_WaveBuilderRegression"
 #include "UTF_WaveVersioning"
+#include "UTF_XOPsCompilation"
 #include "UTF_ZeroMQPublishing"
 
 // include examples here so that these are compile tested as well

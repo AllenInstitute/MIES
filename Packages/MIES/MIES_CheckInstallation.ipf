@@ -244,12 +244,16 @@ Function CHI_CheckInstallation()
 	endif
 
 	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
-	CHI_CheckXOP(listOfXOPs, "JSON-64.xop", "JSON XOP", state)
 	CHI_CheckXOP(listOfXOPs, "VDT2-64.xop", "VDT2 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
+
+	// one operation/function of each non-hardware XOP needs to be called in CheckCompilation_IGNORE()
+	CHI_CheckXOP(listOfXOPs, "JSON-64.xop", "JSON XOP", state)
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
 	CHI_CheckXOP(listOfXOPs, "TUF-64.xop", "TUF XOP", state)
+	CHI_CheckXOP(listOfXOPs, "MiesUtils-64.xop", "MiesUtils XOP", state)
+	CHI_CheckXOP(listOfXOPs, "mies-nwb2-compound-XOP-64.xop", "NWBv2 compound XOP", state)
 
 	CHI_CheckJSONXOPVersion(state)
 	CHI_CheckITCXOPVersion(state)
