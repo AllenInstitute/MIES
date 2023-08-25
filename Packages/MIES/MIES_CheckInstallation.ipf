@@ -243,23 +243,31 @@ Function CHI_CheckInstallation()
 		printf "Mies version info: Valid \"%s...\" (Nice!)\r", StringFromList(0, miesVersion, "\r")
 	endif
 
+#ifdef WINDOWS
 	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
+#endif
 
 	// one operation/function of each non-hardware XOP needs to be called in CheckCompilation_IGNORE()
 	CHI_CheckXOP(listOfXOPs, "JSON-64.xop", "JSON XOP", state)
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
 	CHI_CheckXOP(listOfXOPs, "TUF-64.xop", "TUF XOP", state)
+
+#ifdef WINDOWS
 	CHI_CheckXOP(listOfXOPs, "MiesUtils-64.xop", "MiesUtils XOP", state)
 	CHI_CheckXOP(listOfXOPs, "mies-nwb2-compound-XOP-64.xop", "NWBv2 compound XOP", state)
+#endif
 
 	CHI_CheckJSONXOPVersion(state)
+#ifdef WINDOWS
 	CHI_CheckITCXOPVersion(state)
+#endif
 	CHI_CheckTUFXOPVersion(state)
 
 	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
 
+#ifdef WINDOWS
 	STRUCT CHI_InstallationState stateExtended
 	CHI_InitInstallationState(stateExtended)
 	printf "\rChecking extended installation:\r"
@@ -267,6 +275,7 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", stateExtended, expectedHash = CHI_NIDAQ_XOP_64_HASH)
 
 	printf "Results: %d checks, %d number of errors\r", stateExtended.numTries, stateExtended.numErrors
+#endif
 	ControlWindowToFront()
 
 	return state.numErrors
