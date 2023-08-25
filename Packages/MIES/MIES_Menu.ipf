@@ -197,11 +197,11 @@ Function MEN_CreateIssueOnGithub()
 
 	body += "```\nAvailable NI devices with their properties:\n"
 
+#ifdef WINDOWS
 	ref = CaptureHistoryStart()
 	HW_NI_PrintPropertiesOfDevices()
 	str = CaptureHistory(ref, 1)
-
-	print "b"
+#endif
 
 	body += str
 
@@ -209,7 +209,16 @@ Function MEN_CreateIssueOnGithub()
 
 	sprintf url, "https://github.com/AllenInstitute/MIES/issues/new?title=%s&body=%s", URLEncode(title), URLEncode(body)
 
+#if defined(WINDOWS)
 	BrowseURL(url)
+#elif defined(MACINTOSH)
+	printf "##############################\r"
+	print body
+	printf "##############################\r"
+	printf "Please paste the text between the hashtags into a new issue at: https://github.com/AllenInstitute/MIES/issues/new\r"
+#else
+	ASSSERT(0, "Unsupported OS")
+#endif
 End
 
 Function MEN_ClearPackageSettings()
