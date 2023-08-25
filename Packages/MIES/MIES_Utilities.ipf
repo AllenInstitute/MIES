@@ -2053,7 +2053,14 @@ End
 
 /// @brief Return the path converted to a HFS style (aka ":" separated) path
 threadsafe Function/S GetHFSPath(string path)
+
+#if defined(WINDOWS)
 	return ParseFilePath(5, path, ":", 0, 0)
+#elif defined(MACINTOSH)
+	return ParseFilePath(5, path, "*", 0, 0)
+#else
+	ASSERT_TS(0, "Unsupported OS")
+#endif
 End
 
 /// @brief Set the given bit mask in var
