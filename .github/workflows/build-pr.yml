@@ -105,7 +105,6 @@ jobs:
       installer_artifact_name: BuildInstaller-dev-assets
       installer_flags: ${{ fromJSON('["-x skipHardwareXOPs",""]')[matrix.hardware] }} -s ${{ matrix.source }}
       artifact_name: CompilationTest-${{ matrix.source }}-${{ fromJSON('["no-hardware","hardware"]')[matrix.hardware] }}-assets
-      expensive_checks: "1"
 
   Documentation:
     name: 👷 Documentation
