@@ -67,3 +67,16 @@ static Function TestIsStrictlyPositiveAndFiniteInfinite([variable var])
 
 	CHECK(!IsStrictlyPositiveAndFinite(var))
 End
+
+static Function TestIsNullOrPositiveAndFinite()
+
+	CHECK(IsNullOrPositiveAndFinite(1))
+	CHECK(IsNullOrPositiveAndFinite(0))
+	CHECK(!IsNullOrPositiveAndFinite(-1))
+End
+
+// UTF_TD_GENERATOR InfiniteValues
+static Function TestIsNullOrPositiveAndFiniteInfinite([variable var])
+
+	CHECK(!IsNullOrPositiveAndFinite(var))
+End

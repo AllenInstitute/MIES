@@ -38,6 +38,12 @@ threadsafe Function IsStrictlyPositiveAndFinite(variable var)
 	return var > 0 && var < inf
 End
 
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsNullOrPositiveAndFinite(variable var)
+
+	return var >= 0 && var < inf
+End
+
 /// @brief Return the truth if `val` is in the range `]0, 1[`
 ///
 /// UTF_NOINSTRUMENTATION
