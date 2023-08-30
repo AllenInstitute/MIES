@@ -26,6 +26,7 @@
 #include "UTF_UpgradeDataFolderLocation"
 #include "UTF_UpgradeWaveLocationAndGetIt"
 #include "UTF_Utils"
+#include "UTF_UtilsChecks"
 #include "UTF_WaveAveraging"
 #include "UTF_WaveBuilder"
 #include "UTF_WaveBuilderRegression"
@@ -115,6 +116,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_UpgradeDataFolderLocation.ipf", list, ";", inf)
 	list = AddListItem("UTF_UpgradeWaveLocationAndGetIt.ipf", list, ";", inf)
 	list = AddListItem("UTF_Utils.ipf", list, ";", inf)
+	list = AddListItem("UTF_UtilsChecks.ipf", list, ";", inf)
 	list = AddListItem("UTF_WaveAveraging.ipf", list, ";", inf)
 	list = AddListItem("UTF_WaveBuilder.ipf", list, ";", inf)
 	list = AddListItem("UTF_WaveBuilderRegression.ipf", list, ";", inf)

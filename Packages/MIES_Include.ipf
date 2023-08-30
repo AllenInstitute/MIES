@@ -234,6 +234,7 @@ End
 #include "MIES_TestPulse_Multi"
 #include "MIES_TraceUserData"
 #include "MIES_Utilities"
+#include "MIES_Utilities_Checks"
 #include "MIES_WaveBuilder"
 #include "MIES_WaveBuilderPanel"
 #include "MIES_WaveBuilder_Macro"
