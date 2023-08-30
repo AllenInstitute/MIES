@@ -54,3 +54,16 @@ static Function BetweenZeroAndOneHoundredX()
 	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(100.0), 0)
 	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(102.0), 0)
 End
+
+static Function TestIsStrictlyPositiveAndFinite()
+
+	CHECK(IsStrictlyPositiveAndFinite(1))
+	CHECK(!IsStrictlyPositiveAndFinite(0))
+	CHECK(!IsStrictlyPositiveAndFinite(-1))
+End
+
+// UTF_TD_GENERATOR InfiniteValues
+static Function TestIsStrictlyPositiveAndFiniteInfinite([variable var])
+
+	CHECK(!IsStrictlyPositiveAndFinite(var))
+End
