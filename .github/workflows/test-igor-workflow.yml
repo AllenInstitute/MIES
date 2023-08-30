@@ -51,6 +51,11 @@ on:
         default: "0"
         type: string
         description: Sets environment variable CI_INSTRUMENT_TESTS
+      timeout_minutes:
+        required: false
+        default: 360
+        type: number
+        description: Defines the job timeout in minutes
 defaults:
   run:
     shell: bash
@@ -59,6 +64,7 @@ jobs:
   Test:
     name: ${{ inputs.overwrite_job_name && inputs.job_name || 'Run' }}
     runs-on: ${{ fromJson(inputs.target) }}
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     env:
       CI_EXPENSIVE_CHECKS: ${{ inputs.expensive_checks }}
       CI_INSTRUMENT_TESTS: ${{ inputs.instrument_tests }}

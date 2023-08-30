@@ -105,6 +105,7 @@ jobs:
       installer_artifact_name: BuildInstaller-dev-assets
       installer_flags: ${{ fromJSON('["-x skipHardwareXOPs",""]')[matrix.hardware] }} -s ${{ matrix.source }}
       artifact_name: CompilationTest-${{ matrix.source }}-${{ fromJSON('["no-hardware","hardware"]')[matrix.hardware] }}-assets
+      timeout_minutes: 60
 
   Documentation:
     name: 👷 Documentation
@@ -150,6 +151,7 @@ jobs:
       artifact_name: test-without-hw-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
+      timeout_minutes: 60
 
   TestNI:
     name: 🧪 Test NI ${{ matrix.name }}
@@ -172,6 +174,7 @@ jobs:
       artifact_name: test-ni-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
+      timeout_minutes: 180
 
   TestITC:
     name: 🧪 Test ITC ${{ matrix.name }}
@@ -194,6 +197,7 @@ jobs:
       artifact_name: test-itc-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
+      timeout_minutes: 180
 
   ValidateNwb:
     name: 👮🏼 Validate NWBv2
