@@ -2867,7 +2867,7 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 		KillPath/Z $subFolderPathName
 
 		if(!isEmpty(files))
-			allFiles = AddListItem(files, allFiles, FILE_LIST_SEP, Inf)
+			allFiles = AddListItem(RemoveEnding(files, FILE_LIST_SEP), allFiles, FILE_LIST_SEP, Inf)
 		endif
 	endfor
 
