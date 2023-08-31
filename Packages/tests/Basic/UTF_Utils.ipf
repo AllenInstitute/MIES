@@ -7202,3 +7202,38 @@ static Function TestUpperCaseFirstChar()
 	CHECK_EQUAL_STR(UpperCaseFirstChar("a1a"), "A1a")
 	CHECK_EQUAL_STR(UpperCaseFirstChar("b"), "B")
 End
+
+static Function TestGetAllFilesRecursivelyFromPath()
+
+	string folder, symbPath, list
+
+	folder = GetFolder(FunctionPath("")) + "testFolder:"
+
+	symbPath = GetUniqueSymbolicPath()
+	NewPath/Q/O/C/Z $symbPath, folder
+	CHECK(!V_Flag)
+
+	CreateFolderOnDisk(folder + "b:")
+	CreateFolderOnDisk(folder + "c:")
+
+	SaveTextFile("", folder + "file.txt")
+	SaveTextFile("", folder + "b:file1.txt")
+	SaveTextFile("", folder + "c:file2.txt")
+
+	CreateAliasShortcut/Z/P=$symbPath "file.txt" "alias.txt"
+	CHECK(!V_flag)
+
+	list = GetAllFilesRecursivelyFromPath(symbPath, extension = ".txt")
+	CHECK_PROPER_STR(list)
+
+	WAVE/T result = ListToTextWave(list, FILE_LIST_SEP)
+	result[] = RemovePrefix(result[p], start = folder)
+	CHECK_EQUAL_TEXTWAVES(result, {"file.txt", "b:file1.txt", "c:file2.txt"})
+
+	// no matches
+	list = GetAllFilesRecursivelyFromPath(symbPath, extension = ".abc")
+	CHECK_EMPTY_STR(list)
+
+	KillPath $symbPath
+	CHECK_NO_RTE()
+End
