@@ -44,6 +44,8 @@ static StrConstant EXPCONFIG_JSON_HWDEVBLOCK = "DAQHardwareDevices"
 
 static StrConstant UPLOAD_BLOCK_USERPING = "UserPing"
 
+static Constant ARCHIVE_SIZETHRESHOLD = 52428800
+
 Menu "GraphMarquee"
 	"Horiz Expand (VisX)", /Q, HorizExpandWithVisX()
 End
@@ -7635,9 +7637,6 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 			lastIndex = DimSize(logData, ROWS) - 1
 		endif
 
-		UploadLogFilesPrint(" -> Archive", verbose)
-		ArchiveLogFile(logData, file, lastIndex)
-
 		UploadLogFilesPrint(" -> Splitting", verbose)
 		WAVE/WAVE splitContents = SplitLogDataBySize(uploadData, LOG_FILE_LINE_END, LOGUPLOAD_PAYLOAD_SPLITSIZE)
 		partCnt = 0
@@ -8398,4 +8397,41 @@ Function SetUserPingTimestamp(variable timeStamp)
 	isoTS = GetISO8601TimeStamp(secondsSinceIgorEpoch = timeStamp)
 	NVAR JSONid = $GetSettingsJSONid()
 	JSON_SetString(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/last upload", isoTS)
+End
+
+Function ArchiveLogFilesOnceAndKeepMonth()
+
+	string file
+	variable lastIndex, firstDate, lastDate, fSize
+
+	if(AlreadyCalledOnce(CO_ARCHIVE_ONCE))
+		return NaN
+	endif
+
+	WAVE/T files = GetLogFileNames()
+	Redimension/N=(-1) files
+
+	firstDate = 0
+	// subtract 1/12 of a year as approximation for one month
+	lastDate = DateTimeInUTC() - 365 * 24 * 60 * 60 / 12
+
+	for(file : files)
+
+		if(!FileExists(file))
+			continue
+		endif
+		fSize = GetFileSize(file)
+		if(fSize < ARCHIVE_SIZETHRESHOLD)
+			continue
+		endif
+		if(fSize > 512 * 1024 * 1024)
+			printf "Just a moment, archiving log file %s.\rThis is only done once.\r", file
+		endif
+
+		WAVE/Z/T logData = LoadTextFileToWave(file, LOG_FILE_LINE_END)
+		if(WaveExists(logData))
+			[WAVE/T partData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
+			ArchiveLogFile(logData, file, lastIndex)
+		endif
+	endfor
 End
