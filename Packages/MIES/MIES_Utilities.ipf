@@ -114,6 +114,8 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
 			// Happens e.g. when ASSERT is encounterd in cleanup functions
 			print "Double Assertion Fail encountered !"
+			print errorMsg
+			print GetRTStackInfo(3)
 
 			if(doCallDebugger)
 				ControlWindowToFront()
@@ -239,6 +241,8 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 		if(IsFunctionCalledRecursively())
 
 			print "Double threadsafe assertion Fail encountered !"
+			print errorMsg
+			print GetRTStackInfo(3)
 
 			AbortOnValue 1, 1
 		endif
