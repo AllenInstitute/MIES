@@ -267,7 +267,7 @@ Function CreateRelevantColorsGraph()
 		sprintf str, "\\K(0, 0, 0)Rack %s\r", SelectString(i, "Zero", "One")
 		contents += str
 
-		[s] = GetHeadstageColor(NaN, channelType = XOP_CHANNEL_TYPE_TTL, channelNumber = i, isSplitted = 0)
+		[s] = GetHeadstageColor(NaN, channelType = XOP_CHANNEL_TYPE_TTL, channelNumber = i * NUM_ITC_TTL_BITS_PER_RACK, isSplitted = 0)
 		sprintf str, "\\K(%d, %d, %d) Sum\r", s.red, s.green, s.blue
 		contents += str
 		for(j = 0; j < 4; j += 1)
