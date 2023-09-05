@@ -7596,26 +7596,26 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 
 	UploadLogFilesPrint("Just a moment, Uploading log files to improve MIES... (only once per day)\r", verbose)
 
-	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile(), GetITCXOP2Logfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist", "ITC-XOP2-log-file-does-not-exist"}, {"MIES log file", "ZeroMQ log file", "ITCXOP2 log file"}}
+	WAVE/T files = GetLogFileNames()
 	timeStamp = GetISO8601TimeStamp()
 	ticket = GenerateRFC4122UUID()
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) jsonIDs
 
 	numFiles = DimSize(files, ROWS)
 	for(i = 0; i < numFiles; i += 1)
-		file = files[i][0]
+		file = files[i][%FILENAME]
 
 		fSize = GetFileSize(file)
 		WAVE/Z/T logData = $""
 		if(!IsNaN(fSize))
-			sprintf out, "Loading %s (%.1f MB)", files[i][2], fSize / MEGABYTE
+			sprintf out, "Loading %s (%.1f MB)", files[i][%DESCRIPTION], fSize / MEGABYTE
 			UploadLogFilesPrint(out, verbose)
 			WAVE/Z/T logData = LoadTextFileToWave(file, LOG_FILE_LINE_END)
 		endif
 		if(!WaveExists(logData))
 			jsonID = GenerateJSONTemplateForUpload(timeStamp = timeStamp)
 			AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
-			AddPayloadEntries(jsonID, {file}, {files[i][1]}, isBinary = isBinary)
+			AddPayloadEntries(jsonID, {file}, {files[i][%NOTEXISTTEXT]}, isBinary = isBinary)
 			EnsureLargeEnoughWave(jsonIDs, indexShouldExist=jsonIndex)
 			jsonIDs[jsonIndex] = jsonID
 			jsonIndex += 1
