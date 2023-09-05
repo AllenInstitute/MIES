@@ -4825,6 +4825,8 @@ static Function DAP_UpdateChanAmpAssignPanel(device)
 
 	HeadStageNo = str2num(GetPopupMenuString(device,"Popup_Settings_HeadStage"))
 
+	// function does not use PGC_SetAndActivateControl on purpose, see #1872
+
 	// VC DA settings
 	channel = ChanAmpAssign[%VC_DA][HeadStageNo]
 	Popupmenu Popup_Settings_VC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
