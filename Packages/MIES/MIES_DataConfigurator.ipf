@@ -1096,7 +1096,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 	string key
 
 	// varies per DAC:
-	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
+	// gains, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
 	// setName, setColumn, headstageDAC
 	//
 	// constant:
@@ -1115,7 +1115,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 	cacheParams.numActiveChannels = s.numActiveChannels
 	cacheParams.numberOfRows = DC_CalculateDAQDataWaveLength(device, TEST_PULSE_MODE)
 	cacheParams.samplingInterval = s.samplingInterval
-	WAVE cacheParams.DAGain = s.DAGain
+	WAVE cacheParams.gains = s.gains
 	Duplicate/FREE/RMD=[][FindDimLabel(s.DACAmp, COLS, "TPAMP")] s.DACAmp, DACAmpTP
 	WAVE cacheParams.DACAmpTP = DACAmpTP
 	cacheParams.testPulseLength = s.testPulseLength
@@ -1161,7 +1161,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 				if(s.multiDevice)
 					Multithread ITCDataWave[][0, s.numDACEntries - 1] =                                 \
 					limit(                                                                              \
-						  (s.DAGain[q] * s.DACAmp[q][%TPAMP]) * s.testPulse[mod(p, s.testPulseLength)], \
+						  (s.gains[q] * s.DACAmp[q][%TPAMP]) * s.testPulse[mod(p, s.testPulseLength)], \
 						  SIGNED_INT_16BIT_MIN,                                                         \
 						  SIGNED_INT_16BIT_MAX); AbortOnRTE
 					cutOff = mod(DimSize(ITCDataWave, ROWS), s.testPulseLength)
@@ -1171,7 +1171,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 				else
 					Multithread ITCDataWave[0, s.testPulseLength - 1][0, s.numDACEntries - 1] = \
 					limit(                                                                      \
-						  s.DAGain[q] * s.DACAmp[q][%TPAMP] * s.testPulse[p],                   \
+						  s.gains[q] * s.DACAmp[q][%TPAMP] * s.testPulse[p],                   \
 						  SIGNED_INT_16BIT_MIN,                                                 \
 						  SIGNED_INT_16BIT_MAX); AbortOnRTE
 				endif
@@ -1182,7 +1182,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 			case HARDWARE_NI_DAC:
 				for(i = 0;i < s.numDACEntries; i += 1)
 					WAVE NIChannel = NIDataWave[i]
-					tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
+					tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
 					Multithread NIChannel[0, s.testPulseLength - 1] = \
 					limit(                                          \
 						  tpAmp * s.testPulse[p],                     \
@@ -1209,7 +1209,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 	for(i = 0; i < s.numDACEntries; i += 1)
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 			// TP wave does not need to be decimated, it has already correct size reg. sample rate
-			tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
+			tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
 			ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
 			switch(s.hardwareType)
 				case HARDWARE_ITC_DAC:
@@ -1239,8 +1239,8 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 			channel = s.DACList[i]
 			headstage = s.headstageDAC[i]
-			tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
-			DAScale = s.DACAmp[i][%DASCALE] * s.DAGain[i]
+			tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
+			DAScale = s.DACAmp[i][%DASCALE] * s.gains[i]
 			WAVE singleStimSet = s.stimSet[i]
 			singleSetLength = s.setLength[i]
 			stimsetCol = s.setColumn[i]
@@ -1329,7 +1329,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	WAVE ChannelClampMode = GetChannelClampMode(device)
 	WAVE s.statusHS       = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
-	WAVE s.DAGain  = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
+	WAVE s.gains  = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
 	WAVE config  = GetDAQConfigWave(device)
 	WAVE s.DACList = GetDACListFromConfig(config)
 	WAVE s.ADCList = GetADCListFromConfig(config)
