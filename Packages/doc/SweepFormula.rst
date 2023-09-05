@@ -697,6 +697,11 @@ The returned data type is `SF_DATATYPE_SWEEP`.
    // No double resolve of the same epoch name: Shows sweep data from epoch "TP" of the AD channels of all displayed sweeps.
    data(["TP","TP"], select(channels(AD), sweeps()))
 
+   // extract the first pulse from TTL1 as epoch and extract the AD data
+   // in that range
+   ep = epochs(E0_PT_P0, select(channels(TTL1),sweeps()))
+   data($ep,select(channels(AD),sweeps()))
+
 labnotebook
 """""""""""
 
