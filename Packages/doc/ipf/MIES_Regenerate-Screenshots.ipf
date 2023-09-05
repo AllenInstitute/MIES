@@ -10,7 +10,7 @@ static Function/S GetSavePath()
 
 	string folder, pathName
 
-	folder = GetFolder(FunctionPath("")) + "ScreenShots"
+	folder = GetFolder(FunctionPath("")) + ":ScreenShots"
 	CreateFolderOnDisk(folder)
 	pathName = GetUniqueSymbolicPath()
 	NewPath/O/Q $pathName, folder
