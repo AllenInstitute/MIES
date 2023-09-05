@@ -8062,3 +8062,14 @@ Function/WAVE GetPSXAcceptedAverageFitWaveFromDFR(DFREF dfr)
 End
 
 /// @}
+
+/// @brief Returns a wave with the names of all log files
+Function/WAVE GetLogFileNames()
+
+	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile(), GetITCXOP2Logfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist", "ITC-XOP2-log-file-does-not-exist"}, {"MIES log file", "ZeroMQ log file", "ITCXOP2 log file"}}
+	SetDimLabel COLS, 0, FILENAME, files
+	SetDimLabel COLS, 1, NOTEXISTTEXT, files
+	SetDimLabel COLS, 2, DESCRIPTION, files
+
+	return files
+End
