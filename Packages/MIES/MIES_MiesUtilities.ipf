@@ -7810,7 +7810,7 @@ static Function/S GetDateOfLogEntry(string entry)
 	string dat
 
 	jsonID = JSON_Parse(entry, ignoreErr = 1)
-	if(IsNaN(jsonID))
+	if(!JSON_IsValid(jsonID))
 		// include invalid entries
 		return ""
 	endif

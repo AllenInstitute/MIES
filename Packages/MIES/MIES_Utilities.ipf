@@ -6326,7 +6326,7 @@ Function/WAVE JSONToWave(string str, [string path])
 
 	jsonID = JSON_Parse(str, ignoreErr = 1)
 
-	if(IsNaN(jsonID))
+	if(!JSON_IsValid(jsonID))
 		return $""
 	endif
 
