@@ -324,7 +324,7 @@ Structure HardwareDataTPInput
 	variable numDACs, numActiveChannels
 	variable numberOfRows
 	variable samplingInterval
-	WAVE DAGain, DACAmpTP
+	WAVE gains, DACAmpTP
 	variable testPulseLength, baselineFrac
 EndStructure
 
@@ -516,7 +516,7 @@ Structure DataConfigurationResult
 	/// @}
 
 	/// @sa SWS_GetChannelGains() with `GAIN_BEFORE_DAQ`
-	WAVE DAGain
+	WAVE gains
 
 	/// List of active channels per type
 	/// @{
