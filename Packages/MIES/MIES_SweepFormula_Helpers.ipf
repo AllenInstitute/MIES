@@ -1238,3 +1238,32 @@ Function SFH_CheckArgumentCount(variable jsonId, string jsonPath, string opShort
 
 	return numArgs
 End
+
+static Function/WAVE ES_GetStimsetRange(string graph, WAVE selectData)
+
+	variable sweepNo, channel, chanType, DAChannel
+
+	sweepNo  = selectData[0][%SWEEP]
+	channel  = selectData[0][%CHANNELNUMBER]
+	chanType = selectData[0][%CHANNELTYPE]
+
+	// use SFH_ParseToSelectDataWaveAndRange for gathering sweep/channel/channeltype
+	// function needs to learn to handle plain data gracefully
+
+	// stimset epoch "ST" does not include any onset or termination delay and only the stimset epochs
+	// and it also works with ddDAQ/oodDAQ
+	WAVE range = SFH_GetRangeFromEpoch(graph, "ST", sweepNo, DAChannel)
+
+	if(SFH_IsEmptyRange(range))
+		// data prior to 13b3499d (Add short names for Epochs stored in epoch name, 2021-09-06)
+		// try the long name instead
+		WAVE range = SFH_GetRangeFromEpoch(graph, "Stimset;", sweepNo, DAChannel)
+		if(SFH_IsEmptyRange(range))
+			// data prior to a2172f03 (Added generations of epoch information wave, 2019-05-22)
+			// remove total onset delay and termination delay iff we have neither dDAQ nor oodDAQ enabled
+			SFH_ASSERT(0, "Fallback not implemented")
+		endif
+	endif
+
+	return range
+End
