@@ -6662,15 +6662,17 @@ End
 /// @brief Remove the volatile part of the XOP error code
 ///
 /// The result is constant and can therefore be compared with constants.
-threadsafe Function ConvertXOPErrorCode(xopError)
-	variable xopError
+threadsafe Function ConvertXOPErrorCode(variable err)
+	// error codes -1 to 9999 are Igor Pro error codes
+	// for first loaded XOP -> xop error codes returned are in the range 10000+ up to max. 10999
+	// for second+ loaded XOP -> xop error codes returned are offsetted by n x 0x10000 per XOP instead of 10000
 
-	if(xopError < FIRST_XOP_ERROR)
-		// stock Igor Pro error
-		return xopError
-	endif
+	// Therefore, returning the code through RTE and directly through V_flag (SetOperationReturnValue):
+	err = err < 0xFFFF ? err : (err & 0xFFFF) + 10000
 
-	return xopError == 0 ? 0 : (mod(xopError, FIRST_XOP_ERROR) + FIRST_XOP_ERROR)
+	// Note: Getting the error message through GetRTErrMessage,
+	// GetErrMessage(code) requires the original RTE code (does not work with directly return through  V_flag).
+	return err
 End
 
 /// @brief Extended version of `FindValue`

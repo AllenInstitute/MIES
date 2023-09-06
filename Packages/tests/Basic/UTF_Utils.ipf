@@ -7237,3 +7237,22 @@ static Function TestGetAllFilesRecursivelyFromPath()
 	KillPath $symbPath
 	CHECK_NO_RTE()
 End
+
+static Function TestErrorCodeConversion()
+
+	variable err, convErr
+	string errMsg
+
+	JSONXOP_Parse/Q ""
+	err = GetRTError(0)
+	CHECK_RTE(err)
+
+	errMsg = "Error when parsing string to JSON"
+	CHECK_EQUAL_STR(errMsg, GetErrMessage(err))
+
+	convErr = ConvertXOPErrorCode(err)
+	CHECK_EQUAL_VAR(convErr, 10009)
+
+	// is idempotent
+	CHECK_EQUAL_VAR(ConvertXOPErrorCode(convErr), 10009)
+End
