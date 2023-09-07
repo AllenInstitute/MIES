@@ -2342,7 +2342,7 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 			endtry
 
 			json_nb = BSP_GetSFJSON(mainPanel)
-			if(!IsNaN(jsonID))
+			if(JSON_IsValid(jsonID))
 				text = JSON_Dump(jsonID, indent = 2, ignoreErr = 1)
 				text = NormalizeToEOL(text, "\r")
 				ReplaceNotebookText(json_nb, text)

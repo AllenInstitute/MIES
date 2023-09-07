@@ -596,7 +596,7 @@ Function/S GetSettingsJSONid()
 	NVAR JSONid = $path
 
 	// missing or stale JSON document
-	if(IsNaN(JSONid) || !JSON_Exists(JSONid, ""))
+	if(!JSON_IsValid(JSONid))
 		JSONid = PS_ReadSettings(PACKAGE_MIES, GenerateSettingsDefaults)
 		CONF_UpdatePackageSettingsFromConfigFiles(JSONid)
 	endif

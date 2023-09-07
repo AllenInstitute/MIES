@@ -5147,114 +5147,6 @@ Function ScaleToIndexWrapper(wv, scale, dim)
 	return min(DimSize(wv, dim) - 1, max(0, trunc(index)))
 End
 
-/// @brief Syncs data from a source json into a target json.
-/// @param[in] srcJsonID json Id of source object
-/// @param[in] tgtJsonID json Id of target object
-/// @param[in] srcPath root path for sync in source object
-/// @param[in] tgtPath root path for sync in target
-/// @param[in] srcFile file name of source JSON rig file, used for more specific error message
-///                    in case of conflict. If "" is given then a more unspecific error message is given.
-Function SyncJSON(srcJsonID, tgtJsonID, srcPath, tgtPath, srcFile)
-	variable srcJsonID, tgtJsonID
-	string srcPath, tgtPath, srcFile
-
-	variable type, i, numKeys, arraySize, parentIsArray
-	string localTgtPath
-
-	ASSERT(!IsNull(srcPath), "Invalid source path")
-	ASSERT(!IsNull(tgtPath), "Invalid target path")
-
-	localTgtPath = tgtPath + srcPath
-	parentIsArray = IsJsonParentArray(srcJsonID, srcPath)
-	type = JSON_GetType(srcJsonID, srcPath)
-	if(type != JSON_OBJECT && !parentIsArray)
-		if(JSON_Exists(tgtJsonID, localTgtPath))
-			if(IsEmpty(srcFile))
-				printf "Aborting: JSON element in source at\r%s\rconflicts with element at\r%s\rin main file.\r", srcPath, localTgtPath
-			else
-				printf "Aborting: Found conflict in file %s.\r", srcFile
-				printf "JSON element in source at\r%s\rconflicts with element at\r%s\rin main file.\r", srcPath, localTgtPath
-			endif
-			ControlWindowToFront()
-			Abort
-		endif
-	endif
-
-	if(type == JSON_OBJECT)
-		if(parentIsArray)
-			JSON_SetObjects(tgtJsonID, localTgtPath)
-		else
-			JSON_AddTreeObject(tgtJsonID, localTgtPath)
-		endif
-
-		WAVE/T keys = JSON_GetKeys(srcJsonID, srcPath)
-		numKeys = DimSize(keys, ROWS)
-		for(i = 0; i < numKeys; i += 1)
-			SyncJSON(srcJsonID, tgtJsonID, srcPath + "/" + keys[i], tgtPath, srcFile)
-		endfor
-	elseif(type == JSON_ARRAY)
-		if(parentIsArray)
-			JsonSetEmptyArray(tgtJsonID, localTgtPath)
-		else
-			if(JSON_Exists(tgtJsonID, localTgtPath))
-				if(IsEmpty(srcFile))
-					printf "Aborting: JSON array in source at\r%s\rconflicts with element at\r%s\rin main file.\r", srcPath, localTgtPath
-				else
-					printf "Aborting: Found conflict in file %s.\r", srcFile
-					printf "JSON array in source at\r%s\rconflicts with element at\r%s\rin main file.\r", srcPath, localTgtPath
-				endif
-				ControlWindowToFront()
-				Abort
-			endif
-			JSON_AddTreeArray(tgtJsonID, localTgtPath)
-		endif
-
-		arraySize = JSON_GetArraySize(srcJsonID, srcPath)
-		JSON_AddObjects(tgtJsonID, localTgtPath, objCount = arraySize)
-		for(i = 0; i < arraySize; i += 1)
-			SyncJSON(srcJsonID, tgtJsonID, srcPath + "/" + num2istr(i), tgtPath, srcFile)
-		endfor
-	elseif(type == JSON_NUMERIC)
-		JSON_SetVariable(tgtJsonID, localTgtPath, JSON_GetVariable(srcJsonID, srcPath))
-	elseif(type == JSON_STRING)
-		JSON_SetString(tgtJsonID, localTgtPath, JSON_GetString(srcJsonID, srcPath))
-	elseif(type == JSON_BOOL)
-		JSON_SetBoolean(tgtJsonID, localTgtPath, JSON_GetVariable(srcJsonID, srcPath))
-	elseif(type == JSON_NULL)
-		JSON_SetNull(tgtJsonID, localTgtPath)
-	else
-		ASSERT(0, "Invalid type")
-	endif
-
-End
-
-/// @brief Returns true if the parent path is an array.
-/// @param[in] jsonID Id of json
-/// @param[in] path location where parent is checked, for path "/parent/data" the location "/parent" is checked. For path "" the location "" is checked.
-static Function IsJsonParentArray(jsonID, path)
-	variable jsonID
-	string path
-
-	variable pos = strsearch(path, "/", Inf, 1)
-	if(pos >= 0)
-		path = path[0, pos - 1]
-	endif
-	return JSON_GetType(jsonID, path) == JSON_ARRAY
-End
-
-/// @brief Sets an empty array in a json
-/// @param[in] jsonID Id of json
-/// @param[in] path location where empty array is placed
-static Function JsonSetEmptyArray(jsonID, path)
-	variable jsonID
-	string path
-
-	Make/FREE/N=1 w
-
-	JSON_SetWave(jsonID, path, w)
-	JSON_Remove(jsonID, path + "/0")
-End
-
 /// @brief Return the name of a symbolic path which points to the crash dump
 /// directory on windows
 Function/S GetSymbolicPathForDiagnosticsDirectory()
@@ -6297,7 +6189,7 @@ Function/WAVE JSONToWave(string str, [string path])
 
 	jsonID = JSON_Parse(str, ignoreErr = 1)
 
-	if(IsNaN(jsonID))
+	if(!JSON_IsValid(jsonID))
 		return $""
 	endif
 

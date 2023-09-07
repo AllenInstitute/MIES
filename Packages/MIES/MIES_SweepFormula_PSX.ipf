@@ -3134,7 +3134,7 @@ static Function PSX_RestoreGuiState(string win)
 	jsonDoc = GetUserData(browser, "", PSX_GUI_SETTINGS_PSX)
 	jsonID = JSON_Parse(jsonDoc, ignoreErr = 1)
 
-	if(IsNaN(jsonID))
+	if(!JSON_IsValid(jsonID))
 		// no valid GUI settings found
 		return NaN
 	endif

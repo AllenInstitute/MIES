@@ -3331,7 +3331,7 @@ static Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &
 
 	jsonID = JSON_Parse(GetUserData(win,"", PA_SETTINGS), ignoreErr=1)
 
-	if(IsNaN(jsonID))
+	if(!JSON_IsValid(jsonID))
 		InitPulseAverageSettings(pa)
 		return NaN
 	endif

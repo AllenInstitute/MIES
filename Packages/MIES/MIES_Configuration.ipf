@@ -504,7 +504,7 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 		CONF_AddConfigFileUserData(wName, fullFilePath, rigFile)
 	catch
 		errMsg = getRTErrMessage()
-		if(!IsNaN(jsonID))
+		if(JSON_IsValid(jsonID))
 			JSON_Release(jsonID)
 		endif
 		if(ClearRTError())
@@ -538,13 +538,13 @@ static Function CONF_SaveDAEphys(fName)
 		jsonID = CONF_AllWindowsToJSON(wName, saveMask, excCtrlTypes = DAEPHYS_EXCLUDE_CTRLTYPES)
 
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK, CONF_DefaultSettings())
-		if(!IsNaN(prevJsonId))
+		if(JSON_IsValid(prevJsonId))
 			CONF_TransferPreviousDAEphysJson(jsonId, prevJsonId)
 			JSON_Release(prevJsonId)
 		endif
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK, CONF_GetAmplifierSettings(wName))
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_USERPRESSBLOCK, CONF_GetUserPressure(wName))
-		if(!IsNaN(prevRigJsonId))
+		if(JSON_IsValid(prevRigJsonId))
 			CONF_RemoveRigElementsFromDAEphysJson(jsonId, prevRigJsonId)
 		endif
 
@@ -557,10 +557,10 @@ static Function CONF_SaveDAEphys(fName)
 		fName = SelectString(IsEmpty(newFileName), newFileName, fName)
 
 		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
-		if(!IsNaN(saveResult))
+		if(JSON_IsValid(saveResult))
 			printf "Configuration saved in %s.\r", newFileName
 		endif
-		if(!IsNaN(prevRigJsonId) && !IsEmpty(newFileName))
+		if(JSON_IsValid(prevRigJsonId) && !IsEmpty(newFileName))
 			JSON_Release(prevRigJsonId)
 			newRigFullFilePath = GetFolder(newFileName) + GetBaseName(newFileName) + EXPCONFIG_RIGFILESUFFIX
 			saveResult = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
@@ -2576,7 +2576,7 @@ static Function CONF_JoinRigFile(jsonID, rigFileName)
 		return 0
 	endif
 	jsonIDRig = CONF_ParseJSON(input)
-	SyncJSON(jsonIDRig, jsonID, "", "", rigFileName)
+	JSON_SyncJSON(jsonIDRig, jsonID, "", "", JSON_SYNC_ADD_TO_TARGET)
 	JSON_Release(jsonIDRig)
 End
 
@@ -2674,7 +2674,7 @@ Function CONF_UpdatePackageSettingsFromConfigFiles(variable jsonIdPkg)
 			endif
 
 			jsonIdConf = JSON_Parse(input, ignoreErr=1)
-			if(IsNaN(jsonIdConf))
+			if(!JSON_IsValid(jsonIdConf))
 				continue
 			endif
 
