@@ -2668,16 +2668,14 @@ threadsafe Function ParseISO8601TimeStamp(timestamp)
 	string timestamp
 
 	string year, month, day, hour, minute, second, regexp, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute
-	variable secondsSinceEpoch, timeOffset
+	variable secondsSinceEpoch, timeOffset, err
 
 	if(IsEmpty(timestamp))
 		return NaN
 	endif
 
-	regexp = "^([[:digit:]]+)-([[:digit:]]+)-([[:digit:]]+)[T ]{1}([[:digit:]]+):([[:digit:]]+)(?::([[:digit:]]+)([.,][[:digit:]]+)?)?(?:Z|([\+-])([[:digit:]]{2})(?::?([[:digit:]]{2}))?)?$"
-	SplitString/E=regexp timestamp, year, month, day, hour, minute, second, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute
-
-	if(V_flag < 5)
+	[err, year, month, day, hour, minute, second, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute] = ParseISO8601TimeStampToComponents(timestamp)
+	if(err)
 		return NaN
 	endif
 
@@ -2707,6 +2705,22 @@ threadsafe Function ParseISO8601TimeStamp(timestamp)
 	endif
 
 	return secondsSinceEpoch
+End
+
+/// @brief Parses a ISO8601 timestamp to its components, year, month, day, hour, minute are required and the remaining components are optional and can be returned as empty strings.
+///
+threadsafe Function [variable err, string year, string month, string day, string hour, string minute, string second, string fracSeconds, string tzOffsetSign, string tzOffsetHour, string tzOffsetMinute] ParseISO8601TimeStampToComponents(string timestamp)
+
+	string regexp
+
+	regexp = "^([[:digit:]]+)-([[:digit:]]+)-([[:digit:]]+)[T ]{1}([[:digit:]]+):([[:digit:]]+)(?::([[:digit:]]+)([.,][[:digit:]]+)?)?(?:Z|([\+-])([[:digit:]]{2})(?::?([[:digit:]]{2}))?)?$"
+	SplitString/E=regexp timestamp, year, month, day, hour, minute, second, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute
+
+	if(V_flag < 5)
+		return [1, year, month, day, hour, minute, second, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute]
+	endif
+
+	return [0, year, month, day, hour, minute, second, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute]
 End
 
 /// @brief Return the disc folder name where the XOPs are located

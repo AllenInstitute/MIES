@@ -1940,6 +1940,7 @@ Constant DFREF_FREE = 0x2
 StrConstant CO_EMPTY_DAC_LIST = "emptyDACList"
 StrConstant CO_SF_TOO_MANY_TRACES = "SF_tooManyTraces"
 StrConstant CO_PSX_CLIPPED_STATS = "psx_clippedStats"
+StrConstant CO_ARCHIVE_ONCE = "ArchiveLogs"
 /// @}
 
 /// @name Constants for SweepFormula Meta data in JSON format
@@ -2120,7 +2121,7 @@ Constant BASE64ENCODE_INPUT_MAX_SIZE = 1610612714
 
 Constant LOGUPLOAD_PAYLOAD_SPLITSIZE = 104857600
 Constant LOG_ARCHIVING_SPLITSIZE = 524288000
-Constant LOG_MAX_LINESIZE = 65536
+Constant LOG_MAX_LINESIZE = 2097152
 
 StrConstant LOG_FILE_LINE_END = "\n"
 
