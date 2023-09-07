@@ -8261,6 +8261,7 @@ Function HandleOutOfMemory(string device, string name)
 End
 
 /// @brief Return 1 if the function was already called with that argument, and 0 otherwise
+///        As named use or create a constant in @sa CalledOnceNames
 Function AlreadyCalledOnce(string name)
 
 	NVAR var = $GetCalledOnceVariable(name)
