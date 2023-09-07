@@ -3350,6 +3350,7 @@ End
 /// @param channelType   [optional, empty by default] The channel type for non-associated channels, currently only XOP_CHANNEL_TYPE_TTL is evaluated
 /// @param channelNumber [optional, empty by default] For plotting "TTL" channels only, GUI channel number
 /// @param isSplitted    [optional, default 1] For plotting "TTL" channels only, Flag if the color for a splitted or unsplitted channel should be returned
+///                      For the case isSplitted == 0, then channelNumber must be a GUI channel number from the specific TTL rack range
 Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [variable channelType, variable channelNumber, variable isSplitted])
 
 	string str
