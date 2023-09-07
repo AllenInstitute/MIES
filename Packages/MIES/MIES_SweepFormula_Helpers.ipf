@@ -38,10 +38,16 @@ End
 /// Here `numBottles` is argument number 0 and mandatory as `defValue` is not present.
 ///
 /// The second argument `size` is optional with 0.5 as default and also defines a list of valid values.
-Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues, FUNCREF SFH_NumericChecker_Prototype checkFunc])
+Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable defValue, WAVE/Z allowedValues, FUNCREF SFH_NumericChecker_Prototype checkFunc, variable checkDefault])
 
 	string msg, sep, allowedValuesAsStr
 	variable checkExist, numArgs, result, idx, ret
+
+	if(ParamIsDefault(checkDefault))
+		checkDefault = 1
+	else
+		checkDefault = !!checkDefault
+	endif
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -68,6 +74,10 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 		SFH_ASSERT(!checkExist, msg)
 
 		result = defValue
+
+		if(!checkDefault)
+			return result
+		endif
 	endif
 
 	if(!ParamIsDefault(allowedValues))
@@ -112,10 +122,16 @@ End
 /// The second argument `type` is optional with `steam train` as default and a list of allowed values.
 ///
 /// The text argument can be abbreviated as long as it is unique, the unabbreviated result is returned in all cases.
-Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues, FUNCREF SFH_StringChecker_Prototype checkFunc])
+Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues, FUNCREF SFH_StringChecker_Prototype checkFunc, variable checkDefault])
 
 	string msg, result, sep, allowedValuesAsStr
 	variable checkExist, numArgs, idx, ret
+
+	if(ParamIsDefault(checkDefault))
+		checkDefault = 1
+	else
+		checkDefault = !!checkDefault
+	endif
 
 	if(ParamIsDefault(defValue))
 		checkExist = 1
@@ -150,6 +166,10 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 		SFH_ASSERT(!checkExist, msg)
 
 		result = defValue
+
+		if(!checkDefault)
+			return result
+		endif
 	endif
 
 	if(!ParamIsDefault(allowedValues))

@@ -3424,35 +3424,6 @@ Function/WAVE ExtractFromSubrange(listOfRanges, dim)
 	return ranges
 End
 
-/// @brief Check if a name for an object adheres to the strict naming rules
-///
-/// @see `DisplayHelpTopic "Standard Object Names"`
-///
-/// UTF_NOINSTRUMENTATION
-threadsafe Function IsValidObjectName(string name)
-	return NameChecker(name, 0)
-End
-
-/// UTF_NOINSTRUMENTATION
-threadsafe Function IsStrictlyPositiveAndFinite(variable var)
-
-	return var > 0 && var < inf
-End
-
-/// @brief Check if a name for an object adheres to the liberal naming rules
-///
-/// @see `DisplayHelpTopic "Liberal Object Names"`
-///
-/// UTF_NOINSTRUMENTATION
-threadsafe Function IsValidLiberalObjectName(string name)
-	return NameChecker(name, 1)
-End
-
-/// UTF_NOINSTRUMENTATION
-threadsafe static Function NameChecker(string name, variable liberal)
-	return !cmpstr(name, CleanupName(name, !!liberal, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
-End
-
 /// @brief Find an integer `x` which is larger than `a` but the
 /// smallest possible power of `p`.
 ///
@@ -6768,26 +6739,6 @@ Function GetDayOfWeek(variable seconds)
 	ASSERT(V_flag == 1, "Error parsing date: " + dat)
 
 	return str2num(dayOfWeek)
-End
-
-/// @brief Return the truth if `val` is in the range `]0, 1[`
-threadsafe Function BetweenZeroAndOneExc(variable val)
-	return val > 0.0 && val < 1.0
-End
-
-/// @brief Return the truth if `val` is in the range `[0, 1]`
-threadsafe Function BetweenZeroAndOne(variable val)
-	return val >= 0.0 && val <= 1.0
-End
-
-/// @brief Return the truth if `val` is in the range `]0, 100[`
-threadsafe Function BetweenZeroAndOneHoundredExc(variable val)
-	return val > 0.0 && val < 100.0
-End
-
-/// @brief Return the truth if `val` is in the range `[0, 100]`
-threadsafe Function BetweenZeroAndOneHoundred(variable val)
-	return val >= 0.0 && val <= 100.0
 End
 
 /// @brief Upper case the first character in an ASCII string

@@ -3690,17 +3690,6 @@ Function FLW_RequiresNumericWave()
 	endtry
 End
 
-Function/WAVE InfiniteValues()
-
-	Make/FREE wv = {NaN, Inf, -Inf}
-
-	SetDimLabel ROWS, 0, $"NaN", wv
-	SetDimLabel ROWS, 1, $"Inf", wv
-	SetDimLabel ROWS, 2, $"-Inf", wv
-
-	return wv
-End
-
 // UTF_TD_GENERATOR InfiniteValues
 Function FLW_RequiresFiniteLevel([var])
 	variable var
@@ -7140,58 +7129,6 @@ static Function GetDayOfWeekTest()
 	catch
 		PASS()
 	endtry
-End
-
-static Function BetweenZeroAndOneX()
-
-	FUNCREF SFH_NumericChecker_Prototype f = BetweenZeroAndOne
-	CHECK(FuncRefIsAssigned(FuncRefInfo(f)))
-
-	CHECK_EQUAL_VAR(BetweenZeroAndOne(-2.0), 0)
-	CHECK_EQUAL_VAR(BetweenZeroAndOne(0.0), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneExc(0 + 1e-15), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOne(0.1), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneExc(1.0 - 1e-14), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOne(1.0), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOne(2.0), 0)
-
-	FUNCREF SFH_NumericChecker_Prototype f = BetweenZeroAndOneExc
-	CHECK(FuncRefIsAssigned(FuncRefInfo(f)))
-
-	// excluding the borders
-	CHECK_EQUAL_VAR(BetweenZeroAndOneExc(-2.0), 0)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneExc(0), 0)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneExc(0 + 1e-15), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneExc(0.1), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneExc(1.0 - 1e-14), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneExc(1.0), 0)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneExc(2.0), 0)
-End
-
-static Function BetweenZeroAndOneHoundredX()
-
-	FUNCREF SFH_NumericChecker_Prototype f = BetweenZeroAndOneHoundred
-	CHECK(FuncRefIsAssigned(FuncRefInfo(f)))
-
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundred(-2.0), 0)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundred(0.0), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(0 + 1e-15), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundred(0.1), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(100.0 - 1e-14), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundred(1.0), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundred(102.0), 0)
-
-	FUNCREF SFH_NumericChecker_Prototype f = BetweenZeroAndOneHoundredExc
-	CHECK(FuncRefIsAssigned(FuncRefInfo(f)))
-
-	// excluding the borders
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(-2.0), 0)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(0), 0)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(0 + 1e-15), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(0.1), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(100.0 - 1e-14), 1)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(100.0), 0)
-	CHECK_EQUAL_VAR(BetweenZeroAndOneHoundredExc(102.0), 0)
 End
 
 static Function TestUpperCaseFirstChar()

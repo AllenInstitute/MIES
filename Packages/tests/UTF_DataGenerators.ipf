@@ -283,3 +283,14 @@ static Function/WAVE EpochTestTTL_OD_Gen()
 
 	return w
 End
+
+Function/WAVE InfiniteValues()
+
+	Make/FREE wv = {NaN, Inf, -Inf}
+
+	SetDimLabel ROWS, 0, $"NaN", wv
+	SetDimLabel ROWS, 1, $"Inf", wv
+	SetDimLabel ROWS, 2, $"-Inf", wv
+
+	return wv
+End
