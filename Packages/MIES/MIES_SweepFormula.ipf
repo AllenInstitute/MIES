@@ -5327,3 +5327,12 @@ static Function/WAVE SF_ResolveDataset(WAVE input)
 
 	return out
 End
+
+Function/S SF_GetDefaultFormula()
+
+	return "trange = cursors(A,B)\r" +               \
+	       "sel = select(channels(AD),sweeps())\r" + \
+	       "dat = data($trange, $sel)\r" +           \
+	       "\r" +                                    \
+	       "$dat"
+End

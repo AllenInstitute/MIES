@@ -225,7 +225,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	// settings history
 	CheckBox check_limit_x_selected_sweeps, WIN = $shPanel, value=0
 
-	SF_SetFormula(device, "data(\rcursors(A,B),\rselect(channels(AD),sweeps())\r)")
+	SF_SetFormula(device, SF_GetDefaultFormula())
 
 	helpNBWin = BSP_GetSFHELP(device)
 	SetWindow $helpNBWin, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)="1"
