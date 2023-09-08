@@ -4625,7 +4625,7 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 	normValue = NaN
 	Make/FREE/D/N=0 normMean
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, DimSize(input, ROWS))
-	output = SF_OperationApFrequencyImpl(input[p], level, method, timeFreq, normalize, xAxisType, normValue, normMean)
+	output = SF_OperationApFrequencyImpl(graph, input[p], level, method, timeFreq, normalize, xAxisType, normValue, normMean)
 	if(!CmpStr(normalize, SF_OP_APFREQUENCY_NORMOVERSWEEPSAVG) && DimSize(normMean, ROWS))
 		normValue = mean(normMean)
 		SF_OperationApFrequencyNormalizeOverSweeps(output, normValue)
@@ -4659,9 +4659,9 @@ static Function SF_OperationApFrequencyNormalizeOverSweepsImpl(WAVE/Z data, vari
 	MultiThread data /= normValue
 End
 
-static Function/WAVE SF_OperationApFrequencyImpl(WAVE/Z data, variable level, variable method, string yStr, string normStr, string xAxisTypeStr, variable &normOSValue, WAVE normMean)
+static Function/WAVE SF_OperationApFrequencyImpl(string graph, WAVE/Z data, variable level, variable method, string yStr, string normStr, string xAxisTypeStr, variable &normOSValue, WAVE normMean)
 
-	variable numPeaks, yModeTime, xAxisCount, normalize, normISValue
+	variable numPeaks, yModeTime, xAxisCount, normalize, normISValue, dataLengthInS
 	string yUnit
 
 	if(!WaveExists(data))
@@ -4680,7 +4680,16 @@ static Function/WAVE SF_OperationApFrequencyImpl(WAVE/Z data, variable level, va
 	switch(method)
 		case SF_APFREQUENCY_FULL:
 			// number_of_peaks / sweep_length
-			Make/FREE/D outD = { numPeaks / (DimDelta(data, ROWS) * DimSize(data, ROWS) * MILLI_TO_ONE) }
+			[WAVE selectData, WAVE selRange] = SFH_ParseToSelectDataWaveAndRange(data)
+
+			if(WaveExists(selRange) && SFH_IsFullRange(selRange))
+				WAVE stimsetRange = SFH_GetStimsetRange(graph, data, selectData)
+				dataLengthInS = (stimsetRange[1] - stimsetRange[0]) * MILLI_TO_ONE
+			else
+				dataLengthInS = DimDelta(data, ROWS) * DimSize(data, ROWS) * MILLI_TO_ONE
+			endif
+
+			Make/FREE/D outD = { numPeaks / dataLengthInS }
 			yUnit = SelectString(normalize, "Hz [Full]", "normalized frequency [Full]")
 			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), yUnit, outD
 			break
