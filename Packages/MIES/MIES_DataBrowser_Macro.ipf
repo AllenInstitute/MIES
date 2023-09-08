@@ -11,14 +11,13 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(739.5,170,1279.5,715.25)/K=1  as "DataBrowser"
+	Display /W=(739.5,170,1279.5,715.25)/K=1  as "Browser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=BSP_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Restore side panels"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_BSP_open,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_BSP_open,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
-	SetWindow kwTopWin,hook(cleanup)=DB_WindowHook
 	SetWindow kwTopWin,hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
 	SetWindow kwTopWin,hook(sweepScrolling)=BSP_SweepsAndMouseWheel
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -30,6 +29,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#C=!!#Bb?iU0,zzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin,userdata(BROWSERMODE)="User"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={324,252,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewPanel/HOST=#/EXT=2/W=(0,0,580,70)  as "Sweep Control"
 	Button button_SweepControl_NextSweep,pos={330.00,3.00},size={150.00,36.00},proc=BSP_ButtonProc_ChangeSweep
@@ -930,7 +930,7 @@ Window DataBrowser() : Graph
 	CheckBox check_SweepControl_HideSweep,value=0
 	CheckBox check_BrowserSettings_splitTTL,pos={170.00,56.00},size={58.00,15.00},disable=2,proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_BrowserSettings_splitTTL,title="sep. TTL"
-	CheckBox check_BrowserSettings_splitTTL help={"Display the TTL channel data as single traces for each TTL bit (ITC hardware only, for other hardware types this is always the case regardless of this checkbox)"}
+	CheckBox check_BrowserSettings_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit (ITC hardware only, for other hardware types this is always the case regardless of this checkbox)"}
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabnum)="0"
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabcontrol)="Settings"
 	CheckBox check_BrowserSettings_splitTTL,userdata(ResizeControlsInfo)=A"!!,G:!!#>n!!#?!!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -961,10 +961,10 @@ Window DataBrowser() : Graph
 	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo)=A"!!,CD!!#C.J,hsZJ,hlsz!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_sweepFormula_parseResult,frame=0
-	SetVariable setvar_sweepFormula_parseResult,limits={-inf,inf,0},value=_STR:"",noedit=1,live=1
 	SetVariable setvar_sweepFormula_parseResult,userdata(Config_DontRestore)="1"
 	SetVariable setvar_sweepFormula_parseResult,userdata(Config_DontSave)="1"
+	SetVariable setvar_sweepFormula_parseResult,frame=0
+	SetVariable setvar_sweepFormula_parseResult,limits={-inf,inf,0},value=_STR:"",noedit=1,live=1
 	ValDisplay status_sweepFormula_parser,pos={14.00,409.00},size={10.00,8.00},bodyWidth=10,disable=3
 	ValDisplay status_sweepFormula_parser,help={"Current parsing status of the entered formula."}
 	ValDisplay status_sweepFormula_parser,userdata(tabnum)="5"
@@ -1240,9 +1240,6 @@ Window DataBrowser() : Graph
 	DefineGuide UGVL={FL,15},UGVR={FR,-20},UGVT={FT,113},UGVB={FB,-50},enableBoxTop={FT,25}
 	DefineGuide enableBoxBottom={enableBoxTop,50},MainBoxBottom={FB,3},MainBoxTop={enableBoxBottom,10}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,hook(sweepFormula)=BSP_SweepFormulaHook
-	SetWindow kwTopWin,hook(nbinteract)=BSP_SFHelpWindowHook
-	Execute/Q/Z "SetWindow kwTopWin,tooltiphook(nbinteract)=BSP_TTHookSFFormulaNB"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#CCJ,hsrJ,fQLzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -1272,7 +1269,7 @@ Window DataBrowser() : Graph
 	NewNotebook /F=1 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
 	Notebook kwTopWin, defaultTab=10, autoSave= 1, magnification=100, showRuler=0, rulerUnits=2
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,286}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)uNa2l$r6juaS]NAgm*X3eh,8(:b/3qDf`$IZ2\"c,0hdT&QD#tZ!q>8lc2\"sb*'?t0`LOsu56M&O#8%0(kYUuD?'Lb'WM2S$2n35;Co_bnHG;[8413O#OCe=>%L&rkt2`4Wb4*2%$_9qC;7eC9(Z%8BPJ\\er8p1`7uY(`<2AMfKJPE4[$a\")KaohdHS(QjNH<A=49T(a^pr(1dP!pF/h^9M&3&cHe#dcUh\\e\"9;;O6<4"
+	Notebook kwTopWin, zdata= "Gasai3srhi'RZ$F8K%sE\"\\Fh#JR$#8r[L./V(B`_JUCue,1q,EDr_Y?p+C?J-j5a,_p3T:o4I^Vaj$!!.JQkuYc%`NmV>:A67LFqg7Sd\"hufK:5,7\"-A)I1\"q[QTj:$>G59,B/5EIFXp7j2@c9ue;Z)GpiP!GP_2)u6l%!CfqsS!`W871g&<R9I$]EIO\"H<Tic4?B6E%U,(1G::53H;0<?pGA'rUe6F^>;q6\\)Ym=LZr8u4cp#1tHWM8uU\\C@K0$L(0Cn8\\6_kkZ@L-ZLElJCF2qHBVAV"
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)="0"

@@ -1979,7 +1979,7 @@ Function/S BSP_RenameAndSetTitle(string win, string newName)
 		suffix = " with \"" + BSP_GetDevice(win) + "\""
 	endif
 
-	if(WindowExists(newName))
+	if(WindowExists(newName) && cmpstr(win, newName))
 		newName = UniqueName(newName, 9, 1)
 	endif
 

@@ -3642,3 +3642,14 @@ static Function TestVariables2()
 	code = MIES_SF#SF_ExecuteVariableAssignments(win, str)
 	CHECK_EQUAL_STR("", code)
 End
+
+Function TestDefaultFormula()
+
+	string win, bsPanel
+
+	win = GetDataBrowserWithData()
+	bsPanel = BSP_GetPanel(win)
+
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+End
