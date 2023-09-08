@@ -971,10 +971,12 @@ Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sw
 	WAVE/Z range = JWN_GetTextWaveFromWaveNote(sweepData, SF_META_RANGE)
 
 	if(!WaveExists(range))
-		WAVE range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
+		WAVE/Z range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
 	endif
 
-	ASSERT(HasOneValidEntry(range), "Empty range")
+	if(!WaveExists(range) || !HasOneValidEntry(range))
+		return [$"", $""]
+	endif
 
 	WAVE selectData = SFH_NewSelectDataWave(1, 1)
 
