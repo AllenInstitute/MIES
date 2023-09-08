@@ -4485,6 +4485,7 @@ Function DAP_LockDevice(string win)
 
 	HW_RegisterDevice(deviceLocked, hardwareType, deviceID)
 	if(ItemsInList(GetListOfLockedDevices()) == 1)
+		ArchiveLogFilesOnceAndKeepMonth()
 		DAP_LoadBuiltinStimsets()
 		GetPxPVersion()
 		SetupBackgroundTasks()

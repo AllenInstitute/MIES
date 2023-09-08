@@ -44,6 +44,8 @@ static StrConstant EXPCONFIG_JSON_HWDEVBLOCK = "DAQHardwareDevices"
 
 static StrConstant UPLOAD_BLOCK_USERPING = "UserPing"
 
+static Constant ARCHIVE_SIZETHRESHOLD = 52428800
+
 Menu "GraphMarquee"
 	"Horiz Expand (VisX)", /Q, HorizExpandWithVisX()
 End
@@ -7598,26 +7600,26 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 
 	UploadLogFilesPrint("Just a moment, Uploading log files to improve MIES... (only once per day)\r", verbose)
 
-	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile(), GetITCXOP2Logfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist", "ITC-XOP2-log-file-does-not-exist"}, {"MIES log file", "ZeroMQ log file", "ITCXOP2 log file"}}
+	WAVE/T files = GetLogFileNames()
 	timeStamp = GetISO8601TimeStamp()
 	ticket = GenerateRFC4122UUID()
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) jsonIDs
 
 	numFiles = DimSize(files, ROWS)
 	for(i = 0; i < numFiles; i += 1)
-		file = files[i][0]
+		file = files[i][%FILENAME]
 
 		fSize = GetFileSize(file)
 		WAVE/Z/T logData = $""
 		if(!IsNaN(fSize))
-			sprintf out, "Loading %s (%.1f MB)", files[i][2], fSize / MEGABYTE
+			sprintf out, "Loading %s (%.1f MB)", files[i][%DESCRIPTION], fSize / MEGABYTE
 			UploadLogFilesPrint(out, verbose)
 			WAVE/Z/T logData = LoadTextFileToWave(file, LOG_FILE_LINE_END)
 		endif
 		if(!WaveExists(logData))
 			jsonID = GenerateJSONTemplateForUpload(timeStamp = timeStamp)
 			AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
-			AddPayloadEntries(jsonID, {file}, {files[i][1]}, isBinary = isBinary)
+			AddPayloadEntries(jsonID, {file}, {files[i][%NOTEXISTTEXT]}, isBinary = isBinary)
 			EnsureLargeEnoughWave(jsonIDs, indexShouldExist=jsonIndex)
 			jsonIDs[jsonIndex] = jsonID
 			jsonIndex += 1
@@ -7636,9 +7638,6 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 			WAVE/T uploadData = logData
 			lastIndex = DimSize(logData, ROWS) - 1
 		endif
-
-		UploadLogFilesPrint(" -> Archive", verbose)
-		ArchiveLogFile(logData, file, lastIndex)
 
 		UploadLogFilesPrint(" -> Splitting", verbose)
 		WAVE/WAVE splitContents = SplitLogDataBySize(uploadData, LOG_FILE_LINE_END, LOGUPLOAD_PAYLOAD_SPLITSIZE)
@@ -8263,6 +8262,7 @@ Function HandleOutOfMemory(string device, string name)
 End
 
 /// @brief Return 1 if the function was already called with that argument, and 0 otherwise
+///        As named use or create a constant in @sa CalledOnceNames
 Function AlreadyCalledOnce(string name)
 
 	NVAR var = $GetCalledOnceVariable(name)
@@ -8399,4 +8399,41 @@ Function SetUserPingTimestamp(variable timeStamp)
 	isoTS = GetISO8601TimeStamp(secondsSinceIgorEpoch = timeStamp)
 	NVAR JSONid = $GetSettingsJSONid()
 	JSON_SetString(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/last upload", isoTS)
+End
+
+Function ArchiveLogFilesOnceAndKeepMonth()
+
+	string file
+	variable lastIndex, firstDate, lastDate, fSize
+
+	if(AlreadyCalledOnce(CO_ARCHIVE_ONCE))
+		return NaN
+	endif
+
+	WAVE/T files = GetLogFileNames()
+	Redimension/N=(-1) files
+
+	firstDate = 0
+	// subtract 1/12 of a year as approximation for one month
+	lastDate = DateTimeInUTC() - 365 * 24 * 60 * 60 / 12
+
+	for(file : files)
+
+		if(!FileExists(file))
+			continue
+		endif
+		fSize = GetFileSize(file)
+		if(fSize < ARCHIVE_SIZETHRESHOLD)
+			continue
+		endif
+		if(fSize > 512 * 1024 * 1024)
+			printf "Just a moment, archiving log file %s.\rThis is only done once.\r", file
+		endif
+
+		WAVE/Z/T logData = LoadTextFileToWave(file, LOG_FILE_LINE_END)
+		if(WaveExists(logData))
+			[WAVE/T partData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
+			ArchiveLogFile(logData, file, lastIndex)
+		endif
+	endfor
 End
