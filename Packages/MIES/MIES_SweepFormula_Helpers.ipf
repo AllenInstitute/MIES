@@ -321,12 +321,14 @@ End
 
 /// @brief Returns a range from a epochName
 ///
-/// @param graph name of databrowser graph
+/// @param graph     name of databrowser graph
 /// @param epochName name epoch
-/// @param sweep number of sweep
-/// @param channel number of DA channel
+/// @param sweep     number of sweep
+/// @param chanType  type of channel
+/// @param channel   number of DA channel
+///
 /// @returns a 1D wave with two elements, [startTime, endTime] in ms, if no epoch could be resolved [NaN, NaN] is returned
-Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable channel)
+Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable chanType, variable channel)
 
 	string regex
 	variable numEpochs
@@ -347,7 +349,7 @@ Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable swe
 	endif
 
 	regex = "^" + epochName + "$"
-	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, channel, regex)
+	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, chanType, channel, regex)
 	if(!WaveExists(epochs))
 		return range
 	endif
@@ -1241,28 +1243,39 @@ Function SFH_CheckArgumentCount(variable jsonId, string jsonPath, string opShort
 	return numArgs
 End
 
-static Function/WAVE ES_GetStimsetRange(string graph, WAVE selectData)
+static Function/WAVE ES_GetStimsetRange(string graph, WAVE sweepData)
 
 	variable sweepNo, channel, chanType, DAChannel
+
+	[WAVE selectData, WAVE selRange] = SFH_ParseToSelectDataWaveAndRange(sweepData)
+	if(!WaveExists(selectData) || !WaveExists(selRange))
+		return SFH_GetFullRange()
+	endif
 
 	sweepNo  = selectData[0][%SWEEP]
 	channel  = selectData[0][%CHANNELNUMBER]
 	chanType = selectData[0][%CHANNELTYPE]
 
-	// use SFH_ParseToSelectDataWaveAndRange for gathering sweep/channel/channeltype
-	// function needs to learn to handle plain data gracefully
-
 	// stimset epoch "ST" does not include any onset or termination delay and only the stimset epochs
 	// and it also works with ddDAQ/oodDAQ
-	WAVE range = SFH_GetRangeFromEpoch(graph, "ST", sweepNo, DAChannel)
+	WAVE range = SFH_GetRangeFromEpoch(graph, "ST", sweepNo, chanType, channel)
 
 	if(SFH_IsEmptyRange(range))
 		// data prior to 13b3499d (Add short names for Epochs stored in epoch name, 2021-09-06)
 		// try the long name instead
 		WAVE range = SFH_GetRangeFromEpoch(graph, "Stimset;", sweepNo, DAChannel)
+
 		if(SFH_IsEmptyRange(range))
 			// data prior to a2172f03 (Added generations of epoch information wave, 2019-05-22)
 			// remove total onset delay and termination delay iff we have neither dDAQ nor oodDAQ enabled
+			WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			ASSERT(WaveExists(numericalValues), "Missing numerical labnotebook")
+
+			// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
+			dDAQ = GetLastSetting(numericalValues, sweepNo, "Distributed DAQ", DATA_ACQUISITION_MODE)
+			SFH_ASSERT(dDAQ != 1, "Can not gather stimset range with dDAQ data")
+
+			// d102c07d (Add new data acquisition mode: Optimized overlap distributed acquisition, 2016-08-10)
 			SFH_ASSERT(0, "Fallback not implemented")
 		endif
 	endif
