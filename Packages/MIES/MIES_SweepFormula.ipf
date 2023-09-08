@@ -2291,6 +2291,7 @@ static Function/S SF_PreprocessInput(string formula)
 
 	WAVE/T lines = ListToTextWave(formula, SF_CHAR_CR)
 	lines[] = StringFromList(0, lines[p], SF_CHAR_COMMENT)
+	lines[] = RemoveEndingRegExp(lines[p], "[[:space:]]+$")
 	formula = TextWaveToList(lines, SF_CHAR_CR)
 	if(IsEmpty(formula))
 		return ""
