@@ -6,13 +6,11 @@
 #pragma ModuleName=MIES_RS
 #endif
 
-#include "MIES_Include"
-
 static Function/S GetSavePath()
 
 	string folder, pathName
 
-	folder = GetFolder(FunctionPath("")) + "ScreenShots"
+	folder = GetFolder(FunctionPath("")) + ":ScreenShots"
 	CreateFolderOnDisk(folder)
 	pathName = GetUniqueSymbolicPath()
 	NewPath/O/Q $pathName, folder
@@ -250,25 +248,32 @@ Function CreateRelevantColorsGraph()
 
 	// headstage colors
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		//[s] = GetHeadstageColor(i)
-		sprintf str, "\\K(%d, %d , %d) Headstage %d\r", s.red, s.green, s.blue, i
+		[s] = GetHeadstageColor(i)
+		sprintf str, "\\K(%d, %d, %d) Headstage %d\r", s.red, s.green, s.blue, i
 		contents += str
 	endfor
 
-	contents += "\rTTL colors\r"
+	[s] = GetHeadstageColor(NUM_HEADSTAGES)
+	sprintf str, "\\K(%d, %d, %d) Independent\r", s.red, s.green, s.blue
+	contents += str
+
+	[s] = GetTraceColorForAverage()
+	sprintf str, "\\K(%d, %d, %d) Average\r", s.red, s.green, s.blue
+	contents += str
+
+	contents += "\r\\K(0, 0, 0)TTL colors:\r"
 
 	for(i = 0; i < 2; i += 1)
 		sprintf str, "\\K(0, 0, 0)Rack %s\r", SelectString(i, "Zero", "One")
 		contents += str
 
-		[s] = GetHeadstageColor(NaN, channelType = "TTL", activeChannelCount=i)
-		sprintf str, "\\K(%d, %d , %d) Sum\r", s.red, s.green, s.blue
+		[s] = GetHeadstageColor(NaN, channelType = XOP_CHANNEL_TYPE_TTL, channelNumber = i * NUM_ITC_TTL_BITS_PER_RACK, isSplitted = 0)
+		sprintf str, "\\K(%d, %d, %d) Sum\r", s.red, s.green, s.blue
 		contents += str
 		for(j = 0; j < 4; j += 1)
-			[s] = GetHeadstageColor(NaN, channelType = "TTL", activeChannelCount=i, channelSubNumber = j + 1)
-			sprintf str, "\\K(%d, %d , %d) Single\r", s.red, s.green, s.blue
+			[s] = GetHeadstageColor(NaN, channelType = XOP_CHANNEL_TYPE_TTL, channelNumber = i * NUM_ITC_TTL_BITS_PER_RACK + j, isSplitted = 1)
+			sprintf str, "\\K(%d, %d, %d) Single\r", s.red, s.green, s.blue
 			contents += str
-
 		endfor
 	endfor
 

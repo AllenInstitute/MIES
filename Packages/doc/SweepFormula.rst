@@ -562,8 +562,10 @@ channels
 
 `channels([str name]+)` converts named channels from strings to numbers.
 
-The function accepts an arbitrary amount of channel names like `AD`, `DA` or `TTL` with a combination of numbers `AD1` or channel numbers alone like `2`.
-The maximum allowed channel number is `NUM_MAX_CHANNELS` (16).
+The function accepts an arbitrary amount of channel names like `AD`, `DA` or
+`TTL` with a combination of numbers `AD1` or channel numbers alone like `2`.
+The maximum allowed channel number is `NUM_MAX_CHANNELS` (16). For all channel
+types the channel numbers as given on the DAEphys panel are accepted.
 The operation returns a numeric array of `[[channelType+], [channelNumber+]]` that has as
 row dimension the number of the input strings.
 When called without argument all channel types / channel numbers are set by setting the
@@ -694,6 +696,11 @@ The returned data type is `SF_DATATYPE_SWEEP`.
 
    // No double resolve of the same epoch name: Shows sweep data from epoch "TP" of the AD channels of all displayed sweeps.
    data(["TP","TP"], select(channels(AD), sweeps()))
+
+   // extract the first pulse from TTL1 as epoch and extract the AD data
+   // in that range
+   ep = epochs(E0_PT_P0, select(channels(TTL1),sweeps()))
+   data($ep,select(channels(AD),sweeps()))
 
 labnotebook
 """""""""""
