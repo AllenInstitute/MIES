@@ -242,12 +242,18 @@ static Function/WAVE SF_TestVariablesGen()
 	Make/FREE/T t4DimLbl = {"b"}
 	Make/FREE/T t4Result = {"a$b=1"}
 
+// does not bug out with trailing whitespace
+	Make/FREE/T t5FormulaAndRest = {"a=[1]\r 	\rb=$a\r\r$b", "$b"}
+	t5FormulaAndRest[] = MIES_SF#SF_PreprocessInput(t5FormulaAndRest[p])
+	Make/FREE/T t5DimLbl = {"a", "b"}
+
 	Make/FREE/WAVE t1 = {t1FormulaAndRest, t1DimLbl, $""}
 	Make/FREE/WAVE t2 = {t2FormulaAndRest, t2DimLbl, $""}
 	Make/FREE/WAVE t3 = {t3FormulaAndRest, t3DimLbl, t3Result}
 	Make/FREE/WAVE t4 = {t4FormulaAndRest, t4DimLbl, t4Result}
+	Make/FREE/WAVE t5 = {t5FormulaAndRest, t5DimLbl, $""}
 
-	Make/FREE/WAVE wv = {t1, t2, t3, t4}
+	Make/FREE/WAVE wv = {t1, t2, t3, t4, t5}
 	return wv
 End
 
