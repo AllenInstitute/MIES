@@ -2973,14 +2973,23 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			// waves per channel type
 			for(j = 0; j < numVertWaves; j += 1)
 
-				ttlBit = channelType == XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits ? j : NaN
+				ttlBit = channelType == XOP_CHANNEL_TYPE_TTL && isTTLSplitted ? j : NaN
 
 				if(channelType == XOP_CHANNEL_TYPE_TTL)
-					guiChannelNumber = channelMapHWToGUI[chan][IsNaN(ttlBit) ? 0 : ttlBit]
+					if(isTTLSplitted)
+						guiChannelNumber = channelMapHWToGUI[chan][ttlBit]
+						name = channelID + num2istr(guiChannelNumber)
+					else
+						Duplicate/FREE/RMD=[chan][] channelMapHWToGUI, channelMapSingle
+						WAVE channelMapSingleZapped = ZapNaNs(channelMapSingle)
+						ASSERT(DimSize(channelMapSingleZapped, ROWS), "No GUI channel found for HW channel " + num2istr(chan))
+						guiChannelNumber = channelMapSingleZapped[0]
+						name = channelID + "C" + RemoveEnding(NumericWaveToList(channelMapSingleZapped, "_"), "_")
+					endif
 				else
 					guiChannelNumber = chan
+					name = channelID + num2istr(guiChannelNumber)
 				endif
-				name = channelID + num2istr(guiChannelNumber)
 
 				DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
 
@@ -3343,6 +3352,7 @@ End
 /// @param channelType   [optional, empty by default] The channel type for non-associated channels, currently only XOP_CHANNEL_TYPE_TTL is evaluated
 /// @param channelNumber [optional, empty by default] For plotting "TTL" channels only, GUI channel number
 /// @param isSplitted    [optional, default 1] For plotting "TTL" channels only, Flag if the color for a splitted or unsplitted channel should be returned
+///                      For the case isSplitted == 0, then channelNumber must be a GUI channel number from the specific TTL rack range
 Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [variable channelType, variable channelNumber, variable isSplitted])
 
 	string str

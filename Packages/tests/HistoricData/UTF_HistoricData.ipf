@@ -20,6 +20,7 @@ static StrConstant HTTP_FOLDER_URL = "https://www.byte-physics.de/Downloads/alle
 
 // keep sorted
 #include "UTF_HistoricDashboard"
+#include "UTF_HistoricDatabrowserChannelCheckboxes"
 #include "UTF_HistoricEpochClipping"
 
 // Entry point for UTF
@@ -83,6 +84,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	// sorted list
 	list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", inf)
 	list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", inf)
+	list = AddListItem("UTF_HistoricDatabrowserChannelCheckboxes.ipf", list, ";", inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
@@ -178,7 +180,9 @@ Function/WAVE GetHistoricDataFiles()
 	                     "Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp",           \
 	                     "Sst-IRES-Cre;Ai14-554002.08.06.02.pxp",             \
 	                     "Sst-IRES-Cre;Th-P2A-FlpO;Ai65-561491.09.09.02.pxp", \
-	                     "epoch_clipping_2022_03_08_140256.pxp"}
+							"epoch_clipping_2022_03_08_140256.pxp",              \
+							"DB_ChannelTypeCheckboxes.pxp"                       \
+							}
 
 	/// @TODO use hashes to verify files once IP supports strings > 2GB
 
