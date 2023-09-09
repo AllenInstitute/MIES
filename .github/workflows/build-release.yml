@@ -8,6 +8,9 @@ on:
 defaults:
   run:
     shell: bash
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
 
   CallPR:
@@ -123,7 +126,7 @@ jobs:
   FTPUpload:
     name: 📦 FTP Upload Artifacts
     runs-on: [ self-hosted, Linux, Docker ]
-    if: always()
+    if: ${{ !cancelled() }}
     needs:
       # All jobs that create new artifacts
       - CallPR

@@ -31,6 +31,9 @@ on:
 defaults:
   run:
     shell: bash
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
 
   BuildInstaller:
@@ -226,7 +229,7 @@ jobs:
   FTPUpload:
     name: 📦 FTP Upload Artifacts
     runs-on: [ self-hosted, Linux, Docker ]
-    if: always() && !inputs.is_called_workflow
+    if: ${{ !cancelled() && !inputs.is_called_workflow}}
     needs:
       # All jobs that create new artifacts
       - BuildInstaller
