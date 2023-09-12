@@ -344,9 +344,9 @@ The returned data type is `SF_DATATYPE_AVG`.
 
    avg([1, 2, 3]) == [2]
 
-   avg(data(cursors(A,B), select(channels(AD), sweeps(), all)), over)
+   avg(data(ST, select(channels(AD), sweeps(), all)), over)
 
-   avg(data(cursors(A,B), select()), in)
+   avg(data(ST, select()), in)
 
 root mean square
 """"""""""""""""
@@ -889,11 +889,11 @@ If input data type is `SF_DATATYPE_SWEEP` from the data operation and non-averag
 
 .. code-block:: bash
 
-   powerspectrum(data(cursors(A,B),select(channels(AD),sweeps(),all)))
+   powerspectrum(data(ST,select(channels(AD),sweeps(),all)))
 
-   powerspectrum(data(cursors(A,B),select(channels(AD),sweeps(),all)),dB,avg,0,100,HFT248D) // db units, averaging on, display up to 100 Hz, use HFT248D window
+   powerspectrum(data(ST,select(channels(AD),sweeps(),all)),dB,avg,0,100,HFT248D) // db units, averaging on, display up to 100 Hz, use HFT248D window
 
-   powerspectrum(data(cursors(A,B),select(channels(AD),sweeps(),all)),dB,avg,60) // db units, averaging on, determine power ratio at 60 Hz
+   powerspectrum(data(ST,select(channels(AD),sweeps(),all)),dB,avg,60) // db units, averaging on, determine power ratio at 60 Hz
 
 .. _sf_op_psx:
 
@@ -977,7 +977,7 @@ amp
 
    psxkernel([100, 200])
    psxkernel([E0, E1]) # list of epoch names
-   psxkernel(cursors(), select(channels(AD10), [49, 50], all), 2, 13, 2)
+   psxkernel(ST, select(channels(AD10), [49, 50], all), 2, 13, 2)
 
 psxPrep
 """""""
@@ -1842,6 +1842,6 @@ need to be shown with a different marker or line style. It also adapts the legen
 
 .. code-block:: igorpro
 
-   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
+   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
    with
-   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 100, time, norminsweepsavg, count)
+   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 100, time, norminsweepsavg, count)
