@@ -661,8 +661,9 @@ It can be called in two variants:
    data(string epochShortName[, array selectData])
 
 The range can be either supplied explicitly using `[100, 300]` which would
-select `100 ms` to `300 ms` or by using `cursors` that also returns a range specification. In case `cursors()` is
-used but there are no cursors on the graph, the full x-range is used. A numerical range applies to all sweeps.
+select `100 ms` to `300 ms` or by using `cursors` that also returns a range
+specification. Use `[0, inf]` to extract the full x-range. A numerical range
+applies to all sweeps.
 
 Instead of a numerical range also the short names of epochs can be given including wildcard expressions. Then the range
 is determined from the epoch information of each sweep/channel/epoch data iterates over. If a specified epoch does not exist in a sweep
