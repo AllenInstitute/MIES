@@ -904,7 +904,7 @@ The `psx` operation allows to classify miniature PSC/PSP's interactively.
 
 .. code-block:: bash
 
-   psx(id, [psxKernel(), numSDs, filterLow, filterHigh, maxTauFactor, psxRiseTime()])
+   psx(id, [psxKernel(), numSDs, filterLow, filterHigh, maxTauFactor, psxRiseTime(), psxDeconvFilter()])
 
 The function accepts one to seven arguments.
 
@@ -930,6 +930,9 @@ maxTauFactor
 
 psxRiseTime
   results from the `psxRiseTime` operation
+
+psxDeconvFilter
+  results from the `psxDeconvFilter` operation
 
 The plotting is implemented in a custom way. Due to that multiple `psx`
 operations can only be separated by `with` and not `and`.
@@ -1014,6 +1017,33 @@ upperThreshold
 
    psxRiseTime(0.5)
    psxRiseTime(0.5, 0.9)
+
+psxDeconvFilter
+"""""""""""""""
+
+The `psxDeconvFilter` operation is a helper operation for `psx` to manage the deconvolution filter settings.
+
+   psxDeconvFilter([lowFreq, highFreq, order])
+
+The function accepts zero to three arguments.
+
+lowFreq [Hz]
+   defaults to `NaN`
+
+highFreq [Hz]
+   defaults to `NaN`
+
+order
+   defaults to `NaN`
+
+The default values of `NaN` are replaced inside `psx`. For the order this is
+`101`, for the frequencies this is a normalized frequency which depends on the
+sampling interval of the data.
+
+.. code-block:: bash
+
+   psxDeconvFilter(500, 1000)
+   psxDeconvFilter(400, 600, 91)
 
 psxstats
 """"""""
