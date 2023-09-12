@@ -729,7 +729,7 @@ The suggested y-axis label is the labnotebook key.
 
    max(
       data(
-         cursors(AB)
+         cursors(A, B)
          channels(AD),
          sweeps()
       )
