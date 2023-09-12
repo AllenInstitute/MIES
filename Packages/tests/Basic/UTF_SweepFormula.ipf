@@ -175,6 +175,32 @@ static Function primitiveOperations()
 	TestOperationMinMaxHelper(win, "{\"+\":[1,1]}", "1++1", 1 + +1)
 End
 
+static Function TestNonFiniteValues()
+
+	string win, device
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	TestOperationMinMaxHelper(win, "\"inf\"", "inf", +inf)
+	TestOperationMinMaxHelper(win, "\"-inf\"", "-inf", -inf)
+	TestOperationMinMaxHelper(win, "\"NaN\"", "NaN", NaN)
+End
+
+// Fails with Abort
+// UTF_TD_GENERATOR NonFiniteValues
+//static Function TestNonFiniteValuesPrimitiveOperations([variable var])
+//
+//	string win, device, str
+//
+//	[win, device] = CreateFakeDataBrowserWindow()
+//
+//	str = "\"" + num2str(var) + "\""
+//	TestOperationMinMaxHelper(win, "{\"+\":[1," + str + "]}", "1+" + str, 1 + var)
+//	TestOperationMinMaxHelper(win, "{\"*\":[1," + str + "]}", "1*" + str, 1 * var)
+//	TestOperationMinMaxHelper(win, "{\"-\":[1," + str + "]}", "1-" + str, 1 - var)
+//	TestOperationMinMaxHelper(win, "{\"/\":[1," + str + "]}", "1/" + str, 1 / var)
+//End
+
 static Function Transitions()
 
 	string win, device
@@ -737,7 +763,13 @@ static Function TestOperationMinMaxHelper(string win, string jsonRefText, string
 	CheckEqualFormulas(jsonRefText, formula)
 	WAVE data = SF_ExecuteFormula(formula, win, singleResult=1, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
-	CHECK_EQUAL_VAR(data[0], refResult)
+
+	if(IsNumericWave(data))
+		CHECK_EQUAL_VAR(data[0], refResult)
+	else
+		WAVE/T dataText = data
+		CHECK_EQUAL_STR(dataText[0], num2str(refResult))
+	endif
 End
 
 // test static Functions with 1..N arguments
@@ -2503,6 +2535,13 @@ static Function TestOperationData()
 
 	sweepCnt = 1
 	str = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
+	numResultsRef = sweepCnt * numChannels / 2
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
+	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
+
+	sweepCnt = 1
+	str = "data([0, inf],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	numResultsRef = sweepCnt * numChannels / 2
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
