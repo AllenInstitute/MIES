@@ -5334,9 +5334,9 @@ End
 
 Function/S SF_GetDefaultFormula()
 
-	return "trange = cursors(A,B)\r" +               \
-	       "sel = select(channels(AD),sweeps())\r" + \
-	       "dat = data($trange, $sel)\r" +           \
-	       "\r" +                                    \
+	return "trange = [0, inf]\r" +                    \
+	       "sel = select(channels(AD), sweeps())\r" + \
+	       "dat = data($trange, $sel)\r" +            \
+	       "\r" +                                     \
 	       "$dat"
 End
