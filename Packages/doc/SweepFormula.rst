@@ -829,16 +829,18 @@ seconds of the level and :math:`T` the total x range of the data in seconds.
 
 The method `2` (instantaneous) and `3` (instantaneous pair) treat the peaks as interleaved pairs of peaks and returns results only if there are two or more peaks found.
 
-The returned data type is `SF_DATATYPE_APFREQUENCY`.
-If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred to the returned data waves.
+The returned data type is `SF_DATATYPE_APFREQUENCY`. If input data type is
+`SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred
+to the returned data waves. There is no input data verification, so it is left
+to the user to select a reasonable range or epoch.
 
 .. code-block:: bash
 
    apfrequency([10, 20, 30], 1, 15)
 
-   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
+   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
 
-   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 42, time, norminsweepsmin, time)
+   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 42, time, norminsweepsmin, time)
 
 powerspectrum
 """""""""""""
