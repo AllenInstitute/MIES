@@ -310,6 +310,14 @@ Function/WAVE SFH_GetFullRange()
 	return range
 End
 
+Function SFH_IsFullRange(WAVE range)
+
+	ASSERT(IsNumericWave(range), "Invalid Range wave")
+	WAVE rangeRef = SFH_GetFullRange()
+
+	return	EqualWaves(rangeRef, range, EQWAVES_DATA)
+End
+
 /// @brief Evaluate range parameter
 ///
 /// Range can be `[100-200]` or implicit as `cursors(A, B)` or a named epoch `E0` or a wildcard expression with epochs `E*`
