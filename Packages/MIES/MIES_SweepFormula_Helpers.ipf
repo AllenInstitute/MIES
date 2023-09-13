@@ -349,12 +349,14 @@ End
 
 /// @brief Returns a range from a epochName
 ///
-/// @param graph name of databrowser graph
+/// @param graph     name of databrowser graph
 /// @param epochName name epoch
-/// @param sweep number of sweep
-/// @param channel number of DA channel
+/// @param sweep     number of sweep
+/// @param chanType  type of channel
+/// @param channel   number of DA channel
+///
 /// @returns a 1D wave with two elements, [startTime, endTime] in ms, if no epoch could be resolved [NaN, NaN] is returned
-Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable channel)
+Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable chanType, variable channel)
 
 	string regex
 	variable numEpochs
@@ -375,7 +377,7 @@ Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable swe
 	endif
 
 	regex = "^" + epochName + "$"
-	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, channel, regex)
+	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, chanType, channel, regex)
 	if(!WaveExists(epochs))
 		return range
 	endif
