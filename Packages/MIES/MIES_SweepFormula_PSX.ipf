@@ -731,6 +731,7 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 	WAVE sweepData = psxKernelDataset[%$key]
 
 	[WAVE selectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
+	ASSERT(WaveExists(selectData) && WaveExists(range), "Could not recreate select/range wave")
 	comboKey = PSX_GenerateComboKey(graph, selectData, range)
 
 	psxParametersAnalyzePeaks = PSX_GetPSXParameters(parameterJSONID, PSX_CACHE_KEY_ANALYZE_PEAKS)
@@ -780,6 +781,7 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 	endif
 
 	[WAVE selectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
+	ASSERT(WaveExists(selectData) && WaveExists(range), "Could not recreate select/range wave")
 	comboKey = PSX_GenerateComboKey(graph, selectData, range)
 
 	psxParametersEvents = PSX_GetPSXParameters(parameterJSONID, PSX_CACHE_KEY_EVENTS)

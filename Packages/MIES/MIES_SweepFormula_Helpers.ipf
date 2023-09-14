@@ -310,6 +310,14 @@ Function/WAVE SFH_GetFullRange()
 	return range
 End
 
+Function SFH_IsFullRange(WAVE range)
+
+	ASSERT(IsNumericWave(range), "Invalid Range wave")
+	WAVE rangeRef = SFH_GetFullRange()
+
+	return	EqualWaves(rangeRef, range, EQWAVES_DATA)
+End
+
 /// @brief Evaluate range parameter
 ///
 /// Range can be `[100-200]` or implicit as `cursors(A, B)` or a named epoch `E0` or a wildcard expression with epochs `E*`
@@ -341,12 +349,14 @@ End
 
 /// @brief Returns a range from a epochName
 ///
-/// @param graph name of databrowser graph
+/// @param graph     name of databrowser graph
 /// @param epochName name epoch
-/// @param sweep number of sweep
-/// @param channel number of DA channel
+/// @param sweep     number of sweep
+/// @param chanType  type of channel
+/// @param channel   number of DA channel
+///
 /// @returns a 1D wave with two elements, [startTime, endTime] in ms, if no epoch could be resolved [NaN, NaN] is returned
-Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable channel)
+Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable chanType, variable channel)
 
 	string regex
 	variable numEpochs
@@ -367,7 +377,7 @@ Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable swe
 	endif
 
 	regex = "^" + epochName + "$"
-	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, channel, regex)
+	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, chanType, channel, regex)
 	if(!WaveExists(epochs))
 		return range
 	endif
@@ -971,10 +981,12 @@ Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sw
 	WAVE/Z range = JWN_GetTextWaveFromWaveNote(sweepData, SF_META_RANGE)
 
 	if(!WaveExists(range))
-		WAVE range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
+		WAVE/Z range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
 	endif
 
-	ASSERT(HasOneValidEntry(range), "Empty range")
+	if(!WaveExists(range) || !HasOneValidEntry(range))
+		return [$"", $""]
+	endif
 
 	WAVE selectData = SFH_NewSelectDataWave(1, 1)
 
@@ -1257,4 +1269,62 @@ Function SFH_CheckArgumentCount(variable jsonId, string jsonPath, string opShort
 	SFH_ASSERT(numArgs >= minArgs, errMsg)
 
 	return numArgs
+End
+
+/// @brief Return a SF range in ms with the stimset range
+///
+/// Prefers the `ST` epoch if present, otherwise it tries to deduce the
+/// equivalent from labnotebook entries.
+Function/WAVE SFH_GetStimsetRange(string graph, WAVE data, WAVE selectData)
+
+	variable sweepNo, channel, chanType, dDAQ, oodDAQ, onsetDelay, terminationDelay, lengthInMS
+
+	sweepNo  = selectData[0][%SWEEP]
+	channel  = selectData[0][%CHANNELNUMBER]
+	chanType = selectData[0][%CHANNELTYPE]
+
+	// stimset epoch "ST" does not include any onset or termination delay and only the stimset epochs
+	// and it also works with dDAQ/oodDAQ
+	WAVE range = SFH_GetRangeFromEpoch(graph, "ST", sweepNo, chanType, channel)
+
+	if(!SFH_IsEmptyRange(range))
+		return range
+	endif
+
+	// data prior to 13b3499d (Add short names for Epochs stored in epoch name, 2021-09-06)
+	// try the long name instead
+	WAVE range = SFH_GetRangeFromEpoch(graph, "Stimset;", sweepNo, chanType, channel)
+
+	if(!SFH_IsEmptyRange(range))
+		return range
+	endif
+
+	// data prior to a2172f03 (Added generations of epoch information wave, 2019-05-22)
+	// remove total onset delay and termination delay iff we have neither dDAQ nor oodDAQ enabled
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	ASSERT(WaveExists(numericalValues), "Missing numerical labnotebook")
+
+	// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
+	dDAQ = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ", DATA_ACQUISITION_MODE)
+	SFH_ASSERT(dDAQ != 1, "Can not gather stimset range with dDAQ data")
+
+	// d102c07d (Add new data acquisition mode: Optimized overlap distributed acquisition, 2016-08-10)
+	oodDAQ = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", DATA_ACQUISITION_MODE)
+	SFH_ASSERT(oodDAQ != 1, "Can not gather stimset range with oodDAQ data")
+
+	onsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
+
+	// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
+	terminationDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", DATA_ACQUISITION_MODE)
+
+	lengthInMS = DimDelta(data, ROWS) * DimSize(data, ROWS)
+
+	WAVE range = SFH_GetEmptyRange()
+
+	range[0] = onsetDelay
+	range[1] = lengthInMS - onsetDelay - terminationDelay
+
+	ASSERT(range[0] < range[1], "Invalid range")
+
+	return range
 End

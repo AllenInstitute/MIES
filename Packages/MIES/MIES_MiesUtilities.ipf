@@ -6312,6 +6312,7 @@ Function GetTotalOnsetDelay(numericalValues, sweepNo)
 	WAVE numericalValues
 	variable sweepNo
 
+	// present since 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
 	return GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
 			GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
 End
