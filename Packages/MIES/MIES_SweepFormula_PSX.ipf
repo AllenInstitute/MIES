@@ -320,9 +320,33 @@ End
 ///
 /// @param sweepData data from a single sweep and channel *without* inserted TP
 /// @param psxKernelFFT FFT'ed kernel from PSX_CreatePSXKernel()
-static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFFT)
+/// @param deconvFilter deconvolution filter settings
+static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFFT, WAVE deconvFilter)
 
-	variable numPoints, fftSize
+	variable numPoints, fftSize, samp, low, high, order, lowFrac, highFrac
+
+	samp  = 1 / (deltax(sweepData) * MILLI_TO_ONE)
+	low   = deconvFilter[%$"Filter Low"]
+	high  = deconvFilter[%$"Filter High"]
+	order = deconvFilter[%$"Filter Order"]
+
+	if(IsNaN(low))
+		lowFrac = PSX_DECONV_FILTER_DEF_LOW
+	else
+		lowFrac = low / samp
+	endif
+
+	if(IsNaN(high))
+		highFrac = PSX_DECONV_FILTER_DEF_HIGH
+	else
+		highFrac = high / samp
+	endif
+
+	if(IsNaN(order))
+		order = PSX_DECONV_FILTER_DEF_ORDER
+	endif
+
+	ASSERT(lowFrac < highFrac, "Expected a low pass filter with lowFrac < highFrac")
 
 	numPoints = DimSize(sweepData, ROWS)
 	fftSize = DimSize(psxKernelFFT, ROWS)
@@ -339,7 +363,7 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 
 	CopyScales sweepData, Deconv
 
-	FilterFIR/ENDV={3}/LO={0.002, 0.004, 101} Deconv
+	FilterFIR/ENDV={3}/LO={lowFrac, highFrac, order} Deconv
 
 	return Deconv
 end
@@ -406,7 +430,7 @@ end
 /// - deconvolution
 /// - histogram of deconvolution
 /// - gaussian fit of histogram
-static Function [WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] PSX_Analysis(WAVE sweepData, WAVE psxKernelFFT, variable sweepFilterLow, variable sweepFilterHigh)
+static Function [WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] PSX_Analysis(WAVE sweepData, WAVE psxKernelFFT, variable sweepFilterLow, variable sweepFilterHigh, WAVE deconvFilter)
 
 	variable offset
 
@@ -419,7 +443,7 @@ static Function [WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] PSX_Analysi
 		return [$"", $""]
 	endif
 
-	WAVE sweepDataFiltOffDeconv = PSX_DeconvoluteSweepData(sweepDataFiltOff, psxKernelFFT)
+	WAVE sweepDataFiltOffDeconv = PSX_DeconvoluteSweepData(sweepDataFiltOff, psxKernelFFT, deconvFilter)
 
 	return [sweepDataFiltOff, sweepDataFiltOffDeconv]
 end
@@ -696,7 +720,7 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 	return wv
 End
 
-static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDataset, variable parameterJsonID, variable sweepFilterLow, variable sweepFilterHigh, variable index, WAVE/WAVE output)
+static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDataset, variable parameterJsonID, variable sweepFilterLow, variable sweepFilterHigh, WAVE deconvFilter, variable index, WAVE/WAVE output)
 
 	string key, comboKey, psxParametersAnalyzePeaks, cacheKey
 
@@ -717,7 +741,7 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 		WAVE sweepDataFiltOff       = psxAnalyzePeaksFromCache[%sweepDataFiltOff]
 		WAVE sweepDataFiltOffDeconv = psxAnalyzePeaksFromCache[%sweepDataFiltOffDeconv]
 	else
-		[WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] = PSX_Analysis(sweepData, psxKernelFFT, sweepFilterLow, sweepFilterHigh)
+		[WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] = PSX_Analysis(sweepData, psxKernelFFT, sweepFilterLow, sweepFilterHigh, deconvFilter)
 
 		Make/FREE/WAVE/N=(2) psxAnalyzePeaks
 		SetDimensionLabels(psxAnalyzePeaks, "sweepDataFiltOff;sweepDataFiltOffDeconv", ROWS)
@@ -4099,12 +4123,13 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 	WAVE/WAVE psxKernelDataset = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_PSX, 1,  defOp = "psxKernel()")
 
 	try
-		numberOfSDs   = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
-		sweepFilterLow     = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW)
-		sweepFilterHigh    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH)
-		maxTauFactor  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
+		numberOfSDs = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
+		sweepFilterLow = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW, checkFunc = IsNullOrPositiveAndFinite)
+		sweepFilterHigh = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH, checkFunc = IsNullOrPositiveAndFinite)
+		maxTauFactor = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
 		WAVE riseTime = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 6, defOp = "psxRiseTime()", singleResult = 1)
 		ASSERT(IsNumericWave(riseTime), "Invalid return from psxRiseTime")
+		WAVE deconvFilter = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 7, defOp = "psxDeconvFilter()", singleResult = 1)
 
 		parameterJsonID = JWN_GetWaveNoteAsJSON(psxKernelDataset)
 		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX
@@ -4118,6 +4143,11 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		JSON_AddTreeObject(parameterJsonID, parameterPath)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/upperThreshold", riseTime[%$"Upper Threshold"])
 		JSON_AddVariable(parameterJsonID, parameterPath + "/lowerThreshold", riseTime[%$"Lower Threshold"])
+		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_DECONV_FILTER
+		JSON_AddTreeObject(parameterJsonID, parameterPath)
+		JSON_AddVariable(parameterJsonID, parameterPath + "/filterLow", deconvFilter[%$"Filter Low"])
+		JSON_AddVariable(parameterJsonID, parameterPath + "/filterHigh", deconvFilter[%$"Filter High"])
+		JSON_AddVariable(parameterJsonID, parameterPath + "/filterOrder", deconvFilter[%$"Filter Order"])
 
 		numCombos = DimSize(psxKernelDataset, ROWS) / PSX_KERNEL_OUTPUTWAVES_PER_ENTRY
 		ASSERT(IsInteger(numCombos) && numCombos > 0, "Invalid number of input sets from psxKernel()")
@@ -4138,7 +4168,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		endfor
 
 		for(i = 0; i < numCombos; i += 1)
-			PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilterLow, sweepFilterHigh, i, output)
+			PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilterLow, sweepFilterHigh, deconvFilter, i, output)
 		endfor
 
 		[WAVE hist, WAVE fit, peakThresh, dataUnit] = PSX_CalculatePeakThreshold(output, numCombos, numberOfSDs)
@@ -4251,6 +4281,26 @@ Function/WAVE PSX_OperationRiseTime(variable jsonId, string jsonPath, string gra
 	output[0] = thresholds
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_RISETIME)
+End
+
+Function/WAVE PSX_OperationDeconvFilter(variable jsonId, string jsonPath, string graph)
+
+	variable low, high, order
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_DECONV_FILTER, 0, maxArgs = 3)
+
+	low = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 0, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
+	high = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 1, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
+	order = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 2, defValue = NaN, checkFunc = IsOdd, checkDefault = 0)
+
+	Make/D/FREE params = {low, high, order}
+	SetDimensionLabels(params, "Filter Low;Filter High;Filter Order", ROWS)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_DECONV_FILTER, 1)
+
+	output[0] = params
+
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_PSX_DECONV_FILTER)
 End
 
 Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
