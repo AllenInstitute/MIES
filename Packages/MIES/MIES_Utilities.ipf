@@ -1629,7 +1629,7 @@ threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
 
 	if(regExp)
 		AssertOnAndClearRTError()
-		SplitString/E="^(" + start + ")" str, regExpResult; err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+		SplitString/E=("^(" + start + ")") str, regExpResult; err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(V_flag == 1 && err == 0)
 			skipLength = strlen(regExpResult)
@@ -2121,7 +2121,7 @@ threadsafe Function/S RemoveEndingRegExp(str, endingRegExp)
 		return str
 	endif
 
-	SplitString/E="(" + endingRegExp + ")$" str, endStr
+	SplitString/E=("(" + endingRegExp + ")$") str, endStr
 	ASSERT_TS(V_flag == 0 || V_flag == 1, "Unexpected number of matches")
 
 	return RemoveEnding(str, endStr)

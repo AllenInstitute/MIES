@@ -1255,7 +1255,7 @@ Window DataBrowser() : Graph
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={303,330,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewNotebook /F=0 /N=sweepFormula_json /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=12
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1
-	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
+	Notebook kwTopWin, font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)="1"
 	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
@@ -1268,7 +1268,7 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	NewNotebook /F=1 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
 	Notebook kwTopWin, defaultTab=10, autoSave= 1, magnification=100, showRuler=0, rulerUnits=2
-	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,286}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
+	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0,0,286}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
 	Notebook kwTopWin, zdata= "Gasai3srhi'RZ$F8K%sE\"\\Fh#JR$#8r[L./V(B`_JUCue,1q,EDr_Y?p+C?J-j5a,_p3T:o4I^Vaj$!!.JQkuYc%`NmV>:A67LFqg7Sd\"hufK:5,7\"-A)I1\"q[QTj:$>G59,B/5EIFXp7j2@c9ue;Z)GpiP!GP_2)u6l%!CfqsS!`W871g&<R9I$]EIO\"H<Tic4?B6E%U,(1G::53H;0<?pGA'rUe6F^>;q6\\)Ym=LZr8u4cp#1tHWM8uU\\C@K0$L(0Cn8\\6_kkZ@L-ZLElJCF2qHBVAV"
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -1281,7 +1281,7 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	NewNotebook /F=1 /N=sweepFormula_help /W=(10,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=4
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
-	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,251}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
+	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0,0,251}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)="2"
 	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
@@ -1294,7 +1294,7 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10
 	Notebook kwTopWin, defaultTab=36, autoSave= 0, magnification=100
-	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
+	Notebook kwTopWin, font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)="6"
 	SetWindow kwTopWin,userdata(tabcontrol)="Settings"
@@ -1393,7 +1393,7 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	NewNotebook /F=1 /N=Description /W=(145,49,436,148)/FG=(FL,FT,UGVL,FB) /HOST=# /OPTS=11
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=1, showRuler=0, rulerUnits=0
-	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,86}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
+	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0,0,86}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
 	SetWindow kwTopWin,userdata(Config_DontRestore)="1"
 	SetWindow kwTopWin,userdata(Config_DontSave)="1"
 	RenameWindow #,Description
