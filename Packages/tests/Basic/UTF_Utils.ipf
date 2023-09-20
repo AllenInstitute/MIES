@@ -7157,7 +7157,7 @@ static Function TestGetAllFilesRecursivelyFromPath()
 	SaveTextFile("", folder + "b:file1.txt")
 	SaveTextFile("", folder + "c:file2.txt")
 
-	CreateAliasShortcut/Z/P=$symbPath "file.txt" "alias.txt"
+	CreateAliasShortcut/Z/P=$symbPath "file.txt" as "alias.txt"
 	CHECK(!V_flag)
 
 	list = GetAllFilesRecursivelyFromPath(symbPath, extension = ".txt")

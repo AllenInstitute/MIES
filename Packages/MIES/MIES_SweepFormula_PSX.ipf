@@ -2632,7 +2632,7 @@ End
 
 Function PSX_MoveCursorHelper(string win, string trace, variable index)
 
-	Cursor/W=$win/P A $trace index
+	Cursor/W=$win/P A, $trace, index
 End
 
 /// @brief Move and center cursor
@@ -3505,7 +3505,7 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 	extSingleGraph = PSX_GetSingleEventGraph(win)
 	extSubWin = PSX_GetSpecialPanel(win)
 
-	PopupMenu popup_block win=$extSubWin,value=#("PSX_GetAllEventBlockNumbers(\"" + win + "\")")
+	PopupMenu popup_block, win=$extSubWin,value=#("PSX_GetAllEventBlockNumbers(\"" + win + "\")")
 
 	AppendToGraph/W=$extSingleGraph/C=(color.red, color.green, color.blue) sweepDataFiltOff
 	AppendToGraph/W=$extSingleGraph peakYAtFilt vs peakX
@@ -3752,7 +3752,7 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 			win = s.winName
 
 			// workaround IP bug where the currently selected graph is not in s.winName
-			GetWindow $win activeSW
+			GetWindow $win, activeSW
 			win = S_value
 
 			psxGraph = PSX_GetPSXGraph(win)
@@ -5002,7 +5002,7 @@ Function PSX_PlotStartupSettings()
 		if(WaveExists(userDataKeys))
 			for(ud : userDataKeys)
 				if(!GrepString(ud, "^ResizeControls.*$"))
-					SetWindow $subWin userdata($ud)=""
+					SetWindow $subWin, userdata($ud)=""
 				endif
 			endfor
 		endif
@@ -5027,7 +5027,7 @@ Function PSX_PlotStartupSettings()
 	// default GUI values
 	CheckBox checkbox_suppress_update,value=0,win=$win
 
-	ListBox listbox_select_combo win=$win, listWave=$"", selWave=$"", helpWave=$"",selRow=0
+	ListBox listbox_select_combo, win=$win, listWave=$"", selWave=$"", helpWave=$"",selRow=0
 
 	specialEventPanel = PSX_GetSpecialPanel(win)
 
