@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(739.5,170,1279.5,715.25)/K=1  as "Browser"
+	Display /W=(743.25,77.75,1232.25,449.75)/K=1  as "Browser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=BSP_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Restore side panels"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1269,7 +1269,7 @@ Window DataBrowser() : Graph
 	NewNotebook /F=1 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
 	Notebook kwTopWin, defaultTab=10, autoSave= 1, magnification=100, showRuler=0, rulerUnits=2
 	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0,0,286}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "Gasai3srhi'RZ$F8K%sE\"\\Fh#JR$#8r[L./V(B`_JUCue,1q,EDr_Y?p+C?J-j5a,_p3T:o4I^Vaj$!!.JQkuYc%`NmV>:A67LFqg7Sd\"hufK:5,7\"-A)I1\"q[QTj:$>G59,B/5EIFXp7j2@c9ue;Z)GpiP!GP_2)u6l%!CfqsS!`W871g&<R9I$]EIO\"H<Tic4?B6E%U,(1G::53H;0<?pGA'rUe6F^>;q6\\)Ym=LZr8u4cp#1tHWM8uU\\C@K0$L(0Cn8\\6_kkZ@L-ZLElJCF2qHBVAV"
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)un`Q5gp6juaSgtJ\"fSq0GJLd])[.hK#eE=!1`!1=@^Xod&KOHcHFV4hd75b`6!+WpoV?BghDSuQ2!&8e)8OI;FNbKI]j*sb-#s8RkQ<!B<R:<`eh\"-TY*,oXlCM0XBG3Q2ns/t+g.`T=(u\"iVCKR_0&r\\u!3R;\\D`R\\q+CdL'kjo*<d1N@@C<b@g),5AekbV7KmH6VAo\\j?[bji@Ld8tK62WW3<C@V$+OCje74\\R@`Vs@@;md?\"Bt4lR[fe/W8O2<=.GnHaq,'`H?3()"
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)="0"
