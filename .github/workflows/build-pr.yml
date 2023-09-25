@@ -43,7 +43,7 @@ jobs:
         kind:
           # the normal installer
           - user
-          # This installer is *only* indentend for developer internal use!
+          # This installer is *only* intended for developer internal use!
           - dev
     runs-on: [ self-hosted, Windows, Certificate ]
     steps:
