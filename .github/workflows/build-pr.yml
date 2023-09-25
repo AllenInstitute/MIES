@@ -199,11 +199,34 @@ jobs:
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
 
+  TestITC1600:
+    name: 🧪 Test ITC1600 ${{ matrix.name }}
+    needs:
+      - BuildInstaller
+      - CompilationTest
+    strategy:
+      matrix:
+        include:
+          - experiment: Packages/tests/HardwareBasic/HardwareBasic-ITC1600.pxp
+            name: HardwareBasic
+          - experiment: Packages/tests/HardwareAnalysisFunctions/HardwareAnalysisFunctions-ITC1600.pxp
+            name: HardwareAnalysisFunctions
+    uses: ./.github/workflows/test-igor-workflow.yml
+    with:
+      job_name: 🧪 Test ITC1600 ${{ matrix.name }}
+      overwrite_job_name: ${{ inputs.is_called_workflow || false }}
+      experiment: ${{ matrix.experiment }}
+      target: "[ 'self-hosted', 'Windows', 'IgorPro', 'ITC1600' ]"
+      artifact_name: test-itc1600-assets
+      expensive_checks: "1"
+      instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
+
   ValidateNwb:
     name: 👮🏼 Validate NWBv2
     runs-on: [ self-hosted, Linux, Docker ]
     needs:
       - TestITC18
+      - TestITC1600
       - TestNI
     steps:
       - name: Checkout repository
@@ -216,6 +239,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: test-itc18-assets
+      - name: Download ITC1600 artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: test-itc1600-assets
       - name: Download NI artifacts
         uses: actions/download-artifact@v3
         with:
@@ -235,6 +262,7 @@ jobs:
       - TestWithoutHardware
       - TestNI
       - TestITC18
+      - TestITC1600
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -251,7 +279,7 @@ jobs:
             xargs -I {} tools/ftp-upload/flatten-files.sh "{}"
       - name: Compress NWB artifacts
         run: |
-          for dir in test-itc18-assets test-ni-assets
+          for dir in test-itc18-assets test-itc1600-assets test-ni-assets
           do
             tar --remove-files --use-compress-program=zstd -cvf $dir/NWB.tar.zst $dir/*nwb
           done
