@@ -167,6 +167,12 @@ static Function TestSetWaveInJSONWaveNote()
 
 	WAVE/Z data = JWN_GetTextWaveFromWaveNote(wv, "does_not_exist")
 	CHECK_WAVE(data, NULL_WAVE)
+
+	// return $"" for non-numeric data
+	Make/FREE/T wvDataText = {"a", "b", "c"}
+	JWN_SetWaveInWaveNote(wv, "waveText", wvDataText)
+	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "waveText")
+	CHECK_WAVE(data, NULL_WAVE)
 End
 
 static Function TestJSONWaveNoteCombinations()
