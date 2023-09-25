@@ -151,6 +151,15 @@ then
   ret=1
 fi
 
+matches=$(git grep $opts '^[[:space:]]*[^\/].*;$' '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_Pictures.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "The trailing semicolon check failed and found the following occurences:"
+  echo "$matches"
+  ret=1
+fi
+
 # ripgrep checks
 
 files=$(git ls-files '*.ipf' '*.sh' '*.rst' '*.dot' '*.md' ':!:**/releasenotes_template.rst')
