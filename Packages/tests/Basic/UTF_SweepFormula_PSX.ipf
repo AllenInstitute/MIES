@@ -1108,6 +1108,12 @@ static Function TestOperationPSX()
 	CHECK_EQUAL_VAR(DimSize(params, ROWS), 2)
 
 	JSON_Release(jsonID)
+
+	// check that plain psx does not error out
+	str = "psx(id)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_NO_RTE()
+	CHECK_WAVE(dataWref, WAVE_WAVE)
 End
 
 static Function TestOperationPSXTooLargeDecayTau()
