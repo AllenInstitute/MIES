@@ -6222,10 +6222,12 @@ Function/WAVE JSONToWave(string str, [string path])
 		case "NT_I16":
 		case "NT_I8":
 			WAVE/Z data = JSON_GetWave(jsonID, path + "/data/raw")
+			ASSERT(WaveExists(data), "Missing data")
 			Redimension/Y=(WaveTypeStringToNumber(type)) data
 			break
 		case "TEXT_WAVE_TYPE":
 			WAVE/Z data = JSON_GetTextWave(jsonID, path + "/data/raw")
+			ASSERT(WaveExists(data), "Missing data")
 			break
 		case "WAVE_TYPE":
 			size = JSON_GetArraySize(jsonID, path + "/data/raw")
@@ -6235,8 +6237,6 @@ Function/WAVE JSONToWave(string str, [string path])
 		default:
 			ASSERT(0, "Type is not supported: " + type)
 	endswitch
-
-	ASSERT(WaveExists(data), "Missing data")
 
 	WAVE/D/Z dimSizes = JSON_GetWave(jsonID, path + "/dimension/size", ignoreErr = 1)
 	ASSERT(WaveExists(dimSizes), "dimension sizes are missing")
