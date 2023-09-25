@@ -828,7 +828,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		SFH_ASSERT(!(V_Value >= 0), "Encountered null element in array.", jsonId=jsonId)
 
 		WAVE/T/Z outT = JSON_GetTextWave(jsonID, jsonPath, ignoreErr=1)
-		WAVE/Z out = JSON_GetWave(jsonID, jsonPath, waveMode = 1, ignoreErr=1)
+		WAVE/Z out = JSON_GetWave(jsonID, jsonPath, waveMode = 0, ignoreErr=1)
 		SFH_ASSERT(WaveExists(out) || WaveExists(outT), "Mixed types in array not supported.")
 
 		// Increase dimensionality of data to 4D
