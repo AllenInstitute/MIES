@@ -753,7 +753,7 @@ Function/S HW_ITC_BuildDeviceString(string deviceType, string deviceNumber)
 		return deviceType + "_Dev_" + deviceNumber
 	endif
 
-	ASSERT(0, "No NI or ITC device with this name found");
+	ASSERT(0, "No NI or ITC device with this name found")
 End
 
 #ifdef ITC_XOP_PRESENT

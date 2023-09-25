@@ -23,19 +23,19 @@ static Function TestSetNumberInJSONWaveNote()
 		PASS()
 	endtry
 
-	JWN_SetNumberInWaveNote(wv, "NotANumber", NaN);
+	JWN_SetNumberInWaveNote(wv, "NotANumber", NaN)
 	val = JWN_GetNumberFromWaveNote(wv, "NotANumber")
 	CHECK_EQUAL_VAR(NaN, val)
 
-	JWN_SetNumberInWaveNote(wv, "Infinity", Inf);
+	JWN_SetNumberInWaveNote(wv, "Infinity", Inf)
 	val = JWN_GetNumberFromWaveNote(wv, "Infinity")
 	CHECK_EQUAL_VAR(Inf, val)
 
-	JWN_SetNumberInWaveNote(wv, "negInfinity", -Inf);
+	JWN_SetNumberInWaveNote(wv, "negInfinity", -Inf)
 	val = JWN_GetNumberFromWaveNote(wv, "negInfinity")
 	CHECK_EQUAL_VAR(-Inf, val)
 
-	JWN_SetNumberInWaveNote(wv, "number", -10);
+	JWN_SetNumberInWaveNote(wv, "number", -10)
 	val = JWN_GetNumberFromWaveNote(wv, "number")
 	CHECK_EQUAL_VAR(-10, val)
 
@@ -73,17 +73,17 @@ static Function TestSetStringInJSONWaveNote()
 	endtry
 
 	strRef = ""
-	JWN_SetStringInWaveNote(wv, "string", strRef);
+	JWN_SetStringInWaveNote(wv, "string", strRef)
 	strData = JWN_GetStringFromWaveNote(wv, "string")
 	CHECK_EQUAL_STR(strRef, strData)
 
 	strRef = "string"
-	JWN_SetStringInWaveNote(wv, "string", strRef);
+	JWN_SetStringInWaveNote(wv, "string", strRef)
 	strData = JWN_GetStringFromWaveNote(wv, "string")
 	CHECK_EQUAL_STR(strRef, strData)
 
 	strRef = ";,.:|~^@$🍉#🫃🏿"
-	JWN_SetStringInWaveNote(wv, "string", strRef);
+	JWN_SetStringInWaveNote(wv, "string", strRef)
 	strData = JWN_GetStringFromWaveNote(wv, "string")
 	CHECK_EQUAL_STR(strRef, strData)
 
@@ -132,33 +132,33 @@ static Function TestSetWaveInJSONWaveNote()
 	wvData[2] = -Inf
 	wvData[3] = -10
 
-	JWN_SetWaveInWaveNote(wv, "wave", wvData);
+	JWN_SetWaveInWaveNote(wv, "wave", wvData)
 	WAVE data = JWN_GetNumericWaveFromWaveNote(wv, "wave")
 	CHECK_EQUAL_WAVES(wvData, data, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	Make/FREE/T/N=10 wvText = num2istr(p)
 	wvText[0] = ";,.:|~^@$🍉#🫃🏿"
-	JWN_SetWaveInWaveNote(wv, "wave", wvText);
+	JWN_SetWaveInWaveNote(wv, "wave", wvText)
 	WAVE data = JWN_GetTextWaveFromWaveNote(wv, "wave")
 	CHECK_EQUAL_WAVES(wvText, data, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	Make/FREE/D/N=0 wvDataDP
-	JWN_SetWaveInWaveNote(wv, "wave", wvDataDP);
+	JWN_SetWaveInWaveNote(wv, "wave", wvDataDP)
 	WAVE data = JWN_GetNumericWaveFromWaveNote(wv, "wave")
 	CHECK_EQUAL_WAVES(wvDataDP, data, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	Make/FREE/T/N=0 wvTData
-	JWN_SetWaveInWaveNote(wv, "wave", wvDataDP);
+	JWN_SetWaveInWaveNote(wv, "wave", wvDataDP)
 	WAVE dataT = JWN_GetTextWaveFromWaveNote(wv, "wave")
 	CHECK_EQUAL_WAVES(wvTData, dataT, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	Make/FREE/L wvDataI64 = -p
-	JWN_SetWaveInWaveNote(wv, "wave", wvDataI64);
+	JWN_SetWaveInWaveNote(wv, "wave", wvDataI64)
 	WAVE data = JWN_GetNumericWaveFromWaveNote(wv, "wave")
 	CHECK_EQUAL_WAVES(wvDataI64, data, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	Make/FREE/L/U wvDataUI64 = p
-	JWN_SetWaveInWaveNote(wv, "wave", wvDataUI64);
+	JWN_SetWaveInWaveNote(wv, "wave", wvDataUI64)
 	WAVE data = JWN_GetNumericWaveFromWaveNote(wv, "wave")
 	CHECK_EQUAL_WAVES(wvDataUI64, data, mode = WAVE_DATA | DIMENSION_SIZES)
 
@@ -178,7 +178,7 @@ static Function TestJSONWaveNoteCombinations()
 	Make/FREE wv
 	Make/FREE/T wvText = {"string:" + str2}
 	SetStringInWaveNote(wv, "string", str1)
-	JWN_SetWaveInWaveNote(wv, "wave", wvText);
+	JWN_SetWaveInWaveNote(wv, "wave", wvText)
 	str = GetStringFromWaveNote(wv, "string")
 	CHECK_EQUAL_STR(str1, str)
 End
