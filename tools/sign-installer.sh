@@ -65,12 +65,27 @@ done
 # signtool does not accept a path for the certificate
 cp $top_level/tools/installer/public-key.cer public-key.cer
 
-MSYS_NO_PATHCONV=1 "$sign_tool_exe" sign \
-  /tr http://timestamp.sectigo.com \
-  /fd sha256 \
-  /td sha256 \
-  /csp "eToken Base Cryptographic Provider" \
-  /kc "$privKeyContainerName" \
-  /f public-key.cer \
-  tools/installer/MIES*.exe \
-  || exit $?
+i=0
+
+while [ $i -le 10 ]
+do
+  MSYS_NO_PATHCONV=1 "$sign_tool_exe" sign    \
+    /tr http://timestamp.sectigo.com          \
+    /fd sha256                                \
+    /td sha256                                \
+    /csp "eToken Base Cryptographic Provider" \
+    /kc "$privKeyContainerName"               \
+    /f public-key.cer                         \
+    tools/installer/MIES*.exe
+
+  if [ $? -eq 0 ]
+  then
+    exit 0
+  fi
+
+  ((i++))
+
+  sleep $i
+done
+
+exit 1
