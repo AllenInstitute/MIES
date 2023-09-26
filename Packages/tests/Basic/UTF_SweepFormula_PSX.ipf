@@ -1037,6 +1037,24 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[3], 0, 0.2)
 	CheckDimensionScaleHelper(dataWref[4], 0, 0.01)
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
+
+	// no data from select statement
+	str = "psxKernel([50, 150], select(channels(AD15), [0]), 1, 15, (-5))"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// no data from this sweep statement
+	str = "psxKernel(ABCD, select(channels(AD6), [0, 2], all), 1, 15, (-5))"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function CheckDimensionScaleHelper(WAVE wv, variable refOffset, variable refPerPoint)
