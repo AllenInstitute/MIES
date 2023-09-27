@@ -85,7 +85,7 @@ digraph G {
 	"Check RMS short" -> "Add BL QC failed labnotebook entry"	[label=Failed];
 	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
 	"Get OperationMode [3]" -> "Calculate TP-like properties\nand store them in the\nlabnotebook"	[label=Sub];
-	"Get OperationMode [3]" -> "Search for spikes\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)"	[label=Supra];
+	"Get OperationMode [3]" -> "Search for spikes\n(x range: pulse onset to end of pulse\ny condition: max above 0.01mV)"	[label=Supra];
 	"Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"";
 	"Check if only one headstage is active" -> "All checks passed";
 	"Check RMS long" -> "Add BL QC failed labnotebook entry"	[label=Failed];
