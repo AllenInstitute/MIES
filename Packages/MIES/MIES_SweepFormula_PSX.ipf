@@ -3589,7 +3589,7 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 						str = TextWaveToList(wvText, sep)
 						WaveClear wvText
 					else
-						WAVE wv = JSON_GetWave(jsonID, jsonPathParam)
+						WAVE wv = JSON_GetWave(jsonID, jsonPathParam, waveMode = 1)
 						ASSERT(IsNumericWave(wv), "Expected numeric wave")
 						str = NumericWaveToList(wv, sep)
 						WaveClear wv

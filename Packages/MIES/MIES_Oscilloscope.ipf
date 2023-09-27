@@ -503,11 +503,11 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 				ASSERT(IsFinite(fifopos), "Invalid fifo position")
 			endif
 			SCOPE_ITC_UpdateOscilloscope(device, dataAcqOrTP, chunk, fifoPos)
-			break;
+			break
 		case HARDWARE_NI_DAC:
 			ASSERT(!ParamIsDefault(deviceID), "optional parameter deviceID missing (required for NI devices in TP mode)")
 			SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceID, fifoPos)
-			break;
+			break
 	endswitch
 
 	WAVE config = GetDAQConfigWave(device)

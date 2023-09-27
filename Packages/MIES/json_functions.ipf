@@ -489,15 +489,20 @@ End
 /// @param jsonID     numeric identifier of the JSON object
 /// @param jsonPath   RFC 6901 compliant JSON Pointer
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
+/// @param waveMode   [optional, default 0] when set and an element from the JSON could not be converted to a
+///                   number a null wave is returned.
+///                   When not set (default) NaN is set for that element in the wave. This allows to retrieve
+///                   convertible elements after the element that could not be converted to a number.
 /// @returns a free numeric double precision wave with the elements of the array
-threadsafe Function/WAVE JSON_GetWave(jsonID, jsonPath, [ignoreErr])
+threadsafe Function/WAVE JSON_GetWave(jsonID, jsonPath, [ignoreErr, waveMode])
 	Variable jsonID
 	String jsonPath
-	Variable ignoreErr
+	Variable ignoreErr, waveMode
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
+	waveMode =  ParamIsDefault(waveMode) ? 0 : !!waveMode
 
-	JSONXOP_GetValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/WAVE=wv/FREE jsonID, jsonPath
+	JSONXOP_GetValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/WAVE=wv/WM=(waveMode)/FREE jsonID, jsonPath
 	if(V_flag)
 		if(ignoreErr)
 			return $""

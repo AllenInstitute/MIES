@@ -743,10 +743,10 @@ Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE outpu
 		endif
 
 		if(keepX)
-			WAVE/Z xValues = JWN_GetTextWaveFromWaveNote(outData, SF_META_XVALUES)
+			WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(outData, SF_META_XVALUES)
 
 			if(!WaveExists(xValues))
-				WAVE/Z xValues = JWN_GetNumericWaveFromWaveNote(outData, SF_META_XVALUES)
+				WAVE/Z xValues = JWN_GetTextWaveFromWaveNote(outData, SF_META_XVALUES)
 			endif
 		endif
 
@@ -978,10 +978,10 @@ End
 /// @brief Recreate a **single** select data wave and range stored in the JSON wavenote from SFH_GetSweepsForFormula()
 Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sweepData)
 
-	WAVE/Z range = JWN_GetTextWaveFromWaveNote(sweepData, SF_META_RANGE)
+	WAVE/Z range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
 
 	if(!WaveExists(range))
-		WAVE/Z range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
+		WAVE/Z range = JWN_GetTextWaveFromWaveNote(sweepData, SF_META_RANGE)
 	endif
 
 	if(!WaveExists(range) || !HasOneValidEntry(range))

@@ -74,7 +74,8 @@ End
 /// @param wv       wave reference where the WaveNote is taken from
 /// @param jsonPath path to string
 ///
-/// @returns the wave on success. null wave is returned if it could not be found
+/// @returns the wave on success. null wave is returned if it could not be
+///          found or the referenced entry contains non-numeric data
 threadsafe Function/WAVE JWN_GetNumericWaveFromWaveNote(WAVE wv, string jsonPath)
 
 	variable jsonID
@@ -82,7 +83,7 @@ threadsafe Function/WAVE JWN_GetNumericWaveFromWaveNote(WAVE wv, string jsonPath
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 
 	jsonID = JWN_GetWaveNoteAsJSON(wv)
-	WAVE/Z noteWave = JSON_GetWave(jsonID, jsonPath, ignoreErr = 1)
+	WAVE/Z noteWave = JSON_GetWave(jsonID, jsonPath, waveMode = 1, ignoreErr = 1)
 	JSON_Release(jsonID)
 
 	return noteWave

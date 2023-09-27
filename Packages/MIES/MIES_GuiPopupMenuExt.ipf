@@ -124,270 +124,270 @@ static StrConstant LSEP = ";"
 ///        and must be updated if more definitions are added.
 ///
 Menu "PopupExt1", contextualmenu, dynamic
-	PEXT_PopupMenuItems(0), /Q, ;
+	PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 End
 
 Menu "PopupExt2", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 End
 
 Menu "PopupExt3", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(2)
-		PEXT_PopupMenuItems(2), /Q, ;
+		PEXT_PopupMenuItems(2), /Q, ; // NOLINT
 	End
 End
 
 Menu "PopupExt4", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(2)
-		PEXT_PopupMenuItems(2), /Q, ;
+		PEXT_PopupMenuItems(2), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(3)
-		PEXT_PopupMenuItems(3), /Q, ;
+		PEXT_PopupMenuItems(3), /Q, ; // NOLINT
 	End
 End
 
 Menu "PopupExt5", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(2)
-		PEXT_PopupMenuItems(2), /Q, ;
+		PEXT_PopupMenuItems(2), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(3)
-		PEXT_PopupMenuItems(3), /Q, ;
+		PEXT_PopupMenuItems(3), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(4)
-		PEXT_PopupMenuItems(4), /Q, ;
+		PEXT_PopupMenuItems(4), /Q, ; // NOLINT
 	End
 End
 
 Menu "PopupExt6", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(2)
-		PEXT_PopupMenuItems(2), /Q, ;
+		PEXT_PopupMenuItems(2), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(3)
-		PEXT_PopupMenuItems(3), /Q, ;
+		PEXT_PopupMenuItems(3), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(4)
-		PEXT_PopupMenuItems(4), /Q, ;
+		PEXT_PopupMenuItems(4), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(5)
-		PEXT_PopupMenuItems(5), /Q, ;
+		PEXT_PopupMenuItems(5), /Q, ; // NOLINT
 	End
 End
 
 Menu "PopupExt7", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(2)
-		PEXT_PopupMenuItems(2), /Q, ;
+		PEXT_PopupMenuItems(2), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(3)
-		PEXT_PopupMenuItems(3), /Q, ;
+		PEXT_PopupMenuItems(3), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(4)
-		PEXT_PopupMenuItems(4), /Q, ;
+		PEXT_PopupMenuItems(4), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(5)
-		PEXT_PopupMenuItems(5), /Q, ;
+		PEXT_PopupMenuItems(5), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(6)
-		PEXT_PopupMenuItems(6), /Q, ;
+		PEXT_PopupMenuItems(6), /Q, ; // NOLINT
 	End
 End
 
 Menu "PopupExt8", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(2)
-		PEXT_PopupMenuItems(2), /Q, ;
+		PEXT_PopupMenuItems(2), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(3)
-		PEXT_PopupMenuItems(3), /Q, ;
+		PEXT_PopupMenuItems(3), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(4)
-		PEXT_PopupMenuItems(4), /Q, ;
+		PEXT_PopupMenuItems(4), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(5)
-		PEXT_PopupMenuItems(5), /Q, ;
+		PEXT_PopupMenuItems(5), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(6)
-		PEXT_PopupMenuItems(6), /Q, ;
+		PEXT_PopupMenuItems(6), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(7)
-		PEXT_PopupMenuItems(7), /Q, ;
+		PEXT_PopupMenuItems(7), /Q, ; // NOLINT
 	End
 End
 
 Menu "PopupExt9", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(2)
-		PEXT_PopupMenuItems(2), /Q, ;
+		PEXT_PopupMenuItems(2), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(3)
-		PEXT_PopupMenuItems(3), /Q, ;
+		PEXT_PopupMenuItems(3), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(4)
-		PEXT_PopupMenuItems(4), /Q, ;
+		PEXT_PopupMenuItems(4), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(5)
-		PEXT_PopupMenuItems(5), /Q, ;
+		PEXT_PopupMenuItems(5), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(6)
-		PEXT_PopupMenuItems(6), /Q, ;
+		PEXT_PopupMenuItems(6), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(7)
-		PEXT_PopupMenuItems(7), /Q, ;
+		PEXT_PopupMenuItems(7), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(8)
-		PEXT_PopupMenuItems(8), /Q, ;
+		PEXT_PopupMenuItems(8), /Q, ; // NOLINT
 	End
 End
 
 Menu "PopupExt10", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(2)
-		PEXT_PopupMenuItems(2), /Q, ;
+		PEXT_PopupMenuItems(2), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(3)
-		PEXT_PopupMenuItems(3), /Q, ;
+		PEXT_PopupMenuItems(3), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(4)
-		PEXT_PopupMenuItems(4), /Q, ;
+		PEXT_PopupMenuItems(4), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(5)
-		PEXT_PopupMenuItems(5), /Q, ;
+		PEXT_PopupMenuItems(5), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(6)
-		PEXT_PopupMenuItems(6), /Q, ;
+		PEXT_PopupMenuItems(6), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(7)
-		PEXT_PopupMenuItems(7), /Q, ;
+		PEXT_PopupMenuItems(7), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(8)
-		PEXT_PopupMenuItems(8), /Q, ;
+		PEXT_PopupMenuItems(8), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(9)
-		PEXT_PopupMenuItems(9), /Q, ;
+		PEXT_PopupMenuItems(9), /Q, ; // NOLINT
 	End
 End
 
 Menu "PopupExt11", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(2)
-		PEXT_PopupMenuItems(2), /Q, ;
+		PEXT_PopupMenuItems(2), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(3)
-		PEXT_PopupMenuItems(3), /Q, ;
+		PEXT_PopupMenuItems(3), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(4)
-		PEXT_PopupMenuItems(4), /Q, ;
+		PEXT_PopupMenuItems(4), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(5)
-		PEXT_PopupMenuItems(5), /Q, ;
+		PEXT_PopupMenuItems(5), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(6)
-		PEXT_PopupMenuItems(6), /Q, ;
+		PEXT_PopupMenuItems(6), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(7)
-		PEXT_PopupMenuItems(7), /Q, ;
+		PEXT_PopupMenuItems(7), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(8)
-		PEXT_PopupMenuItems(8), /Q, ;
+		PEXT_PopupMenuItems(8), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(9)
-		PEXT_PopupMenuItems(9), /Q, ;
+		PEXT_PopupMenuItems(9), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(10)
-		PEXT_PopupMenuItems(10), /Q, ;
+		PEXT_PopupMenuItems(10), /Q, ; // NOLINT
 	End
 End
 
 Menu "PopupExt12", contextualmenu, dynamic
 	SubMenu PEXT_SubMenuName(0)
-		PEXT_PopupMenuItems(0), /Q, ;
+		PEXT_PopupMenuItems(0), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(1)
-		PEXT_PopupMenuItems(1), /Q, ;
+		PEXT_PopupMenuItems(1), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(2)
-		PEXT_PopupMenuItems(2), /Q, ;
+		PEXT_PopupMenuItems(2), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(3)
-		PEXT_PopupMenuItems(3), /Q, ;
+		PEXT_PopupMenuItems(3), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(4)
-		PEXT_PopupMenuItems(4), /Q, ;
+		PEXT_PopupMenuItems(4), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(5)
-		PEXT_PopupMenuItems(5), /Q, ;
+		PEXT_PopupMenuItems(5), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(6)
-		PEXT_PopupMenuItems(6), /Q, ;
+		PEXT_PopupMenuItems(6), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(7)
-		PEXT_PopupMenuItems(7), /Q, ;
+		PEXT_PopupMenuItems(7), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(8)
-		PEXT_PopupMenuItems(8), /Q, ;
+		PEXT_PopupMenuItems(8), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(9)
-		PEXT_PopupMenuItems(9), /Q, ;
+		PEXT_PopupMenuItems(9), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(10)
-		PEXT_PopupMenuItems(10), /Q, ;
+		PEXT_PopupMenuItems(10), /Q, ; // NOLINT
 	End
 	SubMenu PEXT_SubMenuName(11)
-		PEXT_PopupMenuItems(11), /Q, ;
+		PEXT_PopupMenuItems(11), /Q, ; // NOLINT
 	End
 End
 
@@ -646,7 +646,7 @@ Function/WAVE PEXT_SplitToSubMenus(menuList, [method])
 				splitMenu[subIndex] = AddListItem(menuList[menuPos + i], splitMenu[subIndex], ";", Inf)
 			endfor
 
-			subIndex++;
+			subIndex++
 			menuPos += subMenuLength
 		while(menuPos < numItems)
 
