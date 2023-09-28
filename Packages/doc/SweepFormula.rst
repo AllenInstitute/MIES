@@ -344,9 +344,9 @@ The returned data type is `SF_DATATYPE_AVG`.
 
    avg([1, 2, 3]) == [2]
 
-   avg(data(cursors(A,B), select(channels(AD), sweeps(), all)), over)
+   avg(data(ST, select(channels(AD), sweeps(), all)), over)
 
-   avg(data(cursors(A,B), select()), in)
+   avg(data(ST, select()), in)
 
 root mean square
 """"""""""""""""
@@ -661,8 +661,9 @@ It can be called in two variants:
    data(string epochShortName[, array selectData])
 
 The range can be either supplied explicitly using `[100, 300]` which would
-select `100 ms` to `300 ms` or by using `cursors` that also returns a range specification. In case `cursors()` is
-used but there are no cursors on the graph, the full x-range is used. A numerical range applies to all sweeps.
+select `100 ms` to `300 ms` or by using `cursors` that also returns a range
+specification. Use `[0, inf]` to extract the full x-range. A numerical range
+applies to all sweeps.
 
 Instead of a numerical range also the short names of epochs can be given including wildcard expressions. Then the range
 is determined from the epoch information of each sweep/channel/epoch data iterates over. If a specified epoch does not exist in a sweep
@@ -729,7 +730,7 @@ The suggested y-axis label is the labnotebook key.
 
    max(
       data(
-         cursors(AB)
+         cursors(A, B)
          channels(AD),
          sweeps()
       )
@@ -829,16 +830,18 @@ seconds of the level and :math:`T` the total x range of the data in seconds.
 
 The method `2` (instantaneous) and `3` (instantaneous pair) treat the peaks as interleaved pairs of peaks and returns results only if there are two or more peaks found.
 
-The returned data type is `SF_DATATYPE_APFREQUENCY`.
-If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred to the returned data waves.
+The returned data type is `SF_DATATYPE_APFREQUENCY`. If input data type is
+`SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred
+to the returned data waves. There is no input data verification, so it is left
+to the user to select a reasonable range or epoch.
 
 .. code-block:: bash
 
    apfrequency([10, 20, 30], 1, 15)
 
-   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
+   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
 
-   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 42, time, norminsweepsmin, time)
+   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 42, time, norminsweepsmin, time)
 
 powerspectrum
 """""""""""""
@@ -889,11 +892,11 @@ If input data type is `SF_DATATYPE_SWEEP` from the data operation and non-averag
 
 .. code-block:: bash
 
-   powerspectrum(data(cursors(A,B),select(channels(AD),sweeps(),all)))
+   powerspectrum(data(ST,select(channels(AD),sweeps(),all)))
 
-   powerspectrum(data(cursors(A,B),select(channels(AD),sweeps(),all)),dB,avg,0,100,HFT248D) // db units, averaging on, display up to 100 Hz, use HFT248D window
+   powerspectrum(data(ST,select(channels(AD),sweeps(),all)),dB,avg,0,100,HFT248D) // db units, averaging on, display up to 100 Hz, use HFT248D window
 
-   powerspectrum(data(cursors(A,B),select(channels(AD),sweeps(),all)),dB,avg,60) // db units, averaging on, determine power ratio at 60 Hz
+   powerspectrum(data(ST,select(channels(AD),sweeps(),all)),dB,avg,60) // db units, averaging on, determine power ratio at 60 Hz
 
 .. _sf_op_psx:
 
@@ -977,7 +980,7 @@ amp
 
    psxkernel([100, 200])
    psxkernel([E0, E1]) # list of epoch names
-   psxkernel(cursors(), select(channels(AD10), [49, 50], all), 2, 13, 2)
+   psxkernel(ST, select(channels(AD10), [49, 50], all), 2, 13, 2)
 
 psxPrep
 """""""
@@ -1842,6 +1845,6 @@ need to be shown with a different marker or line style. It also adapts the legen
 
 .. code-block:: igorpro
 
-   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
+   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
    with
-   apfrequency(data(cursors(A, B), select(channels(AD), sweeps(), all)), 3, 100, time, norminsweepsavg, count)
+   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 100, time, norminsweepsavg, count)
