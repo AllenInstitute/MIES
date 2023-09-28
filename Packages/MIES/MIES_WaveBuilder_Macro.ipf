@@ -615,7 +615,7 @@ Window WaveBuilder() : Panel
 	ListBox listbox_combineEpochMap,widths={58,120}
 	SetVariable setvar_combine_formula_T6,pos={598.00,210.00},size={427.00,18.00},disable=1,proc=WBP_SetVarCombineEpochFormula
 	SetVariable setvar_combine_formula_T6,title="Formula"
-	SetVariable setvar_combine_formula_T6,help={"Mathematical formula for combining stim sets. All math operators from Igor are supported. Examples: +/-*^,sin,cos,tan. All are applied elementwise on the stim set contents. Mutiple sweeps are flattened into one sweep."}
+	SetVariable setvar_combine_formula_T6,help={"Mathematical formula for combining stim sets. All math operators from Igor are supported. Examples: +/-*^,sin,cos,tan. All are applied elementwise on the stim set contents. Multiple sweeps are flattened into one sweep."}
 	SetVariable setvar_combine_formula_T6,userdata(tabnum)="8"
 	SetVariable setvar_combine_formula_T6,userdata(tabcontrol)="WBP_WaveType"
 	SetVariable setvar_combine_formula_T6,userdata(ResizeControlsInfo)=A"!!,J&J,hr7!!#C:J,hlsz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
