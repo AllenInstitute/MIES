@@ -116,6 +116,8 @@ Function/S WBP_CreateWaveBuilderPanel()
 
 	WBP_ClearFolders()
 
+	WB_UpdateChangedStimsets()
+
 	Execute "WaveBuilder()"
 	ListBox listbox_combineEpochMap, listWave=GetWBEpochCombineList()
 	AddVersionToPanel(panel, WAVEBUILDER_PANEL_VERSION)
