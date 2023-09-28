@@ -628,7 +628,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_startPulse,limits={0,inf,1},value=_NUM:0
 	CheckBox check_pulseAver_multGraphs,pos={234.00,165.00},size={121.00,15.00},disable=1,proc=PA_CheckProc_Common
 	CheckBox check_pulseAver_multGraphs,title="Use multiple graphs"
-	CheckBox check_pulseAver_multGraphs,help={"Show the single pulses in multiple graphs or only one graph with mutiple axis."}
+	CheckBox check_pulseAver_multGraphs,help={"Show the single pulses in multiple graphs or only one graph with multiple axis."}
 	CheckBox check_pulseAver_multGraphs,userdata(tabnum)="4"
 	CheckBox check_pulseAver_multGraphs,userdata(tabcontrol)="Settings"
 	CheckBox check_pulseAver_multGraphs,userdata(ResizeControlsInfo)=A"!!,H%!!#A4!!#@V!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
