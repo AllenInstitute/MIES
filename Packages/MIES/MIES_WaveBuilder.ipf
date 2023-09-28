@@ -1937,9 +1937,6 @@ static Function/WAVE WB_FillWaveFromFormula(formula, channelType, sweep)
 	STRUCT FormulaProperties fp
 	string shorthandFormula
 
-	// update shorthand -> stimset mapping
-	WB_UpdateEpochCombineList(channelType)
-
 	shorthandFormula = WB_FormulaSwitchToShorthand(formula)
 
 	if(WB_ParseCombinerFormula(shorthandFormula, sweep, fp))
@@ -1972,7 +1969,7 @@ End
 ///
 /// The rows are sorted by creationDate of the WP/stimset wave to try to keep
 /// the shorthands constants even when new stimsets are added.
-Function WB_UpdateEpochCombineList(variable channelType)
+static Function WB_UpdateEpochCombineList(variable channelType)
 	string list, setPath, setParamPath, entry
 	variable numEntries, i
 
@@ -2680,8 +2677,7 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	ASSERT(WaveExists(stimset), "Could not recreate stimset")
 
 	// propagate the existence of the new set
-	DAP_UpdateDaEphysStimulusSetPopups()
-	WB_UpdateEpochCombineList(stimulusType)
+	WB_UpdateChangedStimsets(stimulusType = stimulusType)
 
 	return setName
 End
@@ -2815,4 +2811,21 @@ Function WB_MakeStimsetThirdParty(string setName)
 	KillOrMoveToTrash(wv=WP)
 	KillOrMoveToTrash(wv=WPT)
 	KillOrMoveToTrash(wv=SegWvType)
+End
+
+/// @brief Propagate added/removed stimsets to DA_Ephys panels and our epoch combine list
+Function WB_UpdateChangedStimsets([string device, variable stimulusType])
+
+	if(ParamIsDefault(device))
+		DAP_UpdateDaEphysStimulusSetPopups()
+	else
+		DAP_UpdateDaEphysStimulusSetPopups(device = device)
+	endif
+
+	if(ParamIsDefault(stimulusType))
+		WB_UpdateEpochCombineList(CHANNEL_TYPE_DAC)
+		WB_UpdateEpochCombineList(CHANNEL_TYPE_TTL)
+	else
+		WB_UpdateEpochCombineList(stimulusType)
+	endif
 End
