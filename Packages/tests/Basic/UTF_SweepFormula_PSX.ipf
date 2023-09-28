@@ -1128,10 +1128,19 @@ static Function TestOperationPSX()
 	JSON_Release(jsonID)
 
 	// check that plain psx does not error out
-	str = "psx(id)"
+	str = "psx(id, psxKernel([50, 150], select(channels(AD6), [0, 2], all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_NO_RTE()
 	CHECK_WAVE(dataWref, WAVE_WAVE)
+
+	// complains without events found
+	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 5000, 15, (-5)), 2.5, 100, 0)"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function TestOperationPSXTooLargeDecayTau()

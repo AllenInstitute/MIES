@@ -763,6 +763,8 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 End
 
 /// @brief Implementation of psx operation
+///
+/// @return 0 on success, 1 on failure
 static Function PSX_OperationImpl(string graph, variable parameterJSONID, string id, variable peakThresh, variable maxTauFactor, WAVE riseTimeParams, variable kernelAmp, variable index, WAVE/WAVE output)
 
 	string comboKey, key, psxOperationKey, psxParametersEvents
@@ -797,7 +799,20 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 		[WAVE peakX, WAVE peakY] = PSX_FindPeaks(sweepDataFiltOffDeconv, peakThresh)
 
 		if(!WaveExists(peakX) || !WaveExists(peakY))
-			return NaN
+			// clear entries from this combo
+			key = PSX_GenerateKey("sweepData", index)
+			output[%$key] = $""
+
+			key = PSX_GenerateKey("sweepDataFiltOff", index)
+			output[%$key] = $""
+
+			key = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
+			output[%$key] = $""
+
+			printf "Could not find any events for combination: \"%s\"\r", comboKey
+			ControlWindowToFront()
+
+			return 1
 		endif
 
 		WAVE psxEvent = GetPSXEventWaveAsFree()
@@ -855,7 +870,7 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 	key = PSX_GenerateKey("eventFit", index)
 	output[%$key] = eventFit
 
-	return NaN
+	return 0
 End
 
 /// @brief Generate the dimension label for the output wave reference waves
@@ -3281,15 +3296,35 @@ End
 
 /// @brief Write all psx data from results in the combination folders
 ///
-/// Takes care of existing combination data due to other `psx` calls in the same code
+/// Takes care of existing combination data due to other `psx` calls in the same code.
+///
+/// @return Number of combinations without event data
 static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, variable offset, variable numCombos)
 
-	variable i, j, numEvents, psxEventJSON
+	variable i, idx, numEvents, psxEventJSON, numFailures
 	string key
 
 	for(i = 0; i < numCombos; i += 1)
 
-		DFREF dfr = GetPSXFolderForCombo(workDFR, offset + i)
+		key = PSX_GenerateKey("peakX", i)
+		WAVE/Z resultsPeakX = results[%$key][1]
+
+		key = PSX_GenerateKey("peakY", i)
+		WAVE/Z resultsPeakY = results[%$key][1]
+
+		if(!WaveExists(resultsPeakX) || !WaveExists(resultsPeakY))
+			numFailures += 1
+			continue
+		endif
+
+		DFREF dfr = GetPSXFolderForCombo(workDFR, offset + idx)
+		idx += 1
+
+		MoveWave resultsPeakX, dfr:peakX
+		WAVE/SDFR=dfr peakX
+
+		MoveWave resultsPeakY, dfr:peakY
+		WAVE/SDFR=dfr peakY
 
 		key = PSX_GenerateKey("sweepData", i)
 		MoveWave results[%$key][1], dfr:sweepData
@@ -3302,14 +3337,6 @@ static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, v
 		key = PSX_GenerateKey("sweepDataFiltOffDeconv", i)
 		MoveWave results[%$key][1], dfr:sweepDataFiltOffDeconv
 		WAVE/SDFR=dfr sweepDataFiltOffDeconv
-
-		key = PSX_GenerateKey("peakX", i)
-		MoveWave results[%$key][1], dfr:peakX
-		WAVE/SDFR=dfr peakX
-
-		key = PSX_GenerateKey("peakY", i)
-		MoveWave results[%$key][1], dfr:peakY
-		WAVE/SDFR=dfr peakY
 
 		ASSERT(DimSize(peakX, ROWS) == DimSize(peakY, ROWS), "Mismatched peak sizes")
 
@@ -3347,6 +3374,8 @@ static Function PSX_MoveWavesToDataFolders(DFREF workDFR, WAVE/WAVE/Z results, v
 	endfor
 
 	PSX_CheckForUniqueIDs(workDFR)
+
+	return numFailures
 End
 
 static Function/S PSX_CheckForUniqueIDs(DFREF workDFR)
@@ -4029,7 +4058,7 @@ End
 /// @brief High-level function responsible for `psx` data and plot management
 Function PSX_Plot(string win, string graph, WAVE/WAVE/Z results, STRUCT SF_PlotMetaData &plotMetaData)
 
-	variable numCombos, i, offset, firstOp
+	variable numCombos, i, offset, firstOp, numFailures
 
 	if(!WaveExists(results))
 		return NaN
@@ -4054,7 +4083,12 @@ Function PSX_Plot(string win, string graph, WAVE/WAVE/Z results, STRUCT SF_PlotM
 		return NaN
 	endif
 
-	PSX_MoveWavesToDataFolders(workDFR, results, offset, numCombos)
+	numFailures = PSX_MoveWavesToDataFolders(workDFR, results, offset, numCombos)
+	numCombos -= numFailures
+
+	if(!numCombos)
+		return NaN
+	endif
 
 	for(i = 0; i <  numCombos; i += 1)
 		PSX_UpdateEventWaves(win, writeState = 0, comboIndex = offset + i)
@@ -4117,7 +4151,7 @@ End
 Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
-	variable maxTauFactor, peakThresh
+	variable maxTauFactor, peakThresh, numFailures
 	string parameterPath, id, psxParameters, dataUnit
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
@@ -4177,8 +4211,12 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		WaveClear hist, fit
 
 		for(i = 0; i < numCombos; i += 1)
-			PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, i, output)
+			numFailures += PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, i, output)
 		endfor
+
+		if(numFailures == numCombos)
+			Abort
+		endif
 	catch
 		if(WaveExists(output))
 			SFH_CleanUpInput(output)
