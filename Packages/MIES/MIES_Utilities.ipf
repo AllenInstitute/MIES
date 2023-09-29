@@ -739,7 +739,7 @@ End
 /// @param upsampleFactor   positive non-zero integer by which the wave should
 ///                         be upsampled
 /// @param mode 			decimation mode, one of @ref DECIMATION_BY_OMISSION,
-///							@ref DECIMATION_BY_AVERAGING
+///                         @ref DECIMATION_BY_AVERAGING
 ///                         or @ref DECIMATION_BY_SMOOTHING.
 /// @param winFunction 		Windowing function for @ref DECIMATION_BY_SMOOTHING mode,
 ///                    		must be one of @ref FFT_WINF.
