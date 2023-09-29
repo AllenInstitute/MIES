@@ -2038,10 +2038,7 @@ End
 ///                      empty on parse error, ready to be executed by WB_FillWaveFromFormula()
 ///
 /// @returns 0 on success, 1 on parse errors (currently not many are found)
-Function WB_ParseCombinerFormula(formula, sweep, fp)
-	string formula
-	variable sweep
-	struct FormulaProperties &fp
+Function WB_ParseCombinerFormula(string formula, variable sweep, STRUCT FormulaProperties &fp)
 
 	string dependentStimsets
 	variable i, numStimsets
@@ -2097,10 +2094,7 @@ Function WB_ParseCombinerFormula(formula, sweep, fp)
 End
 
 /// @brief Replace shorthands with the real stimset names suffixed with `?`
-Function WB_FormulaSwitchToStimset(formula, fp)
-	string formula
-	struct FormulaProperties &fp
-
+Function WB_FormulaSwitchToStimset(string formula, STRUCT FormulaProperties &fp)
 	string stimset, shorthand, stimsetSpec, prefix, suffix
 	variable numSets, i, stimsetFound
 
@@ -2161,8 +2155,7 @@ static Function WB_PrepareFormulaForExecute(fp, sweep)
 End
 
 /// @brief Replace all stimsets suffixed with `?` by their shorthands
-Function/S WB_FormulaSwitchToShorthand(formula)
-	string formula
+Function/S WB_FormulaSwitchToShorthand(string formula)
 
 	variable numSets, i
 	string stimset, shorthand
