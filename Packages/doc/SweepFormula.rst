@@ -956,13 +956,13 @@ the subset of data to work on.
 
 .. code-block:: bash
 
-   psxkernel(array range[, array selectData, riseTau, decayTau, amp])
+   psxkernel([array range, array selectData, riseTau, decayTau, amp])
 
-The function accepts one to five arguments.
+The function accepts zero to five arguments.
 
 range
   either an explicit array in milliseconds, `cursors` or a text array with one
-  or multiple epoch names, see also `data`
+  or multiple epoch names, see also `data`, defaults to the full range.
 
 select
   sweep and channels to operate on from the `select` operation
