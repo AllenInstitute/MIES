@@ -2113,7 +2113,7 @@ Function WB_FormulaSwitchToStimset(variable channelType, string formula, STRUCT 
 	// iterate the stimset list from bottom to top, so that we replace first the shorthands
 	// with numeric prefix and only later on the ones without
 	numSets = DimSize(epochCombineList, ROWS)
-	for(i = numSets - 1; i >= 0; i -= 1)
+	for(i = numSets - 1; i >= 0 && numSets > 0; i -= 1)
 		shorthand   = epochCombineList[i][%Shorthand]
 		stimset     = epochCombineList[i][%stimset]
 		stimsetSpec = LowerStr(stimset) + "?"
