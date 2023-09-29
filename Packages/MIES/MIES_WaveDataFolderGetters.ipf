@@ -3500,7 +3500,7 @@ Function/DF GetWaveBuilderDataPath()
 	return createDFWithAllParents(GetWaveBuilderDataPathAsString())
 End
 
-///	@brief Returns the full path to the data folder, e.g root:MIES:WaveBuilder:Data
+/// @brief Returns the full path to the data folder, e.g root:MIES:WaveBuilder:Data
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWaveBuilderDataPathAsString()
@@ -3514,7 +3514,7 @@ Function/DF GetWBSvdStimSetParamPath()
 	return createDFWithAllParents(GetWBSvdStimSetParamPathAS())
 End
 
-///	@brief Returns the full path to the stimulus set parameter folder, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters
+/// @brief Returns the full path to the stimulus set parameter folder, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetParamPathAS()
@@ -3528,7 +3528,7 @@ Function/DF GetWBSvdStimSetPath()
 	return createDFWithAllParents(GetWBSvdStimSetPathAsString())
 End
 
-///	@brief Returns the full path to the stimulus set, e.g. root:MIES:WaveBuilder:SavedStimulusSets
+/// @brief Returns the full path to the stimulus set, e.g. root:MIES:WaveBuilder:SavedStimulusSets
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetPathAsString()
@@ -3542,7 +3542,7 @@ Function/DF GetWBSvdStimSetParamDAPath()
 	return createDFWithAllParents(GetWBSvdStimSetParamDAPathAS())
 End
 
-///	@brief Returns the full path to the stimulus set parameters of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:DA
+/// @brief Returns the full path to the stimulus set parameters of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:DA
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetParamDAPathAS()
@@ -3556,7 +3556,7 @@ Function/DF GetWBSvdStimSetParamTTLPath()
 	return createDFWithAllParents(GetWBSvdStimSetParamTTLAsString())
 End
 
-///	@brief Returns the full path to the stimulus set parameters of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL
+/// @brief Returns the full path to the stimulus set parameters of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetParamTTLAsString()
@@ -3570,7 +3570,7 @@ Function/DF GetWBSvdStimSetDAPath()
 	return createDFWithAllParents(GetWBSvdStimSetDAPathAsString())
 End
 
-///	@brief Returns the full path to the stimulus set of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:DA
+/// @brief Returns the full path to the stimulus set of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:DA
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetDAPathAsString()
@@ -3584,7 +3584,7 @@ Function/DF GetWBSvdStimSetTTLPath()
 	return createDFWithAllParents(GetWBSvdStimSetTTLPathAsString())
 End
 
-///	@brief Returns the full path to the stimulus set of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:TTL
+/// @brief Returns the full path to the stimulus set of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:TTL
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetTTLPathAsString()
