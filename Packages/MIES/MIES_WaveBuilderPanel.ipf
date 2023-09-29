@@ -119,7 +119,7 @@ Function/S WBP_CreateWaveBuilderPanel()
 	WB_UpdateChangedStimsets()
 
 	Execute "WaveBuilder()"
-	ListBox listbox_combineEpochMap, listWave=GetWBEpochCombineList()
+	ListBox listbox_combineEpochMap, listWave=GetWBEpochCombineList(WBP_GetStimulusType())
 	AddVersionToPanel(panel, WAVEBUILDER_PANEL_VERSION)
 
 	NVAR JSONid = $GetSettingsJSONid()
@@ -404,9 +404,6 @@ static Function WBP_UpdatePanelIfAllowed()
 			if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDuration)
 				SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDuration)
 			endif
-			break
-		case EPOCH_TYPE_COMBINE:
-			WB_UpdateEpochCombineList(WBP_GetStimulusType())
 			break
 		default:
 			// nothing to do
@@ -835,6 +832,8 @@ static Function WBP_ChangeWaveType()
 	else
 		ASSERT(0, "Unknown stimulus type")
 	endif
+
+	ListBox listbox_combineEpochMap, win=$panel, listWave=GetWBEpochCombineList(WBP_GetStimulusType())
 
 	WBP_UpdatePanelIfAllowed()
 End
@@ -1428,7 +1427,7 @@ Function WBP_SetVarCombineEpochFormula(sva) : SetVariableControl
 
 	struct FormulaProperties fp
 	string win, formula
-	variable currentEpoch, lastSweep
+	variable currentEpoch, lastSweep, channelType
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -1438,10 +1437,11 @@ Function WBP_SetVarCombineEpochFormula(sva) : SetVariableControl
 			formula = sva.sval
 
 			WAVE/T WPT = GetWaveBuilderWaveTextParam()
+			channelType = WBP_GetStimulusType()
 
 			lastSweep = GetSetVariable(win, "SetVar_WB_SweepCount_S101") - 1
 
-			if(WB_ParseCombinerFormula(formula, lastSweep, fp))
+			if(WB_ParseCombinerFormula(channelType, formula, lastSweep, fp))
 				break
 			endif
 
@@ -1471,11 +1471,13 @@ static Function/S WBP_TranslateControlContents(control, direction, data)
 	strswitch(control)
 		case "setvar_combine_formula_T6":
 			if(direction == FROM_PANEL_TO_WAVE)
+				variable channelType = WBP_GetStimulusType()
+
 				struct FormulaProperties fp
-				WB_FormulaSwitchToStimset(data, fp)
+				WB_FormulaSwitchToStimset(channelType, data, fp)
 				return fp.formula
 			elseif(direction == FROM_WAVE_TO_PANEL)
-				return WB_FormulaSwitchToShorthand(data)
+				return WB_FormulaSwitchToShorthand(channelType, data)
 			endif
 			break
 		default:

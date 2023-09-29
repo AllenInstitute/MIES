@@ -3507,6 +3507,34 @@ Function/S GetWaveBuilderDataPathAsString()
 	return GetWaveBuilderPathAsString() + ":Data"
 End
 
+/// @brief Returns a data folder reference to the data
+///
+/// UTF_NOINSTRUMENTATION
+Function/DF GetWaveBuilderDataDAPath()
+	return createDFWithAllParents(GetWaveBuilderDataDAPathAsString())
+End
+
+/// @brief Returns the full path to the data folder, e.g root:MIES:WaveBuilder:Data:DA
+///
+/// UTF_NOINSTRUMENTATION
+Function/S GetWaveBuilderDataDAPathAsString()
+	return GetWaveBuilderDataPathAsString() + ":DA"
+End
+
+/// @brief Returns a data folder reference to the data
+///
+/// UTF_NOINSTRUMENTATION
+Function/DF GetWaveBuilderDataTTLPath()
+	return createDFWithAllParents(GetWaveBuilderDataTTLPathAsString())
+End
+
+/// @brief Returns the full path to the data folder, e.g root:MIES:WaveBuilder:Data:TTL
+///
+/// UTF_NOINSTRUMENTATION
+Function/S GetWaveBuilderDataTTLPathAsString()
+	return GetWaveBuilderDataPathAsString() + ":TTL"
+End
+
 /// @brief Returns a data folder reference to the stimulus set parameter
 ///
 /// UTF_NOINSTRUMENTATION
@@ -4188,19 +4216,36 @@ Function/Wave GetWaveBuilderDispWave()
 	return wv
 End
 
-Function/WAVE GetWBEpochCombineList()
+Function/WAVE GetWBEpochCombineList(variable channelType)
 
+	// remove the existing wave which is not channel type aware
 	DFREF dfr = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv = epochCombineList
+	KillOrMoveToTrash(wv = wv)
+
+	switch(channelType)
+		case CHANNEL_TYPE_DAC:
+			DFREF dfr = GetWaveBuilderDataDAPath()
+			break
+		case CHANNEL_TYPE_TTL:
+			DFREF dfr = GetWaveBuilderDataTTLPath()
+			break
+		default:
+			ASSERT(0, "Unknown channel type")
+	endswitch
+
 	WAVE/T/Z/SDFR=dfr wv = epochCombineList
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/T/N=(1, 2) dfr:epochCombineList/Wave=wv
+	Make/T/N=(0, 2) dfr:epochCombineList/Wave=wv
 
 	SetDimLabel 1, 0, Shorthand, wv
 	SetDimLabel 1, 1, Stimset,   wv
+
+	WB_UpdateEpochCombineList(wv, channelType)
 
 	return wv
 End
