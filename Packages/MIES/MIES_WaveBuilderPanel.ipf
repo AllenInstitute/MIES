@@ -2155,6 +2155,8 @@ static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
 	// additional entries which are not covered by the usual naming scheme
 	if(epochType == EPOCH_TYPE_CUSTOM)
 		Make/FREE/T additional = {"Custom epoch wave name"}
+	elseif(epochType == EPOCH_TYPE_COMBINE)
+		Make/FREE/T additional = {"Combine epoch formula version"}
 	else
 		Make/FREE/T/N=(0) additional
 	endif
