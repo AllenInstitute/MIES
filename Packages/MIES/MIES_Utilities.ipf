@@ -2150,20 +2150,38 @@ End
 ///
 /// @return 1 if word was found in str and word was not "". 0 if not.
 Function SearchWordInString(string str, string word, [string &prefix, string &suffix])
-	WAVE/Z/T wv = SearchStringBase(str, "(.*)\\b\\Q" + word + "\\E\\b(.*)")
-	if(!WaveExists(wv))
-		return 0
+
+	string prefixParam, suffixParam
+	variable ret
+
+	[ret, prefixParam, suffixParam] = SearchRegexInString(str, "\\b\\Q" + word + "\\E\\b")
+
+	if(!ret)
+		return ret
 	endif
 
 	if(!ParamIsDefault(prefix))
-		prefix = wv[0]
+		prefix = prefixParam
 	endif
 
 	if(!ParamIsDefault(suffix))
-		suffix = wv[1]
+		suffix = suffixParam
 	endif
 
-	return 1
+	return ret
+End
+
+static Function [variable ret, string prefix, string suffix] SearchRegexInString(string str, string regex)
+
+	ASSERT(IsValidRegexp(regex), "Empty regex")
+
+	WAVE/Z/T wv = SearchStringBase(str, "(.*)" + regex + "(.*)")
+
+	if(!WaveExists(wv))
+		return [0, "", ""]
+	endif
+
+	return [1, wv[0], wv[1]]
 End
 
 /// @brief More advanced version of SplitString
@@ -4056,24 +4074,27 @@ Function/S SortAxisList(graph, list)
 	return TextWaveToList(axisListWave, ";")
 End
 
-/// @brief Replaces all occurences of the string `word`, treated as regexp word,
-///        in `str` with `replacement`. Does not ignore case.
-Function/S ReplaceWordInString(word, str, replacement)
-	string word, str, replacement
+Function/S ReplaceWordInString(string word, string str, string replacement)
 
-	ASSERT(!IsEmpty(word), "Empty regex")
-
-	variable ret
-	string result, prefix, suffix
+	ASSERT(!IsEmpty(word), "Empty word")
 
 	if(!cmpstr(word, replacement, 0))
 		return str
 	endif
 
+	return ReplaceRegexInString("\\b\\Q" + word + "\\E\\b", str, replacement)
+End
+
+/// @brief Replaces all occurences of the regular expression `regex` in `str` with `replacement`
+Function/S ReplaceRegexInString(string regex, string str, string replacement)
+
+	variable ret
+	string result, prefix, suffix
+
 	result = str
 
 	for(;;)
-		ret = SearchWordInString(result, word, prefix = prefix, suffix = suffix)
+		[ret, prefix, suffix] = SearchRegexInString(result, regex)
 
 		if(!ret)
 			break
