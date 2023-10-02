@@ -2158,7 +2158,7 @@ End
 Function/S WB_FormulaSwitchToShorthand(variable channelType, string formula)
 
 	variable numSets, i
-	string stimset, shorthand
+	string stimset, shorthand, regex
 
 	if(isEmpty(formula))
 		return ""
@@ -2171,7 +2171,8 @@ Function/S WB_FormulaSwitchToShorthand(variable channelType, string formula)
 		shorthand = epochCombineList[i][%Shorthand]
 		stimset   = epochCombineList[i][%stimset]
 
-		formula = ReplaceString(stimset + "?", formula, shorthand)
+		regex = "\\b\\Q" + LowerStr(stimset) + "\\E\\b\?"
+		formula = ReplaceRegexInString(regex, formula, shorthand)
 	endfor
 
 	return formula
