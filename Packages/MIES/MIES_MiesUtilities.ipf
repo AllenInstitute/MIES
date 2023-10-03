@@ -4928,7 +4928,7 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 				HW_ITC_GetRackRange(RACK_ONE, first, last)
 				bits = ttlBitsRackOne[index]
 				hwChannel = ttlChannelRackOne[index]
-				channelMapGUIToHW[first, last][%TTLBITNR] = (bits & (1 << (p - NUM_ITC_TTL_BITS_PER_RACK))) != 0 ? p : NaN
+				channelMapGUIToHW[first, last][%TTLBITNR] = (bits & (1 << (p - NUM_ITC_TTL_BITS_PER_RACK))) != 0 ? p - NUM_ITC_TTL_BITS_PER_RACK : NaN
 				channelMapGUIToHW[first, last][%HWCHANNEL] = IsNaN(channelMapGUIToHW[p][%TTLBITNR]) ? NaN : hwChannel
 			endif
 			if(haveRackZero || haveRackOne)
