@@ -2116,13 +2116,14 @@ threadsafe Function/S RemoveEndingRegExp(str, endingRegExp)
 	string str, endingRegExp
 
 	string endStr
+	variable err
 
 	if(isEmpty(str) || isEmpty(endingRegExp))
 		return str
 	endif
 
-	SplitString/E=("(" + endingRegExp + ")$") str, endStr
-	ASSERT_TS(V_flag == 0 || V_flag == 1, "Unexpected number of matches")
+	SplitString/E=("(" + endingRegExp + ")$") str, endStr; err = GetRTError(1)
+	ASSERT_TS((V_flag == 0 || V_flag == 1) && err == 0, "Unexpected number of matches or invalid regex")
 
 	return RemoveEnding(str, endStr)
 End
