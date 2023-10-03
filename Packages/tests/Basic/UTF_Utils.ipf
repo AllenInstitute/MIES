@@ -7230,3 +7230,26 @@ static Function TestRemoveEndingRegex()
 		CHECK_NO_RTE()
 	endtry
 End
+
+Function TestSearchWordInString()
+
+	variable ret
+	string prefix, suffix
+
+	ret = SearchWordInString("ab cd efgh", "ijk")
+	CHECK_EQUAL_VAR(ret, 0)
+
+	// no match as no word boundary after "c"
+	ret = SearchWordInString("ab cd efgh", "c")
+	CHECK_EQUAL_VAR(ret, 0)
+
+	// match
+	ret = SearchWordInString("ab cd efgh", "cd")
+	CHECK_EQUAL_VAR(ret, 1)
+
+	// match with prefix and suffix
+	ret = SearchWordInString("ab#cd?efgh", "cd", prefix = prefix, suffix = suffix)
+	CHECK_EQUAL_VAR(ret, 1)
+	CHECK_EQUAL_STR(prefix, "ab#")
+	CHECK_EQUAL_STR(suffix, "?efgh")
+End
