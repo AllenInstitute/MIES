@@ -335,7 +335,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	DFREF pxpSweepsDFR
 	WAVE/Z epochs
 
-	variable channelGroupID, starting_time, session_start_time, actual, idx, index
+	variable channelGroupID, starting_time, session_start_time, actual, idx, index, GUIchannelNumber, ttlBit
 	variable clampMode, gain, gain_ref, resolution, conversion, headstage, rate_ref, rate, samplingInterval, samplingInterval_ref
 	string stimulus, stimulus_expected, channelName, str, path, neurodata_type
 	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref
@@ -536,8 +536,23 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		WAVE/T/Z epochsSingleChannel = WaveRef(epochs, row=idx)
 		CHECK_WAVE(epochsSingleChannel, TEXT_WAVE)
 
-		WAVE/Z epochsLBN = EP_FetchEpochs(numericalValues, textualValues, sweep, params.channelNumber, params.channelType)
+		GUIchannelNumber = params.channelNumber
+		ttlBit = NaN
+
+		if(params.channelType == XOP_CHANNEL_TYPE_TTL && IsFinite(params.ttlBit))
+			WAVE/Z channelMapHWToGUI = GetActiveChannels(numericalValues, textualValues, sweep, params.channelType, TTLMode = TTL_HWTOGUI_CHANNEL)
+			CHECK_WAVE(channelMapHWToGUI, NUMERIC_WAVE)
+
+			ttlBit = log(params.ttlBit)/log(2)
+			CHECK_GE_VAR(ttlBit, 0)
+
+			GUIchannelNumber = channelMapHWToGUI[params.channelNumber][ttlBit]
+			CHECK_GE_VAR(channelNumber, 0)
+		endif
+
+		WAVE/Z epochsLBN = EP_FetchEpochs(numericalValues, textualValues, sweep, channelNumber, params.channelType)
 		CHECK_WAVE(epochsLBN, TEXT_WAVE)
+		INFO("Channeltype: %s, GUI channel number %d, hardware channel number %d, TTL bit %d", s0 = StringFromList(params.channelType, CHANNEL_NAMES), n0 = channelNumber, n1 = params.channelNumber, n2 = ttlBit)
 		CHECK_EQUAL_TEXTWAVES(epochsLBN, epochsSingleChannel)
 	endif
 End
