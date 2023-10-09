@@ -1170,8 +1170,6 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 		col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
 		writtenDataColumns[col] = 1
 
-		WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
-
 		WAVE data = ExtractOneDimDataFromSweep(s.DAQConfigWave, s.DAQDataWave, col)
 
 		if(hardwareType == HARDWARE_ITC_DAC)
@@ -1190,13 +1188,17 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 				params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
 				params.stimset       = ttlStimsets[log(ttlBit)/log(2)]
 				NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
-				params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
+				params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
+				WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, log(ttlBit)/log(2), params.channelType)
+
 				s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
 			endfor
 		elseif(hardwareType == HARDWARE_NI_DAC)
-			WAVE params.data     = data
-			path                 = "/stimulus/presentation"
-			params.stimset       = stimset
+			WAVE params.data       = data
+			path                   = "/stimulus/presentation"
+			params.stimset         = stimset
+			WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
 			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
