@@ -2116,7 +2116,7 @@ End
 /// @param sweepDFR         datafolder holding 1D waves
 /// @param channelType      One of @ref XopChannelConstants
 /// @param GUIchannelNumber GUI channel number
-Function/WAVE GetDAQDataSingleColumnWaveNG(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable channelType, variable GUIchannelNumber)
+threadsafe Function/WAVE GetDAQDataSingleColumnWaveNG(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable channelType, variable GUIchannelNumber)
 
 	variable hwChannelNumber, ttlBit, hwDACType
 
@@ -2151,7 +2151,7 @@ End
 /// @param channelNumber hardware channel number
 /// @param splitTTLBits  [optional, defaults to false] return a single bit of the TTL wave
 /// @param ttlBit        [optional] number specifying the TTL bit
-Function/WAVE GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNumber, [splitTTLBits, ttlBit])
+threadsafe Function/WAVE GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNumber, [splitTTLBits, ttlBit])
 	DFREF sweepDFR
 	variable channelType, channelNumber
 	variable splitTTLBits, ttlBit
@@ -2164,8 +2164,8 @@ Function/WAVE GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNumber, [
 		splitTTLBits = !!splitTTLBits
 	endif
 
-	ASSERT(ParamIsDefault(splitTTLBits) + ParamIsDefault(ttlBit) != 1, "Expected both or none of splitTTLBits and ttlBit")
-	ASSERT(channelNumber < GetNumberFromType(xopVar=channelType), "Invalid channel index")
+	ASSERT_TS(ParamIsDefault(splitTTLBits) + ParamIsDefault(ttlBit) != 1, "Expected both or none of splitTTLBits and ttlBit")
+	ASSERT_TS(channelNumber < GetNumberFromType(xopVar=channelType), "Invalid channel index")
 
 	wvName = StringFromList(channelType, XOP_CHANNEL_NAMES) + "_" + num2str(channelNumber)
 
@@ -5479,7 +5479,7 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 End
 
 /// @brief Create backup waves for all waves in the datafolder
-Function CreateBackupWavesForAll(DFREF dfr)
+threadsafe Function CreateBackupWavesForAll(DFREF dfr)
 
 	variable i, numWaves
 
@@ -5496,14 +5496,14 @@ End
 /// The backup wave will be located in the same data folder and
 /// its name will be the original name with #WAVE_BACKUP_SUFFIX
 /// appended.
-Function/Wave CreateBackupWave(wv, [forceCreation])
+threadsafe Function/Wave CreateBackupWave(wv, [forceCreation])
 	Wave wv
 	variable forceCreation
 
 	string backupname
 	dfref dfr
 
-	ASSERT(IsGlobalWave(wv), "Wave Can Not Be A Null Wave Or A Free Wave")
+	ASSERT_TS(IsGlobalWave(wv), "Wave Can Not Be A Null Wave Or A Free Wave")
 	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
 	dfr        = GetWavesDataFolderDFR(wv)
 
@@ -5849,7 +5849,7 @@ End
 /// @param configWave      DAQConfigWave
 /// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
 /// @param rescale         One of @ref TTLRescalingOptions
-Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, rescale, [targetDFR])
+threadsafe Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, rescale, [targetDFR])
 	WAVE numericalValues, sweepWave, configWave
 	variable sweep, rescale
 	DFREF targetDFR
@@ -5861,16 +5861,15 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 		DFREF targetDFR = GetWavesDataFolderDFR(sweepWave)
 	endif
 
-	ASSERT(IsGlobalDataFolder(targetDFR), "targetDFR must exist and a global/permanent datafolder")
-	ASSERT(IsFinite(sweep), "Sweep number must be finite")
-	ASSERT(IsValidSweepAndConfig(sweepWave, configWave, configVersion = 0), "Sweep and config waves are not compatible")
+	ASSERT_TS(IsFinite(sweep), "Sweep number must be finite")
+	ASSERT_TS(IsValidSweepAndConfig(sweepWave, configWave, configVersion = 0), "Sweep and config waves are not compatible")
 
 	numRows = DimSize(configWave, ROWS)
 	for(i = 0; i < numRows; i += 1)
 		channelType = StringFromList(configWave[i][0], XOP_CHANNEL_NAMES)
-		ASSERT(!isEmpty(channelType), "empty channel type")
+		ASSERT_TS(!isEmpty(channelType), "empty channel type")
 		channelNumber = configWave[i][1]
-		ASSERT(IsFinite(channelNumber), "non-finite channel number")
+		ASSERT_TS(IsFinite(channelNumber), "non-finite channel number")
 		str = channelType + "_" + num2istr(channelNumber)
 
 		WAVE data = ExtractOneDimDataFromSweep(configWave, sweepWave, i)
