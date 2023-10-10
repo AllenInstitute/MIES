@@ -1147,13 +1147,18 @@ End
 static Function RunPowerSpectrum_REENTRY([str])
 	string str
 
-	variable sweepNo, col, tpAmplitude, daGain, i
+	variable sweepNo
 	string ctrl
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	WAVE sweepDataLNB = GetSweepSettingsWave(str)
+	CHECK_EQUAL_VAR(0, sweepDataLNB[0][%$STIMSET_SCALE_FACTOR_KEY][0])
+	CHECK_EQUAL_VAR(0, sweepDataLNB[0][%$STIMSET_SCALE_FACTOR_KEY][1])
+
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
