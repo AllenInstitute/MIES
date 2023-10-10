@@ -5849,9 +5849,10 @@ End
 /// @param configWave      DAQConfigWave
 /// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
 /// @param rescale         One of @ref TTLRescalingOptions
-threadsafe Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, rescale, [targetDFR])
+/// @param createBackup    [optional, defaults to true] allows to tune the creation of backup waves
+threadsafe Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, rescale, [targetDFR, createBackup])
 	WAVE numericalValues, sweepWave, configWave
-	variable sweep, rescale
+	variable sweep, rescale, createBackup
 	DFREF targetDFR
 
 	variable numRows, i, channelNumber, ttlBits
@@ -5859,6 +5860,12 @@ threadsafe Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, 
 
 	if(ParamIsDefault(targetDFR))
 		DFREF targetDFR = GetWavesDataFolderDFR(sweepWave)
+	endif
+
+	if(ParamIsDefault(createBackup))
+		createBackup = 1
+	else
+		createBackup = !!createBackup
 	endif
 
 	ASSERT_TS(IsFinite(sweep), "Sweep number must be finite")
@@ -5887,7 +5894,9 @@ threadsafe Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, 
 
 	string/G targetDFR:note = note(sweepWave)
 
-	CreateBackupWavesForAll(targetDFR)
+	if(createBackup)
+		CreateBackupWavesForAll(targetDFR)
+	endif
 End
 
 /// @brief Add user data "panelVersion" to the panel
