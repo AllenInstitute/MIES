@@ -7193,3 +7193,63 @@ static Function TestErrorCodeConversion()
 	// is idempotent
 	CHECK_EQUAL_VAR(ConvertXOPErrorCode(convErr), 10009)
 End
+
+static Function TestRemoveEndingRegex()
+
+	string result
+
+	// does nothing with empty string
+	result = RemoveEndingRegExp("", ".*")
+	CHECK_EMPTY_STR(result)
+
+	// does nothing with empty regex
+	result = RemoveEndingRegExp("abcd", "")
+	CHECK_EQUAL_STR(result, "abcd")
+
+	// complains with invalid regex
+	try
+		RemoveEndingRegExp("abcd", "*")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// matches
+	result = RemoveEndingRegExp("abcdd", "d*")
+	CHECK_EQUAL_STR(result, "abc")
+
+	// no match
+	result = RemoveEndingRegExp("abcd", "efgh")
+	CHECK_EQUAL_STR(result, "abcd")
+
+	// too many matches
+	try
+		RemoveEndingRegExp("abcd", "ab)(cd")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+Function TestSearchWordInString()
+
+	variable ret
+	string prefix, suffix
+
+	ret = SearchWordInString("ab cd efgh", "ijk")
+	CHECK_EQUAL_VAR(ret, 0)
+
+	// no match as no word boundary after "c"
+	ret = SearchWordInString("ab cd efgh", "c")
+	CHECK_EQUAL_VAR(ret, 0)
+
+	// match
+	ret = SearchWordInString("ab cd efgh", "cd")
+	CHECK_EQUAL_VAR(ret, 1)
+
+	// match with prefix and suffix
+	ret = SearchWordInString("ab#cd?efgh", "cd", prefix = prefix, suffix = suffix)
+	CHECK_EQUAL_VAR(ret, 1)
+	CHECK_EQUAL_STR(prefix, "ab#")
+	CHECK_EQUAL_STR(suffix, "?efgh")
+End

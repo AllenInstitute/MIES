@@ -1521,7 +1521,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 				// is not yet reflected in the user data
 				list = GetUserData(device, ctrl, USER_DATA_MENU_EXP)
 				if(FindListItem(stimSet, list) == -1)
-					DAP_UpdateDaEphysStimulusSetPopups()
+					WB_UpdateChangedStimsets()
 				endif
 			endif
 
@@ -4456,7 +4456,7 @@ Function DAP_LockDevice(string win)
 	DAP_UpdateDAQControls(deviceLocked, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 	// create the amplifier settings waves
 	GetAmplifierParamStorageWave(deviceLocked)
-	DAP_UpdateDaEphysStimulusSetPopups(device=deviceLocked)
+	WB_UpdateChangedStimsets(device=deviceLocked)
 	DAP_UnlockCommentNotebook(deviceLocked)
 	DAP_ToggleAcquisitionButton(deviceLocked, DATA_ACQ_BUTTON_TO_DAQ)
 	SI_CalculateMinSampInterval(deviceLocked, DATA_ACQUISITION_MODE)
@@ -5339,6 +5339,7 @@ Function DAP_DeleteStimulusSet(string setName, [string device])
 	if(ParamIsDefault(device))
 		WB_KillParameterWaves(setName)
 		WB_KillStimset(setName)
+		WB_UpdateChangedStimsets()
 		return NaN
 	endif
 
@@ -5351,7 +5352,7 @@ Function DAP_DeleteStimulusSet(string setName, [string device])
 	WB_KillParameterWaves(setName)
 	WB_KillStimset(setName)
 
-	DAP_UpdateDaEphysStimulusSetPopups(device = device)
+	WB_UpdateChangedStimsets(device = device)
 End
 
 /// @brief Write all TP settings from the data acquisition/settings tab to the settings wave
