@@ -87,23 +87,6 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	DeleteFile/Z GetExperimentNWBFileForExport()
 End
 
-Function DoExpensiveChecks()
-
-	variable expensive
-
-#ifdef AUTOMATED_TESTING_EXPENSIVE
-	return 1
-#endif
-
-	expensive = GetEnvironmentVariableAsBoolean("CI_EXPENSIVE_CHECKS")
-
-	if(IsFinite(expensive))
-		return expensive
-	endif
-
-	return 0
-End
-
 Function TEST_CASE_END_OVERRIDE(name)
 	string name
 
