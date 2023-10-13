@@ -244,7 +244,6 @@ Function CHI_CheckInstallation()
 	endif
 
 	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
-	CHI_CheckXOP(listOfXOPs, "VDT2-64.xop", "VDT2 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
 

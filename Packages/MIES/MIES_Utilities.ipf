@@ -114,6 +114,8 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
 			// Happens e.g. when ASSERT is encounterd in cleanup functions
 			print "Double Assertion Fail encountered !"
+			print errorMsg
+			print GetRTStackInfo(3)
 
 			if(doCallDebugger)
 				ControlWindowToFront()
@@ -239,6 +241,8 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 		if(IsFunctionCalledRecursively())
 
 			print "Double threadsafe assertion Fail encountered !"
+			print errorMsg
+			print GetRTStackInfo(3)
 
 			AbortOnValue 1, 1
 		endif
@@ -5147,6 +5151,30 @@ Function GetFileSize(string filepath)
 	endif
 
 	return V_logEOF
+End
+
+/// @brief Convert a HFS path (`:`) to a POSIX path (`/`)
+///
+/// The path *must* exist.
+Function/S HFSPathToPosix(string path)
+	return ParseFilePath(9, path, "*", 0, 0)
+End
+
+/// @brief Convert a HFS path (`:`) to a Windows path (`\\`)
+Function/S HFSPathToWindows(string path)
+	return ParseFilePath(5, path, "\\", 0, 0)
+End
+
+/// @brief Convert HFS path (`:`) to OS native path (`\\` or `/`)
+Function/S HFSPathToNative(string path)
+
+#if defined(MACINTOSH)
+	return HFSPathToPosix(path)
+#elif defined(WINDOWS)
+	return HFSPathToWindows(path)
+#else
+	ASSERT(0, "Unsupported OS")
+#endif
 End
 
 /// @brief wrapper to `ScaleToIndex`
