@@ -978,3 +978,12 @@ Function DoExpensiveChecks()
 
 	return 0
 End
+
+Function GetWaveTrackingMode()
+
+	if(DoExpensiveChecks())
+		return UTF_WAVE_TRACKING_ALL
+	endif
+
+	return UTF_WAVE_TRACKING_NONE
+End
