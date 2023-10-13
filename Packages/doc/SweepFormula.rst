@@ -956,13 +956,13 @@ the subset of data to work on.
 
 .. code-block:: bash
 
-   psxkernel(array range[, array selectData, riseTau, decayTau, amp])
+   psxkernel([array range, array selectData, riseTau, decayTau, amp])
 
-The function accepts one to five arguments.
+The function accepts zero to five arguments.
 
 range
   either an explicit array in milliseconds, `cursors` or a text array with one
-  or multiple epoch names, see also `data`
+  or multiple epoch names, see also `data`, defaults to the full range.
 
 select
   sweep and channels to operate on from the `select` operation
@@ -1041,7 +1041,9 @@ order
 
 The default values of `NaN` are replaced inside `psx`. For the order this is
 `101`, for the frequencies this is a normalized frequency which depends on the
-sampling interval of the data.
+sampling interval of the data. Here `lowFreq` is the end of the passband and
+`highFreq` the start of the reject band see also the description of `/LO` from
+`FilterFIR`.
 
 .. code-block:: bash
 

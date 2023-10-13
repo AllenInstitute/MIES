@@ -395,7 +395,7 @@ End
 
 /// @brief Return a wave reference wave with the requested sweep data
 ///
-/// All wave input parameters should are treated as const and are thus *not* modified.
+/// All wave input parameters are treated as const and are thus *not* modified.
 ///
 /// @param graph      name of databrowser graph
 /// @param range      numeric/text wave defining the x-range of the extracted
