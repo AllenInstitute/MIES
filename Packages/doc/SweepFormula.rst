@@ -1041,7 +1041,9 @@ order
 
 The default values of `NaN` are replaced inside `psx`. For the order this is
 `101`, for the frequencies this is a normalized frequency which depends on the
-sampling interval of the data.
+sampling interval of the data. Here `lowFreq` is the end of the passband and
+`highFreq` the start of the reject band see also the description of `/LO` from
+`FilterFIR`.
 
 .. code-block:: bash
 
