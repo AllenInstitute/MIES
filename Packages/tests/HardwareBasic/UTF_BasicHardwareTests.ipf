@@ -1790,6 +1790,7 @@ static Function ExportStimsetsAndRoundtripThem([variable var])
 	REQUIRE(V_IsFile)
 
 	DFREF dfr = GetWaveBuilderPath()
+	KillOrMoveToTrash(dfr = GetWaveBuilderDataPath())
 	MoveDataFolder dfr, :
 	RenameDataFolder WaveBuilder, old
 
@@ -1798,6 +1799,7 @@ static Function ExportStimsetsAndRoundtripThem([variable var])
 	NWB_LoadAllStimsets(filename = discLocation)
 
 	DFREF dfr = GetWaveBuilderPath()
+	KillOrMoveToTrash(dfr = GetWaveBuilderDataPath())
 	MoveDataFolder dfr, :
 	RenameDataFolder WaveBuilder, new
 

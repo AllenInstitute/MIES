@@ -357,3 +357,24 @@ Function WB_StimsetWithNoEpochsAreNotSaved()
 
 	CHECK_EQUAL_STR(ST_GetStimsetList(searchString = basename + "*"), "")
 End
+
+Function CombineStimsetSubStrings()
+
+	string setNameA, setNameAA, setNameCombine
+
+	setNameA  = ST_CreateStimSet("setABC", CHANNEL_TYPE_DAC)
+	setNameAA = ST_CreateStimSet("newsetABC", CHANNEL_TYPE_DAC)
+
+	setNameCombine = ST_CreateStimSet("setCombine", CHANNEL_TYPE_DAC)
+
+	ST_SetStimsetParameter(setNameCombine, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setNameCombine, "Type of Epoch 0", var = EPOCH_TYPE_COMBINE)
+
+	ST_SetStimsetParameter(setNameCombine, "Combine epoch formula version", epochIndex = 0, str = WAVEBUILDER_COMBINE_FORMULA_VER)
+	ST_SetStimsetParameter(setNameCombine, "Combine epoch formula", epochIndex = 0, str = LowerStr(setNameA) + "?" + " + " + LowerStr(setNameAA) + "?")
+
+	WAVE/Z wv = WB_CreateAndGetStimSet(setNameCombine)
+	CHECK_WAVE(wv, NUMERIC_WAVE)
+	CHECK_GT_VAR(DimSize(wv, ROWS), 0)
+	CHECK_NO_RTE()
+End

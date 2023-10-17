@@ -3500,11 +3500,39 @@ Function/DF GetWaveBuilderDataPath()
 	return createDFWithAllParents(GetWaveBuilderDataPathAsString())
 End
 
-///	@brief Returns the full path to the data folder, e.g root:MIES:WaveBuilder:Data
+/// @brief Returns the full path to the data folder, e.g root:MIES:WaveBuilder:Data
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWaveBuilderDataPathAsString()
 	return GetWaveBuilderPathAsString() + ":Data"
+End
+
+/// @brief Returns a data folder reference to the data
+///
+/// UTF_NOINSTRUMENTATION
+Function/DF GetWaveBuilderDataDAPath()
+	return createDFWithAllParents(GetWaveBuilderDataDAPathAsString())
+End
+
+/// @brief Returns the full path to the data folder, e.g root:MIES:WaveBuilder:Data:DA
+///
+/// UTF_NOINSTRUMENTATION
+Function/S GetWaveBuilderDataDAPathAsString()
+	return GetWaveBuilderDataPathAsString() + ":DA"
+End
+
+/// @brief Returns a data folder reference to the data
+///
+/// UTF_NOINSTRUMENTATION
+Function/DF GetWaveBuilderDataTTLPath()
+	return createDFWithAllParents(GetWaveBuilderDataTTLPathAsString())
+End
+
+/// @brief Returns the full path to the data folder, e.g root:MIES:WaveBuilder:Data:TTL
+///
+/// UTF_NOINSTRUMENTATION
+Function/S GetWaveBuilderDataTTLPathAsString()
+	return GetWaveBuilderDataPathAsString() + ":TTL"
 End
 
 /// @brief Returns a data folder reference to the stimulus set parameter
@@ -3514,7 +3542,7 @@ Function/DF GetWBSvdStimSetParamPath()
 	return createDFWithAllParents(GetWBSvdStimSetParamPathAS())
 End
 
-///	@brief Returns the full path to the stimulus set parameter folder, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters
+/// @brief Returns the full path to the stimulus set parameter folder, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetParamPathAS()
@@ -3528,7 +3556,7 @@ Function/DF GetWBSvdStimSetPath()
 	return createDFWithAllParents(GetWBSvdStimSetPathAsString())
 End
 
-///	@brief Returns the full path to the stimulus set, e.g. root:MIES:WaveBuilder:SavedStimulusSets
+/// @brief Returns the full path to the stimulus set, e.g. root:MIES:WaveBuilder:SavedStimulusSets
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetPathAsString()
@@ -3542,7 +3570,7 @@ Function/DF GetWBSvdStimSetParamDAPath()
 	return createDFWithAllParents(GetWBSvdStimSetParamDAPathAS())
 End
 
-///	@brief Returns the full path to the stimulus set parameters of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:DA
+/// @brief Returns the full path to the stimulus set parameters of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:DA
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetParamDAPathAS()
@@ -3556,7 +3584,7 @@ Function/DF GetWBSvdStimSetParamTTLPath()
 	return createDFWithAllParents(GetWBSvdStimSetParamTTLAsString())
 End
 
-///	@brief Returns the full path to the stimulus set parameters of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL
+/// @brief Returns the full path to the stimulus set parameters of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetParamTTLAsString()
@@ -3570,7 +3598,7 @@ Function/DF GetWBSvdStimSetDAPath()
 	return createDFWithAllParents(GetWBSvdStimSetDAPathAsString())
 End
 
-///	@brief Returns the full path to the stimulus set of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:DA
+/// @brief Returns the full path to the stimulus set of `DA` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:DA
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetDAPathAsString()
@@ -3584,7 +3612,7 @@ Function/DF GetWBSvdStimSetTTLPath()
 	return createDFWithAllParents(GetWBSvdStimSetTTLPathAsString())
 End
 
-///	@brief Returns the full path to the stimulus set of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:TTL
+/// @brief Returns the full path to the stimulus set of `TTL` type, e.g. root:MIES:WaveBuilder:SavedStimulusSet:TTL
 ///
 /// UTF_NOINSTRUMENTATION
 Function/S GetWBSvdStimSetTTLPathAsString()
@@ -4188,19 +4216,36 @@ Function/Wave GetWaveBuilderDispWave()
 	return wv
 End
 
-Function/WAVE GetWBEpochCombineList()
+Function/WAVE GetWBEpochCombineList(variable channelType)
 
+	// remove the existing wave which is not channel type aware
 	DFREF dfr = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv = epochCombineList
+	KillOrMoveToTrash(wv = wv)
+
+	switch(channelType)
+		case CHANNEL_TYPE_DAC:
+			DFREF dfr = GetWaveBuilderDataDAPath()
+			break
+		case CHANNEL_TYPE_TTL:
+			DFREF dfr = GetWaveBuilderDataTTLPath()
+			break
+		default:
+			ASSERT(0, "Unknown channel type")
+	endswitch
+
 	WAVE/T/Z/SDFR=dfr wv = epochCombineList
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/T/N=(1, 2) dfr:epochCombineList/Wave=wv
+	Make/T/N=(0, 2) dfr:epochCombineList/Wave=wv
 
 	SetDimLabel 1, 0, Shorthand, wv
 	SetDimLabel 1, 1, Stimset,   wv
+
+	WB_UpdateEpochCombineList(wv, channelType)
 
 	return wv
 End
@@ -4253,7 +4298,7 @@ Function/WAVE GetEpochParameterNames()
 	Make/T/FREE st_5 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Duration type [User/Automatic]", "Number of pulses", "Number of pulses delta", "Number of pulses dme", "Number of pulses ldel", "Number of pulses op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Poisson distribution true/false", "PT [First Mixed Frequency]", "PT [First Mixed Frequency] delta", "PT [First Mixed Frequency] dme", "PT [First Mixed Frequency] ldel", "PT [First Mixed Frequency] op", "PT [Last Mixed Frequency]", "PT [Last Mixed Frequency] delta", "PT [Last Mixed Frequency] dme", "PT [Last Mixed Frequency] ldel", "PT [Last Mixed Frequency] op", "PT [Mixed Frequency]", "PT [Shuffle]", "Pulse train type (index)", "Random Seed", "Reseed RNG for each epoch", "Reseed RNG for each step", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op", "Train pulse duration", "Train pulse duration delta", "Train pulse duration dme", "Train pulse duration ldel", "Train pulse duration op"}
 	Make/T/FREE st_6 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "PSC exp decay time 1/2", "PSC exp decay time 1/2 delta", "PSC exp decay time 1/2 dme", "PSC exp decay time 1/2 ldel", "PSC exp decay time 1/2 op", "PSC exp decay time 2/2", "PSC exp decay time 2/2 delta", "PSC exp decay time 2/2 dme", "PSC exp decay time 2/2 ldel", "PSC exp decay time 2/2 op", "PSC exp rise time", "PSC exp rise time delta", "PSC exp rise time dme", "PSC exp rise time ldel", "PSC exp rise time op", "PSC ratio decay times", "PSC ratio decay times delta", "PSC ratio decay times dme", "PSC ratio decay times ldel", "PSC ratio decay times op"}
 	Make/T/FREE st_7 = {"Custom epoch wave name", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op"}
-	Make/T/FREE st_8 = {"Combine epoch formula"}
+	Make/T/FREE st_8 = {"Combine epoch formula", "Combine epoch formula version"}
 	/// @}
 
 	Make/FREE sizes = {DimSize(st_0, ROWS), DimSize(st_1, ROWS), DimSize(st_2, ROWS), DimSize(st_3, ROWS), DimSize(st_4, ROWS), DimSize(st_5, ROWS), DimSize(st_6, ROWS), DimSize(st_7, ROWS), DimSize(st_8, ROWS)}

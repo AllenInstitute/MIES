@@ -183,7 +183,7 @@ Function CheckStimsetUpdateAndSearch([STRUCT IUTF_mData &m])
 	WAVE/T stimsetsFromMenu = GetStimsetFromUserData(device, ctrlWave)
 	CHECK_EQUAL_TEXTWAVES(stimsetsEmpty, stimsetsFromMenu)
 
-	DAP_UpdateDaEphysStimulusSetPopups(device = device)
+	WB_UpdateChangedStimsets(device = device)
 
 	// updated
 	WAVE/T stimsetsFromMenu = GetStimsetFromUserData(device, ctrlWave)
@@ -200,7 +200,7 @@ Function CheckStimsetUpdateAndSearch([STRUCT IUTF_mData &m])
 	// add another stimset and update
 	Make dfr:stimsetD
 
-	DAP_UpdateDaEphysStimulusSetPopups(device = device)
+	WB_UpdateChangedStimsets(device = device)
 
 	WAVE/T stimsetsFromMenu = GetStimsetFromUserData(device, ctrlWave)
 	CHECK_EQUAL_TEXTWAVES({"stimsetD"}, stimsetsFromMenu)

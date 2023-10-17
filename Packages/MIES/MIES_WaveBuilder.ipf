@@ -1937,12 +1937,9 @@ static Function/WAVE WB_FillWaveFromFormula(formula, channelType, sweep)
 	STRUCT FormulaProperties fp
 	string shorthandFormula
 
-	// update shorthand -> stimset mapping
-	WB_UpdateEpochCombineList(channelType)
+	shorthandFormula = WB_FormulaSwitchToShorthand(channelType, formula)
 
-	shorthandFormula = WB_FormulaSwitchToShorthand(formula)
-
-	if(WB_ParseCombinerFormula(shorthandFormula, sweep, fp))
+	if(WB_ParseCombinerFormula(channelType, shorthandFormula, sweep, fp))
 		return $""
 	endif
 
@@ -1972,7 +1969,7 @@ End
 ///
 /// The rows are sorted by creationDate of the WP/stimset wave to try to keep
 /// the shorthands constants even when new stimsets are added.
-Function WB_UpdateEpochCombineList(variable channelType)
+Function WB_UpdateEpochCombineList(WAVE/T epochCombineList, variable channelType)
 	string list, setPath, setParamPath, entry
 	variable numEntries, i
 
@@ -2006,7 +2003,6 @@ Function WB_UpdateEpochCombineList(variable channelType)
 
 	Sort creationDates, stimsets
 
-	Wave/T epochCombineList = GetWBEpochCombineList()
 	Redimension/N=(numEntries, -1) epochCombineList
 
 	epochCombineList[][%StimSet]   = stimsets[p]
@@ -2035,16 +2031,14 @@ End
 
 /// @brief Parse the formula from the epoch type `Combine`
 ///
-/// @param[in]  formula  math formula to execute, all operators which Igor can grok are allowed
-/// @param      sweep    current sweep (aka step)
-/// @param[out] fp       parsed formula structure, with shorthands replaced by stimsets,
-///                      empty on parse error, ready to be executed by WB_FillWaveFromFormula()
+/// @param[in]  channelType One of CHANNEL_TYPE_DA or CHANNEL_TYPE_TTL
+/// @param[in]  formula     math formula to execute, all operators which Igor can grok are allowed
+/// @param[in]  sweep       current sweep (aka step)
+/// @param[out] fp          parsed formula structure, with shorthands replaced by stimsets,
+///                         empty on parse error, ready to be executed by WB_FillWaveFromFormula()
 ///
 /// @returns 0 on success, 1 on parse errors (currently not many are found)
-Function WB_ParseCombinerFormula(formula, sweep, fp)
-	string formula
-	variable sweep
-	struct FormulaProperties &fp
+Function WB_ParseCombinerFormula(variable channelType, string formula, variable sweep, STRUCT FormulaProperties &fp)
 
 	string dependentStimsets
 	variable i, numStimsets
@@ -2054,7 +2048,7 @@ Function WB_ParseCombinerFormula(formula, sweep, fp)
 
 	InitFormulaProperties(fp)
 	InitFormulaProperties(trans)
-	WB_FormulaSwitchToStimset(formula, trans)
+	WB_FormulaSwitchToStimset(channelType, formula, trans)
 
 	// look for shorthand-like strings not referring to existing stimsets
 	if(GrepString(trans.formula, "\\b[A-Z][0-9]*\\b"))
@@ -2100,10 +2094,7 @@ Function WB_ParseCombinerFormula(formula, sweep, fp)
 End
 
 /// @brief Replace shorthands with the real stimset names suffixed with `?`
-Function WB_FormulaSwitchToStimset(formula, fp)
-	string formula
-	struct FormulaProperties &fp
-
+Function WB_FormulaSwitchToStimset(variable channelType, string formula, STRUCT FormulaProperties &fp)
 	string stimset, shorthand, stimsetSpec, prefix, suffix
 	variable numSets, i, stimsetFound
 
@@ -2113,7 +2104,7 @@ Function WB_FormulaSwitchToStimset(formula, fp)
 		return NaN
 	endif
 
-	WAVE/T epochCombineList = GetWBEpochCombineList()
+	WAVE/T epochCombineList = GetWBEpochCombineList(channeltype)
 
 	formula = UpperStr(formula)
 
@@ -2122,7 +2113,7 @@ Function WB_FormulaSwitchToStimset(formula, fp)
 	// iterate the stimset list from bottom to top, so that we replace first the shorthands
 	// with numeric prefix and only later on the ones without
 	numSets = DimSize(epochCombineList, ROWS)
-	for(i = numSets - 1; i >= 0; i -= 1)
+	for(i = numSets - 1; i >= 0 && numSets > 0; i -= 1)
 		shorthand   = epochCombineList[i][%Shorthand]
 		stimset     = epochCombineList[i][%stimset]
 		stimsetSpec = LowerStr(stimset) + "?"
@@ -2164,24 +2155,24 @@ static Function WB_PrepareFormulaForExecute(fp, sweep)
 End
 
 /// @brief Replace all stimsets suffixed with `?` by their shorthands
-Function/S WB_FormulaSwitchToShorthand(formula)
-	string formula
+Function/S WB_FormulaSwitchToShorthand(variable channelType, string formula)
 
 	variable numSets, i
-	string stimset, shorthand
+	string stimset, shorthand, regex
 
 	if(isEmpty(formula))
 		return ""
 	endif
 
-	WAVE/T epochCombineList = GetWBEpochCombineList()
+	WAVE/T epochCombineList = GetWBEpochCombineList(channelType)
 
 	numSets = DimSize(epochCombineList, ROWS)
 	for(i = 0; i < numSets; i += 1)
 		shorthand = epochCombineList[i][%Shorthand]
 		stimset   = epochCombineList[i][%stimset]
 
-		formula = ReplaceString(stimset + "?", formula, shorthand)
+		regex = "\\b\\Q" + LowerStr(stimset) + "\\E\\b\?"
+		formula = ReplaceRegexInString(regex, formula, shorthand)
 	endfor
 
 	return formula
@@ -2680,8 +2671,7 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	ASSERT(WaveExists(stimset), "Could not recreate stimset")
 
 	// propagate the existence of the new set
-	DAP_UpdateDaEphysStimulusSetPopups()
-	WB_UpdateEpochCombineList(stimulusType)
+	WB_UpdateChangedStimsets(stimulusType = stimulusType)
 
 	return setName
 End
@@ -2815,4 +2805,25 @@ Function WB_MakeStimsetThirdParty(string setName)
 	KillOrMoveToTrash(wv=WP)
 	KillOrMoveToTrash(wv=WPT)
 	KillOrMoveToTrash(wv=SegWvType)
+End
+
+/// @brief Propagate added/removed stimsets to DA_Ephys panels and our epoch combine list
+Function WB_UpdateChangedStimsets([string device, variable stimulusType])
+
+	if(ParamIsDefault(device))
+		DAP_UpdateDaEphysStimulusSetPopups()
+	else
+		DAP_UpdateDaEphysStimulusSetPopups(device = device)
+	endif
+
+	if(ParamIsDefault(stimulusType))
+		WAVE/T epochCombineList = GetWBEpochCombineList(CHANNEL_TYPE_DAC)
+		WB_UpdateEpochCombineList(epochCombineList, CHANNEL_TYPE_DAC)
+
+		WAVE/T epochCombineList = GetWBEpochCombineList(CHANNEL_TYPE_TTL)
+		WB_UpdateEpochCombineList(epochCombineList, CHANNEL_TYPE_TTL)
+	else
+		WAVE/T epochCombineList = GetWBEpochCombineList(stimulusType)
+		WB_UpdateEpochCombineList(epochCombineList, stimulusType)
+	endif
 End

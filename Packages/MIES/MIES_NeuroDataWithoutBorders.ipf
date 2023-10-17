@@ -1634,7 +1634,7 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 	HDF5CloseGroup/Z groupID
 	H5_CloseFile(fileID)
 
-	DAP_UpdateDaEphysStimulusSetPopups()
+	WB_UpdateChangedStimsets()
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 
