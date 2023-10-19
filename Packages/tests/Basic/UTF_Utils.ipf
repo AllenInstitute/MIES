@@ -7316,3 +7316,14 @@ Function TestSearchWordInString()
 	CHECK_EQUAL_STR(prefix, "ab#")
 	CHECK_EQUAL_STR(suffix, "?efgh")
 End
+
+static Function TestFindRightMostHighBit()
+
+	Make/FREE/N=(64) result = FindRightMostHighBit(1 << p) == p
+	CHECK_EQUAL_VAR(sum(result), 64)
+
+	CHECK_EQUAL_VAR(FindRightMostHighBit(0), NaN)
+
+	CHECK_EQUAL_VAR(FindRightMostHighBit(3), 0)
+	CHECK_EQUAL_VAR(FindRightMostHighBit(18), 1)
+End
