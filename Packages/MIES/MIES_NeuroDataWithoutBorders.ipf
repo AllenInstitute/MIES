@@ -1162,7 +1162,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			params.stimset = stimset
 
 			if(IsFinite(guiToHWChannelMap[i][%TTLBITNR]))
-				params.channelSuffix     = num2str(2^guiToHWChannelMap[i][%TTLBITNR])
+				params.channelSuffix     = num2str(NWB_ConvertTTLBitToChannelSuffix(guiToHWChannelMap[i][%TTLBITNR]))
 				params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
 			endif
 
@@ -1877,4 +1877,24 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	endif
 
 	HDF5CloseGroup/Z groupID
+End
+
+/// @brief Convert between `2^x`, this is what we store as channelSuffix for TTL data
+///        in NWB, to `x` what we call TTL bit in MIES
+threadsafe Function NWB_ConvertToStandardTTLBit(variable value)
+
+	variable bit
+
+	ASSERT_TS(IsInteger(value) && value > 0, "Expected positive integer value")
+
+	bit = FindRightMostHighBit(value)
+	ASSERT_TS(bit > 0 && bit < NUM_ITC_TTL_BITS_PER_RACK, "Invalid TTL bit")
+
+	return bit
+End
+
+/// @brief Reverse direction of NWB_ConvertToStandardTTLBit()
+threadsafe Function NWB_ConvertTTLBitToChannelSuffix(variable value)
+
+	return 2^value
 End
