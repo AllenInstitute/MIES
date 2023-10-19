@@ -7253,3 +7253,110 @@ Function TestSearchWordInString()
 	CHECK_EQUAL_STR(prefix, "ab#")
 	CHECK_EQUAL_STR(suffix, "?efgh")
 End
+
+static Function TestDuplicateWaveAndKeepTargetRef()
+
+	Make/FREE wv
+	Make/FREE/WAVE wvRef
+	try
+		DuplicateWaveAndKeepTargetRef(wv, $"")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		DuplicateWaveAndKeepTargetRef($"", wv)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		DuplicateWaveAndKeepTargetRef(wvRef, wv)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	DFREF dfr = GetDataFolderDFR()
+
+	Make/N=0 dfr:tgt/WAVE=tgt
+	Make/FREE/N=10 src
+	src[] = p + q + r + s
+	SetScale/P x, 0, 2, "unit", src
+	SetDimLabel ROWS, 0, DIMLABEL, src
+	note src, "wavenote"
+	DuplicateWaveAndKeepTargetRef(src, tgt)
+	CHECK_EQUAL_WAVES(src, tgt)
+	WAVE afterTgt = dfr:tgt
+	CHECK(WaveRefsEqual(tgt, afterTgt))
+
+	Make/O/N=0 dfr:tgt/WAVE=tgt
+	WAVE origTgt = tgt
+	Redimension/N=(10, 10) src
+	src[] = p + q + r + s
+	DuplicateWaveAndKeepTargetRef(src, tgt)
+	CHECK_EQUAL_WAVES(src, tgt)
+	CHECK(WaveRefsEqual(tgt, origtgt))
+
+	Make/O/N=0 dfr:tgt/WAVE=tgt
+	Redimension/N=(10, 10, 10) src
+	src[] = p + q + r + s
+	DuplicateWaveAndKeepTargetRef(src, tgt)
+	CHECK_EQUAL_WAVES(src, tgt)
+	WAVE afterTgt = dfr:tgt
+	CHECK(WaveRefsEqual(tgt, afterTgt))
+
+	Make/O/N=0 dfr:tgt/WAVE=tgt
+	Redimension/N=(10, 10, 10, 10) src
+	src[] = p + q + r + s
+	DuplicateWaveAndKeepTargetRef(src, tgt)
+	CHECK_EQUAL_WAVES(src, tgt)
+	WAVE afterTgt = dfr:tgt
+	CHECK(WaveRefsEqual(tgt, afterTgt))
+
+	Make/O/N=0 dfr:tgt/WAVE=tgt
+	Redimension/N=0 src
+	DuplicateWaveAndKeepTargetRef(src, tgt)
+	CHECK_EQUAL_WAVES(src, tgt)
+	WAVE afterTgt = dfr:tgt
+	CHECK(WaveRefsEqual(tgt, afterTgt))
+
+	Make/T/N=0 dfr:tgtT/WAVE=tgtT
+	Make/FREE/T/N=(10) srcT
+	srcT[] = num2istr(p)
+	SetScale/P x, 0, 2, "unit", srcT
+	SetDimLabel ROWS, 0, DIMLABEL, srcT
+	note srcT, "wavenote"
+	Redimension/N=10 srcT
+	DuplicateWaveAndKeepTargetRef(srcT, tgtT)
+	CHECK_EQUAL_WAVES(srcT, tgtT)
+	WAVE/T afterTgtT = dfr:tgtT
+	CHECK(WaveRefsEqual(tgtT, afterTgtT))
+
+	Make/DF/N=0 dfr:tgtDF/WAVE=tgtDF
+	Make/FREE/DF/N=(10) srcDF
+	srcDF[] = GetDataFolderDFR()
+	SetScale/P x, 0, 2, "unit", srcDF
+	SetDimLabel ROWS, 0, DIMLABEL, srcDF
+	note srcDF, "wavenote"
+	Redimension/N=10 srcDF
+	DuplicateWaveAndKeepTargetRef(srcDF, tgtDF)
+	CHECK_EQUAL_WAVES(srcDF, tgtDF)
+	WAVE/DF afterTgtDF = dfr:tgtDF
+	CHECK(WaveRefsEqual(tgtDF, afterTgtDF))
+
+	Make/WAVE/N=0 dfr:tgtWR/WAVE=tgtWR
+	WAVE/WAVE origTgtWR = tgtWR
+	Make/FREE/WAVE/N=(10) srcWR
+	srcWR[] = tgtWR
+	SetScale/P x, 0, 2, "unit", srcWR
+	SetDimLabel ROWS, 0, DIMLABEL, srcWR
+	note srcWR, "wavenote"
+	Redimension/N=10 srcWR
+	DuplicateWaveAndKeepTargetRef(srcWR, tgtWR)
+	CHECK_EQUAL_WAVES(srcWR, tgtWR)
+	WAVE/WAVE afterTgtWR = dfr:tgtWR
+	CHECK(WaveRefsEqual(tgtWR, afterTgtWR))
+End
