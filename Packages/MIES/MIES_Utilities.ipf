@@ -6710,3 +6710,25 @@ threadsafe Function/S UpperCaseFirstChar(string str)
 
 	return UpperStr(str[0]) + str[1, len - 1]
 End
+
+/// @brief Find the right most high bit
+///
+/// @param value integer value in the range [0, 2^64]
+///
+/// @return right most high bit or NaN in case nothing could be found
+threadsafe Function FindRightMostHighBit(uint64 value)
+
+	variable i
+	uint64 bit
+
+	for(i = 0; i < 64; i += 1)
+
+		bit = value & (1 << i)
+
+		if(bit)
+			return i
+		endif
+	endfor
+
+	return NaN
+End
