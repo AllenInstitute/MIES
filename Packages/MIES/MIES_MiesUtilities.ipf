@@ -5543,6 +5543,8 @@ Function ReplaceWaveWithBackupForAll(DFREF dfr)
 End
 
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
+///        If the backup wave exists then the wave reference of the restored wave stays the same.
+///        Thus the returned wave reference equals the wv wave reference.
 ///
 /// @param wv                       wave to replace by its backup
 /// @param nonExistingBackupIsFatal [optional, defaults to true] behaviour for the case that there is no backup.
@@ -5550,9 +5552,7 @@ End
 ///                                 zero it will just do nothing.
 /// @param keepBackup               [optional, defaults to false] don't delete the backup after restoring from it
 /// @returns wave reference to the restored data, in case of no backup an invalid wave reference
-Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal, keepBackup])
-	Wave wv
-	variable nonExistingBackupIsFatal, keepBackup
+Function/WAVE ReplaceWaveWithBackup(WAVE wv, [variable nonExistingBackupIsFatal, variable keepBackup])
 
 	if(ParamIsDefault(nonExistingBackupIsFatal))
 		nonExistingBackupIsFatal = 1
