@@ -244,7 +244,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsFinite(params.ttlBit))
-				channelName += "_" + num2str(log(params.ttlBit)/log(2))
+				channelName += "_" + num2str(NWB_ConvertToStandardTTLBit(params.ttlBit))
 			endif
 
 			CHECK_EQUAL_VAR(str2num(params.channelSuffix), params.ttlBit)
@@ -374,7 +374,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 			WAVE/Z channelMapHWToGUI = GetActiveChannels(numericalValues, textualValues, sweep, params.channelType, TTLMode = TTL_HWTOGUI_CHANNEL)
 			CHECK_WAVE(channelMapHWToGUI, NUMERIC_WAVE)
 
-			ttlBit = log(params.ttlBit)/log(2)
+			ttlBit = NWB_ConvertToStandardTTLBit(params.ttlBit)
 			CHECK_GE_VAR(ttlBit, 0)
 
 			GUIchannelNumber = channelMapHWToGUI[params.channelNumber][ttlBit]
