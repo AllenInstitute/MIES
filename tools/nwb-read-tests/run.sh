@@ -25,7 +25,7 @@ echo "Start building Docker container \"$tag\""
 
 docker build --build-arg USERID=$(id -u)                     \
              --build-arg GROUPID=$(id -g)                    \
-             --build-arg PACKAGE_WITH_VERSION="pynwb==2.4.0" \
+             --build-arg PACKAGE_WITH_VERSION="pynwb==2.5.0" \
              -t $tag $top_level/tools/nwb-read-tests
 
 # use 'docker run -it ..' for interactive debugging
