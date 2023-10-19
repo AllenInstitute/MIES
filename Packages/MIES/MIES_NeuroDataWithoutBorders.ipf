@@ -972,7 +972,7 @@ End
 
 threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	variable groupID, numEntries, i, j, ttlBits, dac, adc, col, refTime
-	variable ttlBit, hardwareType, DACUnassoc, ADCUnassoc, index
+	variable ttlBit, DACUnassoc, ADCUnassoc, index
 	string group, path, list, name, stimset, key
 	string channelSuffix, listOfStimsets, contents
 
@@ -1085,6 +1085,9 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave)) * KILO_TO_ONE
 
+	DFREF sweepDFR = NewFreeDataFolder()
+	SplitSweepIntoComponents(s.numericalValues, s.sweep, s.DAQDataWave, s.DAQConfigWave, TTL_RESCALE_OFF, targetDFR = sweepDFR, createBackup = 0)
+
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		if(!statusHS[i])
@@ -1109,7 +1112,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			params.channelType      = IPNWB_CHANNEL_TYPE_ADC
 			col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
-			WAVE params.data        = ExtractOneDimDataFromSweep(s.DAQConfigWave, s.DAQDataWave, col)
+			WAVE params.data        = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, params.channelNumber)
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
 			WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode)
@@ -1121,7 +1124,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			params.channelType      = IPNWB_CHANNEL_TYPE_DAC
 			col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
-			WAVE params.data        = ExtractOneDimDataFromSweep(s.DAQConfigWave, s.DAQDataWave, col)
+			WAVE params.data        = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, params.channelNumber)
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
 			WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
@@ -1133,79 +1136,46 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 
 	NWB_ClearWriteChannelParams(params)
 
-	hardwareType = GetUsedHWDACFromLNB(s.numericalValues, s.sweep)
 	WAVE/Z/T ttlStimsets = GetTTLLabnotebookEntry(s.textualValues, LABNOTEBOOK_TTL_STIMSETS, s.sweep)
+	if(WaveExists(ttlStimsets))
 
-	// i has the following meaning:
-	// - ITC hardware: hardware channel
-	// - NI hardware: DAEphys TTL channel
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		WAVE/Z guiToHWChannelMap = GetActiveChannels(s.numericalValues, s.textualValues, s.sweep, XOP_CHANNEL_TYPE_TTL, TTLMode = TTL_GUITOHW_CHANNEL)
+		ASSERT_TS(WaveExists(guiToHWChannelMap), "Missing GUI to hardware channel map")
 
-		if(!WaveExists(ttlStimsets))
-			break
-		endif
-
-		if(hardwareType == HARDWARE_ITC_DAC)
-			ttlBits = GetTTLBits(s.numericalValues, s.sweep, i)
-			if(!IsFinite(ttlBits))
-				continue
-			endif
-
-		elseif(hardwareType == HARDWARE_NI_DAC)
-			ttlBits = NaN
+		// i is the GUI channel number
+		for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
 			stimset = ttlStimsets[i]
 			if(IsEmpty(stimset))
 				continue
 			endif
-		else
-			ASSERT_TS(0, "unsupported hardware type")
-		endif
 
-		params.clampMode        = NaN
-		params.channelNumber    = i
-		params.channelType      = IPNWB_CHANNEL_TYPE_TTL
-		params.electrodeNumber  = NaN
-		params.electrodeName    = ""
-		col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
-		writtenDataColumns[col] = 1
+			params.clampMode        = NaN
+			params.channelNumber    = guiToHWChannelMap[i][%HWCHANNEL]
+			params.channelType      = IPNWB_CHANNEL_TYPE_TTL
+			params.electrodeNumber  = NaN
+			params.electrodeName    = ""
+			col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
+			writtenDataColumns[col] = 1
 
-		WAVE data = ExtractOneDimDataFromSweep(s.DAQConfigWave, s.DAQDataWave, col)
+			path           = "/stimulus/presentation"
+			params.stimset = stimset
 
-		if(hardwareType == HARDWARE_ITC_DAC)
-			DFREF dfr = NewFreeDataFolder()
-			SplitTTLWaveIntoComponents(data, ttlBits, dfr, "_", TTL_RESCALE_OFF)
-
-			list = GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_WAVES)
-			numEntries = ItemsInList(list)
-			for(j = 0; j < numEntries; j += 1)
-				name = StringFromList(j, list)
-				ttlBit = 2^str2num(name[1,inf])
-				ASSERT_TS((ttlBit & ttlBits) == ttlBit, "Invalid ttlBit")
-				WAVE/SDFR=dfr params.data = $name
-				path                 = "/stimulus/presentation"
-				params.channelSuffix = num2str(ttlBit)
+			if(IsFinite(guiToHWChannelMap[i][%TTLBITNR]))
+				params.channelSuffix     = num2str(2^guiToHWChannelMap[i][%TTLBITNR])
 				params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
-				params.stimset       = ttlStimsets[log(ttlBit)/log(2)]
-				NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
-				params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
-				WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, log(ttlBit)/log(2), params.channelType)
-
-				s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
-			endfor
-		elseif(hardwareType == HARDWARE_NI_DAC)
-			WAVE params.data       = data
-			path                   = "/stimulus/presentation"
-			params.stimset         = stimset
-			WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+			endif
 
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
-			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
-			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
-		endif
+			params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
+			WAVE params.data       = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, i)
+			WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, i, params.channelType)
 
-		NWB_ClearWriteChannelParams(params)
-	endfor
+			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
+
+			NWB_ClearWriteChannelParams(params)
+		endfor
+	endif
 
 	NWB_ClearWriteChannelParams(params)
 
