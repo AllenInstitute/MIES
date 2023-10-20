@@ -776,6 +776,8 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 
 				CHECK(IsFinite(value))
 
+				INFO("sweepNo=%g, entry=%s, unit=%s\r", n0 = sweepNo, s0 = entry, s1 = unit)
+
 				// do a coarse range check
 				strswitch(unit)
 					case "On/Off":
@@ -812,8 +814,13 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 						CHECK_LE_VAR(value, 100)
 						break
 					case "Hz":
-						CHECK_GT_VAR(value, 0)
-						CHECK_LE_VAR(value, 1e6)
+						if(!cmpstr(entry, "USER_DA Scale f-I offset"))
+							CHECK_GE_VAR(value, -1e6)
+							CHECK_LE_VAR(value, 1e6)
+						else
+							CHECK_GT_VAR(value, 0)
+							CHECK_LE_VAR(value, 1e6)
+						endif
 						break
 					default:
 						printf "missing %s with unit %s\r", entry, unit
