@@ -5543,6 +5543,8 @@ Function ReplaceWaveWithBackupForAll(DFREF dfr)
 End
 
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
+///        If the backup wave exists then the wave reference of the restored wave stays the same.
+///        Thus the returned wave reference equals the wv wave reference.
 ///
 /// @param wv                       wave to replace by its backup
 /// @param nonExistingBackupIsFatal [optional, defaults to true] behaviour for the case that there is no backup.
@@ -5550,9 +5552,7 @@ End
 ///                                 zero it will just do nothing.
 /// @param keepBackup               [optional, defaults to false] don't delete the backup after restoring from it
 /// @returns wave reference to the restored data, in case of no backup an invalid wave reference
-Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal, keepBackup])
-	Wave wv
-	variable nonExistingBackupIsFatal, keepBackup
+Function/WAVE ReplaceWaveWithBackup(WAVE wv, [variable nonExistingBackupIsFatal, variable keepBackup])
 
 	if(ParamIsDefault(nonExistingBackupIsFatal))
 		nonExistingBackupIsFatal = 1
@@ -5583,6 +5583,68 @@ Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal, keepBackup])
 	endif
 
 	return wv
+End
+
+/// @brief Duplicate a source wave to a target wave and keep the target wave reference intact. Use with free/local waves.
+///        For global waves use "Duplicate/O source, target".
+///
+/// @param source source wave
+/// @param target target wave
+Function DuplicateWaveAndKeepTargetRef(WAVE/Z source, WAVE/Z target)
+
+	variable wTypeSrc, wTypeTgt
+
+	wTypeSrc = WaveType(source, 1)
+	wTypeTgt = WaveType(target, 1)
+	ASSERT(wTypeSrc != IGOR_TYPE_NULL_WAVE, "Source wave is null")
+	ASSERT(wTypeTgt != IGOR_TYPE_NULL_WAVE, "Target wave is null")
+	if(WaveRefsEqual(source, target))
+		return NaN
+	endif
+	ASSERT(wTypeTgt == wTypeSrc, "Source and Target wave have different base types")
+
+	switch(WaveDims(source))
+		case 0: // intended drop through
+		case 1:
+			Redimension/N=(DimSize(source, ROWS)) target
+			break
+		case 2:
+			Redimension/N=(DimSize(source, ROWS), DimSize(source, COLS)) target
+			break
+		case 3:
+			Redimension/N=(DimSize(source, ROWS), DimSize(source, COLS), DimSize(source, LAYERS)) target
+			break
+		case 4:
+			Redimension/N=(DimSize(source, ROWS), DimSize(source, COLS), DimSize(source, LAYERS), DimSize(source, CHUNKS)) target
+			break
+	endswitch
+
+	switch(wTypeSrc)
+		case IGOR_TYPE_TEXT_WAVE:
+			WAVE/T sourceT = source
+			WAVE/T targetT = target
+			Multithread targetT[][][][] = sourceT[p][q][r][s]
+			break
+		case IGOR_TYPE_NUMERIC_WAVE:
+			Multithread target[][][][] = source[p][q][r][s]
+			break
+		case IGOR_TYPE_DFREF_WAVE:
+			WAVE/DF sourceDF = source
+			WAVE/DF targetDF = target
+			Multithread targetDF[][][][] = sourceDF[p][q][r][s]
+			break
+		case IGOR_TYPE_WAVEREF_WAVE:
+			WAVE/WAVE sourceW = source
+			WAVE/WAVE targetW = target
+			Multithread targetW[][][][] = sourceW[p][q][r][s]
+			break
+		default:
+			ASSERT(0, "Unknown wave type")
+	endswitch
+
+	CopyScales source, target
+	CopyDimLabels source, target
+	note/K target, note(source)
 End
 
 /// @brief Returns 1 if the user cancelled, zero if SaveExperiment was called
