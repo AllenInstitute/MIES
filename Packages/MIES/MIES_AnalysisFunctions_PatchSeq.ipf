@@ -1620,25 +1620,26 @@ Function PSQ_DS_GetDAScaleOffset(device, headstage, opMode)
 
 	variable sweepNo
 
-	if(!cmpstr(opMode, PSQ_DS_SUPRA))
-		if(TestOverrideActive())
-			return PSQ_DS_OFFSETSCALE_FAKE
-		endif
+	strswitch(opMode)
+		case PSQ_DS_SUPRA:
+			if(TestOverrideActive())
+				return PSQ_DS_OFFSETSCALE_FAKE
+			endif
 
-		sweepNo = PSQ_GetLastPassingLongRHSweep(device, headstage, PSQ_RHEOBASE_DURATION)
-		if(!IsValidSweepNumber(sweepNo))
-			return NaN
-		endif
+			sweepNo = PSQ_GetLastPassingLongRHSweep(device, headstage, PSQ_RHEOBASE_DURATION)
+			if(!IsValidSweepNumber(sweepNo))
+				return NaN
+			endif
 
-		WAVE numericalValues = GetLBNumericalValues(device)
-		WAVE/Z setting = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-		ASSERT(WaveExists(setting), "Could not find DAScale value of matching rheobase sweep")
-		return setting[headstage]
-	elseif(!cmpstr(opMode, PSQ_DS_SUB))
-		return 0
-	else
-		ASSERT(0, "unknown opMode")
-	endif
+			WAVE numericalValues = GetLBNumericalValues(device)
+			WAVE/Z setting = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+			ASSERT(WaveExists(setting), "Could not find DAScale value of matching rheobase sweep")
+			return setting[headstage]
+		case PSQ_DS_SUB:
+			return 0
+		default:
+			ASSERT(0, "unknown opMode")
+	endswitch
 End
 
 /// @brief Check if the given sweep has at least one "spike detected" entry in
