@@ -1889,21 +1889,21 @@ Function/S PSQ_DAScale_GetHelp(string name)
 			 return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
 		case "DAScaleModifier":
 			 return "[Optional] Percentage how the DAScale value is adapted if it is outside of the " \
-					+ "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Ignored for \"Sub\"."
+					+ "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\"."
 		case "DAScales":
 			 return "DA Scale Factors in pA"
 		case "FinalSlopePercent":
 			 return "[Optional] As additional passing criteria the slope of the f-I plot must be larger than this value. " \
-					+ "Note: The slope is used in percent. Ignored for \"Sub\"."
+					+ "Note: The slope is used in percent. Only for \"Supra\"."
 		case "MaximumSpikeCount":
-			 return "[Optional] The upper limit of the number of spikes. Ignored for \"Sub\"."
+			 return "[Optional] The upper limit of the number of spikes. Only for \"Supra\"."
 		case "MinimumSpikeCount":
-			 return "[Optional] The lower limit of the number of spikes. Ignored for \"Sub\"."
+			 return "[Optional] The lower limit of the number of spikes. Only for \"Supra\"."
 		case "OffsetOperator":
 			 return "[Optional, defaults to \"+\"] Set the math operator to use for "      \
 					+ "combining the rheobase DAScale value from the previous run and "    \
 					+ "the DAScales values. Valid strings are \"+\" (addition) and \"*\" " \
-					+ "(multiplication). Ignored for \"Sub\"."
+					+ "(multiplication). Only for \"Supra\"."
 		case "OperationMode":
 			 return "Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
 		case "ShowPlot":
