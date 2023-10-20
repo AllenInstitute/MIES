@@ -27,7 +27,9 @@ End
 static Function CheckSetVariablesNoEditInMacros()
 
 	string win, recMacro, subwin
-	variable controlType
+	variable controlType, keepDebugPanel
+
+	keepDebugPanel = WindowExists("DebugPanel")
 
 	WAVE/T macros = GetMIESMacros()
 
@@ -63,4 +65,8 @@ static Function CheckSetVariablesNoEditInMacros()
 			endfor
 		endfor
 	endfor
+
+	if(!keepDebugPanel)
+		KillWindow/Z DebugPanel
+	endif
 End
