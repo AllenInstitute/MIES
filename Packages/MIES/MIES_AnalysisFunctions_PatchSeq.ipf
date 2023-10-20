@@ -1888,26 +1888,26 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "SamplingMultiplier":
 			 return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
 		case "DAScaleModifier":
-			 return "[Optional] Percentage how the DAScale value is adapted if it is outside of the " \
+			 return "Percentage how the DAScale value is adapted if it is outside of the " \
 					+ "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\"."
 		case "DAScales":
 			 return "DA Scale Factors in pA"
 		case "FinalSlopePercent":
-			 return "[Optional] As additional passing criteria the slope of the f-I plot must be larger than this value. " \
+			 return "As additional passing criteria the slope of the f-I plot must be larger than this value. " \
 					+ "Note: The slope is used in percent. Only for \"Supra\"."
 		case "MaximumSpikeCount":
-			 return "[Optional] The upper limit of the number of spikes. Only for \"Supra\"."
+			 return "The upper limit of the number of spikes. Only for \"Supra\"."
 		case "MinimumSpikeCount":
-			 return "[Optional] The lower limit of the number of spikes. Only for \"Supra\"."
+			 return "The lower limit of the number of spikes. Only for \"Supra\"."
 		case "OffsetOperator":
-			 return "[Optional, defaults to \"+\"] Set the math operator to use for "      \
+			 return "Set the math operator to use for "                                    \
 					+ "combining the rheobase DAScale value from the previous run and "    \
 					+ "the DAScales values. Valid strings are \"+\" (addition) and \"*\" " \
-					+ "(multiplication). Only for \"Supra\"."
+					+ "(multiplication). Only for \"Supra\" and defaults to \"+\"."
 		case "OperationMode":
 			 return "Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
 		case "ShowPlot":
-			 return "[Optional, defaults to true] Show the resistance (\"Sub\") or the f-I (\"Supra\") plot."
+			 return "Show the resistance (\"Sub\") or the f-I (\"Supra\") plot, defaults to true."
 		default:
 			 ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
