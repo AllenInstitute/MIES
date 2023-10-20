@@ -11,6 +11,7 @@
 #include "UTF_MultiPatchSeqSpikeControl"
 #include "UTF_PatchSeqAccessResistanceSmoke"
 #include "UTF_PatchSeqChirp"
+#include "UTF_PatchSeqDAScale_Adapt"
 #include "UTF_PatchSeqDAScale_Sub"
 #include "UTF_PatchSeqDAScale_Supra"
 #include "UTF_PatchSeqPipetteInBath"
@@ -93,6 +94,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_SetControls.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqAccessResistanceSmoke.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqChirp.ipf", list, ";", inf)
+	list = AddListItem("UTF_PatchSeqDAScale_Adapt.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqDAScale_Sub.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqDAScale_Supra.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqSealEvaluation.ipf", list, ";", inf)

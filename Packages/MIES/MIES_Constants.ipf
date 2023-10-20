@@ -38,7 +38,7 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 71
+Constant LABNOTEBOOK_VERSION = 72
 Constant RESULTS_VERSION     = 2
 /// @}
 
@@ -47,7 +47,7 @@ Constant RESULTS_VERSION     = 2
 Constant PSQ_PIPETTE_BATH_VERSION    = 4
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 2
 Constant PSQ_CHIRP_VERSION           = 13
-Constant PSQ_DA_SCALE_VERSION        = 6
+Constant PSQ_DA_SCALE_VERSION        = 7
 Constant PSQ_RAMP_VERSION            = 6
 Constant PSQ_RHEOBASE_VERSION        = 5
 Constant PSQ_SQUARE_PULSE_VERSION    = 4
@@ -1122,9 +1122,21 @@ StrConstant PSQ_FMT_LBN_SAMPLING_PASS              = "%s Sampling interval QC"
 StrConstant PSQ_FMT_LBN_PULSE_DUR                  = "%s Pulse duration"
 StrConstant PSQ_FMT_LBN_SPIKE_DASCALE_ZERO         = "%s spike with zero"
 StrConstant PSQ_FMT_LBN_RB_LIMITED_RES             = "%s limited resolut."
-StrConstant PSQ_FMT_LBN_DA_fI_SLOPE                = "%s f-I slope"
-StrConstant PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS   = "%s f-I slope QC"
+StrConstant PSQ_FMT_LBN_DA_FI_SLOPE                = "%s f-I slope"
+StrConstant PSQ_FMT_LBN_DA_AT_FI_OFFSET            = "%s f-I offset"
+StrConstant PSQ_FMT_LBN_DA_FI_SLOPE_REACHED_PASS   = "%s f-I slope QC"
 StrConstant PSQ_FMT_LBN_DA_OPMODE                  = "%s operation mode"
+StrConstant PSQ_FMT_LBN_DA_AT_FREQ                 = "%s AP frequency"
+StrConstant PSQ_FMT_LBN_DA_AT_FREQ_SUPRA           = "%s AP frequency from supra"
+StrConstant PSQ_FMT_LBN_DA_AT_DASCALE_SUPRA        = "%s DAScale from supra"
+StrConstant PSQ_FMT_LBN_DA_AT_FI_SLOPES            = "%s f-I slopes from supra"
+StrConstant PSQ_FMT_LBN_DA_AT_FI_OFFSETS           = "%s f-I offsets from supra"
+StrConstant PSQ_FMT_LBN_DA_AT_MAX_SLOPE            = "%s f-I maximum slope"
+StrConstant PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS     = "%s f-I slope valid QC"
+StrConstant PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS= "%s f-I initial slope valid from supra QC"
+StrConstant PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS= "%s enough f-I pairs for line fit QC"
+StrConstant PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES      = "%s DAScale values left"
+StrConstant PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS = "%s DAScale values left QC"
 StrConstant PSQ_FMT_LBN_CR_RESISTANCE              = "%s input resistance"
 StrConstant PSQ_FMT_LBN_CR_INSIDE_BOUNDS           = "%s inside bounds"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_ACTION           = "%s bounds action"
@@ -1231,6 +1243,8 @@ StrConstant PSQ_RB_FINALSCALE_FAKE_KEY = "PSQRheobaseFinalDAScaleFake"
 Constant PSQ_DS_OFFSETSCALE_FAKE = 23 // pA
 StrConstant PSQ_DS_SUB           = "Sub"
 StrConstant PSQ_DS_SUPRA         = "Supra"
+StrConstant PSQ_DS_ADAPT         = "AdaptiveSupra"
+Constant PSQ_DS_MAX_FREQ_OFFSET  = 2
 /// @}
 
 /// @name PatchSeq Ramp
