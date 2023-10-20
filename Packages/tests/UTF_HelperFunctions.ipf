@@ -99,7 +99,9 @@ End
 Function AdditionalExperimentCleanup()
 
 	string win, list, name
-	variable i, numWindows, reopenDebugPanel
+	variable i, numWindows, reopenDebugPanel, err
+
+	ModifyBrowser close; err = GetRTError(1)
 
 	list = WinList("*", ";", "WIN:67") // Panels, Graphs and tables
 
