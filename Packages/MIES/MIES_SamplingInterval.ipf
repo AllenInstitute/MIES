@@ -503,11 +503,10 @@ End
 ///
 /// @param device  device
 /// @param dataAcqOrTP one of @ref DataAcqModes, ignores TTL channels for #TEST_PULSE_MODE
+/// @param channelType channel type @sa XopChannelConstants
 ///
 /// @returns sampling interval in microseconds (1e-6)
-Function SI_CalculateMinSampInterval(device, dataAcqOrTP)
-	string device
-	variable dataAcqOrTP
+Function SI_CalculateMinSampInterval(string device, variable dataAcqOrTP, variable channelType)
 
 	variable hardwareType = GetHardwareType(device)
 	switch(hardwareType)

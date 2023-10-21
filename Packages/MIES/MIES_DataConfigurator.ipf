@@ -672,10 +672,6 @@ static Function DC_PlaceDataInDAQConfigWave(device, dataAcqOrTP)
 
 	AddEntryIntoWaveNoteAsList(DAQConfigWave, CHANNEL_UNIT_KEY, str = unitList, replaceEntry = 1)
 
-	DAQConfigWave[][%SamplingInterval] = DAP_GetSampInt(device, dataAcqOrTP)
-	DAQConfigWave[][%DecimationMode]   = 0
-	DAQConfigWave[][%Offset]           = 0
-
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		variable hardwareType = GetHardwareType(device)
 		switch(hardwareType)
@@ -714,6 +710,10 @@ static Function DC_PlaceDataInDAQConfigWave(device, dataAcqOrTP)
 				break
 		endswitch
 	endif
+
+	DAQConfigWave[][%SamplingInterval] = DAP_GetSampInt(device, dataAcqOrTP, DAQConfigWave[p][%ChannelType])
+	DAQConfigWave[][%DecimationMode]   = 0
+	DAQConfigWave[][%Offset]           = 0
 End
 
 /// @brief Get the decimation factor for the current channel configuration
@@ -727,7 +727,7 @@ static Function DC_GetDecimationFactor(device, dataAcqOrTP)
 	string device
 	variable dataAcqOrTP
 
-	return DAP_GetSampInt(device, dataAcqOrTP) / (WAVEBUILDER_MIN_SAMPINT * MILLI_TO_MICRO)
+	return DAP_GetSampInt(device, dataAcqOrTP, XOP_CHANNEL_TYPE_DAC) / (WAVEBUILDER_MIN_SAMPINT * MILLI_TO_MICRO)
 End
 
 /// @brief Returns the longest sweep in a stimulus set across the given channel type
@@ -1318,7 +1318,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	// MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
 	// whereas the source data generated waves for ITC min sample rate are at 200 kHz
 	s.decimationFactor = DC_GetDecimationFactor(device, dataAcqOrTP)
-	s.samplingInterval = DAP_GetSampInt(device, dataAcqOrTP)
+	s.samplingInterval = DAP_GetSampInt(device, dataAcqOrTP, XOP_CHANNEL_TYPE_DAC)
 	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	s.hardwareType     = GetHardwareType(device)
 

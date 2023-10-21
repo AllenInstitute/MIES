@@ -383,7 +383,7 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 	if(gotDAQChan)
 		Label/W=$graph bottomDAQ "Time DAQ (\\U)"
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
-		sampInt = DAP_GetSampInt(device, DATA_ACQUISITION_MODE) * MICRO_TO_MILLI
+		sampInt = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_ADC) * MICRO_TO_MILLI
 		SetAxis/W=$graph bottomDAQ, 0, stopCollectionPoint * sampInt
 		ModifyGraph/W=$graph freePos(bottomDAQ)=-35
 	endif

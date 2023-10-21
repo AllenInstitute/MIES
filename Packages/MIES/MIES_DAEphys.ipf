@@ -1608,13 +1608,11 @@ End
 ///
 /// @param[in]  device  device
 /// @param[in]  dataAcqOrTP one of @ref DataAcqModes
+/// @param[in]  channelType channel type, one of @ref XopChannelConstants
 /// @param[out] valid       [optional] returns if the choosen
 ///                         sampling interval is valid or not (DAQ only)
 /// @see SI_CalculateMinSampInterval()
-Function DAP_GetSampInt(device, dataAcqOrTP, [valid])
-	string device
-	variable dataAcqOrTP
-	variable &valid
+Function DAP_GetSampInt(string device, variable dataAcqOrTP, variable channelType, [variable &valid])
 
 	variable multiplier, sampInt
 	string fixedFreqkHzStr
@@ -1629,16 +1627,16 @@ Function DAP_GetSampInt(device, dataAcqOrTP, [valid])
 			sampInt = 1 / (str2num(fixedFreqkHzStr) * KILO_TO_ONE) * ONE_TO_MICRO
 
 			if(!ParamIsDefault(valid))
-				valid = sampInt >= SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE)
+				valid = sampInt >= SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, channelType)
 			endif
 
 			return sampInt
 		else
 			multiplier = str2num(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult"))
-			return SI_CalculateMinSampInterval(device, dataAcqOrTP) * multiplier
+			return SI_CalculateMinSampInterval(device, dataAcqOrTP, channelType) * multiplier
 		endif
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
-		return SI_CalculateMinSampInterval(device, dataAcqOrTP)
+		return SI_CalculateMinSampInterval(device, dataAcqOrTP, channelType)
 	else
 		ASSERT(0, "unknown mode")
 	endif
@@ -1982,7 +1980,7 @@ Function DAP_CheckSettings(device, mode)
 		return 1
 	endif
 
-	DAP_GetSampInt(device, mode, valid=validSampInt)
+	DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_DAC, valid=validSampInt)
 	if(!validSampInt)
 		printf "%s: The selected sampling interval is not possible with your hardware.\r", device
 		ControlWindowToFront()
@@ -2891,7 +2889,7 @@ static Function DAP_CheckEpochLengthsOfStimset(string device, string setName)
 		return 1
 	endif
 
-	sampInt = DAP_GetSampInt(device, DATA_ACQUISITION_MODE) * MICRO_TO_MILLI
+	sampInt = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC) * MICRO_TO_MILLI
 
 	numEntries = DimSize(epochLengths, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -4459,7 +4457,7 @@ Function DAP_LockDevice(string win)
 	WB_UpdateChangedStimsets(device=deviceLocked)
 	DAP_UnlockCommentNotebook(deviceLocked)
 	DAP_ToggleAcquisitionButton(deviceLocked, DATA_ACQ_BUTTON_TO_DAQ)
-	SI_CalculateMinSampInterval(deviceLocked, DATA_ACQUISITION_MODE)
+	SI_CalculateMinSampInterval(deviceLocked, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC)
 
 	// deliberately not using the GUIState wave
 	headstage = GetSliderPositionIndex(deviceLocked, "slider_DataAcq_ActiveHeadstage")
@@ -4881,7 +4879,7 @@ Function DAP_UpdateDAQControls(device, updateFlag)
 	endif
 
 	if(updateFlag & REASON_HEADSTAGE_CHANGE)
-		SetValDisplay(device, "ValDisp_DataAcq_SamplingInt", var=DAP_GetSampInt(device, DATA_ACQUISITION_MODE))
+		SetValDisplay(device, "ValDisp_DataAcq_SamplingInt", var=DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC))
 	endif
 
 	if((updateFlag & REASON_HEADSTAGE_CHANGE) || (updateFlag & REASON_STIMSET_CHANGE))
