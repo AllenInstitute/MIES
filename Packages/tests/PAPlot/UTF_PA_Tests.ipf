@@ -434,8 +434,6 @@ static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	variable err
 	string miesPath
 
-	ModifyBrowser close; err = GetRTError(1)
-
 	AdditionalExperimentCleanup()
 
 	miesPath = GetMiesPathAsString()
