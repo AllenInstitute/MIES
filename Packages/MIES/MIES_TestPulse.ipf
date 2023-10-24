@@ -962,7 +962,12 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	// as data is always too small for threaded execution, the values of V_minRowLoc/V_maxRowLoc are reproducible
 	WaveStats/P/Q/M=1/R=[refPoint, refPoint + 0.25 / sampleInt] data
 	instPoint = (clampAmp < 0) ? V_minRowLoc : V_maxRowLoc
-	instVal = data[instPoint]
+	if(instPoint == -1)
+		// all wave data is NaN
+		instVal = NaN
+	else
+		instVal = data[instPoint]
+	endif
 
 #if defined(TP_ANALYSIS_DEBUGGING)
 	DEBUGPRINT_TS("instantaneous refPoint: ", var = instPoint)
