@@ -1474,37 +1474,6 @@ Note that in this example there are 10 Y-values and only 9 X-values returned by 
 respective formula part. The resulting graph shows 9 data points and thus does not show
 data points where either an X or Y value for the X, Y value pair is missing.
 
-The plotter supports the same X-values for multiple traces:
-
-.. code-block:: bash
-
-   [1, 3], [2, 4], [3, 5], [4, 6], [5, 7] vs 1...6
-
-.. figure:: ScreenShots/sweepFormulaPlot2.png
-   :align: center
-
-This example plots two traces with five data points each against equidistant
-X coordinates 1, 2, 3, 4, 5. The first trace is colored blue for demonstration.
-This also works for a constant X value and multiple traces.
-The same way separate X value series for traces can be set:
-
-.. code-block:: bash
-
-   [1, 3], [2, 4], [3, 5], [4, 6], [5, 7] vs [1, 0], [2, 0.5], [3, 1], [4, 1.5], [5, 2]
-
-.. figure:: ScreenShots/sweepFormulaPlot3.png
-   :align: center
-
-The above example plots two traces with the first one Y series: 1, 2, 3, 4, 5; X series: 1, 2, 3, 4, 5
-and the second Y series: 3, 4, 5, 6, 7; X series: 0, 0.5, 1, 1.5, 2.
-The first trace is colored blue for demonstration.
-
-There is one special case where given X-values are not applied for every trace. If the following conditions
-apply then the n-th value of the given X-values is used for the n-th trace:
-
-- there is the same amount of Y-data-waves as points in the X-wave
-- the Y-wave for a trace contains only one data point
-
 .. code-block:: bash
 
    min(data(TP,select(channels(AD0), 4...11,all)))
@@ -1537,24 +1506,24 @@ The above code creates a panel with three separate graphs arranged vertically ev
 Multiple Y-Formulas
 """""""""""""""""""
 
-Several y-formulas can be plotted with the keyword `with`. The `with` must be on an own line between the y-formulas.
-If the y-data contains different data units the y-axis will show all data units separated by `/`.
+Several y-formulas can be plotted with the keyword `with`. The `with` must be
+on an own line between the y-formulas. If the y-data contains different data
+units the y-axis will show all data units separated by `/`. The `vs` allows to
+set a custom x-formula for the *single* y-formula left to it. Variables, see
+next section, can be used to reuse x-formulas for multiple statements without
+code duplication.
 
 .. code-block:: bash
 
+   xdata = range(10, 100, 10)
+
    0...10
    with
-   20...30
-    vs range(10, 100, 10)
+   20...30 vs $xdata
    and
-   10...20
-   with
    30...40
    with
-   40...50
-    vs range(10, 100, 10)
-   and
-   20...30
+   40...50 vs $xdata
 
 Variables
 ^^^^^^^^^

@@ -1798,7 +1798,7 @@ static Function TestPlotting()
 	String strArray0D = "1"
 	String strCombined = "[1, 2] vs [3, 4]\rand\r[5, 6] vs [7, 8]\rand\r[9, 10]\rand\r"
 	String strCombinedPartial = "[1, 2] vs [1, 2]\rand\r[1?=*, 2] vs [1, 2]"
-	string strWith = "[1, 2]\rwith\r[2, 3] vs [3, 4]\rand\r[5, 6]\rwith\r[2, 3]\rwith\r[4, 5] vs [7, 8]\rand\r[9, 10]\rwith\r\rand\r"
+	string strWith = "[1, 2] vs [3, 4] \rwith\r[2, 3] vs [3, 4]\rand\r[5, 6]  vs [7, 8] \rwith\r[2, 3] vs [7, 8] \rwith\r[4, 5] vs [7, 8]\rand\r[9, 10]"
 
 	// Reference data waves must be moved out of the working DF for the further tests as
 	// calling the FormulaPlotter later kills the working DF
@@ -3554,28 +3554,28 @@ static Function TestInputCodeCheck()
 	NVAR jsonID = $GetSweepFormulaJSONid(dfr)
 
 	formula = "1"
-	jsonRef = "{\n\"graph_0\": {\n\"formula_y_0\": 1\n}\n}"
+	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_y\": 1\n}\n}\n}"
 	MIES_SF#SF_CheckInputCode(formula, win)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
 
 	formula = "1 vs 1"
-	jsonRef = "{\n\"graph_0\": {\n\"formula_x\": 1,\n\"formula_y_0\": 1\n}\n}"
+	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_x\": 1,\n\"formula_y\": 1\n}\n}\n}"
 	MIES_SF#SF_CheckInputCode(formula, win)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
 
 	formula = "1\rwith\r1 vs 1"
-	jsonRef = "{\n\"graph_0\": {\n\"formula_x\": 1,\n\"formula_y_0\": 1,\n\"formula_y_1\": 1\n}\n}"
+	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_y\": 1\n},\n\"pair_1\": {\n\"formula_x\": 1,\n\"formula_y\": 1\n}\n}\n}"
 	MIES_SF#SF_CheckInputCode(formula, win)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
 	CHECK_EQUAL_STR(jsonRef, jsonTxt)
 
 	formula = "v = 1\r1"
-	jsonRef = "{\n\"graph_0\": {\n\"formula_y_0\": 1\n},\n\"variable:v\": 1\n}"
+	jsonRef = "{\n\"graph_0\": {\n\"pair_0\": {\n\"formula_y\": 1\n}\n},\n\"variable:v\": 1\n}"
 	MIES_SF#SF_CheckInputCode(formula, win)
 	jsonTxt = JSON_Dump(jsonId)
 	JSON_Release(jsonId)
