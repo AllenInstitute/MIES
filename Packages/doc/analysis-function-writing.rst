@@ -11,6 +11,7 @@ Thirty six hints for writing analysis functions
 #. Think about what should happen at each event. As a rule of thumb we want
    to do only what is really needed in ``MID_SWEEP_EVENT`` (if that is used at
    all). The common QC entries are determined in the following events:
+
    - Sweep QC in ``POST_SWEEP_EVENT``
    - Set QC in ``POST_SET_EVENT``
    - Baseline QC in ``MID_SWEEP_EVENT``/``POST_SWEEP_EVENT``.
