@@ -101,7 +101,9 @@ Function AdditionalExperimentCleanup()
 	string win, list, name
 	variable i, numWindows, reopenDebugPanel, err
 
-	ModifyBrowser close; err = GetRTError(1)
+	if(IsRunningInCI())
+		ModifyBrowser close; err = GetRTError(1)
+	endif
 
 	list = WinList("*", ";", "WIN:67") // Panels, Graphs and tables
 
