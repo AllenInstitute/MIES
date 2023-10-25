@@ -1795,14 +1795,13 @@ Function IsDriveValid(absPath)
 	return FolderExists(drive)
 End
 
-/// @brief Return the windows drive letter of the given path
+/// @brief Return the drive letter of the given path (Windows) or the volume name (Macintosh)
 Function/S GetDrive(string path)
 
 	string drive
 
 	path  = GetHFSPath(path)
 	drive = StringFromList(0, path, ":")
-	ASSERT(strlen(drive) == 1, "Expected a single letter for the drive")
 
 	return drive
 end
