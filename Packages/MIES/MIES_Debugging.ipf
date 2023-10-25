@@ -595,7 +595,7 @@ Function GetSizeOfAllWavesInExperiment()
 
 	list[][0] = StringFromList(p, allWaves)
 
-	Make/O/D/N=(numWaves) waveSizes = GetWaveSize($list[p][0], recursive=1) / 1024 / 1024
+	Make/O/D/N=(numWaves) waveSizes = (GetWaveSize($list[p][0], recursive=1) / 1024 / 1024)
 
 	list[][1] = num2str(waveSizes[p])
 
