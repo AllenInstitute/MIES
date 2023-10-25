@@ -43,7 +43,7 @@ Function/DF SB_GetSweepDataFolder(WAVE/T sweepMap, [variable sweepNo, variable i
 		ASSERT(index >= 0 && index < DimSize(sweepMap, ROWS), "Invalid index")
 	elseif(ParamIsDefault(index) && !ParamIsDefault(sweepNo))
 		cIndex = FindDimLabel(sweepMap, COLS, "Sweep")
-		FindValue/RMD=[][cIndex]/TEXT=num2istr(sweepNo)/TXOP=4 sweepMap
+		FindValue/RMD=[][cIndex]/TEXT=(num2istr(sweepNo))/TXOP=4 sweepMap
 
 		if(V_row == -1)
 			return $""

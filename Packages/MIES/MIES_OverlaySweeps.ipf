@@ -423,7 +423,7 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
 	if(!ParamIsDefault(sweepNo))
-		FindValue/RMD=[][0]/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
+		FindValue/RMD=[][0]/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
 		if(V_value >= 0)
 			Make/FREE/N=(1, 2) indices = {{V_Value}, {0}}
 		endif
@@ -438,7 +438,7 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 
 			for(i = 0; i < numEntries; i += 1)
 				sweepNo = sweeps[i]
-				FindValue/RMD=[][0]/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
+				FindValue/RMD=[][0]/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
 				indices1D[i] = V_Value >= 0 ? V_Value : NaN
 			endfor
 
@@ -492,7 +492,7 @@ static Function OVS_AddToIgnoreList(win, headstage, [sweepNo, index])
 	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
 
 	if(!ParamIsDefault(sweepNo))
-		FindValue/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
+		FindValue/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
 		index = V_Value
 	elseif(!ParamIsDefault(index))
 		// do nothing
@@ -542,7 +542,7 @@ Function/WAVE OVS_GetHeadstageRemoval(string win, [variable sweepNo, variable in
 	WAVE headstageRemoval = GetOverlaySweepHeadstageRemoval(dfr)
 
 	if(!ParamIsDefault(sweepNo))
-		FindValue/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
+		FindValue/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
 		index = V_Value
 	elseif(!ParamIsDefault(index))
 		// do nothing
