@@ -97,7 +97,7 @@ static Function DP_FillDebugPanelWaves()
 	list = GetFile(list[p])
 	// remove non mies files
 	Make/FREE/T/N=0 results
-	Grep/E="^(MIES|IPNWB)_.*$" list results
+	Grep/E="^(MIES|IPNWB)_.*$" list as results
 	// sort list
 	Sort/A results, results
 
