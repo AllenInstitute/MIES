@@ -3883,6 +3883,8 @@ End
 ///@param[in] d wave reference wave with plot data
 static Function PA_AccelerateAppendTracesImpl(string w, string v, string h, variable r, variable g, variable b, variable a, variable s, WAVE y, WAVE/T t, WAVE/WAVE d)
 
+	// IPT_FORMAT_OFF
+
 	variable step, i
 	i = DimSize(y, ROWS)
 	if(s > 1)
@@ -3962,5 +3964,7 @@ static Function PA_AccelerateAppendTracesImpl(string w, string v, string h, vari
 			endswitch
 		while(i)
 	endif
+
+	// IPT_FORMAT_ON
 
 End

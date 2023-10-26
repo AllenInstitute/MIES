@@ -4288,6 +4288,7 @@ Function/WAVE GetEpochParameterNames()
 		return wv
 	endif
 
+	// IPT_FORMAT_OFF
 	/// Generated code, see WBP_RegenerateEpochParameterNamesCode
 	/// @{
 	Make/T/FREE st_0 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op"}
@@ -4300,6 +4301,7 @@ Function/WAVE GetEpochParameterNames()
 	Make/T/FREE st_7 = {"Custom epoch wave name", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op"}
 	Make/T/FREE st_8 = {"Combine epoch formula", "Combine epoch formula version"}
 	/// @}
+	// IPT_FORMAT_ON
 
 	Make/FREE sizes = {DimSize(st_0, ROWS), DimSize(st_1, ROWS), DimSize(st_2, ROWS), DimSize(st_3, ROWS), DimSize(st_4, ROWS), DimSize(st_5, ROWS), DimSize(st_6, ROWS), DimSize(st_7, ROWS), DimSize(st_8, ROWS)}
 

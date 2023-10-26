@@ -18,6 +18,8 @@ Function WB_StimsetEntryParsing()
 
 	string actual, reference, text
 
+	// IPT_FORMAT_OFF
+
 	text = "Version = 2;\r" + \
 	"Sweep = 0;Epoch = nan;ITI = 1;\r" + \
 	"Sweep = 0;Epoch = 0;Type = Square pulse;Duration = 500;Amplitude = 0;\r" + \
@@ -40,6 +42,8 @@ Function WB_StimsetEntryParsing()
 	"Sweep = 3;Epoch = 2;Type = Square pulse;Duration = 300;Amplitude = 0;\r" + \
 	"Sweep = 3;Epoch = 3;Type = Pulse Train;Duration = 960.005;Amplitude = 1;Offset = 0;Pulse Type = Square;Frequency = 20;Pulse To Pulse Length = 50;Pulse duration = 10;Number of pulses = 20;Mixed frequency = False;First mixed frequency = 0;Last mixed frequency = 0;Poisson distribution = False;Random seed = 0.963638;Pulse Train Pulses = 0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,;Definition mode = Duration;\r" + \
 	"Stimset;Sweep Count = 4;Epoch Count = 4;Pre DAQ = ;Mid Sweep = ;Post Sweep = ;Post Set = ;Post DAQ = ;Pre Sweep = ;Generic = PSQ_Ramp;Pre Set = ;Function params = NumberOfSpikes:variable=5,Elements:string=Hidiho,;Flip = 0;Random Seed = 0.963638;Checksum = 65446509;"
+
+	// IPT_FORMAT_ON
 
 	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, VERSION_ENTRY), 2)
 
