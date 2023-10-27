@@ -5498,7 +5498,7 @@ End
 Function UploadJSONPayload(jsonID)
 	variable jsonID
 
-	URLrequest/DSTR=JSON_Dump(jsonID) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+	URLrequest/DSTR=(JSON_Dump(jsonID)) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
 	ASSERT(!V_Flag, "URLrequest did not succeed due to: " + S_ServerResponse)
 End
 
