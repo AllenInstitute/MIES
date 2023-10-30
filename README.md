@@ -55,14 +55,22 @@ for new hardware.
 
 ## Required Software
 
-- Windows 10 x64
 - [Igor Pro 9 (nightly) or later](https://alleninstitute.github.io/MIES/installation.html#igor-pro-update-nightly)
+
+### Acquisition
+
+- Windows 10 x64
 - [NIDAQ MX XOP](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
+
+### Data evaluation
+
+- Windows 10x64 or MacOSX 10.10
 
 ## Getting started
 
 - [Download](https://github.com/AllenInstitute/MIES/releases/tag/latest) the latest release
-- Run the installer
+- Windows: Run the installer
+- MacOSX (Analysis only): [Manual installation](https://alleninstitute.github.io/MIES/installation.html#manual-installation)
 - [View](https://alleninstitute.github.io/MIES/user.html) the documentation
 
 ## Support statement
