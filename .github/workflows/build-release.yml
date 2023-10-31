@@ -144,7 +144,7 @@ jobs:
             xargs -I {} tools/ftp-upload/flatten-files.sh "{}"
       - name: Compress NWB artifacts
         run: |
-          for dir in test-itc-assets test-ni-assets
+          for dir in test-itc18-assets tests-itc1600-assets test-ni-assets
           do
             tar --remove-files --use-compress-program=zstd -cvf $dir/NWB.tar.zst $dir/*nwb
           done

@@ -65,7 +65,7 @@ Function/WAVE DeviceNameGeneratorMD1()
 #endif
 
 #ifdef TESTS_WITH_ITC1600_HARDWARE
-	devList = AddListItem("ITC1600_Dev_1", devList, ":")
+	devList = AddListItem("ITC1600_Dev_0", devList, ":")
 	lblList = AddListItem("ITC1600", lblList)
 #endif
 

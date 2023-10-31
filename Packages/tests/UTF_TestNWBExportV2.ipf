@@ -295,7 +295,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsFinite(params.ttlBit))
-				channelName += "_" + num2str(log(params.ttlBit)/log(2))
+				channelName += "_" + num2str(NWB_ConvertToStandardTTLBit(params.ttlBit))
 			endif
 
 			CHECK_EQUAL_VAR(str2num(params.channelSuffix), params.ttlBit)
@@ -335,7 +335,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	DFREF pxpSweepsDFR
 	WAVE/Z epochs
 
-	variable channelGroupID, starting_time, session_start_time, actual, idx, index
+	variable channelGroupID, starting_time, session_start_time, actual, idx, index, GUIchannelNumber, ttlBit
 	variable clampMode, gain, gain_ref, resolution, conversion, headstage, rate_ref, rate, samplingInterval, samplingInterval_ref
 	string stimulus, stimulus_expected, channelName, str, path, neurodata_type
 	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref
@@ -388,6 +388,8 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	samplingInterval_ref = DimDelta(loadedFromNWB, ROWS)
 	CHECK_CLOSE_VAR(samplingInterval, samplingInterval_ref, tol=1e-7)
 
+	GUIchannelNumber = params.channelNumber
+
 	// stimulus_description
 	stimulus = ReadTextAttributeAsString(channelGroupID, ".", "stimulus_description")
 	if(params.channelType == XOP_CHANNEL_TYPE_DAC && IsNaN(params.electrodeNumber))
@@ -398,17 +400,25 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		WAVE/T/Z TTLStimsets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, sweep)
 		CHECK_WAVE(TTLStimsets, TEXT_WAVE)
 
-		if(IsNaN(params.ttlBit))
-			stimulus_expected = TTLStimsets[params.channelNumber]
-		else
-			stimulus_expected = TTLStimsets[log(params.ttlBit)/log(2)]
+		if(IsFinite(params.ttlBit))
+			WAVE/Z channelMapHWToGUI = GetActiveChannels(numericalValues, textualValues, sweep, params.channelType, TTLMode = TTL_HWTOGUI_CHANNEL)
+			CHECK_WAVE(channelMapHWToGUI, NUMERIC_WAVE)
+
+			ttlBit = NWB_ConvertToStandardTTLBit(params.ttlBit)
+			CHECK_GE_VAR(ttlBit, 0)
+
+			GUIchannelNumber = channelMapHWToGUI[params.channelNumber][ttlBit]
 		endif
+
+		stimulus_expected = TTLStimsets[GUIchannelNumber]
 	else
 		WAVE/Z/T wvText = GetLastSetting(textualValues, sweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
 		CHECK_WAVE(wvText, TEXT_WAVE)
 		stimulus_expected = wvText[params.electrodeNumber]
 	endif
+
 	CHECK_EQUAL_STR(stimulus, stimulus_expected)
+	CHECK_GE_VAR(GUIchannelNumber, 0)
 
 	// electrode_name, only present for associated channels
 	if(IsFinite(params.electrodeNumber))
@@ -536,8 +546,9 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		WAVE/T/Z epochsSingleChannel = WaveRef(epochs, row=idx)
 		CHECK_WAVE(epochsSingleChannel, TEXT_WAVE)
 
-		WAVE/Z epochsLBN = EP_FetchEpochs(numericalValues, textualValues, sweep, params.channelNumber, params.channelType)
+		WAVE/Z epochsLBN = EP_FetchEpochs(numericalValues, textualValues, sweep, GUIchannelNumber, params.channelType)
 		CHECK_WAVE(epochsLBN, TEXT_WAVE)
+		INFO("Channeltype: %s, GUI channel number %d, hardware channel number %d, TTL bit %d", s0 = StringFromList(params.channelType, CHANNEL_NAMES), n0 = GUIchannelNumber, n1 = params.channelNumber, n2 = ttlBit)
 		CHECK_EQUAL_TEXTWAVES(epochsLBN, epochsSingleChannel)
 	endif
 End
