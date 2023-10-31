@@ -903,7 +903,7 @@ End
 /// @param textualValues   Textual values from the labnotebook
 /// @param sweepNo         Number of sweep
 /// @param channelType     type of channel @sa XopChannelConstants
-/// @param channelNumber   number of channel
+/// @param channelNumber   GUI channel number
 /// @param shortname       short name filter, can be a regular expression which is matched caseless. For older tag formats
 ///                        it can be a simple tag entry (or regexp).
 /// @param treelevel       [optional: default = not set] tree level of epochs, if not set then treelevel is ignored
@@ -988,7 +988,13 @@ End
 
 /// @brief Return free text wave with the epoch information of the given channel
 ///
-/// See GetEpochsWave() for the wave layout.
+/// @param numericalValues Numerical values from the labnotebook
+/// @param textualValues   Textual values from the labnotebook
+/// @param sweep           Number of sweep
+/// @param channelNumber   GUI channel number
+/// @param channelType     Type of channel @sa XopChannelConstants
+///
+/// @return epochs wave, see GetEpochsWave() for the wave layout
 threadsafe Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualValues, variable sweep, variable channelNumber, variable channelType)
 
 	variable index
