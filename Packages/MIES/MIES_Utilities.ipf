@@ -5712,7 +5712,7 @@ Function CalculateNiceLength(variable range , variable multiple)
 		return round(div) * multiple
 	endif
 
-	return multiple * 10^(round(numDigits))
+	return multiple * 10^(round(numDigits)) // NOLINT
 End
 
 /// @brief Remove unused rows from the passed wave and return a copy of it.
