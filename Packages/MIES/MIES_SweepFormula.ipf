@@ -1567,7 +1567,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info, xAxis
-	string yFormula, yFormulasRemain
+	string formulasRemain, yAndXFormula, xFormula, yFormula
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor color
 
@@ -1579,13 +1579,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	endif
 
 	WAVE/T graphCode = SF_SplitCodeToGraphs(formula)
-	WAVE/T/Z formulaPairs = SF_SplitGraphsToFormulas(graphCode)
-	SFH_ASSERT(WaveExists(formulaPairs), "Could not determine y [vs x] formula pair.")
 
 	SVAR lastCode = $GetLastSweepFormulaCode(dfr)
 	keepUserSelection = !cmpstr(lastCode, formula)
 
-	numGraphs = DimSize(formulaPairs, ROWS)
+	numGraphs = DimSize(graphCode, ROWS)
 	wList = ""
 	winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
 
@@ -1601,7 +1599,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		WAVE/Z wvX = $""
 		WAVE/T/Z yUnits = $""
 
-		yFormulasRemain = formulaPairs[j][%FORMULA_Y]
+		formulasRemain = graphCode[j]
 
 		win = plotGraphs[j]
 		wList = AddListItem(win, wList)
@@ -1615,13 +1613,17 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			gdIndex = 0
 			annotation = ""
 
-			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP yFormulasRemain, yFormula, yFormulasRemain
+			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP formulasRemain, yAndXFormula, formulasRemain
 			if(!V_flag)
 				break
 			endif
+
+			[xFormula, yFormula] = SF_SplitGraphsToFormula(yAndXFormula)
+			SFH_ASSERT(!IsEmpty(yFormula), "Could not determine y [vs x] formula pair.")
+
 			WAVE/WAVE/Z formulaResults = $""
 			try
-				[formulaResults, plotMetaData] = SF_GatherFormulaResults(formulaPairs[j][%FORMULA_X], yFormula, graph)
+				[formulaResults, plotMetaData] = SF_GatherFormulaResults(xFormula, yFormula, graph)
 			catch
 				SF_CleanUpPlotWindowsOnFail(plotGraphs)
 				Abort
@@ -2364,7 +2366,7 @@ End
 static Function SF_CheckInputCode(string code, string graph)
 
 	variable i, numGraphs, jsonIDy, jsonIDx, subFormulaCnt
-	string jsonPath, xFormula, yFormula, yFormulasRemain, subPath
+	string jsonPath, xFormula, yFormula, formulasRemain, subPath, yAndXFormula
 
 	NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(graph))
 	JSON_Release(jsonID, ignoreErr = 1)
@@ -2374,36 +2376,41 @@ static Function SF_CheckInputCode(string code, string graph)
 	code = SF_CheckVariableAssignments(code, jsonID)
 
 	WAVE/T graphCode = SF_SplitCodeToGraphs(SF_PreprocessInput(code))
-	WAVE/T/Z formulaPairs = SF_SplitGraphsToFormulas(graphCode)
-	SFH_ASSERT(WaveExists(formulaPairs), "Could not determine y [vs x] formula pair.")
 
-	numGraphs = DimSize(formulaPairs, ROWS)
+	numGraphs = DimSize(graphCode, ROWS)
 	for(i = 0; i < numGraphs; i += 1)
 		subFormulaCnt = 0
-		yFormulasRemain = formulaPairs[i][%FORMULA_Y]
+		formulasRemain = graphCode[i]
 		sprintf jsonPath, "/graph_%d", i
 		JSON_AddObjects(jsonID, jsonPath)
 
 		do
-			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP yFormulasRemain, yFormula, yFormulasRemain
+			SplitString/E=SF_SWEEPFORMULA_WITH_REGEXP formulasRemain, yAndXFormula, formulasRemain
 			if(!V_flag)
 				break
 			endif
 
-			sprintf subPath, "/formula_y_%d", subFormulaCnt
-			jsonIdy = SF_ParseFormulaToJSON(yFormula)
-			JSON_AddJSON(jsonID, jsonPath + subPath, jsonIDy)
+			[xFormula, yFormula] = SF_SplitGraphsToFormula(yAndXFormula)
+			SFH_ASSERT(!IsEmpty(yFormula), "Could not determine y [vs x] formula pair.")
+
+			sprintf subPath, "%s/pair_%d", jsonPath, subFormulaCnt
+			JSON_AddTreeObject(jsonID, subPath)
+
+			sprintf subPath, "%s/pair_%d/formula_y", jsonPath, subFormulaCnt
+			jsonIDy = SF_ParseFormulaToJSON(yFormula)
+			JSON_AddJSON(jsonID, subPath, jsonIDy)
 			JSON_Release(jsonIDy)
+
+			if(!IsEmpty(xFormula))
+				jsonIDx = SF_ParseFormulaToJSON(xFormula)
+
+				sprintf subPath, "%s/pair_%d/formula_x", jsonPath, subFormulaCnt
+				JSON_AddJSON(jsonID, subPath, jsonIDx)
+				JSON_Release(jsonIDx)
+			endif
 
 			subFormulaCnt += 1
 		while(1)
-
-		xFormula = formulaPairs[i][%FORMULA_X]
-		if(!IsEmpty(xFormula))
-			jsonIdx = SF_ParseFormulaToJSON(xFormula)
-			JSON_AddJSON(jsonID, jsonPath + "/formula_x", jsonIDx)
-			JSON_Release(jsonIDx)
-		endif
 	endfor
 End
 
@@ -4833,26 +4840,20 @@ static Function/WAVE SF_SplitCodeToGraphs(string code)
 	return graphCode
 End
 
-static Function/WAVE SF_SplitGraphsToFormulas(WAVE/T graphCode)
+static Function [string xFormula, string yFormula] SF_SplitGraphsToFormula(string graphCode)
 
-	variable i, numGraphs, numFormulae
-	string yFormula, xFormula
+	variable numFormulae
 
-	WAVE/T wFormulas = GetYandXFormulas()
+	SplitString/E=SF_SWEEPFORMULA_REGEXP graphCode, yFormula, xFormula
+	numFormulae = V_Flag
 
-	numGraphs = DimSize(graphCode, ROWS)
-	Redimension/N=(numGraphs, -1) wFormulas
-	for(i = 0; i < numGraphs; i += 1)
-		SplitString/E=SF_SWEEPFORMULA_REGEXP graphCode[i], yFormula, xFormula
-		numFormulae = V_Flag
-		if(numFormulae != 1 && numFormulae != 2)
-			return $""
-		endif
-		wFormulas[i][%FORMULA_X] = SelectString(numFormulae == 2, "", xFormula)
-		wFormulas[i][%FORMULA_Y] = yFormula
-	endfor
+	if(numFormulae != 1 && numFormulae != 2)
+		return ["", ""]
+	endif
 
-	return wFormulas
+	xFormula = SelectString(numFormulae == 2, "", xFormula)
+
+	return [xFormula, yFormula]
 End
 
 static Function/S SF_GetFormulaWinNameTemplate(string mainWindow)
