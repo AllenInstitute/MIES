@@ -839,7 +839,7 @@ Function ACL_UserDataEditorHook(str)
 			ACL_MinWindowSize(str.winName,(355*72/ScreenResolution),(200*72/ScreenResolution))	// make sure the window isn't too small
 			ACL_FitListToWindow(str.winName,"listPanelControls")
 			statusCode=1
-			break;
+			break
 		default:
 
 	EndSwitch
