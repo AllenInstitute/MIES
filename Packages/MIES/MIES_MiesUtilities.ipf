@@ -3299,6 +3299,8 @@ End
 ///@param[in] d wave reference wave with plot data
 static Function TiledGraphAccelerateAppendTracesImpl(string w, string v, string h, variable r, variable g, variable b, WAVE y, WAVE/T t, WAVE/WAVE d)
 
+	// IPT_FORMAT_OFF
+
 	variable step, i
 	i = DimSize(y, ROWS)
 	do
@@ -3334,6 +3336,8 @@ static Function TiledGraphAccelerateAppendTracesImpl(string w, string v, string 
 				break
 		endswitch
 	while(i)
+
+	// IPT_FORMAT_ON
 
 End
 

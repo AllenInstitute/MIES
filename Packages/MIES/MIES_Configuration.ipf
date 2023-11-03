@@ -1645,7 +1645,7 @@ Function CONF_WindowToJSON(wName, saveMask, [excCtrlTypes])
 				numCoupled = ItemsInList(radioList)
 				ASSERT(numCoupled >= 2, "At least two CheckBoxes must be coupled for Radio Buttons")
 				if(numCoupled == 2)
-					FindValue/TXOP=4/TEXT=StringFromList(1, radioList) ctrlNames
+					FindValue/TXOP=4/TEXT=(StringFromList(1, radioList)) ctrlNames
 					ASSERT(V_Value >= 0, "Specified coupled CheckBox is not present as control in " + wName)
 					DeletePoints V_Row, 1, ctrlNames
 				else

@@ -323,14 +323,14 @@ Function PS_FixPackageLocation(string package)
 	// always overwrite correct location
 	correctPackageFile = folder + PACKAGE_SETTINGS_JSON
 	if(FileExists(incorrectPackageFile))
-		MoveFile/O incorrectPackageFile correctPackageFile
+		MoveFile/O incorrectPackageFile as correctPackageFile
 		ASSERT(FileExists(correctPackageFile) && !FileExists(incorrectPackageFile), "Incorrect package file location upgrade")
 	endif
 
 	correctLogFile = folder + LOGFILE_NAME
 	if(FileExists(incorrectLogFile))
 		if(!FileExists(correctLogFile))
-			MoveFile incorrectLogFile correctLogFile
+			MoveFile incorrectLogFile as correctLogFile
 		else
 			// read the incorrect log file and append it to the correct one
 			[incorrectData, fName] = LoadTextFile(incorrectLogFile)

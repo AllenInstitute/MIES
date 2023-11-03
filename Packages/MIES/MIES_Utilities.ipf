@@ -5498,7 +5498,7 @@ End
 Function UploadJSONPayload(jsonID)
 	variable jsonID
 
-	URLrequest/DSTR=JSON_Dump(jsonID) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+	URLrequest/DSTR=(JSON_Dump(jsonID)) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
 	ASSERT(!V_Flag, "URLrequest did not succeed due to: " + S_ServerResponse)
 End
 
@@ -5712,7 +5712,7 @@ Function CalculateNiceLength(variable range , variable multiple)
 		return round(div) * multiple
 	endif
 
-	return multiple * 10^(round(numDigits))
+	return multiple * 10^(round(numDigits)) // NOLINT
 End
 
 /// @brief Remove unused rows from the passed wave and return a copy of it.

@@ -123,6 +123,8 @@ Function ACC_HideTraces(string graph, WAVE/T w, variable h, variable s)
 
 	s = !!s
 
+	// IPT_FORMAT_OFF
+
 	do
 		step = min(2 ^ trunc(log(h) / log(2)), 112)
 		h -= step
@@ -156,6 +158,9 @@ Function ACC_HideTraces(string graph, WAVE/T w, variable h, variable s)
 				break
 		endswitch
 	while(h)
+
+	// IPT_FORMAT_ON
+
 End
 
 /// @brief Accelerated setting of multiple traces in a graph to un/hidden with per trace hide state
@@ -173,6 +178,8 @@ Function ACC_HideTracesPerTrace(string graph, WAVE/T w, variable h, WAVE s)
 	if(!h)
 		return NaN
 	endif
+
+	// IPT_FORMAT_OFF
 
 	do
 		step = min(2 ^ trunc(log(h) / log(2)), ACC_MAX)
@@ -476,6 +483,8 @@ Function ACC_HideTracesPerTrace(string graph, WAVE/T w, variable h, WAVE s)
 				break
 		endswitch
 	while(h)
+
+	// IPT_FORMAT_ON
 End
 
 /// @brief Accelerated setting of multiple traces in a graph to un/hidden and the color
@@ -500,6 +509,8 @@ Function ACC_HideTracesAndColor(string graph, WAVE/T w, variable h, WAVE hideSta
 	// adapt to machine generated code naming
 	WAVE s0 = color
 	WAVE s1 = hideState
+
+	// IPT_FORMAT_OFF
 
 	do
 		step = min(2 ^ trunc(log(h) / log(2)), ACC_MAX)
@@ -802,6 +813,9 @@ Function ACC_HideTracesAndColor(string graph, WAVE/T w, variable h, WAVE hideSta
 				ASSERT(0, "Fail")
 		endswitch
 	while(h)
+
+	// IPT_FORMAT_ON
+
 End
 
 ///@brief Accelerated setting of line size of multiple traces in a graph
@@ -812,6 +826,8 @@ End
 Function ACC_ModLineSizeTraces(string graph, WAVE/T w, variable h, variable l)
 
 	variable step
+
+	// IPT_FORMAT_OFF
 
 	if(h)
 		do
@@ -851,4 +867,7 @@ Function ACC_ModLineSizeTraces(string graph, WAVE/T w, variable h, variable l)
 			endswitch
 		while(h)
 	endif
+
+	// IPT_FORMAT_ON
+
 End
