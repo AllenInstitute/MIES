@@ -481,8 +481,9 @@ The returned data type is `SF_DATATYPE_INTEGRATE`.
 butterworth
 """""""""""
 
-The operation `butterworth` applies a butterworth filter on the given data using `FilterIIR` from Igor Pro.  The operation calculates along rows. It
-takes four arguments:
+The operation `butterworth` applies a butterworth filter on the given data
+using `FilterIIR` from Igor Pro. The operation calculates along rows. It takes
+four arguments:
 
 .. code-block:: bash
 
