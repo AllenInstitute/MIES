@@ -490,8 +490,8 @@ four arguments:
    butterworth(array data, variable lowPassCutoffInHz, variable highPassCutoffInHz, variable order)
 
 The first parameter `data` is intended to be used with the `data()` operation but
-can be an arbitrary numeric array. The parameters lowPassCutoffInHz and highPassCutoffInHz
-are in units of `WAVEBUILDER_MIN_SAMPINT_HZ` (200.000 Hz). The maximum value for `order` is 100.
+can be an arbitrary numeric array. The parameters lowPassCutoffInHz and
+highPassCutoffInHz must be given in Hz. The maximum value for `order` is 100.
 The operation accepts multiple data waves for the data argument.
 For this case the operation is applied on each input data wave independently and returns the same number of data waves.
 The returned data type is `SF_DATATYPE_BUTTERWORTH`.
