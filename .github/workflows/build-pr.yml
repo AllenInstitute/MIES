@@ -90,7 +90,6 @@ jobs:
       👩🏾‍🔬 Compilation: ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
     needs:
       - BuildInstaller
-      - Linting
     strategy:
       matrix:
         source: [ git, installer ]
@@ -136,6 +135,7 @@ jobs:
     name: 🧪 Test ${{ matrix.name }}
     needs:
       - BuildInstaller
+      - Linting
       - CompilationTest
     strategy:
       matrix:
@@ -161,6 +161,7 @@ jobs:
     needs:
       - BuildInstaller
       - CompilationTest
+      - TestWithoutHardware
     strategy:
       matrix:
         include:
@@ -184,6 +185,7 @@ jobs:
     needs:
       - BuildInstaller
       - CompilationTest
+      - TestWithoutHardware
     strategy:
       matrix:
         include:
@@ -207,6 +209,7 @@ jobs:
     needs:
       - BuildInstaller
       - CompilationTest
+      - TestWithoutHardware
     strategy:
       matrix:
         include:
