@@ -15,7 +15,7 @@
 /// @anchor VersioningConstants
 /// @{
 
-Constant DAQ_CONFIG_WAVE_VERSION = 2
+Constant DAQ_CONFIG_WAVE_VERSION = 3
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 64

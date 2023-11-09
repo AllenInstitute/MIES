@@ -443,7 +443,7 @@ static Function SI_TestSampInt(device)
 
 		DAQConfigWave[][2] = sampInt
 
-		WAVE config_t = HW_ITC_TransposeAndToDouble(DAQConfigWave)
+		WAVE config_t = HW_ITC_Transpose(DAQConfigWave)
 		ITCConfigAllChannels2/Z config_t, DAQDataWave
 
 		if(!V_ITCError)
