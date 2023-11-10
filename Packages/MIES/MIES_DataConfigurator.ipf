@@ -626,6 +626,8 @@ static Function DC_PlaceDataInDAQConfigWave(device, dataAcqOrTP)
 	WAVE statusDAFiltered = DC_GetFilteredChannelState(device, dataAcqOrTP, CHANNEL_TYPE_DAC)
 	WAVE/T allSetNames    = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	DAQConfigWave[][%HEADSTAGE] = NaN
+	DAQConfigWave[][%CLAMPMODE] = NaN
 
 	numEntries = DimSize(statusDAFiltered, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -638,6 +640,12 @@ static Function DC_PlaceDataInDAQConfigWave(device, dataAcqOrTP)
 		DAQConfigWave[j][%ChannelNumber] = i
 		unitList = AddListItem(DAG_GetTextualValue(device, ctrl, index = i), unitList, ",", Inf)
 		DAQConfigWave[j][%DAQChannelType] = !CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ, 1) || dataAcqOrTP == TEST_PULSE_MODE ? DAQ_CHANNEL_TYPE_TP : DAQ_CHANNEL_TYPE_DAQ
+		headstage = AFH_GetHeadstageFromDAC(device, i)
+		DAQConfigWave[j][%HEADSTAGE] = headstage
+		if(IsFinite(headstage))
+			DAQConfigWave[j][%CLAMPMODE] = DAG_GetHeadstageMode(device, headstage)
+		endif
+
 		j += 1
 	endfor
 
@@ -662,6 +670,8 @@ static Function DC_PlaceDataInDAQConfigWave(device, dataAcqOrTP)
 		if(IsFinite(headstage))
 			// use the same channel type as the DAC
 			DAQConfigWave[j][%DAQChannelType] = DC_GetChannelTypefromHS(device, headstage)
+			DAQConfigWave[j][%HEADSTAGE] = headstage
+			DAQConfigWave[j][%CLAMPMODE] = DAG_GetHeadstageMode(device, headstage)
 		else
 			// unassociated ADCs are always of DAQ type
 			DAQConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ

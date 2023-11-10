@@ -1277,7 +1277,7 @@ threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
 
 	variable tries
 
-	WAVE config_t  = HW_ITC_TransposeAndToDouble(config)
+	WAVE config_t  = HW_ITC_Transpose(config)
 	WAVE fifoPos_t = HW_ITC_GetFifoPosFromConfig(config_t)
 
 	do
@@ -1314,7 +1314,7 @@ Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 		endif
 	endif
 
-	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
+	WAVE config_t = HW_ITC_Transpose(config)
 	WAVE fifoPos_t = HW_ITC_GetFifoPosFromConfig(config_t)
 
 	do
@@ -1555,7 +1555,7 @@ Function HW_ITC_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, 
 		config[][%Offset] = offset
 	endif
 
-	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
+	WAVE config_t = HW_ITC_Transpose(config)
 
 	do
 		ITCconfigAllchannels2/DEV=(deviceID)/Z=1 config_t, data
@@ -1608,7 +1608,7 @@ threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollect
 
 	offset = GetDataOffset(config)
 
-	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
+	WAVE config_t = HW_ITC_Transpose(config)
 
 	do
 		ITCFIFOAvailableALL2/DEV=(deviceID)/FREE/Z=1 config_t, fifoAvail_t
@@ -1679,7 +1679,7 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 
 	offset = GetDataOffset(config)
 
-	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
+	WAVE config_t = HW_ITC_Transpose(config)
 
 	do
 		ITCFIFOAvailableALL2/DEV=(deviceID)/FREE/Z=1 config_t, fifoAvail_t
@@ -1941,10 +1941,10 @@ Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
 	string str
 end
 
-threadsafe Function/WAVE HW_ITC_TransposeAndToDouble(wv)
+threadsafe Function/WAVE HW_ITC_Transpose(wv)
 	WAVE wv
 
-	MatrixOp/FREE wv_t = fp64(wv^t)
+	MatrixOp/FREE wv_t = wv^t
 
 	return wv_t
 End

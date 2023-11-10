@@ -940,6 +940,8 @@ End
 /// - sampling interval in microseconds (1e-6)
 /// - decimation mode (always zero)
 /// - data offset
+/// - headstage number
+/// - clamp mode
 ///
 /// The wave note holds a list of channel units. The order
 /// is the same as the rows. TTL channels don't have units. Querying the
@@ -964,12 +966,17 @@ End
 ///
 /// Version 2 changes:
 /// - DAQChannelType column added
+///
+/// Version 3 changes:
+/// - Change wave to double precision
+/// - Headstage column added
+/// - ClampMode column added
 Function/Wave GetDAQConfigWave(device)
 	string device
 
 	DFREF dfr = GetDevicePath(device)
 
-	WAVE/I/Z/SDFR=dfr wv = DAQConfigWave
+	WAVE/D/Z/SDFR=dfr wv = DAQConfigWave
 
 	// On version upgrade also adapt function IsValidConfigWave
 	if(ExistsWithCorrectLayoutVersion(wv, DAQ_CONFIG_WAVE_VERSION))
@@ -989,8 +996,15 @@ Function/Wave GetDAQConfigWave(device)
 			wv[][5] = DAQ_CHANNEL_TYPE_DAQ
 			Note/K wv
 		endif
+		if(WaveVersionIsSmaller(wv, 3))
+			// this version adds the HEADSTAGE and CLAMPMODE column
+			Redimension/D/N=(-1, 8) wv
+			wv[][6] = NaN
+			wv[][7] = NaN
+			Note/K wv
+		endif
 	else
-		Make/I/N=(2, 6) dfr:DAQConfigWave/Wave=wv
+		Make/D/N=(2, 8) dfr:DAQConfigWave/WAVE=wv
 	endif
 
 	SetDimLabel COLS, 0, ChannelType, wv
@@ -999,6 +1013,8 @@ Function/Wave GetDAQConfigWave(device)
 	SetDimLabel COLS, 3, DecimationMode, wv
 	SetDimLabel COLS, 4, Offset, wv
 	SetDimLabel COLS, 5, DAQChannelType, wv
+	SetDimLabel COLS, 6, HEADSTAGE, wv
+	SetDimLabel COLS, 7, CLAMPMODE, wv
 
 	SetWaveVersion(wv, DAQ_CONFIG_WAVE_VERSION)
 	AddEntryIntoWaveNoteAsList(wv, CHANNEL_UNIT_KEY, str = "")

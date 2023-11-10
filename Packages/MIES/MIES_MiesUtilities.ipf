@@ -6273,7 +6273,7 @@ End
 /// @param config wave reference to a ITCConfigWave
 ///
 /// @param version [optional, default=DAQ_CONFIG_WAVE_VERSION], check against a specific version
-///                current versions known are 0 (equals NaN), 1, 2
+///                current versions known are 0 (equals NaN), 1, 2, 3
 threadsafe Function IsValidConfigWave(config, [version])
 	WAVE/Z config
 	variable version
@@ -6290,8 +6290,10 @@ threadsafe Function IsValidConfigWave(config, [version])
 
 	waveVersion = GetWaveVersion(config)
 
-	// we know version NaN, 1 and 2, see GetDAQConfigWave()
-	if(version == 2 && waveVersion >= 2)
+	// we know version NaN, 1, 2 and 3 see GetDAQConfigWave()
+	if(version == 3 && waveVersion >= 3)
+		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 8
+	elseif(version == 2 && waveVersion >= 2)
 		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 6
 	elseif(version == 1 && waveVersion >= 1)
 		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 5
@@ -8121,7 +8123,7 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 	WAVE configWave = GetDAQConfigWave(device)
 	Redimension/N=(0, -1) configWave
 
-	ASSERT(GetWaveVersion(configWave) == 2, "Reconstruction might need adaptation for new config wave version")
+	ASSERT(GetWaveVersion(configWave) == 3, "Reconstruction might need adaptation for new config wave version")
 
 	AddChannelPropertiesFromLBN(numericalValues, textualValues, sweepNo, configWave, XOP_CHANNEL_TYPE_DAC)
 	AddChannelPropertiesFromLBN(numericalValues, textualValues, sweepNo, configWave, XOP_CHANNEL_TYPE_ADC)
@@ -8139,6 +8141,8 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 	configWave[][%Offset] = -1
 
 	AddDAQChannelTypeFromLBN(numericalValues, textualValues, sweepNo, configWave)
+	AddHeadstageFromLBN(numericalValues, sweepNo, configWave)
+	AddClampModeFromLBN(numericalValues, sweepNo, configWave)
 	AddChannelUnitFromLBN(numericalValues, textualValues, sweepNo, configWave)
 
 	ASSERT(IsValidSweepWave(configWave), "Recreation created an invalid wave")
@@ -8213,6 +8217,36 @@ static Function AddDAQChannelTypeFromLBN(WAVE numericalValues, WAVE textualValue
 		ASSERT(IsFinite(GetRowIndex(validChannelTypes, val = channelType)), "Invalid channel type")
 
 		configWave[i][%DAQChannelType] = channelType
+	endfor
+End
+
+/// @brief Set `Headstage` in configWave
+static Function AddHeadstageFromLBN(WAVE numericalValues, variable sweepNo, WAVE configWave)
+	variable i, numEntries, headstage, index
+
+	numEntries = DimSize(configWave, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "Headstage Active", configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
+		if(WaveExists(setting))
+			configWave[i][%HEADSTAGE] = setting[index] == 1 ? index : NaN
+		else
+			configWave[i][%HEADSTAGE] = NaN
+		endif
+	endfor
+End
+
+/// @brief Set `ClampMode` in configWave
+static Function AddClampModeFromLBN(WAVE numericalValues, variable sweepNo, WAVE configWave)
+	variable i, numEntries, clampMode, index
+
+	numEntries = DimSize(configWave, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, CLAMPMODE_ENTRY_KEY, configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
+		if(WaveExists(setting))
+			configWave[i][%CLAMPMODE] = setting[index]
+		else
+			configWave[i][%CLAMPMODE] = NaN
+		endif
 	endfor
 End
 

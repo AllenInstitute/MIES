@@ -591,7 +591,7 @@ static Function TPDuringDAQOnlyTP_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 2)
-	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 6)
+	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 8)
 
 	col = FindDimLabel(configWave, COLS, "DAQChannelType")
 	Duplicate/FREE/R=[][col] configWave, channelTypes
@@ -675,7 +675,7 @@ static Function TPDuringDAQTPAndUnAssoc_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 4)
-	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 6)
+	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 8)
 
 	col = FindDimLabel(configWave, COLS, "DAQChannelType")
 	Duplicate/FREE/R=[][col] configWave, channelTypes
@@ -756,7 +756,7 @@ static Function TPDuringDAQ_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 4)
-	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 6)
+	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 8)
 
 	col = FindDimLabel(configWave, COLS, "DAQChannelType")
 	Duplicate/FREE/R=[][col] configWave, channelTypes
@@ -826,7 +826,7 @@ static Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 6)
-	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 6)
+	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 8)
 
 	col = FindDimLabel(configWave, COLS, "DAQChannelType")
 	Duplicate/FREE/R=[][col] configWave, channelTypes
@@ -892,7 +892,7 @@ static Function TPDuringDAQOnlyWithoodDAQ_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 4)
-	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 6)
+	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 8)
 
 	col = FindDimLabel(configWave, COLS, "DAQChannelType")
 	Duplicate/FREE/R=[][col] configWave, channelTypes
