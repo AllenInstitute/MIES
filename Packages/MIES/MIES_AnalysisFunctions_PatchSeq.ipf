@@ -63,7 +63,7 @@
 ///  PSQ_FMT_LBN_PULSE_DUR                    Pulse duration as determined experimentally                 ms       Numerical    RB, DA (Supra), CR                   No           Yes
 ///  PSQ_FMT_LBN_SPIKE_PASS                   Pass/fail state of the spike search (No spikes → Pass)      On/Off   Numerical    CR, VM                               No           Yes
 ///  PSQ_FMT_LBN_DA_fI_SLOPE                  Fitted slope in the f-I plot                                % Hz/pA  Numerical    DA (Supra)                           No           Yes
-///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED          Fitted slope in the f-I plot exceeds target value           On/Off   Numerical    DA (Supra)                           No           No
+///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS     Fitted slope in the f-I plot exceeds target value           On/Off   Numerical    DA (Supra)                           No           No
 ///  PSQ_FMT_LBN_DA_OPMODE                    Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA              (none)   Textual      DA                                   No           No
 ///  PSQ_FMT_LBN_CR_INSIDE_BOUNDS             AD response is inside the given bands                       On/Off   Numerical    CR                                   No           No
 ///  PSQ_FMT_LBN_CR_RESISTANCE                Calculated resistance from DAScale sub threshold            Ohm      Numerical    CR                                   No           No
@@ -2370,7 +2370,7 @@ Function PSQ_DAScale(device, s)
 
 			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = IsFinite(finalSlopePercent) && fiSlope[s.headstage] >= finalSlopePercent
-			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
+			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			ret = PSQ_DetermineSweepQCResults(device, PSQ_DA_SCALE, s.sweepNo, s.headstage, numSweepsPass, inf)
@@ -2389,7 +2389,7 @@ Function PSQ_DAScale(device, s)
 			enoughSweepsPassed = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage) >= numSweepsPass
 
 			if(!cmpstr(opMode, PSQ_DS_SUPRA))
-				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED, query = 1)
+				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS, query = 1)
 				WAVE fISlopeReached = GetLastSettingIndepEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 				if(IsFinite(finalSlopePercent))
