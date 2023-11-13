@@ -109,7 +109,7 @@ static Function PS_DS_Supra1([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0
@@ -202,7 +202,7 @@ static Function PS_DS_Supra2([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0
@@ -297,7 +297,7 @@ static Function PS_DS_Supra3([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0
@@ -392,7 +392,7 @@ static Function PS_DS_Supra4([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0
@@ -491,7 +491,7 @@ static Function PS_DS_Supra5([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0
@@ -601,7 +601,7 @@ static Function PS_DS_Supra6([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0

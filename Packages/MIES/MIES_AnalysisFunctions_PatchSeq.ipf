@@ -1141,9 +1141,10 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
-Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
+Function/WAVE PSQ_CreateOverrideResults(device, headstage, type, [opMode])
 	string device
 	variable headstage, type
+	string opMode
 
 	variable DAC, numCols, numRows, numLayers, numChunks
 	string stimset
@@ -1153,6 +1154,10 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 	WAVE/Z stimsetWave = WB_CreateAndGetStimSet(stimset)
 	ASSERT(WaveExists(stimsetWave), "Stimset does not exist")
+
+	if(type == PSQ_DA_SCALE)
+		ASSERT(!ParamIsDefault(opMode) && PSQ_DS_IsValidMode(opMode), "Expected valid opMode")
+	endif
 
 	switch(type)
 		case PSQ_RAMP:
