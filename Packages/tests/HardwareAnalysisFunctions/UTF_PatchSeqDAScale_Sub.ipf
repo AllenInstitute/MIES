@@ -5,12 +5,12 @@
 
 // This file also holds the test for the baseline evaluation for all PSQ analysis functions
 
-static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device, string stimset)
+static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                  + \
-								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:" + stimset + ":")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                           + \
+	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:PSQ_DaScale_Sub_DA_0:")
 
-	AdjustAnalysisParamsForPSQ(device, stimset)
+	AdjustAnalysisParamsForPSQ(device, "PSQ_DaScale_Sub_DA_0")
 
 	return [s]
 End
@@ -113,7 +113,7 @@ End
 static Function PS_DS_Sub1([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
@@ -262,7 +262,7 @@ End
 static Function PS_DS_Sub2([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
@@ -461,7 +461,7 @@ End
 static Function PS_DS_Sub3([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
@@ -636,7 +636,7 @@ End
 static Function PS_DS_Sub4([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
@@ -856,7 +856,7 @@ End
 static Function PS_DS_Sub5([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
@@ -1009,7 +1009,7 @@ End
 static Function PS_DS_Sub5a([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
@@ -1162,7 +1162,7 @@ End
 static Function PS_DS_Sub6([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
@@ -1383,7 +1383,7 @@ End
 static Function PS_DS_Sub7([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
@@ -1566,7 +1566,7 @@ End
 static Function PS_DS_Sub8([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
@@ -1765,7 +1765,7 @@ End
 static Function PS_DS_Sub9([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
@@ -1918,7 +1918,7 @@ End
 static Function PS_DS_Sub10([str])
 	string str
 
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Sub_DA_0")
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
