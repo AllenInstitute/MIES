@@ -1531,6 +1531,10 @@ static Function PSQ_GetLastPassingLongRHSweep(string device, variable headstage,
 	return -1
 End
 
+static Function PSQ_DS_IsValidMode(string str)
+	return !cmpstr(str, PSQ_DS_SUB) || !cmpstr(str, PSQ_DS_SUPRA)
+End
+
 /// @brief Return the sweep number of the last sweep using the PSQ_DaScale()
 ///        analysis function, where the set passes and was in subthreshold mode.
 static Function PSQ_GetLastPassingDAScaleSub(device, headstage)
@@ -1940,7 +1944,7 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 			break
 		case "OperationMode":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
-			if(cmpstr(str, PSQ_DS_SUB) && cmpstr(str, PSQ_DS_SUPRA))
+			if(!PSQ_DS_IsValidMode(str))
 				return "Invalid string " + str
 			endif
 			break
