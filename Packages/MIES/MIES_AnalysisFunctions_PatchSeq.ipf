@@ -2440,7 +2440,8 @@ Function PSQ_DAScale(device, s)
 				printf "(%s): The stimset has too many sweeps, increase the size of DAScales.\r", GetRTStackInfo(1)
 				continue
 			elseif(index < DimSize(DAScales, ROWS))
-				ASSERT(isFinite(daScaleOffset), "DAScale offset is non-finite")
+				ASSERT(IsFinite(daScaleOffset), "DAScale offset is non-finite")
+				ASSERT(IsFinite(daScaleModifier), "DAScale modifier is non-finite")
 
 				strswitch(offsetOp)
 					case "+":
