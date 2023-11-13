@@ -5088,7 +5088,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 	endif
 End
 
-static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string key, variable sweepNo)
+static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, string key, variable sweepNo)
 	string valueStr, sweepChannelStr
 	variable refSweep
 
@@ -5098,13 +5098,25 @@ static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string ke
 
 	if(IsEmpty(valueStr) || refSweep != sweepNo)
 		// no value for the current sweep
-		return NaN
+		return $""
 	endif
 
 	WAVE/WAVE container = JSONToWave(valueStr)
 	ASSERT(DimSize(container, ROWS) == 1, "Invalid number of entries in return wave from Sweep Formula store")
 
 	WAVE wv = container[0]
+
+	return wv
+End
+
+static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string key, variable sweepNo)
+
+	WAVE/Z wv = PSQ_GetSweepFormulaResultWave(textualResultsValues, key, sweepNo)
+
+	if(!WaveExists(wv))
+		return NaN
+	endif
+
 	ASSERT(DimSize(wv, ROWS) == 1, "Invalid number of entries in wave from Sweep Formula")
 
 	return wv[0]
