@@ -1536,13 +1536,12 @@ static Function PSQ_DS_IsValidMode(string str)
 End
 
 /// @brief Return the sweep number of the last sweep using the PSQ_DaScale()
-///        analysis function, where the set passes and was in subthreshold mode.
-static Function PSQ_GetLastPassingDAScaleSub(device, headstage)
-	string device
-	variable headstage
-
+///        analysis function, where the set passes and was in the given mode
+static Function PSQ_GetLastPassingDAScale(string device, variable headstage, string opMode)
 	variable numEntries, sweepNo, i, setQC
 	string key
+
+	ASSERT(PSQ_DS_IsValidMode(opMode), "Invalid opMode")
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues = GetLBTextualValues(device)
@@ -1571,7 +1570,7 @@ static Function PSQ_GetLastPassingDAScaleSub(device, headstage)
 
 		WAVE/T/Z setting = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
-		if(WaveExists(setting) && !cmpstr(setting[INDEP_HEADSTAGE], PSQ_DS_SUB))
+		if(WaveExists(setting) && !cmpstr(setting[INDEP_HEADSTAGE], opMode))
 			return sweepNo
 		endif
 	endfor
@@ -4290,7 +4289,7 @@ Function PSQ_Chirp(device, s)
 				if(TestOverrideActive())
 					resistance = PSQ_CR_RESISTANCE_FAKE * GIGA_TO_ONE
 				else
-					passingDaScaleSweep = PSQ_GetLastPassingDAScaleSub(device, s.headstage)
+					passingDaScaleSweep = PSQ_GetLastPassingDAScale(device, s.headstage, PSQ_DS_SUB)
 
 					if(!IsValidSweepNumber(passingDaScaleSweep))
 						printf "(%s): We could not find a passing sweep with DAScale analysis function in Subthreshold mode.\r", device
