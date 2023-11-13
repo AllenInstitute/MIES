@@ -778,7 +778,7 @@ threadsafe Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, en
 End
 
 /// @brief Return a headstage independent setting from the numerical
-///        labnotebook of the sweeps in the same RA cycle
+///        labnotebook of the sweeps in the same SCI cycle
 ///
 /// @return the headstage independent setting or `defValue`
 ///
