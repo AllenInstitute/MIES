@@ -86,11 +86,6 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 
 			return val
 			break
-		case LBN_DELTA_I:
-		case LBN_DELTA_V:
-		case LBN_RESISTANCE_FIT:
-		case LBN_RESISTANCE_FIT_ERR:
-			return GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + name, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case STIMSET_SCALE_FACTOR_KEY:
 			return GetLastSettingEachRAC(numericalValues, sweepNo, name, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 			break
@@ -173,18 +168,6 @@ static Function PS_DS_Supra1_REENTRY([str])
 
 	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
-
-	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
-	CHECK_WAVE(deltaI, NULL_WAVE)
-
-	WAVE/Z deltaV = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_V)
-	CHECK_WAVE(deltaV, NULL_WAVE)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT)
-	CHECK_WAVE(resistance, NULL_WAVE)
-
-	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
-	CHECK_WAVE(resistanceErr, NULL_WAVE)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -277,18 +260,6 @@ static Function PS_DS_Supra2_REENTRY([str])
 
 	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
-
-	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
-	CHECK_WAVE(deltaI, NULL_WAVE)
-
-	WAVE/Z deltaV = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_V)
-	CHECK_WAVE(deltaV, NULL_WAVE)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT)
-	CHECK_WAVE(resistance, NULL_WAVE)
-
-	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
-	CHECK_WAVE(resistanceErr, NULL_WAVE)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -385,18 +356,6 @@ static Function PS_DS_Supra3_REENTRY([str])
 	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
 
-	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
-	CHECK_WAVE(deltaI, NULL_WAVE)
-
-	WAVE/Z deltaV = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_V)
-	CHECK_WAVE(deltaV, NULL_WAVE)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT)
-	CHECK_WAVE(resistance, NULL_WAVE)
-
-	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
-	CHECK_WAVE(resistanceErr, NULL_WAVE)
-
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	numEntries = DimSize(sweeps, ROWS)
@@ -491,18 +450,6 @@ static Function PS_DS_Supra4_REENTRY([str])
 
 	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
-
-	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
-	CHECK_WAVE(deltaI, NULL_WAVE)
-
-	WAVE/Z deltaV = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_V)
-	CHECK_WAVE(deltaV, NULL_WAVE)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT)
-	CHECK_WAVE(resistance, NULL_WAVE)
-
-	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
-	CHECK_WAVE(resistanceErr, NULL_WAVE)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -602,18 +549,6 @@ static Function PS_DS_Supra5_REENTRY([str])
 
 	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
-
-	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
-	CHECK_WAVE(deltaI, NULL_WAVE)
-
-	WAVE/Z deltaV = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_V)
-	CHECK_WAVE(deltaV, NULL_WAVE)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT)
-	CHECK_WAVE(resistance, NULL_WAVE)
-
-	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
-	CHECK_WAVE(resistanceErr, NULL_WAVE)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -723,18 +658,6 @@ static Function PS_DS_Supra6_REENTRY([str])
 
 	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
-
-	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
-	CHECK_WAVE(deltaI, NULL_WAVE)
-
-	WAVE/Z deltaV = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_V)
-	CHECK_WAVE(deltaV, NULL_WAVE)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT)
-	CHECK_WAVE(resistance, NULL_WAVE)
-
-	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
-	CHECK_WAVE(resistanceErr, NULL_WAVE)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
