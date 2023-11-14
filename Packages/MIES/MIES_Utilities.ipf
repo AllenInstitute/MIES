@@ -6666,6 +6666,7 @@ Function/WAVE SplitLogDataBySize(WAVE/T logData, string sep, variable lim, [vari
 	return result
 End
 
+/// @todo workaround IP bug, fixed in at least IP 9.03
 threadsafe Function/S Base64EncodeSafe(string data)
 
 	ASSERT_TS(strlen(data) <= BASE64ENCODE_INPUT_MAX_SIZE, "Input string too larger for Base64Encode")

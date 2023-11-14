@@ -63,7 +63,7 @@
 ///  PSQ_FMT_LBN_PULSE_DUR                    Pulse duration as determined experimentally                 ms       Numerical    RB, DA (Supra), CR                   No           Yes
 ///  PSQ_FMT_LBN_SPIKE_PASS                   Pass/fail state of the spike search (No spikes → Pass)      On/Off   Numerical    CR, VM                               No           Yes
 ///  PSQ_FMT_LBN_DA_fI_SLOPE                  Fitted slope in the f-I plot                                % Hz/pA  Numerical    DA (Supra)                           No           Yes
-///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED          Fitted slope in the f-I plot exceeds target value           On/Off   Numerical    DA (Supra)                           No           No
+///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS     Fitted slope in the f-I plot exceeds target value           On/Off   Numerical    DA (Supra)                           No           No
 ///  PSQ_FMT_LBN_DA_OPMODE                    Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA              (none)   Textual      DA                                   No           No
 ///  PSQ_FMT_LBN_CR_INSIDE_BOUNDS             AD response is inside the given bands                       On/Off   Numerical    CR                                   No           No
 ///  PSQ_FMT_LBN_CR_RESISTANCE                Calculated resistance from DAScale sub threshold            Ohm      Numerical    CR                                   No           No
@@ -1531,14 +1531,17 @@ static Function PSQ_GetLastPassingLongRHSweep(string device, variable headstage,
 	return -1
 End
 
-/// @brief Return the sweep number of the last sweep using the PSQ_DaScale()
-///        analysis function, where the set passes and was in subthreshold mode.
-static Function PSQ_GetLastPassingDAScaleSub(device, headstage)
-	string device
-	variable headstage
+static Function PSQ_DS_IsValidMode(string str)
+	return !cmpstr(str, PSQ_DS_SUB) || !cmpstr(str, PSQ_DS_SUPRA)
+End
 
+/// @brief Return the sweep number of the last sweep using the PSQ_DaScale()
+///        analysis function, where the set passes and was in the given mode
+static Function PSQ_GetLastPassingDAScale(string device, variable headstage, string opMode)
 	variable numEntries, sweepNo, i, setQC
 	string key
+
+	ASSERT(PSQ_DS_IsValidMode(opMode), "Invalid opMode")
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues = GetLBTextualValues(device)
@@ -1567,7 +1570,7 @@ static Function PSQ_GetLastPassingDAScaleSub(device, headstage)
 
 		WAVE/T/Z setting = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
-		if(WaveExists(setting) && !cmpstr(setting[INDEP_HEADSTAGE], PSQ_DS_SUB))
+		if(WaveExists(setting) && !cmpstr(setting[INDEP_HEADSTAGE], opMode))
 			return sweepNo
 		endif
 	endfor
@@ -1617,25 +1620,26 @@ Function PSQ_DS_GetDAScaleOffset(device, headstage, opMode)
 
 	variable sweepNo
 
-	if(!cmpstr(opMode, PSQ_DS_SUPRA))
-		if(TestOverrideActive())
-			return PSQ_DS_OFFSETSCALE_FAKE
-		endif
+	strswitch(opMode)
+		case PSQ_DS_SUPRA:
+			if(TestOverrideActive())
+				return PSQ_DS_OFFSETSCALE_FAKE
+			endif
 
-		sweepNo = PSQ_GetLastPassingLongRHSweep(device, headstage, PSQ_RHEOBASE_DURATION)
-		if(!IsValidSweepNumber(sweepNo))
-			return NaN
-		endif
+			sweepNo = PSQ_GetLastPassingLongRHSweep(device, headstage, PSQ_RHEOBASE_DURATION)
+			if(!IsValidSweepNumber(sweepNo))
+				return NaN
+			endif
 
-		WAVE numericalValues = GetLBNumericalValues(device)
-		WAVE/Z setting = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-		ASSERT(WaveExists(setting), "Could not find DAScale value of matching rheobase sweep")
-		return setting[headstage]
-	elseif(!cmpstr(opMode, PSQ_DS_SUB))
-		return 0
-	else
-		ASSERT(0, "unknown opMode")
-	endif
+			WAVE numericalValues = GetLBNumericalValues(device)
+			WAVE/Z setting = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+			ASSERT(WaveExists(setting), "Could not find DAScale value of matching rheobase sweep")
+			return setting[headstage]
+		case PSQ_DS_SUB:
+			return 0
+		default:
+			ASSERT(0, "unknown opMode")
+	endswitch
 End
 
 /// @brief Check if the given sweep has at least one "spike detected" entry in
@@ -1888,26 +1892,26 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "SamplingMultiplier":
 			 return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
 		case "DAScaleModifier":
-			 return "[Optional] Percentage how the DAScale value is adapted if it is outside of the " \
-					+ "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Ignored for \"Sub\"."
+			 return "Percentage how the DAScale value is adapted if it is outside of the " \
+					+ "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\"."
 		case "DAScales":
 			 return "DA Scale Factors in pA"
 		case "FinalSlopePercent":
-			 return "[Optional] As additional passing criteria the slope of the f-I plot must be larger than this value. " \
-					+ "Note: The slope is used in percent. Ignored for \"Sub\"."
+			 return "As additional passing criteria the slope of the f-I plot must be larger than this value. " \
+					+ "Note: The slope is used in percent. Only for \"Supra\"."
 		case "MaximumSpikeCount":
-			 return "[Optional] The upper limit of the number of spikes. Ignored for \"Sub\"."
+			 return "The upper limit of the number of spikes. Only for \"Supra\"."
 		case "MinimumSpikeCount":
-			 return "[Optional] The lower limit of the number of spikes. Ignored for \"Sub\"."
+			 return "The lower limit of the number of spikes. Only for \"Supra\"."
 		case "OffsetOperator":
-			 return "[Optional, defaults to \"+\"] Set the math operator to use for "      \
+			 return "Set the math operator to use for "                                    \
 					+ "combining the rheobase DAScale value from the previous run and "    \
 					+ "the DAScales values. Valid strings are \"+\" (addition) and \"*\" " \
-					+ "(multiplication). Ignored for \"Sub\"."
+					+ "(multiplication). Only for \"Supra\" and defaults to \"+\"."
 		case "OperationMode":
 			 return "Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
 		case "ShowPlot":
-			 return "[Optional, defaults to true] Show the resistance (\"Sub\") or the f-I (\"Supra\") plot."
+			 return "Show the resistance (\"Sub\") or the f-I (\"Supra\") plot, defaults to true."
 		default:
 			 ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
@@ -1940,7 +1944,7 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 			break
 		case "OperationMode":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
-			if(cmpstr(str, PSQ_DS_SUB) && cmpstr(str, PSQ_DS_SUPRA))
+			if(!PSQ_DS_IsValidMode(str))
 				return "Invalid string " + str
 			endif
 			break
@@ -2370,7 +2374,7 @@ Function PSQ_DAScale(device, s)
 
 			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = IsFinite(finalSlopePercent) && fiSlope[s.headstage] >= finalSlopePercent
-			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
+			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			ret = PSQ_DetermineSweepQCResults(device, PSQ_DA_SCALE, s.sweepNo, s.headstage, numSweepsPass, inf)
@@ -2389,7 +2393,7 @@ Function PSQ_DAScale(device, s)
 			enoughSweepsPassed = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage) >= numSweepsPass
 
 			if(!cmpstr(opMode, PSQ_DS_SUPRA))
-				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED, query = 1)
+				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS, query = 1)
 				WAVE fISlopeReached = GetLastSettingIndepEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 				if(IsFinite(finalSlopePercent))
@@ -2436,7 +2440,8 @@ Function PSQ_DAScale(device, s)
 				printf "(%s): The stimset has too many sweeps, increase the size of DAScales.\r", GetRTStackInfo(1)
 				continue
 			elseif(index < DimSize(DAScales, ROWS))
-				ASSERT(isFinite(daScaleOffset), "DAScale offset is non-finite")
+				ASSERT(IsFinite(daScaleOffset), "DAScale offset is non-finite")
+				ASSERT(IsFinite(daScaleModifier), "DAScale modifier is non-finite")
 
 				strswitch(offsetOp)
 					case "+":
@@ -4286,7 +4291,7 @@ Function PSQ_Chirp(device, s)
 				if(TestOverrideActive())
 					resistance = PSQ_CR_RESISTANCE_FAKE * GIGA_TO_ONE
 				else
-					passingDaScaleSweep = PSQ_GetLastPassingDAScaleSub(device, s.headstage)
+					passingDaScaleSweep = PSQ_GetLastPassingDAScale(device, s.headstage, PSQ_DS_SUB)
 
 					if(!IsValidSweepNumber(passingDaScaleSweep))
 						printf "(%s): We could not find a passing sweep with DAScale analysis function in Subthreshold mode.\r", device
@@ -5083,7 +5088,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 	endif
 End
 
-static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string key, variable sweepNo)
+static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, string key, variable sweepNo)
 	string valueStr, sweepChannelStr
 	variable refSweep
 
@@ -5093,13 +5098,25 @@ static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string ke
 
 	if(IsEmpty(valueStr) || refSweep != sweepNo)
 		// no value for the current sweep
-		return NaN
+		return $""
 	endif
 
 	WAVE/WAVE container = JSONToWave(valueStr)
 	ASSERT(DimSize(container, ROWS) == 1, "Invalid number of entries in return wave from Sweep Formula store")
 
 	WAVE wv = container[0]
+
+	return wv
+End
+
+static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string key, variable sweepNo)
+
+	WAVE/Z wv = PSQ_GetSweepFormulaResultWave(textualResultsValues, key, sweepNo)
+
+	if(!WaveExists(wv))
+		return NaN
+	endif
+
 	ASSERT(DimSize(wv, ROWS) == 1, "Invalid number of entries in wave from Sweep Formula")
 
 	return wv[0]

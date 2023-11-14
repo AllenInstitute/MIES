@@ -66,7 +66,7 @@ Function/WAVE FFI_GetAvailableMessageFilters()
 	                  PRESSURE_BREAKIN_FILTER, AUTO_TP_FILTER, AMPLIFIER_CLAMP_MODE_FILTER,            \
 	                  AMPLIFIER_AUTO_BRIDGE_BALANCE, ANALYSIS_FUNCTION_PB, ANALYSIS_FUNCTION_SE,       \
 	                  ANALYSIS_FUNCTION_VM, DAQ_TP_STATE_CHANGE_FILTER,                                \
-			  ANALYSIS_FUNCTION_AR}
+	                  ANALYSIS_FUNCTION_AR}
 
 	Note/K wv "Heartbeat is sent every 5 seconds."
 

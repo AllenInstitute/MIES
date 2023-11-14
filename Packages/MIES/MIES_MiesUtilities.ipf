@@ -778,7 +778,7 @@ threadsafe Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, en
 End
 
 /// @brief Return a headstage independent setting from the numerical
-///        labnotebook of the sweeps in the same RA cycle
+///        labnotebook of the sweeps in the same SCI cycle
 ///
 /// @return the headstage independent setting or `defValue`
 ///
@@ -799,6 +799,34 @@ threadsafe Function GetLastSettingIndepSCI(numericalValues, sweepNo, setting, he
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
+	else
+		return defValue
+	endif
+End
+
+/// @brief Return a headstage independent setting from the textual
+///        labnotebook of the sweeps in the same SCI cycle
+///
+/// @return the headstage independent setting or `defValue`
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
+threadsafe Function/S GetLastSettingTextIndepSCI(textualValues, sweepNo, setting, headstage, entrySourceType, [defValue])
+	WAVE/T textualValues
+	variable sweepNo
+	string setting
+	variable headstage, entrySourceType
+	string defValue
+
+	if(ParamIsDefault(defValue))
+		defValue = ""
+	endif
+
+	WAVE/T/Z settings = GetLastSettingSCI(textualValues, sweepNo, setting, headstage, entrySourceType)
+
+	if(WaveExists(settings))
+		EnforceIndependentSetting(settings)
+		return settings[GetIndexForHeadstageIndepData(textualValues)]
 	else
 		return defValue
 	endif
