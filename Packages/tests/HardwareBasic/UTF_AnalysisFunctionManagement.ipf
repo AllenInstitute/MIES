@@ -304,7 +304,7 @@ static Function GenerateAnalysisFunctionTable()
 	// if this test fails and the CRC changes
 	// commit the file `Packages/MIES/analysis_function_parameters.itx`
 	// and check that the changes therein are intentional
-	CHECK_EQUAL_VAR(WaveCRC(0, output, 0), 844628669)
+	CHECK_EQUAL_VAR(WaveCRC(0, output, 0), 1642314015)
 	StoreWaveOnDisk(output, "analysis_function_parameters")
 End
 
