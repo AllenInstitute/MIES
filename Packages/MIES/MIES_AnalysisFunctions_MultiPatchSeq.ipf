@@ -175,48 +175,6 @@ static Function/WAVE MSQ_DeterminePulseDuration(device, sweepNo, totalOnsetDelay
 	return durations
 End
 
-// @brief Calculate the average from `startTime` spanning
-//        `rangeTime` milliseconds
-static Function MSQ_CalculateAvg(wv, column, startTime, rangeTime)
-	WAVE wv
-	variable column, startTime, rangeTime
-
-	variable rangePoints, startPoints
-
-	startPoints = startTime / DimDelta(wv, ROWS)
-	rangePoints = rangeTime / DimDelta(wv, ROWS)
-
-	MatrixOP/FREE data = subWaveC(wv, startPoints, column, rangePoints)
-	MatrixOP/FREE avg  = mean(data)
-
-	ASSERT(IsFinite(avg[0]), "result must be finite")
-
-	return avg[0]
-End
-
-// @brief Calculate the RMS minus the average from `startTime` spanning
-//        `rangeTime` milliseconds
-//
-// @note: This differs from what WaveStats returns in `V_sdev` as we divide by
-//        `N` but WaveStats by `N -1`.
-static Function MSQ_CalculateRMS(wv, column, startTime, rangeTime)
-	WAVE wv
-	variable column, startTime, rangeTime
-
-	variable rangePoints, startPoints
-
-	startPoints = startTime / DimDelta(wv, ROWS)
-	rangePoints = rangeTime / DimDelta(wv, ROWS)
-
-	MatrixOP/FREE data = subWaveC(wv, startPoints, column, rangePoints)
-	MatrixOP/FREE avg  = mean(data)
-	MatrixOP/FREE rms  = sqrt(sumSqr(data - avg[0]) / numRows(data))
-
-	ASSERT(IsFinite(rms[0]), "result must be finite")
-
-	return rms[0]
-End
-
 /// @brief Return the number of already acquired sweeps
 ///        of the given stimset cycle ID
 static Function MSQ_NumAcquiredSweepsInSet(device, sweepNo, headstage)
