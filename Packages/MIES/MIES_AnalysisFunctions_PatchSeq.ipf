@@ -1672,6 +1672,22 @@ static Function PSQ_GetDefaultSamplingFrequency(string device, variable type)
 				default:
 					ASSERT(0, "Unknown analysis function")
 			endswitch
+		case HARDWARE_SUTTER_DAC:
+			switch(type)
+				case PSQ_CHIRP:
+				case PSQ_DA_SCALE:
+				case PSQ_RAMP:
+				case PSQ_RHEOBASE:
+				case PSQ_SQUARE_PULSE:
+					return 50
+				case PSQ_PIPETTE_BATH:
+				case PSQ_SEAL_EVALUATION:
+				case PSQ_TRUE_REST_VM:
+				case PSQ_ACC_RES_SMOKE:
+					return 50
+				default:
+					ASSERT(0, "Unknown analysis function")
+			endswitch
 		default:
 			ASSERT(0, "Unknown hardware type")
 	endswitch
@@ -1686,6 +1702,8 @@ Function PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(string device)
 			return 50
 		case HARDWARE_NI_DAC:
 			return 125
+		case HARDWARE_SUTTER_DAC:
+			return 50
 		default:
 			ASSERT(0, "Unknown hardware")
 	endswitch
@@ -1729,7 +1747,7 @@ End
 /// Not every analysis function uses every parameter though.
 static Function/S PSQ_GetHelpCommon(variable type, string name)
 
-	string freqITC, freqNI
+	string freqITC, freqNI, freqSU
 
 	strswitch(name)
 		case "AsyncQCChannels":
@@ -1757,7 +1775,8 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 		case "SamplingFrequency":
 			freqITC = num2str(PSQ_GetDefaultSamplingFrequency("ITC16", type))
 			freqNI  = num2str(PSQ_GetDefaultSamplingFrequency("Dev1", type))
-			return "Required sampling frequency for the acquired data [kHz]. Defaults to ITC:" + freqITC + " NI:" + freqNI + "."
+			freqSU  = num2str(PSQ_GetDefaultSamplingFrequency(DEVICE_SUTTER_NAME_START_CLEAN + "1", type))
+			return "Required sampling frequency for the acquired data [kHz]. Defaults to ITC:" + freqITC + " NI:" + freqNI + " Sutter:" + freqSU + "."
 		case "SamplingMultiplier":
 			return "Sampling multiplier, use 1 for no multiplier"
 		default:
