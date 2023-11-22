@@ -583,15 +583,16 @@ static Function TPDuringDAQOnlyTP_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
 	WAVE/Z sweepWave = GetSweepWave(str, 0)
-	CHECK_WAVE(sweepWave, NORMAL_WAVE)
-
-	CHECK_EQUAL_VAR(GetMinSamplingInterval(unit = "ms"), DimDelta(sweepWave, ROWS))
-	CHECK_EQUAL_VAR(DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) / 1000, TIME_TP_ONLY_ON_DAQ)
+	CHECK_WAVE(sweepWave, TEXT_WAVE)
 
 	WAVE/Z configWave = GetConfigWave(sweepWave)
-	CHECK_WAVE(configWave, NORMAL_WAVE)
+	CHECK_WAVE(configWave, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 2)
 	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 8)
+
+	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(configWave))
+	CHECK_EQUAL_VAR(GetMinSamplingInterval(unit = "ms"), DimDelta(channelAD, ROWS))
+	CHECK_EQUAL_VAR(DimSize(channelAD, ROWS) * DimDelta(channelAD, ROWS) / 1000, TIME_TP_ONLY_ON_DAQ)
 
 	col = FindDimLabel(configWave, COLS, "DAQChannelType")
 	Duplicate/FREE/R=[][col] configWave, channelTypes
@@ -666,16 +667,17 @@ static Function TPDuringDAQTPAndUnAssoc_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
 	WAVE/Z sweepWave = GetSweepWave(str, 0)
-	CHECK_WAVE(sweepWave, NORMAL_WAVE)
-
-	CHECK_EQUAL_VAR(2 * GetMinSamplingInterval(unit = "ms"), DimDelta(sweepWave, ROWS))
-	stimSetLengthRef = 0.958336 // length of StimulusSetA_DA_0
-	CHECK_CLOSE_VAR(DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) / 1000, stimSetLengthRef, tol = 1E-3)
+	CHECK_WAVE(sweepWave, TEXT_WAVE)
 
 	WAVE/Z configWave = GetConfigWave(sweepWave)
-	CHECK_WAVE(configWave, NORMAL_WAVE)
+	CHECK_WAVE(configWave, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 4)
 	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 8)
+
+	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(configWave))
+	CHECK_EQUAL_VAR(2 * GetMinSamplingInterval(unit = "ms"), DimDelta(channelAD, ROWS))
+	stimSetLengthRef = 0.958336 // length of StimulusSetA_DA_0
+	CHECK_CLOSE_VAR(DimSize(channelAD, ROWS) * DimDelta(channelAD, ROWS) / 1000, stimSetLengthRef, tol = 1E-3)
 
 	col = FindDimLabel(configWave, COLS, "DAQChannelType")
 	Duplicate/FREE/R=[][col] configWave, channelTypes
@@ -749,14 +751,15 @@ static Function TPDuringDAQ_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
 	WAVE/Z sweepWave = GetSweepWave(str, 0)
-	CHECK_WAVE(sweepWave, NORMAL_WAVE)
-
-	CHECK_EQUAL_VAR(2 * GetMinSamplingInterval(unit = "ms"), DimDelta(sweepWave, ROWS))
+	CHECK_WAVE(sweepWave, TEXT_WAVE)
 
 	WAVE/Z configWave = GetConfigWave(sweepWave)
-	CHECK_WAVE(configWave, NORMAL_WAVE)
+	CHECK_WAVE(configWave, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 4)
 	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 8)
+
+	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(configWave))
+	CHECK_EQUAL_VAR(2 * GetMinSamplingInterval(unit = "ms"), DimDelta(channelAD, ROWS))
 
 	col = FindDimLabel(configWave, COLS, "DAQChannelType")
 	Duplicate/FREE/R=[][col] configWave, channelTypes
