@@ -870,18 +870,10 @@ static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
 		case PSQ_DA_SCALE:
 			nonBL = totalOnsetDelay + PSQ_DS_PULSE_DUR + PSQ_BL_EVAL_RANGE
 			return DEBUGPRINTv(floor((length - nonBL) / PSQ_BL_EVAL_RANGE))
-		case PSQ_RHEOBASE:
-			WAVE durations = PSQ_GetPulseDurations(device, PSQ_RHEOBASE, sweepNo, totalOnsetDelay)
-			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
-			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
+		case PSQ_RHEOBASE: // fallthrough-by-design
 		case PSQ_RAMP:
-			WAVE durations = PSQ_GetPulseDurations(device, PSQ_RAMP, sweepNo, totalOnsetDelay)
-			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
-			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
 		case PSQ_CHIRP:
-			WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, sweepNo, totalOnsetDelay)
+			WAVE durations = PSQ_GetPulseDurations(device, type, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
 			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
