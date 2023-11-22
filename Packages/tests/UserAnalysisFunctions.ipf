@@ -342,7 +342,8 @@ Function ValidFunc_V3(device, s)
 					endfor
 				endif
 				break
-			case HARDWARE_NI_DAC:
+			case HARDWARE_NI_DAC: // intended drop through
+			case HARDWARE_SUTTER_DAC:
 				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, ROWS), DimSize(DAQDataWaveRef, ROWS))
 				Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizesDAQ = DimSize(DAQDataWaveRef[p], ROWS)
@@ -396,7 +397,8 @@ Function ValidFunc_V3(device, s)
 				CHECK_EQUAL_VAR(s.sampleIntervalDA, DimDelta(DAQDataWave, ROWS))
 				CHECK_EQUAL_VAR(s.sampleIntervalAD, DimDelta(DAQDataWave, ROWS))
 				break
-			case HARDWARE_NI_DAC:
+			case HARDWARE_NI_DAC: // intended drop-through
+			case HARDWARE_SUTTER_DAC:
 				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 				Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizes = DimSize(DAQDataWaveRef[p], ROWS)
 				CHECK_GE_VAR(s.lastValidRowIndexAD, 0)
