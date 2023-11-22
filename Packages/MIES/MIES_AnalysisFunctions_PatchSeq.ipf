@@ -3540,6 +3540,24 @@ Function PSQ_Ramp(device, s)
 
 					PSQ_Ramp_AddEpoch(device, s.headstage, NIChannel, "Name=DA suppression", "RA_DS", V_FIFOChunks, DimSize(NIChannel, ROWS) - 1)
 				endif
+			elseif(hardwareType == HARDWARE_SUTTER_DAC)
+				// the sutter XOP might prefetch upto 4096 samples
+
+				WAVE      config         = GetDAQConfigWave(device)
+				WAVE/WAVE SUDataWave     = daqDataWave
+				WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
+				// As only one AD and DA channel is allowed for this function, at index 0 the setting for first DA channel are expected
+				WAVE channelDA       = SUDataWave[0]
+				WAVE scaledChannelDA = scaledDataWave[0]
+				fifoPos = HW_GetDAFifoPosition(device, DATA_ACQUISITION_MODE)
+				if(fifoPos < DimSize(channelDA, ROWS))
+					MultiThread channelDA[fifoPos,] = 0
+					ChangeWaveLock(scaledChannelDA, 0)
+					MultiThread scaledChannelDA[fifoPos,] = 0
+					ChangeWaveLock(scaledChannelDA, 1)
+
+					PSQ_Ramp_AddEpoch(device, s.headstage, channelDA, "Name=DA suppression", "RA_DS", fifoPos, DimSize(channelDA, ROWS) - 1)
+				endif
 			else
 				ASSERT(0, "Unknown hardware type")
 			endif
