@@ -870,28 +870,23 @@ static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
 		case PSQ_DA_SCALE:
 			nonBL = totalOnsetDelay + PSQ_DS_PULSE_DUR + PSQ_BL_EVAL_RANGE
 			return DEBUGPRINTv(floor((length - nonBL) / PSQ_BL_EVAL_RANGE))
-			break
 		case PSQ_RHEOBASE:
 			WAVE durations = PSQ_GetPulseDurations(device, PSQ_RHEOBASE, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
 			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
-			break
 		case PSQ_RAMP:
 			WAVE durations = PSQ_GetPulseDurations(device, PSQ_RAMP, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
 			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
-			break
 		case PSQ_CHIRP:
 			WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
 			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
-			break
 		case PSQ_PIPETTE_BATH:
 			return DEBUGPRINTv(floor(PSQ_PB_GetPrePulseBaselineDuration(device, headstage) / PSQ_BL_EVAL_RANGE))
-			break
 		case PSQ_SEAL_EVALUATION:
 			// upper limit
 			return 2
