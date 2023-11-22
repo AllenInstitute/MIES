@@ -644,7 +644,7 @@ static Function PS_DS_Supra6_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, PSQ_TEST_HEADSTAGE)
 	Make/D/N=0 spikeFreqRef

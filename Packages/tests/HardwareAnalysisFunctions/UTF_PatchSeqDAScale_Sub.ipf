@@ -211,7 +211,7 @@ static Function PS_DS_Sub1_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
@@ -422,7 +422,7 @@ static Function PS_DS_Sub2_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
@@ -585,7 +585,7 @@ static Function PS_DS_Sub3_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
@@ -805,7 +805,7 @@ static Function PS_DS_Sub4_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
@@ -958,7 +958,7 @@ static Function PS_DS_Sub5_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
@@ -1111,7 +1111,7 @@ static Function PS_DS_Sub5a_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
@@ -1332,7 +1332,7 @@ static Function PS_DS_Sub6_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
@@ -1509,7 +1509,7 @@ static Function PS_DS_Sub7_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
@@ -1699,7 +1699,7 @@ static Function PS_DS_Sub8_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
@@ -1863,7 +1863,7 @@ static Function PS_DS_Sub9_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
@@ -2042,7 +2042,7 @@ static Function PS_DS_Sub10_REENTRY([str])
 	CHECK_WAVE(spikeCount, NULL_WAVE)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
-	CHECK_WAVE(pulseDuration, NULL_WAVE)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
 	CHECK_WAVE(fISlope, NULL_WAVE)
