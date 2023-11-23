@@ -60,7 +60,7 @@
 ///  PSQ_FMT_LBN_SWEEP_PASS                   Pass/fail state of the complete sweep                       On/Off   Numerical    DA, SP, RA, CR, PB, SE, VM, AR       No           No
 ///  PSQ_FMT_LBN_SET_PASS                     Pass/fail state of the complete set                         On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM, AR   No           No
 ///  PSQ_FMT_LBN_SAMPLING_PASS                Pass/fail state of the sampling interval check              On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM, AR   No           No
-///  PSQ_FMT_LBN_PULSE_DUR                    Pulse duration as determined experimentally                 ms       Numerical    RB, DA (Supra), CR                   No           Yes
+///  PSQ_FMT_LBN_PULSE_DUR                    Pulse duration as determined experimentally                 ms       Numerical    RB, DA, CR                           No           Yes
 ///  PSQ_FMT_LBN_SPIKE_PASS                   Pass/fail state of the spike search (No spikes → Pass)      On/Off   Numerical    CR, VM                               No           Yes
 ///  PSQ_FMT_LBN_DA_fI_SLOPE                  Fitted slope in the f-I plot                                % Hz/pA  Numerical    DA (Supra)                           No           Yes
 ///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS     Fitted slope in the f-I plot exceeds target value           On/Off   Numerical    DA (Supra)                           No           No
@@ -175,7 +175,7 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 		case PSQ_DA_SCALE:
 			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
 			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
-			s.pulseDuration        = PSQ_DS_PULSE_DUR
+			s.pulseDuration        = NaN
 			break
 		case PSQ_RHEOBASE:
 		case PSQ_RAMP:
@@ -462,7 +462,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		else // post pulse baseline
 			ASSERT(type != PSQ_PIPETTE_BATH, "Unexpected analysis function")
 
-			if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
+			if(type == PSQ_DA_SCALE || type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
 				WAVE durations = PSQ_GetPulseDurations(device, type, s.sweepNo, totalOnsetDelay)
 			else
 				WAVE durations = LBN_GetNumericWave()
@@ -867,31 +867,16 @@ static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
 	length = stopCollectionPoint * DimDelta(DAQDataWave, ROWS)
 
 	switch(type)
-		case PSQ_DA_SCALE:
-			nonBL = totalOnsetDelay + PSQ_DS_PULSE_DUR + PSQ_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL) / PSQ_BL_EVAL_RANGE))
-			break
+		case PSQ_DA_SCALE: // fallthrough-by-design
 		case PSQ_RHEOBASE:
-			WAVE durations = PSQ_GetPulseDurations(device, PSQ_RHEOBASE, sweepNo, totalOnsetDelay)
-			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
-			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
-			break
 		case PSQ_RAMP:
-			WAVE durations = PSQ_GetPulseDurations(device, PSQ_RAMP, sweepNo, totalOnsetDelay)
-			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
-			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
-			break
 		case PSQ_CHIRP:
-			WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, sweepNo, totalOnsetDelay)
+			WAVE durations = PSQ_GetPulseDurations(device, type, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
 			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
-			break
 		case PSQ_PIPETTE_BATH:
 			return DEBUGPRINTv(floor(PSQ_PB_GetPrePulseBaselineDuration(device, headstage) / PSQ_BL_EVAL_RANGE))
-			break
 		case PSQ_SEAL_EVALUATION:
 			// upper limit
 			return 2
@@ -2014,7 +1999,7 @@ End
 ///
 /// Prerequisites:
 /// - Does only work for one headstage
-/// - Assumes that the stimset has 500ms of pre pulse baseline, a 1000ms (#PSQ_DS_PULSE_DUR) pulse and at least 1000ms post pulse baseline.
+/// - Assumes that the stimset has 500ms of pre pulse baseline, a non-zero pulse and at least 1000ms post pulse baseline.
 /// - Each 500ms (#PSQ_BL_EVAL_RANGE) of the baseline is a chunk
 ///
 /// Testing:
@@ -2149,7 +2134,7 @@ Function PSQ_DAScale(device, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(device, s.headstage)
-			minLength = PSQ_DS_PULSE_DUR + 3 * PSQ_BL_EVAL_RANGE
+			minLength = 3 * PSQ_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", device, s.headstage, minLength
 				ControlWindowToFront()
@@ -2273,11 +2258,7 @@ Function PSQ_DAScale(device, s)
 						endif
 					endif
 
-					WAVE durations = PSQ_DeterminePulseDuration(device, s.sweepNo, PSQ_DA_SCALE, totalOnsetDelay)
-					key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_PULSE_DUR)
-					ED_AddEntryToLabnotebook(device, key, durations, unit = "ms", overrideSweepNo = s.sweepNo)
-
-					sprintf msg, "Spike detection: result %d, number of spikes %d, pulse duration %d\r", spikeDetection[s.headstage], numberOfSpikesLBN[s.headstage], durations[s.headstage]
+					sprintf msg, "Spike detection: result %d, number of spikes %d\r", spikeDetection[s.headstage], numberOfSpikesLBN[s.headstage]
 					DEBUGPRINT(msg)
 
 					acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(device, s.sweepNo, s.headstage)

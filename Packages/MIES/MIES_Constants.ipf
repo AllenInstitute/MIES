@@ -47,7 +47,7 @@ Constant RESULTS_VERSION     = 2
 Constant PSQ_PIPETTE_BATH_VERSION    = 4
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 2
 Constant PSQ_CHIRP_VERSION           = 13
-Constant PSQ_DA_SCALE_VERSION        = 5
+Constant PSQ_DA_SCALE_VERSION        = 6
 Constant PSQ_RAMP_VERSION            = 6
 Constant PSQ_RHEOBASE_VERSION        = 5
 Constant PSQ_SQUARE_PULSE_VERSION    = 4
@@ -1063,7 +1063,6 @@ Constant MAX_NUM_MS_TIMERS = 10
 /// @{
 Constant PSQ_BL_EVAL_RANGE = 500
 
-Constant PSQ_DS_PULSE_DUR        = 1000
 Constant PSQ_DS_SPIKE_LEVEL      = -20 // mV
 
 StrConstant PSQ_CR_BEM = "Symmetric;Depolarized;Hyperpolarized"
