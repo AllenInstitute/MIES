@@ -551,6 +551,7 @@ Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCR
 
 	[key, keyTxt] = PrepareLBN_IGNORE(device)
 
+	// Use old 2D data format as sweep template and rely on sweep splitting for upconversion
 	WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 	WAVE config = GetDAQConfigWave(device)
 	hwType = GetHardwareType(device)
@@ -611,6 +612,9 @@ Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCR
 	DFREF dfr = GetDeviceDataPath(device)
 	MoveWave sweep, dfr:$GetSweepWaveName(sweepNo)
 	MoveWave config, dfr:$GetConfigWaveName(sweepNo)
+
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
+	win = GetCurrentWindow()
 	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo)
 
 	list = GetAllDevicesWithContent()
@@ -626,7 +630,6 @@ Function/S GetDataBrowserWithData()
 
 	win = DB_OpenDataBrowser()
 	CreateFakeSweepData(win, device)
-	PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
 	win = GetCurrentWindow()
 
 	result = BSP_GetDevice(win)
