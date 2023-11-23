@@ -448,7 +448,16 @@ Function DB_UpdateSweepPlot(win)
 
 		WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, sweepNo=sweepNo)
 
-		DB_SplitSweepsIfReq(win, sweepNo)
+		if(DB_SplitSweepsIfReq(win, sweepNo) != 0)
+			BUG("Splitting sweep failed on DB update")
+			continue
+		endif
+
+		WAVE/Z/SDFR=dfr sweepWave = $GetSweepWaveName(sweepNo)
+		if(!WaveExists(sweepWave))
+			DEBUGPRINT("Expected sweep wave does not exist. Hugh?")
+			continue
+		endif
 		WAVE config = GetConfigWave(sweepWave)
 
 		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, \
