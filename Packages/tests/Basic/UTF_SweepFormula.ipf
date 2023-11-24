@@ -31,29 +31,14 @@ static Function CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	CHECK_EQUAL_STR(jsonDump0, jsonDump1)
 End
 
-Function [string win, string device] CreateFakeDataBrowserWindow()
+Function [string win, string device] CreateEmptyUnlockedDataBrowserWindow()
 
 	string extWin
 
 	device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
-	win = DATABROWSER_WINDOW_NAME
-
-	if(windowExists(win))
-		DoWindow/K $win
-	endif
-
-	Display/N=$win as device
-	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
-	BSP_SetDataBrowser(win, BROWSER_MODE_USER)
-	BSP_SetDevice(win, device)
-	MIES_DB#DB_SetUserData(win, device)
-	TUD_Clear(win)
-
-	NewPanel/EXT=3/HOST=$win/N=$EXT_PANEL_SETTINGSHISTORY
-	extWin = win + "#" + EXT_PANEL_SETTINGSHISTORY
-
-	PopupMenu popup_experiment, win=$extWin, value="A;B",mode=1
-	PopupMenu popup_device, win=$extWin, value="C;D", mode=2
+	DFREF dfr = GetDeviceDataPath(device)
+	win = DB_OpenDataBrowser()
+	return [win, device]
 End
 
 static Function/S CreateFormulaGraphForBrowser(string browser)
@@ -91,19 +76,56 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	Make/U/I/N=(numChannels) connections = {7,5,3,1}
 	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) clampModeValues = NaN
 	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = lbnTextValue
 	Make/FREE/T/N=(1, 1) dacKeys = "DAC"
+	Make/FREE/T/N=(1, 1) adcKeys = "ADC"
+	Make/FREE/T/N=(1, 1) clampModeKeys = "Operating Mode"
 	Make/FREE/T/N=(1, 1) textKeys = lbnTextKey
 
-	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
-
 	DFREF dfr = GetDeviceDataPath(device)
+	GetDAQDeviceID(device)
+
 	for(i = 0; i < numSweeps; i += 1)
 		sweepNumber = i
 		WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 		WAVE sweep = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
 		WAVE config = GetDAQConfigWave(device)
 		Redimension/N=(numChannels, -1) config
+		for(j = 0; j < numChannels; j += 1)
+			clampMode = mod(sweepNumber, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
+			channelNumber = channels[i][j]
+			values[connections[j]] = channelNumber
+			clampModeValues[connections[j]] = clampMode
+			config[j][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
+			config[j][%ChannelNumber] = channelNumber
+		endfor
+
+		// create sweeps with dummy data for sweeps() operation thats called when omitting select
+		MoveWave sweep, dfr:$GetSweepWaveName(sweepNumber)
+		MoveWave config, dfr:$GetConfigWaveName(sweepNumber)
+
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values, clampModeValues
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 valuesText
+		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
+		ED_AddEntriesToLabnotebook(values, dacKeys, sweepNumber, device, mode)
+		ED_AddEntriesToLabnotebook(values, adcKeys, sweepNumber, device, mode)
+		ED_AddEntriesToLabnotebook(clampModeValues, clampModeKeys, sweepNumber, device, mode)
+		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values, clampModeValues
+		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
+		ED_AddEntriesToLabnotebook(valuesText, textKeys, sweepNumber, device, mode)
+
+		PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
+		win = GetCurrentWindow()
+		REQUIRE_EQUAL_VAR(MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber), 0)
+	endfor
+
+	RemoveFromGraph/ALL
+	TUD_Clear(win)
+
+	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
+	for(i = 0; i < numSweeps; i += 1)
+		sweepNumber = i
 		for(j = 0; j < numChannels; j += 1)
 			name = UniqueName("data", 1, 0)
 			trace = "trace_" + name
@@ -114,23 +136,7 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 			channelNumber = channels[i][j]
 			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},         \
 									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
-			values[connections[j]] = channelNumber
-			config[j][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
-			config[j][%ChannelNumber] = channelNumber
 		endfor
-
-		// create sweeps with dummy data for sweeps() operation thats called when omitting select
-		MoveWave sweep, dfr:$GetSweepWaveName(sweepNumber)
-		MoveWave config, dfr:$GetConfigWaveName(sweepNumber)
-		MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber)
-
-		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
-		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 valuesText
-		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
-		ED_AddEntriesToLabnotebook(values, dacKeys, sweepNumber, device, mode)
-		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
-		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
-		ED_AddEntriesToLabnotebook(valuesText, textKeys, sweepNumber, device, mode)
 	endfor
 
 	return [numSweeps, numChannels, channels]
@@ -155,9 +161,9 @@ End
 static Function primitiveOperations()
 
 	variable jsonID0, jsonID1
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	jsonID0 = JSON_Parse("null")
 	jsonID1 = DirectToFormulaParser("")
@@ -177,9 +183,9 @@ End
 
 static Function TestNonFiniteValues()
 
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	TestOperationMinMaxHelper(win, "\"inf\"", "inf", +inf)
 	TestOperationMinMaxHelper(win, "\"-inf\"", "-inf", -inf)
@@ -192,7 +198,7 @@ End
 //
 //	string win, device, str
 //
-//	[win, device] = CreateFakeDataBrowserWindow()
+//	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 //
 //	str = "\"" + num2str(var) + "\""
 //	TestOperationMinMaxHelper(win, "{\"+\":[1," + str + "]}", "1+" + str, 1 + var)
@@ -203,9 +209,9 @@ End
 
 static Function Transitions()
 
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	// number calculation function
 	TestOperationMinMaxHelper(win, "{\"+\": [1,{\"max\": [1]}]}", "1+max(1)", 2)
@@ -406,9 +412,9 @@ End
 
 static Function primitiveOperations2D()
 
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	arrayOperations(win, "[1,2]", 1)
 	arrayOperations(win, "[[1,2],[3,4],[5,6]]", 1)
@@ -421,9 +427,9 @@ End
 
 static Function TestArrayExpansionText()
 
-	string win, device, str
+	string win, str
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	str = "[[\"1\"],[\"3\",\"4\"],[\"5\",\"6\"]]"
 	WAVE/T output = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
@@ -437,9 +443,9 @@ End
 
 static Function NoConcatenationOfOperations()
 
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	TestOperationMinMaxHelper(win, "{\"+\":[1,{\"+\":[2,{\"+\":[3,4]}]}]}", "1+2+3+4", 1 + 2 + 3 + 4)
 	TestOperationMinMaxHelper(win, "{\"-\":[{\"-\":[{\"-\":[1,2]},3]},4]}", "1-2-3-4", 1 - 2 - 3 - 4)
@@ -450,9 +456,9 @@ End
 // + > - > * > /
 static Function orderOfCalculation()
 
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	// + and -
 	TestOperationMinMaxHelper(win, "{\"+\":[2,{\"-\":[3,4]}]}", "2+3-4", 2 + 3 - 4)
@@ -482,9 +488,9 @@ End
 
 static Function TestSigns()
 
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	// using as sign after primitive operation
 	TestOperationMinMaxHelper(win, "{\"+\":[1,1]}", "+1++1", +1+(+1))
@@ -576,9 +582,9 @@ End
 
 static Function TestSigns4()
 
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	// using as sign for operations
 	TestOperationMinMaxHelper(win, "{\"max\":[1]}", "+max(1)", 1)
@@ -615,9 +621,9 @@ End
 
 static Function brackets()
 
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	TestOperationMinMaxHelper(win, "{\"+\":[1,2]}", "(1+2)", 1 + 2)
 	TestOperationMinMaxHelper(win, "{\"+\":[{\"+\":[1,2]},{\"+\":[3,4]}]}", "(1+2)+(3+4)", (1 + 2) + (3 + 4))
@@ -776,9 +782,9 @@ End
 static Function TestOperationMinMax()
 
 	string str, wavePath
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	TestOperationMinMaxHelper(win, "{\"min\":[1]}", "min(1)", 1)
 	TestOperationMinMaxHelper(win, "{\"min\":[1,2]}", "min(1,2)", min(1, 2))
@@ -833,9 +839,9 @@ End
 static Function TestOperationText()
 
 	string str, strRef, wavePath
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	str = "text()"
 	try
@@ -865,9 +871,9 @@ End
 static Function TestOperationLog()
 
 	string histo, histoAfter, str, strRef
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	str = "log()"
 	WAVE/WAVE outputRef = SF_ExecuteFormula(str, win, useVariables=0)
@@ -913,9 +919,9 @@ End
 static Function TestOperationButterworth()
 
 	string str, strref, dataType
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	str = "butterworth()"
 	try
@@ -965,9 +971,9 @@ End
 
 static Function TestOperationChannels()
 
-	string win, device, str
+	string win, str
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	Make/FREE input = {{0}, {NaN}}
 	SetDimLabel COLS, 0, channelType, input
@@ -1034,9 +1040,9 @@ static Function TestOperationDifferentiateIntegrate()
 
 	variable array
 	string str, strRef, dataType, wavePath
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	// differentiate/integrate 1D waves along rows
 	str = "derivative([0,1,4,9,16,25,36,49,64,81])"
@@ -1125,9 +1131,9 @@ static Function TestOperationArea()
 
 	variable array
 	string str, strref, dataType
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	// rectangular triangle has area 1/2 * a * b
 	// non-zeroed
@@ -1177,9 +1183,9 @@ static Function TestOperationSetscale()
 	variable ref
 	string refUnit, unit
 	string str, strRef, dataScale
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	str = "setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"
 	WAVE wv = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
@@ -1231,9 +1237,9 @@ static Function TestOperationRange()
 	variable jsonID0, jsonID1
 
 	string str, strRef, dataType
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	jsonID0 = DirectToFormulaParser("1…10")
 	jsonID1 = JSON_Parse("{\"…\":[1,10]}")
@@ -1274,9 +1280,9 @@ End
 static Function TestOperationFindLevel()
 
 	string str, strRef, dataType
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	// requires at least two arguments
 	try
@@ -1401,10 +1407,10 @@ static Function TestOperationAPFrequency2([WAVE wv])
 
 	formula = note(wv)
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	CreateFakeSweepData(win, device, sweepNo=0, sweepGen=FakeSweepDataGeneratorAPF0)
-	CreateFakeSweepData(win, device, sweepNo=1, sweepGen=FakeSweepDataGeneratorAPF1)
+	win = CreateFakeSweepData(win, device, sweepNo=0, sweepGen=FakeSweepDataGeneratorAPF0)
+	win = CreateFakeSweepData(win, device, sweepNo=1, sweepGen=FakeSweepDataGeneratorAPF1)
 
 	WAVE/WAVE outputRef = SF_ExecuteFormula(formula, win, useVariables=0)
 	numResults = DimSize(wv, ROWS)
@@ -1424,9 +1430,9 @@ End
 static Function TestOperationAPFrequency()
 
 	string str, strRef, dataType
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	// requires at least one arguments
 	str = "apfrequency()"
@@ -1561,9 +1567,9 @@ End
 static Function TestOperationWave()
 
 	string str
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	KillWaves/Z wave0
 	Make/O/N=(10) wave0 = p
@@ -1596,9 +1602,9 @@ static Function TestOperationTPBase_TPSS_TPInst([str])
 	string str
 
 	string func, formula, strRef, dataType, dataTypeRef
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	func = StringFromList(0, str)
 	dataTypeRef = StringFromList(1, str)
@@ -1645,9 +1651,9 @@ End
 static Function TestOperationTPfit()
 
 	string formula, strRef, dataType, dataTypeRef
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	formula = "tpfit(exp,tau)"
 	WAVE/WAVE output = SF_ExecuteFormula(formula, win, useVariables=0)
@@ -1752,9 +1758,9 @@ static Function TestVariousFunctions([str])
 
 	string func, oneDResult, twoDResult
 	variable jsonIDOneD, jsonIDTwoD
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	func = StringFromList(0, str, ":")
 	oneDResult = StringFromList(1, str, ":")
@@ -2054,14 +2060,14 @@ static Function TestOperationSelect()
 
 	string win, device
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
 	sweepNo = 0
 
-	CreateFakeSweepData(win, device, sweepNo=sweepNo)
-	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
-	CreateFakeSweepData(win, device, sweepNo=sweepNo + 2)
-	CreateFakeSweepData(win, device, sweepNo=sweepNo + 3)
+	win = CreateFakeSweepData(win, device, sweepNo=sweepNo)
+	win = CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
+	win = CreateFakeSweepData(win, device, sweepNo=sweepNo + 2)
+	win = CreateFakeSweepData(win, device, sweepNo=sweepNo + 3)
 
 	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 	Make/FREE/N=0 sweepTemplate
@@ -2413,10 +2419,10 @@ static Function TestOperationAverage()
 	string str
 	STRUCT RGBColor s
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	CreateFakeSweepData(win, device, sweepNo=0)
-	CreateFakeSweepData(win, device, sweepNo=1)
+	win = CreateFakeSweepData(win, device, sweepNo=0)
+	win = CreateFakeSweepData(win, device, sweepNo=1)
 
 	str = "avg()"
 	try
@@ -2497,14 +2503,14 @@ static Function TestOperationData()
 	epochKeys[0][0][0] = EPOCHS_ENTRY_KEY
 	epochKeys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
 	sweepNo = 0
 
-	CreateFakeSweepData(win, device, sweepNo=sweepNo)
-	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
-	CreateFakeSweepData(win, device, sweepNo=sweepNo + 2)
-	CreateFakeSweepData(win, device, sweepNo=sweepNo + 3)
+	win = CreateFakeSweepData(win, device, sweepNo=sweepNo)
+	win = CreateFakeSweepData(win, device, sweepNo=sweepNo + 1)
+	win = CreateFakeSweepData(win, device, sweepNo=sweepNo + 2)
+	win = CreateFakeSweepData(win, device, sweepNo=sweepNo + 3)
 
 	epochStr = "0.00" + num2istr(rangeStart0) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch,0,:"
 	epochStr += "0.00" + num2istr(rangeStart1) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch1,0,:"
@@ -2752,13 +2758,13 @@ static Function TestOperationPowerSpectrum()
 	variable sweepNo, val
 	string str, strRef
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
 	sweepNo = 0
 	FUNCREF FakeSweepDataGeneratorProto sweepGen = FakeSweepDataGeneratorPS
 
-	CreateFakeSweepData(win, device, sweepNo=sweepNo, sweepGen=FakeSweepDataGeneratorPS)
-	CreateFakeSweepData(win, device, sweepNo=sweepNo + 1, sweepGen=FakeSweepDataGeneratorPS)
+	win = CreateFakeSweepData(win, device, sweepNo=sweepNo, sweepGen=FakeSweepDataGeneratorPS)
+	win = CreateFakeSweepData(win, device, sweepNo=sweepNo + 1, sweepGen=FakeSweepDataGeneratorPS)
 
 	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
@@ -2900,11 +2906,10 @@ static Function TestOperationLabNotebook()
 
 	string win, device
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
 	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_ADC, textKey, textValue)
-
-	ModifyGraph/W=$win log(left)=1
+	win = GetCurrentWindow()
 
 	Make/FREE/N=(numSweeps * numChannels) channelsRef
 	channelsRef[] = channels[trunc(p / numChannels)][mod(p, numChannels)]
@@ -2948,7 +2953,7 @@ static Function TestOperationEpochs()
 	string str, trace, key, name, win, device, epoch2, textKey, textValue, epochLongName
 	variable activeChannelsDA = 4
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
 	textKey   = EPOCHS_ENTRY_KEY
 	textValue = "0.5000000,0.5100000,Epoch=0;Type=Pulse Train;Amplitude=1;Pulse=48;ShortName=E0_PT_P48;,2,:"
@@ -2958,6 +2963,7 @@ static Function TestOperationEpochs()
 	textValue += "0.5100000,0.5200000," + epoch2 + ",2,"
 
 	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_DAC, textKey, textValue)
+	win = GetCurrentWindow()
 
 	str = "epochs(\"E0_PT_P48\")"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
@@ -3151,7 +3157,9 @@ static Function AvoidAssertingOutWithNoSweeps([string str])
 
 	string win, device
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+	MIES_DB#DB_LockToDevice(win, device)
+	win = GetCurrentWindow()
 
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables=0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
@@ -3351,9 +3359,9 @@ End
 
 static Function NonExistingOperation()
 
-	string win, device, str
+	string win, str
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	str = "bogusOp(1,2,3)"
 	try
@@ -3368,9 +3376,9 @@ End
 
 static Function ZeroSizedSubArrayTest()
 
-	string win, device
+	string win
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	WAVE wTextRef = MIES_SF#SF_FormulaExecutor(win, JSON_Parse("[]"))
 	CHECK(IsTextWave(wTextRef))
@@ -3481,9 +3489,9 @@ End
 
 static Function BrowserGraphConnectionWorks()
 
-	string formulaGraph, browser, device, result
+	string formulaGraph, browser, result
 
-	[browser, device] = CreateFakeDataBrowserWindow()
+	browser = GetDataBrowserWithData()
 
 	formulaGraph = CreateFormulaGraphForBrowser(browser)
 
@@ -3502,10 +3510,10 @@ static Function TestArgSetup()
 	string win, device, formula, argSetupStack, argSetup, str
 	variable numResults, jsonId, jsonId1
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	CreateFakeSweepData(win, device, sweepNo=0, sweepGen=FakeSweepDataGeneratorAPF0)
-	CreateFakeSweepData(win, device, sweepNo=1, sweepGen=FakeSweepDataGeneratorAPF1)
+	win = CreateFakeSweepData(win, device, sweepNo=0, sweepGen=FakeSweepDataGeneratorAPF0)
+	win = CreateFakeSweepData(win, device, sweepNo=1, sweepGen=FakeSweepDataGeneratorAPF1)
 
 	formula = "apfrequency(data(cursors(A,B),select(channels(AD),[0,1],all)), 3, 15, time, normoversweepsmin,time)"
 	WAVE/WAVE outputRef = SF_ExecuteFormula(formula, win, useVariables=0)
@@ -3551,10 +3559,10 @@ End
 
 static Function TestInputCodeCheck()
 
-	string win, device
+	string win
 	string formula, jsonRef, jsonTxt
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = GetDataBrowserWithData()
 
 	DFREF dfr = SF_GetBrowserDF(win)
 	NVAR jsonID = $GetSweepFormulaJSONid(dfr)
@@ -3605,9 +3613,9 @@ static Function TestVariables1([WAVE wv])
 
 	WAVE/WAVE wRef = wv
 
-	[win, device] = CreateFakeDataBrowserWindow()
-	CreateFakeSweepData(win, device, sweepNo=0)
-	CreateFakeSweepData(win, device, sweepNo=1)
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+	win = CreateFakeSweepData(win, device, sweepNo=0)
+	win = CreateFakeSweepData(win, device, sweepNo=1)
 
 	WAVE/T formulaAndRest = wRef[0]
 
@@ -3643,10 +3651,10 @@ static Function TestVariables2()
 	string win, device
 	string str, code
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	CreateFakeSweepData(win, device, sweepNo=0)
-	CreateFakeSweepData(win, device, sweepNo=1)
+	win = CreateFakeSweepData(win, device, sweepNo=0)
+	win = CreateFakeSweepData(win, device, sweepNo=1)
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
 	// reuse of the same variable name
@@ -3752,7 +3760,9 @@ static Function TestOperationMerge()
 
 	string win, device, code
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo=0)
 
 	// no input
 	code = "merge()"
@@ -3808,7 +3818,9 @@ static Function TestOperationFitLine()
 
 	string win, device, code
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo=0)
 
 	code = "fitline()"
 	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
@@ -3856,7 +3868,9 @@ static Function TestOperationFit()
 
 	string win, device, code
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo=0)
 
 	// straight line with slope 1 and offset 0
 	code = "fit([1, 3], [1, 3], fitline())"
@@ -3944,7 +3958,9 @@ static Function TestOperationDataset()
 
 	string win, device, code
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo=0)
 
 	code = "dataset()"
 	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)

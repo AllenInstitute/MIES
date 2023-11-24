@@ -537,7 +537,7 @@ Function/WAVE FakeSweepDataGeneratorDefault(WAVE sweep, variable numChannels)
 	return sweep
 End
 
-Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCREF FakeSweepDataGeneratorProto sweepGen])
+Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCREF FakeSweepDataGeneratorProto sweepGen])
 
 	string list, key, keyTxt
 	variable numChannels, hwType
@@ -606,7 +606,7 @@ Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCR
 		default:
 			INFO("Unsupported sweep number in test setup")
 			FAIL()
-			return NaN
+			return ""
 	endswitch
 
 	DFREF dfr = GetDeviceDataPath(device)
@@ -615,12 +615,14 @@ Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCR
 
 	PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
 	win = GetCurrentWindow()
-	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo)
+	REQUIRE_EQUAL_VAR(MIES_DB#DB_SplitSweepsIfReq(win, sweepNo), 0)
 
 	list = GetAllDevicesWithContent()
 	list = RemoveEnding(list, ";")
 	CHECK_EQUAL_VAR(ItemsInList(list), 1)
 	CHECK_EQUAL_STR(list, device)
+
+	return win
 End
 
 Function/S GetDataBrowserWithData()
