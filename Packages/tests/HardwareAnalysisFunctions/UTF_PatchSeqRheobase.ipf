@@ -200,10 +200,13 @@ static Function PS_RB1_REENTRY([str])
 	onsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
 	WAVE/Z stimSetLengths = GetStimsetLengths_IGNORE(sweepNo, str)
-	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
 
-	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(str, sweeps[p]), ROWS)
-
+	Make/FREE/N=(numEntries) sweepLengths
+	for(i = 0; i < numEntries; i += 1)
+		WAVE sweepT = GetSweepWave(str, sweeps[i])
+		WAVE channel = ResolveSweepChannel(sweepT, 0)
+		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
+	endfor
 	CHECK_EQUAL_WAVES(stimSetLengths, sweepLengths, mode = WAVE_DATA)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
@@ -1072,10 +1075,13 @@ static Function PS_RB11_REENTRY([str])
 	onsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
 	WAVE/Z stimSetLengths = GetStimsetLengths_IGNORE(sweepNo, str)
-	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
 
-	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(str, sweeps[p]), ROWS)
-
+	Make/FREE/N=(numEntries) sweepLengths
+	for(i = 0; i < numEntries; i += 1)
+		WAVE sweepT = GetSweepWave(str, sweeps[i])
+		WAVE channel = ResolveSweepChannel(sweepT, 0)
+		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
+	endfor
 	CHECK_EQUAL_WAVES(stimSetLengths, sweepLengths, mode = WAVE_DATA)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
