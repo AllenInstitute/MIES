@@ -3073,6 +3073,12 @@ static Function/S PSX_GetPSXGraph(string win)
 	ASSERT(0, "Could not find an psx graph as part of the window hierarchy")
 End
 
+/// @brief Return the name of the possibly non-existing stats subwindow
+static Function/S PSX_GetPSXStatsGraph(string win)
+
+	return GetMainWindow(win) + "#Graph1"
+End
+
 static Function/WAVE PSX_GetEventsInsideAxisRange(string win, string traceName, variable first, variable last, WAVE xCrds)
 	WAVE data = TraceNameToWaveRef(win, traceName)
 
