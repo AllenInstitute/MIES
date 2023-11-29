@@ -3696,3 +3696,270 @@ Function TestDefaultFormula()
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
 End
+
+static Function TestParseFitConstraints()
+
+	Make/D/N=0 emptyWave
+
+	[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints($"", 0)
+	CHECK_EQUAL_WAVES(holdWave, emptyWave)
+	CHECK_EQUAL_WAVES(initialWave, emptyWave)
+
+	[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints($"", 1)
+	CHECK_EQUAL_WAVES(holdWave, {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(initialWave, {NaN}, mode = WAVE_DATA)
+
+	[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints({"K0=1.23", "K1=4.56"}, 3)
+	CHECK_EQUAL_WAVES(holdWave, {1, 1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(initialWave, {1.23, 4.56, NaN}, mode = WAVE_DATA, tol = 1e-3)
+
+	// too many elements in constraints wave
+	try
+		[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints({"abcd"}, 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid constraints wave format, as the regexp does not match
+	try
+		[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints({"abcd"}, 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid constraints wave format, as the index, K1, is too large
+	try
+		[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints({"K1=1"}, 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid constraints wave format, as the value is not a number
+	try
+		[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints({"K0=abcd"}, 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+static Function TestOperationMerge()
+
+	string win, device, code
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	// no input
+	code = "merge()"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// too many points (2) in the input datasets
+	code = "merge(dataset([1, 2]))"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// mixed input wave types
+	code = "merge(dataset([1], [\"a\"]))"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	code = "merge(dataset([1], [2]))"
+	WAVE wv = SF_ExecuteFormula(code, win, useVariables=0, singleResult = 1)
+	CHECK_WAVE(wv, FREE_WAVE, minorType = DOUBLE_WAVE)
+	Make/FREE/D refWv = {1, 2}
+	CHECK_EQUAL_WAVES(wv, refWv)
+
+	code = "merge(dataset([\"a\"], [\"b\"]))"
+	WAVE wv = SF_ExecuteFormula(code, win, useVariables=0, singleResult = 1)
+	CHECK_WAVE(wv, TEXT_WAVE)
+	Make/FREE/T refWvTxt = {"a", "b"}
+	CHECK_EQUAL_WAVES(wv, refWvTxt)
+
+	code = "merge(dataset())"
+	WAVE/WAVE/Z output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
+
+	code = "merge(dataset(wave(I_DONT_EXIST)))"
+	WAVE/WAVE/Z output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
+End
+
+static Function TestOperationFitLine()
+
+	string win, device, code
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	code = "fitline()"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 3)
+	WAVE/T fitType = output[%fitType]
+	CHECK_EQUAL_STR(fitType[0], "line")
+	WAVE holdWave = output[%holdWave]
+	CHECK_EQUAL_WAVES(holdWave, {0, 0}, mode = WAVE_DATA)
+	WAVE initialValues = output[%initialValues]
+	CHECK_EQUAL_WAVES(initialValues, {NaN, NaN}, mode = WAVE_DATA)
+
+	code = "fitline([\"K0=17\"])"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 3)
+	WAVE/T fitType = output[%fitType]
+	CHECK_EQUAL_STR(fitType[0], "line")
+	WAVE holdWave = output[%holdWave]
+	CHECK_EQUAL_WAVES(holdWave, {1, 0}, mode = WAVE_DATA)
+	WAVE initialValues = output[%initialValues]
+	CHECK_EQUAL_WAVES(initialValues, {17, NaN}, mode = WAVE_DATA)
+
+	code = "fitline([\"K0=1\", \"K1=3\"])"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 3)
+	WAVE/T fitType = output[%fitType]
+	CHECK_EQUAL_STR(fitType[0], "line")
+	WAVE holdWave = output[%holdWave]
+	CHECK_EQUAL_WAVES(holdWave, {1, 1}, mode = WAVE_DATA)
+	WAVE initialValues = output[%initialValues]
+	CHECK_EQUAL_WAVES(initialValues, {1, 3}, mode = WAVE_DATA)
+
+	code = "fitline(1, 2)"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+static Function TestOperationFit()
+
+	string win, device, code
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	// straight line with slope 1 and offset 0
+	code = "fit([1, 3], [1, 3], fitline())"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
+	WAVE wv = output[0]
+	Make/FREE/D wvRef = {1, 3}
+	SetScale/P x, 1, 2, wvRef
+	CHECK_EQUAL_WAVES(wvRef, wv, mode = WAVE_DATA | WAVE_DATA_TYPE | WAVE_SCALING)
+
+	WAVE/Z fitCoeff = JWN_GetNumericWaveFromWaveNote(wv, SF_META_USER_GROUP + SF_META_FIT_COEFF)
+	CHECK_WAVE(fitCoeff, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_WAVES(fitCoeff, {0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z fitSigma = JWN_GetNumericWaveFromWaveNote(wv, SF_META_USER_GROUP + SF_META_FIT_SIGMA)
+	CHECK_WAVE(fitSigma, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_WAVES(fitSigma, {NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z/T fitParams = JWN_GetTextWaveFromWaveNote(wv, SF_META_USER_GROUP + SF_META_FIT_PARAMETER)
+	CHECK_WAVE(fitParams, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(fitParams, {"Offset;Slope"}, mode = WAVE_DATA)
+
+	// more complex, use CurveFit for generating reference values
+	code = "fit([0, 1, 2], [4, 5, 6], fitline([K0=3]))"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
+	WAVE wv = output[0]
+
+	variable/G K0 = 3
+
+	Make/FREE/D xData = {0, 1, 2}
+	Make/FREE/D yData = {4, 5, 6}
+	CurveFit/Q/H="10" line yData/X=xData/D
+
+	WAVE/Z fitRef = fit__free_
+	MakeWaveFree(fitRef)
+	CHECK_EQUAL_WAVES(fitRef, wv, mode = WAVE_DATA | WAVE_DATA_TYPE | WAVE_SCALING)
+
+	WAVE W_coef
+	MakeWaveFree(W_coef)
+
+	WAVE/Z fitCoeff = JWN_GetNumericWaveFromWaveNote(wv, SF_META_USER_GROUP + SF_META_FIT_COEFF)
+	CHECK_WAVE(fitCoeff, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_WAVES(fitCoeff, W_coef, mode = WAVE_DATA)
+
+	WAVE W_sigma
+	MakeWaveFree(W_sigma)
+
+	WAVE/Z fitSigma = JWN_GetNumericWaveFromWaveNote(wv, SF_META_USER_GROUP + SF_META_FIT_SIGMA)
+	CHECK_WAVE(fitSigma, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_WAVES(fitSigma, W_sigma, mode = WAVE_DATA)
+
+	WAVE/Z/T fitParams = JWN_GetTextWaveFromWaveNote(wv, SF_META_USER_GROUP + SF_META_FIT_PARAMETER)
+	CHECK_WAVE(fitParams, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(fitParams, {"Offset;Slope"}, mode = WAVE_DATA)
+
+	// non-matching x and y sizes
+	code = "fit([1, 2], [3, 4, 5], fitline())"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
+	CHECK(!WaveExists(output[0]))
+
+	// unknown fit function
+	code = "fit([1, 2], [3, 4], dataset(3))"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// mismatched dataset sizes
+	code = "fit(dataset([1]), dataset([1], [2]), fitline())"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+static Function TestOperationDataset()
+
+	string win, device, code
+
+	[win, device] = CreateFakeDataBrowserWindow()
+
+	code = "dataset()"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
+
+	code = "dataset(1)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1)
+	CHECK_EQUAL_WAVES(output[0], {1}, mode = WAVE_DATA)
+
+	code = "dataset(1, [2, 3], \"abcd\")"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables=0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 3)
+	CHECK_EQUAL_WAVES(output[0], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(output[1], {2, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(output[2], {"abcd"}, mode = WAVE_DATA)
+End

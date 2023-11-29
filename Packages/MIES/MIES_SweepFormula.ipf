@@ -207,7 +207,8 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_LOG10, SF_OP_APFREQUENCY, SF_OP_CURSORS, SF_OP_SWEEPS, SF_OP_AREA, SF_OP_SETSCALE, SF_OP_BUTTERWORTH, \
 	                  SF_OP_CHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP,         \
 	                  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM, SF_OP_TPSS, SF_OP_TPBASE, SF_OP_TPINST, SF_OP_TPFIT,        \
-	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_FILTER}
+	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_FILTER,  \
+	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET}
 
 	return wt
 End
@@ -1101,6 +1102,18 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 			break
 		case SF_OP_PSX_DECONV_FILTER:
 			WAVE out = PSX_OperationDeconvFilter(jsonId, jsonPath, graph)
+			break
+		case SF_OP_MERGE:
+			WAVE out = SF_OperationMerge(jsonId, jsonPath, graph)
+			break
+		case SF_OP_FIT:
+			WAVE out = SF_OperationFit(jsonId, jsonPath, graph)
+			break
+		case SF_OP_FITLINE:
+			WAVE out = SF_OperationFitLine(jsonId, jsonPath, graph)
+			break
+		case SF_OP_DATASET:
+			WAVE out = SF_OperationDataset(jsonId, jsonPath, graph)
 			break
 		default:
 			SFH_ASSERT(0, "Undefined Operation", jsonId=jsonId)
@@ -5334,4 +5347,178 @@ Function/S SF_GetDefaultFormula()
 	       "dat = data($trange, $sel)\r" +            \
 	       "\r" +                                     \
 	       "$dat"
+End
+
+// merge(array data1, array data2, ...)
+Function/WAVE SF_OperationMerge(variable jsonId, string jsonPath, string graph)
+
+	variable numElements, numOutputDatasets, wvType
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_MERGE, 1, maxArgs = 1)
+	WAVE/WAVE inputWithNull = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
+
+	WAVE/WAVE/ZZ input = ZapNullRefs(inputWithNull)
+	WaveClear inputWithNull
+
+	numElements = WaveExists(input) ? DimSize(input, ROWS) : 0
+
+	numOutputDatasets = (numElements > 0)
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_MERGE, numOutputDatasets)
+
+	if(!numOutputDatasets)
+		return SFH_GetOutputForExecutor(output, graph, SF_OP_MERGE)
+	endif
+
+	Make/FREE/N=(numElements) waveTypes = WaveType(input[p])
+	wvType = waveTypes[0]
+	SFH_ASSERT(IsConstant(waveTypes, wvType, ignoreNaN = 0), "Datasets must not differ in type")
+
+	Make/FREE/N=(numElements) waveSizes = numpnts(input[p])
+	SFH_ASSERT(IsConstant(waveSizes, 1, ignoreNaN = 0), "Datasets must have only one element")
+
+	Make/FREE/N=(numElements)/Y=(wvType) content
+
+	if(wvType != 0)
+		content[] = WaveRef(input[p])[0]
+	else
+		Wave/T contentTxt = content
+		contentTxt[] = WaveText(WaveRef(input[p]), row = 0)
+	endif
+
+	output[0] = content
+
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_MERGE)
+End
+
+// dataset(array data1, array data2, ...)
+Function/WAVE SF_OperationDataset(variable jsonId, string jsonPath, string graph)
+
+	variable numArgs
+
+	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_DATASET, numArgs)
+
+	output[] = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_DATASET, p, singleResult = 1)
+
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_DATASET)
+End
+
+static Function [WAVE/D holdWave, WAVE/D initialValues] SF_ParseFitConstraints(WAVE/T/Z constraints, variable numParameters)
+
+	variable i, numElements, index, value
+	string indexStr, valueStr, entry
+
+	Make/FREE/N=(numParameters)/D holdWave = 0, initialValues = NaN
+
+	numElements = WaveExists(constraints) ? DimSize(constraints, ROWS) : 0
+	SFH_ASSERT(numElements <= numParameters, "The constraints wave can only have up to " + num2str(numParameters) + " entries")
+
+	for(i = 0; i < numElements; i += 1)
+		entry = constraints[i]
+
+		SplitString/E="^K([[:digit:]]+)=(.*)$" entry, indexStr, valueStr
+		SFH_ASSERT(V_flag == 2, "Invalid constraints wave")
+
+		index = str2numSafe(indexStr)
+		SFH_ASSERT(index >= 0 && index < numParameters, "Invalid coefficient index in constraints entry")
+
+		value = str2numSafe(valueStr)
+		SFH_ASSERT(!IsNaN(value), "Invalid value in constraints entry")
+
+		holdWave[index] = 1
+		initialValues[index] = value
+	endfor
+
+	return [holdWave, initialValues]
+End
+
+Function/WAVE SF_OperationFitLine(variable jsonId, string jsonPath, string graph)
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_FITLINE, 0, maxArgs = 1)
+
+	WAVE/T/Z constraints = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_FITLINE, 0, defOp = "wave()", singleResult = 1)
+
+	[WAVE holdWave, WAVE initialValues] = SF_ParseFitConstraints(constraints, 2)
+
+	Make/FREE/T entry = {"line"}
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_FITLINE, 3)
+	SetDimensionLabels(output, "fitType;holdWave;initialValues", ROWS)
+	output[0] = entry
+	output[1] = holdWave
+	output[2] = initialValues
+
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_FITLINE)
+End
+
+Function/WAVE SF_OperationFit(variable jsonId, string jsonPath, string graph)
+
+	variable numElements
+	string functionName
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_FIT, 3, maxArgs = 3)
+	WAVE/WAVE xData = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_FIT, 0)
+	WAVE/WAVE yData = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_FIT, 1)
+	SFH_ASSERT(DimSize(xData, ROWS) == DimSize(YData, ROWS), "Mismatched number of datasets")
+
+	WAVE/WAVE fitOp = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_FIT, 2)
+	SFH_ASSERT(DimSize(fitOp, ROWS) == 3, "Invalid fit operation parameters")
+
+	WAVE/T fitType     = fitOp[%fitType]
+	WAVE holdWave      = fitOp[%holdWave]
+	WAVE initialValues = fitOp[%initialValues]
+
+	numElements = DimSize(yData, ROWS)
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_FIT, numElements)
+
+	WAVE/Z constraints
+	output[p] = SF_OperationFitImpl(xData[p], yData[p], fitType[0], holdWave, initialValues)
+
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_FIT)
+End
+
+Function/WAVE SF_OperationFitImpl(WAVE xData, WAVE yData, string fitFunc, WAVE holdWave, WAVE initialValues)
+
+	variable err
+	string holdString
+
+	strswitch(fitFunc)
+		case "line":
+			Make/FREE/D/N=2 coefWave
+			holdString = num2str(holdWave[0]) + num2str(holdWave[1])
+			coefWave[] = initialValues[p]
+			CurveFit/Q/N=1/NTHR=1/M=0/W=2/G/H=holdString line, kwCWave=coefWave, yData[*][0]/X=xData[*][0]/D; err = GetRTError(1)
+			Make/T/FREE params = {"Offset;Slope"}
+			break
+		default:
+			SFH_ASSERT(0, "Invalid fit function: " + fitFunc)
+	endswitch
+
+	if(err)
+		return $""
+	endif
+
+	WAVE/Z fit = fit__free_
+
+	if(WaveExists(fit))
+		MakeWaveFree(fit)
+	endif
+
+	WAVE W_sigma
+	MakeWaveFree(W_sigma)
+
+	JWN_CreatePath(fit, SF_META_USER_GROUP + SF_META_FIT_PARAMETER)
+	JWN_SetWaveInWaveNote(fit, SF_META_USER_GROUP + SF_META_FIT_PARAMETER, params)
+
+	JWN_CreatePath(fit, SF_META_USER_GROUP + SF_META_FIT_COEFF)
+	JWN_SetWaveInWaveNote(fit, SF_META_USER_GROUP + SF_META_FIT_COEFF, coefWave)
+
+	JWN_CreatePath(fit, SF_META_USER_GROUP + SF_META_FIT_SIGMA)
+	JWN_SetWaveInWaveNote(fit, SF_META_USER_GROUP + SF_META_FIT_SIGMA, W_sigma)
+
+	JWN_SetWaveInWaveNote(fit, SF_META_TRACECOLOR, {0, 0, 0}) // black
+	JWN_SetNumberInWaveNote(fit, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
+
+	return fit
 End
