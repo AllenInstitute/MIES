@@ -8364,10 +8364,10 @@ Function TestOverrideActive()
 	WAVE/Z overrideResults = GetOverrideResults()
 
 	if(WaveExists(overrideResults))
-		numberOfOverrideWarnings = GetNumberFromWaveNote(overrideResults, "OverrideWarningIssued")
+		numberOfOverrideWarnings = JWN_GetNumberFromWaveNote(overrideResults, "OverrideWarningIssued")
 		if(IsNaN(numberOfOverrideWarnings))
 			print "TEST OVERRIDE ACTIVE"
-			SetNumberInWaveNote(overrideResults, "OverrideWarningIssued", 1)
+			JWN_SetNumberInWaveNote(overrideResults, "OverrideWarningIssued", 1)
 		endif
 
 		return 1
