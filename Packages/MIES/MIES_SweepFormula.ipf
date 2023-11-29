@@ -3964,12 +3964,9 @@ End
 
 static Function/WAVE SF_OperationWave(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_WAVE, 0, maxArgs = 1)
 
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	SFH_ASSERT(numArgs == 1, "wave expects exactly one argument.")
-
-	WAVE/Z output = $SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_WAVE, 0)
+	WAVE/Z output = $SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_WAVE, 0, defValue = "")
 
 	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_WAVE, discardOpStack=1)
 End

@@ -1578,6 +1578,10 @@ static Function TestOperationWave()
 	str = "wave(does_not_exist)"
 	WAVE/Z wave1 = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
 	CHECK(!WaveExists(wave1))
+
+	str = "wave()"
+	WAVE/Z wave1 = SF_ExecuteFormula(str, win, singleResult=1, useVariables=0)
+	CHECK(!WaveExists(wave1))
 End
 
 static Function/WAVE TestOperationTPBase_TPSS_TPInst_FormulaGetter()
