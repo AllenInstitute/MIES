@@ -4794,20 +4794,18 @@ End
 // `store(name, ...)`
 static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string graph)
 
-	string rawCode, preProcCode
+	string rawCode, preProcCode, name
 	variable maxEntries, numEntries
 
 	SFH_ASSERT(SFH_GetNumberOfArguments(jsonID, jsonPath) == 2, "Function accepts only two arguments")
 
-	WAVE/T name = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_STORE, 0)
-	SFH_ASSERT(IsTextWave(name), "name parameter must be textual")
-	SFH_ASSERT(DimSize(name, ROWS) == 1, "name parameter must be a plain string")
+	name = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_STORE, 0)
 
 	WAVE/WAVE dataRef = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 1)
 
 	[rawCode, preProcCode] = SF_GetCode(graph)
 
-	[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(graph, rawCode, data = dataRef, name = name[0], resultType = SFH_RESULT_TYPE_STORE)
+	[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(graph, rawCode, data = dataRef, name = name, resultType = SFH_RESULT_TYPE_STORE)
 
 	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_RESULT)
 
