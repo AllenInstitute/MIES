@@ -7426,3 +7426,43 @@ static Function CheckLogFiles()
 
 	CHECK_GT_VAR(foundFiles, 0)
 End
+
+static Function TestZapNullRefs()
+
+	try
+		Make/FREE/T wvText
+		ZapNullRefs(wvText)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		Make/FREE/WAVE/N=(1, 1) wv
+		ZapNullRefs(wv)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// empty
+	Make/FREE/WAVE/N=0 wv
+	WAVE/WAVE result = ZapNullRefs(wv)
+	CHECK_WAVE(result, NULL_WAVE)
+
+	// only nulls
+	Make/FREE/WAVE wv
+	WAVE/WAVE result = ZapNullRefs(wv)
+	CHECK_WAVE(result, NULL_WAVE)
+
+	// removes nulls and keeps order
+	Make/FREE a, b
+	Make/FREE/WAVE/N=3 wv
+	wv[0] = a
+	wv[2] = b
+
+	WAVE/WAVE result = ZapNullRefs(wv)
+	CHECK_WAVE(result, WAVE_WAVE)
+	CHECK(WaveRefsEqual(result[0], a))
+	CHECK(WaveRefsEqual(result[1], b))
+End

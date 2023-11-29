@@ -6745,3 +6745,38 @@ threadsafe Function MU_GetFreeDiskSpace(string path)
 End
 
 #endif
+
+Function/WAVE ZapNullRefs(WAVE/WAVE input)
+
+	variable numEntries, i, idx
+
+	ASSERT(IsWaveRefWave(input), "input must be a wave reference wave")
+
+	ASSERT(Dimsize(input, COLS) == 0, "input must be 1D")
+	numEntries = Dimsize(input, ROWS)
+
+	if(!numEntries)
+		return $""
+	endif
+
+	Duplicate/FREE/WAVE input, result
+
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/Z wv = input[i]
+
+		if(!WaveExists(wv))
+			continue
+		endif
+
+		result[idx] = wv
+		idx += 1
+	endfor
+
+	if(!idx)
+		return $""
+	endif
+
+	Redimension/N=(idx) result
+
+	return result
+End
