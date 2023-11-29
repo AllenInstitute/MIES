@@ -811,7 +811,8 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/S GetLastSettingTextIndepSCI(textualValues, sweepNo, setting, headstage, entrySourceType, [defValue])
+threadsafe Function/S GetLastSettingTextIndepSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType, [defValue])
+	WAVE numericalValues
 	WAVE/T textualValues
 	variable sweepNo
 	string setting
@@ -822,7 +823,7 @@ threadsafe Function/S GetLastSettingTextIndepSCI(textualValues, sweepNo, setting
 		defValue = ""
 	endif
 
-	WAVE/T/Z settings = GetLastSettingSCI(textualValues, sweepNo, setting, headstage, entrySourceType)
+	WAVE/T/Z settings = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
 
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
