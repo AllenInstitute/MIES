@@ -8046,7 +8046,7 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 
 		sweepNo = sweepsFromNum[i]
 
-		printf "Trying to recontruct sweep %d\r", sweepNo
+		printf "Trying to reconstruct sweep %d\r", sweepNo
 
 		if(missingSweep[i])
 			WAVE/Z sweepWave = RecreateSweepWaveFromBackupAndLBN(numericalValues, textualValues, sweepNo, deviceDataDFR)
