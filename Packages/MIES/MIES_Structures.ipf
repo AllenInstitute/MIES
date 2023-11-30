@@ -381,6 +381,8 @@ Structure NWBAsyncParameters
 	variable sweep, compressionMode, session_start_time
 	variable locationID, nwbVersion
 
+	// DAQDataWave is a waveRef wave referencing the sweep channels from the main thread
+	// See also @ref GetSweepWave "intermediate sweep format"
 	WAVE DAQDataWave, DAQConfigWave
 
 	WAVE numericalValues
@@ -434,6 +436,7 @@ threadsafe Function [STRUCT NWBAsyncParameters s] NWB_ASYNC_DeserializeStruct(DF
 	s.nwbVersion = ASYNC_FetchVariable(threadDFR, "nwbVersion")
 
 	WAVE s.DAQDataWave = ASYNC_FetchWave(threadDFR, "DAQDataWave")
+	ASSERT_TS(IsWaveRefWave(s.DAQDataWave), "Unsupported sweep wave format")
 	ChangeWaveLock(s.DAQDataWave, 1)
 
 	WAVE s.DAQConfigWave = ASYNC_FetchWave(threadDFR, "DAQConfigWave")
