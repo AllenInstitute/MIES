@@ -98,7 +98,7 @@ End
 /// Kill all left-over windows and remove the trash
 Function AdditionalExperimentCleanup()
 
-	string win, list, name
+	string win, list, name, dest
 	variable i, numWindows, reopenDebugPanel, err
 
 	if(IsRunningInCI())
@@ -129,7 +129,13 @@ Function AdditionalExperimentCleanup()
 	CloseNWBFile()
 	HDF5CloseFile/A/Z 0
 
-	KillOrMoveToTrash(dfr=root:MIES)
+	KillDataFolder/Z root:MIES
+	if(V_flag)
+		DFREF tmpDFR = UniqueDataFolder(root:, TRASH_FOLDER_PREFIX)
+		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
+		MoveDataFolder root:MIES, $dest
+		CHECK_NO_RTE()
+	endif
 
 	NewDataFolder root:MIES
 	MoveDataFolder root:$name, root:MIES
