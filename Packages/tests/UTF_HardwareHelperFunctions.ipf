@@ -853,7 +853,7 @@ Function CheckPublishedMessage(string device, variable type)
 End
 
 static Function TestSweepReconstruction_IGNORE(string device)
-	variable i, numEntries, sweepNo
+	variable i, j, numEntries, sweepNo, numChannels
 	string list, nameRecon, nameOrig
 
 	WAVE numericalValues = GetLBTextualValues(device)
@@ -871,11 +871,11 @@ static Function TestSweepReconstruction_IGNORE(string device)
 	DuplicateDataFolder/O=1 deviceDFR, deviceDataBorkedUp
 	DFREF deviceDataBorkedUp = deviceDataBorkedUp
 
-	// we might already have X_XXXX folders from the databrowser, delete them in our copy
+	// kill all X_XXXX folders with single sweep channels
 	list = GetListOfObjects(deviceDataBorkedUp, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath = 1)
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 
-	// generate 1D sweep waves in X_XXXX folders
+	// generate sweep channel waves in X_XXXX folders in deviceDataBorkedUp from original sweeps in deviceDFR
 	numEntries = DimSize(sweeps, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		sweepNo = sweeps[i]
@@ -888,10 +888,11 @@ static Function TestSweepReconstruction_IGNORE(string device)
 		SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, targetDFR=singleSweepDFR)
 	endfor
 
-	// delete 2D sweep and config waves
+	// delete sweep and config waves
 	list = GetListOfObjects(deviceDataBorkedUp, ".*", typeFlag = COUNTOBJECTS_WAVES, fullPath = 1)
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 
+	// Recreate sweep as 2D wave and config
 	RecreateMissingSweepAndConfigWaves(device, deviceDataBorkedUp)
 
 	// compare the 2D sweep and config waves in deviceDFR and reconstructed
@@ -904,30 +905,39 @@ static Function TestSweepReconstruction_IGNORE(string device)
 	Sort wavesOriginal, wavesOriginal
 
 	CHECK_GT_VAR(DimSize(sweeps, ROWS), 0)
-	CHECK_EQUAL_VAR(DimSize(wavesReconstructed, ROWS), DimSize(sweeps, ROWS) * 2)
-	CHECK_EQUAL_VAR(DimSize(wavesOriginal, ROWS), DimSize(sweeps, ROWS) * 2)
+	CHECK_EQUAL_VAR(DimSize(wavesReconstructed, ROWS), numEntries * 3)
+	CHECK_EQUAL_VAR(DimSize(wavesOriginal, ROWS), numEntries * 3)
 
 	// loop over all waves and compare them
 	numEntries = DimSize(wavesReconstructed, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/Z wvReconstructed = $wavesReconstructed[i]
-		CHECK_WAVE(wvReconstructed, NUMERIC_WAVE)
-
 		WAVE/Z wvOriginal = $wavesOriginal[i]
-		CHECK_WAVE(wvOriginal, NUMERIC_WAVE)
+		CHECK_WAVE(wvReconstructed, NORMAL_WAVE)
+		CHECK_WAVE(wvOriginal, NORMAL_WAVE)
 
 		nameRecon = NameOfWave(wvReconstructed)
 		nameOrig  = NameOfWave(wvOriginal)
 		CHECK_EQUAL_STR(nameRecon, nameOrig)
 
 		if(GrepString(nameRecon, DATA_CONFIG_REGEXP))
+			CHECK_WAVE(wvReconstructed, NUMERIC_WAVE)
+			CHECK_WAVE(wvOriginal, NUMERIC_WAVE)
+
 			// set offset to zero for comparison
 			// only data acquired with PSQ_Ramp has offset != 0
 			wvReconstructed[][%Offset] = 0
 			wvOriginal[][%Offset]      = 0
+		else
+			CHECK_WAVE(wvReconstructed, TEXT_WAVE)
+			CHECK_WAVE(wvOriginal, TEXT_WAVE)
+			numChannels = DimSize(wvReconstructed, ROWS)
+			for(j = 0; j < numChannels; j += 1)
+				WAVE channelRecon = ResolveSweepChannel(wvReconstructed, j)
+				WAVE channelOrig = ResolveSweepChannel(wvOriginal, j)
+				CHECK_EQUAL_WAVES(channelRecon, channelOrig)
+			endfor
 		endif
-
-		CHECK_EQUAL_WAVES(wvReconstructed, wvOriginal)
 	endfor
 End
 
