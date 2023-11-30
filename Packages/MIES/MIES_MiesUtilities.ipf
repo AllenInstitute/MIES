@@ -2111,7 +2111,10 @@ threadsafe Function MoveToTrash([wv, dfr])
 	if(!ParamIsDefault(dfr) && DataFolderExistsDFR(dfr))
 		DFREF tmpDFR = GetUniqueTempPath()
 		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
-		MoveDataFolder dfr, $dest
+		MoveDataFolder/Z dfr, $dest
+		if(V_flag)
+			BUG_TS("Could not move DF to trash: " + GetDataFolder(1, dfr) + " to " + dest)
+		endif
 	endif
 End
 
