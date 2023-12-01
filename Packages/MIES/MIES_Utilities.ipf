@@ -1795,14 +1795,13 @@ Function IsDriveValid(absPath)
 	return FolderExists(drive)
 End
 
-/// @brief Return the windows drive letter of the given path
+/// @brief Return the drive letter of the given path (Windows) or the volume name (Macintosh)
 Function/S GetDrive(string path)
 
 	string drive
 
 	path  = GetHFSPath(path)
 	drive = StringFromList(0, path, ":")
-	ASSERT(strlen(drive) == 1, "Expected a single letter for the drive")
 
 	return drive
 end
@@ -2053,7 +2052,14 @@ End
 
 /// @brief Return the path converted to a HFS style (aka ":" separated) path
 threadsafe Function/S GetHFSPath(string path)
+
+#if defined(WINDOWS)
 	return ParseFilePath(5, path, ":", 0, 0)
+#elif defined(MACINTOSH)
+	return ParseFilePath(5, path, "*", 0, 0)
+#else
+	ASSERT_TS(0, "Unsupported OS")
+#endif
 End
 
 /// @brief Set the given bit mask in var
@@ -6733,3 +6739,17 @@ threadsafe Function FindRightMostHighBit(uint64 value)
 
 	return NaN
 End
+
+#ifdef MACINTOSH
+
+threadsafe Function MU_RunningInMainThread()
+	TUFXOP_RunningInMainThread
+
+	return V_value
+End
+
+threadsafe Function MU_GetFreeDiskSpace(string path)
+	ASSERT_TS(0, "Not implemented")
+End
+
+#endif

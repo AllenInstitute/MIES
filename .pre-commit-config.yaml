@@ -10,6 +10,8 @@ exclude: |
            # patch and svg files always have trailing whitespace
            .*patch$|
            .*svg$
+           # don't touch MacOSX XOPs
+           ^XOPs-MacOSX-IP9-64bit|
          ) # end alternations
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks

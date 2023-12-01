@@ -119,8 +119,8 @@ do
 done
 
 # create rst substitutions for up-to-date IP nightly links
-grep "IgorPro[0-9]Nightly" $top_level/Packages/MIES_Include.ipf \
-  | sed -e "s/^\/\/ //"                                         \
+grep -P "IgorPro[0-9]+(Windows|MacOSX)Nightly" $top_level/Packages/MIES_Include.ipf \
+  | sed -e "s/^\/\/ //"                                                             \
   > $top_level/Packages/doc/installation_subst.txt
 
 if hash sphinx-build 2>/dev/null; then

@@ -48,7 +48,8 @@ End
 Function/S DAP_GetNIDeviceList()
 	variable i, j, numPattern, numDevices
 	string propList
-	string devList, pattern, allDevices, device
+	string devList, pattern, device
+	string allDevices = ""
 
 	SVAR globalNIDevList = $GetNIDeviceList()
 	devList = globalNIDevList
@@ -59,7 +60,10 @@ Function/S DAP_GetNIDeviceList()
 
 	numPattern = ItemsInList(NI_DAC_PATTERNS, "|")
 
+#if defined(WINDOWS)
 	allDevices = HW_NI_ListDevices()
+#endif
+
 	numDevices = ItemsInList(allDevices)
 
 	for(i = 0;i < numDevices;i += 1)
@@ -94,7 +98,7 @@ End
 /// @brief Returns a list of ITC devices for DAC, #NONE if there are none
 Function/S DAP_GetITCDeviceList()
 
-	string devList
+	string devList = ""
 
 	SVAR globalITCDevList = $GetITCDeviceList()
 	devList = globalITCDevList
@@ -103,7 +107,9 @@ Function/S DAP_GetITCDeviceList()
 		return devList
 	endif
 
+#if defined(WINDOWS)
 	devList = HW_ITC_ListDevices()
+#endif
 
 	if(!IsEmpty(devList))
 		globalITCDevList = devList

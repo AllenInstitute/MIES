@@ -6,7 +6,7 @@ Installation instructions
 Installing Igor Pro
 -------------------
 
-Requirements: Windows 10 64bit
+Requirements: Windows 10 64bit or MaxOSX 64bit (analysis only)
 
 - Install `Igor Pro <https://www.wavemetrics.com/downloads/current>`__
 
@@ -29,12 +29,13 @@ and a dialog appears with a button which opens this documentation.
 
 In that case please perform the following steps:
 
-- Download the zip package for |IgorPro9Nightly|. Either
-  from within Igor Pro or from the browser.
+- Download the package for |IgorPro9WindowsNightly| or |IgorPro9MacOSXNightly|.
+  Either from within Igor Pro or from a web browser.
 - Close Igor Pro
-- Replace the folders ``IgorBinaries_x64`` and
-  ``IgorBinaries_Win32`` in ``C:\Program Files\WaveMetrics\Igor Pro 9`` with the
-  ones from the downloaded zip package. This requires admin access.
+- Windows: Replace the folders ``IgorBinaries_x64`` and ``IgorBinaries_Win32``
+           in ``C:\Program Files\WaveMetrics\Igor Pro 9`` with the ones from the
+           downloaded zip package. This requires admin access.
+- MacOSX: Install from image as usual
 - Restart Igor Pro
 
 Installation using the installer (preferred)
@@ -143,13 +144,14 @@ Then the shortcuts have to be removed manually first before a MIES installation 
 Manual Installation
 -------------------
 
-The manual installation instructions are here for
-historical/compatibility reasons. Whenever possible users should install
-via the Installer package.
+The manual installation instructions are here for historical/compatibility
+reasons or in case you are on MacOSX. Windows users should always prefer to
+install via the Installer package.
 
-Install the `Visual C++ Redistributable for Visual Studio 2019
-<https://support.microsoft.com/en-us/topic/the-latest-supported-visual-c-downloads-2647da03-1eea-4433-9aff-95f26a218cc0>`__
-package for 64bit (x64) in English.
+Windows (with hardware support)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Install the `Visual C++ Redistributable package` <https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe>`__.
 
 -  Quit Igor Pro
 -  Create the following shortcuts in ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 9 User Files``
@@ -167,11 +169,13 @@ package for 64bit (x64) in English.
 
 -  Start Igor Pro
 
-Manual Installation without hardware dependencies
--------------------------------------------------
+Windows (without hardware)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In case you don't have the hardware connected/available which some XOPs require, you can also install MIES without any
-hardware related XOPs present.
+In case you don't have the hardware connected/available which some XOPs
+require, you can also install MIES without any hardware related XOPs present.
+
+Install the `Visual C++ Redistributable package` <https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe>`__.
 
 -  Quit Igor Pro
 -  Create the following shortcuts in
@@ -191,6 +195,33 @@ hardware related XOPs present.
       -  ``XOPs-IP9-64bit\ZeroMQ-64.xop``
       -  ``XOPs-IP9-64bit\TUFXOP-64.xop``
       -  ``XOPs-IP9-64bit\mies-nwb2-compound-XOP-64.xop``
+
+   -  In ``Igor Help Files`` a shortcut pointing to HelpFiles-IP9
+
+-  Start Igor Pro
+
+MacOSX (without hardware)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Analysis support only. Data acquisition and NWBv2 export are not supported on MacOSx.
+
+-  Quit Igor Pro
+-  Get the MIES source code, see
+   `here <https://alleninstitute.github.io/MIES/developers.html#latest-development-version-from-main-branch>`__
+   for instructions.
+-  Create the following symlinks in
+   ``/Users/$username/Documents/WaveMetrics/Igor Pro 9 User Files``
+
+   -  In ``User Procedures`` a symlink pointing to
+
+      -  ``Packages/IPNWB``
+      -  ``Packages/MIES``
+
+   -  In ``Igor Procedures`` a symlink pointing to ``Packages\MIES_Include.ipf``
+
+   -  In ``Igor Extensions (64-bit)`` a symlink pointing to
+
+      -  ``XOPs-MacOSX-IP9-64bit``
 
    -  In ``Igor Help Files`` a shortcut pointing to HelpFiles-IP9
 

@@ -17,6 +17,8 @@ static Function CheckCompilation_IGNORE()
 	// MiesUtils
 	print MU_RunningInMainThread()
 
+#ifdef WINDOWS
 	// NWBv2 compound
 	IPNWB_WriteCompound ""
+#endif
 End

@@ -1,0 +1,5 @@
+/* Localized versions of Info.plist keys */
+
+CFBundleName = "JSON";
+CFBundleShortVersionString = "1.00";
+CFBundleGetInfoString = "JSON version 1.00, Copyright 2019, byte physics e. K.";

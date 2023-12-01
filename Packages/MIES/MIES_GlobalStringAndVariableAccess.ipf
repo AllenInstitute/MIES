@@ -142,6 +142,35 @@ Function/S GetMiesVersion()
 	return path
 End
 
+/// @brief Return a text wave with absolute paths to git binaries with HFS `:` separators
+///
+/// The paths may not exist.
+Function/WAVE GetPossiblePathsToGit()
+
+	string userName
+
+#if defined(WINDOWS)
+	// standard locations for 32bit and 64bit standalone git versions
+	Make/FREE/T/N=(5) paths
+	paths[0] = "C:Program Files:Git:mingw64:bin:git.exe"
+	paths[1] = "C:Program Files (x86):Git:bin:git.exe"
+	paths[2] = "C:Program Files:Git:cmd:git.exe"
+
+	// Atlassian Sourcetree (Embedded git)
+	userName = GetSystemUserName()
+	paths[3] = "C::Users:" + userName + ":AppData:Local:Atlassian:SourceTree:git_local:mingw32:bin:git.exe"
+
+	// user installation of git for windows
+	paths[4] = "C::Users:" + userName + ":AppData:Local:Programs:Git:cmd:git.exe"
+#elif defined(MACINTOSH)
+	Make/T/FREE paths = {"Macintosh HD:usr:bin:git"}
+#else
+	ASSERT(0, "Unsupported OS")
+#endif
+
+	return paths
+End
+
 /// @brief Return the version string for the mies-igor project
 ///
 /// The mies version looks like
@@ -161,35 +190,29 @@ End
 /// @returns the mies version
 static Function/S CreateMiesVersion()
 
-	string path, cmd, topDir, version, gitPathCandidates, gitPath
+	string path, cmd, topDir, version, gitPath
 	string userName, gitDir, fullVersionPath
-	variable refNum, numEntries, i
+	variable refNum
 
 	// set path to the toplevel directory in the mies folder structure
 	path = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
 	fullVersionPath = path + "version.txt"
 
-	topDir = ParseFilePath(5, path, "*", 0, 0)
+	topDir = path
 	gitDir = topDir + ".git"
 	if(FolderExists(gitDir))
 		// topDir is a git repository
 
-		// standard locations for 32bit and 64bit standalone git versions
-		gitPathCandidates = "C:\\Program Files\\Git\\mingw64\\bin\\git.exe;C:\\Program Files (x86)\\Git\\bin\\git.exe;C:\\Program Files\\Git\\cmd\\git.exe"
+		WAVE/T gitPathCandidates = GetPossiblePathsToGit()
 
-		// Atlassian Sourcetree (Embedded git)
-		userName = GetSystemUserName()
-		gitPathCandidates = AddListItem("C:\\Users\\" + userName + "\\AppData\\Local\\Atlassian\\SourceTree\\git_local\\mingw32\\bin\\git.exe", gitPathCandidates, ";", Inf)
-
-		// user installation of git for windows
-		gitPathCandidates = AddListItem("C:\\Users\\" + userName + "\\AppData\\Local\\Programs\\Git\\cmd\\git.exe", gitPathCandidates, ";", Inf)
-
-		numEntries = ItemsInList(gitPathCandidates)
-		for(i = 0; i < numEntries; i += 1)
-			gitPath = StringFromList(i, gitPathCandidates)
+		for(gitPath : gitPathCandidates)
 			if(!FileExists(gitPath))
 				continue
 			endif
+
+			gitPath = HFSPathToNative(gitPath)
+			gitDir = HFSPathToNative(gitDir)
+			topDir = HFSPathToNative(topDir)
 
 			// git is installed, try to regenerate version.txt
 			DEBUGPRINT("Found git at: ", str=gitPath)
@@ -197,6 +220,8 @@ static Function/S CreateMiesVersion()
 			// delete the old version.txt so that we can be sure to get the correct one afterwards
 			DeleteFile/Z fullVersionPath
 			DEBUGPRINT("Folder is a git repository: ", str=topDir)
+
+#if defined(WINDOWS)
 			// explanation:
 			// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
 			sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
@@ -225,7 +250,44 @@ static Function/S CreateMiesVersion()
 			sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper status >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
 			DEBUGPRINT("Cmd to execute: ", str=cmd)
 			ExecuteScriptText/B/Z cmd
+#elif defined(MACINTOSH)
 
+			sprintf cmd "do shell script \"%s --version\"", gitPath
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/UNQ/Z cmd
+			if(V_flag)
+				printf "Missing functional git executable, please install the \"Xcode commandline tools\" via \"xcode-select --install\" in Terminal.\r"
+				ControlWindowToFront()
+				break
+			endif
+
+			sprintf cmd "do shell script \"%s --git-dir='%s' describe --always --tags --match 'Release_*' > '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/UNQ/Z cmd
+			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+			sprintf cmd "do shell script \"printf 'Date and time of last commit: ' >> '%sversion.txt' 2>&1\"", topDir
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/UNQ/Z cmd
+			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+			sprintf cmd "do shell script \"%s --git-dir='%s' log -1 --pretty=format:%%cI%%n >> '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/UNQ/Z cmd
+			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+			sprintf cmd "do shell script \"echo 'Submodule status:' >> '%sversion.txt' 2>&1\"", topDir
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/UNQ/Z cmd
+			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+			// see comment in WINDOWS branch
+			sprintf cmd "do shell script \"%s --git-dir='%s' submodule--helper status >> '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			ExecuteScriptText/UNQ/Z cmd
+#else
+	ASSERT(0, "Unsupported OS")
+#endif
 			break
 		endfor
 	endif

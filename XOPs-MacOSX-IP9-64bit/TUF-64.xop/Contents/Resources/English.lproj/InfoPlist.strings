@@ -1,0 +1,5 @@
+/* Localized versions of Info.plist keys */
+
+CFBundleName = "XOPGEN";
+CFBundleShortVersionString = "1.00";
+CFBundleGetInfoString = "XOP Generator version 1.00, Copyright 2020, byte physics e. K.";
