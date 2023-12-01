@@ -3686,7 +3686,7 @@ static Function TestVariables2()
 	CHECK_EQUAL_STR("", code)
 End
 
-Function TestDefaultFormula()
+static Function TestDefaultFormula()
 
 	string win, bsPanel
 
