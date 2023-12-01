@@ -1163,14 +1163,12 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type, [opMode])
 		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
 			numChunks = 4
-			numLayers = 3
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SpikePositionAndQC;AsyncQC"
 			break
 		case PSQ_DA_SCALE:
 			numChunks = 4
-			numLayers = 4
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SpikePosition;NumberOfSpikes;AsyncQC"
@@ -1178,40 +1176,34 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type, [opMode])
 		case PSQ_SQUARE_PULSE:
 			numRows = 1
 			numCols = IDX_NumberOfSweepsInSet(stimset)
-			numLayers = 2
 			layerDimLabels = "SpikePositionAndQC;AsyncQC"
 			break
 		case PSQ_CHIRP:
 			numChunks = 4
-			numLayers = 5
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;MaxInChirp;MinInChirp;SpikeQC;AsyncQC"
 			break
 		case PSQ_PIPETTE_BATH:
 			numChunks = 4
-			numLayers = 3
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SteadyStateResistance;AsyncQC"
 			break
 		case PSQ_SEAL_EVALUATION:
 			numChunks = 4
-			numLayers = 4
 			numRows = 2 // upper limit
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;ResistanceA;ResistanceB;AsyncQC"
 			break
 		case PSQ_TRUE_REST_VM:
 			numChunks = 4
-			numLayers = 4
 			numRows = 2
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;NumberOfSpikes;AverageVoltage;AsyncQC"
 			break
 		case PSQ_ACC_RES_SMOKE:
 			numChunks = 4
-			numLayers = 4
 			numRows = 1
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;AccessResistance;SteadyStateResistance;AsyncQC"
@@ -1221,6 +1213,7 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type, [opMode])
 	endswitch
 
 	WAVE/D/Z wv = GetOverrideResults()
+	numLayers = ItemsInList(layerDimLabels, ";")
 
 	if(WaveExists(wv))
 		Redimension/D/N=(numRows, numCols, numLayers, numChunks) wv
