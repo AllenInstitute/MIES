@@ -510,7 +510,7 @@ End
 
 static Function CheckDashboard(string device, WAVE headstageQC)
 
-	string databrowser
+	string databrowser, message
 	variable numEntries, i, state
 
 	databrowser = DB_FindDataBrowser(device)
@@ -527,8 +527,14 @@ static Function CheckDashboard(string device, WAVE headstageQC)
 	CHECK_GT_VAR(numEntries, 0)
 
 	for(i = 0; i < numEntries; i += 1)
-		state = !cmpstr(listWave[i][%Result], DASHBOARD_PASSING_MESSAGE)
+		message = listWave[i][%Result]
+		state = !cmpstr(message, DASHBOARD_PASSING_MESSAGE)
 		CHECK_EQUAL_VAR(state, headstageQC[i])
+
+		if(!headstageQC[i])
+			INFO("Index=%g, state=%g, message=%s", n0 = i, n1 = state, s0 = message)
+			CHECK_EQUAL_VAR(strsearch(message, DAQ_STOPPED_EARLY_LEGACY_MSG, 0), -1)
+		endif
 	endfor
 End
 

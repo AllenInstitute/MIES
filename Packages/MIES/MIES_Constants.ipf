@@ -1673,6 +1673,7 @@ StrConstant BUFFEREDDRAWDDAQAXES = "dDAQAxes"
 StrConstant TP_PROPERTIES_HASH = "TestPulsePropertiesHash"
 
 StrConstant DASHBOARD_PASSING_MESSAGE = "Pass"
+StrConstant DAQ_STOPPED_EARLY_LEGACY_MSG = "DAQ was stopped early (n.a.)"
 
 Constant MAX_DOUBLE_PRECISION = 15
 
