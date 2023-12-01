@@ -1925,6 +1925,8 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 			WaveStats/Q/M=1 wv
 			if(V_numNans > 0 || V_numInfs > 0)
 				return "Wave must neither have NaNs nor Infs"
+			elseif(V_npnts == 0)
+				return "Wave must have at least one entry"
 			endif
 			break
 		case "OperationMode":
