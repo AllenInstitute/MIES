@@ -8332,12 +8332,13 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 	endfor
 End
 
-/// @brief Try recreating a 2D DAQ sweep wave from its databrowser backup
+/// @brief Try recreating a WaveRef sweep wave from its databrowser backup.
+///        For a text sweep wave, call SplitSweepIntoComponents afterwards with a target DF.
 ///
 /// @return $"" if reconstruction failed or a free wave with the sweep data and correct metadata
 Function/WAVE RecreateSweepWaveFromBackupAndLBN(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF deviceDataDFR)
 	string path
-	variable samplingInterval
+	variable samplingInterval, numChannels, channelOffset
 
 	path = GetSingleSweepFolderAsString(deviceDataDFR, sweepNo)
 
@@ -8374,20 +8375,18 @@ Function/WAVE RecreateSweepWaveFromBackupAndLBN(WAVE numericalValues, WAVE/T tex
 	   return $""
 	endif
 
-	Make/FREE/N=(0, 0) sweepWave
+	numChannels = DimSize(DAChans, ROWS) + DimSize(ADChans, ROWS) + DimSize(TTLChans, ROWS)
+	Make/FREE/WAVE/N=(numChannels) sweepWave
 
 	// Add DA/AD data with increasing channel numbers
-	AddToSweepWave(DAWaves, DAChans, sweepWave)
-	AddToSweepWave(ADWaves, ADChans, sweepWave)
-	AddToSweepWave(TTLWaves, TTLChans, sweepWave)
+	channelOffset = AddToSweepWave(DAWaves, DAChans, sweepWave, 0)
+	channelOffset = AddToSweepWave(ADWaves, ADChans, sweepWave, channelOffset)
+	channelOffset = AddToSweepWave(TTLWaves, TTLChans, sweepWave, channelOffset)
+	ASSERT(channelOffset == numChannels, "channel filling mismatch on recreation of sweep")
 
 	// Attach the wave note
 	SVAR txt = singleSweepFolder:note
 	Note/K sweepWave, txt
-
-	// add ms scale
-	samplingInterval = GetSamplingIntervalFromLBN(numericalValues, sweepNo)
-	SetScale/P x, 0, samplingInterval, "ms", sweepWave
 
 	ASSERT(IsValidSweepWave(sweepWave), "Recreation created an invalid wave")
 
@@ -8587,24 +8586,27 @@ static Function [WAVE channelNumbers, WAVE/WAVE existingWaves] GetSingleSweepWav
 	return [channelNumbers, existingWaves]
 End
 
-/// @brief Add the returned 1D waves from GetSingleSweepWaves() into sweepWave
-static Function AddToSweepWave(WAVE/WAVE channelWaves, Wave channelNumbers, WAVE sweepWave)
-	variable i, numEntries
+/// @brief Add the returned 1D waves from GetSingleSweepWaves() into sweepWave. sweepWave must be WaveRef wave.
+///        The size of sweepWave is increased if required.
+/// @returns index of last row filled
+static Function AddToSweepWave(WAVE/WAVE channelWaves, WAVE channelNumbers, WAVE/WAVE sweepWave, variable indexOffset)
+
+	variable i, numEntries, requiredSize
 
 	// sort channelNumbers and channelWaves ascending so that we start with the smallest channel numbers first
 	Sort channelNumbers, channelNumbers, channelWaves
 
 	numEntries = DimSize(channelWaves, ROWS)
+	requiredSize = indexOffset + numEntries
+	if(DimSize(sweepWave, ROWS) < requiredSize)
+		Redimension/N=(requiredSize) sweepWave
+	endif
+
 	for(i = 0; i < numEntries; i += 1)
-		WAVE wv = channelWaves[i]
-
-		if(i == 0 && DimSize(sweepWave, ROWS) == 0)
-			// adapt sweep data type
-			Redimension/Y=(WaveType(wv)) sweepWave
-		endif
-
-		Concatenate {wv}, sweepWave
+		sweepWave[indexOffset + i] = channelWaves[i]
 	endfor
+
+	return requiredSize
 End
 
 /// @brief Return if the function results are overriden for testing purposes
