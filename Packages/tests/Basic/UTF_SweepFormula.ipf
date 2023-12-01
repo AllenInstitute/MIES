@@ -3303,6 +3303,8 @@ static Function TestHelpNotebook([string str])
 	sfHelpWin = BSP_GetSFHELP(browser)
 	headLine = MIES_BSP#BSP_GetHelpOperationHeadline(str)
 
+	INFO("Op: %s", s0 = str)
+
 	helpText = MIES_BSP#BSP_RetrieveSFHelpTextImpl(sfHelpWin, headLine, "to_top_" + str)
 	CHECK_PROPER_STR(helpText)
 
