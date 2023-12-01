@@ -5087,7 +5087,7 @@ static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, 
 	WAVE/WAVE container = JSONToWave(valueStr)
 	ASSERT(DimSize(container, ROWS) == 1, "Invalid number of entries in return wave from Sweep Formula store")
 
-	WAVE wv = container[0]
+	WAVE/Z wv = container[0]
 
 	return wv
 End
