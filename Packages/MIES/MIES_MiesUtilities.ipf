@@ -6336,17 +6336,21 @@ End
 threadsafe Function IsValidSweepWave(sweep)
 	WAVE/Z sweep
 
+	if(!WaveExists(sweep))
+		return 0
+	endif
+
 	if(IsWaveRefWave(sweep))
-		if(WaveExists(sweep) && DimSize(sweep, ROWS) > 0)
+		if(DimSize(sweep, ROWS) > 0)
 			WAVE/Z/WAVE sweepWREF = sweep
 			WAVE/Z channel = sweepWREF[0]
 			return WaveExists(channel) && DimSize(channel, ROWS) > 0
 		endif
 	else
-		return WaveExists(sweep) &&        \
-			   DimSize(sweep, COLS) > 0 && \
+		return DimSize(sweep, COLS) > 0 && \
 			   DimSize(sweep, ROWS) > 0
 	endif
+
 	return 0
 End
 
@@ -6361,6 +6365,10 @@ threadsafe Function IsValidSweepAndConfig(sweep, config, [configVersion])
 
 	if(ParamIsDefault(configVersion))
 		configVersion = DAQ_CONFIG_WAVE_VERSION
+	endif
+
+	if(!WaveExists(sweep))
+		return 0
 	endif
 
 	if(IsWaveRefWave(sweep))
