@@ -949,15 +949,12 @@ Function PSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
 
 	string key
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	WAVE/Z passes = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE, defValue = 0)
 
-	if(!WaveExists(sweeps)) // very unlikely
+	if(!WaveExists(passes))
 		return NaN
 	endif
-
-	Make/FREE/N=(DimSize(sweeps, ROWS)) passes
-	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-	passes[] = GetLastSettingIndep(numericalValues, sweeps[p], key, UNKNOWN_MODE, defValue = 0)
 
 	return sum(passes)
 End
@@ -1923,6 +1920,8 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 			WaveStats/Q/M=1 wv
 			if(V_numNans > 0 || V_numInfs > 0)
 				return "Wave must neither have NaNs nor Infs"
+			elseif(V_npnts == 0)
+				return "Wave must have at least one entry"
 			endif
 			break
 		case "OperationMode":
@@ -5075,7 +5074,7 @@ static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, 
 	sweepChannelStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula sweeps/channels", SWEEP_FORMULA_RESULT)
 	refSweep = str2num(StringFromList(0, sweepChannelStr))
 
-	if(IsEmpty(valueStr) || refSweep != sweepNo)
+	if(IsEmpty(valueStr) || !EqualValuesOrBothNaN(refSweep, sweepNo))
 		// no value for the current sweep
 		return $""
 	endif
@@ -5083,7 +5082,7 @@ static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, 
 	WAVE/WAVE container = JSONToWave(valueStr)
 	ASSERT(DimSize(container, ROWS) == 1, "Invalid number of entries in return wave from Sweep Formula store")
 
-	WAVE wv = container[0]
+	WAVE/Z wv = container[0]
 
 	return wv
 End
