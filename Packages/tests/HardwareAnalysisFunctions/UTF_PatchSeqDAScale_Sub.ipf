@@ -116,7 +116,7 @@ static Function PS_DS_Sub1([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// all tests fail
 	wv = 0
 End
@@ -265,7 +265,7 @@ static Function PS_DS_Sub2([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// only pre pulse chunk pass, async QC passes, others fail
 	wv[]      = 0
 	wv[0][]   = 1
@@ -464,7 +464,7 @@ static Function PS_DS_Sub3([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// async QC passes
@@ -639,7 +639,7 @@ static Function PS_DS_Sub4([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// pre pulse chunk pass
 	// last post pulse chunk pass
 	// async QC passes
@@ -859,7 +859,7 @@ static Function PS_DS_Sub5([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// pre pulse chunk fails
 	// all post pulse chunk pass
 	// async QC passes
@@ -1012,7 +1012,7 @@ static Function PS_DS_Sub5a([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// pre pulse chunk fails due to targetV
 	// all post pulse chunk pass
 	// async QC passes
@@ -1165,7 +1165,7 @@ static Function PS_DS_Sub6([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	// async QC passes
@@ -1386,7 +1386,7 @@ static Function PS_DS_Sub7([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// of sweeps 2-6
@@ -1569,7 +1569,7 @@ static Function PS_DS_Sub8([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// of sweep 0, 3, 6, 7 , 8
@@ -1768,7 +1768,7 @@ static Function PS_DS_Sub9([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// all tests fail
 	wv = 0
 End
@@ -1921,7 +1921,7 @@ static Function PS_DS_Sub10([str])
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUB)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// async QC passes
