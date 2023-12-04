@@ -90,7 +90,7 @@ End
 Function TEST_CASE_END_OVERRIDE(name)
 	string name
 
-	string dev, experimentNWBFile, baseFolder, nwbFile
+	string dev, experimentNWBFile, baseFolder, nwbFile, wlName
 	variable numEntries, i, fileID, nwbVersion, expensiveChecks
 
 	// be sure that DAQ/TP is stopped before we do anything else
@@ -109,6 +109,12 @@ Function TEST_CASE_END_OVERRIDE(name)
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
 		dev = StringFromList(i, devices)
+
+		wlName = GetWorkLoadName(WORKLOADCLASS_TP, dev)
+		CHECK(!ASYNC_WaitForWLCToFinishAndRemove(wlName, 10))
+
+		wlName = GetWorkLoadName(WORKLOADCLASS_NWB, dev)
+		CHECK(!ASYNC_WaitForWLCToFinishAndRemove(wlName, 10))
 
 		// no analysis function errors
 		NVAR errorCounter = $GetAnalysisFuncErrorCounter(dev)
