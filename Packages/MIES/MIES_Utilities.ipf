@@ -5491,7 +5491,7 @@ Function AddPayloadEntries(variable jsonID, WAVE/T keys, WAVE/T values, [variabl
 
 		if(isBinary)
 			JSON_AddString(jsonID, jsonpath + "encoding", "base64")
-			JSON_AddString(jsonID, jsonpath + "contents", Base64EncodeSafe(values[i]))
+			JSON_AddString(jsonID, jsonpath + "contents", Base64Encode(values[i]))
 		else
 			JSON_AddString(jsonID, jsonpath + "contents", values[i])
 		endif
@@ -6670,14 +6670,6 @@ Function/WAVE SplitLogDataBySize(WAVE/T logData, string sep, variable lim, [vari
 	Redimension/N=(resultCnt) result
 
 	return result
-End
-
-/// @todo workaround IP bug, fixed in at least IP 9.03
-threadsafe Function/S Base64EncodeSafe(string data)
-
-	ASSERT_TS(strlen(data) <= BASE64ENCODE_INPUT_MAX_SIZE, "Input string too larger for Base64Encode")
-
-	return Base64Encode(data)
 End
 
 /// @brief Calculated the size of Base64 encoded data from the unencoded size

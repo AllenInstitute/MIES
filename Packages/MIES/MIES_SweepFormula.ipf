@@ -1752,8 +1752,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 								isCategoryAxis = NumberByKey("ISCAT", info) == 1
 
 								if(isCategoryAxis)
-									/// @todo workaround IP9 bug #4492, CATWAVEDF is empty
-									DFREF catDFR = $StringByKey("CWAVEDF", info)
+									DFREF catDFR = $StringByKey("CATWAVEDF", info)
 									WAVE/Z/SDFR=catDFR categoryWave = $StringByKey("CATWAVE", info)
 									ASSERT(WaveExists(categoryWave), "Expected category axis")
 

@@ -5973,12 +5973,7 @@ threadsafe Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, 
 			endif
 		endif
 
-		// @todo workaround IP bug #4702 where MoveWave fails in preemptive threads
-		if(MU_RunningInMainThread())
-			MoveWave data, targetDFR:$str
-		else
-			Duplicate data, targetDFR:$str
-		endif
+		MoveWave data, targetDFR:$str
 	endfor
 
 	string/G targetDFR:note = note(sweepWave)

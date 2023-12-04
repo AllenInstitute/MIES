@@ -630,9 +630,8 @@ static Function PSX_FitEventDecay(WAVE sweepDataFiltOff, WAVE psxEvent, variable
 
 	[post_min_t, n_min_t] = PSX_GetEventFitRange(sweepDataFiltOff, psxEvent, eventIndex)
 
-// Avoid crash with local wave, see WM #4328
-//	DFREF currDFR = GetDataFolderDFR()
-//	SetDataFolder NewFreeDataFolder()
+	DFREF currDFR = GetDataFolderDFR()
+	SetDataFolder NewFreeDataFolder()
 
 	// require a converging exponential
 	Make/FREE/T constraints = {"K2 > 0"}
@@ -647,7 +646,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataFiltOff, WAVE psxEvent, variable
 		MakeWaveFree(fit)
 	endif
 
-//	SetDataFolder currDFR
+	SetDataFolder currDFR
 
 	decayTau = coefWave[2]
 
@@ -5040,14 +5039,11 @@ Function PSX_PlotStartupSettings()
 
 		WAVE/T/Z userDataKeys = GetUserdataKeys(WinRecreation(subWin, 0))
 
-		/// @todo IP9: remove wave exists check once we update to 39948 or newer
-		if(WaveExists(userDataKeys))
-			for(ud : userDataKeys)
-				if(!GrepString(ud, "^ResizeControls.*$"))
-					SetWindow $subWin, userdata($ud)=""
-				endif
-			endfor
-		endif
+		for(ud : userDataKeys)
+			if(!GrepString(ud, "^ResizeControls.*$"))
+				SetWindow $subWin, userdata($ud)=""
+			endif
+		endfor
 
 		if(WinType(subwin) == WINTYPE_GRAPH)
 			if(ItemsInList(subwin, "#") <= 2)

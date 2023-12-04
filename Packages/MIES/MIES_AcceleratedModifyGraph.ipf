@@ -23,7 +23,6 @@ Function GenerateAcceleratedModifyGraphCase()
 
 	// BEGIN CHANGE ME
 	variable power = 10
-	/// @todo workaround IP bug as we can't break the line after rgb but only after hideTrace #4375
 	Make/FREE/T keyword    = {"rgb", "hideTrace"}
 	Make/FREE type         = {GEN_TYPE_WAVE, GEN_TYPE_NUMBER}
 	Make/FREE numEntryCols = {4, NaN}
