@@ -1749,20 +1749,20 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 						for(i = 0; i < numTraces; i += 1)
 							if(WindowExists(win) && WhichListItem("bottom", AxisList(win)) >= 0)
 								info = AxisInfo(win, "bottom")
-							   isCategoryAxis = NumberByKey("ISCAT", info) == 1
+								isCategoryAxis = NumberByKey("ISCAT", info) == 1
 
-							   if(isCategoryAxis)
+								if(isCategoryAxis)
 									/// @todo workaround IP9 bug #4492, CATWAVEDF is empty
-							   		DFREF catDFR = $StringByKey("CWAVEDF", info)
-							   		WAVE/Z/SDFR=catDFR categoryWave = $StringByKey("CATWAVE", info)
-							   		ASSERT(WaveExists(categoryWave), "Expected category axis")
+									DFREF catDFR = $StringByKey("CWAVEDF", info)
+									WAVE/Z/SDFR=catDFR categoryWave = $StringByKey("CATWAVE", info)
+									ASSERT(WaveExists(categoryWave), "Expected category axis")
 
-							   		if(EqualWaves(categoryWave, wvX, EQWAVES_DATA))
-							   			// we can't, but also don't need, to append the same category axis again
-							   			// so let's just reuse the existing one
-							   			WAVE wvX = categoryWave
-							   		endif
-							   	endif
+									if(EqualWaves(categoryWave, wvX, EQWAVES_DATA))
+										// we can't, but also don't need, to append the same category axis again
+										// so let's just reuse the existing one
+										WAVE wvX = categoryWave
+									endif
+								endif
 							endif
 
 							SF_CollectTraceData(gdIndex, plotFormData, traces[i], wvX, wvY)
