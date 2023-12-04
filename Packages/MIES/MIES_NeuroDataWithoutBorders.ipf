@@ -678,7 +678,7 @@ Function NWB_ASYNC_FinishWriting(string device)
 	string workload, msg
 	variable i
 
-	workload = NWB_ASYNC_WorkLoadName(device)
+	workload = GetWorkLoadName(WORKLOADCLASS_NWB, device)
 
 	for(i = 0; i < NWB_ASYNC_MAX_ITERATIONS; i += 1)
 		if(!ASYNC_WaitForWLCToFinishAndRemove(workload, NWB_ASYNC_WRITING_TIMEOUT))
@@ -688,10 +688,6 @@ Function NWB_ASYNC_FinishWriting(string device)
 		sprintf msg, "Waiting for NWB writing thread %d/%d.\r", i + 1, NWB_ASYNC_MAX_ITERATIONS
 		BUG(msg)
 	endfor
-End
-
-static Function/S NWB_ASYNC_WorkLoadName(string device)
-	return NWB_WORKLOAD_CLASS + "_" + device
 End
 
 Function NWB_CheckForMissingSweeps(string device, WAVE/T sweepNames)
@@ -961,7 +957,7 @@ Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfi
 	WAVE/T s.textualResultsValues = GetTextualResultsValues()
 	WAVE/T s.textualResultsKeys   = GetTextualResultsKeys()
 
-	workload = NWB_ASYNC_WorkLoadName(s.device)
+	workload = GetWorkLoadName(WORKLOADCLASS_NWB, s.device)
 
 	DFREF threadDFR = ASYNC_PrepareDF("NWB_ASYNC_Worker", "NWB_ASYNC_Readout", workload, inOrder = 1)
 

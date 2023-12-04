@@ -4656,7 +4656,7 @@ static Function DAP_UnlockDevice(device)
 	string device
 
 	variable flags, state, hardwareType
-	string lockedDevices
+	string lockedDevices, wlName
 
 	if(!windowExists(device))
 		DEBUGPRINT("Can not unlock the non-existing panel", str=device)
@@ -4674,7 +4674,9 @@ static Function DAP_UnlockDevice(device)
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = CHECKBOX_UNSELECTED)
 	DQ_StopDAQ(device, DQ_STOP_REASON_UNLOCKED_DEVICE)
 	TP_StopTestPulse(device)
-	ASSERT(!ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_TP + device, DAP_WAITFORTPANALYSIS_TIMEOUT), "TP analysis did not finish within timeout")
+
+	wlName = GetWorkLoadName(WORKLOADCLASS_TP, device)
+	ASSERT(!ASYNC_WaitForWLCToFinishAndRemove(wlName, DAP_WAITFORTPANALYSIS_TIMEOUT), "TP analysis did not finish within timeout")
 	NWB_ASYNC_FinishWriting(device)
 
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = state)
