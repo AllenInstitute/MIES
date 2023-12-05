@@ -202,6 +202,9 @@ End
 ///  NI         DA        None
 ///  NI         AD        Scaled directly on acquisition.
 ///  NI         TTL       One channel per TTL bit.
+///  SU         DA        None
+///  SU         AD        Scaled directly on acquisition.
+///  SU         TTL       One channel per TTL bit.
 /// ========== ========= ===============================================
 ///
 /// \endrst
@@ -245,7 +248,8 @@ Function/WAVE SWS_GetChannelGains(device, [timing])
 
 	hardwareType = GetHardwareType(device)
 	switch(hardwareType)
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC:
 			//  in mV^-1, w'(V) = w * g
 			if(numDACs > 0)
 				gain[0, numDACs - 1] = 1 / DA_EphysGuiState[DACs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)]
