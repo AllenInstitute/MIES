@@ -360,7 +360,13 @@ Function/S GetUserComment(device)
 	return GetSVARAsString(GetDevicePath(device), "userComment")
 End
 
-/// @brief Return the stop collection point, this is a *length*.
+/// @brief Return the stop collection point, this is a *length* in points.
+///        The StopCollectionPoint is the effective length of the DAC data.
+///        While for NI and SUTTER hardware this equals the length of the DAC output wave,
+///        for ITC the DAC output wave is longer, see @ref DC_CalculateDAQDataWaveLengthImpl.
+///
+///        Also for SUTTER hardware the ADC input wave length is different from the DAC output wave.
+///        StopCollectionPoint CAN NOT be used to determine the length of the ADC input wave.
 ///
 /// @sa GetFifoPosition()
 Function/S GetStopCollectionPoint(device)
@@ -412,6 +418,17 @@ Function/S GetTestpulseRunMode(device)
 	string device
 
 	return GetNVARAsString(GetDeviceTestPulse(device), "runMode", initialValue = TEST_PULSE_NOT_RUNNING)
+End
+
+/// @brief Returns SU device list
+///
+/// Internal use only, prefer DAP_GetSUDeviceList() instead.
+///
+/// The initial value `""` is different from #NONE which denotes no matches.
+Function/S GetSUDeviceList()
+
+	// note: this global gets killed in IH_KillTemporaries
+	return GetSVARAsString(GetDAQDevicesFolder(), "SUDeviceList", initialValue = "")
 End
 
 /// @brief Returns NI device list
@@ -476,6 +493,18 @@ Function/S GetNI_DACTaskID(device)
 	string device
 
 	return GetNVARAsString(GetDevicePath(device), "NI_DAC_taskID", initialValue = NaN)
+End
+
+/// @brief Returns if the Sutter hardware is acquiring
+Function/S GetSU_IsAcquisitionRunning(string device)
+
+	return GetNVARAsString(GetDevicePath(device), "SU_AcquisitionRunning", initialValue = 0)
+End
+
+/// @brief Returns if the Sutter hardware had an acquisition error
+Function/S GetSU_AcquisitionError(string device)
+
+	return GetNVARAsString(GetDevicePath(device), "SU_AcquisitionError", initialValue = 0)
 End
 
 /// @brief Returns the TTL task ID set by DAQmx_DIO_Config in HW_NI_PrepareAcq
