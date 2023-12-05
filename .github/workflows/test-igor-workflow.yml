@@ -3,7 +3,7 @@ run-name: Test Igor Workflow
 env:
   # if this environment variable is set it will use the igor version from
   # C:\Program Files\WaveMetrics\Igor Pro 9 Folder\IgorBinaries_x64_${CI_IGOR_REVISION}
-  CI_IGOR_REVISION: "r39935"
+  CI_IGOR_REVISION: "r56565"
 on:
   workflow_call:
     inputs:

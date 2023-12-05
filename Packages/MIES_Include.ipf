@@ -7,21 +7,23 @@
 ///
 /// Developer instructions for raising the required nightly versions:
 ///
-/// - Update the revision numbers for IP9 below in the expression involving "BUILD"
-/// - Upload the nightly zip package to the FTP (Thomas' job). Don't delete the
+/// - Update the revision numbers for IP9 below in the expression involving
+///   `BUILD`, and also `CI_IGOR_REVISION` in .github/workflows/test-igor-workflow.yml
+/// - Upload the nightly zip packages to the FTP (Thomas' job). Don't delete the
 ///   old zip packages, we still need them.
 /// - Update the below URLs
 /// - Update Igor Pro on the CI boxes (Thomas' job).
+/// - Remove old workarounds marked with `@todo`
 
 // These are sphinx substitutions destined for Packages/doc/installation_subst.txt.
 // They are defined here so that we can parse them from within IP.
 //
-// .. |IgorPro9WindowsNightly| replace:: `Igor Pro 9 (Windows) <https://www.byte-physics.de/Downloads/WinIgor9_01APR2023.zip>`__
-// .. |IgorPro9MacOSXNightly| replace:: `Igor Pro 9 (MacOSX) <https://www.byte-physics.de/Downloads/MacIgor9_18Aug2023.dmg>`__
+// .. |IgorPro9WindowsNightly| replace:: `Igor Pro 9 (Windows) <https://www.byte-physics.de/Downloads/WinIgor9_01Dec2023.zip>`__
+// .. |IgorPro9MacOSXNightly| replace:: `Igor Pro 9 (MacOSX) <https://www.byte-physics.de/Downloads/MacIgor9_01Dec2023.dmg>`__
 
 #pragma IgorVersion=9.00
 
-#if (NumberByKey("BUILD", IgorInfo(0)) < 39935)
+#if (NumberByKey("BUILD", IgorInfo(0)) < 56565)
 #define TOO_OLD_IGOR
 #endif
 
