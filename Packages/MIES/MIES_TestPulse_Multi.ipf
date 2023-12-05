@@ -95,6 +95,9 @@ static Function TPM_BkrdTPMD(device)
 			NVAR tpCounter = $GetNITestPulseCounter(device)
 			tpCounter = 0
 			break
+		case HARDWARE_SUTTER_DAC:
+			HW_StartAcq(HARDWARE_SUTTER_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
+			break
 	endswitch
 	if(!IsBackgroundTaskRunning(TASKNAME_TPMD))
 		CtrlNamedBackground $TASKNAME_TPMD, start
@@ -109,7 +112,7 @@ Function TPM_BkrdTPFuncMD(s)
 
 	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
 	variable fifoLatest, lastTP, now
-	variable channelNr, tpLengthPoints, err
+	variable channelNr, tpLengthPoints, err, doRestart
 	string device, fifoChannelName, fifoName, errMsg
 
 	variable debTime
@@ -138,6 +141,29 @@ Function TPM_BkrdTPFuncMD(s)
 		WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 
 		switch(hardwareType)
+			case HARDWARE_SUTTER_DAC:
+				if(ROVar(GetSU_AcquisitionError(device)))
+					LOG_AddEntry(PACKAGE_MIES, "hardware error", stacktrace = 1)
+					DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR, startTPAfterDAQ = 0)
+				endif
+
+				fifoLatest = HW_SU_GetADCSamplePosition()
+				doRestart  = HW_GetEffectiveADCWaveLength(device, TEST_PULSE_MODE) == fifoLatest
+
+				lastTP = trunc(fifoLatest / TPSettingsCalc[%totalLengthPointsTP_ADC]) - 1
+				if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
+					SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, chunk = lastTP)
+					ActiveDeviceList[i][%ActiveChunk] = lastTP
+				endif
+
+				if(doRestart)
+					HW_SU_StopAcq(deviceId)
+					ActiveDeviceList[i][%ActiveChunk] = NaN
+					HW_SU_PrepareAcq(deviceId, TEST_PULSE_MODE)
+					HW_SU_StartAcq(deviceId)
+				endif
+
+				break
 			case HARDWARE_NI_DAC:
 				// Pull data until end of FIFO, after BGTask finishes Graph shows only last update
 				do
