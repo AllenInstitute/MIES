@@ -3077,7 +3077,7 @@ Function PSQ_DAScale(device, s)
 						WAVE/Z apfreqFromSupra   = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesSupra")
 						WAVE/Z DAScalesFromSupra = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesSupra")
 					else
-						// re-evaluate all passing sweeps from passingSupraSweep SCI using `E1` epoch
+						// re-evaluate all passing sweeps from passingSupraSweep SCI using a custom range
 						[WAVE apfreqFromSupra, WAVE DaScalesFromSupra] = PSQ_DS_GatherFrequencyCurrentData(device, s.sweepNo, s.headstage, passingSupraSweeps)
 					endif
 
