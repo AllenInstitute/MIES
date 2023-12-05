@@ -49,12 +49,12 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 	Duplicate hardwareConfigWave, dfr:$configName
 	MoveWave scaledDataWave, dfr:$sweepName
 
-	SplitAndUpgradeSweepGlobal(device, sweepNo)
-
 	EP_WriteEpochInfoIntoSweepSettings(device, sweepNo, acquiredTime, plannedTime)
 
-	// Add labnotebook entries for the acquired sweep
+	// Add labnotebook entries for the acquired sweep and note to sweepWave
 	ED_createWaveNoteTags(device, sweepNo)
+
+	SplitAndUpgradeSweepGlobal(device, sweepNo)
 
 	EP_CopyLBNEpochsToEpochsWave(device, sweepNo)
 
