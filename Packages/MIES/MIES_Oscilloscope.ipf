@@ -504,6 +504,16 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 			ASSERT(!ParamIsDefault(deviceID), "optional parameter deviceID missing (required for NI devices in TP mode)")
 			SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceID, fifoPos)
 			break
+		case HARDWARE_SUTTER_DAC:
+			if(dataAcqOrTP == TEST_PULSE_MODE)
+				ASSERT(!ParamIsDefault(chunk), "optional parameter chunk is missing with TEST_PULSE_MODE")
+				ASSERT(ParamIsDefault(fifoPos), "optional parameter fifoPos is not possible with TEST_PULSE_MODE")
+			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+				ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
+				ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
+			endif
+			SCOPE_SU_UpdateOscilloscope(device, dataAcqOrTP, chunk, fifoPos)
+			break
 		default:
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
@@ -646,6 +656,79 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 	fifoPosGlobal = fifoPos
 
 	ASYNC_ThreadReadOut()
+End
+
+static Function SCOPE_SU_UpdateOscilloscope(string device, variable dataAcqOrTP, variable chunk, variable fifoPos)
+
+	variable i, decMethod, decFactor, gain, numCols, lastRow
+	variable startOfADColumns, endOfADColumns, first, last, length
+	string msg
+
+	WAVE/WAVE scaledDataWave   = GetScaledDataWave(device)
+	WAVE      OscilloscopeData = GetOscilloscopeWave(device)
+	WAVE/WAVE SUDataWave       = GetDAQDataWave(device, dataAcqOrTP)
+	WAVE      config           = GetDAQConfigWave(device)
+	WAVE      ADCs             = GetADCListFromConfig(config)
+	WAVE      DACs             = GetDACListFromConfig(config)
+	startOfADColumns = DimSize(DACs, ROWS)
+	endOfADColumns   = startOfADColumns + DimSize(ADCs, ROWS)
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		WAVE TPSettingsCalc = GetTPSettingsCalculated(device)
+		length = TPSettingsCalc[%totalLengthPointsTP_ADC]
+		first  = chunk * length
+		last   = first + length - 1
+
+		ASSERT(first >= 0 && first < last, "Invalid wave subrange")
+		// update a full pulse
+		for(i = startOfADColumns; i < endOfADColumns; i += 1)
+			WAVE SUChannel     = SUDataWave[i]
+			WAVE scaledChannel = scaledDataWave[i]
+			ASSERT(last < DimSize(SUChannel, ROWS), "Invalid wave subrange")
+
+			Multithread OscilloscopeData[][i] = SUChannel[first + p]
+			Multithread scaledChannel[] = SUChannel[first + p]
+		endfor
+		Make/FREE/N=(DimSize(ADCs, ROWS)) tpColumns
+		tpColumns[] = startOfADColumns + p
+		SCOPE_UpdatePowerSpectrum(device, tpColumns)
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+
+		if(fifoPos == 0)
+			return NaN
+		endif
+
+		NVAR fifoPosGlobal = $GetFifoPosition(device)
+
+		for(i = startOfADColumns; i < endOfADColumns; i += 1)
+			WAVE SUChannel     = SUDataWave[i]
+			WAVE scaledChannel = scaledDataWave[i]
+
+			AssertOnAndClearRTError()
+			try
+				Multithread scaledChannel[fifoPosGlobal, fifoPos - 1] = SUChannel[p]; AbortOnRTE
+			catch
+				sprintf msg, "Writing scaledDataWave failed, please save the experiment and file a bug report: scaledDataWave rows %g\r", DimSize(scaledDataWave, ROWS)
+				ASSERT(0, msg)
+			endtry
+		endfor
+
+		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
+		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")
+
+		for(i = startOfADColumns; i < endOfADColumns; i += 1)
+			WAVE SUChannel = SUDataWave[i]
+
+			switch(decMethod)
+				case DECIMATION_NONE:
+					Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][i] = SUChannel[p]
+					break
+				default:
+					DecimateWithMethod(SUChannel, OscilloscopeData, decFactor, decMethod, firstRowInp = fifoPosGlobal, lastRowInp = fifoPos - 1, firstColInp = 0, lastColInp = 0, firstColOut = i, lastColOut = i)
+					break
+			endswitch
+		endfor
+	endif
 End
 
 static Function SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceiD, fifoPos)
