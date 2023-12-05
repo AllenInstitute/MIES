@@ -164,6 +164,12 @@ Function/S DAP_GetDACDeviceList()
 		list = AddListItem(devices, list, ";", Inf)
 	endif
 
+	devices = DAP_GetSUDeviceList()
+
+	if(CmpStr(devices, NONE))
+		list = AddListItem(devices, list, ";", Inf)
+	endif
+
 	if(!cmpstr(list, NONE))
 		DAP_SuggestIssueForAdditionalNIHardware()
 	endif
@@ -1652,12 +1658,16 @@ Function DAP_GetSampInt(string device, variable dataAcqOrTP, variable channelTyp
 	endif
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		if(IsDeviceNameFromSutter(device) && channelType != XOP_CHANNEL_TYPE_ADC)
+			return SI_CalculateMinSampInterval(device, dataAcqOrTP, channelType)
+		endif
+
 		fixedFreqkHzStr = DAG_GetTextualValue(device, "Popup_Settings_FixedFreq")
 		if(cmpstr(fixedFreqkHzStr, "Maximum"))
 			sampInt = 1 / (str2num(fixedFreqkHzStr) * KILO_TO_ONE) * ONE_TO_MICRO
 
 			if(!ParamIsDefault(valid))
-				valid = sampInt >= SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, channelType)
+				valid = DAP_IsSampleIntervalValid(device, channelType, sampInt)
 			endif
 
 			return sampInt
@@ -1670,6 +1680,27 @@ Function DAP_GetSampInt(string device, variable dataAcqOrTP, variable channelTyp
 	else
 		ASSERT(0, "unknown mode")
 	endif
+End
+
+static Function DAP_IsSampleIntervalValid(string device, variable channelType, variable sampInt)
+
+	if(!IsDeviceNameFromSutter(device))
+		return sampInt >= SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, channelType)
+	endif
+
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC: // intended drop-through
+		case XOP_CHANNEL_TYPE_TTL:
+			WAVE allowedIntervals = GetSutterDACTTLSampleInterval()
+			FindValue/Z/V=(sampInt) allowedIntervals
+			return V_value >= 0
+		case XOP_CHANNEL_TYPE_ADC:
+			WAVE allowedIntervals = GetSutterADCSampleInterval()
+			FindValue/Z/V=(sampInt) allowedIntervals
+			return V_value >= 0
+		default:
+			ASSERT(0, "Invalid channel type")
+	endswitch
 End
 
 Function DAP_UpdateSweepSetVariables(device)
@@ -1929,6 +1960,34 @@ static Function DAP_HasAscendingSweepOrdering(string device)
 	return 0
 End
 
+static Function DAP_CheckSampleInterval(string device, variable mode)
+
+	variable sampIntADC, sampIntDAC, sampIntTTL, validSampInt
+
+	sampIntDAC = DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_DAC, valid = validSampInt)
+	if(!validSampInt)
+		printf "%s: The selected sampling interval is not possible with your DAC hardware.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
+
+	sampIntADC = DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_ADC, valid = validSampInt)
+	if(!validSampInt)
+		printf "%s: The selected sampling interval is not possible with your ADC hardware.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
+
+	sampIntTTL = DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_TTL, valid = validSampInt)
+	if(!validSampInt)
+		printf "%s: The selected sampling interval is not possible with your TTL hardware.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
+
+	return 0
+End
+
 /// @brief Check if all settings are valid to send a test pulse or acquire data
 ///
 /// For invalid settings an informative message is printed into the history area.
@@ -1946,7 +2005,7 @@ Function DAP_CheckSettings(device, mode)
 
 	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage
 	variable ampSerial, ampChannelID, minValue, maxValue, hardwareType, hwChannel
-	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
+	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo
 	variable DACchannel, ret
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
 	string list, lastStart, msg
@@ -2010,10 +2069,7 @@ Function DAP_CheckSettings(device, mode)
 		return 1
 	endif
 
-	DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_DAC, valid = validSampInt)
-	if(!validSampInt)
-		printf "%s: The selected sampling interval is not possible with your hardware.\r", device
-		ControlWindowToFront()
+	if(DAP_CheckSampleInterval(device, mode))
 		return 1
 	endif
 
@@ -4158,6 +4214,7 @@ Function/S DAP_CreateDAEphysPanel()
 	// fetch device lists
 	DAP_GetNIDeviceList()
 	DAP_GetITCDeviceList()
+	DAP_GetSUDeviceList()
 
 	Execute "DA_Ephys()"
 	panel = GetCurrentWindow()
@@ -4804,6 +4861,7 @@ static Function DAP_UpdateListOfLockedDevices()
 	string ITCPanelList = WinList("ITC*", ";", "WIN:64")
 	string allPanelList = WinList("*", ";", "WIN:64")
 	string NIDevList    = DAP_GetNIDeviceList()
+	string SUPanelList  = WinList(DEVICE_SUTTER_NAME_START_CLEAN + "*", ";", "WIN:64")
 
 	numDevs = ItemsInList(NIDevList)
 	for(i = 0; i < numDevs; i += 1)
@@ -4814,7 +4872,7 @@ static Function DAP_UpdateListOfLockedDevices()
 	endfor
 
 	SVAR panelList = $GetLockedDevices()
-	panelList = ITCPanelList + NIPanelList
+	panelList = ITCPanelList + NIPanelList + SUPanelList
 End
 
 static Function DAP_UpdateChanAmpAssignStorWv(device)
@@ -5240,6 +5298,7 @@ Function ButtonProc_Hardware_rescan(ba) : ButtonControl
 
 			DAP_GetNIDeviceList()
 			DAP_GetITCDeviceList()
+			DAP_GetSUDeviceList()
 			break
 	endswitch
 
