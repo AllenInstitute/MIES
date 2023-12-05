@@ -59,10 +59,10 @@ Constant SC_SPIKE_CONTROL_VERSION    = 1
 /// @}
 
 /// Especially interesting for PXP consumers like the analysis browser.
-Constant EXPERIMENT_VERSION = 2
+Constant EXPERIMENT_VERSION = 3
 
 /// All experiment versions up to the given value are supported
-Constant ANALYSIS_BROWSER_SUPP_VERSION = 2
+Constant ANALYSIS_BROWSER_SUPP_VERSION = 3
 
 Constant PA_SETTINGS_STRUCT_VERSION = 6
 /// @}
