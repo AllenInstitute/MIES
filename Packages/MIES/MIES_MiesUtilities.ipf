@@ -2382,21 +2382,32 @@ threadsafe Function GetHardwareType(device)
 	if(WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1)
 		return HARDWARE_ITC_DAC
 	elseif(IsEmpty(deviceNumber))
-		return HARDWARE_NI_DAC
+		if(IsDeviceNameFromSutter(deviceType))
+			return HARDWARE_SUTTER_DAC
+		else
+			return HARDWARE_NI_DAC
+		endif
 	endif
 
 	return HARDWARE_UNSUPPORTED_DAC
+End
+
+threadsafe Function IsDeviceNameFromSutter(string device)
+
+	return strsearch(device, DEVICE_SUTTER_NAME_START_CLEAN, 0) == 0 && strlen(device) >= 7
 End
 
 /// @brief Parse a device string:
 /// for ITC devices of the form X_DEV_Y, where X is from @ref DEVICE_TYPES_ITC
 /// and Y from @ref DEVICE_NUMBERS.
 /// for NI devices of the form X, where X is from DAP_GetNIDeviceList()
+/// for Sutter devices of the form IPA_E_Xxxxxx, where X must be present
 ///
 /// Returns the result in deviceType and deviceNumber.
 /// Currently the parsing is successfull if
 /// for ITC devices X and Y are non-empty.
 /// for NI devices X is non-empty.
+/// for Sutter devices if the name starts with IPA_E_ and is at least 7 characters long
 /// deviceNumber is empty for NI devices as it does not apply
 /// @param[in]  device       input device string X_DEV_Y
 /// @param[out] deviceType   returns the device type X
@@ -2410,6 +2421,12 @@ threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 
 	if(isEmpty(device))
 		return 0
+	endif
+
+	if(IsDeviceNameFromSutter(device))
+		deviceType   = device
+		deviceNumber = ""
+		return 1
 	endif
 
 	if(strsearch(device, "_Dev_", 0, 2) == -1)
@@ -2894,7 +2911,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
 			ControlWindowToFront()
 			tgs.splitTTLBits = 0
-		elseif(hardwareType == HARDWARE_NI_DAC)
+		elseif(hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_SUTTER_DAC)
 			// NI hardware does use one channel per bit so we don't need that here
 			tgs.splitTTLBits = 0
 		endif
@@ -4952,9 +4969,9 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 	index = GetIndexForHeadstageIndepData(numericalValues)
 
 	hwDACType = GetUsedHWDACFromLNB(numericalValues, sweep)
-	ASSERT_TS(hwDACType == HARDWARE_ITC_DAC || hwDACType == HARDWARE_NI_DAC, "Unsupported hardware dac type")
+	ASSERT_TS(hwDACType == HARDWARE_ITC_DAC || hwDACType == HARDWARE_NI_DAC || hwDACType == HARDWARE_SUTTER_DAC, "Unsupported hardware dac type")
 
-	if(hwDACType == HARDWARE_NI_DAC)
+	if(hwDACType == HARDWARE_NI_DAC || hwDACType == HARDWARE_SUTTER_DAC)
 		// present since 2f56481a (DC_MakeNITTLWave: Document TTL settings and rework it completely, 2018-09-06)
 		WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
 		if(!WaveExists(ttlChannels))
@@ -6472,7 +6489,8 @@ Function LeftOverSweepTime(string device, variable fifoPos)
 		case HARDWARE_ITC_DAC:
 			// nothing to do
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop-through
+		case HARDWARE_SUTTER_DAC:
 			// we need to use one of the channel waves
 			WAVE/WAVE ref         = DAQDataWave
 			WAVE      DAQDataWave = ref[0]
@@ -7577,6 +7595,8 @@ static Function UploadPing()
 	JSON_AddWave(jsonId2, jsonPath + "/NI", NIDevices)
 	WAVE/T ITCDevices = ListToTextWave(DAP_GetITCDeviceList(), ";")
 	JSON_AddWave(jsonId2, jsonPath + "/ITC", ITCDevices)
+	WAVE/T SUDevices = ListToTextWave(DAP_GetSUDeviceList(), ";")
+	JSON_AddWave(jsonId2, jsonPath + "/SU", SUDevices)
 
 	payLoad = JSON_Dump(jsonId2, indent = 2)
 	JSON_Release(jsonId2)

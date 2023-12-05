@@ -120,6 +120,30 @@ Function/S DAP_GetITCDeviceList()
 	return globalITCDevList
 End
 
+/// @brief Returns a list of SU devices for DAC, #NONE if there are none
+Function/S DAP_GetSUDeviceList()
+
+	string devList
+
+	SVAR globalSUDevList = $GetSUDeviceList()
+	devList = globalSUDevList
+
+	if(!isEmpty(devList) && CmpStr(devList, NONE))
+		return devList
+	endif
+
+	WAVE/T devInfo = GetSUDeviceInfo()
+	devList = devInfo[%MASTERDEVICE]
+
+	if(!IsEmpty(devList))
+		globalSUDevList = devList
+	else
+		globalSUDevList = NONE
+	endif
+
+	return globalSUDevList
+End
+
 /// @brief Returns a list of available ITC and NI devices
 ///
 /// @return list of DAC devices
