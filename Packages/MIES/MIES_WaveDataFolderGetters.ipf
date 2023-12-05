@@ -7631,7 +7631,7 @@ End
 /// The entries in this wave are only valid during DAQ/TP and are updated via DC_UpdateGlobals().
 Function/WAVE GetTPSettingsCalculated(string device)
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	DFREF dfr = GetDeviceTestPulse(device)
 
@@ -7640,13 +7640,34 @@ Function/WAVE GetTPSettingsCalculated(string device)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(10) wv
+		if(!IsWaveVersioned(wv))
+			Redimension/N=(7) wv
+			SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ;", ROWS)
+			SetWaveVersion(wv, 1)
+		endif
+		if(WaveVersionIsAtLeast(wv, 1))
+			Redimension/N=(10) wv
+			SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ;pulseStartMS;pulseStartPointsTP;pulseStartPointsDAQ;", ROWS)
+			SetWaveVersion(wv, 2)
+		endif
+		if(WaveVersionIsAtLeast(wv, 2))
+			Redimension/N=(16) wv
+			SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ;pulseStartMS;pulseStartPointsTP;pulseStartPointsDAQ;pulseLengthPointsTP_ADC;pulseLengthPointsDAQ_ADC;totalLengthPointsTP_ADC;totalLengthPointsDAQ_ADC;pulseStartPointsTP_ADC;pulseStartPointsDAQ_ADC;", ROWS)
+			wv[%pulseLengthPointsTP_ADC] = wv[%pulseLengthPointsTP]
+			wv[%pulseLengthPointsDAQ_ADC] = wv[%pulseLengthPointsDAQ]
+			wv[%totalLengthPointsTP_ADC] = wv[%totalLengthPointsTP]
+			wv[%totalLengthPointsDAQ_ADC] = wv[%totalLengthPointsDAQ]
+			wv[%pulseStartPointsTP_ADC] = wv[%pulseStartPointsTP]
+			wv[%pulseStartPointsDAQ_ADC] = wv[%pulseStartPointsDAQ]
+		endif
 	else
-		Make/N=(10)/D dfr:settingsCalculated/WAVE=wv
+		Make/N=(16)/D dfr:settingsCalculated/WAVE=wv
 		wv = NaN
 	endif
 
-	SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ;pulseStartMS;pulseStartPointsTP;pulseStartPointsDAQ", ROWS)
+	SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ;pulseStartMS;pulseStartPointsTP;pulseStartPointsDAQ;pulseLengthPointsTP_ADC;pulseLengthPointsDAQ_ADC;totalLengthPointsTP_ADC;totalLengthPointsDAQ_ADC;pulseStartPointsTP_ADC;pulseStartPointsDAQ_ADC;", ROWS)
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
