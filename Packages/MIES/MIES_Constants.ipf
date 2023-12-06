@@ -172,6 +172,7 @@ Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
 /// Convenience definition to nicify expressions like DimSize(wv, ROWS)
 /// easier to read than DimSize(wv, 0).
 /// @{
+Constant DATADIMENSION       = -1
 Constant ROWS                = 0
 Constant COLS                = 1
 Constant LAYERS              = 2
