@@ -8350,6 +8350,7 @@ Function/WAVE GetSUDeviceInfo()
 	endif
 
 	SetDimensionLabels(wv, "NUMBEROFDACS;MASTERDEVICE;LISTOFDEVICES;LISTOFHEADSTAGES;SUMHEADSTAGES;AI;AO;DIOPortWidth;", ROWS)
+	HW_SU_GetDeviceInfo(wv)
 
 	return wv
 End
