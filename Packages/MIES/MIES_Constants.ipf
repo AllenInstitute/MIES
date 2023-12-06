@@ -85,6 +85,12 @@ StrConstant ITC_DEVICE_REGEXP = "^ITC.*"
 StrConstant DEVICE_TYPES_ITC = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
 StrConstant DEVICE_NUMBERS   = "0;1;2;3;4;5;6;7;8;9;10"
 
+StrConstant DEVICE_NAME_NICE_SUTTER        = "Sutter Instrument Integrated Patch Amplifier"
+StrConstant DEVICE_SUTTER_NAME_START_CLEAN = "IPA_E_"
+Constant    SUTTER_AI_PER_AMP              = 4
+Constant    SUTTER_AO_PER_AMP              = 2
+Constant    SUTTER_DIO_PER_AMP             = 8
+
 StrConstant BASE_WINDOW_NAME          = "DA_Ephys"
 StrConstant DATABROWSER_WINDOW_NAME   = "DataBrowser"
 StrConstant SWEEPBROWSER_WINDOW_NAME  = "SweepBrowser"
@@ -777,13 +783,14 @@ Constant HARDWARE_PREVENT_ERROR_MESSAGE = 0x04
 /// @}
 
 /// List of different DAC hardware types
-StrConstant HARDWARE_DAC_TYPES = "ITC;NI"
+StrConstant HARDWARE_DAC_TYPES = "ITC;NI;SUTTER;"
 
 /// @name Indizes into HARDWARE_DAC_TYPES
 /// @anchor HardwareDACTypeConstants
 /// @{
 Constant HARDWARE_ITC_DAC         = 0
 Constant HARDWARE_NI_DAC          = 1
+Constant HARDWARE_SUTTER_DAC      = 2
 Constant HARDWARE_UNSUPPORTED_DAC = 1000
 /// @}
 
@@ -807,6 +814,8 @@ Constant HARDWARE_NI_DAC_MIN_SAMPINT = 0.002 ///< NI 6343 and other devices, so 
 #endif
 Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
 Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
+Constant HARDWARE_SU_MIN_SAMPINT_DAC  = 0.1   /// Sutter output -> 10 kHz
+Constant HARDWARE_SU_MIN_SAMPINT_ADC  = 0.02  /// Sutter input -> 50 kHz
 /// @}
 
 Constant WAVEBUILDER_MIN_SAMPINT    = 0.005 ///< [ms]
@@ -1017,6 +1026,22 @@ Constant NI_DAC_MIN = -10
 Constant NI_DAC_MAX = 10
 Constant NI_ADC_MIN = -10
 Constant NI_ADC_MAX = 10
+/// @}
+
+/// @name Ranges for Sutter DAQ analog output in volts
+///
+/// @anchor SUDAQ_WaveRanges
+/// @{
+Constant SU_HS_IN_V_MIN = -1     // V
+Constant SU_HS_IN_V_MAX = 1      // V
+Constant SU_HS_IN_I_MIN = -20E-9 // A
+Constant SU_HS_IN_I_MAX = 20E-9  // A
+Constant SU_DAC_MIN     = -10    // V
+Constant SU_DAC_MAX     = 10     // V
+Constant SU_ADC_MIN     = -10    // V
+Constant SU_ADC_MAX     = 10     // V
+Constant SU_HS_OUT_MIN  = -1     // V
+Constant SU_HS_OUT_MAX  = 1      // V
 /// @}
 
 /// Maximum length of a valid object name in bytes in Igor Pro >= 8
@@ -2214,3 +2239,5 @@ StrConstant SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC = "OriginalCreationTimeInUTC"
 
 StrConstant DF_NAME_FREE = "freeroot"
 StrConstant DF_NAME_MIES = "MIES"
+
+Constant SUTTER_MAX_MAX_TP_PULSES = 10000
