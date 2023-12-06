@@ -961,3 +961,29 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 
 	return [abWin, sweepBrowsers]
 End
+
+Function DoExpensiveChecks()
+
+	variable expensive
+
+#ifdef AUTOMATED_TESTING_EXPENSIVE
+	return 1
+#endif
+
+	expensive = GetEnvironmentVariableAsBoolean("CI_EXPENSIVE_CHECKS")
+
+	if(IsFinite(expensive))
+		return expensive
+	endif
+
+	return 0
+End
+
+Function GetWaveTrackingMode()
+
+	if(DoExpensiveChecks())
+		return UTF_WAVE_TRACKING_ALL
+	endif
+
+	return UTF_WAVE_TRACKING_NONE
+End

@@ -87,27 +87,10 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	DeleteFile/Z GetExperimentNWBFileForExport()
 End
 
-Function DoExpensiveChecks()
-
-	variable expensive
-
-#ifdef AUTOMATED_TESTING_EXPENSIVE
-	return 1
-#endif
-
-	expensive = GetEnvironmentVariableAsBoolean("CI_EXPENSIVE_CHECKS")
-
-	if(IsFinite(expensive))
-		return expensive
-	endif
-
-	return 0
-End
-
 Function TEST_CASE_END_OVERRIDE(name)
 	string name
 
-	string dev, experimentNWBFile, baseFolder, nwbFile
+	string dev, experimentNWBFile, baseFolder, nwbFile, wlName
 	variable numEntries, i, fileID, nwbVersion, expensiveChecks
 
 	// be sure that DAQ/TP is stopped before we do anything else
@@ -126,6 +109,12 @@ Function TEST_CASE_END_OVERRIDE(name)
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
 		dev = StringFromList(i, devices)
+
+		wlName = GetWorkLoadName(WORKLOADCLASS_TP, dev)
+		CHECK(!ASYNC_WaitForWLCToFinishAndRemove(wlName, 10))
+
+		wlName = GetWorkLoadName(WORKLOADCLASS_NWB, dev)
+		CHECK(!ASYNC_WaitForWLCToFinishAndRemove(wlName, 10))
 
 		// no analysis function errors
 		NVAR errorCounter = $GetAnalysisFuncErrorCounter(dev)
@@ -190,6 +179,10 @@ Function TEST_CASE_END_OVERRIDE(name)
 			MoveFile experimentNWBFile as (baseFolder + nwbFile)
 		endif
 	endif
+
+	ASYNC_Stop()
+	AdditionalExperimentCleanup()
+	ASYNC_Start(ThreadProcessorCount, disableTask = 1)
 End
 
 /// @brief Checks user epochs for consistency

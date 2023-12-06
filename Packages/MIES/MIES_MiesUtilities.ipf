@@ -8582,3 +8582,7 @@ Function ArchiveLogFilesOnceAndKeepMonth()
 		endif
 	endfor
 End
+
+Function/S GetWorkLoadName(string workload, string device)
+	return workload + "_" + device
+End

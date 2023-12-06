@@ -52,6 +52,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	string traceOptions
 	string list = ""
 	string name = GetTestName()
+	variable waveTrackingMode = GetWaveTrackingMode()
 
 	// speeds up testing to start with a fresh copy
 	KillWindow/Z HistoryCarbonCopy
@@ -130,9 +131,9 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	else
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	endif
 End
 
@@ -148,4 +149,9 @@ End
 
 Function TEST_CASE_END_OVERRIDE(string testcase)
 	CheckForBugMessages()
+
+	AdditionalExperimentCleanup()
+
+	DFREF dfr = GetMIESPath()
+	KillDataFolder dfr
 End

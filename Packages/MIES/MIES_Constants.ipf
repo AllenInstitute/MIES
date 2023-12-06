@@ -1593,7 +1593,8 @@ Constant POST_PLOT_FULL_UPDATE = 0x8     ///< Forces a complete update from scra
 /// @anchor AsyncWorkLoadClassNames
 ///
 /// @{
-StrConstant WORKLOADCLASS_TP = "TestPulse"
+StrConstant WORKLOADCLASS_TP  = "TestPulse"
+StrConstant WORKLOADCLASS_NWB = "nwb_writing"
 /// @}
 
 /// @name Column numbers of epoch information
@@ -1716,8 +1717,6 @@ Constant DQ_STOP_REASON_FIFO_TIMEOUT      = 0x0400
 Constant DQ_STOP_REASON_STUCK_FIFO        = 0x0800
 Constant DQ_STOP_REASON_INVALID           = 0xFFFF
 /// @}
-
-StrConstant NWB_WORKLOAD_CLASS = "nwb_writing"
 
 /// @name Mode flags for ID_AskUserForSettings()
 /// @anchor AskUserSettingsModeFlag

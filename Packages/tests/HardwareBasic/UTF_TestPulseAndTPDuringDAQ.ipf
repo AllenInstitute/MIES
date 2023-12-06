@@ -951,6 +951,7 @@ static Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 
 	variable i, channel, numTPChan, numStored, numTP
 	variable tresh, m, tpLength, pulseLengthMS
+	string wlName
 
 	WAVE/Z TPStorage = GetTPStorage(device)
 	CHECK_WAVE(TPStorage, NORMAL_WAVE)
@@ -961,7 +962,8 @@ static Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	CHECK_WAVE(storedTestPulses, WAVE_WAVE)
 	numTP = GetNumberFromWaveNote(storedTestPulses, NOTE_INDEX)
 
-	CHECK(!ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_TP + device, TP_WAIT_TIMEOUT))
+	wlName = GetWorkLoadName(WORKLOADCLASS_TP, device)
+	CHECK(!ASYNC_WaitForWLCToFinishAndRemove(wlName, TP_WAIT_TIMEOUT))
 
 	WAVE TPSettingsCalculated = GetTPsettingsCalculated(device)
 

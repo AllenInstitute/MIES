@@ -12,6 +12,13 @@ static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 	TUFXOP_Clear/N=(KEY)/Q/Z
 End
 
+static Function TEST_CASE_END_OVERRIDE(string testname)
+
+	AdditionalExperimentCleanup()
+
+	TUFXOP_Clear/N=(KEY)/Q/Z
+End
+
 static Function ChecksParams()
 
 	try

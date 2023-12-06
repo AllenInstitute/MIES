@@ -1507,7 +1507,11 @@ End
 /// @returns data folder that can be pushed for execution by the async frame work
 Function/DF TP_PrepareAnalysisDF(string device, STRUCT TPAnalysisInput &tpInput)
 
-	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", WORKLOADCLASS_TP + device, inOrder=0)
+	string wlName
+
+	wlName = GetWorkLoadName(WORKLOADCLASS_TP, device)
+
+	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", wlName, inOrder=0)
 	ASYNC_AddParam(threadDF, w=tpInput.data)
 	ASYNC_AddParam(threadDF, var=tpInput.clampAmp)
 	ASYNC_AddParam(threadDF, var=tpInput.clampMode)
