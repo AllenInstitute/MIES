@@ -710,7 +710,7 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 	WAVE/T/Z allUserEntries = GrepTextWave(entries, LABNOTEBOOK_USER_PREFIX + ".*")
 	CHECK_WAVE(allUserEntries, TEXT_WAVE)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNoRef)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 	Make/T/FREE entriesWithoutUnit = {FMT_LBN_ANA_FUNC_VERSION, PSQ_FMT_LBN_SE_TESTPULSE_GROUP,                               \
