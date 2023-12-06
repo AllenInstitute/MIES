@@ -180,23 +180,31 @@ End
 Function AFH_GetLastSweepAcquired(device)
 	string device
 
-	string list, name
-	variable numItems, i, sweep
+	WAVE/Z sweeps = AFH_GetSweeps(device)
 
-	list = GetListOfObjects(GetDeviceDataPath(device), DATA_SWEEP_REGEXP)
-	list = SortList(list, ";", 1 + 16) // descending and case-insensitive alphanumeric
+	if(!WaveExists(sweeps))
+		return NaN
+	endif
 
-	numItems = ItemsInList(list)
-	for(i = 0; i < numItems; i += 1)
-		name = StringFromList(i, list)
-		sweep = ExtractSweepNumber(name)
+	return sweeps[inf]
+End
 
-		if(WaveExists(GetSweepWave(device, sweep)))
-			return sweep
-		endif
-	endfor
+/// @brief Return a numeric wave with all acquired sweep numbers, $"" if there is none
+Function/WAVE AFH_GetSweeps(string device)
+	string list
 
-	return NaN
+	DFREF dfr = GetDeviceDataPath(device)
+
+	list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
+
+	if(IsEmpty(list))
+		return $""
+	endif
+
+	Make/FREE/R/N=(ItemsInList(list)) sweeps = ExtractSweepNumber(StringFromList(p, list))
+	Sort sweeps, sweeps
+
+	return sweeps
 End
 
 /// @brief Return the sweep wave of the last acquired sweep
