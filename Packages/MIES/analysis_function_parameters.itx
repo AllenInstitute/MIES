@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(60,5)	analysis_function_parameters
+WAVES/T/N=(64,5)	analysis_function_parameters
 BEGIN
 	"Name"	"Type"	"Optionality"	"Used by"	"Help"
 	"AbsoluteVoltageDiff"	"variable"	"required"	"VM"	"Maximum absolute allowed difference of the baseline membrane potentials [mV].\r Set to `inf` to disable this check."
@@ -29,6 +29,7 @@ BEGIN
 	"InterTrialInterval"	"variable"	"optional"	"VM"	"Inter trial interval to set, defaults to 10 [s]"
 	"MaxAccessResistance"	"variable"	"required"	"AR"	"Maximum allowed acccess resistance [MΩ]"
 	"MaxAccessToSteadyStateResistanceRatio"	"variable"	"required"	"AR"	"Maximum allowed ratio of access to steady state resistance [%]"
+	"MaxFrequencyChangePercent"	"variable"	"optional"	"DA"	"The maximum allowed difference for the frequency for two consecutive measurements. In case this value is overshot, we redo the measurement with a fitting DAScale in-between. Only for \"AdaptiveSupra\"."
 	"MaximumDAScale"	"variable"	"required"	"FR"	"Maximum allowed DAScale, set to NaN to turn the check off [pA]"
 	"MaximumSpikeCount"	"variable"	"optional"	"DA"	"The upper limit of the number of spikes. Only for \"Supra\"."
 	"MaxLeakCurrent"	"variable"	"required"	"AR, PB"	"Maximum current [pA] which is allowed in the pre pulse baseline"
@@ -43,8 +44,10 @@ BEGIN
 	"NumberOfFailedSweeps"	"variable"	"required"	"AR, CR, PB, SE, VM"	"Number of failed sweeps which marks the set as failed."
 	"NumberOfSpikes"	"variable"	"required"	"RA"	"Number of spikes required to be found after the pulse onset in order to label the cell as having \"spiked\"."
 	"NumberOfTestpulses"	"variable"	"required"	"AR, PB"	"Expected number of testpulses in the stimset"
+	"NumInvalidSlopeSweepsAllowed"	"variable"	"optional"	"DA"	"Number of allowed sweeps with invalid f-I fit slope. Only for \"AdaptiveSupra\"."
+	"NumPointsForLineFit"	"variable"	"optional"	"DA"	"Number of points from the f-I data which will be used for each line fit.."
 	"OffsetOperator"	"string"	"optional"	"DA"	"Set the math operator to use for combining the rheobase DAScale value from the previous run and the DAScales values. Valid strings are \"+\" (addition) and \"*\" (multiplication). Only for \"Supra\" and defaults to \"+\"."
-	"OperationMode"	"string"	"required"	"DA"	"Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
+	"OperationMode"	"string"	"required"	"DA"	"Operation mode of the analysis function. Can be either \"Sub\"/\"Supra\"/\"AdaptiveSupra\"."
 	"OuterRelativeBound"	"variable"	"required"	"CR"	"Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
 	"PostDAQDAScale"	"variable"	"required"	"FR"	"If true the found DAScale value will be set at the end of the set"
 	"PostDAQDAScaleFactor"	"variable"	"required"	"FR"	"Scaling factor for setting the DAScale of passed headstages at the end of the set"
@@ -55,6 +58,7 @@ BEGIN
 	"SamplingMultiplier"	"variable"	"required"	"AR, CR, DA, FR, PB, RA, RB, SE, SP, VM"	"Sampling multiplier, use 1 for no multiplier"
 	"SealThreshold"	"variable"	"required"	"SE"	"Minimum required seal threshold [GΩ]"
 	"ShowPlot"	"variable"	"optional"	"DA"	"Show the resistance (\"Sub\") or the f-I (\"Supra\") plot, defaults to true."
+	"SlopePercentage"	"variable"	"optional"	"DA"	"Once the slope of the f-I fit is smaller than this percentage value compared with the maximum slope the stimset cycle is stopped early. Only for \"AdaptiveSupra\"."
 	"SpikeCheck"	"variable"	"optional"	"CR"	"Toggle spike check during the chirp. Defaults to off."
 	"SpikeFailureIgnoredTime"	"variable"	"required"	"VM"	"Time [ms] to ignore around spikes for average calculation.\r Half of this value before and after each spike."
 	"TestPulseGroupSelector"	"string"	"optional"	"SE"	"Group(s) which have their resistance evaluated: One of Both/First/Second, defaults to Both"
