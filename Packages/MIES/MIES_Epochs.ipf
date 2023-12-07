@@ -742,25 +742,15 @@ End
 
 /// @brief Write the epoch info into the sweep settings wave
 ///
-/// @param device device
-/// @param sweepWave  sweep wave
-/// @param configWave config wave
-Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE configWave)
-	variable i, numDACEntries, channel, headstage, acquiredTime, plannedTime
+/// @param device       device
+/// @param sweepNo      sweep Number
+/// @param acquiredTime actual acquired time in seconds, if acquisition was stopped early lower than plannedTime
+/// @param plannedTime  planned acquisition time in seconds, if acquisition was not stopped early equals acquiredTime
+Function EP_WriteEpochInfoIntoSweepSettings(string device, variable sweepNo, variable acquiredTime, variable plannedTime)
+	variable i, numDACEntries, channel, headstage
 	string entry
 
-	plannedTime = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) * MILLI_TO_ONE
-
-	// all channels are acquired simultaneously we can just check if the last
-	// channel has NaN in the last element
-	if(IsNaN(sweepWave[inf][inf]))
-		FindValue/FNAN sweepWave
-		ASSERT(V_row >= 0, "Unexpected result")
-
-		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) * MILLI_TO_ONE
-	else
-		acquiredTime = plannedTime
-	endif
+	[WAVE sweepWave, WAVE configWave] = GetSweepAndConfigWaveFromDevice(device, sweepNo)
 
 	EP_AdaptEpochInfo(device, configWave, acquiredTime, plannedTime)
 
