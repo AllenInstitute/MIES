@@ -174,6 +174,16 @@ End
 ///
 /// \endrst
 ///
+/// With GAIN_BEFORE_DAQ the function returns the gain factor for all channels.
+/// With GAIN_AFTER_DAC the gain factor for ADC channels is returned as 1.
+/// Gain handling for NI:
+/// In dataconfigurator setup DAC_values = data(before_DAQ) * gain_factor(DAC_channel) @sa DC_FillDAQDataWaveForDAQ
+/// at acquisition time done by hardware ADC_values = data(acquired_by_ADC) * gain_factor(ADC_channel) @sa HW_NI_PrepareAcq
+/// at acquisition time on readout:
+/// oscilloscopeValues = DAC_values
+/// scaledValues = DAC_values / gain_factor(DAC_channel)
+/// ADC_values are NOT changed, thus a gain factor of 1 is used when calculation indexes over all DAC, ADC, TTL channels. @sa SCOPE_NI_UpdateOscilloscope
+///
 /// @param device device
 /// @param timing     One of @ref GainTimeParameter
 ///
