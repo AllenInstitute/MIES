@@ -235,29 +235,12 @@ Structure AnalysisFunction_V3
 	/// one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
 	variable eventType
 
-	/// raw data wave for interacting with the DAC hardware (locked to prevent
-	/// changes using `SetWaveLock`). The exact wave format depends on the hardware.
-	/// @sa GetDAQDataWave()
-	WAVE rawDACWave
-
 	/// scaled and undecimated data from the DAC hardware, 2D floating-point wave
 	/// Rows has channel data, one column per channel, channels are in the order DA/AD/TTL
 	WAVE scaledDACWave
 
 	/// active headstage index, `[0, NUM_HEADSTAGES[`
 	variable headStage
-
-	/// last valid row index in `rawDACWave` which will be filled with data at the
-	/// end of DAQ. The total number of rows in `rawDACWave` might be higher
-	/// due to alignment requirements of the data acquisition hardware.
-	///
-	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT events.
-	variable lastValidRowIndex
-
-	/// last written row index in `rawDACWave`/`scaledDACWave` with already acquired data
-	///
-	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT/#PRE_SWEEP_CONFIG_EVENT.
-	variable lastKnownRowIndex
 
 	/// Potential *future* number of the sweep. Once the sweep is finished it will be
 	/// saved with this number. Use GetSweepWave() to query the sweep itself.
@@ -269,6 +252,38 @@ Structure AnalysisFunction_V3
 	/// Analysis function parameters set in the stimset's textual parameter
 	/// wave. Settable via AFH_AddAnalysisParameter().
 	string params
+
+	/// last valid row index for DA channels in `rawDAQWave` which will be filled with data at the
+	/// end of DAQ. If the acquisition was aborted, the remaining samples beyond lastValidRowIndexDA
+	/// are NaN.
+	/// The total number of rows in `rawDAQWave` might be higher
+	/// due to alignment requirements of the data acquisition hardware (e.g. ITC).
+	///
+	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT events.
+	variable lastValidRowIndexDA
+
+	/// last valid row index for AD/TTL channels in `rawDAQWave` which will be filled with data at the
+	/// end of DAQ. The total number of rows in `rawDAQWave` might be higher
+	/// due to alignment requirements of the data acquisition hardware (e.g. ITC).
+	///
+	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT events.
+	variable lastValidRowIndexAD
+
+	/// last written row index in `rawDAQWave`/`scaledDACWave`s DA channel(s) with already acquired data
+	///
+	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT/#PRE_SWEEP_CONFIG_EVENT.
+	variable lastKnownRowIndexDA
+
+	/// last written row index in `rawDAQWave`/`scaledDACWave`s AD/TTL channel(s) with already acquired data
+	///
+	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT/#PRE_SWEEP_CONFIG_EVENT.
+	variable lastKnownRowIndexAD
+
+	/// sample interval of DA channel(s) in ms
+	variable sampleIntervalDA
+
+	/// sample interval of AD channel(s) in ms
+	variable sampleIntervalAD
 EndStructure
 
 Function InitDeltaControlNames(s)

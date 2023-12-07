@@ -306,72 +306,120 @@ Function ValidFunc_V3(device, s)
 	string device
 	STRUCT AnalysisFunction_V3& s
 
-	variable hardwareType
+	variable hardwareType, i
 
 	hardwareType = GetHardwareType(device)
 
 	CHECK_NON_EMPTY_STR(device)
 
-	switch(hardwareType)
-		case HARDWARE_ITC_DAC:
-			CHECK_WAVE(s.rawDACWave, NUMERIC_WAVE)
-			break
-		case HARDWARE_NI_DAC:
-			CHECK_WAVE(s.rawDACWave, WAVE_WAVE)
-			break
-	endswitch
-
-	CHECK_WAVE(s.scaledDACWave, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+	if(WaveExists(s.scaledDACWave))
+		if(IsTextWave(s.scaledDACWave))
+			WAVE channelDA = ResolveSweepChannel(s.scaledDACWave, 0)
+			CHECK_WAVE(channelDA, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+		elseif(IsWaveRefWave(s.scaledDACWave))
+			WAVE/WAVE scaledDACWaveRef = s.scaledDACWave
+			WAVE channelDA = scaledDACWaveRef[0]
+			CHECK_WAVE(channelDA, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+		else
+			INFO("Unknown data format")
+			FAIL()
+		endif
+	endif
 
 	if(s.eventType != PRE_DAQ_EVENT && s.eventType != PRE_SET_EVENT && s.eventType != PRE_SWEEP_CONFIG_EVENT && s.eventType != POST_DAQ_EVENT)
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
-				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, COLS), DimSize(s.rawDACWave, COLS))
-				CHECK_LE_VAR(DimSize(s.scaledDACWave, ROWS), DimSize(s.rawDACWave, ROWS))
+				WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, ROWS), DimSize(DAQDataWave, COLS))
+				if(IsTextWave(s.scaledDACWave))
+					for(string notused : s.scaledDACWave)
+						CHECK_LE_VAR(DimSize(ResolveSweepChannel(s.scaledDACWave, i), ROWS), DimSize(DAQDataWave, ROWS))
+						i += 1
+					endfor
+				elseif(IsWaveRefWave(s.scaledDACWave))
+					for(WAVE channel : scaledDACWaveRef)
+						CHECK_LE_VAR(DimSize(channel, ROWS), DimSize(DAQDataWave, ROWS))
+					endfor
+				endif
 				break
 			case HARDWARE_NI_DAC:
-				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, COLS), DimSize(s.rawDACWave, ROWS))
-				WAVE/WAVE rawDACWaveRef = s.rawDACWave
-				Make/FREE/N=(DimSize(rawDACWaveRef, ROWS)) sizes = DimSize(rawDACWaveRef[p], ROWS)
-				CHECK_LE_VAR(DimSize(s.scaledDACWave, ROWS), WaveMax(sizes))
+				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, ROWS), DimSize(DAQDataWaveRef, ROWS))
+				Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizesDAQ = DimSize(DAQDataWaveRef[p], ROWS)
+				if(IsTextWave(s.scaledDACWave))
+					Make/FREE/N=(DimSize(s.scaledDACWave, ROWS)) sizesScaled = DimSize(ResolveSweepChannel(s.scaledDACWave, p), ROWS)
+				elseif(IsWaveRefWave(s.scaledDACWave))
+					WAVE/WAVE scaledDACWaveRef = s.scaledDACWave
+					Make/FREE/N=(DimSize(scaledDACWaveRef, ROWS)) sizesScaled = DimSize(scaledDACWaveRef[p], ROWS)
+				endif
+				CHECK_EQUAL_WAVES(sizesDAQ, sizesScaled, mode=WAVE_DATA)
 				break
 			default:
 				FAIL()
 		endswitch
+	elseif(s.eventType == POST_DAQ_EVENT)
+		if(!(IsTextWave(s.scaledDACWave) || IsWaveRefWave(s.scaledDACWave)))
+			FAIL()
+		endif
+	else
+		CHECK_WAVE(s.scaledDACWave, NULL_WAVE)
 	endif
 
-	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(s.scaledDACWAVE, 0)), 1)
-	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(s.rawDACWAVE, 0)), 1)
+	if(WaveExists(s.scaledDACWave))
+		CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(s.scaledDACWAVE, 0)), 1)
+	endif
 	CHECK_EQUAL_VAR(s.headstage, 0)
 	CHECK_EQUAL_VAR(numType(s.sweepNo), 0)
 	CHECK_EQUAL_VAR(numType(s.sweepsInSet), 0)
 	CHECK_EQUAL_VAR(strlen(s.params), 0)
 
 	if(s.eventType == PRE_DAQ_EVENT || s.eventType == PRE_SET_EVENT || s.eventType == PRE_SWEEP_CONFIG_EVENT)
-		CHECK_EQUAL_VAR(numType(s.lastValidRowIndex), 2)
-		CHECK_EQUAL_VAR(numType(s.lastKnownRowIndex), 2)
+		CHECK_EQUAL_VAR(s.lastValidRowIndexAD, NaN)
+		CHECK_EQUAL_VAR(s.lastKnownRowIndexAD, NaN)
+		CHECK_EQUAL_VAR(s.lastValidRowIndexDA, NaN)
+		CHECK_EQUAL_VAR(s.lastKnownRowIndexDA, NaN)
+		CHECK_EQUAL_VAR(s.sampleIntervalDA, NaN)
+		CHECK_EQUAL_VAR(s.sampleIntervalAD, NaN)
+
 	elseif(s.eventType == MID_SWEEP_EVENT)
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
-				CHECK_GE_VAR(s.lastValidRowIndex, 0)
-				CHECK_LT_VAR(s.lastValidRowIndex, DimSize(s.rawDACWave, ROWS))
+				WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+				CHECK_GE_VAR(s.lastValidRowIndexDA, 0)
+				CHECK_LT_VAR(s.lastValidRowIndexDA, DimSize(DAQDataWave, ROWS))
+				CHECK_GE_VAR(s.lastValidRowIndexAD, 0)
+				CHECK_LT_VAR(s.lastValidRowIndexAD, DimSize(DAQDataWave, ROWS))
+				CHECK_GE_VAR(s.lastKnownRowIndexDA, 0)
+				CHECK_LT_VAR(s.lastKnownRowIndexDA, DimSize(DAQDataWave, ROWS))
+				CHECK_GE_VAR(s.lastKnownRowIndexAD, 0)
+				CHECK_LT_VAR(s.lastKnownRowIndexAD, DimSize(DAQDataWave, ROWS))
+				CHECK_EQUAL_VAR(s.sampleIntervalDA, DimDelta(DAQDataWave, ROWS))
+				CHECK_EQUAL_VAR(s.sampleIntervalAD, DimDelta(DAQDataWave, ROWS))
 				break
 			case HARDWARE_NI_DAC:
-				WAVE/WAVE rawDACWaveRef = s.rawDACWave
-				Make/FREE/N=(DimSize(rawDACWaveRef, ROWS)) sizes = DimSize(rawDACWaveRef[p], ROWS)
-				CHECK_GE_VAR(s.lastValidRowIndex, 0)
-				CHECK_LT_VAR(s.lastValidRowIndex, WaveMax(sizes))
-				CHECK_GE_VAR(s.lastKnownRowIndex, 0)
-				CHECK_LT_VAR(s.lastKnownRowIndex, WaveMax(sizes))
+				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+				Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizes = DimSize(DAQDataWaveRef[p], ROWS)
+				CHECK_GE_VAR(s.lastValidRowIndexAD, 0)
+				CHECK_LT_VAR(s.lastValidRowIndexAD, WaveMax(sizes))
+				CHECK_GE_VAR(s.lastKnownRowIndexAD, 0)
+				CHECK_LT_VAR(s.lastKnownRowIndexAD, WaveMax(sizes))
+				CHECK_GE_VAR(s.lastValidRowIndexDA, 0)
+				CHECK_LT_VAR(s.lastValidRowIndexDA, WaveMax(sizes))
+				CHECK_GE_VAR(s.lastKnownRowIndexDA, 0)
+				CHECK_LT_VAR(s.lastKnownRowIndexDA, WaveMax(sizes))
+				CHECK_GT_VAR(s.sampleIntervalDA, 0)
+				CHECK_GT_VAR(s.sampleIntervalAD, 0)
 				break
 			default:
 				FAIL()
 		endswitch
 	elseif(s.eventType == POST_DAQ_EVENT || s.eventType == POST_SET_EVENT || s.eventType == POST_SWEEP_EVENT)
 		WAVE/Z sweepWave = GetSweepWave(device, s.sweepNo)
-		CHECK_WAVE(sweepWave, NUMERIC_WAVE)
-		CHECK_EQUAL_VAR(DimSize(sweepWave, ROWS) - 1, s.lastValidRowIndex)
-		CHECK_EQUAL_VAR(DimSize(sweepWave, ROWS) - 1, s.lastKnownRowIndex)
+		CHECK_WAVE(sweepWave, TEXT_WAVE)
+		CHECK_GT_VAR(DimSize(sweepWave, ROWS), 0)
+		WAVE channel = ResolveSweepChannel(sweepWave, 0)
+		CHECK_EQUAL_VAR(DimSize(channel, ROWS) - 1, s.lastValidRowIndexDA)
+		CHECK_EQUAL_VAR(DimSize(channel, ROWS) - 1, s.lastKnownRowIndexDA)
 	else
 		FAIL()
 	endif
@@ -392,15 +440,15 @@ Function ValidFunc_V3(device, s)
 			break
 		case POST_SWEEP_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
-			CHECK_WAVE(GetSweepWave(device, s.sweepNo), NUMERIC_WAVE)
+			CHECK_WAVE(GetSweepWave(device, s.sweepNo), TEXT_WAVE)
 			break
 		case POST_SET_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT] - 1)
-			CHECK_WAVE(GetSweepWave(device, s.sweepNo), NUMERIC_WAVE)
+			CHECK_WAVE(GetSweepWave(device, s.sweepNo), TEXT_WAVE)
 			break
 		case POST_DAQ_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT] - 1)
-			CHECK_WAVE(GetSweepWave(device, s.sweepNo), NUMERIC_WAVE)
+			CHECK_WAVE(GetSweepWave(device, s.sweepNo), TEXT_WAVE)
 			break
 	endswitch
 
@@ -986,7 +1034,7 @@ Function BreakConfigWave(string device, STRUCT AnalysisFunction_V3& s)
 
 	switch(s.eventType)
 		case MID_SWEEP_EVENT:
-			if(s.lastKnownRowIndex > 0)
+			if(s.lastKnownRowIndexAD > 0)
 				WAVE/Z configWave = GetDAQConfigWave(device)
 				CHECK_WAVE(configWave, NUMERIC_WAVE)
 				CHECK(IsValidSweepAndConfig(s.scaledDACWave, configWave))

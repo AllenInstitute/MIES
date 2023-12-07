@@ -17,7 +17,7 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 	variable eventType
 
 	variable i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet
-	variable realDataLength, sweepNo, fifoPosition
+	variable realDataLengthAD, realDataLengthDA, sweepNo, fifoPositionAD, fifoPositionDA, sampleIntDA, sampleIntAD
 	string func, msg
 	struct AnalysisFunction_V3 s
 
@@ -26,23 +26,22 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 	endif
 
 	NVAR count = $GetCount(device)
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	WAVE setEventFlag = GetSetEventFlag(device)
-	fifoPosition = ROVar(GetFifoPosition(device))
 
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(device)
 
 	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_CONFIG_EVENT)
-		realDataLength = NaN
+		realDataLengthAD = NaN
+		realDataLengthDA = NaN
+		fifoPositionAD = NaN
+		fifoPositionDA = NaN
 	else
-		realDataLength = stopCollectionPoint
-	endif
-
-	// use safe defaults
-	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_CONFIG_EVENT)
-		fifoPosition = NaN
+		realDataLengthAD = HW_GetEffectiveADCWaveLength(device, DATA_ACQUISITION_MODE)
+		realDataLengthDA = HW_GetEffectiveDACWaveLength(device, DATA_ACQUISITION_MODE)
+		fifoPositionAD = ROVar(GetFifoPosition(device))
+		fifoPositionDA = HW_GetDAFifoPosition(device, DATA_ACQUISITION_MODE)
 	endif
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -75,30 +74,46 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 			continue
 		endif
 
+		sampleIntDA = NaN
+		sampleIntAD = NaN
+
 		// @todo Use AS_GetSweepNumber once acquisition state handling supports PRE/POST SET_EVENTS
 		switch(eventType)
 			case PRE_DAQ_EVENT:
 			case PRE_SWEEP_CONFIG_EVENT:
-			case PRE_SET_EVENT:
-			case MID_SWEEP_EVENT: // fallthrough-by-design
+			case PRE_SET_EVENT: // fallthrough-by-design
 				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
-				WAVE scaledDataWave = GetScaledDataWave(device)
+				WAVE/Z dataWave = $""
+				break
+			case MID_SWEEP_EVENT:
+				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
+				WAVE/Z/WAVE scaledDataWave = GetScaledDataWave(device)
+				if(!WaveExists(scaledDataWave))
+					BUG("AnalysisFunctionCall: Expected scaledData wave, could not find it. Event:" + num2istr(eventType))
+					return NaN
+				endif
+
+				WAVE config = GetDAQConfigWave(device)
+				[sampleIntDA, sampleIntAD] = AFH_GetSampleIntervalsFromSweep(scaledDataWave, config)
+				WAVE dataWave = scaledDataWave
 				break
 			case POST_SWEEP_EVENT:
 			case POST_SET_EVENT:
 			case POST_DAQ_EVENT: // fallthrough-by-design
 				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep") - 1
-				WAVE/Z scaledDataWave = GetSweepWave(device, sweepNo)
+				WAVE/Z/T sweepWave = GetSweepWave(device, sweepNo)
+				if(!WaveExists(sweepWave))
+					BUG("AnalysisFunctionCall: Expected sweep wave, could not find it. Event:" + num2istr(eventType))
+					return NaN
+				endif
+				WAVE config = GetConfigWave(sweepWave)
+				[sampleIntDA, sampleIntAD] = AFH_GetSampleIntervalsFromSweep(sweepWave, config)
+				WAVE dataWave = sweepWave
 				break
 			default:
 				ASSERT(0, "Invalid eventType")
 				break
 		endswitch
-
-		if(!WaveExists(scaledDataWave))
-			BUG("Analysis function could not be called due to missing scaledDataWave")
-			return NaN
-		endif
 
 		FUNCREF AFP_ANALYSIS_FUNC_V1 f1 = $func
 		FUNCREF AFP_ANALYSIS_FUNC_V2 f2 = $func
@@ -113,25 +128,33 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 		ret = NaN
 		AssertOnAndClearRTError()
 		try
-			WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-			ChangeWaveLock(DAQDataWave, 1)
-
-			ChangeWaveLock(scaledDataWave, 1)
 
 			if(valid_f1)
+				WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+				ChangeWaveLock(DAQDataWave, 1)
 				ret = f1(device, eventType, DAQDataWave, i); AbortOnRTE
 			elseif(valid_f2)
-				ret = f2(device, eventType, DAQDataWave, i, realDataLength); AbortOnRTE
+				WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+				ChangeWaveLock(DAQDataWave, 1)
+				ret = f2(device, eventType, DAQDataWave, i, realDataLengthAD); AbortOnRTE
 			elseif(valid_f3)
-				s.eventType          = eventType
-				WAVE s.rawDACWave    = DAQDataWave
-				WAVE s.scaledDACWave = scaledDataWave
-				s.headstage          = i
-				s.lastValidRowIndex  = realDataLength - 1
-				s.lastKnownRowIndex  = fifoPosition - 1
-				s.sweepNo            = sweepNo
-				s.sweepsInSet        = sweepsInSet
-				s.params             = analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS]
+
+				if(WaveExists(dataWave))
+					ChangeWaveLock(dataWave, 1)
+				endif
+
+				s.eventType           = eventType
+				WAVE/Z s.scaledDACWave  = dataWave
+				s.headstage           = i
+				s.lastValidRowIndexAD = realDataLengthAD - 1
+				s.lastKnownRowIndexAD = fifoPositionAD - 1
+				s.lastValidRowIndexDA = realDataLengthDA - 1
+				s.lastKnownRowIndexDA = fifoPositionDA - 1
+				s.sampleIntervalDA    = sampleIntDA
+				s.sampleIntervalAD    = sampleIntAD
+				s.sweepNo             = sweepNo
+				s.sweepsInSet         = sweepsInSet
+				s.params              = analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS]
 
 				ret = f3(device, s); AbortOnRTE
 			else
@@ -151,8 +174,12 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 			endif
 		endtry
 
-		ChangeWaveLock(DAQDataWave, 0)
-		ChangeWaveLock(scaledDataWave, 0)
+		if(WaveExists(dataWave))
+			ChangeWaveLock(dataWave, 0)
+		endif
+		if(WaveExists(DAQDataWave))
+			ChangeWaveLock(DAQDataWave, 0)
+		endif
 
 		// error out in CI on pending RTEs
 		AssertOnAndClearRTError()

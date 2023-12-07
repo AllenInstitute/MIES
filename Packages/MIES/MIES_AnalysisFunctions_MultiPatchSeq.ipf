@@ -343,11 +343,7 @@ static Function/WAVE MSQ_SearchForSpikes(device, type, sweepWave, headstage, tot
 	variable minVal, maxVal
 	string msg
 
-	if(WaveRefsEqual(sweepWave, GetDAQDataWave(device, DATA_ACQUISITION_MODE)))
-		WAVE config = GetDAQConfigWave(device)
-	else
-		WAVE config = GetConfigWave(sweepWave)
-	endif
+	WAVE config = AFH_GetConfigWave(device, sweepWave)
 
 	if(ParamIsDefault(numberOfSpikes))
 		numberOfSpikes = 1
