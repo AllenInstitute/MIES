@@ -993,3 +993,9 @@ Function GetWaveTrackingMode()
 
 	return UTF_WAVE_TRACKING_NONE
 End
+
+Function ResetOverrideResults()
+
+	KillOrMoveToTrash(wv=root:overrideResults)
+	Make/N=0 root:overrideResults
+End

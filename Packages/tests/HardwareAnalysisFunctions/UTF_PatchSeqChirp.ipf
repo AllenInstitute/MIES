@@ -27,6 +27,9 @@ static Function GlobalPreInit(string device)
 
 	AdjustAnalysisParamsForPSQ(device, "PatchSeqChirp_DA_0")
 	PrepareForPublishTest()
+
+	// Ensure that PRE_SET_EVENT already sees the override wave
+	ResetOverrideResults()
 End
 
 static Function/WAVE GetLBNEntriesWave_IGNORE()

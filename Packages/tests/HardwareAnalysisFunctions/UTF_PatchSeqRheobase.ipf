@@ -28,13 +28,13 @@ static Function GlobalPreInit(string device)
 
 	AdjustAnalysisParamsForPSQ(device, "Rheobase_DA_0")
 	PrepareForPublishTest()
+	ResetOverrideResults()
 End
 
 static Function SetFinalDAScale(variable var)
 
-	Make/O/N=(0) root:overrideResults/Wave=overrideResults
-	Note/K overrideResults
-
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NORMAL_WAVE)
 	SetNumberInWaveNote(overrideResults, PSQ_RB_FINALSCALE_FAKE_KEY, var)
 End
 
