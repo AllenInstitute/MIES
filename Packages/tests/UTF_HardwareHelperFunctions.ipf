@@ -1644,10 +1644,17 @@ End
 
 Function StartFakeThreadMonitor_IGNORE(string device, variable fixedFifoPos)
 
-	variable deviceID
+	variable deviceID, i, numChannels, fifoPosLatest
 
 	deviceID = ROVar(GetDAQDeviceID(device))
+	NVAR tgID = $GetThreadGroupIDFifo(device)
+	fifoPosLatest = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
 	TFH_StopFifoDaemon(HARDWARE_ITC_DAC, deviceID)
+
+	if(IsFinite(fifoPosLatest) && fixedFifoPos > 0)
+		fixedFifoPos = fifoPosLatest
+	endif
+
 	NVAR tgID = $GetThreadGroupIDFifo(device)
 	tgID = ThreadGroupCreate(1)
 
@@ -1705,7 +1712,7 @@ Function UseFakeFIFOThreadBeingStuck_IGNORE(s)
 	fifoPos = ROVar(GetFifoPosition(device))
 
 	if(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING && fifoPos > 10000)
-		StartFakeThreadMonitor_IGNORE(device, 12345)
+		StartFakeThreadMonitor_IGNORE(device, fifoPos)
 
 		return 1
 	endif
