@@ -222,6 +222,12 @@ threadsafe static Function WaveVersionIsAtLeast(wv, existingVersion)
 	return !isNaN(waveVersion) && waveVersion >= existingVersion
 End
 
+/// @brief Returns 1 if the wave has a valid version information attached, 0 otherwise
+threadsafe static Function IsWaveVersioned(WAVE wv)
+
+	return IsValidWaveVersion(GetWaveVersion(wv))
+End
+
 /// @brief Check if the given wave's version is smaller than the given version, if version is not set true is returned
 threadsafe static Function WaveVersionIsSmaller(wv, existingVersion)
 	WAVE/Z wv
@@ -803,14 +809,20 @@ End
 ///
 /// Special use function, normal callers should use GetDAQDataWave()
 /// instead.
-Function/WAVE GetNIDAQChannelWave(device, channel, mode)
-	string device
-	variable channel
-	variable mode
+Function/WAVE GetNIDAQChannelWave(string device, variable channel, variable mode)
 
-	string name
+	string name, prefix
+	variable hardwareType = GetHardwareType(device)
 
-	name = "NI_Channel" + num2str(channel)
+	switch (hardwareType)
+		case HARDWARE_NI_DAC:
+			prefix = "NI"
+			break
+		default:
+			ASSERT(0, "unsupported device type")
+	endswitch
+
+	name = prefix + "_Channel" + num2str(channel)
 
 	switch(mode)
 		case DATA_ACQUISITION_MODE:
@@ -1105,6 +1117,8 @@ Function/Wave GetTTLWave(device)
 			return wv_ni
 
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 	endswitch
 End
 
@@ -2906,6 +2920,21 @@ End
 
 /// @brief Return a wave which holds undecimated and scaled data
 ///
+/// ScaledDataWave is initialized in @sa DC_InitScaledDataWave
+/// Each channel contains scaled data that takes the gain from the headstage into account.
+/// In the channel wave the voltage output to the DAC and read from the ADC is translated back
+/// to the headstages input/output signal (e.g. mV / pA). The x-time interval is milliseconds.
+///
+/// For ITC on initialization the channels are filled with NaN and the headstages data unit is set.
+/// In @sa SCOPE_ITC_UpdateOscilloscope all channels are copied from the DAQDataWave to the scaledDataWave
+/// and properly scaled.
+/// For NI on initialization the non-ADC channels are copied from the DAQDataWave to the scaledDataWave
+/// and properly scaled. The ADC channels are scaled by a gain factor that is applied in hardware (or the device XOP).
+/// Thus, in @sa SCOPE_NI_UpdateOscilloscope and @sa SCOPE_SU_UpdateOscilloscope the ADC channel data is simply
+/// copied from the DAQDataWave to the scaledDataWave.
+///
+/// Unversioned Wave:
+///
 /// Rows:
 /// - StopCollectionPoint
 ///
@@ -2914,19 +2943,31 @@ End
 ///
 /// Type:
 /// - FP32 or FP64, as returned by SWS_GetRawDataFPType()
-Function/Wave GetScaledDataWave(device)
-	string device
+///
+/// Version 1:
+/// WAVEREF wave, initially with size 0
+/// sized in @sa DC_MakeHelperWaves to number of hardware channels as in config wave
+Function/WAVE GetScaledDataWave(string device)
 
-	dfref dfr = GetDevicePath(device)
+	variable version = 1
+
+	DFREF dfr = GetDevicePath(device)
 	WAVE/Z/SDFR=dfr wv = ScaledData
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
+	elseif(WaveExists(wv))
+		if(!IsWaveVersioned(wv))
+			KillOrMoveToTrash(wv=wv)
+			Make/WAVE/N=0 dfr:ScaledData/WAVE=wv1
+		endif
+	else
+		Make/WAVE/N=0 dfr:ScaledData/WAVE=wv1
 	endif
 
-	Make/Y=(SWS_GetRawDataFPType(device))/N=(1, NUM_DA_TTL_CHANNELS) dfr:ScaledData/Wave=wv
+	SetWaveVersion(wv1, version)
 
-	return wv
+	return wv1
 End
 
 /// @brief Return a wave for displaying scaled data in the oscilloscope window
@@ -2943,6 +2984,23 @@ Function/Wave GetOscilloscopeWave(device)
 	endif
 
 	Make/R/N=(1, NUM_DA_TTL_CHANNELS) dfr:OscilloscopeData/Wave=wv
+
+	return wv
+End
+
+/// @brief Return a wave for temporary storing scaled data for PowerSpectrum input
+Function/WAVE GetScaledTPTempWave(string device)
+
+	string name = "ScaledTPTempWave"
+
+	DFREF dfr = GetDevicePath(device)
+	WAVE/Z/D/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(1, NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv
 
 	return wv
 End
