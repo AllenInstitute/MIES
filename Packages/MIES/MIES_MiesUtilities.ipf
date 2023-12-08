@@ -5521,7 +5521,9 @@ End
 ///
 /// The backup wave will be located in the same data folder and
 /// its name will be the original name with #WAVE_BACKUP_SUFFIX
-/// appended.
+/// appended. If the backup wave exists and the main type of the backup wave can be overridden by Duplicate/O
+/// then the wave reference of the backup wave is kept. Otherwise the main type is changed and the wave reference
+/// is not kept (e.g. backup wave is numerical, original wave is text)
 threadsafe Function/Wave CreateBackupWave(wv, [forceCreation])
 	Wave wv
 	variable forceCreation
@@ -5544,8 +5546,10 @@ threadsafe Function/Wave CreateBackupWave(wv, [forceCreation])
 	if(WaveExists(backup) && !forceCreation)
 		return backup
 	endif
-
-	Duplicate/O wv, dfr:$backupname/Wave=backup
+	if(WaveExists(backup) && WaveType(backup, 1) != WaveType(wv, 1) && (WaveType(backup, 1) == IGOR_TYPE_TEXT_WAVE || WaveType(wv, 1) == IGOR_TYPE_TEXT_WAVE))
+		KillOrMoveToTrash(wv = backup)
+	endif
+	Duplicate/O wv, dfr:$backupname/WAVE=backup
 
 	return backup
 End
