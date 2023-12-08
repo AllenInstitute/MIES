@@ -8590,3 +8590,15 @@ End
 Function/S GetWorkLoadName(string workload, string device)
 	return workload + "_" + device
 End
+
+Function GetFirstADCChannelIndex(WAVE config)
+
+	variable col
+
+	col = FindDimlabel(config, COLS, "ChannelType")
+	ASSERT(col >= 0, "Could not find ChannelType column in config wave")
+	FindValue/RMD=[][col]/V=(XOP_CHANNEL_TYPE_ADC) config
+	ASSERT(V_value >= 0, "Could not find any XOP_CHANNEL_TYPE_ADC channel")
+
+	return V_row
+End
