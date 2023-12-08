@@ -652,7 +652,7 @@ static Function SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceiD, fifoP
 	string device
 	variable dataAcqOrTP, deviceID, fifoPos
 
-	variable i, channel, decMethod, decFactor, gain, numCols, numFifoChannels
+	variable i, channel, decMethod, decFactor, numCols, numFifoChannels
 	string fifoName, msg, fifoInfo
 
 	WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
@@ -685,17 +685,15 @@ static Function SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceiD, fifoP
 		// it is in this moment the previous fifo position, so the new data goes from here to fifoPos-1
 		NVAR fifoPosGlobal = $GetFifoPosition(device)
 
-		WAVE allGain = SWS_GetChannelGains(device, timing = GAIN_AFTER_DAQ)
 		numCols = DimSize(scaledDataWave, COLS)
 		for(i = 0; i < numFifoChannels; i += 1)
 			channel = NumberByKey("NAME" + num2istr(i), fifoInfo)
-			gain = allGain[channel]
 			WAVE NIChannel = NIDataWave[channel]
 			WAVE scaledChannel = scaledDataWave[channel]
 
 			AssertOnAndClearRTError()
 			try
-				Multithread scaledChannel[fifoPosGlobal, fifoPos - 1] = NIChannel[p] / gain; AbortOnRTE
+				Multithread scaledChannel[fifoPosGlobal, fifoPos - 1] = NIChannel[p]; AbortOnRTE
 			catch
 				sprintf msg, "Writing scaledDataWave failed, please save the experiment and file a bug report: fifoPosGlobal %g, fifoPos %g, scaledDataWave rows %g, stopCollectionPoint %g\r", fifoPosGlobal, fifoPos, DimSize(scaledDataWave, ROWS), ROVAR(GetStopCollectionPoint(device))
 				ASSERT(0, msg)
