@@ -69,6 +69,11 @@ Function/WAVE DeviceNameGeneratorMD1()
 	lblList = AddListItem("ITC1600", lblList)
 #endif
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	devList = AddListItem("IPA_E_100170", devList, ":")
+	lblList = AddListItem("SUTTER", lblList)
+#endif
+
 	WAVE data = ListToTextWave(devList, ":")
 	for(i = 0; i < DimSize(data, ROWS); i += 1)
 		SetDimLabel ROWS, i, $StringFromList(i, lblList), data
@@ -81,6 +86,12 @@ Function/WAVE DeviceNameGeneratorMD0()
 
 #ifdef TESTS_WITH_NI_HARDWARE
 	// NI Hardware has no single device support
+	Make/FREE/T/N=0 data
+	return data
+#endif
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// SUTTER Hardware has no single device support
 	Make/FREE/T/N=0 data
 	return data
 #endif
@@ -144,6 +155,11 @@ End
 Function/WAVE GetITCDevices()
 
 #ifdef TESTS_WITH_NI_HARDWARE
+	Make/FREE/T/N=0 wv
+	return wv
+#endif
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
 	Make/FREE/T/N=0 wv
 	return wv
 #endif
