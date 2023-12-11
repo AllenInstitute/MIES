@@ -349,6 +349,7 @@ Function/WAVE DB_GetPlainSweepList(win)
 	endif
 
 	Make/FREE/R/N=(ItemsInList(list)) sweeps = ExtractSweepNumber(StringFromList(p, list))
+	Sort sweeps, sweeps
 
 	return sweeps
 End
