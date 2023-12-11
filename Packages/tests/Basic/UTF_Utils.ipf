@@ -7388,3 +7388,41 @@ static Function TestFindRightMostHighBit()
 	CHECK_EQUAL_VAR(FindRightMostHighBit(3), 0)
 	CHECK_EQUAL_VAR(FindRightMostHighBit(18), 1)
 End
+
+static Function CheckLogFiles()
+
+	// ensure that the ZeroMQ logfile exists as well
+	PrepareForPublishTest()
+
+	string file
+	variable foundFiles, jsonID
+
+	WAVE/T filesAndOther = GetLogFileNames()
+	Duplicate/RMD=[][0]/FREE/T filesAndOther, files
+
+	for(file : files)
+		if(!FileExists(file))
+			continue
+		endif
+
+		WAVE/T contents = LoadTextFileToWave(file, "\n")
+		CHECK_WAVE(contents, TEXT_WAVE)
+		CHECK_GT_VAR(DimSize(contents, ROWS), 0)
+
+		if(!cmpstr(contents[0], "{}"))
+			continue
+		endif
+
+		jsonID = JSON_Parse(contents[0])
+		CHECK(JSON_IsValid(jsonID))
+
+		CHECK(MIES_LOG#LOG_HasRequiredKeys(jsonID))
+		WAVE/T keys = JSON_GetKeys(jsonID, "")
+		FindValue/TEXT="ts" keys
+		CHECK_GE_VAR(V_Value, 0)
+
+		foundFiles += 1
+	endfor
+
+	CHECK_GT_VAR(foundFiles, 0)
+End
