@@ -143,6 +143,7 @@ threadsafe Function LOG_AddEntry(string package, string action, [variable stackt
 	caller = GetRTStackInfo(2)
 	JSONid = LOG_GenerateEntryTemplate(caller)
 	JSON_AddString(JSONid, "/action", action)
+	JSON_AddString(JSONid, "/ts", GetISO8601TimeStamp(numFracSecondsDigits = 3, localTimeZone = 1))
 
 	if(numAdditionalEntries > 0)
 		Make/FREE/N=(numAdditionalEntries) indexHelper = JSON_AddString(JSONid, "/" + keys[p], values[p])
