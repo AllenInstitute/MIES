@@ -1671,7 +1671,11 @@ Function GetMinSamplingInterval([unit])
 #ifdef TESTS_WITH_NI_HARDWARE
 	return factor * HARDWARE_NI_DAC_MIN_SAMPINT
 #else
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	return factor * HARDWARE_SU_MIN_SAMPINT_ADC
+#else
 	return factor * HARDWARE_ITC_MIN_SAMPINT
+#endif
 #endif
 End
 
