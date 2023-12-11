@@ -516,6 +516,9 @@ Function SI_CalculateMinSampInterval(string device, variable dataAcqOrTP, variab
 		case HARDWARE_NI_DAC:
 			return SI_NI_CalculateMinSampInterval(device)
 			break
+		case HARDWARE_SUTTER_DAC:
+			return channelType == XOP_CHANNEL_TYPE_ADC ? HARDWARE_SU_MIN_SAMPINT_ADC * MILLI_TO_MICRO : HARDWARE_SU_MIN_SAMPINT_DAC * MILLI_TO_MICRO
+			break
 	endswitch
 End
 
