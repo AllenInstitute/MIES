@@ -5072,9 +5072,15 @@ static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, 
 
 	valueStr = GetLastSettingTextIndep(textualResultsValues, NaN, key, SWEEP_FORMULA_RESULT)
 	sweepChannelStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula sweeps/channels", SWEEP_FORMULA_RESULT)
-	refSweep = str2num(StringFromList(0, sweepChannelStr))
 
-	if(IsEmpty(valueStr) || !EqualValuesOrBothNaN(refSweep, sweepNo))
+	if(IsEmpty(sweepChannelStr))
+		Make/FREE sweeps = {NaN}
+	else
+		WAVE/T sweepChannelInfoText = ListToTextWaveMD(sweepChannelStr, 2, rowSep = ",", colSep = ";")
+		Make/FREE/N=(DimSize(sweepChannelInfoText, ROWS)) sweeps = str2num(sweepChannelInfoText[p][0])
+	endif
+
+	if(IsEmpty(valueStr) || IsNaN(GetRowIndex(sweeps, val = sweepNo)))
 		// no value for the current sweep
 		return $""
 	endif
