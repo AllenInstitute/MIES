@@ -793,7 +793,7 @@ Function/S DB_GetBoundDataBrowser(string device, [variable mode])
 	bsPanel = BSP_GetPanel(databrowser)
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 
-	return DB_FindDataBrowser(device)
+	return DB_FindDataBrowser(device, mode = mode)
 End
 
 /// @brief Jumps in the SweepFormula help notebook of the current data/sweepbrowser to the first location
