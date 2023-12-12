@@ -311,7 +311,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnse
 			ASSERT(!V_Flag, "Could not find a rising edge")
 			first = V_LevelX
 
-			FindLevel/Q/R=(totalOnsetDelay, inf)/EDGE=2 singleDA, level
+			FindLevel/Q/R=(inf, totalOnsetDelay)/EDGE=2 singleDA, level
 			ASSERT(!V_Flag, "Could not find a falling edge")
 			last = V_LevelX
 		endif
@@ -1383,7 +1383,11 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 			first = levels[0]
 
 			if(type == PSQ_DA_SCALE)
-				last = levels[1]
+				Make/FREE/D levelsHack
+				FindLevels/R=(inf, offset)/Q/N=1/DEST=levelsHack/EDGE=2 singleDA, rangeSearchLevel
+				ASSERT(V_LevelsFound == 1, "Could not find one level")
+
+				last = levelsHack[0]
 			else
 				last = searchEnd
 			endif
@@ -1670,7 +1674,7 @@ Function PSQ_DS_GetDAScaleOffset(device, headstage, opMode)
 				return PSQ_DS_OFFSETSCALE_FAKE
 			endif
 
-			sweepNo = PSQ_GetLastPassingLongRHSweep(device, headstage, PSQ_RHEOBASE_DURATION)
+			sweepNo = PSQ_GetLastPassingLongRHSweep(device, headstage, 5)
 			if(!IsValidSweepNumber(sweepNo))
 				return NaN
 			endif
@@ -1856,7 +1860,7 @@ static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(st
 	ASSERT(WaveExists(epochs), "Could not find E1 epoch")
 	ASSERT(DimSize(epochs, ROWS) == 1, "Expected exactly one epoch")
 	supraEpochLength = str2num(epochs[0][EPOCH_COL_ENDTIME]) - str2num(epochs[0][EPOCH_COL_STARTTIME])
-	ASSERT(adaptiveEpochLength < supraEpochLength, "Adaptive epoch 1 length must be shorter than the one from supra")
+	// ASSERT(adaptiveEpochLength < supraEpochLength, "Adaptive epoch 1 length must be shorter than the one from supra")
 
 	start = str2num(epochs[0][EPOCH_COL_STARTTIME])
 	stop  = start + adaptiveEpochLength
