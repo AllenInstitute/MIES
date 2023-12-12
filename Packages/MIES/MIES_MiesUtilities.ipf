@@ -2103,10 +2103,15 @@ threadsafe Function MoveToTrash([wv, dfr])
 	DFREF dfr
 
 	string dest
+	variable err
 
 	if(!ParamIsDefault(wv) && WaveExists(wv))
 		DFREF tmpDFR = GetUniqueTempPath()
 		MoveWave wv, tmpDFR
+		err = GetRTError(0)
+		if(err)
+			BUG_TS("RTError at MoveWave: " + GetWavesDataFolder(wv, 2) + " " + GetRTErrMessage())
+		endif
 	endif
 
 	if(!ParamIsDefault(dfr) && DataFolderExistsDFR(dfr))
@@ -2236,6 +2241,27 @@ Function/Wave GetConfigWave(sweepWave)
 End
 
 /// @brief Returns the, possibly non existing, sweep data wave for the given sweep number
+///        There are two persistent formats how sweep data is stored.
+///
+///        The current format is:
+///        The sweep wave is a 1D text wave. Each entry contains the relative path to a single channel wave, including the wave name.
+///        The reference data folder for the relative path is the data folder where the sweep wave is located.
+///        The number of rows of the sweep wave equals the number of columns of the config wave and indexes the channels.
+///        Thus, the sweep wave can not be a free wave.
+///
+///        The deprecated format is:
+///        A 2D numeric wave, where the rows are the sample points and the columns the sweep channels.
+///        In that format all channels have the same number of points and the same sample interval.
+///        The sample interval is saved a ROW DimDelta. The number of columns equals the number of columns of the config waves and
+///        indexes the channels.
+///
+///        Intermediate sweep wave format:
+///        Intermediate sweep format is used in some parts of MIES, e.g. NWB saving as it is easier to handle.
+///        The sweep wave is a wave reference wave, where each element refers to a channel. It can be a free wave.
+///        The number of rows of the sweep wave equals the number of columns of the config wave and indexes the channels.
+///        To convert a text sweep wave to a waveRef sweep wave use @ref TextSweepToWaveRef
+///        The programmer has to consider if pure references to channels are good enough (TextSweepToWaveRef) or if the channels
+///        should be duplicated.
 Function/Wave GetSweepWave(device, sweepNo)
 	string device
 	variable sweepNo
@@ -2348,12 +2374,12 @@ threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 		deviceType = device
 		deviceNumber = ""
 		return !isEmpty(deviceType) && cmpstr(deviceType, "DA")
-	else
-		// ITC device notation with X_Dev_Y
-		deviceType   = StringFromList(0,device,"_")
-		deviceNumber = StringFromList(2,device,"_")
-		return !isEmpty(deviceType) && !isEmpty(deviceNumber) && cmpstr(deviceType, "DA")
 	endif
+
+	// ITC device notation with X_Dev_Y
+	deviceType   = StringFromList(0,device,"_")
+	deviceNumber = StringFromList(2,device,"_")
+	return !isEmpty(deviceType) && !isEmpty(deviceNumber) && cmpstr(deviceType, "DA")
 End
 
 /// @brief Layout the DataBrowser/SweepBrowser graph
@@ -3764,22 +3790,30 @@ threadsafe Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
 
 	ASSERT_TS(IsValidSweepAndConfig(sweep, config, configVersion = 0), "Sweep and config are not compatible")
 
+	WAVE/T units = AFH_GetChannelUnits(config)
 	if(IsWaveRefWave(sweep))
 		ASSERT_TS(index < DimSize(sweep, ROWS), "The index is out of range")
 		WAVE/WAVE sweepRef = sweep
 		Duplicate/FREE sweepRef[index], data
+		if(index < DimSize(units, ROWS))
+			ASSERT_TS(!CmpStr(WaveUnits(data, DATADIMENSION), units[index]), "wave units for data in config wave are different from wave units in channel wave (" + WaveUnits(data, DATADIMENSION) + " and " + units[index] + ")")
+		endif
+	elseif(IsTextWave(sweep))
+		ASSERT_TS(index < DimSize(sweep, ROWS), "The index is out of range")
+		WAVE channel = ResolveSweepChannel(sweep, index)
+		Duplicate/FREE channel, data
+		if(index < DimSize(units, ROWS))
+			ASSERT_TS(!CmpStr(WaveUnits(data, DATADIMENSION), units[index]), "wave units for data in config wave are different from wave units in channel wave (" + WaveUnits(data, DATADIMENSION) + " and " + units[index] + ")")
+		endif
 	else
 		ASSERT_TS(index < DimSize(sweep, COLS), "The index is out of range")
 		MatrixOP/FREE data = col(sweep, index)
+		SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
+		if(index < DimSize(units, ROWS))
+			SetScale d, 0, 0, units[index], data
+		endif
 	endif
-
-	SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
-	WAVE/T units = AFH_GetChannelUnits(config)
-	if(index < DimSize(units, ROWS))
-		SetScale d, 0, 0, units[index], data
-	endif
-
-	Note data, note(sweep)
+	Note/K data, note(sweep)
 
 	return data
 End
@@ -5247,20 +5281,16 @@ End
 ///
 /// This function is only for data from ITC hardware.
 ///
-/// @param data       1D channel data extracted by #ExtractOneDimDataFromSweep
-/// @param ttlBits    bit mask of the active TTL channels form e.g. #GetTTLBits
-/// @param targetDFR  datafolder where to put the waves, can be a free datafolder
-/// @param wavePrefix prefix of the created wave names
-/// @param rescale    One of @ref TTLRescalingOptions. Rescales the data to be in the range [0, 1]
-///                   when on, does no rescaling when off.
+/// @param data         1D channel data extracted by #ExtractOneDimDataFromSweep
+/// @param ttlBits      bit mask of the active TTL channels form e.g. #GetTTLBits
+/// @param targetDFR    datafolder where to put the waves, can be a free datafolder
+/// @param wavePrefix   prefix of the created wave names
+/// @param rescale      One of @ref TTLRescalingOptions. Rescales the data to be in the range [0, 1]
+///                     when on, does no rescaling when off.
+/// @param createBackup when set then backups are created
 ///
 /// The created waves will be named `TTL_3_3` so the final suffix is the running TTL Bit.
-threadsafe Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix, rescale)
-	WAVE data
-	variable ttlBits
-	DFREF targetDFR
-	string wavePrefix
-	variable rescale
+threadsafe static Function SplitTTLWaveIntoComponents(WAVE data, variable ttlBits, DFREF targetDFR, string wavePrefix, variable rescale, variable createBackup)
 
 	variable i, bit
 
@@ -5282,6 +5312,9 @@ threadsafe Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePre
 			MultiThread dest[] = dest[p] & bit
 		else
 			ASSERT_TS(0, "Invalid rescale parameter")
+		endif
+		if(createBackup)
+			CreateBackupWave(dest, forceCreation=1)
 		endif
 	endfor
 End
@@ -5504,6 +5537,29 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 	return NaN
 End
 
+/// @brief Looks for backup waves in the datafolder and recreates the original waves from them.
+///        The original waves do not need to be present. If present they are overwritten.
+///        This is different to @ref RestoreFromBackupWavesForAll, where the original waves need
+///        to be existing.
+Function RestoreFromBackupWavesForAll(DFREF dfr)
+
+	variable i, numWaves
+	string origWaveName, wName
+
+	numWaves = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)
+	for(i = 0; i < numWaves; i += 1)
+		wName = GetIndexedObjNameDFR(dfr, COUNTOBJECTS_WAVES, i)
+		WAVE/SDFR=dfr wv = $wName
+		if(!StringEndsWith(NameOfWave(wv), WAVE_BACKUP_SUFFIX))
+			continue
+		endif
+		origWaveName = RemoveEnding(wName, WAVE_BACKUP_SUFFIX)
+		WAVE/Z wvOrig = dfr:$origWaveName
+		KillOrMoveToTrash(wv=wvOrig)
+		Duplicate wv, dfr:$origWaveName
+	endfor
+End
+
 /// @brief Create backup waves for all waves in the datafolder
 threadsafe Function CreateBackupWavesForAll(DFREF dfr)
 
@@ -5514,6 +5570,19 @@ threadsafe Function CreateBackupWavesForAll(DFREF dfr)
 		WAVE/SDFR=dfr wv = $GetIndexedObjNameDFR(dfr, COUNTOBJECTS_WAVES, i)
 		CreateBackupWave(wv)
 	endfor
+End
+
+threadsafe static Function/S GetBackupNameOfWave(WAVE wv)
+
+	return NameOfWave(wv) + WAVE_BACKUP_SUFFIX
+End
+
+threadsafe static Function/WAVE GetBackupWave_TS(WAVE wv)
+
+	DFREF dfr = GetWavesDataFolderDFR(wv)
+	WAVE/Z/SDFR=dfr backup = $GetBackupNameOfWave(wv)
+
+	return backup
 End
 
 /// @brief Create a backup of the wave wv if it does not already
@@ -5529,11 +5598,8 @@ threadsafe Function/Wave CreateBackupWave(wv, [forceCreation])
 	variable forceCreation
 
 	string backupname
-	dfref dfr
 
 	ASSERT_TS(IsGlobalWave(wv), "Wave Can Not Be A Null Wave Or A Free Wave")
-	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
-	dfr        = GetWavesDataFolderDFR(wv)
 
 	if(ParamIsDefault(forceCreation))
 		forceCreation = 0
@@ -5541,7 +5607,7 @@ threadsafe Function/Wave CreateBackupWave(wv, [forceCreation])
 		forceCreation = !!forceCreation
 	endif
 
-	Wave/Z/SDFR=dfr backup = $backupname
+	WAVE/Z backup = GetBackupWave_TS(wv)
 
 	if(WaveExists(backup) && !forceCreation)
 		return backup
@@ -5549,6 +5615,10 @@ threadsafe Function/Wave CreateBackupWave(wv, [forceCreation])
 	if(WaveExists(backup) && WaveType(backup, 1) != WaveType(wv, 1) && (WaveType(backup, 1) == IGOR_TYPE_TEXT_WAVE || WaveType(wv, 1) == IGOR_TYPE_TEXT_WAVE))
 		KillOrMoveToTrash(wv = backup)
 	endif
+
+	backupname = GetBackupNameOfWave(wv)
+	DFREF dfr = GetWavesDataFolderDFR(wv)
+
 	Duplicate/O wv, dfr:$backupname/WAVE=backup
 
 	return backup
@@ -5933,62 +6003,226 @@ Function StartZeroMQSockets([variable forceRestart])
 	return numTrials
 End
 
-/// @brief Split an DAQDataWave into one 1D-wave per channel/ttlBit
+/// @brief Creates a copy of the sweep data and returns it in wRef format
+threadsafe Function/WAVE CopySweepToWRef(WAVE sweep, WAVE config)
+
+	Make/FREE/WAVE/N=(DimSize(config, ROWS)) sweepRef
+	sweepRef[] = ExtractOneDimDataFromSweep(config, sweep, p)
+	Note/K sweepRef, note(sweep)
+
+	return sweepRef
+End
+
+threadsafe static Function SplitSweepWave(WAVE numericalValues, variable sweep, WAVE sweepWave, WAVE configWave, variable rescale, DFREF targetDFR, WAVE/T componentNames, variable createBackup)
+
+	variable numRows, i, ttlBits, dChannelType, dChannelNumber
+
+	WAVE/WAVE sweepRef = CopySweepToWRef(sweepWave, configWave)
+
+	[dChannelType, dChannelNumber] = GetConfigWaveDims(configWave)
+	numRows = DimSize(configWave, ROWS)
+	for(i = 0; i < numRows; i += 1)
+		WAVE/Z wv = targetDFR:$componentNames[i]
+		KillOrMoveToTrash(wv = wv)
+		MoveWave sweepRef[i], targetDFR:$componentNames[i]
+		if(createBackup)
+			CreateBackupWave(sweepRef[i], forceCreation=1)
+		endif
+
+		if(configWave[i][dChannelType] == XOP_CHANNEL_TYPE_TTL)
+			ttlBits = GetTTLBits(numericalValues, sweep, configWave[i][dChannelNumber])
+			if(IsFinite(ttlBits))
+				SplitTTLWaveIntoComponents(sweepRef[i], ttlBits, targetDFR, componentNames[i] + "_", rescale, createBackup)
+			endif
+		endif
+	endfor
+	string/G targetDFR:note = note(sweepWave)
+End
+
+threadsafe static Function AreAllSingleSweepWavesPresent(DFREF targetDFR, WAVE/T componentNames)
+
+	variable chanMissing, chanPresent
+	string wName
+
+	for(wName : componentNames)
+		WAVE/Z channel = targetDFR:$wName
+		if(WaveExists(channel))
+			WAVE/Z channelBak = GetBackupWave_TS(channel)
+		else
+			WAVE/Z channelBak = $""
+		endif
+
+		if(WaveExists(channel) && WaveExists(channelBak))
+			chanPresent = 1
+		elseif(!WaveExists(channel) && !WaveExists(channelBak))
+			chanMissing = 1
+		else
+			ASSERT_TS(0, "Found sweep single channel wave without backup (or vice versa) for sweep in " + GetDataFolder(1, targetDFR) + " channel " + wName)
+		endif
+		ASSERT_TS(chanPresent + chanMissing == 1, "For sweep in " + GetDataFolder(1, targetDFR) + " some single channels are missing, some are present.")
+	endfor
+
+	return chanPresent
+End
+
+threadsafe static Function/DF GetParentDFR(DFREF dfr)
+
+	string path = GetDataFolder(1, dfr)
+	path = RemoveEnding(path, ParseFilePath(0, path, ":", 1, 0) + ":")
+	DFREF parent = $path
+	ASSERT_TS(DataFolderExistsDFR(parent), "Could not resolve parent of " + GetDataFolder(1, dfr))
+
+	return parent
+End
+
+threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentNames, DFREF targetDFR)
+
+	string sweepWaveName, tgtDFName, oldSweepName
+
+	tgtDFName = GetDataFolder(0, targetDFR)
+	Make/FREE/T/N=(DimSize(componentNames, ROWS)) sweepT
+	sweepT[] = tgtDFName + ":" + componentNames[p]
+	note/K sweepT, note(sweepWave)
+	CopyScales sweepWave, sweepT
+
+	Duplicate/FREE/T sweepT, sweepTBak
+	sweepTBak[] = tgtDFName + ":" + componentNames[p] + WAVE_BACKUP_SUFFIX
+
+	sweepWaveName = NameOfWave(sweepWave)
+	DFREF sweepWaveDFR = GetParentDFR(targetDFR)
+	if(IsNumericWave(sweepWave))
+		oldSweepName = UniqueWaveName(sweepWaveDFR, sweepWaveName + "_preUpgrade")
+		Duplicate sweepWave, sweepWaveDFR:$oldSweepName
+	endif
+
+	WAVE/Z wv = sweepWaveDFR:$sweepWaveName
+	KillOrMoveToTrash(wv = wv)
+	MoveWave sweepT, sweepWaveDFR:$sweepWaveName
+
+	sweepWaveName = sweepWaveName + WAVE_BACKUP_SUFFIX
+	WAVE/Z wv = sweepWaveDFR:$sweepWaveName
+	KillOrMoveToTrash(wv = wv)
+	MoveWave sweepTBak, sweepWaveDFR:$sweepWaveName
+End
+
+/// @brief Split a sweep wave into one 1D-wave per channel/ttlBit and convert the sweep wave to the current text sweep format.
+///        Sweeps already in text format are not split (because that already part of their format).
+///        When attempted to split, already existing single channel waves are preserved.
+///        The old 2D sweep format is converted automatically to the current text sweep format.
+///        If targetDFR is a free DF then only splitting is done.
+///        The sweepWave can get invalid and must be reobtained after calling.
+///        See @ref GetSweepWave for detailed documentation of the sweep format.
 ///
 /// @param numericalValues numerical labnotebook
 /// @param sweep           sweep number
-/// @param sweepWave       DAQDataWave
-/// @param configWave      DAQConfigWave
-/// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
+/// @param sweepWave       sweep wave, either old 2D numerical sweep wave, wave ref wave or text sweep wave
+/// @param configWave      config wave
 /// @param rescale         One of @ref TTLRescalingOptions
-/// @param createBackup    [optional, defaults to true] allows to tune the creation of backup waves
-threadsafe Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, rescale, [targetDFR, createBackup])
-	WAVE numericalValues, sweepWave, configWave
-	variable sweep, rescale, createBackup
-	DFREF targetDFR
+/// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
+/// @param createBackup    [optional, defaults 1] flag to enable/disable backup creation of single channel sweep waves
+threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, WAVE sweepWave, WAVE configWave, variable rescale, [DFREF targetDFR, variable createBackup])
 
-	variable numRows, i, channelNumber, ttlBits
-	string channelType, str
+	variable numRows, i, ttlBits
+	variable channelsPresent
 
 	if(ParamIsDefault(targetDFR))
 		DFREF targetDFR = GetWavesDataFolderDFR(sweepWave)
 	endif
 
-	if(ParamIsDefault(createBackup))
-		createBackup = 1
-	else
-		createBackup = !!createBackup
-	endif
+	createBackup = ParamIsDefault(createBackup) ? 1 : !!createBackup
 
 	ASSERT_TS(IsFinite(sweep), "Sweep number must be finite")
 	ASSERT_TS(IsValidSweepAndConfig(sweepWave, configWave, configVersion = 0), "Sweep and config waves are not compatible")
 
-	numRows = DimSize(configWave, ROWS)
-	for(i = 0; i < numRows; i += 1)
-		channelType = StringFromList(configWave[i][0], XOP_CHANNEL_NAMES)
-		ASSERT_TS(!isEmpty(channelType), "empty channel type")
-		channelNumber = configWave[i][1]
-		ASSERT_TS(IsFinite(channelNumber), "non-finite channel number")
-		str = channelType + "_" + num2istr(channelNumber)
-
-		WAVE data = ExtractOneDimDataFromSweep(configWave, sweepWave, i)
-
-		if(!cmpstr(channelType, "TTL"))
-			ttlBits = GetTTLBits(numericalValues, sweep, channelNumber)
-
-			if(IsFinite(ttlBits))
-				SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, str + "_", rescale)
-			endif
+	if(IsTextWave(sweepWave) && !IsFreeDatafolder(targetDFR))
+		DFREF parentDF = GetParentDFR(targetDFR)
+		if(DataFolderRefsEqual(parentDF, GetWavesDataFolderDFR(sweepWave)))
+			return NaN
 		endif
-
-		MoveWave data, targetDFR:$str
-	endfor
-
-	string/G targetDFR:note = note(sweepWave)
-
-	if(createBackup)
-		CreateBackupWavesForAll(targetDFR)
 	endif
+
+	numRows = DimSize(configWave, ROWS)
+	Make/FREE/T/N=(numRows) componentNames = GetSweepComponentWaveName(configWave, p)
+	channelsPresent = AreAllSingleSweepWavesPresent(targetDFR, componentNames)
+
+	// for 2D sweepWaves input assume that existing single channel waves are from input wave
+	ASSERT_TS(!(channelsPresent && IsWaveRefWave(sweepWave)), "Can not split sweep from waveRef wave because in targetDFR is already single channel sweep data")
+
+	if(!channelsPresent)
+		SplitSweepWave(numericalValues, sweep, sweepWave, configWave, rescale, targetDFR, componentNames, createBackup)
+	endif
+
+	if(!IsFreeDatafolder(targetDFR))
+		UpgradeSweepWave(sweepWave, componentNames, targetDFR)
+	endif
+End
+
+/// @brief Resolves a single channel of a text sweep wave and returns a reference to it.
+///
+/// @param sweepWave text sweep wave
+/// @param index     index of the channel
+/// @param allowFail [optional: default = 0] when set a null wave ref is returned if the channel could not be resolved,
+///                  e.g. through a missing single channel wave. On default the function checks for a valid wave and asserts if none was found.
+threadsafe Function/WAVE ResolveSweepChannel(WAVE/T sweepWave, variable index, [variable allowFail])
+
+	variable sweepNo
+	string singleSweepSub, channelName
+
+	allowFail = ParamIsDefault(allowFail) ? 0 : !!allowFail
+
+	ASSERT_TS(index >= 0 && index < DimSize(sweepWave, ROWS), "Invalid index")
+	ASSERT_TS(IsTextWave(sweepWave), "Unsupported sweep wave format")
+	DFREF sweepDF = GetWavesDataFolderDFR(sweepWave)
+	[singleSweepSub, channelName] = SplitTextSweepElement(sweepWave[index])
+	DFREF singleSweepDF = sweepDF:$singleSweepSub
+	ASSERT_TS(DataFolderExistsDFR(singleSweepDF), "Can not resolve single sweep DF at " + GetDataFolder(1, sweepDF) + ":" + singleSweepSub)
+	WAVE/Z channel = singleSweepDF:$channelName
+	if(!allowFail)
+		ASSERT_TS(WaveExists(channel), "Can not resolve sweep wave " + channelName + " in " + GetDataFolder(1, singleSweepDF))
+	endif
+
+	return channel
+End
+
+/// @brief Splits a text sweep wave element into the DF and wave name part
+threadsafe Function [string singleChannelDF, string wvName] SplitTextSweepElement(string element)
+
+	ASSERT_TS(ItemsInList(element, ":") == 2, "Invalid sweep location specification in sweep: " + element)
+	return [StringFromList(0, element, ":"), StringFromList(1, element, ":")]
+End
+
+threadsafe static Function [variable dChannelType, variable dChannelNumber] GetConfigWaveDims(WAVE config)
+
+	variable dimType, dimNumber
+
+	dimType = FindDimlabel(config, COLS, "ChannelType")
+	dimNumber = FindDimlabel(config, COLS, "ChannelNumber")
+	if(dimType == -2)
+		// try AB config wave format, @sa GetAnalysisConfigWave
+		dimType = FindDimlabel(config, COLS, "type")
+		dimNumber = FindDimlabel(config, COLS, "number")
+	endif
+
+	return [dimType, dimNumber]
+End
+
+/// @brief Returns a wave name for a single channel sweep wave. The wave name is based on the channel type and channel number and is
+///        built from the XOP_CHANNEL_NAMES in the form DA_0, DA_1, AD_0, AD_1, TTL_0 and so on.
+/// @param config       config wave
+/// @param channelIndex index in config wave
+/// @returns string with a constructed wave name
+threadsafe Function/S GetSweepComponentWaveName(WAVE config, variable channelIndex)
+
+	string channelType
+	variable channelNumber, dChannelType, dChannelNumber
+
+	[dChannelType, dChannelNumber] = GetConfigWaveDims(config)
+	channelType = StringFromList(config[channelIndex][dChannelType], XOP_CHANNEL_NAMES)
+	ASSERT_TS(!isEmpty(channelType), "empty channel type")
+	channelNumber = config[channelIndex][dChannelNumber]
+	ASSERT_TS(IsFinite(channelNumber), "non-finite channel number")
+
+	return channelType + "_" + num2istr(channelNumber)
 End
 
 /// @brief Add user data "panelVersion" to the panel
@@ -6349,6 +6583,11 @@ threadsafe Function IsValidSweepWave(sweep)
 			WAVE/Z channel = sweepWREF[0]
 			return WaveExists(channel) && DimSize(channel, ROWS) > 0
 		endif
+	elseif(IsTextWave(sweep))
+		if(DimSize(sweep, ROWS) > 1)
+			WAVE/Z channel = ResolveSweepChannel(sweep, 0, allowFail=1)
+			return WaveExists(channel) && DimSize(channel, ROWS) > 0
+		endif
 	else
 		return DimSize(sweep, COLS) > 0 && \
 			   DimSize(sweep, ROWS) > 0
@@ -6375,6 +6614,10 @@ threadsafe Function IsValidSweepAndConfig(sweep, config, [configVersion])
 	endif
 
 	if(IsWaveRefWave(sweep))
+		return IsValidConfigWave(config, version = configVersion) &&  \
+				 IsValidSweepWave(sweep) &&                           \
+				 DimSize(sweep, ROWS) == DimSize(config, ROWS)
+	elseif(IsTextWave(sweep))
 		return IsValidConfigWave(config, version = configVersion) &&  \
 				 IsValidSweepWave(sweep) &&                           \
 				 DimSize(sweep, ROWS) == DimSize(config, ROWS)
@@ -8082,6 +8325,9 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 			MoveWave sweepWave, dest:$GetSweepWaveName(sweepNo)
 		endif
 
+		DFREF singleSweepDFR = GetSingleSweepFolder(dest, sweepNo)
+		SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, targetDFR=singleSweepDFR)
+
 		printf "Reconstructed successfully.\r"
 	endfor
 End
@@ -8605,4 +8851,46 @@ Function GetFirstADCChannelIndex(WAVE config)
 	ASSERT(V_value >= 0, "Could not find any XOP_CHANNEL_TYPE_ADC channel")
 
 	return V_row
+End
+
+Function SplitAndUpgradeSweepGlobal(string device, variable sweepNo)
+
+	[WAVE sweepWave, WAVE configWave] = GetSweepAndConfigWaveFromDevice(device, sweepNo)
+	if(!WaveExists(sweepWave))
+		return 1
+	endif
+
+	DFREF deviceDFR = GetDeviceDataPath(device)
+	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+	WAVE numericalValues = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, device = device)
+	SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, targetDFR=singleSweepDFR)
+
+	return 0
+End
+
+Function [WAVE sweepWave, WAVE config] GetSweepAndConfigWaveFromDevice(string device, variable sweepNo)
+
+	WAVE/Z sweepWave  = GetSweepWave(device, sweepNo)
+	if(!WaveExists(sweepWave))
+		return [$"", $""]
+	endif
+
+	WAVE config = GetConfigWave(sweepWave)
+
+	return [sweepWave, config]
+End
+
+/// @brief Converts a text sweep wave to a free waveRef sweep wave. The waveRef sweep wave contains references to the
+///        channels from the text sweep wave, that are local or global waves.
+///        See also @ref GetSweepWave docu on "intermediate sweep format".
+///        Generally waveRef waves are easier to handle. It is currently used for NWB saving where the sweep channel
+///        data needs to be available in a preemptive thread.
+Function/WAVE TextSweepToWaveRef(WAVE sweepWave)
+
+	ASSERT(IsTextWave(sweepWave), "Unsupported sweep wave format")
+	Make/FREE/WAVE/N=(DimSize(sweepWave, ROWS)) sweepRef
+	sweepRef[] = ResolveSweepChannel(sweepWave, p)
+	Note sweepRef, note(sweepWave)
+
+	return sweepRef
 End

@@ -1082,7 +1082,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave)) * KILO_TO_ONE
 
 	DFREF sweepDFR = NewFreeDataFolder()
-	SplitSweepIntoComponents(s.numericalValues, s.sweep, s.DAQDataWave, s.DAQConfigWave, TTL_RESCALE_OFF, targetDFR = sweepDFR, createBackup = 0)
+	SplitAndUpgradeSweep(s.numericalValues, s.sweep, s.DAQDataWave, s.DAQConfigWave, TTL_RESCALE_OFF, targetDFR = sweepDFR, createBackup = 0)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 

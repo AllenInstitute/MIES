@@ -698,7 +698,7 @@ Function DB_SplitSweepsIfReq(string win, variable sweepNo)
 
 	WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
 
-	SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, targetDFR=singleSweepDFR)
+	SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, targetDFR=singleSweepDFR)
 
 	return 0
 End

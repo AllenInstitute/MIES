@@ -885,7 +885,7 @@ static Function TestSweepReconstruction_IGNORE(string device)
 
 		DFREF singleSweepDFR = GetSingleSweepFolder(deviceDataBorkedUp, sweepNo)
 
-		SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, targetDFR=singleSweepDFR)
+		SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, targetDFR=singleSweepDFR)
 	endfor
 
 	// delete 2D sweep and config waves
