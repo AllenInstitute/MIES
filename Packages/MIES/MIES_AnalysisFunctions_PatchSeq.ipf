@@ -1519,7 +1519,7 @@ End
 ///        analysis function, where the set passes and was in the given mode
 static Function PSQ_GetLastPassingDAScale(string device, variable headstage, string opMode)
 	variable numEntries, sweepNo, i, setQC
-	string key
+	string key, modeKey
 
 	ASSERT(PSQ_DS_IsValidMode(opMode), "Invalid opMode")
 
@@ -1546,9 +1546,9 @@ static Function PSQ_GetLastPassingDAScale(string device, variable headstage, str
 		endif
 
 		// check for subthreshold operation mode
-		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE, query = 1)
+		modeKey = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE, query = 1)
 
-		WAVE/T/Z setting = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+		WAVE/T/Z setting = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, modeKey, headstage, UNKNOWN_MODE)
 
 		if(WaveExists(setting) && !cmpstr(setting[INDEP_HEADSTAGE], opMode))
 			return sweepNo
