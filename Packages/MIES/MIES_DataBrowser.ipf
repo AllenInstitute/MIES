@@ -333,24 +333,15 @@ End
 Function/WAVE DB_GetPlainSweepList(win)
 	string win
 
-	string device, list
-	DFREF dfr
+	string device
 
 	if(!BSP_HasBoundDevice(win))
 		return $""
 	endif
 
 	device = BSP_GetDevice(win)
-	dfr = GetDeviceDataPath(device)
-	list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
 
-	if(IsEmpty(list))
-		return $""
-	endif
-
-	Make/FREE/R/N=(ItemsInList(list)) sweeps = ExtractSweepNumber(StringFromList(p, list))
-
-	return sweeps
+	return AFH_GetSweeps(device)
 End
 
 Function DB_UpdateLastSweepControls(win, first, last)
