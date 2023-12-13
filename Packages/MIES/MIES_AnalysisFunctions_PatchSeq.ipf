@@ -3556,7 +3556,7 @@ Function PSQ_Ramp(device, s)
 					MultiThread scaledChannelDA[fifoPos,] = 0
 					ChangeWaveLock(scaledChannelDA, 1)
 
-					PSQ_Ramp_AddEpoch(device, s.headstage, channelDA, "Name=DA suppression", "RA_DS", fifoPos, DimSize(channelDA, ROWS) - 1)
+					PSQ_Ramp_AddEpoch(device, s.headstage, scaledChannelDA, "Name=DA suppression", "RA_DS", fifoPos, DimSize(channelDA, ROWS) - 1)
 				endif
 			else
 				ASSERT(0, "Unknown hardware type")
