@@ -130,14 +130,17 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 		CheckEpochs(dev)
 
-		// ascending sweep numbers in both labnotebooks
-		WAVE numericalValues = GetLBNumericalValues(dev)
-		WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+		WAVE/Z sweeps = AFH_GetSweeps(dev)
 
 		if(!WaveExists(sweeps))
 			PASS()
 			continue
 		endif
+
+		// ascending sweep numbers in both labnotebooks
+		WAVE numericalValues = GetLBNumericalValues(dev)
+		WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+		CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 		Duplicate/FREE sweeps, unsortedSweeps
 		Sort sweeps, sweeps
@@ -145,11 +148,7 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 		WAVE textualValues = GetLBTextualValues(dev)
 		WAVE/Z sweeps = GetSweepsWithSetting(textualValues, "SweepNum")
-
-		if(!WaveExists(sweeps))
-			PASS()
-			continue
-		endif
+		CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 		Duplicate/FREE sweeps, unsortedSweeps
 		Sort sweeps, sweeps
@@ -190,15 +189,15 @@ static Function CheckUserEpochsFromChunks(string dev)
 
 	variable i, j, sweepCnt, numEpochs, DAC
 
-	WAVE numericalValues = GetLBNumericalValues(dev)
-	WAVE textualValues = GetLBTextualValues(dev)
-
-	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+	WAVE/Z sweeps = AFH_GetSweeps(dev)
 
 	if(!WaveExists(sweeps))
 		PASS()
 		return NaN
 	endif
+
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
 
 	sweepCnt = DimSize(sweeps, ROWS)
 	for(i = 0; i < sweepCnt; i += 1)
@@ -266,15 +265,15 @@ static Function CheckEpochs(string dev)
 	variable sweepCnt, i, j, k, index, channelTypeCount, channelCnt
 	string str
 
-	WAVE numericalValues = GetLBNumericalValues(dev)
-	WAVE textualValues = GetLBTextualValues(dev)
-
-	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+	WAVE/Z sweeps = AFH_GetSweeps(dev)
 
 	if(!WaveExists(sweeps))
 		PASS()
 		return NaN
 	endif
+
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
 
 	Make/D/FREE channelTypes = {XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_DAC} // note: XOP_CHANNEL_TYPE_TTL not supported by GetLastSettingChannel
 	channelTypeCount = DimSize(channelTypes, ROWS)
@@ -510,7 +509,7 @@ End
 
 static Function CheckDashboard(string device, WAVE headstageQC)
 
-	string databrowser
+	string databrowser, message
 	variable numEntries, i, state
 
 	databrowser = DB_FindDataBrowser(device)
@@ -520,15 +519,21 @@ static Function CheckDashboard(string device, WAVE headstageQC)
 
 	// Check that we have acquired some sweeps
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+	WAVE/Z sweeps = AFH_GetSweeps(device)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 	numEntries = GetNumberFromWaveNote(listWave, NOTE_INDEX)
 	CHECK_GT_VAR(numEntries, 0)
 
 	for(i = 0; i < numEntries; i += 1)
-		state = !cmpstr(listWave[i][%Result], DASHBOARD_PASSING_MESSAGE)
+		message = listWave[i][%Result]
+		state = !cmpstr(message, DASHBOARD_PASSING_MESSAGE)
 		CHECK_EQUAL_VAR(state, headstageQC[i])
+
+		if(!headstageQC[i])
+			INFO("Index=%g, state=%g, message=%s", n0 = i, n1 = state, s0 = message)
+			CHECK_EQUAL_VAR(strsearch(message, DAQ_STOPPED_EARLY_LEGACY_MSG, 0), -1)
+		endif
 	endfor
 End
 
@@ -705,7 +710,7 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 	WAVE/T/Z allUserEntries = GrepTextWave(entries, LABNOTEBOOK_USER_PREFIX + ".*")
 	CHECK_WAVE(allUserEntries, TEXT_WAVE)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNoRef)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 	Make/T/FREE entriesWithoutUnit = {FMT_LBN_ANA_FUNC_VERSION, PSQ_FMT_LBN_SE_TESTPULSE_GROUP,                               \
@@ -853,7 +858,7 @@ static Function TestSweepReconstruction_IGNORE(string device)
 
 	WAVE numericalValues = GetLBTextualValues(device)
 
-	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+	WAVE/Z sweeps = AFH_GetSweeps(device)
 
 	if(!WaveExists(sweeps))
 		// no sweeps acquired, so we can't test anything
@@ -989,15 +994,15 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 	REQUIRE(IsEven(size))
 	expectedChunkCnt = size >> 1
 
-	WAVE numericalValues = GetLBNumericalValues(dev)
-	WAVE textualValues = GetLBTextualValues(dev)
-
-	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+	WAVE/Z sweeps = AFH_GetSweeps(dev)
 
 	if(!WaveExists(sweeps))
 		FAIL()
 		return NaN
 	endif
+
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
 
 	sweepCnt = DimSize(sweeps, ROWS)
 

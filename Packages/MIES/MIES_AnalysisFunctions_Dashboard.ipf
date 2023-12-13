@@ -1037,7 +1037,7 @@ static Function/S AD_HasPrematureStopLegacy(WAVE numericalValues, WAVE/T textual
 			FindValue/FNAN/R AD
 
 			if(V_Value >= 0)
-				return "DAQ was stopped early (n.a.)"
+				return DAQ_STOPPED_EARLY_LEGACY_MSG
 			endif
 		endif
 	endfor
