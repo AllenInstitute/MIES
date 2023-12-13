@@ -360,7 +360,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 
 	variable numBaselineChunks, i, totalOnsetDelay, fifoInStimsetTime
 
-	numBaselineChunks = PSQ_GetNumberOfChunks(device, s.sweepNo, s.headstage, type, s.sampleIntervalAD)
+	numBaselineChunks = PSQ_GetNumberOfChunks(device, s.sweepNo, s.headstage, type, s.sampleIntervalDA)
 
 	if(type == PSQ_CHIRP)
 		ASSERT(numBaselineChunks >= 3, "Unexpected number of baseline chunks")
@@ -1139,14 +1139,13 @@ End
 /// - 3: leak current baseline QC
 Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, variable type, [string opMode])
 
-	variable DAC, numCols, numRows, numLayers, numChunks, sampleIntervalAD, firstADChannelIndex
+	variable DAC, numCols, numRows, numLayers, numChunks, sampleIntervalDA
 	string stimset
 	string layerDimLabels = ""
 
 	WAVE config = GetDAQConfigWave(device)
 
-	firstADChannelIndex = GetFirstADCChannelIndex(config)
-	sampleIntervalAD    = config[firstADChannelIndex][%SamplingInterval] * MICRO_TO_MILLI
+	sampleIntervalDA = config[0][%SamplingInterval] * MICRO_TO_MILLI
 
 	DAC     = AFH_GetDACFromHeadstage(device, headstage)
 	stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
@@ -1161,13 +1160,13 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
 			numChunks      = 4
-			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
+			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalDA)
 			numCols        = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SpikePositionAndQC;AsyncQC"
 			break
 		case PSQ_DA_SCALE:
 			numChunks      = 4
-			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
+			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalDA)
 			numCols        = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SpikePosition;NumberOfSpikes;AsyncQC"
 			break
@@ -1178,13 +1177,13 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 			break
 		case PSQ_CHIRP:
 			numChunks      = 4
-			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
+			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalDA)
 			numCols        = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;MaxInChirp;MinInChirp;SpikeQC;AsyncQC"
 			break
 		case PSQ_PIPETTE_BATH:
 			numChunks      = 4
-			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
+			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalDA)
 			numCols        = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SteadyStateResistance;AsyncQC"
 			break
