@@ -34,7 +34,7 @@ jobs:
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Documentation-assets
       - name: Deploy documentation to github pages
@@ -55,7 +55,7 @@ jobs:
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: BuildInstaller-user-assets
       - name: Deploy release assets to github
@@ -74,7 +74,7 @@ jobs:
         run: tools/initial-repo-config.sh
       - name: Download all artifacts
         id: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
       - name: 📥 Download report cache from FTP
@@ -112,7 +112,7 @@ jobs:
             -d "${{ steps.gen.outputs.history }}" \
             -t "cache/coverage-history"
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-artifacts
@@ -135,7 +135,7 @@ jobs:
         run: tools/initial-repo-config.sh
       - name: Download all artifacts
         id: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
       - name: Flatten artifact structure
