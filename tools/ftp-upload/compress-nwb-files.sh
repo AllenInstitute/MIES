@@ -2,9 +2,12 @@
 
 cd $1
 
-for dir in test-itc18-assets test-itc1600-assets test-ni-assets
+for dir in TestNI-* TestITC18-* TestITC1600-*
 do
-  if [ -n "$(find "$dir" -maxdepth 0 -type d -empty)" ]
+  if [ ! -d $dir ]
+  then
+    continue
+  elif [ -n "$(find "$dir" -maxdepth 0 -type d -empty)" ]
   then
     continue
   fi
