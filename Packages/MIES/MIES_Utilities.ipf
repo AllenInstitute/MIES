@@ -1866,7 +1866,11 @@ threadsafe Function GetRowIndex(wv, [val, str, refWave])
 				val = str2num(str)
 			endif
 
-			FindValue/V=(val) wv
+			if(IsNaN(val))
+				FindValue/FNAN wv
+			else
+				FindValue/V=(val) wv
+			endif
 
 			if(V_Value >= 0)
 				return V_Value

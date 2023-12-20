@@ -7504,6 +7504,8 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "3"), 0)
 	// @todo enable once IP bug #4894 is fixed
 	// CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = inf), 4)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = NaN), 3)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = ""), 3)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = 123), NaN)
 
 	// text waves
