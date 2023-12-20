@@ -278,12 +278,7 @@ jobs:
           find "${{ steps.download.outputs.download-path }}" -mindepth 1 -maxdepth 1 -type d |\
             xargs -I {} tools/ftp-upload/flatten-files.sh "{}"
       - name: Compress NWB artifacts
-        run: |
-          for dir in test-itc18-assets test-itc1600-assets test-ni-assets
-          do
-            tar --remove-files --use-compress-program=zstd -cvf $dir/NWB.tar.zst $dir/*nwb
-          done
-        working-directory: ${{ steps.download.outputs.download-path }}
+        run: tools/ftp-upload/compress-nwb-files.sh "${{ steps.download.outputs.download-path }}"
       - name: Upload artifacts using FTP
         run: |
           tools/ftp-upload/upload-files.sh \
