@@ -7466,3 +7466,57 @@ static Function TestZapNullRefs()
 	CHECK(WaveRefsEqual(result[0], a))
 	CHECK(WaveRefsEqual(result[1], b))
 End
+
+static Function TestGetRowIndex()
+
+	Make/N=0/FREE emptyWave
+
+	// check number of opt parameters #1
+	try
+		GetRowIndex(emptyWave)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// check number of opt parameters #2
+	try
+		GetRowIndex(emptyWave, val = 1, str = "", refWave = $"")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid refWave type
+	try
+		GetRowIndex(emptyWave, refWave = $"")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	CHECK_EQUAL_VAR(GetRowIndex(emptyWave, val = 1), NaN)
+	CHECK_EQUAL_VAR(GetRowIndex(emptyWave, str = "1"), NaN)
+
+	// numeric waves
+	Make/FREE floatWave = {3, 1, 2, NaN, inf}
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = 3), 0)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "3"), 0)
+	// @todo enable once IP bug #4894 is fixed
+	// CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = inf), 4)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = 123), NaN)
+
+	// text waves
+	Make/FREE/T textWave = {"a", "b", "c", "d", "1"}
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, val = 1), 4)
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, str = "b"), 1)
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, val = 123), NaN)
+
+	// wave ref waves
+	Make/FREE/WAVE/N=2 waveRefWave
+	Make/FREE content
+	waveRefWave[1] = content
+	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = content), 1)
+	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = $""), 0)
+	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = waveRefWave), NaN)
+End
