@@ -77,7 +77,7 @@ jobs:
         run: tools/initial-repo-config.sh
       - name: Download artifacts
         if: inputs.installer_artifact_name != ''
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: false
         with:
           name: ${{ inputs.installer_artifact_name }}
@@ -89,7 +89,7 @@ jobs:
         if: always()
         run: tools/gather-logfiles-and-crashdumps.sh
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: ${{ inputs.artifact_name }}

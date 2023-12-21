@@ -59,7 +59,7 @@ jobs:
       - name: Sign installer
         run: tools/sign-installer.sh -p "${{ secrets.GHA_MIES_CERTIFICATE_PIN }}"
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: BuildInstaller-${{ matrix.kind }}-assets
@@ -123,7 +123,7 @@ jobs:
       - name: Build documentation
         run: tools/documentation/run.sh
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: Documentation-assets
@@ -151,7 +151,7 @@ jobs:
       job_name: 🧪 Test ${{ matrix.name }}
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
-      artifact_name: test-without-hw-assets
+      artifact_name: TestWithoutHardware-${{ matrix.name }}-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 60
@@ -175,7 +175,7 @@ jobs:
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
       target: "[ 'self-hosted', 'Windows', 'IgorPro', 'NI' ]"
-      artifact_name: test-ni-assets
+      artifact_name: TestNI-${{ matrix.name }}-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
@@ -199,7 +199,7 @@ jobs:
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
       target: "[ 'self-hosted', 'Windows', 'IgorPro', 'ITC' ]"
-      artifact_name: test-itc18-assets
+      artifact_name: TestITC18-${{ matrix.name }}-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
@@ -223,7 +223,7 @@ jobs:
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: ${{ matrix.experiment }}
       target: "[ 'self-hosted', 'Windows', 'IgorPro', 'ITC1600' ]"
-      artifact_name: test-itc1600-assets
+      artifact_name: TestITC1600-${{ matrix.name }}-assets
       expensive_checks: "1"
       instrument_tests: ${{ fromJson('["0", "1"]')[inputs.do_instrumentation] }}
       timeout_minutes: 180
@@ -243,17 +243,17 @@ jobs:
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download ITC18-USB artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: test-itc18-assets
+          pattern: TestITC18-*
       - name: Download ITC1600 artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: test-itc1600-assets
+          pattern: TestITC1600-*
       - name: Download NI artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: test-ni-assets
+          pattern: TestNI-*
       - name: Validate and read NWBv2 files
         run: tools/nwb-read-tests/run.sh
 
@@ -277,7 +277,7 @@ jobs:
         run: tools/initial-repo-config.sh
       - name: Download all artifacts
         id: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
       - name: Flatten artifact structure
@@ -285,17 +285,7 @@ jobs:
           find "${{ steps.download.outputs.download-path }}" -mindepth 1 -maxdepth 1 -type d |\
             xargs -I {} tools/ftp-upload/flatten-files.sh "{}"
       - name: Compress NWB artifacts
-        run: |
-          for dir in test-itc18-assets test-itc1600-assets test-ni-assets
-          do
-            if [ -n "$(find "$dir" -maxdepth 0 -type d -empty)" ]
-            then
-              continue
-            fi
-
-            tar --remove-files --use-compress-program=zstd -cvf $dir/NWB.tar.zst $dir/*nwb
-          done
-        working-directory: ${{ steps.download.outputs.download-path }}
+        run: tools/ftp-upload/compress-nwb-files.sh "${{ steps.download.outputs.download-path }}"
       - name: Upload artifacts using FTP
         run: |
           tools/ftp-upload/upload-files.sh \
