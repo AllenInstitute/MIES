@@ -1519,7 +1519,7 @@ End
 ///        analysis function, where the set passes and was in the given mode
 static Function PSQ_GetLastPassingDAScale(string device, variable headstage, string opMode)
 	variable numEntries, sweepNo, i, setQC
-	string key
+	string key, modeKey
 
 	ASSERT(PSQ_DS_IsValidMode(opMode), "Invalid opMode")
 
@@ -1546,9 +1546,9 @@ static Function PSQ_GetLastPassingDAScale(string device, variable headstage, str
 		endif
 
 		// check for subthreshold operation mode
-		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE, query = 1)
+		modeKey = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE, query = 1)
 
-		WAVE/T/Z setting = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+		WAVE/T/Z setting = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, modeKey, headstage, UNKNOWN_MODE)
 
 		if(WaveExists(setting) && !cmpstr(setting[INDEP_HEADSTAGE], opMode))
 			return sweepNo
@@ -5072,9 +5072,15 @@ static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, 
 
 	valueStr = GetLastSettingTextIndep(textualResultsValues, NaN, key, SWEEP_FORMULA_RESULT)
 	sweepChannelStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula sweeps/channels", SWEEP_FORMULA_RESULT)
-	refSweep = str2num(StringFromList(0, sweepChannelStr))
 
-	if(IsEmpty(valueStr) || !EqualValuesOrBothNaN(refSweep, sweepNo))
+	if(IsEmpty(sweepChannelStr))
+		Make/FREE sweeps = {NaN}
+	else
+		WAVE/T sweepChannelInfoText = ListToTextWaveMD(sweepChannelStr, 2, rowSep = ",", colSep = ";")
+		Make/FREE/N=(DimSize(sweepChannelInfoText, ROWS)) sweeps = str2num(sweepChannelInfoText[p][0])
+	endif
+
+	if(IsEmpty(valueStr) || IsNaN(GetRowIndex(sweeps, val = sweepNo)))
 		// no value for the current sweep
 		return $""
 	endif
