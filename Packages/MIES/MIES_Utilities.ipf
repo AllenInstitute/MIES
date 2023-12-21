@@ -5640,6 +5640,30 @@ threadsafe Function/WAVE WaveRef(WAVE/Z w, [variable row, variable col, variable
 	endif
 End
 
+/// @brief Compensate IP not having a way to dynamically extract a string from an untyped, i.e. numeric, wave
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function/S WaveText(WAVE/Z w, [variable row, variable col, variable layer, variable chunk])
+
+	if(!WaveExists(w))
+		return ""
+	endif
+
+	WAVE/T wv = w
+
+	if(ParamIsDefault(row))
+		ASSERT_TS(0, "Missing row parameter")
+	elseif(ParamIsDefault(col))
+		return wv[row]
+	elseif(ParamIsDefault(layer))
+		return wv[row][col]
+	elseif(ParamIsDefault(chunk))
+		return wv[row][col][layer]
+	else
+		return wv[row][col][layer][chunk]
+	endif
+End
+
 /// @brief Grep the given regular expression in the text wave
 Function/WAVE GrepTextWave(Wave/T in, string regexp, [variable invert])
 

@@ -1126,6 +1126,85 @@ postproc
    psxstats(myID, [100, 200], select(channels(AD10), [49, 50], all), amp, accept)
    psxstats(otherID, [E0], select(channels(AD7), 40...60, all), xpos, every, log10)
 
+fit
+"""
+
+The `fit` operation allows to perform a CurveFit on the given x and y data and
+accepts exactly three parameters.
+
+.. code-block:: bash
+
+   fit(arrays xdata, arrays ydata, fitOp)
+
+xdata, ydata
+   one or multiple arrays with data
+
+fitOp
+   helper operation with fit type and possible constrained parameters,
+   currently only `fitline` is available.
+
+`xdata` and `ydata` all need to be 1D, but multiple can be given. The
+number of points in the corresponding x and y waves must be the same.
+
+Example:
+
+.. code-block:: bash
+
+   # we look at four sweeps
+   sweeps = [5, 7, 8, 10]
+
+   # grab the DA data from channel 0 and epoch E1
+   selDA = select(channels(DA0), $sweeps)
+   dDA   = data("E1", $selDA)
+
+   # E2 from AD channel 2
+   selAD = select(channels(AD2), $sweeps)
+   dAD   = data("E2", $selAD)
+
+   # calculate minimum for the data in each sweep,
+   # but merge the data into one wave for the fit
+   setX = merge(min($dDA))
+
+   # and average for AD
+   setY = merge(avg($dAD))
+
+   # plot the extracted data
+   $dDA
+
+   and
+
+   $dAD
+
+   and
+
+   # and the input data
+   $setY vs $setX
+
+   with
+
+   # and do the fit
+   fit($setX, $setY, fitline())
+
+fitline
+"""""""
+
+The `fitline` operation allows to select a straight line for the `fit` and
+accepts zero or one argument.
+
+.. code-block:: bash
+
+   fitline([textarray constraints])
+
+constraints
+   text array with constrain definitions like `K0=5`
+
+.. code-block:: bash
+
+   fit($xData, $yData, fitline())
+
+   # holds the second fit parameter at 3
+   fit($xData, $yData, fitline(["K1=3"]))
+
 Utility Functions
 ^^^^^^^^^^^^^^^^^
 
@@ -1427,6 +1506,47 @@ The operation returns the data argument unchanged.
 adds the entry "Sweep Formula store [fancy feature]" with a serialized version
 of given array. The serialization format is JSON as described in the
 preliminary `specification <https://github.com/AllenInstitute/ZeroMQ-XOP/#wave-serialization-format>`__.
+
+merge
+"""""
+
+The `merge` operation combines multiple single-point waves into a single wave
+and accepts one to infinite arguments.
+
+.. code-block:: bash
+
+   merge(array data1, array data2, ...)
+
+data1, data2, ...
+  data waves (numeric and text) with only one point.
+
+Especially useful for fitting data from operations like `apfrequency` which
+return the data from different sweeps in separate waves.
+
+The operation currently throws away all metadata.
+
+.. code-block:: bash
+
+   merge(4, 7, 8) == [4, 7, 8]
+
+dataset
+"""""""
+
+The `dataset` operation allows to create arbitrary datasets with any content
+and accepts zero to infinite arguments.
+
+.. code-block:: bash
+
+   dataset(array data1, array data2, ...)
+
+data1, data2, ...
+  data waves (numeric and text)
+
+Useful for testing SweepFormula itself mainly.
+
+.. code-block:: bash
+
+   dataset(1, [2, 3], "abcd") == [1], [2, 3], ["abcd]
 
 Plotting
 ^^^^^^^^

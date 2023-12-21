@@ -1969,6 +1969,9 @@ StrConstant SF_META_TRACETOFRONT = "/TraceToFront" // number, boolean, defaults 
 
 StrConstant SF_META_USER_GROUP = "/User/" // custom metadata for individual operations,
                                           // top-level group with individual entries
+StrConstant SF_META_FIT_COEFF = "FitCoefficients"
+StrConstant SF_META_FIT_SIGMA = "FitSigma"
+StrConstant SF_META_FIT_PARAMETER = "FitParameter"
 
 StrConstant SF_DATATYPE_SWEEP = "SweepData"
 StrConstant SF_DATATYPE_FINDLEVEL = "FindLevel"
@@ -2195,3 +2198,8 @@ Constant PSX_HORIZ_OFFSET_PEAK  = 1
 Constant PSX_DECONV_FILTER_DEF_LOW   = 0.002
 Constant PSX_DECONV_FILTER_DEF_HIGH  = 0.004
 Constant PSX_DECONV_FILTER_DEF_ORDER = 101
+
+StrConstant SF_OP_MERGE   = "merge"
+StrConstant SF_OP_FIT     = "fit"
+StrConstant SF_OP_FITLINE = "fitline"
+StrConstant SF_OP_DATASET = "dataset"
