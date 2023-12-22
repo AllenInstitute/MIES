@@ -336,9 +336,6 @@ threadsafe Function/DF NWB_ASYNC_Worker(DFREF dfr)
 	KillDataFolder/Z root:
 
 	[s] = NWB_ASYNC_DeserializeStruct(dfr)
-	// @todo This is a workaround to keep the references for the unlocking of the channel waves after saving.
-	//       The references in s.DAQDataWave seem to be gone after saving. Needs further investigation why.
-	Duplicate/FREE s.DAQDataWave, dataWave
 
 	AddModificationTimeEntry(s.locationID, s.nwbVersion)
 	NWB_AddDevice(s)
@@ -346,7 +343,7 @@ threadsafe Function/DF NWB_ASYNC_Worker(DFREF dfr)
 	NWB_WriteResultsWaves(s)
 	NWB_AppendSweepLowLevel(s)
 
-	ChangeWaveLock(dataWave, 0)
+	ChangeWaveLock(s.DAQDataWave, 0)
 
 	NWB_Flush(s.locationID)
 
