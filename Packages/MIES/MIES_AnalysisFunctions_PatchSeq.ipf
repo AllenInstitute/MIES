@@ -2147,8 +2147,7 @@ Function PSQ_DAScale(device, s)
 			endif
 
 			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
-
-			// fallthrough-by-design
+			break
 		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(device, PSQ_DA_SCALE, s.headstage, s.sweepNo)
 
@@ -2403,7 +2402,7 @@ Function PSQ_DAScale(device, s)
 			break
 	endswitch
 
-	if(s.eventType == PRE_DAQ_EVENT || s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT)
+	if(s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT)
 		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -2563,8 +2562,7 @@ Function PSQ_SquarePulse(device, s)
 			endif
 
 			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
-
-			// fallthrough-by-design
+			break
 		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(device, PSQ_SQUARE_PULSE, s.headstage, s.sweepNo)
 
@@ -2846,8 +2844,7 @@ Function PSQ_Rheobase(device, s)
 			endif
 
 			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
-
-			// fallthrough-by-design
+			break
 		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(device, PSQ_RHEOBASE, s.headstage, s.sweepNo)
 
@@ -3302,8 +3299,7 @@ Function PSQ_Ramp(device, s)
 			endif
 
 			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
-
-			// fallthrough-by-design
+			break
 		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(device, PSQ_RAMP, s.headstage, s.sweepNo)
 
@@ -4231,8 +4227,8 @@ Function PSQ_Chirp(device, s)
 			endif
 
 			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
-
-		case PRE_SET_EVENT: // fallthrough-by-design
+			break
+		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(device, PSQ_CHIRP, s.headstage, s.sweepNo)
 
 			PSQ_SetAutobiasTargetVIfPresent(device, s.headstage, s.params, "AutobiasTargetV")
