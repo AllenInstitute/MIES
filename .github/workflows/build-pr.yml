@@ -109,6 +109,20 @@ jobs:
       artifact_name: CompilationTest-${{ matrix.source }}-${{ fromJSON('["no-hardware","hardware"]')[matrix.hardware] }}-assets
       timeout_minutes: 60
 
+  CompilationEachCommitTest:
+    name: |
+      👩🏾‍🔬 Compilation: Each commit
+    if: ${{ !inputs.is_called_workflow }}
+    uses: ./.github/workflows/test-igor-rebase-exec-workflow.yml
+    with:
+      job_name: |
+        👩🏾‍🔬 Compilation: Each commit
+      overwrite_job_name: ${{ inputs.is_called_workflow || false }}
+      experiment: Packages/tests/Compilation/CompilationTester.pxp
+      installer_flags: "-s git"
+      artifact_name: Compilation-Each-Commit-assets
+      timeout_minutes: 60
+
   Documentation:
     name: 👷 Documentation
     runs-on: [ self-hosted, Linux, Docker ]
@@ -264,6 +278,7 @@ jobs:
     needs:
       # All jobs that create new artifacts
       - BuildInstaller
+      - CompilationEachCommitTest
       - CompilationTest
       - Documentation
       - TestWithoutHardware
