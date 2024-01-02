@@ -340,7 +340,7 @@ static Function TestEpochsGeneric(string device)
 	WAVE   numericalValues = GetLBNumericalValues(device)
 
 	DFREF dfr = UniqueDataFolder(GetDataFolderDFR(), "epochTestSweepChannels")
-	SplitAndUpgradeSweep(numericalValues, sweepNo, sweep, config, TTL_RESCALE_ON, targetDFR = dfr)
+	SplitAndUpgradeSweep(numericalValues, sweepNo, sweep, config, TTL_RESCALE_ON, 1, targetDFR = dfr)
 
 	// basic check of internal epoch wave
 	WAVE/T epochs = GetEpochsWave(device)

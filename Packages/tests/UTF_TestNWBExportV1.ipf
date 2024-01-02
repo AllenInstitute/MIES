@@ -526,7 +526,7 @@ static Function/DF TestSweepData(entry, device, sweep)
 	CHECK_WAVE(sweepWave, NORMAL_WAVE)
 
 	DFREF pxpSweepsDFR = UniqueDataFolder(GetDataFolderDFR(), "pxpSweeps")
-	SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configWave, TTL_RESCALE_OFF, targetDFR=pxpSweepsDFR)
+	SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configWave, TTL_RESCALE_OFF, 1, targetDFR=pxpSweepsDFR)
 
 	nwbSweeps = SortList(GetListOfObjects(nwbSweepsDFR, ".*"))
 	pxpSweeps = SortList(GetListOfObjects(pxpSweepsDFR, ".*"))

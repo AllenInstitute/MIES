@@ -6118,9 +6118,10 @@ End
 /// @param sweepWave       sweep wave, either old 2D numerical sweep wave, wave ref wave or text sweep wave
 /// @param configWave      config wave
 /// @param rescale         One of @ref TTLRescalingOptions
+/// @param doUpgrade       When this flag is set, then the sweep wave is upgraded to the latest format. When set, createBackup must be set and targetDFR must not be a free DF.
 /// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
 /// @param createBackup    [optional, defaults 1] flag to enable/disable backup creation of single channel sweep waves
-threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, WAVE sweepWave, WAVE configWave, variable rescale, [DFREF targetDFR, variable createBackup])
+threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, WAVE sweepWave, WAVE configWave, variable rescale, variable doUpgrade, [DFREF targetDFR, variable createBackup])
 
 	variable numRows, i, ttlBits
 	variable channelsPresent
@@ -6130,9 +6131,14 @@ threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, W
 	endif
 
 	createBackup = ParamIsDefault(createBackup) ? 1 : !!createBackup
+	doUpgrade = !!doUpgrade
 
 	ASSERT_TS(IsFinite(sweep), "Sweep number must be finite")
 	ASSERT_TS(IsValidSweepAndConfig(sweepWave, configWave, configVersion = 0), "Sweep and config waves are not compatible")
+	if(doUpgrade)
+		ASSERT_TS(!IsFreeDatafolder(targetDFR), "Can not upgrade sweep wave because targetDFR is a free datafolder")
+		ASSERT_TS(createBackup == 1, "createBackup == 1 is required if doUpgrade is set.")
+	endif
 
 	if(IsTextWave(sweepWave) && !IsFreeDatafolder(targetDFR))
 		DFREF parentDF = GetParentDFR(targetDFR)
@@ -6152,7 +6158,7 @@ threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, W
 		SplitSweepWave(numericalValues, sweep, sweepWave, configWave, rescale, targetDFR, componentNames, createBackup)
 	endif
 
-	if(!IsFreeDatafolder(targetDFR))
+	if(doUpgrade)
 		UpgradeSweepWave(sweepWave, componentNames, targetDFR)
 	endif
 End
@@ -8326,7 +8332,7 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 		endif
 
 		DFREF singleSweepDFR = GetSingleSweepFolder(dest, sweepNo)
-		SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, targetDFR=singleSweepDFR)
+		SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, 1, targetDFR=singleSweepDFR)
 
 		printf "Reconstructed successfully.\r"
 	endfor
@@ -8865,7 +8871,7 @@ Function SplitAndUpgradeSweepGlobal(string device, variable sweepNo)
 	DFREF deviceDFR = GetDeviceDataPath(device)
 	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 	WAVE numericalValues = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, device = device)
-	SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, targetDFR=singleSweepDFR)
+	SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, 1, targetDFR=singleSweepDFR)
 
 	return 0
 End
