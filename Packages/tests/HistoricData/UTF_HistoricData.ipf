@@ -21,6 +21,7 @@ static StrConstant HTTP_FOLDER_URL = "https://www.byte-physics.de/Downloads/alle
 // keep sorted
 #include "UTF_HistoricDashboard"
 #include "UTF_HistoricEpochClipping"
+#include "UTF_HistoricSweepUpgrade"
 
 // Entry point for UTF
 Function run()
@@ -84,6 +85,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	// sorted list
 	list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", inf)
 	list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", inf)
+	list = AddListItem("UTF_HistoricSweepUpgrade.ipf", list, ";", inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
@@ -172,17 +174,10 @@ Function DecompressFile(string file)
 	ASSERT(!V_flag, "Decompression error: " + S_Value)
 End
 
-Function/WAVE GetHistoricDataFiles()
+static Function DownloadFilesIfRequired(WAVE/T files)
 
-	string path, fullFilePath, compFile, file
-	variable i, numFiles, size, refSize
-
-	Make/FREE/T files = {"C57BL6J-629713.05.01.02.pxp",                       \
-	                     "Chat-IRES-Cre-neo;Ai14-582723.15.10.01.pxp",        \
-	                     "Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp",           \
-	                     "Sst-IRES-Cre;Ai14-554002.08.06.02.pxp",             \
-	                     "Sst-IRES-Cre;Th-P2A-FlpO;Ai65-561491.09.09.02.pxp", \
-	                     "epoch_clipping_2022_03_08_140256.pxp"}
+	string path, fullFilePath, file
+	variable i, numFiles
 
 	/// @TODO use hashes to verify files once IP supports strings > 2GB
 
@@ -199,11 +194,37 @@ Function/WAVE GetHistoricDataFiles()
 
 		DownloadFile(file)
 	endfor
+End
+
+static Function SetLabelsForDGWave(WAVE/T files)
 
 	Duplicate/FREE/T files, labels
 	labels[] = CleanUpName(labels[p], 0)
 
 	SetDimensionLabels(files, TextWaveToList(labels, ";"), ROWS)
+End
+
+Function/WAVE GetHistoricDataFiles()
+
+	Make/FREE/T files = {"C57BL6J-629713.05.01.02.pxp",                       \
+								"Chat-IRES-Cre-neo;Ai14-582723.15.10.01.pxp",        \
+								"Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp",           \
+								"Sst-IRES-Cre;Ai14-554002.08.06.02.pxp",             \
+								"Sst-IRES-Cre;Th-P2A-FlpO;Ai65-561491.09.09.02.pxp", \
+								"epoch_clipping_2022_03_08_140256.pxp"}
+
+	DownloadFilesIfRequired(files)
+	SetLabelsForDGWave(files)
+
+	return files
+End
+
+Function/WAVE GetHistoricDataFilesSweepUpgrade()
+
+	Make/FREE/T files = {"single_numeric_sweep.pxp"}
+
+	DownloadFilesIfRequired(files)
+	SetLabelsForDGWave(files)
 
 	return files
 End
