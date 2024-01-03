@@ -1237,3 +1237,39 @@ static Function ExportIntoNWB_REENTRY_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
+
+static Function TPDuringDAQwithPS_PreAcq(device)
+	string device
+
+	PGC_SetAndActivateControl(device, "check_settings_show_power", val = 1)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TPDuringDAQwithPS([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"           + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:" + \
+								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+// The general checks are done in test case TPDuringDAQ, this test case only checks the difference when power spectrum is enabled
+static Function TPDuringDAQwithPS_REENTRY([str])
+	string str
+
+	variable daGain, sweepNo
+	variable tpAmp = 0 // tpAmp is zero when power spectrum is enabled
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
+
+	CHECK_EQUAL_WAVES(stimScale, {tpAmp, daGain, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+End
