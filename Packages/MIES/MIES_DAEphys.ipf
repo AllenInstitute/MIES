@@ -22,6 +22,8 @@ static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8
 
 static Constant DAP_WAITFORTPANALYSIS_TIMEOUT = 2
 
+static StrConstant SU_DISABLED_CONTROLS = "Popup_Settings_VC_DA;Popup_Settings_VC_AD;Popup_Settings_IC_DA;Popup_Settings_IC_AD;"
+
 /// @brief Creates meta information about coupled CheckBoxes (Radio Button) controls
 ///        Used for saving/restoring the GUI state
 /// @return Free text wave with lists of coupled CheckBox controls
@@ -4673,6 +4675,10 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 			DisableControls(device, controls)
 		endif
 	endfor
+
+	if(IsDeviceNameFromSutter(device))
+		DisableControls(device, SU_DISABLED_CONTROLS)
+	endif
 End
 
 static Function/S DAP_GetControlsForChannelIndex(variable channelIndex, variable channelType)
@@ -4796,6 +4802,10 @@ static Function DAP_UnlockDevice(device)
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = CHECKBOX_UNSELECTED)
 	WAVE TPSettings = GetTPsettings(device)
 	TPSettings[%autoTPEnable][0, NUM_HEADSTAGES - 1] = 0
+
+	if(IsDeviceNameFromSutter(device))
+		EnableControls(device, SU_DISABLED_CONTROLS)
+	endif
 
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(device))
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(device))
