@@ -59,10 +59,10 @@ Constant SC_SPIKE_CONTROL_VERSION    = 1
 /// @}
 
 /// Especially interesting for PXP consumers like the analysis browser.
-Constant EXPERIMENT_VERSION = 2
+Constant EXPERIMENT_VERSION = 3
 
 /// All experiment versions up to the given value are supported
-Constant ANALYSIS_BROWSER_SUPP_VERSION = 2
+Constant ANALYSIS_BROWSER_SUPP_VERSION = 3
 
 Constant PA_SETTINGS_STRUCT_VERSION = 6
 /// @}
@@ -172,6 +172,7 @@ Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
 /// Convenience definition to nicify expressions like DimSize(wv, ROWS)
 /// easier to read than DimSize(wv, 0).
 /// @{
+Constant DATADIMENSION       = -1
 Constant ROWS                = 0
 Constant COLS                = 1
 Constant LAYERS              = 2

@@ -326,64 +326,93 @@ End
 ///
 /// Config all refers to configuring all the channels at once
 ///
-/// @param device          panel title
-/// @param hardwareType        hardware type
-/// @param numActiveChannels   number of active channels as returned by DC_ChannelCalcForDAQConfigWave()
-/// @param samplingInterval    sampling interval as returned by DAP_GetSampInt()
-/// @param dataAcqOrTP         one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataWave(string device, variable hardwareType, variable numActiveChannels, variable samplingInterval, variable dataAcqOrTP)
+/// @param device      panel title
+/// @param s           DataConfigurationResult structure
+/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataWave(string device, STRUCT DataConfigurationResult &s, variable dataAcqOrTP)
 	variable numRows, i
 
-	numRows = DC_CalculateDAQDataWaveLength(device, dataAcqOrTP)
-	switch(hardwareType)
+	switch(s.hardwareType)
 		case HARDWARE_ITC_DAC:
+			numRows = DC_CalculateDAQDataWaveLength(device, dataAcqOrTP)
 			WAVE ITCDataWave = GetDAQDataWave(device, dataAcqOrTP)
 
-			Redimension/N=(numRows, numActiveChannels) ITCDataWave
+			Redimension/N=(numRows, s.numActiveChannels) ITCDataWave
 
 			FastOp ITCDataWave = 0
-			SetScale/P x, 0, samplingInterval * MICRO_TO_MILLI, "ms", ITCDataWave
+			SetScale/P x, 0, s.samplingInterval * MICRO_TO_MILLI, "ms", ITCDataWave
 
 			return [ITCDataWave, $""]
-			break
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, dataAcqOrTP)
-			Redimension/N=(numActiveChannels) NIDataWave
+			Redimension/N=(s.numActiveChannels) NIDataWave
 
-			SetScale/P x, 0, samplingInterval * MICRO_TO_MILLI, "ms", NIDataWave
-
-			Make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(device)
+			Make/FREE/N=(s.numActiveChannels) type = SWS_GetRawDataFPType(device)
 			WAVE config = GetDAQConfigWave(device)
 			type = config[p][%ChannelType] == XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
-			NIDataWave = DC_MakeNIChannelWave(device, numRows, samplingInterval, p, type[p], dataAcqOrTP)
+			NIDataWave = DC_MakeNIChannelWave(device, dataAcqOrTP, config[p][%ChannelType], config[p][%SamplingInterval], p, type[p])
+			NIDataWave = DC_SetDataScaleNIChannelWave(NIDataWave[p], config[p][%ChannelType])
 
 			return [$"", NIDataWave]
-			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 	endswitch
+End
+
+/// @brief set a data scale for channel waves, this is not required for operation but allows to keep track of the scales
+///        The waves for the hardware that output data and read back data are typically in V because any other unit, like pA in current clamp mode on DAC channels
+///        is converted by the gain from pA to voltage and then by the hardware amplifier converted back from V to pA.
+static Function/WAVE DC_SetDataScaleNIChannelWave(WAVE channel, variable type)
+
+	switch(type)
+		case XOP_CHANNEL_TYPE_DAC:
+			SetScale d, 0, 0, "V", channel
+			break
+		case XOP_CHANNEL_TYPE_ADC:
+			SetScale d, 0, 0, "V", channel
+			break
+		case XOP_CHANNEL_TYPE_TTL:
+			break
+		default:
+			ASSERT(0, "Unknown channel type")
+	endswitch
+
+	return channel
 End
 
 /// @brief Creates a single NIChannel wave
 ///
 /// Config all refers to configuring all the channels at once
 ///
-/// @param device       panel title
-/// @param numRows          size of the 1D channel wave
+/// @param device           panel title
+/// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType      channel type, one of @sa XopChannelConstants
 /// @param samplingInterval minimum sample intervall in microseconds
 /// @param index            number of NI channel
-/// @param type             numeric data type of NI channel
-/// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param dataType         numeric data type of NI channel
 ///
 /// @return                 Wave Reference to NI Channel wave
-static Function/WAVE DC_MakeNIChannelWave(device, numRows, samplingInterval, index, type, dataAcqOrTP)
-	variable numRows, samplingInterval, index, type, dataAcqOrTP
-	string device
+static Function/WAVE DC_MakeNIChannelWave(string device, variable dataAcqOrTP, variable channelType, variable samplingInterval, variable index, variable dataType)
 
-	WAVE NIChannel = GetNIDAQChannelWave(device, index, dataAcqOrTP)
-	Redimension/N=(numRows)/Y=(type) NIChannel
-	FastOp NIChannel= 0
-	SetScale/P x, 0, samplingInterval * MICRO_TO_MILLI, "ms", NIChannel
+	variable numRows = DC_CalculateDAQDataWaveLength(device, dataAcqOrTP)
 
-	return NIChannel
+	WAVE channel = GetNIDAQChannelWave(device, index, dataAcqOrTP)
+	Redimension/N=(numRows)/Y=(dataType) channel
+	// @todo test
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC:
+		case XOP_CHANNEL_TYPE_TTL: // intended drop through
+			FastOp channel = 0
+			break
+		case XOP_CHANNEL_TYPE_ADC:
+			FastOp channel = (NaN)
+			break
+		default:
+			ASSERT(0, "Unsupported channel type")
+	endswitch
+	SetScale/P x, 0, samplingInterval * MICRO_TO_MILLI, "ms", channel
+
+	return channel
 End
 
 /// @brief Initializes the waves used for displaying DAQ/TP results in the
@@ -392,16 +421,14 @@ End
 /// @param device        panel title
 /// @param dataAcqOrTP   one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
-	variable numRows, sampleInterval, col, hardwareType, decimatedNumRows, numPixels, dataPointsPerPixel
+	variable numRows, col, hardwareType, decimatedNumRows, numPixels, dataPointsPerPixel
 	variable decMethod, decFactor, tpLength, numADCs, numDACs, numTTLs, decimatedSampleInterval
 	variable tpOrPowerSpectrumLength, powerSpectrum
+	variable sampleIntervalADC, pointsAcq
 
 	WAVE config = GetDAQConfigWave(device)
 	WAVE OscilloscopeData = GetOscilloscopeWave(device)
 	WAVE TPOscilloscopeData = GetTPOscilloscopeWave(device)
-	WAVE scaledDataWave = GetScaledDataWave(device)
-	WAVE ITCDataWave = GetDAQDataWave(device, dataAcqOrTP)
-	WAVE/WAVE NIDataWave = GetDAQDataWave(device, dataAcqOrTP)
 	WAVE TPSettingsCalc = GetTPSettingsCalculated(device)
 
 	hardwareType = GetHardwareType(device)
@@ -415,16 +442,29 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			sampleInterval = DimDelta(ITCDataWave, ROWS)
+			WAVE ITCDataWave = GetDAQDataWave(device, dataAcqOrTP)
+			sampleIntervalADC = DimDelta(ITCDataWave, ROWS)
 			break
 		case HARDWARE_NI_DAC:
-			sampleInterval = DimDelta(NIDataWave[0], ROWS)
+			WAVE/WAVE NIDataWave = GetDAQDataWave(device, dataAcqOrTP)
+			sampleIntervalADC = DimDelta(NIDataWave[numDACs], ROWS)
 			break
 	endswitch
 
+	tpLength      = dataAcqOrTP == DATA_ACQUISITION_MODE ? TPSettingsCalc[%totalLengthPointsDAQ_ADC] : TPSettingsCalc[%totalLengthPointsTP_ADC]
+	powerSpectrum = DAG_GetNumericalValue(device, "check_settings_show_power")
+	if(powerSpectrum)
+		// see DisplayHelpTopic `FFT` for the explanation of the calculation
+		tpOrPowerSpectrumLength = floor(TP_GetPowerSpectrumLength(tpLength) / 2) + 1
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			WAVE tpOsciForPowerSpectrum = GetScaledTPTempWave(device)
+			Redimension/N=(tpLength, numDACs + numADCs) tpOsciForPowerSpectrum
+		endif
+	else
+		tpOrPowerSpectrumLength = tpLength
+	endif
+
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		tpLength      = TPSettingsCalc[%totalLengthPointsTP]
-		powerSpectrum = DAG_GetNumericalValue(device, "check_settings_show_power")
 
 		numRows = tpLength
 
@@ -432,28 +472,20 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 		decFactor = NaN
 
 		decimatedNumRows        = numRows
-		decimatedSampleInterval = sampleInterval
-
-		if(powerSpectrum)
-			// see DisplayHelpTopic `FFT` for the explanation of the calculation
-			tpOrPowerSpectrumLength = floor(TP_GetPowerSpectrumLength(tpLength) / 2) + 1
-		else
-			tpOrPowerSpectrumLength = tpLength
-		endif
+		decimatedSampleInterval = sampleIntervalADC
 
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		tpLength = NaN
 
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
 				numRows = DimSize(ITCDataWave, ROWS)
+				pointsAcq = ROVar(GetStopCollectionPoint(device))
 				break
 			case HARDWARE_NI_DAC:
-				numRows = DimSize(NIDataWave[0], ROWS)
+				numRows = DimSize(NIDataWave[numDACs], ROWS)
+				pointsAcq = numRows
 				break
 		endswitch
-
-		NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 
 		decMethod = DAG_GetNumericalValue(device, "Popup_Settings_DecMethod")
 		decFactor = DEFAULT_DECIMATION_FACTOR
@@ -462,7 +494,7 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 			case DECIMATION_NONE:
 				decFactor = 1
 				decimatedNumRows = numRows
-				decimatedSampleInterval = sampleInterval
+				decimatedSampleInterval = sampleIntervalADC
 				break
 			default:
 				STRUCT RectD s
@@ -471,17 +503,17 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 				// use twice as many pixels as we need
 				// but round to a power of two
 				numPixels = s.right - s.left
-				dataPointsPerPixel = trunc((stopCollectionPoint / (numPixels * 2)))
+				dataPointsPerPixel = trunc((pointsAcq / (numPixels * 2)))
 				if(dataPointsPerPixel > 2)
 					decFactor = 2^FindPreviousPower(dataPointsPerPixel, 2)
 					decimatedNumRows = GetDecimatedWaveSize(numRows, decFactor, decMethod)
-					decimatedSampleInterval = sampleInterval * decFactor
+					decimatedSampleInterval = sampleIntervalADC * decFactor
 				else
 					// turn off decimation for very short stimsets
 					decMethod = DECIMATION_NONE
 					decFactor = 1
 					decimatedNumRows = numRows
-					decimatedSampleInterval = sampleInterval
+					decimatedSampleInterval = sampleIntervalADC
 				endif
 				break
 		endswitch
@@ -492,14 +524,96 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 	SetNumberInWaveNote(OscilloscopeData, "DecimationMethod", decMethod)
 	SetNumberInWaveNote(OscilloscopeData, "DecimationFactor", decFactor)
 
-	DC_InitDataHoldingWave(TPOscilloscopeData, tpOrPowerSpectrumLength, sampleInterval, numDACs, numADCs, numTTLs, isFourierTransform=(powerSpectrum && dataAcqOrTP == TEST_PULSE_MODE))
-	DC_InitDataHoldingWave(OscilloscopeData, decimatedNumRows, decimatedSampleInterval, numDACs, numADCs, numTTLs)
+	DC_InitOscilloscopeDataWave(TPOscilloscopeData, tpOrPowerSpectrumLength, sampleIntervalADC, numDACs, numADCs, numTTLs, isFourierTransform=powerSpectrum)
+	DC_InitOscilloscopeDataWave(OscilloscopeData, decimatedNumRows, decimatedSampleInterval, numDACs, numADCs, numTTLs)
 
-	DC_InitDataHoldingWave(scaledDataWave, dataAcqOrTP == DATA_ACQUISITION_MODE ? stopCollectionPoint : tpLength, sampleInterval, numDACs, numADCs, numTTLs, type = SWS_GetRawDataFPType(device))
+	DC_InitScaledDataWave(device, dataAcqOrTP)
 End
 
-/// @brief Initialize data holding waves to NaN
-static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, numADCs, numTTLs, [type, isFourierTransform])
+/// @brief Returns the size of a channel for scaledData wave creation. The DAQDataWave must already be existing at this point.
+///        channelIndex must be given for non-ITC hardware in DATA_ACQUISITION_MODE
+static Function DC_CalculateChannelSizeForScaledData(string device, variable dataAcqOrTP, [variable channelIndex])
+
+	variable hardwareType
+
+	WAVE TPSettingsCalc = GetTPSettingsCalculated(device)
+	hardwareType = GetHardwareType(device)
+	if(hardwareType != HARDWARE_ITC_DAC && dataAcqOrTP == DATA_ACQUISITION_MODE)
+		ASSERT(!ParamIsDefault(channelIndex), "Require channelIndex to be specified")
+	endif
+
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			return dataAcqOrTP == DATA_ACQUISITION_MODE ? ROVar(GetStopCollectionPoint(device)) : TPSettingsCalc[%totalLengthPointsTP_ADC]
+		case HARDWARE_NI_DAC:
+			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+				WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
+				ASSERT(channelIndex >= 0 && channelIndex < DimSize(dataWave, ROWS), "ChannelIndex out of range")
+				return DimSize(dataWave[channelIndex], ROWS)
+			endif
+
+			return TPSettingsCalc[%totalLengthPointsTP_ADC]
+		default:
+			ASSERT(0, "Unknown hardware type")
+	endswitch
+End
+
+/// @brief Initialize scaledDataWave, as NI output already properly scaled data, we can prefill output channels.
+///        So in in the more time critical SCOPE_xx_UpdateOscilloscope we can optimize by only copying the ADC data over (ADC data from NI is already properly scaled by hardware)
+static Function DC_InitScaledDataWave(string device, variable dataAcqOrTP)
+
+	variable i, numChannels, dataType, size, sampleIntervalADC, hardwareType
+
+	WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
+	WAVE config = GetDAQConfigWave(device)
+	WAVE/T units = AFH_GetChannelUnits(config)
+	dataType = SWS_GetRawDataFPType(device)
+	hardwareType = GetHardwareType(device)
+
+	WAVE gains = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
+
+	if(hardwareType == HARDWARE_ITC_DAC)
+		size = DC_CalculateChannelSizeForScaledData(device, dataAcqOrTP)
+		WAVE ITCDataWave = GetDAQDataWave(device, dataAcqOrTP)
+		sampleIntervalADC = DimDelta(ITCDataWave, ROWS)
+	else
+		WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
+	endif
+
+	numChannels = DimSize(config, ROWS)
+	Redimension/N=(numChannels) scaledDataWave
+	for(i = 0; i < numChannels; i += 1)
+
+		if(hardwareType != HARDWARE_ITC_DAC)
+			WAVE channel = dataWave[i]
+			size = DC_CalculateChannelSizeForScaledData(device, dataAcqOrTP, channelIndex = i)
+			if(hardwareType == HARDWARE_NI_DAC)
+				sampleIntervalADC = DimDelta(channel, ROWS)
+			endif
+		endif
+
+		Make/FREE/Y=(dataType)/N=(size) wv
+		if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC || config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
+			if(hardwareType == HARDWARE_ITC_DAC)
+				Multithread wv[] = ITCDataWave[p][i] / gains[i]
+			else
+				Multithread wv[] = channel[p] / gains[i]
+			endif
+		else
+			FastOp wv = (NaN)
+		endif
+
+		SetScale/P x, 0, sampleIntervalADC, "ms", wv
+
+		if(i < DimSize(units, ROWS))
+			SetScale d, 0, 0, units[i], wv
+		endif
+		scaledDataWave[i] = wv
+	endfor
+End
+
+/// @brief Initialize OscilloscopeData waves to NaN
+static Function DC_InitOscilloscopeDataWave(wv, numRows, sampleInterval, numDACs, numADCs, numTTLs, [type, isFourierTransform])
 	WAVE wv
 	variable numRows, sampleInterval, numDACs, numADCs, numTTLs, type, isFourierTransform
 	string msg
@@ -1102,7 +1216,8 @@ static Function DC_FillSetEventFlag(string device, STRUCT DataConfigurationResul
 End
 
 static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationResult &s)
-	variable cutOff, i, tpAmp
+
+	variable cutOff, i, tpAmp, channelSize, minLimit, maxLimit
 	string key
 
 	// varies per DAC:
@@ -1149,7 +1264,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 					WAVE/WAVE NIDataWave = DAQDataWave
 					for(i = 0; i < s.numADCEntries; i += 1)
 						WAVE NIChannel = NIDataWave[s.numDACEntries + i]
-						FastOp NIChannel = 0
+						FastOp NIChannel = (NaN)
 					endfor
 					break
 			endswitch
@@ -1163,8 +1278,8 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 			MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
 		endif
 	else
-		[WAVE ITCDataWave, WAVE/WAVE NIDataWave] = DC_MakeAndGetDAQDataWave(device, s.hardwareType, s.numActiveChannels, \
-		                                                                    s.samplingInterval, TEST_PULSE_MODE)
+		[WAVE ITCDataWave, WAVE/WAVE NISUDataWave] = DC_MakeAndGetDAQDataWave(device, s, TEST_PULSE_MODE)
+		WAVE config = GetDAQConfigWave(device)
 
 		switch(s.hardwareType)
 			case HARDWARE_ITC_DAC:
@@ -1191,7 +1306,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 				break
 			case HARDWARE_NI_DAC:
 				for(i = 0;i < s.numDACEntries; i += 1)
-					WAVE NIChannel = NIDataWave[i]
+					WAVE NIChannel = NISUDataWave[i]
 					tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
 					Multithread NIChannel[0, s.testPulseLength - 1] = \
 					limit(                                          \
@@ -1200,8 +1315,8 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 						  NI_DAC_MAX); AbortOnRTE
 				endfor
 
-				SetStringInWaveNote(NIDataWave, TP_PROPERTIES_HASH, key, recursive = 1)
-				CA_StoreEntryIntoCache(key, NIDataWave)
+				SetStringInWaveNote(NISUDataWave, TP_PROPERTIES_HASH, key, recursive = 1)
+				CA_StoreEntryIntoCache(key, NISUDataWave)
 				break
 		endswitch
 	endif
@@ -1209,12 +1324,11 @@ End
 
 static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfigurationResult &s)
 	variable i, tpAmp, cutOff, channel, headstage, DAScale, singleSetLength, stimsetCol, startOffset
-	variable lastValidRow, isUnAssociated
+	variable lastValidRow, isUnAssociated, maxLimit, minLimit
 
 	WAVE config = GetDAQConfigWave(device)
 
-	[WAVE ITCDataWave, WAVE/WAVE NIDataWave] = DC_MakeAndGetDAQDataWave(device, s.hardwareType, s.numActiveChannels, \
-	                                                                    s.samplingInterval, DATA_ACQUISITION_MODE)
+	[WAVE ITCDataWave, WAVE/WAVE NIDataWave] = DC_MakeAndGetDAQDataWave(device, s, DATA_ACQUISITION_MODE)
 
 	for(i = 0; i < s.numDACEntries; i += 1)
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
@@ -1283,17 +1397,22 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 					// for ITC decimationFactor is always >= 1 since the stimSets are generated for the ITC max. sample rate
 					WAVE NIChannel = NIDataWave[i]
 					lastValidRow = DimSize(singleStimSet, ROWS) - 1
+					if(s.hardwareType == HARDWARE_NI_DAC)
+						minLimit = NI_DAC_MIN
+						maxLimit = NI_DAC_MAX
+					endif
+
 					MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                                    \
 					limit(                                                                                                     \
 						  DAScale * singleStimSet[limit(s.decimationFactor * (p - startOffset), 0, lastValidRow)][stimsetCol], \
-						  NI_DAC_MIN,                                                                                          \
-						  NI_DAC_MAX); AbortOnRTE
+						  minLimit,                                                                                          \
+						  maxLimit); AbortOnRTE
 
 					if(s.globalTPInsert && !isUnAssociated)
 						// space in ITCDataWave for the testpulse is allocated via an automatic increase
 						// of the onset delay
 						MultiThread NIChannel[0, s.testPulseLength - 1] = \
-						limit(tpAmp * s.testPulse[p], NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
+						limit(tpAmp * s.testPulse[p], minLimit, maxLimit); AbortOnRTE
 					endif
 					break
 			endswitch
@@ -1445,10 +1564,13 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 					s.DACAmp[i][%TPAMP] = 0
 				endif
 			elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-				// do nothing
+				if(s.powerSpectrum)
+					s.DACAmp[i][%TPAMP] = 0
+				endif
 			endif
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 			if(s.powerSpectrum)
+				// intended use of powerspectrum is for noise checking
 				s.DACAmp[i][%TPAMP] = 0
 			endif
 		else

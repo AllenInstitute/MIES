@@ -1785,7 +1785,7 @@ static Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device,
 	variable sweep, overwrite
 
 	string sweepFolder, sweeps, msg
-	variable h5_fileID, h5_groupID
+	variable h5_fileID, h5_groupID, err
 
 	if(ParamIsDefault(overwrite))
 		overwrite = 0
@@ -1810,12 +1810,8 @@ static Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device,
 
 	strswitch(fileType)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
-			sweeps = AB_LoadSweepFromIgor(discLocation, dataFolder, sweepDFR, device, sweep)
-			if(!cmpstr(sweeps, ""))
-				return 1
-			endif
-			Wave sweepsWave = sweepDFR:$sweeps
-			if(AB_SplitSweepIntoComponents(dataFolder, device, sweep, sweepsWave))
+			err = AB_LoadSweepFromIgor(discLocation, dataFolder, sweepDFR, device, sweep)
+			if(err)
 				return 1
 			endif
 			break
@@ -2084,43 +2080,71 @@ End
 /// @brief Load specified device/sweep combination from Igor experiment file to sweepDFR
 ///
 /// @returns name of loaded sweep
-static Function/S AB_LoadSweepFromIgor(discLocation, expFolder, sweepDFR, device, sweep)
-	string discLocation, expFolder, device
-	DFREF sweepDFR
-	variable sweep
+static Function AB_LoadSweepFromIgor(string discLocation, string expFolder, DFREF sweepDFR, string device, variable sweep)
 
-	variable numWavesLoaded
+	variable i, numWavesLoaded, numComponentsLoaded, numChannels
 	string sweepWaveList = ""
-	string sweepWaveName, dataPath
+	string sweepWaveName, sweepWaveNameBak, dataPath, componentsDataPath, sweepComponent
+	string channelName, channelWaveList
 
 	// we load the backup wave also
 	// in case it exists, it holds the original unmodified data
 	sweepWaveName  = "sweep_" + num2str(sweep)
+	sweepWaveNameBak = sweepWaveName + WAVE_BACKUP_SUFFIX
 	sweepWaveList = AddListItem(sweepWaveList, sweepWaveName, ";", Inf)
-	sweepWaveList = AddListItem(sweepWaveList, sweepWaveName + WAVE_BACKUP_SUFFIX, ";", Inf)
+	sweepWaveList = AddListItem(sweepWaveList, sweepWaveNameBak, ";", Inf)
 
 	dataPath = GetDeviceDataPathAsString(device)
 	dataPath = AB_TranslatePath(dataPath, expFolder)
-	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
+	DFREF newDFR = NewFreeDataFolder()
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, discLocation, dataPath, sweepWaveList)
 
 	if(numWavesLoaded <= 0)
 		printf "Could not load sweep %d of device %s and %s\r", sweep, device, discLocation
 		KillOrMoveToTrash(dfr=newDFR)
 		KillOrMoveToTrash(dfr=sweepDFR)
-		return ""
+		return 1
 	endif
 
 	Wave sweepWave = newDFR:$sweepWaveName
+	if(IsTextWave(sweepWave) && DimSize(sweepWave, ROWS) > 0)
+		WAVE/Z/T sweepT = newDFR:$sweepWaveNameBak
+		if(!WaveExists(sweepT))
+			printf "Could not find original sweep wave in pxp (only working copy). Sweep %d of device %s and %s\r", sweep, device, discLocation
+			return 1
+		endif
 
-	if(numWavesLoaded == 2)
-		ReplaceWaveWithBackup(sweepWave)
+		numChannels = DimSize(sweepT, ROWS)
+		for(i = 0; i < numChannels; i += 1)
+			[componentsDataPath, channelName] = SplitTextSweepElement(sweepT[i])
+			sweepT[i] = channelName
+		endfor
+		channelWaveList = TextWaveToList(sweepT, ";")
+		DFREF sweepComponentsDFR = NewFreeDataFolder()
+		numComponentsLoaded = AB_LoadDataWrapper(sweepComponentsDFR, discLocation, dataPath + ":" + componentsDataPath, channelWaveList)
+		if(numComponentsLoaded != DimSize(sweepT, ROWS))
+			printf "Error loading all sweep components. Sweep %d of device %s and %s\r", sweep, device, discLocation
+			return 1
+		endif
+
+		for(sweepComponent : sweepT)
+			WAVE wv = sweepComponentsDFR:$sweepComponent
+			MoveWave wv, sweepDFR
+		endfor
+		RestoreFromBackupWavesForAll(sweepDFR)
+	else
+		// old sweep format
+		if(numWavesLoaded == 2)
+			ReplaceWaveWithBackup(sweepWave)
+		endif
+
+		MoveWave sweepWave, sweepDFR
+		if(AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave))
+			return 1
+		endif
 	endif
 
-	MoveWave sweepWave, sweepDFR
-	KillOrMoveToTrash(dfr=newDFR)
-
-	return sweepWaveName
+	return 0
 End
 
 /// @brief a failsave alternative for AB_LoadStimsets() to load RAW stimsets
@@ -2471,7 +2495,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
 	WAVE/SDFR=dfr numericalValues
 
-	SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configSweep, TTL_RESCALE_ON, targetDFR=sweepFolder)
+	SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configSweep, TTL_RESCALE_ON, 1, targetDFR=sweepFolder)
 	KillOrMoveToTrash(wv=sweepWave)
 
 	return 0

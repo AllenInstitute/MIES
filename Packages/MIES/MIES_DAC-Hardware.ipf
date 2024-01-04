@@ -737,6 +737,54 @@ Function/S HW_GetDeviceName(hardwareType, deviceID, [flags])
 
 	return mainDevice
 End
+
+/// @brief Generic function to retrieve the wave length of ADC channel(s).
+/// For ITC this is defined through stopCollectionPoint, for other devices like
+/// NI the acquisition wave had the correct size and the value can be retrieved
+/// directly from that wave.
+/// @param device device name
+/// @param dataAcqOrTP data acquisition or tp mode @sa DataAcqModes
+/// @returns effective size of ADC channel wave (for ITC the actual size is bigger)
+Function HW_GetEffectiveADCWaveLength(string device, variable dataAcqOrTP)
+
+	if(GetHardwareType(device) == HARDWARE_ITC_DAC)
+		return ROVar(GetStopCollectionPoint(device))
+	endif
+
+	WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
+	WAVE config = GetDAQConfigWave(device)
+
+	return DimSize(dataWave[GetFirstADCChannelIndex(config)], ROWS)
+End
+
+Function HW_GetEffectiveDACWaveLength(string device, variable dataAcqOrTP)
+
+	if(GetHardwareType(device) == HARDWARE_ITC_DAC)
+		return ROVar(GetStopCollectionPoint(device))
+	endif
+
+	WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
+
+	ASSERT(DimSize(dataWave, ROWS) > 0, "No channel in DAQ wave")
+
+	// channel 0 is always DA
+	return DimSize(dataWave[0], ROWS)
+End
+
+Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
+
+	variable hwType = GetHardwareType(device)
+	variable fifoPositionAD = ROVar(GetFifoPosition(device))
+
+	switch(hwType)
+		case HARDWARE_ITC_DAC: // intended drop through
+		case HARDWARE_NI_DAC:
+			return fifoPositionAD
+		default:
+			ASSERT(0, "Unsupported hardware type")
+	endswitch
+End
+
 /// @}
 
 /// @name ITC

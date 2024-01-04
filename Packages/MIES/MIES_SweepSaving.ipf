@@ -17,7 +17,7 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 	string device
 	variable forcedStop
 
-	variable sweepNo
+	variable sweepNo,  plannedTime, acquiredTime
 	string sweepName, configName
 
 	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
@@ -44,20 +44,22 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 	WAVE/SDFR=dfr/Z sweepWave = $sweepName
 	ASSERT(!WaveExists(sweepWave), "The sweep wave must not exist, name=" + sweepName)
 
+	[plannedTime, acquiredTime] = SWS_ProcessDATTLChannelsOnEarlyAcqStop(device, scaledDataWave, hardwareConfigWave)
+
 	Duplicate hardwareConfigWave, dfr:$configName
 	MoveWave scaledDataWave, dfr:$sweepName
 
-	WAVE sweepWave = GetSweepWave(device, sweepNo)
-	WAVE configWave = GetConfigWave(sweepWave)
+	EP_WriteEpochInfoIntoSweepSettings(device, sweepNo, acquiredTime, plannedTime)
 
-	EP_WriteEpochInfoIntoSweepSettings(device, sweepWave, configWave)
-
-	// Add labnotebook entries for the acquired sweep
+	// Add labnotebook entries for the acquired sweep and note to sweepWave
 	ED_createWaveNoteTags(device, sweepNo)
+
+	SplitAndUpgradeSweepGlobal(device, sweepNo)
 
 	EP_CopyLBNEpochsToEpochsWave(device, sweepNo)
 
 	if(DAG_GetNumericalValue(device, "Check_Settings_NwbExport"))
+		[WAVE sweepWave, WAVE configWave] = GetSweepAndConfigWaveFromDevice(device, sweepNo)
 		NWB_AppendSweepDuringDAQ(device, sweepWave, configWave, sweepNo, str2num(DAG_GetTextualValue(device, "Popup_Settings_NwbVersion")))
 	endif
 
@@ -71,8 +73,49 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 		AFM_CallAnalysisFunctions(device, POST_SET_EVENT)
 	endif
 
-	EP_WriteEpochInfoIntoSweepSettings(device, sweepWave, configWave)
+	EP_WriteEpochInfoIntoSweepSettings(device, sweepNo, acquiredTime, plannedTime)
 	SWS_SweepSettingsEpochInfoToLBN(device, sweepNo)
+End
+
+/// @brief Determine actual acquisition times and if acquisition was stopped early, change the remaining data points in DA/TTL with NaN.
+///        DA/TTL data was prefilled in @sa DC_InitScaledDataWave with no early acquisition stop as default
+static Function [variable plannedTime, variable acquiredTime] SWS_ProcessDATTLChannelsOnEarlyAcqStop(string device, WAVE/WAVE scaledDataWave, WAVE config)
+
+	variable i, numChannels, firstUnAcquiredIndex, adcSize
+
+	NVAR fifoPosGlobal = $GetFifoPosition(device)
+	ASSERT(!IsNaN(fifoPosGlobal), "Invalid fifoPosGlobal")
+
+	WAVE channelADC = scaledDataWave[GetFirstADCChannelIndex(config)]
+	adcSize = HW_GetEffectiveADCWaveLength(device, DATA_ACQUISITION_MODE)
+	plannedTime = IndexToScale(channelADC, adcSize - 1, ROWS) * MILLI_TO_ONE
+
+	FindValue/FNAN  channelADC
+	if(V_row < 0)
+		V_row = adcSize
+	endif
+	ASSERT(V_row == fifoPosGlobal, "Mismatch of NaN boundary in ADC channel to last fifo position")
+
+	if(fifoPosGlobal == adcSize)
+		return [plannedTime, plannedTime]
+	endif
+
+	acquiredTime = fifoPosGlobal ? IndexToScale(channelADC, max(fifoPosGlobal - 1, 0), ROWS) * MILLI_TO_ONE : 0
+
+	numChannels = DimSize(config, ROWS)
+	for(i = 0; i < numChannels; i += 1)
+		if(!(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC || config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL))
+			continue
+		endif
+		WAVE channel = scaledDataWave[i]
+		if(acquiredTime)
+			firstUnAcquiredIndex = trunc((acquiredTime * ONE_TO_MILLI - DimOffset(channel, ROWS)) / DimDelta(channel, ROWS)) + 1
+			firstUnAcquiredIndex = min(firstUnAcquiredIndex, DimSize(channel, ROWS) - 1)
+		endif
+		MultiThread channel[firstUnAcquiredIndex, Inf] = NaN
+	endfor
+
+	return [plannedTime, acquiredTime]
 End
 
 static Function SWS_SweepSettingsEpochInfoToLBN(string device, variable sweepNo)
@@ -130,6 +173,16 @@ End
 /// ========== ========= ===============================================
 ///
 /// \endrst
+///
+/// With GAIN_BEFORE_DAQ the function returns the gain factor for all channels.
+/// With GAIN_AFTER_DAC the gain factor for ADC channels is returned as 1.
+/// Gain handling for NI:
+/// In dataconfigurator setup DAC_values = data(before_DAQ) * gain_factor(DAC_channel) @sa DC_FillDAQDataWaveForDAQ
+/// at acquisition time done by hardware ADC_values = data(acquired_by_ADC) * gain_factor(ADC_channel) @sa HW_NI_PrepareAcq
+/// at acquisition time on readout:
+/// oscilloscopeValues = DAC_values
+/// scaledValues = DAC_values / gain_factor(DAC_channel)
+/// ADC_values are NOT changed, thus a gain factor of 1 is used when calculation indexes over all DAC, ADC, TTL channels. @sa SCOPE_NI_UpdateOscilloscope
 ///
 /// @param device device
 /// @param timing     One of @ref GainTimeParameter

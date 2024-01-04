@@ -651,56 +651,11 @@ End
 /// @returns 1 on error, 0 on success
 Function DB_SplitSweepsIfReq(string win, variable sweepNo)
 
-	string device, mainPanel
-	variable sweepModTime, numWaves, requireNewSplit, i
-	variable numBackupWaves
-
 	if(!BSP_HasBoundDevice(win))
 		return NaN
 	endif
 
-	device = BSP_GetDevice(win)
-
-	DFREF deviceDFR = GetDeviceDataPath(device)
-	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
-
-	WAVE/Z sweepWave  = GetSweepWave(device, sweepNo)
-	if(!WaveExists(sweepWave))
-		return 1
-	endif
-
-	WAVE configWave = GetConfigWave(sweepWave)
-
-	sweepModTime = max(ModDate(sweepWave), ModDate(configWave))
-	numWaves = CountObjectsDFR(singleSweepDFR, COUNTOBJECTS_WAVES)
-	requireNewSplit = (numWaves == 0)
-
-	for(i = 0; i < numWaves; i += 1)
-		WAVE/SDFR=singleSweepDFR wv = $GetIndexedObjNameDFR(singleSweepDFR, COUNTOBJECTS_WAVES, i)
-		if(sweepModTime > ModDate(wv))
-			// original sweep was modified, regenerate single sweep waves
-			KillOrMoveToTrash(dfr=singleSweepDFR)
-			DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
-			requireNewSplit = 1
-			break
-		endif
-		if(GrepString(NameOfWave(wv), "\\Q" + WAVE_BACKUP_SUFFIX + "\\E$"))
-			numBackupWaves += 1
-		endif
-	endfor
-
-	if(!requireNewSplit && (numBackupWaves * 2 == numWaves))
-		return 0
-	endif
-
-	KillOrMoveToTrash(dfr = singleSweepDFR)
-	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
-
-	WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
-
-	SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, targetDFR=singleSweepDFR)
-
-	return 0
+	return SplitAndUpgradeSweepGlobal(BSP_GetDevice(win), sweepNo)
 End
 
 /// @brief Find a Databrowser which is locked to the given DAEphys panel

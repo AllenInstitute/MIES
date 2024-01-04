@@ -343,6 +343,8 @@ threadsafe Function/DF NWB_ASYNC_Worker(DFREF dfr)
 	NWB_WriteResultsWaves(s)
 	NWB_AppendSweepLowLevel(s)
 
+	ChangeWaveLock(s.DAQDataWave, 0)
+
 	NWB_Flush(s.locationID)
 
 	return $""
@@ -641,7 +643,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 
 			// init: 3/3
 			s.sweep = sweep
-			WAVE s.DAQDataWave = sweepWave
+			WAVE s.DAQDataWave = TextSweepToWaveRef(sweepWave)
 			WAVE s.DAQConfigWave = configWave
 
 			NWB_AppendSweepLowLevel(s)
@@ -931,6 +933,9 @@ Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfi
 		return NaN
 	endif
 
+	WAVE/WAVE sweepRef = TextSweepToWaveRef(DAQDataWave)
+	ChangeWaveLock(sweepRef, 1)
+
 	STRUCT NWBAsyncParameters s
 
 	s.device = device
@@ -944,7 +949,7 @@ Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfi
 	s.locationID = locationID
 	s.nwbVersion = nwbVersion
 
-	WAVE s.DAQDataWave = DAQDataWave
+	WAVE s.DAQDataWave = sweepRef
 	WAVE s.DAQConfigWave = DAQConfigWave
 
 	WAVE s.numericalValues = GetLBNumericalValues(device)
@@ -972,7 +977,9 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	string group, path, list, name, stimset, key
 	string channelSuffix, listOfStimsets, contents
 
-	Make/FREE/N=(DimSize(s.DAQDataWave, COLS)) writtenDataColumns = 0
+	ASSERT_TS(IsWaveRefWave(s.DAQDataWave), "Unsupported sweep wave format")
+
+	Make/FREE/N=(DimSize(s.DAQDataWave, ROWS)) writtenDataColumns = 0
 
 	// comment denotes the introducing comment of the labnotebook entry
 	// a2220e9f (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
@@ -1082,7 +1089,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave)) * KILO_TO_ONE
 
 	DFREF sweepDFR = NewFreeDataFolder()
-	SplitSweepIntoComponents(s.numericalValues, s.sweep, s.DAQDataWave, s.DAQConfigWave, TTL_RESCALE_OFF, targetDFR = sweepDFR, createBackup = 0)
+	SplitAndUpgradeSweep(s.numericalValues, s.sweep, s.DAQDataWave, s.DAQConfigWave, TTL_RESCALE_OFF, 0, targetDFR = sweepDFR, createBackup = 0)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 

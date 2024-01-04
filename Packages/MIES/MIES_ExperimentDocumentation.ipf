@@ -402,7 +402,7 @@ static Function ED_WriteChangedValuesToNoteText(device, sweepNo)
 	string device
 	variable sweepNo
 
-	string key, factor, text, frontLabel
+	string key, factor, text, frontLabel, ignoreKeyList
 	string str = ""
 	variable tolerance, i, j, numRows, numCols
 
@@ -413,11 +413,17 @@ static Function ED_WriteChangedValuesToNoteText(device, sweepNo)
 	WAVE/Z junk = GetLastSetting(textualValues, sweepNo, "TimeStamp", UNKNOWN_MODE)
 	WAVE/Z junk = GetLastSetting(textualValues, sweepNo - 1, "TimeStamp", UNKNOWN_MODE)
 
+	ignoreKeyList = AddListItem("MIES version", "")
+	ignoreKeyList = AddListItem("Igor Pro version", ignoreKeyList)
+	ignoreKeyList = AddListItem("Igor Pro build", ignoreKeyList)
+	ignoreKeyList = AddListItem(STIMSET_WAVE_NOTE_KEY, ignoreKeyList)
+	ignoreKeyList = AddListItem(EPOCHS_ENTRY_KEY, ignoreKeyList)
+
 	numCols = DimSize(textualKeys, COLS)
 	for (j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
 		key = textualKeys[0][j]
 
-		if(!cmpstr(key, "MIES version") || !cmpstr(key, "Igor Pro version") || !cmpstr(key, "Igor Pro build") || !cmpstr(key, "Stim Wave Note"))
+		if(WhichListItem(key, ignoreKeyList) >= 0)
 			continue
 		endif
 

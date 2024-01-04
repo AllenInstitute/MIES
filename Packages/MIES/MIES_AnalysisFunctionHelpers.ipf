@@ -961,3 +961,70 @@ Function AFH_GetHeadstageFromActiveADC(WAVE/Z statusADC, variable activeADCount)
 
 	return NaN
 End
+
+/// @brief returns the correct config wave depending on the fact if sweepwave is
+///        either a scaledDataWave from a currently running acquisition or
+///        sweep wave from a finished acquisition
+Function/WAVE AFH_GetConfigWave(string device, WAVE sweepWave)
+
+	if(WaveRefsEqual(sweepWave, GetScaledDataWave(device)))
+		WAVE config = GetDAQConfigWave(device)
+	else
+		WAVE config = GetConfigWave(sweepWave)
+	endif
+
+	return config
+End
+
+/// @brief Some analysis function like PSQ_Ramp and PSQ_EvaluateBaselineChunks need the current acquisition time
+///        within the stimset (where the fifo is currently). This function wraps this calculation and returns the
+///        time in ms. The stimset begin is the reference point and 0 ms on that time scale.
+/// @param device device name
+/// @param s analysis function structure V3
+/// @returns point in time where the current fifo is within the stimset in ms
+Function AFH_GetFifoInStimsetTime(string device, STRUCT AnalysisFunction_V3 &s)
+
+	variable fifoInStimsetPoint
+
+	fifoInStimsetPoint = s.lastKnownRowIndexAD - GetTotalOnsetDelayFromDevice(device) / s.sampleIntervalAD
+
+	return fifoInStimsetPoint * s.sampleIntervalAD
+End
+
+Function/WAVE AFH_GetChannelFromSweepOrScaledWave(WAVE sweepOrScaled, variable channelIndex)
+
+	if(IsWaveRefWave(sweepOrScaled))
+		WAVE/WAVE scaled = sweepOrScaled
+		return scaled[channelIndex]
+	elseif(IsTextWave(sweepOrScaled))
+		return ResolveSweepChannel(sweepOrScaled, channelIndex)
+	endif
+
+	ASSERT(0, "Unknown Data format")
+End
+
+/// @brief Returns the DA and AD sample intervals of the given sweep. The sweep data input can be
+///        text sweep wave, 2D numeric sweep wave or waveRef sweep wave (including e.g. scaledDataWave)
+Function [variable sampleIntDA, variable sampleIntAD] AFH_GetSampleIntervalsFromSweep(WAVE sweep, WAVE config)
+
+	if(IsTextWave(sweep))
+		WAVE channel = ResolveSweepChannel(sweep, 0)
+		sampleIntDA = DimDelta(channel, ROWS)
+		WAVE channel = ResolveSweepChannel(sweep, GetFirstADCChannelIndex(config))
+		sampleIntAD = DimDelta(channel, ROWS)
+		return [sampleIntDA, sampleIntAD]
+	endif
+
+	if(IsWaveRefWave(sweep))
+		WAVE/WAVE sweepRef = sweep
+		WAVE channel = sweepRef[0]
+		sampleIntDA = DimDelta(channel, ROWS)
+		WAVE channel = sweepRef[GetFirstADCChannelIndex(config)]
+		sampleIntAD = DimDelta(channel, ROWS)
+		return [sampleIntDA, sampleIntAD]
+	endif
+
+	sampleIntDA = DimDelta(sweep, ROWS)
+
+	return [sampleIntDA, sampleIntDA]
+End

@@ -388,12 +388,14 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 		for(j = 0; j < numSweeps; j += 1)
 			WAVE/Z sweep  = $StringFromList(j, sweeps)
-			CHECK_WAVE(sweep, NUMERIC_WAVE, minorType = IGOR_TYPE_32bit_FLOAT)
-
+			CHECK_WAVE(sweep, TEXT_WAVE)
 			WAVE/Z config = $StringFromList(j, configs)
 			CHECK_WAVE(config, NUMERIC_WAVE)
 
-			CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
+			WAVE channelDA = ResolveSweepChannel(sweep, 0)
+			CHECK_WAVE(channelDA, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+
+			CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, ROWS))
 
 			switch(hardwareType)
 				case HARDWARE_ITC_DAC:
@@ -758,8 +760,9 @@ static Function CheckSamplingInterval1_REENTRY([str])
 	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(fixedFreqAcq, NaN)
 
-	CHECK_EQUAL_VAR(DimOffset(sweepWave, ROWS), 0)
-	CHECK_CLOSE_VAR(DimDelta(sweepWave, ROWS), expectedSampInt, tol=1e-6)
+	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(configWave))
+	CHECK_EQUAL_VAR(DimOffset(channelAD, ROWS), 0)
+	CHECK_CLOSE_VAR(DimDelta(channelAD, ROWS), expectedSampInt, tol=1e-6)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -804,8 +807,9 @@ static Function CheckSamplingInterval2_REENTRY([str])
 	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(fixedFreqAcq, NaN)
 
-	CHECK_EQUAL_VAR(DimOffset(sweepWave, ROWS), 0)
-	CHECK_CLOSE_VAR(DimDelta(sweepWave, ROWS), expectedSampInt, tol=1e-6)
+	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(configWave))
+	CHECK_EQUAL_VAR(DimOffset(channelAD, ROWS), 0)
+	CHECK_CLOSE_VAR(DimDelta(channelAD, ROWS), expectedSampInt, tol=1e-6)
 End
 
 static Function CheckSamplingInterval3_PreAcq(device)
@@ -856,8 +860,9 @@ static Function CheckSamplingInterval3_REENTRY([str])
 	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(fixedFreqAcq, 100)
 
-	CHECK_EQUAL_VAR(DimOffset(sweepWave, ROWS), 0)
-	CHECK_CLOSE_VAR(DimDelta(sweepWave, ROWS), expectedSampInt, tol=1e-6)
+	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(configWave))
+	CHECK_EQUAL_VAR(DimOffset(channelAD, ROWS), 0)
+	CHECK_CLOSE_VAR(DimDelta(channelAD, ROWS), expectedSampInt, tol=1e-6)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1192,7 +1197,7 @@ End
 static Function HasNaNAsDefaultWhenAborted_REENTRY([str])
 	string str
 
-	variable sweepNo
+	variable sweepNo, i, numChannels, startIndexNaN
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -1200,16 +1205,23 @@ static Function HasNaNAsDefaultWhenAborted_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
 	WAVE/Z sweepWave = GetSweepWave(str, sweepNo)
-	CHECK_WAVE(sweepWave, NUMERIC_WAVE)
+	CHECK_WAVE(sweepWave, TEXT_WAVE)
 
-	FindValue/FNAN/RMD=[][0] sweepWave
-	CHECK_GE_VAR(V_row, 0)
+	WAVE config = GetConfigWave(sweepWave)
+	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(config))
+	FindValue/FNAN/RMD=[][0] channelAD
+	startIndexNaN = V_row
+	CHECK_GE_VAR(startIndexNaN, 0)
 
 	// check that we have NaNs for all columns starting from the first unacquired point
-	Duplicate/FREE/RMD=[V_row,][] sweepWave, unacquiredData
-	WaveStats/Q/M=1 unacquiredData
-	CHECK_EQUAL_VAR(V_numNans, DimSize(unacquiredData, ROWS) * DimSize(unacquiredData, COLS))
-	CHECK_EQUAL_VAR(V_npnts, 0)
+	numChannels = DimSize(sweepWave, ROWS)
+	for(i = 0; i < numChannels; i += 1)
+		WAVE channel = ResolveSweepChannel(sweepWave, i)
+		Duplicate/FREE/RMD=[startIndexNaN,] channel, unacquiredData
+		WaveStats/Q/M=1 unacquiredData
+		CHECK_EQUAL_VAR(V_numNans, DimSize(unacquiredData, ROWS))
+		CHECK_EQUAL_VAR(V_npnts, 0)
+	endfor
 End
 
 static Function UnassocChannelsDuplicatedEntry_PreAcq(device)
@@ -2280,7 +2292,7 @@ static Function RandomAcq_REENTRY([string str])
 
 	for(i = 0; i < 3; i += 1)
 		WAVE/Z sweep = GetSweepWave(str, i)
-		CHECK_WAVE(sweep, NUMERIC_WAVE)
+		CHECK_WAVE(sweep, TEXT_WAVE)
 
 		WAVE/Z DA = AFH_ExtractOneDimDataFromSweep(str, sweep, 0, XOP_CHANNEL_TYPE_DAC)
 		maxDA[i] = WaveMax(DA)

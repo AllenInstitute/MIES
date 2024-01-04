@@ -253,7 +253,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnse
 	WAVE/Z sweepWave = GetSweepWave(device, sweepNo)
 
 	if(!WaveExists(sweepWave))
-		WAVE sweepWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+		WAVE sweepWave = GetScaledDataWave(device)
 		WAVE config    = GetDAQConfigWave(device)
 	else
 		WAVE config = GetConfigWave(sweepWave)
@@ -358,9 +358,9 @@ End
 
 static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string device, variable type, STRUCT AnalysisFunction_V3 &s)
 
-	variable numBaselineChunks, i, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
+	variable numBaselineChunks, i, totalOnsetDelay, fifoInStimsetTime
 
-	numBaselineChunks = PSQ_GetNumberOfChunks(device, s.sweepNo, s.headstage, type)
+	numBaselineChunks = PSQ_GetNumberOfChunks(device, s.sweepNo, s.headstage, type, s.sampleIntervalAD)
 
 	if(type == PSQ_CHIRP)
 		ASSERT(numBaselineChunks >= 3, "Unexpected number of baseline chunks")
@@ -370,8 +370,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
-	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
-	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
+	fifoInStimsetTime  = AFH_GetFifoInStimsetTime(device, s)
 
 	for(i = 0; i < numBaselineChunks; i += 1)
 
@@ -387,7 +386,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 			// NaN: not enough data for check
 
 			// last chunk was only partially present and so can never pass
-			if(i == numBaselineChunks - 1 && s.lastKnownRowIndex == s.lastValidRowIndex)
+			if(i == numBaselineChunks - 1 && s.lastKnownRowIndexAD == s.lastValidRowIndexAD)
 				ret = PSQ_BL_FAILED
 			endif
 
@@ -853,9 +852,7 @@ End
 /// A chunk is #PSQ_BL_EVAL_RANGE [ms] of baseline.
 ///
 /// For calculating the number of chunks we ignore the one chunk after the pulse which we don't evaluate!
-static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
-	string device
-	variable type, sweepNo, headstage
+static Function PSQ_GetNumberOfChunks(string device, variable sweepNo, variable headstage, variable type, variable sampleIntervalAD)
 
 	variable length, nonBL, totalOnsetDelay
 
@@ -864,7 +861,7 @@ static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
-	length = stopCollectionPoint * DimDelta(DAQDataWave, ROWS)
+	length = stopCollectionPoint * sampleIntervalAD
 
 	switch(type)
 		case PSQ_DA_SCALE: // fallthrough-by-design
@@ -896,14 +893,16 @@ static Function PSQ_Calculate(wv, column, startTime, rangeTime, method)
 
 	variable rangePoints, startPoints
 
-	startPoints = startTime / DimDelta(wv, ROWS)
-	rangePoints = rangeTime / DimDelta(wv, ROWS)
+	WAVE channel = AFH_GetChannelFromSweepOrScaledWave(wv, column)
 
-	if(startPoints + rangePoints >= DimSize(wv, ROWS))
-		rangePoints = DimSize(wv, ROWS) - startPoints - 1
+	startPoints = trunc(startTime / DimDelta(channel, ROWS))
+	rangePoints = max(trunc(rangeTime / DimDelta(channel, ROWS)), 1)
+
+	if(startPoints + rangePoints >= DimSize(channel, ROWS))
+		rangePoints = max(trunc(DimSize(channel, ROWS) - startPoints - 1), 1)
 	endif
 
-	MatrixOP/FREE data = subWaveC(wv, startPoints, column, rangePoints)
+	MatrixOP/FREE data = subRange(channel, startPoints, startPoints + rangePoints - 1, 0, 0)
 
 	switch(method)
 		case PSQ_CALC_METHOD_AVG:
@@ -1138,14 +1137,16 @@ End
 /// - 1: RMS long baseline QC
 /// - 2: target voltage baseline QC
 /// - 3: leak current baseline QC
-Function/WAVE PSQ_CreateOverrideResults(device, headstage, type, [opMode])
-	string device
-	variable headstage, type
-	string opMode
+Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, variable type, [string opMode])
 
-	variable DAC, numCols, numRows, numLayers, numChunks
+	variable DAC, numCols, numRows, numLayers, numChunks, sampleIntervalAD, firstADChannelIndex
 	string stimset
 	string layerDimLabels = ""
+
+	WAVE config = GetDAQConfigWave(device)
+
+	firstADChannelIndex = GetFirstADCChannelIndex(config)
+	sampleIntervalAD = config[firstADChannelIndex][%SamplingInterval] * MICRO_TO_MILLI
 
 	DAC = AFH_GetDACFromHeadstage(device, headstage)
 	stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
@@ -1160,13 +1161,13 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type, [opMode])
 		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
 			numChunks = 4
-			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
+			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SpikePositionAndQC;AsyncQC"
 			break
 		case PSQ_DA_SCALE:
 			numChunks = 4
-			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
+			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SpikePosition;NumberOfSpikes;AsyncQC"
 			break
@@ -1177,13 +1178,13 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type, [opMode])
 			break
 		case PSQ_CHIRP:
 			numChunks = 4
-			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
+			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;MaxInChirp;MinInChirp;SpikeQC;AsyncQC"
 			break
 		case PSQ_PIPETTE_BATH:
 			numChunks = 4
-			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
+			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SteadyStateResistance;AsyncQC"
 			break
@@ -1213,6 +1214,7 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type, [opMode])
 	numLayers = ItemsInList(layerDimLabels, ";")
 
 	if(WaveExists(wv))
+		ASSERT(IsNumericWave(wv), "overrideResults wave must be numeric here")
 		Redimension/D/N=(numRows, numCols, numLayers, numChunks) wv
 	else
 		Make/D/N=(numRows, numCols, numLayers, numChunks) root:overrideResults/Wave=wv
@@ -1277,11 +1279,7 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 	WAVE spikeDetection = LBN_GetNumericWave()
 	spikeDetection = (p == headstage ? 0 : NaN)
 
-	if(WaveRefsEqual(sweepWave, GetDAQDataWave(device, DATA_ACQUISITION_MODE)))
-		WAVE config = GetDAQConfigWave(device)
-	else
-		WAVE config = GetConfigWave(sweepWave)
-	endif
+	WAVE config = AFH_GetConfigWave(device, sweepWave)
 
 	if(ParamIsDefault(searchEnd))
 		searchEnd = inf
@@ -1385,10 +1383,6 @@ static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, off
 			numberOfSpikesFound = numSpikesFoundOverride
 		endif
 	else
-		if(type == PSQ_RAMP || type == PSQ_CHIRP) // during midsweep
-			// use the first active AD channel
-			level *= SWS_GetChannelGains(device, timing = GAIN_AFTER_DAQ)[1]
-		endif
 
 		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
 		ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
@@ -1644,22 +1638,43 @@ Function PSQ_FoundAtLeastOneSpike(device, sweepNo)
 	return Sum(settings) > 0
 End
 
-static Function PSQ_GetDefaultSamplingFrequency(variable type)
+static Function PSQ_GetDefaultSamplingFrequency(string device, variable type)
 
-	switch(type)
-		case PSQ_CHIRP:
-		case PSQ_DA_SCALE:
-		case PSQ_RAMP:
-		case PSQ_RHEOBASE:
-		case PSQ_SQUARE_PULSE:
-			return 50
-		case PSQ_PIPETTE_BATH:
-		case PSQ_SEAL_EVALUATION:
-		case PSQ_TRUE_REST_VM:
-		case PSQ_ACC_RES_SMOKE:
-			return 200
+	switch(GetHardwareType(device))
+		case HARDWARE_ITC_DAC:
+			switch(type)
+				case PSQ_CHIRP:
+				case PSQ_DA_SCALE:
+				case PSQ_RAMP:
+				case PSQ_RHEOBASE:
+				case PSQ_SQUARE_PULSE:
+					return 50
+				case PSQ_PIPETTE_BATH:
+				case PSQ_SEAL_EVALUATION:
+				case PSQ_TRUE_REST_VM:
+				case PSQ_ACC_RES_SMOKE:
+					return 200
+				default:
+					ASSERT(0,"Unknown analysis function")
+			endswitch
+		case HARDWARE_NI_DAC:
+			switch(type)
+				case PSQ_CHIRP:
+				case PSQ_DA_SCALE:
+				case PSQ_RAMP:
+				case PSQ_RHEOBASE:
+				case PSQ_SQUARE_PULSE:
+					return 50
+				case PSQ_PIPETTE_BATH:
+				case PSQ_SEAL_EVALUATION:
+				case PSQ_TRUE_REST_VM:
+				case PSQ_ACC_RES_SMOKE:
+					return 250
+				default:
+					ASSERT(0,"Unknown analysis function")
+			endswitch
 		default:
-			ASSERT(0,"Unknown analysis function")
+			ASSERT(0,"Unknown hardware type")
 	endswitch
 End
 
@@ -1678,20 +1693,23 @@ Function PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(string device)
 End
 
 /// @brief Return the QC state of the sampling interval/frequency check and store it also in the labnotebook
-static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, variable type, struct AnalysisFunction_V3& s)
+static Function PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(string device, variable type, struct AnalysisFunction_V3& s)
+
 	variable samplingFrequency, expected, actual, samplingFrequencyPassed, defaultFreq
 	string key
 
-	defaultFreq = PSQ_GetDefaultSamplingFrequency(type)
+	defaultFreq = PSQ_GetDefaultSamplingFrequency(device, type)
 	samplingFrequency = AFH_GetAnalysisParamNumerical("SamplingFrequency", s.params, defValue = defaultFreq)
 
-	ASSERT(!cmpstr(StringByKey("XUNITS", WaveInfo(s.scaledDACWave, 0)), "ms"), "Unexpected wave x unit")
+	WAVE config = AFH_GetConfigWave(device, s.scaledDACWave)
+	WAVE channelAD = AFH_GetChannelFromSweepOrScaledWave(s.scaledDACWave, GetFirstADCChannelIndex(config))
+	ASSERT(!cmpstr(StringByKey("XUNITS", WaveInfo(channelAD, 0)), "ms"), "Unexpected wave x unit")
 
 #ifdef EVIL_KITTEN_EATING_MODE
 	actual = PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(device) * KILO_TO_ONE
 #else
 	// dimension delta [ms]
-	actual = 1.0 / (DimDelta(s.scaledDACWave, ROWS) * MILLI_TO_ONE)
+	actual = 1.0 / (s.sampleIntervalAD * MILLI_TO_ONE)
 #endif
 
 	// samplingFrequency [kHz]
@@ -1711,6 +1729,8 @@ End
 ///
 /// Not every analysis function uses every parameter though.
 static Function/S PSQ_GetHelpCommon(variable type, string name)
+
+	string freqITC, freqNI
 
 	strswitch(name)
 		case "AsyncQCChannels":
@@ -1736,7 +1756,9 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 		case "NumberOfTestpulses":
 			return "Expected number of testpulses in the stimset"
 		case "SamplingFrequency":
-			return "Required sampling frequency for the acquired data [kHz]. Defaults to " + num2str(PSQ_GetDefaultSamplingFrequency(type)) + "."
+			freqITC = num2str(PSQ_GetDefaultSamplingFrequency("ITC16", type))
+			freqNI = num2str(PSQ_GetDefaultSamplingFrequency("Dev1", type))
+			return "Required sampling frequency for the acquired data [kHz]. Defaults to ITC:" + freqITC + " NI:" + freqNI + "."
 		case "SamplingMultiplier":
 			return "Sampling multiplier, use 1 for no multiplier"
 		default:
@@ -2194,7 +2216,7 @@ Function PSQ_DAScale(device, s)
 			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			ASSERT(WaveExists(baselineQCPassedLBN), "Expected BL QC passed LBN entry")
 
-			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_DA_SCALE, s)
+			samplingFrequencyPassed = PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(device, PSQ_DA_SCALE, s)
 
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_DA_SCALE, s.sweepNo, asyncChannels)
@@ -2601,7 +2623,7 @@ Function PSQ_SquarePulse(device, s)
 			WAVE DAScalesLBN = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 			DAScale = DAScalesLBN[s.headstage] * PICO_TO_ONE
 
-			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_SQUARE_PULSE, s)
+			samplingFrequencyPassed = PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(device, PSQ_SQUARE_PULSE, s)
 
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_SQUARE_PULSE, s.sweepNo, asyncChannels)
@@ -2910,7 +2932,7 @@ Function PSQ_Rheobase(device, s)
 			stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			PSQ_StoreStepSizeInLBN(device, PSQ_RHEOBASE, s.sweepNo, stepSize)
 
-			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_RHEOBASE, s)
+			samplingFrequencyPassed = PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(device, PSQ_RHEOBASE, s)
 
 			key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQCPassedWave = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
@@ -3235,7 +3257,7 @@ Function PSQ_Ramp(device, s)
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
 	variable baselineQCPassed, finalDAScale, initialDAScale, samplingFrequencyPassed
-	variable lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
+	variable lastFifoPos, totalOnsetDelay, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, asyncAlarmPassed
 	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, enoughSpikesFound
 	variable pulseStart, pulseDuration, fifoPos, fifoOffset, numberOfSpikes, multiplier, chunk
@@ -3328,7 +3350,7 @@ Function PSQ_Ramp(device, s)
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE baselinePassed = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 
-			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_RAMP, s)
+			samplingFrequencyPassed = PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(device, PSQ_RAMP, s)
 
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_RAMP, s.sweepNo, asyncChannels)
@@ -3389,8 +3411,7 @@ Function PSQ_Ramp(device, s)
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 
-	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
-	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
+	fifoInStimsetTime  = AFH_GetFifoInStimsetTime(device, s)
 
 	WAVE durations = PSQ_GetPulseDurations(device, PSQ_RAMP, s.sweepNo, totalOnsetDelay)
 	pulseStart     = PSQ_BL_EVAL_RANGE
@@ -3400,7 +3421,7 @@ Function PSQ_Ramp(device, s)
 																	// and we are after the pulse onset
 
 		Make/FREE/D spikePos
-		WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_RAMP, s.rawDACWave, s.headstage, \
+		WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_RAMP, s.scaledDACWave, s.headstage, \
 		                                          totalOnsetDelay, PSQ_SPIKE_LEVEL, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes)
 
 		if(spikeDetection[s.headstage] \
@@ -3418,6 +3439,8 @@ Function PSQ_Ramp(device, s)
 
 			NVAR deviceID = $GetDAQDeviceID(device)
 			NVAR ADChannelToMonitor = $GetADChannelToMonitor(device)
+			WAVE daqDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+			WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
 
 			hardwareType = GetHardwareType(device)
 			if(hardwareType == HARDWARE_ITC_DAC)
@@ -3431,16 +3454,12 @@ Function PSQ_Ramp(device, s)
 				HW_StopAcq(HARDWARE_ITC_DAC, deviceID)
 				HW_ITC_PrepareAcq(deviceID, DATA_ACQUISITION_MODE, offset=fifoOffset)
 
-				WAVE wv = s.rawDACWave
-
 				sprintf msg, "DA black out: [%g, %g]\r", fifoOffset, inf
 				DEBUGPRINT(msg)
 
-				SetWaveLock 0, wv
-				Multithread wv[fifoOffset, inf][0, ADChannelToMonitor - 1] = 0
-				SetWaveLock 1, wv
+				Multithread daqDataWave[fifoOffset, inf][0, ADChannelToMonitor - 1] = 0
 
-				PSQ_Ramp_AddEpoch(device, s.headstage, wv, "Name=DA Suppression", "RA_DS", fifoOffset, DimSize(wv, ROWS) - 1)
+				PSQ_Ramp_AddEpoch(device, s.headstage, daqDataWave, "Name=DA Suppression", "RA_DS", fifoOffset, DimSize(daqDataWave, ROWS) - 1)
 
 				HW_StartAcq(HARDWARE_ITC_DAC, deviceID)
 				TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, deviceID)
@@ -3464,11 +3483,19 @@ Function PSQ_Ramp(device, s)
 				sprintf msg, "AD black out: [%g, %g]\r", fifoOffset, (fifoOffset + fifoPos)
 				DEBUGPRINT(msg)
 
-				SetWaveLock 0, wv
-				Multithread wv[fifoOffset, fifoOffset + fifoPos][ADChannelToMonitor, inf] = 0
-				SetWaveLock 1, wv
+				Multithread daqDataWave[fifoOffset, fifoOffset + fifoPos][ADChannelToMonitor, inf] = 0
 
-				PSQ_Ramp_AddEpoch(device, s.headstage, wv, "Name=Unacquired DA data", "RA_UD", fifoOffset, fifoOffset + fifoPos)
+				// only need to adapt DA in scaledDataWave, AD channels will be updated by SCOPE_ITC_UpdateOscilloscope
+				// as soon as it gets a higher fifoPos, because it will copy from the last known fifoPos to the current from
+				// daqDataWave to scaledDataWave
+				WAVE scaledChannelDA = scaledDataWave[0]
+				if(fifoOffset < DimSize(scaledChannelDA, ROWS))
+					ChangeWaveLock(scaledChannelDA, 0)
+					MultiThread scaledChannelDA[fifoOffset,] = 0
+					ChangeWaveLock(scaledChannelDA, 1)
+				endif
+
+				PSQ_Ramp_AddEpoch(device, s.headstage, daqDataWave, "Name=Unacquired DA data", "RA_UD", fifoOffset, fifoOffset + fifoPos)
 
 			elseif(hardwareType == HARDWARE_NI_DAC)
 				// DA output runs on the AD tasks clock source ai
@@ -3482,13 +3509,16 @@ Function PSQ_Ramp(device, s)
 
 				DoXOPIdle
 				FIFOStatus/Q $fifoName
-				WAVE/WAVE NIDataWave = s.rawDACWave
+				WAVE/WAVE NIDataWave = daqDataWave
+				WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
 				// As only one AD and DA channel is allowed for this function, at index 0 the setting for first DA channel are expected
 				WAVE NIChannel = NIDataWave[0]
+				WAVE scaledChannelDA = scaledDataWave[0]
 				if(V_FIFOChunks < DimSize(NIChannel, ROWS))
-					SetWaveLock 0, NIChannel
 					MultiThread NIChannel[V_FIFOChunks,] = 0
-					SetWaveLock 1, NIChannel
+					ChangeWaveLock(scaledChannelDA, 0)
+					MultiThread scaledChannelDA[V_FIFOChunks,] = 0
+					ChangeWaveLock(scaledChannelDA, 1)
 
 					PSQ_Ramp_AddEpoch(device, s.headstage, NIChannel, "Name=DA suppression", "RA_DS", V_FIFOChunks, DimSize(NIChannel, ROWS) - 1)
 				endif
@@ -4361,7 +4391,7 @@ Function PSQ_Chirp(device, s)
 			WAVE/Z spikeCheckPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			spikeCheckPassed = WaveExists(spikeCheckPassedLBN) ? spikeCheckPassedLBN[s.headstage] : 0
 
-			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_CHIRP, s)
+			samplingFrequencyPassed = PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(device, PSQ_CHIRP, s)
 
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_CHIRP, s.sweepNo, asyncChannels)
@@ -4461,7 +4491,7 @@ Function PSQ_Chirp(device, s)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	fifoTime = s.lastKnownRowIndex * DimDelta(s.rawDACWAVE, ROWS)
+	fifoTime = s.lastKnownRowIndexAD * s.sampleIntervalAD
 
 	spikeCheck = !!AFH_GetAnalysisParamNumerical("SpikeCheck", s.params, defValue = PSQ_CR_SPIKE_CHECK_DEFAULT)
 
@@ -4506,7 +4536,7 @@ Function PSQ_Chirp(device, s)
 		if(fifoTime > chirpStart)
 			level = AFH_GetAnalysisParamNumerical("FailedLevel", s.params)
 
-			WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_CHIRP, s.rawDACWave, s.headstage, chirpStart, level, searchEnd = chirpEnd, \
+			WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_CHIRP, s.scaledDACWave, s.headstage, chirpStart, level, searchEnd = chirpEnd, \
 			                                          numberOfSpikesFound = numberOfSpikesFound, numberOfSpikesReq = inf)
 			WaveClear spikeDetection
 
@@ -4977,7 +5007,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE_PASS)
 			ED_AddEntryToLabnotebook(device, key, pipetteResistanceQC, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
-			samplingFrequencyQCPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_PIPETTE_BATH, s)
+			samplingFrequencyQCPassed = PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(device, PSQ_PIPETTE_BATH, s)
 
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_PIPETTE_BATH, s.sweepNo, asyncChannels)
@@ -5550,7 +5580,7 @@ Function PSQ_SealEvaluation(string device, struct AnalysisFunction_V3& s)
 			key = CreateAnaFuncLBNKey(PSQ_SEAL_EVALUATION, PSQ_FMT_LBN_SE_RESISTANCE_PASS)
 			ED_AddEntryToLabnotebook(device, key, sealResistanceQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
 
-			samplingFrequencyQCPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_SEAL_EVALUATION, s)
+			samplingFrequencyQCPassed = PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(device, PSQ_SEAL_EVALUATION, s)
 
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_SEAL_EVALUATION, s.sweepNo, asyncChannels)
@@ -5911,7 +5941,7 @@ Function PSQ_TrueRestingMembranePotential(string device, struct AnalysisFunction
 
 			averageVoltageQCPassed = PSQ_VM_EvaluateAverageVoltage(device, s.sweepNo, s.headstage, s.params, baselineQCPassed)
 
-			samplingFrequencyQCPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_TRUE_REST_VM, s)
+			samplingFrequencyQCPassed = PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(device, PSQ_TRUE_REST_VM, s)
 
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_TRUE_REST_VM, s.sweepNo, asyncChannels)
@@ -6590,7 +6620,7 @@ Function PSQ_AccessResistanceSmoke(string device, struct AnalysisFunction_V3& s)
 			key = CreateAnaFuncLBNKey(PSQ_ACC_RES_SMOKE, PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS)
 			ED_AddEntryToLabnotebook(device, key, resistanceRatioQCLBN, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
-			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_ACC_RES_SMOKE, s)
+			samplingFrequencyPassed = PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(device, PSQ_ACC_RES_SMOKE, s)
 
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_ACC_RES_SMOKE, s.sweepNo, asyncChannels)

@@ -537,7 +537,7 @@ Function/WAVE FakeSweepDataGeneratorDefault(WAVE sweep, variable numChannels)
 	return sweep
 End
 
-Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCREF FakeSweepDataGeneratorProto sweepGen])
+Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCREF FakeSweepDataGeneratorProto sweepGen])
 
 	string list, key, keyTxt
 	variable numChannels, hwType
@@ -551,6 +551,7 @@ Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCR
 
 	[key, keyTxt] = PrepareLBN_IGNORE(device)
 
+	// Use old 2D data format as sweep template and rely on sweep splitting for upconversion
 	WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 	WAVE config = GetDAQConfigWave(device)
 	hwType = GetHardwareType(device)
@@ -605,18 +606,23 @@ Function CreateFakeSweepData(string win, string device, [variable sweepNo, FUNCR
 		default:
 			INFO("Unsupported sweep number in test setup")
 			FAIL()
-			return NaN
+			return ""
 	endswitch
 
 	DFREF dfr = GetDeviceDataPath(device)
 	MoveWave sweep, dfr:$GetSweepWaveName(sweepNo)
 	MoveWave config, dfr:$GetConfigWaveName(sweepNo)
-	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo)
+
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
+	win = GetCurrentWindow()
+	REQUIRE_EQUAL_VAR(MIES_DB#DB_SplitSweepsIfReq(win, sweepNo), 0)
 
 	list = GetAllDevicesWithContent()
 	list = RemoveEnding(list, ";")
 	CHECK_EQUAL_VAR(ItemsInList(list), 1)
 	CHECK_EQUAL_STR(list, device)
+
+	return win
 End
 
 Function/S GetDataBrowserWithData()
@@ -626,7 +632,6 @@ Function/S GetDataBrowserWithData()
 
 	win = DB_OpenDataBrowser()
 	CreateFakeSweepData(win, device)
-	PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
 	win = GetCurrentWindow()
 
 	result = BSP_GetDevice(win)
@@ -992,4 +997,10 @@ Function GetWaveTrackingMode()
 	endif
 
 	return UTF_WAVE_TRACKING_NONE
+End
+
+Function ResetOverrideResults()
+
+	KillOrMoveToTrash(wv=root:overrideResults)
+	Make/N=0 root:overrideResults
 End

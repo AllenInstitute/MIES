@@ -29,8 +29,7 @@ static Function GlobalPreInit(string device)
 	PrepareForPublishTest()
 
 	// Ensure that PSQ_DS_GetDAScaleOffset already sees the test override as enabled
-	Make/O/N=(0) root:overrideResults/Wave=overrideResults
-	Note/K overrideResults
+	ResetOverrideResults()
 End
 
 static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])

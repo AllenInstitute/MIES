@@ -1571,7 +1571,7 @@ End
 ///
 /// @param dfr 	    datafolder reference where the new datafolder should be created
 /// @param baseName first part of the wave name, might be shorted due to Igor Pro limitations
-Function/S UniqueWaveName(dfr, baseName)
+threadsafe Function/S UniqueWaveName(dfr, baseName)
 	dfref dfr
 	string baseName
 
@@ -1579,8 +1579,8 @@ Function/S UniqueWaveName(dfr, baseName)
 	string name
 	string path
 
-	ASSERT(!isEmpty(baseName), "baseName must not be empty" )
-	ASSERT(DataFolderExistsDFR(dfr), "dfr does not exist")
+	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 
 	// shorten basename so that we can attach some numbers
 	baseName = CleanupName(baseName[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 5], 0)
@@ -1597,7 +1597,7 @@ Function/S UniqueWaveName(dfr, baseName)
 		index += 1
 	while(index < 10000)
 
-	DEBUGPRINT("Could not find a unique folder with 10000 trials")
+	DEBUGPRINT_TS("Could not find a unique folder with 10000 trials")
 
 	return ""
 End

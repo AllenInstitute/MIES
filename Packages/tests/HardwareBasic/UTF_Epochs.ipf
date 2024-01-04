@@ -310,7 +310,7 @@ End
 static Function TestEpochsGeneric(string device)
 
 	variable numEntries, endTimeDAC, endTimeEpochs, samplingInterval, hwType
-	variable i, lastPoint, channelType, channelNumber, index, hwChannelNumber, first, last, ttlBit
+	variable i, lastPointDA, channelType, channelNumber, index, hwChannelNumber, first, last, ttlBit
 	string setName, sweepChannelName
 
 	string sweeps, configs
@@ -325,19 +325,22 @@ static Function TestEpochsGeneric(string device)
 	CHECK_EQUAL_VAR(ItemsInList(sweeps), 1)
 	CHECK_EQUAL_VAR(ItemsInList(configs), 1)
 	WAVE/Z sweep  = $StringFromList(0, sweeps)
-	CHECK_WAVE(sweep, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+	CHECK_WAVE(sweep, TEXT_WAVE)
+	CHECK_GT_VAR(DimSize(sweep, ROWS), 1)
+	WAVE channelDA = ResolveSweepChannel(sweep, 0)
+	CHECK_WAVE(channelDA, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	sweepNo = ExtractSweepNumber(NameOfWave(sweep))
 	CHECK_GE_VAR(sweepNo, 0)
 
 	WAVE/Z config = $StringFromList(0, configs)
 	CHECK_WAVE(config, NUMERIC_WAVE)
-	CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
+	CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, ROWS))
 
 	WAVE/T textualValues   = GetLBTextualValues(device)
 	WAVE   numericalValues = GetLBNumericalValues(device)
 
 	DFREF dfr = UniqueDataFolder(GetDataFolderDFR(), "epochTestSweepChannels")
-	SplitSweepIntoComponents(numericalValues, sweepNo, sweep, config, TTL_RESCALE_ON, targetDFR = dfr)
+	SplitAndUpgradeSweep(numericalValues, sweepNo, sweep, config, TTL_RESCALE_ON, 1, targetDFR = dfr)
 
 	// basic check of internal epoch wave
 	WAVE/T epochs = GetEpochsWave(device)
@@ -350,8 +353,8 @@ static Function TestEpochsGeneric(string device)
 	CHECK_WAVE(samplInt, NUMERIC_WAVE)
 	samplingInterval = samplInt[INDEP_HEADSTAGE] * MICRO_TO_MILLI
 
-	lastPoint = DimSize(sweep, ROWS)
-	endTimeDAC = samplingInterval * lastPoint
+	lastPointDA = DimSize(channelDA, ROWS)
+	endTimeDAC = samplingInterval * lastPointDA
 
 	WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	WAVE/T setNameLBEntries = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
@@ -421,11 +424,11 @@ static Function TestEpochsGeneric(string device)
 
 			TestEpochsMonotony(epochChannel, sweepChannel)
 
-			TestUnacquiredEpoch(sweep, epochChannel)
+			TestUnacquiredEpoch(sweepChannel, epochChannel)
 
 			TestNaming(epochChannel)
 
-			TestTrigonometricEpochs(sweep, epochChannel, sweepChannel)
+			TestTrigonometricEpochs(epochChannel, sweepChannel)
 
 			chanMarker[channelNumber][channelType] = 1
 		endfor
@@ -485,7 +488,7 @@ static Function TestNaming(WAVE/T epochChannel)
 	CHECK_EQUAL_WAVES(shortnames, uniqueShortNames)
 End
 
-static Function TestTrigonometricEpochs(WAVE sweep, WAVE/T epochChannel, WAVE DAchannel)
+static Function TestTrigonometricEpochs(WAVE/T epochChannel, WAVE DAchannel)
 	variable numRows, i, num, epochBegin, epochEnd
 	string shortname, epochType, levelTwoType, levelTwoNumber, levelThreeType, levelThreeNumber, refEpochType
 

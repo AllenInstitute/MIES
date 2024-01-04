@@ -5,7 +5,10 @@
 
 Function [string browser, string device, string formulaGraph] CreateFakeDataBrowserWithSweepFormulaGraph()
 
-	[browser, device] = CreateFakeDataBrowserWindow()
+	[browser, device] = CreateEmptyUnlockedDataBrowserWindow()
+	GetDeviceDataPath(device)
+	browser = MIES_DB#DB_LockToDevice(browser, device)
+
 	formulaGraph = GetSweepFormulaGraph()
 
 	SetWindow $formulaGraph, userData($SFH_USER_DATA_BROWSER)=browser
@@ -1004,10 +1007,10 @@ static Function TestOperationPSXKernel()
 	string win, device, str, expected, actual
 	variable jsonID
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSXKernel)
-	CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSXKernel)
+	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSXKernel)
+	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSXKernel)
 
 	str = "psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
@@ -1092,10 +1095,10 @@ static Function TestOperationPSX()
 	// all decay fits are successfull
 	overrideResults[][][%$"Fit Result"] = 1
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
-	CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
+	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
+	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
 
 	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 2.5, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
@@ -1154,10 +1157,10 @@ static Function TestOperationPSXTooLargeDecayTau()
 	overrideResults[][][%$"Fit Result"] = 1
 	overrideResults[][][%Tau] = 1000
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
-	CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
+	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
+	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
 
 	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0], all), 1, 15, (-5)), 1.5, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
@@ -1257,8 +1260,8 @@ static Function MouseSelectionPSX()
 	browser = DB_OpenDataBrowser()
 	device  = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 
-	CreateFakeSweepData(browser, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
-	CreateFakeSweepData(browser, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
+	browser = CreateFakeSweepData(browser, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
+	browser = CreateFakeSweepData(browser, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
 
 	browser = MIES_DB#DB_LockToDevice(browser, device)
 
@@ -1268,7 +1271,7 @@ static Function MouseSelectionPSX()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	psxPlot = "SweepFormula_plotDatabrowser_#Graph0"
+	psxPlot = "SweepFormula_plotDatabrowser_1_#Graph0"
 	REQUIRE(WindowExists(psxPlot))
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxPlot)
@@ -1368,19 +1371,20 @@ static Function/S SetupDatabrowserWithSomeData()
 
 	string browser, device
 
-	browser = DB_OpenDataBrowser()
-	device  = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+	[browser, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	CreateFakeSweepData(browser, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
-	CreateFakeSweepData(browser, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
+	browser = CreateFakeSweepData(browser, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
+	browser = CreateFakeSweepData(browser, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
 
 	// adjust x-position of sweep 2
 	// so sweep 0 has two events and sweep 2 only one but with a different x position
 	WAVE/Z sweepWave = GetSweepWave(device, 2)
-	CHECK_WAVE(sweepWave, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
-	SetScale/P x, 25, DimDelta(sweepWave, ROWS), sweepWave
+	CHECK_WAVE(sweepWave, TEXT_WAVE)
 
-	browser = MIES_DB#DB_LockToDevice(browser, device)
+	Make/WAVE/N=(DimSize(sweepWave, ROWS)) input = ResolveSweepChannel(sweepWave, p)
+	for(WAVE wv : input)
+		SetScale/P x, 25, DimDelta(wv, ROWS), wv
+	endfor
 
 	return browser
 End
@@ -1401,7 +1405,7 @@ End
 /// UTF_TD_GENERATOR s0:SupportedPostProcForEventSelection
 static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 
-	string browser, code, psxStatsGraph, postProc
+	string win, browser, code, psxGraph, psxStatsGraph, postProc
 	variable numEvents, logMode
 
 	postProc = m.s0
@@ -1415,8 +1419,9 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
-	REQUIRE(WindowExists(psxStatsGraph))
+	win = SFH_GetFormulaGraphForBrowser(browser)
+	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	ModifyGraph/W=$psxStatsGraph log(left)=logMode
 
@@ -1505,7 +1510,7 @@ static Function MouseSelectionStatsPostProcNonFinite()
 	win = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
 	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
-	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
 
@@ -1914,8 +1919,8 @@ static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
 	win = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
-	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
 	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxGraph))
 
@@ -2008,7 +2013,7 @@ static Function CursorMovementStats()
 	win = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
 	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
-	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
 
@@ -2068,7 +2073,7 @@ static Function KeyboardInteractions()
 	win = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
 	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
-	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
 
@@ -2282,7 +2287,7 @@ static Function KeyboardInteractionsStats()
 	win = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
 	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
-	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
 
@@ -2509,6 +2514,7 @@ static Function KeyboardInteractionsStatsSpecial()
 	win = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
 	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	SetActiveSubwindow $psxGraph
 
@@ -2519,7 +2525,7 @@ static Function KeyboardInteractionsStatsSpecial()
 	// replot so that stats now has data
 	ExecuteSweepFormulaCode(browser, code)
 
-	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
 
@@ -2580,7 +2586,7 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	win = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
 	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
-	psxStatsGraph = "SweepFormula_plotDatabrowser_#Graph1"
+	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
 
@@ -2845,10 +2851,10 @@ End
 
 static Function TestOperationRiseTime()
 
-	string win, device, str
+	string win, str
 	variable lowerThreshold, upperThreshold
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = SetupDatabrowserWithSomeData()
 
 	str = "psxRiseTime()"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
@@ -2890,9 +2896,9 @@ static Function TestOperationPrep()
 
 	string win, device, code, psxCode
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
+	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
 
 	psxCode = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 2.5, 100, 0)"
 	sprintf code, "psxPrep(%s)", psxCode
@@ -3061,10 +3067,10 @@ End
 
 static Function TestOperationDeconvFilter()
 
-	string win, device, str
+	string win, str
 	variable filterLow, filterHigh, filterOrder
 
-	[win, device] = CreateFakeDataBrowserWindow()
+	win = SetupDatabrowserWithSomeData()
 
 	str = "psxDeconvFilter()"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)

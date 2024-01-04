@@ -57,7 +57,7 @@ static Function AllTests(t, devices)
 	string devices
 
 	string sweeps, configs, stimset, foundStimSet, device, unit
-	variable i, j, sweepNo, numEntries
+	variable i, j, k, sweepNo, numEntries, numChannels
 
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
@@ -76,24 +76,32 @@ static Function AllTests(t, devices)
 
 		for(j = 0; j < t.numSweeps; j += 1)
 			WAVE/Z sweep  = $StringFromList(j, sweeps)
-			CHECK_WAVE(sweep, NUMERIC_WAVE, minorType = t.sweepWaveType)
-
-			WaveStats/M=1/Q sweep
-			CHECK_EQUAL_VAR(V_numNaNs, 0)
-			CHECK_EQUAL_VAR(V_numInfs, 0)
+			CHECK_WAVE(sweep, TEXT_WAVE)
 
 			WAVE/Z config = $StringFromList(j, configs)
 			CHECK_WAVE(config, NUMERIC_WAVE)
-
-			CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
+			CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, ROWS))
 
 			CHECK_EQUAL_VAR(DimSize(config, ROWS), 4)
 
+			numChannels = DimSize(config, ROWS)
+
+			for(k = 0; k < numChannels; k += 1)
+
+				WAVE channel = ResolveSweepChannel(sweep, k)
+				WaveStats/M=1/Q channel
+				if(config[k][%ChannelType] == XOP_CHANNEL_TYPE_ADC)
+					CHECK_EQUAL_VAR(V_numNaNs, 0)
+				endif
+				CHECK_EQUAL_VAR(V_numInfs, 0)
+				CHECK_WAVE(channel, NUMERIC_WAVE, minorType = t.sweepWaveType)
+			endfor
+
 			// check channel types
-			CHECK_EQUAL_VAR(config[0][0], XOP_CHANNEL_TYPE_DAC)
-			CHECK_EQUAL_VAR(config[1][0], XOP_CHANNEL_TYPE_DAC)
-			CHECK_EQUAL_VAR(config[2][0], XOP_CHANNEL_TYPE_ADC)
-			CHECK_EQUAL_VAR(config[3][0], XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[0][%ChannelType], XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[1][%ChannelType], XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[2][%ChannelType], XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[3][%ChannelType], XOP_CHANNEL_TYPE_ADC)
 
 			// check channel numbers
 			WAVE DACs = GetDACListFromConfig(config)
