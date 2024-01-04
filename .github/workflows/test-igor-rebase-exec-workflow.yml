@@ -1,0 +1,107 @@
+name: Test Rebase Exec Igor Workflow
+run-name: Test Rebase Exec Igor Workflow
+env:
+  # if this environment variable is set it will use the igor version from
+  # C:\Program Files\WaveMetrics\Igor Pro 9 Folder\IgorBinaries_x64_${CI_IGOR_REVISION}
+  CI_IGOR_REVISION: "r56565"
+on:
+  workflow_call:
+    inputs:
+      job_name:
+        required: false
+        type: string
+        default: Run
+        description: The name of the main job
+      overwrite_job_name:
+        required: false
+        type: boolean
+        default: false
+        description: |
+          If set to true it will replace the name of the main job with the content of job_name
+      experiment:
+        required: true
+        type: string
+        description: The path to the Igor experiment file
+      target:
+        required: false
+        default: "['self-hosted', 'Windows', 'IgorPro']"
+        type: string
+        description: A JSON string with the tags for the target runner
+      installer_artifact_name:
+        required: false
+        default: BuildInstaller-dev-assets
+        type: string
+        description: The name of the artifact that holds the installer
+      installer_flags:
+        required: false
+        default: "-s installer"
+        type: string
+        description: The flags that should be used for the installer
+      artifact_name:
+        required: true
+        type: string
+        description: The name of the artifact that will be uploaded
+      expensive_checks:
+        required: false
+        default: "0"
+        type: string
+        description: Sets environment variable CI_EXPENSIVE_CHECKS
+      instrument_tests:
+        required: false
+        default: "0"
+        type: string
+        description: Sets environment variable CI_INSTRUMENT_TESTS
+      timeout_minutes:
+        required: false
+        default: 360
+        type: number
+        description: Defines the job timeout in minutes
+defaults:
+  run:
+    shell: bash
+jobs:
+
+  Test:
+    name: ${{ inputs.overwrite_job_name && inputs.job_name || 'Run' }}
+    runs-on: ${{ fromJson(inputs.target) }}
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+    env:
+      CI_EXPENSIVE_CHECKS: ${{ inputs.expensive_checks }}
+      CI_INSTRUMENT_TESTS: ${{ inputs.instrument_tests }}
+      CI_SKIP_COMPILATION_TEST_DEFINES: "1"
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Initial repo config
+        run: tools/initial-repo-config.sh
+      - name: Fetch latest changes for main
+        run: git fetch origin main
+      - name: Fetch latest changes of branch
+        run: git fetch origin $GITHUB_HEAD_REF
+      - name: Checking out branch
+        run: git checkout -B $GITHUB_HEAD_REF origin/$GITHUB_HEAD_REF
+      - name: List of commits to operate on
+        run: git log --pretty=ref origin/main..
+      - name: Cleanup earlier rebase invocations
+        run: git rebase --abort 2>/dev/null || true
+      - name: Compile check each commit with ${{ inputs.experiment }}
+        run: |
+             git rebase --exec "git log --pretty=ref -n1"                                                \
+                        --exec "tools/clean_mies_installation.sh ${{ inputs.installer_flags }}"          \
+                        --exec "tools/autorun-test.sh -p ${{ inputs.experiment }} -v IP_9_64" origin/main
+      - name: Gather log files and crash dumps
+        if: always()
+        run: tools/gather-logfiles-and-crashdumps.sh
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: |
+            Packages/tests/**/JU_*.xml
+            Packages/tests/**/*.log
+            Diagnostics
+            **/*.jsonl
+          if-no-files-found: error

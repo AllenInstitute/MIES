@@ -20,6 +20,21 @@ static Function SetDimensionLabelsFromWaveContents(WAVE/T wv)
 	endfor
 End
 
+// Read the environment variable `key` as number and if present, return 1 for
+// all finite values not equal to 0 and 0 otherwise. Return `NaN` in all other
+// cases.
+static Function GetEnvironmentVariableAsBoolean(string key)
+	variable value, err
+
+	value = str2num(GetEnvironmentVariable(key)); err = GetRTError(-1)
+
+	if(numtype(value) == 0)
+		return !!value
+	endif
+
+	return NaN
+End
+
 Function/WAVE GetIncludes()
 	// keep sorted
 	Make/FREE/T includes = {"MIES_Include",                  \
@@ -34,6 +49,12 @@ Function/WAVE GetIncludes()
 End
 
 Function/WAVE GetDefines()
+
+	if(GetEnvironmentVariableAsBoolean("CI_SKIP_COMPILATION_TEST_DEFINES"))
+		Make/FREE/T/N=1 defines
+		return defines
+	endif
+
 	// keep sorted
 	Make/FREE/T defines = {"AUTOMATED_TESTING",            \
 	                       "AUTOMATED_TESTING_DEBUGGING",  \
@@ -56,5 +77,9 @@ End
 /// UTF_TD_GENERATOR s1:GetDefines
 Function TestCompilation([STRUCT IUTF_mData & md])
 
-	CHECK_COMPILATION(md.s0, defines = {md.s1})
+	if(strlen(md.s1) > 0)
+		CHECK_COMPILATION(md.s0, defines = {md.s1})
+	else
+		CHECK_COMPILATION(md.s0)
+	endif
 End
