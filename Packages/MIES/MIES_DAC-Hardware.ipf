@@ -94,7 +94,9 @@ static Constant HW_ITC_RUNNING_STATE = 0x10
 static Constant HW_ITC_MAX_TIMEOUT   = 10
 static Constant HW_ITC_DSP_TIMEOUT   = 0x80303001
 
-static Constant SUTTER_CHANNELOFFSET_TTL = 3
+static Constant SUTTER_CHANNELOFFSET_TTL      = 3
+static Constant SUTTER_ACQUISITION_FOREGROUND = 1
+static Constant SUTTER_ACQUISITION_BACKGROUND = 2
 
 /// @name Wrapper functions redirecting to the correct internal implementations depending on #HARDWARE_DAC_TYPES
 /// @{
@@ -242,7 +244,8 @@ Function HW_WriteDAC(hardwareType, deviceID, channel, value, [flags])
 			HW_NI_WriteAnalogSingleAndSlow(realDeviceOrPressure, channel, value, flags = flags)
 			break
 		case HARDWARE_SUTTER_DAC:
-			ASSERT(0, "Not yet implemented")
+			HW_SU_WriteDAC(deviceID, channel, value, flags = flags)
+			break
 	endswitch
 End
 
@@ -271,7 +274,8 @@ Function HW_ReadADC(hardwareType, deviceID, channel, [flags])
 			return HW_NI_ReadAnalogSingleAndSlow(realDeviceOrPressure, channel, flags = flags)
 			break
 		case HARDWARE_SUTTER_DAC:
-			ASSERT(0, "Not yet implemented")
+			return HW_SU_ReadADC(deviceID, channel, flags = flags)
+			break
 	endswitch
 End
 
@@ -3401,15 +3405,14 @@ Function HW_SU_StopAcq(variable deviceID, [variable zeroDAC, variable flags])
 
 	SutterDAQReset()
 
-	if(zeroDAC)
-		DEBUGPRINTSTACKINFO()
-		// @TODO zero the DAC maybe through RHP ?
-		//		HW_SU_ZeroDAC(flags=flags)
-	endif
-
 	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 	NVAR acq = $GetSU_IsAcquisitionRunning(device)
 	acq = 0
+
+	if(zeroDAC)
+		DEBUGPRINTSTACKINFO()
+		HW_SU_ZeroDAC(deviceID, flags = flags)
+	endif
 End
 
 /// @brief Prepare for data acquisition
@@ -3598,16 +3601,158 @@ Function HW_SU_StartAcq(variable deviceId, [variable flags])
 	WAVE/T output      = GetSUDeviceOutput(device)
 	WAVE/T input       = GetSUDeviceInput(device)
 	WAVE   hwGainTable = GetSUDeviceInputGains(device)
-	sprintf cmdDone, "HW_SU_AcqDone(\"%s\")", device
-	sprintf cmdError, "HW_SU_AcqError(\"%s\")", device
+	HW_SU_AcquireImpl(device, input, output, hwGainTable, SUTTER_ACQUISITION_BACKGROUND)
+End
+
+Function HW_SU_ZeroDAC(variable deviceID, [variable flags])
+
+	string device, encodeInfo
+	variable i, outIndex, channels, channelNumber, headStage, outChannel, inChannel, unassocDACIndex
+
+	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+	WAVE   config    = GetDAQConfigWave(device)
+	WAVE/T input     = GetSUDeviceInput(device)
+	WAVE/T output    = GetSUDeviceOutput(device)
+	WAVE   channelDA = GetSutterSingleSampleDACOutputWave(device)
+	WAVE   channelAD = GetSutterSingleSampleADCInputWave(device)
+	channelDA = 0
+
+	channels = DimSize(config, ROWS)
+	for(i = 0; i < channels; i += 1)
+
+		channelNumber = config[i][%ChannelNumber]
+		headstage     = config[i][%HEADSTAGE]
+		if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC)
+			EnsureLargeEnoughWave(output, indexShouldExist = outIndex)
+			output[outIndex][%OUTPUTWAVE] = GetWavesDataFolder(channelDA, 2)
+			if(IsNaN(headStage))
+				// unassoc DAC
+				[outChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocDAC(unassocDACIndex)
+				unassocDACIndex += 1
+			else
+				[outChannel, encodeInfo] = HW_SU_GetEncodeFromHS(headstage)
+			endif
+			output[outIndex][%CHANNEL]    = num2istr(outChannel)
+			output[outIndex][%ENCODEINFO] = encodeInfo
+			outIndex                     += 1
+		endif
+	endfor
+	Redimension/N=(outIndex, -1) output
+
+	// we need to run some input as well to have the command hook from SutterDAQScanWave
+	Redimension/N=(1, -1) input
+	input[0][%INPUTWAVE] = GetWavesDataFolder(channelAD, 2)
+	[inChannel, encodeInfo] = HW_SU_GetEncodeFromHS(0)
+	inChannel            *= 2
+	input[0][%CHANNEL]    = num2istr(inChannel)
+	input[0][%ENCODEINFO] = encodeInfo
+
+	HW_SU_AcquireImpl(device, input, output, $"", SUTTER_ACQUISITION_FOREGROUND, timeout = 1)
+End
+
+Function HW_SU_ReadADC(variable deviceID, variable channel, [variable flags])
+
+	string device, encodeInfo
+	variable inChannel
+
+	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+	WAVE   config    = GetDAQConfigWave(device)
+	WAVE/T input     = GetSUDeviceInput(device)
+	WAVE   channelAD = GetSutterSingleSampleADCInputWave(device)
+
+	Redimension/N=(1, -1) input
+	input[0][%INPUTWAVE] = GetWavesDataFolder(channelAD, 2)
+	[inChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocADC(channel)
+	input[0][%CHANNEL]    = num2istr(inChannel)
+	input[0][%ENCODEINFO] = encodeInfo
+
+	HW_SU_AcquireImpl(device, input, $"", $"", SUTTER_ACQUISITION_FOREGROUND, timeout = 1, inputOnly = 1)
+
+	return channelAD[0]
+End
+
+Function HW_SU_WriteDAC(variable deviceID, variable channel, variable value, [variable flags])
+
+	string device, encodeInfo
+	variable outChannel, inChannel
+
+	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+	WAVE   config    = GetDAQConfigWave(device)
+	WAVE/T input     = GetSUDeviceInput(device)
+	WAVE/T output    = GetSUDeviceOutput(device)
+	WAVE   channelDA = GetSutterSingleSampleDACOutputWave(device)
+	WAVE   channelAD = GetSutterSingleSampleADCInputWave(device)
+	channelDA = value
+
+	Redimension/N=(1, -1) output
+	output[0][%OUTPUTWAVE] = GetWavesDataFolder(channelDA, 2)
+	[outChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocDAC(channel)
+	output[0][%CHANNEL]    = num2istr(outChannel)
+	output[0][%ENCODEINFO] = encodeInfo
+
+	// we need to run some input as well to have the command hook from SutterDAQScanWave
+	Redimension/N=(1, -1) input
+	input[0][%INPUTWAVE] = GetWavesDataFolder(channelAD, 2)
+	[inChannel, encodeInfo] = HW_SU_GetEncodeFromHS(0)
+	inChannel            *= 2
+	input[0][%CHANNEL]    = num2istr(inChannel)
+	input[0][%ENCODEINFO] = encodeInfo
+
+	HW_SU_AcquireImpl(device, input, output, $"", SUTTER_ACQUISITION_FOREGROUND, timeout = 1)
+End
+
+/// @brief Wraps the hardware access for sutter acquisition
+/// @param device    device name
+/// @param input     input definition encoding for sutter
+/// @param output    output definition encoding for sutter, can be a null wave if inputOnly flag is set
+/// @param gain      gain wave for sutter input, can be a null wave if no gain should be set
+/// @param mode      Either SUTTER_ACQUISITION_FOREGROUND or SUTTER_ACQUISITION_BACKGROUND for foreground or background acquisition respectively
+/// @param timeout   [optional, default - required for foreground acquisition, must be > 0] time out in [s] for foreground acquisition. An ASSERT is thrown if the timeout is reached.
+///                  timeout is not used in SUTTER_ACQUISITION_BACKGROUND mode.
+/// @param inputOnly [optional, default 0] flag, when set only acquisition from ADC is run, when not set the DAC and ADC is run.
+static Function HW_SU_AcquireImpl(string device, WAVE input, WAVE/Z output, WAVE/Z gain, variable mode, [variable timeout, variable inputOnly])
+
+	string cmdError, cmdDone
+	variable to
+
+	inputOnly = ParamIsDefault(inputOnly) ? 0 : !!inputOnly
+
+	if(mode == SUTTER_ACQUISITION_FOREGROUND)
+		ASSERT(!ParamIsDefault(timeout), "Timeout argument in [s] must be set for foreground acquisition")
+		ASSERT(timeout > 0, "Timeout must be greater than zero")
+	endif
 
 	NVAR err = $GetSU_AcquisitionError(device)
 	NVAR acq = $GetSU_IsAcquisitionRunning(device)
+	ASSERT(acq == 0, "Attempt to start acquisition while acquisition still running.")
+
+	sprintf cmdDone, "HW_SU_AcqDone(\"%s\")", device
+	sprintf cmdError, "HW_SU_AcqError(\"%s\")", device
+
 	err = 0
 	acq = 1
-	SutterDAQWriteWave/MULT=1/T=1/R=0/RHP=0 output
-	SutterDAQScanWave/MULT=1/T=1/C=0/B=1/G=hwGainTable/E=cmdError/H=cmdDone input
+	if(!inputOnly)
+		ASSERT(WaveExists(output), "definition wave for output is a null wave")
+		SutterDAQWriteWave/MULT=1/T=1/R=0/RHP=0 output
+	endif
+	if(WaveExists(gain))
+		SutterDAQScanWave/MULT=1/T=1/C=0/B=1/G=gain/E=cmdError/H=cmdDone input
+	else
+		SutterDAQScanWave/MULT=1/T=1/C=0/B=1/E=cmdError/H=cmdDone input
+	endif
 	SutterDAQClock(0, 0, 1)
+
+	if(mode == SUTTER_ACQUISITION_BACKGROUND)
+		return NaN
+	endif
+
+	to = DateTime + timeout
+	do
+		DoXOPIdle
+	while(acq && err == 0 && DateTime < to)
+
+	ASSERT(err == 0, "Hardware Error on foreground acquisition")
+	ASSERT(acq == 0, "Hardware Error: Reached timeout in foreground acquisition")
 End
 
 Function HW_SU_AcqDone(string device)
@@ -3684,6 +3829,22 @@ Function HW_SU_GetADCSamplePosition()
 
 	DoAbortNow("SUTTER XOP is not available")
 End
+
+Function HW_SU_ZeroDAC(variable deviceID, [variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function HW_SU_ReadADC(variable deviceID, variable channel, [variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function HW_SU_WriteDAC(variable deviceID, variable channel, variable value, [variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
 #endif // SUTTER_XOP_PRESENT
 
 /// @}

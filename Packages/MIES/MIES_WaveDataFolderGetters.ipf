@@ -877,6 +877,48 @@ Function/WAVE GetNIDAQChannelWave(string device, variable channel, variable mode
 	return wv
 End
 
+/// @brief Get a single point output wave for Sutter device
+Function/WAVE GetSutterSingleSampleDACOutputWave(string device)
+
+	variable samplingInterval
+	string name = "SU_SingleSample_DA"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=1 dfr:$name/WAVE=wv
+	samplingInterval = SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC)
+	SetScale/P x, 0, samplingInterval * MICRO_TO_ONE, "s", wv
+
+	return wv
+End
+
+/// @brief Get a single point input wave for Sutter device
+Function/WAVE GetSutterSingleSampleADCInputWave(string device)
+
+	variable samplingInterval
+	string name = "SU_SingleSample_AD"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=1 dfr:$name/WAVE=wv
+	samplingInterval = SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_ADC)
+	SetScale/P x, 0, samplingInterval * MICRO_TO_ONE, "s", wv
+
+	return wv
+End
+
 static Constant EPOCHS_WAVE_VERSION = 3
 
 /// @brief Return the epochs text wave
