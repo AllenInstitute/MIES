@@ -106,11 +106,11 @@ End
 /// @brief Helper function to get read-only access to a global variable
 ///
 /// @param path absolute path to a global variable
-Function ROVar(path)
+threadsafe Function ROVar(path)
 	string path
 
 	NVAR/Z var = $path
-	ASSERT(NVAR_Exists(var), "Could not recreate " + path)
+	ASSERT_TS(NVAR_Exists(var), "Could not recreate " + path)
 
 	return var
 End
@@ -118,11 +118,11 @@ End
 /// @brief Helper function to get read-only access to a global string
 ///
 /// @param path absolute path to a global string
-Function/S ROStr(path)
+threadsafe Function/S ROStr(path)
 	string path
 
 	SVAR/Z str = $path
-	ASSERT(SVAR_Exists(str), "Could not recreate " + path)
+	ASSERT_TS(SVAR_Exists(str), "Could not recreate " + path)
 
 	return str
 End
