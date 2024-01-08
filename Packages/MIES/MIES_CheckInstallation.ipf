@@ -176,7 +176,7 @@ Function CHI_CheckInstallation()
 	CHI_InitInstallationState(state)
 
 	info = IgorInfo(0)
-	igorBuild = StringByKey("BUILD", info)
+	igorBuild = GetIgorProBuildVersion()
 
 	if(!isEmpty(igorBuild))
 		igorBuild = ", " + igorBuild
