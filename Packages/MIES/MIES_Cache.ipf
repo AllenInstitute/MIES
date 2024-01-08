@@ -419,6 +419,22 @@ Function/S CA_PSXAnalyzePeaks(string comboKey, string psxParameters)
 	return CA_PSXBaseKey(comboKey, psxParameters) + " Analyze Peaks " + ":Version 1"
 End
 
+/// @brief Return the key for the igor info entries
+threadsafe Function/S CA_IgorInfoKey(variable selector)
+
+	string key
+
+	// only add new selectors if their output is fixed for the current IP session
+	switch(selector)
+		case 0: // fallthrough-by-design
+		case 3:
+			sprintf key, "IgorInfo(%d):Version 1", selector
+			return key
+		default:
+			ASSERT_TS(0, "Unimplemented selector")
+	endswitch
+End
+
 /// @}
 
 /// @brief Make space for one new entry in the cache waves

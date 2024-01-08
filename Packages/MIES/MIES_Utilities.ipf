@@ -2818,9 +2818,27 @@ Function GetArchitectureBits()
 #endif
 End
 
+/// @brief Return the given IgorInfo (cached)
+///
+/// This is faster than calling `IgorInfo` everytime.
+threadsafe Function/S GetIgorInfo(variable selector)
+
+	string key
+
+	key = CA_IgorInfoKey(selector)
+	WAVE/T/Z result = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+
+	if(!WaveExists(result))
+		Make/FREE/T result = {IgorInfo(selector)}
+		CA_StoreEntryIntoCache(key, result, options = CA_OPTS_NO_DUPLICATE)
+	endif
+
+	return result[0]
+End
+
 /// @brief Return the Igor Pro version string
 threadsafe Function/S GetIgorProVersion()
-	return StringByKey("IGORFILEVERSION", IgorInfo(3))
+	return StringByKey("IGORFILEVERSION", GetIgorInfo(3))
 End
 
 /// @brief Return the Igor Pro build version string
@@ -2828,7 +2846,7 @@ End
 /// This allows to distinguish different builds from the same major/minor
 /// version.
 threadsafe Function/S GetIgorProBuildVersion()
-	return StringByKey("BUILD", IgorInfo(0))
+	return StringByKey("BUILD", GetIgorInfo(0))
 End
 
 /// @brief Return a unique symbolic path name
