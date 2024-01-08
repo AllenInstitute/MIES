@@ -2827,7 +2827,7 @@ End
 ///
 /// This allows to distinguish different builds from the same major/minor
 /// version.
-Function/S GetIgorProBuildVersion()
+threadsafe Function/S GetIgorProBuildVersion()
 	return StringByKey("BUILD", IgorInfo(0))
 End
 
