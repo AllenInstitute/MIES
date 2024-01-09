@@ -1082,7 +1082,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 End
 
 static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResult &s)
-	variable i, j, maxITI, channel, headstage, setChecksum, fingerprint, stimsetCycleID, isoodDAQMember
+	variable i, j, maxITI, channel, headstage, setChecksum, fingerprint, stimsetCycleID, isoodDAQMember, samplingInterval
 	string func, ctrl, str
 
 	WAVE config = GetDAQConfigWave(device)
@@ -1177,7 +1177,12 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 
 	DC_DocumentChannelProperty(device, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, NaN, var=str2num(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult")))
 	DC_DocumentChannelProperty(device, "Fixed frequency acquisition", INDEP_HEADSTAGE, NaN, NaN, var=str2numSafe(DAG_GetTextualValue(device, "Popup_Settings_FixedFreq")))
-	DC_DocumentChannelProperty(device, "Sampling interval", INDEP_HEADSTAGE, NaN, NaN, var=s.samplingInterval * MICRO_TO_MILLI)
+	samplingInterval = DAP_GetSampInt(device, s.dataAcqOrTP, XOP_CHANNEL_TYPE_DAC) * MICRO_TO_MILLI
+	DC_DocumentChannelProperty(device, "Sampling interval DA", INDEP_HEADSTAGE, NaN, NaN, var=samplingInterval)
+	samplingInterval = DAP_GetSampInt(device, s.dataAcqOrTP, XOP_CHANNEL_TYPE_ADC) * MICRO_TO_MILLI
+	DC_DocumentChannelProperty(device, "Sampling interval AD", INDEP_HEADSTAGE, NaN, NaN, var=samplingInterval)
+	samplingInterval = DAP_GetSampInt(device, s.dataAcqOrTP, XOP_CHANNEL_TYPE_TTL) * MICRO_TO_MILLI
+	DC_DocumentChannelProperty(device, "Sampling interval TTL", INDEP_HEADSTAGE, NaN, NaN, var=samplingInterval)
 
 	DC_DocumentChannelProperty(device, "Delay onset user", INDEP_HEADSTAGE, NaN, NaN, var=(s.onsetDelayUser * (s.samplingInterval * MICRO_TO_MILLI)))
 	DC_DocumentChannelProperty(device, "Delay onset auto", INDEP_HEADSTAGE, NaN, NaN, var=(s.onsetDelayAuto * (s.samplingInterval * MICRO_TO_MILLI)))

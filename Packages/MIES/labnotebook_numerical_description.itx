@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(193,6)	labnotebook_numerical_description
+WAVES/T/N=(195,6)	labnotebook_numerical_description
 BEGIN
 	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"SweepNum"	""	"-"	"Sweep number: Non-repeating non-negative numeric identifier for sweep time series. Increments in the order of acquisition. Starts at zero."	"ALL"	""
@@ -45,7 +45,9 @@ BEGIN
 	"Locked indexing"	"On/Off"	"-"	"Enables the acquistion of multiple stimulus sets, for an active channel, on a single repeated acquisition cycle.\rA special form of  indexing where the transition to the next stimulus set happens on the same sweep for all active channels.\r\rSee https://alleninstitute.github.io/MIES/index.html#id1 for a visualisation of indexing."	"INDEP"	""
 	"Repeated Acquisition"	"On/Off"	"-"	"Automated acquisition of more than one sweep.\r\rSee https://alleninstitute.github.io/MIES/index.html#id1 for a visualisation of repeated acquisition."	"INDEP"	""
 	"Random Repeated Acquisition"	"On/Off"	"-"	"Randomizes the sweep acquisition order within a stimulus set.\r\rSee https://alleninstitute.github.io/MIES/index.html#id1 for a visualisation of indexing."	"INDEP"	""
-	"Sampling interval"	"ms"	"1"	"Time interval between consecutive data points."	"INDEP"	""
+	"Sampling interval DA"	"ms"	"1"	"Time interval between consecutive DA data points."	"INDEP"	""
+	"Sampling interval AD"	"ms"	"1"	"Time interval between consecutive AD data points."	"INDEP"	""
+	"Sampling interval TTL"	"ms"	"1"	"Time interval between consecutive TTL data points."	"INDEP"	""
 	"Sampling interval multiplier"	""	"0.1"	"The hardware limited minimum interval between consecutive data points is called the minimum sampling interval.\rThis interval can be prolonged by the user configured sampling interval multiplier."	"INDEP"	""
 	"Stim set length"	""	"0.1"	"Number of points in each sweep of the stimulus set. This is determined by the acquisition sampling interval."	"ALL"	""
 	"oodDAQ Pre Feature"	"ms"	"1"	"oodDAQ pre delay is the leading time envelope for non-zero parts of the stimulus set sweeps.\r\rSee https://alleninstitute.github.io/MIES/#id4 for a visualisation of oodDAQ."	"INDEP"	""

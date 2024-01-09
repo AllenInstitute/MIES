@@ -396,7 +396,7 @@ End
 static Function PA_DiffPulseInfos(WAVE numericalValues, variable sweepNo, WAVE/Z pulseInfosEpochs, WAVE/Z pulseInfosCalc)
 	variable i, j, numRowsEpochs, numColsEpochs
 
-	variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 2
+	variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval DA", DATA_ACQUISITION_MODE) * 2
 
 	if(WaveExists(pulseInfosEpochs) && WaveExists(pulseInfosCalc))
 		numRowsEpochs = DimSize(pulseInfosEpochs, ROWS)
