@@ -3403,11 +3403,12 @@ Function HW_SU_StopAcq(variable deviceID, [variable zeroDAC, variable flags])
 
 	string device
 
-	SutterDAQReset()
-
 	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 	NVAR acq = $GetSU_IsAcquisitionRunning(device)
-	acq = 0
+	if(acq)
+		SutterDAQReset()
+		acq = 0
+	endif
 
 	if(zeroDAC)
 		DEBUGPRINTSTACKINFO()
