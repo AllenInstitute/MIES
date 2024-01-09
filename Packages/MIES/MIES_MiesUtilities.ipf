@@ -8472,8 +8472,6 @@ End
 /// @return `$""` if recreation failed or a free wave on success.
 Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAVE textualValues, variable sweepNo)
 
-	variable samplingInterval
-
 	// ensure we start with a fresh config wave
 	WAVE configWave = GetDAQConfigWave(device)
 	MoveToTrash(wv = configWave)
@@ -8487,9 +8485,7 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 	AddChannelPropertiesFromLBN(numericalValues, textualValues, sweepNo, configWave, XOP_CHANNEL_TYPE_ADC)
 	AddChannelPropertiesFromLBN(numericalValues, textualValues, sweepNo, configWave, XOP_CHANNEL_TYPE_TTL)
 
-	samplingInterval = GetSamplingIntervalFromLBN(numericalValues, sweepNo)
-
-	configWave[][%SamplingInterval] = samplingInterval * MILLI_TO_MICRO
+	configWave[][%SamplingInterval] = GetSamplingIntervalFromLBN(numericalValues, sweepNo, configWave[p][%ChannelType]) * MILLI_TO_MICRO
 
 	// always 0, see DC_PlaceDataInDAQConfigWave
 	configWave[][%DecimationMode] = 0
@@ -8509,10 +8505,26 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 End
 
 /// @brief Return the sampling interval [ms] rounded to microseconds
-static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepNo)
-	variable samplingInterval
+static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepNo, variable channelType)
 
-	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	variable samplingInterval
+	string   key
+
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC:
+			key = "Sampling interval DA"
+			break
+		case XOP_CHANNEL_TYPE_ADC:
+			key = "Sampling interval AD"
+			break
+		case XOP_CHANNEL_TYPE_TTL:
+			key = "Sampling interval TTL"
+			break
+		default:
+			ASSERT(0, "Invalid Channel Type")
+	endswitch
+
+	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
 	// round to full microseconds as that is stored in GetDAQConfigWave()
 	return round(samplingInterval * 1000) / 1000 // NOLINT

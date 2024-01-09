@@ -509,10 +509,10 @@ Structure DataConfigurationResult
 	/// One of @ref HardwareDACTypeConstants
 	variable hardwareType
 
-	/// @sa DAP_GetSampInt()
+	/// @sa DAP_GetSampInt(), the sampling interval for DA
 	variable samplingInterval
 
-	/// @name Various delays in points
+	/// @name Various delays in points of the DA data wave
 	/// @{
 	variable onsetDelayUser
 	variable onsetDelayAuto

@@ -1047,7 +1047,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 End
 
 static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResult &s)
-	variable i, j, maxITI, channel, headstage, setChecksum, fingerprint, stimsetCycleID, isoodDAQMember
+	variable i, j, maxITI, channel, headstage, setChecksum, fingerprint, stimsetCycleID, isoodDAQMember, samplingInterval
 	string func, ctrl, str
 
 	WAVE config = GetDAQConfigWave(device)
@@ -1142,7 +1142,12 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 
 	DC_DocumentChannelProperty(device, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, NaN, var = str2num(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult")))
 	DC_DocumentChannelProperty(device, "Fixed frequency acquisition", INDEP_HEADSTAGE, NaN, NaN, var = str2numSafe(DAG_GetTextualValue(device, "Popup_Settings_FixedFreq")))
-	DC_DocumentChannelProperty(device, "Sampling interval", INDEP_HEADSTAGE, NaN, NaN, var = s.samplingInterval * MICRO_TO_MILLI)
+	samplingInterval = DAP_GetSampInt(device, s.dataAcqOrTP, XOP_CHANNEL_TYPE_DAC) * MICRO_TO_MILLI
+	DC_DocumentChannelProperty(device, "Sampling interval DA", INDEP_HEADSTAGE, NaN, NaN, var = samplingInterval)
+	samplingInterval = DAP_GetSampInt(device, s.dataAcqOrTP, XOP_CHANNEL_TYPE_ADC) * MICRO_TO_MILLI
+	DC_DocumentChannelProperty(device, "Sampling interval AD", INDEP_HEADSTAGE, NaN, NaN, var = samplingInterval)
+	samplingInterval = DAP_GetSampInt(device, s.dataAcqOrTP, XOP_CHANNEL_TYPE_TTL) * MICRO_TO_MILLI
+	DC_DocumentChannelProperty(device, "Sampling interval TTL", INDEP_HEADSTAGE, NaN, NaN, var = samplingInterval)
 
 	DC_DocumentChannelProperty(device, "Delay onset user", INDEP_HEADSTAGE, NaN, NaN, var = (s.onsetDelayUser * (s.samplingInterval * MICRO_TO_MILLI)))
 	DC_DocumentChannelProperty(device, "Delay onset auto", INDEP_HEADSTAGE, NaN, NaN, var = (s.onsetDelayAuto * (s.samplingInterval * MICRO_TO_MILLI)))
@@ -2581,10 +2586,17 @@ static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfi
 		DEBUGPRINT("LNB entry not found: TP Baseline Fraction")
 	endif
 
-	s.samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", s.dataAcqOrTP)
+	s.samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval DA", s.dataAcqOrTP)
+	if(IsNaN(s.samplingInterval))
+		DEBUGPRINT("LNB entry not found: Sampling interval DA")
+		s.samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", s.dataAcqOrTP)
+		if(IsNaN(s.samplingInterval))
+			DEBUGPRINT("LNB entry not found: Sampling interval")
+		endif
+	endif
+
 	if(IsNaN(s.samplingInterval))
 		s.decimationFactor = NaN
-		DEBUGPRINT("LNB entry not found: Sampling interval")
 	else
 		s.samplingInterval *= MILLI_TO_MICRO
 		s.decimationFactor  = DC_GetDecimationFactorCalc(s.samplingInterval)

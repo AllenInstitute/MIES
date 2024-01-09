@@ -354,7 +354,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 	rate_ref = 1 / (DimDelta(loadedFromNWB, ROWS) * MILLI_TO_ONE)
 	CHECK_CLOSE_VAR(rate, rate_ref, tol = 1e-7)
 
-	samplingInterval     = GetLastSettingIndep(numericalValues, sweep, "Sampling interval", DATA_ACQUISITION_MODE)
+	samplingInterval     = GetLastSettingIndep(numericalValues, sweep, "Sampling interval AD", DATA_ACQUISITION_MODE)
 	samplingInterval_ref = DimDelta(loadedFromNWB, ROWS)
 	CHECK_CLOSE_VAR(samplingInterval, samplingInterval_ref, tol = 1e-7)
 

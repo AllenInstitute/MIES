@@ -797,7 +797,7 @@ static Function CheckSamplingInterval1_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sampInt         = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	sampInt         = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval AD", DATA_ACQUISITION_MODE)
 	expectedSampInt = GetMinSamplingInterval(unit = "ms")
 	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol = 1e-6)
 
@@ -844,7 +844,7 @@ static Function CheckSamplingInterval2_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sampInt         = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	sampInt         = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval AD", DATA_ACQUISITION_MODE)
 	expectedSampInt = GetMinSamplingInterval(unit = "ms") * 8
 	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol = 1e-6)
 
