@@ -509,8 +509,12 @@ Structure DataConfigurationResult
 	/// One of @ref HardwareDACTypeConstants
 	variable hardwareType
 
-	/// @sa DAP_GetSampInt(), the sampling interval for DA
-	variable samplingInterval
+	/// Sampling interval for DA channels in μs, @sa DAP_GetSampInt()
+	variable samplingIntervalDA
+	/// Sampling interval for AD channels in μs, @sa DAP_GetSampInt()
+	variable samplingIntervalAD
+	/// Sampling interval for TTL channels in μs, @sa DAP_GetSampInt()
+	variable samplingIntervalTTL
 
 	/// @name Various delays in points of the DA data wave
 	/// @{
