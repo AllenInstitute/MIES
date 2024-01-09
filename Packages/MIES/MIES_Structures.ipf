@@ -509,7 +509,7 @@ Structure DataConfigurationResult
 	/// One of @ref HardwareDACTypeConstants
 	variable hardwareType
 
-	/// @sa DAP_GetSampInt()
+	/// Sampling interval for DA channels, @sa DAP_GetSampInt()
 	variable samplingInterval
 
 	/// @name Various delays in points
