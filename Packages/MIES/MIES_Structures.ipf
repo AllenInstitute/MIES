@@ -235,9 +235,9 @@ Structure AnalysisFunction_V3
 	/// one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
 	variable eventType
 
-	/// scaled and undecimated data from the DAC hardware, 2D floating-point wave
-	/// Rows has channel data, one column per channel, channels are in the order DA/AD/TTL
-	WAVE scaledDACWave
+	/// scaled and undecimated data from the DAC hardware, wave ref wave where each element is a channel wave.
+	/// Channels are in the same order as the config wave rows.
+	WAVE/WAVE scaledDACWave
 
 	/// active headstage index, `[0, NUM_HEADSTAGES[`
 	variable headStage
