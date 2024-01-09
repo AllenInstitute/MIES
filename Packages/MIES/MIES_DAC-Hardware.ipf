@@ -3348,9 +3348,16 @@ Function HW_SU_GetDeviceInfo(WAVE/T deviceInfo)
 	string deviceList = ""
 	string numHSList  = ""
 
+#ifdef AUTOMATED_TESTING
+#ifndef TESTS_WITH_SUTTER_HARDWARE
+	return NaN
+#endif
+#endif
 	DEBUGPRINTSTACKINFO()
 
-	deviceInfo = ""
+	if(!IsEmpty(deviceInfo[%NUMBEROFDACS]))
+		return NaN
+	endif
 
 	numIPAs                   = SutterDAQusbreset()
 	deviceInfo[%NUMBEROFDACS] = num2istr(numIPAs)
