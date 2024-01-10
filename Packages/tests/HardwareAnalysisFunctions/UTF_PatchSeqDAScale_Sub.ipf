@@ -102,7 +102,7 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 End
 
 static Function PS_DS_Sub1_preAcq(string device)
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -251,7 +251,7 @@ static Function PS_DS_Sub1_REENTRY([str])
 End
 
 static Function PS_DS_Sub2_preAcq(string device)
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -450,7 +450,7 @@ static Function PS_DS_Sub2_REENTRY([str])
 End
 
 static Function PS_DS_Sub3_preAcq(string device)
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -625,7 +625,7 @@ static Function PS_DS_Sub3_REENTRY([str])
 End
 
 static Function PS_DS_Sub4_preAcq(string device)
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -845,7 +845,7 @@ static Function PS_DS_Sub4_REENTRY([str])
 End
 
 static Function PS_DS_Sub5_preAcq(string device)
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -998,7 +998,7 @@ static Function PS_DS_Sub5_REENTRY([str])
 End
 
 static Function PS_DS_Sub5a_preAcq(string device)
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1151,7 +1151,7 @@ static Function PS_DS_Sub5a_REENTRY([str])
 End
 
 static Function PS_DS_Sub6_preAcq(string device)
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1372,7 +1372,7 @@ static Function PS_DS_Sub6_REENTRY([str])
 End
 
 static Function PS_DS_Sub7_preAcq(string device)
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1555,7 +1555,7 @@ static Function PS_DS_Sub7_REENTRY([str])
 End
 
 static Function PS_DS_Sub8_preAcq(string device)
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1753,7 +1753,7 @@ static Function PS_DS_Sub9_preAcq(device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "BaselineRMSLongThreshold", var = 0.250)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "baselineTargetVThreshold", var = 0.350)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1906,7 +1906,7 @@ static Function PS_DS_Sub10_preAcq(device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "SamplingFrequency", var = 10)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
