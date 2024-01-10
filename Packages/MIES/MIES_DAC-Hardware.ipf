@@ -535,6 +535,8 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 	deviceInfo[%DA]           = 1024
 	deviceInfo[%TTL]          = 1024
 	deviceInfo[%Rack]         = NaN
+	deviceInfo[%AuxAD] 			= NaN
+	deviceInfo[%AuxDA] 			= NaN
 
 	return NaN
 #endif // EVIL_KITTEN_EATING_MODE
@@ -577,6 +579,8 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 			deviceInfo[%DA]   = devInfoHW[%DACCount]
 			deviceInfo[%Rack] = ceil(min(devInfoHW[%DOCount], devInfoHW[%DICount]) / 3)
 			deviceInfo[%TTL]  = deviceInfo[%Rack] == 1 ? 4 : 8
+			deviceInfo[%AuxAD] = NaN
+			deviceInfo[%AuxDA] = NaN
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/T devInfoHWText = devInfoHW
@@ -584,13 +588,17 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 			deviceInfo[%DA]   = str2num(devInfoHWText[%AO])
 			deviceInfo[%TTL]  = str2num(devInfoHWText[%DIOPortWidth])
 			deviceInfo[%Rack] = NaN
+			deviceInfo[%AuxAD] = NaN
+			deviceInfo[%AuxDA] = NaN
 			break
 		case HARDWARE_SUTTER_DAC:
 			WAVE/T devInfoHWText = devInfoHW
-			deviceInfo[%AD]   = str2num(devInfoHWText[%AI]) + str2num(devInfoHWText[%SUMHEADSTAGES])
-			deviceInfo[%DA]   = str2num(devInfoHWText[%AO]) + str2num(devInfoHWText[%SUMHEADSTAGES])
+			deviceInfo[%AD]   = str2num(devInfoHWText[%SUMHEADSTAGES])
+			deviceInfo[%DA]   = str2num(devInfoHWText[%SUMHEADSTAGES])
 			deviceInfo[%TTL]  = str2num(devInfoHWText[%DIOPortWidth])
 			deviceInfo[%Rack] = NaN
+			deviceInfo[%AuxAD] = str2num(devInfoHWText[%AI])
+			deviceInfo[%AuxDA] = str2num(devInfoHWText[%AO])
 			break
 	endswitch
 End

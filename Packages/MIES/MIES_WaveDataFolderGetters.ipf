@@ -7206,10 +7206,19 @@ Function/WAVE GetAnaFuncDashboardHelpWave(dfr)
 End
 
 /// @brief Return a wave with device information
-Function/WAVE GetDeviceInfoWave(device)
-	string device
+///        Entries:
+/// AD: - For devices that have mixed channels for HS, Unassoc AD the number of the channels combined
+///     - For devices that have separate channels for HS and Unassoc AD the number of the headstages
+/// DA: - For devices that have mixed channels for HS, Unassoc DA the number of the channels combined
+///     - For devices that have separate channels for HS and Unassoc DA the number of the headstages
+/// TTL: - Number of TTL channels
+/// Rack: - Number of Racks for ITC, NaN for other HW
+/// HardwareType: - One of @sa HardwareDACTypeConstants like HARDWARE_SUTTER_DAC
+/// AuxAD: - For devices with HS independent AD channels the number of the separate AD channels, NaN for devices with mixed channels
+/// AuxDA: - For devices with HS independent DA channels the number of the separate DA channels, NaN for devices with mixed channels
+Function/WAVE GetDeviceInfoWave(string device)
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	variable hardwareType
 
 	DFREF dfr = GetDeviceInfoPath()
@@ -7220,7 +7229,7 @@ Function/WAVE GetDeviceInfoWave(device)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/D/N=(5) dfr:$device/Wave=wv
+		Make/D/N=7 dfr:$device/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, AD, wv
@@ -7228,6 +7237,8 @@ Function/WAVE GetDeviceInfoWave(device)
 	SetDimLabel ROWS, 2, TTL, wv
 	SetDimLabel ROWS, 3, Rack, wv
 	SetDimLabel ROWS, 4, HardwareType, wv
+	SetDimLabel ROWS, 5, AuxAD, wv
+	SetDimLabel ROWS, 6, AuxDA, wv
 
 	wv = NaN
 
