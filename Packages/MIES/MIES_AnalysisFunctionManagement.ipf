@@ -86,6 +86,10 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 				WAVE/Z dataWave = $""
 				break
 			case MID_SWEEP_EVENT:
+				if(fifoPositionAD == 0)
+					// no data yet to analyse
+					return 0
+				endif
 				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
 				WAVE/Z/WAVE scaledDataWave = GetScaledDataWave(device)
 				if(!WaveExists(scaledDataWave))
