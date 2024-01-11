@@ -74,18 +74,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Initial repo config
         run: tools/initial-repo-config.sh
-      - name: Fetch latest changes for main
-        run: git fetch origin main
-      - name: Fetch latest changes of branch
-        run: git fetch origin $GITHUB_HEAD_REF
-      - name: Checking out branch
-        run: git checkout -B $GITHUB_HEAD_REF origin/$GITHUB_HEAD_REF
       - name: List of commits to operate on
         run: git log --pretty=ref origin/main..
       - name: Cleanup earlier rebase invocations
-        run: git rebase --abort 2>/dev/null || true
+        run: git rebase --quit 2>/dev/null || true
       - name: Compile check each commit with ${{ inputs.experiment }}
         run: |
              git rebase --exec "git log --pretty=ref -n1"                                                \

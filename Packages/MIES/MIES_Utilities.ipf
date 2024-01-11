@@ -180,7 +180,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			printf "DAQ: [%s]\r", RemoveEnding(TextWaveToList(daqStates, ";"), ";")
 			printf "Testpulse: [%s]\r", RemoveEnding(TextWaveToList(tpStates, ";"), ";")
 			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
-			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
+			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), GetIgorProBuildVersion()
 			print "MIES version:"
 			print miesVersionStr
 			print "################################"
@@ -261,7 +261,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
 			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
-			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
+			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), GetIgorProBuildVersion()
 			print "################################"
 
 			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, stacktrace = 1, keys = {LOG_MESSAGE_KEY}, values = {errorMsg})
@@ -2818,17 +2818,35 @@ Function GetArchitectureBits()
 #endif
 End
 
+/// @brief Return the given IgorInfo (cached)
+///
+/// This is faster than calling `IgorInfo` everytime.
+threadsafe Function/S GetIgorInfo(variable selector)
+
+	string key
+
+	key = CA_IgorInfoKey(selector)
+	WAVE/T/Z result = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+
+	if(!WaveExists(result))
+		Make/FREE/T result = {IgorInfo(selector)}
+		CA_StoreEntryIntoCache(key, result, options = CA_OPTS_NO_DUPLICATE)
+	endif
+
+	return result[0]
+End
+
 /// @brief Return the Igor Pro version string
 threadsafe Function/S GetIgorProVersion()
-	return StringByKey("IGORFILEVERSION", IgorInfo(3))
+	return StringByKey("IGORFILEVERSION", GetIgorInfo(3))
 End
 
 /// @brief Return the Igor Pro build version string
 ///
 /// This allows to distinguish different builds from the same major/minor
 /// version.
-Function/S GetIgorProBuildVersion()
-	return StringByKey("BUILD", IgorInfo(0))
+threadsafe Function/S GetIgorProBuildVersion()
+	return StringByKey("BUILD", GetIgorInfo(0))
 End
 
 /// @brief Return a unique symbolic path name
