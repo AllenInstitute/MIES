@@ -229,7 +229,7 @@ threadsafe static Function IsWaveVersioned(WAVE wv)
 End
 
 /// @brief Check if the given wave's version is smaller than the given version, if version is not set true is returned
-threadsafe static Function WaveVersionIsSmaller(wv, existingVersion)
+threadsafe Function WaveVersionIsSmaller(wv, existingVersion)
 	WAVE/Z wv
 	variable existingVersion
 
