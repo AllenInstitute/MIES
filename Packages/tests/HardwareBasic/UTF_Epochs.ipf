@@ -399,7 +399,7 @@ static Function TestEpochsGeneric(string device)
 				hwChannelNumber = channelMapTTLGUIToHW[channelNumber][%HWCHANNEL]
 				if(hwType == HARDWARE_ITC_DAC)
 					WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber, splitTTLBits = 1, ttlBit = ttlBit)
-				elseif(hwType == HARDWARE_NI_DAC)
+				elseif(hwType == HARDWARE_NI_DAC || hwType == HARDWARE_SUTTER_DAC)
 					WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber)
 				else
 					FAIL()
