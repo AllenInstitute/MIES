@@ -6,7 +6,7 @@
 // Check the root datafolder for waves which might be present and could help debugging
 
 static Constant OODDAQ_PRECISION       = 0.001
-static Constant OTHER_EPOCHS_PRECISION = 0.050
+static Constant OTHER_EPOCHS_PRECISION = 0.050 // in ms
 static Constant MAX_ITERATIONS = 100000
 
 static Function GlobalPreAcq(string device)
@@ -177,7 +177,7 @@ End
 static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 
 	variable i, j, epochCnt, rowCnt, beginInt, endInt, epochNr, amplitude, center, DAAmp
-	variable first, last, level, range, ret
+	variable first, last, level, range, ret, firstIndex, lastIndex, div1, div2
 	string s, name
 
 	rowCnt = DimSize(e, ROWS)
@@ -225,11 +225,15 @@ static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
 		level = str2num(e[i][3])
-		first = startT[i] * ONE_TO_MILLI + OTHER_EPOCHS_PRECISION
-		last  = endT[i] * ONE_TO_MILLI - OTHER_EPOCHS_PRECISION
-		range = last - first
+		first = startT[i] * ONE_TO_MILLI + WAVEBUILDER_MIN_SAMPINT * 1.5
+		last  = endT[i] * ONE_TO_MILLI - WAVEBUILDER_MIN_SAMPINT * 1.5
+		div1 = first / DimDelta(DAChannel, ROWS)
+		firstIndex = abs(div1 - round(div1)) < 1E-10 ? div1 + 1 : ceil(div1)
+		div2 = last / DimDelta(DAChannel, ROWS)
+		lastIndex = abs(div2 - round(div2)) < 1E-10 ? div2 - 1 : trunc(div2)
+		range = lastIndex - firstIndex
 
-		if(range <= 0)
+		if(range < 0)
 			PASS()
 			continue
 		endif
@@ -240,19 +244,19 @@ static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 			amplitude = NumberByKey("Amplitude", name, "=")
 			CHECK(IsFinite(amplitude))
 
-			WaveStats/R=(first, last)/Q/M=1 DAChannel
+			WaveStats/RMD=[firstIndex, lastIndex]/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, amplitude)
 
 			// check that the level 3 pulse epoch is really only the pulse
 			if(level == 3)
-				WaveStats/R=(first, last)/Q/M=1 DAChannel
+				WaveStats/RMD=[firstIndex, lastIndex]/Q/M=1 DAChannel
 				CHECK_EQUAL_VAR(V_min, amplitude)
 			endif
 		endif
 
 		// check baseline
 		if(strsearch(name, "Baseline", 0) > 0)
-			WaveStats/R=(first, last)/Q/M=1 DAChannel
+			WaveStats/RMD=[firstIndex, lastIndex]/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_min, 0)
 			CHECK_EQUAL_VAR(V_max, 0)
 		endif
