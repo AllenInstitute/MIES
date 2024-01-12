@@ -923,6 +923,47 @@ static Function EP_EpochTest15_REENTRY([str])
 	TestEpochsGeneric(str)
 End
 
+static Function EP_EpochTest16_PreAcq(string device)
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_FixedFreq", str = "10")
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPDuration", val = 10)
+End
+
+// This test runs an acquisition at a low 10 kHz rate.
+// The check are verifying that the following previous isues are fixes:
+// - The end of the epochs are capped at the end of the data that was prepared for acquisition
+// - The boundaries of TP and its sub-epochs are precise to the sample point
+// - The approximation for the boundaries in the amplitude test of the epochs in @ref TestEpochsMonotony
+//   takes properly the sample rate decimation from wavebuilder generated stimsets to the acquisition wave
+//   and the variability of the epoch boundary regarding the sample point position into account.
+//   The epoch boundaries are arbitrary points in time that can exactly hit a sample point position, such that
+//   the amplitude of this sample point is not well defined because the transition of the amplitude from one to
+//   the next epoch happens exactly there.
+// Note: PreAcq sets the ADC sample rate to 10 kHz and relies on the feature that DA sample rate for ITC and NI
+//       equals the AD sample rate. For Sutter 10 kHz is the default maximum frequency for DA independent of the
+//       change in PreAcq.
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest16([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59"                + \
+										"__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function EP_EpochTest16_REENTRY([str])
+	string str
+
+	WAVE/Z sweepWave  = GetSweepWave(str, 0)
+	CHECK_WAVE(sweepWave, TEXT_WAVE)
+	WAVE channelDA = ResolveSweepChannel(sweepWave, 0)
+	CHECK_EQUAL_VAR(DimDelta(channelDA, ROWS), 0.1)
+
+	TestEpochsGeneric(str)
+End
+
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function EP_EpochTestUnassocDA([str])
 	string str
