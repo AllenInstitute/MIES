@@ -571,7 +571,7 @@ End
 ///        So in in the more time critical SCOPE_xx_UpdateOscilloscope we can optimize by only copying the ADC data over (ADC data from NI is already properly scaled by hardware)
 static Function DC_InitScaledDataWave(string device, variable dataAcqOrTP)
 
-	variable i, numChannels, dataType, size, sampleIntervalADC, hardwareType
+	variable i, numChannels, dataType, size, sampleInterval, hardwareType, channelType
 
 	WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
 	WAVE      config         = GetDAQConfigWave(device)
@@ -584,7 +584,6 @@ static Function DC_InitScaledDataWave(string device, variable dataAcqOrTP)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		size = DC_CalculateChannelSizeForScaledData(device, dataAcqOrTP)
 		WAVE ITCDataWave = GetDAQDataWave(device, dataAcqOrTP)
-		sampleIntervalADC = DimDelta(ITCDataWave, ROWS)
 	else
 		WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
 	endif
@@ -596,13 +595,11 @@ static Function DC_InitScaledDataWave(string device, variable dataAcqOrTP)
 		if(hardwareType != HARDWARE_ITC_DAC)
 			WAVE channel = dataWave[i]
 			size = DC_CalculateChannelSizeForScaledData(device, dataAcqOrTP, channelIndex = i)
-			if(hardwareType == HARDWARE_NI_DAC)
-				sampleIntervalADC = DimDelta(channel, ROWS)
-			endif
 		endif
 
+		channelType = config[i][%ChannelType]
 		Make/FREE/Y=(dataType)/N=(size) wv
-		if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC || config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
+		if(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_TTL)
 			if(hardwareType == HARDWARE_ITC_DAC)
 				Multithread wv[] = ITCDataWave[p][i] / gains[i]
 			else
@@ -612,7 +609,8 @@ static Function DC_InitScaledDataWave(string device, variable dataAcqOrTP)
 			FastOp wv = (NaN)
 		endif
 
-		SetScale/P x, 0, sampleIntervalADC, "ms", wv
+		sampleInterval = DAP_GetSampInt(device, dataAcqOrTP, channelType) * MICRO_TO_MILLI
+		SetScale/P x, 0, sampleInterval, "ms", wv
 
 		if(i < DimSize(units, ROWS))
 			SetScale d, 0, 0, units[i], wv
