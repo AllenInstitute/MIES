@@ -108,11 +108,11 @@ static Function CheckTPBaseline_REENTRY([STRUCT IUTF_MDATA &md])
 	numEntries = GetNumberFromWaveNote(storedTPs, NOTE_INDEX)
 	CHECK_GT_VAR(numEntries, 0)
 
+	samplingInterval = DAP_GetSampInt(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_ADC)
+
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/Z singleTP = storedTPs[i]
 		CHECK_WAVE(singleTP, NUMERIC_WAVE)
-
-		samplingInterval = GetValDisplayAsNum(device, "ValDisp_DataAcq_SamplingInt")
 
 		CHECK_CLOSE_VAR(DimSize(singleTP, ROWS), (MIES_TP#TP_CalculateTestPulseLength(pulseDuration, baselineFraction) * MILLI_TO_MICRO) / samplingInterval, tol = 0.1)
 	endfor
