@@ -150,7 +150,7 @@ static Function EP_CollectEpochInfoDA(string device, STRUCT DataConfigurationRes
 			if(!isUnAssociated)
 				// space in ITCDataWave for the testpulse is allocated via an automatic increase
 				// of the onset delay
-				EP_AddEpochsFromTP(device, channel, s.baselinefrac, testPulseLength, 0, s.DACAmp[i][%TPAMP])
+				EP_AddEpochsFromTP(device, s.samplingInterval, channel, s.DACAmp[i][%TPAMP])
 			else
 				tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 				EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, 0, testPulseLength, tags, EPOCH_SN_BL_UNASSOC_NOTP_BASELINE, 0)
@@ -222,46 +222,43 @@ static Function EP_CollectEpochInfoTTL(string device, STRUCT DataConfigurationRe
 End
 
 /// @brief Adds four epochs for a test pulse and three sub epochs for test pulse components
-/// @param[in] device      title of device panel
-/// @param[in] channel         number of DA channel
-/// @param[in] baselinefrac    base line fraction of testpulse
-/// @param[in] testPulseLength test pulse length in micro seconds
-/// @param[in] offset          start time of test pulse in micro seconds
-/// @param[in] amplitude       amplitude of the TP in the DA wave without gain
-static Function EP_AddEpochsFromTP(device, channel, baselinefrac, testPulseLength, offset, amplitude)
-	string device
-	variable channel
-	variable baselinefrac, testPulseLength
-	variable offset
-	variable amplitude
+/// @param[in] device           title of device panel
+/// @param[in] samplingInterval samplingInterval in microSec
+/// @param[in] channel          number of DA channel
+/// @param[in] amplitude        amplitude of the TP in the DA wave without gain
+static Function EP_AddEpochsFromTP(string device, variable samplingInterval, variable channel, variable amplitude)
 
-	variable epochBegin
-	variable epochEnd
+	variable totalLengthPoints, pulseStartPoints, pulseLengthPoints
+	variable epochBegin, epochEnd
 	string epochTags, epochSubTags
+
+	variable offset = 0
+
+	[totalLengthPoints, pulseStartPoints, pulseLengthPoints] = TP_GetCreationPropertiesInPoints(device, DATA_ACQUISITION_MODE)
 
 	epochTags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Inserted Testpulse", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
 	// main TP range
 	epochBegin = offset
-	epochEnd = epochBegin + testPulseLength
+	epochEnd = epochBegin + totalLengthPoints * samplingInterval
 	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochTags, EPOCH_SN_TP, 0)
 
 	// TP sub ranges
-	epochBegin = baselineFrac * testPulseLength + offset
-	epochEnd = (1 - baselineFrac) * testPulseLength + offset
+	epochBegin = offset + pulseStartPoints * samplingInterval
+	epochEnd = epochBegin + pulseLengthPoints * samplingInterval
 	epochSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epochTags, EPOCH_PULSE_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	epochSubTags = ReplaceNumberByKey(EPOCH_AMPLITUDE_KEY, epochSubTags, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_PULSE, 1)
 
 	// pre pulse BL
 	epochBegin = offset
-	epochEnd = epochBegin + baselineFrac * testPulseLength
+	epochEnd = epochBegin + pulseStartPoints * samplingInterval
 	epochSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epochTags, EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLFRONT, 1)
 
 	// post pulse BL
-	epochBegin = (1 - baselineFrac) * testPulseLength + offset
-	epochEnd = testPulseLength + offset
+	epochBegin = offset + (pulseStartPoints + pulseLengthPoints) * samplingInterval
+	epochEnd = offset + totalLengthPoints * samplingInterval
 	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLBACK, 1)
 End
 
