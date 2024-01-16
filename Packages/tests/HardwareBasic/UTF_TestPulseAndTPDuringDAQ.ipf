@@ -687,7 +687,7 @@ static Function TPDuringDAQTPAndUnAssoc_REENTRY([str])
 	CHECK_EQUAL_WAVES(channelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ}, mode = WAVE_DATA)
 
 	WAVE/T units = AFH_GetChannelUnits(configWave)
-	CHECK_EQUAL_TEXTWAVES(units, {"mV", "mV", "pA", "pA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(units, {"mV", "V", "pA", "V"}, mode = WAVE_DATA)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 	WAVE textualValues = GetLBTextualValues(str)
