@@ -2321,6 +2321,27 @@ Function DAP_CheckSettings(device, mode)
 				if(DAP_CheckStimset(device, CHANNEL_TYPE_DAC, i, NaN))
 					return 1
 				endif
+
+				if(DAP_CheckChannel(device, CHANNEL_TYPE_DAC, i))
+					return 1
+				endif
+			endif
+		endfor
+
+		WAVE statusADFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_ADC)
+		numEntries = DimSize(statusADFiltered, ROWS)
+		for(i = 0; i < numEntries; i += 1)
+
+			if(!statusADFiltered[i])
+				continue
+			endif
+
+			headstage = AFH_GetHeadstageFromADC(device, i)
+
+			if(IsNaN(headstage)) // unassoc AD
+				if(DAP_CheckChannel(device, CHANNEL_TYPE_ADC, i))
+					return 1
+				endif
 			endif
 		endfor
 
