@@ -517,6 +517,16 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		base_unit_ref = "volts"
 
 		CHECK_EQUAL_STR(unit, base_unit_ref)
+	elseif(!CmpStr(unit_ref, "V"))
+		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
+		CHECK_CLOSE_VAR(conversion, 1, tol = 1e-3)
+
+		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
+
+		// translate back to hardcoded units
+		base_unit_ref = "volts"
+
+		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(IsEmpty(unit_ref)) // TTL data
 		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
 		CHECK_CLOSE_VAR(conversion, 1)

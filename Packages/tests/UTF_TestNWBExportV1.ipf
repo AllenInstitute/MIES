@@ -490,6 +490,13 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "V"
 		CHECK_EQUAL_STR(unit, base_unit_ref)
+	elseif(!CmpStr(unit_ref, "V"))
+		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
+		CHECK_CLOSE_VAR(conversion, 1, tol = 1e-3)
+
+		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
+		base_unit_ref = "V"
+		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(IsEmpty(unit_ref)) // TTL data
 		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
 		CHECK_CLOSE_VAR(conversion, 1)

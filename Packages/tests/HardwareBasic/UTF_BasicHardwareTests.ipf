@@ -615,6 +615,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			CHECK_WAVE(settings, TEXT_WAVE)
 
 			// fetch some labnotebook entries, the last channel is unassociated
+			Make/FREE/T expectedUnits = {"pA", "pA", "V"}
 			for(k = 0; k < DimSize(ADCs, ROWS); k += 1)
 				[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", j, "AD ChannelType", ADCs[k], XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(settings[index], DAQ_CHANNEL_TYPE_DAQ)
@@ -622,10 +623,10 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "AD Unit", ADCs[k], XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
 				WAVE/T settingsText = settings
 				str = settingsText[index]
-				expectedStr= "pA"
-				CHECK_EQUAL_STR(str, expectedStr)
+				CHECK_EQUAL_STR(str, expectedUnits[k])
 			endfor
 
+			Make/FREE/T expectedUnits = {"mV", "mV", "V"}
 			for(k = 0; k < DimSize(DACs, ROWS); k += 1)
 				[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", j, "DA ChannelType", DACs[k], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(settings[index], DAQ_CHANNEL_TYPE_DAQ)
@@ -633,8 +634,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "DA Unit", DACs[k], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 				WAVE/T settingsText = settings
 				str = settingsText[index]
-				expectedStr= "mV"
-				CHECK_EQUAL_STR(str, expectedStr)
+				CHECK_EQUAL_STR(str, expectedUnits[k])
 			endfor
 
 			// test GetActiveChannels

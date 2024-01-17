@@ -1420,30 +1420,28 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 
 	REQUIRE(WindowExists(device))
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	Duplicate/FREE s.hs, sutterRequirementCheck
+	sutterRequirementCheck[] = s.aso[p] == 1 && s.hs[p] == 1
+	if(!(sum(sutterRequirementCheck) == 1 && sutterRequirementCheck[0] == 1))
+		INFO("SUTTER hardware currently supports only 1 HS")
+		CHECK(0)
+		UnRegisterIUTFMonitor()
+		Abort
+	endif
+
+	WAVE deviceInfo = GetDeviceInfoWave(device)
+#endif
+
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		PGC_SetAndActivateControl(device, "Popup_Settings_Headstage", val = i)
-		PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 
-		if(!s.hs[i])
-			ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-			PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_UNSELECTED, switchTab = 1)
+		if(s.hs[i] == 0)
+#ifndef TESTS_WITH_SUTTER_HARDWARE
+			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+#endif
 			continue
-		endif
-
-		PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = num2str(s.da[i]))
-		PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = num2str(s.da[i]))
-		PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = num2str(s.ad[i]))
-		PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = num2str(s.ad[i]))
-
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-		PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_SELECTED, switchTab = 1)
-
-		if(s.amp && activeHS < 2)
-			// first entry is none
-			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1 + activeHS)
-
-			PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 		endif
 
 		if(IsEmpty(s.st[i]))
@@ -1451,6 +1449,56 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 		else
 			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 			PGC_SetAndActivateControl(device, ctrl, str = s.st[i])
+		endif
+
+#ifndef TESTS_WITH_SUTTER_HARDWARE
+		PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = num2str(s.da[i]))
+		PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = num2str(s.da[i]))
+		PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = num2str(s.ad[i]))
+		PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = num2str(s.ad[i]))
+#endif
+
+		if(s.aso[i] != 1)
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+			INFO("Unassociated channel %d is setup on an existing HS", n0=i)
+			CHECK_GT_VAR(i + 1, deviceInfo[%DA])
+#endif
+#ifndef TESTS_WITH_SUTTER_HARDWARE
+			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+#endif
+			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+			PGC_SetAndActivateControl(device, ctrl, val=1)
+			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
+			PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_SELECTED)
+			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+			PGC_SetAndActivateControl(device, ctrl, str="V")
+			ctrl = GetPanelControl(s.ad[i], CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+			PGC_SetAndActivateControl(device, ctrl, val=1)
+			ctrl = GetPanelControl(s.ad[i], CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
+			PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_SELECTED)
+			ctrl = GetPanelControl(s.ad[i], CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+			PGC_SetAndActivateControl(device, ctrl, str="V")
+
+			continue
+		endif
+		// associated HS below here
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+		PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_SELECTED, switchTab = 1)
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+		INFO("Associated HS %d does not exist on this Sutter HW setup", n0=i)
+		CHECK_LT_VAR(i, deviceInfo[%DA])
+		INFO("Requested DA channel %d for HS %d does not match fixed DA channel of Sutter HW setup", n0=s.da[i], n1=i)
+		CHECK_EQUAL_VAR(i, s.da[i])
+		INFO("Requested AD channel %d for HS %d does not match fixed AD channel of Sutter HW setup", n0=s.ad[i], n1=i)
+		CHECK_EQUAL_VAR(i, s.ad[i])
+#endif
+
+		if(s.amp && activeHS < 2)
+			// first entry is none
+			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1 + activeHS)
+
+			PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 		endif
 
 		if(!IsEmpty(s.ist[i]))
@@ -1469,14 +1517,6 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 		ctrl = DAP_GetClampModeControl(s.cm[i], i)
 		PGC_SetAndActivateControl(device, ctrl, val = 1)
 		DoUpdate/W=$device
-
-		if(!s.aso[i])
-			// clear the headstages channel connection and make the DA and AD channels unassociated
-			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-
-			ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-			PGC_SetAndActivateControl(device, ctrl , val=CHECKBOX_UNSELECTED)
-		endif
 
 		activeHS += 1
 	endfor
