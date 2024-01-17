@@ -2559,13 +2559,11 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 		return 1
 	endif
 
-	unit = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DACchannel)
-	if(isEmpty(unit))
-		printf "(%s) The unit for DACchannel %d is empty.\r", device, DACchannel
-		ControlWindowToFront()
+	if(DAP_CheckChannel(device, CHANNEL_TYPE_DAC, DACchannel))
 		return 1
 	endif
 
+	unit = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DACchannel)
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && cmpstr(DAUnit, unit))
 		printf "(%s) The configured unit for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", device, DACchannel, DAUnit, unit
 		ControlWindowToFront()
@@ -2573,33 +2571,17 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 	endif
 
 	gain = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN), index = DACchannel)
-	if(!isFinite(gain) || gain == 0)
-		printf "(%s) The gain for DACchannel %d must be finite and non-zero.\r", device, DACchannel
-		ControlWindowToFront()
-		return 1
-	endif
-
 	if(!CheckIfClose(DAGain, gain, tol=1e-4))
 		printf "(%s) The configured gain for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%d vs %d).\r", device, DACchannel, DAGain, gain
 		ControlWindowToFront()
 		return 1
 	endif
 
-	// we allow the scale being zero
-	scale = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DACchannel)
-	if(!isFinite(scale))
-		printf "(%s) The scale for DACchannel %d must be finite.\r", device, DACchannel
-		ControlWindowToFront()
+	if(DAP_CheckChannel(device, CHANNEL_TYPE_ADC, ADCchannel))
 		return 1
 	endif
 
 	unit = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), index = ADCchannel)
-	if(isEmpty(unit))
-		printf "(%s) The unit for ADCchannel %d is empty.\r", device, ADCchannel
-		ControlWindowToFront()
-		return 1
-	endif
-
 	if(cmpstr(ADUnit, unit))
 		printf "(%s) The configured unit for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", device, ADCchannel, ADUnit, unit
 		ControlWindowToFront()
@@ -2607,12 +2589,6 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 	endif
 
 	gain = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN), index = ADCchannel)
-	if(!isFinite(gain) || gain == 0)
-		printf "(%s) The gain for ADCchannel %d must be finite and non-zero.\r", device, ADCchannel
-		ControlWindowToFront()
-		return 1
-	endif
-
 	if(!CheckIfClose(ADGain, gain, tol=1e-4))
 		printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", device, ADCchannel, ADGain, gain
 		ControlWindowToFront()
@@ -2645,6 +2621,43 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 		endif
 	endif
 #endif
+
+	return 0
+End
+
+static Function DAP_CheckChannel(string device, variable channelType, variable channel)
+
+	string ctrl, channelName, unit
+	variable gain, scale
+
+	channelName = ChannelTypeToString(channelType)
+
+	ctrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_UNIT)
+	unit = DAG_GetTextualValue(device, ctrl, index = channel)
+	if(IsEmpty(unit))
+		printf "(%s) The unit for %s channel %d is empty.\r", device, channelName, channel
+		ControlWindowToFront()
+		return 1
+	endif
+
+	ctrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_GAIN)
+	gain = DAG_GetNumericalValue(device, ctrl, index = channel)
+	if(!IsFinite(gain) || gain == 0)
+		printf "(%s) The gain for %s channel %d must be finite and non-zero.\r", device, channelName, channel
+		ControlWindowToFront()
+		return 1
+	endif
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		// we allow the scale being zero for DA only
+		ctrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_SCALE)
+		scale = DAG_GetNumericalValue(device, ctrl, index = channel)
+		if(!IsFinite(scale) )
+			printf "(%s) The scale for %s channel %d must be finite.\r", device, channelName, channel
+			ControlWindowToFront()
+			return 1
+		endif
+	endif
 
 	return 0
 End
