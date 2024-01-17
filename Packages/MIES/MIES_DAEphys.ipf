@@ -4212,32 +4212,15 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 			break
 	endswitch
 
-	strswitch(elem1)
-		case "DataAcqHS":
-			channelType = CHANNEL_TYPE_HEADSTAGE
-			break
-		case "DA":
-			channelType = CHANNEL_TYPE_DAC
-			break
-		case "AD":
-			channelType = CHANNEL_TYPE_ADC
-			break
-		case "TTL":
-			channelType = CHANNEL_TYPE_TTL
-			break
-		case "AsyncAlarm":
-			channelType = CHANNEL_TYPE_ALARM
-			break
-		case "AsyncAD":
-			channelType = CHANNEL_TYPE_ASYNC
-			break
-		default:
-			channelIndex = NaN
-			channelType  = NaN
-			controlType  = NaN
-			return 1
-			break
-	endswitch
+	channelType = ParseChannelTypeFromString(elem1, allowFail = 1)
+
+	if(IsNaN(channelType))
+		channelIndex = NaN
+		channelType  = NaN
+		controlType  = NaN
+
+		return 1
+	endif
 
 	strswitch(elem2)
 		case "All":

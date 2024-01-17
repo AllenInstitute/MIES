@@ -839,7 +839,7 @@ static Function WBP_ChangeWaveType()
 End
 
 Function WBP_GetStimulusType()
-	return WB_ParseStimulusType(GetPopupMenuString(panel, "popup_wavebuilder_outputtype"))
+	return ParseChannelTypeFromString(GetPopupMenuString(panel, "popup_wavebuilder_outputtype"))
 End
 
 Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl

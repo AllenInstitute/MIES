@@ -454,6 +454,33 @@ Function/S ChannelTypeToString(variable channelType)
 	endswitch
 End
 
+/// @brief Convert a channel type string from ChannelTypeToString to one of the constants from @ref ChannelTypeAndControlConstants
+///
+/// @param channelType channel type
+/// @param allowFail   [optional, defaults to false] return NaN on unknown channel types (true) or assert (false)
+Function ParseChannelTypeFromString(string channelType, [variable allowFail])
+
+	allowFail = ParamIsDefault(allowFail) ? 0 : !!allowFail
+
+	strswitch(channelType)
+		case "DataAcqHS":
+			return CHANNEL_TYPE_HEADSTAGE
+		case "DA":
+			return CHANNEL_TYPE_DAC
+		case "AD":
+			return CHANNEL_TYPE_ADC
+		case "TTL":
+			return CHANNEL_TYPE_TTL
+		case "AsyncAlarm":
+			return CHANNEL_TYPE_ALARM
+		case "AsyncAD":
+			return CHANNEL_TYPE_ASYNC
+		default:
+			ASSERT(allowFail, "Invalid channelType")
+			return NaN
+	endswitch
+End
+
 /// @brief Returns the name of a control from the DA_EPHYS panel
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
