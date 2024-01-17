@@ -2718,17 +2718,6 @@ static Function WB_CheckForEmptyEpochs(string setname)
 	return 0
 End
 
-Function/S WB_SerializeStimulusType(variable stimulusType)
-	switch(stimulusType)
-		case CHANNEL_TYPE_DAC:
-			return "DA"
-		case CHANNEL_TYPE_TTL:
-			return "TTL"
-		default:
-			ASSERT(0, "unknown stimulus type")
-	endswitch
-End
-
 Function WB_ParseStimulusType(string stimulusType)
 
 	strswitch(stimulusType)
@@ -2763,7 +2752,7 @@ static Function/S WB_AssembleSetName(string basename, variable stimulusType, var
 		return ""
 	endif
 
-	result = basename + suffix + "_" + WB_SerializeStimulusType(stimulusType) + "_" + num2str(setNumber)
+	result = basename + suffix + "_" + ChannelTypeToString(stimulusType) + "_" + num2str(setNumber)
 
 	return CleanupName(result, 0)
 End

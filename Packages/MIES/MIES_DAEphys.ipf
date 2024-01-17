@@ -2801,13 +2801,7 @@ static Function DAP_CheckStimset(device, channelType, channel, headstage)
 	string setName, setNameEnd, channelTypeStr, str
 	variable i, numSets
 
-	if(channelType == CHANNEL_TYPE_DAC)
-		channelTypeStr = "DA"
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		channelTypeStr = "TTL"
-	else
-		ASSERT(0, "Unexpected channelType")
-	endif
+	channelTypeStr = ChannelTypeToString(channelType)
 
 	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE), index = channel)
 	if(!CmpStr(setName, NONE))

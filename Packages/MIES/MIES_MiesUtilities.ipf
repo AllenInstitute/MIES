@@ -433,6 +433,27 @@ Function/S GetSpecialControlLabel(channelType, controlType)
 	return RemoveEnding(GetPanelControl(0, channelType, controlType), "_00")
 End
 
+/// @brief Convert a channel type constant from @ref ChannelTypeAndControlConstants to a string
+Function/S ChannelTypeToString(variable channelType)
+
+	switch(channelType)
+		case CHANNEL_TYPE_HEADSTAGE:
+			return "DataAcqHS"
+		case CHANNEL_TYPE_DAC:
+			return "DA"
+		case CHANNEL_TYPE_ADC:
+			return "AD"
+		case CHANNEL_TYPE_TTL:
+			return "TTL"
+		case CHANNEL_TYPE_ALARM:
+			return "AsyncAlarm"
+		case CHANNEL_TYPE_ASYNC:
+			return "AsyncAD"
+		default:
+			ASSERT(0, "Invalid channelType")
+	endswitch
+End
+
 /// @brief Returns the name of a control from the DA_EPHYS panel
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
@@ -441,21 +462,7 @@ Function/S GetPanelControl(channelIndex, channelType, controlType)
 
 	string ctrl
 
-	if(channelType == CHANNEL_TYPE_HEADSTAGE)
-		ctrl = "DataAcqHS"
-	elseif(channelType == CHANNEL_TYPE_DAC)
-		ctrl = "DA"
-	elseif(channelType == CHANNEL_TYPE_ADC)
-		ctrl = "AD"
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		ctrl = "TTL"
-	elseif(channelType == CHANNEL_TYPE_ALARM)
-		ctrl = "AsyncAlarm"
-	elseif(channelType == CHANNEL_TYPE_ASYNC)
-		ctrl = "AsyncAD"
-	else
-		ASSERT(0, "Invalid channelType")
-	endif
+	ctrl = ChannelTypeToString(channelType)
 
 	if(controlType == CHANNEL_CONTROL_WAVE)
 		ctrl = "Wave_" + ctrl
