@@ -2947,7 +2947,7 @@ Function AB_ButtonProc_AddFiles(ba) : ButtonControl
 	return 0
 End
 
-static Function AB_AddElementToSourceList(string entry)
+Function AB_AddElementToSourceList(string entry)
 
 	variable size
 
