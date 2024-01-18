@@ -116,9 +116,7 @@ End
 
 Function TEST_CASE_END_OVERRIDE(string testcase)
 
-	AdditionalExperimentCleanup()
-
-	CheckForBugMessages()
+	TestCaseEndCommon()
 End
 
 Function DownloadFile(string file)

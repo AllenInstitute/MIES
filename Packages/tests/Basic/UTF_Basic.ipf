@@ -152,7 +152,5 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 End
 
 Function TEST_CASE_END_OVERRIDE(string testcase)
-	CheckForBugMessages()
-
-	AdditionalExperimentCleanup()
+	TestCaseEndCommon()
 End
