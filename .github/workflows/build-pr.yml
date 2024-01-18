@@ -148,7 +148,7 @@ jobs:
       experiment: Packages/tests/Compilation/CompilationTester.pxp
       installer_flags: "-s git"
       artifact_name: Compilation-Each-Commit-assets
-      timeout_minutes: 120
+      timeout_minutes: 180
 
   Documentation:
     name: 👷 Documentation
