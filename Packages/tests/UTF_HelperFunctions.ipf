@@ -750,10 +750,21 @@ Function TestCaseBeginCommon()
 	AdditionalExperimentCleanup()
 End
 
-Function TestCaseEndCommon()
+Function TestCaseEndCommon([variable restartAsyncFramework])
+
+	restartAsyncFramework = ParamIsDefault(restartAsyncFramework) ? 0 : !!restartAsyncFramework
+
 	CheckForBugMessages()
 
+	if(restartAsyncFramework)
+		ASYNC_Stop()
+	endif
+
 	AdditionalExperimentCleanup()
+
+	if(restartAsyncFramework)
+		ASYNC_Start(ThreadProcessorCount, disableTask = 1)
+	endif
 End
 
 Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable minValue, variable maxValue)

@@ -166,8 +166,6 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 	StopAllBackgroundTasks()
 
-	CheckForBugMessages()
-
 	if(expensiveChecks)
 		// store experiment NWB file for later validation
 		HDF5CloseFile/A/Z 0
@@ -183,9 +181,7 @@ Function TEST_CASE_END_OVERRIDE(name)
 		endif
 	endif
 
-	ASYNC_Stop()
-	AdditionalExperimentCleanup()
-	ASYNC_Start(ThreadProcessorCount, disableTask = 1)
+	TestCaseEndCommon(restartAsyncFramework = 1)
 End
 
 /// @brief Checks user epochs for consistency
