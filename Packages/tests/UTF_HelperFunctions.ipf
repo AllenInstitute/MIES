@@ -756,14 +756,16 @@ Function TestCaseEndCommon([variable restartAsyncFramework])
 
 	CheckForBugMessages()
 
-	if(restartAsyncFramework)
-		ASYNC_Stop()
-	endif
+	if(GetWaveTrackingMode() != UTF_WAVE_TRACKING_NONE)
+		if(restartAsyncFramework)
+			ASYNC_Stop()
+		endif
 
-	AdditionalExperimentCleanup()
+		AdditionalExperimentCleanup()
 
-	if(restartAsyncFramework)
-		ASYNC_Start(ThreadProcessorCount, disableTask = 1)
+		if(restartAsyncFramework)
+			ASYNC_Start(ThreadProcessorCount, disableTask = 1)
+		endif
 	endif
 End
 
