@@ -155,7 +155,4 @@ Function TEST_CASE_END_OVERRIDE(string testcase)
 	CheckForBugMessages()
 
 	AdditionalExperimentCleanup()
-
-	DFREF dfr = GetMIESPath()
-	KillDataFolder dfr
 End
