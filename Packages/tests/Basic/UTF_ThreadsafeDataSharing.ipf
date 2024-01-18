@@ -14,7 +14,7 @@ End
 
 static Function TEST_CASE_END_OVERRIDE(string testname)
 
-	AdditionalExperimentCleanup()
+	TestCaseEndCommon()
 
 	TUFXOP_Clear/N=(KEY)/Q/Z
 End
