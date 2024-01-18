@@ -440,7 +440,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	variable err
 	string miesPath
 
-	AdditionalExperimentCleanup()
+	TestCaseBeginCommon()
 
 	miesPath = GetMiesPathAsString()
 	DuplicateDataFolder/O=1 root:MIES_backup, $miesPath

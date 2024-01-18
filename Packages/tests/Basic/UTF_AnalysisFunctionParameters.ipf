@@ -12,7 +12,7 @@ End
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
-	AdditionalExperimentCleanup()
+	TestCaseBeginCommon()
 
 	MoveStimsetsIntoPlace()
 End

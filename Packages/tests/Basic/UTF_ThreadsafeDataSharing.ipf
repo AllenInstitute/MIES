@@ -7,7 +7,7 @@ static StrConstant KEY = "abcd"
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 
-	AdditionalExperimentCleanup()
+	TestCaseBeginCommon()
 
 	TUFXOP_Clear/N=(KEY)/Q/Z
 End

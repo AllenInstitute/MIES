@@ -63,7 +63,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	RegisterReentryFunction(name)
 
-	AdditionalExperimentCleanup()
+	TestCaseBeginCommon()
 
 	MoveStimsetsIntoPlace()
 

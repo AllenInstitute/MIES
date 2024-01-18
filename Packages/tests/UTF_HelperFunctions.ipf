@@ -745,6 +745,11 @@ Function TestEndCommon()
 	zeromq_stop()
 End
 
+Function TestCaseBeginCommon()
+
+	AdditionalExperimentCleanup()
+End
+
 Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable minValue, variable maxValue)
 	variable chan
 	string ctrl, title, unit

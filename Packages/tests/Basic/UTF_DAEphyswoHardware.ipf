@@ -5,7 +5,7 @@
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 
-	AdditionalExperimentCleanup()
+	TestCaseBeginCommon()
 End
 
 static Function/S HAH_FillMockGuiStateWave(WAVE statusHS, WAVE clampModes)

@@ -19,7 +19,7 @@ static Constant RADIO3_CLICKED = 2
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	string testCase
 
-	AdditionalExperimentCleanup()
+	TestCaseBeginCommon()
 
 	Execute "MainPanel()"
 	variable/G priorityFlag = 0

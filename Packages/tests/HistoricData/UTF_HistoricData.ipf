@@ -111,7 +111,7 @@ End
 Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
-	AdditionalExperimentCleanup()
+	TestCaseBeginCommon()
 End
 
 Function TEST_CASE_END_OVERRIDE(string testcase)
