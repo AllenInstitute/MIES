@@ -1101,7 +1101,7 @@ End
 
 Structure DAQSettings
 	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP, ITP, FAR
-	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM, STP, TBP
+	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM, STP, TBP, TPD
 	string FFR
 
 	WAVE hs, da, ad, cm, ttl, aso
@@ -1257,6 +1257,8 @@ Function InitDAQSettingsFromString(s, str)
 
 	s.ffr = ParseString(str, "_FFR", defValue = NONE)
 
+	s.tpd = ParseNumber(str, "_TPD", defValue = NaN)
+
 	WAVE/T/Z hsConfig = ListToTextWave(str, "__")
 
 	if(WaveExists(hsConfig))
@@ -1374,6 +1376,7 @@ End
 /// - Save TP: (STP: 1/0), defaults to 0
 /// - TP Baseline Percentage: (TBP: [25, 49])
 /// - Fixed frequency acquisition: (FFR: see @ref DAP_GetSamplingFrequencies() for available values)
+/// - TP Duration: (TPD: [5, inf[)
 ///
 /// HeadstageConfig:
 /// - Full specification: __HSXX_ADXX_DAXX_CM:XX:_ST:XX:_IST:XX:_AF:XX:_IAF:XX:_ASOXX
@@ -1571,6 +1574,10 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 	// these don't have good defaults
 	if(IsFinite(s.iti))
 		PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = s.iti)
+	endif
+
+	if(IsFinite(s.tpd))
+		PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPDuration", val = s.tpd)
 	endif
 
 	PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = s.tpi)
