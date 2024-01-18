@@ -7391,11 +7391,12 @@ End
 
 static Function CheckLogFiles()
 
-	// ensure that the ZeroMQ logfile exists as well
-	PrepareForPublishTest()
-
-	string file
+	string file, line
 	variable foundFiles, jsonID
+
+	// ensure that the ZeroMQ logfile exists as well
+	// and also have the right layout
+	PrepareForPublishTest()
 
 	WAVE/T filesAndOther = GetLogFileNames()
 	Duplicate/RMD=[][0]/FREE/T filesAndOther, files
@@ -7409,16 +7410,28 @@ static Function CheckLogFiles()
 		CHECK_WAVE(contents, TEXT_WAVE)
 		CHECK_GT_VAR(DimSize(contents, ROWS), 0)
 
-		if(!cmpstr(contents[0], "{}"))
+		for(line : contents)
+			if(cmpstr(line, "{}"))
+				break
+			endif
+		endfor
+
+		if(!cmpstr(line, "{}"))
+			// only {} inside the file, no need to check for timestamp
 			continue
 		endif
 
-		jsonID = JSON_Parse(contents[0])
+		jsonID = JSON_Parse(line)
 		CHECK(JSON_IsValid(jsonID))
+
+		INFO("File: \"%s\", Line: \"%s\"", s0 = file, s1 = line)
 
 		CHECK(MIES_LOG#LOG_HasRequiredKeys(jsonID))
 		WAVE/T keys = JSON_GetKeys(jsonID, "")
 		FindValue/TEXT="ts" keys
+
+		INFO("File: \"%s\", Line: \"%s\"", s0 = file, s1 = line)
+
 		CHECK_GE_VAR(V_Value, 0)
 
 		foundFiles += 1
