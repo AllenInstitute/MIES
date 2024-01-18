@@ -48,6 +48,10 @@ Function TEST_BEGIN_OVERRIDE(name)
 	TestBeginCommon()
 End
 
+Function TEST_END_OVERRIDE(string name)
+	TestEndCommon()
+End
+
 Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
