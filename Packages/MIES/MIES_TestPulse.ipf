@@ -1488,16 +1488,24 @@ Function TP_CreateTestPulseWave(device, dataAcqOrTP)
 	variable totalLengthPoints, pulseStartPoints, pulseLengthPoints
 
 	WAVE TestPulse = GetTestPulse()
+
+	[totalLengthPoints, pulseStartPoints, pulseLengthPoints] = TP_GetCreationPropertiesInPoints(device, dataAcqOrTP)
+
+	Redimension/N=(totalLengthPoints) TestPulse
+	FastOp TestPulse = 0
+
+	TestPulse[pulseStartPoints, pulseStartPoints + pulseLengthPoints] = 1
+End
+
+Function [variable totalLengthPoints, variable pulseStartPoints, variable pulseLengthPoints] TP_GetCreationPropertiesInPoints(string device, variable dataAcqOrTP)
+
 	WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 
 	totalLengthPoints = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%totalLengthPointsTP] : TPSettingsCalc[%totalLengthPointsDAQ]
 	pulseStartPoints  = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseStartPointsTP] : TPSettingsCalc[%pulseStartPointsDAQ]
 	pulseLengthPoints = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseLengthPointsTP] : TPSettingsCalc[%pulseLengthPointsDAQ]
 
-	Redimension/N=(totalLengthPoints) TestPulse
-	FastOp TestPulse = 0
-
-	TestPulse[pulseStartPoints, pulseStartPoints + pulseLengthPoints] = 1
+	return [totalLengthPoints, pulseStartPoints, pulseLengthPoints]
 End
 
 /// @brief Prepares a TP data set data folder to the asynchroneous analysis function TP_TSAnalysis
