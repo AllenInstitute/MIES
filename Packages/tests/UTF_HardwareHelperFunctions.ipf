@@ -1102,6 +1102,7 @@ End
 Structure DAQSettings
 	variable MD, RA, IDX, LIDX, BKG_DAQ, RES, DB, AMP, ITP, FAR
 	variable oodDAQ, dDAQ, OD, TD, TP, ITI, GSI, TPI, DAQ, DDL, SIM, STP, TBP
+	string FFR
 
 	WAVE hs, da, ad, cm, ttl, aso
 	WAVE/T st, ist, af, st_ttl, iaf
@@ -1254,6 +1255,8 @@ Function InitDAQSettingsFromString(s, str)
 
 	s.sim = ParseNumber(str, "_SIM", defValue = 1)
 
+	s.ffr = ParseString(str, "_FFR", defValue = NONE)
+
 	WAVE/T/Z hsConfig = ListToTextWave(str, "__")
 
 	if(WaveExists(hsConfig))
@@ -1370,6 +1373,7 @@ End
 /// - Sampling interval multiplier (SIM: 1, 2, 4, ..., 64), defaults to 1
 /// - Save TP: (STP: 1/0), defaults to 0
 /// - TP Baseline Percentage: (TBP: [25, 49])
+/// - Fixed frequency acquisition: (FFR: see @ref DAP_GetSamplingFrequencies() for available values)
 ///
 /// HeadstageConfig:
 /// - Full specification: __HSXX_ADXX_DAXX_CM:XX:_ST:XX:_IST:XX:_AF:XX:_IAF:XX:_ASOXX
@@ -1559,6 +1563,10 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = s.gsi)
 
 	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = num2str(s.sim))
+
+	if(cmpstr(s.ffr, NONE))
+		PGC_SetAndActivateControl(device, "Popup_Settings_FixedFreq", str = s.ffr)
+	endif
 
 	// these don't have good defaults
 	if(IsFinite(s.iti))
