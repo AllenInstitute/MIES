@@ -2767,7 +2767,8 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 		singleSelect[0][%CHANNELTYPE] = chanType
 		singleSelect[0][%CHANNELNUMBER] = chanNr
 
-		WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, {-Inf, Inf}, singleSelect, SF_OP_TP)
+		WAVE/WAVE range = SFH_AsDataSet(SFH_GetFullRange())
+		WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, range, singleSelect, SF_OP_TP)
 		SFH_ASSERT(DimSize(sweepDataRef, ROWS) == 1, "Could not retrieve sweep data for " + num2istr(sweepNo))
 		WAVE/Z sweepData = sweepDataRef[0]
 		SFH_ASSERT(WaveExists(sweepData), "No sweep data for " + num2istr(sweepNo) + " found.")
@@ -4343,7 +4344,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	SFH_ASSERT(numArgs >= 1, "data function requires at least 1 argument.")
 	SFH_ASSERT(numArgs <= 2, "data function has maximal 2 arguments.")
 
-	WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_DATA, 0)
+	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_DATA, 0)
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_DATA, 1)
 
 	WAVE/WAVE output = SFH_GetSweepsForFormula(graph, range, selectData, SF_OP_DATA)

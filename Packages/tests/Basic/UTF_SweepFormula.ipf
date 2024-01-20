@@ -2488,7 +2488,7 @@ End
 static Function TestOperationData()
 
 	variable i, j, numChannels, sweepNo, sweepCnt, numResultsRef, clampMode
-	string str, epochStr, name, trace
+	string str, strSelect, epochStr, name, trace
 	string win, device
 	variable mode = DATA_ACQUISITION_MODE
 	variable numSweeps = 2
@@ -2590,6 +2590,43 @@ static Function TestOperationData()
 	ranges[3][1] = rangeEnd0
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {3, 1, 3, 1}, ranges=ranges)
 	CheckSweepsMetaData(dataWref, {0, 0, 0, 0}, {6, 6, 7, 7}, {0, 0, 0, 0}, SF_DATATYPE_SWEEP)
+
+	// this part specifies to numerical range 0,2 and 0,4
+	// Selected is sweep 0, AD, channel 6 and sweep 0, AD, channel 7
+	sweepCnt = 1
+	strSelect = "select(channels(AD),[" + num2istr(sweepNo) + "],all)"
+	str = "data([[0,0],[2,4]]," + strSelect + ")"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
+	numResultsRef = sweepCnt * numChannels / 2 * 2 // 2 ranges specified
+
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[0][0] = 0
+	ranges[0][1] = 2
+	ranges[1][0] = 0
+	ranges[1][1] = 4
+	ranges[2][0] = 0
+	ranges[2][1] = 2
+	ranges[3][0] = 0
+	ranges[3][1] = 4
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 1, 3}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {0, 0, 0, 0}, {6, 6, 7, 7}, {0, 0, 0, 0}, SF_DATATYPE_SWEEP)
+
+	// This part uses a epochs operation with offset to retrieve ranges
+	// Selected is sweep 0, AD, channel 6 and sweep 0, AD, channel 7
+	// The epoch "TestEpoch" is retrieved for both and offsetted by zero.
+	sweepCnt = 1
+	strSelect = "select(channels(AD),[" + num2istr(sweepNo) + "],all)"
+	str = "data(epochs(\"TestEpoch\"," + strSelect + ")+[0,0]," + strSelect + ")"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
+	numResultsRef = sweepCnt * numChannels / 2
+
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[0][0] = rangeStart0
+	ranges[0][1] = rangeEnd0
+	ranges[1][0] = rangeStart0
+	ranges[1][1] = rangeEnd0
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
 	str = "data([\"TestEpoch\",\"TestEpoch1\"],select(channels(AD),[" + num2istr(sweepNo) + "],all))"

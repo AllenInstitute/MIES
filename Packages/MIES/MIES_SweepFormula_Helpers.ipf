@@ -318,9 +318,35 @@ Function SFH_IsFullRange(WAVE range)
 	return	EqualWaves(rangeRef, range, EQWAVES_DATA)
 End
 
+Function/WAVE SFH_AsDataSet(WAVE data)
+
+	Make/FREE/WAVE/N=1 output
+	output[0] = data
+
+	return output
+End
+
+/// @brief Formula "cursors(A,B)" can return NaNs if no cursor(s) are set.
+static Function SFH_ExtendIncompleteRanges(WAVE ranges)
+
+	for(WAVE wv : ranges)
+		if(IsNumericWave(wv))
+			SFH_ASSERT(DimSize(wv, ROWS) == 2, "Numerical range must have two rows in the form [start, end].")
+			wv[0][] = IsNaN(wv[0][q]) ? -Inf : wv[0][q]
+			wv[1][] = IsNaN(wv[1][q]) ? Inf : wv[1][q]
+		endif
+	endfor
+End
+
 /// @brief Evaluate range parameter
 ///
-/// Range can be `[100-200]` or implicit as `cursors(A, B)` or a named epoch `E0` or a wildcard expression with epochs `E*`
+/// Range is read as dataset(s), it can be per dataset:
+/// numerical 1d: `[start,end]`
+/// numerical 2d with multiple ranges: `[[start1,start2,start3],[end1,end2,end3]]`
+/// implicit: `cursors(A, B)` or `[cursors(A, B), cursors(C, D)]`
+/// implicit: `epochs([E0, TP])`
+/// implicit with offset calculcation: `epochs(E0) + [1, -1]`
+/// named epoch: `E0` or a as wildcard expression `E*`
 Function/WAVE SFH_EvaluateRange(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
 
 	variable numArgs
@@ -328,23 +354,13 @@ Function/WAVE SFH_EvaluateRange(variable jsonId, string jsonPath, string graph, 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
-		WAVE range = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, opShort, argNum, checkExist=1)
-	else
-		return SFH_GetFullRange()
+		WAVE/WAVE ranges = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		SFH_ExtendIncompleteRanges(ranges)
+
+		return ranges
 	endif
 
-	SFH_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
-
-	if(IsTextWave(range))
-		SFH_ASSERT(DimSize(range, ROWS) > 0, "Epoch range can not be empty.")
-	else
-		SFH_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is of the form [rangeStart, rangeEnd].")
-		// convert an empty range to a full range
-		// an empty range can happen with cursors() as input when there are no cursors
-		range[] = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
-	endif
-
-	return range
+	return SFH_AsDataSet(SFH_GetFullRange())
 End
 
 /// @brief Returns a range from a epochName
@@ -393,35 +409,31 @@ Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable swe
 	return range
 End
 
-/// @brief Return a wave reference wave with the requested sweep data
+/// @brief Return a wave reference wave with the requested sweep data. The argument range can contain multiple datasets,
+///        if it is a single dataset the range(s) are extracted from each selection,
+///        if there are multiple datasets then the number of datasets must equal the number of selections,
+///        for that case range datasets and selections are indexed the same.
+///        This is usually only senseful if the same select arguments are used for e.g. data to retrieve sweeps and epochs to retrieve ranges.
 ///
 /// All wave input parameters are treated as const and are thus *not* modified.
 ///
 /// @param graph      name of databrowser graph
-/// @param range      numeric/text wave defining the x-range of the extracted
-///                   data, see also SFH_EvaluateRange()
+/// @param range      wave ref wave with range specification defining the x-range of the extracted
+///                   data, see also SFH_EvaluateRange(), range specification per dataset can be numerical or text
 /// @param selectData channel/sweep selection, see also SFH_GetArgumentSelect()
 /// @param opShort    operation name (short)
-Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectData, string opShort)
+Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z selectData, string opShort)
 
-	variable i, j, rangeStart, rangeEnd, sweepNo
+	variable i, j, rangeStart, rangeEnd, sweepNo, isSingleRange
 	variable chanNr, chanType, cIndex, isSweepBrowser
-	variable numSelected, index, numEpochPatterns, numRanges, numEpochs, epIndex, lastx
+	variable numSelected, index, numRanges, numEpochs, epIndex, lastx
 	string dimLabel, device, dataFolder, epochTag, epochShortName
 	string	allEpochsRegex = "^.*$"
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
 
-	SFH_ASSERT(DimSize(range, COLS) == 0, "Range must be a 1d wave.")
-	if(IsTextWave(range))
-		SFH_ASSERT(DimSize(range, ROWS) > 0, "Epoch range can not be empty.")
-		WAVE/T epochNames = range
-		numEpochPatterns = DimSize(epochNames, ROWS)
-	else
-		SFH_ASSERT(DimSize(range, ROWS) == 2, "A numerical range must have two rows for range start and end.")
-		numEpochPatterns = 1
-	endif
-	if(!WaveExists(selectData))
+	isSingleRange = DimSize(range, ROWS) == 1
+	if(!WaveExists(selectData) || DimSize(range, ROWS) == 0)
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
 		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
 		return output
@@ -429,6 +441,10 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 	SFH_ASSERT(DimSize(selectData, COLS) == 3, "Select data must have 3 columns.")
 
 	numSelected = DimSize(selectData, ROWS)
+	if(!isSingleRange)
+		SFH_ASSERT(DimSize(range, ROWS) == numSelected, "Number of ranges is not equal number of selection.")
+	endif
+
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numSelected)
 
 	isSweepBrowser = BSP_IsSweepBrowser(graph)
@@ -443,6 +459,19 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 	endif
 
 	for(i = 0; i < numSelected; i += 1)
+
+		WAVE/Z setRange = range[isSingleRange ? 0 : i]
+
+		if(!WaveExists(setRange))
+			continue
+		endif
+
+		if(IsTextWave(setRange))
+			WAVE/T epochNames = setRange
+			SFH_ASSERT(!DimSize(epochNames, COLS), "Expected 1d text wave for epoch specification")
+		else
+			WAVE/Z/T epochNames = $""
+		endif
 
 		sweepNo = selectData[i][%SWEEP]
 		chanNr = selectData[i][%CHANNELNUMBER]
@@ -504,8 +533,10 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE range, WAVE/Z selectDat
 				endif
 			endfor
 		else
-			Duplicate/FREE range, adaptedRange
-			Redimension/N=(-1, 1) adaptedRange
+			Duplicate/FREE setRange, adaptedRange
+			if(!DimSize(adaptedRange, COLS))
+				Redimension/N=(-1, 1) adaptedRange
+			endif
 		endif
 
 		SFH_ASSERT(!SFH_IsEmptyRange(adaptedRange), "Specified range not valid.")
