@@ -120,8 +120,6 @@ End
 
 static Function CheckTPEntriesFromLBN_PreAcq(string device)
 
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPDuration", val = 15)
-
 	PGC_SetAndActivateControl(device, "setvar_Settings_TP_RTolerance", val = 2)
 	PGC_SetAndActivateControl(device, "setvar_Settings_TPBuffer", val = 3)
 
@@ -162,7 +160,7 @@ End
 static Function CheckTPEntriesFromLBN([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI5_TBP30"          + \
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI5_TBP30_TPD15"    + \
 								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
 								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
