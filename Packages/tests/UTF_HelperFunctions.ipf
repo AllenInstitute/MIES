@@ -745,6 +745,30 @@ Function TestEndCommon()
 	zeromq_stop()
 End
 
+Function TestCaseBeginCommon()
+
+	AdditionalExperimentCleanup()
+End
+
+Function TestCaseEndCommon([variable restartAsyncFramework])
+
+	restartAsyncFramework = ParamIsDefault(restartAsyncFramework) ? 0 : !!restartAsyncFramework
+
+	CheckForBugMessages()
+
+	if(GetWaveTrackingMode() != UTF_WAVE_TRACKING_NONE)
+		if(restartAsyncFramework)
+			ASYNC_Stop()
+		endif
+
+		AdditionalExperimentCleanup()
+
+		if(restartAsyncFramework)
+			ASYNC_Start(ThreadProcessorCount, disableTask = 1)
+		endif
+	endif
+End
+
 Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable minValue, variable maxValue)
 	variable chan
 	string ctrl, title, unit

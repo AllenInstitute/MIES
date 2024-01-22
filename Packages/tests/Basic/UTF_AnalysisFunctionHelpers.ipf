@@ -10,7 +10,7 @@ static Constant NUM_REPEATS = 10
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	string testCase
 
-	AdditionalExperimentCleanup()
+	TestCaseBeginCommon()
 
 	// fake one existing sweep
 	DFREF dfr = GetDeviceDataPath(device)

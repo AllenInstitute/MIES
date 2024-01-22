@@ -428,9 +428,8 @@ static Function TEST_END_OVERRIDE(string name)
 End
 
 static Function TEST_CASE_END_OVERRIDE(string testcase)
-	CheckForBugMessages()
 
-	AdditionalExperimentCleanup()
+	TestCaseEndCommon()
 End
 
 // use copy of mies folder and restore it each time
@@ -440,7 +439,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	variable err
 	string miesPath
 
-	AdditionalExperimentCleanup()
+	TestCaseBeginCommon()
 
 	miesPath = GetMiesPathAsString()
 	DuplicateDataFolder/O=1 root:MIES_backup, $miesPath
