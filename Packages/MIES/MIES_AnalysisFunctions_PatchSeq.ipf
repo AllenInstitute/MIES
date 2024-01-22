@@ -174,6 +174,18 @@ static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
 static Constant PSQ_RHEOBASE_DURATION = 500
 
+// minimum frequency distance between two measurements
+static Constant PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE = 15
+
+// fallback x-steps, not used for overshoot correction
+static Constant PSQ_DA_ABS_DASCALE_MIN_DISTANCE = 25
+static Constant PSQ_DA_ABS_DASCALE_MAX_DISTANCE = 50
+
+static Constant PSQ_DA_SLOPE_PERCENTAGE_DEFAULT         = 10
+static Constant PSQ_DA_NUM_POINTS_LINE_FIT              = 2
+static Constant PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED = 3
+static Constant PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT     = 20
+
 /// @brief Fills `s` according to the analysis function type
 Function PSQ_GetPulseSettingsForType(type, s)
 	variable                  type
@@ -2117,9 +2129,10 @@ End
 /// @brief Calculate a list of DAScale values which need to be acquired in
 ///        addition so that the AP frequency differences between consecutive points is
 ///        smaller than `maxFrequencyChangePercent`.
-static Function/WAVE PSQ_DS_GatherOvershootCorrection(WAVE apfreqParam, WAVE DAScalesParam, WAVE/Z futureDAScalesHistoric, variable maxFrequencyChangePercent)
+static Function/WAVE PSQ_DS_GatherOvershootCorrection(WAVE apfreqParam, WAVE DAScalesParam, WAVE/Z futureDAScalesHistoric, STRUCT AnalysisFunction_V3 &s)
 
 	variable numEntries, numIterations, x, xp, y, yp, idx, i, xm, frac
+	variable maxFrequencyChangePercent, absFrequencyMinDistance
 	string msg
 
 	Duplicate/FREE apfreqParam, apfreq
@@ -2129,6 +2142,9 @@ static Function/WAVE PSQ_DS_GatherOvershootCorrection(WAVE apfreqParam, WAVE DAS
 
 	numEntries = DimSize(apfreq, ROWS)
 	ASSERT(numEntries == DimSize(DAScales, ROWS), "Non matching wave sizes")
+
+	maxFrequencyChangePercent = AFH_GetAnalysisParamNumerical("MaxFrequencyChangePercent", s.params, defValue = PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT)
+	absFrequencyMinDistance   = AFH_GetAnalysisParamNumerical("AbsFrequencyMinDistance", s.params, defValue = PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE)
 
 	Make/FREE/D/N=(MINIMUM_WAVE_SIZE) results
 
@@ -2140,19 +2156,20 @@ static Function/WAVE PSQ_DS_GatherOvershootCorrection(WAVE apfreqParam, WAVE DAS
 	for(i = 0; i < numIterations; i += 1)
 		y  = apfreq[i]
 		yp = apfreq[i + 1]
+		x  = DAScales[i]
+		xp = DAScales[i + 1]
 
 		frac = yp / y - 1
 
-		if(frac > (maxFrequencyChangePercent * PERCENT_TO_ONE))
-			x  = DAScales[i]
-			xp = DAScales[i + 1]
+		if(frac > (maxFrequencyChangePercent * PERCENT_TO_ONE) \
+		   && abs(yp - y) > absFrequencyMinDistance)
 			xm = (xp + x) / 2
 
+			// only add it if we haven't measured it already
 			if(WaveExists(futureDAScalesHistoric) && !IsNaN(GetRowIndex(futureDAScalesHistoric, val = xm)))
 				continue
 			endif
 
-			// only add it if we haven't measured it already
 			EnsureLargeEnoughWave(results, indexShouldExist = idx)
 			ASSERT(yp > y, "Incorrect data ordering")
 
@@ -2177,23 +2194,39 @@ End
 ///
 /// @param a offset of the f-I straight line fit [Hz]
 /// @param m its slope [% Hz/pA]
+/// @param x DAScale of last acquired sweep [pA]
 /// @param y frequency value of last acquired sweep [Hz]
-/// @param c MaxFrequencyChangePercent analysis parameter [%]
+/// @param s analysis function struct
 ///
 /// @return new DAScale value [pA]
-Function PSQ_DS_CalculateDAScale(variable a, variable m, variable y, variable c)
+Function PSQ_DS_CalculateDAScale(variable a, variable m, variable x, variable y, STRUCT AnalysisFunction_V3 &s)
 
-	variable yp, xp
+	variable yp, xp, absFrequencyMinDistance, absDAScaleMaxDistance, absDAScaleMinDistance, maxFrequencyChangePercent
 	string msg
 
-	ASSERT(c > PSQ_DS_MAX_FREQ_OFFSET, "Invalid PSQ_DS_MAX_FREQ_OFFSET")
-	yp = y * (1 + (c - PSQ_DS_MAX_FREQ_OFFSET) * PERCENT_TO_ONE)
-	xp = (yp - a) / (m / PICO_TO_ONE * PERCENT_TO_ONE)
+	absFrequencyMinDistance   = AFH_GetAnalysisParamNumerical("AbsFrequencyMinDistance", s.params, defValue = PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE)
+	absDAScaleMinDistance     = AFH_GetAnalysisParamNumerical("AbsDAScaleMinDistance", s.params, defValue = PSQ_DA_ABS_DASCALE_MIN_DISTANCE)
+	absDAScaleMaxDistance     = AFH_GetAnalysisParamNumerical("AbsDAScaleMaxDistance", s.params, defValue = PSQ_DA_ABS_DASCALE_MAX_DISTANCE)
+	maxFrequencyChangePercent = AFH_GetAnalysisParamNumerical("MaxFrequencyChangePercent", s.params, defValue = PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT)
 
-	sprintf msg, "result %g with a=%g, m=%g, y=%g, c=%g\r", xp, a, m, y, c
+	m = m / PICO_TO_ONE * PERCENT_TO_ONE
+
+	ASSERT(maxFrequencyChangePercent > PSQ_DS_MAX_FREQ_OFFSET, "Invalid PSQ_DS_MAX_FREQ_OFFSET")
+	yp = y * (1 + (maxFrequencyChangePercent - PSQ_DS_MAX_FREQ_OFFSET) * PERCENT_TO_ONE)
+	xp = (yp - a) / (m)
+
+	sprintf msg, "result %g with a=%g, m=%g, y=%g, maxFrequencyChangePercent=%g\r", xp, a, m, y, maxFrequencyChangePercent
 	DEBUGPRINT(msg)
 
-	ASSERT(IsFinite(xp), "Invalid calcuated DaScale value")
+	ASSERT(absDAScaleMinDistance < absDAScaleMaxDistance, "Invalid constant ordering")
+
+	if(CheckIfSmall(m) || abs(x - xp) > absDAScaleMaxDistance)
+		xp = x + absDAScaleMaxDistance
+	elseif(abs(y - yp) < absFrequencyMinDistance)
+		xp = x + absFrequencyMinDistance
+	endif
+
+	ASSERT(IsFinite(xp), "Invalid calculated DaScale value")
 
 	return xp
 End
@@ -2273,18 +2306,25 @@ End
 /// - Create a new line fit for the last `numPointsForLineFit` points
 /// - Check if the resulting fit slope is smaller than `slopePercentage`
 ///
-/// @retval futureDAScales
-static Function [WAVE futureDAScales, variable fitOffset, variable fitSlope, variable apfreq] PSQ_DS_EvaluateAdaptiveThresholdSweep(string device, variable sweepNo, variable headstage, variable numPointsForLineFit, variable slopePercentage, variable maxFrequencyChangePercent)
+/// @retval futureDAScales future DAScale values including the historic ones, @see PSQ_DS_GatherFutureDAScalesAndFrequency
+/// @retval fitOffset      offset of the linear curve fit
+/// @retval fitSlope       slope of the linear curve fit
+/// @retval DAScale        current DAScale value
+/// @retval apfreq         current AP frequency value
+static Function [WAVE futureDAScales, variable fitOffset, variable fitSlope, variable DAScale, variable apfreq] PSQ_DS_EvaluateAdaptiveThresholdSweep(string device, variable sweepNo, variable headstage, STRUCT AnalysisFunction_V3 &s)
 
 	string key, errMsg
-	variable maxSlope, validFit
+	variable maxSlope, validFit, numPointsForLineFit, slopePercentage
 
 	WAVE textualValues   = GetLBTextualValues(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
 
+	numPointsForLineFit = AFH_GetAnalysisParamNumerical("NumPointsForLineFit", s.params, defValue = PSQ_DA_NUM_POINTS_LINE_FIT)
+	slopePercentage     = AFH_GetAnalysisParamNumerical("SlopePercentage", s.params, defValue = PSQ_DA_SLOPE_PERCENTAGE_DEFAULT)
+
 	PSQ_DS_GatherAndWriteFrequencyToLabnotebook(device, sweepNo, headstage)
 
-	[WAVE futureDAScales, WAVE apfreqs, WAVE DAScales] = PSQ_DS_GatherFutureDAScalesAndFrequency(device, sweepNo, headstage, maxFrequencyChangePercent)
+	[WAVE futureDAScales, WAVE apfreqs, WAVE DAScales] = PSQ_DS_GatherFutureDAScalesAndFrequency(device, sweepNo, headstage, s)
 
 	[WAVE fitOffsetAll, WAVE fitSlopeAll, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, sweepNo, apfreqs, DAScales, numPointsForLineFit, singleFit = 1)
 
@@ -2315,11 +2355,17 @@ static Function [WAVE futureDAScales, variable fitOffset, variable fitSlope, var
 		apfreq = NaN
 	endif
 
+	if(WaveExists(DAScales))
+		DAScale = DAScales[Inf]
+	else
+		DAScale = NaN
+	endif
+
 	maxSlope = PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(device, sweepNo, headstage, fitSlope)
 
 	PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(device, sweepNo, headstage, validFit, fitSlope, maxSlope, slopePercentage)
 
-	return [futureDAScales, fitOffset, fitSlope, apfreq]
+	return [futureDAScales, fitOffset, fitSlope, DAScale, apfreq]
 End
 
 /// @brief Determine from the POST_SWEEP_EVENT if the set is already finished
@@ -2407,7 +2453,7 @@ Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, variable hea
 	return Sum(passedAndSlopeReached) > 0
 End
 
-static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherFutureDAScalesAndFrequency(string device, variable sweepNo, variable headstage, variable maxFrequencyChangePercent)
+static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherFutureDAScalesAndFrequency(string device, variable sweepNo, variable headstage, STRUCT AnalysisFunction_V3 &s)
 
 	string key
 
@@ -2467,7 +2513,7 @@ static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherF
 		Concatenate/NP=(ROWS) {apfreqCurrentSCIClean}, apfreq
 		Concatenate/NP=(ROWS) {DAScaleCurrentSCIClean}, DAScales
 
-		WAVE/D/Z futureDAScalesFromLastSweep = PSQ_DS_GatherOvershootCorrection(apfreq, DAScales, futureDAScalesHistoric, maxFrequencyChangePercent)
+		WAVE/D/Z futureDAScalesFromLastSweep = PSQ_DS_GatherOvershootCorrection(apfreq, DAScales, futureDAScalesHistoric, s)
 
 		if(WaveExists(futureDAScalesFromLastSweep))
 			Concatenate/FREE/NP=(ROWS) {futureDAScalesFromLastSweep}, futureDAScalesHistoric
@@ -2666,7 +2712,10 @@ Function/S PSQ_DAScale_GetParams()
 	       "[SlopePercentage:variable],"              + \
 	       "[NumPointsForLineFit:variable],"          + \
 	       "[NumInvalidSlopeSweepsAllowed:variable]," + \
-	       "[MaxFrequencyChangePercent:variable]"
+	       "[MaxFrequencyChangePercent:variable],"    + \
+	       "[AbsFrequencyMinDistance:variable],"      + \
+	       "[AbsDAScaleMinDistance:variable],"        + \
+	       "[AbsDAScaleMaxDistance:variable]"
 End
 
 Function/S PSQ_DAScale_GetHelp(string name)
@@ -2684,6 +2733,12 @@ Function/S PSQ_DAScale_GetHelp(string name)
 			       + "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\"."
 		case "DAScales":
 			return "DA Scale Factors in pA"
+		case "AbsFrequencyMinDistance":
+			return "Minimum absolute frequency distance for DAScale estimation. Only for \"AdaptiveSupra\"."
+		case "AbsDAScaleMinDistance":
+			return "Minimum absolute DAScale distance for DAScale estimation. Only for \"AdaptiveSupra\"."
+		case "AbsDAScaleMaxDistance":
+			return "Maximum absolute DAScale distance for DAScale estimation. Only for \"AdaptiveSupra\"."
 		case "MaxFrequencyChangePercent":
 			return "The maximum allowed difference for the frequency for two consecutive measurements. "           \
 			       + "In case this value is overshot, we redo the measurement with a fitting DAScale in-between. " \
@@ -2743,6 +2798,9 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Wave must have at least one entry"
 			endif
 			break
+		case "AbsFrequencyMinDistance":
+		case "AbsDAScaleMinDistance":
+		case "AbsDAScaleMaxDistance":
 		case "MaxFrequencyChangePercent":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsNullOrPositiveAndFinite(val))
@@ -2810,6 +2868,16 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			if(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params)   \
 			   >= AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params))
 				return "The minimum/maximum spike counts are not ordered properly"
+			endif
+			break
+	endswitch
+
+	strswitch(name)
+		case "AbsDAScaleMinDistance":
+		case "AbsDAScaleMaxDistance":
+			if(AFH_GetAnalysisParamNumerical("AbsDAScaleMinDistance", s.params)   \
+			   >= AFH_GetAnalysisParamNumerical("AbsDAScaleMaxDistance", s.params))
+				return "The minimum/maximum DAScale distances are not ordered properly"
 			endif
 			break
 	endswitch
@@ -2959,10 +3027,10 @@ Function PSQ_DAScale(device, s)
 
 			numSweepsPass = NaN
 
-			slopePercentage              = AFH_GetAnalysisParamNumerical("SlopePercentage", s.params, defValue = 10)
-			numPointsForLineFit          = AFH_GetAnalysisParamNumerical("NumPointsForLineFit", s.params, defValue = 2)
-			numInvalidSlopeSweepsAllowed = AFH_GetAnalysisParamNumerical("NumInvalidSlopeSweepsAllowed", s.params, defValue = 3)
-			maxFrequencyChangePercent    = AFH_GetAnalysisParamNumerical("MaxFrequencyChangePercent", s.params, defValue = 20)
+			slopePercentage              = AFH_GetAnalysisParamNumerical("SlopePercentage", s.params, defValue = PSQ_DA_SLOPE_PERCENTAGE_DEFAULT)
+			numPointsForLineFit          = AFH_GetAnalysisParamNumerical("NumPointsForLineFit", s.params, defValue = PSQ_DA_NUM_POINTS_LINE_FIT)
+			numInvalidSlopeSweepsAllowed = AFH_GetAnalysisParamNumerical("NumInvalidSlopeSweepsAllowed", s.params, defValue = PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED)
+			maxFrequencyChangePercent    = AFH_GetAnalysisParamNumerical("MaxFrequencyChangePercent", s.params, defValue = PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT)
 
 			break
 		default:
@@ -3120,10 +3188,10 @@ Function PSQ_DAScale(device, s)
 					key                      = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
 					ED_AddEntryToLabnotebook(device, key, maxSlopeLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
 
-					WAVE/D/Z futureDAScales = PSQ_DS_GatherOvershootCorrection(apfreqFromSupra, DAScalesFromSupra, $"", maxFrequencyChangePercent)
+					WAVE/D/Z futureDAScales = PSQ_DS_GatherOvershootCorrection(apfreqFromSupra, DAScalesFromSupra, $"", s)
 
 					if(PSQ_DS_AreFitResultsValid(device, s.sweepNo, s.headstage, fitOffsetFromSupra, fitSlopeFromSupra, fromSupra = 1))
-						dascale = PSQ_DS_CalculateDAScale(fitOffsetFromSupra[Inf], fitSlopeFromSupra[Inf], apfreqFromSupra[Inf], maxFrequencyChangePercent)
+						dascale = PSQ_DS_CalculateDAScale(fitOffsetFromSupra[Inf], fitSlopeFromSupra[Inf], daScalesFromSupra[Inf], apfreqFromSupra[Inf], s)
 
 						if(!WaveExists(futureDAScales))
 							Make/FREE/D/N=0 futureDAScales
@@ -3178,7 +3246,7 @@ Function PSQ_DAScale(device, s)
 					sweepPassed = baselineQCPassedLBN[s.headstage] && samplingFrequencyPassed && asyncAlarmPassed
 					break
 				case PSQ_DS_ADAPT:
-					[WAVE futureDAScales, fitOffset, fitSlope, apfreq] = PSQ_DS_EvaluateAdaptiveThresholdSweep(device, s.sweepNo, s.headstage, numPointsForLineFit, slopePercentage, maxFrequencyChangePercent)
+					[WAVE futureDAScales, fitOffset, fitSlope, DAScale, apfreq] = PSQ_DS_EvaluateAdaptiveThresholdSweep(device, s.sweepNo, s.headstage, s)
 
 					// prepare wave for setting DAScale; DAScalesIndex is incremented when required below
 					WAVE/ZZ DAScales = futureDAScales
@@ -3378,7 +3446,7 @@ Function PSQ_DAScale(device, s)
 
 						if(sweepPassed)
 							if(measuredAllFutureDAScales)
-								dascale = PSQ_DS_CalculateDAScale(fitOffset, fitSlope, apfreq, maxFrequencyChangePercent)
+								dascale = PSQ_DS_CalculateDAScale(fitOffset, fitSlope, DAScale, apfreq, s)
 								Make/FREE/D DAScaleNew = {dascale}
 								Concatenate/NP=(ROWS) {DAScaleNew}, futureDAScales
 

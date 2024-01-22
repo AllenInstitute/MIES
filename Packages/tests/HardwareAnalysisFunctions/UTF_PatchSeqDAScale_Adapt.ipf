@@ -8,24 +8,25 @@
 ///
 /// .. Column order: test overrides, analysis parameters
 ///
-///============= ==================== ===================== ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ============================== =========================== ===================
-///  Test case    Baseline chunk0 QC   Enough supra sweeps   Passing supra sweeps   Valid initial f-I slope QC   Valid initial f-I fit   Initial f-I data is dense enough   Failed f-I   Valid f-I slope QC   Fit f-I slope QC   Enough f-I points QC   Measured all future DAScales   Async QC   Sampling QC   SlopePercentage   NumPointsForLineFit   NumInvalidSlopeSweepsAllowed   MaxFrequencyChangePercent   SamplingFrequency
-///============= ==================== ===================== ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ============================== =========================== ===================
-///  PS_DS_AD1    -                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              -          ✓             def               def                   def                            25                          def
-///  PS_DS_AD2    ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          def
-///  PS_DS_AD3    [-,✓]                ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          def
-///  PS_DS_AD4    ✓                    ✓                     -                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          def
-///  PS_DS_AD5    ✓                    -                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               3                     def                            25                          def
-///  PS_DS_AD6    ✓                    ✓                     ✓                      -                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          def
-///  PS_DS_AD7    ✓                    ✓                     ✓                      -                            ✓                       -                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          def
-///  PS_DS_AD8    ✓                    ✓                     ✓                      ✓                            -                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          def
-///  PS_DS_AD9    ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            [-,-]                ✓                  ✓                      ✓                              ✓          ✓             def               def                   2                              def                         def
-///  PS_DS_AD10   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      -                              ✓          ✓             def               def                   def                            def                         def
-///  PS_DS_AD11   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓]            ✓                      ✓                              ✓          ✓             10                4                     1                              45                          def
-///  PS_DS_AD12   [✓,-,✓,✓]            ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,-,✓]          ✓                      [-,✓-,✓]                       ✓          ✓             def               def                   def                            25                          def
-///  PS_DS_AD13   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            def                         def
-///  PS_DS_AD14   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  -            ✓                    ✓                  ✓                      ✓                              ✓          -             def               def                   def                            def                         def
-///============= ==================== ===================== ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ============================== =========================== ===================
+///============= ==================== ===================== ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ============================== =========================== ======================= ======================= ========================= ===================
+///  Test case    Baseline chunk0 QC   Enough supra sweeps   Passing supra sweeps   Valid initial f-I slope QC   Valid initial f-I fit   Initial f-I data is dense enough   Failed f-I   Valid f-I slope QC   Fit f-I slope QC   Enough f-I points QC   Measured all future DAScales   Async QC   Sampling QC   SlopePercentage   NumPointsForLineFit   NumInvalidSlopeSweepsAllowed   MaxFrequencyChangePercent   AbsDAScaleMinDistance   AbsDAScaleMaxDistance   AbsFrequencyMinDistance   SamplingFrequency
+///============= ==================== ===================== ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ============================== =========================== ======================= ======================= ========================= ===================
+///  PS_DS_AD1    -                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              -          ✓             def               def                   def                            25                          1                       10                      2                         def
+///  PS_DS_AD2    ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
+///  PS_DS_AD3    [-,✓]                ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
+///  PS_DS_AD4    ✓                    ✓                     -                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
+///  PS_DS_AD5    ✓                    -                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               3                     def                            25                          1                       10                      2                         def
+///  PS_DS_AD6    ✓                    ✓                     ✓                      -                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
+///  PS_DS_AD7    ✓                    ✓                     ✓                      -                            ✓                       -                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
+///  PS_DS_AD8    ✓                    ✓                     ✓                      ✓                            -                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
+///  PS_DS_AD9    ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            [-,-]                ✓                  ✓                      ✓                              ✓          ✓             def               def                   2                              def                         1                       10                      2                         def
+///  PS_DS_AD10   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      -                              ✓          ✓             def               def                   def                            def                         1                       10                      2                         def
+///  PS_DS_AD11   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓]            ✓                      ✓                              ✓          ✓             10                4                     1                              45                          1                       10                      2                         def
+///  PS_DS_AD12   [✓,-,✓,✓]            ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,-,✓]          ✓                      [-,✓,✓]                        ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
+///  PS_DS_AD13   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          -             def               def                   def                            def                         1                       10                      2                         def
+///  PS_DS_AD14   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  -            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            def                         1                       10                      2                         def
+///  PS_DS_AD15   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      [-,-,✓]                        ✓          ✓             def               def                   def                            def                         1                       10                      2                         def
+///============= ==================== ===================== ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ============================== =========================== ======================= ======================= ========================= ===================
 ///
 /// @endrst
 
@@ -251,6 +252,10 @@ static Function PS_DS_AD1_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
 	// SamplingMultiplier, SamplingFrequency use defaults
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
@@ -343,6 +348,10 @@ static Function PS_DS_AD2_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
 	// SamplingMultiplier, SamplingFrequency use defaults
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
@@ -434,6 +443,10 @@ static Function PS_DS_AD3_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -531,6 +544,10 @@ static Function PS_DS_AD4_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
 	// SamplingMultiplier, SamplingFrequency use defaults
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
@@ -578,6 +595,10 @@ static Function PS_DS_AD5_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
 	// SamplingMultiplier, SamplingFrequency use defaults
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumPointsForLineFit", var = 3)
@@ -624,6 +645,10 @@ static Function PS_DS_AD6_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -716,6 +741,10 @@ static Function PS_DS_AD7_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -810,6 +839,10 @@ static Function PS_DS_AD8_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
 	// SamplingMultiplier, SamplingFrequency use defaults
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
@@ -855,6 +888,10 @@ static Function PS_DS_AD9_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -949,6 +986,10 @@ static Function PS_DS_AD10_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
 	// SamplingMultiplier, SamplingFrequency use defaults
 
 	// use defaults for the rest
@@ -1040,6 +1081,10 @@ static Function PS_DS_AD11_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	ST_SetStimsetParameter("PSQ_DaScale_Adapt_DA_0", "Total number of steps", var = 4)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -1141,6 +1186,10 @@ static Function PS_DS_AD12_preAcq(string device)
 
 	ST_SetStimsetParameter("PSQ_DaScale_Adapt_DA_0", "Total number of steps", var = 4)
 
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
 	// SamplingMultiplier, SamplingFrequency use defaults
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
@@ -1237,6 +1286,10 @@ static Function PS_DS_AD13_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
 	// SamplingMultiplier use defaults
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "SamplingFrequency", var = 10)
 
@@ -1303,14 +1356,14 @@ static Function PS_DS_AD13_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {2.575757575757574e-10}
-	Make/FREE/D fiSlopeRef = {2.575757575757574e-10}
-	Make/FREE/D fiOffsetRef = {5.848484848484854}
-	Make/FREE/T futureDAScalesRef = {"3.98;2.99;"}
+	Make/FREE/D maxSlopeRef = {2.550000000000001e-10}
+	Make/FREE/D fiSlopeRef = {2.550000000000001e-10}
+	Make/FREE/D fiOffsetRef = {5.899999999999999}
+	Make/FREE/T futureDAScalesRef = {"4;3;"}
 
 	Make/FREE/D fiSlopesFromSupraRef = {1e-10}
 	Make/FREE/D fiOffsetsFromSupraRef = {9}
-	Make/FREE/D DAScalesRef = {3.979999999999999}
+	Make/FREE/D DAScalesRef = {4}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1327,6 +1380,10 @@ static Function PS_DS_AD14_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -1405,6 +1462,103 @@ static Function PS_DS_AD14_REENTRY([string str])
 	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
 	Make/FREE/D DAScalesRef = {5.226666666666667, 5.22666666666667}
+
+	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
+End
+
+static Function PS_DS_AD15_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	// SamplingMultiplier, SamplingFrequency use defaults
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
+
+	// use defaults for the rest
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+
+	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+
+	Make/FREE/D apFrequenciesFromSupra = {10, 11, 12, 12}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_DS_AD15([string str])
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
+
+	// zero slope for last supra fit, then passing
+	wv[][][%APFrequency] = 16.1
+
+	wv[][][%AsyncQC]    = 1
+	wv[][][%BaselineQC] = 1
+End
+
+static Function PS_DS_AD15_REENTRY([string str])
+	variable sweepNo
+
+	sweepNo = 2
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN}, mode = WAVE_DATA)
+
+	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+
+	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+
+	Make/FREE/D maxSlopeRef = {1e-10, 1e-10, 1e-10}
+	Make/FREE/D fiSlopeRef = {4.099999999999999e-11, 0, 0}
+	Make/FREE/D fiOffsetRef = {10.36, 16.1, 16.1}
+	Make/FREE/T futureDAScalesRef = {"14;9;", "14;9;6.5;", "14;9;6.5;"}
+
+	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 1e-10, 0}
+	Make/FREE/D fiOffsetsFromSupraRef = {9, 9, 12}
+	Make/FREE/D DAScalesRef = {14, 9, 6.5}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)

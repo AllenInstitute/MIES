@@ -1,7 +1,10 @@
 IGOR
-WAVES/T/N=(64,5)	analysis_function_parameters
+WAVES/T/N=(67,5)	analysis_function_parameters
 BEGIN
 	"Name"	"Type"	"Optionality"	"Used by"	"Help"
+	"AbsDAScaleMaxDistance"	"variable"	"optional"	"DA"	"Minimum absolute DAScale distance for DAScale estimation. Only for \"AdaptiveSupra\"."
+	"AbsDAScaleMinDistance"	"variable"	"optional"	"DA"	"Minimum absolute DAScale distance for DAScale estimation. Only for \"AdaptiveSupra\"."
+	"AbsFrequencyMinDistance"	"variable"	"optional"	"DA"	"Minimum absolute frequency distance for DAScale estimation. Only for \"AdaptiveSupra\"."
 	"AbsoluteVoltageDiff"	"variable"	"required"	"VM"	"Maximum absolute allowed difference of the baseline membrane potentials [mV].\r Set to `inf` to disable this check."
 	"AmpBesselFilter"	"variable"	"optional"	"CR"	"Applies a bessel filter to the primary output.\r Defaults to 10e3 [Hz],pass \"100000\" to select \"Bypass\"."
 	"AmpBesselFilterRestore"	"variable"	"optional"	"CR"	"Restores the previously active bessel filter in POST_SET_EVENT. Defaults to ON."
