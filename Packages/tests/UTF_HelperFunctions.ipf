@@ -740,6 +740,11 @@ Function TestBeginCommon()
 	MEN_ClearPackageSettings()
 End
 
+Function TestEndCommon()
+
+	zeromq_stop()
+End
+
 Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable minValue, variable maxValue)
 	variable chan
 	string ctrl, title, unit

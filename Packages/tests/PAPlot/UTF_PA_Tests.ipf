@@ -423,6 +423,10 @@ static Function TEST_BEGIN_OVERRIDE(string name)
 	TestBeginCommon()
 End
 
+static Function TEST_END_OVERRIDE(string name)
+	TestEndCommon()
+End
+
 static Function TEST_CASE_END_OVERRIDE(string testcase)
 	CheckForBugMessages()
 
