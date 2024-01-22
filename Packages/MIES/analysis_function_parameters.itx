@@ -1,7 +1,10 @@
 IGOR
-WAVES/T/N=(64,5)	analysis_function_parameters
+WAVES/T/N=(67,5)	analysis_function_parameters
 BEGIN
 	"Name"	"Type"	"Optionality"	"Used by"	"Help"
+	"AbsDAScaleMaxDistance"	"variable"	"optional"	"DA"	"Minimum absolute DAScale distance for DAScale estimation. Only for \"AdaptiveSupra\"."
+	"AbsDAScaleMinDistance"	"variable"	"optional"	"DA"	"Minimum absolute DAScale distance for DAScale estimation. Only for \"AdaptiveSupra\"."
+	"AbsFrequencyMinDistance"	"variable"	"optional"	"DA"	"Minimum absolute frequency distance for DAScale estimation. Only for \"AdaptiveSupra\"."
 	"AbsoluteVoltageDiff"	"variable"	"required"	"VM"	"Maximum absolute allowed difference of the baseline membrane potentials [mV].\r Set to `inf` to disable this check."
 	"AmpBesselFilter"	"variable"	"optional"	"CR"	"Applies a bessel filter to the primary output.\r Defaults to 10e3 [Hz],pass \"100000\" to select \"Bypass\"."
 	"AmpBesselFilterRestore"	"variable"	"optional"	"CR"	"Restores the previously active bessel filter in POST_SET_EVENT. Defaults to ON."
@@ -14,8 +17,8 @@ BEGIN
 	"BaselineRMSShortThreshold"	"variable"	"optional"	"AR, CR, DA, PB, RA, RB, SE, VM"	"Threshold value in mV for the short RMS baseline QC check (defaults to 0.07)"
 	"BaselineTargetVThreshold"	"variable"	"optional"	"CR, DA, RA, RB"	"Threshold value in mV for the target V baseline QC check (defaults to 1)"
 	"BoundsEvaluationMode"	"string"	"required"	"CR"	"Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
-	"DAScaleModifier"	"variable"	"mixed"	"CR, DA, SC"	"Modifier value to the DA Scale of headstages for too few spikes\rPercentage how the DAScale value is adapted if it is outside of the MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\".\rModifier value to the DA Scale of headstages with spikes during chirp"
-	"DAScaleOperator"	"string"	"mixed"	"CR, SC"	"Set the math operator to use for combining the DAScale and the too few spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication).\rSet the math operator to use for combining the DAScale and the modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
+	"DAScaleModifier"	"variable"	"mixed"	"CR, DA, SC"	"Percentage how the DAScale value is adapted if it is outside of the MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\".\rModifier value to the DA Scale of headstages with spikes during chirp\rModifier value to the DA Scale of headstages for too few spikes"
+	"DAScaleOperator"	"string"	"mixed"	"CR, SC"	"Set the math operator to use for combining the DAScale and the modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication).\rSet the math operator to use for combining the DAScale and the too few spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 	"DAScales"	"wave"	"required"	"DA, DS"	"DA Scale Factors in pA"
 	"DAScaleSpikePositionModifier"	"variable"	"required"	"SC"	"Modifier value to the DA Scale of headstages with failing spike positions."
 	"DAScaleSpikePositionOperator"	"string"	"required"	"SC"	"Set the math operator to use for combining the DAScale and the spike position modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
