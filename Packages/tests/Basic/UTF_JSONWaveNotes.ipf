@@ -175,6 +175,172 @@ static Function TestSetWaveInJSONWaveNote()
 	CHECK_WAVE(data, NULL_WAVE)
 End
 
+static Function Test_WaveRefNumeric()
+
+	Make/FREE wv
+	Make/FREE/N=10 wvData0
+
+	wvData0[0] = NaN
+	wvData0[1] = Inf
+	wvData0[2] = -Inf
+	wvData0[3] = -10
+
+	Make/FREE wvData1 = {1, 2, 3, 4}
+	Make/FREE/N=0 wvData2
+	Make/N=(1, 2)/FREE wvData3 = p + q
+	Make/FREE/WAVE wvRef = {wvData0, wvData1, wvData2, wvData3}
+	JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
+
+	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "refWave/0")
+	CHECK_EQUAL_WAVES(data, wvData0, mode = WAVE_DATA)
+
+	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "refWave/1")
+	CHECK_EQUAL_WAVES(data, wvData1, mode = WAVE_DATA)
+
+	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "refWave/2")
+	CHECK_EQUAL_WAVES(data, wvData2, mode = WAVE_DATA)
+
+	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "refWave/3")
+	CHECK_EQUAL_WAVES(data, wvData3, mode = WAVE_DATA)
+
+	WAVE/WAVE/Z container = JWN_GetWaveRefNumericFromWaveNote(wv, "refWave")
+	CHECK_EQUAL_VAR(DimSize(container, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(container, COLS), 0)
+
+	CHECK_EQUAL_WAVES(wvRef[0], container[0], mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wvRef[1], container[1], mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wvRef[2], container[2], mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wvRef[3], container[3], mode = WAVE_DATA)
+
+	// empty wave ref wave
+	Note/K wv
+	Make/FREE/WAVE/N=0 wvRef
+	JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
+	WAVE/Z container = JWN_GetWaveRefTextFromWaveNote(wv, "refWave")
+	CHECK_WAVE(container, NULL_WAVE)
+
+	Note/K wv
+	Make/FREE/WAVE wvRef = {wvData0}
+	JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
+
+	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "refWave/0")
+	CHECK_EQUAL_WAVES(data, wvData0, mode = WAVE_DATA)
+
+	// no array
+	Note/K wv
+	JWN_SetNumberInWaveNote(wv, "num", 123)
+
+	try
+		WAVE/Z container = JWN_GetWaveRefNumericFromWaveNote(wv, "num")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// null wave
+	Note/K wv
+	Make/FREE/WAVE/N=1 wvRef
+
+	try
+		JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// wrong type
+	Note/K wv
+	Make/N=1/T txtWave = "abcd"
+	Make/FREE/WAVE/N=1 wvRef = {txtWave}
+	JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
+
+	try
+		WAVE/Z container = JWN_GetWaveRefNumericFromWaveNote(wv, "refWave")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function Test_WaveRefText()
+
+	Make/FREE wv
+	Make/FREE/N=10/T wvData0
+
+	wvData0[0] = "abcd"
+	wvData0[1] = "efg"
+	wvData0[2] = "1234"
+
+	Make/FREE/T wvData1 = {"a", "b", "c", "d"}
+	Make/FREE/N=0 wvData2
+	Make/N=(1, 2)/FREE/T wvData3 = num2str(p + q)
+	Make/FREE/WAVE wvRef = {wvData0, wvData1, wvData2, wvData3}
+	JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
+
+	WAVE/Z data = JWN_GetTextWaveFromWaveNote(wv, "refWave/0")
+	CHECK_EQUAL_WAVES(data, wvData0, mode = WAVE_DATA)
+
+	WAVE/Z data = JWN_GetTextWaveFromWaveNote(wv, "refWave/1")
+	CHECK_EQUAL_WAVES(data, wvData1, mode = WAVE_DATA)
+
+	WAVE/Z data = JWN_GetTextWaveFromWaveNote(wv, "refWave/2")
+	CHECK_EQUAL_WAVES(data, wvData2, mode = WAVE_DATA)
+
+	WAVE/Z data = JWN_GetTextWaveFromWaveNote(wv, "refWave/3")
+	CHECK_EQUAL_WAVES(data, wvData3, mode = WAVE_DATA)
+
+	WAVE/WAVE/Z container = JWN_GetWaveRefTextFromWaveNote(wv, "refWave")
+	CHECK_EQUAL_VAR(DimSize(container, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(container, COLS), 0)
+
+	CHECK_EQUAL_WAVES(wvRef[0], container[0], mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wvRef[1], container[1], mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wvRef[2], container[2], mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wvRef[3], container[3], mode = WAVE_DATA)
+
+	// empty wave ref wave
+	Note/K wv
+	Make/FREE/WAVE/N=0 wvRef
+	JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
+	WAVE/Z container = JWN_GetWaveRefTextFromWaveNote(wv, "refWave")
+	CHECK_WAVE(container, NULL_WAVE)
+
+	// no array
+	Note/K wv
+	JWN_SetNumberInWaveNote(wv, "num", 123)
+
+	try
+		WAVE/Z container = JWN_GetWaveRefTextFromWaveNote(wv, "num")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// null wave
+	Note/K wv
+	Make/FREE/WAVE/N=1 wvRef
+
+	try
+		JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// wrong type
+	Note/K wv
+	Make/N=1 waveDataNum = 1
+	Make/FREE/WAVE/N=1 wvRef = {waveDataNum}
+	JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
+
+	try
+		WAVE/Z container = JWN_GetWaveRefTextFromWaveNote(wv, "refWave")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 static Function TestJSONWaveNoteCombinations()
 
 	string str

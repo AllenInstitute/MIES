@@ -108,6 +108,65 @@ threadsafe Function/WAVE JWN_GetTextWaveFromWaveNote(WAVE wv, string jsonPath)
 	return textWave
 End
 
+/// @brief Return the wave reference wave at jsonPath found in the wave note
+///
+/// All contained waves must be numeric.
+///
+/// @param wv       wave reference where the WaveNote is taken from
+/// @param jsonPath path to array
+///
+/// @returns the wave on success. null wave is returned if it could not be found
+threadsafe Function/WAVE JWN_GetWaveRefNumericFromWaveNote(WAVE wv, string jsonPath)
+
+	return JWN_GetWaveRefFromWaveNote_Impl(wv, jsonPath, IGOR_TYPE_NUMERIC_WAVE)
+End
+
+/// @brief Return the wave reference wave at jsonPath found in the wave note
+///
+/// All contained waves must be text.
+///
+/// @param wv       wave reference where the WaveNote is taken from
+/// @param jsonPath path to array
+///
+/// @returns the wave on success. null wave is returned if it could not be found
+threadsafe Function/WAVE JWN_GetWaveRefTextFromWaveNote(WAVE wv, string jsonPath)
+
+	return JWN_GetWaveRefFromWaveNote_Impl(wv, jsonPath, IGOR_TYPE_TEXT_WAVE)
+End
+
+threadsafe static Function/WAVE JWN_GetWaveRefFromWaveNote_Impl(WAVE wv, string jsonPath, variable type)
+	variable jsonID, numRows
+
+	jsonID = JWN_GetWaveNoteAsJSON(wv)
+	ASSERT_TS(JSON_GetType(jsonID, jsonPath, ignoreErr = 1) == JSON_ARRAY, "Expected array at jsonPath")
+	WAVE/Z maxArraySizes = JSON_GetMaxArraySize(jsonID, jsonPath, ignoreErr = 1)
+	ASSERT_TS(WaveExists(maxArraySizes) , "Could not query array size")
+
+	numRows = maxArraySizes[ROWS]
+	if(numRows == 0)
+		return $""
+	endif
+
+	Make/FREE/WAVE/N=(numRows) container
+
+	switch(type)
+		case IGOR_TYPE_NUMERIC_WAVE:
+			container[] = JSON_GetWave(jsonID, jsonPath + "/" + num2str(p), ignoreErr = 1, waveMode = 1)
+			break
+		case IGOR_TYPE_TEXT_WAVE:
+			container[] = JSON_GetTextWave(jsonID, jsonPath + "/" + num2str(p), ignoreErr = 1)
+			break
+		default:
+			ASSERT_TS(0, "Invalid type")
+	endswitch
+
+	JSON_Release(jsonID)
+
+	ASSERT_TS(IsNaN(GetRowIndex(container, refWave = $"")), "Encountered invalid waves in the container")
+
+	return container
+End
+
 /// @brief Return the string value at jsonPath found in the wave note
 ///
 /// @param wv       wave reference where the WaveNote is taken from
@@ -194,13 +253,38 @@ End
 /// @param noteWave new wave value
 threadsafe Function JWN_SetWaveInWaveNote(WAVE wv, string jsonPath, WAVE noteWave)
 
-	variable jsonID
+	variable jsonID, idx
+	string jsonPathArray
 
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 	ASSERT_TS(WaveExists(noteWave), "Missing noteWave")
 
 	ASSERT_TS(!IsEmpty(jsonPath), "Empty jsonPath")
-	ASSERT_TS(IsNumericWave(noteWave) || IsTextWave(noteWave), "Only numeric and text waves are supported as JSON wave note entry.")
+
+	ASSERT_TS(IsWaveRefWave(noteWave) || IsNumericWave(noteWave) || IsTextWave(noteWave),                 \
+	          "Only wave references waves, numeric and text waves are supported as JSON wave note entry.")
+
+	if(IsWaveRefWave(noteWave))
+		ASSERT_TS(DimSize(noteWave, COLS) <= 1, "Expected only a 1D wave reference wave")
+
+		// create an array at jsonPath with noteWave ROWS entries
+		jsonID = JWN_GetWaveNoteAsJSON(wv)
+		Make/FREE/N=(DimSize(noteWave, ROWS)) junk
+		JSON_SetWave(jsonID, jsonPath, junk)
+		JWN_WriteWaveNote(wv, JWN_GetWaveNoteHeader(wv), jsonID)
+
+		WAVE/WAVE waveRef = noteWave
+
+		for(WAVE/Z elem : waveRef)
+			ASSERT_TS(WaveExists(elem), "Contained wave must exist")
+			// and now write at each array index the contained wave
+			jsonPathArray = jsonPath + "/" + num2str(idx)
+			JWN_SetWaveInWaveNote(wv, jsonPathArray, elem)
+			idx += 1
+		endfor
+
+		return NaN
+	endif
 
 	jsonID = JWN_GetWaveNoteAsJSON(wv)
 	JSON_SetWave(jsonID, jsonPath, noteWave)
