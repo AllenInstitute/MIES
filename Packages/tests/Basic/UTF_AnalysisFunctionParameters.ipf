@@ -764,6 +764,8 @@ static Function/WAVE GetAnalysisFunctions()
 
 	SetDimensionLabels(wv, funcs, ROWS)
 
+	Sort/DIML wv, wv
+
 	return wv
 End
 
@@ -928,7 +930,7 @@ static Function GenerateAnalysisFunctionTable()
 	// if this test fails and the CRC changes
 	// commit the file `Packages/MIES/analysis_function_parameters.itx`
 	// and check that the changes therein are intentional
-	CHECK_EQUAL_VAR(WaveCRC(0, output, 0), 303837295)
+	CHECK_EQUAL_VAR(WaveCRC(0, output, 0), 2280254664)
 	StoreWaveOnDisk(output, "analysis_function_parameters")
 End
 
