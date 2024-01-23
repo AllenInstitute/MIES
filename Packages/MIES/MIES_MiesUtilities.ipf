@@ -433,6 +433,54 @@ Function/S GetSpecialControlLabel(channelType, controlType)
 	return RemoveEnding(GetPanelControl(0, channelType, controlType), "_00")
 End
 
+/// @brief Convert a channel type constant from @ref ChannelTypeAndControlConstants to a string
+Function/S ChannelTypeToString(variable channelType)
+
+	switch(channelType)
+		case CHANNEL_TYPE_HEADSTAGE:
+			return "DataAcqHS"
+		case CHANNEL_TYPE_DAC:
+			return "DA"
+		case CHANNEL_TYPE_ADC:
+			return "AD"
+		case CHANNEL_TYPE_TTL:
+			return "TTL"
+		case CHANNEL_TYPE_ALARM:
+			return "AsyncAlarm"
+		case CHANNEL_TYPE_ASYNC:
+			return "AsyncAD"
+		default:
+			ASSERT(0, "Invalid channelType")
+	endswitch
+End
+
+/// @brief Convert a channel type string from ChannelTypeToString to one of the constants from @ref ChannelTypeAndControlConstants
+///
+/// @param channelType channel type
+/// @param allowFail   [optional, defaults to false] return NaN on unknown channel types (true) or assert (false)
+Function ParseChannelTypeFromString(string channelType, [variable allowFail])
+
+	allowFail = ParamIsDefault(allowFail) ? 0 : !!allowFail
+
+	strswitch(channelType)
+		case "DataAcqHS":
+			return CHANNEL_TYPE_HEADSTAGE
+		case "DA":
+			return CHANNEL_TYPE_DAC
+		case "AD":
+			return CHANNEL_TYPE_ADC
+		case "TTL":
+			return CHANNEL_TYPE_TTL
+		case "AsyncAlarm":
+			return CHANNEL_TYPE_ALARM
+		case "AsyncAD":
+			return CHANNEL_TYPE_ASYNC
+		default:
+			ASSERT(allowFail, "Invalid channelType")
+			return NaN
+	endswitch
+End
+
 /// @brief Returns the name of a control from the DA_EPHYS panel
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
@@ -441,21 +489,7 @@ Function/S GetPanelControl(channelIndex, channelType, controlType)
 
 	string ctrl
 
-	if(channelType == CHANNEL_TYPE_HEADSTAGE)
-		ctrl = "DataAcqHS"
-	elseif(channelType == CHANNEL_TYPE_DAC)
-		ctrl = "DA"
-	elseif(channelType == CHANNEL_TYPE_ADC)
-		ctrl = "AD"
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		ctrl = "TTL"
-	elseif(channelType == CHANNEL_TYPE_ALARM)
-		ctrl = "AsyncAlarm"
-	elseif(channelType == CHANNEL_TYPE_ASYNC)
-		ctrl = "AsyncAD"
-	else
-		ASSERT(0, "Invalid channelType")
-	endif
+	ctrl = ChannelTypeToString(channelType)
 
 	if(controlType == CHANNEL_CONTROL_WAVE)
 		ctrl = "Wave_" + ctrl

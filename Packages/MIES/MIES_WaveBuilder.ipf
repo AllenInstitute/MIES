@@ -2718,29 +2718,6 @@ static Function WB_CheckForEmptyEpochs(string setname)
 	return 0
 End
 
-Function/S WB_SerializeStimulusType(variable stimulusType)
-	switch(stimulusType)
-		case CHANNEL_TYPE_DAC:
-			return "DA"
-		case CHANNEL_TYPE_TTL:
-			return "TTL"
-		default:
-			ASSERT(0, "unknown stimulus type")
-	endswitch
-End
-
-Function WB_ParseStimulusType(string stimulusType)
-
-	strswitch(stimulusType)
-		case "DA":
-			return CHANNEL_TYPE_DAC
-		case "TTL":
-			return CHANNEL_TYPE_TTL
-		default:
-			ASSERT(0, "unknown stimulus type")
-	endswitch
-End
-
 /// @brief Return the name of a stimulus set build up from the passed parts
 ///
 /// @returns complete stimulus set name or an empty string in case the basename is too long
@@ -2763,7 +2740,7 @@ static Function/S WB_AssembleSetName(string basename, variable stimulusType, var
 		return ""
 	endif
 
-	result = basename + suffix + "_" + WB_SerializeStimulusType(stimulusType) + "_" + num2str(setNumber)
+	result = basename + suffix + "_" + ChannelTypeToString(stimulusType) + "_" + num2str(setNumber)
 
 	return CleanupName(result, 0)
 End
@@ -2786,7 +2763,7 @@ Function WB_SplitStimsetName(string setName, string &setPrefix, variable &stimul
 
 	setNumber    = str2num(setNumberString)
 	setPrefix    = setPrefixString
-	stimulusType = WB_ParseStimulusType(stimulusTypeString)
+	stimulusType = ParseChannelTypeFromString(stimulusTypeString)
 End
 
 /// @brief Changes an existing stimset to a third party stimset
