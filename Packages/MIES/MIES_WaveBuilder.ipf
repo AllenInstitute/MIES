@@ -1752,8 +1752,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	WAVE pulseStartTimes
 	variable &pulseToPulseLength
 
-	variable startIndex, endIndex, startOffset, durationError
-	variable pulseStartTime, i
+	variable startIndex, endIndex, startOffset, durationError, lastValidStartIndex
+	variable pulseStartTime, i, amplitudeStartIndex
 	variable numRows, interPulseInterval, idx, firstStep, lastStep, dist
 	string str
 
@@ -1804,6 +1804,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 				break
 			endif
 
+			lastValidStartIndex = startIndex
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
@@ -1833,6 +1834,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
+
+			lastValidStartIndex = startIndex
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
@@ -1855,6 +1858,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
+
+			lastValidStartIndex = startIndex
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
@@ -1867,11 +1872,16 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	Redimension/N=(idx) pulseStartTimes
 
 	// remove the zero part at the end
-	FindValue/V=(0)/S=(pa.pulseType == WB_PULSE_TRAIN_TYPE_SQUARE ? startIndex : startIndex + 1) segmentWave
-	if(V_Value != -1)
-		DEBUGPRINT("Removal of points:", var=(DimSize(segmentWave, ROWS) - V_Value))
-		Redimension/N=(V_Value) segmentWave
-		pa.duration = V_Value * WAVEBUILDER_MIN_SAMPINT
+	amplitudeStartIndex = pa.pulseType == WB_PULSE_TRAIN_TYPE_SQUARE ? lastValidStartIndex : lastValidStartIndex + 1
+	if(amplitudeStartIndex < DimSize(segmentWave, ROWS))
+		FindValue/V=(0)/S=(amplitudeStartIndex) segmentWave
+		if(V_Value != -1)
+			DEBUGPRINT("Removal of points:", var=(DimSize(segmentWave, ROWS) - V_Value))
+			Redimension/N=(V_Value) segmentWave
+			pa.duration = V_Value * WAVEBUILDER_MIN_SAMPINT
+		else
+			DEBUGPRINT("No removal of points")
+		endif
 	else
 		DEBUGPRINT("No removal of points")
 	endif
