@@ -1751,7 +1751,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	WAVE pulseStartTimes
 	variable &pulseToPulseLength
 
-	variable pulseStartTime, endIndex, startIndex, i
+	variable startIndex, endIndex, startOffset, durationError
+	variable pulseStartTime, i
 	variable numRows, interPulseInterval, idx, firstStep, lastStep, dist
 	string str
 
@@ -1797,13 +1798,11 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 
 		for(;;)
 			pulseStartTime += -ln(abs(enoise(1, pa.noiseGenMode))) / pa.frequency * ONE_TO_MILLI
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
-
+			[startIndex, endIndex, startOffset, durationError] = WB_GetIndicesForSignalDuration(pulseStartTime, pa.pulseDuration, WAVEBUILDER_MIN_SAMPINT)
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
@@ -1829,13 +1828,10 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 
 		for(i = 0; i < pa.numberOfPulses; i += 1)
 
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
-
+			[startIndex, endIndex, startOffset, durationError] = WB_GetIndicesForSignalDuration(pulseStartTime, pa.pulseDuration, WAVEBUILDER_MIN_SAMPINT)
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
-
-			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
@@ -1853,13 +1849,11 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		pulseToPulseLength = interPulseInterval + pa.pulseDuration
 
 		for(;;)
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
 
+			[startIndex, endIndex, startOffset, durationError] = WB_GetIndicesForSignalDuration(pulseStartTime, pa.pulseDuration, WAVEBUILDER_MIN_SAMPINT)
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
-
-			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
@@ -2794,4 +2788,27 @@ Function WB_UpdateChangedStimsets([string device, variable stimulusType])
 		WAVE/T epochCombineList = GetWBEpochCombineList(stimulusType)
 		WB_UpdateEpochCombineList(epochCombineList, stimulusType)
 	endif
+End
+
+/// @brief Returns the start and end indices for a wave given a FP duration. The length within the wave is calculated in a way,
+///        that at least the points to fill duration are included. So the effective duration never gets shortened.
+///
+/// @param  startTime      floating point start time of the range
+/// @param  duration       floating point duration time
+/// @param  sampleInterval floating point sample interval
+/// @retval startIndex     index where the range starts
+/// @retval endIndex       index where the range ends, this is inclusive for e.g. data[startIndex, endIndex] = amplitude
+/// @retval startOffset    floating point error of start in wave regarding startTime argument: >= -0.5 * sampleInterval && < 0.5 * sampleInterval
+/// @retval durationError  floating point error of duration in wave regarding duration argument: >= 0 && < sampleInterval
+static Function [variable startIndex, variable endIndex, variable startOffset, variable durationError] WB_GetIndicesForSignalDuration(variable startTime, variable duration, variable sampleInterval)
+
+	variable actualStartTime, ceilDelta, actualDuration
+
+	ASSERT(startTime >= 0 && duration > 0 && sampleInterval > 0, "invalid argument values")
+	[startIndex, startOffset] = RoundAndDelta(startTime / sampleInterval)
+	actualStartTime = startIndex * sampleInterval
+	[endIndex, ceilDelta] = CeilAndDelta((actualStartTime + duration) / sampleInterval)
+	actualDuration = (endIndex - startIndex) * sampleInterval
+
+	return [startIndex, endIndex, startOffset, actualDuration - duration]
 End

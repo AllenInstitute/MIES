@@ -55,7 +55,7 @@ Constant PSQ_SEAL_EVALUATION_VERSION = 3
 Constant PSQ_TRUE_REST_VM_VERSION    = 2
 Constant MSQ_FAST_RHEO_EST_VERSION   = 1
 Constant MSQ_DA_SCALE_VERSION        = 1
-Constant SC_SPIKE_CONTROL_VERSION    = 1
+Constant SC_SPIKE_CONTROL_VERSION    = 2
 /// @}
 
 /// Especially interesting for PXP consumers like the analysis browser.

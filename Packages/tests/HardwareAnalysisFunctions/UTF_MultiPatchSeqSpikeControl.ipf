@@ -351,8 +351,10 @@ End
 static Function SC_Test3_REENTRY([str])
 	string str
 
-	variable sweepNo, autobiasV
+	variable sweepNo, autobiasV, hwType
 	string lbl, failedPulses, spikeCounts, spikePos
+
+	hwType = GetHardwareType(str)
 
 	sweepNo = 1
 
@@ -381,10 +383,18 @@ static Function SC_Test3_REENTRY([str])
 	spikeCounts = "P0_R1:1,;P1_R1:1,;P2_R1:1,;P3_R1:1,;P4_R1:1,;P5_R1:1,;P6_R1:1,;P7_R1:1,;P8_R1:1,;P9_R1:1,;"
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCounts_HS1], {spikeCounts, spikeCounts}, mode = WAVE_DATA)
 
-	spikePos = "P0_R0:70,;P1_R0:70,;P2_R0:70,;P3_R0:70,;P4_R0:70,;P5_R0:70,;P6_R0:70,;P7_R0:70,;P8_R0:70,;P9_R0:70,;"
+	if(hwType == HARDWARE_ITC_DAC)
+		spikePos = "P0_R0:69.9,;P1_R0:69.9,;P2_R0:69.9,;P3_R0:69.9,;P4_R0:69.9,;P5_R0:69.9,;P6_R0:69.9,;P7_R0:69.9,;P8_R0:69.9,;P9_R0:70.1,;"
+	elseif(hwType == HARDWARE_NI_DAC)
+		spikePos = "P0_R0:70,;P1_R0:70,;P2_R0:70,;P3_R0:70,;P4_R0:70,;P5_R0:70,;P6_R0:70,;P7_R0:70,;P8_R0:70,;P9_R0:70,;"
+	endif
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS0], {spikePos, spikePos}, mode = WAVE_DATA)
 
-	spikePos = "P0_R1:70,;P1_R1:70,;P2_R1:70,;P3_R1:70,;P4_R1:70,;P5_R1:70,;P6_R1:70,;P7_R1:70,;P8_R1:70,;P9_R1:70,;"
+	if(hwType == HARDWARE_ITC_DAC)
+		spikePos = "P0_R1:70,;P1_R1:70,;P2_R1:70,;P3_R1:70,;P4_R1:70,;P5_R1:70,;P6_R1:70,;P7_R1:70,;P8_R1:70,;P9_R1:70.1,;"
+	elseif(hwType == HARDWARE_NI_DAC)
+		spikePos = "P0_R1:70,;P1_R1:70,;P2_R1:70,;P3_R1:70,;P4_R1:70,;P5_R1:70,;P6_R1:70,;P7_R1:70,;P8_R1:70,;P9_R1:70,;"
+	endif
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS1], {spikePos, spikePos}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCountsState_HS0], {SC_SPIKE_COUNT_STATE_STR_GOOD, SC_SPIKE_COUNT_STATE_STR_GOOD}, mode = WAVE_DATA)
@@ -439,8 +449,10 @@ End
 static Function SC_Test4_REENTRY([str])
 	string str
 
-	variable sweepNo, autobiasV
+	variable sweepNo, autobiasV, hwType
 	string lbl, failedPulses, spikeCounts, spikePos
+
+	hwType = GetHardwareType(str)
 
 	sweepNo = 1
 
@@ -469,15 +481,18 @@ static Function SC_Test4_REENTRY([str])
 	spikeCounts = "P0_R1:2,;P1_R1:2,;P2_R1:2,;P3_R1:2,;P4_R1:2,;P5_R1:2,;P6_R1:2,;P7_R1:2,;P8_R1:2,;P9_R1:2,;"
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCounts_HS1], {spikeCounts, spikeCounts}, mode = WAVE_DATA)
 
-	spikePos = "P0_R0:10,115,;P1_R0:10,115,;P2_R0:10,115,;P3_R0:10,115,;P4_R0:10,115,;P5_R0:10,115,;P6_R0:10,115,;P7_R0:10,115,;P8_R0:10,115,;P9_R0:10,115,;"
+	if(hwType == HARDWARE_ITC_DAC)
+		spikePos = "P0_R0:10,114.9,;P1_R0:10,114.9,;P2_R0:10,114.9,;P3_R0:10,114.9,;P4_R0:10,114.9,;P5_R0:10,114.9,;P6_R0:10,114.9,;P7_R0:10,114.9,;P8_R0:10,114.9,;P9_R0:10,115.1,;"
+	elseif(hwType == HARDWARE_NI_DAC)
+		spikePos = "P0_R0:10,115,;P1_R0:10,115,;P2_R0:10,115,;P3_R0:10,115,;P4_R0:10,115,;P5_R0:10,115,;P6_R0:10,115,;P7_R0:10,115,;P8_R0:10,115,;P9_R0:10,115,;"
+	endif
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS0], {spikePos, spikePos}, mode = WAVE_DATA)
 
-#ifdef TESTS_WITH_NI_HARDWARE
-	spikePos = "P0_R1:10,115,;P1_R1:10,115,;P2_R1:10,115,;P3_R1:10,115,;P4_R1:10,115,;P5_R1:10,115,;P6_R1:10,115,;P7_R1:10,115,;P8_R1:10,115,;P9_R1:10,115,;"
-#else
-	//P9_R1 is different due to rounding issues in the epoch info
-	spikePos = "P0_R1:10,115,;P1_R1:10,115,;P2_R1:10,115,;P3_R1:10,115,;P4_R1:10,115,;P5_R1:10,115,;P6_R1:10,115,;P7_R1:10,115,;P8_R1:10,115,;P9_R1:10,114.9,;"
-#endif
+	if(hwType == HARDWARE_ITC_DAC)
+		spikePos = "P0_R1:10,115,;P1_R1:10,115,;P2_R1:10,115,;P3_R1:10,115,;P4_R1:10,115,;P5_R1:10,115,;P6_R1:10,115,;P7_R1:10,115,;P8_R1:10,115,;P9_R1:10,115.1,;"
+	elseif(hwType == HARDWARE_NI_DAC)
+		spikePos = "P0_R1:10,115,;P1_R1:10,115,;P2_R1:10,115,;P3_R1:10,115,;P4_R1:10,115,;P5_R1:10,115,;P6_R1:10,115,;P7_R1:10,115,;P8_R1:10,115,;P9_R1:10,115,;"
+	endif
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS1], {spikePos, spikePos}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCountsState_HS0], {SC_SPIKE_COUNT_STATE_STR_GOOD, SC_SPIKE_COUNT_STATE_STR_GOOD}, mode = WAVE_DATA)
@@ -533,8 +548,10 @@ End
 static Function SC_Test5_REENTRY([str])
 	string str
 
-	variable sweepNo, autobiasV
+	variable sweepNo, autobiasV, hwType
 	string lbl, failedPulses, spikeCounts, spikePos
+
+	hwType = GetHardwareType(str)
 
 	sweepNo = 3
 
@@ -563,10 +580,18 @@ static Function SC_Test5_REENTRY([str])
 	spikeCounts = "P0_R1:2,;P1_R1:2,;P2_R1:2,;P3_R1:2,;P4_R1:2,;P5_R1:2,;P6_R1:2,;P7_R1:2,;P8_R1:2,;P9_R1:2,;"
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCounts_HS1], {spikeCounts, spikeCounts, spikeCounts, spikeCounts}, mode = WAVE_DATA)
 
-	spikePos = "P0_R0:70,90,;P1_R0:70,90,;P2_R0:70,90,;P3_R0:70,90,;P4_R0:70,90,;P5_R0:70,90,;P6_R0:70,90,;P7_R0:70,90,;P8_R0:70,90,;P9_R0:70,90,;"
+	if(hwType == HARDWARE_ITC_DAC)
+		spikePos = "P0_R0:69.9,89.9,;P1_R0:69.9,89.9,;P2_R0:69.9,89.9,;P3_R0:69.9,89.9,;P4_R0:69.9,89.9,;P5_R0:69.9,89.9,;P6_R0:69.9,89.9,;P7_R0:69.9,89.9,;P8_R0:69.9,89.9,;P9_R0:70.1,90.1,;"
+	elseif(hwType == HARDWARE_NI_DAC)
+		spikePos = "P0_R0:70,90,;P1_R0:70,90,;P2_R0:70,90,;P3_R0:70,90,;P4_R0:70,90,;P5_R0:70,90,;P6_R0:70,90,;P7_R0:70,90,;P8_R0:70,90,;P9_R0:70,90,;"
+	endif
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS0], {spikePos, spikePos, spikePos, spikePos}, mode = WAVE_DATA)
 
-	spikePos = "P0_R1:70,90,;P1_R1:70,90,;P2_R1:70,90,;P3_R1:70,90,;P4_R1:70,90,;P5_R1:70,90,;P6_R1:70,90,;P7_R1:70,90,;P8_R1:70,90,;P9_R1:70,90,;"
+	if(hwType == HARDWARE_ITC_DAC)
+		spikePos = "P0_R1:70,90,;P1_R1:70,90,;P2_R1:70,90,;P3_R1:70,90,;P4_R1:70,90,;P5_R1:70,90,;P6_R1:70,90,;P7_R1:70,90,;P8_R1:70,90,;P9_R1:70.1,90.1,;"
+	elseif(hwType == HARDWARE_NI_DAC)
+		spikePos = "P0_R1:70,90,;P1_R1:70,90,;P2_R1:70,90,;P3_R1:70,90,;P4_R1:70,90,;P5_R1:70,90,;P6_R1:70,90,;P7_R1:70,90,;P8_R1:70,90,;P9_R1:70,90,;"
+	endif
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS1], {spikePos, spikePos, spikePos, spikePos}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCountsState_HS0], {SC_SPIKE_COUNT_STATE_STR_GOOD, SC_SPIKE_COUNT_STATE_STR_GOOD, SC_SPIKE_COUNT_STATE_STR_GOOD, SC_SPIKE_COUNT_STATE_STR_GOOD}, mode = WAVE_DATA)
@@ -722,10 +747,12 @@ End
 static Function SC_Test7_REENTRY([str])
 	string str
 
-	variable sweepNo
+	variable sweepNo, hwType
 	string spikeCounts, spikePos
 	string spikeCounts_sweep0, spikeCounts_sweep1, spikeCounts_sweep2, spikeCounts_sweep3
 	string spikePos_sweep0, spikePos_sweep1, spikePos_sweep2, spikePos_sweep3
+
+	hwType = GetHardwareType(str)
 
 	sweepNo = 3
 
@@ -757,13 +784,24 @@ static Function SC_Test7_REENTRY([str])
 
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCounts_HS1], {spikeCounts_sweep0, spikeCounts_sweep1, spikeCounts_sweep2, spikeCounts_sweep3}, mode = WAVE_DATA)
 
-	spikePos = "P1_R0:40,60,80,;P2_R0:40,60,;P3_R0:40,60,;P4_R0:40,60,;P5_R0:40,60,;P6_R0:40,60,;P7_R0:40,60,;P8_R0:40,60,;P9_R0:40,60,;"
+	if(hwType == HARDWARE_ITC_DAC)
+		spikePos = "P1_R0:40,59.9,79.9,;P2_R0:40,59.9,;P3_R0:40,59.9,;P4_R0:40,59.9,;P5_R0:40,59.9,;P6_R0:40,59.9,;P7_R0:40,59.9,;P8_R0:40,59.9,;P9_R0:40,60.1,;"
+	elseif(hwType == HARDWARE_NI_DAC)
+		spikePos = "P1_R0:40,60,80,;P2_R0:40,60,;P3_R0:40,60,;P4_R0:40,60,;P5_R0:40,60,;P6_R0:40,60,;P7_R0:40,60,;P8_R0:40,60,;P9_R0:40,60,;"
+	endif
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS0], {spikePos, spikePos, spikePos, spikePos}, mode = WAVE_DATA)
 
-	spikePos_sweep0 = "P0_R1:40,;P1_R1:40,;P2_R1:40,;P3_R1:40,;P4_R1:40,;P5_R1:40,;P6_R1:40,;P7_R1:40,;P8_R1:40,;P9_R1:40,;"
-	spikePos_sweep1 = "P0_R1:40,60,80,;P1_R1:40,60,80,;P2_R1:40,60,80,;P3_R1:40,60,80,;P4_R1:40,60,80,;P5_R1:40,60,80,;P6_R1:40,60,80,;P7_R1:40,60,80,;P8_R1:40,60,80,;P9_R1:40,60,80,;"
-	spikePos_sweep2 = "P0_R1:70,90,;P1_R1:70,90,;P2_R1:70,90,;P3_R1:70,90,;P4_R1:70,90,;P5_R1:70,90,;P6_R1:70,90,;P7_R1:70,90,;P8_R1:70,90,;P9_R1:70,90,;"
-	spikePos_sweep3 = "P1_R1:40,60,;P2_R1:40,60,80,100,;P3_R1:40,60,;P4_R1:40,60,;P5_R1:40,60,;P6_R1:40,60,;P7_R1:40,60,;P8_R1:40,60,;P9_R1:40,60,;"
+	if(hwType == HARDWARE_ITC_DAC)
+		spikePos_sweep0 = "P0_R1:40,;P1_R1:40,;P2_R1:40,;P3_R1:40,;P4_R1:40,;P5_R1:40,;P6_R1:40,;P7_R1:40,;P8_R1:40,;P9_R1:40,;"
+		spikePos_sweep1 = "P0_R1:40,60,80,;P1_R1:40,60,80,;P2_R1:40,60,80,;P3_R1:40,60,80,;P4_R1:40,60,80,;P5_R1:40,60,80,;P6_R1:40,60,80,;P7_R1:40,60,80,;P8_R1:40,60,80,;P9_R1:40,60.1,80.1,;"
+		spikePos_sweep2 = "P0_R1:70,90,;P1_R1:70,90,;P2_R1:70,90,;P3_R1:70,90,;P4_R1:70,90,;P5_R1:70,90,;P6_R1:70,90,;P7_R1:70,90,;P8_R1:70,90,;P9_R1:70.1,90.1,;"
+		spikePos_sweep3 = "P1_R1:40,60,;P2_R1:40,60,80,100,;P3_R1:40,60,;P4_R1:40,60,;P5_R1:40,60,;P6_R1:40,60,;P7_R1:40,60,;P8_R1:40,60,;P9_R1:40,60.1,;"
+	elseif(hwType == HARDWARE_NI_DAC)
+		spikePos_sweep0 = "P0_R1:40,;P1_R1:40,;P2_R1:40,;P3_R1:40,;P4_R1:40,;P5_R1:40,;P6_R1:40,;P7_R1:40,;P8_R1:40,;P9_R1:40,;"
+		spikePos_sweep1 = "P0_R1:40,60,80,;P1_R1:40,60,80,;P2_R1:40,60,80,;P3_R1:40,60,80,;P4_R1:40,60,80,;P5_R1:40,60,80,;P6_R1:40,60,80,;P7_R1:40,60,80,;P8_R1:40,60,80,;P9_R1:40,60,80,;"
+		spikePos_sweep2 = "P0_R1:70,90,;P1_R1:70,90,;P2_R1:70,90,;P3_R1:70,90,;P4_R1:70,90,;P5_R1:70,90,;P6_R1:70,90,;P7_R1:70,90,;P8_R1:70,90,;P9_R1:70,90,;"
+		spikePos_sweep3 = "P1_R1:40,60,;P2_R1:40,60,80,100,;P3_R1:40,60,;P4_R1:40,60,;P5_R1:40,60,;P6_R1:40,60,;P7_R1:40,60,;P8_R1:40,60,;P9_R1:40,60,;"
+	endif
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS1], {spikePos_sweep0, spikePos_sweep1, spikePos_sweep2, spikePos_sweep3}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCountsState_HS0], {SC_SPIKE_COUNT_STATE_STR_MIXED, SC_SPIKE_COUNT_STATE_STR_MIXED, SC_SPIKE_COUNT_STATE_STR_MIXED, SC_SPIKE_COUNT_STATE_STR_MIXED}, mode = WAVE_DATA)
@@ -842,10 +880,12 @@ End
 static Function SC_Test8_REENTRY([str])
 	string str
 
-	variable sweepNo
+	variable sweepNo, hwType
 	string spikeCounts, spikePos
 	string spikeCounts_sweep0, spikeCounts_sweep1, spikeCounts_sweep2, spikeCounts_sweep3
 	string spikePos_sweep0, spikePos_sweep1, spikePos_sweep2, spikePos_sweep3
+
+	hwType = GetHardwareType(str)
 
 	sweepNo = 3
 
@@ -879,16 +919,30 @@ static Function SC_Test8_REENTRY([str])
 	spikeCounts_sweep3 = "P0_R1:0,;P1_R1:0,;P2_R1:0,;P3_R1:0,;P4_R1:0,;P5_R1:0,;P6_R1:0,;P7_R1:0,;P8_R1:0,;P9_R1:0,;"
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCounts_HS1], {spikeCounts_sweep0, spikeCounts_sweep1, spikeCounts_sweep2, spikeCounts_sweep3}, mode = WAVE_DATA)
 
-	spikePos_sweep0 = ""
-	spikePos_sweep1 = "P0_R0:30,;P1_R0:30,;P2_R0:30,;P3_R0:30,;P4_R0:30,;P5_R0:30,;P6_R0:30,;P7_R0:30,;P8_R0:30,;P9_R0:30,;"
-	spikePos_sweep2 = "P0_R0:30,40,;P1_R0:30,40,;P2_R0:30,40,;P3_R0:30,40,;P4_R0:30,40,;P5_R0:30,40,;P6_R0:30,40,;P7_R0:30,40,;P8_R0:30,40,;P9_R0:30,40,;"
-	spikePos_sweep3 = "P0_R0:65,;P1_R0:65,;P2_R0:65,;P3_R0:65,;P4_R0:65,;P5_R0:65,;P6_R0:65,;P7_R0:65,;P8_R0:65,;P9_R0:65,;"
+	if(hwType == HARDWARE_ITC_DAC)
+		spikePos_sweep0 = ""
+		spikePos_sweep1 = "P0_R0:30,;P1_R0:30,;P2_R0:30,;P3_R0:30,;P4_R0:30,;P5_R0:30,;P6_R0:30,;P7_R0:30,;P8_R0:30,;P9_R0:30,;"
+		spikePos_sweep2 = "P0_R0:30,40,;P1_R0:30,40,;P2_R0:30,40,;P3_R0:30,40,;P4_R0:30,40,;P5_R0:30,40,;P6_R0:30,40,;P7_R0:30,40,;P8_R0:30,40,;P9_R0:30,40,;"
+		spikePos_sweep3 = "P0_R0:64.9,;P1_R0:64.9,;P2_R0:64.9,;P3_R0:64.9,;P4_R0:64.9,;P5_R0:64.9,;P6_R0:64.9,;P7_R0:64.9,;P8_R0:64.9,;P9_R0:65.1,;"
+	elseif(hwType == HARDWARE_NI_DAC)
+		spikePos_sweep0 = ""
+		spikePos_sweep1 = "P0_R0:30,;P1_R0:30,;P2_R0:30,;P3_R0:30,;P4_R0:30,;P5_R0:30,;P6_R0:30,;P7_R0:30,;P8_R0:30,;P9_R0:30,;"
+		spikePos_sweep2 = "P0_R0:30,40,;P1_R0:30,40,;P2_R0:30,40,;P3_R0:30,40,;P4_R0:30,40,;P5_R0:30,40,;P6_R0:30,40,;P7_R0:30,40,;P8_R0:30,40,;P9_R0:30,40,;"
+		spikePos_sweep3 = "P0_R0:65,;P1_R0:65,;P2_R0:65,;P3_R0:65,;P4_R0:65,;P5_R0:65,;P6_R0:65,;P7_R0:65,;P8_R0:65,;P9_R0:65,;"
+	endif
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS0], {spikePos_sweep0, spikePos_sweep1, spikePos_sweep2, spikePos_sweep3}, mode = WAVE_DATA)
 
-	spikePos_sweep0 = "P0_R1:40,;P1_R1:40,;P2_R1:40,;P3_R1:40,;P4_R1:40,;P5_R1:40,;P6_R1:40,;P7_R1:40,;P8_R1:40,;P9_R1:40,;"
-	spikePos_sweep1 = "P0_R1:60,80,;P1_R1:60,80,;P2_R1:60,80,;P3_R1:60,80,;P4_R1:60,80,;P5_R1:60,80,;P6_R1:60,80,;P7_R1:60,80,;P8_R1:60,80,;P9_R1:60,80,;"
-	spikePos_sweep2 = "P0_R1:60,;P1_R1:60,;P2_R1:60,;P3_R1:60,;P4_R1:60,;P5_R1:60,;P6_R1:60,;P7_R1:60,;P8_R1:60,;P9_R1:60,;"
-	spikePos_sweep3 = ""
+	if(hwType == HARDWARE_ITC_DAC)
+		spikePos_sweep0 = "P0_R1:40,;P1_R1:40,;P2_R1:40,;P3_R1:40,;P4_R1:40,;P5_R1:40,;P6_R1:40,;P7_R1:40,;P8_R1:40,;P9_R1:40,;"
+		spikePos_sweep1 = "P0_R1:60,80,;P1_R1:60,80,;P2_R1:60,80,;P3_R1:60,80,;P4_R1:60,80,;P5_R1:60,80,;P6_R1:60,80,;P7_R1:60,80,;P8_R1:60,80,;P9_R1:60.1,80.1,;"
+		spikePos_sweep2 = "P0_R1:60,;P1_R1:60,;P2_R1:60,;P3_R1:60,;P4_R1:60,;P5_R1:60,;P6_R1:60,;P7_R1:60,;P8_R1:60,;P9_R1:60.1,;"
+		spikePos_sweep3 = ""
+	elseif(hwType == HARDWARE_NI_DAC)
+		spikePos_sweep0 = "P0_R1:40,;P1_R1:40,;P2_R1:40,;P3_R1:40,;P4_R1:40,;P5_R1:40,;P6_R1:40,;P7_R1:40,;P8_R1:40,;P9_R1:40,;"
+		spikePos_sweep1 = "P0_R1:60,80,;P1_R1:60,80,;P2_R1:60,80,;P3_R1:60,80,;P4_R1:60,80,;P5_R1:60,80,;P6_R1:60,80,;P7_R1:60,80,;P8_R1:60,80,;P9_R1:60,80,;"
+		spikePos_sweep2 = "P0_R1:60,;P1_R1:60,;P2_R1:60,;P3_R1:60,;P4_R1:60,;P5_R1:60,;P6_R1:60,;P7_R1:60,;P8_R1:60,;P9_R1:60,;"
+		spikePos_sweep3 = ""
+	endif
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS1], {spikePos_sweep0, spikePos_sweep1, spikePos_sweep2, spikePos_sweep3}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCountsState_HS0], {SC_SPIKE_COUNT_STATE_STR_TOO_FEW, SC_SPIKE_COUNT_STATE_STR_GOOD, SC_SPIKE_COUNT_STATE_STR_TOO_MANY, SC_SPIKE_COUNT_STATE_STR_GOOD}, mode = WAVE_DATA)
