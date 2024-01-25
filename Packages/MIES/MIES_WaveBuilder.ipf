@@ -1502,6 +1502,7 @@ static Function WB_CreatePulse(wv, pulseType, amplitude, first, last)
 	if(pulseType == WB_PULSE_TRAIN_TYPE_SQUARE)
 		wv[first, last] = amplitude
 	elseif(pulseType == WB_PULSE_TRAIN_TYPE_TRIANGLE)
+		ASSERT(last > first, "last must be > first")
 		wv[first, last] = amplitude * (p - first) / (last - first)
 	else
 		ASSERT(0, "unknown pulse type")
