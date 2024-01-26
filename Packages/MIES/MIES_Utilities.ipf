@@ -6908,3 +6908,27 @@ threadsafe Function AreIntervalsIntersecting(WAVE intervalsParam)
 
 	return IsFinite(GetRowIndex(result, val = 1))
 End
+
+/// @brief Returns the integer result and the difference of it to the original value
+threadsafe Function [variable intResult, variable rest] RoundAndDelta(variable val)
+
+	intResult = round(val)
+
+	return [intResult, intResult - val]
+End
+
+/// @brief Returns the integer result and the difference of it to the original value
+threadsafe Function [variable intResult, variable rest] CeilAndDelta(variable val)
+
+	intResult = ceil(val)
+
+	return [intResult, intResult - val]
+End
+
+/// @brief Returns the integer result and the difference of it to the original value
+threadsafe Function [variable intResult, variable rest] FloorAndDelta(variable val)
+
+	intResult = floor(val)
+
+	return [intResult, intResult - val]
+End
