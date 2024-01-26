@@ -918,10 +918,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				params.noiseGenMode            = WP[86][i][type]
 				params.noiseGenModePTMixedFreq = WP[87][i][type]
 
-				Make/FREE/D/N=(MINIMUM_WAVE_SIZE) pulseStartTimes
-
 				if(WP[46][i][type]) // "Number of pulses" checkbox
-					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE, pulseStartTimes, pulseToPulseLength)
+					[WAVE pulseStartTimes, WAVE pulseStartIndices, WAVE pulseEndIndices, pulseToPulseLength] = WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE)
 					if(windowExists("WaveBuilder")                                              \
 					   && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN     \
 					   && GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch") == i)
@@ -929,7 +927,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 					endif
 					defMode = "Pulse"
 				else
-					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR, pulseStartTimes, pulseToPulseLength)
+					[WAVE pulseStartTimes, WAVE pulseStartIndices, WAVE pulseEndIndices, pulseToPulseLength] = WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR)
 					if(windowExists("WaveBuilder")                                              \
 					   && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN     \
 					   && GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch") == i)
@@ -954,6 +952,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution"   , str=ToTrueFalse(params.poisson))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"            , var=params.randomSeed)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_START_TIMES_KEY    , str=NumericWaveToList(pulseStartTimes, ",", format="%.15g"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_START_INDICES_KEY  , str=NumericWaveToList(pulseStartIndices, ",", format="%d"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_END_INDICES_KEY    , str=NumericWaveToList(pulseEndIndices, ",", format="%d"))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Definition mode"        , str=defMode)
 				break
 			case EPOCH_TYPE_PSC:
@@ -1746,11 +1746,7 @@ Function/WAVE WB_GetInflectionPoints(WAVE stimset, variable sweep, variable epoc
 	return inflectionPoints
 End
 
-static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPulseLength)
-	struct SegmentParameters &pa
-	variable mode
-	WAVE pulseStartTimes
-	variable &pulseToPulseLength
+static Function [WAVE/D pulseStartTimes, WAVE/D pulseStartIndices, WAVE/D pulseEndIndices, variable pulseToPulseLength] WB_PulseTrainSegment(STRUCT SegmentParameters &pa, variable mode)
 
 	variable startIndex, endIndex, startOffset, durationError, lastValidStartIndex
 	variable pulseStartTime, i, amplitudeStartIndex
@@ -1788,6 +1784,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		endif
 	endif
 
+	Make/FREE/D/N=(MINIMUM_WAVE_SIZE) pulseStartTimes, pulseStartIndices, pulseEndIndices
+
 	if(pa.poisson)
 		interPulseInterval = (1 / pa.frequency) * ONE_TO_MILLI - pa.pulseDuration
 
@@ -1808,7 +1806,12 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
-			pulseStartTimes[idx++] = pulseStartTime
+			EnsureLargeEnoughWave(pulseStartIndices, indexShouldExist=idx)
+			EnsureLargeEnoughWave(pulseEndIndices, indexShouldExist=idx)
+			pulseStartTimes[idx] = pulseStartTime
+			pulseStartIndices[idx] = startIndex
+			pulseEndIndices[idx] = endIndex
+			idx += 1
 		endfor
 	elseif(pa.mixedFreq)
 
@@ -1839,7 +1842,12 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
-			pulseStartTimes[idx++] = pulseStartTime
+			EnsureLargeEnoughWave(pulseStartIndices, indexShouldExist=idx)
+			EnsureLargeEnoughWave(pulseEndIndices, indexShouldExist=idx)
+			pulseStartTimes[idx] = pulseStartTime
+			pulseStartIndices[idx] = startIndex
+			pulseEndIndices[idx] = endIndex
+			idx += 1
 
 			pulseStartTime += interPulseIntervals[i] + pa.pulseDuration
 		endfor
@@ -1863,13 +1871,18 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
-			pulseStartTimes[idx++] = pulseStartTime
+			EnsureLargeEnoughWave(pulseStartIndices, indexShouldExist=idx)
+			EnsureLargeEnoughWave(pulseEndIndices, indexShouldExist=idx)
+			pulseStartTimes[idx] = pulseStartTime
+			pulseStartIndices[idx] = startIndex
+			pulseEndIndices[idx] = endIndex
+			idx += 1
 
 			pulseStartTime += interPulseInterval + pa.pulseDuration
 		endfor
 	endif
 
-	Redimension/N=(idx) pulseStartTimes
+	Redimension/N=(idx) pulseStartTimes, pulseStartIndices, pulseEndIndices
 
 	// remove the zero part at the end
 	amplitudeStartIndex = pa.pulseType == WB_PULSE_TRAIN_TYPE_SQUARE ? lastValidStartIndex : lastValidStartIndex + 1
@@ -1890,6 +1903,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	 			  interPulseInterval, pa.numberOfPulses, pa.pulseDuration, DimSize(segmentWave, ROWS) * WAVEBUILDER_MIN_SAMPINT
 
 	DEBUGPRINT(str)
+
+	return [pulseStartTimes, pulseStartIndices, pulseEndIndices, pulseToPulseLength]
 End
 
 static Function WB_PSCSegment(pa)
