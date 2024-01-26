@@ -629,9 +629,9 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 					// Stim set length
 					if(numRacks == 2)
-						CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";47500;;46250;;50625;65250;;"})
+						CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";47499;;46249;;50624;65249;;"})
 					else
-						CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";38000;;37000;;;;;"})
+						CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";37999;;36999;;;;;"})
 					endif
 
 					break

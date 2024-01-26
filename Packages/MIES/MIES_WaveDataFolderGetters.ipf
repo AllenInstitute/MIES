@@ -4328,12 +4328,12 @@ End
 
 /// @brief Returns the segment wave which stores the stimulus set of one segment/epoch
 /// @param duration time of the stimulus in ms
-Function/Wave GetSegmentWave([duration])
-	variable duration
+Function/WAVE GetSegmentWave([variable duration])
+
+	variable numPoints
 
 	DFREF dfr = GetWaveBuilderDataPath()
-	variable numPoints = duration / WAVEBUILDER_MIN_SAMPINT
-	Wave/Z/SDFR=dfr SegmentWave
+	WAVE/Z/SDFR=dfr SegmentWave
 
 	if(ParamIsDefault(duration))
 		return segmentWave
@@ -4343,9 +4343,10 @@ Function/Wave GetSegmentWave([duration])
 		DoAbortNow("Sweeps are currently limited to 30 minutes in duration.\rAdjust MAX_SWEEP_DURATION_IN_MS to change that!")
 	endif
 
+	numPoints = ceil(duration / WAVEBUILDER_MIN_SAMPINT)
 	// optimization: recreate the wave only if necessary or just resize it
 	if(!WaveExists(SegmentWave))
-		Make/R/N=(numPoints) dfr:SegmentWave/Wave=SegmentWave
+		Make/R/N=(numPoints) dfr:SegmentWave/WAVE=SegmentWave
 	elseif(numPoints != DimSize(SegmentWave, ROWS))
 		Redimension/N=(numPoints) SegmentWave
 	endif
