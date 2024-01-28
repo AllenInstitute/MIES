@@ -1330,9 +1330,13 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 
 	[WAVE ITCDataWave, WAVE/WAVE NIDataWave] = DC_MakeAndGetDAQDataWave(device, s, DATA_ACQUISITION_MODE)
 
+	// Note on decimation:
+	// - There is no decimation for transfer of TP to the dataWave as the TP wave is always created with the same sample interval as the dataWave
+	// - StimSets are created with the fixed WB interval WAVEBUILDER_MIN_SAMPINT and are resampled to the sample interval of the dataWave.
+	//   The resample method picks the closest sample point in the stimSet by using round()
+	//   The decimation factor can be < 1 (picking stimset samples one or multiple times) and > 1 (picking stimset samples or skipping it)
 	for(i = 0; i < s.numDACEntries; i += 1)
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-			// TP wave does not need to be decimated, it has already correct size reg. sample rate
 			tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
 			ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
 			switch(s.hardwareType)
@@ -1375,7 +1379,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 				case HARDWARE_ITC_DAC:
 					Multithread ITCDataWave[startOffset, startOffset + singleSetLength - 1][i] =       \
 					limit(                                                                             \
-						  DAScale * singleStimSet[s.decimationFactor * (p - startOffset)][stimsetCol], \
+						  DAScale * singleStimSet[round(s.decimationFactor * (p - startOffset))][stimsetCol], \
 						  SIGNED_INT_16BIT_MIN,                                                        \
 						  SIGNED_INT_16BIT_MAX); AbortOnRTE
 
@@ -1391,7 +1395,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 					// for an index step of 1 in singleStimset, NIChannel steps 1 / decimationFactor
 					// for decimationFactor < 1 and indexing NIChannel to DimSize(NIChannel, ROWS) - 1 (as implemented here),
 					// singleStimset would be indexed to DimSize(singleStimSet, ROWS) - decimationFactor
-					// this leads to an invalid index if decimationFactor is <= 0.5 (due to the way Igor handles nD wave indexing)
+					// this leads to an invalid index if decimationFactor is <= 0.5 (due to the way Igor handles nD wave indexing using round())
 					// it is solved here by limiting the index of singleStimSet to the last valid integer index
 					// for the case of decimationFactor >= 1 there is no issue since index DimSize(singleStimSet, ROWS) - decimationFactor is valid
 					// for ITC decimationFactor is always >= 1 since the stimSets are generated for the ITC max. sample rate
@@ -1404,7 +1408,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 
 					MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                                    \
 					limit(                                                                                                     \
-						  DAScale * singleStimSet[limit(s.decimationFactor * (p - startOffset), 0, lastValidRow)][stimsetCol], \
+						  DAScale * singleStimSet[round(limit(s.decimationFactor * (p - startOffset), 0, lastValidRow))][stimsetCol], \
 						  minLimit,                                                                                          \
 						  maxLimit); AbortOnRTE
 
