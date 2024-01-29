@@ -1612,6 +1612,11 @@ End
 /// - `Function params (encoded)` contains the analysis function parameters. The values have the format described at GetWaveBuilderWaveTextParam().
 /// - `Inflection Points` are in `epoch build ms`. For offset zero these coincide with the roots.
 ///
+/// Added with version 10:
+///    - start and end indices for pulses in pulse trains (end index is part of the pulse)
+///    - length of each segment
+///    - inflection point positions (left side index)
+///
 /// Example:
 ///
 /// .. code-block:: none
