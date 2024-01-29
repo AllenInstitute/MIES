@@ -2695,8 +2695,8 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		 case "NumInvalidSlopeSweepsAllowed":
 			 return "Number of allowed sweeps with invalid f-I fit slope. Only for \"AdaptiveSupra\"."
 		 case "SlopePercentage":
-			 return "Once the slope of the f-I fit is smaller than this percentage value "                             \
-					+ "compared with the maximum slope the stimset cycle is stopped early. Only for \"AdaptiveSupra\"."
+			 return "Once the slope of the f-I fit is x percentage smaller "                              \
+					+ "compared with the maximum slope, the stimset cycle is stopped. Only for \"AdaptiveSupra\"."
 		case "FinalSlopePercent":
 			 return "As additional passing criteria the slope of the f-I plot must be larger than this value. " \
 					+ "Note: The slope is used in percent. Only for \"Supra\"."
