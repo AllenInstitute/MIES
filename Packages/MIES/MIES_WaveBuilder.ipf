@@ -1590,6 +1590,8 @@ End
 /// \rst
 /// Format of the wave note:
 ///
+/// The wave note version is tracked through STIMSET_NOTE_VERSION
+///
 /// Lines separated by ``\r`` (carriage return) in UTF-8 encoding.
 /// The lines hold Igor Pro style key value pairs in the form ``key = value;``
 /// where value can contain any character except ``;`` (semicolon).
