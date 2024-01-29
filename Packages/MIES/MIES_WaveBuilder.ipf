@@ -895,8 +895,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"       , var=params.randomSeed)
 				break
 			case EPOCH_TYPE_SIN_COS:
-				Make/D/FREE inflectionPoints
-				WB_TrigSegment(params, inflectionPoints)
+				[WAVE inflectionPoints, WAVE inflectionIndices] = WB_TrigSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"     , var=params.Duration)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"    , var=params.Amplitude)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"       , var=params.Offset)
@@ -905,6 +904,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=ToTrueFalse(params.logChirp))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "FunctionType" , str=StringFromList(params.trigFuncType, WAVEBUILDER_TRIGGER_TYPES))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Inflection Points", str=NumericWaveToList(inflectionPoints, ",", format="%.15g"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, INFLECTION_POINTS_INDEX_KEY, str=NumericWaveToList(inflectionIndices, ",", format="%.15g"))
 				break
 			case EPOCH_TYPE_SAW_TOOTH:
 				WB_SawToothSegment(params)
@@ -1352,6 +1352,29 @@ static Function [variable lowerBound, variable upperBound] WB_TrigGetBoundsForIn
 	return [lowerBound, upperBound]
 End
 
+static Function WB_CheckTrigonometricSegmentParameters(STRUCT SegmentParameters &pa)
+
+	if(pa.amplitude == 0)
+		print "Can't calculate inflection points with amplitude zero"
+		ControlWindowToFront()
+		return 1
+	elseif(pa.frequency <= 0)
+		print "Can't calculate inflection points with frequency zero"
+		ControlWindowToFront()
+		return 1
+	elseif(pa.logChirp && pa.frequency == pa.endFrequency)
+		print "Can't calculate inflection points with both frequencies being equal"
+		ControlWindowToFront()
+		return 1
+	elseif(pa.endfrequency <= 0 && pa.logChirp)
+		print "Can't calculate inflection points with end frequency zero"
+		ControlWindowToFront()
+		return 1
+	endif
+
+	return 0
+End
+
 /// @brief Calculate the x values where the trigonometric epoch has inflection points
 ///
 /// For zero offset, the inflection points coincide with the zero crossings/roots.
@@ -1390,31 +1413,12 @@ End
 ///    x = \frac{1}{k_1} \cdot \ln\left(\frac{(c + \frac{1}{2}) \cdot \pi + k_3}{k_2}\right)
 ///
 /// \endrst
-static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, variable k0, variable k1, variable k2, variable k3, WAVE inflectionPoints)
+static Function [WAVE/D inflectionPoints, WAVE/D inflectionIndices] WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, variable k0, variable k1, variable k2, variable k3)
 	variable i, idx, xzero, offset, lowerBound, upperBound
 
-	ASSERT(IsDoubleFloatingPointWave(inflectionPoints), "Expected a double wave")
-
-	if(pa.amplitude == 0)
-		print "Can't calculate inflection points with amplitude zero"
-		ControlWindowToFront()
-		inflectionPoints = {NaN}
-		return NaN
-	elseif(pa.frequency <= 0)
-		print "Can't calculate inflection points with frequency zero"
-		ControlWindowToFront()
-		inflectionPoints = {NaN}
-		return NaN
-	elseif(pa.logChirp && pa.frequency == pa.endFrequency)
-		print "Can't calculate inflection points with both frequencies being equal"
-		ControlWindowToFront()
-		inflectionPoints = {NaN}
-		return NaN
-	elseif(pa.endfrequency <= 0 && pa.logChirp)
-		print "Can't calculate inflection points with end frequency zero"
-		ControlWindowToFront()
-		inflectionPoints = {NaN}
-		return NaN
+	if(WB_CheckTrigonometricSegmentParameters(pa))
+		Make/FREE/D inflectionPoints = {NaN}, inflectionIndices = {NaN}
+		return [inflectionPoints, inflectionIndices]
 	endif
 
 	switch(pa.trigFuncType)
@@ -1430,6 +1434,8 @@ static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, v
 
 	[lowerBound, upperBound] = WB_TrigGetBoundsForInflectionPoints(pa, offset)
 
+	Make/FREE/D/N=(MINIMUM_WAVE_SIZE) inflectionPoints, inflectionIndices
+
 	for(i = lowerBound; i<= upperBound;i += 1)
 		if(pa.logChirp)
 			xzero = 1 / k1 * ln(((i + offset) * pi + k3) / k2)
@@ -1442,19 +1448,26 @@ static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, v
 		ASSERT(xzero < pa.duration || CheckIfClose(xzero, pa.duration), "xzero must <= pa.duration")
 
 		EnsureLargeEnoughWave(inflectionPoints, indexShouldExist = idx, dimension = ROWS, initialValue = NaN)
-		inflectionPoints[idx++] = xzero
+		EnsureLargeEnoughWave(inflectionIndices, indexShouldExist = idx, dimension = ROWS, initialValue = NaN)
+		inflectionPoints[idx] = xzero
+		inflectionIndices[idx] = trunc(xzero / WAVEBUILDER_MIN_SAMPINT)
+		idx += 1
 	endfor
 
-	Redimension/N=(idx) inflectionPoints
+	Redimension/N=(idx) inflectionPoints, inflectionIndices
+
+	return [inflectionPoints, inflectionIndices]
 End
 
-static Function WB_TrigSegment(struct SegmentParameters &pa, WAVE inflectionPoints)
+static Function [WAVE/D inflectionPoints, WAVE/D inflectionIndices] WB_TrigSegment(STRUCT SegmentParameters &pa)
+
 	variable k0, k1, k2, k3
 
 	if(pa.trigFuncType != WB_TRIG_TYPE_SIN && pa.trigFuncType != WB_TRIG_TYPE_COS)
 		printf "Ignoring unknown trigonometric function"
 		Wave SegmentWave = GetSegmentWave(duration=0)
-		return NaN
+		Make/FREE/D inflectionPoints = {NaN}, inflectionIndices = {NaN}
+		return [inflectionPoints, inflectionIndices]
 	endif
 
 	Wave SegmentWave = GetSegmentWave(duration=pa.duration)
@@ -1470,7 +1483,7 @@ static Function WB_TrigSegment(struct SegmentParameters &pa, WAVE inflectionPoin
 			MultiThread SegmentWave = pa.amplitude * cos(k2 * e^(k1 * x) - k3)
 		endif
 
-		WB_TrigCalculateInflectionPoints(pa, k0, k1, k2, k3, inflectionPoints)
+		[WAVE inflectionPoints, WAVE inflectionIndices] = WB_TrigCalculateInflectionPoints(pa, k0, k1, k2, k3)
 	else
 		k0 = 2 * Pi * (pa.frequency / 1000) // NOLINT
 		k1 = NaN
@@ -1483,8 +1496,10 @@ static Function WB_TrigSegment(struct SegmentParameters &pa, WAVE inflectionPoin
 			MultiThread SegmentWave = pa.amplitude * cos(k0 * x)
 		endif
 
-		WB_TrigCalculateInflectionPoints(pa, k0, k1, k2, k3, inflectionPoints)
+		[WAVE inflectionPoints, WAVE inflectionIndices] = WB_TrigCalculateInflectionPoints(pa, k0, k1, k2, k3)
 	endif
+
+	return [inflectionPoints, inflectionIndices]
 End
 
 static Function WB_SawToothSegment(pa)
