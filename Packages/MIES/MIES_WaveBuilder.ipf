@@ -799,7 +799,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	Make/FREE/N=0 WaveBuilderWave
 
 	string customWaveName, debugMsg, defMode, formula, formula_version
-	variable i, j, type, accumulatedDuration, pulseToPulseLength, first, last
+	variable i, j, type, accumulatedDuration, pulseToPulseLength, first, last, segmentLength
 	STRUCT SegmentParameters params
 
 	if(stepCount == 0)
@@ -1011,9 +1011,6 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				continue
 		endswitch
 
-		// add CR as we have finished an epoch
-		Note/NOCR WaveBuilderWave, "\r"
-
 		if(type != EPOCH_TYPE_COMBINE)
 			WB_ApplyOffset(params)
 		endif
@@ -1025,9 +1022,14 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		accumulatedDuration += params.duration
 
 		WAVE/Z segmentWave = GetSegmentWave()
+		segmentLength = WaveExists(segmentWave) ? DimSize(segmentWave, ROWS) : 0
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, EPOCH_LENGTH_INDEX_KEY, var=segmentLength, format="%d")
 		if(WaveExists(segmentWave))
 			Concatenate/NP=0 {segmentWave}, WaveBuilderWave
 		endif
+
+		// add CR as we have finished an epoch
+		Note/NOCR WaveBuilderWave, "\r"
 	endfor
 
 	// adjust epochID timestamps for stimset flipping
