@@ -2107,7 +2107,7 @@ static Function PSQ_DS_AreFitResultsValid(string device, variable sweepNo, varia
 		numFits = DimSize(fitOffset, ROWS)
 		ASSERT(numFits == DimSize(fitSlope, ROWS), "Non-matching fitOffset/fitSlope waves sizes")
 
-		Make/FREE/N=(numFits) validFitAll = !(fitSlope[p] < 0 || CheckIfClose(fitSlope[p], 1, tol = 1e-3, strong_or_weak = 0))
+		Make/FREE/N=(numFits) validFitAll = !CheckIfClose(fitSlope[p], 1, tol = 1e-3, strong_or_weak = 0)
 		validFit = (Sum(validFitAll) == numFits)
 	endif
 
