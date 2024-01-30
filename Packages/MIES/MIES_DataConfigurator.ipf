@@ -891,6 +891,8 @@ static Function DC_CalculateGeneratedDataSize(device, dataAcqOrTP, genLength)
 	string device
 	variable dataAcqOrTP, genLength
 
+	variable decimationFactor = DC_GetDecimationFactor(device, dataAcqOrTP)
+
 	// note: the decimationFactor is the factor between the hardware sample rate and the sample rate of the generated waveform in singleStimSet
 	// The ratio of the source to target wave sizes is however limited by the integer size of both waves
 	// While ideally srcLength == tgtLength the floor(...) limits the real data wave length such that
@@ -898,7 +900,7 @@ static Function DC_CalculateGeneratedDataSize(device, dataAcqOrTP, genLength)
 	// Also if decimationFactor >= 2 the last point of the generated data wave is never transferred
 	// e.g. generated data with 10 points and decimationFactor == 2 copies index 0, 2, 4, 6, 8 to the real data wave of size 5
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		return floor(genLength / DC_GetDecimationFactor(device, dataAcqOrTP))
+		return floor(genLength / decimationFactor) + IndexAfterDecimation(0, decimationFactor)
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
 		return genLength
 	else

@@ -653,7 +653,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 					CHECK_EQUAL_TEXTWAVES(foundIndexingEndStimSets, {"", "", "", "", "", "", "", "", ";- none -;;- none -;;- none -;- none -;;"})
 					CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;[[:digit:]]+;;"))
-					CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";158334;;154167;;168750;217500;;"})
+					CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";158333;;154166;;168749;217499;;"})
 					break
 			endswitch
 
