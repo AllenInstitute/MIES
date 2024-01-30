@@ -6932,3 +6932,16 @@ threadsafe Function [variable intResult, variable rest] FloorAndDelta(variable v
 
 	return [intResult, intResult - val]
 End
+
+/// @brief Returns the target index closer to zero of a given source index for a decimation in the form
+///        target[] = source[round(p * decimationFactor)]
+///        Note:
+///          For a decimationFactor < 1 a point in source may be decimated to multiple points in target,
+///          thus a resulting index in target of sourceIndex + 1 may be equal to the index retrieved for sourceindex.
+///          For a decimationFactor > 1 points in source may be skipped on decimation,
+///          thus a resulting index in target of sourceIndex + 1 may increase the result by more than 1.
+threadsafe Function IndexAfterDecimation(variable sourceIndex, variable decimationFactor)
+
+	ASSERT_TS(IsInteger(sourceIndex) && sourceIndex >= 0, "sourceIndex must be integer & >= 0")
+	return sourceIndex == 0 ? -1 : floor((sourceIndex - 0.5) / decimationFactor)
+End

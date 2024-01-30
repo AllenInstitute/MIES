@@ -7732,3 +7732,32 @@ static Function TestGetListDifference()
 	result = GetListDifference("a;A;b;", "a;", caseSensitive=0)
 	CHECK_EQUAL_STR("b;", result)
 End
+
+// IUTF_TD_GENERATOR v0:IndexAfterDecimation_Positions
+// IUTF_TD_GENERATOR v1:IndexAfterDecimation_Sizes
+static Function TestIndexAfterDecimation([md])
+	STRUCT IUTF_mData &md
+
+	variable decimationFactor, srcPulseLength, srcOffset
+	variable edgeLeft, edgeLeftCalculated
+
+	variable srcLength = 1000
+
+	Make/FREE/N=(srcLength) source
+	Make/FREE/N=(md.v1) target
+
+	decimationFactor = srcLength / md.v1
+	// make srcPulseLength as least as long that there is at least one point with amplitude in target for FindLevel
+	srcPulseLength = ceil(decimationFactor)
+	srcOffset = trunc(srcLength * md.v0)
+	source[srcOffset, srcOffset + srcPulseLength] = 1
+
+	target[] = source[limit(round(p * decimationFactor), 0, srcLength - 1)]
+
+	FindLevel/Q/EDGE=1 target, 0.5
+	edgeLeft = trunc(V_LevelX)
+
+	edgeLeftCalculated = IndexAfterDecimation(srcOffset, decimationFactor)
+
+	CHECK_EQUAL_VAR(edgeLeft, edgeLeftCalculated)
+End

@@ -308,3 +308,18 @@ static Function/WAVE RoundTripStimsetFileType()
 
 	return wv
 End
+
+Function/WAVE IndexAfterDecimation_Positions()
+
+	Make/FREE/D wv = {e / 11.1, Pi / 11.1, 0.73, 0.51}
+
+	return wv
+End
+
+Function/WAVE IndexAfterDecimation_Sizes()
+
+	// These are variations of the target size, the source size is fixed 1000
+	Make/FREE/D wv = {345, 678, 1234, 5678}
+
+	return wv
+End
