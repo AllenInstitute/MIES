@@ -719,7 +719,7 @@ static Function EP_AddEpoch(device, channel, channelType, epBegin, epEnd, epTags
 	ASSERT(!isNull(epTags), "Epoch name is null")
 	ASSERT(!isEmpty(epTags), "Epoch name is empty")
 	ASSERT(!isEmpty(epShortName), "Epoch short name is empty")
-	ASSERT(epBegin <= epEnd, "Epoch end is < epoch begin")
+	ASSERT(epBegin <= epEnd, "Epoch end is <= epoch begin")
 	ASSERT(epBegin < upperlimit, "Epoch begin is greater than upper limit")
 	ASSERT(epEnd > lowerlimit, "Epoch end lesser than lower limit")
 	ASSERT(channel >=0 && channel < NUM_DA_TTL_CHANNELS, "channel is out of range")
