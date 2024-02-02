@@ -27,7 +27,7 @@ jobs:
       - CallPR
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0 # load all commits
@@ -48,7 +48,7 @@ jobs:
       - CallPR
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0 # load all commits
@@ -69,7 +69,7 @@ jobs:
       - CallPR
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download all artifacts
@@ -130,7 +130,7 @@ jobs:
       - GenerateReport
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download all artifacts

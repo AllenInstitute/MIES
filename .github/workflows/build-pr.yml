@@ -48,7 +48,7 @@ jobs:
     runs-on: [ self-hosted, Windows, Certificate ]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0 # load all commits
@@ -72,13 +72,13 @@ jobs:
     runs-on: [ self-hosted, Linux, Docker ]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Code Checks
         run: tools/check-code.sh
         # straight from the documentation, see https://pre-commit.com/#github-actions-example
       - name: set PY
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
           key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
@@ -128,7 +128,7 @@ jobs:
     runs-on: [ self-hosted, Linux, Docker ]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0 # load all commits
@@ -251,7 +251,7 @@ jobs:
       - TestNI
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Initial repo config
@@ -287,7 +287,7 @@ jobs:
       - TestITC1600
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download all artifacts
