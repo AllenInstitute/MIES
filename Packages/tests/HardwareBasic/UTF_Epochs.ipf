@@ -177,7 +177,7 @@ End
 static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 
 	variable i, j, epochCnt, rowCnt, beginInt, endInt, epochNr, amplitude, center, DAAmp
-	variable first, last, level, range, ret, firstIndex, lastIndex, div1, div2
+	variable first, last, level, range, ret, firstIndex, lastIndex
 	string s, name
 
 	rowCnt = DimSize(e, ROWS)
@@ -225,39 +225,40 @@ static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
 		level = str2num(e[i][3])
-		first = startT[i] * ONE_TO_MILLI + WAVEBUILDER_MIN_SAMPINT * 1.5
-		last  = endT[i] * ONE_TO_MILLI - WAVEBUILDER_MIN_SAMPINT * 1.5
-		div1 = first / DimDelta(DAChannel, ROWS)
-		firstIndex = abs(div1 - round(div1)) < 1E-10 ? div1 + 1 : ceil(div1)
-		div2 = last / DimDelta(DAChannel, ROWS)
-		lastIndex = abs(div2 - round(div2)) < 1E-10 ? div2 - 1 : trunc(div2)
+		first = startT[i] * ONE_TO_MILLI
+		last  = endT[i] * ONE_TO_MILLI
+		firstIndex = round(first / DimDelta(DAChannel, ROWS))
+		lastIndex = round(last / DimDelta(DAChannel, ROWS))
 		range = lastIndex - firstIndex
 
-		if(range < 0)
-			PASS()
-			continue
-		endif
+		INFO(name)
+		CHECK_GT_VAR(range, 0)
 
 		// check amplitudes
 		if(strsearch(name, "SubType=Pulse", 0) > 0)
 
 			amplitude = NumberByKey("Amplitude", name, "=")
+			INFO(name)
 			CHECK(IsFinite(amplitude))
 
-			WaveStats/RMD=[firstIndex, lastIndex]/Q/M=1 DAChannel
+			WaveStats/RMD=[firstIndex, lastIndex - 1]/Q/M=1 DAChannel
+			INFO(name)
 			CHECK_EQUAL_VAR(V_max, amplitude)
 
 			// check that the level 3 pulse epoch is really only the pulse
 			if(level == 3)
-				WaveStats/RMD=[firstIndex, lastIndex]/Q/M=1 DAChannel
+				WaveStats/RMD=[firstIndex, lastIndex - 1]/Q/M=1 DAChannel
+				INFO(name)
 				CHECK_EQUAL_VAR(V_min, amplitude)
 			endif
 		endif
 
 		// check baseline
 		if(strsearch(name, "Baseline", 0) > 0)
-			WaveStats/RMD=[firstIndex, lastIndex]/Q/M=1 DAChannel
+			WaveStats/RMD=[firstIndex, lastIndex - 1]/Q/M=1 DAChannel
+			INFO(name)
 			CHECK_EQUAL_VAR(V_min, 0)
+			INFO(name)
 			CHECK_EQUAL_VAR(V_max, 0)
 		endif
 	endfor
