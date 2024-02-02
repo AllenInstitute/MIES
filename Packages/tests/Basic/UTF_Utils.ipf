@@ -7535,3 +7535,61 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = $""), 0)
 	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = waveRefWave), NaN)
 End
+
+static Function TestSplitWavesToDimension()
+
+	// bails on invalid wave
+	try
+		Make/FREE wv
+		SplitWavesToDimension(wv)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// bails on invalid sdim parameter
+	try
+		Make/FREE wvData = {{1, 2}, {3, 4}}
+		Make/FREE/WAVE wvRef = {wvData}
+		SplitWavesToDimension(wvRef, sdim = MAX_DIMENSION_COUNT + 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// bails on invalid contained wv
+	try
+		Make/FREE/WAVE wvRef
+		SplitWavesToDimension(wvRef)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE wvData1 = {{1, 2}, {3, 4}}
+	Make/FREE wvData2 = {5, 6}
+	Make/FREE/WAVE wvRef = {wvData1, wvData2}
+
+	WAVE/WAVE/Z result = SplitWavesToDimension(wvRef)
+	CHECK_WAVE(result, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(result, COLS), 0)
+	CHECK_EQUAL_WAVES(result[0], {1, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(result[1], {3, 4}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(result[2], {5, 6}, mode = WAVE_DATA)
+
+	Make/FREE   wvData1    = {{1, 2}, {3, 4}}
+	Make/FREE/T wvDataTxt1 = {{"a", "b"}, {"c", "d"}}
+	Make/FREE/WAVE wvRef = {wvData1, wvDataTxt1}
+
+	WAVE/WAVE/Z result = SplitWavesToDimension(wvRef)
+	CHECK_WAVE(result, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(result, COLS), 0)
+	CHECK_EQUAL_WAVES(result[0], {1, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(result[1], {3, 4}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(result[2], {"a", "b"}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(result[3], {"c", "d"}, mode = WAVE_DATA)
+
+	CHECK_EMPTY_FOLDER()
+End

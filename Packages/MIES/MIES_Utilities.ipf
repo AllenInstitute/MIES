@@ -6838,3 +6838,35 @@ Function/WAVE ZapNullRefs(WAVE/WAVE input)
 
 	return result
 End
+
+/// @brief Split multidimensional waves inside input to the given dimension
+///
+/// @param input wave reference wave
+/// @param sdim  [optional, defaults to 1] dimensionality to split to
+Function/WAVE SplitWavesToDimension(WAVE/WAVE input, [variable sdim])
+
+	ASSERT_TS(IsWaveRefWave(input), "Expected a wave reference wave")
+
+	if(ParamIsDefault(sdim))
+		sdim = 1
+	else
+		ASSERT_TS(IsInteger(sdim) && sdim >= 1 && sdim <= MAX_DIMENSION_COUNT, "Invalid sdim parameter")
+	endif
+
+	Make/FREE/WAVE/N=(0) output, singleWaves
+
+	for(WAVE/Z wv : input)
+		ASSERT_TS(WaveExists(wv), "Invalid contained wv")
+
+		if(DimSize(wv, COLS) > 1)
+			/// @todo workaround IP issue 4979 (singleWaves is not a free wave)
+			SplitWave/NOTE/O/FREE/OREF=singleWaves/SDIM=(sdim) wv
+		else
+			Make/WAVE/FREE singleWaves = {wv}
+		endif
+
+		Concatenate/NP {singleWaves}, output
+	endfor
+
+	return output
+End
