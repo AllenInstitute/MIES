@@ -421,7 +421,7 @@ static Function StatsComplainsWithoutEvents()
 
 	// matching id but no events
 	try
-		MIES_PSX#PSX_OperationStatsImpl(browser, id, range, selectData, prop, stateAsStr, postProc)
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, stateAsStr, postProc)
 		FAIL()
 	catch
 		error = ROStr(GetSweepFormulaParseErrorMessage())
@@ -432,7 +432,7 @@ static Function StatsComplainsWithoutEvents()
 
 	// mismatched id
 	try
-		MIES_PSX#PSX_OperationStatsImpl(browser, id, range, selectData, prop, stateAsStr, postProc)
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, stateAsStr, postProc)
 		FAIL()
 	catch
 		error = ROStr(GetSweepFormulaParseErrorMessage())
@@ -669,7 +669,7 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	MIES_PSX#PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, psxEvent, id)
 
-	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, range, selectData, prop, stateAsStr, postProc)
+	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, stateAsStr, postProc)
 	CHECK_WAVE(output, WAVE_WAVE)
 
 	Make/FREE/N=4 dims = DimSize(output, p)
@@ -950,7 +950,7 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 		refNum = NaN
 	endif
 
-	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, range, allSelectData, prop, stateAsStr, postProc)
+	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, allSelectData, prop, stateAsStr, postProc)
 	CHECK_WAVE(output, WAVE_WAVE)
 
 	if(outOfRange)

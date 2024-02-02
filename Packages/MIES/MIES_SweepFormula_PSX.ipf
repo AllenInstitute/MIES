@@ -1102,7 +1102,7 @@ static Function/WAVE PSX_GenerateSweepEquiv(WAVE selectData)
 End
 
 /// @brief Helper function of the `psxStats` operation
-static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeParam, WAVE selectData, string prop, string stateAsStr, string postProc)
+static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE rangeParam, WAVE selectData, string prop, string stateAsStr, string postProc)
 
 	string propLabelAxis, comboKey
 	variable numRows, numCols, i, j, k, index, sweepNo, chanNr, chanType, state, numRanges, lowerBoundary, upperBoundary, temp, err
@@ -1116,16 +1116,8 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 	numRows = DimSize(selectDataEquiv, ROWS)
 	numCols = DimSize(selectDataEquiv, COLS)
 
-	// see also SFH_EvaluateRange()
-	if(IsNumericWave(rangeParam))
-		numRanges = 1
-		Make/FREE/WAVE allRanges = {rangeParam}
-	elseif(IsTextWave(rangeParam))
-		numRanges = DimSize(rangeParam, ROWS)
-		WAVE/T rangeParamText = rangeParam
-		Make/FREE/WAVE/N=(numRanges) allRanges = ListToTextWave(rangeParamText[p], ";")
-		WaveClear rangeParamText
-	endif
+	WAVE/WAVE allRanges = SplitWavesToDimension(rangeParam)
+	numRanges = DimSize(allRanges, ROWS)
 	WaveClear rangeParam
 
 	WAVE/Z eventContainerFromResults = PSX_GetEventContainerFromResults(id)
@@ -3572,9 +3564,9 @@ End
 /// @brief Read the user JWN from results and create a legend from all operation parameters
 static Function PSX_AddLegend(string win, WAVE/WAVE results)
 
-	variable jsonID, value, type, i, j, numOperations, numParameters
+	variable jsonID, value, type, i, j, numOperations, numParameters, numRows
 	string line, op, param, prefix, opNice, mainWindow, jsonPathOp, jsonPathParam
-	string str
+	string str, containerSep
 	string sep = ", "
 
 	jsonID = JWN_GetWaveNoteAsJSON(results)
@@ -3623,13 +3615,27 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 						str = TextWaveToList(wvText, sep)
 						WaveClear wvText
 					else
-						WAVE wv = JSON_GetWave(jsonID, jsonPathParam, waveMode = 1)
-						ASSERT(IsNumericWave(wv), "Expected numeric wave")
-						str = NumericWaveToList(wv, sep)
-						WaveClear wv
+						if(!cmpstr(param, "range"))
+							WAVE/WAVE container = JWN_GetWaveRefNumericFromWaveNote(results, jsonPathParam)
+							containerSep = "; "
+						else
+							WAVE wv = JSON_GetWave(jsonID, jsonPathParam, waveMode = 1)
+							Make/FREE/WAVE container = {wv}
+							containerSep = ""
+						endif
+
+						str = ""
+						for(WAVE wv : container)
+							ASSERT(IsNumericWave(wv), "Expected numeric wave")
+							// NumericWaveToList outputs in column-major order but we want row-major
+							MatrixOp/FREE dest = wv^t
+							str += RemoveEnding(NumericWaveToList(dest, sep), sep) + containerSep
+						endfor
+
+						str = RemoveEnding(str, containerSep)
 					endif
 
-					sprintf line, "%s: %s", param, RemoveEnding(str, ", ")
+					sprintf line, "%s: %s", param, RemoveEnding(str, sep)
 					break
 				default:
 					ASSERT(0, "Unsupported type")
@@ -4257,7 +4263,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset
 	string parameterPath, key
 
-	WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
+	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
 
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1)
 
@@ -4358,7 +4364,7 @@ Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
-	WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_STATS, 1)
+	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_STATS, 1)
 
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 2)
 	SFH_Assert(WaveExists(selectData), "Missing select data")
