@@ -559,6 +559,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 				rangeEnd = limit(rangeEnd, -inf, lastx)
 			endif
 
+			SFH_ASSERT(rangeStart < rangeEnd, "Starting range must be smaller than the ending range for sweep " + num2istr(sweepNo) + ".")
 			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < lastx), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
 			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd > leftx(sweep) && rangeEnd <= lastx), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
