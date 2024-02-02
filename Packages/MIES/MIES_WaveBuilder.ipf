@@ -1402,7 +1402,7 @@ End
 static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, variable k0, variable k1, variable k2, variable k3, WAVE inflectionPoints)
 	variable i, idx, xzero, offset, lowerBound, upperBound
 
-	ASSERT(WaveType(inflectionPoints) == IGOR_TYPE_64BIT_FLOAT, "Expected double wave")
+	ASSERT(IsDoubleFloatingPointWave(inflectionPoints), "Expected a double wave")
 
 	if(pa.amplitude == 0)
 		print "Can't calculate inflection points with amplitude zero"
