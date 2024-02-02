@@ -470,6 +470,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 			WAVE/T epochNames = setRange
 			SFH_ASSERT(!DimSize(epochNames, COLS), "Expected 1d text wave for epoch specification")
 		else
+			ASSERT(IsDoubleFloatingPointWave(setRange), "Expected a double wave")
 			WAVE/Z/T epochNames = $""
 		endif
 

@@ -3155,10 +3155,10 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 				Make/FREE/T wt = {epNames[epIndex]}
 				WAVE out = wt
 			elseif(epType == EPOCHS_TYPE_TREELEVEL)
-				Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_TREELEVEL])}
+				Make/FREE/D wv = {str2num(epochInfo[epIndex][EPOCH_COL_TREELEVEL])}
 				WAVE out = wv
 			else
-				Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI}
+				Make/FREE/D wv = {str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI}
 				WAVE out = wv
 			endif
 
@@ -4563,7 +4563,7 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 			wvT[i] = csrName[0]
 		endfor
 	endif
-	Make/FREE/N=(numArgs) out = NaN
+	Make/FREE/N=(numArgs)/D out = NaN
 	for(i = 0; i < numArgs; i += 1)
 		SFH_ASSERT(GrepString(wvT[i], "^(?i)[A-J]$"), "Invalid Cursor Name")
 		if(IsEmpty(graph))
