@@ -2684,12 +2684,12 @@ static Function TestOperationData()
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing sweep
-	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo + 1337) + "],all))"
+	str = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo + 1337) + "],all))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing epoch
-	str = "data(WhatEpochIsThis,select(channels(AD4),[" + num2istr(sweepNo) + "],all))"
+	str = "data(WhatEpochIsThis,select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
