@@ -1208,32 +1208,39 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	return [formulaResults, plotMetaData]
 End
 
+static Function/S SF_GetAnnotationPrefix(string dataType)
+
+	strswitch(dataType)
+		case SF_DATATYPE_SWEEP:
+			return ""
+		case SF_DATATYPE_TP:
+			return "TP "
+		default:
+			ASSERT(0, "Invalid dataType")
+	endswitch
+End
+
 static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData, WAVE data)
 
 	variable channelNumber, channelType, sweepNo, isAveraged
 	string channelId, prefix
-	string traceAnnotation
+	string traceAnnotation, annotationPrefix
 
 	prefix = RemoveEnding(ReplaceString(";", plotMetaData.opStack, " "), " ")
 
 	strswitch(plotMetaData.dataType)
+		case SF_DATATYPE_SWEEP: // fallthrough
 		case SF_DATATYPE_TP:
 			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+			annotationPrefix = SF_GetAnnotationPrefix(plotMetaData.dataType)
 			if(IsValidSweepNumber(sweepNo))
 				channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 				channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
 				channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
-				sprintf traceAnnotation, "TP Sweep %d %s", sweepNo, channelId
+				sprintf traceAnnotation, "%sSweep %d %s", annotationPrefix, sweepNo, channelId
 			else
-				sprintf traceAnnotation, "TP"
+				sprintf traceAnnotation, "%s", annotationPrefix
 			endif
-			break
-		case SF_DATATYPE_SWEEP:
-			channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
-			channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
-			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
-			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
-			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
 		default:
 			if(WhichListItem(SF_OP_DATA, plotMetaData.opStack) == -1)
