@@ -1211,6 +1211,8 @@ End
 static Function/S SF_GetAnnotationPrefix(string dataType)
 
 	strswitch(dataType)
+		case SF_DATATYPE_EPOCHS:
+			return "Epoch "
 		case SF_DATATYPE_SWEEP:
 			return ""
 		case SF_DATATYPE_TP:
@@ -1229,7 +1231,8 @@ static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData
 	prefix = RemoveEnding(ReplaceString(";", plotMetaData.opStack, " "), " ")
 
 	strswitch(plotMetaData.dataType)
-		case SF_DATATYPE_SWEEP: // fallthrough
+		case SF_DATATYPE_EPOCHS: // fallthrough
+		case SF_DATATYPE_SWEEP:  // fallthrough
 		case SF_DATATYPE_TP:
 			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 			annotationPrefix = SF_GetAnnotationPrefix(plotMetaData.dataType)
@@ -1285,7 +1288,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	s.blue = 0x0000
 
 	Make/FREE/T stopInheritance = {SF_OPSHORT_MINUS, SF_OPSHORT_PLUS, SF_OPSHORT_DIV, SF_OPSHORT_MULT}
-	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS}
+	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS, SF_OP_EPOCHS}
 
 	WAVE/T opStackW = ListToTextWave(opStack, ";")
 	numDoInh = DimSize(doInheritance, ROWS)
@@ -3177,6 +3180,8 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_EPOCHS)
 	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
 	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, yAxisLabel)
+
+	SFH_AddOpToOpStack(output, "", SF_OP_EPOCHS)
 
 	return output
 End
