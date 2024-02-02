@@ -48,7 +48,7 @@ jobs:
     runs-on: [ self-hosted, Windows, Certificate ]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0 # load all commits
@@ -59,7 +59,7 @@ jobs:
       - name: Sign installer
         run: tools/sign-installer.sh -p "${{ secrets.GHA_MIES_CERTIFICATE_PIN }}"
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: BuildInstaller-${{ matrix.kind }}-assets
@@ -72,13 +72,13 @@ jobs:
     runs-on: [ self-hosted, Linux, Docker ]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Code Checks
         run: tools/check-code.sh
         # straight from the documentation, see https://pre-commit.com/#github-actions-example
       - name: set PY
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
           key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
@@ -115,7 +115,7 @@ jobs:
     runs-on: [ self-hosted, Linux, Docker ]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0 # load all commits
@@ -124,7 +124,7 @@ jobs:
       - name: Build documentation
         run: tools/documentation/run.sh
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: Documentation-assets
@@ -230,21 +230,21 @@ jobs:
       - TestNI
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download ITC18-USB artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: test-itc18-assets
       - name: Download ITC1600 artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: test-itc1600-assets
       - name: Download NI artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: test-ni-assets
       - name: Validate and read NWBv2 files
@@ -265,12 +265,12 @@ jobs:
       - TestITC1600
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download all artifacts
         id: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
       - name: Flatten artifact structure
