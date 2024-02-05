@@ -996,7 +996,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 				singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, device, DATA_ACQUISITION_MODE)
 				WAVE NIChannel = NIDataWave[i + ttlOffset]
 				MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
-				limit(TTLWaveSingle[trunc(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
+				limit(TTLWaveSingle[round(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
 			endfor
 			break
 		case HARDWARE_ITC_DAC:
@@ -1009,12 +1009,12 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 			bitMask = 1 << NUM_ITC_TTL_BITS_PER_RACK - 1
 			if(ITCRackZeroChecked)
 				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset] = \
-				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))] & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				limit(TTLWaveITC[round(s.decimationFactor * (p - startOffset))] & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 			endif
 
 			if(DC_AreTTLsInRackChecked(device, RACK_ONE))
 				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset + ITCRackZeroChecked] = \
-				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))] >> NUM_ITC_TTL_BITS_PER_RACK & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				limit(TTLWaveITC[round(s.decimationFactor * (p - startOffset))] >> NUM_ITC_TTL_BITS_PER_RACK & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 			endif
 			break
 	endswitch
