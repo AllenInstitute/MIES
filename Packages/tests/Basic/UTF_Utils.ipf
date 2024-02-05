@@ -7593,3 +7593,80 @@ static Function TestSplitWavesToDimension()
 
 	CHECK_EMPTY_FOLDER()
 End
+
+static Function TestAreIntervalsIntersecting()
+
+	// wrong wave type
+	try
+		Make/FREE/T wvText
+		AreIntervalsIntersecting(wvText)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// 1D wave
+	try
+		Make/FREE wv
+		AreIntervalsIntersecting(wv)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// trivial case #1: empty
+	Make/FREE/N=(0, 2) empty
+	CHECK_EQUAL_VAR(0, AreIntervalsIntersecting(empty))
+
+	// trivial case #2: only one interval
+	Make/FREE single = {{1}, {2}}
+	CHECK_EQUAL_VAR(0, AreIntervalsIntersecting(single))
+
+	// contains NaN values (start)
+	Make/FREE infValues = {{1, inf}, {2, 4}}
+
+	try
+		AreIntervalsIntersecting(infValues)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// contains NaN values (end)
+	Make/FREE infValues = {{1, 3}, {2, NaN}}
+
+	try
+		AreIntervalsIntersecting(infValues)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid ordering
+	Make/FREE invalidOrder = {{2, 3}, {1, 4}}
+
+	try
+		AreIntervalsIntersecting(invalidOrder)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// works
+	Make/FREE data = {{1, 3}, {2, 4}}
+	CHECK(!AreIntervalsIntersecting(data))
+
+	// intervals which have start == end are okay
+	Make/FREE data = {{1, 2}, {2, 3}}
+	CHECK(!AreIntervalsIntersecting(data))
+
+	Make/FREE data = {{2.5, 1, 2.7}, {2.6, 2.4, 4}}
+	CHECK(!AreIntervalsIntersecting(data))
+
+	Make/FREE data = {{2, 1}, {3, 4}}
+	CHECK(AreIntervalsIntersecting(data))
+
+	// works also with infinite
+	Make/FREE data = {{-inf, 3}, {2, inf}}
+	CHECK(!AreIntervalsIntersecting(data))
+End

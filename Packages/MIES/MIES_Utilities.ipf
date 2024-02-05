@@ -6888,3 +6888,48 @@ Function/WAVE SplitWavesToDimension(WAVE/WAVE input, [variable sdim])
 
 	return output
 End
+
+threadsafe static Function AreIntervalsIntersectingImpl(variable index, WAVE intervals)
+
+	ASSERT_TS(!IsNaN(intervals[index][0]) && !IsNaN(intervals[index][1]), "Expected finite entries")
+	ASSERT_TS(intervals[index][0] < intervals[index][1], "Expected interval start < end")
+
+	if(index == 0)
+		return 0
+	endif
+
+	// check that every interval, starting from the second interval
+	// starts later than the previous one ends
+	return (intervals[index][0] < intervals[index - 1][1])
+End
+
+/// @brief Return the truth if any of the given intervals ]A, B[ intersect.
+///
+/// @param intervalsParam Nx2 wave with the intervals
+threadsafe Function AreIntervalsIntersecting(WAVE intervalsParam)
+
+	variable numRows, i
+
+	ASSERT_TS(IsNumericWave(intervalsParam), "Expected a numeric wave")
+
+	numRows = DimSize(intervalsParam, ROWS)
+	// two columns: start, end
+	ASSERT_TS(DimSize(intervalsParam, COLS) == 2, "Expected exactly two columns")
+
+	if(numRows <= 1)
+		return 0
+	endif
+
+	// sort start column in ascending order
+	Duplicate/FREE intervalsParam, intervals
+	WaveClear intervalsParam
+	SortColumns/KNDX={0} sortWaves=intervals
+
+	Make/FREE/R/N=(numRows) result = NaN
+
+	Multithread result = AreIntervalsIntersectingImpl(p, intervals)
+
+	ASSERT_TS(IsNaN(GetRowIndex(result, val = NaN)), "Error evaluating intervals")
+
+	return IsFinite(GetRowIndex(result, val = 1))
+End
