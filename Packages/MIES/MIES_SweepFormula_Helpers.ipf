@@ -1368,24 +1368,14 @@ Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoc
 	numEpochs = DimSize(epIndices, ROWS)
 	WAVE adaptedRange = SFH_GetEmptyRange()
 
-	Make/FREE/T/N=(numEpochs) epochRangeNames
-
 	Redimension/N=(-1, numEpochs) adaptedRange
 	for(j = 0; j < numEpochs; j += 1)
 		epIndex = epIndices[j]
 		adaptedRange[0][j] = str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
 		adaptedRange[1][j] = str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
-
-		epochTag = epochInfo[epIndex][EPOCH_COL_TAGS]
-
-		epochShortName = EP_GetShortName(epochTag)
-
-		if(IsEmpty(epochShortName))
-			epochRangeNames[j] = epochTag
-		else
-			epochRangeNames[j] = epochShortName
-		endif
 	endfor
+
+	Make/FREE/T/N=(numEpochs) epochRangeNames = allEpNames[epIndices[p]]
 
 	return [adaptedRange, epochRangeNames]
 End
