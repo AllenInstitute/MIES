@@ -1351,8 +1351,8 @@ Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoc
 		return [adaptedRange, $""]
 	endif
 
-	WAVE/T epochNames = range
-	SFH_ASSERT(IsTextWave(epochNames) && !DimSize(epochNames, COLS), "Expected 1d text wave for epoch specification")
+	WAVE/T epochPatterns = range
+	SFH_ASSERT(IsTextWave(epochPatterns) && !DimSize(epochPatterns, COLS), "Expected 1d text wave for epoch specification")
 
 	WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, chanType, chanNr, allEpochsRegex)
 	if(!WaveExists(epochInfo))
@@ -1360,7 +1360,7 @@ Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoc
 	endif
 
 	WAVE/T allEpNames = SFH_GetEpochNamesFromInfo(epochInfo)
-	WAVE/Z epIndices = SFH_GetEpochIndicesByWildcardPatterns(allEpNames, epochNames)
+	WAVE/Z epIndices = SFH_GetEpochIndicesByWildcardPatterns(allEpNames, epochPatterns)
 	if(!WaveExists(epIndices))
 		return [$"", $""]
 	endif
