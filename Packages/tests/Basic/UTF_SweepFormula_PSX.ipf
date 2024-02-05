@@ -991,6 +991,37 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 	endfor
 End
 
+static Function StatsComplainsAboutIntersectingRanges()
+
+	string browser, device, formulaGraph, comboKey, id
+
+	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
+
+	[WAVE range0, WAVE selectData] = GetFakeRangeAndSelectData()
+
+	// 1st event wave
+	WAVE/Z psxEvent = GetEventWave(comboIndex = 0)
+	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range0)
+	id = "myID"
+	FillEventWave_IGNORE(psxEvent, id, comboKey)
+
+	Duplicate/FREE range0, range1
+
+	// 2nd event wave where we shift the range
+	WAVE/Z psxEvent = CreateEventWaveInComboFolder_IGNORE(comboIndex = 1)
+	range1[] += 0.5 * (range0[1] - range0[0])
+	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range1)
+	id = "myID"
+	FillEventWave_IGNORE(psxEvent, id, comboKey)
+
+	try
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, {range0, range1}, selectData, "amp", "all", "nothing")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
 Function/WAVE FakeSweepDataGeneratorPSXKernel(WAVE sweep, variable numChannels)
 
 	variable pnts = 1001

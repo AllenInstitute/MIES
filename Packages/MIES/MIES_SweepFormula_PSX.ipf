@@ -1101,6 +1101,64 @@ static Function/WAVE PSX_GenerateSweepEquiv(WAVE selectData)
 	return sweepEquiv
 End
 
+/// @brief Collect all resolved ranges in allResolvedRanges together with a hash of the select data
+Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectData, WAVE allResolvedRanges, WAVE/T allSelectHashes)
+
+	variable sweepNo, chanNr, chanType, numRows
+
+	sweepNo  = singleSelectData[0][%SWEEP]
+	chanNr   = singleSelectData[0][%CHANNELNUMBER]
+	chanType = singleSelectData[0][%CHANNELTYPE]
+
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
+
+	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(numericalValues, textualValues, range, sweepNo, chanType, chanNr)
+	ASSERT(DimSize(resolvedRanges, COLS) == 1, "psxStats does not support epoch wildcards")
+
+	numRows = DimSize(allSelectHashes, ROWS)
+	Redimension/N=(numRows + 1) allSelectHashes
+	allSelectHashes[numRows] = WaveHash(singleSelectData, HASH_SHA2_256)
+
+	Concatenate/NP {resolvedRanges}, allResolvedRanges
+
+	if(DimSize(allResolvedRanges, COLS) == 0)
+		Redimension/N=(-1, 1) allResolvedRanges
+	endif
+End
+
+/// @brief Check that the 2xN wave allResolvedRanges has only
+///        non-intersecting ranges for the same select data hash
+static Function PSX_CheckResolvedRanges(WAVE allResolvedRanges, WAVE/T allSelectHashes)
+
+	string selectHash
+	variable numRows, numColumns, i, idx
+
+	numRows    = DimSize(allResolvedRanges, ROWS)
+	numColumns = DimSize(allResolvedRanges, COLS)
+
+	ASSERT(numColumns == DimSize(allSelectHashes, ROWS), "Mismatched row sizes")
+
+	for(selectHash : GetUniqueEntries(allSelectHashes))
+		Make/N=(numRows, numColumns)/FREE work
+
+		for(i = 0, idx = 0; i < numColumns; i += 1)
+			if(!cmpstr(selectHash, allSelectHashes[i]))
+				work[][idx] = allResolvedRanges[p][i]
+				idx += 1
+			endif
+		endfor
+
+		MatrixOp/FREE workTransposed = work^t
+
+		ASSERT(idx > 0, "Invalid idx after searching")
+		Redimension/N=(idx, -1) workTransposed
+
+		ASSERT(!AreIntervalsIntersecting(workTransposed), "Can't work with multiple intersecting ranges")
+	endfor
+End
+
 /// @brief Helper function of the `psxStats` operation
 static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE rangeParam, WAVE selectData, string prop, string stateAsStr, string postProc)
 
@@ -1119,6 +1177,9 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 	WAVE/WAVE allRanges = SplitWavesToDimension(rangeParam)
 	numRanges = DimSize(allRanges, ROWS)
 	WaveClear rangeParam
+
+	Make/D/FREE/N=(0) allResolvedRanges
+	Make/T/FREE/N=(0) allSelectHashes
 
 	WAVE/Z eventContainerFromResults = PSX_GetEventContainerFromResults(id)
 	WAVE/Z eventContainer            = PSX_GetEventContainer(graph, requestID = id)
@@ -1161,8 +1222,9 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 				EnsureLargeEnoughWave(allEvents, indexShouldExist = idx)
 				allEvents[idx] = events
 				idx += 1
-
 				WaveClear events
+
+				PSX_CollectResolvedRanges(graph, range, singleSelectData, allResolvedRanges, allSelectHashes)
 			endfor
 
 			Redimension/N=(idx) allEvents
@@ -1359,6 +1421,8 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 			endfor
 		endfor
 	endfor
+
+	PSX_CheckResolvedRanges(allResolvedRanges, allSelectHashes)
 
 	Redimension/N=(index) output
 
