@@ -426,10 +426,8 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 
 	variable i, j, rangeStart, rangeEnd, sweepNo, isSingleRange
 	variable chanNr, chanType, cIndex, isSweepBrowser
-	variable numSelected, index, numRanges, numEpochs, epIndex, lastx
-	string dimLabel, device, dataFolder, epochTag, epochShortName
-	string	allEpochsRegex = "^.*$"
-
+	variable numSelected, index, numRanges, lastx
+	string dimLabel, device, dataFolder
 	ASSERT(WindowExists(graph), "graph window does not exist")
 
 	isSingleRange = DimSize(range, ROWS) == 1
@@ -466,14 +464,6 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 			continue
 		endif
 
-		if(IsTextWave(setRange))
-			WAVE/T epochNames = setRange
-			SFH_ASSERT(!DimSize(epochNames, COLS), "Expected 1d text wave for epoch specification")
-		else
-			ASSERT(IsDoubleFloatingPointWave(setRange), "Expected a double wave")
-			WAVE/Z/T epochNames = $""
-		endif
-
 		sweepNo = selectData[i][%SWEEP]
 		chanNr = selectData[i][%CHANNELNUMBER]
 		chanType = selectData[i][%CHANNELTYPE]
@@ -501,46 +491,13 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 			continue
 		endif
 
-		if(WaveExists(epochNames))
+		WAVE/ZZ adaptedRange
+		WAVE/T/ZZ epochRangeNames
+		[adaptedRange, epochRangeNames] = SFH_GetNumericRangeFromEpoch(numericalValues, textualValues, setRange, sweepNo, chanType, chanNr)
 
-			WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, chanType, chanNr, allEpochsRegex)
-			if(!WaveExists(epochInfo))
-				continue
-			endif
-			WAVE/T allEpNames = SFH_GetEpochNamesFromInfo(epochInfo)
-			WAVE/Z epIndices = SFH_GetEpochIndicesByWildcardPatterns(allEpNames, epochNames)
-			if(!WaveExists(epIndices))
-				continue
-			endif
-			numEpochs = DimSize(epIndices, ROWS)
-			WAVE adaptedRange = SFH_GetEmptyRange()
-
-			Make/FREE/T/N=(numEpochs) epochRangeNames
-
-			Redimension/N=(-1, numEpochs) adaptedRange
-			for(j = 0; j < numEpochs; j += 1)
-				epIndex = epIndices[j]
-				adaptedRange[0][j] = str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
-				adaptedRange[1][j] = str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
-
-				epochTag = epochInfo[epIndex][EPOCH_COL_TAGS]
-
-				epochShortName = EP_GetShortName(epochTag)
-
-				if(IsEmpty(epochShortName))
-					epochRangeNames[j] = epochTag
-				else
-					epochRangeNames[j] = epochShortName
-				endif
-			endfor
-		else
-			Duplicate/FREE setRange, adaptedRange
-			if(!DimSize(adaptedRange, COLS))
-				Redimension/N=(-1, 1) adaptedRange
-			endif
+		if(!WaveExists(adaptedRange) && !WaveExists(epochRangeNames))
+			continue
 		endif
-
-		SFH_ASSERT(!SFH_IsEmptyRange(adaptedRange), "Specified range not valid.")
 
 		numRanges = DimSize(adaptedRange, COLS)
 		for(j = 0; j < numRanges; j += 1)
@@ -551,7 +508,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 			// we did not cap epoch ranges properly on aborted/shortened sweeps
 			// we also did not calculate the sampling points for TP and Stimesets exactly the same way
 			// Thus, if necessary we clip the data here.
-			if(WaveExists(epochNames))
+			if(WaveExists(epochRangeNames))
 				// complete epoch starting at or beyond sweep end
 				if(rangeStart >= lastx)
 					continue
@@ -1360,4 +1317,75 @@ Function/WAVE SFH_GetStimsetRange(string graph, WAVE data, WAVE selectData)
 	ASSERT(range[0] < range[1], "Invalid range")
 
 	return range
+End
+
+/// @brief From a single numeric/textual range wave we return a 2xN numeric range
+///
+/// Supports numeric ranges, epochs, and epochs with wildcards.
+///
+/// @param numericalValues numeric labnotebok
+/// @param textualValues   textual labnotebok
+/// @param range           one numerical or one/multiple epoch ranges with optional wildcard, @see SFH_EvaluateRange
+/// @param sweepNo         sweep number
+/// @param chanType        channel type
+/// @param chanNr          channel number
+///
+/// @retval adaptedRange    2xN numeric wave with the start/stop ranges [ms]
+/// @retval epochRangeNames epoch names (wildcard expanded) in case range was textual, a null wave ref otherwise
+Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoch(WAVE numericalValues, WAVE textualValues, WAVE range, variable sweepNo, variable chanType, variable chanNr)
+
+	string epochTag, epochShortName
+	variable numEpochs, epIndex, i, j
+	string allEpochsRegex = "^.*$"
+
+	if(IsNumericWave(range))
+		ASSERT(IsDoubleFloatingPointWave(range), "Expected a double wave")
+
+		Duplicate/FREE range, adaptedRange
+		if(!DimSize(adaptedRange, COLS))
+			Redimension/N=(-1, 1) adaptedRange
+		endif
+
+		SFH_ASSERT(!SFH_IsEmptyRange(adaptedRange), "Specified range not valid.")
+
+		return [adaptedRange, $""]
+	endif
+
+	WAVE/T epochNames = range
+	SFH_ASSERT(IsTextWave(epochNames) && !DimSize(epochNames, COLS), "Expected 1d text wave for epoch specification")
+
+	WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, chanType, chanNr, allEpochsRegex)
+	if(!WaveExists(epochInfo))
+		return [$"", $""]
+	endif
+
+	WAVE/T allEpNames = SFH_GetEpochNamesFromInfo(epochInfo)
+	WAVE/Z epIndices = SFH_GetEpochIndicesByWildcardPatterns(allEpNames, epochNames)
+	if(!WaveExists(epIndices))
+		return [$"", $""]
+	endif
+
+	numEpochs = DimSize(epIndices, ROWS)
+	WAVE adaptedRange = SFH_GetEmptyRange()
+
+	Make/FREE/T/N=(numEpochs) epochRangeNames
+
+	Redimension/N=(-1, numEpochs) adaptedRange
+	for(j = 0; j < numEpochs; j += 1)
+		epIndex = epIndices[j]
+		adaptedRange[0][j] = str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+		adaptedRange[1][j] = str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+
+		epochTag = epochInfo[epIndex][EPOCH_COL_TAGS]
+
+		epochShortName = EP_GetShortName(epochTag)
+
+		if(IsEmpty(epochShortName))
+			epochRangeNames[j] = epochTag
+		else
+			epochRangeNames[j] = epochShortName
+		endif
+	endfor
+
+	return [adaptedRange, epochRangeNames]
 End
