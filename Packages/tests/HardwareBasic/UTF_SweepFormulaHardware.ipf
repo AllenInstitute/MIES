@@ -466,10 +466,17 @@ static Function SF_TPTest2_REENTRY([str])
 
 	string graph, dbPanel
 	string formula, dataType, strRef
-	variable i, sweep, chanNr, chanType
+	variable i, sweep, chanNr, chanType, hwType, beginTrailRef
 
+	hwType = GetHardwareType(str)
 	graph = DB_OpenDataBrowser()
 	dbPanel = BSP_GetPanel(graph)
+
+	if(hwType == HARDWARE_NI_DAC)
+		beginTrailRef = 15.004
+	else
+		beginTrailRef = 15.01
+	endif
 
 	formula = "tp(tpfit(exp,tau),select())"
 	WAVE/WAVE tpResult = SF_ExecuteFormula(formula, graph, useVariables=0)
@@ -480,7 +487,7 @@ static Function SF_TPTest2_REENTRY([str])
 	WAVE endTrails = JWN_GetNumericWaveFromWaveNote(data, "/endtrails")
 	CHECK_EQUAL_VAR(DimSize(beginTrails, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(endTrails, ROWS), 1)
-	CHECK_EQUAL_VAR(beginTrails[0], 15)
+	CHECK_CLOSE_VAR(beginTrails[0], beginTrailRef, tol = 1E-10)
 	CHECK_EQUAL_VAR(endTrails[0], 20)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 
@@ -490,7 +497,7 @@ static Function SF_TPTest2_REENTRY([str])
 	WAVE endTrails = JWN_GetNumericWaveFromWaveNote(data, "/endtrails")
 	CHECK_EQUAL_VAR(DimSize(beginTrails, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(endTrails, ROWS), 1)
-	CHECK_EQUAL_VAR(beginTrails[0], 15)
+	CHECK_CLOSE_VAR(beginTrails[0], beginTrailRef, tol = 1E-10)
 	CHECK_EQUAL_VAR(endTrails[0], 20 + 250)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 

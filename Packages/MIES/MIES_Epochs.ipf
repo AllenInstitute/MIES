@@ -245,7 +245,7 @@ static Function EP_AddEpochsFromTP(string device, variable samplingInterval, var
 
 	// TP sub ranges
 	epochBegin = offset + pulseStartPoints * samplingInterval
-	epochEnd = epochBegin + pulseLengthPoints * samplingInterval
+	epochEnd = epochBegin + (pulseLengthPoints + 1) * samplingInterval
 	epochSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epochTags, EPOCH_PULSE_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	epochSubTags = ReplaceNumberByKey(EPOCH_AMPLITUDE_KEY, epochSubTags, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_PULSE, 1)
@@ -257,7 +257,7 @@ static Function EP_AddEpochsFromTP(string device, variable samplingInterval, var
 	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLFRONT, 1)
 
 	// post pulse BL
-	epochBegin = offset + (pulseStartPoints + pulseLengthPoints) * samplingInterval
+	epochBegin = offset + (pulseStartPoints + pulseLengthPoints + 1) * samplingInterval
 	epochEnd = offset + totalLengthPoints * samplingInterval
 	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLBACK, 1)
 End
