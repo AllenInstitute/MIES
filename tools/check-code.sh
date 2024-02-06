@@ -146,7 +146,7 @@ matches=$(git grep $opts -e '^(?U)[[:space:]]*for\(.*\(.*\).*\)' --and --not -e 
 
 if [[ -n "$matches" ]]
 then
-  echo "Function call in a foor loop statement check failed (use \`// NOLINT\` to suppress if appropriate):"
+  echo "Function call in a for loop statement check failed (use \`// NOLINT\` to suppress if appropriate):"
   echo "$matches"
   ret=1
 fi
