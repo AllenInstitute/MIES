@@ -5060,12 +5060,33 @@ Function ZN_AllNaNToNull()
 	WAVE/Z reduced = ZapNaNs(wv)
 	CHECK_WAVE(reduced, NULL_WAVE)
 End
+
 Function ZN_RemovesNaNs()
 
 	Make/FREE wv = {NaN, inf, 1}
 	WAVE/Z reduced = ZapNaNs(wv)
 	CHECK_EQUAL_WAVES(reduced, {inf, 1})
 End
+
+Function ZN_RemovesNaNs2D()
+
+	// row is NaN
+	Make/FREE wv = {{NaN, inf}, { NaN, 1}}
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_EQUAL_WAVES(reduced, {inf, 1})
+
+	// column is NaN
+	Make/FREE wv = {{NaN, NaN}, {inf, 1}}
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_EQUAL_WAVES(reduced, {inf, 1})
+
+	// single point NaN only
+	Make/FREE wv = {{NaN, 2}, {inf, 1}}
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_EQUAL_WAVES(reduced, {2, inf, 1})
+
+End
+
 /// @}
 
 // BinarySearchText
