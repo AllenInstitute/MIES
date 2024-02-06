@@ -1271,3 +1271,40 @@ static Function TPDuringDAQwithPS_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimScale, {tpAmp, daGain, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
+
+// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DeviceNameGenerator
+static Function TPZerosDAC([STRUCT IUTF_MDATA &md])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_TP1" + \
+								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+
+	AcquireData_NG(s, md.s0)
+
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+End
+
+static Function TPZerosDAC_REENTRY([STRUCT IUTF_MDATA &md])
+
+	variable deviceID, hardwareType, sweepNo, index, ADC
+	string device
+
+	device = md.s0
+
+	CHECK_EQUAL_VAR(ROVar(GetDataAcqRunMode(device)), DAQ_NOT_RUNNING)
+	CHECK_EQUAL_VAR(ROVar(GetTestpulseRunMode(device)), TEST_PULSE_NOT_RUNNING)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "ADC", 0, XOP_CHANNEL_TYPE_ADC, TEST_PULSE_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+
+	deviceID = ROVar(GetDAQDeviceID(device))
+	hardwareType = GetHardwareType(device)
+	ADC = settings[index]
+
+	CHECK_LE_VAR(HW_ReadADC(hardwareType, deviceID, ADC), 0.01)
+End
