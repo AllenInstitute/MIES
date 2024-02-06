@@ -3342,6 +3342,8 @@ End
 /// @param var2            second variable
 /// @param tol             [optional, defaults to 1e-8] tolerance
 /// @param strong_or_weak  [optional, defaults to strong] type of condition, can be zero for weak or 1 for strong
+///
+/// UTF_NOINSTRUMENTATION
 Function CheckIfClose(var1, var2, [tol, strong_or_weak])
 	variable var1, var2, tol, strong_or_weak
 
@@ -4181,6 +4183,8 @@ End
 
 /// @brief Normalize the line endings in the given string to either classic Mac OS/Igor Pro EOLs (`\r`)
 ///        or Unix EOLs (`\n`)
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S NormalizeToEOL(str, eol)
 	string str, eol
 
@@ -5797,6 +5801,8 @@ threadsafe Function/WAVE RemoveUnusedRows(WAVE wv)
 End
 
 /// @brief Check wether `val1` and `val2` are equal or both NaN
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function EqualValuesOrBothNaN(variable left, variable right)
 
 	return (IsNaN(left) && IsNaN(right)) || (left == right)

@@ -632,6 +632,8 @@ threadsafe Function/S GetDeviceTypePathAsString(deviceType)
 End
 
 /// @brief Return a datafolder reference to the device folder
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/DF GetDevicePath(device)
 	string device
 	return createDFWithAllParents(GetDevicePathAsString(device))
@@ -5713,6 +5715,8 @@ End
 /// - 15: Internal number stored in control min_AsyncAD__RowNum. The minium value alarm trigger.
 /// - 16: Internal number stored in control max_AsyncAD_RowNum. The max value alarm trigger.
 /// - 17+: Unique controls
+///
+/// UTF_NOINSTRUMENTATION
 Function/Wave GetDA_EphysGuiStateNum(device)
 	string device
 
@@ -5781,6 +5785,8 @@ End
 /// - 8: (Async) Title
 /// - 9: (Async) Unit
 /// - 10+: Unique controls (SetVariable and PopupMenu only)
+///
+/// UTF_NOINSTRUMENTATION
 Function/Wave GetDA_EphysGuiStateTxT(device)
 	string device
 

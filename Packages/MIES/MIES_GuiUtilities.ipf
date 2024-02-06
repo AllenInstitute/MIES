@@ -400,6 +400,8 @@ Function SetSetVariableLimits(win, Control, low, high, increment)
 End
 
 /// @brief Returns the contents of a SetVariable
+///
+/// UTF_NOINSTRUMENTATION
 Function GetSetVariable(win, control)
 	string win, control
 
