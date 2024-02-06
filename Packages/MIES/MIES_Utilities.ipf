@@ -5803,6 +5803,8 @@ End
 /// @param wv        wave to check
 /// @param val       value to check
 /// @param ignoreNaN [optional, defaults to true] ignore NaN in wv
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsConstant(WAVE wv, variable val, [variable ignoreNaN])
 
 	variable minimum, maximum
