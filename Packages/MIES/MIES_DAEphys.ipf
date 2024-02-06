@@ -4170,6 +4170,8 @@ End
 /// Counterpart to GetPanelControl()
 ///
 /// @return 0 if the control name could be parsed, one otherwise
+///
+/// UTF_NOINSTRUMENTATION
 Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 	string ctrl
 	variable &channelIndex, &channelType, &controlType

@@ -1611,6 +1611,8 @@ End
 ///               the begin of str
 /// @param regExp [optional, defaults to false] If start is a simple string (false)
 ///               or a regular expression (true)
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
 	variable length, pos, skipLength, err
 	string regExpResult
@@ -2493,6 +2495,8 @@ End
 
 /// @brief Remove a string prefix from each list item and
 ///        return the new list
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S RemovePrefixFromListItem(string prefix, string list, [string listSep, variable regExp])
 	string result, entry
 	variable numEntries, i

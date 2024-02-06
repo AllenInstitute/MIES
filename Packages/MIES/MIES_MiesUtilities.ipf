@@ -458,6 +458,8 @@ End
 ///
 /// @param channelType channel type
 /// @param allowFail   [optional, defaults to false] return NaN on unknown channel types (true) or assert (false)
+///
+/// UTF_NOINSTRUMENTATION
 Function ParseChannelTypeFromString(string channelType, [variable allowFail])
 
 	allowFail = ParamIsDefault(allowFail) ? 0 : !!allowFail
@@ -2364,6 +2366,8 @@ End
 /// @brief Return the hardware type of the device
 ///
 /// @return One of @ref HardwareDACTypeConstants
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function GetHardwareType(device)
 	string device
 
