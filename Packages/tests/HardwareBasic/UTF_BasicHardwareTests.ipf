@@ -343,6 +343,53 @@ static Function ChangeStimSetDuringDAQ_REENTRY([str])
 	CheckDAQStopReason(str, DQ_STOP_REASON_FINISHED, sweepNo = 2)
 End
 
+// UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
+// UTF_TD_GENERATOR s0:DeviceNameGenerator
+static Function DAQZerosDAC([STRUCT IUTF_MDATA &md])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA0_I0_L0_BKG1"    + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+
+	AcquireData_NG(s, md.s0)
+End
+
+static Function DAQZerosDAC_REENTRY([STRUCT IUTF_MDATA &md])
+
+	variable deviceID, hardwareType, sweepNo, index, ADC, DAC
+	string device
+
+	device = md.s0
+
+	CHECK_EQUAL_VAR(ROVar(GetDataAcqRunMode(device)), DAQ_NOT_RUNNING)
+	CHECK_EQUAL_VAR(ROVar(GetTestpulseRunMode(device)), TEST_PULSE_NOT_RUNNING)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "ADC", 0, XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	ADC = settings[index]
+
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "DAC", 0, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	DAC = settings[index]
+
+	DFREF dataDFR = GetDeviceDataPath(device)
+	DFREF sweepDFR = GetSingleSweepFolder(dataDFR, sweepNo)
+
+	// we end the DAC data with high
+	WAVE/Z DACWave = GetDAQDataSingleColumnWave(sweepDFR, XOP_CHANNEL_TYPE_DAC, DAC)
+	CHECK_GE_VAR(DACWave[inf], 0.9)
+
+	deviceID = ROVar(GetDAQDeviceID(device))
+	hardwareType = GetHardwareType(device)
+
+	// but due to zeroDAC being on we end with around zero
+	CHECK_LE_VAR(HW_ReadADC(hardwareType, deviceID, ADC), 0.01)
+End
+
 // Using unassociated channels works
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function UnassociatedChannelsAndTTLs([str])
