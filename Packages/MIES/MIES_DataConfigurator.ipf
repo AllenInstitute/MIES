@@ -874,7 +874,7 @@ End
 /// @param stimSet          stimset wave
 /// @param device 		 device
 /// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_CalculateStimsetLength(stimSet, device, dataAcqOrTP)
+Function DC_CalculateStimsetLength(stimSet, device, dataAcqOrTP)
 	WAVE stimSet
 	string device
 	variable dataAcqOrTP

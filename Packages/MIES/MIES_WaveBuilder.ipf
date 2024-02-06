@@ -1750,11 +1750,9 @@ Function/WAVE WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epoch, pulseToPulseLe
 End
 
 /// @brief Return the inflection points for trigonometric epochs
-Function/WAVE WB_GetInflectionPoints(WAVE stimset, variable sweep, variable epoch)
-	string inflectionPointList, stimNote, functionTypeString
+Function/WAVE WB_GetInflectionPoints(string stimNote, variable sweep, variable epoch)
+	string inflectionPointList, functionTypeString
 	variable numEntries
-
-	stimNote = note(stimset)
 
 	inflectionPointList = WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = "Inflection Points")
 	WAVE/Z/D inflectionPoints = ListToNumericWave(inflectionPointList, ",")

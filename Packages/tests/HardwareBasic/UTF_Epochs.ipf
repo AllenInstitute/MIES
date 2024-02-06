@@ -957,6 +957,28 @@ static Function EP_EpochTest16_REENTRY([str])
 	TestEpochsGeneric(str)
 End
 
+// This test uses a stimset that has two sweeps of different length.
+// The first sweep is extended with zeroes, such that the stimset wave has the same size.
+// The stimset is also flipped, such that this zeroed interval is at the front in the data wave.
+// This interval should appear as ST_B (stimser baseline trail)
+//
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest17([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"       + \
+										"__HS0_DA0_AD0_CM:VC:_ST:EpochTest17_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function EP_EpochTest17_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End
+
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function EP_EpochTestUnassocDA([str])
 	string str
