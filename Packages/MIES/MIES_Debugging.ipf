@@ -543,9 +543,9 @@ Function BUG(string msg, [WAVE/T keys, WAVE/T values])
 	msg = RemoveEnding(msg, "\r")
 
 	if(!isEmpty(func))
-		printf "BUG %s(...)#L%s: %s\r", func, line, msg
+		printf "%s BUG %s(...)#L%s: %s\r", PACKAGE_MIES, func, line, msg
 	else
-		printf "BUG: %s\r", msg
+		printf "%s BUG: %s\r", PACKAGE_MIES, msg
 	endif
 
 	ReportBugToLogfile(msg, keys, values)
@@ -568,7 +568,7 @@ threadsafe Function BUG_TS(string msg, [WAVE/T keys, WAVE/T values])
 
 	ReportBugToLogfile(msg, keys, values)
 
-	printf "BUG_TS: %s\r", msg
+	printf "%s BUG_TS: %s\r", PACKAGE_MIES, msg
 
 #ifdef AUTOMATED_TESTING
 
