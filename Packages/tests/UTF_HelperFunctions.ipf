@@ -117,6 +117,11 @@ Function AdditionalExperimentCleanup()
 
 		if(!cmpstr(win, "DebugPanel"))
 			reopenDebugPanel = 1
+
+			WAVE debugPanelList = GetDebugPanelListWave()
+			Duplicate/FREE debugPanelList, debugPanelListCopy
+			WAVE debugPanelSel = GetDebugPanelListSelWave()
+			Duplicate/FREE debugPanelSel, debugPanelSelCopy
 		endif
 
 		KillWindow $win
@@ -142,6 +147,11 @@ Function AdditionalExperimentCleanup()
 
 	if(reopenDebugPanel)
 		DP_OpenDebugPanel()
+
+		WAVE debugPanelList = GetDebugPanelListWave()
+		Duplicate/O debugPanelListCopy, debugPanelList
+		WAVE debugPanelSel = GetDebugPanelListSelWave()
+		Duplicate/O debugPanelSelCopy, debugPanelSel
 	endif
 
 	// currently superfluous as we remove root:MIES above
