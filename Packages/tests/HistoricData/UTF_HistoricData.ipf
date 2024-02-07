@@ -181,7 +181,7 @@ static Function DownloadFilesIfRequired(WAVE/T files)
 	string path, fullFilePath, file
 	variable i, numFiles
 
-	/// @TODO use hashes to verify files once IP supports strings > 2GB
+	/// @todo use hashes to verify files once IP supports strings > 2GB
 
 	path = GetInputPath()
 
