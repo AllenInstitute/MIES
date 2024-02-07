@@ -221,4 +221,13 @@ then
   ret=1
 fi
 
+matches=$(rg ${rg_opts} --only-matching '^[[:space:]]+//.*(@[A-Za-z]+)\b' --replace '$1' ${files} | rg --invert-match ':@[a-z]+$')
+
+if [[ -n "$matches" ]]
+then
+  echo "doxygen commands must be all lower case:"
+  echo "$matches"
+  ret=1
+fi
+
 exit $ret
