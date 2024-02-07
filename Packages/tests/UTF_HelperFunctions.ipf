@@ -179,6 +179,8 @@ End
 
 Function PrepareForPublishTest()
 
+	UpdateXOPLoggingTemplate()
+
 	variable numTrials = StartZeroMQSockets(forceRestart = 1)
 	REQUIRE_EQUAL_VAR(numTrials, 0)
 
