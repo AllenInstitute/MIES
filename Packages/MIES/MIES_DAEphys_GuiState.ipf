@@ -175,6 +175,8 @@ End
 /// @param ctrl       control name
 /// @param index      [optional, default to NaN] Some control entries have multiple
 ///                   entries per headstage/channel/etc.
+///
+/// UTF_NOINSTRUMENTATION
 Function DAG_GetNumericalValue(device, ctrl, [index])
 	string device, ctrl
 	variable index

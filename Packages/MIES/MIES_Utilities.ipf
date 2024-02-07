@@ -1611,6 +1611,8 @@ End
 ///               the begin of str
 /// @param regExp [optional, defaults to false] If start is a simple string (false)
 ///               or a regular expression (true)
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
 	variable length, pos, skipLength, err
 	string regExpResult
@@ -2493,6 +2495,8 @@ End
 
 /// @brief Remove a string prefix from each list item and
 ///        return the new list
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S RemovePrefixFromListItem(string prefix, string list, [string listSep, variable regExp])
 	string result, entry
 	variable numEntries, i
@@ -3338,6 +3342,8 @@ End
 /// @param var2            second variable
 /// @param tol             [optional, defaults to 1e-8] tolerance
 /// @param strong_or_weak  [optional, defaults to strong] type of condition, can be zero for weak or 1 for strong
+///
+/// UTF_NOINSTRUMENTATION
 Function CheckIfClose(var1, var2, [tol, strong_or_weak])
 	variable var1, var2, tol, strong_or_weak
 
@@ -4177,6 +4183,8 @@ End
 
 /// @brief Normalize the line endings in the given string to either classic Mac OS/Igor Pro EOLs (`\r`)
 ///        or Unix EOLs (`\n`)
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S NormalizeToEOL(str, eol)
 	string str, eol
 
@@ -5793,6 +5801,8 @@ threadsafe Function/WAVE RemoveUnusedRows(WAVE wv)
 End
 
 /// @brief Check wether `val1` and `val2` are equal or both NaN
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function EqualValuesOrBothNaN(variable left, variable right)
 
 	return (IsNaN(left) && IsNaN(right)) || (left == right)
@@ -5803,6 +5813,8 @@ End
 /// @param wv        wave to check
 /// @param val       value to check
 /// @param ignoreNaN [optional, defaults to true] ignore NaN in wv
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsConstant(WAVE wv, variable val, [variable ignoreNaN])
 
 	variable minimum, maximum
