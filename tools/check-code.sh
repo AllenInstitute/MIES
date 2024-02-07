@@ -216,7 +216,7 @@ matches=$(rg --no-filename '.*@brief[[:space:]]+__([A-Z]{2,})__.*' --replace '$1
 
 if [[ -n "$matches" ]]
 then
-  echo "The list of function prefixes is not unique"
+  echo "The list of function prefixes is not unique:"
   echo "$matches"
   ret=1
 fi
