@@ -216,7 +216,16 @@ matches=$(rg --no-filename '.*@brief[[:space:]]+__([A-Z]{2,})__.*' --replace '$1
 
 if [[ -n "$matches" ]]
 then
-  echo "The list of function prefixes is not unique"
+  echo "The list of function prefixes is not unique:"
+  echo "$matches"
+  ret=1
+fi
+
+matches=$(rg ${rg_opts} --only-matching '^[[:space:]]+//.*(@[A-Za-z]+)\b' --replace '$1' ${files} | rg --invert-match ':@[a-z]+$')
+
+if [[ -n "$matches" ]]
+then
+  echo "doxygen commands must be all lower case:"
   echo "$matches"
   ret=1
 fi
