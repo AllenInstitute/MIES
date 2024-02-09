@@ -70,7 +70,12 @@ End
 Function/S BSP_GetSFHELP(mainPanel)
 	string mainPanel
 
-	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_HELP
+	string helpNotebook
+
+	helpNotebook = BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_HELP
+	BSP_UpdateHelpNotebook(helpNotebook)
+
+	return helpNotebook
 End
 
 /// @brief Inits controls of BrowserSettings side Panel
@@ -237,8 +242,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	PopupMenu popup_TimeAlignment_Master, win=$bsPanel, value=#("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
 
 	BSP_InitMainCheckboxes(bsPanel)
-
-	BSP_UpdateHelpNotebook(mainPanel)
 
 	shPanel = LBV_GetSettingsHistoryPanel(mainPanel)
 
@@ -1038,14 +1041,12 @@ End
 
 /// @brief Fill the SweepFormula help notebook
 ///        with the contents of the stored file
-Function BSP_UpdateHelpNotebook(win)
-	string win
+Function BSP_UpdateHelpNotebook(string helpNotebook)
 
 	variable helpVersion
-	string name, text, helpNotebook, path
+	string name, text, path
 
-	helpNotebook = BSP_GetSFHELP(win)
-	text         = GetNotebookText(helpNotebook, mode = 2)
+	text = GetNotebookText(helpNotebook, mode = 2)
 
 	if(!IsEmpty(text))
 		return NaN
