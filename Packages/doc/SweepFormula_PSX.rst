@@ -22,6 +22,8 @@ with UI controls, the `psx` graph at the top and a `psxstats` graph at the botto
 Above the main panel are again some UI controls on the very left, the all event
 graph and then the single event graph at the very right.
 
+.. youtube:: O2WxPzBsEfc
+
 Main panel
 ^^^^^^^^^^
 
