@@ -2352,7 +2352,7 @@ Function ColorNotebookKeywords(string win, string keyWord, variable r, variable 
 	Notebook $win, findText={"", 0}
 
 	do
-		Notebook $win, findText={keyWord, 6}
+		Notebook $win, findText={keyWord, 2^0 + 2^2}
 		if(V_flag == 1)
 			Notebook $win, textRGB=(r, g, b)
 		endif
