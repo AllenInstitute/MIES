@@ -1200,6 +1200,9 @@ static Function CheckEventDataHelper(WAVE/WAVE/Z dataWref, variable index)
 	comp = psxEvent[p][%$"Event manual QC call"] == PSX_UNDET
 	CHECK_EQUAL_VAR(Sum(comp), numEvents)
 
+	comp = sign(psxEvent[p][%$"Rise Time"])
+	CHECK_EQUAL_VAR(Sum(comp), numEvents)
+
 	// 1 NaN for the first event only
 	WaveStats/M=0/Q psxEvent
 	CHECK_EQUAL_VAR(V_numNaNs, 1)
