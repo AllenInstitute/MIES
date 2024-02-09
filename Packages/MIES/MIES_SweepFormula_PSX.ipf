@@ -852,7 +852,7 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 
 	UpgradePSXEventWave(psxEvent)
 
-	WAVE riseTime = PSX_CalculateRiseTime(psxEvent, sweepDataFiltOff, parameterJsonID, riseTimeParams[%$"Lower Threshold"], riseTimeParams[%$"Upper Threshold"])
+	WAVE riseTime = PSX_CalculateRiseTime(psxEvent, sweepDataFiltOff, parameterJsonID, kernelAmp, riseTimeParams[%$"Lower Threshold"], riseTimeParams[%$"Upper Threshold"])
 	ASSERT(DimSize(riseTime, ROWS) == DimSize(psxEvent, ROWS), "Unmatched number of rows for rise time")
 	psxEvent[][%$"Rise Time"] = riseTime[p]
 	WaveClear riseTime
@@ -1403,7 +1403,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 	return output
 End
 
-static Function/WAVE PSX_CalculateRiseTime(WAVE psxEvent, WAVE sweepDataFiltOff, variable parameterJsonID, variable lowerThreshold, variable upperThreshold)
+static Function/WAVE PSX_CalculateRiseTime(WAVE psxEvent, WAVE sweepDataFiltOff, variable parameterJsonID, variable kernelAmp, variable lowerThreshold, variable upperThreshold)
 
 	string psxParameters, comboKey, cacheKey
 	variable numEvents
@@ -1422,14 +1422,14 @@ static Function/WAVE PSX_CalculateRiseTime(WAVE psxEvent, WAVE sweepDataFiltOff,
 
 	Make/D/FREE/N=(numEvents) riseTime
 
-	riseTime[] = PSX_CalculateRiseTimeImpl(psxEvent, sweepDataFiltOff, psxEvent[p][%index], lowerThreshold, upperThreshold)
+	riseTime[] = PSX_CalculateRiseTimeImpl(psxEvent, sweepDataFiltOff, kernelAmp, psxEvent[p][%index], lowerThreshold, upperThreshold)
 
 	CA_StoreEntryIntoCache(cacheKey, riseTime)
 
 	return riseTime
 End
 
-static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDataFiltOff, variable index, variable lowerThreshold, variable upperThreshold)
+static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDataFiltOff, variable kernelAmp, variable index, variable lowerThreshold, variable upperThreshold)
 
 	variable dY, xStart, xEnd, yStart, yEnd, xlt, xupt, lowerLevel, upperLevel, riseTime
 	variable printDebug
@@ -1466,7 +1466,8 @@ static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDataFiltOff, 
 		printDebug = 1
 	endif
 
-	riseTime = xlt - xupt
+	ASSERT(kernelAmp != 0 && IsFinite(kernelAmp), "kernelAmp must be finite and not zero")
+	riseTime = (xlt - xupt) * sign(kernelAmp) * (-1)
 
 #ifdef DEBUGGING_ENABLED
 	if(printDebug)
