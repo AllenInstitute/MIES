@@ -491,6 +491,7 @@ static Function/Wave WB_GetStimSet([setName])
 		endfor
 		WAVE stimset = stimsetFlipped
 	endif
+	AddEntryIntoWaveNoteAsList(stimset, STIMSET_SIZE_KEY, var=DimSize(stimset, ROWS), format = "%d")
 
 	if(!isEmpty(setName))
 		AddEntryIntoWaveNoteAsList(stimset, "Checksum", var=WB_CalculateStimsetChecksum(stimset, setName), format = "%d")
