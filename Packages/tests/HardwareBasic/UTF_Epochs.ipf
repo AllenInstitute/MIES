@@ -178,7 +178,7 @@ static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 
 	variable i, j, epochCnt, rowCnt, beginInt, endInt, epochNr, amplitude, center, DAAmp
 	variable first, last, level, range, ret, firstIndex, lastIndex
-	string s, name
+	string s, name, epochType
 
 	rowCnt = DimSize(e, ROWS)
 
@@ -224,6 +224,7 @@ static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
+		epochType = StringByKey("EpochType", name, "=")
 		level = str2num(e[i][3])
 		first = startT[i] * ONE_TO_MILLI
 		last  = endT[i] * ONE_TO_MILLI
@@ -234,28 +235,37 @@ static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 		INFO(name)
 		CHECK_GT_VAR(range, 0)
 
+		amplitude = NumberByKey("Amplitude", name, "=")
+		WaveStats/RMD=[firstIndex, lastIndex - 1]/Q/M=1 DAChannel
+
 		// check amplitudes
 		if(strsearch(name, "SubType=Pulse", 0) > 0)
 
-			amplitude = NumberByKey("Amplitude", name, "=")
 			INFO(name)
 			CHECK(IsFinite(amplitude))
 
-			WaveStats/RMD=[firstIndex, lastIndex - 1]/Q/M=1 DAChannel
 			INFO(name)
 			CHECK_EQUAL_VAR(V_max, amplitude)
 
 			// check that the level 3 pulse epoch is really only the pulse
 			if(level == 3)
-				WaveStats/RMD=[firstIndex, lastIndex - 1]/Q/M=1 DAChannel
 				INFO(name)
 				CHECK_EQUAL_VAR(V_min, amplitude)
 			endif
 		endif
+		if(!CmpStr(epochType, "Square pulse"))
+
+			INFO(name)
+			CHECK(IsFinite(amplitude))
+
+			INFO(name)
+			CHECK_EQUAL_VAR(V_max, amplitude)
+			INFO(name)
+			CHECK_EQUAL_VAR(V_min, amplitude)
+		endif
 
 		// check baseline
 		if(strsearch(name, "Baseline", 0) > 0)
-			WaveStats/RMD=[firstIndex, lastIndex - 1]/Q/M=1 DAChannel
 			INFO(name)
 			CHECK_EQUAL_VAR(V_min, 0)
 			INFO(name)
