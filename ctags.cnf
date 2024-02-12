@@ -5,3 +5,4 @@
 --exclude=tools/installer/*
 --exclude=Packages/igortest/internal_dev/*
 --exclude=Packages/igortest/docu/*
+--exclude=Packages/igortest/tests/*
