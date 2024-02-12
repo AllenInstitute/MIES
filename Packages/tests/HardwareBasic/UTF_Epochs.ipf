@@ -981,6 +981,50 @@ static Function EP_EpochTest17_REENTRY([str])
 	TestEpochsGeneric(str)
 End
 
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequency_Gen
+// IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_Stimsets_Gen
+static Function EP_EpochTestSamplingFrequency([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup, stimSetup
+
+	sprintf dynSetup, "_FFR:%d:", mData.v0
+	sprintf stimSetup, "_ST:%s:", mData.s1
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
+								 "__HS0_DA0_AD0_CM:VC:" + stimSetup)
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTestSamplingFrequency_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingMultiplier_Gen
+// IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_Stimsets_Gen
+static Function EP_EpochTestSamplingMultiplier([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup, stimSetup
+
+	sprintf dynSetup, "_SIM%d", mData.v0
+	sprintf stimSetup, "_ST:%s:", mData.s1
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
+								 "__HS0_DA0_AD0_CM:VC:" + stimSetup)
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTestSamplingMultiplier_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
+End
+
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function EP_EpochTestUnassocDA([str])
 	string str
@@ -1086,4 +1130,52 @@ static Function EP_EpochTestTTL_REENTRY([STRUCT IUTF_mData &mData])
 	nameref[size] = "B0_TR"
 
 	CHECK_EQUAL_WAVES(epochShortNames, nameRef, mode = WAVE_DATA)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequency_Gen
+// IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_StimsetsTTL_Gen
+static Function EP_EpochTestTTLSamplingFrequency([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup, stimSetup
+
+	sprintf dynSetup, "_FFR:%d:", mData.v0
+	sprintf stimSetup, "_ST:%s:", mData.s1
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
+								 "__TTL3" + stimSetup)
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTestTTLSamplingFrequency_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingMultiplier_Gen
+// IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_StimsetsTTL_Gen
+static Function EP_EpochTestTTLSamplingMultiplier([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup, stimSetup
+
+	sprintf dynSetup, "_SIM%d", mData.v0
+	sprintf stimSetup, "_ST:%s:", mData.s1
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
+								 "__TTL3" + stimSetup)
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTestTTLSamplingMultiplier_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
 End
