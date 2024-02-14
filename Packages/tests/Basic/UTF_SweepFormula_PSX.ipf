@@ -1147,7 +1147,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
 	// complains without events found
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 5000, 15, -5), 2.5, 100, 0)"
+	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 5000, 15, -5), 25, 100, 0)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1278,7 +1278,7 @@ static Function MouseSelectionPSX()
 
 	browser = MIES_DB#DB_LockToDevice(browser, device)
 
-	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 1.5, 100, 0)"
+	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 5, 100, 0)"
 
 	// combo0 is the current one
 
@@ -1640,9 +1640,9 @@ static Function/WAVE GetCodeVariations()
 	code  = ""
 
 	// one sweep per operation separated with `with`
-	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0], all)), 1.8, 100, 0)"
+	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0], all)), 10, 100, 0)"
 	code += "\r with \r"
-	code += "psx(myId, psxKernel([50, 150], select(channels(AD6), [2], all)), 8, 100, 0)"
+	code += "psx(myId, psxKernel([50, 150], select(channels(AD6), [2], all)), 2.5, 100, 0)"
 	code += "\r and \r"
 	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), xpos, all, nothing)"
 	wv[1] = code

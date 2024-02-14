@@ -369,38 +369,21 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 end
 
 /// @brief Creates a histogram of the deconvoluted sweep data
-static Function/WAVE PSX_CreateHistogramOfDeconvSweepData(WAVE deconvSweepData, [variable bin_start, variable bin_end, variable bin_width])
+static Function/WAVE PSX_CreateHistogramOfDeconvSweepData(WAVE deconvSweepData)
 
-	variable n_bins, tmp
+	variable n_bins, start, binWidth, range
 
-	StatsQuantiles/Q deconvSweepData
+	// we take +/- 80% of the average deviation around the average value
+	WaveStats/Q deconvSweepData
+	binWidth = 0.0001
+	range = V_adev * 0.8
+	start = V_avg - range
+	n_bins = 2 * range /binWidth
 
-	variable q75 = V_Q75
+	SFH_ASSERT(n_bins > 10, "Histogram creation failed due to too few data points")
 
-	if(ParamIsDefault(bin_start))
-		bin_start = q75 * -3
-	endif
-
-	if(ParamIsDefault(bin_end))
-		bin_end = q75 * 3
-	endif
-
-	if(ParamIsDefault(bin_width))
-		bin_width = 0.0005
-	endif
-
-	if(bin_start > bin_end)
-		tmp = bin_end
-		bin_end = bin_start
-		bin_start = tmp
-	endif
-
-	n_bins = ceil((bin_end - bin_start) / bin_width)
-
-	SFH_ASSERT(n_bins > 1, "Histogram creation failed due to too few data points")
-
-	Make/FREE/N=0 hist
-	Histogram/B={bin_start, bin_width, n_bins}/DEST=hist deconvSweepData
+	Make/D/FREE/N=0 hist
+	Histogram/B={start, binWidth, n_bins}/DEST=hist deconvSweepData
 
 	return hist
 end
