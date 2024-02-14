@@ -897,11 +897,12 @@ static Constant EPOCHS_WAVE_VERSION = 3
 ///
 /// For these three formats we have tests in RPI_WorksWithOldData(). When
 /// changing the tags format this test needs to be updated.
-Function/Wave GetEpochsWave(device)
-	string device
+Function/WAVE GetEpochsWave(string device)
+
+	string name = "EpochsWave"
 
 	DFREF dfr = GetDevicePath(device)
-	WAVE/T/Z/SDFR=dfr wv = EpochsWave
+	WAVE/T/Z/SDFR=dfr wv = $name
 
 	if(ExistsWithCorrectLayoutVersion(wv, EPOCHS_WAVE_VERSION))
 	   return wv
@@ -914,9 +915,26 @@ Function/Wave GetEpochsWave(device)
 		   wv[][][][XOP_CHANNEL_TYPE_DAC] = wv[p][q][r][0]
 		   wv[][][][0] = ""
 		endif
+
+		SetEpochsDimensionLabelAndVersion(wv)
 	else
-	  Make/T/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS, XOP_CHANNEL_TYPE_COUNT) dfr:EpochsWave/Wave=wv
+		WAVE/T wv = GetEpochsWaveAsFree()
+		MoveWave wv, dfr:$name
 	endif
+
+	return wv
+End
+
+Function/WAVE GetEpochsWaveAsFree()
+
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS, XOP_CHANNEL_TYPE_COUNT) wv
+
+	SetEpochsDimensionLabelAndVersion(wv)
+
+	return wv
+End
+
+static Function SetEpochsDimensionLabelAndVersion(WAVE wv)
 
 	SetEpochsDimensionLabelsSingleChannel(wv)
 
@@ -925,8 +943,6 @@ Function/Wave GetEpochsWave(device)
 	SetDimLabel CHUNKS, XOP_CHANNEL_TYPE_TTL, TTL, wv
 
 	SetWaveVersion(wv, EPOCHS_WAVE_VERSION)
-
-	return wv
 End
 
 threadsafe Function SetEpochsDimensionLabelsSingleChannel(WAVE wv)
