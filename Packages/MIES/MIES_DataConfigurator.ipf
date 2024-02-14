@@ -922,6 +922,8 @@ static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP
 
 	variable ret, row, column
 
+	WAVE/T epochWave = GetEpochsWave(device)
+
 	STRUCT DataConfigurationResult s
 	[s] = DC_GetConfiguration(device, numActiveChannels, dataAcqOrTP, multiDevice)
 
@@ -936,7 +938,7 @@ static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP
 		DC_FillDAQDataWaveForDAQ(device, s)
 	endif
 
-	EP_CollectEpochInfo(device, s)
+	EP_CollectEpochInfo(device, epochWave, s)
 	DC_PrepareLBNEntries(device, s)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)

@@ -15,18 +15,18 @@ static Function [WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] 
 	CHECK_WAVE(epochsWave, TEXT_WAVE)
 
 	DAC = 2 // HS 0
-	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 1, 3, "someDesc", "EP0", 0)
-	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 4, 5, "someDesc", "EP_0a", 0)
-	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 10, 20, "someDesc", "EP_0b", 0)
-	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 1, 2, "someDesc", "EP1", 1)
-	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 2, 3, "someDesc", "EP_1a", 1)
+	MIES_EP#EP_AddEpoch(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC, 1, 3, "someDesc", "EP0", 0)
+	MIES_EP#EP_AddEpoch(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC, 4, 5, "someDesc", "EP_0a", 0)
+	MIES_EP#EP_AddEpoch(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC, 10, 20, "someDesc", "EP_0b", 0)
+	MIES_EP#EP_AddEpoch(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC, 1, 2, "someDesc", "EP1", 1)
+	MIES_EP#EP_AddEpoch(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC, 2, 3, "someDesc", "EP_1a", 1)
 	// intentional gap
-	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 4, 5, "someDesc", "EP_1b", 1)
-	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 10, 20, "otherDesc", "EP2", 2)
+	MIES_EP#EP_AddEpoch(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC, 4, 5, "someDesc", "EP_1b", 1)
+	MIES_EP#EP_AddEpoch(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC, 10, 20, "otherDesc", "EP2", 2)
 
 	DAC = 3 // HS 1
-	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 100, 200, "someDesc", "EP_1", 1)
-	MIES_EP#EP_AddEpoch(device, DAC, XOP_CHANNEL_TYPE_DAC, 1000, 2000, "otherDesc", "EP_2", -1)
+	MIES_EP#EP_AddEpoch(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC, 100, 200, "someDesc", "EP_1", 1)
+	MIES_EP#EP_AddEpoch(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC, 1000, 2000, "otherDesc", "EP_2", -1)
 
 	[key, keyText] = PrepareLBN_IGNORE(device)
 

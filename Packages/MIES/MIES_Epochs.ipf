@@ -60,28 +60,33 @@ End
 
 /// @brief Fill the epoch wave with epochs before DAQ/TP
 ///
-/// @param device device
-/// @param s          struct holding all input
-Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
+/// @param device    device name
+/// @param epochWave epochs wave
+/// @param s         struct holding all input
+Function EP_CollectEpochInfo(string device, WAVE/T epochWave, STRUCT DataConfigurationResult &s)
 
 	if(s.dataAcqOrTP != DATA_ACQUISITION_MODE)
 		return NaN
 	endif
 
-	EP_CollectEpochInfoDA(device, s)
-	EP_CollectEpochInfoTTL(device, s)
+	EP_CollectEpochInfoDA(device, epochWave, s)
+	EP_CollectEpochInfoTTL(device, epochWave, s)
 End
 
-static Function EP_CollectEpochInfoDA(string device, STRUCT DataConfigurationResult &s)
+static Function EP_CollectEpochInfoDA(string device, WAVE/T epochWave, STRUCT DataConfigurationResult &s)
 
-	variable i, channel, singleSetLength, epochBegin, epochEnd, lastP
-	variable oodDAQOffsetInStimsetIndex
-	variable stimsetCol, startOffset, stopCollectionPoint, isUnAssociated, testPulseLength
+	variable i, epochBegin, epochEnd
+	variable stopCollectionPoint, isUnAssociated, testPulseLength
 	string tags
 	STRUCT EP_EpochCreationData ec
 
 	stopCollectionPoint = ROVar(GetStopCollectionPoint(device))
-	lastP = stopCollectionPoint - 1
+
+	ec.device = device
+	WAVE/T ec.epochWave = epochWave
+	ec.channelType = XOP_CHANNEL_TYPE_DAC
+	ec.decimationFactor = s.decimationFactor
+	ec.samplingInterval = s.samplingInterval
 
 	for(i = 0; i < s.numDACEntries; i += 1)
 
@@ -89,12 +94,24 @@ static Function EP_CollectEpochInfoDA(string device, STRUCT DataConfigurationRes
 			continue
 		endif
 
-		channel = s.DACList[i]
-		startOffset = s.insertStart[i]
-		singleSetLength = s.setLength[i]
 		WAVE singleStimSet = s.stimSet[i]
-		stimsetCol = s.setColumn[i]
 		isUnAssociated = IsNaN(s.headstageDAC[i])
+
+		ec.channel = s.DACList[i]
+		ec.sweep = s.setColumn[i]
+		ec.scale = s.DACAmp[i][%DASCALE]
+		ec.stimNote = note(singleStimSet)
+		ec.dwStimsetSize = s.setLength[i]
+		ec.reducedStimsetSize = DimSize(singleStimSet, ROWS)
+		ec.dwStimsetBegin = s.insertStart[i]
+		ec.wbStimsetSize = WB_GetWaveNoteEntryAsNumber(ec.stimNote, STIMSET_ENTRY, key = STIMSET_SIZE_KEY)
+		ec.flipping = WB_GetWaveNoteEntryAsNumber(ec.stimNote, STIMSET_ENTRY, key = "Flip")
+		ec.dwJoinedTTLStimsetSize = NaN
+		if(s.distributedDAQOptOv && s.offsets[i] > 0)
+			ec.wbOodDAQOffset = round(s.offsets[i] / WAVEBUILDER_MIN_SAMPINT)
+		else
+			ec.wbOodDAQOffset = 0
+		endif
 
 		// epoch for onsetDelayAuto is assumed to be a globalTPInsert which is added as epoch below
 		if(s.onsetDelayUser)
@@ -102,61 +119,39 @@ static Function EP_CollectEpochInfoDA(string device, STRUCT DataConfigurationRes
 			epochEnd = epochBegin + s.onsetDelayUser * s.samplingInterval
 
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, tags, EPOCH_SN_BL_ONSETDELAYUSER, 0)
+			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, tags, EPOCH_SN_BL_ONSETDELAYUSER, 0)
 		endif
 
 		if(s.distributedDAQ)
 			epochBegin = s.onsetDelay * s.samplingInterval
-			epochEnd = startOffset * s.samplingInterval
+			epochEnd = ec.dwStimsetBegin * s.samplingInterval
 			if(epochBegin != epochEnd)
 				tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-				EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, tags, EPOCH_SN_BL_DDAQ, 0)
+				EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, tags, EPOCH_SN_BL_DDAQ, 0)
 			endif
 		endif
 
 		if(s.terminationDelay)
-			epochBegin = (startOffset + singleSetLength) * s.samplingInterval
-			epochEnd = min(epochBegin + s.terminationDelay * s.samplingInterval, lastP * s.samplingInterval)
+			epochBegin = (ec.dwStimsetBegin + ec.dwStimsetSize) * s.samplingInterval
+			epochEnd = min(epochBegin + s.terminationDelay * s.samplingInterval, stopCollectionPoint * s.samplingInterval)
 
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, tags, EPOCH_SN_BL_TERMINATIONDELAY, 0)
+			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, tags, EPOCH_SN_BL_TERMINATIONDELAY, 0)
 		endif
-
-		if(s.distributedDAQOptOv && s.offsets[i] > 0)
-			oodDAQOffsetInStimsetIndex = round(s.offsets[i] / WAVEBUILDER_MIN_SAMPINT)
-		else
-			oodDAQOffsetInStimsetIndex = 0
-		endif
-
-		ec.device = device
-		ec.channel = channel
-		ec.channelType = XOP_CHANNEL_TYPE_DAC
-		ec.sweep = stimsetCol
-		ec.decimationFactor = s.decimationFactor
-		ec.samplingInterval = s.samplingInterval
-		ec.scale = s.DACAmp[i][%DASCALE]
-		ec.stimNote = note(singleStimSet)
-		ec.dwStimsetSize = singleSetLength
-		ec.reducedStimsetSize = DimSize(singleStimSet, ROWS)
-		ec.dwStimsetBegin = startOffset
-		ec.wbOodDAQOffset = oodDAQOffsetInStimsetIndex
-		ec.wbStimsetSize = WB_GetWaveNoteEntryAsNumber(ec.stimNote, STIMSET_ENTRY, key = STIMSET_SIZE_KEY)
-		ec.flipping = WB_GetWaveNoteEntryAsNumber(ec.stimNote, STIMSET_ENTRY, key = "Flip")
-		ec.dwJoinedTTLStimsetSize = NaN
 
 		EP_AddEpochsFromStimSetNote(ec)
 
 		if(s.distributedDAQOptOv)
-			epochBegin = startOffset * s.samplingInterval
-			epochEnd   = (startOffset + singleSetLength) * s.samplingInterval
-			EP_AddEpochsFromOodDAQRegions(device, channel, s.regions[i], epochBegin, epochEnd)
+			epochBegin = ec.dwStimsetBegin * s.samplingInterval
+			epochEnd   = (ec.dwStimsetBegin + ec.dwStimsetSize) * s.samplingInterval
+			EP_AddEpochsFromOodDAQRegions(ec.epochWave, ec.channel, s.regions[i], epochBegin, epochEnd)
 		endif
 
 		// if dDAQ is on then channels 0 to numEntries - 1 have a trailing base line
-		epochBegin = startOffset + singleSetLength + s.terminationDelay
-		if(lastP > epochBegin)
+		epochBegin = ec.dwStimsetBegin + ec.dwStimsetSize + s.terminationDelay
+		if(stopCollectionPoint > epochBegin)
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin * s.samplingInterval, lastP * s.samplingInterval, tags, EPOCH_SN_BL_GENERALTRAIL, 0)
+			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin * ec.samplingInterval, stopCollectionPoint * ec.samplingInterval, tags, EPOCH_SN_BL_GENERALTRAIL, 0)
 		endif
 
 		testPulseLength = s.testPulseLength * s.samplingInterval
@@ -164,27 +159,32 @@ static Function EP_CollectEpochInfoDA(string device, STRUCT DataConfigurationRes
 			if(!isUnAssociated)
 				// space in ITCDataWave for the testpulse is allocated via an automatic increase
 				// of the onset delay
-				EP_AddEpochsFromTP(device, s.samplingInterval, channel, s.DACAmp[i][%TPAMP])
+				EP_AddEpochsFromTP(ec, s.DACAmp[i][%TPAMP])
 			else
 				tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-				EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, 0, testPulseLength, tags, EPOCH_SN_BL_UNASSOC_NOTP_BASELINE, 0)
+				EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, 0, testPulseLength, tags, EPOCH_SN_BL_UNASSOC_NOTP_BASELINE, 0)
 			endif
 		endif
 	endfor
 End
 
-static Function EP_CollectEpochInfoTTL(string device, STRUCT DataConfigurationResult &s)
+static Function EP_CollectEpochInfoTTL(string device, WAVE/T epochWave, STRUCT DataConfigurationResult &s)
 
-	variable i, channel, singleSetLength, stimsetCol, stopCollectionPoint, lastP
+	variable i, stopCollectionPoint
 	variable epochBegin, epochEnd, hwType, dwStimsetEndIndex
 	string tags
 	STRUCT EP_EpochCreationData ec
 
 	stopCollectionPoint = ROVar(GetStopCollectionPoint(device))
-	lastP = stopCollectionPoint - 1
 	hwType = GetHardwareType(device)
 
 	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+
+	ec.device = device
+	WAVE/T ec.epochWave = epochWave
+	ec.channelType = XOP_CHANNEL_TYPE_TTL
+	ec.decimationFactor = s.decimationFactor
+	ec.samplingInterval = s.samplingInterval
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
@@ -197,34 +197,12 @@ static Function EP_CollectEpochInfoTTL(string device, STRUCT DataConfigurationRe
 		endif
 
 		WAVE singleStimSet = s.TTLstimSet[i]
-		singleSetLength = s.TTLsetLength[i]
-		stimsetCol = s.TTLsetColumn[i]
 
-		if(s.globalTPInsert)
-			// s.testPulseLength is a synonym for s.onsetDelayAuto
-			epochBegin = 0
-			epochEnd = s.testPulseLength
-			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(device, i, XOP_CHANNEL_TYPE_TTL, epochBegin * s.samplingInterval, epochEnd * s.samplingInterval, tags, EPOCH_SN_BL_UNASSOC_NOTP_BASELINE, 0)
-		endif
-		if(s.onsetDelayUser)
-			epochBegin = s.onsetDelayAuto
-			// s.onsetDelay = s.onsetDelayUser + s.onsetDelayAuto
-			epochEnd = s.onsetDelay
-
-			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(device, i, XOP_CHANNEL_TYPE_TTL, epochBegin * s.samplingInterval, epochEnd * s.samplingInterval, tags, EPOCH_SN_BL_ONSETDELAYUSER, 0)
-		endif
-
-		ec.device = device
 		ec.channel = i
-		ec.channelType = XOP_CHANNEL_TYPE_TTL
-		ec.sweep = stimsetCol
-		ec.decimationFactor = s.decimationFactor
-		ec.samplingInterval = s.samplingInterval
+		ec.sweep = s.TTLsetColumn[i]
 		ec.scale = 1
 		ec.stimNote = note(singleStimSet)
-		ec.dwStimsetSize = singleSetLength
+		ec.dwStimsetSize = s.TTLsetLength[i]
 		ec.reducedStimsetSize = DimSize(singleStimSet, ROWS)
 		ec.dwStimsetBegin = s.onSetDelay
 		ec.wbOodDAQOffset = 0
@@ -237,32 +215,46 @@ static Function EP_CollectEpochInfoTTL(string device, STRUCT DataConfigurationRe
 			ec.dwJoinedTTLStimsetSize = NaN
 		endif
 
+		if(s.globalTPInsert)
+			// s.testPulseLength is a synonym for s.onsetDelayAuto
+			epochBegin = 0
+			epochEnd = s.testPulseLength
+			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin * ec.samplingInterval, epochEnd * ec.samplingInterval, tags, EPOCH_SN_BL_UNASSOC_NOTP_BASELINE, 0)
+		endif
+		if(s.onsetDelayUser)
+			epochBegin = s.onsetDelayAuto
+			// s.onsetDelay = s.onsetDelayUser + s.onsetDelayAuto
+			epochEnd = s.onsetDelay
+
+			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin * ec.samplingInterval, epochEnd * ec.samplingInterval, tags, EPOCH_SN_BL_ONSETDELAYUSER, 0)
+		endif
+
 		dwStimsetEndIndex = EP_AddEpochsFromStimSetNote(ec)
 
 		if(s.terminationDelay)
 			epochBegin = dwStimsetEndIndex
-			epochEnd = min(epochBegin + s.terminationDelay, lastP)
+			epochEnd = min(epochBegin + s.terminationDelay, stopCollectionPoint)
 
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(device, i, XOP_CHANNEL_TYPE_TTL, epochBegin * s.samplingInterval, epochEnd * s.samplingInterval, tags, EPOCH_SN_BL_TERMINATIONDELAY, 0)
+			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin * ec.samplingInterval, epochEnd * ec.samplingInterval, tags, EPOCH_SN_BL_TERMINATIONDELAY, 0)
 		endif
 
 		epochBegin = dwStimsetEndIndex + s.terminationDelay
-		if(lastP > epochBegin)
-			epochEnd = lastP
+		if(stopCollectionPoint > epochBegin)
+			epochEnd = stopCollectionPoint
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(device, i, XOP_CHANNEL_TYPE_TTL, epochBegin * s.samplingInterval, epochEnd * s.samplingInterval, tags, EPOCH_SN_BL_GENERALTRAIL, 0)
+			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin * ec.samplingInterval, epochEnd * ec.samplingInterval, tags, EPOCH_SN_BL_GENERALTRAIL, 0)
 		endif
 
 	endfor
 End
 
 /// @brief Adds four epochs for a test pulse and three sub epochs for test pulse components
-/// @param[in] device           title of device panel
-/// @param[in] samplingInterval samplingInterval in microSec
-/// @param[in] channel          number of DA channel
-/// @param[in] amplitude        amplitude of the TP in the DA wave without gain
-static Function EP_AddEpochsFromTP(string device, variable samplingInterval, variable channel, variable amplitude)
+/// @param[in] ec        EP_EpochCreationData
+/// @param[in] amplitude amplitude of the TP in the DA wave without gain
+static Function EP_AddEpochsFromTP(STRUCT EP_EpochCreationData &ec, variable amplitude)
 
 	variable totalLengthPoints, pulseStartPoints, pulseLengthPoints
 	variable epochBegin, epochEnd
@@ -270,45 +262,41 @@ static Function EP_AddEpochsFromTP(string device, variable samplingInterval, var
 
 	variable offset = 0
 
-	[totalLengthPoints, pulseStartPoints, pulseLengthPoints] = TP_GetCreationPropertiesInPoints(device, DATA_ACQUISITION_MODE)
+	[totalLengthPoints, pulseStartPoints, pulseLengthPoints] = TP_GetCreationPropertiesInPoints(ec.device, DATA_ACQUISITION_MODE)
 
 	epochTags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Inserted Testpulse", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
 	// main TP range
 	epochBegin = offset
-	epochEnd = epochBegin + totalLengthPoints * samplingInterval
-	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochTags, EPOCH_SN_TP, 0)
+	epochEnd = epochBegin + totalLengthPoints * ec.samplingInterval
+	EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, epochTags, EPOCH_SN_TP, 0)
 
 	// TP sub ranges
-	epochBegin = offset + pulseStartPoints * samplingInterval
-	epochEnd = epochBegin + (pulseLengthPoints + 1) * samplingInterval
+	epochBegin = offset + pulseStartPoints * ec.samplingInterval
+	epochEnd = epochBegin + (pulseLengthPoints + 1) * ec.samplingInterval
 	epochSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epochTags, EPOCH_PULSE_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	epochSubTags = ReplaceNumberByKey(EPOCH_AMPLITUDE_KEY, epochSubTags, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_PULSE, 1)
+	EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_PULSE, 1)
 
 	// pre pulse BL
 	epochBegin = offset
-	epochEnd = epochBegin + pulseStartPoints * samplingInterval
+	epochEnd = epochBegin + pulseStartPoints * ec.samplingInterval
 	epochSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epochTags, EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLFRONT, 1)
+	EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLFRONT, 1)
 
 	// post pulse BL
-	epochBegin = offset + (pulseStartPoints + pulseLengthPoints + 1) * samplingInterval
-	epochEnd = offset + totalLengthPoints * samplingInterval
-	EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLBACK, 1)
+	epochBegin = offset + (pulseStartPoints + pulseLengthPoints + 1) * ec.samplingInterval
+	epochEnd = offset + totalLengthPoints * ec.samplingInterval
+	EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLBACK, 1)
 End
 
 /// @brief Adds epochs for oodDAQ regions
-/// @param[in] device    title of device panel
+/// @param[in] epochWave     epoch wave
 /// @param[in] channel       number of DA channel
 /// @param[in] oodDAQRegions string containing list of oodDAQ regions as %d-%d;...
 /// @param[in] stimsetBegin offset time in micro seconds where stim set begins
 /// @param[in] stimsetEnd   offset time in micro seconds where stim set ends
-static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, stimsetBegin, stimsetEnd)
-	string device
-	variable channel
-	string oodDAQRegions
-	variable stimsetBegin, stimsetEnd
+static Function EP_AddEpochsFromOodDAQRegions(WAVE epochWave, variable channel, string oodDAQRegions, variable stimsetBegin, variable stimsetEnd)
 
 	variable numRegions, first, last
 	string tags
@@ -319,7 +307,7 @@ static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, st
 		Make/FREE/N=(numRegions) epochIndexer
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "oodDAQ", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
-		epochIndexer[] = EP_AddEpoch(device, channel, XOP_CHANNEL_TYPE_DAC, str2num(StringFromList(0, regions[p], "-")) * MILLI_TO_MICRO + stimsetBegin,          \
+		epochIndexer[] = EP_AddEpoch(epochWave, channel, XOP_CHANNEL_TYPE_DAC, str2num(StringFromList(0, regions[p], "-")) * MILLI_TO_MICRO + stimsetBegin,          \
 																						str2num(StringFromList(1, regions[p], "-")) * MILLI_TO_MICRO + stimsetBegin,             \
 																						ReplaceNumberByKey(EPOCH_OODDAQ_REGION_KEY, tags, p, STIMSETKEYNAME_SEP, EPOCHNAME_SEP), \
 																						EPOCH_SN_OODAQ + num2str(p),                                                             \
@@ -421,11 +409,11 @@ static Function [variable stimsetBegin, variable stimsetEnd, variable stimsetEnd
 
 	if(oodDAQTime > 0)
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		EP_AddEpoch(ec.device, ec.channel, ec.channelType, stimsetBegin, stimsetBegin + oodDAQTime, tags, EPOCH_SN_BL_DDAQOPT, 0)
+		EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, stimsetBegin, stimsetBegin + oodDAQTime, tags, EPOCH_SN_BL_DDAQOPT, 0)
 	endif
 
 	epSweepTags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Stimset", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(ec.device, ec.channel, ec.channelType, stimsetBegin + oodDAQTime, stimsetEnd, epSweepTags, EPOCH_SN_STIMSET, 0)
+	EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, stimsetBegin + oodDAQTime, stimsetEnd, epSweepTags, EPOCH_SN_STIMSET, 0)
 
 	// If decimationFactor < 1 then stimsetEndLogical < stimsetEnd (if acquisition was not stopped early)
 	// because the round function in the decimation shifts effectively the stimset by 0.5 * WAVEBUILDER_MIN_SAMPINT to the left.
@@ -444,7 +432,7 @@ static Function [variable stimsetBegin, variable stimsetEnd, variable stimsetEnd
 			tiStimsetBaselineTrailBegin = stimsetEndLogical
 			tiStimsetBaselineTrailEnd = stimsetEnd
 		endif
-		EP_AddEpoch(ec.device, ec.channel, ec.channelType, tiStimsetBaselineTrailBegin, tiStimsetBaselineTrailEnd, tags, EPOCH_SN_STIMSET + "_" + EPOCH_SN_STIMSETBLTRAIL, 1)
+		EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, tiStimsetBaselineTrailBegin, tiStimsetBaselineTrailEnd, tags, EPOCH_SN_STIMSET + "_" + EPOCH_SN_STIMSETBLTRAIL, 1)
 	endif
 
 	return [stimsetBegin, stimsetEnd, stimsetEndIndex]
@@ -521,7 +509,7 @@ static Function [variable epochBegin, variable epochEnd, string epSubTags] EP_Ad
 	endif
 
 	shortNameEp = EP_GetStimsetEpochShortName(epochNr)
-	EP_AddEpoch(ec.device, ec.channel, ec.channelType, epochBegin, epochEnd, epSubTags, shortNameEp, 1, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+	EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, epSubTags, shortNameEp, 1, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 
 	sprintf msg, "\rStimEpoch: nEpoch tBegin tEnd\r %7d %7.0f µs %7.0f µs\r", epochNr, epochBegin, epochEnd
 	DEBUGPRINT(msg)
@@ -629,7 +617,7 @@ static Function [variable subEpochBegin, variable subEpochEnd] EP_PTAddPTPEpoch(
 	subEpochEnd = limit(subEpochEnd, -Inf, epochEnd)
 
 	epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(ec.device, ec.channel, ec.channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTypePTPulse, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+	EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTypePTPulse, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
 
 	sprintf msg, "\rPTP: nPulse tEpBegin tEpEnd tSubEpBegin tSubEpEnd tStart\r %d %7.0f µs %7.0f µs %7.0f µs %7.0f µs %7.0f µs\r", pulseNr, epochBegin, epochEnd, subEpochBegin, subEpochEnd, startTimes[pulseNr]
 	DEBUGPRINT(msg)
@@ -678,7 +666,7 @@ static Function EP_PTAddPTBLTEpoch(STRUCT EP_EpochCreationData &ec, string short
 	endif
 
 	if(!IsNaN(subsubEpochBegin))
-		EP_AddEpoch(ec.device, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, tags, shortNameEpTypePTPulseBT, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+		EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, tags, shortNameEpTypePTPulseBT, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
 	endif
 End
 
@@ -719,7 +707,7 @@ static Function EP_PTAddPTPActiveAndBaseFlipped(STRUCT EP_EpochCreationData &ec,
 			epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 			epSubSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubSubTags, "Pulse", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 			shortNameEpTypePTPulseP = shortNameEpTypePTPulse + "_" + EPOCH_SN_PULSETRAIN_PULSEAMP
-			EP_AddEpoch(ec.device, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseP, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
+			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseP, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
 			pulseActiveAddedFlag = 1
 
 			sprintf msg, "\rPTP_a_f: nPulse iStart iEnd iDataStart iDataEnd tPulseDur tBegin tEnd\r %d %d %d %d %d %7.0f µs %7.0f µs %7.0f µs\r", pulseNr, pulseStartIndexStim, pulseEndIndexStim, pulseStartIndex, pulseEndIndex, pulseDuration, subsubEpochBegin, subsubEpochEnd
@@ -738,7 +726,7 @@ static Function EP_PTAddPTPActiveAndBaseFlipped(STRUCT EP_EpochCreationData &ec,
 	epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	epSubSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubSubTags, EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	shortNameEpTypePTPulseB = shortNameEpTypePTPulse + "_" + EPOCH_SN_PULSETRAIN_PULSEBASE
-	EP_AddEpoch(ec.device, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseB, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
+	EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseB, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
 
 	sprintf msg, "\rPTP_b_f: nPulse tBegin tEnd tDur\r %d %7.0f µs %7.0f µs %7.0f µs\r", pulseNr, subsubEpochBegin, subsubEpochEnd, subsubEpochEnd - subsubEpochBegin
 	DEBUGPRINT(msg)
@@ -788,7 +776,7 @@ static Function EP_PTAddPTPActiveAndBase(STRUCT EP_EpochCreationData &ec, string
 	shortNameEpTypePTPulseP = shortNameEpTypePTPulse + "_" + EPOCH_SN_PULSETRAIN_PULSEAMP
 	epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	epSubSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubSubTags, "Pulse", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(ec.device, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseP, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
+	EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseP, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
 
 	sprintf msg, "\rPTP_a: nPulse iStart iEnd iDataStart iDataEnd tPulseDur tBegin tEnd\r %d %d %d %d %d %7.0f µs %7.0f µs %7.0f µs\r", pulseNr, pulseStartIndexStim, pulseEndIndexStim, pulseStartIndex, pulseEndIndex, pulseDuration, subsubEpochBegin, subsubEpochEnd
 	DEBUGPRINT(msg)
@@ -804,7 +792,7 @@ static Function EP_PTAddPTPActiveAndBase(STRUCT EP_EpochCreationData &ec, string
 	epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	epSubSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubSubTags, EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	shortNameEpTypePTPulseB = shortNameEpTypePTPulse + "_" + EPOCH_SN_PULSETRAIN_PULSEBASE
-	EP_AddEpoch(ec.device, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseB, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
+	EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseB, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
 
 	sprintf msg, "\rPTP_b: nPulse tBegin tEnd tDur\r %d %7.0f µs %7.0f µs %7.0f µs\r", pulseNr, subsubEpochBegin, subsubEpochEnd, subsubEpochEnd - subsubEpochBegin
 	DEBUGPRINT(msg)
@@ -928,7 +916,7 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 				// PulseTrain with numPulses = 0
 				shortNameEpTypePTBaseline = shortNameEpTypePT + "_" + EPOCH_SN_PULSETRAINBASETRAIL
 				tags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-				EP_AddEpoch(ec.device, ec.channel, ec.channelType, epochBegin, epochEnd, tags, shortNameEpTypePTBaseline, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+				EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, tags, shortNameEpTypePTBaseline, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 			endif
 		elseif(epochType == EPOCH_TYPE_SIN_COS)
 			WAVE inflectionPoints = WB_GetInflectionPoints(ec.stimNote, ec.sweep, epochNr)
@@ -951,7 +939,7 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 					subEpochEnd   = epochEnd
 					shortNameEpTRIGIncomplete = shortNameEpTypeTRIG_I + num2istr(incompleteCycleNr)
 					epSubSubTags = ReplaceNumberByKey(EPOCH_INCOMPLETE_CYCLE_KEY, epSubTags, incompleteCycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-					EP_AddEpoch(ec.device, ec.channel, ec.channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGIncomplete, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+					EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGIncomplete, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
 					incompleteCycleNr++
 				continue
 			endif
@@ -995,7 +983,7 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 					if(subEpochBegin != subEpochEnd)
 						shortNameEpTRIGIncomplete = shortNameEpTypeTRIG_I + num2istr(incompleteCycleNr)
 						epSubSubTags = ReplaceNumberByKey(EPOCH_INCOMPLETE_CYCLE_KEY, epSubTags, incompleteCycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-						EP_AddEpoch(ec.device, ec.channel, ec.channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGIncomplete, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+						EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGIncomplete, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
 						incompleteCycleNr++
 					endif
 				endif
@@ -1006,7 +994,7 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 					subEpochEnd   = epochBegin + inflectionPoints[i + 2]
 					shortNameEpTRIGCycle = shortNameEpTypeTRIG_C + num2istr(cycleNr)
 					epSubSubTags = ReplaceNumberByKey(EPOCH_CYCLE_KEY, epSubTags, cycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-					EP_AddEpoch(ec.device, ec.channel, ec.channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGCycle, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
+					EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGCycle, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
 
 					// add half cycles, only for full cycles
 					for(j = 0; j < 2; j += 1)
@@ -1017,7 +1005,7 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 						shortNameEpTRIGHalfCycle = shortNameEpTRIGCycle + "_" + EPOCH_SN_TRIG_HALF_CYCLE + num2istr(halfCycleNr)
 						epSubSubTags = ReplaceNumberByKey(EPOCH_CYCLE_KEY, epSubTags, cycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 						epSubSubTags = ReplaceNumberByKey(EPOCH_HALF_CYCLE_KEY, epSubSubTags, halfCycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-						EP_AddEpoch(ec.device, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTRIGHalfCycle, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
+						EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTRIGHalfCycle, 3, lowerlimit = subEpochBegin, upperlimit = subEpochEnd)
 					endfor
 				endif
 			endfor
@@ -1110,19 +1098,19 @@ Function EP_AddUserEpoch(string device, variable channelType, variable channelNu
 
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_TTL, "Currently only epochs for the DA and TTL channels are supported")
 
+	WAVE/T epochWave = GetEpochsWave(device)
 	if(ParamIsDefault(shortName))
-		WAVE/T epochWave = GetEpochsWave(device)
 		sprintf shortName, "%s%d", EPOCH_SHORTNAME_USER_PREFIX,  EP_GetEpochCount(epochWave, channelNumber, channelType)
 	else
 		ASSERT(!GrepString(shortName, "^" + EPOCH_SHORTNAME_USER_PREFIX), "short name must not be prefixed with " + EPOCH_SHORTNAME_USER_PREFIX)
 		shortName = EPOCH_SHORTNAME_USER_PREFIX + shortName
 	endif
 
-	return EP_AddEpoch(device, channelNumber, channelType, epBegin * ONE_TO_MICRO, epEnd * ONE_TO_MICRO, tags, shortName, EPOCH_USER_LEVEL)
+	return EP_AddEpoch(epochWave, channelNumber, channelType, epBegin * ONE_TO_MICRO, epEnd * ONE_TO_MICRO, tags, shortName, EPOCH_USER_LEVEL)
 End
 
 /// @brief Adds a epoch to the epochsWave
-/// @param[in] device  title of device panel
+/// @param[in] epochWave   epochs wave
 /// @param[in] channel     number of DA/TTL channel
 /// @param[in] channelType type of channel (either DA or TTL)
 /// @param[in] epBegin     start time of the epoch in micro seconds
@@ -1132,15 +1120,8 @@ End
 /// @param[in] level       level of epoch
 /// @param[in] lowerlimit  [optional, default = -Inf] epBegin is limited between lowerlimit and Inf, epEnd must be > this limit
 /// @param[in] upperlimit  [optional, default = Inf] epEnd is limited between -Inf and upperlimit, epBegin must be < this limit
-static Function EP_AddEpoch(device, channel, channelType, epBegin, epEnd, epTags, epShortName, level, [lowerlimit, upperlimit])
-	string device
-	variable channel, channelType
-	variable epBegin, epEnd
-	string epTags, epShortName
-	variable level
-	variable lowerlimit, upperlimit
+static Function EP_AddEpoch(WAVE/T epochWave, variable channel, variable channelType, variable epBegin, variable epEnd, string epTags, string epShortName, variable level, [variable lowerlimit, variable upperlimit])
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	variable i, j, numEpochs, pos
 	string entry, startTimeStr, endTimeStr
 
@@ -1323,7 +1304,7 @@ static Function EP_AdaptEpochInfoChannel(string device, variable channelNumber, 
 	// add unacquired epoch
 	// relies on EP_AddEpoch ignoring single point epochs
 	tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(device, channelNumber, channelType, acquiredTime * ONE_TO_MICRO , plannedTime * ONE_TO_MICRO, tags , EPOCH_SN_UNACQUIRED, 0)
+	EP_AddEpoch(epochWave, channelNumber, channelType, acquiredTime * ONE_TO_MICRO , plannedTime * ONE_TO_MICRO, tags , EPOCH_SN_UNACQUIRED, 0)
 End
 
 /// @brief Get epochs from the LBN filtered by given parameters

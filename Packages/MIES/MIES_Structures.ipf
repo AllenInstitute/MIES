@@ -628,6 +628,8 @@ EndStructure
 Structure EP_EpochCreationData
 	/// device name
 	string device
+	/// Epochs wave
+	WAVE/T epochWave
 	/// GUI channel number
 	variable channel
 	/// channel type as of @ref XopChannelConstants
