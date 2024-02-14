@@ -1012,7 +1012,7 @@ static Function TestOperationPSXKernel()
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSXKernel)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSXKernel)
 
-	str = "psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5))"
+	str = "psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -5)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 6)
@@ -1042,7 +1042,7 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
 
 	// no data from select statement
-	str = "psxKernel([50, 150], select(channels(AD15), [0]), 1, 15, (-5))"
+	str = "psxKernel([50, 150], select(channels(AD15), [0]), 1, 15, -5)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1051,7 +1051,7 @@ static Function TestOperationPSXKernel()
 	endtry
 
 	// no data from this sweep statement
-	str = "psxKernel(ABCD, select(channels(AD6), [0, 2], all), 1, 15, (-5))"
+	str = "psxKernel(ABCD, select(channels(AD6), [0, 2], all), 1, 15, -5)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1084,9 +1084,19 @@ Function/WAVE FakeSweepDataGeneratorPSX(WAVE sweep, variable numChannels)
 	return sweep
 End
 
-static Function TestOperationPSX()
+static Function/WAVE GetKernelAmplitude()
+
+	Make/D/FREE wv = {5, -5}
+
+	return wv
+End
+
+/// IUTF_TD_GENERATOR v0:GetKernelAmplitude
+static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	string win, device, str
-	variable jsonID
+	variable jsonID, kernelAmp
+
+	kernelAmp = m.v0
 
 	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
@@ -1100,7 +1110,7 @@ static Function TestOperationPSX()
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
 
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 2.5, 100, 0)"
+	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, " + num2str(kernelAmp) + "), 2.5, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 2 * 7)
@@ -1137,7 +1147,7 @@ static Function TestOperationPSX()
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
 	// complains without events found
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 5000, 15, (-5)), 2.5, 100, 0)"
+	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 5000, 15, -5), 2.5, 100, 0)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1162,7 +1172,7 @@ static Function TestOperationPSXTooLargeDecayTau()
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
 
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0], all), 1, 15, (-5)), 1.5, 100, 0)"
+	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0], all), 1, 15, -5), 1.5, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
@@ -1198,6 +1208,9 @@ static Function CheckEventDataHelper(WAVE/WAVE/Z dataWref, variable index)
 	CHECK_EQUAL_VAR(Sum(comp), numEvents)
 
 	comp = psxEvent[p][%$"Event manual QC call"] == PSX_UNDET
+	CHECK_EQUAL_VAR(Sum(comp), numEvents)
+
+	comp = sign(psxEvent[p][%$"Rise Time"])
 	CHECK_EQUAL_VAR(Sum(comp), numEvents)
 
 	// 1 NaN for the first event only
@@ -2900,7 +2913,7 @@ static Function TestOperationPrep()
 
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
 
-	psxCode = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, (-5)), 2.5, 100, 0)"
+	psxCode = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -5), 2.5, 100, 0)"
 	sprintf code, "psxPrep(%s)", psxCode
 
 	WAVE/WAVE dataWref = SF_ExecuteFormula(code, win, useVariables = 0)
