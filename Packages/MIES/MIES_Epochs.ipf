@@ -873,6 +873,7 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 	string shortNameEp, shortNameEpTypePT, shortNameEpTypePTPulse
 	string shortNameEpTRIGCycle, shortNameEpTRIGIncomplete, shortNameEpTRIGHalfCycle, shortNameEpTypeTRIG_C, shortNameEpTypeTRIG_I
 	string shortNameEpTypePTBaseline
+	string inflectionPointsList
 
 	string epSubSubTags
 
@@ -952,13 +953,14 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 				EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, tags, shortNameEpTypePTBaseline, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 			endif
 		elseif(epochType == EPOCH_TYPE_SIN_COS)
-			WAVE inflectionPoints = WB_GetInflectionPoints(ec.stimNote, ec.sweep, epochNr)
 
-			if(!WaveExists(inflectionPoints))
+			inflectionPointsList = WB_GetWaveNoteEntry(ec.stimNote, EPOCH_ENTRY, sweep = ec.sweep, epoch = epochNr, key = INFLECTION_POINTS_INDEX_KEY)
+			WAVE/Z wbInflectionPoints = ListToNumericWave(inflectionPointsList, ",")
+			if(!WaveExists(wbInflectionPoints))
 				continue
 			endif
 
-			numInflectionPoints = DimSize(inflectionPoints, ROWS)
+			numInflectionPoints = DimSize(wbInflectionPoints, ROWS)
 
 			cycleNr           = 0
 			incompleteCycleNr = 0
@@ -977,12 +979,16 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 				continue
 			endif
 
-			inflectionPoints *= MILLI_TO_MICRO
-
+			Duplicate/FREE wbInflectionPoints, tiInflectionPoints
+			// start/end op epoch is the first point in the data wave after the zero crossing
 			if(ec.flipping)
-				inflectionPoints[] = (epochEnd - epochBegin) - inflectionPoints[p]
-				WaveTransform/O flip, inflectionPoints
+				tiInflectionPoints[] = (ec.dwStimsetBegin + IndexAfterDecimation(wbFlippingIndex - wbStimsetEpochOffset[epochNr] - wbInflectionPoints[p] - 1, ec.decimationFactor) + 1) * ec.samplingInterval
+				tiInflectionPoints[] = limit(tiInflectionPoints[p], epochBegin, Inf)
+				WaveTransform/O flip, tiInflectionPoints
+			else
+				tiInflectionPoints[] = (ec.dwStimsetBegin + IndexAfterDecimation(ec.wbOodDAQOffset + wbStimsetEpochOffset[epochNr] + wbInflectionPoints[p] + 1, ec.decimationFactor) + 1) * ec.samplingInterval
 			endif
+			tiInflectionPoints -= epochBegin
 
 			for(i = 0; i < numInflectionPoints; i += 2)
 
@@ -996,20 +1002,20 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 				// ...
 
 				hasFullCycle              = (i + 2 < numInflectionPoints)
-				hasIncompleteCycleAtStart = (i == 0 && inflectionPoints[i] != 0)
+				hasIncompleteCycleAtStart = (i == 0 && tiInflectionPoints[i] != 0)
 				hasIncompleteCycleAtEnd   = !hasFullCycle || (i + 1 >= numInflectionPoints)
 
 				if(!hasFullCycle || hasIncompleteCycleAtStart)
 					if(hasIncompleteCycleAtStart)
 						subEpochBegin = epochBegin
 					else
-						subEpochBegin = epochBegin + inflectionPoints[i]
+						subEpochBegin = epochBegin + tiInflectionPoints[i]
 					endif
 
 					if(hasIncompleteCycleAtEnd)
 						subEpochEnd = epochEnd
 					else
-						subEpochEnd = epochBegin + inflectionPoints[i]
+						subEpochEnd = epochBegin + tiInflectionPoints[i]
 					endif
 
 					// add incomplete cycle epoch if it is not-empty
@@ -1023,16 +1029,16 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 
 				if(hasFullCycle)
 					cycleNr = i / 2
-					subEpochBegin = epochBegin + inflectionPoints[i]
-					subEpochEnd   = epochBegin + inflectionPoints[i + 2]
+					subEpochBegin = epochBegin + tiInflectionPoints[i]
+					subEpochEnd   = epochBegin + tiInflectionPoints[i + 2]
 					shortNameEpTRIGCycle = shortNameEpTypeTRIG_C + num2istr(cycleNr)
 					epSubSubTags = ReplaceNumberByKey(EPOCH_CYCLE_KEY, epSubTags, cycleNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 					EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTRIGCycle, 2, lowerlimit = epochBegin, upperlimit = epochEnd)
 
 					// add half cycles, only for full cycles
 					for(j = 0; j < 2; j += 1)
-						subsubEpochBegin = epochBegin + inflectionPoints[i + j]
-						subsubEpochEnd   = epochBegin + inflectionPoints[i + j + 1]
+						subsubEpochBegin = epochBegin + tiInflectionPoints[i + j]
+						subsubEpochEnd   = epochBegin + tiInflectionPoints[i + j + 1]
 
 						halfCycleNr = IsEven(j) ? 0 : 1
 						shortNameEpTRIGHalfCycle = shortNameEpTRIGCycle + "_" + EPOCH_SN_TRIG_HALF_CYCLE + num2istr(halfCycleNr)
