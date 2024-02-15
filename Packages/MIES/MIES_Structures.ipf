@@ -525,7 +525,10 @@ Structure DataConfigurationResult
 	WAVE testPulse
 
 	/// Length of the DataConfigurationResult::testPulse wave in points
+	/// test pulse properties from @ref TP_GetCreationPropertiesInPoints
 	variable testPulseLength
+	variable tpPulseStartPoint
+	variable tpPulseLengthPoints
 
 	/// oodDAQ optimization results, see @ref OOdDAQParams_Output
 	/// @{
@@ -582,6 +585,17 @@ Structure DataConfigurationResult
 
 	/// Number of sweeps to skip over on start of data acquisition
 	variable skipAhead
+
+	/// Maximum number of samples that can be acquired to the data wave
+	/// For ITC can be higher that planned samples to be acquired (no automatic stop, only programmatic)
+	variable stopCollectionPoint
+
+	/// for ITC, TTL stimset size in DC after TTL stimsets were bit-combined to a joined wave
+	/// fixing https://github.com/AllenInstitute/MIES/issues/2007 should remove the need for this
+	variable joinedTTLStimsetSize
+
+	/// wave indexing GUI TTL channels, 1 - activated, 0 deactivated
+	WAVE statusTTLFiltered
 EndStructure
 
 /// @brief Helper struct for storing the number of active channels per rack
@@ -626,8 +640,6 @@ EndStructure
 /// dw*  - index in the data wave (e.g. DAChannel)
 /// wb*  - index in the stimset wave from the wave builder
 Structure EP_EpochCreationData
-	/// device name
-	string device
 	/// Epochs wave
 	WAVE/T epochWave
 	/// GUI channel number
@@ -668,4 +680,9 @@ Structure EP_EpochCreationData
 	variable dwJoinedTTLStimsetSize
 	/// set to one if the stimset is flipped, zero otherwise
 	variable flipping
+	/// test pulse properties transferred from DataConfigurationResult structure,
+	/// originally calculated by @ref TP_GetCreationPropertiesInPoints
+	variable tpTotalLengthPoints
+	variable tpPulseStartPoint
+	variable tpPulseLengthPoints
 EndStructure

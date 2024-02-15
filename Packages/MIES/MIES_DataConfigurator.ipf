@@ -929,6 +929,7 @@ static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 	stopCollectionPoint = DC_GetStopCollectionPoint(device, s)
+	s.stopCollectionPoint = stopCollectionPoint
 
 	AssertOnAndClearRTError()
 
@@ -938,7 +939,7 @@ static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP
 		DC_FillDAQDataWaveForDAQ(device, s)
 	endif
 
-	EP_CollectEpochInfo(device, epochWave, s)
+	EP_CollectEpochInfo(epochWave, s)
 	DC_PrepareLBNEntries(device, s)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -1434,6 +1435,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	variable channel, headstage, channelMode
 	variable scalingZero, indexingLocked, indexing
 	variable i, j, ret, setCycleCountLocal
+	variable testPulseLength, tpPulseStartPoint, tpPulseLengthPoints
 	string ctrl
 
 	// pass parameters into returned struct
@@ -1488,8 +1490,11 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 
 	WAVE s.testPulse = GetTestPulse()
 
-	// test pulse length is calculated for dataAcqOrTP
-	s.testPulseLength = DimSize(s.testPulse, ROWS)
+	// test pulse length is calculated for dataAcqOrTP @ref TP_CreateTestPulseWave
+	[testPulseLength, tpPulseStartPoint, tpPulseLengthPoints] = TP_GetCreationPropertiesInPoints(device, dataAcqOrTP)
+	s.testPulseLength = testPulseLength
+	s.tpPulseStartPoint = tpPulseStartPoint
+	s.tpPulseLengthPoints = tpPulseLengthPoints
 
 	s.headstageDAC[] = channelClampMode[s.DACList[p]][%DAC][%Headstage]
 	s.headstageADC[] = channelClampMode[s.ADCList[p]][%ADC][%Headstage]
@@ -1675,6 +1680,7 @@ static Function DC_SetupConfigurationTTLstimSets(string device, STRUCT DataConfi
 
 	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, s.dataAcqOrTP, CHANNEL_TYPE_TTL)
+	WAVE s.statusTTLFiltered = statusTTLFiltered
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		if(!statusTTLFiltered[i])
@@ -2001,6 +2007,7 @@ static Function DC_ITC_MakeTTLWave(string device, STRUCT DataConfigurationResult
 			endfor
 		endif
 	endfor
+	s.joinedTTLStimsetSize = DC_CalculateStimsetLength(TTLWave, device, DATA_ACQUISITION_MODE)
 End
 
 static Function DC_NI_MakeTTLWave(string device, STRUCT DataConfigurationResult &s)
@@ -2031,6 +2038,7 @@ static Function DC_NI_MakeTTLWave(string device, STRUCT DataConfigurationResult 
 		MultiThread TTLWaveSingle[] = TTLStimSet[p][s.TTLsetColumn[i]]
 		TTLWave[i] = TTLWaveSingle
 	endfor
+	s.joinedTTLStimsetSize = NaN
 
 	DC_DocumentChannelProperty(device, "Stim set length", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(setLength, ";"))
 	DC_DocumentChannelProperty(device, "channels", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(channels, ";"))
