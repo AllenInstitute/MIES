@@ -187,30 +187,30 @@ static Function Test_WaveRefNumeric()
 
 	Make/FREE wvData1 = {1, 2, 3, 4}
 	Make/FREE/N=0 wvData2
-	Make/N=(1, 2)/FREE wvData3 = p + q
+	Make/N=(2, 3)/FREE wvData3 = p * 2 + q
 	Make/FREE/WAVE wvRef = {wvData0, wvData1, wvData2, wvData3}
 	JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
 
 	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "refWave/0")
-	CHECK_EQUAL_WAVES(data, wvData0, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(data, wvData0, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "refWave/1")
-	CHECK_EQUAL_WAVES(data, wvData1, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(data, wvData1, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "refWave/2")
-	CHECK_EQUAL_WAVES(data, wvData2, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(data, wvData2, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "refWave/3")
-	CHECK_EQUAL_WAVES(data, wvData3, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(data, wvData3, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	WAVE/WAVE/Z container = JWN_GetWaveRefNumericFromWaveNote(wv, "refWave")
 	CHECK_EQUAL_VAR(DimSize(container, ROWS), 4)
 	CHECK_EQUAL_VAR(DimSize(container, COLS), 0)
 
-	CHECK_EQUAL_WAVES(wvRef[0], container[0], mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(wvRef[1], container[1], mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(wvRef[2], container[2], mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(wvRef[3], container[3], mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wvRef[0], container[0], mode = WAVE_DATA | DIMENSION_SIZES)
+	CHECK_EQUAL_WAVES(wvRef[1], container[1], mode = WAVE_DATA | DIMENSION_SIZES)
+	CHECK_EQUAL_WAVES(wvRef[2], container[2], mode = WAVE_DATA | DIMENSION_SIZES)
+	CHECK_EQUAL_WAVES(wvRef[3], container[3], mode = WAVE_DATA | DIMENSION_SIZES)
 
 	// empty wave ref wave
 	Note/K wv

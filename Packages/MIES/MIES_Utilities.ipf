@@ -3664,6 +3664,24 @@ threadsafe Function IsFloatingPointWave(wv)
 	return (type & IGOR_TYPE_32BIT_FLOAT) || (type & IGOR_TYPE_64BIT_FLOAT)
 End
 
+/// @brief Return 1 if the wave is a double (64bit) precision floating point wave
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsDoubleFloatingPointWave(wv)
+	WAVE wv
+
+	return WaveType(wv) & IGOR_TYPE_64BIT_FLOAT
+End
+
+/// @brief Return 1 if the wave is a single (32bit) precision floating point wave
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsSingleFloatingPointWave(wv)
+	WAVE wv
+
+	return WaveType(wv) & IGOR_TYPE_32BIT_FLOAT
+End
+
 /// @brief Return 1 if the wave is a global wave (not a null wave and not a free wave)
 threadsafe Function IsGlobalWave(wv)
 	WAVE wv
@@ -6837,4 +6855,81 @@ Function/WAVE ZapNullRefs(WAVE/WAVE input)
 	Redimension/N=(idx) result
 
 	return result
+End
+
+/// @brief Split multidimensional waves inside input to the given dimension
+///
+/// @param input wave reference wave
+/// @param sdim  [optional, defaults to 1] dimensionality to split to
+Function/WAVE SplitWavesToDimension(WAVE/WAVE input, [variable sdim])
+
+	ASSERT_TS(IsWaveRefWave(input), "Expected a wave reference wave")
+
+	if(ParamIsDefault(sdim))
+		sdim = 1
+	else
+		ASSERT_TS(IsInteger(sdim) && sdim >= 1 && sdim <= MAX_DIMENSION_COUNT, "Invalid sdim parameter")
+	endif
+
+	Make/FREE/WAVE/N=(0) output, singleWaves
+
+	for(WAVE/Z wv : input)
+		ASSERT_TS(WaveExists(wv), "Invalid contained wv")
+
+		if(DimSize(wv, COLS) > 1)
+			/// @todo workaround IP issue 4979 (singleWaves is not a free wave)
+			SplitWave/NOTE/O/FREE/OREF=singleWaves/SDIM=(sdim) wv
+		else
+			Make/WAVE/FREE singleWaves = {wv}
+		endif
+
+		Concatenate/NP {singleWaves}, output
+	endfor
+
+	return output
+End
+
+threadsafe static Function AreIntervalsIntersectingImpl(variable index, WAVE intervals)
+
+	ASSERT_TS(!IsNaN(intervals[index][0]) && !IsNaN(intervals[index][1]), "Expected finite entries")
+	ASSERT_TS(intervals[index][0] < intervals[index][1], "Expected interval start < end")
+
+	if(index == 0)
+		return 0
+	endif
+
+	// check that every interval, starting from the second interval
+	// starts later than the previous one ends
+	return (intervals[index][0] < intervals[index - 1][1])
+End
+
+/// @brief Return the truth if any of the given intervals ]A, B[ intersect.
+///
+/// @param intervalsParam Nx2 wave with the intervals
+threadsafe Function AreIntervalsIntersecting(WAVE intervalsParam)
+
+	variable numRows, i
+
+	ASSERT_TS(IsNumericWave(intervalsParam), "Expected a numeric wave")
+
+	numRows = DimSize(intervalsParam, ROWS)
+	// two columns: start, end
+	ASSERT_TS(DimSize(intervalsParam, COLS) == 2, "Expected exactly two columns")
+
+	if(numRows <= 1)
+		return 0
+	endif
+
+	// sort start column in ascending order
+	Duplicate/FREE intervalsParam, intervals
+	WaveClear intervalsParam
+	SortColumns/KNDX={0} sortWaves=intervals
+
+	Make/FREE/R/N=(numRows) result = NaN
+
+	Multithread result = AreIntervalsIntersectingImpl(p, intervals)
+
+	ASSERT_TS(IsNaN(GetRowIndex(result, val = NaN)), "Error evaluating intervals")
+
+	return IsFinite(GetRowIndex(result, val = 1))
 End

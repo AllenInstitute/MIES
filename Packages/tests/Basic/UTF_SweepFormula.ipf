@@ -2488,7 +2488,7 @@ End
 static Function TestOperationData()
 
 	variable i, j, numChannels, sweepNo, sweepCnt, numResultsRef, clampMode
-	string str, epochStr, name, trace
+	string str, strSelect, epochStr, name, trace
 	string win, device
 	variable mode = DATA_ACQUISITION_MODE
 	variable numSweeps = 2
@@ -2591,6 +2591,43 @@ static Function TestOperationData()
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {3, 1, 3, 1}, ranges=ranges)
 	CheckSweepsMetaData(dataWref, {0, 0, 0, 0}, {6, 6, 7, 7}, {0, 0, 0, 0}, SF_DATATYPE_SWEEP)
 
+	// this part specifies to numerical range 0,2 and 0,4
+	// Selected is sweep 0, AD, channel 6 and sweep 0, AD, channel 7
+	sweepCnt = 1
+	strSelect = "select(channels(AD),[" + num2istr(sweepNo) + "],all)"
+	str = "data([[0,0],[2,4]]," + strSelect + ")"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
+	numResultsRef = sweepCnt * numChannels / 2 * 2 // 2 ranges specified
+
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[0][0] = 0
+	ranges[0][1] = 2
+	ranges[1][0] = 0
+	ranges[1][1] = 4
+	ranges[2][0] = 0
+	ranges[2][1] = 2
+	ranges[3][0] = 0
+	ranges[3][1] = 4
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 1, 3}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {0, 0, 0, 0}, {6, 6, 7, 7}, {0, 0, 0, 0}, SF_DATATYPE_SWEEP)
+
+	// This part uses a epochs operation with offset to retrieve ranges
+	// Selected is sweep 0, AD, channel 6 and sweep 0, AD, channel 7
+	// The epoch "TestEpoch" is retrieved for both and offsetted by zero.
+	sweepCnt = 1
+	strSelect = "select(channels(AD),[" + num2istr(sweepNo) + "],all)"
+	str = "data(epochs(\"TestEpoch\"," + strSelect + ")+[0,0]," + strSelect + ")"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
+	numResultsRef = sweepCnt * numChannels / 2
+
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[0][0] = rangeStart0
+	ranges[0][1] = rangeEnd0
+	ranges[1][0] = rangeStart0
+	ranges[1][1] = rangeEnd0
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3}, ranges=ranges)
+	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
+
 	sweepCnt = 1
 	str = "data([\"TestEpoch\",\"TestEpoch1\"],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
@@ -2647,14 +2684,27 @@ static Function TestOperationData()
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing sweep
-	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo + 1337) + "],all))"
+	str = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo + 1337) + "],all))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing epoch
-	str = "data(WhatEpochIsThis,select(channels(AD4),[" + num2istr(sweepNo) + "],all))"
+	str = "data(WhatEpochIsThis,select(channels(AD),[" + num2istr(sweepNo) + "],all))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
+
+	// empty range from epochs
+	str = "select(channels(AD),[" + num2istr(sweepNo) + "],all)"
+	str = "data(epochs(WhatEpochIsThis, " + str + "), " + str + ")"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
+	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
+
+	// one null range from epochs as TestEpoch1 only exists for sweepNo
+	str = "select(channels(AD6),[" + num2istr(sweepNo) + ", " + num2istr(sweepNo + 1) + "],all)"
+	str = "data(epochs([TestEpoch1], " + str + "), " + str + ")"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
+	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
+	REQUIRE_EQUAL_VAR(DimSize(dataWref[0], ROWS), 6)
 
 	// range begin
 	str = "data([12, 10],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
@@ -2732,7 +2782,6 @@ static Function TestOperationData()
 	catch
 		PASS()
 	endtry
-
 End
 
 Function/WAVE FakeSweepDataGeneratorPS(WAVE sweep, variable numChannels)
@@ -3051,23 +3100,24 @@ static Function TestOperationEpochs()
 	// finds only epoch without shortname from test epochs
 	str = "epochs(\"!E0_PT_P48*\", select(channels(DA), 0))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
-	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA * 2)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
+	CHECK_EQUAL_VAR(DimSize(dataWref, COLS), 0)
+
+	for(WAVE/Z data : dataWref)
+		CHECK_WAVE(data, NUMERIC_WAVE)
+		CHECK_EQUAL_VAR(DimSize(data, ROWS), 2)
+		CHECK_EQUAL_VAR(DimSize(data, COLS), 2)
+	endfor
 
 	// the first wildcard matches both setup epochs, the second only the first setup epoch
 	// only unique epochs are returned, thus two
 	str = "epochs([\"E0_PT_*\",\"E0_PT_P48*\"], select(channels(DA), 0))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
-	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 8)
-	Make/FREE/D refData1 = {500, 510}
-	Make/FREE/D refData2 = {503, 510}
-	i = 0
-	for(data : dataWref)
-		if(!i)
-			CHECK_EQUAL_WAVES(data, refData1, mode = WAVE_DATA)
-		else
-			CHECK_EQUAL_WAVES(data, refData2, mode = WAVE_DATA)
-		endif
-		i = 1 - i
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 4)
+	Make/FREE/D refData = {{500, 510}, {503, 510}}
+	for(WAVE/Z data : dataWref)
+		CHECK_WAVE(data, NUMERIC_WAVE)
+		CHECK_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 	endfor
 
 	// channel(s) with no epochs

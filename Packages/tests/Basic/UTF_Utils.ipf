@@ -5060,12 +5060,33 @@ Function ZN_AllNaNToNull()
 	WAVE/Z reduced = ZapNaNs(wv)
 	CHECK_WAVE(reduced, NULL_WAVE)
 End
+
 Function ZN_RemovesNaNs()
 
 	Make/FREE wv = {NaN, inf, 1}
 	WAVE/Z reduced = ZapNaNs(wv)
 	CHECK_EQUAL_WAVES(reduced, {inf, 1})
 End
+
+Function ZN_RemovesNaNs2D()
+
+	// row is NaN
+	Make/FREE wv = {{NaN, inf}, { NaN, 1}}
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_EQUAL_WAVES(reduced, {inf, 1})
+
+	// column is NaN
+	Make/FREE wv = {{NaN, NaN}, {inf, 1}}
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_EQUAL_WAVES(reduced, {inf, 1})
+
+	// single point NaN only
+	Make/FREE wv = {{NaN, 2}, {inf, 1}}
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_EQUAL_WAVES(reduced, {2, inf, 1})
+
+End
+
 /// @}
 
 // BinarySearchText
@@ -7534,4 +7555,139 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = content), 1)
 	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = $""), 0)
 	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = waveRefWave), NaN)
+End
+
+static Function TestSplitWavesToDimension()
+
+	// bails on invalid wave
+	try
+		Make/FREE wv
+		SplitWavesToDimension(wv)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// bails on invalid sdim parameter
+	try
+		Make/FREE wvData = {{1, 2}, {3, 4}}
+		Make/FREE/WAVE wvRef = {wvData}
+		SplitWavesToDimension(wvRef, sdim = MAX_DIMENSION_COUNT + 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// bails on invalid contained wv
+	try
+		Make/FREE/WAVE wvRef
+		SplitWavesToDimension(wvRef)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE wvData1 = {{1, 2}, {3, 4}}
+	Make/FREE wvData2 = {5, 6}
+	Make/FREE/WAVE wvRef = {wvData1, wvData2}
+
+	WAVE/WAVE/Z result = SplitWavesToDimension(wvRef)
+	CHECK_WAVE(result, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(result, COLS), 0)
+	CHECK_EQUAL_WAVES(result[0], {1, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(result[1], {3, 4}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(result[2], {5, 6}, mode = WAVE_DATA)
+
+	Make/FREE   wvData1    = {{1, 2}, {3, 4}}
+	Make/FREE/T wvDataTxt1 = {{"a", "b"}, {"c", "d"}}
+	Make/FREE/WAVE wvRef = {wvData1, wvDataTxt1}
+
+	WAVE/WAVE/Z result = SplitWavesToDimension(wvRef)
+	CHECK_WAVE(result, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(result, COLS), 0)
+	CHECK_EQUAL_WAVES(result[0], {1, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(result[1], {3, 4}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(result[2], {"a", "b"}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(result[3], {"c", "d"}, mode = WAVE_DATA)
+
+	CHECK_EMPTY_FOLDER()
+End
+
+static Function TestAreIntervalsIntersecting()
+
+	// wrong wave type
+	try
+		Make/FREE/T wvText
+		AreIntervalsIntersecting(wvText)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// 1D wave
+	try
+		Make/FREE wv
+		AreIntervalsIntersecting(wv)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// trivial case #1: empty
+	Make/FREE/N=(0, 2) empty
+	CHECK_EQUAL_VAR(0, AreIntervalsIntersecting(empty))
+
+	// trivial case #2: only one interval
+	Make/FREE single = {{1}, {2}}
+	CHECK_EQUAL_VAR(0, AreIntervalsIntersecting(single))
+
+	// contains NaN values (start)
+	Make/FREE infValues = {{1, inf}, {2, 4}}
+
+	try
+		AreIntervalsIntersecting(infValues)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// contains NaN values (end)
+	Make/FREE infValues = {{1, 3}, {2, NaN}}
+
+	try
+		AreIntervalsIntersecting(infValues)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid ordering
+	Make/FREE invalidOrder = {{2, 3}, {1, 4}}
+
+	try
+		AreIntervalsIntersecting(invalidOrder)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// works
+	Make/FREE data = {{1, 3}, {2, 4}}
+	CHECK(!AreIntervalsIntersecting(data))
+
+	// intervals which have start == end are okay
+	Make/FREE data = {{1, 2}, {2, 3}}
+	CHECK(!AreIntervalsIntersecting(data))
+
+	Make/FREE data = {{2.5, 1, 2.7}, {2.6, 2.4, 4}}
+	CHECK(!AreIntervalsIntersecting(data))
+
+	Make/FREE data = {{2, 1}, {3, 4}}
+	CHECK(AreIntervalsIntersecting(data))
+
+	// works also with infinite
+	Make/FREE data = {{-inf, 3}, {2, inf}}
+	CHECK(!AreIntervalsIntersecting(data))
 End

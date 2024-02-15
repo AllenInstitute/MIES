@@ -1208,32 +1208,42 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	return [formulaResults, plotMetaData]
 End
 
+static Function/S SF_GetAnnotationPrefix(string dataType)
+
+	strswitch(dataType)
+		case SF_DATATYPE_EPOCHS:
+			return "Epoch "
+		case SF_DATATYPE_SWEEP:
+			return ""
+		case SF_DATATYPE_TP:
+			return "TP "
+		default:
+			ASSERT(0, "Invalid dataType")
+	endswitch
+End
+
 static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData, WAVE data)
 
 	variable channelNumber, channelType, sweepNo, isAveraged
 	string channelId, prefix
-	string traceAnnotation
+	string traceAnnotation, annotationPrefix
 
 	prefix = RemoveEnding(ReplaceString(";", plotMetaData.opStack, " "), " ")
 
 	strswitch(plotMetaData.dataType)
+		case SF_DATATYPE_EPOCHS: // fallthrough
+		case SF_DATATYPE_SWEEP:  // fallthrough
 		case SF_DATATYPE_TP:
 			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+			annotationPrefix = SF_GetAnnotationPrefix(plotMetaData.dataType)
 			if(IsValidSweepNumber(sweepNo))
 				channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 				channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
 				channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
-				sprintf traceAnnotation, "TP Sweep %d %s", sweepNo, channelId
+				sprintf traceAnnotation, "%sSweep %d %s", annotationPrefix, sweepNo, channelId
 			else
-				sprintf traceAnnotation, "TP"
+				sprintf traceAnnotation, "%s", annotationPrefix
 			endif
-			break
-		case SF_DATATYPE_SWEEP:
-			channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
-			channelType = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
-			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
-			channelId = StringFromList(channelType, XOP_CHANNEL_NAMES) + num2istr(channelNumber)
-			sprintf traceAnnotation, "Sweep %d %s", sweepNo, channelId
 			break
 		default:
 			if(WhichListItem(SF_OP_DATA, plotMetaData.opStack) == -1)
@@ -1278,7 +1288,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	s.blue = 0x0000
 
 	Make/FREE/T stopInheritance = {SF_OPSHORT_MINUS, SF_OPSHORT_PLUS, SF_OPSHORT_DIV, SF_OPSHORT_MULT}
-	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS}
+	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS, SF_OP_EPOCHS}
 
 	WAVE/T opStackW = ListToTextWave(opStack, ";")
 	numDoInh = DimSize(doInheritance, ROWS)
@@ -2767,7 +2777,8 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 		singleSelect[0][%CHANNELTYPE] = chanType
 		singleSelect[0][%CHANNELNUMBER] = chanNr
 
-		WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, {-Inf, Inf}, singleSelect, SF_OP_TP)
+		WAVE/WAVE range = SFH_AsDataSet(SFH_GetFullRange())
+		WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, range, singleSelect, SF_OP_TP)
 		SFH_ASSERT(DimSize(sweepDataRef, ROWS) == 1, "Could not retrieve sweep data for " + num2istr(sweepNo))
 		WAVE/Z sweepData = sweepDataRef[0]
 		SFH_ASSERT(WaveExists(sweepData), "No sweep data for " + num2istr(sweepNo) + " found.")
@@ -3045,7 +3056,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 End
 
 // epochs(string shortName[, array selectData, [string type]])
-// returns 2xN wave for type = range except for a single range result
+// returns 2xN waves for range and 1xN otherwise, where N is the number of epochs
 static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs, epType
@@ -3090,6 +3101,7 @@ End
 Static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, WAVE/Z selectData, variable epType, string opShort)
 
 	variable i, j, numSelected, sweepNo, chanNr, chanType, index, numEpochs, epIndex, settingsIndex, numPatterns, numEntries
+	variable hasValidData
 	string epName, epShortName, epEntry, yAxisLabel, epAxisName
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
@@ -3101,7 +3113,7 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 	endif
 
 	numSelected = DimSize(selectData, ROWS)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, MINIMUM_WAVE_SIZE)
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numSelected)
 
 	epAxisName = TextWaveToList(epochPatterns, "/")
 	if(epType == EPOCHS_TYPE_NAME)
@@ -3147,28 +3159,38 @@ Static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 				Make/FREE/T wt = {epNames[epIndex]}
 				WAVE out = wt
 			elseif(epType == EPOCHS_TYPE_TREELEVEL)
-				Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_TREELEVEL])}
+				Make/FREE/D wv = {str2num(epochInfo[epIndex][EPOCH_COL_TREELEVEL])}
 				WAVE out = wv
 			else
-				Make/FREE wv = {str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI}
+				Make/FREE/D wv = {str2num(epochInfo[epIndex][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, str2num(epochInfo[epIndex][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI}
 				WAVE out = wv
 			endif
 
-			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
-			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
-			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
-			JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
-
-			EnsureLargeEnoughWave(output, indexShouldExist=index)
-			output[index] = out
-			index +=1
+			if(!WaveExists(output[i]))
+				output[i] = out
+			else
+				WAVE target = output[i]
+				Concatenate {out}, target
+			endif
 		endfor
+
+		JWN_SetNumberInWaveNote(output[i], SF_META_SWEEPNO, sweepNo)
+		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELTYPE, chanType)
+		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELNUMBER, chanNr)
+		JWN_SetWaveInWaveNote(output[i], SF_META_XVALUES, {sweepNo})
+
+		hasValidData = 1
 	endfor
-	Redimension/N=(index) output
+
+	if(!hasValidData)
+		Redimension/N=(0) output
+	endif
 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_EPOCHS)
 	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
 	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, yAxisLabel)
+
+	SFH_AddOpToOpStack(output, "", SF_OP_EPOCHS)
 
 	return output
 End
@@ -4343,7 +4365,7 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	SFH_ASSERT(numArgs >= 1, "data function requires at least 1 argument.")
 	SFH_ASSERT(numArgs <= 2, "data function has maximal 2 arguments.")
 
-	WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_DATA, 0)
+	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_DATA, 0)
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_DATA, 1)
 
 	WAVE/WAVE output = SFH_GetSweepsForFormula(graph, range, selectData, SF_OP_DATA)
@@ -4555,7 +4577,7 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 			wvT[i] = csrName[0]
 		endfor
 	endif
-	Make/FREE/N=(numArgs) out = NaN
+	Make/FREE/N=(numArgs)/D out = NaN
 	for(i = 0; i < numArgs; i += 1)
 		SFH_ASSERT(GrepString(wvT[i], "^(?i)[A-J]$"), "Invalid Cursor Name")
 		if(IsEmpty(graph))

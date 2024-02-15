@@ -687,6 +687,10 @@ The returned data type is `SF_DATATYPE_SWEEP`.
    // Shows epoch "E1" range of the AD channels of all displayed sweeps
    data("E1", select(channels(AD), sweeps()))
 
+   // Shows epoch "E1" range with the start offsetted by 10ms of the AD channels of all displayed sweeps
+   sel = select(channels(AD), sweeps())
+   data(epochs("E1", $sel) + [10, 0], $sel)
+
    // Shows sweep data from all epochs starting with "E" of the AD channels of all displayed sweeps
    data("E*", select(channels(AD), sweeps()))
 
@@ -1308,16 +1312,17 @@ For example if `select()` is used for the selectData argument then all channels 
 Thus, there are data waves only returned for the `DA` channels.
 If a selection has epoch information stored in the labnotebook and the specified epoch does not exist it is skipped and thus, not included in the output waves.
 
-The output data varies depending on the requested type.
+The output data varies depending on the requested type. Multiple epochs for one
+sweep always result in additional columns.
 
 range:
-Each output data wave is numeric and contains two elements with the start and end time of the epoch in [ms].
+Each output data wave is numeric and has the start/end times in the rows [ms].
 
 name:
-Each output data wave is textual and contains one elements with the name of the epoch.
+Each output data wave is textual and contains name of the epoch.
 
 treelevel:
-Each output data wave is numeric with one element with the tree level of the epoch.
+Each output data wave is numeric and has the tree level of the epoch.
 
 The returned data type is `SF_DATATYPE_EPOCHS`.
 The default suggested x-axis values for the formula plotter are sweep numbers. The suggested y-axis label is the combination of the requested type (`name`, `tree level`, `range`) and the epoch name wildcards.
@@ -1335,6 +1340,9 @@ The default suggested x-axis values for the formula plotter are sweep numbers. T
 
    // get stimset range from specified epochs from all displayed sweeps and channels
    epochs(["TP_B?", "E?_*"], select(channels(AD), sweeps()))
+
+   // get ranges for epochs TP_B0/TP_B1 where the start is offsetted by 5/10 ms
+   epochs(["TP_B0", "TP_B1"], select(channels(AD), sweeps())) + [[5, 10], [0, 0]]
 
 tp
 ""

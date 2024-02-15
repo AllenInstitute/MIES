@@ -142,11 +142,11 @@ then
 fi
 
 # U means non-greedy matching
-matches=$(git grep $opts -e '^(?U)[[:space:]]*for\(.*\(.*\).*\)' --and --not -e '//[[:space:]]*NOLINT$' '*/MIES_*.ipf')
+matches=$(git grep $opts -e '^(?U)[[:space:]]*for\(.*\(.*\).*\)' --and -e ';' --and --not -e ':' --and --not -e '//[[:space:]]*NOLINT$' '*/MIES_*.ipf')
 
 if [[ -n "$matches" ]]
 then
-  echo "Function call in a foor loop statement check failed (use \`// NOLINT\` to suppress if appropriate):"
+  echo "Function call in a for loop statement check failed (use \`// NOLINT\` to suppress if appropriate):"
   echo "$matches"
   ret=1
 fi

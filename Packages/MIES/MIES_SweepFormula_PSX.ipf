@@ -1084,8 +1084,66 @@ static Function/WAVE PSX_GenerateSweepEquiv(WAVE selectData)
 	return sweepEquiv
 End
 
+/// @brief Collect all resolved ranges in allResolvedRanges together with a hash of the select data
+Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectData, WAVE allResolvedRanges, WAVE/T allSelectHashes)
+
+	variable sweepNo, chanNr, chanType, numRows
+
+	sweepNo  = singleSelectData[0][%SWEEP]
+	chanNr   = singleSelectData[0][%CHANNELNUMBER]
+	chanType = singleSelectData[0][%CHANNELTYPE]
+
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
+
+	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(numericalValues, textualValues, range, sweepNo, chanType, chanNr)
+	ASSERT(DimSize(resolvedRanges, COLS) == 1, "psxStats does not support epoch wildcards")
+
+	numRows = DimSize(allSelectHashes, ROWS)
+	Redimension/N=(numRows + 1) allSelectHashes
+	allSelectHashes[numRows] = WaveHash(singleSelectData, HASH_SHA2_256)
+
+	Concatenate/NP {resolvedRanges}, allResolvedRanges
+
+	if(DimSize(allResolvedRanges, COLS) == 0)
+		Redimension/N=(-1, 1) allResolvedRanges
+	endif
+End
+
+/// @brief Check that the 2xN wave allResolvedRanges has only
+///        non-intersecting ranges for the same select data hash
+static Function PSX_CheckResolvedRanges(WAVE allResolvedRanges, WAVE/T allSelectHashes)
+
+	string selectHash
+	variable numRows, numColumns, i, idx
+
+	numRows    = DimSize(allResolvedRanges, ROWS)
+	numColumns = DimSize(allResolvedRanges, COLS)
+
+	ASSERT(numColumns == DimSize(allSelectHashes, ROWS), "Mismatched row sizes")
+
+	for(selectHash : GetUniqueEntries(allSelectHashes))
+		Make/N=(numRows, numColumns)/FREE work
+
+		for(i = 0, idx = 0; i < numColumns; i += 1)
+			if(!cmpstr(selectHash, allSelectHashes[i]))
+				work[][idx] = allResolvedRanges[p][i]
+				idx += 1
+			endif
+		endfor
+
+		MatrixOp/FREE workTransposed = work^t
+
+		ASSERT(idx > 0, "Invalid idx after searching")
+		Redimension/N=(idx, -1) workTransposed
+
+		ASSERT(!AreIntervalsIntersecting(workTransposed), "Can't work with multiple intersecting ranges")
+	endfor
+End
+
 /// @brief Helper function of the `psxStats` operation
-static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeParam, WAVE selectData, string prop, string stateAsStr, string postProc)
+static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE rangeParam, WAVE selectData, string prop, string stateAsStr, string postProc)
 
 	string propLabelAxis, comboKey
 	variable numRows, numCols, i, j, k, index, sweepNo, chanNr, chanType, state, numRanges, lowerBoundary, upperBoundary, temp, err
@@ -1099,17 +1157,12 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 	numRows = DimSize(selectDataEquiv, ROWS)
 	numCols = DimSize(selectDataEquiv, COLS)
 
-	// see also SFH_EvaluateRange()
-	if(IsNumericWave(rangeParam))
-		numRanges = 1
-		Make/FREE/WAVE allRanges = {rangeParam}
-	elseif(IsTextWave(rangeParam))
-		numRanges = DimSize(rangeParam, ROWS)
-		WAVE/T rangeParamText = rangeParam
-		Make/FREE/WAVE/N=(numRanges) allRanges = ListToTextWave(rangeParamText[p], ";")
-		WaveClear rangeParamText
-	endif
+	WAVE/WAVE allRanges = SplitWavesToDimension(rangeParam)
+	numRanges = DimSize(allRanges, ROWS)
 	WaveClear rangeParam
+
+	Make/D/FREE/N=(0) allResolvedRanges
+	Make/T/FREE/N=(0) allSelectHashes
 
 	WAVE/Z eventContainerFromResults = PSX_GetEventContainerFromResults(id)
 	WAVE/Z eventContainer            = PSX_GetEventContainer(graph, requestID = id)
@@ -1152,8 +1205,9 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 				EnsureLargeEnoughWave(allEvents, indexShouldExist = idx)
 				allEvents[idx] = events
 				idx += 1
-
 				WaveClear events
+
+				PSX_CollectResolvedRanges(graph, range, singleSelectData, allResolvedRanges, allSelectHashes)
 			endfor
 
 			Redimension/N=(idx) allEvents
@@ -1350,6 +1404,8 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE rangeP
 			endfor
 		endfor
 	endfor
+
+	PSX_CheckResolvedRanges(allResolvedRanges, allSelectHashes)
 
 	Redimension/N=(index) output
 
@@ -3556,9 +3612,9 @@ End
 /// @brief Read the user JWN from results and create a legend from all operation parameters
 static Function PSX_AddLegend(string win, WAVE/WAVE results)
 
-	variable jsonID, value, type, i, j, numOperations, numParameters
+	variable jsonID, value, type, i, j, numOperations, numParameters, numRows
 	string line, op, param, prefix, opNice, mainWindow, jsonPathOp, jsonPathParam
-	string str
+	string str, containerSep
 	string sep = ", "
 
 	jsonID = JWN_GetWaveNoteAsJSON(results)
@@ -3607,13 +3663,27 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 						str = TextWaveToList(wvText, sep)
 						WaveClear wvText
 					else
-						WAVE wv = JSON_GetWave(jsonID, jsonPathParam, waveMode = 1)
-						ASSERT(IsNumericWave(wv), "Expected numeric wave")
-						str = NumericWaveToList(wv, sep)
-						WaveClear wv
+						if(!cmpstr(param, "range"))
+							WAVE/WAVE container = JWN_GetWaveRefNumericFromWaveNote(results, jsonPathParam)
+							containerSep = "; "
+						else
+							WAVE wv = JSON_GetWave(jsonID, jsonPathParam, waveMode = 1)
+							Make/FREE/WAVE container = {wv}
+							containerSep = ""
+						endif
+
+						str = ""
+						for(WAVE wv : container)
+							ASSERT(IsNumericWave(wv), "Expected numeric wave")
+							// NumericWaveToList outputs in column-major order but we want row-major
+							MatrixOp/FREE dest = wv^t
+							str += RemoveEnding(NumericWaveToList(dest, sep), sep) + containerSep
+						endfor
+
+						str = RemoveEnding(str, containerSep)
 					endif
 
-					sprintf line, "%s: %s", param, RemoveEnding(str, ", ")
+					sprintf line, "%s: %s", param, RemoveEnding(str, sep)
 					break
 				default:
 					ASSERT(0, "Unsupported type")
@@ -4241,7 +4311,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset
 	string parameterPath, key
 
-	WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
+	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
 
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1)
 
@@ -4287,7 +4357,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 	parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
 	JWN_CreatePath(output, parameterPath)
-	JWN_SetWaveInWaveNote(output, parameterPath + "/range", range)
+	JWN_SetWaveInWaveNote(output, parameterPath + "/range", range) // not the same as SF_META_RANGE
 	JWN_SetNumberInWaveNote(output, parameterPath + "/riseTau", riseTau)
 	JWN_SetNumberInWaveNote(output, parameterPath + "/decayTau", decayTau)
 	JWN_SetNumberInWaveNote(output, parameterPath + "/amp", amp)
@@ -4342,7 +4412,7 @@ Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
-	WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_STATS, 1)
+	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_STATS, 1)
 
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 2)
 	SFH_Assert(WaveExists(selectData), "Missing select data")

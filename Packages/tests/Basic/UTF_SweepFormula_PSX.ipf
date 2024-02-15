@@ -421,7 +421,7 @@ static Function StatsComplainsWithoutEvents()
 
 	// matching id but no events
 	try
-		MIES_PSX#PSX_OperationStatsImpl(browser, id, range, selectData, prop, stateAsStr, postProc)
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, stateAsStr, postProc)
 		FAIL()
 	catch
 		error = ROStr(GetSweepFormulaParseErrorMessage())
@@ -432,7 +432,7 @@ static Function StatsComplainsWithoutEvents()
 
 	// mismatched id
 	try
-		MIES_PSX#PSX_OperationStatsImpl(browser, id, range, selectData, prop, stateAsStr, postProc)
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, stateAsStr, postProc)
 		FAIL()
 	catch
 		error = ROStr(GetSweepFormulaParseErrorMessage())
@@ -669,7 +669,7 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	MIES_PSX#PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, psxEvent, id)
 
-	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, range, selectData, prop, stateAsStr, postProc)
+	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, stateAsStr, postProc)
 	CHECK_WAVE(output, WAVE_WAVE)
 
 	Make/FREE/N=4 dims = DimSize(output, p)
@@ -950,7 +950,7 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 		refNum = NaN
 	endif
 
-	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, range, allSelectData, prop, stateAsStr, postProc)
+	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, allSelectData, prop, stateAsStr, postProc)
 	CHECK_WAVE(output, WAVE_WAVE)
 
 	if(outOfRange)
@@ -989,6 +989,37 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 
 		idx += 1
 	endfor
+End
+
+static Function StatsComplainsAboutIntersectingRanges()
+
+	string browser, device, formulaGraph, comboKey, id
+
+	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
+
+	[WAVE range0, WAVE selectData] = GetFakeRangeAndSelectData()
+
+	// 1st event wave
+	WAVE/Z psxEvent = GetEventWave(comboIndex = 0)
+	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range0)
+	id = "myID"
+	FillEventWave_IGNORE(psxEvent, id, comboKey)
+
+	Duplicate/FREE range0, range1
+
+	// 2nd event wave where we shift the range
+	WAVE/Z psxEvent = CreateEventWaveInComboFolder_IGNORE(comboIndex = 1)
+	range1[] += 0.5 * (range0[1] - range0[0])
+	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range1)
+	id = "myID"
+	FillEventWave_IGNORE(psxEvent, id, comboKey)
+
+	try
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, {range0, range1}, selectData, "amp", "all", "nothing")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
 End
 
 Function/WAVE FakeSweepDataGeneratorPSXKernel(WAVE sweep, variable numChannels)
