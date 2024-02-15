@@ -416,6 +416,10 @@ end
 static Function [WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] PSX_Analysis(WAVE sweepData, WAVE psxKernelFFT, variable sweepFilterLow, variable sweepFilterHigh, WAVE deconvFilter)
 
 	variable offset
+	
+	if(!WaveExists(psxKernelFFT))
+		return [$"", $""]
+	endif
 
 	WAVE sweepDataFilt = PSX_FilterSweepData(sweepData, sweepFilterLow, sweepFilterHigh)
 
@@ -705,9 +709,10 @@ End
 static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDataset, variable parameterJsonID, variable sweepFilterLow, variable sweepFilterHigh, WAVE deconvFilter, variable index, WAVE/WAVE output)
 
 	string key, comboKey, psxParametersAnalyzePeaks, cacheKey
+	variable err
 
 	key = PSX_GenerateKey("psxKernelFFT", index)
-	WAVE psxKernelFFT = psxKernelDataset[%$key]
+	WAVE/Z psxKernelFFT = psxKernelDataset[%$key]; err = GetRTError(1)
 
 	key = PSX_GenerateKey("sweepData", index)
 	WAVE sweepData = psxKernelDataset[%$key]
@@ -721,8 +726,8 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 	WAVE/WAVE/Z psxAnalyzePeaksFromCache = CA_TryFetchingEntryFromCache(cacheKey)
 
 	if(WaveExists(psxAnalyzePeaksFromCache))
-		WAVE sweepDataFiltOff       = psxAnalyzePeaksFromCache[%sweepDataFiltOff]
-		WAVE sweepDataFiltOffDeconv = psxAnalyzePeaksFromCache[%sweepDataFiltOffDeconv]
+		WAVE/Z sweepDataFiltOff       = psxAnalyzePeaksFromCache[%sweepDataFiltOff]
+		WAVE/Z sweepDataFiltOffDeconv = psxAnalyzePeaksFromCache[%sweepDataFiltOffDeconv]
 	else
 		[WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] = PSX_Analysis(sweepData, psxKernelFFT, sweepFilterLow, sweepFilterHigh, deconvFilter)
 
@@ -878,7 +883,12 @@ static Function/WAVE PSX_GetPSXKernel(variable riseTau, variable decayTau, varia
 	endif
 
 	[WAVE psx_kernel, WAVE kernel_fft] = PSX_CreatePSXKernel(riseTau, decayTau, amp, numPoints, dt)
-	Make/FREE/WAVE result = {psx_kernel, kernel_fft}
+	
+	if(!WaveExists(psx_kernel) || !WaveExists(kernel_fft))
+		Make/FREE/WAVE/N=0 result 
+	else
+		Make/FREE/WAVE result = {psx_kernel, kernel_fft}
+	endif
 
 	CA_StoreEntryIntoCache(key, result)
 
@@ -898,18 +908,27 @@ End
 /// The time units are abitrary but fixed for all three components.
 static Function [WAVE kernel, WAVE kernelFFT] PSX_CreatePSXKernel(variable riseTau, variable decayTau, variable amp, variable numPoints, variable dt)
 
-	variable riseTau_p, decayTau_p, kernel_window, amp_prime
+	variable riseTau_p, decayTau_p, kernel_window, amp_prime, expandFactor
+
+//	expandFactor = 
 
 	riseTau_p        = riseTau / dt
 	decayTau_p        = decayTau / dt
-	kernel_window = decayTau_p * 4
+	kernel_window = decayTau_p * 4 // limit(decayTau_p * 4, 0, numPoints)
 	amp_prime     = (decayTau_p / riseTau_p)^(riseTau_p / (riseTau_p - decayTau_p)) // normalization factor
+
+
+	if(kernel_window > numPoints)
+		return [$"", $""]
+	endif
 
 	Make/FREE/N=(kernel_window) timeIndex = p
 	SetScale/P x, 0, dt, timeIndex
 
 	Make/FREE/N=(kernel_window) kernel = (amp / amp_prime) * (-exp(-timeIndex / riseTau_p) + exp(-timeIndex / decayTau_p))
 	SetScale/P x, 0, dt, kernel
+	
+	Duplicate/O kernel, root:kernel_fine
 
 	// no window function on purpose
 	WAVE kernelFFT = DoFFT(kernel, padSize = numPoints)
@@ -4308,7 +4327,7 @@ End
 // ...
 Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph)
 
-	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset
+	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
 	string parameterPath, key
 
 	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
@@ -4342,18 +4361,30 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 		endif
 
 		WAVE/WAVE result = PSX_GetPSXKernel(riseTau, decayTau, amp, numPoints, dt, range)
+		
+		if(DimSize(result, ROWS) == 0)
+			continue
+		endif
 
 		Duplicate/FREE/T rawLabels, labels
-		labels[] = PSX_GenerateKey(rawLabels[p], i)
-		SetDimensionLabels(output, TextWaveToList(labels, ";") , ROWS, startPos = i * PSX_KERNEL_OUTPUTWAVES_PER_ENTRY)
+		labels[] = PSX_GenerateKey(rawLabels[p], idx)
+		SetDimensionLabels(output, TextWaveToList(labels, ";") , ROWS, startPos = idx * PSX_KERNEL_OUTPUTWAVES_PER_ENTRY)
 
-		key = PSX_GenerateKey("psxKernel", i)
-		output[%$key] = result[0]
-		key = PSX_GenerateKey("psxKernelFFT", i)
-		output[%$key] = result[1]
-		key = PSX_GenerateKey("sweepData", i)
+		key = PSX_GenerateKey("sweepData", idx)
 		output[%$key] = sweepData
+		key = PSX_GenerateKey("psxKernel", idx)
+		output[%$key] = result[0]
+		key = PSX_GenerateKey("psxKernelFFT", idx)
+		output[%$key] = result[1]
+		
+		idx += 1
 	endfor
+	
+	numCombos = idx
+	
+	SFH_ASSERT(numCombos > 0, "Could not fetch sweeps")
+		
+	Redimension/N=(PSX_KERNEL_OUTPUTWAVES_PER_ENTRY * numCombos) output
 
 	parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
 	JWN_CreatePath(output, parameterPath)
@@ -4488,8 +4519,15 @@ End
 
 static Function [WAVE hist, WAVE fit, variable peakThresh, string dataUnit] PSX_CalculatePeakThreshold(WAVE/WAVE results, variable numCombos, variable numSDs)
 
+	variable i
 	// Concatenate all input waves
 	Make/FREE/N=(numCombos)/WAVE input = results[%$PSX_GenerateKey("sweepDataFiltOffDeconv", p)]
+	
+	for(i = numCombos - 1; i >= 0;i -= 1)
+			if(!WaveExists(input[i]))
+				DeletePoints/M=(ROWS) i, 1, input
+			endif		
+	endfor
 	Concatenate/NP/FREE {input}, sweepDataFiltOffDeconv
 
 	WAVE hist = PSX_CreateHistogramOfDeconvSweepData(sweepDataFiltOffDeconv)

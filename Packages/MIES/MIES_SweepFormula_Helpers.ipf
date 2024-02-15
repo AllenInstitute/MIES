@@ -515,10 +515,19 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 				endif
 				rangeEnd = limit(rangeEnd, -inf, lastx)
 			endif
+			
+			printf "rangeEnd: %.20f <= %.20f\r", rangeEnd, lastx
+			printf "rangeStart %.20f >= %.20f\r", rangeStart, leftx(sweep)
+			
+//			print rangeStart > leftx(sweep),  CheckifClose(rangeStart, leftx(sweep) || rangeStart == leftx(Sweep)
 
 			SFH_ASSERT(rangeStart < rangeEnd, "Starting range must be smaller than the ending range for sweep " + num2istr(sweepNo) + ".")
-			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < lastx), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
-			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd > leftx(sweep) && rangeEnd <= lastx), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && (rangeStart > leftx(sweep) || CheckifClose(rangeStart, leftx(sweep)) || rangeStart == leftx(Sweep)) && rangeStart < lastx), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd > leftx(sweep) && (rangeEnd < lastx || CheckifClose(rangeEnd, lastX))), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
+			// clip the ranges here so that we store the correct ranges in the JWN
+			rangeStart = limit(rangeStart, leftx(sweep), +inf)
+			rangeEnd   = limit(rangeEnd, -inf, lastx)
+			
 			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
 
 			if(WaveExists(epochRangeNames))
