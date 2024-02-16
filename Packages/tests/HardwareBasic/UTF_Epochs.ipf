@@ -272,6 +272,16 @@ static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 			INFO(infoStr)
 			CHECK_EQUAL_VAR(V_max, 0)
 		endif
+
+		if(!CmpStr(epochType, "Sin Wave") && level == 3)
+			INFO(infoStr + " %f %f", n0 = V_min, n1 = V_max)
+			if(V_max > 1E-10)
+				CHECK_GT_VAR(V_min, -1E-10)
+			elseif(V_min < -1E-10)
+				CHECK_LT_VAR(V_max, 1E-10)
+			endif
+		endif
+
 	endfor
 End
 
