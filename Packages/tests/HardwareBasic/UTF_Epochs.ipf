@@ -1144,7 +1144,7 @@ static Function EP_EpochTestTTL_REENTRY([STRUCT IUTF_mData &mData])
 End
 
 // IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
-// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequency_Gen
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequencyTTL_Gen
 // IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_StimsetsTTL_Gen
 static Function EP_EpochTestTTLSamplingFrequency([STRUCT IUTF_mData &mData])
 
@@ -1187,6 +1187,28 @@ static Function EP_EpochTestTTLSamplingMultiplier([STRUCT IUTF_mData &mData])
 End
 
 static Function EP_EpochTestTTLSamplingMultiplier_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequencyTTL_Gen
+static Function EP_EpochTest18([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup
+
+	sprintf dynSetup, "_FFR:%d:", mData.v0
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__TTL1_ST:EpochTest18long_TTL_0:"              + \
+								 "__TTL3_ST:EpochTest18short_TTL_0:")
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTest18_REENTRY([STRUCT IUTF_mData &mData])
 
 	TestEpochsGeneric(mData.s0)
 End
