@@ -847,11 +847,18 @@ End
 ///
 /// @param device  device
 /// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_GetDecimationFactor(device, dataAcqOrTP)
-	string device
-	variable dataAcqOrTP
+static Function DC_GetDecimationFactor(string device, variable dataAcqOrTP)
 
-	return DAP_GetSampInt(device, dataAcqOrTP, XOP_CHANNEL_TYPE_DAC) / (WAVEBUILDER_MIN_SAMPINT * MILLI_TO_MICRO)
+	variable samplingInterval = DAP_GetSampInt(device, dataAcqOrTP, XOP_CHANNEL_TYPE_DAC)
+
+	return DC_GetDecimationFactorCalc(samplingInterval)
+End
+
+/// @brief Calculcate decimation factor device independent
+/// @param samplingInterval sampling interval in microseconds
+static Function DC_GetDecimationFactorCalc(variable samplingInterval)
+
+	return samplingInterval / (WAVEBUILDER_MIN_SAMPINT * MILLI_TO_MICRO)
 End
 
 /// @brief Returns the longest sweep in a stimulus set across the given channel type
