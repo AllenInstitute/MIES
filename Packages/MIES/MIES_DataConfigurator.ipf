@@ -2260,3 +2260,417 @@ Function DC_GetChannelTypefromHS(device, headstage)
 	ASSERT(IsFinite(row), "Invalid column")
 	return config[row][%DAQChannelType]
 End
+
+// @brief Recreates DataConfigurationResult structure from LabNotebook for DATA_ACQUISITION_MODE
+//        Requirements: Load sweeps and stimsets before call
+Function [STRUCT DataConfigurationResult s] DC_RecreateDataConfigurationResultFromLNB(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+
+	variable index, i, idx, hwType
+
+	s.dataAcqOrTP = DATA_ACQUISITION_MODE
+	DC_RecreateDataConfigurationResultFromLNB_Indep(s, numericalValues, textualValues, sweepNo)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Headstage Active", s.dataAcqOrTP)
+	if(WaveExists(settings))
+		Redimension/N=(NUM_HEADSTAGES) settings
+		WAVE s.statusHS = settings
+	else
+		DEBUGPRINT("LNB entry not found: Headstage Active")
+	endif
+
+	[WAVE daGains] = DC_RecreateDataConfigurationResultFromLNB_DAC(s, numericalValues, textualValues, sweepNo)
+	DC_CalculateInsertStart(s)
+
+	[WAVE adGains] = DC_RecreateDataConfigurationResultFromLNB_ADC(s, numericalValues, textualValues, sweepNo)
+	DC_RecreateDataConfigurationResultFromLNB_TTL(s, numericalValues, textualValues, sweepNo)
+
+	s.numActiveChannels = s.numDACEntries + s.numADCEntries + s.numTTLEntries
+
+	Make/FREE/N=(s.numTTLEntries) ttlGains
+	ttlGains = 1
+	Concatenate/NP {adGains, ttlGains}, daGains
+	daGains[] = 1 / daGains[p]
+	WAVE s.gains = daGains
+
+	ASSERT(DimSize(s.DACList, ROWS), "Could not find any active DA channel.")
+	WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
+	ASSERT(WaveExists(sweep), "Could not retrieve sweep for DataConfigurationResult recreation (required for stopCollectionPoint)")
+	hwType = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", s.dataAcqOrTP)
+	if(IsNaN(hwType))
+		DEBUGPRINT("LNB entry not found: Digitizer Hardware Type, defaulting to ITC")
+		hwType = HARDWARE_ITC_DAC
+	endif
+	s.stopCollectionPoint = DC_CalculateDAQDataWaveLengthImpl(DimSize(sweep, ROWS), hwType, s.dataAcqOrTP)
+
+	if(!IsNaN(s.baselineFrac))
+		DC_RecreateDataConfigurationResultFromLNB_TP(s, numericalValues, sweepNo)
+	endif
+
+// TODO: Save in LNB and restore here
+// s.joinedTTLStimsetSize
+// s.powerSpectrum
+
+End
+
+static Function DC_RecreateDataConfigurationResultFromLNB_TTL(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)
+
+	variable index, indep_hs_text
+
+	indep_hs_text = GetIndexForHeadstageIndepData(textualValues)
+
+	// TTL value entries, fallbacks for missing data not implemented for TTL
+	Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) s.TTLsetLength, s.TTLsetColumn, s.TTLcycleCount
+	Make/FREE/N=(NUM_DA_TTL_CHANNELS) s.statusTTLFiltered
+	Make/FREE/T/N=(NUM_DA_TTL_CHANNELS) s.TTLsetName
+	Make/FREE/WAVE/N=(NUM_DA_TTL_CHANNELS) s.TTLstimSet
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "channels", NaN, XOP_CHANNEL_TYPE_TTL, s.dataAcqOrTP)
+	if(WaveExists(settings))
+		WAVE/T settingsT = settings
+		WAVE TTLList = ListToNumericWave(settingsT[indep_hs_text], ";")
+		ASSERT(DimSize(TTLList, ROWS) == NUM_DA_TTL_CHANNELS, "Unexpected number of TTL channels from LNB.")
+		s.statusTTLFiltered[] = !IsNaN(TTLList[p])
+		WAVE s.TTLList = ZapNaNs(TTLList)
+		s.numTTLEntries = DimSize(s.TTLList, ROWS)
+	else
+		s.numTTLEntries = 0
+		Make/FREE/N=(0) s.TTLList
+		DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: channels")
+	endif
+
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "stim sets", NaN, XOP_CHANNEL_TYPE_TTL, s.dataAcqOrTP)
+	if(WaveExists(settings))
+		WAVE/T settingsT = settings
+		WAVE/T s.TTLsetName = ListToTextWave(settingsT[indep_hs_text], ";")
+		ASSERT(DimSize(s.TTLsetName, ROWS) == NUM_DA_TTL_CHANNELS, "Got unexpected LNB entry format")
+	else
+		DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: stim sets")
+	endif
+
+	s.TTLstimSet[] = WB_CreateAndGetStimSet(s.TTLsetName[p])
+
+	// for TTL the setLength was not saved in the LNB, so recalculate. The result may differ from the actual TTLsetLength originally used when acquired
+	s.TTLsetLength[] = WaveExists(s.TTLstimSet[p]) ? DC_CalculateGeneratedDataSizeDAQMode(DimSize(s.TTLstimSet[p], ROWS), s.decimationFactor) : 0
+
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "TTL set sweep counts", NaN, XOP_CHANNEL_TYPE_TTL, s.dataAcqOrTP)
+	if(WaveExists(settings))
+		WAVE/T settingsT = settings
+		WAVE s.TTLsetColumn = ListToNumericWave(settingsT[indep_hs_text], ";")
+		ASSERT(DimSize(s.TTLsetColumn, ROWS) == NUM_DA_TTL_CHANNELS, "Unexpected number of TTL channels from LNB.")
+	else
+		DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: TTL set sweep counts")
+	endif
+
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "TTL set cycle counts", NaN, XOP_CHANNEL_TYPE_TTL, s.dataAcqOrTP)
+	if(WaveExists(settings))
+		WAVE/T settingsT = settings
+		WAVE s.TTLcycleCount = ListToNumericWave(settingsT[indep_hs_text], ";")
+		ASSERT(DimSize(s.TTLcycleCount, ROWS) == NUM_DA_TTL_CHANNELS, "Unexpected number of TTL channels from LNB.")
+	else
+		DEBUGPRINT("LNB entry not found for XOP_CHANNEL_TYPE_TTL: TTL set cycle counts")
+	endif
+End
+
+static Function [WAVE/D adGains] DC_RecreateDataConfigurationResultFromLNB_ADC(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)
+
+	variable index, i, idx
+
+	Make/FREE/N=(NUM_DA_TTL_CHANNELS) s.ADCList
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "ADC", i, XOP_CHANNEL_TYPE_ADC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			s.ADCList[idx] = settings[index]
+			idx += 1
+		endif
+	endfor
+	Redimension/N=(idx) s.ADCList
+	s.numADCEntries = idx
+	ASSERT(s.numADCEntries > 0, "No active AD channel found")
+
+	Make/FREE/D/N=(s.numADCEntries) s.headstageADC = NaN
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "ADC", s.dataAcqOrTP)
+	if(WaveExists(settings))
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			if(IsFinite(settings[i]))
+				FindValue/V=(settings[i]) s.DACList
+				if(V_row >= 0)
+					s.headstageADC[V_row] = i
+				endif
+			endif
+		endfor
+	else
+		DEBUGPRINT("LNB entry not found: ADC")
+	endif
+
+	Make/FREE/D/N=(s.numADCEntries) adGains
+	for(i = 0; i < s.numADCEntries; i += 1)
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "AD GAIN", s.ADCList[i], XOP_CHANNEL_TYPE_ADC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			adGains[i] = settings[index]
+		endif
+	endfor
+
+	return [adGains]
+End
+
+static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)
+
+	variable index, i, idx, clampMode, wbOodDAQOffset, postFeaturePoints
+	string key
+
+	Make/FREE/N=(NUM_DA_TTL_CHANNELS) s.DACList
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DAC", i, XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			s.DACList[idx] = settings[index]
+			idx += 1
+		endif
+	endfor
+	Redimension/N=(idx) s.DACList
+	s.numDACEntries = idx
+	ASSERT(s.numDACEntries > 0, "No active DA channel found")
+
+	Make/FREE/D/N=(s.numDACEntries) s.headstageDAC = NaN
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "DAC", s.dataAcqOrTP)
+	if(WaveExists(settings))
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			if(IsFinite(settings[i]))
+				FindValue/V=(settings[i]) s.DACList
+				if(V_row >= 0)
+					s.headstageDAC[V_row] = i
+				endif
+			endif
+		endfor
+	else
+		DEBUGPRINT("LNB entry not found: DAC")
+	endif
+
+	Make/FREE/D/N=(s.numDACEntries) s.setCycleCount, s.setColumn, s.insertStart, daGains, daqChannelType, s.setLength
+	Make/FREE/N=(s.numDACEntries) s.offsets
+	Make/FREE/T/N=(s.numDACEntries) s.regions, s.setName
+	Make/FREE/WAVE/N=(s.numDACEntries) s.stimSet
+	WAVE/D s.DACAmp = GetDACAmplitudes(s.numDACEntries)
+	for(i = 0; i < s.numDACEntries; i += 1)
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Set Cycle Count", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			s.setCycleCount[i] = settings[index]
+		endif
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Set Sweep Count", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			s.setColumn[i] = settings[index]
+		endif
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Delay onset oodDAQ", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			s.offsets[i] = settings[index]
+		endif
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "oodDAQ regions", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			WAVE/T settingsT = settings
+			s.regions[i] = settingsT[index]
+		endif
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DA GAIN", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			daGains[i] = settings[index]
+		endif
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DA ChannelType", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			daqChannelType[i] = settings[index]
+		endif
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			if(daqChannelType[i] == DAQ_CHANNEL_TYPE_DAQ)
+				s.DACAmp[i][%DASCALE] = settings[index]
+			else
+				s.DACAmp[i][%TPAMP] = settings[index]
+			endif
+		endif
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			WAVE/T settingsT = settings
+			s.setName[i] = settingsT[index]
+			s.stimSet[i] = WB_CreateAndGetStimSet(s.setName[i])
+			if(s.offsets[i])
+				WAVE stimSet = s.stimSet[i]
+				wbOodDAQOffset = round(s.offsets[i] / WAVEBUILDER_MIN_SAMPINT)
+				postFeaturePoints = s.distributedDAQOptPost / WAVEBUILDER_MIN_SAMPINT // as in @ref InitOOdDAQParams
+				WAVE stimCol = OOD_OffsetStimSetColAndCutoff(stimSet, s.setColumn[i], wbOodDAQOffset, postFeaturePoints)
+				Duplicate/FREE stimSet, stimSetOffsetted
+				Redimension/N=(DimSize(stimCol, ROWS), -1) stimSetOffsetted
+				MultiThread stimSetOffsetted[][s.setColumn[i]] = stimCol[p]
+				s.stimSet[i] = stimSetOffsetted
+			endif
+		endif
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Stim set length", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			s.setLength[i] = settings[index]
+		elseif(WaveExists(s.stimSet[i]))
+			s.setLength[i] = DC_CalculateGeneratedDataSizeDAQMode(DimSize(s.stimSet[i], ROWS), s.decimationFactor)
+		endif
+
+		if(daqChannelType[i] == DAQ_CHANNEL_TYPE_DAQ)
+			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Clamp Mode", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+			if(WaveExists(settings))
+				clampMode = settings[index]
+				if(clampMode == V_CLAMP_MODE)
+					key = TP_AMPLITUDE_VC_ENTRY_KEY
+				elseif(clampMode == I_CLAMP_MODE)
+					key = TP_AMPLITUDE_IC_ENTRY_KEY
+				elseif(clampMode == I_EQUAL_ZERO_MODE)
+					s.DACAmp[i][%DASCALE] = 0
+					s.DACAmp[i][%TPAMP] = 0
+					continue
+				else
+					ASSERT(0, "Unknown clamp mode")
+				endif
+				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+				if(WaveExists(settings))
+					s.DACAmp[i][%TPAMP] = settings[index]
+				endif
+			endif
+		endif
+	endfor
+
+	return [daGains]
+End
+
+static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)
+
+	variable onsetDelayUserTime, onsetDelayAutoTime, distributedDAQDelayTime, terminationDelayTime
+	string device
+
+	s.globalTPInsert = GetLastSettingIndep(numericalValues, sweepNo, "TP Insert Checkbox", s.dataAcqOrTP)
+	if(IsNaN(s.globalTPInsert))
+		DEBUGPRINT("LNB entry not found: TP Insert Checkbox")
+	endif
+
+	s.scalingZero = GetLastSettingIndep(numericalValues, sweepNo, "Scaling zero", s.dataAcqOrTP)
+	if(IsNaN(s.scalingZero))
+		DEBUGPRINT("LNB entry not found: Scaling zero")
+	endif
+
+	// the field s.indexingLocked is not set or used in DC?
+	s.indexingLocked = GetLastSettingIndep(numericalValues, sweepNo, "Locked indexing", s.dataAcqOrTP)
+	if(IsNaN(s.indexingLocked))
+		DEBUGPRINT("LNB entry not found: Locked indexing")
+	endif
+
+	s.indexing = GetLastSettingIndep(numericalValues, sweepNo, "Indexing", s.dataAcqOrTP)
+	if(IsNaN(s.indexing))
+		DEBUGPRINT("LNB entry not found: Indexing")
+	endif
+
+	s.distributedDAQ = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ", s.dataAcqOrTP)
+	if(IsNaN(s.distributedDAQ))
+		DEBUGPRINT("LNB entry not found: Distributed DAQ")
+	endif
+
+	s.distributedDAQOptOv = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", s.dataAcqOrTP)
+	if(IsNaN(s.distributedDAQOptOv))
+		DEBUGPRINT("LNB entry not found: Optimized Overlap dDAQ")
+	endif
+
+	s.distributedDAQOptPre = GetLastSettingIndep(numericalValues, sweepNo, "oodDAQ Pre Feature", s.dataAcqOrTP)
+	if(IsNaN(s.distributedDAQOptPre))
+		DEBUGPRINT("LNB entry not found: oodDAQ Pre Feature")
+	endif
+
+	s.distributedDAQOptPost = GetLastSettingIndep(numericalValues, sweepNo, "oodDAQ Post Feature", s.dataAcqOrTP)
+	if(IsNaN(s.distributedDAQOptPost))
+		DEBUGPRINT("LNB entry not found: oodDAQ Post Feature")
+	endif
+
+	s.multiDevice = GetLastSettingIndep(numericalValues, sweepNo, "Multi Device mode", s.dataAcqOrTP)
+	if(IsNaN(s.multiDevice))
+		DEBUGPRINT("LNB entry not found: Multi Device mode")
+	endif
+
+	s.baselineFrac = GetLastSettingIndep(numericalValues, sweepNo, "TP Baseline Fraction", s.dataAcqOrTP)
+	if(IsNaN(s.baselineFrac))
+		DEBUGPRINT("LNB entry not found: TP Baseline Fraction")
+	endif
+
+	s.samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", s.dataAcqOrTP)
+	if(IsNaN(s.samplingInterval))
+		s.decimationFactor = NaN
+		DEBUGPRINT("LNB entry not found: Sampling interval")
+	else
+		s.samplingInterval *= MILLI_TO_MICRO
+		s.decimationFactor = DC_GetDecimationFactorCalc(s.samplingInterval)
+	endif
+
+	device = GetLastSettingTextIndep(textualValues, sweepNo, "Device", s.dataAcqOrTP)
+	if(IsEmpty(device))
+		s.hardwareType = NaN
+		DEBUGPRINT("LNB entry not found: Device")
+	else
+		s.hardwareType = GetHardwareType(device)
+	endif
+
+	onsetDelayUserTime = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", s.dataAcqOrTP)
+	if(IsNaN(onsetDelayUserTime))
+		s.onsetDelayUser = NaN
+		DEBUGPRINT("LNB entry not found: Delay onset user")
+	else
+		s.onsetDelayUser = round(onsetDelayUserTime * MILLI_TO_MICRO / s.samplingInterval)
+	endif
+
+	onsetDelayAutoTime = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", s.dataAcqOrTP)
+	if(IsNaN(onsetDelayAutoTime))
+		s.onsetDelayAuto = NaN
+		DEBUGPRINT("LNB entry not found: Delay onset auto")
+	else
+		s.onsetDelayAuto = round(onsetDelayAutoTime * MILLI_TO_MICRO / s.samplingInterval)
+	endif
+
+	s.onsetDelay = s.onsetDelayUser + s.onsetDelayAuto
+
+	distributedDAQDelayTime = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", s.dataAcqOrTP)
+	if(IsNaN(distributedDAQDelayTime))
+		s.distributedDAQDelay = NaN
+		DEBUGPRINT("LNB entry not found: Delay distributed DAQ")
+	else
+		s.distributedDAQDelay = round(distributedDAQDelayTime * MILLI_TO_MICRO / s.samplingInterval)
+	endif
+
+	terminationDelayTime = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", s.dataAcqOrTP)
+	if(IsNaN(terminationDelayTime))
+		s.terminationDelay = NaN
+		DEBUGPRINT("LNB entry not found: Delay termination")
+	else
+		s.terminationDelay = round(terminationDelayTime * MILLI_TO_MICRO / s.samplingInterval)
+	endif
+
+	s.skipAhead = GetLastSettingIndep(numericalValues, sweepNo, "Skip Ahead", s.dataAcqOrTP)
+	if(IsNaN(s.skipAhead))
+		DEBUGPRINT("LNB entry not found: Skip Ahead")
+	endif
+End
+
+static Function DC_RecreateDataConfigurationResultFromLNB_TP(STRUCT DataConfigurationResult &s, WAVE numericalValues, variable sweepNo)
+
+	variable pulseDurationTime, totalLengthPoints, pulseStartPoints, pulseLengthPoints
+
+	pulseDurationTime = GetLastSettingIndep(numericalValues, sweepNo, "TP Pulse Duration", s.dataAcqOrTP)
+	if(IsNaN(pulseDurationTime))
+		DEBUGPRINT("LNB entry not found: TP Pulse Duration")
+	endif
+
+	WAVE samplingIntervals = GetNewSamplingIntervalsAsFree()
+	samplingIntervals[%SI_TP_DAC] = NaN
+	samplingIntervals[%SI_DAQ_DAC] = s.samplingInterval
+	samplingIntervals[%SI_TP_ADC] = NaN
+	samplingIntervals[%SI_DAQ_ADC] = NaN
+	WAVE tpSettings = GetTPSettingsFree()
+	TPSettings[%baselinePerc][INDEP_HEADSTAGE] = s.baselineFrac * ONE_TO_PERCENT
+	TPSettings[%durationMS][INDEP_HEADSTAGE] = pulseDurationTime
+	WAVE tpCalculated = GetTPSettingsCalculatedAsFree()
+
+	TP_UpdateTPSettingsCalculatedImpl(TPSettings, samplingIntervals, tpCalculated)
+
+	[totalLengthPoints, pulseStartPoints, pulseLengthPoints] = TP_GetCreationPropertiesInPoints(tpCalculated, s.dataAcqOrTP)
+	s.testPulseLength = totalLengthPoints
+	s.tpPulseStartPoint = pulseStartPoints
+	s.tpPulseLengthPoints = pulseLengthPoints
+
+	WAVE s.testPulse = GetTestPulseAsFree()
+	TP_CreateTestPulseWaveImpl(s.testPulse, s.testPulseLength, s.tpPulseStartPoint, s.tpPulseLengthPoints)
+End
