@@ -85,3 +85,36 @@ threadsafe Function/WAVE LBN_GetTextWave([string defValue])
 
 	return data
 End
+
+/// @brief Return all labnotebook entries which are at least written once
+threadsafe Function/WAVE LBV_GetFilledLabnotebookEntries(WAVE/Z values)
+
+	if(!WaveExists(values))
+		return $""
+	endif
+
+	Make/FREE/N=(DimSize(values, COLS))/T keys
+
+	Multithread keys[] = LBV_IsLabnotebookColumnFilled(values, p)
+
+	RemoveTextWaveEntry1D(keys, "", all = 1)
+
+	if(DimSize(keys, ROWS) == 0)
+		return $""
+	endif
+
+	return keys
+End
+
+/// @brief Return the name of the given labnotebook column if it was written into
+/// at least once, an empty string otherwise
+threadsafe static Function/S LBV_IsLabnotebookColumnFilled(WAVE values, variable col)
+
+	WAVE/Z indizes = FindIndizes(values, col=col, prop=PROP_NON_EMPTY, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
+
+	if(WaveExists(indizes))
+		return GetDimLabel(values, COLS, col)
+	endif
+
+	return ""
+End
