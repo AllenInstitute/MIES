@@ -63,11 +63,11 @@ Function/WAVE LBV_PopupExtGetLBKeys(string win)
 		return $""
 	endif
 
-	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
-	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z textualValues   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
+	WAVE/Z numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 
-	WAVE/Z textualNames = MIES_LBV#LBV_GetLogbookParamNames(textualKeys)
-	WAVE/Z numericalNames = MIES_LBV#LBV_GetLogbookParamNames(numericalKeys)
+	WAVE/T textualNames = LBV_GetFilledLabnotebookEntries(textualValues)
+	WAVE/T numericalNames = LBV_GetFilledLabnotebookEntries(numericalValues)
 
 	WAVE/Z entries = LBV_GetAllLogbookParamNames(textualNames, numericalNames)
 
@@ -81,11 +81,11 @@ Function/WAVE LBV_PopupExtGetResultsKeys(string win)
 		return $""
 	endif
 
-	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
-	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z textualValues   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
+	WAVE/Z numericalValues = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 
-	WAVE/Z textualNames = MIES_LBV#LBV_GetLogbookParamNames(textualKeys)
-	WAVE/Z numericalNames = MIES_LBV#LBV_GetLogbookParamNames(numericalKeys)
+	WAVE/T textualNames = LBV_GetFilledLabnotebookEntries(textualValues)
+	WAVE/T numericalNames = LBV_GetFilledLabnotebookEntries(numericalValues)
 
 	WAVE/Z entries = LBV_GetAllLogbookParamNames(textualNames, numericalNames)
 
