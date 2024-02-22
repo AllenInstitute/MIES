@@ -5042,8 +5042,8 @@ End
 /// @param all     [optional, defaults to false] removes all entries
 ///
 /// @return 0 if at least one entry was found, 1 otherwise
-Function RemoveTextWaveEntry1D(WAVE/T w, string entry, [variable options, variable all])
-	ASSERT(IsTextWave(w), "Input wave must be a text wave")
+threadsafe Function RemoveTextWaveEntry1D(WAVE/T w, string entry, [variable options, variable all])
+	ASSERT_TS(IsTextWave(w), "Input wave must be a text wave")
 
 	variable start, foundOnce
 
