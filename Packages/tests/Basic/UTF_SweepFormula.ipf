@@ -2385,7 +2385,7 @@ static Function CheckSweepsFromData(WAVE/WAVE dataWref, WAVE sweepRef, variable 
 		Duplicate/FREE/RMD=[][chanIndex[i]] sweepRef, sweepDataRef
 		Redimension/N=(-1) sweepDataRef
 		if(!ParamIsDefault(ranges))
-			Duplicate/FREE/RMD=[ranges[i][0], ranges[i][1]] sweepDataRef, sweepDataRanged
+			Duplicate/FREE/RMD=[ranges[i][0], ranges[i][1] - 1] sweepDataRef, sweepDataRanged
 			WAVE sweepDataRef = sweepDataRanged
 		endif
 
@@ -2704,7 +2704,7 @@ static Function TestOperationData()
 	str = "data(epochs([TestEpoch1], " + str + "), " + str + ")"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables=0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
-	REQUIRE_EQUAL_VAR(DimSize(dataWref[0], ROWS), 6)
+	REQUIRE_EQUAL_VAR(DimSize(dataWref[0], ROWS), 5)
 
 	// range begin
 	str = "data([12, 10],select(channels(AD),[" + num2istr(sweepNo) + "],all))"

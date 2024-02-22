@@ -426,7 +426,8 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 
 	variable i, j, rangeStart, rangeEnd, sweepNo, isSingleRange
 	variable chanNr, chanType, cIndex, isSweepBrowser
-	variable numSelected, index, numRanges, lastx
+	variable numSelected, index, numRanges, sweepSize, samplingInterval, samplingOffset
+	variable rangeStartIndex, rangeEndIndex
 	string dimLabel, device, dataFolder
 	ASSERT(WindowExists(graph), "graph window does not exist")
 
@@ -499,32 +500,40 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 			continue
 		endif
 
+		sweepSize = DimSize(Sweep, ROWS)
+		samplingInterval = DimDelta(sweep, ROWS)
+		samplingOffset = DimOffset(sweep, ROWS)
+
 		numRanges = DimSize(adaptedRange, COLS)
 		for(j = 0; j < numRanges; j += 1)
 			rangeStart = adaptedRange[0][j]
 			rangeEnd   = adaptedRange[1][j]
-			lastx = rightx(sweep) - DimDelta(sweep, ROWS)
+
+			rangeStartIndex = round((rangeStart - samplingOffset) / samplingInterval)
+			rangeEndIndex   = round((rangeEnd - samplingOffset) /  samplingInterval)
+
 			// Release 8c6e5da (EP_WriteEpochInfoIntoSweepSettings: Handle unacquired data, 2021-07-13) and before:
 			// we did not cap epoch ranges properly on aborted/shortened sweeps
 			// we also did not calculate the sampling points for TP and Stimesets exactly the same way
 			// Thus, if necessary we clip the data here.
 			if(WaveExists(epochRangeNames))
 				// complete epoch starting at or beyond sweep end
-				if(rangeStart >= lastx)
+				if(rangeStartIndex >= sweepSize)
 					continue
 				endif
-				rangeEnd = limit(rangeEnd, -inf, lastx)
+				rangeEndIndex = limit(rangeEndIndex, -inf, sweepSize)
 			endif
 
-			SFH_ASSERT(rangeStart < rangeEnd, "Starting range must be smaller than the ending range for sweep " + num2istr(sweepNo) + ".")
-			SFH_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < lastx), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
-			SFH_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd > leftx(sweep) && rangeEnd <= lastx), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
-			Duplicate/FREE/R=(rangeStart, rangeEnd) sweep, rangedSweepData
+			SFH_ASSERT(rangeStartIndex < rangeEndIndex - 1, "Starting range must be smaller than the ending range for sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeStartIndex == -inf || (IsFinite(rangeStartIndex) && rangeStartIndex >= 0 && rangeStartIndex < sweepSize), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeEndIndex == inf || (IsFinite(rangeEndIndex) && rangeEndIndex > 0 && rangeEndIndex <= sweepSize), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
+			Duplicate/FREE/RMD=[rangeStartIndex, rangeEndIndex - 1] sweep, rangedSweepData
 
 			if(WaveExists(epochRangeNames))
 				Make/FREE/T entry = {epochRangeNames[j]}
 				JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, entry)
 			else
+				// we write here on purpose the requested range
 				JWN_SetWaveInWaveNote(rangedSweepData, SF_META_RANGE, {rangeStart, rangeEnd})
 			endif
 
