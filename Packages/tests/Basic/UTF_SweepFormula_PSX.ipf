@@ -1103,6 +1103,29 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[4], 0, 0.01)
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
 
+	// three waves from first range, none from second
+	Make/FREE/T/N=(3, 1, 1) epochKeys
+	epochKeys[0][0][0] = EPOCHS_ENTRY_KEY
+	epochKeys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+
+	WAVE/T   epochsWave = GetEpochsWave(device)
+	variable DAC        = 2
+	epochsWave[0][EPOCH_COL_STARTTIME][DAC][XOP_CHANNEL_TYPE_DAC] = "0.050"
+	epochsWave[0][EPOCH_COL_ENDTIME][DAC][XOP_CHANNEL_TYPE_DAC]   = "0.150"
+	epochsWave[0][EPOCH_COL_TAGS][DAC][XOP_CHANNEL_TYPE_DAC]      = "ShortName=E0;stuff"
+	epochsWave[0][EPOCH_COL_TREELEVEL][DAC][XOP_CHANNEL_TYPE_DAC] = "0"
+
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = EP_EpochWaveToStr(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC)
+	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, 0, device, DATA_ACQUISITION_MODE)
+
+	str = "psxKernel(select(selrange([E0]), selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 3)
+
+	WAVE/Z/T range = JWN_GetTextWaveFromWaveNote(dataWref[2], "/Range")
+	CHECK_EQUAL_TEXTWAVES(range, {"E0"}, mode = WAVE_DATA)
+
 	// no data from select statement
 	str = "psxKernel(select(selrange([50, 150]), selchannels(AD15), selsweeps(0)), 1, 15, -5)"
 	try
