@@ -6958,3 +6958,74 @@ threadsafe Function FindFirstNaNIndex(WAVE wv)
 
 	return V_row
 End
+
+/// @brief Sets the DimLabels for elements of a 1d numerical or text wave based on the content of the wave
+///        For numerical waves the wave element is treated as integer
+///        For textual waves the elements must translate to a valid DimLabel.
+///
+/// @param wv input wave
+/// @param prefix [optional: default "" for numerical waves and NUM_ for textual waves] prefix of the dimlabel
+///               For numerical waves it is recommended to provide an own prefix.
+/// @param suffix [optional: default ""] suffix of the dimlabel
+/// @param strict [optional: default 0] When this flag is set then each constructed DimLabels for text wave elements are checked
+///               if it results in a valid DimLabel, it is also checked if duplicate Dimlabels would be created.
+threadsafe Function SetDimensionLabelsFromWaveContents(WAVE wv, [string prefix, string suffix, variable strict])
+
+	variable idx, num
+	string str
+
+	ASSERT_TS(IsTextWave(wv) || IsNumericWave(wv), "Wave must be text or numeric")
+	if(!DimSize(wv, ROWS))
+		return NaN
+	endif
+	ASSERT_TS(!DimSize(wv, COLS), "Wave must be 1d")
+
+	if(ParamIsDefault(prefix))
+		prefix = SelectString(IsTextWave(wv), "NUM_", "")
+	else
+		ASSERT_TS(IsValidObjectName(prefix), "Prefix " + prefix + " must be a valid object name")
+	endif
+	str = SelectString(IsTextWave(wv), "0", "A")
+	if(ParamIsDefault(suffix))
+		suffix = ""
+	endif
+	ASSERT_TS(IsValidObjectName(prefix + str + suffix), "The combination of Prefix " + prefix + " and Suffix " + suffix + " must be a valid object name")
+
+	strict = ParamIsDefault(strict) ? 0 : !!strict
+
+	if(IsTextWave(wv))
+		WAVE/T wt = wv
+		if(strict)
+			FindDuplicates/FREE/DT=textDups wv
+			ASSERT_TS(!DimSize(textDups, ROWS), "Input would result in duplicate DimLabels")
+			for(str : wt)
+				str = prefix + str + suffix
+				ASSERT_TS(IsValidObjectName(str), "Element at " + num2istr(idx) + " results in ivnalid DimLabel " + str)
+				SetDimLabel ROWS, idx++, $str, wv
+			endfor
+		else
+			for(str : wt)
+				str = prefix + str + suffix
+				SetDimLabel ROWS, idx++, $str, wv
+			endfor
+		endif
+
+		return NaN
+	endif
+
+	if(strict)
+		Make/FREE/T/N=(DimSize(wv, ROWS)) labels
+		for(num : wv)
+			sprintf str, "%s%d%s", prefix, num, suffix
+			labels[idx++] = str
+		endfor
+		FindDuplicates/FREE/DT=textDups labels
+		ASSERT_TS(!DimSize(textDups, ROWS), "Input would result in duplicate DimLabels")
+		idx = 0
+	endif
+
+	for(num : wv)
+		sprintf str, "%s%d%s", prefix, num, suffix
+		SetDimLabel ROWS, idx++, $str, wv
+	endfor
+End
