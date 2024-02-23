@@ -1087,6 +1087,14 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[4], 0, 0.01)
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
 
+	// three waves from first range, none from second
+	str = "psxKernel(dataset([50, 150], wave(\"\")), select(channels(AD6), [0, 2], all), 1, 15, -5)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 3)
+	WAVE/Z range = JWN_GetNumericWaveFromWaveNote(dataWref[2], "/Range")
+	CHECK_EQUAL_WAVES(range, {50, 150}, mode = WAVE_DATA)
+
 	// no data from select statement
 	str = "psxKernel([50, 150], select(channels(AD15), [0]), 1, 15, -5)"
 	try
