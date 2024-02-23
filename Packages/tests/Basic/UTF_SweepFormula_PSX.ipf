@@ -1104,6 +1104,15 @@ static Function TestOperationPSXKernel()
 	catch
 		PASS()
 	endtry
+
+	// too large decayTau
+	str = "psxKernel([50, 150], select(channels(AD15), [0]), 1, 150, -5)"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function CheckDimensionScaleHelper(WAVE wv, variable refOffset, variable refPerPoint)

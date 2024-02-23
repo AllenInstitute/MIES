@@ -876,7 +876,12 @@ static Function/WAVE PSX_GetPSXKernel(variable riseTau, variable decayTau, varia
 	endif
 
 	[WAVE psx_kernel, WAVE kernel_fft] = PSX_CreatePSXKernel(riseTau, decayTau, amp, numPoints, dt)
-	Make/FREE/WAVE result = {psx_kernel, kernel_fft}
+
+	if(!WaveExists(psx_kernel) || !WaveExists(kernel_fft))
+		Make/FREE/WAVE/N=0 result
+	else
+		Make/FREE/WAVE result = {psx_kernel, kernel_fft}
+	endif
 
 	CA_StoreEntryIntoCache(key, result)
 
@@ -902,6 +907,10 @@ static Function [WAVE kernel, WAVE kernelFFT] PSX_CreatePSXKernel(variable riseT
 	decayTau_p    = decayTau / dt
 	kernel_window = decayTau_p * 4
 	amp_prime     = (decayTau_p / riseTau_p)^(riseTau_p / (riseTau_p - decayTau_p)) // normalization factor
+
+	if(kernel_window > numPoints)
+		return [$"", $""]
+	endif
 
 	Make/FREE/N=(kernel_window) timeIndex = p
 	SetScale/P x, 0, dt, timeIndex
@@ -4307,7 +4316,7 @@ End
 // ...
 Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph)
 
-	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset
+	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
 	string parameterPath, key
 
 	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
@@ -4342,17 +4351,29 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 		WAVE/WAVE result = PSX_GetPSXKernel(riseTau, decayTau, amp, numPoints, dt, range)
 
-		Duplicate/FREE/T rawLabels, labels
-		labels[] = PSX_GenerateKey(rawLabels[p], i)
-		SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = i * PSX_KERNEL_OUTPUTWAVES_PER_ENTRY)
+		if(DimSize(result, ROWS) == 0)
+			continue
+		endif
 
-		key           = PSX_GenerateKey("psxKernel", i)
-		output[%$key] = result[0]
-		key           = PSX_GenerateKey("psxKernelFFT", i)
-		output[%$key] = result[1]
-		key           = PSX_GenerateKey("sweepData", i)
+		Duplicate/FREE/T rawLabels, labels
+		labels[] = PSX_GenerateKey(rawLabels[p], idx)
+		SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = idx * PSX_KERNEL_OUTPUTWAVES_PER_ENTRY)
+
+		key           = PSX_GenerateKey("sweepData", idx)
 		output[%$key] = sweepData
+		key           = PSX_GenerateKey("psxKernel", idx)
+		output[%$key] = result[0]
+		key           = PSX_GenerateKey("psxKernelFFT", idx)
+		output[%$key] = result[1]
+
+		idx += 1
 	endfor
+
+	numCombos = idx
+
+	SFH_ASSERT(numCombos > 0, "Could not create psxKernel")
+
+	Redimension/N=(PSX_KERNEL_OUTPUTWAVES_PER_ENTRY * numCombos) output
 
 	parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
 	JWN_CreatePath(output, parameterPath)
