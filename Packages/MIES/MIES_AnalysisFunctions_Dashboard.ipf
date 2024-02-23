@@ -349,7 +349,7 @@ static Function AD_FillWaves(win, list, info)
 						lastValid  = DimSize(spikeDetection, ROWS) - 1
 						ASSERT(Sum(spikeDetection, firstValid, lastValid) == 1, "Unexpected spike/non-spike duo")
 						Duplicate/FREE/R=[firstValid, lastValid] sweeps, passingSweeps
-						Duplicate/FREE/R=[0, firstValid - 1] sweeps, failingSweeps
+						WAVE/Z failingSweeps = GetSetDifference(sweeps, passingSweeps)
 					else
 						Duplicate/FREE sweeps, failingSweeps
 						WAVE/Z passingSweeps

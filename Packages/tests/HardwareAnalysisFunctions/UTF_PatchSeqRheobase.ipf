@@ -422,7 +422,7 @@ static Function PS_RB4_REENTRY([str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale, stepsize
-	string key
+	string key, browser
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -473,6 +473,19 @@ static Function PS_RB4_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
+
+	// check passing/failing sweeps
+	browser = DB_FindDataBrowser(str)
+	CHECK_PROPER_STR(browser)
+
+	DFREF dfr = BSP_GetFolder(browser, MIES_BSP_PANEL_FOLDER)
+
+	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(listWave, NOTE_INDEX), 1)
+
+	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
+	CHECK_EQUAL_STR(infoWave[0][%$"Passing Sweeps"], "0;1;")
+	CHECK_EQUAL_STR(infoWave[0][%$"Failing Sweeps"], "")
 End
 
 static Function PS_RB5_preAcq(string device)
