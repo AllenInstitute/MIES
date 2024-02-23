@@ -66,7 +66,10 @@ Function/WAVE LBV_PopupExtGetLBKeys(string win)
 	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
-	WAVE/Z entries = LBV_GetAllLogbookKeys(textualKeys, numericalKeys)
+	WAVE/Z textualNames = MIES_LBV#LBV_GetLogbookParamNames(textualKeys)
+	WAVE/Z numericalNames = MIES_LBV#LBV_GetLogbookParamNames(numericalKeys)
+
+	WAVE/Z entries = LBV_GetAllLogbookParamNames(textualNames, numericalNames)
 
 	return LBV_PopupExtFormatEntries(entries)
 End
@@ -81,47 +84,59 @@ Function/WAVE LBV_PopupExtGetResultsKeys(string win)
 	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
-	WAVE/Z entries = LBV_GetAllLogbookKeys(textualKeys, numericalKeys)
+	WAVE/Z textualNames = MIES_LBV#LBV_GetLogbookParamNames(textualKeys)
+	WAVE/Z numericalNames = MIES_LBV#LBV_GetLogbookParamNames(numericalKeys)
+
+	WAVE/Z entries = LBV_GetAllLogbookParamNames(textualNames, numericalNames)
 
 	return LBV_PopupExtFormatEntries(entries)
 End
 
-/// @brief Returns the combined keys from the numerical and textual MD key loogbook waves as 1D text wave
-static Function/WAVE LBV_GetAllLogbookKeys(WAVE/T/Z textualKeys, WAVE/T/Z numericalKeys)
+/// @brief Returns the combined parameter names from the numerical and textual MD key loogbook waves as 1D text wave
+static Function/WAVE LBV_GetAllLogbookParamNames(WAVE/T/Z textualNames, WAVE/T/Z numericalNames)
 	variable existText, existNum
 
-	WAVE/Z/T textualKeys1D = LBV_GetLogbookKeys(textualKeys)
-	WAVE/Z/T numericalKeys1D = LBV_GetLogbookKeys(numericalKeys)
+	WAVE/Z/T textualNamesClean = LBV_CleanLogbookParamNames(textualNames)
+	WAVE/Z/T numericalNamesClean = LBV_CleanLogbookParamNames(numericalNames)
 
-	existText = WaveExists(textualKeys1D)
-	existNum = WaveExists(numericalKeys1D)
+	existText = WaveExists(textualNamesClean)
+	existNum = WaveExists(numericalNamesClean)
 	if(existText && existNum)
-		return GetSetUnion(textualKeys1D, numericalKeys1D)
+		return GetSetUnion(textualNamesClean, numericalNamesClean)
 	elseif(existText && !existNum)
-		return textualKeys1D
+		return textualNamesClean
 	elseif(!existText && existNum)
-		return numericalKeys1D
+		return numericalNamesClean
 	endif
 
 	return $""
 End
 
-/// @brief Return a wave with all keys in the logbook key wave
-static Function/WAVE LBV_GetLogbookKeys(WAVE/Z/T keyWave)
+/// @brief Return a wave with all parameter names in the logbook key wave
+static Function/WAVE LBV_GetLogbookParamNames(WAVE/Z/T keys)
 	variable row
 
-	if(!WaveExists(keyWave))
+	if(!WaveExists(keys))
 		return $""
 	endif
 
-	row = FindDimLabel(keyWave, ROWS, "Parameter")
+	row = FindDimLabel(keys, ROWS, "Parameter")
 
-	Duplicate/FREE/RMD=[row][] keyWave, keys
-	Redimension/N=(numpnts(keys))/E=1 keys
+	Duplicate/FREE/RMD=[row][] keys, names
+	Redimension/N=(numpnts(keys))/E=1 names
+
+	return LBV_CleanLogbookParamNames(names)
+End
+
+static Function/WAVE LBV_CleanLogbookParamNames(WAVE/Z/T names)
+
+	if(!WaveExists(names))
+		return $""
+	endif
 
 	WAVE/T hiddenDefaultKeys = ListToTextWave(LABNOTEBOOK_KEYS_INITIAL, ";")
 
-	return GetSetDifference(keys, hiddenDefaultKeys)
+	return GetSetDifference(names, hiddenDefaultKeys)
 End
 
 /// @brief Return a text wave with all entries from all TPStorage waves which are candidates for plotting
@@ -1086,7 +1101,7 @@ Function LBV_PlotAllAnalysisFunctionLBNKeys(string browser, variable anaFuncType
 	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
-	WAVE/T/Z allKeys = LBV_GetAllLogbookKeys(numericalkeys, textualKeys)
+	WAVE/T/Z allKeys = LBV_GetAllLogbookParamNames(numericalkeys, textualKeys)
 
 	if(!WaveExists(allKeys))
 		printf "Could not find any labnotebook keys.\r"
