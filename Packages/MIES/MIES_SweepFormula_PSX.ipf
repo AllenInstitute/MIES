@@ -905,8 +905,8 @@ static Function [WAVE kernel, WAVE kernelFFT] PSX_CreatePSXKernel(variable riseT
 
 	variable riseTau_p, decayTau_p, kernel_window, amp_prime
 
-	riseTau_p        = riseTau / dt
-	decayTau_p        = decayTau / dt
+	riseTau_p     = riseTau / dt
+	decayTau_p    = decayTau / dt
 	kernel_window = decayTau_p * 4
 	amp_prime     = (decayTau_p / riseTau_p)^(riseTau_p / (riseTau_p - decayTau_p)) // normalization factor
 
