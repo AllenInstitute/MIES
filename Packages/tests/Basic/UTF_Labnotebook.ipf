@@ -1160,3 +1160,37 @@ Function GTW_WorksWithCustomDefault()
 	WAVE/T/Z result = GetUniqueEntries(values)
 	CHECK_EQUAL_TEXTWAVES(result, {"abcd"})
 End
+
+Function GFE_Works()
+
+	string device, key, keyTxt
+
+	device = "ABCD"
+
+	// handles null wave graciously
+	WAVE/Z null = LBV_GetFilledLabnotebookEntries($"")
+	CHECK_NO_RTE()
+	CHECK_WAVE(null, NULL_WAVE)
+
+	// no valid entries by default
+	WAVE numericalValues = GetLBNumericalValues(device)
+	CHECK_WAVE(numericalValues, NUMERIC_WAVE)
+
+	WAVE/Z null = LBV_GetFilledLabnotebookEntries(numericalValues)
+	CHECK_WAVE(null, NULL_WAVE)
+
+	WAVE textualValues = GetLBTextualValues(device)
+	CHECK_WAVE(textualValues, TEXT_WAVE)
+
+	WAVE/Z null = LBV_GetFilledLabnotebookEntries(textualValues)
+	CHECK_WAVE(null, NULL_WAVE)
+
+	// our fake LBNs have only valid entries
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	WAVE/Z filled = LBV_GetFilledLabnotebookEntries(numericalValues)
+	CHECK_EQUAL_VAR(DimSize(filled, ROWS), DimSize(numericalValues, COLS))
+
+	WAVE/Z filled = LBV_GetFilledLabnotebookEntries(textualValues)
+	CHECK_EQUAL_VAR(DimSize(filled, ROWS), DimSize(textualValues, COLS))
+End
