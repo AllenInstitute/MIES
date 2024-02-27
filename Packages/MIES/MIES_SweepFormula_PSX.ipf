@@ -3522,7 +3522,7 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 
 	mainWin = GetMainWindow(win)
 
-	ApplyMacroToExistingPanel(mainWin, "PSXPanel")
+	PSX_ApplyMacroToExistingPanel(mainWin, "PSXPanel")
 
 	DFREF workDFR  = PSX_GetWorkingFolder(win)
 	DFREF comboDFR = GetPSXFolderForCombo(workDFR, 0)
@@ -5159,7 +5159,7 @@ Function PSX_PlotStartupSettings()
 End
 
 /// @brief Apply the macro `mac` onto the panel `win`
-Function ApplyMacroToExistingPanel(string win, string mac)
+Function PSX_ApplyMacroToExistingPanel(string win, string mac)
 
 	string line, currWindow
 
