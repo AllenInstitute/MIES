@@ -700,6 +700,7 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 	return wv
 End
 
+/// @return 0 on success, 1 otherwise
 static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDataset, variable parameterJsonID, variable sweepFilterLow, variable sweepFilterHigh, WAVE deconvFilter, variable index, WAVE/WAVE output)
 
 	string key, comboKey, psxParametersAnalyzePeaks, cacheKey
@@ -719,17 +720,30 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 	WAVE/WAVE/Z psxAnalyzePeaksFromCache = CA_TryFetchingEntryFromCache(cacheKey)
 
 	if(WaveExists(psxAnalyzePeaksFromCache))
+
+		if(DimSize(psxAnalyzePeaksFromCache, ROWS) == 0)
+			return 1
+		endif
+
 		WAVE sweepDataFiltOff       = psxAnalyzePeaksFromCache[%sweepDataFiltOff]
 		WAVE sweepDataFiltOffDeconv = psxAnalyzePeaksFromCache[%sweepDataFiltOffDeconv]
 	else
 		[WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] = PSX_Analysis(sweepData, psxKernelFFT, sweepFilterLow, sweepFilterHigh, deconvFilter)
 
-		Make/FREE/WAVE/N=(2) psxAnalyzePeaks
-		SetDimensionLabels(psxAnalyzePeaks, "sweepDataFiltOff;sweepDataFiltOffDeconv", ROWS)
-		psxAnalyzePeaks[%sweepDataFiltOff]       = sweepDataFiltOff
-		psxAnalyzePeaks[%sweepDataFiltOffDeconv] = sweepDataFiltOffDeconv
+		if(!WaveExists(sweepDataFiltOff) || !WaveExists(sweepDataFiltOffDeconv))
+			Make/FREE/WAVE/N=(0) psxAnalyzePeaks
+		else
+			Make/FREE/WAVE/N=(2) psxAnalyzePeaks
+			SetDimensionLabels(psxAnalyzePeaks, "sweepDataFiltOff;sweepDataFiltOffDeconv", ROWS)
+			psxAnalyzePeaks[%sweepDataFiltOff]       = sweepDataFiltOff
+			psxAnalyzePeaks[%sweepDataFiltOffDeconv] = sweepDataFiltOffDeconv
+		endif
 
 		CA_StoreEntryIntoCache(cacheKey, psxAnalyzePeaks)
+
+		if(DimSize(psxAnalyzePeaks, ROWS) == 0)
+			return 1
+		endif
 	endif
 
 	key           = PSX_GenerateKey("sweepData", index)
@@ -740,6 +754,8 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 
 	key           = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
 	output[%$key] = sweepDataFiltOffDeconv
+
+	return 0
 End
 
 /// @brief Implementation of psx operation
@@ -753,14 +769,10 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 	WAVE sweepData = output[%$key]
 
 	key = PSX_GenerateKey("sweepDataFiltOff", index)
-	WAVE/Z sweepDataFiltOff = output[%$key]
+	WAVE sweepDataFiltOff = output[%$key]
 
 	key = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
-	WAVE/Z sweepDataFiltOffDeconv = output[%$key]
-
-	if(!WaveExists(sweepDataFiltOff) || !WaveExists(sweepDataFiltOffDeconv))
-		return NaN
-	endif
+	WAVE sweepDataFiltOffDeconv = output[%$key]
 
 	[WAVE selectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
 	ASSERT(WaveExists(selectData) && WaveExists(range), "Could not recreate select/range wave")
@@ -4230,7 +4242,7 @@ End
 Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
-	variable maxTauFactor, peakThresh, numFailures
+	variable maxTauFactor, peakThresh, numFailures, idx, success
 	string parameterPath, id, psxParameters, dataUnit
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
@@ -4279,8 +4291,17 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		PSX_OperationSetDimensionLabels(output, numCombos, labels, labelsTemplate)
 
 		for(i = 0; i < numCombos; i += 1)
-			PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilterLow, sweepFilterHigh, deconvFilter, i, output)
+			success = !PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilterLow, sweepFilterHigh, deconvFilter, idx, output)
+			idx    += success
 		endfor
+
+		numCombos = idx
+
+		if(numCombos == 0)
+			Abort
+		endif
+
+		Redimension/N=(numCombos * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY) output
 
 		[WAVE hist, WAVE fit, peakThresh, dataUnit] = PSX_CalculatePeakThreshold(output, numCombos, numberOfSDs)
 		WaveClear hist, fit
@@ -4289,8 +4310,20 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 			numFailures += PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, i, output)
 		endfor
 
-		if(numFailures == numCombos)
-			Abort
+		if(numFailures > 0)
+			// remove null waves
+			WAVE/Z outputClean = ZapNullRefs(output)
+
+			if(!WaveExists(outputClean))
+				Abort
+			endif
+
+			WAVE outputNew = MoveWaveWithOverwrite(output, outputClean)
+			WAVE output    = outputNew
+			WaveClear outputClean, outputNew
+
+			numCombos = DimSize(output, ROWS) / PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY
+			PSX_OperationSetDimensionLabels(output, numCombos, labels, labelsTemplate)
 		endif
 	catch
 		if(WaveExists(output))

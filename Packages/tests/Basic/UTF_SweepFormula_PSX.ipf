@@ -1217,6 +1217,33 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	catch
 		PASS()
 	endtry
+
+	// complains with no sweep data
+	try
+		str = "psx(myID, psxKernel([150, 160], select(channels(AD6), [0, 2], all), 1, 2, -5), 2.5, 100, 0)"
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+static Function PSXHandlesPartialResults()
+
+	string browser, str
+
+	browser = SetupDatabrowserWithSomeData()
+
+	Make/FREE/T combos = {"Range[25, 120], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[25, 120], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	// all decay fits are successfull
+	overrideResults[][][%$"Fit Result"] = 1
+
+	str = "psx(myID, psxKernel([25, 120], select(channels(AD6), [0, 2], all), 1, 2, -5), 2.5, 10, 0)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, browser, useVariables = 0)
+	PASS()
 End
 
 static Function TestOperationPSXTooLargeDecayTau()
