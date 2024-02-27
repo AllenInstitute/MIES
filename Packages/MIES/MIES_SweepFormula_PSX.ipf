@@ -4384,7 +4384,8 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		JSON_Release(parameterJsonID)
 
 		SFH_CleanUpInput(psxKernelDataset)
-		Abort
+
+		SFH_ASSERT(0, "Could not gather sweep data for psx")
 	endtry
 
 	JWN_SetWaveNoteFromJSON(output, parameterJsonID)
