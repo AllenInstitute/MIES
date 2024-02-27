@@ -4200,6 +4200,18 @@ Function PSX_PostPlot(string win)
 	PSX_ApplySpecialPlotProperties(win, eventLocationTicks, eventLocationLabels)
 End
 
+static Function PSX_OperationSetDimensionLabels(WAVE/WAVE output, variable numCombos, WAVE/T labels, WAVE/T labelsTemplate)
+
+	variable i
+
+	numCombos = DimSize(output, ROWS) / PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY
+
+	for(i = 0; i < numCombos; i += 1)
+		labels[] = PSX_GenerateKey(labelsTemplate[p], i)
+		SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = i * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY)
+	endfor
+End
+
 /// @brief Implementation of the `psx` operation
 ///
 // Returns a SweepFormula dataset with n * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY
@@ -4264,11 +4276,7 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		ASSERT(DimSize(labelsTemplate, ROWS) == PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY, "Mismatched label wave")
 		Duplicate/FREE/T labelsTemplate, labels
 
-		// generate dimension labels for all potential output
-		for(i = 0; i < numCombos; i += 1)
-			labels[] = PSX_GenerateKey(labelsTemplate[p], i)
-			SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = i * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY)
-		endfor
+		PSX_OperationSetDimensionLabels(output, numCombos, labels, labelsTemplate)
 
 		for(i = 0; i < numCombos; i += 1)
 			PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilterLow, sweepFilterHigh, deconvFilter, i, output)
