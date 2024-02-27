@@ -3653,6 +3653,25 @@ Function MWWO_HandlesLockedDest()
 	CHECK_WAVE(src, NULL_WAVE)
 End
 
+Function MWWO_ReturnsNewRef()
+
+	string path
+
+	Make dest = p
+	Make src = 0
+
+	path = GetWavesDataFolder(dest, 2)
+	WAVE newDest = MoveWaveWithOverwrite(dest, src)
+
+	CHECK_WAVE(newDest, NORMAL_WAVE)
+	CHECK_EQUAL_STR(path, GetWavesDataFolder(newDest, 2))
+
+	WAVE dest
+	CHECK_EQUAL_VAR(Sum(dest), 0)
+	WAVE src
+	CHECK_WAVE(src, NULL_WAVE)
+End
+
 Function MWWO_RecursiveWorks()
 	variable err
 
