@@ -1255,6 +1255,39 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	catch
 		PASS()
 	endtry
+
+	// complains with no sweep data
+	try
+		str = "psx(myID, psxKernel(select(selrange([150, 160]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 2, -5), 2.5, 100, 0)"
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+static Function PSXHandlesPartialResults()
+
+	string browser, str, comboKey
+
+	browser = SetupDatabrowserWithSomeData()
+
+	Make/FREE/T/N=2 combos
+
+	sprintf comboKey, "Range[25, 120], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+
+	sprintf comboKey, "Range[25, 120], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	// all decay fits are successfull
+	overrideResults[][][%$"Fit Result"] = 1
+
+	str = "psx(myID, psxKernel(select(selrange([25, 120]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 2, -5), 2.5, 10, 0)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, browser, useVariables = 0)
+	PASS()
 End
 
 static Function TestOperationPSXTooLargeDecayTau()
@@ -2757,7 +2790,7 @@ static Function NoEventsAtAll()
 
 	browser = SetupDatabrowserWithSomeData()
 
-	code = "psx(psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 100, 100, 0)"
+	code = "psx(psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 100, 100, 0)"
 
 	win = ExecuteSweepFormulaCode(browser, code)
 
