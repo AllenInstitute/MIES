@@ -1498,7 +1498,8 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	WAVE s.testPulse = GetTestPulse()
 
 	// test pulse length is calculated for dataAcqOrTP @ref TP_CreateTestPulseWave
-	[testPulseLength, tpPulseStartPoint, tpPulseLengthPoints] = TP_GetCreationPropertiesInPoints(device, dataAcqOrTP)
+	WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
+	[testPulseLength, tpPulseStartPoint, tpPulseLengthPoints] = TP_GetCreationPropertiesInPoints(TPSettingsCalc, dataAcqOrTP)
 	s.testPulseLength = testPulseLength
 	s.tpPulseStartPoint = tpPulseStartPoint
 	s.tpPulseLengthPoints = tpPulseLengthPoints
