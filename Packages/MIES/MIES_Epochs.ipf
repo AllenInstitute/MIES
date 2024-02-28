@@ -1162,7 +1162,7 @@ End
 static Function EP_AddEpoch(WAVE/T epochWave, variable channel, variable channelType, variable epBegin, variable epEnd, string epTags, string epShortName, variable level, [variable lowerlimit, variable upperlimit])
 
 	variable i, j, numEpochs, pos
-	string entry, startTimeStr, endTimeStr
+	string entry, startTimeStr, endTimeStr, msg
 
 	lowerlimit = ParamIsDefault(lowerlimit) ? -Inf : lowerlimit
 	upperlimit = ParamIsDefault(upperlimit) ? Inf : upperlimit
@@ -1197,6 +1197,9 @@ static Function EP_AddEpoch(WAVE/T epochWave, variable channel, variable channel
 	epochWave[i][%EndTime][channel][channelType] = endTimeStr
 	epochWave[i][%Tags][channel][channelType] = epTags
 	epochWave[i][%TreeLevel][channel][channelType] = num2str(level)
+
+	sprintf msg, "AddEpoch (chan, chanType, Lvl, Start, End, Tags): %d %d %d %s %s %s\r", channel, channelType, level, startTimeStr, endTimeStr, epTags
+	DEBUGPRINT(msg)
 End
 
 /// @brief Write the epoch info into the sweep settings wave
