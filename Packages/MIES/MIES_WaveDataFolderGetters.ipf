@@ -7657,18 +7657,18 @@ Function/WAVE GetTPSettings(string device)
 	return wv
 End
 
+static Constant TP_SETTINGSCALCULATED_WAVE_VERSION = 3
+
 /// @brief Return the calculated/derived TP settings
 ///
 /// The entries in this wave are only valid during DAQ/TP and are updated via DC_UpdateGlobals().
 Function/WAVE GetTPSettingsCalculated(string device)
 
-	variable versionOfNewWave = 3
-
 	DFREF dfr = GetDeviceTestPulse(device)
 
 	WAVE/Z/SDFR=dfr/D wv = settingsCalculated
 
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+	if(ExistsWithCorrectLayoutVersion(wv, TP_SETTINGSCALCULATED_WAVE_VERSION))
 		return wv
 	elseif(WaveExists(wv))
 		if(!IsWaveVersioned(wv))
@@ -7691,16 +7691,32 @@ Function/WAVE GetTPSettingsCalculated(string device)
 			wv[%pulseStartPointsTP_ADC] = wv[%pulseStartPointsTP]
 			wv[%pulseStartPointsDAQ_ADC] = wv[%pulseStartPointsDAQ]
 		endif
-	else
-		Make/N=(16)/D dfr:settingsCalculated/WAVE=wv
-		wv = NaN
+
+		SetTPSettingsCalculatedProperties(wv)
+
+		return wv
 	endif
 
-	SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ;pulseStartMS;pulseStartPointsTP;pulseStartPointsDAQ;pulseLengthPointsTP_ADC;pulseLengthPointsDAQ_ADC;totalLengthPointsTP_ADC;totalLengthPointsDAQ_ADC;pulseStartPointsTP_ADC;pulseStartPointsDAQ_ADC;", ROWS)
-
-	SetWaveVersion(wv, versionOfNewWave)
+	WAVE/D wv = GetTPSettingsCalculatedAsFree()
+	MoveWave wv, dfr:settingsCalculated
 
 	return wv
+End
+
+Function/WAVE GetTPSettingsCalculatedAsFree()
+
+	Make/FREE/D/N=(16) wv
+	wv = NaN
+
+	SetTPSettingsCalculatedProperties(wv)
+
+	return wv
+End
+
+static Function SetTPSettingsCalculatedProperties(WAVE wv)
+
+	SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ;pulseStartMS;pulseStartPointsTP;pulseStartPointsDAQ;pulseLengthPointsTP_ADC;pulseLengthPointsDAQ_ADC;totalLengthPointsTP_ADC;totalLengthPointsDAQ_ADC;pulseStartPointsTP_ADC;pulseStartPointsDAQ_ADC;", ROWS)
+	SetWaveVersion(wv, TP_SETTINGSCALCULATED_WAVE_VERSION)
 End
 
 static Constant TP_SETTINGS_WAVE_VERSION = 2
