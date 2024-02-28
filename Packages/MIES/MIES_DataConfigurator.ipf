@@ -898,7 +898,19 @@ static Function DC_CalculateGeneratedDataSize(device, dataAcqOrTP, genLength)
 	string device
 	variable dataAcqOrTP, genLength
 
-	variable decimationFactor = DC_GetDecimationFactor(device, dataAcqOrTP)
+	variable decimationFactor
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		decimationFactor = DC_GetDecimationFactor(device, dataAcqOrTP)
+		return DC_CalculateGeneratedDataSizeDAQMode(genLength, decimationFactor)
+	elseif(dataAcqOrTP == TEST_PULSE_MODE)
+		return genLength
+	else
+		ASSERT(0, "unhandled case")
+	endif
+End
+
+static Function DC_CalculateGeneratedDataSizeDAQMode(variable genLength, variable decimationFactor)
 
 	// note: the decimationFactor is the factor between the hardware sample rate and the sample rate of the generated waveform in singleStimSet
 	// The ratio of the source to target wave sizes is however limited by the integer size of both waves
@@ -906,13 +918,8 @@ static Function DC_CalculateGeneratedDataSize(device, dataAcqOrTP, genLength)
 	// when decimationFactor * index of real data wave is applied as index of the generated data wave it never exceeds its size
 	// Also if decimationFactor >= 2 the last point of the generated data wave is never transferred
 	// e.g. generated data with 10 points and decimationFactor == 2 copies index 0, 2, 4, 6, 8 to the real data wave of size 5
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		return floor(genLength / decimationFactor) + IndexAfterDecimation(0, decimationFactor)
-	elseif(dataAcqOrTP == TEST_PULSE_MODE)
-		return genLength
-	else
-		ASSERT(0, "unhandled case")
-	endif
+
+	return floor(genLength / decimationFactor) + IndexAfterDecimation(0, decimationFactor)
 End
 
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into DAQDataWave.
@@ -1672,11 +1679,17 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 		s.distributedDAQDelay = round(DAG_GetNumericalValue(device, "setvar_DataAcq_dDAQDelay") / (s.samplingInterval * MICRO_TO_MILLI))
 
 		s.onsetDelay = s.onsetDelayUser + s.onsetDelayAuto
-		if(s.distributedDAQ)
-			s.insertStart[] = s.onsetDelay + (sum(s.statusHS, 0, s.headstageDAC[p]) - 1) * (s.distributedDAQDelay + s.setLength[p])
-		else
-			s.insertStart[] = s.onsetDelay
-		endif
+		DC_CalculateInsertStart(s)
+	endif
+End
+
+/// @brief Calculate s.insertStart for DATA_ACQUISITION_MODE
+static Function DC_CalculateInsertStart(STRUCT DataConfigurationResult &s)
+
+	if(s.distributedDAQ)
+		s.insertStart[] = s.onsetDelay + (sum(s.statusHS, 0, s.headstageDAC[p]) - 1) * (s.distributedDAQDelay + s.setLength[p])
+	else
+		s.insertStart[] = s.onsetDelay
 	endif
 End
 
