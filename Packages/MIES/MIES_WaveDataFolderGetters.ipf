@@ -3725,7 +3725,15 @@ Function/WAVE GetTestPulse()
 	endif
 
 	/// create dummy wave
-	Make/R/N=(0) dfr:TestPulse/Wave=wv
+	WAVE wv = GetTestPulseAsFree()
+	MoveWave wv, dfr:TestPulse
+
+	return wv
+End
+
+Function/WAVE GetTestPulseAsFree()
+
+	Make/FREE/R/N=0 wv
 
 	return wv
 End
