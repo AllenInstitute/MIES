@@ -8262,3 +8262,16 @@ Function/WAVE GetLogFileNames()
 
 	return files
 End
+
+/// @brief Used as temporary wave to store various sampling intervals in ms
+Function/WAVE GetNewSamplingIntervalsAsFree()
+
+	Make/FREE/D/N=4 wv
+
+	SetDimLabel ROWS, 0, SI_TP_DAC, wv
+	SetDimLabel ROWS, 1, SI_DAQ_DAC, wv
+	SetDimLabel ROWS, 2, SI_TP_ADC, wv
+	SetDimLabel ROWS, 3, SI_DAQ_ADC, wv
+
+	return wv
+End
