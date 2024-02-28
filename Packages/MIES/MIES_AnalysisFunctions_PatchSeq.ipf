@@ -2685,7 +2685,7 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "AbsDAScaleMinDistance":
 			return "Minimum absolute DAScale distance for DAScale estimation. Only for \"AdaptiveSupra\"."
 		case "AbsDAScaleMaxDistance":
-			return "Minimum absolute DAScale distance for DAScale estimation. Only for \"AdaptiveSupra\"."
+			return "Maximum absolute DAScale distance for DAScale estimation. Only for \"AdaptiveSupra\"."
 		 case "MaxFrequencyChangePercent":
 			 return "The maximum allowed difference for the frequency for two consecutive measurements. "           \
 					 + "In case this value is overshot, we redo the measurement with a fitting DAScale in-between. "  \
