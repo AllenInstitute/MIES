@@ -284,12 +284,21 @@ End
 /// @param device  panel title
 /// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 static Function DC_CalculateDAQDataWaveLength(string device, variable dataAcqOrTP)
+
 	variable hardwareType = GetHardwareType(device)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 
+	return DC_CalculateDAQDataWaveLengthImpl(stopCollectionPoint, hardwareType, dataAcqOrTP)
+end
+
+/// @brief device independent implkementation for @ref DC_CalculateDAQDataWaveLength
+Function DC_CalculateDAQDataWaveLengthImpl(variable dataLength, variable hardwareType, variable dataAcqOrTP)
+
+	variable exponent
+
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			variable exponent = FindNextPower(stopCollectionPoint, 2)
+			exponent = FindNextPower(dataLength, 2)
 
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				exponent += 1
@@ -298,13 +307,13 @@ static Function DC_CalculateDAQDataWaveLength(string device, variable dataAcqOrT
 			exponent = max(MINIMUM_ITCDATAWAVE_EXPONENT, exponent)
 
 			return 2^exponent
-			break
 		case HARDWARE_NI_DAC:
-			return stopCollectionPoint
-			break
+
+			return dataLength
 	endswitch
+
 	return NaN
-end
+End
 
 /// @brief Create the DAQConfigWave used to configure the DAQ device
 ///
