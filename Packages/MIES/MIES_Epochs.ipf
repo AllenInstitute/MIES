@@ -1066,12 +1066,11 @@ End
 /// - Descending ending time
 /// - Ascending tree level
 ///
-/// @param[in] device title of device panel
-static Function EP_SortEpochs(string device)
+/// @param[in] epochWave epoch wave
+Function EP_SortEpochs(WAVE/T epochWave)
 
 	variable channel, channelCnt, epochCnt, channelType
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	channelCnt = DimSize(epochWave, LAYERS)
 	for(channelType = 0; channelType < XOP_CHANNEL_TYPE_COUNT; channelType += 1)
 		for(channel = 0; channel < channelCnt; channel += 1)
@@ -1216,7 +1215,8 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, variable sweepNo, var
 
 	EP_AdaptEpochInfo(device, configWave, acquiredTime, plannedTime)
 
-	EP_SortEpochs(device)
+	WAVE/T epochWave = GetEpochsWave(device)
+	EP_SortEpochs(epochWave)
 
 	WAVE DACList = GetDACListFromConfig(configWave)
 	numDACEntries = DimSize(DACList, ROWS)
@@ -1317,12 +1317,26 @@ End
 
 static Function EP_AdaptEpochInfoChannel(string device, variable channelNumber, variable channelType, variable acquiredTime, variable plannedTime)
 
-	variable epochCnt, epoch, startTime, endTime, samplingInterval, lastValidIndex, acquiredEpochsEndTime
-	string tags
+	variable samplingInterval
 
 	WAVE/T epochWave = GetEpochsWave(device)
-
 	samplingInterval = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, channelType)
+	EP_AdaptEpochInfoChannelImpl(epochWave, channelNumber, channelType, samplingInterval, acquiredTime, plannedTime)
+End
+
+/// @brief Device independent implementation of EP_AdaptEpochInfoChannel
+/// @param epochWave        epoch wave (4d)
+/// @param channelNumber    GUI channel number
+/// @param channelType      channel type
+/// @param samplingInterval sampling interval of channel type
+/// @param acquiredTime     acquiredTime in [s]
+/// @param plannedTime      plannedTime in [s]
+Function EP_AdaptEpochInfoChannelImpl(WAVE/T epochWave, variable channelNumber, variable channelType, variable samplingInterval, variable acquiredTime, variable plannedTime)
+
+	variable epochCnt, epoch, startTime, endTime
+	variable acquiredEpochsEndTime, lastValidIndex
+	string tags
+
 	epochCnt = EP_GetEpochCount(epochWave, channelNumber, channelType)
 	if(IsNaN(acquiredTime))
 		acquiredEpochsEndTime = plannedTime
