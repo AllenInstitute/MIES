@@ -1262,6 +1262,7 @@ threadsafe Function/WAVE EP_EpochStrToWave(string epochStr)
 
 	ASSERT_TS(!IsEmpty(epochStr), "No information in epochStr")
 	WAVE/T epochWave = ListToTextWaveMD(epochStr, 2, rowSep = EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP)
+	SetEpochsDimensionLabelsSingleChannel(epochWave)
 
 	return epochWave
 End
