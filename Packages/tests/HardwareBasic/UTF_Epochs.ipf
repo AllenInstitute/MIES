@@ -464,6 +464,7 @@ static Function TestEpochsGeneric(string device)
 		endfor
 	endfor
 
+	TestEpochReceation(device)
 End
 
 static Function TestUnacquiredEpoch(WAVE sweep, WAVE epochChannel)
@@ -1211,4 +1212,49 @@ End
 static Function EP_EpochTest18_REENTRY([STRUCT IUTF_mData &mData])
 
 	TestEpochsGeneric(mData.s0)
+End
+
+static Function	TestEpochReceationRemoveUserEpochs(WAVE/T epochChannel)
+
+	variable i, epochCnt
+
+	epochCnt = DimSize(epochChannel, ROWS)
+	Make/FREE/T/N=(epochCnt) shortnames = EP_GetShortName(epochChannel[p][EPOCH_COL_TAGS])
+	for(i = epochCnt - 1; i >= 0; i -= 1)
+		if(GrepString(shortnames[i], "^" + EPOCH_SHORTNAME_USER_PREFIX))
+			DeleteWavePoint(epochChannel, ROWS, i)
+		endif
+	endfor
+End
+
+static Function TestEpochReceation(string device)
+
+	variable channelNumber
+	variable sweepNo = 0
+
+	WAVE/Z numericalValues = GetLBNumericalValues(device)
+	WAVE/Z textualValues = GetLBTextualValues(device)
+	DFREF deviceDFR = GetDeviceDataPath(device)
+	DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+
+	WAVE epochWave = EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, sweepNo)
+
+	WAVE/Z activeChannels = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC)
+	CHECK_WAVE(activeChannels, FREE_WAVE | NUMERIC_WAVE)
+	for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
+
+		if(IsNaN(activeChannels[channelNumber]))
+			continue
+		endif
+		WAVE/Z/T epochChannelRef = EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, XOP_CHANNEL_TYPE_DAC)
+		WAVE/Z/T epochChannelRec = EP_FetchEpochsFromRecreated(epochWave, channelNumber, XOP_CHANNEL_TYPE_DAC)
+
+		if(WaveExists(epochChannelRef))
+			TestEpochReceationRemoveUserEpochs(epochChannelRef)
+			// also TP channels can be active but have no epochs
+			CHECK_EQUAL_WAVES(epochChannelRec, epochChannelRef)
+		else
+			CHECK_WAVE(epochChannelRec, NULL_WAVE)
+		endif
+	endfor
 End
