@@ -1008,7 +1008,7 @@ Window DataBrowser() : Graph
 	ListBox list_dashboard,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_dashboard,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_dashboard,userdata(Config_DontRestore)="1"
-	ListBox list_dashboard,userdata(Config_DontSave)="1",fSize=12,mode=1,selRow=-1
+	ListBox list_dashboard,userdata(Config_DontSave)="1",fSize=12,mode=4
 	ListBox list_dashboard,widths={141,109,77},userColumnResize=1
 	CheckBox check_BrowserSettings_DS,pos={186.00,47.00},size={51.00,15.00},disable=1,proc=AD_CheckProc_Toggle
 	CheckBox check_BrowserSettings_DS,title="enable"
@@ -1269,7 +1269,7 @@ Window DataBrowser() : Graph
 	NewNotebook /F=1 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
 	Notebook kwTopWin, defaultTab=10, autoSave= 1, magnification=100, showRuler=0, rulerUnits=2
 	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0,0,286}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)un`Q5gp6juaS/GsbG2$P6*,8(:bX?au2`$IZr!G\"Aj\\dD!s6W/ZaQA2u%!K\"f\"KRaVIH;S-XHE)S!6F;<(6=sP-/2%+CIin`*rr4(7;AH:=3&Lr>$qR6BQY7XW,j+3bjqMSj\\nL@W'UP_p()1OtC@X,flBVM;:.Zu;l3<E.)Cc:[FVIf*L1t,%NtJGqRoq:M)&8f!QuWTDIecFCM)i(o%+50NjTpMJ-K'WH:le>:M'83o,(jB&-I?e*dcAW:6j;cO]]/jZ</)(eZ#iu6"
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)un`Q5gp6juaS*9:-\\LOi\"3Ld])[.hK#eE=!1`!1=@^Xod&KOHcHFV4hd75b`6!+WpoV?BghDSuQ2!&8e)8OI;FNbKI]j*sb-#s8RkQ<!B<R:<`eh\"-TY*,oXlCM0XBG3Q2ns/t+g.`T=(u\"iVCKR_0&r\\u!3R;\\D`R\\q+CdL'kjo*<d1N@@C<b@g),5AekbV7KmH6VAo\\j?[bji@Ld8tK62WW3<C@V$+OCje74\\R@`W,JaP^0b$+/Kc1c[?<;8G7WY;e`oQ%8r9,R@?g"
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)="0"

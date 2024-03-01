@@ -79,3 +79,119 @@ Function TestAnalysisBrowserAddingFiles()
 	MIES_AB#AB_AddFiles(abWin, {fileToReadd})
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), DimSize(files, ROWS))
 End
+
+Function TestDashboardDependentControlHandling()
+
+	string abWin, sweepBrowsers, file, sweepBrowser, bsPanel, scPanel
+
+	WAVE/T files = GetHistoricDataFiles()
+	file = "input:" + files[0]
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
+	sweepBrowser = StringFromList(0, sweepBrowsers, ";")
+
+	bsPanel = BSP_GetPanel(sweepBrowser)
+	CHECK(WindowExists(bsPanel))
+
+	scPanel = BSP_GetSweepControlsPanel(sweepBrowser)
+	CHECK(WindowExists(scPanel))
+
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = CHECKBOX_SELECTED)
+
+	// OVS checkbox is now enabled and but disabled
+	CHECK_EQUAL_VAR(GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS"), CHECKBOX_SELECTED)
+	CHECK_EQUAL_VAR(IsControlDisabled(bsPanel, "check_BrowserSettings_OVS"), 1)
+
+	// disabling the dashboard
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = CHECKBOX_UNSELECTED)
+
+	// restores it
+	CHECK_EQUAL_VAR(GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS"), CHECKBOX_UNSELECTED)
+	CHECK_EQUAL_VAR(IsControlDisabled(bsPanel, "check_BrowserSettings_OVS"), 0)
+
+	// so does previous sweep
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(scPanel, "button_SweepControl_PrevSweep")
+
+	CHECK_EQUAL_VAR(GetCheckBoxState(bsPanel, "check_BrowserSettings_DS"), CHECKBOX_UNSELECTED)
+	CHECK_EQUAL_VAR(GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS"), CHECKBOX_UNSELECTED)
+	CHECK_EQUAL_VAR(IsControlDisabled(bsPanel, "check_BrowserSettings_OVS"), 0)
+
+	// so does next sweep
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(scPanel, "button_SweepControl_NextSweep")
+
+	CHECK_EQUAL_VAR(GetCheckBoxState(bsPanel, "check_BrowserSettings_DS"), CHECKBOX_UNSELECTED)
+	CHECK_EQUAL_VAR(GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS"), CHECKBOX_UNSELECTED)
+	CHECK_EQUAL_VAR(IsControlDisabled(bsPanel, "check_BrowserSettings_OVS"), 0)
+End
+
+static Function CheckNumberOfSelectedRows(string bsPanel)
+
+	DFREF dfr = BSP_GetFolder(bsPanel, MIES_BSP_PANEL_FOLDER)
+	WAVE listBoxSelWave = GetAnaFuncDashboardselWave(dfr)
+	Duplicate/FREE/RMD=[][][0] listBoxSelWave, listBoxSelWaveFirstLayer
+
+	return Sum(listBoxSelWaveFirstLayer) / DimSize(listBoxSelWave, COLS)
+End
+
+Function TestDashboardSelections()
+
+	string abWin, sweepBrowsers, file, sweepBrowser, bsPanel
+
+	WAVE/T files = GetHistoricDataFiles()
+	file = "input:" + files[0]
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
+	sweepBrowser = StringFromList(0, sweepBrowsers, ";")
+
+	bsPanel = BSP_GetPanel(sweepBrowser)
+	CHECK(WindowExists(bsPanel))
+
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = CHECKBOX_SELECTED)
+
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Passed", val = CHECKBOX_SELECTED)
+	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 0)
+
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Failed", val = CHECKBOX_SELECTED)
+	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 0)
+
+	// 0th SCI
+	SetListBoxSelection(bsPanel, "list_dashboard", LISTBOX_SELECTED, 1)
+	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 1)
+
+	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 1)
+	WAVE/Z sweeps = OVS_GetSelectedSweeps(bsPanel, OVS_SWEEP_SELECTION_SWEEPNO)
+	CHECK_EQUAL_WAVES(sweeps, {1}, mode = WAVE_DATA)
+
+	// 4th SCI
+	SetListBoxSelection(bsPanel, "list_dashboard", 0, 1)
+	SetListBoxSelection(bsPanel, "list_dashboard", LISTBOX_SELECTED, 4)
+	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 4)
+
+	// Passed & Failed
+	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 1)
+	WAVE/Z sweeps = OVS_GetSelectedSweeps(bsPanel, OVS_SWEEP_SELECTION_SWEEPNO)
+	CHECK_EQUAL_WAVES(sweeps, {4, 5, 6, 7, 8, 9, 10, 11}, mode = WAVE_DATA)
+
+	// Failed
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Passed", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Failed", val = CHECKBOX_SELECTED)
+	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 1)
+	WAVE/Z sweeps = OVS_GetSelectedSweeps(bsPanel, OVS_SWEEP_SELECTION_SWEEPNO)
+	CHECK_EQUAL_WAVES(sweeps, {5, 6, 7}, mode = WAVE_DATA)
+
+	// Passed
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Passed", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Failed", val = CHECKBOX_UNSELECTED)
+	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 1)
+	WAVE/Z sweeps = OVS_GetSelectedSweeps(bsPanel, OVS_SWEEP_SELECTION_SWEEPNO)
+	CHECK_EQUAL_WAVES(sweeps, {4, 8, 9, 10, 11}, mode = WAVE_DATA)
+
+	// and the 6th in addition
+	SetListBoxSelection(bsPanel, "list_dashboard", LISTBOX_SELECTED, 6)
+	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 6)
+	CHECK_EQUAL_VAR(CheckNumberOfSelectedRows(bsPanel), 2)
+	WAVE/Z sweeps = OVS_GetSelectedSweeps(bsPanel, OVS_SWEEP_SELECTION_SWEEPNO)
+	CHECK_EQUAL_WAVES(sweeps, {4, 8, 9, 10, 11, 20, 21}, mode = WAVE_DATA)
+End
