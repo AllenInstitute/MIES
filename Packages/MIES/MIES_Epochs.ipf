@@ -1620,3 +1620,62 @@ Function EP_GetEpochAmplitude(string epochTag)
 
 	return NumberByKey(EPOCH_AMPLITUDE_KEY, epochTag, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 End
+
+/// @brief Recreate DA epochs from loaded data. The following must be loaded: LabNotebook, Sweep data of sweepNo, Stimsets used in the sweep
+///        User epochs are not recreated !
+///
+/// @param numericalValues numerical LabNotebook
+/// @param textualValues   textual LabNotebook
+/// @param sweepDFR        single sweep folder, e.g. for measurement with a device this wold be DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+/// @param sweepNo         sweep number
+/// @returns recreated 4D epoch wave
+Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+
+	STRUCT DataConfigurationResult s
+	variable channelNr, plannedTime, acquiredTime, adSize, firstUnacquiredIndex
+
+	[s] = DC_RecreateDataConfigurationResultFromLNB(numericalValues, textualValues, sweepDFR, sweepNo)
+
+	WAVE/T recEpochWave = GetEpochsWaveAsFree()
+	EP_CollectEpochInfoDA(recEpochWave, s)
+
+	WAVE/Z channelDA = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
+	ASSERT(WaveExists(channelDA), "Could not retrieve first DA sweep")
+	WAVE/Z channelAD = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_ADC, s.ADCList[0])
+	ASSERT(WaveExists(channelAD), "Could not retrieve first AD sweep")
+	adSize = DimSize(channelAD, ROWS)
+	firstUnacquiredIndex = FindFirstNaNIndex(channelAD)
+	if(IsNaN(firstUnacquiredIndex))
+		firstUnacquiredIndex = adSize
+	endif
+	[plannedTime, acquiredTime] = SWS_DeterminePlannedAndAcquiredTime(channelDA, channelAD, adSize, firstUnacquiredIndex)
+	for(channelNr : s.DACList)
+		EP_AdaptEpochInfoChannelImpl(recEpochWave, channelNr, XOP_CHANNEL_TYPE_DAC, s.samplingInterval, acquiredTime, plannedTime)
+	endfor
+	EP_SortEpochs(recEpochWave)
+
+	return recEpochWave
+End
+
+/// @brief Fetches a single epoch channel from a recreated epoch wave.
+///        The returned epoch channel wave has the same form as epoch information that was stored in the LNB returned by @ref EP_FetchEpochs
+///
+/// @param epochWave 4d epoch wave
+/// @param channelNumber GUI channel number
+/// @param channelType   channel type, one of @ref XopChannelConstants
+/// @returns epoch channel wave (2d)
+Function/WAVE EP_FetchEpochsFromRecreated(WAVE epochWave, variable channelNumber, variable channelType)
+
+	string epList
+
+	epList = EP_EpochWaveToStr(epochWave, channelNumber, channelType)
+	if(IsEmpty(epList))
+		return $""
+	endif
+	WAVE epChannel = EP_EpochStrToWave(epList)
+	if(!DimSize(epChannel, ROWS))
+		return $""
+	endif
+
+	return epChannel
+End
