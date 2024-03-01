@@ -1693,6 +1693,36 @@ Function GetListBoxSelRow(win, ctrl)
 	return V_Value
 End
 
+/// @brief Set the listbox selection
+///
+/// @param win  panel
+/// @param ctrl control
+/// @param val  One of @ref ListBoxSelectionWaveFlags
+/// @param row  row index
+/// @param col  [optional, defaults to all columns] column index
+Function SetListBoxSelection(string win, string ctrl, variable val, variable row, [variable col])
+
+	variable colStart, colEnd
+
+	if(ParamIsDefault(col))
+		colStart = 0
+		colEnd   = inf
+	else
+		colStart = col
+		colEnd = col
+	endif
+
+	ControlInfo/W=$win $ctrl
+	ASSERT(V_flag == 11, "Not a listbox control")
+	WAVE/Z selWave = $GetValueFromRecMacro("selWave", S_recreation)
+	ASSERT(WaveExists(selWave), "Missing selection wave")
+
+	ASSERT(row < DimSize(selWave, ROWS), "Invalid row")
+	ASSERT(col < DimSize(selWave, COLS), "Invalid col")
+
+	selWave[row][colStart, colEnd][0][0] = val
+End
+
 /// @brief Check if the location `loc` is inside the rectangle `r`
 Function IsInsideRect(loc, r)
 	STRUCT Point& loc
