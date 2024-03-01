@@ -1418,7 +1418,8 @@ psxstats
 """"""""
 
 Plot properties of the result waves of a miniature PSC/PSP classification. The
-operation combines the data from all input sweeps.
+operation combines the data from all input sweeps. Also all ranges for each
+sweep are combined.
 
 The operation allows to visualize `psx` data from the results wave or locally,
 i.e. from an `psx` operation from another formula separated by `and`. The
