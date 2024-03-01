@@ -1217,6 +1217,8 @@ static Function/S SF_GetAnnotationPrefix(string dataType)
 			return ""
 		case SF_DATATYPE_TP:
 			return "TP "
+		case SF_DATATYPE_LABNOTEBOOK:
+			return "LB "
 		default:
 			ASSERT(0, "Invalid dataType")
 	endswitch
@@ -1232,7 +1234,8 @@ static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData
 
 	strswitch(plotMetaData.dataType)
 		case SF_DATATYPE_EPOCHS: // fallthrough
-		case SF_DATATYPE_SWEEP:  // fallthrough
+		case SF_DATATYPE_SWEEP: // fallthrough
+		case SF_DATATYPE_LABNOTEBOOK: // fallthrough
 		case SF_DATATYPE_TP:
 			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 			annotationPrefix = SF_GetAnnotationPrefix(plotMetaData.dataType)
@@ -1288,7 +1291,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	s.blue = 0x0000
 
 	Make/FREE/T stopInheritance = {SF_OPSHORT_MINUS, SF_OPSHORT_PLUS, SF_OPSHORT_DIV, SF_OPSHORT_MULT}
-	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS, SF_OP_EPOCHS}
+	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS, SF_OP_EPOCHS, SF_OP_LABNOTEBOOK}
 
 	WAVE/T opStackW = ListToTextWave(opStack, ";")
 	numDoInh = DimSize(doInheritance, ROWS)
