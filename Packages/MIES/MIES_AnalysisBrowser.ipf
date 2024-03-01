@@ -2949,26 +2949,33 @@ Function AB_ButtonProc_AddFiles(ba) : ButtonControl
 				break
 			endif
 			WAVE/T selFiles = ListToTextWave(fileList, "\r")
-			Duplicate/FREE/T selFiles, newFiles
-
-			WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
-			size = DimSize(selFiles, ROWS)
-			for(i = 0; i < size; i += 1)
-				FindValue/TEXT=selFiles[i]/TXOP=4 folderList
-				if(V_Value >= 0)
-					continue
-				endif
-				AB_AddElementToSourceList(selFiles[i])
-				newFiles[index] = selFiles[i]
-				index += 1
-			endfor
-			Redimension/N=(index) newFiles
-
-			AB_AddExperimentEntries(ba.win, newFiles)
+			AB_AddFiles(ba.win, selFiles)
 			break
 	endswitch
 
 	return 0
+End
+
+static Function AB_AddFiles(string win, WAVE/T selFiles)
+
+	variable i, index, size
+
+	Duplicate/FREE/T selFiles, newFiles
+
+	WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
+	size = DimSize(selFiles, ROWS)
+	for(i = 0; i < size; i += 1)
+		FindValue/TEXT=selFiles[i]/TXOP=4 folderList
+		if(V_Value >= 0)
+			continue
+		endif
+		AB_AddElementToSourceList(selFiles[i])
+		newFiles[index] = selFiles[i]
+		index += 1
+	endfor
+	Redimension/N=(index) newFiles
+
+	AB_AddExperimentEntries(win, newFiles)
 End
 
 Function AB_AddElementToSourceList(string entry)
