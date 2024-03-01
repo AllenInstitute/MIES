@@ -366,12 +366,21 @@ End
 /// @brief Evaluate range parameter
 ///
 /// Range is read as dataset(s), it can be per dataset:
-/// numerical 1d: `[start,end]`
-/// numerical 2d with multiple ranges: `[[start1,start2,start3],[end1,end2,end3]]`
-/// implicit: `cursors(A, B)` or `[cursors(A, B), cursors(C, D)]`
-/// implicit: `epochs([E0, TP])`
-/// implicit with offset calculcation: `epochs(E0) + [1, -1]`
-/// named epoch: `E0` or a as wildcard expression `E*`
+/// - numerical 1D: `[start,end]`
+/// - numerical 2D with multiple ranges: `[[start1,start2,start3],[end1,end2,end3]]`
+///    - implicit: `cursors(A, B)` or `[cursors(A, B), cursors(C, D)]`
+///    - implicit: `epochs([E0, TP])`
+///    - implicit with offset calculcation: `epochs(E0) + [1, -1]`
+/// - named epoch: `E0` or a as wildcard expression `E*` or multiple
+///
+/// If one dataset is returned, numRows == 1, all ranges will be used for
+/// all sweeps in the selection.
+///
+/// When multiple datasets are returned, numRows > 1, the i-th sweep will use
+/// all ranges from the i-th dataset. The number of sweeps and datasets also
+/// has to match.
+///
+/// @return One or multiple datasets
 Function/WAVE SFH_EvaluateRange(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
 
 	variable numArgs
