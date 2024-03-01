@@ -53,3 +53,29 @@ Function TestDashboardWithHistoricData([string str])
 	bsPanel = BSP_GetPanel(sbWin)
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = 1)
 End
+
+Function TestAnalysisBrowserAddingFiles()
+
+	string abWin, sweepBrowsers, fileToReadd
+	variable holeIndex
+
+	WAVE/T files = GetHistoricDataFiles()
+	files[] = "input:" + files[p]
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files)
+
+	PGC_SetAndActivateControl(abWin, "button_collapse_all")
+
+	WAVE/T map = GetAnalysisBrowserMap()
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), DimSize(files, ROWS))
+
+	holeIndex = 1
+	fileToReadd = map[holeIndex]
+
+	SetListBoxSelection(abWin, "listbox_AB_Folders", LISTBOX_SELECTED, holeIndex)
+	PGC_SetAndActivateControl(abWin, "button_AB_Remove")
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), DimSize(files, ROWS))
+
+	MIES_AB#AB_AddFiles(abWin, {fileToReadd})
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), DimSize(files, ROWS))
+End

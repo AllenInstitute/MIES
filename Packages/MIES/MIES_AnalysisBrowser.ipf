@@ -88,7 +88,7 @@ End
 static Function AB_AddMapEntry(baseFolder, discLocation)
 	string baseFolder, discLocation
 
-	variable index, fileID, nwbVersion, dim
+	variable nextFreeIndex, fileID, nwbVersion, dim, writeIndex
 	string dataFolder, fileType, relativePath, extension
 	WAVE/T map = GetAnalysisBrowserMap()
 
@@ -99,21 +99,22 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 		return -1
 	endif
 
-	index = GetNumberFromWaveNote(map, NOTE_INDEX)
+	nextFreeIndex = GetNumberFromWaveNote(map, NOTE_INDEX)
 	dim = FindDimLabel(map, COLS, "DiscLocation")
-	FindValue/TEXT=""/TXOP=4/RMD=[][dim] map
-	if(V_row < index)
-		index = V_row
+	FindValue/TEXT=""/TXOP=4/RMD=[0, nextFreeIndex - 1][dim] map
+	if(V_row >= 0)
+		writeIndex = V_row
 	else
-		EnsureLargeEnoughWave(map, indexShouldExist=index, dimension=ROWS)
+		writeIndex = nextFreeIndex
+		EnsureLargeEnoughWave(map, indexShouldExist=writeIndex, dimension=ROWS)
 	endif
 
 	// %DiscLocation = full path to file
-	map[index][%DiscLocation] = discLocation
+	map[writeIndex][%DiscLocation] = discLocation
 
 	// %FileName = filename + extension
 	relativePath = RemovePrefix(discLocation, start = baseFolder)
-	map[index][%FileName] = relativePath
+	map[writeIndex][%FileName] = relativePath
 
 	extension = "." + GetFileSuffix(discLocation)
 
@@ -141,19 +142,21 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 		default:
 			ASSERT(0, "invalid file type")
 	endswitch
-	map[index][%FileType] = fileType
+	map[writeIndex][%FileType] = fileType
 
 	DFREF dfrAB = GetAnalysisFolder()
 	DFREF dfr = dfrAB:$AB_GetUserData(AB_UDATA_WORKINGDF)
 	DFREF expFolder = UniqueDataFolder(dfr, RemoveEnding(relativePath, extension))
 	dataFolder = RemovePrefix(GetDataFolder(1, expFolder), start = GetDataFolder(1, dfrAB))
-	map[index][%DataFolder] = RemoveEnding(dataFolder, ":")
+	map[writeIndex][%DataFolder] = RemoveEnding(dataFolder, ":")
 	RefCounterDFIncrease(expFolder)
 
-	index += 1
-	SetNumberInWaveNote(map, NOTE_INDEX, index)
+	if(writeIndex == nextFreeIndex)
+		nextFreeIndex += 1
+		SetNumberInWaveNote(map, NOTE_INDEX, nextFreeIndex)
+	endif
 
-	return index - 1
+	return writeIndex
 End
 
 static Function AB_RemoveMapEntry(variable index)
