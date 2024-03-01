@@ -1101,9 +1101,7 @@ static Function AD_SelectResult(win, [index])
 		WaveClear sweeps
 	endif
 
-	if(!GetCheckBoxState(bspPanel,"check_BrowserSettings_OVS"))
-		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_OVS", val = 1)
-	elseif(BSP_IsDataBrowser(win))
+	if(BSP_IsDataBrowser(win))
 		WAVE/T ovsListWave = GetOverlaySweepsListWave(dfr)
 
 		// update databrowser if required and not already done
@@ -1111,14 +1109,6 @@ static Function AD_SelectResult(win, [index])
 		if(!WaveExists(indizes))
 			DB_UpdateToLastSweep(win, force = 1)
 		endif
-	endif
-
-	if(!GetCheckBoxState(bspPanel,"check_BrowserSettings_ADC"))
-		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_ADC", val = 1)
-	endif
-
-	if(!GetCheckBoxState(bspPanel,"check_BrowserSettings_DAC"))
-		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_DAC", val = 1)
 	endif
 
 	if(!BSP_IsDataBrowser(win) && WaveExists(sweeps))
@@ -1249,6 +1239,8 @@ Function AD_CheckProc_Toggle(cba) : CheckBoxControl
 		case 2: // mouse up
 			win = cba.win
 			AD_Update(win)
+
+			AdaptDependentControls(win, "check_BrowserSettings_OVS;check_BrowserSettings_ADC;check_BrowserSettings_DAC", CHECKBOX_UNSELECTED, cba.checked, DEP_CTRLS_SAME)
 
 			if(cba.checked)
 				EnableControls(win, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")

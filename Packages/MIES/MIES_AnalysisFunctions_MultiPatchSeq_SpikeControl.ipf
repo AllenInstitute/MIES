@@ -1004,7 +1004,13 @@ Function SC_SpikeControl(device, s)
 				scPanel = BSP_GetSweepControlsPanel(databrowser)
 			endif
 
-			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 1)
+			if(IsControlDisabled(bsPanel, "check_BrowserSettings_OVS"))
+				ASSERT(GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS") == CHECKBOX_SELECTED, \
+				       "OVS must be enabled when the control is disabled")
+			else
+				PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 1)
+			endif
+
 			PGC_SetAndActivateControl(bsPanel, "check_ovs_clear_on_new_stimset_cycle", val = 1)
 
 			PGC_SetAndActivateControl(scPanel, "check_SweepControl_AutoUpdate", val = 1)
