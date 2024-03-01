@@ -1813,6 +1813,8 @@ static Function WBP_UpdateParameterWave()
 			helpWave[i][%Help] = LineBreakingIntoPar(help, minimumWidth = 40)
 		endif
 	endfor
+
+	SortColumns/KNDX={0} sortWaves={listWave, helpWave, selWave}
 End
 
 /// @brief Toggle the analysis parameter GUI
