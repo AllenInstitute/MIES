@@ -273,7 +273,7 @@ static Function/WAVE EpochTestSamplingFrequency_Gen()
 
 	string frequencies = DAP_GetSamplingFrequencies()
 
-	WAVE wTemp = ListToNumericWave(frequencies, ";")
+	WAVE wTemp = ListToNumericWave(frequencies, ";", ignoreErr = 1)
 	WAVE w = ZapNaNs(wTemp)
 
 	SetDimensionLabelsFromWaveContents(w, prefix = "f_", suffix = "_kHz")
@@ -285,7 +285,7 @@ static Function/WAVE EpochTestSamplingFrequencyTTL_Gen()
 
 	string frequencies = DAP_GetSamplingFrequencies()
 
-	WAVE wTemp = ListToNumericWave(frequencies, ";")
+	WAVE wTemp = ListToNumericWave(frequencies, ";", ignoreErr = 1)
 
 #ifdef TESTS_WITH_ITC18USB_HARDWARE
 	wTemp[] = wTemp[p] == 100 ? NaN : wTemp[p]
