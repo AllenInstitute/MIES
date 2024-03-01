@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(743.25,77.75,1232.25,449.75)/K=1  as "Browser"
+	Display /W=(427.5,292.25,916.5,664.25)/K=1
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=BSP_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Restore side panels"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -62,7 +62,7 @@ Window DataBrowser() : Graph
 	Button button_SweepControl_PrevSweep,title="\\W646 Previous"
 	Button button_SweepControl_PrevSweep,help={"Displays the previous sweep (sweep no. = last sweep number - step)"}
 	Button button_SweepControl_PrevSweep,fSize=20
-	PopupMenu Popup_SweepControl_Selector,pos={153.00,42.00},size={174.00,19.00},bodyWidth=175,disable=2
+	PopupMenu Popup_SweepControl_Selector,pos={152.00,42.00},size={175.00,19.00},bodyWidth=175,disable=2
 	PopupMenu Popup_SweepControl_Selector,help={"List of sweeps in this sweep browser"}
 	PopupMenu Popup_SweepControl_Selector,userdata(tabnum)="0"
 	PopupMenu Popup_SweepControl_Selector,userdata(tabcontrol)="Settings"
@@ -947,7 +947,7 @@ Window DataBrowser() : Graph
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)=A"!!,Dg!!#BPJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
 	GroupBox group_enable_sweepFormula,pos={5.00,25.00},size={434.00,50.00},disable=1
 	GroupBox group_enable_sweepFormula,title="SweepFormula",userdata(tabnum)="5"
 	GroupBox group_enable_sweepFormula,userdata(tabcontrol)="Settings"
@@ -1008,7 +1008,7 @@ Window DataBrowser() : Graph
 	ListBox list_dashboard,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_dashboard,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_dashboard,userdata(Config_DontRestore)="1"
-	ListBox list_dashboard,userdata(Config_DontSave)="1",fSize=12,mode=1,selRow=3
+	ListBox list_dashboard,userdata(Config_DontSave)="1",fSize=12,mode=1,selRow=-1
 	ListBox list_dashboard,widths={141,109,77},userColumnResize=1
 	CheckBox check_BrowserSettings_DS,pos={186.00,47.00},size={51.00,15.00},disable=1,proc=AD_CheckProc_Toggle
 	CheckBox check_BrowserSettings_DS,title="enable"
@@ -1269,7 +1269,7 @@ Window DataBrowser() : Graph
 	NewNotebook /F=1 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
 	Notebook kwTopWin, defaultTab=10, autoSave= 1, magnification=100, showRuler=0, rulerUnits=2
 	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0,0,286}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)un`Q5gp6juaSgtJ\"fSq0GJLd])[.hK#eE=!1`!1=@^Xod&KOHcHFV4hd75b`6!+WpoV?BghDSuQ2!&8e)8OI;FNbKI]j*sb-#s8RkQ<!B<R:<`eh\"-TY*,oXlCM0XBG3Q2ns/t+g.`T=(u\"iVCKR_0&r\\u!3R;\\D`R\\q+CdL'kjo*<d1N@@C<b@g),5AekbV7KmH6VAo\\j?[bji@Ld8tK62WW3<C@V$+OCje74\\R@`Vs@@;md?\"Bt4lR[fe/W8O2<=.GnHaq,'`H?3()"
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)un`Q5gp6juaS/GsbG2$P6*,8(:bX?au2`$IZr!G\"Aj\\dD!s6W/ZaQA2u%!K\"f\"KRaVIH;S-XHE)S!6F;<(6=sP-/2%+CIin`*rr4(7;AH:=3&Lr>$qR6BQY7XW,j+3bjqMSj\\nL@W'UP_p()1OtC@X,flBVM;:.Zu;l3<E.)Cc:[FVIf*L1t,%NtJGqRoq:M)&8f!QuWTDIecFCM)i(o%+50NjTpMJ-K'WH:le>:M'83o,(jB&-I?e*dcAW:6j;cO]]/jZ</)(eZ#iu6"
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)="0"

@@ -225,6 +225,10 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SetControlUserData(bsPanel, "check_BrowserSettings_DAC", "oldState", "")
 	EnableControls(bsPanel, "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_OVS")
 
+	ListBox list_dashboard, selRow=-1
+
+	DoWindow/T $device, ""
+
 	CheckBox check_BrowserSettings_VisEpochs, WIN = $bsPanel, value=0, disable=0
 
 	// settings history
