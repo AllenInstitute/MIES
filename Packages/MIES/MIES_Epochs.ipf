@@ -1203,8 +1203,8 @@ End
 ///
 /// @param device       device
 /// @param sweepNo      sweep Number
-/// @param acquiredTime actual acquired time in seconds, if acquisition was stopped early lower than plannedTime
-/// @param plannedTime  planned acquisition time in seconds, if acquisition was not stopped early equals acquiredTime
+/// @param acquiredTime if acquisition was stopped early time of last acquired point in AD wave, NaN otherwise
+/// @param plannedTime  time of one point after the end of the DA wave
 Function EP_WriteEpochInfoIntoSweepSettings(string device, variable sweepNo, variable acquiredTime, variable plannedTime)
 	variable i, numDACEntries, channel, headstage
 	string entry
@@ -1280,10 +1280,10 @@ End
 /// - Blanks out which are then too small or lie outside the acquired region
 /// - Add an unacquired epoch
 ///
-/// @param device    device
+/// @param device        device
 /// @param configWave    DAQ config wave
-/// @param acquiredTime  Last acquired time point [s]
-/// @param plannedTime   Last time point in the sweep [s]
+/// @param acquiredTime  if acquisition was stopped early time of last acquired point in AD wave [s], NaN otherwise
+/// @param plannedTime   planned acquisition time, time at one point after the end of the DA wave [s]
 static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acquiredTime, variable plannedTime)
 
 	variable i, hwChannelNumber, numEntries, chanType
@@ -1314,36 +1314,46 @@ End
 
 static Function EP_AdaptEpochInfoChannel(string device, variable channelNumber, variable channelType, variable acquiredTime, variable plannedTime)
 
-	variable epochCnt, epoch, startTime, endTime
+	variable epochCnt, epoch, startTime, endTime, samplingInterval, lastValidIndex, acquiredEpochsEndTime
 	string tags
 
 	WAVE/T epochWave = GetEpochsWave(device)
 
+	samplingInterval = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, channelType)
 	epochCnt = EP_GetEpochCount(epochWave, channelNumber, channelType)
+	if(IsNaN(acquiredTime))
+		acquiredEpochsEndTime = plannedTime
+	else
+		lastValidIndex = trunc(acquiredTime * ONE_TO_MICRO / samplingInterval)
+		acquiredEpochsEndTime = (lastValidIndex + 1) * samplingInterval * MICRO_TO_ONE
+	endif
 
 	for(epoch = 0; epoch < epochCnt; epoch += 1)
 		startTime = str2num(epochWave[epoch][%StartTime][channelNumber][channelType])
 		endTime   = str2num(epochWave[epoch][%EndTime][channelNumber][channelType])
 
-		if(acquiredTime >= endTime)
+		if(acquiredEpochsEndTime >= endTime)
 			continue
 		endif
 
-		if(acquiredTime < startTime || abs(acquiredTime - startTime) <= 10^(-EPOCHTIME_PRECISION))
+		if(acquiredEpochsEndTime < startTime || abs(acquiredEpochsEndTime - startTime) <= 10^(-EPOCHTIME_PRECISION))
 			// lies completely outside the acquired region
 			// mark it for deletion
 			epochWave[epoch][%StartTime][channelNumber][channelType] = "NaN"
 			epochWave[epoch][%EndTime][channelNumber][channelType]   = "NaN"
 		else
 			// epoch was cut off
-			epochWave[epoch][%EndTime][channelNumber][channelType] = num2strHighPrec(acquiredTime, precision = EPOCHTIME_PRECISION)
+			epochWave[epoch][%EndTime][channelNumber][channelType] = num2strHighPrec(acquiredEpochsEndTime, precision = EPOCHTIME_PRECISION)
+			DEBUGPRINT("Epoch EndTime was cutted, should only happen if acquisition was aborted early.")
 		endif
 	endfor
 
-	// add unacquired epoch
-	// relies on EP_AddEpoch ignoring single point epochs
-	tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(epochWave, channelNumber, channelType, acquiredTime * ONE_TO_MICRO , plannedTime * ONE_TO_MICRO, tags , EPOCH_SN_UNACQUIRED, 0)
+	if(acquiredEpochsEndTime < plannedTime)
+		// add unacquired epoch
+		// relies on EP_AddEpoch ignoring single point epochs
+		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+		EP_AddEpoch(epochWave, channelNumber, channelType, acquiredEpochsEndTime * ONE_TO_MICRO , plannedTime * ONE_TO_MICRO, tags , EPOCH_SN_UNACQUIRED, 0)
+	endif
 End
 
 /// @brief Get epochs from the LBN filtered by given parameters

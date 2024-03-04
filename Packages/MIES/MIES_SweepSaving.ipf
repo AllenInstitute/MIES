@@ -79,29 +79,35 @@ End
 
 /// @brief Determine actual acquisition times and if acquisition was stopped early, change the remaining data points in DA/TTL with NaN.
 ///        DA/TTL data was prefilled in @sa DC_InitScaledDataWave with no early acquisition stop as default
+///
+/// @param device device  name
+/// @param scaledDataWave scaled data wave
+/// @param config         config wave
+/// @retval plannedTime   planned acquisition time, time at one point after the end of the DA wave [s]
+/// @retval acquiredTime  if acquisition was aborted early, time of last acquired point in AD wave [s], NaN otherwise
 static Function [variable plannedTime, variable acquiredTime] SWS_ProcessDATTLChannelsOnEarlyAcqStop(string device, WAVE/WAVE scaledDataWave, WAVE config)
 
 	variable i, numChannels, firstUnAcquiredIndex, adcSize
+	variable firstUnAcquiredADIndex
 
 	NVAR fifoPosGlobal = $GetFifoPosition(device)
 	ASSERT(!IsNaN(fifoPosGlobal), "Invalid fifoPosGlobal")
 
-	WAVE channelADC = scaledDataWave[GetFirstADCChannelIndex(config)]
 	adcSize = HW_GetEffectiveADCWaveLength(device, DATA_ACQUISITION_MODE)
-	plannedTime = IndexToScale(channelADC, adcSize - 1, ROWS) * MILLI_TO_ONE
-
-	FindValue/FNAN  channelADC
-	if(V_row < 0)
-		V_row = adcSize
+	WAVE channelDA = scaledDataWave[0]
+	WAVE channelAD = scaledDataWave[GetFirstADCChannelIndex(config)]
+	firstUnAcquiredADIndex = FindFirstNaNIndex(channelAD)
+	if(IsNaN(firstUnAcquiredADIndex))
+		firstUnAcquiredADIndex = adcSize
 	endif
-	ASSERT(V_row == fifoPosGlobal, "Mismatch of NaN boundary in ADC channel to last fifo position")
+	ASSERT(firstUnAcquiredADIndex == fifoPosGlobal, "Mismatch of NaN boundary in ADC channel to last fifo position")
 
+	plannedTime = IndexToScale(channelDA, DimSize(channelDA, ROWS), ROWS) * MILLI_TO_ONE
 	if(fifoPosGlobal == adcSize)
-		return [plannedTime, plannedTime]
+		return [plannedTime, NaN]
 	endif
 
-	acquiredTime = fifoPosGlobal ? IndexToScale(channelADC, max(fifoPosGlobal - 1, 0), ROWS) * MILLI_TO_ONE : 0
-
+	acquiredTime = fifoPosGlobal ? IndexToScale(channelAD, max(fifoPosGlobal - 1, 0), ROWS) * MILLI_TO_ONE : 0
 	numChannels = DimSize(config, ROWS)
 	for(i = 0; i < numChannels; i += 1)
 		if(!(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC || config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL))

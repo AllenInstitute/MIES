@@ -271,26 +271,17 @@ static Function TestEpochGaps(WAVE startTall, WAVE endTall, WAVE isOodDAQ, WAVE 
 	Extract/FREE endTall, endT, isOodDAQ == 0 && levels == level
 	CHECK_EQUAL_WAVES(startT, endT, mode = DIMENSION_SIZES)
 
-	lastx = IndexToScale(DAchannel, DimSize(DAchannel, ROWS) - 1, ROWS) * MILLI_TO_ONE
+	lastx = IndexToScale(DAchannel, DimSize(DAchannel, ROWS), ROWS) * MILLI_TO_ONE
 	CHECK_GT_VAR(lastx, 0.0)
 
 	epochCnt = DimSize(startT, ROWS)
-	for(i = 0; i < epochCnt; i += 1)
-
-		// first starts at 0.0
-		if(i == 0)
-			CHECK_EQUAL_VAR(startT[i], 0.0)
-		endif
-
-		// last has the x-coordinate as the last point in the DA wave
-		if(i == epochCnt - 1)
-			CHECK_CLOSE_VAR(lastx, endT[i], tol = 1e-10)
-		endif
-
+	if(epochCnt)
+		CHECK_EQUAL_VAR(startT[0], 0.0)
+		CHECK_CLOSE_VAR(lastx, endT[epochCnt - 1], tol = 1e-10)
+	endif
+	for(i = 1; i < epochCnt; i += 1)
 		// and in between no gaps
-		if(i > 0)
-			CHECK_EQUAL_VAR(startT[i], endT[i - 1])
-		endif
+		CHECK_EQUAL_VAR(startT[i], endT[i - 1])
 	endfor
 End
 
