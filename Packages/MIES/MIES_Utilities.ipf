@@ -6945,3 +6945,16 @@ threadsafe Function IndexAfterDecimation(variable sourceIndex, variable decimati
 	ASSERT_TS(IsInteger(sourceIndex) && sourceIndex >= 0, "sourceIndex must be integer & >= 0")
 	return sourceIndex == 0 ? -1 : floor((sourceIndex - 0.5) / decimationFactor)
 End
+
+/// @brief Returns the first row index that is NaN from the floating point wave wv, NaN if no index is NaN
+threadsafe Function FindFirstNaNIndex(WAVE wv)
+
+	ASSERT_TS(IsFloatingPointWave(wv), "input wave must be floating point")
+
+	FindValue/FNAN  wv
+	if(V_row < 0)
+		return NaN
+	endif
+
+	return V_row
+End

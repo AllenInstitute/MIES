@@ -7761,3 +7761,30 @@ static Function TestIndexAfterDecimation([md])
 
 	CHECK_EQUAL_VAR(edgeLeft, edgeLeftCalculated)
 End
+
+Function TestFindFirstNaNIndex()
+
+	variable idx
+
+	Make/FREE/I wi
+	try
+		FindFirstNaNIndex(wi)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE wv
+	idx = FindFirstNaNIndex(wv)
+	CHECK_EQUAL_VAR(idx, NaN)
+
+	Make/FREE wv
+	wv[10,] = NaN
+	idx = FindFirstNaNIndex(wv)
+	CHECK_EQUAL_VAR(idx, 10)
+
+	Make/FREE wv
+	wv[] = NaN
+	idx = FindFirstNaNIndex(wv)
+	CHECK_EQUAL_VAR(idx, 0)
+End
