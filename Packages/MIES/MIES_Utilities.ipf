@@ -978,7 +978,7 @@ Function IsDataFolderEmpty(DFREF dfr)
 	       ) == 0
 End
 
-/// @brief Removes all empty datafolders in the passed datafolder reference
+/// @brief Remove all empty datafolders in the passed datafolder reference recursively including sourceDFR
 Function RemoveAllEmptyDataFolders(sourceDFR)
 	DFREF sourceDFR
 
@@ -991,14 +991,12 @@ Function RemoveAllEmptyDataFolders(sourceDFR)
 
 	numFolder = CountObjectsDFR(sourceDFR, COUNTOBJECTS_DATAFOLDER)
 
-	if(!numFolder)
-		return NaN
-	endif
-
 	for(i = numFolder - 1; i >= 0; i -= 1)
 		folder = GetDataFolder(1, sourceDFR) + GetIndexedObjNameDFR(sourceDFR, COUNTOBJECTS_DATAFOLDER, i)
-		RemoveEmptyDataFolder($folder)
+		RemoveAllEmptyDataFolders($folder)
 	endfor
+
+	RemoveEmptyDataFolder(sourceDFR)
 end
 
 /// @name Debugger state constants for DisableDebugger and ResetDebuggerState
