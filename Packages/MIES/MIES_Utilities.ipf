@@ -1001,30 +1001,6 @@ Function RemoveAllEmptyDataFolders(sourceDFR)
 	endfor
 end
 
-/// @brief Recursively remove all folders from the datafolder path,
-/// if and only if all are empty.
-Function RecursiveRemoveEmptyDataFolder(dfr)
-	dfref dfr
-
-	variable numItems, i
-	string path, partialPath
-
-	if(!DataFolderExistsDFR(dfr))
-		return 0
-	endif
-
-	path = GetDataFolder(1, dfr)
-	path = RemoveEnding(path, ":")
-	numItems = ItemsInList(path, ":")
-	partialPath = path
-	for(i=numItems-1; i >= 1; i-=1)
-		if(!RemoveEmptyDataFolder($partialPath))
-			break
-		endif
-		partialPath = RemoveEnding(partialPath, ":" + StringFromList(i, path, ":"))
-	endfor
-End
-
 /// @name Debugger state constants for DisableDebugger and ResetDebuggerState
 /// @{
 static Constant DEBUGGER_ENABLED        = 0x01
