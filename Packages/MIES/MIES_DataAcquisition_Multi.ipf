@@ -16,7 +16,7 @@ Function DQM_FIFOMonitor(s)
 	STRUCT BackgroundStruct &s
 
 	variable deviceID, isFinished, hardwareType
-	variable i, j, err, fifoLatest, result, channel, lastTP, gotTPChannels
+	variable i, j, err, fifoLatest, result, channel, lastTP, gotTPChannels, newSamplesCount
 	variable bufferSize
 	string device, fifoChannelName, fifoName, errMsg
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
@@ -44,7 +44,9 @@ Function DQM_FIFOMonitor(s)
 					fifoName = GetNIFIFOName(deviceID)
 					FIFOStatus/Q $fifoName
 					ASSERT(V_Flag != 0,"FIFO does not exist!")
-					if(fifoPosGlobal == V_FIFOChunks)
+					newSamplesCount = V_FIFOChunks - fifoPosGlobal
+					if(newSamplesCount < 2)
+						// workaround for Igor Pro bug 5092
 						continue // no new data -> next device
 					endif
 
@@ -55,11 +57,11 @@ Function DQM_FIFOMonitor(s)
 						fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
 						channel = str2num(fifoChannelName)
 						WAVE NIChannel = NIDataWave[channel]
+						FIFO2WAVE/R=[fifoPosGlobal, fifoPosGlobal + newSamplesCount - 1] $fifoName, $fifoChannelName, wNIReadOut; AbortOnRTE
+
 						bufferSize = DimSize(NIChannel, ROWS)
 						fifoLatest = min(V_FIFOChunks, bufferSize)
 						isFinished = (fifoLatest == bufferSize) ? 1 : isFinished
-
-						FIFO2WAVE/R=[fifoPosGlobal, fifoLatest - 1] $fifoName, $fifoChannelName, wNIReadOut; AbortOnRTE
 						multithread NIChannel[fifoPosGlobal, fifoLatest - 1] = wNIReadOut[p - fifoPosGlobal]
 						SetScale/P x, 0, DimDelta(wNIReadOut, ROWS) * ONE_TO_MILLI, "ms", NIChannel
 
