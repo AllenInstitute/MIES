@@ -2362,3 +2362,22 @@ End
 static Function CheckIfNoTTLonTP_REENTRY([string str])
 	PASS()
 End
+
+#ifdef TESTS_WITH_NI_HARDWARE
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TestNIAcquisitionReliability([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_FFR:10:_RES1000"       + \
+										"__HS0_DA0_AD0_CM:VC:_ST:EpochTest6_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function TestNIAcquisitionReliability_REENTRY([str])
+	string str
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1000)
+End
+#endif
