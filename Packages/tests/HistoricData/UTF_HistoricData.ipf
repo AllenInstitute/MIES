@@ -209,11 +209,11 @@ End
 Function/WAVE GetHistoricDataFiles()
 
 	Make/FREE/T files = {"C57BL6J-629713.05.01.02.pxp",                       \
-								"Chat-IRES-Cre-neo;Ai14-582723.15.10.01.pxp",        \
-								"Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp",           \
-								"Sst-IRES-Cre;Ai14-554002.08.06.02.pxp",             \
-								"Sst-IRES-Cre;Th-P2A-FlpO;Ai65-561491.09.09.02.pxp", \
-								"epoch_clipping_2022_03_08_140256.pxp"}
+	                     "Chat-IRES-Cre-neo;Ai14-582723.15.10.01.pxp",        \
+	                     "Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp",           \
+	                     "Sst-IRES-Cre;Ai14-554002.08.06.02.pxp",             \
+	                     "Sst-IRES-Cre;Th-P2A-FlpO;Ai65-561491.09.09.02.pxp", \
+	                     "epoch_clipping_2022_03_08_140256.pxp"}
 
 	DownloadFilesIfRequired(files)
 	SetLabelsForDGWave(files)

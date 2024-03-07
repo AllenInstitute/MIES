@@ -52,7 +52,8 @@ Function RemoveAllEmpty_init_IGNORE()
 	NewDataFolder/O root:removeMe:X7
 	Make/O          root:removeMe:X7:data
 	NewDataFolder/O root:removeMe:X8
-	NewDataFolder/O root:removeMe:x8
+	NewDataFolder/O root:removeMe:X8:Y8
+	NewDataFolder/O root:removeMe:X8:Y8:Z8
 End
 
 Function RemoveAllEmpty_Works1()
@@ -73,7 +74,7 @@ Function RemoveAllEmpty_Works3()
 	NewDataFolder ttest
 	string folder = GetDataFolder(1) + "ttest"
 	RemoveAllEmptyDataFolders($folder)
-	CHECK(DataFolderExists(folder))
+	CHECK(!DataFolderExists(folder))
 End
 
 Function RemoveAllEmpty_Works4()
@@ -82,7 +83,7 @@ Function RemoveAllEmpty_Works4()
 
 	DFREF dfr = root:removeMe
 	RemoveAllEmptyDataFolders(dfr)
-	CHECK_EQUAL_VAR(CountObjectsDFR(dfr, 4), 4)
+	CHECK_EQUAL_VAR(CountObjectsDFR(dfr, COUNTOBJECTS_DATAFOLDER), 3)
 End
 /// @}
 

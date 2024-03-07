@@ -455,11 +455,7 @@ Function DownsampleWindowHook(s)
 			KillOrMoveToTrash(wv=GetDownsampleListWave())
 			KillOrMoveToTrash(wv=GetDownsampleDataRefWave())
 			KillOrMoveToTrash(wv=GetDownsampleRateWave())
-
-			RecursiveRemoveEmptyDataFolder($dataPath)
-			if(DataFolderExists(dataPath))
-				printf "Could not remove all contents of %s\r", dataPath
-			endif
+			KillOrMoveToTrash(dfr=$dataPath)
 		break
 	endswitch
 
