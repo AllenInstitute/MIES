@@ -2681,6 +2681,7 @@ Function AB_BrowserStartupSettings()
 
 	HideTools/W=$panel/A
 	SetWindow $panel, userData(panelVersion)=""
+	SetWindow $panel, userData(datafolder)=""
 
 	SetCheckBoxState(panel, "checkbox_load_overwrite", CHECKBOX_UNSELECTED)
 
@@ -2689,8 +2690,8 @@ Function AB_BrowserStartupSettings()
 	SearchForInvalidControlProcs(panel)
 	print "Do not forget to increase ANALYSISBROWSER_PANEL_VERSION."
 
-	ListBox list_experiment_contents, win=$panel, listWave=$"", selWave=$""
-	ListBox listbox_AB_Folders, win=$panel, listWave=$"", selWave=$""
+	ListBox list_experiment_contents, win=$panel, listWave=$"", selWave=$"", colorWave=$""
+	ListBox listbox_AB_Folders, win=$panel, listWave=$"", selWave=$"", colorWave=$""
 
 	Execute/P/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
