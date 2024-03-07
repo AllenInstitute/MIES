@@ -29,7 +29,7 @@ Window DebugPanel() : Panel
 	PopupMenu popup_select_files,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_select_files,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_select_files,mode=2,popvalue="All",value= #"\"- none -;All\""
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C*J,ht#zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"

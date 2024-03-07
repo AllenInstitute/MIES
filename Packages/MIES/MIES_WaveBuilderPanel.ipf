@@ -1869,7 +1869,7 @@ static Function WBP_ToggleAnalysisParamGUI()
 	ListBox list_params,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ListBox list_params,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	DefineGuide UGFR1={FL,0.35, FR},UGFL1={FL,12},UGFT1={FT,68},UGFB1={FB,-78}
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E<5QF0/J,fQLzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"

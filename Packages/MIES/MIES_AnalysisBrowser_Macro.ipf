@@ -110,7 +110,7 @@ Window AnalysisBrowser() : Panel
 	Button button_AB_AddFiles,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	DefineGuide splitGuide={FT,10},UGVL={FL,15}
 	SetWindow kwTopWin,hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#EIJ,hu%zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"

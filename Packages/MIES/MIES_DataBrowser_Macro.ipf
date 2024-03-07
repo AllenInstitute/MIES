@@ -20,7 +20,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
 	SetWindow kwTopWin,hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
 	SetWindow kwTopWin,hook(sweepScrolling)=BSP_SweepsAndMouseWheel
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(BROWSER)="D"
 	SetWindow kwTopWin,userdata(DEVICE)="- none -"
 	SetWindow kwTopWin,userdata(Config_PanelType)="DataBrowser"
@@ -1239,7 +1239,7 @@ Window DataBrowser() : Graph
 	Button button_sweepformula_all_code,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	DefineGuide UGVL={FL,15},UGVR={FR,-20},UGVT={FT,113},UGVB={FB,-50},enableBoxTop={FT,25}
 	DefineGuide enableBoxBottom={enableBoxTop,50},MainBoxBottom={FB,3},MainBoxTop={enableBoxBottom,10}
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#CCJ,hsrJ,fQLzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -1256,7 +1256,7 @@ Window DataBrowser() : Graph
 	NewNotebook /F=0 /N=sweepFormula_json /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=12
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1
 	Notebook kwTopWin, font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(tabnum)="1"
 	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
@@ -1271,7 +1271,7 @@ Window DataBrowser() : Graph
 	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0,0,286}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)un`Q5gp6juaS*9:-\\LOi\"3Ld])[.hK#eE=!1`!1=@^Xod&KOHcHFV4hd75b`6!+WpoV?BghDSuQ2!&8e)8OI;FNbKI]j*sb-#s8RkQ<!B<R:<`eh\"-TY*,oXlCM0XBG3Q2ns/t+g.`T=(u\"iVCKR_0&r\\u!3R;\\D`R\\q+CdL'kjo*<d1N@@C<b@g),5AekbV7KmH6VAo\\j?[bji@Ld8tK62WW3<C@V$+OCje74\\R@`W,JaP^0b$+/Kc1c[?<;8G7WY;e`oQ%8r9,R@?g"
 	Notebook kwTopWin, zdataEnd= 1
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(tabnum)="0"
 	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
@@ -1282,7 +1282,7 @@ Window DataBrowser() : Graph
 	NewNotebook /F=1 /N=sweepFormula_help /W=(10,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=4
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
 	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0,0,251}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(tabnum)="2"
 	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
@@ -1295,7 +1295,7 @@ Window DataBrowser() : Graph
 	NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10
 	Notebook kwTopWin, defaultTab=36, autoSave= 0, magnification=100
 	Notebook kwTopWin, font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(tabnum)="6"
 	SetWindow kwTopWin,userdata(tabcontrol)="Settings"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
@@ -1377,7 +1377,7 @@ Window DataBrowser() : Graph
 	CheckBox check_limit_x_selected_sweeps,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
 	CheckBox check_limit_x_selected_sweeps,value=0
 	DefineGuide UGVL={FL,125},UGVR={FR,-200},UGVCM={FR,-100}
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#D!5QF/Czzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"

@@ -73,7 +73,7 @@ Window IDM_Headstage_Panel() : Panel
 	SetVariable setvar_INDEP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_INDEP,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_INDEP,value= _NUM:0
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#B&!!#B>J,fQLzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -101,5 +101,5 @@ Window IDM_Popup_Panel() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#B7!!#A!zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(ResizeControlsHookStash)= "ResizeControls#ResizeControlsHook"
+	SetWindow kwTopWin,userdata(ResizeControlsHookStash)= "ResizeControlsSafe"
 EndMacro
