@@ -578,12 +578,16 @@ End
 Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	string win, scPanel
+	string win, bsPanel
 	variable newSweep, newIndex
 
 	switch(pa.eventCode)
 		case 2: // mouse up
 			win = pa.win
+			bsPanel = BSP_GetPanel(win)
+
+			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = CHECKBOX_UNSELECTED)
+
 			WAVE sweeps = SB_GetPlainSweepList(win)
 			newIndex = pa.popNum - 1
 			newSweep = sweeps[newIndex]

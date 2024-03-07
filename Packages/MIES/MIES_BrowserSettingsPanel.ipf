@@ -1476,7 +1476,7 @@ End
 Function BSP_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph, scPanel
+	string graph, scPanel, bsPanel
 	variable first, last, formerLast, sweepNo, overlaySweeps
 	variable index
 
@@ -1484,6 +1484,10 @@ Function BSP_ButtonProc_ChangeSweep(ba) : ButtonControl
 		case 2: // mouse up
 			graph = GetMainWindow(ba.win)
 			scPanel = BSP_GetSweepControlsPanel(graph)
+			bsPanel = BSP_GetPanel(graph)
+
+			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = CHECKBOX_UNSELECTED)
+
 			overlaySweeps = OVS_IsActive(graph)
 
 			[first, last] = BSP_FirstAndLastSweepAcquired(graph)

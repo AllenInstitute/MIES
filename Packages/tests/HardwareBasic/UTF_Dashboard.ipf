@@ -60,12 +60,15 @@ static Function DAB_Indexing_REENTRY([string str])
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DB_Failed", val = CHECKBOX_SELECTED)
 
 	// setA
+	SetListBoxSelection(bsPanel, "list_dashboard", LISTBOX_SELECTED, 0)
 	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 0)
 
 	WAVE/Z selectedSweeps = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)
 	CHECK_EQUAL_WAVES(selectedSweeps, {0, 1, 2})
 
 	// setB
+	SetListBoxSelection(bsPanel, "list_dashboard", 0, 0)
+	SetListBoxSelection(bsPanel, "list_dashboard", LISTBOX_SELECTED, 1)
 	PGC_SetAndActivateControl(bsPanel, "list_dashboard", val = 1)
 
 	WAVE/Z selectedSweeps = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)

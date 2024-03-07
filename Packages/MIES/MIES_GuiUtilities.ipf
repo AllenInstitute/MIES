@@ -1201,7 +1201,7 @@ Function IsControlDisabled(win, control)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	return V_disable & DISABLE_CONTROL_BIT
+	return (V_disable & DISABLE_CONTROL_BIT) == DISABLE_CONTROL_BIT
 End
 
 /// @brief Return one if the given control is hidden,
@@ -1212,7 +1212,7 @@ Function IsControlHidden(win, control)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	return V_disable & HIDDEN_CONTROL_BIT
+	return (V_disable & HIDDEN_CONTROL_BIT) == HIDDEN_CONTROL_BIT
 End
 
 /// @brief Return the main window name from a full subwindow specification
@@ -2435,4 +2435,31 @@ Function [variable first, variable last] GetMarqueeHelper(string axisName, [vari
 	else
 		ASSERT(0, "Impossible state")
 	endif
+End
+
+/// @brief Wrapper for ResizeControlsHook which handles a free datafolder as CDF
+///
+/// @todo reported as #5100 to WM
+Function ResizeControlsSafe(STRUCT WMWinHookStruct &s)
+
+	variable isFreeDFR
+
+	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_RESIZE:
+			DFREF dfr = GetDataFolderDFR()
+			isFreeDFR = IsFreeDataFolder(dfr)
+			if(isFreeDFR)
+				SetDataFolder root:
+			endif
+
+			ResizeControls#ResizeControlsHook(s)
+
+			if(isFreeDFR)
+				SetDataFolder dfr
+			endif
+			break
+	endswitch
+
+	// return zero so that other hooks are called as well
+	return 0
 End

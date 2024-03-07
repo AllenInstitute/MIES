@@ -1047,30 +1047,27 @@ static Function/S AD_HasPrematureStopLegacy(WAVE numericalValues, WAVE/T textual
 	return ""
 End
 
-/// @brief Show the sweeps of the given `index` entry into the listbox
-static Function AD_SelectResult(win, [index])
-	string win
-	variable index
+/// @brief Show the sweeps from the selected SCIs in the dashboard
+static Function AD_SelectResult(string win)
 
 	string bspPanel, list
 	variable numEntries, i
 
 	bspPanel = BSP_GetPanel(win)
 
-	if(ParamIsDefault(index))
-		index = GetListBoxSelRow(bspPanel, "list_dashboard")
-	endif
-
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-	WAVE/T info = GetAnaFuncDashboardInfoWave(dfr)
 
-	if(!IsFinite(index) || index < 0 || index >= DimSize(info, ROWS))
-		return NaN
-	endif
+	WAVE selWave = GetAnaFuncDashboardselWave(dfr)
+
+	Duplicate/FREE/RMD=[*][0] selWave, selection
+	Make/FREE/T/N=(DimSize(selection, ROWS)) sweepList
+
+	WAVE/T info = GetAnaFuncDashboardInfoWave(dfr)
 
 	Make/N=0/FREE sweepsWithDuplicates
 	if(GetCheckBoxState(bspPanel, "check_BrowserSettings_DB_Passed"))
-		list = info[index][%$"Passing Sweeps"]
+		sweepList[] = SelectString(selection[p], "", info[p][%$"Passing Sweeps"])
+		list = TextWaveToList(sweepList, ";")
 
 		if(!IsEmpty(list))
 			WAVE wv = ListToNumericWave(list, ";")
@@ -1079,7 +1076,8 @@ static Function AD_SelectResult(win, [index])
 	endif
 
 	if(GetCheckBoxState(bspPanel, "check_BrowserSettings_DB_Failed"))
-		list = info[index][%$"Failing Sweeps"]
+		sweepList[] = SelectString(selection[p], "", info[p][%$"Failing Sweeps"])
+		list = TextWaveToList(sweepList, ";")
 
 		if(!IsEmpty(list))
 			WAVE wv = ListToNumericWave(list, ";")
@@ -1087,38 +1085,24 @@ static Function AD_SelectResult(win, [index])
 		endif
 	endif
 
-	if(IsNull(list))
-		print "Select the Passed/Failed checkboxes to display these sweeps"
-		ControlWindowToFront()
+	WAVE/Z sweepsWithDuplicatesClean = ZapNans(sweepsWithDuplicates)
+
+	if(!WaveExists(sweepsWithDuplicatesClean))
+		print "Select the Passed/Failed checkboxes to display the sweeps"
 		return NaN
 	endif
 
-	WAVE sweeps = GetUniqueEntries(sweepsWithDuplicates)
-
+	WAVE sweeps = GetUniqueEntries(sweepsWithDuplicatesClean)
 	numEntries = DimSize(sweeps, ROWS)
 
-	if(!numEntries)
-		WaveClear sweeps
-	endif
-
-	if(!GetCheckBoxState(bspPanel,"check_BrowserSettings_OVS"))
-		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_OVS", val = 1)
-	elseif(BSP_IsDataBrowser(win))
+	if(BSP_IsDataBrowser(win))
 		WAVE/T ovsListWave = GetOverlaySweepsListWave(dfr)
 
 		// update databrowser if required and not already done
-		WAVE/Z indizes = FindIndizes(ovsListWave, var = (numEntries > 0 ? sweeps[numEntries - 1] : -1))
+		WAVE/Z indizes = FindIndizes(ovsListWave, var = sweeps[numEntries - 1])
 		if(!WaveExists(indizes))
 			DB_UpdateToLastSweep(win, force = 1)
 		endif
-	endif
-
-	if(!GetCheckBoxState(bspPanel,"check_BrowserSettings_ADC"))
-		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_ADC", val = 1)
-	endif
-
-	if(!GetCheckBoxState(bspPanel,"check_BrowserSettings_DAC"))
-		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_DAC", val = 1)
 	endif
 
 	if(!BSP_IsDataBrowser(win) && WaveExists(sweeps))
@@ -1209,7 +1193,8 @@ Function AD_ListBoxProc(lba) : ListBoxControl
 	switch(lba.eventCode)
 		case 3: // double click
 		case 4: // cell selection
-			AD_SelectResult(lba.win, index = lba.row)
+		case 5: // cell selection plus Shift key
+			AD_SelectResult(lba.win)
 			break
 	endswitch
 
@@ -1249,6 +1234,8 @@ Function AD_CheckProc_Toggle(cba) : CheckBoxControl
 		case 2: // mouse up
 			win = cba.win
 			AD_Update(win)
+
+			AdaptDependentControls(win, "check_BrowserSettings_OVS;check_BrowserSettings_ADC;check_BrowserSettings_DAC", CHECKBOX_UNSELECTED, cba.checked, DEP_CTRLS_SAME)
 
 			if(cba.checked)
 				EnableControls(win, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
