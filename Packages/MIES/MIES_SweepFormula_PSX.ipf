@@ -483,6 +483,58 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataFiltOff
 	return [peakX, peakY]
 End
 
+static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, WAVE sweepDataFiltOff, variable kernelAmp, WAVE psxEvent)
+
+	variable numCrossings, idx, i
+	variable post_min, post_min_t, pre_max, pre_max_t, rel_peak
+	variable overrideSignQC = NaN
+	string comboKey
+
+	if(!WaveExists(peakXUnfiltered) || !WaveExists(peakYUnfiltered))
+		return [$"", $""]
+	endif
+
+	numCrossings = DimSize(peakXUnfiltered, ROWS)
+
+	Make/FREE/D/N=(numCrossings) peakX, peakY
+
+	for(i = 0; i < numCrossings; i += 1)
+
+		[post_min, post_min_t, pre_max, pre_max_t, rel_peak] = PSX_CalculateEventProperties(peakXUnfiltered, peakYUnfiltered, sweepDataFiltOff, i, kernelAmp)
+
+#ifdef AUTOMATED_TESTING
+		WAVE/Z overrideResults = GetOverrideResults()
+
+		if(WaveExists(overrideResults))
+			comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+
+			overrideSignQC = overrideResults[i][%$comboKey][%KernelAmpSignQC]
+		endif
+#endif
+
+		if(IsNaN(overrideSignQC))
+			if(sign(rel_peak) != sign(kernelAmp))
+				continue
+			endif
+		elseif(overrideSignQC == 0)
+			continue
+		endif
+
+		peakX[idx] = peakXUnfiltered[i]
+		peakY[idx] = peakYUnfiltered[i]
+
+		idx += 1
+	endfor
+
+	if(idx == 0)
+		return [$"", $""]
+	endif
+
+	Redimension/N=(idx) peakX, peakY
+
+	return [peakX, peakY]
+End
+
 static Function [variable post_min, variable post_min_t, variable pre_max, variable pre_max_t, variable rel_peak] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataFiltOff, variable index, variable kernelAmp)
 
 	variable numCrossings, i_time, peak, peak_end_search
@@ -523,12 +575,20 @@ static Function [variable post_min, variable post_min_t, variable pre_max, varia
 End
 
 /// @brief Analyze the peaks
-static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE/Z peakX, WAVE/Z peakY, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
+static Function [WAVE peakX, WAVE peakY] PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
 
 	variable i, i_time, peak, isi, post_min, post_min_t, pre_max, pre_max_t, numCrossings, rel_peak
 
+	// we need to first throw away events with invalid amplitude so that
+	// we can then calculate the distance to the neighbour in peakX[i + 1] below
+
+	[WAVE peakX, WAVE peakY] = PSX_FilterEventsKernelAmpSign(peakXUnfiltered, peakYUnfiltered, sweepDataFiltOff, kernelAmp, psxEvent)
+	WaveClear peakXUnfiltered, peakYUnfiltered
+
 	if(!WaveExists(peakX) || !WaveExists(peakY))
-		return 1
+		Redimension/N=(0, -1) psxEvent, eventFit
+
+		return [$"", $""]
 	endif
 
 	numCrossings = DimSize(peakX, ROWS)
@@ -565,7 +625,7 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 
 	psxEvent[][%tau] = PSX_FitEventDecay(sweepDataFiltOff, psxEvent, maxTauFactor, eventFit, p)
 
-	return 0
+	return [peakX, peakY]
 End
 
 /// @brief Return the x-axis range useful for displaying and extracting a single event
@@ -699,7 +759,8 @@ End
 ///
 /// LAYERS:
 /// - 0: Fit result, see GetPSXEventWaveAsFree
-/// - 1: Replacement tau, the default of NaN means don't use
+/// - 1: Replacement tau, the default of NaN means don't override
+/// - 2: Override sign check in PSX_AnalyzePeaks (0 failing, 1 passing), the default of NaN means don't override
 static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos)
 
 	variable numCombos
@@ -708,9 +769,9 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 
 	numCombos = DimSize(combos, ROWS)
 
-	Make/D/N=(numEvents, numCombos, 2) root:overrideResults/WAVE=wv
+	Make/D/N=(numEvents, numCombos, 3) root:overrideResults/WAVE=wv
 	SetDimensionLabels(wv, TextWaveToList(combos, ";"), COLS)
-	SetDimensionLabels(wv, "Fit Result;Tau", LAYERS)
+	SetDimensionLabels(wv, "Fit Result;Tau;KernelAmpSignQC", LAYERS)
 
 	wv[] = NaN
 
@@ -806,9 +867,9 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 		WAVE psxEvent = psxOperationFromCache[%psxEvent]
 		WAVE eventFit = psxOperationFromCache[%eventFit]
 	else
-		[WAVE peakX, WAVE peakY] = PSX_FindPeaks(sweepDataFiltOffDeconv, peakThresh)
+		[WAVE peakXUnfiltered, WAVE peakYUnfiltered] = PSX_FindPeaks(sweepDataFiltOffDeconv, peakThresh)
 
-		if(WaveExists(peakX) && WaveExists(peakY))
+		if(WaveExists(peakXUnfiltered) && WaveExists(peakYUnfiltered))
 			WAVE psxEvent = GetPSXEventWaveAsFree()
 			WAVE eventFit = GetPSXEventFitWaveAsFree()
 
@@ -818,11 +879,7 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 			JWN_SetStringInWaveNote(psxEvent, PSX_X_DATA_UNIT, WaveUnits(sweepData, ROWS))
 			JWN_SetStringInWaveNote(psxEvent, PSX_Y_DATA_UNIT, WaveUnits(sweepData, -1))
 
-			ret = PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakX, peakY, maxTauFactor, kernelAmp, psxEvent, eventFit)
-
-			if(ret)
-				WaveClear peakX, peakY
-			endif
+			[WAVE peakX, WAVE peakY] = PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakXUnfiltered, peakYUnfiltered, maxTauFactor, kernelAmp, psxEvent, eventFit)
 		endif
 
 		if(!WaveExists(peakX) || !WaveExists(peakY))
