@@ -484,10 +484,14 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataFiltOff
 End
 
 /// @brief Analyze the peaks
-static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE peakX, WAVE peakY, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
+static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE/Z peakX, WAVE/Z peakY, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
 
 	variable i, i_time, rel_peak, peak, dc_peak_t, isi, post_min, post_min_t, pre_max, pre_max_t, numCrossings
 	variable peak_end_search
+
+	if(!WaveExists(peakX) || !WaveExists(peakY))
+		return 1
+	endif
 
 	numCrossings = DimSize(peakX, ROWS)
 	for(i = 0; i < numCrossings; i += 1)
@@ -548,6 +552,8 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 	psxEvent[][%$"Fit result"]           = 0
 
 	psxEvent[][%tau] = PSX_FitEventDecay(sweepDataFiltOff, psxEvent, maxTauFactor, eventFit, p)
+
+	return 0
 End
 
 /// @brief Return the x-axis range useful for displaying and extracting a single event
@@ -763,6 +769,7 @@ End
 static Function PSX_OperationImpl(string graph, variable parameterJSONID, string id, variable peakThresh, variable maxTauFactor, WAVE riseTimeParams, variable kernelAmp, variable index, WAVE/WAVE output)
 
 	string comboKey, key, psxOperationKey, psxParametersEvents
+	variable ret
 
 	key = PSX_GenerateKey("sweepData", index)
 	WAVE sweepData = output[%$key]
@@ -789,6 +796,23 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 	else
 		[WAVE peakX, WAVE peakY] = PSX_FindPeaks(sweepDataFiltOffDeconv, peakThresh)
 
+		if(WaveExists(peakX) && WaveExists(peakY))
+			WAVE psxEvent = GetPSXEventWaveAsFree()
+			WAVE eventFit = GetPSXEventFitWaveAsFree()
+
+			JWN_SetWaveNoteFromJSON(psxEvent, parameterJsonID, release = 0)
+
+			JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
+			JWN_SetStringInWaveNote(psxEvent, PSX_X_DATA_UNIT, WaveUnits(sweepData, ROWS))
+			JWN_SetStringInWaveNote(psxEvent, PSX_Y_DATA_UNIT, WaveUnits(sweepData, -1))
+
+			ret = PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakX, peakY, maxTauFactor, kernelAmp, psxEvent, eventFit)
+
+			if(ret)
+				WaveClear peakX, peakY
+			endif
+		endif
+
 		if(!WaveExists(peakX) || !WaveExists(peakY))
 			// clear entries from this combo
 			key           = PSX_GenerateKey("sweepData", index)
@@ -805,17 +829,6 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 
 			return 1
 		endif
-
-		WAVE psxEvent = GetPSXEventWaveAsFree()
-		JWN_SetWaveNoteFromJSON(psxEvent, parameterJsonID, release = 0)
-
-		WAVE eventFit = GetPSXEventFitWaveAsFree()
-
-		JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
-		JWN_SetStringInWaveNote(psxEvent, PSX_X_DATA_UNIT, WaveUnits(sweepData, ROWS))
-		JWN_SetStringInWaveNote(psxEvent, PSX_Y_DATA_UNIT, WaveUnits(sweepData, -1))
-
-		PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakX, peakY, maxTauFactor, kernelAmp, psxEvent, eventFit)
 
 		Make/FREE/WAVE/N=(4) psxOperation
 		SetDimensionLabels(psxOperation, "peakX;peakY;psxEvent;eventFit", ROWS)
