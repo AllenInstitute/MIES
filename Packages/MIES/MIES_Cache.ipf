@@ -70,6 +70,31 @@
 /// @anchor CacheKeyGenerators
 /// @{
 
+/// @brief Cache key generator for recreated epochs wave
+Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+
+	variable crc
+
+	// the calculation assumes that recreated epochs are based on an old LNB
+	// thats content is treated as const (except mod time, as this check is fast)
+
+	ASSERT_TS(!IsFreeWave(numericalValues), "Numerical LNB wave must be global")
+	ASSERT_TS(!IsFreeWave(textualValues), "Textual LNB wave must be global")
+	ASSERT_TS(!IsFreeDatafolder(sweepDFR), "sweepDFR must not be free")
+
+	crc = StringCRC(0, GetWavesDataFolder(numericalValues, 2))
+	crc = StringCRC(crc, num2istr(WaveModCountWrapper(numericalValues)))
+
+	crc = StringCRC(crc, GetWavesDataFolder(textualValues, 2))
+	crc = StringCRC(crc, num2istr(WaveModCountWrapper(textualValues)))
+
+	crc = StringCRC(crc, GetDataFolder(1, sweepDFR))
+	crc = StringCRC(crc, num2istr(sweepNo))
+	crc = StringCRC(crc, num2istr(SWEEP_EPOCH_VERSION))
+
+	return num2istr(crc) + "Version 1"
+End
+
 /// @brief Cache key generator for oodDAQ offset waves
 Function/S CA_DistDAQCreateCacheKey(params)
 	STRUCT OOdDAQParams &params
