@@ -519,7 +519,7 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 		endif
 
 		if(i < numCrossings - 1)
-			peak_end_search = min(i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS, peakX[idx + 1])
+			peak_end_search = min(i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS, peakX[i + 1])
 		else
 			peak_end_search = i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS
 		endif
