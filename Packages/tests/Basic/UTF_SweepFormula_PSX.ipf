@@ -2153,6 +2153,12 @@ static Function JumpToUndet()
 
 	string browser, code, psxGraph, win, mainWindow
 
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
 	browser = SetupDatabrowserWithSomeData()
 
 	code = GetTestCode("nothing")
@@ -2212,6 +2218,13 @@ static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
 	string browser, code, psxGraph, win, mainWindow, postProc, psxStatsGraph
 	variable logMode
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
 
 	postProc = m.s0
 	logMode  = m.v0
@@ -2274,6 +2287,12 @@ static Function CursorMovement()
 
 	string browser, code, psxGraph, win, mainWindow
 
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
 	browser = SetupDatabrowserWithSomeData()
 
 	code = GetTestCode("nothing")
@@ -2307,6 +2326,12 @@ End
 static Function CursorMovementStats()
 
 	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2956,6 +2981,12 @@ static Function CheckResultsWavesForAverageFitResult()
 
 	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry
 
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
 	browser = SetupDatabrowserWithSomeData()
 
 	code = GetTestCode("nothing")
@@ -2992,6 +3023,12 @@ End
 static Function TestBlockIndexLogic()
 
 	string browser, code, psxGraph, win, mainWindow, specialEventPanel, extAllGraph
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -3206,6 +3243,12 @@ End
 static Function TestOperationPrep()
 
 	string win, device, code, psxCode
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
