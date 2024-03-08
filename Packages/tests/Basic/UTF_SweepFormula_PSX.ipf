@@ -1452,6 +1452,13 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 	string win, browser, code, psxGraph, psxStatsGraph, postProc
 	variable numEvents, logMode
 
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%$"Tau"]        = 1
+
 	postProc = m.s0
 	logMode  = m.v0
 
