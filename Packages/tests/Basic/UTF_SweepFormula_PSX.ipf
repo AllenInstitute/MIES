@@ -1298,8 +1298,8 @@ static Function MouseSelectionPSX()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	// all decay fits are successfull
-	overrideResults[][] = 1
+	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%$"Tau"]        = 1
 
 	browser = DB_OpenDataBrowser()
 	device  = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
@@ -2110,8 +2110,8 @@ static Function KeyboardInteractions()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	// all decay fits are successfull
-	overrideResults[][] = 1
+	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%$"Tau"]        = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2326,8 +2326,8 @@ static Function KeyboardInteractionsStats()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	// all decay fits are successfull
-	overrideResults[][] = 1
+	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%$"Tau"]        = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2553,8 +2553,8 @@ static Function KeyboardInteractionsStatsSpecial()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	// all decay fits are successfull
-	overrideResults[][] = 1
+	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%$"Tau"]        = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2994,8 +2994,8 @@ static Function TestStoreAndLoad()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	// all decay fits are successfull
-	overrideResults[][] = 1
+	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%$"Tau"]        = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
