@@ -2364,7 +2364,7 @@ Function [STRUCT DataConfigurationResult s] DC_RecreateDataConfigurationResultFr
 	variable index, i, idx, hwType
 
 	s.dataAcqOrTP = DATA_ACQUISITION_MODE
-	DC_RecreateDataConfigurationResultFromLNB_Indep(s, numericalValues, textualValues, sweepNo)
+	DC_RecreateDataConfigurationResultFromLNB_Indep(s, numericalValues, textualValues, sweepDFR, sweepNo)
 
 	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Headstage Active", s.dataAcqOrTP)
 	if(WaveExists(settings))
@@ -2376,6 +2376,9 @@ Function [STRUCT DataConfigurationResult s] DC_RecreateDataConfigurationResultFr
 
 	[WAVE daGains] = DC_RecreateDataConfigurationResultFromLNB_DAC(s, numericalValues, textualValues, sweepNo)
 	DC_CalculateInsertStart(s)
+	if(IsNaN(s.baselineFrac))
+		DC_RecreateDataConfigurationResultFromLNB_baselineFrac_Path2(s, numericalValues, textualValues, sweepDFR, sweepNo)
+	endif
 
 	[WAVE adGains] = DC_RecreateDataConfigurationResultFromLNB_ADC(s, numericalValues, textualValues, sweepNo)
 	DC_RecreateDataConfigurationResultFromLNB_TTL(s, numericalValues, textualValues, sweepNo)
@@ -2628,7 +2631,84 @@ static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(S
 	return [daGains]
 End
 
-static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)
+static Function DC_RecreateDataConfigurationResultFromLNB_baselineFrac_Path2(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+
+	variable level = GetMachineEpsilon(IGOR_TYPE_64BIT_FLOAT)
+	variable startIndex, endIndex, startIndexHigh, endIndexHigh, startIndexLow, endIndexLow, testPulseLength
+
+	ASSERT(DimSize(s.DACList, ROWS), "No active DA channel found.")
+	if(IsNaN(s.onsetDelayAuto))
+		// try to determine if TP was on
+		print "TODO"
+		return NaN
+	elseif(s.onsetDelayAuto == 0)
+		return NaN
+	else
+		testPulseLength = s.onsetDelayAuto
+	endif
+	WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
+	ASSERT(WaveExists(sweep), "Could not retrieve sweep for DataConfigurationResult recreation")
+
+	startIndexHigh = NaN
+	endIndexHigh   = NaN
+	startIndexLow  = NaN
+	endIndexLow    = NaN
+	FindLevel/Q/EDGE=(FINDLEVEL_EDGE_INCREASING)/P/R=[0, testPulseLength - 1] sweep, level
+	if(!V_flag)
+		startIndexHigh = trunc(V_LevelX) + 1
+		FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/P/R=[startIndexHigh, testPulseLength - 1] sweep, level
+		if(!V_flag)
+			endIndexHigh = trunc(V_LevelX) + 1
+		endif
+	endif
+	// try negative
+	FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/P/R=[0, testPulseLength - 1] sweep, -level
+	if(!V_flag)
+		startIndexLow = trunc(V_LevelX) + 1
+		FindLevel/Q/EDGE=(FINDLEVEL_EDGE_INCREASING)/P/R=[startIndexLow, testPulseLength - 1] sweep, -level
+		if(!V_flag)
+			endIndexLow = trunc(V_LevelX) + 1
+		endif
+	endif
+
+	if(IsNaN(startIndexHigh) || IsNaN(endIndexHigh))
+		if(IsNaN(startIndexLow) || IsNaN(endIndexLow))
+			return NaN
+		else
+			startIndex = startIndexLow
+			endIndex   = endIndexLow
+		endif
+	elseif(IsNaN(startIndexLow) || IsNaN(endIndexLow))
+		startIndex = startIndexHigh
+		endIndex   = endIndexHigh
+	elseif(startIndexLow < startIndexHigh)
+		startIndex = startIndexLow
+		endIndex   = endIndexLow
+	else
+		startIndex = startIndexHigh
+		endIndex   = endIndexHigh
+	endif
+
+	s.baselineFrac = TP_CalculateBaselineFraction(endIndex - startIndex, testPulseLength)
+
+	s.testPulseLength     = testPulseLength
+	s.tpPulseStartPoint   = startIndex
+	s.tpPulseLengthPoints = endIndex - startIndex - 1
+
+	WAVE s.testPulse = GetTestPulseAsFree()
+	TP_CreateTestPulseWaveImpl(s.testPulse, s.testPulseLength, s.tpPulseStartPoint, s.tpPulseLengthPoints)
+End
+
+static Function DC_RecreateDataConfigurationResultFromLNB_SamplingInterval_Path2(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+
+	[WAVE/D daGains] = DC_RecreateDataConfigurationResultFromLNB_DAC(s, numericalValues, textualValues, sweepNo)
+	ASSERT(DimSize(s.DACList, ROWS), "No DA channel found")
+	WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
+	ASSERT(WaveExists(sweep), "Could not retrieve sweep for DataConfigurationResult recreation")
+	s.samplingIntervalDA = DimDelta(sweep, ROWS)
+End
+
+static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 
 	variable onsetDelayUserTime, onsetDelayAutoTime, distributedDAQDelayTime, terminationDelayTime
 	string device
@@ -2695,6 +2775,10 @@ static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfi
 			DEBUGPRINT("LNB entry not found: Sampling interval")
 		endif
 	endif
+	if(IsNaN(s.samplingIntervalDA))
+		DC_RecreateDataConfigurationResultFromLNB_SamplingInterval_Path2(s, numericalValues, textualValues, sweepDFR, sweepNo)
+	endif
+
 	s.samplingIntervalAD   = IsNaN(s.samplingIntervalAD) ? s.samplingIntervalDA : s.samplingIntervalAD
 	s.samplingIntervalTTL  = IsNaN(s.samplingIntervalTTL) ? s.samplingIntervalDA : s.samplingIntervalTTL
 	s.samplingIntervalDA  *= MILLI_TO_MICRO
@@ -2755,6 +2839,10 @@ static Function DC_RecreateDataConfigurationResultFromLNB_TP(STRUCT DataConfigur
 
 	variable pulseDurationTime, totalLengthPoints, pulseStartPoints, pulseLengthPoints
 
+	if(s.testPulseLength > 0)
+		// calculated before with a workaround for old LNBs
+		return NaN
+	endif
 	pulseDurationTime = GetLastSettingIndep(numericalValues, sweepNo, "TP Pulse Duration", s.dataAcqOrTP)
 	if(IsNaN(pulseDurationTime))
 		DEBUGPRINT("LNB entry not found: TP Pulse Duration")
