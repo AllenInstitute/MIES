@@ -2754,6 +2754,19 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Load Both"
+Function AB_ButtonProc_LoadBoth(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventcode)
+		case 2:
+			AB_CheckPanelVersion(ba.win)
+			AB_LoadStimsetsAndSweeps()
+	endswitch
+
+	return 0
+End
+
 /// @brief Button "Load Stimsets"
 Function AB_ButtonProc_LoadStimsets(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
@@ -3554,4 +3567,29 @@ static Function AB_MemoryFreeMappedDF()
 	for(i = 0; i < size; i += 1)
 		AB_RemoveMapEntry(i)
 	endfor
+End
+
+static Function AB_LoadStimsetsAndSweeps()
+
+	variable oneValidStimset, oneValidSweep, sweepNo
+	string panel
+
+	oneValidStimset = AB_LoadFromFile(AB_LOAD_STIMSET)
+	if(!oneValidStimset)
+		print "No stimset(s) found"
+		return 1
+	endif
+
+	DFREF sweepBrowserDFR = SB_OpenSweepBrowser()
+	oneValidSweep = AB_LoadFromFile(AB_LOAD_SWEEP, sweepBrowserDFR = sweepBrowserDFR)
+	SVAR/SDFR=sweepBrowserDFR graph
+	if(oneValidSweep)
+		AD_Update(graph)
+		panel = BSP_GetSweepControlsPanel(graph)
+		PGC_SetAndActivateControl(panel, "button_SweepControl_PrevSweep")
+		LBV_SelectExperimentAndDevice(graph)
+	else
+		KillWindow $graph
+		return NaN
+	endif
 End
