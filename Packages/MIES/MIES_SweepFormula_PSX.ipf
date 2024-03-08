@@ -494,6 +494,11 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 		return 1
 	endif
 
+	// @todo we need to first throw away events with invalid amplitude so that
+	// we can then calculate peakX[idx + 1] below
+
+	// PSX_FilterEventsKernelAmpSign(peakX, peakY, kernelAmp)
+
 	numCrossings = DimSize(peakX, ROWS)
 	for(i = 0; i < numCrossings; i += 1)
 
@@ -518,6 +523,7 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 			continue
 		endif
 
+		// @todo i -> idx
 		if(i < numCrossings - 1)
 			peak_end_search = min(i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS, peakX[i + 1])
 		else
