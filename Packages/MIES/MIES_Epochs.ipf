@@ -127,8 +127,8 @@ End
 
 static Function EP_CollectEpochInfoDA(WAVE/T epochWave, STRUCT DataConfigurationResult &s)
 
-	variable i, epochBegin, epochEnd
-	variable isUnAssociated, testPulseLength
+	variable i, epochBegin, epochEnd, err
+	variable isUnAssociated, testPulseLength, dwStimsetEndIndex
 	string                      tags
 	STRUCT EP_EpochCreationData ec
 
@@ -191,19 +191,22 @@ static Function EP_CollectEpochInfoDA(WAVE/T epochWave, STRUCT DataConfiguration
 			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, tags, EPOCH_SN_BL_TERMINATIONDELAY, 0)
 		endif
 
-		EP_AddEpochsFromStimSetNote(ec)
+		[err, dwStimsetEndIndex] = EP_AddEpochsFromStimSetNote(ec)
+		if(err)
+			printf "Error: Epoch Recreation, could not fully create epochs for stimset %s \r", "" + s.setName[i]
+		else
+			// if dDAQ is on then channels 0 to numEntries - 1 have a trailing base line
+			epochBegin = ec.dwStimsetBegin + ec.dwStimsetSize + s.terminationDelay
+			if(s.stopCollectionPoint > epochBegin)
+				tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+				EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin * ec.samplingInterval, s.stopCollectionPoint * ec.samplingInterval, tags, EPOCH_SN_BL_GENERALTRAIL, 0)
+			endif
+		endif
 
 		if(s.distributedDAQOptOv)
 			epochBegin = ec.dwStimsetBegin * s.samplingIntervalDA
-			epochEnd   = (ec.dwStimsetBegin + ec.dwStimsetSize) * s.samplingIntervalDA
+			epochEnd   = err ? Inf : (ec.dwStimsetBegin + ec.dwStimsetSize) * s.samplingIntervalDA
 			EP_AddEpochsFromOodDAQRegions(ec.epochWave, ec.channel, s.regions[i], epochBegin, epochEnd)
-		endif
-
-		// if dDAQ is on then channels 0 to numEntries - 1 have a trailing base line
-		epochBegin = ec.dwStimsetBegin + ec.dwStimsetSize + s.terminationDelay
-		if(s.stopCollectionPoint > epochBegin)
-			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin * ec.samplingInterval, s.stopCollectionPoint * ec.samplingInterval, tags, EPOCH_SN_BL_GENERALTRAIL, 0)
 		endif
 
 		testPulseLength = s.testPulseLength * s.samplingIntervalDA
@@ -223,7 +226,7 @@ End
 static Function EP_CollectEpochInfoTTL(WAVE/T epochWave, STRUCT DataConfigurationResult &s)
 
 	variable i
-	variable epochBegin, epochEnd, dwStimsetEndIndex
+	variable epochBegin, epochEnd, dwStimsetEndIndex, err
 	string                      tags
 	STRUCT EP_EpochCreationData ec
 
@@ -275,7 +278,11 @@ static Function EP_CollectEpochInfoTTL(WAVE/T epochWave, STRUCT DataConfiguratio
 			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin * ec.samplingInterval, epochEnd * ec.samplingInterval, tags, EPOCH_SN_BL_ONSETDELAYUSER, 0)
 		endif
 
-		dwStimsetEndIndex = EP_AddEpochsFromStimSetNote(ec)
+		[err, dwStimsetEndIndex] = EP_AddEpochsFromStimSetNote(ec)
+		if(err)
+			// @todo workaround, reported to WM as #5205
+			printf "Error: Epoch Recreation, could not fully create epochs for stimset %s \r", "" + s.TTLsetName[i]
+		endif
 
 		if(s.terminationDelay)
 			epochBegin = dwStimsetEndIndex
@@ -367,6 +374,10 @@ static Function [WAVE/D wbStimsetEpochOffset, WAVE/D wbStimsetEpochLength] EP_Ge
 
 	wbStimsetEpochLength[] = WB_GetWaveNoteEntryAsNumber(ec.stimNote, EPOCH_ENTRY, sweep = ec.sweep, epoch = p, key = EPOCH_LENGTH_INDEX_KEY)
 	for(epochNr = 0; epochNr < epochCount; epochNr += 1)
+		if(IsNaN(wbStimsetEpochLength[epochNr]))
+			printf "Error: Epoch Recreation, stimset note has no length information for stimset epoch %d \r", epochNr
+			return [$"", $""]
+		endif
 		wbStimsetEpochOffset[epochNr] = offset
 		offset                       += wbStimsetEpochLength[epochNr]
 	endfor
@@ -417,7 +428,7 @@ End
 ///
 /// @param ec                EP_EpochCreationData
 /// @param stimepochDuration durations of the stimset epochs in microseconds
-static Function [variable stimsetBegin, variable stimsetEnd, variable stimsetEndIndex] EP_AddEpochsForStimset(STRUCT EP_EpochCreationData &ec, WAVE stimepochDuration)
+static Function [variable err, variable stimsetBegin, variable stimsetEnd, variable stimsetEndIndex] EP_AddEpochsForStimset(STRUCT EP_EpochCreationData &ec, WAVE stimepochDuration)
 
 	variable stimsetDuration, stimsetEndLogical, oodDAQTime
 	variable tiStimsetBaselineTrailBegin, tiStimsetBaselineTrailEnd, dwEffectiveStimsetStartIndex
@@ -428,7 +439,9 @@ static Function [variable stimsetBegin, variable stimsetEnd, variable stimsetEnd
 	oodDAQTime   = (IndexAfterDecimation(ec.wbOodDAQOffset, ec.decimationFactor) + 1) * ec.samplingInterval
 
 	stimsetDuration = sum(stimepochDuration)
-	ASSERT(stimsetDuration > 0, "Expected stimsetDuration > 0")
+	if(IsNaN(stimsetDuration))
+		return [1, stimsetBegin, NaN, NaN]
+	endif
 	stimsetEndLogical = stimsetBegin + stimsetDuration + oodDAQTime
 
 	if(!IsNaN(ec.dwJoinedTTLStimsetSize) && ec.dwStimsetSize < ec.dwJoinedTTLStimsetSize)
@@ -476,7 +489,7 @@ static Function [variable stimsetBegin, variable stimsetEnd, variable stimsetEnd
 		EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, tiStimsetBaselineTrailBegin, tiStimsetBaselineTrailEnd, tags, EPOCH_SN_STIMSET + "_" + EPOCH_SN_STIMSETBLTRAIL, 1)
 	endif
 
-	return [stimsetBegin, stimsetEnd, stimsetEndIndex]
+	return [0, stimsetBegin, stimsetEnd, stimsetEndIndex]
 End
 
 /// @brief Returns numerical epoch type from a stimset epoch of a sweep @ref WaveBuilderEpochTypes
@@ -859,10 +872,12 @@ End
 ///    relative to the calculated setLength.
 ///
 /// @param ec                   EP_EpochCreationData
-/// @returns stimset end index in data wave
-static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
+///
+/// @retval err             one if error, zero otherwise
+/// @retval stimsetEndIndex stimset end index in data wave
+static Function [variable err, variable stimsetEndIndex] EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 
-	variable stimsetBegin, stimsetEnd, stimsetEndIndex
+	variable stimsetBegin, stimsetEnd
 	variable epochBegin, epochEnd, subEpochBegin, subEpochEnd
 	string epSubTags, tags
 	variable epochNr, epochCount, cycleNr, wbFlippingIndex
@@ -880,11 +895,17 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 	ASSERT(!IsEmpty(ec.stimNote), "Stimset note is empty.")
 
 	[WAVE wbStimsetEpochOffset, WAVE wbStimsetEpochLength] = EP_GetStimEpochsOffsetAndLength(ec)
-	ec.wbEffectiveStimsetSize = sum(wbStimsetEpochLength)
+	if(WaveExists(wbStimsetEpochOffset))
+		ec.wbEffectiveStimsetSize = sum(wbStimsetEpochLength)
+		[WAVE stimepochOffsetTime, WAVE stimepochDuration] = EP_GetStimEpochsOffsetTimeAndDuration(ec, wbStimsetEpochOffset, wbStimsetEpochLength)
+	else
+		Make/FREE stimepochDuration = {ec.dwStimsetSize * ec.samplingInterval}
+	endif
 
-	[WAVE stimepochOffsetTime, WAVE stimepochDuration] = EP_GetStimEpochsOffsetTimeAndDuration(ec, wbStimsetEpochOffset, wbStimsetEpochLength)
-
-	[stimsetBegin, stimsetEnd, stimsetEndIndex] = EP_AddEpochsForStimset(ec, stimepochDuration)
+	[err, stimsetBegin, stimsetEnd, stimsetEndIndex] = EP_AddEpochsForStimset(ec, stimepochDuration)
+	if(err || !WaveExists(wbStimsetEpochOffset))
+		return [1, NaN]
+	endif
 
 	wbFlippingIndex = EP_GetFlippingIndex(ec)
 	epochCount      = WB_GetWaveNoteEntryAsNumber(ec.stimNote, STIMSET_ENTRY, key = "Epoch Count")
@@ -1054,7 +1075,7 @@ static Function EP_AddEpochsFromStimSetNote(STRUCT EP_EpochCreationData &ec)
 
 	endfor
 
-	return stimsetEndIndex
+	return [0, stimsetEndIndex]
 End
 
 /// @brief Sorts all epochs per channel number / channel type in EpochsWave
