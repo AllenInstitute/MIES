@@ -485,8 +485,10 @@ end
 /// @brief Analyze the peaks
 static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE/Z peakX, WAVE/Z peakY, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
 
-	variable i, i_time, rel_peak, peak, dc_peak_t, isi, post_min, post_min_t, pre_max, pre_max_t, numCrossings
+	variable i, idx, i_time, rel_peak, peak, dc_peak_t, isi, post_min, post_min_t, pre_max, pre_max_t, numCrossings
 	variable peak_end_search
+	variable overrideSignQC = NaN
+	string comboKey
 
 	if(!WaveExists(peakX) || !WaveExists(peakY))
 		return 1
@@ -496,10 +498,28 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 	for(i = 0; i < numCrossings; i += 1)
 
 		i_time = peakX[i]
-		peak = peakY[i]
+		peak   = peakY[i]
+
+#ifdef AUTOMATED_TESTING
+		WAVE/Z overrideResults = GetOverrideResults()
+
+		if(WaveExists(overrideResults))
+			comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+
+			overrideSignQC = overrideResults[i][%$comboKey][%KernelAmpSignQC]
+		endif
+#endif
+
+		if(IsNaN(overrideSignQC))
+			if(sign(peak) != sign(kernelAmp))
+				continue
+			endif
+		elseif(overrideSignQC == 0)
+			continue
+		endif
 
 		if(i < numCrossings - 1)
-			peak_end_search = min(i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS, peakX[i + 1])
+			peak_end_search = min(i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS, peakX[idx + 1])
 		else
 			peak_end_search = i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS
 		endif
@@ -516,15 +536,15 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 			ASSERT(0, "Can't handle kernelAmp of zero")
 		endif
 
-		EnsureLargeEnoughWave(psxEvent, indexShouldExist = i)
+		EnsureLargeEnoughWave(psxEvent, indexShouldExist = idx)
 
-		psxEvent[i][%post_min] = post_min
-		psxEvent[i][%post_min_t] = post_min_t
+		psxEvent[idx][%post_min] = post_min
+		psxEvent[idx][%post_min_t] = post_min_t
 
-		if(i == 0)
+		if(idx == 0)
 			isi = NaN
 		else
-			isi = i_time - psxEvent[i - 1][%peak_t]
+			isi = i_time - psxEvent[idx - 1][%peak_t]
 		endif
 
 		WaveStats/Q/R=(i_time - 2, i_time) sweepDataFiltOff
@@ -533,17 +553,23 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 		WaveStats/Q/R=(pre_max_t - 0.1, pre_max_t + 0.1) sweepDataFiltOff
 		pre_max = V_avg
 
-		psxEvent[i][%index] = i
-		psxEvent[i][%peak_t] = i_time
-		psxEvent[i][%peak] = peak
+		psxEvent[idx][%index] = idx
+		psxEvent[idx][%peak_t] = i_time
+		psxEvent[idx][%peak] = peak
 
-		psxEvent[i][%pre_max] = pre_max
-		psxEvent[i][%pre_max_t] = pre_max_t
-		psxEvent[i][%rel_peak] = post_min-pre_max
-		psxEvent[i][%isi] = isi
+		psxEvent[idx][%pre_max] = pre_max
+		psxEvent[idx][%pre_max_t] = pre_max_t
+		psxEvent[idx][%rel_peak] = post_min-pre_max
+		psxEvent[idx][%isi] = isi
+
+		idx += 1
 	endfor
 
-	Redimension/N=(i, -1) eventFit, psxEvent
+	if(idx == 0)
+		return 1
+	endif
+
+	Redimension/N=(idx, -1) eventFit, psxEvent
 
 	// safe defaults
 	psxEvent[][%$"Event manual QC call"] = PSX_UNDET
@@ -689,7 +715,8 @@ end
 ///
 /// LAYERS:
 /// - 0: Fit result, see GetPSXEventWaveAsFree
-/// - 1: Replacement tau, the default of NaN means don't use
+/// - 1: Replacement tau, the default of NaN means don't override
+/// - 2: Override sign check in PSX_AnalyzePeaks (0 failing, 1 passing), the default of NaN means don't override
 static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos)
 
 	variable numCombos
@@ -698,9 +725,9 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 
 	numCombos = DimSize(combos, ROWS)
 
-	Make/D/N=(numEvents, numCombos, 2) root:overrideResults/Wave=wv
+	Make/D/N=(numEvents, numCombos, 3) root:overrideResults/Wave=wv
 	SetDimensionLabels(wv, TextWaveToList(combos, ";"), COLS)
-	SetDimensionLabels(wv, "Fit Result;Tau", LAYERS)
+	SetDimensionLabels(wv, "Fit Result;Tau;KernelAmpSignQC", LAYERS)
 
 	wv[] = NaN
 

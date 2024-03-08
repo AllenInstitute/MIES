@@ -1337,7 +1337,8 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	// all decay fits are successfull
-	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
@@ -1397,6 +1398,16 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	catch
 		CHECK_NO_RTE()
 	endtry
+
+	// complains without events found due to kernelAmp sign
+	overrideResults[][][%$"KernelAmpSignQC"] = NaN
+	str = "psx(id, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -4))"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function PSXHandlesPartialResults()
@@ -1410,7 +1421,8 @@ static Function PSXHandlesPartialResults()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	// all decay fits are successfull
-	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	str = "psx(myID, psxKernel([25, 120], select(channels(AD6), [0, 2], all), 1, 2, -5), 2.5, 10, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, browser, useVariables = 0)
@@ -1425,8 +1437,9 @@ static Function TestOperationPSXTooLargeDecayTau()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(2, combos)
 
 	// all decay fits are successfull
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%Tau] = 1000
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%Tau]                = 1000
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
@@ -1528,8 +1541,9 @@ static Function MouseSelectionPSX()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = DB_OpenDataBrowser()
 	device  = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
@@ -1686,8 +1700,9 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	postProc = m.s0
 	logMode  = m.v0
@@ -1781,6 +1796,8 @@ static Function MouseSelectionStatsPostProcNonFinite()
 
 	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
 	overrideResults[0][%$combos[1]][%$"Tau"]        = +inf
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -1924,6 +1941,14 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 
 	string browser, code, extAllGraph, win, trace, info, rgbValue, mainWindow, specialEventPanel
 	variable numEvents
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+				          "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2340,8 +2365,9 @@ static Function KeyboardInteractions()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2556,8 +2582,9 @@ static Function KeyboardInteractionsStats()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2783,8 +2810,9 @@ static Function KeyboardInteractionsStatsSpecial()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2857,6 +2885,8 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 
 	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
 	overrideResults[0][%$combos[1]][%$"Tau"]        = +inf
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -3224,8 +3254,9 @@ static Function TestStoreAndLoad()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
