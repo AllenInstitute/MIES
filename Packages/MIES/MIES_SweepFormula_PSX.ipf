@@ -482,11 +482,67 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataFiltOff
 	return [peakX, peakY]
 End
 
+static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable kernelAmp, WAVE psxEvent)
+
+	variable numCrossings, idx, i, peak
+	variable overrideSignQC = NaN
+	string comboKey
+
+	if(!WaveExists(peakXUnfiltered) || !WaveExists(peakYUnfiltered))
+		return [$"", $""]
+	endif
+
+	numCrossings = DimSize(peakXUnfiltered, ROWS)
+
+	Make/FREE/D/N=(numCrossings) peakX, peakY
+
+	for(i = 0; i < numCrossings; i += 1)
+
+		peak = peakYUnfiltered[i]
+
+#ifdef AUTOMATED_TESTING
+		WAVE/Z overrideResults = GetOverrideResults()
+
+		if(WaveExists(overrideResults))
+			comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+
+			overrideSignQC = overrideResults[i][%$comboKey][%KernelAmpSignQC]
+		endif
+#endif
+
+		if(IsNaN(overrideSignQC))
+			if(sign(peak) != sign(kernelAmp))
+				continue
+			endif
+		elseif(overrideSignQC == 0)
+			continue
+		endif
+
+		peakX[idx] = peakXUnfiltered[i]
+		peakY[idx] = peakYUnfiltered[i]
+
+		idx += 1
+	endfor
+
+	if(idx == 0)
+		return [$"", $""]
+	endif
+
+	Redimension/N=(idx) peakX, peakY
+
+	return [peakX, peakY]
+End
+
 /// @brief Analyze the peaks
-static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE/Z peakX, WAVE/Z peakY, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
+static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
 
 	variable i, i_time, rel_peak, peak, dc_peak_t, isi, post_min, post_min_t, pre_max, pre_max_t, numCrossings
 	variable peak_end_search
+
+	// we need to first throw away events with invalid amplitude so that
+	// we can then calculate the distance to the neighbour in peakX[i + 1] below
+
+	[WAVE peakX, WAVE peakY] = PSX_FilterEventsKernelAmpSign(peakXUnfiltered, peakYUnfiltered, kernelAmp, psxEvent)
 
 	if(!WaveExists(peakX) || !WaveExists(peakY))
 		return 1
@@ -689,7 +745,8 @@ End
 ///
 /// LAYERS:
 /// - 0: Fit result, see GetPSXEventWaveAsFree
-/// - 1: Replacement tau, the default of NaN means don't use
+/// - 1: Replacement tau, the default of NaN means don't override
+/// - 2: Override sign check in PSX_AnalyzePeaks (0 failing, 1 passing), the default of NaN means don't override
 static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos)
 
 	variable numCombos
@@ -698,9 +755,9 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 
 	numCombos = DimSize(combos, ROWS)
 
-	Make/D/N=(numEvents, numCombos, 2) root:overrideResults/WAVE=wv
+	Make/D/N=(numEvents, numCombos, 3) root:overrideResults/WAVE=wv
 	SetDimensionLabels(wv, TextWaveToList(combos, ";"), COLS)
-	SetDimensionLabels(wv, "Fit Result;Tau", LAYERS)
+	SetDimensionLabels(wv, "Fit Result;Tau;KernelAmpSignQC", LAYERS)
 
 	wv[] = NaN
 
