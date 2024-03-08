@@ -24,7 +24,7 @@ Constant WAVEBUILDER_PANEL_VERSION        = 14
 Constant ANALYSISBROWSER_PANEL_VERSION    = 3
 
 /// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 10
+Constant STIMSET_NOTE_VERSION = 11
 
 /// Version of the epoch information for DA+TTL data
 Constant SWEEP_EPOCH_VERSION = 9
@@ -984,6 +984,9 @@ StrConstant PULSE_END_INDICES_KEY       = "Pulse Train Pulse End Indices"
 StrConstant INFLECTION_POINTS_INDEX_KEY = "Inflection Points Indices"
 StrConstant EPOCH_LENGTH_INDEX_KEY      = "Epoch Length Indices"
 StrConstant STIMSET_SIZE_KEY            = "Stimset Size"
+StrConstant STIMSET_ERROR_KEY           = "Wavebuilder Error"
+
+Constant WAVEBUILDER_STATUS_ERROR = 1
 
 /// DA_Ephys controls which should be disabled during DAQ
 StrConstant CONTROLS_DISABLE_DURING_DAQ = "Check_DataAcqHS_All;Radio_ClampMode_AllIClamp;Radio_ClampMode_AllVClamp;Radio_ClampMode_AllIZero;SetVar_Sweep;Check_DataAcq_Indexing;check_DataAcq_IndexRandom;Check_DataAcq1_IndexingLocked;check_DataAcq_RepAcqRandom;Check_DataAcq1_RepeatAcq;Check_Settings_SkipAnalysFuncs;check_Settings_MD"
