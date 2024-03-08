@@ -2513,7 +2513,7 @@ End
 
 static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)
 
-	variable index, i, idx, clampMode, wbOodDAQOffset, postFeaturePoints
+	variable index, i, idx, clampMode, wbOodDAQOffset, postFeaturePoints, stimsetError
 	string key
 
 	Make/FREE/N=(NUM_DA_TTL_CHANNELS) s.DACList
@@ -2602,7 +2602,12 @@ static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(S
 		if(WaveExists(settings))
 			s.setLength[i] = settings[index]
 		elseif(WaveExists(s.stimSet[i]))
-			s.setLength[i] = DC_CalculateGeneratedDataSizeDAQMode(DimSize(s.stimSet[i], ROWS), s.decimationFactor)
+			stimsetError = WB_GetWaveNoteEntryAsNumber(note(s.stimSet[i]), STIMSET_ENTRY, key = STIMSET_ERROR_KEY)
+			if(!stimsetError)
+				s.setLength[i] = DC_CalculateGeneratedDataSizeDAQMode(DimSize(s.stimSet[i], ROWS), s.decimationFactor)
+			else
+				s.setLength[i] = NaN
+			endif
 		endif
 
 		if(daqChannelType[i] == DAQ_CHANNEL_TYPE_DAQ)
