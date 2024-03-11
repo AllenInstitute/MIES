@@ -27,14 +27,14 @@ jobs:
       - CallPR
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0 # load all commits
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Documentation-assets
       - name: Deploy documentation to github pages
@@ -48,14 +48,14 @@ jobs:
       - CallPR
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0 # load all commits
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: BuildInstaller-user-assets
       - name: Deploy release assets to github
@@ -69,12 +69,12 @@ jobs:
       - CallPR
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download all artifacts
         id: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
       - name: 📥 Download report cache from FTP
@@ -112,7 +112,7 @@ jobs:
             -d "${{ steps.gen.outputs.history }}" \
             -t "cache/coverage-history"
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-artifacts
@@ -130,12 +130,12 @@ jobs:
       - GenerateReport
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Download all artifacts
         id: download
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
       - name: Flatten artifact structure
@@ -143,12 +143,7 @@ jobs:
           find "${{ steps.download.outputs.download-path }}" -mindepth 1 -maxdepth 1 -type d |\
             xargs -I {} tools/ftp-upload/flatten-files.sh "{}"
       - name: Compress NWB artifacts
-        run: |
-          for dir in test-itc18-assets test-itc1600-assets test-ni-assets
-          do
-            tar --remove-files --use-compress-program=zstd -cvf $dir/NWB.tar.zst $dir/*nwb
-          done
-        working-directory: ${{ steps.download.outputs.download-path }}
+        run: tools/ftp-upload/compress-nwb-files.sh "${{ steps.download.outputs.download-path }}"
       - name: Upload artifacts using FTP
         run: |
           tools/ftp-upload/upload-files.sh \
