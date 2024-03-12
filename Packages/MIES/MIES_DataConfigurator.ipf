@@ -2549,41 +2549,61 @@ End
 static Function DC_RecreateDataConfigurationResultFromLNB_baselineFrac_Path2(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 
 	variable level = 1E-3
-	variable startIndex, endIndex, testPulseLength
+	variable startIndex, endIndex, startIndexHigh, endIndexHigh, startIndexLow, endIndexLow, testPulseLength
 
 	if(!DimSize(s.DACList, ROWS))
 		return NaN
 	endif
-	if(!s.onsetDelayAuto)
+	if(IsNaN(s.onsetDelayAuto))
+		// try to determine if TP was on
+		print "TODO"
 		return NaN
+	elseif(s.onsetDelayAuto == 0)
+		return NaN
+	else
+		testPulseLength = s.onsetDelayAuto
 	endif
 	WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
 	ASSERT(WaveExists(sweep), "Could not retrieve sweep for DataConfigurationResult recreation")
 
-	testPulseLength = s.onsetDelayAuto
-	startIndex = NaN
-	endIndex = NaN
+	startIndexHigh = NaN
+	endIndexHigh = NaN
+	startIndexLow = NaN
+	endIndexLow = NaN
 	FindLevel/Q/EDGE=(FINDLEVEL_EDGE_INCREASING)/P/R=[0, testPulseLength - 1] sweep, level
 	if(!V_flag)
-		startIndex = trunc(V_LevelX) + 1
-		FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/P/R=[startIndex, testPulseLength - 1] sweep, level
+		startIndexHigh = trunc(V_LevelX) + 1
+		FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/P/R=[startIndexHigh, testPulseLength - 1] sweep, level
 		if(!V_flag)
-			endIndex = trunc(V_LevelX) + 1
+			endIndexHigh = trunc(V_LevelX) + 1
 		endif
 	endif
-	if(IsNaN(startIndex) || IsNaN(endIndex))
-		// try negative
-		FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/P/R=[0, testPulseLength - 1] sweep, -level
+	// try negative
+	FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/P/R=[0, testPulseLength - 1] sweep, -level
+	if(!V_flag)
+		startIndexLow = trunc(V_LevelX) + 1
+		FindLevel/Q/EDGE=(FINDLEVEL_EDGE_INCREASING)/P/R=[startIndexLow, testPulseLength - 1] sweep, -level
 		if(!V_flag)
-			startIndex = trunc(V_LevelX) + 1
-			FindLevel/Q/EDGE=(FINDLEVEL_EDGE_INCREASING)/P/R=[startIndex, testPulseLength - 1] sweep, -level
-			if(!V_flag)
-				endIndex = trunc(V_LevelX) + 1
-			endif
+			endIndexLow = trunc(V_LevelX) + 1
 		endif
 	endif
-	if(IsNaN(startIndex) || IsNaN(endIndex))
-		return NaN
+
+	if(IsNaN(startIndexHigh) || IsNaN(endIndexHigh))
+		if(IsNaN(startIndexLow) || IsNaN(endIndexLow))
+			return NaN
+		else
+			startIndex = startIndexLow
+			endIndex = endIndexLow
+		endif
+	elseif(IsNaN(startIndexLow) || IsNaN(endIndexLow))
+		startIndex = startIndexHigh
+		endIndex = endIndexHigh
+	elseif(startIndexLow < startIndexHigh)
+		startIndex = startIndexLow
+		endIndex = endIndexLow
+	else
+		startIndex = startIndexHigh
+		endIndex = endIndexHigh
 	endif
 
 	s.baselineFrac = TP_CalculateBaselineFraction(endIndex - startIndex, testPulseLength)
