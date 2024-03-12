@@ -91,3 +91,25 @@ static Function TryLoadingDifferentFiles()
 	KillWindow $abWin
 	KillWindow $sBrowser1
 End
+
+static Function TestAB_LoadDataWrapper()
+
+	variable numLoaded
+	string expFilePath
+	string expName = "TestAB_LoadDataWrapper.pxp"
+	string wName = "wAvE1"
+
+	WAVE/Z wv =root:WAVE1
+	KillOrMoveToTrash(wv=wv)
+	wName = UpperStr(wName)
+	Make root:$wName
+	SaveExperiment/P=home as expName
+
+	PathInfo home
+	expFilePath = S_path + expName
+
+	DFREF tmpDFR = NewFreeDataFolder()
+	wName = LowerStr(wName) + ";"
+	numLoaded = MIES_AB#AB_LoadDataWrapper(tmpDFR, expFilePath, "root:", wName, typeFlags=COUNTOBJECTS_WAVES)
+	CHECK_GT_VAR(numLoaded, 0)
+End
