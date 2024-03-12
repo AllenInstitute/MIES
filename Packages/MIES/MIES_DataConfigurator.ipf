@@ -2587,6 +2587,11 @@ static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(S
 			WAVE/T settingsT = settings
 			s.setName[i] = settingsT[index]
 			s.stimSet[i] = WB_CreateAndGetStimSet(s.setName[i])
+			if(!WaveExists(s.stimSet[i]))
+				print "DC recreation:  Could not create stimset " + s.setName[i] + ". Was the stimset data loaded?"
+			elseif(DimSize(s.stimSet[i], ROWS) == 0 || IsEmpty(note(s.stimSet[i])))
+				printf "DC recreation: WB returned invalid stimset size %d / empty note %d\r", DimSize(s.stimSet[i], ROWS), IsEmpty(note(s.stimSet[i]))
+			endif
 			if(s.offsets[i])
 				WAVE stimSet = s.stimSet[i]
 				wbOodDAQOffset    = round(s.offsets[i] / WAVEBUILDER_MIN_SAMPINT)
@@ -2606,6 +2611,7 @@ static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(S
 			if(!stimsetError)
 				s.setLength[i] = DC_CalculateGeneratedDataSizeDAQMode(DimSize(s.stimSet[i], ROWS), s.decimationFactor)
 			else
+				print "DC recreation: WB returned error for creation of stimset wave data: " + s.setName[i]
 				s.setLength[i] = NaN
 			endif
 		endif
