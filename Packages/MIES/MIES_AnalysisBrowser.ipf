@@ -1883,6 +1883,8 @@ static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, devic
 	sprintf msg, "Loaded stimsets %s of device %s and %s\r", stimsets, device, discLocation
 	DEBUGPRINT(msg)
 
+	WB_UpdateChangedStimsets()
+
 	return 0
 End
 

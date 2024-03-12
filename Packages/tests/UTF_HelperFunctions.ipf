@@ -965,7 +965,7 @@ Function/S LoadSweeps(string winAB)
 End
 
 /// @brief Open the given files, located relative to the symbolic path `home`, into an analysis browser
-Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps])
+Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets])
 
 	variable idx
 	string filePath, fullFilePath
@@ -975,6 +975,7 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	else
 		loadSweeps = !!loadSweeps
 	endif
+	loadStimsets = ParamIsDefault(loadStimsets) ? 0 : !!loadStimsets
 
 	PathInfo home
 	REQUIRE_EQUAL_VAR(V_flag, 1)
@@ -992,10 +993,11 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 
 	PGC_SetAndActivateControl(abWin, "button_AB_refresh")
 
-	if(!loadSweeps)
+	if(!loadSweeps && !loadStimsets)
 		return [abWin, ""]
 	endif
 
+	sweepBrowsers = ""
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 
@@ -1003,13 +1005,22 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	INFO("Trying to load files @%s", s = files)
 	CHECK_WAVE(indizes, NUMERIC_WAVE)
 
-	for(idx : indizes)
-		expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
-		PGC_SetAndActivateControl(abWin, "button_load_sweeps")
-	endfor
+	if(loadSweeps)
+		for(idx : indizes)
+			expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
+			PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+		endfor
 
-	sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
-	CHECK_PROPER_STR(sweepBrowsers)
+		sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
+		CHECK_PROPER_STR(sweepBrowsers)
+	endif
+
+	if(loadStimsets)
+		for(idx : indizes)
+			expBrowserSel[idx][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
+			PGC_SetAndActivateControl(abWin, "button_load_stimsets")
+		endfor
+	endif
 
 	return [abWin, sweepBrowsers]
 End
