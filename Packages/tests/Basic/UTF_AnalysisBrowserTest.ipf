@@ -113,3 +113,28 @@ static Function TestAB_LoadDataWrapper()
 	numLoaded = MIES_AB#AB_LoadDataWrapper(tmpDFR, expFilePath, "root:", wName, typeFlags=COUNTOBJECTS_WAVES)
 	CHECK_GT_VAR(numLoaded, 0)
 End
+
+static Function TestABLoadWave()
+
+	variable err
+	string expFilePath
+	string expName = "TestAB_LoadWave.pxp"
+	string wName = "wAvE1"
+
+	WAVE/Z wv = root:$wName
+	KillOrMoveToTrash(wv=wv)
+
+	Make root:$wName/WAVE=wv
+	SaveExperiment/P=home as expName
+
+	KillOrMoveToTrash(wv=wv)
+
+	PathInfo home
+	expFilePath = S_path + expName
+	err = MIES_AB#AB_LoadWave(expFilePath, "root:" + wName, 1)
+	CHECK_EQUAL_VAR(err, 0)
+
+	WAVE/Z wv = root:$wName
+	CHECK_WAVE(wv, NUMERIC_WAVE)
+
+End

@@ -2472,8 +2472,7 @@ static Function AB_LoadWave(expFilePath, fullPath, overwrite)
 		return 1
 	endif
 
-	WAVE wv = $(GetIndexedObjNameDFR(newDFR, 1, 0))
-	SetDataFolder root:
+	WAVE/SDFR=newDFR wv = $(GetIndexedObjNameDFR(newDFR, 1, 0))
 	createDFWithAllParents(dataFolder)
 	MoveWave wv, $fullPath
 
