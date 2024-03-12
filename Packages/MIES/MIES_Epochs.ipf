@@ -892,7 +892,14 @@ static Function [variable err, variable stimsetEndIndex] EP_AddEpochsFromStimSet
 
 	string epSubSubTags
 
-	ASSERT(!IsEmpty(ec.stimNote), "Stimset note is empty.")
+	if(IsEmpty(ec.stimNote))
+		DEBUGPRINT("Stimset note is empty.")
+		return [1, NaN]
+	endif
+	if(IsNaN(ec.dwStimsetBegin))
+		DEBUGPRINT("Stimset begin is not defined.")
+		return [1, NaN]
+	endif
 
 	[WAVE wbStimsetEpochOffset, WAVE wbStimsetEpochLength] = EP_GetStimEpochsOffsetAndLength(ec)
 	if(WaveExists(wbStimsetEpochOffset))
