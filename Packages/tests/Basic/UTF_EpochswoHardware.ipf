@@ -3,13 +3,15 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=EpochsTestwoHardware
 
+static StrConstant EP_DUMMY_DEVICE = "dummy"
+
 static Function [WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] PrepareEpochsTable_IGNORE()
 	variable DAC
 
 	string key, keyText
-	string device = "dummy"
+	string device = EP_DUMMY_DEVICE
 
-	WAVE/T/Z epochsWave = GetEpochsWave(DEVICE)
+	WAVE/T/Z epochsWave = GetEpochsWave(device)
 	CHECK_WAVE(epochsWave, TEXT_WAVE)
 
 	DAC = 2 // HS 0
@@ -257,4 +259,33 @@ static Function EP_CheckADCToDACMApping()
 	expected = "someDesc;ShortName=EP_1a;"
 	CHECK_EQUAL_STR(str, expected)
 	CHECK_EQUAL_VAR(str2num(result[0][%TreeLevel]), 1)
+End
+
+static Function EP_TestSortEpochs()
+
+	string refHash, orderHash, orderStr
+	variable numEpochs = 1000
+
+	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
+
+	Redimension/N=(numEpochs, -1, -1, -1) epochsWave
+	epochsWave[][EPOCH_COL_STARTTIME][][] = num2strHighPrec(-trunc(p / 3), precision = EPOCHTIME_PRECISION)
+	epochsWave[][EPOCH_COL_ENDTIME][][] = num2strHighPrec(trunc(p / 2), precision = EPOCHTIME_PRECISION)
+	epochsWave[][EPOCH_COL_TAGS][][] = num2istr(p)
+	epochsWave[][EPOCH_COL_TREELEVEL][][] = num2strHighPrec(p, precision = EPOCHTIME_PRECISION)
+	Make/FREE/D/N=(numEpochs) mixRandom = enoise(1, NOISE_GEN_XOSHIRO)
+
+	SortColumns/DIML keyWaves={mixRandom} sortWaves={epochsWave}
+	Make/FREE/D/N=(numEpochs) order = str2num(epochsWave[p][EPOCH_COL_TAGS][0][0])
+	wfprintf orderStr, "%d\r", order
+
+	MIES_EP#EP_SortEpochs(EP_DUMMY_DEVICE)
+
+	WAVE/T epochWave = GetEpochsWave(EP_DUMMY_DEVICE)
+
+	Make/FREE/D/N=(numEpochs) order = str2num(epochWave[p][EPOCH_COL_TAGS][0][0])
+	refHash = "e234059bf5dcf332577b1459e4f30e28a01103eeb598499322840378d86d69e5"
+	orderHash = WaveHash(order, HASH_SHA2_256)
+	INFO("mixed order = %s", s0 = orderStr)
+	CHECK_EQUAL_STR(refHash, orderHash)
 End
