@@ -4431,54 +4431,46 @@ End
 static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs, mode
-	string lbnKey
+	string modeTxt
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph not specified.")
+	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_LABNOTEBOOK, 1, maxArgs = 3)
 
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
-	SFH_ASSERT(numArgs <= 3, "Maximum number of three arguments exceeded.")
-	SFH_ASSERT(numArgs >= 1, "At least one argument is required.")
+	Make/FREE/T allowedValuesMode = {"UNKNOWN_MODE", "DATA_ACQUISITION_MODE", "TEST_PULSE_MODE", "NUMBER_OF_LBN_DAQ_MODES"}
+	modeTxt = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, allowedValues = allowedValuesMode, defValue = "DATA_ACQUISITION_MODE")
 
-	if(numArgs == 3)
-		WAVE/T wMode = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, checkExist = 1)
-		SFH_ASSERT(IsTextWave(wMode) && DimSize(wMode, ROWS) == 1 && !DimSize(wMode, COLS), "Last parameter needs to be a string.")
-		strswitch(wMode[0])
-			case "UNKNOWN_MODE":
-				mode = UNKNOWN_MODE
-				break
-			case "DATA_ACQUISITION_MODE":
-				mode = DATA_ACQUISITION_MODE
-				break
-			case "TEST_PULSE_MODE":
-				mode = TEST_PULSE_MODE
-				break
-			case "NUMBER_OF_LBN_DAQ_MODES":
-				mode = NUMBER_OF_LBN_DAQ_MODES
-				break
-			default:
-				SFH_ASSERT(0, "Undefined labnotebook mode. Use one in group DataAcqModes")
-		endswitch
-	else
-		mode = DATA_ACQUISITION_MODE
-	endif
+	strswitch(modeTxt)
+		case "UNKNOWN_MODE":
+			mode = UNKNOWN_MODE
+			break
+		case "DATA_ACQUISITION_MODE":
+			mode = DATA_ACQUISITION_MODE
+			break
+		case "TEST_PULSE_MODE":
+			mode = TEST_PULSE_MODE
+			break
+		case "NUMBER_OF_LBN_DAQ_MODES":
+			mode = NUMBER_OF_LBN_DAQ_MODES
+			break
+		default:
+			ASSERT(0, "Unsupported labnotebook mode")
+	endswitch
 
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 1)
 
-	WAVE/T wLbnKey = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, checkExist = 1)
-	SFH_ASSERT(IsTextWave(wLbnKey) && DimSize(wLbnKey, ROWS) == 1 && !DimSize(wLbnKey, COLS), "First parameter needs to be a string labnotebook key.")
-	lbnKey = wLbnKey[0]
+	WAVE/T lbnKeys = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, expectedWaveType = IGOR_TYPE_TEXT_WAVE, singleResult = 1)
 
-	WAVE/WAVE output = SF_OperationLabnotebookImpl(graph, lbnKey, selectData, mode, SF_OP_LABNOTEBOOK)
+	WAVE/WAVE output = SF_OperationLabnotebookImpl(graph, lbnKeys, selectData, mode, SF_OP_LABNOTEBOOK)
 
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_LABNOTEBOOK, ""))
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_LABNOTEBOOK)
 End
 
-static Function/WAVE SF_OperationLabnotebookImpl(string graph, string lbnKey, WAVE/Z selectData, variable mode, string opShort)
+static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T allLBNKeys, WAVE/Z selectData, variable mode, string opShort)
 
-	variable i, numSelected, index, settingsIndex
-	variable sweepNo, chanNr, chanType
+	variable i, numSelected, index, settingsIndex, lbnIndex
+	variable sweepNo, chanNr, chanType, numOutputWaves
+	string lbnKey
 
 	if(!WaveExists(selectData))
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
@@ -4486,51 +4478,57 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, string lbnKey, WA
 		return output
 	endif
 
-	numSelected = DimSize(selectData, ROWS)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numSelected)
+	numSelected    = DimSize(selectData, ROWS)
+	numOutputWaves = numSelected * DimSize(allLBNKeys, ROWS)
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numOutputWaves)
 
-	for(i = 0; i < numSelected; i += 1)
+	for(lbnKey : allLBNKeys)
+		for(i = 0; i < numSelected; i += 1)
 
-		sweepNo  = selectData[i][%SWEEP]
-		chanNr   = selectData[i][%CHANNELNUMBER]
-		chanType = selectData[i][%CHANNELTYPE]
+			sweepNo  = selectData[i][%SWEEP]
+			chanNr   = selectData[i][%CHANNELNUMBER]
+			chanType = selectData[i][%CHANNELTYPE]
 
-		if(!IsValidSweepNumber(sweepNo))
-			continue
-		endif
+			if(!IsValidSweepNumber(sweepNo))
+				continue
+			endif
 
-		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-		WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
-		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
-			continue
-		endif
+			WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+			if(!WaveExists(numericalValues) || !WaveExists(textualValues))
+				continue
+			endif
 
-		[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, mode)
-		if(!WaveExists(settings))
-			continue
-		endif
-		if(IsNumericWave(settings))
-			Make/FREE/D outD = {settings[settingsIndex]}
-			WAVE out = outD
-		elseif(IsTextWave(settings))
-			WAVE/T settingsT = settings
-			Make/FREE/T outT = {settingsT[settingsIndex]}
-			WAVE out = outT
-		endif
+			[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, mode)
+			if(!WaveExists(settings))
+				continue
+			endif
 
-		JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
-		JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
-		JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
-		JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
+			if(IsNumericWave(settings))
+				Make/FREE/D outD = {settings[settingsIndex]}
+				WAVE out = outD
+			elseif(IsTextWave(settings))
+				WAVE/T settingsT = settings
+				Make/FREE/T outT = {settingsT[settingsIndex]}
+				WAVE out = outT
+			endif
 
-		output[index] = out
-		index        += 1
+			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
+			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
+			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
+			JWN_SetStringInWaveNote(out, SF_META_LEGEND_LINE_PREFIX, lbnKey)
+
+			output[index] = out
+			index        += 1
+		endfor
+		lbnIndex += 1
 	endfor
+
 	Redimension/N=(index) output
 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
 	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
-	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, lbnKey)
 	return output
 End
 
