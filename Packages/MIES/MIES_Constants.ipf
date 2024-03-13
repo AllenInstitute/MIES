@@ -2009,6 +2009,7 @@ StrConstant SF_META_XTICKLABELS          = "/XTickLabels"        // text wave
 StrConstant SF_META_XTICKPOSITIONS       = "/XTickPositions"     // numeric wave
 StrConstant SF_META_XAXISLABEL           = "/XAxisLabel"         // string
 StrConstant SF_META_YAXISLABEL           = "/YAxisLabel"         // string
+StrConstant SF_META_LEGEND_LINE_PREFIX   = "/LegendLinePrefix"   // string
 StrConstant SF_META_OPSTACK              = "/OperationStack"     // string
 StrConstant SF_META_MOD_MARKER           = "/Marker"             // numeric wave
 StrConstant SF_META_SHOW_LEGEND          = "/ShowLegend"         // numeric, boolean, defaults to true (1)

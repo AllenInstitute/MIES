@@ -1227,7 +1227,7 @@ End
 static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData &plotMetaData, WAVE data)
 
 	variable channelNumber, channelType, sweepNo, isAveraged
-	string channelId, prefix
+	string channelId, prefix, legendPrefix
 	string traceAnnotation, annotationPrefix
 
 	prefix = RemoveEnding(ReplaceString(";", plotMetaData.opStack, " "), " ")
@@ -1237,8 +1237,15 @@ static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData &plotMetaData
 		case SF_DATATYPE_SWEEP: // fallthrough
 		case SF_DATATYPE_LABNOTEBOOK: // fallthrough
 		case SF_DATATYPE_TP:
-			sweepNo          = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
-			annotationPrefix = SF_GetAnnotationPrefix(plotMetaData.dataType)
+			sweepNo      = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+			legendPrefix = JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX)
+
+			if(!IsEmpty(legendPrefix))
+				legendPrefix += " "
+			endif
+
+			sprintf annotationPrefix, "%s %s", SF_GetAnnotationPrefix(plotMetaData.dataType), legendPrefix
+
 			if(IsValidSweepNumber(sweepNo))
 				channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 				channelType   = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
