@@ -2755,7 +2755,7 @@ Function WB_SplitStimsetName(string setName, string &setPrefix, variable &stimul
 	setPrefix    = ""
 	stimulusType = CHANNEL_TYPE_UNKNOWN
 
-	SplitString/E="(.*)_(DA|TTL)_([[:digit:]]+)" setName, setPrefixString, stimulusTypeString, setNumberString
+	SplitString/E="(?i)(.*)_(DA|TTL)_([[:digit:]]+)" setName, setPrefixString, stimulusTypeString, setNumberString
 
 	if(V_flag != 3)
 		return NaN
