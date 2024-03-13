@@ -963,7 +963,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 			break
 		default:
 			WAVE ops = SF_GetNamedOperations()
-			ASSERT(GetRowIndex(ops, str = opName) >= 0, "List of operations with long name is out of date")
+			ASSERT(GetRowIndex(ops, str = opName) >= 0, "List of operations with long name is out of date as the following is missing: " + opName)
 			break
 	endswitch
 #endif
