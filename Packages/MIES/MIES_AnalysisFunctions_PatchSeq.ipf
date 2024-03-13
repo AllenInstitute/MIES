@@ -2661,9 +2661,17 @@ Function/S PSQ_DAScale_GetParams()
 		   "[NumInvalidSlopeSweepsAllowed:variable]," + \
 		   "[MaxFrequencyChangePercent:variable],"    + \
 		   "[AbsFrequencyMinDistance:variable],"      + \
+		   "[NumPointsWithSaturation:variable]," + \
 		   "[AbsDAScaleMinDistance:variable],"        + \
 		   "[AbsDAScaleMaxDistance:variable]"
 End
+
+// @todo NumPointsWithSaturation: default 2
+// defines how many consecutive passing fit slope QC NumPointsForLineFit sweeps we need for saying that we reached set QC
+// @todo
+// create linefit through F-I vs DAScale of rheobase and supra data, use MaxFrequencyChangePercent to calculate minimum DAscale step width
+// and remove AbsDAScaleMinDistance, AbsDAScaleMaxDistance
+// Add DaScaleMinMaxRatio e.g. 3 means max equals three times min to replace the dascale max distance
 
 Function/S PSQ_DAScale_GetHelp(string name)
 
@@ -3093,6 +3101,7 @@ Function PSQ_DAScale(device, s)
 						WAVE/Z DAScalesFromSupra = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesSupra")
 					else
 						// re-evaluate all passing sweeps from passingSupraSweep SCI using a custom range
+						// @todo fetch also all sweeps with passing baseline QC (and async QC, etc.) and spikes of latest rheobase long pulse SCI
 						[WAVE apfreqFromSupra, WAVE DaScalesFromSupra] = PSQ_DS_GatherFrequencyCurrentData(device, s.sweepNo, s.headstage, passingSupraSweeps)
 					endif
 
