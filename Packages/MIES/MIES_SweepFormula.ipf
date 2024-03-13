@@ -5666,38 +5666,17 @@ End
 static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs, mode
-	string lbnKey
+	string lbnKey, modeTxt
 
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
-	SFH_ASSERT(numArgs <= 3, "Maximum number of three arguments exceeded.")
-	SFH_ASSERT(numArgs >= 1, "At least one argument is required.")
+	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_LABNOTEBOOK, 1, maxArgs = 3)
 
-	if(numArgs == 3)
-		WAVE/T wMode = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, checkExist = 1)
-		SFH_ASSERT(IsTextWave(wMode) && DimSize(wMode, ROWS) == 1 && !DimSize(wMode, COLS), "Last parameter needs to be a string.")
-		strswitch(wMode[0])
-			case "UNKNOWN_MODE":
-				mode = UNKNOWN_MODE
-				break
-			case "DATA_ACQUISITION_MODE":
-				mode = DATA_ACQUISITION_MODE
-				break
-			case "TEST_PULSE_MODE":
-				mode = TEST_PULSE_MODE
-				break
-			case "NUMBER_OF_LBN_DAQ_MODES":
-				mode = NUMBER_OF_LBN_DAQ_MODES
-				break
-			default:
-				SFH_ASSERT(0, "Undefined labnotebook mode. Use one in group DataAcqModes")
-		endswitch
-	else
-		mode = DATA_ACQUISITION_MODE
-	endif
+	Make/FREE/T allowedValuesMode = {"UNKNOWN_MODE", "DATA_ACQUISITION_MODE", "TEST_PULSE_MODE", "NUMBER_OF_LBN_DAQ_MODES"}
+	modeTxt = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, allowedValues = allowedValuesMode, defValue = "DATA_ACQUISITION_MODE")
+	mode    = ParseLogbookMode(modeTxt)
 
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 1)
 
-	WAVE/T wLbnKey = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, checkExist = 1)
+	WAVE/T wLbnKey = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, expectedWaveType = IGOR_TYPE_TEXT_WAVE, singleResult = 1)
 	SFH_ASSERT(IsTextWave(wLbnKey) && DimSize(wLbnKey, ROWS) == 1 && !DimSize(wLbnKey, COLS), "First parameter needs to be a string labnotebook key.")
 	lbnKey = wLbnKey[0]
 
