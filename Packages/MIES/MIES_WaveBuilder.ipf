@@ -2313,7 +2313,7 @@ static Function/S WB_StimsetChildren([stimset])
 	// search for stimsets in all formula-epochs by a regex pattern
 	for(i = 0; i < numEpochs; i += 1)
 		if(SegWvType[i] == 8)
-			formula = WPT[6][i][EPOCH_TYPE_CUSTOM]
+			formula = WPT[6][i][EPOCH_TYPE_COMBINE]
 			numStimsets = CountSubstrings(formula, "?")
 			for(j = 0; j < numStimsets; j += 1)
 				WAVE/T/Z wv = SearchStringBase(formula, "(.*)\\b(\\w+)\\b\\?(.*)")

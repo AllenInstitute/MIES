@@ -8,8 +8,10 @@
 
 static StrConstant PXP_FILENAME = "input:AB_LoadSweepsFromIgorData.pxp"
 static StrConstant PXP2_FILENAME = "input:AB_SweepsFromMultipleDevices.pxp"
+static StrConstant PXP3_FILENAME = "input:SourceOfDependentStimset.pxp"
 static StrConstant NWB1_FILENAME = "input:AB_SweepsFromMultipleDevices-compressed-V1.nwb"
 static StrConstant NWB2_FILENAME = "input:AB_SweepsFromMultipleDevices-compressed-V2.nwb"
+static StrConstant NWB3_FILENAME = ":_2017_09_01_192934-compressed.nwb"
 
 static Function LoadSweepsFromIgor()
 
@@ -137,4 +139,28 @@ static Function TestABLoadWave()
 	WAVE/Z wv = root:$wName
 	CHECK_WAVE(wv, NUMERIC_WAVE)
 
+End
+
+static Function LoadStimsetsFromNWB()
+
+	string abWin, sweepBrowsers
+
+	WBP_CreateWaveBuilderPanel()
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({NWB3_FILENAME}, loadStimsets = 1)
+	WAVE/T epochCombineList = GetWBEpochCombineList(CHANNEL_TYPE_DAC)
+	CHECK_WAVE(epochCombineList, TEXT_WAVE)
+	CHECK_GT_VAR(DimSize(epochCombineList, ROWS), 0)
+
+	KillWindow $abWin
+End
+
+static Function LoadDependentStimsetsFromPXP()
+
+	string abWin, sweepBrowsers, formulaSet
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({PXP3_FILENAME}, loadStimsets = 1)
+	formulaSet = MIES_WB#WB_StimsetChildren(stimset="baseset_DA_0")
+	CHECK_EQUAL_STR(formulaSet, "formula_da_0;")
+
+	KillWindow $abWin
 End
