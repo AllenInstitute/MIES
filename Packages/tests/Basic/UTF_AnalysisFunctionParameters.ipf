@@ -959,3 +959,67 @@ static Function GenerateAnalysisFunctionLegend()
 	CHECK_EQUAL_VAR(WaveCRC(0, output, 0), 2579934075)
 	StoreWaveOnDisk(output, "analysis_function_abrev_legend")
 End
+
+/// @name AFH_GetAnalysisParameterAsText
+/// @{
+Function GAPasT_AbortsWithEmptyName()
+
+	try
+		AFH_GetAnalysisParameterAsText("", "name:textwave=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPasT_AbortsWithIllegalName()
+
+	try
+		AFH_GetAnalysisParameterAsText("123", "name:textwave=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPasT_AbortsWithIllegalType()
+
+	try
+		AFH_GetAnalysisParameterAsText("name", "name:invalidType=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function/WAVE GetAnalysisParameterValues()
+
+	Make/FREE/N=(5)/WAVE waves
+
+	Make/FREE/T wv0 = {"var", "123"}
+	waves[0] = wv0
+
+	Make/FREE/T wv1 = {"str", "abcd"}
+	waves[1] = wv1
+
+	Make/FREE/T wv2 = {"wv", "1;2;"}
+	waves[2] = wv2
+
+	Make/FREE/T wv3 = {"txtwv", "a;b;"}
+	waves[3] = wv3
+
+	Make/FREE/T wv4 = {"i_dont_exist", ""}
+	waves[4] = wv4
+
+	return waves
+End
+
+/// UTF_TD_GENERATOR GetAnalysisParameterValues
+Function GAPasT_Works([WAVE/T wv])
+
+	string result
+
+	result = AFH_GetAnalysisParameterAsText(wv[0], "var:variable=123,str:string=abcd,wv:wave=1|2,txtwv:textwave=a|b")
+	CHECK_EQUAL_STR(result, wv[1])
+End
+/// @}
