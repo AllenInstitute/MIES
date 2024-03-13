@@ -619,11 +619,13 @@ static Function EP_SortEpochs(string device)
 			endif
 
 			Duplicate/FREE/T/RMD=[, epochCnt - 1][][channel][channelType] epochWave, epochChannel
-			Redimension/N=(-1, -1, 0, 0) epochChannel
+			Redimension/N=(-1, -1) epochChannel
 
-			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
-			SortColumns/DIML/KNDX={EPOCH_COL_STARTTIME, EPOCH_COL_ENDTIME, EPOCH_COL_TREELEVEL} sortWaves={epochChannel}
-			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
+			Make/FREE/D/N=(DimSize(epochChannel, ROWS), DimSize(epochChannel, COLS)) epochSortColStartTime, epochSortColEndTime, epochSortColTreeLevel
+			epochSortColStartTime[] = str2numSafe(epochChannel[p][EPOCH_COL_STARTTIME])
+			epochSortColEndTime[] = -1 * str2numSafe(epochChannel[p][EPOCH_COL_ENDTIME])
+			epochSortColTreeLevel[] = str2numSafe(epochChannel[p][EPOCH_COL_TREELEVEL])
+			SortColumns/DIML keyWaves={epochSortColStartTime, epochSortColEndTime, epochSortColTreeLevel} sortWaves={epochChannel}
 
 			// remove epochs marked for removal
 			// first column needs to be StartTime
@@ -636,7 +638,9 @@ static Function EP_SortEpochs(string device)
 				epochWave[, epochCnt - 1][][channel][channelType] = epochChannel[p][q]
 			endif
 
-			epochWave[epochCnt, *][][channel][channelType] = ""
+			if(epochCnt < DimSize(epochWave, ROWS))
+				epochWave[epochCnt, *][][channel][channelType] = ""
+			endif
 		endfor
 	endfor
 End
