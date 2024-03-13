@@ -2071,6 +2071,7 @@ StrConstant SF_DATATYPE_TPBASE        = "TestPulseMode_Baseline"
 StrConstant SF_DATATYPE_TPFIT         = "TestPulseMode_Fit"
 StrConstant SF_DATATYPE_POWERSPECTRUM = "Powerspectrum"
 StrConstant SF_DATATYPE_PSX           = "PSX"
+StrConstant SF_DATATYPE_ANAFUNCPARAM  = "AnaFunc"
 
 StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
