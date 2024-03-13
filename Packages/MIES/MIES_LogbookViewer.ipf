@@ -84,8 +84,8 @@ Function/WAVE LBV_PopupExtGetResultsKeys(string win)
 	WAVE/Z textualValues   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 	WAVE/Z numericalValues = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 
-	WAVE/T textualNames = LBV_GetFilledLabnotebookEntries(textualValues)
-	WAVE/T numericalNames = LBV_GetFilledLabnotebookEntries(numericalValues)
+	WAVE/Z/T textualNames = LBV_GetFilledLabnotebookEntries(textualValues)
+	WAVE/Z/T numericalNames = LBV_GetFilledLabnotebookEntries(numericalValues)
 
 	WAVE/Z entries = LBV_GetAllLogbookParamNames(textualNames, numericalNames)
 
