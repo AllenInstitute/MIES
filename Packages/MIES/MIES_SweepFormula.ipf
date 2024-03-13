@@ -5462,7 +5462,7 @@ Function/WAVE SF_OperationFitLine(variable jsonId, string jsonPath, string graph
 
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_FITLINE, 0, maxArgs = 1)
 
-	WAVE/T/Z constraints = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_FITLINE, 0, defOp = "wave()", singleResult = 1)
+	WAVE/T/Z constraints = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_FITLINE, 0, defWave = $"", singleResult = 1)
 
 	[WAVE holdWave, WAVE initialValues] = SF_ParseFitConstraints(constraints, 2)
 
