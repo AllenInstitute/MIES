@@ -1903,7 +1903,16 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				WAVE wvY = dataInGraph[l][%WAVEY]
 				trace = tracesInGraph[l]
 
-				WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_TRACECOLOR)
+				info = AxisInfo(win, "left")
+				isCategoryAxis = (NumberByKey("ISCAT", info) == 1)
+
+				if(isCategoryAxis)
+					WAVE traceColorHolder = wvX
+				else
+					WAVE traceColorHolder = wvY
+				endif
+
+				WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(traceColorHolder, SF_META_TRACECOLOR)
 				if(WaveExists(traceColor))
 					ASSERT(DimSize(traceColor, ROWS) == 3, "Need 3-element wave for color specification.")
 					ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
