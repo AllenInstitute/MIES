@@ -2432,7 +2432,7 @@ static Function RoundTripDepStimsetsRecursionThroughSweeps_REENTRY([STRUCT IUTF_
 	KillDataFolder dfr
 	KillWaves $customWavePath
 
-	[abWin, sweepBrowsers] = OpenAnalysisBrowser({baseFileName}, loadSweeps = 1)
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({baseFileName}, loadSweeps = 1, loadStimsets=1)
 
 	stimsets = ST_GetStimsetList()
 	stimsets = SortList(stimsets, ";", 16)
