@@ -14,7 +14,7 @@
 ///
 /// Code example:
 /// \rst
-/// .. literalinclude:: ../ipf/example-stimulus-set-api.ipf
+/// .. literalinclude:: /ipf/example-stimulus-set-api.ipf
 ///    :language: igor
 ///    :dedent:
 ///    :tab-width: 4
