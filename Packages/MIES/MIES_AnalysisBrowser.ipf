@@ -2473,15 +2473,15 @@ static Function AB_LoadWave(expFilePath, fullPath, overwrite)
 	if(isEmpty(dataFolder))
 		dataFolder = "root:"
 	endif
-	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataFolder, loadList)
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataFolder, loadList, recursive=0)
 
-	if(numWavesLoaded != 1)
+	if(numWavesLoaded == 0)
 		KillOrMoveToTrash(dfr=newDFR)
 		KillOrMoveToTrash(dfr=sweepDFR)
 		return 1
 	endif
 
-	WAVE/SDFR=newDFR wv = $(GetIndexedObjNameDFR(newDFR, 1, 0))
+	WAVE/SDFR=newDFR wv = $(GetIndexedObjNameDFR(newDFR, COUNTOBJECTS_WAVES, 0))
 	createDFWithAllParents(dataFolder)
 	MoveWave wv, $fullPath
 
