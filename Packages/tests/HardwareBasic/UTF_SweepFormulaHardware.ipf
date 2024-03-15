@@ -816,5 +816,5 @@ static Function SF_UnassociatedDATTL_Epochs_REENTRY([string str])
 	CHECK_WAVE(epochDataT, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(epochDataT, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(epochDataT, COLS), 29)
-	CHECK_EQUAL_STR(epochDataT[0], "E0_PT_P0_P")
+	CHECK_EQUAL_STR(epochDataT[0], "E0_PT_P0")
 End
