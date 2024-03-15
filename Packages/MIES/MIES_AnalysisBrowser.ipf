@@ -564,12 +564,10 @@ End
 /// @param listOfNames    list of names of waves/strings/numbers to load
 /// @param typeFlags      [optional, defaults to 1 (waves)] data types to load, valid values
 ///                       are the same as for `LoadData`, see also @ref LoadDataConstants
+/// @param recursive      [optional, defaults to 1] when set loads data recursive from the experiment file
 ///
 /// @returns number of loaded items
-static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNames, [typeFlags])
-	DFREF tmpDFR
-	string expFilePath, datafolderPath, listOfNames
-	variable typeFlags
+static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string datafolderPath, string listOfNames, [variable typeFlags, variable recursive])
 
 	variable numEntries, i, debugOnError
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
@@ -585,6 +583,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	else
 		ASSERT(typeFlags == COUNTOBJECTS_WAVES || typeFlags == COUNTOBJECTS_VAR || typeFlags == COUNTOBJECTS_STR || typeFlags == COUNTOBJECTS_DATAFOLDER, "Unknown typeFlags, bitmasks are not supported")
 	endif
+	recursive = ParamisDefault(recursive) ? 1 : !!recursive
 
 	fileNameWOExtension = GetBaseName(expFilePath)
 	baseFolder          = GetFolder(expFilePath)
@@ -607,9 +606,17 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	AssertOnAndClearRTError()
 	try
 		if(FileExists(expFileOrFolder))
-			LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
+			if(recursive)
+				LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
+			else
+				LoadData/Q/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
+			endif
 		elseif(FolderExists(expFileOrFolder))
-			LoadData/Q/D/R/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
+			if(recursive)
+				LoadData/Q/D/R/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
+			else
+				LoadData/Q/D/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
+			endif
 		else
 			sprintf str, "The experiment file/folder \"%s\" could not be found!\r", ParseFilePath(5, expFileOrFolder, "\\", 0, 0)
 			DoAlert/T="Error in AB_LoadDataWrapper" 0, str
@@ -628,7 +635,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	RemoveAllEmptyDataFolders(tmpDFR)
 
 	regexp = "(?i)" + ConvertListToRegexpWithAlternations(listOfNames)
-	list = GetListOfObjects(tmpDFR, regexp, recursive=1, typeFlag=typeFlags)
+	list = GetListOfObjects(tmpDFR, regexp, recursive=recursive, typeFlag=typeFlags)
 
 	return ItemsInList(list)
 End
