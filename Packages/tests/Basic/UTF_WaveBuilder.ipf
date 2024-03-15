@@ -382,3 +382,58 @@ Function CombineStimsetSubStrings()
 	CHECK_GT_VAR(DimSize(wv, ROWS), 0)
 	CHECK_NO_RTE()
 End
+
+static Function CreateDependentStimsetsFromParameterWaves()
+
+	string wbPanel, stimsets, refList, setNameF, setNameB, formula
+	string setNameFormula = "formula"
+	string setNameBase = "baseSet"
+	string chanTypeSuffix = "_DA_0"
+
+	DFREF dfr = GetWBSvdStimSetParamPath()
+	KillDataFolder dfr
+
+	setNameF = ST_CreateStimset(setNameFormula, CHANNEL_TYPE_DAC)
+	ST_SetStimsetParameter(setNameF, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setNameF, "Total number of steps", var = 1)
+	ST_SetStimsetParameter(setNameF, "Type of Epoch 0", var = EPOCH_TYPE_SQUARE_PULSE)
+	ST_SetStimsetParameter(setNameF, "Duration", epochIndex = 0, var = 10)
+	ST_SetStimsetParameter(setNameF, "Amplitude", epochIndex = 0, var = 3)
+
+	setNameB = ST_CreateStimset(setNameBase, CHANNEL_TYPE_DAC)
+	ST_SetStimsetParameter(setNameB, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setNameB, "Total number of steps", var = 1)
+	ST_SetStimsetParameter(setNameB, "Type of Epoch 0", var = EPOCH_TYPE_COMBINE)
+	formula = "2*" + LowerStr(setNameF) + "?"
+	ST_SetStimsetParameter(setNameB, "Combine epoch formula", epochIndex = 0, str = formula)
+	ST_SetStimsetParameter(setNameB, "Combine epoch formula version", epochIndex = 0, str = WAVEBUILDER_COMBINE_FORMULA_VER)
+
+	// Retrieve stimsets from parameter waves
+	DFREF dfr = GetWBSvdStimSetPath()
+	KillDataFolder dfr
+	stimsets = ST_GetStimsetList()
+	stimsets = SortList(stimsets, ";", 16)
+	refList = AddListItem(setNameBase + chanTypeSuffix, "")
+	refList = AddListItem(setNameFormula + chanTypeSuffix, refList)
+	refList = AddListItem(STIMSET_TP_WHILE_DAQ, refList)
+	refList = SortList(refList, ";", 16)
+	CHECK_EQUAL_STR(stimsets, refList, case_sensitive=0)
+
+	// Retrieve stimsets created from parameter waves
+	DFREF dfr = GetWBSvdStimSetPath()
+	KillDataFolder dfr
+
+	WAVE/Z baseSet = WB_CreateAndGetStimSet(setNameBase + chanTypeSuffix)
+	CHECK_WAVE(baseSet, NUMERIC_WAVE)
+	CHECK_GT_VAR(DimSize(baseSet, ROWS), 0)
+	WaveStats/Q baseSet
+	CHECK_EQUAL_VAR(V_max, 2 * 3)
+	CHECK_EQUAL_VAR(V_min, 2 * 3)
+
+	// Check as third party stimsets
+	DFREF dfr = GetWBSvdStimSetParamPath()
+	KillDataFolder dfr
+	stimsets = ST_GetStimsetList()
+	stimsets = SortList(stimsets, ";", 16)
+	CHECK_EQUAL_STR(stimsets, refList, case_sensitive=0)
+End

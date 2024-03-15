@@ -65,29 +65,18 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 
 	DFREF dfr = GetSetFolder(type)
 	WAVE/Z/SDFR=dfr stimSet = $setName
-
-	if(WB_StimsetIsFromThirdParty(setName))
-		if(WaveExists(stimSet))
-			return stimSet
-		else
-			return $""
-		endif
+	if(WB_StimsetIsFromThirdParty(setName) || !WB_StimsetNeedsUpdate(setName))
+		return stimSet
 	endif
 
-	needToCreateStimSet = (!WaveExists(stimSet) || WB_StimsetNeedsUpdate(setName))
+	WAVE/Z/SDFR=dfr oldStimSet = $setName
+	if(WaveExists(oldStimSet))
+		KillOrMoveToTrash(wv=oldStimSet)
+	endif
 
-	if(needToCreateStimSet)
-		// create current stimset
-		WAVE/Z stimSet = WB_GetStimSet(setName=setName)
-		if(!WaveExists(stimSet))
-			return $""
-		endif
-
-		WAVE/Z/SDFR=dfr oldStimSet = $setName
-		if(WaveExists(oldStimSet))
-			KillOrMoveToTrash(wv=oldStimSet)
-		endif
-
+	// create current stimset
+	WAVE/Z stimSet = WB_GetStimSet(setName=setName)
+	if(WaveExists(stimSet))
 		MoveWave stimSet, dfr:$setName
 		WAVE/SDFR=dfr stimSet = $setName
 	endif
@@ -212,8 +201,8 @@ static Function WB_StimsetNeedsUpdate(setName)
 	string stimsets
 	variable lastModStimSet, numWaves, numStimsets, i
 
-	// stimset wave note is too old
-	if(!WB_StimsetHasLatestNoteVersion(setName))
+	// stimset does not exist or wave note is too old
+	if(!WB_StimsetExists(setName) || !WB_StimsetHasLatestNoteVersion(setName))
 		return 1
 	endif
 
