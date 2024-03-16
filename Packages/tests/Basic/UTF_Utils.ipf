@@ -7709,3 +7709,26 @@ static Function TestCaseInsensitivityWB_SplitStimsetName()
 	CHECK_EQUAL_VAR(stimulusType, CHANNEL_TYPE_DAC)
 	CHECK_EQUAL_VAR(setNumber, 0)
 End
+
+static Function TestGetListDifference()
+
+	string result
+
+	result = GetListDifference("", "")
+	CHECK_EQUAL_STR("", result)
+
+	result = GetListDifference("1;", "")
+	CHECK_EQUAL_STR("1;", result)
+
+	result = GetListDifference("1;2;", "1;")
+	CHECK_EQUAL_STR("2;", result)
+
+	result = GetListDifference("1;2;", "1;2;")
+	CHECK_EQUAL_STR("", result)
+
+	result = GetListDifference("a;A;", "a;")
+	CHECK_EQUAL_STR("A;", result)
+
+	result = GetListDifference("a;A;b;", "a;", caseSensitive=0)
+	CHECK_EQUAL_STR("b;", result)
+End

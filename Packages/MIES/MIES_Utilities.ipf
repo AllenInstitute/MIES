@@ -1932,21 +1932,22 @@ End
 
 /// @brief calculates the relative complement of list2 in list1
 ///
-/// Every list item of `list1` must be in `list2`.
+/// Every list item of `list2` must be in `list1`.
 ///
 /// also called the set-theoretic difference of list1 and list2
 /// @returns difference as list
-Function/S GetListDifference(list1, list2)
-	string list1, list2
+Function/S GetListDifference(string list1, string list2, [variable caseSensitive])
 
 	variable i, numList1
 	string item
 	string result = ""
 
+	caseSensitive = ParamIsDefault(caseSensitive) ? 1 : !!caseSensitive
+
 	numList1 = ItemsInList(list1)
 	for(i = 0; i < numList1; i += 1)
 		item = StringFromList(i, list1)
-		if(WhichlistItem(item, list2) == -1)
+		if(WhichlistItem(item, list2, ";", 0, caseSensitive) == -1)
 			result = AddListItem(item, result)
 		endif
 	endfor
