@@ -1328,6 +1328,11 @@ Function RestoreAnnotationPositions(string graph, WAVE/T annoInfo)
 	for(i = 0; i < numEntries; i += 1)
 
 		name = StringFromList(i, annotations)
+		//@ TOOD hack!
+		if(strsearch(name, "tag", 0) >= 0)
+			continue
+		endif
+
 		idx = FindDimLabel(annoInfo, ROWS, name)
 
 		if(idx < 0)
