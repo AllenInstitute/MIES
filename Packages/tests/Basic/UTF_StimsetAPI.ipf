@@ -12,7 +12,7 @@ End
 static Function GetStimSetListWorks()
 
 	string list, ref
-	string thirdPartyStimSetList, WBstimSetList
+	string thirdPartyStimSetList, WBstimSetList, setName
 
 	// create STIMSET_TP_WHILE_DAQ to check that no duplicates are returned
 	GetTestPulse()
@@ -60,6 +60,18 @@ static Function GetStimSetListWorks()
 	CHECK_EQUAL_STR(WBstimSetList, ref)
 	ref = ""
 	CHECK_EQUAL_STR(thirdPartyStimSetList, ref)
+
+	// Tests if case-sensitivity does not play a role
+	setName = "setA_DA_0"
+	DFREF dfr = GetWBSvdStimSetDAPath()
+	WAVE/SDFR=dfr wv = $setName
+	Duplicate/FREE wv, wTemp
+	KillWaves wv
+	setName = UpperStr(setName)
+	MoveWave wTemp, dfr:$setName
+	list = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC, WBstimSetList = WBstimSetList, thirdPartyStimSetList = thirdPartyStimSetList)
+	ref  = "TestPulse;setA_DA_0;setC_DA_0;"
+	CHECK_EQUAL_STR(list, ref)
 End
 
 // ST_CreateStimSet
