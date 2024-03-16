@@ -300,3 +300,11 @@ Function/WAVE InfiniteValues()
 
 	return wv
 End
+
+static Function/WAVE RoundTripStimsetFileType()
+
+	Make/FREE/T wv = {"nwb", "pxp"}
+	SetDimensionLabels(wv, TextWaveToList(wv, ";"), ROWS)
+
+	return wv
+End

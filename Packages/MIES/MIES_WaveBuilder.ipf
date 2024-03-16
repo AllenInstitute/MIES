@@ -1024,8 +1024,10 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 		accumulatedDuration += params.duration
 
-		WAVE segmentWave = GetSegmentWave()
-		Concatenate/NP=0 {segmentWave}, WaveBuilderWave
+		WAVE/Z segmentWave = GetSegmentWave()
+		if(WaveExists(segmentWave))
+			Concatenate/NP=0 {segmentWave}, WaveBuilderWave
+		endif
 	endfor
 
 	// adjust epochID timestamps for stimset flipping

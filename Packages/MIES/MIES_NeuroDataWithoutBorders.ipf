@@ -885,10 +885,10 @@ static Function NWB_AppendStimset(nwbVersion, locationID, stimsets, compressionM
 
 	AddModificationTimeEntry(locationID, nwbVersion)
 
-	WAVE/WAVE customWaves = WB_CustomWavesFromStimSet(stimsets)
-
 	// process stimsets and dependent stimsets
 	stimsets = WB_StimsetRecursionForList(stimsets)
+	WAVE/WAVE customWaves = WB_CustomWavesFromStimSet(stimsets)
+
 	numStimsets = ItemsInList(stimsets)
 	for(i = 0; i < numStimsets; i += 1)
 		NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, StringFromList(i, stimsets), customWaves, compressionMode)

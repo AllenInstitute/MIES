@@ -235,7 +235,7 @@ Function/S ST_GetStimsetList([variable channelType, string searchString, string 
 		// remove testpulse as it is not always present, and will be added later on
 		list = RemoveFromList(STIMSET_TP_WHILE_DAQ, list, ";")
 
-		listThirdParty = GetListDifference(list, listInternal)
+		listThirdParty = GetListDifference(list, listInternal, caseSensitive=0)
 
 		if(!ParamIsDefault(WBstimSetList))
 			WBstimSetList += SortList(listInternal, ";", 16)

@@ -1056,3 +1056,74 @@ Function ResetOverrideResults()
 	KillOrMoveToTrash(wv=root:overrideResults)
 	Make/N=0 root:overrideResults
 End
+
+Function [string baseSet, string stimsetList, string customWavePath, variable amplitude] CreateDependentStimset()
+
+	string setNameC, setNameF1, setNameF2, setNameB, formula, wPath
+
+	string wName = "customWave"
+	string setNameCustom = "CustomSet"
+	string setNameFormula1 = "formula1"
+	string setNameFormula2 = "formula2"
+	string setNameBase = "baseSet"
+	string chanTypeSuffix = "_DA_0"
+	variable val = 3
+
+	DFREF dfr = GetWaveBuilderPath()
+	KillDataFolder dfr
+
+	KillWaves/Z root:$wName
+	Make root:$wName/WAVE=customWave = val
+
+	setNameC = ST_CreateStimset(setNameCustom, CHANNEL_TYPE_DAC)
+	ST_SetStimsetParameter(setNameC, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setNameC, "Total number of steps", var = 1)
+	ST_SetStimsetParameter(setNameC, "Type of Epoch 0", var = EPOCH_TYPE_CUSTOM)
+	wPath = GetWavesDataFolder(customWave, 2)
+	ST_SetStimsetParameter(setNameC, "Custom epoch wave name", epochIndex = 0, str = wPath)
+
+	setNameF1 = ST_CreateStimset(setNameFormula1, CHANNEL_TYPE_DAC)
+	ST_SetStimsetParameter(setNameF1, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setNameF1, "Total number of steps", var = 1)
+	ST_SetStimsetParameter(setNameF1, "Type of Epoch 0", var = EPOCH_TYPE_COMBINE)
+	formula = "2*" + LowerStr(setNameC) + "?"
+	ST_SetStimsetParameter(setNameF1, "Combine epoch formula", epochIndex = 0, str = formula)
+	ST_SetStimsetParameter(setNameF1, "Combine epoch formula version", epochIndex = 0, str = WAVEBUILDER_COMBINE_FORMULA_VER)
+
+	setNameF2 = ST_CreateStimset(setNameFormula2, CHANNEL_TYPE_DAC)
+	ST_SetStimsetParameter(setNameF2, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setNameF2, "Total number of steps", var = 1)
+	ST_SetStimsetParameter(setNameF2, "Type of Epoch 0", var = EPOCH_TYPE_COMBINE)
+	formula = "2*" + LowerStr(setNameF1) + "?"
+	ST_SetStimsetParameter(setNameF2, "Combine epoch formula", epochIndex = 0, str = formula)
+	ST_SetStimsetParameter(setNameF2, "Combine epoch formula version", epochIndex = 0, str = WAVEBUILDER_COMBINE_FORMULA_VER)
+
+	setNameB = ST_CreateStimset(setNameBase, CHANNEL_TYPE_DAC)
+	ST_SetStimsetParameter(setNameB, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setNameB, "Total number of steps", var = 1)
+	ST_SetStimsetParameter(setNameB, "Type of Epoch 0", var = EPOCH_TYPE_COMBINE)
+	formula = "2*" + LowerStr(setNameF2) + "?"
+	ST_SetStimsetParameter(setNameB, "Combine epoch formula", epochIndex = 0, str = formula)
+	ST_SetStimsetParameter(setNameB, "Combine epoch formula version", epochIndex = 0, str = WAVEBUILDER_COMBINE_FORMULA_VER)
+
+	amplitude = val * 2^3
+	WAVE/Z wBaseSet = WB_CreateAndGetStimSet(setNameBase + chanTypeSuffix)
+	CHECK_WAVE(wBaseSet, NUMERIC_WAVE)
+	CHECK_GT_VAR(DimSize(wBaseSet, ROWS), 0)
+	WaveStats/Q wBaseSet
+	CHECK_EQUAL_VAR(V_max, amplitude)
+	CHECK_EQUAL_VAR(V_min, amplitude)
+
+	DFREF dfr = GetWBSvdStimSetPath()
+	KillDataFolder dfr
+
+	stimsetList = AddListItem(setNameC, "")
+	stimsetList = AddListItem(setNameF1, stimsetList)
+	stimsetList = AddListItem(setNameF2, stimsetList)
+	stimsetList = AddListItem(setNameB, stimsetList)
+	stimsetList = SortList(stimsetList, ";", 16)
+
+	wPath = GetWavesDataFolder(customWave, 2)
+
+	return [setNameB, stimsetList, wPath, amplitude]
+End

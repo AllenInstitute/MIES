@@ -2381,3 +2381,76 @@ static Function TestNIAcquisitionReliability_REENTRY([str])
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1000)
 End
 #endif
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:DataGenerators#RoundTripStimsetFileType
+static Function RoundTripDepStimsetsRecursionThroughSweeps([STRUCT IUTF_mData &mData])
+
+	string refList, setNameB, customWavePath
+	variable amplitude
+	string device = mData.s0
+	STRUCT DAQSettings s
+
+	[setNameB, refList, customWavePath, amplitude] = CreateDependentStimset()
+
+	string/G m_setNameB = setNameB
+	string/G m_refList = refList
+	string/G m_customWavePath = customWavePath
+	variable/G m_amplitude = amplitude
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"       + \
+										"__HS0_DA0_AD0_CM:VC:_ST:" + setNameB + ":")
+
+	AcquireData_NG(s, device)
+End
+
+static Function RoundTripDepStimsetsRecursionThroughSweeps_REENTRY([STRUCT IUTF_mData &mData])
+
+	string fName, abWin, sweepBrowsers, stimsets
+	string device = mData.s0
+	string suffix = mData.s1
+	string baseFileName = "RoundTripDepStimsetsRecursionThroughSweeps-" + device + "." + suffix
+	variable nwbVersion = GetNWBVersion()
+
+	SVAR setNameB = m_setNameB
+	SVAR refList = m_refList
+	SVAR customWavePath = m_customWavePath
+	NVAR amplitude = m_amplitude
+
+	PathInfo home
+	fName = S_path + baseFileName
+
+	if(!CmpStr(suffix, "nwb"))
+		NWB_ExportAllData(nwbVersion, overrideFilePath=fName, writeStoredTestPulses = 1, writeIgorHistory = 1)
+	elseif(!CmpStr(suffix, "pxp"))
+		SaveExperiment/C as fName
+	else
+		FAIL()
+	endif
+
+	DFREF dfr = GetWaveBuilderPath()
+	KillDataFolder dfr
+	KillWaves $customWavePath
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({baseFileName}, loadSweeps = 1, loadStimsets=1)
+
+	stimsets = ST_GetStimsetList()
+	stimsets = SortList(stimsets, ";", 16)
+	refList = AddListItem(STIMSET_TP_WHILE_DAQ, refList)
+	refList = SortList(refList, ";", 16)
+	CHECK_EQUAL_STR(stimsets, refList, case_sensitive=0)
+	WAVE/T wStimsets = ListToTextWave(stimsets, ";")
+	for(set : wStimsets)
+		if(CmpStr(set, STIMSET_TP_WHILE_DAQ))
+			INFO("Stimset %s should not be third party.\r", s0=set)
+			CHECK_EQUAL_VAR(WB_StimsetIsFromThirdParty(set), 0)
+		endif
+	endfor
+
+	WAVE baseSet = WB_CreateAndGetStimSet(setNameB)
+	CHECK_WAVE(baseSet, NUMERIC_WAVE)
+	CHECK_GT_VAR(DimSize(baseSet, ROWS), 0)
+	WaveStats/Q baseSet
+	CHECK_EQUAL_VAR(V_max, amplitude)
+	CHECK_EQUAL_VAR(V_min, amplitude)
+End
