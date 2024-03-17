@@ -27,7 +27,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  3
 Constant STIMSET_NOTE_VERSION = 9
 
 /// Version of the epoch information for DA+TTL data
-Constant SWEEP_EPOCH_VERSION = 8
+Constant SWEEP_EPOCH_VERSION = 9
 
 /// Version of the labnotebooks and results (numerical and textual) waves
 ///

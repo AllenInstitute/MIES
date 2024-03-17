@@ -996,11 +996,16 @@ static Function EP_EpochTestTTL_REENTRY([STRUCT IUTF_mData &mData])
 	Duplicate/FREE/T epochTags, epochShortNames
 	epochShortNames[] = EP_GetShortName(epochTags[p])
 
-	Make/FREE/T nameRef = {"E0_PT_P0_P", "E0_PT_P0", "ST", "E0", "E0_PT_P0_B", "E0_PT_P1_P", "E0_PT_P1",        \
-								"E0_PT_P1_B", "E0_PT_P2_P", "E0_PT_P2", "E0_PT_P2_B", "E0_PT_P3_P", "E0_PT_P3", "E0_PT_P3_B", \
-								"E0_PT_P4_P", "E0_PT_P4", "E0_PT_P4_B", "E0_PT_P5_P", "E0_PT_P5", "E0_PT_P5_B", "E0_PT_P6_P", \
-								"E0_PT_P6", "E0_PT_P6_B", "E0_PT_P7_P", "E0_PT_P7", "E0_PT_P7_B", "E0_PT_P8_P", "E0_PT_P8",   \
-								"E0_PT_P8_B", "E0_PT_P9", "E0_PT_P9_P"}
+	Make/FREE/T nameRef = {"ST", "E0", "E0_PT_P0", "E0_PT_P0_P", "E0_PT_P0_B", \
+												"E0_PT_P1", "E0_PT_P1_P", "E0_PT_P1_B", \
+												"E0_PT_P2", "E0_PT_P2_P", "E0_PT_P2_B", \
+												"E0_PT_P3", "E0_PT_P3_P", "E0_PT_P3_B", \
+												"E0_PT_P4", "E0_PT_P4_P", "E0_PT_P4_B", \
+												"E0_PT_P5", "E0_PT_P5_P", "E0_PT_P5_B", \
+												"E0_PT_P6", "E0_PT_P6_P", "E0_PT_P6_B", \
+												"E0_PT_P7", "E0_PT_P7_P", "E0_PT_P7_B", \
+												"E0_PT_P8", "E0_PT_P8_P", "E0_PT_P8_B", \
+												"E0_PT_P9", "E0_PT_P9_P" }
 	if(mData.v2)
 		InsertPoints/M=(ROWS) 0, 1, nameRef
 		nameref[0] = "B0_OD"
