@@ -243,7 +243,10 @@ static Function WB_StimsetHasLatestNoteVersion(setName)
 
 	DFREF           dfr     = GetSetFolder(type)
 	WAVE/Z/SDFR=dfr stimSet = $setName
-	ASSERT(WaveExists(stimSet), "stimset must exist")
+
+	if(!WaveExists(stimset))
+		return 0
+	endif
 
 	return WB_GetWaveNoteEntryAsNumber(note(stimset), VERSION_ENTRY) >= STIMSET_NOTE_VERSION
 End
