@@ -453,6 +453,8 @@ static Function CreateBrokenCustomSet()
 
 	KillOrMoveToTrash(wv = customWave)
 	WAVE stimset = WB_CreateAndGetStimSet(setName)
+	CHECK_WAVE(stimset, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(stimset, ROWS), 0)
 	err = WB_GetWaveNoteEntryAsNumber(note(stimSet), STIMSET_ENTRY, key = STIMSET_ERROR_KEY)
 	CHECK_EQUAL_VAR(err, WAVEBUILDER_STATUS_ERROR)
 End

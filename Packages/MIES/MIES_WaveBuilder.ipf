@@ -461,7 +461,9 @@ static Function/WAVE WB_GetStimSet([setName])
 	SegWvType[97] = SegWvTypeCopy[97]
 
 	Make/FREE/N=(lengthOf1DWaves, numSweeps) stimSet
-
+	for(WAVE wv : data)
+		Note/NOCR stimSet, note(wv)
+	endfor
 	if(lengthOf1DWaves == 0)
 		return stimSet
 	endif
@@ -481,8 +483,6 @@ static Function/WAVE WB_GetStimSet([setName])
 
 		last = length - 1
 		Multithread stimSet[0, last][i] = wv[p]
-
-		Note/NOCR stimSet, note(wv)
 	endfor
 
 	if(SegWvType[98])
