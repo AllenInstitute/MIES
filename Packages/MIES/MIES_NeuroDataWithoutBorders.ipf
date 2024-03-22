@@ -83,9 +83,8 @@ static Function NWB_FirstStartTimeOfAllSweeps()
 		for(j = 0; j < numWaves; j += 1)
 			name    = StringFromList(j, list)
 			sweepNo = ExtractSweepNumber(name)
-			ASSERT(IsValidSweepNumber(sweepNo), "Could not extract sweep number")
-			WAVE/SDFR=dfr sweepWave = $name
 
+			WAVE sweepWave = NWB_GetSweepWave(device, sweepNo)
 			oldest = min(oldest, NWB_GetStartTimeOfSweep(textualValues, sweepNo, sweepWave))
 		endfor
 	endfor
@@ -628,14 +627,15 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 
 		for(j = 0; j < numWaves; j += 1)
 			name = StringFromList(j, list)
+
 			WAVE/SDFR=dfr sweepWave  = $name
 			WAVE/Z        configWave = GetConfigWave(sweepWave)
-
-			sweep = ExtractSweepNumber(name)
-
 			if(!WaveExists(configWave))
 				continue
 			endif
+
+			sweep = ExtractSweepNumber(name)
+			WAVE sweepWave = NWB_GetSweepWave(device, sweep)
 
 			// init: 3/3
 			s.sweep = sweep
@@ -665,6 +665,23 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
 
 	return 0
+End
+
+static Function/WAVE NWB_GetSweepWave(string device, variable sweep)
+
+	ASSERT(IsValidSweepNumber(sweep), "Got invalid sweep number")
+	WAVE/Z sweepWave = GetSweepWave(device, sweep)
+	ASSERT(WaveExists(sweepWave), "Can not resolve sweep wave")
+	if(IsTextWave(sweepWave))
+		return sweepWave
+	endif
+
+	// needs upgrade
+	SplitAndUpgradeSweepGlobal(device, sweep)
+	DFREF         dfr       = GetDeviceDataPath(device)
+	WAVE/SDFR=dfr sweepWave = $GetSweepWaveName(sweep)
+
+	return sweepWave
 End
 
 /// @brief Wait for ASYNC nwb writing to finish
