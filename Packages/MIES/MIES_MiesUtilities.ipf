@@ -6077,10 +6077,12 @@ threadsafe static Function SplitSweepWave(WAVE numericalValues, variable sweep, 
 	string/G targetDFR:note = note(sweepWave)
 End
 
-threadsafe static Function AreAllSingleSweepWavesPresent(DFREF targetDFR, WAVE/T componentNames)
+threadsafe static Function AreAllSingleSweepWavesPresent(DFREF targetDFR, WAVE/T componentNames, [variable backupMustExist])
 
 	variable chanMissing, chanPresent
 	string wName
+
+	backupMustExist = ParamIsDefault(backupMustExist) ? 1 : !!backupMustExist
 
 	for(wName : componentNames)
 		WAVE/Z channel = targetDFR:$wName
@@ -6090,12 +6092,20 @@ threadsafe static Function AreAllSingleSweepWavesPresent(DFREF targetDFR, WAVE/T
 			WAVE/Z channelBak = $""
 		endif
 
-		if(WaveExists(channel) && WaveExists(channelBak))
-			chanPresent = 1
-		elseif(!WaveExists(channel) && !WaveExists(channelBak))
-			chanMissing = 1
+		if(backupMustExist)
+			if(WaveExists(channel) && WaveExists(channelBak))
+				chanPresent = 1
+			elseif(!WaveExists(channel) && !WaveExists(channelBak))
+				chanMissing = 1
+			else
+				ASSERT_TS(0, "Found sweep single channel wave without backup (or vice versa) for sweep in " + GetDataFolder(1, targetDFR) + " channel " + wName)
+			endif
 		else
-			ASSERT_TS(0, "Found sweep single channel wave without backup (or vice versa) for sweep in " + GetDataFolder(1, targetDFR) + " channel " + wName)
+			if(WaveExists(channel))
+				chanPresent = 1
+			else
+				chanMissing = 1
+			endif
 		endif
 		ASSERT_TS(chanPresent + chanMissing == 1, "For sweep in " + GetDataFolder(1, targetDFR) + " some single channels are missing, some are present.")
 	endfor
