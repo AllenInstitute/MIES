@@ -6213,7 +6213,7 @@ threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, W
 
 	numRows = DimSize(configWave, ROWS)
 	Make/FREE/T/N=(numRows) componentNames = GetSweepComponentWaveName(configWave, p)
-	channelsPresent = AreAllSingleSweepWavesPresent(targetDFR, componentNames)
+	channelsPresent = AreAllSingleSweepWavesPresent(targetDFR, componentNames, backupMustExist = !IsNumericWave(sweepWave))
 
 	// for 2D sweepWaves input assume that existing single channel waves are from input wave
 	ASSERT_TS(!(channelsPresent && IsWaveRefWave(sweepWave)), "Can not split sweep from waveRef wave because in targetDFR is already single channel sweep data")
