@@ -2323,18 +2323,23 @@ End
 
 /// @brief Returns the sampling interval of the sweep
 /// in microseconds (1e-6s)
-threadsafe Function GetSamplingInterval(config)
-	Wave config
+threadsafe Function GetSamplingInterval(WAVE config, variable channelType)
+
+	variable i, numChannels, colSamplingInterval, colChannelType, oldVersion
 
 	ASSERT_TS(IsValidConfigWave(config, version=0), "Expected a valid config wave")
+	oldVersion = WaveVersionIsSmaller(config, 1)
+	colSamplingInterval =  oldVersion ? 2 : FindDimLabel(config, COLS, "SamplingInterval")
+	colChannelType =  oldVersion ? 0 : FindDimLabel(config, COLS, "ChannelType")
 
-	// from ITCConfigAllChannels help file:
-	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
-	Duplicate/D/R=[][2]/FREE config samplingInterval
+	numChannels = DimSize(config, ROWS)
+	for(i = 0; i < numChannels; i += 1)
+		if(config[i][colChannelType] == channelType)
+			return config[i][colSamplingInterval]
+		endif
+	endfor
 
-	// The sampling interval is the same for all channels
-	ASSERT_TS(IsConstant(samplingInterval, samplingInterval[0]), "Expected constant sample interval for all channels")
-	return samplingInterval[0]
+	return NaN
 End
 
 /// @brief Returns the data offset of the sweep in points
@@ -2377,21 +2382,32 @@ threadsafe Function GetHardwareType(device)
 	if(WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1)
 		return HARDWARE_ITC_DAC
 	elseif(IsEmpty(deviceNumber))
-		return HARDWARE_NI_DAC
+		if(IsDeviceNameFromSutter(deviceType))
+			return HARDWARE_SUTTER_DAC
+		else
+			return HARDWARE_NI_DAC
+		endif
 	endif
 
 	return HARDWARE_UNSUPPORTED_DAC
+End
+
+threadsafe Function IsDeviceNameFromSutter(string device)
+
+	return strsearch(device, DEVICE_SUTTER_NAME_START_CLEAN, 0) == 0 && strlen(device) >= 7
 End
 
 /// @brief Parse a device string:
 /// for ITC devices of the form X_DEV_Y, where X is from @ref DEVICE_TYPES_ITC
 /// and Y from @ref DEVICE_NUMBERS.
 /// for NI devices of the form X, where X is from DAP_GetNIDeviceList()
+/// for Sutter devices of the form IPA_E_Xxxxxx, where X must be present
 ///
 /// Returns the result in deviceType and deviceNumber.
 /// Currently the parsing is successfull if
 /// for ITC devices X and Y are non-empty.
 /// for NI devices X is non-empty.
+/// for Sutter devices if the name starts with IPA_E_ and is at least 7 characters long
 /// deviceNumber is empty for NI devices as it does not apply
 /// @param[in]  device       input device string X_DEV_Y
 /// @param[out] deviceType   returns the device type X
@@ -2405,6 +2421,12 @@ threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 
 	if(isEmpty(device))
 		return 0
+	endif
+
+	if(IsDeviceNameFromSutter(device))
+		deviceType = device
+		deviceNumber = ""
+		return 1
 	endif
 
 	if(strsearch(device, "_Dev_", 0, 2) == -1)
@@ -2787,7 +2809,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	variable moreData, chan, guiChannelNumber, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, headstage, channelType, isTTLSplitted
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
-	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
+	variable stimSetLength, samplingIntDA, xRangeStart, xRangeEnd, first, last, count, ttlBit
 	variable numRegions, numEntries, numRangesPerEntry, traceCounter
 	variable totalXRange = NaN
 	string trace, traceType, channelID, axisLabel, entry, range, traceRange, traceColor
@@ -2839,7 +2861,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
 			ControlWindowToFront()
 			tgs.splitTTLBits = 0
-		elseif(hardwareType == HARDWARE_NI_DAC)
+		elseif(hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_SUTTER_DAC)
 			// NI hardware does use one channel per bit so we don't need that here
 			tgs.splitTTLBits = 0
 		endif
@@ -2871,15 +2893,15 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	endif
 
 	if(tgs.dDAQDisplayMode)
-		samplingInt = GetSamplingInterval(config) * MICRO_TO_MILLI
+		samplingIntDA = GetSamplingInterval(config, XOP_CHANNEL_TYPE_DAC) * MICRO_TO_MILLI
 
 		// dDAQ data taken with versions prior to
 		// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
 		// does not have the delays stored in the labnotebook
-		delayOnsetUser   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
-		delayOnsetAuto   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
-		delayTermination = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
-		delaydDAQ        = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
+		delayOnsetUser   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE, defValue=0) / samplingIntDA
+		delayOnsetAuto   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue=0) / samplingIntDA
+		delayTermination = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", DATA_ACQUISITION_MODE, defValue=0) / samplingIntDA
+		delaydDAQ        = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", DATA_ACQUISITION_MODE, defValue=0) / samplingIntDA
 
 		sprintf str, "delayOnsetUser=%g, delayOnsetAuto=%g, delayTermination=%g, delaydDAQ=%g", delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ
 		DEBUGPRINT(str)
@@ -2916,7 +2938,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 					xRangeStart = str2num(StringFromList(0, range, "-"))
 					xRangeEnd = str2num(StringFromList(1, range, "-"))
-					totalXRange += (xRangeEnd - XRangeStart) / samplingInt
+					totalXRange += (xRangeEnd - XRangeStart) / samplingIntDA
 				endfor
 			endfor
 
@@ -3149,8 +3171,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStart, xRangeEnd
 							DEBUGPRINT(str)
 
-							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingInt
-							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd / samplingInt
+							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingIntDA
+							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd / samplingIntDA
 						endif
 
 						xRangeStart = floor(xRangeStart)
@@ -4927,9 +4949,9 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 	index = GetIndexForHeadstageIndepData(numericalValues)
 
 	hwDACType = GetUsedHWDACFromLNB(numericalValues, sweep)
-	ASSERT_TS(hwDACType == HARDWARE_ITC_DAC || hwDACType == HARDWARE_NI_DAC, "Unsupported hardware dac type")
+	ASSERT_TS(hwDACType == HARDWARE_ITC_DAC || hwDACType == HARDWARE_NI_DAC || hwDACType == HARDWARE_SUTTER_DAC, "Unsupported hardware dac type")
 
-	if(hwDACType == HARDWARE_NI_DAC)
+	if(hwDACType == HARDWARE_NI_DAC || hwDACType == HARDWARE_SUTTER_DAC)
 		// present since 2f56481a (DC_MakeNITTLWave: Document TTL settings and rework it completely, 2018-09-06)
 		WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
 		if(!WaveExists(ttlChannels))
@@ -6417,7 +6439,8 @@ Function LeftOverSweepTime(string device, variable fifoPos)
 		case HARDWARE_ITC_DAC:
 			// nothing to do
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop-through
+		case HARDWARE_SUTTER_DAC:
 			// we need to use one of the channel waves
 			WAVE/WAVE ref = DAQDataWave
 			WAVE DAQDataWave = ref[0]
@@ -7522,6 +7545,8 @@ static function UploadPing()
 	JSON_AddWave(jsonId2, jsonPath + "/NI", NIDevices)
 	WAVE/T ITCDevices = ListToTextWave(DAP_GetITCDeviceList(), ";")
 	JSON_AddWave(jsonId2, jsonPath + "/ITC", ITCDevices)
+	WAVE/T SUDevices = ListToTextWave(DAP_GetSUDeviceList(), ";")
+	JSON_AddWave(jsonId2, jsonPath + "/SU", SUDevices)
 
 	payLoad = JSON_Dump(jsonId2, indent=2)
 	JSON_Release(jsonId2)
@@ -8442,8 +8467,6 @@ End
 /// @return `$""` if recreation failed or a free wave on success.
 Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAVE textualValues, variable sweepNo)
 
-	variable samplingInterval
-
 	// ensure we start with a fresh config wave
 	WAVE configWave = GetDAQConfigWave(device)
 	MoveToTrash(wv=configWave)
@@ -8457,9 +8480,7 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 	AddChannelPropertiesFromLBN(numericalValues, textualValues, sweepNo, configWave, XOP_CHANNEL_TYPE_ADC)
 	AddChannelPropertiesFromLBN(numericalValues, textualValues, sweepNo, configWave, XOP_CHANNEL_TYPE_TTL)
 
-	samplingInterval = GetSamplingIntervalFromLBN(numericalValues, sweepNo)
-
-	configWave[][%SamplingInterval] = samplingInterval * MILLI_TO_MICRO
+	configWave[][%SamplingInterval] = GetSamplingIntervalFromLBN(numericalValues, sweepNo, configWave[p][%ChannelType]) * MILLI_TO_MICRO
 
 	// always 0, see DC_PlaceDataInDAQConfigWave
 	configWave[][%DecimationMode] = 0
@@ -8479,10 +8500,26 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 End
 
 /// @brief Return the sampling interval [ms] rounded to microseconds
-static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepNo)
-	variable samplingInterval
+static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepNo, variable channelType)
 
-	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	variable samplingInterval
+	string key
+
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC:
+			key = "Sampling interval DA"
+			break
+		case XOP_CHANNEL_TYPE_ADC:
+			key = "Sampling interval AD"
+			break
+		case XOP_CHANNEL_TYPE_TTL:
+			key = "Sampling interval TTL"
+			break
+		default:
+			ASSERT(0, "Invalid Channel Type")
+	endswitch
+
+	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
 	// round to full microseconds as that is stored in GetDAQConfigWave()
 	return round(samplingInterval * 1000) / 1000 // NOLINT

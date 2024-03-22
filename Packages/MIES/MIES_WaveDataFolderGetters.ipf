@@ -229,7 +229,7 @@ threadsafe static Function IsWaveVersioned(WAVE wv)
 End
 
 /// @brief Check if the given wave's version is smaller than the given version, if version is not set true is returned
-threadsafe static Function WaveVersionIsSmaller(wv, existingVersion)
+threadsafe Function WaveVersionIsSmaller(wv, existingVersion)
 	WAVE/Z wv
 	variable existingVersion
 
@@ -669,6 +669,9 @@ threadsafe Function/S GetDevicePathAsString(device)
 		case HARDWARE_ITC_DAC:
 			return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
 			break
+		case HARDWARE_SUTTER_DAC:
+			return GetDeviceTypePathAsString(deviceType)
+			break
 		default:
 			ASSERT_TS(0, "Invalid hardware type")
 	endswitch
@@ -752,7 +755,7 @@ End
 /// ITC hardware:
 /// - 2D signed 16bit integer wave, the colums are for the channel
 ///
-/// NI hardware:
+/// NI/SU hardware:
 /// - Wave reference wave, one referencing each channel
 ///
 /// Rows:
@@ -797,6 +800,7 @@ Function/Wave GetDAQDataWave(string device, variable mode)
 			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:$name/Wave=wv
 			break
 		case HARDWARE_NI_DAC:
+		case HARDWARE_SUTTER_DAC: // intended drop through
 			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:$name/Wave=wv_ni
 			WAVE wv = wv_ni
 			break
@@ -807,7 +811,24 @@ Function/Wave GetDAQDataWave(string device, variable mode)
 	return wv
 End
 
-/// @brief Get the single NI channel waves
+Function/WAVE GetSUCompositeTTLWave(string device)
+
+	string name = "SU_OutputTTLComposite"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/D/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(0) dfr:$name/WAVE=wv
+
+	return wv
+End
+
+/// @brief Get the single NI/Sutter channel waves
 ///
 /// Special use function, normal callers should use GetDAQDataWave()
 /// instead.
@@ -819,6 +840,9 @@ Function/WAVE GetNIDAQChannelWave(string device, variable channel, variable mode
 	switch (hardwareType)
 		case HARDWARE_NI_DAC:
 			prefix = "NI"
+			break
+		case HARDWARE_SUTTER_DAC:
+			prefix = "SU"
 			break
 		default:
 			ASSERT(0, "unsupported device type")
@@ -849,6 +873,48 @@ Function/WAVE GetNIDAQChannelWave(string device, variable channel, variable mode
 	Make/N=(0) dfr:$name/WAVE=wv
 
 	SetStringInWaveNote(wv, TP_PROPERTIES_HASH, "n. a.")
+
+	return wv
+End
+
+/// @brief Get a single point output wave for Sutter device
+Function/WAVE GetSutterSingleSampleDACOutputWave(string device)
+
+	variable samplingInterval
+	string name = "SU_SingleSample_DA"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=1 dfr:$name/WAVE=wv
+	samplingInterval = SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC)
+	SetScale/P x, 0, samplingInterval * MICRO_TO_ONE, "s", wv
+
+	return wv
+End
+
+/// @brief Get a single point input wave for Sutter device
+Function/WAVE GetSutterSingleSampleADCInputWave(string device)
+
+	variable samplingInterval
+	string name = "SU_SingleSample_AD"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=1 dfr:$name/WAVE=wv
+	samplingInterval = SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_ADC)
+	SetScale/P x, 0, samplingInterval * MICRO_TO_ONE, "s", wv
 
 	return wv
 End
@@ -981,7 +1047,6 @@ End
 /// While for ITC devices there is one TTL row for each rack,
 /// for NI devices there is one TTL row for each channel (up to 8 currently)
 /// The channel number column holds the hardware channel number for the NI device
-/// Currently the sampling interval is read from channel 0 only and used for all channels
 ///
 /// ITC hardware:
 /// The number of TTL bits which are stored in each TTL channel is hardware
@@ -1123,7 +1188,8 @@ Function/Wave GetTTLWave(device)
 			return wv
 
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE/Z/SDFR=dfr wv_ni = TTLWave
 
 			if(WaveExists(wv_ni))
@@ -1205,6 +1271,9 @@ Function/S GetDevSpecLabNBFolderAsString(device)
 
 	switch(GetHardwareType(device))
 		case HARDWARE_NI_DAC:
+			return GetLabNotebookFolderAsString() + ":" + deviceType
+			break
+		case HARDWARE_SUTTER_DAC:
 			return GetLabNotebookFolderAsString() + ":" + deviceType
 			break
 		case HARDWARE_ITC_DAC:
@@ -2165,7 +2234,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 38
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 39
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2273,45 +2342,47 @@ End
 /// - 20: Locked indexing
 /// - 21: Repeated Acquisition
 /// - 22: Random Repeated Acquisition
-/// - 23: Sampling interval
-/// - 24: Sampling interval multiplier
-/// - 25: Stim set length
-/// - 26: oodDAQ Pre Feature
-/// - 27: oodDAQ Post Feature
-/// - 28: oodDAQ Resolution
-/// - 29: Optimized Overlap dDAQ
-/// - 30: Delay onset oodDAQ
-/// - 31: Repeated Acquisition Cycle ID
-/// - 32: Stim Wave Checksum (can be used to disambiguate cases
+/// - 23: Sampling interval DA
+/// - 24: Sampling interval AD
+/// - 25: Sampling interval TTL
+/// - 26: Sampling interval multiplier
+/// - 27: Stim set length
+/// - 28: oodDAQ Pre Feature
+/// - 29: oodDAQ Post Feature
+/// - 30: oodDAQ Resolution
+/// - 31: Optimized Overlap dDAQ
+/// - 32: Delay onset oodDAQ
+/// - 33: Repeated Acquisition Cycle ID
+/// - 34: Stim Wave Checksum (can be used to disambiguate cases
 ///                           where two stimsets are named the same
 ///                           but have different contents)
-/// - 33: Multi Device mode
-/// - 34: Background Testpulse
-/// - 35: Background DAQ
-/// - 36: Sampling interval multiplier
-/// - 37: TP during ITI
-/// - 38: Amplifier change via I=0
-/// - 39: Skip analysis functions
-/// - 40: Repeat sweep on async alarm
-/// - 41: Set Cycle Count
-/// - 42: Stimset cycle ID
-/// - 43: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
-/// - 44: Fixed frequency acquisition
-/// - 45: Headstage Active, binary flag that indicates the enabled headstage(s), the index is the headstage number
-/// - 46: Clamp Mode
-/// - 47: Igor Pro bitness
-/// - 48: DA ChannelType, one of @ref DaqChannelTypeConstants
-/// - 49: AD ChannelType, one of @ref DaqChannelTypeConstants
-/// - 50: oodDAQ member, true if headstage takes part in oodDAQ mode, false otherwise
-/// - 51: Autobias % (DAEphys->Settings->Amplifier)
-/// - 52: Autobias Interval (DAEphys->Settings->Amplifier)
-/// - 53: TP after DAQ
-/// - 54: Epochs version
-/// - 55: Get/Set Inter-trial interval
-/// - 56: Double precision data
-/// - 57: Save amplifier settings
-/// - 58: Require amplifier
-/// - 59: Skip Ahead
+/// - 35: Multi Device mode
+/// - 36: Background Testpulse
+/// - 37: Background DAQ
+/// - 38: Sampling interval multiplier
+/// - 39: TP during ITI
+/// - 40: Amplifier change via I=0
+/// - 41: Skip analysis functions
+/// - 42: Repeat sweep on async alarm
+/// - 43: Set Cycle Count
+/// - 44: Stimset cycle ID
+/// - 45: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
+/// - 46: Fixed frequency acquisition
+/// - 47: Headstage Active, binary flag that indicates the enabled headstage(s), the index is the headstage number
+/// - 48: Clamp Mode
+/// - 49: Igor Pro bitness
+/// - 50: DA ChannelType, one of @ref DaqChannelTypeConstants
+/// - 51: AD ChannelType, one of @ref DaqChannelTypeConstants
+/// - 52: oodDAQ member, true if headstage takes part in oodDAQ mode, false otherwise
+/// - 53: Autobias % (DAEphys->Settings->Amplifier)
+/// - 54: Autobias Interval (DAEphys->Settings->Amplifier)
+/// - 55: TP after DAQ
+/// - 56: Epochs version
+/// - 57: Get/Set Inter-trial interval
+/// - 58: Double precision data
+/// - 59: Save amplifier settings
+/// - 60: Require amplifier
+/// - 61: Skip Ahead
 Function/Wave GetSweepSettingsKeyWave(device)
 	string device
 
@@ -2330,9 +2401,9 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 60) wv
+		Redimension/N=(-1, 62) wv
 	else
-		Make/T/N=(3, 60) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 62) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -2433,153 +2504,161 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Units][22]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][22] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][23] = "Sampling interval"
+	wv[%Parameter][23] = "Sampling interval DA"
 	wv[%Units][23]     = "ms"
 	wv[%Tolerance][23] = "1"
 
-	wv[%Parameter][24] = "Sampling interval multiplier"
-	wv[%Units][24]     = ""
-	wv[%Tolerance][24] = "0.1"
+	wv[%Parameter][24] = "Sampling interval AD"
+	wv[%Units][24]     = "ms"
+	wv[%Tolerance][24] = "1"
 
-	wv[%Parameter][25] = "Stim set length"
-	wv[%Units][25]     = "" // points not time
-	wv[%Tolerance][25] = "0.1"
+	wv[%Parameter][25] = "Sampling interval TTL"
+	wv[%Units][25]     = "ms"
+	wv[%Tolerance][25] = "1"
 
-	wv[%Parameter][26] = "oodDAQ Pre Feature"
-	wv[%Units][26]     = "ms"
-	wv[%Tolerance][26] = "1"
+	wv[%Parameter][26] = "Sampling interval multiplier"
+	wv[%Units][26]     = ""
+	wv[%Tolerance][26] = "0.1"
 
-	wv[%Parameter][27] = "oodDAQ Post Feature"
-	wv[%Units][27]     = "ms"
-	wv[%Tolerance][27] = "1"
+	wv[%Parameter][27] = "Stim set length"
+	wv[%Units][27]     = "" // points not time
+	wv[%Tolerance][27] = "0.1"
 
-	wv[%Parameter][28] = "oodDAQ Resolution"
+	wv[%Parameter][28] = "oodDAQ Pre Feature"
 	wv[%Units][28]     = "ms"
 	wv[%Tolerance][28] = "1"
 
-	wv[%Parameter][29] = "Optimized Overlap dDAQ"
-	wv[%Units][29]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][29] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][29] = "oodDAQ Post Feature"
+	wv[%Units][29]     = "ms"
+	wv[%Tolerance][29] = "1"
 
-	wv[%Parameter][30] = "Delay onset oodDAQ"
+	wv[%Parameter][30] = "oodDAQ Resolution"
 	wv[%Units][30]     = "ms"
 	wv[%Tolerance][30] = "1"
 
-	wv[%Parameter][31] = RA_ACQ_CYCLE_ID_KEY
-	wv[%Units][31]     = ""
-	wv[%Tolerance][31] = "1"
+	wv[%Parameter][31] = "Optimized Overlap dDAQ"
+	wv[%Units][31]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][31] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][32] = "Stim Wave Checksum"
-	wv[%Units][32]     = ""
+	wv[%Parameter][32] = "Delay onset oodDAQ"
+	wv[%Units][32]     = "ms"
 	wv[%Tolerance][32] = "1"
 
-	wv[%Parameter][33] = "Multi Device mode"
-	wv[%Units][33]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][33] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][33] = RA_ACQ_CYCLE_ID_KEY
+	wv[%Units][33]     = ""
+	wv[%Tolerance][33] = "1"
 
-	wv[%Parameter][34] = "Background Testpulse"
-	wv[%Units][34]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][34] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][34] = "Stim Wave Checksum"
+	wv[%Units][34]     = ""
+	wv[%Tolerance][34] = "1"
 
-	wv[%Parameter][35] = "Background DAQ"
+	wv[%Parameter][35] = "Multi Device mode"
 	wv[%Units][35]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][35] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][36] = "Sampling interval multiplier"
-	wv[%Units][36]     = ""
-	wv[%Tolerance][36] = "1"
+	wv[%Parameter][36] = "Background Testpulse"
+	wv[%Units][36]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][36] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][37] = "TP during ITI"
+	wv[%Parameter][37] = "Background DAQ"
 	wv[%Units][37]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][37] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][38] = "Amplifier change via I=0"
-	wv[%Units][38]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][38] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][38] = "Sampling interval multiplier"
+	wv[%Units][38]     = ""
+	wv[%Tolerance][38] = "1"
 
-	wv[%Parameter][39] = "Skip analysis functions"
+	wv[%Parameter][39] = "TP during ITI"
 	wv[%Units][39]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][39] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][40] = "Repeat sweep on async alarm"
+	wv[%Parameter][40] = "Amplifier change via I=0"
 	wv[%Units][40]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][40] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][41] = "Set Cycle Count"
-	wv[%Units][41]     = ""
-	wv[%Tolerance][41] = "1"
+	wv[%Parameter][41] = "Skip analysis functions"
+	wv[%Units][41]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][41] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][42] = STIMSET_ACQ_CYCLE_ID_KEY
-	wv[%Units][42]     = ""
-	wv[%Tolerance][42] = "1"
+	wv[%Parameter][42] = "Repeat sweep on async alarm"
+	wv[%Units][42]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][42] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][43] = "Digitizer Hardware Type"
+	wv[%Parameter][43] = "Set Cycle Count"
 	wv[%Units][43]     = ""
 	wv[%Tolerance][43] = "1"
 
-	wv[%Parameter][44] = "Fixed frequency acquisition"
-	wv[%Units][44]     = "kHz"
+	wv[%Parameter][44] = STIMSET_ACQ_CYCLE_ID_KEY
+	wv[%Units][44]     = ""
 	wv[%Tolerance][44] = "1"
 
-	wv[%Parameter][45] = "Headstage Active"
-	wv[%Units][45]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][45] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][45] = "Digitizer Hardware Type"
+	wv[%Units][45]     = ""
+	wv[%Tolerance][45] = "1"
 
-	wv[%Parameter][46] = CLAMPMODE_ENTRY_KEY
-	wv[%Units][46]     = ""
-	wv[%Tolerance][46] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][46] = "Fixed frequency acquisition"
+	wv[%Units][46]     = "kHz"
+	wv[%Tolerance][46] = "1"
 
-	wv[%Parameter][47] = "Igor Pro bitness"
-	wv[%Units][47]     = ""
+	wv[%Parameter][47] = "Headstage Active"
+	wv[%Units][47]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][47] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][48] = "DA ChannelType"
+	wv[%Parameter][48] = CLAMPMODE_ENTRY_KEY
 	wv[%Units][48]     = ""
-	wv[%Tolerance][48] = "1"
+	wv[%Tolerance][48] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][49] = "AD ChannelType"
+	wv[%Parameter][49] = "Igor Pro bitness"
 	wv[%Units][49]     = ""
-	wv[%Tolerance][49] = "1"
+	wv[%Tolerance][49] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][50] = "oodDAQ member"
-	wv[%Units][50]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][50] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][50] = "DA ChannelType"
+	wv[%Units][50]     = ""
+	wv[%Tolerance][50] = "1"
 
-	wv[%Parameter][51] = "Autobias %"
+	wv[%Parameter][51] = "AD ChannelType"
 	wv[%Units][51]     = ""
-	wv[%Tolerance][51] = "0.1"
+	wv[%Tolerance][51] = "1"
 
-	wv[%Parameter][52] = "Autobias Interval"
-	wv[%Units][52]     = "s"
-	wv[%Tolerance][52] = "0.1"
+	wv[%Parameter][52] = "oodDAQ member"
+	wv[%Units][52]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][52] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][53] = "TP after DAQ"
-	wv[%Units][53]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][53] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][53] = "Autobias %"
+	wv[%Units][53]     = ""
+	wv[%Tolerance][53] = "0.1"
 
-	wv[%Parameter][54] = "Epochs version"
-	wv[%Units][54]     = ""
-	wv[%Tolerance][54] = "1"
+	wv[%Parameter][54] = "Autobias Interval"
+	wv[%Units][54]     = "s"
+	wv[%Tolerance][54] = "0.1"
 
-	wv[%Parameter][55] = "Get/Set Inter-trial interval"
+	wv[%Parameter][55] = "TP after DAQ"
 	wv[%Units][55]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][55] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][56] = "Double precision data"
-	wv[%Units][56]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][56] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][56] = "Epochs version"
+	wv[%Units][56]     = ""
+	wv[%Tolerance][56] = "1"
 
-	wv[%Parameter][57] = "Save amplifier settings"
+	wv[%Parameter][57] = "Get/Set Inter-trial interval"
 	wv[%Units][57]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][57] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][58] = "Require amplifier"
+	wv[%Parameter][58] = "Double precision data"
 	wv[%Units][58]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][58] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][59] = "Skip Ahead"
-	wv[%Units][59]     = ""
-	wv[%Tolerance][59] = "1"
+	wv[%Parameter][59] = "Save amplifier settings"
+	wv[%Units][59]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][59] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][60] = "Require amplifier"
+	wv[%Units][60]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][60] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][61] = "Skip Ahead"
+	wv[%Units][61]     = ""
+	wv[%Tolerance][61] = "1"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
@@ -5875,14 +5954,14 @@ End
 Function/WAVE GetDeviceMapping()
 
 	DFREF dfr = GetDAQDevicesFolder()
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	WAVE/Z/T/SDFR=dfr wv = deviceMapping
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(HARDWARE_MAX_DEVICES, -1, 2) wv
+		Redimension/N=(HARDWARE_MAX_DEVICES, 3, -1) wv
 	else
 		Make/T/N=(HARDWARE_MAX_DEVICES, ItemsInList(HARDWARE_DAC_TYPES), 2) dfr:deviceMapping/Wave=wv
 	endif
@@ -5891,6 +5970,7 @@ Function/WAVE GetDeviceMapping()
 
 	SetDimLabel COLS, 0, ITC_DEVICE, wv
 	SetDimLabel COLS, 1, NI_DEVICE , wv
+	SetDimLabel COLS, 2, SUTTER_DEVICE , wv
 
 	SetDimLabel LAYERS, 0, MainDevice    , wv
 	SetDimLabel LAYERS, 1, PressureDevice, wv
@@ -7159,10 +7239,19 @@ Function/WAVE GetAnaFuncDashboardHelpWave(dfr)
 End
 
 /// @brief Return a wave with device information
-Function/WAVE GetDeviceInfoWave(device)
-	string device
+///        Entries:
+/// AD: - For devices that have mixed channels for HS, Unassoc AD the number of the channels combined
+///     - For devices that have separate channels for HS and Unassoc AD the number of the headstages
+/// DA: - For devices that have mixed channels for HS, Unassoc DA the number of the channels combined
+///     - For devices that have separate channels for HS and Unassoc DA the number of the headstages
+/// TTL: - Number of TTL channels
+/// Rack: - Number of Racks for ITC, NaN for other HW
+/// HardwareType: - One of @sa HardwareDACTypeConstants like HARDWARE_SUTTER_DAC
+/// AuxAD: - For devices with HS independent AD channels the number of the separate AD channels, NaN for devices with mixed channels
+/// AuxDA: - For devices with HS independent DA channels the number of the separate DA channels, NaN for devices with mixed channels
+Function/WAVE GetDeviceInfoWave(string device)
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	variable hardwareType
 
 	DFREF dfr = GetDeviceInfoPath()
@@ -7173,7 +7262,7 @@ Function/WAVE GetDeviceInfoWave(device)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/D/N=(5) dfr:$device/Wave=wv
+		Make/D/N=7 dfr:$device/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, AD, wv
@@ -7181,6 +7270,8 @@ Function/WAVE GetDeviceInfoWave(device)
 	SetDimLabel ROWS, 2, TTL, wv
 	SetDimLabel ROWS, 3, Rack, wv
 	SetDimLabel ROWS, 4, HardwareType, wv
+	SetDimLabel ROWS, 5, AuxAD, wv
+	SetDimLabel ROWS, 6, AuxDA, wv
 
 	wv = NaN
 
@@ -8237,4 +8328,133 @@ Function/WAVE GetLogFileNames()
 	SetDimLabel COLS, 2, DESCRIPTION, files
 
 	return files
+End
+
+/// @brief Return wave with Sutter device info
+/// Rows:
+/// NUMBEROFDACS: number of IPA devices
+/// MASTERDEVICE: Serial of master device
+/// LISTOFDEVICES: Serials of SubDevices
+/// LISTOFHEADSTAGES: Number of Headstages per Device
+/// SUMHEADSTAGES: Sum of Headstages
+/// AI: Number of analog ins
+/// AO: Number of analog outs
+/// DIOPortWidth: Number of digital outs
+Function/WAVE GetSUDeviceInfo()
+
+	variable version = 1
+	string name = "SUDeviceInfo"
+
+	DFREF dfr = GetDeviceInfoPath()
+
+	WAVE/Z/SDFR=dfr/T wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	elseif(WaveExists(wv))
+		// upgrade here
+	else
+		Make/T/N=8 dfr:$name/WAVE=wv
+	endif
+
+	SetDimensionLabels(wv, "NUMBEROFDACS;MASTERDEVICE;LISTOFDEVICES;LISTOFHEADSTAGES;SUMHEADSTAGES;AI;AO;DIOPortWidth;", ROWS)
+	HW_SU_GetDeviceInfo(wv)
+
+	return wv
+End
+
+/// @brief Return wave with Sutter input list wave
+/// Cols:
+/// INPUTWAVE
+/// CHANNEL
+/// ENCODEINFO
+Function/WAVE GetSUDeviceInput(string device)
+
+	variable version = 1
+	string name = "SUDeviceInput"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr/T wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	elseif(WaveExists(wv))
+		// upgrade here
+	else
+		Make/T/N=(0, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimensionLabels(wv, "INPUTWAVE;CHANNEL;ENCODEINFO;", COLS)
+
+	return wv
+End
+
+/// @brief Return wave with Sutter output list wave
+/// Cols:
+/// OUTPUTWAVE
+/// CHANNEL
+/// ENCODEINFO
+Function/WAVE GetSUDeviceOutput(string device)
+
+	variable version = 1
+	string name = "SUDeviceOutput"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr/T wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	elseif(WaveExists(wv))
+		// upgrade here
+	else
+		Make/T/N=(0, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimensionLabels(wv, "OUTPUTWAVE;CHANNEL;ENCODEINFO;", COLS)
+
+	return wv
+End
+
+/// @brief Return wave with Sutter gains for input
+/// Cols:
+/// GAINFACTOR
+/// OFFSET
+Function/WAVE GetSUDeviceInputGains(string device)
+
+	variable version = 1
+	string name = "SUDeviceInputGains"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr/D wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	elseif(WaveExists(wv))
+		// upgrade here
+	else
+		Make/D/N=(0, 2) dfr:$name/WAVE=wv
+	endif
+
+	SetDimensionLabels(wv, "GAINFACTOR;OFFSET;", COLS)
+
+	return wv
+End
+
+Function/WAVE GetSutterDACTTLSampleInterval()
+
+	Make/FREE/D rates = {1 / 100, 1 / 200, 1 / 400, 1 / 800, 1 / 1000, 1 / 2000, 1 / 4000, 1 / 5000, 1 / 8000, 1 / 10000} // NOLINT
+	rates *= ONE_TO_MICRO
+
+	return rates
+End
+
+Function/WAVE GetSutterADCSampleInterval()
+
+	Make/FREE/D rates = {1 / 100, 1 / 200, 1 / 400, 1 / 800, 1 / 1000, 1 / 2000, 1 / 4000, 1 / 5000, 1 / 8000, 1 / 10000, 1 / 20000, 1 / 25000, 1 / 40000, 1 / 50000} // NOLINT
+	rates *= ONE_TO_MICRO
+
+	return rates
 End

@@ -66,28 +66,41 @@ static Function CheckNumberOfRacksAndTTLs([string str])
 	numTTlsRef  = 32
 #endif
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	numRacksRef = NaN
+	numTTlsRef  = 8
+#endif
+
 	CHECK_EQUAL_VAR(numRacksRef, deviceInfo[%RACK])
 	CHECK_EQUAL_VAR(numTTLsRef, deviceInfo[%TTL])
 End
 
 static Function CheckDeviceLists()
 
-	string ITCdevices, NIdevices, ref
+	string ITCdevices, NIdevices, SUdevices, ref
 
 	ITCDevices = DAP_GetITCDeviceList()
 	NIDevices  = DAP_GetNIDeviceList()
+	SUDevices  = DAP_GetSUDeviceList()
 
 	ref = NONE
 
 #if defined(TESTS_WITH_NI_HARDWARE)
 	CHECK_NEQ_STR(NIDevices, ref)
 	CHECK_EQUAL_STR(ITCDevices, ref)
+	CHECK_EQUAL_STR(SUDevices, ref)
 #elif defined(TESTS_WITH_ITC18USB_HARDWARE)
 	CHECK_NEQ_STR(ITCDevices, ref)
 	CHECK_EQUAL_STR(NIDevices, ref)
+	CHECK_EQUAL_STR(SUDevices, ref)
 #elif defined(TESTS_WITH_ITC1600_HARDWARE)
 	CHECK_NEQ_STR(ITCDevices, ref)
 	CHECK_EQUAL_STR(NIDevices, ref)
+	CHECK_EQUAL_STR(SUDevices, ref)
+#elif defined(TESTS_WITH_SUTTER_HARDWARE)
+	CHECK_NEQ_STR(SUDevices, ref)
+	CHECK_EQUAL_STR(NIDevices, ref)
+	CHECK_EQUAL_STR(ITCDevices, ref)
 #else
 	FAIL()
 #endif
@@ -106,7 +119,11 @@ static Function CheckGetDeviceInfoValid([string str])
 #ifdef TESTS_WITH_NI_HARDWARE
 	CHECK_EQUAL_VAR(wv[%Rack], NaN)
 #else
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	CHECK_EQUAL_VAR(wv[%Rack], NaN)
+#else
 	CHECK_GE_VAR(wv[%Rack], 0)
+#endif
 #endif
 
 	CHECK_EQUAL_VAR(wv[%HardwareType], GetHardwareType(str))

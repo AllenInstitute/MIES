@@ -181,7 +181,7 @@ Function DAG_GetNumericalValue(device, ctrl, [index])
 	string device, ctrl
 	variable index
 
-	variable refValue, waveIndex
+	variable refValue, waveIndex, ctrlDim
 	string msg
 
 	if(ParamIsDefault(index) || IsNaN(index))
@@ -208,7 +208,14 @@ Function DAG_GetNumericalValue(device, ctrl, [index])
 			V_Value -= 1
 		endif
 
-		refValue = GetDA_EphysGuiStateNum(device)[waveIndex][%$ctrl]
+		WAVE GUIState = GetDA_EphysGuiStateNum(device)
+		ctrlDim = FindDimLabel(GUIState, COLS, ctrl)
+		if(ctrlDim < 0)
+			sprintf msg, "Control entry not found in numeric GUI state wave: %s\r", ctrl
+			BUG(msg)
+		else
+			refValue = GUIState[waveIndex][ctrlDim]
+		endif
 
 		if(!CheckIfClose(V_Value, refValue) && !EqualValuesOrBothNaN(V_Value, refValue))
 			sprintf msg, "Numeric GUI state wave is inconsistent for %s: %g vs. %g\r", ctrl, V_Value, refValue
@@ -233,7 +240,7 @@ Function/S DAG_GetTextualValue(device, ctrl, [index])
 	variable index
 
 	string str, msg
-	variable waveIndex
+	variable waveIndex, ctrlDim
 
 	if(ParamIsDefault(index) || IsNaN(index))
 		waveIndex = 0
@@ -257,10 +264,17 @@ Function/S DAG_GetTextualValue(device, ctrl, [index])
 			ControlInfo/W=$device $fullCtrl
 		endif
 
-		str = GUIState[waveIndex][%$ctrl]
+		ctrlDim = FindDimLabel(GUIState, COLS, ctrl)
+		if(ctrlDim < 0)
+			sprintf msg, "Control entry not found in textual GUI state wave: %s\r", ctrl
+			BUG(msg)
+			str = "@@@ CONTROL NOT PRESENT IN GUISTATE WAVE @@@"
+		else
+			str = GUIState[waveIndex][ctrlDim]
+		endif
 
 		if(IsEmpty(S_Value) != IsEmpty(str) || cmpstr(S_Value, str))
-			sprintf msg, "Textual GUI state wave is inconsistent for %s: %s vs. %s\r", ctrl, SelectString(IsNull(S_Value), S_Value, "<null>"), GUIState[index][%$ctrl]
+			sprintf msg, "Textual GUI state wave is inconsistent for %s: %s vs. %s\r", ctrl, SelectString(IsNull(S_Value), S_Value, "<null>"), str
 			BUG(msg)
 		endif
 	endif

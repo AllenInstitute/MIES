@@ -366,7 +366,7 @@ static Function TestEpochsGeneric(string device)
 	CHECK_EQUAL_VAR(DimSize(epochs, CHUNKS), ItemsInList(XOP_CHANNEL_NAMES))
 
 	// further checks of data from LabNotebook Entries
-	WAVE/Z samplInt = GetLastSetting(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	WAVE/Z samplInt = GetLastSetting(numericalValues, sweepNo, "Sampling interval DA", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(samplInt, NUMERIC_WAVE)
 	samplingInterval = samplInt[INDEP_HEADSTAGE] * MICRO_TO_MILLI
 
@@ -399,7 +399,7 @@ static Function TestEpochsGeneric(string device)
 				hwChannelNumber = channelMapTTLGUIToHW[channelNumber][%HWCHANNEL]
 				if(hwType == HARDWARE_ITC_DAC)
 					WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber, splitTTLBits = 1, ttlBit = ttlBit)
-				elseif(hwType == HARDWARE_NI_DAC)
+				elseif(hwType == HARDWARE_NI_DAC || hwType == HARDWARE_SUTTER_DAC)
 					WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber)
 				else
 					FAIL()

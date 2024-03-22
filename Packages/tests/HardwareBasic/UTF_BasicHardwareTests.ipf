@@ -792,12 +792,12 @@ static Function CheckSamplingInterval1_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
-	sampInt = GetSamplingInterval(configWave)
+	sampInt = GetSamplingInterval(configWave, XOP_CHANNEL_TYPE_ADC)
 	CHECK_CLOSE_VAR(sampInt, GetMinSamplingInterval(unit="µs"), tol=1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval AD", DATA_ACQUISITION_MODE)
 	expectedSampInt = GetMinSamplingInterval(unit="ms")
 	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol=1e-6)
 
@@ -839,12 +839,12 @@ static Function CheckSamplingInterval2_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
-	sampInt = GetSamplingInterval(configWave)
+	sampInt = GetSamplingInterval(configWave, XOP_CHANNEL_TYPE_ADC)
 	CHECK_CLOSE_VAR(sampInt, GetMinSamplingInterval(unit="µs") * 8, tol=1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval AD", DATA_ACQUISITION_MODE)
 	expectedSampInt = GetMinSamplingInterval(unit="ms") * 8
 	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol=1e-6)
 
@@ -857,6 +857,14 @@ static Function CheckSamplingInterval2_REENTRY([str])
 	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(configWave))
 	CHECK_EQUAL_VAR(DimOffset(channelAD, ROWS), 0)
 	CHECK_CLOSE_VAR(DimDelta(channelAD, ROWS), expectedSampInt, tol=1e-6)
+End
+
+static Constant SAMPLINGINTERVAL3 = 25 // 25 kHz fixed frequency
+
+static Function CheckSamplingInterval3_PreAcq(device)
+	string device
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_FixedFreq", str=num2istr(SAMPLINGINTERVAL3))
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -886,20 +894,20 @@ static Function CheckSamplingInterval3_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
-	sampInt = GetSamplingInterval(configWave)
-	CHECK_CLOSE_VAR(sampInt, 10, tol=1e-6)
+	sampInt = GetSamplingInterval(configWave, XOP_CHANNEL_TYPE_ADC)
+	CHECK_CLOSE_VAR(sampInt, 1 / SAMPLINGINTERVAL3 * MILLI_TO_MICRO, tol=1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
-	expectedSampInt = 0.010
+	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval AD", DATA_ACQUISITION_MODE)
+	expectedSampInt = 1 / SAMPLINGINTERVAL3
 	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol=1e-6)
 
 	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(sampIntMult, 1)
 
 	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_VAR(fixedFreqAcq, 100)
+	CHECK_EQUAL_VAR(fixedFreqAcq, SAMPLINGINTERVAL3)
 
 	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(configWave))
 	CHECK_EQUAL_VAR(DimOffset(channelAD, ROWS), 0)

@@ -28,7 +28,7 @@ static Function CheckCalculatedTPEntries_REENTRY([string str])
 	WAVE numericalValues = GetLBNumericalValues(str)
 
 	sweepNo = 0
-	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval AD", DATA_ACQUISITION_MODE)
 	samplingIntervalMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval Multiplier", DATA_ACQUISITION_MODE)
 
 	CHECK_EQUAL_VAR(samplingIntervalMult, 2)
@@ -108,11 +108,11 @@ static Function CheckTPBaseline_REENTRY([STRUCT IUTF_MDATA &md])
 	numEntries = GetNumberFromWaveNote(storedTPs, NOTE_INDEX)
 	CHECK_GT_VAR(numEntries, 0)
 
+	samplingInterval = DAP_GetSampInt(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_ADC)
+
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/Z singleTP = storedTPs[i]
 		CHECK_WAVE(singleTP, NUMERIC_WAVE)
-
-		samplingInterval = GetValDisplayAsNum(device, "ValDisp_DataAcq_SamplingInt")
 
 		CHECK_CLOSE_VAR(DimSize(singleTP, ROWS), (MIES_TP#TP_CalculateTestPulseLength(pulseDuration, baselineFraction) * MILLI_TO_MICRO) / samplingInterval, tol = 0.1)
 	endfor
@@ -358,7 +358,7 @@ static Function TPCachingWorks_REENTRY([string str])
 	CHECK_WAVE(dimDeltasUnique, NUMERIC_WAVE)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
-	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval", DATA_ACQUISITION_MODE)
+	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval AD", DATA_ACQUISITION_MODE)
 	samplingIntervalMultiplier = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval Multiplier", DATA_ACQUISITION_MODE)
 
 	CHECK_EQUAL_VAR(DimSize(dimDeltasUnique, ROWS), 1)
