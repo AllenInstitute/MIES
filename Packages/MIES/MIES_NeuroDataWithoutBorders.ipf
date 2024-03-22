@@ -41,6 +41,7 @@ static Constant NWB_ASYNC_MAX_ITERATIONS  = 120
 /// For existing sweeps with #HIGH_PREC_SWEEP_START_KEY labnotebook entries we use the sweep wave's modification time.
 /// The sweep wave can be either an `DAQDataWave` or a `Sweep_$num` wave. Passing the `DAQDataWave` is more accurate.
 threadsafe static Function NWB_GetStartTimeOfSweep(WAVE/T textualValues, variable sweepNo, WAVE sweepWave)
+
 	variable startingTime
 	string   timestamp
 
@@ -50,13 +51,8 @@ threadsafe static Function NWB_GetStartTimeOfSweep(WAVE/T textualValues, variabl
 		return ParseISO8601TimeStamp(timestamp)
 	endif
 
-	// fallback mode for old sweeps
-	ASSERT_TS(!cmpstr(WaveUnits(sweepWave, ROWS), "ms"), "Expected ms as wave units")
-	// last time the wave was modified (UTC)
-	startingTime = NumberByKeY("MODTIME", WaveInfo(sweepWave, 0)) - date2secs(-1, -1, -1)
-	// we want the timestamp of the beginning of the measurement
-	startingTime -= DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) * MILLI_TO_ONE
-
+	startingTime = NumberByKey(SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC, note(sweepWave), ":", "\r")
+	ASSERT_TS(IsFinite(startingTime), "Could not retrieve sweep start time from originally old sweep format")
 	return startingTime
 End
 
@@ -1084,7 +1080,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 
 	// starting time of the dataset, relative to the start of the session
 	params.startingTime = NWB_GetStartTimeOfSweep(s.textualValues, s.sweep, s.DAQDataWave) - s.session_start_time
-	ASSERT_TS(params.startingTime > 0, "TimeSeries starting time can not be negative")
+	ASSERT_TS(params.startingTime >= 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave)) * KILO_TO_ONE
 

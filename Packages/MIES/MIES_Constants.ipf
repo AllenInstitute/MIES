@@ -2209,3 +2209,5 @@ StrConstant SF_OP_MERGE   = "merge"
 StrConstant SF_OP_FIT     = "fit"
 StrConstant SF_OP_FITLINE = "fitline"
 StrConstant SF_OP_DATASET = "dataset"
+
+StrConstant SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC = "OriginalCreationTimeInUTC"

@@ -545,6 +545,7 @@ Function/WAVE FakeSweepDataGeneratorDefault(WAVE sweep, variable numChannels)
 
 	Redimension/N=(10, numChannels) sweep
 	sweep = p
+	SetScale x, 0, 0, "ms", sweep
 
 	return sweep
 End

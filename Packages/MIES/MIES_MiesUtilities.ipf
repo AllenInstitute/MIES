@@ -6125,7 +6125,9 @@ End
 
 threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentNames, DFREF targetDFR)
 
-	string sweepWaveName, tgtDFName, oldSweepName
+	string sweepWaveName, sweepWaveNameBak, tgtDFName, oldSweepName, str
+	variable sweepCreationTimeUTC = NaN
+	string   modTimeStr           = ""
 
 	tgtDFName = GetDataFolder(0, targetDFR)
 	Make/FREE/T/N=(DimSize(componentNames, ROWS)) sweepT
@@ -6139,6 +6141,12 @@ threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentName
 	sweepWaveName = NameOfWave(sweepWave)
 	DFREF sweepWaveDFR = GetParentDFR(targetDFR)
 	if(IsNumericWave(sweepWave))
+		// we also have to preserve the original modification time
+		ASSERT_TS(!CmpStr(WaveUnits(sweepWave, ROWS), "ms"), "Expected ms as wave units")
+		modTimeStr            = StringByKeY("MODTIME", WaveInfo(sweepWave, 0))
+		sweepCreationTimeUTC  = str2num(modTimeStr) - date2secs(-1, -1, -1)
+		sweepCreationTimeUTC -= DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) * MILLI_TO_ONE
+
 		oldSweepName = UniqueWaveName(sweepWaveDFR, sweepWaveName + "_preUpgrade")
 		Duplicate sweepWave, sweepWaveDFR:$oldSweepName
 	endif
@@ -6147,10 +6155,18 @@ threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentName
 	KillOrMoveToTrash(wv = wv)
 	MoveWave sweepT, sweepWaveDFR:$sweepWaveName
 
-	sweepWaveName = sweepWaveName + WAVE_BACKUP_SUFFIX
-	WAVE/Z wv = sweepWaveDFR:$sweepWaveName
+	sweepWaveNameBak = sweepWaveName + WAVE_BACKUP_SUFFIX
+	WAVE/Z wv = sweepWaveDFR:$sweepWaveNameBak
 	KillOrMoveToTrash(wv = wv)
-	MoveWave sweepTBak, sweepWaveDFR:$sweepWaveName
+	MoveWave sweepTBak, sweepWaveDFR:$sweepWaveNameBak
+
+	if(!IsNaN(sweepCreationTimeUTC))
+		sprintf str, "%d", sweepCreationTimeUTC
+		WAVE wv = sweepWaveDFR:$sweepWaveName
+		SetStringInWaveNote(wv, SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC, str, keySep = ":", listSep = "\r")
+		WAVE wv = sweepWaveDFR:$sweepWaveNameBak
+		SetStringInWaveNote(wv, SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC, str, keySep = ":", listSep = "\r")
+	endif
 End
 
 /// @brief Split a sweep wave into one 1D-wave per channel/ttlBit and convert the sweep wave to the current text sweep format.
