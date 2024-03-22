@@ -6908,3 +6908,124 @@ threadsafe Function AreIntervalsIntersecting(WAVE intervalsParam)
 
 	return IsFinite(GetRowIndex(result, val = 1))
 End
+
+/// @brief Returns the integer result and the difference of it to the original value
+threadsafe Function [variable intResult, variable rest] RoundAndDelta(variable val)
+
+	intResult = round(val)
+
+	return [intResult, intResult - val]
+End
+
+/// @brief Returns the integer result and the difference of it to the original value
+threadsafe Function [variable intResult, variable rest] CeilAndDelta(variable val)
+
+	intResult = ceil(val)
+
+	return [intResult, intResult - val]
+End
+
+/// @brief Returns the integer result and the difference of it to the original value
+threadsafe Function [variable intResult, variable rest] FloorAndDelta(variable val)
+
+	intResult = floor(val)
+
+	return [intResult, intResult - val]
+End
+
+/// @brief Returns the target index closer to zero of a given source index for a decimation in the form
+///        target[] = source[round(p * decimationFactor)]
+///        Note:
+///          For a decimationFactor < 1 a point in source may be decimated to multiple points in target,
+///          thus a resulting index in target of sourceIndex + 1 may be equal to the index retrieved for sourceindex.
+///          For a decimationFactor > 1 points in source may be skipped on decimation,
+///          thus a resulting index in target of sourceIndex + 1 may increase the result by more than 1.
+threadsafe Function IndexAfterDecimation(variable sourceIndex, variable decimationFactor)
+
+	ASSERT_TS(IsInteger(sourceIndex) && sourceIndex >= 0, "sourceIndex must be integer & >= 0")
+	return sourceIndex == 0 ? -1 : floor((sourceIndex - 0.5) / decimationFactor)
+End
+
+/// @brief Returns the first row index that is NaN from the floating point wave wv, NaN if no index is NaN
+threadsafe Function FindFirstNaNIndex(WAVE wv)
+
+	ASSERT_TS(IsFloatingPointWave(wv), "input wave must be floating point")
+
+	FindValue/FNAN  wv
+	if(V_row < 0)
+		return NaN
+	endif
+
+	return V_row
+End
+
+/// @brief Sets the DimLabels for elements of a 1d numerical or text wave based on the content of the wave
+///        For numerical waves the wave element is treated as integer
+///        For textual waves the elements must translate to a valid DimLabel.
+///
+/// @param wv input wave
+/// @param prefix [optional: default "" for numerical waves and NUM_ for textual waves] prefix of the dimlabel
+///               For numerical waves it is recommended to provide an own prefix.
+/// @param suffix [optional: default ""] suffix of the dimlabel
+/// @param strict [optional: default 0] When this flag is set then each constructed DimLabels for text wave elements are checked
+///               if it results in a valid DimLabel, it is also checked if duplicate Dimlabels would be created.
+threadsafe Function SetDimensionLabelsFromWaveContents(WAVE wv, [string prefix, string suffix, variable strict])
+
+	variable idx, num
+	string str
+
+	ASSERT_TS(IsTextWave(wv) || IsNumericWave(wv), "Wave must be text or numeric")
+	if(!DimSize(wv, ROWS))
+		return NaN
+	endif
+	ASSERT_TS(!DimSize(wv, COLS), "Wave must be 1d")
+
+	if(ParamIsDefault(prefix))
+		prefix = SelectString(IsTextWave(wv), "NUM_", "")
+	else
+		ASSERT_TS(IsValidObjectName(prefix), "Prefix " + prefix + " must be a valid object name")
+	endif
+	str = SelectString(IsTextWave(wv), "0", "A")
+	if(ParamIsDefault(suffix))
+		suffix = ""
+	endif
+	ASSERT_TS(IsValidObjectName(prefix + str + suffix), "The combination of Prefix " + prefix + " and Suffix " + suffix + " must be a valid object name")
+
+	strict = ParamIsDefault(strict) ? 0 : !!strict
+
+	if(IsTextWave(wv))
+		WAVE/T wt = wv
+		if(strict)
+			FindDuplicates/FREE/DT=textDups wv
+			ASSERT_TS(!DimSize(textDups, ROWS), "Input would result in duplicate DimLabels")
+			for(str : wt)
+				str = prefix + str + suffix
+				ASSERT_TS(IsValidObjectName(str), "Element at " + num2istr(idx) + " results in ivnalid DimLabel " + str)
+				SetDimLabel ROWS, idx++, $str, wv
+			endfor
+		else
+			for(str : wt)
+				str = prefix + str + suffix
+				SetDimLabel ROWS, idx++, $str, wv
+			endfor
+		endif
+
+		return NaN
+	endif
+
+	if(strict)
+		Make/FREE/T/N=(DimSize(wv, ROWS)) labels
+		for(num : wv)
+			sprintf str, "%s%d%s", prefix, num, suffix
+			labels[idx++] = str
+		endfor
+		FindDuplicates/FREE/DT=textDups labels
+		ASSERT_TS(!DimSize(textDups, ROWS), "Input would result in duplicate DimLabels")
+		idx = 0
+	endif
+
+	for(num : wv)
+		sprintf str, "%s%d%s", prefix, num, suffix
+		SetDimLabel ROWS, idx++, $str, wv
+	endfor
+End

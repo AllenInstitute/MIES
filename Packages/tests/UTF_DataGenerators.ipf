@@ -269,6 +269,68 @@ Function/WAVE GetMiesMacrosWithPanelType()
 	return matches
 End
 
+static Function/WAVE EpochTestSamplingFrequency_Gen()
+
+	string frequencies = DAP_GetSamplingFrequencies()
+
+	WAVE wTemp = ListToNumericWave(frequencies, ";")
+	WAVE w = ZapNaNs(wTemp)
+
+	SetDimensionLabelsFromWaveContents(w, prefix = "f_", suffix = "_kHz")
+
+	return w
+End
+
+static Function/WAVE EpochTestSamplingFrequencyTTL_Gen()
+
+	string frequencies = DAP_GetSamplingFrequencies()
+
+	WAVE wTemp = ListToNumericWave(frequencies, ";")
+
+#ifdef TESTS_WITH_ITC18USB_HARDWARE
+	wTemp[] = wTemp[p] == 100 ? NaN : wTemp[p]
+#else
+#ifdef TESTS_WITH_ITC1600_HARDWARE
+	wTemp[] = wTemp[p] == 100 ? NaN : wTemp[p]
+#endif
+#endif
+
+	WAVE w = ZapNaNs(wTemp)
+
+	SetDimensionLabelsFromWaveContents(w, prefix = "f_", suffix = "_kHz")
+
+	return w
+End
+
+static Function/WAVE EpochTestSamplingMultiplier_Gen()
+
+	string multipliers = DAP_GetSamplingMultiplier()
+
+	WAVE wTemp = ListToNumericWave(multipliers, ";")
+	wTemp[] = wTemp[p] == 1 ? NaN : wTemp[p]
+	WAVE w = ZapNaNs(wTemp)
+
+	SetDimensionLabelsFromWaveContents(w, suffix = "x")
+
+	return w
+End
+
+static Function/WAVE EpochTest_Stimsets_Gen()
+
+	Make/FREE/T wt = {"EpochTest0_DA_0", "EpochTest1_DA_0", "EpochTest2_DA_0", "EpochTest3_DA_0", "EpochTest4_DA_0", "EpochTest5_DA_0", "EpochTest6_DA_0", "EpochTest17_DA_0"}
+	SetDimensionLabelsFromWaveContents(wt)
+
+	return wt
+End
+
+static Function/WAVE EpochTest_StimsetsTTL_Gen()
+
+	Make/FREE/T wt = {"StimulusSetA_TTL_0", "StimulusSetB_TTL_0", "StimulusSetC_TTL_0", "StimulusSetD_TTL_0"}
+	SetDimensionLabelsFromWaveContents(wt)
+
+	return wt
+End
+
 static Function/WAVE EpochTestTTL_TP_Gen()
 
 	Make/FREE w = {0, 1}
@@ -305,6 +367,21 @@ static Function/WAVE RoundTripStimsetFileType()
 
 	Make/FREE/T wv = {"nwb", "pxp"}
 	SetDimensionLabels(wv, TextWaveToList(wv, ";"), ROWS)
+
+	return wv
+End
+
+Function/WAVE IndexAfterDecimation_Positions()
+
+	Make/FREE/D wv = {e / 11.1, Pi / 11.1, 0.73, 0.51}
+
+	return wv
+End
+
+Function/WAVE IndexAfterDecimation_Sizes()
+
+	// These are variations of the target size, the source size is fixed 1000
+	Make/FREE/D wv = {345, 678, 1234, 5678}
 
 	return wv
 End

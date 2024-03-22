@@ -671,6 +671,10 @@ is determined from the epoch information of each sweep/channel/epoch data iterat
 that sweep data is not included in the sweep data returned. If the same epoch is resolved multiple times from wildcard expressions or
 multiple epoch names then it is included only once per sweep.
 
+A given range as numbers or epoch extracts a subrange of data points from the sweep. The start and end time is converted to
+closest integer indices, where the included points range from `startIndex` to `endIndex - 1`. This matches the general handling
+of epochs in MIES, where the data point at the end time of an epoch is not part of the epoch range.
+
 selectData is retrieved through the `select` operation. It selects for which sweeps and channels sweep data is returned.
 `select` also allows to choose currently displayed sweeps or all existing sweeps as data source.
 When the optional selectData argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.

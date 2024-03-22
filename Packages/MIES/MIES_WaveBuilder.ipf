@@ -491,6 +491,7 @@ static Function/Wave WB_GetStimSet([setName])
 		endfor
 		WAVE stimset = stimsetFlipped
 	endif
+	AddEntryIntoWaveNoteAsList(stimset, STIMSET_SIZE_KEY, var=DimSize(stimset, ROWS), format = "%d")
 
 	if(!isEmpty(setName))
 		AddEntryIntoWaveNoteAsList(stimset, "Checksum", var=WB_CalculateStimsetChecksum(stimset, setName), format = "%d")
@@ -799,7 +800,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	Make/FREE/N=0 WaveBuilderWave
 
 	string customWaveName, debugMsg, defMode, formula, formula_version
-	variable i, j, type, accumulatedDuration, pulseToPulseLength, first, last
+	variable i, j, type, accumulatedDuration, pulseToPulseLength, first, last, segmentLength
 	STRUCT SegmentParameters params
 
 	if(stepCount == 0)
@@ -895,8 +896,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"       , var=params.randomSeed)
 				break
 			case EPOCH_TYPE_SIN_COS:
-				Make/D/FREE inflectionPoints
-				WB_TrigSegment(params, inflectionPoints)
+				[WAVE inflectionPoints, WAVE inflectionIndices] = WB_TrigSegment(params)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"     , var=params.Duration)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"    , var=params.Amplitude)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"       , var=params.Offset)
@@ -905,6 +905,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=ToTrueFalse(params.logChirp))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "FunctionType" , str=StringFromList(params.trigFuncType, WAVEBUILDER_TRIGGER_TYPES))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Inflection Points", str=NumericWaveToList(inflectionPoints, ",", format="%.15g"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, INFLECTION_POINTS_INDEX_KEY, str=NumericWaveToList(inflectionIndices, ",", format="%.15g"))
 				break
 			case EPOCH_TYPE_SAW_TOOTH:
 				WB_SawToothSegment(params)
@@ -918,10 +919,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				params.noiseGenMode            = WP[86][i][type]
 				params.noiseGenModePTMixedFreq = WP[87][i][type]
 
-				Make/FREE/D/N=(MINIMUM_WAVE_SIZE) pulseStartTimes
-
 				if(WP[46][i][type]) // "Number of pulses" checkbox
-					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE, pulseStartTimes, pulseToPulseLength)
+					[WAVE pulseStartTimes, WAVE pulseStartIndices, WAVE pulseEndIndices, pulseToPulseLength] = WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE)
 					if(windowExists("WaveBuilder")                                              \
 					   && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN     \
 					   && GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch") == i)
@@ -929,7 +928,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 					endif
 					defMode = "Pulse"
 				else
-					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR, pulseStartTimes, pulseToPulseLength)
+					[WAVE pulseStartTimes, WAVE pulseStartIndices, WAVE pulseEndIndices, pulseToPulseLength] = WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR)
 					if(windowExists("WaveBuilder")                                              \
 					   && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN     \
 					   && GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch") == i)
@@ -954,6 +953,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution"   , str=ToTrueFalse(params.poisson))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"            , var=params.randomSeed)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_START_TIMES_KEY    , str=NumericWaveToList(pulseStartTimes, ",", format="%.15g"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_START_INDICES_KEY  , str=NumericWaveToList(pulseStartIndices, ",", format="%d"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_END_INDICES_KEY    , str=NumericWaveToList(pulseEndIndices, ",", format="%d"))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Definition mode"        , str=defMode)
 				break
 			case EPOCH_TYPE_PSC:
@@ -1011,9 +1012,6 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				continue
 		endswitch
 
-		// add CR as we have finished an epoch
-		Note/NOCR WaveBuilderWave, "\r"
-
 		if(type != EPOCH_TYPE_COMBINE)
 			WB_ApplyOffset(params)
 		endif
@@ -1025,9 +1023,14 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		accumulatedDuration += params.duration
 
 		WAVE/Z segmentWave = GetSegmentWave()
+		segmentLength = WaveExists(segmentWave) ? DimSize(segmentWave, ROWS) : 0
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, EPOCH_LENGTH_INDEX_KEY, var=segmentLength, format="%d")
 		if(WaveExists(segmentWave))
 			Concatenate/NP=0 {segmentWave}, WaveBuilderWave
 		endif
+
+		// add CR as we have finished an epoch
+		Note/NOCR WaveBuilderWave, "\r"
 	endfor
 
 	// adjust epochID timestamps for stimset flipping
@@ -1352,6 +1355,29 @@ static Function [variable lowerBound, variable upperBound] WB_TrigGetBoundsForIn
 	return [lowerBound, upperBound]
 End
 
+static Function WB_CheckTrigonometricSegmentParameters(STRUCT SegmentParameters &pa)
+
+	if(pa.amplitude == 0)
+		print "Can't calculate inflection points with amplitude zero"
+		ControlWindowToFront()
+		return 1
+	elseif(pa.frequency <= 0)
+		print "Can't calculate inflection points with frequency zero"
+		ControlWindowToFront()
+		return 1
+	elseif(pa.logChirp && pa.frequency == pa.endFrequency)
+		print "Can't calculate inflection points with both frequencies being equal"
+		ControlWindowToFront()
+		return 1
+	elseif(pa.endfrequency <= 0 && pa.logChirp)
+		print "Can't calculate inflection points with end frequency zero"
+		ControlWindowToFront()
+		return 1
+	endif
+
+	return 0
+End
+
 /// @brief Calculate the x values where the trigonometric epoch has inflection points
 ///
 /// For zero offset, the inflection points coincide with the zero crossings/roots.
@@ -1390,31 +1416,12 @@ End
 ///    x = \frac{1}{k_1} \cdot \ln\left(\frac{(c + \frac{1}{2}) \cdot \pi + k_3}{k_2}\right)
 ///
 /// \endrst
-static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, variable k0, variable k1, variable k2, variable k3, WAVE inflectionPoints)
+static Function [WAVE/D inflectionPoints, WAVE/D inflectionIndices] WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, variable k0, variable k1, variable k2, variable k3)
 	variable i, idx, xzero, offset, lowerBound, upperBound
 
-	ASSERT(IsDoubleFloatingPointWave(inflectionPoints), "Expected a double wave")
-
-	if(pa.amplitude == 0)
-		print "Can't calculate inflection points with amplitude zero"
-		ControlWindowToFront()
-		inflectionPoints = {NaN}
-		return NaN
-	elseif(pa.frequency <= 0)
-		print "Can't calculate inflection points with frequency zero"
-		ControlWindowToFront()
-		inflectionPoints = {NaN}
-		return NaN
-	elseif(pa.logChirp && pa.frequency == pa.endFrequency)
-		print "Can't calculate inflection points with both frequencies being equal"
-		ControlWindowToFront()
-		inflectionPoints = {NaN}
-		return NaN
-	elseif(pa.endfrequency <= 0 && pa.logChirp)
-		print "Can't calculate inflection points with end frequency zero"
-		ControlWindowToFront()
-		inflectionPoints = {NaN}
-		return NaN
+	if(WB_CheckTrigonometricSegmentParameters(pa))
+		Make/FREE/D inflectionPoints = {NaN}, inflectionIndices = {NaN}
+		return [inflectionPoints, inflectionIndices]
 	endif
 
 	switch(pa.trigFuncType)
@@ -1430,6 +1437,8 @@ static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, v
 
 	[lowerBound, upperBound] = WB_TrigGetBoundsForInflectionPoints(pa, offset)
 
+	Make/FREE/D/N=(MINIMUM_WAVE_SIZE) inflectionPoints, inflectionIndices
+
 	for(i = lowerBound; i<= upperBound;i += 1)
 		if(pa.logChirp)
 			xzero = 1 / k1 * ln(((i + offset) * pi + k3) / k2)
@@ -1442,19 +1451,26 @@ static Function WB_TrigCalculateInflectionPoints(struct SegmentParameters &pa, v
 		ASSERT(xzero < pa.duration || CheckIfClose(xzero, pa.duration), "xzero must <= pa.duration")
 
 		EnsureLargeEnoughWave(inflectionPoints, indexShouldExist = idx, dimension = ROWS, initialValue = NaN)
-		inflectionPoints[idx++] = xzero
+		EnsureLargeEnoughWave(inflectionIndices, indexShouldExist = idx, dimension = ROWS, initialValue = NaN)
+		inflectionPoints[idx] = xzero
+		inflectionIndices[idx] = trunc(xzero / WAVEBUILDER_MIN_SAMPINT)
+		idx += 1
 	endfor
 
-	Redimension/N=(idx) inflectionPoints
+	Redimension/N=(idx) inflectionPoints, inflectionIndices
+
+	return [inflectionPoints, inflectionIndices]
 End
 
-static Function WB_TrigSegment(struct SegmentParameters &pa, WAVE inflectionPoints)
+static Function [WAVE/D inflectionPoints, WAVE/D inflectionIndices] WB_TrigSegment(STRUCT SegmentParameters &pa)
+
 	variable k0, k1, k2, k3
 
 	if(pa.trigFuncType != WB_TRIG_TYPE_SIN && pa.trigFuncType != WB_TRIG_TYPE_COS)
 		printf "Ignoring unknown trigonometric function"
 		Wave SegmentWave = GetSegmentWave(duration=0)
-		return NaN
+		Make/FREE/D inflectionPoints = {NaN}, inflectionIndices = {NaN}
+		return [inflectionPoints, inflectionIndices]
 	endif
 
 	Wave SegmentWave = GetSegmentWave(duration=pa.duration)
@@ -1470,7 +1486,7 @@ static Function WB_TrigSegment(struct SegmentParameters &pa, WAVE inflectionPoin
 			MultiThread SegmentWave = pa.amplitude * cos(k2 * e^(k1 * x) - k3)
 		endif
 
-		WB_TrigCalculateInflectionPoints(pa, k0, k1, k2, k3, inflectionPoints)
+		[WAVE inflectionPoints, WAVE inflectionIndices] = WB_TrigCalculateInflectionPoints(pa, k0, k1, k2, k3)
 	else
 		k0 = 2 * Pi * (pa.frequency / 1000) // NOLINT
 		k1 = NaN
@@ -1483,8 +1499,10 @@ static Function WB_TrigSegment(struct SegmentParameters &pa, WAVE inflectionPoin
 			MultiThread SegmentWave = pa.amplitude * cos(k0 * x)
 		endif
 
-		WB_TrigCalculateInflectionPoints(pa, k0, k1, k2, k3, inflectionPoints)
+		[WAVE inflectionPoints, WAVE inflectionIndices] = WB_TrigCalculateInflectionPoints(pa, k0, k1, k2, k3)
 	endif
+
+	return [inflectionPoints, inflectionIndices]
 End
 
 static Function WB_SawToothSegment(pa)
@@ -1502,6 +1520,7 @@ static Function WB_CreatePulse(wv, pulseType, amplitude, first, last)
 	if(pulseType == WB_PULSE_TRAIN_TYPE_SQUARE)
 		wv[first, last] = amplitude
 	elseif(pulseType == WB_PULSE_TRAIN_TYPE_TRIANGLE)
+		ASSERT(last > first, "last must be > first")
 		wv[first, last] = amplitude * (p - first) / (last - first)
 	else
 		ASSERT(0, "unknown pulse type")
@@ -1571,6 +1590,8 @@ End
 /// \rst
 /// Format of the wave note:
 ///
+/// The wave note version is tracked through STIMSET_NOTE_VERSION
+///
 /// Lines separated by ``\r`` (carriage return) in UTF-8 encoding.
 /// The lines hold Igor Pro style key value pairs in the form ``key = value;``
 /// where value can contain any character except ``;`` (semicolon).
@@ -1590,6 +1611,11 @@ End
 /// - `Pulse To Pulse Length` is in `stimset build ms`
 /// - `Function params (encoded)` contains the analysis function parameters. The values have the format described at GetWaveBuilderWaveTextParam().
 /// - `Inflection Points` are in `epoch build ms`. For offset zero these coincide with the roots.
+///
+/// Added with version 10:
+///    - start and end indices for pulses in pulse trains (end index is part of the pulse)
+///    - length of each segment
+///    - inflection point positions (left side index)
 ///
 /// Example:
 ///
@@ -1724,11 +1750,9 @@ Function/WAVE WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epoch, pulseToPulseLe
 End
 
 /// @brief Return the inflection points for trigonometric epochs
-Function/WAVE WB_GetInflectionPoints(WAVE stimset, variable sweep, variable epoch)
-	string inflectionPointList, stimNote, functionTypeString
+Function/WAVE WB_GetInflectionPoints(string stimNote, variable sweep, variable epoch)
+	string inflectionPointList, functionTypeString
 	variable numEntries
-
-	stimNote = note(stimset)
 
 	inflectionPointList = WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = "Inflection Points")
 	WAVE/Z/D inflectionPoints = ListToNumericWave(inflectionPointList, ",")
@@ -1745,13 +1769,10 @@ Function/WAVE WB_GetInflectionPoints(WAVE stimset, variable sweep, variable epoc
 	return inflectionPoints
 End
 
-static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPulseLength)
-	struct SegmentParameters &pa
-	variable mode
-	WAVE pulseStartTimes
-	variable &pulseToPulseLength
+static Function [WAVE/D pulseStartTimes, WAVE/D pulseStartIndices, WAVE/D pulseEndIndices, variable pulseToPulseLength] WB_PulseTrainSegment(STRUCT SegmentParameters &pa, variable mode)
 
-	variable pulseStartTime, endIndex, startIndex, i
+	variable startIndex, endIndex, startOffset, durationError, lastValidStartIndex
+	variable pulseStartTime, i, amplitudeStartIndex
 	variable numRows, interPulseInterval, idx, firstStep, lastStep, dist
 	string str
 
@@ -1786,6 +1807,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		endif
 	endif
 
+	Make/FREE/D/N=(MINIMUM_WAVE_SIZE) pulseStartTimes, pulseStartIndices, pulseEndIndices
+
 	if(pa.poisson)
 		interPulseInterval = (1 / pa.frequency) * ONE_TO_MILLI - pa.pulseDuration
 
@@ -1797,17 +1820,21 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 
 		for(;;)
 			pulseStartTime += -ln(abs(enoise(1, pa.noiseGenMode))) / pa.frequency * ONE_TO_MILLI
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
-
+			[startIndex, endIndex, startOffset, durationError] = WB_GetIndicesForSignalDuration(pulseStartTime, pa.pulseDuration, WAVEBUILDER_MIN_SAMPINT)
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
+			lastValidStartIndex = startIndex
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
-			pulseStartTimes[idx++] = pulseStartTime
+			EnsureLargeEnoughWave(pulseStartIndices, indexShouldExist=idx)
+			EnsureLargeEnoughWave(pulseEndIndices, indexShouldExist=idx)
+			pulseStartTimes[idx] = pulseStartTime
+			pulseStartIndices[idx] = startIndex
+			pulseEndIndices[idx] = endIndex
+			idx += 1
 		endfor
 	elseif(pa.mixedFreq)
 
@@ -1829,17 +1856,21 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 
 		for(i = 0; i < pa.numberOfPulses; i += 1)
 
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
-
+			[startIndex, endIndex, startOffset, durationError] = WB_GetIndicesForSignalDuration(pulseStartTime, pa.pulseDuration, WAVEBUILDER_MIN_SAMPINT)
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
+			lastValidStartIndex = startIndex
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
-			pulseStartTimes[idx++] = pulseStartTime
+			EnsureLargeEnoughWave(pulseStartIndices, indexShouldExist=idx)
+			EnsureLargeEnoughWave(pulseEndIndices, indexShouldExist=idx)
+			pulseStartTimes[idx] = pulseStartTime
+			pulseStartIndices[idx] = startIndex
+			pulseEndIndices[idx] = endIndex
+			idx += 1
 
 			pulseStartTime += interPulseIntervals[i] + pa.pulseDuration
 		endfor
@@ -1853,30 +1884,40 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		pulseToPulseLength = interPulseInterval + pa.pulseDuration
 
 		for(;;)
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
 
+			[startIndex, endIndex, startOffset, durationError] = WB_GetIndicesForSignalDuration(pulseStartTime, pa.pulseDuration, WAVEBUILDER_MIN_SAMPINT)
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
+			lastValidStartIndex = startIndex
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, indexShouldExist=idx)
-			pulseStartTimes[idx++] = pulseStartTime
+			EnsureLargeEnoughWave(pulseStartIndices, indexShouldExist=idx)
+			EnsureLargeEnoughWave(pulseEndIndices, indexShouldExist=idx)
+			pulseStartTimes[idx] = pulseStartTime
+			pulseStartIndices[idx] = startIndex
+			pulseEndIndices[idx] = endIndex
+			idx += 1
 
 			pulseStartTime += interPulseInterval + pa.pulseDuration
 		endfor
 	endif
 
-	Redimension/N=(idx) pulseStartTimes
+	Redimension/N=(idx) pulseStartTimes, pulseStartIndices, pulseEndIndices
 
 	// remove the zero part at the end
-	FindValue/V=(0)/S=(pa.pulseType == WB_PULSE_TRAIN_TYPE_SQUARE ? startIndex : startIndex + 1) segmentWave
-	if(V_Value != -1)
-		DEBUGPRINT("Removal of points:", var=(DimSize(segmentWave, ROWS) - V_Value))
-		Redimension/N=(V_Value) segmentWave
-		pa.duration = V_Value * WAVEBUILDER_MIN_SAMPINT
+	amplitudeStartIndex = pa.pulseType == WB_PULSE_TRAIN_TYPE_SQUARE ? lastValidStartIndex : lastValidStartIndex + 1
+	if(amplitudeStartIndex < DimSize(segmentWave, ROWS))
+		FindValue/V=(0)/S=(amplitudeStartIndex) segmentWave
+		if(V_Value != -1)
+			DEBUGPRINT("Removal of points:", var=(DimSize(segmentWave, ROWS) - V_Value))
+			Redimension/N=(V_Value) segmentWave
+			pa.duration = V_Value * WAVEBUILDER_MIN_SAMPINT
+		else
+			DEBUGPRINT("No removal of points")
+		endif
 	else
 		DEBUGPRINT("No removal of points")
 	endif
@@ -1885,6 +1926,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	 			  interPulseInterval, pa.numberOfPulses, pa.pulseDuration, DimSize(segmentWave, ROWS) * WAVEBUILDER_MIN_SAMPINT
 
 	DEBUGPRINT(str)
+
+	return [pulseStartTimes, pulseStartIndices, pulseEndIndices, pulseToPulseLength]
 End
 
 static Function WB_PSCSegment(pa)
@@ -2794,4 +2837,27 @@ Function WB_UpdateChangedStimsets([string device, variable stimulusType])
 		WAVE/T epochCombineList = GetWBEpochCombineList(stimulusType)
 		WB_UpdateEpochCombineList(epochCombineList, stimulusType)
 	endif
+End
+
+/// @brief Returns the start and end indices for a wave given a FP duration. The length within the wave is calculated in a way,
+///        that at least the points to fill duration are included. So the effective duration never gets shortened.
+///
+/// @param  startTime      floating point start time of the range
+/// @param  duration       floating point duration time
+/// @param  sampleInterval floating point sample interval
+/// @retval startIndex     index where the range starts
+/// @retval endIndex       index where the range ends, this is inclusive for e.g. data[startIndex, endIndex] = amplitude
+/// @retval startOffset    floating point error of start in wave regarding startTime argument: >= -0.5 * sampleInterval && < 0.5 * sampleInterval
+/// @retval durationError  floating point error of duration in wave regarding duration argument: >= 0 && < sampleInterval
+static Function [variable startIndex, variable endIndex, variable startOffset, variable durationError] WB_GetIndicesForSignalDuration(variable startTime, variable duration, variable sampleInterval)
+
+	variable actualStartTime, ceilDelta, actualDuration
+
+	ASSERT(startTime >= 0 && duration > 0 && sampleInterval > 0, "invalid argument values")
+	[startIndex, startOffset] = RoundAndDelta(startTime / sampleInterval)
+	actualStartTime = startIndex * sampleInterval
+	[endIndex, ceilDelta] = CeilAndDelta((actualStartTime + duration) / sampleInterval)
+	actualDuration = (endIndex - startIndex) * sampleInterval
+
+	return [startIndex, endIndex, startOffset, actualDuration - duration]
 End

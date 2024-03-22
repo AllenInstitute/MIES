@@ -24,7 +24,7 @@ Constant WAVEBUILDER_PANEL_VERSION        = 14
 Constant ANALYSISBROWSER_PANEL_VERSION    =  3
 
 /// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 9
+Constant STIMSET_NOTE_VERSION = 10
 
 /// Version of the epoch information for DA+TTL data
 Constant SWEEP_EPOCH_VERSION = 9
@@ -55,7 +55,7 @@ Constant PSQ_SEAL_EVALUATION_VERSION = 3
 Constant PSQ_TRUE_REST_VM_VERSION    = 2
 Constant MSQ_FAST_RHEO_EST_VERSION   = 1
 Constant MSQ_DA_SCALE_VERSION        = 1
-Constant SC_SPIKE_CONTROL_VERSION    = 1
+Constant SC_SPIKE_CONTROL_VERSION    = 2
 /// @}
 
 /// Especially interesting for PXP consumers like the analysis browser.
@@ -970,6 +970,11 @@ StrConstant EPOCHS_ENTRY_KEY          = "Epochs"
 StrConstant CLAMPMODE_ENTRY_KEY       = "Clamp Mode"
 StrConstant TP_AMPLITUDE_VC_ENTRY_KEY = "TP Amplitude VC"
 StrConstant TP_AMPLITUDE_IC_ENTRY_KEY = "TP Amplitude IC"
+StrConstant PULSE_START_INDICES_KEY   = "Pulse Train Pulse Start Indices"
+StrConstant PULSE_END_INDICES_KEY     = "Pulse Train Pulse End Indices"
+StrConstant INFLECTION_POINTS_INDEX_KEY = "Inflection Points Indices"
+StrConstant EPOCH_LENGTH_INDEX_KEY  = "Epoch Length Indices"
+StrConstant STIMSET_SIZE_KEY          = "Stimset Size"
 
 /// DA_Ephys controls which should be disabled during DAQ
 StrConstant CONTROLS_DISABLE_DURING_DAQ = "Check_DataAcqHS_All;Radio_ClampMode_AllIClamp;Radio_ClampMode_AllVClamp;Radio_ClampMode_AllIZero;SetVar_Sweep;Check_DataAcq_Indexing;check_DataAcq_IndexRandom;Check_DataAcq1_IndexingLocked;check_DataAcq_RepAcqRandom;Check_DataAcq1_RepeatAcq;Check_Settings_SkipAnalysFuncs;check_Settings_MD"

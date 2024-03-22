@@ -1686,14 +1686,14 @@ Function BSP_AddTracesForEpochs(string win)
 
 		numEpochs = DimSize(epochs, ROWS)
 
-		Make/FREE/N=(BSP_EPOCH_LEVELS) currentLevel, indexInLevel
+		Make/FREE/D/N=(BSP_EPOCH_LEVELS) currentLevel, indexInLevel
 
 		sprintf levels_x_name, "levels_x_%s", idpart
-		Make/O/N=(numEpochs * 3, 5, 2) dfr:$levels_x_name/WAVE=levels_x
+		Make/O/D/N=(numEpochs * 3, 5, 2) dfr:$levels_x_name/WAVE=levels_x
 		levels_x = NaN
 
 		sprintf levels_y_name, "levels_y_%s", idPart
-		Make/O/N=(numEpochs * 3, 5, 2) dfr:$levels_y_name/WAVE=levels_y
+		Make/O/D/N=(numEpochs * 3, 5, 2) dfr:$levels_y_name/WAVE=levels_y
 		levels_y = NaN
 		SetStringInWaveNote(levels_y, "EpochInfo", GetWavesDataFolder(epochs, 2))
 

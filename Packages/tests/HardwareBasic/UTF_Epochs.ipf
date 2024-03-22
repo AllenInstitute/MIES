@@ -177,8 +177,8 @@ End
 static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 
 	variable i, j, epochCnt, rowCnt, beginInt, endInt, epochNr, amplitude, center, DAAmp
-	variable first, last, level, range, ret, firstIndex, lastIndex, div1, div2
-	string s, name
+	variable first, last, level, range, ret, firstIndex, lastIndex
+	string s, name, epochType, infoStr
 
 	rowCnt = DimSize(e, ROWS)
 
@@ -224,42 +224,64 @@ static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
+		epochType = StringByKey("EpochType", name, "=")
 		level = str2num(e[i][3])
-		first = startT[i] * ONE_TO_MILLI + WAVEBUILDER_MIN_SAMPINT * 1.5
-		last  = endT[i] * ONE_TO_MILLI - WAVEBUILDER_MIN_SAMPINT * 1.5
-		div1 = first / DimDelta(DAChannel, ROWS)
-		firstIndex = abs(div1 - round(div1)) < 1E-10 ? div1 + 1 : ceil(div1)
-		div2 = last / DimDelta(DAChannel, ROWS)
-		lastIndex = abs(div2 - round(div2)) < 1E-10 ? div2 - 1 : trunc(div2)
+		first = startT[i] * ONE_TO_MILLI
+		last  = endT[i] * ONE_TO_MILLI
+		firstIndex = round(first / DimDelta(DAChannel, ROWS))
+		lastIndex = round(last / DimDelta(DAChannel, ROWS))
 		range = lastIndex - firstIndex
+		infoStr = name + " for " + NameOfWave(DAChannel)
 
-		if(range < 0)
-			PASS()
-			continue
-		endif
+		INFO(infoStr)
+		CHECK_GT_VAR(range, 0)
+
+		amplitude = NumberByKey("Amplitude", name, "=")
+		WaveStats/RMD=[firstIndex, lastIndex - 1]/Q/M=1 DAChannel
 
 		// check amplitudes
 		if(strsearch(name, "SubType=Pulse", 0) > 0)
 
-			amplitude = NumberByKey("Amplitude", name, "=")
+			INFO(infoStr)
 			CHECK(IsFinite(amplitude))
 
-			WaveStats/RMD=[firstIndex, lastIndex]/Q/M=1 DAChannel
+			INFO(infoStr)
 			CHECK_EQUAL_VAR(V_max, amplitude)
 
 			// check that the level 3 pulse epoch is really only the pulse
 			if(level == 3)
-				WaveStats/RMD=[firstIndex, lastIndex]/Q/M=1 DAChannel
+				INFO(infoStr)
 				CHECK_EQUAL_VAR(V_min, amplitude)
 			endif
+		endif
+		if(!CmpStr(epochType, "Square pulse"))
+
+			INFO(infoStr)
+			CHECK(IsFinite(amplitude))
+
+			INFO(infoStr)
+			CHECK_EQUAL_VAR(V_max, amplitude)
+			INFO(infoStr)
+			CHECK_EQUAL_VAR(V_min, amplitude)
 		endif
 
 		// check baseline
 		if(strsearch(name, "Baseline", 0) > 0)
-			WaveStats/RMD=[firstIndex, lastIndex]/Q/M=1 DAChannel
+			INFO(infoStr)
 			CHECK_EQUAL_VAR(V_min, 0)
+			INFO(infoStr)
 			CHECK_EQUAL_VAR(V_max, 0)
 		endif
+
+		if(!CmpStr(epochType, "Sin Wave") && level == 3)
+			INFO(infoStr + " %f %f", n0 = V_min, n1 = V_max)
+			if(V_max > 1E-10)
+				CHECK_GT_VAR(V_min, -1E-10)
+			elseif(V_min < -1E-10)
+				CHECK_LT_VAR(V_max, 1E-10)
+			endif
+		endif
+
 	endfor
 End
 
@@ -271,26 +293,17 @@ static Function TestEpochGaps(WAVE startTall, WAVE endTall, WAVE isOodDAQ, WAVE 
 	Extract/FREE endTall, endT, isOodDAQ == 0 && levels == level
 	CHECK_EQUAL_WAVES(startT, endT, mode = DIMENSION_SIZES)
 
-	lastx = IndexToScale(DAchannel, DimSize(DAchannel, ROWS) - 1, ROWS) * MILLI_TO_ONE
+	lastx = IndexToScale(DAchannel, DimSize(DAchannel, ROWS), ROWS) * MILLI_TO_ONE
 	CHECK_GT_VAR(lastx, 0.0)
 
 	epochCnt = DimSize(startT, ROWS)
-	for(i = 0; i < epochCnt; i += 1)
-
-		// first starts at 0.0
-		if(i == 0)
-			CHECK_EQUAL_VAR(startT[i], 0.0)
-		endif
-
-		// last has the x-coordinate as the last point in the DA wave
-		if(i == epochCnt - 1)
-			CHECK_CLOSE_VAR(lastx, endT[i], tol = 1e-10)
-		endif
-
+	if(epochCnt)
+		CHECK_EQUAL_VAR(startT[0], 0.0)
+		CHECK_CLOSE_VAR(lastx, endT[epochCnt - 1], tol = 1e-10)
+	endif
+	for(i = 1; i < epochCnt; i += 1)
 		// and in between no gaps
-		if(i > 0)
-			CHECK_EQUAL_VAR(startT[i], endT[i - 1])
-		endif
+		CHECK_EQUAL_VAR(startT[i], endT[i - 1])
 	endfor
 End
 
@@ -957,6 +970,72 @@ static Function EP_EpochTest16_REENTRY([str])
 	TestEpochsGeneric(str)
 End
 
+// This test uses a stimset that has two sweeps of different length.
+// The first sweep is extended with zeroes, such that the stimset wave has the same size.
+// The stimset is also flipped, such that this zeroed interval is at the front in the data wave.
+// This interval should appear as ST_B (stimser baseline trail)
+//
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function EP_EpochTest17([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"       + \
+										"__HS0_DA0_AD0_CM:VC:_ST:EpochTest17_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function EP_EpochTest17_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequency_Gen
+// IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_Stimsets_Gen
+static Function EP_EpochTestSamplingFrequency([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup, stimSetup
+
+	sprintf dynSetup, "_FFR:%d:", mData.v0
+	sprintf stimSetup, "_ST:%s:", mData.s1
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
+								 "__HS0_DA0_AD0_CM:VC:" + stimSetup)
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTestSamplingFrequency_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingMultiplier_Gen
+// IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_Stimsets_Gen
+static Function EP_EpochTestSamplingMultiplier([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup, stimSetup
+
+	sprintf dynSetup, "_SIM%d", mData.v0
+	sprintf stimSetup, "_ST:%s:", mData.s1
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
+								 "__HS0_DA0_AD0_CM:VC:" + stimSetup)
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTestSamplingMultiplier_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
+End
+
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function EP_EpochTestUnassocDA([str])
 	string str
@@ -1062,4 +1141,74 @@ static Function EP_EpochTestTTL_REENTRY([STRUCT IUTF_mData &mData])
 	nameref[size] = "B0_TR"
 
 	CHECK_EQUAL_WAVES(epochShortNames, nameRef, mode = WAVE_DATA)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequencyTTL_Gen
+// IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_StimsetsTTL_Gen
+static Function EP_EpochTestTTLSamplingFrequency([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup, stimSetup
+
+	sprintf dynSetup, "_FFR:%d:", mData.v0
+	sprintf stimSetup, "_ST:%s:", mData.s1
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
+								 "__TTL3" + stimSetup)
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTestTTLSamplingFrequency_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingMultiplier_Gen
+// IUTF_TD_GENERATOR s1:DataGenerators#EpochTest_StimsetsTTL_Gen
+static Function EP_EpochTestTTLSamplingMultiplier([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup, stimSetup
+
+	sprintf dynSetup, "_SIM%d", mData.v0
+	sprintf stimSetup, "_ST:%s:", mData.s1
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
+								 "__TTL3" + stimSetup)
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTestTTLSamplingMultiplier_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR v0:DataGenerators#EpochTestSamplingFrequencyTTL_Gen
+static Function EP_EpochTest18([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+	string dynSetup
+
+	sprintf dynSetup, "_FFR:%d:", mData.v0
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
+								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+								 "__TTL1_ST:EpochTest18long_TTL_0:"              + \
+								 "__TTL3_ST:EpochTest18short_TTL_0:")
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTest18_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
 End

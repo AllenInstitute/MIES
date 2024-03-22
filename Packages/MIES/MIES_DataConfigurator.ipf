@@ -874,7 +874,7 @@ End
 /// @param stimSet          stimset wave
 /// @param device 		 device
 /// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_CalculateStimsetLength(stimSet, device, dataAcqOrTP)
+Function DC_CalculateStimsetLength(stimSet, device, dataAcqOrTP)
 	WAVE stimSet
 	string device
 	variable dataAcqOrTP
@@ -891,6 +891,8 @@ static Function DC_CalculateGeneratedDataSize(device, dataAcqOrTP, genLength)
 	string device
 	variable dataAcqOrTP, genLength
 
+	variable decimationFactor = DC_GetDecimationFactor(device, dataAcqOrTP)
+
 	// note: the decimationFactor is the factor between the hardware sample rate and the sample rate of the generated waveform in singleStimSet
 	// The ratio of the source to target wave sizes is however limited by the integer size of both waves
 	// While ideally srcLength == tgtLength the floor(...) limits the real data wave length such that
@@ -898,7 +900,7 @@ static Function DC_CalculateGeneratedDataSize(device, dataAcqOrTP, genLength)
 	// Also if decimationFactor >= 2 the last point of the generated data wave is never transferred
 	// e.g. generated data with 10 points and decimationFactor == 2 copies index 0, 2, 4, 6, 8 to the real data wave of size 5
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		return floor(genLength / DC_GetDecimationFactor(device, dataAcqOrTP))
+		return floor(genLength / decimationFactor) + IndexAfterDecimation(0, decimationFactor)
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
 		return genLength
 	else
@@ -920,11 +922,14 @@ static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP
 
 	variable ret, row, column
 
+	WAVE/T epochWave = GetEpochsWave(device)
+
 	STRUCT DataConfigurationResult s
 	[s] = DC_GetConfiguration(device, numActiveChannels, dataAcqOrTP, multiDevice)
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 	stopCollectionPoint = DC_GetStopCollectionPoint(device, s)
+	s.stopCollectionPoint = stopCollectionPoint
 
 	AssertOnAndClearRTError()
 
@@ -934,7 +939,7 @@ static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP
 		DC_FillDAQDataWaveForDAQ(device, s)
 	endif
 
-	EP_CollectEpochInfo(device, s)
+	EP_CollectEpochInfo(epochWave, s)
 	DC_PrepareLBNEntries(device, s)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -994,7 +999,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 				singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, device, DATA_ACQUISITION_MODE)
 				WAVE NIChannel = NIDataWave[i + ttlOffset]
 				MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
-				limit(TTLWaveSingle[trunc(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
+				limit(TTLWaveSingle[round(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
 			endfor
 			break
 		case HARDWARE_ITC_DAC:
@@ -1007,12 +1012,12 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 			bitMask = 1 << NUM_ITC_TTL_BITS_PER_RACK - 1
 			if(ITCRackZeroChecked)
 				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset] = \
-				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))] & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				limit(TTLWaveITC[round(s.decimationFactor * (p - startOffset))] & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 			endif
 
 			if(DC_AreTTLsInRackChecked(device, RACK_ONE))
 				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset + ITCRackZeroChecked] = \
-				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))] >> NUM_ITC_TTL_BITS_PER_RACK & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				limit(TTLWaveITC[round(s.decimationFactor * (p - startOffset))] >> NUM_ITC_TTL_BITS_PER_RACK & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 			endif
 			break
 	endswitch
@@ -1430,6 +1435,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	variable channel, headstage, channelMode
 	variable scalingZero, indexingLocked, indexing
 	variable i, j, ret, setCycleCountLocal
+	variable testPulseLength, tpPulseStartPoint, tpPulseLengthPoints
 	string ctrl
 
 	// pass parameters into returned struct
@@ -1484,8 +1490,11 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 
 	WAVE s.testPulse = GetTestPulse()
 
-	// test pulse length is calculated for dataAcqOrTP
-	s.testPulseLength = DimSize(s.testPulse, ROWS)
+	// test pulse length is calculated for dataAcqOrTP @ref TP_CreateTestPulseWave
+	[testPulseLength, tpPulseStartPoint, tpPulseLengthPoints] = TP_GetCreationPropertiesInPoints(device, dataAcqOrTP)
+	s.testPulseLength = testPulseLength
+	s.tpPulseStartPoint = tpPulseStartPoint
+	s.tpPulseLengthPoints = tpPulseLengthPoints
 
 	s.headstageDAC[] = channelClampMode[s.DACList[p]][%DAC][%Headstage]
 	s.headstageADC[] = channelClampMode[s.ADCList[p]][%ADC][%Headstage]
@@ -1671,6 +1680,7 @@ static Function DC_SetupConfigurationTTLstimSets(string device, STRUCT DataConfi
 
 	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, s.dataAcqOrTP, CHANNEL_TYPE_TTL)
+	WAVE s.statusTTLFiltered = statusTTLFiltered
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		if(!statusTTLFiltered[i])
@@ -1997,6 +2007,7 @@ static Function DC_ITC_MakeTTLWave(string device, STRUCT DataConfigurationResult
 			endfor
 		endif
 	endfor
+	s.joinedTTLStimsetSize = DC_CalculateStimsetLength(TTLWave, device, DATA_ACQUISITION_MODE)
 End
 
 static Function DC_NI_MakeTTLWave(string device, STRUCT DataConfigurationResult &s)
@@ -2027,6 +2038,7 @@ static Function DC_NI_MakeTTLWave(string device, STRUCT DataConfigurationResult 
 		MultiThread TTLWaveSingle[] = TTLStimSet[p][s.TTLsetColumn[i]]
 		TTLWave[i] = TTLWaveSingle
 	endfor
+	s.joinedTTLStimsetSize = NaN
 
 	DC_DocumentChannelProperty(device, "Stim set length", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(setLength, ";"))
 	DC_DocumentChannelProperty(device, "channels", INDEP_HEADSTAGE, NaN, XOP_CHANNEL_TYPE_TTL, str=TextWaveToList(channels, ";"))

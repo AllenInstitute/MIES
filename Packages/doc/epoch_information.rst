@@ -72,7 +72,7 @@ this can be read with:
 Format
 ------
 
-The times are in seconds where 0 is the beginning of the signal input. The reference signal is the DA input wave.
+The times are in seconds where 0 is the beginning of the signal input. The reference signal is the DA or TTL output wave.
 The epochChannel wave can contain several entries with different levels covering the same time range.
 Epochs with a level of zero name the main components of the input signal.
 Typical epochs with zero level are 'Inserted Test Pulse' and 'StimSet'.
@@ -109,16 +109,15 @@ Time specialities
 -----------------
 
 The epoch start and end times are stored in seconds with sufficiently large
-precision as text.
+precision as text. The start time of an epoch refers to the first sample point of the feature that
+contains the signal. The end time of an epoch refers to the sample point directly after epoch.
+This point is also the start point of the next epoch and the first point of the next epoch.
+For a pulse epoch following a base line epoch the sample point at the start time
+of the pulse epoch is the first point with an amplitude > 0. Thus, the epoch ranges are sample point
+exact. The sample point can be calculated by ``round(epochTime / samplingInterval)``.
 
-It can not be assumed though that the epoch start and end time points coincide
-with the sampling pattern of the DA data. As an example an epoch going from
-1s to 2s might be referring to DA data which has sampling points
-acquired at 0.9995s and 1.0015s and not exactly at 1s.
-
-It is the responsibility of the user evaluating the epochs information to
-select a scientific consistent strategy dealing with that. A good first approach might
-be to use the closest sampling point.
+An exception from that are oodDAQ region epochs (``ODx``) that store times that are not sample point exact.
+Details are described in the following section.
 
 optimized overlap distributed data acquisistion (oodDAQ) regions
 ----------------------------------------------------------------
@@ -215,6 +214,36 @@ trains each pulse gets an level two epoch entry. The time interval of a pulse be
 level and includes the trailing baseline (that precedes the next pulse) unless it is the last pulse in the pulse train.
 An epoch named 'Baseline' is inserted if the first pulse in the pulse train has a leading baseline. This is applies for
 flipped Stimsets containing Stimset-Epochs with type pulse train.
+
+.. _Figure Epoch Visualization2:
+
+.. figure:: svg/epoch-visualization2.svg
+   :align: center
+
+   Annotated visualization of epoch from flipped stimsets on two headstages. Each stimset consists of a pulse-train with
+   poisson distribution and a square pulse stimset epoch. The DA output data on the second headstage is offsetted due to enabled oodDAQ.
+
+.. Graph recreation:
+.. 2HS, Stimset: EpochTest2_DA_0, EpochTest3_DA_0
+.. Commands:
+.. Open Databrowser
+.. Check DA, Uncheck AD
+.. Check Visualize Epochs
+
+.. _Figure Epoch Visualization3:
+
+.. figure:: svg/epoch-visualization3.svg
+   :align: center
+
+   Annotated visualization of epoch of a regular and a flipped stimset on two headstages. Each stimset consists of several stimset epochs with
+   trigonometric functions. The stimset on the second headstage is the flipped version of the stimset on the first headstage.
+
+.. Graph recreation:
+.. 2HS, Stimset: EpochTest_Trig_DA_0, EpochTest_TrigFl_DA_0
+.. Commands:
+.. Open Databrowser
+.. Check DA, Uncheck AD
+.. Check Visualize Epochs
 
 .. _user_epochs_doc:
 

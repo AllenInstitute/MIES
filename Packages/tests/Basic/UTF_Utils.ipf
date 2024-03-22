@@ -7732,3 +7732,156 @@ static Function TestGetListDifference()
 	result = GetListDifference("a;A;b;", "a;", caseSensitive=0)
 	CHECK_EQUAL_STR("b;", result)
 End
+
+// IUTF_TD_GENERATOR v0:IndexAfterDecimation_Positions
+// IUTF_TD_GENERATOR v1:IndexAfterDecimation_Sizes
+static Function TestIndexAfterDecimation([md])
+	STRUCT IUTF_mData &md
+
+	variable decimationFactor, srcPulseLength, srcOffset
+	variable edgeLeft, edgeLeftCalculated
+
+	variable srcLength = 1000
+
+	Make/FREE/N=(srcLength) source
+	Make/FREE/N=(md.v1) target
+
+	decimationFactor = srcLength / md.v1
+	// make srcPulseLength as least as long that there is at least one point with amplitude in target for FindLevel
+	srcPulseLength = ceil(decimationFactor)
+	srcOffset = trunc(srcLength * md.v0)
+	source[srcOffset, srcOffset + srcPulseLength] = 1
+
+	target[] = source[limit(round(p * decimationFactor), 0, srcLength - 1)]
+
+	FindLevel/Q/EDGE=1 target, 0.5
+	edgeLeft = trunc(V_LevelX)
+
+	edgeLeftCalculated = IndexAfterDecimation(srcOffset, decimationFactor)
+
+	CHECK_EQUAL_VAR(edgeLeft, edgeLeftCalculated)
+End
+
+Function TestFindFirstNaNIndex()
+
+	variable idx
+
+	Make/FREE/I wi
+	try
+		FindFirstNaNIndex(wi)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE wv
+	idx = FindFirstNaNIndex(wv)
+	CHECK_EQUAL_VAR(idx, NaN)
+
+	Make/FREE wv
+	wv[10,] = NaN
+	idx = FindFirstNaNIndex(wv)
+	CHECK_EQUAL_VAR(idx, 10)
+
+	Make/FREE wv
+	wv[] = NaN
+	idx = FindFirstNaNIndex(wv)
+	CHECK_EQUAL_VAR(idx, 0)
+End
+
+static Function TestSetDimensionLabelsFromWaveContents()
+
+	WAVE/ZZ input
+	try
+		SetDimensionLabelsFromWaveContents(input)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE/N=0 input
+	SetDimensionLabelsFromWaveContents(input)
+	CHECK_NO_RTE()
+
+	Make/FREE/N=3 input = p
+	SetDimensionLabelsFromWaveContents(input)
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 0), "NUM_0")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 1), "NUM_1")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 2), "NUM_2")
+
+	Make/FREE/N=3 input = p
+	SetDimensionLabelsFromWaveContents(input, prefix = "N")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 0), "N0")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 1), "N1")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 2), "N2")
+
+	Make/FREE/N=3 input = p
+	SetDimensionLabelsFromWaveContents(input, suffix = "N")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 0), "NUM_0N")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 1), "NUM_1N")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 2), "NUM_2N")
+
+	Make/FREE/N=3 input = p
+	try
+		SetDimensionLabelsFromWaveContents(input, prefix = ".")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE/T inputt = {"A", "B", "C"}
+	SetDimensionLabelsFromWaveContents(inputt)
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 0), "A")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 1), "B")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 2), "C")
+
+	Make/FREE/T inputt = {"A", "B", "C"}
+	SetDimensionLabelsFromWaveContents(inputt, prefix = "H")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 0), "HA")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 1), "HB")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 2), "HC")
+
+	Make/FREE/T inputt = {"A", "B", "C"}
+	SetDimensionLabelsFromWaveContents(inputt, suffix = "H")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 0), "AH")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 1), "BH")
+	CHECK_EQUAL_STR(GetDimLabel(inputt, ROWS, 2), "CH")
+
+	Make/FREE/N=3 input = p / 2
+	SetDimensionLabelsFromWaveContents(input, prefix = "B", suffix = "N")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 0), "B0N")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 1), "B1N")
+	CHECK_EQUAL_STR(GetDimLabel(input, ROWS, 2), "B1N")
+
+	Make/FREE/N=3 input = p
+	try
+		SetDimensionLabelsFromWaveContents(input, suffix = ".")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE/T inputt = {"A", "A", "C"}
+	try
+		SetDimensionLabelsFromWaveContents(inputt, strict = 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE/T inputt = {"A", "A", "."}
+	try
+		SetDimensionLabelsFromWaveContents(inputt, strict = 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	Make/FREE input = {0, 0, 1}
+	try
+		SetDimensionLabelsFromWaveContents(input, strict = 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
