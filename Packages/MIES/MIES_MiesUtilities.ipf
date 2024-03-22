@@ -6271,6 +6271,10 @@ threadsafe static Function [variable dChannelType, variable dChannelNumber] GetC
 		// try AB config wave format, @sa GetAnalysisConfigWave
 		dimType   = FindDimlabel(config, COLS, "type")
 		dimNumber = FindDimlabel(config, COLS, "number")
+		if(dimType == -2)
+			// from docu of @ref GetDAQConfigWave for unversioned config wave format
+			return [0, 1]
+		endif
 	endif
 
 	return [dimType, dimNumber]
