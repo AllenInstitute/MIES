@@ -279,7 +279,8 @@ static Function EP_TestSortEpochs()
 	Make/FREE/D/N=(numEpochs) order = str2num(epochsWave[p][EPOCH_COL_TAGS][0][0])
 	wfprintf orderStr, "%d\r", order
 
-	MIES_EP#EP_SortEpochs(EP_DUMMY_DEVICE)
+	WAVE/T epochWave = GetEpochsWave(EP_DUMMY_DEVICE)
+	MIES_EP#EP_SortEpochs(epochWave)
 
 	WAVE/T epochWave = GetEpochsWave(EP_DUMMY_DEVICE)
 

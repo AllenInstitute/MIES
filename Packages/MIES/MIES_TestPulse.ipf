@@ -1488,18 +1488,22 @@ Function TP_CreateTestPulseWave(device, dataAcqOrTP)
 	variable totalLengthPoints, pulseStartPoints, pulseLengthPoints
 
 	WAVE TestPulse = GetTestPulse()
+	WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 
-	[totalLengthPoints, pulseStartPoints, pulseLengthPoints] = TP_GetCreationPropertiesInPoints(device, dataAcqOrTP)
-
-	Redimension/N=(totalLengthPoints) TestPulse
-	FastOp TestPulse = 0
-
-	TestPulse[pulseStartPoints, pulseStartPoints + pulseLengthPoints] = 1
+	[totalLengthPoints, pulseStartPoints, pulseLengthPoints] = TP_GetCreationPropertiesInPoints(TPSettingsCalc, dataAcqOrTP)
+	TP_CreateTestPulseWaveImpl(TestPulse, totalLengthPoints, pulseStartPoints, pulseLengthPoints)
 End
 
-Function [variable totalLengthPoints, variable pulseStartPoints, variable pulseLengthPoints] TP_GetCreationPropertiesInPoints(string device, variable dataAcqOrTP)
+/// @brief device independent test pulse wave creation
+Function TP_CreateTestPulseWaveImpl(WAVE tp, variable totalLength, variable pulseStart, variable pulseLength)
 
-	WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
+	Redimension/N=(totalLength) tp
+	FastOp tp = 0
+
+	MultiThread tp[pulseStart, pulseStart + pulseLength] = 1
+End
+
+Function [variable totalLengthPoints, variable pulseStartPoints, variable pulseLengthPoints] TP_GetCreationPropertiesInPoints(WAVE TPSettingsCalc, variable dataAcqOrTP)
 
 	totalLengthPoints = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%totalLengthPointsTP] : TPSettingsCalc[%totalLengthPointsDAQ]
 	pulseStartPoints  = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseStartPointsTP] : TPSettingsCalc[%pulseStartPointsDAQ]
@@ -1547,39 +1551,51 @@ End
 
 Function TP_UpdateTPSettingsCalculated(string device)
 
-	variable interTPDAC, interDAQDAC, interTPADC, interDAQADC, factorTP, factorDAQ
-
 	WAVE TPSettings = GetTPSettings(device)
 	WAVE calculated = GetTPSettingsCalculated(device)
-	calculated = NaN
+	WAVE samplingIntervals = GetNewSamplingIntervalsAsFree()
+	samplingIntervals[%SI_TP_DAC] = DAP_GetSampInt(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_DAC)
+	samplingIntervals[%SI_DAQ_DAC] = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC)
+	samplingIntervals[%SI_TP_ADC] = DAP_GetSampInt(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_ADC)
+	samplingIntervals[%SI_DAQ_ADC] = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_ADC)
 
-	interTPDAC = DAP_GetSampInt(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_DAC) * MICRO_TO_MILLI
-	interDAQDAC = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC) * MICRO_TO_MILLI
-	interTPADC = DAP_GetSampInt(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_ADC) * MICRO_TO_MILLI
-	interDAQADC = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_ADC) * MICRO_TO_MILLI
+	TP_UpdateTPSettingsCalculatedImpl(TPSettings, samplingIntervals, calculated)
+End
+
+/// @brief Device and globals independent calculcation of TPSettingsCalculated
+Function TP_UpdateTPSettingsCalculatedImpl(WAVE TPSettings, WAVE samplingIntervals, WAVE tpCalculated)
+
+	variable interTPDAC, interDAQDAC, interTPADC, interDAQADC, factorTP, factorDAQ
+
+	tpCalculated = NaN
+
+	interTPDAC = samplingIntervals[%SI_TP_DAC] * MICRO_TO_MILLI
+	interDAQDAC = samplingIntervals[%SI_DAQ_DAC] * MICRO_TO_MILLI
+	interTPADC = samplingIntervals[%SI_TP_ADC] * MICRO_TO_MILLI
+	interDAQADC = samplingIntervals[%SI_DAQ_ADC] * MICRO_TO_MILLI
 	factorTP = interTPDAC / interTPADC
 	factorDAQ = interDAQDAC / interDAQADC
 
 	// update the calculated values
-	calculated[%baselineFrac]         = TPSettings[%baselinePerc][INDEP_HEADSTAGE] * PERCENT_TO_ONE
+	tpCalculated[%baselineFrac]         = TPSettings[%baselinePerc][INDEP_HEADSTAGE] * PERCENT_TO_ONE
 
-	calculated[%pulseLengthMS]        = TPSettings[%durationMS][INDEP_HEADSTAGE] // here for completeness
-	calculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / interTPDAC)
-	calculated[%pulseLengthPointsDAQ] = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / interDAQDAC)
-	calculated[%pulseLengthPointsTP_ADC]  = trunc(calculated[%pulseLengthPointsTP] * factorTP)
-	calculated[%pulseLengthPointsDAQ_ADC] = trunc(calculated[%pulseLengthPointsDAQ] * factorDAQ)
+	tpCalculated[%pulseLengthMS]        = TPSettings[%durationMS][INDEP_HEADSTAGE] // here for completeness
+	tpCalculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / interTPDAC)
+	tpCalculated[%pulseLengthPointsDAQ] = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / interDAQDAC)
+	tpCalculated[%pulseLengthPointsTP_ADC]  = trunc(tpCalculated[%pulseLengthPointsTP] * factorTP)
+	tpCalculated[%pulseLengthPointsDAQ_ADC] = trunc(tpCalculated[%pulseLengthPointsDAQ] * factorDAQ)
 
-	calculated[%totalLengthMS]        = TP_CalculateTestPulseLength(calculated[%pulseLengthMS], calculated[%baselineFrac])
-	calculated[%totalLengthPointsTP]  = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsTP], calculated[%baselineFrac]))
-	calculated[%totalLengthPointsDAQ] = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsDAQ], calculated[%baselineFrac]))
-	calculated[%totalLengthPointsTP_ADC]  = trunc(calculated[%totalLengthPointsTP] * factorTP)
-	calculated[%totalLengthPointsDAQ_ADC] = trunc(calculated[%totalLengthPointsDAQ] * factorDAQ)
+	tpCalculated[%totalLengthMS]        = TP_CalculateTestPulseLength(tpCalculated[%pulseLengthMS], tpCalculated[%baselineFrac])
+	tpCalculated[%totalLengthPointsTP]  = trunc(TP_CalculateTestPulseLength(tpCalculated[%pulseLengthPointsTP], tpCalculated[%baselineFrac]))
+	tpCalculated[%totalLengthPointsDAQ] = trunc(TP_CalculateTestPulseLength(tpCalculated[%pulseLengthPointsDAQ], tpCalculated[%baselineFrac]))
+	tpCalculated[%totalLengthPointsTP_ADC]  = trunc(tpCalculated[%totalLengthPointsTP] * factorTP)
+	tpCalculated[%totalLengthPointsDAQ_ADC] = trunc(tpCalculated[%totalLengthPointsDAQ] * factorDAQ)
 
-	calculated[%pulseStartMS]        = calculated[%baselineFrac] * calculated[%totalLengthMS]
-	calculated[%pulseStartPointsTP]  = trunc(calculated[%baselineFrac] * calculated[%totalLengthPointsTP])
-	calculated[%pulseStartPointsDAQ] = trunc(calculated[%baselineFrac] * calculated[%totalLengthPointsDAQ])
-	calculated[%pulseStartPointsTP_ADC]  = trunc(calculated[%pulseStartPointsTP] * factorTP)
-	calculated[%pulseStartPointsDAQ_ADC] = trunc(calculated[%pulseStartPointsDAQ] * factorDAQ)
+	tpCalculated[%pulseStartMS]        = tpCalculated[%baselineFrac] * tpCalculated[%totalLengthMS]
+	tpCalculated[%pulseStartPointsTP]  = trunc(tpCalculated[%baselineFrac] * tpCalculated[%totalLengthPointsTP])
+	tpCalculated[%pulseStartPointsDAQ] = trunc(tpCalculated[%baselineFrac] * tpCalculated[%totalLengthPointsDAQ])
+	tpCalculated[%pulseStartPointsTP_ADC]  = trunc(tpCalculated[%pulseStartPointsTP] * factorTP)
+	tpCalculated[%pulseStartPointsDAQ_ADC] = trunc(tpCalculated[%pulseStartPointsDAQ] * factorDAQ)
 End
 
 /// @brief Convert from row names of GetTPSettings()/GetTPSettingsCalculated() to GetTPSettingsLBN() column names.

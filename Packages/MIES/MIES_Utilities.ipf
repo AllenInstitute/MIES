@@ -3238,19 +3238,23 @@ End
 /// Counterpart @see NumericWaveToList().
 /// @see TextWaveToList
 ///
-/// @param list list with numeric entries
-/// @param sep  separator
-/// @param type [optional, defaults to double precision float (`IGOR_TYPE_64BIT_FLOAT`)] type of the created numeric wave
-threadsafe Function/WAVE ListToNumericWave(list, sep, [type])
-	string list, sep
-	variable type
+/// @param list      list with numeric entries
+/// @param sep       separator
+/// @param type      [optional, defaults to double precision float (`IGOR_TYPE_64BIT_FLOAT`)] type of the created numeric wave
+/// @param ignoreErr [optional, defaults 0] when this flag is set conversion errors are ignored, the value placed is NaN (-9223372036854775808 for int type)
+threadsafe Function/WAVE ListToNumericWave(string list, string sep, [variable type, variable ignoreErr])
 
 	if(ParamIsDefault(type))
 		type = IGOR_TYPE_64BIT_FLOAT
 	endif
+	ignoreErr = ParamIsDefault(ignoreErr) ? 0 : !!ignoreErr
 
 	Make/FREE/Y=(type)/N=(ItemsInList(list, sep)) wv
-	MultiThread wv = str2num(StringFromList(p, list, sep))
+	if(ignoreErr)
+		MultiThread wv = str2numSafe(StringFromList(p, list, sep))
+	else
+		MultiThread wv = str2num(StringFromList(p, list, sep))
+	endif
 
 	return wv
 End

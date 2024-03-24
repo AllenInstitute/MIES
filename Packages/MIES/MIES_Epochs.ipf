@@ -1066,12 +1066,11 @@ End
 /// - Descending ending time
 /// - Ascending tree level
 ///
-/// @param[in] device title of device panel
-static Function EP_SortEpochs(string device)
+/// @param[in] epochWave epoch wave
+Function EP_SortEpochs(WAVE/T epochWave)
 
 	variable channel, channelCnt, epochCnt, channelType
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	channelCnt = DimSize(epochWave, LAYERS)
 	for(channelType = 0; channelType < XOP_CHANNEL_TYPE_COUNT; channelType += 1)
 		for(channel = 0; channel < channelCnt; channel += 1)
@@ -1162,7 +1161,7 @@ End
 static Function EP_AddEpoch(WAVE/T epochWave, variable channel, variable channelType, variable epBegin, variable epEnd, string epTags, string epShortName, variable level, [variable lowerlimit, variable upperlimit])
 
 	variable i, j, numEpochs, pos
-	string entry, startTimeStr, endTimeStr
+	string entry, startTimeStr, endTimeStr, msg
 
 	lowerlimit = ParamIsDefault(lowerlimit) ? -Inf : lowerlimit
 	upperlimit = ParamIsDefault(upperlimit) ? Inf : upperlimit
@@ -1197,6 +1196,9 @@ static Function EP_AddEpoch(WAVE/T epochWave, variable channel, variable channel
 	epochWave[i][%EndTime][channel][channelType] = endTimeStr
 	epochWave[i][%Tags][channel][channelType] = epTags
 	epochWave[i][%TreeLevel][channel][channelType] = num2str(level)
+
+	sprintf msg, "AddEpoch (chan, chanType, Lvl, Start, End, Tags): %d %d %d %s %s %s\r", channel, channelType, level, startTimeStr, endTimeStr, epTags
+	DEBUGPRINT(msg)
 End
 
 /// @brief Write the epoch info into the sweep settings wave
@@ -1213,7 +1215,8 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, variable sweepNo, var
 
 	EP_AdaptEpochInfo(device, configWave, acquiredTime, plannedTime)
 
-	EP_SortEpochs(device)
+	WAVE/T epochWave = GetEpochsWave(device)
+	EP_SortEpochs(epochWave)
 
 	WAVE DACList = GetDACListFromConfig(configWave)
 	numDACEntries = DimSize(DACList, ROWS)
@@ -1259,6 +1262,7 @@ threadsafe Function/WAVE EP_EpochStrToWave(string epochStr)
 
 	ASSERT_TS(!IsEmpty(epochStr), "No information in epochStr")
 	WAVE/T epochWave = ListToTextWaveMD(epochStr, 2, rowSep = EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP)
+	SetEpochsDimensionLabelsSingleChannel(epochWave)
 
 	return epochWave
 End
@@ -1314,12 +1318,26 @@ End
 
 static Function EP_AdaptEpochInfoChannel(string device, variable channelNumber, variable channelType, variable acquiredTime, variable plannedTime)
 
-	variable epochCnt, epoch, startTime, endTime, samplingInterval, lastValidIndex, acquiredEpochsEndTime
-	string tags
+	variable samplingInterval
 
 	WAVE/T epochWave = GetEpochsWave(device)
-
 	samplingInterval = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, channelType)
+	EP_AdaptEpochInfoChannelImpl(epochWave, channelNumber, channelType, samplingInterval, acquiredTime, plannedTime)
+End
+
+/// @brief Device independent implementation of EP_AdaptEpochInfoChannel
+/// @param epochWave        epoch wave (4d)
+/// @param channelNumber    GUI channel number
+/// @param channelType      channel type
+/// @param samplingInterval sampling interval of channel type
+/// @param acquiredTime     acquiredTime in [s]
+/// @param plannedTime      plannedTime in [s]
+Function EP_AdaptEpochInfoChannelImpl(WAVE/T epochWave, variable channelNumber, variable channelType, variable samplingInterval, variable acquiredTime, variable plannedTime)
+
+	variable epochCnt, epoch, startTime, endTime
+	variable acquiredEpochsEndTime, lastValidIndex
+	string tags
+
 	epochCnt = EP_GetEpochCount(epochWave, channelNumber, channelType)
 	if(IsNaN(acquiredTime))
 		acquiredEpochsEndTime = plannedTime
@@ -1601,4 +1619,63 @@ End
 Function EP_GetEpochAmplitude(string epochTag)
 
 	return NumberByKey(EPOCH_AMPLITUDE_KEY, epochTag, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+End
+
+/// @brief Recreate DA epochs from loaded data. The following must be loaded: LabNotebook, Sweep data of sweepNo, Stimsets used in the sweep
+///        User epochs are not recreated !
+///
+/// @param numericalValues numerical LabNotebook
+/// @param textualValues   textual LabNotebook
+/// @param sweepDFR        single sweep folder, e.g. for measurement with a device this wold be DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+/// @param sweepNo         sweep number
+/// @returns recreated 4D epoch wave
+Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+
+	STRUCT DataConfigurationResult s
+	variable channelNr, plannedTime, acquiredTime, adSize, firstUnacquiredIndex
+
+	[s] = DC_RecreateDataConfigurationResultFromLNB(numericalValues, textualValues, sweepDFR, sweepNo)
+
+	WAVE/T recEpochWave = GetEpochsWaveAsFree()
+	EP_CollectEpochInfoDA(recEpochWave, s)
+
+	WAVE/Z channelDA = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
+	ASSERT(WaveExists(channelDA), "Could not retrieve first DA sweep")
+	WAVE/Z channelAD = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_ADC, s.ADCList[0])
+	ASSERT(WaveExists(channelAD), "Could not retrieve first AD sweep")
+	adSize = DimSize(channelAD, ROWS)
+	firstUnacquiredIndex = FindFirstNaNIndex(channelAD)
+	if(IsNaN(firstUnacquiredIndex))
+		firstUnacquiredIndex = adSize
+	endif
+	[plannedTime, acquiredTime] = SWS_DeterminePlannedAndAcquiredTime(channelDA, channelAD, adSize, firstUnacquiredIndex)
+	for(channelNr : s.DACList)
+		EP_AdaptEpochInfoChannelImpl(recEpochWave, channelNr, XOP_CHANNEL_TYPE_DAC, s.samplingInterval, acquiredTime, plannedTime)
+	endfor
+	EP_SortEpochs(recEpochWave)
+
+	return recEpochWave
+End
+
+/// @brief Fetches a single epoch channel from a recreated epoch wave.
+///        The returned epoch channel wave has the same form as epoch information that was stored in the LNB returned by @ref EP_FetchEpochs
+///
+/// @param epochWave 4d epoch wave
+/// @param channelNumber GUI channel number
+/// @param channelType   channel type, one of @ref XopChannelConstants
+/// @returns epoch channel wave (2d)
+Function/WAVE EP_FetchEpochsFromRecreated(WAVE epochWave, variable channelNumber, variable channelType)
+
+	string epList
+
+	epList = EP_EpochWaveToStr(epochWave, channelNumber, channelType)
+	if(IsEmpty(epList))
+		return $""
+	endif
+	WAVE epChannel = EP_EpochStrToWave(epList)
+	if(!DimSize(epChannel, ROWS))
+		return $""
+	endif
+
+	return epChannel
 End

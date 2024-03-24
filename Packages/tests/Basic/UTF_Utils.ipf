@@ -4245,6 +4245,34 @@ Function LTNWRoundtripsWithNumericWaveToList()
 	CHECK_EQUAL_WAVES(expected, actual, mode = WAVE_DATA)
 End
 
+static Function LTNInvalidInput()
+
+	Execute/Z "SetIgorOption DisableThreadsafe=?"
+	NVAR threadingDisabled = V_flag
+	if(threadingDisabled == 1)
+		WAVE wv = ListToNumericWave("1;totallyLegitNumber;1;", ";")
+		CHECK_RTE(1001) // Str2num;expected number
+		CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+		CHECK_EQUAL_WAVES(wv, {1, NaN, 1}, mode = WAVE_DATA)
+	else
+		PASS()
+	endif
+End
+
+static Function LTNInvalidInputIgnored()
+
+	Execute/Z "SetIgorOption DisableThreadsafe=?"
+	NVAR threadingDisabled = V_flag
+	if(threadingDisabled == 1)
+		WAVE wv = ListToNumericWave("1;totallyLegitNumber;1;", ";", ignoreErr=1)
+		CHECK_NO_RTE()
+		CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+		CHECK_EQUAL_WAVES(wv, {1, NaN, 1}, mode = WAVE_DATA)
+	else
+		PASS()
+	endif
+End
+
 /// @}
 
 /// Backup functions

@@ -346,37 +346,39 @@ End
 static Function/Wave OOD_CreateStimSet(params)
 	STRUCT OOdDAQParams &params
 
-	variable i, numSets, length
-	variable offset, cutoff, column
-	variable level = 1e-3
+	variable numSets
 
 	numSets = DimSize(params.stimSets, ROWS)
 	ASSERT(numSets == DimSize(params.offsets, ROWS), "Mismatched offsets wave size")
 
 	Make/WAVE/FREE/N=(numSets) stimSetsWithOffset
 
-	for(i = 0; i < numSets ; i += 1)
-		WAVE stimSet = params.stimSets[i]
-		offset = params.offsets[i]
-		ASSERT(offset >= 0 , "Invalid offset")
-		length = DimSize(stimSet, ROWS) + offset
-		column = params.setColumns[i]
-		Make/FREE/N=(length) acc
-
-		Multithread acc[offset, *] = stimSet[p - offset][column]
-		CopyScales/P stimSet, acc
-		Note acc, note(stimSet)
-
-		// remove empty space beyond `postFeatureTime` at the end
-		FindLevel/P/EDGE=2/Q/R=[DimSize(acc, ROWS) - 1, 0] acc, level
-
-		if(!V_flag && acc[length - 1] < level)
-			cutoff = V_levelX + params.postFeaturePoints
-			Redimension/N=(cutoff) acc
-		endif
-
-		stimSetsWithOffset[i] = acc
-	endfor
+	stimSetsWithOffset[] = OOD_OffsetStimSetColAndCutoff(params.stimSets[p], params.setColumns[p], params.offsets[p], params.postFeaturePoints)
 
 	return stimSetsWithOffset
+End
+
+Function/WAVE OOD_OffsetStimSetColAndCutoff(WAVE stimSet, variable column, variable offset, variable postFeaturePoints)
+
+	variable length, cutoff
+	variable level = 1e-3
+
+	ASSERT(offset >= 0 , "Invalid offset")
+	length = DimSize(stimSet, ROWS) + offset
+
+	Make/FREE/N=(length) acc
+
+	Multithread acc[offset, *] = stimSet[p - offset][column]
+	CopyScales/P stimSet, acc
+	Note acc, note(stimSet)
+
+	// remove empty space beyond `postFeatureTime` at the end
+	FindLevel/P/EDGE=2/Q/R=[DimSize(acc, ROWS) - 1, 0] acc, level
+
+	if(!V_flag && acc[length - 1] < level)
+		cutoff = V_levelX + postFeaturePoints
+		Redimension/N=(cutoff) acc
+	endif
+
+	return acc
 End

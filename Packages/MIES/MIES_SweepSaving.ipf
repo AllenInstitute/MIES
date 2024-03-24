@@ -87,27 +87,29 @@ End
 /// @retval acquiredTime  if acquisition was aborted early, time of last acquired point in AD wave [s], NaN otherwise
 static Function [variable plannedTime, variable acquiredTime] SWS_ProcessDATTLChannelsOnEarlyAcqStop(string device, WAVE/WAVE scaledDataWave, WAVE config)
 
-	variable i, numChannels, firstUnAcquiredIndex, adcSize
-	variable firstUnAcquiredADIndex
+	variable firstUnAcquiredIndex, adSize
 
 	NVAR fifoPosGlobal = $GetFifoPosition(device)
 	ASSERT(!IsNaN(fifoPosGlobal), "Invalid fifoPosGlobal")
 
-	adcSize = HW_GetEffectiveADCWaveLength(device, DATA_ACQUISITION_MODE)
+	adSize = HW_GetEffectiveADCWaveLength(device, DATA_ACQUISITION_MODE)
+
 	WAVE channelDA = scaledDataWave[0]
 	WAVE channelAD = scaledDataWave[GetFirstADCChannelIndex(config)]
-	firstUnAcquiredADIndex = FindFirstNaNIndex(channelAD)
-	if(IsNaN(firstUnAcquiredADIndex))
-		firstUnAcquiredADIndex = adcSize
-	endif
-	ASSERT(firstUnAcquiredADIndex == fifoPosGlobal, "Mismatch of NaN boundary in ADC channel to last fifo position")
 
-	plannedTime = IndexToScale(channelDA, DimSize(channelDA, ROWS), ROWS) * MILLI_TO_ONE
-	if(fifoPosGlobal == adcSize)
-		return [plannedTime, NaN]
+	[plannedTime, acquiredTime] = SWS_DeterminePlannedAndAcquiredTime(channelDA, channelAD, adSize, fifoPosGlobal)
+	if(!IsNaN(acquiredTime))
+		SWS_SetUnacquiredTimeInADCToNaN(config, scaledDataWave, acquiredTime)
 	endif
 
-	acquiredTime = fifoPosGlobal ? IndexToScale(channelAD, max(fifoPosGlobal - 1, 0), ROWS) * MILLI_TO_ONE : 0
+	return [plannedTime, acquiredTime]
+End
+
+/// @brief Sets the data points in the AD channels of the unacquired time interval to NaN
+static Function SWS_SetUnacquiredTimeInADCToNaN(WAVE config, WAVE/WAVE scaledDataWave, variable acquiredTime)
+
+	variable i, numChannels, firstUnAcquiredIndex
+
 	numChannels = DimSize(config, ROWS)
 	for(i = 0; i < numChannels; i += 1)
 		if(!(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC || config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL))
@@ -120,6 +122,30 @@ static Function [variable plannedTime, variable acquiredTime] SWS_ProcessDATTLCh
 		endif
 		MultiThread channel[firstUnAcquiredIndex, Inf] = NaN
 	endfor
+End
+
+/// @brief Determines the acquired and planned time
+///
+/// @param channelDA   DA channel, as all DA channels run synchroneously, the first DA channel is good enough
+/// @param channelAD   AD channel, as all AD channels run synchroneously, the first AD channel is good enough
+/// @param adSize      effective size of the AD channel, where data was sampled (for ITC the AD wave can be longer)
+/// @param lastFifoPos at this index - 1 was the last data point sampled
+Function [variable plannedTime, variable acquiredTime] SWS_DeterminePlannedAndAcquiredTime(WAVE channelDA, WAVE channelAD, variable adSize, variable lastFifoPos)
+
+	variable firstUnAcquiredADIndex
+
+	firstUnAcquiredADIndex = FindFirstNaNIndex(channelAD)
+	if(IsNaN(firstUnAcquiredADIndex))
+		firstUnAcquiredADIndex = adSize
+	endif
+	ASSERT(firstUnAcquiredADIndex == lastFifoPos, "Mismatch of NaN boundary in ADC channel to last fifo position")
+
+	plannedTime = IndexToScale(channelDA, DimSize(channelDA, ROWS), ROWS) * MILLI_TO_ONE
+	if(lastFifoPos == adSize)
+		return [plannedTime, NaN]
+	endif
+
+	acquiredTime = lastFifoPos ? IndexToScale(channelAD, max(lastFifoPos - 1, 0), ROWS) * MILLI_TO_ONE : 0
 
 	return [plannedTime, acquiredTime]
 End
