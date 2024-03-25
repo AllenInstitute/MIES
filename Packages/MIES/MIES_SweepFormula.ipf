@@ -1145,7 +1145,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	numResultsY = DimSize(wvYRef, ROWS)
 	if(WaveExists(wvXRef))
 		numResultsX = DimSize(wvXRef, ROWS)
-//		SFH_ASSERT(numResultsX == numResultsY || numResultsX == 1, "X-Formula data not fitting to Y-Formula.")
+		SFH_ASSERT(numResultsX == numResultsY || numResultsX == 1, "X-Formula data not fitting to Y-Formula.")
 	endif
 
 	useXLabel = 1
@@ -1155,8 +1155,6 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 	if(DimSize(wvYRef, ROWS) > 0 &&  DimSize(formulaResults, ROWS) > 0)
 		CopyDimLabels/ROWS=(ROWS) wvYRef, formulaResults
 	endif
-
-	print note(wvYRef)
 
 	Note/K formulaResults, note(wvYRef)
 
@@ -2063,7 +2061,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			endif
 
 			if(WaveExists(annoInfos))
-				RestoreAnnotationPositions(win, annoInfos)
+				WAVE/T annoInfosClean = FilterAnnotations(annoInfos, "^tag.*$")
+				RestoreAnnotationPositions(win, annoInfosClean)
 			endif
 		endif
 	endfor

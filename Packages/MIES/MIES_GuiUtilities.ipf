@@ -1328,11 +1328,6 @@ Function RestoreAnnotationPositions(string graph, WAVE/T annoInfo)
 	for(i = 0; i < numEntries; i += 1)
 
 		name = StringFromList(i, annotations)
-		//@ TOOD hack!
-		if(strsearch(name, "tag", 0) >= 0)
-			continue
-		endif
-
 		idx = FindDimLabel(annoInfo, ROWS, name)
 
 		if(idx < 0)
@@ -1349,6 +1344,26 @@ Function RestoreAnnotationPositions(string graph, WAVE/T annoInfo)
 
 		TextBox/W=$graph/N=$name/C/X=(xPos)/Y=(yPos)/A=$anchor
 	endfor
+End
+
+/// @brief Remove the annotations given by the `regexp` from annoInfo
+Function/WAVE FilterAnnotations(WAVE/T annoInfo, string regexp)
+
+	variable i, numEntries
+
+	// @todo does not work
+
+	Duplicate/FREE/T annoInfo, annoInfoResult
+	WaveClear annoInfo
+
+	numEntries = DimSize(annoInfoResult, ROWS)
+	for(i = numEntries - 1; i >= 0; i -= 1)
+		if(GrepString(annoInfoResult[i], regexp))
+			DeletePoints/M=(ROWS) i, 0, annoInfoResult
+		endif
+	endfor
+
+	return annoInfoResult
 End
 
 /// @brief Autoscale all vertical axes in the visible x range
