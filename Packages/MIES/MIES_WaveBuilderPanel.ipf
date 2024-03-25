@@ -2019,33 +2019,7 @@ Function WBP_ListBoxProc_AnalysisParams(lba) : ListBoxControl
 			value = ""
 			type  = listWave[row][%Type]
 			if(!IsEmpty(type))
-				strswitch(type)
-					case "variable":
-						numericValue = AFH_GetAnalysisParamNumerical(name, params)
-						if(!IsNan(numericValue))
-							value = num2str(numericValue)
-						endif
-						break
-					case "string":
-						value = AFH_GetAnalysisParamTextual(name, params)
-						break
-					case "wave":
-						WAVE/Z wv = AFH_GetAnalysisParamWave(name, params)
-						if(WaveExists(wv))
-							value = NumericWaveToList(wv, ";")
-						endif
-						break
-					case "textwave":
-						WAVE/Z wv = AFH_GetAnalysisParamTextWave(name, params)
-						if(WaveExists(wv))
-							value = TextWaveToList(wv, ";")
-						endif
-						break
-					default:
-						ASSERT(0, "invalid type")
-						break
-				endswitch
-
+				value = AFH_GetAnalysisParameterAsText(name, params)
 				SetPopupMenuString(win, "popup_param_types", type)
 			endif
 
