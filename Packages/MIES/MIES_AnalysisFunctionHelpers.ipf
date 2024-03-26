@@ -935,6 +935,50 @@ Function AFH_AddAnalysisParameter(string setName, string name, [variable var, st
 	endif
 End
 
+/// @brief Return a stringified version of the analysis parameter value
+///
+/// @param name name of the parameter
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+Function/S AFH_GetAnalysisParameterAsText(string name, string params)
+
+	string type
+	variable numericValue
+
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
+
+	type = AFH_GetAnalysisParamType(name, params, typeCheck = 0)
+
+	strswitch(type)
+		case "variable":
+			numericValue = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsNan(numericValue))
+				return num2str(numericValue)
+			endif
+			break
+		case "string":
+			return AFH_GetAnalysisParamTextual(name, params)
+			break
+		case "wave":
+			WAVE/Z wv = AFH_GetAnalysisParamWave(name, params)
+			if(WaveExists(wv))
+				return NumericWaveToList(wv, ";")
+			endif
+			break
+		case "textwave":
+			WAVE/Z wv = AFH_GetAnalysisParamTextWave(name, params)
+			if(WaveExists(wv))
+				return TextWaveToList(wv, ";")
+			endif
+			break
+		case "": // unknown name
+			break
+		default:
+			ASSERT(0, "invalid type")
+	endswitch
+
+	return ""
+End
+
 /// @brief Return the headstage from the given active AD count
 ///
 /// @param statusADC     channel status as returned by GetLastSetting()

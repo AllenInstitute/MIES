@@ -1217,6 +1217,8 @@ static Function/S SF_GetAnnotationPrefix(string dataType)
 			return ""
 		case SF_DATATYPE_TP:
 			return "TP "
+		case SF_DATATYPE_LABNOTEBOOK:
+			return "LB "
 		default:
 			ASSERT(0, "Invalid dataType")
 	endswitch
@@ -1232,7 +1234,8 @@ static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData& plotMetaData
 
 	strswitch(plotMetaData.dataType)
 		case SF_DATATYPE_EPOCHS: // fallthrough
-		case SF_DATATYPE_SWEEP:  // fallthrough
+		case SF_DATATYPE_SWEEP: // fallthrough
+		case SF_DATATYPE_LABNOTEBOOK: // fallthrough
 		case SF_DATATYPE_TP:
 			sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 			annotationPrefix = SF_GetAnnotationPrefix(plotMetaData.dataType)
@@ -1288,7 +1291,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	s.blue = 0x0000
 
 	Make/FREE/T stopInheritance = {SF_OPSHORT_MINUS, SF_OPSHORT_PLUS, SF_OPSHORT_DIV, SF_OPSHORT_MULT}
-	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS, SF_OP_EPOCHS}
+	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS, SF_OP_EPOCHS, SF_OP_LABNOTEBOOK}
 
 	WAVE/T opStackW = ListToTextWave(opStack, ";")
 	numDoInh = DimSize(doInheritance, ROWS)
@@ -1900,7 +1903,16 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				WAVE wvY = dataInGraph[l][%WAVEY]
 				trace = tracesInGraph[l]
 
-				WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_TRACECOLOR)
+				info = AxisInfo(win, "left")
+				isCategoryAxis = (NumberByKey("ISCAT", info) == 1)
+
+				if(isCategoryAxis)
+					WAVE traceColorHolder = wvX
+				else
+					WAVE traceColorHolder = wvY
+				endif
+
+				WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(traceColorHolder, SF_META_TRACECOLOR)
 				if(WaveExists(traceColor))
 					ASSERT(DimSize(traceColor, ROWS) == 3, "Need 3-element wave for color specification.")
 					ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
@@ -5459,7 +5471,7 @@ Function/WAVE SF_OperationFitLine(variable jsonId, string jsonPath, string graph
 
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_FITLINE, 0, maxArgs = 1)
 
-	WAVE/T/Z constraints = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_FITLINE, 0, defOp = "wave()", singleResult = 1)
+	WAVE/T/Z constraints = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_FITLINE, 0, defWave = $"", singleResult = 1)
 
 	[WAVE holdWave, WAVE initialValues] = SF_ParseFitConstraints(constraints, 2)
 

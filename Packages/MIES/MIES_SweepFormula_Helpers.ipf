@@ -215,7 +215,7 @@ End
 ///
 ///    opShort      = "countBirds"
 ///    WAVE/D birds = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, opShort, 0, singleResult = 1)
-///    WAVE/T types = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, opShort, 1, defOp = "birdTypes()", singleResult = 1)
+///    WAVE/T types = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, opShort, 1, defOp = "birdTypes()", singleResult = 1, expectedWaveType = IGOR_TYPE_TEXT_WAVE)
 ///
 /// \endrst
 ///
@@ -223,16 +223,22 @@ End
 /// unpacks the outer wave reference wave container. It should always be passed if you only expect one wave to be
 /// returned.
 ///
-/// The second argument `birdTypes` is optional, if not present the operation `birdTypes()` is called and its result returned.
-Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, variable singleResult])
+/// The second argument `birdTypes` is optional, if not present the operation `birdTypes()` is called and its result returned. Alternatively `defWave` can be supplied which is then returned if the argument is not present.
+Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defOp, WAVE/Z defWave, variable singleResult, variable expectedWaveType])
 
-	variable checkExist, numArgs
+	variable checkExist, numArgs, checkWaveType, realWaveType
 	string msg
 
-	if(ParamIsDefault(defOp))
+	if(ParamIsDefault(defOp) && ParamIsDefault(defWave))
 		checkExist = 1
 	else
 		checkExist = 0
+	endif
+
+	if(ParamIsDefault(expectedWaveType))
+		checkWaveType = 0
+	else
+		checkWaveType = !!checkWaveType
 	endif
 
 	if(ParamIsDefault(singleResult))
@@ -252,8 +258,23 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 
 			WAVE/Z data = input[0]
 			SFH_CleanUpInput(input)
+
+			Make/FREE types = {WaveType(data)}
 		else
 			WAVE data = input
+			Make/FREE/N=(DimSize(input, ROWS)) types = WaveType(input[p])
+		endif
+
+		if(checkWaveType)
+			if(expectedWaveType == IGOR_TYPE_TEXT_WAVE)
+				// we are using selector 0 for WaveType
+				realWaveType = 0
+			else
+				realWaveType = expectedWaveType
+			endif
+
+			sprintf msg, "Argument #%d of operation %s: Expected wave type %d", argNum, opShort, expectedWaveType
+			SFH_ASSERT(IsConstant(types, realWaveType), msg)
 		endif
 
 		return data
@@ -262,7 +283,11 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	sprintf msg, "Argument #%d of operation %s is mandatory", argNum, opShort
 	SFH_ASSERT(!checkExist, msg)
 
-	return SF_ExecuteFormula(defOp, graph, singleResult = singleResult, useVariables=0)
+	if(!ParamIsDefault(defOp))
+		return SF_ExecuteFormula(defOp, graph, singleResult = singleResult, useVariables=0)
+	endif
+
+	return defWave
 End
 
 /// @brief Assertion for sweep formula
