@@ -1716,7 +1716,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
 	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend, tagCounter
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
-	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
+	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis, overrideMarker
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info, xAxis
 	string formulasRemain, yAndXFormula, xFormula, yFormula, tagText
 	STRUCT SF_PlotMetaData plotMetaData
@@ -2110,6 +2110,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
 					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
 				else
+					overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
+
+					if(!IsNaN(overrideMarker))
+						markerCode = overrideMarker
+					endif
+
 					ModifyGraph/W=$win marker($trace)=markerCode
 				endif
 
@@ -4615,7 +4621,7 @@ End
 
 static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WAVE/Z selectData, string opType)
 
-	variable numNames, numParams, i, j, idx, sweepNo, chanType, chanNr, colorGroup, colorGroupFound, nextFreeIndex
+	variable numNames, numParams, i, j, idx, sweepNo, chanType, chanNr, colorGroup, colorGroupFound, nextFreeIndex, marker
 	string params, name, type
 
 	if(!WaveExists(selectData))
@@ -4651,6 +4657,8 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WA
 		name       = allNamesUnique[i]
 		colorGroup = GetUniqueInteger()
 
+		marker = SFH_GetPlotMarkerCodeSelection(i)
+
 		for(j = 0; j < numParams; j += 1)
 			WAVE/T paramsSingle = allParams[j]
 			params = JWN_GetStringFromWaveNote(paramsSingle, SF_META_TAG_TEXT)
@@ -4685,6 +4693,7 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WA
 
 			JWN_SetStringInWaveNote(out, SF_META_LEGEND_LINE_PREFIX, name)
 			JWN_SetNumberInWaveNote(out, SF_META_COLOR_GROUP, colorGroup)
+			JWN_SetNumberInWaveNote(out, SF_META_MOD_MARKER, marker)
 
 			EnsureLargeEnoughWave(output, dimension = ROWS, indexShouldExist = idx)
 			output[idx] = out
@@ -4826,8 +4835,8 @@ End
 
 static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T allLBNKeys, WAVE/Z selectData, variable mode, string opShort)
 
-	variable i, numSelected, idx
-	variable numOutputWaves, colorGroup
+	variable i, numSelected, idx, lbnIndex
+	variable numOutputWaves, colorGroup, marker
 	string lbnKey, refUnit, unitString
 
 	if(!WaveExists(selectData))
@@ -4842,11 +4851,14 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T allLBNKeys
 
 	for(lbnKey : allLBNKeys)
 		colorGroup = GetUniqueInteger()
+		marker = SFH_GetPlotMarkerCodeSelection(lbnIndex)
+		lbnIndex += 1
 
 		for(i = 0; i < numSelected; i += 1)
 			WAVE out = SF_SF_OperationLabnotebookImplGetEntry(graph, selectData, i, lbnKey, mode)
 
 			JWN_SetNumberInWaveNote(out, SF_META_COLOR_GROUP, colorGroup)
+			JWN_SetNumberInWaveNote(out, SF_META_MOD_MARKER, marker)
 
 			output[idx] = out
 			idx += 1
@@ -4861,8 +4873,10 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T allLBNKeys
 	if(DimSize(unitsUnique, ROWS) == 1)
 		refUnit = unitsUnique[0]
 
-		sprintf unitString, "Unit (%s)", refUnit
-		JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, unitString)
+		if(!IsEmpty(refUnit))
+			sprintf unitString, "Unit (%s)", refUnit
+			JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, unitString)
+		endif
 
 		if(!cmpstr(refUnit, LABNOTEBOOK_BINARY_UNIT))
 			WAVE/T/Z matches = GrepTextWave(allLBNKeys, "^.* QC$")
