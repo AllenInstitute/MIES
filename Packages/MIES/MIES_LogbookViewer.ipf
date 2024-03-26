@@ -93,7 +93,7 @@ Function/WAVE LBV_PopupExtGetResultsKeys(string win)
 End
 
 /// @brief Returns the combined parameter names from the numerical and textual MD key loogbook waves as 1D text wave
-static Function/WAVE LBV_GetAllLogbookParamNames(WAVE/T/Z textualNames, WAVE/T/Z numericalNames)
+Function/WAVE LBV_GetAllLogbookParamNames(WAVE/T/Z textualNames, WAVE/T/Z numericalNames)
 	variable existText, existNum
 
 	WAVE/Z/T textualNamesClean = LBV_CleanLogbookParamNames(textualNames)
@@ -110,22 +110,6 @@ static Function/WAVE LBV_GetAllLogbookParamNames(WAVE/T/Z textualNames, WAVE/T/Z
 	endif
 
 	return $""
-End
-
-/// @brief Return a wave with all parameter names in the logbook key wave
-static Function/WAVE LBV_GetLogbookParamNames(WAVE/Z/T keys)
-	variable row
-
-	if(!WaveExists(keys))
-		return $""
-	endif
-
-	row = FindDimLabel(keys, ROWS, "Parameter")
-
-	Duplicate/FREE/RMD=[row][] keys, names
-	Redimension/N=(numpnts(keys))/E=1 names
-
-	return LBV_CleanLogbookParamNames(names)
 End
 
 static Function/WAVE LBV_CleanLogbookParamNames(WAVE/Z/T names)

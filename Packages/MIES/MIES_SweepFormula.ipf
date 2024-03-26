@@ -4833,7 +4833,57 @@ static Function/WAVE SF_GetLabnotebookEntryUnits(string graph, WAVE/T allLBNKeys
 	return units
 End
 
-static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T allLBNKeys, WAVE/Z selectData, variable mode, string opShort)
+static Function/WAVE SFH_OperationLabnotebookExpandKeys(string graph, WAVE/T LBNKeys, WAVE selectData, variable mode)
+
+	variable i, j, numSelected, numKeys, sweepNo
+	string key
+
+	numSelected = DimSize(selectData, ROWS)
+	numKeys = DimSize(LBNKeys, ROWS)
+
+	Make/FREE/T/N=0 allLBNKeys
+
+	for(i = 0; i < numSelected; i += 1)
+
+		// @todo shortcut for non wildcard match key
+		// cache entries results, also for LBV viewer
+
+		sweepNo = selectData[i][%SWEEP]
+
+		WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	
+		WAVE/Z/T textualNames   = LBV_GetFilledLabnotebookEntries(textualValues)
+		WAVE/Z/T numericalNames = LBV_GetFilledLabnotebookEntries(numericalValues)
+	
+		WAVE/T/Z entries = LBV_GetAllLogbookParamNames(textualNames, numericalNames)
+		
+		if(!WaveExists(entries))
+			continue
+		endif
+
+		Duplicate/FREE/T entries, filteredEntries
+
+		for(j = 0; j < numKeys; j += 1)
+			key = LBNKeys[j]
+			MultiThread filteredEntries = SelectString(stringmatch(entries[p], key), "", entries[p])
+		endfor
+		
+		RemoveTextWaveEntry1D(filteredEntries, "", all = 1)
+
+		Concatenate/NP=(ROWS)/T {filteredEntries}, allLBNKeys
+	endfor
+
+	if(DimSize(allLBNKeys, ROWS) == 0)
+		return $""
+	endif
+
+	WAVE allLBNKeysUnique = GetUniqueEntries(allLBNKeys)
+
+	return allLBNKeysUnique
+End
+
+static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, WAVE/Z selectData, variable mode, string opShort)
 
 	variable i, numSelected, idx, lbnIndex
 	variable numOutputWaves, colorGroup, marker
@@ -4844,6 +4894,8 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T allLBNKeys
 		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
 		return output
 	endif
+
+	WAVE/T/Z allLBNKeys = SFH_OperationLabnotebookExpandKeys(graph, LBNKeys, selectData, mode)
 
 	numSelected = DimSize(selectData, ROWS)
 	numOutputWaves = numSelected * DimSize(allLBNKeys, ROWS)
@@ -4865,7 +4917,7 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T allLBNKeys
 		endfor
 	endfor
 
-	// assume that the unit is the same of all sweeps
+	// assume that the unit for one key is the same for all sweeps
 	WAVE/T units = SF_GetLabnotebookEntryUnits(graph, allLBNKeys, selectData[0][%SWEEP])
 
 	WAVE/T/Z unitsUnique = GetUniqueEntries(units)
