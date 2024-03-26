@@ -2211,3 +2211,5 @@ StrConstant SF_OP_FITLINE = "fitline"
 StrConstant SF_OP_DATASET = "dataset"
 
 StrConstant SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC = "OriginalCreationTimeInUTC"
+
+StrConstant DF_NAME_FREE = "freeroot"

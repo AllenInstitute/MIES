@@ -153,9 +153,9 @@ threadsafe static Function/DF ASYNC_Run_Worker(DFREF dfr)
 		MoveDataFolder dfrOut, dfrAsync
 	elseif(DataFolderExistsDFR(dfrOut))
 		MoveDataFolder dfrOut, dfrAsync
-		RenameDataFolder dfrOut, freeroot
+		RenameDataFolder dfrOut, $DF_NAME_FREE
 	else
-		NewDataFolder dfrAsync:freeroot
+		NewDataFolder dfrAsync:$DF_NAME_FREE
 	endif
 
 	return dfrAsync
@@ -198,7 +198,7 @@ Function ASYNC_ThreadReadOut()
 			bufferSize = numpnts(DFREFbuffer)
 			for(i = 0; i < bufferSize; i += 1)
 				DFREF dfr    = DFREFbuffer[i]
-				DFREF dfrOut = dfr:freeroot
+				DFREF dfrOut = dfr:$DF_NAME_FREE
 
 				WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
 				SVAR workloadClass        = dfr:$ASYNC_WORKLOADCLASS_STR
@@ -217,7 +217,7 @@ Function ASYNC_ThreadReadOut()
 			endif
 		else
 			// check for inOrder, do we need to buffer?
-			DFREF dfrOut        = dfr:freeroot
+			DFREF dfrOut        = dfr:$DF_NAME_FREE
 			SVAR  workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
 			if(track[%$workloadClass][%INORDER])
 				WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
