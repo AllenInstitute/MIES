@@ -134,7 +134,7 @@ Function AdditionalExperimentCleanup()
 	CloseNWBFile()
 	HDF5CloseFile/A/Z 0
 
-	KillDataFolder/Z root:MIES
+	KillDataFolder/Z root:$DF_NAME_MIES
 	if(V_flag)
 		DFREF tmpDFR = UniqueDataFolder(root:, TRASH_FOLDER_PREFIX)
 		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
@@ -142,8 +142,8 @@ Function AdditionalExperimentCleanup()
 		CHECK_NO_RTE()
 	endif
 
-	NewDataFolder root:MIES
-	MoveDataFolder root:$name, root:MIES
+	NewDataFolder root:$DF_NAME_MIES
+	MoveDataFolder root:$name, root:$DF_NAME_MIES
 
 	if(reopenDebugPanel)
 		DP_OpenDebugPanel()
