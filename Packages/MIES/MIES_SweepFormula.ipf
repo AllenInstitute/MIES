@@ -4574,14 +4574,11 @@ End
 
 static Function/WAVE SF_OperationAnaFuncParamImplAllNames(WAVE/T names, WAVE/WAVE allParams)
 
-	variable i, numParams, gatherAllNames
-	string params
+	variable i, numParams, gatherAllNames, j, numNames
+	string params, name, gatheredNames, namesPerParam
 
 	numParams = DimSize(allParams, ROWS)
-	
-	if(DimSize(names, ROWS) == 1 && !cmpstr(names[0], "*"))
-		gatherAllNames = 1
-	endif
+	numNames  = DimSize(names, ROWS)
 
 	Make/FREE/N=0/T allNames
 
@@ -4590,19 +4587,21 @@ static Function/WAVE SF_OperationAnaFuncParamImplAllNames(WAVE/T names, WAVE/WAV
 		WAVE/T paramsSingle = allParams[i]
 		params = JWN_GetStringFromWaveNote(paramsSingle, SF_META_TAG_TEXT)
 
-		WAVE/T gatheredNames = ListToTextWave(AFH_GetListOfAnalysisParamNames(params), ";")
+		gatheredNames = AFH_GetListOfAnalysisParamNames(params)
 
-		if(gatherAllNames)
-			WAVE/T namesPerParam = gatheredNames
-		else
-			WAVE/T/Z namesPerParam = GetSetIntersection(names, gatheredNames)
-		endif
-		
-		if(!WaveExists(namesPerParam))
-			continue
-		endif
+		for(j = 0; j < numNames; j += 1)
+			name = names[j]
 
-		Concatenate/NP=(ROWS)/T {namesPerParam}, allNames
+			namesPerParam = ListMatch(gatheredNames, name)
+
+			if(IsEmpty(namesPerParam))
+				continue
+			endif
+			
+			WAVE wv = ListToTextWave(namesPerParam, ";")
+
+			Concatenate/NP=(ROWS)/T {wv}, allNames
+		endfor
 	endfor
 
 	if(DimSize(allNames, ROWS) == 0)
