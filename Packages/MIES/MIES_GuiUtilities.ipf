@@ -798,6 +798,50 @@ End
 Function [STRUCT RGBColor s] GetTraceColorForAverage()
 
 	[s] = GetTraceColor(NUM_HEADSTAGES + 1)
+
+End
+
+/// @brief Get colors from alternative color scheme
+///
+/// Uses 8 colors with maximum contrast for colorblind people, see
+/// https://www.wavemetrics.com/code-snippet/distinguishable-color-index and
+/// https:// jfly.iam.u-tokyo.ac.jp/color/
+///
+/// @sa GetTraceColor
+Function [STRUCT RGBColor s] GetTraceColorAlternative(variable index)
+
+	index = mod(index, 8)
+
+	switch(index)
+		case 0:
+			s.red = 0; s.green = 0; s.blue = 0
+			break
+		case 1:
+			s.red = 59110; s.green = 40863; s.blue = 0
+			break
+		case 2:
+			s.red = 22102; s.green = 46260; s.blue = 59881
+			break
+		case 3:
+			s.red = 0; s.green = 40606; s.blue = 29555
+			break
+		case 4:
+			s.red = 61680; s.green = 58596; s.blue = 16962
+			break
+		case 5:
+			s.red = 0; s.green = 29298; s.blue = 45746
+			break
+		case 6:
+			s.red = 54741; s.green = 24158; s.blue = 0
+			break
+		case 7:
+			s.red = 52428; s.green = 31097; s.blue = 42919
+			break
+		default:
+			ASSERT(0, "Invalid index")
+	endswitch
+
+	return [s]
 End
 
 /// @brief Query the axis minimum and maximum values
