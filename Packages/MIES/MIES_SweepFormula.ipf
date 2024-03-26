@@ -4841,22 +4841,21 @@ static Function/WAVE SFH_OperationLabnotebookExpandKeys(string graph, WAVE/T LBN
 	numSelected = DimSize(selectData, ROWS)
 	numKeys = DimSize(LBNKeys, ROWS)
 
+	Make/FREE/N=(numKeys) hasWC = HasWildcardSyntax(LBNKeys[p])
+
+	if(IsConstant(hasWC, 0))
+		return LBNKeys
+	endif
+
 	Make/FREE/T/N=0 allLBNKeys
 
 	for(i = 0; i < numSelected; i += 1)
-
-		// @todo shortcut for non wildcard match key
-		// cache entries results, also for LBV viewer
-
 		sweepNo = selectData[i][%SWEEP]
 
 		WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
 	
-		WAVE/Z/T textualNames   = LBV_GetFilledLabnotebookEntries(textualValues)
-		WAVE/Z/T numericalNames = LBV_GetFilledLabnotebookEntries(numericalValues)
-	
-		WAVE/T/Z entries = LBV_GetAllLogbookParamNames(textualNames, numericalNames)
+		WAVE/T/Z entries = LBV_GetAllLogbookParamNames(textualValues, numericalValues)
 		
 		if(!WaveExists(entries))
 			continue

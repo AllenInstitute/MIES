@@ -66,10 +66,7 @@ Function/WAVE LBV_PopupExtGetLBKeys(string win)
 	WAVE/Z textualValues   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 	WAVE/Z numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 
-	WAVE/T textualNames = LBV_GetFilledLabnotebookEntries(textualValues)
-	WAVE/T numericalNames = LBV_GetFilledLabnotebookEntries(numericalValues)
-
-	WAVE/Z entries = LBV_GetAllLogbookParamNames(textualNames, numericalNames)
+	WAVE/Z entries = LBV_GetAllLogbookParamNames(textualValues, numericalValues)
 
 	return LBV_PopupExtFormatEntries(entries)
 End
@@ -84,17 +81,58 @@ Function/WAVE LBV_PopupExtGetResultsKeys(string win)
 	WAVE/Z textualValues   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 	WAVE/Z numericalValues = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 
-	WAVE/Z/T textualNames = LBV_GetFilledLabnotebookEntries(textualValues)
-	WAVE/Z/T numericalNames = LBV_GetFilledLabnotebookEntries(numericalValues)
-
-	WAVE/Z entries = LBV_GetAllLogbookParamNames(textualNames, numericalNames)
+	WAVE/Z entries = LBV_GetAllLogbookParamNames(textualValues, numericalValues)
 
 	return LBV_PopupExtFormatEntries(entries)
 End
 
+Function/S CA_GetLabnotebookNamesKey(WAVE/T/Z textualValues, WAVE/T/Z numericalValues)
+
+	string key = ""
+	variable crc
+
+	if(WaveExists(textualValues))
+		key += GetWavesDataFolder(textualValues, 2)
+		key += num2str(WaveModCountWrapper(textualValues))
+	endif
+
+	if(WaveExists(numericalValues))
+		key += GetWavesDataFolder(numericalValues, 2)
+		key += num2str(WaveModCountWrapper(numericalValues))
+	endif
+
+	ASSERT(!IsEmpty(key), "key can't be empty")
+
+	return "Version 1:" + Hash(key, HASH_SHA2_256)
+End
+
 /// @brief Returns the combined parameter names from the numerical and textual MD key loogbook waves as 1D text wave
-Function/WAVE LBV_GetAllLogbookParamNames(WAVE/T/Z textualNames, WAVE/T/Z numericalNames)
+Function/WAVE LBV_GetAllLogbookParamNames(WAVE/T/Z textualValues, WAVE/T/Z numericalValues)
+
+	string key
+
+	if(!WaveExists(textualValues) && !WaveExists(numericalValues))
+		return $""
+	endif
+
+	key = CA_GetLabnotebookNamesKey(textualValues, numericalValues)
+
+	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+	
+	if(!WaveExists(result))
+		WAVE result = LBV_GetAllLogbookParamNames_NoCache(textualValues, numericalValues)
+
+		CA_StoreEntryIntoCache(key, result)
+	endif
+
+	return result
+End
+
+static Function/WAVE LBV_GetAllLogbookParamNames_NoCache(WAVE/T/Z textualValues, WAVE/T/Z numericalValues)
 	variable existText, existNum
+
+	WAVE/Z/T textualNames = LBV_GetFilledLabnotebookEntries(textualValues)
+	WAVE/Z/T numericalNames = LBV_GetFilledLabnotebookEntries(numericalValues)
 
 	WAVE/Z/T textualNamesClean = LBV_CleanLogbookParamNames(textualNames)
 	WAVE/Z/T numericalNamesClean = LBV_CleanLogbookParamNames(numericalNames)
