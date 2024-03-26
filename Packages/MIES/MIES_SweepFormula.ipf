@@ -1304,6 +1304,7 @@ Function/WAVE GetColorWave(variable numEntries)
 	return traceColors
 End
 
+/// @brief Return an Nx3 wave with one color triplett for each unique trace color group
 static Function/WAVE SF_GetGroupColors(WAVE/WAVE formulaResults)
 
 	variable numFormulas, i, numUniqueColors, refColorGroup, constantChannelNumAndType
@@ -1372,11 +1373,13 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 
 	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal, isAveraged
 	variable colorGroup, idx
-	
+
 	if(WaveExists(traceGroupColors))
 		colorGroup = JWN_GetNumberFromWaveNote(data, SF_META_COLOR_GROUP)
 		ASSERT(IsFinite(colorGroup), "Invalid color group")
+
 		idx = FindDimLabel(traceGroupColors, ROWS, num2str(colorGroup))
+		ASSERT(idx >= 0, "Invalid color group index")
 
 		s.red   = traceGroupColors[idx][%Red]
 		s.green = traceGroupColors[idx][%Green]
@@ -4557,7 +4560,7 @@ static Function/WAVE SF_OperationAnaFuncParam(variable jsonId, string jsonPath, 
 
 	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_ANAFUNCPARAM, 0, maxArgs = 2)
 
-	WAVE/T/Z names    = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_ANAFUNCPARAM, 0, defWave = $"", singleResult = 1)
+	WAVE/T names    = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_ANAFUNCPARAM, 0, singleResult = 1)
 	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_DATA, 1)
 
 	WAVE/WAVE output = SF_OperationAnaFuncParamImpl(graph, names, selectData, SF_OP_ANAFUNCPARAM)
@@ -4569,9 +4572,51 @@ static Function/WAVE SF_OperationAnaFuncParam(variable jsonId, string jsonPath, 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_ANAFUNCPARAM)
 End
 
-static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/Z/T names, WAVE/Z selectData, string opType)
+static Function/WAVE SF_OperationAnaFuncParamImplAllNames(WAVE/T names, WAVE/WAVE allParams)
 
-	variable numNames, numParams, i, j, idx, allNames, sweepNo, chanType, chanNr, colorGroup
+	variable i, numParams, gatherAllNames
+	string params
+
+	numParams = DimSize(allParams, ROWS)
+	
+	if(DimSize(names, ROWS) == 1 && !cmpstr(names[0], "*"))
+		gatherAllNames = 1
+	endif
+
+	Make/FREE/N=0/T allNames
+
+	for(i = 0; i < numParams; i += 1)
+
+		WAVE/T paramsSingle = allParams[i]
+		params = JWN_GetStringFromWaveNote(paramsSingle, SF_META_TAG_TEXT)
+
+		WAVE/T gatheredNames = ListToTextWave(AFH_GetListOfAnalysisParamNames(params), ";")
+
+		if(gatherAllNames)
+			WAVE/T namesPerParam = gatheredNames
+		else
+			WAVE/T/Z namesPerParam = GetSetIntersection(names, gatheredNames)
+		endif
+		
+		if(!WaveExists(namesPerParam))
+			continue
+		endif
+
+		Concatenate/NP=(ROWS)/T {namesPerParam}, allNames
+	endfor
+
+	if(DimSize(allNames, ROWS) == 0)
+		return $""
+	endif
+
+	WAVE allNamesUnique = GetUniqueEntries(allNames)
+
+	return allNamesUnique
+End
+
+static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WAVE/Z selectData, string opType)
+
+	variable numNames, numParams, i, j, idx, sweepNo, chanType, chanNr, colorGroup, colorGroupFound, nextFreeIndex
 	string params, name, type
 
 	if(!WaveExists(selectData))
@@ -4582,10 +4627,6 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/Z/T names, 
 
 	WAVE/WAVE allParams = SF_OperationLabnotebookImpl(graph, {"Function params (encoded)"}, selectData, DATA_ACQUISITION_MODE, SF_OP_ANAFUNCPARAM)
 
-	if(!WaveExists(names))
-		allNames = 1
-	endif
-
 	numParams = DimSize(allParams, ROWS)
 
 	if(numParams == 0)
@@ -4593,20 +4634,27 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/Z/T names, 
 		return SFH_GetOutputForExecutor(output, graph, opType)
 	endif
 
+	WAVE/T/Z allNamesUnique = SF_OperationAnaFuncParamImplAllNames(names, allParams)
+	
+	if(!WaveExists(allNamesUnique))
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opType, 0)
+		return SFH_GetOutputForExecutor(output, graph, opType)
+	endif
+
+	numNames = DimSize(allNamesUnique, ROWS)
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE)/D colorGroups
+	SetNumberInWaveNote(colorGroups, NOTE_INDEX, 0)
+
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opType, MINIMUM_WAVE_SIZE)
 
-	for(i = 0; i < numParams; i += 1)
-		WAVE/T paramsSingle = allParams[i]
-		params = JWN_GetStringFromWaveNote(paramsSingle, SF_META_TAG_TEXT)
+	for(i = 0; i < numNames; i += 1)
+		name       = allNamesUnique[i]
+		colorGroup = GetUniqueInteger()
 
-		if(allNames)
-			WAVE/T names = ListToTextWave(AFH_GetListOfAnalysisParamNames(params), ";")
-		endif
-
-		numNames = DimSize(names, ROWS)
-		for(j = 0; j < numNames; j += 1)
-
-			name = names[j]
+		for(j = 0; j < numParams; j += 1)
+			WAVE/T paramsSingle = allParams[j]
+			params = JWN_GetStringFromWaveNote(paramsSingle, SF_META_TAG_TEXT)
 			type = AFH_GetAnalysisParamType(name, params, typeCheck = 0)
 
 			strswitch(type)
