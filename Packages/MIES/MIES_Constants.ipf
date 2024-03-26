@@ -1973,6 +1973,7 @@ StrConstant SF_META_SHOW_LEGEND = "/ShowLegend" // numeric, boolean, defaults to
 StrConstant SF_META_CUSTOM_LEGEND = "/CustomLegend" // string with custom legend text, honours /ShowLegend
 StrConstant SF_META_ARGSETUPSTACK = "/ArgSetupStack" // string
 StrConstant SF_META_TRACECOLOR = "/TraceColor" // numeric wave, applies to markers and lines
+StrConstant SF_META_COLOR_GROUP = "/ColorGroup" // number
 StrConstant SF_META_LINESTYLE = "/LineStyle" // number
 StrConstant SF_META_TRACE_MODE = "/TraceMode" // number
 StrConstant SF_META_TRACETOFRONT = "/TraceToFront" // number, boolean, defaults to false (0)

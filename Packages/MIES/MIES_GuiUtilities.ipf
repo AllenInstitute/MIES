@@ -1390,7 +1390,7 @@ Function RestoreAnnotationPositions(string graph, WAVE/T annoInfo)
 	endfor
 End
 
-/// @brief Remove the annotations given by the `regexp` from annoInfo
+/// @brief Remove the annotations given by the `regexp` from annoInfo and return the filtered wave
 Function/WAVE FilterAnnotations(WAVE/T annoInfo, string regexp)
 
 	variable i, numEntries
