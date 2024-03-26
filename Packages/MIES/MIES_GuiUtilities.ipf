@@ -1350,16 +1350,16 @@ End
 Function/WAVE FilterAnnotations(WAVE/T annoInfo, string regexp)
 
 	variable i, numEntries
-
-	// @todo does not work
+	string name
 
 	Duplicate/FREE/T annoInfo, annoInfoResult
 	WaveClear annoInfo
 
 	numEntries = DimSize(annoInfoResult, ROWS)
 	for(i = numEntries - 1; i >= 0; i -= 1)
-		if(GrepString(annoInfoResult[i], regexp))
-			DeletePoints/M=(ROWS) i, 0, annoInfoResult
+		name = GetDimLabel(annoInfoResult, ROWS, i)
+		if(GrepString(name, regexp))
+			DeletePoints/M=(ROWS) i, 1, annoInfoResult
 		endif
 	endfor
 
