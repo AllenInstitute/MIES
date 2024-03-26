@@ -7953,3 +7953,13 @@ static Function TestSetDimensionLabelsFromWaveContents()
 		CHECK_NO_RTE()
 	endtry
 End
+
+static Function HWS_Works()
+
+	CHECK_EQUAL_VAR(HasWildcardSyntax(""), 0)
+	CHECK_EQUAL_VAR(HasWildcardSyntax("a"), 0)
+	CHECK_EQUAL_VAR(HasWildcardSyntax("1"), 0)
+	CHECK_EQUAL_VAR(HasWildcardSyntax("!"), 1)
+	CHECK_EQUAL_VAR(HasWildcardSyntax("!a"), 1)
+	CHECK_EQUAL_VAR(HasWildcardSyntax("a*b"), 1)
+End
