@@ -717,9 +717,9 @@ labnotebook
 
 .. code-block:: bash
 
-   labnotebook(string key[, array selectData [, string entrySourceType]])
+   labnotebook(array keys[, array selectData [, string entrySourceType]])
 
-The labnotebook function returns the (case insensitive) `key` entry from the
+The labnotebook function returns the (case insensitive) `keys` entries from the
 labnotebook for the selected channel and sweep combination(s). The optional
 `entrySourceType` can be one of the constants `DataAcqModes` for data
 acquisition modes as defined in `../MIES/MIES_Constants.ipf`. If the
@@ -727,13 +727,13 @@ acquisition modes as defined in `../MIES/MIES_Constants.ipf`. If the
 
 When the optional select argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
 
-The `labnotebook` operation returns a data wave for each selected sweep/channel combination. Each data wave contains a single element, that is depending on the
+The `labnotebook` operation returns a data wave for each selected sweep/channel
+combination. Each data wave contains a single element, that is depending on the
 requested labnotebook entry numeric or textual.
 
 The returned data type is `SF_DATATYPE_LABNOTEBOOK`.
 If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred to the returned data waves.
 The default suggested x-axis values for the formula plotter are sweep numbers.
-The suggested y-axis label is the labnotebook key.
 
 .. code-block:: bash
 
@@ -752,7 +752,7 @@ The suggested y-axis label is the labnotebook key.
    )
 
 The function searches for numeric entries in the labnotebook first and then for
-text entries. It returns a null wave if no match was found.
+text entries.
 
 findlevel
 """""""""
