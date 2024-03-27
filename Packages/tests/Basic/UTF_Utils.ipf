@@ -6171,6 +6171,33 @@ Function SeSt_CheckParams()
 	endtry
 End
 
+static Function SeSt_CheckParams2()
+
+	string str, ref
+
+	Make/FREE wv
+	try
+		SetStringInWaveNote(wv, "abcd", "123", keySep = "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE wv
+		SetStringInWaveNote(wv, "abcd", "123", listSep = "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE wv
+	SetStringInWaveNote(wv, "abcd", "123", keySep = "?", listSep = "_")
+	str = note(wv)
+	ref = "abcd?123_"
+	CHECK_EQUAL_STR(str, ref)
+End
+
 Function SeSt_Works()
 	string str, ref
 
