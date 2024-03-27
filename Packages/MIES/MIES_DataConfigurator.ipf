@@ -2268,7 +2268,7 @@ Function [STRUCT DataConfigurationResult s] DC_RecreateDataConfigurationResultFr
 	variable index, i, idx, hwType
 
 	s.dataAcqOrTP = DATA_ACQUISITION_MODE
-	DC_RecreateDataConfigurationResultFromLNB_Indep(s, numericalValues, textualValues, sweepNo)
+	DC_RecreateDataConfigurationResultFromLNB_Indep(s, numericalValues, textualValues, sweepDFR, sweepNo)
 
 	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Headstage Active", s.dataAcqOrTP)
 	if(WaveExists(settings))
@@ -2278,14 +2278,18 @@ Function [STRUCT DataConfigurationResult s] DC_RecreateDataConfigurationResultFr
 		DEBUGPRINT("LNB entry not found: Headstage Active")
 	endif
 
-	[WAVE daGains] = DC_RecreateDataConfigurationResultFromLNB_DAC(s, numericalValues, textualValues, sweepNo)
+	DC_RecreateDataConfigurationResultFromLNB_DAC(s, numericalValues, textualValues, sweepNo)
 	DC_CalculateInsertStart(s)
+	if(IsNaN(s.baselineFrac))
+		DC_RecreateDataConfigurationResultFromLNB_baselineFrac_Path2(s, numericalValues, textualValues, sweepDFR, sweepNo)
+	endif
 
 	[WAVE adGains] = DC_RecreateDataConfigurationResultFromLNB_ADC(s, numericalValues, textualValues, sweepNo)
 	DC_RecreateDataConfigurationResultFromLNB_TTL(s, numericalValues, textualValues, sweepNo)
 
 	s.numActiveChannels = s.numDACEntries + s.numADCEntries + s.numTTLEntries
 
+	WAVE daGains = DC_RecreateDataConfigurationResultFromLNB_DAGains(s, numericalValues, textualValues, sweepNo)
 	Make/FREE/N=(s.numTTLEntries) ttlGains
 	ttlGains = 1
 	Concatenate/NP {adGains, ttlGains}, daGains
@@ -2412,9 +2416,24 @@ static Function [WAVE/D adGains] DC_RecreateDataConfigurationResultFromLNB_ADC(S
 	return [adGains]
 End
 
-static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)
+static Function/WAVE DC_RecreateDataConfigurationResultFromLNB_DAGains(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)
 
-	variable index, i, idx, clampMode, wbOodDAQOffset, postFeaturePoints
+	variable i, index
+
+	Make/FREE/D/N=(s.numDACEntries) daGains
+	for(i = 0; i < s.numDACEntries; i += 1)
+		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DA GAIN", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
+		if(WaveExists(settings))
+			daGains[i] = settings[index]
+		endif
+	endfor
+
+	return daGains
+End
+
+static Function DC_RecreateDataConfigurationResultFromLNB_DAC(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)
+
+	variable index, i, idx, clampMode, wbOodDAQOffset, postFeaturePoints, stimsetError
 	string key
 
 	Make/FREE/N=(NUM_DA_TTL_CHANNELS) s.DACList
@@ -2444,7 +2463,7 @@ static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(S
 		DEBUGPRINT("LNB entry not found: DAC")
 	endif
 
-	Make/FREE/D/N=(s.numDACEntries) s.setCycleCount, s.setColumn, s.insertStart, daGains, daqChannelType, s.setLength
+	Make/FREE/D/N=(s.numDACEntries) s.setCycleCount, s.setColumn, s.insertStart, daqChannelType, s.setLength
 	Make/FREE/N=(s.numDACEntries) s.offsets
 	Make/FREE/T/N=(s.numDACEntries) s.regions, s.setName
 	Make/FREE/WAVE/N=(s.numDACEntries) s.stimSet
@@ -2467,17 +2486,15 @@ static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(S
 			WAVE/T settingsT = settings
 			s.regions[i] = settingsT[index]
 		endif
-		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DA GAIN", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
-		if(WaveExists(settings))
-			daGains[i] = settings[index]
-		endif
 		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DA ChannelType", s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
 		if(WaveExists(settings))
 			daqChannelType[i] = settings[index]
+		else
+			daqChannelType[i] = NaN
 		endif
 		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, s.DACList[i], XOP_CHANNEL_TYPE_DAC, s.dataAcqOrTP)
 		if(WaveExists(settings))
-			if(daqChannelType[i] == DAQ_CHANNEL_TYPE_DAQ)
+			if(daqChannelType[i] == DAQ_CHANNEL_TYPE_DAQ || IsNaN(daqChannelType[i]))
 				s.DACAmp[i][%DASCALE] = settings[index]
 			else
 				s.DACAmp[i][%TPAMP] = settings[index]
@@ -2488,6 +2505,11 @@ static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(S
 			WAVE/T settingsT = settings
 			s.setName[i] = settingsT[index]
 			s.stimSet[i] = WB_CreateAndGetStimSet(s.setName[i])
+			if(!WaveExists(s.stimSet[i]))
+				print "DC recreation:  Could not create stimset " + s.setName[i] + ". Was the stimset data loaded?"
+			elseif(DimSize(s.stimSet[i], ROWS) == 0 || IsEmpty(note(s.stimSet[i])))
+				printf "DC recreation: WB returned invalid stimset size %d / empty note %d\r", DimSize(s.stimSet[i], ROWS), IsEmpty(note(s.stimSet[i]))
+			endif
 			if(s.offsets[i])
 				WAVE stimSet = s.stimSet[i]
 				wbOodDAQOffset = round(s.offsets[i] / WAVEBUILDER_MIN_SAMPINT)
@@ -2503,7 +2525,13 @@ static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(S
 		if(WaveExists(settings))
 			s.setLength[i] = settings[index]
 		elseif(WaveExists(s.stimSet[i]))
-			s.setLength[i] = DC_CalculateGeneratedDataSizeDAQMode(DimSize(s.stimSet[i], ROWS), s.decimationFactor)
+			stimsetError = WB_GetWaveNoteEntryAsNumber(note(s.stimSet[i]), STIMSET_ENTRY, key = STIMSET_ERROR_KEY)
+			if(!stimsetError)
+				s.setLength[i] = DC_CalculateGeneratedDataSizeDAQMode(DimSize(s.stimSet[i], ROWS), s.decimationFactor)
+			else
+				print "DC recreation: WB returned error for creation of stimset wave data: " + s.setName[i]
+				s.setLength[i] = NaN
+			endif
 		endif
 
 		if(daqChannelType[i] == DAQ_CHANNEL_TYPE_DAQ)
@@ -2528,11 +2556,251 @@ static Function [WAVE/D daGains] DC_RecreateDataConfigurationResultFromLNB_DAC(S
 			endif
 		endif
 	endfor
-
-	return [daGains]
 End
 
-static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, variable sweepNo)
+static Function DC_FindStimsetOffset(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+
+	Make/FREE/N=(s.numDACEntries) offsets
+	offsets[] = DC_FindStimsetOffsetForChannel(s, numericalValues, textualValues, sweepDFR, sweepNo, p)
+	WAVE/Z zappedOffsets = ZapNaNs(offsets)
+	if(!WaveExists(zappedOffsets))
+		return NaN
+	endif
+	if(DimSize(zappedOffsets, ROWS) == 1)
+		return zappedOffsets[0]
+	endif
+
+	WaveStats/Q zappedOffsets
+	DEBUGPRINT("Offset estimation avg dev: " + num2str(V_adev, "%g"))
+
+	return round(mean(zappedOffsets))
+End
+
+/// @brief This function requires that the stimset is featureless (zero)
+static Function DC_FindStimsetOffsetFromTP(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo, variable channelIndex)
+
+	variable startIndex, endIndex
+
+	WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[channelIndex])
+	ASSERT(WaveExists(sweep), "Could not retrieve sweep for DataConfigurationResult recreation")
+
+	[startIndex, endIndex] = DC_FindTestPulse(sweep, inf)
+	if(IsNaN(startIndex))
+		return 0
+	endif
+
+	return endIndex + startIndex - 1
+End
+
+static Function DC_FindStimsetOffsetForChannel(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo, variable channelIndex)
+
+	variable lastIdx, sizeInDA, stimEdgePos, daEdgePos, daSize, offsetGuess, startSearch, endSearch, searchRange
+	variable i, trailPoints, daStimsetSize, matchSize, intenseSearch, progress, progessThreshold, dacAmp
+	variable lastFalling, lastRising
+	variable level = 1E-3
+	variable searchRangeLimit = 2
+	variable threshold = 0.015
+
+	if(!WaveExists(s.stimset[channelIndex]))
+		return NaN
+	endif
+
+	Duplicate/FREE/RMD=[][s.setColumn[channelindex]] s.stimset[channelIndex], stimset
+	Redimension/N=(-1) stimset
+
+	lastIdx = DimSize(stimset, ROWS) - 1
+	sizeInDA = round(s.decimationFactor * lastIdx)
+	// Add one point of trail
+	Make/FREE/N=(sizeInDA + 1) stimsetInDA
+	dacAmp = s.DACAmp[channelIndex][%DASCALE]
+
+	MultiThread stimsetInDA[] = dacAmp * stimset[round(s.decimationFactor * p)]
+
+	WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[channelIndex])
+	ASSERT(WaveExists(sweep), "Could not retrieve sweep for DataConfigurationResult recreation")
+	daSize = DimSize(sweep, ROWS)
+
+	lastFalling = NaN
+	lastRising = NaN
+	FindLevel/Q/P/EDGE=(FINDLEVEL_EDGE_DECREASING)/R=[lastIdx, 0] stimsetInDA, level
+	if(!V_flag)
+		lastFalling = trunc(V_LevelX)
+	endif
+	FindLevel/Q/P/EDGE=(FINDLEVEL_EDGE_INCREASING)/R=[lastIdx, 0] stimsetInDA, -level
+	if(!V_flag)
+		lastRising = trunc(V_LevelX)
+	endif
+	if(IsNaN(lastFalling) && IsNaN(lastRising))
+		DEBUGPRINT("No feature found in stimset")
+		return DC_FindStimsetOffsetFromTP(s, numericalValues, textualValues, sweepDFR, sweepNo, channelIndex)
+	endif
+	if(IsNaN(lastFalling) && !IsNaN(lastRising))
+		stimEdgePos = lastRising
+	elseif(!IsNaN(lastFalling) && IsNaN(lastRising))
+		stimEdgePos = lastFalling
+	else
+		stimEdgePos = max(lastFalling, lastRising)
+	endif
+
+	lastFalling = NaN
+	lastRising = NaN
+	FindLevel/Q/P/EDGE=(FINDLEVEL_EDGE_DECREASING)/R=[daSize - 1, 0] sweep, level
+	if(!V_flag)
+		lastFalling = trunc(V_LevelX)
+	endif
+	FindLevel/Q/P/EDGE=(FINDLEVEL_EDGE_INCREASING)/R=[daSize - 1, 0] sweep, -level
+	if(!V_flag)
+		lastRising = trunc(V_LevelX)
+	endif
+	if(IsNaN(lastFalling) && IsNaN(lastRising))
+		DEBUGPRINT("No feature found in DA wave")
+		return NaN
+	endif
+	if(IsNaN(lastFalling) && !IsNaN(lastRising))
+		daEdgePos = lastRising
+	elseif(!IsNaN(lastFalling) && IsNaN(lastRising))
+		daEdgePos = lastFalling
+	else
+		daEdgePos = max(lastFalling, lastRising)
+	endif
+
+	daStimsetSize = DimSize(stimsetInDA, ROWS) - 1
+	Redimension/N=(daStimsetSize) stimsetInDA
+
+	searchRange = round(1 / s.decimationFactor) * searchRangeLimit
+	offsetGuess = daEdgePos - stimEdgePos
+	startSearch = limit(offsetGuess - searchRange, 0, inf)
+	trailPoints = max(daSize - offsetGuess - daStimsetSize, 0)
+	endSearch = offsetGuess + min(searchRange, trailPoints)
+	endSearch += 1
+	Make/FREE/D/N=(daStimsetSize) matchWindow
+	for(;;)
+		Make/FREE/D/N=(endSearch - startSearch) match
+		for(i = startSearch; i < endSearch; i += 1)
+			matchSize = min(daStimsetSize, daSize - i)
+			MultiThread matchWindow[0, matchSize - 1] = (sweep[i + p] - stimsetInDA[p])^2
+			match[i - startSearch] = sum(matchWindow) / matchSize
+
+			progress = trunc(100 * i / (endSearch - startSearch))
+			if(intenseSearch && progress >= progessThreshold)
+				printf "%d %%\r", progress
+				progessThreshold += 5
+			endif
+
+		endfor
+
+		WaveStats/Q/P/M=1/R=[0, matchSize - 1] match
+		if(V_min < threshold || intenseSearch)
+			break
+		endif
+
+		printf "DC recreation, triggered intense search for stimset offset.\r"
+		startSearch = 0
+		endSearch = daSize - daStimsetSize
+		intenseSearch = 1
+	endfor
+
+	DEBUGPRINT("stimset offset " + num2str(startSearch + V_minRowLoc) + " deviation " + num2str(V_min))
+
+	return startSearch + V_minRowLoc
+End
+
+static Function [variable startIndex, variable endIndex] DC_FindTestPulse(WAVE sweep, variable testPulseLength)
+
+	variable startIndexHigh = NaN
+	variable endIndexHigh = NaN
+	variable startIndexLow = NaN
+	variable endIndexLow = NaN
+	variable level = 1E-3
+
+	FindLevel/Q/EDGE=(FINDLEVEL_EDGE_INCREASING)/P/R=[0, testPulseLength - 1] sweep, level
+	if(!V_flag)
+		startIndexHigh = trunc(V_LevelX) + 1
+		FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/P/R=[startIndexHigh, testPulseLength - 1] sweep, level
+		if(!V_flag)
+			endIndexHigh = trunc(V_LevelX) + 1
+		endif
+	endif
+	// try negative
+	FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/P/R=[0, testPulseLength - 1] sweep, -level
+	if(!V_flag)
+		startIndexLow = trunc(V_LevelX) + 1
+		FindLevel/Q/EDGE=(FINDLEVEL_EDGE_INCREASING)/P/R=[startIndexLow, testPulseLength - 1] sweep, -level
+		if(!V_flag)
+			endIndexLow = trunc(V_LevelX) + 1
+		endif
+	endif
+
+	if(IsNaN(startIndexHigh) || IsNaN(endIndexHigh))
+		if(IsNaN(startIndexLow) || IsNaN(endIndexLow))
+			return [NaN, NaN]
+		else
+			startIndex = startIndexLow
+			endIndex = endIndexLow
+		endif
+	elseif(IsNaN(startIndexLow) || IsNaN(endIndexLow))
+		startIndex = startIndexHigh
+		endIndex = endIndexHigh
+	elseif(startIndexLow < startIndexHigh)
+		startIndex = startIndexLow
+		endIndex = endIndexLow
+	else
+		startIndex = startIndexHigh
+		endIndex = endIndexHigh
+	endif
+
+	return [startIndex, endIndex]
+End
+
+static Function DC_RecreateDataConfigurationResultFromLNB_baselineFrac_Path2(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+
+	variable startIndex, endIndex, testPulseLength
+
+	if(!DimSize(s.DACList, ROWS))
+		return NaN
+	endif
+	if(IsNaN(s.onsetDelayAuto))
+		s.onsetDelayAuto = DC_FindStimsetOffset(s, numericalValues, textualValues, sweepDFR, sweepNo)
+		if(IsNaN(s.onsetDelayAuto))
+			return NaN
+		endif
+		s.insertStart[] = s.onsetDelayAuto
+		s.globalTPInsert = s.onsetDelayAuto > 0
+	elseif(s.onsetDelayAuto == 0)
+		return NaN
+	endif
+
+	testPulseLength = s.onsetDelayAuto
+
+	WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
+	ASSERT(WaveExists(sweep), "Could not retrieve sweep for DataConfigurationResult recreation")
+
+	[startIndex, endIndex] = DC_FindTestPulse(sweep, testPulseLength)
+	if(IsNaN(startIndex))
+		return NaN
+	endif
+
+	s.baselineFrac = TP_CalculateBaselineFraction(endIndex - startIndex, testPulseLength)
+
+	s.testPulseLength = testPulseLength
+	s.tpPulseStartPoint = startIndex
+	s.tpPulseLengthPoints = endIndex - startIndex - 1
+
+	WAVE s.testPulse = GetTestPulseAsFree()
+	TP_CreateTestPulseWaveImpl(s.testPulse, s.testPulseLength, s.tpPulseStartPoint, s.tpPulseLengthPoints)
+End
+
+static Function DC_RecreateDataConfigurationResultFromLNB_SamplingInterval_Path2(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+
+	DC_RecreateDataConfigurationResultFromLNB_DAC(s, numericalValues, textualValues, sweepNo)
+	ASSERT(DimSize(s.DACList, ROWS), "No DA channel found")
+	WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
+	ASSERT(WaveExists(sweep), "Could not retrieve sweep for DataConfigurationResult recreation")
+	s.samplingInterval = DimDelta(sweep, ROWS) * MILLI_TO_MICRO
+	s.decimationFactor = DC_GetDecimationFactorCalc(s.samplingInterval)
+End
+
+static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfigurationResult &s, WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 
 	variable onsetDelayUserTime, onsetDelayAutoTime, distributedDAQDelayTime, terminationDelayTime
 	string device
@@ -2592,6 +2860,7 @@ static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfi
 	if(IsNaN(s.samplingInterval))
 		s.decimationFactor = NaN
 		DEBUGPRINT("LNB entry not found: Sampling interval")
+		DC_RecreateDataConfigurationResultFromLNB_SamplingInterval_Path2(s, numericalValues, textualValues, sweepDFR, sweepNo)
 	else
 		s.samplingInterval *= MILLI_TO_MICRO
 		s.decimationFactor = DC_GetDecimationFactorCalc(s.samplingInterval)
@@ -2649,6 +2918,10 @@ static Function DC_RecreateDataConfigurationResultFromLNB_TP(STRUCT DataConfigur
 
 	variable pulseDurationTime, totalLengthPoints, pulseStartPoints, pulseLengthPoints
 
+	if(s.testPulseLength > 0)
+		// calculated before with a workaround for old LNBs
+		return NaN
+	endif
 	pulseDurationTime = GetLastSettingIndep(numericalValues, sweepNo, "TP Pulse Duration", s.dataAcqOrTP)
 	if(IsNaN(pulseDurationTime))
 		DEBUGPRINT("LNB entry not found: TP Pulse Duration")

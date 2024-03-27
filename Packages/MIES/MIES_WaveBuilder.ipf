@@ -243,7 +243,10 @@ static Function WB_StimsetHasLatestNoteVersion(setName)
 
 	DFREF dfr = GetSetFolder(type)
 	WAVE/Z/SDFR=dfr stimSet = $setName
-	ASSERT(WaveExists(stimSet), "stimset must exist")
+
+	if(!WaveExists(stimset))
+		return 0
+	endif
 
 	return WB_GetWaveNoteEntryAsNumber(note(stimset), VERSION_ENTRY) >= STIMSET_NOTE_VERSION
 End
@@ -458,7 +461,9 @@ static Function/Wave WB_GetStimSet([setName])
 	SegWvType[97] = SegWvTypeCopy[97]
 
 	Make/FREE/N=(lengthOf1DWaves, numSweeps) stimSet
-
+	for(WAVE wv : data)
+		Note/NOCR stimSet, note(wv)
+	endfor
 	if(lengthOf1DWaves == 0)
 		return stimSet
 	endif
@@ -478,8 +483,6 @@ static Function/Wave WB_GetStimSet([setName])
 
 		last = length - 1
 		Multithread stimSet[0, last][i] = wv[p]
-
-		Note/NOCR stimSet, note(wv)
 	endfor
 
 	if(SegWvType[98])
@@ -800,7 +803,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	Make/FREE/N=0 WaveBuilderWave
 
 	string customWaveName, debugMsg, defMode, formula, formula_version
-	variable i, j, type, accumulatedDuration, pulseToPulseLength, first, last, segmentLength
+	variable i, j, type, accumulatedDuration, pulseToPulseLength, first, last, segmentLength, buildError
 	STRUCT SegmentParameters params
 
 	if(stepCount == 0)
@@ -968,6 +971,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 2 weight", var=params.TauDecay2Weight)
 				break
 			case EPOCH_TYPE_CUSTOM:
+				WAVE segmentWave = GetSegmentWave(duration=0)
 				WB_UpgradecustomWaveInWPT(WPT, channelType, i)
 				customWaveName = WPT[0][i][EPOCH_TYPE_CUSTOM]
 				WAVE/Z customWave = $customWaveName
@@ -978,6 +982,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "CustomWavePath", str=customWaveName)
 				elseif(!isEmpty(customWaveName))
 					printf "Stimset %s: Failed to recreate custom wave epoch %d as the referenced wave %s is missing\r", stimset, i, customWaveName
+					buildError = 1
 				endif
 				WaveClear customWave
 				break
@@ -995,7 +1000,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				WAVE/Z combinedWave = WB_FillWaveFromFormula(formula, channelType, stepCount)
 
 				if(!WaveExists(combinedWave))
-					printf "Stimset %s: Could not create the wave from the formula", stimset
+					printf "Stimset %s: Could not create the wave from the formula\r", stimset
+					buildError = 1
 					break
 				endif
 
@@ -1063,6 +1069,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random Seed", var=SegWvType[97])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, STIMSET_ERROR_KEY, var=buildError)
 	endif
 
 	return WaveBuilderWave
@@ -2233,7 +2240,7 @@ Function/WAVE WB_CustomWavesFromStimSet(string stimsetList)
 			wv[j] = customwave
 			j += 1
 		else
-			printf "reference to custom wave \"%s\" failed.\r", cw[i]
+			printf "Reference in stimsets \"%s\" to custom wave \"%s\" failed.\r", stimsetList, cw[i]
 		endif
 		WaveClear customwave
 	endfor
