@@ -2562,11 +2562,14 @@ static Function DC_FindStimsetOffset(STRUCT DataConfigurationResult &s, WAVE num
 
 	Make/FREE/N=(s.numDACEntries) offsets
 	offsets[] = DC_FindStimsetOffsetForChannel(s, numericalValues, textualValues, sweepDFR, sweepNo, p)
-	if(s.numDACEntries == 1)
-		return offsets[0]
+	WAVE/Z zappedOffsets = ZapNaNs(offsets)
+	if(!WaveExists(zappedOffsets))
+		return NaN
+	endif
+	if(DimSize(zappedOffsets, ROWS) == 1)
+		return zappedOffsets[0]
 	endif
 
-	WAVE zappedOffsets = ZapNaNs(offsets)
 	WaveStats/Q zappedOffsets
 	DEBUGPRINT("Offset estimation avg dev: " + num2str(V_adev, "%g"))
 
@@ -2597,6 +2600,10 @@ static Function DC_FindStimsetOffsetForChannel(STRUCT DataConfigurationResult &s
 	variable level = 1E-3
 	variable searchRangeLimit = 2
 	variable threshold = 0.015
+
+	if(!WaveExists(s.stimset[channelIndex]))
+		return NaN
+	endif
 
 	Duplicate/FREE/RMD=[][s.setColumn[channelindex]] s.stimset[channelIndex], stimset
 	Redimension/N=(-1) stimset
