@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=Epochs
@@ -6,8 +6,8 @@
 // Check the root datafolder for waves which might be present and could help debugging
 
 static Constant OODDAQ_PRECISION       = 0.001
-static Constant OTHER_EPOCHS_PRECISION = 0.050 // in ms
-static Constant MAX_ITERATIONS = 100000
+static Constant OTHER_EPOCHS_PRECISION = 0.050  // in ms
+static Constant MAX_ITERATIONS         = 100000
 
 static Function GlobalPreAcq(string device)
 
@@ -23,7 +23,7 @@ End
 static Function TestEpochChannelTight(e)
 	WAVE/T e
 
-	variable i,j, numCols, numRows, emptyFlag
+	variable i, j, numCols, numRows, emptyFlag
 	string s
 
 	numRows = DimSize(e, ROWS)
@@ -52,9 +52,9 @@ static Function [WAVE startT, WAVE endT, WAVE levels, WAVE/T description] Remove
 	Duplicate/FREE levels_all, levels_sub
 	Duplicate/FREE/T description_all, description_sub
 
-	startT_sub[] = isOodDAQ_all[p] ? NaN : startT_all[p]
-	endT_sub[] = isOodDAQ_all[p] ? NaN : endT_all[p]
-	levels_sub[] = isOodDAQ_all[p] ? NaN : levels_all[p]
+	startT_sub[]      = isOodDAQ_all[p] ? NaN : startT_all[p]
+	endT_sub[]        = isOodDAQ_all[p] ? NaN : endT_all[p]
+	levels_sub[]      = isOodDAQ_all[p] ? NaN : levels_all[p]
 	description_sub[] = SelectString(isOodDAQ_all[p], description_sub[p], "")
 
 	WAVE/Z startT = ZapNaNs(startT_sub)
@@ -80,7 +80,7 @@ static Function CheckFaithfullCoverage(WAVE startT_all, WAVE endT_all, WAVE matc
 	variable rangeStart, rangeEnd, idx, i
 
 	refStart = startT_all[refEpoch]
-	refEnd = endT_all[refEpoch]
+	refEnd   = endT_all[refEpoch]
 
 	numMatches = DimSize(matches, ROWS)
 	Make/FREE/D/N=(numMatches) outside
@@ -97,7 +97,7 @@ static Function CheckFaithfullCoverage(WAVE startT_all, WAVE endT_all, WAVE matc
 
 	rangeStart = refStart
 
-	for(;i < MAX_ITERATIONS;)
+	for(; i < MAX_ITERATIONS;)
 		idx = GetRowIndex(startT, val = rangeStart)
 		if(IsNaN(idx))
 			// broken chain
@@ -159,7 +159,7 @@ static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_a
 	// check also that we don't have overlap in the same level
 	Make/FREE/N=(epochCnt) disjunct, sameLevel
 	for(i = 0; i < epochCnt; i += 1)
-		level = levels[i]
+		level    = levels[i]
 		refStart = startT[i]
 		refEnd   = endT[i]
 
@@ -192,11 +192,11 @@ static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 
 	Make/FREE/D/N=(epochCnt) startT, endT, levels, isOodDAQ
 	startT[] = str2num(e[p][0])
-	endT[] = str2num(e[p][1])
+	endT[]   = str2num(e[p][1])
 	CHECK_GE_VAR(WaveMin(startT), 0)
 	CHECK_GE_VAR(WaveMin(endT), 0)
 	isOodDAQ[] = strsearch(e[p][2], EPOCH_OODDAQ_REGION_KEY, 0) != -1
-	levels[] = str2num(e[p][3])
+	levels[]   = str2num(e[p][3])
 	CHECK_EQUAL_VAR(WaveMin(startT), 0)
 
 	Make/T/N=(epochCnt)/FREE description = e[p][2]
@@ -223,15 +223,15 @@ static Function TestEpochsMonotony(WAVE/T e, WAVE DAChannel)
 	TestEpochGaps(startT, endT, isOodDAQ, levels, DAChannel, 0)
 
 	for(i = 0; i < epochCnt; i += 1)
-		name  = e[i][2]
-		epochType = StringByKey("EpochType", name, "=")
-		level = str2num(e[i][3])
-		first = startT[i] * ONE_TO_MILLI
-		last  = endT[i] * ONE_TO_MILLI
+		name       = e[i][2]
+		epochType  = StringByKey("EpochType", name, "=")
+		level      = str2num(e[i][3])
+		first      = startT[i] * ONE_TO_MILLI
+		last       = endT[i] * ONE_TO_MILLI
 		firstIndex = round(first / DimDelta(DAChannel, ROWS))
-		lastIndex = round(last / DimDelta(DAChannel, ROWS))
-		range = lastIndex - firstIndex
-		infoStr = name + " for " + NameOfWave(DAChannel)
+		lastIndex  = round(last / DimDelta(DAChannel, ROWS))
+		range      = lastIndex - firstIndex
+		infoStr    = name + " for " + NameOfWave(DAChannel)
 
 		INFO(infoStr)
 		CHECK_GT_VAR(range, 0)
@@ -341,7 +341,7 @@ static Function TestEpochsGeneric(string device)
 
 	CHECK_EQUAL_VAR(ItemsInList(sweeps), 1)
 	CHECK_EQUAL_VAR(ItemsInList(configs), 1)
-	WAVE/Z sweep  = $StringFromList(0, sweeps)
+	WAVE/Z sweep = $StringFromList(0, sweeps)
 	CHECK_WAVE(sweep, TEXT_WAVE)
 	CHECK_GT_VAR(DimSize(sweep, ROWS), 1)
 	WAVE channelDA = ResolveSweepChannel(sweep, 0)
@@ -371,9 +371,9 @@ static Function TestEpochsGeneric(string device)
 	samplingInterval = samplInt[INDEP_HEADSTAGE] * MICRO_TO_MILLI
 
 	lastPointDA = DimSize(channelDA, ROWS)
-	endTimeDAC = samplingInterval * lastPointDA
+	endTimeDAC  = samplingInterval * lastPointDA
 
-	WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+	WAVE/T epochLBEntries   = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	WAVE/T setNameLBEntries = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 
 	Make/FREE/D channelTypes = {XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_TYPE_TTL}
@@ -395,7 +395,7 @@ static Function TestEpochsGeneric(string device)
 
 			if(channelType == XOP_CHANNEL_TYPE_TTL)
 				REQUIRE_WAVE(channelMapTTLGUIToHW, NUMERIC_WAVE)
-				ttlBit = channelMapTTLGUIToHW[channelNumber][%TTLBITNR]
+				ttlBit          = channelMapTTLGUIToHW[channelNumber][%TTLBITNR]
 				hwChannelNumber = channelMapTTLGUIToHW[channelNumber][%HWCHANNEL]
 				if(hwType == HARDWARE_ITC_DAC)
 					WAVE/Z sweepChannel = GetDAQDataSingleColumnWave(dfr, channelType, hwChannelNumber, splitTTLBits = 1, ttlBit = ttlBit)
@@ -434,7 +434,7 @@ static Function TestEpochsGeneric(string device)
 			Duplicate epochChannel, $("epochChannel_" + num2istr(channelType) + "_" + num2istr(channelNumber))
 
 			// does the latest end time exceed the 'acquiring part of the' DA wave?
-			endT[] = str2num(epochChannel[p][1])
+			endT[]        = str2num(epochChannel[p][1])
 			endTimeEpochs = WaveMax(endT)
 			// allow endTimeEpochs to exceed range by less than one sample point
 			CHECK_LE_VAR(endTimeEpochs, endTimeDAC + samplingInterval)
@@ -554,7 +554,7 @@ static Function TestTrigonometricEpochs(WAVE/T epochChannel, WAVE DAchannel)
 
 		// check amplitude at begin/end
 		epochBegin = str2num(epochChannel[i][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
-		epochEnd = str2num(epochChannel[i][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
+		epochEnd   = str2num(epochChannel[i][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
 
 		Duplicate/FREE/R=(epochBegin - OTHER_EPOCHS_PRECISION / 2, epochBegin + OTHER_EPOCHS_PRECISION / 2) DAchannel, slice
 		if(GetRowIndex(slice, val = 0) == 0)
@@ -585,9 +585,9 @@ static Function EP_EpochTest1([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest0_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest0_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -603,9 +603,9 @@ static Function EP_EpochTest2([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest1_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest1_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest1_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest1_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -621,9 +621,9 @@ static Function EP_EpochTest3([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -639,9 +639,9 @@ static Function EP_EpochTest4([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1"                + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1"                 + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -657,9 +657,9 @@ static Function EP_EpochTest4a([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1_DDL10"      + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1_DDL10"           + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -675,9 +675,9 @@ static Function EP_EpochTest5([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"              + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest2_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -693,9 +693,9 @@ static Function EP_EpochTest6([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"              + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest3_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest2_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest3_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -711,9 +711,9 @@ static Function EP_EpochTest7([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"              + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest4_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest4_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest4_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest4_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -730,8 +730,8 @@ static Function EP_EpochTest8([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_OD50_TD100"            + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest5_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest5_DA_0:")
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest5_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest5_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -747,9 +747,9 @@ static Function EP_EpochTest9([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_OD50_TD100"           + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest6_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest6_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_OD50_TD100"            + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest6_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest6_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -766,8 +766,8 @@ static Function EP_EpochTest10([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG1"                         + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
 
 	AcquireData_NG(s, str)
 End
@@ -788,9 +788,9 @@ static Function EP_EpochTest11([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG1"                        + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetB_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG1"                         + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetB_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -807,8 +807,8 @@ static Function EP_EpochTest12([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                                             + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:")
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:StopMidSweep_V3:")
 
 	AcquireData_NG(s, str)
 End
@@ -825,8 +825,8 @@ static Function EP_EpochTest13([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                                                     + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:")
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddTooLargeUserEpoch_V3:")
 
 	AcquireData_NG(s, str)
 End
@@ -843,8 +843,8 @@ static Function EP_TestUserEpochs([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                                             + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:")
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_AF:AddUserEpoch_V3:")
 
 	AcquireData_NG(s, str)
 End
@@ -881,12 +881,12 @@ static Function EP_TestUserEpochs_REENTRY([str])
 					case PRE_SWEEP_CONFIG_EVENT:
 					case MID_SWEEP_EVENT:
 					case POST_SWEEP_EVENT:
-						if((k == PRE_SET_EVENT && i == 0)  ||         \
+						if((k == PRE_SET_EVENT && i == 0) ||          \
 						   (k == POST_SET_EVENT && i == 2) ||         \
 						   (k != PRE_SET_EVENT && k != POST_SET_EVENT))
 							// user epoch was added
 							CHECK_GE_VAR(V_row, 0)
-							tags = epochWave[V_row][EPOCH_COL_TAGS]
+							tags      = epochWave[V_row][EPOCH_COL_TAGS]
 							shortName = EP_GetShortName(tags)
 							CHECK(GrepString(shortName, "^U_"))
 							break
@@ -906,9 +906,9 @@ static Function EP_EpochTest14([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:EpochTest_Trig_DA_0:"    + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:EpochTest_TrigFl_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest_Trig_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:EpochTest_TrigFl_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -924,8 +924,8 @@ static Function EP_EpochTest15([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10"                + \
-	       						   "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10"     + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -954,8 +954,8 @@ static Function EP_EpochTest16([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10_FFR:10:"       + \
-										"__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10_FFR:10:" + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest0_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -963,7 +963,7 @@ End
 static Function EP_EpochTest16_REENTRY([str])
 	string str
 
-	WAVE/Z sweepWave  = GetSweepWave(str, 0)
+	WAVE/Z sweepWave = GetSweepWave(str, 0)
 	CHECK_WAVE(sweepWave, TEXT_WAVE)
 	WAVE channelDA = ResolveSweepChannel(sweepWave, 0)
 	CHECK_EQUAL_VAR(DimDelta(channelDA, ROWS), 0.1)
@@ -981,8 +981,8 @@ static Function EP_EpochTest17([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"       + \
-										"__HS0_DA0_AD0_CM:VC:_ST:EpochTest17_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                     + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest17_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1005,7 +1005,7 @@ static Function EP_EpochTestSamplingFrequency([STRUCT IUTF_mData &mData])
 	sprintf stimSetup, "_ST:%s:", mData.s1
 
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
-								 "__HS0_DA0_AD0_CM:VC:" + stimSetup)
+	                             "__HS0_DA0_AD0_CM:VC:" + stimSetup)
 
 	AcquireData_NG(s, mData.s0)
 End
@@ -1027,7 +1027,7 @@ static Function EP_EpochTestSamplingMultiplier([STRUCT IUTF_mData &mData])
 	sprintf stimSetup, "_ST:%s:", mData.s1
 
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
-								 "__HS0_DA0_AD0_CM:VC:" + stimSetup)
+	                             "__HS0_DA0_AD0_CM:VC:" + stimSetup)
 
 	AcquireData_NG(s, mData.s0)
 End
@@ -1042,14 +1042,14 @@ static Function EP_EpochTestUnassocDA([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:"      + \
-								 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
-								 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
-								 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
-								 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
-								 "__TTL7_ST:StimulusSetB_TTL_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:"      + \
+	                             "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
+	                             "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+	                             "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+	                             "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
+	                             "__TTL7_ST:StimulusSetB_TTL_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1061,15 +1061,15 @@ static Function EP_EpochTestUnassocDA_REENTRY([str])
 
 	WAVE/T textualValues   = GetLBTextualValues(str)
 	WAVE   numericalValues = GetLBNumericalValues(str)
-	WAVE/T epochChannel0 = EP_FetchEpochs(numericalValues, textualValues, 0, 0, XOP_CHANNEL_TYPE_DAC)
-	WAVE/T epochChannel2 = EP_FetchEpochs(numericalValues, textualValues, 0, 2, XOP_CHANNEL_TYPE_DAC)
+	WAVE/T epochChannel0   = EP_FetchEpochs(numericalValues, textualValues, 0, 0, XOP_CHANNEL_TYPE_DAC)
+	WAVE/T epochChannel2   = EP_FetchEpochs(numericalValues, textualValues, 0, 2, XOP_CHANNEL_TYPE_DAC)
 	Make/FREE/T/N=(DimSize(epochChannel0, ROWS)) epochNames0 = EP_GetShortName(epochChannel0[p][%Tags])
 	Make/FREE/T/N=(DimSize(epochChannel2, ROWS)) epochNames2 = EP_GetShortName(epochChannel2[p][%Tags])
-	WAVE tpIndex = FindIndizes(epochNames0, str="TP")
+	WAVE tpIndex = FindIndizes(epochNames0, str = "TP")
 	CHECK_EQUAL_VAR(DimSize(tpIndex, ROWS), 1)
-	WAVE tpBaseIndex = FindIndizes(epochNames2, str="B0_TP")
+	WAVE tpBaseIndex = FindIndizes(epochNames2, str = "B0_TP")
 	CHECK_EQUAL_VAR(DimSize(tpBaseIndex, ROWS), 1)
-	WAVE/Z tpMissing = FindIndizes(epochNames2, str="TP*", prop = PROP_WILDCARD)
+	WAVE/Z tpMissing = FindIndizes(epochNames2, str = "TP*", prop = PROP_WILDCARD)
 	CHECK_WAVE(tpMissing, NULL_WAVE)
 
 	CHECK_EQUAL_STR(epochChannel0[tpIndex[0]][%StartTime], epochChannel2[tpBaseIndex[0]][%StartTime])
@@ -1085,16 +1085,16 @@ End
 static Function EP_EpochTestTTL([STRUCT IUTF_mData &mData])
 
 	STRUCT DAQSettings s
-	string dynSetup
+	string             dynSetup
 
 	sprintf dynSetup, "_ITP%d_TD%d_OD%d", mData.v0, mData.v1, mData.v2
 
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup				+ \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-								 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
-								 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
-								 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
-								 "__TTL7_ST:StimulusSetB_TTL_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup              + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__TTL1_ST:StimulusSetA_TTL_0:"              + \
+	                             "__TTL3_ST:StimulusSetB_TTL_0:"              + \
+	                             "__TTL5_ST:StimulusSetA_TTL_0:"              + \
+	                             "__TTL7_ST:StimulusSetB_TTL_0:")
 
 	AcquireData_NG(s, mData.s0)
 End
@@ -1114,15 +1114,15 @@ static Function EP_EpochTestTTL_REENTRY([STRUCT IUTF_mData &mData])
 	epochShortNames[] = EP_GetShortName(epochTags[p])
 
 	Make/FREE/T nameRef = {"ST", "E0", "E0_PT_P0", "E0_PT_P0_P", "E0_PT_P0_B", \
-												"E0_PT_P1", "E0_PT_P1_P", "E0_PT_P1_B", \
-												"E0_PT_P2", "E0_PT_P2_P", "E0_PT_P2_B", \
-												"E0_PT_P3", "E0_PT_P3_P", "E0_PT_P3_B", \
-												"E0_PT_P4", "E0_PT_P4_P", "E0_PT_P4_B", \
-												"E0_PT_P5", "E0_PT_P5_P", "E0_PT_P5_B", \
-												"E0_PT_P6", "E0_PT_P6_P", "E0_PT_P6_B", \
-												"E0_PT_P7", "E0_PT_P7_P", "E0_PT_P7_B", \
-												"E0_PT_P8", "E0_PT_P8_P", "E0_PT_P8_B", \
-												"E0_PT_P9", "E0_PT_P9_P" }
+	                       "E0_PT_P1", "E0_PT_P1_P", "E0_PT_P1_B",             \
+	                       "E0_PT_P2", "E0_PT_P2_P", "E0_PT_P2_B",             \
+	                       "E0_PT_P3", "E0_PT_P3_P", "E0_PT_P3_B",             \
+	                       "E0_PT_P4", "E0_PT_P4_P", "E0_PT_P4_B",             \
+	                       "E0_PT_P5", "E0_PT_P5_P", "E0_PT_P5_B",             \
+	                       "E0_PT_P6", "E0_PT_P6_P", "E0_PT_P6_B",             \
+	                       "E0_PT_P7", "E0_PT_P7_P", "E0_PT_P7_B",             \
+	                       "E0_PT_P8", "E0_PT_P8_P", "E0_PT_P8_B",             \
+	                       "E0_PT_P9", "E0_PT_P9_P"}
 	if(mData.v2)
 		InsertPoints/M=(ROWS) 0, 1, nameRef
 		nameref[0] = "B0_OD"
@@ -1136,7 +1136,7 @@ static Function EP_EpochTestTTL_REENTRY([STRUCT IUTF_mData &mData])
 	if(mData.v1)
 		Redimension/N=(size + 1) nameRef
 		nameref[size] = "B0_TD"
-		size += 1
+		size         += 1
 	endif
 	Redimension/N=(size + 1) nameRef
 	nameref[size] = "B0_TR"
@@ -1155,10 +1155,10 @@ static Function EP_EpochTestTTLSamplingFrequency([STRUCT IUTF_mData &mData])
 	sprintf dynSetup, "_FFR:%d:", mData.v0
 	sprintf stimSetup, "_ST:%s:", mData.s1
 
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-								 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
-								 "__TTL3" + stimSetup)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup              + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__TTL1_ST:StimulusSetA_TTL_0:"              + \
+	                             "__TTL3" + stimSetup)
 
 	AcquireData_NG(s, mData.s0)
 End
@@ -1179,10 +1179,10 @@ static Function EP_EpochTestTTLSamplingMultiplier([STRUCT IUTF_mData &mData])
 	sprintf dynSetup, "_SIM%d", mData.v0
 	sprintf stimSetup, "_ST:%s:", mData.s1
 
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-								 "__TTL1_ST:StimulusSetA_TTL_0:"              + \
-								 "__TTL3" + stimSetup)
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup              + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__TTL1_ST:StimulusSetA_TTL_0:"              + \
+	                             "__TTL3" + stimSetup)
 
 	AcquireData_NG(s, mData.s0)
 End
@@ -1197,14 +1197,14 @@ End
 static Function EP_EpochTest18([STRUCT IUTF_mData &mData])
 
 	STRUCT DAQSettings s
-	string dynSetup
+	string             dynSetup
 
 	sprintf dynSetup, "_FFR:%d:", mData.v0
 
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-								 "__TTL1_ST:EpochTest18long_TTL_0:"              + \
-								 "__TTL3_ST:EpochTest18short_TTL_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1" + dynSetup              + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__TTL1_ST:EpochTest18long_TTL_0:"           + \
+	                             "__TTL3_ST:EpochTest18short_TTL_0:")
 
 	AcquireData_NG(s, mData.s0)
 End
@@ -1214,7 +1214,7 @@ static Function EP_EpochTest18_REENTRY([STRUCT IUTF_mData &mData])
 	TestEpochsGeneric(mData.s0)
 End
 
-static Function	TestEpochReceationRemoveUserEpochs(WAVE/T epochChannel)
+static Function TestEpochReceationRemoveUserEpochs(WAVE/T epochChannel)
 
 	variable i, epochCnt
 
@@ -1233,9 +1233,9 @@ static Function TestEpochReceation(string device)
 	variable sweepNo = 0
 
 	WAVE/Z numericalValues = GetLBNumericalValues(device)
-	WAVE/Z textualValues = GetLBTextualValues(device)
-	DFREF deviceDFR = GetDeviceDataPath(device)
-	DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+	WAVE/Z textualValues   = GetLBTextualValues(device)
+	DFREF  deviceDFR       = GetDeviceDataPath(device)
+	DFREF  sweepDFR        = GetSingleSweepFolder(deviceDFR, sweepNo)
 
 	WAVE epochWave = EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, sweepNo)
 

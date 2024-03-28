@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=DataGenerators
@@ -30,7 +30,7 @@ End
 
 Function/WAVE SingleMultiDeviceDAQ()
 
-	WAVE multiDevices = DeviceNameGeneratorMD1()
+	WAVE multiDevices  = DeviceNameGeneratorMD1()
 	WAVE singleDevices = DeviceNameGeneratorMD0()
 
 	Make/FREE wv = {1}
@@ -107,10 +107,10 @@ Function/WAVE NeuroDataRefTree()
 	variable i, numEntries
 	string name
 
-	Make/T/FREE data = {"VoltageClampSeries:TimeSeries;PatchClampSeries;VoltageClampSeries;", \
-						"CurrentClampSeries:TimeSeries;PatchClampSeries;CurrentClampSeries;", \
-						"IZeroClampSeries:TimeSeries;PatchClampSeries;CurrentClampSeries;IZeroClampSeries;" \
-						}
+	Make/T/FREE data = {"VoltageClampSeries:TimeSeries;PatchClampSeries;VoltageClampSeries;",               \
+	                    "CurrentClampSeries:TimeSeries;PatchClampSeries;CurrentClampSeries;",               \
+	                    "IZeroClampSeries:TimeSeries;PatchClampSeries;CurrentClampSeries;IZeroClampSeries;" \
+	                   }
 	return data
 End
 
@@ -156,7 +156,7 @@ Function/WAVE GetChannelNumbersForDATTL()
 	string list
 
 	Make/FREE/N=(NUM_DA_TTL_CHANNELS + 3) channelNumbers = p
-	channelNumbers[NUM_DA_TTL_CHANNELS] = CHANNEL_INDEX_ALL
+	channelNumbers[NUM_DA_TTL_CHANNELS]     = CHANNEL_INDEX_ALL
 	channelNumbers[NUM_DA_TTL_CHANNELS + 1] = CHANNEL_INDEX_ALL_V_CLAMP
 	channelNumbers[NUM_DA_TTL_CHANNELS + 2] = CHANNEL_INDEX_ALL_I_CLAMP
 
@@ -223,26 +223,26 @@ End
 
 static Function/WAVE SF_TestVariablesGen()
 
-// note that data is called for d and e to test if variables get cleaned up, if they would, the assignment for e would fail
-// as c and s were removed by the first data call.
+	// note that data is called for d and e to test if variables get cleaned up, if they would, the assignment for e would fail
+	// as c and s were removed by the first data call.
 	Make/FREE/T t1FormulaAndRest = {"c=cursors(A,B)\rs=select(channels(AD),[0,1],all)\rd=data($c,$s)\re=data($c,$s)\r\r$d", "$d"}
 	Make/FREE/T t1DimLbl = {"c", "s", "d", "e"}
 
-// case-insensitivity
+	// case-insensitivity
 	Make/FREE/T t2FormulaAndRest = {"c=cursors(A,B)\rs=select(channels(AD),[0,1],all)\rd=data($C,$S)\r\r$D", "$D"}
 	Make/FREE/T t2DimLbl = {"c", "s", "d"}
 
-// result test
+	// result test
 	Make/FREE/T t3FormulaAndRest = {"d=1...3\r$d", "$d"}
 	Make/FREE/T t3DimLbl = {"d"}
 	Make/FREE/D t3Result = {1, 2}
 
-// result test
+	// result test
 	Make/FREE/T t4FormulaAndRest = {"b=1\ra$b=1", "a$b=1"}
 	Make/FREE/T t4DimLbl = {"b"}
 	Make/FREE/T t4Result = {"a$b=1"}
 
-// does not bug out with trailing whitespace
+	// does not bug out with trailing whitespace
 	Make/FREE/T t5FormulaAndRest = {"a=[1]\r 	\rb=$a\r\r$b", "$b"}
 	t5FormulaAndRest[] = MIES_SF#SF_PreprocessInput(t5FormulaAndRest[p])
 	Make/FREE/T t5DimLbl = {"a", "b"}
@@ -274,7 +274,7 @@ static Function/WAVE EpochTestSamplingFrequency_Gen()
 	string frequencies = DAP_GetSamplingFrequencies()
 
 	WAVE wTemp = ListToNumericWave(frequencies, ";", ignoreErr = 1)
-	WAVE w = ZapNaNs(wTemp)
+	WAVE w     = ZapNaNs(wTemp)
 
 	SetDimensionLabelsFromWaveContents(w, prefix = "f_", suffix = "_kHz")
 

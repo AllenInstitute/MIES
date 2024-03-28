@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestRamp
@@ -11,10 +11,10 @@ static Constant SPIKE_POSITION_TEST_DELAY_MS = 10500
 
 static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"            + \
-								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:Ramp_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                            + \
+	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:Ramp_DA_0:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -34,7 +34,7 @@ End
 
 static Function/WAVE GetSpikePosition_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -47,7 +47,7 @@ End
 
 static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -58,7 +58,7 @@ End
 
 static Function/WAVE GetSweepQCResults_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -69,7 +69,7 @@ End
 
 static Function/WAVE GetSetQCResults_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -81,7 +81,7 @@ End
 
 static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -92,7 +92,7 @@ End
 
 static Function/WAVE GetPulseDurations_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -104,7 +104,7 @@ End
 
 static Function/WAVE GetStimsetLengths_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -113,7 +113,7 @@ End
 
 static Function/WAVE GetStimScaleFactor_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -122,11 +122,11 @@ End
 
 static Function/WAVE GetUserEpochs_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	variable i, j, numEntries, numEpochs
 
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
 
 	WAVE/T/Z results = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
@@ -160,7 +160,7 @@ End
 
 static Function/WAVE GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -172,7 +172,7 @@ End
 
 static Function/WAVE GetAsyncQCResults_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -188,7 +188,7 @@ static Function [variable start, variable stop] GetPostBaseLineInterval(string d
 
 	variable chunkStartTimeMax, chunkLengthTime, totalOnsetDelay
 
-	struct PSQ_PulseSettings s
+	STRUCT PSQ_PulseSettings s
 	MIES_PSQ#PSQ_GetPulseSettingsForType(PSQ_RAMP, s)
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(dev)
@@ -274,7 +274,7 @@ static Function PS_RA1_REENTRY([str])
 
 	Make/FREE/N=(numEntries) sweepLengths
 	for(i = 0; i < numEntries; i += 1)
-		WAVE sweepT = GetSweepWave(str, sweeps[i])
+		WAVE sweepT  = GetSweepWave(str, sweeps[i])
 		WAVE channel = ResolveSweepChannel(sweepT, 0)
 		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
 	endfor
@@ -304,9 +304,9 @@ static Function PS_RA2([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes, no spikes at all, async QC passes
-	wv = 0
-	wv[0,2][][0] = 1
-	wv[][][2] = 1
+	wv            = 0
+	wv[0, 2][][0] = 1
+	wv[][][2]     = 1
 End
 
 static Function PS_RA2_REENTRY([str])
@@ -380,10 +380,10 @@ static Function PS_RA2a([str])
 	// pre pulse baseline QC passes, post pulse always fails
 	// one spike
 	// async QC passes
-	wv = 0
+	wv         = 0
 	wv[0][][0] = 1
 	wv[0][][1] = SPIKE_POSITION_MS
-	wv[][][2] = 1
+	wv[][][2]  = 1
 End
 
 static Function PS_RA2a_REENTRY([str])
@@ -471,10 +471,10 @@ static Function PS_RA3([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes, always spikes, async QC passes
-	wv = 0
-	wv[0,2][][0] = 1
-	wv[0,2][][1] = SPIKE_POSITION_MS
-	wv[][][2] = 1
+	wv            = 0
+	wv[0, 2][][0] = 1
+	wv[0, 2][][1] = SPIKE_POSITION_MS
+	wv[][][2]     = 1
 End
 
 static Function PS_RA3_REENTRY([str])
@@ -558,10 +558,10 @@ static Function PS_RA4([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes and first spikes, second and third not, async QC passes
-	wv = 0
-	wv[0,2][][0] = 1
-	wv[][0][1]   = SPIKE_POSITION_MS
-	wv[][][2] = 1
+	wv            = 0
+	wv[0, 2][][0] = 1
+	wv[][0][1]    = SPIKE_POSITION_MS
+	wv[][][2]     = 1
 End
 
 static Function PS_RA4_REENTRY([str])
@@ -641,10 +641,10 @@ static Function PS_RA5([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes and first spikes not, second and third does, async QC passes
-	wv = 0
-	wv[0,2][][0] = 1
-	wv[][1,2][1] = SPIKE_POSITION_MS
-	wv[][][2] = 1
+	wv            = 0
+	wv[0, 2][][0] = 1
+	wv[][1, 2][1] = SPIKE_POSITION_MS
+	wv[][][2]     = 1
 End
 
 static Function PS_RA5_REENTRY([str])
@@ -725,8 +725,8 @@ static Function PS_RA6([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes
-	wv = 0
-	wv[0,1][][0] = 1
+	wv            = 0
+	wv[0, 1][][0] = 1
 
 	// sweep 0
 	// spike passes, async QC passes
@@ -811,7 +811,7 @@ static Function PS_RA6_REENTRY([str])
 End
 
 static Function PS_RA7_preAcq(string device)
-	AFH_AddAnalysisParameter("Ramp_DA_0", "SamplingFrequency", var=10)
+	AFH_AddAnalysisParameter("Ramp_DA_0", "SamplingFrequency", var = 10)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -830,9 +830,9 @@ static Function PS_RA7([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
 	// baseline QC passes, no spikes at all, async QC passes
-	wv = 0
-	wv[0,2][][0] = 1
-	wv[][][2] = 1
+	wv            = 0
+	wv[0, 2][][0] = 1
+	wv[][][2]     = 1
 End
 
 static Function PS_RA7_REENTRY([str])
@@ -885,7 +885,7 @@ static Function PS_RA7_REENTRY([str])
 	WAVE/Z stimSetLengths = GetStimsetLengths_IGNORE(sweepNo, str)
 	Make/FREE/N=(numEntries) sweepLengths
 	for(i = 0; i < numEntries; i += 1)
-		WAVE sweepT = GetSweepWave(str, sweeps[i])
+		WAVE sweepT  = GetSweepWave(str, sweeps[i])
 		WAVE channel = ResolveSweepChannel(sweepT, 0)
 		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
 	endfor

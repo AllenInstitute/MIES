@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -13,7 +13,7 @@
 
 Structure BackgroundStruct
 	STRUCT WMBackgroundStruct wmbs
-	int32 count           ///< Number of invocations of background function
+	int32 count ///< Number of invocations of background function
 	int32 threadDeadCount ///< DAQ/TP-MD with ITC hardware only: Number of successive tries to get data from the thread
 	variable tickslastReceivedFifoPos ///< DAQ-MD with ITC hardware only: ticks count when the fifo position was last updated
 	variable lastReceivedFifoPos ///< DAQ-MD with ITC hardware only: last received fifo position
@@ -175,26 +175,26 @@ Structure FormulaProperties
 EndStructure
 
 Function InitFormulaProperties(fp)
-	struct FormulaProperties &fp
+	STRUCT FormulaProperties &fp
 
-	fp.formula = ""
+	fp.formula     = ""
 	fp.stimsetList = ""
-	fp.numRows = NaN
-	fp.numCols = NaN
+	fp.numRows     = NaN
+	fp.numCols     = NaN
 End
 
 /// @brief Helper structure for UpgradeWaveLocationAndGetIt()
 Structure WaveLocationMod
-	DFREF dfr      ///< former location of the wave
-	DFREF newDFR   ///< new location of the wave (can be invalid)
-	string name    ///< former name of the wave
+	DFREF dfr ///< former location of the wave
+	DFREF newDFR ///< new location of the wave (can be invalid)
+	string name ///< former name of the wave
 	string newName ///< new name of the wave (can be null/empty)
 EndStructure
 
 Function InitOOdDAQParams(params, stimSets, setColumns, preFeatureTime, postFeatureTime)
 	STRUCT OOdDAQParams &params
-	WAVE/WAVE stimSets
-	WAVE setColumns
+	WAVE/WAVE            stimSets
+	WAVE                 setColumns
 	variable preFeatureTime, postFeatureTime
 
 	ASSERT(DimSize(stimSets, ROWS) >= 1, "Stimsets wave is empty")
@@ -205,28 +205,28 @@ Function InitOOdDAQParams(params, stimSets, setColumns, preFeatureTime, postFeat
 	WaveClear params.offsets
 	WaveClear params.regions
 
-	WAVE params.stimSets        = stimSets
-	WAVE params.setColumns      = setColumns
-	params.preFeaturePoints     = preFeatureTime  / WAVEBUILDER_MIN_SAMPINT
-	params.postFeaturePoints    = postFeatureTime / WAVEBUILDER_MIN_SAMPINT
+	WAVE params.stimSets   = stimSets
+	WAVE params.setColumns = setColumns
+	params.preFeaturePoints  = preFeatureTime / WAVEBUILDER_MIN_SAMPINT
+	params.postFeaturePoints = postFeatureTime / WAVEBUILDER_MIN_SAMPINT
 End
 
 /// @brief Helper structure for Optimized overlap distributed acquisition (oodDAQ) functions
 Structure OOdDAQParams
 	///@name Input
 	///@{
-	WAVE/WAVE stimSets         ///< Wave ref wave with different stimsets
-	WAVE setColumns            ///< Set (aka column) to use for each stimset
-	variable preFeaturePoints  ///< Time in points which should be kept signal-free before features
+	WAVE/WAVE stimSets ///< Wave ref wave with different stimsets
+	WAVE setColumns ///< Set (aka column) to use for each stimset
+	variable preFeaturePoints ///< Time in points which should be kept signal-free before features
 	variable postFeaturePoints ///< Time in points which should be kept signal-free after features
 	///@}
 
 	///@name Output
 	/// @anchor OOdDAQParams_Output
 	///@{
-	WAVE offsets               ///< Result of the optimization in points
-	WAVE/T regions             ///< List of the form `%begin-%end;...` which denotes the x-coordinates of
-	                           ///< the smeared regions in units of time of the DAQDataWave. @sa OOD_GetFeatureRegions()
+	WAVE offsets ///< Result of the optimization in points
+	WAVE/T regions ///< List of the form `%begin-%end;...` which denotes the x-coordinates of
+	///< the smeared regions in units of time of the DAQDataWave. @sa OOD_GetFeatureRegions()
 	///@}
 EndStructure
 
@@ -349,10 +349,10 @@ EndStructure
 Function InitBufferedDrawInfo(STRUCT BufferedDrawInfo &s)
 
 	s.jsonID = JSON_Parse("{}")
-	JSON_AddTreeObject (s.jsonID, BUFFEREDDRAWAPPEND)
-	JSON_AddTreeObject (s.jsonID, BUFFEREDDRAWLABEL)
-	JSON_AddTreeObject (s.jsonID, BUFFEREDDRAWHIDDENTRACES)
-	JSON_AddTreeObject (s.jsonID, BUFFEREDDRAWDDAQAXES)
+	JSON_AddTreeObject(s.jsonID, BUFFEREDDRAWAPPEND)
+	JSON_AddTreeObject(s.jsonID, BUFFEREDDRAWLABEL)
+	JSON_AddTreeObject(s.jsonID, BUFFEREDDRAWHIDDENTRACES)
+	JSON_AddTreeObject(s.jsonID, BUFFEREDDRAWDDAQAXES)
 	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE_LARGE) tw
 	WAVE/WAVE s.traceWaves = tw
 	SetNumberInWaveNote(s.traceWaves, NOTE_INDEX, 0)
@@ -407,8 +407,8 @@ Function NWB_ASYNC_SerializeStruct(STRUCT NWBAsyncParameters &s, DFREF threadDFR
 	ASYNC_AddParam(threadDFR, var = s.locationID, name = "locationID")
 	ASYNC_AddParam(threadDFR, var = s.nwbVersion, name = "nwbVersion")
 
-	ASYNC_AddParam(threadDFR, w = s.DAQDataWave,  name = "DAQDataWave")
-	ASYNC_AddParam(threadDFR, w = s.DAQConfigWave,  name = "DAQConfigWave")
+	ASYNC_AddParam(threadDFR, w = s.DAQDataWave, name = "DAQDataWave")
+	ASYNC_AddParam(threadDFR, w = s.DAQConfigWave, name = "DAQConfigWave")
 
 	ASYNC_AddParam(threadDFR, w = s.numericalValues, name = "numericalValues")
 	ASYNC_AddParam(threadDFR, w = s.numericalKeys, name = "numericalKeys")
@@ -423,13 +423,13 @@ End
 
 threadsafe Function [STRUCT NWBAsyncParameters s] NWB_ASYNC_DeserializeStruct(DFREF threadDFR)
 
-	s.device = ASYNC_FetchString(threadDFR, "device")
+	s.device      = ASYNC_FetchString(threadDFR, "device")
 	s.userComment = ASYNC_FetchString(threadDFR, "userComment")
 	// always an empty string as we are not writing epoch info during sweep-by-sweep export
 	s.nwbFilePath = ""
 
-	s.sweep = ASYNC_FetchVariable(threadDFR, "sweep")
-	s.compressionMode = ASYNC_FetchVariable(threadDFR, "compressionMode")
+	s.sweep              = ASYNC_FetchVariable(threadDFR, "sweep")
+	s.compressionMode    = ASYNC_FetchVariable(threadDFR, "compressionMode")
 	s.session_start_time = ASYNC_FetchVariable(threadDFR, "session_start_time")
 
 	s.locationID = ASYNC_FetchVariable(threadDFR, "locationID")
@@ -610,8 +610,8 @@ EndStructure
 
 /// @brief Settings structure filled by PSQ_GetPulseSettingsForType()
 Structure PSQ_PulseSettings
-	variable prePulseChunkLength  // ms
-	variable pulseDuration      // ms
+	variable prePulseChunkLength // ms
+	variable pulseDuration // ms
 	variable postPulseChunkLength // ms
 
 	/// Allows to define the baseline chunks by user epochs with shortname `U_BLS%d`

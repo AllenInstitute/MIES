@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
@@ -92,7 +92,7 @@ End
 
 /// @brief Cache key generator for @c FindLevel in PA_CalculatePulseTimes()
 Function/S CA_PulseTimes(wv, fullPath, channelNumber, totalOnsetDelay)
-	WAVE wv
+	WAVE   wv
 	string fullPath
 	variable channelNumber, totalOnsetDelay
 
@@ -131,7 +131,7 @@ End
 /// @param wv  input wave (smoothed average)
 /// @param tau convolution time
 Function/S CA_Deconv(wv, tau)
-	WAVE wv
+	WAVE     wv
 	variable tau
 
 	variable crc
@@ -145,7 +145,7 @@ End
 
 /// @brief Cache key generator for artefact removal ranges
 Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
-	DFREF singleSweepDFR
+	DFREF    singleSweepDFR
 	variable sweepNo
 
 	variable crc
@@ -160,7 +160,7 @@ End
 Function/S CA_AveragingKey(waveRefs)
 	WAVE/WAVE waveRefs
 
-	return CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits=1, dims=ROWS) + "Version 6"
+	return CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits = 1, dims = ROWS) + "Version 6"
 End
 
 /// @brief Cache key generator for averaging info from non-free waves
@@ -195,14 +195,14 @@ static Function CA_RecursiveWavemodCRC(WAVE/Z wv, [variable prevCRC])
 	if(IsWaveRefWave(wv))
 		WAVE/WAVE wvRef = wv
 
-		rows_ = DimSize(wv, ROWS)
-		cols_ = DimSize(wv, COLS)
+		rows_   = DimSize(wv, ROWS)
+		cols_   = DimSize(wv, COLS)
 		layers_ = DimSize(wv, LAYERS)
 		chunks_ = DimSize(wv, CHUNKS)
 
 		chunks_ = chunks_ ? chunks_ : 1
 		layers_ = layers_ ? layers_ : 1
-		cols_ = cols_ ? cols_ : 1
+		cols_   = cols_ ? cols_ : 1
 
 		for(l = 0; l < chunks_; l += 1)
 			for(k = 0; k < layers_; k += 1)
@@ -233,12 +233,12 @@ threadsafe static Function CA_WaveScalingCRC(crc, wv, [dimension])
 	variable dims, i
 
 	if(ParamIsDefault(dimension))
-		i = 0
+		i    = 0
 		dims = WaveDims(wv)
 	else
 		ASSERT_TS(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
 
-		i = dimension
+		i    = dimension
 		dims = dimension + 1
 	endif
 
@@ -295,7 +295,7 @@ End
 /// We are deliberatly not using a WaveCRC here as know that the wave is not
 /// changed in IP once loaded. Therefore using its name and ModDate is enough.
 Function/S CA_SamplingIntervalKey(lut, s)
-	WAVE lut
+	WAVE                   lut
 	STRUCT ActiveChannels &s
 
 	variable crc
@@ -444,16 +444,16 @@ threadsafe static Function CA_MakeSpaceForNewEntry()
 
 	variable index
 
-	WAVE/T keys      = GetCacheKeyWave()
+	WAVE/T    keys   = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
-	WAVE stats       = GetCacheStatsWave()
+	WAVE      stats  = GetCacheStatsWave()
 
 	index = GetNumberFromWaveNote(keys, NOTE_INDEX)
 	ASSERT_TS(index == GetNumberFromWaveNote(values, NOTE_INDEX), "Mismatched indizes in key and value waves")
 
-	EnsureLargeEnoughWave(keys, dimension=ROWS, indexShouldExist=index)
-	EnsureLargeEnoughWave(values, dimension=ROWS, indexShouldExist=index)
-	EnsureLargeEnoughWave(stats, dimension=ROWS, indexShouldExist=index, initialValue = NaN)
+	EnsureLargeEnoughWave(keys, dimension = ROWS, indexShouldExist = index)
+	EnsureLargeEnoughWave(values, dimension = ROWS, indexShouldExist = index)
+	EnsureLargeEnoughWave(stats, dimension = ROWS, indexShouldExist = index, initialValue = NaN)
 	ASSERT_TS(DimSize(keys, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
 	ASSERT_TS(DimSize(stats, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
 
@@ -473,8 +473,8 @@ End
 ///
 /// Existing entries with the same key are overwritten.
 threadsafe Function CA_StoreEntryIntoCache(key, val, [options])
-	string key
-	WAVE val
+	string   key
+	WAVE     val
 	variable options
 
 	variable index, storeDuplicate, foundIndex
@@ -485,9 +485,9 @@ threadsafe Function CA_StoreEntryIntoCache(key, val, [options])
 		storeDuplicate = !(options & CA_OPTS_NO_DUPLICATE)
 	endif
 
-	WAVE/T keys      = GetCacheKeyWave()
+	WAVE/T    keys   = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
-	WAVE stats       = GetCacheStatsWave()
+	WAVE      stats  = GetCacheStatsWave()
 
 	foundIndex = CA_GetCacheIndex(keys, key)
 
@@ -512,7 +512,7 @@ threadsafe Function CA_StoreEntryIntoCache(key, val, [options])
 
 	stats[index][]                       = 0
 	stats[index][%Misses]               += 1
-	stats[index][%Size]                  = GetWaveSize(val, recursive=1)
+	stats[index][%Size]                  = GetWaveSize(val, recursive = 1)
 	stats[index][%ModificationTimestamp] = DateTimeInUTC()
 End
 
@@ -547,7 +547,7 @@ End
 /// @return A wave reference with the stored data or a invalid wave reference
 /// if nothing could be found.
 threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
-	string key
+	string   key
 	variable options
 
 	variable index, returnDuplicate
@@ -564,7 +564,7 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 
 	if(!IsFinite(index))
 #ifdef CACHE_DEBUGGING
-		DEBUGPRINT_TS("Could not find a cache entry for key=", str=key)
+		DEBUGPRINT_TS("Could not find a cache entry for key=", str = key)
 #endif
 		return $""
 	endif
@@ -576,7 +576,7 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 
 	if(!WaveExists(cache))
 #ifdef CACHE_DEBUGGING
-		DEBUGPRINT_TS("Could not find a valid wave for key=", str=key)
+		DEBUGPRINT_TS("Could not find a valid wave for key=", str = key)
 #endif
 		// invalidate cache entry due to non existent wave,
 		// this can happen for unpacked experiments which don't store free waves
@@ -588,7 +588,7 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	stats[index][%Hits] += 1
 
 #ifdef CACHE_DEBUGGING
-	DEBUGPRINT_TS("Found cache entry for key=", str=key)
+	DEBUGPRINT_TS("Found cache entry for key=", str = key)
 #endif
 
 	if(returnDuplicate)
@@ -619,7 +619,7 @@ Function CA_DeleteCacheEntry(key)
 	endif
 
 	WAVE/WAVE values = GetCacheValueWave()
-	WAVE stats       = GetCacheStatsWave()
+	WAVE      stats  = GetCacheStatsWave()
 
 	ASSERT(index < DimSize(values, ROWS) && index < DimSize(keys, ROWS), "Invalid index")
 
@@ -634,9 +634,9 @@ End
 /// @brief Remove all entries from the wave cache
 Function CA_FlushCache()
 
-	KillOrMoveToTrash(wv=GetCacheKeyWave())
-	KillOrMoveToTrash(wv=GetCacheValueWave())
-	KillOrMoveToTrash(wv=GetCacheStatsWave())
+	KillOrMoveToTrash(wv = GetCacheKeyWave())
+	KillOrMoveToTrash(wv = GetCacheValueWave())
+	KillOrMoveToTrash(wv = GetCacheStatsWave())
 End
 
 /// @brief Output cache statistics
@@ -650,11 +650,11 @@ Function CA_OutputCacheStatistics()
 	printf "Number of entries: %d\r", index
 
 	printf "\r"
-	printf "%s   | %s | %s | %s (MB)\r",  GetDimLabel(stats, COLS, 0), GetDimLabel(stats, COLS, 1), GetDimLabel(stats, COLS, 2), GetDimLabel(stats, COLS, 3)
+	printf "%s   | %s | %s | %s (MB)\r", GetDimLabel(stats, COLS, 0), GetDimLabel(stats, COLS, 1), GetDimLabel(stats, COLS, 2), GetDimLabel(stats, COLS, 3)
 	printf "---------------------------------------------------\r"
 
 	for(i = 0; i < index; i += 1)
-		printf "%6d | %6d | %s  | %6d\r", stats[i][%Hits] , stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch=stats[i][%ModificationTimestamp], numFracSecondsDigits = 3), stats[i][%Size] / 1024 / 1024
+		printf "%6d | %6d | %s  | %6d\r", stats[i][%Hits], stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[i][%ModificationTimestamp], numFracSecondsDigits = 3), stats[i][%Size] / 1024 / 1024
 	endfor
 
 	printf "\r"

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareHelperFunctions
@@ -15,7 +15,7 @@ Function TEST_BEGIN_OVERRIDE(name)
 	string name
 
 	variable needsLoading
-	string filepath
+	string   filepath
 
 	AdditionalExperimentCleanup()
 
@@ -26,19 +26,19 @@ Function TEST_BEGIN_OVERRIDE(name)
 	WAVE wv = GetAcqStateTracking()
 	KillWaves wv; AbortOnRTE
 
-//	DisableDebugOutput()
-//	EnableDebugoutput()
+	//	DisableDebugOutput()
+	//	EnableDebugoutput()
 
 	// cache the version string
-	SVAR miesVersion = $GetMIESVersion()
+	SVAR     miesVersion      = $GetMIESVersion()
 	string/G root:miesVersion = miesVersion
 
 	// cache the device lists
 	string/G root:ITCDeviceList = DAP_GetITCDeviceList()
-	string/G root:NIDeviceList = DAP_GetNIDeviceList()
+	string/G root:NIDeviceList  = DAP_GetNIDeviceList()
 
 	// cache device info waves
-	DFREF dfr = GetDeviceInfoPath()
+	DFREF dfr  = GetDeviceInfoPath()
 	DFREF dest = root:
 	DuplicateDataFolder/Z/O=1 dfr, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
@@ -67,21 +67,21 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	MoveStimsetsIntoPlace()
 
-	SVAR miesVersion = root:miesVersion
+	SVAR     miesVersion                           = root:miesVersion
 	string/G $(GetMiesPathAsString() + ":version") = miesVersion
 
-	NVAR interactiveMode = root:interactiveMode
+	NVAR       interactiveMode                               = root:interactiveMode
 	variable/G $(GetMiesPathAsString() + ":interactiveMode") = interactiveMode
 
 	GetDAQDevicesFolder()
 
-	SVAR ITCDeviceList = root:ITCDeviceList
+	SVAR     ITCDeviceList                                       = root:ITCDeviceList
 	string/G $(GetDAQDevicesFolderAsString() + ":ITCDeviceList") = ITCDeviceList
 
-	SVAR NIDeviceList = root:NIDeviceList
+	SVAR     NIDeviceList                                       = root:NIDeviceList
 	string/G $(GetDAQDevicesFolderAsString() + ":NIDeviceList") = NIDeviceList
 
-	DFREF dest = GetDAQDevicesFolder()
+	DFREF dest   = GetDAQDevicesFolder()
 	DFREF source = root:DeviceInfo
 	DuplicateDataFolder/O=1/Z source, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
@@ -142,16 +142,16 @@ Function TEST_CASE_END_OVERRIDE(name)
 		endif
 
 		// ascending sweep numbers in both labnotebooks
-		WAVE numericalValues = GetLBNumericalValues(dev)
-		WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+		WAVE   numericalValues = GetLBNumericalValues(dev)
+		WAVE/Z sweeps          = GetSweepsWithSetting(numericalValues, "SweepNum")
 		CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 		Duplicate/FREE sweeps, unsortedSweeps
 		Sort sweeps, sweeps
 		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
 
-		WAVE textualValues = GetLBTextualValues(dev)
-		WAVE/Z sweeps = GetSweepsWithSetting(textualValues, "SweepNum")
+		WAVE   textualValues = GetLBTextualValues(dev)
+		WAVE/Z sweeps        = GetSweepsWithSetting(textualValues, "SweepNum")
 		CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 		Duplicate/FREE sweeps, unsortedSweeps
@@ -172,7 +172,7 @@ Function TEST_CASE_END_OVERRIDE(name)
 		experimentNWBFile = GetExperimentNWBFileForExport()
 
 		if(FileExists(experimentNWBFile))
-			fileID = H5_OpenFile(experimentNWBFile)
+			fileID     = H5_OpenFile(experimentNWBFile)
 			nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
 			HDF5CloseFile fileID
 
@@ -197,14 +197,14 @@ static Function CheckUserEpochsFromChunks(string dev)
 	endif
 
 	WAVE numericalValues = GetLBNumericalValues(dev)
-	WAVE textualValues = GetLBTextualValues(dev)
+	WAVE textualValues   = GetLBTextualValues(dev)
 
 	sweepCnt = DimSize(sweeps, ROWS)
 	for(i = 0; i < sweepCnt; i += 1)
 
 		WAVE statusHS = GetLastSetting(numericalValues, sweeps[i], "Headstage Active", DATA_ACQUISITION_MODE)
 
-		for(j = 0; j <  NUM_HEADSTAGES; j += 1)
+		for(j = 0; j < NUM_HEADSTAGES; j += 1)
 
 			if(!statusHS[j])
 				continue
@@ -249,8 +249,8 @@ static Function CheckUserEpochChunkNoOverlap(WAVE/T epochInfo)
 		s1 = str2num(epochInfo[i][EPOCH_COL_STARTTIME])
 		e1 = str2num(epochInfo[i][EPOCH_COL_ENDTIME])
 		for(j = i + 1; j < numEpochs; j += 1)
-			s2 = str2num(epochInfo[j][EPOCH_COL_STARTTIME])
-			e2 = str2num(epochInfo[j][EPOCH_COL_ENDTIME])
+			s2      = str2num(epochInfo[j][EPOCH_COL_STARTTIME])
+			e2      = str2num(epochInfo[j][EPOCH_COL_ENDTIME])
 			overlap = min(e1, e2) - max(s1, s2)
 			CHECK_LE_VAR(overlap, 0) // if overlap is positive the two intervalls intersect
 		endfor
@@ -273,7 +273,7 @@ static Function CheckEpochs(string dev)
 	endif
 
 	WAVE numericalValues = GetLBNumericalValues(dev)
-	WAVE textualValues = GetLBTextualValues(dev)
+	WAVE textualValues   = GetLBTextualValues(dev)
 
 	Make/D/FREE channelTypes = {XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_DAC} // note: XOP_CHANNEL_TYPE_TTL not supported by GetLastSettingChannel
 	channelTypeCount = DimSize(channelTypes, ROWS)
@@ -281,9 +281,9 @@ static Function CheckEpochs(string dev)
 	sweepCnt = DimSize(sweeps, ROWS)
 
 	for(i = 0; i < sweepCnt; i += 1)
-		for(j = 0; j <  channelTypeCount; j += 1)
-			channelCnt = GetNumberFromType(var=channelTypes[j])
-			for(k = 0; k <  channelCnt; k += 1)
+		for(j = 0; j < channelTypeCount; j += 1)
+			channelCnt = GetNumberFromType(var = channelTypes[j])
+			for(k = 0; k < channelCnt; k += 1)
 				[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], EPOCHS_ENTRY_KEY, k, channelTypes[j], DATA_ACQUISITION_MODE)
 
 				if(WaveExists(settings))
@@ -309,9 +309,9 @@ static Function CheckEpochs(string dev)
 		endfor
 	endfor
 
-	channelCnt = GetNumberFromType(var=XOP_CHANNEL_TYPE_DAC)
+	channelCnt = GetNumberFromType(var = XOP_CHANNEL_TYPE_DAC)
 	for(i = 0; i < sweepCnt; i += 1)
-		for(j = 0; j <  channelCnt; j += 1)
+		for(j = 0; j < channelCnt; j += 1)
 			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], EPOCHS_ENTRY_KEY, j, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 			if(WaveExists(settings))
 				WAVE/T settingsT = settings
@@ -333,11 +333,11 @@ End
 /// @param testcase function name of the testcase, needs to include a module specification `ABC#` if it's static
 Function RegisterReentryFunction(string testcase)
 
-	string reentryFuncName = testcase + "_REENTRY"
-	FUNCREF TEST_CASE_PROTO reentryFuncPlain = $reentryFuncName
-	FUNCREF TEST_CASE_PROTO_MD_STR reentryFuncMDStr = $reentryFuncName
+	string                               reentryFuncName    = testcase + "_REENTRY"
+	FUNCREF TEST_CASE_PROTO              reentryFuncPlain   = $reentryFuncName
+	FUNCREF TEST_CASE_PROTO_MD_STR       reentryFuncMDStr   = $reentryFuncName
 	FUNCREF TEST_CASE_PROTO_MD_WVWAVEREF reentryFuncRefWave = $reentryFuncName
-	FUNCREF TEST_CASE_PROTO_MD reentryFuncMDD = $reentryFuncName
+	FUNCREF TEST_CASE_PROTO_MD           reentryFuncMDD     = $reentryFuncName
 
 	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncRefWave)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDD)))
 		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
@@ -369,7 +369,7 @@ Function StopAllBackgroundTasks()
 	variable i, numEntries
 
 	CtrlNamedBackGround _all_, status
-	list = S_info
+	list       = S_info
 	numEntries = ItemsInList(list, "\r")
 
 	for(i = 0; i < numEntries; i += 1)
@@ -392,16 +392,16 @@ Function CheckLBIndexCache_IGNORE(string device)
 	string setting, msg
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	Make/FREE/WAVE entries = {numericalValues, textualValues}
 	numEntries = DimSize(entries, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		WAVE values = entries[i]
+		WAVE values       = entries[i]
 		WAVE LBindexCache = GetLBindexCache(values)
 
-		numRows = DimSize(LBIndexCache, ROWS)
-		numCols = DimSize(LBIndexCache, COLS)
+		numRows   = DimSize(LBIndexCache, ROWS)
+		numCols   = DimSize(LBIndexCache, COLS)
 		numLayers = DimSize(LBindexCache, LAYERS)
 
 		Make/FREE/N=(numCols, numLayers) match
@@ -421,8 +421,8 @@ Function CheckLBIndexCache_IGNORE(string device)
 						continue
 					endif
 
-					sweepNo = j
-					setting = GetDimLabel(values, COLS, k)
+					sweepNo         = j
+					setting         = GetDimLabel(values, COLS, k)
 					entrySourceType = ReverseEntrySourceTypeMapper(l)
 
 					WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(values, sweepNo, setting, entrySourceType)
@@ -461,17 +461,17 @@ Function CheckLBRowCache_IGNORE(string device)
 	variable i, j, k, numEntries, numRows, numCols, numLayers, first, last, sweepNo, entrySourceType
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	Make/FREE/WAVE entries = {numericalValues, textualValues}
 
 	numEntries = DimSize(entries, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		WAVE values = entries[i]
+		WAVE values     = entries[i]
 		WAVE LBRowCache = GetLBRowCache(values)
 
-		numRows = DimSize(LBRowCache, ROWS)
-		numCols = DimSize(LBRowCache, COLS)
+		numRows   = DimSize(LBRowCache, ROWS)
+		numCols   = DimSize(LBRowCache, COLS)
 		numLayers = DimSize(LBRowCache, LAYERS)
 
 		for(j = 0; j < numRows; j += 1)
@@ -486,19 +486,19 @@ Function CheckLBRowCache_IGNORE(string device)
 
 			for(k = 0; k < numLayers; k += 1)
 
-				if(LBRowCache[j][%first][k] == LABNOTEBOOK_GET_RANGE   \
+				if(LBRowCache[j][%first][k] == LABNOTEBOOK_GET_RANGE  \
 				   && LBRowCache[j][%last][k] == LABNOTEBOOK_GET_RANGE)
 					continue
 				endif
 
-				sweepNo = j
+				sweepNo         = j
 				entrySourceType = ReverseEntrySourceTypeMapper(k)
 
 				first = LABNOTEBOOK_GET_RANGE
 				last  = LABNOTEBOOK_GET_RANGE
 
 				WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(values, sweepNo, "TimeStamp", entrySourceType, \
-							                                                  first = first, last = last)
+				                                                              first = first, last = last)
 
 				CHECK_EQUAL_VAR(first, LBRowCache[j][%first][k])
 				CHECK_EQUAL_VAR(last, LBRowCache[j][%last][k])
@@ -513,13 +513,13 @@ static Function CheckDashboard(string device, WAVE headstageQC)
 	variable numEntries, i, state
 
 	databrowser = DB_FindDataBrowser(device)
-	DFREF dfr = BSP_GetFolder(databrowser, MIES_BSP_PANEL_FOLDER)
+	DFREF    dfr      = BSP_GetFolder(databrowser, MIES_BSP_PANEL_FOLDER)
 	WAVE/T/Z listWave = GetAnaFuncDashboardListWave(dfr)
 	CHECK_WAVE(listWave, TEXT_WAVE)
 
 	// Check that we have acquired some sweeps
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/Z sweeps = AFH_GetSweeps(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/Z sweeps          = AFH_GetSweeps(device)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 	numEntries = GetNumberFromWaveNote(listWave, NOTE_INDEX)
@@ -527,7 +527,7 @@ static Function CheckDashboard(string device, WAVE headstageQC)
 
 	for(i = 0; i < numEntries; i += 1)
 		message = listWave[i][%Result]
-		state = !cmpstr(message, DASHBOARD_PASSING_MESSAGE)
+		state   = !cmpstr(message, DASHBOARD_PASSING_MESSAGE)
 		CHECK_EQUAL_VAR(state, headstageQC[i])
 
 		if(!headstageQC[i])
@@ -542,7 +542,7 @@ static Function CheckAnaFuncVersion(string device, variable type)
 	variable refVersion, version, sweepNo, i, idx
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	key = CreateAnaFuncLBNKey(type, FMT_LBN_ANA_FUNC_VERSION, query = 1)
+	key     = CreateAnaFuncLBNKey(type, FMT_LBN_ANA_FUNC_VERSION, query = 1)
 	sweepNo = 0
 
 	// check that at least one headstage has the desired analysis function version set
@@ -553,7 +553,7 @@ static Function CheckAnaFuncVersion(string device, variable type)
 		endif
 
 		refVersion = GetAnalysisFunctionVersion(type)
-		idx = GetRowIndex(versions, val = refVersion)
+		idx        = GetRowIndex(versions, val = refVersion)
 		CHECK_GE_VAR(idx, 0)
 		return NaN
 	endfor
@@ -562,7 +562,7 @@ static Function CheckAnaFuncVersion(string device, variable type)
 End
 
 Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE headstageQC)
-	string key
+	string   key
 	variable type
 
 	CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), sweepNo + 1)
@@ -604,7 +604,7 @@ static Function CheckDAStimulusSets(string device, variable sweepNo, variable ty
 	string stimset, stimsetIndexEnd, previousStimset, expected, key, names, params
 	variable setPassed, nextStimsetPresent, indexingEndPresent, indexingState
 
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
 
 	WAVE/Z/T paramsLBN = GetLastSetting(textualValues, sweepNo, ANALYSIS_FUNCTION_PARAMS_LBN, DATA_ACQUISITION_MODE)
@@ -622,7 +622,7 @@ static Function CheckDAStimulusSets(string device, variable sweepNo, variable ty
 		return NaN
 	endif
 
-	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 	CHECK(IsFinite(setPassed))
 
@@ -638,12 +638,12 @@ static Function CheckDAStimulusSets(string device, variable sweepNo, variable ty
 		CHECK_EQUAL_STR(stimset, expected)
 
 		if(indexingEndPresent)
-			expected = "StimulusSetB_DA_0"
+			expected      = "StimulusSetB_DA_0"
 			indexingState = 1
 
 		else
 			indexingState = 0
-			expected = NONE
+			expected      = NONE
 		endif
 
 		CHECK_EQUAL_STR(stimsetIndexEnd, expected)
@@ -660,7 +660,7 @@ static Function [string stimset, string stimsetIndexEnd] GetStimsets_IGNORE(stri
 	variable DAC
 	string ctrl0, ctrl1
 
-	DAC   = AFH_GetDACFromHeadstage(device, PSQ_TEST_HEADSTAGE)
+	DAC = AFH_GetDACFromHeadstage(device, PSQ_TEST_HEADSTAGE)
 	CHECK(IsFinite(DAC))
 
 	ctrl0 = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
@@ -676,7 +676,7 @@ static Function CheckForOtherUserLBNKeys(string device, variable type)
 	WAVE textualKeys   = GetLBTextualKeys(device)
 
 	WAVE/Z numericalNames = MIES_LBV#LBV_GetLogbookParamNames(numericalKeys)
-	WAVE/Z textualNames = MIES_LBV#LBV_GetLogbookParamNames(textualKeys)
+	WAVE/Z textualNames   = MIES_LBV#LBV_GetLogbookParamNames(textualKeys)
 
 	WAVE/Z entries = MIES_LBV#LBV_GetAllLogbookParamNames(textualNames, numericalNames)
 	CHECK_WAVE(entries, TEXT_WAVE)
@@ -702,13 +702,13 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 	string unit, entry
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	WAVE numericalKeys = GetLBNumericalKeys(device)
 	WAVE textualKeys   = GetLBTextualKeys(device)
 
 	WAVE/Z numericalNames = MIES_LBV#LBV_GetLogbookParamNames(numericalKeys)
-	WAVE/Z textualNames = MIES_LBV#LBV_GetLogbookParamNames(textualKeys)
+	WAVE/Z textualNames   = MIES_LBV#LBV_GetLogbookParamNames(textualKeys)
 
 	WAVE/Z entries = MIES_LBV#LBV_GetAllLogbookParamNames(textualNames, numericalNames)
 	CHECK_WAVE(entries, TEXT_WAVE)
@@ -728,7 +728,7 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 
 	entriesWithoutUnit = CreateAnaFuncLBNKey(type, entriesWithoutUnit[p], query = 1)
 
-	numSweeps = DimSize(sweeps, ROWS)
+	numSweeps  = DimSize(sweeps, ROWS)
 	numEntries = DimSize(allUserEntries, ROWS)
 	for(i = 0; i < numSweeps; i += 1)
 		for(j = 0; j < numEntries; j += 1)
@@ -773,7 +773,7 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 
 				// allow inf for this one only
 				if(!cmpstr(entry, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT_ERR))
-					if(value == inf)
+					if(value == Inf)
 						continue
 					endif
 				endif
@@ -891,7 +891,7 @@ static Function TestSweepReconstruction_IGNORE(string device)
 
 		DFREF singleSweepDFR = GetSingleSweepFolder(deviceDataBorkedUp, sweepNo)
 
-		SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, 1, targetDFR=singleSweepDFR)
+		SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, 1, targetDFR = singleSweepDFR)
 	endfor
 
 	// delete sweep and config waves
@@ -905,7 +905,7 @@ static Function TestSweepReconstruction_IGNORE(string device)
 	DFREF reconstructed = root:reconstructed
 
 	WAVE/T wavesReconstructed = ListToTextWave(GetListOfObjects(reconstructed, ".*", typeFlag = COUNTOBJECTS_WAVES, fullPath = 1), ";")
-	WAVE/T wavesOriginal = ListToTextWave(GetListOfObjects(deviceDFR, ".*", typeFlag = COUNTOBJECTS_WAVES, fullPath = 1), ";")
+	WAVE/T wavesOriginal      = ListToTextWave(GetListOfObjects(deviceDFR, ".*", typeFlag = COUNTOBJECTS_WAVES, fullPath = 1), ";")
 
 	Sort wavesReconstructed, wavesReconstructed
 	Sort wavesOriginal, wavesOriginal
@@ -918,7 +918,7 @@ static Function TestSweepReconstruction_IGNORE(string device)
 	numEntries = DimSize(wavesReconstructed, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/Z wvReconstructed = $wavesReconstructed[i]
-		WAVE/Z wvOriginal = $wavesOriginal[i]
+		WAVE/Z wvOriginal      = $wavesOriginal[i]
 		CHECK_WAVE(wvReconstructed, NORMAL_WAVE)
 		CHECK_WAVE(wvOriginal, NORMAL_WAVE)
 
@@ -940,7 +940,7 @@ static Function TestSweepReconstruction_IGNORE(string device)
 			numChannels = DimSize(wvReconstructed, ROWS)
 			for(j = 0; j < numChannels; j += 1)
 				WAVE channelRecon = ResolveSweepChannel(wvReconstructed, j)
-				WAVE channelOrig = ResolveSweepChannel(wvOriginal, j)
+				WAVE channelOrig  = ResolveSweepChannel(wvOriginal, j)
 				CHECK_EQUAL_WAVES(channelRecon, channelOrig)
 			endfor
 		endif
@@ -1003,7 +1003,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 	variable startTime, endTime, startRef, endRef
 	string str, regexp
 
-	sweep = ParamIsDefault(sweep) ? NaN : sweep
+	sweep            = ParamIsDefault(sweep) ? NaN : sweep
 	ignoreIncomplete = ParamIsDefault(ignoreIncomplete) ? 0 : !!ignoreIncomplete
 
 	size = DimSize(times, ROWS)
@@ -1018,7 +1018,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 	endif
 
 	WAVE numericalValues = GetLBNumericalValues(dev)
-	WAVE textualValues = GetLBTextualValues(dev)
+	WAVE textualValues   = GetLBTextualValues(dev)
 
 	sweepCnt = DimSize(sweeps, ROWS)
 
@@ -1029,7 +1029,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 
 		WAVE statusHS = GetLastSetting(numericalValues, sweeps[i], "Headstage Active", DATA_ACQUISITION_MODE)
 
-		for(j = 0; j <  NUM_HEADSTAGES; j += 1)
+		for(j = 0; j < NUM_HEADSTAGES; j += 1)
 
 			if(!statusHS[j])
 				continue
@@ -1068,9 +1068,9 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 				index = V_Value
 				CHECK_NEQ_VAR(index, -1)
 				startTime = str2num(userChunkEpochs[k][EPOCH_COL_STARTTIME])
-				endTime = str2num(userChunkEpochs[k][EPOCH_COL_ENDTIME])
-				startRef = times[k << 1] * MILLI_TO_ONE
-				endRef = times[k << 1 + 1] * MILLI_TO_ONE
+				endTime   = str2num(userChunkEpochs[k][EPOCH_COL_ENDTIME])
+				startRef  = times[k << 1] * MILLI_TO_ONE
+				endRef    = times[k << 1 + 1] * MILLI_TO_ONE
 
 				if(CheckIfSmall(startRef, tol = 1e-12))
 					CHECK_SMALL_VAR(startTime)
@@ -1090,7 +1090,7 @@ End
 Function OpenDatabrowser()
 	string win, bsPanel
 
-	win = DB_OpenDatabrowser()
+	win     = DB_OpenDatabrowser()
 	bsPanel = BSP_GetPanel(win)
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = 1)
 End
@@ -1138,7 +1138,7 @@ End
 static Function FetchCustomizationFunctions(STRUCT DAQSettings &s)
 	string funcName, stacktrace, module, testcaseInfo, preInitFunc, preAcquireFunc
 
-	stacktrace = GetRTStackInfo(3)
+	stacktrace   = GetRTStackInfo(3)
 	testcaseInfo = StringFromList(ItemsInList(stacktrace, ";") - 3, stacktrace, ";")
 
 	funcName = StringFromList(0, testcaseInfo, ",")
@@ -1148,15 +1148,15 @@ static Function FetchCustomizationFunctions(STRUCT DAQSettings &s)
 	CHECK_PROPER_STR(module)
 
 	FUNCREF CALLABLE_PROTO s.globalPreAcquireFunc = $AcquireDataSelectFunction(module, "GlobalPreAcq")
-	FUNCREF CALLABLE_PROTO s.globalPreInitFunc = $AcquireDataSelectFunction(module, "GlobalPreInit")
+	FUNCREF CALLABLE_PROTO s.globalPreInitFunc    = $AcquireDataSelectFunction(module, "GlobalPreInit")
 
 	FUNCREF CALLABLE_PROTO s.preAcquireFunc = $AcquireDataSelectFunction(module, funcName + "_PreAcq")
-	FUNCREF CALLABLE_PROTO s.preInitFunc = $AcquireDataSelectFunction(module, funcName + "_PreInit")
+	FUNCREF CALLABLE_PROTO s.preInitFunc    = $AcquireDataSelectFunction(module, funcName + "_PreInit")
 End
 
 static Function ParseNumber(string str, string name, [variable defValue])
 
-	string output
+	string   output
 	variable var
 
 	SplitString/E=(name + "([[:digit:]]+(\.[[:digit:]]+)?)(?=_|$)") str, output
@@ -1200,8 +1200,8 @@ End
 
 /// @brief Fill the #DAQSetttings structure from a specially crafted string
 Function InitDAQSettingsFromString(s, str)
-	STRUCT DAQSettings& s
-	string str
+	STRUCT DAQSettings &s
+	string              str
 
 	variable md, ra, idx, lidx, bkg_daq, res, headstage, clampMode, ttl
 	string elem, output
@@ -1209,11 +1209,11 @@ Function InitDAQSettingsFromString(s, str)
 	sscanf str, "MD%d_RA%d_I%d_L%d_BKG%d", md, ra, idx, lidx, bkg_daq
 	REQUIRE_GE_VAR(V_Flag, 5)
 
-	s.md        = md
-	s.ra        = ra
-	s.idx       = idx
-	s.lidx      = lidx
-	s.bkg_daq   = bkg_daq
+	s.md      = md
+	s.ra      = ra
+	s.idx     = idx
+	s.lidx    = lidx
+	s.bkg_daq = bkg_daq
 
 	s.res = ParseNumber(str, "_RES", defValue = 0)
 
@@ -1271,11 +1271,11 @@ Function InitDAQSettingsFromString(s, str)
 		// Throw away first element as that is not a hsConfig element
 		DeletePoints ROWS, 1, hsConfig
 
-		Make/FREE/N=(NUM_HEADSTAGES) s.hs  = 0
+		Make/FREE/N=(NUM_HEADSTAGES) s.hs = 0
 		Make/FREE/N=(NUM_HEADSTAGES) s.ttl = 0
-		Make/FREE/N=(NUM_HEADSTAGES) s.ad  = NaN
-		Make/FREE/N=(NUM_HEADSTAGES) s.da  = NaN
-		Make/FREE/N=(NUM_HEADSTAGES) s.cm  = NaN
+		Make/FREE/N=(NUM_HEADSTAGES) s.ad = NaN
+		Make/FREE/N=(NUM_HEADSTAGES) s.da = NaN
+		Make/FREE/N=(NUM_HEADSTAGES) s.cm = NaN
 		Make/FREE/N=(NUM_HEADSTAGES) s.aso = NaN
 		Make/FREE/T/N=(NUM_HEADSTAGES) s.st, s.ist, s.af, s.st_ttl, s.iaf
 
@@ -1283,14 +1283,14 @@ Function InitDAQSettingsFromString(s, str)
 			// no __ prefix as we have splitted it above at two __
 
 			if(GrepString(elem, "^TTL"))
-				ttl = ParseNumber(elem, "TTL")
+				ttl        = ParseNumber(elem, "TTL")
 				s.ttl[ttl] = 1
 
 				s.st_ttl[ttl] = ParseString(elem, "_ST", defValue = "")
 				continue
 			endif
 
-			headstage = ParseNumber(elem, "HS")
+			headstage       = ParseNumber(elem, "HS")
 			s.hs[headstage] = 1
 
 			s.da[headstage] = ParseNumber(elem, "_DA")
@@ -1473,37 +1473,37 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 
 		if(s.aso[i] != 1)
 #ifdef TESTS_WITH_SUTTER_HARDWARE
-			INFO("Unassociated channel %d is setup on an existing HS", n0=i)
+			INFO("Unassociated channel %d is setup on an existing HS", n0 = i)
 			CHECK_GT_VAR(i + 1, deviceInfo[%DA])
 #endif
 #ifndef TESTS_WITH_SUTTER_HARDWARE
 			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 #endif
 			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-			PGC_SetAndActivateControl(device, ctrl, val=1)
+			PGC_SetAndActivateControl(device, ctrl, val = 1)
 			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
-			PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
 			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-			PGC_SetAndActivateControl(device, ctrl, str="V")
+			PGC_SetAndActivateControl(device, ctrl, str = "V")
 			ctrl = GetPanelControl(s.ad[i], CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-			PGC_SetAndActivateControl(device, ctrl, val=1)
+			PGC_SetAndActivateControl(device, ctrl, val = 1)
 			ctrl = GetPanelControl(s.ad[i], CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
-			PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
 			ctrl = GetPanelControl(s.ad[i], CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-			PGC_SetAndActivateControl(device, ctrl, str="V")
+			PGC_SetAndActivateControl(device, ctrl, str = "V")
 
 			continue
 		endif
 		// associated HS below here
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-		PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_SELECTED, switchTab = 1)
+		PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED, switchTab = 1)
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
-		INFO("Associated HS %d does not exist on this Sutter HW setup", n0=i)
+		INFO("Associated HS %d does not exist on this Sutter HW setup", n0 = i)
 		CHECK_LT_VAR(i, deviceInfo[%DA])
-		INFO("Requested DA channel %d for HS %d does not match fixed DA channel of Sutter HW setup", n0=s.da[i], n1=i)
+		INFO("Requested DA channel %d for HS %d does not match fixed DA channel of Sutter HW setup", n0 = s.da[i], n1 = i)
 		CHECK_EQUAL_VAR(i, s.da[i])
-		INFO("Requested AD channel %d for HS %d does not match fixed AD channel of Sutter HW setup", n0=s.ad[i], n1=i)
+		INFO("Requested AD channel %d for HS %d does not match fixed AD channel of Sutter HW setup", n0 = s.ad[i], n1 = i)
 		CHECK_EQUAL_VAR(i, s.ad[i])
 #endif
 
@@ -1542,13 +1542,13 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 
 		if(i >= NUM_ITC_TTL_BITS_PER_RACK                 \
 		   && GetHardwareType(device) == HARDWARE_ITC_DAC \
-			   && HW_ITC_GetNumberOfRacks(device) < 2)
+		   && HW_ITC_GetNumberOfRacks(device) < 2)
 			// ignore unavailable TTLs on single-rack ITC setup
 			continue
 		endif
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
-		PGC_SetAndActivateControl(device, ctrl, val=s.ttl[i])
+		PGC_SetAndActivateControl(device, ctrl, val = s.ttl[i])
 
 		if(!IsEmpty(s.st_ttl[i]))
 			ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
@@ -1632,8 +1632,8 @@ Function CheckDAQStopReason(string device, variable stopReason, [variable sweepN
 
 	key = "DAQ stop reason"
 
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/Z sweeps          = GetSweepsWithSetting(numericalValues, key)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	CHECK_GE_VAR(DimSize(sweeps, ROWS), 1)
 
@@ -1652,8 +1652,8 @@ Function CheckStartStopMessages(string mode, string state)
 
 	msg = FetchPublishedMessage(DAQ_TP_STATE_CHANGE_FILTER)
 
-	jsonID = JSON_Parse(msg)
-	actual = JSON_GetString(jsonID, "/" + mode)
+	jsonID   = JSON_Parse(msg)
+	actual   = JSON_GetString(jsonID, "/" + mode)
 	expected = state
 	CHECK_EQUAL_STR(actual, expected)
 	JSON_Release(jsonID)
@@ -1690,7 +1690,7 @@ Function CreateLockedDAEphys(string device, [string unlockedDevice])
 		unlockedDevice = DAP_CreateDAEphysPanel()
 	endif
 
-	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str = device)
 	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 	REQUIRE(WindowExists(device))
 End
@@ -1698,7 +1698,7 @@ End
 Function CreateLockedDatabrowser(string device)
 	string win, bsPanel
 
-	win = DB_OpenDatabrowser()
+	win     = DB_OpenDatabrowser()
 	bsPanel = BSP_GetPanel(win)
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 End
@@ -1744,8 +1744,8 @@ Function UseFakeFIFOThreadWithTimeout_IGNORE(s)
 
 	variable fifoPos
 
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
+	SVAR   devices = $GetLockedDevices()
+	string device  = StringFromList(0, devices)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 
@@ -1765,8 +1765,8 @@ Function UseFakeFIFOThreadBeingStuck_IGNORE(s)
 
 	variable fifoPos
 
-	SVAR devices = $GetLockedDevices()
-	string device = StringFromList(0, devices)
+	SVAR   devices = $GetLockedDevices()
+	string device  = StringFromList(0, devices)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=WB_Testing
@@ -139,10 +139,10 @@ Function WB_StimsetRecreation3()
 
 	CHECK_EQUAL_VAR(MIES_WB#WB_ParameterWvsNewerThanStim(setName), 0)
 
-	stimset[0][0] += 0
+	stimset[0][0]   += 0
 	SegWvType[0][0] += 0
-	WP[0][0] += 0
-	WPT[0][0] += ""
+	WP[0][0]        += 0
+	WPT[0][0]       += ""
 
 	// this took less time than a second
 	CHECK_EQUAL_VAR(ModDate(stimset), ModDate(WP))
@@ -154,7 +154,7 @@ Function WB_StimsetRecreation3()
 End
 
 Function WB_EditingExistingKeepsPrecision()
-	string panel = "WaveBuilder"
+	string panel   = "WaveBuilder"
 	string setName = "Ref6_b_DA_0"
 
 	WAVE/Z WP = WB_GetWaveParamForSet(setName)
@@ -200,13 +200,13 @@ End
 Function WB_CheckEpochParameters()
 	string newCode, existingCode
 
-	newCode = WBP_RegenerateEpochParameterNamesCode()
+	newCode      = WBP_RegenerateEpochParameterNamesCode()
 	existingCode = ProcedureText("GetEpochParameterNames")
 
 	// remove Z_() functions calls for tracing
 	existingCode = GrepList(existingCode, "^Z_\(\d+,[[:space:]]\d+\)$", 1, "\r")
 
-	newCode = TrimString(newCode, 1)
+	newCode      = TrimString(newCode, 1)
 	existingCode = TrimString(existingCode, 1)
 
 	CHECK_GE_VAR(strsearch(existingCode, newCode, 0), 0)
@@ -280,7 +280,7 @@ Function ExportAndLoadOfCustomWaves([variable var])
 	PathInfo home
 	CHECK_PROPER_STR(S_path)
 	filename = UniqueFileOrFolder("home", "customWaveExportTest")
-	path = S_path  + filename
+	path     = S_path + filename
 	NWB_ExportAllStimsets(NWB_VERSION_LATEST, overrideFilePath = path)
 
 	// check that we don't got a recreation error warning
@@ -293,7 +293,7 @@ Function ExportAndLoadOfCustomWaves([variable var])
 	// now read the file again and compare it's contents
 	NWB_LoadAllStimsets(filename = path)
 
-	DFREF dfr = GetSetFolder(var)
+	DFREF           dfr        = GetSetFolder(var)
 	WAVE/Z/SDFR=dfr customWave = myCustomWave
 	CHECK_EQUAL_WAVES(customWaveRef, customWave)
 End
@@ -387,7 +387,7 @@ static Function CreateDependentStimsetsFromParameterWaves()
 
 	string wbPanel, stimsets, refList, setNameF, setNameB, formula
 	string setNameFormula = "formula"
-	string setNameBase = "baseSet"
+	string setNameBase    = "baseSet"
 	string chanTypeSuffix = "_DA_0"
 
 	DFREF dfr = GetWBSvdStimSetParamPath()
@@ -413,11 +413,11 @@ static Function CreateDependentStimsetsFromParameterWaves()
 	KillDataFolder dfr
 	stimsets = ST_GetStimsetList()
 	stimsets = SortList(stimsets, ";", 16)
-	refList = AddListItem(setNameBase + chanTypeSuffix, "")
-	refList = AddListItem(setNameFormula + chanTypeSuffix, refList)
-	refList = AddListItem(STIMSET_TP_WHILE_DAQ, refList)
-	refList = SortList(refList, ";", 16)
-	CHECK_EQUAL_STR(stimsets, refList, case_sensitive=0)
+	refList  = AddListItem(setNameBase + chanTypeSuffix, "")
+	refList  = AddListItem(setNameFormula + chanTypeSuffix, refList)
+	refList  = AddListItem(STIMSET_TP_WHILE_DAQ, refList)
+	refList  = SortList(refList, ";", 16)
+	CHECK_EQUAL_STR(stimsets, refList, case_sensitive = 0)
 
 	// Retrieve stimsets created from parameter waves
 	DFREF dfr = GetWBSvdStimSetPath()
@@ -435,5 +435,5 @@ static Function CreateDependentStimsetsFromParameterWaves()
 	KillDataFolder dfr
 	stimsets = ST_GetStimsetList()
 	stimsets = SortList(stimsets, ";", 16)
-	CHECK_EQUAL_STR(stimsets, refList, case_sensitive=0)
+	CHECK_EQUAL_STR(stimsets, refList, case_sensitive = 0)
 End

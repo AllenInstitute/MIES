@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -53,12 +53,12 @@ Function OVS_IgnoreHeadstageInOverlay()
 	folder = GetUserData(graph, "", "folder")
 
 	if(!IsEmpty(folder))
-		WAVE traceWave = $TUD_GetUserData(graph, trace, "fullPath")
+		WAVE  traceWave    = $TUD_GetUserData(graph, trace, "fullPath")
 		DFREF sweepDataDFR = GetWavesDataFolderDFR(traceWave)
 		index = SB_GetIndexFromSweepDataPath(graph, sweepDataDFR)
-		OVS_AddToIgnoreList(extPanel, headstage, index=index)
+		OVS_AddToIgnoreList(extPanel, headstage, index = index)
 	else
-		OVS_AddToIgnoreList(extPanel, headstage, sweepNo=sweepNo)
+		OVS_AddToIgnoreList(extPanel, headstage, sweepNo = sweepNo)
 	endif
 End
 
@@ -112,20 +112,20 @@ Function/S OVS_GetSweepSelectionChoices(win)
 	Sort/A=1 dupsRemovedDAStimSetsSetSweepCount, dupsRemovedDAStimSetsSetSweepCount
 	Sort/A=1 dupsRemovedTTLStimSetsSetCycleCount, dupsRemovedTTLStimSetsSetCycleCount
 
-	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;"                   \
-				+ TextWaveToList(dupsRemovedDAStimSets, ";")               \
-				+ "\\M1(TTL Stimulus Sets;"                                \
-				+ TextWaveToList(dupsRemovedTTLStimSets, ";")              \
-				+ "\\M1(-;\\M1(DA Stimulus Sets and Clamp Mode;"           \
-				+ TextWaveToList(dupsRemovedDAStimSetsClamp, ";")          \
-				+ "\\M1(-;\\M1(DA Stimulus Sets and Set Sweep Count;"      \
-				+ TextWaveToList(dupsRemovedDAStimSetsSetSweepCount, ";")  \
-				+ "\\M1(-;\\M1(TTL Stimulus Sets and Set Sweep Count;"     \
-				+ TextWaveToList(dupsRemovedTTLStimSetsSetSweepCount, ";") \
-				+ "\\M1(-;\\M1(DA Stimulus Sets and Set Cycle Count;"      \
-				+ TextWaveToList(dupsRemovedDAStimSetsSetCycleCount, ";")  \
-				+ "\\M1(-;\\M1(TTL Stimulus Sets and Set Cycle Count;"     \
-				+ TextWaveToList(dupsRemovedTTLStimSetsSetCycleCount, ";")
+	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;"                \
+	       + TextWaveToList(dupsRemovedDAStimSets, ";")               \
+	       + "\\M1(TTL Stimulus Sets;"                                \
+	       + TextWaveToList(dupsRemovedTTLStimSets, ";")              \
+	       + "\\M1(-;\\M1(DA Stimulus Sets and Clamp Mode;"           \
+	       + TextWaveToList(dupsRemovedDAStimSetsClamp, ";")          \
+	       + "\\M1(-;\\M1(DA Stimulus Sets and Set Sweep Count;"      \
+	       + TextWaveToList(dupsRemovedDAStimSetsSetSweepCount, ";")  \
+	       + "\\M1(-;\\M1(TTL Stimulus Sets and Set Sweep Count;"     \
+	       + TextWaveToList(dupsRemovedTTLStimSetsSetSweepCount, ";") \
+	       + "\\M1(-;\\M1(DA Stimulus Sets and Set Cycle Count;"      \
+	       + TextWaveToList(dupsRemovedDAStimSetsSetCycleCount, ";")  \
+	       + "\\M1(-;\\M1(TTL Stimulus Sets and Set Cycle Count;"     \
+	       + TextWaveToList(dupsRemovedTTLStimSetsSetCycleCount, ";")
 End
 
 /// @brief Remove all stimsets which were only acquired once, disregaring RAC/SCI, this means we just look at all sweeps
@@ -204,9 +204,9 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 	SetNumberInWaveNote(sweepSelectionChoices, NOTE_NEEDS_UPDATE, 1)
 	WaveClear sweepSelectionChoices
 
-	WAVE/T listBoxWave    = GetOverlaySweepsListWave(dfr)
-	WAVE listBoxSelWave   = GetOverlaySweepsListSelWave(dfr)
-	WAVE headstageRemoval = GetOverlaySweepHeadstageRemoval(dfr)
+	WAVE/T listBoxWave      = GetOverlaySweepsListWave(dfr)
+	WAVE   listBoxSelWave   = GetOverlaySweepsListSelWave(dfr)
+	WAVE   headstageRemoval = GetOverlaySweepHeadstageRemoval(dfr)
 
 	WAVE updateHandle = OVS_BeginIncrementalUpdate(win, fullUpdate = fullUpdate)
 
@@ -243,7 +243,7 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 	endif
 
 	if(newCycleHasStartedRAC || newCycleHasStartedSCI)
-		listBoxSelWave[][%Sweep] = LISTBOX_CHECKBOX
+		listBoxSelWave[][%Sweep]          = LISTBOX_CHECKBOX
 		listBoxSelWave[lastEntry][%Sweep] = LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED
 	else
 		listBoxSelWave[][%Sweep] = listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED ? LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED : LISTBOX_CHECKBOX
@@ -291,7 +291,7 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 
 	WAVE/Z/WAVE allNumericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES)
 	ASSERT(WaveExists(allNumericalValues), "Numerical LabNotebook not found.")
-	WAVE/Z/WAVE allTextualValues   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES)
+	WAVE/Z/WAVE allTextualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES)
 	ASSERT(WaveExists(allTextualValues), "Textual LabNotebook not found.")
 
 	numEntries = DimSize(sweeps, ROWS)
@@ -351,11 +351,11 @@ End
 ///
 /// @return invalid wave reference in case nothing is selected or numeric indizes/sweep numbers depending on mode parameter
 Function/WAVE OVS_GetSelectedSweeps(win, mode)
-	string win
+	string   win
 	variable mode
 
-	ASSERT(mode == OVS_SWEEP_SELECTION_INDEX || \
-	       mode == OVS_SWEEP_SELECTION_SWEEPNO || \
+	ASSERT(mode == OVS_SWEEP_SELECTION_INDEX ||         \
+	       mode == OVS_SWEEP_SELECTION_SWEEPNO ||       \
 	       mode == OVS_SWEEP_ALL_SWEEPNO, "Invalid mode")
 
 	if(mode == OVS_SWEEP_ALL_SWEEPNO)
@@ -369,8 +369,8 @@ Function/WAVE OVS_GetSelectedSweeps(win, mode)
 
 	DFREF dfr = OVS_GetFolder(win)
 
-	WAVE/T listboxWave  = GetOverlaySweepsListWave(dfr)
-	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
+	WAVE/T listboxWave    = GetOverlaySweepsListWave(dfr)
+	WAVE   listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
 	Extract/INDX/FREE listboxSelWave, selectedSweepsIndizes, listboxSelWave & LISTBOX_CHECKBOX_SELECTED
 
@@ -418,9 +418,9 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 	// coerce to 0/1
 	newState = !!newState
 
-	DFREF dfr = OVS_GetFolder(win)
-	WAVE/T listboxWave  = GetOverlaySweepsListWave(dfr)
-	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
+	DFREF  dfr            = OVS_GetFolder(win)
+	WAVE/T listboxWave    = GetOverlaySweepsListWave(dfr)
+	WAVE   listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
 	if(!ParamIsDefault(sweepNo))
 		FindValue/RMD=[][0]/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
@@ -442,7 +442,7 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 				indices1D[i] = V_Value >= 0 ? V_Value : NaN
 			endfor
 
-			Wave/Z indices = ZapNans(indices1D)
+			WAVE/Z indices = ZapNans(indices1D)
 		endif
 	else
 		ASSERT(0, "Requires one of index or sweepNo")
@@ -488,7 +488,7 @@ static Function OVS_AddToIgnoreList(win, headstage, [sweepNo, index])
 		return NaN
 	endif
 
-	DFREF dfr = OVS_GetFolder(win)
+	DFREF  dfr         = OVS_GetFolder(win)
 	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
 
 	if(!ParamIsDefault(sweepNo))
@@ -504,14 +504,14 @@ static Function OVS_AddToIgnoreList(win, headstage, [sweepNo, index])
 		ASSERT(0, "Invalid sweepNo/index")
 	endif
 
-	listboxWave[index][%headstages] = AddListItem(num2str(headstage), listboxWave[index][%headstages], ";", inf)
+	listboxWave[index][%headstages] = AddListItem(num2str(headstage), listboxWave[index][%headstages], ";", Inf)
 	OVS_UpdateHeadstageRemoval(win, index)
 End
 
 /// @brief Update the OVS headstage removal wave from the listbox entry
 static Function OVS_UpdateHeadstageRemoval(string win, variable index)
 
-	DFREF dfr = OVS_GetFolder(win)
+	DFREF  dfr         = OVS_GetFolder(win)
 	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
 
 	WAVE activeHS = OVS_ParseIgnoreList(listboxWave[index][%headstages], str2num(listboxWave[index][%Sweep]))
@@ -537,9 +537,9 @@ Function/WAVE OVS_GetHeadstageRemoval(string win, [variable sweepNo, variable in
 		return $""
 	endif
 
-	DFREF dfr = OVS_GetFolder(win)
-	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
-	WAVE headstageRemoval = GetOverlaySweepHeadstageRemoval(dfr)
+	DFREF  dfr              = OVS_GetFolder(win)
+	WAVE/T listboxWave      = GetOverlaySweepsListWave(dfr)
+	WAVE   headstageRemoval = GetOverlaySweepHeadstageRemoval(dfr)
 
 	if(!ParamIsDefault(sweepNo))
 		FindValue/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
@@ -612,7 +612,7 @@ static Function/WAVE OVS_ParseIgnoreList(string ignoreList, variable sweepNo)
 		endif
 
 		if(stop == -1)
-			activeHS[start, inf]  = 0
+			activeHS[start, Inf] = 0
 		else
 			activeHS[start, stop] = 0
 		endif
@@ -630,9 +630,9 @@ Function OVS_CheckBoxProc_HS_Select(cba) : CheckBoxControl
 		case 2: // mouse up
 			win = cba.win
 
-			DFREF dfr = OVS_GetFolder(win)
-			WAVE updateHandle = OVS_BeginIncrementalUpdate(win)
-			WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
+			DFREF dfr            = OVS_GetFolder(win)
+			WAVE  updateHandle   = OVS_BeginIncrementalUpdate(win)
+			WAVE  listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
 			if(cba.checked)
 				listBoxSelWave[][%Headstages] = SetBit(listBoxSelWave[p][%Headstages], LISTBOX_CELL_EDITABLE)
@@ -648,7 +648,7 @@ Function OVS_CheckBoxProc_HS_Select(cba) : CheckBoxControl
 End
 
 static Function OVS_HighlightSweep(win, index)
-	string win
+	string   win
 	variable index
 
 	variable sweepNo, i, numTraces
@@ -718,8 +718,8 @@ Function [variable sweepNo, string experiment] OVS_GetSweepAndExperiment(string 
 
 	// SweepBrowser
 	graph = GetMainWindow(win)
-	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-	WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+	DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+	WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
 
 	if(index < 0 || index >= DimSize(sweepMap, ROWS) || !IsFinite(index))
 		return [NaN, ""]
@@ -737,10 +737,10 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 
 	ASSERT(OVS_IsActive(win), "Selecting sweeps is only supported if OVS is enabled")
 
-	extPanel  = BSP_GetPanel(win)
+	extPanel = BSP_GetPanel(win)
 
-	DFREF dfr = OVS_GetFolder(win)
-	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
+	DFREF dfr            = OVS_GetFolder(win)
+	WAVE  listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
 	if(DimSize(listboxSelWave, ROWS) == 0)
 		return NaN
@@ -757,13 +757,13 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 	if(!cmpstr(choiceString, NONE))
 		// nothing to do
 	elseif(!cmpstr(choiceString, "All"))
-		listboxSelWave[offset, inf;step][%Sweep] = listboxSelWave[p][q] | LISTBOX_CHECKBOX_SELECTED
+		listboxSelWave[offset, Inf; step][%Sweep] = listboxSelWave[p][q] | LISTBOX_CHECKBOX_SELECTED
 	else
 		WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(win, dfr)
 
 		numLayers = DimSize(sweepSelectionChoices, LAYERS)
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
-			WAVE/Z indizes = FindIndizes(sweepSelectionChoices, col=i, str=choiceString, startLayer = 0, endLayer = numLayers - 1)
+			WAVE/Z indizes = FindIndizes(sweepSelectionChoices, col = i, str = choiceString, startLayer = 0, endLayer = numLayers - 1)
 			if(!WaveExists(indizes))
 				continue
 			endif
@@ -817,7 +817,7 @@ static Function/WAVE OVS_BeginIncrementalUpdate(string win, [variable fullUpdate
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
 	WAVE/T listBoxWave = GetOverlaySweepsListWave(dfr)
-	WAVE listSelWave   = GetOverlaySweepsListSelWave(dfr)
+	WAVE   listSelWave = GetOverlaySweepsListSelWave(dfr)
 
 	Make/FREE/N=2/WAVE handle
 
@@ -848,9 +848,9 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 	string headstageBefore, headstageAfter, msg
 	STRUCT BufferedDrawInfo bdi
 
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	DFREF  dfr                      = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	WAVE/T listBoxWaveAfterOriginal = GetOverlaySweepsListWave(dfr)
-	WAVE listSelWaveAfterOriginal = GetOverlaySweepsListSelWave(dfr)
+	WAVE   listSelWaveAfterOriginal = GetOverlaySweepsListSelWave(dfr)
 
 	if(GetNumberFromWaveNote(updateHandle, OVS_FULL_UPDATE_NOTE) == 1 \
 	   || (DimSize(listBoxWaveAfterOriginal, ROWS) == 0               \
@@ -860,7 +860,7 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 	endif
 
 	WAVE/T listBoxWaveBefore = updateHandle[%contents]
-	WAVE listSelWaveBefore   = updateHandle[%selection]
+	WAVE   listSelWaveBefore = updateHandle[%selection]
 
 	Duplicate/FREE/T listBoxWaveAfterOriginal, listBoxWaveAfter
 	WaveClear listBoxWaveAfterOriginal
@@ -898,9 +898,9 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 		headstageBefore = listBoxWaveBefore[i][%Headstages]
 		headstageAfter  = listBoxWaveAfter[i][%Headstages]
 
-		changedHeadstages = (cmpstr(headstageBefore, headstageAfter) != 0)                  \
-		                     || ((editableBefore != editableAfter)                          \
-		                         && (!IsEmpty(headstageBefore) || !IsEmpty(headstageAfter)))
+		changedHeadstages = (cmpstr(headstageBefore, headstageAfter) != 0)                \
+		                    || ((editableBefore != editableAfter)                         \
+		                        && (!IsEmpty(headstageBefore) || !IsEmpty(headstageAfter)))
 
 #ifdef DEBUGGING_ENABLED
 		sprintf msg, "%d: display %d vs %d, edit: %d vs %d, HS: \"%5s\" vs \"%5s\" (HS changed: %d)\r", i, displayedBefore, displayedAfter, editableBefore, editableAfter, headstageBefore, headstageAfter, changedHeadstages
@@ -916,14 +916,14 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 		elseif(displayedBefore && displayedAfter && changedHeadstages)
 			// needs just an update
 			needsPostProcessing += 1
-			updatedSweeps += 1
+			updatedSweeps       += 1
 			UpdateSweepInGraph(win, i)
 		elseif(displayedBefore && !displayedAfter)
-			needsPostProcessing += 1
+			needsPostProcessing            += 1
 			removedIndizes[removedSweeps++] = i
 			RemoveSweepFromGraph(win, i)
 		elseif(!displayedBefore && displayedAfter)
-			needsPostProcessing += 1
+			needsPostProcessing        += 1
 			addedIndizes[addedSweeps++] = i
 			AddSweepToGraph(win, i, bdi = bdi)
 		else
@@ -939,11 +939,11 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 		else
 			if(removedSweeps == 0)
 				Redimension/N=(addedSweeps) addedIndizes
-				PostPlotTransformations(win, POST_PLOT_ADDED_SWEEPS, additionalData=addedIndizes)
+				PostPlotTransformations(win, POST_PLOT_ADDED_SWEEPS, additionalData = addedIndizes)
 			elseif(addedSweeps == 0)
 				mode = POST_PLOT_REMOVED_SWEEPS
 				Redimension/N=(removedSweeps) removedIndizes
-				PostPlotTransformations(win, POST_PLOT_REMOVED_SWEEPS, additionalData=removedIndizes)
+				PostPlotTransformations(win, POST_PLOT_REMOVED_SWEEPS, additionalData = removedIndizes)
 			else
 				PostPlotTransformations(win, POST_PLOT_FULL_UPDATE)
 			endif
@@ -954,17 +954,17 @@ End
 Function OVS_MainListBoxProc(lba) : ListBoxControl
 	STRUCT WMListboxAction &lba
 
-	string win
+	string   win
 	variable index
 
 	switch(lba.eventCode)
 		case 6: //begin edit
-			win = lba.win
+			win   = lba.win
 			index = lba.row
 			OVS_HighlightSweep(win, index)
 			break
-		case 7:  // end edit
-			win = lba.win
+		case 7: // end edit
+			win   = lba.win
 			index = lba.row
 			OVS_HighlightSweep(win, NaN)
 			if(lba.selWave[lba.row] & LISTBOX_CHECKBOX_SELECTED)
@@ -972,14 +972,14 @@ Function OVS_MainListBoxProc(lba) : ListBoxControl
 			endif
 			break
 		case 13: // checkbox clicked
-			win = lba.win
+			win   = lba.win
 			index = lba.row
 			if(lba.selWave[lba.row] & LISTBOX_CHECKBOX_SELECTED)
 				AddSweepToGraph(win, index)
-				PostPlotTransformations(win, POST_PLOT_ADDED_SWEEPS, additionalData={index})
+				PostPlotTransformations(win, POST_PLOT_ADDED_SWEEPS, additionalData = {index})
 			else
 				RemoveSweepFromGraph(win, index)
-				PostPlotTransformations(win, POST_PLOT_REMOVED_SWEEPS, additionalData={index})
+				PostPlotTransformations(win, POST_PLOT_REMOVED_SWEEPS, additionalData = {index})
 			endif
 			break
 	endswitch
@@ -1008,7 +1008,7 @@ Function OVS_SetVarProc_SelectionRange(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			win = sva.win
+			win    = sva.win
 			popStr = GetPopupMenuString(win, "popup_overlaySweeps_select")
 			OVS_ChangeSweepSelection(win, popStr)
 			break

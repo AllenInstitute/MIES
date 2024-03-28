@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method.
 #pragma rtFunctionErrors=1
 
@@ -44,13 +44,13 @@ Menu "Macros"
 	"Mass convert PXPs to NWBv2", /Q, StartMultiExperimentProcess()
 End
 
-static StrConstant kPackageName = "MIES PXP to NWBv2"
+static StrConstant kPackageName         = "MIES PXP to NWBv2"
 static StrConstant kPreferencesFileName = "ProcessPrefsMIESNWBv2.bin"
-static Constant kPrefsRecordID = 0    // The recordID is a unique number identifying a record within the preference file.
+static Constant    kPrefsRecordID       = 0                           // The recordID is a unique number identifying a record within the preference file.
 
 static Structure MultiExperimentProcessPrefs
-	uint32 version          // Prefs version
-	uint32 processRunning   // Truth that we are running the mult-experiment process
+	uint32 version // Prefs version
+	uint32 processRunning // Truth that we are running the mult-experiment process
 	char settingsFile[256]
 EndStructure
 
@@ -61,20 +61,20 @@ static Constant kPrefsVersionNumber = 102
 static Function LoadPackagePrefs(prefs)
 	STRUCT MultiExperimentProcessPrefs &prefs
 
-	Variable currentPrefsVersion = kPrefsVersionNumber
+	variable currentPrefsVersion = kPrefsVersionNumber
 
 	// This loads preferences from disk if they exist on disk.
-	LoadPackagePreferences /MIS=1 kPackageName, kPreferencesFileName, kPrefsRecordID, prefs
+	LoadPackagePreferences/MIS=1 kPackageName, kPreferencesFileName, kPrefsRecordID, prefs
 	// Printf "%d byte loaded\r", V_bytesRead
 
 	// If error or prefs not found or not valid, initialize them.
-	if (V_flag!=0 || V_bytesRead==0 || prefs.version!=currentPrefsVersion)
+	if(V_flag != 0 || V_bytesRead == 0 || prefs.version != currentPrefsVersion)
 		prefs.version = currentPrefsVersion
 
 		prefs.processRunning = 0
 		prefs.settingsFile   = ""
 
-		SavePackagePrefs(prefs)    // Create default prefs file.
+		SavePackagePrefs(prefs) // Create default prefs file.
 	endif
 End
 
@@ -107,7 +107,7 @@ static Function ProcessCurrentExperiment(prefs)
 		JSON_AddString(jsonID, "/log/" + num2str(index) + "/to", outputFilePath)
 
 		DoWindow/K HistoryCarbonCopy
-		NewNotebook/V=0/F=0 /N=HistoryCarbonCopy
+		NewNotebook/V=0/F=0/N=HistoryCarbonCopy
 
 		try
 			PerformMiesTasks(outputFilePath); AbortOnRTE
@@ -120,7 +120,7 @@ static Function ProcessCurrentExperiment(prefs)
 			DeleteFile/Z outputFilePath
 		endtry
 
-		Notebook HistoryCarbonCopy getData=1
+		Notebook HistoryCarbonCopy, getData=1
 		JSON_AddString(jsonID, "/log/" + num2str(index) + "/output", trimstring(S_Value))
 
 		JSON_SetVariable(jsonID, "/processed", JSON_GetVariable(jsonID, "/processed") + 1)
@@ -150,11 +150,11 @@ static Function PerformMiesTasks(outputFilePath)
 	ClearRTError()
 
 	nwbVersion = 2
-	NWB_ExportAllData(nwbVersion, overrideFilePath=outputFilePath)
+	NWB_ExportAllData(nwbVersion, overrideFilePath = outputFilePath)
 	HDF5CloseFile/A/Z 0
 
 	message = GetRTErrMessage()
-	error = GetRTError(1)
+	error   = GetRTError(1)
 	ASSERT(error == 0, "Encountered lingering RTE of " + num2str(error) + "(message: " + message + ") after executing NWB_ExportAllData.")
 End
 
@@ -196,9 +196,9 @@ End
 // json will be released
 static Function StoreJSON(prefs, jsonID)
 	STRUCT MultiExperimentProcessPrefs &prefs
-	variable jsonID
+	variable                            jsonID
 
-	string data = JSON_Dump(jsonID, indent=2)
+	string data = JSON_Dump(jsonID, indent = 2)
 
 	SaveTextFile(data, prefs.settingsFile)
 
@@ -209,55 +209,55 @@ End
 // Igor executes operation queue commands when it is idling - that is, when it is not running a
 // function or operation.
 static Function PostLoadNextExperiment(nextExperimentFullPath)
-	String nextExperimentFullPath
+	string nextExperimentFullPath
 
 	ASSERT(FileExists(nextExperimentFullPath), "Experiment must exist")
 
-	Execute/P/Q "NEWEXPERIMENT "        // Post command to close this experiment.
+	Execute/P/Q "NEWEXPERIMENT " // Post command to close this experiment.
 
 	Execute/P/Q "SetIgorOption poundDefine=MIES_PXP_NWB_CONVERSION_SKIP_SAVING"
 
 	// Post command to open next experiment.
-	String cmd
-	sprintf cmd "Execute/P/Q \"LOADFILE %s\"", nextExperimentFullPath
+	string cmd
+	sprintf cmd, "Execute/P/Q \"LOADFILE %s\"", nextExperimentFullPath
 	Execute/Q cmd
 End
 
 // This is the hook function that Igor calls whenever a file is opened. We use it to
 // detect the opening of an experiment and to call our ProcessCurrentExperiment function.
-static Function AfterFileOpenHook(refNum,file,pathName,type,creator,kind)
-	Variable refNum,kind
-	String file,pathName,type,creator
+static Function AfterFileOpenHook(refNum, file, pathName, type, creator, kind)
+	variable refNum, kind
+	string file, pathName, type, creator
 
 	STRUCT MultiExperimentProcessPrefs prefs
 
-	LoadPackagePrefs(prefs)            // Load our prefs into our structure
-	if (prefs.processRunning == 0)
-		return 0                  // Process not yet started.
+	LoadPackagePrefs(prefs) // Load our prefs into our structure
+	if(prefs.processRunning == 0)
+		return 0 // Process not yet started.
 	endif
 
 	// Check file type
-	if (CmpStr(type,"IGsU") != 0)
-		return 0    // This is not a packed experiment file
+	if(CmpStr(type, "IGsU") != 0)
+		return 0 // This is not a packed experiment file
 	endif
 
 	ProcessCurrentExperiment(prefs)
 
 	// See if there are more experiments to process.
-	String nextExperimentFullPath = FindNextExperiment(prefs)
-	if (strlen(nextExperimentFullPath) == 0)
+	string nextExperimentFullPath = FindNextExperiment(prefs)
+	if(strlen(nextExperimentFullPath) == 0)
 		// Process is finished
-		prefs.processRunning = 0    // Flag process is finished.
-		Execute/P "NEWEXPERIMENT "              // Post command to close this experiment.
+		prefs.processRunning = 0 // Flag process is finished.
+		Execute/P "NEWEXPERIMENT " // Post command to close this experiment.
 		print "Multi-experiment process is finished."
 	else
 		// Load the next experiment in the designated folder, if any.
-		PostLoadNextExperiment(nextExperimentFullPath)    // Post operation queue commands to load next experiment
+		PostLoadNextExperiment(nextExperimentFullPath) // Post operation queue commands to load next experiment
 	endif
 
 	SavePackagePrefs(prefs)
 
-	return 0  // Tell Igor to handle file in default fashion.
+	return 0 // Tell Igor to handle file in default fashion.
 End
 
 // This function enables our special Igor hooks which skip saving the experiment
@@ -284,8 +284,8 @@ Function StartMultiExperimentProcessWrapper()
 		NewPath/O/Q/M=message MultiExperimentInputFolder, INPUT_FOLDER
 	endif
 
-	if (V_flag != 0)
-		return -1                      // User canceled from New Path dialog
+	if(V_flag != 0)
+		return -1 // User canceled from New Path dialog
 	endif
 
 	PathInfo MultiExperimentInputFolder
@@ -299,15 +299,15 @@ Function StartMultiExperimentProcessWrapper()
 		NewPath/O/Q/M=message MultiExperimentOutputFolder, OUTPUT_FOLDER
 	endif
 
-	if (V_flag != 0)
-		return -1                      // User canceled from New Path dialog
+	if(V_flag != 0)
+		return -1 // User canceled from New Path dialog
 	endif
 
 	PathInfo MultiExperimentOutputFolder
 	outputFolder = S_Path
 	ASSERT(V_flag, "Invalid path")
 
-	files = GetAllFilesRecursivelyFromPath("MultiExperimentInputFolder", extension=".pxp")
+	files = GetAllFilesRecursivelyFromPath("MultiExperimentInputFolder", extension = ".pxp")
 
 	// 16: Case-insensitive alphanumeric sort that sorts wave0 and wave9 before wave10.
 	// ...
@@ -332,11 +332,11 @@ Function StartMultiExperimentProcessWrapper()
 	prefs.settingsFile = outputFolder + "conversion.json"
 	StoreJSON(prefs, jsonID)
 
-	prefs.processRunning = 1                // Flag process is started.
+	prefs.processRunning = 1 // Flag process is started.
 
 	// Start the process off by loading the first experiment.
-	String nextExperimentFullPath = FindNextExperiment(prefs)
-	PostLoadNextExperiment(nextExperimentFullPath)    // Start the process off
+	string nextExperimentFullPath = FindNextExperiment(prefs)
+	PostLoadNextExperiment(nextExperimentFullPath) // Start the process off
 
 	SavePackagePrefs(prefs)
 

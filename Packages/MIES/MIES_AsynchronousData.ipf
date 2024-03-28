@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -14,7 +14,7 @@ Function ASD_CheckAsynAlarmState(string device, variable value, variable minValu
 
 	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
-		NVAR count = $GetCount(device)
+		NVAR count           = $GetCount(device)
 
 		return !overrideResults[0][count][%AsyncQC]
 	endif
@@ -24,7 +24,7 @@ End
 
 /// @brief Read the given asynchronous channel and return the scaled value
 Function ASD_ReadChannel(device, channel)
-	string device
+	string   device
 	variable channel
 
 	string ctrl
@@ -33,7 +33,7 @@ Function ASD_ReadChannel(device, channel)
 	NVAR deviceID = $GetDAQDeviceID(device)
 	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(device)
 
-	hardwareType = GetHardwareType(device)
+	hardwareType    = GetHardwareType(device)
 	rawChannelValue = HW_ReadADC(hardwareType, deviceID, channel + deviceChannelOffset)
 
 	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)

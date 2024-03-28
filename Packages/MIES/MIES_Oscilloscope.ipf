@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -9,11 +9,11 @@
 /// @file MIES_Oscilloscope.ipf
 /// @brief __SCOPE__ Scope window handling for data acquisition and testpulse results
 
-static Constant SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
-static Constant SCOPE_GREEN                     = 26122
-static Constant SCOPE_BLUE                      = 39168
-static StrConstant RES_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%%%s][%d], numMinSignDigits = 2)}\\]1\\K(0, 0, 0)"
-static Constant PRESSURE_SPECTRUM_PERCENT       = 0.05
+static Constant    SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
+static Constant    SCOPE_GREEN                     = 26122
+static Constant    SCOPE_BLUE                      = 39168
+static StrConstant RES_FORMAT_STR                  = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%%%s][%d], numMinSignDigits = 2)}\\]1\\K(0, 0, 0)"
+static Constant    PRESSURE_SPECTRUM_PERCENT       = 0.05
 
 Function/S SCOPE_GetGraph(device)
 	string device
@@ -40,11 +40,11 @@ Function SCOPE_OpenScopeWindow(device)
 
 	graph = SCOPE_GetGraph(device)
 
-	NewPanel/EXT=0/W=(0,0,460,880)/HOST=$device/N=Scope/K=2
-	Display/W=(0,10,358,776)/HOST=$win/N=oscilloscope/FG=(FL,FT,FR,FB)
+	NewPanel/EXT=0/W=(0, 0, 460, 880)/HOST=$device/N=Scope/K=2
+	Display/W=(0, 10, 358, 776)/HOST=$win/N=oscilloscope/FG=(FL, FT, FR, FB)
 	ModifyPanel/W=$win fixedSize=0
 	ModifyGraph/W=$graph gfSize=14
-	ModifyGraph/W=$graph wbRGB=(60928,60928,60928),gbRGB=(60928,60928,60928)
+	ModifyGraph/W=$graph wbRGB=(60928, 60928, 60928), gbRGB=(60928, 60928, 60928)
 	SetActiveSubWindow $device
 End
 
@@ -63,7 +63,7 @@ End
 // @param[out] axisMin suggested new axis minimum
 // @return 1 if axisMin has changed, 0 otherwise
 Function SCOPE_GetTPTopAxisStart(device, axisMin)
-	string device
+	string    device
 	variable &axisMin
 
 	string graph
@@ -75,7 +75,7 @@ Function SCOPE_GetTPTopAxisStart(device, axisMin)
 		return 0
 	endif
 
-	Wave TPStorage = GetTPStorage(device)
+	WAVE TPStorage = GetTPStorage(device)
 	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 
 	if(count > 0)
@@ -94,7 +94,7 @@ Function SCOPE_GetTPTopAxisStart(device, axisMin)
 End
 
 Function SCOPE_UpdateGraph(device, dataAcqOrTP)
-	string device
+	string   device
 	variable dataAcqOrTP
 
 	variable i, numADCs, range, numDACs, statsMin, statsMax
@@ -105,7 +105,7 @@ Function SCOPE_UpdateGraph(device, dataAcqOrTP)
 
 	NVAR timestamp = $GetLastAcqHookCallTimeStamp(device)
 	updateInt = DAG_GetNumericalValue(device, "setvar_Settings_OsciUpdInt")
-	now = DateTime
+	now       = DateTime
 	if((now - timestamp) < updateInt * MILLI_TO_ONE)
 		return 0
 	endif
@@ -130,10 +130,10 @@ Function SCOPE_UpdateGraph(device, dataAcqOrTP)
 		return NaN
 	endif
 
-	WAVE config = GetDAQConfigWave(device)
+	WAVE config  = GetDAQConfigWave(device)
 	WAVE ADCmode = GetADCTypesFromConfig(config)
-	WAVE ADCs = GetADCListFromConfig(config)
-	WAVE DACs = GetDACListFromConfig(config)
+	WAVE ADCs    = GetADCListFromConfig(config)
+	WAVE DACs    = GetDACListFromConfig(config)
 	numADCs = DimSize(ADCs, ROWS)
 	numDACs = DimSize(DACs, ROWS)
 
@@ -194,7 +194,7 @@ static Function [variable showSteadyStateResistance, variable showPeakResistance
 End
 
 Function SCOPE_CreateGraph(device, dataAcqOrTP)
-	string device
+	string   device
 	variable dataAcqOrTP
 
 	string graph, color, style
@@ -209,7 +209,7 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 	STRUCT RGBColor steadyColor
 
 	SCOPE_OpenScopeWindow(device)
-	graph = SCOPE_GetGraph(device)
+	graph          = SCOPE_GetGraph(device)
 	scopeScaleMode = DAG_GetNumericalValue(device, "Popup_Settings_OsciUpdMode")
 
 	WAVE DAQConfigWave      = GetDAQConfigWave(device)
@@ -221,22 +221,22 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 	WAVE TPResults          = GetTPResults(device)
 
 	WAVE ADCmode = GetADCTypesFromConfig(DAQConfigWave)
-	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
-	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
-	numADChannels = DimSize(ADCs, ROWS)
-	numActiveDACs = DimSize(DACs, ROWS)
-	graph = SCOPE_GetGraph(device)
-	Yoffset = 40 / numADChannels
-	YaxisSpacing = 0.95 / numADChannels
-	YaxisHigh = 1
-	YaxisLow = YaxisHigh - YaxisSpacing + 0.025
-	peakColor.green = SCOPE_GREEN
+	WAVE ADCs    = GetADCListFromConfig(DAQConfigWave)
+	WAVE DACs    = GetDACListFromConfig(DAQConfigWave)
+	numADChannels    = DimSize(ADCs, ROWS)
+	numActiveDACs    = DimSize(DACs, ROWS)
+	graph            = SCOPE_GetGraph(device)
+	Yoffset          = 40 / numADChannels
+	YaxisSpacing     = 0.95 / numADChannels
+	YaxisHigh        = 1
+	YaxisLow         = YaxisHigh - YaxisSpacing + 0.025
+	peakColor.green  = SCOPE_GREEN
 	steadyColor.blue = SCOPE_BLUE
-	activeHeadStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
+	activeHeadStage  = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 
-	[axisMinTop, axisMaxTop] = GetAxisRange(graph, AXIS_SCOPE_TP_TIME, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[axisMinTop, axisMaxTop] = GetAxisRange(graph, AXIS_SCOPE_TP_TIME, mode = AXIS_RANGE_INC_AUTOSCALED)
 	if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum && scopeScaleMode == GUI_SETTING_OSCI_SCALE_FIXED)
-		WAVE previousADAxesProperties = GetAxesProperties(graph, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_INC_AUTOSCALED)
+		WAVE previousADAxesProperties = GetAxesProperties(graph, axesRegexp = AXIS_SCOPE_AD_REGEXP, orientation = AXIS_ORIENTATION_LEFT, mode = AXIS_RANGE_INC_AUTOSCALED)
 	endif
 
 	RemoveTracesFromGraph(graph)
@@ -247,8 +247,8 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 	for(i = 0; i < numADChannels; i += 1)
 		chanTPmode = (ADCmode[i] == DAQ_CHANNEL_TYPE_TP)
 
-		adc    = ADCs[i]
-		adcStr = num2str(adc)
+		adc      = ADCs[i]
+		adcStr   = num2str(adc)
 		leftAxis = AXIS_SCOPE_AD + adcStr
 
 		if((chanTPmode && !showPowerSpectrum) || !chanTPmode)
@@ -268,8 +268,8 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 
 			// use fast line drawing
 			ModifyGraph/W=$graph live($oscilloscopeTrace)=(2^1)
-			ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
-			ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50
+			ModifyGraph/W=$graph axisEnab($leftAxis)={YaxisLow, YaxisHigh}, freepos($leftAxis)={0, kwFraction}
+			ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis)=50
 		endif
 
 		// handles plotting of peak and steady state resistance curves in the oscilloscope window with the TP
@@ -282,9 +282,9 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 				powerSpectrumTrace = "powerSpectra" + adcStr
 				AppendToGraph/W=$graph/L=$leftAxis/B=bottomPS TPOscilloscopeData[][numActiveDACs + i]/TN=$powerSpectrumTrace
 				ModifyGraph/W=$graph lstyle=0, mode($powerSpectrumTrace)=0
-				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0,13107)
-				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
-				ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50, log($leftAxis)=1
+				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535, 0, 0, 13107)
+				ModifyGraph/W=$graph freepos($leftAxis)={0, kwFraction}, axisEnab($leftAxis)={YaxisLow, YaxisHigh}
+				ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis)=50, log($leftAxis)=1
 				SetAxis/W=$graph/A=2/N=2 $leftAxis
 				// use fast line drawing
 				ModifyGraph/W=$graph live($powerSpectrumTrace)=(2^1)
@@ -296,7 +296,7 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 				peakTrace = "PeakResistance" + adcStr
 				AppendToGraph/W=$graph/R=$rightAxis/T=$AXIS_SCOPE_TP_TIME TPStorage[][headstage][%PeakResistance]/TN=$peakTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
 				SetAxis/W=$graph/A=2/N=1 $rightAxis
-				ModifyGraph/W=$graph fSize($rightAxis)=10,grid($rightAxis)=1,gridStyle($rightAxis)=4,gridRGB($rightAxis)=(0,0,0,3277)
+				ModifyGraph/W=$graph fSize($rightAxis)=10, grid($rightAxis)=1, gridStyle($rightAxis)=4, gridRGB($rightAxis)=(0, 0, 0, 3277)
 				ModifyGraph/W=$graph live($peakTrace)=(2^1)
 				ModifyGraph/W=$graph lstyle($peakTrace)=1, rgb($peakTrace)=(peakColor.red, peakColor.green, peakColor.blue)
 				ModifyGraph/W=$graph mode($peakTrace)=2
@@ -306,16 +306,16 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 				steadyStateTrace = "SteadyStateResistance" + adcStr
 				AppendToGraph/W=$graph/R=$rightAxis/T=$AXIS_SCOPE_TP_TIME TPStorage[][headstage][%SteadyStateResistance]/TN=$steadyStateTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
 				SetAxis/W=$graph/A=2/N=1 $rightAxis
-				ModifyGraph/W=$graph fSize($rightAxis)=10,grid($rightAxis)=1,gridStyle($rightAxis)=4,gridRGB($rightAxis)=(0,0,0,3277)
+				ModifyGraph/W=$graph fSize($rightAxis)=10, grid($rightAxis)=1, gridStyle($rightAxis)=4, gridRGB($rightAxis)=(0, 0, 0, 3277)
 				ASSERT(isFinite(headStage), "invalid headStage")
 				if(isFinite(PressureData[headStage][%DAC_DevID])) // Check if pressure is enabled
 					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
 					ModifyGraph/W=$graph msize($steadyStateTrace)=1, gaps($steadyStateTrace)=0
-					ModifyGraph/W=$graph useMrkStrokeRGB($steadyStateTrace)=1, mrkStrokeRGB($steadyStateTrace)=(65535,65535,65535)
-					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][headstage][%Pressure],   \
-											(PRESSURE_SPECTRUM_PERCENT * MIN_REGULATOR_PRESSURE), \
-											(PRESSURE_SPECTRUM_PERCENT * MAX_REGULATOR_PRESSURE), BlueBlackRed,0}
-					ModifyGraph/W=$graph zmrkSize($steadyStateTrace)={TPStorage[*][headstage][%PressureChange],0,1,1,4}
+					ModifyGraph/W=$graph useMrkStrokeRGB($steadyStateTrace)=1, mrkStrokeRGB($steadyStateTrace)=(65535, 65535, 65535)
+					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][headstage][%Pressure],                                  \
+					                                                (PRESSURE_SPECTRUM_PERCENT * MIN_REGULATOR_PRESSURE),                \
+					                                                (PRESSURE_SPECTRUM_PERCENT * MAX_REGULATOR_PRESSURE), BlueBlackRed, 0}
+					ModifyGraph/W=$graph zmrkSize($steadyStateTrace)={TPStorage[*][headstage][%PressureChange], 0, 1, 1, 4}
 				else
 					ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
 				endif
@@ -325,14 +325,14 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 			endif
 
 			if(showPeakResistance || showSteadyStateResistance)
-				ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.3}, freePos($rightAxis)={0, kwFraction}
-				ModifyGraph/W=$graph lblPosMode($rightAxis) = 4, lblPos($rightAxis) = 60, lblRot($rightAxis) = 180
-				ModifyGraph/W=$graph nticks($rightAxis) = 2, tickUnit($AXIS_SCOPE_TP_TIME)=1
+				ModifyGraph/W=$graph axisEnab($rightAxis)={YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.3}, freePos($rightAxis)={0, kwFraction}
+				ModifyGraph/W=$graph lblPosMode($rightAxis)=4, lblPos($rightAxis)=60, lblRot($rightAxis)=180
+				ModifyGraph/W=$graph nticks($rightAxis)=2, tickUnit($AXIS_SCOPE_TP_TIME)=1
 				Label/W=$graph $rightAxis, "(MΩ)"
 
 				if(!oneTimeInitDone)
 					sprintf str, "\\[1\\K(%d, %d, %d)R\\Bss\\M(MΩ)\\]1\\K(%d, %d,%d)\r\\[1\\K(0, 26122, 0)R\\Bpeak\\M(MΩ)\\]1\\K(0, 0, 0)", steadyColor.red, steadyColor.green, steadyColor.blue, peakColor.red, peakColor.green, peakColor.blue
-					TextBox/W=$graph/F=0/B=1/X=0.62/Y=0.36/E=2  str
+					TextBox/W=$graph/F=0/B=1/X=0.62/Y=0.36/E=2 str
 
 					Label/W=$graph $AXIS_SCOPE_TP_TIME, "Relative time (s)"
 					SetAxis/W=$graph/A=2 $rightAxis
@@ -350,40 +350,40 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 
 			resPosPercY = 100 * (1 - ((YaxisHigh - YaxisLow) / 2 + YaxisLow))
 			sprintf str, RES_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, GetWavesDataFolder(TPResults, 2), "ResistanceSteadyState", headstage
-			TextBox/W=$graph/A=RT/B=1/F=0/X=-10 /Y=(resPosPercY - 1) str
+			TextBox/W=$graph/A=RT/B=1/F=0/X=-10/Y=(resPosPercY - 1) str
 			sprintf str, RES_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue, GetWavesDataFolder(TPResults, 2), "ResistanceInst", headstage
-			TextBox/W=$graph/A=RT/B=1/F=0/X=-10 /Y=(resPosPercY + 1) str
+			TextBox/W=$graph/A=RT/B=1/F=0/X=-10/Y=(resPosPercY + 1) str
 
 		endif
 
 		YaxisHigh -= YaxisSpacing
-		YaxisLow -= YaxisSpacing
+		YaxisLow  -= YaxisSpacing
 	endfor
 
 	if(WaveExists(previousADAxesProperties))
-		SetAxesProperties(graph, previousADAxesProperties, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_USE_MINMAX)
+		SetAxesProperties(graph, previousADAxesProperties, axesRegexp = AXIS_SCOPE_AD_REGEXP, orientation = AXIS_ORIENTATION_LEFT, mode = AXIS_RANGE_USE_MINMAX)
 	endif
 
 	SCOPE_SetADAxisLabel(device, dataAcqOrTP, activeHeadStage)
 
 	if(showPowerSpectrum)
-		Label/W=$graph bottomPS "Frequency (\\U)"
+		Label/W=$graph bottomPS, "Frequency (\\U)"
 		SetAxis/W=$graph/A bottomPS
 		ModifyGraph/W=$graph freePos(bottomPS)=0
 	elseif(gotTPChan)
-		Label/W=$graph bottomTP "Time TP (\\U)"
+		Label/W=$graph bottomTP, "Time TP (\\U)"
 		WAVE TPSettingsCalc = GetTPSettingsCalculated(device)
 		testPulseLength = TPSettingsCalc[%totalLengthMS]
-		pulseLength = TPSettingsCalc[%pulseLengthMS]
-		baselineFrac = TPSettingsCalc[%baselineFrac]
-		cutOff = max(0, baseLineFrac * testPulseLength - pulseLength/2)
-		SetAxis/W=$graph bottomTP cutOff, testPulseLength - cutOff
+		pulseLength     = TPSettingsCalc[%pulseLengthMS]
+		baselineFrac    = TPSettingsCalc[%baselineFrac]
+		cutOff          = max(0, baseLineFrac * testPulseLength - pulseLength / 2)
+		SetAxis/W=$graph bottomTP, cutOff, testPulseLength - cutOff
 		ModifyGraph/W=$graph freePos(bottomTP)=0
 	endif
 	if(gotDAQChan)
-		Label/W=$graph bottomDAQ "Time DAQ (\\U)"
+		Label/W=$graph bottomDAQ, "Time DAQ (\\U)"
 		pointsAcq = HW_GetEffectiveADCWaveLength(device, dataAcqOrTP)
-		sampInt = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_ADC) * MICRO_TO_MILLI
+		sampInt   = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_ADC) * MICRO_TO_MILLI
 		SetAxis/W=$graph bottomDAQ, 0, pointsAcq * sampInt
 		ModifyGraph/W=$graph freePos(bottomDAQ)=-35
 	endif
@@ -405,14 +405,14 @@ Function SCOPE_SetADAxisLabel(device, dataAcqOrTP, activeHeadStage)
 	endif
 
 	WAVE DAQConfigWave = GetDAQConfigWave(device)
-	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
+	WAVE ADCs          = GetADCListFromConfig(DAQConfigWave)
 
 	numADChannels = DimSize(ADCs, ROWS)
 
 	axList = AxisList(graph)
 
 	for(i = 0; i < numADChannels; i += 1)
-		adc    = ADCs[i]
+		adc      = ADCs[i]
 		leftAxis = AXIS_SCOPE_AD + num2str(adc)
 
 		if(WhichListItem(leftAxis, axList) == -1)
@@ -508,7 +508,7 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
 
-	WAVE config = GetDAQConfigWave(device)
+	WAVE config  = GetDAQConfigWave(device)
 	WAVE ADCmode = GetADCTypesFromConfig(config)
 	tpChannels = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
 
@@ -525,8 +525,8 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 		// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only
 		fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
 
-		WAVE ADCs = GetADCListFromConfig(config)
-		WAVE DACs = GetDACListFromConfig(config)
+		WAVE ADCs   = GetADCListFromConfig(config)
+		WAVE DACs   = GetDACListFromConfig(config)
 		WAVE hsProp = GetHSProperties(device)
 
 		WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
@@ -537,15 +537,15 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 		Make/FREE/N=(tpLengthPoints) channelData
 		WAVE tpInput.data = channelData
 
-		tpInput.device = device
-		tpInput.duration = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseLengthPointsTP_ADC] : TPSettingsCalc[%pulseLengthPointsDAQ_ADC]
-		tpInput.baselineFrac = TPSettingsCalc[%baselineFrac]
+		tpInput.device         = device
+		tpInput.duration       = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseLengthPointsTP_ADC] : TPSettingsCalc[%pulseLengthPointsDAQ_ADC]
+		tpInput.baselineFrac   = TPSettingsCalc[%baselineFrac]
 		tpInput.tpLengthPoints = tpLengthPoints
-		tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
-		tpInput.activeADCs = tpChannels
+		tpInput.readTimeStamp  = ticks * TICKS_TO_SECONDS
+		tpInput.activeADCs     = tpChannels
 
 		tpStart = trunc(fifoPosGlobal / tpLengthPoints)
-		tpEnd = trunc(fifoLatest / tpLengthPoints)
+		tpEnd   = trunc(fifoLatest / tpLengthPoints)
 		ASSERT(tpStart <= tpEnd, "New fifopos is smaller than previous fifopos")
 		Make/FREE/D/N=(tpEnd - tpStart) tpMarker
 		NewRandomSeed()
@@ -554,10 +554,10 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 		DEBUGPRINT("tpChannels: ", var = tpChannels)
 		DEBUGPRINT("tpLength: ", var = tpLengthPoints)
 
-		for(i = tpStart;i < tpEnd; i += 1)
+		for(i = tpStart; i < tpEnd; i += 1)
 
 			tpInput.measurementMarker = tpMarker[i - tpStart]
-			tpStartPos = i * tpLengthPoints
+			tpStartPos                = i * tpLengthPoints
 
 			if(saveTP)
 				Make/FREE/N=(tpLengthPoints, tpChannels) StoreTPWave
@@ -567,7 +567,7 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 				endfor
 				CopyScales/P scaledChannel, StoreTPWave
 				TPChanIndex = 0
-				hsList = ""
+				hsList      = ""
 			endif
 
 			for(j = 0; j < numADCs; j += 1)
@@ -583,9 +583,9 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 					else
 						clampAmp = TPSettings[%amplitudeVC][headstage]
 					endif
-					tpInput.clampAmp = clampAmp
+					tpInput.clampAmp  = clampAmp
 					tpInput.clampMode = hsProp[headstage][%ClampMode]
-					tpInput.hsIndex = headstage
+					tpInput.hsIndex   = headstage
 
 					DEBUGPRINT("headstage: ", var = headstage)
 					DEBUGPRINT("channel: ", var = numDACs + j)
@@ -623,12 +623,12 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 						WAVE scaledChannel = scaledDataWave[channelIndex]
 						MultiThread tpOsciForPowerSpectrum[][channelIndex] = scaledChannel[tpStartPos + p]
 						tpColumns[j] = channelIndex
-						j += 1
+						j           += 1
 					endif
 					CopyScales/P scaledChannel, tpOsciForPowerSpectrum
 				endfor
 				Redimension/N=(j) tpColumns
-				SCOPE_UpdatePowerSpectrum(device, tpColumns, osci=tpOsciForPowerSpectrum)
+				SCOPE_UpdatePowerSpectrum(device, tpColumns, osci = tpOsciForPowerSpectrum)
 			else
 				WAVE TPOscilloscopeData = GetTPOscilloscopeWave(device)
 				for(i = 0; i < numADCs; i += 1)
@@ -655,21 +655,21 @@ static Function SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceiD, fifoP
 	variable i, channel, decMethod, decFactor, numCols, numFifoChannels
 	string fifoName, msg, fifoInfo
 
-	WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
-	WAVE OscilloscopeData = GetOscilloscopeWave(device)
-	WAVE/WAVE NIDataWave = GetDAQDataWave(device, dataAcqOrTP)
+	WAVE/WAVE scaledDataWave   = GetScaledDataWave(device)
+	WAVE      OscilloscopeData = GetOscilloscopeWave(device)
+	WAVE/WAVE NIDataWave       = GetDAQDataWave(device, dataAcqOrTP)
 
 	fifoName = GetNIFIFOName(deviceID)
 	FIFOStatus/Q $fifoName
 	ASSERT(V_Flag != 0, "FIFO does not exist!")
 	numFifoChannels = V_FIFOnchans
-	fifoInfo = S_info
+	fifoInfo        = S_info
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		// update a full pulse
 		Make/FREE/N=(numFifoChannels) tpColumns
 		for(i = 0; i < numFifoChannels; i += 1)
 			channel = NumberByKey("NAME" + num2istr(i), fifoInfo)
-			WAVE NIChannel = NIDataWave[channel]
+			WAVE NIChannel     = NIDataWave[channel]
 			WAVE scaledChannel = scaledDataWave[channel]
 			Multithread OscilloscopeData[][channel] = NIChannel[p]
 			Multithread scaledChannel[] = NIChannel[p]
@@ -688,7 +688,7 @@ static Function SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceiD, fifoP
 		numCols = DimSize(scaledDataWave, COLS)
 		for(i = 0; i < numFifoChannels; i += 1)
 			channel = NumberByKey("NAME" + num2istr(i), fifoInfo)
-			WAVE NIChannel = NIDataWave[channel]
+			WAVE NIChannel     = NIDataWave[channel]
 			WAVE scaledChannel = scaledDataWave[channel]
 
 			AssertOnAndClearRTError()
@@ -728,12 +728,12 @@ static Function SCOPE_ITC_UpdateOscilloscope(device, dataAcqOrTP, chunk, fifoPos
 	variable startOfADColumns, endOfADColumns, decMethod, decFactor, i
 	string msg
 	WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
-	WAVE DAQDataWave       = GetDAQDataWave(device, dataAcqOrTP)
-	WAVE DAQConfigWave = GetDAQConfigWave(device)
-	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
-	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
+	WAVE      DAQDataWave    = GetDAQDataWave(device, dataAcqOrTP)
+	WAVE      DAQConfigWave  = GetDAQConfigWave(device)
+	WAVE      ADCs           = GetADCListFromConfig(DAQConfigWave)
+	WAVE      DACs           = GetDACListFromConfig(DAQConfigWave)
 	startOfADColumns = DimSize(DACs, ROWS)
-	endOfADColumns = startOfADColumns + DimSize(ADCs, ROWS)
+	endOfADColumns   = startOfADColumns + DimSize(ADCs, ROWS)
 
 	WAVE allGain = SWS_GETChannelGains(device, timing = GAIN_AFTER_DAQ)
 
@@ -814,7 +814,7 @@ End
 ///
 /// @return adjusted fifo position
 static Function SCOPE_ITC_AdjustFIFOPos(device, fifopos)
-	string device
+	string   device
 	variable fifopos
 
 	variable stopCollectionPoint
@@ -828,14 +828,14 @@ static Function SCOPE_ITC_AdjustFIFOPos(device, fifopos)
 		// we are done
 		// return the total length we wanted to acquire
 		stopCollectionPoint = ROVAR(GetStopCollectionPoint(device))
-		fifoPos = stopCollectionPoint
+		fifoPos             = stopCollectionPoint
 	elseif(fifoPos < 0)
 		printf "fifoPos was clipped to zero, old value %g\r", fifoPos
 		return 0
 	endif
 
 	WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
-	WAVE channel = scaledDataWave[0]
+	WAVE      channel        = scaledDataWave[0]
 
 	return min(fifoPos, DimSize(channel, ROWS))
 End

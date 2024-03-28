@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
@@ -15,12 +15,12 @@
 ///   The latter ones are only useful if you need to know if the folder exists.
 /// - Modifying wave getter functions might require to introduce wave versioning, see @ref WaveVersioningSupport
 
-static Constant ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION = 1
-static Constant ANALYSIS_BROWSER_FOLDER_LISTBOX_WAVE_VERSION = 1
-static Constant ANALYSIS_BROWSER_FOLDERCOL_LISTBOX_WAVE_VERSION = 1
-static Constant ANALYSIS_BROWSER_FOLDERSEL_LISTBOX_WAVE_VERSION = 1
-static Constant NUM_COLUMNS_LIST_WAVE   = 12
-static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
+static Constant    ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION           = 1
+static Constant    ANALYSIS_BROWSER_FOLDER_LISTBOX_WAVE_VERSION    = 1
+static Constant    ANALYSIS_BROWSER_FOLDERCOL_LISTBOX_WAVE_VERSION = 1
+static Constant    ANALYSIS_BROWSER_FOLDERSEL_LISTBOX_WAVE_VERSION = 1
+static Constant    NUM_COLUMNS_LIST_WAVE                           = 12
+static StrConstant WAVE_NOTE_LAYOUT_KEY                            = "WAVE_LAYOUT_VERSION"
 
 static Constant WAVE_TYPE_NUMERICAL = 0x1
 static Constant WAVE_TYPE_TEXTUAL   = 0x2
@@ -43,20 +43,20 @@ static StrConstant TP_SETTINGS_LABELS = "bufferSize;resistanceTol;sendToAllHS;ba
 /// Columns:
 /// - Head stage number
 ///
-Function/Wave GetChanAmpAssign(device)
+Function/WAVE GetChanAmpAssign(device)
 	string device
 
-	DFREF dfr = GetDevicePath(device)
+	DFREF    dfr              = GetDevicePath(device)
 	variable versionOfNewWave = 3
 
-	Wave/D/Z/SDFR=dfr wv = ChanAmpAssign
+	WAVE/D/Z/SDFR=dfr wv = ChanAmpAssign
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		Redimension/D/N=(10, NUM_HEADSTAGES, -1, -1) wv
 	else
-		Make/D/N=(10, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
+		Make/D/N=(10, NUM_HEADSTAGES) dfr:ChanAmpAssign/WAVE=wv
 		wv = NaN
 
 		// we don't have dimension labels yet
@@ -74,21 +74,21 @@ Function/Wave GetChanAmpAssign(device)
 			wv[6][0, 3] = q
 		endif
 
-		wv[1, 7;2][] = 1
+		wv[1, 7; 2][] = 1
 	endif
 
-	SetDimLabel ROWS,  0, VC_DA,        wv
-	SetDimLabel ROWS,  1, VC_DAGain,    wv
-	SetDimLabel ROWS,  2, VC_AD,        wv
-	SetDimLabel ROWS,  3, VC_ADGain,    wv
+	SetDimLabel ROWS, 0, VC_DA, wv
+	SetDimLabel ROWS, 1, VC_DAGain, wv
+	SetDimLabel ROWS, 2, VC_AD, wv
+	SetDimLabel ROWS, 3, VC_ADGain, wv
 
-	SetDimLabel ROWS,  4, IC_DA,        wv
-	SetDimLabel ROWS,  5, IC_DAGain,    wv
-	SetDimLabel ROWS,  6, IC_AD,        wv
-	SetDimLabel ROWS,  7, IC_ADGain,    wv
+	SetDimLabel ROWS, 4, IC_DA, wv
+	SetDimLabel ROWS, 5, IC_DAGain, wv
+	SetDimLabel ROWS, 6, IC_AD, wv
+	SetDimLabel ROWS, 7, IC_ADGain, wv
 
-	SetDimLabel ROWS,  8, AmpSerialNo,  wv
-	SetDimLabel ROWS,  9, AmpChannelID, wv
+	SetDimLabel ROWS, 8, AmpSerialNo, wv
+	SetDimLabel ROWS, 9, AmpChannelID, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv
@@ -105,20 +105,20 @@ End
 /// Columns:
 /// - Head stage number
 ///
-Function/Wave GetChanAmpAssignUnit(device)
+Function/WAVE GetChanAmpAssignUnit(device)
 	string device
 
-	DFREF dfr = GetDevicePath(device)
+	DFREF    dfr              = GetDevicePath(device)
 	variable versionOfNewWave = 1
 
-	Wave/T/Z/SDFR=dfr wv = ChanAmpAssignUnit
+	WAVE/T/Z/SDFR=dfr wv = ChanAmpAssignUnit
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// do nothing
 	else
-		Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/Wave=wv
+		Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/WAVE=wv
 		wv = ""
 
 		wv[0][] = "mV"
@@ -201,7 +201,7 @@ End
 /// @brief Check if wv exists and has the correct version
 /// UTF_NOINSTRUMENTATION
 threadsafe static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
-	Wave/Z wv
+	WAVE/Z   wv
 	variable versionOfNewWave
 
 	// The equality check ensures that you can also downgrade, e.g. from version 5 to 4, although this is *strongly* discouraged.
@@ -210,7 +210,7 @@ End
 
 /// @brief Check if the given wave's version is equal or larger than the given version, if version is not set false is returned
 threadsafe static Function WaveVersionIsAtLeast(wv, existingVersion)
-	WAVE/Z wv
+	WAVE/Z   wv
 	variable existingVersion
 
 	variable waveVersion
@@ -230,7 +230,7 @@ End
 
 /// @brief Check if the given wave's version is smaller than the given version, if version is not set true is returned
 threadsafe static Function WaveVersionIsSmaller(wv, existingVersion)
-	WAVE/Z wv
+	WAVE/Z   wv
 	variable existingVersion
 
 	variable waveVersion
@@ -245,14 +245,14 @@ End
 /// @brief return the Version of the Wave, returns NaN if no version was set
 /// UTF_NOINSTRUMENTATION
 threadsafe Function GetWaveVersion(wv)
-	Wave/Z wv
+	WAVE/Z wv
 
 	return GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY)
 End
 
 /// @brief Set the wave layout version of wave
 threadsafe static Function SetWaveVersion(wv, val)
-	Wave wv
+	WAVE     wv
 	variable val
 
 	ASSERT_TS(IsValidWaveVersion(val), "val must be a positive and non-zero integer")
@@ -326,7 +326,7 @@ threadsafe Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
 	// 3: Rename to target name
 	oldName = GetDataFolder(0, $oldFolder)
 	newName = GetDataFolder(0, createDFWithAllParents(newFolder))
-	KillOrMoveToTrash(dfr=$newFolder)
+	KillOrMoveToTrash(dfr = $newFolder)
 
 	sprintf msg, "%s -> %s", oldName, newName
 	DEBUGPRINT_TS(msg)
@@ -344,7 +344,7 @@ threadsafe Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
 	DEBUGPRINT_TS(msg)
 
 	MoveDataFolder $from, $to
-	KillOrMoveToTrash(dfr=$tempFolder)
+	KillOrMoveToTrash(dfr = $tempFolder)
 
 	return $newFolder
 End
@@ -464,21 +464,21 @@ End
 ///
 /// Layers:
 /// - NUM_HEADSTAGES positions with value entries at hsIndex
-Function/Wave GetTPResultAsyncBuffer(device)
+Function/WAVE GetTPResultAsyncBuffer(device)
 	string device
 
 	variable versionOfNewWave = 1
 
 	DFREF dfr = GetDeviceTestPulse(device)
 
-	Wave/Z/SDFR=dfr/D wv = TPResultAsyncBuffer
+	WAVE/Z/SDFR=dfr/D wv = TPResultAsyncBuffer
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 9, -1) wv
 	else
-		Make/N=(0, 9, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/Wave=wv
+		Make/N=(0, 9, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/WAVE=wv
 	endif
 
 	SetDimLabel COLS, 0, ASYNCDATA, wv
@@ -515,13 +515,13 @@ End
 /// Layers:
 /// - 0: Clamp Mode
 /// - 1: Headstage
-Function/Wave GetChannelClampMode(device)
+Function/WAVE GetChannelClampMode(device)
 	string device
 
-	DFREF dfr = GetDevicePath(device)
+	DFREF    dfr              = GetDevicePath(device)
 	variable versionOfNewWave = 1
 
-	Wave/Z/SDFR=dfr wv = ChannelClampMode
+	WAVE/Z/SDFR=dfr wv = ChannelClampMode
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -532,7 +532,7 @@ Function/Wave GetChannelClampMode(device)
 		wv[][%DAC][1] = GetHeadstageFromSettings(device, XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
 		wv[][%ADC][1] = GetHeadstageFromSettings(device, XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
 	else
-		Make/R/N=(NUM_AD_CHANNELS, 2, 2) dfr:ChannelClampMode/Wave=wv
+		Make/R/N=(NUM_AD_CHANNELS, 2, 2) dfr:ChannelClampMode/WAVE=wv
 		wv = NaN
 	endif
 
@@ -553,24 +553,24 @@ End
 Function/WAVE GetHSProperties(device)
 	string device
 
-	DFREF dfr = GetDevicePath(device)
+	DFREF    dfr              = GetDevicePath(device)
 	variable versionOfNewWave = 1
 
-	Wave/Z/SDFR=dfr wv = HSProperties
+	WAVE/Z/SDFR=dfr wv = HSProperties
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/R/N=(NUM_HEADSTAGES, 4) dfr:HSProperties/Wave=wv
+		Make/R/N=(NUM_HEADSTAGES, 4) dfr:HSProperties/WAVE=wv
 	endif
 
 	wv = NaN
 
-	SetDimLabel COLS, 0, Enabled  , wv
-	SetDimLabel COLS, 1, ADC      , wv
-	SetDimLabel COLS, 2, DAC      , wv
+	SetDimLabel COLS, 0, Enabled, wv
+	SetDimLabel COLS, 1, ADC, wv
+	SetDimLabel COLS, 2, DAC, wv
 	SetDimLabel COLS, 3, ClampMode, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -729,7 +729,7 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 Function/DF GetSingleSweepFolder(dfr, sweepNo)
-	DFREF dfr
+	DFREF    dfr
 	variable sweepNo
 
 	return createDFWithAllParents(GetSingleSweepFolderAsString(dfr, sweepNo))
@@ -737,7 +737,7 @@ End
 
 /// @brief Return the path to a subfolder below `dfr` for splitted sweep specific data
 Function/S GetSingleSweepFolderAsString(dfr, sweepNo)
-	DFREF dfr
+	DFREF    dfr
 	variable sweepNo
 
 	ASSERT(DataFolderExistsDFR(dfr), "dfr must exist")
@@ -768,11 +768,11 @@ End
 ///
 /// @param device device
 /// @param mode       One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-Function/Wave GetDAQDataWave(string device, variable mode)
+Function/WAVE GetDAQDataWave(string device, variable mode)
 
 	string name
 
-	DFREF dfr = GetDevicePath(device)
+	DFREF    dfr          = GetDevicePath(device)
 	variable hardwareType = GetHardwareType(device)
 
 	switch(mode)
@@ -794,10 +794,10 @@ Function/Wave GetDAQDataWave(string device, variable mode)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:$name/Wave=wv
+			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv
 			break
 		case HARDWARE_NI_DAC:
-			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:$name/Wave=wv_ni
+			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv_ni
 			WAVE wv = wv_ni
 			break
 	endswitch
@@ -816,7 +816,7 @@ Function/WAVE GetNIDAQChannelWave(string device, variable channel, variable mode
 	string name, prefix
 	variable hardwareType = GetHardwareType(device)
 
-	switch (hardwareType)
+	switch(hardwareType)
 		case HARDWARE_NI_DAC:
 			prefix = "NI"
 			break
@@ -901,19 +901,19 @@ Function/WAVE GetEpochsWave(string device)
 
 	string name = "EpochsWave"
 
-	DFREF dfr = GetDevicePath(device)
-	WAVE/T/Z/SDFR=dfr wv = $name
+	DFREF             dfr = GetDevicePath(device)
+	WAVE/T/Z/SDFR=dfr wv  = $name
 
 	if(ExistsWithCorrectLayoutVersion(wv, EPOCHS_WAVE_VERSION))
-	   return wv
+		return wv
 	elseif(WaveExists(wv))
 		if(WaveVersionIsSmaller(wv, 2))
-		   Redimension/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS) wv
+			Redimension/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS) wv
 		endif
 		if(WaveVersionIsSmaller(wv, 3))
-		   Redimension/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS, XOP_CHANNEL_TYPE_COUNT) wv
-		   wv[][][][XOP_CHANNEL_TYPE_DAC] = wv[p][q][r][0]
-		   wv[][][][0] = ""
+			Redimension/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS, XOP_CHANNEL_TYPE_COUNT) wv
+			wv[][][][XOP_CHANNEL_TYPE_DAC] = wv[p][q][r][0]
+			wv[][][][0]                    = ""
 		endif
 
 		SetEpochsDimensionLabelAndVersion(wv)
@@ -1001,7 +1001,7 @@ End
 /// - Change wave to double precision
 /// - Headstage column added
 /// - ClampMode column added
-Function/Wave GetDAQConfigWave(device)
+Function/WAVE GetDAQConfigWave(device)
 	string device
 
 	DFREF dfr = GetDevicePath(device)
@@ -1068,7 +1068,7 @@ static Constant DQM_ACTIVE_DEV_WAVE_VERSION = 3
 /// - 1: Added column activeChunk
 /// - 2: Changed precision to double
 /// - 3: Removed column 2 with StopCollectionPoint as it is no longer used
-Function/Wave GetDQMActiveDeviceList()
+Function/WAVE GetDQMActiveDeviceList()
 
 	DFREF dfr = GetActiveDAQDevicesFolder()
 
@@ -1093,7 +1093,7 @@ Function/Wave GetDQMActiveDeviceList()
 		Make/D/N=(0, 4) dfr:ActiveDeviceList/WAVE=wv
 	endif
 
-	SetDimLabel COLS, 0, DeviceID,    wv
+	SetDimLabel COLS, 0, DeviceID, wv
 	SetDimLabel COLS, 1, ADChannelToMonitor, wv
 	SetDimLabel COLS, 2, HardwareType, wv
 	SetDimLabel COLS, 3, ActiveChunk, wv
@@ -1104,10 +1104,10 @@ Function/Wave GetDQMActiveDeviceList()
 End
 
 /// @brief Return the intermediate storage wave for the TTL data
-Function/Wave GetTTLWave(device)
+Function/WAVE GetTTLWave(device)
 	string device
 
-	DFREF dfr = GetDevicePath(device)
+	DFREF    dfr          = GetDevicePath(device)
 	variable hardwareType = GetHardwareType(device)
 
 	switch(hardwareType)
@@ -1118,7 +1118,7 @@ Function/Wave GetTTLWave(device)
 				return wv
 			endif
 
-			Make/W/N=(0) dfr:TTLWave/Wave=wv
+			Make/W/N=(0) dfr:TTLWave/WAVE=wv
 
 			return wv
 
@@ -1130,7 +1130,7 @@ Function/Wave GetTTLWave(device)
 				return wv_ni
 			endif
 
-			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:TTLWave/Wave=wv_ni
+			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:TTLWave/WAVE=wv_ni
 
 			return wv_ni
 
@@ -1150,7 +1150,7 @@ End
 /// Columns:
 /// - 0: Stimset fingerprint of the previous sweep
 /// - 1: Current stimset acquisition cycle ID
-Function/Wave GetStimsetAcqIDHelperWave(device)
+Function/WAVE GetStimsetAcqIDHelperWave(device)
 	string device
 
 	DFREF dfr = GetDevicePath(device)
@@ -1161,10 +1161,10 @@ Function/Wave GetStimsetAcqIDHelperWave(device)
 		return wv
 	endif
 
-	Make/D/N=(NUM_DA_TTL_CHANNELS, 2) dfr:stimsetAcqIDHelper/Wave=wv
+	Make/D/N=(NUM_DA_TTL_CHANNELS, 2) dfr:stimsetAcqIDHelper/WAVE=wv
 
 	SetDimLabel COLS, 0, fingerprint, wv
-	SetDimLabel COLS, 1, id         , wv
+	SetDimLabel COLS, 1, id, wv
 
 	return wv
 End
@@ -1229,11 +1229,11 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetLBTextualValues(device)
+Function/WAVE GetLBTextualValues(device)
 	string device
 
 	string newName = "textualValues"
-	DFREF newDFR = GetDevSpecLabNBFolder(device)
+	DFREF  newDFR  = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
 	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":textDocumentation")
@@ -1241,19 +1241,19 @@ Function/Wave GetLBTextualValues(device)
 	p.name    = "txtDocWave"
 	p.newName = newName
 
-	Wave/T/Z wv = UpgradeWaveLocationAndGetIt(p)
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/T/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+	Make/T/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/WAVE=wv
 	wv = ""
 
-	SetDimLabel COLS, 0, SweepNum                  , wv
-	SetDimLabel COLS, 1, TimeStamp                 , wv
+	SetDimLabel COLS, 0, SweepNum, wv
+	SetDimLabel COLS, 1, TimeStamp, wv
 	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
-	SetDimLabel COLS, 3, EntrySourceType           , wv
+	SetDimLabel COLS, 3, EntrySourceType, wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
@@ -1280,15 +1280,15 @@ static Function UpgradeLabNotebook(device)
 	variable numCols, i, col, numEntries, sourceCol
 	string list, key
 
-	WAVE  numericalValues = GetLBNumericalValues(device)
-	WAVE/T textualValues  = GetLBTextualValues(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues   = GetLBTextualValues(device)
 
 	// we only have to check the new place and name as we are called
 	// later than UpgradeWaveLocationAndGetIt from both key wave getters
 	//
 	// avoid recursion by checking the wave location first
-	Wave/Z/T/SDFR=GetDevSpecLabNBFolder(device) numericalKeys
-	Wave/Z/T/SDFR=GetDevSpecLabNBFolder(device) textualKeys
+	WAVE/Z/T/SDFR=GetDevSpecLabNBFolder(device) numericalKeys
+	WAVE/Z/T/SDFR=GetDevSpecLabNBFolder(device) textualKeys
 
 	if(!WaveExists(numericalKeys))
 		WAVE/T numericalKeys = GetLBNumericalKeys(device)
@@ -1320,12 +1320,12 @@ static Function UpgradeLabNotebook(device)
 
 		Redimension/N=(-1, numCols + 1, -1) numericalKeys, numericalValues
 
-		numericalKeys[][numCols]           = numericalKeys[p][2]
+		numericalKeys[][numCols]     = numericalKeys[p][2]
 		numericalValues[][numCols][] = numericalValues[p][2][r]
 
 		numericalValues[][2][] = NaN
-		numericalKeys[][2]           = ""
-		numericalKeys[0][2]          = "TimeStampSinceIgorEpochUTC"
+		numericalKeys[][2]     = ""
+		numericalKeys[0][2]    = "TimeStampSinceIgorEpochUTC"
 		LBN_SetDimensionLabels(numericalKeys, numericalValues)
 
 		DEBUGPRINT("Upgraded numerical labnotebook to hold UTC timestamps")
@@ -1337,12 +1337,12 @@ static Function UpgradeLabNotebook(device)
 
 		Redimension/N=(-1, numCols + 1, -1) textualKeys, textualValues
 
-		textualKeys[][numCols]   = textualKeys[p][2]
+		textualKeys[][numCols]     = textualKeys[p][2]
 		textualValues[][numCols][] = textualValues[p][2][r]
 
-		textualValues[][2][]   = ""
-		textualKeys[][2]  = ""
-		textualKeys[0][2] = "TimeStampSinceIgorEpochUTC"
+		textualValues[][2][] = ""
+		textualKeys[][2]     = ""
+		textualKeys[0][2]    = "TimeStampSinceIgorEpochUTC"
 		LBN_SetDimensionLabels(textualKeys, textualValues)
 
 		DEBUGPRINT("Upgraded textual labnotebook to hold UTC timestamps")
@@ -1512,7 +1512,7 @@ End
 static Function SetLBKeysRowDimensionLabels(WAVE wv)
 
 	SetDimLabel ROWS, 0, Parameter, wv
-	SetDimLabel ROWS, 1, Units,     wv
+	SetDimLabel ROWS, 1, Units, wv
 	SetDimLabel ROWS, 2, Tolerance, wv
 
 	if(DimSize(wv, ROWS) == 6)
@@ -1536,12 +1536,12 @@ End
 /// - 3: Source entry type, one of @ref DataAcqModes
 /// - 4: Acquisition state, one of @ref AcquisitionStates
 /// - other columns are filled at runtime
-Function/Wave GetLBTextualKeys(device)
+Function/WAVE GetLBTextualKeys(device)
 	string device
 
 	variable versionOfNewWave = LABNOTEBOOK_VERSION
-	string newName = "textualKeys"
-	DFREF newDFR = GetDevSpecLabNBFolder(device)
+	string   newName          = "textualKeys"
+	DFREF    newDFR           = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
 	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":TextDocKeyWave")
@@ -1558,7 +1558,7 @@ Function/Wave GetLBTextualKeys(device)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
-		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/WAVE=wv
 	endif
 
 	wv = ""
@@ -1590,13 +1590,13 @@ End
 /// - 3: Source entry type, one of @ref DataAcqModes
 /// - 4: Acquisition state, one of @ref AcquisitionStates
 /// - other columns are filled at runtime
-Function/Wave GetLBNumericalKeys(device)
+Function/WAVE GetLBNumericalKeys(device)
 	string device
 
 	variable versionOfNewWave = LABNOTEBOOK_VERSION
 	/// @todo move the renaming stuff into one function for all four labnotebook waves
 	string newName = "numericalKeys"
-	DFREF newDFR = GetDevSpecLabNBFolder(device)
+	DFREF  newDFR  = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
 	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":KeyWave")
@@ -1613,7 +1613,7 @@ Function/Wave GetLBNumericalKeys(device)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
-		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/WAVE=wv
 	endif
 
 	wv = ""
@@ -1673,9 +1673,9 @@ End
 
 static Function/WAVE GetLBDescription_Impl(string name, variable forceReload)
 
-	variable versionOfNewWave = LABNOTEBOOK_VERSION
-	DFREF dfr = GetStaticDataFolder()
-	WAVE/T/Z/SDFR=dfr wv = $name
+	variable          versionOfNewWave = LABNOTEBOOK_VERSION
+	DFREF             dfr              = GetStaticDataFolder()
+	WAVE/T/Z/SDFR=dfr wv               = $name
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave) && !forceReload)
 		return wv
@@ -1716,8 +1716,8 @@ End
 
 static Function SaveLBDescription_Impl(string name, variable version)
 
-	DFREF dfr = GetStaticDataFolder()
-	WAVE/T/Z/SDFR=dfr wv = $name
+	DFREF             dfr = GetStaticDataFolder()
+	WAVE/T/Z/SDFR=dfr wv  = $name
 	ASSERT(WaveExists(wv), "Missing wave")
 
 	RemoveAllDimLabels(wv)
@@ -1732,7 +1732,7 @@ static Function SaveLBDescription_Impl(string name, variable version)
 	InsertPoints/M=(ROWS) 0, 1, dup
 
 	// Add header
-	dup[0][] = {{"Name"}, {"Unit"},{"Tolerance"},{"Description"},{"Headstage Contingency"}, {"ClampMode"}}
+	dup[0][] = {{"Name"}, {"Unit"}, {"Tolerance"}, {"Description"}, {"Headstage Contingency"}, {"ClampMode"}}
 
 	StoreWaveOnDisk(dup, name)
 End
@@ -1748,11 +1748,11 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetLBNumericalValues(device)
+Function/WAVE GetLBNumericalValues(device)
 	string device
 
 	string newName = "numericalValues"
-	DFREF newDFR = GetDevSpecLabNBFolder(device)
+	DFREF  newDFR  = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
 	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":settingsHistory")
@@ -1763,12 +1763,12 @@ Function/Wave GetLBNumericalValues(device)
 	WAVE/D/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(!WaveExists(wv))
-		Make/D/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv = NaN
+		Make/D/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/WAVE=wv = NaN
 
-		SetDimLabel COLS, 0, SweepNum                  , wv
-		SetDimLabel COLS, 1, TimeStamp                 , wv
+		SetDimLabel COLS, 0, SweepNum, wv
+		SetDimLabel COLS, 1, TimeStamp, wv
 		SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
-		SetDimLabel COLS, 3, EntrySourceType           , wv
+		SetDimLabel COLS, 3, EntrySourceType, wv
 
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
@@ -1790,8 +1790,8 @@ End
 /// - 3: Source entry type, one of @ref DataAcqModes
 /// - 4: Acquisition state, one of @ref AcquisitionStates
 /// - other columns are filled at runtime
-Function/Wave GetNumericalResultsKeys()
-	string name
+Function/WAVE GetNumericalResultsKeys()
+	string   name
 	variable versionOfNewWave
 
 	DFREF dfr = GetResultsFolder()
@@ -1806,7 +1806,7 @@ Function/Wave GetNumericalResultsKeys()
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
-		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:$name/Wave=wv
+		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:$name/WAVE=wv
 	endif
 
 	wv = ""
@@ -1815,7 +1815,7 @@ Function/Wave GetNumericalResultsKeys()
 	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
 
 	SetDimLabel ROWS, 0, Parameter, wv
-	SetDimLabel ROWS, 1, Units,     wv
+	SetDimLabel ROWS, 1, Units, wv
 	SetDimLabel ROWS, 2, Tolerance, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -1834,7 +1834,7 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetNumericalResultsValues()
+Function/WAVE GetNumericalResultsValues()
 	string name
 
 	DFREF dfr = GetResultsFolder()
@@ -1846,12 +1846,12 @@ Function/Wave GetNumericalResultsValues()
 		return wv
 	endif
 
-	Make/D/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) dfr:$name/Wave=wv = NaN
+	Make/D/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) dfr:$name/WAVE=wv = NaN
 
-	SetDimLabel COLS, 0, SweepNum                  , wv
-	SetDimLabel COLS, 1, TimeStamp                 , wv
+	SetDimLabel COLS, 0, SweepNum, wv
+	SetDimLabel COLS, 1, TimeStamp, wv
 	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
-	SetDimLabel COLS, 3, EntrySourceType           , wv
+	SetDimLabel COLS, 3, EntrySourceType, wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
@@ -1887,8 +1887,8 @@ End
 /// - Sweep Formula store [X]: Stored data from SweepFormula `store` operation.
 ///                            The `X` is dynamic and the first argument passed.
 /// - Other columns are created and filled at runtime
-Function/Wave GetTextualResultsKeys()
-	string name
+Function/WAVE GetTextualResultsKeys()
+	string   name
 	variable versionOfNewWave
 
 	DFREF dfr = GetResultsFolder()
@@ -1903,7 +1903,7 @@ Function/Wave GetTextualResultsKeys()
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
-		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:$name/Wave=wv
+		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:$name/WAVE=wv
 	endif
 
 	wv = ""
@@ -1912,7 +1912,7 @@ Function/Wave GetTextualResultsKeys()
 	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
 
 	SetDimLabel ROWS, 0, Parameter, wv
-	SetDimLabel ROWS, 1, Units,     wv
+	SetDimLabel ROWS, 1, Units, wv
 	SetDimLabel ROWS, 2, Tolerance, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -1931,7 +1931,7 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetTextualResultsValues()
+Function/WAVE GetTextualResultsValues()
 	string name
 
 	DFREF dfr = GetResultsFolder()
@@ -1943,12 +1943,12 @@ Function/Wave GetTextualResultsValues()
 		return wv
 	endif
 
-	Make/T/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) dfr:$name/Wave=wv
+	Make/T/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) dfr:$name/WAVE=wv
 
-	SetDimLabel COLS, 0, SweepNum                  , wv
-	SetDimLabel COLS, 1, TimeStamp                 , wv
+	SetDimLabel COLS, 0, SweepNum, wv
+	SetDimLabel COLS, 1, TimeStamp, wv
 	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
-	SetDimLabel COLS, 3, EntrySourceType           , wv
+	SetDimLabel COLS, 3, EntrySourceType, wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
@@ -1980,8 +1980,8 @@ threadsafe Function/WAVE GetLBRowCache(values)
 
 	variable versionOfNewWave = 5
 
-	actual        = WaveModCountWrapper(values)
-	name          = GetWavesDataFolder(values, 2)
+	actual = WaveModCountWrapper(values)
+	name   = GetWavesDataFolder(values, 2)
 	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RowCache"
@@ -2007,8 +2007,8 @@ threadsafe Function/WAVE GetLBRowCache(values)
 
 			if(IsFinite(sweepNo))
 				EnsureLargeEnoughWave(wv, indexShouldExist = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_GET_RANGE)
-				first = limit(sweepNo - 1, 0, inf)
-				last = sweepNo
+				first = limit(sweepNo - 1, 0, Inf)
+				last  = sweepNo
 				Multithread wv[first, last][][] = LABNOTEBOOK_GET_RANGE
 
 				// now we are up to date
@@ -2025,7 +2025,7 @@ threadsafe Function/WAVE GetLBRowCache(values)
 	Multithread wv = LABNOTEBOOK_GET_RANGE
 
 	SetDimLabel COLS, 0, first, wv
-	SetDimLabel COLS, 1, last,  wv
+	SetDimLabel COLS, 1, last, wv
 
 	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
 	SetWaveVersion(wv, versionOfNewWave)
@@ -2059,8 +2059,8 @@ threadsafe Function/WAVE GetLBIndexCache(values)
 
 	variable versionOfNewWave = 5
 
-	actual        = WaveModCountWrapper(values)
-	name          = GetWavesDataFolder(values, 2)
+	actual = WaveModCountWrapper(values)
+	name   = GetWavesDataFolder(values, 2)
 	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_IndexCache"
@@ -2084,8 +2084,8 @@ threadsafe Function/WAVE GetLBIndexCache(values)
 
 			if(IsFinite(sweepNo))
 				EnsureLargeEnoughWave(wv, indexShouldExist = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
-				first = limit(sweepNo - 1, 0, inf)
-				last = sweepNo
+				first = limit(sweepNo - 1, 0, Inf)
+				last  = sweepNo
 				Multithread wv[first, last][][] = LABNOTEBOOK_UNCACHED_VALUE
 
 				// now we are up to date
@@ -2131,8 +2131,8 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 
 	ASSERT_TS(WaveExists(numericalValues) && IsNumericWave(numericalValues), "Expected existing numerical labnotebook")
 
-	actual        = WaveModCountWrapper(numericalValues)
-	name          = GetWavesDataFolder(numericalValues, 2)
+	actual = WaveModCountWrapper(numericalValues)
+	name   = GetWavesDataFolder(numericalValues, 2)
 	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RACidCache"
@@ -2159,7 +2159,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
 	SetWaveVersion(wv, versionOfNewWave)
 
-	SetDimLabel COLS, 0, $RA_ACQ_CYCLE_ID_KEY     , wv
+	SetDimLabel COLS, 0, $RA_ACQ_CYCLE_ID_KEY, wv
 	SetDimLabel COLS, 1, $STIMSET_ACQ_CYCLE_ID_KEY, wv
 
 	return wv
@@ -2170,7 +2170,7 @@ static Constant SWEEP_SETTINGS_WAVE_VERSION = 38
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
 static Function SetSweepSettingsDimLabels(dest, sourceKey)
-	WAVE dest
+	WAVE   dest
 	WAVE/T sourceKey
 
 	variable i, numCols
@@ -2201,14 +2201,14 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetSweepSettingsWave(device)
+Function/WAVE GetSweepSettingsWave(device)
 	string device
 
 	variable numCols
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
-	string newName = "sweepSettingsNumericValues"
-	DFREF newDFR = GetDevSpecLabNBTempFolder(device)
+	string   newName          = "sweepSettingsNumericValues"
+	DFREF    newDFR           = GetDevSpecLabNBTempFolder(device)
 
 	STRUCT WaveLocationMod p
 	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":settingsHistory")
@@ -2228,7 +2228,7 @@ Function/Wave GetSweepSettingsWave(device)
 	if(WaveExists(wv))
 		Redimension/D/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/D/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/D/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/WAVE=wv
 	endif
 
 	wv = NaN
@@ -2312,12 +2312,12 @@ End
 /// - 57: Save amplifier settings
 /// - 58: Require amplifier
 /// - 59: Skip Ahead
-Function/Wave GetSweepSettingsKeyWave(device)
+Function/WAVE GetSweepSettingsKeyWave(device)
 	string device
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
-	string newName = "sweepSettingsNumericKeys"
-	DFREF newDFR = GetDevSpecLabNBTempFolder(device)
+	string   newName          = "sweepSettingsNumericKeys"
+	DFREF    newDFR           = GetDevSpecLabNBTempFolder(device)
 
 	STRUCT WaveLocationMod p
 	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":KeyWave")
@@ -2332,7 +2332,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 60) wv
 	else
-		Make/T/N=(3, 60) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 60) newDFR:$newName/WAVE=wv
 	endif
 
 	wv = ""
@@ -2442,7 +2442,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][24] = "0.1"
 
 	wv[%Parameter][25] = "Stim set length"
-	wv[%Units][25]     = "" // points not time
+	wv[%Units][25]     = ""                // points not time
 	wv[%Tolerance][25] = "0.1"
 
 	wv[%Parameter][26] = "oodDAQ Pre Feature"
@@ -2600,14 +2600,14 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetSweepSettingsTextWave(device)
+Function/WAVE GetSweepSettingsTextWave(device)
 	string device
 
 	variable numCols
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
-	string newName = "sweepSettingsTextValues"
-	DFREF newDFR = GetDevSpecLabNBTempFolder(device)
+	string   newName          = "sweepSettingsTextValues"
+	DFREF    newDFR           = GetDevSpecLabNBTempFolder(device)
 
 	STRUCT WaveLocationMod p
 	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":textDocumentation")
@@ -2627,7 +2627,7 @@ Function/Wave GetSweepSettingsTextWave(device)
 	if(WaveExists(wv))
 		Redimension/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/WAVE=wv
 	endif
 
 	wv = ""
@@ -2691,12 +2691,12 @@ End
 /// - 39: TTL rack one set cycle counts (ITC hardware)
 /// - 40: TTL set cycle counts (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
 /// - 41: Device (aka DAEphys panel name)
-Function/Wave GetSweepSettingsTextKeyWave(device)
+Function/WAVE GetSweepSettingsTextKeyWave(device)
 	string device
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
-	string newName = "sweepSettingsTextKeys"
-	DFREF newDFR = GetDevSpecLabNBTempFolder(device)
+	string   newName          = "sweepSettingsTextKeys"
+	DFREF    newDFR           = GetDevSpecLabNBTempFolder(device)
 
 	STRUCT WaveLocationMod p
 	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":textDocKeyWave")
@@ -2711,7 +2711,7 @@ Function/Wave GetSweepSettingsTextKeyWave(device)
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 50, 0) wv
 	else
-		Make/T/N=(1, 50) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 50) newDFR:$newName/WAVE=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -2823,10 +2823,10 @@ End
 ///       state is switched (aka on->off or off->on)
 /// - 29: Auto TP Baseline Fit result: One of @ref TPBaselineFitResults
 /// - 30: Auto TP Delta V [mV]
-Function/Wave GetTPStorage(device)
+Function/WAVE GetTPStorage(device)
 	string device
 
-	dfref dfr = GetDeviceTestPulse(device)
+	DFREF    dfr              = GetDeviceTestPulse(device)
 	variable versionOfNewWave = 15
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
@@ -2837,15 +2837,15 @@ Function/Wave GetTPStorage(device)
 		Redimension/N=(-1, NUM_HEADSTAGES, 31)/D wv
 
 		if(WaveVersionIsSmaller(wv, 10))
-			wv[][][17]    = NaN
-			wv[][][20,21] = NaN
+			wv[][][17]     = NaN
+			wv[][][20, 21] = NaN
 		endif
 		if(WaveVersionIsSmaller(wv, 11))
-			wv[][][22]    = NaN
+			wv[][][22] = NaN
 		endif
 		// no size change on version 12
 		if(WaveVersionIsSmaller(wv, 13))
-			wv[][][23]    = NaN
+			wv[][][23] = NaN
 		endif
 		if(WaveVersionIsSmaller(wv, 14))
 			wv[][][24] = NaN
@@ -2854,46 +2854,46 @@ Function/Wave GetTPStorage(device)
 			wv[][][25, 30] = NaN
 		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 31)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 31)/D dfr:TPStorage/WAVE=wv
 
 		wv = NaN
 
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
 
-	SetDimLabel COLS,  -1,  Headstage                   , wv
+	SetDimLabel COLS, -1, Headstage, wv
 
-	SetDimLabel LAYERS,  0, HoldingCmd_VC               , wv
-	SetDimLabel LAYERS,  1, HoldingCmd_IC               , wv
-	SetDimLabel LAYERS,  2, PeakResistance              , wv
-	SetDimLabel LAYERS,  3, SteadyStateResistance       , wv
-	SetDimLabel LAYERS,  4, TimeInSeconds               , wv
-	SetDimLabel LAYERS,  5, DeltaTimeInSeconds          , wv
-	SetDimLabel LAYERS,  6, Rss_Slope                   , wv
-	SetDimLabel LAYERS,  7, Pressure                    , wv
-	SetDimLabel LAYERS,  8, TimeStamp                   , wv
-	SetDimLabel LAYERS,  9, TimeStampSinceIgorEpochUTC  , wv
-	SetDimLabel LAYERS, 10, PressureChange              , wv
-	SetDimLabel LAYERS, 11, Baseline_VC                 , wv
-	SetDimLabel LAYERS, 12, Baseline_IC                 , wv
-	SetDimLabel LAYERS, 13, ADC                         , wv
-	SetDimLabel LAYERS, 14, DAC                         , wv
-	SetDimLabel LAYERS, 15, Headstage                   , wv
-	SetDimLabel LAYERS, 16, ClampMode                   , wv
-	SetDimLabel LAYERS, 17, UserPressure                , wv
-	SetDimLabel LAYERS, 18, PressureMethod              , wv
-	SetDimLabel LAYERS, 19, ValidState                  , wv
-	SetDimLabel LAYERS, 20, UserPressureType            , wv
-	SetDimLabel LAYERS, 21, UserPressureTimeStampUTC    , wv
-	SetDimLabel LAYERS, 22, TPMarker                    , wv
-	SetDimLabel LAYERS, 23, CellState                   , wv
-	SetDimLabel LAYERS, 24, TPCycleID                   , wv
-	SetDimLabel LAYERS, 25, AutoTPAmplitude             , wv
-	SetDimLabel LAYERS, 26, AutoTPBaseline              , wv
-	SetDimLabel LAYERS, 27, AutoTPBaselineRangeExceeded , wv
-	SetDimLabel LAYERS, 28, AutoTPCycleID               , wv
-	SetDimLabel LAYERS, 29, AutoTPBaselineFitResult     , wv
-	SetDimLabel LAYERS, 30, AutoTPDeltaV                , wv
+	SetDimLabel LAYERS, 0, HoldingCmd_VC, wv
+	SetDimLabel LAYERS, 1, HoldingCmd_IC, wv
+	SetDimLabel LAYERS, 2, PeakResistance, wv
+	SetDimLabel LAYERS, 3, SteadyStateResistance, wv
+	SetDimLabel LAYERS, 4, TimeInSeconds, wv
+	SetDimLabel LAYERS, 5, DeltaTimeInSeconds, wv
+	SetDimLabel LAYERS, 6, Rss_Slope, wv
+	SetDimLabel LAYERS, 7, Pressure, wv
+	SetDimLabel LAYERS, 8, TimeStamp, wv
+	SetDimLabel LAYERS, 9, TimeStampSinceIgorEpochUTC, wv
+	SetDimLabel LAYERS, 10, PressureChange, wv
+	SetDimLabel LAYERS, 11, Baseline_VC, wv
+	SetDimLabel LAYERS, 12, Baseline_IC, wv
+	SetDimLabel LAYERS, 13, ADC, wv
+	SetDimLabel LAYERS, 14, DAC, wv
+	SetDimLabel LAYERS, 15, Headstage, wv
+	SetDimLabel LAYERS, 16, ClampMode, wv
+	SetDimLabel LAYERS, 17, UserPressure, wv
+	SetDimLabel LAYERS, 18, PressureMethod, wv
+	SetDimLabel LAYERS, 19, ValidState, wv
+	SetDimLabel LAYERS, 20, UserPressureType, wv
+	SetDimLabel LAYERS, 21, UserPressureTimeStampUTC, wv
+	SetDimLabel LAYERS, 22, TPMarker, wv
+	SetDimLabel LAYERS, 23, CellState, wv
+	SetDimLabel LAYERS, 24, TPCycleID, wv
+	SetDimLabel LAYERS, 25, AutoTPAmplitude, wv
+	SetDimLabel LAYERS, 26, AutoTPBaseline, wv
+	SetDimLabel LAYERS, 27, AutoTPBaselineRangeExceeded, wv
+	SetDimLabel LAYERS, 28, AutoTPCycleID, wv
+	SetDimLabel LAYERS, 29, AutoTPBaselineFitResult, wv
+	SetDimLabel LAYERS, 30, AutoTPDeltaV, wv
 
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
@@ -2908,14 +2908,14 @@ End
 /// @brief Return a free wave reference for AcqTPStorage wave for passing to ACQ4
 ///
 /// The wave stores PeakResistance, SteadyStateResistance, and TimeStamp in rows and headstages in cols
-Function/Wave GetAcqTPStorage()
+Function/WAVE GetAcqTPStorage()
 
 	Make/FREE/D/N=(3, NUM_HEADSTAGES, HARDWARE_MAX_DEVICES) wv
 
-	SetDimLabel COLS, -1, HeadStage            , wv
-	SetDimLabel ROWS, 0 , TimeStamp            , wv
-	SetDimLabel ROWS, 1 , SteadyStateResistance, wv
-	SetDimLabel ROWS, 2 , PeakResistance       , wv
+	SetDimLabel COLS, -1, HeadStage, wv
+	SetDimLabel ROWS, 0, TimeStamp, wv
+	SetDimLabel ROWS, 1, SteadyStateResistance, wv
+	SetDimLabel ROWS, 2, PeakResistance, wv
 
 	return wv
 End
@@ -2969,14 +2969,14 @@ Function/WAVE GetScaledDataWave(string device)
 
 	variable version = 1
 
-	DFREF dfr = GetDevicePath(device)
-	WAVE/Z/SDFR=dfr wv = ScaledData
+	DFREF           dfr = GetDevicePath(device)
+	WAVE/Z/SDFR=dfr wv  = ScaledData
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
 	elseif(WaveExists(wv))
 		if(!IsWaveVersioned(wv))
-			KillOrMoveToTrash(wv=wv)
+			KillOrMoveToTrash(wv = wv)
 			Make/WAVE/N=0 dfr:ScaledData/WAVE=wv1
 		endif
 	else
@@ -2991,17 +2991,17 @@ End
 /// @brief Return a wave for displaying scaled data in the oscilloscope window
 ///
 /// Contents can be decimated for faster display.
-Function/Wave GetOscilloscopeWave(device)
+Function/WAVE GetOscilloscopeWave(device)
 	string device
 
-	dfref dfr = GetDevicePath(device)
-	WAVE/Z/SDFR=dfr wv = OscilloscopeData
+	DFREF           dfr = GetDevicePath(device)
+	WAVE/Z/SDFR=dfr wv  = OscilloscopeData
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/R/N=(1, NUM_DA_TTL_CHANNELS) dfr:OscilloscopeData/Wave=wv
+	Make/R/N=(1, NUM_DA_TTL_CHANNELS) dfr:OscilloscopeData/WAVE=wv
 
 	return wv
 End
@@ -3011,8 +3011,8 @@ Function/WAVE GetScaledTPTempWave(string device)
 
 	string name = "ScaledTPTempWave"
 
-	DFREF dfr = GetDevicePath(device)
-	WAVE/Z/D/SDFR=dfr wv = $name
+	DFREF             dfr = GetDevicePath(device)
+	WAVE/Z/D/SDFR=dfr wv  = $name
 
 	if(WaveExists(wv))
 		return wv
@@ -3031,17 +3031,17 @@ End
 ///
 /// Columns:
 /// - DA/AD/TTLs data, same order as GetDAQDataWave()
-Function/Wave GetTPOscilloscopeWave(device)
+Function/WAVE GetTPOscilloscopeWave(device)
 	string device
 
-	dfref dfr = GetDevicePath(device)
-	WAVE/Z/SDFR=dfr wv = TPOscilloscopeData
+	DFREF           dfr = GetDevicePath(device)
+	WAVE/Z/SDFR=dfr wv  = TPOscilloscopeData
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/R/N=(0, NUM_DA_TTL_CHANNELS) dfr:TPOscilloscopeData/Wave=wv
+	Make/R/N=(0, NUM_DA_TTL_CHANNELS) dfr:TPOscilloscopeData/WAVE=wv
 
 	return wv
 End
@@ -3050,14 +3050,14 @@ End
 Function/WAVE GetStoredTestPulseWave(device)
 	string device
 
-	DFREF dfr = GetDeviceTestPulse(device)
-	WAVE/WAVE/Z/SDFR=dfr wv = StoredTestPulses
+	DFREF                dfr = GetDeviceTestPulse(device)
+	WAVE/WAVE/Z/SDFR=dfr wv  = StoredTestPulses
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(MINIMUM_WAVE_SIZE)/WAVE dfr:StoredTestPulses/Wave=wv
+	Make/N=(MINIMUM_WAVE_SIZE)/WAVE dfr:StoredTestPulses/WAVE=wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
@@ -3080,11 +3080,11 @@ End
 ///
 /// Columns:
 /// - NUM_HEADSTAGES
-Function/Wave GetTPResults(string device)
+Function/WAVE GetTPResults(string device)
 	variable version = 3
 
-	DFREF dfr = GetDeviceTestPulse(device)
-	WAVE/D/Z/SDFR=dfr wv = results
+	DFREF             dfr = GetDeviceTestPulse(device)
+	WAVE/D/Z/SDFR=dfr wv  = results
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
@@ -3092,7 +3092,7 @@ Function/Wave GetTPResults(string device)
 		Redimension/D/N=(10, NUM_HEADSTAGES) wv
 		wv = NaN
 	else
-		Make/D/N=(10, NUM_HEADSTAGES) dfr:results/Wave=wv
+		Make/D/N=(10, NUM_HEADSTAGES) dfr:results/WAVE=wv
 		wv = NaN
 
 		// initialize with the old 1D waves
@@ -3118,20 +3118,20 @@ End
 /// @brief Return the testpulse results buffer wave
 ///
 /// Same layout as GetTPResults() but as many layers as the buffer size.
-Function/Wave GetTPResultsBuffer(device)
+Function/WAVE GetTPResultsBuffer(device)
 	string device
 
 	variable version = 2
 
-	DFREF dfr = GetDeviceTestPulse(device)
-	WAVE/D/Z/SDFR=dfr wv = resultsBuffer
+	DFREF             dfr = GetDeviceTestPulse(device)
+	WAVE/D/Z/SDFR=dfr wv  = resultsBuffer
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
 	elseif(WaveExists(wv))
 		// do upgrade
 	else
-		WAVE TPResults = GetTPResults(device)
+		WAVE TPResults  = GetTPResults(device)
 		WAVE TPSettings = GetTPSettings(device)
 
 		Duplicate TPResults, dfr:resultsBuffer/WAVE=wv
@@ -3177,14 +3177,14 @@ End
 ///
 /// Contents:
 /// - numerical amplifier settings
-Function/Wave GetAmplifierParamStorageWave(device)
+Function/WAVE GetAmplifierParamStorageWave(device)
 	string device
 
 	variable versionOfNewWave = 4
 	STRUCT WaveLocationMod p
 
 	DFREF newDFR = GetAmplifierFolder()
-	p.dfr = $(GetAmplifierFolderAsString() + ":Settings")
+	p.dfr    = $(GetAmplifierFolderAsString() + ":Settings")
 	p.newDFR = newDFR
 	// wave's name is like ITC18USB_Dev_0
 	p.name = device
@@ -3196,41 +3196,41 @@ Function/Wave GetAmplifierParamStorageWave(device)
 	elseif(WaveExists(wv))
 		// nothing to do
 	else
-		Make/N=(31, 1, NUM_HEADSTAGES)/D newDFR:$device/Wave=wv
+		Make/N=(31, 1, NUM_HEADSTAGES)/D newDFR:$device/WAVE=wv
 	endif
 
-	SetDimLabel LAYERS, -1, Headstage             , wv
-	SetDimLabel ROWS  , 0 , HoldingPotential      , wv
-	SetDimLabel ROWS  , 1 , HoldingPotentialEnable, wv
-	SetDimLabel ROWS  , 2 , WholeCellCap          , wv
-	SetDimLabel ROWS  , 3 , WholeCellRes          , wv
-	SetDimLabel ROWS  , 4 , WholeCellEnable       , wv
-	SetDimLabel ROWS  , 5 , Correction            , wv
-	SetDimLabel ROWS  , 6 , Prediction            , wv
-	SetDimLabel ROWS  , 7 , RsCompEnable          , wv
-	SetDimLabel ROWS  , 8 , PipetteOffsetVC       , wv
-	SetDimLabel ROWS  , 9 , FastCapacitanceComp   , wv
-	SetDimLabel ROWS  , 10, SlowCapacitanceComp   , wv
-	SetDimLabel ROWS  , 11, RSCompChaining        , wv
-	SetDimLabel ROWS  , 12, VClampPlaceHolder     , wv
-	SetDimLabel ROWS  , 13, VClampPlaceHolder     , wv
-	SetDimLabel ROWS  , 14, VClampPlaceHolder     , wv
-	SetDimLabel ROWS  , 15, VClampPlaceHolder     , wv
-	SetDimLabel ROWS  , 16, BiasCurrent           , wv // Hold IC
-	SetDimLabel ROWS  , 17, BiasCurrentEnable     , wv // Hold Enable IC
-	SetDimLabel ROWS  , 18, BridgeBalance         , wv
-	SetDimLabel ROWS  , 19, BridgeBalanceEnable   , wv
-	SetDimLabel ROWS  , 20, CapNeut               , wv
-	SetDimLabel ROWS  , 21, CapNeutEnable         , wv
-	SetDimLabel ROWS  , 22, AutoBiasVcom          , wv
-	SetDimLabel ROWS  , 23, AutoBiasVcomVariance  , wv
-	SetDimLabel ROWS  , 24, AutoBiasIbiasmax      , wv
-	SetDimLabel ROWS  , 25, AutoBiasEnable        , wv
-	SetDimLabel ROWS  , 26, PipetteOffsetIC       , wv
-	SetDimLabel ROWS  , 27, IclampPlaceHolder     , wv
-	SetDimLabel ROWS  , 28, IclampPlaceHolder     , wv
-	SetDimLabel ROWS  , 29, IclampPlaceHolder     , wv
-	SetDimLabel ROWS  , 30, IclampPlaceHolder     , wv
+	SetDimLabel LAYERS, -1, Headstage, wv
+	SetDimLabel ROWS, 0, HoldingPotential, wv
+	SetDimLabel ROWS, 1, HoldingPotentialEnable, wv
+	SetDimLabel ROWS, 2, WholeCellCap, wv
+	SetDimLabel ROWS, 3, WholeCellRes, wv
+	SetDimLabel ROWS, 4, WholeCellEnable, wv
+	SetDimLabel ROWS, 5, Correction, wv
+	SetDimLabel ROWS, 6, Prediction, wv
+	SetDimLabel ROWS, 7, RsCompEnable, wv
+	SetDimLabel ROWS, 8, PipetteOffsetVC, wv
+	SetDimLabel ROWS, 9, FastCapacitanceComp, wv
+	SetDimLabel ROWS, 10, SlowCapacitanceComp, wv
+	SetDimLabel ROWS, 11, RSCompChaining, wv
+	SetDimLabel ROWS, 12, VClampPlaceHolder, wv
+	SetDimLabel ROWS, 13, VClampPlaceHolder, wv
+	SetDimLabel ROWS, 14, VClampPlaceHolder, wv
+	SetDimLabel ROWS, 15, VClampPlaceHolder, wv
+	SetDimLabel ROWS, 16, BiasCurrent, wv // Hold IC
+	SetDimLabel ROWS, 17, BiasCurrentEnable, wv // Hold Enable IC
+	SetDimLabel ROWS, 18, BridgeBalance, wv
+	SetDimLabel ROWS, 19, BridgeBalanceEnable, wv
+	SetDimLabel ROWS, 20, CapNeut, wv
+	SetDimLabel ROWS, 21, CapNeutEnable, wv
+	SetDimLabel ROWS, 22, AutoBiasVcom, wv
+	SetDimLabel ROWS, 23, AutoBiasVcomVariance, wv
+	SetDimLabel ROWS, 24, AutoBiasIbiasmax, wv
+	SetDimLabel ROWS, 25, AutoBiasEnable, wv
+	SetDimLabel ROWS, 26, PipetteOffsetIC, wv
+	SetDimLabel ROWS, 27, IclampPlaceHolder, wv
+	SetDimLabel ROWS, 28, IclampPlaceHolder, wv
+	SetDimLabel ROWS, 29, IclampPlaceHolder, wv
+	SetDimLabel ROWS, 30, IclampPlaceHolder, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -3271,198 +3271,198 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	Make/FREE/T/N=(3, 47) wv
 
 	SetDimLabel ROWS, 0, Parameter, wv
-	SetDimLabel ROWS, 1, Units    , wv
+	SetDimLabel ROWS, 1, Units, wv
 	SetDimLabel ROWS, 2, Tolerance, wv
 
 	wv[0][0] = "V-Clamp Holding Enable"
 	wv[1][0] = LABNOTEBOOK_BINARY_UNIT
 	wv[2][0] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[0][1] =  "V-Clamp Holding Level"
+	wv[0][1] = "V-Clamp Holding Level"
 	wv[1][1] = "mV"
 	wv[2][1] = "0.9"
 
-	wv[0][2] =  "Osc Killer Enable"
-	wv[1][2] =  LABNOTEBOOK_BINARY_UNIT
-	wv[2][2] =  LABNOTEBOOK_NO_TOLERANCE
+	wv[0][2] = "Osc Killer Enable"
+	wv[1][2] = LABNOTEBOOK_BINARY_UNIT
+	wv[2][2] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[0][3] =  "RsComp Bandwidth"
-	wv[1][3] =  "Hz"
-	wv[2][3] =  "0.9"
+	wv[0][3] = "RsComp Bandwidth"
+	wv[1][3] = "Hz"
+	wv[2][3] = "0.9"
 
-	wv[0][4] =  "RsComp Correction"
-	wv[1][4] =  "%"
-	wv[2][4] =  "0.9"
+	wv[0][4] = "RsComp Correction"
+	wv[1][4] = "%"
+	wv[2][4] = "0.9"
 
-	wv[0][5] =  "RsComp Enable"
-	wv[1][5] =  LABNOTEBOOK_BINARY_UNIT
-	wv[2][5] =  LABNOTEBOOK_NO_TOLERANCE
+	wv[0][5] = "RsComp Enable"
+	wv[1][5] = LABNOTEBOOK_BINARY_UNIT
+	wv[2][5] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[0][6] =  "RsComp Prediction"
-	wv[1][6] =  "%"
-	wv[2][6] =  "0.9"
+	wv[0][6] = "RsComp Prediction"
+	wv[1][6] = "%"
+	wv[2][6] = "0.9"
 
-	wv[0][7] =  "Whole Cell Comp Enable"
-	wv[1][7] =  LABNOTEBOOK_BINARY_UNIT
-	wv[2][7] =  LABNOTEBOOK_NO_TOLERANCE
+	wv[0][7] = "Whole Cell Comp Enable"
+	wv[1][7] = LABNOTEBOOK_BINARY_UNIT
+	wv[2][7] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[0][8] =  "Whole Cell Comp Cap"
-	wv[1][8] =  "pF"
-	wv[2][8] =  "0.9"
+	wv[0][8] = "Whole Cell Comp Cap"
+	wv[1][8] = "pF"
+	wv[2][8] = "0.9"
 
-	wv[0][9] =  "Whole Cell Comp Resist"
-	wv[1][9] =  "MΩ"
-	wv[2][9] =  "0.9"
+	wv[0][9] = "Whole Cell Comp Resist"
+	wv[1][9] = "MΩ"
+	wv[2][9] = "0.9"
 
-	wv[0][10] =  "I-Clamp Holding Enable"
-	wv[1][10] =  LABNOTEBOOK_BINARY_UNIT
-	wv[2][10] =  LABNOTEBOOK_NO_TOLERANCE
+	wv[0][10] = "I-Clamp Holding Enable"
+	wv[1][10] = LABNOTEBOOK_BINARY_UNIT
+	wv[2][10] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[0][11] =  "I-Clamp Holding Level"
-	wv[1][11] =  "pA"
-	wv[2][11] =  "0.9"
+	wv[0][11] = "I-Clamp Holding Level"
+	wv[1][11] = "pA"
+	wv[2][11] = "0.9"
 
-	wv[0][12] =  "Neut Cap Enabled"
-	wv[1][12] =  LABNOTEBOOK_BINARY_UNIT
-	wv[2][12] =  LABNOTEBOOK_NO_TOLERANCE
+	wv[0][12] = "Neut Cap Enabled"
+	wv[1][12] = LABNOTEBOOK_BINARY_UNIT
+	wv[2][12] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[0][13] =  "Neut Cap Value"
-	wv[1][13] =  "pF"
-	wv[2][13] =  "0.9"
+	wv[0][13] = "Neut Cap Value"
+	wv[1][13] = "pF"
+	wv[2][13] = "0.9"
 
-	wv[0][14] =  "Bridge Bal Enable"
-	wv[1][14] =  LABNOTEBOOK_BINARY_UNIT
-	wv[2][14] =  LABNOTEBOOK_NO_TOLERANCE
+	wv[0][14] = "Bridge Bal Enable"
+	wv[1][14] = LABNOTEBOOK_BINARY_UNIT
+	wv[2][14] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[0][15] =  "Bridge Bal Value"
-	wv[1][15] =  "MΩ"
-	wv[2][15] =  "0.9"
+	wv[0][15] = "Bridge Bal Value"
+	wv[1][15] = "MΩ"
+	wv[2][15] = "0.9"
 
 	// and now add the Axon values to the amp settings key
-	wv[0][16] =  "Serial Number"
-	wv[1][16] =  ""
-	wv[2][16] =  "-"
+	wv[0][16] = "Serial Number"
+	wv[1][16] = ""
+	wv[2][16] = "-"
 
-	wv[0][17] =  "Channel ID"
-	wv[1][17] =  ""
-	wv[2][17] =  "-"
+	wv[0][17] = "Channel ID"
+	wv[1][17] = ""
+	wv[2][17] = "-"
 
-	wv[0][18] =  "ComPort ID"
-	wv[1][18] =  ""
-	wv[2][18] =  "-"
+	wv[0][18] = "ComPort ID"
+	wv[1][18] = ""
+	wv[2][18] = "-"
 
-	wv[0][19] =  "AxoBus ID"
-	wv[1][19] =  ""
-	wv[2][19] =  "-"
+	wv[0][19] = "AxoBus ID"
+	wv[1][19] = ""
+	wv[2][19] = "-"
 
-	wv[0][20] =  "Operating Mode"
-	wv[1][20] =  ""
-	wv[2][20] =  "-"
+	wv[0][20] = "Operating Mode"
+	wv[1][20] = ""
+	wv[2][20] = "-"
 
-	wv[0][21] =  "Scaled Out Signal"
-	wv[1][21] =  ""
-	wv[2][21] =  "-"
+	wv[0][21] = "Scaled Out Signal"
+	wv[1][21] = ""
+	wv[2][21] = "-"
 
-	wv[0][22] =  "Alpha"
-	wv[1][22] =  ""
-	wv[2][22] =  "-"
+	wv[0][22] = "Alpha"
+	wv[1][22] = ""
+	wv[2][22] = "-"
 
-	wv[0][23] =  "Scale Factor"
-	wv[1][23] =  ""
-	wv[2][23] =  "-"
+	wv[0][23] = "Scale Factor"
+	wv[1][23] = ""
+	wv[2][23] = "-"
 
-	wv[0][24] =  "Scale Factor Units"
-	wv[1][24] =  ""
-	wv[2][24] =  "-"
+	wv[0][24] = "Scale Factor Units"
+	wv[1][24] = ""
+	wv[2][24] = "-"
 
-	wv[0][25] =  "LPF Cutoff"
-	wv[1][25] =  ""
-	wv[2][25] =  "-"
+	wv[0][25] = "LPF Cutoff"
+	wv[1][25] = ""
+	wv[2][25] = "-"
 
-	wv[0][26] =  "Membrane Cap"
-	wv[1][26] =  "pF"
-	wv[2][26] =  "0.9"
+	wv[0][26] = "Membrane Cap"
+	wv[1][26] = "pF"
+	wv[2][26] = "0.9"
 
-	wv[0][27] =  "Ext Cmd Sens"
-	wv[1][27] =  ""
-	wv[2][27] =  "-"
+	wv[0][27] = "Ext Cmd Sens"
+	wv[1][27] = ""
+	wv[2][27] = "-"
 
-	wv[0][28] =  "Raw Out Signal"
-	wv[1][28] =  ""
-	wv[2][28] =  "-"
+	wv[0][28] = "Raw Out Signal"
+	wv[1][28] = ""
+	wv[2][28] = "-"
 
-	wv[0][29] =  "Raw Scale Factor"
-	wv[1][29] =  ""
-	wv[2][29] =  "-"
+	wv[0][29] = "Raw Scale Factor"
+	wv[1][29] = ""
+	wv[2][29] = "-"
 
-	wv[0][30] =  "Raw Scale Factor Units"
-	wv[1][30] =  ""
-	wv[2][30] =  "-"
+	wv[0][30] = "Raw Scale Factor Units"
+	wv[1][30] = ""
+	wv[2][30] = "-"
 
-	wv[0][31] =  "Hardware Type"
-	wv[1][31] =  ""
-	wv[2][31] =  "-"
+	wv[0][31] = "Hardware Type"
+	wv[1][31] = ""
+	wv[2][31] = "-"
 
-	wv[0][32] =  "Secondary Alpha"
-	wv[1][32] =  ""
-	wv[2][32] =  "-"
+	wv[0][32] = "Secondary Alpha"
+	wv[1][32] = ""
+	wv[2][32] = "-"
 
-	wv[0][33] =  "Secondary LPF Cutoff"
-	wv[1][33] =  ""
-	wv[2][33] =  "-"
+	wv[0][33] = "Secondary LPF Cutoff"
+	wv[1][33] = ""
+	wv[2][33] = "-"
 
-	wv[0][34] =  "Series Resistance"
-	wv[1][34] =  "MΩ"
-	wv[2][34] =  LABNOTEBOOK_NO_TOLERANCE
+	wv[0][34] = "Series Resistance"
+	wv[1][34] = "MΩ"
+	wv[2][34] = LABNOTEBOOK_NO_TOLERANCE
 
 	// new keys starting from 29a161c
-	wv[0][35] =  "Pipette Offset"
-	wv[1][35] =  "mV"
-	wv[2][35] =  "0.1"
+	wv[0][35] = "Pipette Offset"
+	wv[1][35] = "mV"
+	wv[2][35] = "0.1"
 
-	wv[0][36] =  "Slow current injection"
-	wv[1][36] =  LABNOTEBOOK_BINARY_UNIT
-	wv[2][36] =  LABNOTEBOOK_NO_TOLERANCE
+	wv[0][36] = "Slow current injection"
+	wv[1][36] = LABNOTEBOOK_BINARY_UNIT
+	wv[2][36] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[0][37] =  "Slow current injection level"
-	wv[1][37] =  "V"
-	wv[2][37] =  "0.1"
+	wv[0][37] = "Slow current injection level"
+	wv[1][37] = "V"
+	wv[2][37] = "0.1"
 
-	wv[0][38] =  "Slow current injection settling time"
-	wv[1][38] =  "s"
-	wv[2][38] =  "-"
+	wv[0][38] = "Slow current injection settling time"
+	wv[1][38] = "s"
+	wv[2][38] = "-"
 
-	wv[0][39] =  "Fast compensation capacitance"
-	wv[1][39] =  "F"
-	wv[2][39] =  "1e-12"
+	wv[0][39] = "Fast compensation capacitance"
+	wv[1][39] = "F"
+	wv[2][39] = "1e-12"
 
-	wv[0][40] =  "Slow compensation capacitance"
-	wv[1][40] =  "F"
-	wv[2][40] =  "1e-12"
+	wv[0][40] = "Slow compensation capacitance"
+	wv[1][40] = "F"
+	wv[2][40] = "1e-12"
 
-	wv[0][41] =  "Fast compensation time"
-	wv[1][41] =  "s"
-	wv[2][41] =  "1e-6"
+	wv[0][41] = "Fast compensation time"
+	wv[1][41] = "s"
+	wv[2][41] = "1e-6"
 
-	wv[0][42] =  "Slow compensation time"
-	wv[1][42] =  "s"
-	wv[2][42] =  "1e-6"
+	wv[0][42] = "Slow compensation time"
+	wv[1][42] = "s"
+	wv[2][42] = "1e-6"
 
-	wv[0][43] =  "Autobias Vcom"
-	wv[1][43] =  "mV"
-	wv[2][43] =  "0.1"
+	wv[0][43] = "Autobias Vcom"
+	wv[1][43] = "mV"
+	wv[2][43] = "0.1"
 
-	wv[0][44] =  "Autobias Vcom variance"
-	wv[1][44] =  "mV"
-	wv[2][44] =  "0.1"
+	wv[0][44] = "Autobias Vcom variance"
+	wv[1][44] = "mV"
+	wv[2][44] = "0.1"
 
-	wv[0][45] =  "Autobias Ibias max"
-	wv[1][45] =  "pA"
-	wv[2][45] =  "0.1"
+	wv[0][45] = "Autobias Ibias max"
+	wv[1][45] = "pA"
+	wv[2][45] = "0.1"
 
-	wv[0][46] =  "Autobias"
-	wv[1][46] =  LABNOTEBOOK_BINARY_UNIT
-	wv[2][46] =  LABNOTEBOOK_NO_TOLERANCE
+	wv[0][46] = "Autobias"
+	wv[1][46] = LABNOTEBOOK_BINARY_UNIT
+	wv[2][46] = LABNOTEBOOK_NO_TOLERANCE
 
 	return wv
 End
@@ -3499,7 +3499,7 @@ Function/WAVE GetAmplifierSettingsTextKeyWave()
 	Make/FREE/T/N=(3, 6) wv
 
 	SetDimLabel ROWS, 0, Parameter, wv
-	SetDimLabel ROWS, 1, Units    , wv
+	SetDimLabel ROWS, 1, Units, wv
 	SetDimLabel ROWS, 2, Tolerance, wv
 
 	wv[0][0] = "OperatingModeString"
@@ -3533,7 +3533,7 @@ End
 ///
 /// Call AI_FindConnectedAmps() to create that wave, otherwise an empty wave is
 /// returned.
-Function/Wave GetAmplifierTelegraphServers()
+Function/WAVE GetAmplifierTelegraphServers()
 
 	DFREF dfr = GetAmplifierFolder()
 
@@ -3542,7 +3542,7 @@ Function/Wave GetAmplifierTelegraphServers()
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/I/N=(0) dfr:W_TelegraphServers/Wave=wv
+		Make/I/N=(0) dfr:W_TelegraphServers/WAVE=wv
 	endif
 
 	return wv
@@ -3552,7 +3552,7 @@ End
 ///
 /// Call AI_FindConnectedAmps() to create that wave, if that was not done an
 /// empty wave is returned.
-Function/Wave GetAmplifierMultiClamps()
+Function/WAVE GetAmplifierMultiClamps()
 
 	DFREF dfr = GetAmplifierFolder()
 
@@ -3561,7 +3561,7 @@ Function/Wave GetAmplifierMultiClamps()
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/I/N=(0) dfr:W_MultiClamps/Wave=wv
+		Make/I/N=(0) dfr:W_MultiClamps/WAVE=wv
 	endif
 
 	return wv
@@ -3717,8 +3717,8 @@ End
 /// sampling interval.
 Function/WAVE GetTestPulse()
 
-	dfref dfr = GetWBSvdStimSetDAPath()
-	WAVE/Z/SDFR=dfr wv = TestPulse
+	DFREF           dfr = GetWBSvdStimSetDAPath()
+	WAVE/Z/SDFR=dfr wv  = TestPulse
 
 	if(WaveExists(wv))
 		return wv
@@ -3771,7 +3771,7 @@ Function UpgradeWaveParam(wv)
 	// upgrade to wave version 5
 	if(WaveVersionIsSmaller(wv, 5))
 		// 41: pink noise, 42: brown noise, none: white noise -> 54: noise type
-		wv[54][][EPOCH_TYPE_NOISE] = wv[41][q][EPOCH_TYPE_NOISE] == 0 && wv[42][q][EPOCH_TYPE_NOISE] == 0 ? 0 : ( wv[41][q][EPOCH_TYPE_NOISE] == 1 ? 1 : 2)
+		wv[54][][EPOCH_TYPE_NOISE] = wv[41][q][EPOCH_TYPE_NOISE] == 0 && wv[42][q][EPOCH_TYPE_NOISE] == 0 ? 0 : (wv[41][q][EPOCH_TYPE_NOISE] == 1 ? 1 : 2)
 		// adapt to changed filter order definition
 		wv[26][][EPOCH_TYPE_NOISE] = 6
 		wv[27][][EPOCH_TYPE_NOISE] = 0
@@ -3786,7 +3786,7 @@ Function UpgradeWaveParam(wv)
 	// upgrade to wave version 10
 	if(WaveVersionIsSmaller(wv, 10))
 		// delta operation mode was global before but now is per entry
-		Multithread wv[70,85][][] = wv[40][q][r]
+		Multithread wv[70, 85][][] = wv[40][q][r]
 		wv[40][][] = NaN
 	endif
 
@@ -3810,106 +3810,106 @@ static Function AddDimLabelsToWP(wv)
 
 	RemoveAllDimLabels(wv)
 
-	SetDimLabel COLS,   -1, $("Epoch number"), wv
+	SetDimLabel COLS, -1, $("Epoch number"), wv
 
 	for(i = 0; i < WB_TOTAL_NUMBER_OF_EPOCHS; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
 	endfor
 
-	SetDimLabel LAYERS, -1, $("Epoch type")        , wv
-	SetDimLabel LAYERS,  0, $("Square pulse")      , wv
-	SetDimLabel LAYERS,  1, $("Ramp")              , wv
-	SetDimLabel LAYERS,  2, $("Noise")             , wv
-	SetDimLabel LAYERS,  3, $("Sin")               , wv
-	SetDimLabel LAYERS,  4, $("Saw tooth")         , wv
-	SetDimLabel LAYERS,  5, $("Pulse train")       , wv
-	SetDimLabel LAYERS,  6, $("PSC")               , wv
-	SetDimLabel LAYERS,  7, $("Load custom wave")  , wv
-	SetDimLabel LAYERS,  8, $("Combine")           , wv
+	SetDimLabel LAYERS, -1, $("Epoch type"), wv
+	SetDimLabel LAYERS, 0, $("Square pulse"), wv
+	SetDimLabel LAYERS, 1, $("Ramp"), wv
+	SetDimLabel LAYERS, 2, $("Noise"), wv
+	SetDimLabel LAYERS, 3, $("Sin"), wv
+	SetDimLabel LAYERS, 4, $("Saw tooth"), wv
+	SetDimLabel LAYERS, 5, $("Pulse train"), wv
+	SetDimLabel LAYERS, 6, $("PSC"), wv
+	SetDimLabel LAYERS, 7, $("Load custom wave"), wv
+	SetDimLabel LAYERS, 8, $("Combine"), wv
 
-	SetDimLabel ROWS, -1, $("Property")                       , wv
-	SetDimLabel ROWS, 0 , $("Duration")                       , wv
-	SetDimLabel ROWS, 1 , $("Duration delta")                 , wv
-	SetDimLabel ROWS, 2 , $("Amplitude")                      , wv
-	SetDimLabel ROWS, 3 , $("Amplitude delta")                , wv
-	SetDimLabel ROWS, 4 , $("Offset")                         , wv
-	SetDimLabel ROWS, 5 , $("Offset delta")                   , wv
-	SetDimLabel ROWS, 6 , $("Sin/chirp/saw frequency")        , wv
-	SetDimLabel ROWS, 7 , $("Sin/chirp/saw frequency delta")  , wv
-	SetDimLabel ROWS, 8 , $("Train pulse duration")           , wv
-	SetDimLabel ROWS, 9 , $("Train pulse duration delta")     , wv
-	SetDimLabel ROWS, 10, $("PSC exp rise time")              , wv
-	SetDimLabel ROWS, 11, $("PSC exp rise time delta")        , wv
-	SetDimLabel ROWS, 12, $("PSC exp decay time 1/2")         , wv
-	SetDimLabel ROWS, 13, $("PSC exp decay time 1/2 delta")   , wv
-	SetDimLabel ROWS, 14, $("PSC exp decay time 2/2")         , wv
-	SetDimLabel ROWS, 15, $("PSC exp decay time 2/2 delta")   , wv
-	SetDimLabel ROWS, 16, $("PSC ratio decay times")          , wv
-	SetDimLabel ROWS, 17, $("PSC ratio decay times delta")    , wv
+	SetDimLabel ROWS, -1, $("Property"), wv
+	SetDimLabel ROWS, 0, $("Duration"), wv
+	SetDimLabel ROWS, 1, $("Duration delta"), wv
+	SetDimLabel ROWS, 2, $("Amplitude"), wv
+	SetDimLabel ROWS, 3, $("Amplitude delta"), wv
+	SetDimLabel ROWS, 4, $("Offset"), wv
+	SetDimLabel ROWS, 5, $("Offset delta"), wv
+	SetDimLabel ROWS, 6, $("Sin/chirp/saw frequency"), wv
+	SetDimLabel ROWS, 7, $("Sin/chirp/saw frequency delta"), wv
+	SetDimLabel ROWS, 8, $("Train pulse duration"), wv
+	SetDimLabel ROWS, 9, $("Train pulse duration delta"), wv
+	SetDimLabel ROWS, 10, $("PSC exp rise time"), wv
+	SetDimLabel ROWS, 11, $("PSC exp rise time delta"), wv
+	SetDimLabel ROWS, 12, $("PSC exp decay time 1/2"), wv
+	SetDimLabel ROWS, 13, $("PSC exp decay time 1/2 delta"), wv
+	SetDimLabel ROWS, 14, $("PSC exp decay time 2/2"), wv
+	SetDimLabel ROWS, 15, $("PSC exp decay time 2/2 delta"), wv
+	SetDimLabel ROWS, 16, $("PSC ratio decay times"), wv
+	SetDimLabel ROWS, 17, $("PSC ratio decay times delta"), wv
 	// unused entries are not labeled
-	SetDimLabel ROWS, 20, $("Low pass filter cut off")        , wv
-	SetDimLabel ROWS, 21, $("Low pass filter cut off delta")  , wv
-	SetDimLabel ROWS, 22, $("High pass filter cut off")       , wv
-	SetDimLabel ROWS, 23, $("High pass filter cut off delta") , wv
-	SetDimLabel ROWS, 24, $("Chirp end frequency")            , wv
-	SetDimLabel ROWS, 25, $("Chirp end frequency delta")      , wv
-	SetDimLabel ROWS, 26, $("Noise filter order")             , wv
-	SetDimLabel ROWS, 27, $("Noise filter order delta")       , wv
-	SetDimLabel ROWS, 28, $("PT [First Mixed Frequency]")     , wv
+	SetDimLabel ROWS, 20, $("Low pass filter cut off"), wv
+	SetDimLabel ROWS, 21, $("Low pass filter cut off delta"), wv
+	SetDimLabel ROWS, 22, $("High pass filter cut off"), wv
+	SetDimLabel ROWS, 23, $("High pass filter cut off delta"), wv
+	SetDimLabel ROWS, 24, $("Chirp end frequency"), wv
+	SetDimLabel ROWS, 25, $("Chirp end frequency delta"), wv
+	SetDimLabel ROWS, 26, $("Noise filter order"), wv
+	SetDimLabel ROWS, 27, $("Noise filter order delta"), wv
+	SetDimLabel ROWS, 28, $("PT [First Mixed Frequency]"), wv
 	SetDimLabel ROWS, 29, $("PT [First Mixed Frequency] delta"), wv
-	SetDimLabel ROWS, 30, $("PT [Last Mixed Frequency]")      , wv
+	SetDimLabel ROWS, 30, $("PT [Last Mixed Frequency]"), wv
 	SetDimLabel ROWS, 31, $("PT [Last Mixed Frequency] delta"), wv
 	// unused entries are not labeled
-	SetDimLabel ROWS, 39, $("Reseed RNG for each epoch")      , wv
+	SetDimLabel ROWS, 39, $("Reseed RNG for each epoch"), wv
 	// unused entry, previously the global delta operation
-	SetDimLabel ROWS, 41, $("PT [Mixed Frequency]")           , wv
-	SetDimLabel ROWS, 42, $("PT [Shuffle]")                   , wv
-	SetDimLabel ROWS, 43, $("Chirp type [Log or sin]")        , wv
+	SetDimLabel ROWS, 41, $("PT [Mixed Frequency]"), wv
+	SetDimLabel ROWS, 42, $("PT [Shuffle]"), wv
+	SetDimLabel ROWS, 43, $("Chirp type [Log or sin]"), wv
 	SetDimLabel ROWS, 44, $("Poisson distribution true/false"), wv
-	SetDimLabel ROWS, 45, $("Number of pulses")               , wv
-	SetDimLabel ROWS, 46, $("Duration type [User/Automatic]") , wv
-	SetDimLabel ROWS, 47, $("Number of pulses delta")         , wv
-	SetDimLabel ROWS, 48, $("Random Seed")                    , wv
-	SetDimLabel ROWS, 49, $("Reseed RNG for each step")       , wv
+	SetDimLabel ROWS, 45, $("Number of pulses"), wv
+	SetDimLabel ROWS, 46, $("Duration type [User/Automatic]"), wv
+	SetDimLabel ROWS, 47, $("Number of pulses delta"), wv
+	SetDimLabel ROWS, 48, $("Random Seed"), wv
+	SetDimLabel ROWS, 49, $("Reseed RNG for each step"), wv
 	// `dme` means `delta multiplier/exponential`
-	SetDimLabel ROWS, 50, $("Amplitude dme")                  , wv
-	SetDimLabel ROWS, 51, $("Offset dme")                     , wv
-	SetDimLabel ROWS, 52, $("Duration dme")                   , wv
-	SetDimLabel ROWS, 53, $("Trigonometric function Sin/Cos") , wv
+	SetDimLabel ROWS, 50, $("Amplitude dme"), wv
+	SetDimLabel ROWS, 51, $("Offset dme"), wv
+	SetDimLabel ROWS, 52, $("Duration dme"), wv
+	SetDimLabel ROWS, 53, $("Trigonometric function Sin/Cos"), wv
 	SetDimLabel ROWS, 54, $("Noise Type [White, Pink, Brown]"), wv
-	SetDimLabel ROWS, 55, $("Build resolution (index)")       , wv
-	SetDimLabel ROWS, 56, $("Pulse train type (index)")       , wv
-	SetDimLabel ROWS, 57, $("Sin/chirp/saw frequency dme")    , wv
-	SetDimLabel ROWS, 58, $("Train pulse duration dme")       , wv
-	SetDimLabel ROWS, 59, $("PSC exp rise time dme")          , wv
-	SetDimLabel ROWS, 60, $("PSC exp decay time 1/2 dme")     , wv
-	SetDimLabel ROWS, 61, $("PSC exp decay time 2/2 dme")     , wv
-	SetDimLabel ROWS, 62, $("PSC ratio decay times dme")      , wv
-	SetDimLabel ROWS, 63, $("Low pass filter cut off dme")    , wv
-	SetDimLabel ROWS, 64, $("High pass filter cut off dme")   , wv
-	SetDimLabel ROWS, 65, $("Chirp end frequency dme")        , wv
-	SetDimLabel ROWS, 66, $("Noise filter order dme")         , wv
-	SetDimLabel ROWS, 67, $("PT [First Mixed Frequency] dme") , wv
-	SetDimLabel ROWS, 68, $("PT [Last Mixed Frequency] dme")  , wv
-	SetDimLabel ROWS, 69, $("Number of pulses dme")           , wv
-	SetDimLabel ROWS, 70, $("Amplitude op")                   , wv
-	SetDimLabel ROWS, 71, $("Offset op")                      , wv
-	SetDimLabel ROWS, 72, $("Duration op")                    , wv
-	SetDimLabel ROWS, 73, $("Sin/chirp/saw frequency op")     , wv
-	SetDimLabel ROWS, 74, $("Train pulse duration op")        , wv
-	SetDimLabel ROWS, 75, $("PSC exp rise time op")           , wv
-	SetDimLabel ROWS, 76, $("PSC exp decay time 1/2 op")      , wv
-	SetDimLabel ROWS, 77, $("PSC exp decay time 2/2 op")      , wv
-	SetDimLabel ROWS, 78, $("PSC ratio decay times op")       , wv
-	SetDimLabel ROWS, 79, $("Low pass filter cut off op")     , wv
-	SetDimLabel ROWS, 80, $("High pass filter cut off op")    , wv
-	SetDimLabel ROWS, 81, $("Chirp end frequency op")         , wv
-	SetDimLabel ROWS, 82, $("Noise filter order op")          , wv
-	SetDimLabel ROWS, 83, $("PT [First Mixed Frequency] op")  , wv
-	SetDimLabel ROWS, 84, $("PT [Last Mixed Frequency] op")   , wv
-	SetDimLabel ROWS, 85, $("Number of pulses op")            , wv
-	SetDimLabel ROWS, 86, $("Noise RNG type")                 , wv
-	SetDimLabel ROWS, 87, $("Noise RNG type [Mixed Freq]")    , wv
+	SetDimLabel ROWS, 55, $("Build resolution (index)"), wv
+	SetDimLabel ROWS, 56, $("Pulse train type (index)"), wv
+	SetDimLabel ROWS, 57, $("Sin/chirp/saw frequency dme"), wv
+	SetDimLabel ROWS, 58, $("Train pulse duration dme"), wv
+	SetDimLabel ROWS, 59, $("PSC exp rise time dme"), wv
+	SetDimLabel ROWS, 60, $("PSC exp decay time 1/2 dme"), wv
+	SetDimLabel ROWS, 61, $("PSC exp decay time 2/2 dme"), wv
+	SetDimLabel ROWS, 62, $("PSC ratio decay times dme"), wv
+	SetDimLabel ROWS, 63, $("Low pass filter cut off dme"), wv
+	SetDimLabel ROWS, 64, $("High pass filter cut off dme"), wv
+	SetDimLabel ROWS, 65, $("Chirp end frequency dme"), wv
+	SetDimLabel ROWS, 66, $("Noise filter order dme"), wv
+	SetDimLabel ROWS, 67, $("PT [First Mixed Frequency] dme"), wv
+	SetDimLabel ROWS, 68, $("PT [Last Mixed Frequency] dme"), wv
+	SetDimLabel ROWS, 69, $("Number of pulses dme"), wv
+	SetDimLabel ROWS, 70, $("Amplitude op"), wv
+	SetDimLabel ROWS, 71, $("Offset op"), wv
+	SetDimLabel ROWS, 72, $("Duration op"), wv
+	SetDimLabel ROWS, 73, $("Sin/chirp/saw frequency op"), wv
+	SetDimLabel ROWS, 74, $("Train pulse duration op"), wv
+	SetDimLabel ROWS, 75, $("PSC exp rise time op"), wv
+	SetDimLabel ROWS, 76, $("PSC exp decay time 1/2 op"), wv
+	SetDimLabel ROWS, 77, $("PSC exp decay time 2/2 op"), wv
+	SetDimLabel ROWS, 78, $("PSC ratio decay times op"), wv
+	SetDimLabel ROWS, 79, $("Low pass filter cut off op"), wv
+	SetDimLabel ROWS, 80, $("High pass filter cut off op"), wv
+	SetDimLabel ROWS, 81, $("Chirp end frequency op"), wv
+	SetDimLabel ROWS, 82, $("Noise filter order op"), wv
+	SetDimLabel ROWS, 83, $("PT [First Mixed Frequency] op"), wv
+	SetDimLabel ROWS, 84, $("PT [Last Mixed Frequency] op"), wv
+	SetDimLabel ROWS, 85, $("Number of pulses op"), wv
+	SetDimLabel ROWS, 86, $("Noise RNG type"), wv
+	SetDimLabel ROWS, 87, $("Noise RNG type [Mixed Freq]"), wv
 End
 
 /// @brief Return the parameter wave for the wave builder panel
@@ -3932,8 +3932,8 @@ End
 /// - Combine
 Function/WAVE GetWaveBuilderWaveParam()
 
-	dfref dfr = GetWaveBuilderDataPath()
-	WAVE/Z/SDFR=dfr wv = WP
+	DFREF           dfr = GetWaveBuilderDataPath()
+	WAVE/Z/SDFR=dfr wv  = WP
 
 	if(WaveExists(wv))
 		UpgradeWaveParam(wv)
@@ -4019,7 +4019,7 @@ Function UpgradeWaveTextParam(wv)
 	// into the right place
 	if(WaveVersionIsSmaller(wv, 10))
 		params = wv[10][%Set][INDEP_EPOCH_TYPE]
-		names = AFH_GetListOfAnalysisParamNames(params)
+		names  = AFH_GetListOfAnalysisParamNames(params)
 
 		numEntries = ItemsInList(names)
 		for(i = 0; i < numEntries; i += 1)
@@ -4061,36 +4061,36 @@ static Function AddDimLabelsToWPT(wv)
 
 	RemoveAllDimLabels(wv)
 
-	SetDimLabel ROWS, 0 , $("Custom epoch wave name")        , wv
-	SetDimLabel ROWS, 1 , $("Analysis pre DAQ function")     , wv
-	SetDimLabel ROWS, 2 , $("Analysis mid sweep function")   , wv
-	SetDimLabel ROWS, 3 , $("Analysis post sweep function")  , wv
-	SetDimLabel ROWS, 4 , $("Analysis post set function")    , wv
-	SetDimLabel ROWS, 5 , $("Analysis post DAQ function")    , wv
-	SetDimLabel ROWS, 6 , $("Combine epoch formula")         , wv
-	SetDimLabel ROWS, 7 , $("Combine epoch formula version") , wv
+	SetDimLabel ROWS, 0, $("Custom epoch wave name"), wv
+	SetDimLabel ROWS, 1, $("Analysis pre DAQ function"), wv
+	SetDimLabel ROWS, 2, $("Analysis mid sweep function"), wv
+	SetDimLabel ROWS, 3, $("Analysis post sweep function"), wv
+	SetDimLabel ROWS, 4, $("Analysis post set function"), wv
+	SetDimLabel ROWS, 5, $("Analysis post DAQ function"), wv
+	SetDimLabel ROWS, 6, $("Combine epoch formula"), wv
+	SetDimLabel ROWS, 7, $("Combine epoch formula version"), wv
 	// not renamed as this is v1/v2 only and therefore deprecated already
-	SetDimLabel ROWS, 8 , $("Analysis pre sweep function")   , wv
-	SetDimLabel ROWS, 9 , $("Analysis function (generic)")   , wv
+	SetDimLabel ROWS, 8, $("Analysis pre sweep function"), wv
+	SetDimLabel ROWS, 9, $("Analysis function (generic)"), wv
 	// empty: was "Analysis function params"
-	SetDimLabel ROWS, 11, $("Amplitude ldel")                , wv
-	SetDimLabel ROWS, 12, $("Offset ldel")                   , wv
-	SetDimLabel ROWS, 13, $("Duration ldel")                 , wv
-	SetDimLabel ROWS, 14, $("Sin/chirp/saw frequency ldel")  , wv
-	SetDimLabel ROWS, 15, $("Train pulse duration ldel")     , wv
-	SetDimLabel ROWS, 16, $("PSC exp rise time ldel")        , wv
-	SetDimLabel ROWS, 17, $("PSC exp decay time 1/2 ldel")   , wv
-	SetDimLabel ROWS, 18, $("PSC exp decay time 2/2 ldel")   , wv
-	SetDimLabel ROWS, 19, $("PSC ratio decay times ldel")    , wv
-	SetDimLabel ROWS, 20, $("Low pass filter cut off ldel")  , wv
-	SetDimLabel ROWS, 21, $("High pass filter cut off ldel") , wv
-	SetDimLabel ROWS, 22, $("Chirp end frequency ldel")      , wv
-	SetDimLabel ROWS, 23, $("Noise filter order ldel")       , wv
+	SetDimLabel ROWS, 11, $("Amplitude ldel"), wv
+	SetDimLabel ROWS, 12, $("Offset ldel"), wv
+	SetDimLabel ROWS, 13, $("Duration ldel"), wv
+	SetDimLabel ROWS, 14, $("Sin/chirp/saw frequency ldel"), wv
+	SetDimLabel ROWS, 15, $("Train pulse duration ldel"), wv
+	SetDimLabel ROWS, 16, $("PSC exp rise time ldel"), wv
+	SetDimLabel ROWS, 17, $("PSC exp decay time 1/2 ldel"), wv
+	SetDimLabel ROWS, 18, $("PSC exp decay time 2/2 ldel"), wv
+	SetDimLabel ROWS, 19, $("PSC ratio decay times ldel"), wv
+	SetDimLabel ROWS, 20, $("Low pass filter cut off ldel"), wv
+	SetDimLabel ROWS, 21, $("High pass filter cut off ldel"), wv
+	SetDimLabel ROWS, 22, $("Chirp end frequency ldel"), wv
+	SetDimLabel ROWS, 23, $("Noise filter order ldel"), wv
 	SetDimLabel ROWS, 24, $("PT [First Mixed Frequency] ldel"), wv
 	SetDimLabel ROWS, 25, $("PT [Last Mixed Frequency] ldel"), wv
-	SetDimLabel ROWS, 26, $("Number of pulses ldel")         , wv
-	SetDimLabel ROWS, 27, $("Analysis pre set function")     , wv
-	SetDimLabel ROWS, 28, $("Inter trial interval ldel")     , wv
+	SetDimLabel ROWS, 26, $("Number of pulses ldel"), wv
+	SetDimLabel ROWS, 27, $("Analysis pre set function"), wv
+	SetDimLabel ROWS, 28, $("Inter trial interval ldel"), wv
 	SetDimLabel ROWS, 29, $("Analysis function params (encoded)"), wv
 
 	for(i = 0; i < WB_TOTAL_NUMBER_OF_EPOCHS; i += 1)
@@ -4099,16 +4099,16 @@ static Function AddDimLabelsToWPT(wv)
 
 	SetDimLabel COLS, DimSize(wv, COLS) - 1, $("Set"), wv
 
-	SetDimLabel LAYERS, -1, $("Epoch type")        , wv
-	SetDimLabel LAYERS,  0, $("Square pulse")      , wv
-	SetDimLabel LAYERS,  1, $("Ramp")              , wv
-	SetDimLabel LAYERS,  2, $("Noise")             , wv
-	SetDimLabel LAYERS,  3, $("Sin")               , wv
-	SetDimLabel LAYERS,  4, $("Saw tooth")         , wv
-	SetDimLabel LAYERS,  5, $("Pulse train")       , wv
-	SetDimLabel LAYERS,  6, $("PSC")               , wv
-	SetDimLabel LAYERS,  7, $("Load custom wave")  , wv
-	SetDimLabel LAYERS,  8, $("Combine")           , wv
+	SetDimLabel LAYERS, -1, $("Epoch type"), wv
+	SetDimLabel LAYERS, 0, $("Square pulse"), wv
+	SetDimLabel LAYERS, 1, $("Ramp"), wv
+	SetDimLabel LAYERS, 2, $("Noise"), wv
+	SetDimLabel LAYERS, 3, $("Sin"), wv
+	SetDimLabel LAYERS, 4, $("Saw tooth"), wv
+	SetDimLabel LAYERS, 5, $("Pulse train"), wv
+	SetDimLabel LAYERS, 6, $("PSC"), wv
+	SetDimLabel LAYERS, 7, $("Load custom wave"), wv
+	SetDimLabel LAYERS, 8, $("Combine"), wv
 End
 
 /// @brief Return the parameter text wave for the wave builder panel
@@ -4167,8 +4167,8 @@ End
 /// Multiple entries are separated by comma (`,`).
 Function/WAVE GetWaveBuilderWaveTextParam()
 
-	dfref dfr = GetWaveBuilderDataPath()
-	WAVE/T/Z/SDFR=dfr wv = WPT
+	DFREF             dfr = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv  = WPT
 
 	if(WaveExists(wv))
 		UpgradeWaveTextParam(wv)
@@ -4226,14 +4226,14 @@ static Function AddDimLabelsToSegWvType(wv)
 		SetDimLabel ROWS, i, $("Type of Epoch " + num2str(i)), wv
 	endfor
 
-	SetDimLabel ROWS, 94,  $("Inter trial interval op"), wv
-	SetDimLabel ROWS, 95,  $("Inter trial interval dme"), wv
-	SetDimLabel ROWS, 96,  $("Inter trial interval delta"), wv
-	SetDimLabel ROWS, 97,  $("Stimset global RNG seed"), wv
-	SetDimLabel ROWS, 98,  $("Flip time axis")         , wv
-	SetDimLabel ROWS, 99,  $("Inter trial interval")   , wv
-	SetDimLabel ROWS, 100, $("Total number of epochs") , wv
-	SetDimLabel ROWS, 101, $("Total number of steps")  , wv
+	SetDimLabel ROWS, 94, $("Inter trial interval op"), wv
+	SetDimLabel ROWS, 95, $("Inter trial interval dme"), wv
+	SetDimLabel ROWS, 96, $("Inter trial interval delta"), wv
+	SetDimLabel ROWS, 97, $("Stimset global RNG seed"), wv
+	SetDimLabel ROWS, 98, $("Flip time axis"), wv
+	SetDimLabel ROWS, 99, $("Inter trial interval"), wv
+	SetDimLabel ROWS, 100, $("Total number of epochs"), wv
+	SetDimLabel ROWS, 101, $("Total number of steps"), wv
 End
 
 /// @brief Returns the segment type wave used by the wave builder panel
@@ -4249,10 +4249,10 @@ End
 /// - 99: Inter trial interval [s]
 /// - 100: total number of segments/epochs
 /// - 101: total number of steps
-Function/Wave GetSegmentTypeWave()
+Function/WAVE GetSegmentTypeWave()
 
-	DFREF dfr = GetWaveBuilderDataPath()
-	WAVE/Z/SDFR=dfr wv = SegWvType
+	DFREF           dfr = GetWaveBuilderDataPath()
+	WAVE/Z/SDFR=dfr wv  = SegWvType
 
 	if(WaveExists(wv))
 		UpgradeSegWvType(wv)
@@ -4267,7 +4267,7 @@ End
 /// @brief Return a free wave version of GetSegmentTypeWave()
 ///
 /// @sa GetSegmentTypeWave()
-Function/Wave GetSegmentTypeWaveAsFree()
+Function/WAVE GetSegmentTypeWaveAsFree()
 
 	Make/N=102/D/FREE wv
 
@@ -4282,9 +4282,9 @@ End
 
 /// @brief Return the wave identifiying the begin and
 /// end times of the current epoch
-Function/Wave GetEpochID()
+Function/WAVE GetEpochID()
 
-	dfref dfr = GetWaveBuilderDataPath()
+	DFREF dfr = GetWaveBuilderDataPath()
 
 	WAVE/Z/SDFR=dfr wv = epochID
 
@@ -4292,7 +4292,7 @@ Function/Wave GetEpochID()
 		return wv
 	endif
 
-	Make/R/N=(100, 2) dfr:epochID/Wave=wv
+	Make/R/N=(100, 2) dfr:epochID/WAVE=wv
 
 	SetDimLabel COLS, 0, timeBegin, wv
 	SetDimLabel COLS, 1, timeEnd, wv
@@ -4302,16 +4302,16 @@ End
 
 /// @brief Return the wave for visualization of the stim set
 /// in the wavebuilder panel
-Function/Wave GetWaveBuilderDispWave()
+Function/WAVE GetWaveBuilderDispWave()
 
-	dfref dfr = GetWaveBuilderDataPath()
-	WAVE/Z/SDFR=dfr wv = dispData
+	DFREF           dfr = GetWaveBuilderDataPath()
+	WAVE/Z/SDFR=dfr wv  = dispData
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/R/N=(0) dfr:dispData/Wave=wv
+	Make/R/N=(0) dfr:dispData/WAVE=wv
 
 	return wv
 End
@@ -4319,8 +4319,8 @@ End
 Function/WAVE GetWBEpochCombineList(variable channelType)
 
 	// remove the existing wave which is not channel type aware
-	DFREF dfr = GetWaveBuilderDataPath()
-	WAVE/T/Z/SDFR=dfr wv = epochCombineList
+	DFREF             dfr = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv  = epochCombineList
 	KillOrMoveToTrash(wv = wv)
 
 	switch(channelType)
@@ -4340,10 +4340,10 @@ Function/WAVE GetWBEpochCombineList(variable channelType)
 		return wv
 	endif
 
-	Make/T/N=(0, 2) dfr:epochCombineList/Wave=wv
+	Make/T/N=(0, 2) dfr:epochCombineList/WAVE=wv
 
 	SetDimLabel 1, 0, Shorthand, wv
-	SetDimLabel 1, 1, Stimset,   wv
+	SetDimLabel 1, 1, Stimset, wv
 
 	WB_UpdateEpochCombineList(wv, channelType)
 
@@ -4382,8 +4382,8 @@ End
 
 Function/WAVE GetEpochParameterNames()
 
-	DFREF dfr = GetWaveBuilderDataPath()
-	WAVE/T/Z/SDFR=dfr wv = epochParameterNames
+	DFREF             dfr = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv  = epochParameterNames
 
 	if(WaveExists(wv))
 		return wv
@@ -4414,16 +4414,16 @@ Function/WAVE GetEpochParameterNames()
 
 	MoveWave wv, dfr:epochParameterNames
 
-	SetDimLabel ROWS, -1, $("Epoch type")        , wv
-	SetDimLabel ROWS,  0, $("Square pulse")      , wv
-	SetDimLabel ROWS,  1, $("Ramp")              , wv
-	SetDimLabel ROWS,  2, $("Noise")             , wv
-	SetDimLabel ROWS,  3, $("Sin")               , wv
-	SetDimLabel ROWS,  4, $("Saw tooth")         , wv
-	SetDimLabel ROWS,  5, $("Pulse train")       , wv
-	SetDimLabel ROWS,  6, $("PSC")               , wv
-	SetDimLabel ROWS,  7, $("Load custom wave")  , wv
-	SetDimLabel ROWS,  8, $("Combine")           , wv
+	SetDimLabel ROWS, -1, $("Epoch type"), wv
+	SetDimLabel ROWS, 0, $("Square pulse"), wv
+	SetDimLabel ROWS, 1, $("Ramp"), wv
+	SetDimLabel ROWS, 2, $("Noise"), wv
+	SetDimLabel ROWS, 3, $("Sin"), wv
+	SetDimLabel ROWS, 4, $("Saw tooth"), wv
+	SetDimLabel ROWS, 5, $("Pulse train"), wv
+	SetDimLabel ROWS, 6, $("PSC"), wv
+	SetDimLabel ROWS, 7, $("Load custom wave"), wv
+	SetDimLabel ROWS, 8, $("Combine"), wv
 
 	return wv
 End
@@ -4446,10 +4446,10 @@ End
 ///
 /// Layers:
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
-Function/Wave GetAsyncSettingsWave()
+Function/WAVE GetAsyncSettingsWave()
 
 	Make/D/N=(1, 7, LABNOTEBOOK_LAYER_COUNT)/FREE wv
-	wv = Nan
+	wv = NaN
 
 	SetDimLabel COLS, 0, ADOnOff, wv
 	SetDimLabel COLS, 1, ADGain, wv
@@ -4479,12 +4479,12 @@ End
 /// - 3: Async Alarm $Channel Min
 /// - 4: Async Alarm  $Channel Max
 /// - 5: Async AD $Channel [$Title]
-Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, string title, string unit)
+Function/WAVE GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, string title, string unit)
 	string prefix
 
 	sprintf prefix, "Async %d", channel
 
-	Make/T/N=(3,7)/FREE wv
+	Make/T/N=(3, 7)/FREE wv
 	wv = ""
 
 	CopyDimLabels settingsWave, wv
@@ -4522,7 +4522,7 @@ Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, strin
 
 	wv[%Parameter][5] = prefix
 	wv[%Units][5]     = unit
-	wv[%Tolerance][5] = "" // tolerance is calculated in ED_createAsyncWaveNoteTags()
+	wv[%Tolerance][5] = ""     // tolerance is calculated in ED_createAsyncWaveNoteTags()
 
 	sprintf prefix, "Async Alarm %d", channel
 
@@ -4546,7 +4546,7 @@ End
 ///
 /// Layers:
 /// - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
-Function/Wave GetAsyncSettingsTextWave()
+Function/WAVE GetAsyncSettingsTextWave()
 
 	Make/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT)/FREE wv
 	wv = ""
@@ -4567,7 +4567,7 @@ End
 /// Columns:
 /// - 0: Async $Channel Title
 /// - 1: Async $Channel Unit
-Function/Wave GetAsyncSettingsTextKeyWave(WAVE/T settingsWave, variable channel)
+Function/WAVE GetAsyncSettingsTextKeyWave(WAVE/T settingsWave, variable channel)
 	string prefix
 
 	Make/T/N=(1, 2)/FREE wv
@@ -4592,10 +4592,10 @@ End
 Function/S P_GetDevicePressureFolderAS(device)
 	string device
 
-	string 	DeviceNumber
-	string 	DeviceType
+	string DeviceNumber
+	string DeviceType
 	ParseDeviceString(device, deviceType, deviceNumber)
-	string 	FolderPathString
+	string FolderPathString
 	sprintf FolderPathString, "%s:Pressure:%s:Device_%s", GetMiesPathAsString(), DeviceType, DeviceNumber
 	return FolderPathString
 End
@@ -4637,9 +4637,9 @@ End
 Function/WAVE P_GetITCData(device)
 	string device
 
-	dfref dfr = P_DeviceSpecificPressureDFRef(device)
+	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
 
-	Wave/Z/T/SDFR=dfr P_ITCData
+	WAVE/Z/T/SDFR=dfr P_ITCData
 
 	if(WaveExists(P_ITCData))
 		return P_ITCData
@@ -4647,10 +4647,10 @@ Function/WAVE P_GetITCData(device)
 
 	Make/W/N=(2^MINIMUM_ITCDATAWAVE_EXPONENT, 4) dfr:P_ITCData/WAVE=wv
 
-	SetDimLabel COLS, 0, DA, 		wv
-	SetDimLabel COLS, 1, AD, 		wv
-	SetDimLabel COLS, 2, TTL_R0, 	wv
-	SetDimLabel COLS, 3, TTL_R1, 	wv
+	SetDimLabel COLS, 0, DA, wv
+	SetDimLabel COLS, 1, AD, wv
+	SetDimLabel COLS, 2, TTL_R0, wv
+	SetDimLabel COLS, 3, TTL_R1, wv
 	wv = 0
 
 	return wv
@@ -4672,9 +4672,9 @@ End
 Function/WAVE P_GetITCChanConfig(device)
 	string device
 
-	dfref dfr = P_DeviceSpecificPressureDFRef(device)
+	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
 
-	Wave/Z/T/SDFR=dfr P_ChanConfig
+	WAVE/Z/T/SDFR=dfr P_ChanConfig
 
 	if(WaveExists(P_ChanConfig))
 		return P_ChanConfig
@@ -4682,7 +4682,7 @@ Function/WAVE P_GetITCChanConfig(device)
 
 	Make/I/N=(4, 4) dfr:P_ChanConfig/WAVE=wv
 
-	wv = 0
+	wv       = 0
 	wv[0][0] = XOP_CHANNEL_TYPE_DAC
 	wv[1][0] = XOP_CHANNEL_TYPE_ADC
 	wv[2][0] = XOP_CHANNEL_TYPE_TTL
@@ -4692,16 +4692,16 @@ Function/WAVE P_GetITCChanConfig(device)
 	wv[2][1] = -1
 	wv[3][1] = -1
 
-	wv[][2]  = WAVEBUILDER_MIN_SAMPINT * MILLI_TO_MICRO
+	wv[][2] = WAVEBUILDER_MIN_SAMPINT * MILLI_TO_MICRO
 
-	SetDimLabel ROWS, 0, DA, 		wv
-	SetDimLabel ROWS, 1, AD, 		wv
-	SetDimLabel ROWS, 2, TTL_R0, 	wv
-	SetDimLabel ROWS, 3, TTL_R1, 	wv
+	SetDimLabel ROWS, 0, DA, wv
+	SetDimLabel ROWS, 1, AD, wv
+	SetDimLabel ROWS, 2, TTL_R0, wv
+	SetDimLabel ROWS, 3, TTL_R1, wv
 
 	SetDimLabel COLS, 0, Chan_Type, wv
-	SetDimLabel COLS, 1, Chan_num, 	wv
-	SetDimLabel COLS, 2, Samp_int, 	wv
+	SetDimLabel COLS, 1, Chan_num, wv
+	SetDimLabel COLS, 2, Samp_int, wv
 
 	return wv
 End
@@ -4710,31 +4710,31 @@ End
 static Function SetPressureWaveDimLabels(wv)
 	WAVE wv
 
-	SetDimLabel COLS, 0 , Approach_Seal_BrkIn_Clear, wv
-	SetDimLabel COLS, 1 , DAC_List_Index           , wv
-	SetDimLabel COLS, 2 , HW_DAC_Type              , wv
-	SetDimLabel COLS, 3 , DAC_DevID                , wv
-	SetDimLabel COLS, 4 , DAC                      , wv
-	SetDimLabel COLS, 5 , DAC_Gain                 , wv
-	SetDimLabel COLS, 6 , ADC                      , wv
-	SetDimLabel COLS, 7 , ADC_Gain                 , wv
-	SetDimLabel COLS, 8 , TTL_A                    , wv
-	SetDimLabel COLS, 9 , PSI_air                  , wv
-	SetDimLabel COLS, 10, PSI_solution             , wv
-	SetDimLabel COLS, 11, PSI_slice                , wv
-	SetDimLabel COLS, 12, PSI_nearCell             , wv
-	SetDimLabel COLS, 13, PSI_SealInitial          , wv
-	SetDimLabel COLS, 14, PSI_SealMax              , wv
-	SetDimLabel COLS, 15, solutionZaxis            , wv
-	SetDimLabel COLS, 16, sliceZaxis               , wv
-	SetDimLabel COLS, 17, cellZaxis                , wv
-	SetDimLabel COLS, 18, cellXaxis                , wv
-	SetDimLabel COLS, 19, cellYaxis                , wv
-	SetDimLabel COLS, 20, PlaceHolderZero          , wv
-	SetDimLabel COLS, 21, RealTimePressure         , wv
-	SetDimLabel COLS, 22, LastResistanceValue      , wv
-	SetDimLabel COLS, 23, SSResistanceSlope        , wv
-	SetDimLabel COLS, 24, ActiveTP				   , wv
+	SetDimLabel COLS, 0, Approach_Seal_BrkIn_Clear, wv
+	SetDimLabel COLS, 1, DAC_List_Index, wv
+	SetDimLabel COLS, 2, HW_DAC_Type, wv
+	SetDimLabel COLS, 3, DAC_DevID, wv
+	SetDimLabel COLS, 4, DAC, wv
+	SetDimLabel COLS, 5, DAC_Gain, wv
+	SetDimLabel COLS, 6, ADC, wv
+	SetDimLabel COLS, 7, ADC_Gain, wv
+	SetDimLabel COLS, 8, TTL_A, wv
+	SetDimLabel COLS, 9, PSI_air, wv
+	SetDimLabel COLS, 10, PSI_solution, wv
+	SetDimLabel COLS, 11, PSI_slice, wv
+	SetDimLabel COLS, 12, PSI_nearCell, wv
+	SetDimLabel COLS, 13, PSI_SealInitial, wv
+	SetDimLabel COLS, 14, PSI_SealMax, wv
+	SetDimLabel COLS, 15, solutionZaxis, wv
+	SetDimLabel COLS, 16, sliceZaxis, wv
+	SetDimLabel COLS, 17, cellZaxis, wv
+	SetDimLabel COLS, 18, cellXaxis, wv
+	SetDimLabel COLS, 19, cellYaxis, wv
+	SetDimLabel COLS, 20, PlaceHolderZero, wv
+	SetDimLabel COLS, 21, RealTimePressure, wv
+	SetDimLabel COLS, 22, LastResistanceValue, wv
+	SetDimLabel COLS, 23, SSResistanceSlope, wv
+	SetDimLabel COLS, 24, ActiveTP, wv
 	/// @todo If user switched headStage mode while pressure regulation is
 	/// ongoing, pressure reg either needs to be turned off, or steady state
 	/// slope values need to be used
@@ -4744,28 +4744,28 @@ static Function SetPressureWaveDimLabels(wv)
 	// If the PeakResistance slope is greater than the SSResistanceSlope
 	// thershold pressure method does not need to update i.e. the pressure is
 	// "good" as it is
-	SetDimLabel COLS, 26, TimeOfLastRSlopeCheck   , wv
-	SetDimLabel COLS, 27, LastPressureCommand     , wv
-	SetDimLabel COLS, 28, OngoingPessurePulse     , wv
-	SetDimLabel COLS, 29, LastVcom                , wv
-	SetDimLabel COLS, 30, ManSSPressure           , wv
-	SetDimLabel COLS, 31, ManPPPressure           , wv
-	SetDimLabel COLS, 32, ManPPDuration           , wv
-	SetDimLabel COLS, 33, LastPeakR               , wv
-	SetDimLabel COLS, 34, PeakR                   , wv
-	SetDimLabel COLS, 35, TimePeakRcheck          , wv
-	SetDimLabel COLS, 36, PosCalConst             , wv
-	SetDimLabel COLS, 37, NegCalConst             , wv
-	SetDimLabel COLS, 38, ApproachNear            , wv
-	SetDimLabel COLS, 39, SealAtm                 , wv
-	SetDimLabel COLS, 40, UserSelectedHeadStage   , wv
-	SetDimLabel COLS, 41, UserPressureOffset      , wv
-	SetDimLabel COLS, 42, UserPressureOffsetTotal , wv
+	SetDimLabel COLS, 26, TimeOfLastRSlopeCheck, wv
+	SetDimLabel COLS, 27, LastPressureCommand, wv
+	SetDimLabel COLS, 28, OngoingPessurePulse, wv
+	SetDimLabel COLS, 29, LastVcom, wv
+	SetDimLabel COLS, 30, ManSSPressure, wv
+	SetDimLabel COLS, 31, ManPPPressure, wv
+	SetDimLabel COLS, 32, ManPPDuration, wv
+	SetDimLabel COLS, 33, LastPeakR, wv
+	SetDimLabel COLS, 34, PeakR, wv
+	SetDimLabel COLS, 35, TimePeakRcheck, wv
+	SetDimLabel COLS, 36, PosCalConst, wv
+	SetDimLabel COLS, 37, NegCalConst, wv
+	SetDimLabel COLS, 38, ApproachNear, wv
+	SetDimLabel COLS, 39, SealAtm, wv
+	SetDimLabel COLS, 40, UserSelectedHeadStage, wv
+	SetDimLabel COLS, 41, UserPressureOffset, wv
+	SetDimLabel COLS, 42, UserPressureOffsetTotal, wv
 	SetDimLabel COLS, 43, UserPressureOffsetPeriod, wv
-	SetDimLabel COLS, 44, TTL_B                   , wv
-	SetDimLabel COLS, 45, UserPressureDeviceID    , wv
+	SetDimLabel COLS, 44, TTL_B, wv
+	SetDimLabel COLS, 45, UserPressureDeviceID, wv
 	SetDimLabel COLS, 46, UserPressureDeviceHWType, wv
-	SetDimLabel COLS, 47, UserPressureDeviceADC   , wv
+	SetDimLabel COLS, 47, UserPressureDeviceADC, wv
 
 	SetDimLabel ROWS, 0, Headstage_0, wv
 	SetDimLabel ROWS, 1, Headstage_1, wv
@@ -4833,11 +4833,11 @@ End
 /// - 46: User pressure device hardware type
 /// - 47: User pressure ADC
 Function/WAVE P_GetPressureDataWaveRef(device)
-	string	device
+	string device
 
-	variable versionOfNewWave = 8
-	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
-	Wave/D/Z/SDFR=dfr wv=PressureData
+	variable          versionOfNewWave = 8
+	DFREF             dfr              = P_DeviceSpecificPressureDFRef(device)
+	WAVE/D/Z/SDFR=dfr wv               = PressureData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -4845,11 +4845,11 @@ Function/WAVE P_GetPressureDataWaveRef(device)
 		Redimension/D/N=(8, 48) wv
 		SetPressureWaveDimLabels(wv)
 	else
-		Make/D/N=(8, 48) dfr:PressureData/Wave=wv
+		Make/D/N=(8, 48) dfr:PressureData/WAVE=wv
 
 		SetPressureWaveDimLabels(wv)
 
-		wv 	= nan
+		wv = NaN
 
 		// prime the wave to avoid index out of range error for popup menus and to
 		// set all pressure methods to OFF (-1)
@@ -4876,12 +4876,12 @@ Function/WAVE P_GetPressureDataWaveRef(device)
 		wv[][%sliceZAxis]      = 350
 	endif
 
-	wv[][%UserPressureOffset]        = 0
-	wv[][%UserPressureOffsetPeriod]  = 0
-	wv[][%UserPressureOffsetTotal]   = NaN
-	wv[][%UserPressureDeviceID]      = NaN
-	wv[][%UserPressureDeviceHWType]  = NaN
-	wv[][%UserPressureDeviceADC]     = NaN
+	wv[][%UserPressureOffset]       = 0
+	wv[][%UserPressureOffsetPeriod] = 0
+	wv[][%UserPressureOffsetTotal]  = NaN
+	wv[][%UserPressureDeviceID]     = NaN
+	wv[][%UserPressureDeviceHWType] = NaN
+	wv[][%UserPressureDeviceADC]    = NaN
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -4901,9 +4901,9 @@ Function/WAVE P_PressureDataTxtWaveRef(device)
 	string device
 
 	variable versionOfNewWave = 1
-	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
+	DFREF    dfr              = P_DeviceSpecificPressureDFRef(device)
 
-	Wave/Z/T/SDFR=dfr wv=PressureDataTextWv
+	WAVE/Z/T/SDFR=dfr wv = PressureDataTextWv
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -4913,9 +4913,9 @@ Function/WAVE P_PressureDataTxtWaveRef(device)
 		Make/T/N=(8, 3) dfr:PressureDataTextWv/WAVE=wv
 	endif
 
-	SetDimLabel COLS, 0, Device     , wv
-	SetDimLabel COLS, 1, DA_Unit    , wv
-	SetDimLabel COLS, 2, AD_Unit    , wv
+	SetDimLabel COLS, 0, Device, wv
+	SetDimLabel COLS, 1, DA_Unit, wv
+	SetDimLabel COLS, 2, AD_Unit, wv
 
 	SetDimLabel ROWS, 0, Headstage_0, wv
 	SetDimLabel ROWS, 1, Headstage_1, wv
@@ -5189,23 +5189,23 @@ Function/WAVE GetAnalysisResultsWave(string expFolder, variable type)
 End
 
 ///  wave is used to relate it's index to sweepWave and deviceWave.
-Function/Wave GetAnalysisChannelStorage(dataFolder, device)
-	String dataFolder, device
-	Variable versionOfWave = 2
+Function/WAVE GetAnalysisChannelStorage(dataFolder, device)
+	string dataFolder, device
+	variable versionOfWave = 2
 
-	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
-	Wave/Z/SDFR=dfr/WAVE wv = channelStorage
+	DFREF                dfr = GetAnalysisDevChannelFolder(dataFolder, device)
+	WAVE/Z/SDFR=dfr/WAVE wv  = channelStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
 	elseif(ExistsWithCorrectLayoutVersion(wv, 1))
 		// update Dimension label
 	else
-		Make/R/O/N=(MINIMUM_WAVE_SIZE, 1)/WAVE dfr:channelStorage/Wave=wv
+		Make/R/O/N=(MINIMUM_WAVE_SIZE, 1)/WAVE dfr:channelStorage/WAVE=wv
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
 
-	SetDimLabel COLS, 0, configSweep,   wv
+	SetDimLabel COLS, 0, configSweep, wv
 
 	SetWaveVersion(wv, versionOfWave)
 
@@ -5214,18 +5214,18 @@ End
 
 /// @brief Return a wave containing all stimulus channels in the NWB file as a ";"-separated List
 ///  wave is used to relate it's index to sweepWave and deviceWave.
-Function/Wave GetAnalysisChannelStimWave(dataFolder, device)
-	String dataFolder, device
+Function/WAVE GetAnalysisChannelStimWave(dataFolder, device)
+	string dataFolder, device
 
 	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
 
-	Wave/Z/SDFR=dfr/T wv = stimulus
+	WAVE/Z/SDFR=dfr/T wv = stimulus
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:stimulus/Wave=wv
+	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:stimulus/WAVE=wv
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
@@ -5233,18 +5233,18 @@ End
 
 /// @brief Return a wave containing all acquisition channels in the NWB file as a ";"-separated List
 ///  wave is used to relate it's index to sweepWave and deviceWave.
-Function/Wave GetAnalysisChannelAcqWave(dataFolder, device)
-	String dataFolder, device
+Function/WAVE GetAnalysisChannelAcqWave(dataFolder, device)
+	string dataFolder, device
 
 	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
 
-	Wave/Z/SDFR=dfr/T wv = acquisition
+	WAVE/Z/SDFR=dfr/T wv = acquisition
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:acquisition/Wave=wv
+	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:acquisition/WAVE=wv
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
@@ -5252,18 +5252,18 @@ End
 
 /// @brief Return a wave containing all sweeps in a unique fashion.
 ///  wave is used to relate it's index to channelWave and deviceWave
-Function/Wave GetAnalysisChannelSweepWave(dataFolder, device)
-	String dataFolder, device
+Function/WAVE GetAnalysisChannelSweepWave(dataFolder, device)
+	string dataFolder, device
 
 	DFREF dfr = GetAnalysisDevChannelFolder(dataFolder, device)
 
-	Wave/Z/SDFR=dfr/I wv = sweeps
+	WAVE/Z/SDFR=dfr/I wv = sweeps
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(MINIMUM_WAVE_SIZE)/I dfr:sweeps/Wave=wv = -1
+	Make/N=(MINIMUM_WAVE_SIZE)/I dfr:sweeps/WAVE=wv = -1
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
@@ -5271,35 +5271,35 @@ End
 
 /// @brief Return a wave containing all devices
 ///  wave is used to relate it's index to sweepWave and channelWave.
-Function/Wave GetAnalysisDeviceWave(dataFolder)
-	String dataFolder
+Function/WAVE GetAnalysisDeviceWave(dataFolder)
+	string dataFolder
 
 	DFREF dfr = GetAnalysisExpFolder(dataFolder)
 
-	Wave/Z/SDFR=dfr/T wv = devices
+	WAVE/Z/SDFR=dfr/T wv = devices
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:devices/Wave=wv
+	Make/N=(MINIMUM_WAVE_SIZE)/T dfr:devices/WAVE=wv
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End
 
 /// @brief Return wave with all stored test pulses
-Function/Wave GetAnalysisStoredTestPulses(string dataFolder, string device)
+Function/WAVE GetAnalysisStoredTestPulses(string dataFolder, string device)
 
 	DFREF dfr = GetAnalysisDeviceTestpulse(dataFolder, device)
 
-	Wave/Z/SDFR=dfr/WAVE wv = StoredTestPulses
+	WAVE/Z/SDFR=dfr/WAVE wv = StoredTestPulses
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=(0)/WAVE dfr:StoredTestPulses/Wave=wv
+	Make/N=(0)/WAVE dfr:StoredTestPulses/WAVE=wv
 
 	return wv
 End
@@ -5314,8 +5314,8 @@ End
 /// - 1: %FileName:      Name of File in experiment column in ExperimentBrowser
 /// - 2: %DataFolder     Data folder inside current Igor experiment
 /// - 3: %FileType       File Type identifier for routing to loader functions, one of @ref AnalysisBrowserFileTypes
-Function/Wave GetAnalysisBrowserMap()
-	DFREF dfr = GetAnalysisFolder()
+Function/WAVE GetAnalysisBrowserMap()
+	DFREF    dfr           = GetAnalysisFolder()
 	variable versionOfWave = 3
 
 	STRUCT WaveLocationMod p
@@ -5337,7 +5337,7 @@ Function/Wave GetAnalysisBrowserMap()
 		Redimension/N=(-1, 4) wv
 		wv[][3] = ANALYSISBROWSER_FILE_TYPE_IGOR
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, 4)/T dfr:analysisBrowserMap/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE, 4)/T dfr:analysisBrowserMap/WAVE=wv
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
 
@@ -5354,8 +5354,8 @@ End
 /// @brief Return the text wave used in the folder listbox of the analysis browser
 Function/WAVE GetAnalysisBrowserGUIFolderList()
 
-	string name = "AnaBrowserFolderList"
-	DFREF dfr = GetAnalysisFolder()
+	string   name          = "AnaBrowserFolderList"
+	DFREF    dfr           = GetAnalysisFolder()
 	variable versionOfWave = ANALYSIS_BROWSER_FOLDER_LISTBOX_WAVE_VERSION
 
 	WAVE/Z/SDFR=dfr/T wv = $name
@@ -5376,8 +5376,8 @@ End
 /// @brief Return the selection wave used in the folder listbox of the analysis browser
 Function/WAVE GetAnalysisBrowserGUIFolderSelection()
 
-	string name = "AnaBrowserFolderSelection"
-	DFREF dfr = GetAnalysisFolder()
+	string   name          = "AnaBrowserFolderSelection"
+	DFREF    dfr           = GetAnalysisFolder()
 	variable versionOfWave = ANALYSIS_BROWSER_FOLDERSEL_LISTBOX_WAVE_VERSION
 
 	WAVE/Z/SDFR=dfr wv = $name
@@ -5400,8 +5400,8 @@ End
 /// @brief Return the color wave used in the folder listbox of the analysis browser
 Function/WAVE GetAnalysisBrowserGUIFolderColors()
 
-	string name = "AnaBrowserFolderColors"
-	DFREF dfr = GetAnalysisFolder()
+	string   name          = "AnaBrowserFolderColors"
+	DFREF    dfr           = GetAnalysisFolder()
 	variable versionOfWave = ANALYSIS_BROWSER_FOLDERCOL_LISTBOX_WAVE_VERSION
 
 	WAVE/Z/SDFR=dfr/W/U wv = $name
@@ -5437,12 +5437,12 @@ End
 /// @brief Return the text wave used in the listbox of the experiment browser
 ///
 /// The "experiment" column in the second layer maps to the corresponding row in the experimentMap.
-Function/Wave GetExperimentBrowserGUIList()
+Function/WAVE GetExperimentBrowserGUIList()
 
-	DFREF dfr = GetAnalysisFolder()
+	DFREF    dfr           = GetAnalysisFolder()
 	variable versionOfWave = ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION
 
-	Wave/Z/SDFR=dfr/T wv = expBrowserList
+	WAVE/Z/SDFR=dfr/T wv = expBrowserList
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
@@ -5450,21 +5450,21 @@ Function/Wave GetExperimentBrowserGUIList()
 		Redimension/N=(-1, NUM_COLUMNS_LIST_WAVE, -1) wv
 		wv = ""
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE, 2)/T dfr:expBrowserList/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE, 2)/T dfr:expBrowserList/WAVE=wv
 	endif
 
-	SetDimLabel COLS, 0 , $""          , wv
-	SetDimLabel COLS, 1 , file         , wv
-	SetDimLabel COLS, 2 , type         , wv
-	SetDimLabel COLS, 3 , $""          , wv
-	SetDimLabel COLS, 4 , device       , wv
-	SetDimLabel COLS, 5 , '#sweeps'    , wv
-	SetDimLabel COLS, 6 , sweep        , wv
-	SetDimLabel COLS, 7 , '#headstages', wv
-	SetDimLabel COLS, 8 , 'stim sets'  , wv
-	SetDimLabel COLS, 9 , 'set count'  , wv
-	SetDimLabel COLS, 10, '#DAC'       , wv
-	SetDimLabel COLS, 11, '#ADC'       , wv
+	SetDimLabel COLS, 0, $"", wv
+	SetDimLabel COLS, 1, file, wv
+	SetDimLabel COLS, 2, type, wv
+	SetDimLabel COLS, 3, $"", wv
+	SetDimLabel COLS, 4, device, wv
+	SetDimLabel COLS, 5, '#sweeps', wv
+	SetDimLabel COLS, 6, sweep, wv
+	SetDimLabel COLS, 7, '#headstages', wv
+	SetDimLabel COLS, 8, 'stim sets', wv
+	SetDimLabel COLS, 9, 'set count', wv
+	SetDimLabel COLS, 10, '#DAC', wv
+	SetDimLabel COLS, 11, '#ADC', wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	SetWaveVersion(wv, versionOfWave)
@@ -5474,12 +5474,12 @@ End
 
 /// @brief Return the selection wave used in the listbox of the experiment browser
 ///
-Function/Wave GetExperimentBrowserGUISel()
+Function/WAVE GetExperimentBrowserGUISel()
 
-	DFREF dfr = GetAnalysisFolder()
+	DFREF    dfr           = GetAnalysisFolder()
 	variable versionOfWave = ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION
 
-	Wave/Z/SDFR=dfr wv = expBrowserSel
+	WAVE/Z/SDFR=dfr wv = expBrowserSel
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
@@ -5487,7 +5487,7 @@ Function/Wave GetExperimentBrowserGUISel()
 		Redimension/N=(-1, NUM_COLUMNS_LIST_WAVE, -1) wv
 		wv = 0
 	else
-		Make/R/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE) dfr:expBrowserSel/Wave=wv
+		Make/R/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE) dfr:expBrowserSel/WAVE=wv
 	endif
 
 	SetWaveVersion(wv, versionOfWave)
@@ -5496,22 +5496,22 @@ Function/Wave GetExperimentBrowserGUISel()
 End
 
 /// @brief Return the configSweep wave of a given sweep from the analysis subfolder
-Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
+Function/WAVE GetAnalysisConfigWave(dataFolder, device, sweep)
 	string dataFolder, device
 	variable sweep
 
-	DFREF dfr = GetAnalysisDeviceConfigFolder(dataFolder, device)
+	DFREF  dfr         = GetAnalysisDeviceConfigFolder(dataFolder, device)
 	string configSweep = GetConfigWaveName(sweep)
 
-	Wave/I/Z/SDFR=dfr wv = $configSweep
+	WAVE/I/Z/SDFR=dfr wv = $configSweep
 
 	if(WaveExists(wv))
 		// do nothing
 	else
-		Make/N=(0, 4)/I dfr:$configSweep/Wave=wv = -1
+		Make/N=(0, 4)/I dfr:$configSweep/WAVE=wv = -1
 	endif
 
-	SetDimLabel COLS, 0, type,   wv
+	SetDimLabel COLS, 0, type, wv
 	SetDimLabel COLS, 1, number, wv
 	SetDimLabel COLS, 2, timeMS, wv
 
@@ -5595,10 +5595,10 @@ End
 ///
 /// Layers:
 /// - Channels
-Function/Wave GetIndexingStorageWave(device)
+Function/WAVE GetIndexingStorageWave(device)
 	string device
 
-	DFREF dfr = GetDevicePath(device)
+	DFREF    dfr              = GetDevicePath(device)
 	variable versionOfNewWave = 1
 
 	WAVE/Z/SDFR=dfr wv = IndexingStorageWave
@@ -5610,7 +5610,7 @@ Function/Wave GetIndexingStorageWave(device)
 		return wv
 	endif
 
-	Make/R/N=(2, 2, NUM_DA_TTL_CHANNELS) dfr:IndexingStorageWave/Wave=wv
+	Make/R/N=(2, 2, NUM_DA_TTL_CHANNELS) dfr:IndexingStorageWave/WAVE=wv
 
 	SetDimLabel ROWS, 0, CHANNEL_TYPE_DAC, wv
 	SetDimLabel ROWS, 1, CHANNEL_TYPE_TTL, wv
@@ -5684,7 +5684,7 @@ End
 /// In addition it is also the next free row index.
 Function/WAVE GetActiveDevicesTPMD()
 
-	DFREF dfr = GetActDAQDevicesTestPulseFolder()
+	DFREF    dfr              = GetActDAQDevicesTestPulseFolder()
 	variable versionOfNewWave = 1
 
 	WAVE/Z/SDFR=dfr wv = ActiveDevicesTPMD
@@ -5694,11 +5694,11 @@ Function/WAVE GetActiveDevicesTPMD()
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/R/N=(MINIMUM_WAVE_SIZE, 3) dfr:ActiveDevicesTPMD/Wave=wv
+		Make/R/N=(MINIMUM_WAVE_SIZE, 3) dfr:ActiveDevicesTPMD/WAVE=wv
 		wv = NaN
 	endif
 
-	SetDimLabel COLS, 0, DeviceID,    wv
+	SetDimLabel COLS, 0, DeviceID, wv
 	SetDimLabel COLS, 1, ActiveChunk, wv
 	SetDimLabel COLS, 2, HardwareType, wv
 
@@ -5742,41 +5742,41 @@ End
 /// - 17+: Unique controls
 ///
 /// UTF_NOINSTRUMENTATION
-Function/Wave GetDA_EphysGuiStateNum(device)
+Function/WAVE GetDA_EphysGuiStateNum(device)
 	string device
 
 	variable uniqueCtrlCount
-	string uniqueCtrlList
+	string   uniqueCtrlList
 
-	DFREF dfr = GetDevicePath(device)
-	WAVE/Z/D/SDFR=dfr wv = DA_EphysGuiStateNum
+	DFREF             dfr = GetDevicePath(device)
+	WAVE/Z/D/SDFR=dfr wv  = DA_EphysGuiStateNum
 
 	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
 		return wv
 	elseif(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
-		uniqueCtrlList = DAG_GetUniqueSpecCtrlListNum(device)
+		uniqueCtrlList  = DAG_GetUniqueSpecCtrlListNum(device)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Redimension/D/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount, -1, -1) wv
-		wv = Nan
+		wv = NaN
 	else
-		uniqueCtrlList = DAG_GetUniqueSpecCtrlListNum(device)
+		uniqueCtrlList  = DAG_GetUniqueSpecCtrlListNum(device)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
-		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount)/D dfr:DA_EphysGuiStateNum/Wave=wv
-		wv = Nan
+		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount)/D dfr:DA_EphysGuiStateNum/WAVE=wv
+		wv = NaN
 	endif
 
-	SetDimLabel COLS,  0, $GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), wv
-	SetDimLabel COLS,  1, HSMode, wv
-	SetDimLabel COLS,  2, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK), wv
-	SetDimLabel COLS,  3, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN), wv
-	SetDimLabel COLS,  4, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), wv
-	SetDimLabel COLS,  5, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), wv
-	SetDimLabel COLS,  6, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), wv
-	SetDimLabel COLS,  7, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK), wv
-	SetDimLabel COLS,  8, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN), wv
-	SetDimLabel COLS,  9, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS, 0, $GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS, 1, HSMode, wv
+	SetDimLabel COLS, 2, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS, 3, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN), wv
+	SetDimLabel COLS, 4, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), wv
+	SetDimLabel COLS, 5, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS, 6, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS, 7, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS, 8, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN), wv
+	SetDimLabel COLS, 9, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), wv
 	SetDimLabel COLS, 10, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), wv
 	SetDimLabel COLS, 11, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END), wv
 	SetDimLabel COLS, 12, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), wv
@@ -5812,40 +5812,40 @@ End
 /// - 10+: Unique controls (SetVariable and PopupMenu only)
 ///
 /// UTF_NOINSTRUMENTATION
-Function/Wave GetDA_EphysGuiStateTxT(device)
+Function/WAVE GetDA_EphysGuiStateTxT(device)
 	string device
 
-	DFREF dfr= GetDevicePath(device)
-	Wave/Z/T/SDFR=dfr wv = DA_EphysGuiStateTxT
+	DFREF             dfr = GetDevicePath(device)
+	WAVE/Z/T/SDFR=dfr wv  = DA_EphysGuiStateTxT
 	variable uniqueCtrlCount
-	string uniqueCtrlList
+	string   uniqueCtrlList
 
 	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
 		return wv
 	elseif(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
-		uniqueCtrlList = DAG_GetUniqueSpecCtrlListTxt(device)
+		uniqueCtrlList  = DAG_GetUniqueSpecCtrlListTxt(device)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount, -1, -1) wv
 		wv = ""
 	else
-		uniqueCtrlList = DAG_GetUniqueSpecCtrlListTxt(device)
+		uniqueCtrlList  = DAG_GetUniqueSpecCtrlListTxt(device)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
-		Make/T/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount) dfr:DA_EphysGuiStateTxT/Wave=wv
+		Make/T/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount) dfr:DA_EphysGuiStateTxT/WAVE=wv
 		wv = ""
 	endif
 
-	SetDimLabel COLS,  0, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), wv
-	SetDimLabel COLS,  1, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), wv
-	SetDimLabel COLS,  2, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), wv
-	SetDimLabel COLS,  3, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH), wv
-	SetDimLabel COLS,  4, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), wv
-	SetDimLabel COLS,  5, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), wv
-	SetDimLabel COLS,  6, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END), wv
-	SetDimLabel COLS,  7, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH), wv
-	SetDimLabel COLS,  8, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE), wv
-	SetDimLabel COLS,  9, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), wv
+	SetDimLabel COLS, 0, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS, 1, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS, 2, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), wv
+	SetDimLabel COLS, 3, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH), wv
+	SetDimLabel COLS, 4, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), wv
+	SetDimLabel COLS, 5, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS, 6, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS, 7, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH), wv
+	SetDimLabel COLS, 8, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE), wv
+	SetDimLabel COLS, 9, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), wv
 
 	SetDimensionLabels(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
@@ -5882,7 +5882,7 @@ End
 /// - 1: Name of the device used for pressure control (maybe empty)
 Function/WAVE GetDeviceMapping()
 
-	DFREF dfr = GetDAQDevicesFolder()
+	DFREF    dfr              = GetDAQDevicesFolder()
 	variable versionOfNewWave = 2
 
 	WAVE/Z/T/SDFR=dfr wv = deviceMapping
@@ -5892,15 +5892,15 @@ Function/WAVE GetDeviceMapping()
 	elseif(WaveExists(wv))
 		Redimension/N=(HARDWARE_MAX_DEVICES, -1, 2) wv
 	else
-		Make/T/N=(HARDWARE_MAX_DEVICES, ItemsInList(HARDWARE_DAC_TYPES), 2) dfr:deviceMapping/Wave=wv
+		Make/T/N=(HARDWARE_MAX_DEVICES, ItemsInList(HARDWARE_DAC_TYPES), 2) dfr:deviceMapping/WAVE=wv
 	endif
 
 	SetDimLabel ROWS, -1, DeviceID, wv
 
 	SetDimLabel COLS, 0, ITC_DEVICE, wv
-	SetDimLabel COLS, 1, NI_DEVICE , wv
+	SetDimLabel COLS, 1, NI_DEVICE, wv
 
-	SetDimLabel LAYERS, 0, MainDevice    , wv
+	SetDimLabel LAYERS, 0, MainDevice, wv
 	SetDimLabel LAYERS, 1, PressureDevice, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -5926,7 +5926,7 @@ End
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
 /// UTF_NOINSTRUMENTATION
-threadsafe Function/Wave GetCacheValueWave()
+threadsafe Function/WAVE GetCacheValueWave()
 
 	DFREF dfr = GetCacheFolder()
 
@@ -5935,7 +5935,7 @@ threadsafe Function/Wave GetCacheValueWave()
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/WAVE/N=(MINIMUM_WAVE_SIZE) dfr:values/Wave=wv
+		Make/WAVE/N=(MINIMUM_WAVE_SIZE) dfr:values/WAVE=wv
 	endif
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
@@ -5947,7 +5947,7 @@ End
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
 /// UTF_NOINSTRUMENTATION
-threadsafe Function/Wave GetCacheKeyWave()
+threadsafe Function/WAVE GetCacheKeyWave()
 
 	DFREF dfr = GetCacheFolder()
 
@@ -5956,7 +5956,7 @@ threadsafe Function/Wave GetCacheKeyWave()
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE) dfr:keys/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE) dfr:keys/WAVE=wv
 	endif
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
@@ -5977,18 +5977,18 @@ End
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
 /// UTF_NOINSTRUMENTATION
-threadsafe Function/Wave GetCacheStatsWave()
+threadsafe Function/WAVE GetCacheStatsWave()
 
 	variable versionOfNewWave = 3
 
 	variable numRows, index, oldNumRows
-	DFREF dfr = GetCacheFolder()
-	WAVE/D/Z/SDFR=dfr wv = stats
+	DFREF             dfr = GetCacheFolder()
+	WAVE/D/Z/SDFR=dfr wv  = stats
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	else
-		WAVE/T keys      = GetCacheKeyWave()
+		WAVE/T    keys   = GetCacheKeyWave()
 		WAVE/WAVE values = GetCacheValueWave()
 		numRows = DimSize(values, ROWS)
 		ASSERT_TS(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
@@ -6012,7 +6012,7 @@ threadsafe Function/Wave GetCacheStatsWave()
 		else
 			// experiments prior to ab795b55 (Cache: Add statistics for each entry, 2018-03-23)
 			// don't hold this wave, but we still have to ensure that the stats wave has the right number of rows
-			Make/D/N=(numRows, 4) dfr:stats/Wave=wv
+			Make/D/N=(numRows, 4) dfr:stats/WAVE=wv
 		endif
 	endif
 
@@ -6041,7 +6041,7 @@ Function/WAVE GetCellElectrodeNames(device)
 	string device
 
 	variable versionOfNewWave = 1
-	DFREF dfr = GetDevicePath(device)
+	DFREF    dfr              = GetDevicePath(device)
 
 	WAVE/Z/T/SDFR=dfr wv = cellElectrodeNames
 
@@ -6076,7 +6076,7 @@ Function/WAVE GetPressureTypeWv(device)
 		return wv
 	endif
 
-	Make/R/N=(NUM_HEADSTAGES) dfr:pressureType/Wave=wv
+	Make/R/N=(NUM_HEADSTAGES) dfr:pressureType/WAVE=wv
 
 	return wv
 End
@@ -6205,7 +6205,7 @@ Function/WAVE GetPulseAverageSetIndizes(DFREF dfr, variable channelNumber, varia
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/R/N=(MINIMUM_WAVE_SIZE, 1) dfr:$name/Wave=wv
+		Make/R/N=(MINIMUM_WAVE_SIZE, 1) dfr:$name/WAVE=wv
 		Multithread wv[] = NaN
 	endif
 
@@ -6239,7 +6239,7 @@ Function/WAVE GetPulseAverageSetImageWave(DFREF dfr, variable channelNumber, var
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/R/N=(1, MINIMUM_WAVE_SIZE) dfr:$name/Wave=wv
+		Make/R/N=(1, MINIMUM_WAVE_SIZE) dfr:$name/WAVE=wv
 		Multithread wv[] = NaN
 	endif
 
@@ -6264,7 +6264,7 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 8) wv
 	else
-		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 8) dfr:properties/Wave=wv
+		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 8) dfr:properties/WAVE=wv
 	endif
 
 	Multithread wv[] = NaN
@@ -6299,7 +6299,7 @@ Function/WAVE GetPulseAveragePropertiesWaves(DFREF dfr)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/WAVE/N=(MINIMUM_WAVE_SIZE_LARGE, 2) dfr:propertiesWaves/Wave=wv
+		Make/WAVE/N=(MINIMUM_WAVE_SIZE_LARGE, 2) dfr:propertiesWaves/WAVE=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -6324,7 +6324,7 @@ Function/WAVE GetPulseAverageDisplayMapping(DFREF dfr)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/D/N=(NUM_HEADSTAGES, NUM_MAX_CHANNELS, 2) dfr:displayMapping/Wave=wv
+		Make/D/N=(NUM_HEADSTAGES, NUM_MAX_CHANNELS, 2) dfr:displayMapping/WAVE=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -6349,7 +6349,7 @@ Function/WAVE GetArtefactRemovalListWave(dfr)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, 2) dfr:artefactRemovalListBoxWave/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, 2) dfr:artefactRemovalListBoxWave/WAVE=wv
 	endif
 
 	SetDimLabel COLS, 0, $"Begin [ms]", wv
@@ -6374,13 +6374,13 @@ Function/WAVE GetArtefactRemovalDataWave(dfr)
 	elseif(WaveExists(wv))
 		Redimension/D/N=(MINIMUM_WAVE_SIZE, 4) wv
 	else
-		Make/D/N=(MINIMUM_WAVE_SIZE, 4) dfr:artefactRemovalDataWave/Wave=wv
+		Make/D/N=(MINIMUM_WAVE_SIZE, 4) dfr:artefactRemovalDataWave/WAVE=wv
 	endif
 
 	SetDimLabel COLS, 0, $"ArtefactPosition", wv
-	SetDimLabel COLS, 1, $"DAC",           wv
-	SetDimLabel COLS, 2, $"ADC",           wv
-	SetDimLabel COLS, 3, $"HS",            wv
+	SetDimLabel COLS, 1, $"DAC", wv
+	SetDimLabel COLS, 2, $"ADC", wv
+	SetDimLabel COLS, 3, $"HS", wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv
@@ -6401,7 +6401,7 @@ Function/WAVE GetOverlaySweepsListWave(dfr)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, 2) dfr:overlaySweepsListBoxWave/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, 2) dfr:overlaySweepsListBoxWave/WAVE=wv
 	endif
 
 	SetDimLabel COLS, 0, $"Sweep", wv
@@ -6426,7 +6426,7 @@ Function/WAVE GetOverlaySweepsListSelWave(dfr)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/B/N=(MINIMUM_WAVE_SIZE, 2) dfr:overlaySweepsListBoxSelWave/Wave=wv
+		Make/B/N=(MINIMUM_WAVE_SIZE, 2) dfr:overlaySweepsListBoxSelWave/WAVE=wv
 	endif
 
 	SetDimLabel COLS, 0, $"Sweep", wv
@@ -6455,7 +6455,7 @@ Function/WAVE GetOverlaySweepHeadstageRemoval(DFREF dfr)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/R/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:overlaySweepsHeadstageRemoval/Wave=wv
+		Make/R/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:overlaySweepsHeadstageRemoval/WAVE=wv
 	endif
 
 	wv = 1
@@ -6467,8 +6467,8 @@ End
 /// @brief Return the overlay sweeps wave with all sweep selection choices
 /// for the databrowser or the sweepbrowser
 Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
-	string win
-	DFREF dfr
+	string   win
+	DFREF    dfr
 	variable skipUpdate
 
 	variable versionOfNewWave = 4
@@ -6498,7 +6498,7 @@ Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
 		Redimension/N=(-1, -1, 7) wv
 	else
 		ASSERT(NUM_HEADSTAGES == NUM_DA_TTL_CHANNELS, "Unexpected channel count")
-		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 7) dfr:$newName/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 7) dfr:$newName/WAVE=wv
 	endif
 
 	SetDimensionLabels(wv, "Stimset;TTLStimset;DAStimsetAndClampMode;DAStimsetAndSetSweepCount;TTLStimsetAndSetSweepCount;DAStimsetAndSetCycleCount;TTLStimsetAndSetCycleCount", LAYERS)
@@ -6526,14 +6526,14 @@ Function/WAVE GetChannelSelectionWave(dfr)
 	elseif(WaveExists(wv))
 		Redimension/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) wv
 	else
-		Make/R/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) dfr:channelSelection/Wave=wv
+		Make/R/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) dfr:channelSelection/WAVE=wv
 
 		// by default all channels are selected
 		wv = 1
 	endif
 
-	SetDimLabel COLS, 0, DA       , wv
-	SetDimLabel COLS, 1, AD       , wv
+	SetDimLabel COLS, 0, DA, wv
+	SetDimLabel COLS, 1, AD, wv
 	SetDimLabel COLS, 2, HEADSTAGE, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -6554,7 +6554,7 @@ Function/WAVE GetAxisLabelCacheWave()
 End
 
 /// @brief Return the sweepBrowser map wave from the given DFR
-Function/Wave GetSweepBrowserMap(dfr)
+Function/WAVE GetSweepBrowserMap(dfr)
 	DFREF dfr
 
 	variable versionOfNewWave = 1
@@ -6565,7 +6565,7 @@ Function/Wave GetSweepBrowserMap(dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:map/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:map/WAVE=wv
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
 
@@ -6598,9 +6598,9 @@ End
 /// @brief Return the list wave for the debug panel
 Function/WAVE GetDebugPanelListWave()
 
-	variable versionOfNewWave = 1
-	DFREF dfr = GetDebugPanelFolder()
-	WAVE/T/Z/SDFR=dfr wv = fileSelectionListWave
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetDebugPanelFolder()
+	WAVE/T/Z/SDFR=dfr wv               = fileSelectionListWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -6616,9 +6616,9 @@ End
 /// @brief Return the list selection wave for the debugging panel
 Function/WAVE GetDebugPanelListSelWave()
 
-	variable versionOfNewWave = 1
-	DFREF dfr = GetDebugPanelFolder()
-	WAVE/B/Z/SDFR=dfr wv = fileSelectionListSelWave
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetDebugPanelFolder()
+	WAVE/B/Z/SDFR=dfr wv               = fileSelectionListSelWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -6641,9 +6641,9 @@ End
 Function/WAVE GetAnalysisFuncIndexingHelper(device)
 	string device
 
-	variable versionOfNewWave = 1
-	DFREF dfr = GetDevicePath(device)
-	WAVE/D/Z/SDFR=dfr wv = analysisFuncIndexing
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetDevicePath(device)
+	WAVE/D/Z/SDFR=dfr wv               = analysisFuncIndexing
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -6669,9 +6669,9 @@ End
 Function/WAVE GetAnalysisFuncDAScaleDeltaV(device)
 	string device
 
-	variable versionOfNewWave = 1
-	DFREF dfr = GetDevicePath(device)
-	WAVE/D/Z/SDFR=dfr wv = analysisFuncDAScaleDeltaV
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetDevicePath(device)
+	WAVE/D/Z/SDFR=dfr wv               = analysisFuncDAScaleDeltaV
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -6703,9 +6703,9 @@ End
 Function/WAVE GetAnalysisFuncDAScaleDeltaI(device)
 	string device
 
-	variable versionOfNewWave = 1
-	DFREF dfr = GetDevicePath(device)
-	WAVE/D/Z/SDFR=dfr wv = analysisFuncDAScaleDeltaI
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetDevicePath(device)
+	WAVE/D/Z/SDFR=dfr wv               = analysisFuncDAScaleDeltaI
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -6735,9 +6735,9 @@ End
 Function/WAVE GetAnalysisFuncDAScaleRes(device)
 	string device
 
-	variable versionOfNewWave = 1
-	DFREF dfr = GetDevicePath(device)
-	WAVE/D/Z/SDFR=dfr wv = analysisFuncDAScaleRes
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetDevicePath(device)
+	WAVE/D/Z/SDFR=dfr wv               = analysisFuncDAScaleRes
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -6760,7 +6760,7 @@ End
 ///
 /// Used by PSQ_AdjustDAScale().
 Function/WAVE GetAnalysisFuncDAScaleResFit(device, headstage)
-	string device
+	string   device
 	variable headstage
 
 	variable versionOfNewWave = 1
@@ -6790,7 +6790,7 @@ End
 ///
 /// Used by PSQ_AdjustDAScale().
 Function/WAVE GetAnalysisFuncDAScaleSpikeFreq(device, headstage)
-	string device
+	string   device
 	variable headstage
 
 	variable versionOfNewWave = 1
@@ -6819,7 +6819,7 @@ End
 ///
 /// Used by PSQ_AdjustDAScale().
 Function/WAVE GetAnalysisFuncDAScaleFreqFit(device, headstage)
-	string device
+	string   device
 	variable headstage
 
 	variable versionOfNewWave = 1
@@ -6848,7 +6848,7 @@ End
 ///
 /// Used by PSQ_AdjustDAScale().
 Function/WAVE GetAnalysisFuncDAScales(device, headstage)
-	string device
+	string   device
 	variable headstage
 
 	variable versionOfNewWave = 1
@@ -6890,14 +6890,14 @@ End
 Function/WAVE GetAnalysisFunctionStorage(device)
 	string device
 
-	variable versionOfWave = 4
-	DFREF dfr = GetDevicePath(device)
-	WAVE/T/Z/SDFR=dfr wv = analysisFunctions
+	variable          versionOfWave = 4
+	DFREF             dfr           = GetDevicePath(device)
+	WAVE/T/Z/SDFR=dfr wv            = analysisFunctions
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
 	elseif(WaveExists(wv))
-		 // handle upgrade
+		// handle upgrade
 		Redimension/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS + 1) wv
 	else
 		Make/T/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS + 1) dfr:analysisFunctions/WAVE=wv
@@ -6920,14 +6920,14 @@ End
 Function/WAVE GetSetEventFlag(device)
 	string device
 
-	variable versionOfWave = 1
-	DFREF dfr = GetDevicePath(device)
-	WAVE/D/Z/SDFR=dfr wv = setEventFlag
+	variable          versionOfWave = 1
+	DFREF             dfr           = GetDevicePath(device)
+	WAVE/D/Z/SDFR=dfr wv            = setEventFlag
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
 	elseif(WaveExists(wv))
-		 // handle upgrade
+		// handle upgrade
 	else
 		Make/D/N=(NUM_DA_TTL_CHANNELS, 2) dfr:setEventFlag/WAVE=wv
 	endif
@@ -6945,20 +6945,20 @@ End
 Function/WAVE GetRAPerfWave(device)
 	string device
 
-	variable versionOfWave = 1
-	DFREF dfr = GetDevicePath(device)
-	WAVE/D/Z/SDFR=dfr wv = perfingRA
+	variable          versionOfWave = 1
+	DFREF             dfr           = GetDevicePath(device)
+	WAVE/D/Z/SDFR=dfr wv            = perfingRA
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
 	elseif(WaveExists(wv))
-		 // handle upgrade
+		// handle upgrade
 	else
 		Make/D/N=(MINIMUM_WAVE_SIZE) dfr:perfingRA/WAVE=wv
 	endif
 
 	wv = NaN
-	SetScale d, 0, inf, "s", wv
+	SetScale d, 0, Inf, "s", wv
 
 	SetWaveVersion(wv, versionOfWave)
 
@@ -6969,9 +6969,9 @@ End
 /// @brief Return the list wave for the analysis parameter GUI
 Function/WAVE WBP_GetAnalysisParamGUIListWave()
 
-	variable versionOfWave = 3
-	DFREF dfr = GetWaveBuilderDataPath()
-	WAVE/T/Z/SDFR=dfr wv = analysisGUIListWave
+	variable          versionOfWave = 3
+	DFREF             dfr           = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv            = analysisGUIListWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
@@ -6995,9 +6995,9 @@ End
 /// @brief Return the selection wave for the analysis parameter GUI
 Function/WAVE WBP_GetAnalysisParamGUISelWave()
 
-	variable versionOfWave = 1
-	DFREF dfr = GetWaveBuilderDataPath()
-	WAVE/B/Z/SDFR=dfr wv = analysisGUISelWave
+	variable          versionOfWave = 1
+	DFREF             dfr           = GetWaveBuilderDataPath()
+	WAVE/B/Z/SDFR=dfr wv            = analysisGUISelWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
@@ -7013,9 +7013,9 @@ End
 /// @brief Return the help wave for the analysis parameter GUI
 Function/WAVE WBP_GetAnalysisParamGUIHelpWave()
 
-	variable versionOfWave = 1
-	DFREF dfr = GetWaveBuilderDataPath()
-	WAVE/T/Z/SDFR=dfr wv = analysisGUIHelpWave
+	variable          versionOfWave = 1
+	DFREF             dfr           = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv            = analysisGUIHelpWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
@@ -7049,7 +7049,7 @@ Function/WAVE GetAnaFuncDashboardListWave(dfr)
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 4) wv
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:dashboardListWave/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:dashboardListWave/WAVE=wv
 	endif
 
 	SetDimLabel COLS, 0, $"Stimset", wv
@@ -7079,7 +7079,7 @@ Function/WAVE GetAnaFuncDashboardInfoWave(dfr)
 		// handle upgrade
 		Redimension/N=(-1, 4) wv
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:dashboardInfoWave/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:dashboardInfoWave/WAVE=wv
 	endif
 
 	SetDimLabel COLS, 0, $STIMSET_ACQ_CYCLE_ID_KEY, wv
@@ -7107,7 +7107,7 @@ Function/WAVE GetAnaFuncDashboardSelWave(dfr)
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 4, -1) wv
 	else
-		Make/B/N=(MINIMUM_WAVE_SIZE, 4, 2) dfr:dashboardSelWave/Wave=wv
+		Make/B/N=(MINIMUM_WAVE_SIZE, 4, 2) dfr:dashboardSelWave/WAVE=wv
 	endif
 
 	SetDimLabel LAYERS, 1, $LISTBOX_LAYER_FOREGROUND, wv
@@ -7131,12 +7131,12 @@ Function/WAVE GetAnaFuncDashboardColorWave(dfr)
 	elseif(WaveExists(wv))
 		Redimension/N=(4, -1) wv
 	else
-		Make/W/U/N=(4, 3) dfr:dashboardColorWave/Wave=wv
+		Make/W/U/N=(4, 3) dfr:dashboardColorWave/WAVE=wv
 	endif
 
-	wv[0][0]= {0, 65535, 0}
-	wv[0][1]= {0, 0,     35000}
-	wv[0][2]= {0, 0,     0}
+	wv[0][0] = {0, 65535, 0}
+	wv[0][1] = {0, 0, 35000}
+	wv[0][2] = {0, 0, 0}
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -7158,7 +7158,7 @@ Function/WAVE GetAnaFuncDashboardHelpWave(dfr)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/T/N=(0) dfr:dashboardHelpWave/Wave=wv
+		Make/T/N=(0) dfr:dashboardHelpWave/WAVE=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -7173,15 +7173,15 @@ Function/WAVE GetDeviceInfoWave(device)
 	variable versionOfNewWave = 1
 	variable hardwareType
 
-	DFREF dfr = GetDeviceInfoPath()
-	WAVE/D/Z/SDFR=dfr wv = $device
+	DFREF             dfr = GetDeviceInfoPath()
+	WAVE/D/Z/SDFR=dfr wv  = $device
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/D/N=(5) dfr:$device/Wave=wv
+		Make/D/N=(5) dfr:$device/WAVE=wv
 	endif
 
 	SetDimLabel ROWS, 0, AD, wv
@@ -7207,15 +7207,15 @@ Function/WAVE GetElapsedTimeWave()
 
 	variable versionOfNewWave = 1
 
-	DFREF dfr = GetTempPath()
-	WAVE/D/Z/SDFR=dfr wv = elapsedTime
+	DFREF             dfr = GetTempPath()
+	WAVE/D/Z/SDFR=dfr wv  = elapsedTime
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/D/N=(MINIMUM_WAVE_SIZE) dfr:elapsedTime/Wave=wv
+		Make/D/N=(MINIMUM_WAVE_SIZE) dfr:elapsedTime/WAVE=wv
 	endif
 
 	wv = NaN
@@ -7239,7 +7239,7 @@ Function/WAVE GetSweepFormulaX(DFREF dfr, variable graphNr)
 		return wv
 	endif
 
-	Make/N=0/D dfr:$wName/Wave=wv
+	Make/N=0/D dfr:$wName/WAVE=wv
 
 	return wv
 End
@@ -7255,7 +7255,7 @@ Function/WAVE GetSweepFormulaY(DFREF dfr, variable graphNr)
 		return wv
 	endif
 
-	Make/N=0/D dfr:$wName/Wave=wv
+	Make/N=0/D dfr:$wName/WAVE=wv
 
 	return wv
 End
@@ -7263,9 +7263,9 @@ End
 /// @brief Return the global temporary wave for extended popup menu
 Function/WAVE GetPopupExtMenuWave()
 
-	variable versionOfNewWave = 1
-	DFREF dfr = GetMiesPath()
-	WAVE/T/Z/SDFR=dfr wv = popupExtMenuInfo
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetMiesPath()
+	WAVE/T/Z/SDFR=dfr wv               = popupExtMenuInfo
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -7315,10 +7315,10 @@ End
 /// @param graph existing graph
 Function/WAVE GetGraphUserData(string graph)
 
-	variable versionOfNewWave = 1
-	DFREF dfr = GetGraphUserDataFolderDFR()
-	string name = BuildGraphName(graph)
-	WAVE/T/Z/SDFR=dfr wv = $name
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetGraphUserDataFolderDFR()
+	string            name             = BuildGraphName(graph)
+	WAVE/T/Z/SDFR=dfr wv               = $name
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -7345,10 +7345,10 @@ End
 /// - 2: list of used image names
 Function/WAVE GetPAGraphData()
 
-	variable versionOfNewWave = 1
-	DFREF dfr = GetGraphUserDataFolderDFR()
-	string name = "PAGraphData"
-	WAVE/T/Z/SDFR=dfr wv = $name
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetGraphUserDataFolderDFR()
+	string            name             = "PAGraphData"
+	WAVE/T/Z/SDFR=dfr wv               = $name
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -7373,7 +7373,7 @@ Function [WAVE avg_, string baseName_] GetPAPermanentAverageWave(DFREF dfr, vari
 	string baseName, wName
 
 	baseName = PA_BaseName(channel, region)
-	wName = PA_AVERAGE_WAVE_PREFIX + baseName
+	wName    = PA_AVERAGE_WAVE_PREFIX + baseName
 	WAVE/Z avg = dfr:$wName
 
 	return [avg, baseName]
@@ -7416,10 +7416,10 @@ End
 Function/WAVE GetAcqStateTracking()
 
 	variable versionOfNewWave = 1
-	DFREF dfr = root:
+	DFREF    dfr              = root:
 
-	string name = "acquisitionStateTracking"
-	WAVE/Z/SDFR=dfr wv = $name
+	string          name = "acquisitionStateTracking"
+	WAVE/Z/SDFR=dfr wv   = $name
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -7447,10 +7447,10 @@ End
 Function/WAVE GetValidAcqStateTransitions()
 
 	variable versionOfNewWave = 2
-	DFREF dfr = GetMiesPath()
+	DFREF    dfr              = GetMiesPath()
 
-	string name = "validAcqStateTransitions"
-	WAVE/Z/SDFR=dfr wv = $name
+	string          name = "validAcqStateTransitions"
+	WAVE/Z/SDFR=dfr wv   = $name
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -7471,26 +7471,26 @@ Function/WAVE GetValidAcqStateTransitions()
 
 	wv[%AS_INACTIVE][%AS_EARLY_CHECK] = 1
 
-	wv[%AS_EARLY_CHECK][%AS_PRE_DAQ] = 1
+	wv[%AS_EARLY_CHECK][%AS_PRE_DAQ]  = 1
 	wv[%AS_EARLY_CHECK][%AS_INACTIVE] = 1
 
 	wv[%AS_PRE_DAQ][%AS_PRE_SWEEP_CONFIG] = 1
-	wv[%AS_PRE_DAQ][%AS_INACTIVE] = 1
-	wv[%AS_PRE_DAQ][%AS_POST_DAQ] = 1
+	wv[%AS_PRE_DAQ][%AS_INACTIVE]         = 1
+	wv[%AS_PRE_DAQ][%AS_POST_DAQ]         = 1
 
 	wv[%AS_PRE_SWEEP_CONFIG][%AS_PRE_SWEEP] = 1
-	wv[%AS_PRE_SWEEP_CONFIG][%AS_POST_DAQ] = 1
+	wv[%AS_PRE_SWEEP_CONFIG][%AS_POST_DAQ]  = 1
 
 	wv[%AS_PRE_SWEEP][%AS_MID_SWEEP] = 1
 
-	wv[%AS_MID_SWEEP][%AS_MID_SWEEP] = 1
+	wv[%AS_MID_SWEEP][%AS_MID_SWEEP]  = 1
 	wv[%AS_MID_SWEEP][%AS_POST_SWEEP] = 1
 
-	wv[%AS_POST_SWEEP][%AS_ITI] = 1
+	wv[%AS_POST_SWEEP][%AS_ITI]      = 1
 	wv[%AS_POST_SWEEP][%AS_POST_DAQ] = 1
 
 	wv[%AS_ITI][%AS_PRE_SWEEP_CONFIG] = 1
-	wv[%AS_ITI][%AS_POST_DAQ] = 1
+	wv[%AS_ITI][%AS_POST_DAQ]         = 1
 
 	wv[%AS_POST_DAQ][%AS_INACTIVE] = 1
 
@@ -7684,12 +7684,12 @@ Function/WAVE GetTPSettingsCalculated(string device)
 		if(WaveVersionIsAtLeast(wv, 2))
 			Redimension/N=(16) wv
 			SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ;pulseStartMS;pulseStartPointsTP;pulseStartPointsDAQ;pulseLengthPointsTP_ADC;pulseLengthPointsDAQ_ADC;totalLengthPointsTP_ADC;totalLengthPointsDAQ_ADC;pulseStartPointsTP_ADC;pulseStartPointsDAQ_ADC;", ROWS)
-			wv[%pulseLengthPointsTP_ADC] = wv[%pulseLengthPointsTP]
+			wv[%pulseLengthPointsTP_ADC]  = wv[%pulseLengthPointsTP]
 			wv[%pulseLengthPointsDAQ_ADC] = wv[%pulseLengthPointsDAQ]
-			wv[%totalLengthPointsTP_ADC] = wv[%totalLengthPointsTP]
+			wv[%totalLengthPointsTP_ADC]  = wv[%totalLengthPointsTP]
 			wv[%totalLengthPointsDAQ_ADC] = wv[%totalLengthPointsDAQ]
-			wv[%pulseStartPointsTP_ADC] = wv[%pulseStartPointsTP]
-			wv[%pulseStartPointsDAQ_ADC] = wv[%pulseStartPointsDAQ]
+			wv[%pulseStartPointsTP_ADC]   = wv[%pulseStartPointsTP]
+			wv[%pulseStartPointsDAQ_ADC]  = wv[%pulseStartPointsDAQ]
 		endif
 
 		SetTPSettingsCalculatedProperties(wv)
@@ -7748,15 +7748,15 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 
 	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
 
-	DFREF dfr = GetDevSpecLabNBTempFolder(device)
-	WAVE/Z/SDFR=dfr/T wv = TPSettingsKeyWave
+	DFREF             dfr = GetDevSpecLabNBTempFolder(device)
+	WAVE/Z/SDFR=dfr/T wv  = TPSettingsKeyWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 15) wv
 	else
-		Make/T/N=(3, 15) dfr:TPSettingsKeyWave/Wave=wv
+		Make/T/N=(3, 15) dfr:TPSettingsKeyWave/WAVE=wv
 	endif
 
 	wv = ""
@@ -7765,45 +7765,45 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 	SetDimLabel 0, 1, Units, wv
 	SetDimLabel 0, 2, Tolerance, wv
 
-	wv[%Parameter][0]  = "TP Baseline Fraction" // fraction of total TP duration
-	wv[%Units][0]      = ""
-	wv[%Tolerance][0]  = "0.01"
+	wv[%Parameter][0] = "TP Baseline Fraction" // fraction of total TP duration
+	wv[%Units][0]     = ""
+	wv[%Tolerance][0] = "0.01"
 
-	wv[%Parameter][1]  = TP_AMPLITUDE_VC_ENTRY_KEY
-	wv[%Units][1]      = "pA"
-	wv[%Tolerance][1]  = "-"
+	wv[%Parameter][1] = TP_AMPLITUDE_VC_ENTRY_KEY
+	wv[%Units][1]     = "pA"
+	wv[%Tolerance][1] = "-"
 
-	wv[%Parameter][2]  = TP_AMPLITUDE_IC_ENTRY_KEY
-	wv[%Units][2]      = "mV"
-	wv[%Tolerance][2]  = "-"
+	wv[%Parameter][2] = TP_AMPLITUDE_IC_ENTRY_KEY
+	wv[%Units][2]     = "mV"
+	wv[%Tolerance][2] = "-"
 
-	wv[%Parameter][3]  = "TP Pulse Duration"
-	wv[%Units][3]      = "ms"
-	wv[%Tolerance][3]  = "-"
+	wv[%Parameter][3] = "TP Pulse Duration"
+	wv[%Units][3]     = "ms"
+	wv[%Tolerance][3] = "-"
 
-	wv[%Parameter][4]  = "TP Auto"
-	wv[%Units][4]      = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][4]  = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][4] = "TP Auto"
+	wv[%Units][4]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][4] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][5]  = "TP Auto max current"
-	wv[%Units][5]      = "pA"
-	wv[%Tolerance][5]  = "0.1"
+	wv[%Parameter][5] = "TP Auto max current"
+	wv[%Units][5]     = "pA"
+	wv[%Tolerance][5] = "0.1"
 
-	wv[%Parameter][6]  = "TP Auto voltage"
-	wv[%Units][6]      = "mV"
-	wv[%Tolerance][6]  = "0.1"
+	wv[%Parameter][6] = "TP Auto voltage"
+	wv[%Units][6]     = "mV"
+	wv[%Tolerance][6] = "0.1"
 
-	wv[%Parameter][7]  = "TP Auto voltage range"
-	wv[%Units][7]      = "mV"
-	wv[%Tolerance][7]  = "0.1"
+	wv[%Parameter][7] = "TP Auto voltage range"
+	wv[%Units][7]     = "mV"
+	wv[%Tolerance][7] = "0.1"
 
-	wv[%Parameter][8]  = "TP buffer size"
-	wv[%Units][8]      = ""
-	wv[%Tolerance][8]  = "0.1"
+	wv[%Parameter][8] = "TP buffer size"
+	wv[%Units][8]     = ""
+	wv[%Tolerance][8] = "0.1"
 
-	wv[%Parameter][9]  = "Minimum TP resistance for tolerance"
-	wv[%Units][9]      = "MΩ"
-	wv[%Tolerance][9]  = "1"
+	wv[%Parameter][9] = "Minimum TP resistance for tolerance"
+	wv[%Units][9]     = "MΩ"
+	wv[%Tolerance][9] = "1"
 
 	wv[%Parameter][10] = "Send TP settings to all headstages"
 	wv[%Units][10]     = LABNOTEBOOK_BINARY_UNIT
@@ -7831,13 +7831,13 @@ End
 /// @brief Get TP settings wave for the labnotebook
 ///
 /// See GetTPSettingsLabnotebookKeyWave() for the dimension label description.
-Function/Wave GetTPSettingsLabnotebook(string device)
+Function/WAVE GetTPSettingsLabnotebook(string device)
 
 	variable numCols
 	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
 
-	DFREF dfr = GetDevSpecLabNBTempFolder(device)
-	WAVE/Z/SDFR=dfr/D wv = TPSettings
+	DFREF             dfr = GetDevSpecLabNBTempFolder(device)
+	WAVE/Z/SDFR=dfr/D wv  = TPSettings
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
@@ -7849,7 +7849,7 @@ Function/Wave GetTPSettingsLabnotebook(string device)
 	if(WaveExists(wv))
 		Redimension/D/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/D/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) dfr:TPSettings/Wave=wv
+		Make/D/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) dfr:TPSettings/WAVE=wv
 	endif
 
 	wv = NaN
@@ -7877,7 +7877,7 @@ Function/WAVE GetDFREFbuffer(dfr)
 	if(WaveExists(wv))
 		return wv
 	endif
-	Make/DF/N=0 dfr:DFREFbuffer/Wave=wv
+	Make/DF/N=0 dfr:DFREFbuffer/WAVE=wv
 
 	return wv
 End
@@ -7897,7 +7897,7 @@ Function/WAVE GetWorkloadTracking(dfr)
 		return wv
 	endif
 
-	Make/L/U/N=(0, 3) dfr:WorkloadTracking/Wave=wv
+	Make/L/U/N=(0, 3) dfr:WorkloadTracking/WAVE=wv
 	SetDimLabel COLS, 0, $"INPUTCOUNT", wv
 	SetDimLabel COLS, 1, $"OUTPUTCOUNT", wv
 	SetDimLabel COLS, 2, $"INORDER", wv
@@ -7916,7 +7916,7 @@ Function/WAVE GetSerialExecutionBuffer(dfr)
 		return wv
 	endif
 
-	Make/DF/N=(MINIMUM_WAVE_SIZE) dfr:SerialExecutionBuffer/Wave=wv
+	Make/DF/N=(MINIMUM_WAVE_SIZE) dfr:SerialExecutionBuffer/WAVE=wv
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
@@ -8056,16 +8056,16 @@ End
 
 Function SetPSXEventDimensionLabels(WAVE wv)
 
-	SetDimLabel COLS,  0, index, wv
-	SetDimLabel COLS,  1, peak_t, wv
-	SetDimLabel COLS,  2, peak, wv
-	SetDimLabel COLS,  3, post_min, wv
-	SetDimLabel COLS,  4, post_min_t, wv
-	SetDimLabel COLS,  5, pre_max, wv
-	SetDimLabel COLS,  6, pre_max_t, wv
-	SetDimLabel COLS,  7, rel_peak, wv
-	SetDimLabel COLS,  8, isi, wv
-	SetDimLabel COLS,  9, tau, wv
+	SetDimLabel COLS, 0, index, wv
+	SetDimLabel COLS, 1, peak_t, wv
+	SetDimLabel COLS, 2, peak, wv
+	SetDimLabel COLS, 3, post_min, wv
+	SetDimLabel COLS, 4, post_min_t, wv
+	SetDimLabel COLS, 5, pre_max, wv
+	SetDimLabel COLS, 6, pre_max_t, wv
+	SetDimLabel COLS, 7, rel_peak, wv
+	SetDimLabel COLS, 8, isi, wv
+	SetDimLabel COLS, 9, tau, wv
 	SetDimLabel COLS, 10, $"Fit manual QC call", wv
 	SetDimLabel COLS, 11, $"Fit result", wv
 	SetDimLabel COLS, 12, $"Event manual QC call", wv

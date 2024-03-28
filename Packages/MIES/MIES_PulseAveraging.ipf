@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -21,8 +21,8 @@
 /// - ProgFront: Scale bars
 /// - ProgBack: Failed pulses triangles
 /// @{
-static StrConstant PA_DRAWLAYER_XZEROLINE = "ProgAxes"
-static StrConstant PA_DRAWLAYER_SCALEBAR = "ProgFront"
+static StrConstant PA_DRAWLAYER_XZEROLINE     = "ProgAxes"
+static StrConstant PA_DRAWLAYER_SCALEBAR      = "ProgFront"
 static StrConstant PA_DRAWLAYER_FAILED_PULSES = "ProgBack"
 /// @}
 
@@ -32,9 +32,9 @@ static StrConstant PA_SOURCE_WAVE_TIMESTAMP = "SOURCE_WAVE_TS"
 static StrConstant PA_SETTINGS = "PulseAverageSettings"
 
 static StrConstant PA_USER_DATA_X_START_RELATIVE_PREFIX = "XAxisStartPlotRelative_"
-static StrConstant PA_USER_DATA_CALC_XLENGTH = "CalculatedXBarLength"
-static StrConstant PA_USER_DATA_CALC_YLENGTH = "CalculatedYBarLength"
-static StrConstant PA_USER_DATA_USER_YLENGTH = "UserYBarLength"
+static StrConstant PA_USER_DATA_CALC_XLENGTH            = "CalculatedXBarLength"
+static StrConstant PA_USER_DATA_CALC_YLENGTH            = "CalculatedYBarLength"
+static StrConstant PA_USER_DATA_USER_YLENGTH            = "UserYBarLength"
 
 static Constant PA_USE_WAVE_SCALES = 0x01
 static Constant PA_USE_AXIS_SCALES = 0x02
@@ -59,30 +59,30 @@ static Constant PA_PULSE_SORTING_ORDER_PULSE = 0x1
 /// @}
 ///
 
-static Constant PA_AVGERAGE_PLOT_LSIZE = 1.5
+static Constant PA_AVGERAGE_PLOT_LSIZE      = 1.5
 static Constant PA_DECONVOLUTION_PLOT_LSIZE = 2
 
-static StrConstant PA_PROPERTIES_KEY_REGIONS = "Regions"
-static StrConstant PA_PROPERTIES_KEY_CHANNELS = "Channels"
-static StrConstant PA_PROPERTIES_KEY_PREVREGIONS = "PreviousRegions"
-static StrConstant PA_PROPERTIES_KEY_PREVCHANNELS = "PreviousChannels"
-static StrConstant PA_PROPERTIES_KEY_SWEEPS = "Sweeps"
-static StrConstant PA_PROPERTIES_KEY_LAYOUTCHANGE = "LayoutChanged"
-static StrConstant PA_PROPERTIES_STRLIST_SEP = ","
-static StrConstant PA_SETINDICES_KEY_ACTIVECHANCOUNT = "ActiveChanCount"
+static StrConstant PA_PROPERTIES_KEY_REGIONS           = "Regions"
+static StrConstant PA_PROPERTIES_KEY_CHANNELS          = "Channels"
+static StrConstant PA_PROPERTIES_KEY_PREVREGIONS       = "PreviousRegions"
+static StrConstant PA_PROPERTIES_KEY_PREVCHANNELS      = "PreviousChannels"
+static StrConstant PA_PROPERTIES_KEY_SWEEPS            = "Sweeps"
+static StrConstant PA_PROPERTIES_KEY_LAYOUTCHANGE      = "LayoutChanged"
+static StrConstant PA_PROPERTIES_STRLIST_SEP           = ","
+static StrConstant PA_SETINDICES_KEY_ACTIVECHANCOUNT   = "ActiveChanCount"
 static StrConstant PA_SETINDICES_KEY_ACTIVEREGIONCOUNT = "ActiveRegionCount"
-static StrConstant PA_SETINDICES_KEY_DISPCHANGE = "DisplayChange"
-static StrConstant PA_SETINDICES_KEY_DISPSTART = "DisplayStart"
+static StrConstant PA_SETINDICES_KEY_DISPCHANGE        = "DisplayChange"
+static StrConstant PA_SETINDICES_KEY_DISPSTART         = "DisplayStart"
 
 static Constant PA_UPDATEINDICES_TYPE_PREV = 1
 static Constant PA_UPDATEINDICES_TYPE_CURR = 2
 
-static Constant PA_INDICESCHANGE_NONE = 0
-static Constant PA_INDICESCHANGE_MOVED = 1
+static Constant PA_INDICESCHANGE_NONE    = 0
+static Constant PA_INDICESCHANGE_MOVED   = 1
 static Constant PA_INDICESCHANGE_REMOVED = 2
-static Constant PA_INDICESCHANGE_ADDED = 3
+static Constant PA_INDICESCHANGE_ADDED   = 3
 
-static Constant PA_PASIINIT_BASE = 0x01
+static Constant PA_PASIINIT_BASE       = 0x01
 static Constant PA_PASIINIT_INDICEMETA = 0x02
 
 static Constant PA_MINIMUM_SPIKE_WIDTH = 0.2 // ms
@@ -161,8 +161,8 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 			height         = 80
 			width_spacing  = 10
 			height_spacing = 3.5
-			width_offset   = (activeRegionCount - 1) * (width  + width_spacing)
-			height_offset  = (activeChanCount   - 1) * (height + 2 * height_spacing)
+			width_offset   = (activeRegionCount - 1) * (width + width_spacing)
+			height_offset  = (activeChanCount - 1) * (height + 2 * height_spacing)
 		else
 			width         = 400
 			height        = 400
@@ -181,17 +181,17 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 		top    += height_offset
 		bottom += height_offset
 		Display/W=(left, top, right, bottom)/K=1/N=$win
-		SetWindow $win, userdata($MIES_BSP_PA_MAINPANEL) = mainWin
+		SetWindow $win, userdata($MIES_BSP_PA_MAINPANEL)=mainWin
 		PA_GetTraceCountFromGraphData(win, clear = 1)
 		if(displayMode == PA_DISPLAYMODE_IMAGES && (!pa.multipleGraphs || activeRegionCount == numRegions))
 			NewPanel/HOST=#/EXT=0/W=(0, 0, PA_COLORSCALE_PANEL_WIDTH, bottom - top) as ""
-			Display/FG=(FL,FT,FR,FB)/HOST=#
+			Display/FG=(FL, FT, FR, FB)/HOST=#
 		endif
 
 		if(pa.multipleGraphs)
 			winAbove = PA_GetGraphName(mainWin, pa, displayMode, channelNumber - 1, activeRegionCount)
 
-			for(i = channelNumber - 1; i >=0; i -= 1)
+			for(i = channelNumber - 1; i >= 0; i -= 1)
 				winAbove = PA_GetGraphName(mainWin, pa, displayMode, i, activeRegionCount)
 
 				if(WindowExists(winAbove))
@@ -228,7 +228,7 @@ static Function/WAVE PA_GetAxes(STRUCT PulseAverageSettings &pa, variable channe
 		return w
 	endif
 
-	sprintf vertAxis,  "left_R%d_C%d", region, channel
+	sprintf vertAxis, "left_R%d_C%d", region, channel
 	sprintf horizAxis, "bottom_R%d", region
 	Make/FREE/T w = {vertAxis, horizAxis}
 	return w
@@ -254,7 +254,7 @@ static Function/WAVE PA_CalculatePulseInfos(WAVE DA, string fullPath, variable c
 		return cache
 	endif
 
-	WaveStats/Q/M=1/R=(totalOnsetDelay, inf) DA
+	WaveStats/Q/M=1/R=(totalOnsetDelay, Inf) DA
 	level = V_min + (V_Max - V_Min) * 0.1
 
 	delta = DimDelta(DA, ROWS)
@@ -263,7 +263,7 @@ static Function/WAVE PA_CalculatePulseInfos(WAVE DA, string fullPath, variable c
 	endif
 
 	MAKE/FREE/D levels
-	FindLevels/Q/R=(searchStart, inf)/EDGE=(FINDLEVEL_EDGE_BOTH)/DEST=levels DA, level
+	FindLevels/Q/R=(searchStart, Inf)/EDGE=(FINDLEVEL_EDGE_BOTH)/DEST=levels DA, level
 
 	if(DimSize(levels, ROWS) == 0)
 		return $""
@@ -292,7 +292,7 @@ static Function/WAVE PA_CalculatePulseInfos(WAVE DA, string fullPath, variable c
 			// falling
 			// fake leading rising edge
 			InsertPoints/M=(ROWS) 0, 1, levels
-			levels[0] = IndexToScale(DA, 0, ROWS)
+			levels[0]  = IndexToScale(DA, 0, ROWS)
 			numLevels += 1
 		endif
 	endif
@@ -407,7 +407,7 @@ static Function PA_DiffPulseInfos(WAVE numericalValues, variable sweepNo, WAVE/Z
 		else
 			for(i = 0; i < numRowsEpochs; i += 1)
 				for(j = 0; j < numColsEpochs; j += 1)
-					if(abs(pulseInfosEpochs[i][j] - pulseInfosCalc[i][j]) > warnDiffms                          \
+					if(abs(pulseInfosEpochs[i][j] - pulseInfosCalc[i][j]) > warnDiffms                        \
 					   && j == DimSize(pulseInfosEpochs, COLS) - 1 && i == DimSize(pulseInfosEpochs, ROWS) - 1)
 						print/D "Warn: Differing pulse infos in [" + num2str(i) + ", " + GetDimLabel(pulseInfosEpochs, COLS, j) + "], from epochs:\r", pulseInfosEpochs, "from Calculation:\r", pulseInfosCalc
 						break
@@ -477,9 +477,9 @@ static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 					hasOneValidEntry = 1
 				elseif(level == 3 && (strsearch(tags, "Active", 0) != -1) || (strsearch(tags, "SubType=Pulse;", 0) != -1))
 					pulseInfos[idx][%PulseStart] = first * ONE_TO_MILLI
-					pulseInfos[idx][%PulseEnd]   = last  * ONE_TO_MILLI
+					pulseInfos[idx][%PulseEnd]   = last * ONE_TO_MILLI
 
-					hasPerPulseInfo = 1
+					hasPerPulseInfo  = 1
 					hasOneValidEntry = 1
 				endif
 				break
@@ -564,7 +564,7 @@ static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(W
 
 	length = limit(length, 1, DimSize(wv, ROWS) - first)
 
-	WAVE singlePulseWave = GetPulseAverageWave(singleSweepFolder, length, channelType, channelNumber, region, pulseIndex)
+	WAVE singlePulseWave     = GetPulseAverageWave(singleSweepFolder, length, channelType, channelNumber, region, pulseIndex)
 	WAVE singlePulseWaveNote = GetPulseAverageWaveNoteWave(singleSweepFolder, length, channelType, channelNumber, region, pulseIndex)
 
 	existingLength = GetNumberFromWaveNote(singlePulseWaveNote, NOTE_KEY_PULSE_LENGTH)
@@ -606,8 +606,8 @@ threadsafe static Function PA_UpdateMinAndMax(WAVE wv, WAVE noteWave)
 	variable minimum, maximum
 
 	[minimum, maximum] = WaveMinAndMax(wv)
-	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MINIMUM, minimum, format="%.15f")
-	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MAXIMUM, maximum, format="%.15f")
+	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MINIMUM, minimum, format = "%.15f")
+	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MAXIMUM, maximum, format = "%.15f")
 End
 
 /// @brief Generate a key for a pulse
@@ -638,7 +638,7 @@ static Function [WAVE/D sweeps, WAVE/T experiments] PA_GetSweepsAndExperimentsFr
 
 	for(i = 0; i < numIndices; i += 1)
 		[sweepNo, experiment] = OVS_GetSweepAndExperiment(win, additionalData[i])
-		sweeps[i] = sweepNo
+		sweeps[i]      = sweepNo
 		experiments[i] = experiment
 	endfor
 
@@ -694,19 +694,19 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		endingPulseSett = pa.endingPulse
 	endif
 
-	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
+	DFREF pulseAverageDFR       = GetDevicePulseAverageFolder(pa.dfr)
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
-	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-	oldRegionList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS)
+	WAVE  properties            = GetPulseAverageProperties(pulseAverageHelperDFR)
+	oldRegionList  = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS)
 	oldChannelList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS)
 
 	if(mode != POST_PLOT_ADDED_SWEEPS)
 		KillorMoveToTrash(dfr = GetDevicePulseAverageHelperFolder(pa.dfr))
 	endif
 
-	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
-	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
+	DFREF     pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+	WAVE      properties            = GetPulseAverageProperties(pulseAverageHelperDFR)
+	WAVE/WAVE propertiesWaves       = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 
 	// Get regions of all traces
 	WAVE/Z regions = PA_GetUniqueHeadstages(traceData)
@@ -716,7 +716,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	numRegions = DimSize(regions, ROWS)
 	regionList = ""
 	for(i = 0; i < numRegions; i += 1)
-		regionList = AddListItem(num2istr(regions[i]), regionList, PA_PROPERTIES_STRLIST_SEP, inf)
+		regionList = AddListItem(num2istr(regions[i]), regionList, PA_PROPERTIES_STRLIST_SEP, Inf)
 	endfor
 
 	Make/FREE/N=(MINIMUM_WAVE_SIZE)/WAVE headstageRemovalPerSweep
@@ -733,7 +733,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	// In incremental mode get only new part of the indices
 	if(incrementalMode)
 		Make/FREE/N=(numChannelTypeTraces) indizesToAdd
-		j = 0
+		j            = 0
 		numNewSweeps = DimSize(additionalData, ROWS)
 		ASSERT(numNewSweeps > 0, "Set POST_PLOT_ADDED_SWEEPS, but found no new sweep(s) in additionlData")
 		WAVE/D/Z newSweeps
@@ -741,13 +741,13 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		[newSweeps, newExperiments] = PA_GetSweepsAndExperimentsFromIndices(win, additionalData)
 
 		for(i = 0; i < numNewSweeps; i += 1)
-			WAVE/Z indizesNewSweep = FindIndizes(traceData, colLabel="SweepNumber", str=num2str(newSweeps[i]))
+			WAVE/Z indizesNewSweep = FindIndizes(traceData, colLabel = "SweepNumber", str = num2str(newSweeps[i]))
 			if(!WaveExists(indizesNewSweep))
 				continue
 			endif
-			numNewIndicesSweep = DimSize(indizesNewSweep, ROWS)
+			numNewIndicesSweep                          = DimSize(indizesNewSweep, ROWS)
 			indizesToAdd[j, j + numNewIndicesSweep - 1] = indizesNewSweep[p - j]
-			j += numNewIndicesSweep
+			j                                          += numNewIndicesSweep
 
 			// This assertion check is a workaround for the case that we have multiple sweeps with the same SweepNo from different experiments.
 			FindValue/Z/V=(newSweeps[i])/T=(GetMachineEpsilon(WaveType(properties)))/RMD=[][PA_PROPERTIES_INDEX_SWEEP] properties
@@ -757,7 +757,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		Redimension/N=(j) indizesToAdd
 
 		WAVE indizesChannelTypeAll = indizesChannelType
-		WAVE indizesChannelType = indizesToAdd
+		WAVE indizesChannelType    = indizesToAdd
 		numChannelTypeTraces = DimSize(indizesChannelType, ROWS)
 
 		totalPulseCounter = GetNumberFromWaveNote(properties, NOTE_INDEX)
@@ -779,28 +779,28 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 	lblIndex = -1
 
-	lblTraceHeadstage = FindDimLabel(traceData, COLS, "headstage")
-	lblTraceSweepNumber = FindDimLabel(traceData, COLS, "SweepNumber")
-	lblTraceChannelNumber = FindDimLabel(traceData, COLS, "ChannelNumber")
+	lblTraceHeadstage       = FindDimLabel(traceData, COLS, "headstage")
+	lblTraceSweepNumber     = FindDimLabel(traceData, COLS, "SweepNumber")
+	lblTraceChannelNumber   = FindDimLabel(traceData, COLS, "ChannelNumber")
 	lblTracenumericalValues = FindDimLabel(traceData, COLS, "numericalValues")
-	lblTraceExperiment = FindDimLabel(traceData, COLS, "Experiment")
-	lblTraceFullpath = FindDimLabel(traceData, COLS, "fullpath")
-	lblClampMode = FindDimLabel(traceData, COLS, "ClampMode")
+	lblTraceExperiment      = FindDimLabel(traceData, COLS, "Experiment")
+	lblTraceFullpath        = FindDimLabel(traceData, COLS, "fullpath")
+	lblClampMode            = FindDimLabel(traceData, COLS, "ClampMode")
 
-	lblACTIVEREGION = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVEREGION")
+	lblACTIVEREGION  = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVEREGION")
 	lblACTIVECHANNEL = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVECHANNEL")
 
-	channelType = XOP_CHANNEL_TYPE_ADC
+	channelType    = XOP_CHANNEL_TYPE_ADC
 	channelTypeStr = StringFromList(channelType, XOP_CHANNEL_NAMES)
-	sweepList  = ""
-	channelList = ""
+	sweepList      = ""
+	channelList    = ""
 
 	jsonID = JSON_New()
 
 	for(i = 0; i < numRegions; i += 1)
 		region = regions[i]
 
-		activeChanCount = 0
+		activeChanCount   = 0
 		regionChannelList = ""
 
 		// we have the starting times for one channel type and headstage combination
@@ -811,13 +811,13 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 			// get channel number and update local and global list
 			channelNumberStr = traceData[idx][lblTraceChannelNumber]
-			channelNumber = str2num(channelNumberStr)
+			channelNumber    = str2num(channelNumberStr)
 			if(WhichListItem(channelNumberStr, regionChannelList) == -1)
-				activeChanCount += 1
-				regionChannelList = AddListItem(channelNumberStr, regionChannelList, ";", inf)
+				activeChanCount  += 1
+				regionChannelList = AddListItem(channelNumberStr, regionChannelList, ";", Inf)
 			endif
 			if(WhichListItem(channelNumberStr, channelList, PA_PROPERTIES_STRLIST_SEP) == -1)
-				channelList = AddListItem(channelNumberStr, channelList, PA_PROPERTIES_STRLIST_SEP, inf)
+				channelList = AddListItem(channelNumberStr, channelList, PA_PROPERTIES_STRLIST_SEP, Inf)
 			endif
 
 			// get pulse start times and from that number of pulses
@@ -834,9 +834,9 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			endif
 			// get sweep number
 			sweepNoStr = traceData[idx][lblTraceSweepNumber]
-			sweepNo = str2num(sweepNoStr)
+			sweepNo    = str2num(sweepNoStr)
 			if(WhichListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP) == -1)
-				sweepList = AddListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP, inf)
+				sweepList = AddListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP, Inf)
 
 				EnsureLargeEnoughWave(headstageRemovalPerSweep, indexShouldExist = sweepNo)
 				headstageRemovalPerSweep[sweepNo] = OVS_GetHeadstageRemoval(win, sweepNo = sweepNo)
@@ -850,16 +850,16 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			experiment = traceData[idx][lblTraceExperiment]
 			// we want to find the last acquired sweep from the experiment/device combination
 			// by just using the path to the numerical labnotebook we can achieve that
-			key = experiment + "_" + traceData[idx][lblTracenumericalValues]
+			key       = experiment + "_" + traceData[idx][lblTracenumericalValues]
 			lastSweep = JSON_GetVariable(jsonID, key, ignoreErr = 1)
 			if(IsNaN(lastSweep))
 				WAVE numericalValues = $traceData[idx][lblTraceNumericalValues]
-				WAVE junkWave = GetLastSweepWithSetting(numericalValues, "Headstage Active", lastSweep)
+				WAVE junkWave        = GetLastSweepWithSetting(numericalValues, "Headstage Active", lastSweep)
 				ASSERT(IsValidSweepNumber(lastSweep), "Could not find last sweep")
 				JSON_SetVariable(jsonID, key, lastSweep)
 			endif
 
-			WAVE numericalValues = $traceData[idx][lblTracenumericalValues]
+			WAVE  numericalValues   = $traceData[idx][lblTracenumericalValues]
 			DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][lblTraceFullpath])
 			ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
 			WAVE wv = GetDAQDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
@@ -873,15 +873,15 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				EnsureLargeEnoughWave(propertiesWaves, indexShouldExist = numPulseCreate)
 			endif
 
-			clampMode = str2num(traceData[idx][lblClampMode])
-			headstage = str2num(traceData[idx][lblTraceHeadstage])
+			clampMode             = str2num(traceData[idx][lblClampMode])
+			headstage             = str2num(traceData[idx][lblTraceHeadstage])
 			prevTotalPulseCounter = totalPulseCounter
 			for(k = startingPulseSett; k <= endingPulse; k += 1)
 
 				pulseToPulseLength = PA_GetPulseLength(pulseInfos, k, pa.overridePulseLength, pa.fixedPulseLength)
 
-				first        = round(pulseInfos[k][%PulseStart] / DimDelta(wv, ROWS))
-				length       = round(pulseToPulseLength / DimDelta(wv, ROWS))
+				first  = round(pulseInfos[k][%PulseStart] / DimDelta(wv, ROWS))
+				length = round(pulseToPulseLength / DimDelta(wv, ROWS))
 
 				WAVE/Z pulseWave, pulseWaveNote
 				[pulseWave, pulseWaveNote] = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, \
@@ -891,15 +891,15 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 					continue
 				endif
 
-				properties[totalPulseCounter][PA_PROPERTIES_INDEX_SWEEP] = sweepNo
+				properties[totalPulseCounter][PA_PROPERTIES_INDEX_SWEEP]         = sweepNo
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_CHANNELNUMBER] = channelNumber
-				properties[totalPulseCounter][PA_PROPERTIES_INDEX_REGION] = region
-				properties[totalPulseCounter][PA_PROPERTIES_INDEX_HEADSTAGE] = headstage
-				properties[totalPulseCounter][PA_PROPERTIES_INDEX_PULSE] = k
-				properties[totalPulseCounter][PA_PROPERTIES_INDEX_LASTSWEEP] = lastSweep
-				properties[totalPulseCounter][PA_PROPERTIES_INDEX_CLAMPMODE] = clampMode
+				properties[totalPulseCounter][PA_PROPERTIES_INDEX_REGION]        = region
+				properties[totalPulseCounter][PA_PROPERTIES_INDEX_HEADSTAGE]     = headstage
+				properties[totalPulseCounter][PA_PROPERTIES_INDEX_PULSE]         = k
+				properties[totalPulseCounter][PA_PROPERTIES_INDEX_LASTSWEEP]     = lastSweep
+				properties[totalPulseCounter][PA_PROPERTIES_INDEX_CLAMPMODE]     = clampMode
 
-				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSE] = pulseWave
+				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSE]     = pulseWave
 				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSENOTE] = pulseWaveNote
 
 				// gather all pulses from one set (used for averaging)
@@ -919,7 +919,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				SetNumberInWaveNote(setIndizes, NOTE_INDEX, idx + numPulseCreate)
 			endif
 
-			currentDisplayMapping[region][channelNumber][lblACTIVEREGION] = i + 1
+			currentDisplayMapping[region][channelNumber][lblACTIVEREGION]  = i + 1
 			currentDisplayMapping[region][channelNumber][lblACTIVECHANNEL] = activeChanCount
 
 		endfor
@@ -930,7 +930,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		sweepList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS) + sweepList
 		// in traceData the sort order is channelType, channelNumber, Sweep, Headstage. With channelType always AD, we can say that
 		// channelsNumbers are always sorted. This allows us to take the shortcut and sort the merged lists here.
-		channelList = SortList(MergeLists(channelList, oldChannelList, sep = PA_PROPERTIES_STRLIST_SEP), PA_PROPERTIES_STRLIST_SEP, 2)
+		channelList   = SortList(MergeLists(channelList, oldChannelList, sep = PA_PROPERTIES_STRLIST_SEP), PA_PROPERTIES_STRLIST_SEP, 2)
 		layoutChanged = CmpStr(oldRegionList, regionList) || CmpStr(oldChannelList, channelList)
 		if(layoutChanged)
 
@@ -941,17 +941,17 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			for(i = 0; i < numRegions; i += 1)
 				region = regions[i]
 
-				activeChanCount = 0
+				activeChanCount   = 0
 				regionChannelList = ""
 				for(j = 0; j < numChannelTypeTraces; j += 1)
 					channelNumberStr = traceData[j][lblTraceChannelNumber]
 					if(WhichListItem(channelNumberStr, regionChannelList) == -1)
-						activeChanCount += 1
-						regionChannelList = AddListItem(channelNumberStr, regionChannelList, ";", inf)
+						activeChanCount  += 1
+						regionChannelList = AddListItem(channelNumberStr, regionChannelList, ";", Inf)
 					endif
 
-					channelNumber = str2num(channelNumberStr)
-					currentDisplayMapping[region][channelNumber][lblACTIVEREGION] = i + 1
+					channelNumber                                                  = str2num(channelNumberStr)
+					currentDisplayMapping[region][channelNumber][lblACTIVEREGION]  = i + 1
 					currentDisplayMapping[region][channelNumber][lblACTIVECHANNEL] = activeChanCount
 				endfor
 			endfor
@@ -1007,10 +1007,10 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT P
 	disableIncremental = !!disableIncremental
 
 	if(part & PA_PASIINIT_BASE)
-		DFREF pasi.pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
+		DFREF pasi.pulseAverageDFR       = GetDevicePulseAverageFolder(pa.dfr)
 		DFREF pasi.pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 
-		WAVE pasi.properties = GetPulseAverageProperties(pasi.pulseAverageHelperDFR)
+		WAVE      pasi.properties      = GetPulseAverageProperties(pasi.pulseAverageHelperDFR)
 		WAVE/WAVE pasi.propertiesWaves = GetPulseAveragePropertiesWaves(pasi.pulseAverageHelperDFR)
 
 		WAVE/WAVE/Z setIndices
@@ -1020,8 +1020,8 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT P
 			return [pasi]
 		endif
 
-		WAVE pasi.channels = channels
-		WAVE pasi.regions = regions
+		WAVE pasi.channels    = channels
+		WAVE pasi.regions     = regions
 		WAVE pasi.indexHelper = indexHelper
 
 		numActive = DimSize(pasi.channels, ROWS)
@@ -1038,9 +1038,9 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT P
 		WAVE/WAVE pasi.axesNames = axesNames
 
 		Make/FREE/D/N=(numActive, numActive) ovlTracesAvg, ovlTracesDeconv, imageAvgDataPresent, imageDeconvDataPresent
-		WAVE pasi.ovlTracesAvg = ovlTracesAvg
-		WAVE pasi.ovlTracesDeconv = ovlTracesDeconv
-		WAVE pasi.imageAvgDataPresent = imageAvgDataPresent
+		WAVE pasi.ovlTracesAvg           = ovlTracesAvg
+		WAVE pasi.ovlTracesDeconv        = ovlTracesDeconv
+		WAVE pasi.imageAvgDataPresent    = imageAvgDataPresent
 		WAVE pasi.imageDeconvDataPresent = imageDeconvDataPresent
 	endif
 
@@ -1086,10 +1086,10 @@ static Function [WAVE/WAVE setIndices, WAVE channels, WAVE regions, WAVE indexHe
 
 	if(prevIndices)
 		keyChannels = PA_PROPERTIES_KEY_PREVCHANNELS
-		keyRegions = PA_PROPERTIES_KEY_PREVREGIONS
+		keyRegions  = PA_PROPERTIES_KEY_PREVREGIONS
 	else
 		keyChannels = PA_PROPERTIES_KEY_CHANNELS
-		keyRegions = PA_PROPERTIES_KEY_REGIONS
+		keyRegions  = PA_PROPERTIES_KEY_REGIONS
 	endif
 
 	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, keyChannels), PA_PROPERTIES_STRLIST_SEP)
@@ -1220,7 +1220,7 @@ End
 
 /// @brief Populates pps.pulseAverSett with the user selection from the panel
 static Function PA_GatherSettings(win, s)
-	string win
+	string                       win
 	STRUCT PulseAverageSettings &s
 
 	string extPanel
@@ -1261,7 +1261,7 @@ End
 
 /// @brief gather deconvolution settings from PA section in BSP
 static Function PA_DeconvGatherSettings(win, deconvolution)
-	string win
+	string                             win
 	STRUCT PulseAverageDeconvSettings &deconvolution
 
 	string bsPanel = BSP_GetPanel(win)
@@ -1293,7 +1293,7 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
 	STRUCT PulseAverageSettings old
 	jsonIDOld = PA_DeSerializeSettings(graph, old)
-	JSON_Release(jsonIDOld, ignoreErr=1)
+	JSON_Release(jsonIDOld, ignoreErr = 1)
 
 	STRUCT PulseAverageSettings current
 	PA_GatherSettings(graph, current)
@@ -1353,7 +1353,7 @@ static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable 
 
 	WAVE setIndizes = GetPulseAverageSetIndizes(dfr, channelNumber, region)
 
-	WAVE properties = GetPulseAverageProperties(dfr)
+	WAVE      properties      = GetPulseAverageProperties(dfr)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(dfr)
 
 	return WaveRef(PA_GetSetWaves_TS(properties, propertiesWaves, setIndizes, PA_GETSETWAVES_ALL, removeFailedPulses), row = 0)
@@ -1391,17 +1391,17 @@ threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE pro
 		if(getMode & PA_GETSETWAVES_NEW && index >= startIndexNewPulses && !(properties[index][PA_PROPERTIES_INDEX_PULSEHASFAILED] == 1 && removeFailedPulses))
 			setWavesNew[numNewPulses][0] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSE]
 			setWavesNew[numNewPulses][1] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
-			numNewPulses += 1
+			numNewPulses                += 1
 		endif
 		if(getMode & PA_GETSETWAVES_OLD && index < startIndexNewPulses && !(properties[index][PA_PROPERTIES_INDEX_PULSEHASFAILED] == 1 && removeFailedPulses))
 			setWavesOld[numOldPulses][0] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSE]
 			setWavesOld[numOldPulses][1] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
-			numOldPulses += 1
+			numOldPulses                += 1
 		endif
 		if(getMode & PA_GETSETWAVES_ALL && !(properties[index][PA_PROPERTIES_INDEX_PULSEHASFAILED] == 1 && removeFailedPulses))
 			setWavesAll[numAllPulses][0] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSE]
 			setWavesAll[numAllPulses][1] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
-			numAllPulses += 1
+			numAllPulses                += 1
 		endif
 	endfor
 	if(numNewPulses)
@@ -1466,7 +1466,7 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 
 		if(entriesToUpdate > 0)
 			Make/FREE/N=(entriesToUpdate) pulseHasFailed
-			Multithread pulseHasFailed[] = PA_PulseHasFailed(propertiesWaves[indices[startEntry + p]][PA_PROPERTIESWAVES_INDEX_PULSE],        \
+			Multithread pulseHasFailed[] = PA_PulseHasFailed(propertiesWaves[indices[startEntry + p]][PA_PROPERTIESWAVES_INDEX_PULSE],       \
 			                                                 propertiesWaves[indices[startEntry + p]][PA_PROPERTIESWAVES_INDEX_PULSENOTE], pa)
 		endif
 
@@ -1477,7 +1477,7 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 
 			sweepNo = properties[idx][PA_PROPERTIES_INDEX_SWEEP]
 			pulse   = properties[idx][PA_PROPERTIES_INDEX_PULSE]
-			key = PA_GenerateFailedPulseKey(sweepNo, region, pulse)
+			key     = PA_GenerateFailedPulseKey(sweepNo, region, pulse)
 			JSON_SetVariable(jsonID, key, properties[idx][PA_PROPERTIES_INDEX_PULSEHASFAILED])
 		endfor
 	endfor
@@ -1493,11 +1493,11 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 			numEntries = pasi.numEntries[j][i]
 			startEntry = pasi.startEntry[j][i]
 			for(k = startEntry; k < numEntries; k += 1)
-				idx = indices[k]
+				idx     = indices[k]
 				sweepNo = properties[idx][PA_PROPERTIES_INDEX_SWEEP]
 				pulse   = properties[idx][PA_PROPERTIES_INDEX_PULSE]
 
-				key = PA_GenerateFailedPulseKey(sweepNo, region, pulse)
+				key                     = PA_GenerateFailedPulseKey(sweepNo, region, pulse)
 				referencePulseHasFailed = JSON_GetVariable(jsonID, key, ignoreErr = 1)
 				// NaN: reference trace could not be found, this happens
 				// when a headstage is not displayed (channel selection, OVS HS removal)
@@ -1534,8 +1534,8 @@ static Function PA_GetTraceCountFromGraphData(string graph, [variable clear])
 	if(idx >= 0)
 		if(clear)
 			graphData[idx][%TRACES_AVERAGE] = ""
-			graphData[idx][%TRACES_DECONV] = ""
-			graphData[idx][%IMAGELIST] = ""
+			graphData[idx][%TRACES_DECONV]  = ""
+			graphData[idx][%IMAGELIST]      = ""
 		endif
 		return idx
 	endif
@@ -1561,10 +1561,10 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	variable startEntry, numEntries, idx, layoutChanged
 	variable lblTRACES_AVERAGE, lblTRACES_DECONV
 	STRUCT RGBColor s
-	string jsonPath
+	string          jsonPath
 	string vertAxis, horizAxis
 	string baseName, traceName, tagName
-	string usedGraphs = ""
+	string usedGraphs  = ""
 	string resetGraphs = ""
 
 	if(!pa.showTraces)
@@ -1573,18 +1573,18 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		return PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
 	endif
 
-	WAVE properties = pasi.properties
+	WAVE      properties      = pasi.properties
 	WAVE/WAVE propertiesWaves = pasi.propertiesWaves
 
 	numActive = DimSize(pasi.channels, ROWS)
 
 	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
-	numPlotPulses = numTotalPulses - GetNumberFromWaveNote(properties, NOTE_PA_NEW_PULSES_START)
+	numPlotPulses  = numTotalPulses - GetNumberFromWaveNote(properties, NOTE_PA_NEW_PULSES_START)
 
 	WAVE/T paGraphData = GetPAGraphData()
 
 	lblTRACES_AVERAGE = FindDimLabel(paGraphData, COLS, "TRACES_AVERAGE")
-	lblTRACES_DECONV = FindDimLabel(paGraphData, COLS, "TRACES_DECONV")
+	lblTRACES_DECONV  = FindDimLabel(paGraphData, COLS, "TRACES_DECONV")
 
 	Make/T/FREE/N=(numTotalPulses) hiddenTraces
 	Duplicate/FREE/RMD=[][PA_PROPERTIESWAVES_INDEX_PULSE] propertiesWaves, pulseWaves
@@ -1619,9 +1619,9 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 						RemoveTracesFromGraph(graph)
 						RemoveAnnotationsFromGraph(graph)
 						graphDataIndex = PA_GetTraceCountFromGraphData(graph, clear = 1)
-						resetGraphs = AddListItem(graph, resetGraphs, ";", inf)
+						resetGraphs    = AddListItem(graph, resetGraphs, ";", Inf)
 					endif
-					usedGraphs = AddListItem(graph, usedGraphs, ";", inf)
+					usedGraphs = AddListItem(graph, usedGraphs, ";", Inf)
 				endif
 
 				if(!pa.showIndividualPulses)
@@ -1629,7 +1629,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				endif
 
 				WAVE/T axesNames = pasi.axesNames[j][i]
-				vertAxis = axesNames[0]
+				vertAxis  = axesNames[0]
 				horizAxis = axesNames[1]
 
 				step = (i == j) ? 1 : PA_PLOT_STEPPING
@@ -1649,21 +1649,21 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 								JSON_AddString(hideTraceJsonID, jsonPath, pulseTrace)
 							else
 								hiddenTraces[hiddenTracesCount] = pulseTrace
-								hiddenTracesCount += 1
+								hiddenTracesCount              += 1
 							endif
 						endif
 					endfor
 				else
 
 					for(k = startEntry; k < numEntries; k += 1)
-						idx = indices[k]
+						idx            = indices[k]
 						pulseHasFailed = properties[idx][PA_PROPERTIES_INDEX_PULSEHASFAILED]
 						if(pulseHasFailed)
 							hideTrace = pa.hideFailedPulses
-							s.red   = 65535
-							s.green = 0
-							s.blue  = 0
-							alpha = 65535
+							s.red     = 65535
+							s.green   = 0
+							s.blue    = 0
+							alpha     = 65535
 						else
 							hideTrace = 0
 							[s] = GetTraceColor(properties[idx][PA_PROPERTIES_INDEX_HEADSTAGE])
@@ -1686,14 +1686,14 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 								JSON_AddString(hideTraceJsonID, jsonPath, pulseTrace)
 							else
 								hiddenTraces[hiddenTracesCount] = pulseTrace
-								hiddenTracesCount += 1
+								hiddenTracesCount              += 1
 							endif
 						endif
 
-						sweepNo = properties[idx][PA_PROPERTIES_INDEX_SWEEP]
+						sweepNo   = properties[idx][PA_PROPERTIES_INDEX_SWEEP]
 						lastSweep = properties[idx][PA_PROPERTIES_INDEX_LASTSWEEP]
 						if(pulseHasFailed && (i == j) && (sweepNo == lastSweep))
-							sprintf tagName "tag_%s_AD%d_R%d", vertAxis, channelNumber, region
+							sprintf tagName, "tag_%s_AD%d_R%d", vertAxis, channelNumber, region
 							if(WhichListItem(tagName, AnnotationList(graph)) == -1)
 								xPos = ((i + 1) / numActive) * ONE_TO_PERCENT - 2
 								yPos = ((j + 1) / numActive) * ONE_TO_PERCENT - (1 / numActive) * ONE_TO_PERCENT / 2
@@ -1741,13 +1741,13 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 			plottedAvgTraces = 0
 
 			WAVE/T axesNames = pasi.axesNames[j][i]
-			vertAxis = axesNames[0]
+			vertAxis  = axesNames[0]
 			horizAxis = axesNames[1]
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
-				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, i + 1, j + 1, numActive)
+				graph          = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, i + 1, j + 1, numActive)
 				graphDataIndex = PA_GetTraceCountFromGraphData(graph)
-				WAVE/T averageTraceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
+				WAVE/T averageTraceNames       = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
 				WAVE/T deconvolutionTraceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_DECONV], ";")
 				graphWasReset = WhichListItem(graph, resetGraphs, ";") != -1
 			endif
@@ -1768,7 +1768,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				if(WaveExists(foundTraces))
 					RemoveFromGraph/W=$graph $foundTraces[0]
 					paGraphData[graphDataIndex][lblTRACES_AVERAGE] = RemoveFromList(foundTraces[0], paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
-					pasi.ovlTracesAvg[j][i] = 0
+					pasi.ovlTracesAvg[j][i]                        = 0
 				endif
 
 				if(pa.showAverage && WaveExists(averageWave))
@@ -1776,25 +1776,25 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					[s] = GetTraceColorForAverage()
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue) averageWave/TN=$traceName
 					pasi.ovlTracesAvg[j][i] = 1
-					plottedAvgTraces = 1
+					plottedAvgTraces        = 1
 
 					if(pa.multipleGraphs)
 						ModifyGraph/W=$graph lsize($traceName)=PA_AVGERAGE_PLOT_LSIZE
 					else
 						avgPlotTraces[avgPlotCount] = traceName
-						avgPlotCount += 1
+						avgPlotCount               += 1
 					endif
 
 					paGraphData[graphDataIndex][lblTRACES_AVERAGE] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";", Inf)
 				endif
 			endif
 
-			if((	graphwasReset		\
-				|| layoutChanged			\
-				|| !cs.multipleGraphs	\
-				|| !cs.deconvolution   \
-				|| !cs.failedPulses    \
-				|| plottedAvgTraces) && (i != j))
+			if((graphwasReset                   \
+			    || layoutChanged                \
+			    || !cs.multipleGraphs           \
+			    || !cs.deconvolution            \
+			    || !cs.failedPulses             \
+			    || plottedAvgTraces) && (i != j))
 
 				sprintf traceName, "Ovl_%s%s", PA_DECONVOLUTION_WAVE_PREFIX, baseName
 
@@ -1807,19 +1807,19 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				if(WaveExists(foundTraces))
 					RemoveFromGraph/W=$graph $foundTraces[0]
 					paGraphData[graphDataIndex][lblTRACES_DECONV] = RemoveFromList(foundTraces[0], paGraphData[graphDataIndex][lblTRACES_DECONV], ";")
-					pasi.ovlTracesDeconv[j][i] = 0
+					pasi.ovlTracesDeconv[j][i]                    = 0
 				endif
 
 				if(pa.deconvolution.enable && WaveExists(averageWave))
 					WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
+					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0, 0, 0) deconv[0, Inf; PA_PLOT_STEPPING]/TN=$traceName
 					pasi.ovlTracesDeconv[j][i] = 1
 
 					if(pa.multipleGraphs)
 						ModifyGraph/W=$graph lsize($traceName)=PA_DECONVOLUTION_PLOT_LSIZE
 					else
 						deconPlotTraces[deconPlotCount] = traceName
-						deconPlotCount += 1
+						deconPlotCount                 += 1
 					endif
 
 					paGraphData[graphDataIndex][lblTRACES_DECONV] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_DECONV], ";", Inf)
@@ -1879,17 +1879,17 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	variable generalSettings
 
 	if(mode != POST_PLOT_CONSTANT_SWEEPS)
-		cs.singlePulse = 0
-		cs.traces = 0
-		cs.images = 0
-		cs.dontResetWaves = 0
-		cs.failedPulses = 0
-		cs.multipleGraphs = 0
-		cs.showAverage = 0
-		cs.deconvolution = 0
-		cs.hideFailedPulses = 0
+		cs.singlePulse          = 0
+		cs.traces               = 0
+		cs.images               = 0
+		cs.dontResetWaves       = 0
+		cs.failedPulses         = 0
+		cs.multipleGraphs       = 0
+		cs.showAverage          = 0
+		cs.deconvolution        = 0
+		cs.hideFailedPulses     = 0
 		cs.showIndividualPulses = 0
-		cs.showTraces = 0
+		cs.showTraces           = 0
 		return [cs]
 	endif
 
@@ -1898,35 +1898,35 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	                  && pa.overridePulseLength == paOld.overridePulseLength \
 	                  && pa.fixedPulseLength == paOld.fixedPulseLength)
 
-	cs.failedPulses = (pa.searchFailedPulses == paOld.searchFailedPulses                               \
-	                   && pa.failedPulsesLevel ==  paOld.failedPulsesLevel                             \
+	cs.failedPulses = (pa.searchFailedPulses == paOld.searchFailedPulses                           \
+	                   && pa.failedPulsesLevel == paOld.failedPulsesLevel                          \
 	                   && EqualValuesOrBothNaN(pa.failedNumberOfSpikes, paOld.failedNumberOfSpikes))
 
-	cs.deconvolution = (pa.deconvolution.enable == paOld.deconvolution.enable   \
-	                    && pa.deconvolution.smth == paOld.deconvolution.smth    \
-	                    && pa.deconvolution.tau == paOld.deconvolution.tau      \
+	cs.deconvolution = (pa.deconvolution.enable == paOld.deconvolution.enable \
+	                    && pa.deconvolution.smth == paOld.deconvolution.smth  \
+	                    && pa.deconvolution.tau == paOld.deconvolution.tau    \
 	                    && pa.deconvolution.range == paOld.deconvolution.range)
 
-	generalSettings = (pa.showIndividualPulses == paOld.showIndividualPulses    \
-	                   && pa.drawXZeroLine == paOld.drawXZeroLine               \
-	                   && pa.showAverage == paOld.showAverage                   \
-	                   && pa.regionSlider == paOld.regionSlider                 \
-	                   && pa.multipleGraphs == paOld.multipleGraphs             \
-	                   && pa.zeroPulses == paOld.zeroPulses                     \
-	                   && pa.autoTimeAlignment == paOld.autoTimeAlignment       \
-	                   && pa.enabled == paOld.enabled                           \
-	                   && pa.hideFailedPulses == paOld.hideFailedPulses         \
-	                   && cs.failedPulses == 1                                  \
+	generalSettings = (pa.showIndividualPulses == paOld.showIndividualPulses \
+	                   && pa.drawXZeroLine == paOld.drawXZeroLine            \
+	                   && pa.showAverage == paOld.showAverage                \
+	                   && pa.regionSlider == paOld.regionSlider              \
+	                   && pa.multipleGraphs == paOld.multipleGraphs          \
+	                   && pa.zeroPulses == paOld.zeroPulses                  \
+	                   && pa.autoTimeAlignment == paOld.autoTimeAlignment    \
+	                   && pa.enabled == paOld.enabled                        \
+	                   && pa.hideFailedPulses == paOld.hideFailedPulses      \
+	                   && cs.failedPulses == 1                               \
 	                   && cs.deconvolution == 1)
 
-	cs.traces = (generalSettings == 1                            \
-	             && cs.singlePulse == 1                          \
-	             && pa.showTraces == paOld.showTraces            \
+	cs.traces = (generalSettings == 1                          \
+	             && cs.singlePulse == 1                        \
+	             && pa.showTraces == paOld.showTraces          \
 	             && pa.yScaleBarLength == paOld.yScaleBarLength)
 
-	cs.images = (generalSettings == 1                          \
-	             && cs.singlePulse == 1                        \
-	             && pa.showImages == paOld.showImages          \
+	cs.images = (generalSettings == 1                        \
+	             && cs.singlePulse == 1                      \
+	             && pa.showImages == paOld.showImages        \
 	             && pa.pulseSortOrder == paOld.pulseSortOrder)
 
 	cs.dontResetWaves = (pa.zeroPulses == paOld.zeroPulses                  \
@@ -1973,7 +1973,7 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 #endif
 
 	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
-	graph = GetMainWindow(win)
+	graph             = GetMainWindow(win)
 
 	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
@@ -1989,11 +1989,11 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 	else
 
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_StartLocal = stopmstimer(-2)
+		execTime_StartLocal = stopmstimer(-2)
 #endif
 		[pasi] = PA_GenerateAllPulseWaves(win, pa, mode, additionalData)
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_GenerateAllPulseWaves = stopmstimer(-2) - execTime_StartLocal
+		execTime_GenerateAllPulseWaves = stopmstimer(-2) - execTime_StartLocal
 #endif
 	endif
 
@@ -2004,65 +2004,65 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.images))
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_StartLocal = stopmstimer(-2)
+		execTime_StartLocal = stopmstimer(-2)
 #endif
 		// if CONSTANT_SWEEPS and not changed or no image shown, no need to call
 		WAVE indexHelper = pasi.indexHelper
 		Multithread indexHelper[][] = PA_ApplyPulseSortingOrder(pasi.setIndices[p][q], pasi.channels[p], pasi.regions[q], pasi.properties, pa)
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_ApplyPulseSortingOrder = stopmstimer(-2) - execTime_StartLocal
+		execTime_ApplyPulseSortingOrder = stopmstimer(-2) - execTime_StartLocal
 #endif
 	endif
 
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) || (!cs.singlePulse && pa.searchFailedPulses))
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_StartLocal = stopmstimer(-2)
+		execTime_StartLocal = stopmstimer(-2)
 #endif
 		pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves2Unsorted[p][q], pa, mode)
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_ResetWavesIfRequired = stopmstimer(-2) - execTime_StartLocal
+		execTime_ResetWavesIfRequired = stopmstimer(-2) - execTime_StartLocal
 #endif
 	endif
 
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.failedPulses) || (!cs.singlePulse && pa.searchFailedPulses))
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_StartLocal = stopmstimer(-2)
+		execTime_StartLocal = stopmstimer(-2)
 #endif
 		PA_MarkFailedPulses(pa, pasi)
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_MarkFailedPulses = stopmstimer(-2) - execTime_StartLocal
+		execTime_MarkFailedPulses = stopmstimer(-2) - execTime_StartLocal
 #endif
 	endif
 
 	// cs.dontResetWaves contains that zeroPulse setting did not change
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves && cs.singlePulse) && pa.zeroPulses)
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_StartLocal = stopmstimer(-2)
+		execTime_StartLocal = stopmstimer(-2)
 #endif
 		pasi.indexHelper[][] = PA_ZeroPulses(pasi.setWaves2Unsorted[p][q])
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_ZeroPulses = stopmstimer(-2) - execTime_StartLocal
+		execTime_ZeroPulses = stopmstimer(-2) - execTime_StartLocal
 #endif
 	endif
 
 	// cs.dontResetWaves contains that autoTimeAlignment setting did not change
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves && cs.singlePulse) && pa.autoTimeAlignment)
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_StartLocal = stopmstimer(-2)
+		execTime_StartLocal = stopmstimer(-2)
 #endif
 		PA_AutomaticTimeAlignment(pasi)
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_AutomaticTimeAlignment = stopmstimer(-2) - execTime_StartLocal
+		execTime_AutomaticTimeAlignment = stopmstimer(-2) - execTime_StartLocal
 #endif
 	endif
 
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves && cs.failedPulses && cs.singlePulse))
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_StartLocal = stopmstimer(-2)
+		execTime_StartLocal = stopmstimer(-2)
 #endif
 		PA_CalculateAllAverages(pa, pasi, mode)
 #ifndef PA_HIDE_EXECUTION_TIME
-	execTime_CalculateAllAverages = stopmstimer(-2) - execTime_StartLocal
+		execTime_CalculateAllAverages = stopmstimer(-2) - execTime_StartLocal
 #endif
 	endif
 
@@ -2103,18 +2103,18 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa, STRUCT 
 	keyAll = CA_AveragingWaveModKey(setWavesAll)
 	WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyAll, options = CA_OPTS_NO_DUPLICATE)
 	if(!WaveExists(cache))
-		DEBUGPRINT("Cache miss all data:", str=keyAll)
+		DEBUGPRINT("Cache miss all data:", str = keyAll)
 		// we have to calculate
 		if(mode == POST_PLOT_ADDED_SWEEPS)
 			Multithread/NT=(numThreads) setWavesOld[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2AllNewOld[p][q], row = 2))
 			keyOld = CA_AveragingWaveModKey(setWavesOld)
 			WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyOld, options = CA_OPTS_NO_DUPLICATE)
 			if(WaveExists(cache))
-				DEBUGPRINT("Cache hit old data (for incremental):", str=keyOld)
+				DEBUGPRINT("Cache hit old data (for incremental):", str = keyOld)
 				Multithread/NT=(numThreads) setWavesNew[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2AllNewOld[p][q], row = 1))
 				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesNew[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1, prevAvgData = PA_ExtractSumsCountsOnly(cache[p][q]))
 			else
-				DEBUGPRINT("Cache miss old data (for incremental):", str=keyOld)
+				DEBUGPRINT("Cache miss old data (for incremental):", str = keyOld)
 				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
 			endif
 		else
@@ -2128,7 +2128,7 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa, STRUCT 
 		Multithread indexHelper[][] = PA_StoreMaxAndUnitsInWaveNote(WaveRef(avg[p][q], row = 0), WaveRef(setWavesAll[p][q], row = 0))
 		CA_StoreEntryIntoCache(keyAll, avg, options = CA_OPTS_NO_DUPLICATE)
 	else
-		DEBUGPRINT("Cache hit all data:", str=keyAll)
+		DEBUGPRINT("Cache hit all data:", str = keyAll)
 		WAVE/WAVE avg = cache
 	endif
 
@@ -2150,15 +2150,15 @@ threadsafe static Function PA_TAAdaptAverageWave(WAVE/Z avg, WAVE/WAVE set)
 	endif
 
 	Make/FREE/N=(numPulses) left, right
-	left[] = leftx(set[p])
+	left[]  = leftx(set[p])
 	right[] = rightx(set[p])
 	// since ScaleToIndexWrapper uses round(...) we can not use it here
 	dOffset = DimOffset(avg, ROWS)
-	dDelta = DimDelta(avg, ROWS)
-	l = (WaveMax(left) - dOffset) / dDelta
-	l = IsInteger(l) ? l : trunc(l) + 1
-	r = (WaveMin(right) - dOffset) / dDelta
-	r = IsInteger(r) ? r : trunc(r)
+	dDelta  = DimDelta(avg, ROWS)
+	l       = (WaveMax(left) - dOffset) / dDelta
+	l       = IsInteger(l) ? l : trunc(l) + 1
+	r       = (WaveMin(right) - dOffset) / dDelta
+	r       = IsInteger(r) ? r : trunc(r)
 	if(l >= r)
 		avg[] = NaN
 	else
@@ -2229,8 +2229,8 @@ End
 /// want to update only after the mouse wheel triggered the axis range change.
 /// And that is only possible with the operation queue.
 Function PA_UpdateScaleBars(string win, variable resetToUserLength)
-	variable displayMode
-	string bsPanel
+	variable                      displayMode
+	string                        bsPanel
 	STRUCT PulseAverageSetIndices pasi
 
 	if(!WindowExists(win))
@@ -2287,7 +2287,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 			graph = PA_GetGraph(win, pa, displayMode, channelNumber, region, j + 1, i + 1, numActive)
 
 			WAVE/T axesNames = pasi.axesNames[i][j]
-			vertAxis = axesNames[0]
+			vertAxis  = axesNames[0]
 			horizAxis = axesNames[1]
 
 			if(!pa.multipleGraphs && i == 0 && j == firstActiveRegionIndex || pa.multipleGraphs)
@@ -2307,13 +2307,13 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 				yUnit  = "n. a."
 			endif
 
-			PA_DrawScaleBarsHelper(graph, axisMode, displayMode, pasi.setWaves2Unsorted[i][j], \
+			PA_DrawScaleBarsHelper(graph, axisMode, displayMode, pasi.setWaves2Unsorted[i][j],                          \
 			                       vertAxis, horizAxis, length, xUnit, yUnit, i + 1, j + 1, numActive, resetToUserLength)
 		endfor
 	endfor
 End
 
-static Function	[variable vert_min, variable vert_max, variable horiz_min, variable horiz_max] PA_GetMinAndMax(WAVE/WAVE setWaves2)
+static Function [variable vert_min, variable vert_max, variable horiz_min, variable horiz_max] PA_GetMinAndMax(WAVE/WAVE setWaves2)
 
 	variable numPulses = DimSize(setWaves2, ROWS)
 
@@ -2349,8 +2349,8 @@ static Function [variable forceScaleBar, variable physicalLengthCorr] PA_NeedsFo
 		if(IsNaN(userLengthStored)                        \
 		   || !CheckIfClose(userLengthStored, userLength) \
 		   || resetToUserLength)
-			SetWindow $win, userdata($userLengthName) = num2str(userLength)
-			SetWindow $win, userdata($userDataName) = num2str(physicalLength)
+			SetWindow $win, userdata($userLengthName)=num2str(userLength)
+			SetWindow $win, userdata($userDataName)=num2str(physicalLength)
 			return [0, userLength]
 		endif
 
@@ -2365,7 +2365,7 @@ static Function [variable forceScaleBar, variable physicalLengthCorr] PA_NeedsFo
 	endif
 
 	if(IsNaN(originalBarLength))
-		SetWindow $win, userdata($userDataName) = num2str(physicalLength)
+		SetWindow $win, userdata($userDataName)=num2str(physicalLength)
 	endif
 
 	forceScaleBar      = !CheckIfClose(originalBarLength, physicalLength) && !CheckIfClose(userLength, physicalLength) && !IsNaN(originalBarLength)
@@ -2406,15 +2406,15 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 			endswitch
 			break
 		case PA_USE_AXIS_SCALES:
-			[vert_min, vert_max] = GetAxisRange(graph, vertAxis, mode=AXIS_RANGE_INC_AUTOSCALED)
-			[horiz_min, horiz_max] = GetAxisRange(graph, horizAxis, mode=AXIS_RANGE_INC_AUTOSCALED)
+			[vert_min, vert_max] = GetAxisRange(graph, vertAxis, mode = AXIS_RANGE_INC_AUTOSCALED)
+			[horiz_min, horiz_max] = GetAxisRange(graph, horizAxis, mode = AXIS_RANGE_INC_AUTOSCALED)
 			break
 		default:
 			ASSERT(0, "Unknown mode")
 	endswitch
 
 	SetDrawEnv/W=$graph push
-	SetDrawEnv/W=$graph linefgc=(0,0,0), textrgb=(0,0,0), fsize=10, linethick=1.5
+	SetDrawEnv/W=$graph linefgc=(0, 0, 0), textrgb=(0, 0, 0), fsize=10, linethick=1.5
 
 	sprintf msg, "win %s, horizAxis %s [%g, %g], vertAxis %s [%g, %g]\r", win, horizAxis, horiz_min, horiz_max, vertAxis, vert_min, vert_max
 	DEBUGPRINT(msg)
@@ -2433,9 +2433,9 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 		SetDrawEnv/W=$graph gstart, gname=$str
 
 		userLength = ylength
-		yLength = sign(userLength) * CalculateNiceLength(0.10 * abs(vert_max - vert_min), abs(userLength))
+		yLength    = sign(userLength) * CalculateNiceLength(0.10 * abs(vert_max - vert_min), abs(userLength))
 
-		name = PA_USER_DATA_CALC_YLENGTH + "_" + vertAxis
+		name           = PA_USER_DATA_CALC_YLENGTH + "_" + vertAxis
 		userLengthName = PA_USER_DATA_USER_YLENGTH + "_" + vertAxis
 		[forceScaleBar, yLength] = PA_NeedsForcedScaleBar(win, name, ylength, vert_min, vert_max, userLength = userLength, userLengthName = userLengthName, resetToUserLength = resetToUserLength)
 
@@ -2456,7 +2456,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 
 		drawLength = forceScaleBar || ((activeChanCount == numActive) && (activeRegionCount == 1))
 
-		DrawScaleBar(graph, xBarBottom, yBarBottom, xBarTop, yBarTop, unit=yUnit, drawLength=drawLength, labelOffset=labelOffset, newlineBeforeUnit=1)
+		DrawScaleBar(graph, xBarBottom, yBarBottom, xBarTop, yBarTop, unit = yUnit, drawLength = drawLength, labelOffset = labelOffset, newlineBeforeUnit = 1)
 
 		SetDrawEnv/W=$graph gstop
 	endif
@@ -2486,7 +2486,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 
 		drawLength = forceScaleBar || ((activeChanCount == numActive) && (activeRegionCount == numActive))
 
-		DrawScaleBar(graph, xBarLeft, yBarLeft, xBarRight, yBarRight, unit=xUnit, drawLength=drawLength)
+		DrawScaleBar(graph, xBarLeft, yBarLeft, xBarRight, yBarRight, unit = xUnit, drawLength = drawLength)
 
 		SetDrawEnv/W=$graph gstop
 	endif
@@ -2597,7 +2597,7 @@ End
 /// @brief Generate the wave name for a single pulse
 Function/S PA_GeneratePulseWaveName(variable channelType, variable channelNumber, variable region, variable pulseIndex)
 	ASSERT(channelType < ItemsInList(XOP_CHANNEL_NAMES), "Invalid channel type")
-	ASSERT(channelNumber < GetNumberFromType(xopVar=channelType) , "Invalid channel number")
+	ASSERT(channelNumber < GetNumberFromType(xopVar = channelType), "Invalid channel number")
 	ASSERT(IsInteger(pulseIndex) && pulseIndex >= 0, "Invalid pulseIndex")
 
 	return StringFromList(channelType, XOP_CHANNEL_NAMES) + num2str(channelNumber) + \
@@ -2609,7 +2609,7 @@ Function/S PA_BaseName(channelNumber, headStage)
 	variable channelNumber, headStage
 
 	string baseName
-	baseName = "AD" + num2str(channelNumber)
+	baseName  = "AD" + num2str(channelNumber)
 	baseName += "_HS" + num2str(headStage)
 
 	return baseName
@@ -2650,13 +2650,13 @@ threadsafe static Function PA_ZeroWave(WAVE wv, WAVE noteWave)
 End
 
 static Function/WAVE PA_SmoothDeconv(input, deconvolution)
-	WAVE input
+	WAVE                               input
 	STRUCT PulseAverageDeconvSettings &deconvolution
 
 	variable range_pnts, smoothingFactor
 	string key
 
-	range_pnts = deconvolution.range / DimDelta(input, ROWS)
+	range_pnts      = deconvolution.range / DimDelta(input, ROWS)
 	smoothingFactor = max(min(deconvolution.smth, 32767), 1)
 
 	key = CA_SmoothDeconv(input, smoothingFactor, range_pnts)
@@ -2668,7 +2668,7 @@ static Function/WAVE PA_SmoothDeconv(input, deconvolution)
 		return cache
 	endif
 
-	Duplicate/FREE/R=[0, range_pnts] input wv
+	Duplicate/FREE/R=[0, range_pnts] input, wv
 	Smooth smoothingFactor, wv
 
 	CA_StoreEntryIntoCache(key, wv)
@@ -2676,13 +2676,13 @@ static Function/WAVE PA_SmoothDeconv(input, deconvolution)
 End
 
 static Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconvolution)
-	WAVE average
-	DFREF outputDFR
-	string outputWaveName
+	WAVE                               average
+	DFREF                              outputDFR
+	string                             outputWaveName
 	STRUCT PulseAverageDeconvSettings &deconvolution
 
 	variable step
-	string key
+	string   key
 
 	WAVE smoothed = PA_SmoothDeconv(average, deconvolution)
 
@@ -2777,9 +2777,9 @@ static Function PA_AutomaticTimeAlignment(STRUCT PulseAverageSetIndices &pasi)
 	oldSetMode = V_AutoMultiThread
 
 	// require serial execution for WaveStats in PA_GetFeaturePosition
-	MultiThreadingControl setMode = 0
+	MultiThreadingControl setMode=0
 
-	WAVE properties = pasi.properties
+	WAVE      properties      = pasi.properties
 	WAVE/WAVE propertiesWaves = pasi.propertiesWaves
 
 	numActive = DimSize(pasi.channels, ROWS)
@@ -2812,11 +2812,11 @@ static Function PA_AutomaticTimeAlignment(STRUCT PulseAverageSetIndices &pasi)
 
 			Redimension/N=(numEntries) keys, junk
 			Multithread keys[] = "/" + num2str(properties[setIndizes[p]][PA_PROPERTIES_INDEX_SWEEP]) + "-" + num2str(properties[setIndizes[p]][PA_PROPERTIES_INDEX_PULSE])
-			Multithread junk[] = PA_SetFeaturePosition(propertiesWaves[setIndizes[p]][PA_PROPERTIESWAVES_INDEX_PULSE], propertiesWaves[setIndizes[p]][PA_PROPERTIESWAVES_INDEX_PULSENOTE], JSON_GetVariable(jsonID, keys[p], ignoreErr=1))
+			Multithread junk[] = PA_SetFeaturePosition(propertiesWaves[setIndizes[p]][PA_PROPERTIESWAVES_INDEX_PULSE], propertiesWaves[setIndizes[p]][PA_PROPERTIESWAVES_INDEX_PULSENOTE], JSON_GetVariable(jsonID, keys[p], ignoreErr = 1))
 		endfor
 	endfor
 
-	MultiThreadingControl setMode = oldSetMode
+	MultiThreadingControl setMode=oldSetMode
 
 	JSON_Release(jsonID)
 End
@@ -2833,14 +2833,14 @@ threadsafe static Function PA_GetFeaturePosition(WAVE wv, WAVE noteWave)
 
 	WaveStats/M=1/Q wv
 	featurePos = V_maxLoc
-	SetNumberInWaveNote(noteWave, NOTE_KEY_TIMEALIGN_FEATURE_POS, featurePos, format="%.15g")
+	SetNumberInWaveNote(noteWave, NOTE_KEY_TIMEALIGN_FEATURE_POS, featurePos, format = "%.15g")
 	return featurePos
 End
 
 threadsafe static Function PA_SetFeaturePosition(WAVE wv, WAVE noteWave, variable featurePos)
 
 	variable offset
-	string name
+	string   name
 
 	if(GetNumberFromWaveNote(noteWave, NOTE_KEY_TIMEALIGN) == 1)
 		return NaN
@@ -2853,11 +2853,11 @@ threadsafe static Function PA_SetFeaturePosition(WAVE wv, WAVE noteWave, variabl
 	endif
 
 	offset = -featurePos
-	DEBUGPRINT_TS("pulse", str=name)
-	DEBUGPRINT_TS("old DimOffset", var=DimOffset(wv, ROWS))
-	DEBUGPRINT_TS("new DimOffset", var=DimOffset(wv, ROWS) + offset)
+	DEBUGPRINT_TS("pulse", str = name)
+	DEBUGPRINT_TS("old DimOffset", var = DimOffset(wv, ROWS))
+	DEBUGPRINT_TS("new DimOffset", var = DimOffset(wv, ROWS) + offset)
 	SetScale/P x, DimOffset(wv, ROWS) + offset, DimDelta(wv, ROWS), wv
-	SetNumberInWaveNote(noteWave, NOTE_KEY_TIMEALIGN_TOTAL_OFFSET, offset, format="%.15g")
+	SetNumberInWaveNote(noteWave, NOTE_KEY_TIMEALIGN_TOTAL_OFFSET, offset, format = "%.15g")
 	SetNumberInWaveNote(noteWave, NOTE_KEY_TIMEALIGN, 1)
 End
 
@@ -2884,27 +2884,27 @@ static Function PA_ResetWavesIfRequired(WAVE/Z setWave2, STRUCT PulseAverageSett
 
 		WAVE noteWave = set2[i][1]
 
-		statusZero = GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED)
-		statusTimeAlign = GetNumberFromWaveNote(noteWave, NOTE_KEY_TIMEALIGN)
+		statusZero              = GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED)
+		statusTimeAlign         = GetNumberFromWaveNote(noteWave, NOTE_KEY_TIMEALIGN)
 		statusSearchFailedPulse = GetNumberFromWaveNote(noteWave, NOTE_KEY_SEARCH_FAILED_PULSE)
 
 		if(statusZero == 0 && statusTimeAlign == 0 && statusSearchFailedPulse == 0)
 			continue // wave is unmodified
 		endif
 
-		if(statusZero == pa.zeroPulses                          \
-			&& statusTimeAlign == pa.autoTimeAlignment           \
-			&& statusSearchFailedPulse == pa.searchFailedPulses)
+		if(statusZero == pa.zeroPulses                        \
+		   && statusTimeAlign == pa.autoTimeAlignment         \
+		   && statusSearchFailedPulse == pa.searchFailedPulses)
 
-			failedPulseLevel = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
+			failedPulseLevel     = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
 			failedNumberOfSpikes = GetNumberFromWaveNote(noteWave, NOTE_KEY_NUMBER_OF_SPIKES)
 
 			// when zeroing and failed pulse search is enabled, we always
 			// need to reset the waves when the level or the number of spike changes
-			if(!pa.zeroPulses                                                              \
-			   || !pa.searchFailedPulses                                                   \
-			   || (pa.failedPulsesLevel == failedPulseLevel                                \
-				   && EqualValuesOrBothNaN(failedNumberOfSpikes, pa.failedNumberOfSpikes)))
+			if(!pa.zeroPulses                                                             \
+			   || !pa.searchFailedPulses                                                  \
+			   || (pa.failedPulsesLevel == failedPulseLevel                               \
+			       && EqualValuesOrBothNaN(failedNumberOfSpikes, pa.failedNumberOfSpikes)))
 				continue // wave is up to date
 			endif
 		endif
@@ -2924,7 +2924,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 	numActive = DimSize(pasi.channels, ROWS)
 
 	if(!pa.multipleGraphs)
-		graph = PA_GetGraphName(win, pa, displayMode, NaN, NaN)
+		graph   = PA_GetGraphName(win, pa, displayMode, NaN, NaN)
 		allAxes = AxisList(graph)
 
 #ifdef PA_HIDE_AXIS
@@ -2945,7 +2945,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 			axisWave[j] = wt[1]
 		endfor
 		horizAxes = TextWaveToList(axisWave, ";")
-		EquallySpaceAxisPA(graph, allAxes, horizAxes, axisOffset=PA_X_AXIS_OFFSET)
+		EquallySpaceAxisPA(graph, allAxes, horizAxes, axisOffset = PA_X_AXIS_OFFSET)
 
 		for(i = 0; i < numActive; i += 1)
 			axisWaveRef[] = pasi.axesNames[p][i]
@@ -2958,7 +2958,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 			for(j = 0; j < numActive; j += 1)
 
 				WAVE/T axesNames = pasi.axesNames[j][i]
-				vertAxis = axesNames[0]
+				vertAxis  = axesNames[0]
 				horizAxis = axesNames[1]
 
 				xAxisPlotRelative = PA_GetSetXAxisUserData(graph, horizAxis)
@@ -3019,9 +3019,9 @@ static Function PA_GetSetXAxisUserData(string graph, string horizAxis)
 
 	variable xStart, xAxisPlotRelative
 
-	xStart = GetNumFromModifyStr(AxisInfo(graph, horizAxis), "axisEnab", "{", 0)
+	xStart            = GetNumFromModifyStr(AxisInfo(graph, horizAxis), "axisEnab", "{", 0)
 	xAxisPlotRelative = xStart - PA_X_AXIS_OFFSET
-	SetWindow $graph, userData($(PA_USER_DATA_X_START_RELATIVE_PREFIX + horizAxis)) = num2str(xAxisPlotRelative)
+	SetWindow $graph, userData($(PA_USER_DATA_X_START_RELATIVE_PREFIX + horizAxis))=num2str(xAxisPlotRelative)
 
 	return xAxisPlotRelative
 End
@@ -3055,7 +3055,7 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 			endif
 
 			WAVE/T axesNames = pasi.axesNames[j][i]
-			vertAxis = axesNames[0]
+			vertAxis  = axesNames[0]
 			horizAxis = axesNames[1]
 
 			// only show filled in pulses for the vertical axis
@@ -3104,8 +3104,8 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 			channelNumber = pasi.channels[j]
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
-				graph = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, i + 1)
-				graphsToResize = AddListItem(graph, graphsToResize, ";", Inf)
+				graph           = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, i + 1)
+				graphsToResize  = AddListItem(graph, graphsToResize, ";", Inf)
 				colorScaleGraph = PA_GetColorScaleGraph(graph)
 				if(WindowExists(colorScaleGraph))
 					RemoveAnnotationsFromGraph(colorScaleGraph)
@@ -3126,7 +3126,7 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 			sprintf msg, "traceName %s, minimum %g, maximum %g\r", traceName, minimum, maximum
 			DEBUGPRINT(msg)
 
-			ModifyImage/W=$graph $traceName, ctab= {minimum, maximum, $(pa.imageColorScale), 0}, minRGB=0,maxRGB=(65535,0,0)
+			ModifyImage/W=$graph $traceName, ctab={minimum, maximum, $(pa.imageColorScale), 0}, minRGB=0, maxRGB=(65535, 0, 0)
 		endfor
 	endfor
 
@@ -3156,17 +3156,17 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 				// we always take the last region except for the last channel as that would be diagonal again
 				if(i == numActive - 1)
 					regionTaken = 0
-					region = pasi.regions[regionTaken]
+					region      = pasi.regions[regionTaken]
 				else
 					regionTaken = numActive - 1
-					region = pasi.regions[regionTaken]
+					region      = pasi.regions[regionTaken]
 				endif
 
 				WAVE img = GetPulseAverageSetImageWave(pasi.pulseAverageDFR, channelNumber, region)
 				traceName = NameOfWave(img)
 
 				if(i == 0)
-					graph = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, regionTaken + 1)
+					graph           = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, regionTaken + 1)
 					colorScaleGraph = PA_GetColorScaleGraph(graph)
 				endif
 
@@ -3184,10 +3184,10 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 			endfor
 
 			// diagonal color scale
-			channelNumber = pasi.channels[0]
-			regionTaken = 0
-			region = pasi.regions[regionTaken]
-			graph = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, regionTaken + 1)
+			channelNumber   = pasi.channels[0]
+			regionTaken     = 0
+			region          = pasi.regions[regionTaken]
+			graph           = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, regionTaken + 1)
 			colorScaleGraph = PA_GetColorScaleGraph(graph)
 			WAVE img = GetPulseAverageSetImageWave(pasi.pulseAverageDFR, channelNumber, region)
 			traceName = NameOfWave(img)
@@ -3205,21 +3205,21 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 				// and in that case the color scale bar is also attached to the image from the first region
 				// but it is placed in the external subwindow from the last region
 
-				graph = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, numActive)
+				graph           = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, numActive)
 				colorScaleGraph = PA_GetColorScaleGraph(graph)
 				ASSERT(WindowExists(colorScaleGraph), "Missing external subwindow for color scale")
 
 				if(i == numActive - 1)
 					regionTaken = 0
-					region = pasi.regions[regionTaken]
-					imageGraph = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, 1)
-					numSlots = 2
+					region      = pasi.regions[regionTaken]
+					imageGraph  = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, 1)
+					numSlots    = 2
 				else
 					regionTaken = numActive - 1
-					region = pasi.regions[regionTaken]
-					graph = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, numActive)
-					imageGraph = graph
-					numSlots = 1
+					region      = pasi.regions[regionTaken]
+					graph       = PA_GetGraphName(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, numActive)
+					imageGraph  = graph
+					numSlots    = 1
 				endif
 
 				WAVE setIndizes = pasi.setIndices[i][regionTaken]
@@ -3238,8 +3238,8 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 				PA_AddColorScale(imageGraph, colorScaleGraph, name, text, 0, numSlots, traceName)
 			endfor
 
-			name = "colorScaleDiag"
-			text = "Diagonal\r(\\U)"
+			name     = "colorScaleDiag"
+			text     = "Diagonal\r(\\U)"
 			numSlots = 2
 			PA_AddColorScale(imageGraph, colorScaleGraph, name, text, 1, numSlots, traceName)
 		endif
@@ -3259,9 +3259,9 @@ static Function PA_AddColorScale(string graph, string colorScaleGraph, string na
 	[WAVE start, WAVE stop] = DistributeElements(numSlots)
 
 	intIndex = trunc(index)
-	length = stop[intIndex] - start[intIndex]
-	yPos = start[intIndex] + abs(index - intIndex) * length
-	yPos *= ONE_TO_PERCENT
+	length   = stop[intIndex] - start[intIndex]
+	yPos     = start[intIndex] + abs(index - intIndex) * length
+	yPos    *= ONE_TO_PERCENT
 
 	ColorScale/W=$colorScaleGraph/C/N=$name/F=0/A=MT/X=(0)/Y=(yPos)/E=0 vert=0, image={$graph, $traceName}
 	ColorScale/W=$colorScaleGraph/C/N=$name heightPct=(5), widthPct=95, lblMargin=0
@@ -3276,7 +3276,7 @@ End
 static Function PA_SerializeSettings(string win, STRUCT PulseAverageSettings &pa)
 
 	variable jsonID
-	string datafolder
+	string   datafolder
 
 	jsonID = JSON_New()
 
@@ -3329,7 +3329,7 @@ static Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &
 
 	variable jsonID, version
 
-	jsonID = JSON_Parse(GetUserData(win,"", PA_SETTINGS), ignoreErr=1)
+	jsonID = JSON_Parse(GetUserData(win, "", PA_SETTINGS), ignoreErr = 1)
 
 	if(!JSON_IsValid(jsonID))
 		InitPulseAverageSettings(pa)
@@ -3345,7 +3345,7 @@ static Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &
 		return NaN
 	endif
 
-	DFREF pa.dfr            = $JSON_GetString(jsonID, "/dfr")
+	DFREF pa.dfr = $JSON_GetString(jsonID, "/dfr")
 	pa.enabled              = JSON_GetVariable(jsonID, "/enabled")
 	pa.showIndividualPulses = JSON_GetVariable(jsonID, "/showIndividualPulses")
 	pa.showAverage          = JSON_GetVariable(jsonID, "/showAverage")
@@ -3386,7 +3386,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 	variable refScaleLeft, refScaleRight, refScalePoints, refScaleDelta, scaleChanged, pulseScaleLeft, pulseScaleRight
 	string vertAxis, horizAxis, graph, basename, imageName, msg, graphWithImage, xUnits
 	string image
-	string usedGraphs = ""
+	string usedGraphs       = ""
 	string graphsWithImages = ""
 
 	if(!pa.showImages)
@@ -3414,13 +3414,13 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			[averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
-				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, region, j + 1, i + 1, numActive)
+				graph             = PA_GetGraph(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, region, j + 1, i + 1, numActive)
 				graphsWithImages += AddPrefixToEachListItem(graph + "#", ImageNameList(graph, ";"))
 				SetDrawLayer/W=$graph/K $PA_DRAWLAYER_FAILED_PULSES
-				usedGraphs = AddListItem(graph, usedGraphs, ";", inf)
+				usedGraphs = AddListItem(graph, usedGraphs, ";", Inf)
 			endif
 
-			numPulses = pasi.numEntries[i][j]
+			numPulses          = pasi.numEntries[i][j]
 			gotNewPulsesToDraw = numPulses != 0
 			WAVE img = GetPulseAverageSetImageWave(pasi.pulseAverageDFR, channelNumber, region)
 
@@ -3432,7 +3432,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			// we reserve 5% of the total columns for average and 5% for deconvolution
 			specialEntryHeight = trunc((1 / (1 - 2 * PA_IMAGE_SPECIAL_ENTRIES_RANGE) - 1) * numPulses / 2)
 			specialEntryHeight = limit(specialEntryHeight, 1, specialEntryHeight)
-			requiredEntries = numPulses + 2 * specialEntryHeight
+			requiredEntries    = numPulses + 2 * specialEntryHeight
 
 			firstPulseIndex = 0
 
@@ -3447,25 +3447,25 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				Multithread scaleLeft = leftx(set2[p][0])
 				Multithread scaleRight = rightx(set2[p][0])
 				Multithread scalePoints = DimSize(set2[p][0], ROWS)
-				refScaleLeft = WaveMin(scaleLeft)
-				refScaleRight = WaveMax(scaleRight)
+				refScaleLeft   = WaveMin(scaleLeft)
+				refScaleRight  = WaveMax(scaleRight)
 				refScalePoints = WaveMax(scalePoints)
-				refScaleDelta = (refScaleRight - refScaleLeft) / refScalePoints
-				scaleChanged = (DimOffset(img, ROWS) != refScaleLeft) || (DimOffset(img, ROWS) + (DimSize(img, ROWS) - 1) * DimDelta(img, ROWS) != refScaleRight)
-				xUnits = WaveUnits(set2[0][0], ROWS)
+				refScaleDelta  = (refScaleRight - refScaleLeft) / refScalePoints
+				scaleChanged   = (DimOffset(img, ROWS) != refScaleLeft) || (DimOffset(img, ROWS) + (DimSize(img, ROWS) - 1) * DimDelta(img, ROWS) != refScaleRight)
+				xUnits         = WaveUnits(set2[0][0], ROWS)
 
 				Make/FREE/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(img, p)
-				EnsureLargeEnoughWave(img, indexShouldExist = requiredEntries, dimension = COLS, initialValue=NaN)
+				EnsureLargeEnoughWave(img, indexShouldExist = requiredEntries, dimension = COLS, initialValue = NaN)
 				Redimension/N=(refScalePoints, -1) img
 				// inclusive scale must be set after redimension
 				SetScale/P x, refScaleLeft, refScaleDelta, xUnits, img
 				Make/FREE/N=(MAX_DIMENSION_COUNT) newSizes = DimSize(img, p)
 
-				if(!(mode != POST_PLOT_ADDED_SWEEPS                                        \
-				   || !EqualWaves(oldSizes, newSizes, EQWAVES_DATA)         \
-				   || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP						\
-				   || scaleChanged                                          \
-				   || layoutChanged))
+				if(!(mode != POST_PLOT_ADDED_SWEEPS                       \
+				     || !EqualWaves(oldSizes, newSizes, EQWAVES_DATA)     \
+				     || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP \
+				     || scaleChanged                                      \
+				     || layoutChanged))
 
 					WAVE/D/Z newSweeps
 					WAVE/T/Z newExperiments
@@ -3494,7 +3494,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				// pasi stores only the unsorted sets, but specifically here we need the sorted ones. Thus, we have to retrieve it from the now sorted setIndices.
 				WAVE/WAVE set2 = PA_GetSetWaves(pasi.pulseAverageHelperDFR, channelNumber, region)
 				colStart = firstPulseIndex
-				colEnd = numPulses
+				colEnd   = numPulses
 				AssertOnAndClearRTError()
 				Multithread img[][colStart, colEnd - 1] = WaveRef(set2[q][0])(x); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 				for(k = colStart; k < colEnd; k += 1)
@@ -3525,11 +3525,11 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			if(pa.showAverage && WaveExists(averageWave))
 				// when all pulses from the set fail, we don't have an average wave
 				colStart = numPulses
-				colEnd = numPulses + specialEntryHeight
+				colEnd   = numPulses + specialEntryHeight
 				AssertOnAndClearRTError()
-				Multithread img[][colStart, colEnd - 1] = averageWave(x); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+				Multithread img[][colStart, colEnd - 1] = averageWave(x); err = GetRTError(1)      // see developer docu section Preventing Debugger Popup
 				val = leftx(averageWave)
-				if(refScaleLeft != val  && val > refScaleLeft + refScaleDelta)
+				if(refScaleLeft != val && val > refScaleLeft + refScaleDelta)
 					img[0, ScaleToIndexWrapper(img, val, ROWS)][colStart, colEnd - 1] = NaN
 				endif
 				val = rightx(averageWave)
@@ -3545,7 +3545,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				baseName = PA_BaseName(channelNumber, region)
 				WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 				colStart = numPulses + specialEntryHeight
-				colEnd = numPulses + 2 * specialEntryHeight
+				colEnd   = numPulses + 2 * specialEntryHeight
 				AssertOnAndClearRTError()
 				Multithread img[][colStart, colEnd - 1] = limit(deconv(x), vert_min, vert_max); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 				val = leftx(deconv)
@@ -3571,7 +3571,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			graphsWithImages = RemoveFromList(graph + "#" + imageName, graphsWithImages)
 
 			WAVE/T axesNames = pasi.axesNames[i][j]
-			vertAxis = axesNames[0]
+			vertAxis  = axesNames[0]
 			horizAxis = axesNames[1]
 
 			graphDataIndex = PA_GetTraceCountFromGraphData(graph)
@@ -3590,8 +3590,8 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 	numGraphs = ItemsInList(graphsWithImages)
 	for(i = 0; i < numGraphs; i += 1)
 		graphWithImage = StringFromList(i, graphsWithImages)
-		graph = StringFromList(0, graphWithImage, "#")
-		image = StringFromList(1, graphWithImage, "#")
+		graph          = StringFromList(0, graphWithImage, "#")
+		image          = StringFromList(1, graphWithImage, "#")
 		RemoveImage/W=$graph $image
 		paGraphData[graphDataIndex][lblIMAGELIST] = RemoveFromList(image, paGraphData[graphDataIndex][lblIMAGELIST], ";")
 	endfor
@@ -3613,10 +3613,10 @@ static Function PA_HighligthFailedPulsesInImage(string graph, STRUCT PulseAverag
 
 	if(pa.hideFailedPulses)
 		failedMarkerStartRow = 0
-		fillValue = NaN
+		fillValue            = NaN
 	else
 		failedMarkerStartRow = trunc(DimSize(img, ROWS) * PA_IMAGE_FAILEDMARKERSTART)
-		fillValue = Inf
+		fillValue            = Inf
 	endif
 
 	for(i = 0; i < numPulses; i += 1)
@@ -3624,7 +3624,7 @@ static Function PA_HighligthFailedPulsesInImage(string graph, STRUCT PulseAverag
 			continue
 		endif
 
-		Multithread img[failedMarkerStartRow, inf][i] = fillValue
+		Multithread img[failedMarkerStartRow, Inf][i] = fillValue
 
 		if(!pa.hideFailedPulses)
 			if(numFailedPulses == 0)
@@ -3653,17 +3653,17 @@ static Function PA_SetColorScale(string win, string colScale)
 	string colorScales, annotation, str
 	variable i, j, numGraphs, numImages, numAnnotations
 
-	graphs = PA_GetGraphs(win, PA_DISPLAYMODE_IMAGES)
+	graphs    = PA_GetGraphs(win, PA_DISPLAYMODE_IMAGES)
 	numGraphs = ItemsInList(graphs)
 
 	for(i = 0; i < numGraphs; i += 1)
 		graph = StringFromList(i, graphs)
 
-		images = ImageNameList(graph, ";")
+		images    = ImageNameList(graph, ";")
 		numImages = ItemsInList(images)
 		for(j = 0; j < numImages; j += 1)
 			image = StringFromList(j, images)
-			ModifyImage/W=$graph $image, ctab={,,$colScale,0}
+			ModifyImage/W=$graph $image, ctab={,, $colScale, 0}
 		endfor
 	endfor
 End
@@ -3791,13 +3791,13 @@ static Function PA_DrawXZeroLines(string win, STRUCT PulseAverageSettings &pa, S
 			endif
 
 			WAVE/T axesNames = pasi.axesNames[i][j]
-			vertAxis = axesNames[0]
+			vertAxis  = axesNames[0]
 			horizAxis = axesNames[1]
 
 			SetDrawEnv/W=$graph push
 			SetDrawEnv/W=$graph xcoord=$horizAxis, ycoord=rel, dash=1
 			SetDrawEnv/W=$graph save
-			DrawLine/W=$graph 0,0,0,1
+			DrawLine/W=$graph 0, 0, 0, 1
 			SetDrawEnv/W=$graph pop
 		endfor
 	endfor
@@ -3815,48 +3815,48 @@ static Function PA_AccelerateAppendTraces(variable jsonID, WAVE/WAVE plotWaves)
 	WAVE/T wGraphs = JSON_GetKeys(jsonID, "")
 	numGraphs = DimSize(wGraphs, ROWS)
 	for(i0 = 0; i0 < numGraphs; i0 += 1)
-		graph = wGraphs[i0]
+		graph  = wGraphs[i0]
 		i0Path = "/" + graph
 		WAVE/T wVertAxis = JSON_GetKeys(jsonID, i0Path)
 		numVertAxis = DimSize(wVertAxis, ROWS)
 		for(i1 = 0; i1 < numVertAxis; i1 += 1)
 			vertAxis = wVertAxis[i1]
-			i1Path = i0Path + "/" + vertAxis
+			i1Path   = i0Path + "/" + vertAxis
 			WAVE/T wHorizAxis = JSON_GetKeys(jsonID, i1Path)
 			numHorizAxis = DimSize(wHorizAxis, ROWS)
 			for(i2 = 0; i2 < numHorizAxis; i2 += 1)
 				horizAxis = wHorizAxis[i2]
-				i2Path = i1Path + "/" + horizAxis
+				i2Path    = i1Path + "/" + horizAxis
 				WAVE/T wRed = JSON_GetKeys(jsonID, i2Path)
 				numRed = DimSize(wRed, ROWS)
 				for(i3 = 0; i3 < numRed; i3 += 1)
 					redStr = wRed[i3]
-					red = str2num(redStr)
+					red    = str2num(redStr)
 					i3Path = i2Path + "/" + redStr
 					WAVE/T wGreen = JSON_GetKeys(jsonID, i3Path)
 					numGreen = DimSize(wGreen, ROWS)
 					for(i4 = 0; i4 < numGreen; i4 += 1)
 						greenStr = wGreen[i4]
-						green = str2num(greenStr)
-						i4Path = i3Path + "/" + greenStr
+						green    = str2num(greenStr)
+						i4Path   = i3Path + "/" + greenStr
 						WAVE/T wBlue = JSON_GetKeys(jsonID, i4Path)
 						numBlue = DimSize(wBlue, ROWS)
 						for(i5 = 0; i5 < numBlue; i5 += 1)
 							blueStr = wBlue[i5]
-							blue = str2num(blueStr)
-							i5Path = i4Path + "/" + blueStr
+							blue    = str2num(blueStr)
+							i5Path  = i4Path + "/" + blueStr
 							WAVE/T wAlpha = JSON_GetKeys(jsonID, i5Path)
 							numAlpha = DimSize(wAlpha, ROWS)
 							for(i6 = 0; i6 < numAlpha; i6 += 1)
 								alphaStr = wAlpha[i6]
-								alpha = str2num(alphaStr)
-								i6Path = i5Path + "/" + alphaStr
+								alpha    = str2num(alphaStr)
+								i6Path   = i5Path + "/" + alphaStr
 								WAVE/T wStep = JSON_GetKeys(jsonID, i6Path)
 								numStep = DimSize(wStep, ROWS)
 								for(i7 = 0; i7 < numStep; i7 += 1)
 									stepStr = wStep[i7]
-									i7Path = i6Path + "/" + stepStr
-									WAVE indices = JSON_GetWave(jsonID, i7Path + "/index")
+									i7Path  = i6Path + "/" + stepStr
+									WAVE   indices    = JSON_GetWave(jsonID, i7Path + "/index")
 									WAVE/T traceNames = JSON_GetTextWave(jsonID, i7Path + "/traceName")
 									PA_AccelerateAppendTracesImpl(graph, vertAxis, horizAxis, red, green, blue, alpha, str2num(stepStr), indices, traceNames, plotWaves)
 								endfor

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -9,13 +9,13 @@
 /// @file MIES_DAEphys.ipf
 /// @brief __DAP__ Main data acquisition panel routines
 
-static Constant DATA_ACQU_TAB_NUM         = 0
-static Constant HARDWARE_TAB_NUM          = 6
+static Constant DATA_ACQU_TAB_NUM = 0
+static Constant HARDWARE_TAB_NUM  = 6
 
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
-static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
+static StrConstant AMPLIFIER_DEF_FORMAT = "AmpNo %d Chan %d"
 
 //                                   PCIe-6343                                    | PXI-6259                                   | PCIe-6341                                 | USB-6346
 static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8|AI:16;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8|AI:8;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8"
@@ -66,12 +66,12 @@ Function/S DAP_GetNIDeviceList()
 
 	numDevices = ItemsInList(allDevices)
 
-	for(i = 0;i < numDevices;i += 1)
-		device = StringFromList(i, allDevices)
+	for(i = 0; i < numDevices; i += 1)
+		device   = StringFromList(i, allDevices)
 		propList = HW_NI_GetPropertyListOfDevices(device)
 
 #ifdef EVIL_KITTEN_EATING_MODE
-		devList = AddListItem(device, devList, ";", inf)
+		devList = AddListItem(device, devList, ";", Inf)
 #else
 		for(j = 0; j < numPattern; j += 1)
 			pattern = StringFromList(j, NI_DAC_PATTERNS, "|")
@@ -79,7 +79,7 @@ Function/S DAP_GetNIDeviceList()
 				if(!IsValidObjectName(device))
 					Print "NI device " + device + " has a name that is incompatible for use in MIES. Please change the device name in NI MAX to a simple name, e.g. DeviceX."
 				else
-					devList = AddListItem(device, devList, ";", inf)
+					devList = AddListItem(device, devList, ";", Inf)
 				endif
 			endif
 		endfor
@@ -131,13 +131,13 @@ Function/S DAP_GetDACDeviceList()
 	devices = DAP_GetITCDeviceList()
 
 	if(CmpStr(devices, NONE))
-		list = AddListItem(devices, list, ";", inf)
+		list = AddListItem(devices, list, ";", Inf)
 	endif
 
 	devices = DAP_GetNIDeviceList()
 
 	if(CmpStr(devices, NONE))
-		list = AddListItem(devices, list, ";", inf)
+		list = AddListItem(devices, list, ";", Inf)
 	endif
 
 	if(!cmpstr(list, NONE))
@@ -164,7 +164,7 @@ Function DAP_EphysPanelStartUpSettings()
 	string device
 
 	variable i
-	string popValue
+	string   popValue
 
 	device = GetMainWindow(GetCurrentWindow())
 
@@ -189,466 +189,466 @@ Function DAP_EphysPanelStartUpSettings()
 	// reset all device dependent controls
 	DAP_AdaptPanelForDeviceSpecifics(device, forceEnable = 1)
 
-	SetWindow $device, userData(panelVersion) = ""
-	SetWindow $device, userdata(Config_FileName) = ""
-	SetWindow $device, userdata(Config_FileHash) = ""
+	SetWindow $device, userData(panelVersion)=""
+	SetWindow $device, userdata(Config_FileName)=""
+	SetWindow $device, userdata(Config_FileHash)=""
 
-	CheckBox Check_AD_00, WIN = $device,value= 0
-	CheckBox Check_AD_01, WIN = $device,value= 0
-	CheckBox Check_AD_02, WIN = $device,value= 0
-	CheckBox Check_AD_03, WIN = $device,value= 0
-	CheckBox Check_AD_04, WIN = $device,value= 0
-	CheckBox Check_AD_05, WIN = $device,value= 0
-	CheckBox Check_AD_06, WIN = $device,value= 0
-	CheckBox Check_AD_07, WIN = $device,value= 0
-	CheckBox Check_AD_08, WIN = $device,value= 0
-	CheckBox Check_AD_09, WIN = $device,value= 0
-	CheckBox Check_AD_10, WIN = $device,value= 0
-	CheckBox Check_AD_11, WIN = $device,value= 0
-	CheckBox Check_AD_12, WIN = $device,value= 0
-	CheckBox Check_AD_13, WIN = $device,value= 0
-	CheckBox Check_AD_14, WIN = $device,value= 0
-	CheckBox Check_AD_15, WIN = $device,value= 0
-	CheckBox Check_AD_All, WIN = $device,value= 0
+	CheckBox Check_AD_00, WIN=$device, value=0
+	CheckBox Check_AD_01, WIN=$device, value=0
+	CheckBox Check_AD_02, WIN=$device, value=0
+	CheckBox Check_AD_03, WIN=$device, value=0
+	CheckBox Check_AD_04, WIN=$device, value=0
+	CheckBox Check_AD_05, WIN=$device, value=0
+	CheckBox Check_AD_06, WIN=$device, value=0
+	CheckBox Check_AD_07, WIN=$device, value=0
+	CheckBox Check_AD_08, WIN=$device, value=0
+	CheckBox Check_AD_09, WIN=$device, value=0
+	CheckBox Check_AD_10, WIN=$device, value=0
+	CheckBox Check_AD_11, WIN=$device, value=0
+	CheckBox Check_AD_12, WIN=$device, value=0
+	CheckBox Check_AD_13, WIN=$device, value=0
+	CheckBox Check_AD_14, WIN=$device, value=0
+	CheckBox Check_AD_15, WIN=$device, value=0
+	CheckBox Check_AD_All, WIN=$device, value=0
 
-	CheckBox Check_DA_00, WIN = $device,value= 0
-	CheckBox Check_DA_01, WIN = $device,value= 0
-	CheckBox Check_DA_02, WIN = $device,value= 0
-	CheckBox Check_DA_03, WIN = $device,value= 0
-	CheckBox Check_DA_04, WIN = $device,value= 0
-	CheckBox Check_DA_05, WIN = $device,value= 0
-	CheckBox Check_DA_06, WIN = $device,value= 0
-	CheckBox Check_DA_07, WIN = $device,value= 0
-	CheckBox Check_DA_All, WIN = $device,value= 0
-	CheckBox Check_DA_AllVClamp, WIN = $device,value= 0
-	CheckBox Check_DA_AllIClamp, WIN = $device,value= 0
+	CheckBox Check_DA_00, WIN=$device, value=0
+	CheckBox Check_DA_01, WIN=$device, value=0
+	CheckBox Check_DA_02, WIN=$device, value=0
+	CheckBox Check_DA_03, WIN=$device, value=0
+	CheckBox Check_DA_04, WIN=$device, value=0
+	CheckBox Check_DA_05, WIN=$device, value=0
+	CheckBox Check_DA_06, WIN=$device, value=0
+	CheckBox Check_DA_07, WIN=$device, value=0
+	CheckBox Check_DA_All, WIN=$device, value=0
+	CheckBox Check_DA_AllVClamp, WIN=$device, value=0
+	CheckBox Check_DA_AllIClamp, WIN=$device, value=0
 
-	CheckBox Check_TTL_00, WIN = $device,value= 0
-	CheckBox Check_TTL_01, WIN = $device,value= 0
-	CheckBox Check_TTL_02, WIN = $device,value= 0
-	CheckBox Check_TTL_03, WIN = $device,value= 0
-	CheckBox Check_TTL_04, WIN = $device,value= 0
-	CheckBox Check_TTL_05, WIN = $device,value= 0
-	CheckBox Check_TTL_06, WIN = $device,value= 0
-	CheckBox Check_TTL_07, WIN = $device,value= 0
-	CheckBox Check_TTL_All, WIN = $device,value= 0
+	CheckBox Check_TTL_00, WIN=$device, value=0
+	CheckBox Check_TTL_01, WIN=$device, value=0
+	CheckBox Check_TTL_02, WIN=$device, value=0
+	CheckBox Check_TTL_03, WIN=$device, value=0
+	CheckBox Check_TTL_04, WIN=$device, value=0
+	CheckBox Check_TTL_05, WIN=$device, value=0
+	CheckBox Check_TTL_06, WIN=$device, value=0
+	CheckBox Check_TTL_07, WIN=$device, value=0
+	CheckBox Check_TTL_All, WIN=$device, value=0
 
-	CheckBox Check_DataAcqHS_00, WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_01, WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_02, WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_03, WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_04, WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_05, WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_06, WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_07, WIN = $device,value= 0
-	CheckBox Check_DataAcqHS_All, WIN = $device,value= 0
+	CheckBox Check_DataAcqHS_00, WIN=$device, value=0
+	CheckBox Check_DataAcqHS_01, WIN=$device, value=0
+	CheckBox Check_DataAcqHS_02, WIN=$device, value=0
+	CheckBox Check_DataAcqHS_03, WIN=$device, value=0
+	CheckBox Check_DataAcqHS_04, WIN=$device, value=0
+	CheckBox Check_DataAcqHS_05, WIN=$device, value=0
+	CheckBox Check_DataAcqHS_06, WIN=$device, value=0
+	CheckBox Check_DataAcqHS_07, WIN=$device, value=0
+	CheckBox Check_DataAcqHS_All, WIN=$device, value=0
 
 	PGC_SetAndActivateControl(device, "ADC", val = 6)
 	DoUpdate/W=$device
 
-	SetVariable Gain_AD_00, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_01, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_02, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_03, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_04, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_05, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_06, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_07, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_08, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_09, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_10, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_11, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_12, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_13, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_14, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_AD_15, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_AD_00, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_01, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_02, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_03, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_04, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_05, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_06, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_07, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_08, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_09, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_10, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_11, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_12, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_13, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_14, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_AD_15, WIN=$device, value=_NUM:0.00
 
-	SetVariable Gain_DA_00, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_01, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_02, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_03, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_04, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_05, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_06, WIN = $device, value = _NUM:0.00
-	SetVariable Gain_DA_07, WIN = $device, value = _NUM:0.00
+	SetVariable Gain_DA_00, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_DA_01, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_DA_02, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_DA_03, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_DA_04, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_DA_05, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_DA_06, WIN=$device, value=_NUM:0.00
+	SetVariable Gain_DA_07, WIN=$device, value=_NUM:0.00
 
 	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC)
-	PopupMenu Wave_DA_00, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_01, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_02, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_03, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_04, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_05, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_06, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_07, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_All, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_AllVClamp, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_DA_AllIClamp, WIN = $device,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_00, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_DA_01, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_DA_02, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_DA_03, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_DA_04, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_DA_05, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_DA_06, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_DA_07, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_DA_All, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_DA_AllVClamp, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_DA_AllIClamp, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
 
-	SetVariable Scale_DA_00, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_01, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_02, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_03, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_04, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_05, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_06, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_07, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_All, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_AllVClamp, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
-	SetVariable Scale_DA_AllIClamp, WIN = $device, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_00, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
+	SetVariable Scale_DA_01, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
+	SetVariable Scale_DA_02, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
+	SetVariable Scale_DA_03, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
+	SetVariable Scale_DA_04, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
+	SetVariable Scale_DA_05, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
+	SetVariable Scale_DA_06, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
+	SetVariable Scale_DA_07, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
+	SetVariable Scale_DA_All, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
+	SetVariable Scale_DA_AllVClamp, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
+	SetVariable Scale_DA_AllIClamp, WIN=$device, value=_NUM:1, limits={-Inf, Inf, 10}
 
-	SetVariable SetVar_DataAcq_Comment, WIN = $device,value= _STR:""
+	SetVariable SetVar_DataAcq_Comment, WIN=$device, value=_STR:""
 
-	CheckBox Check_DataAcq1_RepeatAcq, Win = $device, value = 1
-	CheckBox Check_DataAcq1_DistribDaq, Win = $device, value = 0
-	CheckBox Check_DataAcq1_dDAQOptOv, Win = $device, value = 0
+	CheckBox Check_DataAcq1_RepeatAcq, Win=$device, value=1
+	CheckBox Check_DataAcq1_DistribDaq, Win=$device, value=0
+	CheckBox Check_DataAcq1_dDAQOptOv, Win=$device, value=0
 
-	SetVariable SetVar_DataAcq_ITI, WIN = $device, value = _NUM:0
+	SetVariable SetVar_DataAcq_ITI, WIN=$device, value=_NUM:0
 
-	SetVariable SetVar_DataAcq_TPDuration,  WIN = $device,value= _NUM:10
-	SetVariable SetVar_DataAcq_TPBaselinePerc,  WIN = $device,value= _NUM:35
+	SetVariable SetVar_DataAcq_TPDuration, WIN=$device, value=_NUM:10
+	SetVariable SetVar_DataAcq_TPBaselinePerc, WIN=$device, value=_NUM:35
 
-	Checkbox Check_TP_SendToAllHS, WIN = $device, value=1
+	Checkbox Check_TP_SendToAllHS, WIN=$device, value=1
 
 	/// needs to be in sync with GetTPSettings()
 	/// @{
 	WAVE TPSettingsRef = GetTPSettingsFree()
-	SetVariable SetVar_DataAcq_TPAmplitude,  WIN = $device,value= _NUM:TPSettingsRef[%amplitudeVC][0]
-	SetVariable SetVar_DataAcq_TPAmplitudeIC, WIN = $device,value= _NUM:TPSettingsRef[%amplitudeIC][0]
+	SetVariable SetVar_DataAcq_TPAmplitude, WIN=$device, value=_NUM:TPSettingsRef[%amplitudeVC][0]
+	SetVariable SetVar_DataAcq_TPAmplitudeIC, WIN=$device, value=_NUM:TPSettingsRef[%amplitudeIC][0]
 
-	Checkbox check_DataAcq_AutoTP, WIN = $device, labelBack=0, value=TPSettingsRef[%autoTPEnable][0]
-	SetVariable setvar_DataAcq_IinjMax, WIN = $device, value= _NUM:TPSettingsRef[%autoAmpMaxCurrent][0]
-	SetVariable setvar_DataAcq_targetVoltage, WIN = $device, value= _NUM:TPSettingsRef[%autoAmpVoltage][0]
-	SetVariable setvar_DataAcq_targetVoltageRange, WIN = $device, value= _NUM:TPSettingsRef[%autoAmpVoltageRange][0]
+	Checkbox check_DataAcq_AutoTP, WIN=$device, labelBack=0, value=TPSettingsRef[%autoTPEnable][0]
+	SetVariable setvar_DataAcq_IinjMax, WIN=$device, value=_NUM:TPSettingsRef[%autoAmpMaxCurrent][0]
+	SetVariable setvar_DataAcq_targetVoltage, WIN=$device, value=_NUM:TPSettingsRef[%autoAmpVoltage][0]
+	SetVariable setvar_DataAcq_targetVoltageRange, WIN=$device, value=_NUM:TPSettingsRef[%autoAmpVoltageRange][0]
 	/// @}
 
-	SetVariable setvar_Settings_autoTP_int, WIN = $device, value = _NUM:0
-	SetVariable setvar_Settings_autoTP_perc, WIN = $device, value = _NUM:90
+	SetVariable setvar_Settings_autoTP_int, WIN=$device, value=_NUM:0
+	SetVariable setvar_Settings_autoTP_perc, WIN=$device, value=_NUM:90
 
 	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL)
-	PopupMenu Wave_TTL_00, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_01, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_02, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_03, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_04, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_05, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_06, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_07, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu Wave_TTL_All, Win = $device ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_00, Win=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_TTL_01, Win=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_TTL_02, Win=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_TTL_03, Win=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_TTL_04, Win=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_TTL_05, Win=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_TTL_06, Win=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_TTL_07, Win=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu Wave_TTL_All, Win=$device, mode=1, userdata(MenuExp)="", value=#popValue
 
-	CheckBox Check_Settings_TrigOut, Win = $device, value = 0
-	CheckBox Check_Settings_TrigIn, Win = $device, value = 0
+	CheckBox Check_Settings_TrigOut, Win=$device, value=0
+	CheckBox Check_Settings_TrigIn, Win=$device, value=0
 
-	SetVariable SetVar_DataAcq_SetRepeats, WIN = $device,value= _NUM:1
+	SetVariable SetVar_DataAcq_SetRepeats, WIN=$device, value=_NUM:1
 
-	CheckBox Check_Settings_UseDoublePrec, WIN = $device, value= 0
-	CheckBox Check_Settings_SkipAnalysFuncs, WIN = $device, value= 0
-	PopupMenu Popup_Settings_SampIntMult, WIN = $device, mode = 1
+	CheckBox Check_Settings_UseDoublePrec, WIN=$device, value=0
+	CheckBox Check_Settings_SkipAnalysFuncs, WIN=$device, value=0
+	PopupMenu Popup_Settings_SampIntMult, WIN=$device, mode=1
 
-	CheckBox Check_AsyncAD_00, WIN = $device,value= 0
-	CheckBox Check_AsyncAD_01, WIN = $device,value= 0
-	CheckBox Check_AsyncAD_02, WIN = $device,value= 0
-	CheckBox Check_AsyncAD_03, WIN = $device,value= 0
-	CheckBox Check_AsyncAD_04, WIN = $device,value= 0
-	CheckBox Check_AsyncAD_05, WIN = $device,value= 0
-	CheckBox Check_AsyncAD_06, WIN = $device,value= 0
-	CheckBox Check_AsyncAD_07, WIN = $device,value= 0
+	CheckBox Check_AsyncAD_00, WIN=$device, value=0
+	CheckBox Check_AsyncAD_01, WIN=$device, value=0
+	CheckBox Check_AsyncAD_02, WIN=$device, value=0
+	CheckBox Check_AsyncAD_03, WIN=$device, value=0
+	CheckBox Check_AsyncAD_04, WIN=$device, value=0
+	CheckBox Check_AsyncAD_05, WIN=$device, value=0
+	CheckBox Check_AsyncAD_06, WIN=$device, value=0
+	CheckBox Check_AsyncAD_07, WIN=$device, value=0
 
-	SetVariable Gain_AsyncAD_00, WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_01, WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_02, WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_03, WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_04, WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_05, WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_06, WIN = $device,value= _NUM:1
-	SetVariable Gain_AsyncAD_07, WIN = $device,value= _NUM:1
+	SetVariable Gain_AsyncAD_00, WIN=$device, value=_NUM:1
+	SetVariable Gain_AsyncAD_01, WIN=$device, value=_NUM:1
+	SetVariable Gain_AsyncAD_02, WIN=$device, value=_NUM:1
+	SetVariable Gain_AsyncAD_03, WIN=$device, value=_NUM:1
+	SetVariable Gain_AsyncAD_04, WIN=$device, value=_NUM:1
+	SetVariable Gain_AsyncAD_05, WIN=$device, value=_NUM:1
+	SetVariable Gain_AsyncAD_06, WIN=$device, value=_NUM:1
+	SetVariable Gain_AsyncAD_07, WIN=$device, value=_NUM:1
 
-	SetVariable Title_AsyncAD_00, WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_01, WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_02, WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_03, WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_04, WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_05, WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_06, WIN = $device,value= _STR:""
-	SetVariable Title_AsyncAD_07, WIN = $device,value= _STR:""
+	SetVariable Title_AsyncAD_00, WIN=$device, value=_STR:""
+	SetVariable Title_AsyncAD_01, WIN=$device, value=_STR:""
+	SetVariable Title_AsyncAD_02, WIN=$device, value=_STR:""
+	SetVariable Title_AsyncAD_03, WIN=$device, value=_STR:""
+	SetVariable Title_AsyncAD_04, WIN=$device, value=_STR:""
+	SetVariable Title_AsyncAD_05, WIN=$device, value=_STR:""
+	SetVariable Title_AsyncAD_06, WIN=$device, value=_STR:""
+	SetVariable Title_AsyncAD_07, WIN=$device, value=_STR:""
 
-	SetVariable Unit_AsyncAD_00, WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_01, WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_02, WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_03, WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_04, WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_05, WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_06, WIN = $device,value= _STR:""
-	SetVariable Unit_AsyncAD_07, WIN = $device,value= _STR:""
+	SetVariable Unit_AsyncAD_00, WIN=$device, value=_STR:""
+	SetVariable Unit_AsyncAD_01, WIN=$device, value=_STR:""
+	SetVariable Unit_AsyncAD_02, WIN=$device, value=_STR:""
+	SetVariable Unit_AsyncAD_03, WIN=$device, value=_STR:""
+	SetVariable Unit_AsyncAD_04, WIN=$device, value=_STR:""
+	SetVariable Unit_AsyncAD_05, WIN=$device, value=_STR:""
+	SetVariable Unit_AsyncAD_06, WIN=$device, value=_STR:""
+	SetVariable Unit_AsyncAD_07, WIN=$device, value=_STR:""
 
-	CheckBox Radio_ClampMode_0, WIN = $device,value= 1,mode=1
+	CheckBox Radio_ClampMode_0, WIN=$device, value=1, mode=1
 
 	// Sets MIES headstage to V-Clamp
-	CheckBox Radio_ClampMode_0, WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_1, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_2, WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_3, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_4, WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_5, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_6, WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_7, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_8, WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_9, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_10, WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_11, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_12, WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_13, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_14, WIN = $device, value= 1,mode=1
-	CheckBox Radio_ClampMode_15, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_1IZ, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_3IZ, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_5IZ, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_7IZ, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_9IZ, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_11IZ, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_13IZ, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_15IZ, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_0, WIN=$device, value=1, mode=1
+	CheckBox Radio_ClampMode_1, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_2, WIN=$device, value=1, mode=1
+	CheckBox Radio_ClampMode_3, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_4, WIN=$device, value=1, mode=1
+	CheckBox Radio_ClampMode_5, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_6, WIN=$device, value=1, mode=1
+	CheckBox Radio_ClampMode_7, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_8, WIN=$device, value=1, mode=1
+	CheckBox Radio_ClampMode_9, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_10, WIN=$device, value=1, mode=1
+	CheckBox Radio_ClampMode_11, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_12, WIN=$device, value=1, mode=1
+	CheckBox Radio_ClampMode_13, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_14, WIN=$device, value=1, mode=1
+	CheckBox Radio_ClampMode_15, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_1IZ, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_3IZ, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_5IZ, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_7IZ, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_9IZ, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_11IZ, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_13IZ, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_15IZ, WIN=$device, value=0, mode=1
 
 	// clamp mode sub tab
 	PGC_SetAndActivateControl(device, "tab_DataAcq_Amp", val = 0)
 	PGC_SetAndActivateControl(device, "ADC", val = 6)
 
-	CheckBox Radio_ClampMode_AllVClamp, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_AllIClamp, WIN = $device, value= 0,mode=1
-	CheckBox Radio_ClampMode_AllIZero, WIN = $device, value= 0,mode=1
+	CheckBox Radio_ClampMode_AllVClamp, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_AllIClamp, WIN=$device, value=0, mode=1
+	CheckBox Radio_ClampMode_AllIZero, WIN=$device, value=0, mode=1
 
-	CheckBox Check_DataAcq_SendToAllAmp, WIN = $device, value= 0
+	CheckBox Check_DataAcq_SendToAllAmp, WIN=$device, value=0
 
-	SetVariable SetVar_Settings_VC_DAgain, WIN = $device, value= _NUM:20
-	SetVariable SetVar_Settings_VC_ADgain, WIN = $device, value= _NUM:0.00999999977648258
-	SetVariable SetVar_Settings_IC_ADgain, WIN = $device, value= _NUM:0.00999999977648258
+	SetVariable SetVar_Settings_VC_DAgain, WIN=$device, value=_NUM:20
+	SetVariable SetVar_Settings_VC_ADgain, WIN=$device, value=_NUM:0.00999999977648258
+	SetVariable SetVar_Settings_IC_ADgain, WIN=$device, value=_NUM:0.00999999977648258
 
-	PopupMenu Popup_Settings_VC_DA, WIN = $device, mode=1
-	PopupMenu Popup_Settings_VC_AD, WIN = $device, mode=1
-	PopupMenu Popup_Settings_IC_AD, WIN = $device, mode=1
-	PopupMenu Popup_Settings_HeadStage, WIN = $device, mode=1
-	PopupMenu Popup_Settings_IC_DA, WIN = $device, mode=1
-	PopupMenu Popup_Settings_IC_DA, WIN = $device, mode=1
+	PopupMenu Popup_Settings_VC_DA, WIN=$device, mode=1
+	PopupMenu Popup_Settings_VC_AD, WIN=$device, mode=1
+	PopupMenu Popup_Settings_IC_AD, WIN=$device, mode=1
+	PopupMenu Popup_Settings_HeadStage, WIN=$device, mode=1
+	PopupMenu Popup_Settings_IC_DA, WIN=$device, mode=1
+	PopupMenu Popup_Settings_IC_DA, WIN=$device, mode=1
 
-	SetVariable SetVar_Settings_IC_DAgain, WIN = $device, value= _NUM:400
+	SetVariable SetVar_Settings_IC_DAgain, WIN=$device, value=_NUM:400
 
-	SetVariable Search_DA_00, WIN = $device, value= _STR:""
-	SetVariable Search_DA_01, WIN = $device, value= _STR:""
-	SetVariable Search_DA_02, WIN = $device, value= _STR:""
-	SetVariable Search_DA_03, WIN = $device, value= _STR:""
-	SetVariable Search_DA_04, WIN = $device, value= _STR:""
-	SetVariable Search_DA_05, WIN = $device, value= _STR:""
-	SetVariable Search_DA_06, WIN = $device, value= _STR:""
-	SetVariable Search_DA_07, WIN = $device, value= _STR:""
-	SetVariable Search_DA_All, WIN = $device, value= _STR:""
-	SetVariable Search_DA_AllVClamp, WIN = $device, value= _STR:""
-	SetVariable Search_DA_AllIClamp, WIN = $device, value= _STR:""
+	SetVariable Search_DA_00, WIN=$device, value=_STR:""
+	SetVariable Search_DA_01, WIN=$device, value=_STR:""
+	SetVariable Search_DA_02, WIN=$device, value=_STR:""
+	SetVariable Search_DA_03, WIN=$device, value=_STR:""
+	SetVariable Search_DA_04, WIN=$device, value=_STR:""
+	SetVariable Search_DA_05, WIN=$device, value=_STR:""
+	SetVariable Search_DA_06, WIN=$device, value=_STR:""
+	SetVariable Search_DA_07, WIN=$device, value=_STR:""
+	SetVariable Search_DA_All, WIN=$device, value=_STR:""
+	SetVariable Search_DA_AllVClamp, WIN=$device, value=_STR:""
+	SetVariable Search_DA_AllIClamp, WIN=$device, value=_STR:""
 
-	SetVariable Search_TTL_00, WIN = $device, value= _STR:""
-	SetVariable Search_TTL_01, WIN = $device, value= _STR:""
-	SetVariable Search_TTL_02, WIN = $device, value= _STR:""
-	SetVariable Search_TTL_03, WIN = $device, value= _STR:""
-	SetVariable Search_TTL_04, WIN = $device, value= _STR:""
-	SetVariable Search_TTL_05, WIN = $device, value= _STR:""
-	SetVariable Search_TTL_06, WIN = $device, value= _STR:""
-	SetVariable Search_TTL_07, WIN = $device, value= _STR:""
-	SetVariable Search_TTL_All, WIN = $device, value= _STR:""
+	SetVariable Search_TTL_00, WIN=$device, value=_STR:""
+	SetVariable Search_TTL_01, WIN=$device, value=_STR:""
+	SetVariable Search_TTL_02, WIN=$device, value=_STR:""
+	SetVariable Search_TTL_03, WIN=$device, value=_STR:""
+	SetVariable Search_TTL_04, WIN=$device, value=_STR:""
+	SetVariable Search_TTL_05, WIN=$device, value=_STR:""
+	SetVariable Search_TTL_06, WIN=$device, value=_STR:""
+	SetVariable Search_TTL_07, WIN=$device, value=_STR:""
+	SetVariable Search_TTL_All, WIN=$device, value=_STR:""
 
 	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC)
-	PopupMenu IndexEnd_DA_00, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_01, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_02, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_03, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_04, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_05, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_06, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_07, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_All, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_AllVClamp, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_DA_AllICLamp, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_00, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_DA_01, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_DA_02, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_DA_03, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_DA_04, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_DA_05, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_DA_06, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_DA_07, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_DA_All, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_DA_AllVClamp, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_DA_AllICLamp, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
 
 	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL)
-	PopupMenu IndexEnd_TTL_00, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_01, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_02, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_03, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_04, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_05, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_06, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_07, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
-	PopupMenu IndexEnd_TTL_All, WIN = $device, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_00, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_TTL_01, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_TTL_02, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_TTL_03, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_TTL_04, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_TTL_05, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_TTL_06, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_TTL_07, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
+	PopupMenu IndexEnd_TTL_All, WIN=$device, mode=1, userdata(MenuExp)="", value=#popValue
 
-	PopupMenu popup_Settings_Amplifier,mode=1,popvalue="- none -"
+	PopupMenu popup_Settings_Amplifier, mode=1, popvalue="- none -"
 	// don't make the scope subwindow part of the recreation macro
-	CheckBox check_Settings_ShowScopeWindow, WIN = $device, value= 0
+	CheckBox check_Settings_ShowScopeWindow, WIN=$device, value=0
 	SCOPE_KillScopeWindowIfRequest(device)
-	CheckBox check_Settings_ShowScopeWindow, WIN = $device, value= 1
+	CheckBox check_Settings_ShowScopeWindow, WIN=$device, value=1
 
-	CheckBox check_Settings_ITITP, WIN = $device, value= 1
-	CheckBox check_Settings_TPAfterDAQ, WIN = $device, value= 0
+	CheckBox check_Settings_ITITP, WIN=$device, value=1
+	CheckBox check_Settings_TPAfterDAQ, WIN=$device, value=0
 
-	CheckBox Check_Settings_NwbExport, WIN = $device,value= 0
-	PopupMenu Popup_Settings_NwbVersion, WIN = $device, mode=2, popvalue="2"
+	CheckBox Check_Settings_NwbExport, WIN=$device, value=0
+	PopupMenu Popup_Settings_NwbVersion, WIN=$device, mode=2, popvalue="2"
 
 	PopupMenu Popup_Settings_DecMethod, mode=2, popvalue="MinMax"
 
-	SetVariable min_AsyncAD_00, WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_00, WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_00,  WIN = $device,value= 0
+	SetVariable min_AsyncAD_00, WIN=$device, value=_NUM:0
+	SetVariable max_AsyncAD_00, WIN=$device, value=_NUM:0
+	CheckBox check_AsyncAlarm_00, WIN=$device, value=0
 
-	SetVariable min_AsyncAD_01, WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_01, WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_01,  WIN = $device,value= 0
+	SetVariable min_AsyncAD_01, WIN=$device, value=_NUM:0
+	SetVariable max_AsyncAD_01, WIN=$device, value=_NUM:0
+	CheckBox check_AsyncAlarm_01, WIN=$device, value=0
 
-	SetVariable min_AsyncAD_02, WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_02, WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_02,  WIN = $device,value= 0
+	SetVariable min_AsyncAD_02, WIN=$device, value=_NUM:0
+	SetVariable max_AsyncAD_02, WIN=$device, value=_NUM:0
+	CheckBox check_AsyncAlarm_02, WIN=$device, value=0
 
-	SetVariable min_AsyncAD_03, WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_03, WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_03,  WIN = $device,value= 0
+	SetVariable min_AsyncAD_03, WIN=$device, value=_NUM:0
+	SetVariable max_AsyncAD_03, WIN=$device, value=_NUM:0
+	CheckBox check_AsyncAlarm_03, WIN=$device, value=0
 
-	SetVariable min_AsyncAD_04, WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_04, WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_04,  WIN = $device,value= 0
+	SetVariable min_AsyncAD_04, WIN=$device, value=_NUM:0
+	SetVariable max_AsyncAD_04, WIN=$device, value=_NUM:0
+	CheckBox check_AsyncAlarm_04, WIN=$device, value=0
 
-	SetVariable min_AsyncAD_05, WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_05, WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_05,  WIN = $device,value= 0
+	SetVariable min_AsyncAD_05, WIN=$device, value=_NUM:0
+	SetVariable max_AsyncAD_05, WIN=$device, value=_NUM:0
+	CheckBox check_AsyncAlarm_05, WIN=$device, value=0
 
-	SetVariable min_AsyncAD_06, WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_06, WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_06,  WIN = $device,value= 0
+	SetVariable min_AsyncAD_06, WIN=$device, value=_NUM:0
+	SetVariable max_AsyncAD_06, WIN=$device, value=_NUM:0
+	CheckBox check_AsyncAlarm_06, WIN=$device, value=0
 
-	SetVariable min_AsyncAD_07, WIN = $device,value= _NUM:0
-	SetVariable max_AsyncAD_07, WIN = $device,value= _NUM:0
-	CheckBox check_AsyncAlarm_07,  WIN = $device,value= 0
+	SetVariable min_AsyncAD_07, WIN=$device, value=_NUM:0
+	SetVariable max_AsyncAD_07, WIN=$device, value=_NUM:0
+	CheckBox check_AsyncAlarm_07, WIN=$device, value=0
 
-	CheckBox check_DataAcq_RepAcqRandom, WIN = $device,value= 0
-	CheckBox check_Settings_Option_3, WIN = $device,value= 0
-	CheckBox check_Settings_ScalingZero, WIN = $device,value= 0
-	CheckBox check_Settings_SetOption_04, WIN = $device,fColor=(65280,43520,0),value= 0
+	CheckBox check_DataAcq_RepAcqRandom, WIN=$device, value=0
+	CheckBox check_Settings_Option_3, WIN=$device, value=0
+	CheckBox check_Settings_ScalingZero, WIN=$device, value=0
+	CheckBox check_Settings_SetOption_04, WIN=$device, fColor=(65280, 43520, 0), value=0
 
 	PopupMenu popup_MoreSettings_Devices, WIN=$device, mode=1
 
-	SetVariable SetVar_Sweep, WIN = $device, value= _NUM:0
+	SetVariable SetVar_Sweep, WIN=$device, value=_NUM:0
 
-	SetVariable SetVar_DataAcq_dDAQDelay, WIN = $device,value= _NUM:0
-	SetVariable setvar_DataAcq_dDAQOptOvPost, WIN = $device,value= _NUM:0
-	SetVariable setvar_DataAcq_dDAQOptOvPre, WIN = $device,value= _NUM:0
-	SetVariable SetVar_DataAcq_OnsetDelayUser, WIN = $device,value= _NUM:0
-	ValDisplay valdisp_DataAcq_OnsetDelayAuto, WIN = $device,value= _NUM:0
-	ValDisplay valdisp_DataAcq_SweepsInSet, WIN = $device,value= _NUM:1
-	ValDisplay valdisp_DataAcq_SweepsActiveSet, WIN = $device,value= _NUM:1
-	ValDisplay valdisp_DataAcq_TrialsCountdown, WIN = $device,value= _NUM:1
-	ValDisplay valdisp_DataAcq_ITICountdown, WIN = $device,value= _NUM:0
+	SetVariable SetVar_DataAcq_dDAQDelay, WIN=$device, value=_NUM:0
+	SetVariable setvar_DataAcq_dDAQOptOvPost, WIN=$device, value=_NUM:0
+	SetVariable setvar_DataAcq_dDAQOptOvPre, WIN=$device, value=_NUM:0
+	SetVariable SetVar_DataAcq_OnsetDelayUser, WIN=$device, value=_NUM:0
+	ValDisplay valdisp_DataAcq_OnsetDelayAuto, WIN=$device, value=_NUM:0
+	ValDisplay valdisp_DataAcq_SweepsInSet, WIN=$device, value=_NUM:1
+	ValDisplay valdisp_DataAcq_SweepsActiveSet, WIN=$device, value=_NUM:1
+	ValDisplay valdisp_DataAcq_TrialsCountdown, WIN=$device, value=_NUM:1
+	ValDisplay valdisp_DataAcq_ITICountdown, WIN=$device, value=_NUM:0
 
-	SetVariable SetVar_DataAcq_TerminationDelay, WIN = $device,value= _NUM:0
+	SetVariable SetVar_DataAcq_TerminationDelay, WIN=$device, value=_NUM:0
 
-	CheckBox check_Settings_SetOption_5, WIN = $device,value= 1
-	CheckBox Check_DataAcq1_IndexingLocked, WIN = $device, value= 0
-	CheckBox Check_DataAcq_Indexing, WIN = $device, value= 0
+	CheckBox check_Settings_SetOption_5, WIN=$device, value=1
+	CheckBox Check_DataAcq1_IndexingLocked, WIN=$device, value=0
+	CheckBox Check_DataAcq_Indexing, WIN=$device, value=0
 
-	SetVariable SetVar_DataAcq_ListRepeats, WIN = $device,limits={1,inf,1},value= _NUM:1
+	SetVariable SetVar_DataAcq_ListRepeats, WIN=$device, limits={1, Inf, 1}, value=_NUM:1
 
-	SetVariable setvar_Settings_TPBuffer, WIN = $device, value= _NUM:1
+	SetVariable setvar_Settings_TPBuffer, WIN=$device, value=_NUM:1
 
-	CheckBox check_DataAcq_IndexRandom, WIN = $device, fColor=(65280,43520,0),value= 0
+	CheckBox check_DataAcq_IndexRandom, WIN=$device, fColor=(65280, 43520, 0), value=0
 
-	ValDisplay ValDisp_DataAcq_SamplingInt, win = $device, value= _NUM:0
+	ValDisplay ValDisp_DataAcq_SamplingInt, win=$device, value=_NUM:0
 
-	SetVariable SetVar_Hardware_VC_DA_Unit, WIN = $device,value= _STR:"mV"
-	SetVariable SetVar_Hardware_IC_DA_Unit, WIN = $device,value= _STR:"pA"
-	SetVariable SetVar_Hardware_VC_AD_Unit, WIN = $device,value= _STR:"pA"
-	SetVariable SetVar_Hardware_IC_AD_Unit, WIN = $device,value= _STR:"mV"
+	SetVariable SetVar_Hardware_VC_DA_Unit, WIN=$device, value=_STR:"mV"
+	SetVariable SetVar_Hardware_IC_DA_Unit, WIN=$device, value=_STR:"pA"
+	SetVariable SetVar_Hardware_VC_AD_Unit, WIN=$device, value=_STR:"pA"
+	SetVariable SetVar_Hardware_IC_AD_Unit, WIN=$device, value=_STR:"mV"
 
-	SetVariable Unit_DA_00, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_01, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_02, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_03, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_04, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_05, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_06, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_DA_07, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_DA_00, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_DA_01, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_DA_02, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_DA_03, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_DA_04, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_DA_05, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_DA_06, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_DA_07, WIN=$device, limits={0, Inf, 1}, value=_STR:""
 
-	SetVariable Unit_AD_00, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_01, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_02, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_03, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_04, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_05, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_06, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_07, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_08, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_09, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_10, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_11, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_12, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_13, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_14, WIN = $device,limits={0,inf,1},value= _STR:""
-	SetVariable Unit_AD_15, WIN = $device,limits={0,inf,1},value= _STR:""
+	SetVariable Unit_AD_00, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_01, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_02, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_03, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_04, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_05, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_06, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_07, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_08, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_09, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_10, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_11, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_12, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_13, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_14, WIN=$device, limits={0, Inf, 1}, value=_STR:""
+	SetVariable Unit_AD_15, WIN=$device, limits={0, Inf, 1}, value=_STR:""
 
-	SetVariable SetVar_DataAcq_Hold_IC, WIN = $device, value= _NUM:0
-	SetVariable Setvar_DataAcq_PipetteOffset_VC, WIN = $device, value= _NUM:0
-	SetVariable Setvar_DataAcq_PipetteOffset_IC, WIN = $device, value= _NUM:0
-	SetVariable SetVar_DataAcq_BB, WIN = $device,limits={0,inf,1},value= _NUM:0
-	SetVariable SetVar_DataAcq_CN, WIN = $device,limits={-8,16,1},value= _NUM:0
+	SetVariable SetVar_DataAcq_Hold_IC, WIN=$device, value=_NUM:0
+	SetVariable Setvar_DataAcq_PipetteOffset_VC, WIN=$device, value=_NUM:0
+	SetVariable Setvar_DataAcq_PipetteOffset_IC, WIN=$device, value=_NUM:0
+	SetVariable SetVar_DataAcq_BB, WIN=$device, limits={0, Inf, 1}, value=_NUM:0
+	SetVariable SetVar_DataAcq_CN, WIN=$device, limits={-8, 16, 1}, value=_NUM:0
 
-	CheckBox check_DatAcq_HoldEnable, WIN = $device,value= 0
-	CheckBox check_DatAcq_RsCompEnable, WIN = $device,value= 0
-	CheckBox check_DatAcq_CNEnable, WIN = $device,value= 0
+	CheckBox check_DatAcq_HoldEnable, WIN=$device, value=0
+	CheckBox check_DatAcq_RsCompEnable, WIN=$device, value=0
+	CheckBox check_DatAcq_CNEnable, WIN=$device, value=0
 
-	Slider slider_DataAcq_ActiveHeadstage,  WIN = $device,value= 0
-	CheckBox check_DataAcq_AutoBias, WIN = $device,value= 0
+	Slider slider_DataAcq_ActiveHeadstage, WIN=$device, value=0
+	CheckBox check_DataAcq_AutoBias, WIN=$device, value=0
 
 	// auto bias default: -70 plus/minus 0.5 mV @ 200 pA
-	SetVariable SetVar_DataAcq_AutoBiasV,      WIN = $device, value = _NUM:-70
-	SetVariable SetVar_DataAcq_AutoBiasVrange, WIN = $device, value = _NUM:0.5
-	SetVariable setvar_DataAcq_IbiasMax,       WIN = $device, value = _NUM:200
+	SetVariable SetVar_DataAcq_AutoBiasV, WIN=$device, value=_NUM:-70
+	SetVariable SetVar_DataAcq_AutoBiasVrange, WIN=$device, value=_NUM:0.5
+	SetVariable setvar_DataAcq_IbiasMax, WIN=$device, value=_NUM:200
 
 	// settings tab
-	SetVariable setvar_Settings_AutoBiasPerc,  WIN = $device, value = _NUM:15
-	SetVariable setvar_Settings_AutoBiasInt,   WIN = $device, value = _NUM:1
+	SetVariable setvar_Settings_AutoBiasPerc, WIN=$device, value=_NUM:15
+	SetVariable setvar_Settings_AutoBiasInt, WIN=$device, value=_NUM:1
 
-	SetVariable SetVar_DataAcq_Hold_VC, WIN = $device,value= _NUM:0
-	CheckBox check_DatAcq_HoldEnableVC, WIN = $device,value= 0
-	SetVariable SetVar_DataAcq_WCR, WIN = $device,value= _NUM:0
-	CheckBox check_DatAcq_WholeCellEnable, WIN = $device,value= 0
-	SetVariable SetVar_DataAcq_WCC,  WIN = $device,value= _NUM:0
-	SetVariable SetVar_DataAcq_RsCorr, WIN = $device,value= _NUM:0
-	SetVariable SetVar_DataAcq_RsPred, WIN = $device,value= _NUM:0
-	CheckBox Check_Settings_AlarmPauseAcq, WIN = $device,value= 0
-	CheckBox Check_Settings_AlarmAutoRepeat, WIN = $device,value= 0
-	CheckBox check_Settings_AmpMCCdefault, WIN = $device,value= 0
-	CheckBox check_Settings_SyncMiesToMCC, WIN = $device,value= 0
-	CheckBox check_DataAcq_Amp_Chain, WIN = $device,value= 0
-	CheckBox check_DatAcq_BBEnable, WIN = $device,value= 0
-	CheckBox check_Settings_MD, WIN = $device,value= 1
+	SetVariable SetVar_DataAcq_Hold_VC, WIN=$device, value=_NUM:0
+	CheckBox check_DatAcq_HoldEnableVC, WIN=$device, value=0
+	SetVariable SetVar_DataAcq_WCR, WIN=$device, value=_NUM:0
+	CheckBox check_DatAcq_WholeCellEnable, WIN=$device, value=0
+	SetVariable SetVar_DataAcq_WCC, WIN=$device, value=_NUM:0
+	SetVariable SetVar_DataAcq_RsCorr, WIN=$device, value=_NUM:0
+	SetVariable SetVar_DataAcq_RsPred, WIN=$device, value=_NUM:0
+	CheckBox Check_Settings_AlarmPauseAcq, WIN=$device, value=0
+	CheckBox Check_Settings_AlarmAutoRepeat, WIN=$device, value=0
+	CheckBox check_Settings_AmpMCCdefault, WIN=$device, value=0
+	CheckBox check_Settings_SyncMiesToMCC, WIN=$device, value=0
+	CheckBox check_DataAcq_Amp_Chain, WIN=$device, value=0
+	CheckBox check_DatAcq_BBEnable, WIN=$device, value=0
+	CheckBox check_Settings_MD, WIN=$device, value=1
 	EnableControls(device, "check_Settings_MD")
-	SetVariable setvar_Settings_TP_RTolerance, WIN = $device,value= _NUM:1
-	CheckBox check_Settings_SaveAmpSettings, WIN = $device,value= 0
-	CheckBox check_Settings_AmpIEQZstep, WIN = $device,value= 0
-	CheckBox Check_Settings_ITImanualStart, WIN = $device,value= 0
+	SetVariable setvar_Settings_TP_RTolerance, WIN=$device, value=_NUM:1
+	CheckBox check_Settings_SaveAmpSettings, WIN=$device, value=0
+	CheckBox check_Settings_AmpIEQZstep, WIN=$device, value=0
+	CheckBox Check_Settings_ITImanualStart, WIN=$device, value=0
 
 	SetControlUserData(device, "Check_Settings_BkgTP", "oldState", "")
 	SetControlUserData(device, "Check_Settings_BackgrndDataAcq", "oldState", "")
 	SetControlUserData(device, "check_Settings_TP_SaveTP", "oldState", "")
 
-	CheckBox Check_Settings_BkgTP, WIN = $device,value= 1
-	CheckBox Check_Settings_BackgrndDataAcq, WIN = $device, value= 1
+	CheckBox Check_Settings_BkgTP, WIN=$device, value=1
+	CheckBox Check_Settings_BackgrndDataAcq, WIN=$device, value=1
 
-	CheckBox Check_Settings_InsertTP, WIN = $device,value= 1
-	CheckBox Check_DataAcq_Get_Set_ITI, WIN = $device, value = 1
-	CheckBox check_Settings_TP_SaveTP, WIN = $device, value = 0
-	CheckBox check_settings_TP_show_steady, WIN = $device, value = 1
-	CheckBox check_settings_TP_show_peak, WIN = $device, value = 1
-	CheckBox check_Settings_DisablePressure, WIN = $device, value = 0
-	CheckBox check_Settings_RequireAmpConn, WIN = $device, value = 1
+	CheckBox Check_Settings_InsertTP, WIN=$device, value=1
+	CheckBox Check_DataAcq_Get_Set_ITI, WIN=$device, value=1
+	CheckBox check_Settings_TP_SaveTP, WIN=$device, value=0
+	CheckBox check_settings_TP_show_steady, WIN=$device, value=1
+	CheckBox check_settings_TP_show_peak, WIN=$device, value=1
+	CheckBox check_Settings_DisablePressure, WIN=$device, value=0
+	CheckBox check_Settings_RequireAmpConn, WIN=$device, value=1
 	// Oscilloscope section in setting tab
-	CheckBox check_settings_show_power, WIN = $device, value = 0
-	SetVariable setvar_Settings_OsciUpdInt, win=$device, value= _NUM:500
-	SetVariable setvar_Settings_OsciUpdExt, win=$device, value= _NUM:10
-	PopupMenu Popup_Settings_OsciUpdMode, WIN = $device, value=DAP_GetOsciUpdModes(), mode=3
+	CheckBox check_settings_show_power, WIN=$device, value=0
+	SetVariable setvar_Settings_OsciUpdInt, win=$device, value=_NUM:500
+	SetVariable setvar_Settings_OsciUpdExt, win=$device, value=_NUM:10
+	PopupMenu Popup_Settings_OsciUpdMode, WIN=$device, value=DAP_GetOsciUpdModes(), mode=3
 	EnableControls(device, "Popup_Settings_OsciUpdMode")
 
 	// defaults are also hardcoded in P_GetPressureDataWaveRef
@@ -663,91 +663,91 @@ Function DAP_EphysPanelStartUpSettings()
 	SetSetVariable(device, "setvar_Settings_Pressure_ADgain", 0.5)
 	SetSetVariableString(device, "SetVar_Hardware_Pressur_DA_Unit", "psi")
 	SetSetVariableString(device, "SetVar_Hardware_Pressur_AD_Unit", "psi")
-	SetVariable setvar_Settings_InAirP         , win=$device, value= _NUM:3.8
-	SetVariable setvar_Settings_InBathP        , win=$device, value= _NUM:0.55
-	SetVariable setvar_Settings_InSliceP       , win=$device, value= _NUM:0.2
-	SetVariable setvar_Settings_NearCellP      , win=$device, value= _NUM:0.6
-	SetVariable setvar_Settings_SealStartP     , win=$device, value= _NUM:-0.2
-	SetVariable setvar_Settings_SealMaxP       , win=$device, value= _NUM:-1.4
-	SetVariable setvar_Settings_SurfaceHeight  , win=$device, value= _NUM:3500
-	SetVariable setvar_Settings_SliceSurfHeight, win=$device, value= _NUM:350
-	CheckBox check_Settings_DisablePressure    , win=$device, value= 0
-	CheckBox check_DatAcq_ApproachAll          , win=$device, value= 0
-	CheckBox check_DatAcq_BreakInAll           , win=$device, value= 0
-	CheckBox check_DatAcq_SealALl              , win=$device, value= 0
-	CheckBox check_DatAcq_ClearEnable          , win=$device, value= 0
-	CheckBox check_Settings_AmpIEQZstep        , win=$device, value= 0
-	CheckBox check_DatAcq_SealAtm              , win=$device, value= 0
-	CheckBox check_DatAcq_ApproachNear         , win=$device, value= 0
-	CheckBox check_DataAcq_ManPressureAll      , win=$device, value= 0
-	CheckBox check_Settings_SaveAmpSettings    , win=$device, value= 1
-	SetVariable setvar_DataAcq_PPDuration, win=$device, value= _NUM:0,limits={0,300,1}
-	SetVariable setvar_DataAcq_PPPressure, win=$device, value= _NUM:0,limits={-10,10,1}
-	SetVariable setvar_DataAcq_SSPressure, win=$device, value= _NUM:0,limits={-10,10,1}
+	SetVariable setvar_Settings_InAirP, win=$device, value=_NUM:3.8
+	SetVariable setvar_Settings_InBathP, win=$device, value=_NUM:0.55
+	SetVariable setvar_Settings_InSliceP, win=$device, value=_NUM:0.2
+	SetVariable setvar_Settings_NearCellP, win=$device, value=_NUM:0.6
+	SetVariable setvar_Settings_SealStartP, win=$device, value=_NUM:-0.2
+	SetVariable setvar_Settings_SealMaxP, win=$device, value=_NUM:-1.4
+	SetVariable setvar_Settings_SurfaceHeight, win=$device, value=_NUM:3500
+	SetVariable setvar_Settings_SliceSurfHeight, win=$device, value=_NUM:350
+	CheckBox check_Settings_DisablePressure, win=$device, value=0
+	CheckBox check_DatAcq_ApproachAll, win=$device, value=0
+	CheckBox check_DatAcq_BreakInAll, win=$device, value=0
+	CheckBox check_DatAcq_SealALl, win=$device, value=0
+	CheckBox check_DatAcq_ClearEnable, win=$device, value=0
+	CheckBox check_Settings_AmpIEQZstep, win=$device, value=0
+	CheckBox check_DatAcq_SealAtm, win=$device, value=0
+	CheckBox check_DatAcq_ApproachNear, win=$device, value=0
+	CheckBox check_DataAcq_ManPressureAll, win=$device, value=0
+	CheckBox check_Settings_SaveAmpSettings, win=$device, value=1
+	SetVariable setvar_DataAcq_PPDuration, win=$device, value=_NUM:0, limits={0, 300, 1}
+	SetVariable setvar_DataAcq_PPPressure, win=$device, value=_NUM:0, limits={-10, 10, 1}
+	SetVariable setvar_DataAcq_SSPressure, win=$device, value=_NUM:0, limits={-10, 10, 1}
 
 	// user pressure
 	PGC_SetAndActivateControl(device, "tab_DataAcq_Pressure", val = 0, switchtab = 1)
-	PopupMenu popup_Settings_UserPressure, WIN = $device, mode=1,value= #"\"- none -;\""
+	PopupMenu popup_Settings_UserPressure, WIN=$device, mode=1, value=#"\"- none -;\""
 	EnableControl(device, "popup_Settings_UserPressure")
-	PopupMenu Popup_Settings_UserPressure_ADC,  WIN = $device, mode=1
+	PopupMenu Popup_Settings_UserPressure_ADC, WIN=$device, mode=1
 	EnableControl(device, "Popup_Settings_UserPressure_ADC")
 	EnableControl(device, "button_Hardware_PUser_Enable")
 	DisableControl(device, "button_Hardware_PUser_Disable")
 	PGC_SetAndActivateControl(device, "ADC", val = 6)
 
-	ValDisplay valdisp_DataAcq_P_LED_0, WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_1, WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_2, WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_3, WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_4, WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_5, WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_6, WIN = $device, value= _NUM:-1
-	ValDisplay valdisp_DataAcq_P_LED_7, WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_0, WIN=$device, value=_NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_1, WIN=$device, value=_NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_2, WIN=$device, value=_NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_3, WIN=$device, value=_NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_4, WIN=$device, value=_NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_5, WIN=$device, value=_NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_6, WIN=$device, value=_NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_7, WIN=$device, value=_NUM:-1
 
-	ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-	ValDisplay valdisp_DataAcq_P_LED_1,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-	ValDisplay valdisp_DataAcq_P_LED_2,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-	ValDisplay valdisp_DataAcq_P_LED_3,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-	ValDisplay valdisp_DataAcq_P_LED_4,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-	ValDisplay valdisp_DataAcq_P_LED_5,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-	ValDisplay valdisp_DataAcq_P_LED_6,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-	ValDisplay valdisp_DataAcq_P_LED_7,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_0, limits={-1, 2, 0}, barmisc={0, 0}, mode=2, highColor=(65535, 49000, 49000), lowColor=(65535, 65535, 65535), zeroColor=(49151, 53155, 65535)
+	ValDisplay valdisp_DataAcq_P_LED_1, limits={-1, 2, 0}, barmisc={0, 0}, mode=2, highColor=(65535, 49000, 49000), lowColor=(65535, 65535, 65535), zeroColor=(49151, 53155, 65535)
+	ValDisplay valdisp_DataAcq_P_LED_2, limits={-1, 2, 0}, barmisc={0, 0}, mode=2, highColor=(65535, 49000, 49000), lowColor=(65535, 65535, 65535), zeroColor=(49151, 53155, 65535)
+	ValDisplay valdisp_DataAcq_P_LED_3, limits={-1, 2, 0}, barmisc={0, 0}, mode=2, highColor=(65535, 49000, 49000), lowColor=(65535, 65535, 65535), zeroColor=(49151, 53155, 65535)
+	ValDisplay valdisp_DataAcq_P_LED_4, limits={-1, 2, 0}, barmisc={0, 0}, mode=2, highColor=(65535, 49000, 49000), lowColor=(65535, 65535, 65535), zeroColor=(49151, 53155, 65535)
+	ValDisplay valdisp_DataAcq_P_LED_5, limits={-1, 2, 0}, barmisc={0, 0}, mode=2, highColor=(65535, 49000, 49000), lowColor=(65535, 65535, 65535), zeroColor=(49151, 53155, 65535)
+	ValDisplay valdisp_DataAcq_P_LED_6, limits={-1, 2, 0}, barmisc={0, 0}, mode=2, highColor=(65535, 49000, 49000), lowColor=(65535, 65535, 65535), zeroColor=(49151, 53155, 65535)
+	ValDisplay valdisp_DataAcq_P_LED_7, limits={-1, 2, 0}, barmisc={0, 0}, mode=2, highColor=(65535, 49000, 49000), lowColor=(65535, 65535, 65535), zeroColor=(49151, 53155, 65535)
 
-	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-	ValDisplay valdisp_DataAcq_P_1,valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_1,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-	ValDisplay valdisp_DataAcq_P_2,valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_2,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-	ValDisplay valdisp_DataAcq_P_3,valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_3,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-	ValDisplay valdisp_DataAcq_P_4,valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_4,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-	ValDisplay valdisp_DataAcq_P_5,valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_5,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-	ValDisplay valdisp_DataAcq_P_6,valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_6,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-	ValDisplay valdisp_DataAcq_P_7,valueBackColor=(65535,65535,65535,0)
-	ValDisplay valdisp_DataAcq_P_7,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+	ValDisplay valdisp_DataAcq_P_0, valueBackColor=(65535, 65535, 65535, 0)
+	ValDisplay valdisp_DataAcq_P_0, limits={0, 0, 0}, barmisc={0, 1000}, value=#"0.00"
+	ValDisplay valdisp_DataAcq_P_1, valueBackColor=(65535, 65535, 65535, 0)
+	ValDisplay valdisp_DataAcq_P_1, limits={0, 0, 0}, barmisc={0, 1000}, value=#"0.00"
+	ValDisplay valdisp_DataAcq_P_2, valueBackColor=(65535, 65535, 65535, 0)
+	ValDisplay valdisp_DataAcq_P_2, limits={0, 0, 0}, barmisc={0, 1000}, value=#"0.00"
+	ValDisplay valdisp_DataAcq_P_3, valueBackColor=(65535, 65535, 65535, 0)
+	ValDisplay valdisp_DataAcq_P_3, limits={0, 0, 0}, barmisc={0, 1000}, value=#"0.00"
+	ValDisplay valdisp_DataAcq_P_4, valueBackColor=(65535, 65535, 65535, 0)
+	ValDisplay valdisp_DataAcq_P_4, limits={0, 0, 0}, barmisc={0, 1000}, value=#"0.00"
+	ValDisplay valdisp_DataAcq_P_5, valueBackColor=(65535, 65535, 65535, 0)
+	ValDisplay valdisp_DataAcq_P_5, limits={0, 0, 0}, barmisc={0, 1000}, value=#"0.00"
+	ValDisplay valdisp_DataAcq_P_6, valueBackColor=(65535, 65535, 65535, 0)
+	ValDisplay valdisp_DataAcq_P_6, limits={0, 0, 0}, barmisc={0, 1000}, value=#"0.00"
+	ValDisplay valdisp_DataAcq_P_7, valueBackColor=(65535, 65535, 65535, 0)
+	ValDisplay valdisp_DataAcq_P_7, limits={0, 0, 0}, barmisc={0, 1000}, value=#"0.00"
 
-	ValDisplay valdisp_DataAcq_P_LED_Approach, WIN = $device, value= _NUM:0
-	ValDisplay valdisp_DataAcq_P_LED_Seal, WIN = $device, value= _NUM:0
-	ValDisplay valdisp_DataAcq_P_LED_Breakin, WIN = $device, value= _NUM:0
-	ValDisplay valdisp_DataAcq_P_LED_Clear, WIN = $device, value= _NUM:0
+	ValDisplay valdisp_DataAcq_P_LED_Approach, WIN=$device, value=_NUM:0
+	ValDisplay valdisp_DataAcq_P_LED_Seal, WIN=$device, value=_NUM:0
+	ValDisplay valdisp_DataAcq_P_LED_Breakin, WIN=$device, value=_NUM:0
+	ValDisplay valdisp_DataAcq_P_LED_Clear, WIN=$device, value=_NUM:0
 
-	CheckBox check_Settings_UserP_Approach, WIN = $device, value=0
-	CheckBox check_Settings_UserP_BreakIn, WIN = $device, value=0
-	CheckBox check_Settings_UserP_Seal, WIN = $device, value=0
-	CheckBox check_Settings_UserP_Clear, WIN = $device, value=0
-	CheckBox check_DataACq_Pressure_AutoOFF, WIN = $device, value=0
-	CheckBox check_DataACq_Pressure_User, WIN = $device, value=0
-	CheckBox check_DA_applyOnModeSwitch, WIN = $device, value=0
+	CheckBox check_Settings_UserP_Approach, WIN=$device, value=0
+	CheckBox check_Settings_UserP_BreakIn, WIN=$device, value=0
+	CheckBox check_Settings_UserP_Seal, WIN=$device, value=0
+	CheckBox check_Settings_UserP_Clear, WIN=$device, value=0
+	CheckBox check_DataACq_Pressure_AutoOFF, WIN=$device, value=0
+	CheckBox check_DataACq_Pressure_User, WIN=$device, value=0
+	CheckBox check_DA_applyOnModeSwitch, WIN=$device, value=0
 
-	PopupMenu Popup_Settings_SampIntMult, WIN = $device, mode=1
-	PopupMenu Popup_Settings_FixedFreq, WIN = $device, mode=1
+	PopupMenu Popup_Settings_SampIntMult, WIN=$device, mode=1
+	PopupMenu Popup_Settings_FixedFreq, WIN=$device, mode=1
 	EnableControls(device, "Popup_Settings_SampIntMult;Popup_Settings_FixedFreq")
 
-	SetVariable setvar_dataAcq_skipAhead, win=$device,limits={0,0,1},value= _NUM:0
+	SetVariable setvar_dataAcq_skipAhead, win=$device, limits={0, 0, 1}, value=_NUM:0
 	EnableControl(device, "button_Hardware_P_Enable")
 	DisableControl(device, "button_Hardware_P_Disable")
 	EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
@@ -829,13 +829,13 @@ static Function DAP_UpdateDrawElements(string device, variable tab)
 	SetDrawLayer/W=$device/K ProgBack
 
 	switch(tab)
-		case 0:// Daa acqusition
+		case 0: // Daa acqusition
 			SetDrawEnv/W=$device textrot=-90
-			DrawText/W=$device 167,441,"All HS"
+			DrawText/W=$device 167, 441, "All HS"
 
 			break
 		default:
-			// do nothing
+		// do nothing
 	endswitch
 End
 
@@ -873,8 +873,8 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 		case 2: // Enter key
 		case 3: // Live update
 			device = sva.win
-			ctrl       = sva.ctrlName
-			varstr     = sva.sval
+			ctrl   = sva.ctrlName
+			varstr = sva.sval
 
 			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
@@ -883,11 +883,11 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 				searchString = "*"
 			else
 				isCustomSearchString = 1
-				searchString = varStr
+				searchString         = varStr
 			endif
 
 			listOfWaves = ST_GetStimsetList(channelType = channelType, searchString = searchString)
-			popupValue = DAP_FormatStimSetPopupValue(channelType, searchString = searchString)
+			popupValue  = DAP_FormatStimSetPopupValue(channelType, searchString = searchString)
 
 			ctrl = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE)
 			PopupMenu $ctrl, win=$device, value=#popupValue, userdata($USER_DATA_MENU_EXP)=listOfWaves
@@ -900,7 +900,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			PopupMenu $ctrl, win=$device, popmatch=sel
 
 			if(DAP_IsAllControl(channelIndex))
-				numSuppChannels = GetNumberFromType(var=channelType)
+				numSuppChannels = GetNumberFromType(var = channelType)
 				for(i = 0; i < numSuppChannels; i += 1)
 
 					if(!DAP_DACHasExpectedClampMode(device, channelIndex, i, channelType))
@@ -908,7 +908,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 					endif
 
 					ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_SEARCH)
-					str = SelectString(isCustomSearchString, "", searchString)
+					str  = SelectString(isCustomSearchString, "", searchString)
 					PGC_SetAndActivateControl(device, ctrl, str = str, mode = PGC_MODE_SKIP_ON_DISABLED)
 					DAG_Update(device, ctrl, str = str)
 
@@ -930,7 +930,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 End
 
 Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
-	struct WMCheckboxAction &cba
+	STRUCT WMCheckboxAction &cba
 
 	string device, control
 
@@ -938,8 +938,8 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 		case 2:
 			AssertOnAndClearRTError()
 			try
-				device = cba.win
-				control    = cba.ctrlName
+				device  = cba.win
+				control = cba.ctrlName
 				DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 				DAP_AdaptAssocHeadstageState(device, control)
 				DAP_UpdateDAQControls(device, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
@@ -962,14 +962,14 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			device = cba.win
+			device     = cba.win
 			allChecked = cba.checked
 			ASSERT(!DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType), "Invalid control format")
-			ASSERT(controlType  == CHANNEL_CONTROL_CHECK, "Invalid control type")
+			ASSERT(controlType == CHANNEL_CONTROL_CHECK, "Invalid control type")
 			ASSERT(DAP_ISAllControl(channelIndex), "Invalid channel index")
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 
-			numEntries = GetNumberFromType(var=channelType)
+			numEntries = GetNumberFromType(var = channelType)
 
 			lbl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK)
 
@@ -985,7 +985,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 				endif
 
 				control = GetPanelControl(i, channelType, CHANNEL_CONTROL_CHECK)
-				PGC_SetAndActivateControl(device, control, val=allChecked, mode = PGC_MODE_SKIP_ON_DISABLED)
+				PGC_SetAndActivateControl(device, control, val = allChecked, mode = PGC_MODE_SKIP_ON_DISABLED)
 			endfor
 			break
 	endswitch
@@ -997,7 +997,7 @@ End
 Function DAP_IsAllControl(channelIndex)
 	variable channelIndex
 
-	return channelIndex == CHANNEL_INDEX_ALL \
+	return channelIndex == CHANNEL_INDEX_ALL            \
 	       || channelIndex == CHANNEL_INDEX_ALL_V_CLAMP \
 	       || channelIndex == CHANNEL_INDEX_ALL_I_CLAMP
 End
@@ -1035,7 +1035,7 @@ Function DAP_DACHasExpectedClampMode(device, controlChannelIndex, channelNumber,
 	endif
 
 	return 0
-end
+End
 
 Function DAP_CheckProc_AD(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
@@ -1046,8 +1046,8 @@ Function DAP_CheckProc_AD(cba) : CheckBoxControl
 		case 2: // mouse up
 			AssertOnAndClearRTError()
 			try
-				device = cba.win
-				control    = cba.ctrlName
+				device  = cba.win
+				control = cba.ctrlName
 
 				DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 				DAP_AdaptAssocHeadstageState(device, control)
@@ -1114,11 +1114,11 @@ static Function DAP_AdaptAssocHeadstageState(device, checkboxCtrl)
 	ASSERT(CHANNEL_CONTROL_CHECK == controlType, "Not a valid control type")
 
 	if(channelType == CHANNEL_TYPE_DAC)
-		headStage = AFH_GetHeadstageFromDAC(device, idx)
+		headStage               = AFH_GetHeadstageFromDAC(device, idx)
 		headStageFromSettingsVC = GetHeadstageFromSettings(device, XOP_CHANNEL_TYPE_DAC, idx, V_CLAMP_MODE)
 		headStageFromSettingsIC = GetHeadstageFromSettings(device, XOP_CHANNEL_TYPE_DAC, idx, I_CLAMP_MODE)
 	elseif(channelType == CHANNEL_TYPE_ADC)
-		headStage = AFH_GetHeadstageFromADC(device, idx)
+		headStage               = AFH_GetHeadstageFromADC(device, idx)
 		headStageFromSettingsVC = GetHeadstageFromSettings(device, XOP_CHANNEL_TYPE_ADC, idx, V_CLAMP_MODE)
 		headStageFromSettingsIC = GetHeadstageFromSettings(device, XOP_CHANNEL_TYPE_ADC, idx, I_CLAMP_MODE)
 	elseif(channelType == CHANNEL_TYPE_TTL)
@@ -1148,7 +1148,7 @@ static Function DAP_AdaptAssocHeadstageState(device, checkboxCtrl)
 	endif
 
 	headStageCheckBox = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-	PGC_SetAndActivateControl(device, headStageCheckBox, val=!headstageState)
+	PGC_SetAndActivateControl(device, headStageCheckBox, val = !headstageState)
 End
 
 /// @brief Return the repeated acquisition cycle ID for the given devide.
@@ -1165,7 +1165,7 @@ End
 /// @param device device
 /// @param runMode    One of @ref DAQRunModes except DAQ_NOT_RUNNING
 Function DAP_OneTimeCallBeforeDAQ(device, runMode)
-	string device
+	string   device
 	variable runMode
 
 	variable i, DAC, ADC, hardwareType
@@ -1312,7 +1312,7 @@ End
 Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable forcedStop, variable startTPAfterDAQ])
 	variable hardwareType, indexing
 
-	forcedStop      = ParamIsDefault(forcedStop)      ? 0 : !!forcedStop
+	forcedStop      = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
 	indexing = DAG_GetNumericalValue(device, "Check_DataAcq_Indexing")
@@ -1380,9 +1380,9 @@ static Function DAP_DocumentStopReason(string device, variable stopReason)
 
 	Make/FREE/N=(3, 1)/T keys
 
-	keys[0][0] =  "DAQ stop reason"
-	keys[1][0] =  "" // @todo: use enumeration as unit once available
-	keys[2][0] =  LABNOTEBOOK_NO_TOLERANCE
+	keys[0][0] = "DAQ stop reason"
+	keys[1][0] = ""                       // @todo: use enumeration as unit once available
+	keys[2][0] = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values = NaN
 	values[][][INDEP_HEADSTAGE] = stopReason
@@ -1437,23 +1437,23 @@ Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
 End
 
 static Function DAP_TurnOffAllChannels(device, channelType)
-	string device
+	string   device
 	variable channelType
 
 	variable i, numEntries
 	string ctrl
 
-	numEntries = GetNumberFromType(var=channelType)
+	numEntries = GetNumberFromType(var = channelType)
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_CHECK)
-		PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_UNSELECTED)
 	endfor
 
 	// we just called the control procedure for each channel, so we just have to set
 	// the checkbox to unselected here
 	if(channelType == CHANNEL_TYPE_ADC || channelType == CHANNEL_TYPE_DAC || channelType == CHANNEL_TYPE_TTL)
 		ctrl = GetPanelControl(CHANNEL_INDEX_ALL, channelType, CHANNEL_CONTROL_CHECK)
-		PGC_SetAndActivateControl(device, ctrl, val=CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_UNSELECTED)
 	endif
 End
 
@@ -1475,7 +1475,7 @@ End
 
 /// @brief Update the ITI for the given device
 Function DAP_UpdateITIAcrossSets(device, maxITI)
-	string device
+	string   device
 	variable maxITI
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq_Get_Set_ITI"))
@@ -1485,7 +1485,7 @@ End
 
 /// @brief Procedure for DA/TTL popupmenus including indexing wave popupmenus
 Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
-	STRUCT WMPopupAction& pa
+	STRUCT WMPopupAction &pa
 
 	string ctrl, list
 	string device, stimSet
@@ -1494,10 +1494,10 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2:
-			device = pa.win
-			ctrl       = pa.ctrlName
-			stimSet    = pa.popStr
-			idx        = pa.popNum
+			device  = pa.win
+			ctrl    = pa.ctrlName
+			stimSet = pa.popStr
+			idx     = pa.popNum
 
 			DAP_AbortIfUnlocked(device)
 			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
@@ -1505,11 +1505,11 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 
 			indexing      = DAG_GetNumericalValue(device, "Check_DataAcq_Indexing")
 			isAllControl  = DAP_IsAllControl(channelIndex)
-			activeChannel = isAllControl                                       \
-							|| (DAG_GetNumericalValue(device, GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK), index = channelIndex)        \
-			                   && (channelControl == CHANNEL_CONTROL_WAVE      \
-			                   || (channelControl == CHANNEL_CONTROL_INDEX_END \
-			                   && indexing)))
+			activeChannel = isAllControl                                                                                                        \
+			                || (DAG_GetNumericalValue(device, GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK), index = channelIndex) \
+			                    && (channelControl == CHANNEL_CONTROL_WAVE                                                                      \
+			                        || (channelControl == CHANNEL_CONTROL_INDEX_END                                                             \
+			                            && indexing)))
 
 			if(activeChannel)
 				dataAcqRunMode = DQ_StopDAQ(device, DQ_STOP_REASON_STIMSET_SELECTION, startTPAfterDAQ = 0)
@@ -1532,7 +1532,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			endif
 
 			if(isAllControl)
-				numEntries = GetNumberFromType(var=channelType)
+				numEntries = GetNumberFromType(var = channelType)
 				for(i = 0; i < numEntries; i += 1)
 					ctrl = GetPanelControl(i, channelType, channelControl)
 
@@ -1552,7 +1552,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			endif
 
 			break
-		endswitch
+	endswitch
 	return 0
 End
 
@@ -1566,17 +1566,17 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			val        = sva.dval
-			ctrl       = sva.ctrlName
+			val    = sva.dval
+			ctrl   = sva.ctrlName
 			device = sva.win
 
 			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType), "Invalid control format")
 			ASSERT(DAP_IsAllControl(channelIndex), "Unexpected channel index")
 			DAG_Update(sva.win, ctrl, val = sva.dval, str = sva.sval)
 
-			numEntries = GetNumberFromType(var=channelType)
+			numEntries = GetNumberFromType(var = channelType)
 
-			for(i = 0; i < numEntries; i+= 1)
+			for(i = 0; i < numEntries; i += 1)
 				ctrl = GetPanelControl(i, channelType, controlType)
 
 				if(!DAP_DACHasExpectedClampMode(device, channelIndex, i, channelType))
@@ -1665,9 +1665,9 @@ Function DAP_UpdateSweepSetVariables(device)
 		numSetRepeats = 1
 	endif
 
-	SetValDisplay(device, "valdisp_DataAcq_TrialsCountdown", var=numSetRepeats)
-	SetValDisplay(device, "valdisp_DataAcq_SweepsInSet", var=numSetRepeats)
-	SetValDisplay(device, "valdisp_DataAcq_SweepsActiveSet", var=IDX_MaxNoOfSweeps(device, 1))
+	SetValDisplay(device, "valdisp_DataAcq_TrialsCountdown", var = numSetRepeats)
+	SetValDisplay(device, "valdisp_DataAcq_SweepsInSet", var = numSetRepeats)
+	SetValDisplay(device, "valdisp_DataAcq_SweepsActiveSet", var = IDX_MaxNoOfSweeps(device, 1))
 End
 
 Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
@@ -1704,10 +1704,10 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	WAVE telegraphServers = GetAmplifierTelegraphServers()
 
 	if(!DimSize(telegraphServers, ROWS))
-		return AddListItem("\\M1(MC not available", NONE, ";", inf)
+		return AddListItem("\\M1(MC not available", NONE, ";", Inf)
 	endif
 
-	return AddListItem(DAP_FormatTelegraphServerList(telegraphServers), NONE, ";", inf)
+	return AddListItem(DAP_FormatTelegraphServerList(telegraphServers), NONE, ";", Inf)
 End
 
 Function/S DAP_FormatTelegraphServerList(WAVE telegraphServers)
@@ -1718,7 +1718,7 @@ Function/S DAP_FormatTelegraphServerList(WAVE telegraphServers)
 	numRows = DimSize(telegraphServers, ROWS)
 	for(i = 0; i < numRows; i += 1)
 		str  = DAP_GetAmplifierDef(telegraphServers[i][0], telegraphServers[i][1])
-		list = AddListItem(str, list, ";", inf)
+		list = AddListItem(str, list, ";", Inf)
 	endfor
 
 	return list
@@ -1751,7 +1751,7 @@ Function DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
 End
 
 Function DAP_SyncDeviceAssocSettToGUI(device, headStage)
-	string device
+	string   device
 	variable headStage
 
 	DAP_AbortIfUnlocked(device)
@@ -1763,13 +1763,13 @@ End
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	string device
+	string   device
 	variable headStage
 
 	switch(pa.eventCode)
 		case 2: // mouse up
-			device = pa.win
-			headStage  = str2num(pa.popStr)
+			device    = pa.win
+			headStage = str2num(pa.popStr)
 
 			DAG_Update(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
 			DAP_SyncDeviceAssocSettToGUI(device, headStage)
@@ -1847,7 +1847,7 @@ Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
 
 			WAVE ChanAmpAssign = GetChanAmpAssign(device)
 
-			headStage = str2num(GetPopupMenuString(device,"Popup_Settings_HeadStage"))
+			headStage = str2num(GetPopupMenuString(device, "Popup_Settings_HeadStage"))
 
 			daVC = ChanAmpAssign[%VC_DA][headStage]
 			daIC = ChanAmpAssign[%IC_DA][headStage]
@@ -1874,8 +1874,8 @@ Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
 			endif
 
 			// set all DA/AD channels for both clamp modes to an invalid channel number
-			ChanAmpAssign[0, 6;2][headStage] = NaN
-			ChanAmpAssign[8, 9][headStage]   = NaN
+			ChanAmpAssign[0, 6; 2][headStage] = NaN
+			ChanAmpAssign[8, 9][headStage]    = NaN
 
 			DAP_UpdateChanAmpAssignPanel(device)
 			break
@@ -1917,7 +1917,7 @@ End
 ///
 /// @return 0 for valid settings, 1 for invalid settings
 Function DAP_CheckSettings(device, mode)
-	string device
+	string   device
 	variable mode
 
 	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage
@@ -1986,7 +1986,7 @@ Function DAP_CheckSettings(device, mode)
 		return 1
 	endif
 
-	DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_DAC, valid=validSampInt)
+	DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_DAC, valid = validSampInt)
 	if(!validSampInt)
 		printf "%s: The selected sampling interval is not possible with your hardware.\r", device
 		ControlWindowToFront()
@@ -2016,7 +2016,7 @@ Function DAP_CheckSettings(device, mode)
 	hardwareType = GetHardwareType(device)
 
 #ifndef EVIL_KITTEN_EATING_MODE
-	if(HW_SelectDevice(hardwareType, deviceID, flags=HARDWARE_PREVENT_ERROR_MESSAGE))
+	if(HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE))
 		printf "(%s) Device can not be selected. Please unlock and lock the device.\r", device
 		ControlWindowToFront()
 		return 1
@@ -2063,7 +2063,7 @@ Function DAP_CheckSettings(device, mode)
 		if(DAG_GetNumericalValue(device, "Check_Settings_ITImanualStart"))
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
-			lastITI   = GetLastSweepWithSettingIndep(numericalValues, "Inter-trial interval", sweepNo)
+			lastITI = GetLastSweepWithSettingIndep(numericalValues, "Inter-trial interval", sweepNo)
 
 			if(IsFinite(lastITI))
 				lastStart = GetLastSettingTextIndep(textualValues, sweepNo, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE)
@@ -2085,7 +2085,7 @@ Function DAP_CheckSettings(device, mode)
 		// check all selected TTLs
 		WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, mode, CHANNEL_TYPE_TTL)
 		numEntries = DimSize(statusTTLFiltered, ROWS)
-		for(i=0; i < numEntries; i+=1)
+		for(i = 0; i < numEntries; i += 1)
 			if(!statusTTLFiltered[i])
 				continue
 			endif
@@ -2114,7 +2114,7 @@ Function DAP_CheckSettings(device, mode)
 		if(DAG_GetNumericalValue(device, "Check_DataAcq1_DistribDaq") || DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv"))
 			WAVE statusDAFiltered = DC_GetFilteredChannelState(device, mode, CHANNEL_TYPE_DAC)
 			numEntries = DimSize(statusDAFiltered, ROWS)
-			for(i=0; i < numEntries; i+=1)
+			for(i = 0; i < numEntries; i += 1)
 				if(!statusDAFiltered[i])
 					continue
 				endif
@@ -2141,9 +2141,9 @@ Function DAP_CheckSettings(device, mode)
 		endif
 
 		WAVE statusAsync = DAG_GetChannelState(device, CHANNEL_TYPE_ASYNC)
-		WAVE statusAD = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
+		WAVE statusAD    = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
 
-		for(i = 0; i < NUM_ASYNC_CHANNELS ; i += 1)
+		for(i = 0; i < NUM_ASYNC_CHANNELS; i += 1)
 
 			if(!statusAsync[i])
 				continue
@@ -2174,7 +2174,7 @@ Function DAP_CheckSettings(device, mode)
 
 			// with alarm enabled
 
-			ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+			ctrl     = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 			minValue = DAG_GetNumericalValue(device, ctrl, index = i)
 			if(!IsFinite(minValue))
 				printf "(%s) Please select a finite minimum value for async channel %d\r", device, i
@@ -2182,7 +2182,7 @@ Function DAP_CheckSettings(device, mode)
 				return 1
 			endif
 
-			ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+			ctrl     = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
 			maxValue = DAG_GetNumericalValue(device, ctrl, index = i)
 			if(!IsFinite(maxValue))
 				printf "(%s) Please select a finite maximum value for async channel %d\r", device, i
@@ -2224,7 +2224,7 @@ Function DAP_CheckSettings(device, mode)
 			ampSpec[i] = num2str(i)
 		endif
 
-		clampMode  = DAG_GetHeadstageMode(device, i)
+		clampMode = DAG_GetHeadstageMode(device, i)
 
 		if(clampMode == V_CLAMP_MODE)
 			DACs[i] = ChanAmpAssign[%VC_DA][i]
@@ -2262,7 +2262,7 @@ Function DAP_CheckSettings(device, mode)
 
 	// check all active headstages
 	numEntries = DimSize(statusHS, ROWS)
-	for(i=0; i < numEntries; i+=1)
+	for(i = 0; i < numEntries; i += 1)
 		if(!statusHS[i])
 			continue
 		endif
@@ -2292,8 +2292,8 @@ Function DAP_CheckSettings(device, mode)
 	endif
 
 	if(mode == DATA_ACQUISITION_MODE)
-		WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		WAVE statusDAFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
+		WAVE/T allSetNames      = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		WAVE   statusDAFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
 		numEntries = DimSize(statusDAFiltered, ROWS)
 		for(i = 0; i < numEntries; i += 1)
 
@@ -2388,7 +2388,7 @@ static Function DAP_CheckPressureSettings(string device)
 	if(cmpstr(pressureDevice, NONE))
 		if(GetHardwareType(pressureDevice) == HARDWARE_NI_DAC)
 
-			ADC = str2num(GetPopupMenuString(device, "Popup_Settings_Pressure_AD"))
+			ADC      = str2num(GetPopupMenuString(device, "Popup_Settings_Pressure_AD"))
 			ADConfig = HW_NI_GetAnalogInputConfig(pressureDevice, ADC)
 
 			if((ADConfig & HW_NI_CONFIG_DIFFERENTIAL) != HW_NI_CONFIG_DIFFERENTIAL)
@@ -2405,7 +2405,7 @@ static Function DAP_CheckPressureSettings(string device)
 	if(cmpstr(userPressureDevice, NONE))
 		if(GetHardwareType(userPressureDevice) == HARDWARE_NI_DAC)
 
-			ADC = str2num(GetPopupMenuString(device, "Popup_Settings_UserPressure_ADC"))
+			ADC      = str2num(GetPopupMenuString(device, "Popup_Settings_UserPressure_ADC"))
 			ADConfig = HW_NI_GetAnalogInputConfig(userPressureDevice, ADC)
 
 			if((ADConfig & HW_NI_CONFIG_DIFFERENTIAL) != HW_NI_CONFIG_DIFFERENTIAL)
@@ -2438,9 +2438,9 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 		return 1
 	endif
 
-	Wave ChanAmpAssign       = GetChanAmpAssign(device)
-	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
-	Wave channelClampMode    = GetChannelClampMode(device)
+	WAVE   ChanAmpAssign     = GetChanAmpAssign(device)
+	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
+	WAVE   channelClampMode  = GetChannelClampMode(device)
 
 	if(headstage < 0 || headStage >= DimSize(ChanAmpAssign, COLS))
 		printf "(%s) Invalid headstage %d\r", device, headStage
@@ -2449,7 +2449,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 	endif
 
 	ampConnState = AI_SelectMultiClamp(device, headStage)
-	clampMode = DAG_GetHeadstageMode(device, headstage)
+	clampMode    = DAG_GetHeadstageMode(device, headstage)
 
 	// needs to be at the beginning as DAP_ApplyClmpModeSavdSettngs writes into
 	// ChanAmpAssign/ChanAmpAssignUnit
@@ -2493,20 +2493,20 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 		elseif(clampMode != I_EQUAL_ZERO_MODE && CheckIfSmall(DAGainMCC))
 			printf "(%s) The DA gain for the DA channel %d is zero, this is an MCC bug. Please reset the  MultiClamp Commander to default settings and restart MIES.\r", device, DACchannel
 			return 2
-		elseif(clampMode != I_EQUAL_ZERO_MODE && !CheckIfClose(DAGain, DAGainMCC, tol=1e-4))
+		elseif(clampMode != I_EQUAL_ZERO_MODE && !CheckIfClose(DAGain, DAGainMCC, tol = 1e-4))
 			printf "(%s) The configured gain for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", device, DACchannel, DAGain, DAGainMCC
 			needResetting = 1
 		endif
 
-	   if(cmpstr(ADUnit, ADUnitMCC))
+		if(cmpstr(ADUnit, ADUnitMCC))
 			printf "(%s) The configured unit for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", device, ADCchannel, ADUnit, ADUnitMCC
 			needResetting = 1
-	   endif
+		endif
 
-		if(!CheckIfClose(ADGain, ADGainMCC, tol=1e-4))
+		if(!CheckIfClose(ADGain, ADGainMCC, tol = 1e-4))
 			printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", device, ADCchannel, ADGain, ADGainMCC
 			needResetting = 1
-	   endif
+		endif
 
 		if(needResetting)
 			AI_UpdateChanAmpAssign(device, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
@@ -2517,7 +2517,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 			return 2
 		endif
 	else
-		clampModeStr = ConvertAmplifierModeShortStr(clampMode)
+		clampModeStr  = ConvertAmplifierModeShortStr(clampMode)
 		unitAtChannel = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DACchannel)
 		if(CmpStr(unitAtChannel, DAUnit))
 			printf "(%s) The DA unit for the DA channel %d is different from the DA unit for headstage %d in the Hardware tab (clampMode %s).\r", device, DACchannel, headstage, clampModeStr
@@ -2529,12 +2529,12 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 			return 1
 		endif
 		gainAtChannel = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN), index = DACchannel)
-		if(!CheckIfClose(DAGain, gainAtChannel, tol=1e-4))
+		if(!CheckIfClose(DAGain, gainAtChannel, tol = 1e-4))
 			printf "(%s) The DA gain for the DA channel %d is different from the DA gain for headstage %d in the Hardware tab (clampMode %s).\r", device, ADCchannel, headstage, clampModeStr
 			return 1
 		endif
 		gainAtChannel = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN), index = ADCchannel)
-		if(!CheckIfClose(ADGain, gainAtChannel, tol=1e-4))
+		if(!CheckIfClose(ADGain, gainAtChannel, tol = 1e-4))
 			printf "(%s) The AD gain for the AD channel %d is different from the AD gain for headstage %d in the Hardware tab (clampMode %s).\r", device, ADCchannel, headstage, clampModeStr
 			return 1
 		endif
@@ -2592,7 +2592,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 	endif
 
 	gain = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN), index = DACchannel)
-	if(!CheckIfClose(DAGain, gain, tol=1e-4))
+	if(!CheckIfClose(DAGain, gain, tol = 1e-4))
 		printf "(%s) The configured gain for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%d vs %d).\r", device, DACchannel, DAGain, gain
 		ControlWindowToFront()
 		return 1
@@ -2610,7 +2610,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 	endif
 
 	gain = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN), index = ADCchannel)
-	if(!CheckIfClose(ADGain, gain, tol=1e-4))
+	if(!CheckIfClose(ADGain, gain, tol = 1e-4))
 		printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", device, ADCchannel, ADGain, gain
 		ControlWindowToFront()
 		return 1
@@ -2671,9 +2671,9 @@ static Function DAP_CheckChannel(string device, variable channelType, variable c
 
 	if(channelType == CHANNEL_TYPE_DAC)
 		// we allow the scale being zero for DA only
-		ctrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_SCALE)
+		ctrl  = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_SCALE)
 		scale = DAG_GetNumericalValue(device, ctrl, index = channel)
-		if(!IsFinite(scale) )
+		if(!IsFinite(scale))
 			printf "(%s) The scale for %s channel %d must be finite.\r", device, channelName, channel
 			ControlWindowToFront()
 			return 1
@@ -2753,7 +2753,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 		reqNames   = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
 		suppParams = ExtractAnalysisFunctionParams(stimSet)
 		suppNames  = AFH_GetListOfAnalysisParamNames(suppParams)
-		diff = GetListDifference(reqNames, suppNames)
+		diff       = GetListDifference(reqNames, suppNames)
 		if(!IsEmpty(diff))
 			printf "(%s) The required analysis parameters requested by %s for stim set %s were not all supplied (missing are: %s)\r", device, func, setName, diff
 			ControlWindowToFront()
@@ -2815,7 +2815,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 		endfor
 
 		STRUCT CheckParametersStruct s
-		s.params = suppParams
+		s.params  = suppParams
 		s.setName = setName
 
 		errorMessage = AFH_CheckAnalysisParameter(func, s)
@@ -2886,8 +2886,8 @@ static Function DAP_CheckStimset(device, channelType, channel, headstage)
 
 		// non fatal errors which we fix ourselves
 		if(DimDelta(stimSet, ROWS) != WAVEBUILDER_MIN_SAMPINT || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
-			sprintf str, "(%s) The stim set %s for %s channel of headstage %g must have a row dimension delta of %g, " + \
-						 "row dimension offset of zero and row unit \"ms\".\r", device, setName, channelTypeStr, headstage, WAVEBUILDER_MIN_SAMPINT
+			sprintf str, "(%s) The stim set %s for %s channel of headstage %g must have a row dimension delta of %g, "                          + \
+			             "row dimension offset of zero and row unit \"ms\".\r", device, setName, channelTypeStr, headstage, WAVEBUILDER_MIN_SAMPINT
 			DEBUGPRINT(str)
 			DEBUGPRINT("The stim set is now automatically fixed")
 			SetScale/P x, 0, WAVEBUILDER_MIN_SAMPINT, "ms", stimSet
@@ -2964,10 +2964,10 @@ static Function DAP_ApplyClmpModeSavdSettngs(device, headStage, clampMode)
 	variable DAGain, ADGain
 	variable DACchannel, ADCchannel
 
-	Wave ChanAmpAssign       = GetChanAmpAssign(device)
-	Wave ChannelClampMode    = GetChannelClampMode(device)
-	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
-	WAVE GuiState            = GetDA_EphysGuiStateNum(device)
+	WAVE   ChanAmpAssign     = GetChanAmpAssign(device)
+	WAVE   ChannelClampMode  = GetChannelClampMode(device)
+	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
+	WAVE   GuiState          = GetDA_EphysGuiStateNum(device)
 	WAVE/T GuiStateTxT       = GetDA_EphysGuiStateTxT(device)
 
 	if(clampMode == V_CLAMP_MODE)
@@ -2992,29 +2992,29 @@ static Function DAP_ApplyClmpModeSavdSettngs(device, headStage, clampMode)
 
 	// DAC channels
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
-	SetCheckBoxState(device, 	ctrl, CHECKBOX_SELECTED)
+	SetCheckBoxState(device, ctrl, CHECKBOX_SELECTED)
 	GuiState[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_SELECTED
-	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	ctrl                                                                                    = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 	SetSetVariable(device, ctrl, DaGain)
 	GuiState[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)] = DAGain
-	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	ctrl                                                                                   = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	SetSetVariableString(device, ctrl, DaUnit)
 	GuiStateTxT[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)] = DAUnit
-	ChannelClampMode[DACchannel][%DAC][%ClampMode] = clampMode
-	ChannelClampMode[DACchannel][%DAC][%Headstage] = headStage
+	ChannelClampMode[DACchannel][%DAC][%ClampMode]                                            = clampMode
+	ChannelClampMode[DACchannel][%DAC][%Headstage]                                            = headStage
 
 	// ADC channels
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(device, ctrl, CHECKBOX_SELECTED)
 	GuiState[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_SELECTED
-	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	ctrl                                                                                    = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	SetSetVariable(device, ctrl, ADGain)
 	GuiState[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] = ADGain
-	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+	ctrl                                                                                   = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 	SetSetVariableString(device, ctrl, ADUnit)
 	GuiStateTxT[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)] = ADUnit
-	ChannelClampMode[ADCchannel][%ADC][%ClampMode] = clampMode
-	ChannelClampMode[ADCchannel][%ADC][%Headstage] = headStage
+	ChannelClampMode[ADCchannel][%ADC][%ClampMode]                                            = clampMode
+	ChannelClampMode[ADCchannel][%ADC][%Headstage]                                            = headStage
 End
 
 static Function DAP_RemoveClampModeSettings(device, headStage, clampMode)
@@ -3024,8 +3024,8 @@ static Function DAP_RemoveClampModeSettings(device, headStage, clampMode)
 	string ctrl
 	variable DACchannel, ADCchannel
 
-	Wave ChanAmpAssign    = GetChanAmpAssign(device)
-	Wave ChannelClampMode = GetChannelClampMode(device)
+	WAVE ChanAmpAssign    = GetChanAmpAssign(device)
+	WAVE ChannelClampMode = GetChannelClampMode(device)
 	WAVE GuiState         = GetDA_EphysGuiStateNum(device)
 
 	if(ClampMode == V_CLAMP_MODE)
@@ -3034,7 +3034,7 @@ static Function DAP_RemoveClampModeSettings(device, headStage, clampMode)
 	elseif(ClampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
 		DACchannel = ChanAmpAssign[%IC_DA][headStage]
 		ADCchannel = ChanAmpAssign[%IC_AD][headStage]
-	endIf
+	endif
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
 		ChannelClampMode[][][%Headstage] = ChannelClampMode[p][q][%Headstage] == headstage ? NaN : ChannelClampMode[p][q][%Headstage]
@@ -3043,12 +3043,12 @@ static Function DAP_RemoveClampModeSettings(device, headStage, clampMode)
 
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(device, ctrl, CHECKBOX_UNSELECTED)
-	ChannelClampMode[DACchannel][%DAC][] = NaN
+	ChannelClampMode[DACchannel][%DAC][]                                                    = NaN
 	GuiState[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_UNSELECTED
 
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(device, ctrl, CHECKBOX_UNSELECTED)
-	ChannelClampMode[ADCchannel][%ADC][] = NaN
+	ChannelClampMode[ADCchannel][%ADC][]                                                    = NaN
 	GuiState[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_UNSELECTED
 End
 
@@ -3070,7 +3070,7 @@ Function/S DAP_GetClampModeControl(mode, headstage)
 				return "Radio_ClampMode_" + num2str(headstage * 2 + 1) + "IZ"
 			default:
 				ASSERT(0, "invalid mode")
-			break
+				break
 		endswitch
 	else
 		switch(mode)
@@ -3082,7 +3082,7 @@ Function/S DAP_GetClampModeControl(mode, headstage)
 				return "Radio_ClampMode_AllIZero"
 			default:
 				ASSERT(0, "invalid mode")
-			break
+				break
 		endswitch
 	endif
 End
@@ -3115,34 +3115,34 @@ Function DAP_GetInfoFromControl(device, ctrl, mode, headStage)
 	pos2 = strsearch(ctrl, headStageCtrl, 0)
 
 	if(pos1 != -1)
-		ctrlClean = RemoveEnding(ctrl, "IZ")
-		ctrlSuffix = ctrlClean[pos1 + strlen(clampMode), inf]
-			if(!cmpstr(ctrlSuffix, "AllVclamp"))
-				headStage = CHANNEL_INDEX_ALL_V_CLAMP
-				mode = V_CLAMP_MODE
-			elseif(!cmpstr(ctrlSuffix, "AllIclamp"))
-				headStage = CHANNEL_INDEX_ALL_I_CLAMP
-				mode = I_CLAMP_MODE
-			elseif(!cmpstr(ctrlSuffix, "AllIzero"))
-				headStage = CHANNEL_INDEX_ALL_I_ZERO
-				mode = I_EQUAL_ZERO_MODE
+		ctrlClean  = RemoveEnding(ctrl, "IZ")
+		ctrlSuffix = ctrlClean[pos1 + strlen(clampMode), Inf]
+		if(!cmpstr(ctrlSuffix, "AllVclamp"))
+			headStage = CHANNEL_INDEX_ALL_V_CLAMP
+			mode      = V_CLAMP_MODE
+		elseif(!cmpstr(ctrlSuffix, "AllIclamp"))
+			headStage = CHANNEL_INDEX_ALL_I_CLAMP
+			mode      = I_CLAMP_MODE
+		elseif(!cmpstr(ctrlSuffix, "AllIzero"))
+			headStage = CHANNEL_INDEX_ALL_I_ZERO
+			mode      = I_EQUAL_ZERO_MODE
+		else
+			ctrlNo = str2num(ctrlSuffix)
+			ASSERT(IsFinite(ctrlNo), "non finite number parsed from control")
+			if(IsEven(ctrlNo))
+				mode      = V_CLAMP_MODE
+				headStage = ctrlNo / 2
 			else
-				ctrlNo = str2num(ctrlSuffix)
-				ASSERT(IsFinite(ctrlNo), "non finite number parsed from control")
-				if(IsEven(ctrlNo))
-					mode = V_CLAMP_MODE
-					headStage = ctrlNo / 2
+				if(!cmpstr(ctrlClean, ctrl))
+					mode = I_CLAMP_MODE
 				else
-					if(!cmpstr(ctrlClean, ctrl))
-						mode = I_CLAMP_MODE
-					else
-						mode = I_EQUAL_ZERO_MODE
-					endif
-					headStage = (ctrlNo - 1) / 2
+					mode = I_EQUAL_ZERO_MODE
 				endif
+				headStage = (ctrlNo - 1) / 2
 			endif
+		endif
 	elseif(pos2 != -1)
-		ctrlNo = str2num(ctrl[pos2 + strlen(headStageCtrl), inf])
+		ctrlNo = str2num(ctrl[pos2 + strlen(headStageCtrl), Inf])
 		ASSERT(IsFinite(ctrlNo), "non finite number parsed from control")
 		headStage = ctrlNo
 
@@ -3177,8 +3177,8 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 		case 2: // mouse up
 			AssertOnAndClearRTError()
 			try
-				device = cba.win
-				control    = cba.ctrlName
+				device  = cba.win
+				control = cba.ctrlName
 				DAP_GetInfoFromControl(device, control, mode, headStage)
 
 				NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
@@ -3194,7 +3194,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 				SetCheckBoxState(device, control, !cba.checked)
 				Abort
 			endtry
-		break
+			break
 	endswitch
 
 	return 0
@@ -3210,9 +3210,9 @@ Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 		case 2: // mouse up
 			AssertOnAndClearRTError()
 			try
-				device = cba.win
-				control    = cba.ctrlName
-				checked    = cba.checked
+				device  = cba.win
+				control = cba.ctrlName
+				checked = cba.checked
 				DAP_ChangeHeadstageState(device, control, checked)
 			catch
 				ClearRTError()
@@ -3247,12 +3247,12 @@ Function DAP_ChangeHeadStageMode(device, clampMode, headstage, options)
 		// the control layout messed up
 		oldTab = GetTabID(device, "ADC")
 		if(oldTab != 0)
-			PGC_SetAndActivateControl(device, "ADC", val=0)
+			PGC_SetAndActivateControl(device, "ADC", val = 0)
 		endif
 	endif
 
 	WAVE ChanAmpAssign = GetChanAmpAssign(device)
-	WAVE GuiState = GetDA_EphysGuiStateNum(device)
+	WAVE GuiState      = GetDA_EphysGuiStateNum(device)
 
 	Make/FREE/N=(NUM_HEADSTAGES) changeHS = 0
 	if(headstage < 0)
@@ -3261,8 +3261,8 @@ Function DAP_ChangeHeadStageMode(device, clampMode, headstage, options)
 		newSliderPos = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 	else
 		changeHS[headstage] = 1
-		activeHS = DAG_GetHeadstageState(device, headstage)
-		newSliderPos = headstage
+		activeHS            = DAG_GetHeadstageState(device, headstage)
+		newSliderPos        = headstage
 	endif
 
 	if(options != MCC_SKIP_UPDATES)
@@ -3271,7 +3271,7 @@ Function DAP_ChangeHeadStageMode(device, clampMode, headstage, options)
 		endif
 	endif
 
-	for(i = 0; i < NUM_HEADSTAGES ; i +=1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!changeHS[i])
 			continue
 		endif
@@ -3319,7 +3319,7 @@ Function DAP_ChangeHeadStageMode(device, clampMode, headstage, options)
 	endif
 
 	if(oldTab != 0)
-		PGC_SetAndActivateControl(device, "ADC", val=oldTab)
+		PGC_SetAndActivateControl(device, "ADC", val = oldTab)
 	endif
 End
 
@@ -3329,7 +3329,7 @@ End
 ///@param clampMode		clamp mode to activate
 ///@param delayed       indicate on the control that the change is delayed
 static Function DAP_SetAmpModeControls(device, headstage, clampMode, [delayed])
-	string device
+	string   device
 	variable headstage
 	variable clampMode
 	variable delayed
@@ -3368,7 +3368,7 @@ End
 /// @param clampMode  Clamp mode to activate
 /// @param delayed    [optional, defaults to false] Indicate that this is a delayed clamp mode change
 static Function DAP_SetHeadstageChanControls(device, headstage, clampMode, [delayed])
-	string device
+	string   device
 	variable headstage
 	variable clampMode, delayed
 
@@ -3399,9 +3399,9 @@ static Function DAP_UpdateClampmodeTabs(device, headStage, clampMode)
 		AI_SyncGUIToAmpStorageAndMCCApp(device, headStage, clampMode)
 	endif
 
-	TabControl tab_DataAcq_Amp, win=$device, tabLabel(V_CLAMP_MODE)      = SelectString(clampMode == V_CLAMP_MODE,      "", highlightSpec) + "V-Clamp"
-	TabControl tab_DataAcq_Amp, win=$device, tabLabel(I_CLAMP_MODE)      = SelectString(clampMode == I_CLAMP_MODE,      "", highlightSpec) + "I-Clamp"
-	TabControl tab_DataAcq_Amp, win=$device, tabLabel(I_EQUAL_ZERO_MODE) = SelectString(clampMode == I_EQUAL_ZERO_MODE, "", highlightSpec) + "I = 0"
+	TabControl tab_DataAcq_Amp, win=$device, tabLabel(V_CLAMP_MODE)=SelectString(clampMode == V_CLAMP_MODE, "", highlightSpec) + "V-Clamp"
+	TabControl tab_DataAcq_Amp, win=$device, tabLabel(I_CLAMP_MODE)=SelectString(clampMode == I_CLAMP_MODE, "", highlightSpec) + "I-Clamp"
+	TabControl tab_DataAcq_Amp, win=$device, tabLabel(I_EQUAL_ZERO_MODE)=SelectString(clampMode == I_EQUAL_ZERO_MODE, "", highlightSpec) + "I = 0"
 End
 
 static Function DAP_ChangeHeadstageState(device, headStageCtrl, enabled)
@@ -3428,7 +3428,7 @@ static Function DAP_ChangeHeadstageState(device, headStageCtrl, enabled)
 		changeHS[] = 1
 	endif
 
-	for(i = 0; i < NUM_HEADSTAGES ; i +=1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!changeHS[i])
 			continue
 		endif
@@ -3457,10 +3457,10 @@ static Function DAP_ChangeHeadstageState(device, headStageCtrl, enabled)
 		IZeroState = GetCheckBoxState(device, IZeroCtrl)
 
 		if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
-			PGC_SetAndActivateControl(device, VCctrl, val=CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(device, VCctrl, val = CHECKBOX_SELECTED)
 		else
 			if(enabled && DAG_GetNumericalValue(device, "check_Settings_SyncMiesToMCC"))
-				PGC_SetAndActivateControl(device, DAP_GetClampModeControl(clampMode, i), val=CHECKBOX_SELECTED)
+				PGC_SetAndActivateControl(device, DAP_GetClampModeControl(clampMode, i), val = CHECKBOX_SELECTED)
 			endif
 		endif
 	endfor
@@ -3468,7 +3468,7 @@ static Function DAP_ChangeHeadstageState(device, headStageCtrl, enabled)
 	DAP_UpdateDAQControls(device, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
-	if(Sum(statusHS) > 0 )
+	if(Sum(statusHS) > 0)
 		TP_RestartTestPulse(device, TPState)
 	endif
 End
@@ -3478,7 +3478,7 @@ End
 /// @param device device
 /// @param mode       One of @ref ToggleAcquisitionButtonConstants
 Function DAP_ToggleAcquisitionButton(device, mode)
-	string device
+	string   device
 	variable mode
 
 	ASSERT(mode == DATA_ACQ_BUTTON_TO_STOP || mode == DATA_ACQ_BUTTON_TO_DAQ, "Invalid mode")
@@ -3491,7 +3491,7 @@ Function DAP_ToggleAcquisitionButton(device, mode)
 		text = "\\Z14\\f01Acquire\rData"
 	endif
 
-	Button DataAcquireButton, title=text, win = $device
+	Button DataAcquireButton, title=text, win=$device
 End
 
 /// @brief Set the testpulse button text
@@ -3499,7 +3499,7 @@ End
 /// @param device device
 /// @param mode       One of @ref ToggleTestpulseButtonConstants
 Function DAP_ToggleTestpulseButton(device, mode)
-	string device
+	string   device
 	variable mode
 
 	ASSERT(mode == TESTPULSE_BUTTON_TO_STOP || mode == TESTPULSE_BUTTON_TO_START, "Invalid mode")
@@ -3512,13 +3512,13 @@ Function DAP_ToggleTestpulseButton(device, mode)
 		text = "\\Z14\\f01Start Test \rPulse"
 	endif
 
-	Button StartTestPulseButton, title=text, win = $device
+	Button StartTestPulseButton, title=text, win=$device
 End
 
 Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
-	struct WMButtonAction &ba
+	STRUCT WMButtonAction &ba
 
-	string device
+	string   device
 	variable numConnAmplifiers
 
 	switch(ba.eventCode)
@@ -3542,7 +3542,7 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 End
 
 Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
-	struct WMSliderAction &sc
+	STRUCT WMSliderAction &sc
 
 	variable mode, headstage
 	string device
@@ -3550,8 +3550,8 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	// eventCode is a bitmask as opposed to a plain value
 	// compared to other controls
 	if(sc.eventCode > 0 && sc.eventCode & 0x1)
-		headstage  = sc.curval
-		device = sc.win
+		headstage = sc.curval
+		device    = sc.win
 		DAG_Update(device, sc.ctrlName, val = headstage)
 
 		DAP_AbortIfUnlocked(device)
@@ -3577,11 +3577,11 @@ Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
 	string device, ctrl
 	variable headStage
 
-	switch( sva.eventCode )
+	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 			device = sva.win
-			ctrl       = sva.ctrlName
+			ctrl   = sva.ctrlName
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(device, ctrl, headStage)
@@ -3597,10 +3597,10 @@ Function DAP_ButtonProc_AmpCntrls(ba) : ButtonControl
 	string device, ctrl
 	variable headStage
 
-	switch( ba.eventCode )
+	switch(ba.eventCode)
 		case 2: // mouse up
 			device = ba.win
-			ctrl       = ba.ctrlName
+			ctrl   = ba.ctrlName
 
 			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(device, ctrl, headstage)
@@ -3611,15 +3611,15 @@ Function DAP_ButtonProc_AmpCntrls(ba) : ButtonControl
 End
 
 Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
-	struct WMCheckboxAction &cba
+	STRUCT WMCheckboxAction &cba
 
 	string device, ctrl
 	variable headStage
 
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			device = cba.win
-			ctrl       = cba.ctrlName
+			ctrl   = cba.ctrlName
 
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
@@ -3635,11 +3635,11 @@ Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	variable checked
-	string device
+	string   device
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			device = cba.win
+			device  = cba.win
 			checked = cba.checked
 			DAG_Update(device, cba.ctrlName, val = checked)
 			AdaptDependentControls(device, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq", CHECKBOX_UNSELECTED, checked, DEP_CTRLS_SAME)
@@ -3666,7 +3666,7 @@ End
 
 /// @brief Controls TP Insertion into set sweeps before the sweep begins
 Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
-	struct WMCheckBoxAction &cba
+	STRUCT WMCheckBoxAction &cba
 
 	string device
 
@@ -3675,7 +3675,7 @@ Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			device = cba.win
 			DAP_UpdateOnsetDelay(cba.win)
-		break
+			break
 	endswitch
 
 	return 0
@@ -3696,21 +3696,21 @@ Function DAP_UpdateOnsetDelay(string device)
 		testPulseDurWithBL = 0
 	endif
 
-	SetValDisplay(device, "valdisp_DataAcq_OnsetDelayAuto", var=testPulseDurWithBL)
+	SetValDisplay(device, "valdisp_DataAcq_OnsetDelayAuto", var = testPulseDurWithBL)
 End
 
 Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
-	struct WMSetVariableAction &sva
+	STRUCT WMSetVariableAction &sva
 
 	variable TPState
-	string device
+	string   device
 
 	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
 			sva.blockReentry = 1
-			device = sva.win
+			device           = sva.win
 			DAP_AbortIfUnlocked(device)
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 
@@ -3729,8 +3729,8 @@ Function DAP_CheckProc_TestPulseSett(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			device = cba.win
-			ctrl = cba.ctrlName
+			device  = cba.win
+			ctrl    = cba.ctrlName
 			checked = cba.checked
 
 			DAP_AbortIfUnlocked(device)
@@ -3772,7 +3772,7 @@ Function DAP_UnlockAllDevices()
 	variable i, numItems
 
 	numItems = ItemsInList(list)
-	for(i=0; i < numItems; i+=1)
+	for(i = 0; i < numItems; i += 1)
 		win = StringFromList(i, list)
 		DAP_UnlockDevice(win)
 	endfor
@@ -3845,13 +3845,13 @@ End
 Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string device
+	string   device
 	variable testpulseRunMode
 
 	switch(ba.eventcode)
 		case 2:
 			ba.blockreentry = 1
-			device = ba.win
+			device          = ba.win
 
 			DAP_AbortIfUnlocked(device)
 
@@ -3905,7 +3905,7 @@ Function/S DAP_GetCommentPanel(device)
 End
 
 /// @brief Return the full window path to the comment notebook
-Function/S  DAP_GetCommentNotebook(device)
+Function/S DAP_GetCommentNotebook(device)
 	string device
 
 	return DAP_GetCommentPanel(device) + "#" + COMMENT_PANEL_NOTEBOOK
@@ -3926,8 +3926,8 @@ static Function DAP_OpenCommentPanel(device)
 
 	commentNotebook = DAP_GetCommentNotebook(device)
 
-	NewPanel/HOST=$device/N=$COMMENT_PANEL/EXT=1/W=(400,0,0,200)
-	NewNotebook/HOST=$commentPanel/F=0/N=$COMMENT_PANEL_NOTEBOOK/FG=(FL,FT,FR,FB)
+	NewPanel/HOST=$device/N=$COMMENT_PANEL/EXT=1/W=(400, 0, 0, 200)
+	NewNotebook/HOST=$commentPanel/F=0/N=$COMMENT_PANEL_NOTEBOOK/FG=(FL, FT, FR, FB)
 	ModifyPanel/W=$commentPanel fixedSize=0
 	SetWindow $commentPanel, hook(mainHook)=DAP_CommentPanelHook
 
@@ -3953,8 +3953,8 @@ Function DAP_ButtonProc_OpenCommentNB(ba) : ButtonControl
 End
 
 static Function/S DAP_FormatCommentString(device, comment, sweepNo)
-	string device
-	string comment
+	string   device
+	string   comment
 	variable sweepNo
 
 	string str, contents, commentNotebook
@@ -3963,11 +3963,11 @@ static Function/S DAP_FormatCommentString(device, comment, sweepNo)
 	ASSERT(!IsEmpty(comment), "Comment can not be empty")
 	sweepNo = IsNaN(sweepNo) ? -1 : sweepNo
 
-	sprintf str, "%s, % 5d: %s\r", GetTimeStamp(humanReadable=1), sweepNo, comment
+	sprintf str, "%s, % 5d: %s\r", GetTimeStamp(humanReadable = 1), sweepNo, comment
 
 	DAP_OpenCommentPanel(device)
 	commentNotebook = DAP_GetCommentNotebook(device)
-	contents = GetNotebookText(commentNotebook)
+	contents        = GetNotebookText(commentNotebook)
 
 	// add a carriage return if the last line does not end with one
 	length = strlen(contents)
@@ -4002,7 +4002,7 @@ static Function DAP_AddUserComment(device)
 
 	sweepNo = AFH_GetLastSweepAcquired(device)
 
-	commentNotebook = DAP_GetCommentNotebook(device)
+	commentNotebook  = DAP_GetCommentNotebook(device)
 	formattedComment = DAP_FormatCommentString(device, comment, sweepNo)
 	AppendToNotebookText(commentNotebook, formattedComment)
 	NotebookSelectionAtEnd(commentNotebook)
@@ -4084,7 +4084,7 @@ Function DAP_SerializeCommentNotebook(device)
 	endif
 
 	commentNotebook = DAP_GetCommentNotebook(device)
-	text = GetNotebookText(commentNotebook)
+	text            = GetNotebookText(commentNotebook)
 
 	if(isEmpty(text))
 		return NaN
@@ -4150,10 +4150,10 @@ End
 Function DAP_CheckProc_LockedLogic(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
-			string checkBoxPartener = SelectString(cmpstr(cba.ctrlName, "check_Settings_Option_3"),"check_Settings_SetOption_5","check_Settings_Option_3")
+			string checkBoxPartener = SelectString(cmpstr(cba.ctrlName, "check_Settings_Option_3"), "check_Settings_SetOption_5", "check_Settings_Option_3")
 			ToggleCheckBoxes(cba.win, cba.ctrlName, checkBoxPartener, cba.checked)
 			EqualizeCheckBoxes(cba.win, "check_Settings_Option_3", "Check_DataAcq1_IndexingLocked", DAG_GetNumericalValue(cba.win, "check_Settings_Option_3"))
 			if(cmpstr(cba.win, "check_Settings_Option_3") == 0 && cba.checked)
@@ -4275,7 +4275,7 @@ Function DAP_UpdateListOfPressureDevices()
 	string list, device
 	variable i, numItems
 
-	list = GetListOfLockedDevices()
+	list     = GetListOfLockedDevices()
 	numItems = ItemsInList(list)
 
 	for(i = 0; i < numItems; i += 1)
@@ -4306,7 +4306,7 @@ End
 Function DAP_CheckProc_UpdateGuiState(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
@@ -4361,7 +4361,7 @@ Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 			P_RunP_ControlIfTPOFF(cba.win)
 			headstage = PressureDataWv[0][%UserSelectedHeadStage]
 			if(P_ValidatePressureSetHeadstage(cba.win, headstage))
-				P_SetPressureValves(cba.win, headstage, P_GetUserAccess(cba.win, headstage,PressureDataWv[headstage][%Approach_Seal_BrkIn_Clear]))
+				P_SetPressureValves(cba.win, headstage, P_GetUserAccess(cba.win, headstage, PressureDataWv[headstage][%Approach_Seal_BrkIn_Clear]))
 			endif
 			P_UpdatePressureType(cba.win)
 
@@ -4372,7 +4372,7 @@ Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 End
 
 Function DAP_ButtonProc_LockDev(ba) : ButtonControl
-	struct WMButtonAction& ba
+	STRUCT WMButtonAction &ba
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -4385,7 +4385,7 @@ Function DAP_ButtonProc_LockDev(ba) : ButtonControl
 End
 
 Function DAP_ButProc_Hrdwr_UnlckDev(ba) : ButtonControl
-	struct WMButtonAction& ba
+	STRUCT WMButtonAction &ba
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -4398,7 +4398,7 @@ Function DAP_ButProc_Hrdwr_UnlckDev(ba) : ButtonControl
 End
 
 static Function DAP_UpdateDataFolderDisplay(device, locked)
-	string device
+	string   device
 	variable locked
 
 	string title
@@ -4408,7 +4408,7 @@ static Function DAP_UpdateDataFolderDisplay(device, locked)
 		title = "Lock a device to generate device folder structure"
 	endif
 
-	GroupBox group_Hardware_FolderPath, win = $device, title = title
+	GroupBox group_Hardware_FolderPath, win=$device, title=title
 End
 
 Function DAP_LockDevice(string win)
@@ -4448,8 +4448,8 @@ Function DAP_LockDevice(string win)
 #endif
 	endif
 
-	DisableControls(win,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
-	EnableControl(win,"button_SettingsPlus_unLockDevic")
+	DisableControls(win, "button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
+	EnableControl(win, "button_SettingsPlus_unLockDevic")
 
 	DoWindow/W=$win/C $deviceLocked
 
@@ -4473,7 +4473,7 @@ Function DAP_LockDevice(string win)
 	DAP_UpdateDAQControls(deviceLocked, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 	// create the amplifier settings waves
 	GetAmplifierParamStorageWave(deviceLocked)
-	WB_UpdateChangedStimsets(device=deviceLocked)
+	WB_UpdateChangedStimsets(device = deviceLocked)
 	DAP_UnlockCommentNotebook(deviceLocked)
 	DAP_ToggleAcquisitionButton(deviceLocked, DATA_ACQ_BUTTON_TO_DAQ)
 	SI_CalculateMinSampInterval(deviceLocked, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC)
@@ -4530,7 +4530,7 @@ End
 static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceEnable])
 
 	variable i
-	string controls
+	string   controls
 
 	if(ParamIsDefault(forceEnable))
 #ifdef EVIL_KITTEN_EATING_MODE
@@ -4647,7 +4647,7 @@ static Function DAP_LoadBuiltinStimsets()
 		return NaN
 	endif
 
-	files = GetAllFilesRecursivelyFromPath(symbPath, extension = ".nwb")
+	files      = GetAllFilesRecursivelyFromPath(symbPath, extension = ".nwb")
 	numEntries = ItemsInList(files, FILE_LIST_SEP)
 	for(i = 0; i < numEntries; i += 1)
 		filename = StringFromList(i, files, FILE_LIST_SEP)
@@ -4672,12 +4672,12 @@ static Function DAP_UnlockDevice(device)
 	string lockedDevices, wlName
 
 	if(!windowExists(device))
-		DEBUGPRINT("Can not unlock the non-existing panel", str=device)
+		DEBUGPRINT("Can not unlock the non-existing panel", str = device)
 		return NaN
 	endif
 
 	if(DAP_DeviceIsUnlocked(device))
-		DEBUGPRINT("Device is not locked, doing nothing", str=device)
+		DEBUGPRINT("Device is not locked, doing nothing", str = device)
 		return NaN
 	endif
 
@@ -4705,8 +4705,8 @@ static Function DAP_UnlockDevice(device)
 		PGC_SetAndActivateControl(device, "button_Hardware_PUser_Disable")
 	endif
 
-	EnableControls(device,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
-	DisableControl(device,"button_SettingsPlus_unLockDevic")
+	EnableControls(device, "button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
+	DisableControl(device, "button_SettingsPlus_unLockDevic")
 	EnableControls(device, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
 	DAP_ResetGUIAfterDAQ(device)
 	DAP_ToggleTestpulseButton(device, TESTPULSE_BUTTON_TO_START)
@@ -4720,13 +4720,13 @@ static Function DAP_UnlockDevice(device)
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(device))
 
 	string unlockedDevice = BASE_WINDOW_NAME
-	if(CheckName(unlockedDevice,CONTROL_PANEL_TYPE))
-		unlockedDevice = UniqueName(BASE_WINDOW_NAME + "_",CONTROL_PANEL_TYPE,1)
+	if(CheckName(unlockedDevice, CONTROL_PANEL_TYPE))
+		unlockedDevice = UniqueName(BASE_WINDOW_NAME + "_", CONTROL_PANEL_TYPE, 1)
 	endif
 	DoWindow/W=$device/C $unlockedDevice
 
 	variable locked = 0
-	DAP_UpdateDataFolderDisplay(unlockedDevice,locked)
+	DAP_UpdateDataFolderDisplay(unlockedDevice, locked)
 
 	NVAR/SDFR=GetDevicePath(device) deviceID
 
@@ -4735,9 +4735,9 @@ static Function DAP_UnlockDevice(device)
 	TFH_StopFIFODaemon(hardwareType, deviceID)
 
 	flags = HARDWARE_ABORT_ON_ERROR
-	HW_CloseDevice(hardwareType, deviceID, flags=flags)
-	HW_ResetDevice(hardwareType, deviceID, flags=flags)
-	HW_DeRegisterDevice(hardwareType, deviceID, flags=flags)
+	HW_CloseDevice(hardwareType, deviceID, flags = flags)
+	HW_ResetDevice(hardwareType, deviceID, flags = flags)
+	HW_DeRegisterDevice(hardwareType, deviceID, flags = flags)
 
 	DAP_UpdateListOfLockedDevices()
 
@@ -4776,13 +4776,13 @@ End
 /// @brief Update the list of locked devices
 static Function DAP_UpdateListOfLockedDevices()
 	variable i, numDevs, numItm
-	string NIPanelList = ""
+	string NIPanelList  = ""
 	string ITCPanelList = WinList("ITC*", ";", "WIN:64")
 	string allPanelList = WinList("*", ";", "WIN:64")
-	string NIDevList = DAP_GetNIDeviceList()
+	string NIDevList    = DAP_GetNIDeviceList()
 
 	numDevs = ItemsInList(NIDevList)
-	for(i = 0;i < numDevs; i += 1)
+	for(i = 0; i < numDevs; i += 1)
 		numItm = WhichListItem(StringFromList(i, NIDevList), allPanelList)
 		if(numItm > -1)
 			NIPanelList = AddListItem(StringFromList(numItm, allPanelList), NIPanelList, ";")
@@ -4798,26 +4798,26 @@ static Function DAP_UpdateChanAmpAssignStorWv(device)
 
 	variable HeadStageNo, ampSerial, ampChannelID
 	string amplifierDef
-	Wave ChanAmpAssign       = GetChanAmpAssign(device)
-	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
+	WAVE   ChanAmpAssign     = GetChanAmpAssign(device)
+	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
 
-	HeadStageNo = str2num(GetPopupMenuString(device,"Popup_Settings_HeadStage"))
+	HeadStageNo = str2num(GetPopupMenuString(device, "Popup_Settings_HeadStage"))
 
 	// Assigns V-clamp settings for a particular headstage
-	ChanAmpAssign[%VC_DA][HeadStageNo]     = str2numSafe(GetPopupMenuString(device, "Popup_Settings_VC_DA"))
-	ChanAmpAssign[%VC_DAGain][HeadStageNo] = GetSetVariable(device, "setvar_Settings_VC_DAgain")
-	ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo]      = GetSetVariableString(device, "SetVar_Hardware_VC_DA_Unit")
-	ChanAmpAssign[%VC_AD][HeadStageNo]     = str2numSafe(GetPopupMenuString(device, "Popup_Settings_VC_AD"))
-	ChanAmpAssign[%VC_ADGain][HeadStageNo] = GetSetVariable(device, "setvar_Settings_VC_ADgain")
-	ChanAmpAssignUnit[%VC_ADUnit][HeadStageNo]      = GetSetVariableString(device, "SetVar_Hardware_VC_AD_Unit")
+	ChanAmpAssign[%VC_DA][HeadStageNo]         = str2numSafe(GetPopupMenuString(device, "Popup_Settings_VC_DA"))
+	ChanAmpAssign[%VC_DAGain][HeadStageNo]     = GetSetVariable(device, "setvar_Settings_VC_DAgain")
+	ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo] = GetSetVariableString(device, "SetVar_Hardware_VC_DA_Unit")
+	ChanAmpAssign[%VC_AD][HeadStageNo]         = str2numSafe(GetPopupMenuString(device, "Popup_Settings_VC_AD"))
+	ChanAmpAssign[%VC_ADGain][HeadStageNo]     = GetSetVariable(device, "setvar_Settings_VC_ADgain")
+	ChanAmpAssignUnit[%VC_ADUnit][HeadStageNo] = GetSetVariableString(device, "SetVar_Hardware_VC_AD_Unit")
 
 	//Assigns I-clamp settings for a particular headstage
-	ChanAmpAssign[%IC_DA][HeadStageNo]     = str2numSafe(GetPopupMenuString(device, "Popup_Settings_IC_DA"))
-	ChanAmpAssign[%IC_DAGain][HeadStageNo] = GetSetVariable(device, "setvar_Settings_IC_DAgain")
-	ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo]      = GetSetVariableString(device, "SetVar_Hardware_IC_DA_Unit")
-	ChanAmpAssign[%IC_AD][HeadStageNo]     = str2numSafe(GetPopupMenuString(device, "Popup_Settings_IC_AD"))
-	ChanAmpAssign[%IC_ADGain][HeadStageNo] = GetSetVariable(device, "setvar_Settings_IC_ADgain")
-	ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]      = GetSetVariableString(device, "SetVar_Hardware_IC_AD_Unit")
+	ChanAmpAssign[%IC_DA][HeadStageNo]         = str2numSafe(GetPopupMenuString(device, "Popup_Settings_IC_DA"))
+	ChanAmpAssign[%IC_DAGain][HeadStageNo]     = GetSetVariable(device, "setvar_Settings_IC_DAgain")
+	ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo] = GetSetVariableString(device, "SetVar_Hardware_IC_DA_Unit")
+	ChanAmpAssign[%IC_AD][HeadStageNo]         = str2numSafe(GetPopupMenuString(device, "Popup_Settings_IC_AD"))
+	ChanAmpAssign[%IC_ADGain][HeadStageNo]     = GetSetVariable(device, "setvar_Settings_IC_ADgain")
+	ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo] = GetSetVariableString(device, "SetVar_Hardware_IC_AD_Unit")
 
 	// Assigns amplifier to a particular headstage
 	// sounds weird because this relationship is predetermined in hardware
@@ -4829,8 +4829,8 @@ static Function DAP_UpdateChanAmpAssignStorWv(device)
 		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
 		ChanAmpAssign[%AmpChannelID][HeadStageNo] = ampChannelID
 	else
-		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = nan
-		ChanAmpAssign[%AmpChannelID][HeadStageNo] = nan
+		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = NaN
+		ChanAmpAssign[%AmpChannelID][HeadStageNo] = NaN
 	endif
 End
 
@@ -4840,44 +4840,44 @@ static Function DAP_UpdateChanAmpAssignPanel(device)
 	variable HeadStageNo, channel, ampSerial, ampChannelID
 	string entry
 
-	Wave ChanAmpAssign       = GetChanAmpAssign(device)
-	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
+	WAVE   ChanAmpAssign     = GetChanAmpAssign(device)
+	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
 
-	HeadStageNo = str2num(GetPopupMenuString(device,"Popup_Settings_HeadStage"))
+	HeadStageNo = str2num(GetPopupMenuString(device, "Popup_Settings_HeadStage"))
 
 	// function does not use PGC_SetAndActivateControl on purpose, see #1872
 
 	// VC DA settings
 	channel = ChanAmpAssign[%VC_DA][HeadStageNo]
-	Popupmenu Popup_Settings_VC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
-	Setvariable setvar_Settings_VC_DAgain, win = $device, value = _num:ChanAmpAssign[%VC_DAGain][HeadStageNo]
-	Setvariable SetVar_Hardware_VC_DA_Unit, win = $device, value = _str:ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo]
+	Popupmenu Popup_Settings_VC_DA, win=$device, mode=(IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
+	Setvariable setvar_Settings_VC_DAgain, win=$device, value=_num:ChanAmpAssign[%VC_DAGain][HeadStageNo]
+	Setvariable SetVar_Hardware_VC_DA_Unit, win=$device, value=_str:ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo]
 
 	// VC AD settings
 	channel = ChanAmpAssign[%VC_AD][HeadStageNo]
-	Popupmenu Popup_Settings_VC_AD, win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
-	Setvariable setvar_Settings_VC_ADgain, win = $device, value = _num:ChanAmpAssign[%VC_ADGain][HeadStageNo]
-	Setvariable SetVar_Hardware_VC_AD_Unit, win = $device, value = _str:ChanAmpAssignUnit[%VC_ADUnit][HeadStageNo]
+	Popupmenu Popup_Settings_VC_AD, win=$device, mode=(IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
+	Setvariable setvar_Settings_VC_ADgain, win=$device, value=_num:ChanAmpAssign[%VC_ADGain][HeadStageNo]
+	Setvariable SetVar_Hardware_VC_AD_Unit, win=$device, value=_str:ChanAmpAssignUnit[%VC_ADUnit][HeadStageNo]
 
 	// IC DA settings
 	channel = ChanAmpAssign[%IC_DA][HeadStageNo]
-	Popupmenu Popup_Settings_IC_DA, win = $device, mode = (IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
-	Setvariable setvar_Settings_IC_DAgain, win = $device, value = _num:ChanAmpAssign[%IC_DAGain][HeadStageNo]
-	Setvariable SetVar_Hardware_IC_DA_Unit, win = $device, value = _str:ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo]
+	Popupmenu Popup_Settings_IC_DA, win=$device, mode=(IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
+	Setvariable setvar_Settings_IC_DAgain, win=$device, value=_num:ChanAmpAssign[%IC_DAGain][HeadStageNo]
+	Setvariable SetVar_Hardware_IC_DA_Unit, win=$device, value=_str:ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo]
 
 	// IC AD settings
 	channel = ChanAmpAssign[%IC_AD][HeadStageNo]
-	Popupmenu  Popup_Settings_IC_AD, win = $device, mode = (IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
-	Setvariable setvar_Settings_IC_ADgain, win = $device, value = _num:ChanAmpAssign[%IC_ADGain][HeadStageNo]
-	Setvariable SetVar_Hardware_IC_AD_Unit, win = $device, value = _str:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
+	Popupmenu Popup_Settings_IC_AD, win=$device, mode=(IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
+	Setvariable setvar_Settings_IC_ADgain, win=$device, value=_num:ChanAmpAssign[%IC_ADGain][HeadStageNo]
+	Setvariable SetVar_Hardware_IC_AD_Unit, win=$device, value=_str:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
 
 	ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
 	ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
 	if(isFinite(ampSerial) && isFinite(ampChannelID))
 		entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
-		Popupmenu popup_Settings_Amplifier, win = $device, popmatch=entry
+		Popupmenu popup_Settings_Amplifier, win=$device, popmatch=entry
 	else
-		Popupmenu popup_Settings_Amplifier, win = $device, popmatch=NONE
+		Popupmenu popup_Settings_Amplifier, win=$device, popmatch=NONE
 	endif
 End
 
@@ -4886,7 +4886,7 @@ End
 /// @param device device
 /// @param updateFlag One of @ref UpdateControlsFlags
 Function DAP_UpdateDAQControls(device, updateFlag)
-	string device
+	string   device
 	variable updateFlag
 
 	DEBUGPRINT("updateFlag", var = updateFlag)
@@ -4896,11 +4896,11 @@ Function DAP_UpdateDAQControls(device, updateFlag)
 		AFM_UpdateAnalysisFunctionWave(device)
 	elseif(updateFlag & REASON_STIMSET_CHANGE_DUR_DAQ)
 		AFM_UpdateAnalysisFunctionWave(device)
-		SetValDisplay(device, "valdisp_DataAcq_SweepsActiveSet", var=IDX_MaxNoOfSweeps(device, 1))
+		SetValDisplay(device, "valdisp_DataAcq_SweepsActiveSet", var = IDX_MaxNoOfSweeps(device, 1))
 	endif
 
 	if(updateFlag & REASON_HEADSTAGE_CHANGE)
-		SetValDisplay(device, "ValDisp_DataAcq_SamplingInt", var=DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC))
+		SetValDisplay(device, "ValDisp_DataAcq_SamplingInt", var = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC))
 	endif
 
 	if((updateFlag & REASON_HEADSTAGE_CHANGE) || (updateFlag & REASON_STIMSET_CHANGE))
@@ -4939,13 +4939,13 @@ static Function DAP_AllChanDASettings(device, headStage, [delayed])
 	clampMode = DAG_GetHeadstageMode(device, headStage)
 
 	if(clampMode == V_CLAMP_MODE)
-		scalar = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
-		index = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
-		indexEnd = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
+		scalar   = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE))
+		index    = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE))
+		indexEnd = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END))
 	elseif(clampMode == I_CLAMP_MODE)
-		scalar = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
-		index = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
-		indexEnd = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
+		scalar   = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE))
+		index    = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE))
+		indexEnd = DAG_GetNumericalValue(device, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END))
 	endif
 
 	// update the scalar
@@ -4965,7 +4965,7 @@ End
 Function DAP_ButtonProc_skipSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	switch( ba.eventCode )
+	switch(ba.eventCode)
 		case 2:
 			RA_SkipSweeps(ba.win, 1, SWEEP_SKIP_USER, limitToSetBorder = 1)
 			break
@@ -4977,7 +4977,7 @@ End
 Function DAP_ButtonProc_skipBack(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	switch( ba.eventCode )
+	switch(ba.eventCode)
 		case 2:
 			RA_SkipSweeps(ba.win, -1, SWEEP_SKIP_USER, limitToSetBorder = 1)
 			break
@@ -4997,11 +4997,11 @@ Function DAP_ResetskipAhead(device)
 
 	WAVE guiState = GetDA_EphysGuiStateNum(device)
 	guiState[0][%SetVar_DataAcq_skipAhead] = 0
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_skipAhead", val=0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_skipAhead", val = 0)
 End
 
 Function DAP_getFilteredSkipAhead(device, skipAhead)
-	string device
+	string   device
 	variable skipAhead
 
 	variable maxSkipAhead = max(0, IDX_MinNoOfSweeps(device) - 1)
@@ -5009,7 +5009,7 @@ Function DAP_getFilteredSkipAhead(device, skipAhead)
 End
 
 Function DAP_setSkipAheadLimit(device, filteredSkipAhead)
-	string device
+	string   device
 	variable filteredSkipAhead
 
 	SetSetVariableLimits(device, "SetVar_DataAcq_skipAhead", 0, max(0, filteredSkipAhead), 1)
@@ -5018,12 +5018,12 @@ End
 Function DAP_SetVarProc_skipAhead(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
-	switch( sva.eventCode )
+	switch(sva.eventCode)
 		case 1:
 		case 2:
 		case 3:
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
-			DAP_setSkipAheadLimit(sva.win,  IDX_MinNoOfSweeps(sva.win) - 1)
+			DAP_setSkipAheadLimit(sva.win, IDX_MinNoOfSweeps(sva.win) - 1)
 			break
 	endswitch
 
@@ -5033,11 +5033,11 @@ End
 Function DAP_CheckProc_RandomRA(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2:
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			if(cba.checked)
-				PGC_SetAndActivateControl(cba.win, "SetVar_DataAcq_skipAhead", val=0)
+				PGC_SetAndActivateControl(cba.win, "SetVar_DataAcq_skipAhead", val = 0)
 				DisableControl(cba.win, "SetVar_DataAcq_skipAhead")
 			else
 				EnableControl(cba.win, "SetVar_DataAcq_skipAhead")
@@ -5051,11 +5051,11 @@ End
 Function DAP_CheckSkipAhead(device)
 	string device
 
-	variable activeSkipAhead = DAG_GetNumericalValue(device, "SetVar_DataAcq_skipAhead")
+	variable activeSkipAhead   = DAG_GetNumericalValue(device, "SetVar_DataAcq_skipAhead")
 	variable filteredSkipAhead = DAP_getFilteredSkipAhead(device, activeSkipAhead)
 	if(activeSkipAhead > filteredSkipAhead)
 		printf "Skip ahead value exceeds allowed limit for new selection and has been set to %d \r", filteredSkipAhead
-		PGC_SetAndActivateControl(device, "SetVar_DataAcq_skipAhead", val=filteredSkipAhead)
+		PGC_SetAndActivateControl(device, "SetVar_DataAcq_skipAhead", val = filteredSkipAhead)
 		controlWindowToFront()
 	endif
 
@@ -5105,7 +5105,7 @@ Function DAP_CheckProc_RequireAmplifier(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	variable checked
-	string device
+	string   device
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -5163,7 +5163,7 @@ Function DAP_PopMenuProc_OsciUpdMode(pa) : PopupMenuControl
 			device = pa.win
 			DAG_Update(device, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
 
-			NVAR tpRunMode = $GetTestpulseRunMode(device)
+			NVAR tpRunMode      = $GetTestpulseRunMode(device)
 			NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 
 			if(IsFinite(tpRunMode) && tpRunMode != TEST_PULSE_NOT_RUNNING)
@@ -5210,7 +5210,7 @@ Function ButtonProc_Hardware_rescan(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			SVAR globalITCDevList = $GetITCDeviceList()
-			SVAR globalNIDevList = $GetNIDeviceList()
+			SVAR globalNIDevList  = $GetNIDeviceList()
 
 			KillStrings/Z globalITCDevList, globalNIDevList
 
@@ -5226,7 +5226,7 @@ Function DAP_CheckProc_PowerSpectrum(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	variable testPulseMode
-	string device
+	string   device
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -5261,7 +5261,7 @@ Function DAP_UpdateDaEphysStimulusSetPopups([device])
 		listOfPanels = device
 	endif
 
-	DEBUGPRINT("Updating", str=listOfPanels)
+	DEBUGPRINT("Updating", str = listOfPanels)
 
 	DAlist  = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC)
 	TTLlist = ST_GetStimsetList(channelType = CHANNEL_TYPE_TTL)
@@ -5331,7 +5331,7 @@ Function DAP_UpdateDaEphysStimulusSetPopups([device])
 End
 
 static Function DAP_UpdateStimulusSetPopup(string device, string ctrl, string stimsets)
-	string stimset
+	string   stimset
 	variable index
 
 	stimset = GetPopupMenuString(device, ctrl)
@@ -5500,7 +5500,7 @@ Function DAP_TPSettingsToGUI(string device, [string entry])
 	// turn off send to all headstages temporarily
 	// we want the values for the *current* headstage only be set in the GUI
 	// and only for the *current* headstage
-	originalHSAll = TPSettings[%sendToAllHS][INDEP_HEADSTAGE]
+	originalHSAll                             = TPSettings[%sendToAllHS][INDEP_HEADSTAGE]
 	TPSettings[%sendToAllHS][INDEP_HEADSTAGE] = 0
 
 	TPState = TP_StopTestPulse(device)

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -9,14 +9,14 @@
 /// @file MIES_TestPulse.ipf
 /// @brief __TP__ Basic Testpulse related functionality
 
-static Constant TP_MAX_VALID_RESISTANCE       = 3000 ///< Units MΩ
-static Constant TP_TPSTORAGE_EVAL_INTERVAL    = 0.18
-static Constant TP_FIT_POINTS                 = 5
-static Constant TP_PRESSURE_INTERVAL          = 0.090  ///< [s]
-static Constant TP_EVAL_POINT_OFFSET          = 5
+static Constant TP_MAX_VALID_RESISTANCE    = 3000  ///< Units MΩ
+static Constant TP_TPSTORAGE_EVAL_INTERVAL = 0.18
+static Constant TP_FIT_POINTS              = 5
+static Constant TP_PRESSURE_INTERVAL       = 0.090 ///< [s]
+static Constant TP_EVAL_POINT_OFFSET       = 5
 
-static Constant TP_BASELINE_FITTING_INSET     = 0.3 // ms
-static Constant TP_SET_PRECISION              = 2
+static Constant TP_BASELINE_FITTING_INSET = 0.3 // ms
+static Constant TP_SET_PRECISION          = 2
 
 /// Comment in for debugging of TP_TSAnalysis
 ///
@@ -69,17 +69,17 @@ End
 ///
 /// The stored test pulse waves will have column dimension labels in the format `HS_X`.
 Function TP_StoreTP(device, TPWave, tpMarker, hsList)
-	string device
-	WAVE TPWave
+	string   device
+	WAVE     TPWave
 	variable tpMarker
-	string hsList
+	string   hsList
 
 	variable index, ret
 
 	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 
-	ret = EnsureLargeEnoughWave(storedTP, indexShouldExist=index, checkFreeMemory = 1)
+	ret = EnsureLargeEnoughWave(storedTP, indexShouldExist = index, checkFreeMemory = 1)
 
 	if(ret)
 		HandleOutOfMemory(device, NameOfWave(storedTP))
@@ -89,8 +89,8 @@ Function TP_StoreTP(device, TPWave, tpMarker, hsList)
 	Note/K TPWave
 
 	SetStringInWaveNote(TPWave, "TimeStamp", GetISO8601TimeStamp(numFracSecondsDigits = 3))
-	SetNumberInWaveNote(TPWave, "TPMarker", tpMarker, format="%d")
-	SetNumberInWaveNote(TPWave, "TPCycleID", ROVAR(GetTestpulseCycleID(device)), format="%d")
+	SetNumberInWaveNote(TPWave, "TPMarker", tpMarker, format = "%d")
+	SetNumberInWaveNote(TPWave, "TPCycleID", ROVAR(GetTestpulseCycleID(device)), format = "%d")
 	SetStringInWaveNote(TPWave, "Headstages", hsList)
 
 	// setting dimension labels only works if the dimension size is not zero
@@ -159,7 +159,7 @@ Function TP_SplitStoredTestPulseWave(device)
 	variable numEntries, i
 
 	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
-	DFREF dfr = GetDeviceTestPulse(device)
+	DFREF     dfr      = GetDeviceTestPulse(device)
 
 	numEntries = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 	for(i = 0; i < numEntries; i += 1)
@@ -186,9 +186,9 @@ End
 ///
 /// @param errmsg error message of TP_TSAnalysis() function
 Function TP_ROAnalysis(dfr, err, errmsg)
-	DFREF dfr
+	DFREF    dfr
 	variable err
-	string errmsg
+	string   errmsg
 
 	variable i, j, bufSize
 	variable posMarker, posAsync, tpBufferSize
@@ -199,22 +199,22 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 		ASSERT(0, "RTError " + num2str(err) + " in TP_Analysis thread: " + errmsg)
 	endif
 
-	WAVE/SDFR=dfr inData=outData
-	NVAR/SDFR=dfr now=now
-	NVAR/SDFR=dfr hsIndex=hsIndex
-	SVAR/SDFR=dfr device=device
-	NVAR/SDFR=dfr marker=marker
-	NVAR/SDFR=dfr activeADCs=activeADCs
+	WAVE/SDFR=dfr inData     = outData
+	NVAR/SDFR=dfr now        = now
+	NVAR/SDFR=dfr hsIndex    = hsIndex
+	SVAR/SDFR=dfr device     = device
+	NVAR/SDFR=dfr marker     = marker
+	NVAR/SDFR=dfr activeADCs = activeADCs
 
 	WAVE asyncBuffer = GetTPResultAsyncBuffer(device)
 
-	bufSize = DimSize(asyncBuffer, ROWS)
-	posMarker = FindDimLabel(asyncBuffer, LAYERS, "MARKER")
-	posAsync = FindDimLabel(asyncBuffer, COLS, "ASYNCDATA")
+	bufSize     = DimSize(asyncBuffer, ROWS)
+	posMarker   = FindDimLabel(asyncBuffer, LAYERS, "MARKER")
+	posAsync    = FindDimLabel(asyncBuffer, COLS, "ASYNCDATA")
 	posBaseline = FindDimLabel(asyncBuffer, COLS, "BASELINE")
-	posSSRes = FindDimLabel(asyncBuffer, COLS, "STEADYSTATERES")
-	posInstRes = FindDimLabel(asyncBuffer, COLS, "INSTANTRES")
-	posElevSS = FindDimLabel(asyncBuffer, COLS, "ELEVATED_SS")
+	posSSRes    = FindDimLabel(asyncBuffer, COLS, "STEADYSTATERES")
+	posInstRes  = FindDimLabel(asyncBuffer, COLS, "INSTANTRES")
+	posElevSS   = FindDimLabel(asyncBuffer, COLS, "ELEVATED_SS")
 	posElevInst = FindDimLabel(asyncBuffer, COLS, "ELEVATED_INST")
 
 	FindValue/RMD=[][posAsync][posMarker, posMarker]/V=(marker)/T=0 asyncBuffer
@@ -222,18 +222,18 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 
 	if(i == bufSize)
 		Redimension/N=(bufSize + 1, -1, -1) asyncBuffer
-		asyncBuffer[bufSize][][] = NaN
+		asyncBuffer[bufSize][][]                      = NaN
 		asyncBuffer[bufSize][posAsync][%REC_CHANNELS] = 0
-		asyncBuffer[bufSize][posAsync][posMarker] = marker
+		asyncBuffer[bufSize][posAsync][posMarker]     = marker
 	endif
 
 	asyncBuffer[i][posBaseline][hsIndex] = inData[%BASELINE]
-	asyncBuffer[i][posSSRes][hsIndex] = inData[%STEADYSTATERES]
-	asyncBuffer[i][posInstRes][hsIndex] = inData[%INSTANTRES]
-	asyncBuffer[i][posElevSS][hsIndex] = inData[%ELEVATED_SS]
+	asyncBuffer[i][posSSRes][hsIndex]    = inData[%STEADYSTATERES]
+	asyncBuffer[i][posInstRes][hsIndex]  = inData[%INSTANTRES]
+	asyncBuffer[i][posElevSS][hsIndex]   = inData[%ELEVATED_SS]
 	asyncBuffer[i][posElevInst][hsIndex] = inData[%ELEVATED_INST]
 
-	asyncBuffer[i][posAsync][%NOW] = now
+	asyncBuffer[i][posAsync][%NOW]           = now
 	asyncBuffer[i][posAsync][%REC_CHANNELS] += 1
 
 	// got one set of results ready
@@ -242,16 +242,16 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 		WAVE TPResults  = GetTPResults(device)
 		WAVE TPSettings = GetTPSettings(device)
 
-		MultiThread TPResults[%BaselineSteadyState][]   = asyncBuffer[i][posBaseline][q]
+		MultiThread TPResults[%BaselineSteadyState][] = asyncBuffer[i][posBaseline][q]
 		MultiThread TPResults[%ResistanceSteadyState][] = asyncBuffer[i][posSSRes][q]
-		MultiThread TPResults[%ResistanceInst][]        = asyncBuffer[i][posInstRes][q]
-		MultiThread TPResults[%ElevatedSteadyState][]   = asyncBuffer[i][posElevSS][q]
-		MultiThread TPResults[%ElevatedInst][]          = asyncBuffer[i][posElevInst][q]
+		MultiThread TPResults[%ResistanceInst][] = asyncBuffer[i][posInstRes][q]
+		MultiThread TPResults[%ElevatedSteadyState][] = asyncBuffer[i][posElevSS][q]
+		MultiThread TPResults[%ElevatedInst][] = asyncBuffer[i][posElevInst][q]
 
 		// Remove finished results from buffer
 		DeletePoints i, 1, asyncBuffer
 		if(!DimSize(asyncBuffer, ROWS))
-			KillOrMoveToTrash(wv=asyncBuffer)
+			KillOrMoveToTrash(wv = asyncBuffer)
 		endif
 
 		if(TPSettings[%bufferSize][INDEP_HEADSTAGE] > 1)
@@ -281,7 +281,7 @@ static Function/WAVE TP_CreateOverrideResults(string device, variable type)
 			numRows   = MINIMUM_WAVE_SIZE
 			numCols   = NUM_HEADSTAGES
 			numLayers = 3
-			labels = "Factor;Voltage;BaselineFitResult"
+			labels    = "Factor;Voltage;BaselineFitResult"
 			break
 		default:
 			ASSERT(0, "Invalid type")
@@ -289,7 +289,7 @@ static Function/WAVE TP_CreateOverrideResults(string device, variable type)
 
 	KillOrMoveToTrash(wv = GetOverrideResults())
 
-	Make/D/N=(numRows, numCols, numLayers) root:overrideResults/Wave=wv
+	Make/D/N=(numRows, numCols, numLayers) root:overrideResults/WAVE=wv
 
 	wv[] = NaN
 
@@ -346,10 +346,10 @@ static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResult
 
 	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
-		WAVE indizes = ListToNumericWave(GetStringFromWaveNote(overrideResults, "Next unread index [baseline]"), ",")
+		WAVE indizes         = ListToNumericWave(GetStringFromWaveNote(overrideResults, "Next unread index [baseline]"), ",")
 		ASSERT(indizes[headstage] < DimSize(overrideResults, ROWS), "Invalid index")
-		fac = overrideResults[indizes[headstage]][headstage][%Factor]
-		result = overrideResults[indizes[headstage]][headstage][%BaselineFitResult]
+		fac                 = overrideResults[indizes[headstage]][headstage][%Factor]
+		result              = overrideResults[indizes[headstage]][headstage][%BaselineFitResult]
 		indizes[headstage] += 1
 		SetStringInWaveNote(overrideResults, "Next unread index [baseline]", NumericWaveToList(indizes, ","))
 		tau = fac * baseline
@@ -382,8 +382,8 @@ static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResult
 		TPResults[%AutoTPBaseline][headstage] = 0
 
 		// optimum baseline length [ms]: baseline * (fac / TP_BASELINE_RATIO_OPT) = tau / TP_BASELINE_RATIO_OPT
-		baselineFracCand = TP_CalculateBaselineFraction(pulseLengthMS, pulseLengthMS + tau / TP_BASELINE_RATIO_OPT)
-		baselineFrac[headstage]  = limit(baselineFracCand, TP_BASELINE_FRACTION_LOW, TP_BASELINE_FRACTION_HIGH)
+		baselineFracCand        = TP_CalculateBaselineFraction(pulseLengthMS, pulseLengthMS + tau / TP_BASELINE_RATIO_OPT)
+		baselineFrac[headstage] = limit(baselineFracCand, TP_BASELINE_FRACTION_LOW, TP_BASELINE_FRACTION_HIGH)
 
 		TPResults[%AutoTPBaselineRangeExceeded][headstage] = (baselineFracCand != baselineFrac[headstage])
 
@@ -443,8 +443,8 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 
 	totalLength = DimDelta(data, ROWS) * (DimSize(data, ROWS) - 1)
 
-	first = 1/4 * totalLength + 1/2 * pulseLengthMS
-	last  = 3/4 * totalLength - 1/2 * pulseLengthMS
+	first = 1 / 4 * totalLength + 1 / 2 * pulseLengthMS
+	last  = 3 / 4 * totalLength - 1 / 2 * pulseLengthMS
 	ASSERT(first < last, "Invalid first/last")
 
 	baseline = last - first
@@ -464,14 +464,14 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 
 			AppendToGraph/W=AutoTPDebugging/L=res residuals
 			AppendToGraph/W=AutoTPDebugging displayedData
-			ModifyGraph/W=AutoTPDebugging rgb(Res_AutoTPDebuggingData)=(0,0,0),rgb(AutoTPDebuggingData)=(655355,0,0)
-			ModifyGraph axisEnab(left)={0,0.65},axisEnab(res)={0.7,1},freePos(res)=0
+			ModifyGraph/W=AutoTPDebugging rgb(Res_AutoTPDebuggingData)=(0, 0, 0), rgb(AutoTPDebuggingData)=(655355, 0, 0)
+			ModifyGraph axisEnab(left)={0, 0.65}, axisEnab(res)={0.7, 1}, freePos(res)=0
 		endif
 
 		Cursor/W=AutoTPDebugging A, $NameOfWave(displayedData), first
 		Cursor/W=AutoTPDebugging B, $NameOfWave(displayedData), last
 
-		WAVE data = root:AutoTPDebuggingData
+		WAVE data      = root:AutoTPDebuggingData
 		WAVE residuals = root:Res_AutoTPDebuggingData
 	endif
 #endif
@@ -555,15 +555,15 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 		return NaN
 	endif
 
-	Wave TPStorage = GetTPStorage(device)
+	WAVE TPStorage = GetTPStorage(device)
 	lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOTP_LAST_INVOCATION_KEY)
-	curTime = ticks * TICKS_TO_SECONDS
+	curTime        = ticks * TICKS_TO_SECONDS
 
 	if(IsFinite(lastInvocation) && (curTime - lastInvocation) < TPSettings[%autoTPInterval][INDEP_HEADSTAGE])
 		return NaN
 	endif
 
-	SetNumberInWaveNote(TPStorage, AUTOTP_LAST_INVOCATION_KEY, curTime, format="%.06f")
+	SetNumberInWaveNote(TPStorage, AUTOTP_LAST_INVOCATION_KEY, curTime, format = "%.06f")
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
@@ -593,9 +593,9 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 
 		if(TestOverrideActive())
 			WAVE overrideResults = GetOverrideResults()
-			WAVE indizes = ListToNumericWave(GetStringFromWaveNote(overrideResults, "Next unread index [amplitude]"), ",")
+			WAVE indizes         = ListToNumericWave(GetStringFromWaveNote(overrideResults, "Next unread index [amplitude]"), ",")
 			ASSERT(indizes[i] < DimSize(overrideResults, ROWS), "Invalid index")
-			voltage = overrideResults[indizes[i]][i][%Voltage]
+			voltage     = overrideResults[indizes[i]][i][%Voltage]
 			indizes[i] += 1
 			SetStringInWaveNote(overrideResults, "Next unread index [amplitude]", NumericWaveToList(indizes, ","))
 		else
@@ -608,7 +608,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 			TPSettings[%amplitudeIC][i] = RoundNumber(abs(TPSettings[%amplitudeIC][i]) * sign(targetVoltage), TP_SET_PRECISION)
 
 			skipAutoBaseline = 1
-			needsUpdate = 1
+			needsUpdate      = 1
 		endif
 
 		if(abs(TPSettings[%amplitudeIC][i]) <= 5)
@@ -616,7 +616,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 			TPSettings[%amplitudeIC][i] = RoundNumber((7.5 + enoise(2.5, NOISE_GEN_MERSENNE_TWISTER)) * sign(targetVoltage), TP_SET_PRECISION)
 
 			skipAutoBaseline = 1
-			needsUpdate = 1
+			needsUpdate      = 1
 		endif
 
 		if(skipAutoBaseline)
@@ -728,7 +728,7 @@ static Function TP_AutoDisableIfFinished(string device, WAVE TPStorage)
 		WAVE/Z amplitudePasses = TP_GetValuesFromTPStorage(TPStorage, i, "AutoTPAmplitude", TP_AUTO_TP_CONSECUTIVE_PASSES, options = TP_GETVALUES_LATEST_AUTOTPCYCLE)
 		WAVE/Z baselinePasses  = TP_GetValuesFromTPStorage(TPStorage, i, "AutoTPBaseline", TP_AUTO_TP_CONSECUTIVE_PASSES, options = TP_GETVALUES_LATEST_AUTOTPCYCLE)
 
-		if((WaveExists(amplitudePasses) && Sum(amplitudePasses) == TP_AUTO_TP_CONSECUTIVE_PASSES)  \
+		if((WaveExists(amplitudePasses) && Sum(amplitudePasses) == TP_AUTO_TP_CONSECUTIVE_PASSES) \
 		   && (WaveExists(baselinePasses) && Sum(baselinePasses) == TP_AUTO_TP_CONSECUTIVE_PASSES))
 
 			TP_AutoTPTurnOff(device, autoTPEnable, i, 1)
@@ -819,7 +819,7 @@ Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, stri
 
 	latestAutoTPCycleID = TPStorage[lastValidEntry][headstage][%autoTPCycleID]
 
-	if(numReqEntries == inf)
+	if(numReqEntries == Inf)
 		entryLayer = FindDimLabel(TPstorage, LAYERS, entry)
 		ASSERT(entryLayer >= 0, "Invalid entry")
 		Duplicate/FREE/RMD=[0, lastValidEntry][headstage][entryLayer] TPStorage, slice
@@ -886,24 +886,24 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 
 	DFREF dfrOut = NewFreeDataFolder()
 
-	WAVE data = dfrInp:param0
-	NVAR/SDFR=dfrInp clampAmp = param1
-	NVAR/SDFR=dfrInp clampMode = param2
-	NVAR/SDFR=dfrInp duration = param3
-	NVAR/SDFR=dfrInp baselineFrac = param4
+	WAVE             data             = dfrInp:param0
+	NVAR/SDFR=dfrInp clampAmp         = param1
+	NVAR/SDFR=dfrInp clampMode        = param2
+	NVAR/SDFR=dfrInp duration         = param3
+	NVAR/SDFR=dfrInp baselineFrac     = param4
 	NVAR/SDFR=dfrInp lengthTPInPoints = param5
-	NVAR/SDFR=dfrInp now = param6
-	NVAR/SDFR=dfrInp hsIndex = param7
-	SVAR/SDFR=dfrInp device = param8
-	NVAR/SDFR=dfrInp marker = param9
-	NVAR/SDFR=dfrInp activeADCs = param10
+	NVAR/SDFR=dfrInp now              = param6
+	NVAR/SDFR=dfrInp hsIndex          = param7
+	SVAR/SDFR=dfrInp device           = param8
+	NVAR/SDFR=dfrInp marker           = param9
+	NVAR/SDFR=dfrInp activeADCs       = param10
 
 #if defined(TP_ANALYSIS_DEBUGGING)
 	DEBUGPRINT_TS("Marker: ", var = marker)
 	Duplicate data, dfrOut:colors
 	Duplicate data, dfrOut:data
 	WAVE colors = dfrOut:colors
-	colors = 0
+	colors                          = 0
 	colors[0, lengthTPInPoints - 1] = 100
 #endif
 
@@ -913,21 +913,21 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	// 2: instantaneous resistance
 	// 3: averaged elevated level (steady state)
 	// 4: averaged elevated level (instantaneous)
-	Make/N=5/D dfrOut:outData/wave=outData
+	Make/N=5/D dfrOut:outData/WAVE=outData
 	SetDimLabel ROWS, 0, BASELINE, outData
 	SetDimLabel ROWS, 1, STEADYSTATERES, outData
 	SetDimLabel ROWS, 2, INSTANTRES, outData
 	SetDimLabel ROWS, 3, ELEVATED_SS, outData
 	SetDimLabel ROWS, 4, ELEVATED_INST, outData
 
-	sampleInt = DimDelta(data, ROWS)
+	sampleInt    = DimDelta(data, ROWS)
 	tpStartPoint = baseLineFrac * lengthTPInPoints
-	evalRange = min(5 / sampleInt, min(duration * 0.2, tpStartPoint * 0.2)) * sampleInt
+	evalRange    = min(5 / sampleInt, min(duration * 0.2, tpStartPoint * 0.2)) * sampleInt
 
 	// correct TP_EVAL_POINT_OFFSET for the non-standard sampling interval
 	evalOffsetPointsCorrected = (TP_EVAL_POINT_OFFSET / sampleInt) * HARDWARE_ITC_MIN_SAMPINT
 
-	refTime = (tpStartPoint - evalOffsetPointsCorrected) * sampleInt
+	refTime       = (tpStartPoint - evalOffsetPointsCorrected) * sampleInt
 	AvgBaselineSS = mean(data, refTime - evalRange, refTime)
 
 #if defined(TP_ANALYSIS_DEBUGGING)
@@ -951,10 +951,10 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	DEBUGPRINT_TS("steady state range eng (ms): ", var = refTime)
 	DEBUGPRINT_TS("steady state average: ", var = avgTPSS)
 	// color steady state
-	refpt = lengthTPInPoints - tpStartPoint - evalOffsetPointsCorrected
+	refpt                                        = lengthTPInPoints - tpStartPoint - evalOffsetPointsCorrected
 	colors[refpt - evalRange / sampleInt, refpt] = 50
 	// color instantaneous
-	refpt = tpStartPoint + evalOffsetPointsCorrected
+	refpt                                   = tpStartPoint + evalOffsetPointsCorrected
 	colors[refpt, refpt + 0.25 / sampleInt] = 50
 #endif
 
@@ -992,10 +992,10 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 #endif
 
 	// additional data copy
-	variable/G dfrOut:now = now
-	variable/G dfrOut:hsIndex = hsIndex
-	string/G dfrOut:device = device
-	variable/G dfrOut:marker = marker
+	variable/G dfrOut:now        = now
+	variable/G dfrOut:hsIndex    = hsIndex
+	string/G   dfrOut:device     = device
+	variable/G dfrOut:marker     = marker
 	variable/G dfrOut:activeADCs = activeADCs
 
 	return dfrOut
@@ -1030,13 +1030,13 @@ End
 /// Used for analysis of TP over time.
 static Function TP_RecordTP(device, TPResults, now, tpMarker)
 	string device
-	WAVE TPResults
+	WAVE   TPResults
 	variable now, tpMarker
 
 	variable delta, i, ret, lastPressureCtrl, timestamp, cycleID
-	WAVE TPStorage = GetTPStorage(device)
-	WAVE hsProp = GetHSProperties(device)
-	variable count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+	WAVE     TPStorage     = GetTPStorage(device)
+	WAVE     hsProp        = GetHSProperties(device)
+	variable count         = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	variable lastRescaling = GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC)
 
 	if(!count)
@@ -1045,7 +1045,7 @@ static Function TP_RecordTP(device, TPResults, now, tpMarker)
 
 		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
-		for(i = 0 ; i < NUM_HEADSTAGES; i += 1)
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 			if(!statusHS[i])
 				continue
@@ -1055,7 +1055,7 @@ static Function TP_RecordTP(device, TPResults, now, tpMarker)
 		endfor
 	endif
 
-	ret = EnsureLargeEnoughWave(TPStorage, indexShouldExist=count, dimension=ROWS, initialValue=NaN, checkFreeMemory = 1)
+	ret = EnsureLargeEnoughWave(TPStorage, indexShouldExist = count, dimension = ROWS, initialValue = NaN, checkFreeMemory = 1)
 
 	if(ret)
 		HandleOutOfMemory(device, NameOfWave(TPStorage))
@@ -1065,27 +1065,27 @@ static Function TP_RecordTP(device, TPResults, now, tpMarker)
 	// use the last value if we don't have a current one
 	if(count > 0)
 		TPStorage[count][][%HoldingCmd_VC] = !IsFinite(TPStorage[count][q][%HoldingCmd_VC]) \
-											 ? TPStorage[count - 1][q][%HoldingCmd_VC]      \
-											 : TPStorage[count][q][%HoldingCmd_VC]
+		                                     ? TPStorage[count - 1][q][%HoldingCmd_VC]      \
+		                                     : TPStorage[count][q][%HoldingCmd_VC]
 
 		TPStorage[count][][%HoldingCmd_IC] = !IsFinite(TPStorage[count][q][%HoldingCmd_IC]) \
-											 ? TPStorage[count - 1][q][%HoldingCmd_IC]      \
-											 : TPStorage[count][q][%HoldingCmd_IC]
+		                                     ? TPStorage[count - 1][q][%HoldingCmd_IC]      \
+		                                     : TPStorage[count][q][%HoldingCmd_IC]
 	endif
 
-	TPStorage[count][][%TimeInSeconds]              = now
+	TPStorage[count][][%TimeInSeconds] = now
 
 	// store the current time in a variable first
 	// so that all columns have the same timestamp
-	timestamp = DateTime
-	TPStorage[count][][%TimeStamp] = timestamp
-	timestamp = DateTimeInUTC()
+	timestamp                                       = DateTime
+	TPStorage[count][][%TimeStamp]                  = timestamp
+	timestamp                                       = DateTimeInUTC()
 	TPStorage[count][][%TimeStampSinceIgorEpochUTC] = timestamp
 
 	TPStorage[count][][%PeakResistance]        = min(TPResults[%ResistanceInst][q], TP_MAX_VALID_RESISTANCE)
 	TPStorage[count][][%SteadyStateResistance] = min(TPResults[%ResistanceSteadyState][q], TP_MAX_VALID_RESISTANCE)
-	TPStorage[count][][%ValidState]            = TPStorage[count][q][%PeakResistance] < TP_MAX_VALID_RESISTANCE \
-															&& TPStorage[count][q][%SteadyStateResistance] < TP_MAX_VALID_RESISTANCE
+	TPStorage[count][][%ValidState]            = TPStorage[count][q][%PeakResistance] < TP_MAX_VALID_RESISTANCE         \
+	                                             && TPStorage[count][q][%SteadyStateResistance] < TP_MAX_VALID_RESISTANCE
 
 	TPStorage[count][][%DAC]       = hsProp[q][%DAC]
 	TPStorage[count][][%ADC]       = hsProp[q][%ADC]
@@ -1096,9 +1096,9 @@ static Function TP_RecordTP(device, TPResults, now, tpMarker)
 	TPStorage[count][][%Baseline_IC] = hsProp[q][%ClampMode] == I_CLAMP_MODE ? TPResults[%BaselineSteadyState][q] : NaN
 
 	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
-	TPStorage[count][][%TPMarker] = tpMarker
+	TPStorage[count][][%TPMarker]           = tpMarker
 
-	cycleID = ROVAR(GetTestpulseCycleID(device))
+	cycleID                        = ROVAR(GetTestpulseCycleID(device))
 	TPStorage[count][][%TPCycleID] = cycleID
 
 	TPStorage[count][][%AutoTPAmplitude]             = TPResults[%AutoTPAmplitude][q]
@@ -1113,13 +1113,13 @@ static Function TP_RecordTP(device, TPResults, now, tpMarker)
 	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
 	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
 		P_PressureControl(device)
-		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, now, format="%.06f")
+		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, now, format = "%.06f")
 	endif
 
 	TP_AnalyzeTP(device, TPStorage, count)
 
 	WAVE TPStorageDat = ExtractLogbookSliceTimeStamp(TPStorage)
-	EnsureLargeEnoughWave(TPStorageDat, indexShouldExist=count, dimension=ROWS, initialValue=NaN)
+	EnsureLargeEnoughWave(TPStorageDat, indexShouldExist = count, dimension = ROWS, initialValue = NaN)
 	TPStorageDat[count][] = TPStorage[count][q][%TimeStampSinceIgorEpochUTC]
 
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
@@ -1135,7 +1135,7 @@ threadsafe static Function TP_FitResistance(TPStorage, startRow, endRow, headsta
 	variable V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode
 
 	// finish early on missing data
-	if(!IsFinite(TPStorage[startRow][headstage][%SteadyStateResistance])   \
+	if(!IsFinite(TPStorage[startRow][headstage][%SteadyStateResistance]) \
 	   || !IsFinite(TPStorage[endRow][headstage][%SteadyStateResistance]))
 		return NaN
 	endif
@@ -1147,7 +1147,7 @@ threadsafe static Function TP_FitResistance(TPStorage, startRow, endRow, headsta
 	try
 		V_FitError  = 0
 		V_AbortCode = 0
-		CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow,endRow][headstage][%SteadyStateResistance]/X=TPStorage[startRow,endRow][headstage][%TimeInSeconds]/AD=0/AR=0; AbortOnRTE
+		CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow, endRow][headstage][%SteadyStateResistance]/X=TPStorage[startRow, endRow][headstage][%TimeInSeconds]/AD=0/AR=0; AbortOnRTE
 		return coefWave[1]
 	catch
 		ClearRTError()
@@ -1163,15 +1163,15 @@ End
 /// @param TPStorage        test pulse storage wave
 /// @param endRow           last valid row index in TPStorage
 static Function TP_AnalyzeTP(device, TPStorage, endRow)
-	string device
-	Wave/Z TPStorage
+	string   device
+	WAVE/Z   TPStorage
 	variable endRow
 
 	variable i, startRow, headstage
 
 	startRow = endRow - ceil(TP_FIT_POINTS / TP_TPSTORAGE_EVAL_INTERVAL)
 
-	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage,ROWS))
+	if(startRow < 0 || startRow >= endRow || !WaveExists(TPStorage) || endRow >= DimSize(TPStorage, ROWS))
 		return NaN
 	endif
 
@@ -1219,7 +1219,7 @@ End
 ///
 /// @return One of @ref TestPulseRunModes
 static Function TP_StopTestPulseWrapper(device, [fast])
-	string device
+	string   device
 	variable fast
 
 	variable runMode
@@ -1273,7 +1273,7 @@ Function TP_RestartTestPulse(device, testPulseMode, [fast])
 			TPM_StartTestPulseMultiDevice(device, fast = fast)
 			break
 		default:
-			DEBUGPRINT("Ignoring unknown value:", var=testPulseMode)
+			DEBUGPRINT("Ignoring unknown value:", var = testPulseMode)
 			break
 	endswitch
 End
@@ -1283,7 +1283,7 @@ End
 /// @param runMode     Testpulse running mode, one of @ref TestPulseRunModes
 /// @param fast        [optional, defaults to false] Performs only the totally necessary steps for setup
 Function TP_Setup(device, runMode, [fast])
-	string device
+	string   device
 	variable runMode
 	variable fast
 
@@ -1300,7 +1300,7 @@ Function TP_Setup(device, runMode, [fast])
 		// fast restart is considered to be part of the same cycle
 
 		NVAR deviceID = $GetDAQDeviceID(device)
-		HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+		HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags = HARDWARE_ABORT_ON_ERROR)
 		return NaN
 	endif
 
@@ -1321,7 +1321,7 @@ Function TP_Setup(device, runMode, [fast])
 	DAP_AdaptAutoTPColorAndDependent(device)
 
 	NVAR deviceID = $GetDAQDeviceID(device)
-	HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags = HARDWARE_ABORT_ON_ERROR)
 End
 
 /// @brief Common setup calls for TP and TP during DAQ
@@ -1358,12 +1358,12 @@ Function TP_SetupCommon(device)
 	tpCycleID = TP_GetTPCycleID(device)
 
 	WAVE tpAsyncBuffer = GetTPResultAsyncBuffer(device)
-	KillOrMoveToTrash(wv=tpAsyncBuffer)
+	KillOrMoveToTrash(wv = tpAsyncBuffer)
 End
 
 /// @brief Perform common actions after the testpulse
 Function TP_Teardown(device, [fast])
-	string device
+	string   device
 	variable fast
 
 	if(ParamIsDefault(fast))
@@ -1413,9 +1413,9 @@ Function TP_GetNumDevicesWithTPRunning()
 	variable numEntries, i, count
 	string list, device
 
-	list = GetListOfLockedDevices()
+	list       = GetListOfLockedDevices()
 	numEntries = ItemsInList(list)
-	for(i= 0; i < numEntries;i += 1)
+	for(i = 0; i < numEntries; i += 1)
 		device = StringFromList(i, list)
 		count += TP_CheckIfTestpulseIsRunning(device)
 	endfor
@@ -1439,7 +1439,7 @@ End
 /// @param device		DA_Ephys panel name
 /// @param cycles		number of cycles that test pulse must run
 Function TP_TestPulseHasCycled(device, cycles)
-	string device
+	string   device
 	variable cycles
 
 	variable index, indexOnTPStart
@@ -1453,7 +1453,7 @@ End
 
 /// @brief Save the amplifier holding command in the TPStorage wave
 Function TP_UpdateHoldCmdInTPStorage(device, headStage)
-	string device
+	string   device
 	variable headStage
 
 	variable count, clampMode
@@ -1465,7 +1465,7 @@ Function TP_UpdateHoldCmdInTPStorage(device, headStage)
 	WAVE TPStorage = GetTPStorage(device)
 
 	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-	EnsureLargeEnoughWave(TPStorage, indexShouldExist=count, dimension=ROWS, initialValue=NaN)
+	EnsureLargeEnoughWave(TPStorage, indexShouldExist = count, dimension = ROWS, initialValue = NaN)
 
 	if(!IsFinite(TPStorage[count][headstage][%Headstage])) // HS not active
 		return NaN
@@ -1482,12 +1482,12 @@ End
 
 /// @brief Create the testpulse wave with the current settings
 Function TP_CreateTestPulseWave(device, dataAcqOrTP)
-	string device
+	string   device
 	variable dataAcqOrTP
 
 	variable totalLengthPoints, pulseStartPoints, pulseLengthPoints
 
-	WAVE TestPulse = GetTestPulse()
+	WAVE TestPulse      = GetTestPulse()
 	WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 
 	[totalLengthPoints, pulseStartPoints, pulseLengthPoints] = TP_GetCreationPropertiesInPoints(TPSettingsCalc, dataAcqOrTP)
@@ -1523,18 +1523,18 @@ Function/DF TP_PrepareAnalysisDF(string device, STRUCT TPAnalysisInput &tpInput)
 
 	wlName = GetWorkLoadName(WORKLOADCLASS_TP, device)
 
-	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", wlName, inOrder=0)
-	ASYNC_AddParam(threadDF, w=tpInput.data)
-	ASYNC_AddParam(threadDF, var=tpInput.clampAmp)
-	ASYNC_AddParam(threadDF, var=tpInput.clampMode)
-	ASYNC_AddParam(threadDF, var=tpInput.duration)
-	ASYNC_AddParam(threadDF, var=tpInput.baselineFrac)
-	ASYNC_AddParam(threadDF, var=tpInput.tpLengthPoints)
-	ASYNC_AddParam(threadDF, var=tpInput.readTimeStamp)
-	ASYNC_AddParam(threadDF, var=tpInput.hsIndex)
-	ASYNC_AddParam(threadDF, str=tpInput.device)
-	ASYNC_AddParam(threadDF, var=tpInput.measurementMarker)
-	ASYNC_AddParam(threadDF, var=tpInput.activeADCs)
+	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", wlName, inOrder = 0)
+	ASYNC_AddParam(threadDF, w = tpInput.data)
+	ASYNC_AddParam(threadDF, var = tpInput.clampAmp)
+	ASYNC_AddParam(threadDF, var = tpInput.clampMode)
+	ASYNC_AddParam(threadDF, var = tpInput.duration)
+	ASYNC_AddParam(threadDF, var = tpInput.baselineFrac)
+	ASYNC_AddParam(threadDF, var = tpInput.tpLengthPoints)
+	ASYNC_AddParam(threadDF, var = tpInput.readTimeStamp)
+	ASYNC_AddParam(threadDF, var = tpInput.hsIndex)
+	ASYNC_AddParam(threadDF, str = tpInput.device)
+	ASYNC_AddParam(threadDF, var = tpInput.measurementMarker)
+	ASYNC_AddParam(threadDF, var = tpInput.activeADCs)
 
 	return threadDF
 End
@@ -1551,12 +1551,12 @@ End
 
 Function TP_UpdateTPSettingsCalculated(string device)
 
-	WAVE TPSettings = GetTPSettings(device)
-	WAVE calculated = GetTPSettingsCalculated(device)
+	WAVE TPSettings        = GetTPSettings(device)
+	WAVE calculated        = GetTPSettingsCalculated(device)
 	WAVE samplingIntervals = GetNewSamplingIntervalsAsFree()
-	samplingIntervals[%SI_TP_DAC] = DAP_GetSampInt(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_DAC)
+	samplingIntervals[%SI_TP_DAC]  = DAP_GetSampInt(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_DAC)
 	samplingIntervals[%SI_DAQ_DAC] = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC)
-	samplingIntervals[%SI_TP_ADC] = DAP_GetSampInt(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_ADC)
+	samplingIntervals[%SI_TP_ADC]  = DAP_GetSampInt(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_ADC)
 	samplingIntervals[%SI_DAQ_ADC] = DAP_GetSampInt(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_ADC)
 
 	TP_UpdateTPSettingsCalculatedImpl(TPSettings, samplingIntervals, calculated)
@@ -1569,31 +1569,31 @@ Function TP_UpdateTPSettingsCalculatedImpl(WAVE TPSettings, WAVE samplingInterva
 
 	tpCalculated = NaN
 
-	interTPDAC = samplingIntervals[%SI_TP_DAC] * MICRO_TO_MILLI
+	interTPDAC  = samplingIntervals[%SI_TP_DAC] * MICRO_TO_MILLI
 	interDAQDAC = samplingIntervals[%SI_DAQ_DAC] * MICRO_TO_MILLI
-	interTPADC = samplingIntervals[%SI_TP_ADC] * MICRO_TO_MILLI
+	interTPADC  = samplingIntervals[%SI_TP_ADC] * MICRO_TO_MILLI
 	interDAQADC = samplingIntervals[%SI_DAQ_ADC] * MICRO_TO_MILLI
-	factorTP = interTPDAC / interTPADC
-	factorDAQ = interDAQDAC / interDAQADC
+	factorTP    = interTPDAC / interTPADC
+	factorDAQ   = interDAQDAC / interDAQADC
 
 	// update the calculated values
-	tpCalculated[%baselineFrac]         = TPSettings[%baselinePerc][INDEP_HEADSTAGE] * PERCENT_TO_ONE
+	tpCalculated[%baselineFrac] = TPSettings[%baselinePerc][INDEP_HEADSTAGE] * PERCENT_TO_ONE
 
-	tpCalculated[%pulseLengthMS]        = TPSettings[%durationMS][INDEP_HEADSTAGE] // here for completeness
-	tpCalculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / interTPDAC)
-	tpCalculated[%pulseLengthPointsDAQ] = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / interDAQDAC)
+	tpCalculated[%pulseLengthMS]            = TPSettings[%durationMS][INDEP_HEADSTAGE]                      // here for completeness
+	tpCalculated[%pulseLengthPointsTP]      = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / interTPDAC)
+	tpCalculated[%pulseLengthPointsDAQ]     = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / interDAQDAC)
 	tpCalculated[%pulseLengthPointsTP_ADC]  = trunc(tpCalculated[%pulseLengthPointsTP] * factorTP)
 	tpCalculated[%pulseLengthPointsDAQ_ADC] = trunc(tpCalculated[%pulseLengthPointsDAQ] * factorDAQ)
 
-	tpCalculated[%totalLengthMS]        = TP_CalculateTestPulseLength(tpCalculated[%pulseLengthMS], tpCalculated[%baselineFrac])
-	tpCalculated[%totalLengthPointsTP]  = trunc(TP_CalculateTestPulseLength(tpCalculated[%pulseLengthPointsTP], tpCalculated[%baselineFrac]))
-	tpCalculated[%totalLengthPointsDAQ] = trunc(TP_CalculateTestPulseLength(tpCalculated[%pulseLengthPointsDAQ], tpCalculated[%baselineFrac]))
+	tpCalculated[%totalLengthMS]            = TP_CalculateTestPulseLength(tpCalculated[%pulseLengthMS], tpCalculated[%baselineFrac])
+	tpCalculated[%totalLengthPointsTP]      = trunc(TP_CalculateTestPulseLength(tpCalculated[%pulseLengthPointsTP], tpCalculated[%baselineFrac]))
+	tpCalculated[%totalLengthPointsDAQ]     = trunc(TP_CalculateTestPulseLength(tpCalculated[%pulseLengthPointsDAQ], tpCalculated[%baselineFrac]))
 	tpCalculated[%totalLengthPointsTP_ADC]  = trunc(tpCalculated[%totalLengthPointsTP] * factorTP)
 	tpCalculated[%totalLengthPointsDAQ_ADC] = trunc(tpCalculated[%totalLengthPointsDAQ] * factorDAQ)
 
-	tpCalculated[%pulseStartMS]        = tpCalculated[%baselineFrac] * tpCalculated[%totalLengthMS]
-	tpCalculated[%pulseStartPointsTP]  = trunc(tpCalculated[%baselineFrac] * tpCalculated[%totalLengthPointsTP])
-	tpCalculated[%pulseStartPointsDAQ] = trunc(tpCalculated[%baselineFrac] * tpCalculated[%totalLengthPointsDAQ])
+	tpCalculated[%pulseStartMS]            = tpCalculated[%baselineFrac] * tpCalculated[%totalLengthMS]
+	tpCalculated[%pulseStartPointsTP]      = trunc(tpCalculated[%baselineFrac] * tpCalculated[%totalLengthPointsTP])
+	tpCalculated[%pulseStartPointsDAQ]     = trunc(tpCalculated[%baselineFrac] * tpCalculated[%totalLengthPointsDAQ])
 	tpCalculated[%pulseStartPointsTP_ADC]  = trunc(tpCalculated[%pulseStartPointsTP] * factorTP)
 	tpCalculated[%pulseStartPointsDAQ_ADC] = trunc(tpCalculated[%pulseStartPointsDAQ] * factorDAQ)
 End
@@ -1653,20 +1653,20 @@ Function TP_UpdateTPLBNSettings(string device)
 		TPSettingsLBN[0][%$TP_AMPLITUDE_VC_ENTRY_KEY][i] = TPSettings[%amplitudeVC][i]
 		TPSettingsLBN[0][%$TP_AMPLITUDE_IC_ENTRY_KEY][i] = TPSettings[%amplitudeIC][i]
 
-		lbl = "autoTPEnable"
-		entry = TP_AutoTPLabelToLabnotebookName(lbl)
+		lbl                          = "autoTPEnable"
+		entry                        = TP_AutoTPLabelToLabnotebookName(lbl)
 		TPSettingsLBN[0][%$entry][i] = TPSettings[%$lbl][i]
 
-		lbl = "autoAmpMaxCurrent"
-		entry = TP_AutoTPLabelToLabnotebookName(lbl)
+		lbl                          = "autoAmpMaxCurrent"
+		entry                        = TP_AutoTPLabelToLabnotebookName(lbl)
 		TPSettingsLBN[0][%$entry][i] = TPSettings[%$lbl][i]
 
-		lbl = "autoAmpVoltage"
-		entry = TP_AutoTPLabelToLabnotebookName(lbl)
+		lbl                          = "autoAmpVoltage"
+		entry                        = TP_AutoTPLabelToLabnotebookName(lbl)
 		TPSettingsLBN[0][%$entry][i] = TPSettings[%$lbl][i]
 
-		lbl = "autoAmpVoltageRange"
-		entry = TP_AutoTPLabelToLabnotebookName(lbl)
+		lbl                          = "autoAmpVoltageRange"
+		entry                        = TP_AutoTPLabelToLabnotebookName(lbl)
 		TPSettingsLBN[0][%$entry][i] = TPSettings[%$lbl][i]
 	endfor
 
@@ -1674,19 +1674,19 @@ Function TP_UpdateTPLBNSettings(string device)
 	TPSettingsLBN[0][%$"TP Pulse Duration"][INDEP_HEADSTAGE]                   = calculated[%pulseLengthMS]
 	TPSettingsLBN[0][%$"TP buffer size"][INDEP_HEADSTAGE]                      = TPSettings[%bufferSize][INDEP_HEADSTAGE]
 	TPSettingsLBN[0][%$"Minimum TP resistance for tolerance"][INDEP_HEADSTAGE] = TPSettings[%resistanceTol][INDEP_HEADSTAGE]
-	value = ROVar(GetTestpulseCycleID(device))
-	TPSettingsLBN[0][%$"TP Cycle ID"][INDEP_HEADSTAGE] = value
+	value                                                                      = ROVar(GetTestpulseCycleID(device))
+	TPSettingsLBN[0][%$"TP Cycle ID"][INDEP_HEADSTAGE]                         = value
 
-	lbl = "sendToAllHS"
-	entry = TP_AutoTPLabelToLabnotebookName(lbl)
+	lbl                                        = "sendToAllHS"
+	entry                                      = TP_AutoTPLabelToLabnotebookName(lbl)
 	TPSettingsLBN[0][%$entry][INDEP_HEADSTAGE] = TPSettings[%$lbl][INDEP_HEADSTAGE]
 
-	lbl = "autoTPPercentage"
-	entry = TP_AutoTPLabelToLabnotebookName(lbl)
+	lbl                                        = "autoTPPercentage"
+	entry                                      = TP_AutoTPLabelToLabnotebookName(lbl)
 	TPSettingsLBN[0][%$entry][INDEP_HEADSTAGE] = TPSettings[%$lbl][INDEP_HEADSTAGE]
 
-	lbl = "autoTPInterval"
-	entry = TP_AutoTPLabelToLabnotebookName(lbl)
+	lbl                                        = "autoTPInterval"
+	entry                                      = TP_AutoTPLabelToLabnotebookName(lbl)
 	TPSettingsLBN[0][%$entry][INDEP_HEADSTAGE] = TPSettings[%$lbl][INDEP_HEADSTAGE]
 End
 
