@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
@@ -40,7 +40,7 @@ Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock
 
 	win = GetCurrentWindow()
 	DFREF dfr = GetWavesDataFolderDFR(data)
-	SetWindow $win, userdata(folder) = GetDataFolder(1, dfr)
+	SetWindow $win, userdata(folder)=GetDataFolder(1, dfr)
 
 	ID_SetTitle(win, title)
 
@@ -79,8 +79,8 @@ static Function ID_SetTitle(string win, string title)
 
 	SetDrawLayer/W=$win UserBack
 	SetDrawEnv/W=$win xcoord=rel, ycoord=abs
-	SetDrawEnv/W=$win textxjust= 1,textyjust= 1
-	DrawText/W=$win 0.5,15,title
+	SetDrawEnv/W=$win textxjust=1, textyjust=1
+	DrawText/W=$win 0.5, 15, title
 End
 
 static Function/S ID_GetControl(variable index)
@@ -155,7 +155,7 @@ Function ID_PopMenuProc(pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			WAVE data = ID_GetWave(pa.win)
-			data[] = 0
+			data[]            = 0
 			data[%$pa.popStr] = 1
 
 			break

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -9,7 +9,7 @@
 /// @file MIES_AnalysisBrowser_SweepBrowser.ipf
 /// @brief __SB__  Visualization of sweep data in the analysis browser
 
-static Function/Wave SB_GetSweepBrowserMapFromGraph(win)
+static Function/WAVE SB_GetSweepBrowserMapFromGraph(win)
 	string win
 
 	return GetSweepBrowserMap(SB_GetSweepBrowserFolder(win))
@@ -23,7 +23,7 @@ End
 
 Function SB_TranslateSBMapIndexToABMapIndex(string win, variable sbIndex)
 
-	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(win)
+	WAVE/T sweepMap    = SB_GetSweepBrowserMapFromGraph(win)
 	WAVE/T analysisMap = GetAnalysisBrowserMap()
 
 	// now search the DataFolder from sweepMap in the analyisMap
@@ -59,7 +59,7 @@ Function/DF SB_GetSweepDataFolder(WAVE/T sweepMap, [variable sweepNo, variable i
 End
 
 static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
-	DFREF sweepBrowserDFR
+	DFREF    sweepBrowserDFR
 	variable mapIndex
 
 	string device, expFolder
@@ -84,7 +84,7 @@ End
 
 Function SB_GetIndexFromSweepDataPath(win, dataDFR)
 	string win
-	DFREF dataDFR
+	DFREF  dataDFR
 
 	variable mapIndex, sweepNo
 	string device, expFolder, sweepFolder
@@ -96,15 +96,15 @@ Function SB_GetIndexFromSweepDataPath(win, dataDFR)
 
 	sweepNo = ExtractSweepNumber(sweepFolder)
 
-	WAVE/Z indizesDataFolder = FindIndizes(sweepMap, colLabel="DataFolder", str=expFolder)
-	WAVE/Z indizesDevice     = FindIndizes(sweepMap, colLabel="Device", str=device)
-	WAVE/Z indizesSweep      = FindIndizes(sweepMap, colLabel="Sweep", str=num2str(sweepNo))
+	WAVE/Z indizesDataFolder = FindIndizes(sweepMap, colLabel = "DataFolder", str = expFolder)
+	WAVE/Z indizesDevice     = FindIndizes(sweepMap, colLabel = "Device", str = device)
+	WAVE/Z indizesSweep      = FindIndizes(sweepMap, colLabel = "Sweep", str = num2str(sweepNo))
 
 	ASSERT(WaveExists(indizesDevice) && WaveExists(indizesSweep) && WaveExists(indizesDataFolder), "Map could not be queried")
 
 	// indizesSweep is the shortest one
 	Duplicate/FREE indizesSweep, matches
-	matches[] = (IsFinite(GetRowIndex(indizesDevice, val=indizesSweep[p])) && IsFinite(GetRowIndex(indizesDataFolder, val=indizesSweep[p]))) ? indizesSweep[p] : NaN
+	matches[] = (IsFinite(GetRowIndex(indizesDevice, val = indizesSweep[p])) && IsFinite(GetRowIndex(indizesDataFolder, val = indizesSweep[p]))) ? indizesSweep[p] : NaN
 
 	WAVE reduced = ZapNaNs(matches)
 	ASSERT(Dimsize(reduced, ROWS) == 1, "Unexpected number of matches")
@@ -118,7 +118,7 @@ End
 static Function SB_SetUserData(win)
 	string win
 
-	SetWindow $win, userdata = ""
+	SetWindow $win, userdata=""
 
 	DFREF dfr = UniqueDataFolder(root:, "sweepBrowser")
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
@@ -132,9 +132,9 @@ End
 ///
 /// @return wave with the setting for each headstage or an invalid wave reference if the setting does not exist
 static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
-	string graph
+	string   graph
 	variable mapIndex
-	string key
+	string   key
 
 	string device, expFolder
 	variable sweep
@@ -228,15 +228,15 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 
 	Make/FREE/T/N=(MINIMUM_WAVE_SIZE, 3) channelMap
 
-	SetDimLabel COLS, 0, channel,   channelMap
-	SetDimLabel COLS, 1, path,      channelMap
+	SetDimLabel COLS, 0, channel, channelMap
+	SetDimLabel COLS, 1, path, channelMap
 	SetDimLabel COLS, 2, headstage, channelMap
 
 	if(ParamIsDefault(experiment))
 		numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
 		Make/FREE/N=(numEntries) indizes = p
 	else
-		WAVE/Z indizes = FindIndizes(sweepMap, colLabel="FileName", str=experiment)
+		WAVE/Z indizes = FindIndizes(sweepMap, colLabel = "FileName", str = experiment)
 		ASSERT(WaveExists(indizes), "The experiment could not be found in the sweep browser")
 		numEntries = DimSize(indizes, ROWS)
 	endif
@@ -244,18 +244,18 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 	for(i = 0; i < numEntries; i += 1)
 		DFREF dfr = SB_GetSweepDataPathFromIndex(sweepBrowserDFR, indizes[i])
 
-		list = GetListOfObjects(dfr, channel + "_.*", fullpath=1)
+		list = GetListOfObjects(dfr, channel + "_.*", fullpath = 1)
 		if(IsEmpty(list))
 			continue
 		endif
 
 		WAVE headstages = SB_GetSweepPropertyFromNumLBN(graph, i, "Headstage Active")
-		WAVE ADCs = SB_GetSweepPropertyFromNumLBN(graph, i, "ADC")
-		WAVE DACs = SB_GetSweepPropertyFromNumLBN(graph, i, "DAC")
+		WAVE ADCs       = SB_GetSweepPropertyFromNumLBN(graph, i, "ADC")
+		WAVE DACs       = SB_GetSweepPropertyFromNumLBN(graph, i, "DAC")
 
 		numWaves = ItemsInList(list)
 		for(j = 0; j < numWaves; j += 1)
-			path = StringFromList(j, list)
+			path          = StringFromList(j, list)
 			channelNumber = str2num(RemovePrefix(GetBaseName(path), start = channel + "_"))
 			ASSERT(IsFinite(channelNumber), "Extracted non finite channel number")
 
@@ -276,11 +276,11 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 
 			headstage = num2str(V_value)
 
-			EnsureLargeEnoughWave(channelMap, indexShouldExist=idx)
-			channelMap[idx][%channel]    = num2str(channelNumber)
+			EnsureLargeEnoughWave(channelMap, indexShouldExist = idx)
+			channelMap[idx][%channel]   = num2str(channelNumber)
 			channelMap[idx][%path]      = path
 			channelMap[idx][%headstage] = headstage
-			idx += 1
+			idx                        += 1
 		endfor
 	endfor
 
@@ -296,9 +296,9 @@ Function SB_UpdateSweepPlot(win)
 	variable mapIndex, i, numEntries, sweepNo, traceIndex, currentSweep
 	STRUCT TiledGraphSettings tgs
 
-	graph = GetMainWindow(win)
-	scPanel   = BSP_GetSweepControlsPanel(win)
-	lbPanel   = BSP_GetNotebookSubWindow(win)
+	graph   = GetMainWindow(win)
+	scPanel = BSP_GetSweepControlsPanel(win)
+	lbPanel = BSP_GetNotebookSubWindow(win)
 
 	if(!HasPanelLatestVersion(graph, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
@@ -336,15 +336,15 @@ Function SB_UpdateSweepPlot(win)
 		experiment = sweepMap[mapIndex][%FileName]
 		sweepNo    = str2num(sweepMap[mapIndex][%Sweep])
 
-		WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, index=mapIndex)
+		WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, index = mapIndex)
 
 		WAVE/Z numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
 		ASSERT(WaveExists(numericalValues), "Missing labnotebook wave")
 		WAVE/Z textualValues = GetAnalysLBTextualValues(dataFolder, device)
 		ASSERT(WaveExists(textualValues), "Missing labnotebook wave")
 
-		DFREF sweepDFR  = GetAnalysisSweepPath(dataFolder, device)
-		WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweepNo)
+		DFREF sweepDFR   = GetAnalysisSweepPath(dataFolder, device)
+		WAVE  configWave = GetAnalysisConfigWave(dataFolder, device, sweepNo)
 
 		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, \
 		                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
@@ -370,25 +370,25 @@ Function SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
 	WAVE/T map = GetSweepBrowserMap(sweepBrowser)
 
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
-	EnsureLargeEnoughWave(map, indexShouldExist=index)
+	EnsureLargeEnoughWave(map, indexShouldExist = index)
 
 	Duplicate/FREE/R=[0][]/T map, singleRow
 
-	singleRow = ""
-	singleRow[0][%FileName]         = fileName
-	singleRow[0][%DataFolder]       = dataFolder
-	singleRow[0][%Device]           = device
-	singleRow[0][%Sweep]            = sweepStr
+	singleRow                 = ""
+	singleRow[0][%FileName]   = fileName
+	singleRow[0][%DataFolder] = dataFolder
+	singleRow[0][%Device]     = device
+	singleRow[0][%Sweep]      = sweepStr
 
 	if(IsFinite(GetRowWithSameContent(map, singleRow, 0)))
 		// we already have that sweep in the map
 		return NaN
 	endif
 
-	map[index][%FileName]         = fileName
-	map[index][%DataFolder]       = dataFolder
-	map[index][%Device]           = device
-	map[index][%Sweep]            = sweepStr
+	map[index][%FileName]   = fileName
+	map[index][%DataFolder] = dataFolder
+	map[index][%Device]     = device
+	map[index][%Sweep]      = sweepStr
 
 	SetNumberInWaveNote(map, NOTE_INDEX, index + 1)
 End
@@ -583,7 +583,7 @@ Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
-			win = pa.win
+			win     = pa.win
 			bsPanel = BSP_GetPanel(win)
 
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = CHECKBOX_UNSELECTED)
@@ -594,7 +594,7 @@ Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 			SetSetVariable(win, "setvar_SweepControl_SweepNo", newSweep)
 
 			if(OVS_IsActive(win))
-				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index=newIndex)
+				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index = newIndex)
 			else
 				UpdateSweepPlot(win)
 			endif
@@ -635,21 +635,21 @@ Function SB_AddSweepToGraph(string win, variable index)
 
 	WAVE/Z numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
 	ASSERT(WaveExists(numericalValues), "Missing labnotebook wave")
-	WAVE/Z textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+	WAVE/Z textualValues = GetAnalysLBTextualValues(dataFolder, device)
 	ASSERT(WaveExists(textualValues), "Missing labnotebook wave")
-	DFREF sweepDFR       = GetAnalysisSweepPath(dataFolder, device)
+	DFREF sweepDFR = GetAnalysisSweepPath(dataFolder, device)
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)
 
-	WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, index=index)
+	WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, index = index)
 
 	WAVE config = GetAnalysisConfigWave(dataFolder, device, sweepNo)
 
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
 
 	traceIndex = GetNextTraceIndex(graph)
-	CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepDFR,\
-	                        axisLabelCache, traceIndex, experiment,sweepChannelSel)
+	CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepDFR, \
+	                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
 
 	AR_UpdateTracesIfReq(graph, dfr, sweepNo)
 End

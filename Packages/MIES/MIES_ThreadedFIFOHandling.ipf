@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -44,10 +44,10 @@ static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode)
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(device)
-	WAVE DAQConfigWave   = GetDAQConfigWave(device)
+	WAVE DAQConfigWave       = GetDAQConfigWave(device)
 
 	TFH_StopFifoDaemon(hwType, deviceID)
-	NVAR tgID  = $GetThreadGroupIDFifo(device)
+	NVAR tgID = $GetThreadGroupIDFifo(device)
 	tgID = ThreadGroupCreate(1)
 
 	Duplicate/FREE DAQConfigWave, config
@@ -103,7 +103,7 @@ threadsafe static Function TFH_FifoLoop(config, deviceID, stopCollectionPoint, A
 		endif
 
 		moreData = HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, fifoPos = fifoPos, flags = flags)
-		fifoPos = limit(fifoPos, 0, stopCollectionPoint)
+		fifoPos  = limit(fifoPos, 0, stopCollectionPoint)
 
 		TS_ThreadGroupPutVariable(MAIN_THREAD, "fifoPos", fifoPos)
 

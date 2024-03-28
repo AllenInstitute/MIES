@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ZeroMQPublishingTests
@@ -14,7 +14,7 @@ End
 
 static Function FetchAndParseMessage(string filter)
 	variable jsonID
-	string msg
+	string   msg
 
 	msg = FetchPublishedMessage(filter)
 
@@ -49,7 +49,7 @@ static Function CheckPressureState()
 	string device, expected, actual
 	variable headstage, i, jsonID
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
 
 	MIES_PUB#PUB_PressureMethodChange(device, headstage, PRESSURE_METHOD_ATM, PRESSURE_METHOD_APPROACH)
@@ -71,7 +71,7 @@ static Function CheckPressureSeal()
 	string device, expected, actual
 	variable headstage, i, jsonID, value
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
 
 	MIES_PUB#PUB_PressureSealedState(device, headstage)
@@ -88,7 +88,7 @@ static Function CheckClampMode()
 	string device, expected, actual
 	variable headstage, i, jsonID, value
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
 
 	MIES_PUB#PUB_ClampModeChange(device, headstage, I_CLAMP_MODE, V_CLAMP_MODE)
@@ -110,7 +110,7 @@ static Function CheckAutoBridgeBalance()
 	string device, expected, actual
 	variable headstage, i, jsonID, value
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
 
 	MIES_PUB#PUB_AutoBridgeBalance(device, headstage, 4711)
@@ -131,7 +131,7 @@ static Function CheckPressureBreakin()
 	string device
 	variable headstage, i, jsonID, value
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
 
 	MIES_PUB#PUB_PressureBreakin(device, headstage)
@@ -148,7 +148,7 @@ static Function CheckAutoTP()
 	string device, expected, actual
 	variable headstage, i, jsonID, value
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
 
 	// BEGIN required entries
@@ -158,8 +158,8 @@ static Function CheckAutoTP()
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, 1)
 
 	// Fake TPSettings to avoid GUI calls
-	DFREF dfr = GetDeviceTestPulse(device)
-	WAVE TPsettings = GetTPSettingsFree()
+	DFREF dfr        = GetDeviceTestPulse(device)
+	WAVE  TPsettings = GetTPSettingsFree()
 	MIES_WAVEGETTERS#SetWaveVersion(TPSettings, 2)
 	MoveWave TPSettings, dfr:settings
 
@@ -208,9 +208,9 @@ static Function CheckPipetteInBath()
 	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
-	sweepNo = 0
+	sweepNo   = 0
 
 	// BEGIN required entries
 	ED_AddEntryToLabnotebook(device, "Pipette in Bath Set QC", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
@@ -223,8 +223,8 @@ static Function CheckPipetteInBath()
 	Make/T/FREE/N=(3, 1, 1) keys
 
 	values[headstage] = GetUniqueInteger()
-	keys[0][0][0] = STIMSET_ACQ_CYCLE_ID_KEY
-	keys[2][0][0] = "1"
+	keys[0][0][0]     = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]     = "1"
 
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	// END required entries
@@ -255,14 +255,14 @@ static Function CheckPipetteInBath()
 	CHECK_EQUAL_WAVES(entries, {123}, mode = WAVE_DATA)
 
 	expected = "Ω"
-	actual = JSON_GetString(jsonID, "/results/USER_Pipette in Bath pipette resistance/unit")
+	actual   = JSON_GetString(jsonID, "/results/USER_Pipette in Bath pipette resistance/unit")
 	CHECK_EQUAL_STR(actual, expected)
 
 	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Pipette in Bath pipette resistance/value")
 	CHECK_EQUAL_WAVES(entries, {456}, mode = WAVE_DATA)
 
 	expected = LABNOTEBOOK_BINARY_UNIT
-	actual = JSON_GetString(jsonID, "/results/USER_Pipette in Bath pipette resistance QC/unit")
+	actual   = JSON_GetString(jsonID, "/results/USER_Pipette in Bath pipette resistance QC/unit")
 	CHECK_EQUAL_STR(actual, expected)
 
 	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Pipette in Bath pipette resistance QC/value")
@@ -275,9 +275,9 @@ static Function CheckSealEvaluation()
 	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
-	sweepNo = 0
+	sweepNo   = 0
 
 	// BEGIN required entries
 	ED_AddEntryToLabnotebook(device, "Seal evaluation Set QC", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
@@ -287,8 +287,8 @@ static Function CheckSealEvaluation()
 	Make/T/FREE/N=(3, 1, 1) keys
 
 	values[headstage] = GetUniqueInteger()
-	keys[0][0][0] = STIMSET_ACQ_CYCLE_ID_KEY
-	keys[2][0][0] = "1"
+	keys[0][0][0]     = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]     = "1"
 
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	// END required entries
@@ -305,7 +305,7 @@ static Function CheckSealEvaluation()
 	CHECK_EQUAL_WAVES(entries, {1}, mode = WAVE_DATA)
 
 	expected = "Ω"
-	actual = JSON_GetString(jsonID, "/results/USER_Seal evaluation seal resistance max/unit")
+	actual   = JSON_GetString(jsonID, "/results/USER_Seal evaluation seal resistance max/unit")
 	CHECK_EQUAL_STR(actual, expected)
 
 	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Seal evaluation seal resistance max/value")
@@ -318,9 +318,9 @@ static Function CheckTrueRestMembPot()
 	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
-	sweepNo = 0
+	sweepNo   = 0
 
 	// BEGIN required entries
 	ED_AddEntryToLabnotebook(device, "True Rest Memb. Set QC", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
@@ -330,8 +330,8 @@ static Function CheckTrueRestMembPot()
 	Make/T/FREE/N=(3, 1, 1) keys
 
 	values[headstage] = GetUniqueInteger()
-	keys[0][0][0] = STIMSET_ACQ_CYCLE_ID_KEY
-	keys[2][0][0] = "1"
+	keys[0][0][0]     = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]     = "1"
 
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	// END required entries
@@ -348,7 +348,7 @@ static Function CheckTrueRestMembPot()
 	CHECK_EQUAL_WAVES(entries, {1}, mode = WAVE_DATA)
 
 	expected = "Volt"
-	actual = JSON_GetString(jsonID, "/results/USER_True Rest Memb. Full Average/unit")
+	actual   = JSON_GetString(jsonID, "/results/USER_True Rest Memb. Full Average/unit")
 	CHECK_EQUAL_STR(actual, expected)
 
 	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_True Rest Memb. Full Average/value")
@@ -361,14 +361,14 @@ static Function CheckDAQStateChange_DAQ()
 	string device, actual, expected
 	variable headstage, i, jsonID, type
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
 
 	MIES_PUB#PUB_DAQStateChange(device, DATA_ACQUISITION_MODE, 0, 1)
 
 	jsonID = FetchAndParseMessage(DAQ_TP_STATE_CHANGE_FILTER)
 
-	actual = JSON_GetString(jsonID, "/daq")
+	actual   = JSON_GetString(jsonID, "/daq")
 	expected = "starting"
 	CHECK_EQUAL_STR(actual, expected)
 
@@ -382,14 +382,14 @@ static Function CheckDAQStateChange_TP()
 	string device, actual, expected
 	variable headstage, i, jsonID, type
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
 
 	MIES_PUB#PUB_DAQStateChange(device, TEST_PULSE_MODE, 1, 0)
 
 	jsonID = FetchAndParseMessage(DAQ_TP_STATE_CHANGE_FILTER)
 
-	actual = JSON_GetString(jsonID, "/tp")
+	actual   = JSON_GetString(jsonID, "/tp")
 	expected = "stopping"
 	CHECK_EQUAL_STR(actual, expected)
 
@@ -403,9 +403,9 @@ static Function CheckAccessResSmoke()
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
-	device = "my_device"
+	device    = "my_device"
 	headstage = 0
-	sweepNo = 0
+	sweepNo   = 0
 
 	// BEGIN required entries
 	ED_AddEntryToLabnotebook(device, "Access Res. Smoke Set QC", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
@@ -418,8 +418,8 @@ static Function CheckAccessResSmoke()
 	Make/T/FREE/N=(3, 1, 1) keys
 
 	values[headstage] = GetUniqueInteger()
-	keys[0][0][0] = STIMSET_ACQ_CYCLE_ID_KEY
-	keys[2][0][0] = "1"
+	keys[0][0][0]     = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]     = "1"
 
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	// END required entries
@@ -438,14 +438,14 @@ static Function CheckAccessResSmoke()
 	CHECK_EQUAL_WAVES(entries, {1}, mode = WAVE_DATA)
 
 	expected = "Ω"
-	actual = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke access resistance/unit")
+	actual   = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke access resistance/unit")
 	CHECK_EQUAL_STR(actual, expected)
 
 	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Access Res. Smoke access resistance/value")
 	CHECK_EQUAL_WAVES(entries, {123}, mode = WAVE_DATA)
 
 	expected = LABNOTEBOOK_BINARY_UNIT
-	actual = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke access resistance QC/unit")
+	actual   = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke access resistance QC/unit")
 	CHECK_EQUAL_STR(actual, expected)
 
 	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Access Res. Smoke access resistance QC/value")
@@ -458,7 +458,7 @@ static Function CheckAccessResSmoke()
 	CHECK_EQUAL_WAVES(entries, {0.5}, mode = WAVE_DATA)
 
 	expected = LABNOTEBOOK_BINARY_UNIT
-	actual = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke access vs steady state ratio QC/unit")
+	actual   = JSON_GetString(jsonID, "/results/USER_Access Res. Smoke access vs steady state ratio QC/unit")
 	CHECK_EQUAL_STR(actual, expected)
 
 	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Access Res. Smoke access vs steady state ratio QC/value")

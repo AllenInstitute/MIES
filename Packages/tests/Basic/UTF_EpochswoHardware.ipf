@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=EpochsTestwoHardware
@@ -37,8 +37,8 @@ static Function [WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] 
 
 	ED_AddEntriesToLabnotebook(values, keys, 0, device, DATA_ACQUISITION_MODE)
 
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues   = GetLBTextualValues(device)
 
 	return [numericalValues, textualValues, epochsWave]
 End
@@ -100,7 +100,7 @@ static Function EP_GetEpochsHasMatch()
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
 	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 1 * MICRO_TO_ONE)
 	CHECK_EQUAL_VAR(str2num(result[0][%EndTime]), 2 * MICRO_TO_ONE)
-	str = result[0][%Tags]
+	str      = result[0][%Tags]
 	expected = "someDesc;ShortName=EP1;"
 	CHECK_EQUAL_STR(str, expected)
 	CHECK_EQUAL_VAR(str2num(result[0][%TreeLevel]), 1)
@@ -161,13 +161,13 @@ static Function EP_GetEpochsWorks()
 
 	CHECK_EQUAL_VAR(DimSize(resultAllEpochs, ROWS), 3)
 	Redimension/N=(3, -1) result
-	result[][EPOCH_COL_TREELEVEL] = "1"
+	result[][EPOCH_COL_TREELEVEL]  = "1"
 	result[1][EPOCH_COL_STARTTIME] = "0.0000020"
-	result[1][EPOCH_COL_ENDTIME] = "0.0000030"
-	result[1][EPOCH_COL_TAGS] = "someDesc;ShortName=EP_1a;"
+	result[1][EPOCH_COL_ENDTIME]   = "0.0000030"
+	result[1][EPOCH_COL_TAGS]      = "someDesc;ShortName=EP_1a;"
 	result[2][EPOCH_COL_STARTTIME] = "0.0000040"
-	result[2][EPOCH_COL_ENDTIME] = "0.0000050"
-	result[2][EPOCH_COL_TAGS] = "someDesc;ShortName=EP_1b;"
+	result[2][EPOCH_COL_ENDTIME]   = "0.0000050"
+	result[2][EPOCH_COL_TAGS]      = "someDesc;ShortName=EP_1b;"
 
 	CHECK_EQUAL_TEXTWAVES(result, resultAllEpochs)
 End
@@ -222,7 +222,7 @@ static Function EP_GetNextEpochsHasMatch()
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
 	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 2 * MICRO_TO_ONE)
 	CHECK_EQUAL_VAR(str2num(result[0][%EndTime]), 3 * MICRO_TO_ONE)
-	str = result[0][%Tags]
+	str      = result[0][%Tags]
 	expected = "someDesc;ShortName=EP_1a;"
 	CHECK_EQUAL_STR(str, expected)
 	CHECK_EQUAL_VAR(str2num(result[0][%TreeLevel]), 1)
@@ -233,12 +233,12 @@ static Function EP_GetNextEpochsWithGapHasMatch()
 
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
-	WAVE/T/Z result = EP_GetNextEpoch(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP_1a", 1, ignoreGaps=1)
+	WAVE/T/Z result = EP_GetNextEpoch(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP_1a", 1, ignoreGaps = 1)
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
 	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 4e-6)
 	CHECK_EQUAL_VAR(str2num(result[0][%EndTime]), 5e-6)
-	str = result[0][%Tags]
+	str      = result[0][%Tags]
 	expected = "someDesc;ShortName=EP_1b;"
 	CHECK_EQUAL_STR(str, expected)
 	CHECK_EQUAL_VAR(str2num(result[0][%TreeLevel]), 1)
@@ -255,7 +255,7 @@ static Function EP_CheckADCToDACMApping()
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
 	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 2e-6)
 	CHECK_EQUAL_VAR(str2num(result[0][%EndTime]), 3e-6)
-	str = result[0][%Tags]
+	str      = result[0][%Tags]
 	expected = "someDesc;ShortName=EP_1a;"
 	CHECK_EQUAL_STR(str, expected)
 	CHECK_EQUAL_VAR(str2num(result[0][%TreeLevel]), 1)
@@ -270,12 +270,12 @@ static Function EP_TestSortEpochs()
 
 	Redimension/N=(numEpochs, -1, -1, -1) epochsWave
 	epochsWave[][EPOCH_COL_STARTTIME][][] = num2strHighPrec(-trunc(p / 3), precision = EPOCHTIME_PRECISION)
-	epochsWave[][EPOCH_COL_ENDTIME][][] = num2strHighPrec(trunc(p / 2), precision = EPOCHTIME_PRECISION)
-	epochsWave[][EPOCH_COL_TAGS][][] = num2istr(p)
+	epochsWave[][EPOCH_COL_ENDTIME][][]   = num2strHighPrec(trunc(p / 2), precision = EPOCHTIME_PRECISION)
+	epochsWave[][EPOCH_COL_TAGS][][]      = num2istr(p)
 	epochsWave[][EPOCH_COL_TREELEVEL][][] = num2strHighPrec(p, precision = EPOCHTIME_PRECISION)
 	Make/FREE/D/N=(numEpochs) mixRandom = enoise(1, NOISE_GEN_XOSHIRO)
 
-	SortColumns/DIML keyWaves={mixRandom} sortWaves={epochsWave}
+	SortColumns/DIML keyWaves={mixRandom}, sortWaves={epochsWave}
 	Make/FREE/D/N=(numEpochs) order = str2num(epochsWave[p][EPOCH_COL_TAGS][0][0])
 	wfprintf orderStr, "%d\r", order
 
@@ -285,7 +285,7 @@ static Function EP_TestSortEpochs()
 	WAVE/T epochWave = GetEpochsWave(EP_DUMMY_DEVICE)
 
 	Make/FREE/D/N=(numEpochs) order = str2num(epochWave[p][EPOCH_COL_TAGS][0][0])
-	refHash = "e234059bf5dcf332577b1459e4f30e28a01103eeb598499322840378d86d69e5"
+	refHash   = "e234059bf5dcf332577b1459e4f30e28a01103eeb598499322840378d86d69e5"
 	orderHash = WaveHash(order, HASH_SHA2_256)
 	INFO("mixed order = %s", s0 = orderStr)
 	CHECK_EQUAL_STR(refHash, orderHash)

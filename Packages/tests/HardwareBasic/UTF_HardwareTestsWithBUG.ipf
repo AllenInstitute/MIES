@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareTestsWithBUG
@@ -48,7 +48,7 @@ End
 Function ExtendedDebugLoggingOnErrorWithITC_REENTRY([string str])
 
 	variable refNum
-	string history
+	string   history
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UtilsTest
@@ -46,11 +46,11 @@ Function RemoveAllEmpty_init_IGNORE()
 	NewDataFolder/O root:removeMe:X4
 	NewDataFolder/O root:removeMe:X4:data
 	NewDataFolder/O root:removeMe:X5
-	variable/G      root:removeMe:X5:data
+	variable/G root:removeMe:X5:data
 	NewDataFolder/O root:removeMe:X6
-	string/G        root:removeMe:X6:data
+	string/G root:removeMe:X6:data
 	NewDataFolder/O root:removeMe:X7
-	Make/O          root:removeMe:X7:data
+	Make/O root:removeMe:X7:data
 	NewDataFolder/O root:removeMe:X8
 	NewDataFolder/O root:removeMe:X8:Y8
 	NewDataFolder/O root:removeMe:X8:Y8:Z8
@@ -218,7 +218,7 @@ Function AcceptsValid8()
 
 	variable expected = 3578412052.12345678910
 	// ISO 8601 does not define decimal separator, so comma is also okay
-	variable actual   = ParseISO8601TimeStamp("2017-05-23T19:20:52,12345678910")
+	variable actual = ParseISO8601TimeStamp("2017-05-23T19:20:52,12345678910")
 	CHECK_EQUAL_VAR(actual, expected)
 End
 
@@ -235,15 +235,15 @@ Function AcceptsValid10()
 	variable now      = DateTimeInUTC()
 	variable expected = now
 	// DateTime currently returns six digits of precision
-	variable actual   = ParseISO8601TimeStamp(GetIso8601TimeStamp(secondsSinceIgorEpoch = now, numFracSecondsDigits = 6))
+	variable actual = ParseISO8601TimeStamp(GetIso8601TimeStamp(secondsSinceIgorEpoch = now, numFracSecondsDigits = 6))
 	CHECK_CLOSE_VAR(actual, expected)
 End
 
 Function AcceptsValid11()
 
-	variable now = DateTime
-	string actual   = GetIso8601TimeStamp(secondsSinceIgorEpoch = now, localTimeZone = 1)
-	string expected = GetIso8601TimeStamp(secondsSinceIgorEpoch = now  - Date2Secs(-1, -1, -1))
+	variable now      = DateTime
+	string   actual   = GetIso8601TimeStamp(secondsSinceIgorEpoch = now, localTimeZone = 1)
+	string   expected = GetIso8601TimeStamp(secondsSinceIgorEpoch = now - Date2Secs(-1, -1, -1))
 
 	CHECK_EQUAL_VAR(ParseISO8601TimeStamp(actual), ParseISO8601TimeStamp(expected))
 End
@@ -295,19 +295,19 @@ End
 
 Function/WAVE ISO8601_timestamps()
 
-	Make/FREE/T wv = {\
-		GetIso8601TimeStamp(), \
-		GetIso8601TimeStamp(localTimeZone = 0), \
-		GetIso8601TimeStamp(localTimeZone = 1), \
-		GetIso8601TimeStamp(numFracSecondsDigits = 1), \
-		GetIso8601TimeStamp(numFracSecondsDigits = 2), \
-		GetIso8601TimeStamp(numFracSecondsDigits = 2, localTimeZone = 1), \
-		"2007-08-31T16:47+00:00", \
-		"2007-12-24T18:21Z", \
-		"2008-02-01T09:00:22+05", \
-		"2009-01-01T12:00:00+01:00", \
-		"2009-06-30T18:30:00+02:00" \
-		}
+	Make/FREE/T wv = {                                                                  \
+	                  GetIso8601TimeStamp(),                                            \
+	                  GetIso8601TimeStamp(localTimeZone = 0),                           \
+	                  GetIso8601TimeStamp(localTimeZone = 1),                           \
+	                  GetIso8601TimeStamp(numFracSecondsDigits = 1),                    \
+	                  GetIso8601TimeStamp(numFracSecondsDigits = 2),                    \
+	                  GetIso8601TimeStamp(numFracSecondsDigits = 2, localTimeZone = 1), \
+	                  "2007-08-31T16:47+00:00",                                         \
+	                  "2007-12-24T18:21Z",                                              \
+	                  "2008-02-01T09:00:22+05",                                         \
+	                  "2009-01-01T12:00:00+01:00",                                      \
+	                  "2009-06-30T18:30:00+02:00"                                       \
+	                 }
 
 	return wv
 End
@@ -328,8 +328,8 @@ End
 /// @{
 Function GSD_ExpectsSameWaveType()
 
-	Make/Free/D data1
-	Make/Free/R data2
+	Make/FREE/D data1
+	Make/FREE/R data2
 
 	try
 		WAVE/Z matches = GetSetDifference(data1, data2)
@@ -341,8 +341,8 @@ End
 
 Function GSD_ExpectsFPWaveType()
 
-	Make/Free/D data1
-	Make/Free/T data2
+	Make/FREE/D data1
+	Make/FREE/T data2
 
 	try
 		WAVE/Z matches = GetSetDifference(data1, data2)
@@ -354,8 +354,8 @@ End
 
 Function GSD_Works1()
 
-	Make/Free data1 = {1, 2, 3, 4}
-	Make/Free data2 = {4, 5, 6}
+	Make/FREE data1 = {1, 2, 3, 4}
+	Make/FREE data2 = {4, 5, 6}
 
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_EQUAL_WAVES(matches, {1, 2, 3})
@@ -363,8 +363,8 @@ End
 
 Function GSD_Works2()
 
-	Make/Free data1 = {1, 2, 3, 4}
-	Make/Free data2 = {5, 6, 7}
+	Make/FREE data1 = {1, 2, 3, 4}
+	Make/FREE data2 = {5, 6, 7}
 
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_EQUAL_WAVES(matches, {1, 2, 3, 4})
@@ -372,8 +372,8 @@ End
 
 Function GSD_Works3()
 
-	Make/Free data1 = {1, 2, 3, 4}
-	Make/Free data2 = {4, 3, 2}
+	Make/FREE data1 = {1, 2, 3, 4}
+	Make/FREE data2 = {4, 3, 2}
 
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_EQUAL_WAVES(matches, {1})
@@ -381,8 +381,8 @@ End
 
 Function GSD_Works4()
 
-	Make/Free/D data1
-	Make/Free/D data2
+	Make/FREE/D data1
+	Make/FREE/D data2
 
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
@@ -390,8 +390,8 @@ End
 
 Function GSD_Works5()
 
-	Make/Free/D data1
-	Make/Free/D/N=0 data2
+	Make/FREE/D data1
+	Make/FREE/D/N=0 data2
 
 	WAVE matches = GetSetDifference(data1, data2)
 	CHECK_EQUAL_WAVES(matches, data1)
@@ -399,8 +399,8 @@ End
 
 Function GSD_Works6()
 
-	Make/Free/D data1 = p
-	Make/Free/D data2 = -1
+	Make/FREE/D data1 = p
+	Make/FREE/D data2 = -1
 
 	WAVE matches = GetSetDifference(data1, data2)
 	CHECK_EQUAL_WAVES(matches, data1)
@@ -408,8 +408,8 @@ End
 
 Function GSD_WorksText1()
 
-	Make/Free/T data1 = {"1", "2", "3", "4"}
-	Make/Free/T data2 = {"4", "5", "6"}
+	Make/FREE/T data1 = {"1", "2", "3", "4"}
+	Make/FREE/T data2 = {"4", "5", "6"}
 
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_EQUAL_TEXTWAVES(matches, {"1", "2", "3"})
@@ -417,8 +417,8 @@ End
 
 Function GSD_WorksText2()
 
-	Make/Free/T data1 = {"1", "2", "3", "4"}
-	Make/Free/T data2 = {"5", "6", "7"}
+	Make/FREE/T data1 = {"1", "2", "3", "4"}
+	Make/FREE/T data2 = {"5", "6", "7"}
 
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_EQUAL_TEXTWAVES(matches, {"1", "2", "3", "4"})
@@ -426,8 +426,8 @@ End
 
 Function GSD_WorksText3()
 
-	Make/Free/T data1 = {"1", "2", "3", "4"}
-	Make/Free/T data2 = {"4", "3", "2"}
+	Make/FREE/T data1 = {"1", "2", "3", "4"}
+	Make/FREE/T data2 = {"4", "3", "2"}
 
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_EQUAL_TEXTWAVES(matches, {"1"})
@@ -435,8 +435,8 @@ End
 
 Function GSD_WorksText4()
 
-	Make/Free/T data1
-	Make/Free/T data2
+	Make/FREE/T data1
+	Make/FREE/T data2
 
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
@@ -444,8 +444,8 @@ End
 
 Function GSD_WorksText5()
 
-	Make/Free/T data1
-	Make/Free/T/N=0 data2
+	Make/FREE/T data1
+	Make/FREE/T/N=0 data2
 
 	WAVE matches = GetSetDifference(data1, data2)
 	CHECK_EQUAL_TEXTWAVES(matches, data1)
@@ -453,8 +453,8 @@ End
 
 Function GSD_WorksText6()
 
-	Make/Free/T data1 = num2str(p)
-	Make/Free/T data2 = num2str(-1)
+	Make/FREE/T data1 = num2str(p)
+	Make/FREE/T data2 = num2str(-1)
 
 	WAVE matches = GetSetDifference(data1, data2)
 	CHECK_EQUAL_TEXTWAVES(matches, data1)
@@ -462,8 +462,8 @@ End
 
 Function GSD_ReturnsInvalidWaveRefWOMatches()
 
-	Make/Free/D/N=0 data1
-	Make/Free/D data2
+	Make/FREE/D/N=0 data1
+	Make/FREE/D data2
 
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
@@ -474,8 +474,8 @@ End
 /// @{
 Function GSI_ExpectsSameWaveType()
 
-	Make/Free/D data1
-	Make/Free/R data2
+	Make/FREE/D data1
+	Make/FREE/R data2
 
 	try
 		WAVE/Z matches = GetSetIntersection(data1, data2)
@@ -487,8 +487,8 @@ End
 
 Function GSI_Works()
 
-	Make/Free data1 = {1, 2, 3, 4}
-	Make/Free data2 = {4, 5, 6}
+	Make/FREE data1 = {1, 2, 3, 4}
+	Make/FREE data2 = {4, 5, 6}
 
 	WAVE/Z matches = GetSetIntersection(data1, data2)
 	CHECK_EQUAL_WAVES(matches, {4})
@@ -496,8 +496,8 @@ End
 
 Function GSI_WorksText()
 
-	Make/Free/T data1 = {"a", "b", "c", "D"}
-	Make/Free/T data2 = {"c", "d", "e"}
+	Make/FREE/T data1 = {"a", "b", "c", "D"}
+	Make/FREE/T data2 = {"c", "d", "e"}
 
 	WAVE/T/Z matches = GetSetIntersection(data1, data2)
 	CHECK_EQUAL_TEXTWAVES(matches, {"c"})
@@ -505,8 +505,8 @@ End
 
 Function GSI_ReturnsCorrectType()
 
-	Make/Free/D data1
-	Make/Free/D data2
+	Make/FREE/D data1
+	Make/FREE/D data2
 
 	WAVE matches = GetSetIntersection(data1, data2)
 	CHECK_EQUAL_WAVES(data1, matches)
@@ -514,7 +514,7 @@ End
 
 Function GSI_WorksWithTheSameWaves()
 
-	Make/Free/D data = p
+	Make/FREE/D data = p
 
 	WAVE matches = GetSetIntersection(data, data)
 	CHECK_EQUAL_WAVES(data, matches)
@@ -523,8 +523,8 @@ End
 
 Function GSI_ReturnsInvalidWaveRefWOMatches1()
 
-	Make/Free/D/N=0 data1
-	Make/Free/D data2
+	Make/FREE/D/N=0 data1
+	Make/FREE/D data2
 
 	WAVE/Z matches = GetSetIntersection(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
@@ -532,8 +532,8 @@ End
 
 Function GSI_ReturnsInvalidWaveRefWOMatches2()
 
-	Make/Free/D data1
-	Make/Free/D/N=0 data2
+	Make/FREE/D data1
+	Make/FREE/D/N=0 data2
 
 	WAVE/Z matches = GetSetIntersection(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
@@ -541,8 +541,8 @@ End
 
 Function GSI_ReturnsInvalidWaveRefWOMatches3()
 
-	Make/Free/D data1 = p
-	Make/Free/D data2 = -1
+	Make/FREE/D data1 = p
+	Make/FREE/D data2 = -1
 
 	WAVE/Z matches = GetSetIntersection(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
@@ -741,7 +741,7 @@ End
 Function RUR_ChecksNote2()
 
 	Make/FREE wv
-	SetNumberInWaveNote(wv, NOTE_INDEX, inf)
+	SetNumberInWaveNote(wv, NOTE_INDEX, Inf)
 
 	try
 		RemoveUnusedRows(wv); AbortOnRTE
@@ -897,8 +897,8 @@ End
 
 Function NTE_Works1()
 
-	string eol      = "\r"
-	string input    = "hi there!\r"
+	string eol   = "\r"
+	string input = "hi there!\r"
 
 	string output   = NormalizeToEOL(input, eol)
 	string expected = input
@@ -907,8 +907,8 @@ End
 
 Function NTE_Works2()
 
-	string eol      = "\r"
-	string input    = "hi there!\n\n\r"
+	string eol   = "\r"
+	string input = "hi there!\n\n\r"
 
 	string output   = NormalizeToEOL(input, eol)
 	string expected = "hi there!\r\r\r"
@@ -917,8 +917,8 @@ End
 
 Function NTE_Works3()
 
-	string eol      = "\r"
-	string input    = "hi there!\r\n\r" // CR+LF -> CR
+	string eol   = "\r"
+	string input = "hi there!\r\n\r" // CR+LF -> CR
 
 	string output   = NormalizeToEOL(input, eol)
 	string expected = "hi there!\r\r"
@@ -927,8 +927,8 @@ End
 
 Function NTE_Works4()
 
-	string eol      = "\n"
-	string input    = "hi there!\r\n\r" // CR+LF -> CR
+	string eol   = "\n"
+	string input = "hi there!\r\n\r" // CR+LF -> CR
 
 	string output   = NormalizeToEOL(input, eol)
 	string expected = "hi there!\n\n"
@@ -979,7 +979,7 @@ Function ITCC_WorksLegacy()
 	string actual, expected
 
 	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_legacy
-	CHECK(IsValidConfigWave(config, version=0))
+	CHECK(IsValidConfigWave(config, version = 0))
 
 	WAVE/T/Z units = AFH_GetChannelUnits(config)
 	CHECK_WAVE(units, TEXT_WAVE)
@@ -988,12 +988,12 @@ Function ITCC_WorksLegacy()
 	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
 
 	for(i = 0; i < 3; i += 1)
-		type = XOP_CHANNEL_TYPE_DAC
+		type     = XOP_CHANNEL_TYPE_DAC
 		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
 
-		type = XOP_CHANNEL_TYPE_ADC
+		type     = XOP_CHANNEL_TYPE_ADC
 		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
@@ -1018,7 +1018,7 @@ Function ITCC_WorksVersion1()
 	string actual, expected
 
 	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_Version1
-	CHECK(IsValidConfigWave(config, version=1))
+	CHECK(IsValidConfigWave(config, version = 1))
 
 	WAVE/T/Z units = AFH_GetChannelUnits(config)
 	CHECK_WAVE(units, TEXT_WAVE)
@@ -1027,12 +1027,12 @@ Function ITCC_WorksVersion1()
 	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
 
 	for(i = 0; i < 3; i += 1)
-		type = XOP_CHANNEL_TYPE_DAC
+		type     = XOP_CHANNEL_TYPE_DAC
 		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
 
-		type = XOP_CHANNEL_TYPE_ADC
+		type     = XOP_CHANNEL_TYPE_ADC
 		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
@@ -1057,7 +1057,7 @@ Function ITCC_WorksVersion2()
 	string actual, expected
 
 	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_Version2
-	CHECK(IsValidConfigWave(config, version=2))
+	CHECK(IsValidConfigWave(config, version = 2))
 
 	WAVE/T/Z units = AFH_GetChannelUnits(config)
 	CHECK(WaveExists(units))
@@ -1066,12 +1066,12 @@ Function ITCC_WorksVersion2()
 	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
 
 	for(i = 0; i < 3; i += 1)
-		type = XOP_CHANNEL_TYPE_DAC
+		type     = XOP_CHANNEL_TYPE_DAC
 		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
 
-		type = XOP_CHANNEL_TYPE_ADC
+		type     = XOP_CHANNEL_TYPE_ADC
 		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
@@ -1530,7 +1530,7 @@ Function EPS_WorksWithDouble()
 	val = ref[0] + eps
 	CHECK_NEQ_VAR(ref[0], val[0])
 
-	val = ref[0] + eps/2.0
+	val = ref[0] + eps / 2.0
 	CHECK_EQUAL_VAR(ref[0], val[0])
 End
 
@@ -1546,7 +1546,7 @@ Function EPS_WorksWithFloat()
 	val = ref[0] + eps
 	CHECK_NEQ_VAR(ref[0], val[0])
 
-	val = ref[0] + eps/2.0
+	val = ref[0] + eps / 2.0
 	CHECK_EQUAL_VAR(ref[0], val[0])
 End
 /// @}
@@ -1580,8 +1580,8 @@ static Function/WAVE GetoodDAQ_RefWaves_IGNORE(index)
 	Make/FREE/WAVE/N=(64, 3) wv
 
 	SetDimLabel COLS, 0, stimset, wv
-	SetDimLabel COLS, 1, offset,  wv
-	SetDimLabel COLS, 2, region,  wv
+	SetDimLabel COLS, 1, offset, wv
+	SetDimLabel COLS, 2, region, wv
 
 	DFREF dfr = root:oodDAQ
 
@@ -1595,8 +1595,8 @@ static Function/WAVE GetoodDAQ_RefWaves_IGNORE(index)
 		wv[i][%stimset] = ref_stimset
 	endfor
 
-	WAVE/Z/SDFR=dfr ref_offsets   = $("offsets_" + num2str(index))
-	WAVE/Z/SDFR=dfr ref_regions   = $("regions_" + num2str(index))
+	WAVE/Z/SDFR=dfr ref_offsets = $("offsets_" + num2str(index))
+	WAVE/Z/SDFR=dfr ref_regions = $("regions_" + num2str(index))
 
 	wv[0][%offset] = ref_offsets
 	wv[0][%region] = ref_regions
@@ -1606,11 +1606,11 @@ End
 
 Function oodDAQRegTests_0()
 
-	variable index
+	variable            index
 	STRUCT OOdDAQParams params
-	DFREF dfr = root:oodDAQ
-	string device = "ITC18USB_Dev_0"
-	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	DFREF  dfr           = root:oodDAQ
+	string device        = "ITC18USB_Dev_0"
+	WAVE   singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
 	// BEGIN CHANGE ME
@@ -1618,9 +1618,9 @@ Function oodDAQRegTests_0()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device, params)
 
-//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
 	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
 	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
@@ -1630,11 +1630,11 @@ End
 
 Function oodDAQRegTests_1()
 
-	variable index
+	variable            index
 	STRUCT OOdDAQParams params
-	DFREF dfr = root:oodDAQ
-	string device = "ITC18USB_Dev_0"
-	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	DFREF  dfr           = root:oodDAQ
+	string device        = "ITC18USB_Dev_0"
+	WAVE   singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
 	// BEGIN CHANGE ME
@@ -1642,9 +1642,9 @@ Function oodDAQRegTests_1()
 	InitOOdDAQParams(params, stimSet, {1, 0}, 0, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device, params)
 
-//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
 	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
 	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
@@ -1654,11 +1654,11 @@ End
 
 Function oodDAQRegTests_2()
 
-	variable index
+	variable            index
 	STRUCT OOdDAQParams params
-	DFREF dfr = root:oodDAQ
-	string device = "ITC18USB_Dev_0"
-	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	DFREF  dfr           = root:oodDAQ
+	string device        = "ITC18USB_Dev_0"
+	WAVE   singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
 	// BEGIN CHANGE ME
@@ -1666,9 +1666,9 @@ Function oodDAQRegTests_2()
 	InitOOdDAQParams(params, stimSet, {0, 1}, 0, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device, params)
 
-//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
 	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
 	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
@@ -1678,11 +1678,11 @@ End
 
 Function oodDAQRegTests_3()
 
-	variable index
+	variable            index
 	STRUCT OOdDAQParams params
-	DFREF dfr = root:oodDAQ
-	string device = "ITC18USB_Dev_0"
-	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	DFREF  dfr           = root:oodDAQ
+	string device        = "ITC18USB_Dev_0"
+	WAVE   singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
 	// BEGIN CHANGE ME
@@ -1690,9 +1690,9 @@ Function oodDAQRegTests_3()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 20, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device, params)
 
-//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
 	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
 	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
@@ -1702,11 +1702,11 @@ End
 
 Function oodDAQRegTests_4()
 
-	variable index
+	variable            index
 	STRUCT OOdDAQParams params
-	DFREF dfr = root:oodDAQ
-	string device = "ITC18USB_Dev_0"
-	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	DFREF  dfr           = root:oodDAQ
+	string device        = "ITC18USB_Dev_0"
+	WAVE   singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
 	// BEGIN CHANGE ME
@@ -1714,9 +1714,9 @@ Function oodDAQRegTests_4()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 20)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device, params)
 
-//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
 	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
 	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
@@ -1726,11 +1726,11 @@ End
 
 Function oodDAQRegTests_5()
 
-	variable index
+	variable            index
 	STRUCT OOdDAQParams params
-	DFREF dfr = root:oodDAQ
-	string device = "ITC18USB_Dev_0"
-	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	DFREF  dfr           = root:oodDAQ
+	string device        = "ITC18USB_Dev_0"
+	WAVE   singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
 	// BEGIN CHANGE ME
@@ -1738,9 +1738,9 @@ Function oodDAQRegTests_5()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device, params)
 
-//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
 	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
 	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
@@ -1750,11 +1750,11 @@ End
 
 Function oodDAQRegTests_6()
 
-	variable index
+	variable            index
 	STRUCT OOdDAQParams params
-	DFREF dfr = root:oodDAQ
-	string device = "ITC18USB_Dev_0"
-	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	DFREF  dfr           = root:oodDAQ
+	string device        = "ITC18USB_Dev_0"
+	WAVE   singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
 	// BEGIN CHANGE ME
@@ -1762,9 +1762,9 @@ Function oodDAQRegTests_6()
 	InitOOdDAQParams(params, stimSet, {0, 1}, 20, 30)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device, params)
 
-//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
 	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
 	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
@@ -1774,11 +1774,11 @@ End
 
 Function oodDAQRegTests_7()
 
-	variable index
+	variable            index
 	STRUCT OOdDAQParams params
-	DFREF dfr = root:oodDAQ
-	string device = "ITC18USB_Dev_0"
-	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	DFREF  dfr           = root:oodDAQ
+	string device        = "ITC18USB_Dev_0"
+	WAVE   singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=3/WAVE stimset = singleStimset
 
 	// BEGIN CHANGE ME
@@ -1786,9 +1786,9 @@ Function oodDAQRegTests_7()
 	InitOOdDAQParams(params, stimSet, {0, 0, 0}, 0, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device, params)
 
-//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
 	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
 	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
@@ -1840,21 +1840,21 @@ End
 Function HOV_Works3()
 
 	Make/D/N=10 wv = NaN
-	wv[9] = inf
+	wv[9] = Inf
 	CHECK(HasOneValidEntry(wv))
 End
 
 Function HOV_Works4()
 
 	Make/D/N=10 wv = NaN
-	wv[9] = -inf
+	wv[9] = -Inf
 	CHECK(HasOneValidEntry(wv))
 End
 
 Function HOV_WorksWithReal()
 
 	Make/R/N=10 wv = NaN
-	wv[9] = -inf
+	wv[9] = -Inf
 	CHECK(HasOneValidEntry(wv))
 End
 
@@ -1918,7 +1918,7 @@ End
 /// SetNumberInWaveNote
 Function SNWN_AbortsOnInvalidWave()
 
-	Wave/Z wv = $""
+	WAVE/Z wv = $""
 
 	try
 		SetNumberInWaveNote(wv, "key", 123)
@@ -1945,7 +1945,7 @@ Function SNWN_ComplainsOnEmptyFormat()
 	Make/FREE wv
 
 	try
-		SetNumberInWaveNote(wv, "key", 123, format="")
+		SetNumberInWaveNote(wv, "key", 123, format = "")
 		FAIL()
 	catch
 		PASS()
@@ -1994,7 +1994,7 @@ Function SNWN_IntegerFormat()
 	string expected, actual
 
 	Make/FREE wv
-	SetNumberInWaveNote(wv, "key", 123.456, format="%d")
+	SetNumberInWaveNote(wv, "key", 123.456, format = "%d")
 	expected = "key:123;"
 	actual   = note(wv)
 	CHECK_EQUAL_STR(expected, actual)
@@ -2005,7 +2005,7 @@ Function SNWN_FloatFormat()
 	string expected, actual
 
 	Make/FREE wv
-	SetNumberInWaveNote(wv, "key", 123.456, format="%.1f")
+	SetNumberInWaveNote(wv, "key", 123.456, format = "%.1f")
 	// %f rounds
 	expected = "key:123.5;"
 	actual   = note(wv)
@@ -2017,7 +2017,7 @@ Function SNWN_FloatFormatWithZeros()
 	string expected, actual
 
 	Make/FREE wv
-	SetNumberInWaveNote(wv, "key", 123.1, format="%.06f")
+	SetNumberInWaveNote(wv, "key", 123.1, format = "%.06f")
 	// %f rounds
 	expected = "key:123.100000;"
 	actual   = note(wv)
@@ -2034,7 +2034,7 @@ Function GUE_WorksWithEmpty()
 	Make/N=0 wv
 
 	WAVE/Z result = GetUniqueEntries(wv)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType=FLOAT_WAVE)
+	CHECK_WAVE(result, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
 End
 
@@ -2050,7 +2050,7 @@ static Function GUE_WorksWithOneNoDuplicate()
 
 	Make/N=1 wv
 
-	WAVE/Z result = GetUniqueEntries(wv, dontDuplicate=1)
+	WAVE/Z result = GetUniqueEntries(wv, dontDuplicate = 1)
 	CHECK(WaveRefsEqual(result, wv))
 End
 
@@ -2087,7 +2087,7 @@ static Function GUE_WorksWithTextOneNoDuplicate()
 
 	Make/T/N=1 wv
 
-	WAVE/Z result = GetUniqueEntries(wv, dontDuplicate=1)
+	WAVE/Z result = GetUniqueEntries(wv, dontDuplicate = 1)
 	CHECK(WaveRefsEqual(result, wv))
 End
 
@@ -2095,7 +2095,7 @@ Function GUE_IgnoresCase()
 
 	Make/T wv = {"a", "A"}
 
-	WAVE/Z result = GetUniqueEntries(wv, caseSensitive=0)
+	WAVE/Z result = GetUniqueEntries(wv, caseSensitive = 0)
 	CHECK_EQUAL_TEXTWAVES(result, {"a"})
 End
 
@@ -2103,7 +2103,7 @@ Function GUE_HandlesCase()
 
 	Make/T wv = {"a", "A"}
 
-	WAVE/Z result = GetUniqueEntries(wv, caseSensitive=1)
+	WAVE/Z result = GetUniqueEntries(wv, caseSensitive = 1)
 	CHECK_EQUAL_TEXTWAVES(result, {"a", "A"})
 End
 
@@ -2123,10 +2123,10 @@ Function GUE_ListWorks1()
 
 	string input, expected, result
 
-	input = "a;A;"
+	input    = "a;A;"
 	expected = "a;"
 
-	result = GetUniqueTextEntriesFromList(input, caseSensitive=0)
+	result = GetUniqueTextEntriesFromList(input, caseSensitive = 0)
 	CHECK_EQUAL_STR(result, expected)
 End
 
@@ -2134,10 +2134,10 @@ Function GUE_ListWorks2()
 
 	string input, expected, result
 
-	input = "a;A;"
+	input    = "a;A;"
 	expected = input
 
-	result = GetUniqueTextEntriesFromList(input, caseSensitive=1)
+	result = GetUniqueTextEntriesFromList(input, caseSensitive = 1)
 	CHECK_EQUAL_STR(result, expected)
 End
 
@@ -2145,10 +2145,10 @@ Function GUE_ListWorksWithSep()
 
 	string input, expected, result
 
-	input = "a-A-a"
+	input    = "a-A-a"
 	expected = "a-A-"
 
-	result = GetUniqueTextEntriesFromList(input, caseSensitive=1, sep="-")
+	result = GetUniqueTextEntriesFromList(input, caseSensitive = 1, sep = "-")
 	CHECK_EQUAL_STR(result, expected)
 End
 
@@ -2156,7 +2156,7 @@ static Function GUTE_WorksWithOneNoDuplicate()
 
 	Make/T/N=1 wv
 
-	WAVE/Z result = MIES_UTILS#GetUniqueTextEntries(wv, dontDuplicate=1)
+	WAVE/Z result = MIES_UTILS#GetUniqueTextEntries(wv, dontDuplicate = 1)
 	CHECK(WaveRefsEqual(result, wv))
 End
 
@@ -2184,10 +2184,10 @@ Function/S TrimVolatileFolderName_IGNORE(list)
 		pos = strsearch(str, ":test", 0)
 
 		if(pos >= 0)
-			str = str[pos,inf]
+			str = str[pos, Inf]
 		endif
 
-		result = AddListItem(str, result, ";", inf)
+		result = AddListItem(str, result, ";", Inf)
 	endfor
 
 	return result
@@ -2203,23 +2203,23 @@ Function GetListOfObjectsWorksRE()
 	Make dfr:abcd
 	Make dfr:efgh
 
-	result = GetListOfObjects(dfr, "a.*", recursive = 0, fullpath = 0)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, "a.*", recursive = 0, fullpath = 0)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = "abcd;"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, "a.*", recursive = 1, fullpath = 0)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, "a.*", recursive = 1, fullpath = 0)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = "abcd;"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, "a.*", recursive = 1, fullpath = 1)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, "a.*", recursive = 1, fullpath = 1)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = ":test:abcd;"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, "a.*", recursive = 0, fullpath = 1)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, "a.*", recursive = 0, fullpath = 1)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = ":test:abcd;"
 	CHECK_EQUAL_STR(result, expected)
 End
@@ -2233,23 +2233,23 @@ Function GetListOfObjectsWorksWC()
 	Make dfr:abcd
 	Make dfr:efgh
 
-	result = GetListOfObjects(dfr, "a*", recursive = 0, fullpath = 0, exprType = MATCH_WILDCARD)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, "a*", recursive = 0, fullpath = 0, exprType = MATCH_WILDCARD)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = "abcd;"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, "a*", recursive = 1, fullpath = 0, exprType = MATCH_WILDCARD)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, "a*", recursive = 1, fullpath = 0, exprType = MATCH_WILDCARD)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = "abcd;"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, "a*", recursive = 1, fullpath = 1, exprType = MATCH_WILDCARD)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, "a*", recursive = 1, fullpath = 1, exprType = MATCH_WILDCARD)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = ":test:abcd;"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, "a*", recursive = 0, fullpath = 1, exprType = MATCH_WILDCARD)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, "a*", recursive = 0, fullpath = 1, exprType = MATCH_WILDCARD)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = ":test:abcd;"
 	CHECK_EQUAL_STR(result, expected)
 End
@@ -2273,29 +2273,29 @@ Function GetListOfObjectsWorks2()
 	Make dfrDeep:wv3
 	Make dfrDeep:wv4
 
-	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 0)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 0)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = "wv1;wv2;"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 0)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 0)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = "wv1;wv2;wv3;wv4"
 	// sort order is implementation defined
-	result = SortList(result)
+	result   = SortList(result)
 	expected = SortList(expected)
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 1)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 1)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = ":test:wv1;:test:wv2;:test:test2:wv3;:test:test2:wv4;"
 	// sort order is implementation defined
-	result = SortList(result)
+	result   = SortList(result)
 	expected = SortList(expected)
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 1)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 1)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = ":test:wv1;:test:wv2;"
 	CHECK_EQUAL_STR(result, expected)
 End
@@ -2314,22 +2314,22 @@ Function GetListOfObjectsWorksWithFolder()
 	DFREF dfrDeep = $":test1:test2"
 	CHECK(DataFolderExistsDFR(dfrDeep))
 
-	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 0, typeFlag = COUNTOBJECTS_DATAFOLDER)
+	result   = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 0, typeFlag = COUNTOBJECTS_DATAFOLDER)
 	expected = "test2"
-	result = SortList(result)
+	result   = SortList(result)
 	expected = SortList(expected)
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 0, typeFlag = COUNTOBJECTS_DATAFOLDER)
+	result   = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 0, typeFlag = COUNTOBJECTS_DATAFOLDER)
 	expected = "test2;test3"
-	result = SortList(result)
+	result   = SortList(result)
 	expected = SortList(expected)
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 1, typeFlag = COUNTOBJECTS_DATAFOLDER)
-	result = TrimVolatileFolderName_IGNORE(result)
+	result   = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 1, typeFlag = COUNTOBJECTS_DATAFOLDER)
+	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = ":test1:test2;:test1:test2:test3"
-	result = SortList(result)
+	result   = SortList(result)
 	expected = SortList(expected)
 	CHECK_EQUAL_STR(result, expected)
 End
@@ -2351,14 +2351,14 @@ static Function GetListOfObjectsWorksWithFreeDF()
 	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 0, typeFlag = COUNTOBJECTS_WAVES)
 
 	expected = "wave1;wave2;"
-	result = SortList(result)
+	result   = SortList(result)
 	expected = SortList(expected)
 	CHECK_EQUAL_STR(result, expected)
 
 	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 1, typeFlag = COUNTOBJECTS_WAVES)
 
 	expected = "SubFolder1:wave1;SubFolder1:SubFolder2:wave2;"
-	result = SortList(result)
+	result   = SortList(result)
 	expected = SortList(expected)
 	CHECK_EQUAL_STR(result, expected)
 End
@@ -2500,7 +2500,7 @@ End
 Function DWP_Check4D()
 
 	Make/FREE/N=(3, 3, 3, 3) wv
-	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r + +DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
 
 	DeleteWavePoint(wv, ROWS, 1)
 	Make/FREE/N=(2, 3, 3, 3) comp
@@ -2523,7 +2523,7 @@ Function DWP_Check4D()
 	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
 
 	Make/O/FREE/N=(3, 3, 3, 3) wv
-	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r + +DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
 
 	DeleteWavePoint(wv, COLS, 1)
 	Make/O/FREE/N=(3, 2, 3, 3) comp
@@ -2534,7 +2534,7 @@ Function DWP_Check4D()
 
 	DeleteWavePoint(wv, COLS, 1)
 	Make/O/FREE/N=(3, 1, 3, 3) comp
-	comp[][][][0] = {{{0 , 1, 2}}, {{9, 10, 11}}, {{18, 19, 20}}}
+	comp[][][][0] = {{{0, 1, 2}}, {{9, 10, 11}}, {{18, 19, 20}}}
 	comp[][][][1] = {{{27, 28, 29}}, {{36, 37, 38}}, {{45, 46, 47}}}
 	comp[][][][2] = {{{54, 55, 56}}, {{63, 64, 65}}, {{72, 73, 74}}}
 	CHECK_EQUAL_WAVES(wv, comp)
@@ -2546,7 +2546,7 @@ Function DWP_Check4D()
 	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
 
 	Make/O/FREE/N=(3, 3, 3, 3) wv
-	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r + +DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
 
 	DeleteWavePoint(wv, LAYERS, 1)
 	Make/O/FREE/N=(3, 3, 2, 3) comp
@@ -2569,7 +2569,7 @@ Function DWP_Check4D()
 	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
 
 	Make/O/FREE/N=(3, 3, 3, 3) wv
-	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r + +DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
 
 	DeleteWavePoint(wv, CHUNKS, 1)
 	Make/O/FREE/N=(3, 3, 3, 2) comp
@@ -2678,92 +2678,92 @@ Function TWTL1D()
 	string refList
 
 	refList = "1;2;3;"
-	list = TextWaveToList(w, ";")
+	list    = TextWaveToList(w, ";")
 	CHECK_EQUAL_STR(list, refList)
 End
 
 Function TWTL2D()
 
-	Make/FREE/T/N=(3,3) w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+	Make/FREE/T/N=(3, 3) w = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
 
 	string list
 	string refList
 
 	refList = "1,4,7,;2,5,8,;3,6,9,;"
-	list = TextWaveToList(w, ";")
+	list    = TextWaveToList(w, ";")
 	CHECK_EQUAL_STR(list, refList)
 End
 
 Function TWTL3D()
 
-	Make/FREE/T/N=(2, 2, 2) w = {{{"1", "2"}, {"3" , "4"}}, {{"5", "6"}, {"7", "8"}}}
+	Make/FREE/T/N=(2, 2, 2) w = {{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}
 
 	string list
 	string refList
 
 	refList = "1:5:,3:7:,;2:6:,4:8:,;"
-	list = TextWaveToList(w, ";")
+	list    = TextWaveToList(w, ";")
 	CHECK_EQUAL_STR(list, refList)
 End
 
 Function TWTL4D()
 
-	Make/FREE/T/N=(2, 2, 2, 2) w = {{{{"1", "2"}, {"3" , "4"}}, {{"5", "6"} , {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
+	Make/FREE/T/N=(2, 2, 2, 2) w = {{{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
 
 	string list
 	string refList
 
 	refList = "1/9/:5/13/:,3/11/:7/15/:,;2/10/:6/14/:,4/12/:8/16/:,;" // NOLINT
-	list = TextWaveToList(w, ";")
+	list    = TextWaveToList(w, ";")
 	CHECK_EQUAL_STR(list, refList)
 End
 
 Function TWTLCustomSepators()
 
-	Make/FREE/T/N=(2, 2, 2, 2) w = {{{{"1", "2"}, {"3" , "4"}}, {{"5", "6"} , {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
+	Make/FREE/T/N=(2, 2, 2, 2) w = {{{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
 
 	string list
 	string refList
 
 	refList = "1d9dc5d13dcb3d11dc7d15dcba2d10dc6d14dcb4d12dc8d16dcba"
-	list = TextWaveToList(w, "a", colSep = "b", layerSep = "c", chunkSep = "d")
+	list    = TextWaveToList(w, "a", colSep = "b", layerSep = "c", chunkSep = "d")
 	CHECK_EQUAL_STR(list, refList)
 End
 
 Function TWTLStopOnEmpty()
 
-	Make/FREE/T/N=(3,3) w = {{"", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+	Make/FREE/T/N=(3, 3) w = {{"", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
 
 	string list
 	string refList
 
 	// stop at first element
 	refList = ""
-	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	list    = TextWaveToList(w, ";", stopOnEmpty = 1)
 	CHECK_EQUAL_STR(list, refList)
 
 	// stop in the middle
-	w = {"1", "", "3"}
+	w       = {"1", "", "3"}
 	refList = "1;"
-	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	list    = TextWaveToList(w, ";", stopOnEmpty = 1)
 	CHECK_EQUAL_STR(list, refList)
 
 	// stop at last element with partial filling
-	w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", ""}}
+	w       = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", ""}}
 	refList = "1,4,7,;2,5,8,;3,6,;"
-	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	list    = TextWaveToList(w, ";", stopOnEmpty = 1)
 	CHECK_EQUAL_STR(list, refList)
 
 	// stop at new row
-	w = {{"1", "", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+	w       = {{"1", "", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
 	refList = "1,4,7,;"
-	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	list    = TextWaveToList(w, ";", stopOnEmpty = 1)
 	CHECK_EQUAL_STR(list, refList)
 End
 
 Function TWTLMaxElements()
 
-	Make/FREE/T/N=(3,3) w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+	Make/FREE/T/N=(3, 3) w = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
 
 	string list
 	string refList
@@ -2774,17 +2774,17 @@ Function TWTLMaxElements()
 
 	// Only first row
 	refList = "1,4,7,;"
-	list = TextWaveToList(w, ";", maxElements = 3)
+	list    = TextWaveToList(w, ";", maxElements = 3)
 	CHECK_EQUAL_STR(list, refList)
 
 	// stops in the middle of column
 	refList = "1,4,7,;2,;"
-	list = TextWaveToList(w, ";", maxElements = 4)
+	list    = TextWaveToList(w, ";", maxElements = 4)
 	CHECK_EQUAL_STR(list, refList)
 
 	// inf is the same as not giving it
 	refList = "1,4,7,;2,5,8,;3,6,9,;"
-	list = TextWaveToList(w, ";", maxElements = inf)
+	list    = TextWaveToList(w, ";", maxElements = Inf)
 	CHECK_EQUAL_STR(list, refList)
 End
 
@@ -2794,22 +2794,22 @@ static Function TWTLSingleElementNDSeparators()
 	string refList
 
 	Make/FREE/T/N=(1, 1, 1, 1) wt = "test"
-	list = TextWaveToList(wt, ";")
+	list    = TextWaveToList(wt, ";")
 	refList = "test/:,;"
 	CHECK_EQUAL_STR(list, refList)
 
 	Make/FREE/T/N=(1, 1, 1) wt = "test"
-	list = TextWaveToList(wt, ";")
+	list    = TextWaveToList(wt, ";")
 	refList = "test:,;"
 	CHECK_EQUAL_STR(list, refList)
 
 	Make/FREE/T/N=(1, 1) wt = "test"
-	list = TextWaveToList(wt, ";")
+	list    = TextWaveToList(wt, ";")
 	refList = "test,;"
 	CHECK_EQUAL_STR(list, refList)
 
 	Make/FREE/T/N=(1) wt = "test"
-	list = TextWaveToList(wt, ";")
+	list    = TextWaveToList(wt, ";")
 	refList = "test;"
 	CHECK_EQUAL_STR(list, refList)
 End
@@ -2821,15 +2821,15 @@ Function/WAVE SomeTextWaves()
 
 	// both empty and null roundtrip to an empty wave
 	all[0] = wv1
-	all[1] =$""
+	all[1] = $""
 
-	Make/FREE/T/N=(3,3) wv2 = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+	Make/FREE/T/N=(3, 3) wv2 = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
 	all[2] = wv2
 
-	Make/FREE/T/N=(2, 2, 2) wv3 = {{{"1", "2"}, {"3" , "4"}}, {{"5", "6"}, {"7", "8"}}}
+	Make/FREE/T/N=(2, 2, 2) wv3 = {{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}
 	all[3] = wv3
 
-	Make/FREE/T/N=(2, 2, 2, 2) wv4 = {{{{"1", "2"}, {"3" , "4"}}, {{"5", "6"} , {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
+	Make/FREE/T/N=(2, 2, 2, 2) wv4 = {{{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
 	all[4] = wv4
 
 	return all
@@ -2837,7 +2837,7 @@ End
 
 // UTF_TD_GENERATOR SomeTextWaves
 Function TWTLRoundTrips([WAVE/Z wv])
-	string list
+	string   list
 	variable dims
 
 	dims = WaveExists(wv) ? max(1, WaveDims(wv)) : 1
@@ -2887,7 +2887,7 @@ End
 Function num2strHighPrecWorks0()
 
 	string sref = "1.66667"
-	string s = num2strHighPrec(1.6666666)
+	string s    = num2strHighPrec(1.6666666)
 	CHECK_EQUAL_STR(s, sref)
 End
 
@@ -2895,16 +2895,16 @@ End
 Function num2strHighPrecWorks1()
 
 	string sref = "2"
-	string s = num2strHighPrec(1.6666666, precision = 0)
+	string s    = num2strHighPrec(1.6666666, precision = 0)
 	CHECK_EQUAL_STR(s, sref)
 End
 
 /// @brief precision 15
 Function num2strHighPrecWorks2()
 
-//                  123456789012345
+	//                  123456789012345
 	string sref = "1.666666666666667"
-//                              1234567890123456
+	//                              1234567890123456
 	string s = num2strHighPrec(1.6666666666666666, precision = 15)
 	CHECK_EQUAL_STR(s, sref)
 End
@@ -2913,14 +2913,14 @@ End
 Function num2strHighPrecWorks3()
 
 	string sref = "2"
-	string s = num2strHighPrec(1.5, precision = 0)
+	string s    = num2strHighPrec(1.5, precision = 0)
 	CHECK_EQUAL_STR(s, sref)
 
 	s = num2strHighPrec(2.5, precision = 0)
 	CHECK_EQUAL_STR(s, sref)
 
 	sref = "-2"
-	s = num2strHighPrec(-2.5, precision = 0)
+	s    = num2strHighPrec(-2.5, precision = 0)
 	CHECK_EQUAL_STR(s, sref)
 	s = num2strHighPrec(-1.5, precision = 0)
 	CHECK_EQUAL_STR(s, sref)
@@ -2930,42 +2930,42 @@ End
 Function num2strHighPrecWorks4()
 
 	string sref = "nan"
-	string s = num2strHighPrec(NaN)
+	string s    = num2strHighPrec(NaN)
 	CHECK_EQUAL_STR(s, sref)
 
 	sref = "inf"
-	s = num2strHighPrec(Inf)
+	s    = num2strHighPrec(Inf)
 	CHECK_EQUAL_STR(s, sref)
 
 	sref = "-inf"
-	s = num2strHighPrec(-Inf)
+	s    = num2strHighPrec(-Inf)
 	CHECK_EQUAL_STR(s, sref)
 End
 
 /// @brief Only real part of complex is returned
 Function num2strHighPrecWorks5()
 
-	variable/C c = cmplx(Inf, NaN)
-	string sref = "inf"
-	string s = num2strHighPrec(c)
+	variable/C c    = cmplx(Inf, NaN)
+	string     sref = "inf"
+	string     s    = num2strHighPrec(c)
 	CHECK_EQUAL_STR(s, sref)
 End
 
 Function num2strHighPrecShortenWorks1()
 	string sref = "1.234"
-	string s = num2strHighPrec(1.2340, precision = MAX_DOUBLE_PRECISION, shorten = 1)
+	string s    = num2strHighPrec(1.2340, precision = MAX_DOUBLE_PRECISION, shorten = 1)
 	CHECK_EQUAL_STR(s, sref)
 End
 
 Function num2strHighPrecShortenWorks2()
 	string sref = "1"
-	string s = num2strHighPrec(1.0, precision = MAX_DOUBLE_PRECISION, shorten = 1)
+	string s    = num2strHighPrec(1.0, precision = MAX_DOUBLE_PRECISION, shorten = 1)
 	CHECK_EQUAL_STR(s, sref)
 End
 
 Function num2strHighPrecShortenDoesNotEatAllZeroes()
 	string sref = "10"
-	string s = num2strHighPrec(10.00, precision = MAX_DOUBLE_PRECISION, shorten = 1)
+	string s    = num2strHighPrec(10.00, precision = MAX_DOUBLE_PRECISION, shorten = 1)
 	CHECK_EQUAL_STR(s, sref)
 End
 /// @}
@@ -3020,7 +3020,7 @@ End
 
 /// @brief Fail due to null string
 Function ListToTextWaveMDFail0()
-	string uninitialized
+	string   uninitialized
 	variable err
 
 	try
@@ -3068,7 +3068,7 @@ End
 /// @brief 2D list, default sep
 Function ListToTextWaveMDWorks1()
 
-	Make/FREE/T ref = {{"1", "3"} , {"2", "4"}}
+	Make/FREE/T ref = {{"1", "3"}, {"2", "4"}}
 	WAVE/T t = ListToTextWaveMD("1,2,;3,4,;", 2)
 	CHECK_EQUAL_WAVES(t, ref)
 End
@@ -3076,7 +3076,7 @@ End
 /// @brief 2D list, default sep, short sub list 0
 Function ListToTextWaveMDWorks9()
 
-	Make/FREE/T ref = {{"1", "3"} , {"2", ""}}
+	Make/FREE/T ref = {{"1", "3"}, {"2", ""}}
 	WAVE/T t = ListToTextWaveMD("1,2,;3,;", 2)
 	CHECK_EQUAL_WAVES(t, ref)
 End
@@ -3084,7 +3084,7 @@ End
 /// @brief 3D list, default sep
 Function ListToTextWaveMDWorks2()
 
-	Make/FREE/T ref = {{{"1", "5"} , {"3", "7"}}, {{"2", "6"} , {"4", "8"}}}
+	Make/FREE/T ref = {{{"1", "5"}, {"3", "7"}}, {{"2", "6"}, {"4", "8"}}}
 	WAVE/T t = ListToTextWaveMD("1:2:,3:4:,;5:6:,7:8:,;", 3)
 	CHECK_EQUAL_WAVES(t, ref)
 End
@@ -3092,7 +3092,7 @@ End
 /// @brief 3D list, default sep, short sub list 0
 Function ListToTextWaveMDWorks7()
 
-	Make/FREE/T ref = {{{"1", "5"} , {"3", ""}}, {{"2", "6"} , {"4", ""}}}
+	Make/FREE/T ref = {{{"1", "5"}, {"3", ""}}, {{"2", "6"}, {"4", ""}}}
 	WAVE/T t = ListToTextWaveMD("1:2:,3:4:,;5:6:,;", 3)
 	CHECK_EQUAL_WAVES(t, ref)
 End
@@ -3100,7 +3100,7 @@ End
 /// @brief 3D list, default sep, short sub list 1
 Function ListToTextWaveMDWorks8()
 
-	Make/FREE/T ref = {{{"1", "5"} , {"3", "7"}}, {{"2", "6"} , {"4", ""}}}
+	Make/FREE/T ref = {{{"1", "5"}, {"3", "7"}}, {{"2", "6"}, {"4", ""}}}
 	WAVE/T t = ListToTextWaveMD("1:2:,3:4:,;5:6:,7:,;", 3)
 	CHECK_EQUAL_WAVES(t, ref)
 End
@@ -3108,7 +3108,7 @@ End
 /// @brief 4D list, default sep
 Function ListToTextWaveMDWorks3()
 
-	Make/FREE/T ref = {{{{"1", "9"} , {"5", "13"}}, {{"3", "11"} , {"7", "15"}}}, {{{"2", "10"} , {"6", "14"}}, {{"4", "12"} , {"8", "16"}}}}
+	Make/FREE/T ref = {{{{"1", "9"}, {"5", "13"}}, {{"3", "11"}, {"7", "15"}}}, {{{"2", "10"}, {"6", "14"}}, {{"4", "12"}, {"8", "16"}}}}
 	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:15/16/:,;", 4) // NOLINT
 	CHECK_EQUAL_WAVES(t, ref)
 End
@@ -3116,7 +3116,7 @@ End
 /// @brief 4D list, default sep, short sub list 0
 Function ListToTextWaveMDWorks4()
 
-	Make/FREE/T ref = {{{{"1", "9"} , {"5", ""}}, {{"3", "11"} , {"7", ""}}}, {{{"2", "10"} , {"6", ""}}, {{"4", "12"} , {"8", ""}}}}
+	Make/FREE/T ref = {{{{"1", "9"}, {"5", ""}}, {{"3", "11"}, {"7", ""}}}, {{{"2", "10"}, {"6", ""}}, {{"4", "12"}, {"8", ""}}}}
 	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:;", 4) // NOLINT
 	CHECK_EQUAL_WAVES(t, ref)
 End
@@ -3124,7 +3124,7 @@ End
 /// @brief 4D list, default sep, short sub list 1
 Function ListToTextWaveMDWorks5()
 
-	Make/FREE/T ref = {{{{"1", "9"} , {"5", "13"}}, {{"3", "11"} , {"7", ""}}}, {{{"2", "10"} , {"6", "14"}}, {{"4", "12"} , {"8", ""}}}}
+	Make/FREE/T ref = {{{{"1", "9"}, {"5", "13"}}, {{"3", "11"}, {"7", ""}}}, {{{"2", "10"}, {"6", "14"}}, {{"4", "12"}, {"8", ""}}}}
 	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:,;", 4) // NOLINT
 	CHECK_EQUAL_WAVES(t, ref)
 End
@@ -3132,7 +3132,7 @@ End
 /// @brief 4D list, default sep, short sub list 2
 Function ListToTextWaveMDWorks6()
 
-	Make/FREE/T ref = {{{{"1", "9"} , {"5", "13"}}, {{"3", "11"} , {"7", "15"}}}, {{{"2", "10"} , {"6", "14"}}, {{"4", "12"} , {"8", ""}}}}
+	Make/FREE/T ref = {{{{"1", "9"}, {"5", "13"}}, {{"3", "11"}, {"7", "15"}}}, {{{"2", "10"}, {"6", "14"}}, {{"4", "12"}, {"8", ""}}}}
 	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:15/:,;", 4) // NOLINT
 	CHECK_EQUAL_WAVES(t, ref)
 End
@@ -3163,15 +3163,15 @@ Function FloatWithMinSigDigitsWorks()
 
 	string result, expected
 
-	result = FloatWithMinSigDigits(1.234, numMinSignDigits = 0)
+	result   = FloatWithMinSigDigits(1.234, numMinSignDigits = 0)
 	expected = "1"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = FloatWithMinSigDigits(-1.234, numMinSignDigits = 0)
+	result   = FloatWithMinSigDigits(-1.234, numMinSignDigits = 0)
 	expected = "-1"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = FloatWithMinSigDigits(1e-2, numMinSignDigits = 2)
+	result   = FloatWithMinSigDigits(1e-2, numMinSignDigits = 2)
 	expected = "0.01"
 	CHECK_EQUAL_STR(result, expected)
 End
@@ -3186,10 +3186,10 @@ Function TestDecimateWithMethodInvalid()
 	variable newSize, numRows, decimationFactor, method, err
 
 	Make/D/FREE data = {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}
-	numRows = DimSize(data, ROWS)
+	numRows          = DimSize(data, ROWS)
 	decimationFactor = 2
-	method = DECIMATION_MINMAX
-	Make/FREE/N=(DimSize(data, ROWS)/2) output
+	method           = DECIMATION_MINMAX
+	Make/FREE/N=(DimSize(data, ROWS) / 2) output
 
 	try
 		DecimateWithMethod(data, output, 1, method); AbortOnRTE
@@ -3224,7 +3224,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, inf, method); AbortOnRTE
+		DecimateWithMethod(data, output, Inf, method); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -3330,7 +3330,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, factor=$""); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, factor = $""); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -3339,7 +3339,7 @@ Function TestDecimateWithMethodInvalid()
 
 	try
 		Make/N=(100) factor
-		DecimateWithMethod(data, output, decimationFactor, method, factor=factor); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, factor = factor); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -3352,10 +3352,10 @@ Function TestDecimateWithMethodDec1()
 	variable newSize, numRows, decimationFactor, method
 
 	Make/D/FREE data = {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}
-	numRows = DimSize(data, ROWS)
+	numRows          = DimSize(data, ROWS)
 	decimationFactor = 8
-	method = DECIMATION_MINMAX
-	newSize = GetDecimatedWaveSize(numRows, decimationFactor, method)
+	method           = DECIMATION_MINMAX
+	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 2)
 	Make/FREE/D/N=(newSize) output
 
@@ -3373,10 +3373,10 @@ Function TestDecimateWithMethodDec2()
 	variable newSize, numRows, decimationFactor, method
 
 	Make/D/FREE data = {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}
-	numRows = DimSize(data, ROWS)
+	numRows          = DimSize(data, ROWS)
 	decimationFactor = 2
-	method = DECIMATION_MINMAX
-	newSize = GetDecimatedWaveSize(numRows, decimationFactor, method)
+	method           = DECIMATION_MINMAX
+	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 8)
 	Make/FREE/D/N=(newSize) output
 	Make/D/FREE refOutput = {0.1, 2, 0.3, 4, 0.5, 6, 0.7, 8}
@@ -3390,10 +3390,10 @@ Function TestDecimateWithMethodDec3()
 	variable newSize, numRows, decimationFactor, method
 
 	Make/D/FREE data = {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}
-	numRows = DimSize(data, ROWS)
+	numRows          = DimSize(data, ROWS)
 	decimationFactor = 4
-	method = DECIMATION_MINMAX
-	newSize = GetDecimatedWaveSize(numRows, decimationFactor, method)
+	method           = DECIMATION_MINMAX
+	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 4)
 	Make/FREE/D/N=(newSize) output
 	Make/D/FREE refOutput = {0.1, 4, 0.5, 8}
@@ -3408,10 +3408,10 @@ Function TestDecimateWithMethodDec4()
 	variable newSize, numRows, decimationFactor, method
 
 	Make/D/FREE data = {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}
-	numRows = DimSize(data, ROWS)
+	numRows          = DimSize(data, ROWS)
 	decimationFactor = 3
-	method = DECIMATION_MINMAX
-	newSize = GetDecimatedWaveSize(numRows, decimationFactor, method)
+	method           = DECIMATION_MINMAX
+	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 6)
 	Make/FREE/D/N=(newSize) output
 	Make/D/FREE refOutput = {0.1, 3, 0.4, 6, 0.7, 8}
@@ -3426,10 +3426,10 @@ Function TestDecimateWithMethodDec5()
 	variable newSize, numRows, decimationFactor, method
 
 	Make/D/FREE data = {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}
-	numRows = DimSize(data, ROWS)
+	numRows          = DimSize(data, ROWS)
 	decimationFactor = 1000
-	method = DECIMATION_MINMAX
-	newSize = GetDecimatedWaveSize(numRows, decimationFactor, method)
+	method           = DECIMATION_MINMAX
+	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 2)
 	Make/FREE/D/N=(newSize) output
 	Make/D/FREE refOutput = {0.1, 8}
@@ -3444,10 +3444,10 @@ Function TestDecimateWithMethodDec6()
 	variable newSize, numRows, decimationFactor, method
 
 	Make/D/FREE data = {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}}
-	numRows = DimSize(data, ROWS)
+	numRows          = DimSize(data, ROWS)
 	decimationFactor = 4
-	method = DECIMATION_MINMAX
-	newSize = GetDecimatedWaveSize(numRows, decimationFactor, method)
+	method           = DECIMATION_MINMAX
+	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 4)
 	Make/D/N=(newSize, 2) output
 	Make/D/FREE refOutput = {{0, 0, 0, 0}, {0.1, 4, 0.5, 8}}
@@ -3462,17 +3462,17 @@ Function TestDecimateWithMethodDec7()
 	variable newSize, numRows, decimationFactor, method
 
 	Make/D/FREE data = {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}}
-	numRows = DimSize(data, ROWS)
+	numRows          = DimSize(data, ROWS)
 	decimationFactor = 4
-	method = DECIMATION_MINMAX
-	newSize = GetDecimatedWaveSize(numRows, decimationFactor, method)
+	method           = DECIMATION_MINMAX
+	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 4)
 	Make/D/N=(newSize, 2) output = {{-10, -400, -50, -800}, {2, 2, 2, 2}}
 	// factor leaves first column untouched
 	Make/D/FREE refOutput = {{-10, -400, -50, -800}, {2, 2, 2, 2}}
 	Make/N=(1) factor = {-100}
 
-	DecimateWithMethod(data, output, decimationFactor, method, factor=factor, firstColInp = 1, firstColOut = 0, lastColOut = 0)
+	DecimateWithMethod(data, output, decimationFactor, method, factor = factor, firstColInp = 1, firstColOut = 0, lastColOut = 0)
 	CHECK_EQUAL_WAVES(output, refOutput, mode = WAVE_DATA)
 End
 
@@ -3482,10 +3482,10 @@ Function TestDecimateWithMethodDec8()
 	variable newSize, numRows, decimationFactor, method, i
 
 	Make/D/FREE data = {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}
-	numRows = DimSize(data, ROWS)
+	numRows          = DimSize(data, ROWS)
 	decimationFactor = 4
-	method = DECIMATION_MINMAX
-	newSize = GetDecimatedWaveSize(numRows, decimationFactor, method)
+	method           = DECIMATION_MINMAX
+	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 4)
 	Make/FREE/D/N=(newSize) output
 	Make/D/FREE refOutput = {0.1, 4, 0.5, 8}
@@ -3496,13 +3496,13 @@ Function TestDecimateWithMethodDec8()
 		DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = chunks[0][i], lastRowInp = chunks[1][i])
 		switch(i)
 			case 0:
-				CHECK_EQUAL_WAVES(output, {0.1, 1, 0, 0}, mode = WAVE_DATA, tol=1e-10)
+				CHECK_EQUAL_WAVES(output, {0.1, 1, 0, 0}, mode = WAVE_DATA, tol = 1e-10)
 				break
 			case 1:
-				CHECK_EQUAL_WAVES(output, {0.1, 4, 0.5, 0.5}, mode = WAVE_DATA, tol=1e-10)
+				CHECK_EQUAL_WAVES(output, {0.1, 4, 0.5, 0.5}, mode = WAVE_DATA, tol = 1e-10)
 				break
 			case 2:
-				CHECK_EQUAL_WAVES(output, {0.1, 4, 0.5, 8}, mode = WAVE_DATA, tol=1e-10)
+				CHECK_EQUAL_WAVES(output, {0.1, 4, 0.5, 8}, mode = WAVE_DATA, tol = 1e-10)
 				break
 			default:
 				FAIL()
@@ -3644,8 +3644,8 @@ Function MWWO_RecursiveWorks()
 	variable err
 
 	Make/WAVE/N=2 dest
-	Make/D dest0 =   p
-	Make/D dest1 = 2*p
+	Make/D dest0 = p
+	Make/D dest1 = 2 * p
 
 	dest[0] = dest0
 	dest[1] = dest1
@@ -3779,7 +3779,7 @@ Function FLW_SameResultsAsFindLevelSingle([wv])
 
 	variable i, edge, level, numCols
 
-	edge = GetNumberFromWaveNote(wv, "edge")
+	edge  = GetNumberFromWaveNote(wv, "edge")
 	level = GetNumberFromWaveNote(wv, "level")
 
 	numCols = max(1, DimSize(wv, COLS))
@@ -3815,22 +3815,22 @@ Function/WAVE FLW_SampleDataMulti()
 	SetDimLabel ROWS, 1, $"1", result3
 	SetDimLabel ROWS, 2, $"0", result3
 
-	Make/FREE/D result4 = {NaN,NaN,NaN}
+	Make/FREE/D result4 = {NaN, NaN, NaN}
 	SetDimLabel ROWS, 0, $"0", result4
 	SetDimLabel ROWS, 1, $"0", result4
 	SetDimLabel ROWS, 2, $"0", result4
 
-	Make/FREE/D result5 = {3.95,3.9,NaN}
+	Make/FREE/D result5 = {3.95, 3.9, NaN}
 	SetDimLabel ROWS, 0, $"1", result5
 	SetDimLabel ROWS, 1, $"1", result5
 	SetDimLabel ROWS, 2, $"0", result5
 
 	Make/FREE/D/N=(3, 5) result6
-	result6[0][0]= {3.95,3.9,NaN}
-	result6[0][1]= {NaN,3.1,NaN}
-	result6[0][2]= {NaN,2.9,NaN}
-	result6[0][3]= {NaN,2.1,NaN}
-	result6[0][4]= {NaN,1.9,NaN}
+	result6[0][0] = {3.95, 3.9, NaN}
+	result6[0][1] = {NaN, 3.1, NaN}
+	result6[0][2] = {NaN, 2.9, NaN}
+	result6[0][3] = {NaN, 2.1, NaN}
+	result6[0][4] = {NaN, 1.9, NaN}
 	SetDimLabel ROWS, 0, $"1", result6
 	SetDimLabel ROWS, 1, $"5", result6
 	SetDimLabel ROWS, 2, $"0", result6
@@ -3858,14 +3858,14 @@ Function FLW_MultiWorks([wv])
 	WAVE data      = wvWave[0]
 	WAVE resultRef = wvWave[1]
 
-	edge = GetNumberFromWaveNote(data, "edge")
+	edge  = GetNumberFromWaveNote(data, "edge")
 	level = GetNumberFromWaveNote(data, "level")
 
 	Duplicate/FREE data, dataCopy
 
 	WAVE result = FindLevelWrapper(data, level, edge, FINDLEVEL_MODE_MULTI)
 	CHECK_EQUAL_WAVES(data, dataCopy)
-	CHECK_EQUAL_WAVES(result, resultRef, tol=1e-8)
+	CHECK_EQUAL_WAVES(result, resultRef, tol = 1e-8)
 End
 
 Function FLW_MaxNumberOfLevelsWorks()
@@ -3925,7 +3925,7 @@ Function FR_WorksWithAliasFiles()
 	string expected, ref
 
 	// alias is a folder
-	target = 	GetFolder(FunctionPath(""))
+	target = GetFolder(FunctionPath(""))
 	alias  = GetFolder(target) + "alias"
 	CreateAliasShortCut target as alias
 	CHECK(!V_flag)
@@ -3933,13 +3933,13 @@ Function FR_WorksWithAliasFiles()
 	CHECK(FolderExists(S_path))
 
 	expected = target
-	ref = ResolveAlias(S_path)
+	ref      = ResolveAlias(S_path)
 	CHECK_EQUAL_STR(expected, ref)
 
 	DeleteFile/Z alias + ".lnk"
 
 	// alias is a file
-	target = 	FunctionPath("")
+	target = FunctionPath("")
 	alias  = GetFolder(target) + "alias.ipf"
 	CreateAliasShortCut/Z target as alias
 	CHECK(!V_flag)
@@ -3947,7 +3947,7 @@ Function FR_WorksWithAliasFiles()
 	CHECK(!FolderExists(S_path))
 
 	expected = target
-	ref = ResolveAlias(S_path)
+	ref      = ResolveAlias(S_path)
 	CHECK_EQUAL_STR(expected, ref)
 
 	DeleteFile/Z alias + ".lnk"
@@ -3970,8 +3970,8 @@ Function STIW_TestDimensions()
 
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -1, ROWS), DimOffset(testwave, ROWS) - 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -1, ROWS), 0)
-	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), NaN)
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -inf, ROWS), 0)
+	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -Inf, ROWS), NaN)
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -Inf, ROWS), 0)
 
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, 1e3, ROWS), DimOffset(testwave, ROWS) + 1e3 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1e3, ROWS), DimSize(testwave, ROWS) - 1)
@@ -3981,7 +3981,7 @@ Function STIW_TestDimensions()
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1, ROWS), 0)
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, 1, ROWS), DimOffset(testwave, ROWS) + 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1, ROWS), 0)
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, inf, ROWS), 0)
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, Inf, ROWS), 0)
 End
 
 Function/WAVE STIW_TestAbortGetter()
@@ -4043,23 +4043,23 @@ Function HexAndNumbersWorks()
 	CHECK_EQUAL_VAR(HexToNumber("00"), 0)
 	CHECK_EQUAL_VAR(HexToNumber("ff"), 255)
 
-	str = NumberToHex(0)
+	str      = NumberToHex(0)
 	expected = "00"
 	CHECK_EQUAL_STR(str, expected)
 
-	str = NumberToHex(10)
+	str      = NumberToHex(10)
 	expected = "0a"
 	CHECK_EQUAL_STR(str, expected)
 
-	str = NumberToHex(15)
+	str      = NumberToHex(15)
 	expected = "0f"
 	CHECK_EQUAL_STR(str, expected)
 
-	str = NumberToHex(255)
+	str      = NumberToHex(255)
 	expected = "ff"
 	CHECK_EQUAL_STR(str, expected)
 
-	CHECK_EQUAL_WAVES(HexToBinary("ff000110"), {255, 0, 16, 1}, mode=WAVE_DATA)
+	CHECK_EQUAL_WAVES(HexToBinary("ff000110"), {255, 0, 16, 1}, mode = WAVE_DATA)
 End
 
 Function CheckUUIDs()
@@ -4095,7 +4095,7 @@ Function LBP_Aborts([var])
 	variable var
 
 	try
-		LineBreakingIntoPar("", minimumWidth=var); AbortOnRTE
+		LineBreakingIntoPar("", minimumWidth = var); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -4105,11 +4105,11 @@ End
 Function LBP_Works()
 	string str, expected
 
-	str = LineBreakingIntoPar("abcd efgh 123 one two\tfour")
+	str      = LineBreakingIntoPar("abcd efgh 123 one two\tfour")
 	expected = "abcd\refgh 123\rone\rtwo\rfour"
 	CHECK_EQUAL_STR(str, expected)
 
-	str = LineBreakingIntoPar("abcd efgh 123 one two\tfour", minimumWidth = 10)
+	str      = LineBreakingIntoPar("abcd efgh 123 one two\tfour", minimumWidth = 10)
 	expected = "abcd efgh 123\rone two\tfour"
 	CHECK_EQUAL_STR(str, expected)
 End
@@ -4149,18 +4149,18 @@ Function NWLWorks()
 
 	string expected, result
 
-	Make/FREE dataFP = {1, 1e6, -inf, 1.5, NaN}
-	result = NumericWaveToList(dataFP, ";")
+	Make/FREE dataFP = {1, 1e6, -Inf, 1.5, NaN}
+	result   = NumericWaveToList(dataFP, ";")
 	expected = "1;1e+06;-inf;1.5;nan;"
 	CHECK_EQUAL_STR(result, expected)
 
 	Make/FREE dataFP = {1, 1e6, -100}
-	result = NumericWaveToList(dataFP, ";", format="%d")
+	result   = NumericWaveToList(dataFP, ";", format = "%d")
 	expected = "1;1000000;-100;"
 	CHECK_EQUAL_STR(result, expected)
 
 	Make/FREE dataFP = {{1, 2, 3}, {4, 5, 6}}
-	result = NumericWaveToList(dataFP, ";")
+	result   = NumericWaveToList(dataFP, ";")
 	expected = "1,4,;2,5,;3,6,;"
 	CHECK_EQUAL_STR(result, expected)
 
@@ -4208,14 +4208,14 @@ Function LTNWWorks()
 	WAVE wv = ListToNumericWave("1;1e6;-inf;1.5;NaN;", ";")
 
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
-	CHECK_EQUAL_WAVES(wv, {1, 1e6, -inf, 1.5, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wv, {1, 1e6, -Inf, 1.5, NaN}, mode = WAVE_DATA)
 End
 
 Function LTNWWorksWithCustomSepAndFloatType()
 	WAVE wv = ListToNumericWave("1|1e6|-inf|1.5|NaN|", "|", type = IGOR_TYPE_32BIT_FLOAT)
 
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
-	CHECK_EQUAL_WAVES(wv, {1, 1e6, -inf, 1.5, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(wv, {1, 1e6, -Inf, 1.5, NaN}, mode = WAVE_DATA)
 End
 
 Function LTNWWorksWithIntegerType()
@@ -4235,7 +4235,7 @@ End
 Function LTNWRoundtripsWithNumericWaveToList()
 	string list
 
-	Make/FREE expected = {1, 1e6, -inf, 1.5, NaN}
+	Make/FREE expected = {1, 1e6, -Inf, 1.5, NaN}
 
 	list = NumericWaveToList(expected, ";")
 
@@ -4264,7 +4264,7 @@ static Function LTNInvalidInputIgnored()
 	Execute/Z "SetIgorOption DisableThreadsafe=?"
 	NVAR threadingDisabled = V_flag
 	if(threadingDisabled == 1)
-		WAVE wv = ListToNumericWave("1;totallyLegitNumber;1;", ";", ignoreErr=1)
+		WAVE wv = ListToNumericWave("1;totallyLegitNumber;1;", ";", ignoreErr = 1)
 		CHECK_NO_RTE()
 		CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 		CHECK_EQUAL_WAVES(wv, {1, NaN, 1}, mode = WAVE_DATA)
@@ -4351,7 +4351,7 @@ Function/DF PrepareFolderForBackup_IGNORE()
 	NewDataFolder folder
 	Make :folder:data1 = p
 	Make :folder:data2 = P^2
-	string/G :folder:str
+	string/G   :folder:str
 	variable/G :folder:var
 	NewDataFolder :folder:test
 
@@ -4360,13 +4360,13 @@ Function/DF PrepareFolderForBackup_IGNORE()
 End
 
 Function CountElementsInFolder_IGNORE(DFREF dfr)
-	return CountObjectsDFR(dfr, COUNTOBJECTS_WAVES) + CountObjectsDFR(dfr, COUNTOBJECTS_VAR)        \
-		   + CountObjectsDFR(dfr, COUNTOBJECTS_STR) + CountObjectsDFR(dfr, COUNTOBJECTS_DATAFOLDER)
+	return CountObjectsDFR(dfr, COUNTOBJECTS_WAVES) + CountObjectsDFR(dfr, COUNTOBJECTS_VAR)      \
+	       + CountObjectsDFR(dfr, COUNTOBJECTS_STR) + CountObjectsDFR(dfr, COUNTOBJECTS_DATAFOLDER)
 End
 
 Function CreateBackupWaveForAllWorks()
 
-	DFREF dfr = PrepareFolderForBackup_IGNORE()
+	DFREF    dfr         = PrepareFolderForBackup_IGNORE()
 	variable numElements = CountElementsInFolder_IGNORE(dfr)
 
 	CreateBackupWavesForAll(dfr)
@@ -4416,7 +4416,7 @@ Function ReplaceWaveWithBackupWorks()
 	Make data = p
 	CreateBackupWave(data)
 	originalSum = Sum(data)
-	data = 0
+	data        = 0
 
 	CHECK_EQUAL_VAR(Sum(data), 0)
 
@@ -4438,7 +4438,7 @@ Function ReplaceWaveWithBackupNonExistingBackupIsFatal()
 	endtry
 End
 
-Function 	ReplaceWaveWithBackupNonExistingBackupIsOkay()
+Function ReplaceWaveWithBackupNonExistingBackupIsOkay()
 
 	// but that can be turned off
 	Make data
@@ -4470,7 +4470,7 @@ End
 
 Function ReplaceWaveWithBackupForAllNonFatal()
 
-	DFREF dfr = PrepareFolderForBackup_IGNORE()
+	DFREF    dfr         = PrepareFolderForBackup_IGNORE()
 	variable numElements = CountElementsInFolder_IGNORE(dfr)
 	ReplaceWaveWithBackupForAll(dfr)
 	CHECK_EQUAL_VAR(CountElementsInFolder_IGNORE(dfr), numElements)
@@ -4480,16 +4480,16 @@ Function ReplaceWaveWithBackupForAllWorks()
 
 	variable originalSum1, originalSum2
 
-	DFREF dfr = PrepareFolderForBackup_IGNORE()
+	DFREF    dfr         = PrepareFolderForBackup_IGNORE()
 	variable numElements = CountElementsInFolder_IGNORE(dfr)
 
 	WAVE/SDFR=dfr data1
 
 	WAVE/SDFR=dfr data1
-	originalSum1	= Sum(data1)
+	originalSum1 = Sum(data1)
 
 	WAVE/SDFR=dfr data2
-	originalSum2	= Sum(data2)
+	originalSum2 = Sum(data2)
 
 	CreateBackupWavesForAll(dfr)
 
@@ -4552,11 +4552,11 @@ End
 Function DE_Basics()
 
 	[WAVE start, WAVE stop] = DistributeElements(2)
-	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
-	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+	CHECK_WAVE(start, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_WAVE(stop, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 
-	CHECK_EQUAL_WAVES(start, {0.0, 0.515}, mode = WAVE_DATA, tol=1e-8)
-	CHECK_EQUAL_WAVES(stop,  {0.485, 1.0}, mode = WAVE_DATA, tol=1e-8)
+	CHECK_EQUAL_WAVES(start, {0.0, 0.515}, mode = WAVE_DATA, tol = 1e-8)
+	CHECK_EQUAL_WAVES(stop, {0.485, 1.0}, mode = WAVE_DATA, tol = 1e-8)
 End
 
 Function DE_OffsetWorks()
@@ -4564,24 +4564,24 @@ Function DE_OffsetWorks()
 	variable offset = 0.01
 
 	[WAVE start, WAVE stop] = DistributeElements(2, offset = offset)
-	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
-	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+	CHECK_WAVE(start, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_WAVE(stop, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 
-	CHECK_EQUAL_WAVES(start, {0.01, 0.52}, mode = WAVE_DATA, tol=1e-8)
-	CHECK_EQUAL_WAVES(stop,  {0.49, 1.0}, mode = WAVE_DATA, tol=1e-8)
+	CHECK_EQUAL_WAVES(start, {0.01, 0.52}, mode = WAVE_DATA, tol = 1e-8)
+	CHECK_EQUAL_WAVES(stop, {0.49, 1.0}, mode = WAVE_DATA, tol = 1e-8)
 End
 
 Function DE_ManyElements()
 
 	[WAVE start, WAVE stop] = DistributeElements(10)
-	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
-	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+	CHECK_WAVE(start, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_WAVE(stop, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 
-	Make/FREE/D refStart = {0,0.102222222222222,0.204444444444444,0.306666666666667,0.408888888888889,0.511111111111111,0.613333333333333,0.715555555555556,0.817777777777778,0.92}
-	Make/FREE/D refStop = {0.08,0.182222222222222,0.284444444444444,0.386666666666667,0.488888888888889,0.591111111111111,0.693333333333333,0.795555555555556,0.897777777777778,1}
+	Make/FREE/D refStart = {0, 0.102222222222222, 0.204444444444444, 0.306666666666667, 0.408888888888889, 0.511111111111111, 0.613333333333333, 0.715555555555556, 0.817777777777778, 0.92}
+	Make/FREE/D refStop = {0.08, 0.182222222222222, 0.284444444444444, 0.386666666666667, 0.488888888888889, 0.591111111111111, 0.693333333333333, 0.795555555555556, 0.897777777777778, 1}
 
-	CHECK_EQUAL_WAVES(start, refStart, mode = WAVE_DATA, tol=1e-8)
-	CHECK_EQUAL_WAVES(stop,  refStop, mode = WAVE_DATA, tol=1e-8)
+	CHECK_EQUAL_WAVES(start, refStart, mode = WAVE_DATA, tol = 1e-8)
+	CHECK_EQUAL_WAVES(stop, refStop, mode = WAVE_DATA, tol = 1e-8)
 End
 
 /// @}
@@ -4596,9 +4596,9 @@ Function CNL_Works()
 	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 90, 5), 10)
 	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 60, 5), 5)
 	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 20, 5), 5)
-	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  2, 5), 0.5)
-	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  1, 5), 0.05)
-	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  0.5, 5), 0.05)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 2, 5), 0.5)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 1, 5), 0.05)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 0.5, 5), 0.05)
 End
 
 /// @}
@@ -4632,8 +4632,8 @@ Function IC_CheckNaNInInputWave()
 	CHECK_EQUAL_VAR(IsConstant({NaN, 0}, 0, ignoreNaN = 1), 1)
 
 	CHECK_EQUAL_VAR(IsConstant({NaN, 0}, 0, ignoreNaN = 0), 0)
-	CHECK_EQUAL_VAR(IsConstant({NaN, -inf}, NaN, ignoreNaN = 0), 0)
-	CHECK_EQUAL_VAR(IsConstant({NaN, inf}, NaN, ignoreNaN = 0), 0)
+	CHECK_EQUAL_VAR(IsConstant({NaN, -Inf}, NaN, ignoreNaN = 0), 0)
+	CHECK_EQUAL_VAR(IsConstant({NaN, Inf}, NaN, ignoreNaN = 0), 0)
 
 	// it can only be true if all are NaN
 	CHECK_EQUAL_VAR(IsConstant({NaN, NaN}, NaN, ignoreNaN = 0), 1)
@@ -4647,9 +4647,9 @@ End
 /// DataFolderExistsDFR
 /// @{
 
-static structure dfrTest
+static Structure dfrTest
 	DFREF structDFR
-endstructure
+EndStructure
 
 Function DFED_WorksRegular1()
 
@@ -4659,7 +4659,7 @@ Function DFED_WorksRegular1()
 	NewDataFolder test
 	DFREF dfr = test
 	s.structDFR = test
-	wDfr[0] = test
+	wDfr[0]     = test
 
 	CHECK(DataFolderExistsDFR(dfr))
 	CHECK(DataFolderExistsDFR(s.structDFR))
@@ -4674,7 +4674,7 @@ Function DFED_WorksRegular2()
 	NewDataFolder test
 	DFREF dfr = test
 	s.structDFR = test
-	wDfr[0] = test
+	wDfr[0]     = test
 
 	NewDataFolder test1
 	MoveDataFolder test, test1
@@ -4691,7 +4691,7 @@ Function DFED_WorksRegular3()
 
 	DFREF dfr = NewFreeDataFolder()
 	s.structDFR = dfr
-	wDfr[0] = dfr
+	wDfr[0]     = dfr
 
 	NewDataFolder test
 	MoveDataFolder dfr, test
@@ -4708,7 +4708,7 @@ Function DFED_WorksRegular4()
 
 	DFREF dfr = NewFreeDataFolder()
 	s.structDFR = dfr
-	wDfr[0] = dfr
+	wDfr[0]     = dfr
 
 	RenameDataFolder dfr, test1234
 
@@ -4724,7 +4724,7 @@ Function DFED_FailsRegular1()
 
 	DFREF dfr = $""
 	s.structDFR = $""
-	wDfr[0] = $""
+	wDfr[0]     = $""
 
 	CHECK(!DataFolderExistsDFR(dfr))
 	CHECK(!DataFolderExistsDFR(s.structDFR))
@@ -4740,7 +4740,7 @@ Function DFED_FailsRegular2()
 
 	DFREF dfr = test
 	s.structDFR = test
-	wDfr[0] = test
+	wDfr[0]     = test
 
 	KillDataFolder test
 
@@ -4752,7 +4752,7 @@ End
 Function DFED_FailsRegular3()
 
 	DFREF dfr = NewFreeDataFolder()
-	Make/DF/N=1 dfr:wDfr/Wave=wDfr
+	Make/DF/N=1 dfr:wDfr/WAVE=wDfr
 	wDfr[0] = dfr
 	CHECK(DataFolderExistsDFR(wDfr[0]))
 
@@ -5092,27 +5092,27 @@ End
 
 Function ZN_RemovesNaNs()
 
-	Make/FREE wv = {NaN, inf, 1}
+	Make/FREE wv = {NaN, Inf, 1}
 	WAVE/Z reduced = ZapNaNs(wv)
-	CHECK_EQUAL_WAVES(reduced, {inf, 1})
+	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
 End
 
 Function ZN_RemovesNaNs2D()
 
 	// row is NaN
-	Make/FREE wv = {{NaN, inf}, { NaN, 1}}
+	Make/FREE wv = {{NaN, Inf}, {NaN, 1}}
 	WAVE/Z reduced = ZapNaNs(wv)
-	CHECK_EQUAL_WAVES(reduced, {inf, 1})
+	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
 
 	// column is NaN
-	Make/FREE wv = {{NaN, NaN}, {inf, 1}}
+	Make/FREE wv = {{NaN, NaN}, {Inf, 1}}
 	WAVE/Z reduced = ZapNaNs(wv)
-	CHECK_EQUAL_WAVES(reduced, {inf, 1})
+	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
 
 	// single point NaN only
-	Make/FREE wv = {{NaN, 2}, {inf, 1}}
+	Make/FREE wv = {{NaN, 2}, {Inf, 1}}
 	WAVE/Z reduced = ZapNaNs(wv)
-	CHECK_EQUAL_WAVES(reduced, {2, inf, 1})
+	CHECK_EQUAL_WAVES(reduced, {2, Inf, 1})
 
 End
 
@@ -5290,7 +5290,7 @@ threadsafe Function WMCW_ChecksPreemptiveThreadHelper(WAVE wv)
 
 	try
 		WaveModCountWrapper(wv)
-		return inf
+		return Inf
 	catch
 		return 0
 	endtry
@@ -5312,7 +5312,7 @@ Function WMCW_Works1()
 	variable val
 
 	Make/O data
-	val = WaveModCountWrapper(data)
+	val   = WaveModCountWrapper(data)
 	data += 1
 	CHECK_EQUAL_VAR(val + 1, WaveModCountWrapper(data))
 End
@@ -5362,14 +5362,14 @@ End
 Function RDFU_Works()
 	string name, suffix, path
 
-	name = "I_DONT_EXIST"
+	name   = "I_DONT_EXIST"
 	suffix = "DONT_CARE"
 
 	CHECK(!DataFolderExists(name))
 	RenameDataFolderToUniqueName(name, suffix)
 	CHECK(!DataFolderExists(name))
 
-	name = "folder"
+	name   = "folder"
 	suffix = "_old"
 
 	NewDataFolder $name
@@ -5461,14 +5461,14 @@ End
 
 Function GSU_WorksWithFloat()
 
-	Make/FREE data1 = {1, 4.5, inf, -inf}
-	Make/FREE data2 = {1, 5, NaN, inf}
+	Make/FREE data1 = {1, 4.5, Inf, -Inf}
+	Make/FREE data2 = {1, 5, NaN, Inf}
 
 	WAVE/Z union = GetSetUnion(data1, data2)
 	CHECK_WAVE(union, NUMERIC_WAVE)
 	Sort union, union
 
-	CHECK_EQUAL_WAVES({-inf, 1, 4.5, 5, inf, NaN}, union)
+	CHECK_EQUAL_WAVES({-Inf, 1, 4.5, 5, Inf, NaN}, union)
 End
 
 Function GSU_WorksWithTextAndIsCaseSensitiveByDefault()
@@ -5480,31 +5480,31 @@ Function GSU_WorksWithTextAndIsCaseSensitiveByDefault()
 	CHECK_WAVE(union, TEXT_WAVE)
 	Sort union, union
 
-	CHECK_EQUAL_TEXTWAVES({"","11","ab","CD", "cd", "ef"}, union)
+	CHECK_EQUAL_TEXTWAVES({"", "11", "ab", "CD", "cd", "ef"}, union)
 End
 
 Function GSU_WorksWithFirstEmpty()
 
 	Make/FREE/N=0 data1
-	Make/FREE data2 = {1, 1, 5, NaN, inf}
+	Make/FREE data2 = {1, 1, 5, NaN, Inf}
 
 	WAVE/Z union = GetSetUnion(data1, data2)
 	CHECK_WAVE(union, NUMERIC_WAVE)
 	Sort union, union
 
-	CHECK_EQUAL_WAVES({1, 5, inf, NaN}, union)
+	CHECK_EQUAL_WAVES({1, 5, Inf, NaN}, union)
 End
 
 Function GSU_WorksWithSecondEmpty()
 
-	Make/FREE data1 = {1, 1, 5, NaN, inf}
+	Make/FREE data1 = {1, 1, 5, NaN, Inf}
 	Make/FREE/N=0 data2
 
 	WAVE/Z union = GetSetUnion(data1, data2)
 	CHECK_WAVE(union, NUMERIC_WAVE)
 	Sort union, union
 
-	CHECK_EQUAL_WAVES({1, 5, inf, NaN}, union)
+	CHECK_EQUAL_WAVES({1, 5, Inf, NaN}, union)
 End
 
 Function GSU_WorksWithFirstEmptyText()
@@ -5533,7 +5533,7 @@ End
 
 Function GSU_WorksWithBothEqual()
 
-	Make/FREE data = {1, 5, inf, NaN}
+	Make/FREE data = {1, 5, Inf, NaN}
 
 	WAVE/Z union = GetSetUnion(data, data)
 	CHECK_WAVE(union, NUMERIC_WAVE)
@@ -5563,7 +5563,7 @@ End
 
 Function SICP_EnsureValidGUIs()
 
-	string panel
+	string   panel
 	variable keepDebugPanel
 
 	// avoid that the default TEST_CASE_BEGIN_OVERRIDE
@@ -5660,7 +5660,7 @@ End
 
 // UTF_TD_GENERATOR ETInvalidInput
 Function ET_Fails([WAVE/T wv])
-	string str
+	string   str
 	variable length
 
 	str    = wv[0]
@@ -5980,16 +5980,16 @@ static Function FBD_WorksWithInvalidTimeStamp()
 	WAVE/Z/T result = $""
 
 	Make/FREE/T input2 = {"{}", "{}", "{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
-						"{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
-						"{}", "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
-						"{}", "{}"}
+	                      "{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+	                      "{}", "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
+	                      "{}", "{}"}
 
 	Make/FREE/T input3 = {"{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}"}
 
 	// invalid ts at borders are included (2)
 	Make/FREE/T ref = {"{}", "{}", "{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
-					   "{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
-					   "{}", "{}"}
+	                   "{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+	                   "{}", "{}"}
 
 	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
 	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
@@ -6006,9 +6006,9 @@ static Function FBD_WorksWithInvalidTimeStamp()
 
 	// right boundary
 	Make/FREE/T ref = {"{}", "{}", "{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
-					   "{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
-					  "{}", "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
-					   "{}", "{}"}
+	                   "{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+	                   "{}", "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
+	                   "{}", "{}"}
 
 	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
 	last  = Inf
@@ -6036,10 +6036,10 @@ static Function FBD_WorksWithInvalidTimeStamp()
 	CHECK_EQUAL_VAR(lastIndex, DimSize(input3, ROWS) - 1)
 
 	// right boundary with invalid ts
-	Make/FREE/T input4 = {"{\"ts\" : \"2021-12-24T00:00:00Z\"}", \
-					   "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
-					  "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
-					   "{}"}
+	Make/FREE/T input4 = {"{\"ts\" : \"2021-12-24T00:00:00Z\"}",       \
+	                      "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
+	                      "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
+	                      "{}"}
 
 	first = 0
 	last  = ParseIsO8601TimeStamp("2022-01-25T00:00:00Z")
@@ -6095,7 +6095,7 @@ Function GSFWNR_Works()
 
 	// non-wave ref
 	Make/FREE plain
-	Note/K plain "abcd:123"
+	Note/K plain, "abcd:123"
 
 	ref = "123"
 	str = GetStringFromWaveNote(plain, "abcd", recursive = 1)
@@ -6103,7 +6103,7 @@ Function GSFWNR_Works()
 
 	// empty wave ref
 	Make/WAVE/FREE/N=0 wref
-	Note/K wref "abcd:123"
+	Note/K wref, "abcd:123"
 
 	ref = "123"
 	str = GetStringFromWaveNote(wref, "abcd", recursive = 1)
@@ -6295,32 +6295,32 @@ static Function CompressNumericalList()
 	string list, ref
 
 	list = "1,2"
-	ref = "1-2"
+	ref  = "1-2"
 	list = MIES_UTILS#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = "-1,0,1"
-	ref = "-1-1"
+	ref  = "-1-1"
 	list = MIES_UTILS#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = "1,2,3,5,6,7"
-	ref = "1-3,5-7"
+	ref  = "1-3,5-7"
 	list = MIES_UTILS#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = ""
-	ref = ""
+	ref  = ""
 	list = MIES_UTILS#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = "1,2,2,3,3,4,6"
-	ref = "1-4,6"
+	ref  = "1-4,6"
 	list = MIES_UTILS#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = "6,4,3,3,2,2,1"
-	ref = "1-4,6"
+	ref  = "1-4,6"
 	list = MIES_UTILS#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
@@ -6388,13 +6388,13 @@ Function CFW_Works1()
 	CHECK_WAVE(wv, FREE_WAVE)
 
 	expected = "wv"
-	str = NameOfWave(wv)
+	str      = NameOfWave(wv)
 	CHECK_EQUAL_STR(str, expected)
 
 	ChangeFreeWaveName(wv, "abcd")
 
 	expected = "abcd"
-	str = NameOfWave(wv)
+	str      = NameOfWave(wv)
 	CHECK_EQUAL_STR(str, expected)
 End
 
@@ -6440,51 +6440,51 @@ static Function TestReduceWaveDimensionality()
 	CHECK_EQUAL_VAR(DimSize(data, COLS), 0)
 
 	Make/FREE/N=(1, 1, 1, 1) data
-	ReduceWaveDimensionality(data, minDimension=CHUNKS)
+	ReduceWaveDimensionality(data, minDimension = CHUNKS)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(data, COLS), 1)
 	CHECK_EQUAL_VAR(DimSize(data, LAYERS), 1)
 	CHECK_EQUAL_VAR(DimSize(data, CHUNKS), 0)
 
 	Make/FREE/N=(1, 1, 1, 1) data
-	ReduceWaveDimensionality(data, minDimension=LAYERS)
+	ReduceWaveDimensionality(data, minDimension = LAYERS)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(data, COLS), 1)
 	CHECK_EQUAL_VAR(DimSize(data, LAYERS), 0)
 
 	Make/FREE/N=(1, 1, 1, 1) data
-	ReduceWaveDimensionality(data, minDimension=COLS)
+	ReduceWaveDimensionality(data, minDimension = COLS)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(data, COLS), 0)
 
 	Make/FREE/N=(1, 1, 1, 1) data
-	ReduceWaveDimensionality(data, minDimension=ROWS)
+	ReduceWaveDimensionality(data, minDimension = ROWS)
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(DimSize(data, COLS), 0)
 
 	try
-		ReduceWaveDimensionality(data, minDimension=NaN); AbortOnRTE
+		ReduceWaveDimensionality(data, minDimension = NaN); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		ReduceWaveDimensionality(data, minDimension=-1); AbortOnRTE
+		ReduceWaveDimensionality(data, minDimension = -1); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		ReduceWaveDimensionality(data, minDimension=1.5); AbortOnRTE
+		ReduceWaveDimensionality(data, minDimension = 1.5); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		ReduceWaveDimensionality(data, minDimension=Inf); AbortOnRTE
+		ReduceWaveDimensionality(data, minDimension = Inf); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -6503,7 +6503,7 @@ End
 static Function TestDeepCopyWaveRefWave()
 
 	variable i
-	variable refSize = 3
+	variable refSize  = 3
 	variable dataSize = 2
 
 	Make/FREE/WAVE/N=(refSize) src
@@ -6518,14 +6518,14 @@ static Function TestDeepCopyWaveRefWave()
 		CHECK_EQUAL_VAR(WaveRefsEqual(src[i], cpy[i]), 0)
 	endfor
 
-	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=CHUNKS, index=dataSize - 1)
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = CHUNKS, index = dataSize - 1)
 	CHECK_EQUAL_VAR(DimSize(src, ROWS), refSize)
 	Make/FREE/N=(dataSize, dataSize, dataSize) dataRef
 	for(i = 0; i < dataSize; i += 1)
 		CHECK_EQUAL_WAVES(dataRef, cpy[i])
 	endfor
 
-	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=LAYERS, index=dataSize - 1)
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = LAYERS, index = dataSize - 1)
 	CHECK_EQUAL_VAR(DimSize(src, ROWS), refSize)
 	Make/FREE/N=(dataSize, dataSize, dataSize, dataSize) wv
 	Duplicate/FREE/R=[][][dataSize - 1][] wv, dataRef
@@ -6534,7 +6534,7 @@ static Function TestDeepCopyWaveRefWave()
 	endfor
 
 	Make/FREE/N=(refSize) indexWave = p
-	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=LAYERS, indexWave=indexWave)
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = LAYERS, indexWave = indexWave)
 	CHECK_EQUAL_VAR(DimSize(src, ROWS), refSize)
 	Make/FREE/N=(dataSize, dataSize, dataSize, dataSize) wv
 	Duplicate/FREE/R=[][][0][] wv, dataRef0
@@ -6546,7 +6546,7 @@ static Function TestDeepCopyWaveRefWave()
 
 	Make/FREE/N=(dataSize) data
 	src[] = data
-	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=ROWS, index=dataSize - 1)
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, index = dataSize - 1)
 	CHECK_EQUAL_VAR(DimSize(src, ROWS), refSize)
 	Make/FREE/N=(dataSize) wv
 	Duplicate/FREE/R=[dataSize - 1][][][] wv, dataRef
@@ -6555,21 +6555,21 @@ static Function TestDeepCopyWaveRefWave()
 	endfor
 
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=ROWS, index=0, indexWave=indexWave); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, index = 0, indexWave = indexWave); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=NaN); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = NaN); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
 	endtry
 
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, index=0); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, index = 0); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -6577,7 +6577,7 @@ static Function TestDeepCopyWaveRefWave()
 
 	Make/FREE/N=(refSize + 1) indexWave = p
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=ROWS, indexWave=indexWave); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, indexWave = indexWave); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -6585,7 +6585,7 @@ static Function TestDeepCopyWaveRefWave()
 
 	Make/FREE/N=(refSize + 1)/T indexWaveT
 	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension=ROWS, indexWave=indexWaveT); AbortOnRTE
+		WAVE/WAVE cpy = DeepCopyWaveRefWave(src, dimension = ROWS, indexWave = indexWaveT); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -6599,7 +6599,7 @@ static Function TestDeepCopyWaveRefWave()
 		PASS()
 	endtry
 
-	Make/FREE/WAVE/N=(1,1) invalidSrc1
+	Make/FREE/WAVE/N=(1, 1) invalidSrc1
 	try
 		WAVE/WAVE cpy = DeepCopyWaveRefWave(invalidSrc1); AbortOnRTE
 		FAIL()
@@ -6802,7 +6802,7 @@ Function GetMarqueeHelperWorks()
 
 	// non-existing axis
 	try
-		[first, last ] = GetMarqueeHelper("I_DONT_EXIST", horiz = 1)
+		[first, last] = GetMarqueeHelper("I_DONT_EXIST", horiz = 1)
 		FAIL()
 	catch
 		CHECK_EQUAL_VAR(first, NaN)
@@ -6810,13 +6810,13 @@ Function GetMarqueeHelperWorks()
 	endtry
 
 	// non-existing axis without assert
-	[first, last ] = GetMarqueeHelper("I_DONT_EXIST", horiz = 1, doAssert = 0)
+	[first, last] = GetMarqueeHelper("I_DONT_EXIST", horiz = 1, doAssert = 0)
 	CHECK_EQUAL_VAR(first, NaN)
 	CHECK_EQUAL_VAR(last, NaN)
 
 	// missing horiz/vert
 	try
-		[first, last ] = GetMarqueeHelper("left")
+		[first, last] = GetMarqueeHelper("left")
 		FAIL()
 	catch
 		CHECK_EQUAL_VAR(first, NaN)
@@ -6825,7 +6825,7 @@ Function GetMarqueeHelperWorks()
 
 	// both horiz/vert
 	try
-		[first, last ] = GetMarqueeHelper("left", horiz = 1, vert = 1)
+		[first, last] = GetMarqueeHelper("left", horiz = 1, vert = 1)
 		FAIL()
 	catch
 		CHECK_EQUAL_VAR(first, NaN)
@@ -6833,23 +6833,23 @@ Function GetMarqueeHelperWorks()
 	endtry
 
 	// querying without kill (default)
-	[first, last ] = GetMarqueeHelper("bottom", horiz = 1)
+	[first, last] = GetMarqueeHelper("bottom", horiz = 1)
 	CHECK_EQUAL_VAR(round(first), 10)
 	CHECK_EQUAL_VAR(round(last), 30)
 
 	// querying without kill (explicit)
-	[first, last ] = GetMarqueeHelper("bottom", horiz = 1)
+	[first, last] = GetMarqueeHelper("bottom", horiz = 1)
 	CHECK_EQUAL_VAR(round(first), 10)
 	CHECK_EQUAL_VAR(round(last), 30)
 
 	// query with kill and win
-	[first, last ] = GetMarqueeHelper("left", vert = 1, kill = 1, win = win)
+	[first, last] = GetMarqueeHelper("left", vert = 1, kill = 1, win = win)
 	CHECK_EQUAL_VAR(round(first), 2)
 	CHECK_EQUAL_VAR(round(last), 4)
 	CHECK_EQUAL_STR(win, refWin)
 
 	// marquee is gone
-	[first, last ] = GetMarqueeHelper("left", horiz = 1, doAssert = 0)
+	[first, last] = GetMarqueeHelper("left", horiz = 1, doAssert = 0)
 	CHECK_EQUAL_VAR(first, NaN)
 	CHECK_EQUAL_VAR(last, NaN)
 End
@@ -6876,7 +6876,7 @@ static Function/S ConvertMacroToPlainCommands(string recMacro)
 
 	Make/FREE/T/N=(numLines) contents = StringFromList(p, recMacro, "\r")
 
-	contents[0, 1] = ""
+	contents[0, 1]         = ""
 	contents[numLines - 1] = ""
 
 	return ReplaceString("\r", TextWaveToList(contents, "\r"), ";")
@@ -6911,7 +6911,7 @@ static Function/WAVE GetDifferentGraphs()
 	wv[1] = recMacro
 
 	Display data
-	win = S_name
+	win      = S_name
 	recMacro = WinRecreation(win, 0)
 	CHECK_PROPER_STR(recMacro)
 	KillWindow $win
@@ -6928,7 +6928,7 @@ static Function/WAVE GetDifferentGraphs()
 	wv[3] = recMacro
 
 	Display data
-	win = S_name
+	win      = S_name
 	recMacro = WinRecreation(win, 0)
 	CHECK_PROPER_STR(recMacro)
 	KillWindow $win
@@ -6973,7 +6973,7 @@ End
 static Function NoNullReturnFromGetValDisplayAsString()
 
 	NewPanel/N=testpanelVal
-	ValDisplay vdisp win=testpanelVal
+	ValDisplay vdisp, win=testpanelVal
 
 	GetValDisplayAsString("testpanelVal", "vdisp")
 	PASS()
@@ -6982,7 +6982,7 @@ End
 static Function NoNullReturnFromGetPopupMenuString()
 
 	NewPanel/N=testpanelPM
-	PopupMenu pmenu win=testpanelPM
+	PopupMenu pmenu, win=testpanelPM
 
 	GetPopupMenuString("testpanelPM", "pmenu")
 	PASS()
@@ -6991,7 +6991,7 @@ End
 static Function NoNullReturnFromGetSetVariableString()
 
 	NewPanel/N=testpanelSV
-	SetVariable svari win=testpanelSV
+	SetVariable svari, win=testpanelSV
 
 	GetSetVariableString("testpanelSV", "svari")
 	PASS()
@@ -7043,7 +7043,7 @@ static Function TestLoadTextFileToWave1()
 	string tmpFile = GetFolder(FunctionPath("")) + "LoadTextWave.txt"
 
 	line = PadString("", MEGABYTE - 1, 0x20) + "\n"
-	cnt = ceil(STRING_MAX_SIZE / MEGABYTE + 1)
+	cnt  = ceil(STRING_MAX_SIZE / MEGABYTE + 1)
 	Open fNum as tmpFile
 	for(i = 0; i < cnt; i += 1)
 		FBinWrite fnum, line
@@ -7151,7 +7151,7 @@ static Function TestSplitLogDataBySize()
 
 	Make/FREE/T strData = {str}
 	Make/FREE/WAVE ref = {strData, strData, strData}
-	WAVE/WAVE result = SplitLogDataBySize(logData, "", 10, lastIndex = inf)
+	WAVE/WAVE result = SplitLogDataBySize(logData, "", 10, lastIndex = Inf)
 	CHECK_EQUAL_WAVES(result, ref, mode = -1 %^ WAVE_DATA)
 	for(resultContent : result)
 		CHECK_EQUAL_WAVES(resultContent, strData, mode = -1 %^ WAVE_SCALING)
@@ -7185,13 +7185,13 @@ static Function GetDayOfWeekTest()
 		PASS()
 	endtry
 	try
-		GetDayOfWeek(inf)
+		GetDayOfWeek(Inf)
 		FAIL()
 	catch
 		PASS()
 	endtry
 	try
-		GetDayOfWeek(-inf)
+		GetDayOfWeek(-Inf)
 		FAIL()
 	catch
 		PASS()
@@ -7562,7 +7562,7 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(emptyWave, str = "1"), NaN)
 
 	// numeric waves
-	Make/FREE floatWave = {3, 1, 2, NaN, inf}
+	Make/FREE floatWave = {3, 1, 2, NaN, Inf}
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = 3), 0)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "3"), 0)
 	// @todo enable once IP bug #4894 is fixed
@@ -7628,7 +7628,7 @@ static Function TestSplitWavesToDimension()
 	CHECK_EQUAL_WAVES(result[1], {3, 4}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(result[2], {5, 6}, mode = WAVE_DATA)
 
-	Make/FREE   wvData1    = {{1, 2}, {3, 4}}
+	Make/FREE wvData1 = {{1, 2}, {3, 4}}
 	Make/FREE/T wvDataTxt1 = {{"a", "b"}, {"c", "d"}}
 	Make/FREE/WAVE wvRef = {wvData1, wvDataTxt1}
 
@@ -7673,7 +7673,7 @@ static Function TestAreIntervalsIntersecting()
 	CHECK_EQUAL_VAR(0, AreIntervalsIntersecting(single))
 
 	// contains NaN values (start)
-	Make/FREE infValues = {{1, inf}, {2, 4}}
+	Make/FREE infValues = {{1, Inf}, {2, 4}}
 
 	try
 		AreIntervalsIntersecting(infValues)
@@ -7717,13 +7717,13 @@ static Function TestAreIntervalsIntersecting()
 	CHECK(AreIntervalsIntersecting(data))
 
 	// works also with infinite
-	Make/FREE data = {{-inf, 3}, {2, inf}}
+	Make/FREE data = {{-Inf, 3}, {2, Inf}}
 	CHECK(!AreIntervalsIntersecting(data))
 End
 
 static Function TestCaseInsensitivityWB_SplitStimsetName()
 
-	string setPrefix
+	string   setPrefix
 	variable stimulusType
 	variable setNumber
 
@@ -7757,7 +7757,7 @@ static Function TestGetListDifference()
 	result = GetListDifference("a;A;", "a;")
 	CHECK_EQUAL_STR("A;", result)
 
-	result = GetListDifference("a;A;b;", "a;", caseSensitive=0)
+	result = GetListDifference("a;A;b;", "a;", caseSensitive = 0)
 	CHECK_EQUAL_STR("b;", result)
 End
 
@@ -7776,8 +7776,8 @@ static Function TestIndexAfterDecimation([md])
 
 	decimationFactor = srcLength / md.v1
 	// make srcPulseLength as least as long that there is at least one point with amplitude in target for FindLevel
-	srcPulseLength = ceil(decimationFactor)
-	srcOffset = trunc(srcLength * md.v0)
+	srcPulseLength                                = ceil(decimationFactor)
+	srcOffset                                     = trunc(srcLength * md.v0)
 	source[srcOffset, srcOffset + srcPulseLength] = 1
 
 	target[] = source[limit(round(p * decimationFactor), 0, srcLength - 1)]
@@ -7808,12 +7808,12 @@ Function TestFindFirstNaNIndex()
 
 	Make/FREE wv
 	wv[10,] = NaN
-	idx = FindFirstNaNIndex(wv)
+	idx     = FindFirstNaNIndex(wv)
 	CHECK_EQUAL_VAR(idx, 10)
 
 	Make/FREE wv
 	wv[] = NaN
-	idx = FindFirstNaNIndex(wv)
+	idx  = FindFirstNaNIndex(wv)
 	CHECK_EQUAL_VAR(idx, 0)
 End
 

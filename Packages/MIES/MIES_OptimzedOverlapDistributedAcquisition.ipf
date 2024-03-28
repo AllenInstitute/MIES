@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
@@ -50,7 +50,7 @@ static Function/WAVE OOD_GetRegionsFromStimset(stimset, prePoints, postPoints)
 
 			if(expectFalling)
 				regions[rIndex][%ENDPOINT] = size
-				rIndex += 1
+				rIndex                    += 1
 			endif
 			break
 
@@ -70,7 +70,7 @@ static Function/WAVE OOD_GetRegionsFromStimset(stimset, prePoints, postPoints)
 				regions[rIndex][%STARTPOINT] = 0
 			endif
 			regions[rIndex][%ENDPOINT] = min(position + postPoints, size)
-			rIndex += 1
+			rIndex                    += 1
 
 		endif
 
@@ -100,16 +100,16 @@ static Function/WAVE OOD_CompactRegions(regions)
 	SetDimLabel COLS, 1, ENDPOINT, regionsComp
 
 	regionsComp[0][%STARTPOINT] = regions[0][%STARTPOINT]
-	endPoint = regions[0][%ENDPOINT]
+	endPoint                    = regions[0][%ENDPOINT]
 	for(regionNr = 1; regionNr < size; regionNr += 1)
 		startPoint = regions[regionNr][%STARTPOINT]
 		if(startPoint <= endPoint)
 			endPoint = regions[regionNr][%ENDPOINT]
 		else
-			regionsComp[rIndex][%ENDPOINT] = endPoint
-			rIndex += 1
+			regionsComp[rIndex][%ENDPOINT]   = endPoint
+			rIndex                          += 1
 			regionsComp[rIndex][%STARTPOINT] = startPoint
-			endPoint = regions[regionNr][%ENDPOINT]
+			endPoint                         = regions[regionNr][%ENDPOINT]
 		endif
 	endfor
 	regionsComp[rIndex][%ENDPOINT] = endPoint
@@ -130,7 +130,7 @@ static Function/WAVE OOD_GetRegionsFromStimsets(params)
 
 	numSets = DimSize(params.stimSets, ROWS)
 	Make/FREE/WAVE/N=(numSets) regions
-	WAVE/WAVE singleColumnStimsets = DeepCopyWaveRefWave(params.stimSets, dimension=COLS, indexWave=params.setColumns)
+	WAVE/WAVE singleColumnStimsets = DeepCopyWaveRefWave(params.stimSets, dimension = COLS, indexWave = params.setColumns)
 
 	regions[] = OOD_CompactRegions(OOD_GetRegionsFromStimset(singleColumnStimsets[p], params.preFeaturePoints, params.postFeaturePoints))
 
@@ -143,7 +143,7 @@ End
 /// @return 1D text wave with lists of regions
 static Function/WAVE OOD_GetFeatureRegions(setRegions, offsets)
 	WAVE/WAVE setRegions
-	WAVE offsets
+	WAVE      offsets
 
 	string list
 	variable setNr, regNr, regCnt
@@ -196,7 +196,7 @@ static Function/WAVE OOD_CalculateOffsetsImpl(setRegions)
 				newOff = 0
 				for(regNr = 0; regNr < regCnt; regNr += 1)
 					rStart = regions[regNr][%STARTPOINT] + offsets[setNr]
-					rEnd   = regions[regNr][%ENDPOINT]   + offsets[setNr]
+					rEnd   = regions[regNr][%ENDPOINT] + offsets[setNr]
 
 					if(bEnd <= rStart)
 						break
@@ -207,7 +207,7 @@ static Function/WAVE OOD_CalculateOffsetsImpl(setRegions)
 					endif
 				endfor
 				offsets[setNr] += newOff
-				overlap = overlap | newOff
+				overlap         = overlap | newOff
 			endfor
 		while(overlap)
 
@@ -216,7 +216,7 @@ static Function/WAVE OOD_CalculateOffsetsImpl(setRegions)
 			baseRegions[baseRegCnt,][] = regions[p - baseRegCnt][q] + offsets[setNr]
 			SortColumns/KNDX={0} sortWaves={baseRegions}
 			WAVE baseRegions1 = OOD_CompactRegions(baseRegions)
-			WAVE baseRegions = baseRegions1
+			WAVE baseRegions  = baseRegions1
 		endif
 	endfor
 
@@ -228,7 +228,7 @@ End
 /// @param[in] device title of the device panel
 /// @param[in] params     OOdDAQParams structure with oodDAQ setup data
 static Function OOD_CalculateOffsets(device, params)
-	string device
+	string               device
 	STRUCT OOdDAQParams &params
 
 	WAVE setRegions = OOD_GetRegionsFromStimsets(params)
@@ -258,7 +258,7 @@ static Function/S OOD_AddToRegionList(first, last, list)
 
 	sprintf str, "%g-%g", first * WAVEBUILDER_MIN_SAMPINT, last * WAVEBUILDER_MIN_SAMPINT
 
-	return AddListItem(str, list, ";", INF)
+	return AddListItem(str, list, ";", Inf)
 End
 
 /// @brief Prints various internals useful for oodDAQ debugging, called when DEBUGGING_ENABLED is set
@@ -272,16 +272,16 @@ static Function OOD_Debugging(params)
 
 	DFREF dfr = GetUniqueTempPath()
 
-	WAVE/WAVE stimSetsSingleColumn = DeepCopyWaveRefWave(params.stimSets, dimension=COLS, indexWave=params.setColumns)
+	WAVE/WAVE stimSetsSingleColumn = DeepCopyWaveRefWave(params.stimSets, dimension = COLS, indexWave = params.setColumns)
 
 	Duplicate params.offsets, dfr:offsets
 
 	WAVE/WAVE wv = OOD_CreateStimSet(params)
 	for(i = 0; i < numSets; i += 1)
-		Duplicate wv[i], dfr:$("stimSetAndOffset" + num2str(i))/Wave=result
+		Duplicate wv[i], dfr:$("stimSetAndOffset" + num2str(i))/WAVE=result
 		CopyScales/P params.stimSets[i], result
 
-		Duplicate stimSetsSingleColumn[i], dfr:$("stimSet" + num2str(i))/Wave=stimSetCopy
+		Duplicate stimSetsSingleColumn[i], dfr:$("stimSet" + num2str(i))/WAVE=stimSetCopy
 		CopyScales/P params.stimSets[i], stimSetCopy
 	endfor
 
@@ -305,7 +305,7 @@ End
 /// @param[in] params     OOdDAQParams structure with the initial settings
 /// @return one dimensional numberic wave with the offsets in points for each stimset
 Function/WAVE OOD_GetResultWaves(device, params)
-	string device
+	string               device
 	STRUCT OOdDAQParams &params
 
 	string key
@@ -315,7 +315,7 @@ Function/WAVE OOD_GetResultWaves(device, params)
 	WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(key)
 
 	if(WaveExists(cache))
-		WAVE params.offsets = cache[%offsets]
+		WAVE   params.offsets = cache[%offsets]
 		WAVE/T params.regions = cache[%regions]
 		return cache[%stimSetsWithOffset]
 	endif
@@ -328,8 +328,8 @@ Function/WAVE OOD_GetResultWaves(device, params)
 	SetDimLabel ROWS, 1, regions, cache
 	SetDimLabel ROWS, 2, stimSetsWithOffset, cache
 
-	cache[%offsets] = params.offsets
-	cache[%regions] = params.regions
+	cache[%offsets]            = params.offsets
+	cache[%regions]            = params.regions
 	cache[%stimSetsWithOffset] = stimSetsWithOffset
 
 	CA_StoreEntryIntoCache(key, cache)
@@ -343,7 +343,7 @@ End
 /// @param[in] params OOdDAQParams structure with the stimsets and offset information
 ///
 /// @return stimsets with offsets, one wave per offset
-static Function/Wave OOD_CreateStimSet(params)
+static Function/WAVE OOD_CreateStimSet(params)
 	STRUCT OOdDAQParams &params
 
 	variable numSets
@@ -363,7 +363,7 @@ Function/WAVE OOD_OffsetStimSetColAndCutoff(WAVE stimSet, variable column, varia
 	variable length, cutoff
 	variable level = 1e-3
 
-	ASSERT(offset >= 0 , "Invalid offset")
+	ASSERT(offset >= 0, "Invalid offset")
 	length = DimSize(stimSet, ROWS) + offset
 
 	Make/FREE/N=(length) acc

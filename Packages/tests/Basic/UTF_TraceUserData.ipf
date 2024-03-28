@@ -1,5 +1,5 @@
-#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma TextEncoding="UTF-8"
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=TraceUserDataTest
 
@@ -117,7 +117,7 @@ Function ClearDoesHonourRecursiveFlag()
 	TUD_Init(subGraph)
 	TUD_SetUserData(subGraph, "trace1", "efgh", "ijkl")
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/T/Z graphUserData    = GetGraphUserData(graph)
 	WAVE/T/Z subGraphUserData = GetGraphUserData(subGraph)
 
 	modCount = WaveModCount(subGraphUserData)

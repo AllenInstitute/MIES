@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -30,7 +30,7 @@
 ///
 /// @return headstage or NaN (for non-associated channels)
 Function AFH_GetHeadstageFromADC(device, AD)
-	string device
+	string   device
 	variable AD
 
 	WAVE channelClampMode = GetChannelClampMode(device)
@@ -46,7 +46,7 @@ End
 ///
 /// @return headstage or NaN (for non-associated channels)
 Function AFH_GetHeadstageFromDAC(device, DA)
-	string device
+	string   device
 	variable DA
 
 	WAVE channelClampMode = GetChannelClampMode(device)
@@ -61,7 +61,7 @@ End
 ///
 /// @return AD channel or NaN (for non-associated channels)
 Function AFH_GetADCFromHeadstage(device, headstage)
-	string device
+	string   device
 	variable headstage
 
 	variable i, retHeadstage
@@ -83,7 +83,7 @@ End
 ///
 /// @return DA channel or NaN (for non-associated channels)
 Function AFH_GetDACFromHeadstage(device, headstage)
-	string device
+	string   device
 	variable headstage
 
 	variable i, retHeadstage
@@ -143,7 +143,7 @@ threadsafe Function/WAVE AFH_GetChannelUnits(DAQConfigWave)
 
 	string units
 
-	if(IsValidConfigWave(DAQConfigWave, version=1))
+	if(IsValidConfigWave(DAQConfigWave, version = 1))
 		units = GetStringFromWaveNote(DAQConfigWave, CHANNEL_UNIT_KEY, keySep = "=")
 		return ListToTextWave(units, ",")
 	else
@@ -186,7 +186,7 @@ Function AFH_GetLastSweepAcquired(device)
 		return NaN
 	endif
 
-	return sweeps[inf]
+	return sweeps[Inf]
 End
 
 /// @brief Return a numeric wave with all acquired sweep numbers, $"" if there is none
@@ -223,7 +223,7 @@ End
 /// @param channelType		one of the type constants from @ref ChannelTypeAndControlConstants
 /// @return an existing stimulus set name for a DA channel
 Function/S AFH_GetStimSetName(device, chanNo, channelType)
-	string device
+	string   device
 	variable chanNo
 	variable channelType
 
@@ -243,7 +243,7 @@ End
 ///
 /// Return an invalid wave reference if not all required labnotebook entries are available
 threadsafe static Function/WAVE AFH_GetSweepsFromSameRACycleNC(numericalValues, sweepNo)
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable sweepNo
 
 	variable sweepCol, raCycleID
@@ -255,7 +255,7 @@ threadsafe static Function/WAVE AFH_GetSweepsFromSameRACycleNC(numericalValues, 
 	endif
 
 	WAVE/Z indizes = FindIndizes(numericalValues, colLabel = RA_ACQ_CYCLE_ID_KEY, var = raCycleID, \
-								 startLayer = INDEP_HEADSTAGE, endLayer = INDEP_HEADSTAGE)
+	                             startLayer = INDEP_HEADSTAGE, endLayer = INDEP_HEADSTAGE)
 	ASSERT_TS(WaveExists(indizes), "Expected at least one match")
 
 	sweepCol = GetSweepColumn(numericalValues)
@@ -269,7 +269,7 @@ End
 ///
 /// Return an invalid wave reference if not all required labnotebook entries are available
 threadsafe Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable sweepNo
 
 	if(!IsValidSweepNumber(sweepNo))
@@ -344,7 +344,7 @@ End
 ///
 /// Return an invalid wave reference if not all required labnotebook entries are available
 threadsafe static Function/WAVE AFH_GetSweepsFromSameSCINC(numericalValues, sweepNo, headstage)
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable sweepNo
 	variable headstage
 
@@ -357,7 +357,7 @@ threadsafe static Function/WAVE AFH_GetSweepsFromSameSCINC(numericalValues, swee
 	endif
 
 	WAVE/Z indizes = FindIndizes(numericalValues, colLabel = STIMSET_ACQ_CYCLE_ID_KEY, var = stimsetCycleIDs[headstage], \
-								 startLayer = headstage, endLayer = headstage)
+	                             startLayer = headstage, endLayer = headstage)
 	ASSERT_TS(WaveExists(indizes), "Expected at least one match")
 
 	sweepCol = GetSweepColumn(numericalValues)
@@ -397,7 +397,7 @@ End
 /// @param config                [optional, defaults to config wave of the sweep returned by GetConfigWave()] config wave
 Function/WAVE AFH_ExtractOneDimDataFromSweep(device, sweep, headstageOrChannelNum, channelType, [config])
 	string device
-	WAVE sweep
+	WAVE   sweep
 	variable headstageOrChannelNum, channelType
 	WAVE config
 
@@ -451,10 +451,10 @@ Function/S AFH_GetAnalysisFunctions(variable versionBitMask, [variable includeUs
 	endif
 
 	// gather all analysis functions from these files
-	list = WinList("MIES_AnalysisFunctions*.ipf", ";", "WIN:128")
+	list       = WinList("MIES_AnalysisFunctions*.ipf", ";", "WIN:128")
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
-		procWin = StringFromList(i, list)
+		procWin   = StringFromList(i, list)
 		funcList += FunctionList("*", ";", "KIND:2,WIN:" + procWin)
 	endfor
 
@@ -489,7 +489,7 @@ End
 /// @param func Analysis function `V3` which must be valid and existing
 /// @param mode Bit mask values from @ref GetListOfParamsModeFlags
 Function/S AFH_GetListOfAnalysisParams(func, mode)
-	string func
+	string   func
 	variable mode
 
 	string params, re
@@ -584,7 +584,7 @@ End
 Function/S AFH_GetAnalysisParamType(name, params, [typeCheck, expectedType])
 	string name, params
 	variable typeCheck
-	string expectedType
+	string   expectedType
 
 	string typeAndValue
 	string type = ""
@@ -661,7 +661,7 @@ End
 /// @ingroup AnalysisFunctionParameterHelpers
 Function/S AFH_GetAnalysisParamTextual(name, params, [defValue, percentDecoded])
 	string name, params
-	string defValue
+	string   defValue
 	variable percentDecoded
 
 	string contents
@@ -735,7 +735,7 @@ End
 /// parameter could not be found.
 Function/WAVE AFH_GetAnalysisParamTextWave(name, params, [defValue, percentDecoded])
 	string name, params
-	WAVE/T defValue
+	WAVE/T   defValue
 	variable percentDecoded
 
 	string contents
@@ -848,10 +848,10 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 	endif
 
 	reqNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS)
-	reqNames = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
+	reqNames                 = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
 
 	optNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(genericFunc, OPTIONAL_PARAMS)
-	optNames = AFH_GetListOfAnalysisParamNames(optNamesAndTypesFromFunc)
+	optNames                 = AFH_GetListOfAnalysisParamNames(optNamesAndTypesFromFunc)
 
 	presentNames = AFH_GetListOfAnalysisParamNames(s.params)
 
@@ -941,7 +941,7 @@ End
 /// @param params serialized parameters, usually just #AnalysisFunction_V3.params
 Function/S AFH_GetAnalysisParameterAsText(string name, string params)
 
-	string type
+	string   type
 	variable numericValue
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
@@ -1061,7 +1061,7 @@ Function [variable sampleIntDA, variable sampleIntAD] AFH_GetSampleIntervalsFrom
 
 	if(IsWaveRefWave(sweep))
 		WAVE/WAVE sweepRef = sweep
-		WAVE channel = sweepRef[0]
+		WAVE      channel  = sweepRef[0]
 		sampleIntDA = DimDelta(channel, ROWS)
 		WAVE channel = sweepRef[GetFirstADCChannelIndex(config)]
 		sampleIntAD = DimDelta(channel, ROWS)

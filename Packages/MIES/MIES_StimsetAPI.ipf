@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict Wave access.
 #pragma rtFunctionErrors=1
 
@@ -110,7 +110,7 @@ static Function [variable resultColumn, variable resultLayer] ST_GetResultWaveCo
 		endif
 
 		resultColumn = epochIndex
-		resultLayer = epochType
+		resultLayer  = epochType
 	endif
 End
 
@@ -165,18 +165,18 @@ End
 static Function/S ST_ParameterStringValues(string entry)
 	// translate passed string values which are numeric internally
 	//                                  WBP_GetDeltaModes() WBP_GetNoiseTypes()               WBP_GetNoiseBuildResolution() WBP_GetTriggerTypes()             WBP_GetPulseTypes()
-	Make/FREE/T translateableEntries = {"^.* op$",          "Noise Type [White, Pink, Brown]", "Build resolution (index)",   "Trigonometric function Sin/Cos", "Pulse train type (index)"}
+	Make/FREE/T translateableEntries = {"^.* op$", "Noise Type [White, Pink, Brown]", "Build resolution (index)", "Trigonometric function Sin/Cos", "Pulse train type (index)"}
 
 	if(GrepString(entry, translateableEntries[0]))
 		return WBP_GetDeltaModes()
 	elseif(!cmpstr(entry, translateableEntries[1]))
-		return  WBP_GetNoiseTypes()
+		return WBP_GetNoiseTypes()
 	elseif(!cmpstr(entry, translateableEntries[2]))
-		return  WBP_GetNoiseBuildResolution()
+		return WBP_GetNoiseBuildResolution()
 	elseif(!cmpstr(entry, translateableEntries[3]))
-		return  WBP_GetTriggerTypes()
+		return WBP_GetTriggerTypes()
 	elseif(!cmpstr(entry, translateableEntries[4]))
-		return  WBP_GetPulseTypes()
+		return WBP_GetPulseTypes()
 	endif
 
 	return ""
@@ -193,8 +193,8 @@ End
 ///
 /// @ingroup StimsetAPIFunctions
 Function/S ST_GetStimsetList([variable channelType, string searchString, string &WBstimSetList, string &thirdPartyStimSetList])
-	string listAll = ""
-	string listInternal = ""
+	string listAll        = ""
+	string listInternal   = ""
 	string listThirdParty = ""
 	string list
 	variable i, numEntries
@@ -224,7 +224,7 @@ Function/S ST_GetStimsetList([variable channelType, string searchString, string 
 		// fetch stim sets created with the WaveBuilder
 		DFREF dfr = GetSetParamFolder(channelTypes[i])
 
-		list = GetListOfObjects(dfr, "WP_" + searchString, exprType = MATCH_WILDCARD)
+		list         = GetListOfObjects(dfr, "WP_" + searchString, exprType = MATCH_WILDCARD)
 		listInternal = RemovePrefixFromListItem("WP_", list)
 
 		// fetch third party stim sets
@@ -235,7 +235,7 @@ Function/S ST_GetStimsetList([variable channelType, string searchString, string 
 		// remove testpulse as it is not always present, and will be added later on
 		list = RemoveFromList(STIMSET_TP_WHILE_DAQ, list, ";")
 
-		listThirdParty = GetListDifference(list, listInternal, caseSensitive=0)
+		listThirdParty = GetListDifference(list, listInternal, caseSensitive = 0)
 
 		if(!ParamIsDefault(WBstimSetList))
 			WBstimSetList += SortList(listInternal, ";", 16)
@@ -277,9 +277,9 @@ Function/S ST_CreateStimSet(string baseName, variable stimulusType, [variable se
 		saveAsBuiltin = !!saveAsBuiltin
 	endif
 
-	WAVE WP        = GetWaveBuilderWaveParamAsFree()
-	WAVE/T WPT     = GetWaveBuilderWaveTextParamAsFree()
-	WAVE SegWvType = GetSegmentTypeWaveAsFree()
+	WAVE   WP        = GetWaveBuilderWaveParamAsFree()
+	WAVE/T WPT       = GetWaveBuilderWaveTextParamAsFree()
+	WAVE   SegWvType = GetSegmentTypeWaveAsFree()
 
 	ASSERT(SegWvType[%$"Total number of epochs"] == 1, "Unexpected number of epochs")
 	ASSERT(SegWvType[0] == EPOCH_TYPE_SQUARE_PULSE, "Expected square pulse epoch")
@@ -459,7 +459,7 @@ Function ST_SetStimsetParameter(string setName, string entry, [variable epochInd
 			return WB_SetAnalysisFunctionGeneric(stimulusType, str, wv)
 		endif
 
-		Wave/T wvText = wv
+		WAVE/T wvText = wv
 		wvText[row][col][layer] = str
 	elseif(IsNumericWave(wv))
 		if(strIsGiven)
@@ -477,7 +477,7 @@ Function ST_SetStimsetParameter(string setName, string entry, [variable epochInd
 				endif
 
 				// invalidate it
-				str= ""
+				str = ""
 			endif
 		endif
 

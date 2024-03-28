@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma IgorVersion=8.00
@@ -6,12 +6,12 @@
 // This file describes the wrapper functions, mentioned in the API.
 
 // Error constants for JSON XOP
-Constant JSON_OLD_IGOR = 10001
+Constant JSON_OLD_IGOR                = 10001
 Constant JSON_UNHANDLED_CPP_EXCEPTION = 10002
-Constant JSON_CPP_EXCEPTION = 10003
-Constant JSON_ERR_ASSERT = 10004
-Constant JSON_ERR_CONVERT = 10012
-Constant JSON_ERR_INVALID_TYPE = 10011
+Constant JSON_CPP_EXCEPTION           = 10003
+Constant JSON_ERR_ASSERT              = 10004
+Constant JSON_ERR_CONVERT             = 10012
+Constant JSON_ERR_INVALID_TYPE        = 10011
 
 // Invalid JSON id.
 Constant JSON_ERR_INVALID_ID = 10005
@@ -48,13 +48,13 @@ static Constant JSON_QFLAG_DEFAULT = 1
 
 /// @addtogroup JSON_TYPES
 /// @{
-Constant JSON_INVALID   = -1
-Constant JSON_OBJECT    = 0
-Constant JSON_ARRAY     = 1
-Constant JSON_NUMERIC   = 2
-Constant JSON_STRING    = 3
-Constant JSON_BOOL      = 4
-Constant JSON_NULL      = 5
+Constant JSON_INVALID = -1
+Constant JSON_OBJECT  = 0
+Constant JSON_ARRAY   = 1
+Constant JSON_NUMERIC = 2
+Constant JSON_STRING  = 3
+Constant JSON_BOOL    = 4
+Constant JSON_NULL    = 5
 /// @}
 
 /// @addtogroup JSON_SYNC_OPTIONS
@@ -77,8 +77,8 @@ static Constant IGOR_STRING_MAX_SIZE = 2147483647
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns a numeric identifier of the JSON object on success
 threadsafe Function JSON_Parse(jsonStr, [ignoreErr])
-	String jsonStr
-	Variable ignoreErr
+	string   jsonStr
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -106,11 +106,11 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns a string representation of the JSON object
 threadsafe Function/S JSON_Dump(jsonID, [indent, ignoreErr])
-	Variable jsonID
-	Variable indent, ignoreErr
+	variable jsonID
+	variable indent, ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
-	indent = ParamIsDefault(indent) ? 0 : !!numtype(indent) ? -1 : round(indent)
+	indent    = ParamIsDefault(indent) ? 0 : !!numtype(indent) ? -1 : round(indent)
 
 	JSONXOP_Dump/IND=(indent)/Z=1/Q=(JSON_QFLAG_DEFAULT) jsonID
 	if(V_flag)
@@ -157,8 +157,8 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns 0 on success, NaN otherwise
 threadsafe Function JSON_Release(jsonID, [ignoreErr])
-	Variable jsonID
-	Variable ignoreErr
+	variable jsonID
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -184,9 +184,9 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns 0 on success, NaN otherwise
 threadsafe Function JSON_Remove(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -216,9 +216,9 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns 0 on success
 threadsafe Function JSON_AddTreeObject(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 	return JSON_AddTree(jsonID, jsonPath, JSON_OBJECT, ignoreErr)
@@ -233,18 +233,18 @@ End
 /// @param jsonPath   RFC 6901 compliant JSON Pointer
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddTreeArray(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 	return JSON_AddTree(jsonID, jsonPath, JSON_ARRAY, ignoreErr)
 End
 
 threadsafe static Function JSON_AddTree(jsonID, jsonPath, type, ignoreErr)
-	Variable jsonID
-	String jsonPath
-	Variable type, ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable type, ignoreErr
 
 	JSONXOP_AddTree/Z=1/Q=(JSON_QFLAG_DEFAULT)/T=(type) jsonID, jsonPath
 	if(V_flag)
@@ -269,9 +269,9 @@ End
 /// @param esc        [optional, 0 or 1] set to ignore RFC 6901 path escaping standards
 /// @returns a free text wave with all elements as rows.
 threadsafe Function/WAVE JSON_GetKeys(jsonID, jsonPath, [esc, ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable esc, ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable esc, ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -303,9 +303,9 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns a numeric value representing one of the defined @see JSON_TYPES
 threadsafe Function JSON_GetType(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -332,9 +332,9 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns a numeric variable with the number of elements the array at jsonPath
 threadsafe Function JSON_GetArraySize(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -360,9 +360,9 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns a free numeric wave with the size for each dimension as rows
 threadsafe Function/WAVE JSON_GetMaxArraySize(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -391,9 +391,9 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns a new jsonID containing a copy of the JSON object referenced by jsonpath in jsonID
 threadsafe Function JSON_GetJSON(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
@@ -416,9 +416,9 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns a string containing the entity
 threadsafe Function/S JSON_GetString(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
@@ -441,9 +441,9 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns a numeric variable containing the entity
 threadsafe Function JSON_GetVariable(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
@@ -466,9 +466,9 @@ End
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns a free text wave with the elements of the array
 threadsafe Function/WAVE JSON_GetTextWave(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
@@ -495,12 +495,12 @@ End
 ///                   convertible elements after the element that could not be converted to a number.
 /// @returns a free numeric double precision wave with the elements of the array
 threadsafe Function/WAVE JSON_GetWave(jsonID, jsonPath, [ignoreErr, waveMode])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr, waveMode
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr, waveMode
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
-	waveMode =  ParamIsDefault(waveMode) ? 0 : !!waveMode
+	waveMode  = ParamIsDefault(waveMode) ? 0 : !!waveMode
 
 	JSONXOP_GetValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/WAVE=wv/WM=(waveMode)/FREE jsonID, jsonPath
 	if(V_flag)
@@ -520,7 +520,7 @@ End
 /// @param jsonPath   RFC 6901 compliant JSON Pointer
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns a 64bit variable
-threadsafe Function [Int64 result] JSON_GetInt64(Variable jsonID, String jsonPath, [Variable ignoreErr])
+threadsafe Function [int64 result] JSON_GetInt64(variable jsonID, string jsonPath, [variable ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
@@ -545,7 +545,7 @@ End
 /// @param jsonPath   RFC 6901 compliant JSON Pointer
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 /// @returns an unsigned 64bit variable
-threadsafe Function [UInt64 result] JSON_GetUInt64(Variable jsonID, String jsonPath, [Variable ignoreErr])
+threadsafe Function [uint64 result] JSON_GetUInt64(variable jsonID, string jsonPath, [variable ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
@@ -576,10 +576,10 @@ End
 /// @param value      string value to add
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddString(jsonID, jsonPath, value, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	String value
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	string   value
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -603,11 +603,11 @@ End
 /// @param significance  [optional] number of digits after the decimal sign
 /// @param ignoreErr     [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddVariable(jsonID, jsonPath, value, [significance, ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable value
-	Variable significance
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable value
+	variable significance
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -635,9 +635,9 @@ End
 /// @param jsonPath   RFC 6901 compliant JSON Pointer
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddNull(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -660,10 +660,10 @@ End
 /// @param value      boolean value to add
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddBoolean(jsonID, jsonPath, value, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable value
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable value
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -690,10 +690,10 @@ End
 /// @param wv         WAVE reference to the wave to add
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddWave(jsonID, jsonPath, wv, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	WAVE wv
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	WAVE     wv
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -716,10 +716,10 @@ End
 /// @param value      int64 value to add
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddInt64(jsonID, jsonPath, value, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Int64 value
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	int64    value
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 	Make/FREE/L/N=1 w
@@ -734,10 +734,10 @@ End
 /// @param value      uint64 value to add
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddUInt64(jsonID, jsonPath, value, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	UInt64 value
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	uint64   value
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 	Make/FREE/L/U/N=1 w
@@ -746,10 +746,10 @@ threadsafe Function JSON_AddUInt64(jsonID, jsonPath, value, [ignoreErr])
 End
 
 threadsafe static Function AddValueI64(jsonID, jsonPath, w, ignoreErr)
-	Variable jsonID
-	String jsonPath
-	WAVE w
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	WAVE     w
+	variable ignoreErr
 
 	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/L=w jsonID, jsonPath
 	if(V_flag)
@@ -770,11 +770,11 @@ End
 /// @param objCount   [optional, default 1] number of objects
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddObjects(jsonID, jsonPath, [objCount, ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable objCount, ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable objCount, ignoreErr
 
-	objCount = ParamIsDefault(objCount) ? 1 : objCount
+	objCount  = ParamIsDefault(objCount) ? 1 : objCount
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
 	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/OBJ=(objCount) jsonID, jsonPath
@@ -796,10 +796,10 @@ End
 /// @param jsonID2    numeric identifier of the merged object, the merged JSON object is NOT freed by JSON_AddJSON. The caller keeps ownership of it.
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_AddJSON(jsonID, jsonPath, jsonID2, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable jsonID2
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable jsonID2
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -822,10 +822,10 @@ End
 /// @param value      new string value
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_SetString(jsonID, jsonPath, value, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	String value
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	string   value
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -849,11 +849,11 @@ End
 /// @param significance  [optional] number of digits after the decimal sign
 /// @param ignoreErr     [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_SetVariable(jsonID, jsonPath, value, [significance, ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable value
-	Variable significance
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable value
+	variable significance
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -881,9 +881,9 @@ End
 /// @param jsonPath   RFC 6901 compliant JSON Pointer
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_SetNull(jsonID, jsonPath, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -906,10 +906,10 @@ End
 /// @param value      new boolean value
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_SetBoolean(jsonID, jsonPath, value, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable value
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable value
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -936,10 +936,10 @@ End
 /// @param wv         WAVE reference to the new wave
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_SetWave(jsonID, jsonPath, wv, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	WAVE wv
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	WAVE     wv
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -962,10 +962,10 @@ End
 /// @param value      new int64 value
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_SetInt64(jsonID, jsonPath, value, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Int64 value
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	int64    value
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 	Make/FREE/L/N=1 w
@@ -980,10 +980,10 @@ End
 /// @param value      new uint64 value
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_SetUInt64(jsonID, jsonPath, value, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	UInt64 value
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	uint64   value
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 	Make/FREE/L/U/N=1 w
@@ -992,10 +992,10 @@ threadsafe Function JSON_SetUInt64(jsonID, jsonPath, value, [ignoreErr])
 End
 
 threadsafe static Function SetValueI64(jsonID, jsonPath, w, ignoreErr)
-	Variable jsonID
-	String jsonPath
-	WAVE w
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	WAVE     w
+	variable ignoreErr
 
 	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/L=w jsonID, jsonPath
 	if(V_flag)
@@ -1016,11 +1016,11 @@ End
 /// @param objCount   [optional, default 1] number of objects
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_SetObjects(jsonID, jsonPath, [objCount, ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable objCount, ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable objCount, ignoreErr
 
-	objCount = ParamIsDefault(objCount) ? 1 : objCount
+	objCount  = ParamIsDefault(objCount) ? 1 : objCount
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
 	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/OBJ=(objCount) jsonID, jsonPath
@@ -1042,10 +1042,10 @@ End
 /// @param jsonID2    numeric identifier of the merged object
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
 threadsafe Function JSON_SetJSON(jsonID, jsonPath, jsonID2, [ignoreErr])
-	Variable jsonID
-	String jsonPath
-	Variable jsonID2
-	Variable ignoreErr
+	variable jsonID
+	string   jsonPath
+	variable jsonID2
+	variable ignoreErr
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -1073,10 +1073,10 @@ threadsafe static Function JSON_KVPairsToJSON(jsonID, jsonPath, str, ignoreErr)
 	numEntries = ItemsInList(str)
 	for(i = 0; i < numEntries; i += 1)
 		entry = StringFromList(i, str)
-		pos = strsearch(entry, ":", 0)
+		pos   = strsearch(entry, ":", 0)
 		AbortOnValue pos == -1, 1
-		key = entry[0, pos - 1]
-		value  = entry[pos + 1, inf]
+		key   = entry[0, pos - 1]
+		value = entry[pos + 1, Inf]
 		JSON_AddString(jsonID, LowerStr(jsonPath + key), value, ignoreErr = ignoreErr)
 	endfor
 End
@@ -1125,7 +1125,7 @@ Function/S JSON_Version([ignoreErr])
 	jsonID2 = JSON_Parse(S_Value, ignoreErr = ignoreErr)
 
 	jsonID = JSON_GetIgorInfo(ignoreErr = ignoreErr)
-	JSON_AddJSON(jsonID, "/XOP", jsonID2, ignoreErr=ignoreErr)
+	JSON_AddJSON(jsonID, "/XOP", jsonID2, ignoreErr = ignoreErr)
 	JSONXOP_Release/Z=(ignoreErr) jsonID2
 
 	rep = JSON_Dump(jsonID, indent = 2, ignoreErr = ignoreErr)
@@ -1149,8 +1149,8 @@ End
 /// @param jsonPath   RFC 6901 compliant JSON Pointer
 /// @returns 1 if object at jsonPath exists in JSON object, 0 otherwise
 threadsafe Function JSON_Exists(jsonID, jsonPath)
-	Variable jsonID
-	String jsonPath
+	variable jsonID
+	string   jsonPath
 
 	return JSON_GetType(jsonID, jsonPath, ignoreErr = 1) != JSON_INVALID
 End
@@ -1207,8 +1207,8 @@ threadsafe Function JSON_SyncJSON(variable srcJsonId, variable tgtJsonId, string
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
 	if(!(syncOptions >= 0 && syncOptions <= JSON_SYNC_ADD_TO_TARGET | JSON_SYNC_REMOVE_IN_TARGET | JSON_SYNC_OVERWRITE_IN_TARGET) || \
-		numtype(strlen(srcPath)) == 2 || \
-		numtype(strlen(tgtPath)) == 2)
+	   numtype(strlen(srcPath)) == 2 ||                                                                                              \
+	   numtype(strlen(tgtPath)) == 2)
 		if(ignoreErr)
 			return NaN
 		endif
@@ -1245,14 +1245,14 @@ threadsafe Function JSON_SyncJSON(variable srcJsonId, variable tgtJsonId, string
 			WAVE/T srcKeys = JSON_GetKeys(srcJsonId, srcPath)
 			size = DimSize(srcKeys, 0)
 			for(i = 0; i < size; i += 1)
-				JSON_SyncJSON(srcJsonId, tgtJsonId, srcPath + "/" + srcKeys[i], tgtPath + "/" + srcKeys[i], syncOptions, ignoreErr=ignoreErr)
+				JSON_SyncJSON(srcJsonId, tgtJsonId, srcPath + "/" + srcKeys[i], tgtPath + "/" + srcKeys[i], syncOptions, ignoreErr = ignoreErr)
 			endfor
 
 			if(syncOptions & JSON_SYNC_REMOVE_IN_TARGET)
 				WAVE/T tgtKeys = JSON_GetKeys(tgtJsonId, tgtPath)
 				size = DimSize(tgtKeys, 0)
 				for(i = 0; i < size; i += 1)
-					JSON_SyncJSON(srcJsonId, tgtJsonId, srcPath + "/" + tgtKeys[i], tgtPath + "/" + tgtKeys[i], syncOptions, ignoreErr=ignoreErr)
+					JSON_SyncJSON(srcJsonId, tgtJsonId, srcPath + "/" + tgtKeys[i], tgtPath + "/" + tgtKeys[i], syncOptions, ignoreErr = ignoreErr)
 				endfor
 			endif
 
@@ -1260,7 +1260,7 @@ threadsafe Function JSON_SyncJSON(variable srcJsonId, variable tgtJsonId, string
 		case JSON_ARRAY:
 			arraySize = max(JSON_GetArraySize(srcJsonId, srcPath), JSON_GetArraySize(tgtJsonId, tgtPath))
 			for(i = 0; i < arraySize; i += 1)
-				JSON_SyncJSON(srcJsonId, tgtJsonId, srcPath + "/" + num2istr(i), tgtPath + "/" + num2istr(i), syncOptions, ignoreErr=ignoreErr)
+				JSON_SyncJSON(srcJsonId, tgtJsonId, srcPath + "/" + num2istr(i), tgtPath + "/" + num2istr(i), syncOptions, ignoreErr = ignoreErr)
 			endfor
 
 			break
@@ -1328,7 +1328,7 @@ End
 threadsafe Function JSON_Load(string fullFilepath, [variable ignoreErr])
 
 	variable fNum
-	string data
+	string   data
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
@@ -1366,7 +1366,7 @@ threadsafe Function JSON_Load(string fullFilepath, [variable ignoreErr])
 	FBinRead fnum, data
 	Close fNum
 
-	return JSON_Parse(data, ignoreErr=ignoreErr)
+	return JSON_Parse(data, ignoreErr = ignoreErr)
 End
 
 /// @brief Saves a JSON to a text file. If the target file exists it is overwritten.
@@ -1378,11 +1378,11 @@ End
 threadsafe Function JSON_Save(variable jsonId, string fullFilepath, [variable ignoreErr])
 
 	variable fNum
-	string data
+	string   data
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	data = JSON_Dump(jsonId, ignoreErr=ignoreErr)
+	data = JSON_Dump(jsonId, ignoreErr = ignoreErr)
 	if(!(strlen(data) > 0) && ignoreErr)
 		return NaN
 	endif

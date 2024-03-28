@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=MultiPatchSeqDAScale
@@ -10,10 +10,10 @@ static Constant SINGLE_SCI     = 0x08
 
 static Function [STRUCT DAQSettings s] MSQ_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                   + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:MSQ_DAScale_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                 + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:MSQ_DAScale_DA_0:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -30,7 +30,7 @@ End
 
 static Function/WAVE GetLBNSingleEntry_IGNORE(sweepNo, device, str, headstage, mode)
 	variable sweepNo
-	string device
+	string   device
 	variable headstage, mode
 	string str
 
@@ -67,7 +67,7 @@ static Function MSQ_DS1([str])
 End
 
 static Function MSQ_DS1_REENTRY([str])
-	string str
+	string   str
 	variable sweepNo
 
 	sweepNo = 4

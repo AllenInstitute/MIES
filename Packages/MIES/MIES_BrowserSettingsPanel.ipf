@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -9,21 +9,21 @@
 /// @file MIES_BrowserSettingsPanel.ipf
 /// @brief __BSP__ Panel for __DB__ and __AB__ (SweepBrowser) that combines different settings in a tabcontrol.
 
-static strConstant EXT_PANEL_SUBWINDOW = "BrowserSettingsPanel"
-static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
-static strConstant EXT_PANEL_SF_FORMULA = "sweepFormula_formula"
-static strConstant EXT_PANEL_SF_JSON = "sweepFormula_json"
-static strConstant EXT_PANEL_SF_HELP = "sweepFormula_help"
+static StrConstant EXT_PANEL_SUBWINDOW    = "BrowserSettingsPanel"
+static StrConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
+static StrConstant EXT_PANEL_SF_FORMULA   = "sweepFormula_formula"
+static StrConstant EXT_PANEL_SF_JSON      = "sweepFormula_json"
+static StrConstant EXT_PANEL_SF_HELP      = "sweepFormula_help"
 
-static strConstant BROWSERTYPE_DATABROWSER  = "D"
-static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
+static StrConstant BROWSERTYPE_DATABROWSER  = "D"
+static StrConstant BROWSERTYPE_SWEEPBROWSER = "S"
 
 /// @brief exclusive controls that are enabled/disabled for the specific browser window type
-static StrConstant BROWSERSETTINGS_CONTROLS_DATABROWSER = "popup_DB_lockedDevices;"
+static StrConstant BROWSERSETTINGS_CONTROLS_DATABROWSER    = "popup_DB_lockedDevices;"
 static StrConstant BROWSERSETTINGS_AXES_SCALING_CHECKBOXES = "check_Display_VisibleXrange;check_Display_EqualYrange;check_Display_EqualYignore"
 
 /// @brief exclusive controls that are enabled/disabled for the specific browser window type
-static StrConstant SWEEPCONTROL_CONTROLS_DATABROWSER = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
+static StrConstant SWEEPCONTROL_CONTROLS_DATABROWSER  = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
 static StrConstant SWEEPCONTROL_CONTROLS_SWEEPBROWSER = "popup_SweepControl_Selector;"
 
 static StrConstant BSP_USER_DATA_SF_CONTENT_CRC = "SweepFormulaContentCRC"
@@ -55,19 +55,19 @@ Function/S BSP_GetSweepControlsPanel(mainPanel)
 	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SWEEPCONTROL
 End
 
-Function /S BSP_GetSFFormula(mainPanel)
+Function/S BSP_GetSFFormula(mainPanel)
 	string mainPanel
 
 	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_FORMULA
 End
 
-Function /S BSP_GetSFJSON(mainPanel)
+Function/S BSP_GetSFJSON(mainPanel)
 	string mainPanel
 
 	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_JSON
 End
 
-Function /S BSP_GetSFHELP(mainPanel)
+Function/S BSP_GetSFHELP(mainPanel)
 	string mainPanel
 
 	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_HELP
@@ -146,7 +146,7 @@ static Function BSP_DynamicSweepControls(mainPanel)
 
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", 0)
 	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", 0, 0, 1)
-	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=NaN)
+	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var = NaN)
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepStep", 1)
 
 	if(BSP_IsDataBrowser(mainPanel))
@@ -154,7 +154,7 @@ static Function BSP_DynamicSweepControls(mainPanel)
 		EnableControls(scPanel, SWEEPCONTROL_CONTROLS_DATABROWSER)
 		DisableControls(scPanel, SWEEPCONTROL_CONTROLS_SWEEPBROWSER)
 	else
-		PopupMenu popup_SweepControl_Selector, win=$scPanel, value= #("SB_GetSweepList(\"" + mainPanel + "\")")
+		PopupMenu popup_SweepControl_Selector, win=$scPanel, value=#("SB_GetSweepList(\"" + mainPanel + "\")")
 		SetControlProcedures(scPanel, "popup_SweepControl_Selector;", "SB_PopupMenuSelectSweep")
 		EnableControls(scPanel, SWEEPCONTROL_CONTROLS_SWEEPBROWSER)
 		DisableControls(scPanel, SWEEPCONTROL_CONTROLS_DATABROWSER)
@@ -221,9 +221,9 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	bsPanel = BSP_GetPanel(mainPanel)
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, mainPanel, "datasweepbrowser", addHook=0)
+	PS_InitCoordinates(JSONid, mainPanel, "datasweepbrowser", addHook = 0)
 
-	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value= #("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
+	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value=#("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
 
 	if(BSP_HasBoundDevice(mainPanel))
 		BSP_BindListBoxWaves(mainPanel)
@@ -234,7 +234,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	else
 		DisableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
 	endif
-	PopupMenu popup_TimeAlignment_Master, win=$bsPanel, value = #("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
+	PopupMenu popup_TimeAlignment_Master, win=$bsPanel, value=#("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
 
 	BSP_InitMainCheckboxes(bsPanel)
 
@@ -265,7 +265,7 @@ Function BSP_SweepFormulaHook(s)
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_KEYBOARD: // keyboard
 			if(s.specialKeyCode == 200 && s.eventMod & WINDOW_HOOK_EMOD_SHIFTKEYDOWN) // Enter + Shift
-				win = GetMainWindow(s.winName)
+				win     = GetMainWindow(s.winName)
 				bsPanel = BSP_GetPanel(win)
 
 				if(SF_IsActive(win))
@@ -291,9 +291,9 @@ Function BSP_UnsetDynamicStartupSettings(mainPanel)
 	ASSERT(BSP_IsDataBrowser(mainPanel), "Browser window is not of type DataBrowser")
 	bsPanel = BSP_GetPanel(mainPanel)
 	ASSERT(WindowExists(bsPanel), "external BrowserSettings panel not found")
-	SetWindow $bsPanel, userData(panelVersion) = ""
+	SetWindow $bsPanel, userData(panelVersion)=""
 	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value=""
-	PopupMenu popup_TimeAlignment_Master, win=$bsPanel, value = ""
+	PopupMenu popup_TimeAlignment_Master, win=$bsPanel, value=""
 	ListBox list_of_ranges, win=$bsPanel, listWave=$"", selWave=$""
 	ListBox list_of_ranges1, win=$bsPanel, listWave=$"", selWave=$""
 	ListBox list_dashboard, win=$bsPanel, listWave=$"", colorWave=$"", selWave=$"", helpWave=$""
@@ -313,12 +313,12 @@ Function BSP_BindListBoxWaves(win)
 	ASSERT(BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win) || !BSP_IsDataBrowser(win), "DataBrowser needs bound device to bind listBox waves.")
 
 	mainPanel = GetMainWindow(win)
-	bsPanel = BSP_GetPanel(win)
+	bsPanel   = BSP_GetPanel(win)
 
 	// overlay sweeps
-	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
-	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
-	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
+	DFREF  dfr            = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+	WAVE/T listBoxWave    = GetOverlaySweepsListWave(dfr)
+	WAVE   listBoxSelWave = GetOverlaySweepsListSelWave(dfr)
 	ListBox list_of_ranges, win=$bsPanel, listWave=listBoxWave
 	ListBox list_of_ranges, win=$bsPanel, selWave=listBoxSelWave
 	WaveClear listBoxWave, listBoxSelWave
@@ -332,14 +332,14 @@ Function BSP_BindListBoxWaves(win)
 	BSP_ChannelSelectionWaveToGUI(bsPanel, channelSelection)
 
 	// dashboard
-	WAVE listBoxHelpWave  = GetAnaFuncDashboardHelpWave(dfr)
-	WAVE listBoxColorWave = GetAnaFuncDashboardColorWave(dfr)
-	WAVE listBoxSelWave   = GetAnaFuncDashboardselWave(dfr)
-	WAVE/T listBoxWave    = GetAnaFuncDashboardListWave(dfr)
+	WAVE   listBoxHelpWave  = GetAnaFuncDashboardHelpWave(dfr)
+	WAVE   listBoxColorWave = GetAnaFuncDashboardColorWave(dfr)
+	WAVE   listBoxSelWave   = GetAnaFuncDashboardselWave(dfr)
+	WAVE/T listBoxWave      = GetAnaFuncDashboardListWave(dfr)
 	ListBox list_dashboard, win=$bsPanel, listWave=listBoxWave, colorWave=listBoxColorWave, selWave=listBoxSelWave, helpWave=listBoxHelpWave
 
 	// sweep formula tab
-	SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
+	SetValDisplay(bsPanel, "status_sweepFormula_parser", var = 1)
 	SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "")
 End
 
@@ -351,7 +351,7 @@ Function/WAVE BSP_GetChannelSelectionWave(win)
 	string win
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-	WAVE wv = GetChannelSelectionWave(dfr)
+	WAVE  wv  = GetChannelSelectionWave(dfr)
 
 	return wv
 End
@@ -402,7 +402,7 @@ Function BSP_SetFolder(win, dfr, folderType)
 	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
-	SetWindow $mainPanel, userData($folderType) = GetDataFolder(1, dfr)
+	SetWindow $mainPanel, userData($folderType)=GetDataFolder(1, dfr)
 End
 
 /// @brief get the assigned DEVICE property from the main panel
@@ -440,7 +440,7 @@ Function/S BSP_SetDevice(win, device)
 	ASSERT(BSP_IsDataBrowser(win), "device property only relevant in DB context")
 
 	mainPanel = GetMainWindow(win)
-	SetWindow $mainPanel, userdata($MIES_BSP_DEVICE) = device
+	SetWindow $mainPanel, userdata($MIES_BSP_DEVICE)=device
 End
 
 /// @brief get the MIES Browser Type
@@ -472,7 +472,7 @@ static Function/S BSP_SetBrowserType(string win, string type, variable mode)
 	mainPanel = GetMainWindow(win)
 	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
-	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER) = type
+	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER)=type
 
 	if(mode == BROWSER_MODE_USER)
 		suffix = ""
@@ -480,7 +480,7 @@ static Function/S BSP_SetBrowserType(string win, string type, variable mode)
 		suffix = " (A*U*T*O*M*A*T*I*O*N)"
 	endif
 
-	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER_MODE) = BSP_SerializeBrowserMode(mode)
+	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER_MODE)=BSP_SerializeBrowserMode(mode)
 
 	if(!CmpStr(type, BROWSERTYPE_SWEEPBROWSER))
 		title = SWEEPBROWSER_WINDOW_NAME
@@ -523,7 +523,7 @@ End
 
 Function BSP_HasMode(string win, variable mode)
 
-	string mainPanel
+	string   mainPanel
 	variable foundMode
 
 	mainPanel = GetMainWindow(win)
@@ -597,8 +597,8 @@ Function BSP_SetOVSControlStatus(win)
 	string win
 
 	string controlList = "group_properties_sweeps;popup_overlaySweeps_select;setvar_overlaySweeps_offset;"            \
-						 + "setvar_overlaySweeps_step;check_overlaySweeps_disableHS;check_overlaySweeps_non_commula;" \
-						 + "list_of_ranges;check_ovs_clear_on_new_ra_cycle;check_ovs_clear_on_new_stimset_cycle"
+	                     + "setvar_overlaySweeps_step;check_overlaySweeps_disableHS;check_overlaySweeps_non_commula;" \
+	                     + "list_of_ranges;check_ovs_clear_on_new_ra_cycle;check_ovs_clear_on_new_stimset_cycle"
 
 	BSP_SetControlStatus(win, controlList, OVS_IsActive(win))
 End
@@ -653,7 +653,7 @@ End
 /// @param mainPanel 	main Panel window
 /// @param visible 		set status of external Panel (opened: visible = 1)
 static Function BSP_MainPanelButtonToggle(mainPanel, visible)
-	string mainPanel
+	string   mainPanel
 	variable visible
 
 	string panelButton
@@ -858,7 +858,7 @@ Function BSP_DoTimeAlignment(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 
-			win = ba.win
+			win   = ba.win
 			graph = GetMainWindow(win)
 
 			if(!BSP_HasBoundDevice(win))
@@ -885,7 +885,7 @@ Function BSP_CheckProc_ScaleAxes(cba) : CheckBoxControl
 			bsPanel = BSP_GetPanel(graph)
 
 			if(cba.checked)
-				ctrls = ListMatch(BROWSERSETTINGS_AXES_SCALING_CHECKBOXES, "!" + cba.ctrlName)
+				ctrls    = ListMatch(BROWSERSETTINGS_AXES_SCALING_CHECKBOXES, "!" + cba.ctrlName)
 				numCtrls = ItemsInList(ctrls)
 				for(i = 0; i < numCtrls; i += 1)
 					SetCheckBoxState(bsPanel, StringFromList(i, ctrls), CHECKBOX_UNSELECTED)
@@ -963,8 +963,8 @@ static Function BSP_UpdateSweepControls(win, ctrl, firstSweepOrIndex, lastSweepO
 		lastSweep  = lastSweepOrIndex
 
 		currentSweep = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
-		newSweep = currentSweep + direction * step
-		newSweep = limit(newSweep, firstSweep, lastSweep)
+		newSweep     = currentSweep + direction * step
+		newSweep     = limit(newSweep, firstSweep, lastSweep)
 
 		ret = newSweep
 	else
@@ -973,12 +973,12 @@ static Function BSP_UpdateSweepControls(win, ctrl, firstSweepOrIndex, lastSweepO
 		lastIndex  = DimSize(sweeps, ROWS) - 1
 
 		currentIndex = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
-		newIndex = currentIndex + direction * step
-		newIndex = limit(newIndex, firstIndex, lastIndex)
+		newIndex     = currentIndex + direction * step
+		newIndex     = limit(newIndex, firstIndex, lastIndex)
 
-		newSweep = sweeps[newIndex]
+		newSweep   = sweeps[newIndex]
 		firstSweep = sweeps[firstIndex]
-		lastSweep = sweeps[lastIndex]
+		lastSweep  = sweeps[lastIndex]
 
 		SetPopupMenuIndex(scPanel, "popup_SweepControl_Selector", newIndex)
 
@@ -998,7 +998,7 @@ End
 /// @param elementID 	one of MIES_BSP_* constants like MIES_BSP_PA
 /// @return 1 if setting was activated, 0 otherwise
 Function BSP_IsActive(win, elementID)
-	string win
+	string   win
 	variable elementID
 
 	string bsPanel, control
@@ -1045,7 +1045,7 @@ Function BSP_UpdateHelpNotebook(win)
 	string name, text, helpNotebook, path
 
 	helpNotebook = BSP_GetSFHELP(win)
-	text = GetNotebookText(helpNotebook, mode = 2)
+	text         = GetNotebookText(helpNotebook, mode = 2)
 
 	if(!IsEmpty(text))
 		return NaN
@@ -1085,8 +1085,8 @@ End
 /// @brief Parse a control name for the "Channel Selection Panel" and return
 ///        its channel type and number. The number will be NaN for the ALL control.
 Function BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
-	string ctrl
-	string &channelType
+	string    ctrl
+	string   &channelType
 	variable &channelNum
 
 	string channelNumStr
@@ -1106,12 +1106,12 @@ End
 ///        selection wave
 Function BSP_ChannelSelectionWaveToGUI(panel, channelSel)
 	string panel
-	WAVE channelSel
+	WAVE   channelSel
 
 	string list, channelType, ctrl
 	variable channelNum, numEntries, i
 
-	list = ControlNameList(panel, ";", "check_channelSel_*")
+	list       = ControlNameList(panel, ";", "check_channelSel_*")
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = StringFromList(i, list)
@@ -1138,7 +1138,7 @@ Function BSP_GUIToChannelSelectionWave(win, ctrl, checked)
 	BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
 
 	if(isNaN(channelNum))
-		numEntries = GetNumberFromType(str=channelType)
+		numEntries                                   = GetNumberFromType(str = channelType)
 		channelSel[0, numEntries - 1][%$channelType] = checked
 		Make/FREE/N=(numEntries) junkWave = SetCheckBoxState(win, "check_channelSel_" + channelType + "_" + num2str(p), checked)
 	else
@@ -1154,7 +1154,7 @@ Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, statusHS, numericalV
 	WAVE channelSel
 	WAVE ADCs, DACs, numericalValues
 	variable sweepNo
-	WAVE statusHS
+	WAVE     statusHS
 
 	variable numADCs, numDACs, i
 
@@ -1174,7 +1174,7 @@ Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, statusHS, numericalV
 		if(!channelSel[i][%HEADSTAGE])
 			channelSel[statusADC[i]][%AD] = 0
 			channelSel[statusDAC[i]][%DA] = 0
-			statusHS[i] = 0
+			statusHS[i]                   = 0
 		endif
 	endfor
 
@@ -1199,21 +1199,21 @@ Function BSP_ScaleAxes(win)
 	string graph, bsPanel
 	variable visXRange, equalY, equalYIgn, level
 
-	graph      = GetMainWindow(win)
-	bsPanel    = BSP_GetPanel(win)
-	visXRange  = GetCheckBoxState(bsPanel, "check_Display_VisibleXrange")
-	equalY     = GetCheckBoxState(bsPanel, "check_Display_EqualYrange") && !IsControlDisabled(bsPanel, "check_Display_EqualYrange")
-	equalYIgn  = GetCheckBoxState(bsPanel, "check_Display_EqualYignore") && !IsControlDisabled(bsPanel, "check_Display_EqualYignore")
+	graph     = GetMainWindow(win)
+	bsPanel   = BSP_GetPanel(win)
+	visXRange = GetCheckBoxState(bsPanel, "check_Display_VisibleXrange")
+	equalY    = GetCheckBoxState(bsPanel, "check_Display_EqualYrange") && !IsControlDisabled(bsPanel, "check_Display_EqualYrange")
+	equalYIgn = GetCheckBoxState(bsPanel, "check_Display_EqualYignore") && !IsControlDisabled(bsPanel, "check_Display_EqualYignore")
 
 	ASSERT(visXRange + equalY + equalYIgn <= 1, "Only one scaling mode is allowed to be selected")
 
 	if(visXRange)
 		AutoscaleVertAxisVisXRange(graph)
 	elseif(equalY)
-		EqualizeVerticalAxesRanges(graph, ignoreAxesWithLevelCrossing=0)
+		EqualizeVerticalAxesRanges(graph, ignoreAxesWithLevelCrossing = 0)
 	elseif(equalYIgn)
 		level = GetSetVariable(bsPanel, "setvar_Display_EqualYlevel")
-		EqualizeVerticalAxesRanges(graph, ignoreAxesWithLevelCrossing=1, level=level)
+		EqualizeVerticalAxesRanges(graph, ignoreAxesWithLevelCrossing = 1, level = level)
 	else
 		// do nothing
 	endif
@@ -1234,7 +1234,7 @@ Function [STRUCT TiledGraphSettings tgs] BSP_GatherTiledGraphSettings(string win
 	tgs.dDAQDisplayMode      = GetCheckBoxState(bsPanel, "check_BrowserSettings_dDAQ")
 	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(bsPanel, "slider_BrowserSettings_dDAQ")
 	tgs.hideSweep            = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
-	tgs.visualizeEpochs       = GetCheckBoxState(bsPanel, "check_BrowserSettings_VisEpochs")
+	tgs.visualizeEpochs      = GetCheckBoxState(bsPanel, "check_BrowserSettings_VisEpochs")
 
 	if(tgs.overlayChannels)
 		tgs.splitTTLBits = 0
@@ -1305,7 +1305,7 @@ Function BSP_ButtonProc_RestoreData(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			graph = GetMainWindow(ba.win)
+			graph   = GetMainWindow(ba.win)
 			bsPanel = BSP_GetPanel(graph)
 
 			if(!BSP_HasBoundDevice(graph))
@@ -1328,12 +1328,12 @@ Function BSP_ButtonProc_RestoreData(ba) : ButtonControl
 					ReplaceWaveWithBackupForAll(singleSweepDFR)
 				endfor
 			else
-				DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-				WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+				DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+				WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
 
 				numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
 				for(i = 0; i < numEntries; i += 1)
-					DFREF sweepDFR = SB_GetSweepDataFolder(sweepMap, index = i)
+					DFREF sweepDFR       = SB_GetSweepDataFolder(sweepMap, index = i)
 					DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
 					ReplaceWaveWithBackupForAll(singleSweepDFR)
 				endfor
@@ -1420,7 +1420,7 @@ Function/WAVE BSP_GetLogbookWave(string win, variable logbookType, variable logb
 			shPanel = LBV_GetSettingsHistoryPanel(win)
 
 			dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
-			device = GetPopupMenuString(shPanel, "popup_Device")
+			device     = GetPopupMenuString(shPanel, "popup_Device")
 
 			if(!cmpstr(dataFolder, NONE) || !cmpstr(device, NONE))
 				return $""
@@ -1441,9 +1441,9 @@ End
 Function/WAVE BSP_FetchSelectedChannels(string graph, [variable index, variable sweepNo])
 
 	if(ParamIsDefault(index) && !ParamIsDefault(sweepNo))
-		WAVE/Z activeHS = OVS_GetHeadstageRemoval(graph, sweepNo=sweepNo)
+		WAVE/Z activeHS = OVS_GetHeadstageRemoval(graph, sweepNo = sweepNo)
 	elseif(!ParamIsDefault(index) && ParamIsDefault(sweepNo))
-		WAVE/Z activeHS = OVS_GetHeadstageRemoval(graph, index=index)
+		WAVE/Z activeHS = OVS_GetHeadstageRemoval(graph, index = index)
 	else
 		ASSERT(0, "Invalid optional flags")
 	endif
@@ -1482,7 +1482,7 @@ Function BSP_ButtonProc_ChangeSweep(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			graph = GetMainWindow(ba.win)
+			graph   = GetMainWindow(ba.win)
 			scPanel = BSP_GetSweepControlsPanel(graph)
 			bsPanel = BSP_GetPanel(graph)
 
@@ -1495,10 +1495,10 @@ Function BSP_ButtonProc_ChangeSweep(ba) : ButtonControl
 			if(BSP_IsDataBrowser(graph))
 				DB_UpdateLastSweepControls(graph, first, last)
 				sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, first, last)
-				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNo=sweepNo)
+				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNo = sweepNo)
 			else
 				index = BSP_UpdateSweepControls(graph, ba.ctrlName, first, last)
-				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, index=index)
+				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, index = index)
 			endif
 
 			if(!overlaySweeps)
@@ -1552,16 +1552,16 @@ Function BSP_UpdateSweepNote(win)
 		graph = GetMainWindow(win)
 
 		scPanel = BSP_GetSweepControlsPanel(win)
-		index = GetPopupMenuIndex(scPanel, "Popup_SweepControl_Selector")
+		index   = GetPopupMenuIndex(scPanel, "Popup_SweepControl_Selector")
 
-		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+		DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+		WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
 
 		dataFolder = sweepMap[index][%DataFolder]
 		device     = sweepMap[index][%Device]
 		sweepNo    = str2num(sweepMap[index][%Sweep])
 
-		DFREF dfr = GetAnalysisSweepDataPath(dataFolder, device, sweepNo)
+		DFREF           dfr           = GetAnalysisSweepDataPath(dataFolder, device, sweepNo)
 		SVAR/SDFR=dfr/Z sweepNoteSVAR = note
 		if(!SVAR_EXISTS(sweepNoteSVAR))
 			return NaN
@@ -1616,7 +1616,7 @@ Function BSP_AddTracesForEpochs(string win)
 	if(!BSP_IsDataBrowser(win) && !BSP_IsSweepBrowser(win))
 		printf "The current window is neither a databrowser nor a sweepbrowser windows.\r"
 		ControlWindowToFront()
-		return Nan
+		return NaN
 	endif
 
 	DFREF dfr = GetEpochsVisualizationFolder(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
@@ -1629,7 +1629,7 @@ Function BSP_AddTracesForEpochs(string win)
 	endif
 
 	WAVE/T/Z traceInfosUnassocDA = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "0"})
-	WAVE/T/Z traceInfosTTL = GetTraceInfos(win, addFilterKeys = {"channelType"}, addFilterValues = {"TTL"})
+	WAVE/T/Z traceInfosTTL       = GetTraceInfos(win, addFilterKeys = {"channelType"}, addFilterValues = {"TTL"})
 
 	if(!WaveExists(traceInfosHS) && !WaveExists(traceInfosUnassocDA) && !WaveExists(traceInfosTTL))
 		return NaN
@@ -1661,9 +1661,9 @@ Function BSP_AddTracesForEpochs(string win)
 		yaxis = ReplaceString("_AD", yaxis, DB_AXIS_PART_EPOCHS + "_DA")
 		yaxis = ReplaceString("_TTL", yaxis, DB_AXIS_PART_EPOCHS + "_TTL")
 
-		headstage   = str2num(traceInfos[i][%headstage])
-		sweepNumber = str2num(traceInfos[i][%sweepNumber])
-		channelType = WhichListItem(traceInfos[i][%channelType], XOP_CHANNEL_NAMES)
+		headstage     = str2num(traceInfos[i][%headstage])
+		sweepNumber   = str2num(traceInfos[i][%sweepNumber])
+		channelType   = WhichListItem(traceInfos[i][%channelType], XOP_CHANNEL_NAMES)
 		channelNumber = str2num(traceInfos[i][%GUIChannelNumber])
 
 		WAVE/Z/T numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNumber)
@@ -1679,10 +1679,10 @@ Function BSP_AddTracesForEpochs(string win)
 
 		sprintf idPart, "_sweep%d_chan%d_type%d_HS%.0g", sweepNumber, channelNumber, channelType, headstage
 		sprintf name, "epochs_%s", idPart
-		Duplicate/O/T epochsFromLBN, dfr:$name/Wave=epochs
+		Duplicate/O/T epochsFromLBN, dfr:$name/WAVE=epochs
 
 		yLevelOffset = 10
-		yOffset = - yLevelOffset
+		yOffset      = -yLevelOffset
 
 		numEpochs = DimSize(epochs, ROWS)
 
@@ -1705,18 +1705,18 @@ Function BSP_AddTracesForEpochs(string win)
 			// handle EPOCH_USER_LEVEL being -1
 			level = str2num(epochs[j][3]) + 1
 
-			start_y = yOffset - yLevelOffset * level  - 0.1 * yLevelOffset * currentLevel[level]
-			end_y = start_y
+			start_y = yOffset - yLevelOffset * level - 0.1 * yLevelOffset * currentLevel[level]
+			end_y   = start_y
 
-			idx = indexInLevel[level]
-			levels_x[idx][level][0] = start_x
-			levels_x[idx + 1][level][0] = end_x
-			levels_x[idx + 2][level][0] = NaN
+			idx                              = indexInLevel[level]
+			levels_x[idx][level][0]          = start_x
+			levels_x[idx + 1][level][0]      = end_x
+			levels_x[idx + 2][level][0]      = NaN
 			levels_x[idx, idx + 2][level][1] = j
 
-			levels_y[idx][level][0] = start_y
-			levels_y[idx + 1][level][0] = end_y
-			levels_y[idx + 2][level][0] = NaN
+			levels_y[idx][level][0]          = start_y
+			levels_y[idx + 1][level][0]      = end_y
+			levels_y[idx + 2][level][0]      = NaN
 			levels_y[idx, idx + 2][level][1] = j
 
 			indexInLevel[level] = idx + 3
@@ -1734,7 +1734,7 @@ Function BSP_AddTracesForEpochs(string win)
 			ModifyGraph/W=$win marker($level_x_trace)=10, mode($level_x_trace)=4, rgb($level_x_trace)=(c.red, c.green, c.blue)
 		endfor
 
-		SetWindow $win, tooltipHook(hook) = BSP_EpochGraphToolTip
+		SetWindow $win, tooltipHook(hook)=BSP_EpochGraphToolTip
 
 		SetAxis/W=$win/A
 	endfor
@@ -1745,25 +1745,25 @@ Function BSP_EpochGraphToolTip(s)
 
 	variable idx, hasShortname
 	string first, last, tags, treelevel, shortname
-	Variable hookResult = 0 // 0 tells Igor to use the standard tooltip
+	variable hookResult = 0 // 0 tells Igor to use the standard tooltip
 
 	// traceName is set only for graphs and only if the mouse hovered near a trace
 	if(!IsEmpty(s.traceName))
 		s.tooltip = "a <-> b"
-		s.isHtml = 1
+		s.isHtml  = 1
 		WAVE w = s.yWave // The trace's Y wave
-		if (WaveDims(w) > 2)
+		if(WaveDims(w) > 2)
 			WAVE/T/Z epochs = $GetStringFromWaveNote(w, "EpochInfo")
 			ASSERT(WaveExists(epochs), "Missing epoch info")
-			hookResult = 1 // 1 tells Igor to use our custom tooltip
-			idx = w[s.row][s.column][1]
+			hookResult = 1                     // 1 tells Igor to use our custom tooltip
+			idx        = w[s.row][s.column][1]
 
 			first     = num2strHighPrec(str2num(epochs[idx][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
 			last      = num2strHighPrec(str2num(epochs[idx][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
 			tags      = epochs[idx][EPOCH_COL_TAGS]
 			treelevel = epochs[idx][EPOCH_COL_TREELEVEL]
 
-			shortname = EP_GetShortName(tags)
+			shortname    = EP_GetShortName(tags)
 			hasShortname = IsEmpty(shortname)
 
 			if(hasShortname)
@@ -1781,12 +1781,12 @@ Function BSP_SFHelpWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
 	string mainWin, sfWin, bspPanel, cmdStr
-	variable modMask,refContentCRC, contentCRC
+	variable modMask, refContentCRC, contentCRC
 
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_MOUSEDOWN:
 			mainWin = GetMainWindow(s.winName)
-			sfWin = BSP_GetSFFormula(mainWin)
+			sfWin   = BSP_GetSFFormula(mainWin)
 			if(CmpStr(sfWin, s.winName))
 				return 0
 			endif
@@ -1795,13 +1795,13 @@ Function BSP_SFHelpWindowHook(s)
 			if((s.eventMod & modMask) != modMask)
 				return 0
 			endif
-			cmdStr = LowerStr(GetNotebookText(sfWin, mode=4))
+			cmdStr = LowerStr(GetNotebookText(sfWin, mode = 4))
 
 			WAVE/T knownOps = SF_GetNamedOperations()
 			if(GetRowIndex(knownOps, str = cmdStr) >= 0)
 				DB_SFHelpJumpToLine(BSP_GetHelpOperationHeadline(cmdStr))
 				bspPanel = BSP_GetPanel(mainWin)
-				PGC_SetAndActivateControl(bspPanel, "SF_InfoTab", val=2, mode=PGC_MODE_SKIP_ON_DISABLED)
+				PGC_SetAndActivateControl(bspPanel, "SF_InfoTab", val = 2, mode = PGC_MODE_SKIP_ON_DISABLED)
 				return 1
 			endif
 
@@ -1809,15 +1809,15 @@ Function BSP_SFHelpWindowHook(s)
 			if(GetRowIndex(knownKeywords, str = cmdStr) >= 0)
 				DB_SFHelpJumpToLine(BSP_GetHelpKeywordHeadline(cmdStr))
 				bspPanel = BSP_GetPanel(mainWin)
-				PGC_SetAndActivateControl(bspPanel, "SF_InfoTab", val=2, mode=PGC_MODE_SKIP_ON_DISABLED)
+				PGC_SetAndActivateControl(bspPanel, "SF_InfoTab", val = 2, mode = PGC_MODE_SKIP_ON_DISABLED)
 				return 1
 			endif
 			break
 		case EVENT_WINDOW_HOOK_DEACTIVATE:
-			mainWin = GetMainWindow(s.winName)
-			sfWin = BSP_GetSFFormula(mainWin)
+			mainWin       = GetMainWindow(s.winName)
+			sfWin         = BSP_GetSFFormula(mainWin)
 			refContentCRC = str2num(GetUserData(mainWin, "", BSP_USER_DATA_SF_CONTENT_CRC))
-			contentCRC = GetNotebookCRC(sfWin)
+			contentCRC    = GetNotebookCRC(sfWin)
 			if(!CmpStr(sfWin, s.winName) && refContentCRC != contentCRC)
 				BSP_SFFormulaColoring(sfWin)
 				SetWindow $mainWin, userData($BSP_USER_DATA_SF_CONTENT_CRC)=num2istr(contentCRC)
@@ -1870,19 +1870,19 @@ Function BSP_TTHookSFFormulaNB(STRUCT WMTooltipHookStruct &s)
 	endif
 
 	s.duration_ms = Inf
-	mainWin = GetMainWindow(s.winName)
-	sfWin = BSP_GetSFFormula(mainWin)
+	mainWin       = GetMainWindow(s.winName)
+	sfWin         = BSP_GetSFFormula(mainWin)
 	Notebook $sfWin, getData=4
 	if(isEmpty(S_Value))
 		s.tooltip = "Mark operation or keyword for help tooltip or\r shift-rightclick on marked operation or keyword to jump to help."
 		return 1
 	endif
 	cmdStr = LowerStr(S_Value)
-	WAVE/T knownOps = SF_GetNamedOperations()
+	WAVE/T knownOps      = SF_GetNamedOperations()
 	WAVE/T knownKeywords = SF_GetFormulaKeywords()
 	sfHelpWin = BSP_GetSFHELP(mainWin)
 	if(GetRowIndex(knownOps, str = cmdStr) >= 0)
-		headLine = BSP_GetHelpOperationHeadline(cmdStr)
+		headLine  = BSP_GetHelpOperationHeadline(cmdStr)
 		s.tooltip = BSP_RetrieveSFHelpTextImpl(sfHelpWin, headLine, "to_top_" + cmdStr)
 		if(IsEmpty(s.tooltip))
 			s.tooltip = "Help for operation " + cmdStr + " not found."
@@ -1891,7 +1891,7 @@ Function BSP_TTHookSFFormulaNB(STRUCT WMTooltipHookStruct &s)
 		endif
 		DB_SFHelpJumpToLine(headLine)
 	elseif(GetRowIndex(knownKeywords, str = cmdStr) >= 0)
-		headLine = BSP_GetHelpKeywordHeadline(cmdStr)
+		headLine  = BSP_GetHelpKeywordHeadline(cmdStr)
 		s.tooltip = BSP_RetrieveSFHelpTextImpl(sfHelpWin, headLine, "to_top_" + cmdStr)
 		if(IsEmpty(s.tooltip))
 			s.tooltip = "Help for keyword " + cmdStr + " not found."
@@ -1915,7 +1915,7 @@ static Function/S BSP_RetrieveSFHelpTextImpl(string win, string hlpStart, string
 		return ""
 	endif
 	GetSelection notebook, $win, 1
-	paraStart = V_endParagraph
+	paraStart    = V_endParagraph
 	paraStartOff = V_endPos
 
 	Notebook $win, findSpecialCharacter={hlpEnd, 1}
@@ -1976,7 +1976,7 @@ End
 Function/S BSP_RenameAndSetTitle(string win, string newName)
 
 	variable numOtherBrowser
-	string newTitle
+	string   newTitle
 	string suffix = ""
 
 	if(BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win))
@@ -2006,8 +2006,8 @@ static Function BSP_MemoryFreeMappedDF(string win)
 
 	variable dim, index
 
-	DFREF sweepBrowserDFR = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-	WAVE/T map = GetSweepBrowserMap(sweepBrowserDFR)
+	DFREF  sweepBrowserDFR = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	WAVE/T map             = GetSweepBrowserMap(sweepBrowserDFR)
 	dim = FindDimLabel(map, COLS, "DataFolder")
 	Duplicate/FREE/RMD=[][dim] map, dfList
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)

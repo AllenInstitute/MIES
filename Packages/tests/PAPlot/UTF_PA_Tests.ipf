@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PA_Tests
@@ -437,7 +437,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
 	variable err
-	string miesPath
+	string   miesPath
 
 	TestCaseBeginCommon()
 
@@ -453,7 +453,7 @@ static Function [string bspName, string graph] PAT_StartDataBrowser_IGNORE()
 
 	string win, panel
 
-	win = DB_OpenDataBrowser()
+	win     = DB_OpenDataBrowser()
 	bspName = BSP_GetPanel(win)
 
 	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_PA", val = 1)
@@ -467,7 +467,7 @@ static Function [string bspName, string imageWin] PAT_StartDataBrowserImage_IGNO
 
 	string win, panel
 
-	win = DB_OpenDataBrowser()
+	win     = DB_OpenDataBrowser()
 	bspName = BSP_GetPanel(win)
 
 	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_PA", val = 1)
@@ -575,7 +575,7 @@ static Function PAT_VerifyImageAxes(string graph, string traceName, variable ach
 
 	multiGraphMode = ParamIsDefault(multiGraphMode) ? 0 : !!multiGraphMode
 
-	region = patest.regions[aregion - 1]
+	region  = patest.regions[aregion - 1]
 	channel = patest.channels[achan - 1]
 
 	tInfo = ImageInfo(graph, traceName, 0)
@@ -592,27 +592,27 @@ static Function PAT_VerifyImageAxes(string graph, string traceName, variable ach
 	CHECK_EQUAL_STR(xaxis, ref_xaxis)
 	CHECK_EQUAL_STR(yaxis, ref_yaxis)
 
-	aInfo = AxisInfo(graph, xaxis)
-	xunits = StringByKey("UNITS", aInfo)
+	aInfo      = AxisInfo(graph, xaxis)
+	xunits     = StringByKey("UNITS", aInfo)
 	ref_xunits = patest.xUnit
 	CHECK_EQUAL_STR(xunits, ref_xunits)
 
-	aInfo = AxisInfo(graph, yaxis)
-	yunits = StringByKey("UNITS", aInfo)
+	aInfo      = AxisInfo(graph, yaxis)
+	yunits     = StringByKey("UNITS", aInfo)
 	ref_yunits = ""
 	CHECK_EQUAL_STR(yunits, ref_yunits)
 
-	layoutSize = multiGraphMode ? 1 : patest.layoutSize
+	layoutSize   = multiGraphMode ? 1 : patest.layoutSize
 	xLayoutCoord = multiGraphMode ? 0 : aregion - 1
 	yLayoutCoord = multiGraphMode ? 0 : achan - 1
 
 	ref_from = xLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
-	ref_to = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_to   = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
 	CHECK_GE_VAR(from, ref_from)
 	CHECK_LE_VAR(to, ref_to)
 
-	ref_to = 100 - yLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_to   = 100 - yLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
 	ref_from = 100 - (yLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
 	CHECK_GE_VAR(from, ref_from)
@@ -628,7 +628,7 @@ static Function PAT_VerifyTraceAxes(string graph, string traceName, variable ach
 
 	multiGraphMode = ParamIsDefault(multiGraphMode) ? 0 : !!multiGraphMode
 
-	region = patest.regions[aregion - 1]
+	region  = patest.regions[aregion - 1]
 	channel = patest.channels[achan - 1]
 
 	tInfo = TraceInfo(graph, traceName, 0)
@@ -645,28 +645,28 @@ static Function PAT_VerifyTraceAxes(string graph, string traceName, variable ach
 	CHECK_EQUAL_STR(xaxis, ref_xaxis)
 	CHECK_EQUAL_STR(yaxis, ref_yaxis)
 
-	aInfo = AxisInfo(graph, xaxis)
-	xunits = StringByKey("UNITS", aInfo)
+	aInfo      = AxisInfo(graph, xaxis)
+	xunits     = StringByKey("UNITS", aInfo)
 	ref_xunits = patest.xUnit
 	CHECK_EQUAL_STR(xunits, ref_xunits)
 
-	aInfo = AxisInfo(graph, yaxis)
-	yunits = StringByKey("UNITS", aInfo)
+	aInfo      = AxisInfo(graph, yaxis)
+	yunits     = StringByKey("UNITS", aInfo)
 	ref_yunits = patest.yUnit
 	CHECK_EQUAL_STR(yunits, ref_yunits)
 
-	layoutSize = multiGraphMode ? 1 : patest.layoutSize
+	layoutSize   = multiGraphMode ? 1 : patest.layoutSize
 	xLayoutCoord = multiGraphMode ? 0 : aregion - 1
 	yLayoutCoord = multiGraphMode ? 0 : achan - 1
 
 	ref_from = xLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
-	ref_to = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_to   = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
 	CHECK_GE_VAR(from, ref_from)
 	CHECK_LE_VAR(to, ref_to)
 
-	ref_to = 100 - yLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_to   = 100 - yLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
 	ref_from = 100 - (yLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
@@ -734,8 +734,8 @@ static Function PAT_CheckIfTraceIsRed(string graph, string traceName, variable i
 	isRed = !!isRed
 
 	refColorInfo = "(65535,0,0)"
-	tInfo = TraceInfo(graph, traceName, 0)
-	colorInfo = PAT_GetTraceColor(tInfo)
+	tInfo        = TraceInfo(graph, traceName, 0)
+	colorInfo    = PAT_GetTraceColor(tInfo)
 
 	if(isRed)
 		CHECK_EQUAL_STR(colorInfo, refColorInfo)
@@ -746,12 +746,12 @@ End
 
 static Function PAT_CheckIfTraceIsHidden(string graph, string traceName, variable isHidden)
 
-	string tInfo
+	string   tInfo
 	variable hiddenInfo
 
 	isHidden = !!isHidden
 
-	tInfo = TraceInfo(graph, traceName, 0)
+	tInfo      = TraceInfo(graph, traceName, 0)
 	hiddenInfo = GetNumFromModifyStr(tInfo, "hideTrace", "", 0)
 
 	if(isHidden)
@@ -831,8 +831,8 @@ End
 static Function PAT_CheckFailedPulse(string win, WAVE pulse, variable isDiagonal, variable testExpect, variable numSpikes, [string spikePositions])
 
 	STRUCT PulseAverageSettings s
-	variable setting
-	string str
+	variable                    setting
+	string                      str
 
 	isDiagonal = !!isDiagonal
 	testExpect = !!testExpect
@@ -1012,17 +1012,17 @@ EndStructure
 
 static Function PA_InitSweep0(STRUCT PA_Test &patest)
 
-	patest.xUnit = "ms"
-	patest.yUnit = "pA"
-	patest.xMin = 0
-	patest.xMax = 1000
-	patest.xTol = 0.005
-	patest.yMin = 0
-	patest.yMax = 100
-	patest.yTol = 4
-	patest.pulseCnt = 1
+	patest.xUnit      = "ms"
+	patest.yUnit      = "pA"
+	patest.xMin       = 0
+	patest.xMax       = 1000
+	patest.xTol       = 0.005
+	patest.yMin       = 0
+	patest.yMax       = 100
+	patest.yTol       = 4
+	patest.pulseCnt   = 1
 	patest.layoutSize = 4
-	patest.eqWaveTol = 130000
+	patest.eqWaveTol  = 130000
 	patest.dataLength = 250000
 
 	Make/FREE/N=(250000) refPulseData
@@ -1037,17 +1037,17 @@ End
 
 static Function PA_InitSweep3(STRUCT PA_Test &patest)
 
-	patest.xUnit = "ms"
-	patest.yUnit = "pA"
-	patest.xMin = 0
-	patest.xMax = 1000
-	patest.xTol = 0.005
-	patest.yMin = 0
-	patest.yMax = 100
-	patest.yTol = 4
-	patest.pulseCnt = 1
+	patest.xUnit      = "ms"
+	patest.yUnit      = "pA"
+	patest.xMin       = 0
+	patest.xMax       = 1000
+	patest.xTol       = 0.005
+	patest.yMin       = 0
+	patest.yMax       = 100
+	patest.yTol       = 4
+	patest.pulseCnt   = 1
 	patest.layoutSize = 4
-	patest.eqWaveTol = 130000
+	patest.eqWaveTol  = 130000
 	patest.dataLength = 250000
 
 	Make/FREE/N=(250000) refPulseData
@@ -1062,17 +1062,17 @@ End
 
 static Function PA_InitSweep4(STRUCT PA_Test &patest)
 
-	patest.xUnit = "ms"
-	patest.yUnit = "pA"
-	patest.xMin = 0
-	patest.xMax = 1000
-	patest.xTol = 0.005
-	patest.yMin = 0
-	patest.yMax = 100
-	patest.yTol = 4
-	patest.pulseCnt = 1
+	patest.xUnit      = "ms"
+	patest.yUnit      = "pA"
+	patest.xMin       = 0
+	patest.xMax       = 1000
+	patest.xTol       = 0.005
+	patest.yMin       = 0
+	patest.yMax       = 100
+	patest.yTol       = 4
+	patest.pulseCnt   = 1
 	patest.layoutSize = 4
-	patest.eqWaveTol = 130000
+	patest.eqWaveTol  = 130000
 	patest.dataLength = 250000
 
 	Make/FREE/N=(250000) refPulseData
@@ -1087,12 +1087,12 @@ End
 
 static Function PA_InitSweep5(STRUCT PA_Test &patest)
 	// This is only set partially for the values that are constant for all pulses
-	patest.xUnit = "ms"
-	patest.yUnit = "pA"
-	patest.xMin = 0
-	patest.xMax = 1000
-	patest.xTol = 0.005
-	patest.pulseCnt = 1
+	patest.xUnit      = "ms"
+	patest.yUnit      = "pA"
+	patest.xMin       = 0
+	patest.xMax       = 1000
+	patest.xTol       = 0.005
+	patest.pulseCnt   = 1
 	patest.layoutSize = 9
 
 	patest.dataLength = 166667
@@ -1105,12 +1105,12 @@ End
 
 static Function PA_InitSweep7(STRUCT PA_Test &patest)
 	// This is only set partially for the values that are constant for all pulses
-	patest.xUnit = "ms"
-	patest.yUnit = "pA"
-	patest.xMin = 0
-	patest.xMax = 200
-	patest.xTol = 0.005
-	patest.pulseCnt = 3
+	patest.xUnit      = "ms"
+	patest.yUnit      = "pA"
+	patest.xMin       = 0
+	patest.xMax       = 200
+	patest.xTol       = 0.005
+	patest.pulseCnt   = 3
 	patest.layoutSize = 4
 
 	patest.dataLength = 33333
@@ -1123,12 +1123,12 @@ End
 
 static Function PA_InitSweep8(STRUCT PA_Test &patest)
 	// This is only set partially for the values that are constant for all pulses
-	patest.xUnit = "ms"
-	patest.yUnit = "pA"
-	patest.xMin = 0
-	patest.xMax = 200
-	patest.xTol = 0.005
-	patest.pulseCnt = 3
+	patest.xUnit      = "ms"
+	patest.yUnit      = "pA"
+	patest.xMin       = 0
+	patest.xMax       = 200
+	patest.xTol       = 0.005
+	patest.pulseCnt   = 3
 	patest.layoutSize = 4
 
 	patest.dataLength = 33333
@@ -1154,7 +1154,7 @@ static Function PAT_BasicStartUpCheck()
 	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
 
 	traceList = PAT_GetTraces(graph, patest.layoutSize)
-	size = sqrt(patest.layoutSize)
+	size      = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			for(k = 0; k < patest.pulseCnt; k += 1)
@@ -1186,7 +1186,7 @@ static Function PAT_BasicAverageCheck()
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize)
 
 	traceList = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
-	traceNum = ItemsInList(traceList)
+	traceNum  = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize)
 
 	size = sqrt(patest.layoutSize)
@@ -1226,7 +1226,7 @@ static Function PAT_ExtendedAverageCheck()
 	traceListAll = PAT_GetTraces(graph, 3 * patest.layoutSize)
 
 	traceList = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
-	traceNum = ItemsInList(traceList)
+	traceNum  = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize)
 
 	traceName = PAT_FindTraceNameAvgDeconv(traceList, patest.channels[0], patest.regions[0])
@@ -1256,7 +1256,7 @@ static Function PAT_BasicDeconvCheck()
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize / 2)
 
 	traceList = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
-	traceNum = ItemsInList(traceList)
+	traceNum  = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize / 2)
 
 	size = sqrt(patest.layoutSize)
@@ -1299,7 +1299,7 @@ static Function PAT_BasicDeconvOnlyCheck()
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize / 2)
 
 	traceList = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
-	traceNum = ItemsInList(traceList)
+	traceNum  = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize / 2)
 
 	size = sqrt(patest.layoutSize)
@@ -1334,7 +1334,7 @@ static Function PAT_ZeroPulses()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_zero", val = 1)
 
 	traceList = PAT_GetTraces(graph, patest.layoutSize)
-	size = sqrt(patest.layoutSize)
+	size      = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			for(k = 0; k < patest.pulseCnt; k += 1)
@@ -1364,12 +1364,12 @@ static Function PAT_TimeAlignment()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_timeAlign", val = 1)
 
 	traceList = PAT_GetTraces(graph, patest.layoutSize)
-	size = sqrt(patest.layoutSize)
+	size      = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
-			traceName = PAT_FindTraceNames(traceList, patest.channels[i], patest.regions[j], 0)
+			traceName     = PAT_FindTraceNames(traceList, patest.channels[i], patest.regions[j], 0)
 			traceNameDiag = PAT_FindTraceNames(traceList, patest.channels[j], patest.regions[j], 0)
-			WAVE pData = TraceNameToWaveRef(graph, traceName)
+			WAVE pData     = TraceNameToWaveRef(graph, traceName)
 			WAVE pDataDiag = TraceNameToWaveRef(graph, traceNameDiag)
 			PAT_CheckPulseWaveNoteTA(pData, pDataDiag, i + 1, j + 1)
 		endfor
@@ -1428,7 +1428,7 @@ static Function PAT_DontShowIndividualPulses()
 
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_indPulses", val = 1)
 	traceListAvg = GrepList(traceList, PA_AVERAGE_WAVE_PREFIX)
-	size = sqrt(patest.layoutSize)
+	size         = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			traceName = PAT_FindTraceNameAvgDeconv(traceListAvg, patest.channels[i], patest.regions[j])
@@ -1471,10 +1471,10 @@ static Function PAT_ExtendedDeconvCheckTau()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
 	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_deconv_tau", val = 0)
 
-	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize +  + patest.layoutSize / 2)
+	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize + +patest.layoutSize / 2)
 
 	traceList = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
-	traceNum = ItemsInList(traceList)
+	traceNum  = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize / 2)
 
 	size = sqrt(patest.layoutSize)
@@ -1510,10 +1510,10 @@ static Function PAT_ExtendedDeconvCheckSmooth()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
 	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_deconv_smth", val = 1)
 
-	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize +  + patest.layoutSize / 2)
+	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize + +patest.layoutSize / 2)
 
 	traceList = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
-	traceNum = ItemsInList(traceList)
+	traceNum  = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize / 2)
 
 	size = sqrt(patest.layoutSize)
@@ -1539,7 +1539,7 @@ static Function PAT_ExtendedDeconvCheckDisplay()
 	string traceListAll, traceList, traceName
 	variable traceNum, i, j, size
 
-	variable range = 400
+	variable range    = 400
 	variable dataSize = 100000 // 400 ms * 250000 pts / 1000 ms // NOLINT
 
 	PA_InitSweep0(patest)
@@ -1556,10 +1556,10 @@ static Function PAT_ExtendedDeconvCheckDisplay()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
 	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_deconv_range", val = range)
 
-	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize +  + patest.layoutSize / 2)
+	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize + +patest.layoutSize / 2)
 
 	traceList = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
-	traceNum = ItemsInList(traceList)
+	traceNum  = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize / 2)
 
 	size = sqrt(patest.layoutSize)
@@ -1601,7 +1601,7 @@ static Function PAT_BasicOVSCheck()
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			traceNames = PAT_FindTraceNames(traceListAll, patest0.channels[i], patest0.regions[j], 0)
-			traceNum = ItemsInList(traceNames)
+			traceNum   = ItemsInList(traceNames)
 			CHECK_EQUAL_VAR(traceNum, 2)
 			for(k = 0; k < traceNum; k += 1)
 				if(k == 1)
@@ -1647,7 +1647,7 @@ static Function PAT_BasicOVSAverageCheck()
 	traceListAll = PAT_GetTraces(graph, 3 * patest.layoutSize)
 
 	traceList = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
-	traceNum = ItemsInList(traceList)
+	traceNum  = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize)
 
 	size = sqrt(patest.layoutSize)
@@ -1691,7 +1691,7 @@ static Function PAT_FailedPulseCheck1()
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			traceNames = PAT_FindTraceNames(traceListAll, patest0.channels[i], patest0.regions[j], 0)
-			traceNum = ItemsInList(traceNames)
+			traceNum   = ItemsInList(traceNames)
 			CHECK_EQUAL_VAR(traceNum, 2)
 			for(k = 0; k < traceNum; k += 1)
 				if(k == 1)
@@ -1701,7 +1701,7 @@ static Function PAT_FailedPulseCheck1()
 				endif
 
 				pulseHasFailed = 0
-				numSpikes = 1
+				numSpikes      = 1
 
 				traceName = StringFromList(k, traceNames)
 				if(k == 1)
@@ -1725,7 +1725,7 @@ static Function PAT_FailedPulseCheck1()
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			traceNames = PAT_FindTraceNames(traceListAll, patest0.channels[i], patest0.regions[j], 0)
-			traceNum = ItemsInList(traceNames)
+			traceNum   = ItemsInList(traceNames)
 			for(k = 0; k < traceNum; k += 1)
 				if(k == 1)
 					patest = patest4
@@ -1734,7 +1734,7 @@ static Function PAT_FailedPulseCheck1()
 				endif
 
 				pulseHasFailed = k > 0
-				numSpikes = k == 0 && i == j
+				numSpikes      = k == 0 && i == j
 
 				if(numSpikes == 1)
 					if(i == 0 && j == 0)
@@ -1763,7 +1763,7 @@ static Function PAT_FailedPulseCheck1()
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			traceNames = PAT_FindTraceNames(traceListAll, patest0.channels[i], patest0.regions[j], 0)
-			traceNum = ItemsInList(traceNames)
+			traceNum   = ItemsInList(traceNames)
 			for(k = 0; k < traceNum; k += 1)
 				if(k == 1)
 					patest = patest4
@@ -1772,7 +1772,7 @@ static Function PAT_FailedPulseCheck1()
 				endif
 
 				pulseHasFailed = k > 0
-				numSpikes = k == 0 && i == j
+				numSpikes      = k == 0 && i == j
 
 				if(numSpikes == 1)
 					if(i == 0 && j == 0)
@@ -1801,7 +1801,7 @@ static Function PAT_FailedPulseCheck1()
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			traceNames = PAT_FindTraceNames(traceListAll, patest0.channels[i], patest0.regions[j], 0)
-			traceNum = ItemsInList(traceNames)
+			traceNum   = ItemsInList(traceNames)
 			for(k = 0; k < traceNum; k += 1)
 				if(k == 1)
 					patest = patest4
@@ -1810,7 +1810,7 @@ static Function PAT_FailedPulseCheck1()
 				endif
 
 				pulseHasFailed = 1
-				numSpikes = k == 0 && i == j
+				numSpikes      = k == 0 && i == j
 
 				if(numSpikes == 1)
 					if(i == 0 && j == 0)
@@ -1861,7 +1861,7 @@ Function PAT_FailedPulseCheckVC()
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			traceNames = PAT_FindTraceNames(traceListAll, patest0.channels[i], patest0.regions[j], 0)
-			traceNum = ItemsInList(traceNames)
+			traceNum   = ItemsInList(traceNames)
 			CHECK_EQUAL_VAR(traceNum, 2)
 			for(k = 0; k < traceNum; k += 1)
 				if(k == 1)
@@ -1871,7 +1871,7 @@ Function PAT_FailedPulseCheckVC()
 				endif
 
 				pulseHasFailed = 0
-				numSpikes = 0
+				numSpikes      = 0
 
 				traceName = StringFromList(k, traceNames)
 
@@ -1904,15 +1904,15 @@ static Function PAT_FailedPulseCheck2()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_searchFailedPulses", val = 1)
 	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 20)
 
-	size = sqrt(patest5.layoutSize)
+	size         = sqrt(patest5.layoutSize)
 	traceListAll = PAT_GetTraces(graph, patest5.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
-			region = patest5.regions[j]
+			region    = patest5.regions[j]
 			traceName = PAT_FindTraceNames(traceListAll, patest5.channels[i], region, 0)
 
 			pulseHasFailed = (region == 5)
-			numSpikes = (i == 0 && j == 0) ? 0 : 1
+			numSpikes      = (i == 0 && j == 0) ? 0 : 1
 
 			WAVE pData = TraceNameToWaveRef(graph, traceName)
 			PAT_CheckPulseWaveNote(bspName, pData)
@@ -1925,7 +1925,7 @@ static Function PAT_FailedPulseCheck2()
 	traceListAll = PAT_GetTraces(graph, patest5.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
-			region = patest5.regions[j]
+			region    = patest5.regions[j]
 			traceName = PAT_FindTraceNames(traceListAll, patest5.channels[i], region, 0)
 
 			pulseHasFailed = (region == 5)
@@ -1956,18 +1956,18 @@ static Function PAT_FailedPulseCheck3()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_showAver", val = 1)
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
 
-	size = sqrt(patest5.layoutSize)
-	avgTraceNum = 3
+	size           = sqrt(patest5.layoutSize)
+	avgTraceNum    = 3
 	deconvTraceNum = 2
 
 	traceListAll = PAT_GetTraces(graph, patest5.layoutSize + avgTraceNum + deconvTraceNum)
 
 	traceListAvg = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
-	traceNum = ItemsInList(traceListAvg)
+	traceNum     = ItemsInList(traceListAvg)
 	CHECK_EQUAL_VAR(traceNum, avgTraceNum)
 
 	traceListDeconv = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
-	traceNum = ItemsInList(traceListDeconv)
+	traceNum        = ItemsInList(traceListDeconv)
 	CHECK_EQUAL_VAR(traceNum, deconvTraceNum)
 
 	for(i = 0; i < size; i += 1)
@@ -2015,13 +2015,13 @@ static Function PAT_FailedPulseCheck4()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_showAver", val = 0)
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_indPulses", val = 0)
 
-	size = sqrt(patest5.layoutSize)
+	size           = sqrt(patest5.layoutSize)
 	deconvTraceNum = 2
 
 	traceListAll = PAT_GetTraces(graph, deconvTraceNum)
 
 	traceListDeconv = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
-	traceNum = ItemsInList(traceListDeconv)
+	traceNum        = ItemsInList(traceListDeconv)
 	CHECK_EQUAL_VAR(traceNum, deconvTraceNum)
 
 	for(i = 0; i < size; i += 1)
@@ -2054,9 +2054,9 @@ static Function PAT_MultiSweep1()
 	Make/FREE combinedRegions = {5, 1, 3}
 	combinedLayoutSize = 9
 	WAVE patest0.channels = combinedChannels
-	WAVE patest0.regions = combinedRegions
+	WAVE patest0.regions  = combinedRegions
 	WAVE patest5.channels = combinedChannels
-	WAVE patest5.regions = combinedRegions
+	WAVE patest5.regions  = combinedRegions
 
 	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
@@ -2066,14 +2066,14 @@ static Function PAT_MultiSweep1()
 
 	patest0.layoutSize = combinedLayoutSize
 	patest5.layoutSize = combinedLayoutSize
-	size = DimSize(combinedChannels, ROWS)
+	size               = DimSize(combinedChannels, ROWS)
 	for(i = 0; i < size; i += 1)
 		channel = combinedChannels[i]
 		for(j = 0; j < size; j += 1)
 			region = combinedRegions[j]
 			if(region != 5 && channel != 0)
 				traceNames = PAT_FindTraceNames(traceListAll, channel, region, 0)
-				traceNum = ItemsInList(traceNames)
+				traceNum   = ItemsInList(traceNames)
 				CHECK_EQUAL_VAR(traceNum, 2)
 				for(k = 0; k < traceNum; k += 1)
 					if(k == 1)
@@ -2082,7 +2082,7 @@ static Function PAT_MultiSweep1()
 						patest = patest0
 					endif
 					patest.layoutSize = size * size
-					traceName = StringFromList(k, traceNames)
+					traceName         = StringFromList(k, traceNames)
 					PAT_VerifyTraceAxes(graph, traceName, i + 1, j + 1, patest)
 					if(k == 0)
 						WAVE pData = TraceNameToWaveRef(graph, traceName)
@@ -2091,7 +2091,7 @@ static Function PAT_MultiSweep1()
 				endfor
 			else
 				traceNames = PAT_FindTraceNames(traceListAll, channel, region, 0)
-				traceNum = ItemsInList(traceNames)
+				traceNum   = ItemsInList(traceNames)
 				CHECK_EQUAL_VAR(traceNum, 1)
 
 				PAT_VerifyTraceAxes(graph, traceNames, i + 1, j + 1, patest5)
@@ -2117,7 +2117,7 @@ static Function PAT_MultiSweep2()
 	OVS_ChangeSweepSelectionState(bspName, 0, sweepNo = 5)
 
 	traceList = PAT_GetTraces(graph, patest.layoutSize)
-	size = sqrt(patest.layoutSize)
+	size      = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			for(k = 0; k < patest.pulseCnt; k += 1)
@@ -2143,7 +2143,7 @@ static Function PAT_MultiSweepAvg()
 
 	PA_InitSweep0(patest)
 
-	avgTraceNum = 4
+	avgTraceNum    = 4
 	deconvTraceNum = 2
 
 	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
@@ -2155,11 +2155,11 @@ static Function PAT_MultiSweepAvg()
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize + avgTraceNum + deconvTraceNum)
 
 	traceListAvg = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
-	traceNum = ItemsInList(traceListAvg)
+	traceNum     = ItemsInList(traceListAvg)
 	CHECK_EQUAL_VAR(traceNum, avgTraceNum)
 
 	traceListDeconv = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
-	traceNum = ItemsInList(traceListDeconv)
+	traceNum        = ItemsInList(traceListDeconv)
 	CHECK_EQUAL_VAR(traceNum, deconvTraceNum)
 
 	size = sqrt(patest.layoutSize)
@@ -2169,12 +2169,12 @@ static Function PAT_MultiSweepAvg()
 				traceNames = PAT_FindTraceNameAvgDeconv(traceListDeconv, patest.channels[i], patest.regions[j], checkForNoTrace = 1)
 			else
 				traceNames = PAT_FindTraceNameAvgDeconv(traceListDeconv, patest.channels[i], patest.regions[j])
-				traceNum = ItemsInList(traceNames)
+				traceNum   = ItemsInList(traceNames)
 				CHECK_EQUAL_VAR(traceNum, 1)
 				PAT_VerifyTraceAxes(graph, traceNames, i + 1, j + 1, patest)
 			endif
 			traceNames = PAT_FindTraceNameAvgDeconv(traceListAvg, patest.channels[i], patest.regions[j])
-			traceNum = ItemsInList(traceNames)
+			traceNum   = ItemsInList(traceNames)
 			CHECK_EQUAL_VAR(traceNum, 1)
 			PAT_VerifyTraceAxes(graph, traceNames, i + 1, j + 1, patest)
 		endfor
@@ -2235,8 +2235,8 @@ static Function PAT_IncrementalSweepAddPartialAvgCheck()
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 2)
 
 	traceListAll = PAT_GetTraces(graph, 5 + 4)
-	traceList = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
-	traceNum = ItemsInList(traceList)
+	traceList    = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
+	traceNum     = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, 4)
 End
 
@@ -2261,10 +2261,10 @@ static Function PAT_HSRemoval1()
 	size = sqrt(patest4.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
-			region = patest4.regions[j]
-			channel = patest4.channels[i]
+			region     = patest4.regions[j]
+			channel    = patest4.channels[i]
 			traceNames = PAT_FindTraceNames(traceListAll, channel, region, 0)
-			traceNum = ItemsInList(traceNames)
+			traceNum   = ItemsInList(traceNames)
 			if(region == 3 && channel == 3)
 				CHECK_EQUAL_VAR(traceNum, 2)
 				if(traceNum == 2)
@@ -2297,7 +2297,7 @@ static Function PAT_BasicImagePlot()
 	[bspName, imageWin] = PAT_StartDataBrowserImage_IGNORE()
 
 	imageList = PAT_GetImages(imageWin, patest.layoutSize)
-	size = sqrt(patest.layoutSize)
+	size      = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			imageName = PAT_FindImageNames(imageList, patest.channels[i], patest.regions[j])
@@ -2319,7 +2319,7 @@ static Function PAT_BasicImagePlot()
 	CHECK_NEQ_VAR(WhichListItem(imageWin + "#P0#G0", winL), -1)
 
 	subWin = imageWin + "#P0#G0"
-	annoL = AnnotationList(subWin)
+	annoL  = AnnotationList(subWin)
 	CHECK_EQUAL_VAR(ItemsInList(annoL), size + 1)
 End
 
@@ -2337,7 +2337,7 @@ static Function PAT_BasicImagePlotAverage()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_showAver", val = 1)
 
 	imageList = PAT_GetImages(imageWin, patest.layoutSize)
-	size = sqrt(patest.layoutSize)
+	size      = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			imageName = PAT_FindImageNames(imageList, patest.channels[i], patest.regions[j])
@@ -2367,7 +2367,7 @@ static Function PAT_BasicImagePlotDeconvolution()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
 
 	imageList = PAT_GetImages(imageWin, patest.layoutSize)
-	size = sqrt(patest.layoutSize)
+	size      = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			if(i != j)
@@ -2405,7 +2405,7 @@ static Function PAT_ImagePlotMultiSweep0()
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 3)
 
 	imageList = PAT_GetImages(imageWin, patest0.layoutSize)
-	size = sqrt(patest0.layoutSize)
+	size      = sqrt(patest0.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			imageName = PAT_FindImageNames(imageList, patest0.channels[i], patest0.regions[j])
@@ -2445,7 +2445,7 @@ static Function PAT_ImagePlotAverageExtended()
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 3)
 
 	imageList = PAT_GetImages(imageWin, patest.layoutSize)
-	size = sqrt(patest.layoutSize)
+	size      = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			imageName = PAT_FindImageNames(imageList, patest.channels[i], patest.regions[j])
@@ -2474,9 +2474,9 @@ static Function PAT_ImagePlotMultiSweep1()
 	Make/FREE combinedRegions = {5, 1, 3}
 	combinedLayoutSize = 9
 	WAVE patest0.channels = combinedChannels
-	WAVE patest0.regions = combinedRegions
+	WAVE patest0.regions  = combinedRegions
 	WAVE patest5.channels = combinedChannels
-	WAVE patest5.regions = combinedRegions
+	WAVE patest5.regions  = combinedRegions
 	patest0.layoutSize = combinedLayoutSize
 	patest5.layoutSize = combinedLayoutSize
 
@@ -2485,7 +2485,7 @@ static Function PAT_ImagePlotMultiSweep1()
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 5)
 
 	imageList = PAT_GetImages(imageWin, patest5.layoutSize)
-	size = sqrt(patest5.layoutSize)
+	size      = sqrt(patest5.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			imageName = PAT_FindImageNames(imageList, combinedChannels[i], combinedRegions[j])
@@ -2548,7 +2548,7 @@ static Function PAT_ImagePlotFailedPulses()
 	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 75)
 
 	imageList = PAT_GetImages(imageWin, patest0.layoutSize)
-	size = sqrt(patest0.layoutSize)
+	size      = sqrt(patest0.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			imageName = PAT_FindImageNames(imageList, patest0.channels[i], patest0.regions[j])
@@ -2629,10 +2629,10 @@ static Function PAT_ImagePlotPartialFullFail()
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 5)
 
 	imageList = PAT_GetImages(imageWin, patest.layoutSize)
-	size = sqrt(patest.layoutSize)
+	size      = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
-			region = patest.regions[j]
+			region  = patest.regions[j]
 			channel = patest.channels[i]
 
 			imageName = PAT_FindImageNames(imageList, channel, region)
@@ -2689,10 +2689,10 @@ static Function PAT_ImagePlotIncrementalPartial()
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 0)
 
 	imageList = PAT_GetImages(imageWin, patest.layoutSize)
-	size = sqrt(patest.layoutSize)
+	size      = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
-			region = patest.regions[j]
+			region  = patest.regions[j]
 			channel = patest.channels[i]
 
 			imageName = PAT_FindImageNames(imageList, channel, region)
@@ -2733,14 +2733,14 @@ static Function PAT_ImagePlotSortOrder()
 	Make/FREE/D refDataSweep = {100, 100, 100, 100, 50, 50, 50, 50, NaN, NaN}
 
 	imageList = PAT_GetImages(imageWin, patest7.layoutSize)
-	size = sqrt(patest7.layoutSize)
+	size      = sqrt(patest7.layoutSize)
 	// Explicitly set it to another value before activating the selection that should be tested
 	PGC_SetAndActivateControl(bspName, "popup_pulseAver_pulseSortOrder", str = "PulseIndex")
 	PGC_SetAndActivateControl(bspName, "popup_pulseAver_pulseSortOrder", str = "Sweep")
 
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
-			region = patest7.regions[j]
+			region  = patest7.regions[j]
 			channel = patest7.channels[i]
 
 			imageName = PAT_FindImageNames(imageList, channel, region)
@@ -2760,7 +2760,7 @@ static Function PAT_ImagePlotSortOrder()
 	PGC_SetAndActivateControl(bspName, "popup_pulseAver_pulseSortOrder", str = "PulseIndex")
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
-			region = patest7.regions[j]
+			region  = patest7.regions[j]
 			channel = patest7.channels[i]
 
 			imageName = PAT_FindImageNames(imageList, channel, region)

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -19,7 +19,7 @@ static Function RA_RecalculateITI(device)
 	variable ITI, sweepNo
 
 	NVAR repurposedTime = $GetRepurposedSweepTime(device)
-	ITI = DAG_GetNumericalValue(device, "SetVar_DataAcq_ITI") - DQ_StopDAQDeviceTimer(device) + repurposedTime
+	ITI            = DAG_GetNumericalValue(device, "SetVar_DataAcq_ITI") - DQ_StopDAQDeviceTimer(device) + repurposedTime
 	repurposedTime = 0
 
 	ASSERT(IsFinite(ITI), "The recalculated ITI must be finite")
@@ -43,7 +43,7 @@ static Function RA_HandleITI_MD(device)
 	string device
 
 	variable ITI
-	string funcList
+	string   funcList
 
 	DAP_ApplyDelayedClampModeChange(device)
 
@@ -65,20 +65,20 @@ static Function RA_HandleITI_MD(device)
 		return NaN
 	endif
 
-	TPM_StartTPMultiDeviceLow(device, runModifier=TEST_PULSE_DURING_RA_MOD)
+	TPM_StartTPMultiDeviceLow(device, runModifier = TEST_PULSE_DURING_RA_MOD)
 
 	funcList = "TPM_StopTestPulseMultiDevice(\"" + device + "\")" + ";" + "RA_CounterMD(\"" + device + "\")"
 	DQM_StartBackgroundTimer(device, ITI, funcList)
 End
 
 static Function RA_WaitUntiIITIDone(device, elapsedTime)
-	string device
+	string   device
 	variable elapsedTime
 
 	variable reftime, timeLeft
 	string oscilloscopeSubwindow
 
-	refTime = RelativeNowHighPrec()
+	refTime               = RelativeNowHighPrec()
 	oscilloscopeSubwindow = SCOPE_GetGraph(device)
 
 	do
@@ -104,9 +104,9 @@ static Function RA_HandleITI(device)
 	DAP_ApplyDelayedClampModeChange(device)
 	AS_HandlePossibleTransition(device, AS_ITI)
 
-	ITI = RA_RecalculateITI(device)
+	ITI        = RA_RecalculateITI(device)
 	background = DAG_GetNumericalValue(device, "Check_Settings_BackgrndDataAcq")
-	funcList = "RA_Counter(\"" + device + "\")"
+	funcList   = "RA_Counter(\"" + device + "\")"
 
 	if(!DAG_GetNumericalValue(device, "check_Settings_ITITP") || ITI <= 0)
 
@@ -162,7 +162,7 @@ Function RA_StepSweepsRemaining(device)
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 		variable numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
-		NVAR count = $GetCount(device)
+		NVAR     count          = $GetCount(device)
 
 		SetValDisplay(device, "valdisp_DataAcq_TrialsCountdown", var = numTotalSweeps - count - 1)
 	else
@@ -205,10 +205,10 @@ Function RA_Counter(device)
 
 	DAP_ApplyDelayedClampModeChange(device)
 
-	NVAR count = $GetCount(device)
+	NVAR count          = $GetCount(device)
 	NVAR activeSetCount = $GetActiveSetCount(device)
 
-	count += 1
+	count          += 1
 	activeSetCount -= 1
 
 #ifdef PERFING_RA
@@ -293,7 +293,7 @@ Function RA_CounterMD(device)
 	string device
 
 	variable numTotalSweeps
-	NVAR count = $GetCount(device)
+	NVAR count          = $GetCount(device)
 	NVAR activeSetCount = $GetActiveSetCount(device)
 	variable i, runMode
 	string str
@@ -306,7 +306,7 @@ Function RA_CounterMD(device)
 
 	DAP_ApplyDelayedClampModeChange(device)
 
-	Count += 1
+	Count          += 1
 	ActiveSetCount -= 1
 
 #ifdef PERFING_RA
@@ -322,7 +322,7 @@ Function RA_CounterMD(device)
 	numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
 
 	if(count < numTotalSweeps)
-		DQM_StartDAQMultiDevice(device, initialSetupReq=0)
+		DQM_StartDAQMultiDevice(device, initialSetupReq = 0)
 	else
 		RA_FinishAcquisition(device)
 	endif
@@ -369,7 +369,7 @@ Function RA_SkipSweeps(device, skipCount, source, [limitToSetBorder])
 	variable sweepsInSet, recalculatedCount
 	string msg
 
-	NVAR count = $GetCount(device)
+	NVAR count          = $GetCount(device)
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 	NVAR activeSetCount = $GetActiveSetCount(device)
 
@@ -392,13 +392,13 @@ Function RA_SkipSweeps(device, skipCount, source, [limitToSetBorder])
 			skipCount = limit(skipCount, 0, activeSetCount - 1)
 		else
 			sweepsInSet = IDX_CalculcateActiveSetCount(device)
-			skipCount = limit(skipCount, activeSetCount - sweepsInSet - 1, 0)
+			skipCount   = limit(skipCount, activeSetCount - sweepsInSet - 1, 0)
 		endif
 	endif
 
 	recalculatedCount = RA_SkipSweepCalc(device, skipCount)
-	skipCount = recalculatedCount - count
-	count = recalculatedCount
+	skipCount         = recalculatedCount - count
+	count             = recalculatedCount
 
 	activeSetCount -= skipCount
 
@@ -428,10 +428,10 @@ static Function RA_DocumentSweepSkipping(string device, variable skipCount, vari
 
 	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, device, UNKNOWN_MODE)
 
-	vals = NaN
+	vals                        = NaN
 	vals[0][0][INDEP_HEADSTAGE] = source
 
-	keys = ""
+	keys    = ""
 	keys[0] = SKIP_SWEEPS_SOURCE_KEY
 	keys[1] = ""
 	keys[2] = "0.1"
@@ -444,10 +444,10 @@ End
 ///@param device device
 ///@param skipCount The number of sweeps to skip (forward or backwards) during repeated acquisition.
 static Function RA_SkipSweepCalc(device, skipCount)
-	string device
+	string   device
 	variable skipCount
 
-	string msg
+	string   msg
 	variable totSweeps
 
 	totSweeps = RA_GetTotalNumberOfSweeps(device)
@@ -474,7 +474,7 @@ static Function RA_PerfInitialize(device)
 End
 
 static Function RA_PerfAddMark(device, idx)
-	string device
+	string   device
 	variable idx
 
 	WAVE perfWave = GetRAPerfWave(device)
@@ -498,8 +498,8 @@ static Function RA_PerfFinish(device)
 	endif
 
 	perfWave[1, Dimsize(perfWave, ROWS) - 1] = perfWave[p] - perfWave[0]
-	perfWave[0] = 0
-	perfWave[1] = NaN
+	perfWave[0]                              = 0
+	perfWave[1]                              = NaN
 
 	DFREF dfr = GetWavesDataFolderDFR(perfWave)
 
@@ -511,7 +511,7 @@ End
 /// @param device  device
 /// @param multiDevice [optional, defaults to false] DAQ mode
 Function RA_ContinueOrStop(device, [multiDevice])
-	string device
+	string   device
 	variable multiDevice
 
 	if(ParamIsDefault(multiDevice))

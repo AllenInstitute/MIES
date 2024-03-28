@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestRheobase
@@ -9,10 +9,10 @@ static Constant PSQ_RB_FINALSCALE_FAKE_LOW  = 40e-12
 
 static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"               + \
-								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:Rheobase_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                + \
+	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:Rheobase_DA_0:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -40,7 +40,7 @@ End
 
 static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -51,7 +51,7 @@ End
 
 static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -62,7 +62,7 @@ End
 
 static Function/WAVE GetPulseDurations_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -74,7 +74,7 @@ End
 
 static Function/WAVE GetLimitedResolution_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -92,7 +92,7 @@ End
 
 static Function/WAVE GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -104,7 +104,7 @@ End
 
 static Function/WAVE GetAsyncQCResults_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	string key
 
@@ -116,7 +116,7 @@ End
 
 static Function/WAVE GetStimsetLengths_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -125,7 +125,7 @@ End
 
 static Function/WAVE GetStimScaleFactor_IGNORE(sweepNo, device)
 	variable sweepNo
-	string device
+	string   device
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -159,17 +159,17 @@ static Function PS_RB1_REENTRY([str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay, initialDAScale
 	variable stepSize
-	string key
+	string   key
 
 	sweepNo = 14
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
@@ -187,7 +187,7 @@ static Function PS_RB1_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 15)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndep(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
@@ -203,7 +203,7 @@ static Function PS_RB1_REENTRY([str])
 
 	Make/FREE/N=(numEntries) sweepLengths
 	for(i = 0; i < numEntries; i += 1)
-		WAVE sweepT = GetSweepWave(str, sweeps[i])
+		WAVE sweepT  = GetSweepWave(str, sweeps[i])
 		WAVE channel = ResolveSweepChannel(sweepT, 0)
 		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
 	endfor
@@ -213,7 +213,7 @@ static Function PS_RB1_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
@@ -245,10 +245,10 @@ static Function PS_RB2([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and no spikes at all
-	wv = 0
-	wv[0,1][][0] = 1
-	wv[0,1][][0] = 1
-	wv[][][2] = 1
+	wv            = 0
+	wv[0, 1][][0] = 1
+	wv[0, 1][][0] = 1
+	wv[][][2]     = 1
 End
 
 static Function PS_RB2_REENTRY([str])
@@ -262,11 +262,11 @@ static Function PS_RB2_REENTRY([str])
 
 	sweepNo = 5
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
@@ -296,7 +296,7 @@ static Function PS_RB2_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
@@ -328,10 +328,10 @@ static Function PS_RB3([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and always spikes
-	wv = 0
-	wv[0,1][][0] = 1
-	wv[][][1]    = 1
-	wv[][][2]    = 1
+	wv            = 0
+	wv[0, 1][][0] = 1
+	wv[][][1]     = 1
+	wv[][][2]     = 1
 End
 
 static Function PS_RB3_REENTRY([str])
@@ -345,11 +345,11 @@ static Function PS_RB3_REENTRY([str])
 
 	sweepNo = 5
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
@@ -379,7 +379,7 @@ static Function PS_RB3_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
@@ -411,10 +411,10 @@ static Function PS_RB4([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes, second not
-	wv = 0
-	wv[0,1][][0] = 1
-	wv[][0][1]   = 1
-	wv[][][2]    = 1
+	wv            = 0
+	wv[0, 1][][0] = 1
+	wv[][0][1]    = 1
+	wv[][][2]     = 1
 End
 
 static Function PS_RB4_REENTRY([str])
@@ -428,11 +428,11 @@ static Function PS_RB4_REENTRY([str])
 
 	sweepNo = 1
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
@@ -462,7 +462,7 @@ static Function PS_RB4_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
@@ -507,10 +507,10 @@ static Function PS_RB5([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes not, second does
-	wv = 0
-	wv[0,1][][0] = 1
-	wv[][1][1]   = 1
-	wv[][][2]    = 1
+	wv            = 0
+	wv[0, 1][][0] = 1
+	wv[][1][1]    = 1
+	wv[][][2]     = 1
 End
 
 static Function PS_RB5_REENTRY([str])
@@ -524,11 +524,11 @@ static Function PS_RB5_REENTRY([str])
 
 	sweepNo = 1
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
@@ -558,7 +558,7 @@ static Function PS_RB5_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
@@ -590,10 +590,10 @@ static Function PS_RB6([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes (except first) and first two spike not, third does
-	wv = 0
-	wv[0,1][][0] = 1
-	wv[][2][1]   = 1
-	wv[][1,2][2] = 1
+	wv            = 0
+	wv[0, 1][][0] = 1
+	wv[][2][1]    = 1
+	wv[][1, 2][2] = 1
 End
 
 static Function PS_RB6_REENTRY([str])
@@ -607,11 +607,11 @@ static Function PS_RB6_REENTRY([str])
 
 	sweepNo = 2
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
@@ -634,8 +634,8 @@ static Function PS_RB6_REENTRY([str])
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
-	stimScaleRef[0, 1] = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
-	stimScaleRef[2, inf] = (PSQ_GetFinalDAScaleFake() + (p - 1) * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
+	stimScaleRef[0, 1]   = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
+	stimScaleRef[2, Inf] = (PSQ_GetFinalDAScaleFake() + (p - 1) * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -643,7 +643,7 @@ static Function PS_RB6_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
@@ -677,9 +677,9 @@ static Function PS_RB7([str])
 	// frist two sweeps: baseline QC fails
 	// rest:baseline QC passes
 	// all: no spikes, async QC passes
-	wv = 0
-	wv[0,1][2, inf][0] = 1
-	wv[][][2] = 1
+	wv                  = 0
+	wv[0, 1][2, Inf][0] = 1
+	wv[][][2]           = 1
 End
 
 static Function PS_RB7_REENTRY([str])
@@ -693,11 +693,11 @@ static Function PS_RB7_REENTRY([str])
 
 	sweepNo = 7
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
@@ -721,7 +721,7 @@ static Function PS_RB7_REENTRY([str])
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
 	stimScaleRef[0, 1]   = PSQ_GetFinalDAScaleFake() * ONE_TO_PICO
-	stimScaleRef[2, inf] = (PSQ_GetFinalDAScaleFake() + (p - 2) * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
+	stimScaleRef[2, Inf] = (PSQ_GetFinalDAScaleFake() + (p - 2) * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -729,7 +729,7 @@ static Function PS_RB7_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
@@ -768,11 +768,11 @@ static Function PS_RB8([str])
 	// 0: spike
 	// 1-2: no-spike
 	// 3: spike
-	wv = 0
-	wv[0,1][][0] = 1
-	wv[][0][1]   = 1
-	wv[][3][1]   = 1
-	wv[][][2] = 1
+	wv            = 0
+	wv[0, 1][][0] = 1
+	wv[][0][1]    = 1
+	wv[][3][1]    = 1
+	wv[][][2]     = 1
 End
 
 static Function PS_RB8_REENTRY([str])
@@ -786,11 +786,11 @@ static Function PS_RB8_REENTRY([str])
 
 	sweepNo = 3
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
@@ -818,7 +818,7 @@ static Function PS_RB8_REENTRY([str])
 	stimScaleRef[1] = stimScaleRef[0] - PSQ_RB_DASCALE_STEP_LARGE
 	stimScaleRef[2] = stimScaleRef[1] + PSQ_RB_DASCALE_STEP_SMALL
 	stimScaleRef[3] = stimScaleRef[2] + PSQ_RB_DASCALE_STEP_SMALL
-	stimScaleRef *= ONE_TO_PICO
+	stimScaleRef   *= ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -826,7 +826,7 @@ static Function PS_RB8_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_SMALL)
 
@@ -859,11 +859,11 @@ static Function PS_RB9([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes, second not, third spikes
-	wv = 0
-	wv[0,1][][0] = 1
-	wv[][0][1]   = 1
-	wv[][2][1]   = 1
-	wv[][][2]    = 1
+	wv            = 0
+	wv[0, 1][][0] = 1
+	wv[][0][1]    = 1
+	wv[][2][1]    = 1
+	wv[][][2]     = 1
 End
 
 static Function PS_RB9_REENTRY([str])
@@ -877,11 +877,11 @@ static Function PS_RB9_REENTRY([str])
 
 	sweepNo = 2
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
@@ -908,7 +908,7 @@ static Function PS_RB9_REENTRY([str])
 	stimScaleRef[0] = PSQ_RB_DASCALE_STEP_LARGE
 	stimScaleRef[1] = PSQ_RB_DASCALE_STEP_SMALL
 	stimScaleRef[2] = 2 * PSQ_RB_DASCALE_STEP_SMALL
-	stimScaleRef *= ONE_TO_PICO
+	stimScaleRef   *= ONE_TO_PICO
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -916,7 +916,7 @@ static Function PS_RB9_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_SMALL)
 
@@ -949,11 +949,11 @@ static Function PS_RB10([str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes, async QC passes and first spikes not, rest spikes
-	wv = 0
-	wv[0,1][][0] = 1
-	wv[][0][1]   = 0
-	wv[][1,inf][1] = 1
-	wv[][][2] = 1
+	wv              = 0
+	wv[0, 1][][0]   = 1
+	wv[][0][1]      = 0
+	wv[][1, Inf][1] = 1
+	wv[][][2]       = 1
 End
 
 static Function PS_RB10_REENTRY([str])
@@ -967,11 +967,11 @@ static Function PS_RB10_REENTRY([str])
 
 	sweepNo = 1
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
@@ -1004,7 +1004,7 @@ static Function PS_RB10_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_SMALL)
 
@@ -1018,7 +1018,7 @@ static Function PS_RB10_REENTRY([str])
 End
 
 static Function PS_RB11_preAcq(string device)
-	AFH_AddAnalysisParameter("Rheobase_DA_0", "SamplingFrequency", var=10)
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "SamplingFrequency", var = 10)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -1047,17 +1047,17 @@ static Function PS_RB11_REENTRY([str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay, initialDAScale
 	variable stepSize
-	string key
+	string   key
 
 	sweepNo = 0
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
@@ -1075,7 +1075,7 @@ static Function PS_RB11_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 1)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndep(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
@@ -1091,7 +1091,7 @@ static Function PS_RB11_REENTRY([str])
 
 	Make/FREE/N=(numEntries) sweepLengths
 	for(i = 0; i < numEntries; i += 1)
-		WAVE sweepT = GetSweepWave(str, sweeps[i])
+		WAVE sweepT  = GetSweepWave(str, sweeps[i])
 		WAVE channel = ResolveSweepChannel(sweepT, 0)
 		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
 	endfor
@@ -1101,7 +1101,7 @@ static Function PS_RB11_REENTRY([str])
 	Make/N=(numEntries) durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 

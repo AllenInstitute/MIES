@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -16,8 +16,8 @@ threadsafe Function/S JWN_GetWaveNoteAsString(WAVE wv)
 
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 	noteStr = note(wv)
-	pos = strsearch(noteStr, WAVE_NOTE_JSON_SEPARATOR, 0)
-	len = strlen(WAVE_NOTE_JSON_SEPARATOR)
+	pos     = strsearch(noteStr, WAVE_NOTE_JSON_SEPARATOR, 0)
+	len     = strlen(WAVE_NOTE_JSON_SEPARATOR)
 	if(pos >= 0 && strlen(noteStr) > pos + len)
 		return noteStr[pos + len, Inf]
 	endif
@@ -61,7 +61,7 @@ threadsafe Function JWN_GetNumberFromWaveNote(WAVE wv, string jsonPath)
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 
 	jsonID = JWN_GetWaveNoteAsJSON(wv)
-	val = JSON_GetVariable(jsonID, jsonPath, ignoreErr = 1)
+	val    = JSON_GetVariable(jsonID, jsonPath, ignoreErr = 1)
 	JSON_Release(jsonID)
 
 	return val
@@ -140,7 +140,7 @@ threadsafe static Function/WAVE JWN_GetWaveRefFromWaveNote_Impl(WAVE wv, string 
 	jsonID = JWN_GetWaveNoteAsJSON(wv)
 	ASSERT_TS(JSON_GetType(jsonID, jsonPath, ignoreErr = 1) == JSON_ARRAY, "Expected array at jsonPath")
 	WAVE/Z maxArraySizes = JSON_GetMaxArraySize(jsonID, jsonPath, ignoreErr = 1)
-	ASSERT_TS(WaveExists(maxArraySizes) , "Could not query array size")
+	ASSERT_TS(WaveExists(maxArraySizes), "Could not query array size")
 
 	numRows = maxArraySizes[ROWS]
 	if(numRows == 0)
@@ -176,12 +176,12 @@ End
 threadsafe Function/S JWN_GetStringFromWaveNote(WAVE wv, string jsonPath)
 
 	variable jsonID
-	string str
+	string   str
 
 	ASSERT_TS(!IsEmpty(jsonPath), "Empty jsonPath")
 
 	jsonID = JWN_GetWaveNoteAsJSON(wv)
-	str = JSON_GetString(jsonID, jsonPath, ignoreErr = 1)
+	str    = JSON_GetString(jsonID, jsonPath, ignoreErr = 1)
 	JSON_Release(jsonID)
 
 	return str
@@ -261,7 +261,7 @@ threadsafe Function JWN_SetWaveInWaveNote(WAVE wv, string jsonPath, WAVE noteWav
 
 	ASSERT_TS(!IsEmpty(jsonPath), "Empty jsonPath")
 
-	ASSERT_TS(IsWaveRefWave(noteWave) || IsNumericWave(noteWave) || IsTextWave(noteWave),                 \
+	ASSERT_TS(IsWaveRefWave(noteWave) || IsNumericWave(noteWave) || IsTextWave(noteWave),                \
 	          "Only wave references waves, numeric and text waves are supported as JSON wave note entry.")
 
 	if(IsWaveRefWave(noteWave))

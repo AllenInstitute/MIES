@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareAnalysisFunctions
@@ -35,9 +35,9 @@ End
 Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable ITCXOP2Debug, variable keepDataFolder, variable enableJU])
 
 	variable debugMode
-	string traceOptions
-	string list = ""
-	string name = GetTestName()
+	string   traceOptions
+	string   list             = ""
+	string   name             = GetTestName()
 	variable waveTrackingMode = GetWaveTrackingMode()
 
 	// speeds up testing to start with a fresh copy
@@ -90,21 +90,21 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 
 	traceOptions = GetDefaultTraceOptions()
 
-	list = AddListItem("UTF_SetControls.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqAccessResistanceSmoke.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqChirp.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqDAScale_Sub.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqDAScale_Supra.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqSealEvaluation.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqRamp.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqPipetteInBath.ipf", list, ";", inf)
-	list = AddListItem("UTF_PatchSeqTrueRestingMembranePotential.ipf", list, ";", inf)
-	list = AddListItem("UTF_ReachTargetVoltage.ipf", list, ";", inf)
-	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", inf)
-	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
-	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
+	list = AddListItem("UTF_SetControls.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqAccessResistanceSmoke.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqChirp.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqDAScale_Sub.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqDAScale_Supra.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqSealEvaluation.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqRamp.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqPipetteInBath.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqTrueRestingMembranePotential.ipf", list, ";", Inf)
+	list = AddListItem("UTF_ReachTargetVoltage.ipf", list, ";", Inf)
+	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", Inf)
+	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", Inf)
+	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", Inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
@@ -113,8 +113,8 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	else
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	endif
 End

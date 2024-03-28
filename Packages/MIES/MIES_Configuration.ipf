@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -105,135 +105,135 @@
 ///   exist a save dialog is opened to allow the user to modify the path/name.
 ///******************************************************************************************************************************
 
-static StrConstant EXPCONFIG_FIELD_CTRLTYPE = "Type"
-static StrConstant EXPCONFIG_FIELD_CTRLVVALUE = "NumValue"
-static StrConstant EXPCONFIG_FIELD_CTRLSVALUE = "StrValue"
-static StrConstant EXPCONFIG_FIELD_CTRLSDF = "DataSource"
-static StrConstant EXPCONFIG_FIELD_CTRLDISABLED = "Disabled"
-static StrConstant EXPCONFIG_FIELD_CTRLPOSHEIGHT = "Height"
-static StrConstant EXPCONFIG_FIELD_CTRLPOSWIDTH = "Width"
-static StrConstant EXPCONFIG_FIELD_CTRLPOSTOP = "Top"
-static StrConstant EXPCONFIG_FIELD_CTRLPOSLEFT = "Left"
-static StrConstant EXPCONFIG_FIELD_CTRLPOSRIGHT = "Right"
-static StrConstant EXPCONFIG_FIELD_CTRLPOSPOS = "Pos"
-static StrConstant EXPCONFIG_FIELD_CTRLPOSALIGN = "Align"
-static StrConstant EXPCONFIG_FIELD_CTRLUSERDATA = "Userdata"
-static StrConstant EXPCONFIG_FIELD_BASE64PREFIX = "Base64 "
+static StrConstant EXPCONFIG_FIELD_CTRLTYPE        = "Type"
+static StrConstant EXPCONFIG_FIELD_CTRLVVALUE      = "NumValue"
+static StrConstant EXPCONFIG_FIELD_CTRLSVALUE      = "StrValue"
+static StrConstant EXPCONFIG_FIELD_CTRLSDF         = "DataSource"
+static StrConstant EXPCONFIG_FIELD_CTRLDISABLED    = "Disabled"
+static StrConstant EXPCONFIG_FIELD_CTRLPOSHEIGHT   = "Height"
+static StrConstant EXPCONFIG_FIELD_CTRLPOSWIDTH    = "Width"
+static StrConstant EXPCONFIG_FIELD_CTRLPOSTOP      = "Top"
+static StrConstant EXPCONFIG_FIELD_CTRLPOSLEFT     = "Left"
+static StrConstant EXPCONFIG_FIELD_CTRLPOSRIGHT    = "Right"
+static StrConstant EXPCONFIG_FIELD_CTRLPOSPOS      = "Pos"
+static StrConstant EXPCONFIG_FIELD_CTRLPOSALIGN    = "Align"
+static StrConstant EXPCONFIG_FIELD_CTRLUSERDATA    = "Userdata"
+static StrConstant EXPCONFIG_FIELD_BASE64PREFIX    = "Base64 "
 static StrConstant EXPCONFIG_FIELD_CTRLARRAYVALUES = "Values"
-static StrConstant EXPCONFIG_FIELD_NOTEBOOKTEXT = "NotebookText"
+static StrConstant EXPCONFIG_FIELD_NOTEBOOKTEXT    = "NotebookText"
 
-static StrConstant EXPCONFIG_UDATA_NICENAME = "Config_NiceName"
-static StrConstant EXPCONFIG_UDATA_JSONPATH = "Config_GroupPath"
+static StrConstant EXPCONFIG_UDATA_NICENAME    = "Config_NiceName"
+static StrConstant EXPCONFIG_UDATA_JSONPATH    = "Config_GroupPath"
 static StrConstant EXPCONFIG_UDATA_BUTTONPRESS = "Config_PushButtonOnRestore"
 // Lower means higher priority
 static StrConstant EXPCONFIG_UDATA_RESTORE_PRIORITY = "Config_RestorePriority"
-static StrConstant EXPCONFIG_UDATA_WINHANDLE = "Config_WindowHandle"
-static StrConstant EXPCONFIG_UDATA_RADIOCOUPLING = "Config_RadioCouplingFunc"
-static StrConstant EXPCONFIG_UDATA_CTRLARRAY = "ControlArray"
-static StrConstant EXPCONFIG_UDATA_CTRLARRAYINDEX = "ControlArrayIndex"
+static StrConstant EXPCONFIG_UDATA_WINHANDLE        = "Config_WindowHandle"
+static StrConstant EXPCONFIG_UDATA_RADIOCOUPLING    = "Config_RadioCouplingFunc"
+static StrConstant EXPCONFIG_UDATA_CTRLARRAY        = "ControlArray"
+static StrConstant EXPCONFIG_UDATA_CTRLARRAYINDEX   = "ControlArrayIndex"
 
-static Constant EXPCONFIG_UDATA_MAXCTRLARRAYINDEX = 100
-static Constant EXPCONFIG_JSON_INDENT = 4
-static StrConstant EXPCONFIG_FILEFILTER = "Configuration Files (*.json):.json;All Files:.*;"
-static StrConstant EXPCONFIG_CTRLGROUP_SUFFIX = " ControlGroup"
-static StrConstant EXPCONFIG_SETTINGS_FOLDER = "Settings"
+static Constant    EXPCONFIG_UDATA_MAXCTRLARRAYINDEX = 100
+static Constant    EXPCONFIG_JSON_INDENT             = 4
+static StrConstant EXPCONFIG_FILEFILTER              = "Configuration Files (*.json):.json;All Files:.*;"
+static StrConstant EXPCONFIG_CTRLGROUP_SUFFIX        = " ControlGroup"
+static StrConstant EXPCONFIG_SETTINGS_FOLDER         = "Settings"
 
 // DA_Ephys specific constants
 static StrConstant DAEPHYS_UDATA_WINHANDLE = "DAEphys_WindowHandle"
 // Headstage checkboxes ctrl niceName prefix
 static StrConstant DAEPHYS_HEADSTAGECTRLARRAYPREFIX = "Check_DataAcqHS"
-static StrConstant DAEPHYS_EXCLUDE_CTRLTYPES = "12;9;10;4;"
+static StrConstant DAEPHYS_EXCLUDE_CTRLTYPES        = "12;9;10;4;"
 
 static StrConstant EXPCONFIG_DEFAULT_CTRL_JSONPATH = "Generic"
-static StrConstant EXPCONFIG_RESERVED_DATABLOCK = "Common configuration data"
-static StrConstant EXPCONFIG_RESERVED_TAGENTRY = "Target Window Type"
+static StrConstant EXPCONFIG_RESERVED_DATABLOCK    = "Common configuration data"
+static StrConstant EXPCONFIG_RESERVED_TAGENTRY     = "Target Window Type"
 
-static StrConstant EXPCONFIG_EXCLUDE_USERDATA = "ResizeControlsInfo;"
+static StrConstant EXPCONFIG_EXCLUDE_USERDATA  = "ResizeControlsInfo;"
 static StrConstant EXPCONFIG_EXCLUDE_CTRLTYPES = "12;9;10;"
 
 static StrConstant EXPCONFIG_SETTINGS_AMPTITLE = "0,1;2,3;4,5;6,7"
 
 static StrConstant EXPCONFIG_JSON_GLOBALPACKAGESETTINGBLOCK = "Global Package Settings"
 
-static StrConstant EXPCONFIG_JSON_HSASSOCBLOCK = "Headstage Association"
-static StrConstant EXPCONFIG_JSON_AMPBLOCK = "Amplifier"
-static StrConstant EXPCONFIG_JSON_ICBLOCK = "IC"
-static StrConstant EXPCONFIG_JSON_VCBLOCK = "VC"
+static StrConstant EXPCONFIG_JSON_HSASSOCBLOCK  = "Headstage Association"
+static StrConstant EXPCONFIG_JSON_AMPBLOCK      = "Amplifier"
+static StrConstant EXPCONFIG_JSON_ICBLOCK       = "IC"
+static StrConstant EXPCONFIG_JSON_VCBLOCK       = "VC"
 static StrConstant EXPCONFIG_JSON_PRESSUREBLOCK = "Pressure"
-static StrConstant EXPCONFIG_JSON_AMPSERIAL = "Serial"
-static StrConstant EXPCONFIG_JSON_AMPTITLE = "Title"
-static StrConstant EXPCONFIG_JSON_AMPCHANNEL = "Channel"
-static StrConstant EXPCONFIG_JSON_AMPVCDA = "DA"
-static StrConstant EXPCONFIG_JSON_AMPVCDAGAIN = "DA gain"
-static StrConstant EXPCONFIG_JSON_AMPVCDAUNIT = "DA unit"
-static StrConstant EXPCONFIG_JSON_AMPVCAD = "AD"
-static StrConstant EXPCONFIG_JSON_AMPVCADGAIN = "AD gain"
-static StrConstant EXPCONFIG_JSON_AMPVCADUNIT = "AD unit"
-static StrConstant EXPCONFIG_JSON_AMPICDA = "DA"
-static StrConstant EXPCONFIG_JSON_AMPICDAGAIN = "DA gain"
-static StrConstant EXPCONFIG_JSON_AMPICDAUNIT = "DA unit"
-static StrConstant EXPCONFIG_JSON_AMPICAD = "AD"
-static StrConstant EXPCONFIG_JSON_AMPICADGAIN = "AD gain"
-static StrConstant EXPCONFIG_JSON_AMPICADUNIT = "AD unit"
-static StrConstant EXPCONFIG_JSON_PRESSDEV = "Device"
-static StrConstant EXPCONFIG_JSON_PRESSDA = "DA"
-static StrConstant EXPCONFIG_JSON_PRESSAD = "AD"
-static StrConstant EXPCONFIG_JSON_PRESSDAGAIN = "DA Gain"
-static StrConstant EXPCONFIG_JSON_PRESSADGAIN = "AD Gain"
-static StrConstant EXPCONFIG_JSON_PRESSDAUNIT = "DA Unit"
-static StrConstant EXPCONFIG_JSON_PRESSADUNIT = "AD Unit"
-static StrConstant EXPCONFIG_JSON_PRESSTTLA = "TTLA"
-static StrConstant EXPCONFIG_JSON_PRESSTTLB = "TTLB"
+static StrConstant EXPCONFIG_JSON_AMPSERIAL     = "Serial"
+static StrConstant EXPCONFIG_JSON_AMPTITLE      = "Title"
+static StrConstant EXPCONFIG_JSON_AMPCHANNEL    = "Channel"
+static StrConstant EXPCONFIG_JSON_AMPVCDA       = "DA"
+static StrConstant EXPCONFIG_JSON_AMPVCDAGAIN   = "DA gain"
+static StrConstant EXPCONFIG_JSON_AMPVCDAUNIT   = "DA unit"
+static StrConstant EXPCONFIG_JSON_AMPVCAD       = "AD"
+static StrConstant EXPCONFIG_JSON_AMPVCADGAIN   = "AD gain"
+static StrConstant EXPCONFIG_JSON_AMPVCADUNIT   = "AD unit"
+static StrConstant EXPCONFIG_JSON_AMPICDA       = "DA"
+static StrConstant EXPCONFIG_JSON_AMPICDAGAIN   = "DA gain"
+static StrConstant EXPCONFIG_JSON_AMPICDAUNIT   = "DA unit"
+static StrConstant EXPCONFIG_JSON_AMPICAD       = "AD"
+static StrConstant EXPCONFIG_JSON_AMPICADGAIN   = "AD gain"
+static StrConstant EXPCONFIG_JSON_AMPICADUNIT   = "AD unit"
+static StrConstant EXPCONFIG_JSON_PRESSDEV      = "Device"
+static StrConstant EXPCONFIG_JSON_PRESSDA       = "DA"
+static StrConstant EXPCONFIG_JSON_PRESSAD       = "AD"
+static StrConstant EXPCONFIG_JSON_PRESSDAGAIN   = "DA Gain"
+static StrConstant EXPCONFIG_JSON_PRESSADGAIN   = "AD Gain"
+static StrConstant EXPCONFIG_JSON_PRESSDAUNIT   = "DA Unit"
+static StrConstant EXPCONFIG_JSON_PRESSADUNIT   = "AD Unit"
+static StrConstant EXPCONFIG_JSON_PRESSTTLA     = "TTLA"
+static StrConstant EXPCONFIG_JSON_PRESSTTLB     = "TTLB"
 static StrConstant EXPCONFIG_JSON_PRESSCONSTNEG = "Constant Negative"
 static StrConstant EXPCONFIG_JSON_PRESSCONSTPOS = "Constant Positive"
 
-static StrConstant EXPCONFIG_JSON_SAVE_PATH = "Save data to"
-static StrConstant EXPCONFIG_JSON_STIMSET_NAME = "Stim set file name"
-static StrConstant EXPCONFIG_JSON_POSITION_MCC = "Position MCCs"
-static StrConstant EXPCONFIG_JSON_LOGFILE_UPLOAD = "Automatic logfile upload"
-static Constant EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT = 0
+static StrConstant EXPCONFIG_JSON_SAVE_PATH              = "Save data to"
+static StrConstant EXPCONFIG_JSON_STIMSET_NAME           = "Stim set file name"
+static StrConstant EXPCONFIG_JSON_POSITION_MCC           = "Position MCCs"
+static StrConstant EXPCONFIG_JSON_LOGFILE_UPLOAD         = "Automatic logfile upload"
+static Constant    EXPCONFIG_JSON_LOGFILE_UPLOAD_DEFAULT = 0
 
 static StrConstant EXPCONFIG_JSON_USERPRESSBLOCK = "User Pressure Devices"
-static StrConstant EXPCONFIG_JSON_USERPRESSDEV = "DAC Device"
-static StrConstant EXPCONFIG_JSON_USERPRESSDA = "DA"
+static StrConstant EXPCONFIG_JSON_USERPRESSDEV   = "DAC Device"
+static StrConstant EXPCONFIG_JSON_USERPRESSDA    = "DA"
 
-static StrConstant EXPCONFIG_JSON_AMP_HOLD_VC = "Holding"
+static StrConstant EXPCONFIG_JSON_AMP_HOLD_VC        = "Holding"
 static StrConstant EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC = "Holding Enable"
 
-static StrConstant EXPCONFIG_JSON_AMP_LPF = "LPF primary output"
+static StrConstant EXPCONFIG_JSON_AMP_LPF  = "LPF primary output"
 static StrConstant EXPCONFIG_JSON_AMP_GAIN = "Gain primary output"
 
 static StrConstant EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC = "Pipette Offset"
 
 static StrConstant EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE = "Whole Cell Capacitance"
-static StrConstant EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE = "Whole Cell Resistance"
-static StrConstant EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE = "Whole Cell Enable"
+static StrConstant EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE  = "Whole Cell Resistance"
+static StrConstant EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE      = "Whole Cell Enable"
 
 static StrConstant EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION = "RS Compensation Correction"
 static StrConstant EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION = "RS Compensation Prediction"
-static StrConstant EXPCONFIG_JSON_AMP_RS_COMP_ENABLE = "RS Compensation Enable"
-static StrConstant EXPCONFIG_JSON_AMP_COMP_CHAIN = "RS Compensation Chain"
+static StrConstant EXPCONFIG_JSON_AMP_RS_COMP_ENABLE     = "RS Compensation Enable"
+static StrConstant EXPCONFIG_JSON_AMP_COMP_CHAIN         = "RS Compensation Chain"
 
-static StrConstant EXPCONFIG_JSON_AMP_HOLD_IC = "Holding"
+static StrConstant EXPCONFIG_JSON_AMP_HOLD_IC        = "Holding"
 static StrConstant EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC = "Holding Enable"
 
-static StrConstant EXPCONFIG_JSON_AMP_BRIDGE_BALANCE = "Bridge Balance"
+static StrConstant EXPCONFIG_JSON_AMP_BRIDGE_BALANCE        = "Bridge Balance"
 static StrConstant EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE = "Bridge Balance Enable"
 
-static StrConstant EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION = "Capacitance Neutralization"
+static StrConstant EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION        = "Capacitance Neutralization"
 static StrConstant EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE = "Capacitance Neutralization Enable"
 
-static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS_V = "Autobias Voltage"
-static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE = "Autobias Voltage Range"
+static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS_V          = "Autobias Voltage"
+static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE    = "Autobias Voltage Range"
 static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX = "Autobias Current Max"
-static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS = "Autobias Enable"
+static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS            = "Autobias Enable"
 
 static StrConstant EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC = "Pipette Offset"
 
 static StrConstant EXPCONFIG_RIGFILESUFFIX = "_rig.json"
 
 static Constant EXPCONFIG_MIDDLEEXP_OFF = 0
-static Constant EXPCONFIG_MIDDLEEXP_ON = 1
+static Constant EXPCONFIG_MIDDLEEXP_ON  = 1
 
 /// @brief Parameters for CONF_GetSettingsPath()
 /// @{
@@ -249,7 +249,7 @@ static StrConstant CONF_AUTO_LOADER_USER_PATH = "C:ProgramData:AllenInstitute:MI
 static Function CONF_DefaultSettings()
 
 	variable jsonID
-	string jsonPath
+	string   jsonPath
 
 	jsonID = JSON_New()
 
@@ -307,7 +307,7 @@ static Function/WAVE CONF_GetConfigFiles([string customIPath])
 
 	if(IsEmpty(fileList) && !ParamIsDefault(customIPath))
 		settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_USER)
-		fileList = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
+		fileList     = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
 	endif
 
 	if(IsEmpty(fileList))
@@ -327,7 +327,7 @@ Function CONF_AutoLoader([string customIPath])
 	if(ParamIsDefault(customIPath))
 		WAVE/T/Z rawFileList = CONF_GetConfigFiles()
 	else
-		WAVE/T/Z rawFileList = CONF_GetConfigFiles(customIPath=customIPath)
+		WAVE/T/Z rawFileList = CONF_GetConfigFiles(customIPath = customIPath)
 	endif
 	if(!WaveExists(rawFileList))
 		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
@@ -415,8 +415,8 @@ Function CONF_SaveWindow(fName)
 			CONF_SaveDAEphys(fName)
 		else
 			saveMask = EXPCONFIG_SAVE_VALUE
-			jsonID = CONF_AllWindowsToJSON(wName, saveMask, excCtrlTypes = EXPCONFIG_EXCLUDE_CTRLTYPES)
-			out = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
+			jsonID   = CONF_AllWindowsToJSON(wName, saveMask, excCtrlTypes = EXPCONFIG_EXCLUDE_CTRLTYPES)
+			out      = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
 			JSON_Release(jsonID)
 
 			PathInfo/S $CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
@@ -452,7 +452,7 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 
 	PathInfo/S $CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
 
-	jsonID = NaN
+	jsonID      = NaN
 	restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED
 	AssertOnAndClearRTError()
 	try
@@ -460,7 +460,7 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 		if(IsEmpty(input))
 			return 0
 		endif
-		jsonID = CONF_ParseJSON(input)
+		jsonID    = CONF_ParseJSON(input)
 		panelType = JSON_GetString(jsonID, "/" + EXPCONFIG_RESERVED_TAGENTRY)
 		if(IsEmpty(panelType))
 			wName = GetMainWindow(GetCurrentWindow())
@@ -529,13 +529,13 @@ static Function CONF_SaveDAEphys(fName)
 	wName = GetMainWindow(GetCurrentWindow())
 	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Current window is no DA_Ephys panel")
 	[prevJsonId, jsonTxt] = CONF_LoadConfigUsedForDAEphysPanel(wName)
-	[prevRigJsonId, jsonTxt] = CONF_LoadConfigUsedForDAEphysPanel(wName, loadRigFile=1)
+	[prevRigJsonId, jsonTxt] = CONF_LoadConfigUsedForDAEphysPanel(wName, loadRigFile = 1)
 
 	AssertOnAndClearRTError()
 	try
 
 		saveMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_BUTTONS_ONLY_PRESSED | EXPCONFIG_SAVE_ONLY_RELEVANT
-		jsonID = CONF_AllWindowsToJSON(wName, saveMask, excCtrlTypes = DAEPHYS_EXCLUDE_CTRLTYPES)
+		jsonID   = CONF_AllWindowsToJSON(wName, saveMask, excCtrlTypes = DAEPHYS_EXCLUDE_CTRLTYPES)
 
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK, CONF_DefaultSettings())
 		if(JSON_IsValid(prevJsonId))
@@ -554,7 +554,7 @@ static Function CONF_SaveDAEphys(fName)
 		PathInfo/S $CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
 
 		newFileName = CONF_GetDAEphysConfigurationFileNameSuggestion(wName)
-		fName = SelectString(IsEmpty(newFileName), newFileName, fName)
+		fName       = SelectString(IsEmpty(newFileName), newFileName, fName)
 
 		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 		if(JSON_IsValid(saveResult))
@@ -563,7 +563,7 @@ static Function CONF_SaveDAEphys(fName)
 		if(JSON_IsValid(prevRigJsonId) && !IsEmpty(newFileName))
 			JSON_Release(prevRigJsonId)
 			newRigFullFilePath = GetFolder(newFileName) + GetBaseName(newFileName) + EXPCONFIG_RIGFILESUFFIX
-			saveResult = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
+			saveResult         = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 			if(!IsNaN(saveResult))
 				printf "Rig configuration saved in %s.\r", newFileName
 			endif
@@ -587,11 +587,11 @@ Function CONF_PrimeDeviceLists(string device)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			SVAR globalDeviceList = $GetITCDeviceList()
+			SVAR globalDeviceList      = $GetITCDeviceList()
 			SVAR globalOtherDeviceList = $GetNIDeviceList()
 			break
 		case HARDWARE_NI_DAC:
-			SVAR globalDeviceList = $GetNIDeviceList()
+			SVAR globalDeviceList      = $GetNIDeviceList()
 			SVAR globalOtherDeviceList = $GetITCDeviceList()
 			break
 		default:
@@ -617,7 +617,7 @@ End
 /// @return name of the created DAEphys panel
 Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNewPanel])
 	variable jsonID
-	string fullFilePath
+	string   fullFilePath
 	variable middleOfExperiment, forceNewPanel
 
 	variable i, fnum, restoreMask, numPotentialUnlocked, err, winConfigChanged, isTagged, uploadLogfiles
@@ -628,7 +628,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 	AssertOnAndClearRTError()
 	try
 		middleOfExperiment = ParamIsDefault(middleOfExperiment) ? 0 : !!middleOfExperiment
-		forceNewPanel = ParamIsDefault(forceNewPanel) ? 0 : !!forceNewPanel
+		forceNewPanel      = ParamIsDefault(forceNewPanel) ? 0 : !!forceNewPanel
 
 		deviceToRecreate = CONF_GetStringFromSavedControl(jsonID, "popup_MoreSettings_Devices")
 
@@ -644,7 +644,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 				device = deviceToRecreate
 				if(PanelIsType(device, PANELTAG_DAEPHYS))
 					winHandle = num2istr(GetUniqueInteger())
-					SetWindow $device, userdata($EXPCONFIG_UDATA_WINHANDLE) = winHandle
+					SetWindow $device, userdata($EXPCONFIG_UDATA_WINHANDLE)=winHandle
 					PGC_SetAndActivateControl(device, "button_SettingsPlus_unLockDevic")
 					device = CONF_FindWindow(winHandle)
 					ASSERT(!IsEmpty(device), "Could not find unlocked window, did it close?")
@@ -685,8 +685,8 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		endif
 
 		restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_ONLY_RELEVANT | EXPCONFIG_MINIMIZE_ON_RESTORE
-		winHandle = num2istr(GetUniqueInteger())
-		SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE) = winHandle
+		winHandle   = num2istr(GetUniqueInteger())
+		SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE)=winHandle
 		isTagged = 1
 
 		WAVE/T winNames = CONF_GetWindowNames(jsonID)
@@ -706,9 +706,9 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 
 		CONF_RestoreHeadstageAssociation(device, jsonID, middleOfExperiment)
 
-		device = CONF_JSONToWindow(device, restoreMask, jsonID)
+		device   = CONF_JSONToWindow(device, restoreMask, jsonID)
 		isTagged = 0
-		SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE) = ""
+		SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE)=""
 
 		if(middleOfExperiment)
 			ModifyControl $"check_Settings_SyncMiesToMCC", win=$device, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)=rStateSync
@@ -717,7 +717,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		CONF_RestoreUserPressure(device, jsonID)
 
 		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
-		path = CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_SAVE_PATH)
+		path     = CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_SAVE_PATH)
 
 		if(IsDriveValid(path))
 			CreateFolderOnDisk(path)
@@ -725,7 +725,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 
 		NewPath/C/O SavePath, path
 
-		SaveExperiment /P=SavePath as filename
+		SaveExperiment/P=SavePath as filename
 
 		KillPath/Z SavePath
 
@@ -751,7 +751,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 			device = CONF_FindWindow(winHandle, uKey = DAEPHYS_UDATA_WINHANDLE)
 		endif
 		if(!IsEmpty(device) && WindowExists(device))
-			SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE) = ""
+			SetWindow $device, userdata($DAEPHYS_UDATA_WINHANDLE)=""
 			if(middleOfExperiment & winConfigChanged)
 				ModifyControl $"check_Settings_SyncMiesToMCC", win=$device, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)=rStateSync
 			endif
@@ -809,7 +809,7 @@ static Function/S CONF_GetDAEphysActiveHeadstages(jsonID)
 
 	WAVE hsStates = CONF_GetWaveFromSavedControlArray(jsonID, DAEPHYS_HEADSTAGECTRLARRAYPREFIX)
 	return NumericWaveToList(hsStates, ";")
-end
+End
 
 /// @brief Checks if EXPCONFIG_RESERVED_DATABLOCK exists in json; ASSERTion is thrown if not found.
 ///
@@ -829,7 +829,7 @@ End
 /// @returns string from member with keyname in the EXPCONFIG_RESERVED_DATABLOCK
 static Function/S CONF_GetStringFromSettings(jsonID, keyName)
 	variable jsonID
-	string keyName
+	string   keyName
 
 	CONF_RequireConfigBlockExists(jsonID)
 	return JSON_GetString(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName)
@@ -846,7 +846,7 @@ End
 /// @returns value of the EXPCONFIG_FIELD_CTRLVVALUE field of the control
 static Function CONF_GetVariableFromSettings(jsonID, keyName, [defaultValue])
 	variable jsonID
-	string keyName
+	string   keyName
 	variable defaultValue
 
 	variable val
@@ -874,7 +874,7 @@ End
 /// @returns Path to control in json, empty string if not found
 static Function/S CONF_FindControl(jsonID, niceName)
 	variable jsonID
-	string niceName
+	string   niceName
 
 	variable i, numWindows
 	string result
@@ -934,7 +934,7 @@ End
 /// @returns text wave with data from ControlArray
 static Function/WAVE CONF_GetWaveFromSavedControlArray(jsonID, arrayName)
 	variable jsonID
-	string arrayName
+	string   arrayName
 
 	string arrayPath = CONF_FindControl(jsonID, arrayName)
 	ASSERT(!IsEmpty(arrayPath), "Can not find ControlArray " + arrayName + " in config file.")
@@ -948,7 +948,7 @@ End
 /// @returns value of the EXPCONFIG_FIELD_CTRLSVALUE field of the control
 static Function/S CONF_GetStringFromSavedControl(jsonID, niceName)
 	variable jsonID
-	string niceName
+	string   niceName
 
 	string ctrlPath = CONF_FindControl(jsonID, niceName)
 	ASSERT(!IsEmpty(ctrlPath), "Can not find control " + niceName + " in config file.")
@@ -962,7 +962,7 @@ End
 /// @returns value of the EXPCONFIG_FIELD_CTRLVVALUE field of the control
 static Function CONF_GetVariableFromSavedControl(jsonID, niceName)
 	variable jsonID
-	string niceName
+	string   niceName
 
 	string ctrlPath = CONF_FindControl(jsonID, niceName)
 	ASSERT(!IsEmpty(ctrlPath), "Can not find control " + niceName + " in config file.")
@@ -994,7 +994,7 @@ static Function/WAVE CONF_GetControlArrayList(wName)
 	string ctrlList, ctrlName, arrayName
 	variable i, numWinCtrl, col1, numCtrlArrays
 
-	ctrlList = ControlNameList(wName, ";", "*")
+	ctrlList   = ControlNameList(wName, ";", "*")
 	numWinCtrl = ItemsInList(ctrlList)
 
 	Make/FREE/T/N=(MINIMUM_WAVE_SIZE, 2) ctrlArrays
@@ -1003,7 +1003,7 @@ static Function/WAVE CONF_GetControlArrayList(wName)
 
 	col1 = FindDimLabel(ctrlArrays, COLS, "ARRAYNAME")
 	for(i = 0; i < numWinCtrl; i += 1)
-		ctrlName = StringFromList(i, ctrlList)
+		ctrlName  = StringFromList(i, ctrlList)
 		arrayName = GetUserData(wName, ctrlName, EXPCONFIG_UDATA_CTRLARRAY)
 		if(!IsEmpty(arrayName))
 			FindValue/RMD=[][col1]/TXOP=4/TEXT=arrayName ctrlArrays
@@ -1011,9 +1011,9 @@ static Function/WAVE CONF_GetControlArrayList(wName)
 				ctrlArrays[V_Row][%CTRLNAMELIST] = AddListItem(ctrlName, ctrlArrays[V_Row][%CTRLNAMELIST])
 			else
 				EnsureLargeEnoughWave(ctrlArrays, dimension = ROWS, indexShouldExist = numCtrlArrays)
-				ctrlArrays[numCtrlArrays][%ARRAYNAME] = arrayName
+				ctrlArrays[numCtrlArrays][%ARRAYNAME]    = arrayName
 				ctrlArrays[numCtrlArrays][%CTRLNAMELIST] = ctrlName
-				numCtrlArrays += 1
+				numCtrlArrays                           += 1
 			endif
 		endif
 	endfor
@@ -1027,9 +1027,9 @@ End
 /// @param[in] jsonID json object to traverse
 /// @param[in] basePath root path for traversal
 static Function CONF_GatherControlsFromJSON(ctrlData, jsonID, basePath)
-	WAVE/T ctrlData
+	WAVE/T   ctrlData
 	variable jsonID
-	string basePath
+	string   basePath
 
 	variable i, numElems, offset
 
@@ -1087,14 +1087,14 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 			SetWindow $wName, hide=1
 		endif
 		WAVE/T srcWinNames = CONF_GetWindowNames(jsonID)
-		Duplicate/FREE/T srcWinNames tgtWinNames
+		Duplicate/FREE/T srcWinNames, tgtWinNames
 		tgtWinNames[] = RemoveListItem(0, srcWinNames[p], "#")
 
 		numWindows = DimSize(srcWinNames, ROWS)
 		for(winNum = 0; winNum < numWindows; winNum += 1)
-			str = tgtWinNames[winNum]
+			str          = tgtWinNames[winNum]
 			subWinTarget = SelectString(IsEmpty(str), wName + "#" + str, wName)
-			wType = WinType(subWinTarget)
+			wType        = WinType(subWinTarget)
 			ASSERT(wType, "Window " + subWinTarget + " does not exist!")
 			if(wType == WINTYPE_NOTEBOOK)
 				CONF_RestoreNotebookWindow(subWinTarget, srcWinNames[winNum], jsonID)
@@ -1110,18 +1110,18 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 			CONF_GatherControlsFromJSON(ctrlData, jsonID, srcWinNames[winNum])
 
 			colNiceName = FindDimLabel(ctrlData, COLS, "NICENAME")
-			Duplicate/FREE/RMD=[][colNiceName] ctrlData ctrlNiceNames
+			Duplicate/FREE/RMD=[][colNiceName] ctrlData, ctrlNiceNames
 			Redimension/N=(DimSize(ctrlNiceNames, ROWS)) ctrlNiceNames
 
 			ASSERT(!SearchForDuplicates(ctrlNiceNames), "Found duplicates in control names in configuration file for window " + subWinTarget)
 
 			WAVE/T ctrlArrays = CONF_GetControlArrayList(subWinTarget)
 			Make/FREE/B/U/N=(DimSize(ctrlArrays, ROWS)) ctrlArrayAdded
-			ctrlList = ControlNameList(subWinTarget, ";", "*")
-			numWinCtrl = ItemsInList(ctrlList)
+			ctrlList     = ControlNameList(subWinTarget, ";", "*")
+			numWinCtrl   = ItemsInList(ctrlList)
 			colArrayName = FindDimLabel(ctrlArrays, COLS, "ARRAYNAME")
 			for(i = 0; i < numWinCtrl; i += 1)
-				ctrlName = StringFromList(i, ctrlList)
+				ctrlName  = StringFromList(i, ctrlList)
 				arrayName = GetUserData(subWinTarget, ctrlName, EXPCONFIG_UDATA_CTRLARRAY)
 				if(!IsEmpty(arrayName))
 					FindValue/RMD=[][colArrayName]/TXOP=4/TEXT=arrayName ctrlArrays
@@ -1133,14 +1133,14 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 								jsonCtrlGroupPath = ctrlData[V_Row][%JSONPATH]
 								DeletePoints V_Row, 1, ctrlData
 								numArrayElem = ItemsInList(ctrlArrays[arrayNameIndex][%CTRLNAMELIST])
-								numCtrl = DimSize(ctrlData, ROWS)
+								numCtrl      = DimSize(ctrlData, ROWS)
 								Redimension/N=(numCtrl + numArrayElem, 4) ctrlData
 								ctrlData[numCtrl, numCtrl + numArrayElem - 1][%NICENAME] = arrayName
 								ctrlData[numCtrl, numCtrl + numArrayElem - 1][%CTRLNAME] = StringFromList(p - numCtrl, ctrlArrays[arrayNameIndex][%CTRLNAMELIST])
 								ctrlData[numCtrl, numCtrl + numArrayElem - 1][%JSONPATH] = jsonCtrlGroupPath
 								ctrlData[numCtrl, numCtrl + numArrayElem - 1][%PRIORITY] = GetUserData(subWinTarget, ctrlData[p][%CTRLNAME], EXPCONFIG_UDATA_RESTORE_PRIORITY)
 								ctrlData[numCtrl, numCtrl + numArrayElem - 1][%PRIORITY] = SelectString(strlen(ctrlData[p][%PRIORITY]), "Inf", ctrlData[p][%PRIORITY])
-								ctrlArrayAdded[arrayNameIndex] = 1
+								ctrlArrayAdded[arrayNameIndex]                           = 1
 							endif
 						endif
 					else
@@ -1152,7 +1152,7 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 					FindValue/RMD=[][colNiceName]/TXOP=4/TEXT=niceName ctrlData
 					if(V_Value >= 0)
 						ctrlData[V_Row][%CTRLNAME] = ctrlName
-						uData = GetUserData(subWinTarget, ctrlName, EXPCONFIG_UDATA_RESTORE_PRIORITY)
+						uData                      = GetUserData(subWinTarget, ctrlName, EXPCONFIG_UDATA_RESTORE_PRIORITY)
 						ctrlData[V_Row][%PRIORITY] = SelectString(IsEmpty(uData), uData, "Inf")
 					endif
 				endif
@@ -1183,16 +1183,16 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 			SortColumns keyWaves={prioritySort}, sortWaves={ctrlData}
 
 			winHandle = num2istr(GetUniqueInteger())
-			SetWindow $subWinTarget, userdata($EXPCONFIG_UDATA_WINHANDLE) = winHandle
+			SetWindow $subWinTarget, userdata($EXPCONFIG_UDATA_WINHANDLE)=winHandle
 			isTagged = 1
 			for(i = 0; i < numCtrl; i += 1)
 				CONF_RestoreControl(subWinTarget, restoreMask, jsonID, ctrlData[i][%CTRLNAME], jsonPath = ctrlData[i][%JSONPATH])
 				subWinTarget = CONF_FindWindow(winHandle)
 				ASSERT(!IsEmpty(subWinTarget), "Could not find window, did it close?")
 			endfor
-			wName = GetMainWindow(subWinTarget)
+			wName    = GetMainWindow(subWinTarget)
 			isTagged = 0
-			SetWindow $subWinTarget, userdata($EXPCONFIG_UDATA_WINHANDLE) = ""
+			SetWindow $subWinTarget, userdata($EXPCONFIG_UDATA_WINHANDLE)=""
 		endfor
 		if(restoreMask & EXPCONFIG_MINIMIZE_ON_RESTORE)
 			SetWindow $wName, hide=0, needUpdate=1
@@ -1229,7 +1229,7 @@ static Function CONF_RestoreNotebookWindow(string wName, string srcWin, variable
 		return NaN
 	endif
 	jsonPath = srcWin + "/" + EXPCONFIG_FIELD_NOTEBOOKTEXT
-	nbText = JSON_GetString(jsonID, jsonPath)
+	nbText   = JSON_GetString(jsonID, jsonPath)
 	ReplaceNotebookText(wName, nbText)
 End
 
@@ -1244,12 +1244,12 @@ static Function/S CONF_FindWindow(winHandle, [uKey])
 	variable i, j, numWin, numSubWin
 	string wList, wName, wSubList
 
-	uKey = SelectString(ParamIsDefault(uKey), uKey, EXPCONFIG_UDATA_WINHANDLE)
-	wList = WinList("*", ";", "WIN:87")
+	uKey   = SelectString(ParamIsDefault(uKey), uKey, EXPCONFIG_UDATA_WINHANDLE)
+	wList  = WinList("*", ";", "WIN:87")
 	numWin = ItemsInList(wList)
 	for(i = 0; i < numWin; i += 1)
-		wName = StringFromList(i, wList)
-		wSubList = GetAllWindows(wName)
+		wName     = StringFromList(i, wList)
+		wSubList  = GetAllWindows(wName)
 		numSubWin = ItemsInList(wSubList)
 		for(j = 0; j < numSubWin; j += 1)
 			wName = StringFromList(j, wSubList)
@@ -1306,7 +1306,7 @@ static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName, [jsonP
 		FindValue/TXOP=4/TEXT=EXPCONFIG_FIELD_CTRLTYPE ctrlPropList
 		if(V_Value >= 0)
 			ctrlTypeName = JSON_GetString(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLTYPE)
-			i = WhichListItem(ctrlTypeName, EXPCONFIG_GUI_CTRLLIST)
+			i            = WhichListItem(ctrlTypeName, EXPCONFIG_GUI_CTRLLIST)
 			ASSERT(i != -1, "Read unknown control type: " + ctrlTypeName)
 			ctrlType = str2num(StringFromList(i, EXPCONFIG_GUI_CTRLTYPES))
 			ControlInfo/W=$wName $ctrlName
@@ -1318,10 +1318,10 @@ static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName, [jsonP
 
 		if(restoreMask & EXPCONFIG_SAVE_POSITION)
 			VHeight = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSHEIGHT)
-			VWidth = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSWIDTH)
-			VTop = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSTOP)
-			VPos = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSPOS)
-			VAlign = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSALIGN)
+			VWidth  = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSWIDTH)
+			VTop    = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSTOP)
+			VPos    = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSPOS)
+			VAlign  = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLPOSALIGN)
 			ModifyControl $ctrlName, win=$wName, align=VAlign, size={VWidth, VHeight}, pos={VPos, VTop}
 		endif
 		if(restoreMask & EXPCONFIG_SAVE_DISABLED)
@@ -1348,9 +1348,9 @@ static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName, [jsonP
 				for(i = numUdataKeys - 1; i >= 0; i -= 1)
 					uKey = udataKeys[i]
 					if(strsearch(uKey, EXPCONFIG_FIELD_BASE64PREFIX, 0) >= 0)
-						base64Key = uKey[strlen(EXPCONFIG_FIELD_BASE64PREFIX), Inf]
+						base64Key                  = uKey[strlen(EXPCONFIG_FIELD_BASE64PREFIX), Inf]
 						udataBase64[base64Entries] = base64Key
-						base64Entries += 1
+						base64Entries             += 1
 						DeletePoints i, 1, udataKeys
 						i -= 1
 					endif
@@ -1359,7 +1359,7 @@ static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName, [jsonP
 
 				numUdataKeys = DimSize(udataKeys, ROWS)
 				for(i = 0; i < numUdataKeys; i += 1)
-					uKey = udataKeys[i]
+					uKey  = udataKeys[i]
 					uData = JSON_GetString(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLUSERDATA + "/" + uKey)
 					FindValue/TXOP=4/TEXT=uKey udataBase64
 					if(V_Value >= 0)
@@ -1426,7 +1426,7 @@ static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName, [jsonP
 		ASSERT(arrayIndex < arraySize, "The ControlArray of control " + ctrlName + " has less data elements saved than the GUI control requests from its ControlArrayIndex.")
 		arrayElemPath = jsonPath + EXPCONFIG_FIELD_CTRLARRAYVALUES + "/" + num2istr(arrayIndex)
 		arrayElemType = JSON_GetType(jsonID, arrayElemPath)
-		ASSERT(arrayElemType != JSON_NULL , "Value for element " + num2istr(arrayIndex) + " in ControlArray of control " + ctrlName + " was not saved.")
+		ASSERT(arrayElemType != JSON_NULL, "Value for element " + num2istr(arrayIndex) + " in ControlArray of control " + ctrlName + " was not saved.")
 
 		ControlInfo/W=$wName $ctrlName
 		ctrlType = abs(V_Flag)
@@ -1491,9 +1491,9 @@ End
 /// @param[in] excCtrlTypes [optional, default = ""], list of control type codes for excluded control types for saving e.g. "1;6;" to exclude all buttons and charts
 /// @returns json ID of object where all controls where serialized into
 Function CONF_AllWindowsToJSON(wName, saveMask, [excCtrlTypes])
-	string wName
+	string   wName
 	variable saveMask
-	string excCtrlTypes
+	string   excCtrlTypes
 
 	string wList, curWinName, errMsg
 	variable i, numWins, jsonID, jsonIDWin
@@ -1504,7 +1504,7 @@ Function CONF_AllWindowsToJSON(wName, saveMask, [excCtrlTypes])
 
 		ASSERT(!CmpStr(wName, GetMainWindow(wName)), "Windows name is not a main window, use function CONF_WindowToJSON instead.")
 
-		wList= GetAllWindows(wName)
+		wList = GetAllWindows(wName)
 
 		jsonID = JSON_New()
 
@@ -1513,7 +1513,7 @@ Function CONF_AllWindowsToJSON(wName, saveMask, [excCtrlTypes])
 		numWins = ItemsInList(wList)
 		for(i = 0; i < numWins; i += 1)
 			curWinName = StringFromList(i, wList)
-			jsonIDWin = CONF_WindowToJSON(curWinName, saveMask, excCtrlTypes = excCtrlTypes)
+			jsonIDWin  = CONF_WindowToJSON(curWinName, saveMask, excCtrlTypes = excCtrlTypes)
 
 			if(JSON_GetType(jsonIDWin, "") == JSON_NULL)
 				JSON_Release(jsonIDWin)
@@ -1552,9 +1552,9 @@ End
 /// @param excCtrlTypes        [optional, default = ""] List of excluded control types that are ignored
 /// @returns jsonID            ID of json containing the serialized GUI data
 Function CONF_WindowToJSON(wName, saveMask, [excCtrlTypes])
-	string wName
+	string   wName
 	variable saveMask
-	string excCtrlTypes
+	string   excCtrlTypes
 
 	string ctrlList, ctrlName, radioList, tmpList, wList, cbCtrlName, coupledIndexKeys = "", excUserKeys, radioFunc, str, errMsg
 	variable numCtrl, i, j, jsonID, numCoupled, setRadioPos, ctrlType, coupledCnt, numUniqueCtrlArray, numDupCheck
@@ -1563,7 +1563,7 @@ Function CONF_WindowToJSON(wName, saveMask, [excCtrlTypes])
 	AssertOnAndClearRTError()
 	try
 		excCtrlTypes = SelectString(ParamIsDefault(excCtrlTypes), excCtrlTypes, "")
-		wType = WinType(wName)
+		wType        = WinType(wName)
 		ASSERT(wType, "Window " + wName + " does not exist!")
 		jsonID = JSON_New()
 		if(wType == WINTYPE_NOTEBOOK)
@@ -1572,7 +1572,7 @@ Function CONF_WindowToJSON(wName, saveMask, [excCtrlTypes])
 		endif
 
 		ctrlList = ControlNameList(wName, ";", "*")
-		numCtrl = ItemsInList(ctrlList)
+		numCtrl  = ItemsInList(ctrlList)
 		if(!numCtrl)
 			JSON_AddTreeObject(jsonID, "")
 			return jsonID
@@ -1599,7 +1599,7 @@ Function CONF_WindowToJSON(wName, saveMask, [excCtrlTypes])
 		endif
 
 		Make/FREE/N=(numCtrl)/T duplicateCheck
-		duplicateCheck[] = SelectString(strlen(ctrlNames[p][%NICENAME]), LowerStr(ctrlNames[p][%CTRLNAME]), LowerStr(ctrlNames[p][%NICENAME]))
+		duplicateCheck[]   = SelectString(strlen(ctrlNames[p][%NICENAME]), LowerStr(ctrlNames[p][%CTRLNAME]), LowerStr(ctrlNames[p][%NICENAME]))
 		numUniqueCtrlArray = DimSize(arrayNamesRedux, ROWS)
 		if(numUniqueCtrlArray)
 			Redimension/N=(numCtrl + numUniqueCtrlArray) duplicateCheck
@@ -1618,12 +1618,12 @@ Function CONF_WindowToJSON(wName, saveMask, [excCtrlTypes])
 
 		radioFunc = GetUserData(wName, "", EXPCONFIG_UDATA_RADIOCOUPLING)
 		if(!IsEmpty(radioFunc))
-			FUNCREF CONF_GetRadioButtonCouplingProtoFunc rCoupleFunc = $radioFunc
-			WAVE/T radioButtonCoupling = rCoupleFunc()
+			FUNCREF CONF_GetRadioButtonCouplingProtoFunc rCoupleFunc         = $radioFunc
+			WAVE/T                                       radioButtonCoupling = rCoupleFunc()
 			coupledCnt = DimSize(radioButtonCoupling, ROWS)
 			for(i = 0; i < coupledCnt; i += 1)
 				radioList = radioButtonCoupling[i]
-				numCtrl = ItemsInList(radioList)
+				numCtrl   = ItemsInList(radioList)
 				for(j = 0; j < numCtrl; j += 1)
 					coupledIndexKeys = ReplaceNumberByKey(StringFromList(j, radioList), coupledIndexKeys, i)
 				endfor
@@ -1727,7 +1727,7 @@ static Function CONF_NotebookToJSON(string wName, variable jsonID)
 	if(!CmpStr(GetUserData(wName, "", EXPCONFIG_UDATA_EXCLUDE_SAVE), "1"))
 		return NaN
 	endif
-	nbText = GetNotebookText(wName, mode=2)
+	nbText = GetNotebookText(wName, mode = 2)
 	JSON_AddString(jsonID, EXPCONFIG_FIELD_NOTEBOOKTEXT, nbText)
 End
 
@@ -1773,8 +1773,8 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 		jsonPath = EXPCONFIG_DEFAULT_CTRL_JSONPATH
 	endif
 
-	arrayName = GetUserData(wName, ctrlName, EXPCONFIG_UDATA_CTRLARRAY)
-	niceName = SelectString(IsEmpty(arrayName), arrayName, niceName)
+	arrayName   = GetUserData(wName, ctrlName, EXPCONFIG_UDATA_CTRLARRAY)
+	niceName    = SelectString(IsEmpty(arrayName), arrayName, niceName)
 	controlPath = jsonPath + niceName
 	JSON_AddTreeObject(jsonID, controlPath)
 	ctrlPath = controlPath + "/"
@@ -1871,7 +1871,7 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 			endif
 			WAVE/T/Z udataKeys = GetUserDataKeys(S_recreation)
 			numUdataKeys = WaveExists(udataKeys) ? DimSize(udataKeys, ROWS) : 0
-			for(i = 0; i < numUdataKeys; i +=1)
+			for(i = 0; i < numUdataKeys; i += 1)
 				uDataKey = udataKeys[i]
 				if(WhichListItem(uDataKey, excUserKeys) >= 0)
 					continue
@@ -1968,7 +1968,7 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 	variable i, type, numRows, ampSerial, ampChannel, index, value, warnMissingMCCSync
 	string jsonPath, jsonBasePath, jsonPathAmpBlock
 	string ampSerialList = ""
-	string ampTitleList = ""
+	string ampTitleList  = ""
 
 	CONF_RequireConfigBlockExists(jsonID)
 	WAVE/T keys = JSON_GetKeys(jsonID, EXPCONFIG_RESERVED_DATABLOCK)
@@ -1977,11 +1977,11 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		jsonBasePath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK + "/" + num2istr(i)
-		type = JSON_GetType(jsonID, jsonBasePath)
+		type         = JSON_GetType(jsonID, jsonBasePath)
 		if(type == JSON_NULL)
 			continue
 		elseif(type == JSON_OBJECT)
-			jsonPath = jsonBasePath  + "/" + EXPCONFIG_JSON_AMPBLOCK
+			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
 			if(JSON_GetType(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL) == JSON_NULL)
 				continue
 			endif
@@ -1992,7 +1992,7 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 			endif
 
 			ampSerialList = AddListItem(num2istr(ampSerial), ampSerialList)
-			ampTitleList = AddListItem(JSON_GetString(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPTITLE), ampTitleList)
+			ampTitleList  = AddListItem(JSON_GetString(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPTITLE), ampTitleList)
 		else
 			ASSERT(0, "Unexpected entry for headstage data in Headstage Association block")
 		endif
@@ -2001,7 +2001,7 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 	WAVE telegraphServers = GetAmplifierTelegraphServers()
 	numRows = DimSize(telegraphServers, ROWS)
 	if(!numRows)
-		Assert(AI_OpenMCCs(ampSerialList, ampTitleList = ampTitleList), "Evil kittens prevented MultiClamp from opening - FULL STOP" )
+		Assert(AI_OpenMCCs(ampSerialList, ampTitleList = ampTitleList), "Evil kittens prevented MultiClamp from opening - FULL STOP")
 	endif
 
 	CONF_Position_MCC_Win(ampSerialList, ampTitleList, CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_POSITION_MCC))
@@ -2015,7 +2015,7 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = i)
 
 		jsonBasePath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK + "/" + num2istr(i)
-		type = JSON_GetType(jsonID, jsonBasePath)
+		type         = JSON_GetType(jsonID, jsonBasePath)
 
 		if(type == JSON_NULL)
 			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
@@ -2023,12 +2023,12 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 		elseif(type == JSON_OBJECT)
 			jsonPathAmpBlock = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
-			ampSerial = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPSERIAL)
-			ampChannel = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPCHANNEL)
+			ampSerial        = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPSERIAL)
+			ampChannel       = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPCHANNEL)
 
 			if(IsFinite(ampSerial) && IsFinite(ampChannel))
 				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampChannel))
-				PGC_SetAndActivateControl(device,"button_Hardware_AutoGainAndUnit")
+				PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 			else
 				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
 				jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
@@ -2071,7 +2071,7 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 				PGC_SetAndActivateControl(device, "Popup_Settings_Pressure_TTLB", str = num2istr(value))
 			endif
 			WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
-			index = FindDimLabel(pressureDataWv, ROWS, "headStage_" + num2str(i))
+			index                               = FindDimLabel(pressureDataWv, ROWS, "headStage_" + num2str(i))
 			pressureDataWv[index][%NegCalConst] = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSCONSTNEG)
 			pressureDataWv[index][%PosCalConst] = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSCONSTPOS)
 
@@ -2141,7 +2141,7 @@ End
 /// @param[in] device panel title of DA_Ephys panel
 /// @param[in] jsonID ID of json object with configuration data
 static Function CONF_RestoreUserPressure(device, jsonID)
-	string device
+	string   device
 	variable jsonID
 
 	string jsonPath
@@ -2229,9 +2229,9 @@ static Function CONF_GetAmplifierSettings(device)
 			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC, DAG_GetNumericalValue(device, "check_DatAcq_HoldEnableVC"))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC, DAG_GetNumericalValue(device, "setvar_DataAcq_PipetteOffset_VC"))
 
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE, DAG_GetNumericalValue(device,"setvar_DataAcq_WCC"))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE, DAG_GetNumericalValue(device,"setvar_DataAcq_WCR"))
-			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE, DAG_GetNumericalValue(device,"check_DatAcq_WholeCellEnable"))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE, DAG_GetNumericalValue(device, "setvar_DataAcq_WCC"))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE, DAG_GetNumericalValue(device, "setvar_DataAcq_WCR"))
+			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE, DAG_GetNumericalValue(device, "check_DatAcq_WholeCellEnable"))
 
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION, DAG_GetNumericalValue(device, "setvar_DataAcq_RsCorr"))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION, DAG_GetNumericalValue(device, "setvar_DataAcq_RsPred"))
@@ -2251,17 +2251,17 @@ static Function CONF_GetAmplifierSettings(device)
 			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC, DAG_GetNumericalValue(device, "check_DatAcq_HoldEnable"))
 
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_BRIDGE_BALANCE, DAG_GetNumericalValue(device, "setvar_DataAcq_BB"))
-			JSON_AddBoolean(jsonID,  jsonPath + EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE, DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"))
+			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE, DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"))
 
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION, DAG_GetNumericalValue(device, "setvar_DataAcq_CN"))
-			JSON_AddBoolean(jsonID,  jsonPath + EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE, DAG_GetNumericalValue(device, "check_DatAcq_CNEnable"))
+			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE, DAG_GetNumericalValue(device, "check_DatAcq_CNEnable"))
 
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_AUTOBIAS_V, DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV"))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE, DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasVrange"))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX, DAG_GetNumericalValue(device, "setvar_DataAcq_IbiasMax"))
-			JSON_AddBoolean(jsonID,  jsonPath + EXPCONFIG_JSON_AMP_AUTOBIAS, DAG_GetNumericalValue(device, "check_DataAcq_AutoBias"))
+			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_AUTOBIAS, DAG_GetNumericalValue(device, "check_DataAcq_AutoBias"))
 
-			JSON_AddVariable(jsonID,  jsonPath + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC, DAG_GetNumericalValue(device, "setvar_DataAcq_PipetteOffset_IC"))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC, DAG_GetNumericalValue(device, "setvar_DataAcq_PipetteOffset_IC"))
 
 			// MCC settings without GUI control
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_LPF, AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN))
@@ -2317,7 +2317,7 @@ static Function CONF_RestoreAmplifierSettings(device, headStage, jsonID, basePat
 
 	clampMode = DAG_GetHeadstageMode(device, headstage)
 
-	PGC_SetAndActivateControl(device,"slider_DataAcq_ActiveHeadstage", val = headStage)
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = headStage)
 
 	// set VC settings
 	DAP_ChangeHeadStageMode(device, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
@@ -2329,14 +2329,14 @@ static Function CONF_RestoreAmplifierSettings(device, headStage, jsonID, basePat
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_PipetteOffset_VC", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC))
 
-	PGC_SetAndActivateControl(device,"setvar_DataAcq_WCC", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE))
-	PGC_SetAndActivateControl(device,"setvar_DataAcq_WCR", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE))
-	PGC_SetAndActivateControl(device,"check_DatAcq_WholeCellEnable", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE))
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_WCC", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE))
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_WCR", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE))
+	PGC_SetAndActivateControl(device, "check_DatAcq_WholeCellEnable", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE))
 
-	PGC_SetAndActivateControl(device,"setvar_DataAcq_RsCorr", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION))
-	PGC_SetAndActivateControl(device,"setvar_DataAcq_RsPred", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION))
-	PGC_SetAndActivateControl(device,"check_DatAcq_RsCompEnable", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_RS_COMP_ENABLE))
-	PGC_SetAndActivateControl(device,"check_DataAcq_Amp_Chain", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_COMP_CHAIN))
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_RsCorr", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION))
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_RsPred", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION))
+	PGC_SetAndActivateControl(device, "check_DatAcq_RsCompEnable", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_RS_COMP_ENABLE))
+	PGC_SetAndActivateControl(device, "check_DataAcq_Amp_Chain", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_COMP_CHAIN))
 
 	// MCC settings without GUI control
 	val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_LPF, ignoreErr = 1)
@@ -2401,7 +2401,7 @@ static Function CONF_FindAmpInList(ampSerialRef, ampChannelIDRef)
 	variable numAmps, i, ampSerial, ampChannelID
 
 	listOfAmps = DAP_GetNiceAmplifierChannelList()
-	numAmps = ItemsInList(listOfAmps)
+	numAmps    = ItemsInList(listOfAmps)
 
 	for(i = 0; i < numAmps; i += 1)
 		ampDef = StringFromList(i, listOfAmps)
@@ -2420,7 +2420,7 @@ static Function CONF_MCC_MidExp(device, headStage, jsonID)
 
 	variable settingValue, clampMode
 
-	PGC_SetAndActivateControl(device,"slider_DataAcq_ActiveHeadstage", val = headStage)
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = headStage)
 
 	clampMode = AI_GetMode(device, headstage)
 
@@ -2433,7 +2433,7 @@ static Function CONF_MCC_MidExp(device, headStage, jsonID)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_Hold_VC", val = settingValue)
 		settingValue = AI_SendToAmp(device, headStage, V_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN, checkBeforeWrite = 1)
 		PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnableVC", val = settingValue)
-		PGC_SetAndActivateControl(device,"check_DataAcq_AutoBias", val = CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = CHECKBOX_SELECTED)
 		printf "HeadStage %d is in V-Clamp mode and has been configured from the MCC. I-Clamp settings were reset to initial values, check before switching!\r", headStage
 	elseif(clampMode == I_CLAMP_MODE)
 		settingValue = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
@@ -2451,8 +2451,8 @@ static Function CONF_MCC_MidExp(device, headStage, jsonID)
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_CN", val = settingValue)
 		settingValue = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETNEUTRALIZATIONENABL_FUNC, NaN, checkBeforeWrite = 1)
 		PGC_SetAndActivateControl(device, "check_DatAcq_CNEnable", val = settingValue)
-		PGC_SetAndActivateControl(device,"check_DataAcq_AutoBias", val = CHECKBOX_UNSELECTED)
-		PGC_SetAndActivateControl(device,"check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
 		printf "HeadStage %d is in I-Clamp mode and has been configured from the MCC. V-Clamp settings were reset to initial values, check before switching!\r", headStage
 	elseif(clampMode == I_EQUAL_ZERO_MODE)
 		// do nothing
@@ -2480,10 +2480,10 @@ Function CONF_Position_MCC_Win(serialNum, winTitle, winPosition)
 		return NaN
 	endif
 
-	Make/T/FREE/N=(NUM_HEADSTAGES/2) winNm
-	for(w = 0; w<NUM_HEADSTAGES/2; w+=1)
+	Make/T/FREE/N=(NUM_HEADSTAGES / 2) winNm
+	for(w = 0; w < NUM_HEADSTAGES / 2; w += 1)
 
-		winNm[w] = {stringfromlist(w,winTitle) + "(" + stringfromlist(w,serialNum) + ")"}
+		winNm[w] = {stringfromlist(w, winTitle) + "(" + stringfromlist(w, serialNum) + ")"}
 		sprintf cmd, "\"%s\" nircmd.exe win center title \"%s\"", cmdPath, winNm[w]
 		ExecuteScriptText cmd
 	endfor
@@ -2566,9 +2566,9 @@ End
 /// @param[in] rigFileName full file path of rig file
 static Function CONF_JoinRigFile(jsonID, rigFileName)
 	variable jsonID
-	string rigFileName
+	string   rigFileName
 
-	string input
+	string   input
 	variable jsonIDRig
 
 	[input, rigFileName] = LoadTextFile(rigFileName)
@@ -2605,7 +2605,7 @@ static Function [variable jsonId, string txtData] CONF_LoadConfigUsedForDAEphysP
 		return [NaN, ""]
 	endif
 
-	return [JSON_Parse(txtData, ignoreErr=1), txtData]
+	return [JSON_Parse(txtData, ignoreErr = 1), txtData]
 End
 
 static Function CONF_TransferPreviousDAEphysJson(variable jsonId, variable prevJsonId)
@@ -2633,7 +2633,7 @@ static Function CONF_RemoveRigElementsFromDAEphysJson(variable jsonId, variable 
 		newJsonPath = jsonPath + "/" + key
 		switch(JSON_GetType(rigJsonId, newJsonPath))
 			case JSON_OBJECT:
-				CONF_RemoveRigElementsFromDAEphysJson(jsonId, rigJsonId, jsonPath=newJsonPath)
+				CONF_RemoveRigElementsFromDAEphysJson(jsonId, rigJsonId, jsonPath = newJsonPath)
 				break
 			default:
 				ASSERT(JSON_Exists(jsonId, newJsonPath), "JSON path from previous rig file not found in current DAEPhys JSON: " + newJsonPath)
@@ -2673,7 +2673,7 @@ Function CONF_UpdatePackageSettingsFromConfigFiles(variable jsonIdPkg)
 				continue
 			endif
 
-			jsonIdConf = JSON_Parse(input, ignoreErr=1)
+			jsonIdConf = JSON_Parse(input, ignoreErr = 1)
 			if(!JSON_IsValid(jsonIdConf))
 				continue
 			endif

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -66,12 +66,12 @@ static StrConstant functionReturnMessage = "return value"
 ///@param format  optional format string to override the default of "%g"
 Function DEBUGPRINTv(var, [format])
 	variable var
-	string format
+	string   format
 
 	if(ParamIsDefault(format))
-		DEBUGPRINT(functionReturnMessage, var=var)
+		DEBUGPRINT(functionReturnMessage, var = var)
 	else
-		DEBUGPRINT(functionReturnMessage, var=var, format=format)
+		DEBUGPRINT(functionReturnMessage, var = var, format = format)
 	endif
 
 	return var
@@ -105,9 +105,9 @@ Function/WAVE DEBUGPRINTw(wv, [format])
 	string format
 
 	if(ParamIsDefault(format))
-		DEBUGPRINT(functionReturnMessage, wv=wv)
+		DEBUGPRINT(functionReturnMessage, wv = wv)
 	else
-		DEBUGPRINT(functionReturnMessage, wv=wv, format=format)
+		DEBUGPRINT(functionReturnMessage, wv = wv, format = format)
 	endif
 
 	return wv
@@ -135,13 +135,13 @@ End
 ///
 ///@param str     string argument for debug output
 ///@param format  optional format string to override the default of "%s"
-Function/s DEBUGPRINTs(str, [format])
+Function/S DEBUGPRINTs(str, [format])
 	string str, format
 
 	if(ParamIsDefault(format))
-		DEBUGPRINT(functionReturnMessage, str=str)
+		DEBUGPRINT(functionReturnMessage, str = str)
 	else
-		DEBUGPRINT(functionReturnMessage, str=str, format=format)
+		DEBUGPRINT(functionReturnMessage, str = str, format = format)
 	endif
 
 	return str
@@ -170,9 +170,9 @@ End
 /// @param wv     wave (can be null)
 /// @param format format string overrides the default of "%g" for variables and "%s" for strings
 Function DEBUGPRINT(msg, [var, str, wv, format])
-	string msg
+	string   msg
 	variable var
-	WAVE/Z wv
+	WAVE/Z   wv
 	string str, format
 
 	string file, line, func, caller, stacktrace, formatted = ""
@@ -261,7 +261,7 @@ End
 /// @param str    string
 /// @param format format string overrides the default of "%g" for variables and "%s" for strings
 threadsafe Function DEBUGPRINT_TS(msg, [var, str, format])
-	string msg
+	string   msg
 	variable var
 	string str, format
 
@@ -331,7 +331,7 @@ End
 /// which will hold a copy of the history
 static Function CreateHistoryLog()
 	DoWindow/K HistoryCarbonCopy
-	NewNotebook/V=0/F=0 /N=HistoryCarbonCopy
+	NewNotebook/V=0/F=0/N=HistoryCarbonCopy
 End
 
 /// Save the contents of the history notebook on disk
@@ -339,8 +339,8 @@ End
 static Function SaveHistoryLog()
 
 	variable err
-	string historyLog
-	sprintf historyLog, "%s.log", IgorInfo(1)//, Secs2Date(DateTime,-2), ReplaceString(":",Secs2Time(DateTime,1),"-")
+	string   historyLog
+	sprintf historyLog, "%s.log", IgorInfo(1) //, Secs2Date(DateTime,-2), ReplaceString(":",Secs2Time(DateTime,1),"-")
 
 	DoWindow HistoryCarbonCopy
 	if(V_flag == 0)
@@ -385,7 +385,7 @@ End
 Function DEBUGPRINT_ELAPSED(referenceTime)
 	variable referenceTime
 
-	DEBUGPRINT("timestamp: ", var=GetElapsedTime(referenceTime))
+	DEBUGPRINT("timestamp: ", var = GetElapsedTime(referenceTime))
 End
 
 /// @brief Print and store the elapsed time for performance measurements
@@ -400,14 +400,14 @@ End
 
 Function DEBUGPRINTv(var, [format])
 	variable var
-	string format
+	string   format
 
 	// do nothing
 
 	return var
 End
 
-Function/s DEBUGPRINTs(str, [format])
+Function/S DEBUGPRINTs(str, [format])
 	string str, format
 
 	// do nothing
@@ -425,16 +425,16 @@ Function/WAVE DEBUGPRINTw(wv, [format])
 End
 
 Function DEBUGPRINT(msg, [var, str, wv, format])
-	string msg
+	string   msg
 	variable var
-	WAVE/Z wv
+	WAVE/Z   wv
 	string str, format
 
 	// do nothing
 End
 
 threadsafe Function DEBUGPRINT_TS(msg, [var, str, format])
-	string msg
+	string   msg
 	variable var
 	string str, format
 
@@ -520,8 +520,8 @@ threadsafe static Function ReportBugToLogfile(string msg, WAVE/T/Z keys, WAVE/T/
 	ASSERT_TS(size == DimSize(values, ROWS), "keys and values must have matching sizes")
 
 	Redimension/N=(size + 1) keys, values
-	keys[size]       = LOG_MESSAGE_KEY
-	values[size]     = msg
+	keys[size]   = LOG_MESSAGE_KEY
+	values[size] = msg
 
 	LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_REPORT, \
 	             stacktrace = 1,                  \
@@ -573,7 +573,7 @@ threadsafe Function BUG_TS(string msg, [WAVE/T keys, WAVE/T values])
 #ifdef AUTOMATED_TESTING
 
 	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
-	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0, create = 1)
+	bugCount  = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0, create = 1)
 	bugCount += 1
 	TSDS_Write(TSDS_BUGCOUNT, var = bugCount)
 	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
@@ -586,7 +586,7 @@ End
 ///        the names of all waves and their size in MiB
 Function GetSizeOfAllWavesInExperiment()
 
-	string allWaves = GetListOfObjects($"root:", ".*", fullPath=1, recursive=1)
+	string allWaves = GetListOfObjects($"root:", ".*", fullPath = 1, recursive = 1)
 
 	allWaves = GetUniqueTextEntriesFromList(allWaves)
 	variable numWaves = ItemsInList(allWaves)
@@ -595,7 +595,7 @@ Function GetSizeOfAllWavesInExperiment()
 
 	list[][0] = StringFromList(p, allWaves)
 
-	Make/O/D/N=(numWaves) waveSizes = (GetWaveSize($list[p][0], recursive=1) / 1024 / 1024)
+	Make/O/D/N=(numWaves) waveSizes = (GetWaveSize($list[p][0], recursive = 1) / 1024 / 1024)
 
 	list[][1] = num2str(waveSizes[p])
 
@@ -616,7 +616,7 @@ Function CheckAllDimensionLabels()
 	string msg, path
 	variable i, numWaves, failures
 
-	WAVE/T allWaves = ListToTextWave(GetListOfObjects($"root:", ".*", fullPath=1, recursive=1), ";")
+	WAVE/T allWaves       = ListToTextWave(GetListOfObjects($"root:", ".*", fullPath = 1, recursive = 1), ";")
 	WAVE/T allWavesUnique = GetUniqueEntries(allWaves)
 	WaveClear allWaves
 
@@ -639,7 +639,7 @@ End
 threadsafe static Function/S CheckDimensionLabels(WAVE/Z wv)
 	variable i, numDims, j, size, numMatches, numEntries, idx
 	string entry
-	string msg = ""
+	string msg  = ""
 	string text = ""
 
 	if(!WaveExists(wv))
@@ -682,7 +682,7 @@ threadsafe static Function/S CheckDimensionLabels(WAVE/Z wv)
 			numMatches = WaveExists(indizes) ? DimSize(indizes, ROWS) : 0
 
 			for(i = 0; i < numMatches; i += 1)
-				idx = indizes[i]
+				idx   = indizes[i]
 				entry = results[idx]
 
 				if(IsEmpty(entry))
@@ -699,9 +699,9 @@ End
 
 // see tools/functionprofiling.sh
 Function DEBUG_STOREFUNCTION()
-	string funcName = GetRTStackInfo(2)
+	string funcName  = GetRTStackInfo(2)
 	string callchain = GetRTStackInfo(0)
-	string caller = StringFromList(0, callchain)
+	string caller    = StringFromList(0, callchain)
 
 	WAVE/Z wv = root:functionids
 	if(!WaveExists(wv))

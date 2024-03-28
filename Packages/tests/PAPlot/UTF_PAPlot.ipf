@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PAPlot
@@ -19,9 +19,9 @@ End
 Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable keepDataFolder, variable enableJU])
 
 	variable debugMode
-	string traceOptions
-	string list = ""
-	string name = GetTestName()
+	string   traceOptions
+	string   list             = ""
+	string   name             = GetTestName()
 	variable waveTrackingMode = GetWaveTrackingMode()
 
 	// speeds up testing to start with a fresh copy
@@ -66,7 +66,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 
 	traceOptions = GetDefaultTraceOptions()
 
-	list = AddListItem("UTF_PA_Tests.ipf", list, ";", inf)
+	list = AddListItem("UTF_PA_Tests.ipf", list, ";", Inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
@@ -75,8 +75,8 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	else
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	endif
 End

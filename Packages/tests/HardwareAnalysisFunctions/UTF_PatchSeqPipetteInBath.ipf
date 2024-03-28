@@ -1,14 +1,14 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqPipetteInBath
 
 static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                      + \
-								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:VC:_ST:PSQ_QC_stimsets_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                       + \
+	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:VC:_ST:PSQ_QC_stimsets_DA_0:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -58,9 +58,9 @@ static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
 End
 
 static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
-	string device
+	string   device
 	variable sweepNo
-	string name
+	string   name
 
 	variable val, type
 	string key
@@ -69,7 +69,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 	CHECK_LE_VAR(sweepNo, AFH_GetLastSweepAcquired(device))
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	type = PSQ_PIPETTE_BATH
 
@@ -118,27 +118,27 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	WAVE/WAVE wv = GetWave_IGNORE()
 
 	wv[%sweepPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	wv[%setPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
+	wv[%setPass]   = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
 
-	wv[%asyncPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	wv[%asyncPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
 	wv[%samplingPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 
 	wv[%rmsShortPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_RMS_SHORT_PASS)
-	wv[%rmsLongPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS)
-	wv[%leakCur] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_LEAKCUR)
-	wv[%leakCurPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS)
+	wv[%rmsLongPass]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS)
+	wv[%leakCur]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_LEAKCUR)
+	wv[%leakCurPass]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS)
 	wv[%baselinePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 
-	wv[%resistance] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_PB_RESISTANCE)
+	wv[%resistance]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_PB_RESISTANCE)
 	wv[%resistancePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_PB_RESISTANCE_PASS)
 
-	wv[%resultsSweep] = ExtractSweepsFromSFPairs(GetResultsSingleEntry_IGNORE("Sweep Formula sweeps/channels"))
+	wv[%resultsSweep]      = ExtractSweepsFromSFPairs(GetResultsSingleEntry_IGNORE("Sweep Formula sweeps/channels"))
 	wv[%resultsResistance] = GetResultsSingleEntry_IGNORE("Sweep Formula store [Steady state resistance]")
 
 	return wv
 End
 
-static Function CheckTestPulseLikeEpochs(string device,[variable incomplete])
+static Function CheckTestPulseLikeEpochs(string device, [variable incomplete])
 
 	if(ParamIsDefault(incomplete))
 		incomplete = 0
@@ -166,18 +166,18 @@ End
 static Function PS_PB1_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var=2)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var=10)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var=15)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var = 2)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var = 15)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -236,18 +236,18 @@ End
 static Function PS_PB2_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var=2)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var=10)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var=15)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var = 2)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var = 15)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -307,18 +307,18 @@ End
 static Function PS_PB3_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var=2)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var=10)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var=15)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var=4)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var = 2)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var = 15)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var = 4)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -397,18 +397,18 @@ End
 static Function PS_PB4_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var=2)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var=10)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var=15)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var=2)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var = 2)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var = 15)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var = 2)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -468,18 +468,18 @@ End
 static Function PS_PB5_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var=2)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var=10)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var=15)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var = 2)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var = 15)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -501,7 +501,7 @@ static Function PS_PB5([str])
 	wv[][][0][3] = 0
 
 	wv[][][1] = 12.5
-	wv[][][2]  = 1
+	wv[][][2] = 1
 End
 
 static Function PS_PB5_REENTRY([str])
@@ -542,18 +542,18 @@ End
 static Function PS_PB6_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var=2)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var=10)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var=15)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var = 2)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var = 15)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -616,20 +616,20 @@ End
 static Function PS_PB7_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var=2)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var=10)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var=15)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var=3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxLeakCurrent", var = 2)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MinPipetteResistance", var = 10)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "MaxPipetteResistance", var = 15)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
-	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "SamplingFrequency", var=10)
+	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "SamplingFrequency", var = 10)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)

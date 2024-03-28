@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -13,23 +13,23 @@
 /// See :ref:`async_framework_doc` for the full documentation.
 /// \endrst
 
-static StrConstant ASYNC_BACKGROUND = "AsyncFramework"
-static Constant ASYNC_THREAD_MARKER = 299792458
-static Constant ASYNC_MAX_THREADS = 64
-static Constant ASYNC_SLEEP_ON_WAIT = 0.01
+static StrConstant ASYNC_BACKGROUND    = "AsyncFramework"
+static Constant    ASYNC_THREAD_MARKER = 299792458
+static Constant    ASYNC_MAX_THREADS   = 64
+static Constant    ASYNC_SLEEP_ON_WAIT = 0.01
 
 /// @name Variable names for free data folder structure
 /// @{
 static StrConstant ASYNC_THREAD_MARKER_STR = "threadDFMarker"
-static StrConstant ASYNC_WORKERFUNC_STR = "WorkerFunc"
-static StrConstant ASYNC_READOUTFUNC_STR = "ReadOutFunc"
+static StrConstant ASYNC_WORKERFUNC_STR    = "WorkerFunc"
+static StrConstant ASYNC_READOUTFUNC_STR   = "ReadOutFunc"
 static StrConstant ASYNC_WORKLOADCLASS_STR = "workloadClass"
-static StrConstant ASYNC_PARAMCOUNT_STR = "paramCount"
-static StrConstant ASYNC_INORDER_STR = "inOrder"
-static StrConstant ASYNC_ABORTFLAG_STR = "abortFlag"
-static StrConstant ASYNC_ERROR_STR = "err"
-static StrConstant ASYNC_ERRORMSG_STR = "errmsg"
-static StrConstant ASYNC_WLCOUNTER_STR = "workloadClassCounter"
+static StrConstant ASYNC_PARAMCOUNT_STR    = "paramCount"
+static StrConstant ASYNC_INORDER_STR       = "inOrder"
+static StrConstant ASYNC_ABORTFLAG_STR     = "abortFlag"
+static StrConstant ASYNC_ERROR_STR         = "err"
+static StrConstant ASYNC_ERRORMSG_STR      = "errmsg"
+static StrConstant ASYNC_WLCOUNTER_STR     = "workloadClassCounter"
 /// @}
 
 /// @brief Starts the Async Framework with numThreads parallel threads.
@@ -90,9 +90,9 @@ End
 /// @param err     error code, only set in the error case
 /// @param errmsg  error message, only set in the error case
 Function ASYNC_ReadOut(dfr, err, errmsg)
-	DFREF dfr
+	DFREF    dfr
 	variable err
-	string errmsg
+	string   errmsg
 End
 
 /// @brief thread function that receives data folders from the thread input queue
@@ -128,25 +128,25 @@ threadsafe static Function/DF ASYNC_Run_Worker(DFREF dfr)
 
 	DFREF dfrOut, dfrTemp
 
-	SVAR WFunc = dfr:$ASYNC_WORKERFUNC_STR
-	FUNCREF ASYNC_Worker f = $WFunc
+	SVAR                 WFunc = dfr:$ASYNC_WORKERFUNC_STR
+	FUNCREF ASYNC_Worker f     = $WFunc
 
-	DFREF dfrInp = dfr:input
+	DFREF dfrInp   = dfr:input
 	DFREF dfrAsync = dfr:async
 
-	variable/G dfrAsync:$ASYNC_ERROR_STR = 0
-	NVAR err = dfrAsync:$ASYNC_ERROR_STR
-	string/G dfrAsync:$ASYNC_ERRORMSG_STR = ""
-	SVAR errmsg = dfrAsync:$ASYNC_ERRORMSG_STR
+	variable/G dfrAsync:$ASYNC_ERROR_STR    = 0
+	NVAR       err                          = dfrAsync:$ASYNC_ERROR_STR
+	string/G   dfrAsync:$ASYNC_ERRORMSG_STR = ""
+	SVAR       errmsg                       = dfrAsync:$ASYNC_ERRORMSG_STR
 
-	err = 0
+	err    = 0
 	dfrOut = $""
 	AssertOnAndClearRTError()
 	try
-		dfrOut = f(dfrInp);AbortOnRTE
+		dfrOut = f(dfrInp); AbortOnRTE
 	catch
 		errmsg = GetRTErrMessage()
-		err = ClearRTError()
+		err    = ClearRTError()
 	endtry
 
 	if(IsFreeDatafolder(dfrOut))
@@ -172,7 +172,7 @@ Function ASYNC_ThreadReadOut()
 	NVAR tgID = $GetThreadGroupID()
 	ASSERT(!isNaN(tgID), "Async frame work is not running")
 	WAVE/DF DFREFbuffer = GetDFREFBuffer(getAsyncHomeDF())
-	WAVE track = GetWorkloadTracking(getAsyncHomeDF())
+	WAVE    track       = GetWorkloadTracking(getAsyncHomeDF())
 
 	for(;;)
 #ifdef THREADING_DISABLED
@@ -197,11 +197,11 @@ Function ASYNC_ThreadReadOut()
 			// Can we process one of the buffered results?
 			bufferSize = numpnts(DFREFbuffer)
 			for(i = 0; i < bufferSize; i += 1)
-				DFREF dfr = DFREFbuffer[i]
+				DFREF dfr    = DFREFbuffer[i]
 				DFREF dfrOut = dfr:freeroot
 
 				WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
-				SVAR workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
+				SVAR workloadClass        = dfr:$ASYNC_WORKLOADCLASS_STR
 				wlcIndex = FindDimLabel(track, ROWS, workloadClass)
 				ASSERT(wlcIndex >= 0, "Could not find work load class")
 				if(workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT] == 0)
@@ -217,8 +217,8 @@ Function ASYNC_ThreadReadOut()
 			endif
 		else
 			// check for inOrder, do we need to buffer?
-			DFREF dfrOut = dfr:freeroot
-			SVAR workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
+			DFREF dfrOut        = dfr:freeroot
+			SVAR  workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
 			if(track[%$workloadClass][%INORDER])
 				WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
 				wlcIndex = FindDimLabel(track, ROWS, workloadClass)
@@ -227,7 +227,7 @@ Function ASYNC_ThreadReadOut()
 					bufferSize = numpnts(DFREFbuffer)
 					Redimension/N=(bufferSize + 1) DFREFbuffer
 					DFREFbuffer[bufferSize] = dfr
-					justBuffered = 1
+					justBuffered            = 1
 					continue
 				endif
 
@@ -238,15 +238,15 @@ Function ASYNC_ThreadReadOut()
 
 		track[%$workloadClass][%OUTPUTCOUNT] += 1
 
-		SVAR RFunc = dfr:$ASYNC_READOUTFUNC_STR
-		FUNCREF ASYNC_ReadOut f = $RFunc
-		NVAR err = dfr:$ASYNC_ERROR_STR
-		SVAR errmsg = dfr:$ASYNC_ERRORMSG_STR
+		SVAR                  RFunc  = dfr:$ASYNC_READOUTFUNC_STR
+		FUNCREF ASYNC_ReadOut f      = $RFunc
+		NVAR                  err    = dfr:$ASYNC_ERROR_STR
+		SVAR                  errmsg = dfr:$ASYNC_ERRORMSG_STR
 
 		statCnt += 1
 		AssertOnAndClearRTError()
 		try
-			f(dfrOut, err, errmsg);AbortOnRTE
+			f(dfrOut, err, errmsg); AbortOnRTE
 		catch
 			rterrmsg = GetRTErrMessage()
 			ClearRTError()
@@ -335,15 +335,15 @@ End
 /// @param move [optional, default = 0] if a wave was given as parameter and move is not zero then the wave is moved to the threads data folder
 /// @param name [optional, default = paramXXX] name of the added parameter
 Function ASYNC_AddParam(dfr, [w, var, str, move, name])
-	DFREF dfr
-	WAVE w
+	DFREF    dfr
+	WAVE     w
 	variable var
-	string str
+	string   str
 	variable move
-	string name
+	string   name
 
 	variable paramCnt
-	string paramName
+	string   paramName
 
 	ASSERT(ASYNC_isThreadDF(dfr), "Invalid data folder or not a thread data folder")
 	DFREF dfrInp = dfr:input
@@ -440,7 +440,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 	for(i = 0; i < numThreads; i += 1)
 		DFREF dfr = NewFreeDataFolder()
 		NewDataFolder dfr:async
-		DFREF dfrAsync = dfr:async
+		DFREF      dfrAsync                    = dfr:async
 		variable/G dfrAsync:$ASYNC_INORDER_STR = 0
 		variable/G dfr:$ASYNC_ABORTFLAG_STR
 		variable/G dfr:$ASYNC_THREAD_MARKER_STR
@@ -449,7 +449,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 		if(fromAssert)
 			try
 				ClearRTError()
-				ASYNC_Execute(dfr);AbortOnRTE
+				ASYNC_Execute(dfr); AbortOnRTE
 			catch
 				ClearRTError()
 			endtry
@@ -493,7 +493,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 				d = FindDimLabel(track, COLS, "INPUTCOUNT")
 				WaveStats/Q/M=1/RMD=[][d] track
 				inputCount = V_Sum
-				d = FindDimLabel(track, COLS, "OUTPUTCOUNT")
+				d          = FindDimLabel(track, COLS, "OUTPUTCOUNT")
 				WaveStats/Q/M=1/RMD=[][d] track
 				outputCount = V_Sum
 				if(inputCount == outputCount)
@@ -503,7 +503,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 				if(fromAssert)
 					try
 						ClearRTError()
-						ASYNC_ThreadReadOut();AbortOnRTE
+						ASYNC_ThreadReadOut(); AbortOnRTE
 					catch
 						ClearRTError()
 					endtry
@@ -545,7 +545,7 @@ End
 /// @param inOrder [optional, default = 1] flag that allows to disable in order readout of results
 ///
 /// @return data folder for thread, where parameters can be put to with :cpp:func:`ASYNC_AddParam`
-Function/DF ASYNC_PrepareDF(string WorkerFunc, string ReadOutFunc, string workloadClass,[variable inOrder])
+Function/DF ASYNC_PrepareDF(string WorkerFunc, string ReadOutFunc, string workloadClass, [variable inOrder])
 
 	ASSERT(!IsEmpty(workloadClass), "No work load class string specified")
 	ASSERT(IsValidObjectName(workloadClass), "Work load class name does not follow strict object naming rules")
@@ -564,8 +564,8 @@ Function/DF ASYNC_PrepareDF(string WorkerFunc, string ReadOutFunc, string worklo
 
 	string/G dfr:$ASYNC_WORKERFUNC_STR = WorkerFunc
 
-	string/G dfrAsync:$ASYNC_READOUTFUNC_STR = ReadOutFunc
-	variable/G dfrAsync:$ASYNC_INORDER_STR = inOrder
+	string/G   dfrAsync:$ASYNC_READOUTFUNC_STR = ReadOutFunc
+	variable/G dfrAsync:$ASYNC_INORDER_STR     = inOrder
 
 	variable/G dfrInp:$ASYNC_PARAMCOUNT_STR = 0
 
@@ -597,7 +597,7 @@ Function ASYNC_Execute(dfr)
 	SVAR/Z workloadClass = dfrAsync:$ASYNC_WORKLOADCLASS_STR
 	if(SVAR_Exists(workloadClass))
 		NVAR inOrder = dfrAsync:$ASYNC_INORDER_STR
-		WAVE track = GetWorkloadTracking(getAsyncHomeDF())
+		WAVE track   = GetWorkloadTracking(getAsyncHomeDF())
 		if(!(FindDimLabel(track, ROWS, workloadClass) >= 0))
 			size = DimSize(track, ROWS)
 			Redimension/N=(size + 1, -1) track
@@ -610,14 +610,14 @@ Function ASYNC_Execute(dfr)
 
 		KillVariables dfrAsync:$ASYNC_INORDER_STR
 
-		Make/L/U/N=1 dfrAsync:$ASYNC_WLCOUNTER_STR/Wave=wlCounter
+		Make/L/U/N=1 dfrAsync:$ASYNC_WLCOUNTER_STR/WAVE=wlCounter
 		wlCounter[0] = track[%$workloadClass][%INPUTCOUNT]
 
 		track[%$workloadClass][%INPUTCOUNT] += 1
 	endif
 
 #ifdef THREADING_DISABLED
-	DFREF result = ASYNC_Run_Worker(dfr)
+	DFREF   result                = ASYNC_Run_Worker(dfr)
 	WAVE/DF serialExecutionBuffer = GetSerialExecutionBuffer(getAsyncHomeDF())
 	index = GetNumberFromWaveNote(serialExecutionBuffer, NOTE_INDEX)
 	EnsureLargeEnoughWave(serialExecutionBuffer, indexShouldExist = index)

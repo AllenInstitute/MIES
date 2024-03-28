@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=AnalysisBrowserTests
@@ -6,7 +6,7 @@
 /// @file UTF_AnalysisBrowserTest.ipf
 /// @brief __ANALYSISBROWSER_Test__ This file holds the tests for the Analysis Browser Tests
 
-static StrConstant PXP_FILENAME = "input:AB_LoadSweepsFromIgorData.pxp"
+static StrConstant PXP_FILENAME  = "input:AB_LoadSweepsFromIgorData.pxp"
 static StrConstant PXP2_FILENAME = "input:AB_SweepsFromMultipleDevices.pxp"
 static StrConstant PXP3_FILENAME = "input:SourceOfDependentStimset.pxp"
 static StrConstant NWB1_FILENAME = "input:AB_SweepsFromMultipleDevices-compressed-V1.nwb"
@@ -24,7 +24,7 @@ static Function LoadSweepsFromIgor()
 	WAVE/Z sweep = WaveRefIndexed(win, 0, 1)
 	CHECK_WAVE(sweep, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(DimSize(sweep, ROWS), 31667)
-	CHECK_CLOSE_VAR(WaveMax(sweep), 1000, tol=1E-2)
+	CHECK_CLOSE_VAR(WaveMax(sweep), 1000, tol = 1E-2)
 	KillWindow $abWin
 	KilLWindow $win
 End
@@ -41,8 +41,8 @@ static Function CheckRefCount()
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 	expBrowserSel[0][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
 
-	DFREF dfr = $(GetAnalysisFolderAS() + ":workFolder:")
-	WAVE/T workFolders = ListToTextWave(GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath=1), ";")
+	DFREF  dfr         = $(GetAnalysisFolderAS() + ":workFolder:")
+	WAVE/T workFolders = ListToTextWave(GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath = 1), ";")
 	CHECK_WAVE(workFolders, TEXT_WAVE)
 	dfPath = workFolders[0]
 	CHECK_EQUAL_VAR(DataFolderExists(dfPath), 1)
@@ -70,7 +70,7 @@ static Function TryLoadingDifferentFiles()
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 
 	expBrowserSel[0][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
-	sBrowser1 = LoadSweeps(abWin)
+	sBrowser1              = LoadSweeps(abWin)
 
 	expBrowserSel[0][0][0] = LISTBOX_TREEVIEW
 	expBrowserSel[6][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
@@ -81,7 +81,7 @@ static Function TryLoadingDifferentFiles()
 		PASS()
 	endtry
 
-	expBrowserSel[6][0][0] = LISTBOX_TREEVIEW
+	expBrowserSel[6][0][0]  = LISTBOX_TREEVIEW
 	expBrowserSel[12][0][0] = LISTBOX_TREEVIEW | LISTBOX_SELECTED
 	try
 		LoadSweeps(abWin)
@@ -97,12 +97,12 @@ End
 static Function TestAB_LoadDataWrapper()
 
 	variable numLoaded
-	string expFilePath
+	string   expFilePath
 	string expName = "TestAB_LoadDataWrapper.pxp"
-	string wName = "wAvE1"
+	string wName   = "wAvE1"
 
-	WAVE/Z wv =root:WAVE1
-	KillOrMoveToTrash(wv=wv)
+	WAVE/Z wv = root:WAVE1
+	KillOrMoveToTrash(wv = wv)
 	wName = UpperStr(wName)
 	Make root:$wName
 	SaveExperiment/P=home as expName
@@ -111,29 +111,29 @@ static Function TestAB_LoadDataWrapper()
 	expFilePath = S_path + expName
 
 	DFREF tmpDFR = NewFreeDataFolder()
-	wName = LowerStr(wName) + ";"
-	numLoaded = MIES_AB#AB_LoadDataWrapper(tmpDFR, expFilePath, "root:", wName, typeFlags=COUNTOBJECTS_WAVES)
+	wName     = LowerStr(wName) + ";"
+	numLoaded = MIES_AB#AB_LoadDataWrapper(tmpDFR, expFilePath, "root:", wName, typeFlags = COUNTOBJECTS_WAVES)
 	CHECK_GT_VAR(numLoaded, 0)
 End
 
 static Function TestABLoadWave()
 
 	variable err
-	string expFilePath
+	string   expFilePath
 	string expName = "TestAB_LoadWave.pxp"
-	string wName = "wAvE1"
+	string wName   = "wAvE1"
 
 	WAVE/Z wv = root:$wName
-	KillOrMoveToTrash(wv=wv)
+	KillOrMoveToTrash(wv = wv)
 
 	Make root:$wName/WAVE=wv
 	SaveExperiment/P=home as expName
 
-	KillOrMoveToTrash(wv=wv)
+	KillOrMoveToTrash(wv = wv)
 
 	PathInfo home
 	expFilePath = S_path + expName
-	err = MIES_AB#AB_LoadWave(expFilePath, "root:" + wName, 1)
+	err         = MIES_AB#AB_LoadWave(expFilePath, "root:" + wName, 1)
 	CHECK_EQUAL_VAR(err, 0)
 
 	WAVE/Z wv = root:$wName
@@ -159,7 +159,7 @@ static Function LoadDependentStimsetsFromPXP()
 	string abWin, sweepBrowsers, formulaSet
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({PXP3_FILENAME}, loadStimsets = 1)
-	formulaSet = MIES_WB#WB_StimsetChildren(stimset="baseset_DA_0")
+	formulaSet = MIES_WB#WB_StimsetChildren(stimset = "baseset_DA_0")
 	CHECK_EQUAL_STR(formulaSet, "formula_da_0;")
 
 	KillWindow $abWin
@@ -169,11 +169,11 @@ End
 static Function RoundTripDepStimsets([string str])
 
 	string fName, abWin, sweepBrowsers, stimsets, refList, setNameF, setNameB, formula, set
-	string setNameFormula = "formula"
-	string setNameBase = "baseSet"
-	string baseFileName = "RoundTripDepStimsets." + str
-	string chanTypeSuffix = "_DA_0"
-	variable nwbVersion = GetNWBVersion()
+	string   setNameFormula = "formula"
+	string   setNameBase    = "baseSet"
+	string   baseFileName   = "RoundTripDepStimsets." + str
+	string   chanTypeSuffix = "_DA_0"
+	variable nwbVersion     = GetNWBVersion()
 
 	DFREF dfr = GetWaveBuilderPath()
 	KillDataFolder dfr
@@ -207,7 +207,7 @@ static Function RoundTripDepStimsets([string str])
 	fName = S_path + baseFileName
 
 	if(!CmpStr(str, "nwb"))
-		NWB_ExportAllStimsets(nwbVersion, overrideFilePath=fName)
+		NWB_ExportAllStimsets(nwbVersion, overrideFilePath = fName)
 	elseif(!CmpStr(str, "pxp"))
 		SaveExperiment/C as fName
 	else
@@ -221,16 +221,16 @@ static Function RoundTripDepStimsets([string str])
 
 	stimsets = ST_GetStimsetList()
 	stimsets = SortList(stimsets, ";", 16)
-	refList = AddListItem(setNameFormula + chanTypeSuffix, "")
-	refList = AddListItem(setNameBase + chanTypeSuffix, refList)
-	refList = AddListItem(STIMSET_TP_WHILE_DAQ, refList)
-	refList = SortList(refList, ";", 16)
-	CHECK_EQUAL_STR(stimsets, refList, case_sensitive=0)
+	refList  = AddListItem(setNameFormula + chanTypeSuffix, "")
+	refList  = AddListItem(setNameBase + chanTypeSuffix, refList)
+	refList  = AddListItem(STIMSET_TP_WHILE_DAQ, refList)
+	refList  = SortList(refList, ";", 16)
+	CHECK_EQUAL_STR(stimsets, refList, case_sensitive = 0)
 
 	WAVE/T wStimsets = ListToTextWave(stimsets, ";")
 	for(set : wStimsets)
 		if(CmpStr(set, STIMSET_TP_WHILE_DAQ))
-			INFO("Stimset %s should not be third party.\r", s0=set)
+			INFO("Stimset %s should not be third party.\r", s0 = set)
 			CHECK_EQUAL_VAR(WB_StimsetIsFromThirdParty(set), 0)
 		endif
 	endfor
@@ -247,12 +247,12 @@ End
 static Function RoundTripCustStimsets([string str])
 
 	string wbPanel, fName, abWin, sweepBrowsers, stimsets, refList, setNameB, wPath, set
-	string wName = "customWave"
-	string setNameBase = "baseSet"
-	string baseFileName = "RoundTripCustStimsets." + str
-	string chanTypeSuffix = "_DA_0"
-	variable nwbVersion = GetNWBVersion()
-	variable val = 3
+	string   wName          = "customWave"
+	string   setNameBase    = "baseSet"
+	string   baseFileName   = "RoundTripCustStimsets." + str
+	string   chanTypeSuffix = "_DA_0"
+	variable nwbVersion     = GetNWBVersion()
+	variable val            = 3
 
 	DFREF dfr = GetWaveBuilderPath()
 	KillDataFolder dfr
@@ -278,7 +278,7 @@ static Function RoundTripCustStimsets([string str])
 	fName = S_path + baseFileName
 
 	if(!CmpStr(str, "nwb"))
-		NWB_ExportAllStimsets(nwbVersion, overrideFilePath=fName)
+		NWB_ExportAllStimsets(nwbVersion, overrideFilePath = fName)
 	elseif(!CmpStr(str, "pxp"))
 		SaveExperiment/C as fName
 	else
@@ -293,14 +293,14 @@ static Function RoundTripCustStimsets([string str])
 
 	stimsets = ST_GetStimsetList()
 	stimsets = SortList(stimsets, ";", 16)
-	refList = AddListItem(setNameBase + chanTypeSuffix, "")
-	refList = AddListItem(STIMSET_TP_WHILE_DAQ, refList)
-	refList = SortList(refList, ";", 16)
-	CHECK_EQUAL_STR(stimsets, refList, case_sensitive=0)
+	refList  = AddListItem(setNameBase + chanTypeSuffix, "")
+	refList  = AddListItem(STIMSET_TP_WHILE_DAQ, refList)
+	refList  = SortList(refList, ";", 16)
+	CHECK_EQUAL_STR(stimsets, refList, case_sensitive = 0)
 	WAVE/T wStimsets = ListToTextWave(stimsets, ";")
 	for(set : wStimsets)
 		if(CmpStr(set, STIMSET_TP_WHILE_DAQ))
-			INFO("Stimset %s should not be third party.\r", s0=set)
+			INFO("Stimset %s should not be third party.\r", s0 = set)
 			CHECK_EQUAL_VAR(WB_StimsetIsFromThirdParty(set), 0)
 		endif
 	endfor
@@ -318,8 +318,8 @@ static Function RoundTripDepStimsetsRecursion([string str])
 
 	string fName, abWin, sweepBrowsers, stimsets, refList, customWavePath, setNameB
 	variable amplitude
-	string baseFileName = "RoundTripDepStimsetsRecursion." + str
-	variable nwbVersion = GetNWBVersion()
+	string   baseFileName = "RoundTripDepStimsetsRecursion." + str
+	variable nwbVersion   = GetNWBVersion()
 
 	[setNameB, refList, customWavePath, amplitude] = CreateDependentStimset()
 
@@ -327,7 +327,7 @@ static Function RoundTripDepStimsetsRecursion([string str])
 	fName = S_path + baseFileName
 
 	if(!CmpStr(str, "nwb"))
-		NWB_ExportAllStimsets(nwbVersion, overrideFilePath=fName)
+		NWB_ExportAllStimsets(nwbVersion, overrideFilePath = fName)
 	elseif(!CmpStr(str, "pxp"))
 		SaveExperiment/C as fName
 	else
@@ -342,13 +342,13 @@ static Function RoundTripDepStimsetsRecursion([string str])
 
 	stimsets = ST_GetStimsetList()
 	stimsets = SortList(stimsets, ";", 16)
-	refList = AddListItem(STIMSET_TP_WHILE_DAQ, refList)
-	refList = SortList(refList, ";", 16)
-	CHECK_EQUAL_STR(stimsets, refList, case_sensitive=0)
+	refList  = AddListItem(STIMSET_TP_WHILE_DAQ, refList)
+	refList  = SortList(refList, ";", 16)
+	CHECK_EQUAL_STR(stimsets, refList, case_sensitive = 0)
 	WAVE/T wStimsets = ListToTextWave(stimsets, ";")
 	for(set : wStimsets)
 		if(CmpStr(set, STIMSET_TP_WHILE_DAQ))
-			INFO("Stimset %s should not be third party.\r", s0=set)
+			INFO("Stimset %s should not be third party.\r", s0 = set)
 			CHECK_EQUAL_VAR(WB_StimsetIsFromThirdParty(set), 0)
 		endif
 	endfor

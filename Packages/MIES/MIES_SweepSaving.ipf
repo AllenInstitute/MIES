@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -14,21 +14,21 @@
 /// @param device device
 /// @param forcedStop [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
 Function SWS_SaveAcquiredData(device, [forcedStop])
-	string device
+	string   device
 	variable forcedStop
 
-	variable sweepNo,  plannedTime, acquiredTime
+	variable sweepNo, plannedTime, acquiredTime
 	string sweepName, configName
 
 	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
 	sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
 
-	WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	WAVE DAQDataWave        = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 	WAVE hardwareConfigWave = GetDAQConfigWave(device)
-	WAVE scaledDataWave = GetScaledDataWave(device)
+	WAVE scaledDataWave     = GetScaledDataWave(device)
 
-	if(!IsValidSweepAndConfig(DAQDataWave, hardwareConfigWave)       \
+	if(!IsValidSweepAndConfig(DAQDataWave, hardwareConfigWave)      \
 	   || !IsValidSweepAndConfig(scaledDataWave, hardwareConfigWave))
 		BUG("Scaled data and config wave are not compatible, nothing will be saved!")
 		return 0
@@ -154,7 +154,7 @@ static Function SWS_SweepSettingsEpochInfoToLBN(string device, variable sweepNo)
 	variable idx
 
 	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(device)
-	WAVE/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(device)
+	WAVE/T sweepSettingsTxtKey  = GetSweepSettingsTextKeyWave(device)
 
 	idx = FindDimLabel(sweepSettingsTxtWave, COLS, "Epochs")
 	ASSERT(idx >= 0, "Could not find epochs wave")
@@ -221,7 +221,7 @@ End
 ///
 /// @see GetDAQDataWave()
 Function/WAVE SWS_GetChannelGains(device, [timing])
-	string device
+	string   device
 	variable timing
 
 	variable numDACs, numADCs, numTTLs
@@ -233,9 +233,9 @@ Function/WAVE SWS_GetChannelGains(device, [timing])
 	numCols = DimSize(DAQConfigWave, ROWS)
 
 	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(device)
-	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
-	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
-	WAVE TTLs = GetTTLListFromConfig(DAQConfigWave)
+	WAVE ADCs             = GetADCListFromConfig(DAQConfigWave)
+	WAVE DACs             = GetDACListFromConfig(DAQConfigWave)
+	WAVE TTLs             = GetTTLListFromConfig(DAQConfigWave)
 
 	numADCs = DimSize(ADCs, ROWS)
 	numDACs = DimSize(DACs, ROWS)

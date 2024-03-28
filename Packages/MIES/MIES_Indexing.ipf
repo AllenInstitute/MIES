@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -22,7 +22,7 @@ Function IDX_StoreStartFinishForIndexing(device)
 			channelType = channelTypes[j]
 
 			[waveIdx, indexIdx] = IDX_GetCurrentSets(device, channelType, i)
-			IndexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i] = waveIdx
+			IndexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i]      = waveIdx
 			IndexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][i] = indexIdx
 		endfor
 	endfor
@@ -43,7 +43,7 @@ Function IDX_ResetStartFinishForIndexing(device)
 			channelType = channelTypes[j]
 
 			ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-			idx = IndexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i]
+			idx  = IndexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i]
 			SetPopupMenuIndex(device, ctrl, idx)
 
 			WAVE stimsets = IDX_GetStimsets(device, i, channelType)
@@ -61,7 +61,7 @@ static Function IDX_IndexingDoIt(device)
 
 	variable i
 
-	WAVE statusDAFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
+	WAVE statusDAFiltered  = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
 	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
@@ -139,12 +139,12 @@ Function IDX_MaxSweepsLockedIndexing(device)
 	string device
 
 	variable i, maxSteps
-	variable MaxCycleIndexSteps = max(IDX_MaxSets(device, CHANNEL_TYPE_DAC), \
-									  IDX_MaxSets(device, CHANNEL_TYPE_TTL)) + 1
+	variable MaxCycleIndexSteps = max(IDX_MaxSets(device, CHANNEL_TYPE_DAC),   \
+	                                  IDX_MaxSets(device, CHANNEL_TYPE_TTL)) + 1
 
 	do
 		MaxSteps += max(IDX_StepsInSetWithMaxSweeps(device, i, CHANNEL_TYPE_DAC), \
-							IDX_StepsInSetWithMaxSweeps(device, i, CHANNEL_TYPE_TTL))
+		                IDX_StepsInSetWithMaxSweeps(device, i, CHANNEL_TYPE_TTL))
 		i += 1
 	while(i < MaxCycleIndexSteps)
 
@@ -158,7 +158,7 @@ static Function IDX_StepsInSetWithMaxSweeps(device, IndexNo, channelType)
 
 	variable MaxSteps, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
-	string setName
+	string   setName
 	variable i
 
 	WAVE status = DAG_GetChannelState(device, channelType)
@@ -172,7 +172,7 @@ static Function IDX_StepsInSetWithMaxSweeps(device, IndexNo, channelType)
 		[ListStartNo, ListEndNo] = IDX_GetCurrentSets(device, channelType, i)
 
 		ListLength = abs(ListStartNo - ListEndNo) + 1
-		index = indexNo
+		index      = indexNo
 		if(listLength <= IndexNo)
 			Index = mod(IndexNo, ListLength)
 		endif
@@ -195,10 +195,10 @@ static Function [variable waveIdx, variable indexIdx] IDX_GetCurrentSets(string 
 
 	string lbl
 
-	lbl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE)
+	lbl     = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE)
 	waveIdx = DAG_GetNumericalValue(device, lbl, index = channelNumber)
 
-	lbl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_INDEX_END)
+	lbl      = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_INDEX_END)
 	indexIdx = DAG_GetNumericalValue(device, lbl, index = channelNumber)
 
 	return [waveIdx, indexIdx]
@@ -206,7 +206,7 @@ End
 
 /// @brief Return the number of sets on the active channel with the most sets.
 static Function IDX_MaxSets(device, channelType)
-	string device
+	string   device
 	variable channelType
 
 	variable i, waveIdx, indexIdx, MaxSets
@@ -235,7 +235,7 @@ End
 ///                      Functions that call this function only want the max number of steps in the
 ///                      start (active) set, when indexing is on. 1 = over ride ON
 Function IDX_MaxNoOfSweeps(device, IndexOverRide)
-	string device
+	string   device
 	variable IndexOverRide
 
 	variable MaxNoOfSweeps
@@ -281,7 +281,7 @@ End
 Function IDX_MinNoOfSweeps(device)
 	string device
 
-	variable MinNoOfSweeps = inf
+	variable MinNoOfSweeps = Inf
 	variable i
 
 	WAVE statusDAFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
@@ -306,7 +306,7 @@ Function IDX_MinNoOfSweeps(device)
 		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(device, i, CHANNEL_TYPE_TTL, 1))
 	endfor
 
-	return MinNoOfSweeps == inf ? 0 : MinNoOfSweeps
+	return MinNoOfSweeps == Inf ? 0 : MinNoOfSweeps
 End
 
 /// @brief Returns a 1D textwave of selected set names
@@ -332,10 +332,10 @@ Function/WAVE IDX_GetSetsInRange(device, channel, channelType, lockedIndexing)
 	WAVE/T stimsets = IDX_GetStimsets(device, channel, channelType)
 
 	waveCtrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE)
-	first = DAG_GetNumericalValue(device, waveCtrl, index = channel) - ListOffset
+	first    = DAG_GetNumericalValue(device, waveCtrl, index = channel) - ListOffset
 
 	lastCtrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_INDEX_END)
-	last = DAG_GetNumericalValue(device, lastCtrl, index = channel) - ListOffset
+	last     = DAG_GetNumericalValue(device, lastCtrl, index = channel) - ListOffset
 
 	if(lockedIndexing || !DAG_GetNumericalValue(device, "Check_DataAcq_Indexing"))
 		return DuplicateSubRange(stimsets, first, first)
@@ -343,7 +343,7 @@ Function/WAVE IDX_GetSetsInRange(device, channel, channelType, lockedIndexing)
 
 	[indexStart, indexEnd] = MinMax(first, last)
 
-	 // - None - is selected
+	// - None - is selected
 	if(indexStart < 0 || indexEnd < 0)
 		Make/N=0/T/FREE result
 		return result
@@ -394,12 +394,12 @@ Function IDX_NumberOfSweepsInSet(setName)
 End
 
 static Function IDX_ApplyUnLockedIndexing(device, count)
-	string device
+	string   device
 	variable count
 
 	variable i, update
 
-	WAVE statusDAFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
+	WAVE statusDAFiltered  = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
 	WAVE statusTTLFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
@@ -481,7 +481,7 @@ Function IDX_UnlockedIndexingStepNo(device, channelNumber, channelType, count)
 	stepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, first + i - direction))
 
 	return count - StepsInSummedSets
-end
+End
 
 static Function IDX_DetIfCountIsAtSetBorder(device, count, channelNumber, channelType)
 	string device
@@ -499,7 +499,7 @@ static Function IDX_DetIfCountIsAtSetBorder(device, count, channelNumber, channe
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
 	ASSERT(first != last, "Unexpected combo")
 
-	count = (mod(count, totalListSteps) == 0 ? totalListSteps : mod(count, totalListSTeps))
+	count     = (mod(count, totalListSteps) == 0 ? totalListSteps : mod(count, totalListSTeps))
 	direction = first < last ? +1 : -1
 
 	for(i = 0; stepsInSummedSets <= count; i += direction)
@@ -581,7 +581,7 @@ Function IDX_HandleIndexing(string device)
 
 	indexingLocked = DAG_GetNumericalValue(device, "Check_DataAcq1_IndexingLocked")
 
-	NVAR count = $GetCount(device)
+	NVAR count          = $GetCount(device)
 	NVAR activeSetCount = $GetActiveSetCount(device)
 
 	if(indexingLocked && activeSetcount == 0)

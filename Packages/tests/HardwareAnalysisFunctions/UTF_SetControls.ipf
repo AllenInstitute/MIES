@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=SetControlsTesting
@@ -11,10 +11,10 @@ static Function [STRUCT DAQSettings s] SC_GetDAQSettings(string device, [variabl
 		far = !!far
 	endif
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_FAR" + num2str(far)    + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncSetCtrl_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_FAR" + num2str(far) + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncSetCtrl_DA_0:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -31,10 +31,10 @@ static Function SC_SetControls1_preAcq(device)
 	string device
 
 	Make/FREE/T payload = {"Pre DAQ", "1"}
-	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "unknown_ctrl", wv=payload)
-	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "group_DataAcq_ClampMode", wv=payload)
-	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "valdisp_DataAcq_SweepsActiveSet", wv=payload)
-	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Title_DataAcq_Bridge", wv=payload)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "unknown_ctrl", wv = payload)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "group_DataAcq_ClampMode", wv = payload)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "valdisp_DataAcq_SweepsActiveSet", wv = payload)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Title_DataAcq_Bridge", wv = payload)
 End
 
 // ignores invalid control
@@ -50,7 +50,7 @@ static Function SC_SetControls1_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string contents
+	string   contents
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -66,7 +66,7 @@ End
 static Function SC_SetControls2_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", str="myValue")
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", str = "myValue")
 End
 
 // complains on wrong parameter type (string)
@@ -406,7 +406,7 @@ static Function SC_SetControls6_REENTRY([str])
 	CHECK_EQUAL_VAR(GetCheckBoxState(str, "Check_Settings_UseDoublePrec"), 1)
 	CHECK_EQUAL_VAR(GetSetVariable(str, "setvar_DataAcq_OnsetDelayUser"), 10)
 
-	ref = "abcd efgh"
+	ref    = "abcd efgh"
 	actual = GetSetVariableString(str, "SetVar_DataAcq_Comment")
 	CHECK_EQUAL_STR(ref, actual)
 
@@ -489,8 +489,8 @@ static Function SC_SetControls8_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
-	expected	= "abcdefgh"
-	actual = GetNotebookText(str + "#UserComments#NB")
+	expected = "abcdefgh"
+	actual   = GetNotebookText(str + "#UserComments#NB")
 	CHECK_EQUAL_STR(expected, actual)
 
 	WAVE/T/Z allDBs = DB_FindAllDataBrowser(str)
@@ -501,7 +501,7 @@ static Function SC_SetControls8_REENTRY([str])
 		nb = BSP_GetSFFormula(databrowser)
 
 		expected = "1 + 2"
-		actual = GetNotebookText(nb, mode = 2)
+		actual   = GetNotebookText(nb, mode = 2)
 		CHECK_EQUAL_STR(expected, actual)
 	endfor
 End
