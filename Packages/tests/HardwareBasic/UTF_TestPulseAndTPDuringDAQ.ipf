@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=TestPulseAndTPDuringDAQ
@@ -15,9 +15,9 @@ End
 static Function CheckCalculatedTPEntries([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM2_TBP25"                     + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM2_TBP25"              + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -27,8 +27,8 @@ static Function CheckCalculatedTPEntries_REENTRY([string str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sweepNo = 0
-	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	sweepNo              = 0
+	samplingInterval     = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
 	samplingIntervalMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval Multiplier", DATA_ACQUISITION_MODE)
 
 	CHECK_EQUAL_VAR(samplingIntervalMult, 2)
@@ -60,7 +60,7 @@ static Function CheckCalculatedTPEntries_REENTRY([string str])
 	CHECK_EQUAL_VAR(calculated[%totalLengthPointsDAQ], 20 / 0.008)
 #endif
 
-	delayOnsetAuto = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue=NaN)
+	delayOnsetAuto = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue = NaN)
 	CHECK_EQUAL_VAR(delayOnsetAuto, 20)
 	CHECK_EQUAL_VAR(MIES_TP#TP_CalculateTestPulseLength(10, 0.25), 20)
 End
@@ -73,15 +73,15 @@ End
 /// UTF_TD_GENERATOR v0:GenerateBaselineValues
 /// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
 static Function CheckTPBaseline([STRUCT IUTF_MDATA &md])
-	string device
+	string   device
 	variable TPbaseline
 
-	device = md.s0
+	device     = md.s0
 	TPbaseline = md.v0
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1_TBP" + num2str(TPBaseline) + \
-	                          "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	AcquireData_NG(s, device)
 End
@@ -90,7 +90,7 @@ static Function CheckTPBaseline_REENTRY([STRUCT IUTF_MDATA &md])
 	string device
 	variable i, numEntries, baselineFraction, baselineFractionRef, pulseDuration, tpLength, samplingInterval
 
-	device = md.s0
+	device              = md.s0
 	baselineFractionRef = md.v0 * PERCENT_TO_ONE
 
 	WAVE/T textualValues   = GetLBTextualValues(device)
@@ -160,9 +160,9 @@ End
 static Function CheckTPEntriesFromLBN([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI5_TBP30_TPD15"    + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI5_TBP30_TPD15"   + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -323,9 +323,9 @@ End
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function TPCachingWorks([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1_SIM4_STP1"            + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:"  + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1_SIM4_STP1"           + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 
@@ -358,7 +358,7 @@ static Function TPCachingWorks_REENTRY([string str])
 	CHECK_WAVE(dimDeltasUnique, NUMERIC_WAVE)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
-	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval", DATA_ACQUISITION_MODE)
+	samplingInterval           = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval", DATA_ACQUISITION_MODE)
 	samplingIntervalMultiplier = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval Multiplier", DATA_ACQUISITION_MODE)
 
 	CHECK_EQUAL_VAR(DimSize(dimDeltasUnique, ROWS), 1)
@@ -444,7 +444,7 @@ static Function CheckTPStorage(string device)
 
 	entry = "baseline_IC"
 	WAVE/Z values = ExtractvalidValues(TPStorage, 0, entry)
-	CHECK_WAVE(values,NULL_WAVE)
+	CHECK_WAVE(values, NULL_WAVE)
 
 	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
 	CHECK_WAVE(values, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
@@ -457,7 +457,7 @@ static Function CheckTPStorage(string device)
 	CHECK_LT_VAR(V_avg, 100)
 
 	WAVE/Z values = ExtractvalidValues(TPStorage, 1, entry)
-	CHECK_WAVE(values,NULL_WAVE)
+	CHECK_WAVE(values, NULL_WAVE)
 End
 
 static Function EnsureUnityGain(string device, variable headstage)
@@ -493,9 +493,9 @@ End
 static Function CheckTPStorage1([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -506,7 +506,7 @@ End
 
 static Function CheckTPStorage2_PreAcq(string device)
 
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val = 1)
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = 37)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = -150)
@@ -520,9 +520,9 @@ End
 /// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function CheckTPStorage2([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -533,7 +533,7 @@ End
 
 static Function CheckTPStorage3_PreAcq(string device)
 
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val = 1)
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = -15)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = 50)
@@ -547,9 +547,9 @@ End
 /// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function CheckTPStorage3([string str])
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -563,8 +563,8 @@ static Function TPDuringDAQOnlyTP([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"             + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"              + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
 
 	AcquireData_NG(s, str)
 End
@@ -601,7 +601,7 @@ static Function TPDuringDAQOnlyTP_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(units, {"mV", "pA"}, mode = WAVE_DATA)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE textualValues   = GetLBTextualValues(str)
 
 	WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
@@ -609,7 +609,7 @@ static Function TPDuringDAQOnlyTP_REENTRY([str])
 	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+	WAVE/Z stimScale   = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, TP_AMPLITUDE_VC_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
@@ -624,7 +624,7 @@ static Function TPDuringDAQOnlyTPAndIndexing([STRUCT IUTF_MDATA &md])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I1_L" + num2str(md.v0) + "_BKG1_RES3" + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
+	                             "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:")
 
 	AcquireData_NG(s, md.s0)
 End
@@ -646,9 +646,9 @@ static Function TPDuringDAQTPAndUnAssoc([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1"             + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"  + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1"                      + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"           + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
 
 	AcquireData_NG(s, str)
 End
@@ -688,7 +688,7 @@ static Function TPDuringDAQTPAndUnAssoc_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(units, {"mV", "V", "pA", "V"}, mode = WAVE_DATA)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE textualValues   = GetLBTextualValues(str)
 
 	WAVE/Z setCycleCount = GetLastSetting(numericalValues, sweepNo, "Set Cycle Count", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(setCycleCount, NULL_WAVE)
@@ -699,28 +699,28 @@ static Function TPDuringDAQTPAndUnAssoc_REENTRY([str])
 	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	key = CreateLBNUnassocKey("DA ChannelType", 1, XOP_CHANNEL_TYPE_DAC)
+	key                = CreateLBNUnassocKey("DA ChannelType", 1, XOP_CHANNEL_TYPE_DAC)
 	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
 
-	key = CreateLBNUnassocKey("AD ChannelType", 1, XOP_CHANNEL_TYPE_ADC)
+	key                = CreateLBNUnassocKey("AD ChannelType", 1, XOP_CHANNEL_TYPE_ADC)
 	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
 
-	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+	WAVE/Z stimScale   = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, TP_AMPLITUDE_VC_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	key = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1, XOP_CHANNEL_TYPE_DAC)
+	key              = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1, XOP_CHANNEL_TYPE_DAC)
 	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(stimScaleUnassoc, 1.0)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 
-	key = CreateLBNUnassocKey(STIM_WAVE_NAME_KEY, 1, XOP_CHANNEL_TYPE_DAC)
-	stimsetUnassoc = GetLastSettingTextIndep(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	key               = CreateLBNUnassocKey(STIM_WAVE_NAME_KEY, 1, XOP_CHANNEL_TYPE_DAC)
+	stimsetUnassoc    = GetLastSettingTextIndep(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	stimsetUnassocRef = "StimulusSetA_DA_0"
 	CHECK_EQUAL_STR(stimsetUnassoc, stimsetUnassocRef)
 End
@@ -730,9 +730,9 @@ static Function TPDuringDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"           + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"      + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -769,7 +769,7 @@ static Function TPDuringDAQ_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(units, {"mV", "mV", "pA", "pA"}, mode = WAVE_DATA)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE textualValues   = GetLBTextualValues(str)
 
 	WAVE setCycleCount = GetLastSetting(numericalValues, sweepNo, "Set Cycle Count", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(setCycleCount, {NaN, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
@@ -780,7 +780,7 @@ static Function TPDuringDAQ_REENTRY([str])
 	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+	WAVE/Z stimScale   = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, TP_AMPLITUDE_VC_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
 	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
@@ -802,10 +802,10 @@ static Function TPDuringDAQWithoodDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"            + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
-								 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"                 + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
+	                             "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -839,7 +839,7 @@ static Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(units, {"mV", "mV", "mV", "pA", "pA", "pA"}, mode = WAVE_DATA)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE textualValues   = GetLBTextualValues(str)
 
 	WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
@@ -847,7 +847,7 @@ static Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+	WAVE/Z stimScale   = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, TP_AMPLITUDE_VC_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
 
@@ -870,9 +870,9 @@ static Function TPDuringDAQOnlyWithoodDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"            + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:TestPulse:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"         + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:TestPulse:")
 
 	AcquireData_NG(s, str)
 End
@@ -902,7 +902,7 @@ static Function TPDuringDAQOnlyWithoodDAQ_REENTRY([str])
 	CHECK_EQUAL_WAVES(channelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP}, mode = WAVE_DATA)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE textualValues   = GetLBTextualValues(str)
 
 	WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
@@ -934,9 +934,9 @@ static Function TPDuringDAQTPStoreCheck([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1_STP1"               + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"            + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:PulseTrain_10Hz_DA_0:" + \
-								 "__HS2_DA2_AD2_CM:VC:_ST:TestPulse:")
+	                             "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"            + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:PulseTrain_10Hz_DA_0:" + \
+	                             "__HS2_DA2_AD2_CM:VC:_ST:TestPulse:")
 	AcquireData_NG(s, str)
 End
 
@@ -947,7 +947,7 @@ static Function TPDuringDAQTPStoreCheck_REENTRY([str])
 End
 
 static Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
-	string device
+	string   device
 	variable expectedNumTPchannels
 
 	variable i, channel, numTPChan, numStored, numTP
@@ -968,7 +968,7 @@ static Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 
 	WAVE TPSettingsCalculated = GetTPsettingsCalculated(device)
 
-	tpLength = TPSettingsCalculated[%totalLengthPointsDAQ]
+	tpLength      = TPSettingsCalculated[%totalLengthPointsDAQ]
 	pulseLengthMS = TPSettingsCalculated[%pulseLengthMS]
 
 	for(i = 0; i < numTP; i += 1)
@@ -1002,9 +1002,9 @@ static Function CheckThatTPsCanBeFound([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1"                   + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"    + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1"                + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 
@@ -1070,9 +1070,9 @@ static Function TPDuringDAQWithTTL([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP25"                   + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
-								 "__TTL0_ST:StimulusSetA_TTL_0:")
+	                             "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"         + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:" + \
+	                             "__TTL0_ST:StimulusSetA_TTL_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1138,9 +1138,9 @@ static Function RunPowerSpectrum([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"  + \
-								 "__HS0_DA0_AD0_CM:VC:"         + \
-								 "__HS1_DA1_AD1_CM:IC:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1" + \
+	                             "__HS0_DA0_AD0_CM:VC:"   + \
+	                             "__HS1_DA1_AD1_CM:IC:")
 
 	AcquireData_NG(s, str)
 
@@ -1151,7 +1151,7 @@ static Function RunPowerSpectrum_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string ctrl
+	string   ctrl
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -1169,9 +1169,9 @@ static Function TestPulseCachingWorks([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI3"           + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"  + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI3"               + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1200,9 +1200,9 @@ static Function ExportIntoNWB([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                 + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"  + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 
@@ -1210,7 +1210,7 @@ static Function ExportIntoNWB([str])
 End
 
 static Function ExportIntoNWB_REENTRY([str])
-	string str
+	string   str
 	variable sweepNo
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
@@ -1227,7 +1227,7 @@ static Function ExportIntoNWB_REENTRY([str])
 End
 
 static Function ExportIntoNWB_REENTRY_REENTRY([str])
-	string str
+	string   str
 	variable sweepNo
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
@@ -1247,9 +1247,9 @@ static Function TPDuringDAQwithPS([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"           + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:" + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:TestPulse:"      + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1277,7 +1277,7 @@ End
 static Function TPZerosDAC([STRUCT IUTF_MDATA &md])
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_TP1" + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	AcquireData_NG(s, md.s0)
 
@@ -1302,9 +1302,9 @@ static Function TPZerosDAC_REENTRY([STRUCT IUTF_MDATA &md])
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "ADC", 0, XOP_CHANNEL_TYPE_ADC, TEST_PULSE_MODE)
 	CHECK_WAVE(settings, NUMERIC_WAVE)
 
-	deviceID = ROVar(GetDAQDeviceID(device))
+	deviceID     = ROVar(GetDAQDeviceID(device))
 	hardwareType = GetHardwareType(device)
-	ADC = settings[index]
+	ADC          = settings[index]
 
 	CHECK_LE_VAR(HW_ReadADC(hardwareType, deviceID, ADC), 0.01)
 End

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -84,21 +84,21 @@ static StrConstant PSX_ALL_EVENT_SUB_GRAPH    = "All"
 static StrConstant PSX_CURSOR_TRACE = "peakY"
 
 static StrConstant PSX_USER_DATA_TYPE = "type"
-static StrConstant PSX_USER_DATA_PSX = "PSX"
+static StrConstant PSX_USER_DATA_PSX  = "PSX"
 
 static StrConstant PSX_JWN_COMBO_KEYS_NAME = "ComboKeys"
 static StrConstant PSX_JWN_PARAMETERS      = "Parameters"
 static StrConstant PSX_JWN_STATS_POST_PROC = "PostProcessing"
 
-static StrConstant PSX_TUD_EVENT_INDEX_KEY  = "eventIndex"
+static StrConstant PSX_TUD_EVENT_INDEX_KEY = "eventIndex"
 
 static StrConstant PSX_UD_NUM_BLOCKS = "NumberOfBlocks"
 
 /// @name State types
 /// @anchor SpecialEventPanelEventTypes
 /// @{
-static StrConstant PSX_TUD_FIT_STATE_KEY    = "Fit State"
-static StrConstant PSX_TUD_EVENT_STATE_KEY  = "Event State"
+static StrConstant PSX_TUD_FIT_STATE_KEY   = "Fit State"
+static StrConstant PSX_TUD_EVENT_STATE_KEY = "Event State"
 /// @}
 ///
 static StrConstant PSX_TUD_TRACE_HIDDEN_KEY = "traceHidden"
@@ -107,13 +107,13 @@ static StrConstant PSX_TUD_TYPE_KEY         = "type"
 /// @name Trace types
 /// @anchor AllEventGraphTraceType
 /// @{
-static StrConstant PSX_TUD_TYPE_SINGLE      = "single"
-static StrConstant PSX_TUD_TYPE_AVERAGE     = "average"
+static StrConstant PSX_TUD_TYPE_SINGLE  = "single"
+static StrConstant PSX_TUD_TYPE_AVERAGE = "average"
 /// @}
 
-static StrConstant PSX_TUD_COMBO_KEY        = "comboKey"
-static StrConstant PSX_TUD_COMBO_INDEX      = "comboIndex"
-static StrConstant PSX_TUD_BLOCK_INDEX      = "blockIndex"
+static StrConstant PSX_TUD_COMBO_KEY   = "comboKey"
+static StrConstant PSX_TUD_COMBO_INDEX = "comboIndex"
+static StrConstant PSX_TUD_BLOCK_INDEX = "blockIndex"
 
 static Constant PSX_GUI_SETTINGS_VERSION = 1
 
@@ -121,9 +121,9 @@ static StrConstant PSX_GUI_SETTINGS_PSX = "GuiSettingsPSX"
 
 static Constant PSX_MAX_NUM_EVENTS = 1e6
 
-static StrConstant PSX_GLOBAL_AVERAGE_SUFFIX     = "_global"
-static StrConstant PSX_TUD_AVERAGE_ALL_COMBO_KEY = "allCombos"
-static Constant PSX_TUD_AVERAGE_ALL_COMBO_INDEX  = NaN
+static StrConstant PSX_GLOBAL_AVERAGE_SUFFIX       = "_global"
+static StrConstant PSX_TUD_AVERAGE_ALL_COMBO_KEY   = "allCombos"
+static Constant    PSX_TUD_AVERAGE_ALL_COMBO_INDEX = NaN
 
 static StrConstant PSX_AVERAGE_FIT_RESULT_DEFAULT_HELP = "No fit results available for average accept"
 
@@ -202,17 +202,17 @@ static Function/WAVE PSX_GetCheckboxStatesFromSpecialPanel(string win, string tr
 	strswitch(traceType)
 		case PSX_TUD_TYPE_AVERAGE:
 			ctrlPrefix = "checkbox_average_events_"
-			last = DimSize(states, ROWS) - 1
+			last       = DimSize(states, ROWS) - 1
 			break
 		case PSX_TUD_TYPE_SINGLE:
-			ctrlPrefix = "checkbox_single_events_"
+			ctrlPrefix   = "checkbox_single_events_"
 			states[%all] = 0
-			last = DimSize(states, ROWS) - 2
+			last         = DimSize(states, ROWS) - 2
 			break
 	endswitch
 
 	specialEventPanel = PSX_GetSpecialPanel(win)
-	states[,last] = GetCheckboxState(specialEventPanel, ctrlPrefix + lbls[p])
+	states[, last]    = GetCheckboxState(specialEventPanel, ctrlPrefix + lbls[p])
 
 	return states
 End
@@ -292,7 +292,7 @@ static Function/WAVE PSX_CreateHistogram(WAVE sweepData, [variable bin_start, va
 	endif
 
 	return output
-end
+End
 
 /// @brief Offset sweepData by X
 ///
@@ -349,7 +349,7 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	ASSERT(lowFrac < highFrac, "Expected a low pass filter with lowFrac < highFrac")
 
 	numPoints = DimSize(sweepData, ROWS)
-	fftSize = DimSize(psxKernelFFT, ROWS)
+	fftSize   = DimSize(psxKernelFFT, ROWS)
 
 	// no window function on purpose
 	WAVE/C outputFFT = DoFFT(sweepData, padSize = numPoints)
@@ -366,7 +366,7 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	FilterFIR/ENDV={3}/LO={lowFrac, highFrac, order} Deconv
 
 	return Deconv
-end
+End
 
 /// @brief Creates a histogram of the deconvoluted sweep data
 static Function/WAVE PSX_CreateHistogramOfDeconvSweepData(WAVE deconvSweepData)
@@ -376,9 +376,9 @@ static Function/WAVE PSX_CreateHistogramOfDeconvSweepData(WAVE deconvSweepData)
 	// we take +/- 80% of the average deviation around the average value
 	WaveStats/Q deconvSweepData
 	binWidth = 0.0001
-	range = V_adev * 0.8
-	start = V_avg - range
-	n_bins = 2 * range /binWidth
+	range    = V_adev * 0.8
+	start    = V_avg - range
+	n_bins   = 2 * range / binWidth
 
 	SFH_ASSERT(n_bins > 10, "Histogram creation failed due to too few data points")
 
@@ -386,7 +386,7 @@ static Function/WAVE PSX_CreateHistogramOfDeconvSweepData(WAVE deconvSweepData)
 	Histogram/B={start, binWidth, n_bins}/DEST=hist deconvSweepData
 
 	return hist
-end
+End
 
 /// Fit the given wave with a gaussian where K0, y offset, is fixed at zero.
 static Function [WAVE coef, WAVE fit] PSX_FitHistogram(WAVE input)
@@ -405,7 +405,7 @@ static Function [WAVE coef, WAVE fit] PSX_FitHistogram(WAVE input)
 	endif
 
 	return [coefWave, MakeWaveFree(fit)]
-end
+End
 
 /// Full analysis cycle:
 /// - filtering
@@ -429,7 +429,7 @@ static Function [WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] PSX_Analysi
 	WAVE sweepDataFiltOffDeconv = PSX_DeconvoluteSweepData(sweepDataFiltOff, psxKernelFFT, deconvFilter)
 
 	return [sweepDataFiltOff, sweepDataFiltOffDeconv]
-end
+End
 
 /// Searches for peaks in sweepData
 ///
@@ -441,7 +441,7 @@ end
 ///
 /// @retval peakX x-coordinates of peaks
 /// @retval peakY y-coordinates of peaks
-static function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataFiltOffDeconv, variable threshold, [variable numPeaksMax, variable start, variable stop])
+static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataFiltOffDeconv, variable threshold, [variable numPeaksMax, variable start, variable stop])
 
 	variable i
 
@@ -460,7 +460,7 @@ static function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataFiltOff
 	Make/FREE/D/N=(numPeaksMax) peakX, peakY
 
 	for(i = 0; i < numPeaksMax; i += 1)
-		FindPeak/B=10/M=(threshold)/Q/R=(start,stop) sweepDataFiltOffDeconv
+		FindPeak/B=10/M=(threshold)/Q/R=(start, stop) sweepDataFiltOffDeconv
 
 		if(V_Flag != 0)
 			break
@@ -481,7 +481,7 @@ static function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataFiltOff
 	Redimension/N=(i) peakX, peakY
 
 	return [peakX, peakY]
-end
+End
 
 /// @brief Analyze the peaks
 static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE peakX, WAVE peakY, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
@@ -493,7 +493,7 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 	for(i = 0; i < numCrossings; i += 1)
 
 		i_time = peakX[i]
-		peak = peakY[i]
+		peak   = peakY[i]
 
 		if(i < numCrossings - 1)
 			peak_end_search = min(i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS, peakX[i + 1])
@@ -515,7 +515,7 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 
 		EnsureLargeEnoughWave(psxEvent, indexShouldExist = i)
 
-		psxEvent[i][%post_min] = post_min
+		psxEvent[i][%post_min]   = post_min
 		psxEvent[i][%post_min_t] = post_min_t
 
 		if(i == 0)
@@ -525,19 +525,19 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 		endif
 
 		WaveStats/Q/R=(i_time - 2, i_time) sweepDataFiltOff
-		pre_max = V_max
+		pre_max   = V_max
 		pre_max_t = V_maxloc
 		WaveStats/Q/R=(pre_max_t - 0.1, pre_max_t + 0.1) sweepDataFiltOff
 		pre_max = V_avg
 
-		psxEvent[i][%index] = i
+		psxEvent[i][%index]  = i
 		psxEvent[i][%peak_t] = i_time
-		psxEvent[i][%peak] = peak
+		psxEvent[i][%peak]   = peak
 
-		psxEvent[i][%pre_max] = pre_max
+		psxEvent[i][%pre_max]   = pre_max
 		psxEvent[i][%pre_max_t] = pre_max_t
-		psxEvent[i][%rel_peak] = post_min-pre_max
-		psxEvent[i][%isi] = isi
+		psxEvent[i][%rel_peak]  = post_min - pre_max
+		psxEvent[i][%isi]       = isi
 	endfor
 
 	Redimension/N=(i, -1) eventFit, psxEvent
@@ -548,7 +548,7 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 	psxEvent[][%$"Fit result"]           = 0
 
 	psxEvent[][%tau] = PSX_FitEventDecay(sweepDataFiltOff, psxEvent, maxTauFactor, eventFit, p)
-end
+End
 
 /// @brief Return the x-axis range useful for displaying and extracting a single event
 static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psxEvent, variable index)
@@ -652,7 +652,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataFiltOff, WAVE psxEvent, variable
 
 	if(err)
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
-		psxEvent[eventIndex][%$"Fit result"] = -err
+		psxEvent[eventIndex][%$"Fit result"]         = -err
 		return NaN
 	endif
 
@@ -660,19 +660,19 @@ static Function PSX_FitEventDecay(WAVE sweepDataFiltOff, WAVE psxEvent, variable
 
 	if(IsFinite(decayTau) && decayTau > maxTauFactor * fitRange)
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
-		psxEvent[eventIndex][%$"Fit result"] = PSX_DECAY_FIT_ERROR
+		psxEvent[eventIndex][%$"Fit result"]         = PSX_DECAY_FIT_ERROR
 		return NaN
 	endif
 
 	ChangeFreeWaveName(fit, "expoffset_fit_event_" + num2str(eventIndex))
 
 	ASSERT(WaveExists(fit), "Expected fit wave")
-	eventFit[eventIndex] = fit
-	psxEvent[eventIndex][%$"Fit result"] = 1
+	eventFit[eventIndex]                         = fit
+	psxEvent[eventIndex][%$"Fit result"]         = 1
 	psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_UNDET
 
 	return decayTau
-end
+End
 
 /// @brief Create the override results 2D wave
 ///
@@ -693,7 +693,7 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 
 	numCombos = DimSize(combos, ROWS)
 
-	Make/D/N=(numEvents, numCombos, 2) root:overrideResults/Wave=wv
+	Make/D/N=(numEvents, numCombos, 2) root:overrideResults/WAVE=wv
 	SetDimensionLabels(wv, TextWaveToList(combos, ";"), COLS)
 	SetDimensionLabels(wv, "Fit Result;Tau", LAYERS)
 
@@ -717,7 +717,7 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 	comboKey = PSX_GenerateComboKey(graph, selectData, range)
 
 	psxParametersAnalyzePeaks = PSX_GetPSXParameters(parameterJSONID, PSX_CACHE_KEY_ANALYZE_PEAKS)
-	cacheKey = CA_PSXAnalyzePeaks(comboKey, psxParametersAnalyzePeaks)
+	cacheKey                  = CA_PSXAnalyzePeaks(comboKey, psxParametersAnalyzePeaks)
 	WAVE/WAVE/Z psxAnalyzePeaksFromCache = CA_TryFetchingEntryFromCache(cacheKey)
 
 	if(WaveExists(psxAnalyzePeaksFromCache))
@@ -734,13 +734,13 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 		CA_StoreEntryIntoCache(cacheKey, psxAnalyzePeaks)
 	endif
 
-	key = PSX_GenerateKey("sweepData", index)
+	key           = PSX_GenerateKey("sweepData", index)
 	output[%$key] = sweepData
 
-	key = PSX_GenerateKey("sweepDataFiltOff", index)
+	key           = PSX_GenerateKey("sweepDataFiltOff", index)
 	output[%$key] = sweepDataFiltOff
 
-	key = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
+	key           = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
 	output[%$key] = sweepDataFiltOffDeconv
 End
 
@@ -769,7 +769,7 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 	comboKey = PSX_GenerateComboKey(graph, selectData, range)
 
 	psxParametersEvents = PSX_GetPSXParameters(parameterJSONID, PSX_CACHE_KEY_EVENTS)
-	psxOperationKey = CA_PSXOperationKey(comboKey, psxParametersEvents)
+	psxOperationKey     = CA_PSXOperationKey(comboKey, psxParametersEvents)
 	WAVE/WAVE/Z psxOperationFromCache = CA_TryFetchingEntryFromCache(psxOperationKey)
 
 	if(WaveExists(psxOperationFromCache))
@@ -782,13 +782,13 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 
 		if(!WaveExists(peakX) || !WaveExists(peakY))
 			// clear entries from this combo
-			key = PSX_GenerateKey("sweepData", index)
+			key           = PSX_GenerateKey("sweepData", index)
 			output[%$key] = $""
 
-			key = PSX_GenerateKey("sweepDataFiltOff", index)
+			key           = PSX_GenerateKey("sweepDataFiltOff", index)
 			output[%$key] = $""
 
-			key = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
+			key           = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
 			output[%$key] = $""
 
 			printf "Could not find any events for combination: \"%s\"\r", comboKey
@@ -825,7 +825,7 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 	else
 		// no cached psxEvent data exists
 		// look into the results wave
-		WAVE/Z psxEventContainer = PSX_GetEventContainerFromResults(id)
+		WAVE/Z psxEventContainer   = PSX_GetEventContainerFromResults(id)
 		WAVE/Z psxEventFromResults = PSX_FilterEventContainer(psxEventContainer, comboKey)
 
 		if(WaveExists(psxEventFromResults))
@@ -840,16 +840,16 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 	psxEvent[][%$"Rise Time"] = riseTime[p]
 	WaveClear riseTime
 
-	key = PSX_GenerateKey("peakX", index)
+	key           = PSX_GenerateKey("peakX", index)
 	output[%$key] = peakX
 
-	key = PSX_GenerateKey("peakY", index)
+	key           = PSX_GenerateKey("peakY", index)
 	output[%$key] = peakY
 
-	key = PSX_GenerateKey("psxEvent", index)
+	key           = PSX_GenerateKey("psxEvent", index)
 	output[%$key] = psxEvent
 
-	key = PSX_GenerateKey("eventFit", index)
+	key           = PSX_GenerateKey("eventFit", index)
 	output[%$key] = eventFit
 
 	return 0
@@ -900,8 +900,8 @@ static Function [WAVE kernel, WAVE kernelFFT] PSX_CreatePSXKernel(variable riseT
 
 	variable riseTau_p, decayTau_p, kernel_window, amp_prime
 
-	riseTau_p        = riseTau / dt
-	decayTau_p        = decayTau / dt
+	riseTau_p     = riseTau / dt
+	decayTau_p    = decayTau / dt
 	kernel_window = decayTau_p * 4
 	amp_prime     = (decayTau_p / riseTau_p)^(riseTau_p / (riseTau_p - decayTau_p)) // normalization factor
 
@@ -915,7 +915,7 @@ static Function [WAVE kernel, WAVE kernelFFT] PSX_CreatePSXKernel(variable riseT
 	WAVE kernelFFT = DoFFT(kernel, padSize = numPoints)
 
 	return [kernel, kernelFFT]
-end
+End
 
 /// @brief Return the data/index/marker/comboKeys of the events matching the given state and property
 static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] PSX_GetStatsResults(WAVE/WAVE allEvents, variable state, string prop)
@@ -978,7 +978,7 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 	Make/FREE/N=0 marker, eventIndex
 	Make/FREE/N=0/T comboKeys
 
-	for(WAVE events: allEvents)
+	for(WAVE events : allEvents)
 		WAVE/Z indizes = FindIndizes(events, var = state, colLabel = stateType, prop = PROP_MATCHES_VAR_BIT_MASK)
 
 		if(!WaveExists(indizes))
@@ -997,7 +997,7 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 		endif
 
 		Multithread eventIndex[] = events[indizes[p]][%index]
-		Multithread marker[]     = PSX_SelectMarker(events[indizes[p]][%$stateType])
+		Multithread marker[] = PSX_SelectMarker(events[indizes[p]][%$stateType])
 
 		Make/FREE/T/N=(numEntries) comboKeys = JWN_GetStringFromWaveNote(events, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
 
@@ -1032,12 +1032,12 @@ End
 /// @brief Return the triplett channel number, channel type and sweep number from the sweep equivalence wave located in the given row/col
 static Function [variable chanNr, variable chanType, variable sweepNo] PSX_GetSweepEquivKeyAndSweep(WAVE sweepEquiv, variable row, variable col)
 
-	string str,  chanTypeStr, chanNrStr
+	string str, chanTypeStr, chanNrStr
 
 	str = GetDimLabel(sweepEquiv, ROWS, row)
 	ASSERT(strlen(str) > 0, "Unexpected empty row label")
 
-	SplitString/E="ChanType([[:digit:]]+)_ChanNr([[:digit:]]+)" str,  chanTypeStr, chanNrStr
+	SplitString/E="ChanType([[:digit:]]+)_ChanNr([[:digit:]]+)" str, chanTypeStr, chanNrStr
 
 	chanType = str2num(chanTypeStr)
 	chanNr   = str2num(chanNrStr)
@@ -1066,7 +1066,7 @@ static Function/WAVE PSX_GenerateSweepEquiv(WAVE selectData)
 
 		if(idx == -2)
 			SetDimLabel ROWS, nextFreeRow, $key, sweepEquiv
-			idx = nextFreeRow
+			idx          = nextFreeRow
 			nextFreeRow += 1
 		endif
 
@@ -1094,7 +1094,7 @@ Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectDa
 	chanType = singleSelectData[0][%CHANNELTYPE]
 
 	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
 
 	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(numericalValues, textualValues, range, sweepNo, chanType, chanNr)
@@ -1129,7 +1129,7 @@ static Function PSX_CheckResolvedRanges(WAVE allResolvedRanges, WAVE/T allSelect
 		for(i = 0, idx = 0; i < numColumns; i += 1)
 			if(!cmpstr(selectHash, allSelectHashes[i]))
 				work[][idx] = allResolvedRanges[p][i]
-				idx += 1
+				idx        += 1
 			endif
 		endfor
 
@@ -1204,7 +1204,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 				EnsureLargeEnoughWave(allEvents, indexShouldExist = idx)
 				allEvents[idx] = events
-				idx += 1
+				idx           += 1
 				WaveClear events
 
 				PSX_CollectResolvedRanges(graph, range, singleSelectData, allResolvedRanges, allSelectHashes)
@@ -1287,8 +1287,8 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 						// resize markers
 						Redimension/N=(DimSize(results, ROWS)) marker
-						refMarker= marker[0]
-						marker[] = refMarker
+						refMarker = marker[0]
+						marker[]  = refMarker
 
 						break
 					case "nonfinite":
@@ -1298,7 +1298,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 						// +inf -> +1
 						// finite -> NaN
 						Duplicate/FREE resultsRaw, results
-						Multithread results[] = resultsRaw[p] == -inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : (resultsRaw[p] == +inf ? +1 : NaN))
+						Multithread results[] = resultsRaw[p] == -Inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : (resultsRaw[p] == +Inf ? +1 : NaN))
 
 						WAVE/Z resultsClean = ZapNaNs(results)
 
@@ -1307,10 +1307,10 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 						endif
 
 						eventIndex[] = IsFinite(results[p]) ? eventIndex[p] : NaN
-						marker[] = IsFinite(results[p]) ? marker[p] : NaN
-						comboKeys[] = SelectString(IsFinite(results[p]), "", comboKeys[p])
+						marker[]     = IsFinite(results[p]) ? marker[p] : NaN
+						comboKeys[]  = SelectString(IsFinite(results[p]), "", comboKeys[p])
 
-						WAVE markerClean = ZapNaNs(marker)
+						WAVE markerClean     = ZapNaNs(marker)
 						WAVE eventIndexClean = ZapNaNs(eventIndex)
 						RemoveTextWaveEntry1D(comboKeys, "", all = 1)
 
@@ -1323,7 +1323,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 						JWN_SetWaveInWaveNote(results, SF_META_XVALUES, xValues)
 
-						Make/FREE/T nonFiniteTickLabels = {num2str(-inf), num2str(NaN), num2str(+inf)}
+						Make/FREE/T nonFiniteTickLabels = {num2str(-Inf), num2str(NaN), num2str(+Inf)}
 						JWN_SetWaveInWaveNote(results, SF_META_XTICKLABELS, nonFiniteTickLabels)
 						JWN_SetWaveInWaveNote(results, SF_META_XTICKPOSITIONS, {-1, 0, 1})
 
@@ -1343,7 +1343,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 								upperBoundary = PSX_STATS_TAU_FACTOR * JWN_GetNumberFromWaveNote(allEvents, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
 								ASSERT(IsFinite(upperBoundary) && upperBoundary > 0, "Upper boundary for tau must be finite and positive")
 							elseif(!cmpstr(prop, "amp"))
-								temp = PSX_STATS_AMP_FACTOR * JWN_GetNumberFromWaveNote(allEvents, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/amp")
+								temp          = PSX_STATS_AMP_FACTOR * JWN_GetNumberFromWaveNote(allEvents, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/amp")
 								lowerBoundary = -abs(temp)
 								upperBoundary = +abs(temp)
 								ASSERT(IsFinite(lowerBoundary) && IsFinite(upperBoundary), "Lower/Upper boundary for amp must be finite")
@@ -1354,7 +1354,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 						WAVE/Z resultsRawClean = ZapNaNs(resultsRaw)
 
-						if((!WaveExists(resultsRawClean) && WaveExists(resultsRaw))         \
+						if((!WaveExists(resultsRawClean) && WaveExists(resultsRaw))        \
 						   || (DimSize(resultsRawClean, ROWS) != DimSize(resultsRaw, ROWS)))
 							if(!AlreadyCalledOnce(CO_PSX_CLIPPED_STATS))
 								printf "psxStats removed out-of-range input data for histogram generation.\r"
@@ -1400,7 +1400,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 				EnsureLargeEnoughWave(output, indexShouldExist = index)
 				output[index] = results
-				index += 1
+				index        += 1
 			endfor
 		endfor
 	endfor
@@ -1448,7 +1448,7 @@ static Function/WAVE PSX_CalculateRiseTime(WAVE psxEvent, WAVE sweepDataFiltOff,
 	variable numEvents
 
 	psxParameters = PSX_GetPSXParameters(parameterJsonID, PSX_CACHE_KEY_RISETIME)
-	comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+	comboKey      = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
 
 	cacheKey = CA_PSXRiseTimeKey(comboKey, psxParameters)
 	WAVE/Z riseTimeFromCache = CA_TryFetchingEntryFromCache(cacheKey)
@@ -1472,7 +1472,7 @@ static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDataFiltOff, 
 
 	variable dY, xStart, xEnd, yStart, yEnd, xlt, xupt, lowerLevel, upperLevel, riseTime
 	variable printDebug
-	string comboKey
+	string   comboKey
 
 	xStart = psxEvent[index][%peak_t]
 	yStart = sweepDataFiltOff(xStart)
@@ -1486,8 +1486,8 @@ static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDataFiltOff, 
 	upperLevel = min(yStart, yEnd) + upperThreshold * dY
 
 	riseTime = NaN
-	xlt = NaN
-	xupt = NaN
+	xlt      = NaN
+	xupt     = NaN
 
 	FindLevel/R=(xStart, xEnd)/Q sweepDataFiltOff, lowerLevel
 
@@ -1671,7 +1671,7 @@ End
 /// @brief Update the displayed fit in the single event graph
 static Function PSX_UpdateDisplayedFit(DFREF comboDFR, variable index)
 
- 	WAVE/WAVE eventFit = GetPSXEventFitWaveFromDFR(comboDFR)
+	WAVE/WAVE eventFit = GetPSXEventFitWaveFromDFR(comboDFR)
 
 	WAVE/Z singleEventFitFree = eventFit[index]
 
@@ -1701,7 +1701,7 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 		return NaN
 	endif
 
-	DFREF workDFR = PSX_GetWorkingFolder(win)
+	DFREF     workDFR      = PSX_GetWorkingFolder(win)
 	WAVE/DF/Z comboFolders = PSX_GetAllCombinationFolders(workDFR)
 
 	if(!WaveExists(comboFolders))
@@ -1804,10 +1804,10 @@ static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverag
 	ASSERT(WaveExists(traceNames), "Expected at least one entry")
 
 	WAVE/T hideTracesFromTraces   = TUD_GetUserDataAsWave(extAllGraph, PSX_TUD_TRACE_HIDDEN_KEY, keys = keys, values = values)
-	WAVE/T eventStateFromTraces   = TUD_GetUserDataAsWave(extAllGraph, PSX_TUD_EVENT_STATE_KEY,  keys = keys, values = values)
-	WAVE/T fitStateFromTraces     = TUD_GetUserDataAsWave(extAllGraph, PSX_TUD_FIT_STATE_KEY,  keys = keys, values = values)
-	WAVE/T eventIndexFromTraces   = TUD_GetUserDataAsWave(extAllGraph, PSX_TUD_EVENT_INDEX_KEY,  keys = keys, values = values)
-	WAVE/T comboIndizesFromTraces = TUD_GetUserDataAsWave(extAllGraph, PSX_TUD_COMBO_INDEX,  keys = keys, values = values)
+	WAVE/T eventStateFromTraces   = TUD_GetUserDataAsWave(extAllGraph, PSX_TUD_EVENT_STATE_KEY, keys = keys, values = values)
+	WAVE/T fitStateFromTraces     = TUD_GetUserDataAsWave(extAllGraph, PSX_TUD_FIT_STATE_KEY, keys = keys, values = values)
+	WAVE/T eventIndexFromTraces   = TUD_GetUserDataAsWave(extAllGraph, PSX_TUD_EVENT_INDEX_KEY, keys = keys, values = values)
+	WAVE/T comboIndizesFromTraces = TUD_GetUserDataAsWave(extAllGraph, PSX_TUD_COMBO_INDEX, keys = keys, values = values)
 	numSingleEventTraces = DimSize(eventIndexFromTraces, ROWS)
 
 	// wave reference wave with psxEvents wave indexed by *comboIndex*
@@ -1835,11 +1835,11 @@ static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverag
 
 	strswitch(stateType)
 		case PSX_TUD_FIT_STATE_KEY:
-			WAVE stateNew   = fitStateNew
+			WAVE   stateNew = fitStateNew
 			WAVE/T stateOld = fitStateFromTraces
 			break
 		case PSX_TUD_EVENT_STATE_KEY:
-			WAVE stateNew   = eventStateNew
+			WAVE   stateNew = eventStateNew
 			WAVE/T stateOld = eventStateFromTraces
 			break
 		default:
@@ -1849,19 +1849,19 @@ static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverag
 	[WAVE acceptColors, WAVE rejectColors, WAVE undetColors] = PSX_GetEventColors()
 
 	MultiThread hideTracesNew[] = (stateNew[p] & stateMatchPattern) == 0
-	MultiThread colorsNew[][]   = PSX_SelectColor(stateNew[p], acceptColors, rejectColors, undetColors)[q]
+	MultiThread colorsNew[][] = PSX_SelectColor(stateNew[p], acceptColors, rejectColors, undetColors)[q]
 
 	if(forceSingleEventUpdate)
 
 		ACC_HideTracesAndColor(extAllGraph, traceNames, numSingleEventTraces, hideTracesNew, colorsNew)
 
 		WAVE indexHelper = hideTracesNew
-		indexHelper[] = TUD_SetUserDataFromWaves(extAllGraph, traceNames[i],                                                     \
-		                                         {PSX_TUD_FIT_STATE_KEY, PSX_TUD_EVENT_STATE_KEY, PSX_TUD_TRACE_HIDDEN_KEY},     \
+		indexHelper[] = TUD_SetUserDataFromWaves(extAllGraph, traceNames[i],                                                    \
+		                                         {PSX_TUD_FIT_STATE_KEY, PSX_TUD_EVENT_STATE_KEY, PSX_TUD_TRACE_HIDDEN_KEY},    \
 		                                         {num2str(fitStateNew[p]), num2str(eventStateNew[p]), num2str(hideTracesNew[p])})
 
 	else
-		MultiThread differentHideState  = (str2num(hideTracesFromTraces[p]) != hideTracesNew[p])
+		MultiThread differentHideState = (str2num(hideTracesFromTraces[p]) != hideTracesNew[p])
 		MultiThread differentEventState = (str2num(stateOld[p]) != stateNew[p])
 
 		for(i = 0; i < numSingleEventTraces; i += 1)
@@ -1879,8 +1879,8 @@ static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverag
 
 				ModifyGraph/W=$extAllGraph hideTrace($trace)=(hideTracesNew[i]), rgb($trace)=(colorsNew[i][0], colorsNew[i][1], colorsNew[i][2], colorsNew[i][3])
 
-				TUD_SetUserDataFromWaves(extAllGraph, trace,                                                             \
-				                         {PSX_TUD_FIT_STATE_KEY, PSX_TUD_EVENT_STATE_KEY, PSX_TUD_TRACE_HIDDEN_KEY},     \
+				TUD_SetUserDataFromWaves(extAllGraph, trace,                                                            \
+				                         {PSX_TUD_FIT_STATE_KEY, PSX_TUD_EVENT_STATE_KEY, PSX_TUD_TRACE_HIDDEN_KEY},    \
 				                         {num2str(fitStateNew[i]), num2str(eventStateNew[i]), num2str(hideTracesNew[i])})
 
 			elseif(differentHideState[i])
@@ -1896,8 +1896,8 @@ static Function PSX_AdaptColorsInAllEventGraph(string win, [variable forceAverag
 
 				ModifyGraph/W=$extAllGraph rgb($trace)=(colorsNew[i][0], colorsNew[i][1], colorsNew[i][2], colorsNew[i][3])
 
-				TUD_SetUserDataFromWaves(extAllGraph, trace,                                  \
-				                         {PSX_TUD_FIT_STATE_KEY, PSX_TUD_EVENT_STATE_KEY},    \
+				TUD_SetUserDataFromWaves(extAllGraph, trace,                                 \
+				                         {PSX_TUD_FIT_STATE_KEY, PSX_TUD_EVENT_STATE_KEY},   \
 				                         {num2str(fitStateNew[i]), num2str(eventStateNew[i])})
 			else
 				ASSERT(0, "Impossible case")
@@ -1940,25 +1940,25 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 				contAverageAccept[acceptIndex] = singleEvent
 
 				WAVE sweepDataFiltOff = GetPSXSweepDataFiltOffWaveFromDFR(comboDFR)
-				WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
+				WAVE psxEvent         = GetPSXEventWaveFromDFR(comboDFR)
 
 				// single event waves are zeroed in x-direction to extractStartAbs
 				[extractStartAbs, extractStopAbs] = PSX_GetSingleEventRange(psxEvent, idx)
 				fitStartAbs = psxEvent[idx][%peak_t]
 				ASSERT(fitStartAbs > extractStartAbs, "Unexpected fit/extraction start positions")
 
-				eventStartTime[acceptIndex] = fitStartAbs    - extractStartAbs
+				eventStartTime[acceptIndex] = fitStartAbs - extractStartAbs
 				eventStopTime[acceptIndex]  = extractStopAbs - extractStartAbs
 
 				acceptIndex += 1
 				break
 			case PSX_REJECT:
 				contAverageReject[rejectIndex] = singleEvent
-				rejectIndex += 1
+				rejectIndex                   += 1
 				break
 			case PSX_UNDET:
 				contAverageUndet[undetIndex] = singleEvent
-				undetIndex += 1
+				undetIndex                  += 1
 				break
 			default:
 				ASSERT(0, "impossible state")
@@ -2056,12 +2056,12 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventSta
 
 	Make/FREE/T/N=(9, 2) input
 
-	input[0][0,1]    = {{"Function"}, {fitFunc}}
-	input[1][0,1]    = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
-	input[2, 6][0]   = coeffNames[p - 2]
-	input[2, 6][1]   = num2strHighPrec(coefWave[p - 2])
-	input[7][0,1]    = {{"State source"},{PSX_GetStateTypeFromSpecialPanel(win)}}
-	input[8][0,1]    = {{"Current combo"},{ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
+	input[0][0, 1] = {{"Function"}, {fitFunc}}
+	input[1][0, 1] = {{"ChiSq"}, {num2strHighPrec(V_chiSq)}}
+	input[2, 6][0] = coeffNames[p - 2]
+	input[2, 6][1] = num2strHighPrec(coefWave[p - 2])
+	input[7][0, 1] = {{"State source"}, {PSX_GetStateTypeFromSpecialPanel(win)}}
+	input[8][0, 1] = {{"Current combo"}, {ToTrueFalse(PSX_GetrestrictEventsToCurrentCombo(win))}}
 
 	str = FormatTextWaveForLegend(input)
 	UpdateInfoButtonHelp(specialEventPanel, "button_fit_results", str)
@@ -2106,7 +2106,7 @@ End
 
 static Function/S PSX_GetPSXParameters(variable jsonID, variable cacheKeyType)
 
-	string psxParameters
+	string   psxParameters
 	variable subJsonID
 
 	subJsonID = JSON_GetJSON(jsonID, SF_META_USER_GROUP + PSX_JWN_PARAMETERS, ignoreErr = 1)
@@ -2137,7 +2137,7 @@ static Function PSX_StoreEventsIntoCache(WAVE psxEvent)
 	variable jsonID
 
 	comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
-	jsonID = JWN_GetWaveNoteAsJSON(psxEvent)
+	jsonID   = JWN_GetWaveNoteAsJSON(psxEvent)
 	ASSERT(jsonID >= 0, "Invalid JSON document")
 	psxParameters = PSX_GetPSXParameters(jsonID, PSX_CACHE_KEY_EVENTS)
 	JSON_Release(jsonID)
@@ -2182,17 +2182,17 @@ static Function [WAVE/T keys, WAVE/T values] PSX_GetTraceSelectionWaves(string w
 		DFREF comboDFR = PSX_GetCurrentComboFolder(win)
 		comboKey = PSX_GetComboKeyFromDFR(comboDFR)
 
-		Make/FREE/T keys   = {PSX_TUD_TYPE_KEY, PSX_TUD_COMBO_KEY}
+		Make/FREE/T keys = {PSX_TUD_TYPE_KEY, PSX_TUD_COMBO_KEY}
 		Make/FREE/T values = {traceType, comboKey}
 	else
 		strswitch(traceType)
 			case PSX_TUD_TYPE_SINGLE:
-				Make/FREE/T keys   = {PSX_TUD_TYPE_KEY}
+				Make/FREE/T keys = {PSX_TUD_TYPE_KEY}
 				Make/FREE/T values = {traceType}
 				break
 			case PSX_TUD_TYPE_AVERAGE:
 				// only gather the gobal average waves
-				Make/FREE/T keys   = {PSX_TUD_TYPE_KEY, PSX_TUD_COMBO_KEY}
+				Make/FREE/T keys = {PSX_TUD_TYPE_KEY, PSX_TUD_COMBO_KEY}
 				Make/FREE/T values = {traceType, PSX_TUD_AVERAGE_ALL_COMBO_KEY}
 				break
 			default:
@@ -2202,7 +2202,7 @@ static Function [WAVE/T keys, WAVE/T values] PSX_GetTraceSelectionWaves(string w
 
 	if(respectBlock && !cmpstr(traceType, PSX_TUD_TYPE_SINGLE))
 		specialEventPanel = PSX_GetSpecialPanel(win)
-		blockIndexAsStr = GetPopupMenuString(specialEventPanel, "popup_block")
+		blockIndexAsStr   = GetPopupMenuString(specialEventPanel, "popup_block")
 
 		numEntries = DimSize(keys, ROWS)
 		Redimension/N=(numEntries + 1) keys, values
@@ -2272,9 +2272,9 @@ static Function PSX_UpdateBlockIndizes(string win)
 	variable restrictCurrentCombo, numBlocks
 	variable numEntries, i, blockSize, first, last
 
-	extAllGraph = PSX_GetAllEventGraph(win)
+	extAllGraph          = PSX_GetAllEventGraph(win)
 	restrictCurrentCombo = PSX_GetRestrictEventsToCurrentCombo(win)
-	numBlocks = PSX_CalculateNumberOfBlocks(win)
+	numBlocks            = PSX_CalculateNumberOfBlocks(win)
 
 	[WAVE/T keys, WAVE/T values] = PSX_GetTraceSelectionWaves(extAllGraph, PSX_TUD_TYPE_SINGLE, respectBlock = 0)
 
@@ -2340,7 +2340,7 @@ static Function PSX_CalculateNumberOfBlocks(string win)
 	variable blockSize, numBlocks
 
 	specialEventPanel = PSX_GetSpecialPanel(win)
-	blockSize = GetSetVariable(specialEventPanel, "setvar_event_block_size")
+	blockSize         = GetSetVariable(specialEventPanel, "setvar_event_block_size")
 	ASSERT(blockSize > 0 && blockSize <= 100, "Invalid block size")
 
 	numBlocks = ceil(100 / blockSize)
@@ -2349,11 +2349,11 @@ static Function PSX_CalculateNumberOfBlocks(string win)
 End
 
 Function/S PSX_GetAllEventBlockNumbers(string win)
-	string specialEventPanel
+	string   specialEventPanel
 	variable numBlocks
 
 	specialEventPanel = PSX_GetSpecialPanel(win)
-	numBlocks = str2num(GetUserData(specialEventPanel, "popup_block", PSX_UD_NUM_BLOCKS))
+	numBlocks         = str2num(GetUserData(specialEventPanel, "popup_block", PSX_UD_NUM_BLOCKS))
 	ASSERT(IsInteger(numBlocks) && numBlocks > 0, "Invalid block size")
 
 	return BuildList("%d", 0, 1, numBlocks)
@@ -2387,7 +2387,7 @@ static Function PSX_AppendTracesToAllEventGraph(string win)
 
 	[WAVE acceptColors, WAVE rejectColors, WAVE undetColors] = PSX_GetEventColors()
 
-	DFREF workDFR = PSX_GetWorkingFolder(win)
+	DFREF     workDFR      = PSX_GetWorkingFolder(win)
 	WAVE/DF/Z comboFolders = PSX_GetAllCombinationFolders(workDFR)
 
 	if(!WaveExists(comboFolders))
@@ -2415,8 +2415,8 @@ static Function PSX_AppendTracesToAllEventGraph(string win)
 			trace = GetTraceNamePrefix(idx)
 			AppendToGraph/W=$extAllGraph/C=(eventColors[i][0], eventColors[i][1], eventColors[i][2], eventColors[i][3]) singleEvent/TN=$trace
 
-			TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                                                                                                          \
-			                         traceUserDataKeys,                                                                                                                                                                           \
+			TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                                                                                                         \
+			                         traceUserDataKeys,                                                                                                                                                                          \
 			                         {num2str(psxEvent[i][%index]), num2str(psxEvent[i][%$"Fit manual QC call"]), num2str(psxEvent[i][%$"Event manual QC call"]), "0", PSX_TUD_TYPE_SINGLE, comboKey, "NaN", num2str(comboIndex)})
 
 			idx += 1
@@ -2432,7 +2432,7 @@ static Function/S PSX_GetAverageTraceName(variable idx, string basename, variabl
 
 	string trace
 
-	sprintf trace, "%s_%s%s%s", GetTraceNamePrefix(idx), basename, SelectString(IsFinite(comboIndex), "",  "_ComboIndex" + num2str(comboIndex)), traceSuffix
+	sprintf trace, "%s_%s%s%s", GetTraceNamePrefix(idx), basename, SelectString(IsFinite(comboIndex), "", "_ComboIndex" + num2str(comboIndex)), traceSuffix
 
 	return trace
 End
@@ -2441,7 +2441,7 @@ End
 static Function PSX_AppendAverageTraces(string extAllGraph, DFREF averageDFR, string traceSuffix, variable idx, string comboKey, variable comboIndex, WAVE traceUserDataKeys, WAVE states, WAVE acceptColors, WAVE rejectColors, WAVE undetColors)
 
 	variable state
-	string trace
+	string   trace
 
 	for(state : states)
 
@@ -2457,8 +2457,8 @@ static Function PSX_AppendAverageTraces(string extAllGraph, DFREF averageDFR, st
 		// don't use any transparency for the average
 		AppendToGraph/W=$extAllGraph/C=(colors[0], colors[1], colors[2]) average/TN=$trace
 
-		TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                      \
-		                         traceUserDataKeys,                                                                                       \
+		TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                     \
+		                         traceUserDataKeys,                                                                                      \
 		                         {"NaN", num2str(state), num2str(state), "0", PSX_TUD_TYPE_AVERAGE, comboKey, "NaN", num2str(comboIndex)})
 		idx += 1
 	endfor
@@ -2466,11 +2466,11 @@ static Function PSX_AppendAverageTraces(string extAllGraph, DFREF averageDFR, st
 	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
 
 	trace = PSX_GetAverageTraceName(idx, "acceptAverageFit", comboIndex, traceSuffix)
-	idx += 1
+	idx  += 1
 
 	AppendToGraph/W=$extAllGraph acceptedAverageFit/TN=$trace
-	TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                                \
-	                         traceUserDataKeys,                                                                                                 \
+	TUD_SetUserDataFromWaves(extAllGraph, trace,                                                                                               \
+	                         traceUserDataKeys,                                                                                                \
 	                         {"NaN", num2str(PSX_ACCEPT), num2str(PSX_ACCEPT), "0", PSX_TUD_TYPE_AVERAGE, comboKey, "NaN", num2str(comboIndex)})
 
 	return idx
@@ -2484,7 +2484,7 @@ static Function PSX_GetCurrentEventIndex(string win)
 	string psxGraph, info
 
 	psxGraph = PSX_GetPSXGraph(win)
-	info = PSX_GetCursorInfo(psxGraph)
+	info     = PSX_GetCursorInfo(psxGraph)
 
 	if(IsEmpty(info))
 		return NaN
@@ -2525,7 +2525,7 @@ static Function PSX_UpdateSingleEventTextbox(string win, [variable eventIndex])
 	endif
 
 	DFREF comboDFR = PSX_GetCurrentComboFolder(win)
-	WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
+	WAVE  psxEvent = GetPSXEventWaveFromDFR(comboDFR)
 
 	Make/FREE/T/N=(8, 2) input
 
@@ -2598,7 +2598,7 @@ static Function PSX_CenterCursor(string win, variable leftIndex, variable consta
 	WAVE refWave = GetPSXPeakXWaveFromDFR(comboDFR)
 
 	leftBorder  = refWave[0] - PSX_PLOT_DEFAULT_X_RANGE / 2
-	rightBorder = refWave[inf] + PSX_PLOT_DEFAULT_X_RANGE / 2
+	rightBorder = refWave[Inf] + PSX_PLOT_DEFAULT_X_RANGE / 2
 
 	// keep the x-axis range constant if requested
 	if(constantWidth)
@@ -2615,8 +2615,8 @@ static Function PSX_CenterCursor(string win, variable leftIndex, variable consta
 	leftIndex  = limit(leftIndex, 0, DimSize(refWave, ROWS) - 1)
 	rightIndex = limit(rightIndex, 0, DimSize(refWave, ROWS) - 1)
 
-	left  = limit(refWave[leftIndex] - range/2, leftBorder, rightBorder)
-	right = limit(refWave[rightIndex] + range/2, leftBorder, rightBorder)
+	left  = limit(refWave[leftIndex] - range / 2, leftBorder, rightBorder)
+	right = limit(refWave[rightIndex] + range / 2, leftBorder, rightBorder)
 
 	SetAxis/W=$win/A=0 bottom, left, right
 
@@ -2649,12 +2649,12 @@ static Function PSX_MoveCursor(string win, string trace, variable index, variabl
 
 	if(minWrapAround || maxWrapAround)
 
-		DFREF workDFR = PSX_GetWorkingFolder(win)
+		DFREF     workDFR      = PSX_GetWorkingFolder(win)
 		WAVE/DF/Z comboFolders = PSX_GetAllCombinationFolders(workDFR)
 		ASSERT(WaveExists(comboFolders), "Missing comboFolders")
 
-		comboIndex = PSX_GetCurrentComboIndex(win)
-		numCombos = DimSize(comboFolders, ROWS)
+		comboIndex    = PSX_GetCurrentComboIndex(win)
+		numCombos     = DimSize(comboFolders, ROWS)
 		newComboIndex = mod(comboIndex + direction + numCombos, numCombos)
 
 		mainWindow = GetMainWindow(win)
@@ -2824,7 +2824,7 @@ static Function PSX_UpdateEventWaves(string win, [variable val, variable index, 
 
 	if(ParamIsDefault(index) && ParamIsDefault(indizes))
 		start = 0
-		stop  = inf
+		stop  = Inf
 	elseif(!ParamIsDefault(index))
 		start = index
 		stop  = index
@@ -2836,7 +2836,7 @@ static Function PSX_UpdateEventWaves(string win, [variable val, variable index, 
 
 	WAVE eventColors = GetPSXEventColorsWaveFromDFR(comboDFR)
 	WAVE eventMarker = GetPSXEventMarkerWaveFromDFR(comboDFR)
-	WAVE psxEvent   = GetPSXEventWaveFromDFR(comboDFR)
+	WAVE psxEvent    = GetPSXEventWaveFromDFR(comboDFR)
 
 	// stateColX is the psxEvent column we want to read/write
 	// checkColX denotes if there is a corresponding check column which
@@ -2917,7 +2917,7 @@ static Function PSX_UpdateEventWaves(string win, [variable val, variable index, 
 			endif
 		endif
 
-		Multithread eventMarker[start, stop]   = PSX_SelectMarker(psxEvent[p][%$"Event manual QC call"])
+		Multithread eventMarker[start, stop] = PSX_SelectMarker(psxEvent[p][%$"Event manual QC call"])
 		MultiThread eventColors[start, stop][] = PSX_SelectColor(psxEvent[p][%$"Event manual QC call"], acceptColors, rejectColors, undetColors)[q]
 	endif
 
@@ -2935,7 +2935,7 @@ static Function [WAVE acceptColors, WAVE rejectColors, WAVE undetColors] PSX_Get
 
 	Make/FREE acceptColors = {PSX_COLOR_ACCEPT_R, PSX_COLOR_ACCEPT_G, PSX_COLOR_ACCEPT_B, 0.2 * 65535}
 	Make/FREE rejectColors = {PSX_COLOR_REJECT_R, PSX_COLOR_REJECT_G, PSX_COLOR_REJECT_B, 0.2 * 65535}
-	Make/FREE undetColors  = {PSX_COLOR_UNDET_R,  PSX_COLOR_UNDET_G,  PSX_COLOR_UNDET_B, 0.2 * 65535}
+	Make/FREE undetColors = {PSX_COLOR_UNDET_R, PSX_COLOR_UNDET_G, PSX_COLOR_UNDET_B, 0.2 * 65535}
 End
 
 /// @brief Generate the unique combination key made up from `selectData` and `range`
@@ -2964,7 +2964,7 @@ static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range
 		else
 			// datafolder looks like: root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:labnotebook
 			datafolder = GetWavesDataFolder(textualValues, 1)
-			device = StringFromList(4, datafolder, ":")
+			device     = StringFromList(4, datafolder, ":")
 		endif
 	endif
 
@@ -3054,7 +3054,7 @@ static Function/WAVE PSX_GetEventContainerFromResults(string id)
 
 	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
-	name = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_EVENTS, id)
+	name  = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_EVENTS, id)
 	entry = GetLastSettingTextIndep(textualResultsValues, NaN, name, UNKNOWN_MODE)
 
 	if(IsEmpty(entry))
@@ -3163,12 +3163,12 @@ static Function PSX_StoreGuiState(string win, string browser)
 	variable jsonID, childID
 	string specialEventPanel, mainWindow, ctrl, extAllGraph
 
-	extAllGraph = PSX_GetAllEventGraph(win)
+	extAllGraph       = PSX_GetAllEventGraph(win)
 	specialEventPanel = PSX_GetSpecialPanel(win)
 
-	if(IsEmpty(browser)                    \
-	   || !WindowExists(browser)           \
-	   || !WindowExists(extAllGraph)       \
+	if(IsEmpty(browser)                   \
+	   || !WindowExists(browser)          \
+	   || !WindowExists(extAllGraph)      \
 	   || !WindowExists(specialEventPanel))
 		return NaN
 	endif
@@ -3218,7 +3218,7 @@ static Function PSX_RestoreGuiState(string win)
 	browser = SFH_GetBrowserForFormulaGraph(win)
 
 	jsonDoc = GetUserData(browser, "", PSX_GUI_SETTINGS_PSX)
-	jsonID = JSON_Parse(jsonDoc, ignoreErr = 1)
+	jsonID  = JSON_Parse(jsonDoc, ignoreErr = 1)
 
 	if(!JSON_IsValid(jsonID))
 		// no valid GUI settings found
@@ -3242,8 +3242,8 @@ static Function PSX_RestoreGuiState(string win)
 	PGC_SetAndActivateControl(specialEventPanel, "setvar_event_block_size", val = JSON_GetVariable(jsonID, "/specialEventPanel/setvar_event_block_size"))
 
 	selectedBlock = JSON_GetVariable(jsonID, "/specialEventPanel/popup_block")
-	allBlocks = PSX_GetAllEventBlockNumbers(specialEventPanel)
-	lastBlock = str2num(StringFromList(ItemsInList(allBlocks) - 1, allBlocks))
+	allBlocks     = PSX_GetAllEventBlockNumbers(specialEventPanel)
+	lastBlock     = str2num(StringFromList(ItemsInList(allBlocks) - 1, allBlocks))
 	PGC_SetAndActivateControl(specialEventPanel, "popup_block", val = limit(selectedBlock, 0, lastBlock))
 
 	WAVE/T popups = PSX_GetSpecialEventPanelPopups(specialEventPanel)
@@ -3257,10 +3257,10 @@ static Function PSX_RestoreGuiState(string win)
 
 	lastActiveCombo = JSON_GetVariable(jsonID, "/mainPanel/listbox_select_combo")
 
-	DFREF workDFR = PSX_GetWorkingFolder(win)
-	WAVE comboListBox = GetPSXComboListBox(workDFR)
+	DFREF workDFR      = PSX_GetWorkingFolder(win)
+	WAVE  comboListBox = GetPSXComboListBox(workDFR)
 
-	PGC_SetAndActivateControl(mainWindow, "listbox_select_combo", val = limit(lastActiveCombo,0, DimSize(comboListBox, ROWS) - 1))
+	PGC_SetAndActivateControl(mainWindow, "listbox_select_combo", val = limit(lastActiveCombo, 0, DimSize(comboListBox, ROWS) - 1))
 
 	WAVE axesProps = JSONToWave(jsonDoc, path = "/specialEventPanel/axesProps")
 
@@ -3275,7 +3275,7 @@ End
 static Function/DF PSX_GetCurrentComboFolder(string win)
 
 	variable comboIndex
-	string mainWindow
+	string   mainWindow
 
 	mainWindow = GetMainWindow(win)
 
@@ -3524,13 +3524,13 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 
 	ApplyMacroToExistingPanel(mainWin, "PSXPanel")
 
-	DFREF workDFR = PSX_GetWorkingFolder(win)
+	DFREF workDFR  = PSX_GetWorkingFolder(win)
 	DFREF comboDFR = GetPSXFolderForCombo(workDFR, 0)
 
 	// make space on the left hand side
-	DefineGuide/W=$mainWin customLeft = {FL, 0.15, FR}
+	DefineGuide/W=$mainWin customLeft={FL, 0.15, FR}
 	WAVE combos = GetPSXComboListBox(workDFR)
-	ListBox listbox_select_combo,win=$mainWin,mode=2,selRow=0,listWave=combos,helpWave=combos
+	ListBox listbox_select_combo, win=$mainWin, mode=2, selRow=0, listWave=combos, helpWave=combos
 
 	WAVE peakX                  = GetPSXPeakXWaveFromDFR(comboDFR)
 	WAVE peakY                  = GetPSXPeakYWaveFromDFR(comboDFR)
@@ -3549,49 +3549,49 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 
 	ModifyGraph/W=$win msize(peakY)=10, msize(peakYAtFilt)=10
 
-	ModifyGraph/W=$win axisEnab(leftFiltOff)={0.51,1},lblPos(leftFiltOff)=70,freePos(leftFiltOff)=0
-	ModifyGraph/W=$win axisEnab(leftFiltOffDeconv)={0,0.49},lblPos(leftFiltOffDeconv)=70,freePos(leftFiltOffDeconv)=0
+	ModifyGraph/W=$win axisEnab(leftFiltOff)={0.51, 1}, lblPos(leftFiltOff)=70, freePos(leftFiltOff)=0
+	ModifyGraph/W=$win axisEnab(leftFiltOffDeconv)={0, 0.49}, lblPos(leftFiltOffDeconv)=70, freePos(leftFiltOffDeconv)=0
 
 	PSX_MarkGraphForPSX(win)
 
 	WAVE eventLocationLabels = GetPSXEventLocationLabels(comboDFR)
-	WAVE eventLocationTicks = GetPSXEventLocationTicks(comboDFR)
-	WAVE eventColors = GetPSXEventColorsWaveFromDFR(comboDFR)
-	WAVE eventMarker = GetPSXEventMarkerWaveFromDFR(comboDFR)
+	WAVE eventLocationTicks  = GetPSXEventLocationTicks(comboDFR)
+	WAVE eventColors         = GetPSXEventColorsWaveFromDFR(comboDFR)
+	WAVE eventMarker         = GetPSXEventMarkerWaveFromDFR(comboDFR)
 
 	NewFreeAxis/W=$win/O/T eventLocAxis
-	ModifyFreeAxis/W=$win/Z eventLocAxis,master=bottom
+	ModifyFreeAxis/W=$win/Z eventLocAxis, master=bottom
 	ModifyGraph/W=$win grid(eventLocAxis)=1
 	ModifyGraph/W=$win tick(eventLocAxis)=3
 	ModifyGraph/W=$win lblPos(eventLocAxis)=43
 	ModifyGraph/W=$win noLabel(eventLocAxis)=2
-	ModifyGraph/W=$win freePos(eventLocAxis)={0,kwFraction}
-	Label/W=$win eventLocAxis "\\u#2"
+	ModifyGraph/W=$win freePos(eventLocAxis)={0, kwFraction}
+	Label/W=$win eventLocAxis, "\\u#2"
 
-	ModifyGraph/W=$win zColor(peakYAtFilt)={eventColors,*,*,directRGB,0}
+	ModifyGraph/W=$win zColor(peakYAtFilt)={eventColors, *, *, directRGB, 0}
 	ModifyGraph/W=$win mode(peakYAtFilt)=3
 	ModifyGraph/W=$win zmrkNum(peakYAtFilt)={eventMarker}
 
-	ModifyGraph/W=$win zColor(peakY)={eventColors,*,*,directRGB,0}
+	ModifyGraph/W=$win zColor(peakY)={eventColors, *, *, directRGB, 0}
 	ModifyGraph/W=$win mode(peakY)=3
 	ModifyGraph/W=$win zmrkNum(peakY)={eventMarker}
 
 	extSingleGraph = PSX_GetSingleEventGraph(win)
-	extSubWin = PSX_GetSpecialPanel(win)
+	extSubWin      = PSX_GetSpecialPanel(win)
 
-	PopupMenu popup_block, win=$extSubWin,value=#("PSX_GetAllEventBlockNumbers(\"" + win + "\")")
+	PopupMenu popup_block, win=$extSubWin, value=#("PSX_GetAllEventBlockNumbers(\"" + win + "\")")
 
 	AppendToGraph/W=$extSingleGraph/C=(color.red, color.green, color.blue) sweepDataFiltOff
 	AppendToGraph/W=$extSingleGraph peakYAtFilt vs peakX
 	SetAxis/A=2/W=$extSingleGraph left
 
-	ModifyGraph/W=$extSingleGraph zColor(peakYAtFilt)={eventColors,*,*,directRGB,0}
+	ModifyGraph/W=$extSingleGraph zColor(peakYAtFilt)={eventColors, *, *, directRGB, 0}
 	ModifyGraph/W=$extSingleGraph mode(peakYAtFilt)=3
 	ModifyGraph/W=$extSingleGraph zmrkNum(peakYAtFilt)={eventMarker}
 	ModifyGraph/W=$extSingleGraph msize(peakYAtFilt)=10
 
 	WAVE singleEventFit = GetPSXSingleEventFitWaveFromDFR(comboDFR)
-	AppendToGraph/W=$extSingleGraph/C=(21845,21845,21845) singleEventFit
+	AppendToGraph/W=$extSingleGraph/C=(21845, 21845, 21845) singleEventFit
 
 	NVAR JSONid = $GetSettingsJSONid()
 	PS_InitCoordinates(JSONid, extSubWin, extSubWin)
@@ -3600,7 +3600,7 @@ End
 /// @brief Mark `win` as being an psx graph
 static Function PSX_MarkGraphForPSX(string win)
 
-	SetWindow $win, userData($PSX_USER_DATA_TYPE) = PSX_USER_DATA_PSX
+	SetWindow $win, userData($PSX_USER_DATA_TYPE)=PSX_USER_DATA_PSX
 End
 
 /// @brief Apply plot properties which have to be reapplied on every combo index change
@@ -3627,7 +3627,7 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 	Redimension/N=(-1, numOperations) input
 
 	for(i = 0; i < numOperations; i += 1)
-		op = operations[i]
+		op     = operations[i]
 		opNice = op + ": "
 
 		jsonPathOp = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + op
@@ -3646,7 +3646,7 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 			endif
 
 			jsonPathParam = jsonPathOp + "/" + param
-			type = JSON_GetType(jsonID, jsonPathParam)
+			type          = JSON_GetType(jsonID, jsonPathParam)
 
 			switch(type)
 				case JSON_NUMERIC:
@@ -3695,7 +3695,7 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 
 	JSON_Release(jsonID)
 
-	str = FormatTextWaveForLegend(input)
+	str        = FormatTextWaveForLegend(input)
 	mainWindow = GetMainWindow(win)
 	UpdateInfoButtonHelp(mainWindow, "button_psx_info", str)
 End
@@ -3772,7 +3772,7 @@ static Function [variable eventIndex, variable waveIndex, variable comboIndex] P
 	ASSERT(numEntries == DimSize(xWave, ROWS), "Unmatching wave sizes")
 
 	yPointNumber = limit(yPointNumber + direction, 0, numEntries - 1)
-	comboIndex = PSX_GetComboIndexForComboKey(win, comboKeys[yPointNumber])
+	comboIndex   = PSX_GetComboIndexForComboKey(win, comboKeys[yPointNumber])
 
 	strswitch(postProc)
 		case "nothing":
@@ -3806,7 +3806,7 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 				break
 			endif
 
-			win = s.winName
+			win        = s.winName
 			eventIndex = s.pointNumber
 
 			psxGraph = PSX_GetPSXGraph(win)
@@ -3889,12 +3889,12 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 			endif
 
 #ifdef DEBUGGING_ENABLED
-			DFREF workDFR = PSX_GetWorkingFolder(win)
+			DFREF   workDFR      = PSX_GetWorkingFolder(win)
 			WAVE/DF comboFolders = PSX_GetAllCombinationFolders(workDFR)
-			DFREF comboDFR = comboFolders[comboIndex]
+			DFREF   comboDFR     = comboFolders[comboIndex]
 
 			WAVE sweepDataFiltOff = GetPSXSweepDataFiltOffWaveFromDFR(comboDFR)
-			WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
+			WAVE psxEvent         = GetPSXEventWaveFromDFR(comboDFR)
 			[first, last] = PSX_GetEventFitRange(sweepDataFiltOff, psxEvent, eventIndex)
 
 			sprintf msg, "Fit range for event %d: [%g, %g]", eventIndex, first, last
@@ -3928,7 +3928,7 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 
 			return 1
 		case EVENT_WINDOW_HOOK_KILLVOTE:
-			win = s.winName
+			win     = s.winName
 			browser = SFH_GetBrowserForFormulaGraph(s.winName)
 			PSX_StoreGuiState(win, browser)
 			return 0
@@ -3954,7 +3954,7 @@ Function PSX_AllEventGraphHook(STRUCT WMWinHookStruct &s)
 			endif
 
 			specialEventPanel = PSX_GetSpecialPanel(win)
-			statetype = GetPopupMenuString(specialEventPanel, "popupmenu_state_type")
+			statetype         = GetPopupMenuString(specialEventPanel, "popupmenu_state_type")
 			if(!cmpstr(statetype, PSX_TUD_FIT_STATE_KEY))
 				printf "Keyboard interaction is disabled while fit event state is selected.\r"
 				ControlWindowToFront()
@@ -4021,7 +4021,7 @@ End
 static Function PSX_ReactToKeyPressWithoutMouse(string win, variable keyCode, variable comboIndex, variable eventIndex)
 
 	variable keyboardDir
-	string psxGraph
+	string   psxGraph
 
 	switch(keycode)
 		case LEFT_KEY:
@@ -4128,7 +4128,7 @@ Function PSX_Plot(string win, string graph, WAVE/WAVE/Z results, STRUCT SF_PlotM
 	if(!DataFolderExistsDFR(workDFR))
 		firstOp = 1
 		DFREF sweepFormulaDFR = SFH_GetWorkingDF(graph)
-		DFREF workDFR = UniqueDataFolder(sweepFormulaDFR, "psx")
+		DFREF workDFR         = UniqueDataFolder(sweepFormulaDFR, "psx")
 		BSP_SetFolder(win, workDFR, PSX_USER_DATA_WORKING_FOLDER)
 	else
 		WAVE comboFolders = PSX_GetAllCombinationFolders(workDFR)
@@ -4143,13 +4143,13 @@ Function PSX_Plot(string win, string graph, WAVE/WAVE/Z results, STRUCT SF_PlotM
 	endif
 
 	numFailures = PSX_MoveWavesToDataFolders(workDFR, results, offset, numCombos)
-	numCombos -= numFailures
+	numCombos  -= numFailures
 
 	if(!numCombos)
 		return NaN
 	endif
 
-	for(i = 0; i <  numCombos; i += 1)
+	for(i = 0; i < numCombos; i += 1)
 		PSX_UpdateEventWaves(win, writeState = 0, comboIndex = offset + i)
 	endfor
 
@@ -4158,7 +4158,7 @@ Function PSX_Plot(string win, string graph, WAVE/WAVE/Z results, STRUCT SF_PlotM
 
 		PSX_AddLegend(win, results)
 	else
-		WAVE combos = GetPSXComboListBox(workDFR)
+		WAVE combos        = GetPSXComboListBox(workDFR)
 		WAVE updatedCombos = PSX_CreateCombinationsListBoxWaveAsFree(workDFR)
 
 		Duplicate/O updatedCombos, combos
@@ -4168,7 +4168,7 @@ End
 /// @brief Init the psx plot after filling it with data
 Function PSX_PostPlot(string win)
 
-	DFREF workDFR = PSX_GetWorkingFolder(win)
+	DFREF     workDFR      = PSX_GetWorkingFolder(win)
 	WAVE/DF/Z comboFolders = PSX_GetAllCombinationFolders(workDFR)
 
 	if(!WaveExists(comboFolders))
@@ -4185,9 +4185,9 @@ Function PSX_PostPlot(string win)
 
 	PSX_UpdateAllEventGraph(win, forceAverageUpdate = 1, forceSingleEventUpdate = 1, forceBlockIndexUpdate = 1, forceSingleEventOffsetUpdate = 1)
 
-	DFREF comboDFR = PSX_GetCurrentComboFolder(win)
-	WAVE eventLocationLabels = GetPSXEventLocationLabels(comboDFR)
-	WAVE eventLocationTicks = GetPSXEventLocationTicks(comboDFR)
+	DFREF comboDFR            = PSX_GetCurrentComboFolder(win)
+	WAVE  eventLocationLabels = GetPSXEventLocationLabels(comboDFR)
+	WAVE  eventLocationTicks  = GetPSXEventLocationTicks(comboDFR)
 
 	PSX_ApplySpecialPlotProperties(win, eventLocationTicks, eventLocationLabels)
 End
@@ -4215,19 +4215,19 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
-	WAVE/WAVE psxKernelDataset = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_PSX, 1,  defOp = "psxKernel()")
+	WAVE/WAVE psxKernelDataset = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_PSX, 1, defOp = "psxKernel()")
 
 	try
-		numberOfSDs = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
-		sweepFilterLow = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW, checkFunc = IsNullOrPositiveAndFinite)
+		numberOfSDs     = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 2, defValue = PSX_NUMBER_OF_SDS_DEFAULT, checkFunc = IsStrictlyPositiveAndFinite)
+		sweepFilterLow  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 3, defValue = PSX_DEFAULT_FILTER_LOW, checkFunc = IsNullOrPositiveAndFinite)
 		sweepFilterHigh = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 4, defValue = PSX_DEFAULT_FILTER_HIGH, checkFunc = IsNullOrPositiveAndFinite)
-		maxTauFactor = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
+		maxTauFactor    = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX, 5, defValue = PSX_DEFAULT_MAX_TAU_FACTOR, checkFunc = IsStrictlyPositiveAndFinite)
 		WAVE riseTime = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 6, defOp = "psxRiseTime()", expectedWaveType = IGOR_TYPE_64BIT_FLOAT, singleResult = 1)
 		ASSERT(IsNumericWave(riseTime), "Invalid return from psxRiseTime")
 		WAVE deconvFilter = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_PSX, 7, defOp = "psxDeconvFilter()", singleResult = 1)
 
 		parameterJsonID = JWN_GetWaveNoteAsJSON(psxKernelDataset)
-		parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX
+		parameterPath   = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX
 		JSON_AddTreeObject(parameterJsonID, parameterPath)
 		JSON_AddString(parameterJsonID, parameterPath + "/id", id)
 		JSON_AddVariable(parameterJsonID, parameterPath + "/numberOfSDs", numberOfSDs)
@@ -4317,9 +4317,9 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 	SFH_ASSERT(WaveExists(selectData), "Could not gather sweep data from select statement")
 
-	riseTau = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 2, defValue = 1, checkFunc = IsStrictlyPositiveAndFinite)
+	riseTau  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 2, defValue = 1, checkFunc = IsStrictlyPositiveAndFinite)
 	decayTau = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 3, defValue = 15, checkFunc = IsStrictlyPositiveAndFinite)
-	amp = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 4, defValue = -5, checkFunc = IsFinite)
+	amp      = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 4, defValue = -5, checkFunc = IsFinite)
 
 	WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, range, selectData, SF_OP_PSX_KERNEL)
 
@@ -4334,7 +4334,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	for(i = 0; i < numCombos; i += 1)
 		WAVE sweepData = sweepDataRef[i]
 		numPoints = DimSize(sweepData, ROWS)
-		dt = DimDelta(sweepData, ROWS)
+		dt        = DimDelta(sweepData, ROWS)
 
 		if(IsOdd(numPoints))
 			// throw away one point so that FFT works
@@ -4345,13 +4345,13 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 		Duplicate/FREE/T rawLabels, labels
 		labels[] = PSX_GenerateKey(rawLabels[p], i)
-		SetDimensionLabels(output, TextWaveToList(labels, ";") , ROWS, startPos = i * PSX_KERNEL_OUTPUTWAVES_PER_ENTRY)
+		SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = i * PSX_KERNEL_OUTPUTWAVES_PER_ENTRY)
 
-		key = PSX_GenerateKey("psxKernel", i)
+		key           = PSX_GenerateKey("psxKernel", i)
 		output[%$key] = result[0]
-		key = PSX_GenerateKey("psxKernelFFT", i)
+		key           = PSX_GenerateKey("psxKernelFFT", i)
 		output[%$key] = result[1]
-		key = PSX_GenerateKey("sweepData", i)
+		key           = PSX_GenerateKey("sweepData", i)
 		output[%$key] = sweepData
 	endfor
 
@@ -4392,8 +4392,8 @@ Function/WAVE PSX_OperationDeconvFilter(variable jsonId, string jsonPath, string
 
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_PSX_DECONV_FILTER, 0, maxArgs = 3)
 
-	low = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 0, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
-	high = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 1, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
+	low   = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 0, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
+	high  = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 1, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
 	order = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 2, defValue = NaN, checkFunc = IsOdd, checkDefault = 0)
 
 	Make/D/FREE params = {low, high, order}
@@ -4476,7 +4476,7 @@ Function/WAVE PSX_OperationPrep(variable jsonId, string jsonPath, string graph)
 	JWN_SetNumberInWaveNote(fit, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
 	JWN_SetNumberInWaveNote(sdThresholdY, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_MARKERS)
 
-	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Data (" + dataUnit  + ")")
+	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Data (" + dataUnit + ")")
 	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, "All points histogram with Gaussian fit")
 
 	/// @todo: Don't hardcode trace names
@@ -4499,7 +4499,7 @@ static Function [WAVE hist, WAVE fit, variable peakThresh, string dataUnit] PSX_
 
 	if(WaveExists(coef) && WaveExists(fit))
 		peakThresh = RoundNumber(coef[3] * numSDs, 3)
-		dataUnit = WaveUnits(sweepDataFiltOffDeconv, -1)
+		dataUnit   = WaveUnits(sweepDataFiltOffDeconv, -1)
 
 		return [hist, fit, peakThresh, dataUnit]
 	endif
@@ -4639,7 +4639,7 @@ static Function/WAVE PSX_GetEventsInsideMarqueeForStatsPlot(string win, variable
 	string traces, comboKey, trace
 	variable numTraces, i, idx
 
-	traces = TraceNameList(win, ";", 1 + 2)
+	traces    = TraceNameList(win, ";", 1 + 2)
 	numTraces = ItemsInList(traces)
 
 	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE, 2) result
@@ -4819,7 +4819,7 @@ static Function PSX_SetCombo(string win, variable comboIndex)
 
 	psxGraph = PSX_GetPSXGraph(win)
 
-	DFREF workDFR = PSX_GetWorkingFolder(psxGraph)
+	DFREF workDFR  = PSX_GetWorkingFolder(psxGraph)
 	DFREF comboDFR = GetPSXFolderForCombo(workDFR, comboIndex)
 
 	extSingleGraph = PSX_GetSingleEventGraph(psxGraph)
@@ -4830,7 +4830,7 @@ static Function PSX_SetCombo(string win, variable comboIndex)
 	ReplaceWave/W=$extSingleGraph allinCDF
 	SetDataFolder currentDFR
 
-	WAVE eventLocationTicks = GetPSXEventLocationTicks(comboDFR)
+	WAVE eventLocationTicks  = GetPSXEventLocationTicks(comboDFR)
 	WAVE eventLocationLabels = GetPSXEventLocationLabels(comboDFR)
 
 	PSX_ApplySpecialPlotProperties(psxGraph, eventLocationTicks, eventLocationLabels)
@@ -4859,7 +4859,7 @@ Function PSX_ButtonProc_StoreEvents(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			graph = GetMainWindow(ba.win)
+			graph   = GetMainWindow(ba.win)
 			browser = SFH_GetBrowserForFormulaGraph(graph)
 
 			WAVE/Z eventContainer = PSX_GetEventContainer(browser)
@@ -4879,7 +4879,7 @@ Function PSX_ButtonProc_LoadEvents(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			graph = GetMainWindow(ba.win)
-			id = PSX_GetID(graph)
+			id    = PSX_GetID(graph)
 
 			WAVE/Z eventContainerFromResults = PSX_GetEventContainerFromResults(id)
 			if(!WaveExists(eventContainerFromResults))
@@ -4896,7 +4896,7 @@ Function PSX_ButtonProc_LoadEvents(STRUCT WMButtonAction &ba) : ButtonControl
 
 			for(i = 0; i < numCombos; i += 1)
 				DFREF comboDFR = comboFolders[i]
-				WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
+				WAVE  psxEvent = GetPSXEventWaveFromDFR(comboDFR)
 
 				comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
 
@@ -4934,7 +4934,7 @@ Function PSX_ButtonProcJumpFirstUndet(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			win = ba.win
+			win      = ba.win
 			psxGraph = PSX_GetPSXGraph(win)
 
 			DFREF workDFR = PSX_GetWorkingFolder(win)
@@ -5123,26 +5123,26 @@ Function PSX_PlotStartupSettings()
 	endfor
 
 	// default GUI values
-	CheckBox checkbox_suppress_update,value=0,win=$win
+	CheckBox checkbox_suppress_update, value=0, win=$win
 
-	ListBox listbox_select_combo, win=$win, listWave=$"", selWave=$"", helpWave=$"",selRow=0
+	ListBox listbox_select_combo, win=$win, listWave=$"", selWave=$"", helpWave=$"", selRow=0
 
 	specialEventPanel = PSX_GetSpecialPanel(win)
 
-	CheckBox checkbox_single_events_accept,value=1,win=$specialEventPanel
-	CheckBox checkbox_single_events_reject,value=1,win=$specialEventPanel
-	CheckBox checkbox_single_events_undetermined,value=1,win=$specialEventPanel
+	CheckBox checkbox_single_events_accept, value=1, win=$specialEventPanel
+	CheckBox checkbox_single_events_reject, value=1, win=$specialEventPanel
+	CheckBox checkbox_single_events_undetermined, value=1, win=$specialEventPanel
 
-	CheckBox checkbox_average_events_accept,value=0,win=$specialEventPanel
-	CheckBox checkbox_average_events_reject,value=0,win=$specialEventPanel
-	CheckBox checkbox_average_events_undetermined,value=0,win=$specialEventPanel
-	CheckBox checkbox_average_events_all,value=0,win=$specialEventPanel
-	CheckBox checkbox_average_events_fit,value=0,win=$specialEventPanel
+	CheckBox checkbox_average_events_accept, value=0, win=$specialEventPanel
+	CheckBox checkbox_average_events_reject, value=0, win=$specialEventPanel
+	CheckBox checkbox_average_events_undetermined, value=0, win=$specialEventPanel
+	CheckBox checkbox_average_events_all, value=0, win=$specialEventPanel
+	CheckBox checkbox_average_events_fit, value=0, win=$specialEventPanel
 
-	CheckBox checkbox_restrict_events_to_current_combination,value=0,win=$specialEventPanel
-	PopupMenu popupmenu_accept_fit_function,mode=1,win=$specialEventPanel
-	SetVariable setvar_event_block_size,value=_NUM:100,win=$specialEventPanel
-	PopupMenu popup_block,mode=1,value="",win=$specialEventPanel,userdata($PSX_UD_NUM_BLOCKS)="1"
+	CheckBox checkbox_restrict_events_to_current_combination, value=0, win=$specialEventPanel
+	PopupMenu popupmenu_accept_fit_function, mode=1, win=$specialEventPanel
+	SetVariable setvar_event_block_size, value=_NUM:100, win=$specialEventPanel
+	PopupMenu popup_block, mode=1, value="", win=$specialEventPanel, userdata($PSX_UD_NUM_BLOCKS)="1"
 
 	StoreCurrentPanelsResizeInfo(win)
 
@@ -5182,7 +5182,7 @@ Function ApplyMacroToExistingPanel(string win, string mac)
 	FindValue/TEXT="NewPanel" macroCode
 	ASSERT(V_row > 0, "Could not find NewPanel")
 	macroCode[0, V_row] = ""
-	macroCode[inf] = ""
+	macroCode[Inf]      = ""
 
 	currWindow = GetCurrentWindow()
 	SetActiveSubwindow $win

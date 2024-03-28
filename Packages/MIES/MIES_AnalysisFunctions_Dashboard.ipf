@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -15,11 +15,11 @@ Function AD_UpdateAllDatabrowser()
 	string win, panelList, browserType
 	variable i, numEntries
 
-	panelList = WinList("DB_*", ";", "WIN:1")
+	panelList  = WinList("DB_*", ";", "WIN:1")
 	numEntries = ItemsInList(panelList)
 
 	for(i = 0; i < numEntries; i += 1)
-		win = StringFromList(i, panelList)
+		win         = StringFromList(i, panelList)
 		browserType = BSP_GetBrowserType(win)
 		if(!IsEmpty(browserType))
 			AD_Update(win)
@@ -52,11 +52,11 @@ Function AD_Update(win)
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
-	WAVE/T helpWave = GetAnaFuncDashboardHelpWave(dfr)
-	WAVE colorWave  = GetAnaFuncDashboardColorWave(dfr)
-	WAVE selWave    = GetAnaFuncDashboardselWave(dfr)
-	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
-	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
+	WAVE/T helpWave  = GetAnaFuncDashboardHelpWave(dfr)
+	WAVE   colorWave = GetAnaFuncDashboardColorWave(dfr)
+	WAVE   selWave   = GetAnaFuncDashboardselWave(dfr)
+	WAVE/T listWave  = GetAnaFuncDashboardListWave(dfr)
+	WAVE/T infoWave  = GetAnaFuncDashboardInfoWave(dfr)
 
 	if(BSP_IsActive(mainPanel, MIES_BSP_DS))
 		numEntries = AD_FillWaves(win, listWave, infoWave)
@@ -200,13 +200,13 @@ static Function AD_FillWaves(win, list, info)
 	endif
 
 	if(BSP_IsDataBrowser(win))
-		device = BSP_GetDevice(win)
+		device   = BSP_GetDevice(win)
 		acqState = ROVar(GetAcquisitionState(device))
 		DFREF sweepDFR = GetDeviceDataPath(device)
 	else
 		acqState = AS_INACTIVE
-		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(win)
-		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+		DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(win)
+		WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
 	endif
 
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
@@ -265,8 +265,8 @@ static Function AD_FillWaves(win, list, info)
 			if(V_Value >= 0)
 				if(!cmpstr(info[V_Value][%$"Ongoing DAQ"], "1"))
 					// if DAQ was ongoing we want to overwrite this entry and all later entries
-					index = V_Value
-					info[index, inf][] = ""
+					index              = V_Value
+					info[index, Inf][] = ""
 				else
 					// otherwise we want to keep it
 					continue
@@ -283,8 +283,8 @@ static Function AD_FillWaves(win, list, info)
 				ASSERT(WaveExists(lastSweepStimsetCycleIDs), "Missing last sweep SCIs")
 				ongoingDAQ = (lastSweepStimsetCycleIDs[headstage] == stimsetCycleID) && (acqState != AS_INACTIVE)
 			else
-				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1, waMode = waMode)
-				passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+				key        = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1, waMode = waMode)
+				passed     = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 				ongoingDAQ = IsNaN(passed) && (acqState != AS_INACTIVE)
 			endif
 
@@ -332,7 +332,7 @@ static Function AD_FillWaves(win, list, info)
 					endif
 
 					Duplicate/FREE sweeps, passingSweepsAll, failingSweepsAll
-					passingSweepsAll[] = sweepPass[p]  ? sweeps[p] : NaN
+					passingSweepsAll[] = sweepPass[p] ? sweeps[p] : NaN
 					failingSweepsAll[] = !sweepPass[p] ? sweeps[p] : NaN
 
 					WAVE/Z passingSweeps = ZapNaNs(passingSweepsAll)
@@ -369,9 +369,9 @@ static Function AD_FillWaves(win, list, info)
 			endswitch
 
 			info[index][%$STIMSET_ACQ_CYCLE_ID_KEY] = AD_FormatListKey(stimsetCycleID, headstage)
-			info[index][%$"Passing Sweeps"] = NumericWaveToList(passingSweeps, ";")
-			info[index][%$"Failing Sweeps"] = NumericWaveToList(failingSweeps, ";")
-			info[index][%$"Ongoing DAQ"] = num2str(ongoingDAQ)
+			info[index][%$"Passing Sweeps"]         = NumericWaveToList(passingSweeps, ";")
+			info[index][%$"Failing Sweeps"]         = NumericWaveToList(failingSweeps, ";")
+			info[index][%$"Ongoing DAQ"]            = num2str(ongoingDAQ)
 
 			SetNumberInWaveNote(list, NOTE_INDEX, ++index)
 		endfor
@@ -388,7 +388,7 @@ End
 /// @param headstage       headstage
 static Function [variable anaFuncType, variable waMode] AD_GetAnalysisFunctionType(WAVE numericalValues, WAVE anaFuncTypes, variable sweepNo, variable headstage)
 
-	string key
+	string   key
 	variable passed
 
 	anaFuncType = anaFuncTypes[headstage]
@@ -397,7 +397,7 @@ static Function [variable anaFuncType, variable waMode] AD_GetAnalysisFunctionTy
 		// querying the analysis function version would have been a more generic choice
 		// but that is only available since c2b1e0fb (Add a version labnotebook entry for
 		// all PSQ/MSQ analysis functions, 2021-06-18)
-		key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
+		key    = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 		passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 		if(IsNaN(passed))
@@ -428,7 +428,7 @@ End
 
 static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage, waMode)
 	variable sweepNo
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable headstage, waMode
 
 	string msg, key
@@ -446,7 +446,7 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage, 
 		endif
 	endif
 
-	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1, waMode = waMode)
+	key      = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1, waMode = waMode)
 	stepSize = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	if(!IsFinite(stepSize))
 		BUG("Missing DAScale stepsize LBN entry")
@@ -471,10 +471,10 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage, 
 End
 
 static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, sweepDFR, headstage)
-	WAVE numericalValues
-	WAVE/T textualValues
+	WAVE     numericalValues
+	WAVE/T   textualValues
 	variable sweepNo
-	DFREF sweepDFR
+	DFREF    sweepDFR
 	variable headstage
 
 	string msg, key, fISlopeStr
@@ -524,7 +524,7 @@ static Function/S AD_GetRheobaseFailMsg(WAVE numericalValues, WAVE/T textualValu
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 	WAVE/Z spikeDetect = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	pattern = RemoveEnding(NumericWaveToList(spikeDetect, ", ", format="%g"), ", ")
+	pattern = RemoveEnding(NumericWaveToList(spikeDetect, ", ", format = "%g"), ", ")
 	pattern = SelectString(IsEmpty(pattern), pattern, "n.a.")
 
 	sprintf msg, "%s\rWe were not able to find the correct on/off spike pattern (%s)", prefix, pattern
@@ -559,7 +559,7 @@ static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualVa
 	return "Failure as we ran out of sweeps"
 End
 
-static Function/S AD_GetChirpFailMsg(WAVE numericalValues,WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
+static Function/S AD_GetChirpFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
 	string key, msg, str
 	string text = ""
 	variable i, numSweeps, setPassed, maxOccurences
@@ -630,8 +630,8 @@ static Function [variable qc, string msg] AD_GetBaselineFailMsg(variable anaFunc
 				return [1, ""]
 			endif
 
-			for(i = 0; ;i += 1)
-				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_CHUNK_PASS, query = 1, chunk = i)
+			for(i = 0;; i += 1)
+				key     = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_CHUNK_PASS, query = 1, chunk = i)
 				chunkQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 				if(IsNaN(chunkQC))
@@ -745,7 +745,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 
 	for(i = 0; i < numSweeps; i += 1)
 		sweepNo = sweeps[i]
-		text = ""
+		text    = ""
 
 		if(WaveExists(sweepPass) && sweepPass[i])
 			sprintf text, "Sweep %d passed", sweeps[i]
@@ -775,7 +775,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 					break
 				endif
 
-				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS, query = 1)
+				key            = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS, query = 1)
 				accessRestPass = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 				if(IsFinite(accessRestPass) && !accessRestPass)
@@ -783,7 +783,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 					break
 				endif
 
-				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS, query = 1)
+				key             = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS, query = 1)
 				resistanceRatio = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 				if(IsFinite(resistanceRatio) && !resistanceRatio)
@@ -792,7 +792,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				endif
 				break
 			case PSQ_CHIRP:
-				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_STIMSET_QC, query = 1)
+				key       = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_STIMSET_QC, query = 1)
 				stimsetQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 				// not available in ed5d20c7 (Merge pull request #1434 from
@@ -810,7 +810,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 					break
 				endif
 
-				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_BOUNDS_ACTION, query = 1)
+				key          = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_BOUNDS_ACTION, query = 1)
 				boundsAction = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 				if(IsFinite(boundsAction) && boundsAction != PSQ_CR_PASS)
@@ -818,7 +818,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 					break
 				endif
 
-				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_CHECK, query = 1)
+				key        = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_CHECK, query = 1)
 				spikeCheck = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 				if(spikeCheck)
@@ -863,7 +863,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 					break
 				endif
 
-				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_PB_RESISTANCE_PASS, query = 1)
+				key            = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_PB_RESISTANCE_PASS, query = 1)
 				resistancePass = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 				if(IsFinite(resistancePass) && !resistancePass)
@@ -901,7 +901,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 					break
 				endif
 
-				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SE_RESISTANCE_PASS, query = 1)
+				key            = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SE_RESISTANCE_PASS, query = 1)
 				resistancePass = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 				if(IsFinite(resistancePass) && !resistancePass)
@@ -917,7 +917,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 					break
 				endif
 
-				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_VM_FULL_AVG_PASS, query = 1)
+				key          = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_VM_FULL_AVG_PASS, query = 1)
 				avgCheckPass = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 				if(IsFinite(avgCheckPass) && !avgCheckPass)
@@ -986,7 +986,7 @@ static Function/S AD_HasAsyncQCFailed(WAVE numericalValues, WAVE/T textualValues
 		return ""
 	endif
 
-	WAVE/T params = GetLastSetting(textualValues, sweepNo, "Function params (encoded)", DATA_ACQUISITION_MODE)
+	WAVE/T params        = GetLastSetting(textualValues, sweepNo, "Function params (encoded)", DATA_ACQUISITION_MODE)
 	WAVE/Z asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", params[headstage])
 
 	if(!WaveExists(asyncChannelQC))
@@ -999,7 +999,7 @@ static Function/S AD_HasAsyncQCFailed(WAVE numericalValues, WAVE/T textualValues
 		return ""
 	endif
 
-	for(chan: asyncChannels)
+	for(chan : asyncChannels)
 		sprintf key, "Async Alarm %d State", chan
 		asyncAlarm = !GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
@@ -1026,8 +1026,8 @@ End
 static Function/S AD_HasPrematureStopLegacy(WAVE numericalValues, WAVE/T textualValues, variable anaFuncType, variable sweepNo, DFREF sweepDFR, variable headstage)
 	variable once
 
-	DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
-	WAVE/WAVE ADData = GetDAQDataSingleColumnWaves(singleSweepDFR, XOP_CHANNEL_TYPE_ADC)
+	DFREF     singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
+	WAVE/WAVE ADData         = GetDAQDataSingleColumnWaves(singleSweepDFR, XOP_CHANNEL_TYPE_ADC)
 
 	for(WAVE/Z AD : ADData)
 		if(WaveExists(AD))
@@ -1067,7 +1067,7 @@ static Function AD_SelectResult(string win)
 	Make/N=0/FREE sweepsWithDuplicates
 	if(GetCheckBoxState(bspPanel, "check_BrowserSettings_DB_Passed"))
 		sweepList[] = SelectString(selection[p], "", info[p][%$"Passing Sweeps"])
-		list = TextWaveToList(sweepList, ";")
+		list        = TextWaveToList(sweepList, ";")
 
 		if(!IsEmpty(list))
 			WAVE wv = ListToNumericWave(list, ";")
@@ -1077,7 +1077,7 @@ static Function AD_SelectResult(string win)
 
 	if(GetCheckBoxState(bspPanel, "check_BrowserSettings_DB_Failed"))
 		sweepList[] = SelectString(selection[p], "", info[p][%$"Failing Sweeps"])
-		list = TextWaveToList(sweepList, ";")
+		list        = TextWaveToList(sweepList, ";")
 
 		if(!IsEmpty(list))
 			WAVE wv = ListToNumericWave(list, ";")
@@ -1106,7 +1106,7 @@ static Function AD_SelectResult(string win)
 	endif
 
 	if(!BSP_IsDataBrowser(win) && WaveExists(sweeps))
-		WAVE allSweeps = GetPlainSweepList(win)
+		WAVE   allSweeps     = GetPlainSweepList(win)
 		WAVE/Z presentSweeps = GetSetIntersection(allSweeps, sweeps)
 		if(!WaveExists(presentSweeps) || EqualWaves(presentSweeps, sweeps, EQWAVES_DATA) != 1)
 			printf "Some requested sweeps can not be displayed, as they are not loaded into this sweepbrowser.\r"
@@ -1124,8 +1124,8 @@ Function AD_PlotBounds(string browser, variable sweepNo)
 	string key, graph, leftAxis
 	variable outerRelativeBound, innerRelativeBound, baselineVoltage, lastX, headstage
 
-	WAVE/Z numericalValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	WAVE/T/Z textualValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	WAVE/Z   numericalValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	WAVE/T/Z textualValues   = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 	ASSERT(WaveExists(numericalValues) && WaveExists(textualValues), "Missing labnotebook")
 
 	WAVE/Z statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", UNKNOWN_MODE)
@@ -1154,8 +1154,8 @@ Function AD_PlotBounds(string browser, variable sweepNo)
 
 	graph = GetMainWindow(browser)
 
-	WAVE/T/Z leftAxisMatches = TUD_GetUserDataAsWave(graph, "YAXIS",                                                   \
-	                                                 keys = {"channelType", "channelNumber", "sweepNumber"},           \
+	WAVE/T/Z leftAxisMatches = TUD_GetUserDataAsWave(graph, "YAXIS",                                                 \
+	                                                 keys = {"channelType", "channelNumber", "sweepNumber"},         \
 	                                                 values = {"AD", num2str(statusADC[headstage]), num2str(sweepNo)})
 	ASSERT(WaveExists(leftAxisMatches) && DimSize(leftAxisMatches, ROWS) >= 1, "Could not find sweep displayed")
 	leftAxis = leftAxisMatches[0]
@@ -1181,10 +1181,10 @@ Function AD_PlotBounds(string browser, variable sweepNo)
 	SetScale/I x, 0, lastX, "ms", upperMax, upperMin, lowerMax, lowerMin
 
 	AppendToGraph/W=$graph/L=$leftAxis upperMax, upperMin, lowerMax, lowerMin
-	ModifyGraph/W=$graph lstyle(chirpBoundUpperMax)=7,rgb(chirpBoundUpperMax)=(0,0,65535)
-	ModifyGraph/W=$graph lstyle(chirpBoundUpperMin)=7,rgb(chirpBoundUpperMin)=(0,0,65535)
-	ModifyGraph/W=$graph lstyle(chirpBoundLowerMax)=7,rgb(chirpBoundLowerMax)=(0,0,65535)
-	ModifyGraph/W=$graph lstyle(chirpBoundLowerMin)=7,rgb(chirpBoundLowerMin)=(0,0,65535)
+	ModifyGraph/W=$graph lstyle(chirpBoundUpperMax)=7, rgb(chirpBoundUpperMax)=(0, 0, 65535)
+	ModifyGraph/W=$graph lstyle(chirpBoundUpperMin)=7, rgb(chirpBoundUpperMin)=(0, 0, 65535)
+	ModifyGraph/W=$graph lstyle(chirpBoundLowerMax)=7, rgb(chirpBoundLowerMax)=(0, 0, 65535)
+	ModifyGraph/W=$graph lstyle(chirpBoundLowerMin)=7, rgb(chirpBoundLowerMin)=(0, 0, 65535)
 End
 
 Function AD_ListBoxProc(lba) : ListBoxControl

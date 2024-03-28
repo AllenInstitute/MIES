@@ -1,5 +1,5 @@
-#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3	 // Use modern global access method and strict wave access.
+#pragma TextEncoding="UTF-8"
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UTF_SweepFormula_PSX
 
@@ -23,7 +23,7 @@ Function/S GetSweepFormulaGraph()
 
 	numEvents = 5
 
-	NewPanel/N=$CleanupName(SF_PLOT_NAME_TEMPLATE, 0)
+	NewPanel/N=$CleanupName (SF_PLOT_NAME_TEMPLATE, 0)
 	win = S_name
 
 	DFREF workDFR = UniqueDataFolder(GetDataFolderDFR(), "psx_test")
@@ -70,8 +70,8 @@ static Function/WAVE CreateEventWaveInComboFolder_IGNORE([variable comboIndex])
 	JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, "fake combo key")
 	JWN_CreatePath(psxEvent, SF_META_USER_GROUP + "Parameters/psxRiseTime")
 
-	win = GetCurrentWindow()
-	userData =  MIES_PSX#PSX_GetUserDataForWorkingFolder()
+	win      = GetCurrentWindow()
+	userData = MIES_PSX#PSX_GetUserDataForWorkingFolder()
 	DFREF workDFR = BSP_GetFolder(win, userData, versionCheck = 0)
 
 	DFREF dfr = GetPSXFolderForCombo(workDFR, comboIndex)
@@ -85,7 +85,7 @@ static Function/WAVE CreateEventWaveInComboFolder_IGNORE([variable comboIndex])
 	return psxEvent
 End
 
-static Function/Wave GetEventWave([variable comboIndex])
+static Function/WAVE GetEventWave([variable comboIndex])
 
 	string win
 
@@ -210,7 +210,7 @@ static Function EWUCheckInitialToggle()
 	string win = GetSweepFormulaGraph()
 
 	WAVE psxEvent = GetEventWave()
-	psxEvent[][%$"Event manual QC call"] = inf
+	psxEvent[][%$"Event manual QC call"] = Inf
 
 	try
 		MIES_PSX#PSX_UpdateEventWaves(win, toggle = 1, comboIndex = 0)
@@ -394,12 +394,12 @@ End
 
 Function [WAVE range, WAVE selectData] GetFakeRangeAndSelectData()
 
-	WAVE range = SFH_GetEmptyRange()
+	WAVE range      = SFH_GetEmptyRange()
 	WAVE selectData = SFH_NewSelectDataWave(1, 1)
 
-	range[] = {100, 200}
-	selectData[0][%SWEEP] = 1
-	selectData[0][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
+	range[]                       = {100, 200}
+	selectData[0][%SWEEP]         = 1
+	selectData[0][%CHANNELTYPE]   = XOP_CHANNEL_TYPE_ADC
 	selectData[0][%CHANNELNUMBER] = 3
 
 	return [range, selectData]
@@ -414,10 +414,10 @@ static Function StatsComplainsWithoutEvents()
 
 	[WAVE range, WAVE selectData] = GetFakeRangeAndSelectData()
 
-	prop = "tau"
+	prop       = "tau"
 	stateAsStr = MIES_PSX#PSX_StateToString(PSX_ACCEPT)
-	postProc = "nothing"
-	id = "myID"
+	postProc   = "nothing"
+	id         = "myID"
 
 	// matching id but no events
 	try
@@ -461,9 +461,9 @@ static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 	// PSX_REJECT:2
 	// PSX_UNDET: 4
 
-	Make/FREE refFitState   = {1,4,2,4,1,4,2,4,1,4}
-	Make/FREE refEventState = {2,1,4,1,2,1,4,1,2,4}
-	Make/FREE refFitResult  = {0,1,0,1,0,1,0,1,0,1}
+	Make/FREE refFitState = {1, 4, 2, 4, 1, 4, 2, 4, 1, 4}
+	Make/FREE refEventState = {2, 1, 4, 1, 2, 1, 4, 1, 2, 4}
+	Make/FREE refFitResult = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1}
 
 	psxEvent[][%$"Fit manual QC call"]   = refFitState[p]
 	psxEvent[][%$"Event manual QC call"] = refEventState[p]
@@ -619,7 +619,7 @@ Function/WAVE StatsTest_GetInput()
 	JWN_SetWaveInWaveNote(input, "/XTickPositions", {-1, 0, 1})
 
 	// end
-	Make/FREE/WAVE results = {wv0, wv1 , wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9, wv10}
+	Make/FREE/WAVE results = {wv0, wv1, wv2, wv3, wv4, wv5, wv6, wv7, wv8, wv9, wv10}
 
 	return results
 End
@@ -632,9 +632,9 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	WAVE/T input = m.w0
 
-	prop                  = input[%prop]
-	stateAsStr            = input[%state]
-	postProc              = input[%postProc]
+	prop       = input[%prop]
+	stateAsStr = input[%state]
+	postProc   = input[%postProc]
 	WAVE/Z results        = JWN_GetNumericWaveFromWaveNote(input, "/results")
 	WAVE/Z xValues        = JWN_GetNumericWaveFromWaveNote(input, "/xValues")
 	WAVE/Z marker         = JWN_GetNumericWaveFromWaveNote(input, "/marker")
@@ -655,7 +655,7 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 	Redimension/N=(10, -1) psxEvent
 
 	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range)
-	ref = "Range[100, 200], Sweep [1], Channel [AD3], Device [ITC16_Dev_0]"
+	ref      = "Range[100, 200], Sweep [1], Channel [AD3], Device [ITC16_Dev_0]"
 	CHECK_EQUAL_STR(comboKey, ref)
 
 	id = "myID"
@@ -663,7 +663,7 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	if(!cmpstr(postProc, "nonfinite"))
 		// overwrite peak_t data
-		Make/FREE/D peak_t = {10, NaN, 20, -inf, 30, +inf, 40, NaN, 50, -inf}
+		Make/FREE/D peak_t = {10, NaN, 20, -Inf, 30, +Inf, 40, NaN, 50, -Inf}
 		psxEvent[][%peak_t] = peak_t[p]
 	endif
 
@@ -720,7 +720,7 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 	endif
 
 	WAVE/Z xTickPositionsRead = JWN_GetNumericWaveFromWaveNote(resultsRead, SF_META_XTICKPOSITIONS)
-	WAVE/Z xTickLabelsRead = JWN_GetTextWaveFromWaveNote(resultsRead, SF_META_XTICKLABELS)
+	WAVE/Z xTickLabelsRead    = JWN_GetTextWaveFromWaveNote(resultsRead, SF_META_XTICKLABELS)
 
 	if(WaveExists(xTickPositions))
 		CHECK_EQUAL_WAVES(xTickPositionsRead, xTickPositions, mode = WAVE_DATA)
@@ -747,13 +747,13 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	Duplicate/FREE/T template, wv0
 	WAVE/T input = wv0
 
-	input[%prop]            = "estate"
-	input[%state]           = "every"
-	input[%postProc]        = "nothing"
-	input[%refNumOutputRows]= "3"
-	input[%numEventsCombo0] = "5"
-	input[%numEventsCombo1] = "3"
-	input[%outOfRange]      = "0"
+	input[%prop]             = "estate"
+	input[%state]            = "every"
+	input[%postProc]         = "nothing"
+	input[%refNumOutputRows] = "3"
+	input[%numEventsCombo0]  = "5"
+	input[%numEventsCombo1]  = "3"
+	input[%outOfRange]       = "0"
 
 	JWN_CreatePath(input, "/0")
 	JWN_SetWaveInWaveNote(input, "/0/results", {PSX_ACCEPT, PSX_ACCEPT, PSX_ACCEPT})
@@ -775,26 +775,26 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	Duplicate/FREE/T template, wv1
 	WAVE/T input = wv1
 
-	input[%prop]            = "estate"
-	input[%state]           = "accept"
-	input[%postProc]        = "nothing"
-	input[%refNumOutputRows]= "0"
-	input[%numEventsCombo0] = "1"
-	input[%numEventsCombo1] = "1"
-	input[%outOfRange]      = "0"
+	input[%prop]             = "estate"
+	input[%state]            = "accept"
+	input[%postProc]         = "nothing"
+	input[%refNumOutputRows] = "0"
+	input[%numEventsCombo0]  = "1"
+	input[%numEventsCombo1]  = "1"
+	input[%outOfRange]       = "0"
 
 	// wv2
 	// histogram works also with just one point
 	Duplicate/FREE/T template, wv2
 	WAVE/T input = wv2
 
-	input[%prop]            = "estate"
-	input[%state]           = "reject"
-	input[%postProc]        = "hist"
-	input[%refNumOutputRows]= "1"
-	input[%numEventsCombo0] = "1"
-	input[%numEventsCombo1] = "0"
-	input[%outOfRange]      = "0"
+	input[%prop]             = "estate"
+	input[%state]            = "reject"
+	input[%postProc]         = "hist"
+	input[%refNumOutputRows] = "1"
+	input[%numEventsCombo0]  = "1"
+	input[%numEventsCombo1]  = "0"
+	input[%outOfRange]       = "0"
 
 	JWN_CreatePath(input, "/0")
 	JWN_SetWaveInWaveNote(input, "/0/results", {1})
@@ -806,26 +806,26 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	Duplicate/FREE/T template, wv3
 	WAVE/T input = wv3
 
-	input[%prop]            = "tau"
-	input[%state]           = "undetermined"
-	input[%postProc]        = "hist"
-	input[%refNumOutputRows]= "0"
-	input[%numEventsCombo0] = "3"
-	input[%numEventsCombo1] = "0"
-	input[%outOfRange]      = "1"
+	input[%prop]             = "tau"
+	input[%state]            = "undetermined"
+	input[%postProc]         = "hist"
+	input[%refNumOutputRows] = "0"
+	input[%numEventsCombo0]  = "3"
+	input[%numEventsCombo1]  = "0"
+	input[%outOfRange]       = "1"
 
 	// wv4
 	// histogram with match but cut out data
 	Duplicate/FREE/T template, wv4
 	WAVE/T input = wv4
 
-	input[%prop]            = "amp"
-	input[%state]           = "all"
-	input[%postProc]        = "hist"
-	input[%refNumOutputRows]= "1"
-	input[%numEventsCombo0] = "3"
-	input[%numEventsCombo1] = "0"
-	input[%outOfRange]      = "1"
+	input[%prop]             = "amp"
+	input[%state]            = "all"
+	input[%postProc]         = "hist"
+	input[%refNumOutputRows] = "1"
+	input[%numEventsCombo0]  = "3"
+	input[%numEventsCombo1]  = "0"
+	input[%outOfRange]       = "1"
 
 	JWN_CreatePath(input, "/0")
 	JWN_SetWaveInWaveNote(input, "/0/results", {1})
@@ -837,13 +837,13 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	Duplicate/FREE/T template, wv5
 	WAVE/T input = wv5
 
-	input[%prop]            = "amp"
-	input[%state]           = "all"
-	input[%postProc]        = "stats"
-	input[%refNumOutputRows]= "1"
-	input[%numEventsCombo0] = "2"
-	input[%numEventsCombo1] = "2"
-	input[%outOfRange]      = "0"
+	input[%prop]             = "amp"
+	input[%state]            = "all"
+	input[%postProc]         = "stats"
+	input[%refNumOutputRows] = "1"
+	input[%numEventsCombo0]  = "2"
+	input[%numEventsCombo1]  = "2"
+	input[%outOfRange]       = "0"
 
 	JWN_CreatePath(input, "/0")
 	JWN_SetWaveInWaveNote(input, "/0/results", {10, 0, 0, 0, NaN, NaN})
@@ -856,13 +856,13 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	Duplicate/FREE/T template, wv6
 	WAVE/T input = wv6
 
-	input[%prop]            = "amp"
-	input[%state]           = "all"
-	input[%postProc]        = "stats"
-	input[%refNumOutputRows]= "0"
-	input[%numEventsCombo0] = "1"
-	input[%numEventsCombo1] = "1"
-	input[%outOfRange]      = "0"
+	input[%prop]             = "amp"
+	input[%state]            = "all"
+	input[%postProc]         = "stats"
+	input[%refNumOutputRows] = "0"
+	input[%numEventsCombo0]  = "1"
+	input[%numEventsCombo1]  = "1"
+	input[%outOfRange]       = "0"
 
 	// no results
 	// no xValues
@@ -873,13 +873,13 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	Duplicate/FREE/T template, wv7
 	WAVE/T input = wv7
 
-	input[%prop]            = "xinterval"
-	input[%state]           = "accept"
-	input[%postProc]        = "nothing"
-	input[%refNumOutputRows]= "1"
-	input[%numEventsCombo0] = "5"
-	input[%numEventsCombo1] = "5"
-	input[%outOfRange]      = "0"
+	input[%prop]             = "xinterval"
+	input[%state]            = "accept"
+	input[%postProc]         = "nothing"
+	input[%refNumOutputRows] = "1"
+	input[%numEventsCombo0]  = "5"
+	input[%numEventsCombo1]  = "5"
+	input[%outOfRange]       = "0"
 
 	JWN_CreatePath(input, "/0")
 	JWN_SetWaveInWaveNote(input, "/0/results", {NaN, 200, NaN, 200})
@@ -920,7 +920,7 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 	WAVE/Z psxEvent = GetEventWave(comboIndex = 0)
 	Redimension/N=(numEventsCombo0, -1) psxEvent
 	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectDataComboIndex0, range)
-	id = "myID"
+	id       = "myID"
 	FillEventWave_IGNORE(psxEvent, id, comboKey)
 
 	selectDataComboIndex0[0][%SWEEP] = 1
@@ -934,8 +934,8 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 
 	Duplicate/FREE selectData, selectDataComboIndex1
 	selectDataComboIndex1[0][%SWEEP] = 2
-	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectDataComboIndex1, range)
-	id = "myID"
+	comboKey                         = MIES_PSX#PSX_GenerateComboKey(browser, selectDataComboIndex1, range)
+	id                               = "myID"
 	FillEventWave_IGNORE(psxEvent, id, comboKey)
 
 	Duplicate/FREE selectData, selectDataComboIndex2
@@ -1002,7 +1002,7 @@ static Function StatsComplainsAboutIntersectingRanges()
 	// 1st event wave
 	WAVE/Z psxEvent = GetEventWave(comboIndex = 0)
 	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range0)
-	id = "myID"
+	id       = "myID"
 	FillEventWave_IGNORE(psxEvent, id, comboKey)
 
 	Duplicate/FREE range0, range1
@@ -1010,8 +1010,8 @@ static Function StatsComplainsAboutIntersectingRanges()
 	// 2nd event wave where we shift the range
 	WAVE/Z psxEvent = CreateEventWaveInComboFolder_IGNORE(comboIndex = 1)
 	range1[] += 0.5 * (range0[1] - range0[0])
-	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range1)
-	id = "myID"
+	comboKey  = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range1)
+	id        = "myID"
 	FillEventWave_IGNORE(psxEvent, id, comboKey)
 
 	try
@@ -1040,15 +1040,15 @@ static Function TestOperationPSXKernel()
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSXKernel)
-	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSXKernel)
+	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSXKernel)
+	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSXKernel)
 
 	str = "psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -5)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 6)
 
-	actual = MIES_CA#CA_WaveCRCs(dataWref, includeWaveScalingAndUnits = 1)
+	actual   = MIES_CA#CA_WaveCRCs(dataWref, includeWaveScalingAndUnits = 1)
 	expected = "1323156356;3770352039;3016891533;1323156356;3770352039;3016891533;"
 	CHECK_EQUAL_STR(expected, actual)
 
@@ -1138,8 +1138,8 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
-	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
+	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
+	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
 	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, " + num2str(kernelAmp) + "), 2.5, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
@@ -1196,12 +1196,12 @@ static Function TestOperationPSXTooLargeDecayTau()
 
 	// all decay fits are successfull
 	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%Tau] = 1000
+	overrideResults[][][%Tau]           = 1000
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
-	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
+	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
+	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
 	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0], all), 1, 15, -5), 10, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
@@ -1264,7 +1264,7 @@ End
 static Function CheckPSXEventField(WAVE/WAVE psxEventWaves, WAVE/T colLabels, WAVE indices, variable val)
 
 	variable idx
-	string colLabel
+	string   colLabel
 
 	for(colLabel : colLabels)
 		for(WAVE psxEvent : psxEventWaves)
@@ -1304,12 +1304,12 @@ static Function MouseSelectionPSX()
 	browser = DB_OpenDataBrowser()
 	device  = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 
-	browser = CreateFakeSweepData(browser, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
-	browser = CreateFakeSweepData(browser, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
+	browser = CreateFakeSweepData(browser, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
+	browser = CreateFakeSweepData(browser, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
 	browser = MIES_DB#DB_LockToDevice(browser, device)
 
-	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 5, 100, 0)"
+	code = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 5, 100, 0)"
 
 	// combo0 is the current one
 
@@ -1417,8 +1417,8 @@ static Function/S SetupDatabrowserWithSomeData()
 
 	[browser, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	browser = CreateFakeSweepData(browser, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
-	browser = CreateFakeSweepData(browser, device, sweepNo = 2, sweepGen=FakeSweepDataGeneratorPSX)
+	browser = CreateFakeSweepData(browser, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
+	browser = CreateFakeSweepData(browser, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
 	// adjust x-position of sweep 2
 	// so sweep 0 has two events and sweep 2 only one but with a different x position
@@ -1463,8 +1463,8 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	win           = SFH_GetFormulaGraphForBrowser(browser)
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	ModifyGraph/W=$psxStatsGraph log(left)=logMode
@@ -1537,13 +1537,13 @@ static Function MouseSelectionStatsPostProcNonFinite()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[1][%$combos[0]][%$"Fit Result"] = 1
-	overrideResults[1][%$combos[0]][%$"Tau"]        = -inf
+	overrideResults[1][%$combos[0]][%$"Tau"]        = -Inf
 
 	overrideResults[0][%$combos[0]][%$"Fit Result"] = 0
 	overrideResults[0][%$combos[0]][%$"Tau"]        = NaN
 
 	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
-	overrideResults[0][%$combos[1]][%$"Tau"]        = +inf
+	overrideResults[0][%$combos[1]][%$"Tau"]        = +Inf
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -1551,9 +1551,9 @@ static Function MouseSelectionStatsPostProcNonFinite()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	win           = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow    = GetMainWindow(win)
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
@@ -1561,7 +1561,7 @@ static Function MouseSelectionStatsPostProcNonFinite()
 	SetActiveSubwindow $psxStatsGraph
 
 	tracenames = TraceNameList(psxStatsGraph, ";", 1)
-	trace = StringFromList(0, tracenames)
+	trace      = StringFromList(0, tracenames)
 	CHECK_PROPER_STR(trace)
 
 	Cursor/W=$psxStatsGraph/P A, $trace, 0
@@ -1624,8 +1624,8 @@ static Function CheckTraceColors(string win, WAVE/T traces, variable state)
 			ASSERT(0, "Invalid state")
 	endswitch
 
-	for(trace: traces)
-		tInfo = TraceInfo(win, trace, 0)
+	for(trace : traces)
+		tInfo    = TraceInfo(win, trace, 0)
 		rgbValue = StringByKey("rgb(x)", tInfo, "=", ";")
 		WAVE traceColors = ListToNumericWave(rgbValue[1, strlen(rgbValue) - 2], ",")
 
@@ -1656,7 +1656,7 @@ static Function/S GetTestCode(string postProc, [string eventState, string prop])
 
 	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 1.5, 100, 0)"
 	code += "\r and \r"
-	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), " + prop + ", " + eventState + ", "+ postProc + ")"
+	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), " + prop + ", " + eventState + ", " + postProc + ")"
 
 	return code
 End
@@ -1696,9 +1696,9 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	mainWindow = GetMainWindow(win)
-	extAllGraph = MIES_PSX#PSX_GetAllEventGraph(win)
+	win               = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow        = GetMainWindow(win)
+	extAllGraph       = MIES_PSX#PSX_GetAllEventGraph(win)
 	specialEventPanel = MIES_PSX#PSX_GetSpecialPanel(win)
 
 	REQUIRE(WindowExists(extAllGraph))
@@ -1711,8 +1711,8 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 
 	WAVE averageGlobalAccept = GetPSXAverageWave(averageGlobalDFR, PSX_ACCEPT)
 	WAVE averageGlobalReject = GetPSXAverageWave(averageGlobalDFR, PSX_REJECT)
-	WAVE averageGlobalUndet = GetPSXAverageWave(averageGlobalDFR, PSX_UNDET)
-	WAVE averageGlobalAll = GetPSXAverageWave(averageGlobalDFR, PSX_ALL)
+	WAVE averageGlobalUndet  = GetPSXAverageWave(averageGlobalDFR, PSX_UNDET)
+	WAVE averageGlobalAll    = GetPSXAverageWave(averageGlobalDFR, PSX_ALL)
 
 	CHECK_EQUAL_WAVES(averageGlobalUndet, averageGlobalAll)
 	CHECK_EQUAL_VAR(DimSize(averageGlobalAccept, ROWS), 0)
@@ -1731,14 +1731,14 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	                            "T000010_averageUndetermined_ComboIndex1", "T000011_averageAll_ComboIndex1", \
 	                            "T000012_acceptAverageFit_ComboIndex1",                                      \
 	                            "T000013_averageAccept_global", "T000014_averageReject_global",              \
-	                            "T000015_averageUndetermined_global","T000016_averageAll_global",            \
+	                            "T000015_averageUndetermined_global", "T000016_averageAll_global",           \
 	                            "T000017_acceptAverageFit_global"}
 
 	CHECK_EQUAL_TEXTWAVES(allTracesRef, allTraces)
 
 	// currently shown traces
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000",  "T000001", "T000007"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000007"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_UNDET)
@@ -1798,7 +1798,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	// all
 	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000011_averageAll_ComboIndex1")
 
-	DFREF comboDFR = MIES_PSX#PSX_GetCurrentComboFolder(win)
+	DFREF comboDFR       = MIES_PSX#PSX_GetCurrentComboFolder(win)
 	DFREF singleEventDFR = GetPSXSingleEventFolder(comboDFR)
 
 	WAVE/WAVE singleEventWaves = ListToWaveRefWave(GetListOfObjects(singleEventDFR, ".*", fullPath = 1))
@@ -1823,7 +1823,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 
 	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000005_averageAll_ComboIndex0")
 
-	DFREF comboDFR = MIES_PSX#PSX_GetCurrentComboFolder(win)
+	DFREF comboDFR       = MIES_PSX#PSX_GetCurrentComboFolder(win)
 	DFREF singleEventDFR = GetPSXSingleEventFolder(comboDFR)
 
 	WAVE/WAVE singleEventWaves = ListToWaveRefWave(GetListOfObjects(singleEventDFR, ".*", fullPath = 1))
@@ -1899,9 +1899,9 @@ static Function JumpToUndet()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
+	win        = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	psxGraph   = MIES_PSX#PSX_GetPSXGraph(win)
 
 	REQUIRE(WindowExists(psxGraph))
 
@@ -1961,9 +1961,9 @@ static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	win           = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow    = GetMainWindow(win)
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxGraph))
@@ -2020,9 +2020,9 @@ static Function CursorMovement()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
+	win        = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	psxGraph   = MIES_PSX#PSX_GetPSXGraph(win)
 
 	REQUIRE(WindowExists(psxGraph))
 
@@ -2054,9 +2054,9 @@ static Function CursorMovementStats()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	win           = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow    = GetMainWindow(win)
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
@@ -2065,7 +2065,7 @@ static Function CursorMovementStats()
 	DoUpdate
 
 	tracenames = TraceNameList(psxStatsGraph, ";", 1)
-	trace = StringFromList(0, tracenames)
+	trace      = StringFromList(0, tracenames)
 	CHECK_PROPER_STR(trace)
 
 	Cursor/W=$psxStatsGraph/P A, $trace, 0
@@ -2088,7 +2088,7 @@ static Function SendKey(string win, variable key)
 
 	STRUCT WMWinHookStruct s
 
-	s.winName = win
+	s.winName   = win
 	s.eventCode = 11
 	s.keyCode   = key
 
@@ -2114,9 +2114,9 @@ static Function KeyboardInteractions()
 
 	DoUpdate
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	win           = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow    = GetMainWindow(win)
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
@@ -2328,9 +2328,9 @@ static Function KeyboardInteractionsStats()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	win           = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow    = GetMainWindow(win)
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
@@ -2338,7 +2338,7 @@ static Function KeyboardInteractionsStats()
 	SetActiveSubwindow $psxStatsGraph
 
 	tracenames = TraceNameList(psxStatsGraph, ";", 1)
-	trace = StringFromList(0, tracenames)
+	trace      = StringFromList(0, tracenames)
 	CHECK_PROPER_STR(trace)
 
 	Cursor/W=$psxStatsGraph/P A, $trace, 0
@@ -2555,9 +2555,9 @@ static Function KeyboardInteractionsStatsSpecial()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	win           = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow    = GetMainWindow(win)
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	SetActiveSubwindow $psxGraph
@@ -2576,7 +2576,7 @@ static Function KeyboardInteractionsStatsSpecial()
 	SetActiveSubwindow $psxStatsGraph
 
 	tracenames = TraceNameList(psxStatsGraph, ";", 1)
-	trace = StringFromList(0, tracenames)
+	trace      = StringFromList(0, tracenames)
 	CHECK_PROPER_STR(trace)
 
 	Cursor/W=$psxStatsGraph/P A, $trace, 0
@@ -2613,13 +2613,13 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[1][%$combos[0]][%$"Fit Result"] = 1
-	overrideResults[1][%$combos[0]][%$"Tau"]        = -inf
+	overrideResults[1][%$combos[0]][%$"Tau"]        = -Inf
 
 	overrideResults[0][%$combos[0]][%$"Fit Result"] = 0
 	overrideResults[0][%$combos[0]][%$"Tau"]        = NaN
 
 	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
-	overrideResults[0][%$combos[1]][%$"Tau"]        = +inf
+	overrideResults[0][%$combos[1]][%$"Tau"]        = +Inf
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2627,9 +2627,9 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	win           = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow    = GetMainWindow(win)
+	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
 	REQUIRE(WindowExists(psxStatsGraph))
@@ -2637,7 +2637,7 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	SetActiveSubwindow $psxStatsGraph
 
 	tracenames = TraceNameList(psxStatsGraph, ";", 1)
-	trace = StringFromList(0, tracenames)
+	trace      = StringFromList(0, tracenames)
 	CHECK_PROPER_STR(trace)
 
 	Cursor/W=$psxStatsGraph/P A, $trace, 0
@@ -2695,9 +2695,9 @@ static Function CheckResultsWavesForAverageFitResult()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	win               = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow        = GetMainWindow(win)
+	psxGraph          = MIES_PSX#PSX_GetPSXGraph(win)
 	specialEventPanel = MIES_PSX#PSX_GetSpecialPanel(win)
 
 	REQUIRE(WindowExists(psxGraph))
@@ -2717,7 +2717,7 @@ static Function CheckResultsWavesForAverageFitResult()
 	// our data makes the fit fail
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 1)
 
-	name = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_MISC, "accepted average fit results")
+	name  = SFH_FormatResultsKey(SFH_RESULT_TYPE_PSX_MISC, "accepted average fit results")
 	entry = GetLastSettingTextIndep(textualResultsValues, NaN, name, SWEEP_FORMULA_RESULT)
 	CHECK_EMPTY_STR(entry)
 End
@@ -2732,11 +2732,11 @@ static Function TestBlockIndexLogic()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
-	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
+	win               = SFH_GetFormulaGraphForBrowser(browser)
+	mainWindow        = GetMainWindow(win)
+	psxGraph          = MIES_PSX#PSX_GetPSXGraph(win)
 	specialEventPanel = MIES_PSX#PSX_GetSpecialPanel(win)
-	extAllGraph = MIES_PSX#PSX_GetAllEventGraph(win)
+	extAllGraph       = MIES_PSX#PSX_GetAllEventGraph(win)
 
 	// not restricted to current combinations aka all combinations
 	CHECK_EQUAL_VAR(GetCheckBoxState(specialEventPanel, "checkbox_restrict_events_to_current_combination"), 0)
@@ -2942,7 +2942,7 @@ static Function TestOperationPrep()
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
-	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen=FakeSweepDataGeneratorPSX)
+	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
 
 	psxCode = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -5), 2.5, 100, 0)"
 	sprintf code, "psxPrep(%s)", psxCode
@@ -2954,7 +2954,7 @@ static Function TestOperationPrep()
 	WAVE hist = dataWref[0]
 	CHECK_GT_VAR(DimSize(hist, ROWS), 0)
 
-	WAVE fit  = dataWref[1]
+	WAVE fit = dataWref[1]
 	CHECK_EQUAL_VAR(DimSize(fit, ROWS), 200)
 
 	WAVE threshold = dataWref[2]
@@ -2996,10 +2996,10 @@ static Function TestStoreAndLoad()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	win = SFH_GetFormulaGraphForBrowser(browser)
+	win        = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
-	psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
-	bsPanel = BSP_GetPanel(browser)
+	psxGraph   = MIES_PSX#PSX_GetPSXGraph(win)
+	bsPanel    = BSP_GetPanel(browser)
 
 	SetActiveSubwindow $psxGraph
 

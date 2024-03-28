@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=DataBrowserTests
@@ -51,7 +51,7 @@ Function RestoreButtonWorks([string str])
 
 	string win, subWindow
 
-	win = DB_OpenDatabrowser()
+	win       = DB_OpenDatabrowser()
 	subWindow = str
 
 	CHECK(WindowExists(subWindow))

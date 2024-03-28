@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -34,11 +34,11 @@ Function ED_AddEntriesToResults(WAVE vals, WAVE/T keys, variable entrySourceType
 End
 
 static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
-	ASSERT(DimSize(vals, ROWS)   == 1, "Mismatched row count")
-	ASSERT(DimSize(vals, COLS)   == DimSize(keys, COLS), "Mismatched column count")
+	ASSERT(DimSize(vals, ROWS) == 1, "Mismatched row count")
+	ASSERT(DimSize(vals, COLS) == DimSize(keys, COLS), "Mismatched column count")
 	ASSERT(DimSize(vals, LAYERS) <= LABNOTEBOOK_LAYER_COUNT, "Mismatched layer count")
 
-	ASSERT(DimSize(keys, ROWS)   == 1 || DimSize(keys, ROWS) == 3 || DimSize(keys, ROWS) == 6, "Mismatched row count")
+	ASSERT(DimSize(keys, ROWS) == 1 || DimSize(keys, ROWS) == 3 || DimSize(keys, ROWS) == 6, "Mismatched row count")
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
 End
 
@@ -65,10 +65,10 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 		state = AS_INACTIVE
 
 		WAVE/T values = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES)
-		WAVE/T keys = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS)
+		WAVE/T keys   = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS)
 	else
 		WAVE/T values = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES, device = device)
-		WAVE/T keys = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS, device = device)
+		WAVE/T keys   = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS, device = device)
 
 		state = ROVar(GetAcquisitionState(device))
 	endif
@@ -83,24 +83,24 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 
 	// store the current time in a variable first
 	// so that all layers have the same timestamp
-	timestamp = num2strHighPrec(DateTime, precision = 3)
+	timestamp             = num2strHighPrec(DateTime, precision = 3)
 	values[rowIndex][1][] = timestamp
-	timestamp = num2strHighPrec(DateTimeInUTC(), precision = 3)
+	timestamp             = num2strHighPrec(DateTimeInUTC(), precision = 3)
 	values[rowIndex][2][] = timestamp
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
-	EnsureLargeEnoughWave(valuesDat, indexShouldExist=rowIndex, dimension=ROWS)
+	EnsureLargeEnoughWave(valuesDat, indexShouldExist = rowIndex, dimension = ROWS)
 	valuesDat[rowIndex] = str2num(values[rowIndex][1])
 
 	WAVE valuesSweep = ExtractLogbookSliceSweep(values)
-	EnsureLargeEnoughWave(valuesSweep, indexShouldExist=rowIndex, dimension=ROWS)
+	EnsureLargeEnoughWave(valuesSweep, indexShouldExist = rowIndex, dimension = ROWS)
 	valuesSweep[rowIndex] = str2num(values[rowIndex][0])
 
 	WAVE valuesNull = ExtractLogbookSliceEmpty(values)
-	EnsureLargeEnoughWave(valuesNull, indexShouldExist=rowIndex, dimension=ROWS)
+	EnsureLargeEnoughWave(valuesNull, indexShouldExist = rowIndex, dimension = ROWS)
 	// nothing to do
 
-	numCols = DimSize(incomingTextualValues, COLS)
+	numCols                = DimSize(incomingTextualValues, COLS)
 	lastValidIncomingLayer = DimSize(incomingTextualValues, LAYERS) == 0 ? 0 : DimSize(incomingTextualValues, LAYERS) - 1
 	for(i = 0; i < numCols; i += 1)
 		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = NormalizeToEOL(incomingTextualValues[0][i][r], "\n")
@@ -143,10 +143,10 @@ static Function ED_GetHeadstageContingency(WAVE values)
 
 	if(IsTextWave(values))
 		WAVE/T valuesText = values
-		WAVE stats = LBN_GetNumericWave()
+		WAVE   stats      = LBN_GetNumericWave()
 		stats[] = strlen(valuesText[p]) == 0 ? NaN : 1
 	else
-		Wave stats = values
+		WAVE stats = values
 	endif
 
 	WaveStats/Q/M=1 stats
@@ -182,13 +182,13 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 	if(ParamIsDefault(device))
 		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
 
-		WAVE values = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES)
-		WAVE/T keys = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS)
+		WAVE   values = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES)
+		WAVE/T keys   = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS)
 
 		state = AS_INACTIVE
 	else
-		WAVE values = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES, device = device)
-		WAVE/T keys = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS, device = device)
+		WAVE   values = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES, device = device)
+		WAVE/T keys   = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS, device = device)
 
 		state = ROVar(GetAcquisitionState(device))
 	endif
@@ -203,16 +203,16 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 
 	// store the current time in a variable first
 	// so that all layers have the same timestamp
-	timestamp = DateTime
+	timestamp             = DateTime
 	values[rowIndex][1][] = timestamp
-	timestamp = DateTimeInUTC()
+	timestamp             = DateTimeInUTC()
 	values[rowIndex][2][] = timestamp
 
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
-	EnsureLargeEnoughWave(valuesDat, indexShouldExist=rowIndex, dimension=ROWS, initialValue=NaN)
+	EnsureLargeEnoughWave(valuesDat, indexShouldExist = rowIndex, dimension = ROWS, initialValue = NaN)
 	valuesDat[rowIndex] = values[rowIndex][1]
 
-	numCols = DimSize(incomingNumericalValues, COLS)
+	numCols                = DimSize(incomingNumericalValues, COLS)
 	lastValidIncomingLayer = DimSize(incomingNumericalValues, LAYERS) == 0 ? 0 : DimSize(incomingNumericalValues, LAYERS) - 1
 	for(i = 0; i < numCols; i += 1)
 		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingNumericalValues[0][i][r]
@@ -261,7 +261,7 @@ End
 ///                        analysis functions.
 Function ED_AddEntryToLabnotebook(device, key, values, [unit, tolerance, overrideSweepNo])
 	string device, key
-	WAVE values
+	WAVE   values
 	string unit
 	variable tolerance, overrideSweepNo
 
@@ -312,28 +312,28 @@ End
 ///
 /// Honours tolerances defined in the keywave and LABNOTEBOOK_BINARY_UNIT values
 static Function ED_WriteChangedValuesToNote(device, sweepNo)
-	string device
+	string   device
 	variable sweepNo
 
 	string key, factor, unit, text, frontLabel
 	string str = ""
 	variable tolerance, i, j, numRows, numCols, err
 
-	WAVE/T numericalKeys = GetLBNumericalKeys(device)
-	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE/T numericalKeys   = GetLBNumericalKeys(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
 
 	// prefill the row cache for the labnotebook
 	WAVE/Z junk = GetLastSetting(numericalValues, sweepNo, "TimeStamp", UNKNOWN_MODE)
 	WAVE/Z junk = GetLastSetting(numericalValues, sweepNo - 1, "TimeStamp", UNKNOWN_MODE)
 
 	numCols = DimSize(numericalKeys, COLS)
-	for (j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
+	for(j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
 		key    = numericalKeys[0][j]
 		unit   = numericalKeys[1][j]
 		factor = numericalKeys[2][j]
 
-		Wave/Z currentSetting = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
-		Wave/Z lastSetting = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
+		WAVE/Z currentSetting = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+		WAVE/Z lastSetting    = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
 
 		// We have four combinations for the current and the last setting:
 		// 1. valid -> valid
@@ -377,7 +377,7 @@ static Function ED_WriteChangedValuesToNote(device, sweepNo)
 				frontLabel = ""
 			endif
 
-			if (!cmpstr(factor, LABNOTEBOOK_NO_TOLERANCE))
+			if(!cmpstr(factor, LABNOTEBOOK_NO_TOLERANCE))
 				sprintf text, "%s%s: %s\r", frontLabel, key, SelectString(currentSetting[i], "Off", "On")
 			else
 				sprintf text, "%s%s: %.2f %s\r", frontLabel, key, currentSetting[i], unit
@@ -399,7 +399,7 @@ End
 ///
 /// Honours tolerances defined in the keywave and LABNOTEBOOK_BINARY_UNIT values
 static Function ED_WriteChangedValuesToNoteText(device, sweepNo)
-	string device
+	string   device
 	variable sweepNo
 
 	string key, factor, text, frontLabel, ignoreKeyList
@@ -420,15 +420,15 @@ static Function ED_WriteChangedValuesToNoteText(device, sweepNo)
 	ignoreKeyList = AddListItem(EPOCHS_ENTRY_KEY, ignoreKeyList)
 
 	numCols = DimSize(textualKeys, COLS)
-	for (j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
+	for(j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
 		key = textualKeys[0][j]
 
 		if(WhichListItem(key, ignoreKeyList) >= 0)
 			continue
 		endif
 
-		Wave/Z/T currentSetting = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
-		Wave/Z/T lastSetting    = GetLastSetting(textualValues, sweepNo - 1, key, UNKNOWN_MODE)
+		WAVE/Z/T currentSetting = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
+		WAVE/Z/T lastSetting    = GetLastSetting(textualValues, sweepNo - 1, key, UNKNOWN_MODE)
 
 		// We have four combinations for the current and the last setting:
 		// 1. valid -> valid
@@ -495,8 +495,8 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 	variable lastValidIncomingKeyRow, descIndex, isUserEntry, headstageCont, headstageContDesc, isUnAssoc
 	string msg, searchStr
 
-	numKeyRows = DimSize(key, ROWS)
-	numKeyCols = DimSize(key, COLS)
+	numKeyRows              = DimSize(key, ROWS)
+	numKeyCols              = DimSize(key, COLS)
 	lastValidIncomingKeyRow = DimSize(incomingKey, ROWS) - 1
 
 	Make/FREE/D/N=(DimSize(incomingKey, COLS)) indizes = NaN
@@ -518,10 +518,10 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 
 		// need to add new entry
 		idx = numKeyCols + numAdditions
-		EnsureLargeEnoughWave(key, indexShouldExist=idx, dimension=COLS)
+		EnsureLargeEnoughWave(key, indexShouldExist = idx, dimension = COLS)
 		key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
-		indizes[i] = idx
-		numAdditions += 1
+		indizes[i]                           = idx
+		numAdditions                        += 1
 
 		isUserEntry = (strsearch(searchStr, LABNOTEBOOK_USER_PREFIX, 0) == 0)
 
@@ -575,7 +575,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		endif
 
 		// check that metadata is consistent
-		for(j = 1; j <= lastValidIncomingKeyRow; j +=  1)
+		for(j = 1; j <= lastValidIncomingKeyRow; j += 1)
 			if(!cmpstr(desc[j][descIndex], incomingKey[j][i]))
 				continue
 			endif
@@ -591,7 +591,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 
 		// check for correct headstage contingency
 		Duplicate/FREE/RMD=[0][i][*] incomingValues, valuesSlice
-		headstageCont = ED_GetHeadstageContingency(valuesSlice)
+		headstageCont     = ED_GetHeadstageContingency(valuesSlice)
 		headstageContDesc = ED_ParseHeadstageContigencyMode(desc[%HeadstageContingency][descIndex])
 
 		if(isUnAssoc)
@@ -607,7 +607,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		// in case the incoming key wave provided all entries
 		// there is nothing left to do
 		if(DimSize(incomingKey, ROWS) != DimSize(desc, ROWS))
-			key[lastValidIncomingKeyRow + 1, inf][idx] = desc[p][descIndex]
+			key[lastValidIncomingKeyRow + 1, Inf][idx] = desc[p][descIndex]
 		endif
 	endfor
 
@@ -628,12 +628,12 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 	endif
 
 	if(IsNumericWave(values))
-		EnsureLargeEnoughWave(values, indexShouldExist=rowIndex, dimension=ROWS, initialValue=NaN)
+		EnsureLargeEnoughWave(values, indexShouldExist = rowIndex, dimension = ROWS, initialValue = NaN)
 		if(numAdditions)
 			values[][numKeyCols,][] = NaN
 		endif
 	else
-		EnsureLargeEnoughWave(values, indexShouldExist=rowIndex, dimension=ROWS)
+		EnsureLargeEnoughWave(values, indexShouldExist = rowIndex, dimension = ROWS)
 	endif
 
 	return [indizes, rowIndex]
@@ -652,16 +652,16 @@ End
 
 /// @brief Add sweep specific information to the labnotebook
 Function ED_createWaveNoteTags(device, sweepCount)
-	string device
+	string   device
 	variable sweepCount
 
 	variable i, j, refITI, ITI
 
-	WAVE sweepSettingsWave = GetSweepSettingsWave(device)
-	WAVE/T sweepSettingsKey = GetSweepSettingsKeyWave(device)
+	WAVE   sweepSettingsWave = GetSweepSettingsWave(device)
+	WAVE/T sweepSettingsKey  = GetSweepSettingsKeyWave(device)
 	ED_AddEntriesToLabnotebook(sweepSettingsWave, sweepSettingsKey, SweepCount, device, DATA_ACQUISITION_MODE)
 
-	ITI = DAG_GetNumericalValue(device, "SetVar_DataAcq_ITI")
+	ITI    = DAG_GetNumericalValue(device, "SetVar_DataAcq_ITI")
 	refITI = GetSweepSettingsWave(device)[0][%$"Inter-trial interval"][INDEP_HEADSTAGE]
 	if(!CheckIfClose(ITI, refITI, tol = 1e-3))
 		Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
@@ -676,7 +676,7 @@ Function ED_createWaveNoteTags(device, sweepCount)
 	endif
 
 	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(device)
-	WAVE/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(device)
+	WAVE/T sweepSettingsTxtKey  = GetSweepSettingsTextKeyWave(device)
 	ED_AddEntriesToLabnotebook(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, device, DATA_ACQUISITION_MODE)
 
 	if(DAG_GetNumericalValue(device, "check_Settings_SaveAmpSettings"))
@@ -696,15 +696,15 @@ End
 
 /// @brief Write the user comment from the DA_Ephys panel to the labnotebook
 Function ED_WriteUserCommentToLabNB(device, comment, sweepNo)
-	string device
-	string comment
+	string   device
+	string   comment
 	variable sweepNo
 
 	Make/FREE/N=(3, 1)/T keys
 
-	keys[0][0] =  "User comment"
-	keys[1][0] =  ""
-	keys[2][0] =  LABNOTEBOOK_NO_TOLERANCE
+	keys[0][0] = "User comment"
+	keys[1][0] = ""
+	keys[2][0] = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
 	values[][][INDEP_HEADSTAGE] = comment
@@ -714,8 +714,8 @@ End
 
 /// @brief This function is used to create wave notes for the informations found in the Asynchronous tab in the DA_Ephys panel
 static Function ED_createAsyncWaveNoteTags(device, sweepCount)
-	string device
-	Variable sweepCount
+	string   device
+	variable sweepCount
 
 	string title, unit, str, ctrl
 	variable minSettingValue, maxSettingValue, i, scaledValue
@@ -727,43 +727,43 @@ static Function ED_createAsyncWaveNoteTags(device, sweepCount)
 		return NaN
 	endif
 
-	for(i = 0; i < NUM_ASYNC_CHANNELS ; i += 1)
+	for(i = 0; i < NUM_ASYNC_CHANNELS; i += 1)
 
 		if(!statusAsync[i])
 			continue
 		endif
 
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+		ctrl  = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
 		title = DAG_GetTextualValue(device, ctrl, index = i)
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
 		unit = DAG_GetTextualValue(device, ctrl, index = i)
 
-		WAVE asyncSettingsWave = GetAsyncSettingsWave()
-		WAVE/T asyncSettingsKey = GetAsyncSettingsKeyWave(asyncSettingsWave, i, title, unit)
+		WAVE   asyncSettingsWave = GetAsyncSettingsWave()
+		WAVE/T asyncSettingsKey  = GetAsyncSettingsKeyWave(asyncSettingsWave, i, title, unit)
 
 		WAVE/T asyncSettingsTxtWave = GetAsyncSettingsTextWave()
-		WAVE/T asyncSettingsTxtKey = GetAsyncSettingsTextKeyWave(asyncSettingsTxtWave, i)
+		WAVE/T asyncSettingsTxtKey  = GetAsyncSettingsTextKeyWave(asyncSettingsTxtWave, i)
 
 		asyncSettingsWave[0][%ADOnOff][INDEP_HEADSTAGE] = CHECKBOX_SELECTED
 
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+		ctrl                                           = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 		asyncSettingsWave[0][%ADGain][INDEP_HEADSTAGE] = DAG_GetNumericalValue(device, ctrl, index = i)
 
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-		alarmEnabled = DAG_GetNumericalValue(device, ctrl, index = i)
+		ctrl                                               = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+		alarmEnabled                                       = DAG_GetNumericalValue(device, ctrl, index = i)
 		asyncSettingsWave[0][%AlarmOnOff][INDEP_HEADSTAGE] = alarmEnabled
 
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-		minSettingValue = DAG_GetNumericalValue(device, ctrl, index = i)
+		ctrl                            = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+		minSettingValue                 = DAG_GetNumericalValue(device, ctrl, index = i)
 		asyncSettingsWave[0][%AlarmMin] = minSettingValue
 
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-		maxSettingValue = DAG_GetNumericalValue(device, ctrl, index = i)
+		ctrl                            = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+		maxSettingValue                 = DAG_GetNumericalValue(device, ctrl, index = i)
 		asyncSettingsWave[0][%AlarmMax] = maxSettingValue
 
 		// Take the Min and Max values and use them for setting the tolerance value in the measurement key wave
-		asyncSettingsKey[%Tolerance][%MeasuredValue] = num2str(abs((maxSettingValue - minSettingValue)/2))
+		asyncSettingsKey[%Tolerance][%MeasuredValue] = num2str(abs((maxSettingValue - minSettingValue) / 2))
 
 		asyncSettingsTxtWave[0][%Title][INDEP_HEADSTAGE] = title
 
@@ -774,7 +774,7 @@ static Function ED_createAsyncWaveNoteTags(device, sweepCount)
 		// put the measurement value into the async settings wave for creation of wave notes
 		asyncSettingsWave[0][%MeasuredValue][INDEP_HEADSTAGE] = scaledValue
 
-		alarmState = alarmEnabled ? ASD_CheckAsynAlarmState(device, scaledValue, minSettingValue, maxSettingValue) : NaN
+		alarmState                                         = alarmEnabled ? ASD_CheckAsynAlarmState(device, scaledValue, minSettingValue, maxSettingValue) : NaN
 		asyncSettingsWave[0][%AlarmState][INDEP_HEADSTAGE] = alarmState
 
 		if(alarmEnabled && alarmState)
@@ -801,19 +801,19 @@ Function ED_TPDocumentation(device)
 	variable sweepNo, RTolerance
 	variable i, j
 
-	WAVE hsProp = GetHSProperties(device)
+	WAVE hsProp     = GetHSProperties(device)
 	WAVE TPSettings = GetTPsettings(device)
-	WAVE TPResults = GetTPResults(device)
-	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	WAVE TPResults  = GetTPResults(device)
+	WAVE statusHS   = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/FREE/T/N=(3, 12) TPKeyWave
 	Make/FREE/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
 
 	// add data to TPKeyWave
-	TPKeyWave[0][0]  = "TP Baseline Vm"  // current clamp
-	TPKeyWave[0][1]  = "TP Baseline pA"  // voltage clamp
-	TPKeyWave[0][2]  = "TP Peak Resistance"
-	TPKeyWave[0][3]  = "TP Steady State Resistance"
+	TPKeyWave[0][0] = "TP Baseline Vm"             // current clamp
+	TPKeyWave[0][1] = "TP Baseline pA"             // voltage clamp
+	TPKeyWave[0][2] = "TP Peak Resistance"
+	TPKeyWave[0][3] = "TP Steady State Resistance"
 	// same names as  in GetAmplifierSettingsKeyWave
 	TPKeyWave[0][4]  = "Fast compensation capacitance"
 	TPKeyWave[0][5]  = "Slow compensation capacitance"
@@ -837,10 +837,10 @@ Function ED_TPDocumentation(device)
 	TPKeyWave[1][10] = ""
 	TPKeyWave[1][11] = ""
 
-	RTolerance = TPSettings[%resistanceTol][INDEP_HEADSTAGE]
-	TPKeyWave[2][0]  = "1" // Assume a tolerance of 1 mV for V rest
-	TPKeyWave[2][1]  = "50" // Assume a tolerance of 50pA for I rest
-	TPKeyWave[2][2]  = num2str(RTolerance) // applies the same R tolerance for the instantaneous and steady state resistance
+	RTolerance       = TPSettings[%resistanceTol][INDEP_HEADSTAGE]
+	TPKeyWave[2][0]  = "1"                                         // Assume a tolerance of 1 mV for V rest
+	TPKeyWave[2][1]  = "50"                                        // Assume a tolerance of 50pA for I rest
+	TPKeyWave[2][2]  = num2str(RTolerance)                         // applies the same R tolerance for the instantaneous and steady state resistance
 	TPKeyWave[2][3]  = num2str(RTolerance)
 	TPKeyWave[2][4]  = "1e-12"
 	TPKeyWave[2][5]  = "1e-12"
@@ -851,8 +851,8 @@ Function ED_TPDocumentation(device)
 	TPKeyWave[2][10] = "0.1"
 	TPKeyWave[2][11] = LABNOTEBOOK_NO_TOLERANCE
 
-	TPSettingsWave[0][2][0, NUM_HEADSTAGES - 1]  = TPResults[%ResistanceInst][r]
-	TPSettingsWave[0][3][0, NUM_HEADSTAGES - 1]  = TPResults[%ResistanceSteadyState][r]
+	TPSettingsWave[0][2][0, NUM_HEADSTAGES - 1] = TPResults[%ResistanceInst][r]
+	TPSettingsWave[0][3][0, NUM_HEADSTAGES - 1] = TPResults[%ResistanceSteadyState][r]
 
 	TPSettingsWave[0][8][0, NUM_HEADSTAGES - 1] = statusHS[r]
 

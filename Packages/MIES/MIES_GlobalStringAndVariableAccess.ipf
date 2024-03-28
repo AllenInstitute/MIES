@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -54,8 +54,8 @@
 /// @param initialValue  initial value of the variable. Will only be used if
 /// 					 it is created. 0 by default.
 threadsafe static Function/S GetNVARAsString(dfr, globalVarName, [initialValue])
-	dfref dfr
-	string globalVarName
+	DFREF    dfr
+	string   globalVarName
 	variable initialValue
 
 	NVAR/Z/SDFR=dfr var = $globalVarName
@@ -82,7 +82,7 @@ End
 /// @param initialValue  initial value of the string. Will only be used if
 /// 					 it is created. null by default.
 threadsafe static Function/S GetSVARAsString(dfr, globalStrName, [initialValue])
-	dfref dfr
+	DFREF  dfr
 	string globalStrName
 	string initialValue
 
@@ -91,7 +91,7 @@ threadsafe static Function/S GetSVARAsString(dfr, globalStrName, [initialValue])
 		ASSERT_TS(DataFolderExistsDFR(dfr), "Missing dfr")
 		ASSERT_TS(IsValidObjectName(globalStrName), "Invalid globalStrName")
 
-		String/G dfr:$globalStrName
+		string/G dfr:$globalStrName
 
 		SVAR/SDFR=dfr str = $globalStrName
 
@@ -133,9 +133,9 @@ End
 Function/S GetMiesVersion()
 
 	string path = GetSVARAsString(GetMiesPath(), "version")
-	SVAR str = $path
+	SVAR   str  = $path
 
-	if(!CmpStr(str,"") || !CmpStr(str, UNKNOWN_MIES_VERSION))
+	if(!CmpStr(str, "") || !CmpStr(str, UNKNOWN_MIES_VERSION))
 		str = CreateMiesVersion()
 	endif
 
@@ -195,7 +195,7 @@ static Function/S CreateMiesVersion()
 	variable refNum
 
 	// set path to the toplevel directory in the mies folder structure
-	path = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
+	path            = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
 	fullVersionPath = path + "version.txt"
 
 	topDir = path
@@ -211,49 +211,49 @@ static Function/S CreateMiesVersion()
 			endif
 
 			gitPath = HFSPathToNative(gitPath)
-			gitDir = HFSPathToNative(gitDir)
-			topDir = HFSPathToNative(topDir)
+			gitDir  = HFSPathToNative(gitDir)
+			topDir  = HFSPathToNative(topDir)
 
 			// git is installed, try to regenerate version.txt
-			DEBUGPRINT("Found git at: ", str=gitPath)
+			DEBUGPRINT("Found git at: ", str = gitPath)
 
 			// delete the old version.txt so that we can be sure to get the correct one afterwards
 			DeleteFile/Z fullVersionPath
-			DEBUGPRINT("Folder is a git repository: ", str=topDir)
+			DEBUGPRINT("Folder is a git repository: ", str = topDir)
 
 #if defined(WINDOWS)
 			// explanation:
 			// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
-			sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/B/Z cmd
 			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
-			sprintf cmd "cmd.exe /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", topDir
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "cmd.exe /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", topDir
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/B/Z cmd
 			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
-			sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/B/Z cmd
 			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
-			sprintf cmd "cmd.exe /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", topDir
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "cmd.exe /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", topDir
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/B/Z cmd
 			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
 			// git submodule status can not be used here as submodule is currently a sh script and executing that with --git-dir does not work
 			// but we can use the helper command which outputs a slightly uglier version, but is much faster
 			// the submodule helper is shipped with git 2.7 and later, therefore its failed execution is not fatal
-			sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper status >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper status >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/B/Z cmd
 #elif defined(MACINTOSH)
 
-			sprintf cmd "do shell script \"%s --version\"", gitPath
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "do shell script \"%s --version\"", gitPath
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/UNQ/Z cmd
 			if(V_flag)
 				printf "Missing functional git executable, please install the \"Xcode commandline tools\" via \"xcode-select --install\" in Terminal.\r"
@@ -261,32 +261,32 @@ static Function/S CreateMiesVersion()
 				break
 			endif
 
-			sprintf cmd "do shell script \"%s --git-dir='%s' describe --always --tags --match 'Release_*' > '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "do shell script \"%s --git-dir='%s' describe --always --tags --match 'Release_*' > '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/UNQ/Z cmd
 			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
-			sprintf cmd "do shell script \"printf 'Date and time of last commit: ' >> '%sversion.txt' 2>&1\"", topDir
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "do shell script \"printf 'Date and time of last commit: ' >> '%sversion.txt' 2>&1\"", topDir
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/UNQ/Z cmd
 			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
-			sprintf cmd "do shell script \"%s --git-dir='%s' log -1 --pretty=format:%%cI%%n >> '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "do shell script \"%s --git-dir='%s' log -1 --pretty=format:%%cI%%n >> '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/UNQ/Z cmd
 			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
-			sprintf cmd "do shell script \"echo 'Submodule status:' >> '%sversion.txt' 2>&1\"", topDir
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "do shell script \"echo 'Submodule status:' >> '%sversion.txt' 2>&1\"", topDir
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/UNQ/Z cmd
 			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
 
 			// see comment in WINDOWS branch
-			sprintf cmd "do shell script \"%s --git-dir='%s' submodule--helper status >> '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str=cmd)
+			sprintf cmd, "do shell script \"%s --git-dir='%s' submodule--helper status >> '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
+			DEBUGPRINT("Cmd to execute: ", str = cmd)
 			ExecuteScriptText/UNQ/Z cmd
 #else
-	ASSERT(0, "Unsupported OS")
+			ASSERT(0, "Unsupported OS")
 #endif
 			break
 		endfor
@@ -298,8 +298,8 @@ static Function/S CreateMiesVersion()
 		printf "Possible reasons:\r"
 		printf "- Borked up installation, please use the installer again."
 		printf "- If you are using a git clone, please ensure that you followed\r"    + \
-			   "the manual installation steps correctly, and ensure that files and\r" + \
-			   "folders must *not* be copied but a shortcut must be created.\r"
+		       "the manual installation steps correctly, and ensure that files and\r" + \
+		       "folders must *not* be copied but a shortcut must be created.\r"
 		ControlWindowToFront()
 		return UNKNOWN_MIES_VERSION
 	endif
@@ -311,7 +311,7 @@ static Function/S CreateMiesVersion()
 
 	version = NormalizeToEOL(version, "\r")
 
-	DEBUGPRINT("Version.txt contents:\r\r", str=version)
+	DEBUGPRINT("Version.txt contents:\r\r", str = version)
 
 	if(IsEmpty(version) || strsearch(version, "Release", 0) == -1)
 		return UNKNOWN_MIES_VERSION
@@ -326,14 +326,14 @@ End
 Function/S GetDataAcqRunMode(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "runMode", initialValue=DAQ_NOT_RUNNING)
+	return GetNVARAsString(GetDevicePath(device), "runMode", initialValue = DAQ_NOT_RUNNING)
 End
 
 /// @brief Returns the absolute path to the device ID
 Function/S GetDAQDeviceID(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "deviceID", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(device), "deviceID", initialValue = NaN)
 End
 
 /// @brief Returns the absolute path to the global variable `count` storing the
@@ -343,14 +343,14 @@ End
 Function/S GetCount(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "count", initialValue=0)
+	return GetNVARAsString(GetDevicePath(device), "count", initialValue = 0)
 End
 
 /// @brief Returns the list of locked devices
 Function/S GetLockedDevices()
 	string device
 
-	return GetSVARAsString(GetDAQDevicesFolder(), "lockedDevices", initialValue="")
+	return GetSVARAsString(GetDAQDevicesFolder(), "lockedDevices", initialValue = "")
 End
 
 /// @brief Return the absolute path to the user comment string
@@ -366,7 +366,7 @@ End
 Function/S GetStopCollectionPoint(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "stopCollectionPoint", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(device), "stopCollectionPoint", initialValue = NaN)
 End
 
 /// @brief Return the ADC to monitor
@@ -375,7 +375,7 @@ End
 Function/S GetADChannelToMonitor(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "ADChannelToMonitor", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(device), "ADChannelToMonitor", initialValue = NaN)
 End
 
 /// @brief Return global device for background tasks
@@ -393,7 +393,7 @@ End
 Function/S GetActiveSetCount(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "activeSetCount", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(device), "activeSetCount", initialValue = NaN)
 End
 
 /// @brief Return the interactive mode
@@ -404,14 +404,14 @@ End
 /// with sensible defaults.
 threadsafe Function/S GetInteractiveMode()
 
-	return GetNVARAsString(GetMiesPath(), "interactiveMode", initialValue=!!MU_RunningInMainThread())
+	return GetNVARAsString(GetMiesPath(), "interactiveMode", initialValue = !!MU_RunningInMainThread())
 End
 
 /// @brief Returns the absolute path to the testpulse running modes, holds one of @ref TestPulseRunModes
 Function/S GetTestpulseRunMode(device)
 	string device
 
-	return GetNVARAsString(GetDeviceTestPulse(device), "runMode", initialValue=TEST_PULSE_NOT_RUNNING)
+	return GetNVARAsString(GetDeviceTestPulse(device), "runMode", initialValue = TEST_PULSE_NOT_RUNNING)
 End
 
 /// @brief Returns NI device list
@@ -422,7 +422,7 @@ End
 Function/S GetNIDeviceList()
 
 	// note: this global gets killed in IH_KillTemporaries
-	return GetSVARAsString(GetDAQDevicesFolder(), "NIDeviceList", initialValue="")
+	return GetSVARAsString(GetDAQDevicesFolder(), "NIDeviceList", initialValue = "")
 End
 
 /// @brief Returns ITC device list
@@ -433,28 +433,28 @@ End
 Function/S GetITCDeviceList()
 
 	// note: this global gets killed in IH_KillTemporaries
-	return GetSVARAsString(GetDAQDevicesFolder(), "ITCDeviceList", initialValue="")
+	return GetSVARAsString(GetDAQDevicesFolder(), "ITCDeviceList", initialValue = "")
 End
 
 /// @brief Returns the last time stamp HW_NI_RepeatAcqHook was called
 Function/S GetLastAcqHookCallTimeStamp(device)
 	string device
 
-	return GetNVARAsString(GetDeviceTestPulse(device), "acqHookTimeStamp", initialValue=DateTime)
+	return GetNVARAsString(GetDeviceTestPulse(device), "acqHookTimeStamp", initialValue = DateTime)
 End
 
 /// @brief Returns FIFO file reference
 Function/S GetFIFOFileRef(device)
 	string device
 
-	return GetNVARAsString(GetDeviceTestPulse(device), "FIFOFileRef", initialValue=0)
+	return GetNVARAsString(GetDeviceTestPulse(device), "FIFOFileRef", initialValue = 0)
 End
 
 /// @brief Returns TestPulse Counter for Background Task
 Function/S GetNITestPulseCounter(device)
 	string device
 
-	return GetNVARAsString(GetDeviceTestPulse(device), "NITestPulseCounter", initialValue=0)
+	return GetNVARAsString(GetDeviceTestPulse(device), "NITestPulseCounter", initialValue = 0)
 End
 
 /// @brief Returns the current NI setup string for analog in through DAQmx_Scan
@@ -468,21 +468,21 @@ End
 Function/S GetNI_ADCTaskID(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "NI_ADC_taskID", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(device), "NI_ADC_taskID", initialValue = NaN)
 End
 
 /// @brief Returns the DAC task ID set after DAQmx_WaveFormGen in HW_NI_PrepareAcq
 Function/S GetNI_DACTaskID(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "NI_DAC_taskID", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(device), "NI_DAC_taskID", initialValue = NaN)
 End
 
 /// @brief Returns the TTL task ID set by DAQmx_DIO_Config in HW_NI_PrepareAcq
 Function/S GetNI_TTLTaskID(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "NI_TTL_taskID", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(device), "NI_TTL_taskID", initialValue = NaN)
 End
 
 /// @brief Return the experiment session start time in NWB-speech
@@ -490,13 +490,13 @@ End
 /// This is the time when the last device was locked.
 Function/S GetSessionStartTime()
 
-	return GetNVARAsString(GetNWBFolder(), "sessionStartTime", initialValue=NaN)
+	return GetNVARAsString(GetNWBFolder(), "sessionStartTime", initialValue = NaN)
 End
 
 /// @brief Return the HDF5 file identifier for the NWB export
 Function/S GetNWBFileIDExport()
 
-	return GetNVARAsString(GetNWBFolder(), "fileIdExport", initialValue=NaN)
+	return GetNVARAsString(GetNWBFolder(), "fileIdExport", initialValue = NaN)
 End
 
 /// @brief Return the absolute path to the file for NWB export
@@ -509,14 +509,14 @@ End
 ///        read back from the NWB file.
 Function/S GetSessionStartTimeReadBack()
 
-	return GetNVARAsString(GetNWBFolder(), "sessionStartTimeReadBack", initialValue=NaN)
+	return GetNVARAsString(GetNWBFolder(), "sessionStartTimeReadBack", initialValue = NaN)
 End
 
 /// @brief Return the thread group ID for the FIFO monitor/resetting daemon
 threadsafe Function/S GetThreadGroupIDFIFO(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "threadGroupIDFifo", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(device), "threadGroupIDFifo", initialValue = NaN)
 End
 
 /// @brief Return the absolute path to the temporary global string
@@ -552,14 +552,14 @@ End
 Function/S GetRNGSeed(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "rngSeed", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(device), "rngSeed", initialValue = NaN)
 End
 
 /// @brief Return the absolute path to the repeated acquisition cycle ID
 Function/S GetRepeatedAcquisitionCycleID(device)
 	string device
 
-	return GetNVARAsString(GetDevicePath(device), "raCycleID", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(device), "raCycleID", initialValue = NaN)
 End
 
 /// @brief Return the absolute path to the repurposed sweep time global variable.
@@ -641,7 +641,7 @@ End
 Function/S GetSweepFormulaJSONid(dfr)
 	DFREF dfr
 
-	return GetNVARAsString(dfr, "sweepFormulaJSONid", initialValue=NaN)
+	return GetNVARAsString(dfr, "sweepFormulaJSONid", initialValue = NaN)
 End
 
 /// @brief Return the formula error message for the sweep formula
@@ -654,8 +654,8 @@ End
 ///
 /// Loads the stored settings on disc if required.
 Function/S GetSettingsJSONid()
-	string path = GetNVARAsString(GetMiesPath(), "settingsJSONid", initialValue = NaN)
-	NVAR JSONid = $path
+	string path   = GetNVARAsString(GetMiesPath(), "settingsJSONid", initialValue = NaN)
+	NVAR   JSONid = $path
 
 	// missing or stale JSON document
 	if(!JSON_IsValid(JSONid))
@@ -693,35 +693,35 @@ End
 Function/S GetTestpulseCycleID(device)
 	string device
 
-	return GetNVARAsString(GetDeviceTestPulse(device), "tpCycleID", initialValue=NaN)
+	return GetNVARAsString(GetDeviceTestPulse(device), "tpCycleID", initialValue = NaN)
 End
 
 /// @brief Returns the path to the "called once" variable of the given name
 Function/S GetCalledOnceVariable(string name)
-	return GetNVARAsString(GetCalledOncePath(), name, initialValue=0)
+	return GetNVARAsString(GetCalledOncePath(), name, initialValue = 0)
 End
 
 /// @brief Returns string path to the thread group id
 Function/S GetThreadGroupID()
-	return GetNVARAsString(getAsyncHomeDF(), "threadGroupID", initialValue=NaN)
+	return GetNVARAsString(getAsyncHomeDF(), "threadGroupID", initialValue = NaN)
 End
 
 /// @brief Returns string path to the number of threads
 Function/S GetNumThreads()
-	return GetNVARAsString(getAsyncHomeDF(), "numThreads", initialValue=0)
+	return GetNVARAsString(getAsyncHomeDF(), "numThreads", initialValue = 0)
 End
 
 /// @brief Returns string path to flag if background task was disabled
 Function/S GetTaskDisableStatus()
-	return GetNVARAsString(getAsyncHomeDF(), "disableTask", initialValue=0)
+	return GetNVARAsString(getAsyncHomeDF(), "disableTask", initialValue = 0)
 End
 
 /// @brief Returns the string path to the last successfully executed SweepFormula code
-Function /S GetLastSweepFormulaCode(DFREF dfr)
+Function/S GetLastSweepFormulaCode(DFREF dfr)
 	return GetSVARAsString(dfr, "lastSweepFormulaCode", initialValue = "")
 End
 
 /// @brief Returns the reference count variable of the given DF
 Function/S GetDFReferenceCount(DFREF dfr)
-	return GetNVARAsString(dfr, MEMORY_REFCOUNTER_DF, initialValue=0)
+	return GetNVARAsString(dfr, MEMORY_REFCOUNTER_DF, initialValue = 0)
 End

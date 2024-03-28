@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=TestNWBExportV1
@@ -19,7 +19,7 @@ static Function TestHistory(fileID)
 
 	WAVE/Z/T matches = GrepTextWave(history, LOGFILE_NWB_MARKER)
 	CHECK_WAVE(history, TEXT_WAVE)
-end
+End
 
 static Function/S TestUserComment(variable fileID, string device)
 	WAVE/Z/T userComment = H5_LoadDataSet(fileID, "/general/user_comment/" + device + "/userComment")
@@ -31,14 +31,14 @@ End
 
 static Function TestLabnotebooks(fileID, device)
 	variable fileID
-	string device
+	string   device
 
 	string lbnDevices, prefix
 
-	WAVE numericalValues = RemoveUnusedRows(GetLBNumericalValues(device))
-	WAVE/T numericalKeys = GetLBNumericalKeys(device)
-	WAVE/T textualValues = RemoveUnusedRows(GetLBTextualValues(device))
-	WAVE/T textualKeys = GetLBTextualKeys(device)
+	WAVE   numericalValues = RemoveUnusedRows(GetLBNumericalValues(device))
+	WAVE/T numericalKeys   = GetLBNumericalKeys(device)
+	WAVE/T textualValues   = RemoveUnusedRows(GetLBTextualValues(device))
+	WAVE/T textualKeys     = GetLBTextualKeys(device)
 
 	lbnDevices = RemoveEnding(ReadLabNoteBooks(fileID), ";")
 	CHECK_EQUAL_STR(lbnDevices, device)
@@ -57,13 +57,13 @@ End
 
 static Function TestTPStorage(fileID, device)
 	variable fileID
-	string device
+	string   device
 
 	string prefix
 
 	prefix = "/general/testpulse/" + device + "/"
 	WAVE/Z TPStorageNWB = H5_LoadDataSet(fileID, prefix + "TPStorage")
-	WAVE/Z TPStorage = RemoveUnusedRows(GetTPStorage(device))
+	WAVE/Z TPStorage    = RemoveUnusedRows(GetTPStorage(device))
 
 	if(!WaveExists(TPStorageNWB) && !WaveExists(TPStorage))
 		PASS()
@@ -74,7 +74,7 @@ End
 
 static Function TestStoredTestPulses(fileID, device)
 	variable fileID
-	string device
+	string   device
 
 	string prefix, datasets, dataset, idxstr
 	variable numPulses, i, numEntries, idx
@@ -109,8 +109,8 @@ End
 
 static Function TestStimsetParamWaves(fileID, device, sweeps)
 	variable fileID
-	string device
-	WAVE sweeps
+	string   device
+	WAVE     sweeps
 
 	variable i, j, numEntries, sweep
 	string stimsetParamsNWB, stimset, prefix, name
@@ -142,8 +142,8 @@ static Function TestStimsetParamWaves(fileID, device, sweeps)
 				continue
 			endif
 
-			WAVE/Z WP  = WB_GetWaveParamForSet(stimset)
-			WAVE/Z WPT = WB_GetWaveTextParamForSet(stimset)
+			WAVE/Z WP        = WB_GetWaveParamForSet(stimset)
+			WAVE/Z WPT       = WB_GetWaveTextParamForSet(stimset)
 			WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimset)
 
 			prefix = "/general/stimsets/"
@@ -156,7 +156,7 @@ static Function TestStimsetParamWaves(fileID, device, sweeps)
 			WAVE/Z WPT_NWB = H5_LoadDataSet(fileID, prefix + name)
 			CHECK_EQUAL_WAVES(WPT_NWB, WPT)
 
-			name =  WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE, nwbFormat = 1)
+			name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE, nwbFormat = 1)
 			WAVE/Z SegWvType_NWB = H5_LoadDataSet(fileID, prefix + name)
 			CHECK_EQUAL_WAVES(SegWvType_NWB, SegWvType)
 		endfor
@@ -165,7 +165,7 @@ End
 
 static Function TestTimeSeriesProperties(groupID, channel)
 	variable groupID
-	string channel
+	string   channel
 
 	variable numEntries, i, value, channelGroupID
 	string missing_fields_ref, missing_fields
@@ -195,10 +195,10 @@ static Function TestTimeSeriesProperties(groupID, channel)
 End
 
 static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep, params)
-	variable groupID
-	string device
-	string channel
-	variable sweep
+	variable                  groupID
+	string                    device
+	string                    channel
+	variable                  sweep
 	STRUCT ReadChannelParams &params
 
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -210,7 +210,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 
 	switch(params.channelType)
 		case XOP_CHANNEL_TYPE_DAC:
-			channelName = "DA"
+			channelName  = "DA"
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
@@ -225,7 +225,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 			CHECK_EQUAL_VAR(entry, params.channelNumber)
 			break
 		case XOP_CHANNEL_TYPE_ADC:
-			channelName = "AD"
+			channelName  = "AD"
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
@@ -299,8 +299,8 @@ static Function TestSourceAttribute(groupID, device, channel, sweep, pxpSweepsDF
 	channelName = GetChannelNameFromChannelType(groupID, device, channel, sweep, params)
 
 	// check that we stored it under the correct name
-	WAVE/Z/SDFR=pxpSweepsDFR pxpWave = $channelName
-	WAVE loadedFromNWB = LoadTimeSeriesImpl(groupID, channel, params.channelType)
+	WAVE/Z/SDFR=pxpSweepsDFR pxpWave       = $channelName
+	WAVE                     loadedFromNWB = LoadTimeSeriesImpl(groupID, channel, params.channelType)
 	CHECK_EQUAL_WAVES(pxpWave, loadedFromNWB)
 
 	// groupIndex is written by AnalyseChannelName
@@ -326,8 +326,8 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 
 	channelGroupID = H5_OpenGroup(groupID, channel)
 
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues   = GetLBTextualValues(device)
 
 	// num_samples
 	num_samples = ReadDataSetAsNumber(channelGroupID, "num_samples")
@@ -335,28 +335,28 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 	CHECK_EQUAL_VAR(num_samples, DimSize(loadedFromNWB, ROWS))
 
 	// starting_time
-	starting_time = ReadDataSetAsNumber(channelGroupID, "starting_time")
+	starting_time      = ReadDataSetAsNumber(channelGroupID, "starting_time")
 	session_start_time = ParseISO8601Timestamp(ReadTextDataSetAsString(fileID, "/session_start_time"))
-	actual = ParseISO8601Timestamp(GetLastSettingTextIndep(textualValues, sweep, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE))
+	actual             = ParseISO8601Timestamp(GetLastSettingTextIndep(textualValues, sweep, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE))
 	CHECK_EQUAL_VAR(session_start_time + starting_time, actual)
 
 	// its attributes: unit
-	unit = ReadTextAttributeAsString(groupID, channel + "/starting_time", "unit")
+	unit     = ReadTextAttributeAsString(groupID, channel + "/starting_time", "unit")
 	unit_ref = "Seconds"
 	CHECK_EQUAL_STR(unit, unit_ref)
 
-	unit = WaveUnits(loadedFromNWB, ROWS)
+	unit     = WaveUnits(loadedFromNWB, ROWS)
 	unit_ref = "ms"
 	CHECK_EQUAL_STR(unit, unit_ref)
 
 	// and rate
-	rate = ReadAttributeAsNumber(groupID, channel + "/starting_time", "rate")
+	rate     = ReadAttributeAsNumber(groupID, channel + "/starting_time", "rate")
 	rate_ref = 1 / (DimDelta(loadedFromNWB, ROWS) * MILLI_TO_ONE)
-	CHECK_CLOSE_VAR(rate, rate_ref, tol=1e-7)
+	CHECK_CLOSE_VAR(rate, rate_ref, tol = 1e-7)
 
-	samplingInterval = GetLastSettingIndep(numericalValues, sweep, "Sampling interval", DATA_ACQUISITION_MODE)
+	samplingInterval     = GetLastSettingIndep(numericalValues, sweep, "Sampling interval", DATA_ACQUISITION_MODE)
 	samplingInterval_ref = DimDelta(loadedFromNWB, ROWS)
-	CHECK_CLOSE_VAR(samplingInterval, samplingInterval_ref, tol=1e-7)
+	CHECK_CLOSE_VAR(samplingInterval, samplingInterval_ref, tol = 1e-7)
 
 	GUIchannelNumber = params.channelNumber
 
@@ -392,7 +392,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 
 	// electrode_name, only present for associated channels
 	if(IsFinite(params.electrodeNumber))
-		electrode_name = ReadTextDataSetAsString(channelGroupID, "electrode_name")
+		electrode_name     = ReadTextDataSetAsString(channelGroupID, "electrode_name")
 		electrode_name_ref = "electrode_" + num2str(params.electrodeNumber)
 		CHECK_EQUAL_STR(electrode_name, electrode_name_ref)
 	endif
@@ -415,7 +415,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 				FAIL()
 			endif
 			break
-		case  I_CLAMP_MODE:
+		case I_CLAMP_MODE:
 			if(params.channelType == XOP_CHANNEL_TYPE_ADC)
 				CHECK_EQUAL_TEXTWAVES(ancestry, {"TimeSeries", "PatchClampSeries", "CurrentClampSeries"})
 			elseif(params.channelType == XOP_CHANNEL_TYPE_DAC)
@@ -441,7 +441,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 	endswitch
 
 	// neurodata_type
-	neurodata_type = ReadTextAttributeAsString(groupID, channel, "neurodata_type")
+	neurodata_type     = ReadTextAttributeAsString(groupID, channel, "neurodata_type")
 	neurodata_type_ref = "TimeSeries"
 	CHECK_EQUAL_STR(neurodata_type, neurodata_type_ref)
 
@@ -452,7 +452,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 		CHECK_WAVE(gains, NUMERIC_WAVE)
 
 		gain_ref = gains[params.electrodeNumber]
-		gain = ReadDatasetAsNumber(channelGroupID, "gain")
+		gain     = ReadDatasetAsNumber(channelGroupID, "gain")
 		CHECK_CLOSE_VAR(gain, gain_ref, tol = 1e-6)
 	endif
 
@@ -462,7 +462,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 		CHECK_WAVE(scales, NUMERIC_WAVE)
 
 		scale_ref = scales[params.electrodeNumber]
-		scale = ReadDatasetAsNumber(channelGroupID, "scale")
+		scale     = ReadDatasetAsNumber(channelGroupID, "scale")
 		CHECK_EQUAL_VAR(scale, scale_ref)
 	endif
 
@@ -480,28 +480,28 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
 		CHECK_CLOSE_VAR(conversion, PICO_TO_ONE)
 
-		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
+		unit          = ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "A"
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(!cmpstr(unit_ref, "mV"))
 		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
 		CHECK_CLOSE_VAR(conversion, MILLI_TO_ONE, tol = 1e-5)
 
-		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
+		unit          = ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "V"
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(!CmpStr(unit_ref, "V"))
 		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
 		CHECK_CLOSE_VAR(conversion, 1, tol = 1e-3)
 
-		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
+		unit          = ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "V"
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(IsEmpty(unit_ref)) // TTL data
 		conversion = ReadAttributeAsNumber(channelGroupID, "data", "conversion")
 		CHECK_CLOSE_VAR(conversion, 1)
 
-		unit = ReadTextAttributeAsString(channelGroupID, "data", "unit")
+		unit          = ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "a.u."
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	else
@@ -510,15 +510,15 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 End
 
 static Function/DF TestSweepData(entry, device, sweep)
-	WAVE/T entry
-	string device
+	WAVE/T   entry
+	string   device
 	variable sweep
 
 	variable ret, i, numEntries, headstage
 	string nwbSweeps, pxpSweeps, pxpSweepsClean, name, channelTypeStr, channelNumberStr, channelSuffix
 
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues   = GetLBTextualValues(device)
 
 	ret = MIES_AB#AB_LoadSweepFromFile(entry[%DiscLocation], entry[%DataFolder], entry[%FileType], device, sweep)
 	CHECK_EQUAL_VAR(ret, 0)
@@ -533,7 +533,7 @@ static Function/DF TestSweepData(entry, device, sweep)
 	CHECK_WAVE(sweepWave, NORMAL_WAVE)
 
 	DFREF pxpSweepsDFR = UniqueDataFolder(GetDataFolderDFR(), "pxpSweeps")
-	SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configWave, TTL_RESCALE_OFF, 1, targetDFR=pxpSweepsDFR)
+	SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configWave, TTL_RESCALE_OFF, 1, targetDFR = pxpSweepsDFR)
 
 	nwbSweeps = SortList(GetListOfObjects(nwbSweepsDFR, ".*"))
 	pxpSweeps = SortList(GetListOfObjects(pxpSweepsDFR, ".*"))
@@ -544,7 +544,7 @@ static Function/DF TestSweepData(entry, device, sweep)
 
 	// remove IZero DA channels as we don't save these in NWB
 	pxpSweepsClean = ""
-	numEntries = ItemsInList(pxpSweeps)
+	numEntries     = ItemsInList(pxpSweeps)
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, pxpSweeps)
 
@@ -552,17 +552,17 @@ static Function/DF TestSweepData(entry, device, sweep)
 		CHECK_EQUAL_VAR(V_Flag, 2)
 
 		WAVE DAC = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
-		headstage = GetRowIndex(DAC, val=str2num(channelNumberStr))
+		headstage = GetRowIndex(DAC, val = str2num(channelNumberStr))
 		if(IsFinite(headstage))
 			WAVE clampMode = GetLastSetting(numericalValues, sweep, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 
-			if(clampMode[headstage] == I_EQUAL_ZERO_MODE \
+			if(clampMode[headstage] == I_EQUAL_ZERO_MODE                                          \
 			   && !cmpstr(channelTypeStr, StringFromList(XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_NAMES)))
 				continue
 			endif
 		endif
 
-		pxpSweepsClean = AddListItem(name, pxpSweepsClean, ";", inf)
+		pxpSweepsClean = AddListItem(name, pxpSweepsClean, ";", Inf)
 	endfor
 
 	CHECK_EQUAL_STR(nwbSweeps, pxpSweepsClean)
@@ -586,10 +586,10 @@ static Function/S TestFileExport()
 	PathInfo home
 	baseFolder = S_path
 
-	nwbFile = GetExperimentName() + "-V1.nwb"
+	nwbFile      = GetExperimentName() + "-V1.nwb"
 	discLocation = baseFolder + nwbFile
 
-	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath=discLocation, overwrite = 1)
+	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath = discLocation, overwrite = 1)
 
 	[abWin, sweepBrowser] = OpenAnalysisBrowser({nwbFile})
 
@@ -601,7 +601,7 @@ static Function TestListOfGroups(groupList, wv)
 	WAVE/T wv
 
 	variable index
-	string list
+	string   list
 
 	index = GetNumberFromWaveNote(wv, NOTE_INDEX)
 	CHECK_GE_VAR(index, 1)
@@ -610,7 +610,7 @@ static Function TestListOfGroups(groupList, wv)
 
 	Duplicate/FREE/T/R=[0, index - 1] wv, wvFilled
 	wvFilled[] = RemoveEnding(wvFilled[p], ";")
-	list = SortList(TextWaveToList(wvFilled, ";"))
+	list       = SortList(TextWaveToList(wvFilled, ";"))
 	CHECK_EQUAL_STR(groupList, list)
 End
 

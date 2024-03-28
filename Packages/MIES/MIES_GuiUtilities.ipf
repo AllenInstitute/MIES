@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -35,9 +35,9 @@ Function ShowControls(win, controlList)
 	variable i
 	variable numItems = ItemsInList(controlList)
 	string ctrl
-	for(i=0; i < numItems; i+=1)
-		ctrl = StringFromList(i,controlList)
-		ShowControl(win,ctrl)
+	for(i = 0; i < numItems; i += 1)
+		ctrl = StringFromList(i, controlList)
+		ShowControl(win, ctrl)
 	endfor
 End
 
@@ -62,9 +62,9 @@ Function HideControls(win, controlList)
 	variable i
 	variable numItems = ItemsInList(controlList)
 	string ctrl
-	for(i=0; i < numItems; i+=1)
-		ctrl = StringFromList(i,controlList)
-		HideControl(win,ctrl)
+	for(i = 0; i < numItems; i += 1)
+		ctrl = StringFromList(i, controlList)
+		HideControl(win, ctrl)
 	endfor
 End
 
@@ -75,7 +75,7 @@ Function EnableControl(win, control)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	if( (V_disable & DISABLE_CONTROL_BIT) == 0)
+	if((V_disable & DISABLE_CONTROL_BIT) == 0)
 		return NaN
 	endif
 
@@ -89,9 +89,9 @@ Function EnableControls(win, controlList)
 	variable i
 	variable numItems = ItemsInList(controlList)
 	string ctrl
-	for(i=0; i < numItems; i+=1)
-		ctrl = StringFromList(i,controlList)
-		EnableControl(win,ctrl)
+	for(i = 0; i < numItems; i += 1)
+		ctrl = StringFromList(i, controlList)
+		EnableControl(win, ctrl)
 	endfor
 End
 
@@ -116,9 +116,9 @@ Function DisableControls(win, controlList)
 	variable i
 	variable numItems = ItemsInList(controlList)
 	string ctrl
-	for(i=0; i < numItems; i+=1)
-		ctrl = StringFromList(i,controlList)
-		DisableControl(win,ctrl)
+	for(i = 0; i < numItems; i += 1)
+		ctrl = StringFromList(i, controlList)
+		DisableControl(win, ctrl)
 	endfor
 End
 
@@ -130,9 +130,9 @@ Function SetControlTitles(win, controlList, controlTitleList)
 	variable numItems = ItemsInList(controlList)
 	ASSERT(numItems <= ItemsInList(controlTitleList), "List of control titles is too short")
 	string controlName, newTitle
-	for(i=0; i < numItems; i+=1)
-		controlName = StringFromList(i,controlList)
-		newTitle = StringFromList(i,controlTitleList)
+	for(i = 0; i < numItems; i += 1)
+		controlName = StringFromList(i, controlList)
+		newTitle    = StringFromList(i, controlTitleList)
 		SetControlTitle(win, controlName, newTitle)
 	endfor
 End
@@ -144,7 +144,7 @@ Function SetControlTitle(win, controlName, newTitle)
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName, WIN = $win, title = newTitle
+	ModifyControl $ControlName, WIN=$win, title=newTitle
 End
 
 /// @brief Set the procedure of a list of controls
@@ -152,7 +152,7 @@ Function SetControlProcedures(win, controlList, newProcedure)
 	string win, controlList, newProcedure
 
 	variable i
-	string controlName
+	string   controlName
 	variable numItems = ItemsInList(controlList)
 
 	for(i = 0; i < numItems; i += 1)
@@ -168,7 +168,7 @@ Function SetControlProcedure(win, controlName, newProcedure)
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName, WIN = $win, proc = $newProcedure
+	ModifyControl $ControlName, WIN=$win, proc=$newProcedure
 End
 
 /// @brief Return the title of a control
@@ -177,7 +177,7 @@ End
 /// @param supress      supress assertion that ctrl must have a title
 /// @return Returns     the title or an empty string
 Function/S GetTitle(recMacro, [supress])
-	string recMacro
+	string   recMacro
 	variable supress
 
 	string title, errorMessage
@@ -208,8 +208,8 @@ Function SetControlTitleColors(win, controlList, R, G, B)
 	variable i
 	variable numItems = ItemsInList(controlList)
 	string controlName
-	for(i=0; i < numItems; i+=1)
-		controlName = StringFromList(i,controlList)
+	for(i = 0; i < numItems; i += 1)
+		controlName = StringFromList(i, controlList)
 		SetControlTitleColor(win, controlName, R, G, B)
 	endfor
 End
@@ -222,7 +222,7 @@ Function SetControlTitleColor(win, controlName, R, G, B) ///@todo store color in
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName, WIN = $win, fColor = (R,G,B)
+	ModifyControl $ControlName, WIN=$win, fColor=(R, G, B)
 End
 
 /// @brief Change color of a control
@@ -233,7 +233,7 @@ Function ChangeControlColor(win, controlName, R, G, B)
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName, WIN = $win, fColor = (R,G,B)
+	ModifyControl $ControlName, WIN=$win, fColor=(R, G, B)
 
 End
 
@@ -245,7 +245,7 @@ Function ChangeControlValueColor(win, controlName, R, G, B)
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName, WIN = $win, valueColor = (R,G,B)
+	ModifyControl $ControlName, WIN=$win, valueColor=(R, G, B)
 
 End
 
@@ -256,14 +256,14 @@ Function ChangeControlValueColors(win, controlList, R, G, B)
 	variable i
 	variable numItems = ItemsInList(controlList)
 	string ctrl
-	for(i=0; i < numItems; i+=1)
-		ctrl = StringFromList(i,controlList)
+	for(i = 0; i < numItems; i += 1)
+		ctrl = StringFromList(i, controlList)
 		ControlInfo/W=$win $ctrl
 		ASSERT(V_flag != 0, "Non-existing control or window")
-	//	ChangeControlValueColor(win, ctrl, R, G, B)
+		//	ChangeControlValueColor(win, ctrl, R, G, B)
 	endfor
 
-	ModifyControlList controlList, WIN = $win, valueColor = (R,G,B)
+	ModifyControlList controlList, WIN=$win, valueColor=(R, G, B)
 
 End
 
@@ -281,13 +281,13 @@ Function SetControlBckgColor(win, controlName, R, G, B, [Alpha])
 
 	if(paramIsDefault(Alpha))
 		Alpha = 1
-	Endif
+	endif
 	ASSERT(Alpha > 0 && Alpha <= 1, "Alpha must be between 0 and 1")
 	Alpha *= 65535
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
-	ModifyControl $ControlName, WIN = $win, valueBackColor = (R,G,B,Alpha)
+	ModifyControl $ControlName, WIN=$win, valueBackColor=(R, G, B, Alpha)
 End
 
 /// @brief Change the background color of a list of controls
@@ -297,14 +297,14 @@ Function ChangeControlBckgColors(win, controlList, R, G, B)
 	variable i
 	variable numItems = ItemsInList(controlList)
 	string ctrl
-	for(i=0; i < numItems; i+=1)
-		ctrl = StringFromList(i,controlList)
+	for(i = 0; i < numItems; i += 1)
+		ctrl = StringFromList(i, controlList)
 		ControlInfo/W=$win $ctrl
 		ASSERT(V_flag != 0, "Non-existing control or window")
-	//	ChangeControlValueColor(win, ctrl, R, G, B)
+		//	ChangeControlValueColor(win, ctrl, R, G, B)
 	endfor
 
-	ModifyControlList controlList, WIN = $win, valueBackColor = (R,G,B)
+	ModifyControlList controlList, WIN=$win, valueBackColor=(R, G, B)
 
 End
 
@@ -320,7 +320,7 @@ Function GetCheckBoxState(win, control)
 End
 
 /// @brief Set the internal number in a setvariable control
-Function SetSetVariable(win,Control, newValue, [respectLimits])
+Function SetSetVariable(win, Control, newValue, [respectLimits])
 	string win, control
 	variable newValue
 	variable respectLimits
@@ -338,7 +338,7 @@ Function SetSetVariable(win,Control, newValue, [respectLimits])
 	endif
 
 	if(newValue != v_value)
-		SetVariable $control, win = $win, value =_NUM:newValue
+		SetVariable $control, win=$win, value=_NUM:newValue
 	endif
 
 	return newValue
@@ -364,14 +364,14 @@ Function SetSetVariableString(string win, string control, string str, [variable 
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
 
 	if(setHelp)
-		SetVariable $control, win = $win, value =_STR:str, help={str}
+		SetVariable $control, win=$win, value=_STR:str, help={str}
 	else
-		SetVariable $control, win = $win, value =_STR:str
+		SetVariable $control, win=$win, value=_STR:str
 	endif
 End
 
 /// @brief Set the state of the checkbox
-Function SetCheckBoxState(win,control,state)
+Function SetCheckBoxState(win, control, state)
 	string win, control
 	variable state
 
@@ -382,7 +382,7 @@ Function SetCheckBoxState(win,control,state)
 	state = !!state
 
 	if(state != V_Value)
-		CheckBox $control, win=$win, value=(state==CHECKBOX_SELECTED)
+		CheckBox $control, win=$win, value=(state == CHECKBOX_SELECTED)
 	endif
 
 End
@@ -396,7 +396,7 @@ Function SetSetVariableLimits(win, Control, low, high, increment)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
 
-	SetVariable $control, win = $win, limits={low,high,increment}
+	SetVariable $control, win=$win, limits={low, high, increment}
 End
 
 /// @brief Returns the contents of a SetVariable
@@ -409,7 +409,7 @@ Function GetSetVariable(win, control)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
 	return V_Value
-end
+End
 
 /// @brief Returns the contents of a SetVariable with an internal string
 Function/S GetSetVariableString(win, control)
@@ -423,7 +423,7 @@ Function/S GetSetVariableString(win, control)
 	endif
 
 	return S_Value
-end
+End
 
 /// @brief Returns the current PopupMenu item as string
 Function/S GetPopupMenuString(win, control)
@@ -446,7 +446,7 @@ Function GetPopupMenuIndex(win, control)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
-	ASSERT(V_Value >= 1,"Invalid index")
+	ASSERT(V_Value >= 1, "Invalid index")
 	return V_Value - 1
 End
 
@@ -459,7 +459,7 @@ Function SetPopupMenuIndex(win, control, index)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
-	ASSERT(index >= 0,"Invalid index")
+	ASSERT(index >= 0, "Invalid index")
 	PopupMenu $control, win=$win, mode=index
 End
 
@@ -475,7 +475,7 @@ Function SetPopupMenuVal(string win, string control, [string list, string func])
 		sprintf output, "\"%s\"", List
 		ASSERT(strlen(output) < MAX_COMMANDLINE_LENGTH, "Popup menu list is greater than MAX_COMMANDLINE_LENGTH characters")
 	elseif(!ParamIsDefault(func))
-		output = func
+		output     = func
 		allEntries = GetPopupMenuList(func, POPUPMENULIST_TYPE_OTHER)
 		ASSERT(!IsEmpty(allEntries), "func does not generate a non-empty string list.")
 	endif
@@ -499,7 +499,7 @@ Function/S SetPopupMenuString(win, control, str)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
-	PopupMenu $control, win=$win, popmatch = str
+	PopupMenu $control, win=$win, popmatch=str
 
 	result = GetPopupMenuString(win, control)
 
@@ -550,7 +550,7 @@ Function SetSliderPositionIndex(win, control, index)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SLIDER, "Control is not a slider")
-	Slider $control, win=$win, value = index
+	Slider $control, win=$win, value=index
 End
 
 /// @brief Set a ValDisplay
@@ -705,87 +705,87 @@ Function [STRUCT RGBColor s] GetTraceColor(variable index)
 	index = mod(index, 21)
 	switch(index)
 		case 0:
-			s.red = 7967; s.green=7710; s.blue=7710
+			s.red = 7967; s.green = 7710; s.blue = 7710
 			break
 
 		case 1:
-			s.red = 60395; s.green=52685; s.blue=15934
+			s.red = 60395; s.green = 52685; s.blue = 15934
 			break
 
 		case 2:
-			s.red = 28527; s.green=12336; s.blue=35723
+			s.red = 28527; s.green = 12336; s.blue = 35723
 			break
 
 		case 3:
-			s.red = 56283; s.green=27242; s.blue=10537
+			s.red = 56283; s.green = 27242; s.blue = 10537
 			break
 
 		case 4:
-			s.red = 38807; s.green=52942; s.blue=59110
+			s.red = 38807; s.green = 52942; s.blue = 59110
 			break
 
 		case 5:
-			s.red = 47545; s.green=8224; s.blue=13878
+			s.red = 47545; s.green = 8224; s.blue = 13878
 			break
 
 		case 6:
-			s.red = 49858; s.green=48316; s.blue=33410
+			s.red = 49858; s.green = 48316; s.blue = 33410
 			break
 
 		case 7:
-			s.red = 32639; s.green=32896; s.blue=33153
+			s.red = 32639; s.green = 32896; s.blue = 33153
 			break
 
 		case 8:
-			s.red = 25186; s.green=42662; s.blue=18247
+			s.red = 25186; s.green = 42662; s.blue = 18247
 			break
 
 		case 9:
-			s.red = 54227; s.green=34438; s.blue=45746
+			s.red = 54227; s.green = 34438; s.blue = 45746
 			break
 
 		case 10:
-			s.red = 17733; s.green=30840; s.blue=46003
+			s.red = 17733; s.green = 30840; s.blue = 46003
 			break
 
 		case 11:
-			s.red = 56540; s.green=33924; s.blue=25957
+			s.red = 56540; s.green = 33924; s.blue = 25957
 			break
 
 		case 12:
-			s.red = 18504; s.green=14392; s.blue=38550
+			s.red = 18504; s.green = 14392; s.blue = 38550
 			break
 
 		case 13:
-			s.red = 57825; s.green=41377; s.blue=12593
+			s.red = 57825; s.green = 41377; s.blue = 12593
 			break
 
 		case 14:
-			s.red = 37265; s.green=10023; s.blue=35723
+			s.red = 37265; s.green = 10023; s.blue = 35723
 			break
 
 		case 15:
-			s.red = 59881; s.green=59624; s.blue=22359
+			s.red = 59881; s.green = 59624; s.blue = 22359
 			break
 
 		case 16:
-			s.red = 32125; s.green=5911; s.blue=5654
+			s.red = 32125; s.green = 5911; s.blue = 5654
 			break
 
 		case 17:
-			s.red = 37779; s.green=44461; s.blue=15420
+			s.red = 37779; s.green = 44461; s.blue = 15420
 			break
 
 		case 18:
-			s.red = 28270; s.green=13621; s.blue=5397
+			s.red = 28270; s.green = 13621; s.blue = 5397
 			break
 
 		case 19:
-			s.red = 53713; s.green=11565; s.blue=10023
+			s.red = 53713; s.green = 11565; s.blue = 10023
 			break
 
 		case 20:
-			s.red = 11308; s.green=13878; s.blue=5911
+			s.red = 11308; s.green = 13878; s.blue = 5911
 			break
 
 		default:
@@ -885,14 +885,14 @@ End
 /// @brief Return the recreation macro for an axis
 static Function/S GetAxisRecreationMacro(string info)
 
-	string key
+	string   key
 	variable index
 
 	// straight from the AxisInfo help
-	key = ";RECREATION:"
-	index = strsearch(info,key,0)
+	key   = ";RECREATION:"
+	index = strsearch(info, key, 0)
 
-	return info[index + strlen(key), inf]
+	return info[index + strlen(key), Inf]
 End
 
 /// @brief Return the logmode of the axis
@@ -927,7 +927,7 @@ End
 /// @param[in] orientation [optional: default not set] filter orientation of axes see @ref AxisOrientationConstants
 /// @param[in] mode [optional: default #AXIS_RANGE_DEFAULT] filter returned axis information by mode see @ref AxisPropModeConstants
 /// @return free wave with rows = axes, cols = axes info, dimlabel of rows is axis name
-Function/Wave GetAxesProperties(graph, [axesRegexp, orientation, mode])
+Function/WAVE GetAxesProperties(graph, [axesRegexp, orientation, mode])
 	string graph, axesRegexp
 	variable orientation, mode
 
@@ -948,13 +948,13 @@ Function/Wave GetAxesProperties(graph, [axesRegexp, orientation, mode])
 	numAxes = ItemsInList(list)
 
 	Make/FREE/D/N=(numAxes, 4) props = 0
-	SetDimLabel COLS, 0, minimum , props
-	SetDimLabel COLS, 1, maximum , props
+	SetDimLabel COLS, 0, minimum, props
+	SetDimLabel COLS, 1, maximum, props
 	SetDimLabel COLS, 2, axisType, props
 	SetDimLabel COLS, 3, logMode, props
 
 	for(i = 0; i < numAxes; i += 1)
-		axis = StringFromList(i, list)
+		axis            = StringFromList(i, list)
 		axisOrientation = GetAxisOrientation(graph, axis)
 		if(!ParamIsDefault(orientation) && !(axisOrientation & orientation))
 			continue
@@ -964,8 +964,8 @@ Function/Wave GetAxesProperties(graph, [axesRegexp, orientation, mode])
 
 		[minimum, maximum] = GetAxisRangeFromInfo(graph, info, axis, mode)
 		props[countAxes][%axisType] = axisOrientation
-		props[countAxes][%minimum] = minimum
-		props[countAxes][%maximum] = maximum
+		props[countAxes][%minimum]  = minimum
+		props[countAxes][%maximum]  = maximum
 
 		props[countAxes][%logMode] = GetAxisLogModeFromInfo(info)
 
@@ -994,7 +994,7 @@ End
 /// @param[in] mode [optional: default 0] axis set mode see @ref AxisPropModeConstants
 Function SetAxesProperties(graph, props, [axesRegexp, orientation, mode])
 	string graph
-	Wave props
+	WAVE   props
 	string axesRegexp
 	variable orientation, mode
 
@@ -1022,7 +1022,7 @@ Function SetAxesProperties(graph, props, [axesRegexp, orientation, mode])
 	numAxes = ItemsInList(list)
 
 	for(i = 0; i < numAxes; i += 1)
-		axis = StringFromList(i, list)
+		axis            = StringFromList(i, list)
 		axisOrientation = GetAxisOrientation(graph, axis)
 		if(!ParamIsDefault(orientation) && axisOrientation != orientation)
 			continue
@@ -1043,7 +1043,7 @@ Function SetAxesProperties(graph, props, [axesRegexp, orientation, mode])
 					col = FindDimLabel(props, COLS, "maximum")
 					WaveStats/Q/M=1/RMD=[][col] props
 					prevAxisMax = V_Max
-					col = FindDimLabel(props, COLS, "minimum")
+					col         = FindDimLabel(props, COLS, "minimum")
 					WaveStats/Q/M=1/RMD=[][col] props
 					prevAxisMin = V_Min
 				endif
@@ -1130,7 +1130,7 @@ Function SetGuiControlValue(win, control, value)
 	elseif(controlType == CONTROL_TYPE_POPUPMENU)
 		SetPopupMenuIndex(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_SLIDER)
-		Slider $control, win = $win, value = str2num(value)
+		Slider $control, win=$win, value=str2num(value)
 	else
 		ASSERT(0, "Unsupported control type") // if I get this, something's really gone pear shaped
 	endif
@@ -1184,7 +1184,7 @@ End
 /// @brief Generic wrapper for setting a controls state (enabled, hidden, disabled)
 Function SetGuiControlState(win, control, controlState)
 	string win, control
-	string controlState
+	string   controlState
 	variable controlType
 
 	ControlInfo/W=$win $control
@@ -1231,7 +1231,7 @@ End
 /// UTF_NOINSTRUMENTATION
 Function/S GetCurrentWindow()
 
-	GetWindow kwTopWin activesw
+	GetWindow kwTopWin, activesw
 	return s_value
 End
 
@@ -1255,7 +1255,7 @@ End
 
 /// @brief Restore the cursors from the info of GetCursorInfos().
 Function RestoreCursors(graph, cursorInfos)
-	string graph
+	string   graph
 	WAVE/T/Z cursorInfos
 
 	string traceList, cursorTrace, info, replacementTrace
@@ -1285,7 +1285,7 @@ Function RestoreCursors(graph, cursorInfos)
 		if(FindListItem(cursorTrace, traceList) == -1)
 			// trace is not present anymore, use the first one instead
 			replacementTrace = StringFromList(0, traceList)
-			info = ReplaceWordInString(cursorTrace, info, replacementTrace)
+			info             = ReplaceWordInString(cursorTrace, info, replacementTrace)
 		endif
 
 		Execute StringByKey("RECREATION", info)
@@ -1296,10 +1296,10 @@ End
 Function/WAVE GetAnnotationInfo(string graph)
 
 	variable numEntries
-	string annotations
+	string   annotations
 
 	annotations = AnnotationList(graph)
-	numEntries = ItemsInList(annotations)
+	numEntries  = ItemsInList(annotations)
 
 	if(numEntries == 0)
 		return $""
@@ -1319,7 +1319,7 @@ Function RestoreAnnotationPositions(string graph, WAVE/T annoInfo)
 	string annotations, name, infoStr, flags, anchor
 
 	annotations = AnnotationList(graph)
-	numEntries = ItemsInList(annotations)
+	numEntries  = ItemsInList(annotations)
 
 	if(numEntries == 0)
 		return NaN
@@ -1328,7 +1328,7 @@ Function RestoreAnnotationPositions(string graph, WAVE/T annoInfo)
 	for(i = 0; i < numEntries; i += 1)
 
 		name = StringFromList(i, annotations)
-		idx = FindDimLabel(annoInfo, ROWS, name)
+		idx  = FindDimLabel(annoInfo, ROWS, name)
 
 		if(idx < 0)
 			continue
@@ -1353,7 +1353,7 @@ Function AutoscaleVertAxisVisXRange(graph)
 	string axList, axis
 	variable i, numAxes, axisOrient
 
-	axList = AxisList(graph)
+	axList  = AxisList(graph)
 	numAxes = ItemsInList(axList)
 	for(i = 0; i < numAxes; i += 1)
 		axis = StringFromList(i, axList)
@@ -1387,7 +1387,7 @@ Function GetInternalSetVariableType(recMacro)
 	return SET_VARIABLE_GLOBAL
 End
 
-Function ExtractLimitsFromRecMacro(string recMacro, variable& minVal, variable& maxVal, variable& incVal)
+Function ExtractLimitsFromRecMacro(string recMacro, variable &minVal, variable &maxVal, variable &incVal)
 	string minStr, maxStr, incStr
 
 	minVal = NaN
@@ -1412,10 +1412,10 @@ End
 /// @return 0 on success, 1 if no specification could be found
 ///
 /// @sa ExtractLimitsFromRecMacro for a faster way if you already have the recreation macro
-Function ExtractLimits(string win, string control, variable& minVal, variable& maxVal, variable& incVal)
+Function ExtractLimits(string win, string control, variable &minVal, variable &maxVal, variable &incVal)
 	string minStr, maxStr, incStr
 
-	string recMacro
+	string   recMacro
 	variable controlType
 	[recMacro, controlType] = GetRecreationMacroAndType(win, control)
 
@@ -1459,7 +1459,7 @@ End
 /// @param func       name of the function
 /// @param paramIndex index of the parameter
 Function GetFunctionParameterType(func, paramIndex)
-	string func
+	string   func
 	variable paramIndex
 
 	string funcInfo, param
@@ -1532,7 +1532,7 @@ End
 ///
 /// @returns 1 on error, 0 if everything is fine.
 Function SearchForInvalidControlProcs(win, [warnOnEmpty])
-	string win
+	string   win
 	variable warnOnEmpty
 
 	string controlList, control, controlProc
@@ -1549,7 +1549,7 @@ Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 	if(ParamIsDefault(warnOnEmpty))
 		warnOnEmpty = 0
 	else
-		warnOnEmpty = !!	warnOnEmpty
+		warnOnEmpty = !!warnOnEmpty
 	endif
 
 	if(WinType(win) != 7 && WinType(win) != 1) // ignore everything except panels and graphs
@@ -1557,10 +1557,10 @@ Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 	endif
 
 	subwindowList = ChildWindowList(win)
-	numEntries = ItemsInList(subwindowList)
+	numEntries    = ItemsInList(subwindowList)
 	for(i = 0; i < numEntries; i += 1)
 		subwindow = win + "#" + StringFromList(i, subWindowList)
-		result = result || SearchForInvalidControlProcs(subwindow, warnOnEmpty = warnOnEmpty)
+		result    = result || SearchForInvalidControlProcs(subwindow, warnOnEmpty = warnOnEmpty)
 	endfor
 
 	funcList    = FunctionList("*", ";", "NPARAMS:1,KIND:2")
@@ -1674,7 +1674,7 @@ Function GetCheckBoxMode(win, checkBoxName)
 	string modeString
 	ControlInfo/W=$win $checkBoxName
 	ASSERT(V_flag == 2, "not a checkBox control")
-	first = strsearch(S_recreation, "mode=", 0,2)
+	first = strsearch(S_recreation, "mode=", 0, 2)
 	if(first == -1)
 		return 0
 	else
@@ -1708,10 +1708,10 @@ Function SetListBoxSelection(string win, string ctrl, variable val, variable row
 
 	if(ParamIsDefault(col))
 		colStart = 0
-		colEnd   = inf
+		colEnd   = Inf
 	else
 		colStart = col
-		colEnd = col
+		colEnd   = col
 	endif
 
 	ControlInfo/W=$win $ctrl
@@ -1727,20 +1727,20 @@ End
 
 /// @brief Check if the location `loc` is inside the rectangle `r`
 Function IsInsideRect(loc, r)
-	STRUCT Point& loc
-	STRUCT RectF& r
+	STRUCT Point &loc
+	STRUCT RectF &r
 
-	return loc.h >= r.left      \
-		   && loc.h <= r.right  \
-		   && loc.v >= r.top    \
-		   && loc.v <= r.bottom
+	return loc.h >= r.left     \
+	       && loc.h <= r.right \
+	       && loc.v >= r.top   \
+	       && loc.v <= r.bottom
 End
 
 /// @brief Return the coordinates of the control borders
 ///        relative to the top left corner in pixels
 Function GetControlCoordinates(win, ctrl, s)
 	string win, ctrl
-	STRUCT RectF& s
+	STRUCT RectF &s
 
 	ControlInfo/W=$win $ctrl
 	ASSERT(V_flag != 0, "Not an existing control")
@@ -1797,7 +1797,7 @@ Function NotebookSelectionAtEnd(win)
 
 	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
 
-	Notebook $win, selection={endOfFile,endOfFile}, findText={"",1}
+	Notebook $win, selection={endOfFile, endOfFile}, findText={"", 1}
 End
 
 /// @brief Retrieves named userdata keys from a recreation macro string
@@ -1850,7 +1850,7 @@ Function/S ControlTypeToName(ctrlType)
 	endif
 	pos = WhichListItem(num2str(abs(ctrlType)), EXPCONFIG_GUI_CTRLTYPES)
 	if(pos < 0)
-	  return ""
+		return ""
 	endif
 	return StringFromList(pos, EXPCONFIG_GUI_CTRLLIST)
 End
@@ -1865,7 +1865,7 @@ Function Name2ControlType(ctrlName)
 	variable pos
 	pos = WhichListItem(ctrlName, EXPCONFIG_GUI_CTRLLIST)
 	if(pos < 0)
-	  return NaN
+		return NaN
 	endif
 	return str2num(StringFromList(pos, EXPCONFIG_GUI_CTRLTYPES))
 End
@@ -1901,19 +1901,19 @@ Function/S GetAllWindows(wName)
 End
 
 static Function GetAllWindowsImpl(wName, windowList)
-	string wName
+	string  wName
 	string &windowList
 
 	string children
 	variable i, numChildren, err
 
-	windowList = AddListItem(wName, windowList, ";", inf)
+	windowList = AddListItem(wName, windowList, ";", Inf)
 
 	if(!WindowTypeCanHaveChildren(wName))
 		return NaN
 	endif
 
-	children = ChildWindowList(wName)
+	children    = ChildWindowList(wName)
 	numChildren = ItemsInList(children, ";")
 	for(i = 0; i < numChildren; i += 1)
 		GetAllWindowsImpl(wName + "#" + StringFromList(i, children, ";"), windowList)
@@ -1930,12 +1930,12 @@ End
 /// @{
 Function PointsToPixel(variable var)
 
-	return var * (ScreenResolution/72)
+	return var * (ScreenResolution / 72)
 End
 
 Function PixelToPoints(variable var)
 
-	return var * (72/ScreenResolution)
+	return var * (72 / ScreenResolution)
 End
 /// @}
 
@@ -1965,7 +1965,7 @@ Function ShowSetVariableLimitsSelectionPopup(sva)
 	string win, ctrl, items, defaultIncrementStr, elem
 	variable minVal, maxVal, incVal, defaultIncrement, index
 
-	win = sva.win
+	win  = sva.win
 	ctrl = sva.ctrlName
 
 	ASSERT(sva.eventCode == 9, "Unexpected event code")
@@ -1981,7 +1981,7 @@ Function ShowSetVariableLimitsSelectionPopup(sva)
 	endif
 
 	defaultIncrementStr = GetUserData(win, ctrl, "DefaultIncrement")
-	defaultIncrement = str2numSafe(defaultIncrementStr)
+	defaultIncrement    = str2numSafe(defaultIncrementStr)
 	ASSERT(IsFinite(defaultIncrement), "Missing DefaultIncrement user data")
 
 	Make/D/FREE increments = {1e-3, 1e-2, 0.1, 1.0, 10, 1e2, 1e3}
@@ -2062,7 +2062,7 @@ Function DrawScaleBar(string graph, variable x0, variable y0, variable x1, varia
 			length = abs(y0 - y1)
 
 			ASSERT(!IsEmpty(unit), "empty unit")
-			subDigits = length > 1 ? 0 : abs(floor(log(length)/log(10)))
+			subDigits = length > 1 ? 0 : abs(floor(log(length) / log(10)))
 			sprintf str, "%.*f%s%s", subDigits, length, SelectString(newlineBeforeUnit, NUMBER_UNIT_SPACE, "\r"), unit
 
 			xPos = x0 - labelOffset
@@ -2071,12 +2071,12 @@ Function DrawScaleBar(string graph, variable x0, variable y0, variable x1, varia
 			sprintf msg, "Text: (%g, %g)\r", xPos, yPos
 			DEBUGPRINT(msg)
 
-			SetDrawEnv/W=$graph textxjust = 2,textyjust = 1
+			SetDrawEnv/W=$graph textxjust=2, textyjust=1
 		elseif(y0 == y1)
 			length = abs(x0 - x1)
 
 			ASSERT(!IsEmpty(unit), "empty unit")
-			subDigits = length > 1 ? 0 : abs(floor(log(length)/log(10)))
+			subDigits = length > 1 ? 0 : abs(floor(log(length) / log(10)))
 			sprintf str, "%.*f%s%s", subDigits, length, SelectString(newlineBeforeUnit, NUMBER_UNIT_SPACE, "\r"), unit
 
 			xPos = min(x0, x1) + abs(x0 - x1) / 2
@@ -2085,7 +2085,7 @@ Function DrawScaleBar(string graph, variable x0, variable y0, variable x1, varia
 			sprintf msg, "Text: (%g, %g)\r", xPos, yPos
 			DEBUGPRINT(msg)
 
-			SetDrawEnv/W=$graph textxjust = 1,textyjust = 2
+			SetDrawEnv/W=$graph textxjust=1, textyjust=2
 		else
 			ASSERT(0, "Unexpected combination")
 		endif
@@ -2179,7 +2179,7 @@ Function ShowTraceInfoTags()
 		KillWindow/Z $S_name
 		return NaN
 	endif
-	if(CmpStr(S_value,"Show Trace Info Tags"))
+	if(CmpStr(S_value, "Show Trace Info Tags"))
 		// toggled to "Show Trace Info Tags", need to toggle back
 		DoIgorMenu/OVRD "Graph", "Show Trace Info Tags"
 	endif
@@ -2200,7 +2200,7 @@ End
 
 /// @brief Query a numeric GUI control property
 Function GetControlSettingVar(string recMacro, string setting, [variable defValue])
-	string match
+	string   match
 	variable found
 
 	if(ParamIsDefault(defValue))
@@ -2218,7 +2218,7 @@ End
 
 /// @brief Query a string GUI control property
 Function/S GetControlSettingStr(string recMacro, string setting, [string defValue])
-	string match
+	string   match
 	variable found
 
 	if(ParamIsDefault(defValue))
@@ -2279,8 +2279,8 @@ Function AdaptDependentControls(string win, string controls, variable restoreOnS
 	string ctrl
 
 	restoreOnState = !!restoreOnState
-	newMainState = !!newMainState
-	numControls = ItemsInList(controls)
+	newMainState   = !!newMainState
+	numControls    = ItemsInList(controls)
 
 	if(restoreOnState == newMainState)
 		// enabled controls and restore the previous state
@@ -2330,7 +2330,7 @@ Function ReflowNotebookText(string win)
 	// make it a bit shorter
 	width -= 10
 	// pixel -> points
-	width = width * (72/ScreenResolution)
+	width = width * (72 / ScreenResolution)
 	// redefine ruler
 	Notebook $win, ruler=Normal, rulerUnits=0, margins={0, 0, width}
 	// select everything

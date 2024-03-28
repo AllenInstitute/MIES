@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -22,7 +22,7 @@ static Structure SBE_ExportSettings
 EndStructure
 
 static Function SBE_FillExportSettings(win, sett)
-	string win
+	string                     win
 	STRUCT SBE_ExportSettings &sett
 
 	variable redistAxis
@@ -90,7 +90,7 @@ End
 
 /// @brief Return a list of possible axes for the export panel
 Function/S SBE_GetSelectedAxis(graphPopup, axisOrientation)
-	string graphPopup
+	string   graphPopup
 	variable axisOrientation
 
 	string graph
@@ -126,14 +126,14 @@ static Function SBE_AddMissingADTraceInfo(traceData)
 	Make/FREE/WAVE/N=(numPaths) shownWaves = $traceData[p][%fullPath]
 
 	for(i = 0; i < numPaths; i += 1)
-		DFREF sweepDFR = $GetWavesDataFolder(shownWaves[i], 1)
+		DFREF     sweepDFR = $GetWavesDataFolder(shownWaves[i], 1)
 		WAVE/WAVE allWaves = GetDAQDataSingleColumnWaves(sweepDFR, XOP_CHANNEL_TYPE_ADC)
 
 		WAVE numericalValues = $traceData[i][%numericalValues]
 		sweepNumber = str2num(traceData[i][%sweepNumber])
 
 		WAVE ADCs = GetLastSetting(numericalValues, sweepNumber, "ADC", DATA_ACQUISITION_MODE)
-		WAVE HS = GetLastSetting(numericalValues, sweepNumber, "Headstage Active", DATA_ACQUISITION_MODE)
+		WAVE HS   = GetLastSetting(numericalValues, sweepNumber, "Headstage Active", DATA_ACQUISITION_MODE)
 
 		numEntries = DimSize(allWaves, ROWS)
 		for(j = 0; j < numEntries; j += 1)
@@ -151,13 +151,13 @@ static Function SBE_AddMissingADTraceInfo(traceData)
 			endif
 
 			// labnotebook layer where the ADC can be found is the headstage number
-			headstage = GetRowIndex(ADCs, val=j)
+			headstage = GetRowIndex(ADCs, val = j)
 
 			if(!IsFinite(headstage)) // unassociated ADC
 				continue
 			endif
 
-			EnsureLargeEnoughWave(newData, indexShouldExist=cnt)
+			EnsureLargeEnoughWave(newData, indexShouldExist = cnt)
 			newData[cnt][] = traceData[i][q]
 
 			newData[cnt][%traceName]     = ""
@@ -165,7 +165,7 @@ static Function SBE_AddMissingADTraceInfo(traceData)
 			newData[cnt][%channelType]   = StringFromList(XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_NAMES)
 			newData[cnt][%channelNumber] = num2str(j)
 			newData[cnt][%headstage]     = num2str(headstage)
-			cnt += 1
+			cnt                         += 1
 		endfor
 	endfor
 
@@ -175,7 +175,7 @@ static Function SBE_AddMissingADTraceInfo(traceData)
 
 	Redimension/N=(numPaths + cnt, -1) traceData
 
-	traceData[numPaths, inf][] = newData[p - numPaths][q]
+	traceData[numPaths, Inf][] = newData[p - numPaths][q]
 
 	SortColumns/A/DIML/KNDX={2, 3, 4, 5} sortWaves=traceData
 End
@@ -198,8 +198,8 @@ static Function/WAVE SBE_GetPulseStartTimesForSel()
 
 	SBE_AddMissingADTraceInfo(traceData)
 
-	WAVE/Z indizesType   = FindIndizes(traceData, colLabel="channelType", str="AD")
-	WAVE/Z indizesNumber = FindIndizes(traceData, colLabel="channelNumber", var=ADC)
+	WAVE/Z indizesType   = FindIndizes(traceData, colLabel = "channelType", str = "AD")
+	WAVE/Z indizesNumber = FindIndizes(traceData, colLabel = "channelNumber", var = ADC)
 
 	if(!WaveExists(indizesType) || !WaveExists(indizesNumber))
 		return $""
@@ -284,8 +284,8 @@ static Function SBE_ExportSweepBrowser(sett)
 	string trace, folder, newPrefix, analysisPrefix, relativeDest, win, wvName, unit, stimset
 	string graphName, graphMacro, saveDFR, traceList, line, newGraph, newWvName, traceAxis
 	string rest, xAxesList, yAxesList, axis, refMacro, newAxis, oldTrace, newTrace, niceStimSet, garbage
-	string newHorizAxes = ""
-	string newVertAxes = ""
+	string newHorizAxes   = ""
+	string newVertAxes    = ""
 	string listOfStimSets = ""
 	variable numTraces, i, j, pos, numLines, clipXRange, doCreateNewGraph, axisIndex, sweep
 	variable beginX, endX, xcsrA, xcsrB, beginXPerWave, endXPerWave, numAxesList, headstage
@@ -329,17 +329,17 @@ static Function SBE_ExportSweepBrowser(sett)
 			return NaN
 		endif
 		ASSERT(sett.numPulses < DimSize(pulseStartTimes, ROWS), "Invalid number of pulses")
-		beginX = pulseStartTimes[0] + sett.preFirstPulse
-		endX   = pulseStartTimes[sett.numPulses] + sett.postLastPulse
+		beginX     = pulseStartTimes[0] + sett.preFirstPulse
+		endX       = pulseStartTimes[sett.numPulses] + sett.postLastPulse
 		clipXRange = 1
 	elseif(sett.useCursorRange)
-		xcsrA  = xcsr(A, sett.sourceGraph)
-		xcsrB  = xcsr(B, sett.sourceGraph)
+		xcsrA = xcsr(A, sett.sourceGraph)
+		xcsrB = xcsr(B, sett.sourceGraph)
 		[beginX, endX] = MinMax(xcsrA, xcsrB)
 		clipXRange = 1
 	elseif(isFinite(sett.manualRangeBegin) && IsFinite(sett.manualRangeEnd))
-		beginX = sett.manualRangeBegin
-		endX   = sett.manualRangeEnd
+		beginX     = sett.manualRangeBegin
+		endX       = sett.manualRangeEnd
 		clipXRange = 1
 	endif
 
@@ -347,7 +347,7 @@ static Function SBE_ExportSweepBrowser(sett)
 
 	// everything we don't need anymore starts in the line with SetWindow
 	// ranging to the macro's end
-	pos = strsearch(graphMacro, "SetWindow kwTopWin" , 0)
+	pos = strsearch(graphMacro, "SetWindow kwTopWin", 0)
 	if(pos != -1)
 		graphMacro = graphMacro[0, pos - 2]
 	endif
@@ -363,9 +363,9 @@ static Function SBE_ExportSweepBrowser(sett)
 
 	// replace relative reference to sweepBrowserDFR
 	// with absolut ones to newPrefix
-	folder = GetDataFolder(1, sweepBrowserDFR)
-	folder = RemovePrefix(folder, start = "root:")
-	folder = ":::::::" + folder
+	folder     = GetDataFolder(1, sweepBrowserDFR)
+	folder     = RemovePrefix(folder, start = "root:")
+	folder     = ":::::::" + folder
 	graphMacro = ReplaceString(folder, graphMacro, newPrefix + ":")
 
 	traceList = TraceNameList(sett.sourceGraph, ";", 0 + 1)
@@ -404,12 +404,12 @@ static Function SBE_ExportSweepBrowser(sett)
 		endif
 
 		if(clipXRange)
-			AddEntryIntoWaveNoteAsList(dup, "CursorA", var=beginX)
-			AddEntryIntoWaveNoteAsList(dup, "CursorB", var=endX)
+			AddEntryIntoWaveNoteAsList(dup, "CursorA", var = beginX)
+			AddEntryIntoWaveNoteAsList(dup, "CursorB", var = endX)
 		endif
 
 		if(sett.resetWaveZero)
-			AddEntryIntoWaveNoteAsList(dup, "OldDimOffset", var=DimOffset(dup, ROWS))
+			AddEntryIntoWaveNoteAsList(dup, "OldDimOffset", var = DimOffset(dup, ROWS))
 			SetScale/P x, 0, DimDelta(dup, ROWS), WaveUnits(dup, ROWS), dup
 		endif
 	endfor
@@ -417,9 +417,9 @@ static Function SBE_ExportSweepBrowser(sett)
 	// we have to replace all occurences of existing axes with
 	// the new axes and also add a numerical suffix for the new
 	// axes as the user only chooses the base name
-	axisIndex = 0
-	newAxis = sett.bottomAxis
-	xAxesList = GetAllAxesWithOrientation(sett.sourceGraph, AXIS_ORIENTATION_HORIZ)
+	axisIndex   = 0
+	newAxis     = sett.bottomAxis
+	xAxesList   = GetAllAxesWithOrientation(sett.sourceGraph, AXIS_ORIENTATION_HORIZ)
 	numAxesList = ItemsInList(xAxesList)
 	for(i = 0; i < numAxesList; i += 1)
 		axis = StringFromList(i, xAxesList)
@@ -429,13 +429,13 @@ static Function SBE_ExportSweepBrowser(sett)
 
 		if(cmpstr(refMacro, graphMacro))
 			newHorizAxes = AddListItem(newAxis, newHorizAxes, ";", Inf)
-			newAxis = sett.bottomAxis + num2str(axisIndex++)
+			newAxis      = sett.bottomAxis + num2str(axisIndex++)
 		endif
 	endfor
 
-	axisIndex = 0
-	newAxis = sett.leftAxis
-	yAxesList = GetAllAxesWithOrientation(sett.sourceGraph, AXIS_ORIENTATION_VERT)
+	axisIndex   = 0
+	newAxis     = sett.leftAxis
+	yAxesList   = GetAllAxesWithOrientation(sett.sourceGraph, AXIS_ORIENTATION_VERT)
 	numAxesList = ItemsInList(yAxesList)
 
 	Make/FREE/N=(numAxesList, 2)/T yAxesStimSetMapping
@@ -449,7 +449,7 @@ static Function SBE_ExportSweepBrowser(sett)
 		listOfStimSets = ""
 
 		for(j = 0; j < numTraces; j += 1)
-			trace = StringFromList(j, traceList)
+			trace     = StringFromList(j, traceList)
 			traceAxis = TUD_GetUserData(sett.sourceGraph, trace, "YAXIS")
 
 			if(cmpstr(traceAxis, axis))
@@ -463,7 +463,7 @@ static Function SBE_ExportSweepBrowser(sett)
 			endif
 
 			headstage = str2num(TUD_GetUserData(sett.sourceGraph, trace, "headstage"))
-			sweep = str2num(TUD_GetUserData(sett.sourceGraph, trace, "sweepNumber"))
+			sweep     = str2num(TUD_GetUserData(sett.sourceGraph, trace, "sweepNumber"))
 
 			WAVE/T stimSets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 
@@ -482,7 +482,7 @@ static Function SBE_ExportSweepBrowser(sett)
 
 		if(cmpstr(refMacro, graphMacro))
 			newVertAxes = AddListItem(newAxis, newVertAxes, ";", Inf)
-			newAxis = sett.leftAxis + num2str(axisIndex++)
+			newAxis     = sett.leftAxis + num2str(axisIndex++)
 		endif
 	endfor
 
@@ -491,8 +491,8 @@ static Function SBE_ExportSweepBrowser(sett)
 		traceList = TraceNameList(sett.sourceGraph, ";", 1 + 2)
 		numTraces = ItemsInList(traceList)
 		for(i = 0; i < numTraces; i += 1)
-			oldTrace = StringFromList(i, traceList)
-			newTrace = UniqueTraceName(sett.targetGraph, oldTrace)
+			oldTrace   = StringFromList(i, traceList)
+			newTrace   = UniqueTraceName(sett.targetGraph, oldTrace)
 			graphMacro = ReplaceWordInString(oldTrace, graphMacro, newTrace)
 		endfor
 	endif
@@ -521,7 +521,7 @@ static Function SBE_ExportSweepBrowser(sett)
 		if(GrepString(line, "^Label.*"))
 			SplitString/E="(?i)^Label ([^[:space:]]+) .*(\(.*\))\"$" line, axis, unit
 			if(V_Flag == 2)
-				WAVE indizes = FindIndizes(yAxesStimSetMapping, str=axis)
+				WAVE indizes = FindIndizes(yAxesStimSetMapping, str = axis)
 				ASSERT(DimSize(indizes, ROWS) == 1, "Invalid yAxesStimSetMapping wave")
 				sprintf line, "Label %s \"\\Z12%s\\r%s\"", axis, yAxesStimSetMapping[indizes[0]][1], unit
 			endif
@@ -624,7 +624,7 @@ Function SBE_ButtonProc_PerformExport(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			win   = ba.win
+			win = ba.win
 
 			STRUCT SBE_ExportSettings sett
 			SBE_FillExportSettings(win, sett)
@@ -650,7 +650,7 @@ Function SBE_CheckProc_UsePulseForXRange(cba) : CheckBoxControl
 				EnableControls(win, listXPulses)
 				DisableControls(win, listXManual)
 				// force control activation without changing the selection
-				PGC_SetAndActivateControl(win, "popup_sweep_export_pulse_AD", val=GetPopupMenuIndex(win, "popup_sweep_export_pulse_AD"))
+				PGC_SetAndActivateControl(win, "popup_sweep_export_pulse_AD", val = GetPopupMenuIndex(win, "popup_sweep_export_pulse_AD"))
 			else
 				EnableControls(win, listXManual)
 				DisableControls(win, listXPulses)

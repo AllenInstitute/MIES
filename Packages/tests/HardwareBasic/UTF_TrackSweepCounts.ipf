@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=TrackSweepCounts
@@ -10,9 +10,9 @@ static Function [STRUCT DAQSettings s] GetDAQSettings([string overrideConfig])
 		overrideConfig = GetRTStackInfo(2)
 	endif
 
-	InitDAQSettingsFromString(s, overrideConfig                                                       + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_IST:StimulusSetB_DA_0:"  + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
+	InitDAQSettingsFromString(s, overrideConfig                                                      + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_IST:StimulusSetB_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_IST:StimulusSetD_DA_0:")
 End
 
 static Function GlobalPreInit(string device)
@@ -30,7 +30,7 @@ End
 static Structure TestSettings
 	variable numSweeps
 	variable sweepWaveType
-	WAVE/T   acquiredStimSets_HS0, acquiredStimSets_HS1 // including repetitions
+	WAVE/T acquiredStimSets_HS0, acquiredStimSets_HS1 // including repetitions
 	WAVE sweepCount_HS0, sweepCount_HS1
 	WAVE setCycleCount_HS0, setCycleCount_HS1
 	WAVE stimsetCycleID_HS0, stimsetCycleID_HS1
@@ -54,7 +54,7 @@ End
 
 static Function AllTests(t, devices)
 	STRUCT TestSettings &t
-	string devices
+	string               devices
 
 	string sweeps, configs, stimset, foundStimSet, device, unit
 	variable i, j, k, sweepNo, numEntries, numChannels
@@ -70,12 +70,12 @@ static Function AllTests(t, devices)
 		CHECK_EQUAL_VAR(ItemsInList(sweeps), t.numSweeps)
 		CHECK_EQUAL_VAR(ItemsInList(configs), t.numSweeps)
 
-		WAVE/T textualValues   = GetLBTextualValues(device)
-		WAVE   numericalValues = GetLBNumericalValues(device)
-		WAVE anaFuncSweepTracker = GetTrackSweepCounts()
+		WAVE/T textualValues       = GetLBTextualValues(device)
+		WAVE   numericalValues     = GetLBNumericalValues(device)
+		WAVE   anaFuncSweepTracker = GetTrackSweepCounts()
 
 		for(j = 0; j < t.numSweeps; j += 1)
-			WAVE/Z sweep  = $StringFromList(j, sweeps)
+			WAVE/Z sweep = $StringFromList(j, sweeps)
 			CHECK_WAVE(sweep, TEXT_WAVE)
 
 			WAVE/Z config = $StringFromList(j, configs)
@@ -228,12 +228,12 @@ static Function Events_MD0_RA0_I0_L0_BKG0(t)
 
 	Events_Common(t)
 
-	sweepNo = 0
-	t.events_HS0[sweepNo][PRE_SET_EVENT]    = sweepNo
-	t.events_HS0[sweepNo][POST_SET_EVENT]   = NaN
+	sweepNo                               = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
-	t.events_HS1[sweepNo][PRE_SET_EVENT]    = sweepNo
-	t.events_HS1[sweepNo][POST_SET_EVENT]   = NaN
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD0
@@ -252,8 +252,8 @@ static Function MD0_RA0_I0_L0_BKG0_REENTRY([str])
 
 	STRUCT TestSettings t
 
-	t.numSweeps        = 1
-	t.sweepWaveType    = FLOAT_WAVE
+	t.numSweeps     = 1
+	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
 	Events_MD0_RA0_I0_L0_BKG0(t)
@@ -293,7 +293,7 @@ static Function MD1_RA0_I0_L0_BKG1_REENTRY([str])
 
 	STRUCT TestSettings t
 
-	t.numSweeps = 1
+	t.numSweeps     = 1
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
@@ -319,21 +319,21 @@ static Function Events_MD0_RA1_I0_L0_BKG1(t)
 
 	Events_Common(t)
 
-	sweepNo = 0
+	sweepNo                               = 0
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 1
+	sweepNo                               = 1
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 2
+	sweepNo                               = 2
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
@@ -354,8 +354,8 @@ static Function MD0_RA1_I0_L0_BKG0_REENTRY([str])
 
 	STRUCT TestSettings t
 
-	t.numSweeps              = 3
-	t.sweepWaveType          = FLOAT_WAVE
+	t.numSweeps     = 3
+	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
 	Events_MD0_RA1_I0_L0_BKG1(t)
@@ -392,8 +392,8 @@ static Function MD1_RA1_I0_L0_BKG1_REENTRY([str])
 
 	STRUCT TestSettings t
 
-	t.numSweeps              = 3
-	t.sweepWaveType          = FLOAT_WAVE
+	t.numSweeps     = 3
+	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
 	Events_MD1_RA1_I0_L0_BKG1(t)
@@ -418,35 +418,35 @@ static Function Events_MD1_RA1_I1_L0_BKG1(t)
 
 	Events_Common(t)
 
-	sweepNo = 0
+	sweepNo                               = 0
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 1
+	sweepNo                               = 1
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 2
+	sweepNo                               = 2
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 3
+	sweepNo                               = 3
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 4
+	sweepNo                               = 4
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
@@ -473,18 +473,18 @@ static Function MD1_RA1_I1_L0_BKG1_REENTRY([str])
 	InitTestStructure(t)
 	Events_MD1_RA1_I1_L0_BKG1(t)
 
-	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
-	t.acquiredStimSets_HS0[4]   = "StimulusSetA_DA_0"
-	t.sweepCount_HS0            = {0, 1, 2, 0, 0}
-	t.setCycleCount_HS0         = 0
-	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2}
+	t.acquiredStimSets_HS0[0, 2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3]    = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[4]    = "StimulusSetA_DA_0"
+	t.sweepCount_HS0             = {0, 1, 2, 0, 0}
+	t.setCycleCount_HS0          = 0
+	t.stimsetCycleID_HS0[]       = {0, 0, 0, 1, 2}
 
-	t.acquiredStimSets_HS1[0,1] = "StimulusSetC_DA_0"
-	t.acquiredStimSets_HS1[2,4] = "StimulusSetD_DA_0"
-	t.sweepCount_HS1            = {0, 1, 0, 1, 2}
-	t.setCycleCount_HS1         = 0
-	t.stimsetCycleID_HS1[]      = {0, 0, 1, 1, 1}
+	t.acquiredStimSets_HS1[0, 1] = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[2, 4] = "StimulusSetD_DA_0"
+	t.sweepCount_HS1             = {0, 1, 0, 1, 2}
+	t.setCycleCount_HS1          = 0
+	t.stimsetCycleID_HS1[]       = {0, 0, 1, 1, 1}
 
 	AllTests(t, str)
 End
@@ -514,18 +514,18 @@ static Function MD0_RA1_I1_L0_BKG0_REENTRY([str])
 	InitTestStructure(t)
 	Events_MD0_RA1_I1_L0_BKG0(t)
 
-	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
-	t.acquiredStimSets_HS0[4]   = "StimulusSetA_DA_0"
-	t.sweepCount_HS0            = {0, 1, 2, 0, 0}
-	t.setCycleCount_HS0         = 0
-	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2}
+	t.acquiredStimSets_HS0[0, 2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3]    = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[4]    = "StimulusSetA_DA_0"
+	t.sweepCount_HS0             = {0, 1, 2, 0, 0}
+	t.setCycleCount_HS0          = 0
+	t.stimsetCycleID_HS0[]       = {0, 0, 0, 1, 2}
 
-	t.acquiredStimSets_HS1[0,1] = "StimulusSetC_DA_0"
-	t.acquiredStimSets_HS1[2,4] = "StimulusSetD_DA_0"
-	t.sweepCount_HS1            = {0, 1, 0, 1, 2}
-	t.setCycleCount_HS1         = 0
-	t.stimsetCycleID_HS1[]      = {0, 0, 1, 1, 1}
+	t.acquiredStimSets_HS1[0, 1] = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[2, 4] = "StimulusSetD_DA_0"
+	t.sweepCount_HS1             = {0, 1, 0, 1, 2}
+	t.setCycleCount_HS1          = 0
+	t.stimsetCycleID_HS1[]       = {0, 0, 1, 1, 1}
 
 	AllTests(t, str)
 End
@@ -537,42 +537,42 @@ static Function Events_MD1_RA1_I1_L1_BKG1(t)
 
 	Events_Common(t)
 
-	sweepNo = 0
+	sweepNo                               = 0
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 1
+	sweepNo                               = 1
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 2
+	sweepNo                               = 2
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 3
+	sweepNo                               = 3
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 4
+	sweepNo                               = 4
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 5
+	sweepNo                               = 5
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
@@ -599,17 +599,17 @@ static Function MD1_RA1_I1_L1_BKG1_REENTRY([str])
 	InitTestStructure(t)
 	Events_MD1_RA1_I1_L1_BKG1(t)
 
-	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
-	t.sweepCount_HS0            = {0, 1, 2, 0, 0, 0}
-	t.setCycleCount_HS0         = {0, 0, 0, 0, 1, 2}
-	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2, 3}
+	t.acquiredStimSets_HS0[0, 2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3, 5] = "StimulusSetB_DA_0"
+	t.sweepCount_HS0             = {0, 1, 2, 0, 0, 0}
+	t.setCycleCount_HS0          = {0, 0, 0, 0, 1, 2}
+	t.stimsetCycleID_HS0[]       = {0, 0, 0, 1, 2, 3}
 
-	t.acquiredStimSets_HS1[0,2] = "StimulusSetC_DA_0"
-	t.acquiredStimSets_HS1[3,5] = "StimulusSetD_DA_0"
-	t.sweepCount_HS1            = {0, 1, 0, 0, 1, 2}
-	t.setCycleCount_HS1         = {0, 0, 1, 0, 0, 0}
-	t.stimsetCycleID_HS1[]      = {0, 0, 1, 2, 2, 2}
+	t.acquiredStimSets_HS1[0, 2] = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[3, 5] = "StimulusSetD_DA_0"
+	t.sweepCount_HS1             = {0, 1, 0, 0, 1, 2}
+	t.setCycleCount_HS1          = {0, 0, 1, 0, 0, 0}
+	t.stimsetCycleID_HS1[]       = {0, 0, 1, 2, 2, 2}
 
 	AllTests(t, str)
 End
@@ -639,17 +639,17 @@ static Function MD0_RA1_I1_L1_BKG0_REENTRY([str])
 	InitTestStructure(t)
 	Events_MD0_RA1_I1_L1_BKG0(t)
 
-	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
-	t.sweepCount_HS0            = {0, 1, 2, 0, 0, 0}
-	t.setCycleCount_HS0         = {0, 0, 0, 0, 1, 2}
-	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2, 3}
+	t.acquiredStimSets_HS0[0, 2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3, 5] = "StimulusSetB_DA_0"
+	t.sweepCount_HS0             = {0, 1, 2, 0, 0, 0}
+	t.setCycleCount_HS0          = {0, 0, 0, 0, 1, 2}
+	t.stimsetCycleID_HS0[]       = {0, 0, 0, 1, 2, 3}
 
-	t.acquiredStimSets_HS1[0,2] = "StimulusSetC_DA_0"
-	t.acquiredStimSets_HS1[3,5] = "StimulusSetD_DA_0"
-	t.sweepCount_HS1            = {0, 1, 0, 0, 1, 2}
-	t.setCycleCount_HS1         = {0, 0, 1, 0, 0, 0}
-	t.stimsetCycleID_HS1[]      = {0, 0, 1, 2, 2, 2}
+	t.acquiredStimSets_HS1[0, 2] = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[3, 5] = "StimulusSetD_DA_0"
+	t.sweepCount_HS1             = {0, 1, 0, 0, 1, 2}
+	t.setCycleCount_HS1          = {0, 0, 1, 0, 0, 0}
+	t.stimsetCycleID_HS1[]       = {0, 0, 1, 2, 2, 2}
 
 	AllTests(t, str)
 End
@@ -661,42 +661,42 @@ static Function Events_RepeatSets_1(t)
 
 	Events_Common(t)
 
-	sweepNo = 0
+	sweepNo                               = 0
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 1
+	sweepNo                               = 1
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 2
+	sweepNo                               = 2
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 3
+	sweepNo                               = 3
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 4
+	sweepNo                               = 4
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 5
+	sweepNo                               = 5
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
@@ -743,70 +743,70 @@ static Function Events_RepeatSets_2(t)
 
 	Events_Common(t)
 
-	sweepNo = 0
+	sweepNo                               = 0
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 1
+	sweepNo                               = 1
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 2
+	sweepNo                               = 2
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 3
+	sweepNo                               = 3
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 4
+	sweepNo                               = 4
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 5
+	sweepNo                               = 5
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 6
+	sweepNo                               = 6
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 7
+	sweepNo                               = 7
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 8
+	sweepNo                               = 8
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 9
+	sweepNo                               = 9
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
@@ -833,22 +833,22 @@ static Function RepeatSets_2_REENTRY([str])
 	InitTestStructure(t)
 	Events_RepeatSets_2(t)
 
-	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
-	t.acquiredStimSets_HS0[4,6] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[7]   = "StimulusSetB_DA_0"
-	t.acquiredStimSets_HS0[8,9] = "StimulusSetA_DA_0"
-	t.sweepCount_HS0            = {0, 1, 2, 0, 0, 1, 2, 0, 0, 1}
-	t.setCycleCount_HS0         = 0
-	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2, 2, 2, 3, 4, 4}
+	t.acquiredStimSets_HS0[0, 2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3]    = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[4, 6] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[7]    = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[8, 9] = "StimulusSetA_DA_0"
+	t.sweepCount_HS0             = {0, 1, 2, 0, 0, 1, 2, 0, 0, 1}
+	t.setCycleCount_HS0          = 0
+	t.stimsetCycleID_HS0[]       = {0, 0, 0, 1, 2, 2, 2, 3, 4, 4}
 
-	t.acquiredStimSets_HS1[0,1] = "StimulusSetC_DA_0"
-	t.acquiredStimSets_HS1[2,4] = "StimulusSetD_DA_0"
-	t.acquiredStimSets_HS1[5,6] = "StimulusSetC_DA_0"
-	t.acquiredStimSets_HS1[7,9] = "StimulusSetD_DA_0"
-	t.sweepCount_HS1            = {0, 1, 0, 1, 2, 0, 1, 0, 1, 2}
-	t.setCycleCount_HS1         = 0
-	t.stimsetCycleID_HS1[]      = {0, 0, 1, 1, 1, 2, 2, 3, 3, 3}
+	t.acquiredStimSets_HS1[0, 1] = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[2, 4] = "StimulusSetD_DA_0"
+	t.acquiredStimSets_HS1[5, 6] = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[7, 9] = "StimulusSetD_DA_0"
+	t.sweepCount_HS1             = {0, 1, 0, 1, 2, 0, 1, 0, 1, 2}
+	t.setCycleCount_HS1          = 0
+	t.stimsetCycleID_HS1[]       = {0, 0, 1, 1, 1, 2, 2, 3, 3, 3}
 
 	AllTests(t, str)
 End
@@ -860,84 +860,84 @@ static Function Events_RepeatSets_3(t)
 
 	Events_Common(t)
 
-	sweepNo = 0
+	sweepNo                               = 0
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 1
+	sweepNo                               = 1
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 2
+	sweepNo                               = 2
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 3
+	sweepNo                               = 3
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 4
+	sweepNo                               = 4
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 5
+	sweepNo                               = 5
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 6
+	sweepNo                               = 6
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 7
+	sweepNo                               = 7
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 8
+	sweepNo                               = 8
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 9
+	sweepNo                               = 9
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 10
+	sweepNo                               = 10
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 11
+	sweepNo                               = 11
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
@@ -964,17 +964,17 @@ static Function RepeatSets_3_REENTRY([str])
 	InitTestStructure(t)
 	Events_RepeatSets_3(t)
 
-	t.acquiredStimSets_HS0[0,5]  = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[6,11] = "StimulusSetB_DA_0"
-	t.sweepCount_HS0             = {0, 1, 2, 0, 1, 2, 0, 0, 0, 0, 0, 0}
-	t.setCycleCount_HS0          = {0, 0, 0, 1, 1, 1, 0, 1, 2, 3, 4, 5}
-	t.stimsetCycleID_HS0[]       = {0, 0, 0, 1, 1, 1, 2, 3, 4, 5, 6, 7}
+	t.acquiredStimSets_HS0[0, 5]  = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[6, 11] = "StimulusSetB_DA_0"
+	t.sweepCount_HS0              = {0, 1, 2, 0, 1, 2, 0, 0, 0, 0, 0, 0}
+	t.setCycleCount_HS0           = {0, 0, 0, 1, 1, 1, 0, 1, 2, 3, 4, 5}
+	t.stimsetCycleID_HS0[]        = {0, 0, 0, 1, 1, 1, 2, 3, 4, 5, 6, 7}
 
-	t.acquiredStimSets_HS1[0,5]  = "StimulusSetC_DA_0"
-	t.acquiredStimSets_HS1[6,11] = "StimulusSetD_DA_0"
-	t.sweepCount_HS1             = {0, 1, 0, 1, 0, 1, 0, 1, 2, 0, 1, 2}
-	t.setCycleCount_HS1          = {0, 0, 1, 1, 2, 2, 0, 0, 0, 1, 1, 1}
-	t.stimsetCycleID_HS1[]       = {0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4}
+	t.acquiredStimSets_HS1[0, 5]  = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[6, 11] = "StimulusSetD_DA_0"
+	t.sweepCount_HS1              = {0, 1, 0, 1, 0, 1, 0, 1, 2, 0, 1, 2}
+	t.setCycleCount_HS1           = {0, 0, 1, 1, 2, 2, 0, 0, 0, 1, 1, 1}
+	t.stimsetCycleID_HS1[]        = {0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4}
 
 	AllTests(t, str)
 End
@@ -986,84 +986,84 @@ static Function Events_RepeatSets_4(t)
 
 	Events_Common(t)
 
-	sweepNo = 0
+	sweepNo                               = 0
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 1
+	sweepNo                               = 1
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 2
+	sweepNo                               = 2
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 3
+	sweepNo                               = 3
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 4
+	sweepNo                               = 4
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 5
+	sweepNo                               = 5
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 6
+	sweepNo                               = 6
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 7
+	sweepNo                               = 7
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 8
+	sweepNo                               = 8
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 9
+	sweepNo                               = 9
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 10
+	sweepNo                               = 10
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 11
+	sweepNo                               = 11
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
@@ -1102,17 +1102,17 @@ static Function RepeatSets_4_REENTRY([str])
 	InitTestStructure(t)
 	Events_RepeatSets_4(t)
 
-	t.acquiredStimSets_HS0[0,5]  = "StimulusSetB_DA_0"
-	t.acquiredStimSets_HS0[6,11] = "StimulusSetA_DA_0"
-	t.sweepCount_HS0             = {0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1, 2}
-	t.setCycleCount_HS0          = {0, 1, 2, 3, 4, 5, 0, 0, 0, 1, 1, 1}
-	t.stimsetCycleID_HS0         = {2, 3, 4, 5, 6, 7, 0, 0, 0, 1, 1, 1}
+	t.acquiredStimSets_HS0[0, 5]  = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[6, 11] = "StimulusSetA_DA_0"
+	t.sweepCount_HS0              = {0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1, 2}
+	t.setCycleCount_HS0           = {0, 1, 2, 3, 4, 5, 0, 0, 0, 1, 1, 1}
+	t.stimsetCycleID_HS0          = {2, 3, 4, 5, 6, 7, 0, 0, 0, 1, 1, 1}
 
-	t.acquiredStimSets_HS1[0,5]  = "StimulusSetD_DA_0"
-	t.acquiredStimSets_HS1[6,11] = "StimulusSetC_DA_0"
-	t.sweepCount_HS1             = {0, 1, 2, 0, 1, 2, 0, 1, 0, 1, 0, 1}
-	t.setCycleCount_HS1          = {0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 2}
-	t.stimsetCycleID_HS1         = {3, 3, 3, 4, 4, 4, 0, 0, 1, 1, 2, 2}
+	t.acquiredStimSets_HS1[0, 5]  = "StimulusSetD_DA_0"
+	t.acquiredStimSets_HS1[6, 11] = "StimulusSetC_DA_0"
+	t.sweepCount_HS1              = {0, 1, 2, 0, 1, 2, 0, 1, 0, 1, 0, 1}
+	t.setCycleCount_HS1           = {0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 2}
+	t.stimsetCycleID_HS1          = {3, 3, 3, 4, 4, 4, 0, 0, 1, 1, 2, 2}
 
 	AllTests(t, str)
 End
@@ -1124,70 +1124,70 @@ static Function Events_RepeatSets_5(t)
 
 	Events_Common(t)
 
-	sweepNo = 0
+	sweepNo                               = 0
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 1
+	sweepNo                               = 1
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 2
+	sweepNo                               = 2
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 3
+	sweepNo                               = 3
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 4
+	sweepNo                               = 4
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 5
+	sweepNo                               = 5
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 6
+	sweepNo                               = 6
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 7
+	sweepNo                               = 7
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 8
+	sweepNo                               = 8
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 9
+	sweepNo                               = 9
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
@@ -1219,23 +1219,23 @@ static Function RepeatSets_5_REENTRY([str])
 	InitTestStructure(t)
 	Events_RepeatSets_5(t)
 
-	t.acquiredStimSets_HS0[0]   = "StimulusSetB_DA_0"
-	t.acquiredStimSets_HS0[1,3] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[4]   = "StimulusSetB_DA_0"
-	t.acquiredStimSets_HS0[5,7] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[8]   = "StimulusSetB_DA_0"
-	t.acquiredStimSets_HS0[9]   = "StimulusSetA_DA_0"
-	t.sweepCount_HS0            = {0, 0, 1, 2, 0, 0, 1, 2, 0, 0}
-	t.setCycleCount_HS0         = 0
-	t.stimsetCycleID_HS0[]      = {0, 1, 1, 1, 2, 3, 3, 3, 4, 5}
+	t.acquiredStimSets_HS0[0]    = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[1, 3] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[4]    = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[5, 7] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[8]    = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[9]    = "StimulusSetA_DA_0"
+	t.sweepCount_HS0             = {0, 0, 1, 2, 0, 0, 1, 2, 0, 0}
+	t.setCycleCount_HS0          = 0
+	t.stimsetCycleID_HS0[]       = {0, 1, 1, 1, 2, 3, 3, 3, 4, 5}
 
-	t.acquiredStimSets_HS1[0,2] = "StimulusSetD_DA_0"
-	t.acquiredStimSets_HS1[3,4] = "StimulusSetC_DA_0"
-	t.acquiredStimSets_HS1[5,7] = "StimulusSetD_DA_0"
-	t.acquiredStimSets_HS1[8,9] = "StimulusSetC_DA_0"
-	t.sweepCount_HS1            = {0, 1, 2, 0, 1, 0, 1, 2, 0, 1}
-	t.setCycleCount_HS1         = 0
-	t.stimsetCycleID_HS1[]      = {0, 0, 0, 1, 1, 2, 2, 2, 3, 3}
+	t.acquiredStimSets_HS1[0, 2] = "StimulusSetD_DA_0"
+	t.acquiredStimSets_HS1[3, 4] = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[5, 7] = "StimulusSetD_DA_0"
+	t.acquiredStimSets_HS1[8, 9] = "StimulusSetC_DA_0"
+	t.sweepCount_HS1             = {0, 1, 2, 0, 1, 0, 1, 2, 0, 1}
+	t.setCycleCount_HS1          = 0
+	t.stimsetCycleID_HS1[]       = {0, 0, 0, 1, 1, 2, 2, 2, 3, 3}
 
 	AllTests(t, str)
 End
@@ -1274,17 +1274,17 @@ static Function RepeatSets_6_REENTRY([str])
 
 	InitTestStructure(t)
 
-	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[3,6] = "StimulusSetB_DA_0"
-	t.sweepCount_HS0            = {0, 1, 2, 0, 0, 0, 0}
-	t.setCycleCount_HS0         = {0, 0, 0, 0, 1, 2, 3}
-	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2, 3, 4}
+	t.acquiredStimSets_HS0[0, 2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3, 6] = "StimulusSetB_DA_0"
+	t.sweepCount_HS0             = {0, 1, 2, 0, 0, 0, 0}
+	t.setCycleCount_HS0          = {0, 0, 0, 0, 1, 2, 3}
+	t.stimsetCycleID_HS0[]       = {0, 0, 0, 1, 2, 3, 4}
 
-	t.acquiredStimSets_HS1[0,2] = "StimulusSetE_DA_0"
-	t.acquiredStimSets_HS1[3,6] = "StimulusSetF_DA_0"
-	t.sweepCount_HS1            = {0, 1, 0, 0, 1, 2, 3}
-	t.setCycleCount_HS1         = {0, 0, 1, 0, 0, 0, 0}
-	t.stimsetCycleID_HS1[]      = {0, 0, 1, 2, 2, 2, 2}
+	t.acquiredStimSets_HS1[0, 2] = "StimulusSetE_DA_0"
+	t.acquiredStimSets_HS1[3, 6] = "StimulusSetF_DA_0"
+	t.sweepCount_HS1             = {0, 1, 0, 0, 1, 2, 3}
+	t.setCycleCount_HS1          = {0, 0, 1, 0, 0, 0, 0}
+	t.stimsetCycleID_HS1[]       = {0, 0, 1, 2, 2, 2, 2}
 
 	AllTests(t, str)
 End
@@ -1308,7 +1308,7 @@ static Function CheckIZeroClampMode_REENTRY([str])
 
 	STRUCT TestSettings t
 
-	t.numSweeps = 1
+	t.numSweeps     = 1
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
@@ -1329,7 +1329,7 @@ static Function CheckIZeroClampMode_REENTRY([str])
 	WAVE numericalValues = GetLBNumericalValues(str)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 0, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {I_EQUAL_ZERO_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=WAVE_DATA)
+	CHECK_EQUAL_WAVES(clampMode, {I_EQUAL_ZERO_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
 static Function Events_RepeatSets_7(t)
@@ -1339,21 +1339,21 @@ static Function Events_RepeatSets_7(t)
 
 	Events_Common(t)
 
-	sweepNo = 0
+	sweepNo                               = 0
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 
-	sweepNo = 1
+	sweepNo                               = 1
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
 
 	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 
-	sweepNo = 2
+	sweepNo                               = 2
 	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
 	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
 
@@ -1424,15 +1424,15 @@ static Function RepeatSets_8_REENTRY([str])
 
 	InitTestStructure(t)
 
-	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
-	t.sweepCount_HS0            = {0, 1, 2, 0}
-	t.setCycleCount_HS0         = {0, 0, 0, 0}
-	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1}
+	t.acquiredStimSets_HS0[0, 2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3]    = "StimulusSetB_DA_0"
+	t.sweepCount_HS0             = {0, 1, 2, 0}
+	t.setCycleCount_HS0          = {0, 0, 0, 0}
+	t.stimsetCycleID_HS0[]       = {0, 0, 0, 1}
 
-	t.acquiredStimSets_HS1      = "TestPulse"
-	t.sweepCount_HS1            = {0, 0, 0, 0}
-	t.setCycleCount_HS1         = {NaN, NaN, NaN, NaN}
+	t.acquiredStimSets_HS1 = "TestPulse"
+	t.sweepCount_HS1       = {0, 0, 0, 0}
+	t.setCycleCount_HS1    = {NaN, NaN, NaN, NaN}
 	WAVEClear t.stimsetCycleID_HS1
 
 	t.DAQChannelTypeDA = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
@@ -1471,15 +1471,15 @@ static Function RepeatSets_9_REENTRY([str])
 
 	InitTestStructure(t)
 
-	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
-	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
-	t.sweepCount_HS0            = {0, 1, 2, 0}
-	t.setCycleCount_HS0         = {0, 0, 0, 0}
-	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1}
+	t.acquiredStimSets_HS0[0, 2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3]    = "StimulusSetB_DA_0"
+	t.sweepCount_HS0             = {0, 1, 2, 0}
+	t.setCycleCount_HS0          = {0, 0, 0, 0}
+	t.stimsetCycleID_HS0[]       = {0, 0, 0, 1}
 
-	t.acquiredStimSets_HS1      = "TestPulse"
-	t.sweepCount_HS1            = {0, 0, 0, 0}
-	t.setCycleCount_HS1         = {NaN, NaN, NaN, NaN}
+	t.acquiredStimSets_HS1 = "TestPulse"
+	t.sweepCount_HS1       = {0, 0, 0, 0}
+	t.setCycleCount_HS1    = {NaN, NaN, NaN, NaN}
 	WAVEClear t.stimsetCycleID_HS1
 
 	t.DAQChannelTypeDA = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}

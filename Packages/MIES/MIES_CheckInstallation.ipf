@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -36,8 +36,8 @@ static Function CHI_CheckJSONXOPVersion(state)
 	variable id
 	string info, version
 
-	info = JSON_Version()
-	id = JSON_Parse(info)
+	info    = JSON_Version()
+	id      = JSON_Parse(info)
 	version = JSON_GetString(id, "/XOP/version", ignoreErr = 1)
 
 	CHI_OutputVersionCheckResult(state, "JSON", CHI_JSON_XOP_VERSION, version)
@@ -47,10 +47,10 @@ static Function CHI_CheckTUFXOPVersion(state)
 	STRUCT CHI_InstallationState &state
 
 	variable id
-	string version
+	string   version
 
 	TUFXOP_Version
-	id = JSON_Parse(S_value)
+	id      = JSON_Parse(S_value)
 	version = JSON_GetString(id, "/version", ignoreErr = 1)
 
 	CHI_OutputVersionCheckResult(state, "TUF", CHI_TUF_XOP_VERSION, version)
@@ -86,7 +86,7 @@ End
 static Function CHI_CheckXOP(list, item, name, state, [expectedHash])
 	string &list, item, name
 	STRUCT CHI_InstallationState &state
-	string expectedHash
+	string                        expectedHash
 
 	variable numMatches, i, hashMatches
 	string matches, fileVersion, filepath, existingHash, hashMsg
@@ -110,14 +110,14 @@ static Function CHI_CheckXOP(list, item, name, state, [expectedHash])
 			state.numErrors += 1
 			break
 		case 1:
-			filepath = StringFromList(0, matches, FILE_LIST_SEP)
+			filepath    = StringFromList(0, matches, FILE_LIST_SEP)
 			fileVersion = GetFileVersion(filepath)
 			if(ParamIsDefault(expectedHash))
 				printf "%s: Found version %s (Nice!)\r", name, fileVersion
 			else
 				existingHash = CalcHashForFile(filepath)
-				hashMatches = !cmpstr(existingHash, expectedHash)
-				hashMsg = SelectString(hashMatches, "not ok (" + expectedHash + " vs " + existingHash + ")", "ok")
+				hashMatches  = !cmpstr(existingHash, expectedHash)
+				hashMsg      = SelectString(hashMatches, "not ok (" + expectedHash + " vs " + existingHash + ")", "ok")
 				printf "%s: Found version %s and hash is %s (%s)\r", name, fileVersion, hashMsg, SelectString(hashMatches, "Very Bad", "Nice!")
 				state.numErrors += !hashMatches
 			endif
@@ -126,14 +126,14 @@ static Function CHI_CheckXOP(list, item, name, state, [expectedHash])
 			printf "%s: Found multiple versions in \"%s\" (Might create problems)\r", name, matches
 			printf "%s: Duplicates are:\r", name
 			for(i = 0; i < numMatches; i += 1)
-				filepath = StringFromList(i, matches, FILE_LIST_SEP)
+				filepath    = StringFromList(i, matches, FILE_LIST_SEP)
 				fileVersion = GetFileVersion(filepath)
 				if(ParamIsDefault(expectedHash))
 					printf "%s: Found version %s\r", name, fileVersion
 				else
 					existingHash = CalcHashForFile(filepath)
-					hashMatches = !cmpstr(existingHash, expectedHash)
-					hashMsg = SelectString(hashMatches, "not ok (" + expectedHash + " vs " + existingHash + ")", "ok")
+					hashMatches  = !cmpstr(existingHash, expectedHash)
+					hashMsg      = SelectString(hashMatches, "not ok (" + expectedHash + " vs " + existingHash + ")", "ok")
 					printf "%s: Found version %s and hash is %s\r", name, fileVersion, hashMsg
 					state.numErrors += !hashMatches
 				endif
@@ -168,14 +168,14 @@ Function CHI_CheckInstallation()
 	KillPath $symbPath
 
 	listOfXOPs = ListMatch(allFilesUser + FILE_LIST_SEP + allFilesSystem, "*.xop", FILE_LIST_SEP)
-	WAVE/T list = ListToTextWave(listOfXOPs, FILE_LIST_SEP)
+	WAVE/T list       = ListToTextWave(listOfXOPs, FILE_LIST_SEP)
 	WAVE/T listNoDups = GetUniqueEntries(list)
 	listOfXOPs = TextWaveToList(listNoDups, FILE_LIST_SEP)
 
 	STRUCT CHI_InstallationState state
 	CHI_InitInstallationState(state)
 
-	info = IgorInfo(0)
+	info      = IgorInfo(0)
 	igorBuild = GetIgorProBuildVersion()
 
 	if(!isEmpty(igorBuild))

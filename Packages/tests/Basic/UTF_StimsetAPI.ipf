@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=StimsetAPITests
@@ -63,8 +63,8 @@ static Function GetStimSetListWorks()
 
 	// Tests if case-sensitivity does not play a role
 	setName = "setA_DA_0"
-	DFREF dfr = GetWBSvdStimSetDAPath()
-	WAVE/SDFR=dfr wv = $setName
+	DFREF         dfr = GetWBSvdStimSetDAPath()
+	WAVE/SDFR=dfr wv  = $setName
 	Duplicate/FREE wv, wTemp
 	KillWaves wv
 	setName = UpperStr(setName)
@@ -78,49 +78,49 @@ End
 static Function CreateStimSetWorks()
 	string name, returned, ref
 
-	name = "setA"
+	name     = "setA"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC)
-	name += "_DA_0"
+	name    += "_DA_0"
 	CHECK_EQUAL_STR(name, returned)
 	CHECK(WB_ParameterWavesExist(returned))
 	CHECK(WB_StimsetExists(returned))
 
-	name = "setB"
+	name     = "setB"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_TTL)
-	name += "_TTL_0"
+	name    += "_TTL_0"
 	CHECK_EQUAL_STR(name, returned)
 	CHECK(WB_ParameterWavesExist(returned))
 	CHECK(WB_StimsetExists(returned))
 
 	// fixes up invalid names
-	name = "set B"
+	name     = "set B"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC)
-	name += "_DA_0"
+	name    += "_DA_0"
 	CHECK_NEQ_STR(name, returned)
 	CHECK(!WB_ParameterWavesExist(name))
 	CHECK(WB_ParameterWavesExist(returned))
 	CHECK(WB_StimsetExists(returned))
 
 	// uses setNumber
-	name = "setC"
+	name     = "setC"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC, setNumber = 1)
-	name += "_DA_1"
+	name    += "_DA_1"
 	CHECK_EQUAL_STR(name, returned)
 	CHECK(WB_ParameterWavesExist(returned))
 	CHECK(WB_StimsetExists(returned))
 
 	// does not allow saving builtin stimsets out of the box
-	name = "MIES_setD"
+	name     = "MIES_setD"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC)
-	ref = ""
+	ref      = ""
 	CHECK_EQUAL_STR(ref, returned)
 	CHECK(!WB_ParameterWavesExist(returned))
 	CHECK(!WB_StimsetExists(returned))
 
 	// but it does if one passes saveAsBuiltin == 1
-	name = "MIES_setD"
+	name     = "MIES_setD"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC, saveAsBuiltin = 1)
-	name += "_DA_0"
+	name    += "_DA_0"
 	CHECK_EQUAL_STR(name, returned)
 	CHECK(WB_ParameterWavesExist(returned))
 	CHECK(WB_StimsetExists(returned))
@@ -143,9 +143,9 @@ End
 static Function RemoveStimSetWorks()
 	string name, returned
 
-	name = "setA"
+	name     = "setA"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC)
-	name += "_DA_0"
+	name    += "_DA_0"
 	CHECK_EQUAL_STR(name, returned)
 	CHECK(WB_ParameterWavesExist(returned))
 	CHECK(WB_StimsetExists(returned))
@@ -160,9 +160,9 @@ End
 static Function GetStimsetParametersWorksGlobal()
 	string name, returned
 
-	name = "setA"
+	name     = "setA"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC)
-	name += "_DA_0"
+	name    += "_DA_0"
 	CHECK_EQUAL_STR(name, returned)
 
 	WAVE/Z globalParams = ST_GetStimsetParameters(name)
@@ -179,9 +179,9 @@ static Function GetStimsetParametersWorksPerEpoch()
 	string name, returned, entry
 	variable i
 
-	name = "setA"
+	name     = "setA"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC)
-	name += "_DA_0"
+	name    += "_DA_0"
 	CHECK_EQUAL_STR(name, returned)
 
 	for(i = 0; i < EPOCH_TYPES_TOTAL_NUMBER; i += 1)
@@ -217,9 +217,9 @@ End
 static Function GetStimsetParameterAsVariableWorks()
 	string name, returned
 
-	name = "setA"
+	name     = "setA"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC)
-	name += "_DA_0"
+	name    += "_DA_0"
 	CHECK_EQUAL_STR(name, returned)
 
 	// fetch SegWvType entries
@@ -250,9 +250,9 @@ End
 static Function GetStimsetParameterAsStringWorks()
 	string name, returned, str, ref
 
-	name = "setA"
+	name     = "setA"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC)
-	name += "_DA_0"
+	name    += "_DA_0"
 	CHECK_EQUAL_STR(name, returned)
 
 	// fetch SegWvType entries
@@ -287,9 +287,9 @@ End
 static Function SetStimsetParameterWorks()
 	string name, returned, str, ref
 
-	name = "setA"
+	name     = "setA"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC)
-	name += "_DA_0"
+	name    += "_DA_0"
 	CHECK_EQUAL_STR(name, returned)
 
 	ST_SetStimsetParameter(name, "Total number of epochs", var = 3)
@@ -390,9 +390,9 @@ static Function SetStimsetParameterChecksInput()
 	string name, returned
 	variable ret
 
-	name = "setA"
+	name     = "setA"
 	returned = ST_CreateStimSet(name, CHANNEL_TYPE_DAC)
-	name += "_DA_0"
+	name    += "_DA_0"
 	CHECK_EQUAL_STR(name, returned)
 
 	STRUCT ParamModCounts s

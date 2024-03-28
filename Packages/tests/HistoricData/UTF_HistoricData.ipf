@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HistoricData
@@ -35,9 +35,9 @@ End
 Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable keepDataFolder, variable enableJU])
 
 	variable debugMode
-	string traceOptions
-	string list = ""
-	string name = GetTestName()
+	string   traceOptions
+	string   list             = ""
+	string   name             = GetTestName()
 	variable waveTrackingMode = GetWaveTrackingMode()
 
 	// speeds up testing to start with a fresh copy
@@ -83,9 +83,9 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	traceOptions = GetDefaultTraceOptions()
 
 	// sorted list
-	list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", inf)
-	list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", inf)
-	list = AddListItem("UTF_HistoricSweepUpgrade.ipf", list, ";", inf)
+	list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", Inf)
+	list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", Inf)
+	list = AddListItem("UTF_HistoricSweepUpgrade.ipf", list, ";", Inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
@@ -94,9 +94,9 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	else
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	endif
 End
 
@@ -123,9 +123,9 @@ Function DownloadFile(string file)
 
 	string fullFilePath, url, folder
 
-	folder = GetInputPath()
+	folder       = GetInputPath()
 	fullFilePath = folder + file + ZSTD_SUFFIX
-	url = HTTP_FOLDER_URL + URLEncode(file + ZSTD_SUFFIX)
+	url          = HTTP_FOLDER_URL + URLEncode(file + ZSTD_SUFFIX)
 
 	INFO("Download file %s", s0 = file)
 
@@ -187,7 +187,7 @@ static Function DownloadFilesIfRequired(WAVE/T files)
 
 	numFiles = DimSize(files, ROWS)
 	for(i = 0; i < numFiles; i += 1)
-		file = files[i]
+		file         = files[i]
 		fullFilePath = path + file
 
 		if(FileExists(fullFilePath))

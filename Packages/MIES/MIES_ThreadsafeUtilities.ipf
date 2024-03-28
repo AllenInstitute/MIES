@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -34,7 +34,7 @@ Function TS_GetNewestFromThreadQueue(tgID, varName, [timeout_default, timeout_tr
 	endif
 
 	if(ParamIsDefault(timeout_tries))
-		timeout_tries = inf
+		timeout_tries = Inf
 	else
 		ASSERT(IsInteger(timeout_tries) && timeout_tries > 0, "Invalid timeout_tries")
 	endif
@@ -79,7 +79,7 @@ End
 /// Throws away anything else in the datafolder from the thread queue.
 Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames, [timeout_default, timeout_tries])
 	variable tgID, timeout_default, timeout_tries
-	Wave/T varNames
+	WAVE/T varNames
 
 	variable numEntries, i, j, oneValidEntry, err
 	string varName
@@ -96,7 +96,7 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames, [timeout_default, 
 	endif
 
 	if(ParamIsDefault(timeout_tries))
-		timeout_tries = inf
+		timeout_tries = Inf
 	else
 		ASSERT(IsInteger(timeout_tries) && timeout_tries > 0, "Invalid timeout_tries")
 	endif
@@ -150,7 +150,7 @@ End
 /// Throws away anything else in the datafolder from the thread queue.
 threadsafe Function TS_ThreadGroupGetVariable(tgID, varName)
 	variable tgID
-	string varName
+	string   varName
 
 	variable err
 
@@ -180,7 +180,7 @@ End
 /// thread queue
 threadsafe Function TS_ThreadGroupPutVariable(tgID, varName, varValue)
 	variable tgID
-	string varName
+	string   varName
 	variable varValue
 
 	DFREF dfrSave = GetDataFolderDFR()
@@ -198,7 +198,7 @@ End
 /// dfr can be a free DF
 threadsafe Function TS_ThreadGroupPutDFR(tgID, dfr)
 	variable tgID
-	DFREF dfr
+	DFREF    dfr
 
 	string dfrName
 
@@ -234,7 +234,7 @@ Function TS_StopThreadGroup(tgID)
 	variable tgID
 
 	variable numThreadsRunning
-	string msg
+	string   msg
 
 	if(!IsFinite(tgID) || TS_ThreadGroupFinished(tgID))
 		// nothing to do

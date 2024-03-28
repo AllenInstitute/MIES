@@ -13,9 +13,9 @@ End
 static Function SetDimensionLabelsFromWaveContents(WAVE/T wv)
 
 	variable idx
-	string elem
+	string   elem
 
-	for(elem: wv)
+	for(elem : wv)
 		SetDimLabel 0, idx++, $elem, wv
 	endfor
 End
@@ -75,7 +75,7 @@ End
 
 /// UTF_TD_GENERATOR s0:GetIncludes
 /// UTF_TD_GENERATOR s1:GetDefines
-Function TestCompilation([STRUCT IUTF_mData & md])
+Function TestCompilation([STRUCT IUTF_mData &md])
 
 	if(strlen(md.s1) > 0)
 		CHECK_COMPILATION(md.s0, defines = {md.s1})

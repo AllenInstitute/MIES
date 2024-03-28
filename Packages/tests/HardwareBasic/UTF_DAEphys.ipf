@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=DAEphysPanel
@@ -21,7 +21,7 @@ Function CheckIfAllControlsReferStateWv([str])
 
 	CreateLockedDAEphys(str)
 
-	list  = ControlNameList(str, ";")
+	list = ControlNameList(str, ";")
 
 	uniqueControls = MIES_DAG#DAG_GetUniqueCtrlList(str)
 
@@ -135,7 +135,7 @@ Function CheckIfAllControlsReferStateWv([str])
 			case CONTROL_TYPE_POPUPMENU:
 
 				oldVal = GetPopupMenuIndex(str, ctrl)
-				val = 0
+				val    = 0
 				KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(str))
 				KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(str))
 
@@ -183,7 +183,7 @@ Function CheckStartupSettings([str])
 	PGC_SetAndActivateControl(str, "button_SettingsPlus_unLockDevic")
 	unlockedDevice = GetCurrentWindow()
 
-	list  = ControlNameList(unlockedDevice, ";")
+	list = ControlNameList(unlockedDevice, ";")
 
 	numEntries = ItemsInList(list)
 	CHECK_GT_VAR(numEntries, 0)
@@ -246,7 +246,7 @@ Function CheckStimsetPopupMetadata([str])
 
 	CreateLockedDAEphys(str)
 
-	controls = ControlNameList(str)
+	controls    = ControlNameList(str)
 	numControls = ItemsInList(controls)
 	for(i = 0; i < numControls; i += 1)
 		ctrl = StringFromList(i, controls)
@@ -273,7 +273,7 @@ End
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 Function AllChannelControlsWork([string str])
 
-	string ctrl
+	string   ctrl
 	variable channelType
 
 	CreateLockedDAEphys(str)
@@ -297,27 +297,27 @@ Function CheckIfConfigurationRestoresMCCFilterGain([str])
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                 + \
-	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"  + \
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
 
 	AcquireData_NG(s, str)
 
-	gain = 5
+	gain       = 5
 	filterFreq = 6
 	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
 	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
 	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
 	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
 
-	PGC_SetAndActivateControl(str, "check_Settings_SyncMiesToMCC", val=1)
+	PGC_SetAndActivateControl(str, "check_Settings_SyncMiesToMCC", val = 1)
 
 	CONF_SaveWindow(fName)
 
 	[jsonID, rewrittenConfig] = FixupJSONConfig_IGNORE(fName, str)
 	JSON_Release(jsonID)
 
-	gain = 1
+	gain       = 1
 	filterFreq = 2
 	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
 	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
@@ -328,9 +328,9 @@ Function CheckIfConfigurationRestoresMCCFilterGain([str])
 
 	CONF_RestoreWindow(rewrittenConfig)
 
-	gain = 5
+	gain       = 5
 	filterFreq = 6
-	val = AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN)
+	val        = AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN)
 	CHECK_EQUAL_VAR(val, filterFreq)
 	val = AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
 	CHECK_EQUAL_VAR(val, gain)
@@ -361,11 +361,11 @@ End
 static Function ComplainsAboutVanishingEpoch([STRUCT IUTF_MDATA &md])
 
 	variable refNum
-	string history
+	string   history
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_SIM8"                 + \
-	                          "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 
 	refNum = CaptureHistoryStart()
 	AcquireData_NG(s, md.s0)
@@ -377,7 +377,7 @@ End
 
 static Function ComplainsAboutVanishingEpoch_REENTRY([STRUCT IUTF_MDATA &md])
 
-	string device    = md.s0
+	string   device  = md.s0
 	variable DAC     = 0
 	variable sweepNo = 0
 

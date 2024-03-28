@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -22,16 +22,16 @@ Function DQM_FIFOMonitor(s)
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
 	if(s.wmbs.started)
-		s.wmbs.started    = 0
-		s.threadDeadCount = 0
+		s.wmbs.started             = 0
+		s.threadDeadCount          = 0
 		s.ticksLastReceivedFifoPos = ticks
-		s.lastReceivedFifoPos = HARDWARE_ITC_FIFO_ERROR
+		s.lastReceivedFifoPos      = HARDWARE_ITC_FIFO_ERROR
 	endif
 
 	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1) // NOLINT
-		deviceID   = ActiveDeviceList[i][%DeviceID]
+		deviceID     = ActiveDeviceList[i][%DeviceID]
 		hardwareType = ActiveDeviceList[i][%HardwareType]
-		device = HW_GetMainDeviceName(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
+		device       = HW_GetMainDeviceName(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 
 		WAVE TPSettingsCalc = GetTPSettingsCalculated(device)
 
@@ -43,7 +43,7 @@ Function DQM_FIFOMonitor(s)
 					NVAR fifoPosGlobal = $GetFifoPosition(device)
 					fifoName = GetNIFIFOName(deviceID)
 					FIFOStatus/Q $fifoName
-					ASSERT(V_Flag != 0,"FIFO does not exist!")
+					ASSERT(V_Flag != 0, "FIFO does not exist!")
 					newSamplesCount = V_FIFOChunks - fifoPosGlobal
 					if(newSamplesCount < 2)
 						// workaround for Igor Pro bug 5092
@@ -55,7 +55,7 @@ Function DQM_FIFOMonitor(s)
 					for(j = 0; j < V_FIFOnchans; j += 1)
 
 						fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
-						channel = str2num(fifoChannelName)
+						channel         = str2num(fifoChannelName)
 						WAVE NIChannel = NIDataWave[channel]
 						FIFO2WAVE/R=[fifoPosGlobal, fifoPosGlobal + newSamplesCount - 1] $fifoName, $fifoChannelName, wNIReadOut; AbortOnRTE
 
@@ -68,7 +68,7 @@ Function DQM_FIFOMonitor(s)
 					endfor
 				catch
 					errMsg = GetRTErrMessage()
-					err = ClearRTError()
+					err    = ClearRTError()
 					LOG_AddEntry(PACKAGE_MIES, "hardware error", stacktrace = 1)
 					DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR, startTPAfterDAQ = 0)
 					if(err == 18)
@@ -84,7 +84,7 @@ Function DQM_FIFOMonitor(s)
 
 				if(fifoLatest != s.lastReceivedFifoPos)
 					s.ticksLastReceivedFifoPos = ticks
-					s.lastReceivedFifoPos = fifoLatest
+					s.lastReceivedFifoPos      = fifoLatest
 				endif
 
 				if(fifoLatest == HARDWARE_ITC_FIFO_ERROR)
@@ -133,7 +133,7 @@ Function DQM_FIFOMonitor(s)
 				break
 		endswitch
 
-		SCOPE_UpdateOscilloscopeData(device, DATA_ACQUISITION_MODE, deviceID=deviceID, fifoPos=fifoLatest)
+		SCOPE_UpdateOscilloscopeData(device, DATA_ACQUISITION_MODE, deviceID = deviceID, fifoPos = fifoLatest)
 
 		result = AS_HandlePossibleTransition(device, AS_MID_SWEEP)
 
@@ -168,11 +168,11 @@ End
 
 /// @brief Stop ongoing multi device DAQ
 Function DQM_TerminateOngoingDAQHelper(device)
-	String device
+	string device
 
 	variable returnedHardwareType
 
-	NVAR deviceID = $GetDAQDeviceID(device)
+	NVAR deviceID         = $GetDAQDeviceID(device)
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
 	variable hardwareType = GetHardwareType(device)
@@ -181,7 +181,7 @@ Function DQM_TerminateOngoingDAQHelper(device)
 	endif
 
 	try
-		HW_StopAcq(hardwareType, deviceID, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+		HW_StopAcq(hardwareType, deviceID, zeroDAC = 1, flags = HARDWARE_ABORT_ON_ERROR)
 	catch
 		if(hardwareType == HARDWARE_ITC_DAC)
 			print "Stopping data acquisition was not successfull, trying to close and reopen the device"
@@ -200,7 +200,7 @@ Function DQM_TerminateOngoingDAQHelper(device)
 	if(DimSize(ActiveDeviceList, ROWS) == 0)
 		CtrlNamedBackground $TASKNAME_FIFOMONMD, stop
 	endif
-END
+End
 
 /// @brief Handles function calls for data acquistion
 ///
@@ -211,11 +211,11 @@ END
 /// @param initialSetupReq [optional, defaults to true] performs initialization routines
 ///                        at the very beginning of DAQ, turn off for RA
 Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
-	string device
+	string   device
 	variable initialSetupReq
 
-	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1, \
-		"Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
+	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1,                          \
+	       "Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
 
 	if(ParamIsDefault(initialSetupReq))
 		initialSetupReq = 1
@@ -242,7 +242,7 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 
 	// configure passed device
 	NVAR deviceID = $GetDAQDeviceID(device)
-	HW_PrepareAcq(GetHardwareType(device), deviceID, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(GetHardwareType(device), deviceID, DATA_ACQUISITION_MODE, flags = HARDWARE_ABORT_ON_ERROR)
 
 	DAP_UpdateITIAcrossSets(device, maxITI)
 	DQM_BkrdDataAcq(device)
@@ -295,13 +295,13 @@ Function DQM_Timer(s)
 	WAVE/T/SDFR=GetActiveDAQDevicesTimerFolder() TimerFunctionListWave
 	// column 0 = panel title; column 1 = list of functions
 	variable i
-	string device
+	string   device
 	variable TimeLeft
 
 	for(i = 0; i < DimSize(ActiveDevTimeParam, ROWS); i += 1) // NOLINT
 		ActiveDevTimeParam[i][4] = (RelativeNowHighPrec() - ActiveDevTimeParam[i][1])
-		timeLeft = max(ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4], 0)
-		device = TimerFunctionListWave[i][0]
+		timeLeft                 = max(ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4], 0)
+		device                   = TimerFunctionListWave[i][0]
 
 		SetValDisplay(device, "valdisp_DataAcq_ITICountdown", var = timeLeft)
 
@@ -327,35 +327,35 @@ static Function DQM_StartBckrdFIFOMonitor()
 End
 
 static Function DQM_StopDataAcq(device, deviceID)
-	String device
-	Variable deviceID
+	string   device
+	variable deviceID
 
 	variable hardwareType = GetHardwareType(device)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StopFIFODaemon(hardwareType, deviceID)
 	endif
-	HW_StopAcq(hardwareType, deviceID, prepareForDAQ = 1, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StopAcq(hardwareType, deviceID, prepareForDAQ = 1, zeroDAC = 1, flags = HARDWARE_ABORT_ON_ERROR)
 
 	SWS_SaveAcquiredData(device)
-	RA_ContinueOrStop(device, multiDevice=1)
+	RA_ContinueOrStop(device, multiDevice = 1)
 End
 
 static Function DQM_BkrdDataAcq(device, [triggerMode])
-	string device
+	string   device
 	variable triggerMode
 
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
 
-	NVAR deviceID   = $GetDAQDeviceID(device)
+	NVAR deviceID = $GetDAQDeviceID(device)
 
 	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER && DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartDAQDeviceTimer(device)
 	endif
 
 	variable hardwareType = GetHardwareType(device)
-	HW_StartAcq(hardwareType, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StartAcq(hardwareType, deviceID, triggerMode = triggerMode, flags = HARDWARE_ABORT_ON_ERROR)
 	AS_HandlePossibleTransition(device, AS_MID_SWEEP)
 
 	if(hardwareType == HARDWARE_ITC_DAC)
@@ -374,7 +374,7 @@ End
 /// @param device panel title
 /// @param deviceID   id of the device to be removed
 static Function DQM_RemoveDevice(device, deviceID)
-	string device
+	string   device
 	variable deviceID
 
 	variable row
@@ -409,17 +409,17 @@ static Function DQM_AddDevice(device)
 
 	variable numberOfRows
 
-	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(device)
-	NVAR deviceID   = $GetDAQDeviceID(device)
-	WAVE ActiveDeviceList    = GetDQMActiveDeviceList()
+	NVAR ADChannelToMonitor = $GetADChannelToMonitor(device)
+	NVAR deviceID           = $GetDAQDeviceID(device)
+	WAVE ActiveDeviceList   = GetDQMActiveDeviceList()
 
 	numberOfRows = DimSize(ActiveDeviceList, ROWS)
 	Redimension/N=(numberOfRows + 1, 4) ActiveDeviceList
 
-	ActiveDeviceList[numberOfRows][%DeviceID] = deviceID
+	ActiveDeviceList[numberOfRows][%DeviceID]           = deviceID
 	ActiveDeviceList[numberOfRows][%ADChannelToMonitor] = ADChannelToMonitor
-	ActiveDeviceList[numberOfRows][%HardwareType] = GetHardwareType(device)
-	ActiveDeviceList[numberOfRows][%ActiveChunk] = NaN
+	ActiveDeviceList[numberOfRows][%HardwareType]       = GetHardwareType(device)
+	ActiveDeviceList[numberOfRows][%ActiveChunk]        = NaN
 End
 
 static Function DQM_MakeOrUpdateTimerParamWave(device, listOfFunctions, startTime, RunTime, EndTime, addOrRemoveDevice)
@@ -429,13 +429,13 @@ static Function DQM_MakeOrUpdateTimerParamWave(device, listOfFunctions, startTim
 	variable rowToRemove = NaN
 	variable numberOfRows
 
-	NVAR deviceID = $GetDAQDeviceID(device)
-	DFREF dfr = GetActiveDAQDevicesTimerFolder()
+	NVAR  deviceID = $GetDAQDeviceID(device)
+	DFREF dfr      = GetActiveDAQDevicesTimerFolder()
 
 	WAVE/Z/SDFR=dfr ActiveDevTimeParam
 	if(addOrRemoveDevice == 1) // add a DAQ device
 		if(!WaveExists(ActiveDevTimeParam))
-			Make/N=(1, 5) dfr:ActiveDevTimeParam/Wave=ActiveDevTimeParam
+			Make/N=(1, 5) dfr:ActiveDevTimeParam/WAVE=ActiveDevTimeParam
 			ActiveDevTimeParam[0][0] = deviceID
 			ActiveDevTimeParam[0][1] = startTime
 			ActiveDevTimeParam[0][2] = RunTime
@@ -478,7 +478,7 @@ static Function DQM_MakeOrUpdtDevTimerTxtWv(device, listOfFunctions, rowToRemove
 
 	if(addOrRemoveDevice == 1) // Add a device
 		if(!WaveExists(TimerFunctionListWave))
-			Make/T/N=(1, 2) dfr:TimerFunctionListWave/Wave=TimerFunctionListWave
+			Make/T/N=(1, 2) dfr:TimerFunctionListWave/WAVE=TimerFunctionListWave
 			TimerFunctionListWave[0][0] = device
 			TimerFunctionListWave[0][1] = listOfFunctions
 		else

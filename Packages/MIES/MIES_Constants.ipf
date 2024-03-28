@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -21,7 +21,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 3
 Constant DA_EPHYS_PANEL_VERSION           = 64
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 50
 Constant WAVEBUILDER_PANEL_VERSION        = 14
-Constant ANALYSISBROWSER_PANEL_VERSION    =  3
+Constant ANALYSISBROWSER_PANEL_VERSION    = 3
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 10
@@ -70,24 +70,24 @@ Constant PA_SETTINGS_STRUCT_VERSION = 6
 /// @name Constans for the number of channels
 /// @anchor NUM_CHANNELS_CONSTANTS
 /// @{
-Constant NUM_DA_TTL_CHANNELS   = 8
-Constant NUM_HEADSTAGES        = 8
-Constant NUM_AD_CHANNELS       = 16
-Constant NUM_ASYNC_CHANNELS    = 8
+Constant NUM_DA_TTL_CHANNELS       = 8
+Constant NUM_HEADSTAGES            = 8
+Constant NUM_AD_CHANNELS           = 16
+Constant NUM_ASYNC_CHANNELS        = 8
 Constant NUM_ITC_TTL_BITS_PER_RACK = 4
 /// @}
 
 /// Maximum values of @ref NUM_CHANNELS_CONSTANTS
-Constant NUM_MAX_CHANNELS      = 16
+Constant NUM_MAX_CHANNELS = 16
 
 StrConstant ITC_DEVICE_REGEXP = "^ITC.*"
 
 StrConstant DEVICE_TYPES_ITC = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
 StrConstant DEVICE_NUMBERS   = "0;1;2;3;4;5;6;7;8;9;10"
 
-StrConstant BASE_WINDOW_NAME    = "DA_Ephys"
-StrConstant DATABROWSER_WINDOW_NAME = "DataBrowser"
-StrConstant SWEEPBROWSER_WINDOW_NAME = "SweepBrowser"
+StrConstant BASE_WINDOW_NAME          = "DA_Ephys"
+StrConstant DATABROWSER_WINDOW_NAME   = "DataBrowser"
+StrConstant SWEEPBROWSER_WINDOW_NAME  = "SweepBrowser"
 StrConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
 
 /// @name Task names
@@ -122,7 +122,7 @@ Constant FREE_MEMORY_LOWER_LIMIT = 0.75
 /// @name Pressure Control constants
 /// @{
 /// Max and min pressure regulator pressure in psi
-Constant MAX_REGULATOR_PRESSURE =  9.9
+Constant MAX_REGULATOR_PRESSURE = 9.9
 Constant MIN_REGULATOR_PRESSURE = -9.9
 /// @}
 
@@ -134,9 +134,9 @@ StrConstant XOP_CHANNEL_NAMES = "AD;DA;;TTL"
 /// Due to historic reasons these are now also used for other hardware types
 /// @anchor XopChannelConstants
 /// @{
-Constant XOP_CHANNEL_TYPE_ADC = 0
-Constant XOP_CHANNEL_TYPE_DAC = 1
-Constant XOP_CHANNEL_TYPE_TTL = 3
+Constant XOP_CHANNEL_TYPE_ADC   = 0
+Constant XOP_CHANNEL_TYPE_DAC   = 1
+Constant XOP_CHANNEL_TYPE_TTL   = 3
 Constant XOP_CHANNEL_TYPE_COUNT = 4 // last channel type + 1
 /// @}
 
@@ -157,26 +157,26 @@ Constant TIME_TP_ONLY_ON_DAQ = 1
 /// @name Flags for GetActiveChannels
 /// @anchor ActiveChannelsTTLMode
 /// @{
-Constant TTL_HARDWARE_CHANNEL  = 0x0
-Constant TTL_DAEPHYS_CHANNEL   = 0x1
-Constant TTL_GUITOHW_CHANNEL   = 0x2
-Constant TTL_HWTOGUI_CHANNEL   = 0x3
+Constant TTL_HARDWARE_CHANNEL = 0x0
+Constant TTL_DAEPHYS_CHANNEL  = 0x1
+Constant TTL_GUITOHW_CHANNEL  = 0x2
+Constant TTL_HWTOGUI_CHANNEL  = 0x3
 /// @}
 
-Constant MINIMUM_WAVE_SIZE = 64
+Constant MINIMUM_WAVE_SIZE       = 64
 Constant MINIMUM_WAVE_SIZE_LARGE = 2048
-Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
+Constant MAXIMUM_WAVE_SIZE       = 16384 // 2^14
 
 /// @name Wave dimension constants
 /// @anchor WaveDimensions
 /// Convenience definition to nicify expressions like DimSize(wv, ROWS)
 /// easier to read than DimSize(wv, 0).
 /// @{
-Constant DATADIMENSION       = -1
-Constant ROWS                = 0
-Constant COLS                = 1
-Constant LAYERS              = 2
-Constant CHUNKS              = 3
+Constant DATADIMENSION = -1
+Constant ROWS          = 0
+Constant COLS          = 1
+Constant LAYERS        = 2
+Constant CHUNKS        = 3
 /// @}
 Constant MAX_DIMENSION_COUNT = 4
 
@@ -358,28 +358,28 @@ StrConstant LABNOTEBOOK_KEYS_INITIAL = "SweepNum;TimeStamp;TimeStampSinceIgorEpo
 
 /// @name Constants for the note of the wave returned by GetTPStorage
 /// @{
-StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
-StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
-StrConstant PRESSURE_CTRL_LAST_INVOC       = "PressureControlLastInvocation"
-StrConstant INDEX_ON_TP_START              = "IndexOnTestPulseStart"
-StrConstant AUTOTP_LAST_INVOCATION_KEY     = "AutoTPLastInvocation"
+StrConstant AUTOBIAS_LAST_INVOCATION_KEY = "AutoBiasLastInvocation"
+StrConstant DIMENSION_SCALING_LAST_INVOC = "DimensionScalingLastInvocation"
+StrConstant PRESSURE_CTRL_LAST_INVOC     = "PressureControlLastInvocation"
+StrConstant INDEX_ON_TP_START            = "IndexOnTestPulseStart"
+StrConstant AUTOTP_LAST_INVOCATION_KEY   = "AutoTPLastInvocation"
 /// @}
 
 /// @name Modes for SaveExperimentSpecial
 /// @anchor SaveExperimentModes
 /// @{
-Constant SAVE_AND_CLEAR            = 0x01
-Constant SAVE_AND_SPLIT            = 0x02
+Constant SAVE_AND_CLEAR = 0x01
+Constant SAVE_AND_SPLIT = 0x02
 /// @}
 
 /// @name Constants for data acquisition modes
 /// @anchor DataAcqModes
 /// @{
-Constant UNKNOWN_MODE            = NaN
-Constant DATA_ACQUISITION_MODE   = 0
-Constant TEST_PULSE_MODE         = 1
-Constant SWEEP_FORMULA_RESULT    = 2
-Constant SWEEP_FORMULA_PSX       = 3
+Constant UNKNOWN_MODE          = NaN
+Constant DATA_ACQUISITION_MODE = 0
+Constant TEST_PULSE_MODE       = 1
+Constant SWEEP_FORMULA_RESULT  = 2
+Constant SWEEP_FORMULA_PSX     = 3
 /// @}
 
 Constant NUMBER_OF_LBN_DAQ_MODES = 4
@@ -465,8 +465,8 @@ Constant MCC_END_INVALID_FUNC            = 10062
 /// Magic value for selecting "Bypass" in the bessel filter for the primary output
 Constant LPF_BYPASS = 100e3
 
-Constant CHECKBOX_SELECTED     = 1
-Constant CHECKBOX_UNSELECTED   = 0
+Constant CHECKBOX_SELECTED   = 1
+Constant CHECKBOX_UNSELECTED = 0
 
 /// @name Constants for FunctionInfo and WaveType
 ///
@@ -482,16 +482,16 @@ Constant IGOR_TYPE_64BIT_INT        = 0x080
 Constant IGOR_TYPE_UNSIGNED         = 0x040 ///< Can be combined, using bitwise or, with all integer types
 Constant IGOR_TYPE_STRUCT_PARAMETER = 0x200
 // If wavetype is called with selector 1
-Constant IGOR_TYPE_NULL_WAVE        = 0x000
-Constant IGOR_TYPE_NUMERIC_WAVE     = 0x001
-Constant IGOR_TYPE_TEXT_WAVE        = 0x002
-Constant IGOR_TYPE_DFREF_WAVE       = 0x003
-Constant IGOR_TYPE_WAVEREF_WAVE     = 0x004
+Constant IGOR_TYPE_NULL_WAVE    = 0x000
+Constant IGOR_TYPE_NUMERIC_WAVE = 0x001
+Constant IGOR_TYPE_TEXT_WAVE    = 0x002
+Constant IGOR_TYPE_DFREF_WAVE   = 0x003
+Constant IGOR_TYPE_WAVEREF_WAVE = 0x004
 // If wavetype is called with selector 2
 //Constant IGOR_TYPE_NULL_WAVE      = 0x000
-Constant IGOR_TYPE_GLOBAL_WAVE      = 0x001
-Constant IGOR_TYPE_FREE_WAVE        = 0x002
-Constant IGOR_TYPE_FREEDF_WAVE      = 0x002
+Constant IGOR_TYPE_GLOBAL_WAVE = 0x001
+Constant IGOR_TYPE_FREE_WAVE   = 0x002
+Constant IGOR_TYPE_FREEDF_WAVE = 0x002
 /// @}
 
 /// @name TabControl values in Browser Settings Panel
@@ -506,19 +506,19 @@ Constant MIES_BSP_DS  = 7
 
 /// @name values for  UserData in BrowserSettings and derived windows
 /// @{
-strConstant MIES_BSP_BROWSER = "BROWSER"
-strConstant MIES_BSP_BROWSER_MODE = "BROWSERMODE"
-strConstant MIES_BSP_DEVICE = "DEVICE"
-strConstant MIES_BSP_PANEL_FOLDER = "PANEL_FOLDER"
-strConstant MIES_BSP_AR_SWEEPFOLDER = "AR_SWEEPFOLDER"
-strConstant MIES_BSP_PA_MAINPANEL = "HOSTWINDOW"
+StrConstant MIES_BSP_BROWSER        = "BROWSER"
+StrConstant MIES_BSP_BROWSER_MODE   = "BROWSERMODE"
+StrConstant MIES_BSP_DEVICE         = "DEVICE"
+StrConstant MIES_BSP_PANEL_FOLDER   = "PANEL_FOLDER"
+StrConstant MIES_BSP_AR_SWEEPFOLDER = "AR_SWEEPFOLDER"
+StrConstant MIES_BSP_PA_MAINPANEL   = "HOSTWINDOW"
 /// @}
 
 StrConstant NUMERALS = "First;Second;Third;Fourth;Fifth;Sixth;Seventh;Eighth"
 
 /// Generic axis name for graphs using split axis
-StrConstant VERT_AXIS_BASE_NAME   = "row"
-StrConstant HORIZ_AXIS_BASE_NAME  = "col"
+StrConstant VERT_AXIS_BASE_NAME  = "row"
+StrConstant HORIZ_AXIS_BASE_NAME = "col"
 
 /// Fallback value for  the sampling interval in milliseconds (1e-3) used by
 /// #SI_CalculateMinSampInterval if the lookup table could not be found on disk.
@@ -676,16 +676,16 @@ Constant PRE_SET_EVENT          = 7
 /// @}
 
 Constant GENERIC_EVENT = 6 ///< Only used for internal bookkeeping. Never
-                           ///  send to analysis functions.
+///  send to analysis functions.
 
 /// Number of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
-Constant TOTAL_NUM_EVENTS   = 8
+Constant TOTAL_NUM_EVENTS = 8
 
 /// Column for GetAnalysisFunctionStorage(). Same value as #TOTAL_NUM_EVENTS
 /// but more readable.
 Constant ANALYSIS_FUNCTION_PARAMS = 8
 
-StrConstant ANALYSIS_FUNCTION_PARAMS_LBN = "Function params (encoded)"
+StrConstant ANALYSIS_FUNCTION_PARAMS_LBN     = "Function params (encoded)"
 StrConstant ANALYSIS_FUNCTION_PARAMS_STIMSET = "Function params (encoded)"
 
 /// Human readable names for @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
@@ -733,12 +733,12 @@ Constant ESCAPE_KEY = 32
 
 /// Window hook key constants
 /// @{
-Constant LEFT_KEY  =  28
-Constant RIGHT_KEY =  29
-Constant UP_KEY    =  30
-Constant DOWN_KEY  =  31
-Constant SPACE_KEY =  32
-Constant C_KEY     =  99
+Constant LEFT_KEY  = 28
+Constant RIGHT_KEY = 29
+Constant UP_KEY    = 30
+Constant DOWN_KEY  = 31
+Constant SPACE_KEY = 32
+Constant C_KEY     = 99
 Constant E_KEY     = 101
 Constant F_KEY     = 102
 Constant R_KEY     = 114
@@ -782,9 +782,9 @@ StrConstant HARDWARE_DAC_TYPES = "ITC;NI"
 /// @name Indizes into HARDWARE_DAC_TYPES
 /// @anchor HardwareDACTypeConstants
 /// @{
-Constant HARDWARE_ITC_DAC = 0
-Constant HARDWARE_NI_DAC  = 1
-Constant HARDWARE_UNSUPPORTED_DAC  = 1000
+Constant HARDWARE_ITC_DAC         = 0
+Constant HARDWARE_NI_DAC          = 1
+Constant HARDWARE_UNSUPPORTED_DAC = 1000
 /// @}
 
 /// @name Name of NI_DAC FIFO
@@ -801,9 +801,9 @@ Constant HARDWARE_MAX_DEVICES = 10
 /// @name Minimum possible sampling intervals in milliseconds (1e-3s)
 /// @{
 #ifdef EVIL_KITTEN_EATING_MODE
-Constant HARDWARE_NI_DAC_MIN_SAMPINT  = 0.2
+Constant HARDWARE_NI_DAC_MIN_SAMPINT = 0.2
 #else
-Constant HARDWARE_NI_DAC_MIN_SAMPINT  = 0.002 ///< NI 6343 and other devices, so it is 4E-3 ms for 2 channels, 6E-3 ms for 3 a.s.o.
+Constant HARDWARE_NI_DAC_MIN_SAMPINT = 0.002 ///< NI 6343 and other devices, so it is 4E-3 ms for 2 channels, 6E-3 ms for 3 a.s.o.
 #endif
 Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
 Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
@@ -825,16 +825,16 @@ Constant AMPLIFIER_CONNECTION_MCC_FAILED = 2 ///< calling MCC_SelectMultiClamp70
 
 /// Additional entry in the NWB source attribute for TTL data
 StrConstant NWB_SOURCE_TTL_BIT = "TTLBit"
-StrConstant IPNWB_PLACEHOLDER = "PLACEHOLDER"
+StrConstant IPNWB_PLACEHOLDER  = "PLACEHOLDER"
 
 /// @name Constants for the options parameter of DAP_ChangeHeadStageMode()
 /// @anchor ClampModeChangeOptions
 /// @{
-Constant DO_MCC_MIES_SYNCING   = 0x0 ///< Default mode with all bells and whistles
-Constant NO_SLIDER_MOVEMENT    = 0x2 ///< Does not move the headstage slider
-Constant MCC_SKIP_UPDATES      = 0x4 ///< Skips all unnecessary updates. Intereseting for temporarily switching the clamp mode,
-                                     ///< e.g. for an auto MCC amplifier function.
-                                     ///< Using that option requires to switch the clamp mode back to its original value.
+Constant DO_MCC_MIES_SYNCING = 0x0 ///< Default mode with all bells and whistles
+Constant NO_SLIDER_MOVEMENT  = 0x2 ///< Does not move the headstage slider
+Constant MCC_SKIP_UPDATES    = 0x4 ///< Skips all unnecessary updates. Intereseting for temporarily switching the clamp mode,
+///< e.g. for an auto MCC amplifier function.
+///< Using that option requires to switch the clamp mode back to its original value.
 /// @}
 
 /// Number of trials to find a suitable port for binding a ZeroMQ service
@@ -873,9 +873,9 @@ Constant PRESSURE_METHOD_MANUAL   = 4
 /// @anchor PressureTypeConstants
 /// @{
 Constant PRESSURE_TYPE_ATM    = -1
-Constant PRESSURE_TYPE_AUTO   =  0
-Constant PRESSURE_TYPE_MANUAL =  1
-Constant PRESSURE_TYPE_USER   =  2
+Constant PRESSURE_TYPE_AUTO   = 0
+Constant PRESSURE_TYPE_MANUAL = 1
+Constant PRESSURE_TYPE_USER   = 2
 /// @}
 
 StrConstant POPUPMENU_DIVIDER = "\\M1(-"
@@ -948,33 +948,33 @@ StrConstant NOTE_KEY_PULSE_SPIKE_POSITIONS = "SpikePositions"
 
 /// DA_Ephys Panel Tabs
 Constant DA_EPHYS_PANEL_DATA_ACQUISITION = 0
-Constant DA_EPHYS_PANEL_DA = 1
-Constant DA_EPHYS_PANEL_AD = 2
-Constant DA_EPHYS_PANEL_TTL = 3
-Constant DA_EPHYS_PANEL_ASYNCHRONOUS = 4
-Constant DA_EPHYS_PANEL_SETTINGS = 5
-Constant DA_EPHYS_PANEL_HARDWARE = 6
-Constant DA_EPHYS_PANEL_VCLAMP = 0
-Constant DA_EPHYS_PANEL_ICLAMP = 1
-Constant DA_EPHYS_PANEL_IEQUALZERO = 2
-Constant DA_EPHYS_PANEL_PRESSURE_AUTO = 0
-Constant DA_EPHYS_PANEL_PRESSURE_MANUAL = 1
-Constant DA_EPHYS_PANEL_PRESSURE_USER = 2
+Constant DA_EPHYS_PANEL_DA               = 1
+Constant DA_EPHYS_PANEL_AD               = 2
+Constant DA_EPHYS_PANEL_TTL              = 3
+Constant DA_EPHYS_PANEL_ASYNCHRONOUS     = 4
+Constant DA_EPHYS_PANEL_SETTINGS         = 5
+Constant DA_EPHYS_PANEL_HARDWARE         = 6
+Constant DA_EPHYS_PANEL_VCLAMP           = 0
+Constant DA_EPHYS_PANEL_ICLAMP           = 1
+Constant DA_EPHYS_PANEL_IEQUALZERO       = 2
+Constant DA_EPHYS_PANEL_PRESSURE_AUTO    = 0
+Constant DA_EPHYS_PANEL_PRESSURE_MANUAL  = 1
+Constant DA_EPHYS_PANEL_PRESSURE_USER    = 2
 
-StrConstant PULSE_START_TIMES_KEY     = "Pulse Train Pulses"
-StrConstant PULSE_TO_PULSE_LENGTH_KEY = "Pulse To Pulse Length"
-StrConstant HIGH_PREC_SWEEP_START_KEY = "High precision sweep start"
-StrConstant STIMSET_SCALE_FACTOR_KEY  = "Stim Scale Factor"
-StrConstant STIMSET_WAVE_NOTE_KEY     = "Stim Wave Note"
-StrConstant EPOCHS_ENTRY_KEY          = "Epochs"
-StrConstant CLAMPMODE_ENTRY_KEY       = "Clamp Mode"
-StrConstant TP_AMPLITUDE_VC_ENTRY_KEY = "TP Amplitude VC"
-StrConstant TP_AMPLITUDE_IC_ENTRY_KEY = "TP Amplitude IC"
-StrConstant PULSE_START_INDICES_KEY   = "Pulse Train Pulse Start Indices"
-StrConstant PULSE_END_INDICES_KEY     = "Pulse Train Pulse End Indices"
+StrConstant PULSE_START_TIMES_KEY       = "Pulse Train Pulses"
+StrConstant PULSE_TO_PULSE_LENGTH_KEY   = "Pulse To Pulse Length"
+StrConstant HIGH_PREC_SWEEP_START_KEY   = "High precision sweep start"
+StrConstant STIMSET_SCALE_FACTOR_KEY    = "Stim Scale Factor"
+StrConstant STIMSET_WAVE_NOTE_KEY       = "Stim Wave Note"
+StrConstant EPOCHS_ENTRY_KEY            = "Epochs"
+StrConstant CLAMPMODE_ENTRY_KEY         = "Clamp Mode"
+StrConstant TP_AMPLITUDE_VC_ENTRY_KEY   = "TP Amplitude VC"
+StrConstant TP_AMPLITUDE_IC_ENTRY_KEY   = "TP Amplitude IC"
+StrConstant PULSE_START_INDICES_KEY     = "Pulse Train Pulse Start Indices"
+StrConstant PULSE_END_INDICES_KEY       = "Pulse Train Pulse End Indices"
 StrConstant INFLECTION_POINTS_INDEX_KEY = "Inflection Points Indices"
-StrConstant EPOCH_LENGTH_INDEX_KEY  = "Epoch Length Indices"
-StrConstant STIMSET_SIZE_KEY          = "Stimset Size"
+StrConstant EPOCH_LENGTH_INDEX_KEY      = "Epoch Length Indices"
+StrConstant STIMSET_SIZE_KEY            = "Stimset Size"
 
 /// DA_Ephys controls which should be disabled during DAQ
 StrConstant CONTROLS_DISABLE_DURING_DAQ = "Check_DataAcqHS_All;Radio_ClampMode_AllIClamp;Radio_ClampMode_AllVClamp;Radio_ClampMode_AllIZero;SetVar_Sweep;Check_DataAcq_Indexing;check_DataAcq_IndexRandom;Check_DataAcq1_IndexingLocked;check_DataAcq_RepAcqRandom;Check_DataAcq1_RepeatAcq;Check_Settings_SkipAnalysFuncs;check_Settings_MD"
@@ -1006,7 +1006,7 @@ Constant STIMSET_PARAM_SEGWVTYPE = 2
 /// @anchor IntegerWaveRanges
 /// @{
 Constant SIGNED_INT_16BIT_MIN = -32768
-Constant SIGNED_INT_16BIT_MAX =  32767
+Constant SIGNED_INT_16BIT_MAX = 32767
 /// @}
 
 /// @name Ranges for NIDAQ analog output in volts
@@ -1014,9 +1014,9 @@ Constant SIGNED_INT_16BIT_MAX =  32767
 /// @anchor NIDAQ_AO_WaveRanges
 /// @{
 Constant NI_DAC_MIN = -10
-Constant NI_DAC_MAX =  10
+Constant NI_DAC_MAX = 10
 Constant NI_ADC_MIN = -10
-Constant NI_ADC_MAX =  10
+Constant NI_ADC_MAX = 10
 /// @}
 
 /// Maximum length of a valid object name in bytes in Igor Pro >= 8
@@ -1069,7 +1069,7 @@ Constant MAX_NUM_MS_TIMERS = 10
 /// @{
 Constant PSQ_BL_EVAL_RANGE = 500
 
-Constant PSQ_DS_SPIKE_LEVEL      = -20 // mV
+Constant PSQ_DS_SPIKE_LEVEL = -20 // mV
 
 StrConstant PSQ_CR_BEM = "Symmetric;Depolarized;Hyperpolarized"
 
@@ -1175,8 +1175,8 @@ Constant TEST_ANALYSIS_FUNCTION    = 0x10000
 
 /// Legacy analysis functions
 /// @{
-Constant ADJUST_DA_SCALE       = 0x1000 // AD
-Constant REACH_TARGET_VOLTAGE  = 0x2000 // RV
+Constant ADJUST_DA_SCALE      = 0x1000 // AD
+Constant REACH_TARGET_VOLTAGE = 0x2000 // RV
 /// @}
 
 /// Legacy analysis functions labnotebook entries
@@ -1224,18 +1224,18 @@ Constant PSQ_SP_NUM_SWEEPS_PASS  = 1
 
 /// @name PatchSeq Rheobase
 /// @{
-Constant PSQ_RB_MAX_DASCALE_DIFF       = 60e-12
-Constant PSQ_RB_DASCALE_SMALL_BORDER   = 50e-12
-Constant PSQ_RB_DASCALE_STEP_LARGE     = 10e-12
-Constant PSQ_RB_DASCALE_STEP_SMALL     =  2e-12
-StrConstant PSQ_RB_FINALSCALE_FAKE_KEY = "PSQRheobaseFinalDAScaleFake"
+Constant    PSQ_RB_MAX_DASCALE_DIFF     = 60e-12
+Constant    PSQ_RB_DASCALE_SMALL_BORDER = 50e-12
+Constant    PSQ_RB_DASCALE_STEP_LARGE   = 10e-12
+Constant    PSQ_RB_DASCALE_STEP_SMALL   = 2e-12
+StrConstant PSQ_RB_FINALSCALE_FAKE_KEY  = "PSQRheobaseFinalDAScaleFake"
 /// @}
 
 /// @name PatchSeq DAScale
 /// @{
-Constant PSQ_DS_OFFSETSCALE_FAKE = 23 // pA
-StrConstant PSQ_DS_SUB           = "Sub"
-StrConstant PSQ_DS_SUPRA         = "Supra"
+Constant    PSQ_DS_OFFSETSCALE_FAKE = 23      // pA
+StrConstant PSQ_DS_SUB              = "Sub"
+StrConstant PSQ_DS_SUPRA            = "Supra"
 /// @}
 
 /// @name PatchSeq Ramp
@@ -1247,10 +1247,10 @@ Constant PSQ_RA_NUM_SWEEPS_PASS = 3
 /// @name PatchSeq Chirp
 /// @{
 Constant PSQ_CR_NUM_SWEEPS_PASS  = 3
-Constant PSQ_CR_RESISTANCE_FAKE  = 1 // GΩ
-Constant PSQ_CR_BASELINE_V_FAKE  = 1 // mV
-Constant PSQ_CR_LIMIT_BAND_LOW   = 1 // mV
-Constant PSQ_CR_LIMIT_BAND_HIGH  = 100 // mV
+Constant PSQ_CR_RESISTANCE_FAKE  = 1    // GΩ
+Constant PSQ_CR_BASELINE_V_FAKE  = 1    // mV
+Constant PSQ_CR_LIMIT_BAND_LOW   = 1    // mV
+Constant PSQ_CR_LIMIT_BAND_HIGH  = 100  // mV
 Constant PSQ_CR_USE_TRUE_RMP_DEF = 1
 Constant PSQ_CR_DEFAULT_LPF      = 10e3 // Hz
 /// @}
@@ -1290,14 +1290,14 @@ Constant PSQ_CR_RERUN    = 0x8
 
 /// @name PatchSeq AccessResistance
 /// @{
-Constant PSQ_AR_NUM_SWEEPS_PASS   = 1
+Constant PSQ_AR_NUM_SWEEPS_PASS = 1
 /// @}
 
 /// @name MultiPatchSeq various constants
 /// @{
-Constant MSQ_FRE_INIT_AMP_m50    = -50e-12
-Constant MSQ_FRE_INIT_AMP_p100   = +100e-12
-Constant MSQ_FRE_INIT_AMP_p10    = +10e-12
+Constant MSQ_FRE_INIT_AMP_m50  = -50e-12
+Constant MSQ_FRE_INIT_AMP_p100 = +100e-12
+Constant MSQ_FRE_INIT_AMP_p10  = +10e-12
 
 Constant MSQ_DS_PULSE_DUR = 1000
 
@@ -1305,9 +1305,9 @@ Constant MSQ_DS_OFFSETSCALE_FAKE = 23 // pA
 Constant MSQ_DS_SWEEP_FAKE       = 42
 
 Constant MSQ_SPIKE_LEVEL         = -10.0 // mV
-Constant MSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
-Constant MSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
-Constant MSQ_TARGETV_THRESHOLD   = 1    // mV
+Constant MSQ_RMS_SHORT_THRESHOLD = 0.07  // mV
+Constant MSQ_RMS_LONG_THRESHOLD  = 0.5   // mV
+Constant MSQ_TARGETV_THRESHOLD   = 1     // mV
 /// @}
 
 /// @name MultiPatchSeq SpikeControl
@@ -1321,39 +1321,39 @@ Constant SC_SPIKE_COUNT_NUM_TOO_FEW  = 0x1
 Constant SC_SPIKE_COUNT_NUM_TOO_MANY = 0x2
 Constant SC_SPIKE_COUNT_NUM_MIXED    = 0x4
 
-StrConstant SC_SPIKE_COUNT_STATE_STR_GOOD        = "Good"
-StrConstant SC_SPIKE_COUNT_STATE_STR_TOO_FEW     = "Too few"
-StrConstant SC_SPIKE_COUNT_STATE_STR_TOO_MANY    = "Too many"
-StrConstant SC_SPIKE_COUNT_STATE_STR_MIXED       = "Mixed"
+StrConstant SC_SPIKE_COUNT_STATE_STR_GOOD     = "Good"
+StrConstant SC_SPIKE_COUNT_STATE_STR_TOO_FEW  = "Too few"
+StrConstant SC_SPIKE_COUNT_STATE_STR_TOO_MANY = "Too many"
+StrConstant SC_SPIKE_COUNT_STATE_STR_MIXED    = "Mixed"
 /// @}
 
 /// @}
 
 /// @anchor MultiPatchSeqLabnotebookFormatStrings
 /// @{
-StrConstant MSQ_FMT_LBN_DASCALE_EXC          = "%s DAScale exceeded"
-StrConstant MSQ_FMT_LBN_STEPSIZE             = "%s step size"
-StrConstant MSQ_FMT_LBN_SPIKE_DETECT         = "%s spike detected"
-StrConstant MSQ_FMT_LBN_SPIKE_POSITIONS      = "%s Spike positions"
-StrConstant MSQ_FMT_LBN_SPIKE_COUNTS         = "%s Spike counts"
-StrConstant MSQ_FMT_LBN_FINAL_SCALE          = "%s final DAScale"
-StrConstant MSQ_FMT_LBN_INITIAL_SCALE        = "%s initial DAScale"
-StrConstant MSQ_FMT_LBN_RMS_SHORT_PASS       = "%s Chk%d S-RMS QC"
-StrConstant MSQ_FMT_LBN_RMS_LONG_PASS        = "%s Chk%d L-RMS QC"
-StrConstant MSQ_FMT_LBN_TARGETV_PASS         = "%s Chk%d T-V BL QC"
-StrConstant MSQ_FMT_LBN_CHUNK_PASS           = "%s Chk%d BL QC"
-StrConstant MSQ_FMT_LBN_SPONT_SPIKE_PASS     = "%s Spontaneous Spiking QC"
-StrConstant MSQ_FMT_LBN_HEADSTAGE_PASS       = "%s Headstage QC"
-StrConstant MSQ_FMT_LBN_SWEEP_PASS           = "%s Sweep QC"
-StrConstant MSQ_FMT_LBN_SET_PASS             = "%s Set QC"
-StrConstant MSQ_FMT_LBN_PULSE_DUR            = "%s Pulse duration"
-StrConstant MSQ_FMT_LBN_ACTIVE_HS            = "%s Active Headstage"
-StrConstant MSQ_FMT_LBN_FAILED_PULSE_LEVEL   = "%s Failed Pulse Level"
-StrConstant MSQ_FMT_LBN_SPIKE_POSITION_PASS  = "%s Spike positions QC"
-StrConstant MSQ_FMT_LBN_SPIKE_COUNTS_STATE   = "%s Spike counts state"
-StrConstant MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS   = "%s Ideal spike counts"
-StrConstant MSQ_FMT_LBN_RERUN_TRIAL          = "%s Rerun Trials"
-StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC      = "%s Rerun Trials exceeded"
+StrConstant MSQ_FMT_LBN_DASCALE_EXC         = "%s DAScale exceeded"
+StrConstant MSQ_FMT_LBN_STEPSIZE            = "%s step size"
+StrConstant MSQ_FMT_LBN_SPIKE_DETECT        = "%s spike detected"
+StrConstant MSQ_FMT_LBN_SPIKE_POSITIONS     = "%s Spike positions"
+StrConstant MSQ_FMT_LBN_SPIKE_COUNTS        = "%s Spike counts"
+StrConstant MSQ_FMT_LBN_FINAL_SCALE         = "%s final DAScale"
+StrConstant MSQ_FMT_LBN_INITIAL_SCALE       = "%s initial DAScale"
+StrConstant MSQ_FMT_LBN_RMS_SHORT_PASS      = "%s Chk%d S-RMS QC"
+StrConstant MSQ_FMT_LBN_RMS_LONG_PASS       = "%s Chk%d L-RMS QC"
+StrConstant MSQ_FMT_LBN_TARGETV_PASS        = "%s Chk%d T-V BL QC"
+StrConstant MSQ_FMT_LBN_CHUNK_PASS          = "%s Chk%d BL QC"
+StrConstant MSQ_FMT_LBN_SPONT_SPIKE_PASS    = "%s Spontaneous Spiking QC"
+StrConstant MSQ_FMT_LBN_HEADSTAGE_PASS      = "%s Headstage QC"
+StrConstant MSQ_FMT_LBN_SWEEP_PASS          = "%s Sweep QC"
+StrConstant MSQ_FMT_LBN_SET_PASS            = "%s Set QC"
+StrConstant MSQ_FMT_LBN_PULSE_DUR           = "%s Pulse duration"
+StrConstant MSQ_FMT_LBN_ACTIVE_HS           = "%s Active Headstage"
+StrConstant MSQ_FMT_LBN_FAILED_PULSE_LEVEL  = "%s Failed Pulse Level"
+StrConstant MSQ_FMT_LBN_SPIKE_POSITION_PASS = "%s Spike positions QC"
+StrConstant MSQ_FMT_LBN_SPIKE_COUNTS_STATE  = "%s Spike counts state"
+StrConstant MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS  = "%s Ideal spike counts"
+StrConstant MSQ_FMT_LBN_RERUN_TRIAL         = "%s Rerun Trials"
+StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC     = "%s Rerun Trials exceeded"
 /// @}
 
 /// @name Workaround flags for CreateAnaFuncLBNKey()
@@ -1393,8 +1393,8 @@ StrConstant REC_MACRO_MODE      = "mode"
 Constant CA_OPTS_NO_DUPLICATE = 0x1
 /// @}
 
-Constant LABNOTEBOOK_MISSING_VALUE     = -1
-Constant LABNOTEBOOK_UNCACHED_VALUE    = -2
+Constant    LABNOTEBOOK_MISSING_VALUE  = -1
+Constant    LABNOTEBOOK_UNCACHED_VALUE = -2
 StrConstant LABNOTEBOOK_MOD_COUNT      = "Labnotebook modification count"
 
 /// @name Constants for the different delta operation modes in the Wavebuilder
@@ -1430,9 +1430,9 @@ Constant OPTIONAL_PARAMS = 0x2
 /// @name GUI settings oscilloscopy Y scale update modes
 /// @anchor GUISettingOscilloscopeScaleMode
 /// @{
-Constant GUI_SETTING_OSCI_SCALE_AUTO      = 0
-Constant GUI_SETTING_OSCI_SCALE_FIXED     = 1
-Constant GUI_SETTING_OSCI_SCALE_INTERVAL  = 2
+Constant GUI_SETTING_OSCI_SCALE_AUTO     = 0
+Constant GUI_SETTING_OSCI_SCALE_FIXED    = 1
+Constant GUI_SETTING_OSCI_SCALE_INTERVAL = 2
 /// @}
 
 StrConstant PRESSURE_CONTROL_LED_DASHBOARD = "valdisp_DataAcq_P_LED_0;valdisp_DataAcq_P_LED_1;valdisp_DataAcq_P_LED_2;valdisp_DataAcq_P_LED_3;valdisp_DataAcq_P_LED_4;valdisp_DataAcq_P_LED_5;valdisp_DataAcq_P_LED_6;valdisp_DataAcq_P_LED_7"
@@ -1486,12 +1486,12 @@ Constant FINDLEVEL_MODE_MULTI  = 2
 /// @name Return codes of the Igor exists function
 /// @anchor existsReturnCodes
 /// @{
-Constant EXISTS_NAME_NOT_USED = 0
-Constant EXISTS_AS_WAVE = 1
-Constant EXISTS_AS_VAR_OR_STR = 2
-Constant EXISTS_AS_FUNCTION = 3
-Constant EXISTS_AS_OPERATION = 4
-Constant EXISTS_AS_MACRO = 5
+Constant EXISTS_NAME_NOT_USED   = 0
+Constant EXISTS_AS_WAVE         = 1
+Constant EXISTS_AS_VAR_OR_STR   = 2
+Constant EXISTS_AS_FUNCTION     = 3
+Constant EXISTS_AS_OPERATION    = 4
+Constant EXISTS_AS_MACRO        = 5
 Constant EXISTS_AS_USERFUNCTION = 6
 /// @}
 
@@ -1499,14 +1499,14 @@ Constant EXISTS_AS_USERFUNCTION = 6
 /// @anchor wintypeReturnCodes
 /// @{
 Constant WINTYPE_NOWINDOW = 0
-Constant WINTYPE_GRAPH = 1
-Constant WINTYPE_TABLE = 2
-Constant WINTYPE_LAYOUT = 3
+Constant WINTYPE_GRAPH    = 1
+Constant WINTYPE_TABLE    = 2
+Constant WINTYPE_LAYOUT   = 3
 Constant WINTYPE_NOTEBOOK = 5
-Constant WINTYPE_PANEL = 7
-Constant WINTYPE_XOP = 13
-Constant WINTYPE_CAMERA = 15
-Constant WINTYPE_GIZMO = 17
+Constant WINTYPE_PANEL    = 7
+Constant WINTYPE_XOP      = 13
+Constant WINTYPE_CAMERA   = 15
+Constant WINTYPE_GIZMO    = 17
 /// @}
 
 /// @name Panel tag codes to identify panel types, set in creation macro as main window userdata($EXPCONFIG_UDATA_PANELTYPE)
@@ -1514,58 +1514,58 @@ Constant WINTYPE_GIZMO = 17
 /// @{
 StrConstant EXPCONFIG_UDATA_PANELTYPE = "Config_PanelType"
 
-StrConstant PANELTAG_DAEPHYS = "DA_Ephys"
-StrConstant PANELTAG_DATABROWSER = "DataBrowser"
-StrConstant PANELTAG_WAVEBUILDER = "WaveBuilder"
+StrConstant PANELTAG_DAEPHYS         = "DA_Ephys"
+StrConstant PANELTAG_DATABROWSER     = "DataBrowser"
+StrConstant PANELTAG_WAVEBUILDER     = "WaveBuilder"
 StrConstant PANELTAG_ANALYSISBROWSER = "AnalysisBrowser"
-StrConstant PANELTAG_IVSCCP = "IVSCControlPanel"
+StrConstant PANELTAG_IVSCCP          = "IVSCControlPanel"
 /// @}
 
-StrConstant EXPCONFIG_UDATA_SOURCEFILE_PATH = "Config_FileName"
-StrConstant EXPCONFIG_UDATA_SOURCEFILE_HASH = "Config_FileHash"
+StrConstant EXPCONFIG_UDATA_SOURCEFILE_PATH  = "Config_FileName"
+StrConstant EXPCONFIG_UDATA_SOURCEFILE_HASH  = "Config_FileHash"
 StrConstant EXPCONFIG_UDATA_STIMSET_NWB_PATH = "Config_StimsetNWBPath"
 
 /// @name Bit mask constants for properties for window control saving/restore
 /// @anchor WindowControlSavingMask
 /// @{
-Constant EXPCONFIG_SAVE_VALUE = 1
-Constant EXPCONFIG_SAVE_POSITION = 2
-Constant EXPCONFIG_SAVE_USERDATA = 4
-Constant EXPCONFIG_SAVE_DISABLED = 8
-Constant EXPCONFIG_SAVE_CTRLTYPE = 16
+Constant EXPCONFIG_SAVE_VALUE                    = 1
+Constant EXPCONFIG_SAVE_POSITION                 = 2
+Constant EXPCONFIG_SAVE_USERDATA                 = 4
+Constant EXPCONFIG_SAVE_DISABLED                 = 8
+Constant EXPCONFIG_SAVE_CTRLTYPE                 = 16
 Constant EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY = 32
-Constant EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY = 64
-Constant EXPCONFIG_MINIMIZE_ON_RESTORE = 128
-Constant EXPCONFIG_SAVE_BUTTONS_ONLY_PRESSED = 256
-Constant EXPCONFIG_SAVE_ONLY_RELEVANT = 512
+Constant EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY  = 64
+Constant EXPCONFIG_MINIMIZE_ON_RESTORE           = 128
+Constant EXPCONFIG_SAVE_BUTTONS_ONLY_PRESSED     = 256
+Constant EXPCONFIG_SAVE_ONLY_RELEVANT            = 512
 /// @}
 
 /// @name Correlated control name/type/valuetype list for use with e.g. ControlInfo
 /// @anchor IgorControlData
 /// @{
-StrConstant EXPCONFIG_GUI_CTRLLIST = "Button;Chart;CheckBox;CustomControl;GroupBox;ListBox;PopupMenu;SetVariable;Slider;TabControl;TitleBox;ValDisplay;"
-StrConstant EXPCONFIG_GUI_CTRLTYPES = "1;6;2;12;9;11;3;5;7;8;10;4;"
-StrConstant EXPCONFIG_GUI_VVALUE =      "1;1;1;1;0;1;1;1;1;1;0;1;"
-StrConstant EXPCONFIG_GUI_SVALUE =      "0;1;0;0;1;1;1;1;1;1;0;1;"
+StrConstant EXPCONFIG_GUI_CTRLLIST    = "Button;Chart;CheckBox;CustomControl;GroupBox;ListBox;PopupMenu;SetVariable;Slider;TabControl;TitleBox;ValDisplay;"
+StrConstant EXPCONFIG_GUI_CTRLTYPES   = "1;6;2;12;9;11;3;5;7;8;10;4;"
+StrConstant EXPCONFIG_GUI_VVALUE      = "1;1;1;1;0;1;1;1;1;1;0;1;"
+StrConstant EXPCONFIG_GUI_SVALUE      = "0;1;0;0;1;1;1;1;1;1;0;1;"
 StrConstant EXPCONFIG_GUI_SDATAFOLDER = "0;0;0;0;0;1;0;1;1;0;1;0;"
 /// 0 does not apply, 1 V_Value, 2 S_Value, 3 S_DataFolder for EXPCONFIG_SAVE_ONLY_RELEVANT
-StrConstant EXPCONFIG_GUI_PREFERRED =   "0;2;0;0;0;3;2;0;1;1;0;1;"
+StrConstant EXPCONFIG_GUI_PREFERRED = "0;2;0;0;0;3;2;0;1;1;0;1;"
 
-StrConstant EXPCONFIG_GUI_SUSERDATA =   "1;0;1;1;0;1;1;1;1;1;0;0;"
+StrConstant EXPCONFIG_GUI_SUSERDATA = "1;0;1;1;0;1;1;1;1;1;0;0;"
 /// @}
 
 /// @name PopupMenu extension keys for userdata definition of procedures
 /// @anchor PopupMenuExtension
 /// @{
 StrConstant PEXT_UDATA_ITEMGETTER = "Items"
-StrConstant PEXT_UDATA_POPUPPROC = "popupProc"
+StrConstant PEXT_UDATA_POPUPPROC  = "popupProc"
 /// @}
 
 /// @name PopupMenu extension sub menu splitting methods
 /// @anchor PEXT_SubMenuSplitting
 /// @{
 Constant PEXT_SUBSPLIT_DEFAULT = 0
-Constant PEXT_SUBSPLIT_ALPHA = 1
+Constant PEXT_SUBSPLIT_ALPHA   = 1
 /// @}
 
 /// @name PopupMenu extension sub menu name generation methods
@@ -1588,10 +1588,10 @@ StrConstant NUMBER_UNIT_SPACE = "\u2006"
 ///
 /// @{
 
-Constant POST_PLOT_ADDED_SWEEPS = 0x1    ///< The only change: Some sweeps were added
-Constant POST_PLOT_REMOVED_SWEEPS = 0x2  ///< The only change: Some sweeps were removed
+Constant POST_PLOT_ADDED_SWEEPS    = 0x1 ///< The only change: Some sweeps were added
+Constant POST_PLOT_REMOVED_SWEEPS  = 0x2 ///< The only change: Some sweeps were removed
 Constant POST_PLOT_CONSTANT_SWEEPS = 0x4 ///< The displayed data in the databrowser stayed *constant* but some settings changed
-Constant POST_PLOT_FULL_UPDATE = 0x8     ///< Forces a complete update from scratch, use that if nothing else fits
+Constant POST_PLOT_FULL_UPDATE     = 0x8 ///< Forces a complete update from scratch, use that if nothing else fits
 
 /// @}
 
@@ -1609,13 +1609,13 @@ StrConstant WORKLOADCLASS_NWB = "nwb_writing"
 /// @{
 
 Constant EPOCH_COL_STARTTIME = 0
-Constant EPOCH_COL_ENDTIME = 1
-Constant EPOCH_COL_TAGS = 2
+Constant EPOCH_COL_ENDTIME   = 1
+Constant EPOCH_COL_TAGS      = 2
 Constant EPOCH_COL_TREELEVEL = 3
 
 /// @}
 Constant PA_IMAGE_SPECIAL_ENTRIES_RANGE = 0.065
-Constant PA_IMAGE_FAILEDMARKERSTART = 0.9
+Constant PA_IMAGE_FAILEDMARKERSTART     = 0.9
 
 StrConstant NOTE_NEEDS_UPDATE = "NeedsUpdate"
 
@@ -1643,14 +1643,14 @@ StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 ///
 /// @{
 
-Constant PA_PROPERTIES_INDEX_SWEEP = 0
-Constant PA_PROPERTIES_INDEX_CHANNELNUMBER = 1
-Constant PA_PROPERTIES_INDEX_REGION = 2
-Constant PA_PROPERTIES_INDEX_HEADSTAGE = 3
-Constant PA_PROPERTIES_INDEX_PULSE = 4
+Constant PA_PROPERTIES_INDEX_SWEEP          = 0
+Constant PA_PROPERTIES_INDEX_CHANNELNUMBER  = 1
+Constant PA_PROPERTIES_INDEX_REGION         = 2
+Constant PA_PROPERTIES_INDEX_HEADSTAGE      = 3
+Constant PA_PROPERTIES_INDEX_PULSE          = 4
 Constant PA_PROPERTIES_INDEX_PULSEHASFAILED = 5
-Constant PA_PROPERTIES_INDEX_LASTSWEEP = 6
-Constant PA_PROPERTIES_INDEX_CLAMPMODE = 7
+Constant PA_PROPERTIES_INDEX_LASTSWEEP      = 6
+Constant PA_PROPERTIES_INDEX_CLAMPMODE      = 7
 /// @}
 
 /// @name Indices into PA propertiesWaves wave
@@ -1658,7 +1658,7 @@ Constant PA_PROPERTIES_INDEX_CLAMPMODE = 7
 ///
 /// @{
 
-Constant PA_PROPERTIESWAVES_INDEX_PULSE = 0
+Constant PA_PROPERTIESWAVES_INDEX_PULSE     = 0
 Constant PA_PROPERTIESWAVES_INDEX_PULSENOTE = 1
 
 /// @}
@@ -1669,16 +1669,16 @@ Constant PA_PROPERTIESWAVES_INDEX_PULSENOTE = 1
 ///
 /// @{
 
-StrConstant BUFFEREDDRAWAPPEND = "AppendToGraph"
-StrConstant BUFFEREDDRAWLABEL = "Label"
+StrConstant BUFFEREDDRAWAPPEND       = "AppendToGraph"
+StrConstant BUFFEREDDRAWLABEL        = "Label"
 StrConstant BUFFEREDDRAWHIDDENTRACES = "HiddenTraces"
-StrConstant BUFFEREDDRAWDDAQAXES = "dDAQAxes"
+StrConstant BUFFEREDDRAWDDAQAXES     = "dDAQAxes"
 
 /// @}
 
 StrConstant TP_PROPERTIES_HASH = "TestPulsePropertiesHash"
 
-StrConstant DASHBOARD_PASSING_MESSAGE = "Pass"
+StrConstant DASHBOARD_PASSING_MESSAGE    = "Pass"
 StrConstant DAQ_STOPPED_EARLY_LEGACY_MSG = "DAQ was stopped early (n.a.)"
 
 Constant MAX_DOUBLE_PRECISION = 15
@@ -1696,9 +1696,9 @@ Constant HW_NI_CONFIG_DIFFERENTIAL        = 4 //< Differential terminal configur
 Constant HW_NI_CONFIG_PSEUDO_DIFFERENTIAL = 8 //< Pseudodifferential terminal configuration
 /// @}
 
-StrConstant PACKAGE_SETTINGS_JSON = "Settings.json"
-StrConstant PACKAGE_SETTINGS_USERPING = "userping"
-Constant PACKAGE_SETTINGS_USERPING_DEFAULT = 1
+StrConstant PACKAGE_SETTINGS_JSON             = "Settings.json"
+StrConstant PACKAGE_SETTINGS_USERPING         = "userping"
+Constant    PACKAGE_SETTINGS_USERPING_DEFAULT = 1
 
 StrConstant LOGFILE_NAME = "Log.jsonl"
 
@@ -1803,7 +1803,7 @@ StrConstant EPOCH_SHORTNAME_USER_PREFIX = "U_"
 /// @name SweepFormula display modes
 /// @anchor SweepFormulaDisplayModes
 /// @{
-Constant SF_DM_NORMAL = 1
+Constant SF_DM_NORMAL     = 1
 Constant SF_DM_SUBWINDOWS = 2
 /// @}
 
@@ -1844,8 +1844,8 @@ Constant TP_OVERRIDE_RESULTS_AUTO_TP = 0x0
 /// Possible result values for TP_AutoFitBaseline
 /// @anchor TPBaselineFitResults
 /// @{
-Constant TP_BASELINE_FIT_RESULT_OK        = 0
-Constant TP_BASELINE_FIT_RESULT_ERROR     = 1
+Constant TP_BASELINE_FIT_RESULT_OK    = 0
+Constant TP_BASELINE_FIT_RESULT_ERROR = 1
 // future space for more elaborated error codes
 Constant TP_BASELINE_FIT_RESULT_TOO_NOISY = 32
 /// @}
@@ -1879,7 +1879,7 @@ Constant DECIMATION_NONE   = 0x0
 Constant DECIMATION_MINMAX = 0x1
 /// @}
 
-StrConstant DEFAULT_KEY_SEP = ":"
+StrConstant DEFAULT_KEY_SEP  = ":"
 StrConstant DEFAULT_LIST_SEP = ";"
 
 /// \rst
@@ -1919,8 +1919,8 @@ StrConstant PREFIX_VALUE_LIST = "1;1e24;1e21;1e18;1e15;1e12;1e9;1e6;1e3;1e2;1e1;
 /// @name Possible return values for PSQ_DetermineSweepQCResults()
 /// @anchor DetermineSweepQCReturns
 /// @{
-CONSTANT PSQ_RESULTS_DONE = 0x1
-CONSTANT PSQ_RESULTS_CONT = 0x2
+Constant PSQ_RESULTS_DONE = 0x1
+Constant PSQ_RESULTS_CONT = 0x2
 /// @}
 
 /// @name Possible mode parameters for AdaptDependentControls
@@ -1930,80 +1930,80 @@ Constant DEP_CTRLS_SAME   = 0x1
 Constant DEP_CTRLS_INVERT = 0x2
 /// @}
 
-Constant FIRST_XOP_ERROR  = 10000 ///< Smaller error codes are from Igor Pro
+Constant FIRST_XOP_ERROR = 10000 ///< Smaller error codes are from Igor Pro
 
 /// @name Returned bits of DataFolderRefStatus
 /// @anchor DataFolderRefStatusConstants
 /// @{
 Constant DFREF_VALID = 0x1
-Constant DFREF_FREE = 0x2
+Constant DFREF_FREE  = 0x2
 /// @}
 
 /// @name Called once names
 /// @anchor CalledOnceNames
 /// @{
-StrConstant CO_EMPTY_DAC_LIST = "emptyDACList"
+StrConstant CO_EMPTY_DAC_LIST     = "emptyDACList"
 StrConstant CO_SF_TOO_MANY_TRACES = "SF_tooManyTraces"
-StrConstant CO_PSX_CLIPPED_STATS = "psx_clippedStats"
-StrConstant CO_ARCHIVE_ONCE = "ArchiveLogs"
+StrConstant CO_PSX_CLIPPED_STATS  = "psx_clippedStats"
+StrConstant CO_ARCHIVE_ONCE       = "ArchiveLogs"
 /// @}
 
 /// @name Constants for SweepFormula Meta data in JSON format
 /// @anchor SFMetaDataConstants
 /// @{
-StrConstant SF_META_DATATYPE = "/DataType" // string
-StrConstant SF_META_SWEEPNO = "/SweepNumber" // number
-StrConstant SF_META_RANGE = "/Range" // numeric wave
-StrConstant SF_META_CHANNELTYPE = "/ChannelType" // number
-StrConstant SF_META_CHANNELNUMBER = "/ChannelNumber" // number
-StrConstant SF_META_ISAVERAGED = "/IsAveraged" // number
+StrConstant SF_META_DATATYPE             = "/DataType"           // string
+StrConstant SF_META_SWEEPNO              = "/SweepNumber"        // number
+StrConstant SF_META_RANGE                = "/Range"              // numeric wave
+StrConstant SF_META_CHANNELTYPE          = "/ChannelType"        // number
+StrConstant SF_META_CHANNELNUMBER        = "/ChannelNumber"      // number
+StrConstant SF_META_ISAVERAGED           = "/IsAveraged"         // number
 StrConstant SF_META_AVERAGED_FIRST_SWEEP = "/AveragedFirstSweep" // number
-StrConstant SF_META_XVALUES = "/XValues" // numeric wave
-StrConstant SF_META_XTICKLABELS = "/XTickLabels" // text wave
-StrConstant SF_META_XTICKPOSITIONS = "/XTickPositions" // numeric wave
-StrConstant SF_META_XAXISLABEL = "/XAxisLabel" // string
-StrConstant SF_META_YAXISLABEL = "/YAxisLabel" // string
-StrConstant SF_META_OPSTACK = "/OperationStack" // string
-StrConstant SF_META_MOD_MARKER = "/Marker" // numeric wave
-StrConstant SF_META_SHOW_LEGEND = "/ShowLegend" // numeric, boolean, defaults to true (1)
-StrConstant SF_META_CUSTOM_LEGEND = "/CustomLegend" // string with custom legend text, honours /ShowLegend
-StrConstant SF_META_ARGSETUPSTACK = "/ArgSetupStack" // string
-StrConstant SF_META_TRACECOLOR = "/TraceColor" // numeric wave, applies to markers and lines
-StrConstant SF_META_LINESTYLE = "/LineStyle" // number
-StrConstant SF_META_TRACE_MODE = "/TraceMode" // number
-StrConstant SF_META_TRACETOFRONT = "/TraceToFront" // number, boolean, defaults to false (0)
+StrConstant SF_META_XVALUES              = "/XValues"            // numeric wave
+StrConstant SF_META_XTICKLABELS          = "/XTickLabels"        // text wave
+StrConstant SF_META_XTICKPOSITIONS       = "/XTickPositions"     // numeric wave
+StrConstant SF_META_XAXISLABEL           = "/XAxisLabel"         // string
+StrConstant SF_META_YAXISLABEL           = "/YAxisLabel"         // string
+StrConstant SF_META_OPSTACK              = "/OperationStack"     // string
+StrConstant SF_META_MOD_MARKER           = "/Marker"             // numeric wave
+StrConstant SF_META_SHOW_LEGEND          = "/ShowLegend"         // numeric, boolean, defaults to true (1)
+StrConstant SF_META_CUSTOM_LEGEND        = "/CustomLegend"       // string with custom legend text, honours /ShowLegend
+StrConstant SF_META_ARGSETUPSTACK        = "/ArgSetupStack"      // string
+StrConstant SF_META_TRACECOLOR           = "/TraceColor"         // numeric wave, applies to markers and lines
+StrConstant SF_META_LINESTYLE            = "/LineStyle"          // number
+StrConstant SF_META_TRACE_MODE           = "/TraceMode"          // number
+StrConstant SF_META_TRACETOFRONT         = "/TraceToFront"       // number, boolean, defaults to false (0)
 
 StrConstant SF_META_USER_GROUP = "/User/" // custom metadata for individual operations,
-                                          // top-level group with individual entries
-StrConstant SF_META_FIT_COEFF = "FitCoefficients"
-StrConstant SF_META_FIT_SIGMA = "FitSigma"
+// top-level group with individual entries
+StrConstant SF_META_FIT_COEFF     = "FitCoefficients"
+StrConstant SF_META_FIT_SIGMA     = "FitSigma"
 StrConstant SF_META_FIT_PARAMETER = "FitParameter"
 
-StrConstant SF_DATATYPE_SWEEP = "SweepData"
-StrConstant SF_DATATYPE_FINDLEVEL = "FindLevel"
-StrConstant SF_DATATYPE_APFREQUENCY = "ApFrequency"
-StrConstant SF_DATATYPE_LABNOTEBOOK = "LabNotebook"
-StrConstant SF_DATATYPE_BUTTERWORTH = "Butterworth"
-StrConstant SF_DATATYPE_AREA = "Area"
-StrConstant SF_DATATYPE_INTEGRATE = "Integrate"
-StrConstant SF_DATATYPE_DERIVATIVE = "Derivative"
-StrConstant SF_DATATYPE_STDEV = "StDev"
-StrConstant SF_DATATYPE_VARIANCE = "Variance"
-StrConstant SF_DATATYPE_RMS = "RMS"
-StrConstant SF_DATATYPE_AVG = "Average"
-StrConstant SF_DATATYPE_MAX = "Max"
-StrConstant SF_DATATYPE_MIN = "Min"
-StrConstant SF_DATATYPE_RANGE = "Range"
-StrConstant SF_DATATYPE_EPOCHS = "Epochs"
-StrConstant SF_DATATYPE_TP = "TestPulse"
-StrConstant SF_DATATYPE_TPSS = "TestPulseMode_SteadyState"
-StrConstant SF_DATATYPE_TPINST = "TestPulseMode_Instantaneous"
-StrConstant SF_DATATYPE_TPBASE = "TestPulseMode_Baseline"
-StrConstant SF_DATATYPE_TPFIT = "TestPulseMode_Fit"
+StrConstant SF_DATATYPE_SWEEP         = "SweepData"
+StrConstant SF_DATATYPE_FINDLEVEL     = "FindLevel"
+StrConstant SF_DATATYPE_APFREQUENCY   = "ApFrequency"
+StrConstant SF_DATATYPE_LABNOTEBOOK   = "LabNotebook"
+StrConstant SF_DATATYPE_BUTTERWORTH   = "Butterworth"
+StrConstant SF_DATATYPE_AREA          = "Area"
+StrConstant SF_DATATYPE_INTEGRATE     = "Integrate"
+StrConstant SF_DATATYPE_DERIVATIVE    = "Derivative"
+StrConstant SF_DATATYPE_STDEV         = "StDev"
+StrConstant SF_DATATYPE_VARIANCE      = "Variance"
+StrConstant SF_DATATYPE_RMS           = "RMS"
+StrConstant SF_DATATYPE_AVG           = "Average"
+StrConstant SF_DATATYPE_MAX           = "Max"
+StrConstant SF_DATATYPE_MIN           = "Min"
+StrConstant SF_DATATYPE_RANGE         = "Range"
+StrConstant SF_DATATYPE_EPOCHS        = "Epochs"
+StrConstant SF_DATATYPE_TP            = "TestPulse"
+StrConstant SF_DATATYPE_TPSS          = "TestPulseMode_SteadyState"
+StrConstant SF_DATATYPE_TPINST        = "TestPulseMode_Instantaneous"
+StrConstant SF_DATATYPE_TPBASE        = "TestPulseMode_Baseline"
+StrConstant SF_DATATYPE_TPFIT         = "TestPulseMode_Fit"
 StrConstant SF_DATATYPE_POWERSPECTRUM = "Powerspectrum"
-StrConstant SF_DATATYPE_PSX = "PSX"
+StrConstant SF_DATATYPE_PSX           = "PSX"
 
-StrConstant SF_WREF_MARKER = "\"WREF@\":"
+StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
 /// @}
 
@@ -2017,14 +2017,14 @@ Constant SWEEP_SKIP_AUTO = 0x2
 /// @name Public constants from MIES_Configuration
 /// @anchor ExpConfigUserData
 /// @{
-StrConstant EXPCONFIG_UDATA_EXCLUDE_SAVE = "Config_DontSave"
+StrConstant EXPCONFIG_UDATA_EXCLUDE_SAVE    = "Config_DontSave"
 StrConstant EXPCONFIG_UDATA_EXCLUDE_RESTORE = "Config_DontRestore"
 /// @}
 
 /// @name FFT Window Functions
 /// @anchor FFTWinFunctions
 /// @{
-StrConstant FFT_WINF = "Bartlet;Bartlett;Blackman367;Blackman361;Blackman492;Blackman474;Cos1;Cos2;Cos3;Cos4;Hamming;Hanning;KaiserBessel20;KaiserBessel25;KaiserBessel30;Parzen;Poisson2;Poisson3;Poisson4;Riemann;SFT3F;SFT3M;FTNI;SFT4F;SFT5F;SFT4M;FTHP;HFT70;FTSRS;SFT5M;HFT90D;HFT95;HFT116D;HFT144D;HFT169D;HFT196D;HFT223D;HFT248D;"
+StrConstant FFT_WINF         = "Bartlet;Bartlett;Blackman367;Blackman361;Blackman492;Blackman474;Cos1;Cos2;Cos3;Cos4;Hamming;Hanning;KaiserBessel20;KaiserBessel25;KaiserBessel30;Parzen;Poisson2;Poisson3;Poisson4;Riemann;SFT3F;SFT3M;FTNI;SFT4F;SFT5F;SFT4M;FTHP;HFT70;FTSRS;SFT5M;HFT90D;HFT95;HFT116D;HFT144D;HFT169D;HFT196D;HFT223D;HFT248D;"
 StrConstant FFT_WINF_DEFAULT = "Hanning"
 /// @}
 
@@ -2038,7 +2038,7 @@ Constant BROWSER_MODE_ALL        = 0xFF
 
 Constant THREAD_QUEUE_TRIES            = 1000
 Constant HARDWARE_ITC_FIFO_ERROR       = -1
-Constant HARDWARE_ITC_STUCK_FIFO_TICKS = 120 // 2s
+Constant HARDWARE_ITC_STUCK_FIFO_TICKS = 120  // 2s
 
 StrConstant SF_PLOT_NAME_TEMPLATE = "SweepFormula plot"
 StrConstant SFH_USER_DATA_BROWSER = "browser"
@@ -2054,7 +2054,7 @@ Constant SFH_RESULT_TYPE_PSX_MISC   = 0x04
 /// @name Constants used in the wave note JSON support
 /// @anchor WaveNoteJSONSupportConstants
 /// @{
-StrConstant WAVE_NOTE_EMPTY_JSON = "{}"
+StrConstant WAVE_NOTE_EMPTY_JSON     = "{}"
 StrConstant WAVE_NOTE_JSON_SEPARATOR = "\rJSON_BEGIN\r"
 /// @}
 
@@ -2071,30 +2071,30 @@ StrConstant FILE_LIST_SEP = "|"
 /// @name Constants for EqualWaves mode
 /// @anchor EqualWavesConstants
 /// @{
-Constant EQWAVES_DATA = 1
-Constant EQWAVES_DATATYPE = 2
-Constant EQWAVES_SCALING = 4
-Constant EQWAVES_DATAUNITS = 8
-Constant EQWAVES_DIMUNITS = 16
-Constant EQWAVES_DIMLABELS = 32
-Constant EQWAVES_WAVENOTE = 64
-Constant EQWAVES_LOCKSTATE = 128
+Constant EQWAVES_DATA          = 1
+Constant EQWAVES_DATATYPE      = 2
+Constant EQWAVES_SCALING       = 4
+Constant EQWAVES_DATAUNITS     = 8
+Constant EQWAVES_DIMUNITS      = 16
+Constant EQWAVES_DIMLABELS     = 32
+Constant EQWAVES_WAVENOTE      = 64
+Constant EQWAVES_LOCKSTATE     = 128
 Constant EQWAVES_DATAFULLSCALE = 256
-Constant EQWAVES_DIMSIZE = 512
-Constant EQWAVES_ALL = -1
+Constant EQWAVES_DIMSIZE       = 512
+Constant EQWAVES_ALL           = -1
 /// @}
 
 /// @name Igor reserved layer dim labels for ListBox GUI control
 /// @anchor ListBoxLayerDimLabels
 /// @{
 StrConstant LISTBOX_LAYER_FOREGROUND = "foreColors"
-StrConstant LISTBOX_LAYER_BACKGROUND  = "backColors"
+StrConstant LISTBOX_LAYER_BACKGROUND = "backColors"
 /// @}
 
 /// @name MIES Settings paths
 /// @anchor SettingsPaths
 /// @{
-StrConstant SETTINGS_AB_FOLDER = "/analysisbrowser/directory"
+StrConstant SETTINGS_AB_FOLDER             = "/analysisbrowser/directory"
 StrConstant SETTINGS_AB_FOLDER_OLD_DEFAULT = "C:"
 /// @}
 
@@ -2103,7 +2103,7 @@ StrConstant ANALYSIS_BROWSER_NAME = "AnalysisBrowser"
 StrConstant MEMORY_REFCOUNTER_DF = "MemoryReferenceCounterDF"
 
 StrConstant LOG_ACTION_ASSERT = "assert"
-StrConstant LOG_MESSAGE_KEY = "msg"
+StrConstant LOG_MESSAGE_KEY   = "msg"
 StrConstant LOG_ACTION_REPORT = "report"
 
 /// Poorly understood difference required for vertical direction for MoveSubWindow
@@ -2116,10 +2116,10 @@ Constant HASH_SHA2_256 = 1
 /// @}
 
 // see DisplayHelpTopic "LoadWave"
-Constant LOADWAVE_V_FLAGS_IGNORECOLEND = 0x01
-Constant LOADWAVE_V_FLAGS_WCOLSPACEBLANK = 0x02
-Constant LOADWAVE_V_FLAGS_DISABLELINEPRECOUNTING = 0x04
-Constant LOADWAVE_V_FLAGS_DISABLEUNESCAPEBACKSLASH = 0x08
+Constant LOADWAVE_V_FLAGS_IGNORECOLEND                = 0x01
+Constant LOADWAVE_V_FLAGS_WCOLSPACEBLANK              = 0x02
+Constant LOADWAVE_V_FLAGS_DISABLELINEPRECOUNTING      = 0x04
+Constant LOADWAVE_V_FLAGS_DISABLEUNESCAPEBACKSLASH    = 0x08
 Constant LOADWAVE_V_FLAGS_DISABLESUPPORTQUOTEDSTRINGS = 0x10
 
 Constant MEGABYTE = 1048576
@@ -2127,21 +2127,21 @@ Constant MEGABYTE = 1048576
 Constant STRING_MAX_SIZE = 2147483647
 
 Constant LOGUPLOAD_PAYLOAD_SPLITSIZE = 104857600
-Constant LOG_ARCHIVING_SPLITSIZE = 524288000
-Constant LOG_MAX_LINESIZE = 2097152
+Constant LOG_ARCHIVING_SPLITSIZE     = 524288000
+Constant LOG_MAX_LINESIZE            = 2097152
 
 StrConstant LOG_FILE_LINE_END = "\n"
 
 /// @name Igor Pro week days
 /// @anchor WeekDays
 /// @{
-Constant SUNDAY = 1
-Constant MONDAY = 2
-Constant TUESDAY = 3
+Constant SUNDAY    = 1
+Constant MONDAY    = 2
+Constant TUESDAY   = 3
 Constant WEDNESDAY = 4
-Constant THURSDAY = 5
-Constant FRIDAY = 6
-Constant SATURDAY = 7
+Constant THURSDAY  = 5
+Constant FRIDAY    = 6
+Constant SATURDAY  = 7
 /// @}
 
 Constant SECONDS_PER_DAY = 86400
@@ -2149,7 +2149,7 @@ Constant SECONDS_PER_DAY = 86400
 /// @name DataBrowser visualisation constants
 /// @anchor DataBrowserVisualizationConstants
 /// @{
-Strconstant DB_AXIS_PART_EPOCHS = "_EP"
+StrConstant DB_AXIS_PART_EPOCHS = "_EP"
 /// @}
 
 StrConstant SF_OP_PSX               = "psx"

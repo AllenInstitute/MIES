@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=AsynTest
@@ -6,7 +6,7 @@
 /// @file UTF_AsynFrameworkTest.ipf
 /// @brief __ASYNC_Test__ This file holds the tests for the Async Framework
 
-static Constant WORK_COUNT_GENERIC = 200
+static Constant WORK_COUNT_GENERIC     = 200
 static Constant THREADING_TEST_TIMEOUT = 60
 
 /// @brief Stops a possibly running Async frame work due to Compilehook feature of IP8
@@ -61,26 +61,26 @@ End
 static Function TASYNC_Start_Stop()
 
 	ASYNC_Start(ThreadProcessorCount)
-	DFREF dfr = GetAsyncHomeDF()
+	DFREF  dfr  = GetAsyncHomeDF()
 	NVAR/Z tgID = dfr:threadGroupID
 	CHECK(NVAR_Exists(tgID))
 	NVAR/Z ThreadCnt = dfr:numThreads
 	CHECK(NVAR_Exists(ThreadCnt))
 	CHECK_EQUAL_VAR(ThreadCnt, ThreadProcessorCount)
 	CtrlNamedBackground _all_, status
-	CHECK_GE_VAR(strsearch(S_Info,"NAME:AsyncFramework;PROC:ASYNC_BackgroundReadOut;RUN:1;",0), 0)
+	CHECK_GE_VAR(strsearch(S_Info, "NAME:AsyncFramework;PROC:ASYNC_BackgroundReadOut;RUN:1;", 0), 0)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to start and stop the Framework without the readout task
 static Function TASYNC_StartWOTask()
 
-	ASYNC_Start(ThreadProcessorCount, disableTask=1)
+	ASYNC_Start(ThreadProcessorCount, disableTask = 1)
 	CtrlNamedBackground _all_, status
-	CHECK_EQUAL_VAR(strsearch(S_Info,"NAME:AsyncFramework;PROC:ASYNC_BackgroundReadOut;RUN:1;",0), -1)
+	CHECK_EQUAL_VAR(strsearch(S_Info, "NAME:AsyncFramework;PROC:ASYNC_BackgroundReadOut;RUN:1;", 0), -1)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to start and the Framework twice
@@ -89,7 +89,7 @@ static Function TASYNC_Start_DoubleStart0()
 	ASYNC_Start(ThreadProcessorCount)
 	ASYNC_Start(ThreadProcessorCount)
 	PASS()
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to prepare a thread data folder with an invalid Worker function
@@ -122,17 +122,17 @@ static Function TASYNC_PrepareDF_Setup()
 
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
-	SVAR/Z/SDFR=threadDF tempS=WorkerFunc
+	SVAR/Z/SDFR=threadDF tempS = WorkerFunc
 	CHECK(SVAR_Exists(tempS))
 	helperStr = tempS
-	compStr = "RunGenericWorker"
+	compStr   = "RunGenericWorker"
 	CHECK_EQUAL_STR(helperStr, compStr)
 
-	DFREF dfrAsync = threadDF:async
-	SVAR/Z/SDFR=dfrAsync tempS = ReadOutFunc
+	DFREF                dfrAsync = threadDF:async
+	SVAR/Z/SDFR=dfrAsync tempS    = ReadOutFunc
 	CHECK(SVAR_Exists(tempS))
 	helperStr = tempS
-	compStr = "RunGenericReadOut"
+	compStr   = "RunGenericReadOut"
 	CHECK_EQUAL_STR(helperStr, compStr)
 
 	NVAR/Z/SDFR=dfrAsync tempV = inOrder
@@ -143,8 +143,8 @@ static Function TASYNC_PrepareDF_Setup()
 	CHECK(NVAR_Exists(tempV))
 	CHECK_EQUAL_VAR(tempV, 299792458)
 
-	DFREF dfrInp = threadDF:input
-	NVAR/Z/SDFR=dfrInp tempV = paramCount
+	DFREF              dfrInp = threadDF:input
+	NVAR/Z/SDFR=dfrInp tempV  = paramCount
 	CHECK(NVAR_Exists(tempV))
 	CHECK_EQUAL_VAR(tempV, 0)
 End
@@ -176,7 +176,7 @@ static Function TASYNC_AddParam_NoParams()
 		PASS()
 	endtry
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add variable and string parameter at the same time to a thread data folder
@@ -189,13 +189,13 @@ static Function TASYNC_AddParam_VarStr()
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
 	try
-		ASYNC_AddParam(threadDF, var=1, str="1")
+		ASYNC_AddParam(threadDF, var = 1, str = "1")
 		FAIL()
 	catch
 		PASS()
 	endtry
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add variable and wave parameter at the same time to a thread data folder
@@ -209,13 +209,13 @@ static Function TASYNC_AddParam_VarWave()
 
 	Make/N=1 wv
 	try
-		ASYNC_AddParam(threadDF, var=1, w=wv)
+		ASYNC_AddParam(threadDF, var = 1, w = wv)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add string and wave parameter at the same time to a thread data folder
@@ -229,13 +229,13 @@ static Function TASYNC_AddParam_StrWave()
 
 	Make/N=1 wv
 	try
-		ASYNC_AddParam(threadDF, str="1", w=wv)
+		ASYNC_AddParam(threadDF, str = "1", w = wv)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add variable, string and wave parameter at the same time to a thread data folder
@@ -249,13 +249,13 @@ static Function TASYNC_AddParam_VarStrWave()
 
 	Make/N=1 wv
 	try
-		ASYNC_AddParam(threadDF, var=1, str="1", w=wv)
+		ASYNC_AddParam(threadDF, var = 1, str = "1", w = wv)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add variable with a move parameter to a thread data folder
@@ -269,13 +269,13 @@ static Function TASYNC_AddParam_VarMove()
 
 	Make/N=1 wv
 	try
-		ASYNC_AddParam(threadDF, var=1, move=1)
+		ASYNC_AddParam(threadDF, var = 1, move = 1)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add string with a move parameter to a thread data folder
@@ -289,13 +289,13 @@ static Function TASYNC_AddParam_StrMove()
 
 	Make/N=1 wv
 	try
-		ASYNC_AddParam(threadDF, str="1", move=1)
+		ASYNC_AddParam(threadDF, str = "1", move = 1)
 		FAIL()
 	catch
 		PASS()
 	endtry
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add a free wave with a move parameter to a thread data folder
@@ -308,13 +308,13 @@ static Function TASYNC_AddParam_FreeWaveMove()
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
 	Make/FREE/N=1 wv
-	ASYNC_AddParam(threadDF, w=wv, move=1)
+	ASYNC_AddParam(threadDF, w = wv, move = 1)
 
-	DFREF dfrInp = threadDF:input
-	WAVE/Z/SDFR=dfrInp p0 = param0
+	DFREF              dfrInp = threadDF:input
+	WAVE/Z/SDFR=dfrInp p0     = param0
 	CHECK_WAVE(p0, NUMERIC_WAVE)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add a wave with a move parameter to a thread data folder
@@ -327,13 +327,13 @@ static Function TASYNC_AddParam_WaveMove()
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
 	Make/N=1 wv
-	ASYNC_AddParam(threadDF, w=wv, move=1)
+	ASYNC_AddParam(threadDF, w = wv, move = 1)
 
-	DFREF dfrInp = threadDF:input
-	WAVE/Z/SDFR=dfrInp p0 = param0
+	DFREF              dfrInp = threadDF:input
+	WAVE/Z/SDFR=dfrInp p0     = param0
 	CHECK_WAVE(p0, NUMERIC_WAVE)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add a wave parameter to a thread data folder
@@ -346,19 +346,19 @@ static Function TASYNC_AddParam_Wave()
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
 	Make/N=1 wv = p
-	ASYNC_AddParam(threadDF, w=wv)
+	ASYNC_AddParam(threadDF, w = wv)
 
 	Make/FREE/N=2 wv2 = p
-	ASYNC_AddParam(threadDF, w=wv2, name = "myParam")
+	ASYNC_AddParam(threadDF, w = wv2, name = "myParam")
 
-	DFREF dfrInp = threadDF:input
-	WAVE/Z/SDFR=dfrInp wv1 = param0
+	DFREF              dfrInp = threadDF:input
+	WAVE/Z/SDFR=dfrInp wv1    = param0
 	CHECK_EQUAL_WAVES(wv1, {0})
 
 	WAVE/Z/SDFR=dfrInp wv2 = myParam
 	CHECK_EQUAL_WAVES(wv2, {0, 1})
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add a free wave parameter to a thread data folder
@@ -371,19 +371,19 @@ static Function TASYNC_AddParam_FreeWave()
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
 	Make/FREE/N=1 wv1 = p
-	ASYNC_AddParam(threadDF, w=wv1)
+	ASYNC_AddParam(threadDF, w = wv1)
 
 	Make/FREE/N=2 wv2 = p
-	ASYNC_AddParam(threadDF, w=wv2, name = "myParam")
+	ASYNC_AddParam(threadDF, w = wv2, name = "myParam")
 
-	DFREF dfrInp = threadDF:input
-	WAVE/Z/SDFR=dfrInp wv1 = param0
+	DFREF              dfrInp = threadDF:input
+	WAVE/Z/SDFR=dfrInp wv1    = param0
 	CHECK_EQUAL_WAVES(wv1, {0})
 
 	WAVE/Z/SDFR=dfrInp wv2 = myParam
 	CHECK_EQUAL_WAVES(wv2, {0, 1})
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add a variable parameter to a thread data folder
@@ -395,8 +395,8 @@ static Function TASYNC_AddParam_Var()
 
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
-	ASYNC_AddParam(threadDF, var=1)
-	ASYNC_AddParam(threadDF, var=2, name = "myParam")
+	ASYNC_AddParam(threadDF, var = 1)
+	ASYNC_AddParam(threadDF, var = 2, name = "myParam")
 
 	DFREF dfrInp = threadDF:input
 
@@ -408,7 +408,7 @@ static Function TASYNC_AddParam_Var()
 	CHECK(NVAR_Exists(v2))
 	CHECK_EQUAL_VAR(v2, 2)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add a string parameter to a thread data folder
@@ -421,28 +421,28 @@ static Function TASYNC_AddParam_Str()
 
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
-	ASYNC_AddParam(threadDF, str="1")
-	ASYNC_AddParam(threadDF, str="2", name = "myParam")
+	ASYNC_AddParam(threadDF, str = "1")
+	ASYNC_AddParam(threadDF, str = "2", name = "myParam")
 
-	DFREF dfrInp = threadDF:input
-	SVAR/Z/SDFR=dfrInp s1 = param0
+	DFREF              dfrInp = threadDF:input
+	SVAR/Z/SDFR=dfrInp s1     = param0
 	CHECK(SVAR_Exists(s1))
-	strRef = "1"
+	strRef  = "1"
 	strRead = s1
 	CHECK_EQUAL_STR(strRef, strRead)
 
 	SVAR/Z/SDFR=dfrInp s2 = myParam
 	CHECK(SVAR_Exists(s2))
-	strRef = "2"
+	strRef  = "2"
 	strRead = s2
 	CHECK_EQUAL_STR(strRef, strRead)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 static Function TASYNC_TestFetch()
 
-	DFREF threadDF
+	DFREF    threadDF
 	variable var
 	string strRef, strRead, str
 
@@ -451,10 +451,10 @@ static Function TASYNC_TestFetch()
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
 	Make/FREE/N=2 w = p
-	ASYNC_AddParam(threadDF, w=w)
+	ASYNC_AddParam(threadDF, w = w)
 
-	ASYNC_AddParam(threadDF, var=0)
-	ASYNC_AddParam(threadDF, str="1")
+	ASYNC_AddParam(threadDF, var = 0)
+	ASYNC_AddParam(threadDF, str = "1")
 
 	DFREF dfrInp = threadDF:input
 
@@ -466,7 +466,7 @@ static Function TASYNC_TestFetch()
 	CHECK_EQUAL_VAR(var, 0)
 
 	strRead = ASYNC_FetchString(dfrInp, "param2")
-	strRef = "1"
+	strRef  = "1"
 	CHECK_EQUAL_STR(strRead, strRef)
 
 	// asserts on invalid name
@@ -491,7 +491,7 @@ static Function TASYNC_TestFetch()
 		PASS()
 	endtry
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to add multiple parameters to a thread data folder and check if they are counted correctly
@@ -503,13 +503,13 @@ static Function TASYNC_AddParam_ParamsCount()
 
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
-	ASYNC_AddParam(threadDF, var=0)
-	ASYNC_AddParam(threadDF, var=1)
-	ASYNC_AddParam(threadDF, var=2)
-	ASYNC_AddParam(threadDF, var=3)
+	ASYNC_AddParam(threadDF, var = 0)
+	ASYNC_AddParam(threadDF, var = 1)
+	ASYNC_AddParam(threadDF, var = 2)
+	ASYNC_AddParam(threadDF, var = 3)
 
-	DFREF dfrInp = threadDF:input
-	NVAR/Z/SDFR=dfrInp p0 = param0
+	DFREF              dfrInp = threadDF:input
+	NVAR/Z/SDFR=dfrInp p0     = param0
 	CHECK(NVAR_Exists(p0))
 	CHECK_EQUAL_VAR(p0, 0)
 	NVAR/Z/SDFR=dfrInp p1 = param1
@@ -522,7 +522,7 @@ static Function TASYNC_AddParam_ParamsCount()
 	CHECK(NVAR_Exists(p3))
 	CHECK_EQUAL_VAR(p3, 3)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test to execute a workload without a running framework
@@ -532,7 +532,7 @@ static Function TASYNC_Execute_NotRunning()
 
 	ASYNC_Start(ThreadProcessorCount)
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 
 	try
 		ASYNC_Execute(threadDF)
@@ -556,23 +556,23 @@ static Function TASYNC_Execute_InvalidDF()
 	catch
 		PASS()
 	endtry
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test if ASYNC_Execute triggers execution and data is returned through readout.
 static Function TASYNC_Execute_Valid()
 
 	string myDF
-	DFREF threadDF
+	DFREF  threadDF
 	variable endtime, timeout
 
 	ASYNC_Start(ThreadProcessorCount)
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
-	ASYNC_AddParam(threadDF, var=1)
+	ASYNC_AddParam(threadDF, var = 1)
 	Make/N=10 data
-	ASYNC_AddParam(threadDF, w=data, move=1)
+	ASYNC_AddParam(threadDF, w = data, move = 1)
 	myDF = GetDataFolder(1)
-	ASYNC_AddParam(threadDF, str=myDF)
+	ASYNC_AddParam(threadDF, str = myDF)
 
 	ASYNC_Execute(threadDF)
 
@@ -591,7 +591,7 @@ static Function TASYNC_Execute_Valid()
 	endfor
 	CHECK(!timeout)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test if ASYNC_Execute triggers execution and data is returned through readout.
@@ -599,16 +599,16 @@ End
 static Function TASYNC_WorkerRealDF()
 
 	string myDF
-	DFREF threadDF
+	DFREF  threadDF
 	variable endtime, timeout
 
 	ASYNC_Start(1)
 	threadDF = ASYNC_PrepareDF("RunGenericWorker3", "RunGenericReadOut", "TASYNCTest")
-	ASYNC_AddParam(threadDF, var=1)
+	ASYNC_AddParam(threadDF, var = 1)
 	Make/N=10 data
-	ASYNC_AddParam(threadDF, w=data, move=1)
+	ASYNC_AddParam(threadDF, w = data, move = 1)
 	myDF = GetDataFolder(1)
-	ASYNC_AddParam(threadDF, str=myDF)
+	ASYNC_AddParam(threadDF, str = myDF)
 
 	ASYNC_Execute(threadDF)
 
@@ -627,7 +627,7 @@ static Function TASYNC_WorkerRealDF()
 	endfor
 	CHECK(!timeout)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 #ifndef THREADING_DISABLED
@@ -636,21 +636,21 @@ End
 static Function TASYNC_StopForAssert()
 
 	string myDF
-	DFREF threadDF
+	DFREF  threadDF
 	variable endtime, timeout
 
 	ASYNC_Start(ThreadProcessorCount)
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOutAbort", "TASYNCTest")
-	ASYNC_AddParam(threadDF, var=1)
+	ASYNC_AddParam(threadDF, var = 1)
 	Make/N=10 data
-	ASYNC_AddParam(threadDF, w=data, move=1)
+	ASYNC_AddParam(threadDF, w = data, move = 1)
 	myDF = GetDataFolder(1)
-	ASYNC_AddParam(threadDF, str=myDF)
+	ASYNC_AddParam(threadDF, str = myDF)
 
 	ASYNC_Execute(threadDF)
 	Make/N=0 returnOrder
 
-	ASYNC_Stop(timeout=1, fromAssert=1)
+	ASYNC_Stop(timeout = 1, fromAssert = 1)
 End
 
 #endif
@@ -660,16 +660,16 @@ End
 static Function TASYNC_WorkerNoDF()
 
 	string myDF
-	DFREF threadDF
+	DFREF  threadDF
 	variable endtime, timeout
 
 	ASYNC_Start(1)
 	threadDF = ASYNC_PrepareDF("RunGenericWorker4", "ReadOutCheckDF", "TASYNCTest")
-	ASYNC_AddParam(threadDF, var=1)
+	ASYNC_AddParam(threadDF, var = 1)
 	Make/N=10 data
-	ASYNC_AddParam(threadDF, w=data, move=1)
+	ASYNC_AddParam(threadDF, w = data, move = 1)
 	myDF = GetDataFolder(1)
-	ASYNC_AddParam(threadDF, str=myDF)
+	ASYNC_AddParam(threadDF, str = myDF)
 
 	ASYNC_Execute(threadDF)
 
@@ -688,7 +688,7 @@ static Function TASYNC_WorkerNoDF()
 	endfor
 	CHECK(!timeout)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test if workloads are correctly processed out of order
@@ -697,21 +697,21 @@ End
 static Function TASYNC_RunOrderless()
 
 	variable i
-	string myDF
-	DFREF threadDF
+	string   myDF
+	DFREF    threadDF
 	variable endtime, timeout
 	variable wlCount
 
 	ASYNC_Start(ThreadProcessorCount)
 
 	myDF = GetDataFolder(1)
-	for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
+	for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
 
-		threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest", inOrder=0)
-		ASYNC_AddParam(threadDF, var=wlCount)
+		threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest", inOrder = 0)
+		ASYNC_AddParam(threadDF, var = wlCount)
 		Make/N=10 data
-		ASYNC_AddParam(threadDF, w=data, move=1)
-		ASYNC_AddParam(threadDF, str=myDF)
+		ASYNC_AddParam(threadDF, w = data, move = 1)
+		ASYNC_AddParam(threadDF, str = myDF)
 
 		ASYNC_Execute(threadDF)
 		wlCount += 1
@@ -734,7 +734,7 @@ static Function TASYNC_RunOrderless()
 
 	if(!timeout)
 		// There are chances the result is still in Order, so we give only a Warning
-		for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
+		for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
 			if(returnOrder[i] != i)
 				WARN(0)
 				break
@@ -742,28 +742,28 @@ static Function TASYNC_RunOrderless()
 		endfor
 	endif
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test if workloads are correctly processed in order
 static Function TASYNC_RunInOrder()
 
 	variable i
-	DFREF threadDF
-	string myDF
+	DFREF    threadDF
+	string   myDF
 	variable endtime, timeout
 	variable wlCount
 
 	ASYNC_Start(ThreadProcessorCount)
 
 	myDF = GetDataFolder(1)
-	for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
+	for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
 
 		threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
-		ASYNC_AddParam(threadDF, var=wlCount)
+		ASYNC_AddParam(threadDF, var = wlCount)
 		Make/N=10 data
-		ASYNC_AddParam(threadDF, w=data, move=1)
-		ASYNC_AddParam(threadDF, str=myDF)
+		ASYNC_AddParam(threadDF, w = data, move = 1)
+		ASYNC_AddParam(threadDF, str = myDF)
 
 		ASYNC_Execute(threadDF)
 		wlCount += 1
@@ -784,20 +784,20 @@ static Function TASYNC_RunInOrder()
 	CHECK(!timeout)
 
 	if(!timeout)
-		for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
+		for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
 			CHECK_EQUAL_VAR(returnOrder[i], i)
 		endfor
 	endif
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test if mixed workloads are correctly processed in order, independently
 static Function TASYNC_InOrderDiffWL()
 
 	variable i
-	DFREF threadDF
-	string myDF
+	DFREF    threadDF
+	string   myDF
 	variable endtime, timeout
 	variable workCnt = WORK_COUNT_GENERIC * 2
 	variable wl1Count, wl2Count
@@ -805,18 +805,18 @@ static Function TASYNC_InOrderDiffWL()
 	ASYNC_Start(ThreadProcessorCount)
 
 	myDF = GetDataFolder(1)
-	for(i = 0;i < workCnt; i += 1)
+	for(i = 0; i < workCnt; i += 1)
 
 		if(mod(i, 2))
 			threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
-			ASYNC_AddParam(threadDF, var=wl1Count)
+			ASYNC_AddParam(threadDF, var = wl1Count)
 		else
 			threadDF = ASYNC_PrepareDF("RunGenericWorker2", "RunGenericReadOut2", "TASYNCTest")
-			ASYNC_AddParam(threadDF, var=wl2Count)
+			ASYNC_AddParam(threadDF, var = wl2Count)
 		endif
 		Make/N=10 data
-		ASYNC_AddParam(threadDF, w=data, move=1)
-		ASYNC_AddParam(threadDF, str=myDF)
+		ASYNC_AddParam(threadDF, w = data, move = 1)
+		ASYNC_AddParam(threadDF, str = myDF)
 
 		ASYNC_Execute(threadDF)
 		if(mod(i, 2))
@@ -843,13 +843,13 @@ static Function TASYNC_InOrderDiffWL()
 	CHECK(!timeout)
 
 	if(!timeout)
-		for(i = 0;i < workCnt / 2; i += 1)
+		for(i = 0; i < workCnt / 2; i += 1)
 			CHECK_EQUAL_VAR(returnOrder[i], i)
 			CHECK_EQUAL_VAR(returnOrder2[i], i)
 		endfor
 	endif
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test if errors are returned properly, note: the assertion is in the readout function
@@ -857,20 +857,20 @@ static Function TASYNC_RunErrorWorker()
 
 	variable workCnt = ThreadProcessorCount
 	variable i
-	DFREF threadDF
+	DFREF    threadDF
 	string myDF = GetDataFolder(1)
 	variable endtime, timeout
 	Make/N=0 returnOrder
 
 	ASYNC_Start(ThreadProcessorCount)
 
-	for(i = 0;i < workCnt; i += 1)
+	for(i = 0; i < workCnt; i += 1)
 
 		threadDF = ASYNC_PrepareDF("RunWorkerOfDOOM", "RunReadOutOfDOOM", "TASYNCTest")
-		ASYNC_AddParam(threadDF, var=i)
+		ASYNC_AddParam(threadDF, var = i)
 		Make/N=10 data
-		ASYNC_AddParam(threadDF, w=data, move=1)
-		ASYNC_AddParam(threadDF, str=myDF)
+		ASYNC_AddParam(threadDF, w = data, move = 1)
+		ASYNC_AddParam(threadDF, str = myDF)
 
 		ASYNC_Execute(threadDF)
 	endfor
@@ -889,23 +889,23 @@ static Function TASYNC_RunErrorWorker()
 	endfor
 	CHECK(!timeout)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test if a ReadOut function that generates a runtime error is properly caught.
 static Function TASYNC_RunErrorReadOut()
 
 	string myDF
-	DFREF threadDF
+	DFREF  threadDF
 	variable endtime, timeout
 
 	ASYNC_Start(ThreadProcessorCount)
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "FailReadOut", "TASYNCTest")
-	ASYNC_AddParam(threadDF, var=1)
+	ASYNC_AddParam(threadDF, var = 1)
 	Make/N=10 data
-	ASYNC_AddParam(threadDF, w=data, move=1)
+	ASYNC_AddParam(threadDF, w = data, move = 1)
 	myDF = GetDataFolder(1)
-	ASYNC_AddParam(threadDF, str=myDF)
+	ASYNC_AddParam(threadDF, str = myDF)
 
 	ASYNC_Execute(threadDF)
 
@@ -933,39 +933,39 @@ static Function TASYNC_RunErrorReadOut()
 	endfor
 	CHECK(!timeout)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test if a stop on delayed workloads releases the threads properly without force, finishing pending readouts
 static Function TASYNC_OrderlessDirectStop()
 
 	variable i
-	string myDF
-	DFREF threadDF
+	string   myDF
+	DFREF    threadDF
 	variable endtime, timeout
 	variable wlCount
 
 	ASYNC_Start(ThreadProcessorCount)
 
 	myDF = GetDataFolder(1)
-	for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
+	for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
 
-		threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest", inOrder=0)
-		ASYNC_AddParam(threadDF, var=wlCount)
+		threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest", inOrder = 0)
+		ASYNC_AddParam(threadDF, var = wlCount)
 		Make/N=10 data
-		ASYNC_AddParam(threadDF, w=data, move=1)
-		ASYNC_AddParam(threadDF, str=myDF)
+		ASYNC_AddParam(threadDF, w = data, move = 1)
+		ASYNC_AddParam(threadDF, str = myDF)
 
 		ASYNC_Execute(threadDF)
 		wlCount += 1
 	endfor
 	Make/N=0 returnOrder
-	timeout=ASYNC_Stop(timeout=THREADING_TEST_TIMEOUT)
+	timeout = ASYNC_Stop(timeout = THREADING_TEST_TIMEOUT)
 	CHECK(!timeout)
 
 	if(!timeout)
 		// There are chances the result is still in Order, so we give only a Warning
-		for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
+		for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
 			if(returnOrder[i] != i)
 				WARN(0)
 				break
@@ -980,27 +980,27 @@ End
 static Function TASYNC_StopTimeOut()
 
 	variable i
-	string myDF
-	DFREF threadDF
+	string   myDF
+	DFREF    threadDF
 	variable endtime, timeout
 	variable wlCount
 
 	ASYNC_Start(ThreadProcessorCount)
 
 	myDF = GetDataFolder(1)
-	for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
+	for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
 
-		threadDF = ASYNC_PrepareDF("RunGenericWorker5", "RunGenericReadOut", "TASYNCTest", inOrder=0)
-		ASYNC_AddParam(threadDF, var=wlCount)
+		threadDF = ASYNC_PrepareDF("RunGenericWorker5", "RunGenericReadOut", "TASYNCTest", inOrder = 0)
+		ASYNC_AddParam(threadDF, var = wlCount)
 		Make/N=10 data
-		ASYNC_AddParam(threadDF, w=data, move=1)
-		ASYNC_AddParam(threadDF, str=myDF)
+		ASYNC_AddParam(threadDF, w = data, move = 1)
+		ASYNC_AddParam(threadDF, str = myDF)
 
 		ASYNC_Execute(threadDF)
 		wlCount += 1
 	endfor
 	Make/N=0 returnOrder
-	timeout=ASYNC_Stop(timeout=0)
+	timeout = ASYNC_Stop(timeout = 0)
 	CHECK(timeout)
 	CHECK_LT_VAR(numpnts(returnOrder), WORK_COUNT_GENERIC)
 End
@@ -1014,13 +1014,13 @@ static Function TASYNC_StopTimeOutForce()
 
 	ASYNC_Start(ThreadProcessorCount)
 
-	for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
-		threadDF = ASYNC_PrepareDF("InfiniteWorker", "EmptyReadOut", "TASYNCTest", inOrder=0)
+	for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
+		threadDF = ASYNC_PrepareDF("InfiniteWorker", "EmptyReadOut", "TASYNCTest", inOrder = 0)
 		ASYNC_Execute(threadDF)
 	endfor
 	Make/N=0 returnOrder
 
-	timeout=ASYNC_Stop(timeout = 0)
+	timeout = ASYNC_Stop(timeout = 0)
 	PASS()
 End
 
@@ -1030,8 +1030,8 @@ End
 static Function TASYNC_IODiffWLDirectStop()
 
 	variable i
-	DFREF threadDF
-	string myDF
+	DFREF    threadDF
+	string   myDF
 	variable endtime, timeout
 	variable workCnt = WORK_COUNT_GENERIC * 2
 	variable wl1Count, wl2Count
@@ -1039,18 +1039,18 @@ static Function TASYNC_IODiffWLDirectStop()
 	ASYNC_Start(ThreadProcessorCount)
 
 	myDF = GetDataFolder(1)
-	for(i = 0;i < workCnt; i += 1)
+	for(i = 0; i < workCnt; i += 1)
 
 		if(mod(i, 2))
 			threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
-			ASYNC_AddParam(threadDF, var=wl1Count)
+			ASYNC_AddParam(threadDF, var = wl1Count)
 		else
 			threadDF = ASYNC_PrepareDF("RunGenericWorker2", "RunGenericReadOut2", "TASYNCTest")
-			ASYNC_AddParam(threadDF, var=wl2Count)
+			ASYNC_AddParam(threadDF, var = wl2Count)
 		endif
 		Make/N=10 data
-		ASYNC_AddParam(threadDF, w=data, move=1)
-		ASYNC_AddParam(threadDF, str=myDF)
+		ASYNC_AddParam(threadDF, w = data, move = 1)
+		ASYNC_AddParam(threadDF, str = myDF)
 
 		ASYNC_Execute(threadDF)
 		if(mod(i, 2))
@@ -1061,11 +1061,11 @@ static Function TASYNC_IODiffWLDirectStop()
 	endfor
 	Make/N=0 returnOrder
 	Make/N=0 returnOrder2
-	timeout=ASYNC_Stop(timeout=THREADING_TEST_TIMEOUT)
+	timeout = ASYNC_Stop(timeout = THREADING_TEST_TIMEOUT)
 	CHECK(!timeout)
 
 	if(!timeout)
-		for(i = 0;i < workCnt / 2; i += 1)
+		for(i = 0; i < workCnt / 2; i += 1)
 			CHECK_EQUAL_VAR(returnOrder[i], i)
 			CHECK_EQUAL_VAR(returnOrder2[i], i)
 		endfor
@@ -1076,21 +1076,21 @@ End
 static Function TASYNC_RunClassSingle()
 
 	variable i
-	string myDF
-	DFREF threadDF
+	string   myDF
+	DFREF    threadDF
 	variable endtime, timeout
 	variable wlCount
 
 	ASYNC_Start(ThreadProcessorCount)
 
 	myDF = GetDataFolder(1)
-	for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
+	for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
 
-		threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadSingleClass1", inOrder=0)
-		ASYNC_AddParam(threadDF, var=wlCount)
+		threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadSingleClass1", inOrder = 0)
+		ASYNC_AddParam(threadDF, var = wlCount)
 		Make/N=10 data
-		ASYNC_AddParam(threadDF, w=data, move=1)
-		ASYNC_AddParam(threadDF, str=myDF)
+		ASYNC_AddParam(threadDF, w = data, move = 1)
+		ASYNC_AddParam(threadDF, str = myDF)
 
 		ASYNC_Execute(threadDF)
 		wlCount += 1
@@ -1115,15 +1115,15 @@ static Function TASYNC_RunClassSingle()
 	endfor
 	CHECK(!timeout)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test if multiple workloads class tracking works based on class
 static Function TASYNC_RunClassDouble()
 
 	variable i
-	DFREF threadDF
-	string myDF
+	DFREF    threadDF
+	string   myDF
 	variable endtime, timeout
 	variable workCnt = WORK_COUNT_GENERIC * 2
 	variable wl1Count, wl2Count
@@ -1131,18 +1131,18 @@ static Function TASYNC_RunClassDouble()
 	ASYNC_Start(ThreadProcessorCount)
 
 	myDF = GetDataFolder(1)
-	for(i = 0;i < workCnt; i += 1)
+	for(i = 0; i < workCnt; i += 1)
 
 		if(mod(i, 2))
 			threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadDoubleClass1")
-			ASYNC_AddParam(threadDF, var=wl1Count)
+			ASYNC_AddParam(threadDF, var = wl1Count)
 		else
 			threadDF = ASYNC_PrepareDF("RunGenericWorker2", "RunGenericReadOut2", "WorkLoadDoubleClass2")
-			ASYNC_AddParam(threadDF, var=wl2Count)
+			ASYNC_AddParam(threadDF, var = wl2Count)
 		endif
 		Make/N=10 data
-		ASYNC_AddParam(threadDF, w=data, move=1)
-		ASYNC_AddParam(threadDF, str=myDF)
+		ASYNC_AddParam(threadDF, w = data, move = 1)
+		ASYNC_AddParam(threadDF, str = myDF)
 
 		ASYNC_Execute(threadDF)
 		if(mod(i, 2))
@@ -1177,7 +1177,7 @@ static Function TASYNC_RunClassDouble()
 	endfor
 	CHECK(!timeout)
 
-	ASYNC_Stop(timeout=1)
+	ASYNC_Stop(timeout = 1)
 End
 
 /// @brief Test if workloads class is known
@@ -1217,14 +1217,14 @@ static Function TASYNC_RunClassChangeOrder()
 	Make/N=0 returnOrder
 
 	threadDF1 = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadMixedClass", inOrder = 1)
-	ASYNC_AddParam(threadDF1, var=0)
-	ASYNC_AddParam(threadDF1, w=data)
-	ASYNC_AddParam(threadDF1, str=myDF)
+	ASYNC_AddParam(threadDF1, var = 0)
+	ASYNC_AddParam(threadDF1, w = data)
+	ASYNC_AddParam(threadDF1, str = myDF)
 
 	threadDF2 = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadMixedClass", inOrder = 0)
-	ASYNC_AddParam(threadDF2, var=0)
-	ASYNC_AddParam(threadDF2, w=data)
-	ASYNC_AddParam(threadDF2, str=myDF)
+	ASYNC_AddParam(threadDF2, var = 0)
+	ASYNC_AddParam(threadDF2, w = data)
+	ASYNC_AddParam(threadDF2, str = myDF)
 
 	ASYNC_Execute(threadDF1)
 	CHECK(!ASYNC_WaitForWLCToFinishAndRemove("WorkLoadMixedClass", THREADING_TEST_TIMEOUT))
@@ -1242,21 +1242,21 @@ threadsafe Function/DF RunGenericWorker(dfr)
 	variable i, j
 	string s
 
-	SVAR/SDFR=dfr testDF=param2
-	string/G dfrOut:myDF = testDF
+	SVAR/SDFR=dfr testDF      = param2
+	string/G      dfrOut:myDF = testDF
 
-	WAVE/SDFR=dfr w=param1
+	WAVE/SDFR=dfr w = param1
 	MoveWave w, dfrOut:outWave
 
-	NVAR/SDFR=dfr v=param0
-	variable/G dfrOut:outV = v
+	NVAR/SDFR=dfr v           = param0
+	variable/G    dfrOut:outV = v
 
 	// some processing that has a random runtime
 	variable runtime = abs(floor(gnoise(1))) * 10 // NOLINT
 	for(i = 0; i < runtime; i += 1)
-			for(j = 0; j < 100; j += 1)
-				s = num2str(i)
-			endfor
+		for(j = 0; j < 100; j += 1)
+			s = num2str(i)
+		endfor
 	endfor
 
 	return dfrOut
@@ -1280,21 +1280,21 @@ threadsafe Function/DF RunGenericWorker3(dfr)
 	variable i, j
 	string s
 
-	SVAR/SDFR=dfr testDF=param2
-	string/G dfrOut:myDF = testDF
+	SVAR/SDFR=dfr testDF      = param2
+	string/G      dfrOut:myDF = testDF
 
-	WAVE/SDFR=dfr w=param1
+	WAVE/SDFR=dfr w = param1
 	MoveWave w, dfrOut:outWave
 
-	NVAR/SDFR=dfr v=param0
-	variable/G dfrOut:outV = v
+	NVAR/SDFR=dfr v           = param0
+	variable/G    dfrOut:outV = v
 
 	// some processing that has a random runtime
 	variable runtime = abs(floor(gnoise(1))) * 10 // NOLINT
 	for(i = 0; i < runtime; i += 1)
-			for(j = 0; j < 100; j += 1)
-				s = num2str(i)
-			endfor
+		for(j = 0; j < 100; j += 1)
+			s = num2str(i)
+		endfor
 	endfor
 
 	return dfrOut
@@ -1315,14 +1315,14 @@ threadsafe Function/DF RunGenericWorker5(dfr)
 	variable i, j, now
 	string s
 
-	SVAR/SDFR=dfr testDF=param2
-	string/G dfrOut:myDF = testDF
+	SVAR/SDFR=dfr testDF      = param2
+	string/G      dfrOut:myDF = testDF
 
-	WAVE/SDFR=dfr w=param1
+	WAVE/SDFR=dfr w = param1
 	MoveWave w, dfrOut:outWave
 
-	NVAR/SDFR=dfr v=param0
-	variable/G dfrOut:outV = v
+	NVAR/SDFR=dfr v           = param0
+	variable/G    dfrOut:outV = v
 
 	// sleep for 1s, Sleep does not work
 	// reliable here on Win7/wine
@@ -1338,17 +1338,17 @@ End
 
 /// @brief ReadOut function for combination with RunGenericWorker, order is saved in wave returnOrder
 Function RunGenericReadOut(dfr, err, errmsg)
-	DFREF dfr
+	DFREF    dfr
 	variable err
-	string errmsg
+	string   errmsg
 
 	variable size
 
 	CHECK(!err)
 
-	SVAR/SDFR=dfr testDF=myDF
-	NVAR/SDFR=dfr oID=outV
-	WAVE retOrder = $(testDF + "returnOrder")
+	SVAR/SDFR=dfr testDF   = myDF
+	NVAR/SDFR=dfr oID      = outV
+	WAVE          retOrder = $(testDF + "returnOrder")
 	size = numpnts(retOrder)
 	Redimension/N=(size + 1) retOrder
 	retOrder[size] = oID
@@ -1356,17 +1356,17 @@ End
 
 /// @brief ReadOut function for combination with RunGenericWorker2, order is saved in wave returnOrder2
 Function RunGenericReadOut2(dfr, err, errmsg)
-	DFREF dfr
+	DFREF    dfr
 	variable err
-	string errmsg
+	string   errmsg
 
 	variable size
 
 	CHECK(!err)
 
-	SVAR/SDFR=dfr testDF=myDF
-	NVAR/SDFR=dfr oID=outV
-	WAVE retOrder = $(testDF + "returnOrder2")
+	SVAR/SDFR=dfr testDF   = myDF
+	NVAR/SDFR=dfr oID      = outV
+	WAVE          retOrder = $(testDF + "returnOrder2")
 	size = numpnts(retOrder)
 	Redimension/N=(size + 1) retOrder
 	retOrder[size] = oID
@@ -1375,17 +1375,17 @@ End
 /// @brief ReadOut function for combination with RunGenericWorker, order is saved in wave returnOrder
 /// Aborts at end to trigger an exception
 Function RunGenericReadOutAbort(dfr, err, errmsg)
-	DFREF dfr
+	DFREF    dfr
 	variable err
-	string errmsg
+	string   errmsg
 
 	variable size
 
 	CHECK(!err)
 
-	SVAR/SDFR=dfr testDF=myDF
-	NVAR/SDFR=dfr oID=outV
-	WAVE retOrder = $(testDF + "returnOrder")
+	SVAR/SDFR=dfr testDF   = myDF
+	NVAR/SDFR=dfr oID      = outV
+	WAVE          retOrder = $(testDF + "returnOrder")
 	size = numpnts(retOrder)
 	Redimension/N=(size + 1) retOrder
 	retOrder[size] = oID
@@ -1398,29 +1398,29 @@ threadsafe Function/DF RunWorkerOfDOOM(dfr)
 
 	DFREF dfrOut = NewFreeDataFolder()
 
-	SVAR/SDFR=dfr testDF=param2
-	string/G dfrOut:myDF = testDF
+	SVAR/SDFR=dfr testDF      = param2
+	string/G      dfrOut:myDF = testDF
 
-	NVAR/SDFR=dfr v=param0
-	variable/G dfrOut:outV = v
+	NVAR/SDFR=dfr v           = param0
+	variable/G    dfrOut:outV = v
 
-	WAVE/Z w=$""
+	WAVE/Z w = $""
 	w[0] = 0xCAFEBABE
 	return dfrOut
 End
 
 /// @brief ReadOut function for combination with RunWorkerOfDOOM, checks if Worker generated an error
 Function RunReadOutOfDOOM(dfr, err, errmsg)
-	DFREF dfr
+	DFREF    dfr
 	variable err
-	string errmsg
+	string   errmsg
 
 	CHECK_EQUAL_VAR(err, 330)
 
-	SVAR/SDFR=dfr testDF=myDF
-	NVAR/SDFR=dfr oID=outV
-	WAVE retOrder = $(testDF + "returnOrder")
-	variable size = numpnts(retOrder)
+	SVAR/SDFR=dfr testDF   = myDF
+	NVAR/SDFR=dfr oID      = outV
+	WAVE          retOrder = $(testDF + "returnOrder")
+	variable      size     = numpnts(retOrder)
 	Redimension/N=(size + 1) retOrder
 	retOrder[size] = oID
 End
@@ -1433,7 +1433,7 @@ threadsafe Function/DF InfiniteWorker(dfr)
 	// We want to catch the thread abort RT on IP7
 	for(;;)
 		try
-			InfiniteWorkerHelper_IGNORE();AbortOnRTE
+			InfiniteWorkerHelper_IGNORE(); AbortOnRTE
 		catch
 		endtry
 	endfor
@@ -1445,16 +1445,16 @@ End
 
 /// @brief Empty ReadOut function
 Function EmptyReadOut(dfr, err, errmsg)
-	DFREF dfr
+	DFREF    dfr
 	variable err
-	string errmsg
+	string   errmsg
 End
 
 /// @brief Empty ReadOut function
 Function ReadOutCheckDF(dfr, err, errmsg)
-	DFREF dfr
+	DFREF    dfr
 	variable err
-	string errmsg
+	string   errmsg
 
 	CHECK(DataFolderExistsDFR(dfr))
 
@@ -1464,21 +1464,21 @@ End
 
 /// @brief ReadOut function for combination with RunGenericWorker that generates a runtime error 330
 Function FailReadOut(dfr, err, errmsg)
-	DFREF dfr
+	DFREF    dfr
 	variable err
-	string errmsg
+	string   errmsg
 
 	variable size
 
 	CHECK(!err)
 
-	SVAR/SDFR=dfr testDF=myDF
-	NVAR/SDFR=dfr oID=outV
-	WAVE retOrder = $(testDF + "returnOrder")
+	SVAR/SDFR=dfr testDF   = myDF
+	NVAR/SDFR=dfr oID      = outV
+	WAVE          retOrder = $(testDF + "returnOrder")
 	size = numpnts(retOrder)
 	Redimension/N=(size + 1) retOrder
 	retOrder[size] = oID
 	// generate runtime error 330
-	WAVE/Z w=$""
+	WAVE/Z w = $""
 	w[0] = 0xCAFEBABE
 End

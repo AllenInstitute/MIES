@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -15,7 +15,7 @@
 static Function PGC_ShowControlInTab(win, control)
 	string win, control
 
-	variable idx ,numEntries, i, tab
+	variable idx, numEntries, i, tab
 	string tabnum, tabctrl
 
 	if(!WindowExists(win))
@@ -45,7 +45,7 @@ static Function PGC_ShowControlInTab(win, control)
 	// `tabs` has the outer most tab at the end
 
 	numEntries = idx
-	for(i = numEntries - 1; i >= 0 ; i -= 1)
+	for(i = numEntries - 1; i >= 0; i -= 1)
 		tab = str2num(tabs[i][0])
 
 		if(GetTabID(win, tabs[i][1]) == tab)
@@ -60,7 +60,7 @@ static Function/S PGC_GetProcAndCheckParamType(recMacro)
 	string recMacro
 
 	variable paramType
-	string procedure
+	string   procedure
 
 	procedure = GetValueFromRecMacro(REC_MACRO_PROCEDURE, recMacro)
 	if(isEmpty(procedure))
@@ -77,43 +77,43 @@ End
 /// @anchor PGC_SetAndActivateControlPrototypeFunctions
 /// @{
 Function PGC_ButtonControlProcedure(ba) : ButtonControl
-	struct WMButtonAction& ba
+	STRUCT WMButtonAction &ba
 
 	ASSERT(0, "Prototype function which must not be called")
 End
 
 Function PGC_PopupActionControlProcedure(pa) : PopupMenuControl
-	struct WMPopupAction& pa
+	STRUCT WMPopupAction &pa
 
 	ASSERT(0, "Prototype function which must not be called")
 End
 
 Function PGC_CheckboxControlProcedure(cba) : CheckBoxControl
-	struct WMCheckBoxAction& cba
+	STRUCT WMCheckBoxAction &cba
 
 	ASSERT(0, "Prototype function which must not be called")
 End
 
 Function PGC_TabControlProcedure(tca) : TabControl
-	struct WMTabControlAction& tca
+	STRUCT WMTabControlAction &tca
 
 	ASSERT(0, "Prototype function which must not be called")
 End
 
 Function PGC_SetVariableControlProcedure(tca) : SetVariableControl
-	struct WMSetVariableAction& tca
+	STRUCT WMSetVariableAction &tca
 
 	ASSERT(0, "Prototype function which must not be called")
 End
 
 Function PGC_SliderControlProcedure(sla) : SliderControl
-	struct WMSliderAction& sla
+	STRUCT WMSliderAction &sla
 
 	ASSERT(0, "Prototype function which must not be called")
 End
 
 Function PGC_ListBoxControlProcedure(lba) : ListBoxControl
-	struct WMListBoxAction& lba
+	STRUCT WMListBoxAction &lba
 
 	ASSERT(0, "Prototype function which must not be called")
 End
@@ -123,7 +123,7 @@ End
 Function PGC_SetAndActivateControlStr(win, control, str)
 	string win, control, str
 
-	return PGC_SetAndActivateControl(win, control, str=str)
+	return PGC_SetAndActivateControl(win, control, str = str)
 End
 
 /// @brief Wrapper for PGC_SetAndActivateControl()
@@ -131,7 +131,7 @@ Function PGC_SetAndActivateControlVar(win, control, var)
 	string win, control
 	variable var
 
-	return PGC_SetAndActivateControl(win, control, val=var)
+	return PGC_SetAndActivateControl(win, control, val = var)
 End
 
 /// @brief Set the control's value and execute the control procedure of the given control
@@ -266,7 +266,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 				break
 			endif
 
-			struct WMPopupAction pa
+			STRUCT WMPopupAction pa
 			pa.ctrlName  = control
 			pa.win       = win
 			pa.eventCode = 2
@@ -283,9 +283,9 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			val = !!val
 
 			checkBoxMode = str2numSafe(GetValueFromRecMacro(REC_MACRO_MODE, S_recreation))
-			isCheckBox = IsNan(checkBoxMode) || checkBoxMode == 1
+			isCheckBox   = IsNan(checkBoxMode) || checkBoxMode == 1
 
-			 // emulate the real user experience and do nothing
+			// emulate the real user experience and do nothing
 			if(isCheckBox && val == V_Value)
 				break
 			endif
@@ -315,7 +315,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 				break
 			endif
 
-			struct WMTabControlAction tca
+			STRUCT WMTabControlAction tca
 			tca.ctrlName  = control
 			tca.win       = win
 			tca.eventCode = 2
@@ -366,7 +366,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 				break
 			endif
 
-			struct WMSetVariableAction sva
+			STRUCT WMSetVariableAction sva
 			sva.ctrlName  = control
 			sva.win       = win
 			sva.eventCode = 2
@@ -379,20 +379,20 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			break
 		case CONTROL_TYPE_VALDISPLAY:
 			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
-			SetValDisplay(win, control, var=val)
+			SetValDisplay(win, control, var = val)
 			// Value displays don't have control procedures
 			break
 		case CONTROL_TYPE_SLIDER:
 			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
 			ASSERT(GetLimitConstrainedSetVar(S_recreation, val) == val, "Value " + num2str(val) + " is out of range.")
 
-			Slider $control, win=$win, value = val
+			Slider $control, win=$win, value=val
 
 			if(isEmpty(procedure))
 				break
 			endif
 
-			struct WMSliderAction sla
+			STRUCT WMSliderAction sla
 			sla.ctrlName  = control
 			sla.win       = win
 			sla.eventCode = 1
@@ -408,28 +408,28 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			ASSERT(WaveExists(listWave), "Can't call ListBox without list wave")
 
 			// all optional
-			WAVE/Z selWave     = $GetValueFromRecMacro("selWave", S_recreation)
-			WAVE/Z colorWave   = $GetValueFromRecMacro("colorWave", S_recreation)
+			WAVE/Z   selWave   = $GetValueFromRecMacro("selWave", S_recreation)
+			WAVE/Z   colorWave = $GetValueFromRecMacro("colorWave", S_recreation)
 			WAVE/T/Z titleWave = $GetValueFromRecMacro("titleWave", S_recreation)
 
 			ASSERT(val >= 0 && val < DimSize(listWave, ROWS), "val is out of range")
 
-			ListBox $control, win=$win, row = val, selRow = val
+			ListBox $control, win=$win, row=val, selRow=val
 
 			if(IsEmpty(procedure))
 				break
 			endif
 
-			struct WMListBoxAction lba
-			lba.ctrlName           = control
-			lba.win                = win
-			lba.eventCode          = 3 // double click
-			WAVE/Z lba.colorWave   = colorWave
+			STRUCT WMListBoxAction lba
+			lba.ctrlName  = control
+			lba.win       = win
+			lba.eventCode = 3       // double click
+			WAVE/Z   lba.colorWave = colorWave
 			WAVE/T/Z lba.listWave  = listWave
-			WAVE/Z lba.selWave     = selWave
+			WAVE/Z   lba.selWave   = selWave
 			WAVE/T/Z lba.titleWave = titleWave
-			lba.row                = val
-			lba.col                = -1
+			lba.row = val
+			lba.col = -1
 
 			FUNCREF PGC_ListBoxControlProcedure ListProc = $procedure
 			ListProc(lba)

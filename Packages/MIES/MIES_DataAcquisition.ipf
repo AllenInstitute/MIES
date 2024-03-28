@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -43,24 +43,24 @@ Function DQ_StopOngoingDAQ(string device, variable stopReason, [variable startTP
 		TPS_StopTestPulseSingleDevice(device)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
-		discardData      = discardData      | 1
+		discardData      = discardData | 1
 	elseif(IsDeviceActiveWithBGTask(device, TASKNAME_TPMD))
 		TPM_StopTestPulseMultiDevice(device)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
-		discardData      = discardData      | 1
+		discardData      = discardData | 1
 	endif
 
 	if(IsDeviceActiveWithBGTask(device, TASKNAME_TIMER))
 		DQS_StopBackgroundTimer()
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
-		discardData      = discardData      | 1
+		discardData      = discardData | 1
 	elseif(IsDeviceActiveWithBGTask(device, TASKNAME_TIMERMD))
 		DQM_StopBackgroundTimer(device)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
-		discardData      = discardData      | 1
+		discardData      = discardData | 1
 	endif
 
 	if(IsDeviceActiveWithBGTask(device, TASKNAME_FIFOMON))
@@ -121,14 +121,14 @@ Function DQ_StartDAQDeviceTimer(device)
 
 	string msg
 
-	NVAR deviceID = $GetDAQDeviceID(device)
-	DFREF timer = GetActiveDAQDevicesTimerFolder()
+	NVAR  deviceID = $GetDAQDeviceID(device)
+	DFREF timer    = GetActiveDAQDevicesTimerFolder()
 
 	WAVE/Z/SDFR=timer CycleTimeStorageWave
 	if(!WaveExists(CycleTimeStorageWave))
 		// the size of the wave is limited by the number of igor timers.
 		// This will also limit the number of simultaneously active devices possible to 10
-		Make/N=(MAX_NUM_MS_TIMERS) timer:CycleTimeStorageWave/Wave=CycleTimeStorageWave
+		Make/N=(MAX_NUM_MS_TIMERS) timer:CycleTimeStorageWave/WAVE=CycleTimeStorageWave
 	endif
 
 	variable timerID = startmstimer
@@ -147,7 +147,7 @@ Function DQ_StopDAQDeviceTimer(device)
 	string device
 
 	variable timerID
-	string msg
+	string   msg
 
 	WAVE/Z/SDFR=GetActiveDAQDevicesTimerFolder() CycleTimeStorageWave
 
@@ -192,7 +192,7 @@ Function DQ_StopDAQ(string device, variable stopReason, [variable startTPAfterDA
 End
 
 Function DQ_RestartDAQ(device, dataAcqRunMode)
-	string device
+	string   device
 	variable dataAcqRunMode
 
 	switch(dataAcqRunMode)
@@ -202,12 +202,12 @@ Function DQ_RestartDAQ(device, dataAcqRunMode)
 		case DAQ_FG_SINGLE_DEVICE:
 			AS_HandlePossibleTransition(device, AS_EARLY_CHECK, call = 0)
 			AS_HandlePossibleTransition(device, AS_PRE_DAQ, call = 0)
-			DQS_StartDAQSingleDevice(device, useBackground=0)
+			DQS_StartDAQSingleDevice(device, useBackground = 0)
 			break
 		case DAQ_BG_SINGLE_DEVICE:
 			AS_HandlePossibleTransition(device, AS_EARLY_CHECK, call = 0)
 			AS_HandlePossibleTransition(device, AS_PRE_DAQ, call = 0)
-			DQS_StartDAQSingleDevice(device, useBackground=1)
+			DQS_StartDAQSingleDevice(device, useBackground = 1)
 			break
 		case DAQ_BG_MULTI_DEVICE:
 			AS_HandlePossibleTransition(device, AS_EARLY_CHECK, call = 0)
@@ -215,7 +215,7 @@ Function DQ_RestartDAQ(device, dataAcqRunMode)
 			DQM_StartDAQMultiDevice(device)
 			break
 		default:
-			DEBUGPRINT("Ignoring unknown value:", var=dataAcqRunMode)
+			DEBUGPRINT("Ignoring unknown value:", var = dataAcqRunMode)
 			break
 	endswitch
 End
@@ -226,7 +226,7 @@ End
 /// @param TPResults  Data from TP_ROAnalysis()
 Function DQ_ApplyAutoBias(device, TPResults)
 	string device
-	Wave TPResults
+	WAVE   TPResults
 
 	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
 	variable resistance, maximumAutoBiasCurrent, lastInvocation, curTime
@@ -235,21 +235,21 @@ Function DQ_ApplyAutoBias(device, TPResults)
 		return NaN
 	endif
 
-	Wave TPStorage = GetTPStorage(device)
+	WAVE TPStorage = GetTPStorage(device)
 	lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
-	curTime = ticks * TICKS_TO_SECONDS
+	curTime        = ticks * TICKS_TO_SECONDS
 
-	if( (curTime - lastInvocation) < DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasInt"))
+	if((curTime - lastInvocation) < DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasInt"))
 		return NaN
 	endif
 
-	DEBUGPRINT("DQ_ApplyAutoBias's turn, curTime=", var=curTime)
-	SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, curTime, format="%.06f")
+	DEBUGPRINT("DQ_ApplyAutoBias's turn, curTime=", var = curTime)
+	SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, curTime, format = "%.06f")
 
-	Wave ampSettings = GetAmplifierParamStorageWave(device)
-	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	WAVE ampSettings = GetAmplifierParamStorageWave(device)
+	WAVE statusHS    = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
-	for(headStage=0; headStage < NUM_HEADSTAGES; headStage+=1)
+	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 
 		if(!statusHS[headstage])
 			continue
@@ -264,10 +264,10 @@ Function DQ_ApplyAutoBias(device, TPResults)
 			continue
 		endif
 
-		DEBUGPRINT("current clamp mode set in headstage", var=headStage)
+		DEBUGPRINT("current clamp mode set in headstage", var = headStage)
 
 		maximumAutoBiasCurrent = abs(ampSettings[%AutoBiasIbiasmax][0][headStage] * PICO_TO_ONE)
-		DEBUGPRINT("maximumAutoBiasCurrent=", var=maximumAutoBiasCurrent)
+		DEBUGPRINT("maximumAutoBiasCurrent=", var = maximumAutoBiasCurrent)
 
 		/// all variables holding physical units use plain values without prefixes
 		/// e.g Amps instead of pA
@@ -278,9 +278,9 @@ Function DQ_ApplyAutoBias(device, TPResults)
 		resistance = TPResults[%ResistanceSteadyState][headstage] * MEGA_TO_ONE
 		setVoltage = TPResults[%BaselineSteadyState][headstage] * MILLI_TO_ONE
 
-		DEBUGPRINT("resistance[Ω]=", var=resistance)
-		DEBUGPRINT("setVoltage[V]=", var=setVoltage)
-		DEBUGPRINT("targetVoltage[V]=", var=targetVoltage)
+		DEBUGPRINT("resistance[Ω]=", var = resistance)
+		DEBUGPRINT("setVoltage[V]=", var = setVoltage)
+		DEBUGPRINT("targetVoltage[V]=", var = targetVoltage)
 
 		// if we are in the desired voltage region, check the next headstage
 		if(abs(targetVoltage - setVoltage) < targetVoltageTol)
@@ -289,20 +289,20 @@ Function DQ_ApplyAutoBias(device, TPResults)
 
 		// neuron needs a current shot
 		// I = U / R
-		current = ( targetVoltage - setVoltage ) / resistance
-		DEBUGPRINT("current[A]=", var=current)
+		current = (targetVoltage - setVoltage) / resistance
+		DEBUGPRINT("current[A]=", var = current)
 		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
 		current *= DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasPerc") * PERCENT_TO_ONE
 
 		// check if holding is enabled. If it is not, ignore holding current value.
 		if(AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN))
-			actualCurrent = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, usePrefixes=0)
+			actualCurrent = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, usePrefixes = 0)
 		else
 			actualCurrent = 0
 		endif
 
-		DEBUGPRINT("actualCurrent[A]=", var=actualCurrent)
+		DEBUGPRINT("actualCurrent[A]=", var = actualCurrent)
 
 		if(!IsFinite(actualCurrent))
 			print "Queried amplifier current is non-finite"
@@ -312,14 +312,14 @@ Function DQ_ApplyAutoBias(device, TPResults)
 
 		current += actualCurrent
 
-		if( abs(current) > maximumAutoBiasCurrent)
+		if(abs(current) > maximumAutoBiasCurrent)
 			printf "Headstage %d: Not applying autobias current shot of %.0W0PA as that would exceed the maximum allowed current of %.0W0PA\r", headStage, current, maximumAutoBiasCurrent
 			continue
 		endif
 
-		DEBUGPRINT("current[A] to send=", var=current)
-		AI_UpdateAmpModel(device, "check_DatAcq_HoldEnable", headStage, value=1, sendToAll=0)
-		AI_UpdateAmpModel(device, "setvar_DataAcq_Hold_IC", headstage, value=current * ONE_TO_PICO,sendToAll=0)
+		DEBUGPRINT("current[A] to send=", var = current)
+		AI_UpdateAmpModel(device, "check_DatAcq_HoldEnable", headStage, value = 1, sendToAll = 0)
+		AI_UpdateAmpModel(device, "setvar_DataAcq_Hold_IC", headstage, value = current * ONE_TO_PICO, sendToAll = 0)
 	endfor
 End
 
@@ -329,11 +329,11 @@ Function DQ_GetNumDevicesWithDAQRunning()
 	variable numEntries, i, count
 	string list, device
 
-	list = GetListOfLockedDevices()
+	list       = GetListOfLockedDevices()
 	numEntries = ItemsInList(list)
-	for(i= 0; i < numEntries;i += 1)
+	for(i = 0; i < numEntries; i += 1)
 		device = StringFromList(i, list)
-		NVAR daqMode=$GetDataAcqRunMode(device)
+		NVAR daqMode = $GetDataAcqRunMode(device)
 
 		count += (daqMode != DAQ_NOT_RUNNING)
 	endfor

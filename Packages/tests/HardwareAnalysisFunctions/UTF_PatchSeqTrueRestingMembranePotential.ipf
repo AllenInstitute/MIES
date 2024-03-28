@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTrueRestMembranePot
@@ -29,10 +29,10 @@
 
 static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                     + \
-								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:PSQ_TrueRest_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                    + \
+	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:PSQ_TrueRest_DA_0:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -58,7 +58,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name, [chunk])
 	CHECK_LE_VAR(sweepNo, AFH_GetLastSweepAcquired(device))
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	type = PSQ_TRUE_REST_VM
 
@@ -137,7 +137,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%baselinePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 	wv[%spikePass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SPIKE_PASS)
 	wv[%samplingPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
-	wv[%asyncPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	wv[%asyncPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
 
 	wv[%spikePositions] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SPIKE_POSITIONS)
 
@@ -146,7 +146,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%iti]          = GetLBNSingleEntry_IGNORE(device, sweepNo, "Inter-trial interval")
 	wv[%getsetiti]    = GetLBNSingleEntry_IGNORE(device, sweepNo, "Get/Set Inter-trial interval")
 
-	wv[%fullAvg]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_VM_FULL_AVG)
+	wv[%fullAvg]          = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_VM_FULL_AVG)
 	wv[%fullAvgADiff]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_VM_FULL_AVG_ADIFF)
 	wv[%fullAvgADiffPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS)
 	wv[%fullAvgRDiff]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_VM_FULL_AVG_RDIFF)
@@ -177,21 +177,21 @@ End
 static Function PS_VM1_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=1)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 1)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -280,21 +280,21 @@ End
 static Function PS_VM2_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 0)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -391,21 +391,21 @@ End
 static Function PS_VM3_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 0)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -498,21 +498,21 @@ End
 static Function PS_VM4_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 0)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=inf)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = Inf)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -530,7 +530,7 @@ static Function PS_VM4([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
 	// tests pass, except relative average voltage diff
-	wv[][][0]  = 1
+	wv[][][0] = 1
 
 	// number of spikes
 	wv[][][1] = 0
@@ -609,21 +609,21 @@ End
 static Function PS_VM5_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 0)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=inf)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = Inf)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -641,7 +641,7 @@ static Function PS_VM5([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
 	// tests pass, except absolute average voltage diff
-	wv[][][0]  = 1
+	wv[][][0] = 1
 
 	// number of spikes
 	wv[][][1] = 0
@@ -720,20 +720,20 @@ End
 static Function PS_VM5a_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0.1)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0.1)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 10)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -819,7 +819,7 @@ static Function PS_VM5a_REENTRY([string str])
 	// first sweep does not have autobias enabled
 	// and the last sweep's setting is only available in the GUI
 	CHECK_EQUAL_WAVES(entries[%autobiasVcom], {0, 0, 0}, mode = WAVE_DATA)
-	CHECK_CLOSE_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 1.025, tol=1e-6)
+	CHECK_CLOSE_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 1.025, tol = 1e-6)
 
 	CHECK_EQUAL_WAVES(entries[%autobias], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "check_DataAcq_AutoBias"), 1)
@@ -837,21 +837,21 @@ End
 static Function PS_VM5b_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 0)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
 	// NextIndexingEndStimSetName not set
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -948,21 +948,21 @@ End
 static Function PS_VM6_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 0)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=600)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 600)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -980,7 +980,7 @@ static Function PS_VM6([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
 	// all tests pass, but see below
-	wv[][][0]  = 1
+	wv[][][0] = 1
 
 	// number of spikes
 	wv[][][1] = 0
@@ -1007,21 +1007,21 @@ End
 static Function PS_VM7_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=1)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 1)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=1)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 1)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -1039,7 +1039,7 @@ static Function PS_VM7([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
 	// tests pass, except for 1 spike
-	wv[][][0]  = 1
+	wv[][][0] = 1
 
 	// number of spikes
 	wv[][][1] = 1
@@ -1118,21 +1118,21 @@ End
 static Function PS_VM7a_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=1)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 1)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -1150,7 +1150,7 @@ static Function PS_VM7a([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
 	// tests pass, except for 1 spike
-	wv[][][0]  = 1
+	wv[][][0] = 1
 
 	// number of spikes [1, 0]
 	wv[][][1]  = 0
@@ -1229,21 +1229,21 @@ End
 static Function PS_VM7b_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 0)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -1261,7 +1261,7 @@ static Function PS_VM7b([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
 	// tests pass, except async QC
-	wv[][][0]  = 1
+	wv[][][0] = 1
 
 	// number of spikes
 	wv[][][1] = 0
@@ -1341,22 +1341,22 @@ End
 static Function PS_VM8_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var=0.07)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var=0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "InterTrialInterval", var = 0)
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SamplingFrequency", var=10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SamplingFrequency", var = 10)
 	// SamplingMultiplier use defaults
 
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var=1)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var=500)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var=10)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var=5)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var=-3)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var=0)
-	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var=100)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NumberOfFailedSweeps", var = 1)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineChunkLength", var = 500)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "SpikeFailureIgnoredTime", var = 10)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "FailedLevel", var = 5)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "UserOffsetTargetVAutobias", var = -3)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AbsoluteVoltageDiff", var = 0)
+	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "RelativeVoltageDiff", var = 100)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -1374,7 +1374,7 @@ static Function PS_VM8([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_TRUE_REST_VM)
 
 	// tests pass, except sampling QC fails
-	wv[][][0]  = 1
+	wv[][][0] = 1
 
 	// number of spikes
 	wv[][][1] = 0
