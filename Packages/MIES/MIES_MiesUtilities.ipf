@@ -6544,7 +6544,9 @@ End
 /// @param recursive [optional, defaults to false] Overwrite referenced waves
 ///                                                in dest with the ones from src
 ///                                                (wave reference waves only with matching sizes)
-Function MoveWaveWithOverwrite(dest, src, [recursive])
+///
+/// @return new wave reference to dest wave
+Function/WAVE MoveWaveWithOverwrite(dest, src, [recursive])
 	WAVE dest, src
 	variable recursive
 
@@ -6559,7 +6561,7 @@ Function MoveWaveWithOverwrite(dest, src, [recursive])
 	if(IsWaveRefWave(dest) && IsWaveRefWave(src) && recursive)
 		numEntries = numpnts(dest)
 		ASSERT(numEntries == numpnts(src), "Unmatched sizes")
-		Make/N=(numEntries)/FREE entries
+		Make/N=(numEntries)/FREE/WAVE entries
 
 		WAVE/WAVE destWaveRef = dest
 		WAVE/WAVE srcWaveRef = src
@@ -6571,6 +6573,10 @@ Function MoveWaveWithOverwrite(dest, src, [recursive])
 
 	KillOrMoveToTrash(wv=dest)
 	MoveWave src, $path
+
+	WAVE dest = $path
+
+	return dest
 End
 
 /// @brief Check if the given wave is a valid ITCConfigWave

@@ -167,6 +167,8 @@ Function AdditionalExperimentCleanup()
 	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
 	TSDS_Write(TSDS_BUGCOUNT, var = 0)
 	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
+
+	KillOrMoveToTrash(wv = GetOverrideResults())
 End
 
 static Function WaitForPubSubHeartbeat()
