@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -35,13 +35,13 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsStrictlyPositiveAndFinite(variable var)
 
-	return var > 0 && var < inf
+	return var > 0 && var < Inf
 End
 
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsNullOrPositiveAndFinite(variable var)
 
-	return var >= 0 && var < inf
+	return var >= 0 && var < Inf
 End
 
 /// @brief Return the truth if `val` is in the range `]0, 1[`

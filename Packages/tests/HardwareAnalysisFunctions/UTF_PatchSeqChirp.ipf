@@ -1,14 +1,14 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestChirp
 
 static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                      + \
-								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:PatchSeqChirp_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                     + \
+	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:PatchSeqChirp_DA_0:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -37,7 +37,7 @@ static Function/WAVE GetLBNEntriesWave_IGNORE()
 	string list = "sweepPass;setPass;insideBounds;baselinePass;spikePass;stimsetPass;"          \
 	              + "boundsState;boundsAction;initialDAScale;DAScale;resistance;spikeCheck;"    \
 	              + "samplingPass;autobiasTargetV;initUserOnsetDelay;userOnsetDelay;asyncPass;" \
-				  + "initLowPassFilter;lowPassFilter"
+	              + "initLowPassFilter;lowPassFilter"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -51,39 +51,39 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 
 	WAVE/WAVE wv = GetLBNEntriesWave_IGNORE()
 
-	wv[%sweepPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	wv[%setPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
-	wv[%insideBounds] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	wv[%baselinePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	wv[%spikePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SPIKE_PASS)
-	wv[%stimsetPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_STIMSET_QC)
-	wv[%boundsState] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	wv[%boundsAction] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	wv[%initialDAScale] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	wv[%DAScale] = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	wv[%resistance] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	wv[%spikeCheck] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_CHECK)
-	wv[%samplingPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
-	wv[%autobiasTargetV] = GetLBNSingleEntry_IGNORE(device, sweepNo, "Autobias Vcom")
+	wv[%sweepPass]          = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	wv[%setPass]            = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
+	wv[%insideBounds]       = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
+	wv[%baselinePass]       = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
+	wv[%spikePass]          = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SPIKE_PASS)
+	wv[%stimsetPass]        = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_STIMSET_QC)
+	wv[%boundsState]        = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
+	wv[%boundsAction]       = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
+	wv[%initialDAScale]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
+	wv[%DAScale]            = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
+	wv[%resistance]         = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
+	wv[%spikeCheck]         = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_CHECK)
+	wv[%samplingPass]       = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
+	wv[%autobiasTargetV]    = GetLBNSingleEntry_IGNORE(device, sweepNo, "Autobias Vcom")
 	wv[%initUserOnsetDelay] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INIT_UOD)
-	wv[%userOnsetDelay] = GetLBNSingleEntry_IGNORE(device, sweepNo, "Delay onset user")
-	wv[%asyncPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
-	wv[%initLowPassFilter] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INIT_LPF)
-	wv[%lowPassFilter] = GetLBNSingleEntry_IGNORE(device, sweepNo, "LPF cutoff")
+	wv[%userOnsetDelay]     = GetLBNSingleEntry_IGNORE(device, sweepNo, "Delay onset user")
+	wv[%asyncPass]          = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	wv[%initLowPassFilter]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INIT_LPF)
+	wv[%lowPassFilter]      = GetLBNSingleEntry_IGNORE(device, sweepNo, "LPF cutoff")
 
 	return wv
 End
 
 static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
-	string device
+	string   device
 	variable sweepNo
-	string name
+	string   name
 
 	variable val
-	string key
+	string   key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	strswitch(name)
 		case PSQ_FMT_LBN_SWEEP_PASS:
@@ -128,7 +128,7 @@ static Function CheckMCCLPF(string device, variable expectedValue)
 
 	val = AI_SendToAmp(device, PSQ_TEST_HEADSTAGE, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN, selectAmp = 0)
 	CHECK_EQUAL_VAR(val, expectedValue)
-end
+End
 
 static Function CheckChirpUserEpochs(string device, WAVE baselineChunks, WAVE chirpChunk, WAVE spikeChunk, [variable incomplete, variable sweep])
 
@@ -150,12 +150,12 @@ End
 static Function PS_CR1_preAcq(string device)
 	variable ret
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -228,13 +228,13 @@ End
 
 static Function PS_CR2_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = 1)
@@ -310,12 +310,12 @@ End
 
 static Function PS_CR2a_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Depolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -388,12 +388,12 @@ End
 
 static Function PS_CR2b_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Hyperpolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -467,13 +467,13 @@ End
 
 static Function PS_CR3_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var=14)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = 14)
 	// AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -549,14 +549,14 @@ End
 
 static Function PS_CR4_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var=14)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilterRestore", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = 14)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilterRestore", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -662,12 +662,12 @@ End
 
 static Function PS_CR4a_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Depolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -773,12 +773,12 @@ End
 
 static Function PS_CR4b_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Hyperpolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -884,12 +884,12 @@ End
 
 static Function PS_CR5_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -996,12 +996,12 @@ End
 
 static Function PS_CR6_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -1109,12 +1109,12 @@ End
 
 static Function PS_CR7_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -1217,12 +1217,12 @@ End
 
 static Function PS_CR8_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -1324,12 +1324,12 @@ End
 
 static Function PS_CR9_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -1437,12 +1437,12 @@ End
 
 static Function PS_CR9a_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Depolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -1550,12 +1550,12 @@ End
 
 static Function PS_CR9b_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Hyperpolarized")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -1663,12 +1663,12 @@ End
 
 static Function PS_CR10_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -1773,15 +1773,15 @@ End
 
 static Function PS_CR11_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var = 10)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var = 1.2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -1807,7 +1807,7 @@ static Function PS_CR11([str])
 
 	// first BL chunk passes, later ones fail. This is done so that
 	// we reach the chirp region for performing spike checks.
-	wv = 0
+	wv          = 0
 	wv[0][][0]  = 1
 	wv[1,][][0] = 0
 End
@@ -1859,15 +1859,15 @@ End
 
 static Function PS_CR12_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var = 10)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var = 1.2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -1943,15 +1943,15 @@ End
 
 static Function PS_CR13_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var = 10)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var = 1.2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -2043,16 +2043,16 @@ End
 
 static Function PS_CR13a_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var=2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var = 10)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var = 1.2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var = 2)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -2147,13 +2147,13 @@ End
 
 static Function PS_CR14_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SamplingFrequency", var=10)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SamplingFrequency", var = 10)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -2228,15 +2228,15 @@ End
 
 static Function PS_CR15_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetV", var=45)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var=55)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetV", var = 45)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var = 55)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -2313,16 +2313,16 @@ End
 
 static Function PS_CR16_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetV", var=45)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var=55)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UseTrueRestingMembranePotentialVoltage", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetV", var = 45)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var = 55)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UseTrueRestingMembranePotentialVoltage", var = 0)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -2397,13 +2397,13 @@ End
 
 static Function PS_CR17_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}
@@ -2427,7 +2427,7 @@ static Function PS_CR17([str])
 	// layer 4: async QC
 
 	// BL targetV fails for 1 first chunk in first sweep
-	wv[][][0] = 1
+	wv[][][0]      = 1
 	wv[0][0][0][2] = 0
 
 	wv[][][1] = 35
@@ -2454,7 +2454,7 @@ static Function PS_CR17_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%stimsetPass], {1, 1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {NaN, 1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"","BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {NaN, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
@@ -2483,13 +2483,13 @@ End
 
 static Function PS_CR18_preAcq(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=100)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var=0)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var=3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 100)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 4}

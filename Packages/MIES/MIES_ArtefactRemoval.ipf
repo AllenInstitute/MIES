@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -20,9 +20,9 @@ static Constant AR_MIN_RANGE_FACTOR = 0.1
 /// - ADC
 /// - Headstage
 static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
-	DFREF sweepDFR
+	DFREF    sweepDFR
 	variable sweepNo
-	WAVE numericalValues
+	WAVE     numericalValues
 
 	variable i, dac, adc
 	variable level, index, total
@@ -62,7 +62,7 @@ static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 
 			index = GetNumberFromWaveNote(ranges, NOTE_INDEX)
 			total = index + V_LevelsFound
-			EnsureLargeEnoughWave(ranges, indexShouldExist=total, initialValue=NaN)
+			EnsureLargeEnoughWave(ranges, indexShouldExist = total, initialValue = NaN)
 
 			ranges[index, total - 1][0] = posLevels[p - index]
 			ranges[index, total - 1][1] = dac
@@ -80,7 +80,7 @@ static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 
 			index = GetNumberFromWaveNote(ranges, NOTE_INDEX)
 			total = index + V_LevelsFound
-			EnsureLargeEnoughWave(ranges, indexShouldExist=total, initialValue=NaN)
+			EnsureLargeEnoughWave(ranges, indexShouldExist = total, initialValue = NaN)
 
 			ranges[index, total - 1][0] = negLevels[p - index]
 			ranges[index, total - 1][1] = dac
@@ -100,14 +100,14 @@ End
 
 static Function AR_UpdatePanel(device, ranges, sweepDFR)
 	string device
-	WAVE ranges
-	DFREF sweepDFR
+	WAVE   ranges
+	DFREF  sweepDFR
 
 	AR_SetSweepFolder(device, sweepDFR)
 
-	DFREF dfr = AR_GetFolder(device)
-	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
-	WAVE artefactWave  = GetArtefactRemovalDataWave(dfr)
+	DFREF  dfr          = AR_GetFolder(device)
+	WAVE/T listBoxWave  = GetArtefactRemovalListWave(dfr)
+	WAVE   artefactWave = GetArtefactRemovalDataWave(dfr)
 
 	Redimension/N=(DimSize(ranges, ROWS), -1) listBoxWave, artefactWave
 
@@ -122,9 +122,9 @@ static Function AR_UpdateListBoxWave(device)
 	string extPanel
 
 	extPanel = BSP_GetPanel(device)
-	DFREF dfr = AR_GetFolder(device)
-	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
-	WAVE artefactWave  = GetArtefactRemovalDataWave(dfr)
+	DFREF  dfr          = AR_GetFolder(device)
+	WAVE/T listBoxWave  = GetArtefactRemovalListWave(dfr)
+	WAVE   artefactWave = GetArtefactRemovalDataWave(dfr)
 
 	cutoffLength_before = GetSetVariable(extPanel, "setvar_cutoff_length_before")
 	cutoffLength_after  = GetSetVariable(extPanel, "setvar_cutoff_length_after")
@@ -175,9 +175,9 @@ Function AR_HighlightArtefactsEntry(graph)
 		return NaN
 	endif
 
-	DFREF dfr = AR_GetFolder(graph)
-	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
-	WAVE artefactWave  = GetArtefactRemovalDataWave(dfr)
+	DFREF  dfr          = AR_GetFolder(graph)
+	WAVE/T listBoxWave  = GetArtefactRemovalListWave(dfr)
+	WAVE   artefactWave = GetArtefactRemovalDataWave(dfr)
 
 	row = GetListBoxSelRow(extPanel, "list_of_ranges")
 
@@ -193,16 +193,16 @@ Function AR_HighlightArtefactsEntry(graph)
 		index = str2num(TUD_GetUserData(graph, trace, "AR_INDEX"))
 
 		if(row == index)
-			ModifyGraph/W=$graph rgb($trace)=(1,39321,19939,32768)
+			ModifyGraph/W=$graph rgb($trace)=(1, 39321, 19939, 32768)
 			ReorderTraces/W=$graph _front_, {$trace}
 		else
-			ModifyGraph/W=$graph rgb($trace)=(65535,0,0,32768)
+			ModifyGraph/W=$graph rgb($trace)=(65535, 0, 0, 32768)
 		endif
 	endfor
 End
 
 static Function AR_HandleRanges(graph, [removeRange])
-	string graph
+	string   graph
 	variable removeRange
 
 	variable first, last, substituteValue
@@ -217,9 +217,9 @@ static Function AR_HandleRanges(graph, [removeRange])
 		removeRange = !!removeRange
 	endif
 
-	DFREF dfr = AR_GetFolder(graph)
-	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
-	WAVE artefactWave  = GetArtefactRemovalDataWave(dfr)
+	DFREF  dfr          = AR_GetFolder(graph)
+	WAVE/T listBoxWave  = GetArtefactRemovalListWave(dfr)
+	WAVE   artefactWave = GetArtefactRemovalDataWave(dfr)
 
 	AR_RemoveTraces(graph)
 
@@ -227,8 +227,8 @@ static Function AR_HandleRanges(graph, [removeRange])
 		return NaN
 	endif
 
-	DFREF sweepDFR = AR_GetSweepFolder(graph)
-	WAVE/WAVE ADCs = GetDAQDataSingleColumnWaves(sweepDFR, XOP_CHANNEL_TYPE_ADC)
+	DFREF     sweepDFR = AR_GetSweepFolder(graph)
+	WAVE/WAVE ADCs     = GetDAQDataSingleColumnWaves(sweepDFR, XOP_CHANNEL_TYPE_ADC)
 
 	ASSERT(DimSize(listBoxWave, ROWS) == DimSize(artefactWave, ROWS), "Unexpected dimension sizes")
 
@@ -239,7 +239,7 @@ static Function AR_HandleRanges(graph, [removeRange])
 			WAVE/Z AD = ADCs[j]
 
 			if(removeRange && i == 0 && WaveExists(AD))
-				AddEntryIntoWaveNoteAsList(AD, NOTE_KEY_ARTEFACT_REMOVAL, str="true", replaceEntry=1)
+				AddEntryIntoWaveNoteAsList(AD, NOTE_KEY_ARTEFACT_REMOVAL, str = "true", replaceEntry = 1)
 			endif
 
 			if(!WaveExists(AD))
@@ -247,7 +247,7 @@ static Function AR_HandleRanges(graph, [removeRange])
 			endif
 
 			WAVE/T/Z leftAxisMatches = TUD_GetUserDataAsWave(graph, "YAXIS", keys = {"channelType", "channelNumber"}, \
-						                                     values = {"AD", num2str(j)})
+			                                                 values = {"AD", num2str(j)})
 			ASSERT(WaveExists(leftAxisMatches) && DimSize(leftAxisMatches, ROWS) >= 1, "Expected one hit")
 			leftAxis = leftAxisMatches[0]
 
@@ -274,7 +274,7 @@ static Function AR_HandleRanges(graph, [removeRange])
 
 				AppendToGraph/W=$graph/L=$leftAxis/B=$bottomAxis AD[first, last]/TN=$traceName
 				ModifyGraph/W=$graph mode($traceName)=3, marker($traceName)=8
-				ModifyGraph/W=$graph msize($traceName)=0.5,rgb($traceName)=(65535,0,0,32768)
+				ModifyGraph/W=$graph msize($traceName)=0.5, rgb($traceName)=(65535, 0, 0, 32768)
 				TUD_SetUserData(graph, traceName, "AR_INDEX", num2str(i))
 				TUD_SetUserData(graph, traceName, "traceType", "ArtefactRemoval")
 			endif
@@ -311,7 +311,7 @@ End
 /// @brief Updates the `AR_SWEEPFOLDER` user data of the artefact removal panel
 static Function AR_SetSweepFolder(device, sweepDFR)
 	string device
-	DFREF sweepDFR
+	DFREF  sweepDFR
 
 	BSP_SetFolder(device, sweepDFR, MIES_BSP_AR_SWEEPFOLDER)
 End
@@ -342,7 +342,7 @@ Function AR_SetVarProcCutoffLength(sva) : SetVariableControl
 		case 2: // Enter key
 		case 3: // Live update
 			device = GetMainWindow(sva.win)
-			graph = GetMainWindow(device)
+			graph  = GetMainWindow(device)
 			AR_UpdateListBoxWave(device)
 			AR_HandleRanges(graph)
 			break
@@ -358,7 +358,7 @@ Function AR_ButtonProc_RemoveRanges(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			win = ba.win
+			win   = ba.win
 			graph = GetMainWindow(win)
 			SetCheckBoxState(win, "check_auto_remove", CHECKBOX_SELECTED)
 			UpdateSweepPlot(graph)
@@ -370,9 +370,9 @@ Function AR_ButtonProc_RemoveRanges(ba) : ButtonControl
 End
 
 Function AR_UpdateTracesIfReq(graph, sweepFolder, sweepNo)
-	string graph
+	string   graph
 	variable sweepNo
-	DFREF sweepFolder
+	DFREF    sweepFolder
 
 	string device
 
@@ -386,7 +386,7 @@ Function AR_UpdateTracesIfReq(graph, sweepFolder, sweepNo)
 	ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
 
 	DFREF singleSweepDFR = GetSingleSweepFolder(sweepFolder, sweepNo)
-	WAVE ranges = AR_ComputeRanges(singleSweepDFR, sweepNo, numericalValues)
+	WAVE  ranges         = AR_ComputeRanges(singleSweepDFR, sweepNo, numericalValues)
 	AR_UpdatePanel(device, ranges, singleSweepDFR)
 	AR_HandleRanges(graph)
 End

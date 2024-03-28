@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -14,7 +14,7 @@ static Constant ACC_MAX = 1024
 static Constant GEN_TYPE_NUMBER = 0x1
 /// ModifyGraph keyword expects multiple entries (A, B, ...)
 /// numEntryCols denotes how many entries are inside (..)
-static Constant GEN_TYPE_WAVE   = 0x2
+static Constant GEN_TYPE_WAVE = 0x2
 
 /// Generate code for ModifyGraph acceleration, needs whitespace cleanup
 Function GenerateAcceleratedModifyGraphCase()
@@ -23,8 +23,8 @@ Function GenerateAcceleratedModifyGraphCase()
 
 	// BEGIN CHANGE ME
 	variable power = 10
-	Make/FREE/T keyword    = {"rgb", "hideTrace"}
-	Make/FREE type         = {GEN_TYPE_WAVE, GEN_TYPE_NUMBER}
+	Make/FREE/T keyword = {"rgb", "hideTrace"}
+	Make/FREE type = {GEN_TYPE_WAVE, GEN_TYPE_NUMBER}
 	Make/FREE numEntryCols = {4, NaN}
 	// END CHANGE ME
 
@@ -47,7 +47,7 @@ static Function/S GenerateValueString(variable type, variable keywordIndex, vari
 			break
 		case GEN_TYPE_WAVE:
 			for(i = 0; i < numEntryCols; i += 1)
-				sprintf str "s%d[h%s][%d]%s", keywordIndex, indexStr, i, SelectString(i < numEntryCols - 1, "", ",")
+				sprintf str, "s%d[h%s][%d]%s", keywordIndex, indexStr, i, SelectString(i < numEntryCols - 1, "", ",")
 				result += str
 			endfor
 

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=AnalysisFuncParamTesting
@@ -38,12 +38,12 @@ static Function UpgradeToEncodedAnalysisParamsWorks()
 	CHECK_GE_VAR(GetWaveVersion(WPT), 10)
 
 	expected = ""
-	actual = WPT[10][%Set][INDEP_EPOCH_TYPE]
+	actual   = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EQUAL_STR(expected, actual)
 
 	// URL encoded text values
 	expected = "a:variable=1.234,b:string=hi%20there,c:textwave=%20|zz|,d:wave=1|2|3|,"
-	actual = WPT[29][%Set][INDEP_EPOCH_TYPE]
+	actual   = WPT[29][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EQUAL_STR(expected, actual)
 End
 
@@ -303,7 +303,7 @@ static Function AcceptsAllTextWaveContents()
 	CHECK_EMPTY_STR(params)
 
 	Make/T/FREE refData = {"1", "2", "3", "|"}
-	refName   = "abcd"
+	refName = "abcd"
 
 	AFH_AddAnalysisParameter(stimSet, refName, wv = refData)
 End
@@ -328,11 +328,11 @@ static Function WorksWithVariable()
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
-	names = AFH_GetListOfAnalysisParamNames(params)
+	names    = AFH_GetListOfAnalysisParamNames(params)
 	CHECK_EQUAL_STR(names, refNames)
 
 	refType = "variable"
-	type = AFH_GetAnalysisParamType(refName, params)
+	type    = AFH_GetAnalysisParamType(refName, params)
 	CHECK_EQUAL_STR(refType, type)
 
 	val = AFH_GetAnalysisParamNumerical(refName, params)
@@ -359,11 +359,11 @@ static Function WorksWithString()
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
-	names = AFH_GetListOfAnalysisParamNames(params)
+	names    = AFH_GetListOfAnalysisParamNames(params)
 	CHECK_EQUAL_STR(names, refNames)
 
 	refType = "string"
-	type = AFH_GetAnalysisParamType(refName, params)
+	type    = AFH_GetAnalysisParamType(refName, params)
 	CHECK_EQUAL_STR(refType, type)
 
 	val = AFH_GetAnalysisParamTextual(refName, params)
@@ -384,17 +384,17 @@ static Function WorksWithNumericWave()
 	CHECK_EMPTY_STR(params)
 
 	Make/D/FREE refData = {1, 2, 3, 4}
-	refName   = "abcde"
+	refName = "abcde"
 
 	AFH_AddAnalysisParameter(stimSet, refName, wv = refData)
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
-	names = AFH_GetListOfAnalysisParamNames(params)
+	names    = AFH_GetListOfAnalysisParamNames(params)
 	CHECK_EQUAL_STR(names, refNames)
 
 	refType = "wave"
-	type = AFH_GetAnalysisParamType(refName, params)
+	type    = AFH_GetAnalysisParamType(refName, params)
 	CHECK_EQUAL_STR(refType, type)
 
 	WAVE data = AFH_GetAnalysisParamWave(refName, params)
@@ -416,17 +416,17 @@ static Function WorksWithTextWave()
 	CHECK_EMPTY_STR(params)
 
 	Make/T/FREE refData = {"1", "2", "3", "hi_there"}
-	refName   = "abcdef"
+	refName = "abcdef"
 
 	AFH_AddAnalysisParameter(stimSet, refName, wv = refData)
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
-	names = AFH_GetListOfAnalysisParamNames(params)
+	names    = AFH_GetListOfAnalysisParamNames(params)
 	CHECK_EQUAL_STR(names, refNames)
 
 	refType = "textwave"
-	type = AFH_GetAnalysisParamType(refName, params)
+	type    = AFH_GetAnalysisParamType(refName, params)
 	CHECK_EQUAL_STR(refType, type)
 
 	WAVE/T data = AFH_GetAnalysisParamTextWave(refName, params)
@@ -454,7 +454,7 @@ static Function ReplacesDuplicateEntries()
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = "a1;a2;"
-	names = AFH_GetListOfAnalysisParamNames(params)
+	names    = AFH_GetListOfAnalysisParamNames(params)
 	CHECK_EQUAL_STR(names, refNames)
 
 	refString = "a11"
@@ -587,28 +587,28 @@ End
 
 Function GAPT_ReturnsEmptyForNonExisting()
 
-	string result = AFH_GetAnalysisparamTextual("name", "otherName:string=0")
+	string result   = AFH_GetAnalysisparamTextual("name", "otherName:string=0")
 	string expected = ""
 	CHECK_EQUAL_STR(result, expected)
 End
 
 Function GAPT_Works()
 
-	string result = AFH_GetAnalysisparamTextual("name", "name:string=abcd")
+	string result   = AFH_GetAnalysisparamTextual("name", "name:string=abcd")
 	string expected = "abcd"
 	CHECK_EQUAL_STR(result, expected)
 End
 
 Function GAPT_WorksWithURLEncoded()
 
-	string result = AFH_GetAnalysisparamTextual("name", "name:string=%20")
+	string result   = AFH_GetAnalysisparamTextual("name", "name:string=%20")
 	string expected = " "
 	CHECK_EQUAL_STR(result, expected)
 End
 
 Function GAPT_WorksWithDefault()
 
-	string result = AFH_GetAnalysisparamTextual("name", "", defValue = "abcd")
+	string result   = AFH_GetAnalysisparamTextual("name", "", defValue = "abcd")
 	string expected = "abcd"
 	CHECK_EQUAL_STR(result, expected)
 End
@@ -776,7 +776,7 @@ Function CheckHelpStringsOfAllAnalysisFunctions()
 	for(genericFunc : GetAnalysisFunctions())
 		params = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS | OPTIONAL_PARAMS)
 
-		names = AFH_GetListOfAnalysisParamNames(params)
+		names     = AFH_GetListOfAnalysisParamNames(params)
 		numParams = ItemsInList(names)
 		for(j = 0; j < numParams; j += 1)
 			name = StringFromList(j, names)
@@ -802,7 +802,7 @@ static Function [WAVE/T required, WAVE/T optional, WAVE/T mixed] GetAllAnalysisP
 	CHECK_GT_VAR(numFuncs, 0)
 
 	Make/N=(numFuncs)/FREE/WAVE requiredParams = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], REQUIRED_PARAMS)), ";")
-	Make/N=(numFuncs)/FREE/WAVE optParams      = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], OPTIONAL_PARAMS)), ";")
+	Make/N=(numFuncs)/FREE/WAVE optParams = ListToTextWave(AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(funcs[p], OPTIONAL_PARAMS)), ";")
 
 	Concatenate/NP/FREE {requiredParams}, allRequiredParams
 	Concatenate/NP/FREE {optParams}, allOptParams
@@ -855,7 +855,7 @@ static Function [WAVE/T matchingFunctions, string type, string help] GetAnalysis
 
 	for(func : funcs)
 		namesAndTypes = AFH_GetListOfAnalysisParams(func, REQUIRED_PARAMS | OPTIONAL_PARAMS)
-		names = AFH_GetListOfAnalysisParamNames(namesAndTypes)
+		names         = AFH_GetListOfAnalysisParamNames(namesAndTypes)
 
 		if(WhichListItem(name, names, ";", 0, 0) != -1)
 			matchingFunctions[idx] = GetAbbreviationForAnalysisFunction(func)

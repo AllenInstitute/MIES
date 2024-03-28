@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=AutoTP
@@ -6,10 +6,10 @@
 static Function [STRUCT DAQSettings s] AutoTP_GetDAQSettings(string device)
 
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0_TP1" + \
-								 "__HS0_DA0_AD0_CM:IC:"       + \
-								 "__HS1_DA1_AD1_CM:IC:")
+	                             "__HS0_DA0_AD0_CM:IC:"       + \
+	                             "__HS1_DA1_AD1_CM:IC:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -38,28 +38,28 @@ End
 
 static Function/WAVE GetLBNSingleEntry_IGNORE(string device)
 
-	WAVE TPStorage = GetTPstorage(device)
+	WAVE TPStorage       = GetTPstorage(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
 	WAVE/WAVE wv = GetEntriesWave_IGNORE()
 
-	wv[%amplitudePass_HS0] = TP_GetValuesFromTPStorage(TPStorage, 0, "AutoTPAmplitude", inf)
-	wv[%amplitudePass_HS1] = TP_GetValuesFromTPStorage(TPStorage, 1, "AutoTPAmplitude", inf)
+	wv[%amplitudePass_HS0] = TP_GetValuesFromTPStorage(TPStorage, 0, "AutoTPAmplitude", Inf)
+	wv[%amplitudePass_HS1] = TP_GetValuesFromTPStorage(TPStorage, 1, "AutoTPAmplitude", Inf)
 
-	wv[%baselinePass_HS0] = TP_GetValuesFromTPStorage(TPStorage, 0, "AutoTPBaseline", inf)
-	wv[%baselinePass_HS1] = TP_GetValuesFromTPStorage(TPStorage, 1, "AutoTPBaseline", inf)
+	wv[%baselinePass_HS0] = TP_GetValuesFromTPStorage(TPStorage, 0, "AutoTPBaseline", Inf)
+	wv[%baselinePass_HS1] = TP_GetValuesFromTPStorage(TPStorage, 1, "AutoTPBaseline", Inf)
 
-	wv[%baselineRangeExceeded_HS0] = TP_GetValuesFromTPStorage(TPStorage, 0, "AutoTPBaselineRangeExceeded", inf)
-	wv[%baselineRangeExceeded_HS1] = TP_GetValuesFromTPStorage(TPStorage, 1, "AutoTPBaselineRangeExceeded", inf)
+	wv[%baselineRangeExceeded_HS0] = TP_GetValuesFromTPStorage(TPStorage, 0, "AutoTPBaselineRangeExceeded", Inf)
+	wv[%baselineRangeExceeded_HS1] = TP_GetValuesFromTPStorage(TPStorage, 1, "AutoTPBaselineRangeExceeded", Inf)
 
-	wv[%baselineFitResult_HS0] = TP_GetValuesFromTPStorage(TPStorage, 0, "AutoTPBaselineFitResult", inf)
-	wv[%baselineFitResult_HS1] = TP_GetValuesFromTPStorage(TPStorage, 1, "AutoTPBaselineFitResult", inf)
+	wv[%baselineFitResult_HS0] = TP_GetValuesFromTPStorage(TPStorage, 0, "AutoTPBaselineFitResult", Inf)
+	wv[%baselineFitResult_HS1] = TP_GetValuesFromTPStorage(TPStorage, 1, "AutoTPBaselineFitResult", Inf)
 
-	wv[%autoTPEnable]  = GetLastSetting(numericalValues, NaN, "TP Auto", TEST_PULSE_MODE)
-	wv[%autoTPQC]      = GetLastSetting(numericalValues, NaN, "TP Auto QC", TEST_PULSE_MODE)
-	wv[%amplitudeIC]   = GetLastSetting(numericalValues, NaN, TP_AMPLITUDE_IC_ENTRY_KEY, TEST_PULSE_MODE)
-	wv[%baselineFrac]  = GetLastSetting(numericalValues, NaN, "TP Baseline Fraction", TEST_PULSE_MODE)
+	wv[%autoTPEnable] = GetLastSetting(numericalValues, NaN, "TP Auto", TEST_PULSE_MODE)
+	wv[%autoTPQC]     = GetLastSetting(numericalValues, NaN, "TP Auto QC", TEST_PULSE_MODE)
+	wv[%amplitudeIC]  = GetLastSetting(numericalValues, NaN, TP_AMPLITUDE_IC_ENTRY_KEY, TEST_PULSE_MODE)
+	wv[%baselineFrac] = GetLastSetting(numericalValues, NaN, "TP Baseline Fraction", TEST_PULSE_MODE)
 
 	return wv
 End
@@ -70,8 +70,8 @@ static Function AutoTP_OptimumValues_preAcq(string device)
 
 	// 2 HS in IC mode
 	// both have the ideal values
-	overrideResults[][0, 1][%Factor]  = TP_BASELINE_RATIO_OPT
-	overrideResults[][0, 1][%Voltage] = 0.015 // V
+	overrideResults[][0, 1][%Factor]            = TP_BASELINE_RATIO_OPT
+	overrideResults[][0, 1][%Voltage]           = 0.015                     // V
 	overrideResults[][0, 1][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = 1)
@@ -117,15 +117,15 @@ End
 
 static Function AutoTP_BadValues_preAcq(string device)
 
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 0), val=1)
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 0), val = 1)
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val = 1)
 
 	WAVE overrideResults = MIES_TP#TP_CreateOverrideResults(device, TP_OVERRIDE_RESULTS_AUTO_TP)
 
 	// 2 HS in IC mode
 	// both have very bad values, the fit is good
 	overrideResults[][0, 1][%Factor]            = TP_BASELINE_RATIO_LOW / 4
-	overrideResults[][0, 1][%Voltage]           = 0.020 // V
+	overrideResults[][0, 1][%Voltage]           = 0.020                     // V
 	overrideResults[][0, 1][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = 1)
@@ -176,12 +176,12 @@ static Function AutoTP_MixedOptimumBadValues_preAcq(string device)
 
 	// HS0: ideal values
 	overrideResults[][0][%Factor]            = TP_BASELINE_RATIO_OPT
-	overrideResults[][0][%Voltage]           = 0.015 // V
+	overrideResults[][0][%Voltage]           = 0.015                     // V
 	overrideResults[][0][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
 
 	// HS1: bad values
 	overrideResults[][1][%Factor]            = TP_BASELINE_RATIO_LOW / 4
-	overrideResults[][1][%Voltage]           = 0.020 // V
+	overrideResults[][1][%Voltage]           = 0.020                     // V
 	overrideResults[][1][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = 1)
@@ -230,7 +230,7 @@ static Function AutoTP_SpecialCases_preAcq(string device)
 
 	// 2 HS in IC mode
 	overrideResults[][0, 1][%Factor]  = TP_BASELINE_RATIO_OPT
-	overrideResults[][0, 1][%Voltage] = 0.050 // V
+	overrideResults[][0, 1][%Voltage] = 0.050                 // V
 
 	overrideResults[][0, 1][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
 

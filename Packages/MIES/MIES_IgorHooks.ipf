@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -28,7 +28,7 @@ static Function IH_KillTemporaries()
 	KillStrings/Z dfrHW:ITCDeviceList
 
 	// try to delete all trash folders
-	trashFolders = GetListOfObjects(dfr, TRASH_FOLDER_PREFIX + ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath=1)
+	trashFolders = GetListOfObjects(dfr, TRASH_FOLDER_PREFIX + ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath = 1)
 
 	numFolders = ItemsInList(trashFolders)
 	for(i = 0; i < numFolders; i += 1)
@@ -39,15 +39,15 @@ static Function IH_KillTemporaries()
 	RemoveEmptyDataFolder(dfr)
 
 	DFREF dfr = GetWaveBuilderDataPath()
-	list = GetListOfObjects(dfr, SEGMENTWAVE_SPECTRUM_PREFIX + ".*", fullPath=1)
+	list = GetListOfObjects(dfr, SEGMENTWAVE_SPECTRUM_PREFIX + ".*", fullPath = 1)
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 End
 
 /// @brief Remove the amplifier connection waves
 Function IH_RemoveAmplifierConnWaves()
 
-	KillOrMoveToTrash(wv=GetAmplifierTelegraphServers())
-	KillOrMoveToTrash(wv=GetAmplifierMultiClamps())
+	KillOrMoveToTrash(wv = GetAmplifierTelegraphServers())
+	KillOrMoveToTrash(wv = GetAmplifierMultiClamps())
 End
 
 /// @brief Delete all wavebuilder stim sets to save memory
@@ -55,12 +55,12 @@ static Function IH_KillStimSets()
 
 	string list, path
 
-	ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC, WBstimSetList=list)
+	ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC, WBstimSetList = list)
 	path = GetDataFolder(1, GetWBSvdStimSetDAPath())
 	list = AddPrefixToEachListItem(path, list)
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 
-	ST_GetStimsetList(channelType = CHANNEL_TYPE_TTL, WBstimSetList=list)
+	ST_GetStimsetList(channelType = CHANNEL_TYPE_TTL, WBstimSetList = list)
 	path = GetDataFolder(1, GetWBSvdStimSetTTLPath())
 	list = AddPrefixToEachListItem(path, list)
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
@@ -100,8 +100,8 @@ static Function IgorStartOrNewHook(igorApplicationNameStr)
 End
 
 static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
-	Variable rN, kind
-	String fileName, path, type, creator
+	variable rN, kind
+	string fileName, path, type, creator
 
 	ExperimentModified 0
 
@@ -119,8 +119,8 @@ End
 #else
 
 static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
-	Variable rN, kind
-	String fileName, path, type, creator
+	variable rN, kind
+	string fileName, path, type, creator
 
 	// don't try cleaning up if the user never used MIES
 	if(!DataFolderExists(GetMiesPathAsString()))
@@ -255,7 +255,7 @@ End
 static Function IgorStartOrNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
-	string miesVersion
+	string   miesVersion
 	variable modifiedBefore
 
 	ExperimentModified
@@ -268,10 +268,10 @@ static Function IgorStartOrNewHook(igorApplicationNameStr)
 
 	miesVersion = ROStr(GetMiesVersion())
 	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"version", "computername", "username", "igorinfo"}, \
-	                                    values = {StringFromList(0, miesVersion, "\r"),             \
-	                                              GetEnvironmentVariable("COMPUTERNAME"),           \
-	                                              IgorInfo(7),                                      \
-	                                              IgorInfo(0)})
+	             values = {StringFromList(0, miesVersion, "\r"),                                    \
+	                       GetEnvironmentVariable("COMPUTERNAME"),                                  \
+	                       IgorInfo(7),                                                             \
+	                       IgorInfo(0)})
 
 	StartZeroMQSockets()
 
@@ -286,8 +286,8 @@ End
 
 static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textChangeStr)
 	variable changeCode
-	string procedureWindowTitleStr
-	string textChangeStr
+	string   procedureWindowTitleStr
+	string   textChangeStr
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
@@ -303,7 +303,7 @@ static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textCh
 	// dito
 	AssertOnAndClearRTError()
 	try
-		ASYNC_Stop(timeout=5); AbortOnRTE
+		ASYNC_Stop(timeout = 5); AbortOnRTE
 	catch
 		ClearRTError()
 	endtry
@@ -323,7 +323,7 @@ static Function AfterCompiledHook()
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	ASYNC_Start(threadprocessorCount, disableTask=1)
+	ASYNC_Start(threadprocessorCount, disableTask = 1)
 
 	ShowTraceInfoTags()
 
@@ -338,7 +338,7 @@ End
 
 #endif
 
-Function IH_ResetScaling(struct WMWinHookStruct &s)
+Function IH_ResetScaling(STRUCT WMWinHookStruct &s)
 	string activeSW, graph, list, win
 	variable i, numEntries
 
@@ -362,7 +362,7 @@ Function IH_ResetScaling(struct WMWinHookStruct &s)
 			endif
 
 			// if not we rescale all subgraphs
-			list = GetAllWindows(graph)
+			list       = GetAllWindows(graph)
 			numEntries = ItemsInList(list)
 			for(i = 0; i < numEntries; i += 1)
 				win = StringFromList(i, list)

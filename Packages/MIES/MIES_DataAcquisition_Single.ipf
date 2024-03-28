@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -17,11 +17,11 @@
 /// @param useBackground [optional, defaults to background checkbox setting in the DA_Ephys
 ///                      panel]
 Function DQS_StartDAQSingleDevice(device, [useBackground])
-	string device
+	string   device
 	variable useBackground
 
-	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1, \
-		"Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
+	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1,                          \
+	       "Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
 
 	if(ParamIsDefault(useBackground))
 		useBackground = DAG_GetNumericalValue(device, "Check_Settings_BackgrndDataAcq")
@@ -56,13 +56,13 @@ Function DQS_DataAcq(device)
 
 	NVAR deviceID = $GetDAQDeviceID(device)
 
-	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags = HARDWARE_ABORT_ON_ERROR)
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartDAQDeviceTimer(device)
 	endif
 
-	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 	AS_HandlePossibleTransition(device, AS_MID_SWEEP)
 
 	gotTPChannels = GotTPChannelsOnADCs(device)
@@ -70,8 +70,8 @@ Function DQS_DataAcq(device)
 	do
 		DoXOPIdle
 
-		moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos, flags=HARDWARE_ABORT_ON_ERROR)
-		SCOPE_UpdateOscilloscopeData(device, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
+		moreData = HW_ITC_MoreData(deviceID, fifoPos = fifoPos, flags = HARDWARE_ABORT_ON_ERROR)
+		SCOPE_UpdateOscilloscopeData(device, DATA_ACQUISITION_MODE, fifoPos = fifoPos)
 
 		if(gotTPChannels)
 			SCOPE_UpdateGraph(device, DATA_ACQUISITION_MODE)
@@ -94,13 +94,13 @@ Function DQS_BkrdDataAcq(device)
 	string device
 
 	NVAR deviceID = $GetDAQDeviceID(device)
-	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags = HARDWARE_ABORT_ON_ERROR)
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartDAQDeviceTimer(device)
 	endif
 
-	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 	AS_HandlePossibleTransition(device, AS_MID_SWEEP)
 
 	DQS_StartBackgroundFifoMonitor()
@@ -115,13 +115,13 @@ static Function DQS_StopDataAcq(string device, variable stopReason, [variable fo
 	endif
 
 	NVAR deviceID = $GetDAQDeviceID(device)
-	HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1, zeroDAC=1, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1, zeroDAC = 1, flags = HARDWARE_ABORT_ON_ERROR)
 	SWS_SaveAcquiredData(device, forcedStop = forcedStop)
 
 	if(forcedStop)
 		DQ_StopOngoingDAQ(device, stopReason)
 	else
-		RA_ContinueOrStop(device, multiDevice=0)
+		RA_ContinueOrStop(device, multiDevice = 0)
 	endif
 End
 
@@ -137,12 +137,12 @@ Function DQS_FIFOMonitor(s)
 
 	variable fifoPos, moreData, anaFuncReturn, result
 
-	SVAR runningDevice       = $GetRunningSingleDevice()
-	NVAR deviceID = $GetDAQDeviceID(runningDevice)
+	SVAR runningDevice = $GetRunningSingleDevice()
+	NVAR deviceID      = $GetDAQDeviceID(runningDevice)
 
-	moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos, flags=HARDWARE_ABORT_ON_ERROR)
+	moreData = HW_ITC_MoreData(deviceID, fifoPos = fifoPos, flags = HARDWARE_ABORT_ON_ERROR)
 
-	SCOPE_UpdateOscilloscopeData(runningDevice, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
+	SCOPE_UpdateOscilloscopeData(runningDevice, DATA_ACQUISITION_MODE, fifoPos = fifoPos)
 
 	result = AS_HandlePossibleTransition(runningDevice, AS_MID_SWEEP)
 
@@ -211,7 +211,7 @@ Function DQS_Timer(s)
 
 	NVAR repeatedAcqStart    = $GetRepeatedAcquisitionStart()
 	NVAR repeatedAcqDuration = $GetRepeatedAcquisitionDuration()
-	SVAR runningDevice         = $GetRunningSingleDevice()
+	SVAR runningDevice       = $GetRunningSingleDevice()
 
 	elapsedTime = RelativeNowHighPrec() - repeatedAcqStart
 	timeLeft    = max(repeatedAcqDuration - elapsedTime, 0)

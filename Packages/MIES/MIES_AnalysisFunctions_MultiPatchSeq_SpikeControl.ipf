@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -19,7 +19,7 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string dev
 	string key, msg
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL, query = 1)
 	WAVE trialsInSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
@@ -85,8 +85,8 @@ static Function/WAVE SC_GetHeadstageQCForSetCount(string device, variable sweepN
 	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 	headstage = GetRowIndex(statusHS, val = 1)
 
-	DAC = AFH_GetDACFromHeadstage(device, headstage)
-	stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
+	DAC         = AFH_GetDACFromHeadstage(device, headstage)
+	stimset     = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 	sweepsInSet = IDX_NumberOfSweepsInSet(stimset)
 
 	// now we need to check that we have for every set sweep count
@@ -171,11 +171,11 @@ static Function SC_LastSweepInSet(string device, variable sweepNo, variable head
 
 	variable DAC, sweepsInSet
 
-	DAC = AFH_GetHeadstageFromDAC(device, headstage)
+	DAC         = AFH_GetHeadstageFromDAC(device, headstage)
 	sweepsInSet = IDX_NumberOfSweepsInSet(AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC))
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE sweepSetCount = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
+	WAVE sweepSetCount   = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
 
 	return (sweepSetCount[headstage] + 1) == sweepsInSet
 End
@@ -244,10 +244,10 @@ static Function [WAVE properties, WAVE/WAVE propertiesWaves] SC_GetPulseAverageP
 	string databrowser
 
 	databrowser = DB_FindDataBrowser(device)
-	DFREF dfr = BSP_GetFolder(databrowser, MIES_BSP_PANEL_FOLDER)
-	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(dfr)
-	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
+	DFREF     dfr                   = BSP_GetFolder(databrowser, MIES_BSP_PANEL_FOLDER)
+	DFREF     pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(dfr)
+	WAVE      properties            = GetPulseAverageProperties(pulseAverageHelperDFR)
+	WAVE/WAVE propertiesWaves       = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 
 	return [properties, propertiesWaves]
 End
@@ -257,8 +257,8 @@ static Function/WAVE SC_GetPulseIndizes(WAVE properties, WAVE/WAVE propertiesWav
 	variable idx, size, endRow, i, headstageProp, region, pulseIndex, sweepNoProp, pulseFailedState
 	string entry, msg
 
-	size = GetNumberFromWaveNote(properties, NOTE_INDEX)
-	endRow = limit(size - 1, 0, inf)
+	size   = GetNumberFromWaveNote(properties, NOTE_INDEX)
+	endRow = limit(size - 1, 0, Inf)
 
 	WAVE/Z indizesSweep = FindIndizes(properties, colLabel = "Sweep", var = sweepNo, endRow = endRow)
 	ASSERT(WaveExists(indizesSweep), "Could not find sweeps with sweepNo")
@@ -294,10 +294,10 @@ static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNu
 			continue
 		endif
 
-		sweepNoProp = properties[idx][%Sweep]
+		sweepNoProp   = properties[idx][%Sweep]
 		headstageProp = properties[idx][%Headstage]
-		pulseIndex = properties[idx][%Pulse]
-		region = properties[idx][%Region]
+		pulseIndex    = properties[idx][%Pulse]
+		region        = properties[idx][%Region]
 
 		WAVE noteWave = propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
 
@@ -312,7 +312,7 @@ static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNu
 
 		// coordinates are in ms of the pulse
 		pulseStart = GetNumberFromWaveNote(noteWave, NOTE_KEY_PULSE_START)
-		pulseEnd = GetNumberFromWaveNote(noteWave, NOTE_KEY_PULSE_END)
+		pulseEnd   = GetNumberFromWaveNote(noteWave, NOTE_KEY_PULSE_END)
 
 		numSpikes = DimSize(spikePositions, ROWS)
 
@@ -410,9 +410,9 @@ End
 /// @brief Determine the spike counts state for all headstages
 static Function/WAVE SC_SpikeCountsCalc(string device, WAVE minimum, WAVE maximum, variable idealNumberOfSpikes)
 	variable i
-	string msg
+	string   msg
 
-	WAVE state = LBN_GetNumericWave()
+	WAVE state    = LBN_GetNumericWave()
 	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -560,8 +560,8 @@ static Function/WAVE SC_RegionBlanked(WAVE data, variable totalOnsetDelay, WAVE/
 	regionEnd[]   = str2num(StringFromList(1, oodDAQRegion[p], "-")) + totalOnsetDelay
 
 	for(i = 0; i < numEntries; i += 1)
-		first = ScaleToIndex(data, regionStart[i], ROWS)
-		last  = ScaleToIndex(data, regionEnd[i], ROWS)
+		first             = ScaleToIndex(data, regionStart[i], ROWS)
+		last              = ScaleToIndex(data, regionEnd[i], ROWS)
 		data[first, last] = NaN
 	endfor
 
@@ -580,7 +580,7 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string device, variable sweepN
 	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 	headstage = GetRowIndex(statusHS, val = 1)
 
-	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_FAILED_PULSE_LEVEL, query = 1)
+	key              = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_FAILED_PULSE_LEVEL, query = 1)
 	failedPulseLevel = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	ASSERT(IsFinite(failedPulseLevel), "Invalid failed pulse level")
 
@@ -588,11 +588,11 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string device, variable sweepN
 
 	WAVE sweepWave = GetSweepWave(device, sweepNo)
 
-	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
+	WAVE statusHS                   = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 	WAVE spontaneousSpikingCheckLBN = LBN_GetNumericWave()
 	spontaneousSpikingCheckLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
 
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE     textualValues = GetLBTextualValues(device)
 	WAVE/Z/T oodDAQRegions = GetLastSetting(textualValues, sweepNo, "oodDAQ regions", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(oodDAQRegions), "Could not find oodDAQ regions")
 
@@ -602,7 +602,7 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string device, variable sweepN
 			continue
 		endif
 
-		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(device, sweepWave, i, XOP_CHANNEL_TYPE_ADC)
+		WAVE singleAD     = AFH_ExtractOneDimDataFromSweep(device, sweepWave, i, XOP_CHANNEL_TYPE_ADC)
 		WAVE oodDAQRegion = ListToTextWave(oodDAQRegions[i], ";")
 
 		SC_RegionBlanked(singleAD, totalOnsetDelay, oodDAQRegion)
@@ -611,7 +611,7 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string device, variable sweepN
 		if(TestOverrideActive())
 			WAVE/T overrideResults = GetOverrideResults()
 
-			entry = overrideResults[sweepNo][i][0][0]
+			entry   = overrideResults[sweepNo][i][0][0]
 			maximum = NumberByKey("SpontaneousSpikeMax", entry)
 		else
 			maximum = WaveMax(singleAD)
@@ -696,8 +696,8 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 	string daScaleOperator, daScaleSpikePositionOperator, daScaleTooManySpikesOperator
 	string key, msg
 
-	daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", params)
-	daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", params)
+	daScaleModifier              = AFH_GetAnalysisParamNumerical("DAScaleModifier", params)
+	daScaleOperator              = AFH_GetAnalysisParamTextual("DAScaleOperator", params)
 	daScaleSpikePositionModifier = AFH_GetAnalysisParamNumerical("DAScaleSpikePositionModifier", params)
 	daScaleSpikePositionOperator = AFH_GetAnalysisParamTextual("DAScaleSpikePositionOperator", params)
 	daScaleTooManySpikesModifier = AFH_GetAnalysisParamNumerical("DaScaleTooManySpikesModifier", params)
@@ -706,8 +706,8 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 	autobiasModifier = AFH_GetAnalysisParamNumerical("AutoBiasBaselineModifier", params)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
-	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
+	WAVE textualValues   = GetLBTextualValues(device)
+	WAVE statusHS        = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, query = 1)
 	WAVE/T spikeCountStateLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
@@ -811,22 +811,22 @@ Function/S SC_SpikeControl_GetHelp(name)
 			return "[Optional, defaults to infinity] A sweep is rerun this many times on a failed headstage."
 			break
 		case "DAScaleOperator":
-			return "Set the math operator to use for combining the DAScale and the "                          \
+			return "Set the math operator to use for combining the DAScale and the "                         \
 			       + "too few spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 			break
 		case "DAScaleModifier":
 			return "Modifier value to the DA Scale of headstages for too few spikes"
 			break
 		case "DAScaleSpikePositionOperator":
-			return "Set the math operator to use for combining the DAScale and the "                           \
+			return "Set the math operator to use for combining the DAScale and the "                         \
 			       + "spike position modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 			break
 		case "DAScaleSpikePositionModifier":
 			return "Modifier value to the DA Scale of headstages with failing spike positions."
 			break
 		case "DaScaleTooManySpikesOperator":
-			return "Set the math operator to use for combining the DAScale and the "                           \
-				   + "too many spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
+			return "Set the math operator to use for combining the DAScale and the "                          \
+			       + "too many spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 			break
 		case "DaScaleTooManySpikesModifier":
 			return "Modifier value to the DA Scale of headstages for too many spikes"
@@ -846,7 +846,7 @@ Function/S SC_SpikeControl_GetHelp(name)
 	endswitch
 End
 
-Function/S SC_SpikeControl_CheckParam(string name, struct CheckParametersStruct &s)
+Function/S SC_SpikeControl_CheckParam(string name, STRUCT CheckParametersStruct &s)
 
 	variable val, modifier
 	string str, operator
@@ -969,7 +969,7 @@ End
 ///
 /// The graphs were made with http://asciiflow.com.
 Function SC_SpikeControl(device, s)
-	string device
+	string                      device
 	STRUCT AnalysisFunction_V3 &s
 
 	variable i, index, ret, headstagePassed, sweepPassed, val, failedPulseLevel, maxTrialsAllowed, minimumSpikePosition
@@ -1000,8 +1000,8 @@ Function SC_SpikeControl(device, s)
 			if(!BSP_HasBoundDevice(bsPanel))
 				PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 				databrowser = DB_FindDataBrowser(device)
-				bsPanel = BSP_GetPanel(databrowser)
-				scPanel = BSP_GetSweepControlsPanel(databrowser)
+				bsPanel     = BSP_GetPanel(databrowser)
+				scPanel     = BSP_GetSweepControlsPanel(databrowser)
 			endif
 
 			if(IsControlDisabled(bsPanel, "check_BrowserSettings_OVS"))
@@ -1026,15 +1026,15 @@ Function SC_SpikeControl(device, s)
 
 			WAVE settingsLBN = LBN_GetNumericWave()
 			settingsLBN[INDEP_HEADSTAGE] = failedPulseLevel
-			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_FAILED_PULSE_LEVEL)
+			key                          = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_FAILED_PULSE_LEVEL)
 			ED_AddEntryToLabnotebook(device, key, settingsLBN, overrideSweepNo = s.sweepNo)
 
 			idealNumberOfSpikes = AFH_GetAnalysisParamNumerical("IdealNumberOfSpikesPerPulse", s.params)
 			PGC_SetAndActivateControl(bsPanel, "setvar_pulseAver_numberOfSpikes", val = idealNumberOfSpikes)
 
-			settingsLBN = NaN
+			settingsLBN                  = NaN
 			settingsLBN[INDEP_HEADSTAGE] = idealNumberOfSpikes
-			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS)
+			key                          = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS)
 			ED_AddEntryToLabnotebook(device, key, settingsLBN, overrideSweepNo = s.sweepNo)
 
 			// turn on PA plot at the end to skip expensive updating
@@ -1057,8 +1057,8 @@ Function SC_SpikeControl(device, s)
 
 				DAC = AFH_GetDACFromHeadstage(device, i)
 				ASSERT(IsFinite(DAC), "Unexpected unassociated DAC")
-				stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
-				stimsets = AddListItem(stimset, stimsets, ";", inf)
+				stimset  = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
+				stimsets = AddListItem(stimset, stimsets, ";", Inf)
 			endfor
 
 			if(ItemsInList(GetUniqueTextEntriesFromList(stimsets)) > 1)
@@ -1071,7 +1071,7 @@ Function SC_SpikeControl(device, s)
 			// remove once https://github.com/AllenInstitute/MIES/issues/671 is resolved
 			PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = 500)
 			PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = 1000)
-			PGC_SetAndActivateControl(device,"Check_DataAcq1_dDAQOptOv", val = 1)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = 1)
 			PGC_SetAndActivateControl(device, "setvar_DataAcq_dDAQDelay", val = 0)
 			PGC_SetAndActivateControl(device, "setvar_DataAcq_dDAQOptOvPre", val = 0)
 			PGC_SetAndActivateControl(device, "setvar_DataAcq_dDAQOptOvPost", val = 250)
@@ -1079,12 +1079,12 @@ Function SC_SpikeControl(device, s)
 
 			WAVE rerunExceeded = LBN_GetNumericWave()
 			rerunExceeded[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
-			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC)
+			key                                  = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC)
 			ED_AddEntryToLabnotebook(device, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 			WAVE trialsLBN = LBN_GetNumericWave()
 			trialsLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1 ? 0 : NaN)
-			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL)
+			key                              = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL)
 			ED_AddEntryToLabnotebook(device, key, trialsLBN, overrideSweepNo = s.sweepNo)
 
 			break
@@ -1097,7 +1097,7 @@ Function SC_SpikeControl(device, s)
 			minimumSpikePosition = AFH_GetAnalysisParamNumerical("MinimumSpikePosition", s.params)
 
 			WAVE numericalValues = GetLBNumericalValues(device)
-			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS, query = 1)
+			key                 = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS, query = 1)
 			idealNumberOfSpikes = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 			SC_ProcessPulses(device, s.sweepNo, minimumSpikePosition, idealNumberOfSpikes)
@@ -1107,7 +1107,7 @@ Function SC_SpikeControl(device, s)
 
 			WAVE sweepQCLBN = LBN_GetNumericWave()
 			sweepQCLBN[INDEP_HEADSTAGE] = sweepPassed
-			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SWEEP_PASS)
+			key                         = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, sweepQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			[minTrials, maxTrials] = SC_GetTrials(device, s.sweepNo, s.headstage)
@@ -1117,7 +1117,7 @@ Function SC_SpikeControl(device, s)
 			if(!sweepPassed)
 				if(SC_CanStillSkip(maxTrials, s.params))
 					skippedBack = 1
-					RA_SkipSweeps(device, -1, SWEEP_SKIP_AUTO, limitToSetBorder=1)
+					RA_SkipSweeps(device, -1, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 				else
 					rerunExceededResult = 1
 				endif
@@ -1127,7 +1127,7 @@ Function SC_SpikeControl(device, s)
 
 			WAVE rerunExceeded = LBN_GetNumericWave()
 			rerunExceeded[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? rerunExceededResult : NaN
-			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC)
+			key                                  = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC)
 			ED_AddEntryToLabnotebook(device, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			setPassed = SC_GetSetPassed(device, s.sweepNo)
@@ -1152,10 +1152,10 @@ Function SC_SpikeControl(device, s)
 			if(IsFinite(setPassed))
 				WAVE setQC = LBN_GetNumericWave()
 				setQC[INDEP_HEADSTAGE] = setPassed
-				key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SET_PASS)
+				key                    = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SET_PASS)
 				ED_AddEntryToLabnotebook(device, key, setQC, unit = LABNOTEBOOK_BINARY_UNIT)
 
-				RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder=1)
+				RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 				AD_UpdateAllDatabrowser()
 			endif
 

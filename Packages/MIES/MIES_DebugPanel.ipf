@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -19,8 +19,8 @@ Function DP_DebuggingEnabledForFile(file)
 		return 1
 	endif
 
-	WAVE/T listWave  = GetDebugPanelListWave()
-	WAVE listSelWave = GetDebugPanelListSelWave()
+	WAVE/T listWave    = GetDebugPanelListWave()
+	WAVE   listSelWave = GetDebugPanelListSelWave()
 
 	FindValue/TXOP=4/TEXT=file listWave
 	if(V_Value == -1)
@@ -63,12 +63,12 @@ Function/S DP_OpenDebugPanel()
 	Execute PANEL + "()"
 	DP_FillDebugPanelWaves()
 
-	WAVE/T listWave  = GetDebugPanelListWave()
-	WAVE listSelWave = GetDebugPanelListSelWave()
+	WAVE/T listWave    = GetDebugPanelListWave()
+	WAVE   listSelWave = GetDebugPanelListSelWave()
 	ListBox listbox_mies_files, win=$PANEL, listWave=listWave, selWave=listSelWave
 
 	debugMode = QuerySetIgorOption("DEBUGGING_ENABLED", globalSymbol = 1)
-	SetCheckBoxState(PANEL, "check_debug_mode",  debugMode == 1)
+	SetCheckBoxState(PANEL, "check_debug_mode", debugMode == 1)
 	// we can't readout the ITC XOP debugging state
 
 	return panel
@@ -77,18 +77,18 @@ End
 static Function DP_FillDebugPanelWaves()
 	string symbPath, path, allProcFiles
 
-	WAVE/T listWave  = GetDebugPanelListWave()
-	WAVE listSelWave = GetDebugPanelListSelWave()
+	WAVE/T listWave    = GetDebugPanelListWave()
+	WAVE   listSelWave = GetDebugPanelListSelWave()
 
 	symbPath = GetUniqueSymbolicPath()
 
 	path = FunctionPath("") + "::"
 	NewPath/Q/O $symbPath, path
-	allProcFiles = GetAllFilesRecursivelyFromPath(symbPath, extension=".ipf")
+	allProcFiles = GetAllFilesRecursivelyFromPath(symbPath, extension = ".ipf")
 
 	path += ":IPNWB"
 	NewPath/Q/O $symbPath, path
-	allProcFiles = AddListItem(allProcFiles, GetAllFilesRecursivelyFromPath(symbPath, extension=".ipf"), FILE_LIST_SEP)
+	allProcFiles = AddListItem(allProcFiles, GetAllFilesRecursivelyFromPath(symbPath, extension = ".ipf"), FILE_LIST_SEP)
 
 	KillPath $symbPath
 
@@ -115,7 +115,7 @@ Function DP_WindowHook(s)
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_ACTIVATE:
 			debugMode = QuerySetIgorOption("DEBUGGING_ENABLED", globalSymbol = 1)
-			SetCheckBoxState(PANEL, "check_debug_mode",  debugMode == 1)
+			SetCheckBoxState(PANEL, "check_debug_mode", debugMode == 1)
 			break
 	endswitch
 
@@ -125,12 +125,12 @@ End
 Function DP_CheckProc_Debug(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	string ctrl
+	string   ctrl
 	variable checked
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			ctrl = cba.ctrlName
+			ctrl    = cba.ctrlName
 			checked = cba.checked
 
 			if(!cmpstr(ctrl, "check_debug_mode"))

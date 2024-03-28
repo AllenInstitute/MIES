@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestDAScaleSub
@@ -7,7 +7,7 @@
 
 static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                           + \
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                       + \
 	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:PSQ_DaScale_Sub_DA_0:")
 
 	AdjustAnalysisParamsForPSQ(device, "PSQ_DaScale_Sub_DA_0")
@@ -40,7 +40,7 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	if(ParamIsDefault(chunk))
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, name, query = 1)
@@ -467,9 +467,9 @@ static Function PS_DS_Sub3([str])
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// async QC passes
-	wv[]      = 0
-	wv[0,1][] = 1
-	wv[][][3] = 1
+	wv[]       = 0
+	wv[0, 1][] = 1
+	wv[][][3]  = 1
 End
 
 static Function PS_DS_Sub3_REENTRY([str])
@@ -642,10 +642,10 @@ static Function PS_DS_Sub4([str])
 	// pre pulse chunk pass
 	// last post pulse chunk pass
 	// async QC passes
-	wv[] = 0
-	wv[0][] = 1
+	wv[]                        = 0
+	wv[0][]                     = 1
 	wv[DimSize(wv, ROWS) - 1][] = 1
-	wv[][][3] = 1
+	wv[][][3]                   = 1
 End
 
 static Function PS_DS_Sub4_REENTRY([str])
@@ -1390,9 +1390,9 @@ static Function PS_DS_Sub7([str])
 	// first post pulse chunk pass
 	// of sweeps 2-6
 	// async QC passes
-	wv[]          = 0
-	wv[0, 1][2,6] = 1
-	wv[][][3]     = 1
+	wv[]           = 0
+	wv[0, 1][2, 6] = 1
+	wv[][][3]      = 1
 End
 
 static Function PS_DS_Sub7_REENTRY([str])
@@ -1924,9 +1924,9 @@ static Function PS_DS_Sub10([str])
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// async QC passes
-	wv[]      = 0
-	wv[0,1][] = 1
-	wv[][][3] = 1
+	wv[]       = 0
+	wv[0, 1][] = 1
+	wv[][][3]  = 1
 End
 
 static Function PS_DS_Sub10_REENTRY([str])

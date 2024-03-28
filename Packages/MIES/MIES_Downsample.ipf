@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
@@ -31,54 +31,54 @@ static StrConstant listbox_waves          = "listbox_waves_id"
 static StrConstant button_doit            = "button_doit_id"
 static StrConstant button_restorebackup   = "button_restorebackup_id"
 
-static StrConstant dataPath               = "root:MIES:postExperimentProcedures:downsample:"
-static StrConstant panel                  = "Downsampling"
+static StrConstant dataPath = "root:MIES:postExperimentProcedures:downsample:"
+static StrConstant panel    = "Downsampling"
 
 static Function/DF GetDownsampleDataFolder()
 	return createDFWithAllParents(dataPath)
 End
 
-static Function/Wave GetDownsampleDataRefWave()
+static Function/WAVE GetDownsampleDataRefWave()
 
-	dfref dfr = GetDownsampleDataFolder()
-	Wave/Wave/Z/SDFR=dfr dataRef
+	DFREF dfr = GetDownsampleDataFolder()
+	WAVE/WAVE/Z/SDFR=dfr dataRef
 
 	if(WaveExists(dataRef))
 		return dataRef
 	endif
 
-	Make/Wave/N=(0) dfr:dataRef/Wave=dataRef
+	Make/WAVE/N=(0) dfr:dataRef/WAVE=dataRef
 
 	return dataRef
 End
 
-static Function/Wave GetDownsampleRateWave()
+static Function/WAVE GetDownsampleRateWave()
 
-	dfref dfr = GetDownsampleDataFolder()
-	Wave/Z/SDFR=dfr rate
+	DFREF dfr = GetDownsampleDataFolder()
+	WAVE/Z/SDFR=dfr rate
 
 	if(WaveExists(rate))
 		return rate
 	endif
 
-	Make/N=(0) dfr:rate/Wave=rate
+	Make/N=(0) dfr:rate/WAVE=rate
 
 	return rate
 End
 
-static Function/Wave GetDownsampleListWave()
+static Function/WAVE GetDownsampleListWave()
 
-	dfref dfr = GetDownsampleDataFolder()
-	Wave/Z/T/SDFR=dfr sweepProperties
+	DFREF dfr = GetDownsampleDataFolder()
+	WAVE/Z/T/SDFR=dfr sweepProperties
 
 	if(WaveExists(sweepProperties))
 		return sweepProperties
 	endif
 
-	Make/T/N=(0, 3) dfr:sweepProperties/Wave=sweepProperties
+	Make/T/N=(0, 3) dfr:sweepProperties/WAVE=sweepProperties
 
-	SetDimLabel COLS, 0, Device       , sweepProperties
-	SetDimLabel COLS, 1, Name         , sweepProperties
+	SetDimLabel COLS, 0, Device, sweepProperties
+	SetDimLabel COLS, 1, Name, sweepProperties
 	SetDimLabel COLS, 2, $"Rate (kHz)", sweepProperties
 
 	return sweepProperties
@@ -98,7 +98,7 @@ Function/S GetPopupMenuDeviceListWithData()
 
 	// @todo: Does not know about NI devices and should probably prefer GetAllDevicesWithContent
 
-	for(i=0; i < numDeviceTypes; i+=1)
+	for(i = 0; i < numDeviceTypes; i += 1)
 		deviceType = StringFromList(i, DEVICE_TYPES_ITC)
 		path       = GetDeviceTypePathAsString(deviceType)
 
@@ -106,7 +106,7 @@ Function/S GetPopupMenuDeviceListWithData()
 			continue
 		endif
 
-		for(j=0; j < numDevices; j+=1)
+		for(j = 0; j < numDevices; j += 1)
 			deviceNumber = StringFromList(j, DEVICE_NUMBERS)
 			deviceString = HW_ITC_BuildDeviceString(deviceType, deviceNumber)
 			path         = GetDevicePathAsString(deviceString)
@@ -115,7 +115,7 @@ Function/S GetPopupMenuDeviceListWithData()
 				continue
 			endif
 
-			list = AddListItem(deviceString, list, ";", inf)
+			list = AddListItem(deviceString, list, ";", Inf)
 		endfor
 	endfor
 
@@ -137,28 +137,28 @@ End
 /// @returns			index of the last valid entry into the passed waves
 static Function AppendEntries(list, dataRef, rate, startIndex, deviceType, deviceNumber)
 	string deviceType, deviceNumber
-	variable startIndex
-	Wave/T list
-	Wave/Wave dataRef
-	Wave rate
+	variable  startIndex
+	WAVE/T    list
+	WAVE/WAVE dataRef
+	WAVE      rate
 
 	string listOfDataWaves, name
 	variable numWaves, i, idx, convrate, samplingInterval
-	dfref deviceDFR = GetDeviceDataPath(HW_ITC_BuildDeviceString(deviceType, deviceNumber))
+	DFREF deviceDFR = GetDeviceDataPath(HW_ITC_BuildDeviceString(deviceType, deviceNumber))
 
 	listOfDataWaves = GetListOfObjects(deviceDFR, DATA_SWEEP_REGEXP)
-	numWaves = ItemsInList(listOfDataWaves)
-	idx = startIndex
+	numWaves        = ItemsInList(listOfDataWaves)
+	idx             = startIndex
 
-	for(i=0; i<numWaves; i+=1, idx+=1)
+	for(i = 0; i < numWaves; i += 1, idx += 1)
 		name = StringFromList(i, listOfDataWaves)
-		Wave/SDFR=deviceDFR wv = $name
-		WAVE config = GetConfigWave(wv)
+		WAVE/SDFR=deviceDFR wv     = $name
+		WAVE                config = GetConfigWave(wv)
 		samplingInterval = GetSamplingInterval(config)
 
-		EnsureLargeEnoughWave(list, indexShouldExist=idx)
-		EnsureLargeEnoughWave(dataRef, indexShouldExist=idx)
-		EnsureLargeEnoughWave(rate, indexShouldExist=idx)
+		EnsureLargeEnoughWave(list, indexShouldExist = idx)
+		EnsureLargeEnoughWave(dataRef, indexShouldExist = idx)
+		EnsureLargeEnoughWave(rate, indexShouldExist = idx)
 
 		convRate = ConvertSamplingIntervalToRate(samplingInterval)
 
@@ -178,9 +178,9 @@ static Function UpdateDataWaves(deviceType, deviceNumber)
 
 	variable i, idx
 
-	Wave/T list       = GetDownsampleListWave()
-	Wave/Wave dataRef = GetDownsampleDataRefWave()
-	Wave   rate       = GetDownsampleRateWave()
+	WAVE/T    list    = GetDownsampleListWave()
+	WAVE/WAVE dataRef = GetDownsampleDataRefWave()
+	WAVE      rate    = GetDownsampleRateWave()
 
 	idx = 0
 	Redimension/N=(idx, -1) list, dataRef, rate
@@ -193,11 +193,11 @@ End
 static Function UpdateCurrentSize(win)
 	string win
 
-	Wave/Wave dataRef = GetDownsampleDataRefWave()
+	WAVE/WAVE dataRef = GetDownsampleDataRefWave()
 	variable i, size = 0
 	variable numWaves = DimSize(dataRef, ROWS)
 
-	for(i=0;i<numWaves;i+=1)
+	for(i = 0; i < numWaves; i += 1)
 		size += GetWaveSize(dataRef[i])
 	endfor
 
@@ -205,7 +205,7 @@ static Function UpdateCurrentSize(win)
 		size = max(1, ConvertFromBytesToMiB(size))
 	endif
 
-	SetValDisplay(win, valdisp_currentsize, var=size, format="%3.0f")
+	SetValDisplay(win, valdisp_currentsize, var = size, format = "%3.0f")
 End
 
 static Function GetTargetRate(win)
@@ -225,13 +225,13 @@ End
 static Function UpdateEstimatedSizeAfterwards(win)
 	string win
 
-	Wave/Wave dataRef = GetDownsampleDataRefWave()
-	Wave      rate    = GetDownsampleRateWave()
+	WAVE/WAVE dataRef = GetDownsampleDataRefWave()
+	WAVE      rate    = GetDownsampleRateWave()
 	variable i, size = 0
-	variable numWaves = DimSize(dataRef, ROWS)
+	variable numWaves   = DimSize(dataRef, ROWS)
 	variable targetRate = GetTargetRate(win)
 
-	for(i=0;i<numWaves;i+=1)
+	for(i = 0; i < numWaves; i += 1)
 		size += GetWaveSize(dataRef[i]) * targetRate / rate[i]
 	endfor
 
@@ -241,7 +241,7 @@ static Function UpdateEstimatedSizeAfterwards(win)
 		size = NaN
 	endif
 
-	SetValDisplay(win, valdisp_estimatedsize, var=size, format="%3.0f")
+	SetValDisplay(win, valdisp_estimatedsize, var = size, format = "%3.0f")
 End
 
 /// @brief Disable the equalize checkbox if all data waves have the same rate
@@ -282,8 +282,8 @@ static Function/S ExpandRateToList(win, var, [constantRates])
 		return num2str(var)
 	endif
 
-	for(i = constantRates ? 2 : 1 ; i <= count ; i+=1)
-		list = AddListItem(num2str(var/i), list, ";", inf)
+	for(i = constantRates ? 2 : 1; i <= count; i += 1)
+		list = AddListItem(num2str(var / i), list, ";", Inf)
 	endfor
 
 	return list
@@ -293,7 +293,7 @@ End
 Function/S GetPopupMenuRates()
 
 	variable maximum, minimum
-	Wave rates = GetDownsampleRateWave()
+	WAVE rates = GetDownsampleRateWave()
 
 	if(!DimSize(rates, ROWS))
 		return NONE
@@ -302,7 +302,7 @@ Function/S GetPopupMenuRates()
 	[minimum, maximum] = WaveMinAndMax(rates)
 
 	if(minimum == maximum)
-		return ExpandRateToList(panel, minimum, constantRates=1)
+		return ExpandRateToList(panel, minimum, constantRates = 1)
 	endif
 
 	variable interpolation = GetCheckBoxState(panel, checkbox_interpolation)
@@ -311,7 +311,7 @@ Function/S GetPopupMenuRates()
 		return ExpandRateToList(panel, minimum)
 	endif
 
-	Wave uniqueRates = GetUniqueEntries(rates)
+	WAVE uniqueRates = GetUniqueEntries(rates)
 
 	uniqueRates[] = maximum / uniqueRates[p]
 
@@ -349,14 +349,14 @@ static Function UpdateCheckBoxes(win, control, state)
 End
 
 static Function UpdatePopupMenuWindowFunction(win, [decimationMethod])
-	string win
+	string   win
 	variable decimationMethod
 
 	if(ParamIsDefault(decimationMethod))
 		decimationMethod = GetDecimationMethod(win)
 	endif
 
-	if( decimationMethod == DECIMATION_BY_SMOOTHING )
+	if(decimationMethod == DECIMATION_BY_SMOOTHING)
 		EnableControl(win, popup_windowfunction)
 	else
 		DisableControl(win, popup_windowfunction)
@@ -370,71 +370,71 @@ Function CreateDownsamplePanel()
 		return NaN
 	endif
 
-	NewPanel/N=$panel/W=(283,389,847,643)/K=1
+	NewPanel/N=$panel/W=(283, 389, 847, 643)/K=1
 	ASSERT(CmpStr(panel, S_name) == 0, "window already exists")
 	SetWindow $panel, hook(cleanup)=DownsampleWindowHook
 
-	PopupMenu popup_deviceselection_id,pos={28,13},size={214,21},bodyWidth=130,proc=PopupMenuDeviceSelection,title="Device Selection"
-	PopupMenu popup_deviceselection_id,mode=1,value= #"GetPopupMenuDeviceListWithData()"
-	PopupMenu popup_deviceselection_id,help={"List of devices having acquired data."}
+	PopupMenu popup_deviceselection_id, pos={28, 13}, size={214, 21}, bodyWidth=130, proc=PopupMenuDeviceSelection, title="Device Selection"
+	PopupMenu popup_deviceselection_id, mode=1, value=#"GetPopupMenuDeviceListWithData()"
+	PopupMenu popup_deviceselection_id, help={"List of devices having acquired data."}
 
-	PopupMenu popup_decimationmethod_id,pos={29,126},size={206,21},bodyWidth=111,proc=PopupMenuDecimationMethod,title="Decimation Method"
-	PopupMenu popup_decimationmethod_id,mode=1,popvalue="Omission",value= #"\"Omission;Smoothing;Averaging\""
-	PopupMenu popup_decimationmethod_id,help={"Different methods on how to resample the data. See the section about \"Resample\" in the Igor Pro manual."}
+	PopupMenu popup_decimationmethod_id, pos={29, 126}, size={206, 21}, bodyWidth=111, proc=PopupMenuDecimationMethod, title="Decimation Method"
+	PopupMenu popup_decimationmethod_id, mode=1, popvalue="Omission", value=#"\"Omission;Smoothing;Averaging\""
+	PopupMenu popup_decimationmethod_id, help={"Different methods on how to resample the data. See the section about \"Resample\" in the Igor Pro manual."}
 
-	PopupMenu popup_windowfunction_id,pos={42,152},size={194,21},bodyWidth=111,disable=2,title="Window function"
-	PopupMenu popup_windowfunction_id,mode=11,popvalue=FFT_WINF_DEFAULT,value= #"FFT_WINF"
-	PopupMenu popup_windowfunction_id,help={"Window functions for the Smooting-Method of resampling."}
+	PopupMenu popup_windowfunction_id, pos={42, 152}, size={194, 21}, bodyWidth=111, disable=2, title="Window function"
+	PopupMenu popup_windowfunction_id, mode=11, popvalue=FFT_WINF_DEFAULT, value=#"FFT_WINF"
+	PopupMenu popup_windowfunction_id, help={"Window functions for the Smooting-Method of resampling."}
 
-	CheckBox checkbox_equalize_id,pos={21,55},size={58,14},proc=CheckBoxEqualizeDown,title="Equalize"
-	CheckBox checkbox_equalize_id,value= 1,mode=1
-	CheckBox checkbox_equalize_id,help={"Resamples all data to the greatest common divisor of all rates."}
+	CheckBox checkbox_equalize_id, pos={21, 55}, size={58, 14}, proc=CheckBoxEqualizeDown, title="Equalize"
+	CheckBox checkbox_equalize_id, value=1, mode=1
+	CheckBox checkbox_equalize_id, help={"Resamples all data to the greatest common divisor of all rates."}
 
-	CheckBox checkbox_downsample_id,pos={20,77},size={79,14},proc=CheckBoxEqualizeDown,title="Downsample"
-	CheckBox checkbox_downsample_id,value= 0,mode=1
-	CheckBox checkbox_downsample_id,help={"Resamples all data to a lower rate."}
+	CheckBox checkbox_downsample_id, pos={20, 77}, size={79, 14}, proc=CheckBoxEqualizeDown, title="Downsample"
+	CheckBox checkbox_downsample_id, value=0, mode=1
+	CheckBox checkbox_downsample_id, help={"Resamples all data to a lower rate."}
 
-	PopupMenu popup_targetrate_id,pos={110,62},size={143,21},bodyWidth=60,proc=PopupMenuTargetRate,title="Target rate (kHz)"
-	PopupMenu popup_targetrate_id,mode=1,value= #"GetPopupMenuRates()"
-	PopupMenu popup_targetrate_id,help={"Available rates for downsampling."}
+	PopupMenu popup_targetrate_id, pos={110, 62}, size={143, 21}, bodyWidth=60, proc=PopupMenuTargetRate, title="Target rate (kHz)"
+	PopupMenu popup_targetrate_id, mode=1, value=#"GetPopupMenuRates()"
+	PopupMenu popup_targetrate_id, help={"Available rates for downsampling."}
 
-	CheckBox checkbox_backupwaves_id,pos={25,199},size={115,14},title="Backup original data"
-	CheckBox checkbox_backupwaves_id,value= 1
-	CheckBox checkbox_backupwaves_id,help={"Should the original data be backuped before performing the downsampling?"}
+	CheckBox checkbox_backupwaves_id, pos={25, 199}, size={115, 14}, title="Backup original data"
+	CheckBox checkbox_backupwaves_id, value=1
+	CheckBox checkbox_backupwaves_id, help={"Should the original data be backuped before performing the downsampling?"}
 
-	Button button_restorebackup_id,pos={155,196},size={90,20},proc=ButtonRestoreBackup,title="Restore backup"
-	Button button_restorebackup_id,help={"Replace the data and config waves with its backup."}
+	Button button_restorebackup_id, pos={155, 196}, size={90, 20}, proc=ButtonRestoreBackup, title="Restore backup"
+	Button button_restorebackup_id, help={"Replace the data and config waves with its backup."}
 
-	ValDisplay valdisp_currentsize_id,pos={298,178},size={180,14},title="Current size:"
-	ValDisplay valdisp_currentsize_id,format="%25g MiB",frame=0
-	ValDisplay valdisp_currentsize_id,valueBackColor=(60928,60928,60928)
-	ValDisplay valdisp_currentsize_id,limits={0,0,0},barmisc={0,1000},value= #"nan"
-	ValDisplay valdisp_currentsize_id,help={"Current size of all data waves from the device"}
+	ValDisplay valdisp_currentsize_id, pos={298, 178}, size={180, 14}, title="Current size:"
+	ValDisplay valdisp_currentsize_id, format="%25g MiB", frame=0
+	ValDisplay valdisp_currentsize_id, valueBackColor=(60928, 60928, 60928)
+	ValDisplay valdisp_currentsize_id, limits={0, 0, 0}, barmisc={0, 1000}, value=#"nan"
+	ValDisplay valdisp_currentsize_id, help={"Current size of all data waves from the device"}
 
-	ValDisplay valdisp_estimatedsize_id,pos={297,198},size={180,14},title="Estimated size afterwards:"
-	ValDisplay valdisp_estimatedsize_id,format="%4g MiB",frame=0
-	ValDisplay valdisp_estimatedsize_id,valueBackColor=(60928,60928,60928)
-	ValDisplay valdisp_estimatedsize_id,limits={0,0,0},barmisc={0,1000}
-	ValDisplay valdisp_estimatedsize_id,value= #"nan"
-	ValDisplay valdisp_estimatedsize_id,help={"Approximated size of all data waves after resampling."}
+	ValDisplay valdisp_estimatedsize_id, pos={297, 198}, size={180, 14}, title="Estimated size afterwards:"
+	ValDisplay valdisp_estimatedsize_id, format="%4g MiB", frame=0
+	ValDisplay valdisp_estimatedsize_id, valueBackColor=(60928, 60928, 60928)
+	ValDisplay valdisp_estimatedsize_id, limits={0, 0, 0}, barmisc={0, 1000}
+	ValDisplay valdisp_estimatedsize_id, value=#"nan"
+	ValDisplay valdisp_estimatedsize_id, help={"Approximated size of all data waves after resampling."}
 
-	ListBox listbox_waves_id,pos={297,23},size={241,148}
-	ListBox listbox_waves_id,listWave=GetDownsampleListWave()
-	ListBox listbox_waves_id,widths={45,68,58}
+	ListBox listbox_waves_id, pos={297, 23}, size={241, 148}
+	ListBox listbox_waves_id, listWave=GetDownsampleListWave()
+	ListBox listbox_waves_id, widths={45, 68, 58}
 
-	Button button_doit_id,pos={227,230},size={90,20},proc=ButtonDoIt,title="Do It"
-	Button button_doit_id,help={"Perform the resampling."}
+	Button button_doit_id, pos={227, 230}, size={90, 20}, proc=ButtonDoIt, title="Do It"
+	Button button_doit_id, help={"Perform the resampling."}
 
-	CheckBox checkbox_interpolation_id,pos={89,101},size={103,14},proc=CheckBoxInterpolation,title="Allow interpolation"
-	CheckBox checkbox_interpolation_id,value=1
-	CheckBox checkbox_interpolation_id,help={"Allow also upsampling to reach the target rate. Especially useful if all possible rates are present."}
+	CheckBox checkbox_interpolation_id, pos={89, 101}, size={103, 14}, proc=CheckBoxInterpolation, title="Allow interpolation"
+	CheckBox checkbox_interpolation_id, value=1
+	CheckBox checkbox_interpolation_id, help={"Allow also upsampling to reach the target rate. Especially useful if all possible rates are present."}
 
-	GroupBox group0,pos={276,11},size={276,211}
-	GroupBox group1,pos={11,43},size={252,137}
-	GroupBox group2,pos={11,190},size={253,32}
+	GroupBox group0, pos={276, 11}, size={276, 211}
+	GroupBox group1, pos={11, 43}, size={252, 137}
+	GroupBox group2, pos={11, 190}, size={253, 32}
 
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_InitCoordinates(JSONid, panel, "downsample", addHook=0)
+	PS_InitCoordinates(JSONid, panel, "downsample", addHook = 0)
 
 	UpdatePanel(panel)
 	UpdatePopupMenuWindowFunction(panel)
@@ -452,11 +452,11 @@ Function DownsampleWindowHook(s)
 			NVAR JSONid = $GetSettingsJSONid()
 			PS_StoreWindowCoordinate(JSONid, win)
 
-			KillOrMoveToTrash(wv=GetDownsampleListWave())
-			KillOrMoveToTrash(wv=GetDownsampleDataRefWave())
-			KillOrMoveToTrash(wv=GetDownsampleRateWave())
-			KillOrMoveToTrash(dfr=$dataPath)
-		break
+			KillOrMoveToTrash(wv = GetDownsampleListWave())
+			KillOrMoveToTrash(wv = GetDownsampleDataRefWave())
+			KillOrMoveToTrash(wv = GetDownsampleRateWave())
+			KillOrMoveToTrash(dfr = $dataPath)
+			break
 	endswitch
 
 	// return zero so that other hooks are called as well
@@ -467,7 +467,7 @@ Function CheckBoxInterpolation(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	string win
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			win = cba.win
 			ControlUpdate/W=$win $popup_targetrate
@@ -481,7 +481,7 @@ End
 Function PopupMenuTargetRate(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	switch( pa.eventCode )
+	switch(pa.eventCode)
 		case 1:
 		case 2:
 		case 3:
@@ -496,26 +496,26 @@ Function PopupMenuTargetRate(pa) : PopupMenuControl
 End
 
 Function ButtonRestoreBackup(ba) : ButtonControl
-	struct WMButtonAction& ba
+	STRUCT WMButtonAction &ba
 
 	string win
 	variable numWaves, i, success
 
-	switch( ba.eventCode )
+	switch(ba.eventCode)
 		case 2: // mouse up
 			win     = ba.win
 			success = 1
-			Wave/Wave dataRef = GetDownsampleDataRefWave()
+			WAVE/WAVE dataRef = GetDownsampleDataRefWave()
 
 			numWaves = DimSize(dataRef, ROWS)
-			for(i=0;i<numWaves;i+=1)
+			for(i = 0; i < numWaves; i += 1)
 
 				WAVE sweep  = dataRef[i]
 				WAVE config = GetConfigWave(sweep)
 
 				if(WaveExists(GetBackupWave(sweep)) && WaveExists(GetBackupWave(config)))
-					ReplaceWaveWithBackup(sweep, nonExistingBackupIsFatal=0)
-					ReplaceWaveWithBackup(config, nonExistingBackupIsFatal=0)
+					ReplaceWaveWithBackup(sweep, nonExistingBackupIsFatal = 0)
+					ReplaceWaveWithBackup(config, nonExistingBackupIsFatal = 0)
 				else
 					success = 0
 				endif
@@ -534,14 +534,14 @@ Function ButtonRestoreBackup(ba) : ButtonControl
 End
 
 Function ButtonDoIt(ba) : ButtonControl
-	struct WMButtonAction& ba
+	STRUCT WMButtonAction &ba
 
 	variable backupWaves, decimationMethod, i, numWaves, downsampleFactor, upsampleFactor
 	variable targetRate, channel, ret
 	string win, name, winFunction
-	dfref dfr
+	DFREF dfr
 
-	switch( ba.eventCode )
+	switch(ba.eventCode)
 		case 2: // mouse up
 			win              = ba.win
 			backupWaves      = GetCheckBoxState(win, checkbox_backupwaves)
@@ -554,21 +554,21 @@ Function ButtonDoIt(ba) : ButtonControl
 				endif
 			endif
 
-			Wave/Wave dataRef = GetDownsampleDataRefWave()
-			Wave      rate    = GetDownsampleRateWave()
-			Wave/T    list    = GetDownsampleListWave()
+			WAVE/WAVE dataRef = GetDownsampleDataRefWave()
+			WAVE      rate    = GetDownsampleRateWave()
+			WAVE/T    list    = GetDownsampleListWave()
 			ASSERT(DimSize(dataRef, ROWS) == DimSize(rate, ROWS), "Unmatched wave sizes")
-			ASSERT(DimSize(list, ROWS)    == DimSize(rate, ROWS), "Unmatched wave sizes")
+			ASSERT(DimSize(list, ROWS) == DimSize(rate, ROWS), "Unmatched wave sizes")
 
 			targetRate = GetTargetRate(win)
 
 			numWaves = DimSize(dataRef, ROWS)
-			for(i=0;i < numWaves; i+=1)
+			for(i = 0; i < numWaves; i += 1)
 				RatioFromNumber/MERR=1e-2 (targetRate / rate[i])
 				upsampleFactor   = V_numerator
 				downsampleFactor = V_denominator
-				Wave data   = dataRef[i]
-				Wave config = GetConfigWave(data)
+				WAVE data   = dataRef[i]
+				WAVE config = GetConfigWave(data)
 
 				if(backupWaves)
 					CreateBackupWave(data)
@@ -578,7 +578,7 @@ Function ButtonDoIt(ba) : ButtonControl
 				// resample with window function
 				if(decimationMethod == DECIMATION_BY_SMOOTHING)
 					winFunction = GetPopupMenuString(win, popup_windowfunction)
-					ret = DownSample(data, downsampleFactor, upsampleFactor, decimationMethod, winFunction=winFunction)
+					ret         = DownSample(data, downsampleFactor, upsampleFactor, decimationMethod, winFunction = winFunction)
 				else
 					ret = DownSample(data, downsampleFactor, upsampleFactor, decimationMethod)
 				endif
@@ -587,7 +587,7 @@ Function ButtonDoIt(ba) : ButtonControl
 					return NaN
 				endif
 
-				UpdateSweepConfig(config, samplingInterval=ConvertRateToSamplingInterval(targetrate))
+				UpdateSweepConfig(config, samplingInterval = ConvertRateToSamplingInterval(targetrate))
 			endfor
 			UpdatePanel(win)
 			break
@@ -635,11 +635,11 @@ Function PopupMenuDeviceSelection(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	string popStr, win
-	switch( pa.eventCode )
+	switch(pa.eventCode)
 		case 2: // mouse up
 			win    = pa.win
 			popStr = pa.popStr
-			UpdatePanel(win, deviceSelectionString=popStr)
+			UpdatePanel(win, deviceSelectionString = popStr)
 			break
 	endswitch
 
@@ -650,7 +650,7 @@ Function PopupMenuDecimationMethod(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	string win
-	switch( pa.eventCode )
+	switch(pa.eventCode)
 		case 2: // mouse up
 			win = pa.win
 			UpdatePopupMenuWindowFunction(win, decimationMethod = 2^(pa.popNum - 1))
@@ -663,17 +663,17 @@ End
 Function CheckBoxEqualizeDown(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	Variable checked
+	variable checked
 	string   win
 	string   control
-	Variable low, high, inc
+	variable low, high, inc
 
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			cba.blockreentry = 1
-			checked = cba.checked
-			win     = cba.win
-			control = cba.ctrlName
+			checked          = cba.checked
+			win              = cba.win
+			control          = cba.ctrlName
 			UpdateCheckBoxes(win, control, checked)
 			break
 	endswitch

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ConfigurationHardwareTesting
@@ -29,14 +29,14 @@ static Function RestoreAndSaveConfiguration([string str])
 	string settingsIPath, settingsFolder, templateFolder, workingFolder
 	string fileList, fName, fContent, fContentRig, wList
 	variable jsonId
-	string templateIPath = "templateConf"
-	string tempIPath = "tempConf"
-	string defaultConfig = "1_DA_Ephys.json"
+	string templateIPath    = "templateConf"
+	string tempIPath        = "tempConf"
+	string defaultConfig    = "1_DA_Ephys.json"
 	string defaultRigConfig = "1_DA_Ephys_rig.json"
-	string newConfig = "1_DA_Ephys_new.json"
-	string newRigConfig = "1_DA_Ephys_new_rig.json"
-	string stimsetJsonPath = "/Common configuration data/Stim set file name"
-	string hsAssocJsonPath = "/Common configuration data/Headstage Association"
+	string newConfig        = "1_DA_Ephys_new.json"
+	string newRigConfig     = "1_DA_Ephys_new_rig.json"
+	string stimsetJsonPath  = "/Common configuration data/Stim set file name"
+	string hsAssocJsonPath  = "/Common configuration data/Headstage Association"
 
 	settingsIPath = MIES_CONF#CONF_GetSettingsPath(0x0)
 	PathInfo $settingsIPath
@@ -57,16 +57,16 @@ static Function RestoreAndSaveConfiguration([string str])
 
 		if(JSON_Exists(jsonId, stimsetJsonPath))
 			FixupJSONConfigImplMain(jsonId, str)
-			fContent = JSON_Dump(jsonId, indent=2)
+			fContent = JSON_Dump(jsonId, indent = 2)
 		elseif(JSON_Exists(jsonId, hsAssocJsonPath))
 			FixupJSONConfigImplRig(jsonId)
-			fContent = JSON_Dump(jsonId, indent=2)
+			fContent = JSON_Dump(jsonId, indent = 2)
 		endif
 		JSON_Release(jsonId)
 		SaveTextFile(fContent, workingFolder + GetFile(fileName))
 	endfor
 
-	CONF_AutoLoader(customIPath=tempIPath)
+	CONF_AutoLoader(customIPath = tempIPath)
 	CHECK(WindowExists(DATABROWSER_WINDOW_NAME))
 	CHECK(WindowExists(str))
 
@@ -88,7 +88,7 @@ static Function RestoreAndSaveConfiguration([string str])
 	fName = workingFolder + defaultConfig
 	DeleteFile fName
 
-	CONF_AutoLoader(customIPath=tempIPath)
+	CONF_AutoLoader(customIPath = tempIPath)
 	CHECK(WindowExists(DATABROWSER_WINDOW_NAME))
 	CHECK(WindowExists(str))
 
@@ -107,27 +107,27 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                 + \
-										"__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"  + \
-										"__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:")
 
 	AcquireData_NG(s, str)
 
-	gain = 5
+	gain       = 5
 	filterFreq = 6
 	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
 	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
 	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
 	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
 
-	PGC_SetAndActivateControl(str, "check_Settings_SyncMiesToMCC", val=1)
+	PGC_SetAndActivateControl(str, "check_Settings_SyncMiesToMCC", val = 1)
 
 	CONF_SaveWindow(fName)
 
 	[jsonID, rewrittenConfig] = FixupJSONConfig_IGNORE(fName, str)
 	JSON_Release(jsonID)
 
-	gain = 1
+	gain       = 1
 	filterFreq = 2
 	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
 	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
@@ -138,9 +138,9 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	CONF_RestoreWindow(rewrittenConfig)
 
-	gain = 5
+	gain       = 5
 	filterFreq = 6
-	val = AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN)
+	val        = AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN)
 	CHECK_EQUAL_VAR(val, filterFreq)
 	val = AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
 	CHECK_EQUAL_VAR(val, gain)
@@ -166,12 +166,12 @@ static Function TCONF_CheckTypedPanelRestore([STRUCT IUTF_mData &md])
 		KillWindow $win
 		CreateLockedDAEphys(md.s1)
 		win = WinName(0, -1)
-		PGC_SetAndActivateControl(win, "check_Settings_RequireAmpConn", val=0)
-		PGC_SetAndActivateControl(win, "Check_DataAcqHS_00",val=1)
-		PGC_SetAndActivateControl(win, "Gain_DA_00",val=20)
-		PGC_SetAndActivateControl(win, "setvar_Settings_VC_DAgain",val=20)
-		PGC_SetAndActivateControl(win, "Gain_AD_00",val=0.0025)
-		PGC_SetAndActivateControl(win, "setvar_Settings_VC_ADgain",val=0.0025)
+		PGC_SetAndActivateControl(win, "check_Settings_RequireAmpConn", val = 0)
+		PGC_SetAndActivateControl(win, "Check_DataAcqHS_00", val = 1)
+		PGC_SetAndActivateControl(win, "Gain_DA_00", val = 20)
+		PGC_SetAndActivateControl(win, "setvar_Settings_VC_DAgain", val = 20)
+		PGC_SetAndActivateControl(win, "Gain_AD_00", val = 0.0025)
+		PGC_SetAndActivateControl(win, "setvar_Settings_VC_ADgain", val = 0.0025)
 	endif
 	CONF_SaveWindow(fName)
 	KillWindow $win
@@ -190,14 +190,14 @@ static Function CheckIfConfigurationRestoresDAEphysWithUnassocDA([string str])
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresDAEphysWithUnassocDA.json")
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-								 "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-								 "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_ASO0" + \
-								 "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
-								 "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
-								 "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
-								 "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
-								 "__TTL7_ST:StimulusSetB_TTL_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:_ASO0" + \
+	                             "__HS2_DA2_AD2_CM:VC:_ST:StimulusSetA_DA_0:_ASO0" + \
+	                             "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+	                             "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+	                             "__TTL5_ST:StimulusSetA_TTL_0:"                   + \
+	                             "__TTL7_ST:StimulusSetB_TTL_0:")
 
 	AcquireData_NG(s, str)
 
@@ -207,7 +207,7 @@ static Function CheckIfConfigurationRestoresDAEphysWithUnassocDA([string str])
 	JSON_Release(jsonID)
 
 	KillWindow $str
-	KillOrMoveToTrash(dfr=root:MIES)
+	KillOrMoveToTrash(dfr = root:MIES)
 
 	CONF_RestoreWindow(rewrittenConfig)
 	PGC_SetAndActivateControl(str, "StartTestPulseButton")
@@ -254,7 +254,7 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp_PreAcq(device)
 	string device
 
 	string hs1Ctrl
-	string unit = "testunit"
+	string   unit = "testunit"
 	variable gain = 19
 
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
@@ -285,10 +285,10 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp([string str])
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresDAEphysWithoutAmp.json")
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-								 "__HS0_DA3_AD2_CM:VC:_ST:StimulusSetA_DA_0:"      + \
-								 "__HS1_DA1_AD0_CM:VC:_ST:StimulusSetC_DA_0:"      + \
-								 "__HS2_DA2_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
+	                             "__HS0_DA3_AD2_CM:VC:_ST:StimulusSetA_DA_0:"   + \
+	                             "__HS1_DA1_AD0_CM:VC:_ST:StimulusSetC_DA_0:"   + \
+	                             "__HS2_DA2_AD1_CM:VC:_ST:StimulusSetA_DA_0:_ASO0")
 
 	AcquireData_NG(s, str)
 
@@ -298,7 +298,7 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp([string str])
 	JSON_Release(jsonID)
 
 	KillWindow $str
-	KillOrMoveToTrash(dfr=root:MIES)
+	KillOrMoveToTrash(dfr = root:MIES)
 
 	CONF_RestoreWindow(rewrittenConfig)
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
@@ -308,13 +308,13 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp_REENTRY([string st
 
 	WAVE/Z numericalValues = GetLBNumericalValues(str)
 	CHECK_WAVE(numericalValues, NUMERIC_WAVE)
-	WAVE/Z DACs = GetLastSetting(numericalValues, NaN, "DAC", TEST_PULSE_MODE)
-	WAVE DACRef = LBN_GetNumericWave(defValue = NaN)
+	WAVE/Z DACs   = GetLastSetting(numericalValues, NaN, "DAC", TEST_PULSE_MODE)
+	WAVE   DACRef = LBN_GetNumericWave(defValue = NaN)
 	DACRef[0] = 3
 	DACRef[1] = 1
 	CHECK_EQUAL_WAVES(DACs, DACRef, mode = WAVE_DATA)
-	WAVE/Z ADCs = GetLastSetting(numericalValues, NaN, "ADC", TEST_PULSE_MODE)
-	WAVE ADCRef = LBN_GetNumericWave(defValue = NaN)
+	WAVE/Z ADCs   = GetLastSetting(numericalValues, NaN, "ADC", TEST_PULSE_MODE)
+	WAVE   ADCRef = LBN_GetNumericWave(defValue = NaN)
 	ADCRef[0] = 2
 	ADCRef[1] = 0
 	CHECK_EQUAL_WAVES(ADCs, ADCRef, mode = WAVE_DATA)
@@ -333,26 +333,26 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp2_REENTRY([string s
 	WAVE/Z/T textualValues = GetLBTextualValues(str)
 	CHECK_WAVE(textualValues, TEXT_WAVE)
 
-	WAVE/Z/T ADUnit = GetLastSetting(textualValues, sweepNo, "AD Unit", DATA_ACQUISITION_MODE)
-	WAVE/T ADUnitRef = LBN_GetTextWave()
+	WAVE/Z/T ADUnit    = GetLastSetting(textualValues, sweepNo, "AD Unit", DATA_ACQUISITION_MODE)
+	WAVE/T   ADUnitRef = LBN_GetTextWave()
 	ADUnitRef[0] = "pA"
 	ADUnitRef[1] = "testunit"
 	CHECK_EQUAL_WAVES(ADUnit, ADUnitRef, mode = WAVE_DATA)
 
-	WAVE/Z/T DAUnit = GetLastSetting(textualValues, sweepNo, "DA Unit", DATA_ACQUISITION_MODE)
-	WAVE/T DAUnitRef = LBN_GetTextWave()
+	WAVE/Z/T DAUnit    = GetLastSetting(textualValues, sweepNo, "DA Unit", DATA_ACQUISITION_MODE)
+	WAVE/T   DAUnitRef = LBN_GetTextWave()
 	DAUnitRef[0] = "mV"
 	DAUnitRef[1] = "testunit"
 	CHECK_EQUAL_WAVES(DAUnit, DAUnitRef, mode = WAVE_DATA)
 
-	WAVE/Z ADGain = GetLastSetting(numericalValues, sweepNo, "AD Gain", DATA_ACQUISITION_MODE)
-	WAVE ADGainRef = LBN_GetNumericWave(defValue = NaN)
+	WAVE/Z ADGain    = GetLastSetting(numericalValues, sweepNo, "AD Gain", DATA_ACQUISITION_MODE)
+	WAVE   ADGainRef = LBN_GetNumericWave(defValue = NaN)
 	ADGainRef[0] = 0.0025
 	ADGainRef[1] = 19
 	CHECK_EQUAL_WAVES(ADGain, ADGainRef, mode = WAVE_DATA)
 
-	WAVE/Z DAGain = GetLastSetting(numericalValues, sweepNo, "DA Gain", DATA_ACQUISITION_MODE)
-	WAVE DAGainRef = LBN_GetNumericWave(defValue = NaN)
+	WAVE/Z DAGain    = GetLastSetting(numericalValues, sweepNo, "DA Gain", DATA_ACQUISITION_MODE)
+	WAVE   DAGainRef = LBN_GetNumericWave(defValue = NaN)
 	DAGainRef[0] = 20
 	DAGainRef[1] = 19
 	CHECK_EQUAL_WAVES(DAGain, DAGainRef, mode = WAVE_DATA)

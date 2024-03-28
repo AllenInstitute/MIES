@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -9,21 +9,21 @@
 /// @file MIES_Blowout.ipf
 /// @brief __BWO__ Automates amplifier configuration and acquisition of the sweep used to measure drift in the zero calibration of the amplifer.
 
-static Constant BWO_MAX_RESISTANCE = 10 // MΩ
-static Constant BWO_INIT_PRESSURE = 5 // psi
-static Constant BWO_PRESSURE_INCREMENT = 1 // psi
-static Constant TWO_SECONDS = 120 // ticks in two seconds
-static Constant FIFTEEN_SECONDS = 900 // ticks in fifteen seconds
+static Constant BWO_MAX_RESISTANCE     = 10  // MΩ
+static Constant BWO_INIT_PRESSURE      = 5   // psi
+static Constant BWO_PRESSURE_INCREMENT = 1   // psi
+static Constant TWO_SECONDS            = 120 // ticks in two seconds
+static Constant FIFTEEN_SECONDS        = 900 // ticks in fifteen seconds
 
 /// @brief Initiates blowout protocol on single locked device
 Function BWO_SelectDevice()
 
 	string device
-	string lockedDeviceList = GetListOfLockedDevices()
+	string   lockedDeviceList  = GetListOfLockedDevices()
 	variable noOfLockedDevices = ItemsInList(lockedDeviceList)
-	NVAR interactiveMode = $GetInteractiveMode()
+	NVAR     interactiveMode   = $GetInteractiveMode()
 
-	If(noOfLockedDevices == 0)
+	if(noOfLockedDevices == 0)
 		return NaN
 	elseif(noOfLockedDevices == 1)
 		if(interactiveMode)
@@ -36,7 +36,7 @@ Function BWO_SelectDevice()
 		BWO_Go(StringFromList(0, lockedDeviceList))
 	elseif(noOfLockedDevices > 1)
 		print "Blowout is not available for multiple locked devices"
-		return Nan
+		return NaN
 	endif
 End
 
@@ -44,7 +44,7 @@ End
 Function BWO_Go(device)
 	string device
 
-	If(!BWO_CheckGlobalSettings(device))
+	if(!BWO_CheckGlobalSettings(device))
 		return NaN
 	endif
 
@@ -81,7 +81,7 @@ static Function BWO_CheckGlobalSettings(device)
 	endif
 	// check that blowout protocol exists
 	stimSetList = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC, searchString = "MIES_Blowout*")
-	If(itemsinlist(stimSetList) ==  0)
+	if(itemsinlist(stimSetList) == 0)
 		print "Blowout stimulus set does not exist. Please create a MIES_Blowout stimulus set using the waveBuilder"
 		return 0
 	endif
@@ -93,13 +93,13 @@ static Function BWO_CheckGlobalSettings(device)
 
 	// check that pressure is set to Atomospheric on all headstages
 	PressureModeStorageCol = findDimLabel(pressure, COLS, "Approach_Seal_BrkIn_Clear")
-	wavestats/Q/RMD=[][PressureModeStorageCol,PressureModeStorageCol] pressure
+	wavestats/Q/RMD=[][PressureModeStorageCol, PressureModeStorageCol] pressure
 	if(V_max > PRESSURE_METHOD_ATM)
 		print "Turn off pressure on all headstages"
 		return 0
 	endif
 
-	for(i=0; i < NUM_HEADSTAGES; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		connected = min(connected, AI_SelectMultiClamp(device, i))
 	endfor
 
@@ -116,10 +116,10 @@ static Function BWO_ConfigureTP(device)
 	string device
 
 	if(!TP_CheckIfTestpulseIsRunning(device))
-		PGC_SetAndActivateControl(device,"StartTestPulseButton", switchTab = 1)
+		PGC_SetAndActivateControl(device, "StartTestPulseButton", switchTab = 1)
 	endif
 
-	DoUpdate/W=$SCOPE_GetPanel(device)
+	DoUpdate/W=$SCOPE_GetPanel (device)
 End
 
 /// @brief Configures data acquisition settings for blowout
@@ -145,18 +145,18 @@ End
 static Function BWO_InitParaPipetteClear(device)
 	string device
 
-	variable 	startTime
+	variable                startTime
 	STRUCT BackgroundStruct s
 	s.wmbs.name = "TestPulseMD"
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_ManPressureAll", val = CHECKBOX_SELECTED, switchTab = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = BWO_INIT_PRESSURE) // set the initial manual pressure
-	PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan")// turn on manual pressure
+	PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan") // turn on manual pressure
 	startTime = ticks
-	Do
+	do
 		TPM_BkrdTPFuncMD(s)
-		DoUpdate/W=$SCOPE_GetPanel(device)
-	While(ticks - startTime < 90 ) // wait for 1.5 seconds but update oscilloscope
+		DoUpdate/W=$SCOPE_GetPanel (device)
+	while(ticks - startTime < 90) // wait for 1.5 seconds but update oscilloscope
 	PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan") // turn OFF manual pressure
 	PGC_SetAndActivateControl(device, "check_DataAcq_ManPressureAll", val = CHECKBOX_UNSELECTED) // turn off apply pressure mode to all HS
 End
@@ -167,13 +167,13 @@ static Function BWO_CheckAndClearPipettes(device)
 
 	variable i, j, col, initPressure, startTime, pressurePulseStartTime, pressurePulseTime
 
-	wave TPResults = GetTPResults(device)
-	WAVE pressure = P_GetPressureDataWaveRef(device)
+	WAVE TPResults = GetTPResults(device)
+	WAVE pressure  = P_GetPressureDataWaveRef(device)
 
 	STRUCT BackgroundStruct s
 	s.wmbs.name = "TestPulseMD"
 
-	make/FREE/n = (NUM_HEADSTAGES) PressureTracking = BWO_INIT_PRESSURE + BWO_PRESSURE_INCREMENT
+	make/FREE/N=(NUM_HEADSTAGES) PressureTracking = BWO_INIT_PRESSURE + BWO_PRESSURE_INCREMENT
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -185,11 +185,11 @@ static Function BWO_CheckAndClearPipettes(device)
 		PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan") // turn on manual pressure
 
 		TPM_BkrdTPFuncMD(s)
-		DoUpdate/W=$SCOPE_GetPanel(device)
+		DoUpdate/W=$SCOPE_GetPanel (device)
 		startTime = ticks
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = PressureTracking[i])
 		pressurePulseStartTime = ticks
-		PressureTracking[i] += BWO_PRESSURE_INCREMENT
+		PressureTracking[i]   += BWO_PRESSURE_INCREMENT
 
 		do
 			pressurePulseTime = ticks - pressurePulseStartTime
@@ -198,11 +198,11 @@ static Function BWO_CheckAndClearPipettes(device)
 				if(PressureTracking[i] <= MAX_REGULATOR_PRESSURE) // only increase pressure if less than or equal to max pressure
 					PressureTracking[i] += 1
 				endif
-				PressureTracking[i] = min(PressureTracking[i], MAX_REGULATOR_PRESSURE)
+				PressureTracking[i]    = min(PressureTracking[i], MAX_REGULATOR_PRESSURE)
 				pressurePulseStartTime = ticks
 			endif
 			TPM_BkrdTPFuncMD(s)
-			DoUpdate/W=$SCOPE_GetPanel(device)
+			DoUpdate/W=$SCOPE_GetPanel (device)
 		while(TPResults[%ResistanceSteadyState][i] > BWO_MAX_RESISTANCE && ticks - startTime < FIFTEEN_SECONDS) // continue if the pipette is not clear AND the timeout hasn't been exceeded
 
 		PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan") // turn off manual pressure
@@ -229,7 +229,7 @@ End
 
 /// @brief Wrapper function for setting the clamp mode on all headstages (T̶h̶o̶m̶a̶s̶ ̶p̶r̶o̶b̶a̶b̶l̶y̶ ̶w̶o̶n̶'̶t̶ ̶l̶i̶k̶e̶ ̶i̶t̶  He liked it!! :/ ).
 static Function BWO_SetClampModeAll(device, mode)
-	string device
+	string   device
 	variable mode
 
 	switch(mode)

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -26,7 +26,7 @@ End
 /// @brief Publish the given message as given by the JSON and the filter
 static Function PUB_Publish(variable jsonID, string messageFilter)
 	variable err
-	string payload
+	string   payload
 
 	payload = JSON_Dump(jsonID)
 	JSON_Release(jsonID)
@@ -154,7 +154,7 @@ End
 /// \endrst
 Function PUB_PipetteInBath(string device, variable sweepNo, variable headstage)
 	variable jsonID
-	string key
+	string   key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE numericalKeys   = GetLBNumericalKeys(device)
@@ -220,7 +220,7 @@ End
 /// \endrst
 Function PUB_SealEvaluation(string device, variable sweepNo, variable headstage)
 	variable jsonID
-	string key
+	string   key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE numericalKeys   = GetLBNumericalKeys(device)
@@ -276,7 +276,7 @@ End
 /// \endrst
 Function PUB_TrueRestingMembranePotential(string device, variable sweepNo, variable headstage)
 	variable jsonID
-	string key
+	string   key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE numericalKeys   = GetLBNumericalKeys(device)
@@ -315,7 +315,7 @@ End
 /// \endrst
 Function PUB_ClampModeChange(string device, variable headstage, variable oldClampMode, variable newClampMode)
 	variable jsonID
-	string payload
+	string   payload
 
 	if(oldClampMode == newClampMode)
 		return NaN
@@ -453,7 +453,7 @@ Function PUB_AutoTPResult(string device, variable headstage, variable result)
 	string payload, path
 
 	WAVE TPSettings = GetTPSettings(device)
-	WAVE TPStorage = GetTPStorage(device)
+	WAVE TPStorage  = GetTPStorage(device)
 
 	WAVE/Z autoTPDeltaV = TP_GetValuesFromTPStorage(TPStorage, headstage, "AutoTPDeltaV", 1)
 	ASSERT(WaveExists(autoTPDeltaV), "Missing auto TP delta V")
@@ -532,16 +532,16 @@ Function PUB_DAQStateChange(string device, variable mode, variable oldState, var
 
 	switch(mode)
 		case DATA_ACQUISITION_MODE:
-			name = "daq"
+			name      = "daq"
 			name_null = "tp"
-			oldState = !(oldState == DAQ_NOT_RUNNING)
-			newState = !(newState == DAQ_NOT_RUNNING)
+			oldState  = !(oldState == DAQ_NOT_RUNNING)
+			newState  = !(newState == DAQ_NOT_RUNNING)
 			break
 		case TEST_PULSE_MODE:
-			name = "tp"
+			name      = "tp"
 			name_null = "daq"
-			oldState = !(oldState == TEST_PULSE_NOT_RUNNING)
-			newState = !(newState == TEST_PULSE_NOT_RUNNING)
+			oldState  = !(oldState == TEST_PULSE_NOT_RUNNING)
+			newState  = !(newState == TEST_PULSE_NOT_RUNNING)
 			break
 		default:
 			ASSERT(0, "Invalid mode")
@@ -616,7 +616,7 @@ End
 /// \endrst
 Function PUB_AccessResistanceSmoke(string device, variable sweepNo, variable headstage)
 	variable jsonID
-	string key
+	string   key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE numericalKeys   = GetLBNumericalKeys(device)
