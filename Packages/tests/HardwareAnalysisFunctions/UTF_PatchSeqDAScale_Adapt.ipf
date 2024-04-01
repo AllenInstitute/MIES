@@ -6,27 +6,29 @@
 /// Test matrix
 /// @rst
 ///
-/// .. Column order: test overrides, analysis parameters
+/// .. Column order: test overrides, labnotebook entries, analysis parameters
 ///
-///============= ==================== ===================== ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ============================== =========================== ======================= ======================= ========================= ===================
-///  Test case    Baseline chunk0 QC   Enough supra sweeps   Passing supra sweeps   Valid initial f-I slope QC   Valid initial f-I fit   Initial f-I data is dense enough   Failed f-I   Valid f-I slope QC   Fit f-I slope QC   Enough f-I points QC   Measured all future DAScales   Async QC   Sampling QC   SlopePercentage   NumPointsForLineFit   NumInvalidSlopeSweepsAllowed   MaxFrequencyChangePercent   AbsDAScaleMinDistance   AbsDAScaleMaxDistance   AbsFrequencyMinDistance   SamplingFrequency
-///============= ==================== ===================== ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ============================== =========================== ======================= ======================= ========================= ===================
-///  PS_DS_AD1    -                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              -          ✓             def               def                   def                            25                          1                       10                      2                         def
-///  PS_DS_AD2    ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
-///  PS_DS_AD3    [-,✓]                ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
-///  PS_DS_AD4    ✓                    ✓                     -                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
-///  PS_DS_AD5    ✓                    -                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               3                     def                            25                          1                       10                      2                         def
-///  PS_DS_AD6    ✓                    ✓                     ✓                      -                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
-///  PS_DS_AD7    ✓                    ✓                     ✓                      -                            ✓                       -                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
-///  PS_DS_AD8    ✓                    ✓                     ✓                      ✓                            -                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
-///  PS_DS_AD9    ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            [-,-]                ✓                  ✓                      ✓                              ✓          ✓             def               def                   2                              def                         1                       10                      2                         def
-///  PS_DS_AD10   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      -                              ✓          ✓             def               def                   def                            def                         1                       10                      2                         def
-///  PS_DS_AD11   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓]            ✓                      ✓                              ✓          ✓             10                4                     1                              45                          1                       10                      2                         def
-///  PS_DS_AD12   [✓,-,✓,✓]            ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,-,✓]          ✓                      [-,✓,✓]                        ✓          ✓             def               def                   def                            25                          1                       10                      2                         def
-///  PS_DS_AD13   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          -             def               def                   def                            def                         1                       10                      2                         def
-///  PS_DS_AD14   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  -            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   def                            def                         1                       10                      2                         def
-///  PS_DS_AD15   ✓                    ✓                     ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      [-,-,✓]                        ✓          ✓             def               def                   def                            def                         1                       10                      2                         def
-///============= ==================== ===================== ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ============================== =========================== ======================= ======================= ========================= ===================
+///============= ==================== ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ========================= ============================== =========================== ============================= ========================= ===================
+///  Test case    Baseline chunk0 QC   Enough rheobase/supra sweeps   Passing rheobase sweeps   Passing supra sweeps   Valid initial f-I slope QC   Valid initial f-I fit   Initial f-I data is dense enough   Failed f-I   Valid f-I slope QC   Fit f-I slope QC   Enough f-I points QC   Measured all future DAScales   Async QC   Sampling QC   SlopePercentage   NumPointsForLineFit   NumSweepsWithSaturation   NumInvalidSlopeSweepsAllowed   MaxFrequencyChangePercent   DaScaleStepWidthMinMaxRatio   AbsFrequencyMinDistance   SamplingFrequency
+///============= ==================== ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ========================= ============================== =========================== ============================= ========================= ===================
+///  PS_DS_AD1    -                    ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              -          ✓             def               def                   2                         def                            5                           3                             2                         def
+///  PS_DS_AD2    ✓                    ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   1                         def                            25                          3                             2                         def
+///  PS_DS_AD2a   ✓                    ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   2                         def                            25                          3                             2                         def
+///  PS_DS_AD2b   ✓                    ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   2                         def                            25                          1.5                           2                         def
+///  PS_DS_AD3    [-,✓,✓]              ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            [-,✓,✓]              [-,✓,✓]            ✓                      [✓,-,✓]                        ✓          ✓             def               def                   2                         def                            25                          3                             2                         def
+///  PS_DS_AD4    ✓                    ✓                              ✓                         -                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   2                         def                            25                          3                             2                         def
+///  PS_DS_AD4a   ✓                    ✓                              -                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   2                         def                            25                          3                             2                         def
+///  PS_DS_AD5    ✓                    -                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               3                     2                         def                            25                          3                             2                         def
+///  PS_DS_AD6    ✓                    ✓                              ✓                         ✓                      -                            ✓                       ✓                                  ✓            -                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   1                         def                            25                          3                             2                         def
+///  PS_DS_AD7    ✓                    ✓                              ✓                         ✓                      -                            ✓                       -                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   1                         def                            10                          1.1                           2                         def
+///  PS_DS_AD8    ✓                    ✓                              ✓                         ✓                      ✓                            -                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               def                   1                         def                            25                          3                             2                         def
+///  PS_DS_AD9    ✓                    ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            [-,-]                [-,-]              ✓                      ✓                              ✓          ✓             def               def                   3                         2                              45                          3                             2                         def
+///  PS_DS_AD10   ✓                    ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      -                              ✓          ✓             def               def                   2                         def                            25                          1.2                           2                         def
+///  PS_DS_AD11   ✓                    ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓]            ✓                      [-,-,✓]                        ✓          ✓             60                4                     1                         1                              45                          1.2                           2                         def
+///  PS_DS_AD12   [✓,-,✓,✓]            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓,✓]          ✓                      [-,✓-,,✓]                      ✓          ✓             def               def                   2                         def                            25                          3                             1.1                       def
+///  PS_DS_AD13   ✓                    ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          -             def               def                   2                         def                            25                          3                             0.5                       def
+///  PS_DS_AD14   ✓                    ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  [-,✓ ]       [-,✓ ]               ✓                  ✓                      ✓                              ✓          ✓             def               def                   1                         def                            25                          3                             2                         def
+///============= ==================== ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ===================== ========================= ============================== =========================== ============================= ========================= ===================
 ///
 /// @endrst
 
@@ -111,6 +113,8 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 		case PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS:
 		case PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS:
 		case PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS:
+		case PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM:
+		case PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_DA_AT_FREQ:
@@ -136,8 +140,8 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 			return GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_DA_AT_FI_SLOPES:
 		case PSQ_FMT_LBN_DA_AT_FI_OFFSETS:
-		case PSQ_FMT_LBN_DA_AT_FREQ_SUPRA:
-		case PSQ_FMT_LBN_DA_AT_DASCALE_SUPRA:
+		case PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA:
+		case PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			WAVE/T settings = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			return ListToNumericWave(settings[PSQ_TEST_HEADSTAGE], ";")
@@ -161,7 +165,8 @@ static Function/WAVE GetWave_IGNORE()
 	              "validSlopePass;initialValidSlopePass;"                     + \
 	              "opMode;apFreq;maxSlope;fiSlope;fiOffset;futureDAScales;"   + \
 	              "fiSlopesFromSupra;fiOffsetsFromSupra;daScale;"             + \
-	              "apFreqFromSupra;daScaleFromSupra;"
+	              "apFreqFromRHSupra;dascaleFromRHSupra;minDaScaleNorm;"      + \
+	              "maxDAScaleNorm"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -194,8 +199,10 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%fiSlopesFromSupra]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_SLOPES)
 	wv[%fiOffsetsFromSupra] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSETS)
 	wv[%dascale]            = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	wv[%apFreqFromSupra]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ_SUPRA)
-	wv[%dascaleFromSupra]   = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_DASCALE_SUPRA)
+	wv[%apFreqFromRHSupra]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA)
+	wv[%dascaleFromRHSupra] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA)
+	wv[%minDaScaleNorm]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM)
+	wv[%maxDaScaleNorm]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM)
 
 	wv[%futureDAScalesPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS)
 	wv[%fiSlopeReachedPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
@@ -209,7 +216,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	return wv
 End
 
-static Function [WAVE apFreqRef, WAVE apfreqFromSupra, WAVE DAScalesFromSupra] ExtractRefValuesFromOverride(variable sweepNo)
+static Function [WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] ExtractRefValuesFromOverride(variable sweepNo)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
@@ -217,10 +224,10 @@ static Function [WAVE apFreqRef, WAVE apfreqFromSupra, WAVE DAScalesFromSupra] E
 	Duplicate/FREE/RMD=[0][0, sweepNo][FindDimLabel(overrideResults, LAYERS, "APFrequency")] overrideResults, apFreqRef
 	Redimension/N=(DimSize(apFreqRef, COLS)) apFreqRef
 
-	WAVE/Z apfreqFromSupra   = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesSupra")
-	WAVE/Z DAScalesFromSupra = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesSupra")
+	WAVE/Z apFreqFromRHSupra         = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRheobaseSupra")
+	WAVE/Z DAScalesFromRheobaseSupra = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRheobaseSupra")
 
-	return [apFreqRef, apfreqFromSupra, DAScalesFromSupra]
+	return [apFreqRef, apFreqFromRHSupra, DAScalesFromRheobaseSupra]
 End
 
 static Function PrintSomeValues(WAVE/WAVE entries)
@@ -252,13 +259,14 @@ static Function PS_DS_AD1_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 5)
 
 	// use defaults for the rest
 
@@ -269,14 +277,15 @@ static Function PS_DS_AD1_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -311,26 +320,32 @@ static Function PS_DS_AD1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%asyncPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%validSlopePass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.025, NaN, NaN}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {.075, NaN, NaN}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {2.999999970665357e-10, NaN, NaN}
-	Make/FREE/T futureDAScalesRef = {"5.22666666666667;", \
-	                                 "5.22666666666667;", \
-	                                 "5.22666666666667;"}
+	Make/FREE/T futureDAScalesRef = {"3.5;4.4;", \
+	                                 "3.5;4.4;", \
+	                                 "3.5;4.4;"}
 
 	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {5.226666666666667, 5.226666666666667, 5.226666666666667}
+	Make/FREE/D DAScalesRef = {3.5, 3.5, 3.5}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_WAVE(entries[%fiSlope], NULL_WAVE)
@@ -348,9 +363,10 @@ static Function PS_DS_AD2_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -365,14 +381,15 @@ static Function PS_DS_AD2_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -384,7 +401,7 @@ static Function PS_DS_AD2([string str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
 
 	// all tests pass
-	wv[][][%APFrequency] = 16.1 - 5 * q
+	wv[][][%APFrequency] = 16.1
 	wv[][][%AsyncQC]     = 1
 	wv[][][%BaselineQC]  = 1
 End
@@ -413,11 +430,17 @@ static Function PS_DS_AD2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.125}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.375}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10}
 	Make/FREE/D fiSlopeRef = {8.15217391304348e-12}
@@ -439,14 +462,15 @@ static Function PS_DS_AD2_REENTRY([string str])
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 End
 
-static Function PS_DS_AD3_preAcq(string device)
+static Function PS_DS_AD2a_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -461,14 +485,225 @@ static Function PS_DS_AD3_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_DS_AD2a([string str])
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
+
+	// all tests pass
+	wv[][][%APFrequency] = 16.1 - 1 * q
+	wv[][][%AsyncQC]     = 1
+	wv[][][%BaselineQC]  = 1
+End
+
+static Function PS_DS_AD2a_REENTRY([string str])
+	variable sweepNo
+
+	sweepNo = 1
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN}, mode = WAVE_DATA)
+
+	Make/FREE/D minDAScaleNormRef = {0.125, NaN}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.375, NaN}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+
+	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+
+	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
+	Make/FREE/D fiSlopeRef = {8.15217391304348e-12, -1.656314699792955e-11}
+	Make/FREE/D fiOffsetRef = {15.67391304347826, 16.96570048309179}
+	Make/FREE/T futureDAScalesRef = {"5.22666666666667;11.2641666666667;", "5.22666666666667;11.2641666666667;"}
+
+	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
+	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
+	Make/FREE/D DAScalesRef = {5.226666666666667, 11.26416666666667}
+
+	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
+End
+
+static Function PS_DS_AD2b_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 1.5)
+
+	// SamplingMultiplier, SamplingFrequency use defaults
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
+
+	// use defaults for the rest
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_DS_AD2b([string str])
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
+
+	// all tests pass
+	wv[][][%APFrequency] = 16.1 - 1 * q
+	wv[][][%AsyncQC]     = 1
+	wv[][][%BaselineQC]  = 1
+End
+
+static Function PS_DS_AD2b_REENTRY([string str])
+	variable sweepNo
+
+	sweepNo = 1
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN}, mode = WAVE_DATA)
+
+	Make/FREE/D minDAScaleNormRef = {0.125, NaN}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.1875, NaN}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+
+	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+
+	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
+	Make/FREE/D fiSlopeRef = {8.15217391304348e-12, -3.312629399585924e-11}
+	Make/FREE/D fiOffsetRef = {15.67391304347826, 17.83140096618358}
+	Make/FREE/T futureDAScalesRef = {"5.22666666666667;8.24541666666667;", "5.22666666666667;8.24541666666667;"}
+
+	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
+	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
+	Make/FREE/D DAScalesRef = {5.226666666666667, 8.245416666666667}
+
+	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
+End
+
+static Function PS_DS_AD3_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
+
+	// SamplingMultiplier, SamplingFrequency use defaults
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
+
+	// use defaults for the rest
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -480,53 +715,59 @@ static Function PS_DS_AD3([string str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
 
 	// 0: BL fails
-	// 1: sweep QC passes and fiSlope reached
+	// 1-2: sweep QC passes and fiSlope reached
 	wv[][0][%APFrequency]  = 16.1
-	wv[][1,][%APFrequency] = 16.1 - 5 * (q - 1)
+	wv[][1,][%APFrequency] = 16.1 - 1 * (q - 1)
 	wv[][][%AsyncQC]       = 1
-	wv[][1][%BaselineQC]   = 1
+	wv[][1,][%BaselineQC]  = 1
 End
 
 static Function PS_DS_AD3_REENTRY([string str])
 	variable sweepNo
 
-	sweepNo = 1
+	sweepNo = 2
 
 	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {NaN, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {NaN, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {1, 0, 1}, mode = WAVE_DATA)
 	// first sweep fails, so we redo the fit with only the supra data and that
 	// does not result in fit slope reached QC
-	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%validSlopePass], {0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%validSlopePass], {0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.125, NaN, NaN}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.375, NaN, NaN}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
-	Make/FREE/D fiSlopeRef = {NaN, 8.152173913043478e-12}
-	Make/FREE/D fiOffsetRef = {NaN, 15.67391304347826}
-	Make/FREE/T futureDAScalesRef = {"5.22666666666667;", "5.22666666666667;"}
+	Make/FREE/D maxSlopeRef = {3e-10, 3e-10, 3e-10}
+	Make/FREE/D fiSlopeRef = {NaN, 8.152173913043478e-12, -1.656314699792955e-11}
+	Make/FREE/D fiOffsetRef = {NaN, 15.67391304347826, 16.96570048309179}
+	Make/FREE/T futureDAScalesRef = {"5.22666666666667;", "5.22666666666667;11.2641666666667;", "5.22666666666667;11.2641666666667;"}
 
 	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {5.226666666666667, 5.226666666666667}
+	Make/FREE/D DAScalesRef = {5.226666666666667, 5.226666666666667, 11.26416666666667}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -544,9 +785,10 @@ static Function PS_DS_AD4_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -563,13 +805,14 @@ static Function PS_DS_AD4_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -590,14 +833,68 @@ static Function PS_DS_AD4([string str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
+static Function PS_DS_AD4a_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
+
+	// SamplingMultiplier, SamplingFrequency use defaults
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
+
+	// use defaults for the rest
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	Make/O/N=0 root:overrideResults
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_DS_AD4a([string str])
+
+	variable ref, sweepNo
+	string historyText
+
+	ref = CaptureHistoryStart()
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	historyText = CaptureHistory(ref, 1)
+	CHECK_GE_VAR(strsearch(historyText, "Could not find a passing set QC from previous Rheobase runs.", 1), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+End
+
 static Function PS_DS_AD5_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -613,14 +910,15 @@ static Function PS_DS_AD5_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5})
 
-	Make/FREE/D daScalesFromSupra = {1, 2}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -635,7 +933,7 @@ static Function PS_DS_AD5([string str])
 	AcquireData_NG(s, str)
 
 	historyText = CaptureHistory(ref, 1)
-	CHECK_GE_VAR(strsearch(historyText, "The f-I fit of the supra data failed due to: \"Not enough points for fit\"", 1), 0)
+	CHECK_GE_VAR(strsearch(historyText, "The f-I fit of the rheobase/supra data failed due to: \"Not enough points for fit\"", 1), 0)
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
@@ -646,9 +944,10 @@ static Function PS_DS_AD6_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -663,15 +962,16 @@ static Function PS_DS_AD6_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 3}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
 	// invalid initial valid fit QC
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 13, 8}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 15}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -707,23 +1007,29 @@ static Function PS_DS_AD6_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {0}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.1195652173913044}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.3586956521739131}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {2e-10}
-	Make/FREE/D fiSlopeRef = {3.333333333333333e-11}
-	Make/FREE/D fiOffsetRef = {6.666666666666667}
+	Make/FREE/D maxSlopeRef = {4e-10}
+	Make/FREE/D fiSlopeRef = {4e-10}
+	Make/FREE/D fiOffsetRef = {3}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, -5e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 28}
+	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, NaN}
+	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, NaN}
 	Make/FREE/D DAScalesRef = {1}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -742,13 +1048,14 @@ static Function PS_DS_AD7_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 1.1)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 50)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 10)
 
 	// use defaults for the rest
 
@@ -759,15 +1066,16 @@ static Function PS_DS_AD7_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 3}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
 	// invalid initial valid fit QC but not dense enough
-	Make/FREE/D apFrequenciesFromSupra = {5, 8, 13, 10}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {5, 8, 13, 15}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -787,41 +1095,47 @@ End
 static Function PS_DS_AD7_REENTRY([string str])
 	variable sweepNo
 
-	sweepNo = 0
+	sweepNo = 1
 
 	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%sweepPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselinePass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%asyncPass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {0, NaN}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.02156862745098039, NaN}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.02372549019607843, NaN}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {4.999999858590343e-10}
-	Make/FREE/D fiSlopeRef = {1.4e-10}
-	Make/FREE/D fiOffsetRef = {4.4}
-	Make/FREE/T futureDAScalesRef = {"1.5;"}
+	Make/FREE/D maxSlopeRef = {5.666666666666668e-10, 9.999999999999999e-10}
+	Make/FREE/D fiSlopeRef = {5.666666666666668e-10, 9.999999999999999e-10}
+	Make/FREE/D fiOffsetRef = {-2, -8.5}
+	Make/FREE/T futureDAScalesRef = {"1.5;2.5;", "1.5;2.5;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {3e-10, 5e-10, -3e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {2, -2, 22}
-	Make/FREE/D DAScalesRef = {1.5}
+	Make/FREE/D fiSlopesFromSupraRef = {3e-10, 5e-10, NaN}
+	Make/FREE/D fiOffsetsFromSupraRef = {2, -2, NaN}
+	Make/FREE/D DAScalesRef = {1.5, 2.5}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -839,9 +1153,10 @@ static Function PS_DS_AD8_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -856,14 +1171,15 @@ static Function PS_DS_AD8_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5})
 
-	Make/FREE/D daScalesFromSupra = {1, 1}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 1}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -878,7 +1194,7 @@ static Function PS_DS_AD8([string str])
 	AcquireData_NG(s, str)
 
 	historyText = CaptureHistory(ref, 1)
-	CHECK_GE_VAR(strsearch(historyText, "The f-I fit of the supra data failed due to: \"All fit results are NaN\"", 1), 0)
+	CHECK_GE_VAR(strsearch(historyText, "The f-I fit of the rheobase/supra data failed due to: \"All fit results are NaN\"", 1), 0)
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
@@ -889,9 +1205,10 @@ static Function PS_DS_AD9_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 3)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -906,15 +1223,15 @@ static Function PS_DS_AD9_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	// invalid initial valid fit QC but not dense enough
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 13, 15}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 15}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -926,7 +1243,7 @@ static Function PS_DS_AD9([string str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
 
 	// all post sweep fits have an invalid fit QC
-	wv[][][%APFrequency] = 6
+	wv[][][%APFrequency] = PSQ_TEST_VERY_LARGE_FREQUENCY
 	wv[][][%AsyncQC]     = 1
 	wv[][][%BaselineQC]  = 1
 End
@@ -949,30 +1266,36 @@ static Function PS_DS_AD9_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%validSlopePass], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.1176470588235294, NaN}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.3529411764705883, NaN}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {2e-10, 2e-10}
+	Make/FREE/D maxSlopeRef = {2e-10, NaN}
 	Make/FREE/D fiSlopeRef = {-6.666666666666667e-10, -6.666666666666667e-10}
 	Make/FREE/D fiOffsetRef = {41.66666666666667, 41.66666666666667}
-	Make/FREE/T futureDAScalesRef = {"5.35;3.175;", "5.35;3.175;"}
+	Make/FREE/T futureDAScalesRef = {"5.35;", "5.35;"}
 
 	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 2e-10}
 	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 7}
 	Make/FREE/D DAScalesRef = {5.35, 5.35}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_WAVE(entries[%fiSlope], NULL_WAVE)
+	CHECK_WAVE(entries[%fiOffset], NULL_WAVE)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
@@ -986,9 +1309,10 @@ static Function PS_DS_AD10_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 1.2)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -1001,14 +1325,15 @@ static Function PS_DS_AD10_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1020,7 +1345,7 @@ static Function PS_DS_AD10([string str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
 
 	// not dense enough and we are running out of sweeps
-	wv[][][%APFrequency] = 17 + 10 * q
+	wv[][][%APFrequency] = 25 + 15 * q
 	wv[][][%AsyncQC]     = 1
 	wv[][][%BaselineQC]  = 1
 End
@@ -1035,7 +1360,7 @@ static Function PS_DS_AD10_REENTRY([string str])
 	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1, 1}, mode = WAVE_DATA)
@@ -1046,23 +1371,29 @@ static Function PS_DS_AD10_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%validSlopePass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.1, NaN, NaN}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.12, NaN, NaN}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {3e-10, 3e-10, 3e-10}
-	Make/FREE/D fiSlopeRef = {-2e-10, -2.2e-09, -4.2e-09}
-	Make/FREE/D fiOffsetRef = {24, 104, 184}
-	Make/FREE/T futureDAScalesRef = {"3.5;4.96;", "3.5;4.96;3.75;", "3.5;4.96;3.75;"}
+	Make/FREE/D maxSlopeRef = {9.374999999999962e-10, 3.124999999999997e-09, 6.510416666666681e-09}
+	Make/FREE/D fiSlopeRef = {9.374999999999962e-10, 3.124999999999997e-09, 6.510416666666681e-09}
+	Make/FREE/D fiOffsetRef = {-21.49999999999984, -129.9999999999999, -314.1666666666675}
+	Make/FREE/T futureDAScalesRef = {"4.96;5.44;", "4.96;5.44;5.6704;", "4.96;5.44;5.6704;5.822464;"}
 
 	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {3.5, 3.5, 3.5}
+	Make/FREE/D DAScalesRef = {4.96, 5.440000000000003, 5.670400000000001}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1082,9 +1413,10 @@ static Function PS_DS_AD11_preAcq(string device)
 
 	ST_SetStimsetParameter("PSQ_DaScale_Adapt_DA_0", "Total number of steps", var = 4)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 1.2)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -1102,14 +1434,15 @@ static Function PS_DS_AD11_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1153,20 +1486,26 @@ static Function PS_DS_AD11_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.225, NaN, NaN}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.27, NaN, NaN}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {2e-10, 2e-10, 2e-10}
-	Make/FREE/D fiSlopeRef = {1.538081020918171e-10, 1.129800583785857e-10, 4.846702671982674e-11}
-	Make/FREE/D fiOffsetRef = {8.582356940218931, 10.67480711493808, 15.84235744837213}
-	Make/FREE/T futureDAScalesRef = {"7.69;13.0146869947276;", "7.69;13.0146869947276;22.1943529193774;", "7.69;13.0146869947276;22.1943529193774;"}
+	Make/FREE/D fiSlopeRef = {1.538081020918171e-10, 1.129800583785857e-10, 5.828789905826642e-11}
+	Make/FREE/D fiOffsetRef = {8.582356940218931, 10.67480711493808, 15.04493404429584}
+	Make/FREE/T futureDAScalesRef = {"7.69;13.0146869947276;", "7.69;13.0146869947276;19.7646869947276;", "7.69;13.0146869947276;19.7646869947276;"}
 
 	Make/FREE/D fiSlopesFromSupraRef = {2e-10}
 	Make/FREE/D fiOffsetsFromSupraRef = {7.5}
-	Make/FREE/D DAScalesRef = {7.69, 13.0146869947276, 22.19435291937739}
+	Make/FREE/D DAScalesRef = {7.69, 13.0146869947276, 19.7646869947276}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1186,9 +1525,10 @@ static Function PS_DS_AD12_preAcq(string device)
 
 	ST_SetStimsetParameter("PSQ_DaScale_Adapt_DA_0", "Total number of steps", var = 4)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 1.1)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -1203,14 +1543,15 @@ static Function PS_DS_AD12_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 1.5, 2.5, 3.5}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 14}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1221,10 +1562,10 @@ static Function PS_DS_AD12([string str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
 
-	wv[][0][%APFrequency] = 22
-	wv[][1][%APFrequency] = 18   // future DAScale
-	wv[][2][%APFrequency] = 18   // redoing future DAScale
-	wv[][3][%APFrequency] = 18.1 // finished
+	wv[][0][%APFrequency] = 25
+	wv[][1][%APFrequency] = 21   // future DAScale (8.4)
+	wv[][2][%APFrequency] = 21   // redoing future DAScale (8.4), passed f-I slope QC (1.) and got another future DAScale 5.95
+	wv[][3][%APFrequency] = 21.1 // passed f-I slope QC (2.)
 
 	wv[][][%AsyncQC]     = 1
 	wv[][][%BaselineQC]  = 1
@@ -1250,25 +1591,31 @@ static Function PS_DS_AD12_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 1, 0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 0, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.1536458333333333, NaN, NaN, NaN}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.4609374999999999, NaN, NaN, NaN}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {4.891304347826073e-10, 4.891304347826073e-10, 6.521739130434707e-10, 6.521739130434707e-10}
-	Make/FREE/D fiSlopeRef = {4.891304347826073e-10, 4.891304347826073e-10, 6.521739130434707e-10, 1.575299306869098e-11}
-	Make/FREE/D fiOffsetRef = {-3.565217391304294, -3.565217391304294, -12.08695652173876, 17.27326191976437}
-	Make/FREE/T futureDAScalesRef = {"5.22666666666667;4.61333333333333;", "5.22666666666667;4.61333333333333;", "5.22666666666667;4.61333333333333;5.24813333333334;", "5.22666666666667;4.61333333333333;5.24813333333334;"}
+	Make/FREE/D maxSlopeRef = {3.416149068322985e-10, 3.416149068322985e-10, 3.416149068322985e-10, 3.416149068322985e-10}
+	Make/FREE/D fiSlopeRef = {3.416149068322985e-10, 3.416149068322985e-10, -2.376451525789897e-10, -4.078983962177433e-12}
+	Make/FREE/D fiOffsetRef = {2.043478260869549, 2.043478260869549, 40.9697542533081, 21.34276443867624}
+	Make/FREE/T futureDAScalesRef = {"6.72;8.40318181818181;", "6.72;8.40318181818181;", "6.72;8.40318181818181;5.95159090909091;", "6.72;8.40318181818181;5.95159090909091;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {5.22666666666667, 4.61333333333333, 4.61333333333333, 5.248133333333337}
+	Make/FREE/D fiSlopesFromSupraRef = {2e-10, 2e-10, 1e-10}
+	Make/FREE/D fiOffsetsFromSupraRef = {8, 8, 10.5}
+	Make/FREE/D DAScalesRef = {6.719999999999999, 8.403181818181814, 8.403181818181814, 5.951590909090905}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1286,9 +1633,12 @@ static Function PS_DS_AD13_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 0.5)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
 
 	// SamplingMultiplier use defaults
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "SamplingFrequency", var = 10)
@@ -1302,14 +1652,15 @@ static Function PS_DS_AD13_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5})
 
-	Make/FREE/D daScalesFromSupra = {1, 2}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 1.2}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {5, 15}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1321,7 +1672,7 @@ static Function PS_DS_AD13([string str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
 
 	// all tests pass, but sampling interval check fails
-	wv[][][%APFrequency] = 16.1 - 5 * q
+	wv[][][%APFrequency] = 20
 	wv[][][%AsyncQC]     = 1
 	wv[][][%BaselineQC]  = 1
 End
@@ -1345,25 +1696,31 @@ static Function PS_DS_AD13_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.005}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.015}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {2.550000000000001e-10}
-	Make/FREE/D fiSlopeRef = {2.550000000000001e-10}
-	Make/FREE/D fiOffsetRef = {5.899999999999999}
-	Make/FREE/T futureDAScalesRef = {"4;3;"}
+	Make/FREE/D maxSlopeRef = {4.99999999999999e-09}
+	Make/FREE/D fiSlopeRef = {-4.999999999999928e-09}
+	Make/FREE/D fiOffsetRef = {74.99999999999918}
+	Make/FREE/T futureDAScalesRef = {"1.1;1.269;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9}
-	Make/FREE/D DAScalesRef = {4}
+	Make/FREE/D fiSlopesFromSupraRef = {4.99999999999999e-09}
+	Make/FREE/D fiOffsetsFromSupraRef = {-44.9999999999999}
+	Make/FREE/D DAScalesRef = {1.1}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1381,9 +1738,10 @@ static Function PS_DS_AD14_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 1)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
@@ -1398,14 +1756,15 @@ static Function PS_DS_AD14_preAcq(string device)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
+	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
 
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
+	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1448,11 +1807,17 @@ static Function PS_DS_AD14_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%validSlopePass], {0, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN}, mode = WAVE_DATA)
 
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
+	Make/FREE/D minDAScaleNormRef = {0.125, NaN}
+	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	Make/FREE/D maxDAScaleNormRef = {0.375, NaN}
+	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
+
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
 	Make/FREE/D fiSlopeRef = {NaN, 8.152173913043478e-12}
@@ -1462,103 +1827,6 @@ static Function PS_DS_AD14_REENTRY([string str])
 	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
 	Make/FREE/D DAScalesRef = {5.226666666666667, 5.22666666666667}
-
-	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
-
-	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
-End
-
-static Function PS_DS_AD15_preAcq(string device)
-
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
-
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMinDistance", var = 1)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsDAScaleMaxDistance", var = 10)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
-
-	// SamplingMultiplier, SamplingFrequency use defaults
-
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 25)
-
-	// use defaults for the rest
-
-	Make/FREE asyncChannels = {2, 4}
-	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
-
-	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
-
-	WAVE/Z overrideResults = GetOverrideResults()
-	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweeps", {4, 5, 6, 7})
-
-	Make/FREE/D daScalesFromSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesSupra", daScalesFromSupra)
-
-	Make/FREE/D apFrequenciesFromSupra = {10, 11, 12, 12}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesSupra", apFrequenciesFromSupra)
-End
-
-// UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_AD15([string str])
-
-	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
-	AcquireData_NG(s, str)
-
-	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
-
-	// zero slope for last supra fit, then passing
-	wv[][][%APFrequency] = 16.1
-
-	wv[][][%AsyncQC]    = 1
-	wv[][][%BaselineQC] = 1
-End
-
-static Function PS_DS_AD15_REENTRY([string str])
-	variable sweepNo
-
-	sweepNo = 2
-
-	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
-
-	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
-
-	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
-
-	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
-
-	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN}, mode = WAVE_DATA)
-
-	[WAVE apFreqRef, WAVE apFreqFromSupra, WAVE DAScalesFromSupra] = ExtractRefValuesFromOverride(sweepNo)
-
-	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apfreqFromSupra], apFreqFromSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromSupra], DAScalesFromSupra, mode = WAVE_DATA)
-
-	Make/FREE/D maxSlopeRef = {1e-10, 1e-10, 1e-10}
-	Make/FREE/D fiSlopeRef = {4.099999999999999e-11, 0, 0}
-	Make/FREE/D fiOffsetRef = {10.36, 16.1, 16.1}
-	Make/FREE/T futureDAScalesRef = {"14;9;", "14;9;6.5;", "14;9;6.5;"}
-
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 1e-10, 0}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 9, 12}
-	Make/FREE/D DAScalesRef = {14, 9, 6.5}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)

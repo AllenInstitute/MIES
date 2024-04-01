@@ -715,12 +715,12 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNoRef)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
-	Make/T/FREE entriesWithoutUnit = {FMT_LBN_ANA_FUNC_VERSION, PSQ_FMT_LBN_SE_TESTPULSE_GROUP,                               \
-	                                  PSQ_FMT_LBN_STEPSIZE, PSQ_FMT_LBN_STEPSIZE_FUTURE, PSQ_FMT_LBN_SPIKE_COUNT,             \
-	                                  PSQ_FMT_LBN_CR_BOUNDS_ACTION, PSQ_FMT_LBN_INITIAL_SCALE, PSQ_FMT_LBN_FINAL_SCALE,       \
-	                                  MSQ_FMT_LBN_INITIAL_SCALE, MSQ_FMT_LBN_FINAL_SCALE, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS,     \
-	                                  MSQ_FMT_LBN_FAILED_PULSE_LEVEL, MSQ_FMT_LBN_RERUN_TRIAL, PSQ_FMT_LBN_VM_FULL_AVG_RDIFF, \
-	                                  PSQ_FMT_LBN_AR_RESISTANCE_RATIO}
+	Make/T/FREE entriesWithoutUnit = {FMT_LBN_ANA_FUNC_VERSION, PSQ_FMT_LBN_SE_TESTPULSE_GROUP,                                              \
+	                                  PSQ_FMT_LBN_STEPSIZE, PSQ_FMT_LBN_STEPSIZE_FUTURE, PSQ_FMT_LBN_SPIKE_COUNT,                            \
+	                                  PSQ_FMT_LBN_CR_BOUNDS_ACTION, PSQ_FMT_LBN_INITIAL_SCALE, PSQ_FMT_LBN_FINAL_SCALE,                      \
+	                                  MSQ_FMT_LBN_INITIAL_SCALE, MSQ_FMT_LBN_FINAL_SCALE, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS,                    \
+	                                  MSQ_FMT_LBN_FAILED_PULSE_LEVEL, MSQ_FMT_LBN_RERUN_TRIAL, PSQ_FMT_LBN_VM_FULL_AVG_RDIFF,                \
+	                                  PSQ_FMT_LBN_AR_RESISTANCE_RATIO, PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM, PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM}
 
 	entriesWithoutUnit = CreateAnaFuncLBNKey(type, entriesWithoutUnit[p], query = 1)
 
@@ -819,7 +819,9 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 							CHECK_LE_VAR(value, 1e6)
 						else
 							CHECK_GT_VAR(value, 0)
-							CHECK_LE_VAR(value, 1e6)
+							if(value != PSQ_TEST_VERY_LARGE_FREQUENCY)
+								CHECK_LE_VAR(value, 1e6)
+							endif
 						endif
 						break
 					default:
