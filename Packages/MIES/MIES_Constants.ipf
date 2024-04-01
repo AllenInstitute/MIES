@@ -2244,3 +2244,5 @@ StrConstant DF_NAME_FREE = "freeroot"
 StrConstant DF_NAME_MIES = "MIES"
 
 Constant SUTTER_MAX_MAX_TP_PULSES = 10000
+
+Constant INVALID_SWEEP_NUMBER = -1

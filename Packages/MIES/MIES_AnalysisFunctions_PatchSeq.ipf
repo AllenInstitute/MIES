@@ -1450,7 +1450,7 @@ End
 ///
 /// And as usual we want the *last* matching sweep.
 ///
-/// @return existing sweep number or -1 in case no such sweep could be found
+/// @return existing sweep number or INVALID_SWEEP_NUMBER in case no such sweep could be found
 static Function PSQ_GetLastPassingLongRHSweep(string device, variable headstage, variable duration)
 	string key
 	variable i, j, setSweep, numSetSweeps, numEntries, sweepNo, setQC, numPassingSweeps
@@ -1461,7 +1461,7 @@ static Function PSQ_GetLastPassingLongRHSweep(string device, variable headstage,
 	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
 
 	if(!WaveExists(sweeps))
-		return -1
+		return INVALID_SWEEP_NUMBER
 	endif
 
 	// sweeps hold all which have a Set QC entry
@@ -1501,7 +1501,7 @@ static Function PSQ_GetLastPassingLongRHSweep(string device, variable headstage,
 		endfor
 	endfor
 
-	return -1
+	return INVALID_SWEEP_NUMBER
 End
 
 static Function PSQ_DS_IsValidMode(string str)
@@ -1524,7 +1524,7 @@ static Function PSQ_GetLastPassingDAScale(string device, variable headstage, str
 	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
 
 	if(!WaveExists(sweeps))
-		return -1
+		return INVALID_SWEEP_NUMBER
 	endif
 
 	numEntries = DimSize(sweeps, ROWS)
@@ -1548,7 +1548,7 @@ static Function PSQ_GetLastPassingDAScale(string device, variable headstage, str
 		endif
 	endfor
 
-	return -1
+	return INVALID_SWEEP_NUMBER
 End
 
 /// @brief Return the sweep number of the last sweep using the PSQ_TrueRestingMembranePotential()
@@ -1564,7 +1564,7 @@ static Function PSQ_GetLastPassingTrueRMP(string device, variable headstage)
 	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
 
 	if(!WaveExists(sweeps))
-		return -1
+		return INVALID_SWEEP_NUMBER
 	endif
 
 	numEntries = DimSize(sweeps, ROWS)
@@ -1581,7 +1581,7 @@ static Function PSQ_GetLastPassingTrueRMP(string device, variable headstage)
 		return sweepNo
 	endfor
 
-	return -1
+	return INVALID_SWEEP_NUMBER
 End
 
 /// @brief Return the DAScale offset for PSQ_DaScale()
