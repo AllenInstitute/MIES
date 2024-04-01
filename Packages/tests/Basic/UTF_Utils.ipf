@@ -3,6 +3,19 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UtilsTest
 
+// UTF_TD_GENERATOR InfiniteValues
+static Function IVSN_WorksSpecialValues([variable val])
+
+	CHECK(!IsValidSweepNumber(val))
+End
+
+static Function IVSN_Works()
+
+	CHECK(!IsValidSweepNumber(INVALID_SWEEP_NUMBER))
+	CHECK(IsValidSweepNumber(0))
+	CHECK(IsValidSweepNumber(1000))
+End
+
 Function AssertionWorksWithPassingOne()
 
 	PASS()
