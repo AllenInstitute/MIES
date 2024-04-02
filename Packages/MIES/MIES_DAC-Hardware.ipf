@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -27,63 +27,63 @@
 /// @name Error codes for the ITC XOP2
 /// @anchor ITCXOP2Errors
 /// @{
-static Constant OLD_IGOR                    = 10001
+static Constant OLD_IGOR = 10001
 
-static Constant UNHANDLED_CPP_EXCEPTION     = 10002
+static Constant UNHANDLED_CPP_EXCEPTION = 10002
 
 // DeviceID is locked to another thread.
 static Constant SLOT_LOCKED_TO_OTHER_THREAD = 10003
 // Tried to access an unused DeviceID.
-static Constant SLOT_EMPTY                  = 10004
+static Constant SLOT_EMPTY = 10004
 // No DeviceIDs available to use.
-static Constant COULDNT_FIND_EMPTY_SLOT     = 10005
+static Constant COULDNT_FIND_EMPTY_SLOT = 10005
 
 // ITC DLL errors
-static Constant ITC_DLL_ERROR               = 10006
+static Constant ITC_DLL_ERROR = 10006
 
 // Invalid numeric device type (/DTN).
-static Constant INVALID_DEVICETYPE_NUMERIC  = 10007
+static Constant INVALID_DEVICETYPE_NUMERIC = 10007
 // Invalid string device type (/DTS).
-static Constant INVALID_DEVICETYPE_STRING   = 10008
+static Constant INVALID_DEVICETYPE_STRING = 10008
 // The device types specified by /DTN and /DTS do not agree.
-static Constant DTN_DTS_DISAGREE            = 10009
+static Constant DTN_DTS_DISAGREE = 10009
 
 // Invalid numeric channel type (/CHN).
 static Constant INVALID_CHANNELTYPE_NUMERIC = 10010
 // Invalid string channel type (/CHS).
-static Constant INVALID_CHANNELTYPE_STRING  = 10011
+static Constant INVALID_CHANNELTYPE_STRING = 10011
 // The channel types specified by /CHN and /CHS do not agree.
-static Constant CHN_CHS_DISAGREE            = 10012
+static Constant CHN_CHS_DISAGREE = 10012
 // Must specify /CHN or /CHS.
-static Constant MUST_SPECIFY_CHN_OR_CHS     = 10013
+static Constant MUST_SPECIFY_CHN_OR_CHS = 10013
 
 // ITCConfigChannel2 flags
 // Invalid value for /S flag.
-static Constant ITCCONFIGCHANNEL2_BAD_S     = 10014
+static Constant ITCCONFIGCHANNEL2_BAD_S = 10014
 // Invalid value for /M flag.
-static Constant ITCCONFIGCHANNEL2_BAD_M     = 10015
+static Constant ITCCONFIGCHANNEL2_BAD_M = 10015
 // Invalid value for /A flag.
-static Constant ITCCONFIGCHANNEL2_BAD_A     = 10016
+static Constant ITCCONFIGCHANNEL2_BAD_A = 10016
 // Invalid value for /O flag.
-static Constant ITCCONFIGCHANNEL2_BAD_O     = 10017
+static Constant ITCCONFIGCHANNEL2_BAD_O = 10017
 // Invalid value for /U flag.
-static Constant ITCCONFIGCHANNEL2_BAD_U     = 10018
+static Constant ITCCONFIGCHANNEL2_BAD_U = 10018
 
 // Wave does not have the minumum number of rows required
-static Constant NEED_MIN_ROWS               = 10019
+static Constant NEED_MIN_ROWS = 10019
 
 // ITCInitialize2 errors
 // The /F flag requires an ITC18, ITC18USB or ITC1600
 static Constant F_FLAG_REQ_ITC18_18USB_1600 = 10020
 // The /D flag requires an ITC1600
-static Constant D_FLAG_REQUIRES_ITC1600     = 10021
+static Constant D_FLAG_REQUIRES_ITC1600 = 10021
 // The /H flag requires an ITC1600
-static Constant H_FLAG_REQUIRES_ITC1600     = 10022
+static Constant H_FLAG_REQUIRES_ITC1600 = 10022
 // The /R flag requires an ITC1600
-static Constant R_FLAG_REQUIRES_ITC1600     = 10023
+static Constant R_FLAG_REQUIRES_ITC1600 = 10023
 
 // Tried to access the default device, but the default device has not been set.
-static Constant THREAD_DEVICE_ID_NOT_SET    = 10024
+static Constant THREAD_DEVICE_ID_NOT_SET = 10024
 /// @}
 
 static Constant HW_ITC_RUNNING_STATE = 0x10
@@ -112,10 +112,10 @@ Function HW_PrepareAcq(hardwareType, deviceID, mode, [data, dataFunc, config, co
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			return HW_ITC_PrepareAcq(deviceID, mode, flags=flags)
+			return HW_ITC_PrepareAcq(deviceID, mode, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
-			return HW_NI_PrepareAcq(deviceID, mode, flags=flags)
+			return HW_NI_PrepareAcq(deviceID, mode, flags = flags)
 			break
 	endswitch
 	return 0
@@ -136,7 +136,7 @@ Function HW_SelectDevice(hardwareType, deviceID, [flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			return HW_ITC_SelectDevice(deviceID, flags=flags)
+			return HW_ITC_SelectDevice(deviceID, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			// nothing to do
@@ -169,7 +169,7 @@ Function HW_OpenDevice(deviceToOpen, hardwareType, [flags])
 			ParseDeviceString(deviceToOpen, deviceType, deviceNumber)
 			deviceTypeIndex   = WhichListItem(deviceType, DEVICE_TYPES_ITC)
 			deviceNumberIndex = WhichListItem(deviceNumber, DEVICE_NUMBERS)
-			deviceID     = HW_ITC_OpenDevice(deviceTypeIndex, deviceNumberIndex, flags = flags)
+			deviceID          = HW_ITC_OpenDevice(deviceTypeIndex, deviceNumberIndex, flags = flags)
 			break
 		default:
 			ASSERT(0, "Unable to open device: Device to open had an unsupported hardware type")
@@ -195,10 +195,10 @@ Function HW_CloseDevice(hardwareType, deviceID, [flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_CloseDevice(deviceID, flags=flags)
+			HW_ITC_CloseDevice(deviceID, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
-			HW_NI_CloseDevice(deviceID, flags=flags)
+			HW_NI_CloseDevice(deviceID, flags = flags)
 			break
 	endswitch
 End
@@ -219,12 +219,12 @@ Function HW_WriteDAC(hardwareType, deviceID, channel, value, [flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_WriteDAC(deviceID, channel, value, flags=flags)
+			HW_ITC_WriteDAC(deviceID, channel, value, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
-			HW_NI_WriteAnalogSingleAndSlow(realDeviceOrPressure, channel, value, flags=flags)
+			HW_NI_WriteAnalogSingleAndSlow(realDeviceOrPressure, channel, value, flags = flags)
 			break
 	endswitch
 End
@@ -246,12 +246,12 @@ Function HW_ReadADC(hardwareType, deviceID, channel, [flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			return HW_ITC_ReadADC(deviceID, channel, flags=flags)
+			return HW_ITC_ReadADC(deviceID, channel, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
-			return HW_NI_ReadAnalogSingleAndSlow(realDeviceOrPressure, channel, flags=flags)
+			return HW_NI_ReadAnalogSingleAndSlow(realDeviceOrPressure, channel, flags = flags)
 			break
 	endswitch
 End
@@ -282,15 +282,15 @@ Function HW_ReadDigital(hardwareType, deviceID, channel, [line, flags])
 			ttlBit     = channel
 			rack       = HW_ITC_GetRackForTTLBit(realDeviceOrPressure, ttlBit)
 			xopChannel = HW_ITC_GetITCXOPChannelForRack(realDeviceOrPressure, rack)
-			return HW_ITC_ReadDigital(deviceID, xopChannel, flags=flags)
+			return HW_ITC_ReadDigital(deviceID, xopChannel, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			if(ParamisDefault(line))
-				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort=channel, flags=flags)
+				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort = channel, flags = flags)
 			else
-				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort=channel, DIOline=line, flags=flags)
+				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort = channel, DIOline = line, flags = flags)
 			endif
 			break
 	endswitch
@@ -321,15 +321,15 @@ Function HW_WriteDigital(hardwareType, deviceID, channel, value, [line, flags])
 			ttlBit     = channel
 			rack       = HW_ITC_GetRackForTTLBit(realDeviceOrPressure, ttlBit)
 			xopChannel = HW_ITC_GetITCXOPChannelForRack(realDeviceOrPressure, rack)
-			HW_ITC_WriteDigital(deviceID, xopChannel, value, flags=flags)
+			HW_ITC_WriteDigital(deviceID, xopChannel, value, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			if(ParamisDefault(line))
-				HW_NI_WriteDigital(realDeviceOrPressure, value, DIOPort=channel, flags=flags)
+				HW_NI_WriteDigital(realDeviceOrPressure, value, DIOPort = channel, flags = flags)
 			else
-				HW_NI_WriteDigital(realDeviceOrPressure, value, DIOPort=channel, DIOline=line, flags=flags)
+				HW_NI_WriteDigital(realDeviceOrPressure, value, DIOPort = channel, DIOline = line, flags = flags)
 			endif
 			break
 	endswitch
@@ -347,7 +347,7 @@ Function HW_EnableYoking(hardwareType, deviceID, [flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_EnableYoking(deviceID, flags=flags)
+			HW_ITC_EnableYoking(deviceID, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			ASSERT(0, "Not implemented")
@@ -367,7 +367,7 @@ Function HW_DisableYoking(hardwareType, deviceID, [flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_DisableYoking(deviceID, flags=flags)
+			HW_ITC_DisableYoking(deviceID, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			ASSERT(0, "Not implemented")
@@ -390,10 +390,10 @@ Function HW_StopAcq(hardwareType, deviceID, [prepareForDAQ, zeroDAC, flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_StopAcq(deviceID, prepareForDAQ=prepareForDAQ, zeroDAC = zeroDAC, flags=flags)
+			HW_ITC_StopAcq(deviceID, prepareForDAQ = prepareForDAQ, zeroDAC = zeroDAC, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
-			HW_NI_StopAcq(deviceID, zeroDAC = zeroDAC, flags=flags)
+			HW_NI_StopAcq(deviceID, zeroDAC = zeroDAC, flags = flags)
 			break
 	endswitch
 End
@@ -413,7 +413,7 @@ Function HW_IsRunning(hardwareType, deviceID, [flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			return HW_ITC_IsRunning(deviceID, flags=flags)
+			return HW_ITC_IsRunning(deviceID, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
@@ -438,12 +438,12 @@ Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			return HW_ITC_GetDeviceInfo(deviceID, flags=flags)
+			return HW_ITC_GetDeviceInfo(deviceID, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
-			return HW_NI_GetDeviceInfo(realDeviceOrPressure, flags=flags)
+			return HW_NI_GetDeviceInfo(realDeviceOrPressure, flags = flags)
 			break
 	endswitch
 End
@@ -561,10 +561,10 @@ Function HW_StartAcq(hardwareType, deviceID, [triggerMode, flags, repeat])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_StartAcq(deviceID, triggerMode, flags=flags)
+			HW_ITC_StartAcq(deviceID, triggerMode, flags = flags)
 			break
 		case HARDWARE_NI_DAC:
-			HW_NI_StartAcq(deviceID, triggerMode, flags=flags, repeat=repeat)
+			HW_NI_StartAcq(deviceID, triggerMode, flags = flags, repeat = repeat)
 			break
 	endswitch
 End
@@ -586,7 +586,7 @@ Function HW_ResetDevice(hardwareType, deviceID, [flags])
 		case HARDWARE_NI_DAC:
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
-			HW_NI_ResetDevice(realDeviceOrPressure, flags=flags)
+			HW_NI_ResetDevice(realDeviceOrPressure, flags = flags)
 			break
 	endswitch
 End
@@ -752,7 +752,7 @@ Function HW_GetEffectiveADCWaveLength(string device, variable dataAcqOrTP)
 	endif
 
 	WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
-	WAVE config = GetDAQConfigWave(device)
+	WAVE      config   = GetDAQConfigWave(device)
 
 	return DimSize(dataWave[GetFirstADCChannelIndex(config)], ROWS)
 End
@@ -773,7 +773,7 @@ End
 
 Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
 
-	variable hwType = GetHardwareType(device)
+	variable hwType         = GetHardwareType(device)
 	variable fifoPositionAD = ROVar(GetFifoPosition(device))
 
 	switch(hwType)
@@ -828,7 +828,7 @@ Function/S HW_ITC_ListOfOpenDevices()
 		list   = AddListItem(device, list, ";", Inf)
 	endfor
 
-	KillOrMoveToTrash(wv=DevInfo)
+	KillOrMoveToTrash(wv = DevInfo)
 
 	return list
 End
@@ -861,16 +861,16 @@ Function/S HW_ITC_ListDevices()
 	numTypes      = ItemsInList(DEVICE_TYPES_ITC)
 	numberPerType = ItemsInList(DEVICE_NUMBERS)
 
-	for(i=0; i < numTypes; i+=1)
+	for(i = 0; i < numTypes; i += 1)
 		type = StringFromList(i, DEVICE_TYPES_ITC)
 
-		if(CmpStr(type,"ITC00") == 0) // don't test the virtual device
+		if(CmpStr(type, "ITC00") == 0) // don't test the virtual device
 			continue
 		endif
 
 #ifdef EVIL_KITTEN_EATING_MODE
 		device = HW_ITC_BuildDeviceString(type, "0")
-		list = AddListItem(device, list, ";", inf)
+		list   = AddListItem(device, list, ";", Inf)
 		continue
 #endif
 
@@ -880,9 +880,9 @@ Function/S HW_ITC_ListDevices()
 		while(HW_ITC_ShouldContinue(tries++, V_ITCError, V_ITCXOPError))
 
 		if(V_Value > 0)
-			for(j=0; j < numberPerType; j+=1)
+			for(j = 0; j < numberPerType; j += 1)
 				number = StringFromList(j, DEVICE_NUMBERS)
-				device = HW_ITC_BuildDeviceString(type,number)
+				device = HW_ITC_BuildDeviceString(type, number)
 
 				tries = 0
 				do
@@ -908,7 +908,7 @@ Function/S HW_ITC_ListDevices()
 						ITCCloseDevice2/Z=1/DEV=(deviceID)
 					while(HW_ITC_ShouldContinue(tries++, V_ITCError, V_ITCXOPError))
 
-					list = AddListItem(device, list, ";", inf)
+					list = AddListItem(device, list, ";", Inf)
 				endif
 			endfor
 		endif
@@ -932,8 +932,8 @@ threadsafe Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 	endif
 
 	// we only need the lower 32bits of the error
-	ITCError = ITCError & 0x00000000ffffffff
-	ITCXOPError = ConvertXOPErrorCode(ITCXOPError)
+	ITCError           = ITCError & 0x00000000ffffffff
+	ITCXOPError        = ConvertXOPErrorCode(ITCXOPError)
 	outputErrorMessage = !(flags & HARDWARE_PREVENT_ERROR_MESSAGE)
 
 	if(ITCError != 0 && outputErrorMessage)
@@ -1241,7 +1241,7 @@ End
 /// @see HW_StopAcq
 Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
 	variable deviceID, prepareForDAQ, zeroDAC, flags
-	WAVE/Z config
+	WAVE/Z                           config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 
 	variable i, numEntries, tries
@@ -1320,7 +1320,7 @@ End
 /// @param flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
 	variable deviceID
-	WAVE config
+	WAVE     config
 	variable flags
 
 	variable tries
@@ -1342,13 +1342,13 @@ End
 /// @param configFunc    [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
 /// @param     flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
-	variable deviceID
-	WAVE/Z config
+	variable                         deviceID
+	WAVE/Z                           config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
-	variable  flags
+	variable                         flags
 
 	variable tries
-	string device
+	string   device
 
 	DEBUGPRINTSTACKINFO()
 
@@ -1362,7 +1362,7 @@ Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 		endif
 	endif
 
-	WAVE config_t = HW_ITC_Transpose(config)
+	WAVE config_t  = HW_ITC_Transpose(config)
 	WAVE fifoPos_t = HW_ITC_GetFifoPosFromConfig(config_t)
 
 	do
@@ -1445,7 +1445,7 @@ Function HW_ITC_IsRunning(deviceID, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	WAVE/Z state = HW_ITC_GetState(deviceID, flags=flags)
+	WAVE/Z state = HW_ITC_GetState(deviceID, flags = flags)
 
 	if(!WaveExists(state))
 		return 0
@@ -1476,7 +1476,7 @@ End
 
 threadsafe static Function HW_ITC_ShouldContinue(variable tries, variable itcError, variable itcXOPError)
 
-	return (itcXOPError == SLOT_LOCKED_TO_OTHER_THREAD && itcError == 0)                         \
+	return (itcXOPError == SLOT_LOCKED_TO_OTHER_THREAD && itcError == 0)                       \
 	       || (itcXOPError == 0 && itcError == HW_ITC_DSP_TIMEOUT && tries < HW_ITC_MAX_TIMEOUT)
 End
 
@@ -1576,7 +1576,7 @@ Function HW_ITC_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, 
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
 	variable flags, offset
 
-	string device
+	string   device
 	variable tries
 
 	DEBUGPRINTSTACKINFO()
@@ -1648,9 +1648,9 @@ End
 threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, [fifoPos, flags])
 	variable deviceID
 	variable ADChannelToMonitor, stopCollectionPoint
-	WAVE config
+	WAVE      config
 	variable &fifoPos
-	variable flags
+	variable  flags
 
 	variable fifoPosValue, offset, ret, tries
 
@@ -1695,10 +1695,10 @@ End
 Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoPos, flags])
 	variable deviceID
 	variable ADChannelToMonitor, stopCollectionPoint
-	WAVE/Z config
+	WAVE/Z                           config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
-	variable &fifoPos
-	variable flags
+	variable                        &fifoPos
+	variable                         flags
 
 	variable fifoPosValue, offset, ret, tries
 	string device
@@ -1849,7 +1849,7 @@ End
 
 Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
 	variable deviceID, prepareForDAQ, zeroDAC, flags
-	WAVE/Z config
+	WAVE/Z                           config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 
 	DEBUGPRINT("Unimplemented")
@@ -1869,17 +1869,17 @@ End
 
 threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
 	variable deviceID
-	WAVE config
+	WAVE     config
 	variable flags
 
 	DEBUGPRINT_TS("Unimplemented")
 End
 
 Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
-	variable deviceID
-	WAVE/Z config
+	variable                         deviceID
+	WAVE/Z                           config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
-	variable  flags
+	variable                         flags
 
 	DEBUGPRINT("Unimplemented")
 End
@@ -1956,9 +1956,9 @@ End
 threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, [fifoPos, flags])
 	variable deviceID
 	variable ADChannelToMonitor, stopCollectionPoint
-	WAVE config
+	WAVE      config
 	variable &fifoPos
-	variable flags
+	variable  flags
 
 	DEBUGPRINT_TS("Unimplemented")
 End
@@ -1966,10 +1966,10 @@ End
 Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoPos, flags])
 	variable deviceID
 	variable ADChannelToMonitor, stopCollectionPoint
-	WAVE/Z config
+	WAVE/Z                           config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
-	variable &fifoPos
-	variable flags
+	variable                        &fifoPos
+	variable                         flags
 
 	DEBUGPRINT("Unimplemented")
 End
@@ -1985,9 +1985,9 @@ End
 
 #endif
 
-Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
+Function/WAVE HW_WAVE_GETTER_PROTOTYPE(str)
 	string str
-end
+End
 
 threadsafe Function/WAVE HW_ITC_Transpose(wv)
 	WAVE wv
@@ -2028,15 +2028,15 @@ threadsafe Function HW_ITC_GetRackRange(rack, first, last)
 
 	if(rack == RACK_ZERO)
 		first = 0
-		last = NUM_ITC_TTL_BITS_PER_RACK - 1
+		last  = NUM_ITC_TTL_BITS_PER_RACK - 1
 	elseif(rack == RACK_ONE)
 		first = NUM_ITC_TTL_BITS_PER_RACK
-		last = 2 * NUM_ITC_TTL_BITS_PER_RACK - 1
+		last  = 2 * NUM_ITC_TTL_BITS_PER_RACK - 1
 	else
 		ASSERT_TS(0, "Invalid rack parameter")
 	endif
 
-	ASSERT_TS(last - first + 1 ==  NUM_ITC_TTL_BITS_PER_RACK, "Rack channel range must be NUM_ITC_TTL_BITS_PER_RACK for each rack")
+	ASSERT_TS(last - first + 1 == NUM_ITC_TTL_BITS_PER_RACK, "Rack channel range must be NUM_ITC_TTL_BITS_PER_RACK for each rack")
 End
 
 /// @brief Clip the ttlBit to adapt for differences in notation
@@ -2044,7 +2044,7 @@ End
 /// The DA_Ephys panel e.g. labels the first ttlBit of #RACK_ONE as 4, but the
 /// ITC XOP treats that as 0.
 Function HW_ITC_ClipTTLBit(device, ttlBit)
-	string device
+	string   device
 	variable ttlBit
 
 	if(HW_ITC_GetRackForTTLBit(device, ttlBit) == RACK_ONE)
@@ -2057,7 +2057,7 @@ End
 /// @brief Return the rack number for the given ttlBit (the ttlBit is
 /// called `TTL channel` in the DA Ephys panel)
 Function HW_ITC_GetRackForTTLBit(device, ttlBit)
-	string device
+	string   device
 	variable ttlBit
 
 	ASSERT(ttlBit < NUM_DA_TTL_CHANNELS, "Invalid channel index")
@@ -2075,7 +2075,7 @@ End
 /// Only the ITC1600 has two racks. The channel numbers differ for the
 /// different ITC device types.
 Function HW_ITC_GetITCXOPChannelForRack(device, rack)
-	string device
+	string   device
 	variable rack
 
 	if(rack == RACK_ZERO)
@@ -2207,7 +2207,7 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		repeat = 0
 	endif
 
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
+	device               = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 	SVAR scanStr = $GetNI_AISetup(device)
 	fifoName = GetNIFIFOName(deviceID)
@@ -2220,9 +2220,9 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		endif
 		CtrlFIFO $fifoName, start
 		if(repeat)
-			DAQmx_Scan/DEV=realDeviceOrPressure/BKG/RPTC FIFO=scanStr;AbortOnRTE
+			DAQmx_Scan/DEV=realDeviceOrPressure/BKG/RPTC FIFO=scanStr; AbortOnRTE
 		else
-			DAQmx_Scan/DEV=realDeviceOrPressure/BKG FIFO=scanStr;AbortOnRTE
+			DAQmx_Scan/DEV=realDeviceOrPressure/BKG FIFO=scanStr; AbortOnRTE
 		endif
 		NVAR taskIDADC = $GetNI_ADCTaskID(device)
 		taskIDADC = 1
@@ -2230,17 +2230,17 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		// The following code just gathers additional information that is printed out
 		FIFOStatus/Q $fifoName
 		FIFONote = StringByKey("NOTE", S_Info)
-		noteID = "Channel dt="
-		pos = strsearch(FIFONote, noteID, 0)
+		noteID   = "Channel dt="
+		pos      = strsearch(FIFONote, noteID, 0)
 		if(pos > -1)
-			pos += strlen(noteID)
-			endpos = strsearch(FIFONote, "\r", pos)
+			pos              += strlen(noteID)
+			endpos            = strsearch(FIFONote, "\r", pos)
 			channelTimeOffset = str2num(FIFONote[pos, endpos - 1])
 			DEBUGPRINT("Time offset between NI channels: " + num2str(channelTimeOffset * ONE_TO_MICRO) + " µs")
 		endif
 	catch
 		errMsg = GetRTErrMessage() + "\r" + fDAQmx_ErrorString()
-		err = ClearRTError()
+		err    = ClearRTError()
 		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
 		ASSERT(0, "Start acquisition of NI device " + device + " failed with code: " + num2str(err) + "\r" + errMsg)
@@ -2268,7 +2268,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 
 	DEBUGPRINTSTACKINFO()
 
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
+	device               = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 
 	if(ParamIsDefault(data))
@@ -2296,17 +2296,17 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 	fifoName = GetNIFIFOName(deviceID)
 	channels = DimSize(config, ROWS)
 	SVAR scanStr = $GetNI_AISetup(device)
-	scanStr = fifoName + ";"
+	scanStr    = fifoName + ";"
 	wavegenStr = ""
-	TTLStr = ""
+	TTLStr     = ""
 	Make/FREE/WAVE/N=(channels) TTLWaves
 
 	AssertOnAndClearRTError()
 	try
 		NewFIFO $fifoName; AbortOnRTE
-		aiCnt = 0
+		aiCnt  = 0
 		ttlCnt = 0
-		for(i = 0;i < channels; i += 1)
+		for(i = 0; i < channels; i += 1)
 			ASSERT(!IsFreeWave(NIDataWave[i]), "Can not work with free waves")
 			switch(config[i][%ChannelType])
 				case XOP_CHANNEL_TYPE_ADC:
@@ -2315,7 +2315,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 					scanStr += num2str(gain[i]) + ",0"
 					scanStr += ";"
 					// note: the second parameter encodes the attributed NIDataWave index into the FIFO channel name
-					NewFIFOChan $fifoName, $num2str(i),0,1,NI_ADC_MIN,NI_ADC_MAX,"V"
+					NewFIFOChan $fifoName, $num2str(i), 0, 1, NI_ADC_MIN, NI_ADC_MAX, "V"
 					aiCnt += 1
 					break
 				case XOP_CHANNEL_TYPE_DAC:
@@ -2329,15 +2329,15 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 					wavegenStr += tempStr + ";"
 					break
 				case XOP_CHANNEL_TYPE_TTL:
-					TTLStr += "/" + realDeviceOrPressure + "/port" + num2str(HARDWARE_NI_TTL_PORT) +"/line" + num2str(config[i][%ChannelNumber]) + ","
-					TTLWaves[ttlCnt]= NIDataWave[i]
-					ttlCnt += 1
+					TTLStr          += "/" + realDeviceOrPressure + "/port" + num2str(HARDWARE_NI_TTL_PORT) + "/line" + num2str(config[i][%ChannelNumber]) + ","
+					TTLWaves[ttlCnt] = NIDataWave[i]
+					ttlCnt          += 1
 					break
 			endswitch
 		endfor
 
 		sampleIntervall = config[0][%SamplingInterval] * MICRO_TO_ONE
-		fifoSize = HW_NI_FIFOSIZE/sampleIntervall
+		fifoSize        = HW_NI_FIFOSIZE / sampleIntervall
 		NVAR fifopos = $GetFifoPosition(device)
 		fifopos = 0
 		NVAR fnum = $GetFIFOFileRef(device)
@@ -2351,9 +2351,9 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 		// note actually this does already 'starts' a measurement
 #ifdef EVIL_KITTEN_EATING_MODE
 		// don't set any clock source to make the USB6001 work with DAQ
-		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1 wavegenStr;AbortOnRTE
+		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1 wavegenStr; AbortOnRTE
 #else
-		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1/CLK={clkStr, 0} wavegenStr;AbortOnRTE
+		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1/CLK={clkStr, 0} wavegenStr; AbortOnRTE
 #endif
 		NVAR taskIDDAC = $GetNI_DACTaskID(device)
 		taskIDDAC = 1
@@ -2362,28 +2362,28 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 			case 0:
 				break
 			case 1:
-				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0]} TTLStr; AbortOnRTE
 				break
 			case 2:
-				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1]} TTLStr; AbortOnRTE
 				break
 			case 3:
-				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2]} TTLStr; AbortOnRTE
 				break
 			case 4:
-				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3]} TTLStr; AbortOnRTE
 				break
 			case 5:
-				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4]} TTLStr; AbortOnRTE
 				break
 			case 6:
-				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5]} TTLStr; AbortOnRTE
 				break
 			case 7:
-				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6]} TTLStr; AbortOnRTE
 				break
 			case 8:
-				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6], TTLWaves[7]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6], TTLWaves[7]} TTLStr; AbortOnRTE
 				break
 		endswitch
 		NVAR taskIDTTL = $GetNI_TTLTaskID(device)
@@ -2391,7 +2391,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 
 	catch
 		errMsg = GetRTErrMessage() + "\r" + fDAQmx_ErrorString()
-		err = ClearRTError()
+		err    = ClearRTError()
 		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
 		ASSERT(0, "Prepare acquisition of NI device " + device + " failed with code: " + num2str(err) + "\r" + errMsg)
@@ -2412,17 +2412,17 @@ Function/S HW_NI_GetPropertyListOfDevices(string device)
 
 	DEBUGPRINTSTACKINFO()
 
-	numAI       = fDAQmx_NumAnalogInputs(device)
-	numAO       = fDAQmx_NumAnalogOutputs(device)
-	numCounter  = fDAQmx_NumCounters(device)
-	numDIO      = fDAQmx_NumDIOPorts(device)
+	numAI      = fDAQmx_NumAnalogInputs(device)
+	numAO      = fDAQmx_NumAnalogOutputs(device)
+	numCounter = fDAQmx_NumCounters(device)
+	numDIO     = fDAQmx_NumDIOPorts(device)
 	for(i = 0; i < numDIO; i += 1)
 		portWidth = fDAQmx_DIO_PortWidth(device, i)
-		lines = AddListItem(num2str(portWidth), lines, ",", Inf)
+		lines     = AddListItem(num2str(portWidth), lines, ",", Inf)
 	endfor
 	lines = RemoveEnding(lines, ",")
 
-	propList = "NAME:" + device
+	propList  = "NAME:" + device
 	propList += ";AI:" + num2str(numAI)
 	propList += ";AO:" + num2str(numAO)
 	propList += ";COUNTER:" + num2str(numCounter)
@@ -2440,13 +2440,13 @@ End
 /// @param device name of NI device
 /// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function HW_NI_OpenDevice(device, [flags])
-	string device
+	string   device
 	variable flags
 
 	DEBUGPRINTSTACKINFO()
 
-	HW_NI_ResetDevice(device, flags=flags)
-	HW_NI_CalibrateDevice(device, flags=flags)
+	HW_NI_ResetDevice(device, flags = flags)
+	HW_NI_CalibrateDevice(device, flags = flags)
 End
 
 /// @name Functions for interfacing with National Instruments Hardware
@@ -2478,15 +2478,15 @@ Function HW_NI_PrintPropertiesOfDevices()
 
 		for(j = 0; j < numDIO; j += 1)
 			portWidth = fDAQmx_DIO_PortWidth(device, j)
-			lines = AddListItem(num2str(portWidth), lines, ",", Inf)
+			lines     = AddListItem(num2str(portWidth), lines, ",", Inf)
 		endfor
 
 		lines = RemoveEnding(lines, ",")
 
 		printf "Device name: %s\r", device
 		printf "#AI %d, #AO %d, #Cnt %d, #DIO ports %d with (%s) lines\r", numAI, numAO, numCounter, numDIO, lines
-		printf "Last self calibration: %s\r", SelectString(IsFinite(selfCalDate), "na", GetIso8601TimeStamp(secondsSinceIgorEpoch=selfCalDate))
-		printf "Last external calibration: %s\r", GetIso8601TimeStamp(secondsSinceIgorEpoch=extCalDate)
+		printf "Last self calibration: %s\r", SelectString(IsFinite(selfCalDate), "na", GetIso8601TimeStamp(secondsSinceIgorEpoch = selfCalDate))
+		printf "Last external calibration: %s\r", GetIso8601TimeStamp(secondsSinceIgorEpoch = extCalDate)
 	endfor
 End
 
@@ -2513,12 +2513,12 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 	endif
 
 	if(ParamIsDefault(DIOLine))
-		sprintf line "/%s/port%d", device, DIOPort
+		sprintf line, "/%s/port%d", device, DIOPort
 		lineGrouping = 0
 	else
 		lineGrouping = 1
 		ASSERT(DIOline <= fDAQmx_DIO_PortWidth(device, DIOport), "Line does not exist in port")
-		sprintf line "/%s/port%d/line%d", device, DIOPort, DIOline
+		sprintf line, "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
 	AssertOnAndClearRTError()
@@ -2573,12 +2573,12 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 	endif
 
 	if(ParamIsDefault(DIOLine))
-		sprintf line "/%s/port%d", device, DIOPort
+		sprintf line, "/%s/port%d", device, DIOPort
 		lineGrouping = 0
 	else
 		lineGrouping = 1
 		ASSERT(DIOline <= fDAQmx_DIO_PortWidth(device, DIOport), "Line does not exist in port")
-		sprintf line "/%s/port%d/line%d", device, DIOPort, DIOline
+		sprintf line, "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
 	AssertOnAndClearRTError()
@@ -2595,7 +2595,7 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 
 	taskID = V_DAQmx_DIO_TaskNumber
 
-	ASSERT(log(value)/log(2) <= fDAQmx_DIO_PortWidth(device, DIOport), "value has bits sets which are higher than the number of output lines in this port")
+	ASSERT(log(value) / log(2) <= fDAQmx_DIO_PortWidth(device, DIOport), "value has bits sets which are higher than the number of output lines in this port")
 	ret = fDAQmx_DIO_Write(device, taskID, value)
 	if(ret)
 		print fDAQmx_ErrorString()
@@ -2644,7 +2644,7 @@ Function HW_NI_WriteAnalogSingleAndSlow(device, channel, value, [flags])
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error: " + fDAQmx_ErrorString())
 		else
-			DEBUGPRINT("Error: ", str=fDAQmx_ErrorString())
+			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 		endif
 	endif
 
@@ -2674,7 +2674,7 @@ Function HW_NI_ReadAnalogSingleAndSlow(device, channel, [flags])
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error " + fDAQmx_ErrorString())
 		else
-			DEBUGPRINT("Error: ", str=fDAQmx_ErrorString())
+			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 		endif
 	endif
 
@@ -2700,7 +2700,7 @@ Function HW_NI_GetAnalogInputConfig(string device, variable channel, [variable f
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error " + fDAQmx_ErrorString())
 		else
-			DEBUGPRINT("Error: ", str=fDAQmx_ErrorString())
+			DEBUGPRINT("Error: ", str = fDAQmx_ErrorString())
 		endif
 	endif
 
@@ -2738,13 +2738,13 @@ Function HW_NI_StopAcq(deviceID, [zeroDAC, flags])
 
 	string device
 
-	HW_NI_StopADC(deviceID, flags=flags)
-	HW_NI_StopDAC(deviceID, flags=flags)
-	HW_NI_StopTTL(deviceID, flags=flags)
+	HW_NI_StopADC(deviceID, flags = flags)
+	HW_NI_StopDAC(deviceID, flags = flags)
+	HW_NI_StopTTL(deviceID, flags = flags)
 
 	if(zeroDAC)
-	DEBUGPRINTSTACKINFO()
-		HW_NI_ZeroDAC(deviceID, flags=flags)
+		DEBUGPRINTSTACKINFO()
+		HW_NI_ZeroDAC(deviceID, flags = flags)
 	endif
 End
 
@@ -2764,7 +2764,7 @@ Function HW_NI_StopADC(deviceID, [flags])
 	NVAR taskIDADC = $GetNI_ADCTaskID(device)
 	if(!isNaN(taskIDADC))
 		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
-		ret = fDAQmx_ScanStop(realDeviceOrPressure)
+		ret                  = fDAQmx_ScanStop(realDeviceOrPressure)
 		if(ret)
 			print fDAQmx_ErrorString()
 			printf "Error %d: fDAQmx_ScanStop\r", ret
@@ -2794,7 +2794,7 @@ Function HW_NI_StopDAC(deviceID, [flags])
 	NVAR taskIDDAC = $GetNI_DACTaskID(device)
 	if(!isNaN(taskIDDAC))
 		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
-		ret = fDAQmx_WaveformStop(realDeviceOrPressure)
+		ret                  = fDAQmx_WaveformStop(realDeviceOrPressure)
 		if(ret)
 			print fDAQmx_ErrorString()
 			printf "Error %d: fDAQmx_WaveformStop\r", ret
@@ -2823,7 +2823,7 @@ Function HW_NI_StopTTL(deviceID, [flags])
 	NVAR taskIDTTL = $GetNI_TTLTaskID(device)
 	if(!isNaN(taskIDTTL))
 		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
-		ret = fDAQmx_DIO_Finished(realDeviceOrPressure, taskIDTTL)
+		ret                  = fDAQmx_DIO_Finished(realDeviceOrPressure, taskIDTTL)
 		if(ret)
 			print fDAQmx_ErrorString()
 			printf "Error %d: fDAQmx_DIO_Finished\r", ret
@@ -2849,12 +2849,12 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 	variable channels, i
 
 	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
+	device               = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = flags)
 	WAVE config = GetDAQConfigWave(device)
 
-	paraStr = ""
+	paraStr  = ""
 	channels = DimSize(config, ROWS)
-	for(i = 0;i < channels; i += 1)
+	for(i = 0; i < channels; i += 1)
 		if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC)
 			paraStr += "0," + num2str(config[i][%ChannelNumber]) + ";"
 		endif
@@ -2884,7 +2884,7 @@ Function HW_NI_KillFifo(deviceID)
 	string fifoName, errMsg, device
 	variable err
 
-	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
+	device   = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE)
 	fifoName = GetNIFIFOName(deviceID)
 
 	FIFOStatus/Q $fifoName
@@ -2901,7 +2901,7 @@ Function HW_NI_KillFifo(deviceID)
 		KillFIFO $fifoName; AbortOnRTE
 	catch
 		errMsg = GetRTErrMessage()
-		err = ClearRTError()
+		err    = ClearRTError()
 		print "Could not cleanup FIFO of NI device " + device + ", failed with code: " + num2str(err) + "\r" + errMsg
 		ControlWindowToFront()
 	endtry
@@ -2912,7 +2912,7 @@ End
 /// @param device name of the NI device
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 static Function HW_NI_ResetDevice(device, [flags])
-	string device
+	string   device
 	variable flags
 
 	variable ret
@@ -3009,7 +3009,7 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 	ASSERT(ParseDeviceString(deviceName, deviceType, deviceNumber), "Error parsing device string!")
 
 	if(HW_NI_IsRunning(deviceType))
-		HW_NI_StopAcq(deviceID, flags=flags)
+		HW_NI_StopAcq(deviceID, flags = flags)
 	else
 		HW_NI_KillFifo(deviceID)
 	endif
@@ -3017,7 +3017,7 @@ End
 
 /// @see HW_GetDeviceInfo
 Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
-	string device
+	string   device
 	variable flags
 
 	DEBUGPRINTSTACKINFO()
@@ -3047,7 +3047,7 @@ Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 	deviceInfo[%DeviceSerialNumber] = num2istr(V_NIDeviceSerialNumber)
 	deviceInfo[%DeviceCategoryStr]  = S_NIDeviceCategory
 	// S_NIProductType has a trailing \0
-	deviceInfo[%ProductType]        = RemoveEnding(S_NIProductType, num2char(0))
+	deviceInfo[%ProductType] = RemoveEnding(S_NIProductType, num2char(0))
 
 	deviceInfo[%AI]           = num2str(fDAQmx_NumAnalogInputs(device))
 	deviceInfo[%AO]           = num2str(fDAQmx_NumAnalogOutputs(device))
@@ -3157,7 +3157,7 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 End
 
 static Function HW_NI_ResetDevice(device, [flags])
-	string device
+	string   device
 	variable flags
 
 	DoAbortNow("NI-DAQ XOP is not available")
@@ -3171,14 +3171,14 @@ static Function HW_NI_CalibrateDevice(device, [force, flags])
 End
 
 Function HW_NI_IsRunning(device, [flags])
-	string device
+	string   device
 	variable flags
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
 Function HW_NI_OpenDevice(device, [flags])
-	string device
+	string   device
 	variable flags
 
 	DoAbortNow("NI-DAQ XOP is not available")
@@ -3191,7 +3191,7 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 End
 
 Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
-	string device
+	string   device
 	variable flags
 
 	DoAbortNow("NI-DAQ XOP is not available")

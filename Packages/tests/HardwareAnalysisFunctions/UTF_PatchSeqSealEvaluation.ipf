@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqSealEvaluation
@@ -27,10 +27,10 @@
 
 static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                       + \
-								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:VC:_ST:PatchSeqSealChec_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                        + \
+	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:VC:_ST:PatchSeqSealChec_DA_0:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -85,7 +85,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name, [chunk])
 	CHECK_LE_VAR(sweepNo, AFH_GetLastSweepAcquired(device))
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	type = PSQ_SEAL_EVALUATION
 
@@ -135,26 +135,26 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 
 	WAVE/WAVE wv = GetWave_IGNORE()
 
-	wv[%sweepPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	wv[%setPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
+	wv[%sweepPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	wv[%setPass]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
 	wv[%baselinePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 
 	wv[%testpulseGroupSel] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SE_TESTPULSE_GROUP)
 
-	wv[%resistanceA] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SE_RESISTANCE_A)
-	wv[%resistanceB] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SE_RESISTANCE_B)
-	wv[%resistanceMax] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SE_RESISTANCE_MAX)
+	wv[%resistanceA]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SE_RESISTANCE_A)
+	wv[%resistanceB]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SE_RESISTANCE_B)
+	wv[%resistanceMax]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SE_RESISTANCE_MAX)
 	wv[%resistancePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SE_RESISTANCE_PASS)
 
 	wv[%baselineQCChunk0] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 0)
 	wv[%baselineQCChunk1] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
 
-	wv[%resultsSweep] = ExtractSweepsFromSFPairs(GetResultsSingleEntry_IGNORE("Sweep Formula sweeps/channels"))
+	wv[%resultsSweep]       = ExtractSweepsFromSFPairs(GetResultsSingleEntry_IGNORE("Sweep Formula sweeps/channels"))
 	wv[%resultsResistanceA] = GetResultsSingleEntry_IGNORE("Sweep Formula store [Steady state resistance (group A)]")
 	wv[%resultsResistanceB] = GetResultsSingleEntry_IGNORE("Sweep Formula store [Steady state resistance (group B)]")
 
 	wv[%samplingPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
-	wv[%asyncPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	wv[%asyncPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
 
 	return wv
 End
@@ -213,17 +213,17 @@ End
 static Function PS_SE1_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="Both")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str = "Both")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -293,17 +293,17 @@ End
 static Function PS_SE2_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="Both")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str = "Both")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -373,17 +373,17 @@ End
 static Function PS_SE3_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="First")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str = "First")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -452,17 +452,17 @@ End
 static Function PS_SE4_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="Second")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str = "Second")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -531,17 +531,17 @@ End
 static Function PS_SE5_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="Both")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str = "Both")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -561,9 +561,9 @@ static Function PS_SE5([str])
 	// tests fail as baseline QC fails in first chunk
 	wv[0][][0] = 0
 	wv[1][][0] = 1
-	wv[][][1] = 1.4e3
-	wv[][][2] = 1.6e3
-	wv[][][3] = 1
+	wv[][][1]  = 1.4e3
+	wv[][][2]  = 1.6e3
+	wv[][][3]  = 1
 End
 
 static Function PS_SE5_REENTRY([str])
@@ -612,17 +612,17 @@ End
 static Function PS_SE6_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="Both")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str = "Both")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -642,9 +642,9 @@ static Function PS_SE6([str])
 	// tests fail as baseline QC fails in second chunk
 	wv[0][][0] = 1
 	wv[1][][0] = 0
-	wv[][][1] = 1.4e3
-	wv[][][2] = 1.6e3
-	wv[][][3] = 1
+	wv[][][1]  = 1.4e3
+	wv[][][2]  = 1.6e3
+	wv[][][3]  = 1
 End
 
 static Function PS_SE6_REENTRY([str])
@@ -693,17 +693,17 @@ End
 static Function PS_SE7_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="Both")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str = "Both")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -773,16 +773,16 @@ End
 static Function PS_SE7a_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="Both")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str = "Both")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -852,17 +852,17 @@ End
 static Function PS_SE8_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier, SamplingFrequency use defaults
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="Both")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=600)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str = "Both")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 600)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -887,18 +887,18 @@ End
 static Function PS_SE9_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var=0.5)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var=0.07)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
 
 	// SamplingMultiplier uses default
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SamplingFrequency", var=10)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SamplingFrequency", var = 10)
 
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str="Both")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var=1)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var=3)
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str="StimulusSetA_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str="StimulusSetB_DA_0")
-	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var=500)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "TestPulseGroupSelector", str = "Both")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "SealThreshold", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)

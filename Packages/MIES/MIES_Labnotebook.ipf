@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -20,11 +20,11 @@ Function LBN_SetDimensionLabels(WAVE/T keys, WAVE values, [variable start])
 	endif
 
 	ASSERT(DimSize(keys, COLS) == numCols, "Mismatched column sizes")
-	ASSERT(DimSize(keys, ROWS) > 0 , "Expected at least one row in the key wave")
+	ASSERT(DimSize(keys, ROWS) > 0, "Expected at least one row in the key wave")
 
 	for(i = start; i < numCols; i += 1)
 		text = keys[0][i]
-		text = text[0,MAX_OBJECT_NAME_LENGTH_IN_BYTES - 1]
+		text = text[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 1]
 		ASSERT(!isEmpty(text), "Empty key")
 		SetDimLabel COLS, i, $text, keys, values
 	endfor
@@ -110,7 +110,7 @@ End
 /// at least once, an empty string otherwise
 threadsafe static Function/S LBV_IsLabnotebookColumnFilled(WAVE values, variable col)
 
-	WAVE/Z indizes = FindIndizes(values, col=col, prop=PROP_NON_EMPTY, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
+	WAVE/Z indizes = FindIndizes(values, col = col, prop = PROP_NON_EMPTY, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
 
 	if(WaveExists(indizes))
 		return GetDimLabel(values, COLS, col)

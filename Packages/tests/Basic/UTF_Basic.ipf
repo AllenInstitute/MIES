@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=Basic
@@ -49,9 +49,9 @@ End
 Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable keepDataFolder, variable enableJU])
 
 	variable debugMode
-	string traceOptions
-	string list = ""
-	string name = GetTestName()
+	string   traceOptions
+	string   list             = ""
+	string   name             = GetTestName()
 	variable waveTrackingMode = GetWaveTrackingMode()
 
 	// speeds up testing to start with a fresh copy
@@ -97,32 +97,32 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	traceOptions = GetDefaultTraceOptions()
 
 	// sorted list
-	list = AddListItem("UTF_AnalysisBrowserTest.ipf", list, ";", inf)
-	list = AddListItem("UTF_AnalysisFunctionHelpers.ipf", list, ";", inf)
-	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", inf)
-	list = AddListItem("UTF_AsynFrameworkTest.ipf", list, ";", inf)
-	list = AddListItem("UTF_Configuration.ipf", list, ";", inf)
-	list = AddListItem("UTF_DAEphyswoHardware.ipf", list, ";", inf)
-	list = AddListItem("UTF_EpochswoHardware.ipf", list, ";", inf)
-	list = AddListItem("UTF_JSONWaveNotes.ipf", list, ";", inf)
-	list = AddListItem("UTF_Labnotebook.ipf", list, ";", inf)
-	list = AddListItem("UTF_Macros.ipf", list, ";", inf)
-	list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", inf)
-	list = AddListItem("UTF_StimsetAPI.ipf", list, ";", inf)
-	list = AddListItem("UTF_SweepFormula.ipf", list, ";", inf)
-	list = AddListItem("UTF_SweepFormula_PSX.ipf", list, ";", inf)
-	list = AddListItem("UTF_Testpulse.ipf", list, ";", inf)
-	list = AddListItem("UTF_TraceUserData.ipf", list, ";", inf)
-	list = AddListItem("UTF_ThreadsafeDataSharing.ipf", list, ";", inf)
-	list = AddListItem("UTF_UpgradeDataFolderLocation.ipf", list, ";", inf)
-	list = AddListItem("UTF_UpgradeWaveLocationAndGetIt.ipf", list, ";", inf)
-	list = AddListItem("UTF_Utils.ipf", list, ";", inf)
-	list = AddListItem("UTF_UtilsChecks.ipf", list, ";", inf)
-	list = AddListItem("UTF_WaveAveraging.ipf", list, ";", inf)
-	list = AddListItem("UTF_WaveBuilder.ipf", list, ";", inf)
-	list = AddListItem("UTF_WaveBuilderRegression.ipf", list, ";", inf)
-	list = AddListItem("UTF_WaveVersioning.ipf", list, ";", inf)
-	list = AddListItem("UTF_ZeroMQPublishing.ipf", list, ";", inf)
+	list = AddListItem("UTF_AnalysisBrowserTest.ipf", list, ";", Inf)
+	list = AddListItem("UTF_AnalysisFunctionHelpers.ipf", list, ";", Inf)
+	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", Inf)
+	list = AddListItem("UTF_AsynFrameworkTest.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Configuration.ipf", list, ";", Inf)
+	list = AddListItem("UTF_DAEphyswoHardware.ipf", list, ";", Inf)
+	list = AddListItem("UTF_EpochswoHardware.ipf", list, ";", Inf)
+	list = AddListItem("UTF_JSONWaveNotes.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Labnotebook.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Macros.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", Inf)
+	list = AddListItem("UTF_StimsetAPI.ipf", list, ";", Inf)
+	list = AddListItem("UTF_SweepFormula.ipf", list, ";", Inf)
+	list = AddListItem("UTF_SweepFormula_PSX.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Testpulse.ipf", list, ";", Inf)
+	list = AddListItem("UTF_TraceUserData.ipf", list, ";", Inf)
+	list = AddListItem("UTF_ThreadsafeDataSharing.ipf", list, ";", Inf)
+	list = AddListItem("UTF_UpgradeDataFolderLocation.ipf", list, ";", Inf)
+	list = AddListItem("UTF_UpgradeWaveLocationAndGetIt.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils.ipf", list, ";", Inf)
+	list = AddListItem("UTF_UtilsChecks.ipf", list, ";", Inf)
+	list = AddListItem("UTF_WaveAveraging.ipf", list, ";", Inf)
+	list = AddListItem("UTF_WaveBuilder.ipf", list, ";", Inf)
+	list = AddListItem("UTF_WaveBuilderRegression.ipf", list, ";", Inf)
+	list = AddListItem("UTF_WaveVersioning.ipf", list, ";", Inf)
+	list = AddListItem("UTF_ZeroMQPublishing.ipf", list, ";", Inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
@@ -131,9 +131,9 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	else
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	endif
 End
 

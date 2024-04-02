@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -10,65 +10,65 @@
 /// @brief __MEN__ Definition of the menu items
 
 Menu "Mies Panels"
-	"Generate stimulus sets (WB)/2"            , /Q, WBP_CreateWaveBuilderPanel()
-	"Acquire data (DA_Ephys)/3"                , /Q, DAP_CreateDAEphysPanel()
-	"Browse data (DB)/4"                       , /Q, DB_OpenDataBrowser()
+	"Generate stimulus sets (WB)/2", /Q, WBP_CreateWaveBuilderPanel()
+	"Acquire data (DA_Ephys)/3", /Q, DAP_CreateDAEphysPanel()
+	"Browse data (DB)/4", /Q, DB_OpenDataBrowser()
 	"-"
 	SubMenu "Analysis"
-		"Analysis Browser"                     , /Q, AB_OpenAnalysisBrowser()
-		"Open Downsample Panel"                , /Q, CreateDownsamplePanel()
+		"Analysis Browser", /Q, AB_OpenAnalysisBrowser()
+		"Open Downsample Panel", /Q, CreateDownsamplePanel()
 	End
 	"-"
 	SubMenu "Automation"
-		"Load Standard Configuration/1"        , /Q, CONF_AutoLoader()
-		"Load Window Configuration"            , /Q, CONF_RestoreWindow("")
-		"Save Window Configuration"            , /Q, CONF_SaveWindow("")
-		"Blowout/8"                            , /Q, BWO_SelectDevice()
-		"Save and Clear Experiment"            , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
-		"Close Mies"                           , /Q, MEN_CloseMies()
-		"IVSCC control panel"                  , /Q, IVS_CreatePanel()
+		"Load Standard Configuration/1", /Q, CONF_AutoLoader()
+		"Load Window Configuration", /Q, CONF_RestoreWindow("")
+		"Save Window Configuration", /Q, CONF_SaveWindow("")
+		"Blowout/8", /Q, BWO_SelectDevice()
+		"Save and Clear Experiment", /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
+		"Close Mies", /Q, MEN_CloseMies()
+		"IVSCC control panel", /Q, IVS_CreatePanel()
 	End
 	"-"
 	SubMenu "\\M0Neurodata Without Borders (NWB)/DANDI"
-		"Export all data into NWB"             , /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA)
+		"Export all data into NWB", /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA)
 		"-"
-		"Export all data into NWBv1 (legacy)"  , /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA, nwbVersion = 1)
+		"Export all data into NWBv1 (legacy)", /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA, nwbVersion = 1)
 		"-"
-		"Export all stimsets into NWB"         , /Q, NWB_ExportWithDialog(NWB_EXPORT_STIMSETS)
-		"Load Stimsets from NWB"               , /Q, NWB_LoadAllStimsets()
-		"Download Stimsets"                    , /Q, MEN_DownloadStimsets()
+		"Export all stimsets into NWB", /Q, NWB_ExportWithDialog(NWB_EXPORT_STIMSETS)
+		"Load Stimsets from NWB", /Q, NWB_LoadAllStimsets()
+		"Download Stimsets", /Q, MEN_DownloadStimsets()
 	End
 	SubMenu "View Files"
-		"Configuration"                        , /Q, CONF_OpenConfigInNotebook()
-		"Package settings"                     , /Q, MEN_OpenPackageSettingsAsNotebook()
-		"MIES Log"                             , /Q, MEN_OpenMiesLogFile()
-		"ZeroMQ-XOP Log"                       , /Q, MEN_OpenZeroMQXOPLogFile()
-		"ITCXOP2 Log"                          , /Q, MEN_OpenITCXOP2LogFile()
+		"Configuration", /Q, CONF_OpenConfigInNotebook()
+		"Package settings", /Q, MEN_OpenPackageSettingsAsNotebook()
+		"MIES Log", /Q, MEN_OpenMiesLogFile()
+		"ZeroMQ-XOP Log", /Q, MEN_OpenZeroMQXOPLogFile()
+		"ITCXOP2 Log", /Q, MEN_OpenITCXOP2LogFile()
 	End
 	"-"
-	"Check Installation"                       , /Q, CHI_CheckInstallation()
-	"Report an issue"                          , /Q, MEN_CreateIssueOnGithub()
-	"About MIES"                               , /Q, MEN_OpenAboutDialog()
+	"Check Installation", /Q, CHI_CheckInstallation()
+	"Report an issue", /Q, MEN_CreateIssueOnGithub()
+	"About MIES", /Q, MEN_OpenAboutDialog()
 	"-"
 	SubMenu "Advanced"
-		MEN_GetUserPingMenuString()                , /Q, ToggleUserPingSetting()
+		MEN_GetUserPingMenuString(), /Q, ToggleUserPingSetting()
 		"Restart ZeroMQ Sockets and Message Handler", /Q, StartZeroMQSockets(forceRestart = 1)
-		"Turn off ASLR (requires UAC elevation)"   , /Q, TurnOffASLR()
-		"Enable Independent Module editing"        , /Q, SetIgorOption IndependentModuleDev=1
-		"Flush Cache"                              , /Q, CA_FlushCache()
-		"Output Cache statistics"                  , /Q, CA_OutputCacheStatistics()
-		"Show Diagnostics (crash dumps) directory" , /Q, ShowDiagnosticsDirectory()
-		"Upload crash dumps"                       , /Q, UploadCrashDumps()
-		"Clear package settings"                   , /Q, MEN_ClearPackageSettings()
-		"Upload log files"                         , /Q, UploadLogFiles()
+		"Turn off ASLR (requires UAC elevation)", /Q, TurnOffASLR()
+		"Enable Independent Module editing", /Q, SetIgorOption IndependentModuleDev=1
+		"Flush Cache", /Q, CA_FlushCache()
+		"Output Cache statistics", /Q, CA_OutputCacheStatistics()
+		"Show Diagnostics (crash dumps) directory", /Q, ShowDiagnosticsDirectory()
+		"Upload crash dumps", /Q, UploadCrashDumps()
+		"Clear package settings", /Q, MEN_ClearPackageSettings()
+		"Upload log files", /Q, UploadLogFiles()
 		SubMenu "Panels"
-			"Reset and store AnalysisBrowser"           , /Q, AB_BrowserStartupSettings()
-			"Reset and store DA_EPHYS"                  , /Q, DAP_EphysPanelStartUpSettings()
-			"Reset and store DataBrowser"               , /Q, DB_ResetAndStoreCurrentDBPanel()
-			"Reset and store Wavebuilder"               , /Q, WBP_StartupSettings()
-			"Check GUI control procedures of top panel" , /Q, SearchForInvalidControlProcs(GetCurrentWindow())
-			"Open debug panel"                          , /Q, DP_OpenDebugPanel()
-			"Start Background Task watcher panel"       , /Q, MEN_OpenBackgroundWatcherPanel()
+			"Reset and store AnalysisBrowser", /Q, AB_BrowserStartupSettings()
+			"Reset and store DA_EPHYS", /Q, DAP_EphysPanelStartUpSettings()
+			"Reset and store DataBrowser", /Q, DB_ResetAndStoreCurrentDBPanel()
+			"Reset and store Wavebuilder", /Q, WBP_StartupSettings()
+			"Check GUI control procedures of top panel", /Q, SearchForInvalidControlProcs(GetCurrentWindow())
+			"Open debug panel", /Q, DP_OpenDebugPanel()
+			"Start Background Task watcher panel", /Q, MEN_OpenBackgroundWatcherPanel()
 		End
 	End
 End
@@ -79,15 +79,15 @@ Function MEN_CloseMies()
 
 	string windowToClose
 	string activeWindows = WinList("*", ";", "WIN:64")
-	Variable index
-	Variable noOfActiveWindows = ItemsInList(activeWindows)
+	variable index
+	variable noOfActiveWindows = ItemsInList(activeWindows)
 
-	for (index = 0; index < noOfActiveWindows;index += 1)
+	for(index = 0; index < noOfActiveWindows; index += 1)
 		windowToClose = StringFromList(index, activeWindows)
-		if(StringMatch(windowToClose, "waveBuilder*")          \
-		   || StringMatch(windowToClose, "dataBrowser*")       \
-		   || StringMatch(windowToClose, "DB_ITC*")            \
-		   || StringMatch(windowToClose, "DA_Ephys*")          \
+		if(StringMatch(windowToClose, "waveBuilder*")         \
+		   || StringMatch(windowToClose, "dataBrowser*")      \
+		   || StringMatch(windowToClose, "DB_ITC*")           \
+		   || StringMatch(windowToClose, "DA_Ephys*")         \
 		   || StringMatch(windowToClose, "configureAnalysis*"))
 			KillWindow $windowToClose
 		endif
@@ -105,23 +105,23 @@ Function MEN_OpenAboutDialog()
 		return NaN
 	endif
 
-	sfactor = ScreenResolution/96
-	NewPanel/N=$panel/K=1/W=(332 / sfactor, 252 / sfactor,928 / sfactor, 724 / sfactor) as "About MIES"
+	sfactor = ScreenResolution / 96
+	NewPanel/N=$panel/K=1/W=(332 / sfactor, 252 / sfactor, 928 / sfactor, 724 / sfactor) as "About MIES"
 
 	nb = "MiesVersionNB"
-	NewNotebook /F=1 /N=MiesVersionNB/FG=(FL,FT,FR,FB)/HOST=#/OPTS=3
+	NewNotebook/F=1/N=MiesVersionNB/FG=(FL, FT, FR, FB)/HOST=#/OPTS=3
 	nb = panel + "#" + nb
 
 	Notebook $nb, defaultTab=36, magnification=100
-	Notebook $nb, showRuler=0, rulerUnits=2, updating={1, 1},writeProtect=1
-	Notebook $nb, newRuler=Normal, justification=0, margins={0,0,468}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
+	Notebook $nb, showRuler=0, rulerUnits=2, updating={1, 1}, writeProtect=1
+	Notebook $nb, newRuler=Normal, justification=0, margins={0, 0, 468}, spacing={0, 0, 0}, tabs={}, rulerDefaults={"Arial", 11, 0, (0, 0, 0)}
 	Notebook $nb, ruler=Normal, text="MIES is a sweep based data acquisition tool written in Igor Pro.\r"
 	Notebook $nb, text="\r"
 
 	version = ROStr(GetMiesVersion())
 	version = StringFromList(0, version, "\r")
 	version = RemovePrefix(version, start = "Release_")
-	Notebook $nb, text="Version: " + version  + "\r"
+	Notebook $nb, text="Version: " + version + "\r"
 	Notebook $nb, text="\r"
 	NotebookAction/W=$nb name=Action1, title="Report an Issue/Enhancement proposal", ignoreErrors=1
 	NotebookAction/W=$nb name=Action1, commands="MEN_CreateIssueOnGithub()"
@@ -144,8 +144,8 @@ Function MEN_OpenAboutDialog()
 	Notebook $nb, text="\r"
 	Notebook $nb, text="Data products:"
 	Notebook $nb, text="\r"
-	NotebookAction/W=$nb name=Action5, title="", showmode=3, linkStyle=0, scaling={40.0 * sfactor, 40.0 * sfactor}, procPICTName=SynPhys, ignoreErrors=1, padding={0,0,0,0,5}, commands="BrowseURL(\"https://portal.brain-map.org/explore/connectivity/synaptic-physiology\")"
-	NotebookAction/W=$nb name=Action6, title="", showmode=3, linkStyle=0, scaling={40.0 * sfactor, 40.0 * sfactor}, procPICTName=CellTypes, ignoreErrors=1, padding={0,0,0,0,0}, commands="BrowseURL(\"http://celltypes.brain-map.org/\")"
+	NotebookAction/W=$nb name=Action5, title="", showmode=3, linkStyle=0, scaling={40.0 * sfactor, 40.0 * sfactor}, procPICTName=SynPhys, ignoreErrors=1, padding={0, 0, 0, 0, 5}, commands="BrowseURL(\"https://portal.brain-map.org/explore/connectivity/synaptic-physiology\")"
+	NotebookAction/W=$nb name=Action6, title="", showmode=3, linkStyle=0, scaling={40.0 * sfactor, 40.0 * sfactor}, procPICTName=CellTypes, ignoreErrors=1, padding={0, 0, 0, 0, 0}, commands="BrowseURL(\"http://celltypes.brain-map.org/\")"
 	SetActiveSubwindow ##
 End
 
@@ -167,7 +167,7 @@ Function MEN_CreateIssueOnGithub()
 	variable ref
 
 	title = "Please summarize your issue here"
-	body = ""
+	body  = ""
 
 	version = ROStr(GetMiesVersion())
 
@@ -205,7 +205,7 @@ Function MEN_CreateIssueOnGithub()
 
 	body += str
 
-	body +=  "```\n\n"
+	body += "```\n\n"
 
 	sprintf url, "https://github.com/AllenInstitute/MIES/issues/new?title=%s&body=%s", URLEncode(title), URLEncode(body)
 
@@ -238,7 +238,7 @@ End
 
 Function/S MEN_GetUserPingMenuString()
 
-	return  "Periodically ping" + SelectString(GetUserPingEnabled(), "", "!")
+	return "Periodically ping" + SelectString(GetUserPingEnabled(), "", "!")
 End
 
 /// @brief Generic routine for displaying a logfile in a notebook

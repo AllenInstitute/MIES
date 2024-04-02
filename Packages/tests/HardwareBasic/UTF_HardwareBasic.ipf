@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareBasic
@@ -36,9 +36,9 @@ End
 Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable ITCXOP2Debug, variable keepDataFolder, variable enableJU])
 
 	variable debugMode
-	string traceOptions
-	string list = ""
-	string name = GetTestName()
+	string   traceOptions
+	string   list             = ""
+	string   name             = GetTestName()
 	variable waveTrackingMode = GetWaveTrackingMode()
 
 	// speeds up testing to start with a fresh copy
@@ -91,23 +91,23 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 
 	traceOptions = GetDefaultTraceOptions()
 
-	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list, ";", inf)
-	list = AddListItem("UTF_TrackSweepCounts.ipf", list, ";", inf)
-	list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", inf)
-	list = AddListItem("UTF_ConfigurationHardware.ipf", list, ";", inf)
-	list = AddListItem("UTF_SweepSkipping.ipf", list, ";", inf)
-	list = AddListItem("UTF_TestPulseAndTPDuringDAQ.ipf", list, ";", inf)
-	list = AddListItem("UTF_DAEphys.ipf", list, ";", inf)
-	list = AddListItem("UTF_Dashboard.ipf", list, ";", inf)
-	list = AddListItem("UTF_Databrowser.ipf", list, ";", inf)
-	list = AddListItem("UTF_Epochs.ipf", list, ";", inf)
-	list = AddListItem("UTF_SweepFormulaHardware.ipf", list, ";", inf)
-	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", inf)
-	list = AddListItem("UTF_AutoTestpulse.ipf", list, ";", inf)
-	list = AddListItem("UTF_VeryLastTestSuite.ipf", list, ";", inf)
+	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list, ";", Inf)
+	list = AddListItem("UTF_TrackSweepCounts.ipf", list, ";", Inf)
+	list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", Inf)
+	list = AddListItem("UTF_ConfigurationHardware.ipf", list, ";", Inf)
+	list = AddListItem("UTF_SweepSkipping.ipf", list, ";", Inf)
+	list = AddListItem("UTF_TestPulseAndTPDuringDAQ.ipf", list, ";", Inf)
+	list = AddListItem("UTF_DAEphys.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Dashboard.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Databrowser.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Epochs.ipf", list, ";", Inf)
+	list = AddListItem("UTF_SweepFormulaHardware.ipf", list, ";", Inf)
+	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", Inf)
+	list = AddListItem("UTF_AutoTestpulse.ipf", list, ";", Inf)
+	list = AddListItem("UTF_VeryLastTestSuite.ipf", list, ";", Inf)
 
 	// tests which BUG out must come after the test-all tests in UTF_VeryLastTestSuite.ipf
-	list = AddListItem("UTF_HardwareTestsWithBUG.ipf", list, ";", inf)
+	list = AddListItem("UTF_HardwareTestsWithBUG.ipf", list, ";", Inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
@@ -116,8 +116,8 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder=keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	else
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList, keepDataFolder=keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	endif
 End

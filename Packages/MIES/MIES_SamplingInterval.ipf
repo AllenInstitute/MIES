@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -30,55 +30,55 @@ static Function SI_FillITCConfig(wv, results, idx, totalNumDA, totalNumAD, total
 
 	numDA = results[idx][%numDARack1] + results[idx][%numDARack2]
 	if(numDA > 0)
-		first = 0
-		last  = numDA - 1
+		first              = 0
+		last               = numDA - 1
 		wv[first, last][0] = XOP_CHANNEL_TYPE_DAC
 
-		if(results[idx][%numDARack1]  > 0)
-			last = results[idx][%numDARack1] - 1
+		if(results[idx][%numDARack1] > 0)
+			last               = results[idx][%numDARack1] - 1
 			wv[first, last][1] = p - first
 		endif
 
-		if(results[idx][%numDARack2]  > 0)
-			first = results[idx][%numDARack1]
-			last  = numDA - 1
-			wv[first, last][1] = totalNumDA/2 + (p - first)
+		if(results[idx][%numDARack2] > 0)
+			first              = results[idx][%numDARack1]
+			last               = numDA - 1
+			wv[first, last][1] = totalNumDA / 2 + (p - first)
 		endif
 	endif
 
 	numAD = results[idx][%numADRack1] + results[idx][%numADRack2]
 	if(numAD > 0)
-		first = numDA
-		last  = numDA + numAD - 1
+		first              = numDA
+		last               = numDA + numAD - 1
 		wv[first, last][0] = XOP_CHANNEL_TYPE_ADC
 
-		if(results[idx][%numADRack1]  > 0)
-			last = numDA + results[idx][%numADRack1] - 1
+		if(results[idx][%numADRack1] > 0)
+			last               = numDA + results[idx][%numADRack1] - 1
 			wv[first, last][1] = p - first
 		endif
 
-		if(results[idx][%numADRack2]  > 0)
-			first = numDA + results[idx][%numADRack1]
-			last  = numDA + numAD - 1
-			wv[first, last][1] = totalNumAD/2 + (p - first)
+		if(results[idx][%numADRack2] > 0)
+			first              = numDA + results[idx][%numADRack1]
+			last               = numDA + numAD - 1
+			wv[first, last][1] = totalNumAD / 2 + (p - first)
 		endif
 	endif
 
 	numTTL = results[idx][%numTTLRack1] + results[idx][%numTTLRack2]
 	if(numTTL > 0)
-		first = numDA + numAD
-		last  = numDA + numAD + numTTL - 1
+		first              = numDA + numAD
+		last               = numDA + numAD + numTTL - 1
 		wv[first, last][0] = XOP_CHANNEL_TYPE_TTL
 
-		if(results[idx][%numTTLRack1]  > 0)
-			last = numDA + numAD + results[idx][%numTTLRack1] - 1
+		if(results[idx][%numTTLRack1] > 0)
+			last               = numDA + numAD + results[idx][%numTTLRack1] - 1
 			wv[first, last][1] = p - first
 		endif
 
-		if(results[idx][%numTTLRack2]  > 0)
-			first = numDA + numAD + results[idx][%numTTLRack1]
-			last  = numDA + numAD + numTTL - 1
-			wv[first, last][1] = totalNumTTL/2 + (p - first)
+		if(results[idx][%numTTLRack2] > 0)
+			first              = numDA + numAD + results[idx][%numTTLRack1]
+			last               = numDA + numAD + numTTL - 1
+			wv[first, last][1] = totalNumTTL / 2 + (p - first)
 		endif
 	endif
 End
@@ -101,8 +101,8 @@ static Function SI_FillITCConfigWithPerms(wv, start, value, channelType)
 		if(value & 1)
 			wv[idx][0] = channelType
 			wv[idx][1] = count
-			count += 1
-			idx += 1
+			count     += 1
+			idx       += 1
 		endif
 		value = trunc(value / 2^1) // shift one to the right
 	while(value > 0)
@@ -111,7 +111,7 @@ End
 /// @brief Removes invalid and duplicated entries from the
 /// generated table from #SI_CreateLookupWave
 static Function SI_CompressWave(wv)
-	Wave wv
+	WAVE wv
 
 	variable i, j
 
@@ -142,11 +142,11 @@ End
 static Function SI_SortWave(wv)
 	WAVE wv
 
-	variable type = WaveType(wv)
+	variable type    = WaveType(wv)
 	variable numRows = DimSize(wv, ROWS)
 
-	Make/Y=(type)/Free/N=(numRows) key0, key1, key2, key3, key4, key5, key6
-	Make/Free/N=(numRows)/I/U valindex = p
+	Make/Y=(type)/FREE/N=(numRows) key0, key1, key2, key3, key4, key5, key6
+	Make/FREE/N=(numRows)/I/U valindex = p
 
 	MultiThread key0[] = wv[p][0]
 	MultiThread key1[] = wv[p][1]
@@ -165,7 +165,7 @@ End
 
 /// @brief Search the given active channel combination in the lookup wave
 static Function SI_FindMatchingTableEntry(wv, ac)
-	WAVE wv
+	WAVE                   wv
 	STRUCT ActiveChannels &ac
 
 	variable i, numRows, start
@@ -213,7 +213,7 @@ End
 
 /// @brief Store the lookup wave on disc
 Function/WAVE SI_StoreMinSampIntOnDisk(wv, deviceType)
-	WAVE wv
+	WAVE   wv
 	string deviceType
 
 	Duplicate wv, $("SampInt_" + deviceType)/WAVE=storedWave
@@ -228,7 +228,7 @@ End
 ///
 /// @return number of active channels
 static Function SI_FillActiveChannelsStruct(device, ac)
-	string device
+	string                 device
 	STRUCT ActiveChannels &ac
 
 	ASSERT(IsEven(NUM_DA_TTL_CHANNELS), "Expected even number of DA/TTL channels")
@@ -238,14 +238,14 @@ static Function SI_FillActiveChannelsStruct(device, ac)
 	WAVE statusAD  = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
 	WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
 
-	ac.numDARack1 = sum(statusDA, 0, NUM_DA_TTL_CHANNELS/2 - 1)
-	ac.numDARack2 = sum(statusDA, NUM_DA_TTL_CHANNELS/2, inf)
+	ac.numDARack1 = sum(statusDA, 0, NUM_DA_TTL_CHANNELS / 2 - 1)
+	ac.numDARack2 = sum(statusDA, NUM_DA_TTL_CHANNELS / 2, Inf)
 
-	ac.numADRack1 = sum(statusAD, 0, NUM_AD_CHANNELS/2 - 1)
-	ac.numADRack2 = sum(statusAD, NUM_AD_CHANNELS/2, inf)
+	ac.numADRack1 = sum(statusAD, 0, NUM_AD_CHANNELS / 2 - 1)
+	ac.numADRack2 = sum(statusAD, NUM_AD_CHANNELS / 2, Inf)
 
-	ac.numTTLRack1 = sum(statusTTL, 0, NUM_DA_TTL_CHANNELS/2 - 1)
-	ac.numTTLRack2 = sum(statusTTL, NUM_DA_TTL_CHANNELS/2, inf)
+	ac.numTTLRack1 = sum(statusTTL, 0, NUM_DA_TTL_CHANNELS / 2 - 1)
+	ac.numTTLRack2 = sum(statusTTL, NUM_DA_TTL_CHANNELS / 2, Inf)
 
 	return sum(statusDA) + sum(statusAD) + sum(statusTTL)
 End
@@ -260,7 +260,7 @@ End
 /// @param device device, must be locked
 /// @param ignoreChannelOrder [optional: defaults to false] ignore the order of the active channels
 Function SI_CreateLookupWave(device, [ignoreChannelOrder])
-	string device
+	string   device
 	variable ignoreChannelOrder
 
 	variable i, j, k, numChannels, numPerms, ret, idx, numRows
@@ -280,7 +280,7 @@ Function SI_CreateLookupWave(device, [ignoreChannelOrder])
 
 	DC_Configure(device, DATA_ACQUISITION_MODE)
 
-	WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	WAVE DAQDataWave   = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 	WAVE DAQConfigWave = GetDAQConfigWave(device)
 
 	NVAR deviceID = $GetDAQDeviceID(device)
@@ -306,18 +306,18 @@ Function SI_CreateLookupWave(device, [ignoreChannelOrder])
 		numPerms = ((totalNumDA + 1) * (totalNumAD + 1) * (totalNumTTL + 1))^totalNumRacks
 
 		Make/FREE/B/N=(sqrt(numPerms), 3) resultsOneRack = -1
-		SetDimLabel COLS, 0, numDA,  resultsOneRack
-		SetDimLabel COLS, 1, numAD,  resultsOneRack
+		SetDimLabel COLS, 0, numDA, resultsOneRack
+		SetDimLabel COLS, 1, numAD, resultsOneRack
 		SetDimLabel COLS, 2, numTTL, resultsOneRack
 
 		Make/O/B/N=(numPerms, 7) results = -1
-		SetDimLabel COLS, 0, numDARack1,  results
-		SetDimLabel COLS, 1, numADRack1,  results
+		SetDimLabel COLS, 0, numDARack1, results
+		SetDimLabel COLS, 1, numADRack1, results
 		SetDimLabel COLS, 2, numTTLRack1, results
-		SetDimLabel COLS, 3, numDARack2,  results
-		SetDimLabel COLS, 4, numADRack2,  results
+		SetDimLabel COLS, 3, numDARack2, results
+		SetDimLabel COLS, 4, numADRack2, results
 		SetDimLabel COLS, 5, numTTLRack2, results
-		SetDimLabel COLS, 6, minSampInt,  results
+		SetDimLabel COLS, 6, minSampInt, results
 
 		idx = 0
 		for(i = 0; i <= totalNumDA; i += 1)
@@ -326,7 +326,7 @@ Function SI_CreateLookupWave(device, [ignoreChannelOrder])
 					resultsOneRack[idx][%numDA]  = i
 					resultsOneRack[idx][%numAD]  = j
 					resultsOneRack[idx][%numTTL] = k
-					idx += 1
+					idx                         += 1
 				endfor
 			endfor
 		endfor
@@ -335,7 +335,7 @@ Function SI_CreateLookupWave(device, [ignoreChannelOrder])
 
 		ASSERT(totalNumRacks == 2, "Only implemented for two racks")
 
-		idx = 0
+		idx     = 0
 		numRows = DimSize(resultsOneRack, ROWS)
 		for(i = 0; i < numRows; i += 1)
 			for(j = 0; j < numRows; j += 1)
@@ -346,21 +346,21 @@ Function SI_CreateLookupWave(device, [ignoreChannelOrder])
 				results[idx][%numADRack2]  = resultsOneRack[j][%numAD]
 				results[idx][%numTTLRack2] = resultsOneRack[j][%numTTL]
 
-				numChannels  = results[idx][%numDARack1]  + results[idx][%numDARack2]
-				numChannels += results[idx][%numADRack1]  + results[idx][%numADRack2]
+				numChannels  = results[idx][%numDARack1] + results[idx][%numDARack2]
+				numChannels += results[idx][%numADRack1] + results[idx][%numADRack2]
 				numChannels += results[idx][%numTTLRack1] + results[idx][%numTTLRack2]
 
 				Redimension/N=(-1, numChannels) DAQDataWave
 				Redimension/N=(numChannels, -1) DAQConfigWave
 
-				if(!mod(idx,1000))
+				if(!mod(idx, 1000))
 					printf "idx= %d\r", idx
 				endif
 
 				SI_FillITCConfig(DAQConfigWave, results, idx, totalNumDA, totalNumAD, totalNumTTL)
 
 				results[idx][%minSampInt] = SI_TestSampInt(device)
-				idx += 1
+				idx                      += 1
 			endfor
 		endfor
 	else // exhaustive sampling interval brute forcing
@@ -375,16 +375,16 @@ Function SI_CreateLookupWave(device, [ignoreChannelOrder])
 		SetDimLabel COLS, 3, numDARack2, results
 		SetDimLabel COLS, 4, numADRack2, results
 		SetDimLabel COLS, 5, numTTLRack2, results
-		SetDimLabel COLS, 6, minSampInt  , results
+		SetDimLabel COLS, 6, minSampInt, results
 
-		DAMask  = (2^(totalNumDA)  - 1) * 2^(totalNumAD + totalNumTTL)
-		ADMask  = (2^(totalNumAD)  - 1) * 2^(totalNumTTL)
+		DAMask  = (2^(totalNumDA) - 1) * 2^(totalNumAD + totalNumTTL)
+		ADMask  = (2^(totalNumAD) - 1) * 2^(totalNumTTL)
 		TTLMask = (2^(totalNumTTL) - 1) * 2^(0)
 
 		for(i = 0; i < numPerms; i += 1)
-			DA  = (i & DAMask)  / 2^(totalNumAD + totalNumTTL)
-			AD  = (i & ADMask)  / 2^(totalNumTTL)
-			TTL = (i & TTLMask) / 2^(0)
+			DA          = (i & DAMask) / 2^(totalNumAD + totalNumTTL)
+			AD          = (i & ADMask) / 2^(totalNumTTL)
+			TTL         = (i & TTLMask) / 2^(0)
 			numChannels = PopCount(i)
 
 			if(numChannels == 0)
@@ -398,7 +398,7 @@ Function SI_CreateLookupWave(device, [ignoreChannelOrder])
 			numAD  = PopCount(AD)
 			numTTL = PopCount(TTL)
 
-			if(!mod(i,1000))
+			if(!mod(i, 1000))
 				printf "i= %d\r", i
 			endif
 
@@ -406,11 +406,11 @@ Function SI_CreateLookupWave(device, [ignoreChannelOrder])
 			SI_FillITCConfigWithPerms(DAQConfigWave, numDA, AD, XOP_CHANNEL_TYPE_ADC)
 			SI_FillITCConfigWithPerms(DAQConfigWave, numDA + numAD, TTL, XOP_CHANNEL_TYPE_TTL)
 
-			results[i][0]   = numDA
-			results[i][1]   = numAD
-			results[i][2]   = numTTL
-			results[i][3,5] = 0
-			results[i][6] = SI_TestSampInt(device)
+			results[i][0]    = numDA
+			results[i][1]    = numAD
+			results[i][2]    = numTTL
+			results[i][3, 5] = 0
+			results[i][6]    = SI_TestSampInt(device)
 		endfor
 	endif
 
@@ -426,17 +426,17 @@ static Function SI_TestSampInt(device)
 
 	variable i, sampInt, sampIntRead, numChannels, sampIntRef, iLast
 	variable numConsecutive = -1
-	variable numTries = 1001
+	variable numTries       = 1001
 
-	WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	WAVE DAQDataWave   = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 	WAVE DAQConfigWave = GetDAQConfigWave(device)
 	numChannels = DimSize(DAQConfigWave, ROWS)
 
 	Make/D/FREE/N=(20, numChannels) ResultWave
 
-	for(i=1; i < numTries; i += 1)
+	for(i = 1; i < numTries; i += 1)
 		if(numConsecutive == -1)
-			sampInt  = WAVEBUILDER_MIN_SAMPINT * i * MILLI_TO_MICRO
+			sampInt = WAVEBUILDER_MIN_SAMPINT * i * MILLI_TO_MICRO
 		else
 			sampInt *= 2
 		endif
@@ -455,11 +455,11 @@ static Function SI_TestSampInt(device)
 			ITCGetAllChannelsConfig2/O config_t, ResultWave
 			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
 
-			WaveStats/Q/R=[12,12] ResultWave
+			WaveStats/Q/R=[12, 12] ResultWave
 			ASSERT(V_min == V_max, "Unexpected differing sampling interval")
 			// ITCGetAllChannelsConfig2 returns the sampling interval in Hz
 			// but we want it in microseconds
-			sampIntRead = 1/V_min * ONE_TO_MICRO
+			sampIntRead = 1 / V_min * ONE_TO_MICRO
 
 			if(sampIntRead == sampInt)
 				if(numConsecutive == -1)
@@ -472,7 +472,7 @@ static Function SI_TestSampInt(device)
 					return sampIntRef
 				else
 					ASSERT(numConsecutive == 0 || iLast == i - 1, "Expected consecutive hits")
-					iLast = i
+					iLast           = i
 					numConsecutive += 1
 				endif
 			endif
@@ -485,7 +485,7 @@ End
 #else
 
 Function SI_CreateLookupWave(device, [ignoreChannelOrder])
-	string device
+	string   device
 	variable ignoreChannelOrder
 
 	DEBUGPRINT("Unimplemented")
@@ -540,7 +540,7 @@ End
 ///
 /// @returns sampling interval in microseconds (1e-6)
 static Function SI_ITC_CalculateMinSampInterval(device, dataAcqOrTP)
-	string device
+	string   device
 	variable dataAcqOrTP
 
 	variable numActiveChannels
@@ -625,7 +625,7 @@ static Function/WAVE SI_GetMinSampIntWave(device)
 			return wv
 			break
 		default:
-			DEBUGPRINT("There is no lookup wave available for the device type", str=deviceType)
+			DEBUGPRINT("There is no lookup wave available for the device type", str = deviceType)
 			break
 	endswitch
 

@@ -1,5 +1,5 @@
-#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3	 // Use modern global access method and strict wave access.
+#pragma TextEncoding="UTF-8"
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UTF_WaveAveraging
 
@@ -28,7 +28,7 @@ End
 Function CheckWaveScaling_IGNORE(WAVE result)
 
 	string unit, unitRef
-	unit = WaveUnits(result, ROWS)
+	unit    = WaveUnits(result, ROWS)
 	unitRef = "m"
 	CHECK_EQUAL_STR(unit, unitRef)
 	CHECK_SMALL_VAR(DimOffset(result, ROWS))
@@ -101,7 +101,7 @@ Function PointForPointWithNaNs([var])
 	variable var
 
 	Make/D/FREE data1 = {1, 2, NaN, 4}
-	Make/D/FREE data2 = {3, 4, 5  , 6}
+	Make/D/FREE data2 = {3, 4, 5, 6}
 	SetScale/P x, 0, 1, "m", data1, data2
 
 	Make/FREE/WAVE input = {data1, data2}

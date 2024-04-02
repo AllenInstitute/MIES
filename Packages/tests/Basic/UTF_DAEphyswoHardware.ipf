@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=DAEphysTestsWithoutHardware
@@ -16,7 +16,7 @@ static Function/S HAH_FillMockGuiStateWave(WAVE statusHS, WAVE clampModes)
 
 	WAVE GUIState = GetDA_EphysGuiStateNum(device)
 
-	GUIState[0, NUM_HEADSTAGES - 1][0] = statusHS[p]
+	GUIState[0, NUM_HEADSTAGES - 1][0]       = statusHS[p]
 	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = clampModes[p]
 
 	return device
@@ -108,7 +108,7 @@ Function HAH_WorksWithClampMode1()
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	statusHS[1, 2] = 1
-	clampModes[1] = I_CLAMP_MODE
+	clampModes[1]  = I_CLAMP_MODE
 
 	device = HAH_FillMockGuiStateWave(statusHS, clampModes)
 
@@ -125,8 +125,8 @@ Function HAH_WorksWithClampMode2()
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	statusHS[1, 6] = 1
-	clampModes[] = I_CLAMP_MODE
-	clampModes[6] = V_CLAMP_MODE
+	clampModes[]   = I_CLAMP_MODE
+	clampModes[6]  = V_CLAMP_MODE
 
 	device = HAH_FillMockGuiStateWave(statusHS, clampModes)
 

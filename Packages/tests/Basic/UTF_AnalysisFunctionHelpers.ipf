@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UTF_AnalyisFunctionHelpers
@@ -63,7 +63,7 @@ End
 Function AE_ThrowsWithInvalidNumCols()
 
 	try
-		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT,1) values
+		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT, 1) values
 		ED_AddEntryToLabnotebook(device, "a", values)
 		FAIL()
 	catch
@@ -75,7 +75,7 @@ Function AE_ThrowsWithTooLongKey()
 
 	try
 		WAVE values = AE_GenerateValidNum_IGNORE()
-		ED_AddEntryToLabnotebook(device, PadString("", MAX_OBJECT_NAME_LENGTH_IN_BYTES + 1, char2num("a")) , values)
+		ED_AddEntryToLabnotebook(device, PadString("", MAX_OBJECT_NAME_LENGTH_IN_BYTES + 1, char2num("a")), values)
 		FAIL()
 	catch
 		PASS()
@@ -86,7 +86,7 @@ Function AE_ThrowsWithDupPrefix()
 
 	try
 		WAVE values = AE_GenerateValidNum_IGNORE()
-		ED_AddEntryToLabnotebook(device, LABNOTEBOOK_USER_PREFIX + "myKey" , values)
+		ED_AddEntryToLabnotebook(device, LABNOTEBOOK_USER_PREFIX + "myKey", values)
 		FAIL()
 	catch
 		PASS()
@@ -97,7 +97,7 @@ Function AE_ThrowsWithInvalidInput1()
 
 	try
 		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = 0
-		ED_AddEntryToLabnotebook(device, "myKey" , values)
+		ED_AddEntryToLabnotebook(device, "myKey", values)
 		FAIL()
 	catch
 		PASS()
@@ -109,8 +109,8 @@ Function AE_ThrowsWithInvalidInput2()
 	try
 		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 		values[LABNOTEBOOK_LAYER_COUNT - 1] = 0
-		values[0] = 0
-		ED_AddEntryToLabnotebook(device, "myKey" , values)
+		values[0]                           = 0
+		ED_AddEntryToLabnotebook(device, "myKey", values)
 		FAIL()
 	catch
 		PASS()
@@ -120,7 +120,7 @@ End
 Function AE_WorksWithValidInput()
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
-	ED_AddEntryToLabnotebook(device, "myKey" , values)
+	ED_AddEntryToLabnotebook(device, "myKey", values)
 	PASS()
 End
 
@@ -130,12 +130,12 @@ Function AE_Works1()
 	string unit, unitRef, tolerance, toleranceRef
 	string key = "someKey"
 
-	unitRef   = ""
+	unitRef      = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	values[0] = 4711
-	ED_AddEntryToLabnotebook(device, key , values)
+	ED_AddEntryToLabnotebook(device, key, values)
 
 	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
@@ -171,12 +171,12 @@ Function AE_Works2()
 	string unit, unitRef, tolerance, toleranceRef
 	string key = "someKey"
 
-	unitRef   = "hi there"
+	unitRef      = "hi there"
 	toleranceRef = "123"
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	values[0] = 4711
-	ED_AddEntryToLabnotebook(device, key , values, unit = unitRef, tolerance = str2num(toleranceRef))
+	ED_AddEntryToLabnotebook(device, key, values, unit = unitRef, tolerance = str2num(toleranceRef))
 
 	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
@@ -212,7 +212,7 @@ Function AE_Works3()
 	string unit, unitRef, tolerance, toleranceRef
 	string key = "someKey"
 
-	unitRef = ""
+	unitRef      = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
@@ -254,7 +254,7 @@ Function AE_Works4()
 	string unit, unitRef, tolerance, toleranceRef
 	string key = "someKey"
 
-	unitRef = ""
+	unitRef      = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
@@ -295,7 +295,7 @@ Function AE_WorksMultiValues()
 	string unit, unitRef, tolerance, toleranceRef
 	string key = "someKey"
 
-	unitRef = ""
+	unitRef      = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
@@ -393,7 +393,7 @@ Function AE_WorksIndepHeadstage()
 	string unit, unitRef, tolerance, toleranceRef
 	string key = "someKey"
 
-	unitRef = ""
+	unitRef      = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
@@ -434,14 +434,14 @@ Function AE_OverrideSweepNoAborts()
 	string unit, unitRef, tolerance, toleranceRef
 	string key = "someKey"
 
-	unitRef = ""
+	unitRef      = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	values[LABNOTEBOOK_LAYER_COUNT - 1] = 4711
 
 	try
-		ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = inf)
+		ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = Inf)
 		FAIL()
 	catch
 		PASS()
@@ -461,7 +461,7 @@ Function AE_OverrideSweepNoWorks()
 	string unit, unitRef, tolerance, toleranceRef
 	string key = "someKey"
 
-	unitRef = ""
+	unitRef      = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
@@ -502,7 +502,7 @@ Function ATE_TextWorks1()
 	string unit, unitRef, tolerance, toleranceRef, str, strRef
 	string key = "someKey"
 
-	unitRef   = ""
+	unitRef      = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
@@ -548,11 +548,11 @@ Function AE_TextWorksIndepHeadstage()
 	string unit, unitRef, tolerance, toleranceRef, str, strRef
 	string key = "someKey"
 
-	unitRef   = ""
+	unitRef      = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
-	strRef = "4711"
+	strRef                              = "4711"
 	values[LABNOTEBOOK_LAYER_COUNT - 1] = strRef
 	ED_AddEntryToLabnotebook(device, key, values)
 
@@ -591,7 +591,7 @@ Function AE_TextHasCorrectTimeStamps()
 	variable row, col, ts, i
 	string key = "someKey"
 
-	for(i = 0;i < NUM_REPEATS; i += 1)
+	for(i = 0; i < NUM_REPEATS; i += 1)
 		KillOrMoveToTrashPath("root:MIES:LabNoteBook")
 
 		Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
@@ -642,11 +642,11 @@ Function AE_NormalizesEOLs()
 	string unit, unitRef, tolerance, toleranceRef, str, strRef, normalizedStr
 	string key = "someKey"
 
-	unitRef   = ""
+	unitRef      = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
-	strRef    = "123\r456\r\n"
+	strRef                              = "123\r456\r\n"
 	values[LABNOTEBOOK_LAYER_COUNT - 1] = strRef
 	ED_AddEntryToLabnotebook(device, key, values)
 
@@ -670,7 +670,7 @@ Function AE_NormalizesEOLs()
 	CHECK_EQUAL_STR(tolerance, toleranceRef)
 
 	// entry can be found
-	str = textualValues[0][col][8]
+	str           = textualValues[0][col][8]
 	normalizedStr = "123\n456\n"
 	CHECK_EQUAL_STR(str, normalizedStr)
 	for(i = 0; i < 8; i += 1)
@@ -707,7 +707,7 @@ End
 Function AGLAP_MissingFunc()
 
 	string expected = ""
-	string actual = AFH_GetListOfAnalysisParams("I_DONT_EXIST", REQUIRED_PARAMS)
+	string actual   = AFH_GetListOfAnalysisParams("I_DONT_EXIST", REQUIRED_PARAMS)
 
 	CHECK_EQUAL_STR(expected, actual)
 End
@@ -744,12 +744,12 @@ Function AGLAP_Works1()
 	string expected, actual
 
 	expected = "param1,"
-	actual = AFH_GetListOfAnalysisParams("AnaFunc_1", REQUIRED_PARAMS)
+	actual   = AFH_GetListOfAnalysisParams("AnaFunc_1", REQUIRED_PARAMS)
 
 	CHECK_EQUAL_STR(expected, actual)
 
 	expected = ""
-	actual = AFH_GetListOfAnalysisParams("AnaFunc_1", OPTIONAL_PARAMS)
+	actual   = AFH_GetListOfAnalysisParams("AnaFunc_1", OPTIONAL_PARAMS)
 
 	CHECK_EQUAL_STR(expected, actual)
 End
@@ -759,15 +759,15 @@ Function AGLAP_WorksWithType()
 	string expected, actual
 
 	expected = "param1,param2,"
-	actual = AFH_GetListOfAnalysisParams("AnaFunc_WithOptionals", REQUIRED_PARAMS)
+	actual   = AFH_GetListOfAnalysisParams("AnaFunc_WithOptionals", REQUIRED_PARAMS)
 
 	CHECK_EQUAL_STR(expected, actual)
 
 	expected = "optParam1,optParam2,"
-	actual = AFH_GetListOfAnalysisParams("AnaFunc_WithOptionals", OPTIONAL_PARAMS)
+	actual   = AFH_GetListOfAnalysisParams("AnaFunc_WithOptionals", OPTIONAL_PARAMS)
 
 	expected = "param1,optParam1,param2,optParam2"
-	actual = AFH_GetListOfAnalysisParams("AnaFunc_WithOptionals", REQUIRED_PARAMS | OPTIONAL_PARAMS)
+	actual   = AFH_GetListOfAnalysisParams("AnaFunc_WithOptionals", REQUIRED_PARAMS | OPTIONAL_PARAMS)
 
 	CHECK_EQUAL_STR(expected, actual)
 End

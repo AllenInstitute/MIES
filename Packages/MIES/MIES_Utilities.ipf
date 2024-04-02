@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -48,7 +48,7 @@ End
 /// @hidecallergraph
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsNull(str)
-	string& str
+	string &str
 
 	variable len = strlen(str)
 	return numtype(len) == 2
@@ -90,7 +90,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 	variable i, numLockedDevices, doCallDebugger
 
 	try
-		AbortOnValue var==0, 1
+		AbortOnValue var == 0, 1
 	catch
 		if(ParamIsDefault(extendedOutput))
 			extendedOutput = 1
@@ -141,9 +141,9 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
 			SVAR/Z lockedDevices = root:MIES:HardwareDevices:lockedDevices
 
-			Make/FREE/T sweeps = { NONE }
-			Make/FREE/T tpStates = { NONE }
-			Make/FREE/T daqStates = { NONE }
+			Make/FREE/T sweeps = {NONE}
+			Make/FREE/T tpStates = {NONE}
+			Make/FREE/T daqStates = {NONE}
 
 			if(!SVAR_Exists(lockedDevices) || IsEmpty(lockedDevices))
 				lockedDevicesStr = NONE
@@ -156,7 +156,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
 				for(i = 0; i < numLockedDevices; i += 1)
 					device = StringFromList(i, lockedDevicesStr)
-					NVAR runMode = $GetDataAcqRunMode(device)
+					NVAR runMode       = $GetDataAcqRunMode(device)
 					NVAR testpulseMode = $GetTestpulseRunMode(device)
 
 					sweeps[i]    = num2str(AFH_GetLastSweepAcquired(device))
@@ -222,7 +222,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 	string stacktrace
 
 	try
-		AbortOnValue var==0, 1
+		AbortOnValue var == 0, 1
 	catch
 		if(ParamIsDefault(extendedOutput))
 			extendedOutput = 1
@@ -295,7 +295,7 @@ End
 ///
 /// @returns list of object names matching matchExpr
 threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recursive, exprType])
-	dfref dfr
+	DFREF  dfr
 	string matchExpr
 	variable fullPath, recursive, typeFlag, exprType
 
@@ -303,8 +303,8 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 	string name, folders, basePath, subList, freeDFName
 	string list = ""
 
-	ASSERT_TS(DataFolderExistsDFR(dfr),"Non-existing datafolder")
-	ASSERT_TS(!isEmpty(matchExpr),"matchExpr is empty or null")
+	ASSERT_TS(DataFolderExistsDFR(dfr), "Non-existing datafolder")
+	ASSERT_TS(!isEmpty(matchExpr), "matchExpr is empty or null")
 
 	if(ParamIsDefault(fullPath))
 		fullPath = 0
@@ -334,17 +334,17 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 		basePath = GetDataFolder(1, dfr)
 		if(IsFreeDataFolder(dfr))
 			freeDFName = StringFromList(0, basePath, ":") + ":"
-			basePath = ReplaceString(freeDFName, basePath, "", 0, 1)
+			basePath   = ReplaceString(freeDFName, basePath, "", 0, 1)
 		endif
 		list = AddPrefixToEachListItem(basePath, list)
 	endif
 
 	if(recursive)
-		folders = GetAllObjects(dfr, COUNTOBJECTS_DATAFOLDER)
+		folders    = GetAllObjects(dfr, COUNTOBJECTS_DATAFOLDER)
 		numFolders = ItemsInList(folders)
-		for(i = 0; i < numFolders; i+=1)
+		for(i = 0; i < numFolders; i += 1)
 			DFREF subFolder = dfr:$StringFromList(i, folders)
-			subList = GetListOfObjects(subFolder, matchExpr, typeFlag = typeFlag, fullPath=fullPath, recursive=recursive, exprType=exprType)
+			subList = GetListOfObjects(subFolder, matchExpr, typeFlag = typeFlag, fullPath = fullPath, recursive = recursive, exprType = exprType)
 			if(!IsEmpty(subList))
 				list = AddListItem(RemoveEnding(subList, ";"), list)
 			endif
@@ -358,7 +358,7 @@ End
 ///
 /// Does not work for datafolders which have a comma (`,`) in them.
 threadsafe static Function/S GetAllObjects(dfr, typeFlag)
-	DFREF dfr
+	DFREF    dfr
 	variable typeFlag
 
 	string list
@@ -475,7 +475,7 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 	Make/FREE/L/N=(MAX_DIMENSION_COUNT) targetSizes = -1
 	targetSizes[dimension] = indexShouldExist
 
-	Make/FREE/L/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(wv,p)
+	Make/FREE/L/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(wv, p)
 
 	Redimension/N=(targetSizes[ROWS], targetSizes[COLS], targetSizes[LAYERS], targetSizes[CHUNKS]) wv
 
@@ -484,16 +484,16 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 		switch(dimension)
 			case ROWS:
 				wv[oldSizes[ROWS],][][][] = initialValue
-			break
+				break
 			case COLS:
 				wv[][oldSizes[COLS],][][] = initialValue
-			break
+				break
 			case LAYERS:
 				wv[][][oldSizes[LAYERS],][] = initialValue
-			break
+				break
 			case CHUNKS:
 				wv[][][][oldSizes[CHUNKS],] = initialValue
-			break
+				break
 		endswitch
 	endif
 
@@ -504,7 +504,7 @@ End
 ///
 /// Does currently ignore floating point precision and ranges for integer waves
 threadsafe Function ValueCanBeWritten(wv, value)
-	WAVE/Z wv
+	WAVE/Z   wv
 	variable value
 
 	variable type
@@ -532,7 +532,7 @@ End
 /// @param wv          wave to redimension
 /// @param maximumSize maximum number of the rows, defaults to MAXIMUM_SIZE
 Function EnsureSmallEnoughWave(wv, [maximumSize])
-	Wave wv
+	WAVE     wv
 	variable maximumSize
 
 	if(ParamIsDefault(maximumSize))
@@ -556,7 +556,7 @@ End
 
 /// @brief Returns the size of the wave in bytes
 threadsafe static Function GetWaveSizeImplementation(wv)
-	Wave wv
+	WAVE wv
 
 	return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
 End
@@ -603,7 +603,7 @@ End
 
 /// @brief Returns the size of the wave in bytes.
 threadsafe Function GetWaveSize(wv, [recursive])
-	WAVE/Z wv
+	WAVE/Z   wv
 	variable recursive
 
 	if(ParamIsDefault(recursive))
@@ -697,9 +697,9 @@ threadsafe Function/DF createDFWithAllParents(dataFolder)
 	partialPath = "root"
 
 	// i=1 because we want to skip root, as this exists always
-	numItems = ItemsInList(dataFolder,":")
-	for(i=1; i < numItems ; i+=1)
-		component = StringFromList(i,dataFolder,":")
+	numItems = ItemsInList(dataFolder, ":")
+	for(i = 1; i < numItems; i += 1)
+		component = StringFromList(i, dataFolder, ":")
 		ASSERT_TS(IsValidObjectName(component), "dataFolder must follow strict object naming rules.")
 
 		partialPath += ":" + component
@@ -709,7 +709,7 @@ threadsafe Function/DF createDFWithAllParents(dataFolder)
 	endfor
 
 	return $dataFolder
-end
+End
 
 /// @brief Returns one if var is an integer and zero otherwise
 /// UTF_NOINSTRUMENTATION
@@ -749,7 +749,7 @@ End
 ///                    		must be one of @ref FFT_WINF.
 /// @returns One on error, zero otherwise
 Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
-	Wave/Z wv
+	WAVE/Z wv
 	variable downsampleFactor, upsampleFactor, mode
 	string winFunction
 
@@ -760,7 +760,7 @@ Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
 		print "Wave wv does not exist"
 		ControlWindowToFront()
 		return 1
-	elseif(downsampleFactor <= 0 || downsampleFactor >= DimSize(wv,ROWS))
+	elseif(downsampleFactor <= 0 || downsampleFactor >= DimSize(wv, ROWS))
 		print "Parameter downsampleFactor must be strictly positive and strictly smaller than the number of rows in wv."
 		ControlWindowToFront()
 		return 1
@@ -768,7 +768,7 @@ Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
 		print "Parameter downsampleFactor must be an integer."
 		ControlWindowToFront()
 		return 1
-	elseif(upsampleFactor <= 0 )
+	elseif(upsampleFactor <= 0)
 		print "Parameter upsampleFactor must be strictly positive."
 		ControlWindowToFront()
 		return 1
@@ -805,7 +805,7 @@ Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
 		case DECIMATION_BY_AVERAGING:
 			// See again the Igor Manual page III-141
 			// take the next odd number
-			numReconstructionSamples = mod(downSampleFactor,2) == 0 ? downSampleFactor + 1 : downSampleFactor
+			numReconstructionSamples = mod(downSampleFactor, 2) == 0 ? downSampleFactor + 1 : downSampleFactor
 			Resample/DOWN=(downsampleFactor)/UP=(upsampleFactor)/N=(numReconstructionSamples)/WINF=None wv
 			break
 		default:
@@ -818,25 +818,25 @@ Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
 End
 
 /// @brief Compute the least common multiplier of two variables
-Function CalculateLCM(a,b)
-	Variable a, b
+Function CalculateLCM(a, b)
+	variable a, b
 
 	return (a * b) / gcd(a, b)
 End
 
 /// @brief Compute the least common multiplier of all entries in the 1D-wave
 Function CalculateLCMOfWave(wv)
-	Wave wv
+	WAVE wv
 
 	variable i, result
-	variable numRows = DimSize(wv,ROWS)
-	if( numRows <= 1)
+	variable numRows = DimSize(wv, ROWS)
+	if(numRows <= 1)
 		return NaN
 	endif
 
-	result = CalculateLCM(wv[0],wv[1])
-	for(i=2; i < numRows; i+=1)
-		result = CalculateLCM(result,wv[i])
+	result = CalculateLCM(wv[0], wv[1])
+	for(i = 2; i < numRows; i += 1)
+		result = CalculateLCM(result, wv[i])
 	endfor
 
 	return result
@@ -873,7 +873,7 @@ threadsafe Function/WAVE GetUniqueEntries(WAVE wv, [variable caseSensitive, vari
 	if(IsTextWave(wv))
 		caseSensitive = ParamIsDefault(caseSensitive) ? 1 : !!caseSensitive
 
-		return GetUniqueTextEntries(wv, caseSensitive=caseSensitive)
+		return GetUniqueTextEntries(wv, caseSensitive = caseSensitive)
 	endif
 
 	FindDuplicates/FREE/RN=result wv
@@ -898,8 +898,8 @@ threadsafe Function/S GetUniqueTextEntriesFromList(list, [sep, caseSensitive])
 		caseSensitive = !!caseSensitive
 	endif
 
-	WAVE/T wv = ListToTextWave(list, sep)
-	WAVE/T unique = GetUniqueTextEntries(wv, caseSensitive=caseSensitive)
+	WAVE/T wv     = ListToTextWave(list, sep)
+	WAVE/T unique = GetUniqueTextEntries(wv, caseSensitive = caseSensitive)
 
 	return TextWaveToList(unique, sep)
 End
@@ -927,14 +927,14 @@ threadsafe static Function/WAVE GetUniqueTextEntries(WAVE/T wv, [variable caseSe
 		if(dontDuplicate)
 			return wv
 		endif
-		Duplicate/T/FREE wv result
+		Duplicate/T/FREE wv, result
 		return result
 	endif
 
 	if(caseSensitive)
 		FindDuplicates/FREE/RT=result wv
 	else
-		Duplicate/T/FREE wv result
+		Duplicate/T/FREE wv, result
 
 		MAKE/T/FREE/N=(numEntries) duplicates = LowerStr(wv[p])
 		FindDuplicates/FREE/INDX=index duplicates
@@ -952,7 +952,7 @@ End
 /// @param dfr data folder reference to kill
 /// @returns 1 in case the folder was removed and 0 in all other cases
 Function RemoveEmptyDataFolder(dfr)
-	dfref dfr
+	DFREF dfr
 
 	if(!DataFolderExistsDFR(dfr))
 		return 0
@@ -964,7 +964,7 @@ Function RemoveEmptyDataFolder(dfr)
 	endif
 
 	return 0
-end
+End
 
 /// @brief Return 1 if the datafolder is empty, zero if not
 Function IsDataFolderEmpty(DFREF dfr)
@@ -997,7 +997,7 @@ Function RemoveAllEmptyDataFolders(sourceDFR)
 	endfor
 
 	RemoveEmptyDataFolder(sourceDFR)
-end
+End
 
 /// @name Debugger state constants for DisableDebugger and ResetDebuggerState
 /// @{
@@ -1078,7 +1078,7 @@ End
 /// The expected wave note format is: `key1:val1;key2:val2;`
 /// UTF_NOINSTRUMENTATION
 threadsafe Function GetNumberFromWaveNote(wv, key)
-	Wave wv
+	WAVE   wv
 	string key
 
 	ASSERT_TS(WaveExists(wv), "Missing wave")
@@ -1097,10 +1097,10 @@ End
 ///
 /// The expected wave note format is: `key1:val1;key2:val2;`
 threadsafe Function SetNumberInWaveNote(wv, key, val, [format])
-	Wave wv
-	string key
+	WAVE     wv
+	string   key
 	variable val
-	string format
+	string   format
 
 	string str
 
@@ -1242,10 +1242,10 @@ End
 ///                      in wave note lists without carriage returns).
 /// @param format        [optional, defaults to `%g`] format string used for converting `var` to `str`
 Function AddEntryIntoWaveNoteAsList(wv, key, [var, str, appendCR, replaceEntry, format])
-	Wave wv
-	string key
+	WAVE     wv
+	string   key
 	variable var
-	string str
+	string   str
 	variable appendCR, replaceEntry
 	string format
 
@@ -1271,7 +1271,7 @@ Function AddEntryIntoWaveNoteAsList(wv, key, [var, str, appendCR, replaceEntry, 
 		formattedString = key + ";"
 	endif
 
-	appendCR     = ParamIsDefault(appendCR)     ? 0 : appendCR
+	appendCR     = ParamIsDefault(appendCR) ? 0 : appendCR
 	replaceEntry = ParamIsDefault(replaceEntry) ? 0 : replaceEntry
 
 	if(replaceEntry)
@@ -1303,7 +1303,7 @@ End
 Function IsWaveDisplayedOnGraph(win, [wv, dfr])
 	string win
 	WAVE/Z wv
-	DFREF dfr
+	DFREF  dfr
 
 	string traceList, trace, list
 	variable numWaves, numTraces, i
@@ -1321,7 +1321,7 @@ Function IsWaveDisplayedOnGraph(win, [wv, dfr])
 			return 0
 		endif
 
-		WAVE/WAVE candidates = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullpath=1))
+		WAVE/WAVE candidates = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullpath = 1))
 		numWaves = DimSize(candidates, ROWS)
 	endif
 
@@ -1331,7 +1331,7 @@ Function IsWaveDisplayedOnGraph(win, [wv, dfr])
 		trace = StringFromList(i, traceList)
 		WAVE traceWave = TraceNameToWaveRef(win, trace)
 
-		if(GetRowIndex(candidates, refWave=traceWave) >= 0)
+		if(GetRowIndex(candidates, refWave = traceWave) >= 0)
 			return 1
 		endif
 	endfor
@@ -1344,7 +1344,7 @@ End
 /// @param graphs     semicolon separated list of graph names
 /// @param cursorName name of cursor as string
 Function KillCursorInGraphs(graphs, cursorName)
-	String graphs, cursorName
+	string graphs, cursorName
 
 	string graph
 	variable i, numGraphs
@@ -1369,7 +1369,7 @@ End
 ///
 /// @return graph where cursor was found
 Function/S FindCursorInGraphs(graphs, cursorName)
-	String graphs, cursorName
+	string graphs, cursorName
 
 	string graph, csr
 	variable i, numGraphs
@@ -1410,8 +1410,8 @@ Function GetCursorXPositionAB(graph, csrAx, csrBx)
 	csrB = CsrInfo(B, graph)
 
 	if(isEmpty(csrA) || isEmpty(csrB))
-		csrAx = -inf
-		csrBx = inf
+		csrAx = -Inf
+		csrBx = Inf
 	else
 		csrAx = xcsr(A, graph)
 		csrBx = xcsr(B, graph)
@@ -1445,7 +1445,7 @@ End
 /// @param minimumWidth [optional, defaults to zero] Each line, except the last one,
 ///                     will have at least this length
 Function/S LineBreakingIntoPar(str, [minimumWidth])
-	string str
+	string   str
 	variable minimumWidth
 
 	variable len, i, width
@@ -1467,9 +1467,9 @@ Function/S LineBreakingIntoPar(str, [minimumWidth])
 		if((!cmpstr(curr, " ") || !cmpstr(curr, "\t"))                            \
 		   && IsNaN(str2numSafe(next)) && cmpstr(next, " ") && cmpstr(next, "\t") \
 		   && width >= minimumWidth)
-				output += "\r"
-				width = 0
-				continue
+			output += "\r"
+			width   = 0
+			continue
 		endif
 
 		output += curr
@@ -1485,12 +1485,12 @@ End
 /// @param dfr 	    datafolder reference where the new datafolder should be created
 /// @param baseName first part of the datafolder, might be shortend due to Igor Pro limitations
 threadsafe Function/DF UniqueDataFolder(dfr, baseName)
-	dfref dfr
+	DFREF  dfr
 	string baseName
 
 	string path
 
-	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty")
 
 	path = UniqueDataFolderName(dfr, basename)
 
@@ -1507,13 +1507,13 @@ End
 /// @param dfr      datafolder to search
 /// @param baseName first part of the datafolder, must be a *valid* Igor Pro object name
 threadsafe Function/S UniqueDataFolderName(dfr, baseName)
-	DFREF dfr
+	DFREF  dfr
 	string baseName
 
 	variable index, numRuns
 	string basePath, path
 
-	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty")
 	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 	ASSERT_TS(!IsFreeDatafolder(dfr), "dfr can not be a free DF")
 
@@ -1522,7 +1522,7 @@ threadsafe Function/S UniqueDataFolderName(dfr, baseName)
 	baseName = baseName[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - (ceil(log(numRuns)) + 1)]
 	baseName = CleanupName(baseName, 0)
 	basePath = GetDataFolder(1, dfr)
-	path = basePath + baseName
+	path     = basePath + baseName
 
 	do
 		if(!DataFolderExists(path))
@@ -1546,20 +1546,20 @@ End
 /// @param dfr 	    datafolder reference where the new datafolder should be created
 /// @param baseName first part of the wave name, might be shorted due to Igor Pro limitations
 threadsafe Function/S UniqueWaveName(dfr, baseName)
-	dfref dfr
+	DFREF  dfr
 	string baseName
 
 	variable index
-	string name
-	string path
+	string   name
+	string   path
 
-	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty")
 	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 
 	// shorten basename so that we can attach some numbers
 	baseName = CleanupName(baseName[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 5], 0)
-	path = GetDataFolder(1, dfr)
-	name = baseName
+	path     = GetDataFolder(1, dfr)
+	name     = baseName
 
 	do
 		if(!WaveExists($(path + name)))
@@ -1661,7 +1661,7 @@ Function/S UniqueFileOrFolder(symbPath, baseName, [suffix])
 		endif
 
 		file = baseName + "_" + num2str(i) + suffix
-		i += 1
+		i   += 1
 
 	while(i < 10000)
 
@@ -1700,7 +1700,7 @@ Function/S GetTimeStamp([secondsSinceIgorEpoch, humanReadable])
 	endif
 
 	if(humanReadable)
-		return Secs2Time(secondsSinceIgorEpoch, 1)  + " " + Secs2Date(secondsSinceIgorEpoch, -2, "/")
+		return Secs2Time(secondsSinceIgorEpoch, 1) + " " + Secs2Date(secondsSinceIgorEpoch, -2, "/")
 	else
 		return Secs2Date(secondsSinceIgorEpoch, -2, "_") + "_" + ReplaceString(":", Secs2Time(secondsSinceIgorEpoch, 3), "")
 	endif
@@ -1780,7 +1780,7 @@ Function/S GetDrive(string path)
 	drive = StringFromList(0, path, ":")
 
 	return drive
-end
+End
 
 /// @brief Create a folder recursively on disk given an absolute path
 ///
@@ -1794,8 +1794,8 @@ Function CreateFolderOnDisk(absPath)
 	path = GetHFSPath(absPath)
 	ASSERT(!FileExists(path), "The path which we should create exists, but points to a file")
 
-	tempPath = UniqueName("tempPath", 12, 0)
-	numParts = ItemsInList(path, ":")
+	tempPath    = UniqueName("tempPath", 12, 0)
+	numParts    = ItemsInList(path, ":")
 	partialPath = GetDrive(path)
 
 	// we skip the first one as that is the drive letter
@@ -1816,10 +1816,10 @@ End
 ///
 /// Assumes wv being one dimensional
 threadsafe Function GetRowIndex(wv, [val, str, refWave])
-	WAVE wv
+	WAVE     wv
 	variable val
-	string str
-	WAVE/Z refWave
+	string   str
+	WAVE/Z   refWave
 
 	variable numEntries, i
 
@@ -1831,7 +1831,7 @@ threadsafe Function GetRowIndex(wv, [val, str, refWave])
 		WAVE/WAVE cmpWave = wv
 
 		for(i = 0; i < numEntries; i += 1)
-			if(WaveRefsEqual(cmpWave[i], refWave)                   \
+			if(WaveRefsEqual(cmpWave[i], refWave)                  \
 			   || (!WaveExists(cmpWave[i]) && !WaveExists(refWave)))
 				return i
 			endif
@@ -1879,7 +1879,7 @@ Function/S ListFromList(list, itemBegin, itemEnd, [listSep])
 	string list, listSep
 	variable itemBegin, itemEnd
 
-	variable i,  numItems, start, stop
+	variable i, numItems, start, stop
 
 	if(ParamIsDefault(listSep))
 		listSep = ";"
@@ -2076,7 +2076,7 @@ Function/S BuildList(format, start, step, stop)
 
 	for(i = start; i < stop; i += step)
 		sprintf str, format, i
-		list = AddListItem(str, list, ";", inf)
+		list = AddListItem(str, list, ";", Inf)
 	endfor
 
 	return list
@@ -2106,7 +2106,7 @@ End
 threadsafe Function/S RemoveEndingRegExp(str, endingRegExp)
 	string str, endingRegExp
 
-	string endStr
+	string   endStr
 	variable err
 
 	if(isEmpty(str) || isEmpty(endingRegExp))
@@ -2205,7 +2205,7 @@ Function/WAVE SearchStringBase(str, regex)
 	wv[5] = str5
 
 	// return wv on success
-	if(V_flag  == numBrackets)
+	if(V_flag == numBrackets)
 		Redimension/N=(numbrackets) wv
 		return wv
 	endif
@@ -2221,17 +2221,17 @@ Function CountSubstrings(str, pattern)
 	variable i = -1, position = -1
 
 	do
-		i += 1
+		i        += 1
 		position += 1
-		position = strsearch(str, pattern, position)
+		position  = strsearch(str, pattern, position)
 	while(position != -1)
 
 	return i
-end
+End
 
 /// @brief Search the row in refWave which has the same contents as the given row in the sourceWave
 Function GetRowWithSameContent(refWave, sourceWave, row)
-	Wave/T refWave, sourceWave
+	WAVE/T refWave, sourceWave
 	variable row
 
 	variable i, j, numRows, numCols
@@ -2265,7 +2265,7 @@ End
 /// @param inwave The wave that will have its rows shuffled.
 /// @param noiseGenMode [optional, defaults to #NOISE_GEN_XOSHIRO] type of RNG to use
 Function InPlaceRandomShuffle(inwave, [noiseGenMode])
-	wave inwave
+	WAVE     inwave
 	variable noiseGenMode
 
 	variable i, j, emax, temp
@@ -2275,15 +2275,15 @@ Function InPlaceRandomShuffle(inwave, [noiseGenMode])
 		noiseGenMode = NOISE_GEN_XOSHIRO
 	endif
 
-	for(i = N; i>1; i-=1)
+	for(i = N; i > 1; i -= 1)
 		emax = i / 2
-		j =  floor(emax + enoise(emax, noiseGenMode))		//	random index
-// 		emax + enoise(emax) ranges in random value from 0 to 2*emax = i
-		temp		= inwave[j]
-		inwave[j]	= inwave[i-1]
-		inwave[i-1]	= temp
+		j    = floor(emax + enoise(emax, noiseGenMode)) //	random index
+		// 		emax + enoise(emax) ranges in random value from 0 to 2*emax = i
+		temp          = inwave[j]
+		inwave[j]     = inwave[i - 1]
+		inwave[i - 1] = temp
 	endfor
-end
+End
 
 /// @brief Return a unique trace name in the graph
 ///
@@ -2303,7 +2303,7 @@ Function/S UniqueTraceName(graph, baseName)
 	ASSERT(windowExists(graph), "graph must exist")
 	ASSERT(!isEmpty(baseName), "baseName must not be empty")
 
-	traceList = TraceNameList(graph, ";", 0+1)
+	traceList = TraceNameList(graph, ";", 0 + 1)
 	// use an upper limit of trials to ease calculation
 	numTrials = 2 * ItemsInList(traceList) + 1
 
@@ -2314,7 +2314,7 @@ Function/S UniqueTraceName(graph, baseName)
 		endif
 
 		trace = baseName + "_" + num2str(i)
-		i += 1
+		i    += 1
 
 	while(i < numTrials)
 
@@ -2328,7 +2328,7 @@ End
 /// @param[out] baseName    Returns the common baseName if the list has one,
 ///                         otherwise this will be an empty string.
 Function WaveListHasSameWaveNames(listOfWaves, baseName)
-	string listOfWaves
+	string  listOfWaves
 	string &baseName
 
 	baseName = ""
@@ -2403,7 +2403,7 @@ End
 /// \endrst
 Function NewRandomSeed()
 
-	SetRandomSeed/BETR=1 ((stopmstimer(-2) * 10 ) & 0xffffffff) / 2^32 // NOLINT
+	SetRandomSeed/BETR=1 ((stopmstimer(-2) * 10) & 0xffffffff) / 2^32 // NOLINT
 
 End
 
@@ -2444,7 +2444,7 @@ threadsafe Function/S AddPrefixToEachListItem(string prefix, string list, [strin
 
 	numEntries = ItemsInList(list, sep)
 	for(i = 0; i < numEntries; i += 1)
-		result = AddListItem(prefix + StringFromList(i, list, sep), result, sep, inf)
+		result = AddListItem(prefix + StringFromList(i, list, sep), result, sep, Inf)
 	endfor
 
 	return result
@@ -2462,7 +2462,7 @@ threadsafe Function/S AddSuffixToEachListItem(string suffix, string list, [strin
 
 	numEntries = ItemsInList(list, sep)
 	for(i = 0; i < numEntries; i += 1)
-		result = AddListItem(StringFromList(i, list, sep) + suffix, result, sep, inf)
+		result = AddListItem(StringFromList(i, list, sep) + suffix, result, sep, Inf)
 	endfor
 
 	return result
@@ -2486,11 +2486,11 @@ threadsafe Function/S RemovePrefixFromListItem(string prefix, string list, [stri
 		regExp = !!regExp
 	endif
 
-	result = ""
+	result     = ""
 	numEntries = ItemsInList(list, listSep)
 	for(i = 0; i < numEntries; i += 1)
-		entry = StringFromList(i, list, listSep)
-		result = AddListItem(RemovePrefix(entry, start = prefix, regExp = regExp), result, listSep, inf)
+		entry  = StringFromList(i, list, listSep)
+		result = AddListItem(RemovePrefix(entry, start = prefix, regExp = regExp), result, listSep, Inf)
 	endfor
 
 	return result
@@ -2530,7 +2530,7 @@ End
 threadsafe Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone])
 	variable secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone
 
-	string str
+	string   str
 	variable timezone
 
 	if(ParamIsDefault(localTimeZone))
@@ -2554,7 +2554,7 @@ threadsafe Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSeconds
 	endif
 
 	if(localTimeZone)
-		timezone = Date2Secs(-1,-1,-1)
+		timezone = Date2Secs(-1, -1, -1)
 		sprintf str, "%sT%s%+03d:%02d", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, numFracSecondsDigits), trunc(timezone / 3600), abs(mod(timezone / 60, 60))
 	else
 		sprintf str, "%sT%sZ", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, numFracSecondsDigits)
@@ -2574,10 +2574,10 @@ End
 /// @param[out] numPrefix      numerical value of the decimal multiplier
 /// @param[out] unit           unit
 threadsafe Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
-	string unitWithPrefix
-	string &prefix
+	string    unitWithPrefix
+	string   &prefix
 	variable &numPrefix
-	string &unit
+	string   &unit
 
 	string expr, unitInt, prefixInt
 
@@ -2593,9 +2593,9 @@ threadsafe Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
 	ASSERT_TS(V_flag >= 1, "Could not parse unit string")
 	ASSERT_TS(!IsEmpty(unitInt), "Could not find a unit")
 
-	prefix = prefixInt
+	prefix    = prefixInt
 	numPrefix = GetDecimalMultiplierValue(prefix)
-	unit = unitInt
+	unit      = unitInt
 End
 
 /// @brief Return the numerical value of a SI decimal multiplier
@@ -2624,10 +2624,10 @@ End
 /// @param globalSymbol [optional, defaults to false] `name` refers to a global
 ///                     symbol set via `poundDefine`
 Function QuerySetIgorOption(name, [globalSymbol])
-	string name
+	string   name
 	variable globalSymbol
 
-	string cmd
+	string   cmd
 	variable result
 
 	if(ParamIsDefault(globalSymbol))
@@ -2863,7 +2863,7 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 
 	string fileOrPath, folders, subFolderPathName, fileName
 	string files, allFilesList
-	string allFiles = ""
+	string allFiles         = ""
 	string foldersFromAlias = ""
 	variable err
 
@@ -2899,7 +2899,7 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 	endfor
 
 	AssertOnAndClearRTError()
-	folders = IndexedDir($pathName, -1, 1, FILE_LIST_SEP); err = GetRTError(1)
+	folders = IndexedDir($pathName, -1, 1, FILE_LIST_SEP); err     = GetRTError(1)
 	folders = folders + foldersFromAlias
 	WAVE/T wFolders = ListToTextWave(folders, FILE_LIST_SEP)
 	for(folder : wFolders)
@@ -2907,7 +2907,7 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 		subFolderPathName = GetUniqueSymbolicPath()
 
 		NewPath/Q/O $subFolderPathName, folder
-		files = GetAllFilesRecursivelyFromPath(subFolderPathName, extension=extension)
+		files = GetAllFilesRecursivelyFromPath(subFolderPathName, extension = extension)
 		KillPath/Z $subFolderPathName
 
 		if(!isEmpty(files))
@@ -2964,9 +2964,9 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 	endif
 
 	if(ParamIsDefault(maxElements))
-		maxElements = inf
+		maxElements = Inf
 	else
-		ASSERT_TS((IsInteger(maxElements) && maxElements >= 0) || maxElements == inf, "maxElements must be >=0 and an integer")
+		ASSERT_TS((IsInteger(maxElements) && maxElements >= 0) || maxElements == Inf, "maxElements must be >=0 and an integer")
 	endif
 
 	stopOnEmpty = ParamIsDefault(stopOnEmpty) ? 0 : !!stopOnEmpty
@@ -2975,15 +2975,15 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 	if(numRows == 0)
 		return list
 	endif
-	numCols = DimSize(txtWave, COLS)
+	numCols   = DimSize(txtWave, COLS)
 	numLayers = DimSize(txtWave, LAYERS)
 	numChunks = DimSize(txtWave, CHUNKS)
 
-	if(!stopOnEmpty && maxElements == inf && !numLayers && !numChunks)
+	if(!stopOnEmpty && maxElements == Inf && !numLayers && !numChunks)
 		return WaveToListFast(txtWave, "%s", rowSep, colSep)
 	endif
 
-	numColsLoop = max(1, numCols)
+	numColsLoop   = max(1, numCols)
 	numLayersLoop = max(1, numLayers)
 	numChunksLoop = max(1, numChunks)
 
@@ -3025,7 +3025,7 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 						seps += rowSep
 					endif
 
-					list += seps + entry
+					list  += seps + entry
 					count += 1
 				endfor
 
@@ -3088,7 +3088,7 @@ End
 /// '_free_'[0][0][0][2]= {"6","","",""}
 /// '_free_'[0][0][1][2]= {"","","",""}
 threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, chuSep])
-	string list
+	string   list
 	variable dims
 	string rowSep, colSep, laySep, chuSep
 
@@ -3261,7 +3261,7 @@ End
 
 /// @brief Returns the column from a multidimensional wave using the dimlabel
 Function/WAVE GetColfromWavewithDimLabel(wv, dimLabel)
-	WAVE wv
+	WAVE   wv
 	string dimLabel
 
 	variable column = FindDimLabel(wv, COLS, dimLabel)
@@ -3271,7 +3271,7 @@ Function/WAVE GetColfromWavewithDimLabel(wv, dimLabel)
 End
 
 /// @brief Turn a persistent wave into a free wave
-Function/Wave MakeWaveFree(wv)
+Function/WAVE MakeWaveFree(wv)
 	WAVE wv
 
 	DFREF dfr = NewFreeDataFolder()
@@ -3288,12 +3288,12 @@ End
 /// @param dim      Wave dimension, see, @ref WaveDimensions
 /// @param startPos [optional, defaults to 0] First dimLabel index
 threadsafe Function SetDimensionLabels(wv, list, dim, [startPos])
-	WAVE wv
-	string list
+	WAVE     wv
+	string   list
 	variable dim
 	variable startPos
 
-	string labelName
+	string   labelName
 	variable i
 	variable dimlabelCount = ItemsInlist(list)
 
@@ -3303,7 +3303,7 @@ threadsafe Function SetDimensionLabels(wv, list, dim, [startPos])
 
 	ASSERT_TS(startPos >= 0, "Illegal negative startPos")
 	ASSERT_TS(dimlabelCount <= DimSize(wv, dim) + startPos, "Dimension label count exceeds dimension size")
-	for(i = 0; i < dimlabelCount;i += 1)
+	for(i = 0; i < dimlabelCount; i += 1)
 		labelName = StringFromList(i, list)
 		SetDimLabel dim, i + startPos, $labelName, Wv
 	endfor
@@ -3378,7 +3378,7 @@ Function ListHasOnlyOneUniqueEntry(list, [sep])
 	numElements = ItemsInList(list, sep)
 
 	if(numElements <= 1)
-		return	1
+		return 1
 	endif
 
 	refElement = StringFromList(0, list, sep)
@@ -3410,7 +3410,7 @@ End
 ///          number of elements. Returns -1 instead of `*` or ``. An invalid
 ///          wave reference is returned on parsing errors.
 Function/WAVE ExtractFromSubrange(listOfRanges, dim)
-	string listOfRanges
+	string   listOfRanges
 	variable dim
 
 	variable numElements, i, start, stop, step
@@ -3461,7 +3461,7 @@ Function/WAVE ExtractFromSubrange(listOfRanges, dim)
 					ranges[i][2] = 1
 				endif
 			elseif(V_Flag == 3) // case 6
-				stop = str2num(stopStr) // case 5
+				stop         = str2num(stopStr)           // case 5
 				ranges[i][0] = start
 				ranges[i][1] = IsFinite(stop) ? stop : -1
 				ranges[i][2] = step
@@ -3486,7 +3486,7 @@ threadsafe Function FindNextPower(a, p)
 	ASSERT_TS(a > 0, "Invalid value")
 	ASSERT_TS(IsInteger(a), "Value has to be an integer")
 
-	return ceil(log(a)/log(p))
+	return ceil(log(a) / log(p))
 End
 
 /// @brief Find an integer `x` which is smaller than `a` but the
@@ -3501,7 +3501,7 @@ Function FindPreviousPower(a, p)
 	ASSERT(a > 0, "Invalid value")
 	ASSERT(IsInteger(a), "Value has to be an integer")
 
-	return floor(log(a)/log(p))
+	return floor(log(a) / log(p))
 End
 
 /// @brief Return a wave with deep copies of all referenced waves
@@ -3565,7 +3565,7 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 					Duplicate/FREE/R=[][][][index] srcWave, dstWave
 					break
 			endswitch
-			ReduceWaveDimensionality(dstWave, minDimension=dimension)
+			ReduceWaveDimensionality(dstWave, minDimension = dimension)
 		endif
 
 		dst[i] = dstWave
@@ -3599,7 +3599,7 @@ threadsafe Function ReduceWaveDimensionality(WAVE/Z wv, [variable minDimension])
 	for(i = MAX_DIMENSION_COUNT - 1; i >= minDimension; i -= 1)
 		if(waveSize[i] == 1)
 			waveSize[i] = 0
-			shrink = 1
+			shrink      = 1
 		elseif(waveSize[i] > 1)
 			break
 		endif
@@ -3679,10 +3679,10 @@ End
 Function/S GetSystemUserName()
 
 	variable numElements
-	string path
+	string   path
 
 	// example: C:Users:thomas:AppData:Roaming:WaveMetrics:Igor Pro 7:Packages:
-	path = SpecialDirPath("Packages", 0, 0, 0)
+	path        = SpecialDirPath("Packages", 0, 0, 0)
 	numElements = ItemsInList(path, ":")
 	ASSERT(numElements > 3, "Unexpected format")
 
@@ -3701,9 +3701,9 @@ Function GetAlignment(val)
 
 	variable i
 
-	for(i=1; i < 64; i+= 1)
+	for(i = 1; i < 64; i += 1)
 		if(mod(val, 2^i) != 0)
-			return 2^(i-1)
+			return 2^(i - 1)
 		endif
 	endfor
 End
@@ -3747,7 +3747,7 @@ End
 threadsafe Function/WAVE GetSetUnion(WAVE wave1, WAVE wave2)
 	variable type, wave1Points, wave2Points, totalPoints
 
-	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                   \
+	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                  \
 	          || (IsTextWave(wave1) && IsTextWave(wave2)), "Invalid wave type")
 
 	type = WaveType(wave1)
@@ -3780,7 +3780,7 @@ threadsafe Function/WAVE GetSetUnion(WAVE wave1, WAVE wave2)
 		endif
 
 		if(wave2Points > 0)
-			Multithread/NT=(totalPoints < 1024) resultText[wave1Points, inf] = wave2Text[p - wave1Points]
+			Multithread/NT=(totalPoints < 1024) resultText[wave1Points, Inf] = wave2Text[p - wave1Points]
 		endif
 
 		WAVE result = resultText
@@ -3877,8 +3877,8 @@ threadsafe Function/WAVE GetSetIntersection(wave1, wave2)
 	variable i, j, longWaveRow
 	string strEntry
 
-	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                   \
-	       || (IsTextWave(wave1) && IsTextWave(wave2)), "Invalid wave type")
+	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                  \
+	          || (IsTextWave(wave1) && IsTextWave(wave2)), "Invalid wave type")
 
 	type = WaveType(wave1)
 	ASSERT_TS(type == WaveType(wave2), "Wave type mismatch")
@@ -3910,11 +3910,11 @@ threadsafe Function/WAVE GetSetIntersection(wave1, wave2)
 	Make/FREE/N=(shortRows)/Y=(type) resultWave
 
 	if(type == 0)
-		WAVE/T shortWaveText = shortWave
-		WAVE/T longWaveText  = longWave
+		WAVE/T shortWaveText  = shortWave
+		WAVE/T longWaveText   = longWave
 		WAVE/T resultWaveText = resultWave
 		for(i = 0; i < shortRows; i += 1)
-			strEntry = shortWaveText[i]
+			strEntry    = shortWaveText[i]
 			longWaveRow = BinarySearchText(longWave, strEntry, caseSensitive = 1)
 			if(longWaveRow >= 0 && !cmpstr(longWaveText[longWaveRow], strEntry))
 				resultWaveText[j++] = strEntry
@@ -3922,7 +3922,7 @@ threadsafe Function/WAVE GetSetIntersection(wave1, wave2)
 		endfor
 	else
 		for(i = 0; i < shortRows; i += 1)
-			entry = shortWave[i]
+			entry       = shortWave[i]
 			longWaveRow = BinarySearch(longWave, entry)
 			if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
 				resultWave[j++] = entry
@@ -3998,7 +3998,7 @@ End
 /// @param graph graph
 /// @param axisOrientation One of @ref AxisOrientationConstants
 Function/S GetAllAxesWithOrientation(graph, axisOrientation)
-	string graph
+	string   graph
 	variable axisOrientation
 
 	string axList, axis
@@ -4012,7 +4012,7 @@ Function/S GetAllAxesWithOrientation(graph, axisOrientation)
 		axis = StringFromList(i, axList)
 
 		if(axisOrientation & GetAxisOrientation(graph, axis))
-			list = AddListItem(axis, list, ";", inf)
+			list = AddListItem(axis, list, ";", Inf)
 		endif
 	endfor
 
@@ -4026,9 +4026,9 @@ End
 /// @param listChar empty, `{` or `(` depending on keyword style
 /// @param item     return the given element from the extracted list
 Function GetNumFromModifyStr(info, key, listChar, item)
-	string info
-	string key
-	string listChar
+	string   info
+	string   key
+	string   listChar
 	variable item
 
 	string list, escapedListChar, regexp
@@ -4295,7 +4295,7 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsFreeWave(wv)
-	Wave wv
+	WAVE wv
 
 	return WaveType(wv, 2) == 2
 End
@@ -4344,7 +4344,7 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function HasOneValidEntry(WAVE wv)
 
-	string str
+	string   str
 	variable val
 
 	ASSERT_TS(numpnts(wv) > 0, "Expected non-empty wave")
@@ -4382,7 +4382,7 @@ Function/WAVE MergeTwoWaves(wv1, wv2)
 	Make/FREE/Y=(WaveType(wv1)) result = NaN
 
 	numEntries = DimSize(wv1, ROWS)
-	for(i = 0; i < numEntries; i +=1)
+	for(i = 0; i < numEntries; i += 1)
 
 		validEntryOne = IsFinite(wv1[i])
 		validEntryTwo = IsFinite(wv2[i])
@@ -4445,7 +4445,7 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function AssertOnAndClearRTError()
 
-	string msg
+	string   msg
 	variable err
 
 	msg = GetRTErrMessage()
@@ -4521,7 +4521,7 @@ End
 /// @brief Adapt the wave lock status on the wave and its contained waves
 threadsafe Function ChangeWaveLock(wv, val)
 	WAVE/WAVE wv
-	variable val
+	variable  val
 
 	variable numEntries, i
 
@@ -4673,7 +4673,7 @@ Function IsWindows10()
 	string info, os
 
 	info = IgorInfo(3)
-	os = StringByKey("OS", info)
+	os   = StringByKey("OS", info)
 	return GrepString(os, "^(Microsoft )?Windows 10 ")
 End
 
@@ -4711,19 +4711,19 @@ Function StoreElapsedTime(referenceTime)
 	WAVE/D elapsedTime = GetElapsedTimeWave()
 
 	count = GetNumberFromWaveNote(elapsedTime, NOTE_INDEX)
-	EnsureLargeEnoughWave(elapsedTime, indexShouldExist=count, initialValue = NaN)
+	EnsureLargeEnoughWave(elapsedTime, indexShouldExist = count, initialValue = NaN)
 
-	elapsed = GetElapsedTime(referenceTime)
+	elapsed            = GetElapsedTime(referenceTime)
 	elapsedTime[count] = elapsed
 	SetNumberInWaveNote(elapsedTime, NOTE_INDEX, count + 1)
 
-	DEBUGPRINT("timestamp: ", var=elapsed)
+	DEBUGPRINT("timestamp: ", var = elapsed)
 
 	return elapsed
 End
 
 Function GetPlotArea(win, s)
-	string win
+	string        win
 	STRUCT RectD &s
 
 	InitRectD(s)
@@ -4745,7 +4745,7 @@ End
 /// @param diskPath          path on disk to check
 /// @param requiredFreeSpace required free space in GB
 Function HasEnoughDiskspaceFree(diskPath, requiredFreeSpace)
-	string diskPath
+	string   diskPath
 	variable requiredFreeSpace
 
 	variable leftOverBytes
@@ -4776,7 +4776,7 @@ threadsafe static Function/WAVE FindLevelsMult(WAVE data, variable level, variab
 
 	Make/FREE/D/N=0 levels
 	FindLevels/Q/DEST=levels/EDGE=(edge)/R=[first, last]/N=(maxNumLevels) data, level
-	found = V_flag != 2
+	found     = V_flag != 2
 	numLevels = found ? DimSize(levels, ROWS) : 0
 
 	Redimension/N=(numLevels) levels
@@ -4812,11 +4812,11 @@ threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable ed
 	variable numCols, numColsFixed, numRows, numLayers, xDelta, maxLevels, numLevels
 	variable first, last, i, xLevel, found, columnOffset
 
-	numCols = DimSize(data, COLS)
-	numRows = DimSize(data, ROWS)
-	numLayers = DimSize(data, LAYERS)
+	numCols      = DimSize(data, COLS)
+	numRows      = DimSize(data, ROWS)
+	numLayers    = DimSize(data, LAYERS)
 	numColsFixed = max(1, numCols)
-	xDelta = DimDelta(data, ROWS)
+	xDelta       = DimDelta(data, ROWS)
 
 	if(ParamIsDefault(maxNumLevels))
 		maxNumLevels = numRows
@@ -4903,7 +4903,7 @@ End
 /// @param[out] savedFileName [optional, default = ""] file name of the saved file
 /// @param[in] showDialogOnOverwrite [optional, default = 0] opens save file dialog, if the current fileName would cause an overwrite, to allow user to change fileName
 /// @returns NaN if file open dialog was aborted or an error was encountered, 0 otherwise
-Function SaveTextFile(data, fileName,[ fileFilter, message, savedFileName, showDialogOnOverwrite])
+Function SaveTextFile(data, fileName, [fileFilter, message, savedFileName, showDialogOnOverwrite])
 	string data, fileName, fileFilter, message, &savedFileName
 	variable showDialogOnOverwrite
 
@@ -4916,8 +4916,8 @@ Function SaveTextFile(data, fileName,[ fileFilter, message, savedFileName, showD
 #ifdef AUTOMATED_TESTING
 	string S_fileName = fileName
 #else
-	showDialogOnOverwrite = ParamIsDefault(showDialogOnOverwrite) ? 0: !!showDialogOnOverwrite
-	dialogCode = showDialogOnOverwrite && FileExists(fileName) ? 1 : 2
+	showDialogOnOverwrite = ParamIsDefault(showDialogOnOverwrite) ? 0 : !!showDialogOnOverwrite
+	dialogCode            = showDialogOnOverwrite && FileExists(fileName) ? 1 : 2
 	if(ParamIsDefault(fileFilter) && ParamIsDefault(message))
 		Open/D=(dialogCode) fnum as fileName
 	elseif(ParamIsDefault(fileFilter) && !ParamIsDefault(message))
@@ -4998,7 +4998,7 @@ Function/WAVE LoadTextFileToWave(string fullFilePath, string sep)
 	DFREF saveDFR = GetDataFolderDFR()
 	SetDataFolder NewFreeDataFolder()
 
-	LoadWave/Q/H/A/J/K=2/V={sep, "", 0, loadFlags} fullFilePath; err=GetRTError(1)
+	LoadWave/Q/H/A/J/K=2/V={sep, "", 0, loadFlags} fullFilePath; err = GetRTError(1)
 	if(!V_flag)
 		SetDataFolder saveDFR
 		return $""
@@ -5047,7 +5047,7 @@ threadsafe Function RemoveTextWaveEntry1D(WAVE/T w, string entry, [variable opti
 			DeletePoints V_Value, 1, w
 
 			if(all)
-				start = V_Value
+				start     = V_Value
 				foundOnce = 1
 				continue
 			endif
@@ -5234,7 +5234,7 @@ Function ScaleToIndexWrapper(wv, scale, dim)
 	if(IsFinite(scale))
 		index = ScaleToIndex(wv, scale, dim)
 	else
-		index = sign(scale) * sign(DimDelta(wv, dim)) * inf
+		index = sign(scale) * sign(DimDelta(wv, dim)) * Inf
 	endif
 
 	if(dim >= WaveDims(wv))
@@ -5273,13 +5273,13 @@ End
 
 /// @brief Helper structure for GenerateRFC4122UUID()
 static Structure Uuid
-	uint32  time_low
-	uint16  time_mid
-	uint16  time_hi_and_version
-	uint16  clock_seq
-	uint16  node0
-	uint16  node1
-	uint16  node2
+	uint32 time_low
+	uint16 time_mid
+	uint16 time_hi_and_version
+	uint16 clock_seq
+	uint16 node0
+	uint16 node1
+	uint16 node2
 EndStructure
 
 /// @brief Generate a version 4 UUID according to https://tools.ietf.org/html/rfc4122
@@ -5373,21 +5373,21 @@ threadsafe Function/S GenerateRFC4122UUID()
 	string str, randomness
 	STRUCT Uuid uu
 
-	randomness = Hash(num2strHighPrec(GetReproducibleRandom(), precision=15), 1)
+	randomness = Hash(num2strHighPrec(GetReproducibleRandom(), precision = 15), 1)
 
 	WAVE binary = HexToBinary(randomness)
 
-	uu.time_low = binary[0] | (binary[1] << 8) | (binary[2] << 16) | (binary[3] << 24)
-	uu.time_mid = binary[4] | (binary[5] << 8)
+	uu.time_low            = binary[0] | (binary[1] << 8) | (binary[2] << 16) | (binary[3] << 24)
+	uu.time_mid            = binary[4] | (binary[5] << 8)
 	uu.time_hi_and_version = binary[6] | (binary[7] << 8)
-	uu.clock_seq = binary[8] | (binary[9] << 8)
+	uu.clock_seq           = binary[8] | (binary[9] << 8)
 
 	uu.node0 = binary[10] | (binary[11] << 8)
 	uu.node1 = binary[12] | (binary[13] << 8)
 	uu.node2 = binary[14] | (binary[15] << 8)
 
 	// set the version
-	uu.clock_seq = (uu.clock_seq & 0x3FFF) | 0x8000
+	uu.clock_seq           = (uu.clock_seq & 0x3FFF) | 0x8000
 	uu.time_hi_and_version = (uu.time_hi_and_version & 0x0FFF) | 0x4000
 
 	sprintf str, "%8.8x-%4.4x-%4.4x-%4.4x-%4.4x%4.4x%4.4x", uu.time_low, uu.time_mid, uu.time_hi_and_version, uu.clock_seq, uu.node0, uu.node1, uu.node2
@@ -5419,7 +5419,7 @@ threadsafe Function/S NumberToHex(var)
 
 	string str
 
-	ASSERT_TS(IsInteger(var) && var >= 0 && var < 256 , "Invalid input")
+	ASSERT_TS(IsInteger(var) && var >= 0 && var < 256, "Invalid input")
 
 	sprintf str, "%02x", var
 
@@ -5456,7 +5456,7 @@ Function/S ConvertListToRegexpWithAlternations(list)
 
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
-		regexpList = AddListItem("\\Q" + StringFromList(i, list) + "\\E", regexpList, "|", inf)
+		regexpList = AddListItem("\\Q" + StringFromList(i, list) + "\\E", regexpList, "|", Inf)
 	endfor
 
 	regexpList = "(?:" + RemoveEnding(regexpList, "|") + ")"
@@ -5688,7 +5688,7 @@ threadsafe Function/S WaveText(WAVE/Z w, [variable row, variable col, variable l
 End
 
 /// @brief Grep the given regular expression in the text wave
-Function/WAVE GrepTextWave(Wave/T in, string regexp, [variable invert])
+Function/WAVE GrepTextWave(WAVE/T in, string regexp, [variable invert])
 
 	if(ParamIsDefault(invert))
 		invert = 0
@@ -5750,7 +5750,7 @@ Function [WAVE/D start, WAVE/D stop] DistributeElements(variable numElements, [v
 	Make/FREE/D/N=(numElements) start, stop
 
 	start[] = limit(offset + p * (elementLength + spacing), 0.0, 1.0)
-	stop[] = limit(start[p] + elementLength, 0.0, 1.0)
+	stop[]  = limit(start[p] + elementLength, 0.0, 1.0)
 
 	return [start, stop]
 End
@@ -5758,11 +5758,11 @@ End
 /// @brief Calculate a nice length which is an integer number of `multiple` long
 ///
 /// For small values @f$ 10^{-x} @f$ times `multiple` are returned
-Function CalculateNiceLength(variable range , variable multiple)
+Function CalculateNiceLength(variable range, variable multiple)
 
 	variable div, numDigits
 
-	div = range / multiple
+	div       = range / multiple
 	numDigits = log(div)
 
 	if(numDigits > 0)
@@ -5838,7 +5838,7 @@ threadsafe Function IsConstant(WAVE wv, variable val, [variable ignoreNaN])
 		endif
 	elseif(V_numNans > 0)
 		// we have some NaNs
-		 if(!ignoreNaN)
+		if(!ignoreNaN)
 			// and don't ignore them, this is always false
 			return 0
 		endif
@@ -5859,7 +5859,7 @@ Function/S SanitizeFilename(string name)
 
 	ASSERT(numChars > 0, "name can not be empty")
 
-	result	 = ""
+	result = ""
 	regexp = "^[A-Za-z_\-0-9\.]+$"
 
 	for(i = 0; i < numChars; i += 1)
@@ -5892,7 +5892,7 @@ Function/S MergeLists(string l1, string l2, [string sep])
 	for(i = 0; i < numL1; i += 1)
 		item = StringFromList(i, l1, sep)
 		if(WhichListItem(item, l2, sep) == -1)
-			l2 = AddListItem(item, l2, sep, inf)
+			l2 = AddListItem(item, l2, sep, Inf)
 		endif
 	endfor
 
@@ -5900,7 +5900,7 @@ Function/S MergeLists(string l1, string l2, [string sep])
 End
 
 /// @brief Duplicates the input wave to a free wave and returns the free wave reference.
-threadsafe Function/WAVE DuplicateWaveToFree(Wave w)
+threadsafe Function/WAVE DuplicateWaveToFree(WAVE w)
 
 	Duplicate/FREE w, wFree
 
@@ -5930,8 +5930,8 @@ End
 /// From https://www.wavemetrics.com/code-snippet/binary-search-pre-sorted-text-waves by Jamie Boyd
 /// Completely reworked, fixed and removed unused features
 threadsafe Function BinarySearchText(WAVE/T theWave, string theText, [variable caseSensitive, variable startPos, variable endPos])
-	variable iPos // the point to be compared
-	variable theCmp // the result of the comparison
+	variable iPos    // the point to be compared
+	variable theCmp  // the result of the comparison
 	variable firstPt
 	variable lastPt
 	variable i
@@ -5970,26 +5970,26 @@ threadsafe Function BinarySearchText(WAVE/T theWave, string theText, [variable c
 	firstPt = startPos
 	lastPt  = endPos
 
-	for(i = 0; firstPt <= lastPt; i +=1)
-		iPos = trunc((firstPt + lastPt) / 2)
+	for(i = 0; firstPt <= lastPt; i += 1)
+		iPos   = trunc((firstPt + lastPt) / 2)
 		theCmp = cmpstr(thetext, theWave[iPos], caseSensitive)
 
-		if(theCmp ==0) //thetext is the same as theWave [iPos]
-			if((iPos == startPos) || (cmpstr(theText, theWave[iPos -1], caseSensitive) == 1))
+		if(theCmp == 0) //thetext is the same as theWave [iPos]
+			if((iPos == startPos) || (cmpstr(theText, theWave[iPos - 1], caseSensitive) == 1))
 				// then iPos is the first occurence of thetext in theWave from startPos to endPos
 				return iPos
 			else //  there are more copies of theText in theWave before iPos
-				lastPt = iPos-1
+				lastPt = iPos - 1
 			endif
-		elseif (theCmp == 1) //thetext is alphabetically after theWave [iPos]
-			firstPt = iPos +1
+		elseif(theCmp == 1) //thetext is alphabetically after theWave [iPos]
+			firstPt = iPos + 1
 		else // thetext is alphabetically before theWave [iPos]
-			lastPt = iPos -1
+			lastPt = iPos - 1
 		endif
 	endfor
 
 	return NaN
-end
+End
 
 /// @brief Returns a hex string which is unique for the given Igor Pro session
 ///
@@ -6011,9 +6011,9 @@ Function RenameDataFolderToUniqueName(string path, string suffix)
 	endif
 
 	DFREF dfr = $path
-	name = GetFile(path)
+	name   = GetFile(path)
 	folder = UniqueDataFolderName($path + "::", name + suffix)
-	name = GetFile(folder)
+	name   = GetFile(folder)
 	RenameDataFolder $path, $name
 	ASSERT_TS(!DataFolderExists(path), "Could not move it of the way.")
 	ASSERT_TS(DataFolderExists(folder), "Could not create it in the correct place.")
@@ -6063,7 +6063,7 @@ Function/S ElideText(string str, variable returnLength)
 		return str
 	endif
 
-	suffix = "..."
+	suffix       = "..."
 	suffixLength = strlen(suffix)
 
 	ASSERT(returnLength > suffixLength, "Invalid return length")
@@ -6125,7 +6125,7 @@ Function GenerateMultiplierConstants()
 	string str
 
 	WAVE/T prefixes = ListToTextWave(PREFIX_LONG_LIST, ";")
-	WAVE/D values = ListToNumericWave(PREFIX_VALUE_LIST, ";")
+	WAVE/D values   = ListToNumericWave(PREFIX_VALUE_LIST, ";")
 
 	numElements = DimSize(prefixes, ROWS)
 	ASSERT(DimSize(values, ROWS) == numElements, "Non matching list sizes")
@@ -6135,7 +6135,7 @@ Function GenerateMultiplierConstants()
 
 	for(i = 0; i < numElements; i += 1)
 		for(j = 0; j < numElements; j += 1)
-			if( i == j)
+			if(i == j)
 				continue
 			endif
 
@@ -6207,7 +6207,7 @@ Function/S CompressNumericalList(string list, string sepChar)
 
 	variable i, nextEntry, entry, nextEntryMinusOne, numItems
 	variable firstConsecutiveEntry = NaN
-	string resultList = ""
+	string   resultList            = ""
 
 	ASSERT(!IsEmpty(sepChar), "Seperation character is empty.")
 
@@ -6215,7 +6215,7 @@ Function/S CompressNumericalList(string list, string sepChar)
 		return ""
 	endif
 
-	list = SortList(list, sepChar, 2)
+	list     = SortList(list, sepChar, 2)
 	numItems = ItemsInList(list, sepChar)
 
 	for(i = 0; i < numItems; i += 1)
@@ -6236,17 +6236,17 @@ Function/S CompressNumericalList(string list, string sepChar)
 
 		// different entries and no range in progress
 		if(entry != nextEntryMinusOne && IsNaN(firstConsecutiveEntry))
-			resultList = AddListItem(num2istr(entry), resultList, sepChar, inf)
+			resultList = AddListItem(num2istr(entry), resultList, sepChar, Inf)
 			// different entries but we have to finalize the last range
 		elseif(entry != nextEntryMinusOne && !IsNaN(firstConsecutiveEntry))
-			resultList	+= "-" + num2istr(entry) + sepChar
+			resultList           += "-" + num2istr(entry) + sepChar
 			firstConsecutiveEntry = NaN
 			// same entries and we have to start a range
 		elseif(entry == nextEntryMinusOne && IsNaN(firstConsecutiveEntry))
-			resultList += num2istr(entry)
+			resultList           += num2istr(entry)
 			firstConsecutiveEntry = entry
-		// else
-		// same entries and a range is in progress
+			// else
+			// same entries and a range is in progress
 		endif
 	endfor
 
@@ -6356,9 +6356,9 @@ Function/WAVE JSONToWave(string str, [string path])
 	newSizes[0, DimSize(dimSizes, ROWS) - 1] = dimSizes[p]
 	Redimension/N=(newSizes[0], newSizes[1], newSizes[2], newSizes[3]) data
 
-	WAVE/D/Z dimDeltas = JSON_GetWave(jsonID, path + "/dimension/delta", waveMode = 1, ignoreErr = 1)
+	WAVE/D/Z dimDeltas  = JSON_GetWave(jsonID, path + "/dimension/delta", waveMode = 1, ignoreErr = 1)
 	WAVE/D/Z dimOffsets = JSON_GetWave(jsonID, path + "/dimension/offset", waveMode = 1, ignoreErr = 1)
-	WAVE/T/Z dimUnits = JSON_GetTextWave(jsonID, path + "/dimension/unit", ignoreErr = 1)
+	WAVE/T/Z dimUnits   = JSON_GetTextWave(jsonID, path + "/dimension/unit", ignoreErr = 1)
 
 	if(WaveExists(dimDeltas) || WaveExists(dimOffsets) || WaveExists(dimUnits))
 
@@ -6465,7 +6465,7 @@ Function/S FormatTextWaveForLegend(WAVE/T input)
 
 	variable i, j, numRows, numCols, length
 	variable spacing = 2
-	string str = ""
+	string   str     = ""
 	string line
 
 	numRows = DimSize(input, ROWS)
@@ -6561,7 +6561,7 @@ Function UTF8CharactersInString(string str)
 		numBytesInCharacter = NumBytesInUTF8Character(str, byteOffset)
 		ASSERT(numBytesInCharacter > 0, "Bug in CharactersInUTF8String")
 		numCharacters += 1
-		byteOffset += numBytesInCharacter
+		byteOffset    += numBytesInCharacter
 	while(1)
 
 	return numCharacters
@@ -6586,8 +6586,8 @@ Function/S UTF8CharacterAtPosition(string str, variable charPos)
 			break
 		endif
 		numBytesInCharacter = NumBytesInUTF8Character(str, byteOffset)
-		byteOffset += numBytesInCharacter
-		charPos -= 1
+		byteOffset         += numBytesInCharacter
+		charPos            -= 1
 	while(1)
 
 	numBytesInCharacter = NumBytesInUTF8Character(str, byteOffset)
@@ -6613,9 +6613,9 @@ Function/WAVE UTF8StringToTextWave(string str)
 		endif
 
 		numBytesInCharacter = NumBytesInUTF8Character(str, byteOffset)
-		wv[charPos] = str[byteOffset, byteOffset + numBytesInCharacter - 1]
-		charPos += 1
-		byteOffset += numBytesInCharacter
+		wv[charPos]         = str[byteOffset, byteOffset + numBytesInCharacter - 1]
+		charPos            += 1
+		byteOffset         += numBytesInCharacter
 	while(1)
 	Redimension/N=(charPos) wv
 
@@ -6650,7 +6650,7 @@ Function RefCounterDFDecrease(DFREF dfr)
 	rc -= 1
 
 	if(rc == 0)
-		KillOrMoveToTrash(dfr=dfr)
+		KillOrMoveToTrash(dfr = dfr)
 	endif
 End
 
@@ -6659,7 +6659,7 @@ Function UpdateInfoButtonHelp(string win, string ctrl, string content)
 
 	string htmlStr = "<pre>" + content + "</pre>"
 
-	Button $ctrl, win=$win,help={htmlStr},userdata=content
+	Button $ctrl, win=$win, help={htmlStr}, userdata=content
 End
 
 /// @brief Acts like the `limit` builtin but replaces values outside the valid range instead of clipping them
@@ -6690,10 +6690,10 @@ Function/WAVE SplitLogDataBySize(WAVE/T logData, string sep, variable lim, [vari
 	variable lineCnt, sepLen, i, size, elemSize
 	variable first, sizeLimit, resultCnt
 
-	lineCnt = DimSize(logData, ROWS)
+	lineCnt       = DimSize(logData, ROWS)
 	firstPartSize = ParamIsDefault(firstPartSize) ? lim : firstPartSize
-	lastIndex = ParamIsDefault(lastIndex) ? lineCnt - 1 : limit(lastIndex, 0, lineCnt - 1)
-	sepLen = strlen(sep)
+	lastIndex     = ParamIsDefault(lastIndex) ? lineCnt - 1 : limit(lastIndex, 0, lineCnt - 1)
+	sepLen        = strlen(sep)
 	Make/FREE/D/N=(lastIndex + 1) logSizes
 	MultiThread logSizes[0, lastIndex] = strlen(logData[p])
 
@@ -6707,20 +6707,20 @@ Function/WAVE SplitLogDataBySize(WAVE/T logData, string sep, variable lim, [vari
 		if(size > sizeLimit)
 
 			Duplicate/FREE/T/RMD=[first, i - 1] logData, logPart
-			EnsureLargeEnoughWave(result, indexShouldExist=resultCnt)
+			EnsureLargeEnoughWave(result, indexShouldExist = resultCnt)
 			result[resultCnt] = logPart
-			resultCnt += 1
+			resultCnt        += 1
 
 			sizeLimit = lim
-			first = i
-			size = elemSize
+			first     = i
+			size      = elemSize
 		endif
 	endfor
 
 	Duplicate/FREE/T/RMD=[first, i - 1] logData, logPart
-	EnsureLargeEnoughWave(result, indexShouldExist=resultCnt)
+	EnsureLargeEnoughWave(result, indexShouldExist = resultCnt)
 	result[resultCnt] = logPart
-	resultCnt += 1
+	resultCnt        += 1
 
 	Redimension/N=(resultCnt) result
 
@@ -6773,7 +6773,7 @@ End
 threadsafe Function FindRightMostHighBit(uint64 value)
 
 	variable i
-	uint64 bit
+	uint64   bit
 
 	for(i = 0; i < 64; i += 1)
 
@@ -6824,7 +6824,7 @@ Function/WAVE ZapNullRefs(WAVE/WAVE input)
 		endif
 
 		result[idx] = wv
-		idx += 1
+		idx        += 1
 	endfor
 
 	if(!idx)
@@ -6955,7 +6955,7 @@ threadsafe Function FindFirstNaNIndex(WAVE wv)
 
 	ASSERT_TS(IsFloatingPointWave(wv), "input wave must be floating point")
 
-	FindValue/FNAN  wv
+	FindValue/FNAN wv
 	if(V_row < 0)
 		return NaN
 	endif

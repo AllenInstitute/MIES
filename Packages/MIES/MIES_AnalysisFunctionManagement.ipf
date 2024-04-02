@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -13,35 +13,35 @@
 ///
 /// @return Valid analysis function return types, zero otherwise, see also @ref AnalysisFunctionReturnTypes
 Function AFM_CallAnalysisFunctions(device, eventType)
-	string device
+	string   device
 	variable eventType
 
 	variable i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet
 	variable realDataLengthAD, realDataLengthDA, sweepNo, fifoPositionAD, fifoPositionDA, sampleIntDA, sampleIntAD
 	string func, msg
-	struct AnalysisFunction_V3 s
+	STRUCT AnalysisFunction_V3 s
 
 	if(DAG_GetNumericalValue(device, "Check_Settings_SkipAnalysFuncs"))
 		return 0
 	endif
 
-	NVAR count = $GetCount(device)
-	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
-	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	WAVE setEventFlag = GetSetEventFlag(device)
+	NVAR   count        = $GetCount(device)
+	WAVE   statusHS     = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	WAVE/T allSetNames  = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	WAVE   setEventFlag = GetSetEventFlag(device)
 
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(device)
 
 	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_CONFIG_EVENT)
 		realDataLengthAD = NaN
 		realDataLengthDA = NaN
-		fifoPositionAD = NaN
-		fifoPositionDA = NaN
+		fifoPositionAD   = NaN
+		fifoPositionDA   = NaN
 	else
 		realDataLengthAD = HW_GetEffectiveADCWaveLength(device, DATA_ACQUISITION_MODE)
 		realDataLengthDA = HW_GetEffectiveDACWaveLength(device, DATA_ACQUISITION_MODE)
-		fifoPositionAD = ROVar(GetFifoPosition(device))
-		fifoPositionDA = HW_GetDAFifoPosition(device, DATA_ACQUISITION_MODE)
+		fifoPositionAD   = ROVar(GetFifoPosition(device))
+		fifoPositionDA   = HW_GetDAFifoPosition(device, DATA_ACQUISITION_MODE)
 	endif
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -67,7 +67,7 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 			continue
 		endif
 
-		if((eventType == PRE_SET_EVENT && !setEventFlag[DAC][%PRE_SET_EVENT]) \
+		if((eventType == PRE_SET_EVENT && !setEventFlag[DAC][%PRE_SET_EVENT])     \
 		   || (eventType == POST_SET_EVENT && !setEventFlag[DAC][%POST_SET_EVENT]))
 			sprintf msg, "Skipping event \"%s\" on headstage %d", StringFromList(eventType, EVENT_NAME_LIST), i
 			DEBUGPRINT(msg)
@@ -147,8 +147,8 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 					ChangeWaveLock(dataWave, 1)
 				endif
 
-				s.eventType           = eventType
-				WAVE/Z s.scaledDACWave  = dataWave
+				s.eventType = eventType
+				WAVE/Z s.scaledDACWave = dataWave
 				s.headstage           = i
 				s.lastValidRowIndexAD = realDataLengthAD - 1
 				s.lastKnownRowIndexAD = fifoPositionAD - 1
@@ -165,7 +165,7 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 				ASSERT(0, "impossible case")
 			endif
 		catch
-			msg   = GetRTErrMessage()
+			msg = GetRTErrMessage()
 			ClearRTError()
 			printf "The analysis function %s aborted with error \"%s\", this is dangerous and must *not* happen!\r", func, msg
 
@@ -210,7 +210,7 @@ Function AFM_UpdateAnalysisFunctionWave(device)
 	variable i, j, DAC
 	string ctrl, setName, possibleFunctions, func
 
-	WAVE statusHS            = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	WAVE   statusHS          = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(device)
 
 	analysisFunctions = ""

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -53,7 +53,7 @@ Function WB_OpenStimulusSetInWaveBuilder()
 		return NaN
 	endif
 
-	sweepNo = str2num(TUD_GetUserData(graph, trace, "sweepNumber"))
+	sweepNo   = str2num(TUD_GetUserData(graph, trace, "sweepNumber"))
 	headstage = str2num(TUD_GetUserData(graph, trace, "headstage"))
 	WAVE/T textualValues = $TUD_GetUserData(graph, trace, "textualValues")
 
@@ -76,12 +76,12 @@ Function WB_OpenStimulusSetInWaveBuilder()
 			return NaN
 		else
 			// we might need to load the stimset
-			WAVE traceWave = $TUD_GetUserData(graph, trace, "fullPath")
+			WAVE  traceWave    = $TUD_GetUserData(graph, trace, "fullPath")
 			DFREF sweepDataDFR = GetWavesDataFolderDFR(traceWave)
 			sbIndex = SB_GetIndexFromSweepDataPath(graph, sweepDataDFR)
 
-			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-			WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+			DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+			WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
 
 			abIndex = SB_TranslateSBMapIndexToABMapIndex(graph, sbIndex)
 			device  = sweepMap[sbIndex][%Device]
@@ -147,9 +147,9 @@ Function WBP_StartupSettings()
 		return NaN
 	endif
 
-	KillOrMoveToTrash(wv=GetSegmentTypeWave())
-	KillOrMoveToTrash(wv=GetWaveBuilderWaveParam())
-	KillOrMoveToTrash(wv=GetWaveBuilderWaveTextParam())
+	KillOrMoveToTrash(wv = GetSegmentTypeWave())
+	KillOrMoveToTrash(wv = GetWaveBuilderWaveParam())
+	KillOrMoveToTrash(wv = GetWaveBuilderWaveTextParam())
 
 	SetPopupMenuIndex(panel, "popup_WaveBuilder_SetList", 0)
 	SetCheckBoxState(panel, "check_PreventUpdate", CHECKBOX_UNSELECTED)
@@ -230,11 +230,11 @@ static Function WBP_AddEpochHLTraces(dfr, epochHLType, epoch, numEpochs)
 	ModifyGraph/W=$waveBuilderGraph hbFill($nameBegin)=5
 	ModifyGraph/W=$waveBuilderGraph mode($nameBegin)=7, toMode($nameBegin)=1
 	ModifyGraph/W=$waveBuilderGraph useNegRGB($nameBegin)=1, usePlusRGB($nameBegin)=1
-	ModifyGraph/W=$waveBuilderGraph plusRGB($nameBegin)=(56576,56576,56576), negRGB($nameBegin)=(56576,56576,56576)
-	ModifyGraph/W=$waveBuilderGraph rgb($nameBegin)=(65535,65535,65535)
+	ModifyGraph/W=$waveBuilderGraph plusRGB($nameBegin)=(56576, 56576, 56576), negRGB($nameBegin)=(56576, 56576, 56576)
+	ModifyGraph/W=$waveBuilderGraph rgb($nameBegin)=(65535, 65535, 65535)
 
 	AppendToGraph/W=$waveBuilderGraph waveEnd
-	ModifyGraph/W=$waveBuilderGraph rgb($nameEnd)=(65535,65535,65535)
+	ModifyGraph/W=$waveBuilderGraph rgb($nameEnd)=(65535, 65535, 65535)
 End
 
 static Function WBP_DisplaySetInPanel()
@@ -283,7 +283,7 @@ static Function WBP_DisplaySetInPanel()
 		trace = NameOfWave(displayData) + "_S" + num2str(i)
 		AppendToGraph/W=$waveBuilderGraph displayData[][i]/TN=$trace
 		[s] = WBP_GetSweepColor(i)
-		ModifyGraph/W=$waveBuilderGraph rgb($trace) = (s.red, s.green, s.blue)
+		ModifyGraph/W=$waveBuilderGraph rgb($trace)=(s.red, s.green, s.blue)
 	endfor
 
 	[minYValue, maxYValue] = WaveMinAndMax(displayData)
@@ -296,8 +296,8 @@ static Function WBP_DisplaySetInPanel()
 	epochHLBeginRight = maxYValue
 	epochHLBeginLeft  = maxYValue
 
-	epochHLEndRight   = min(0, minYValue)
-	epochHLEndLeft    = min(0, minYValue)
+	epochHLEndRight = min(0, minYValue)
+	epochHLEndLeft  = min(0, minYValue)
 
 	SetAxis/W=$waveBuilderGraph/A/E=3 left
 	SetAxesProperties(waveBuilderGraph, axesProps)
@@ -307,14 +307,14 @@ End
 ///
 /// Must be called before the changed settings are written into the parameter waves.
 static Function WBP_UpdateDependentControls(checkBoxCtrl, checked)
-	string checkBoxCtrl
+	string   checkBoxCtrl
 	variable checked
 
 	variable val
 
 	switch(GetTabID(panel, "WBP_WaveType"))
 		case EPOCH_TYPE_PULSE_TRAIN:
-			if(!cmpstr(checkBoxCtrl,"check_SPT_Poisson_P44"))
+			if(!cmpstr(checkBoxCtrl, "check_SPT_Poisson_P44"))
 
 				if(checked)
 					WBP_UpdateControlAndWave("check_SPT_MixedFreq_P41", var = CHECKBOX_UNSELECTED)
@@ -324,19 +324,19 @@ static Function WBP_UpdateDependentControls(checkBoxCtrl, checked)
 						WBP_UpdateControlAndWave("check_SPT_NumPulses_P46", var = !!val)
 					endif
 
-					EnableControls(panel,"check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
+					EnableControls(panel, "check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
 				endif
 
-			elseif(!cmpstr(checkBoxCtrl,"check_SPT_MixedFreq_P41"))
+			elseif(!cmpstr(checkBoxCtrl, "check_SPT_MixedFreq_P41"))
 
 				if(checked)
 					WBP_UpdateControlAndWave("check_SPT_Poisson_P44", var = CHECKBOX_UNSELECTED)
-					val = GetCheckBoxState(panel,"check_SPT_NumPulses_P46")
+					val = GetCheckBoxState(panel, "check_SPT_NumPulses_P46")
 					SetControlUserData(panel, "check_SPT_NumPulses_P46", "old_state", num2str(val))
 					WBP_UpdateControlAndWave("check_SPT_NumPulses_P46", var = CHECKBOX_SELECTED)
-					DisableControls(panel,"check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
+					DisableControls(panel, "check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
 				else
-					EnableControls(panel,"check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
+					EnableControls(panel, "check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
 				endif
 
 			endif
@@ -372,14 +372,14 @@ static Function WBP_UpdatePanelIfAllowed()
 			WBP_CutOffCrossOver()
 			break
 		case EPOCH_TYPE_SIN_COS:
-			if(GetCheckBoxState(panel,"check_Sin_Chirp_P43"))
+			if(GetCheckBoxState(panel, "check_Sin_Chirp_P43"))
 				EnableControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25;SetVar_WB_DeltaMult_P65;popup_WaveBuilder_op_P81;setvar_explDeltaValues_T22")
 			else
 				DisableControls(panel, "SetVar_WaveBuilder_P24;SetVar_WaveBuilder_P25;SetVar_WB_DeltaMult_P65;popup_WaveBuilder_op_P81;setvar_explDeltaValues_T22")
 			endif
 			break
 		case EPOCH_TYPE_PULSE_TRAIN:
-			if(GetCheckBoxState(panel,"check_SPT_NumPulses_P46"))
+			if(GetCheckBoxState(panel, "check_SPT_NumPulses_P46"))
 				DisableControl(panel, "SetVar_WaveBuilder_P0")
 				EnableControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47;SetVar_WB_DeltaMult_P69;popup_WaveBuilder_op_P85;setvar_explDeltaValues_T26")
 			else
@@ -393,14 +393,14 @@ static Function WBP_UpdatePanelIfAllowed()
 				DisableControls(panel, "SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29;SetVar_WB_DeltaMult_P67;popup_WaveBuilder_op_P83;setvar_explDeltaValues_T24;SetVar_WaveBuilder_P30;SetVar_WaveBuilder_P31;SetVar_WB_DeltaMult_P68;popup_WaveBuilder_op_P84;setvar_explDeltaValues_T25")
 			endif
 
-			if(GetCheckBoxState(panel,"check_SPT_Poisson_P44") || GetCheckBoxState(panel,"check_SPT_MixedFreqShuffle_P42"))
+			if(GetCheckBoxState(panel, "check_SPT_Poisson_P44") || GetCheckBoxState(panel, "check_SPT_MixedFreqShuffle_P42"))
 				EnableControls(panel, "check_NewSeedForEachSweep_P49_0;button_NewSeed_P48_0;check_UseEpochSeed_P39_0")
 			else
 				DisableControls(panel, "check_NewSeedForEachSweep_P49_0;button_NewSeed_P48_0;check_UseEpochSeed_P39_0")
 			endif
 
 			maxDuration = WBP_ReturnPulseDurationMax()
-			SetVariable SetVar_WaveBuilder_P8, win=$panel, limits = {0, maxDuration, 0.1}
+			SetVariable SetVar_WaveBuilder_P8, win=$panel, limits={0, maxDuration, 0.1}
 			if(GetSetVariable(panel, "SetVar_WaveBuilder_P8") > maxDuration)
 				SetSetVariable(panel, "SetVar_WaveBuilder_P8", maxDuration)
 			endif
@@ -418,10 +418,10 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	string list, control, data, customWaveName, allControls
 	variable segment, numEntries, i, row
 
-	WAVE WP    = GetWaveBuilderWaveParam()
+	WAVE   WP  = GetWaveBuilderWaveParam()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	segment = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
+	segment     = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
 	allControls = ControlNameList(panel)
 
 	list = GrepList(allControls, WP_CONTROL_REGEXP)
@@ -429,7 +429,7 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, list)
-		row = WBP_ExtractRowNumberFromControl(control)
+		row     = WBP_ExtractRowNumberFromControl(control)
 		ASSERT(IsFinite(row), "Could not find row in: " + control)
 		WBP_SetControl(panel, control, value = WP[row][segment][stimulusType])
 	endfor
@@ -439,7 +439,7 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, list)
-		row = WBP_ExtractRowNumberFromControl(control)
+		row     = WBP_ExtractRowNumberFromControl(control)
 		ASSERT(IsFinite(row), "Could not find row in: " + control)
 
 		if(GrepString(control, SEGWVTYPE_ALL_CONTROL_REGEXP))
@@ -469,7 +469,7 @@ End
 static Function WBP_SetControl(win, control, [value, str])
 	string win, control
 	variable value
-	string str
+	string   str
 
 	variable controlType
 
@@ -517,7 +517,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 			ST_RemoveStimSet(setWaveToDelete)
 
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
-			PopupMenu popup_WaveBuilder_SetList, win=$panel, mode = 1
+			PopupMenu popup_WaveBuilder_SetList, win=$panel, mode=1
 			break
 	endswitch
 
@@ -545,7 +545,7 @@ Function WBP_InitialTabHook(tca)
 
 	string type
 	variable tabnum, idx
-	Wave SegWvType = GetSegmentTypeWave()
+	WAVE SegWvType = GetSegmentTypeWave()
 
 	tabnum = tca.tab
 
@@ -600,14 +600,14 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			basename = GetSetVariableString(panel, "setvar_WaveBuilder_baseName")
-			stimulusType = WBP_GetStimulusType()
-			setNumber = GetSetVariable(panel, "setvar_WaveBuilder_SetNumber")
+			basename      = GetSetVariableString(panel, "setvar_WaveBuilder_baseName")
+			stimulusType  = WBP_GetStimulusType()
+			setNumber     = GetSetVariable(panel, "setvar_WaveBuilder_SetNumber")
 			saveAsBuiltin = GetCheckBoxState(panel, "check_allow_saving_builtin_nam")
 
-			WAVE SegWvType = GetSegmentTypeWave()
-			WAVE WP        = GetWaveBuilderWaveParam()
-			WAVE/T WPT     = GetWaveBuilderWaveTextParam()
+			WAVE   SegWvType = GetSegmentTypeWave()
+			WAVE   WP        = GetWaveBuilderWaveParam()
+			WAVE/T WPT       = GetWaveBuilderWaveTextParam()
 
 			setName = WB_SaveStimSet(baseName, stimulusType, SegWvType, WP, WPT, setNumber, saveAsBuiltin)
 
@@ -670,7 +670,7 @@ static Function WBP_ExtractRowNumberFromControl(control)
 		stop = Inf
 	endif
 
-	row = str2num(control[start + 2,stop - 1])
+	row = str2num(control[start + 2, stop - 1])
 	ASSERT(IsFinite(row), "Non finite row")
 
 	return row
@@ -678,9 +678,9 @@ End
 
 /// @brief Update the named control and pass its new value into the parameter wave
 Function WBP_UpdateControlAndWave(control, [var, str])
-	string control
+	string   control
 	variable var
-	string str
+	string   str
 
 	variable stimulusType, epoch, paramRow
 
@@ -752,19 +752,19 @@ static Function WBP_LowPassDeltaLimits()
 	numSweeps = SegWvType[101]
 
 	LowPassCutoff = GetSetVariable(panel, "SetVar_WaveBuilder_P20")
-	LowPassDelta = GetSetVariable(panel, "SetVar_WaveBuilder_P21")
+	LowPassDelta  = GetSetVariable(panel, "SetVar_WaveBuilder_P21")
 
 	if(LowPassDelta > 0)
 		DeltaLimit = trunc(100000 / numSweeps)
-		SetVariable SetVar_WaveBuilder_P21, win=$panel, limits = {-inf, DeltaLimit, 1}
+		SetVariable SetVar_WaveBuilder_P21, win=$panel, limits={-Inf, DeltaLimit, 1}
 		if(LowPassDelta > DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P21", DeltaLimit)
 		endif
 	endif
 
 	if(LowPassDelta < 0)
-		DeltaLimit = trunc(-((LowPassCutOff/numSweeps) -1))
-		SetVariable SetVar_WaveBuilder_P21, win=$panel, limits = {DeltaLimit, 99999, 1}
+		DeltaLimit = trunc(-((LowPassCutOff / numSweeps) - 1))
+		SetVariable SetVar_WaveBuilder_P21, win=$panel, limits={DeltaLimit, 99999, 1}
 		if(LowPassDelta < DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P21", DeltaLimit)
 		endif
@@ -779,11 +779,11 @@ static Function WBP_HighPassDeltaLimits()
 	numSweeps = SegWvType[101]
 
 	HighPassCutoff = GetSetVariable(panel, "SetVar_WaveBuilder_P22")
-	HighPassDelta = GetSetVariable(panel, "SetVar_WaveBuilder_P23")
+	HighPassDelta  = GetSetVariable(panel, "SetVar_WaveBuilder_P23")
 
 	if(HighPassDelta > 0)
 		DeltaLimit = trunc((100000 - HighPassCutOff) / numSweeps) - 1
-		SetVariable SetVar_WaveBuilder_P23, win=$panel, limits = { -inf, DeltaLimit, 1}
+		SetVariable SetVar_WaveBuilder_P23, win=$panel, limits={-Inf, DeltaLimit, 1}
 		if(HighPassDelta > DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P23", DeltaLimit)
 		endif
@@ -791,7 +791,7 @@ static Function WBP_HighPassDeltaLimits()
 
 	if(HighPassDelta < 0)
 		DeltaLimit = trunc(HighPassCutOff / numSweeps) + 1
-		SetVariable SetVar_WaveBuilder_P23, win=$panel, limits = {DeltaLimit, 99999, 1}
+		SetVariable SetVar_WaveBuilder_P23, win=$panel, limits={DeltaLimit, 99999, 1}
 		if(HighPassDelta < DeltaLimit)
 			SetSetVariable(panel, "SetVar_WaveBuilder_P23", DeltaLimit)
 		endif
@@ -801,10 +801,10 @@ End
 static Function WBP_ChangeWaveType()
 
 	variable stimulusType
-	string list
+	string   list
 
 	WAVE SegWvType = GetSegmentTypeWave()
-	WAVE WP = GetWaveBuilderWaveParam()
+	WAVE WP        = GetWaveBuilderWaveParam()
 
 	list  = "SetVar_WaveBuilder_P3;SetVar_WaveBuilder_P4;SetVar_WaveBuilder_P5;"
 	list += "SetVar_WaveBuilder_P4_OD00;SetVar_WaveBuilder_P4_OD01;SetVar_WaveBuilder_P4_OD02;SetVar_WaveBuilder_P4_OD03;SetVar_WaveBuilder_P4_OD04;"
@@ -815,11 +815,11 @@ static Function WBP_ChangeWaveType()
 
 	if(stimulusType == CHANNEL_TYPE_TTL)
 		// recreate SegWvType with its defaults
-		KillOrMoveToTrash(wv=GetSegmentTypeWave())
+		KillOrMoveToTrash(wv = GetSegmentTypeWave())
 
-		WP[1,6][][] = 0
+		WP[1, 6][][] = 0
 
-		SetVariable SetVar_WaveBuilder_P2, win = $panel, limits = {0,1,1}
+		SetVariable SetVar_WaveBuilder_P2, win=$panel, limits={0, 1, 1}
 		DisableControls(panel, list)
 
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P2", var = 0)
@@ -827,7 +827,7 @@ static Function WBP_ChangeWaveType()
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P4", var = 0)
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P5", var = 0)
 	elseif(stimulusType == CHANNEL_TYPE_DAC)
-		SetVariable SetVar_WaveBuilder_P2, win =$panel, limits = {-inf,inf,1}
+		SetVariable SetVar_WaveBuilder_P2, win=$panel, limits={-Inf, Inf, 1}
 		EnableControls(panel, list)
 	else
 		ASSERT(0, "Unknown stimulus type")
@@ -843,7 +843,7 @@ Function WBP_GetStimulusType()
 End
 
 Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
-	STRUCT WMPopupAction& pa
+	STRUCT WMPopupAction &pa
 
 	switch(pa.eventCode)
 		case 2:
@@ -864,7 +864,7 @@ Function/S WBP_GetListOfWaves()
 		searchPattern = S_Value
 	endif
 
-	DFREF dfr = WBP_GetFolderPath()
+	DFREF dfr     = WBP_GetFolderPath()
 	DFREF saveDFR = GetDataFolderDFR()
 	SetDataFolder dfr
 	listOfWaves = NONE + ";" + Wavelist(searchPattern, ";", "TEXT:0,MAXCOLS:1")
@@ -887,10 +887,10 @@ Function WBP_SetVarProc_SetSearchString(sva) : SetVariableControl
 End
 
 Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
-	struct WMPopupAction& pa
+	STRUCT WMPopupAction &pa
 
 	variable SegmentNo
-	string win
+	string   win
 
 	switch(pa.eventCode)
 		case 2:
@@ -898,8 +898,8 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 
 			WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-			dfref dfr = WBP_GetFolderPath()
-			Wave/Z/SDFR=dfr customWave = $pa.popStr
+			DFREF           dfr        = WBP_GetFolderPath()
+			WAVE/Z/SDFR=dfr customWave = $pa.popStr
 
 			SegmentNo = GetSetVariable(win, "setvar_WaveBuilder_CurrentEpoch")
 
@@ -910,7 +910,7 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 			endif
 
 			WBP_UpdatePanelIfAllowed()
-		break
+			break
 	endswitch
 End
 
@@ -927,7 +927,7 @@ Function/S WBP_ReturnListSavedSets()
 	ST_GetStimsetList(searchString = searchString, WBstimSetList = stimsetList)
 
 	return NONE + ";" + stimsetList
-end
+End
 
 /// @brief Return true if the given stimset is a builtin, false otherwise
 Function WBP_IsBuiltinStimset(setName)
@@ -951,29 +951,29 @@ static Function WBP_LoadSet(setName)
 
 		PGC_SetAndActivateControl(panel, "popup_WaveBuilder_OutputType", val = channelType)
 
-		WAVE WP        = WB_GetWaveParamForSet(setName)
-		WAVE/T WPT     = WB_GetWaveTextParamForSet(setName)
-		WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
+		WAVE   WP        = WB_GetWaveParamForSet(setName)
+		WAVE/T WPT       = WB_GetWaveTextParamForSet(setName)
+		WAVE   SegWvType = WB_GetSegWvTypeForSet(setName)
 
 		DFREF dfr = GetWaveBuilderDataPath()
 		Duplicate/O WP, dfr:WP
 		Duplicate/O WPT, dfr:WPT
 		Duplicate/O SegWvType, dfr:SegWvType
 	else
-		setPrefix = DEFAULT_SET_PREFIX
+		setPrefix   = DEFAULT_SET_PREFIX
 		channelType = CHANNEL_TYPE_DAC
 
-		KillOrMoveToTrash(wv=GetSegmentTypeWave())
-		KillOrMoveToTrash(wv=GetWaveBuilderWaveParam())
-		KillOrMoveToTrash(wv=GetWaveBuilderWaveTextParam())
+		KillOrMoveToTrash(wv = GetSegmentTypeWave())
+		KillOrMoveToTrash(wv = GetWaveBuilderWaveParam())
+		KillOrMoveToTrash(wv = GetWaveBuilderWaveTextParam())
 
 		PGC_SetAndActivateControl(panel, "popup_WaveBuilder_OutputType", val = channelType)
 	endif
 
 	// fetch wave references, possibly updating the wave layout if required
-	WAVE WP        = GetWaveBuilderWaveParam()
-	WAVE/T WPT     = GetWaveBuilderWaveTextParam()
-	WAVE SegWvType = GetSegmentTypeWave()
+	WAVE   WP        = GetWaveBuilderWaveParam()
+	WAVE/T WPT       = GetWaveBuilderWaveTextParam()
+	WAVE   SegWvType = GetSegmentTypeWave()
 
 	SetPopupMenuIndex(panel, "popup_WaveBuilder_op_S94", SegWvType[94])
 	SetSetVariable(panel, "SetVar_WB_Multiplier_S95", SegWvType[95])
@@ -1001,11 +1001,11 @@ static Function WBP_LoadSet(setName)
 	WBP_UpdatePanelIfAllowed()
 
 	if(WindowExists(AnalysisParamGUI))
-		Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
+		WAVE/T listWave = WBP_GetAnalysisParamGUIListWave()
 
 		if(DimSize(listWave, ROWS) == 0)
 			PGC_SetAndActivateControl(AnalysisParamGUI, "setvar_param_name", str = "")
-			ReplaceNoteBookText(AnalysisParamGUI + "#nb_param_value","")
+			ReplaceNoteBookText(AnalysisParamGUI + "#nb_param_value", "")
 		endif
 	endif
 End
@@ -1036,9 +1036,9 @@ static Function WBP_UpdateEpochControls()
 
 	WAVE SegWvType = GetSegmentTypeWave()
 	currentEpoch = GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch")
-	numEpochs = SegWvType[100]
+	numEpochs    = SegWvType[100]
 
-	SetVariable setvar_WaveBuilder_CurrentEpoch, win=$panel, limits = {0, numEpochs - 1, 1}
+	SetVariable setvar_WaveBuilder_CurrentEpoch, win=$panel, limits={0, numEpochs - 1, 1}
 
 	if(currentEpoch >= numEpochs)
 		PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_CurrentEpoch", val = numEpochs - 1)
@@ -1079,7 +1079,7 @@ static Function WBP_CutOffCrossOver()
 
 	variable HighPassCutOff, LowPassCutOff
 
-	LowPassCutOff = GetSetVariable(panel, "SetVar_WaveBuilder_P20")
+	LowPassCutOff  = GetSetVariable(panel, "SetVar_WaveBuilder_P20")
 	HighPassCutOff = GetSetVariable(panel, "SetVar_WaveBuilder_P22")
 
 	if(!WB_IsValidCutoffFrequency(HighPassCutOff) || !WB_IsValidCutoffFrequency(LowPassCutOff))
@@ -1150,9 +1150,9 @@ Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
 				endif
 			endif
 
-			GroupBox group_WaveBuilder_FolderPath, win=$panel, title = path
-			PopupMenu popup_WaveBuilder_FolderList, win=$panel, mode = 1
-			PopupMenu popup_WaveBuilder_ListOfWaves, win=$panel, mode = 1
+			GroupBox group_WaveBuilder_FolderPath, win=$panel, title=path
+			PopupMenu popup_WaveBuilder_FolderList, win=$panel, mode=1
+			PopupMenu popup_WaveBuilder_ListOfWaves, win=$panel, mode=1
 			ControlUpdate/W=$panel popup_WaveBuilder_ListOfWaves
 			break
 	endswitch
@@ -1193,8 +1193,8 @@ static Function/S WBP_ConvertDeltaLblToCtrlNames(allControls, dimLabel)
 
 	variable index
 
-	WAVE WP  = GetWaveBuilderWaveParam()
-	WAVE WPT = GetWaveBuilderWaveTextParam()
+	WAVE WP        = GetWaveBuilderWaveParam()
+	WAVE WPT       = GetWaveBuilderWaveTextParam()
 	WAVE SegWvType = GetSegmentTypeWave()
 
 	index = FindDimLabel(WP, ROWS, dimLabel)
@@ -1336,14 +1336,14 @@ End
 static Function WBP_AnaFuncsToWPT()
 
 	variable stimulusType
-	string analysisFunction
+	string   analysisFunction
 
 	if(WBP_GetStimulusType() == CHANNEL_TYPE_TTL)
 		return NaN
 	endif
 
 	analysisFunction = GetPopupMenuString(panel, "popup_af_generic_S9")
-	stimulusType = WBP_GetStimulusType()
+	stimulusType     = WBP_GetStimulusType()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	WB_SetAnalysisFunctionGeneric(stimulusType, analysisFunction, WPT)
@@ -1425,7 +1425,7 @@ End
 Function WBP_SetVarCombineEpochFormula(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
-	struct FormulaProperties fp
+	STRUCT FormulaProperties fp
 	string win, formula
 	variable currentEpoch, lastSweep, channelType
 
@@ -1473,7 +1473,7 @@ static Function/S WBP_TranslateControlContents(control, direction, data)
 			if(direction == FROM_PANEL_TO_WAVE)
 				variable channelType = WBP_GetStimulusType()
 
-				struct FormulaProperties fp
+				STRUCT FormulaProperties fp
 				WB_FormulaSwitchToStimset(channelType, data, fp)
 				return fp.formula
 			elseif(direction == FROM_WAVE_TO_PANEL)
@@ -1511,7 +1511,7 @@ Function WBP_MainWindowHook(s)
 			win = s.winName
 
 			if(DP_DebuggingEnabledForCaller())
-				controls = ControlNameList(win)
+				controls   = ControlNameList(win)
 				numEntries = ItemsInList(controls)
 				for(i = 0; i < numEntries; i += 1)
 					ctrl = StringFromList(i, controls)
@@ -1551,7 +1551,7 @@ Function WBP_MainWindowHook(s)
 							break
 					endswitch
 
-					printf "%s -> %s\r", ctrl, 	name
+					printf "%s -> %s\r", ctrl, name
 				endfor
 			endif
 			break
@@ -1592,7 +1592,7 @@ Function WBP_MainWindowHook(s)
 					return 1
 				endif
 			endfor
-		break
+			break
 	endswitch
 
 	return 0
@@ -1603,10 +1603,10 @@ Function/S WBP_GetFFTSpectrumPanel()
 End
 
 Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
-	WAVE segmentWave
+	WAVE     segmentWave
 	variable sweep
 
-	DEBUGPRINT("sweep=", var=sweep)
+	DEBUGPRINT("sweep=", var = sweep)
 
 	string extPanel, graphMag, graphPhase, trace
 	STRUCT RGBColor s
@@ -1618,7 +1618,7 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	extPanel = WBP_GetFFTSpectrumPanel()
 
 	if(GetTabID(panel, "WBP_WaveType") != EPOCH_TYPE_NOISE)
-		KillWindow/z $extPanel
+		KillWindow/Z $extPanel
 		return NaN
 	endif
 
@@ -1652,24 +1652,24 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 
 	if(!WindowExists(extPanel))
 		SetActiveSubwindow $panel
-		NewPanel/HOST=#/EXT=0/W=(0,0,460,638)
+		NewPanel/HOST=#/EXT=0/W=(0, 0, 460, 638)
 		ModifyPanel fixedSize=1
-		Display/W=(10,10,450,330)/HOST=#
-		RenameWindow #,magnitude
+		Display/W=(10, 10, 450, 330)/HOST=#
+		RenameWindow #, magnitude
 		SetActiveSubwindow ##
-		Display/W=(10,330,450,629)/HOST=#
-		RenameWindow #,phase
+		Display/W=(10, 330, 450, 629)/HOST=#
+		RenameWindow #, phase
 		SetActiveSubwindow ##
-		RenameWindow #,fftSpectrum
+		RenameWindow #, fftSpectrum
 		SetActiveSubwindow ##
 	endif
 
 	graphMag   = extPanel + "#magnitude"
 	graphPhase = extPanel + "#phase"
 
-	WAVE axesPropsMag   = GetAxesProperties(graphMag)
-	WAVE axesPropsPhase = GetAxesProperties(graphPhase)
-	WAVE/T/Z cursorInfosMag = GetCursorInfos(graphMag)
+	WAVE     axesPropsMag     = GetAxesProperties(graphMag)
+	WAVE     axesPropsPhase   = GetAxesProperties(graphPhase)
+	WAVE/T/Z cursorInfosMag   = GetCursorInfos(graphMag)
 	WAVE/T/Z cursorInfosPhase = GetCursorInfos(graphPhase)
 
 	if(sweep == 0)
@@ -1688,8 +1688,8 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	ModifyGraph/W=$graphPhase mode=4
 
 	[s] = WBP_GetSweepColor(sweep)
-	ModifyGraph/W=$graphMag rgb($trace)   = (s.red, s.green, s.blue)
-	ModifyGraph/W=$graphPhase rgb($trace) = (s.red, s.green, s.blue)
+	ModifyGraph/W=$graphMag rgb($trace)=(s.red, s.green, s.blue)
+	ModifyGraph/W=$graphPhase rgb($trace)=(s.red, s.green, s.blue)
 
 	SetAxesProperties(graphMag, axesPropsMag)
 	SetAxesProperties(graphPhase, axesPropsPhase)
@@ -1715,8 +1715,8 @@ static Function WBP_DeleteAnalysisParameter(name)
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	params = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
-	params = AFH_RemoveAnalysisParameter(name, params)
+	params                                                              = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
+	params                                                              = AFH_RemoveAnalysisParameter(name, params)
 	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = params
 End
 
@@ -1762,14 +1762,14 @@ static Function WBP_UpdateParameterWave()
 	string missingParams, suggNames, reqNames, help
 	variable i, numEntries, offset
 
-	Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
+	WAVE/T listWave = WBP_GetAnalysisParamGUIListWave()
 	WAVE   selWave  = WBP_GetAnalysisParamGUISelWave()
 	WAVE/T helpWave = WBP_GetAnalysisParamGUIHelpWave()
 
 	genericFunc = WBP_GetAnalysisGenericFunction()
 
 	suggParams = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS | OPTIONAL_PARAMS)
-	suggNames = AFH_GetListOfAnalysisParamNames(suggParams)
+	suggNames  = AFH_GetListOfAnalysisParamNames(suggParams)
 
 	reqNames = AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS))
 
@@ -1780,7 +1780,7 @@ static Function WBP_UpdateParameterWave()
 	Redimension/N=(numEntries, -1) listWave, selWave, helpWave
 
 	for(i = 0; i < numEntries; i += 1)
-		name = StringFromList(i, names)
+		name                   = StringFromList(i, names)
 		listWave[i][%Name]     = name
 		listWave[i][%Type]     = AFH_GetAnalysisParamType(name, params)
 		listWave[i][%Value]    = URLDecode(AFH_GetAnalysisParameter(name, params))
@@ -1790,25 +1790,25 @@ static Function WBP_UpdateParameterWave()
 	offset = DimSize(listWave, ROWS)
 
 	missingParams = GetListDifference(suggNames, names)
-	numEntries = ItemsInList(missingParams)
+	numEntries    = ItemsInList(missingParams)
 	Redimension/N=(offset + numEntries, -1) listWave, selWave, helpWave
 
 	for(i = 0; i < numEntries; i += 1)
-		name = StringFromList(i, missingParams)
+		name                            = StringFromList(i, missingParams)
 		listWave[offset + i][%Name]     = name
 		listWave[offset + i][%Type]     = AFH_GetAnalysisParamType(name, suggParams, typeCheck = 0)
 		listWave[offset + i][%Required] = ToTrueFalse(WhichListItem(name, reqNames) != -1)
 	endfor
 
 	listWave[][%Help] = ""
-	helpWave[][] = ""
+	helpWave[][]      = ""
 
 	numEntries = DimSize(listWave, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		name = listWave[i][%Name]
 
 		if(WhichListItem(name, suggNames) != -1)
-			help = AFH_GetHelpForAnalysisParameter(genericFunc, name)
+			help               = AFH_GetHelpForAnalysisParameter(genericFunc, name)
 			listWave[i][%Help] = help
 			helpWave[i][%Help] = LineBreakingIntoPar(help, minimumWidth = 40)
 		endif
@@ -1827,61 +1827,61 @@ static Function WBP_ToggleAnalysisParamGUI()
 		return 1
 	endif
 
-	Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
+	WAVE/T listWave = WBP_GetAnalysisParamGUIListWave()
 	WAVE   selWave  = WBP_GetAnalysisParamGUISelWave()
 	WAVE/T helpWave = WBP_GetAnalysisParamGUIHelpWave()
 
-	NewPanel/EXT=2/HOST=$panel/N=AnalysisParamGUI/W=(0,0,785,233)/K=2 as " "
+	NewPanel/EXT=2/HOST=$panel/N=AnalysisParamGUI/W=(0, 0, 785, 233)/K=2 as " "
 	ModifyPanel fixedSize=0
-	GroupBox group_main,pos={5.00,11.00},size={365,252}
-	GroupBox group_main,userdata(ResizeControlsInfo)= A"!!,?X!!#;=!!#BpJ,hraz!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
-	GroupBox group_main,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	GroupBox group_main,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button button_delete_parameter,pos={40,232},size={280,25},proc=WBP_ButtonProc_DeleteParam,title="Delete"
-	Button button_delete_parameter,help={"Delete the selected parameter"}
-	Button button_delete_parameter,userdata(ResizeControlsInfo)= A"!!,D/!!#B\"!!#BF!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
-	Button button_delete_parameter,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzz"
-	Button button_delete_parameter,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzzzzz!!!"
-	Button button_add_parameter,pos={40,205},size={280,25},proc=WBP_ButtonProc_AddParam,title="Add"
-	Button button_add_parameter,help={"Add the parameter with type and value to the stimset"}
-	Button button_add_parameter,userdata(ResizeControlsInfo)= A"!!,D/!!#A\\!!#BF!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
-	Button button_add_parameter,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzz"
-	Button button_add_parameter,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzzzzz!!!"
-	PopupMenu popup_param_types,pos={136,42},size={100.00,19.00},bodyWidth=70,title="Type:"
-	PopupMenu popup_param_types,help={"Choose the parameter type"}
-	PopupMenu popup_param_types,mode=4,popvalue="textwave",value= #"WBP_GetParameterTypes()"
-	PopupMenu popup_param_types,userdata(ResizeControlsInfo)= A"!!,Fm!!#>6!!#@,!!#<Pz!!#](Aon\"q<C]MP0`V1Rzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
-	PopupMenu popup_param_types,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]MX0`V1Rzzzzzzzzz"
-	PopupMenu popup_param_types,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]MX0`V1Rzzzzzzzzzzzz!!!"
-	SetVariable setvar_param_name,pos={15.00,19.00},size={350,18}
-	SetVariable setvar_param_name,help={"The parameter name"}
-	SetVariable setvar_param_name,value= _STR:""
-	SetVariable setvar_param_name,userdata(ResizeControlsInfo)= A"!!,B)!!#<P!!#Bi!!#<Hz!!#N3Bk1ct<C]MP0`V1Rzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
-	SetVariable setvar_param_name,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	SetVariable setvar_param_name,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	ListBox list_params,pos={375,11},size={644,247},proc=WBP_ListBoxProc_AnalysisParams
-	ListBox list_params,help={"Visualization of all parameters with types and values"}
-	ListBox list_params,listWave=listWave
-	ListBox list_params,selWave=selWave
-	ListBox list_params,helpWave=helpWave
-	ListBox list_params,mode= 4,widths={180, 60, 120, 60, 600}, userColumnResize=1
-	ListBox list_params,userdata(ResizeControlsInfo)= A"!!,I!J,hkh!!#D1!!#B1z!!#N3Bk1ct<C]MV0`V1Rzzzzzzzzzzzz!!#o2B4uAezz"
-	ListBox list_params,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	ListBox list_params,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	DefineGuide UGFR1={FL,0.35, FR},UGFL1={FL,12},UGFT1={FT,68},UGFB1={FB,-78}
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControlsSafe
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E<5QF0/J,fQLzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGFR1;UGFL1;UGFT1;UGFB1;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGFR1)=  "NAME:UGFR1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:0;POSITION:351.00;GUIDE1:FL;GUIDE2:FR;RELPOSITION:0.339357;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGFL1)=  "NAME:UGFL1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:0;POSITION:12.00;GUIDE1:FL;GUIDE2:;RELPOSITION:12;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGFT1)=  "NAME:UGFT1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:1;POSITION:68.00;GUIDE1:FT;GUIDE2:;RELPOSITION:68;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGFB1)=  "NAME:UGFB1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:1;POSITION:199.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-78;"
+	GroupBox group_main, pos={5.00, 11.00}, size={365, 252}
+	GroupBox group_main, userdata(ResizeControlsInfo)=A"!!,?X!!#;=!!#BpJ,hraz!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
+	GroupBox group_main, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	GroupBox group_main, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	Button button_delete_parameter, pos={40, 232}, size={280, 25}, proc=WBP_ButtonProc_DeleteParam, title="Delete"
+	Button button_delete_parameter, help={"Delete the selected parameter"}
+	Button button_delete_parameter, userdata(ResizeControlsInfo)=A"!!,D/!!#B\"!!#BF!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
+	Button button_delete_parameter, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzz"
+	Button button_delete_parameter, userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzzzzz!!!"
+	Button button_add_parameter, pos={40, 205}, size={280, 25}, proc=WBP_ButtonProc_AddParam, title="Add"
+	Button button_add_parameter, help={"Add the parameter with type and value to the stimset"}
+	Button button_add_parameter, userdata(ResizeControlsInfo)=A"!!,D/!!#A\\!!#BF!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
+	Button button_add_parameter, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzz"
+	Button button_add_parameter, userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzzzzz!!!"
+	PopupMenu popup_param_types, pos={136, 42}, size={100.00, 19.00}, bodyWidth=70, title="Type:"
+	PopupMenu popup_param_types, help={"Choose the parameter type"}
+	PopupMenu popup_param_types, mode=4, popvalue="textwave", value=#"WBP_GetParameterTypes()"
+	PopupMenu popup_param_types, userdata(ResizeControlsInfo)=A"!!,Fm!!#>6!!#@,!!#<Pz!!#](Aon\"q<C]MP0`V1Rzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
+	PopupMenu popup_param_types, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#N3Bk1ct<C]MX0`V1Rzzzzzzzzz"
+	PopupMenu popup_param_types, userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ct<C]MX0`V1Rzzzzzzzzzzzz!!!"
+	SetVariable setvar_param_name, pos={15.00, 19.00}, size={350, 18}
+	SetVariable setvar_param_name, help={"The parameter name"}
+	SetVariable setvar_param_name, value=_STR:""
+	SetVariable setvar_param_name, userdata(ResizeControlsInfo)=A"!!,B)!!#<P!!#Bi!!#<Hz!!#N3Bk1ct<C]MP0`V1Rzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
+	SetVariable setvar_param_name, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	SetVariable setvar_param_name, userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	ListBox list_params, pos={375, 11}, size={644, 247}, proc=WBP_ListBoxProc_AnalysisParams
+	ListBox list_params, help={"Visualization of all parameters with types and values"}
+	ListBox list_params, listWave=listWave
+	ListBox list_params, selWave=selWave
+	ListBox list_params, helpWave=helpWave
+	ListBox list_params, mode=4, widths={180, 60, 120, 60, 600}, userColumnResize=1
+	ListBox list_params, userdata(ResizeControlsInfo)=A"!!,I!J,hkh!!#D1!!#B1z!!#N3Bk1ct<C]MV0`V1Rzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_params, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	ListBox list_params, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	DefineGuide UGFR1={FL, 0.35, FR}, UGFL1={FL, 12}, UGFT1={FT, 68}, UGFB1={FB, -78}
+	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#E<5QF0/J,fQLzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin, userdata(ResizeControlsGuides)="UGFR1;UGFL1;UGFT1;UGFB1;"
+	SetWindow kwTopWin, userdata(ResizeControlsInfoUGFR1)="NAME:UGFR1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:0;POSITION:351.00;GUIDE1:FL;GUIDE2:FR;RELPOSITION:0.339357;"
+	SetWindow kwTopWin, userdata(ResizeControlsInfoUGFL1)="NAME:UGFL1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:0;POSITION:12.00;GUIDE1:FL;GUIDE2:;RELPOSITION:12;"
+	SetWindow kwTopWin, userdata(ResizeControlsInfoUGFT1)="NAME:UGFT1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:1;POSITION:68.00;GUIDE1:FT;GUIDE2:;RELPOSITION:68;"
+	SetWindow kwTopWin, userdata(ResizeControlsInfoUGFB1)="NAME:UGFB1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:1;POSITION:199.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-78;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={785,233,inf,inf}" // sizeLimit requires Igor 7 or later
-	NewNotebook /F=0 /N=nb_param_value /W=(16,76,216,120)/FG=(UGFL1,UGFT1,UGFR1,UGFB1) /HOST=# /OPTS=3
-	Notebook kwTopWin, defaultTab=20, autoSave= 0, magnification=100
-	Notebook kwTopWin, font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
+	NewNotebook/F=0/N=nb_param_value/W=(16, 76, 216, 120)/FG=(UGFL1, UGFT1, UGFR1, UGFB1)/HOST=#/OPTS=3
+	Notebook kwTopWin, defaultTab=20, autoSave=0, magnification=100
+	Notebook kwTopWin, font="Lucida Console", fSize=11, fStyle=0, textRGB=(0, 0, 0)
 	SetActiveSubwindow ##
 
 	WBP_UpdateParameterWave()
@@ -1896,8 +1896,8 @@ Function WBP_ButtonProc_DeleteParam(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
-			WAVE selWave    = WBP_GetAnalysisParamGUISelWave()
+			WAVE/T listWave = WBP_GetAnalysisParamGUIListWave()
+			WAVE   selWave  = WBP_GetAnalysisParamGUISelWave()
 
 			WAVE/Z indizes = FindIndizes(selWave, var = LISTBOX_SELECTED, prop = PROP_MATCHES_VAR_BIT_MASK)
 			if(!WaveExists(indizes))
@@ -1937,8 +1937,8 @@ Function WBP_ButtonProc_AddParam(ba) : ButtonControl
 			endif
 
 			WAVE/T WPT = GetWaveBuilderWaveTextParam()
-			type       = GetPopupMenuString(win, "popup_param_types")
-			value      = GetNotebookText(win + "#nb_param_value")
+			type  = GetPopupMenuString(win, "popup_param_types")
+			value = GetNotebookText(win + "#nb_param_value")
 
 			if(IsEmpty(value))
 				printf "The parameter \"%s\" has an empty value and is thus not valid.\r", name
@@ -1966,7 +1966,7 @@ Function WBP_ButtonProc_AddParam(ba) : ButtonControl
 
 			WBP_UpdateParameterWave()
 			SetSetVariableString(win, "setvar_param_name", "")
-			ReplaceNoteBookText(win + "#nb_param_value","")
+			ReplaceNoteBookText(win + "#nb_param_value", "")
 			break
 	endswitch
 
@@ -1979,9 +1979,9 @@ Function WBP_ButtonProc_OpenAnaParamGUI(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			if(WBP_ToggleAnalysisParamGUI())
-				SetControlTitle(panel, "button_toggle_params","Open parameters panel")
+				SetControlTitle(panel, "button_toggle_params", "Open parameters panel")
 			else
-				SetControlTitle(panel, "button_toggle_params","Close parameters panel")
+				SetControlTitle(panel, "button_toggle_params", "Close parameters panel")
 			endif
 			break
 	endswitch
@@ -2007,7 +2007,7 @@ Function WBP_ListBoxProc_AnalysisParams(lba) : ListBoxControl
 			row = lba.row
 			col = lba.col
 			WAVE/T/Z listWave = lba.listWave
-			WAVE/Z selWave = lba.selWave
+			WAVE/Z   selWave  = lba.selWave
 
 			if(row < 0 || row >= DimSize(listWave, ROWS))
 				break
@@ -2069,7 +2069,7 @@ static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
 
 	WBP_CreateWaveBuilderPanel()
 
-	WAVE WP    = GetWaveBuilderWaveParam()
+	WAVE   WP  = GetWaveBuilderWaveParam()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	Make/FREE/T/N=(MINIMUM_WAVE_SIZE) names

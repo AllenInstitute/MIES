@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -11,7 +11,7 @@
 /// @brief it will however still update once per device
 /// @brief so the gui thread can update at least every ~0.5 seconds (default value here)
 /// @brief however the fifo may run full if the timeout is hit too often
-static Constant TPM_NI_TASKTIMEOUT = 0.5
+static Constant TPM_NI_TASKTIMEOUT         = 0.5
 static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 
 /// @file MIES_TestPulse_Multi.ipf
@@ -19,7 +19,7 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 
 /// @brief Start the test pulse when MD support is activated.
 Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
-	string device
+	string   device
 	variable runModifier
 	variable fast
 
@@ -48,7 +48,7 @@ End
 
 /// @brief Start a multi device test pulse, always done in background mode
 Function TPM_StartTestPulseMultiDevice(device, [fast])
-	string device
+	string   device
 	variable fast
 
 	if(ParamIsDefault(fast))
@@ -62,7 +62,7 @@ Function TPM_StartTestPulseMultiDevice(device, [fast])
 		return NaN
 	endif
 
-	AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE),1
+	AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE), 1
 
 	DQ_StopOngoingDAQ(device, DQ_STOP_REASON_TP_STARTED)
 
@@ -86,12 +86,12 @@ static Function TPM_BkrdTPMD(device)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_ResetFifo(deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-			HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+			HW_ITC_ResetFifo(deviceID, flags = HARDWARE_ABORT_ON_ERROR)
+			HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 			TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, deviceID)
 			break
 		case HARDWARE_NI_DAC:
-			HW_StartAcq(HARDWARE_NI_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR, repeat=1)
+			HW_StartAcq(HARDWARE_NI_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR, repeat = 1)
 			NVAR tpCounter = $GetNITestPulseCounter(device)
 			tpCounter = 0
 			break
@@ -131,9 +131,9 @@ Function TPM_BkrdTPFuncMD(s)
 	// works through list of active devices
 	// update parameters for a particular active device
 	for(i = 0; i < GetNumberFromWaveNote(ActiveDeviceList, NOTE_INDEX); i += 1) // NOLINT
-		deviceID = ActiveDeviceList[i][%DeviceID]
+		deviceID     = ActiveDeviceList[i][%DeviceID]
 		hardwareType = ActiveDeviceList[i][%HardwareType]
-		device = HW_GetMainDeviceName(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
+		device       = HW_GetMainDeviceName(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 
 		WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 
@@ -142,12 +142,12 @@ Function TPM_BkrdTPFuncMD(s)
 				// Pull data until end of FIFO, after BGTask finishes Graph shows only last update
 				do
 					checkAgain = 0
-					NVAR tpCounter = $GetNITestPulseCounter(device)
+					NVAR tpCounter  = $GetNITestPulseCounter(device)
 					NVAR datapoints = $GetStopCollectionPoint(device)
 					fifoName = GetNIFIFOName(deviceID)
 
 					FIFOStatus/Q $fifoName
-					ASSERT(V_Flag != 0,"FIFO does not exist!")
+					ASSERT(V_Flag != 0, "FIFO does not exist!")
 					endOfPulse = datapoints * tpCounter + datapoints
 					if(V_FIFOChunks >= endOfPulse)
 						WAVE/WAVE NIDataWave = GetDAQDataWave(device, TEST_PULSE_MODE)
@@ -156,16 +156,16 @@ Function TPM_BkrdTPFuncMD(s)
 						try
 							for(j = 0; j < V_FIFOnchans; j += 1)
 								fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
-								channelNr = str2num(fifoChannelName)
+								channelNr       = str2num(fifoChannelName)
 								WAVE NIChannel = NIDataWave[channelNr]
 								FIFO2WAVE/R=[endOfPulse - datapoints, endOfPulse - 1] $fifoName, $fifoChannelName, NIChannel; AbortOnRTE
 								SetScale/P x, 0, DimDelta(NIChannel, ROWS) * ONE_TO_MILLI, "ms", NIChannel
 							endfor
 
-							SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, deviceID=deviceID)
+							SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, deviceID = deviceID)
 						catch
 							errMsg = GetRTErrMessage()
-							err = ClearRTError()
+							err    = ClearRTError()
 							LOG_AddEntry(PACKAGE_MIES, "hardware error", stacktrace = 1)
 							DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR)
 							if(err == 18)
@@ -189,43 +189,43 @@ Function TPM_BkrdTPFuncMD(s)
 						tpCounter = 0
 					endif
 				while(checkAgain)
-			break
-		case HARDWARE_ITC_DAC:
-			WAVE ITCDataWave = GetDAQDataWave(device, TEST_PULSE_MODE)
+				break
+			case HARDWARE_ITC_DAC:
+				WAVE ITCDataWave = GetDAQDataWave(device, TEST_PULSE_MODE)
 
-			NVAR tgID = $GetThreadGroupIDFIFO(device)
-			fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_tries = THREAD_QUEUE_TRIES)
+				NVAR tgID = $GetThreadGroupIDFIFO(device)
+				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos", timeout_tries = THREAD_QUEUE_TRIES)
 
-			// should never be hit
-			if(!IsFinite(fifoPos))
-				if(s.threadDeadCount < TP_MD_THREAD_DEAD_MAX_RETRIES)
-					s.threadDeadCount += 1
-					printf "Retrying getting data from thread, keep fingers crossed (%d/%d)\r", s.threadDeadCount, TP_MD_THREAD_DEAD_MAX_RETRIES
-					ControlWindowToFront()
-					continue
+				// should never be hit
+				if(!IsFinite(fifoPos))
+					if(s.threadDeadCount < TP_MD_THREAD_DEAD_MAX_RETRIES)
+						s.threadDeadCount += 1
+						printf "Retrying getting data from thread, keep fingers crossed (%d/%d)\r", s.threadDeadCount, TP_MD_THREAD_DEAD_MAX_RETRIES
+						ControlWindowToFront()
+						continue
+					endif
+
+					// give up
+					TPM_StopTestPulseMultiDevice(device)
+					return 0
 				endif
 
-				// give up
-				TPM_StopTestPulseMultiDevice(device)
-				return 0
-			endif
+				s.threadDeadCount = 0
 
-			s.threadDeadCount = 0
+				fifoLatest = mod(fifoPos, DimSize(ITCDataWave, ROWS))
 
-			fifoLatest = mod(fifoPos, DimSize(ITCDataWave, ROWS))
+				// extract the last fully completed chunk
+				// for ITC only the last complete TP is evaluated, all earlier TPs get discarded
+				lastTP = trunc(fifoLatest / TPSettingsCalc[%totalLengthPointsTP]) - 1
 
-			// extract the last fully completed chunk
-			// for ITC only the last complete TP is evaluated, all earlier TPs get discarded
-			lastTP = trunc(fifoLatest / TPSettingsCalc[%totalLengthPointsTP]) - 1
+				// Ensures that the new TP chunk isn't the same as the last one.
+				// This is required to keep the TP buffer in sync.
+				if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
+					SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, chunk = lastTP)
+					ActiveDeviceList[i][%ActiveChunk] = lastTP
+				endif
 
-			// Ensures that the new TP chunk isn't the same as the last one.
-			// This is required to keep the TP buffer in sync.
-			if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
-				SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, chunk=lastTP)
-				ActiveDeviceList[i][%ActiveChunk] = lastTP
-			endif
-
-			break
+				break
 		endswitch
 
 		SCOPE_UpdateGraph(device, TEST_PULSE_MODE)
@@ -241,7 +241,7 @@ Function TPM_BkrdTPFuncMD(s)
 End
 
 Function TPM_StopTestPulseMultiDevice(device, [fast])
-	string device
+	string   device
 	variable fast
 
 	if(ParamIsDefault(fast))
@@ -279,10 +279,10 @@ static Function TPM_RemoveDevice(device)
 	string device
 
 	variable idx
-	string msg
+	string   msg
 
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
-	NVAR deviceID = $GetDAQDeviceID(device)
+	NVAR deviceID          = $GetDAQDeviceID(device)
 
 	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX) - 1
 	ASSERT(idx >= 0, "Invalid index")
@@ -304,17 +304,17 @@ static Function TPM_AddDevice(device)
 	string device
 
 	variable idx
-	string msg
+	string   msg
 
-	NVAR deviceID = $GetDAQDeviceID(device)
+	NVAR deviceID          = $GetDAQDeviceID(device)
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
 
 	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
-	EnsureLargeEnoughWave(ActiveDevicesTPMD, indexShouldExist=idx)
+	EnsureLargeEnoughWave(ActiveDevicesTPMD, indexShouldExist = idx)
 
 	ActiveDevicesTPMD[idx][%DeviceID]     = deviceID
 	ActiveDevicesTPMD[idx][%HardwareType] = GetHardwareType(device)
-	ActiveDevicesTPMD[idx][%activeChunk] = NaN
+	ActiveDevicesTPMD[idx][%activeChunk]  = NaN
 
 	SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, idx + 1)
 

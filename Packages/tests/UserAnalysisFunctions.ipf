@@ -4,7 +4,7 @@
 
 #ifndef AUTOMATED_TESTING
 
-	#define **error** Can only be used with automated testing
+#define **error** Can only be used with automated testing
 #endif
 
 Function CorrectFileMarker()
@@ -23,27 +23,27 @@ Function/WAVE InvalidSignatureAndReturnType()
 End
 
 Function/WAVE InvalidReturnTypeAndValidSig_V1(device, eventType, DAQDataWave, headStage)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage
 
 	FAIL()
 End
 
 Function/WAVE InvalidReturnTypeAndValidSig_V2(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	FAIL()
 End
 
 Function ValidFunc_V1(device, eventType, DAQDataWave, headStage)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage
 
 	CHECK_NON_EMPTY_STR(device)
@@ -69,9 +69,9 @@ Function ValidFunc_V1(device, eventType, DAQDataWave, headStage)
 End
 
 Function ValidFunc_V2(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	CHECK_NON_EMPTY_STR(device)
@@ -111,9 +111,9 @@ Function ValidFunc_V2(device, eventType, DAQDataWave, headStage, realDataLength)
 End
 
 Function ValidMultHS_V1(device, eventType, DAQDataWave, headStage)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage
 
 	CHECK_NON_EMPTY_STR(device)
@@ -138,18 +138,18 @@ Function ValidMultHS_V1(device, eventType, DAQDataWave, headStage)
 End
 
 Function NotCalled_V1(device, eventType, DAQDataWave, headStage)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage
 
 	FAIL()
 End
 
 Function preDAQHardAbort(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -164,9 +164,9 @@ Function preDAQHardAbort(device, eventType, DAQDataWave, headStage, realDataLeng
 End
 
 Function preDAQ(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -177,9 +177,9 @@ Function preDAQ(device, eventType, DAQDataWave, headStage, realDataLength)
 End
 
 Function preSet(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -190,9 +190,9 @@ Function preSet(device, eventType, DAQDataWave, headStage, realDataLength)
 End
 
 Function preSweepConfig(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -203,9 +203,9 @@ Function preSweepConfig(device, eventType, DAQDataWave, headStage, realDataLengt
 End
 
 Function midSweep(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -216,9 +216,9 @@ Function midSweep(device, eventType, DAQDataWave, headStage, realDataLength)
 End
 
 Function postSweep(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -229,9 +229,9 @@ Function postSweep(device, eventType, DAQDataWave, headStage, realDataLength)
 End
 
 Function postSet(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -242,9 +242,9 @@ Function postSet(device, eventType, DAQDataWave, headStage, realDataLength)
 End
 
 Function postDAQ(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -255,9 +255,9 @@ Function postDAQ(device, eventType, DAQDataWave, headStage, realDataLength)
 End
 
 Function AbortPreDAQ(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -271,8 +271,8 @@ Function AbortPreDAQ(device, eventType, DAQDataWave, headStage, realDataLength)
 End
 
 Function StopPreSweepConfig_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -288,9 +288,9 @@ Function StopPreSweepConfig_V3(device, s)
 End
 
 Function StopMidSweep(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -303,8 +303,8 @@ Function StopMidSweep(device, eventType, DAQDataWave, headStage, realDataLength)
 End
 
 Function ValidFunc_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	variable hardwareType, i
 
@@ -318,7 +318,7 @@ Function ValidFunc_V3(device, s)
 			CHECK_WAVE(channelDA, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 		elseif(IsWaveRefWave(s.scaledDACWave))
 			WAVE/WAVE scaledDACWaveRef = s.scaledDACWave
-			WAVE channelDA = scaledDACWaveRef[0]
+			WAVE      channelDA        = scaledDACWaveRef[0]
 			CHECK_WAVE(channelDA, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 		else
 			INFO("Unknown data format")
@@ -352,7 +352,7 @@ Function ValidFunc_V3(device, s)
 					WAVE/WAVE scaledDACWaveRef = s.scaledDACWave
 					Make/FREE/N=(DimSize(scaledDACWaveRef, ROWS)) sizesScaled = DimSize(scaledDACWaveRef[p], ROWS)
 				endif
-				CHECK_EQUAL_WAVES(sizesDAQ, sizesScaled, mode=WAVE_DATA)
+				CHECK_EQUAL_WAVES(sizesDAQ, sizesScaled, mode = WAVE_DATA)
 				break
 			default:
 				FAIL()
@@ -468,8 +468,8 @@ Function/S Params1_V3_GetParams()
 End
 
 Function Params1_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -486,8 +486,8 @@ Function/S Params2_V3_GetParams()
 End
 
 Function Params2_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -504,8 +504,8 @@ Function/S Params3_V3_GetParams()
 End
 
 Function Params3_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -522,8 +522,8 @@ Function/S Params4_V3_GetParams()
 End
 
 Function Params4_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -538,7 +538,7 @@ End
 Function/S Params5_V3_CheckParam(name, params)
 	string name, params
 
-	string str
+	string   str
 	variable var
 
 	strswitch(name)
@@ -581,8 +581,8 @@ Function/S Params5_V3_GetParams()
 End
 
 Function Params5_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -618,8 +618,8 @@ Function/S Params6_V3_GetParams()
 End
 
 Function Params6_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -648,16 +648,16 @@ End
 // Params7_V3_GetParams is not present
 
 Function Params7_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	return NaN
 End
 
 Function ChangeToOtherDeviceDAQAF(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	PGC_SetAndActivateControl(device, "check_Settings_MD", val = !GetCheckBoxState(device, "check_Settings_MD"))
@@ -665,8 +665,8 @@ Function ChangeToOtherDeviceDAQAF(device, eventType, DAQDataWave, headStage, rea
 End
 
 Function Indexing_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -679,8 +679,8 @@ Function Indexing_V3(device, s)
 End
 
 Function TrackSweepCount_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncSweepCounts = GetTrackSweepCounts()
 
@@ -704,8 +704,8 @@ Function TrackSweepCount_V3(device, s)
 End
 
 Function AbortPreSet(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -722,8 +722,8 @@ Function AbortPreSet(device, s)
 End
 
 Function TotalOrdering(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncOrder = TrackAnalysisFunctionOrder()
 
@@ -735,8 +735,8 @@ Function TotalOrdering(device, s)
 End
 
 Function TrackActiveSetCount(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	if(s.eventType != PRE_SWEEP_CONFIG_EVENT)
 		return NaN
@@ -749,8 +749,8 @@ Function TrackActiveSetCount(device, s)
 End
 
 Function SkipSweeps(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	variable skipCountExisting
 
@@ -771,13 +771,13 @@ Function SkipSweeps(device, s)
 			RA_SkipSweeps(device, 1, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 		endif
 	elseif(s.eventType == POST_SWEEP_EVENT)
-		RA_SkipSweeps(device, inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
+		RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 	endif
 End
 
 Function SkipSweepsAdvanced(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -809,8 +809,8 @@ Function SkipSweepsAdvanced(device, s)
 End
 
 Function TrackActiveSetCountsAndEvents(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -825,8 +825,8 @@ Function TrackActiveSetCountsAndEvents(device, s)
 End
 
 Function WriteIntoLBNOnPreDAQ(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	if(s.eventType == PRE_DAQ_EVENT)
 		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = p
@@ -838,8 +838,8 @@ Function WriteIntoLBNOnPreDAQ(device, s)
 End
 
 Function ChangeStimSet(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	string ctrl
 
@@ -852,8 +852,8 @@ Function ChangeStimSet(device, s)
 End
 
 Function IncrementalLabnotebookUpdate(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	if(s.eventType == POST_SWEEP_EVENT)
 #if exists("ILCUCheck_IGNORE")
@@ -873,15 +873,15 @@ Function IncrementalLabnotebookUpdate(device, s)
 End
 
 Function AcquisitionStateTrackingFunc(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	variable acqState, expectedAcqState
 	string name
 
 	acqState = ROVAR(GetAcquisitionState(device))
 
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values     = NaN
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = ""
 
 	switch(s.eventType)
@@ -927,9 +927,9 @@ Function AcquisitionStateTrackingFunc(device, s)
 	return 0
 End
 
-Function ModifyStimSet(string device, STRUCT AnalysisFunction_V3& s)
+Function ModifyStimSet(string device, STRUCT AnalysisFunction_V3 &s)
 
-	string stimset
+	string   stimset
 	variable var
 
 	stimset = "AnaFuncModStim_DA_0"
@@ -947,7 +947,7 @@ Function ModifyStimSet(string device, STRUCT AnalysisFunction_V3& s)
 	return 0
 End
 
-Function StopMidSweep_V3(string device, STRUCT AnalysisFunction_V3& s)
+Function StopMidSweep_V3(string device, STRUCT AnalysisFunction_V3 &s)
 	variable DAC
 
 	switch(s.eventType)
@@ -962,7 +962,7 @@ Function StopMidSweep_V3(string device, STRUCT AnalysisFunction_V3& s)
 	return 0
 End
 
-Function AddTooLargeUserEpoch_V3(string device, STRUCT AnalysisFunction_V3& s)
+Function AddTooLargeUserEpoch_V3(string device, STRUCT AnalysisFunction_V3 &s)
 	variable DAC
 
 	switch(s.eventType)
@@ -973,9 +973,9 @@ Function AddTooLargeUserEpoch_V3(string device, STRUCT AnalysisFunction_V3& s)
 	endswitch
 End
 
-Function AddUserEpoch_V3(string device, STRUCT AnalysisFunction_V3& s)
+Function AddUserEpoch_V3(string device, STRUCT AnalysisFunction_V3 &s)
 	variable DAC
-	string tags
+	string   tags
 
 	DAC = AFH_GetDACFromHeadstage(device, s.headstage)
 
@@ -984,8 +984,8 @@ Function AddUserEpoch_V3(string device, STRUCT AnalysisFunction_V3& s)
 End
 
 Function ChangeTPSettings(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	switch(s.eventType)
 		case POST_SWEEP_EVENT:
@@ -1006,31 +1006,31 @@ Function ChangeTPSettings(device, s)
 			endif
 			break
 		default:
-			// do nothing
+		// do nothing
 	endswitch
 End
 
-Function SetSweepFormula(string device, STRUCT AnalysisFunction_V3& s)
+Function SetSweepFormula(string device, STRUCT AnalysisFunction_V3 &s)
 	string win, bsPanel, sweepFormulaNB, code
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			win = DB_OpenDataBrowser()
+			win     = DB_OpenDataBrowser()
 			bsPanel = BSP_GetPanel(win)
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
-			win = DB_FindDataBrowser(device)
+			win            = DB_FindDataBrowser(device)
 			sweepFormulaNB = BSP_GetSFFormula(win)
 			sprintf code, "data(TP, select(channels(AD), [%d]))\r", s.sweepNo
 			ReplaceNotebookText(sweepFormulaNB, code)
 			break
 		default:
-			// do nothing
+		// do nothing
 	endswitch
 End
 
-Function BreakConfigWave(string device, STRUCT AnalysisFunction_V3& s)
+Function BreakConfigWave(string device, STRUCT AnalysisFunction_V3 &s)
 
 	switch(s.eventType)
 		case MID_SWEEP_EVENT:
@@ -1075,22 +1075,22 @@ Function/S ComplainWithProperString_GetParams()
 	return "param"
 End
 
-Function ComplainWithProperString(string device, STRUCT AnalysisFunction_V3& s)
+Function ComplainWithProperString(string device, STRUCT AnalysisFunction_V3 &s)
 	FAIL()
 End
 
-Function EnableIndexing(string device, STRUCT AnalysisFunction_V3& s)
+Function EnableIndexing(string device, STRUCT AnalysisFunction_V3 &s)
 
 	switch(s.eventType)
 		case POST_DAQ_EVENT:
 			PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = CHECKBOX_SELECTED)
 			break
 		default:
-			// do nothing
+		// do nothing
 	endswitch
 End
 
-Function AddUserEpochsForTPLike(string device, STRUCT AnalysisFunction_V3& s)
+Function AddUserEpochsForTPLike(string device, STRUCT AnalysisFunction_V3 &s)
 	variable ret
 
 	switch(s.eventType)
@@ -1102,12 +1102,12 @@ Function AddUserEpochsForTPLike(string device, STRUCT AnalysisFunction_V3& s)
 	endswitch
 End
 
-Function DashboardAnaFunc(string device, STRUCT AnalysisFunction_V3& s)
+Function DashboardAnaFunc(string device, STRUCT AnalysisFunction_V3 &s)
 	string win, key, ref, str
 	variable index
 
 	win = DB_GetBoundDataBrowser(device)
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	DFREF  dfr      = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
 	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
 
@@ -1129,20 +1129,20 @@ Function DashboardAnaFunc(string device, STRUCT AnalysisFunction_V3& s)
 			ED_AddEntryToLabnotebook(device, key, setPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 			break
 		default:
-			// do nothing
+		// do nothing
 	endswitch
 End
 
-Function JustFail(string device, STRUCT AnalysisFunction_V3& s)
+Function JustFail(string device, STRUCT AnalysisFunction_V3 &s)
 	FAIL()
 End
 
-static Function ILCUCheck_IGNORE(string device, STRUCT AnalysisFunction_V3& s)
+static Function ILCUCheck_IGNORE(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable nonExistingSweep
 
-	WAVE/T textualValues = GetLBTextualValues(device)
-	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues   = GetLBTextualValues(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
 
 	// fetch some existing entries from the LBN
 	WAVE/Z sweepCounts = GetLastSetting(numericalValues, s.sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)

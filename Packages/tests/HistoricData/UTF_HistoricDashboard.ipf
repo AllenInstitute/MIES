@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HistoricDashboard
@@ -9,9 +9,9 @@ static Function TestCompression()
 
 	path = GetInputPath()
 
-	refData = "abcd"
+	refData  = "abcd"
 	filename = "test.bak"
-	compfile = filename  + ZSTD_SUFFIX
+	compfile = filename + ZSTD_SUFFIX
 	fullPath = path + filename
 	compPath = path + compfile
 
@@ -69,7 +69,7 @@ Function TestAnalysisBrowserAddingFiles()
 	WAVE/T map = GetAnalysisBrowserMap()
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), DimSize(files, ROWS))
 
-	holeIndex = 1
+	holeIndex   = 1
 	fileToReadd = map[holeIndex]
 
 	SetListBoxSelection(abWin, "listbox_AB_Folders", LISTBOX_SELECTED, holeIndex)
@@ -128,8 +128,8 @@ End
 
 static Function CheckNumberOfSelectedRows(string bsPanel)
 
-	DFREF dfr = BSP_GetFolder(bsPanel, MIES_BSP_PANEL_FOLDER)
-	WAVE listBoxSelWave = GetAnaFuncDashboardselWave(dfr)
+	DFREF dfr            = BSP_GetFolder(bsPanel, MIES_BSP_PANEL_FOLDER)
+	WAVE  listBoxSelWave = GetAnaFuncDashboardselWave(dfr)
 	Duplicate/FREE/RMD=[][][0] listBoxSelWave, listBoxSelWaveFirstLayer
 
 	return Sum(listBoxSelWaveFirstLayer) / DimSize(listBoxSelWave, COLS)

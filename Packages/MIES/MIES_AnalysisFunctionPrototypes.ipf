@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -21,9 +21,9 @@
 ///
 /// @return ignored
 Function AFP_ANALYSIS_FUNC_V1(device, eventType, DAQDataWave, headStage)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage
 End
 
@@ -39,9 +39,9 @@ End
 ///
 /// @return see @ref AnalysisFunction_V3DescriptionTable
 Function AFP_ANALYSIS_FUNC_V2(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	return 0
@@ -52,7 +52,7 @@ End
 ///
 /// @return see @ref AnalysisFunction_V3DescriptionTable
 Function AFP_ANALYSIS_FUNC_V3(device, s)
-	string device
+	string                      device
 	STRUCT AnalysisFunction_V3 &s
 
 	return 0
@@ -78,5 +78,5 @@ End
 
 /// @brief Prototype function for the user supplied parameter check function
 ///
-Function/S AFP_PARAM_CHECK_V2(string name, struct CheckParametersStruct &s)
+Function/S AFP_PARAM_CHECK_V2(string name, STRUCT CheckParametersStruct &s)
 End

@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=DashboardTests
@@ -12,9 +12,9 @@ End
 static Function DAB_Indexing([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_DB1"                                           + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:DashboardAnaFunc:"  + \
-								                     "_IST:StimulusSetB_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_DB1"                                          + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:DashboardAnaFunc:" + \
+	                             "_IST:StimulusSetB_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -49,7 +49,7 @@ static Function DAB_Indexing_REENTRY([string str])
 	actual = infoWave[0][%$"Ongoing DAQ"]
 	CHECK_EQUAL_STR(ref, actual)
 
-	Duplicate/FREE/RMD=[0,1][] listWave, listWaveDup
+	Duplicate/FREE/RMD=[0, 1][] listWave, listWaveDup
 
 	Make/FREE/T refListWaveDup = {{"StimulusSetA_DA_0", "StimulusSetB_DA_0"}, {"DashboardAnaFunc", "n/a"}, {"0", "0"}, {"Pass", "n/a"}}
 
@@ -77,16 +77,16 @@ End
 
 static Function DAB_Skipping_preAcq(string device)
 
-	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val=CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = CHECKBOX_SELECTED)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function DAB_Skipping([string str])
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_DB1"                                   + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:JustFail:"  + \
-								                     "_IST:StimulusSetB_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_DB1"                                  + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:_AF:JustFail:" + \
+	                             "_IST:StimulusSetB_DA_0:")
 
 	AcquireData_NG(s, str)
 End

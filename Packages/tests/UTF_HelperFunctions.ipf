@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=TestHelperFunctions
@@ -288,26 +288,26 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 
 	// HS 0: DAC 2 and ADC 6
 	// HS 1: DAC 3 and ADC 7
-	valuesDAC[]  = NaN
+	valuesDAC[]        = NaN
 	valuesDAC[0][0][0] = 2
 	valuesDAC[0][0][1] = 3
-	keys[0][0][0] = "DAC"
-	keys[2][0][0] = "0.1"
+	keys[0][0][0]      = "DAC"
+	keys[2][0][0]      = "0.1"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	valuesADC[]  = NaN
+	valuesADC[]        = NaN
 	valuesADC[0][0][0] = 6
 	valuesADC[0][0][1] = 7
-	keys[0][0][0] = "ADC"
-	keys[2][0][0] = "0.1"
+	keys[0][0][0]      = "ADC"
+	keys[2][0][0]      = "0.1"
 	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	values[]  = 0
+	values[]        = 0
 	values[0][0][0] = 1
 	values[0][0][1] = 1
-	keys[0][0][0] = "Headstage Active"
-	keys[1][0][0] = LABNOTEBOOK_BINARY_UNIT
-	keys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+	keys[0][0][0]   = "Headstage Active"
+	keys[1][0][0]   = LABNOTEBOOK_BINARY_UNIT
+	keys[2][0][0]   = LABNOTEBOOK_NO_TOLERANCE
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	keys = ""
@@ -315,221 +315,221 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	// numerical entries
 
 	// DAC 4: unassoc (old)
-	values[] = NaN
+	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 123
-	keys[0][0][0] = CreateLBNUnassocKey(key, 4, NaN) // old format does not include the channelType
+	keys[0][0][0]                 = CreateLBNUnassocKey(key, 4, NaN) // old format does not include the channelType
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// ADC 8: unassoc (old)
-	values[] = NaN
+	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 789
-	keys[0][0][0] = CreateLBNUnassocKey(key, 8, NaN) // old format does not include the channelType
+	keys[0][0][0]                 = CreateLBNUnassocKey(key, 8, NaN) // old format does not include the channelType
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// associated
-	values[] = NaN
+	values[]        = NaN
 	values[0][0][0] = 131415
 	values[0][0][1] = 161718
-	keys[0][0][0] = key
+	keys[0][0][0]   = key
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	values[] = NaN
+	values[]        = NaN
 	values[0][0][0] = I_CLAMP_MODE
-	keys[0][0][0] = CLAMPMODE_ENTRY_KEY
-	keys[2][0][0] = "-"
+	keys[0][0][0]   = CLAMPMODE_ENTRY_KEY
+	keys[2][0][0]   = "-"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// textual entries
 
 	// DAC 4: unassoc (old)
-	valuesTxt[] = ""
+	valuesTxt[]                      = ""
 	valuesTxt[0][0][INDEP_HEADSTAGE] = "123"
-	keys[0][0][0] = CreateLBNUnassocKey(keyTxt, 4, NaN) // old format does not include the channelType
+	keys[0][0][0]                    = CreateLBNUnassocKey(keyTxt, 4, NaN) // old format does not include the channelType
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// ADC 8: unassoc (old)
-	valuesTxt[] = ""
+	valuesTxt[]                      = ""
 	valuesTxt[0][0][INDEP_HEADSTAGE] = "789"
-	keys[0][0][0] = CreateLBNUnassocKey(keyTxt, 8, NaN) // old format does not include the channelType
+	keys[0][0][0]                    = CreateLBNUnassocKey(keyTxt, 8, NaN) // old format does not include the channelType
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// associated
-	valuesTxt[] = ""
+	valuesTxt[]        = ""
 	valuesTxt[0][0][0] = "131415"
 	valuesTxt[0][0][1] = "161718"
-	keys[0][0][0] = keyTxt
+	keys[0][0][0]      = keyTxt
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	sweepNo = 1
 
-	valuesDAC[]  = NaN
+	valuesDAC[]        = NaN
 	valuesDAC[0][0][0] = 2
 	valuesDAC[0][0][1] = 3
-	keys[0][0][0] = "DAC"
+	keys[0][0][0]      = "DAC"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	valuesADC[]  = NaN
+	valuesADC[]        = NaN
 	valuesADC[0][0][0] = 6
 	valuesADC[0][0][1] = 7
-	keys[0][0][0] = "ADC"
+	keys[0][0][0]      = "ADC"
 	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	values[]  = 0
+	values[]        = 0
 	values[0][0][0] = 1
 	values[0][0][1] = 1
-	keys[0][0][0] = "Headstage Active"
+	keys[0][0][0]   = "Headstage Active"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// numerical entries
 
 	// DAC 5: unassoc (new)
-	values[] = NaN
+	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 456
-	keys[0][0][0] = CreateLBNUnassocKey(key, 5, XOP_CHANNEL_TYPE_DAC)
+	keys[0][0][0]                 = CreateLBNUnassocKey(key, 5, XOP_CHANNEL_TYPE_DAC)
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// ADC 9: unassoc (new)
-	values[] = NaN
+	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 101112
-	keys[0][0][0] = CreateLBNUnassocKey(key, 9, XOP_CHANNEL_TYPE_ADC)
+	keys[0][0][0]                 = CreateLBNUnassocKey(key, 9, XOP_CHANNEL_TYPE_ADC)
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// associated
-	values[] = NaN
+	values[]        = NaN
 	values[0][0][0] = 192021
 	values[0][0][1] = 222324
-	keys[0][0][0] = key
+	keys[0][0][0]   = key
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	values[] = NaN
+	values[]        = NaN
 	values[0][0][0] = V_CLAMP_MODE
-	keys[0][0][0] = CLAMPMODE_ENTRY_KEY
+	keys[0][0][0]   = CLAMPMODE_ENTRY_KEY
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// textual entries
 
 	// DAC 5: unassoc (new)
-	valuesTxt[] = ""
+	valuesTxt[]                      = ""
 	valuesTxt[0][0][INDEP_HEADSTAGE] = "456"
-	keys[0]= CreateLBNUnassocKey(keyTxt, 5, XOP_CHANNEL_TYPE_DAC)
+	keys[0]                          = CreateLBNUnassocKey(keyTxt, 5, XOP_CHANNEL_TYPE_DAC)
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// ADC 9: unassoc (new)
-	valuesTxT[] = ""
+	valuesTxT[]                      = ""
 	valuesTxT[0][0][INDEP_HEADSTAGE] = "101112"
-	keys[0][0][0] = CreateLBNUnassocKey(keyTxt, 9, XOP_CHANNEL_TYPE_ADC)
+	keys[0][0][0]                    = CreateLBNUnassocKey(keyTxt, 9, XOP_CHANNEL_TYPE_ADC)
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// associated
-	valuesTxT[] = ""
+	valuesTxT[]        = ""
 	valuesTxT[0][0][0] = "192021"
 	valuesTxT[0][0][1] = "222324"
-	keys[0][0][0] = keyTxt
+	keys[0][0][0]      = keyTxt
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	sweepNo = 2
 
-	valuesDAC[]  = NaN
+	valuesDAC[]        = NaN
 	valuesDAC[0][0][0] = 2
 	valuesDAC[0][0][1] = 3
-	keys[0][0][0] = "DAC"
+	keys[0][0][0]      = "DAC"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	valuesADC[]  = NaN
+	valuesADC[]        = NaN
 	valuesADC[0][0][0] = 6
 	valuesADC[0][0][1] = 7
-	keys[0][0][0] = "ADC"
+	keys[0][0][0]      = "ADC"
 	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	values[]  = 0
+	values[]        = 0
 	values[0][0][0] = 1
 	values[0][0][1] = 1
-	keys[0][0][0] = "Headstage Active"
+	keys[0][0][0]   = "Headstage Active"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	values[] = NaN
+	values[]        = NaN
 	values[0][0][0] = I_EQUAL_ZERO_MODE
-	keys[0][0][0] = CLAMPMODE_ENTRY_KEY
+	keys[0][0][0]   = CLAMPMODE_ENTRY_KEY
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// indep headstage
-	values[] = NaN
+	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 252627
-	keys[0][0][0] = key
+	keys[0][0][0]                 = key
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	valuesTxt[] = ""
+	valuesTxt[]                      = ""
 	valuesTxt[0][0][INDEP_HEADSTAGE] = "252627"
-	keys[0][0][0] = keyTxt
+	keys[0][0][0]                    = keyTxt
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	sweepNo = 3
 
 	// HS0 with DA1 and AD0
-	valuesDAC[]  = NaN
+	valuesDAC[]        = NaN
 	valuesDAC[0][0][0] = 1
-	keys[0][0][0] = "DAC"
+	keys[0][0][0]      = "DAC"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	valuesADC[]  = NaN
+	valuesADC[]        = NaN
 	valuesADC[0][0][0] = 0
-	keys[0][0][0] = "ADC"
+	keys[0][0][0]      = "ADC"
 	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// Create unassoc AD1 and DA0
-	values[] = NaN
+	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 1
-	keys[0][0][0] = CreateLBNUnassocKey("ADC", 1, XOP_CHANNEL_TYPE_ADC)
-	keys[2][0][0] = "0.1"
+	keys[0][0][0]                 = CreateLBNUnassocKey("ADC", 1, XOP_CHANNEL_TYPE_ADC)
+	keys[2][0][0]                 = "0.1"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
-	values[] = NaN
+	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 0
-	keys[0][0][0] = CreateLBNUnassocKey("DAC", 0, XOP_CHANNEL_TYPE_DAC)
-	keys[2][0][0] = "0.1"
+	keys[0][0][0]                 = CreateLBNUnassocKey("DAC", 0, XOP_CHANNEL_TYPE_DAC)
+	keys[2][0][0]                 = "0.1"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	values[]  = 0
+	values[]        = 0
 	values[0][0][0] = 1
-	keys[0][0][0] = "Headstage Active"
+	keys[0][0][0]   = "Headstage Active"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	values[] = NaN
+	values[]        = NaN
 	values[0][0][0] = V_CLAMP_MODE
-	keys[0][0][0] = CLAMPMODE_ENTRY_KEY
+	keys[0][0][0]   = CLAMPMODE_ENTRY_KEY
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// indep headstage
-	values[] = NaN
+	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = hwType
-	keys[0][0][0] = "Digitizer Hardware Type"
-	keys[2][0][0] = "1"
+	keys[0][0][0]                 = "Digitizer Hardware Type"
+	keys[2][0][0]                 = "1"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	if(hwType == HARDWARE_NI_DAC)
 		Make/FREE/T/N=(NUM_DA_TTL_CHANNELS) ttlChannels
-		ttlChannels[2] = "2"
-		strVal = TextWaveToList(ttlChannels, ";")
-		valuesTxt[] = ""
+		ttlChannels[2]                   = "2"
+		strVal                           = TextWaveToList(ttlChannels, ";")
+		valuesTxt[]                      = ""
 		valuesTxt[0][0][INDEP_HEADSTAGE] = strVal
-		keys[0][0][0] = "TTL channels"
-		keys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+		keys[0][0][0]                    = "TTL channels"
+		keys[2][0][0]                    = LABNOTEBOOK_NO_TOLERANCE
 		ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	elseif(hwType == HARDWARE_ITC_DAC)
 
-		values[] = NaN
-		keys = ""
+		values[]                      = NaN
+		keys                          = ""
 		values[0][0][INDEP_HEADSTAGE] = IsITC1600(device) ? HARDWARE_ITC_TTL_1600_RACK_ZERO : HARDWARE_ITC_TTL_DEF_RACK_ZERO
-		keys[0][0][0] = "TTL rack zero channel"
-		keys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+		keys[0][0][0]                 = "TTL rack zero channel"
+		keys[2][0][0]                 = LABNOTEBOOK_NO_TOLERANCE
 		ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-		values[] = NaN
-		keys = ""
+		values[]                      = NaN
+		keys                          = ""
 		values[0][0][INDEP_HEADSTAGE] = 1 << 2
-		keys[0][0][0] = "TTL rack zero bits"
-		keys[1][0][0] = "bit mask"
-		keys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+		keys[0][0][0]                 = "TTL rack zero bits"
+		keys[1][0][0]                 = "bit mask"
+		keys[2][0][0]                 = LABNOTEBOOK_NO_TOLERANCE
 		ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 	endif
 
@@ -554,7 +554,7 @@ Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUN
 	string list, key, keyTxt
 	variable numChannels, hwType
 
-	sweepNo = ParamIsDefault(sweepNo) ? 0: sweepNo
+	sweepNo = ParamIsDefault(sweepNo) ? 0 : sweepNo
 	if(ParamIsDefault(sweepGen))
 		FUNCREF FakeSweepDataGeneratorProto sweepGen = FakeSweepDataGeneratorDefault
 	endif
@@ -565,7 +565,7 @@ Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUN
 
 	// Use old 2D data format as sweep template and rely on sweep splitting for upconversion
 	WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-	WAVE config = GetDAQConfigWave(device)
+	WAVE config        = GetDAQConfigWave(device)
 	hwType = GetHardwareType(device)
 	switch(sweepNo)
 		case 0: // intended drop through
@@ -655,8 +655,8 @@ End
 Function/WAVE TrackAnalysisFunctionCalls()
 	variable i
 
-	DFREF dfr = root:
-	WAVE/Z/SDFR=dfr wv = anaFuncTracker
+	DFREF           dfr = root:
+	WAVE/Z/SDFR=dfr wv  = anaFuncTracker
 
 	if(WaveExists(wv))
 		return wv
@@ -676,8 +676,8 @@ Function/WAVE TrackAnalysisFunctionOrder([numHeadstages])
 
 	variable i
 
-	DFREF dfr = root:
-	WAVE/D/Z/SDFR=dfr wv = anaFuncOrder
+	DFREF             dfr = root:
+	WAVE/D/Z/SDFR=dfr wv  = anaFuncOrder
 
 	if(WaveExists(wv))
 		return wv
@@ -696,8 +696,8 @@ End
 
 Function/WAVE GetTrackActiveSetCount()
 
-	DFREF dfr = root:
-	WAVE/Z/SDFR=dfr wv = anaFuncActiveSetCount
+	DFREF           dfr = root:
+	WAVE/Z/SDFR=dfr wv  = anaFuncActiveSetCount
 
 	if(WaveExists(wv))
 		return wv
@@ -715,8 +715,8 @@ Function/WAVE GetTrackSweepCounts()
 
 	variable i
 
-	DFREF dfr = root:
-	WAVE/Z/SDFR=dfr wv = anaFuncSweepTracker
+	DFREF           dfr = root:
+	WAVE/Z/SDFR=dfr wv  = anaFuncSweepTracker
 
 	if(WaveExists(wv))
 		return wv
@@ -785,7 +785,7 @@ Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable m
 	variable chan
 	string ctrl, title, unit
 
-	for(chan :  asyncChannels)
+	for(chan : asyncChannels)
 		ctrl = GetPanelControl(chan, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
 		PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
 
@@ -823,7 +823,7 @@ Function/WAVE ExtractSweepsFromSFPairs(WAVE/T/Z wv)
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/T data = ListToTextWave(wv[i], ",")
 		data[] = StringFromList(0, data)
-		wv[i] = TextWaveToList(data, ";")
+		wv[i]  = TextWaveToList(data, ";")
 	endfor
 
 	return wv
@@ -864,7 +864,7 @@ End
 Function ExhaustMemory(amountOfFreeMemoryLeft)
 	variable amountOfFreeMemoryLeft
 
-	variable i, expo=10, err
+	variable i, expo = 10, err
 	string str
 
 	for(i = expo; i >= 0;)
@@ -885,7 +885,7 @@ Function ExhaustMemory(amountOfFreeMemoryLeft)
 End
 
 Function LoadStimsetsIfRequired()
-	string filepath
+	string   filepath
 	variable needsLoading
 
 	filepath = GetTestStimsetFullFilePath()
@@ -912,7 +912,7 @@ End
 Function MoveStimsetsIntoPlace()
 
 	GetMiesPath()
-	DuplicateDataFolder	root:WaveBuilder, root:MIES:WaveBuilder
+	DuplicateDataFolder root:WaveBuilder, root:MIES:WaveBuilder
 	REQUIRE(DataFolderExists("root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"))
 End
 
@@ -999,7 +999,7 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 
 	sweepBrowsers = ""
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
-	WAVE expBrowserSel = GetExperimentBrowserGUISel()
+	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 
 	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_NON_EMPTY)
 	INFO("Trying to load files @%s", s = files)
@@ -1053,7 +1053,7 @@ End
 
 Function ResetOverrideResults()
 
-	KillOrMoveToTrash(wv=root:overrideResults)
+	KillOrMoveToTrash(wv = root:overrideResults)
 	Make/N=0 root:overrideResults
 End
 
@@ -1061,13 +1061,13 @@ Function [string baseSet, string stimsetList, string customWavePath, variable am
 
 	string setNameC, setNameF1, setNameF2, setNameB, formula, wPath
 
-	string wName = "customWave"
-	string setNameCustom = "CustomSet"
-	string setNameFormula1 = "formula1"
-	string setNameFormula2 = "formula2"
-	string setNameBase = "baseSet"
-	string chanTypeSuffix = "_DA_0"
-	variable val = 3
+	string   wName           = "customWave"
+	string   setNameCustom   = "CustomSet"
+	string   setNameFormula1 = "formula1"
+	string   setNameFormula2 = "formula2"
+	string   setNameBase     = "baseSet"
+	string   chanTypeSuffix  = "_DA_0"
+	variable val             = 3
 
 	DFREF dfr = GetWaveBuilderPath()
 	KillDataFolder dfr

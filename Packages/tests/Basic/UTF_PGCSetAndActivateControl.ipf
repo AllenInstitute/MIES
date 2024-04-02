@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PGC_Testing
@@ -26,44 +26,44 @@ End
 
 Function CreatePGCTestPanel_IGNORE()
 
-	NewPanel /K=1 /W=(265,784,820,987)
-	String/G root:panel = S_name
+	NewPanel/K=1/W=(265, 784, 820, 987)
+	string/G root:panel = S_name
 
-	PopupMenu popup_ctrl, proc=PGCT_PopMenuProc,value=#("\"" + PGCT_POPUPMENU_ENTRIES + "\""), mode = 1
-	PopupMenu popup_ctrl_colortable,pos={68.00,114.00},size={200.00,19.00},proc=PGCT_PopMenuProc
-	PopupMenu popup_ctrl_colortable,mode=2,value= #"\"*COLORTABLEPOP*\""
+	PopupMenu popup_ctrl, proc=PGCT_PopMenuProc, value=#("\"" + PGCT_POPUPMENU_ENTRIES + "\""), mode=1
+	PopupMenu popup_ctrl_colortable, pos={68.00, 114.00}, size={200.00, 19.00}, proc=PGCT_PopMenuProc
+	PopupMenu popup_ctrl_colortable, mode=2, value=#"\"*COLORTABLEPOP*\""
 
-	CheckBox checkbox_ctrl_mode_checkbox,pos={66.00,1.00},size={39.00,15.00},proc=PGCT_CheckProc
-	CheckBox checkbox_ctrl_mode_checkbox,value= 0
-	CheckBox checkbox_ctrl_disabled,value= 0,disable=DISABLE_CONTROL_BIT,proc=PGCT_CheckProc
+	CheckBox checkbox_ctrl_mode_checkbox, pos={66.00, 1.00}, size={39.00, 15.00}, proc=PGCT_CheckProc
+	CheckBox checkbox_ctrl_mode_checkbox, value=0
+	CheckBox checkbox_ctrl_disabled, value=0, disable=DISABLE_CONTROL_BIT, proc=PGCT_CheckProc
 
-	Slider slider_ctrl,pos={79.00,36.00},size={164.00,56.00}
-	Slider slider_ctrl,limits={0,10,1},value=0,vert=0,proc=PGCT_SliderProc
+	Slider slider_ctrl, pos={79.00, 36.00}, size={164.00, 56.00}
+	Slider slider_ctrl, limits={0, 10, 1}, value=0, vert=0, proc=PGCT_SliderProc
 
-	SetVariable setvar_str_ctrl,pos={184.00,151.00},size={50.00,18.00},proc=PGCT_SetVarProc
-	SetVariable setvar_str_ctrl,value=_STR:"abcd"
+	SetVariable setvar_str_ctrl, pos={184.00, 151.00}, size={50.00, 18.00}, proc=PGCT_SetVarProc
+	SetVariable setvar_str_ctrl, value=_STR:"abcd"
 
-	SetVariable setvar_num_ctrl,pos={120.00,151.00},size={50.00,18.00},proc=PGCT_SetVarProc
-	SetVariable setvar_num_ctrl,value=_NUM:123
+	SetVariable setvar_num_ctrl, pos={120.00, 151.00}, size={50.00, 18.00}, proc=PGCT_SetVarProc
+	SetVariable setvar_num_ctrl, value=_NUM:123
 
-	Button button_ctrl,pos={20.00,148.00},size={50.00,20.00},proc=PGCT_ButtonProc
+	Button button_ctrl, pos={20.00, 148.00}, size={50.00, 20.00}, proc=PGCT_ButtonProc
 
-	ValDisplay valdisp_ctrl,pos={219.00,12.00},size={50.00,17.00}
-	ValDisplay valdisp_ctrl,limits={0,0,0},barmisc={0,1000},value=_NUM:123
+	ValDisplay valdisp_ctrl, pos={219.00, 12.00}, size={50.00, 17.00}
+	ValDisplay valdisp_ctrl, limits={0, 0, 0}, barmisc={0, 1000}, value=_NUM:123
 
-	TabControl tab_ctrl,pos={136.00,175.00},size={50.00,20.00},proc=PGCT_TabProc
-	TabControl tab_ctrl,tabLabel(0)="Tab 0",tabLabel(1)="Tab 1",value=0
+	TabControl tab_ctrl, pos={136.00, 175.00}, size={50.00, 20.00}, proc=PGCT_TabProc
+	TabControl tab_ctrl, tabLabel(0)="Tab 0", tabLabel(1)="Tab 1", value=0
 
 	KillVariables/Z popNum, checked
 	KillStrings/Z popStr, called, curval, dval, sval, tab
 
 	Make/T/O listWave = {"elem A", "elem B"}
 	Make/N=2/O selWave
-	Make/N=(3,2)/O colorWave
+	Make/N=(3, 2)/O colorWave
 	Make/T/O titleWave = {"title"}
 
-	ListBox listbox_ctrl,pos={290.00,11.00},size={252.00,168.00},listWave=listWave, colorWave=colorWave
-	ListBox listbox_ctrl,selWave=selWave,titleWave=titleWave,mode=1,proc=PGCT_ListBoxProc
+	ListBox listbox_ctrl, pos={290.00, 11.00}, size={252.00, 168.00}, listWave=listWave, colorWave=colorWave
+	ListBox listbox_ctrl, selWave=selWave, titleWave=titleWave, mode=1, proc=PGCT_ListBoxProc
 End
 
 Function PGCT_PopMenuProc(pa) : PopupMenuControl
@@ -71,8 +71,8 @@ Function PGCT_PopMenuProc(pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
-			Variable/G popNum = pa.popNum
-			String/G popStr   = pa.popStr
+			variable/G popNum = pa.popNum
+			string/G   popStr = pa.popStr
 			variable/G called = 1
 			break
 	endswitch
@@ -85,8 +85,8 @@ Function PGCT_CheckProc(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			Variable/G checked = cba.checked
-			variable/G called = 1
+			variable/G checked = cba.checked
+			variable/G called  = 1
 			break
 	endswitch
 
@@ -98,8 +98,8 @@ Function PGCT_SliderProc(sa) : SliderControl
 
 	switch(sa.eventCode)
 		default:
-			if( sa.eventCode & 1 ) // value set
-				Variable/G curval = sa.curval
+			if(sa.eventCode & 1) // value set
+				variable/G curval = sa.curval
 				variable/G called = 1
 			endif
 			break
@@ -111,12 +111,12 @@ End
 Function PGCT_SetVarProc(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
-	switch( sva.eventCode )
+	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			Variable/G dval = sva.dval
-			String/G sval = sva.sval
+			variable/G dval   = sva.dval
+			string/G   sval   = sva.sval
 			variable/G called = 1
 			break
 	endswitch
@@ -127,7 +127,7 @@ End
 Function PGCT_ButtonProc(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	switch( ba.eventCode )
+	switch(ba.eventCode)
 		case 2: // mouse up
 			variable/G called = 1
 			break
@@ -139,9 +139,9 @@ End
 Function PGCT_TabProc(tca) : TabControl
 	STRUCT WMTabControlAction &tca
 
-	switch( tca.eventCode )
+	switch(tca.eventCode)
 		case 2: // mouse up
-			Variable/G tab = tca.tab
+			variable/G tab    = tca.tab
 			variable/G called = 1
 			break
 	endswitch
@@ -197,7 +197,7 @@ static Function PGCT_AbortsWithStr([string str])
 	SVAR/SDFR=root: panel
 
 	try
-		PGC_SetAndActivateControl(panel, str, str ="Entry1")
+		PGC_SetAndActivateControl(panel, str, str = "Entry1")
 		FAIL()
 	catch
 		PASS()
@@ -246,7 +246,7 @@ static Function PGCT_AbortsWithoutVarAndStrOrBoth([string str])
 	CHECK(!NVAR_Exists(called))
 
 	try
-		PGC_SetAndActivateControl(panel, str, val = 0, str ="Entry1")
+		PGC_SetAndActivateControl(panel, str, val = 0, str = "Entry1")
 		FAIL()
 	catch
 		PASS()
