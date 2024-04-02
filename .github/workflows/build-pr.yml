@@ -36,6 +36,33 @@ concurrency:
   cancel-in-progress: true
 jobs:
 
+  Ipt:
+    name: 🔎 IPT Format check
+    runs-on: [ self-hosted, Windows ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # no need to checkout submodules or the full history
+      - name: Download ipt binary from server
+        run: curl -o ipt.exe "https://byte-physics.de/public-downloads/aistorage/transfer/ipt/0.4.0/ipt.exe"
+      - name: IPT version
+        run: ./ipt.exe --version
+      - name: Format code
+        run: tools/ipt-format.sh
+      - name: Check for changed files
+        run: git diff --name-only; git diff --quiet
+      - name: Create patch
+        if: ${{ failure() }}
+        run: git diff > format-changes.patch
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: IPT-assets
+          path: |
+            format-changes.patch
+          if-no-files-found: warn
+
   BuildInstaller:
     name: 🏗 Build ${{ matrix.kind }} installer
     strategy:
@@ -277,6 +304,7 @@ jobs:
     if: ${{ !cancelled() && !inputs.is_called_workflow}}
     needs:
       # All jobs that create new artifacts
+      - Ipt
       - BuildInstaller
       - CompilationEachCommitTest
       - CompilationTest

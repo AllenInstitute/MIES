@@ -1,12 +1,12 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestDAScaleSupra
 
 static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device, string stimset)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                  + \
-								 "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:" + stimset + ":")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                                                  + \
+	                             "__HS" + num2str(PSQ_TEST_HEADSTAGE) + "_DA0_AD0_CM:IC:_ST:" + stimset + ":")
 
 	AdjustAnalysisParamsForPSQ(device, stimset)
 
@@ -38,7 +38,7 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	if(ParamIsDefault(chunk))
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, name, query = 1)
@@ -111,7 +111,7 @@ static Function PS_DS_Supra1([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
-	wv = 0
+	wv         = 0
 	wv[0][][0] = 1
 	wv[1][][0] = 1
 	// all sweeps spike
@@ -185,7 +185,7 @@ static Function PS_DS_Supra1_REENTRY([str])
 End
 
 static Function PS_DS_Supra2_preAcq(string device)
-	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str="*")
+	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str = "*")
 
 	Make/FREE asyncChannels = {2, 4}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "AsyncQCChannels", wv = asyncChannels)
@@ -204,7 +204,7 @@ static Function PS_DS_Supra2([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
-	wv = 0
+	wv         = 0
 	wv[0][][0] = 1
 	wv[1][][0] = 1
 	// Spike and non-spiking
@@ -299,7 +299,7 @@ static Function PS_DS_Supra3([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
-	wv = 0
+	wv         = 0
 	wv[0][][0] = 1
 	wv[1][][0] = 1
 	// Spike and non-spiking
@@ -394,7 +394,7 @@ static Function PS_DS_Supra4([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
-	wv = 0
+	wv         = 0
 	wv[0][][0] = 1
 	wv[1][][0] = 1
 	// Spike and non-spiking
@@ -408,7 +408,7 @@ End
 static Function PS_DS_Supra4_REENTRY([str])
 	string str
 
-	variable sweepNo,  numEntries
+	variable sweepNo, numEntries
 
 	sweepNo = 4
 
@@ -493,7 +493,7 @@ static Function PS_DS_Supra5([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
-	wv = 0
+	wv         = 0
 	wv[0][][0] = 1
 	wv[1][][0] = 1
 	// Spiking
@@ -507,7 +507,7 @@ End
 static Function PS_DS_Supra5_REENTRY([str])
 	string str
 
-	variable sweepNo,  numEntries
+	variable sweepNo, numEntries
 
 	sweepNo = 4
 
@@ -532,16 +532,16 @@ static Function PS_DS_Supra5_REENTRY([str])
 	CHECK_EQUAL_WAVES(spikeDetection, {1, 1, 1, 1, 1}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z spikeCount = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SPIKE_COUNT)
-	CHECK_EQUAL_WAVES(spikeCount, {1 ,2, 5, 10, 17}, mode = WAVE_DATA, tol = 1e-3)
+	CHECK_EQUAL_WAVES(spikeCount, {1, 2, 5, 10, 17}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
 	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, PSQ_TEST_HEADSTAGE)
-	CHECK_EQUAL_WAVES(spikeFreq, {1 ,2, 5, 10, 17}, mode = WAVE_DATA, tol = 1e-3)
+	CHECK_EQUAL_WAVES(spikeFreq, {1, 2, 5, 10, 17}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
-	CHECK_EQUAL_WAVES(fISlope, {0,3.33333333333334,7.14285714285714,12.4517906336088,18.4313725490196}, mode = WAVE_DATA, tol = 1e-3)
+	CHECK_EQUAL_WAVES(fISlope, {0, 3.33333333333334, 7.14285714285714, 12.4517906336088, 18.4313725490196}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -557,11 +557,11 @@ static Function PS_DS_Supra5_REENTRY([str])
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 
-	Make/FREE/D/N=(numEntries) stimScaleRef = {20 + PSQ_DS_OFFSETSCALE_FAKE,                                 \
-														 40 * (1 + DAScaleModifierPerc * PERCENT_TO_ONE) + PSQ_DS_OFFSETSCALE_FAKE, \
-														 60 * (1 + DAScaleModifierPerc * PERCENT_TO_ONE) + PSQ_DS_OFFSETSCALE_FAKE, \
-														 80 + PSQ_DS_OFFSETSCALE_FAKE,                                 \
-														 100 * (1 - DAScaleModifierPerc * PERCENT_TO_ONE) + PSQ_DS_OFFSETSCALE_FAKE}
+	Make/FREE/D/N=(numEntries) stimScaleRef = {20 + PSQ_DS_OFFSETSCALE_FAKE,                                              \
+	                                           40 * (1 + DAScaleModifierPerc * PERCENT_TO_ONE) + PSQ_DS_OFFSETSCALE_FAKE, \
+	                                           60 * (1 + DAScaleModifierPerc * PERCENT_TO_ONE) + PSQ_DS_OFFSETSCALE_FAKE, \
+	                                           80 + PSQ_DS_OFFSETSCALE_FAKE,                                              \
+	                                           100 * (1 - DAScaleModifierPerc * PERCENT_TO_ONE) + PSQ_DS_OFFSETSCALE_FAKE}
 
 	// Explanations for the stimscale:
 	// 1. initial
@@ -603,7 +603,7 @@ static Function PS_DS_Supra6([str])
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
-	wv = 0
+	wv         = 0
 	wv[0][][0] = 1
 	wv[1][][0] = 1
 	// no spikes
@@ -615,7 +615,7 @@ End
 static Function PS_DS_Supra6_REENTRY([str])
 	string str
 
-	variable sweepNo,  numEntries
+	variable sweepNo, numEntries
 
 	sweepNo = 4
 

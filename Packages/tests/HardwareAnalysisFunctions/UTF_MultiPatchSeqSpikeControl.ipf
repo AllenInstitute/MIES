@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=MultiPatchSeqSpikeControl
@@ -12,10 +12,10 @@ static Constant INDEP_SINGLE_SCI = 0x10
 static Function [STRUCT DAQSettings s] MSQ_GetDAQSettings(string device)
 
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB1"                        + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:SC_SpikeControl_DA_0:"  + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:SC_SpikeControl_DA_0:")
+	                             "__HS0_DA0_AD0_CM:IC:_ST:SC_SpikeControl_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:SC_SpikeControl_DA_0:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -38,8 +38,8 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 		textualEntry = !!textualEntry
 	endif
 
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues   = GetLBTextualValues(device)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, str, query = 1)
 
@@ -75,13 +75,13 @@ End
 
 static Function/WAVE GetLBNEntriesWave_IGNORE()
 
-	string list = "sweepPass;setPass;failedPulseLevel;idealSpikeCounts;"                                                                \
-	               + "setSweepCount_HS0;setSweepCount_HS1;"                                                                             \
-	               + "headstagePass_HS0;headstagePass_HS1;stimScale_HS0;stimScale_HS1;"                                                 \
-	               + "rerunTrials_HS0;rerunTrials_HS1;rerunTrialsExceeded_HS0;rerunTrialsExceeded_HS1;"                                 \
-	               + "spikeCounts_HS0;spikeCounts_HS1;spikeCountsState_HS0;spikeCountsState_HS1;"                                       \
-	               + "spikePositions_HS0;spikePositions_HS1;spikePositionQC_HS0;spikePositionQC_HS1;spontSpikeQC_HS0;spontSpikeQC_HS1;" \
-	               + "autoBiasV_HS0;autoBiasV_HS1;"
+	string list = "sweepPass;setPass;failedPulseLevel;idealSpikeCounts;"                                                               \
+	              + "setSweepCount_HS0;setSweepCount_HS1;"                                                                             \
+	              + "headstagePass_HS0;headstagePass_HS1;stimScale_HS0;stimScale_HS1;"                                                 \
+	              + "rerunTrials_HS0;rerunTrials_HS1;rerunTrialsExceeded_HS0;rerunTrialsExceeded_HS1;"                                 \
+	              + "spikeCounts_HS0;spikeCounts_HS1;spikeCountsState_HS0;spikeCountsState_HS1;"                                       \
+	              + "spikePositions_HS0;spikePositions_HS1;spikePositionQC_HS0;spikePositionQC_HS1;spontSpikeQC_HS0;spontSpikeQC_HS1;" \
+	              + "autoBiasV_HS0;autoBiasV_HS1;"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -97,8 +97,8 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 
 	WAVE/WAVE wv = GetLBNEntriesWave_IGNORE()
 
-	wv[%sweepPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
-	wv[%setPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	wv[%sweepPass]        = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	wv[%setPass]          = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	wv[%failedPulseLevel] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_FAILED_PULSE_LEVEL, 0, INDEP_SINGLE_SCI)
 	wv[%idealSpikeCounts] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS, 0, INDEP_SINGLE_SCI)
 
@@ -146,15 +146,15 @@ End
 static Function SC_Test1_preInit(device)
 	string device
 
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var = 2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var = 50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var = 10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var = 1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -231,15 +231,15 @@ End
 static Function SC_Test2_preInit(device)
 	string device
 
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var = 2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var = 50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var = 10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var = 1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -256,7 +256,7 @@ static Function SC_Test2([str])
 	//
 	// [sweep][headstage][pulse][region]
 	wv[][][0, 9][0, 1] += "SpikePosition_ms:3;"
-	wv[][][][]      += "SpontaneousSpikeMax:0.5"
+	wv[][][][]         += "SpontaneousSpikeMax:0.5"
 End
 
 static Function SC_Test2_REENTRY([str])
@@ -308,8 +308,8 @@ static Function SC_Test2_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%spontSpikeQC_HS1], {1, 1}, mode = WAVE_DATA)
 
 	// spike position modifier kicks in
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1,3.5}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1,3.5}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 3.5}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 3.5}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
@@ -320,15 +320,15 @@ End
 static Function SC_Test3_preInit(device)
 	string device
 
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var = 2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var = 50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var = 10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var = 1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -345,7 +345,7 @@ static Function SC_Test3([str])
 	//
 	// [sweep][headstage][pulse][region]
 	wv[][][0, 9][0, 1] += "SpikePosition_ms:7;"
-	wv[][][][]      += "SpontaneousSpikeMax:0.5"
+	wv[][][][]         += "SpontaneousSpikeMax:0.5"
 End
 
 static Function SC_Test3_REENTRY([str])
@@ -406,8 +406,8 @@ static Function SC_Test3_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%spontSpikeQC_HS0], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%spontSpikeQC_HS1], {1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1,1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1,1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
@@ -418,15 +418,15 @@ End
 static Function SC_Test4_preInit(device)
 	string device
 
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=60)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var = 2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var = 60)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var = 10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var = 1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 2)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -443,7 +443,7 @@ static Function SC_Test4([str])
 	//
 	// [sweep][headstage][pulse][region]
 	wv[][][0, 9][0, 1] += "SpikePosition_ms:1,11.5;"
-	wv[][][][]      += "SpontaneousSpikeMax:0.5"
+	wv[][][][]         += "SpontaneousSpikeMax:0.5"
 End
 
 static Function SC_Test4_REENTRY([str])
@@ -504,8 +504,8 @@ static Function SC_Test4_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%spontSpikeQC_HS0], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%spontSpikeQC_HS1], {1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1,1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1,1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
@@ -516,15 +516,15 @@ End
 static Function SC_Test5_preInit(device)
 	string device
 
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var = 2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var = 50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var = 10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var = 1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 2)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -542,7 +542,7 @@ static Function SC_Test5([str])
 	//
 	// [sweep][headstage][pulse][region]
 	wv[][][0, 9][0, 1] += "SpikePosition_ms:7,9;"
-	wv[][][][]      += "SpontaneousSpikeMax:1.5"
+	wv[][][][]         += "SpontaneousSpikeMax:1.5"
 End
 
 static Function SC_Test5_REENTRY([str])
@@ -615,15 +615,15 @@ End
 static Function SC_Test6_preInit(device)
 	string device
 
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=3)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="*")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var = 3)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str = "*")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var = 50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var = 10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var = 1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -640,7 +640,7 @@ static Function SC_Test6([str])
 	//
 	// [sweep][headstage][pulse][region]
 	wv[][][0, 9][0, 1] += "SpikePosition_ms:3;"
-	wv[][][][]      += "SpontaneousSpikeMax:0.5"
+	wv[][][][]         += "SpontaneousSpikeMax:0.5"
 End
 
 static Function SC_Test6_REENTRY([str])
@@ -692,8 +692,8 @@ static Function SC_Test6_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%spontSpikeQC_HS1], {1, 1}, mode = WAVE_DATA)
 
 	// spike position modifier kicks in
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1,3}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1,3}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 3}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
@@ -704,15 +704,15 @@ End
 static Function SC_Test7_preInit(device)
 	string device
 
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=90)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var = 2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var = 90)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var = 10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var = 1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 2)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -730,7 +730,7 @@ static Function SC_Test7([str])
 	//
 	// [sweep][headstage][pulse][region]
 	wv[][0][][0, 1]  = "SpikePosition_ms:4,6"
-	wv[][0][0][0, 1] = "" // no spike
+	wv[][0][0][0, 1] = ""                       // no spike
 	wv[][0][1][0, 1] = "SpikePosition_ms:4,6,8" // three spikes
 
 	wv[0][1][][0, 1] = "SpikePosition_ms:4"
@@ -738,7 +738,7 @@ static Function SC_Test7([str])
 	wv[2][1][][0, 1] = "SpikePosition_ms:7,9"
 
 	wv[3][1][][0, 1]  = "SpikePosition_ms:4,6"
-	wv[3][1][0][0, 1] = "" // no spike
+	wv[3][1][0][0, 1] = ""                          // no spike
 	wv[3][1][2][0, 1] = "SpikePosition_ms:4,6,8,10" // four spikes
 
 	wv[][][][] += ";SpontaneousSpikeMax:0.5"
@@ -826,15 +826,15 @@ End
 static Function SC_Test8_preInit(device)
 	string device
 
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="*")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=3)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="*")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "*")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var = 3)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str = "*")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var = 50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var = 10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -853,13 +853,13 @@ static Function SC_Test8([str])
 	// sweep 0, HS0: Too few (SPF)
 	// sweep 0, HS1: Good (SPF)
 
-	wv[0][0][][0, 1]  = "" // no spike
+	wv[0][0][][0, 1] = ""                   // no spike
 	wv[0][1][][0, 1] = "SpikePosition_ms:4"
 
 	// sweep 1, HS0: Good (SPF)
 	// sweep 1, HS1: Too Many
 
-	wv[1][0][][0, 1]  = "SpikePosition_ms:3"
+	wv[1][0][][0, 1] = "SpikePosition_ms:3"
 	wv[1][1][][0, 1] = "SpikePosition_ms:6,8"
 
 	// sweep 2, HS0: Too Many (SPF)
@@ -872,7 +872,7 @@ static Function SC_Test8([str])
 	// sweep 3, HS1: Too Few (SPF)
 
 	wv[3][0][][0, 1] = "SpikePosition_ms:6.5"
-	wv[3][1][][0, 1] = "" // no spike
+	wv[3][1][][0, 1] = ""                     // no spike
 
 	wv[][][][] += ";SpontaneousSpikeMax:0.5"
 End
@@ -967,21 +967,21 @@ End
 static Function SC_Test9_preInit(device)
 	string device
 
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=3)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="*")
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var = 2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var = 3)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str = "*")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var = 50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var = 10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var = 1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
 static Function SC_Test9_preAcq(device)
 	string device
 
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=1)
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val = 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -999,7 +999,7 @@ static Function SC_Test9([str])
 	//
 	// [sweep][headstage][pulse][region]
 	wv[][0][0, 9][0, 1] += "SpikePosition_ms:3;"
-	wv[][0][][]      += "SpontaneousSpikeMax:0.5"
+	wv[][0][][]         += "SpontaneousSpikeMax:0.5"
 End
 
 static Function SC_Test9_REENTRY([str])
@@ -1047,9 +1047,9 @@ static Function SC_Test9_REENTRY([str])
 	CHECK_WAVE(lbnEntries[%spontSpikeQC_HS1], NULL_WAVE)
 
 	// spike position modifier kicks in
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1,3}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 3}, mode = WAVE_DATA)
 	// but not here as this HS is in VC
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1,1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%autoBiasV_HS1], NULL_WAVE)

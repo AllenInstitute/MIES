@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UTF_UpgradeDataLoc
@@ -93,7 +93,7 @@ End
 Function MovesSrcToNewFolder1()
 
 	string oldFolder = "root:A1:A2"
-	string newFolder   = "root:C1:C2"
+	string newFolder = "root:C1:C2"
 
 	CHECK(DataFolderExists(oldFolder))
 	CHECK(!DataFolderExists(newFolder))
@@ -105,7 +105,7 @@ End
 Function MovesSrcToNewFolder2()
 
 	string oldFolder = "root:A1:A2:"
-	string newFolder   = "root:C1:C2:"
+	string newFolder = "root:C1:C2:"
 
 	CHECK(DataFolderExists(oldFolder))
 	CHECK(!DataFolderExists(newFolder))
@@ -129,7 +129,7 @@ End
 Function MovesSrcToNewFolderWithRel1()
 
 	string oldFolder = "root:A1::A1:A2" // same as root:A1:A2
-	string newFolder   = "root:C1:C2"
+	string newFolder = "root:C1:C2"
 
 	CHECK(DataFolderExists(oldFolder))
 	CHECK(!DataFolderExists(newFolder))
@@ -141,7 +141,7 @@ End
 Function JustReturnsNewFolder1()
 
 	string oldFolder = "root:I_DONT_EXIST"
-	string newFolder   = "root:C1:C2"
+	string newFolder = "root:C1:C2"
 
 	CHECK(!DataFolderExists(oldFolder))
 	CHECK(!DataFolderExists(newFolder))
@@ -153,7 +153,7 @@ End
 Function ReturnsNewIfBothExist()
 
 	string oldFolder = "root:A1:A2"
-	string newFolder   = "root:B1:B2"
+	string newFolder = "root:B1:B2"
 
 	CHECK(DataFolderExists(oldFolder))
 	CHECK(DataFolderExists(newFolder))
@@ -168,9 +168,9 @@ Function DoesNotTouchOtherObjects1()
 	string new, ref
 
 	oldFolder = "root:A1:A2"
-	newFolder   = "root:B1:B2:B3:B4"
+	newFolder = "root:B1:B2:B3:B4"
 
-	Make root:B1:B2:B3:B4/Wave=B4
+	Make root:B1:B2:B3:B4/WAVE=B4
 
 	CHECK(DataFolderExists(oldFolder))
 	CHECK(!DataFolderExists(newFolder))
@@ -188,7 +188,7 @@ Function DoesNotTouchOtherObjects2()
 	oldFolder = "root:A1:A2"
 	newFolder = "root:C1:C2"
 
-	Make root:A1:A2:A3/Wave=A3
+	Make root:A1:A2:A3/WAVE=A3
 
 	CHECK(DataFolderExists(oldFolder))
 	CHECK(!DataFolderExists(newFolder))

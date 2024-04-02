@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -16,7 +16,7 @@ Function TPS_StartBackgroundTestPulse(device)
 End
 
 Function TPS_StopTestPulseSingleDevice(device, [fast])
-	string device
+	string   device
 	variable fast
 
 	if(ParamIsDefault(fast))
@@ -44,17 +44,17 @@ Function TPS_TestPulseFunc(s)
 
 	if(s.wmbs.started)
 		s.wmbs.started = 0
-		s.count  = 0
+		s.count        = 0
 	else
 		s.count += 1
 	endif
 
-	HW_ITC_ResetFifo(deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_ITC_ResetFifo(deviceID, flags = HARDWARE_ABORT_ON_ERROR)
+	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 
 	do
 		// nothing
-	while (HW_ITC_MoreData(deviceID, flags=(HARDWARE_ABORT_ON_ERROR)))
+	while(HW_ITC_MoreData(deviceID, flags = (HARDWARE_ABORT_ON_ERROR)))
 
 	HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1, zeroDAC = 1, flags = HARDWARE_ABORT_ON_ERROR)
 
@@ -77,7 +77,7 @@ End
 /// @param fast       [optional, defaults to false] Starts TP without any checks or
 ///                   setup. Can be called after stopping it with TP_StopTestPulseFast().
 Function TPS_StartTestPulseSingleDevice(device, [fast])
-	string device
+	string   device
 	variable fast
 
 	variable bkg
@@ -103,7 +103,7 @@ Function TPS_StartTestPulseSingleDevice(device, [fast])
 		return NaN
 	endif
 
-	AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE),1
+	AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE), 1
 
 	DQ_StopOngoingDAQ(device, DQ_STOP_REASON_TP_STARTED)
 
@@ -136,7 +136,7 @@ End
 ///                                           of seconds only.
 /// @return zero if time elapsed, one if the Testpulse was manually stopped
 Function TPS_StartTestPulseForeground(device, [elapsedTime])
-	string device
+	string   device
 	variable elapsedTime
 
 	variable i, refTime, timeLeft
@@ -154,11 +154,11 @@ Function TPS_StartTestPulseForeground(device, [elapsedTime])
 	do
 		DoXOPIdle
 		HW_ITC_ResetFifo(deviceID)
-		HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+		HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 
 		do
 			// nothing
-		while (HW_ITC_MoreData(deviceID, flags=(HARDWARE_ABORT_ON_ERROR)))
+		while(HW_ITC_MoreData(deviceID, flags = (HARDWARE_ABORT_ON_ERROR)))
 
 		HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1, zeroDAC = 1, flags = HARDWARE_ABORT_ON_ERROR)
 		SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE)

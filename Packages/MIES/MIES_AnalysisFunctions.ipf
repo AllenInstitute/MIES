@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -159,24 +159,24 @@
 
 /// @name Initial parameters for stimulation
 ///@{
-static StrConstant DEFAULT_DEVICE = "ITC18USB_Dev_0"        ///< device device
-static StrConstant STIM_SET_LOCAL = "PulseTrain_150Hz_DA_0" ///< Initial stimulus set
-static Constant VM1_LOCAL         = -55                     ///< Initial holding potential
-static Constant VM2_LOCAL         = -85                     ///< Second holding potential to switch to
-static Constant SCALE_LOCAL       = 70                      ///< Stimulus amplitude
-static Constant NUM_SWEEPS_LOCAL  = 6                       ///< Number of sweeps to acquire
-static Constant ITI_LOCAL         = 15                      ///< Inter-trial-interval
+static StrConstant DEFAULT_DEVICE   = "ITC18USB_Dev_0"        ///< device device
+static StrConstant STIM_SET_LOCAL   = "PulseTrain_150Hz_DA_0" ///< Initial stimulus set
+static Constant    VM1_LOCAL        = -55                     ///< Initial holding potential
+static Constant    VM2_LOCAL        = -85                     ///< Second holding potential to switch to
+static Constant    SCALE_LOCAL      = 70                      ///< Stimulus amplitude
+static Constant    NUM_SWEEPS_LOCAL = 6                       ///< Number of sweeps to acquire
+static Constant    ITI_LOCAL        = 15                      ///< Inter-trial-interval
 ///@}
 
 /// @name Initial settings for oodDAQ stimulation
 ///@{
-static Constant POST_DELAY = 150									 ///< Delay after stimulation event in which no other event can occur in ms
+static Constant POST_DELAY = 150 ///< Delay after stimulation event in which no other event can occur in ms
 ///@}
 
 Function TestAnalysisFunction_V1(device, eventType, DAQDataWave, headStage)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage
 
 	printf "Analysis function version 1 called: device %s, eventType \"%s\", headstage %d\r", device, StringFromList(eventType, EVENT_NAME_LIST), headStage
@@ -184,9 +184,9 @@ Function TestAnalysisFunction_V1(device, eventType, DAQDataWave, headStage)
 End
 
 Function TestAnalysisFunction_V2(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	printf "Analysis function version 2 called: device %s, eventType \"%s\", headstage %d\r", device, StringFromList(eventType, EVENT_NAME_LIST), headStage
@@ -195,8 +195,8 @@ Function TestAnalysisFunction_V2(device, eventType, DAQDataWave, headStage, real
 End
 
 Function TestAnalysisFunction_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	string names, name, type
 	variable numEntries, i
@@ -270,8 +270,8 @@ End
 ///
 /// Used mainly for debugging.
 Function MeasureMidSweepTiming_V3(device, s)
-	string device
-	STRUCT AnalysisFunction_V3& s
+	string                      device
+	STRUCT AnalysisFunction_V3 &s
 
 	NVAR lastCall = $GetTemporaryVar()
 
@@ -295,13 +295,13 @@ Function MeasureMidSweepTiming_V3(device, s)
 End
 
 Function Enforce_VC(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	if(eventType != PRE_DAQ_EVENT)
-	   return 0
+		return 0
 	endif
 
 	if(DAG_GetHeadstageMode(device, headStage) != V_CLAMP_MODE)
@@ -316,18 +316,18 @@ Function Enforce_VC(device, eventType, DAQDataWave, headStage, realDataLength)
 End
 
 Function Enforce_IC(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	if(eventType != PRE_DAQ_EVENT)
-	   return 0
+		return 0
 	endif
 
 	if(DAG_GetHeadstageMode(device, headStage) != I_CLAMP_MODE)
-		variable DAC = AFH_GetDACFromHeadstage(device, headstage)
-		string stimSetName = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
+		variable DAC         = AFH_GetDACFromHeadstage(device, headstage)
+		string   stimSetName = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 		printf "Stimulus set: %s on DAC: %d of headstage: %d requires current clamp mode. Change clamp mode to current clamp to allow data acquistion\r", stimSetName, DAC, headStage
 		return 1
 	endif
@@ -341,9 +341,9 @@ End
 
 /// @brief Force active headstages into voltage clamp
 Function SetStimConfig_Vclamp(device, eventType, DAQDataWave, headStage)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage
 
 	setVClampMode()
@@ -354,9 +354,9 @@ End
 
 /// @brief Force active headstages into current clamp
 Function SetStimConfig_Iclamp(device, eventType, DAQDataWave, headStage)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage
 
 	setIClampMode()
@@ -367,9 +367,9 @@ End
 
 /// @brief Change holding potential midway through stim set
 Function ChangeHoldingPotential(device, eventType, DAQDataWave, headStage)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage
 
 	variable SweepsRemaining = switchHolding(VM2_LOCAL)
@@ -379,9 +379,9 @@ End
 
 /// @brief Print last Stim Set run and headstage mode and holding potential
 Function LastStimSet(device, eventType, DAQDataWave, headStage)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage
 
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
@@ -397,11 +397,11 @@ Function StimParamGUI()
 	variable Vm1, Scale, sweeps, ITI
 
 	StimSetList = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC)
-	stimSet = STIM_SET_LOCAL
-	Vm1 = VM1_LOCAL
-	Scale = SCALE_LOCAL
-	sweeps = NUM_SWEEPS_LOCAL
-	ITI = ITI_LOCAL
+	stimSet     = STIM_SET_LOCAL
+	Vm1         = VM1_LOCAL
+	Scale       = SCALE_LOCAL
+	sweeps      = NUM_SWEEPS_LOCAL
+	ITI         = ITI_LOCAL
 
 	Prompt stimSet, "Choose which stimulus set to run:", popup, StimSetList
 	Prompt Vm1, "Enter initial holding potential: "
@@ -409,11 +409,11 @@ Function StimParamGUI()
 	Prompt sweeps, "Enter number of sweeps to run: "
 	Prompt ITI, "Enter inter-trial interval [s]: "
 
-	DoPrompt "Choose stimulus set and enter initial parameters", stimSet, Vm1,  Scale, sweeps, ITI
+	DoPrompt "Choose stimulus set and enter initial parameters", stimSet, Vm1, Scale, sweeps, ITI
 
 	if(!V_flag)
-		SetStimParam(stimSet,Vm1,Scale,Sweeps,ITI)
-		PGC_SetAndActivateControl(DEFAULT_DEVICE,"DataAcquireButton")
+		SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
+		PGC_SetAndActivateControl(DEFAULT_DEVICE, "DataAcquireButton")
 	endif
 End
 
@@ -429,7 +429,7 @@ Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 	string stimSet
 
 	setHolding(Vm1)
-	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Wave_DA_All",  str = stimset)
+	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Wave_DA_All", str = stimset)
 	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Scale_DA_All", val = scale)
 	PGC_SetAndActivateControl(DEFAULT_DEVICE, "SetVar_DataAcq_SetRepeats", val = sweeps)
 	PGC_SetAndActivateControl(DEFAULT_DEVICE, "SetVar_DataAcq_ITI", val = ITI)
@@ -450,8 +450,8 @@ Function setHolding(Vm1)
 	variable i
 	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
-	for(i=0; i<NUM_HEADSTAGES; i+=1)
-		if (statusHS[i] == 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(statusHS[i] == 1)
 			PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
 			PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_VC", val = Vm1)
 			PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_IC", val = Vm1)
@@ -463,10 +463,10 @@ End
 Function setVClampMode()
 
 	variable i
-	string ctrl
+	string   ctrl
 	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
-	for(i=0; i<NUM_HEADSTAGES; i+=1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(statusHS[i])
 			PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
 			ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, i)
@@ -479,11 +479,11 @@ End
 Function setIClampMode()
 
 	variable i
-	string ctrl
+	string   ctrl
 
 	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
-	for(i=0; i<NUM_HEADSTAGES; i+=1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(statusHS[i])
 			PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
 			ctrl = DAP_GetClampModeControl(I_CLAMP_MODE, i)
@@ -501,7 +501,7 @@ Function switchHolding(Vm2)
 
 	variable numSweeps, SweepsRemaining, switchSweep, i, clampMode
 
-	numSweeps = GetValDisplayAsNum(DEFAULT_DEVICE, "valdisp_DataAcq_SweepsInSet")
+	numSweeps       = GetValDisplayAsNum(DEFAULT_DEVICE, "valdisp_DataAcq_SweepsInSet")
 	SweepsRemaining = DAG_GetNumericalValue(DEFAULT_DEVICE, "valdisp_DataAcq_TrialsCountdown") - 1
 
 	if(numSweeps <= 1)
@@ -510,11 +510,11 @@ Function switchHolding(Vm2)
 		return SweepsRemaining
 	endif
 
-	switchSweep = floor(numSweeps/2)
+	switchSweep = floor(numSweeps / 2)
 	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
 	if(SweepsRemaining == switchSweep)
-		for(i=0; i<NUM_HEADSTAGES; i+=1)
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(statusHS[i])
 				clampMode = DAG_GetHeadstageMode(DEFAULT_DEVICE, i)
 				PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
@@ -558,24 +558,24 @@ Function LastStimSetRun()
 	variable LastSweep, i, holding_i
 	string StimSet_i, clampHS_i
 
-	WAVE /T textualValues = GetLBTextualValues(DEFAULT_DEVICE)
-	WAVE  numericalValues = GetLBNumericalValues(DEFAULT_DEVICE)
-	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE/T textualValues   = GetLBTextualValues(DEFAULT_DEVICE)
+	WAVE   numericalValues = GetLBNumericalValues(DEFAULT_DEVICE)
+	WAVE   statusHS        = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 	LastSweep = AFH_GetLastSweepAcquired(DEFAULT_DEVICE)
 
-	if (!isInteger(LastSweep))
+	if(!isInteger(LastSweep))
 		printf "No sweeps have been acquired"
 		return LastSweep
 	endif
 
-	WAVE /T StimSet = GetLastSetting(textualValues, LastSweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
-	WAVE clampHS = GetLastSetting(numericalValues, LastSweep, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
-	WAVE /Z holdingVC = GetLastSetting(numericalValues, LastSweep, "V-Clamp Holding Level", DATA_ACQUISITION_MODE)
-	WAVE /Z holdingIC = GetLastSetting(numericalValues, LastSweep, "I-Clamp Holding Level", DATA_ACQUISITION_MODE)
+	WAVE/T StimSet   = GetLastSetting(textualValues, LastSweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
+	WAVE   clampHS   = GetLastSetting(numericalValues, LastSweep, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
+	WAVE/Z holdingVC = GetLastSetting(numericalValues, LastSweep, "V-Clamp Holding Level", DATA_ACQUISITION_MODE)
+	WAVE/Z holdingIC = GetLastSetting(numericalValues, LastSweep, "I-Clamp Holding Level", DATA_ACQUISITION_MODE)
 
-	for(i=0; i<NUM_HEADSTAGES; i+=1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(statusHS[i])
-			if(clampHS[i] == V_CLAMP_MODE )
+			if(clampHS[i] == V_CLAMP_MODE)
 				holding_i = holdingVC[i]
 				clampHS_i = "V-Clamp"
 			elseif(clampHS[i] == I_CLAMP_MODE)
@@ -593,9 +593,9 @@ End
 ///
 /// This function needs to be set for Pre DAQ, Mid Sweep and Post Sweep Event.
 Function TestPrematureSweepStop(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	variable num
@@ -619,46 +619,46 @@ Function TestPrematureSweepStop(device, eventType, DAQDataWave, headStage, realD
 End
 
 Function preDAQ_MP_mainConfig(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
 
-	PGC_SetAndActivateControl(device,"Check_DataAcq1_DistribDaq", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 0)
 
-	PGC_SetAndActivateControl(device,"Check_DataAcq1_dDAQOptOv", val = 1)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = 1)
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
 End
 
 Function preDAQ_MP_IfMixed(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
 
-	PGC_SetAndActivateControl(device,"Check_DataAcq1_DistribDaq", val = 1)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 1)
 
-	PGC_SetAndActivateControl(device,"Check_DataAcq1_dDAQOptOv", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = 0)
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
 End
 
 Function preDAQ_MP_ChirpBlowout(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
 
-	PGC_SetAndActivateControl(device,"Check_DataAcq1_DistribDaq", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 0)
 
-	PGC_SetAndActivateControl(device,"Check_DataAcq1_dDAQOptOv", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = 0)
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
 End
@@ -673,9 +673,9 @@ End
 /// - Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)
 /// - All active headstages must be in "Current Clamp"
 Function AdjustDAScale(device, eventType, DAQDataWave, headStage, realDataLength)
-	string device
+	string   device
 	variable eventType
-	Wave DAQDataWave
+	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
 	variable val, index, DAC, ADC
@@ -727,7 +727,7 @@ Function AdjustDAScale(device, eventType, DAQDataWave, headStage, realDataLength
 	// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
 	if(index > DimSize(DAScales, ROWS))
 		printf "(%s): Skipping analysis function \"%s\".\r", device, GetRTStackInfo(1)
-		printf "The stimset \"%s\" of headstage %d has too many sweeps, increase the size of DAScales.\r", AFH_GetStimSetName(device, DAC,  CHANNEL_TYPE_DAC), headstage
+		printf "The stimset \"%s\" of headstage %d has too many sweeps, increase the size of DAScales.\r", AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC), headstage
 		return NaN
 	endif
 
@@ -782,8 +782,8 @@ Function FitResistance(string device, variable headstage, [variable showPlot, va
 		return NaN
 	endif
 
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/Z sweeps          = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
 	if(!WaveExists(sweeps))
 		printf "The last sweep %d did not hold any stimset cycle information.\r", sweepNo
@@ -814,7 +814,7 @@ Function FitResistance(string device, variable headstage, [variable showPlot, va
 
 		if(!WaveExists(deltaI) || !WaveExists(deltaV))
 			if(IsFinite(anaFuncType))
-				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+				key         = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 				sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 				if(IsFinite(sweepPassed) && !sweepPassed)
@@ -873,12 +873,12 @@ Function FitResistance(string device, variable headstage, [variable showPlot, va
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Value]
 	ED_AddEntryToLabnotebook(device, LBN_RESISTANCE_FIT, storage, unit = "Ohm")
 
-	storage = NaN
+	storage                        = NaN
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Error]
 	ED_AddEntryToLabnotebook(device, LBN_RESISTANCE_FIT_ERR, storage, unit = "Ohm")
 
-	KillOrMoveToTrash(wv=W_sigma)
-	KillOrMoveToTrash(wv=fitWave)
+	KillOrMoveToTrash(wv = W_sigma)
+	KillOrMoveToTrash(wv = fitWave)
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
@@ -902,7 +902,7 @@ Function FitResistance(string device, variable headstage, [variable showPlot, va
 			trace = "fit_HS_" + num2str(i)
 			AppendToGraph/W=$RESISTANCE_GRAPH/L=VertCrossing/B=HorizCrossing curveFitWave/TN=$trace
 			ModifyGraph/W=$RESISTANCE_GRAPH rgb($trace)=(s.red, s.green, s.blue)
-			ModifyGraph/W=$RESISTANCE_GRAPH freePos(VertCrossing)={0,HorizCrossing},freePos(HorizCrossing)={0,VertCrossing}, lblLatPos=-50
+			ModifyGraph/W=$RESISTANCE_GRAPH freePos(VertCrossing)={0, HorizCrossing}, freePos(HorizCrossing)={0, VertCrossing}, lblLatPos=-50
 		endfor
 	endif
 
@@ -928,7 +928,7 @@ Function SetDAScaleModOp(string device, variable headstage, variable modifier, s
 
 	strswitch(operator)
 		case "+":
-			SetDAScale(device, headstage, offset = invert ? - modifier : modifier, roundTopA = roundTopA)
+			SetDAScale(device, headstage, offset = invert ? -modifier : modifier, roundTopA = roundTopA)
 			break
 		case "*":
 			SetDAScale(device, headstage, relative = invert ? 1 / modifier : modifier, roundTopA = roundTopA)
@@ -975,10 +975,10 @@ Function SetDAScale(device, headstage, [absolute, relative, offset, roundTopA])
 	if(!ParamIsDefault(absolute))
 		amps = absolute * ONE_TO_PICO
 	elseif(!ParamIsDefault(relative))
-		lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		lbl  = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		amps = DAG_GetNumericalValue(device, lbl, index = DAC) * relative
 	elseif(!ParamIsDefault(offset))
-		lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		lbl  = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		amps = DAG_GetNumericalValue(device, lbl, index = DAC) + offset
 	endif
 
@@ -998,18 +998,18 @@ Function/S ReachTargetVoltage_GetHelp(string name)
 		case "EnableIndexing":
 			return "Enable Locked Indexing in preDAQ event"
 			break
-		 case "IndexingEndStimsetAllIC":
+		case "IndexingEndStimsetAllIC":
 			return "Indexing end stimulus set for all IC headstages"
-		 default:
+		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
 	endswitch
 End
 
-Function/S ReachTargetVoltage_CheckParam(string name, struct CheckParametersStruct &s)
+Function/S ReachTargetVoltage_CheckParam(string name, STRUCT CheckParametersStruct &s)
 
 	variable val
-	string str
+	string   str
 
 	strswitch(name)
 		case "EnableIndexing":
@@ -1044,7 +1044,7 @@ End
 /// - All active IC headstages must run this analysis function
 /// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on
 /// the next sweep if the measured resistance is smaller than 20MΩ
-Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
+Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 	variable sweepNo, index, i, targetV, prevActiveHS, prevSendToAllAmp
 	variable amps, result
 	variable autoBiasCheck, holdingPotential, indexing
@@ -1074,9 +1074,9 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 					return 1
 				endif
 
-				SetDAScale(device, i, absolute=-20e-12)
+				SetDAScale(device, i, absolute = -20e-12)
 
-				autoBiasCheck = ampParam[%AutoBiasEnable][0][i]
+				autoBiasCheck    = ampParam[%AutoBiasEnable][0][i]
 				holdingPotential = ampParam[%AutoBiasVcom][0][i]
 
 				if(autoBiasCheck != 1)
@@ -1085,7 +1085,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 					return 1
 				endif
 
-				if(CheckIfClose(holdingPotential, -70, tol=1) != 1)
+				if(CheckIfClose(holdingPotential, -70, tol = 1) != 1)
 					if(holdingPotential > -75 && holdingPotential < -65)
 						printf "Warning: Holding potential for headstage %d is not -70mV but is within acceptable range, targetV continuing.\r", i
 					else
@@ -1103,17 +1103,17 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
 
-			PGC_SetAndActivateControl(device,"Check_DataAcq1_DistribDaq", val = 1)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 1)
 
-			PGC_SetAndActivateControl(device,"Check_DataAcq1_dDAQOptOv", val = 0)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = 0)
 
-			PGC_SetAndActivateControl(device,"Setvar_DataAcq_dDAQDelay", val = 500)
+			PGC_SetAndActivateControl(device, "Setvar_DataAcq_dDAQDelay", val = 500)
 
 			indexing = !!AFH_GetAnalysisParamNumerical("EnableIndexing", s.params, defValue = 0)
 
 			if(indexing)
 				name = AFH_GetAnalysisParamTextual("IndexingEndStimsetAllIC", s.params)
-				WAVE/z stimset = WB_CreateAndGetStimSet(name)
+				WAVE/Z stimset = WB_CreateAndGetStimSet(name)
 
 				if(!WaveExists(stimset))
 					printf "Abort: The analysis parameter IndexingEndStimsetAllIC holds \"%s\" which is not a valid stimset.", name
@@ -1125,10 +1125,10 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 				PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = 1)
 
 				control = GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-				PGC_SetAndActivateControl(device, control , str = name)
+				PGC_SetAndActivateControl(device, control, str = name)
 
-				DFREF dfr = GetUniqueTempPath()
-				WAVE autobiasV = LBN_GetNumericWave()
+				DFREF dfr       = GetUniqueTempPath()
+				WAVE  autobiasV = LBN_GetNumericWave()
 				MoveWave autobiasV, dfr:autobiasV
 
 				autobiasV[] = (p < NUM_HEADSTAGES && statusHS[p] == 1) ? -70 : NaN
@@ -1205,18 +1205,18 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 
 				// check initial response
 				if(index == 0 && resistanceFitted[i] <= 20e6)
-					amps = -100e-12
+					amps                   = -100e-12
 					targetVoltagesIndex[i] = -1
 				else
 					amps = targetVoltages[index] / resistanceFitted[i]
 				endif
 
-				index = targetVoltagesIndex[i]
+				index   = targetVoltagesIndex[i]
 				targetV = (index >= 0 && index < DimSize(targetVoltages, ROWS)) ? targetVoltages[index] : NaN
 				sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", device, i, resistanceFitted[i], targetV, amps
 				DEBUGPRINT(msg)
 
-				SetDAScale(device, i, absolute=amps)
+				SetDAScale(device, i, absolute = amps)
 			endfor
 			break
 		case POST_SET_EVENT:
@@ -1224,12 +1224,12 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 				return NaN
 			endif
 
-			WAVE numericalValues = GetLBNumericalValues(device)
+			WAVE   numericalValues    = GetLBNumericalValues(device)
 			WAVE/Z autobiasFromDialog = GetLastSettingSCI(numericalValues, s.sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_AUTOBIAS_TARGET_DIAG, s.headstage, UNKNOWN_MODE)
 			if(WaveExists(autobiasFromDialog))
 				WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
-				prevActiveHS = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
+				prevActiveHS     = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
 				prevSendToAllAmp = GetCheckBoxState(device, "Check_DataAcq_SendToAllAmp")
 				PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
 
@@ -1257,7 +1257,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 	endswitch
 End
 
-Function/S SetControlInEvent_CheckParam(string name, struct CheckParametersStruct &s)
+Function/S SetControlInEvent_CheckParam(string name, STRUCT CheckParametersStruct &s)
 
 	string type, event
 	variable i, numTuples
@@ -1295,7 +1295,7 @@ Function/S SetControlInEvent_CheckParam(string name, struct CheckParametersStruc
 		endif
 
 		if(WhichListItem(name, CONTROLS_DISABLE_DURING_DAQ, ";", 0, 0) != -1 && WhichListItem(event, "Pre DAQ;Post DAQ", ";", 0, 0) == -1)
-			return  "The control " + name + "can only be changed in Pre/Post DAQ."
+			return "The control " + name + "can only be changed in Pre/Post DAQ."
 		endif
 	endfor
 End
@@ -1327,7 +1327,7 @@ End
 /// \endrst
 ///
 Function SetControlInEvent(device, s)
-	string device
+	string                      device
 	STRUCT AnalysisFunction_V3 &s
 
 	string guiElements, guiElem, type, valueStr, event, msg, win, windowsWithGUIElement, databrowser, str
@@ -1342,7 +1342,7 @@ Function SetControlInEvent(device, s)
 	endif
 
 	guiElements = AFH_GetListOfAnalysisParamNames(s.params)
-	numEntries = ItemsInList(guiElements)
+	numEntries  = ItemsInList(guiElements)
 
 	for(i = 0; i < numEntries; i += 1)
 		guiElem = StringFromList(i, guiElements)
@@ -1365,7 +1365,7 @@ Function SetControlInEvent(device, s)
 			ASSERT(numMatches == 0, "invalid code")
 
 			windowsWithGUIElement = FindNotebook(guiElem)
-			numMatches = ItemsInList(windowsWithGUIElement)
+			numMatches            = ItemsInList(windowsWithGUIElement)
 
 			if(numMatches == 0)
 				printf "(%s): The analysis parameter %s does not exist as control or notebook in one of the open panels and graphs.\r", device, guiElem
@@ -1400,7 +1400,7 @@ Function SetControlInEvent(device, s)
 			DEBUGPRINT(msg)
 
 			numWindows = ItemsInList(windowsWithGUIElement)
-			for(k = 0; k < numWindows; k +=1)
+			for(k = 0; k < numWindows; k += 1)
 				win = StringFromList(k, windowsWithGUIElement)
 
 				switch(WinType(win))

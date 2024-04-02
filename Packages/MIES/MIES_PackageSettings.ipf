@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -9,8 +9,8 @@
 /// @file MIES_PackageSettings.ipf
 /// @brief __PS__ Routines for dealing with JSON settings
 
-static StrConstant PS_STORE_COORDINATES = "JSONSettings_StoreCoordinates"
-static StrConstant PS_WINDOW_NAME = "JSONSettings_WindowName"
+static StrConstant PS_STORE_COORDINATES      = "JSONSettings_StoreCoordinates"
+static StrConstant PS_WINDOW_NAME            = "JSONSettings_WindowName"
 static StrConstant PS_COORDINATE_SAVING_HOOK = "windowCoordinateSaving"
 
 /// @brief Initialize the `PackageFolder` symbolic path
@@ -33,7 +33,7 @@ End
 ///
 /// Caller is responsible for releasing the document.
 Function PS_ReadSettings(package, generateDefaults)
-	string package
+	string                              package
 	FUNCREF PS_GenerateSettingsDefaults generateDefaults
 
 	string filepath, data, fName
@@ -59,7 +59,7 @@ End
 ///
 /// Call this function in `BeforeExperimentSaveHook` to write the settings to disc
 Function PS_WriteSettings(package, JSONid)
-	string package
+	string   package
 	variable JSONid
 
 	string filepath
@@ -67,7 +67,7 @@ Function PS_WriteSettings(package, JSONid)
 	ASSERT(IsFinite(JSONid), "Invalid JSONid")
 
 	filepath = PS_GetSettingsFile(package)
-	SaveTextFile(JSON_Dump(JSONid, indent=2), filepath)
+	SaveTextFile(JSON_Dump(JSONid, indent = 2), filepath)
 End
 
 /// @brief Return the absolute path to the settings folder for `package`
@@ -126,13 +126,13 @@ static Function PS_ApplyStoredWindowCoordinate(variable JSONid, string win)
 
 	path = "/" + name + "/coordinates"
 
-	if(JSON_GetType(JSONid, path, ignoreErr=1) != JSON_OBJECT)
+	if(JSON_GetType(JSONid, path, ignoreErr = 1) != JSON_OBJECT)
 		return NaN
 	endif
 
-	left = JSON_GetVariable(JSONid, path + "/left", ignoreErr = 1)
-	top = JSON_GetVariable(JSONid, path + "/top", ignoreErr = 1)
-	right = JSON_GetVariable(JSONid, path + "/right", ignoreErr = 1)
+	left   = JSON_GetVariable(JSONid, path + "/left", ignoreErr = 1)
+	top    = JSON_GetVariable(JSONid, path + "/top", ignoreErr = 1)
+	right  = JSON_GetVariable(JSONid, path + "/right", ignoreErr = 1)
 	bottom = JSON_GetVariable(JSONid, path + "/bottom", ignoreErr = 1)
 
 	AssertOnAndClearRTError()
@@ -153,15 +153,15 @@ End
 /// @brief Add user data to mark the window as using coordinate saving
 static Function PS_RegisterForCoordinateSaving(string win, string name)
 
-	SetWindow $win, userdata($PS_STORE_COORDINATES) = "1"
-	SetWindow $win, userdata($PS_WINDOW_NAME) = name
+	SetWindow $win, userdata($PS_STORE_COORDINATES)="1"
+	SetWindow $win, userdata($PS_WINDOW_NAME)=name
 End
 
 /// @brief Remove user data related to coordinate saving
 Function PS_RemoveCoordinateSaving(string win)
 
-	SetWindow $win, userdata($PS_STORE_COORDINATES) = ""
-	SetWindow $win, userdata($PS_WINDOW_NAME) = ""
+	SetWindow $win, userdata($PS_STORE_COORDINATES)=""
+	SetWindow $win, userdata($PS_WINDOW_NAME)=""
 
 	SetWindow $win, hook($PS_COORDINATE_SAVING_HOOK)=$""
 End
@@ -184,7 +184,7 @@ static Function PS_StoreWindowCoordinates(variable JSONid)
 
 		for(j = 0; j < numSubWindows; j += 1)
 			subWin = StringFromList(j, subWindows)
-			store = str2num(GetUserData(subWin, "", PS_STORE_COORDINATES))
+			store  = str2num(GetUserData(subWin, "", PS_STORE_COORDINATES))
 
 			if(IsNaN(store) || store == 0)
 				continue
@@ -313,7 +313,7 @@ Function PS_FixPackageLocation(string package)
 	ASSERT(cmpstr(folder, incorrectFolder), "Invalid incorrectFolder")
 
 	incorrectPackageFile = incorrectFolder + PACKAGE_SETTINGS_JSON
-	incorrectLogFile = incorrectFolder + LOGFILE_NAME
+	incorrectLogFile     = incorrectFolder + LOGFILE_NAME
 
 	if(!FileExists(incorrectPackageFile) && !FileExists(incorrectLogFile))
 		// nothing to do

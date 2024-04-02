@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access
 #pragma rtFunctionErrors=1
 
@@ -25,12 +25,12 @@ Function run()
 	// CreateRelevantColorsGraph()
 
 	ScreenShotsForDataBrowser()
-//
-//	ScreenShotsForAnalysisBrowser()
+	//
+	//	ScreenShotsForAnalysisBrowser()
 
-//	ScreenShotsForWaveBuilder()
+	//	ScreenShotsForWaveBuilder()
 
-//	ScreenShotsForDAEphys()
+	//	ScreenShotsForDAEphys()
 End
 
 Function RestrictScreenshotToControl(string path, string filename, string panel, string control)
@@ -54,7 +54,7 @@ static Function ScreenShotsForAnalysisBrowser()
 
 	panel = AB_OpenAnalysisBrowser()
 
-	SavePICT/E=-5/P=$path/Win=$panel/SNAP=1/O as "AnalysisBrowser.png"
+	SavePICT/E=-5/P=$path/WIN=$panel/SNAP=1/O as "AnalysisBrowser.png"
 End
 
 static Function ScreenShotsForWaveBuilder()
@@ -68,7 +68,7 @@ static Function ScreenShotsForWaveBuilder()
 	KillWindow/Z $panel
 	panel = WBP_CreateWaveBuilderPanel()
 
-	SavePICT/E=-5/P=$path/Win=$panel/SNAP=1/O as "Wavebuilder.png"
+	SavePICT/E=-5/P=$path/WIN=$panel/SNAP=1/O as "Wavebuilder.png"
 
 	for(i = 0; i < EPOCH_TYPES_TOTAL_NUMBER; i += 1)
 		entry = WB_ToEpochTypeString(i)
@@ -76,16 +76,16 @@ static Function ScreenShotsForWaveBuilder()
 		DoUpdate
 		sprintf filename, "WaveBuilder-%s.png", entry
 		filename = SanitizeFilename(filename)
-		SavePICT/E=-5/P=$path/Win=$panel/SNAP=1/O as filename
+		SavePICT/E=-5/P=$path/WIN=$panel/SNAP=1/O as filename
 
 		RestrictScreenshotToControl(path, filename, panel, "WBP_WaveType")
 	endfor
 
 	PGC_SetAndActivateControl(panel, "button_toggle_params")
-	SavePICT/E=-5/P=$path/Win=$(panel + "#AnalysisParamGUI")/SNAP=1/O as "Wavebuilder-AnalysisParameterPanel.png"
+	SavePICT/E=-5/P=$path/WIN=$(panel + "#AnalysisParamGUI")/SNAP=1/O as "Wavebuilder-AnalysisParameterPanel.png"
 End
 
-static Function	ScreenShotsForDAEphys()
+static Function ScreenShotsForDAEphys()
 
 	string folder, path, entry, filename, panel, scope
 	variable i, numEntries
@@ -106,7 +106,7 @@ static Function	ScreenShotsForDAEphys()
 		DoUpdate
 		sprintf filename, "DAEphys-%s.png", entry
 		filename = SanitizeFilename(filename)
-		SavePICT/E=-5/P=$path/Win=$panel/SNAP=1/O as filename
+		SavePICT/E=-5/P=$path/WIN=$panel/SNAP=1/O as filename
 	endfor
 End
 
@@ -134,7 +134,7 @@ static Function ScreenShotsForDataBrowser()
 		DoUpdate
 		sprintf filename, "BrowserSettingsPanel-%s.png", entry
 		filename = SanitizeFilename(filename)
-		SavePICT/E=-5/P=$path/Win=$bsPanel/SNAP=1/O as filename
+		SavePICT/E=-5/P=$path/WIN=$bsPanel/SNAP=1/O as filename
 	endfor
 
 	// PA graphs
@@ -149,40 +149,40 @@ static Function ScreenShotsForDataBrowser()
 
 	// Experiment X2020_06_24_151931_compressed.nwb
 	// Sweeps: 37-53 dropping HS2 of 48 and 49
-	pulseTracePlot = browser + "_PulseAverage_traces"
-	pulseImagePlot = browser + "_PulseAverage_images"
+	pulseTracePlot   = browser + "_PulseAverage_traces"
+	pulseImagePlot   = browser + "_PulseAverage_images"
 	pulseImagePlotCS = pulseImagePlot + "#P0#G0"
 
-	SavePICT/TRAN=0/B=(2*72)/E=-5/P=$path/Win=$pulseImagePlot/O as "PulseAverage_images.png"
-	SavePICT/TRAN=0/B=(2*72)/E=-5/P=$path/Win=$pulseImagePlotCS/O as "PulseAverage_images_colorscales.png"
-	SavePICT/TRAN=0/B=(2*72)/E=-5/P=$path/Win=$pulseTracePlot/O as "PulseAverage_traces.png"
+	SavePICT/TRAN=0/B=(2 * 72)/E=-5/P=$path/WIN=$pulseImagePlot/O as "PulseAverage_images.png"
+	SavePICT/TRAN=0/B=(2 * 72)/E=-5/P=$path/WIN=$pulseImagePlotCS/O as "PulseAverage_images_colorscales.png"
+	SavePICT/TRAN=0/B=(2 * 72)/E=-5/P=$path/WIN=$pulseTracePlot/O as "PulseAverage_traces.png"
 
-	SavePICT/TRAN=0/B=(2*72)/E=-5/P=$path/Win=$pulseTracePlot/O as "PulseAverage_traces.png"
+	SavePICT/TRAN=0/B=(2 * 72)/E=-5/P=$path/WIN=$pulseTracePlot/O as "PulseAverage_traces.png"
 
-	SavePICT/TRAN=0/B=(2*72)/E=-5/P=$path/Win=RelevantColors/O as "RelevantColors.png"
+	SavePICT/TRAN=0/B=(2 * 72)/E=-5/P=$path/WIN=RelevantColors/O as "RelevantColors.png"
 
 	browser = "DB_ITC1600_Dev_0"
 
 	DoUpdate
-	SavePICT/E=-5/P=$path/Win=$browser/SNAP=1/O as "Browser-Graph.png"
+	SavePICT/E=-5/P=$path/WIN=$browser/SNAP=1/O as "Browser-Graph.png"
 
 	sweepControl = BSP_GetSweepControlsPanel(browser)
 	DoUpdate
-	SavePICT/E=-5/P=$path/Win=$sweepControl/SNAP=1/O as "Browser-SweepControl.png"
+	SavePICT/E=-5/P=$path/WIN=$sweepControl/SNAP=1/O as "Browser-SweepControl.png"
 
 	settingsHistoryPanel = LBV_GetSettingsHistoryPanel(browser)
 
 	PGC_SetAndActivateControl(settingsHistoryPanel, "button_clearlabnotebookgraph")
 
 	STRUCT WMPopupAction pa
-	pa.win = settingsHistoryPanel
+	pa.win       = settingsHistoryPanel
 	pa.eventCode = 2
 
 	pa.popStr = "Stim Scale Factor"
 	LBV_PopMenuProc_LabNotebookAndResults(pa)
 
 	DoUpdate
-	SavePICT/E=-5/P=$path/Win=$settingsHistoryPanel/SNAP=1/O as "Browser-SettingsHistory.png"
+	SavePICT/E=-5/P=$path/WIN=$settingsHistoryPanel/SNAP=1/O as "Browser-SettingsHistory.png"
 
 	AssembleOneDataBrowserImage(path)
 End
@@ -206,21 +206,21 @@ Function AssembleOneDataBrowserImage(string path)
 	Redimension/N=(numRows, numCols, -1) total
 	total[][][] = NaN
 
-	firstRow = 0
-	lastRow  = firstRow + DimSize(settingsPic, ROWS) - 1
-	firstCol = 0
-	lastCol  = firstCol + DimSize(settingsPic, COLS) - 1
+	firstRow                                      = 0
+	lastRow                                       = firstRow + DimSize(settingsPic, ROWS) - 1
+	firstCol                                      = 0
+	lastCol                                       = firstCol + DimSize(settingsPic, COLS) - 1
 	total[firstRow, lastRow][firstCol, lastCol][] = settingsPic[p - firstRow][q - firstCol][r]
 
 	firstRow = DimSize(settingsPic, ROWS)
-	lastRow  = firstRow +  + DimSize(graphPic, ROWS) - 1
+	lastRow  = firstRow + +DimSize(graphPic, ROWS) - 1
 	firstCol = 0
 	lastCol  = firstCol + DimSize(graphPic, COLS) - 1
 
 	total[firstRow, lastRow][firstCol, lastCol][] = graphPic[p - firstRow][q - firstCol][r]
 
 	firstRow = DimSize(settingsPic, ROWS)
-	lastRow  = firstRow +  + DimSize(sweepControlPic, ROWS) - 1
+	lastRow  = firstRow + +DimSize(sweepControlPic, ROWS) - 1
 	firstCol = DimSize(graphPic, COLS)
 	lastCol  = firstCol + DimSize(sweepControlPic, COLS) - 1
 

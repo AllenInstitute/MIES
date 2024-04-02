@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=AnalysisFunctionTesting
@@ -128,8 +128,8 @@ static Function AFT1([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                        + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid1_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                    + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid1_DA_0:")
 
 	try
 		AcquireData_NG(s, str); AbortOnRTE
@@ -143,7 +143,7 @@ static Function AFT1_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -192,8 +192,8 @@ static Function AFT2([str])
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                        + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid2_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                    + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncInvalid2_DA_0:")
 
 	try
 		AcquireData_NG(s, str); AbortOnRTE
@@ -207,7 +207,7 @@ static Function AFT2_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -254,8 +254,8 @@ static Function AFT3([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid1_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid1_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -263,7 +263,7 @@ static Function AFT3_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -327,8 +327,8 @@ static Function AFT4([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid1_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                       + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid1_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -336,7 +336,7 @@ static Function AFT4_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
 
@@ -400,8 +400,8 @@ static Function AFT5([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid2_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid2_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -409,7 +409,7 @@ static Function AFT5_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -464,8 +464,8 @@ static Function AFT6([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid2_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                       + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid2_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -473,7 +473,7 @@ static Function AFT6_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
 
@@ -537,8 +537,8 @@ static Function AFT6a([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid3_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                       + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid3_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -546,7 +546,7 @@ static Function AFT6a_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
 
@@ -607,7 +607,7 @@ static Function AFT6b([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncGeneric_DA_0:")
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncGeneric_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -615,7 +615,7 @@ static Function AFT6b_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
 
@@ -681,8 +681,8 @@ static Function AFT7([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                             + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValidMult_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncValidMult_DA_0:")
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValidMult_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncValidMult_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -764,9 +764,9 @@ static Function AFT8([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                    + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
-								 "__TTL0_ST:AnaFuncTTLNot_TTL_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                         + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
+	                             "__TTL0_ST:AnaFuncTTLNot_TTL_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -821,8 +821,8 @@ static Function AFT9([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                              + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid3Lon_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                          + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncValid3Lon_DA_0:")
 	AcquireData_NG(s, str)
 	CtrlNamedBackGround Abort_ITI_PressAcq, start=(ticks + 3), period=30, proc=StopAcq_IGNORE
 End
@@ -831,7 +831,7 @@ static Function AFT9_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -862,8 +862,8 @@ static Function AFT10([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncMissing_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncMissing_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -871,7 +871,7 @@ static Function AFT10_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -918,8 +918,8 @@ static Function AFT11([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                         + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncDiff_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                     + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncDiff_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -927,7 +927,7 @@ static Function AFT11_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
 
@@ -993,9 +993,9 @@ static Function AFT12([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_FAR0"                            + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncAbortPre_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncAbortPre_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_FAR0"                       + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncAbortPre_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncAbortPre_DA_0:")
 
 	try
 		AcquireData_NG(s, str); AbortOnRTE
@@ -1009,7 +1009,7 @@ static Function AFT12_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -1070,8 +1070,8 @@ static Function AFT13([str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncStopMid_DA_0:" + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncStopMid_DA_0:")
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncStopMid_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncStopMid_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -1079,7 +1079,7 @@ static Function AFT13_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -1152,8 +1152,8 @@ static Function AFT14([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams1_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams1_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -1161,7 +1161,7 @@ static Function AFT14_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -1233,8 +1233,8 @@ static Function AFT14a([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams2_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams2_DA_0:")
 	AcquireData_NG(s, str)
 End
 
@@ -1242,7 +1242,7 @@ static Function AFT14a_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -1274,8 +1274,8 @@ static Function AFT14b([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                      + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams3_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams3_DA_0:")
 
 	try
 		AcquireData_NG(s, str); AbortOnRTE
@@ -1289,7 +1289,7 @@ static Function AFT14b_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -1321,8 +1321,8 @@ static Function AFT14c([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                       + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams4_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams4_DA_0:")
 
 	try
 		AcquireData_NG(s, str); AbortOnRTE
@@ -1336,7 +1336,7 @@ static Function AFT14c_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -1370,8 +1370,8 @@ static Function AFT14d([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                       + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	try
 		AcquireData_NG(s, str); AbortOnRTE
@@ -1385,7 +1385,7 @@ static Function AFT14d_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -1421,8 +1421,8 @@ static Function AFT14e([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                       + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	try
 		AcquireData_NG(s, str); AbortOnRTE
@@ -1436,7 +1436,7 @@ static Function AFT14e_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -1470,8 +1470,8 @@ static Function AFT14f([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1480,7 +1480,7 @@ static Function AFT14f_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -1514,8 +1514,8 @@ static Function AFT14g([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                            + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams5_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1524,7 +1524,7 @@ static Function AFT14g_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -1556,8 +1556,8 @@ static Function AFT14h([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams6_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams6_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1566,7 +1566,7 @@ static Function AFT14h_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -1598,8 +1598,8 @@ static Function AFT14i([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                      + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams7_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams7_DA_0:")
 
 	try
 		AcquireData_NG(s, str)
@@ -1615,8 +1615,8 @@ static Function AFT15([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_ITP0"                           + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_ITP0"                     + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1625,7 +1625,7 @@ static Function AFT15_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -1650,8 +1650,8 @@ static Function AFT16([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_ITP0"                    + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_ITP0"                     + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncVeryShort_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1660,7 +1660,7 @@ static Function AFT16_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -1685,8 +1685,8 @@ static Function AFT17([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_FAR0"                        + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreDAQHar_DA_0:")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_FAR0"                     + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreDAQHar_DA_0:")
 
 	try
 		AcquireData_NG(s, str); AbortOnRTE
@@ -1703,7 +1703,7 @@ static Function AFT17_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -1730,8 +1730,8 @@ static Function AFT18([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES2"                                          + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncIdx1_DA_0:_IST:AnaFuncIdx2_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES2"                                      + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncIdx1_DA_0:_IST:AnaFuncIdx2_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1740,7 +1740,7 @@ static Function AFT18_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 4)
 
@@ -1775,8 +1775,8 @@ static Function AFT19([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreSetHar_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                          + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreSetHar_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1785,7 +1785,7 @@ static Function AFT19_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -1810,8 +1810,8 @@ static Function AFT19a([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                            + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreSwCfg_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPreSwCfg_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1820,7 +1820,7 @@ static Function AFT19a_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -1845,8 +1845,8 @@ static Function AFT20([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncOrder_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncOrder_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1878,8 +1878,8 @@ static Function AFT21([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPostDAQ_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncPostDAQ_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1895,13 +1895,13 @@ static Function AFT21_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
-	WAVE/T textualValues   = GetLBTextualValues(str)
+	WAVE/T   textualValues = GetLBTextualValues(str)
 	WAVE/T/Z foundStimSets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 
 	REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"AnaFuncPostDAQ_DA_0", "", "", "", "", "", "", "", ""})
 
-	stimset = AFH_GetStimSetName(str, 0, CHANNEL_TYPE_DAC)
+	stimset  = AFH_GetStimSetName(str, 0, CHANNEL_TYPE_DAC)
 	expected = "StimulusSetA_DA_0"
 	REQUIRE_EQUAL_STR(stimset, expected)
 End
@@ -1912,8 +1912,8 @@ static Function AFT22([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                            + \
-								 "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncValidMult_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                          + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:AnaFuncValidMult_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -1922,7 +1922,7 @@ static Function AFT22_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string key
+	string   key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
 
@@ -1986,8 +1986,8 @@ static Function CanModifyStimsetInPreSweepConfig([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                            + \
-								 "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncModStim_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncModStim_DA_0:")
 
 	AcquireData_NG(s, str)
 End
@@ -2005,7 +2005,7 @@ static Function CanModifyStimsetInPreSweepConfig_REENTRY([str])
 
 	// stimset has modified duration
 	stimset = "AnaFuncModStim_DA_0"
-	var = ST_GetStimsetParameterAsVariable(stimset, "Duration", epochIndex = 0)
+	var     = ST_GetStimsetParameterAsVariable(stimset, "Duration", epochIndex = 0)
 	CHECK_EQUAL_VAR(var, 6)
 
 	// and the stimset checksum is different for both sweeps

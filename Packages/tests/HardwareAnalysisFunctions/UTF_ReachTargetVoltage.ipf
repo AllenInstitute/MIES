@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ReachTargetVoltageTesting
@@ -7,10 +7,10 @@ static Constant HEADSTAGE = 1
 
 static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                                             + \
-								 "__HS" + num2str(HEADSTAGE) + "_DA1_AD1_CM:IC:_ST:StimulusSetA_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                                           + \
+	                             "__HS" + num2str(HEADSTAGE) + "_DA1_AD1_CM:IC:_ST:StimulusSetA_DA_0:")
 
-	 return [s]
+	return [s]
 End
 
 static Function GlobalPreAcq(string device)
@@ -32,10 +32,10 @@ static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resista
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	WAVE/Z deltaI        = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_I, HEADSTAGE, UNKNOWN_MODE)
-	WAVE/Z deltaV        = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_V, HEADSTAGE, UNKNOWN_MODE)
-	WAVE/Z resistance    = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, HEADSTAGE, UNKNOWN_MODE)
-	WAVE/Z resistanceErr = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT_ERR, HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z deltaI             = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_I, HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z deltaV             = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_DELTA_V, HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z resistance         = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z resistanceErr      = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT_ERR, HEADSTAGE, UNKNOWN_MODE)
 	WAVE/Z autobiasFromDialog = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_AUTOBIAS_TARGET_DIAG, HEADSTAGE, UNKNOWN_MODE)
 End
 
@@ -70,8 +70,8 @@ End
 static Function RTV_WorksWithIndexing_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("StimulusSetA_DA_0", "EnableIndexing", var=1)
-	AFH_AddAnalysisParameter("StimulusSetA_DA_0", "IndexingEndStimsetAllIC", str="StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("StimulusSetA_DA_0", "EnableIndexing", var = 1)
+	AFH_AddAnalysisParameter("StimulusSetA_DA_0", "IndexingEndStimsetAllIC", str = "StimulusSetB_DA_0")
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1

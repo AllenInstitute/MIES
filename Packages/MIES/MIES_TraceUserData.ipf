@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
@@ -202,8 +202,8 @@ Function TUD_SetUserData(string graph, string trace, string key, string value)
 	WAVE/T graphUserData = GetGraphUserData(graph)
 
 	if(TUD_GetTraceCount(graph) == 0)
-		 Redimension/N=(-1, 1) graphUserData
-		 SetDimensionLabels(graphUserData, "traceName", COLS)
+		Redimension/N=(-1, 1) graphUserData
+		SetDimensionLabels(graphUserData, "traceName", COLS)
 	endif
 
 	row = TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 1)
@@ -240,7 +240,7 @@ Function TUD_SetUserDataFromWaves(string graph, string trace, WAVE/T keys, WAVE/
 		last  = numCols - 1
 	elseif(first == -2 && last == -2)
 		numExistingCols = DimSize(graphUserData, COLS)
-		numCols = numExistingCols + DimSize(keys, ROWS)
+		numCols         = numExistingCols + DimSize(keys, ROWS)
 		Redimension/N=(-1, numCols) graphUserData
 		SetDimensionLabels(graphUserData, TextWaveToList(keys, ";"), COLS, startPos = numExistingCols)
 		first = numExistingCols
@@ -291,7 +291,7 @@ Function TUD_Init(string graph)
 	ASSERT(WinType(graph) == 1, "Expected graph")
 
 	win = GetMainWindow(graph)
-	SetWindow $win, hook(traceUserDataCleanup) = TUD_RemoveUserDataWave
+	SetWindow $win, hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
 End
 
 static Function TUD_AddTrace(variable jsonID, WAVE/T graphUserData, string trace)
@@ -354,7 +354,7 @@ static Function TUD_ConvertTraceNameToRowIndex(WAVE/T graphUserData, string trac
 	jsonID = TUD_GetIndexJSON(graphUserData)
 
 	if(create == 0)
-		return JSON_GetVariable(jsonID, "/" + trace, ignoreErr=allowMissing)
+		return JSON_GetVariable(jsonID, "/" + trace, ignoreErr = allowMissing)
 	endif
 
 	var = JSON_GetVariable(jsonID, "/" + trace, ignoreErr = 1)
@@ -365,7 +365,7 @@ static Function TUD_ConvertTraceNameToRowIndex(WAVE/T graphUserData, string trac
 	return TUD_AddTrace(jsonID, graphUserData, trace)
 End
 
-static Function TUD_GetIndexJSON(Wave/T graphUserData)
+static Function TUD_GetIndexJSON(WAVE/T graphUserData)
 
 	variable jsonID
 

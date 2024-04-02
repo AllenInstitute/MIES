@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -51,7 +51,7 @@ static Function/S DND_FetchAsset(variable setNumber, string assetID, string asse
 
 	jsonID = JSON_Parse(S_serverResponse)
 
-	refHash = JSON_GetString(jsonID, "/digest/dandi:sha2-256")
+	refHash     = JSON_GetString(jsonID, "/digest/dandi:sha2-256")
 	downloadUrl = JSON_GetString(jsonID, "/contentUrl/0")
 
 	JSON_Release(jsonID)
@@ -108,7 +108,7 @@ static Function/WAVE DND_ParseSetReponse(string response)
 End
 
 Function/S DND_FetchAssetFromSet(variable setNumber)
-	string url, assetID , name, path, data, fname, assetFilePath
+	string url, assetID, name, path, data, fname, assetFilePath
 	variable numAssets, idx, i
 
 	sprintf url, "https://api.dandiarchive.org/api/dandisets/%06d/versions/draft/assets/", setNumber

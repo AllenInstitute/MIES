@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -111,13 +111,13 @@
 /// If in the previous sub menu the number of letters determined for the last menu item is higher then for the first name component the higher amount is taken:
 /// e.g. Balalaika, Cembalo -> B .. C -> Bal .. C (because Alu were three letters)
 
-static Constant MAX_SUBMENUS = 12
-static StrConstant WAVE_NOTE_PROCNAME = "PROC"
+static Constant    MAX_SUBMENUS         = 12
+static StrConstant WAVE_NOTE_PROCNAME   = "PROC"
 static StrConstant WAVE_NOTE_WINDOWNAME = "WINNAME"
-static StrConstant WAVE_NOTE_CTRLNAME = "CTRLNAME"
-static StrConstant MENUNAME_UNUSED = "*** bug, report to dev ***"
+static StrConstant WAVE_NOTE_CTRLNAME   = "CTRLNAME"
+static StrConstant MENUNAME_UNUSED      = "*** bug, report to dev ***"
 static StrConstant MENU_DISABLE_SPECIAL = "\\M0"
-static StrConstant LSEP = ";"
+static StrConstant LSEP                 = ";"
 
 /// @brief Menu definition templates for up to MAX_SUBMENUS sub menus.
 ///        The constant MAX_SUBMENUS stores the number of these definitions
@@ -401,8 +401,8 @@ Function/S PEXT_SubMenuName(subMenuNr)
 
 	string s
 
-	WAVE/T itemListWave = GetPopupExtMenuWave()
-	variable subMenuCnt = DimSize(itemListWave, ROWS)
+	WAVE/T   itemListWave = GetPopupExtMenuWave()
+	variable subMenuCnt   = DimSize(itemListWave, ROWS)
 
 	if(subMenuNr >= subMenuCnt)
 		return MENUNAME_UNUSED
@@ -431,8 +431,8 @@ Function/S PEXT_PopupMenuItems(subMenuNr)
 	ExperimentModified
 	modifiedBefore = V_flag
 
-	WAVE/T itemListWave = GetPopupExtMenuWave()
-	variable subMenuCnt = DimSize(itemListWave, ROWS)
+	WAVE/T   itemListWave = GetPopupExtMenuWave()
+	variable subMenuCnt   = DimSize(itemListWave, ROWS)
 
 	if(!modifiedBefore)
 		ExperimentModified 0
@@ -451,7 +451,7 @@ End
 /// @param popupStr popup string
 /// @param text selected menu item text
 /// @param itemNum selected item index in submenu
-Function PEXT_Callback(string popupStr,string text,variable itemNum)
+Function PEXT_Callback(string popupStr, string text, variable itemNum)
 
 	STRUCT WMPopupAction pa
 
@@ -462,12 +462,12 @@ Function PEXT_Callback(string popupStr,string text,variable itemNum)
 		return 0
 	endif
 
-	pa.ctrlName = GetStringFromWaveNote(itemListWave, WAVE_NOTE_CTRLNAME)
+	pa.ctrlName  = GetStringFromWaveNote(itemListWave, WAVE_NOTE_CTRLNAME)
 	pa.eventCode = 2
-	pa.eventMod = 0
-	pa.popNum = NaN
-	pa.popStr = text
-	pa.win = GetStringFromWaveNote(itemListWave, WAVE_NOTE_WINDOWNAME)
+	pa.eventMod  = 0
+	pa.popNum    = NaN
+	pa.popStr    = text
+	pa.win       = GetStringFromWaveNote(itemListWave, WAVE_NOTE_WINDOWNAME)
 
 	FUNCREF PEXT_POPUPACTION_PROTO popupAction = $GetStringFromWaveNote(itemListWave, WAVE_NOTE_PROCNAME)
 	note/K itemListWave
@@ -522,7 +522,7 @@ Function PEXT_ButtonProc(ba) : ButtonControl
 			if(FuncRefIsAssigned(FuncRefInfo(GetItemList)))
 				itemList = GetItemList()
 				ASSERT(!IsNull(itemList), "Popup Extension got menu item list that is null.")
-				WAVE/T itemWave = ListToTextWave(itemList, ";")
+				WAVE/T itemWave  = ListToTextWave(itemList, ";")
 				WAVE/T splitMenu = PEXT_SplitToSubMenus(itemWave)
 				PEXT_GenerateSubMenuNames(splitMenu)
 				PEXT_VerifyAndSetMenuWave(splitMenu)
@@ -612,7 +612,7 @@ Function/WAVE PEXT_SplitToSubMenus(menuList, [method])
 
 		for(i = 0; i < subMenuCnt; i++)
 			beginItem = i * numPerSubEntry
-			endItem = i == subMenuCnt - 1 ? DimSize(menuList, ROWS) - 1 : beginItem + numPerSubEntry - 1
+			endItem   = i == subMenuCnt - 1 ? DimSize(menuList, ROWS) - 1 : beginItem + numPerSubEntry - 1
 
 			for(j = beginitem; j < enditem; j++)
 				splitMenu[i] = AddListItem(menuList[j], splitMenu[i], ";", Inf)
@@ -685,7 +685,7 @@ Function PEXT_GenerateSubMenuNames(splitMenu, [method])
 		for(i = 0; i < subMenuCnt; i++)
 			subItemList = splitMenu[i]
 			ASSERT(!IsEmpty(subItemList), "menu item list for submenu is empty in splitMenu wave")
-			subMenuBoundary[2 * i] = StringFromList(0, subItemList)
+			subMenuBoundary[2 * i]     = StringFromList(0, subItemList)
 			subMenuBoundary[2 * i + 1] = StringFromList(ItemsInList(subItemList) - 1, subItemList)
 		endfor
 
@@ -693,9 +693,9 @@ Function PEXT_GenerateSubMenuNames(splitMenu, [method])
 		for(i = 0; i < 2 * subMenuCnt - 1; i++)
 			begEntry = subMenuBoundary[i]
 			endEntry = subMenuBoundary[i + 1]
-			endLen = min(strlen(begEntry), strlen(endEntry))
-			s1 = ""
-			s2 = ""
+			endLen   = min(strlen(begEntry), strlen(endEntry))
+			s1       = ""
+			s2       = ""
 
 			for(j = 0; j < endLen; j++)
 				s1 = s1 + begEntry[j]
@@ -708,7 +708,7 @@ Function PEXT_GenerateSubMenuNames(splitMenu, [method])
 				s1 = begEntry[j, minLen]
 			endif
 
-			minLen = j
+			minLen          = j
 			subMenuShort[i] = s1
 			if(i == 2 * subMenuCnt - 2)
 				subMenuShort[i + 1] = s2

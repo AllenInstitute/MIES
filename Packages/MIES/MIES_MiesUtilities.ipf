@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
@@ -14,10 +14,10 @@
 static Constant ADC_SLOT_MULTIPLIER   = 4
 static Constant EPOCH_SLOT_MULTIPLIER = 3
 
-static Constant NUM_CHANNEL_TYPES   = 3
+static Constant NUM_CHANNEL_TYPES = 3
 
-static Constant GET_LB_MODE_NONE  = 0
-static Constant GET_LB_MODE_READ  = 1
+static Constant GET_LB_MODE_NONE = 0
+static Constant GET_LB_MODE_READ = 1
 
 static Constant GET_LB_MODE_WRITE = 2
 
@@ -36,7 +36,7 @@ static StrConstant MSQ_DS_LBN_PREFIX  = "Da Scale"
 static StrConstant MSQ_SC_LBN_PREFIX  = "Spike Control"
 
 static StrConstant LBN_UNASSOC_REGEXP_LEGACY = "^(.*) UNASSOC_[[:digit:]]+$"
-static StrConstant LBN_UNASSOC_REGEXP = "^(.*) u_(AD|DA)[[:digit:]]+$"
+static StrConstant LBN_UNASSOC_REGEXP        = "^(.*) u_(AD|DA)[[:digit:]]+$"
 
 static StrConstant ARCHIVEDLOG_SUFFIX = "_old_"
 
@@ -75,7 +75,7 @@ Function HorizExpandWithVisX()
 		minimum = axesProps[i][%minimum]
 		maximum = axesProps[i][%maximum]
 
-		first = limit(first , minimum, maximum)
+		first = limit(first, minimum, maximum)
 		last  = limit(last, minimum, maximum)
 
 		if(first == last)
@@ -251,19 +251,19 @@ static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, var
 		case LBT_LABNOTEBOOK:
 		case LBT_RESULTS:
 			entryName = GetDimLabel(logbook, COLS, colOrLayer)
-			col   = colOrLayer
-			layer = -1
+			col       = colOrLayer
+			layer     = -1
 			break
 		case LBT_TPSTORAGE:
 			entryName = GetDimLabel(logbook, LAYERS, colOrLayer)
-			col   = -1
-			layer = colOrLayer
+			col       = -1
+			layer     = colOrLayer
 			break
 		default:
 			ASSERT(0, "Invalid logbook type")
 	endswitch
 
-	Duplicate/O/R=[0, DimSize(logbook, ROWS)][col][layer][-1] logbook, dfr:$name/Wave=slice
+	Duplicate/O/R=[0, DimSize(logbook, ROWS)][col][layer][-1] logbook, dfr:$name/WAVE=slice
 
 	// we want to have a pure 1D wave without any columns or layers, this is currently not possible with Duplicate
 	Redimension/N=-1 slice
@@ -279,7 +279,7 @@ static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, var
 
 	if(IsTextWave(slice))
 		WAVE/T sliceFree = MakeWaveFree(slice)
-		Make/O/D/N=(DimSize(sliceFree, ROWS), DimSize(sliceFree, COLS), DimSize(sliceFree, LAYERS), DimSize(sliceFree, CHUNKS)) dfr:$name/Wave=sliceFromText
+		Make/O/D/N=(DimSize(sliceFree, ROWS), DimSize(sliceFree, COLS), DimSize(sliceFree, LAYERS), DimSize(sliceFree, CHUNKS)) dfr:$name/WAVE=sliceFromText
 		CopyScales sliceFree, sliceFromText
 		sliceFromText = str2num(sliceFree)
 		return sliceFromText
@@ -316,12 +316,12 @@ End
 /// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
 threadsafe static Function/WAVE GetChanneListFromDAQConfigWave(config, channelType)
-	WAVE config
+	WAVE     config
 	variable channelType
 
 	variable numRows, i, j
 
-	ASSERT_TS(IsValidConfigWave(config, version=0), "Invalid config wave")
+	ASSERT_TS(IsValidConfigWave(config, version = 0), "Invalid config wave")
 
 	numRows = DimSize(config, ROWS)
 	Make/U/B/FREE/N=(numRows) activeChannels
@@ -329,7 +329,7 @@ threadsafe static Function/WAVE GetChanneListFromDAQConfigWave(config, channelTy
 	for(i = 0; i < numRows; i += 1)
 		if(channelType == config[i][0])
 			activeChannels[j] = config[i][1]
-			j += 1
+			j                += 1
 		endif
 	endfor
 
@@ -346,7 +346,7 @@ End
 ///
 /// @return number of types present in chanTypes
 Function GetNrOfTypedChannels(chanTypes, type)
-	WAVE chanTypes
+	WAVE     chanTypes
 	variable type
 
 	variable i, numChannels, count
@@ -390,12 +390,12 @@ End
 /// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
 static Function/WAVE GetTypeListFromITCConfig(config, channelType)
-	WAVE config
+	WAVE     config
 	variable channelType
 
 	variable numRows, i, j
 
-	ASSERT(IsValidConfigWave(config, version=2), "Invalid config wave")
+	ASSERT(IsValidConfigWave(config, version = 2), "Invalid config wave")
 
 	numRows = DimSize(config, ROWS)
 	Make/U/B/FREE/N=(numRows) activeChannels
@@ -403,7 +403,7 @@ static Function/WAVE GetTypeListFromITCConfig(config, channelType)
 	for(i = 0; i < numRows; i += 1)
 		if(channelType == config[i][%ChannelType])
 			activeChannels[j] = config[i][%DAQChannelType]
-			j += 1
+			j                += 1
 		endif
 	endfor
 
@@ -420,7 +420,7 @@ End
 Function GotTPChannelsOnADCs(device)
 	string device
 
-	WAVE config = GetDAQConfigWave(device)
+	WAVE config  = GetDAQConfigWave(device)
 	WAVE ADCmode = GetADCTypesFromConfig(config)
 	FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
 	return (V_Value != -1)
@@ -554,9 +554,9 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 	// still correct without startLayer/endLayer coordinates
 	// as we always have sweepNumber/etc. in the first layer
 	if(IsNaN(val) && IsNumericWave(wv))
-		WAVE/Z indizesSetting = FindIndizes(wv, col=col, prop=PROP_EMPTY)
+		WAVE/Z indizesSetting = FindIndizes(wv, col = col, prop = PROP_EMPTY)
 	else
-		WAVE/Z indizesSetting = FindIndizes(wv, col=col, var=val)
+		WAVE/Z indizesSetting = FindIndizes(wv, col = col, var = val)
 	endif
 
 	if(!WaveExists(indizesSetting))
@@ -568,7 +568,7 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 
 		if(sourceTypeCol >= 0) // labnotebook has a entrySourceType column
 			[firstRow, lastRow] = WaveMinAndMax(indizesSetting)
-			WAVE/Z indizesSourceType = FindIndizes(wv, col=sourceTypeCol, var=entrySourceType, startRow = firstRow, endRow = lastRow)
+			WAVE/Z indizesSourceType = FindIndizes(wv, col = sourceTypeCol, var = entrySourceType, startRow = firstRow, endRow = lastRow)
 
 			// we don't have an entry source type in the labnotebook set
 			// throw away entries which are obviously from a different (guessed) entry source type
@@ -577,19 +577,19 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 
 					// "TP Peak Resistance" introduced in 666d761a (TP documenting is implemented using David Reid's documenting functions, 2014-07-28)
 					if(FindDimLabel(wv, COLS, "TP Peak Resistance") >= 0)
-						WAVE/Z indizesDefinitlyTP = FindIndizes(wv, colLabel="TP Peak Resistance", prop=PROP_NON_EMPTY, startRow = firstRow, endRow = lastRow, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
+						WAVE/Z indizesDefinitlyTP = FindIndizes(wv, colLabel = "TP Peak Resistance", prop = PROP_NON_EMPTY, startRow = firstRow, endRow = lastRow, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
 						if(WaveExists(indizesDefinitlyTP) && WaveExists(indizesSetting))
 							WAVE/Z indizesSettingRemoved = GetSetDifference(indizesSetting, indizesDefinitlyTP)
-							WAVE/Z indizesSetting = indizesSettingRemoved
+							WAVE/Z indizesSetting        = indizesSettingRemoved
 						endif
 					endif
 
 					// "TP Baseline Fraction" introduced in 4f4649a2 (Document the testpulse settings in the labnotebook, 2015-07-28)
 					if(FindDimLabel(wv, COLS, "TP Baseline Fraction") >= 0)
-						WAVE/Z indizesDefinitlyTP = FindIndizes(wv, colLabel="TP Baseline Fraction", prop=PROP_NON_EMPTY, startRow = firstRow, endRow = lastRow, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
+						WAVE/Z indizesDefinitlyTP = FindIndizes(wv, colLabel = "TP Baseline Fraction", prop = PROP_NON_EMPTY, startRow = firstRow, endRow = lastRow, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
 						if(WaveExists(indizesDefinitlyTP) && WaveExists(indizesSetting))
 							WAVE/Z indizesSettingRemoved = GetSetDifference(indizesSetting, indizesDefinitlyTP)
-							WAVE/Z indizesSetting = indizesSettingRemoved
+							WAVE/Z indizesSetting        = indizesSettingRemoved
 						endif
 					endif
 				endif
@@ -659,7 +659,7 @@ End
 /// @brief Returns the numerical index for the sweep number column
 /// in the settings history waves (numeric and text)
 threadsafe Function GetSweepColumn(labnotebookValues)
-	Wave labnotebookValues
+	WAVE labnotebookValues
 
 	variable sweepCol
 
@@ -739,9 +739,9 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function GetLastSettingIndep(numericalValues, sweepNo, setting, entrySourceType, [defValue])
-	Wave numericalValues
+	WAVE     numericalValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable defValue, entrySourceType
 
 	if(ParamIsDefault(defValue))
@@ -765,7 +765,7 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceType, [defValue])
-	Wave/T textualValues
+	WAVE/T   textualValues
 	variable sweepNo
 	string setting, defValue
 	variable entrySourceType
@@ -794,9 +794,9 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
-	Wave numericalValues
+	WAVE     numericalValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable defValue, entrySourceType
 
 	if(ParamIsDefault(defValue))
@@ -821,9 +821,9 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function GetLastSettingIndepSCI(numericalValues, sweepNo, setting, headstage, entrySourceType, [defValue])
-	Wave numericalValues
+	WAVE     numericalValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable defValue, headstage, entrySourceType
 
 	if(ParamIsDefault(defValue))
@@ -848,10 +848,10 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/S GetLastSettingTextIndepSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType, [defValue])
-	WAVE numericalValues
-	WAVE/T textualValues
+	WAVE     numericalValues
+	WAVE/T   textualValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable headstage, entrySourceType
 	string defValue
 
@@ -876,8 +876,8 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 threadsafe Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
-	WAVE numericalValues
-	wAVE/T textualValues
+	WAVE     numericalValues
+	WAVE/T   textualValues
 	variable sweepNo
 	string setting, defValue
 	variable entrySourceType
@@ -1022,8 +1022,8 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 
 	// new style unassociated entry
 	WAVE/Z settings = GetLastSetting(values, sweepNo,                                          \
-									 CreateLBNUnassocKey(setting, channelNumber, channelType), \
-									 entrySourceType)
+	                                 CreateLBNUnassocKey(setting, channelNumber, channelType), \
+	                                 entrySourceType)
 
 	if(WaveExists(settings))
 		return [settings, GetIndexForHeadstageIndepData(values)]
@@ -1031,8 +1031,8 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 
 	// old style unassociated entry
 	WAVE/Z settings = GetLastSetting(values, sweepNo,                                  \
-									 CreateLBNUnassocKey(setting, channelNumber, NaN), \
-									 entrySourceType)
+	                                 CreateLBNUnassocKey(setting, channelNumber, NaN), \
+	                                 entrySourceType)
 
 	if(WaveExists(settings))
 		return [settings, GetIndexForHeadstageIndepData(values)]
@@ -1055,9 +1055,9 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType)
-	wAVE values
+	WAVE     values
 	variable sweepNo
-	string setting
+	string   setting
 	variable entrySourceType
 
 	variable first, last, rowIndex, entrySourceTypeIndex, settingCol
@@ -1105,8 +1105,8 @@ threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceTyp
 		first = rowCache[sweepNo][%first][entrySourceTypeIndex]
 		last  = rowCache[sweepNo][%last][entrySourceTypeIndex]
 
-		WAVE/Z settings = GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, \
-												first = first, last = last, rowIndex = rowIndex)
+		WAVE/Z settings = GetLastSettingNoCache(values, sweepNo, setting, entrySourceType,     \
+		                                        first = first, last = last, rowIndex = rowIndex)
 
 		if(WaveExists(settings))
 			ASSERT_TS(first >= 0 && last >= 0 && rowIndex >= 0, "invalid return combination from GetLastSettingNoCache")
@@ -1148,9 +1148,9 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [first, last, rowIndex])
-	Wave values
+	WAVE     values
 	variable sweepNo
-	string setting
+	string   setting
 	variable entrySourceType
 	variable &first, &last, &rowIndex
 
@@ -1177,7 +1177,7 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 		ASSERT_TS(0, "Invalid params")
 	endif
 
-	numLayers = DimSize(values, LAYERS)
+	numLayers  = DimSize(values, LAYERS)
 	settingCol = FindDimLabel(values, COLS, setting)
 
 	if(settingCol <= 0)
@@ -1222,13 +1222,13 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 					endif
 				elseif(entrySourceType != str2num(textualValues[i][sourceTypeCol][0]))
 					// labnotebook has entrySourceType and it is not matching
-					DEBUGPRINT_TS("Skipping the given row as sourceType is available and not matching: ", var=i)
+					DEBUGPRINT_TS("Skipping the given row as sourceType is available and not matching: ", var = i)
 					continue
 				endif
 			endif
 
 			statusText[] = textualValues[i][settingCol][p]
-			lengths[]	= strlen(statusTexT[p])
+			lengths[]    = strlen(statusTexT[p])
 
 			// return if we have at least one non-empty entry
 			if(Sum(lengths) > 0)
@@ -1271,7 +1271,7 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 					blockType = UNKNOWN_MODE
 
 					if(pulseDurationCol > 0)
-						status[] = numericalValues[i][pulseDurationCol][p]
+						status[]                     = numericalValues[i][pulseDurationCol][p]
 						hasValidTPPulseDurationEntry = HasOneValidEntry(status)
 					else
 						hasValidTPPulseDurationEntry = 0
@@ -1287,7 +1287,7 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 						// if the previous row has a "TP Peak Resistance" entry we know that this is a testpulse block
 						status[] = numericalValues[i - 1][peakResistanceCol][p]
 						if(HasOneValidEntry(status))
-							blockType = TEST_PULSE_MODE
+							blockType            = TEST_PULSE_MODE
 							testpulseBlockLength = 1
 						else
 							blockType = DATA_ACQUISITION_MODE
@@ -1295,7 +1295,7 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 					else // no match, maybe old format
 						status[] = numericalValues[i][peakResistanceCol][p]
 						if(HasOneValidEntry(status))
-							blockType = TEST_PULSE_MODE
+							blockType            = TEST_PULSE_MODE
 							testpulseBlockLength = 0
 						else
 							blockType = DATA_ACQUISITION_MODE
@@ -1306,7 +1306,7 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 						// testpulse block starts but DAQ was requested
 						// two row long testpulse block, skip it
 						i -= testpulseBlockLength
-						DEBUGPRINT_TS("Skipping the testpulse block as DAQ is requested, testpulseBlockLength:", var=testPulseBlockLength)
+						DEBUGPRINT_TS("Skipping the testpulse block as DAQ is requested, testpulseBlockLength:", var = testPulseBlockLength)
 						continue
 					elseif(entrySourceType == TEST_PULSE_MODE && blockType == DATA_ACQUISITION_MODE)
 						// sweep block starts but TP was requested
@@ -1317,7 +1317,7 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 					endif
 				elseif(entrySourceType != numericalValues[i][sourceTypeCol][0])
 					// labnotebook has entrySourceType and it is not matching
-					DEBUGPRINT_TS("Skipping the given row as sourceType is available and not matching: ", var=i)
+					DEBUGPRINT_TS("Skipping the given row as sourceType is available and not matching: ", var = i)
 					continue
 				endif
 			endif
@@ -1342,10 +1342,10 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/WAVE GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType)
-	WAVE numericalValues
-	WAVE/T textualValues
+	WAVE     numericalValues
+	WAVE/T   textualValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable entrySourceType
 
 	variable i, numSweeps
@@ -1372,9 +1372,9 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/WAVE GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceType)
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable entrySourceType
 
 	variable i, numSweeps
@@ -1405,9 +1405,9 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable entrySourceType, defValue
 
 	variable settings, numSweeps
@@ -1441,12 +1441,12 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
-	WAVE numericalValues
-	WAVE/T textualValues
+	WAVE     numericalValues
+	WAVE/T   textualValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable entrySourceType
-	string defValue
+	string   defValue
 
 	variable settings, numSweeps
 
@@ -1479,9 +1479,9 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting
 threadsafe Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable headstage, entrySourceType
 
 	variable i, numSweeps
@@ -1520,10 +1520,10 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/WAVE GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE numericalValues
-	WAVE/T textualValues
+	WAVE     numericalValues
+	WAVE/T   textualValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable headstage, entrySourceType
 
 	variable i, numSweeps
@@ -1559,10 +1559,10 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/WAVE GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE numericalValues
-	WAVE/T textualValues
+	WAVE     numericalValues
+	WAVE/T   textualValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable headstage, entrySourceType
 
 	variable i, numSweeps
@@ -1589,9 +1589,9 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/WAVE GetLastSettingSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable headstage, entrySourceType
 
 	variable i, numSweeps
@@ -1622,9 +1622,9 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/WAVE GetLastSettingIndepEachSCI(numericalValues, sweepNo, setting, headstage, entrySourceType, [defValue])
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable headstage, entrySourceType, defValue
 
 	variable settings, numSweeps
@@ -1658,10 +1658,10 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/WAVE GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, headstage, setting, entrySourceType, [defValue])
-	WAVE numericalValues
-	WAVE/T textualValues
+	WAVE     numericalValues
+	WAVE/T   textualValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable headstage, entrySourceType
 	string defValue
 
@@ -1696,9 +1696,9 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting
 threadsafe Function/WAVE GetLastSettingEachSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable headstage, entrySourceType
 
 	variable i, numSweeps
@@ -1737,10 +1737,10 @@ End
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 threadsafe Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE numericalValues
-	WAVE/T textualValues
+	WAVE     numericalValues
+	WAVE/T   textualValues
 	variable sweepNo
-	string setting
+	string   setting
 	variable headstage, entrySourceType
 
 	variable i, numSweeps
@@ -1773,7 +1773,7 @@ End
 
 /// @brief Return a wave with all labnotebook rows which have a non-empty entry for setting
 threadsafe Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
-	WAVE labnotebookValues
+	WAVE   labnotebookValues
 	string setting
 
 	variable col
@@ -1784,7 +1784,7 @@ threadsafe Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
 		return $""
 	endif
 
-	return FindIndizes(labnotebookValues, col = col, prop = PROP_NON_EMPTY,               \
+	return FindIndizes(labnotebookValues, col = col, prop = PROP_NON_EMPTY,             \
 	                   startLayer = 0, endLayer = DimSize(labnotebookValues, LAYERS) - 1)
 End
 
@@ -1798,7 +1798,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 threadsafe Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
-	WAVE labnotebookValues
+	WAVE   labnotebookValues
 	string setting
 
 	variable sweepCol
@@ -1838,8 +1838,8 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 threadsafe Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
-	WAVE numericalValues
-	string setting
+	WAVE      numericalValues
+	string    setting
 	variable &sweepNo
 
 	variable idx
@@ -1870,10 +1870,10 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 threadsafe Function GetLastSweepWithSettingIndep(numericalValues, setting, sweepNo, [defValue])
-	WAVE numericalValues
-	string setting
+	WAVE      numericalValues
+	string    setting
 	variable &sweepNo
-	variable defValue
+	variable  defValue
 
 	if(ParamIsDefault(defValue))
 		defValue = NaN
@@ -1901,8 +1901,8 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 threadsafe Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
-	WAVE/T textualValues
-	string setting
+	WAVE/T    textualValues
+	string    setting
 	variable &sweepNo
 
 	variable idx
@@ -1933,10 +1933,10 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 threadsafe Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defValue])
-	WAVE numericalValues
-	string setting
+	WAVE      numericalValues
+	string    setting
 	variable &sweepNo
-	string defValue
+	string    defValue
 
 	if(ParamIsDefault(defValue))
 		defValue = ""
@@ -1961,9 +1961,9 @@ Function/S GetAllDevices()
 	string path, list = ""
 
 	string devicesFolderPath = GetDAQDevicesFolderAsString()
-	DFREF devicesFolder = GetDAQDevicesFolder()
+	DFREF  devicesFolder     = GetDAQDevicesFolder()
 
-	folders = GetListOfObjects(devicesFolder, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
+	folders    = GetListOfObjects(devicesFolder, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 	numEntries = ItemsInList(folders)
 	for(i = 0; i < numEntries; i += 1)
 		folder = StringFromList(i, folders)
@@ -1974,32 +1974,32 @@ Function/S GetAllDevices()
 
 			// ITC hardware is in a specific subfolder
 			numDevices = ItemsInList(subFolders)
-			for(j = 0; j < numDevices ; j += 1)
+			for(j = 0; j < numDevices; j += 1)
 				subFolder = StringFromList(j, subFolders)
-				number = RemovePrefix(subFolder, start = "Device")
-				device = HW_ITC_BuildDeviceString(folder, number)
-				path   = GetDevicePathAsString(device)
+				number    = RemovePrefix(subFolder, start = "Device")
+				device    = HW_ITC_BuildDeviceString(folder, number)
+				path      = GetDevicePathAsString(device)
 
 				if(DataFolderExists(path))
 					DFREF dfr = $path
 					NVAR/SDFR=dfr/Z deviceID, ITCDeviceIDGlobal
 
 					if(NVAR_Exists(deviceID) || NVAR_Exists(ITCDeviceIDGlobal))
-						list = AddListItem(device, list, ";", inf)
+						list = AddListItem(device, list, ";", Inf)
 					endif
 				endif
 			endfor
 		else
 			// other hardware has no subfolder
 			device = folder
-			path = GetDevicePathAsString(device)
+			path   = GetDevicePathAsString(device)
 
 			if(DataFolderExists(path))
 				DFREF dfr = $path
 				NVAR/SDFR=dfr/Z deviceID, ITCDeviceIDGlobal
 
 				if(NVAR_Exists(deviceID) || NVAR_Exists(ITCDeviceIDGlobal))
-					list = AddListItem(device, list, ";", inf)
+					list = AddListItem(device, list, ";", Inf)
 				endif
 			endif
 		endif
@@ -2054,23 +2054,23 @@ Function/S GetAllDevicesWithContent([contentType])
 		dataPath      = GetDeviceDataPathAsString(device)
 		testPulsePath = GetDeviceTestPulseAsString(device)
 
-		if(contentType & CONTENT_TYPE_SWEEP                   \
-		   && DataFolderExists(dataPath)                      \
+		if(contentType & CONTENT_TYPE_SWEEP                 \
+		   && DataFolderExists(dataPath)                    \
 		   && CountObjects(dataPath, COUNTOBJECTS_WAVES) > 0)
-			list = AddListItem(device, list, ";", inf)
+			list = AddListItem(device, list, ";", Inf)
 			continue
 		endif
 
-		if(contentType & CONTENT_TYPE_TPSTORAGE                                     \
-		   && DataFolderExists(testPulsePath)                                       \
+		if(contentType & CONTENT_TYPE_TPSTORAGE                                   \
+		   && DataFolderExists(testPulsePath)                                     \
 		   && ItemsInList(GetListOfObjects($testPulsePath, TP_STORAGE_REGEXP)) > 0)
-			list = AddListItem(device, list, ";", inf)
+			list = AddListItem(device, list, ";", Inf)
 			continue
 		endif
 
 		if(contentType & CONTENT_TYPE_COMMENT \
 		   && DeviceHasUserComments(device))
-			list = AddListItem(device, list, ";", inf)
+			list = AddListItem(device, list, ";", Inf)
 			continue
 		endif
 	endfor
@@ -2081,7 +2081,7 @@ End
 /// @brief Convenience wrapper for KillOrMoveToTrashPath()
 threadsafe Function KillOrMoveToTrash([wv, dfr])
 	WAVE/Z wv
-	DFREF dfr
+	DFREF  dfr
 
 	if(!ParamIsDefault(wv) && WaveExists(wv))
 		if(IsFreeWave(wv))
@@ -2130,15 +2130,15 @@ threadsafe Function KillOrMoveToTrashPath(path)
 
 		MoveToTrash(wv = wv)
 	else
-		DEBUGPRINT_TS("Ignoring the datafolder/wave as it does not exist", str=path)
+		DEBUGPRINT_TS("Ignoring the datafolder/wave as it does not exist", str = path)
 	endif
 End
 
 threadsafe Function MoveToTrash([wv, dfr])
 	WAVE/Z wv
-	DFREF dfr
+	DFREF  dfr
 
-	string dest
+	string   dest
 	variable err
 
 	if(!ParamIsDefault(wv) && WaveExists(wv))
@@ -2169,12 +2169,12 @@ End
 ///
 /// @see GetDAQDataSingleColumnWave() or SplitSweepIntoComponents()
 Function/WAVE GetDAQDataSingleColumnWaves(sweepDFR, channelType)
-	DFREF sweepDFR
+	DFREF    sweepDFR
 	variable channelType
 
 	ASSERT(DataFolderExistsDFR(sweepDFR), "sweepDFR is invalid")
 
-	Make/FREE/WAVE/N=(GetNumberFromType(xopVar=channelType)) matches = GetDAQDataSingleColumnWave(sweepDFR, channelType, p)
+	Make/FREE/WAVE/N=(GetNumberFromType(xopVar = channelType)) matches = GetDAQDataSingleColumnWave(sweepDFR, channelType, p)
 
 	return matches
 End
@@ -2200,7 +2200,7 @@ threadsafe Function/WAVE GetDAQDataSingleColumnWaveNG(WAVE numericalValues, WAVE
 		endif
 
 		hwChannelNumber = guiToHWChannelMap[GUIchannelNumber][%HWCHANNEL]
-		hwDACType = GetUsedHWDACFromLNB(numericalValues, sweepNo)
+		hwDACType       = GetUsedHWDACFromLNB(numericalValues, sweepNo)
 		ASSERT_TS(hwDACType == HARDWARE_ITC_DAC || hwDACType == HARDWARE_NI_DAC, "Unsupported hardware dac type")
 
 		if(hwDACType == HARDWARE_NI_DAC)
@@ -2238,7 +2238,7 @@ threadsafe Function/WAVE GetDAQDataSingleColumnWave(sweepDFR, channelType, chann
 	endif
 
 	ASSERT_TS(ParamIsDefault(splitTTLBits) + ParamIsDefault(ttlBit) != 1, "Expected both or none of splitTTLBits and ttlBit")
-	ASSERT_TS(channelNumber < GetNumberFromType(xopVar=channelType), "Invalid channel index")
+	ASSERT_TS(channelNumber < GetNumberFromType(xopVar = channelType), "Invalid channel index")
 
 	wvName = StringFromList(channelType, XOP_CHANNEL_NAMES) + "_" + num2str(channelNumber)
 
@@ -2268,7 +2268,7 @@ Function IsValidEpochNumber(epochNo)
 End
 
 /// @brief Returns the config wave for a given sweep wave
-Function/Wave GetConfigWave(sweepWave)
+Function/WAVE GetConfigWave(sweepWave)
 	WAVE sweepWave
 
 	WAVE/SDFR=GetWavesDataFolderDFR(sweepWave)/Z config = $GetConfigWaveName(ExtractSweepNumber(NameOfWave(sweepWave)))
@@ -2298,11 +2298,11 @@ End
 ///        To convert a text sweep wave to a waveRef sweep wave use @ref TextSweepToWaveRef
 ///        The programmer has to consider if pure references to channels are good enough (TextSweepToWaveRef) or if the channels
 ///        should be duplicated.
-Function/Wave GetSweepWave(device, sweepNo)
-	string device
+Function/WAVE GetSweepWave(device, sweepNo)
+	string   device
 	variable sweepNo
 
-	Wave/Z/SDFR=GetDeviceDataPath(device) wv = $GetSweepWaveName(sweepNo)
+	WAVE/Z/SDFR=GetDeviceDataPath(device) wv = $GetSweepWaveName(sweepNo)
 
 	return wv
 End
@@ -2324,13 +2324,13 @@ End
 /// @brief Returns the sampling interval of the sweep
 /// in microseconds (1e-6s)
 threadsafe Function GetSamplingInterval(config)
-	Wave config
+	WAVE config
 
-	ASSERT_TS(IsValidConfigWave(config, version=0), "Expected a valid config wave")
+	ASSERT_TS(IsValidConfigWave(config, version = 0), "Expected a valid config wave")
 
 	// from ITCConfigAllChannels help file:
 	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
-	Duplicate/D/R=[][2]/FREE config samplingInterval
+	Duplicate/D/R=[][2]/FREE config, samplingInterval
 
 	// The sampling interval is the same for all channels
 	ASSERT_TS(IsConstant(samplingInterval, samplingInterval[0]), "Expected constant sample interval for all channels")
@@ -2339,9 +2339,9 @@ End
 
 /// @brief Returns the data offset of the sweep in points
 threadsafe Function GetDataOffset(config)
-	Wave config
+	WAVE config
 
-	ASSERT_TS(IsValidConfigWave(config, version=1),"Expected a valid config wave")
+	ASSERT_TS(IsValidConfigWave(config, version = 1), "Expected a valid config wave")
 
 	Duplicate/D/R=[][4]/FREE config, offsets
 
@@ -2356,7 +2356,7 @@ End
 /// @param config configuration wave
 /// @param samplingInterval sampling interval in microseconds (1e-6s)
 Function UpdateSweepConfig(config, [samplingInterval])
-	Wave config
+	WAVE     config
 	variable samplingInterval
 
 	ASSERT(IsFinite(samplingInterval), "samplingInterval must be finite")
@@ -2409,14 +2409,14 @@ threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 
 	if(strsearch(device, "_Dev_", 0, 2) == -1)
 		// NI device
-		deviceType = device
+		deviceType   = device
 		deviceNumber = ""
 		return !isEmpty(deviceType) && cmpstr(deviceType, "DA")
 	endif
 
 	// ITC device notation with X_Dev_Y
-	deviceType   = StringFromList(0,device,"_")
-	deviceNumber = StringFromList(2,device,"_")
+	deviceType   = StringFromList(0, device, "_")
+	deviceNumber = StringFromList(2, device, "_")
 	return !isEmpty(deviceType) && !isEmpty(deviceNumber) && cmpstr(deviceType, "DA")
 End
 
@@ -2444,7 +2444,7 @@ End
 /// For overlayed channels we have up to three blocks (DA, AD, TTL) in that order.
 Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
-	variable i, numSlots, headstage,  numBlocksTTL, numBlocks, numBlocksEpochDA, numBlocksEpochTTL, spacePerSlot
+	variable i, numSlots, headstage, numBlocksTTL, numBlocks, numBlocksEpochDA, numBlocksEpochTTL, spacePerSlot
 	variable numBlocksDA, numBlocksAD, first, firstFreeAxis, lastFreeAxis, orientation
 	variable numBlocksUnassocDA, numBlocksUnassocAD, numBlocksHS
 	string graph, regex, freeAxis, axis
@@ -2463,7 +2463,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	WAVE/T allVerticalAxes = GetUniqueEntries(allVerticalAxesNonUnique)
 
 	WAVE/T allHorizontalAxesNonUnique = TUD_GetUserDataAsWave(graph, "XAXIS")
-	WAVE/T allHorizontalAxes = GetUniqueEntries(allHorizontalAxesNonUnique)
+	WAVE/T allHorizontalAxes          = GetUniqueEntries(allHorizontalAxesNonUnique)
 
 	if(tgs.overLayChannels)
 		// up to three blocks
@@ -2490,7 +2490,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		numBlocksEpochTTL = WaveExists(Epochaxes) ? DimSize(Epochaxes, ROWS) : 0
 
 		numBlocks = numBlocksAD + numBlocksDA + numBlocksTTL + numBlocksEpochDA + numBlocksEpochTTL
-		numSlots = ADC_SLOT_MULTIPLIER * numBlocksAD + numBlocksDA + numBlocksTTL + EPOCH_SLOT_MULTIPLIER * (numBlocksEpochDA + numBlocksEpochTTL)
+		numSlots  = ADC_SLOT_MULTIPLIER * numBlocksAD + numBlocksDA + numBlocksTTL + EPOCH_SLOT_MULTIPLIER * (numBlocksEpochDA + numBlocksEpochTTL)
 
 		spacePerSlot = (1.0 - (numBlocks - 1) * GRAPH_DIV_SPACING) / numSlots
 
@@ -2536,7 +2536,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 	// number of headstages
 	WAVE/T/Z headstagesNonUnique = TUD_GetUserDataAsWave(graph, "headstage")
-	WAVE/Z headstages = ConvertToUniqueNumber(headstagesNonUnique, doZapNaNs = 1, doSort = 1)
+	WAVE/Z   headstages          = ConvertToUniqueNumber(headstagesNonUnique, doZapNaNs = 1, doSort = 1)
 
 	numBlocksHS = WaveExists(headstages) ? DimSize(headstages, ROWS) : 0
 
@@ -2574,7 +2574,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	if(WaveExists(TTLsIndizes))
 		WAVE/T graphUserData = GetGraphUserData(graph)
 		Make/FREE/T/N=(DimSize(TTLsIndizes, ROWS)) ttlsWithBitsUnsorted = "TTL_" + graphUserData[TTLsIndizes[p]][%channelNumber] + \
-					                                                      "_" + graphUserData[TTLsIndizes[p]][%TTLBit]
+		                                                                  "_" + graphUserData[TTLsIndizes[p]][%TTLBit]
 		WAVE/T ttlsWithBits = GetUniqueEntries(ttlsWithBitsUnsorted)
 	endif
 
@@ -2586,7 +2586,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	// TTL: 1 slot per ttlsWithBits
 
 	numBlocks = numBlocksAD + numBlocksDA + numBlocksUnassocDA + numBlocksUnassocAD + numBlocksTTL + numBlocksEpochDA + numBlocksEpochTTL
-	numSlots = ADC_SLOT_MULTIPLIER * numBlocksAD + numBlocksDA + numBlocksUnassocDA + ADC_SLOT_MULTIPLIER * numBlocksUnassocAD + numBlocksTTL + EPOCH_SLOT_MULTIPLIER * (numBlocksEpochDA + numBlocksEpochTTL)
+	numSlots  = ADC_SLOT_MULTIPLIER * numBlocksAD + numBlocksDA + numBlocksUnassocDA + ADC_SLOT_MULTIPLIER * numBlocksUnassocAD + numBlocksTTL + EPOCH_SLOT_MULTIPLIER * (numBlocksEpochDA + numBlocksEpochTTL)
 
 	spacePerSlot = (1.0 - (numBlocks - 1) * GRAPH_DIV_SPACING) / numSlots
 
@@ -2621,7 +2621,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 		freeAxis = "freeaxis_hs" + num2str(headstage)
 		NewFreeAxis/W=$graph $freeAxis
-		ModifyGraph/W=$graph standoff($freeAxis)=0, lblPosMode($freeAxis)=2, axRGB($freeAxis)=(65535,65535,65535,0), tlblRGB($freeAxis)=(65535,65535,65535,0), alblRGB($freeAxis)=(0,0,0), lblMargin($freeAxis)=0, lblLatPos($freeAxis)=0
+		ModifyGraph/W=$graph standoff($freeAxis)=0, lblPosMode($freeAxis)=2, axRGB($freeAxis)=(65535, 65535, 65535, 0), tlblRGB($freeAxis)=(65535, 65535, 65535, 0), alblRGB($freeAxis)=(0, 0, 0), lblMargin($freeAxis)=0, lblLatPos($freeAxis)=0
 		ModifyGraph/W=$graph axisEnab($freeAxis)={firstFreeAxis, lastFreeAxis}
 		Label/W=$graph $freeAxis, "HS" + num2str(headstage)
 	endfor
@@ -2665,7 +2665,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		EnableAxis(graph, axes, spacePerSlot, first, last)
 
 		axis = axes[0]
-		ModifyGraph/W=$graph nticks($axis)=2, manTick($axis)={0,1,0,0}, manMinor($axis)={0,50}
+		ModifyGraph/W=$graph nticks($axis)=2, manTick($axis)={0, 1, 0, 0}, manMinor($axis)={0, 50}
 	endfor
 
 	ASSERT(first < 1e-15, "Left over space")
@@ -2681,12 +2681,12 @@ static Function TweakAxes(string graph, STRUCT TiledGraphSettings &tgs, WAVE/T a
 	for(i = 0; i < numAxes; i += 1)
 		axis = allVerticalAxes[i]
 
-		ModifyGraph/W=$graph tickUnit($axis) = 1
-		ModifyGraph/W=$graph lblPosMode($axis) = 2, standoff($axis) = 0, freePos($axis) = 0
-		ModifyGraph/W=$graph lblLatPos($axis) = 3, lblMargin($axis) = 15
+		ModifyGraph/W=$graph tickUnit($axis)=1
+		ModifyGraph/W=$graph lblPosMode($axis)=2, standoff($axis)=0, freePos($axis)=0
+		ModifyGraph/W=$graph lblLatPos($axis)=3, lblMargin($axis)=15
 
 		if(tgs.dDAQDisplayMode)
-			ModifyGraph/W=$graph freePos($axis) = 20
+			ModifyGraph/W=$graph freePos($axis)=20
 		endif
 	endfor
 
@@ -2695,11 +2695,11 @@ static Function TweakAxes(string graph, STRUCT TiledGraphSettings &tgs, WAVE/T a
 		for(i = 0; i < numAxes; i += 1)
 			axis = allHorizontalAxes[i]
 
-			ModifyGraph/W=$graph alblRGB($axis)=(65535,65535,65535)
+			ModifyGraph/W=$graph alblRGB($axis)=(65535, 65535, 65535)
 			Label/W=$graph $axis, "\u#2"
 		endfor
 
-		ModifyGraph/W=$graph axRGB=(65535,65535,65535), tlblRGB=(65535,65535,65535)
+		ModifyGraph/W=$graph axRGB=(65535, 65535, 65535), tlblRGB=(65535, 65535, 65535)
 		ModifyGraph/W=$graph axThick=0
 		ModifyGraph/W=$graph margin(left)=40, margin(bottom)=1
 	else
@@ -2749,7 +2749,7 @@ Function GetNextTraceIndex(string graph)
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
 	lastTraceName = graphUserData[traceCount - 1][%traceName]
-	traceIndex = str2num(lastTraceName[1, inf]) + 1
+	traceIndex    = str2num(lastTraceName[1, Inf]) + 1
 	ASSERT(IsFinite(traceIndex), "Non finite trace index")
 
 	return traceIndex
@@ -2780,7 +2780,7 @@ End
 /// @param experiment      name of the experiment the sweep stems from
 /// @param channelSelWave  channel selection wave
 /// @param bdi [optional, default = n/a] initialized BufferedDrawInfo structure, when given draw calls are buffered instead for later execution @sa OVS_EndIncrementalUpdate
-Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues,  WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave, [STRUCT BufferedDrawInfo &bdi])
+Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues, WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave, [STRUCT BufferedDrawInfo &bdi])
 
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
@@ -2797,9 +2797,9 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
 
-	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",               \
-			  					"textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType", \
-								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage", "GUIChannelNumber"}
+	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",                         \
+	                            "textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType",           \
+	                            "occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage", "GUIChannelNumber"}
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -2830,7 +2830,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		ASSERT(WaveExists(channelMapHWToGUI), "Can not find LNB entries for active TTL channels from config wave.")
 	endif
 
-	hardwareType           = GetUsedHWDACFromLNB(numericalValues, sweepNo)
+	hardwareType = GetUsedHWDACFromLNB(numericalValues, sweepNo)
 	WAVE/Z ttlRackZeroBits = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackOneBits  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
 
@@ -2848,15 +2848,15 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			idx = GetIndexForHeadstageIndepData(numericalValues)
 			if(WaveExists(ttlRackZeroBits))
 				numTTLBits += PopCount(ttlRackZeroBits[idx])
-			 endif
+			endif
 			if(WaveExists(ttlRackOneBits))
 				numTTLBits += PopCount(ttlRackOneBits[idx])
-			 endif
+			endif
 		endif
 	endif
 
-	dDAQEnabled   = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ", DATA_ACQUISITION_MODE, defValue=0)
-	oodDAQEnabled = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", DATA_ACQUISITION_MODE, defValue=0)
+	dDAQEnabled   = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ", DATA_ACQUISITION_MODE, defValue = 0)
+	oodDAQEnabled = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", DATA_ACQUISITION_MODE, defValue = 0)
 
 	if(tgs.dDAQDisplayMode && !(dDAQEnabled || oodDAQEnabled))
 		printf "Distributed DAQ display mode turned off as no dDAQ data could be found.\r"
@@ -2876,23 +2876,23 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		// dDAQ data taken with versions prior to
 		// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
 		// does not have the delays stored in the labnotebook
-		delayOnsetUser   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
-		delayOnsetAuto   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
-		delayTermination = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
-		delaydDAQ        = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
+		delayOnsetUser   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE, defValue = 0) / samplingInt
+		delayOnsetAuto   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue = 0) / samplingInt
+		delayTermination = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", DATA_ACQUISITION_MODE, defValue = 0) / samplingInt
+		delaydDAQ        = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", DATA_ACQUISITION_MODE, defValue = 0) / samplingInt
 
 		sprintf str, "delayOnsetUser=%g, delayOnsetAuto=%g, delayTermination=%g, delaydDAQ=%g", delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ
 		DEBUGPRINT(str)
 
 		if(oodDAQEnabled)
-			numEntries = DimSize(oodDAQRegions, ROWS)
+			numEntries       = DimSize(oodDAQRegions, ROWS)
 			oodDAQRegionsAll = ""
-			totalXRange = 0
+			totalXRange      = 0
 
 			// Fixup buggy entries introduced since 88323d8d (Replacement of oodDAQ offset calculation routines, 2019-06-13)
 			// The regions from the second active headstage are duplicated into the
 			// first region in case we had more than two active headstages taking part in oodDAQ.
-			WAVE/Z indizes = FindIndizes(oodDAQRegions, prop=PROP_NON_EMPTY)
+			WAVE/Z indizes = FindIndizes(oodDAQRegions, prop = PROP_NON_EMPTY)
 			if(WaveExists(indizes) && DimSize(indizes, ROWS) > 2)
 				oodDAQRegions[indizes[0]] = ReplaceString(oodDAQRegions[indizes[1]], oodDAQRegions[indizes[0]], "")
 			endif
@@ -2908,14 +2908,14 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					continue
 				endif
 
-				entry = RemoveEnding(oodDAQRegions[i], ";")
+				entry             = RemoveEnding(oodDAQRegions[i], ";")
 				numRangesPerEntry = ItemsInList(entry)
 				for(j = 0; j < numRangesPerEntry; j += 1)
-					range = StringFromList(j, entry)
+					range            = StringFromList(j, entry)
 					oodDAQRegionsAll = AddListItem(range, oodDAQRegionsAll, ";", Inf)
 
-					xRangeStart = str2num(StringFromList(0, range, "-"))
-					xRangeEnd = str2num(StringFromList(1, range, "-"))
+					xRangeStart  = str2num(StringFromList(0, range, "-"))
+					xRangeEnd    = str2num(StringFromList(1, range, "-"))
 					totalXRange += (xRangeEnd - XRangeStart) / samplingInt
 				endfor
 			endfor
@@ -2925,7 +2925,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			DEBUGPRINT(str)
 		else
 			stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length", DATA_ACQUISITION_MODE)
-			DEBUGPRINT("Stim set length (labnotebook, NaN for oodDAQ)", var=stimSetLength)
+			DEBUGPRINT("Stim set length (labnotebook, NaN for oodDAQ)", var = stimSetLength)
 
 			dDAQActiveHeadstageAll = ""
 
@@ -2986,26 +2986,26 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						continue
 					endif
 
-					WAVE/Z status    = statusDAC
-					WAVE channelList = DACs
-					channelID        = "DA"
-					hasPhysUnit      = 1
-					numHorizWaves    = tgs.dDAQDisplayMode ? numRegions : 1
-					numVertWaves     = 1
-					numChannels      = numDACs
+					WAVE/Z status      = statusDAC
+					WAVE   channelList = DACs
+					channelID     = "DA"
+					hasPhysUnit   = 1
+					numHorizWaves = tgs.dDAQDisplayMode ? numRegions : 1
+					numVertWaves  = 1
+					numChannels   = numDACs
 					break
 				case XOP_CHANNEL_TYPE_ADC:
 					if(!tgs.displayADC)
 						continue
 					endif
 
-					WAVE/Z status    = statusADC
-					WAVE channelList = ADCs
-					channelID        = "AD"
-					hasPhysUnit      = 1
-					numHorizWaves    = tgs.dDAQDisplayMode ? numRegions : 1
-					numVertWaves     = 1
-					numChannels      = numADCs
+					WAVE/Z status      = statusADC
+					WAVE   channelList = ADCs
+					channelID     = "AD"
+					hasPhysUnit   = 1
+					numHorizWaves = tgs.dDAQDisplayMode ? numRegions : 1
+					numVertWaves  = 1
+					numChannels   = numADCs
 					break
 				case XOP_CHANNEL_TYPE_TTL:
 					if(!tgs.displayTTL                                      \
@@ -3014,17 +3014,17 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						continue
 					endif
 
-					WAVE/Z status    = $""
-					WAVE channelList = TTLs
-					channelID        = "TTL"
-					hasPhysUnit      = 0
-					numHorizWaves    = 1
+					WAVE/Z status      = $""
+					WAVE   channelList = TTLs
+					channelID     = "TTL"
+					hasPhysUnit   = 0
+					numHorizWaves = 1
 
 					if(hardwareType == HARDWARE_ITC_DAC)
-						numVertWaves = tgs.splitTTLBits ? NUM_ITC_TTL_BITS_PER_RACK : 1
+						numVertWaves  = tgs.splitTTLBits ? NUM_ITC_TTL_BITS_PER_RACK : 1
 						isTTLSplitted = tgs.splitTTLBits
 					else
-						numVertWaves = 1
+						numVertWaves  = 1
 						isTTLSplitted = 1
 					endif
 
@@ -3037,27 +3037,27 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			endif
 
 			moreData = 1
-			chan = channelList[0]
+			chan     = channelList[0]
 			DeletePoints/M=(ROWS) 0, 1, channelList
 
 			if(WaveExists(status))
-				headstage = GetRowIndex(status, val=chan)
+				headstage = GetRowIndex(status, val = chan)
 			else
 				headstage = NaN
 			endif
 
 			// ignore TP during DAQ channels
 			if(WaveExists(status) && IsFinite(headstage))
-				if(channelType == XOP_CHANNEL_TYPE_DAC              \
-				   && WaveExists(daChannelType)                         \
+				if(channelType == XOP_CHANNEL_TYPE_DAC                \
+				   && WaveExists(daChannelType)                       \
 				   && daChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
-						activeChanCount[i] += 1
-						continue
-				elseif(channelType == XOP_CHANNEL_TYPE_ADC              \
-				       && WaveExists(adChannelType)                         \
+					activeChanCount[i] += 1
+					continue
+				elseif(channelType == XOP_CHANNEL_TYPE_ADC                \
+				       && WaveExists(adChannelType)                       \
 				       && adChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
-						activeChanCount[i] += 1
-						continue
+					activeChanCount[i] += 1
+					continue
 				endif
 			endif
 
@@ -3082,7 +3082,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 				ASSERT(DataFolderExistsDFR(singleSweepDFR), "Missing singleSweepDFR")
 
-				WAVE/Z wv = GetDAQDataSingleColumnWave(singleSweepDFR, channelType, chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
+				WAVE/Z wv = GetDAQDataSingleColumnWave(singleSweepDFR, channelType, chan, splitTTLBits = tgs.splitTTLBits, ttlBit = j)
 				if(!WaveExists(wv))
 					continue
 				endif
@@ -3106,8 +3106,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					vertAxis = VERT_AXIS_BASE_NAME + num2str(j) + "_" + HORIZ_AXIS_BASE_NAME + num2str(k) + "_" + channelID
 
 					if(!tgs.overlayChannels)
-						vertAxis   += "_" + num2str(chan)
-						traceType   = name
+						vertAxis += "_" + num2str(chan)
+						traceType = name
 						if(!cmpstr(channelID, "TTL"))
 							if(tgs.splitTTLBits)
 								vertAxis += "_" + num2str(j)
@@ -3116,7 +3116,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 							endif
 						endif
 					else
-						traceType   = channelID
+						traceType = channelID
 					endif
 
 					if(!tgs.overlayChannels)
@@ -3129,8 +3129,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 							// fallback to manual calculation
 							// for versions prior to bb2d2bd6 (DC_PlaceDataInITCDataWave: Document stim set length, 2016-05-12)
 							if(!IsFinite(stimSetLength))
-								stimSetLength = (DimSize(wv, ROWS) - (delayOnsetUser + delayOnsetAuto + delayTermination + delaydDAQ * (numADCs - 1))) /  numADCs
-								DEBUGPRINT("Stim set length (manually calculated)", var=stimSetLength)
+								stimSetLength = (DimSize(wv, ROWS) - (delayOnsetUser + delayOnsetAuto + delayTermination + delaydDAQ * (numADCs - 1))) / numADCs
+								DEBUGPRINT("Stim set length (manually calculated)", var = stimSetLength)
 							endif
 
 							xRangeStart = delayOnsetUser + delayOnsetAuto + str2num(StringFromList(k, dDAQActiveHeadstageAll)) * (stimSetLength + delaydDAQ)
@@ -3160,7 +3160,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						xRangeEnd   = NaN
 					endif
 
-					trace = GetTraceNamePrefix(traceIndex)
+					trace       = GetTraceNamePrefix(traceIndex)
 					traceIndex += 1
 
 					sprintf str, "i=%d, j=%d, k=%d, vertAxis=%s, traceType=%s, name=%s", i, j, k, vertAxis, traceType, name
@@ -3169,14 +3169,14 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					sprintf traceColor, "(%d, %d, %d, %d)", s.red, s.green, s.blue, 65535
 
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
-						horizAxis = "bottom"
+						horizAxis  = "bottom"
 						traceRange = "[][0]"
 
 						if(ParamIsDefault(bdi))
 							AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(s.red, s.green, s.blue, 65535) wv[][0]/TN=$trace
 						else
 							bdi.traceWaves[traceCounter] = wv
-							jsonPath = BUFFEREDDRAWAPPEND + "/" + graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/"
+							jsonPath                     = BUFFEREDDRAWAPPEND + "/" + graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/"
 							JSON_AddTreeArray(bdi.jsonID, jsonPath + "index")
 							JSON_AddTreeArray(bdi.jsonID, jsonPath + "traceName")
 							JSON_AddVariable(bdi.jsonID, jsonPath + "index", traceCounter)
@@ -3192,7 +3192,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
 						first += (xRangeEnd - xRangeStart) / totalXRange
 
-						sprintf str, "horiz axis: stimset=[%d, %d] aka (%g, %g)", xRangeStart, xRangeEnd, pnt2x(wv,xRangeStart), pnt2x(wv,xRangeEnd)
+						sprintf str, "horiz axis: stimset=[%d, %d] aka (%g, %g)", xRangeStart, xRangeEnd, pnt2x(wv, xRangeStart), pnt2x(wv, xRangeEnd)
 						DEBUGPRINT(str)
 					endif
 
@@ -3203,18 +3203,18 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 							unit = "a.u."
 						endif
 
-						axisLabel = "\Z08"+ traceType + "\r(" + unit + ")"
+						axisLabel = "\Z08" + traceType + "\r(" + unit + ")"
 
 						FindValue/TXOP=4/TEXT=(vertAxis) axisLabelCache
 						axisIndex = V_Value
 						if(axisIndex != -1 && cmpstr(axisLabelCache[axisIndex][%Lbl], axisLabel))
-							axisLabel =  channelID + "?\r(a. u.)"
+							axisLabel                    = channelID + "?\r(a. u.)"
 							axisLabelCache[axisIndex][1] = axisLabel
 						endif
 
 						if(axisIndex == -1) // create new entry
 							count = GetNumberFromWaveNote(axisLabelCache, NOTE_INDEX)
-							EnsureLargeEnoughWave(axisLabelCache, indexShouldExist=count)
+							EnsureLargeEnoughWave(axisLabelCache, indexShouldExist = count)
 							axisLabelCache[count][%Axis] = vertAxis
 							axisLabelCache[count][%Lbl]  = axisLabel
 							SetNumberInWaveNote(axisLabelCache, NOTE_INDEX, count + 1)
@@ -3232,7 +3232,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 					if(tgs.dDAQDisplayMode)
 						if(ParamIsDefault(bdi))
-							ModifyGraph/W=$graph freePos($vertAxis)={1 / numHorizWaves * k,kwFraction}, freePos($horizAxis)={0,$vertAxis}
+							ModifyGraph/W=$graph freePos($vertAxis)={1 / numHorizWaves * k, kwFraction}, freePos($horizAxis)={0, $vertAxis}
 						else
 							jsonPath = BUFFEREDDRAWDDAQAXES + "/" + graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(1 / numHorizWaves * k)
 							JSON_AddTreeObject(bdi.jsonID, jsonPath)
@@ -3249,12 +3249,12 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						endif
 					endif
 
-					TUD_SetUserDataFromWaves(graph, trace, userDataKeys,                                                                   \
-					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),   \
-					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                \
-								              num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep",             \
-												  num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage)),       \
-												  num2istr(guiChannelNumber)})
+					TUD_SetUserDataFromWaves(graph, trace, userDataKeys,                                                                        \
+					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),        \
+					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                     \
+					                          num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep", \
+					                          num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage)),           \
+					                          num2istr(guiChannelNumber)})
 				endfor
 			endfor
 
@@ -3288,37 +3288,37 @@ Function TiledGraphAccelerateDraw(STRUCT BufferedDrawInfo &bdi)
 	WAVE/T wGraphs = JSON_GetKeys(bdi.jsonID, BUFFEREDDRAWAPPEND)
 	numGraphs = DimSize(wGraphs, ROWS)
 	for(i0 = 0; i0 < numGraphs; i0 += 1)
-		graph = wGraphs[i0]
+		graph  = wGraphs[i0]
 		i0Path = BUFFEREDDRAWAPPEND + "/" + graph
 		WAVE/T wVertAxis = JSON_GetKeys(bdi.jsonID, i0Path)
 		numVertAxis = DimSize(wVertAxis, ROWS)
 		for(i1 = 0; i1 < numVertAxis; i1 += 1)
 			vertAxis = wVertAxis[i1]
-			i1Path = i0Path + "/" + vertAxis
+			i1Path   = i0Path + "/" + vertAxis
 			WAVE/T wHorizAxis = JSON_GetKeys(bdi.jsonID, i1Path)
 			numHorizAxis = DimSize(wHorizAxis, ROWS)
 			for(i2 = 0; i2 < numHorizAxis; i2 += 1)
 				horizAxis = wHorizAxis[i2]
-				i2Path = i1Path + "/" + horizAxis
+				i2Path    = i1Path + "/" + horizAxis
 				WAVE/T wRed = JSON_GetKeys(bdi.jsonID, i2Path)
 				numRed = DimSize(wRed, ROWS)
 				for(i3 = 0; i3 < numRed; i3 += 1)
 					redStr = wRed[i3]
-					red = str2num(redStr)
+					red    = str2num(redStr)
 					i3Path = i2Path + "/" + redStr
 					WAVE/T wGreen = JSON_GetKeys(bdi.jsonID, i3Path)
 					numGreen = DimSize(wGreen, ROWS)
 					for(i4 = 0; i4 < numGreen; i4 += 1)
 						greenStr = wGreen[i4]
-						green = str2num(greenStr)
-						i4Path = i3Path + "/" + greenStr
+						green    = str2num(greenStr)
+						i4Path   = i3Path + "/" + greenStr
 						WAVE/T wBlue = JSON_GetKeys(bdi.jsonID, i4Path)
 						numBlue = DimSize(wBlue, ROWS)
 						for(i5 = 0; i5 < numBlue; i5 += 1)
 							blueStr = wBlue[i5]
-							blue = str2num(blueStr)
-							i5Path = i4Path + "/" + blueStr
-							WAVE indices = JSON_GetWave(bdi.jsonID, i5Path + "/index")
+							blue    = str2num(blueStr)
+							i5Path  = i4Path + "/" + blueStr
+							WAVE   indices    = JSON_GetWave(bdi.jsonID, i5Path + "/index")
 							WAVE/T traceNames = JSON_GetTextWave(bdi.jsonID, i5Path + "/traceName")
 							TiledGraphAccelerateAppendTracesImpl(graph, vertAxis, horizAxis, red, green, blue, indices, traceNames, bdi.traceWaves)
 						endfor
@@ -3331,18 +3331,18 @@ Function TiledGraphAccelerateDraw(STRUCT BufferedDrawInfo &bdi)
 	WAVE/T wGraphs = JSON_GetKeys(bdi.jsonID, BUFFEREDDRAWDDAQAXES)
 	numGraphs = DimSize(wGraphs, ROWS)
 	for(i0 = 0; i0 < numGraphs; i0 += 1)
-		graph = wGraphs[i0]
+		graph  = wGraphs[i0]
 		i0Path = BUFFEREDDRAWDDAQAXES + "/" + graph
 		WAVE/T wVertAxis = JSON_GetKeys(bdi.jsonID, i0Path)
 		numVertAxis = DimSize(wVertAxis, ROWS)
 		for(i1 = 0; i1 < numVertAxis; i1 += 1)
 			vertAxis = wVertAxis[i1]
-			i1Path = i0Path + "/" + vertAxis
+			i1Path   = i0Path + "/" + vertAxis
 			WAVE/T wHorizAxis = JSON_GetKeys(bdi.jsonID, i1Path)
 			numHorizAxis = DimSize(wHorizAxis, ROWS)
 			for(i2 = 0; i2 < numHorizAxis; i2 += 1)
 				horizAxis = wHorizAxis[i2]
-				i2Path = i1Path + "/" + horizAxis
+				i2Path    = i1Path + "/" + horizAxis
 				WAVE/T wFractions = JSON_GetKeys(bdi.jsonID, i2Path)
 				numFractions = DimSize(wHorizAxis, ROWS)
 				for(i3 = 0; i3 < numFractions; i3 += 1)
@@ -3355,7 +3355,7 @@ Function TiledGraphAccelerateDraw(STRUCT BufferedDrawInfo &bdi)
 	WAVE/T wGraphs = JSON_GetKeys(bdi.jsonID, BUFFEREDDRAWHIDDENTRACES)
 	numGraphs = DimSize(wGraphs, ROWS)
 	for(i0 = 0; i0 < numGraphs; i0 += 1)
-		graph = wGraphs[i0]
+		graph  = wGraphs[i0]
 		i0Path = BUFFEREDDRAWHIDDENTRACES + "/" + graph
 		WAVE/T hiddenTracesNames = JSON_GetTextWave(bdi.jsonID, i0Path)
 		ACC_HideTraces(graph, hiddenTracesNames, DimSize(hiddenTracesNames, ROWS), 1)
@@ -3364,13 +3364,13 @@ Function TiledGraphAccelerateDraw(STRUCT BufferedDrawInfo &bdi)
 	WAVE/T wGraphs = JSON_GetKeys(bdi.jsonID, BUFFEREDDRAWLABEL)
 	numGraphs = DimSize(wGraphs, ROWS)
 	for(i0 = 0; i0 < numGraphs; i0 += 1)
-		graph = wGraphs[i0]
+		graph  = wGraphs[i0]
 		i0Path = BUFFEREDDRAWLABEL + "/" + graph
 		WAVE/T wVertAxis = JSON_GetKeys(bdi.jsonID, i0Path)
 		numVertAxis = DimSize(wVertAxis, ROWS)
 		for(i1 = 0; i1 < numVertAxis; i1 += 1)
 			vertAxis = wVertAxis[i1]
-			i1Path = i0Path + "/" + vertAxis
+			i1Path   = i0Path + "/" + vertAxis
 			WAVE/T wAxisLabel = JSON_GetKeys(bdi.jsonID, i1Path)
 			numAxisLabel = DimSize(wAxisLabel, ROWS)
 			for(i2 = 0; i2 < numAxisLabel; i2 += 1)
@@ -3456,11 +3456,11 @@ Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [variable cha
 	elseif(!ParamIsDefault(channelType) && channelType == XOP_CHANNEL_TYPE_TTL)
 		// The mapping is based on ITC hardware with unsplitted and splitted TTL channels in the following index order
 		// Unsplit0, Split0_0, Split0_1, Split0_2, Split0_3, Unsplit1, Split1_0, Split1_1, Split1_2, Split1_3
-		blockSizeTTL = NUM_ITC_TTL_BITS_PER_RACK + 1
+		blockSizeTTL              = NUM_ITC_TTL_BITS_PER_RACK + 1
 		activeChannelIndexAsOfITC = trunc(channelNumber / NUM_ITC_TTL_BITS_PER_RACK)
-		ttlBitAsOfITC = mod(channelNumber, NUM_ITC_TTL_BITS_PER_RACK)
-		blockOffsetTTL = isSplitted ? 1 + ttlBitAsOfITC : 0
-		colorIndex = offsetTTL + activeChannelIndexAsOfITC * blockSizeTTL + blockOffsetTTL
+		ttlBitAsOfITC             = mod(channelNumber, NUM_ITC_TTL_BITS_PER_RACK)
+		blockOffsetTTL            = isSplitted ? 1 + ttlBitAsOfITC : 0
+		colorIndex                = offsetTTL + activeChannelIndexAsOfITC * blockSizeTTL + blockOffsetTTL
 	else
 		colorIndex = NUM_HEADSTAGES
 	endif
@@ -3502,7 +3502,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 	if(ParamIsDefault(axisOffset))
 		axisOffset = 0
 	else
-		ASSERT(axisOffset >=0 && axisOffset <= 1.0, "Invalid axis offset")
+		ASSERT(axisOffset >= 0 && axisOffset <= 1.0, "Invalid axis offset")
 	endif
 
 	axes    = GrepList(list, axisRegExp)
@@ -3533,7 +3533,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 			axis = StringFromList(i, axes)
 
 			if(WhichListItem(axis, listForBegin) == -1 && WhichListItem(axis, listForEnd) == -1)
-				adaptedList = AddListItem(axis, adaptedList, ";", inf)
+				adaptedList = AddListItem(axis, adaptedList, ";", Inf)
 			endif
 		endfor
 
@@ -3543,7 +3543,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 		endif
 
 		if(!IsEmpty(listForEnd))
-			adaptedList = AddListItem(listForEnd, adaptedList, ";", inf)
+			adaptedList = AddListItem(listForEnd, adaptedList, ";", Inf)
 		endif
 	else
 		adaptedList = axes
@@ -3555,7 +3555,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 		numAxes = ItemsInList(adaptedList)
 		for(i = 0; i < numAxes; i += 1)
 			axis = StringFromList(i, adaptedList)
-			ModifyGraph/Z/W=$graph axisEnab($axis) = {axisStart[i], axisEnd[i]}
+			ModifyGraph/Z/W=$graph axisEnab($axis)={axisStart[i], axisEnd[i]}
 		endfor
 	endif
 End
@@ -3578,7 +3578,7 @@ Function EquallySpaceAxisPA(string graph, string allAxes, string distAxes, [vari
 	if(ParamIsDefault(axisOffset))
 		axisOffset = 0
 	else
-		ASSERT(axisOffset >=0 && axisOffset <= 1.0, "Invalid axis offset")
+		ASSERT(axisOffset >= 0 && axisOffset <= 1.0, "Invalid axis offset")
 	endif
 
 	numAxes = ItemsInList(distAxes)
@@ -3587,7 +3587,7 @@ Function EquallySpaceAxisPA(string graph, string allAxes, string distAxes, [vari
 		for(i = 0; i < numAxes; i += 1)
 			axis = StringFromList(i, distAxes)
 			if(WhichListItem(axis, allAxes) != -1)
-				ModifyGraph/Z/W=$graph axisEnab($axis) = {axisStart[i], axisEnd[i]}
+				ModifyGraph/Z/W=$graph axisEnab($axis)={axisStart[i], axisEnd[i]}
 			endif
 		endfor
 	endif
@@ -3667,7 +3667,7 @@ Function SaveExperimentSpecial(mode)
 
 	// remove sweep data from all devices with data
 	devicesWithData = GetAllDevicesWithContent()
-	numDevices = ItemsInList(devicesWithData)
+	numDevices      = ItemsInList(devicesWithData)
 	for(i = 0; i < numDevices; i += 1)
 		device = StringFromList(i, devicesWithData)
 
@@ -3694,20 +3694,20 @@ Function SaveExperimentSpecial(mode)
 
 		// remove other waves from active devices
 		activeDevices = GetAllDevices()
-		numDevices = ItemsInList(activeDevices)
+		numDevices    = ItemsInList(activeDevices)
 		for(i = 0; i < numDevices; i += 1)
 			device = StringFromList(i, activeDevices)
 
 			DFREF dfr = GetDevicePath(device)
-			list = GetListOfObjects(dfr, "ChanAmpAssign_Sweep_*", fullPath=1)
+			list = GetListOfObjects(dfr, "ChanAmpAssign_Sweep_*", fullPath = 1)
 			CallFunctionForEachListItem_TS(killFunc, list)
 
 			DFREF dfr = GetDeviceTestPulse(device)
-			list = GetListOfObjects(dfr, "TPStorage_*", fullPath=1)
+			list = GetListOfObjects(dfr, "TPStorage_*", fullPath = 1)
 			CallFunctionForEachListItem_TS(killFunc, list)
 
 			DFREF dfr = GetDevicePath(device)
-			list = GetListOfObjects(dfr, "Databrowser*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath=1)
+			list = GetListOfObjects(dfr, "Databrowser*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath = 1)
 			CallFunctionForEachListItem_TS(killFunc, list)
 
 			RemoveTracesFromGraph(SCOPE_GetGraph(device))
@@ -3736,9 +3736,9 @@ Function/S CleanupExperimentName(expName)
 	// - sibling
 	// - time stamp
 	// - numerical suffixes added to prevent overwriting files
-	expName  = RemoveEndingRegExp(expName, "_[[:digit:]]{4}_[[:digit:]]{2}_[[:digit:]]{2}_[[:digit:]]{6}") // example: 2015_03_25_213219
-	expName  = RemoveEndingRegExp(expName, "_[[:digit:]]{1,5}") // example: _1, _123
-	expName  = RemoveEnding(expName, SIBLING_FILENAME_SUFFIX)
+	expName = RemoveEndingRegExp(expName, "_[[:digit:]]{4}_[[:digit:]]{2}_[[:digit:]]{2}_[[:digit:]]{6}") // example: 2015_03_25_213219
+	expName = RemoveEndingRegExp(expName, "_[[:digit:]]{1,5}")                                            // example: _1, _123
+	expName = RemoveEnding(expName, SIBLING_FILENAME_SUFFIX)
 
 	return expName
 End
@@ -3750,7 +3750,7 @@ End
 /// @param xopVar numeric XOP channel types
 threadsafe Function GetNumberFromType([var, str, xopVar])
 	variable var
-	string str
+	string   str
 	variable xopVar
 
 	ASSERT_TS(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(xopVar) == 2, "Expected exactly one parameter")
@@ -3821,9 +3821,9 @@ End
 /// @param index  index into `sweep`, can be queried with #AFH_GetDAQDataColumn
 ///
 /// @returns a reference to a free wave with the single channel data
-threadsafe Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
-	WAVE config
-	WAVE sweep
+threadsafe Function/WAVE ExtractOneDimDataFromSweep(config, sweep, index)
+	WAVE     config
+	WAVE     sweep
 	variable index
 
 	ASSERT_TS(IsValidSweepAndConfig(sweep, config, configVersion = 0), "Sweep and config are not compatible")
@@ -3873,7 +3873,7 @@ End
 ///                        Use OVS_GetSweepAndExperiment() to convert an index into a sweep/experiment pair.
 Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalData])
 	STRUCT TiledGraphSettings tgs
-	string graph
+	string                    graph
 
 	switch(mode)
 		case POST_PLOT_ADDED_SWEEPS:
@@ -3927,7 +3927,7 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 End
 
 static Function InitPostPlotSettings(win, pps)
-	string win
+	string                   win
 	STRUCT PostPlotSettings &pps
 
 	string bsPanel = BSP_GetPanel(win)
@@ -3953,7 +3953,7 @@ End
 /// @param graph graph with sweep traces
 /// @param pps   settings
 Function TimeAlignMainWindow(graph, pps)
-	string graph
+	string                   graph
 	STRUCT PostPlotSettings &pps
 
 	variable csrAx, csrBx
@@ -4025,8 +4025,8 @@ Function TimeAlignHandleCursorDisplay(win)
 	if(isEmpty(csrA) || isEmpty(csrB))
 		WAVE wv = TraceNameToWaveRef(graph, trace)
 		length = DimSize(wv, ROWS)
-		posA = length / 3
-		posB = length * 2 / 3
+		posA   = length / 3
+		posB   = length * 2 / 3
 	else
 		posA = NumberByKey("POINT", csrA)
 		posB = NumberByKey("POINT", csrB)
@@ -4037,13 +4037,13 @@ End
 
 /// @brief Enable/Disable TimeAlignment Controls and Cursors
 Function TimeAlignUpdateControls(win)
-	string win
+	string   win
 	variable alignMode
 
 	string bsPanel, graph
 
 	bsPanel = BSP_GetPanel(win)
-	graph = GetMainWindow(win)
+	graph   = GetMainWindow(win)
 
 	if(GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
 		EnableControls(bsPanel, "popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action")
@@ -4082,8 +4082,8 @@ Function TimeAlignCursorMovedHook(s)
 				return 0
 			endif
 
-			mainPanel = GetMainWindow(bsPanel)
-			graphtrace = s.winName + "#" + trace
+			mainPanel   = GetMainWindow(bsPanel)
+			graphtrace  = s.winName + "#" + trace
 			graphtraces = TimeAlignGetAllTraces(mainPanel)
 			if(FindListItem(graphtrace, graphtraces) == -1)
 				xAxis = TUD_GetUserData(s.winName, trace, "XAXIS")
@@ -4094,7 +4094,7 @@ Function TimeAlignCursorMovedHook(s)
 
 				numTraces = DimSize(traces, ROWS)
 				for(i = 0; i < numTraces; i += 1)
-					trace = traces[i]
+					trace      = traces[i]
 					graphtrace = s.winName + "#" + trace
 
 					if(FindListItem(graphtrace, graphtraces) != -1)
@@ -4175,7 +4175,7 @@ Function/WAVE GetSweepUserData(string graph, string key, [variable channelType, 
 	if(ParamIsDefault(channelType) && ParamIsDefault(region))
 		return TUD_GetUserDataAsWave(graph, key, keys = {"traceType", "occurence"}, values = {"sweep", "0"})
 	elseif(!ParamIsDefault(channelType))
-		return TUD_GetUserDataAsWave(graph, key, keys = {"traceType", "occurence", "channelType"},            \
+		return TUD_GetUserDataAsWave(graph, key, keys = {"traceType", "occurence", "channelType"},          \
 		                             values = {"sweep", "0", StringFromList(channelType, XOP_CHANNEL_NAMES)})
 	elseif(!ParamIsDefault(region))
 		return TUD_GetUserDataAsWave(graph, key, keys = {"traceType", "occurence", "region"}, \
@@ -4190,9 +4190,9 @@ End
 /// @param averageDataFolder permanent datafolder where the average waves can be stored
 /// @param hideSweep         are normal channel traces hidden or not
 static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageDataFolder, hideSweep)
-	string graph
+	string   graph
 	variable averagingEnabled
-	DFREF averageDataFolder
+	DFREF    averageDataFolder
 	variable hideSweep
 
 	variable referenceTime, traceIndex
@@ -4207,7 +4207,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 	referenceTime = DEBUG_TIMER_START()
 
 	if(!averagingEnabled)
-		listOfWaves = GetListOfObjects(averageDataFolder, "average.*", fullPath=1)
+		listOfWaves = GetListOfObjects(averageDataFolder, "average.*", fullPath = 1)
 		CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, listOfWaves)
 		RemoveEmptyDataFolder(averageDataFolder)
 		return NaN
@@ -4228,12 +4228,12 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 		return NaN
 	endif
 
-	axList = AxisList(graph)
-	numAxes = ItemsInList(axList)
+	axList    = AxisList(graph)
+	numAxes   = ItemsInList(axList)
 	numTraces = DimSize(traces, ROWS)
 
 	for(i = 0; i < numAxes; i += 1)
-		axis = StringFromList(i, axList)
+		axis                 = StringFromList(i, axList)
 		listOfWaves          = ""
 		listOfChannelTypes   = ""
 		listOfChannelNumbers = ""
@@ -4302,7 +4302,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 		Redimension/D ranges
 
 		MatrixOP/FREE rangeStart = col(ranges, 0)
-		MatrixOP/FREE rangeStop  = col(ranges, 1)
+		MatrixOP/FREE rangeStop = col(ranges, 1)
 
 		rangeStart[] = IndexToScale($StringFromList(p, listOfWaves), rangeStart[p], ROWS)
 		rangeStop[]  = IndexToScale($StringFromList(p, listOfWaves), rangeStop[p], ROWS)
@@ -4312,14 +4312,14 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 			last  = WaveMax(rangeStop)
 		else
 			first = NaN
-			last  = Nan
+			last  = NaN
 		endif
 		WaveClear rangeStart, rangeStop
 
 		WAVE/WAVE wavesToAverage = ListToWaveRefWave(listOfWaves)
-		WAVE averageWave = CalculateAverage(wavesToAverage, averageDataFolder, averageWaveName)
+		WAVE      averageWave    = CalculateAverage(wavesToAverage, averageDataFolder, averageWaveName)
 
-		if(WaveListHasSameWaveNames(listOfHeadstages, headstage)&& hideSweep)
+		if(WaveListHasSameWaveNames(listOfHeadstages, headstage) && hideSweep)
 			[s] = GetTraceColor(str2num(headstage))
 		else
 			[s] = GetTraceColorForAverage()
@@ -4365,15 +4365,15 @@ End
 /// @return wave reference to the average wave
 Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [skipCRC, writeSourcePaths, inputAverage])
 	WAVE/WAVE waveRefs
-	DFREF averageDataFolder
-	string averageWaveName
+	DFREF     averageDataFolder
+	string    averageWaveName
 	variable skipCRC, writeSourcePaths
 	WAVE inputAverage
 
 	variable crc
 	string key, wvName, dataUnit
 
-	skipCRC = ParamIsDefault(skipCRC) ? 0 : !!skipCRC
+	skipCRC          = ParamIsDefault(skipCRC) ? 0 : !!skipCRC
 	writeSourcePaths = ParamIsDefault(writeSourcePaths) ? 0 : !!writeSourcePaths
 
 	key = CA_AveragingKey(waveRefs)
@@ -4382,7 +4382,7 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 
 	if(ParamIsDefault(inputAverage))
 
-		WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key, options=CA_OPTS_NO_DUPLICATE)
+		WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 		if(WaveExists(freeAverageWave)) // found in the cache
 
 			if(!skipCRC)
@@ -4399,8 +4399,8 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 			return permAverageWave
 		endif
 
-		WAVE/WAVE aveResult = MIES_fWaveAverage(waveRefs, 1, IGOR_TYPE_64BIT_FLOAT)
-		WAVE freeAverageWave = aveResult[0]
+		WAVE/WAVE aveResult       = MIES_fWaveAverage(waveRefs, 1, IGOR_TYPE_64BIT_FLOAT)
+		WAVE      freeAverageWave = aveResult[0]
 		ASSERT(ClearRTError() == 0, "Unexpected RTE")
 		ASSERT(WaveExists(freeAverageWave), "Wave averaging failed")
 	else
@@ -4411,17 +4411,17 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 	SetScale d, 0, 0, dataUnit, freeAverageWave
 
 	if(!skipCRC)
-		crc = WaveCRC(0, freeAverageWave)
+		crc     = WaveCRC(0, freeAverageWave)
 		wvName += "_" + num2istr(crc)
 		SetNumberInWaveNote(freeAverageWave, "DataCRC", crc)
 	endif
 
 	if(writeSourcePaths)
-		AddEntryIntoWaveNoteAsList(freeAverageWave, "SourceWavesForAverage", str=ReplaceString(";", WaveRefWaveToList(waveRefs, 0), "|"))
+		AddEntryIntoWaveNoteAsList(freeAverageWave, "SourceWavesForAverage", str = ReplaceString(";", WaveRefWaveToList(waveRefs, 0), "|"))
 	endif
 	SetNumberInWaveNote(freeAverageWave, NOTE_KEY_WAVE_MAXIMUM, WaveMax(freeAverageWave), format = "%.15f")
 
-	CA_StoreEntryIntoCache(key, freeAverageWave, options=CA_OPTS_NO_DUPLICATE)
+	CA_StoreEntryIntoCache(key, freeAverageWave, options = CA_OPTS_NO_DUPLICATE)
 
 	return ConvertFreeWaveToPermanent(freeAverageWave, averageDataFolder, wvName)
 End
@@ -4448,7 +4448,7 @@ End
 
 /// @brief Zero all given traces
 static Function ZeroTracesIfReq(graph, traces, zeroTraces)
-	string graph
+	string   graph
 	variable zeroTraces
 	WAVE/T/Z traces
 
@@ -4516,7 +4516,7 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	for(i = 0; i < numTraces; i += 1)
 		graph = StringFromList(0, graphtraces[i], "#")
 		trace = StringFromList(1, graphtraces[i], "#")
-		axis = TUD_GetUserData(graph, trace, "YAXIS")
+		axis  = TUD_GetUserData(graph, trace, "YAXIS")
 
 		if(cmpstr(axis, refAxis) || cmpstr(graph, refGraph))
 			continue
@@ -4535,12 +4535,12 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 			refPos = pos
 		endif
 
-		featurePos[i]  = pos
-		sweepNo = TUD_GetUserData(graph, trace, "sweepNumber")
+		featurePos[i] = pos
+		sweepNo       = TUD_GetUserData(graph, trace, "sweepNumber")
 		ASSERT(!isEmpty(sweepNo), "Sweep number is empty. Set \"sweepNumber\" userData entry for trace.")
 		sweepNumber[i] = str2num(sweepNo)
-		pulseIndexStr = TUD_GetUserData(graph, trace, "pulseIndex")
-		refIndex[i] = sweepNo + ":" + pulseIndexStr
+		pulseIndexStr  = TUD_GetUserData(graph, trace, "pulseIndex")
+		refIndex[i]    = sweepNo + ":" + pulseIndexStr
 	endfor
 
 	// now shift all traces from all sweeps according to their relative offsets
@@ -4555,19 +4555,19 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 			continue
 		endif
 
-		sweepNo = TUD_GetUserData(graph, trace, "sweepNumber")
+		sweepNo       = TUD_GetUserData(graph, trace, "sweepNumber")
 		pulseIndexStr = TUD_GetUserData(graph, trace, "pulseIndex")
-		indexStr = sweepNo + ":" + pulseIndexStr
-		idx = GetRowIndex(refIndex, str = indexStr)
+		indexStr      = sweepNo + ":" + pulseIndexStr
+		idx           = GetRowIndex(refIndex, str = indexStr)
 
 		if(IsNaN(idx))
 			continue
 		endif
 
-		offset = - (refPos + featurePos[idx])
-		DEBUGPRINT("trace", str=trace)
-		DEBUGPRINT("old DimOffset", var=DimOffset(wv, ROWS))
-		DEBUGPRINT("new DimOffset", var=DimOffset(wv, ROWS) + offset)
+		offset = -(refPos + featurePos[idx])
+		DEBUGPRINT("trace", str = trace)
+		DEBUGPRINT("old DimOffset", var = DimOffset(wv, ROWS))
+		DEBUGPRINT("new DimOffset", var = DimOffset(wv, ROWS) + offset)
 		SetScale/P x, DimOffset(wv, ROWS) + offset, DimDelta(wv, ROWS), wv
 		SetNumberInWaveNote(wv, NOTE_KEY_TIMEALIGN_TOTAL_OFFSET, offset)
 		SetNumberInWaveNote(wv, NOTE_KEY_TIMEALIGN, 1)
@@ -4577,7 +4577,7 @@ End
 /// @brief Find the given feature in the given wave range
 /// `first` and `last` are in x coordinates and clipped to valid values
 static Function CalculateFeatureLoc(wv, mode, level, first, last)
-	Wave wv
+	WAVE wv
 	variable mode, level, first, last
 
 	variable edgeType
@@ -4617,14 +4617,14 @@ End
 /// @param level                       [optional, defaults to zero] level to be used for `ignoreAxesWithLevelCrossing=1`
 /// @param rangePerClampMode           [optional, defaults to false] use separate Y ranges per clamp mode
 Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, rangePerClampMode])
-	string graph
+	string   graph
 	variable ignoreAxesWithLevelCrossing
 	variable level, rangePerClampMode
 
 	string axList, axis, trace
 	variable i, j, numAxes, axisOrient, xRangeBegin, xRangeEnd
 	variable beginY, endY, clampMode
-	variable maxYRange, numTraces , range, refClampMode, err
+	variable maxYRange, numTraces, range, refClampMode, err
 
 	if(ParamIsDefault(ignoreAxesWithLevelCrossing))
 		ignoreAxesWithLevelCrossing = 0
@@ -4661,18 +4661,18 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 	endif
 
 	numTraces = DimSize(traces, ROWS)
-	axList = AxisList(graph)
-	numAxes = ItemsInList(axList)
+	axList    = AxisList(graph)
+	numAxes   = ItemsInList(axList)
 
 	Make/FREE/D/N=(NUM_CLAMP_MODES + 1) maxYRangeClampMode = 0
-	Make/FREE/D/N=(numAxes) axisClampMode = Nan
-	Make/FREE/D/N=(numAxes, 2) YValues = inf
+	Make/FREE/D/N=(numAxes) axisClampMode = NaN
+	Make/FREE/D/N=(numAxes, 2) YValues = Inf
 
 	SetDimLabel COLS, 0, minimum, YValues
 	SetDimLabel COLS, 1, maximum, YValues
 
-	YValues[][%minimum] =  inf
-	YValues[][%maximum] = -inf
+	YValues[][%minimum] = Inf
+	YValues[][%maximum] = -Inf
 
 	// collect the y ranges of the visible x range of all vertical axis
 	// respecting ignoreAxesWithLevelCrossing
@@ -4760,9 +4760,9 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 			endY = beginY + maxYRange
 		endif
 
-		DebugPrint("Setting new axis ranges for:", str=axis)
-		DebugPrint("beginY:", var=beginY)
-		DebugPrint("endY:", var=endY)
+		DebugPrint("Setting new axis ranges for:", str = axis)
+		DebugPrint("beginY:", var = beginY)
+		DebugPrint("endY:", var = endY)
 
 		SetAxis/W=$graph $axis, beginY, endY
 	endfor
@@ -4774,7 +4774,7 @@ threadsafe Function ExtractSweepNumber(str)
 
 	variable numElements, sweepNo
 
-	str = RemoveEnding(str, WAVE_BACKUP_SUFFIX)
+	str         = RemoveEnding(str, WAVE_BACKUP_SUFFIX)
 	numElements = ItemsInList(str, "_")
 	ASSERT_TS(numElements > 1, "Invalid string with sweep number")
 	sweepNo = str2num(StringFromList(numElements - 1, str, "_"))
@@ -4940,7 +4940,7 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 			case TTL_DAEPHYS_CHANNEL:
 				return ListToNumericWave(ttlChannels[index], ";")
 			case TTL_GUITOHW_CHANNEL:
-				WAVE channelMapGUIToHW = GetActiveChannelMapTTLGUIToHW()
+				WAVE channelMapGUIToHW  = GetActiveChannelMapTTLGUIToHW()
 				WAVE NIChannelNumbersHW = ListToNumericWave(ttlChannels[index], ";")
 				channelMapGUIToHW[][%HWCHANNEL] = NIChannelNumbersHW[p]
 
@@ -4965,17 +4965,17 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 		case TTL_HARDWARE_CHANNEL:
 
 			WAVE/Z ttlChannelRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
-			WAVE/Z ttlChannelRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlChannelRackOne  = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
 			if(WaveExists(ttlChannelRackZero) || WaveExists(ttlChannelRackOne))
 				numHWTTLChannels = max(HARDWARE_ITC_TTL_1600_RACK_ONE + 1, NUM_DA_TTL_CHANNELS)
 				Make/FREE/D/N=(numHWTTLChannels) entries = NaN
 				if(WaveExists(ttlChannelRackZero))
-					hwChannel = ttlChannelRackZero[index]
+					hwChannel          = ttlChannelRackZero[index]
 					entries[hwChannel] = hwChannel
 				endif
 
 				if(WaveExists(ttlChannelRackOne))
-					hwChannel = ttlChannelRackOne[index]
+					hwChannel          = ttlChannelRackOne[index]
 					entries[hwChannel] = hwChannel
 				endif
 
@@ -4986,19 +4986,19 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 		case TTL_DAEPHYS_CHANNEL:
 
 			WAVE/Z ttlBitsRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero bits", DATA_ACQUISITION_MODE)
-			WAVE/Z ttlBitsRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlBitsRackOne  = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
 			if(WaveExists(ttlBitsRackZero) || WaveExists(ttlBitsRackOne))
 				Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) entries = NaN
 
 				if(WaveExists(ttlBitsRackZero))
 					HW_ITC_GetRackRange(RACK_ZERO, first, last)
-					bits = ttlBitsRackZero[index]
+					bits                 = ttlBitsRackZero[index]
 					entries[first, last] = (bits & (1 << p)) != 0 ? p : NaN
 				endif
 
 				if(WaveExists(ttlBitsRackOne))
 					HW_ITC_GetRackRange(RACK_ONE, first, last)
-					bits = ttlBitsRackOne[index]
+					bits                 = ttlBitsRackOne[index]
 					entries[first, last] = (bits & (1 << (p - NUM_ITC_TTL_BITS_PER_RACK))) != 0 ? p : NaN
 				endif
 
@@ -5010,23 +5010,23 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 			WAVE channelMapGUIToHW = GetActiveChannelMapTTLGUIToHW()
 
 			WAVE/Z ttlChannelRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
-			WAVE/Z ttlChannelRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
-			WAVE/Z ttlBitsRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero bits", DATA_ACQUISITION_MODE)
-			WAVE/Z ttlBitsRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlChannelRackOne  = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlBitsRackZero    = GetLastSetting(numericalValues, sweep, "TTL rack zero bits", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlBitsRackOne     = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
 			haveRackZero = WaveExists(ttlBitsRackZero) && WaveExists(ttlChannelRackZero)
-			haveRackOne = WaveExists(ttlBitsRackOne) && WaveExists(ttlChannelRackOne)
+			haveRackOne  = WaveExists(ttlBitsRackOne) && WaveExists(ttlChannelRackOne)
 			if(haveRackZero)
 				HW_ITC_GetRackRange(RACK_ZERO, first, last)
-				bits = ttlBitsRackZero[index]
-				hwChannel = ttlChannelRackZero[index]
-				channelMapGUIToHW[first, last][%TTLBITNR] = (bits & (1 << p)) != 0 ? p : NaN
+				bits                                       = ttlBitsRackZero[index]
+				hwChannel                                  = ttlChannelRackZero[index]
+				channelMapGUIToHW[first, last][%TTLBITNR]  = (bits & (1 << p)) != 0 ? p : NaN
 				channelMapGUIToHW[first, last][%HWCHANNEL] = IsNaN(channelMapGUIToHW[p][%TTLBITNR]) ? NaN : hwChannel
 			endif
 			if(haveRackOne)
 				HW_ITC_GetRackRange(RACK_ONE, first, last)
-				bits = ttlBitsRackOne[index]
-				hwChannel = ttlChannelRackOne[index]
-				channelMapGUIToHW[first, last][%TTLBITNR] = (bits & (1 << (p - NUM_ITC_TTL_BITS_PER_RACK))) != 0 ? p - NUM_ITC_TTL_BITS_PER_RACK : NaN
+				bits                                       = ttlBitsRackOne[index]
+				hwChannel                                  = ttlChannelRackOne[index]
+				channelMapGUIToHW[first, last][%TTLBITNR]  = (bits & (1 << (p - NUM_ITC_TTL_BITS_PER_RACK))) != 0 ? p - NUM_ITC_TTL_BITS_PER_RACK : NaN
 				channelMapGUIToHW[first, last][%HWCHANNEL] = IsNaN(channelMapGUIToHW[p][%TTLBITNR]) ? NaN : hwChannel
 			endif
 			if(haveRackZero || haveRackOne)
@@ -5037,21 +5037,21 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 			WAVE channelMapHWToGUI = GetActiveChannelMapTTLHWToGUI()
 
 			WAVE/Z ttlChannelRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
-			WAVE/Z ttlChannelRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
-			WAVE/Z ttlBitsRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero bits", DATA_ACQUISITION_MODE)
-			WAVE/Z ttlBitsRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlChannelRackOne  = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlBitsRackZero    = GetLastSetting(numericalValues, sweep, "TTL rack zero bits", DATA_ACQUISITION_MODE)
+			WAVE/Z ttlBitsRackOne     = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
 			haveRackZero = WaveExists(ttlBitsRackZero) && WaveExists(ttlChannelRackZero)
-			haveRackOne = WaveExists(ttlBitsRackOne) && WaveExists(ttlChannelRackOne)
+			haveRackOne  = WaveExists(ttlBitsRackOne) && WaveExists(ttlChannelRackOne)
 			if(haveRackZero)
 				HW_ITC_GetRackRange(RACK_ZERO, first, last)
-				bits = ttlBitsRackZero[index]
-				hwChannel = ttlChannelRackZero[index]
+				bits                                      = ttlBitsRackZero[index]
+				hwChannel                                 = ttlChannelRackZero[index]
 				channelMapHWToGUI[hwChannel][first, last] = (bits & (1 << q)) != 0 ? q : NaN
 			endif
 			if(haveRackOne)
 				HW_ITC_GetRackRange(RACK_ONE, first, last)
-				bits = ttlBitsRackOne[index]
-				hwChannel = ttlChannelRackOne[index]
+				bits                                                                                              = ttlBitsRackOne[index]
+				hwChannel                                                                                         = ttlChannelRackOne[index]
 				channelMapHWToGUI[hwChannel][first - NUM_ITC_TTL_BITS_PER_RACK, last - NUM_ITC_TTL_BITS_PER_RACK] = (bits & (1 << q)) != 0 ? q + NUM_ITC_TTL_BITS_PER_RACK : NaN
 			endif
 			if(haveRackZero || haveRackOne)
@@ -5176,9 +5176,9 @@ threadsafe Function/WAVE GetTTLLabnotebookEntry(WAVE/T textualValues, string nam
 
 	index = GetIndexForHeadstageIndepData(textualValues)
 
-	WAVE/T/Z ttlEntry = GetLastSetting(textualValues, sweep, "TTL " + name, DATA_ACQUISITION_MODE)
+	WAVE/T/Z ttlEntry         = GetLastSetting(textualValues, sweep, "TTL " + name, DATA_ACQUISITION_MODE)
 	WAVE/T/Z ttlEntryRackZero = GetLastSetting(textualValues, sweep, "TTL rack zero " + name, DATA_ACQUISITION_MODE)
-	WAVE/T/Z ttlEntryRackOne = GetLastSetting(textualValues, sweep, "TTL rack one " + name, DATA_ACQUISITION_MODE)
+	WAVE/T/Z ttlEntryRackOne  = GetLastSetting(textualValues, sweep, "TTL rack one " + name, DATA_ACQUISITION_MODE)
 
 	if(WaveExists(ttlEntry))
 		// NI hardware
@@ -5191,7 +5191,7 @@ threadsafe Function/WAVE GetTTLLabnotebookEntry(WAVE/T textualValues, string nam
 		endif
 
 		if(WaveExists(ttlEntryRackOne))
-			entries[NUM_ITC_TTL_BITS_PER_RACK, inf] += StringFromList(p - NUM_ITC_TTL_BITS_PER_RACK, ttlEntryRackOne[index])
+			entries[NUM_ITC_TTL_BITS_PER_RACK, Inf] += StringFromList(p - NUM_ITC_TTL_BITS_PER_RACK, ttlEntryRackOne[index])
 		endif
 
 		return entries
@@ -5229,64 +5229,64 @@ Function/S GetWaveBuilderParameterTypeName(type)
 End
 
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysSetVarNum(device, channelType, controlType)
+Function/WAVE GetAllDAEphysSetVarNum(device, channelType, controlType)
 	string device
 	variable channelType, controlType
 
-	variable CtrlNum = GetNumberFromType(var=channelType)
+	variable CtrlNum = GetNumberFromType(var = channelType)
 	string ctrl
-	make/FREE/n=(CtrlNum) Wv
+	make/FREE/N=(CtrlNum) Wv
 	variable i
-	for(i = 0; i < CtrlNum; i+=1)
-		ctrl = GetPanelControl(i, channelType, controlType)
+	for(i = 0; i < CtrlNum; i += 1)
+		ctrl  = GetPanelControl(i, channelType, controlType)
 		wv[i] = GetSetVariable(device, ctrl)
 	endfor
 	return wv
 End
 
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysSetVarTxT(device, channelType, controlType)
+Function/WAVE GetAllDAEphysSetVarTxT(device, channelType, controlType)
 	string device
 	variable channelType, controlType
 
-	variable CtrlNum = GetNumberFromType(var=channelType)
+	variable CtrlNum = GetNumberFromType(var = channelType)
 	string ctrl
-	make/FREE/n=(CtrlNum)/T Wv
+	make/FREE/N=(CtrlNum)/T Wv
 	variable i
-	for(i = 0; i < CtrlNum; i+=1)
-		ctrl = GetPanelControl(i, channelType, controlType)
+	for(i = 0; i < CtrlNum; i += 1)
+		ctrl  = GetPanelControl(i, channelType, controlType)
 		wv[i] = GetSetVariableString(device, ctrl)
 	endfor
 	return wv
 End
 
 /// @brief Returns the index of all popupmenus in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysPopMenuIndex(device, channelType, controlType)
+Function/WAVE GetAllDAEphysPopMenuIndex(device, channelType, controlType)
 	string device
 	variable channelType, controlType
 
-	variable CtrlNum = GetNumberFromType(var=channelType)
+	variable CtrlNum = GetNumberFromType(var = channelType)
 	string ctrl
-	make/FREE/n=(CtrlNum) Wv
+	make/FREE/N=(CtrlNum) Wv
 	variable i
-	for(i = 0; i < CtrlNum; i+=1)
-		ctrl = GetPanelControl(i, channelType, controlType)
+	for(i = 0; i < CtrlNum; i += 1)
+		ctrl  = GetPanelControl(i, channelType, controlType)
 		wv[i] = GetPopupMenuIndex(device, ctrl)
 	endfor
 	return wv
 End
 
 /// @brief Returns the string contents of all popupmenus in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysPopMenuString(device, channelType, controlType)
+Function/WAVE GetAllDAEphysPopMenuString(device, channelType, controlType)
 	string device
 	variable channelType, controlType
 
-	variable CtrlNum = GetNumberFromType(var=channelType)
+	variable CtrlNum = GetNumberFromType(var = channelType)
 	string ctrl
-	make/FREE/n=(CtrlNum)/T Wv
+	make/FREE/N=(CtrlNum)/T Wv
 	variable i
-	for(i = 0; i < CtrlNum; i+=1)
-		ctrl = GetPanelControl(i, channelType, controlType)
+	for(i = 0; i < CtrlNum; i += 1)
+		ctrl  = GetPanelControl(i, channelType, controlType)
 		wv[i] = GetPopupMenuString(device, ctrl)
 	endfor
 	return wv
@@ -5295,7 +5295,7 @@ End
 /// @brief Extract the analysis function name from the wave note of the stim set
 /// @return Analysis function for the given event type, empty string if none is set
 Function/S ExtractAnalysisFuncFromStimSet(stimSet, eventType)
-	WAVE stimSet
+	WAVE     stimSet
 	variable eventType
 
 	string eventName
@@ -5343,7 +5343,7 @@ threadsafe static Function SplitTTLWaveIntoComponents(WAVE data, variable ttlBit
 			continue
 		endif
 
-		Duplicate data, targetDFR:$(wavePrefix + num2str(i))/Wave=dest
+		Duplicate data, targetDFR:$(wavePrefix + num2str(i))/WAVE=dest
 		if(rescale == TTL_RESCALE_ON)
 			MultiThread dest[] = (dest[p] & bit) / bit
 		elseif(rescale == TTL_RESCALE_OFF)
@@ -5352,7 +5352,7 @@ threadsafe static Function SplitTTLWaveIntoComponents(WAVE data, variable ttlBit
 			ASSERT_TS(0, "Invalid rescale parameter")
 		endif
 		if(createBackup)
-			CreateBackupWave(dest, forceCreation=1)
+			CreateBackupWave(dest, forceCreation = 1)
 		endif
 	endfor
 End
@@ -5370,7 +5370,7 @@ Function CloseNWBFile()
 		CallFunctionForEachListItem(NWB_ASYNC_FinishWriting, lockedDevices)
 
 		HDF5CloseFile/Z fileID
-		DEBUGPRINT("Trying to close the NWB file using HDF5CloseFile returned: ", var=V_flag)
+		DEBUGPRINT("Trying to close the NWB file using HDF5CloseFile returned: ", var = V_flag)
 		if(!V_flag) // success
 			fileID = NaN
 			SVAR filePath = $GetNWBFilePathExport()
@@ -5427,7 +5427,7 @@ End
 /// @param method [optional, defaults to #HASH_SHA2_256]
 ///               Type of cryptographic hash function, one of @ref HASH_SHA2_256
 Function/S CalcHashForFile(path, [method])
-	string path
+	string   path
 	variable method
 
 	string contents, loadedFilePath
@@ -5481,7 +5481,7 @@ Function RemoveFreeAxisFromGraph(graph)
 	string list, name, info
 	variable i, numEntries
 
-	list = AxisList(graph)
+	list       = AxisList(graph)
 	numEntries = ItemsInList(list)
 
 	for(i = 0; i < numEntries; i += 1)
@@ -5521,7 +5521,7 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 	string graph
 	string trace
 	WAVE/Z wv
-	DFREF dfr
+	DFREF  dfr
 
 	variable i, numEntries, numOptArgs, remove_all_traces, err
 	string traceList, refTrace
@@ -5534,7 +5534,7 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 	endif
 
 	if(!ParamIsDefault(dfr))
-		WAVE/WAVE candidates = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullpath=1))
+		WAVE/WAVE candidates = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullpath = 1))
 	endif
 
 	remove_all_traces = ParamIsDefault(trace) && ParamIsDefault(wv) && ParamIsDefault(dfr)
@@ -5545,14 +5545,14 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 		return NaN
 	endif
 
-	traceList  = TraceNameList(graph, ";", 1 )
+	traceList  = TraceNameList(graph, ";", 1)
 	numEntries = ItemsInList(traceList)
 
 	// iterating backwards is required, see http://www.igorexchange.com/node/1677#comment-2315
 	for(i = numEntries - 1; i >= 0; i -= 1)
 		refTrace = StringFromList(i, traceList)
 
-		Wave/Z refWave = TraceNameToWaveRef(graph, refTrace)
+		WAVE/Z refWave = TraceNameToWaveRef(graph, refTrace)
 
 		if(remove_all_traces)
 			RemoveFromGraph/W=$graph $refTrace
@@ -5565,7 +5565,7 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 				RemoveFromGraph/W=$graph $refTrace
 			endif
 		elseif(!ParamIsDefault(dfr))
-			if(GetRowIndex(candidates, refWave=refWave) >= 0)
+			if(GetRowIndex(candidates, refWave = refWave) >= 0)
 				RemoveFromGraph/W=$graph $refTrace
 			endif
 		endif
@@ -5593,7 +5593,7 @@ Function RestoreFromBackupWavesForAll(DFREF dfr)
 		endif
 		origWaveName = RemoveEnding(wName, WAVE_BACKUP_SUFFIX)
 		WAVE/Z wvOrig = dfr:$origWaveName
-		KillOrMoveToTrash(wv=wvOrig)
+		KillOrMoveToTrash(wv = wvOrig)
 		Duplicate wv, dfr:$origWaveName
 	endfor
 End
@@ -5617,7 +5617,7 @@ End
 
 threadsafe static Function/WAVE GetBackupWave_TS(WAVE wv)
 
-	DFREF dfr = GetWavesDataFolderDFR(wv)
+	DFREF           dfr    = GetWavesDataFolderDFR(wv)
 	WAVE/Z/SDFR=dfr backup = $GetBackupNameOfWave(wv)
 
 	return backup
@@ -5631,8 +5631,8 @@ End
 /// appended. If the backup wave exists and the main type of the backup wave can be overridden by Duplicate/O
 /// then the wave reference of the backup wave is kept. Otherwise the main type is changed and the wave reference
 /// is not kept (e.g. backup wave is numerical, original wave is text)
-threadsafe Function/Wave CreateBackupWave(wv, [forceCreation])
-	Wave wv
+threadsafe Function/WAVE CreateBackupWave(wv, [forceCreation])
+	WAVE     wv
 	variable forceCreation
 
 	string backupname
@@ -5671,7 +5671,7 @@ Function/WAVE GetBackupWave(wv)
 	ASSERT(IsGlobalWave(wv), "Wave Can Not Be A Null Wave Or A Free Wave")
 
 	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
-	DFREF dfr  = GetWavesDataFolderDFR(wv)
+	DFREF dfr = GetWavesDataFolderDFR(wv)
 
 	WAVE/Z/SDFR=dfr backup = $backupname
 
@@ -5686,7 +5686,7 @@ Function ReplaceWaveWithBackupForAll(DFREF dfr)
 	numWaves = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)
 	for(i = 0; i < numWaves; i += 1)
 		WAVE/SDFR=dfr wv = $GetIndexedObjNameDFR(dfr, COUNTOBJECTS_WAVES, i)
-		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0, keepBackup=1)
+		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal = 0, keepBackup = 1)
 	endfor
 End
 
@@ -5727,7 +5727,7 @@ Function/WAVE ReplaceWaveWithBackup(WAVE wv, [variable nonExistingBackupIsFatal,
 	Duplicate/O backup, wv
 
 	if(!keepBackup)
-		KillOrMoveToTrash(wv=backup)
+		KillOrMoveToTrash(wv = backup)
 	endif
 
 	return wv
@@ -5829,7 +5829,7 @@ Function SaveExperimentWrapper(path, filename, [overrideInteractiveMode])
 			if(!V_flag)
 				NewPath/Q Desktop, SpecialDirPath("Desktop", 0, 0, 0)
 			endif
-			path = "Desktop"
+			path             = "Desktop"
 			pathNeedsKilling = 1
 		endif
 		Open/Z/P=$path refNum as filename
@@ -5893,7 +5893,7 @@ End
 threadsafe Function/S GetDefaultElectrodeName(headstage)
 	variable headstage
 
-	ASSERT_TS(headstage >=0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
 
 	return num2str(headstage)
 End
@@ -6013,7 +6013,7 @@ Function StartZeroMQSockets([variable forceRestart])
 		zeromq_server_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(!err)
-			DEBUGPRINT("Successfully listening with server on port:", var=port)
+			DEBUGPRINT("Successfully listening with server on port:", var = port)
 			numBinds += 1
 			break
 		endif
@@ -6027,7 +6027,7 @@ Function StartZeroMQSockets([variable forceRestart])
 		zeromq_pub_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(!err)
-			DEBUGPRINT("Successfully listening with publisher on port:", var=port)
+			DEBUGPRINT("Successfully listening with publisher on port:", var = port)
 			numBinds += 1
 			break
 		endif
@@ -6064,7 +6064,7 @@ threadsafe static Function SplitSweepWave(WAVE numericalValues, variable sweep, 
 		KillOrMoveToTrash(wv = wv)
 		MoveWave sweepRef[i], targetDFR:$componentNames[i]
 		if(createBackup)
-			CreateBackupWave(sweepRef[i], forceCreation=1)
+			CreateBackupWave(sweepRef[i], forceCreation = 1)
 		endif
 
 		if(configWave[i][dChannelType] == XOP_CHANNEL_TYPE_TTL)
@@ -6169,7 +6169,7 @@ threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, W
 	endif
 
 	createBackup = ParamIsDefault(createBackup) ? 1 : !!createBackup
-	doUpgrade = !!doUpgrade
+	doUpgrade    = !!doUpgrade
 
 	ASSERT_TS(IsFinite(sweep), "Sweep number must be finite")
 	ASSERT_TS(IsValidSweepAndConfig(sweepWave, configWave, configVersion = 0), "Sweep and config waves are not compatible")
@@ -6239,11 +6239,11 @@ threadsafe static Function [variable dChannelType, variable dChannelNumber] GetC
 
 	variable dimType, dimNumber
 
-	dimType = FindDimlabel(config, COLS, "ChannelType")
+	dimType   = FindDimlabel(config, COLS, "ChannelType")
 	dimNumber = FindDimlabel(config, COLS, "ChannelNumber")
 	if(dimType == -2)
 		// try AB config wave format, @sa GetAnalysisConfigWave
-		dimType = FindDimlabel(config, COLS, "type")
+		dimType   = FindDimlabel(config, COLS, "type")
 		dimNumber = FindDimlabel(config, COLS, "number")
 	endif
 
@@ -6271,15 +6271,15 @@ End
 
 /// @brief Add user data "panelVersion" to the panel
 Function AddVersionToPanel(win, version)
-	string win
+	string   win
 	variable version
 
-	SetWindow $win, userData(panelVersion) = num2str(version)
+	SetWindow $win, userData(panelVersion)=num2str(version)
 End
 
 /// @brief Return 1 if the panel is up to date, zero otherwise
 Function HasPanelLatestVersion(win, expectedVersion)
-	string win
+	string   win
 	variable expectedVersion
 
 	variable version
@@ -6393,7 +6393,7 @@ End
 ///
 /// Currently only useful for handling mid sweep analysis functions.
 Function UpdateLeftOverSweepTime(device, fifoPos)
-	string device
+	string   device
 	variable fifoPos
 
 	string msg
@@ -6419,8 +6419,8 @@ Function LeftOverSweepTime(string device, variable fifoPos)
 			break
 		case HARDWARE_NI_DAC:
 			// we need to use one of the channel waves
-			WAVE/WAVE ref = DAQDataWave
-			WAVE DAQDataWave = ref[0]
+			WAVE/WAVE ref         = DAQDataWave
+			WAVE      DAQDataWave = ref[0]
 			break
 		default:
 			ASSERT(0, "Invalid hardware type")
@@ -6445,7 +6445,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 	variable totalOnsetDelay, first, last, onsetDelayPoint
 	string msg
 
-	sweepNo     = ExtractSweepNumber(NameofWave(sweep))
+	sweepNo = ExtractSweepNumber(NameofWave(sweep))
 	WAVE config = GetConfigWave(sweep)
 
 	totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
@@ -6483,8 +6483,8 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		FindLevels/Q/P/DEST=levels/R=(first, last)/N=2 DA, level
 		ASSERT(V_LevelsFound >= 2, "Could not find enough levels")
 
-		firstEdge   = trunc(levels[0])
-		secondEdge  = trunc(levels[1])
+		firstEdge  = trunc(levels[0])
+		secondEdge = trunc(levels[1])
 
 		high = firstEdge - 1
 		low  = high - (firstEdge - onsetDelayPoint) * 0.1
@@ -6499,7 +6499,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 
 		elevated = mean(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS))
 
-		sprintf msg, "(%d) AD: low = %g (%g ms), high = %g (%g ms), elevated %g", i, low, IndexToScale(AD, low, ROWS),  high, IndexToScale(AD, high, ROWS), elevated
+		sprintf msg, "(%d) AD: low = %g (%g ms), high = %g (%g ms), elevated %g", i, low, IndexToScale(AD, low, ROWS), high, IndexToScale(AD, high, ROWS), elevated
 		DEBUGPRINT(msg)
 
 		// convert from mv to V
@@ -6548,7 +6548,7 @@ Function MoveWaveWithOverwrite(dest, src, [recursive])
 	WAVE dest, src
 	variable recursive
 
-	string path
+	string   path
 	variable numEntries
 
 	recursive = ParamIsDefault(recursive) ? 0 : !!recursive
@@ -6562,14 +6562,14 @@ Function MoveWaveWithOverwrite(dest, src, [recursive])
 		Make/N=(numEntries)/FREE entries
 
 		WAVE/WAVE destWaveRef = dest
-		WAVE/WAVE srcWaveRef = src
+		WAVE/WAVE srcWaveRef  = src
 
 		entries[] = MoveWaveWithOverWrite(destWaveRef[p], srcWaveRef[p], recursive = 1)
 	endif
 
 	path = GetWavesDataFolder(dest, 2)
 
-	KillOrMoveToTrash(wv=dest)
+	KillOrMoveToTrash(wv = dest)
 	MoveWave src, $path
 End
 
@@ -6584,7 +6584,7 @@ End
 /// @param version [optional, default=DAQ_CONFIG_WAVE_VERSION], check against a specific version
 ///                current versions known are 0 (equals NaN), 1, 2, 3
 threadsafe Function IsValidConfigWave(config, [version])
-	WAVE/Z config
+	WAVE/Z   config
 	variable version
 
 	variable waveVersion
@@ -6624,17 +6624,17 @@ threadsafe Function IsValidSweepWave(sweep)
 	if(IsWaveRefWave(sweep))
 		if(DimSize(sweep, ROWS) > 0)
 			WAVE/Z/WAVE sweepWREF = sweep
-			WAVE/Z channel = sweepWREF[0]
+			WAVE/Z      channel   = sweepWREF[0]
 			return WaveExists(channel) && DimSize(channel, ROWS) > 0
 		endif
 	elseif(IsTextWave(sweep))
 		if(DimSize(sweep, ROWS) > 1)
-			WAVE/Z channel = ResolveSweepChannel(sweep, 0, allowFail=1)
+			WAVE/Z channel = ResolveSweepChannel(sweep, 0, allowFail = 1)
 			return WaveExists(channel) && DimSize(channel, ROWS) > 0
 		endif
 	else
 		return DimSize(sweep, COLS) > 0 && \
-			   DimSize(sweep, ROWS) > 0
+		       DimSize(sweep, ROWS) > 0
 	endif
 
 	return 0
@@ -6658,17 +6658,17 @@ threadsafe Function IsValidSweepAndConfig(sweep, config, [configVersion])
 	endif
 
 	if(IsWaveRefWave(sweep))
-		return IsValidConfigWave(config, version = configVersion) &&  \
-				 IsValidSweepWave(sweep) &&                           \
-				 DimSize(sweep, ROWS) == DimSize(config, ROWS)
+		return IsValidConfigWave(config, version = configVersion) && \
+		       IsValidSweepWave(sweep) &&                            \
+		       DimSize(sweep, ROWS) == DimSize(config, ROWS)
 	elseif(IsTextWave(sweep))
-		return IsValidConfigWave(config, version = configVersion) &&  \
-				 IsValidSweepWave(sweep) &&                           \
-				 DimSize(sweep, ROWS) == DimSize(config, ROWS)
+		return IsValidConfigWave(config, version = configVersion) && \
+		       IsValidSweepWave(sweep) &&                            \
+		       DimSize(sweep, ROWS) == DimSize(config, ROWS)
 	else
-		return IsValidConfigWave(config, version = configVersion) &&  \
-				 IsValidSweepWave(sweep) &&                           \
-				 DimSize(sweep, COLS) == DimSize(config, ROWS)
+		return IsValidConfigWave(config, version = configVersion) && \
+		       IsValidSweepWave(sweep) &&                            \
+		       DimSize(sweep, COLS) == DimSize(config, ROWS)
 	endif
 End
 
@@ -6700,7 +6700,7 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function ReverseEntrySourceTypeMapper(variable mapped)
-	return	(mapped == 0 ? NaN : --mapped)
+	return (mapped == 0 ? NaN : --mapped)
 End
 
 /// @brief constructs a fifo name for NI device ADC operations from the deviceID
@@ -6716,12 +6716,12 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 Function GetTotalOnsetDelay(numericalValues, sweepNo)
-	WAVE numericalValues
+	WAVE     numericalValues
 	variable sweepNo
 
 	// present since 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
 	return GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
-			GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+	       GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
 End
 
 /// @brief Return the total onset delay from the given device during DAQ
@@ -6752,9 +6752,9 @@ End
 /// @param checkBoxPartner	checkbox that will be placed in opposite state
 /// @param checkBoxInState	state of the ctrl checkbox
 Function ToggleCheckBoxes(win, checkBoxIn, checkBoxPartner, checkBoxInState)
-	string win
-	string checkBoxIn
-	string checkBoxPartner
+	string   win
+	string   checkBoxIn
+	string   checkBoxPartner
 	variable checkBoxInState
 
 	SetCheckBoxState(win, checkBoxIn, checkBoxInState)
@@ -6770,9 +6770,9 @@ End
 /// @param checkBoxPartner	checkbox that will be placed in the same state
 /// @param checkBoxInState	state of the ctrl checkbox
 Function EqualizeCheckBoxes(win, checkBoxIn, checkBoxPartner, checkBoxInState)
-	string win
-	string checkBoxIn
-	string checkBoxPartner
+	string   win
+	string   checkBoxIn
+	string   checkBoxPartner
 	variable checkBoxInState
 
 	SetCheckBoxState(win, checkBoxIn, checkBoxInState)
@@ -6791,13 +6791,13 @@ End
 
 // @brief Common setup routine for all MIES background tasks for DAQ, TP and pressure control
 Function SetupBackgroundTasks()
-	CtrlNamedBackground $TASKNAME_TIMERMD, dialogsOK = 0, period = 6, proc=DQM_Timer
-	CtrlNamedBackground $TASKNAME_FIFOMONMD, dialogsOK = 0, period=1, proc=DQM_FIFOMonitor
-	CtrlNamedBackground $TASKNAME_FIFOMON, dialogsOK = 0, period = 5, proc=DQS_FIFOMonitor
-	CtrlNamedBackground $TASKNAME_TIMER, dialogsOK = 0, period = 5, proc=DQS_Timer
-	CtrlNamedBackground $TASKNAME_TPMD, dialogsOK = 0, period=5, proc=TPM_BkrdTPFuncMD
-	CtrlNamedBackground $TASKNAME_TP, dialogsOK = 0, period = 5, proc=TPS_TestPulseFunc
-	CtrlNamedBackground P_ITC_FIFOMonitor, dialogsOK = 0, period = 10, proc=P_ITC_FIFOMonitorProc
+	CtrlNamedBackground $TASKNAME_TIMERMD, dialogsOK=0, period=6, proc=DQM_Timer
+	CtrlNamedBackground $TASKNAME_FIFOMONMD, dialogsOK=0, period=1, proc=DQM_FIFOMonitor
+	CtrlNamedBackground $TASKNAME_FIFOMON, dialogsOK=0, period=5, proc=DQS_FIFOMonitor
+	CtrlNamedBackground $TASKNAME_TIMER, dialogsOK=0, period=5, proc=DQS_Timer
+	CtrlNamedBackground $TASKNAME_TPMD, dialogsOK=0, period=5, proc=TPM_BkrdTPFuncMD
+	CtrlNamedBackground $TASKNAME_TP, dialogsOK=0, period=5, proc=TPS_TestPulseFunc
+	CtrlNamedBackground P_ITC_FIFOMonitor, dialogsOK=0, period=10, proc=P_ITC_FIFOMonitorProc
 End
 
 /// @brief Zero the wave using differentiation and integration
@@ -6905,7 +6905,7 @@ Function DecimateWithMethod(input, output, decimationFactor, method, [firstRowIn
 	variable firstRowInp, lastRowInp, firstColInp, lastColInp, firstColOut, lastColOut
 	WAVE/Z factor
 
-	variable numRowsInp, numColsInp, numRowsOut, numColsOut, targetFirst, targetLast,  numOutputPairs, usedColumns, usedRows
+	variable numRowsInp, numColsInp, numRowsOut, numColsOut, targetFirst, targetLast, numOutputPairs, usedColumns, usedRows
 	variable numRowsDecimated, first, last
 	string msg, key
 
@@ -7040,22 +7040,22 @@ threadsafe static Function DecimateMinMax(input, output, idx, firstRowInp, lastR
 		return NaN
 	endif
 
-	last  = min(last, lastRowInp)
+	last = min(last, lastRowInp)
 
 	targetFirst = idx * 2
-	targetLast = (idx * 2) + 1
+	targetLast  = (idx * 2) + 1
 
 	WaveStats/Q/M=1/RMD=[first, last][colInp] input
 	ASSERT_TS(V_numINFS == 0, "INFs are not supported.")
 	ASSERT_TS(V_numNaNS == 0, "NaNs are not supported.")
 	ASSERT_TS(last - first + 1 == V_npnts && V_npnts > 0, "Range got clipped")
 
-// comment in for debugging
-// #ifdef DEBUGGING_ENABLED
-//   if(DP_DebuggingEnabledForCaller())
-// 		printf "[%d, %d] -> [%d, %d]; min %g; max %g;\r", first, last, targetFirst, targetLast, V_min, V_max
-//   endif
-// #endif // DEBUGGING_ENABLED
+	// comment in for debugging
+	// #ifdef DEBUGGING_ENABLED
+	//   if(DP_DebuggingEnabledForCaller())
+	// 		printf "[%d, %d] -> [%d, %d]; min %g; max %g;\r", first, last, targetFirst, targetLast, V_min, V_max
+	//   endif
+	// #endif // DEBUGGING_ENABLED
 
 	output[targetFirst][colOut] = V_min
 	output[targetLast][colOut]  = V_max
@@ -7113,7 +7113,7 @@ End
 ///
 /// @returns A wave with the row indizes of the found values. An invalid wave reference if the
 /// value could not be found.
-threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow, startLayer, endLayer])
+threadsafe Function/WAVE FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow, startLayer, endLayer])
 	WAVE numericOrTextWave
 	variable col, var, prop
 	string str, colLabel
@@ -7126,10 +7126,10 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	ASSERT_TS(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2                 \
 	          || (!ParamIsDefault(prop)                                                             \
 	              && (((prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
-	                    && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                        \
-					  || (prop == PROP_GREP && !ParamIsDefault(str) && ParamIsDefault(var))         \
-					  || (prop == PROP_WILDCARD && !ParamIsDefault(str) && ParamIsDefault(var))     \
-					  )),                                                                          \
+	                   && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                         \
+	                  || (prop == PROP_GREP && !ParamIsDefault(str) && ParamIsDefault(var))         \
+	                  || (prop == PROP_WILDCARD && !ParamIsDefault(str) && ParamIsDefault(var))     \
+	                 )),                                                                            \
 	          "Invalid combination of var/str/prop arguments")
 
 	ASSERT_TS(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
@@ -7160,16 +7160,16 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 		WAVE/Z wv     = $""
 	else
 		WAVE/T/Z wvText = $""
-		WAVE wv         = numericOrTextWave
+		WAVE     wv     = numericOrTextWave
 	endif
 
 	if(!ParamIsDefault(prop))
-		ASSERT_TS(prop == PROP_NON_EMPTY                    \
-		          || prop == PROP_EMPTY                     \
-		          || prop == PROP_MATCHES_VAR_BIT_MASK      \
-		          || prop == PROP_NOT_MATCHES_VAR_BIT_MASK  \
-				  || prop == PROP_GREP                      \
-				  || prop == PROP_WILDCARD,                 \
+		ASSERT_TS(prop == PROP_NON_EMPTY                   \
+		          || prop == PROP_EMPTY                    \
+		          || prop == PROP_MATCHES_VAR_BIT_MASK     \
+		          || prop == PROP_NOT_MATCHES_VAR_BIT_MASK \
+		          || prop == PROP_GREP                     \
+		          || prop == PROP_WILDCARD,                \
 		          "Invalid property")
 
 		if(prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
@@ -7194,7 +7194,7 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	endif
 
 	if(ParamIsDefault(endRow))
-		endRow = inf
+		endRow = Inf
 	else
 		ASSERT_TS(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	endif
@@ -7275,7 +7275,7 @@ threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	endif
 
 	endRow = numRows - 1
-	MatrixOp/Free result = zapNans(replace(maxCols(subRange(matches, startRow, endRow, startLayer, endLayer)^t)^t, -1, NaN))
+	MatrixOp/FREE result = zapNans(replace(maxCols(subRange(matches, startRow, endRow, startLayer, endLayer)^t)^t, -1, NaN))
 
 	if(DimSize(result, ROWS) == 0)
 		return $""
@@ -7293,11 +7293,11 @@ End
 /// @param colLabel   column label from wv
 /// @param endRow     maximum row index to consider
 Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
-	Wave/T wv
-	string colLabel
+	WAVE/T   wv
+	string   colLabel
 	variable endRow
 
-	WAVE/Z indizes = FindIndizes(wv, colLabel=colLabel, prop=PROP_NON_EMPTY, endRow=endRow)
+	WAVE/Z indizes = FindIndizes(wv, colLabel = colLabel, prop = PROP_NON_EMPTY, endRow = endRow)
 
 	if(!WaveExists(indizes))
 		return ""
@@ -7357,7 +7357,7 @@ Function GenerateSettingsDefaults()
 
 	JSON_AddVariable(JSONid, "version", 1)
 	JSON_AddTreeObject(JSONid, "/diagnostics")
-	JSON_AddString(JSONid, "/diagnostics/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch=0))
+	JSON_AddString(JSONid, "/diagnostics/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
 
 	UpgradeSettings(JSONid)
 
@@ -7377,7 +7377,7 @@ Function UpgradeSettings(JSONid)
 
 	if(!JSON_Exists(JSONid, "/logfiles"))
 		JSON_AddTreeObject(JSONid, "/logfiles")
-		JSON_AddString(JSONid, "/logfiles/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch=0))
+		JSON_AddString(JSONid, "/logfiles/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
 	endif
 
 	if(JSON_GetType(JSONid, SETTINGS_AB_FOLDER) == JSON_STRING)
@@ -7397,7 +7397,7 @@ Function UpgradeSettings(JSONid)
 		JSON_AddBoolean(JSONid, jsonPath + "/enabled", PACKAGE_SETTINGS_USERPING_DEFAULT)
 	endif
 	if(!JSON_Exists(JSONid, jsonPath + "/last upload"))
-		JSON_AddString(JSONid, jsonPath + "/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch=0))
+		JSON_AddString(JSONid, jsonPath + "/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch = 0))
 	endif
 End
 
@@ -7446,9 +7446,9 @@ Function UploadLogFilesDaily()
 	try
 		NVAR JSONid = $GetSettingsJSONid()
 
-		ts = JSON_GetString(jsonID, "/logfiles/last upload")
+		ts        = JSON_GetString(jsonID, "/logfiles/last upload")
 		lastWrite = ParseISO8601TimeStamp(ts)
-		now = DateTimeInUTC()
+		now       = DateTimeInUTC()
 
 		if(lastWrite + SECONDS_PER_DAY > now)
 			// nothing to do
@@ -7493,14 +7493,14 @@ Function UploadPingPeriodically()
 		return NaN
 	endif
 
-	now = DateTimeInUTC()
+	now      = DateTimeInUTC()
 	lastPing = ParseISO8601TimeStamp(GetUserPingTimestamp())
 	if(now - lastPing < SECONDS_PER_DAY * 7)
-		today = GetDayOfWeek(now)
+		today       = GetDayOfWeek(now)
 		lastWeekDay = GetDayOfWeek(lastPing)
-		if(today == lastWeekDay || \
-			(today > lastWeekDay && lastWeekDay > SUNDAY) || \
-			(today < lastWeekDay && today < MONDAY))
+		if(today == lastWeekDay ||                          \
+		   (today > lastWeekDay && lastWeekDay > SUNDAY) || \
+		   (today < lastWeekDay && today < MONDAY))
 			return NaN
 		endif
 	endif
@@ -7510,12 +7510,12 @@ Function UploadPingPeriodically()
 	endif
 End
 
-static function UploadPing()
+static Function UploadPing()
 
 	variable jsonID, jsonID2, err
 	string payLoad, jsonPath
 
-	jsonId2 = JSON_GetIgorInfo()
+	jsonId2  = JSON_GetIgorInfo()
 	jsonPath = "/" + EXPCONFIG_JSON_HWDEVBLOCK
 	JSON_AddTreeObject(jsonId2, jsonPath)
 	WAVE/T NIDevices = ListToTextWave(DAP_GetNIDeviceList(), ";")
@@ -7523,7 +7523,7 @@ static function UploadPing()
 	WAVE/T ITCDevices = ListToTextWave(DAP_GetITCDeviceList(), ";")
 	JSON_AddWave(jsonId2, jsonPath + "/ITC", ITCDevices)
 
-	payLoad = JSON_Dump(jsonId2, indent=2)
+	payLoad = JSON_Dump(jsonId2, indent = 2)
 	JSON_Release(jsonId2)
 
 	jsonID = GenerateJSONTemplateForUpload()
@@ -7663,7 +7663,7 @@ Function UpdateSweepInGraph(string win, variable index)
 
 	graph = GetMainWindow(win)
 
-	WAVE axesProps = GetAxesProperties(graph)
+	WAVE     axesProps   = GetAxesProperties(graph)
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
 	RemoveSweepFromGraph(win, index)
@@ -7944,10 +7944,10 @@ Function UploadCrashDumps()
 
 	diagSymbPath = GetSymbolicPathForDiagnosticsDirectory()
 
-	WAVE/T files = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".dmp"), FILE_LIST_SEP)
-	WAVE/T logs = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".txt"), FILE_LIST_SEP)
+	WAVE/T files = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension = ".dmp"), FILE_LIST_SEP)
+	WAVE/T logs  = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension = ".txt"), FILE_LIST_SEP)
 	numFiles = DimSize(files, ROWS)
-	numLogs = DimSize(logs, ROWS)
+	numLogs  = DimSize(logs, ROWS)
 
 	if(!numFiles && !numLogs)
 		return 0
@@ -7968,7 +7968,7 @@ Function UploadCrashDumps()
 	NewPath/Q/O/Z $basePath, diagPath + ":"
 
 #ifdef DEBUGGING_ENABLED
-	SaveTextFile(JSON_dump(jsonID, indent=4), diagPath + ":" + UniqueFileOrFolder(basePath, "crash-dumps", suffix = ".json"))
+	SaveTextFile(JSON_dump(jsonID, indent = 4), diagPath + ":" + UniqueFileOrFolder(basePath, "crash-dumps", suffix = ".json"))
 #endif // DEBUGGING_ENABLED
 
 	UploadJSONPayload(jsonID)
@@ -7996,7 +7996,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 	variable jsonID, numFiles, i, j, doFilter, isBinary, lastIndex, jsonIndex, partCnt, sumSize, fSize
 
 	isBinary = 1
-	verbose = ParamIsDefault(verbose) ? 1 : !!verbose
+	verbose  = ParamIsDefault(verbose) ? 1 : !!verbose
 
 	if(ParamIsDefault(firstDate) && ParamIsDefault(lastDate))
 		doFilter = 0
@@ -8010,7 +8010,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 
 	WAVE/T files = GetLogFileNames()
 	timeStamp = GetISO8601TimeStamp()
-	ticket = GenerateRFC4122UUID()
+	ticket    = GenerateRFC4122UUID()
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) jsonIDs
 
 	numFiles = DimSize(files, ROWS)
@@ -8028,9 +8028,9 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 			jsonID = GenerateJSONTemplateForUpload(timeStamp = timeStamp)
 			AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
 			AddPayloadEntries(jsonID, {file}, {files[i][%NOTEXISTTEXT]}, isBinary = isBinary)
-			EnsureLargeEnoughWave(jsonIDs, indexShouldExist=jsonIndex)
+			EnsureLargeEnoughWave(jsonIDs, indexShouldExist = jsonIndex)
 			jsonIDs[jsonIndex] = jsonID
-			jsonIndex += 1
+			jsonIndex         += 1
 			continue
 		endif
 
@@ -8064,10 +8064,10 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 
 			AddPayloadEntries(jsonID, {fNamePart}, {logPartStr}, isBinary = isBinary)
 			sumSize += strlen(logPartStr)
-			EnsureLargeEnoughWave(jsonIDs, indexShouldExist=jsonIndex)
+			EnsureLargeEnoughWave(jsonIDs, indexShouldExist = jsonIndex)
 			jsonIDs[jsonIndex] = jsonID
-			jsonIndex += 1
-			partCnt += 1
+			jsonIndex         += 1
+			partCnt           += 1
 			UploadLogFilesPrint(".", verbose)
 		endfor
 		UploadLogFilesPrint("\r", verbose)
@@ -8077,12 +8077,12 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
 		basePath = GetUniqueSymbolicPath()
-		path = SpecialDirPath("Temporary", 0, 0, 1) + "MIES:"
+		path     = SpecialDirPath("Temporary", 0, 0, 1) + "MIES:"
 		NewPath/C/Q/O/Z $basePath, path
 
 		for(jsonID : jsonIDs)
 			location = path + UniqueFileOrFolder(basePath, "logfiles", suffix = ".json")
-			SaveTextFile(JSON_dump(jsonID, indent=4), location)
+			SaveTextFile(JSON_dump(jsonID, indent = 4), location)
 
 			printf "Stored the logfile JSON in %s.\r", location
 		endfor
@@ -8124,7 +8124,7 @@ static Function ArchiveLogFile(WAVE/T logData, string fullFilePath, variable ind
 	endif
 
 	fileFolder = GetFolder(fullFilePath)
-	fileBase = GetBaseName(fullFilePath)
+	fileBase   = GetBaseName(fullFilePath)
 	fileSuffix = GetFileSuffix(fullFilePath)
 	filePrefix = fileFolder + fileBase + ARCHIVEDLOG_SUFFIX
 
@@ -8143,13 +8143,13 @@ static Function ArchiveLogFile(WAVE/T logData, string fullFilePath, variable ind
 			partIdx += 1
 		endif
 
-		numPart = ReplaceString(filePrefix, lastFileExists, "")
+		numPart   = ReplaceString(filePrefix, lastFileExists, "")
 		fileIndex = str2num(RemoveEnding(numPart, fileSuffix)) + 1
 	else
 		WAVE/WAVE logParts = SplitLogDataBySize(logData, LOG_FILE_LINE_END, LOG_ARCHIVING_SPLITSIZE, lastIndex = index)
 	endif
 
-	format = "%s%s" + ARCHIVEDLOG_SUFFIX + "%04d.%s"
+	format   = "%s%s" + ARCHIVEDLOG_SUFFIX + "%04d.%s"
 	numParts = DimSize(logParts, ROWS)
 	for(partIdx = partIdx; partIdx < numParts; partIdx += 1)
 		sprintf newFullFilePath, format, fileFolder, fileBase, fileIndex, fileSuffix
@@ -8194,7 +8194,7 @@ static Function/S LastArchivedLogFile(string fullFilePath)
 	variable err
 
 	fileFolder = GetFolder(fullFilePath)
-	fileBase = GetBaseName(fullFilePath)
+	fileBase   = GetBaseName(fullFilePath)
 	fileSuffix = GetFileSuffix(fullFilePath)
 
 	pathName = GetUniqueSymbolicPath()
@@ -8204,7 +8204,7 @@ static Function/S LastArchivedLogFile(string fullFilePath)
 	allFilesList = IndexedFile($pathName, -1, "." + fileSuffix, "????", FILE_LIST_SEP); err = GetRTError(1)
 	KillPath/Z $pathName
 
-	regex = "^" + fileBase + ARCHIVEDLOG_SUFFIX + "[0-9]{4}." + fileSuffix
+	regex            = "^" + fileBase + ARCHIVEDLOG_SUFFIX + "[0-9]{4}." + fileSuffix
 	allArchivedFiles = GrepList(allFilesList, regex, 0, FILE_LIST_SEP)
 	if(IsEmpty(allArchivedFiles))
 		return ""
@@ -8216,7 +8216,7 @@ End
 static Function/S GetDateOfLogEntry(string entry)
 
 	variable jsonId
-	string dat
+	string   dat
 
 	jsonID = JSON_Parse(entry, ignoreErr = 1)
 	if(!JSON_IsValid(jsonID))
@@ -8224,7 +8224,7 @@ static Function/S GetDateOfLogEntry(string entry)
 		return ""
 	endif
 
-	dat = JSON_GetString(jsonID, "ts", ignoreErr=1)
+	dat = JSON_GetString(jsonID, "ts", ignoreErr = 1)
 	JSON_Release(jsonID)
 
 	return dat
@@ -8233,7 +8233,7 @@ End
 /// @brief Update the logging template used by the ZeroMQ-XOP and ITCXOP2
 Function UpdateXOPLoggingTemplate()
 	variable JSONid
-	string str
+	string   str
 
 	JSONid = LOG_GenerateEntryTemplate("XOP")
 
@@ -8281,13 +8281,13 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 	string path
 
 	WAVE numericalKeys = GetLBTextualKeys(device)
-	WAVE textualKeys = GetLBNumericalKeys(device)
+	WAVE textualKeys   = GetLBNumericalKeys(device)
 
 	// now the labnotebooks are upgraded to the latest version
 	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues = GetLBTextualValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
-	WAVE/Z sweepsFromNum = GetSweepsWithSetting(numericalValues, "SweepNum")
+	WAVE/Z sweepsFromNum  = GetSweepsWithSetting(numericalValues, "SweepNum")
 	WAVE/Z sweepsFromText = GetSweepsWithSetting(textualValues, "SweepNum")
 
 	// consistency check
@@ -8304,8 +8304,8 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 	for(i = 0; i < numEntries; i += 1)
 		sweepNo = sweepsFromNum[i]
 
-		WAVE/Z/SDFR=deviceDataDFR sweepWave = $GetSweepWaveName(sweepNo)
-		Wave/Z/SDFR=deviceDataDFR configWave = $GetConfigWaveName(sweepNo)
+		WAVE/Z/SDFR=deviceDataDFR sweepWave  = $GetSweepWaveName(sweepNo)
+		WAVE/Z/SDFR=deviceDataDFR configWave = $GetConfigWaveName(sweepNo)
 
 		if(WaveExists(sweepWave) && WaveExists(configWave))
 			missingSweep[i]  = 0
@@ -8370,7 +8370,7 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 		endif
 
 		DFREF singleSweepDFR = GetSingleSweepFolder(dest, sweepNo)
-		SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, 1, targetDFR=singleSweepDFR)
+		SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, 1, targetDFR = singleSweepDFR)
 
 		printf "Reconstructed successfully.\r"
 	endfor
@@ -8397,10 +8397,10 @@ Function/WAVE RecreateSweepWaveFromBackupAndLBN(WAVE numericalValues, WAVE/T tex
 	[WAVE TTLChans, WAVE/WAVE TTLWaves] = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_TTL)
 
 	// check that we have found all 1D waves of one sweep
-	WAVE DAFromLBN = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC)
+	WAVE DAFromLBN      = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC)
 	WAVE DAFromLBNWoNaN = ZapNaNs(DAFromLBN)
 
-	WAVE ADFromLBN = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_ADC)
+	WAVE ADFromLBN      = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_ADC)
 	WAVE ADFromLBNWoNaN = ZapNaNs(ADFromLBN)
 
 	WAVE/Z TTLFromLBN = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_HARDWARE_CHANNEL)
@@ -8413,10 +8413,10 @@ Function/WAVE RecreateSweepWaveFromBackupAndLBN(WAVE numericalValues, WAVE/T tex
 		Make/FREE/N=0 TTLFromLBNWoNaN
 	endif
 
-	if(DimSize(DAFromLBNWoNaN, ROWS) != DimSize(DAChans, ROWS)       \
-	   || DimSize(ADFromLBNWoNaN, ROWS) != DimSize(ADChans, ROWS)    \
+	if(DimSize(DAFromLBNWoNaN, ROWS) != DimSize(DAChans, ROWS)     \
+	   || DimSize(ADFromLBNWoNaN, ROWS) != DimSize(ADChans, ROWS)  \
 	   || DimSize(TTLFromLBNWoNaN, ROWS) != DimSize(TTLChans, ROWS))
-	   return $""
+		return $""
 	endif
 
 	numChannels = DimSize(DAChans, ROWS) + DimSize(ADChans, ROWS) + DimSize(TTLChans, ROWS)
@@ -8446,7 +8446,7 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 
 	// ensure we start with a fresh config wave
 	WAVE configWave = GetDAQConfigWave(device)
-	MoveToTrash(wv=configWave)
+	MoveToTrash(wv = configWave)
 
 	WAVE configWave = GetDAQConfigWave(device)
 	Redimension/N=(0, -1) configWave
@@ -8596,7 +8596,7 @@ static Function AddChannelUnitFromLBN(WAVE numericalValues, WAVE/T textualValues
 		[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
 
 		WAVE/T settingText = setting
-		unitList = AddListItem(settingText[index], unitList, ",", inf)
+		unitList = AddListItem(settingText[index], unitList, ",", Inf)
 	endfor
 
 	AddEntryIntoWaveNoteAsList(configWave, CHANNEL_UNIT_KEY, str = unitList, replaceEntry = 1)
@@ -8640,7 +8640,7 @@ static Function AddToSweepWave(WAVE/WAVE channelWaves, WAVE channelNumbers, WAVE
 	// sort channelNumbers and channelWaves ascending so that we start with the smallest channel numbers first
 	Sort channelNumbers, channelNumbers, channelWaves
 
-	numEntries = DimSize(channelWaves, ROWS)
+	numEntries   = DimSize(channelWaves, ROWS)
 	requiredSize = indexOffset + numEntries
 	if(DimSize(sweepWave, ROWS) < requiredSize)
 		Redimension/N=(requiredSize) sweepWave
@@ -8730,7 +8730,7 @@ Function [WAVE/T filtered, variable lastIndex] FilterByDate(WAVE/T entries, vari
 	ASSERT(first >= 0 && last >= 0 && first < last, "first and last must not be negative and first < last.")
 
 	firstIndex = FindFirstLogEntryElementByDate(entries, first)
-	lastIndex = FindLastLogEntryElementByDate(entries, last)
+	lastIndex  = FindLastLogEntryElementByDate(entries, last)
 	if(lastIndex < firstIndex)
 		return [$"", NaN]
 	endif
@@ -8755,9 +8755,9 @@ static Function FindFirstLogEntryElementByDate(WAVE/T entries, variable timeStam
 	variable l, r, m, ts
 
 	r = DimSize(entries, ROWS)
-	for(;l < r;)
-		m = trunc((l + r) / 2)
-		ts =  ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
+	for(; l < r;)
+		m  = trunc((l + r) / 2)
+		ts = ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
 		if(IsNaN(ts))
 			for(m = m - 1; m > l; m -= 1)
 				ts = ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
@@ -8791,12 +8791,12 @@ static Function FindLastLogEntryElementByDate(WAVE/T entries, variable timeStamp
 	variable l, r, m, ts
 
 	r = DimSize(entries, ROWS)
-	for(;l < r;)
-		m = trunc((l + r) / 2)
+	for(; l < r;)
+		m  = trunc((l + r) / 2)
 		ts = ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
 		if(IsNaN(ts))
 			for(m = m + 1; m < r; m += 1)
-				ts =  ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
+				ts = ParseISO8601TimeStamp(GetDateOfLogEntry(entries[m]))
 				if(!IsNaN(ts))
 					break
 				endif
@@ -8906,17 +8906,17 @@ Function SplitAndUpgradeSweepGlobal(string device, variable sweepNo)
 		return 1
 	endif
 
-	DFREF deviceDFR = GetDeviceDataPath(device)
-	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
-	WAVE numericalValues = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, device = device)
-	SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, 1, targetDFR=singleSweepDFR)
+	DFREF deviceDFR       = GetDeviceDataPath(device)
+	DFREF singleSweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
+	WAVE  numericalValues = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, device = device)
+	SplitAndUpgradeSweep(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, 1, targetDFR = singleSweepDFR)
 
 	return 0
 End
 
 Function [WAVE sweepWave, WAVE config] GetSweepAndConfigWaveFromDevice(string device, variable sweepNo)
 
-	WAVE/Z sweepWave  = GetSweepWave(device, sweepNo)
+	WAVE/Z sweepWave = GetSweepWave(device, sweepNo)
 	if(!WaveExists(sweepWave))
 		return [$"", $""]
 	endif

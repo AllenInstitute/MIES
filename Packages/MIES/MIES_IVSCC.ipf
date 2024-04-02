@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -21,21 +21,21 @@
 
 static Constant    IVS_DEFAULT_NWBVERSION = 2
 static Constant    IVS_DEFAULT_HEADSTAGE  = 0
-static StrConstant IVS_DEFAULT_DEVICE = "ITC18USB_Dev_0"
+static StrConstant IVS_DEFAULT_DEVICE     = "ITC18USB_Dev_0"
 
 Function IVS_ConfigureMCC()
-	string device
+	string   device
 	variable headstage
 
 	variable oldTab, numErrors, initResult
 
-	device = IVS_DEFAULT_DEVICE
-	headstage  = IVS_DEFAULT_HEADSTAGE
+	device    = IVS_DEFAULT_DEVICE
+	headstage = IVS_DEFAULT_HEADSTAGE
 
 	// explicitly switch to the data acquistion tab to avoid having
 	// the control layout messed up
 	oldTab = GetTabID(device, "ADC")
-	PGC_SetAndActivateControl(device, "ADC", val=0)
+	PGC_SetAndActivateControl(device, "ADC", val = 0)
 
 	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
 		print "MCC not valid...cannot initialize Amplifier Settings"
@@ -43,7 +43,7 @@ Function IVS_ConfigureMCC()
 	else
 		// Do Current Clamp stuff
 		// switch to IC
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, headstage), val=CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, headstage), val = CHECKBOX_SELECTED)
 
 		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, 0)
 		if(!IsFinite(initResult))
@@ -51,7 +51,7 @@ Function IVS_ConfigureMCC()
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE,  MCC_SETNEUTRALIZATIONCAP_FUNC, 0.0)
+		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, 0.0)
 		if(!IsFinite(initResult))
 			print "Error setting Neutralization Cap to 0.0"
 			numErrors += 1
@@ -101,7 +101,7 @@ Function IVS_ConfigureMCC()
 		endif
 
 		// switch to VC
-		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, headstage), val=CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, headstage), val = CHECKBOX_SELECTED)
 
 		// These commands work with both current clamp and voltage clamp...so now do the voltage clamp mode
 		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, 0.0)
@@ -123,7 +123,7 @@ Function IVS_ConfigureMCC()
 		endif
 
 		// Voltage Clamp Mode only settings
-		initResult =  AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, 0.0)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, 0.0)
 		if(!IsFinite(initResult))
 			print "Error setting RsCompCorrection to 0"
 			numErrors += 1
@@ -173,7 +173,7 @@ Function IVS_ConfigureMCC()
 	endif
 
 	if(oldTab != 0)
-		PGC_SetAndActivateControl(device, "ADC", val=oldTab)
+		PGC_SetAndActivateControl(device, "ADC", val = oldTab)
 	endif
 
 	return numErrors
@@ -186,8 +186,8 @@ Function IVS_runBaselineCheckQC()
 	string device, ctrl
 	variable headstage
 
-	device = IVS_DEFAULT_DEVICE
-	headstage  = IVS_DEFAULT_HEADSTAGE
+	device    = IVS_DEFAULT_DEVICE
+	headstage = IVS_DEFAULT_HEADSTAGE
 
 	DoWindow/F $device
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
@@ -201,8 +201,8 @@ Function IVS_runInitAccessResisQC()
 	string device, ctrl
 	variable headstage
 
-	device = IVS_DEFAULT_DEVICE
-	headstage  = IVS_DEFAULT_HEADSTAGE
+	device    = IVS_DEFAULT_DEVICE
+	headstage = IVS_DEFAULT_HEADSTAGE
 
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	PGC_SetAndActivateControl(device, ctrl, str = "EXTPBREAKN*")
@@ -215,8 +215,8 @@ Function IVS_RunGigOhmSealQC()
 	string device, ctrl
 	variable headstage
 
-	device = IVS_DEFAULT_DEVICE
-	headstage  = IVS_DEFAULT_HEADSTAGE
+	device    = IVS_DEFAULT_DEVICE
+	headstage = IVS_DEFAULT_HEADSTAGE
 
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	PGC_SetAndActivateControl(device, ctrl, str = "EXTPCllATT*")
@@ -253,7 +253,7 @@ Function IVS_SaveExperiment(filename)
 
 	AssertOnAndClearRTError()
 	try
-		SaveExperiment/C/F={1,"",2}/P=home as filename + ".pxp"; AbortOnRTE
+		SaveExperiment/C/F={1, "", 2}/P=home as filename + ".pxp"; AbortOnRTE
 	catch
 		err = ClearRTError()
 		ASSERT(0, "Could not save experiment due to code: " + num2istr(err))
@@ -265,13 +265,13 @@ End
 /// @param stimWaveName stimWaveName to be used
 /// @param scaleFactor  scale factor to run the stim wave at
 Function IVS_runStimWave(stimWaveName, scaleFactor)
-	string stimWaveName
+	string   stimWaveName
 	variable scaleFactor
 
 	variable headstage
 	string device, ctrl
 
-	device = IVS_DEFAULT_DEVICE
+	device    = IVS_DEFAULT_DEVICE
 	headstage = IVS_DEFAULT_HEADSTAGE
 
 	DoWindow/F $device
@@ -341,14 +341,14 @@ End
 /// @return 1 if passed, 0 if not (or not yet) and
 /// asserts out on all other errors.
 Function IVS_GetSetQCForSweep(device, sweepNo)
-	string device
+	string   device
 	variable sweepNo
 
 	string key
 	variable headstage, anaFuncType
 
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues   = GetLBTextualValues(device)
 
 	WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(headstages), "The given sweep number does not exist.")

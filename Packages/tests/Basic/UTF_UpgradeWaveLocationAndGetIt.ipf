@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UpgradeWaveLocationTesting
@@ -82,7 +82,7 @@ Function rename_wave_only()
 	p.name = "srcw"
 	p.dfr  = srcf
 
-	newName = "destw"
+	newName   = "destw"
 	p.newName = newName
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
@@ -101,9 +101,9 @@ Function rename_handles_equal_names()
 
 	p.dfr = srcf
 
-	newName = "srcw"
+	newName   = "srcw"
 	p.newName = newName
-	p.name = newName
+	p.name    = newName
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 	CHECK_WAVE(wv, NUMERIC_WAVE)
@@ -123,7 +123,7 @@ Function move_wave_only()
 	p.dfr  = srcf
 
 	newFolder = "destf"
-	p.newDFR = $newFolder
+	p.newDFR  = $newFolder
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 	CHECK_WAVE(wv, NUMERIC_WAVE)
@@ -144,13 +144,13 @@ Function move_fails_on_non_exist_ret_src()
 	p.dfr  = srcf
 
 	newFolder = "destf_notexist"
-	p.newDFR = $newFolder
+	p.newDFR  = $newFolder
 
 	CHECK(!DataFolderExistsDFR(p.newDFR))
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 	CHECK_WAVE(wv, NUMERIC_WAVE)
-	folder = GetWavesDataFolder(wv, 0)
+	folder    = GetWavesDataFolder(wv, 0)
 	oldFolder = "srcf"
 	CHECK_EQUAL_STR(folder, oldFolder)
 	CHECK_EQUAL_VAR(wv[0], 12345)
@@ -207,14 +207,14 @@ Function move_rename()
 	string folder, newFolder
 	string name, newName
 
-	folder    = "srcf"
-	p.dfr     = srcf
+	folder = "srcf"
+	p.dfr  = srcf
 
 	newFolder = "destf"
 	p.newDFR  = $newFolder
 
-	name      = "srcw"
-	p.name    = name
+	name   = "srcw"
+	p.name = name
 
 	newName   = "destw"
 	p.newName = newName
@@ -236,14 +236,14 @@ Function move_rename_keeps_dfr()
 	string folder, newFolder
 	string name, newName
 
-	folder    = "srcf"
-	p.dfr     = srcf
+	folder = "srcf"
+	p.dfr  = srcf
 
 	newFolder = "destf"
 	p.newDFR  = $newFolder
 
-	name      = "srcw"
-	p.name    = name
+	name   = "srcw"
+	p.name = name
 
 	newName   = "destw"
 	p.newName = newName
@@ -271,20 +271,20 @@ Function return_dest_if_both_keep_src()
 	string folder, newFolder
 	string name, newName
 
-	folder    = "srcf"
-	p.dfr     = srcf
+	folder = "srcf"
+	p.dfr  = srcf
 
 	newFolder = "destf"
 	p.newDFR  = $newFolder
 
-	name      = "srcw"
-	p.name    = name
+	name   = "srcw"
+	p.name = name
 
 	newName   = "destw"
 	p.newName = newName
 
-	WAVE/SDFR=p.dfr src = $name
-	DFREF tmpDFR = p.newDFR
+	WAVE/SDFR=p.dfr src    = $name
+	DFREF           tmpDFR = p.newDFR
 	Duplicate src, tmpDFR:$(p.newName)/WAVE=dest
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)

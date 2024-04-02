@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=WB_Regression
@@ -42,7 +42,7 @@ Function/WAVE WB_FetchRefWave_IGNORE(string name)
 
 	string majorVersion = num2istr(IgorVersion())
 
-	DFREF dfr = root:wavebuilder_misc:DAWaves
+	DFREF           dfr          = root:wavebuilder_misc:DAWaves
 	WAVE/SDFR=dfr/Z overrideWave = $(name + "_IP" + majorVersion)
 	if(WaveExists(overrideWave))
 		return overrideWave
@@ -108,7 +108,7 @@ Function WB_RegressionTest([string stimset])
 
 	for(i = 0; i < sweepCount; i += 1)
 		for(j = 0; j < epochCount; j += 1)
-			duration = WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, key = "Duration", sweep = i, epoch= j)
+			duration = WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, key = "Duration", sweep = i, epoch = j)
 			CHECK_GT_VAR(duration, 0)
 
 			// check inflection point info
@@ -122,13 +122,13 @@ Function WB_RegressionTest([string stimset])
 
 					switch(j)
 						case 0:
-							Make/D/FREE refInflectionPoints = {197.458726593435,435.675394434122,588.633714511935,701.526877331138,791.045847308983,865.22891295094,928.57002432697,983.837930372523}
+							Make/D/FREE refInflectionPoints = {197.458726593435, 435.675394434122, 588.633714511935, 701.526877331138, 791.045847308983, 865.22891295094, 928.57002432697, 983.837930372523}
 							break
 						case 1:
-							Make/D/FREE refInflectionPoints= {152.790159219023,284.335069591481,356.976185802109,407.420806489504,446.105169062074,477.48904673523}
+							Make/D/FREE refInflectionPoints = {152.790159219023, 284.335069591481, 356.976185802109, 407.420806489504, 446.105169062074, 477.48904673523}
 							break
 						case 2:
-							Make/D/FREE refInflectionPoints = {0,250,500,750,1000}
+							Make/D/FREE refInflectionPoints = {0, 250, 500, 750, 1000}
 							break
 						case 3:
 							Make/D/FREE refInflectionPoints = {250}
@@ -137,10 +137,10 @@ Function WB_RegressionTest([string stimset])
 							Make/D/FREE/N=0 refInflectionPoints
 							break
 						case 5:
-							Make/D/FREE refInflectionPoints = {0,56.8275517074798,134.011125536996,254.863071610038,551.280032534985}
+							Make/D/FREE refInflectionPoints = {0, 56.8275517074798, 134.011125536996, 254.863071610038, 551.280032534985}
 							break
 						case 6:
-							Make/D/FREE refInflectionPoints = {13.8634120431695,55.5281095180012,197.212830141239}
+							Make/D/FREE refInflectionPoints = {13.8634120431695, 55.5281095180012, 197.212830141239}
 							break
 						default:
 							FAIL()
