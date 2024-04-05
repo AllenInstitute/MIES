@@ -2839,10 +2839,11 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	variable moreData, chan, guiChannelNumber, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, headstage, channelType, isTTLSplitted
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
-	variable stimSetLength, samplingIntDA, first, last, count, ttlBit
+	variable stimSetLength, samplingIntDA, samplingIntSweep, samplingIntervalFactor, first, last, count, ttlBit
 	variable numRegions, numRangesPerEntry, traceCounter
 	variable xRangeStartMS, xRangeEndMS
 	variable totalRangeDAPoints, rangeStartDAPoints, rangeEndDAPoints
+	variable startIndexSweep, endIndexSweep
 	variable totalOodRangeMS = NaN
 	string trace, traceType, channelID, axisLabel, traceRange, traceColor
 	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis, jsonPath
@@ -2924,8 +2925,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		tgs.dDAQDisplayMode = 0
 	endif
 
+	samplingIntDA = GetSamplingInterval(config, XOP_CHANNEL_TYPE_DAC) * MICRO_TO_MILLI
 	if(tgs.dDAQDisplayMode)
-		samplingIntDA = GetSamplingInterval(config, XOP_CHANNEL_TYPE_DAC) * MICRO_TO_MILLI
 
 		// dDAQ data taken with versions prior to
 		// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
@@ -3105,6 +3106,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 				if(!WaveExists(wv))
 					continue
 				endif
+				samplingIntSweep = GetSamplingInterval(config, channelType) * MICRO_TO_MILLI
 
 				// Color scheme:
 				// 0-7:   Different headstages
@@ -3203,9 +3205,13 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 							traceCounter += 1
 						endif
 					else
+						samplingIntervalFactor = samplingIntDA / samplingIntSweep
+						startIndexSweep        = rangeStartDAPoints * samplingIntervalFactor
+						endIndexSweep          = rangeEndDAPoints * samplingIntervalFactor
+
 						horizAxis = vertAxis + "_b"
-						sprintf traceRange, "[%d,%d][0]", rangeStartDAPoints, rangeEndDAPoints
-						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, 65535) wv[rangeStartDAPoints, rangeEndDAPoints][0]/TN=$trace
+						sprintf traceRange, "[%d,%d][0]", startIndexSweep, endIndexSweep
+						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, 65535) wv[startIndexSweep, endIndexSweep][0]/TN=$trace
 						first = first
 						last  = first + (rangeEndDAPoints - rangeStartDAPoints) / totalRangeDAPoints
 						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
