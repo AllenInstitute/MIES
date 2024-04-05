@@ -3352,12 +3352,13 @@ Function HW_SU_GetDeviceInfo(WAVE/T deviceInfo)
 	string deviceList = ""
 	string numHSList  = ""
 
+	DEBUGPRINTSTACKINFO()
+
 #ifdef AUTOMATED_TESTING
 #ifndef TESTS_WITH_SUTTER_HARDWARE
 	return NaN
 #endif
 #endif
-	DEBUGPRINTSTACKINFO()
 
 	if(!IsEmpty(deviceInfo[%NUMBEROFDACS]))
 		return NaN
@@ -3403,6 +3404,8 @@ Function HW_SU_StopAcq(variable deviceID, [variable zeroDAC, variable flags])
 
 	string device
 
+	DEBUGPRINTSTACKINFO()
+
 	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 	NVAR acq = $GetSU_IsAcquisitionRunning(device)
 	if(acq)
@@ -3411,7 +3414,6 @@ Function HW_SU_StopAcq(variable deviceID, [variable zeroDAC, variable flags])
 	endif
 
 	if(zeroDAC)
-		DEBUGPRINTSTACKINFO()
 		HW_SU_ZeroDAC(deviceID, flags = flags)
 	endif
 End
@@ -3610,6 +3612,8 @@ Function HW_SU_ZeroDAC(variable deviceID, [variable flags])
 	string device, encodeInfo
 	variable i, outIndex, channels, channelNumber, headStage, outChannel, inChannel, unassocDACIndex
 
+	DEBUGPRINTSTACKINFO()
+
 	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 	WAVE   config    = GetDAQConfigWave(device)
 	WAVE/T input     = GetSUDeviceInput(device)
@@ -3656,6 +3660,8 @@ Function HW_SU_ReadADC(variable deviceID, variable channel, [variable flags])
 	string device, encodeInfo
 	variable inChannel
 
+	DEBUGPRINTSTACKINFO()
+
 	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 	WAVE   config    = GetDAQConfigWave(device)
 	WAVE/T input     = GetSUDeviceInput(device)
@@ -3676,6 +3682,8 @@ Function HW_SU_WriteDAC(variable deviceID, variable channel, variable value, [va
 
 	string device, encodeInfo
 	variable outChannel, inChannel
+
+	DEBUGPRINTSTACKINFO()
 
 	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 	WAVE   config    = GetDAQConfigWave(device)
