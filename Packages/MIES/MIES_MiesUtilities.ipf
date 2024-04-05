@@ -2760,6 +2760,53 @@ Function GetNextTraceIndex(string graph)
 	return traceIndex
 End
 
+/// @brief Get all selected oodDAQ regions and the total X range in ms
+static Function [string oodDAQRegionsAll, variable totalXRange] GetOodDAQFullRange(STRUCT TiledGraphSettings &tgs, WAVE/T oodDAQRegions)
+
+	variable i, j, numEntries, numRangesPerEntry, xRangeStart, xRangeEnd
+	string entry, range, str
+
+	numEntries       = DimSize(oodDAQRegions, ROWS)
+	oodDAQRegionsAll = ""
+	totalXRange      = 0
+
+	// Fixup buggy entries introduced since 88323d8d (Replacement of oodDAQ offset calculation routines, 2019-06-13)
+	// The regions from the second active headstage are duplicated into the
+	// first region in case we had more than two active headstages taking part in oodDAQ.
+	WAVE/Z indizes = FindIndizes(oodDAQRegions, prop = PROP_NON_EMPTY)
+	if(WaveExists(indizes) && DimSize(indizes, ROWS) > 2)
+		oodDAQRegions[indizes[0]] = ReplaceString(oodDAQRegions[indizes[1]], oodDAQRegions[indizes[0]], "")
+	endif
+
+	for(i = 0; i < numEntries; i += 1)
+
+		// we still gather regions from deselected headstages to help overlaying multiple sweeps with the same
+		// oodDAQ regions and removed headstages.
+		// If we would remove them here the plotting would get messed up.
+
+		// use only the selected region if requested
+		if(tgs.dDAQHeadstageRegions >= 0 && tgs.dDAQHeadstageRegions < NUM_HEADSTAGES && tgs.dDAQHeadstageRegions != i)
+			continue
+		endif
+
+		entry             = RemoveEnding(oodDAQRegions[i], ";")
+		numRangesPerEntry = ItemsInList(entry)
+		for(j = 0; j < numRangesPerEntry; j += 1)
+			range            = StringFromList(j, entry)
+			oodDAQRegionsAll = AddListItem(range, oodDAQRegionsAll, ";", Inf)
+
+			xRangeStart  = str2num(StringFromList(0, range, "-"))
+			xRangeEnd    = str2num(StringFromList(1, range, "-"))
+			totalXRange += (xRangeEnd - XRangeStart)
+		endfor
+	endfor
+
+	sprintf str, "oodDAQRegions (%d) concatenated: _%s_, totalRange=%g", ItemsInList(oodDAQRegionsAll), oodDAQRegionsAll, totalXRange
+	DEBUGPRINT(str)
+
+	return [oodDAQRegionsAll, totalXRange]
+End
+
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
 ///
 /// For preservering the axis scaling callers should do the following:
@@ -2793,9 +2840,10 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	variable numTTLBits, headstage, channelType, isTTLSplitted
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingIntDA, xRangeStart, xRangeEnd, first, last, count, ttlBit
-	variable numRegions, numEntries, numRangesPerEntry, traceCounter
+	variable numRegions, numRangesPerEntry, traceCounter
 	variable totalXRange = NaN
-	string trace, traceType, channelID, axisLabel, entry, range, traceRange, traceColor
+	variable totalRangeDAPoints
+	string trace, traceType, channelID, axisLabel, traceRange, traceColor
 	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis, jsonPath
 	STRUCT RGBColor s
 
@@ -2890,44 +2938,9 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		DEBUGPRINT(str)
 
 		if(oodDAQEnabled)
-			numEntries       = DimSize(oodDAQRegions, ROWS)
-			oodDAQRegionsAll = ""
-			totalXRange      = 0
-
-			// Fixup buggy entries introduced since 88323d8d (Replacement of oodDAQ offset calculation routines, 2019-06-13)
-			// The regions from the second active headstage are duplicated into the
-			// first region in case we had more than two active headstages taking part in oodDAQ.
-			WAVE/Z indizes = FindIndizes(oodDAQRegions, prop = PROP_NON_EMPTY)
-			if(WaveExists(indizes) && DimSize(indizes, ROWS) > 2)
-				oodDAQRegions[indizes[0]] = ReplaceString(oodDAQRegions[indizes[1]], oodDAQRegions[indizes[0]], "")
-			endif
-
-			for(i = 0; i < numEntries; i += 1)
-
-				// we still gather regions from deselected headstages to help overlaying multiple sweeps with the same
-				// oodDAQ regions and removed headstages.
-				// If we would remove them here the plotting would get messed up.
-
-				// use only the selected region if requested
-				if(tgs.dDAQHeadstageRegions >= 0 && tgs.dDAQHeadstageRegions < NUM_HEADSTAGES && tgs.dDAQHeadstageRegions != i)
-					continue
-				endif
-
-				entry             = RemoveEnding(oodDAQRegions[i], ";")
-				numRangesPerEntry = ItemsInList(entry)
-				for(j = 0; j < numRangesPerEntry; j += 1)
-					range            = StringFromList(j, entry)
-					oodDAQRegionsAll = AddListItem(range, oodDAQRegionsAll, ";", Inf)
-
-					xRangeStart  = str2num(StringFromList(0, range, "-"))
-					xRangeEnd    = str2num(StringFromList(1, range, "-"))
-					totalXRange += (xRangeEnd - XRangeStart) / samplingIntDA
-				endfor
-			endfor
-
+			[oodDAQRegionsAll, totalXRange] = GetOodDAQFullRange(tgs, oodDAQRegions)
+			totalRangeDAPoints = totalXRange / samplingIntDA
 			numRegions = ItemsInList(oodDAQRegionsAll)
-			sprintf str, "oodDAQRegions (%d) concatenated: _%s_, totalRange=%g", numRegions, oodDAQRegionsAll, totalXRange
-			DEBUGPRINT(str)
 		else
 			stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length", DATA_ACQUISITION_MODE)
 			DEBUGPRINT("Stim set length (labnotebook, NaN for oodDAQ)", var = stimSetLength)
