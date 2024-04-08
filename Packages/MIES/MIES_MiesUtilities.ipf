@@ -2839,10 +2839,11 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	variable moreData, chan, guiChannelNumber, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, headstage, channelType, isTTLSplitted
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
-	variable stimSetLength, samplingIntDA, xRangeStart, xRangeEnd, first, last, count, ttlBit
+	variable stimSetLength, samplingIntDA, first, last, count, ttlBit
 	variable numRegions, numRangesPerEntry, traceCounter
-	variable totalXRange = NaN
-	variable totalRangeDAPoints
+	variable xRangeStartMS, xRangeEndMS
+	variable totalRangeDAPoints, rangeStartDAPoints, rangeEndDAPoints
+	variable totalOodRangeMS = NaN
 	string trace, traceType, channelID, axisLabel, traceRange, traceColor
 	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis, jsonPath
 	STRUCT RGBColor s
@@ -2938,9 +2939,9 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		DEBUGPRINT(str)
 
 		if(oodDAQEnabled)
-			[oodDAQRegionsAll, totalXRange] = GetOodDAQFullRange(tgs, oodDAQRegions)
-			totalRangeDAPoints = totalXRange / samplingIntDA
-			numRegions = ItemsInList(oodDAQRegionsAll)
+			[oodDAQRegionsAll, totalOodRangeMS] = GetOodDAQFullRange(tgs, oodDAQRegions)
+			totalRangeDAPoints = totalOodRangeMS / samplingIntDA
+			numRegions         = ItemsInList(oodDAQRegionsAll)
 		else
 			stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length", DATA_ACQUISITION_MODE)
 			DEBUGPRINT("Stim set length (labnotebook, NaN for oodDAQ)", var = stimSetLength)
@@ -3151,31 +3152,31 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 								DEBUGPRINT("Stim set length (manually calculated)", var = stimSetLength)
 							endif
 
-							xRangeStart = delayOnsetUser + delayOnsetAuto + str2num(StringFromList(k, dDAQActiveHeadstageAll)) * (stimSetLength + delaydDAQ)
-							xRangeEnd   = xRangeStart + stimSetLength
+							rangeStartDAPoints = delayOnsetUser + delayOnsetAuto + str2num(StringFromList(k, dDAQActiveHeadstageAll)) * (stimSetLength + delaydDAQ)
+							rangeEndDAPoints   = rangeStartDAPoints + stimSetLength
 
 							// initial total x range once, the stimsets have all the same length for dDAQ
-							if(!IsFinite(totalXRange))
-								totalXRange = (xRangeEnd - XRangeStart) * numHorizWaves
+							if(!IsFinite(totalRangeDAPoints))
+								totalRangeDAPoints = (rangeEndDAPoints - rangeStartDAPoints) * numHorizWaves
 							endif
 						elseif(oodDAQEnabled)
 							/// @sa GetSweepSettingsTextKeyWave for the format
 							/// we need points here with taking the onset delays into account
-							xRangeStart = str2num(StringFromList(0, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
-							xRangeEnd   = str2num(StringFromList(1, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
+							xRangeStartMS = str2num(StringFromList(0, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
+							xRangeEndMS   = str2num(StringFromList(1, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
 
-							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStart, xRangeEnd
+							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStartMS, xRangeEndMS
 							DEBUGPRINT(str)
 
-							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingIntDA
-							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd / samplingIntDA
+							rangeStartDAPoints = delayOnsetUser + delayOnsetAuto + xRangeStartMS / samplingIntDA
+							rangeEndDAPoints   = delayOnsetUser + delayOnsetAuto + xRangeEndMS / samplingIntDA
 						endif
 
-						xRangeStart = floor(xRangeStart)
-						xRangeEnd   = ceil(xRangeEnd)
+						rangeStartDAPoints = floor(rangeStartDAPoints)
+						rangeEndDAPoints   = ceil(rangeEndDAPoints)
 					else
-						xRangeStart = NaN
-						xRangeEnd   = NaN
+						rangeStartDAPoints = NaN
+						rangeEndDAPoints   = NaN
 					endif
 
 					trace       = GetTraceNamePrefix(traceIndex)
@@ -3186,7 +3187,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 					sprintf traceColor, "(%d, %d, %d, %d)", s.red, s.green, s.blue, 65535
 
-					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
+					if(!IsFinite(rangeStartDAPoints) && !IsFinite(rangeEndDAPoints))
 						horizAxis  = "bottom"
 						traceRange = "[][0]"
 
@@ -3203,14 +3204,14 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						endif
 					else
 						horizAxis = vertAxis + "_b"
-						sprintf traceRange, "[%d,%d][0]", xRangeStart, xRangeEnd
-						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, 65535) wv[xRangeStart, xRangeEnd][0]/TN=$trace
+						sprintf traceRange, "[%d,%d][0]", rangeStartDAPoints, rangeEndDAPoints
+						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, 65535) wv[rangeStartDAPoints, rangeEndDAPoints][0]/TN=$trace
 						first = first
-						last  = first + (xRangeEnd - xRangeStart) / totalXRange
+						last  = first + (rangeEndDAPoints - rangeStartDAPoints) / totalRangeDAPoints
 						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
-						first += (xRangeEnd - xRangeStart) / totalXRange
+						first += (rangeEndDAPoints - rangeStartDAPoints) / totalRangeDAPoints
 
-						sprintf str, "horiz axis: stimset=[%d, %d] aka (%g, %g)", xRangeStart, xRangeEnd, pnt2x(wv, xRangeStart), pnt2x(wv, xRangeEnd)
+						sprintf str, "horiz axis: stimset=[%d, %d] aka (%g, %g)", rangeStartDAPoints, rangeEndDAPoints, pnt2x(wv, rangeStartDAPoints), pnt2x(wv, rangeEndDAPoints)
 						DEBUGPRINT(str)
 					endif
 
