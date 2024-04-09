@@ -1378,6 +1378,8 @@ Function/WAVE FakeSweepDataGeneratorAPF0(WAVE sweep, variable numChannels)
 	sweep[7][] = 20
 	sweep[8][] = 30
 
+	SetScale x, 0, 0, "ms", sweep
+
 	return sweep
 End
 
@@ -1395,6 +1397,8 @@ Function/WAVE FakeSweepDataGeneratorAPF1(WAVE sweep, variable numChannels)
 	sweep[6][] = 30
 	sweep[7][] = 10
 	sweep[8][] = 30
+
+	SetScale x, 0, 0, "ms", sweep
 
 	return sweep
 End

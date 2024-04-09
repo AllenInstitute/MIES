@@ -698,7 +698,7 @@ End
 /// @brief Returns the base folder for all MIES functionality, e.g. root:MIES
 /// UTF_NOINSTRUMENTATION
 threadsafe Function/S GetMiesPathAsString()
-	return "root:MIES"
+	return "root:" + DF_NAME_MIES
 End
 
 /// @brief Returns a data folder reference to the sweep formula folder

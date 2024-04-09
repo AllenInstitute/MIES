@@ -1186,7 +1186,7 @@ End
 /// @brief Update the string value of `key` found in the wave note to `str`
 ///
 /// The expected wave note format is: `key1:val1;key2:str2;`
-threadsafe Function SetStringInWaveNote(WAVE wv, string key, string str, [variable recursive])
+threadsafe Function SetStringInWaveNote(WAVE wv, string key, string str, [variable recursive, string keySep, string listSep])
 
 	variable numEntries
 
@@ -1195,11 +1195,21 @@ threadsafe Function SetStringInWaveNote(WAVE wv, string key, string str, [variab
 	else
 		recursive = !!recursive
 	endif
+	if(ParamIsDefault(keySep))
+		keySep = ":"
+	else
+		ASSERT_TS(!IsEmpty(keySep), "key separator can not be empty")
+	endif
+	if(ParamIsDefault(listSep))
+		listSep = ";"
+	else
+		ASSERT_TS(!IsEmpty(listSep), "list separator can not be empty")
+	endif
 
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 	ASSERT_TS(!IsEmpty(key), "Empty key")
 
-	Note/K wv, ReplaceStringByKey(key, note(wv), str)
+	Note/K wv, ReplaceStringByKey(key, note(wv), str, keySep, listSep)
 
 	numEntries = numpnts(wv)
 	if(!recursive || !IsWaveRefWave(wv) || numEntries == 0)

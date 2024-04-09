@@ -19,6 +19,7 @@
 static StrConstant HTTP_FOLDER_URL = "https://www.byte-physics.de/Downloads/allensdk-test-data/MIES-HistoricData/"
 
 // keep sorted
+#include "UTF_AttemptNWB2ExportOnOldData"
 #include "UTF_HistoricDashboard"
 #include "UTF_HistoricEpochClipping"
 #include "UTF_HistoricSweepUpgrade"
@@ -86,6 +87,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricSweepUpgrade.ipf", list, ";", Inf)
+	list = AddListItem("UTF_AttemptNWB2ExportOnOldData.ipf", list, ";", Inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
@@ -213,6 +215,7 @@ Function/WAVE GetHistoricDataFiles()
 	                     "Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp",           \
 	                     "Sst-IRES-Cre;Ai14-554002.08.06.02.pxp",             \
 	                     "Sst-IRES-Cre;Th-P2A-FlpO;Ai65-561491.09.09.02.pxp", \
+	                     "very_early_mies-data_H17.03.016.11.09.01.pxp",      \
 	                     "epoch_clipping_2022_03_08_140256.pxp"}
 
 	DownloadFilesIfRequired(files)

@@ -41,6 +41,7 @@ static Constant NWB_ASYNC_MAX_ITERATIONS  = 120
 /// For existing sweeps with #HIGH_PREC_SWEEP_START_KEY labnotebook entries we use the sweep wave's modification time.
 /// The sweep wave can be either an `DAQDataWave` or a `Sweep_$num` wave. Passing the `DAQDataWave` is more accurate.
 threadsafe static Function NWB_GetStartTimeOfSweep(WAVE/T textualValues, variable sweepNo, WAVE sweepWave)
+
 	variable startingTime
 	string   timestamp
 
@@ -50,13 +51,8 @@ threadsafe static Function NWB_GetStartTimeOfSweep(WAVE/T textualValues, variabl
 		return ParseISO8601TimeStamp(timestamp)
 	endif
 
-	// fallback mode for old sweeps
-	ASSERT_TS(!cmpstr(WaveUnits(sweepWave, ROWS), "ms"), "Expected ms as wave units")
-	// last time the wave was modified (UTC)
-	startingTime = NumberByKeY("MODTIME", WaveInfo(sweepWave, 0)) - date2secs(-1, -1, -1)
-	// we want the timestamp of the beginning of the measurement
-	startingTime -= DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) * MILLI_TO_ONE
-
+	startingTime = NumberByKey(SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC, note(sweepWave), ":", "\r")
+	ASSERT_TS(IsFinite(startingTime), "Could not retrieve sweep start time from originally old sweep format")
 	return startingTime
 End
 
@@ -87,9 +83,8 @@ static Function NWB_FirstStartTimeOfAllSweeps()
 		for(j = 0; j < numWaves; j += 1)
 			name    = StringFromList(j, list)
 			sweepNo = ExtractSweepNumber(name)
-			ASSERT(IsValidSweepNumber(sweepNo), "Could not extract sweep number")
-			WAVE/SDFR=dfr sweepWave = $name
 
+			WAVE sweepWave = NWB_GetSweepWave(device, sweepNo)
 			oldest = min(oldest, NWB_GetStartTimeOfSweep(textualValues, sweepNo, sweepWave))
 		endfor
 	endfor
@@ -632,14 +627,15 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 
 		for(j = 0; j < numWaves; j += 1)
 			name = StringFromList(j, list)
+
 			WAVE/SDFR=dfr sweepWave  = $name
 			WAVE/Z        configWave = GetConfigWave(sweepWave)
-
-			sweep = ExtractSweepNumber(name)
-
 			if(!WaveExists(configWave))
 				continue
 			endif
+
+			sweep = ExtractSweepNumber(name)
+			WAVE sweepWave = NWB_GetSweepWave(device, sweep)
 
 			// init: 3/3
 			s.sweep = sweep
@@ -669,6 +665,23 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
 
 	return 0
+End
+
+static Function/WAVE NWB_GetSweepWave(string device, variable sweep)
+
+	ASSERT(IsValidSweepNumber(sweep), "Got invalid sweep number")
+	WAVE/Z sweepWave = GetSweepWave(device, sweep)
+	ASSERT(WaveExists(sweepWave), "Can not resolve sweep wave")
+	if(IsTextWave(sweepWave))
+		return sweepWave
+	endif
+
+	// needs upgrade
+	SplitAndUpgradeSweepGlobal(device, sweep)
+	DFREF         dfr       = GetDeviceDataPath(device)
+	WAVE/SDFR=dfr sweepWave = $GetSweepWaveName(sweep)
+
+	return sweepWave
 End
 
 /// @brief Wait for ASYNC nwb writing to finish
@@ -1084,7 +1097,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 
 	// starting time of the dataset, relative to the start of the session
 	params.startingTime = NWB_GetStartTimeOfSweep(s.textualValues, s.sweep, s.DAQDataWave) - s.session_start_time
-	ASSERT_TS(params.startingTime > 0, "TimeSeries starting time can not be negative")
+	ASSERT_TS(params.startingTime >= 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave)) * KILO_TO_ONE
 

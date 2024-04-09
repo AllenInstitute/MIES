@@ -6077,10 +6077,12 @@ threadsafe static Function SplitSweepWave(WAVE numericalValues, variable sweep, 
 	string/G targetDFR:note = note(sweepWave)
 End
 
-threadsafe static Function AreAllSingleSweepWavesPresent(DFREF targetDFR, WAVE/T componentNames)
+threadsafe static Function AreAllSingleSweepWavesPresent(DFREF targetDFR, WAVE/T componentNames, [variable backupMustExist])
 
 	variable chanMissing, chanPresent
 	string wName
+
+	backupMustExist = ParamIsDefault(backupMustExist) ? 1 : !!backupMustExist
 
 	for(wName : componentNames)
 		WAVE/Z channel = targetDFR:$wName
@@ -6090,12 +6092,20 @@ threadsafe static Function AreAllSingleSweepWavesPresent(DFREF targetDFR, WAVE/T
 			WAVE/Z channelBak = $""
 		endif
 
-		if(WaveExists(channel) && WaveExists(channelBak))
-			chanPresent = 1
-		elseif(!WaveExists(channel) && !WaveExists(channelBak))
-			chanMissing = 1
+		if(backupMustExist)
+			if(WaveExists(channel) && WaveExists(channelBak))
+				chanPresent = 1
+			elseif(!WaveExists(channel) && !WaveExists(channelBak))
+				chanMissing = 1
+			else
+				ASSERT_TS(0, "Found sweep single channel wave without backup (or vice versa) for sweep in " + GetDataFolder(1, targetDFR) + " channel " + wName)
+			endif
 		else
-			ASSERT_TS(0, "Found sweep single channel wave without backup (or vice versa) for sweep in " + GetDataFolder(1, targetDFR) + " channel " + wName)
+			if(WaveExists(channel))
+				chanPresent = 1
+			else
+				chanMissing = 1
+			endif
 		endif
 		ASSERT_TS(chanPresent + chanMissing == 1, "For sweep in " + GetDataFolder(1, targetDFR) + " some single channels are missing, some are present.")
 	endfor
@@ -6115,7 +6125,9 @@ End
 
 threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentNames, DFREF targetDFR)
 
-	string sweepWaveName, tgtDFName, oldSweepName
+	string sweepWaveName, sweepWaveNameBak, tgtDFName, oldSweepName, str
+	variable sweepCreationTimeUTC = NaN
+	string   modTimeStr           = ""
 
 	tgtDFName = GetDataFolder(0, targetDFR)
 	Make/FREE/T/N=(DimSize(componentNames, ROWS)) sweepT
@@ -6129,6 +6141,12 @@ threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentName
 	sweepWaveName = NameOfWave(sweepWave)
 	DFREF sweepWaveDFR = GetParentDFR(targetDFR)
 	if(IsNumericWave(sweepWave))
+		// we also have to preserve the original modification time
+		ASSERT_TS(!CmpStr(WaveUnits(sweepWave, ROWS), "ms"), "Expected ms as wave units")
+		modTimeStr            = StringByKeY("MODTIME", WaveInfo(sweepWave, 0))
+		sweepCreationTimeUTC  = str2num(modTimeStr) - date2secs(-1, -1, -1)
+		sweepCreationTimeUTC -= DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) * MILLI_TO_ONE
+
 		oldSweepName = UniqueWaveName(sweepWaveDFR, sweepWaveName + "_preUpgrade")
 		Duplicate sweepWave, sweepWaveDFR:$oldSweepName
 	endif
@@ -6137,10 +6155,18 @@ threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentName
 	KillOrMoveToTrash(wv = wv)
 	MoveWave sweepT, sweepWaveDFR:$sweepWaveName
 
-	sweepWaveName = sweepWaveName + WAVE_BACKUP_SUFFIX
-	WAVE/Z wv = sweepWaveDFR:$sweepWaveName
+	sweepWaveNameBak = sweepWaveName + WAVE_BACKUP_SUFFIX
+	WAVE/Z wv = sweepWaveDFR:$sweepWaveNameBak
 	KillOrMoveToTrash(wv = wv)
-	MoveWave sweepTBak, sweepWaveDFR:$sweepWaveName
+	MoveWave sweepTBak, sweepWaveDFR:$sweepWaveNameBak
+
+	if(!IsNaN(sweepCreationTimeUTC))
+		sprintf str, "%d", sweepCreationTimeUTC
+		WAVE wv = sweepWaveDFR:$sweepWaveName
+		SetStringInWaveNote(wv, SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC, str, keySep = ":", listSep = "\r")
+		WAVE wv = sweepWaveDFR:$sweepWaveNameBak
+		SetStringInWaveNote(wv, SWEEP_NOTE_KEY_ORIGCREATIONTIME_UTC, str, keySep = ":", listSep = "\r")
+	endif
 End
 
 /// @brief Split a sweep wave into one 1D-wave per channel/ttlBit and convert the sweep wave to the current text sweep format.
@@ -6187,7 +6213,7 @@ threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, W
 
 	numRows = DimSize(configWave, ROWS)
 	Make/FREE/T/N=(numRows) componentNames = GetSweepComponentWaveName(configWave, p)
-	channelsPresent = AreAllSingleSweepWavesPresent(targetDFR, componentNames)
+	channelsPresent = AreAllSingleSweepWavesPresent(targetDFR, componentNames, backupMustExist = !IsNumericWave(sweepWave))
 
 	// for 2D sweepWaves input assume that existing single channel waves are from input wave
 	ASSERT_TS(!(channelsPresent && IsWaveRefWave(sweepWave)), "Can not split sweep from waveRef wave because in targetDFR is already single channel sweep data")
@@ -6245,6 +6271,10 @@ threadsafe static Function [variable dChannelType, variable dChannelNumber] GetC
 		// try AB config wave format, @sa GetAnalysisConfigWave
 		dimType   = FindDimlabel(config, COLS, "type")
 		dimNumber = FindDimlabel(config, COLS, "number")
+		if(dimType == -2)
+			// from docu of @ref GetDAQConfigWave for unversioned config wave format
+			return [0, 1]
+		endif
 	endif
 
 	return [dimType, dimNumber]
