@@ -43,7 +43,7 @@ Packages/Artwork        export-ignore
 *.zip binary
 *.pdb binary
 
-*.ipf whitespace=indent-with-non-tab,tabwidth=4
+*.ipf whitespace=tabwidth=4
 *.ibw binary
 *.xop binary
 *.pxp binary
