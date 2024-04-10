@@ -154,7 +154,7 @@ static Function AppendEntries(list, dataRef, rate, startIndex, deviceType, devic
 		name = StringFromList(i, listOfDataWaves)
 		WAVE/SDFR=deviceDFR wv     = $name
 		WAVE                config = GetConfigWave(wv)
-		samplingInterval = GetSamplingInterval(config)
+		samplingInterval = GetSamplingInterval(config, XOP_CHANNEL_TYPE_ADC)
 
 		EnsureLargeEnoughWave(list, indexShouldExist = idx)
 		EnsureLargeEnoughWave(dataRef, indexShouldExist = idx)

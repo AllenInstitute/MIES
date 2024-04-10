@@ -792,7 +792,7 @@ static Function CheckSamplingInterval1_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
-	sampInt = GetSamplingInterval(configWave)
+	sampInt = GetSamplingInterval(configWave, XOP_CHANNEL_TYPE_ADC)
 	CHECK_CLOSE_VAR(sampInt, GetMinSamplingInterval(unit = "µs"), tol = 1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -839,7 +839,7 @@ static Function CheckSamplingInterval2_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
-	sampInt = GetSamplingInterval(configWave)
+	sampInt = GetSamplingInterval(configWave, XOP_CHANNEL_TYPE_ADC)
 	CHECK_CLOSE_VAR(sampInt, GetMinSamplingInterval(unit = "µs") * 8, tol = 1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -886,7 +886,7 @@ static Function CheckSamplingInterval3_REENTRY([str])
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
-	sampInt = GetSamplingInterval(configWave)
+	sampInt = GetSamplingInterval(configWave, XOP_CHANNEL_TYPE_ADC)
 	CHECK_CLOSE_VAR(sampInt, 10, tol = 1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
