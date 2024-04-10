@@ -864,7 +864,7 @@ static Function CheckSamplingInterval3([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FFR:100:"             + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FFR:25:"              + \
 	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
 
 	AcquireData_NG(s, str)
@@ -874,6 +874,7 @@ static Function CheckSamplingInterval3_REENTRY([str])
 	string str
 
 	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq, expectedSampInt
+	variable FFR = 25
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -887,19 +888,19 @@ static Function CheckSamplingInterval3_REENTRY([str])
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
 	sampInt = GetSamplingInterval(configWave, XOP_CHANNEL_TYPE_ADC)
-	CHECK_CLOSE_VAR(sampInt, 10, tol = 1e-6)
+	CHECK_CLOSE_VAR(sampInt, 1 / FFR * MILLI_TO_MICRO, tol = 1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sampInt         = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
-	expectedSampInt = 0.010
+	sampInt         = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval AD", DATA_ACQUISITION_MODE)
+	expectedSampInt = 1 / FFR
 	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol = 1e-6)
 
 	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(sampIntMult, 1)
 
 	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_VAR(fixedFreqAcq, 100)
+	CHECK_EQUAL_VAR(fixedFreqAcq, FFR)
 
 	WAVE channelAD = ResolveSweepChannel(sweepWave, GetFirstADCChannelIndex(configWave))
 	CHECK_EQUAL_VAR(DimOffset(channelAD, ROWS), 0)
