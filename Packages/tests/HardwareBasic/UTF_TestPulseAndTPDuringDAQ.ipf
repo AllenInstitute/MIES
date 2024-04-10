@@ -28,7 +28,7 @@ static Function CheckCalculatedTPEntries_REENTRY([string str])
 	WAVE numericalValues = GetLBNumericalValues(str)
 
 	sweepNo              = 0
-	samplingInterval     = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	samplingInterval     = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval AD", DATA_ACQUISITION_MODE)
 	samplingIntervalMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval Multiplier", DATA_ACQUISITION_MODE)
 
 	CHECK_EQUAL_VAR(samplingIntervalMult, 2)
@@ -358,7 +358,7 @@ static Function TPCachingWorks_REENTRY([string str])
 	CHECK_WAVE(dimDeltasUnique, NUMERIC_WAVE)
 
 	WAVE numericalValues = GetLBNumericalValues(str)
-	samplingInterval           = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval", DATA_ACQUISITION_MODE)
+	samplingInterval           = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval AD", DATA_ACQUISITION_MODE)
 	samplingIntervalMultiplier = GetLastSettingIndep(numericalValues, sweepNo, "Sampling Interval Multiplier", DATA_ACQUISITION_MODE)
 
 	CHECK_EQUAL_VAR(DimSize(dimDeltasUnique, ROWS), 1)

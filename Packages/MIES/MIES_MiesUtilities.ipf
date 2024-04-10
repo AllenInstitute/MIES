@@ -2323,18 +2323,23 @@ End
 
 /// @brief Returns the sampling interval of the sweep
 /// in microseconds (1e-6s)
-threadsafe Function GetSamplingInterval(config)
-	WAVE config
+threadsafe Function GetSamplingInterval(WAVE config, variable channelType)
+
+	variable i, numChannels, colSamplingInterval, colChannelType, colChannelNumber
 
 	ASSERT_TS(IsValidConfigWave(config, version = 0), "Expected a valid config wave")
+	[colChannelType, colChannelNumber] = GetConfigWaveDims(config)
+	colSamplingInterval = FindDimLabel(config, COLS, "SamplingInterval")
+	colSamplingInterval = colSamplingInterval == -2 ? 2 : colSamplingInterval
 
-	// from ITCConfigAllChannels help file:
-	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
-	Duplicate/D/R=[][2]/FREE config, samplingInterval
+	numChannels = DimSize(config, ROWS)
+	for(i = 0; i < numChannels; i += 1)
+		if(config[i][colChannelType] == channelType)
+			return config[i][colSamplingInterval]
+		endif
+	endfor
 
-	// The sampling interval is the same for all channels
-	ASSERT_TS(IsConstant(samplingInterval, samplingInterval[0]), "Expected constant sample interval for all channels")
-	return samplingInterval[0]
+	return NaN
 End
 
 /// @brief Returns the data offset of the sweep in points
@@ -2755,6 +2760,53 @@ Function GetNextTraceIndex(string graph)
 	return traceIndex
 End
 
+/// @brief Get all selected oodDAQ regions and the total X range in ms
+static Function [string oodDAQRegionsAll, variable totalXRange] GetOodDAQFullRange(STRUCT TiledGraphSettings &tgs, WAVE/T oodDAQRegions)
+
+	variable i, j, numEntries, numRangesPerEntry, xRangeStart, xRangeEnd
+	string entry, range, str
+
+	numEntries       = DimSize(oodDAQRegions, ROWS)
+	oodDAQRegionsAll = ""
+	totalXRange      = 0
+
+	// Fixup buggy entries introduced since 88323d8d (Replacement of oodDAQ offset calculation routines, 2019-06-13)
+	// The regions from the second active headstage are duplicated into the
+	// first region in case we had more than two active headstages taking part in oodDAQ.
+	WAVE/Z indizes = FindIndizes(oodDAQRegions, prop = PROP_NON_EMPTY)
+	if(WaveExists(indizes) && DimSize(indizes, ROWS) > 2)
+		oodDAQRegions[indizes[0]] = ReplaceString(oodDAQRegions[indizes[1]], oodDAQRegions[indizes[0]], "")
+	endif
+
+	for(i = 0; i < numEntries; i += 1)
+
+		// we still gather regions from deselected headstages to help overlaying multiple sweeps with the same
+		// oodDAQ regions and removed headstages.
+		// If we would remove them here the plotting would get messed up.
+
+		// use only the selected region if requested
+		if(tgs.dDAQHeadstageRegions >= 0 && tgs.dDAQHeadstageRegions < NUM_HEADSTAGES && tgs.dDAQHeadstageRegions != i)
+			continue
+		endif
+
+		entry             = RemoveEnding(oodDAQRegions[i], ";")
+		numRangesPerEntry = ItemsInList(entry)
+		for(j = 0; j < numRangesPerEntry; j += 1)
+			range            = StringFromList(j, entry)
+			oodDAQRegionsAll = AddListItem(range, oodDAQRegionsAll, ";", Inf)
+
+			xRangeStart  = str2num(StringFromList(0, range, "-"))
+			xRangeEnd    = str2num(StringFromList(1, range, "-"))
+			totalXRange += (xRangeEnd - XRangeStart)
+		endfor
+	endfor
+
+	sprintf str, "oodDAQRegions (%d) concatenated: _%s_, totalRange=%g", ItemsInList(oodDAQRegionsAll), oodDAQRegionsAll, totalXRange
+	DEBUGPRINT(str)
+
+	return [oodDAQRegionsAll, totalXRange]
+End
+
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
 ///
 /// For preservering the axis scaling callers should do the following:
@@ -2787,10 +2839,13 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	variable moreData, chan, guiChannelNumber, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, headstage, channelType, isTTLSplitted
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
-	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
-	variable numRegions, numEntries, numRangesPerEntry, traceCounter
-	variable totalXRange = NaN
-	string trace, traceType, channelID, axisLabel, entry, range, traceRange, traceColor
+	variable stimSetLength, samplingIntDA, samplingIntSweep, samplingIntervalFactor, first, last, count, ttlBit
+	variable numRegions, numRangesPerEntry, traceCounter
+	variable xRangeStartMS, xRangeEndMS
+	variable totalRangeDAPoints, rangeStartDAPoints, rangeEndDAPoints
+	variable startIndexSweep, endIndexSweep
+	variable totalOodRangeMS = NaN
+	string trace, traceType, channelID, axisLabel, traceRange, traceColor
 	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis, jsonPath
 	STRUCT RGBColor s
 
@@ -2870,59 +2925,24 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		tgs.dDAQDisplayMode = 0
 	endif
 
+	samplingIntDA = GetSamplingInterval(config, XOP_CHANNEL_TYPE_DAC) * MICRO_TO_MILLI
 	if(tgs.dDAQDisplayMode)
-		samplingInt = GetSamplingInterval(config) * MICRO_TO_MILLI
 
 		// dDAQ data taken with versions prior to
 		// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
 		// does not have the delays stored in the labnotebook
-		delayOnsetUser   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE, defValue = 0) / samplingInt
-		delayOnsetAuto   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue = 0) / samplingInt
-		delayTermination = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", DATA_ACQUISITION_MODE, defValue = 0) / samplingInt
-		delaydDAQ        = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", DATA_ACQUISITION_MODE, defValue = 0) / samplingInt
+		delayOnsetUser   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE, defValue = 0) / samplingIntDA
+		delayOnsetAuto   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue = 0) / samplingIntDA
+		delayTermination = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", DATA_ACQUISITION_MODE, defValue = 0) / samplingIntDA
+		delaydDAQ        = GetLastSettingIndep(numericalValues, sweepNo, "Delay distributed DAQ", DATA_ACQUISITION_MODE, defValue = 0) / samplingIntDA
 
 		sprintf str, "delayOnsetUser=%g, delayOnsetAuto=%g, delayTermination=%g, delaydDAQ=%g", delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ
 		DEBUGPRINT(str)
 
 		if(oodDAQEnabled)
-			numEntries       = DimSize(oodDAQRegions, ROWS)
-			oodDAQRegionsAll = ""
-			totalXRange      = 0
-
-			// Fixup buggy entries introduced since 88323d8d (Replacement of oodDAQ offset calculation routines, 2019-06-13)
-			// The regions from the second active headstage are duplicated into the
-			// first region in case we had more than two active headstages taking part in oodDAQ.
-			WAVE/Z indizes = FindIndizes(oodDAQRegions, prop = PROP_NON_EMPTY)
-			if(WaveExists(indizes) && DimSize(indizes, ROWS) > 2)
-				oodDAQRegions[indizes[0]] = ReplaceString(oodDAQRegions[indizes[1]], oodDAQRegions[indizes[0]], "")
-			endif
-
-			for(i = 0; i < numEntries; i += 1)
-
-				// we still gather regions from deselected headstages to help overlaying multiple sweeps with the same
-				// oodDAQ regions and removed headstages.
-				// If we would remove them here the plotting would get messed up.
-
-				// use only the selected region if requested
-				if(tgs.dDAQHeadstageRegions >= 0 && tgs.dDAQHeadstageRegions < NUM_HEADSTAGES && tgs.dDAQHeadstageRegions != i)
-					continue
-				endif
-
-				entry             = RemoveEnding(oodDAQRegions[i], ";")
-				numRangesPerEntry = ItemsInList(entry)
-				for(j = 0; j < numRangesPerEntry; j += 1)
-					range            = StringFromList(j, entry)
-					oodDAQRegionsAll = AddListItem(range, oodDAQRegionsAll, ";", Inf)
-
-					xRangeStart  = str2num(StringFromList(0, range, "-"))
-					xRangeEnd    = str2num(StringFromList(1, range, "-"))
-					totalXRange += (xRangeEnd - XRangeStart) / samplingInt
-				endfor
-			endfor
-
-			numRegions = ItemsInList(oodDAQRegionsAll)
-			sprintf str, "oodDAQRegions (%d) concatenated: _%s_, totalRange=%g", numRegions, oodDAQRegionsAll, totalXRange
-			DEBUGPRINT(str)
+			[oodDAQRegionsAll, totalOodRangeMS] = GetOodDAQFullRange(tgs, oodDAQRegions)
+			totalRangeDAPoints = totalOodRangeMS / samplingIntDA
+			numRegions         = ItemsInList(oodDAQRegionsAll)
 		else
 			stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length", DATA_ACQUISITION_MODE)
 			DEBUGPRINT("Stim set length (labnotebook, NaN for oodDAQ)", var = stimSetLength)
@@ -3086,6 +3106,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 				if(!WaveExists(wv))
 					continue
 				endif
+				samplingIntSweep = GetSamplingInterval(config, channelType) * MICRO_TO_MILLI
 
 				// Color scheme:
 				// 0-7:   Different headstages
@@ -3133,31 +3154,31 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 								DEBUGPRINT("Stim set length (manually calculated)", var = stimSetLength)
 							endif
 
-							xRangeStart = delayOnsetUser + delayOnsetAuto + str2num(StringFromList(k, dDAQActiveHeadstageAll)) * (stimSetLength + delaydDAQ)
-							xRangeEnd   = xRangeStart + stimSetLength
+							rangeStartDAPoints = delayOnsetUser + delayOnsetAuto + str2num(StringFromList(k, dDAQActiveHeadstageAll)) * (stimSetLength + delaydDAQ)
+							rangeEndDAPoints   = rangeStartDAPoints + stimSetLength
 
 							// initial total x range once, the stimsets have all the same length for dDAQ
-							if(!IsFinite(totalXRange))
-								totalXRange = (xRangeEnd - XRangeStart) * numHorizWaves
+							if(!IsFinite(totalRangeDAPoints))
+								totalRangeDAPoints = (rangeEndDAPoints - rangeStartDAPoints) * numHorizWaves
 							endif
 						elseif(oodDAQEnabled)
 							/// @sa GetSweepSettingsTextKeyWave for the format
 							/// we need points here with taking the onset delays into account
-							xRangeStart = str2num(StringFromList(0, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
-							xRangeEnd   = str2num(StringFromList(1, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
+							xRangeStartMS = str2num(StringFromList(0, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
+							xRangeEndMS   = str2num(StringFromList(1, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
 
-							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStart, xRangeEnd
+							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStartMS, xRangeEndMS
 							DEBUGPRINT(str)
 
-							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingInt
-							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd / samplingInt
+							rangeStartDAPoints = delayOnsetUser + delayOnsetAuto + xRangeStartMS / samplingIntDA
+							rangeEndDAPoints   = delayOnsetUser + delayOnsetAuto + xRangeEndMS / samplingIntDA
 						endif
 
-						xRangeStart = floor(xRangeStart)
-						xRangeEnd   = ceil(xRangeEnd)
+						rangeStartDAPoints = floor(rangeStartDAPoints)
+						rangeEndDAPoints   = ceil(rangeEndDAPoints)
 					else
-						xRangeStart = NaN
-						xRangeEnd   = NaN
+						rangeStartDAPoints = NaN
+						rangeEndDAPoints   = NaN
 					endif
 
 					trace       = GetTraceNamePrefix(traceIndex)
@@ -3168,7 +3189,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 					sprintf traceColor, "(%d, %d, %d, %d)", s.red, s.green, s.blue, 65535
 
-					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
+					if(!IsFinite(rangeStartDAPoints) && !IsFinite(rangeEndDAPoints))
 						horizAxis  = "bottom"
 						traceRange = "[][0]"
 
@@ -3184,15 +3205,19 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 							traceCounter += 1
 						endif
 					else
-						horizAxis = vertAxis + "_b"
-						sprintf traceRange, "[%d,%d][0]", xRangeStart, xRangeEnd
-						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, 65535) wv[xRangeStart, xRangeEnd][0]/TN=$trace
-						first = first
-						last  = first + (xRangeEnd - xRangeStart) / totalXRange
-						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
-						first += (xRangeEnd - xRangeStart) / totalXRange
+						samplingIntervalFactor = samplingIntDA / samplingIntSweep
+						startIndexSweep        = rangeStartDAPoints * samplingIntervalFactor
+						endIndexSweep          = rangeEndDAPoints * samplingIntervalFactor
 
-						sprintf str, "horiz axis: stimset=[%d, %d] aka (%g, %g)", xRangeStart, xRangeEnd, pnt2x(wv, xRangeStart), pnt2x(wv, xRangeEnd)
+						horizAxis = vertAxis + "_b"
+						sprintf traceRange, "[%d,%d][0]", startIndexSweep, endIndexSweep
+						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, 65535) wv[startIndexSweep, endIndexSweep][0]/TN=$trace
+						first = first
+						last  = first + (rangeEndDAPoints - rangeStartDAPoints) / totalRangeDAPoints
+						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
+						first += (rangeEndDAPoints - rangeStartDAPoints) / totalRangeDAPoints
+
+						sprintf str, "horiz axis: stimset=[%d, %d] aka (%g, %g)", rangeStartDAPoints, rangeEndDAPoints, pnt2x(wv, rangeStartDAPoints), pnt2x(wv, rangeEndDAPoints)
 						DEBUGPRINT(str)
 					endif
 
@@ -6261,7 +6286,7 @@ threadsafe Function [string singleChannelDF, string wvName] SplitTextSweepElemen
 	return [StringFromList(0, element, ":"), StringFromList(1, element, ":")]
 End
 
-threadsafe static Function [variable dChannelType, variable dChannelNumber] GetConfigWaveDims(WAVE config)
+threadsafe Function [variable dChannelType, variable dChannelNumber] GetConfigWaveDims(WAVE config)
 
 	variable dimType, dimNumber
 
@@ -8472,8 +8497,6 @@ End
 /// @return `$""` if recreation failed or a free wave on success.
 Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAVE textualValues, variable sweepNo)
 
-	variable samplingInterval
-
 	// ensure we start with a fresh config wave
 	WAVE configWave = GetDAQConfigWave(device)
 	MoveToTrash(wv = configWave)
@@ -8487,9 +8510,7 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 	AddChannelPropertiesFromLBN(numericalValues, textualValues, sweepNo, configWave, XOP_CHANNEL_TYPE_ADC)
 	AddChannelPropertiesFromLBN(numericalValues, textualValues, sweepNo, configWave, XOP_CHANNEL_TYPE_TTL)
 
-	samplingInterval = GetSamplingIntervalFromLBN(numericalValues, sweepNo)
-
-	configWave[][%SamplingInterval] = samplingInterval * MILLI_TO_MICRO
+	configWave[][%SamplingInterval] = GetSamplingIntervalFromLBN(numericalValues, sweepNo, configWave[p][%ChannelType]) * MILLI_TO_MICRO
 
 	// always 0, see DC_PlaceDataInDAQConfigWave
 	configWave[][%DecimationMode] = 0
@@ -8509,10 +8530,26 @@ Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAV
 End
 
 /// @brief Return the sampling interval [ms] rounded to microseconds
-static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepNo)
-	variable samplingInterval
+static Function GetSamplingIntervalFromLBN(WAVE numericalValues, variable sweepNo, variable channelType)
 
-	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	variable samplingInterval
+	string   key
+
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC:
+			key = "Sampling interval DA"
+			break
+		case XOP_CHANNEL_TYPE_ADC:
+			key = "Sampling interval AD"
+			break
+		case XOP_CHANNEL_TYPE_TTL:
+			key = "Sampling interval TTL"
+			break
+		default:
+			ASSERT(0, "Invalid Channel Type")
+	endswitch
+
+	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
 	// round to full microseconds as that is stored in GetDAQConfigWave()
 	return round(samplingInterval * 1000) / 1000 // NOLINT

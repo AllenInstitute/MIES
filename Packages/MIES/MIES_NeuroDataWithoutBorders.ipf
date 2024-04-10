@@ -987,6 +987,7 @@ End
 threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	variable groupID, numEntries, i, j, ttlBits, dac, adc, col, refTime
 	variable ttlBit, DACUnassoc, ADCUnassoc, index
+	variable dChannelType, dChannelNumber
 	string group, path, list, name, stimset, key
 	string channelSuffix, listOfStimsets, contents
 
@@ -1099,8 +1100,6 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	params.startingTime = NWB_GetStartTimeOfSweep(s.textualValues, s.sweep, s.DAQDataWave) - s.session_start_time
 	ASSERT_TS(params.startingTime >= 0, "TimeSeries starting time can not be negative")
 
-	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave)) * KILO_TO_ONE
-
 	DFREF sweepDFR = NewFreeDataFolder()
 	SplitAndUpgradeSweep(s.numericalValues, s.sweep, s.DAQDataWave, s.DAQConfigWave, TTL_RESCALE_OFF, 0, targetDFR = sweepDFR, createBackup = 0)
 
@@ -1123,9 +1122,11 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 		params.stimset         = stimSets[i]
 
 		if(IsFinite(adc))
-			path                    = GetNWBgroupPatchClampSeries(s.nwbVersion)
-			params.channelNumber    = ADCs[i]
-			params.channelType      = IPNWB_CHANNEL_TYPE_ADC
+			path                 = GetNWBgroupPatchClampSeries(s.nwbVersion)
+			params.channelNumber = ADCs[i]
+			params.channelType   = IPNWB_CHANNEL_TYPE_ADC
+			// relies on the fact that IPNWB_CHANNEL_TYPE_XXX equal XOP_CHANNEL_TYPE_XXX constants
+			params.samplingRate     = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave, params.channelType)) * KILO_TO_ONE
 			col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
 			WAVE params.data = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, params.channelNumber)
@@ -1138,6 +1139,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			path                    = "/stimulus/presentation"
 			params.channelNumber    = DACs[i]
 			params.channelType      = IPNWB_CHANNEL_TYPE_DAC
+			params.samplingRate     = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave, params.channelType)) * KILO_TO_ONE
 			col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
 			WAVE params.data = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, params.channelNumber)
@@ -1155,6 +1157,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	WAVE/Z/T ttlStimsets = GetTTLLabnotebookEntry(s.textualValues, LABNOTEBOOK_TTL_STIMSETS, s.sweep)
 	if(WaveExists(ttlStimsets))
 
+		params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave, XOP_CHANNEL_TYPE_TTL)) * KILO_TO_ONE
 		WAVE/Z guiToHWChannelMap = GetActiveChannels(s.numericalValues, s.textualValues, s.sweep, XOP_CHANNEL_TYPE_TTL, TTLMode = TTL_GUITOHW_CHANNEL)
 		ASSERT_TS(WaveExists(guiToHWChannelMap), "Missing GUI to hardware channel map")
 
@@ -1206,9 +1209,11 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 		params.clampMode       = NaN
 		params.electrodeNumber = NaN
 		params.electrodeName   = ""
-		params.channelType     = s.DAQConfigWave[i][0]
-		params.channelNumber   = s.DAQConfigWave[i][1]
-		params.stimSet         = IPNWB_PLACEHOLDER
+		[dChannelType, dChannelNumber] = GetConfigWaveDims(s.DAQConfigWave)
+		params.channelType   = s.DAQConfigWave[i][dChannelType]
+		params.channelNumber = s.DAQConfigWave[i][dChannelNumber]
+		params.samplingRate  = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave, params.channelType)) * KILO_TO_ONE
+		params.stimSet       = IPNWB_PLACEHOLDER
 
 		switch(params.channelType)
 			case IPNWB_CHANNEL_TYPE_ADC:

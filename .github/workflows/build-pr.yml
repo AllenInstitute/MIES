@@ -50,7 +50,7 @@ jobs:
       - name: Format code
         run: tools/ipt-format.sh
       - name: Check for changed files
-        run: git diff --name-only; git diff --quiet
+        run: git diff --name-only --ignore-submodules; git diff  --ignore-submodules --quiet
       - name: Create patch
         if: ${{ failure() }}
         run: git diff > format-changes.patch

@@ -278,11 +278,9 @@ static Function/WAVE LoadTimeSeriesImpl(groupID, channel, channelType)
 End
 
 /// @brief Test NWBv1 specific source attribute (dropped since NWBv2)
-static Function TestSourceAttribute(groupID, device, channel, sweep, pxpSweepsDFR)
-	variable groupID, sweep
-	string device, channel
-	DFREF pxpSweepsDFR
+static Function TestSourceAttribute(variable groupID, string device, string channel, variable sweep, DFREF pxpSweepsDFR)
 
+	variable samplingRate
 	string deviceFromSource, channelName
 
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -302,6 +300,9 @@ static Function TestSourceAttribute(groupID, device, channel, sweep, pxpSweepsDF
 	WAVE/Z/SDFR=pxpSweepsDFR pxpWave       = $channelName
 	WAVE                     loadedFromNWB = LoadTimeSeriesImpl(groupID, channel, params.channelType)
 	CHECK_EQUAL_WAVES(pxpWave, loadedFromNWB)
+	// the same precision specifier as in @ref IPNWB#WriteSingleChannel for SamplingRate
+	samplingRate = str2num(num2str(ConvertSamplingIntervalToRate(DimDelta(pxpWave, ROWS)), "%.15g"))
+	CHECK_EQUAL_VAR(params.samplingRate, samplingRate)
 
 	// groupIndex is written by AnalyseChannelName
 	CHECK_GE_VAR(params.groupIndex, 0)
@@ -354,7 +355,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 	rate_ref = 1 / (DimDelta(loadedFromNWB, ROWS) * MILLI_TO_ONE)
 	CHECK_CLOSE_VAR(rate, rate_ref, tol = 1e-7)
 
-	samplingInterval     = GetLastSettingIndep(numericalValues, sweep, "Sampling interval", DATA_ACQUISITION_MODE)
+	samplingInterval     = GetLastSettingIndep(numericalValues, sweep, "Sampling interval AD", DATA_ACQUISITION_MODE)
 	samplingInterval_ref = DimDelta(loadedFromNWB, ROWS)
 	CHECK_CLOSE_VAR(samplingInterval, samplingInterval_ref, tol = 1e-7)
 
