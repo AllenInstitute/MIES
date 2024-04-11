@@ -4672,8 +4672,7 @@ End
 ///
 /// Zero is the DA/AD wave zero.
 static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRange(string device, variable sweepNo, variable headstage)
-	variable DAC, totalOnsetDelay, chirpStart, chirpEnd
-	string tags, shortname
+	variable DAC, totalOnsetDelay
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
@@ -4696,7 +4695,28 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRang
 
 	WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, sweepNo, totalOnsetDelay)
 
-	chirpStart = totalOnsetDelay + PSQ_BL_EVAL_RANGE
+	WAVE/T epochWave = GetEpochsWave(device)
+	[epBegin, epEnd] = PSQ_CR_AddSpikeEvaluationEpoch(epochsWave, DAC, headstage, durations, totalOnsetDelay)
+
+	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
+End
+
+/// @brief Adds PSQ_Chirp spike evaluation epoch
+///
+/// @param epochsWave        4d epochs wave
+/// @param DAC               DAC number
+/// @param headstage         headstage number
+/// @param durations         pulse duration wave
+/// @param totalOnsetDelayMS totalOnsetDelay in ms
+///
+/// @retval epBegin epoch begin in s
+/// @retval epEnd   epoch end in s
+Function [variable epBegin, variable epEnd] PSQ_CR_AddSpikeEvaluationEpoch(WAVE/T epochsWave, variable DAC, variable headstage, WAVE durations, variable totalOnsetDelayMS)
+
+	variable chirpStart, chirpEnd
+	string tags, shortName
+
+	chirpStart = totalOnsetDelayMS + PSQ_BL_EVAL_RANGE
 	chirpEnd   = chirpStart + durations[headstage]
 
 	epBegin = chirpStart * MILLI_TO_ONE
@@ -4705,10 +4725,9 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRang
 	sprintf tags, "Type=Chirp spike evaluation"
 	sprintf shortName, "CR_SE"
 
-	WAVE/T epochWave = GetEpochsWave(device)
-	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	EP_AddUserEpoch(epochsWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
-	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
+	return [epBegin, epEnd]
 End
 
 /// @brief Return the begin/start [ms] of the chirp bounds evaluation range
@@ -4717,7 +4736,7 @@ End
 static Function [variable epBegin, variable epEnd] PSQ_CR_GetChirpEvaluationRange(string device, variable sweepNo, variable headstage, variable requestedCycles)
 
 	variable DAC, stimsetQC
-	string name, tags, regexp, shortname, key
+	string name, tags, shortname, key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
@@ -4736,10 +4755,7 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetChirpEvaluationRang
 		return [epBegin, epEnd]
 	endif
 
-	sprintf regexp, "^(E1_TG_C%d|E1_TG_C%d)$", 0, requestedCycles - 1
-	WAVE/T/Z fullCycleEpochs = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC, \
-	                                        regexp, treelevel = 2, epochsWave = epochsWave)
-
+	WAVE/Z/T fullCycleEpochs = PSQ_CR_GetFullCycleEpochs(numericalValues, textualValues, DAC, epochsWave, requestedCycles)
 	if(!WaveExists(fullCycleEpochs))
 		printf "Could not find chirp cycles in epoch 1.\r"
 		ControlWindowToFront()
@@ -4761,6 +4777,23 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetChirpEvaluationRang
 		return [NaN, NaN]
 	endif
 
+	[epBegin, epEnd] = PSQ_CR_AddCycleEvaluationEpoch(epochsWave, fullCycleEpochs, DAC)
+
+	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
+End
+
+/// @brief Add PSQ_Chirp cycle evaluation epoch
+///
+/// @param epochsWave      4d epoch wave
+/// @param fullCycleEpochs 2d epoch wave with epochs of full cycles (sorted)
+/// @param DAC             DAC number
+///
+/// @retval epBegin epoch begin in s
+/// @retval epEnd   epoch end in s
+Function [variable epBegin, variable epEnd] PSQ_CR_AddCycleEvaluationEpoch(WAVE/T epochsWave, WAVE/T fullCycleEpochs, variable DAC)
+
+	string tags, shortName
+
 	epBegin = str2num(fullCycleEpochs[0][EPOCH_COL_STARTTIME])
 	epEnd   = str2num(fullCycleEpochs[DimSize(fullCycleEpochs, ROWS) - 1][EPOCH_COL_ENDTIME])
 
@@ -4769,7 +4802,18 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetChirpEvaluationRang
 
 	EP_AddUserEpoch(epochsWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
-	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
+	return [epBegin, epEnd]
+End
+
+Function/WAVE PSQ_CR_GetFullCycleEpochs(WAVE numericalValues, WAVE/T textualValues, variable DAC, WAVE/T epochsWave, variable requestedCycles)
+
+	string regexp
+
+	sprintf regexp, "^(E1_TG_C%d|E1_TG_C%d)$", 0, requestedCycles - 1
+	WAVE/T/Z fullCycleEpochs = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC, \
+	                                        regexp, treelevel = 2, epochsWave = epochsWave)
+
+	return fullCycleEpochs
 End
 
 /// @brief Manually force the pre/post set events
