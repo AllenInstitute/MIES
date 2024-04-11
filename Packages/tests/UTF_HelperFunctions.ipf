@@ -1136,41 +1136,44 @@ Function [string baseSet, string stimsetList, string customWavePath, variable am
 	return [setNameB, stimsetList, wPath, amplitude]
 End
 
-static Function TestEpochReceationRemoveUserEpochs(WAVE/T epochChannel)
+static Function TestEpochRecreationRemoveUnsupportedUserEpochs(WAVE/T epochChannel)
 
 	variable i, epochCnt
+
+	Make/FREE/T supportedUserEpochs = {"CR_CE", "CR_SE"}
+	supportedUserEpochs[] = EPOCH_SHORTNAME_USER_PREFIX + supportedUserEpochs[p]
 
 	epochCnt = DimSize(epochChannel, ROWS)
 	Make/FREE/T/N=(epochCnt) shortnames = EP_GetShortName(epochChannel[p][EPOCH_COL_TAGS])
 	for(i = epochCnt - 1; i >= 0; i -= 1)
 		if(GrepString(shortnames[i], "^" + EPOCH_SHORTNAME_USER_PREFIX))
+			FindValue/TEXT=shortnames[i]/TXOP=4 supportedUserEpochs
+			if(V_Value >= 0)
+				continue
+			endif
 			DeleteWavePoint(epochChannel, ROWS, i)
 		endif
 	endfor
 End
 
-Function TestEpochReceation(string device)
+Function TestEpochRecreation(string device, variable sweepNo)
 
 	variable channelNumber
-	variable sweepNo = 0
 
 	WAVE/Z numericalValues = GetLBNumericalValues(device)
 	WAVE/Z textualValues   = GetLBTextualValues(device)
 	DFREF  deviceDFR       = GetDeviceDataPath(device)
 	DFREF  sweepDFR        = GetSingleSweepFolder(deviceDFR, sweepNo)
 
-	WAVE/Z activeChannels = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC)
-	CHECK_WAVE(activeChannels, FREE_WAVE | NUMERIC_WAVE)
+	WAVE epochWave = MIES_EP#EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, sweepNo)
+
 	for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
 
-		if(IsNaN(activeChannels[channelNumber]))
-			continue
-		endif
 		WAVE/Z/T epochChannelRef = EP_FetchEpochs(numericalValues, textualValues, sweepNo, sweepDFR, channelNumber, XOP_CHANNEL_TYPE_DAC)
-		WAVE/Z/T epochChannelRec = MIES_EP#EP_FetchEpochsFromRecreation(numericalValues, textualValues, sweepNo, sweepDFR, channelNumber, XOP_CHANNEL_TYPE_DAC)
+		WAVE/Z/T epochChannelRec = EP_FetchEpochsFromRecreated(epochWave, channelNumber, XOP_CHANNEL_TYPE_DAC)
 
 		if(WaveExists(epochChannelRef))
-			TestEpochReceationRemoveUserEpochs(epochChannelRef)
+			TestEpochRecreationRemoveUnsupportedUserEpochs(epochChannelRef)
 			// also TP channels can be active but have no epochs
 			CHECK_EQUAL_WAVES(epochChannelRec, epochChannelRef)
 		else

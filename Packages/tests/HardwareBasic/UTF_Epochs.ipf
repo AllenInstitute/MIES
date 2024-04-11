@@ -467,7 +467,7 @@ static Function TestEpochsGeneric(string device)
 		endfor
 	endfor
 
-	TestEpochReceation(device)
+	TestEpochRecreation(device, sweepNo)
 End
 
 static Function TestUnacquiredEpoch(WAVE sweep, WAVE epochChannel)
