@@ -373,3 +373,34 @@ static Function CheckIfConfigurationRestoresDAEphysWithoutAmp2_REENTRY([string s
 	CHECK_PROPER_STR(strTmp)
 	CHECK_EQUAL_STR(hwTypeString[1], "")
 End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckIfConfigurationSavesAndRestores([string str])
+
+	string rewrittenConfig, fName
+	variable jsonID
+
+	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationSavesAndRestores.json")
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DAQ0_TP0"                     + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetB_DA_0:_ASO0" + \
+	                             "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+	                             "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+	                             "__TTL5_ST:StimulusSetC_TTL_0:"                   + \
+	                             "__TTL6_ST:StimulusSetD_TTL_0:")
+
+	AcquireData_NG(s, str)
+
+	CONF_SaveWindow(fName)
+
+	[jsonID, rewrittenConfig] = FixupJSONConfig_IGNORE(fName, str)
+	JSON_Release(jsonID)
+
+	KillWindow $str
+
+	CONF_RestoreWindow(rewrittenConfig)
+
+	CHECK_NO_RTE()
+End

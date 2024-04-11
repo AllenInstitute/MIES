@@ -3,6 +3,10 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=TestingConstants
 
-Constant    PSQ_TEST_HEADSTAGE = 2
-StrConstant ZSTD_SUFFIX        = ".zst"
-Constant    TP_DURATION_S      = 5
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+Constant PSQ_TEST_HEADSTAGE = 0
+#else
+Constant PSQ_TEST_HEADSTAGE = 2
+#endif
+StrConstant ZSTD_SUFFIX   = ".zst"
+Constant    TP_DURATION_S = 5

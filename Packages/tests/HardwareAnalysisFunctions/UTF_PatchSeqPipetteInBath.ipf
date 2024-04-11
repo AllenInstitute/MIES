@@ -179,7 +179,7 @@ static Function PS_PB1_preAcq(device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -249,7 +249,7 @@ static Function PS_PB2_preAcq(device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -320,7 +320,7 @@ static Function PS_PB3_preAcq(device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -410,7 +410,7 @@ static Function PS_PB4_preAcq(device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -481,7 +481,7 @@ static Function PS_PB5_preAcq(device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -555,7 +555,7 @@ static Function PS_PB6_preAcq(device)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "NumberOfTestpulses", var = 3)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -631,7 +631,7 @@ static Function PS_PB7_preAcq(device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "SamplingFrequency", var = 10)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)

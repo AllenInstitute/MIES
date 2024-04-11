@@ -583,25 +583,36 @@ Function CONF_PrimeDeviceLists(string device)
 
 	variable hardwareType
 
-	hardwareType = GetHardwareType(device)
+	SVAR globalITCDeviceList = $GetITCDeviceList()
+	SVAR globalNIDeviceList  = $GetNIDeviceList()
+	SVAR globalSUDeviceList  = $GetSUDeviceList()
 
+	hardwareType = GetHardwareType(device)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			SVAR globalDeviceList      = $GetITCDeviceList()
-			SVAR globalOtherDeviceList = $GetNIDeviceList()
+			if(IsEmpty(globalITCDeviceList))
+				globalITCDeviceList = device + ";"
+				globalNIDeviceList  = NONE
+				globalSUDeviceList  = NONE
+			endif
 			break
 		case HARDWARE_NI_DAC:
-			SVAR globalDeviceList      = $GetNIDeviceList()
-			SVAR globalOtherDeviceList = $GetITCDeviceList()
+			if(IsEmpty(globalNIDeviceList))
+				globalITCDeviceList = NONE
+				globalNIDeviceList  = device + ";"
+				globalSUDeviceList  = NONE
+			endif
+			break
+		case HARDWARE_SUTTER_DAC:
+			if(IsEmpty(globalSUDeviceList))
+				globalITCDeviceList = NONE
+				globalNIDeviceList  = NONE
+				globalSUDeviceList  = device + ";"
+			endif
 			break
 		default:
 			ASSERT(0, "Unknown hardwareType")
 	endswitch
-
-	if(IsEmpty(globalDeviceList))
-		globalDeviceList      = device + ";"
-		globalOtherDeviceList = NONE
-	endif
 End
 
 /// @brief Restores the GUI state of a DA_Ephys panel from a configuration file
@@ -2020,7 +2031,9 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 		if(type == JSON_NULL)
 			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
 			PGC_SetAndActivateControl(device, "popup_Settings_Pressure_dev", str = NONE)
-			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+			if(!IsDeviceNameFromSutter(device))
+				PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+			endif
 		elseif(type == JSON_OBJECT)
 			jsonPathAmpBlock = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
 			ampSerial        = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPSERIAL)
@@ -2110,6 +2123,10 @@ End
 static Function CONF_SetDAEPhysChannelPopup(string device, string ctrl, variable jsonId, string jsonPath)
 
 	variable channelNumber
+
+	if(IsDeviceNameFromSutter(device))
+		return NaN
+	endif
 
 	if(JSON_Exists(jsonId, jsonPath))
 		channelNumber = JSON_GetVariable(jsonID, jsonPath)

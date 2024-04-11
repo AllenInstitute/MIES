@@ -1564,9 +1564,13 @@ static Function AsyncAcquisitionLBN([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
-	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
-	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_DAQ1_TP0"                     + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:"      + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:StimulusSetC_DA_0:_ASO0" + \
+	                             "__TTL1_ST:StimulusSetA_TTL_0:"                   + \
+	                             "__TTL3_ST:StimulusSetB_TTL_0:"                   + \
+	                             "__TTL5_ST:StimulusSetC_TTL_0:"                   + \
+	                             "__TTL6_ST:StimulusSetD_TTL_0:")
 
 	AcquireData_NG(s, str)
 End

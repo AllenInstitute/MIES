@@ -202,7 +202,7 @@ End
 
 static Function PS_RA1_preAcq(string device)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -289,7 +289,7 @@ End
 
 static Function PS_RA2_preAcq(string device)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -360,7 +360,7 @@ End
 
 static Function PS_RA2a_preAcq(string device)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -456,7 +456,7 @@ End
 
 static Function PS_RA3_preAcq(string device)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -543,7 +543,7 @@ End
 
 static Function PS_RA4_preAcq(string device)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -626,7 +626,7 @@ End
 
 static Function PS_RA5_preAcq(string device)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -710,7 +710,7 @@ End
 
 static Function PS_RA6_preAcq(string device)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -813,7 +813,7 @@ End
 static Function PS_RA7_preAcq(string device)
 	AFH_AddAnalysisParameter("Ramp_DA_0", "SamplingFrequency", var = 10)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("Ramp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)

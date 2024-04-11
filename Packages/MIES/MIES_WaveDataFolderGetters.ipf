@@ -669,6 +669,9 @@ threadsafe Function/S GetDevicePathAsString(device)
 		case HARDWARE_ITC_DAC:
 			return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
 			break
+		case HARDWARE_SUTTER_DAC:
+			return GetDeviceTypePathAsString(deviceType)
+			break
 		default:
 			ASSERT_TS(0, "Invalid hardware type")
 	endswitch
@@ -752,7 +755,7 @@ End
 /// ITC hardware:
 /// - 2D signed 16bit integer wave, the colums are for the channel
 ///
-/// NI hardware:
+/// NI/SU hardware:
 /// - Wave reference wave, one referencing each channel
 ///
 /// Rows:
@@ -797,6 +800,7 @@ Function/WAVE GetDAQDataWave(string device, variable mode)
 			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv
 			break
 		case HARDWARE_NI_DAC:
+		case HARDWARE_SUTTER_DAC: // intended drop through
 			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv_ni
 			WAVE wv = wv_ni
 			break
@@ -807,7 +811,24 @@ Function/WAVE GetDAQDataWave(string device, variable mode)
 	return wv
 End
 
-/// @brief Get the single NI channel waves
+Function/WAVE GetSUCompositeTTLWave(string device)
+
+	string name = "SU_OutputTTLComposite"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/D/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(0) dfr:$name/WAVE=wv
+
+	return wv
+End
+
+/// @brief Get the single NI/Sutter channel waves
 ///
 /// Special use function, normal callers should use GetDAQDataWave()
 /// instead.
@@ -819,6 +840,9 @@ Function/WAVE GetNIDAQChannelWave(string device, variable channel, variable mode
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
 			prefix = "NI"
+			break
+		case HARDWARE_SUTTER_DAC:
+			prefix = "SU"
 			break
 		default:
 			ASSERT(0, "unsupported device type")
@@ -849,6 +873,48 @@ Function/WAVE GetNIDAQChannelWave(string device, variable channel, variable mode
 	Make/N=(0) dfr:$name/WAVE=wv
 
 	SetStringInWaveNote(wv, TP_PROPERTIES_HASH, "n. a.")
+
+	return wv
+End
+
+/// @brief Get a single point output wave for Sutter device
+Function/WAVE GetSutterSingleSampleDACOutputWave(string device)
+
+	variable samplingInterval
+	string name = "SU_SingleSample_DA"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=1 dfr:$name/WAVE=wv
+	samplingInterval = SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_DAC)
+	SetScale/P x, 0, samplingInterval * MICRO_TO_ONE, "s", wv
+
+	return wv
+End
+
+/// @brief Get a single point input wave for Sutter device
+Function/WAVE GetSutterSingleSampleADCInputWave(string device)
+
+	variable samplingInterval
+	string name = "SU_SingleSample_AD"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=1 dfr:$name/WAVE=wv
+	samplingInterval = SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, XOP_CHANNEL_TYPE_ADC)
+	SetScale/P x, 0, samplingInterval * MICRO_TO_ONE, "s", wv
 
 	return wv
 End
@@ -981,7 +1047,6 @@ End
 /// While for ITC devices there is one TTL row for each rack,
 /// for NI devices there is one TTL row for each channel (up to 8 currently)
 /// The channel number column holds the hardware channel number for the NI device
-/// Currently the sampling interval is read from channel 0 only and used for all channels
 ///
 /// ITC hardware:
 /// The number of TTL bits which are stored in each TTL channel is hardware
@@ -1123,7 +1188,8 @@ Function/WAVE GetTTLWave(device)
 			return wv
 
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE/Z/SDFR=dfr wv_ni = TTLWave
 
 			if(WaveExists(wv_ni))
@@ -1205,6 +1271,9 @@ Function/S GetDevSpecLabNBFolderAsString(device)
 
 	switch(GetHardwareType(device))
 		case HARDWARE_NI_DAC:
+			return GetLabNotebookFolderAsString() + ":" + deviceType
+			break
+		case HARDWARE_SUTTER_DAC:
 			return GetLabNotebookFolderAsString() + ":" + deviceType
 			break
 		case HARDWARE_ITC_DAC:
@@ -5893,14 +5962,21 @@ End
 Function/WAVE GetDeviceMapping()
 
 	DFREF    dfr              = GetDAQDevicesFolder()
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	WAVE/Z/T/SDFR=dfr wv = deviceMapping
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(HARDWARE_MAX_DEVICES, -1, 2) wv
+		if(WaveVersionIsSmaller(wv, 2))
+			Redimension/N=(HARDWARE_MAX_DEVICES, -1, 2) wv
+			SetWaveVersion(wv, 2)
+		endif
+		if(WaveVersionIsSmaller(wv, 3))
+			Redimension/N=(HARDWARE_MAX_DEVICES, ItemsInList(HARDWARE_DAC_TYPES), -1) wv
+			SetWaveVersion(wv, 3)
+		endif
 	else
 		Make/T/N=(HARDWARE_MAX_DEVICES, ItemsInList(HARDWARE_DAC_TYPES), 2) dfr:deviceMapping/WAVE=wv
 	endif
@@ -5909,6 +5985,7 @@ Function/WAVE GetDeviceMapping()
 
 	SetDimLabel COLS, 0, ITC_DEVICE, wv
 	SetDimLabel COLS, 1, NI_DEVICE, wv
+	SetDimLabel COLS, 2, SUTTER_DEVICE, wv
 
 	SetDimLabel LAYERS, 0, MainDevice, wv
 	SetDimLabel LAYERS, 1, PressureDevice, wv
@@ -7177,10 +7254,20 @@ Function/WAVE GetAnaFuncDashboardHelpWave(dfr)
 End
 
 /// @brief Return a wave with device information
-Function/WAVE GetDeviceInfoWave(device)
-	string device
+///
+///        Entries:
+/// AD: - For devices that have mixed channels for HS, Unassoc AD the number of the channels combined
+///     - For devices that have separate channels for HS and Unassoc AD the number of the headstages
+/// DA: - For devices that have mixed channels for HS, Unassoc DA the number of the channels combined
+///     - For devices that have separate channels for HS and Unassoc DA the number of the headstages
+/// TTL: - Number of TTL channels
+/// Rack: - Number of Racks for ITC, NaN for other HW
+/// HardwareType: - One of @sa HardwareDACTypeConstants like HARDWARE_SUTTER_DAC
+/// AuxAD: - For devices with HS independent AD channels the number of the separate AD channels, NaN for devices with mixed channels
+/// AuxDA: - For devices with HS independent DA channels the number of the separate DA channels, NaN for devices with mixed channels
+Function/WAVE GetDeviceInfoWave(string device)
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	variable hardwareType
 
 	DFREF             dfr = GetDeviceInfoPath()
@@ -7189,9 +7276,13 @@ Function/WAVE GetDeviceInfoWave(device)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
+		if(WaveVersionIsSmaller(wv, 2))
+			Redimension/N=7 wv
+			SetWaveVersion(wv, 2)
+		endif
 		// handle upgrade
 	else
-		Make/D/N=(5) dfr:$device/WAVE=wv
+		Make/D/N=7 dfr:$device/WAVE=wv
 	endif
 
 	SetDimLabel ROWS, 0, AD, wv
@@ -7199,6 +7290,8 @@ Function/WAVE GetDeviceInfoWave(device)
 	SetDimLabel ROWS, 2, TTL, wv
 	SetDimLabel ROWS, 3, Rack, wv
 	SetDimLabel ROWS, 4, HardwareType, wv
+	SetDimLabel ROWS, 5, AuxAD, wv
+	SetDimLabel ROWS, 6, AuxDA, wv
 
 	wv = NaN
 
@@ -8284,4 +8377,150 @@ Function/WAVE GetNewSamplingIntervalsAsFree()
 	SetDimLabel ROWS, 3, SI_DAQ_ADC, wv
 
 	return wv
+End
+
+/// @brief Return wave with Sutter device info
+///
+/// ROWS:
+/// - NUMBEROFDACS: number of IPA devices
+/// - MASTERDEVICE: Serial of master device
+/// - LISTOFDEVICES: Serials of SubDevices
+/// - LISTOFHEADSTAGES: Number of Headstages per Device
+/// - SUMHEADSTAGES: Sum of Headstages
+/// - AI: Number of analog ins
+/// - AO: Number of analog outs
+/// - DIOPortWidth: Number of digital outs
+Function/WAVE GetSUDeviceInfo()
+
+	variable version = 1
+	string   name    = "SUDeviceInfo"
+
+	DFREF dfr = GetDeviceInfoPath()
+
+	WAVE/Z/SDFR=dfr/T wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	elseif(WaveExists(wv))
+		// upgrade here
+	else
+		Make/T/N=8 dfr:$name/WAVE=wv
+	endif
+
+	SetDimensionLabels(wv, "NUMBEROFDACS;MASTERDEVICE;LISTOFDEVICES;LISTOFHEADSTAGES;SUMHEADSTAGES;AI;AO;DIOPortWidth;", ROWS)
+	HW_SU_GetDeviceInfo(wv)
+
+	return wv
+End
+
+/// @brief Return wave with Sutter input list wave
+///
+/// ROWS:
+/// - entries
+///
+/// COLS:
+/// - INPUTWAVE: full path to input wave
+/// - CHANNEL: sutter hardware channel number
+/// - ENCODEINFO: additional information for multi-device configuration
+Function/WAVE GetSUDeviceInput(string device)
+
+	variable version = 1
+	string   name    = "SUDeviceInput"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr/T wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	elseif(WaveExists(wv))
+		// upgrade here
+	else
+		Make/T/N=(0, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimensionLabels(wv, "INPUTWAVE;CHANNEL;ENCODEINFO;", COLS)
+
+	return wv
+End
+
+/// @brief Return wave with Sutter output list wave
+///
+/// ROWS:
+/// - entries
+///
+/// COLS:
+/// - OUTPUTWAVE: full path to output wave
+/// - CHANNEL: sutter hardware channel number
+/// - ENCODEINFO: additional information for multi-device configuration
+Function/WAVE GetSUDeviceOutput(string device)
+
+	variable version = 1
+	string   name    = "SUDeviceOutput"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr/T wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	elseif(WaveExists(wv))
+		// upgrade here
+	else
+		Make/T/N=(0, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetDimensionLabels(wv, "OUTPUTWAVE;CHANNEL;ENCODEINFO;", COLS)
+
+	return wv
+End
+
+/// @brief Return wave with Sutter gains for input
+///
+/// ROWS:
+/// - entries
+///
+/// COLS:
+/// - GAINFACTOR: gain factor
+/// - OFFSET: offset
+Function/WAVE GetSUDeviceInputGains(string device)
+
+	variable version = 1
+	string   name    = "SUDeviceInputGains"
+
+	DFREF dfr = GetDevicePath(device)
+
+	WAVE/Z/SDFR=dfr/D wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	elseif(WaveExists(wv))
+		// upgrade here
+	else
+		Make/D/N=(0, 2) dfr:$name/WAVE=wv
+	endif
+
+	SetDimensionLabels(wv, "GAINFACTOR;OFFSET;", COLS)
+
+	return wv
+End
+
+/// @brief Returns valid TTL channel sample intervals of sutter IPA hardware in microseconds
+Function/WAVE GetSutterDACTTLSampleInterval()
+
+	Make/FREE/D rates = {1 / 100, 1 / 200, 1 / 400, 1 / 800, 1 / 1000, 1 / 2000, 1 / 4000, 1 / 5000, 1 / 8000, 1 / 10000} // NOLINT
+	rates *= ONE_TO_MICRO
+	SetScale d, 0, 0, "µs", rates
+
+	return rates
+End
+
+/// @brief Returns valid ADC channel sample intervals of sutter IPA hardware in microseconds
+Function/WAVE GetSutterADCSampleInterval()
+
+	Make/FREE/D rates = {1 / 100, 1 / 200, 1 / 400, 1 / 800, 1 / 1000, 1 / 2000, 1 / 4000, 1 / 5000, 1 / 8000, 1 / 10000, 1 / 20000, 1 / 25000, 1 / 40000, 1 / 50000} // NOLINT
+	rates *= ONE_TO_MICRO
+	SetScale d, 0, 0, "µs", rates
+
+	return rates
 End

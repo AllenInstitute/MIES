@@ -360,7 +360,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 
 	variable numBaselineChunks, i, totalOnsetDelay, fifoInStimsetTime
 
-	numBaselineChunks = PSQ_GetNumberOfChunks(device, s.sweepNo, s.headstage, type, s.sampleIntervalAD)
+	numBaselineChunks = PSQ_GetNumberOfChunks(device, s.sweepNo, s.headstage, type, s.sampleIntervalDA)
 
 	if(type == PSQ_CHIRP)
 		ASSERT(numBaselineChunks >= 3, "Unexpected number of baseline chunks")
@@ -1139,14 +1139,13 @@ End
 /// - 3: leak current baseline QC
 Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, variable type, [string opMode])
 
-	variable DAC, numCols, numRows, numLayers, numChunks, sampleIntervalAD, firstADChannelIndex
+	variable DAC, numCols, numRows, numLayers, numChunks, sampleIntervalDA
 	string stimset
 	string layerDimLabels = ""
 
 	WAVE config = GetDAQConfigWave(device)
 
-	firstADChannelIndex = GetFirstADCChannelIndex(config)
-	sampleIntervalAD    = config[firstADChannelIndex][%SamplingInterval] * MICRO_TO_MILLI
+	sampleIntervalDA = config[0][%SamplingInterval] * MICRO_TO_MILLI
 
 	DAC     = AFH_GetDACFromHeadstage(device, headstage)
 	stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
@@ -1161,13 +1160,13 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
 			numChunks      = 4
-			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
+			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalDA)
 			numCols        = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SpikePositionAndQC;AsyncQC"
 			break
 		case PSQ_DA_SCALE:
 			numChunks      = 4
-			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
+			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalDA)
 			numCols        = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SpikePosition;NumberOfSpikes;AsyncQC"
 			break
@@ -1178,13 +1177,13 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 			break
 		case PSQ_CHIRP:
 			numChunks      = 4
-			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
+			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalDA)
 			numCols        = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;MaxInChirp;MinInChirp;SpikeQC;AsyncQC"
 			break
 		case PSQ_PIPETTE_BATH:
 			numChunks      = 4
-			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalAD)
+			numRows        = PSQ_GetNumberOfChunks(device, 0, headstage, type, sampleIntervalDA)
 			numCols        = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;SteadyStateResistance;AsyncQC"
 			break
@@ -1673,6 +1672,22 @@ static Function PSQ_GetDefaultSamplingFrequency(string device, variable type)
 				default:
 					ASSERT(0, "Unknown analysis function")
 			endswitch
+		case HARDWARE_SUTTER_DAC:
+			switch(type)
+				case PSQ_CHIRP:
+				case PSQ_DA_SCALE:
+				case PSQ_RAMP:
+				case PSQ_RHEOBASE:
+				case PSQ_SQUARE_PULSE:
+					return 50
+				case PSQ_PIPETTE_BATH:
+				case PSQ_SEAL_EVALUATION:
+				case PSQ_TRUE_REST_VM:
+				case PSQ_ACC_RES_SMOKE:
+					return 50
+				default:
+					ASSERT(0, "Unknown analysis function")
+			endswitch
 		default:
 			ASSERT(0, "Unknown hardware type")
 	endswitch
@@ -1687,6 +1702,8 @@ Function PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(string device)
 			return 50
 		case HARDWARE_NI_DAC:
 			return 125
+		case HARDWARE_SUTTER_DAC:
+			return 50
 		default:
 			ASSERT(0, "Unknown hardware")
 	endswitch
@@ -1730,7 +1747,7 @@ End
 /// Not every analysis function uses every parameter though.
 static Function/S PSQ_GetHelpCommon(variable type, string name)
 
-	string freqITC, freqNI
+	string freqITC, freqNI, freqSU
 
 	strswitch(name)
 		case "AsyncQCChannels":
@@ -1758,7 +1775,8 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 		case "SamplingFrequency":
 			freqITC = num2str(PSQ_GetDefaultSamplingFrequency("ITC16", type))
 			freqNI  = num2str(PSQ_GetDefaultSamplingFrequency("Dev1", type))
-			return "Required sampling frequency for the acquired data [kHz]. Defaults to ITC:" + freqITC + " NI:" + freqNI + "."
+			freqSU  = num2str(PSQ_GetDefaultSamplingFrequency(DEVICE_SUTTER_NAME_START_CLEAN + "1", type))
+			return "Required sampling frequency for the acquired data [kHz]. Defaults to ITC:" + freqITC + " NI:" + freqNI + " Sutter:" + freqSU + "."
 		case "SamplingMultiplier":
 			return "Sampling multiplier, use 1 for no multiplier"
 		default:
@@ -3521,6 +3539,24 @@ Function PSQ_Ramp(device, s)
 					ChangeWaveLock(scaledChannelDA, 1)
 
 					PSQ_Ramp_AddEpoch(device, s.headstage, NIChannel, "Name=DA suppression", "RA_DS", V_FIFOChunks, DimSize(NIChannel, ROWS) - 1)
+				endif
+			elseif(hardwareType == HARDWARE_SUTTER_DAC)
+				// the sutter XOP might prefetch upto 4096 samples
+
+				WAVE      config         = GetDAQConfigWave(device)
+				WAVE/WAVE SUDataWave     = daqDataWave
+				WAVE/WAVE scaledDataWave = GetScaledDataWave(device)
+				// As only one AD and DA channel is allowed for this function, at index 0 the setting for first DA channel are expected
+				WAVE channelDA       = SUDataWave[0]
+				WAVE scaledChannelDA = scaledDataWave[0]
+				fifoPos = HW_GetDAFifoPosition(device, DATA_ACQUISITION_MODE)
+				if(fifoPos < DimSize(channelDA, ROWS))
+					MultiThread channelDA[fifoPos,] = 0
+					ChangeWaveLock(scaledChannelDA, 0)
+					MultiThread scaledChannelDA[fifoPos,] = 0
+					ChangeWaveLock(scaledChannelDA, 1)
+
+					PSQ_Ramp_AddEpoch(device, s.headstage, scaledChannelDA, "Name=DA suppression", "RA_DS", fifoPos, DimSize(channelDA, ROWS) - 1)
 				endif
 			else
 				ASSERT(0, "Unknown hardware type")

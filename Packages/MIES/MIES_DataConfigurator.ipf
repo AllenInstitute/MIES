@@ -185,7 +185,8 @@ static Function DC_ChannelCalcForDAQConfigWave(device, dataAcqOrTP)
 			endif
 			return numDACs + numADCs + numTTLsRackZero + numTTLsRackOne
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC:
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				numDACs = DC_NoOfChannelsSelected(device, CHANNEL_TYPE_DAC)
 				numADCs = DC_NoOfChannelsSelected(device, CHANNEL_TYPE_ADC)
@@ -264,6 +265,9 @@ static Function DC_LongestOutputWave(device, dataAcqOrTP, channelType)
 			singlePulseLength = DimSize(wv, ROWS)
 			numPulses         = max(10, ceil((2^(MINIMUM_ITCDATAWAVE_EXPONENT + 1) * 0.90) / singlePulseLength))
 			maxNumRows        = max(maxNumRows, numPulses * singlePulseLength)
+		elseif(dataAcqOrTP == TEST_PULSE_MODE && GetHardwareType(device) == HARDWARE_SUTTER_DAC)
+			singlePulseLength = DimSize(wv, ROWS)
+			maxNumRows        = SUTTER_MAX_MAX_TP_PULSES * singlePulseLength
 		else
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 		endif
@@ -283,12 +287,21 @@ End
 ///
 /// @param device  panel title
 /// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_CalculateDAQDataWaveLength(string device, variable dataAcqOrTP)
+/// @param channelType channel type, one of @sa XopChannelConstants
+static Function DC_CalculateDAQDataWaveLength(string device, variable dataAcqOrTP, variable channelType)
+
+	variable dataLength, rateFactor
 
 	variable hardwareType        = GetHardwareType(device)
 	NVAR     stopCollectionPoint = $GetStopCollectionPoint(device)
 
-	return DC_CalculateDAQDataWaveLengthImpl(stopCollectionPoint, hardwareType, dataAcqOrTP)
+	dataLength = stopCollectionPoint
+	if(hardWareType == HARDWARE_SUTTER_DAC && channelType == XOP_CHANNEL_TYPE_ADC)
+		rateFactor = DAP_GetSampInt(device, dataAcqOrTP, XOP_CHANNEL_TYPE_DAC) / DAP_GetSampInt(device, dataAcqOrTP, XOP_CHANNEL_TYPE_ADC)
+		dataLength = trunc(stopCollectionPoint * rateFactor)
+	endif
+
+	return DC_CalculateDAQDataWaveLengthImpl(dataLength, hardwareType, dataAcqOrTP)
 End
 
 /// @brief device independent implkementation for @ref DC_CalculateDAQDataWaveLength
@@ -308,8 +321,10 @@ Function DC_CalculateDAQDataWaveLengthImpl(variable dataLength, variable hardwar
 
 			return 2^exponent
 		case HARDWARE_NI_DAC:
+		case HARDWARE_SUTTER_DAC: // intended drop-through
 
 			return dataLength
+			break
 	endswitch
 
 	return NaN
@@ -343,26 +358,31 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 
 	switch(s.hardwareType)
 		case HARDWARE_ITC_DAC:
-			numRows = DC_CalculateDAQDataWaveLength(device, dataAcqOrTP)
+			numRows = DC_CalculateDAQDataWaveLength(device, dataAcqOrTP, XOP_CHANNEL_TYPE_DAC)
 			WAVE ITCDataWave = GetDAQDataWave(device, dataAcqOrTP)
 
 			Redimension/N=(numRows, s.numActiveChannels) ITCDataWave
 
 			FastOp ITCDataWave = 0
-			SetScale/P x, 0, s.samplingInterval * MICRO_TO_MILLI, "ms", ITCDataWave
+			SetScale/P x, 0, s.samplingIntervalDA * MICRO_TO_MILLI, "ms", ITCDataWave
 
 			return [ITCDataWave, $""]
-		case HARDWARE_NI_DAC:
-			WAVE/WAVE NIDataWave = GetDAQDataWave(device, dataAcqOrTP)
-			Redimension/N=(s.numActiveChannels) NIDataWave
+		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC:
+			WAVE/WAVE NISUDataWave = GetDAQDataWave(device, dataAcqOrTP)
+			Redimension/N=(s.numActiveChannels) NISUDataWave
 
 			Make/FREE/N=(s.numActiveChannels) type = SWS_GetRawDataFPType(device)
 			WAVE config = GetDAQConfigWave(device)
-			type       = config[p][%ChannelType] == XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
-			NIDataWave = DC_MakeNIChannelWave(device, dataAcqOrTP, config[p][%ChannelType], config[p][%SamplingInterval], p, type[p])
-			NIDataWave = DC_SetDataScaleNIChannelWave(NIDataWave[p], config[p][%ChannelType])
+			type = config[p][%ChannelType] == XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
+			if(s.hardwareType == HARDWARE_NI_DAC)
+				NISUDataWave = DC_MakeNIChannelWave(device, dataAcqOrTP, config[p][%ChannelType], config[p][%SamplingInterval], p, type[p])
+			elseif(s.hardwareType == HARDWARE_SUTTER_DAC)
+				NISUDataWave = DC_MakeSUTTERChannelWave(device, dataAcqOrTP, config[p][%ChannelType], config[p][%SamplingInterval], p, type[p])
+			endif
+			NISUDataWave = DC_SetDataScaleNISUChannelWave(NISUDataWave[p], config[p][%ChannelType])
 
-			return [$"", NIDataWave]
+			return [$"", NISUDataWave]
 		default:
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
@@ -371,7 +391,7 @@ End
 /// @brief set a data scale for channel waves, this is not required for operation but allows to keep track of the scales
 ///        The waves for the hardware that output data and read back data are typically in V because any other unit, like pA in current clamp mode on DAC channels
 ///        is converted by the gain from pA to voltage and then by the hardware amplifier converted back from V to pA.
-static Function/WAVE DC_SetDataScaleNIChannelWave(WAVE channel, variable type)
+static Function/WAVE DC_SetDataScaleNISUChannelWave(WAVE channel, variable type)
 
 	switch(type)
 		case XOP_CHANNEL_TYPE_DAC:
@@ -403,7 +423,7 @@ End
 /// @return                 Wave Reference to NI Channel wave
 static Function/WAVE DC_MakeNIChannelWave(string device, variable dataAcqOrTP, variable channelType, variable samplingInterval, variable index, variable dataType)
 
-	variable numRows = DC_CalculateDAQDataWaveLength(device, dataAcqOrTP)
+	variable numRows = DC_CalculateDAQDataWaveLength(device, dataAcqOrTP, channelType)
 
 	WAVE channel = GetNIDAQChannelWave(device, index, dataAcqOrTP)
 	Redimension/N=(numRows)/Y=(dataType) channel
@@ -420,6 +440,40 @@ static Function/WAVE DC_MakeNIChannelWave(string device, variable dataAcqOrTP, v
 			ASSERT(0, "Unsupported channel type")
 	endswitch
 	SetScale/P x, 0, samplingInterval * MICRO_TO_MILLI, "ms", channel
+
+	return channel
+End
+
+/// @brief Creates a single SUTTER Channel wave
+///
+/// Config all refers to configuring all the channels at once
+///
+/// @param device           panel title
+/// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType      channel type, one of @sa XopChannelConstants
+/// @param samplingInterval minimum sample intervall in microseconds
+/// @param index            number of NI channel
+/// @param dataType         numeric data type of NI channel
+///
+/// @return                 Wave Reference to NI Channel wave
+static Function/WAVE DC_MakeSUTTERChannelWave(string device, variable dataAcqOrTP, variable channelType, variable samplingInterval, variable index, variable dataType)
+
+	variable numRows = DC_CalculateDAQDataWaveLength(device, dataAcqOrTP, channelType)
+
+	WAVE channel = GetNIDAQChannelWave(device, index, dataAcqOrTP)
+	Redimension/N=(numRows)/Y=(dataType) channel
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC:
+		case XOP_CHANNEL_TYPE_TTL: // intended drop through
+			FastOp channel = 0
+			break
+		case XOP_CHANNEL_TYPE_ADC:
+			FastOp channel = (NaN)
+			break
+		default:
+			ASSERT(0, "Unsupported channel type")
+	endswitch
+	SetScale/P x, 0, samplingInterval * MICRO_TO_ONE, "s", channel
 
 	return channel
 End
@@ -458,6 +512,10 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, dataAcqOrTP)
 			sampleIntervalADC = DimDelta(NIDataWave[numDACs], ROWS)
 			break
+		case HARDWARE_SUTTER_DAC:
+			WAVE/WAVE SUDataWave = GetDAQDataWave(device, dataAcqOrTP)
+			sampleIntervalADC = DimDelta(SUDataWave[numDACs], ROWS) * ONE_TO_MILLI
+			break
 	endswitch
 
 	tpLength      = dataAcqOrTP == DATA_ACQUISITION_MODE ? TPSettingsCalc[%totalLengthPointsDAQ_ADC] : TPSettingsCalc[%totalLengthPointsTP_ADC]
@@ -492,6 +550,10 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 				break
 			case HARDWARE_NI_DAC:
 				numRows   = DimSize(NIDataWave[numDACs], ROWS)
+				pointsAcq = numRows
+				break
+			case HARDWARE_SUTTER_DAC:
+				numRows   = DimSize(SUDataWave[numDACs], ROWS)
 				pointsAcq = numRows
 				break
 		endswitch
@@ -554,7 +616,8 @@ static Function DC_CalculateChannelSizeForScaledData(string device, variable dat
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			return dataAcqOrTP == DATA_ACQUISITION_MODE ? ROVar(GetStopCollectionPoint(device)) : TPSettingsCalc[%totalLengthPointsTP_ADC]
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended-drop-through
+		case HARDWARE_SUTTER_DAC:
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
 				ASSERT(channelIndex >= 0 && channelIndex < DimSize(dataWave, ROWS), "ChannelIndex out of range")
@@ -567,8 +630,8 @@ static Function DC_CalculateChannelSizeForScaledData(string device, variable dat
 	endswitch
 End
 
-/// @brief Initialize scaledDataWave, as NI output already properly scaled data, we can prefill output channels.
-///        So in in the more time critical SCOPE_xx_UpdateOscilloscope we can optimize by only copying the ADC data over (ADC data from NI is already properly scaled by hardware)
+/// @brief Initialize scaledDataWave, as NI and SUTTER output already properly scaled data, we can prefill output channels.
+///        So in in the more time critical SCOPE_xx_UpdateOscilloscope we can optimize by only copying the ADC data over (ADC data from SUTTER and NI is already properly scaled by hardware)
 static Function DC_InitScaledDataWave(string device, variable dataAcqOrTP)
 
 	variable i, numChannels, dataType, size, sampleInterval, hardwareType, channelType
@@ -827,7 +890,8 @@ static Function DC_PlaceDataInDAQConfigWave(device, dataAcqOrTP)
 					DAQConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
 				endif
 				break
-			case HARDWARE_NI_DAC:
+			case HARDWARE_NI_DAC: // intended drop through
+			case HARDWARE_SUTTER_DAC:
 				WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
 				numEntries = DimSize(statusTTL, ROWS)
 				for(i = 0; i < numEntries; i += 1)
@@ -984,7 +1048,8 @@ static Function DC_MakeTTLWave(string device, STRUCT DataConfigurationResult &s)
 	endif
 
 	switch(s.hardwareType)
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC:
 			DC_NI_MakeTTLWave(device, s)
 			break
 		case HARDWARE_ITC_DAC:
@@ -1011,7 +1076,8 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 	WAVE config = GetDAQConfigWave(device)
 
 	switch(s.hardwareType)
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC:
 			WAVE/WAVE NIDataWave = GetDAQDataWave(device, s.dataAcqOrTP)
 			WAVE/WAVE TTLWaveNI  = GetTTLWave(device)
 
@@ -1140,17 +1206,14 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 
 	DC_DocumentChannelProperty(device, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, NaN, var = str2num(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult")))
 	DC_DocumentChannelProperty(device, "Fixed frequency acquisition", INDEP_HEADSTAGE, NaN, NaN, var = str2numSafe(DAG_GetTextualValue(device, "Popup_Settings_FixedFreq")))
-	samplingInterval = DAP_GetSampInt(device, s.dataAcqOrTP, XOP_CHANNEL_TYPE_DAC) * MICRO_TO_MILLI
-	DC_DocumentChannelProperty(device, "Sampling interval DA", INDEP_HEADSTAGE, NaN, NaN, var = samplingInterval)
-	samplingInterval = DAP_GetSampInt(device, s.dataAcqOrTP, XOP_CHANNEL_TYPE_ADC) * MICRO_TO_MILLI
-	DC_DocumentChannelProperty(device, "Sampling interval AD", INDEP_HEADSTAGE, NaN, NaN, var = samplingInterval)
-	samplingInterval = DAP_GetSampInt(device, s.dataAcqOrTP, XOP_CHANNEL_TYPE_TTL) * MICRO_TO_MILLI
-	DC_DocumentChannelProperty(device, "Sampling interval TTL", INDEP_HEADSTAGE, NaN, NaN, var = samplingInterval)
+	DC_DocumentChannelProperty(device, "Sampling interval DA", INDEP_HEADSTAGE, NaN, NaN, var = s.samplingIntervalDA * MICRO_TO_MILLI)
+	DC_DocumentChannelProperty(device, "Sampling interval AD", INDEP_HEADSTAGE, NaN, NaN, var = s.samplingIntervalAD * MICRO_TO_MILLI)
+	DC_DocumentChannelProperty(device, "Sampling interval TTL", INDEP_HEADSTAGE, NaN, NaN, var = s.samplingIntervalTTL * MICRO_TO_MILLI)
 
-	DC_DocumentChannelProperty(device, "Delay onset user", INDEP_HEADSTAGE, NaN, NaN, var = (s.onsetDelayUser * (s.samplingInterval * MICRO_TO_MILLI)))
-	DC_DocumentChannelProperty(device, "Delay onset auto", INDEP_HEADSTAGE, NaN, NaN, var = (s.onsetDelayAuto * (s.samplingInterval * MICRO_TO_MILLI)))
-	DC_DocumentChannelProperty(device, "Delay termination", INDEP_HEADSTAGE, NaN, NaN, var = (s.terminationDelay * (s.samplingInterval * MICRO_TO_MILLI)))
-	DC_DocumentChannelProperty(device, "Delay distributed DAQ", INDEP_HEADSTAGE, NaN, NaN, var = (s.distributedDAQDelay * (s.samplingInterval * MICRO_TO_MILLI)))
+	DC_DocumentChannelProperty(device, "Delay onset user", INDEP_HEADSTAGE, NaN, NaN, var = (s.onsetDelayUser * (s.samplingIntervalDA * MICRO_TO_MILLI)))
+	DC_DocumentChannelProperty(device, "Delay onset auto", INDEP_HEADSTAGE, NaN, NaN, var = (s.onsetDelayAuto * (s.samplingIntervalDA * MICRO_TO_MILLI)))
+	DC_DocumentChannelProperty(device, "Delay termination", INDEP_HEADSTAGE, NaN, NaN, var = (s.terminationDelay * (s.samplingIntervalDA * MICRO_TO_MILLI)))
+	DC_DocumentChannelProperty(device, "Delay distributed DAQ", INDEP_HEADSTAGE, NaN, NaN, var = (s.distributedDAQDelay * (s.samplingIntervalDA * MICRO_TO_MILLI)))
 	DC_DocumentChannelProperty(device, "oodDAQ Pre Feature", INDEP_HEADSTAGE, NaN, NaN, var = DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPre"))
 	DC_DocumentChannelProperty(device, "oodDAQ Post Feature", INDEP_HEADSTAGE, NaN, NaN, var = DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPost"))
 	DC_DocumentChannelProperty(device, "oodDAQ Resolution", INDEP_HEADSTAGE, NaN, NaN, var = WAVEBUILDER_MIN_SAMPINT)
@@ -1269,8 +1332,8 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 	cacheParams.hardwareType      = s.hardwareType
 	cacheParams.numDACs           = s.numDACEntries
 	cacheParams.numActiveChannels = s.numActiveChannels
-	cacheParams.numberOfRows      = DC_CalculateDAQDataWaveLength(device, TEST_PULSE_MODE)
-	cacheParams.samplingInterval  = s.samplingInterval
+	cacheParams.numberOfRows      = DC_CalculateDAQDataWaveLength(device, TEST_PULSE_MODE, XOP_CHANNEL_TYPE_DAC)
+	cacheParams.samplingInterval  = s.samplingIntervalDA
 	WAVE cacheParams.gains = s.gains
 	Duplicate/FREE/RMD=[][FindDimLabel(s.DACAmp, COLS, "TPAMP")] s.DACAmp, DACAmpTP
 	WAVE cacheParams.DACAmpTP = DACAmpTP
@@ -1291,7 +1354,8 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 					WAVE/W ITCDataWave = DAQDataWave
 					Multithread ITCDataWave[][s.numDACEntries, s.numDACEntries + s.numADCEntries - 1] = 0
 					break
-				case HARDWARE_NI_DAC:
+				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_SUTTER_DAC:
 					WAVE/WAVE NIDataWave = DAQDataWave
 					for(i = 0; i < s.numADCEntries; i += 1)
 						WAVE NIChannel = NIDataWave[s.numDACEntries + i]
@@ -1346,6 +1410,24 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 				SetStringInWaveNote(NISUDataWave, TP_PROPERTIES_HASH, key, recursive = 1)
 				CA_StoreEntryIntoCache(key, NISUDataWave)
 				break
+			case HARDWARE_SUTTER_DAC:
+				for(i = 0; i < s.numDACEntries; i += 1)
+					WAVE SUChannel = NISUDataWave[i]
+					ASSERT(!mod(DimSize(SUChannel, ROWS), s.testPulseLength), "Sutter TP channel length is not integer multiple of test pulse length")
+					tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
+					if(IsNaN(config[i][%HEADSTAGE]))
+						minLimit = SU_DAC_MIN
+						maxLimit = SU_DAC_MAX
+					else
+						minLimit = SU_HS_OUT_MIN
+						maxLimit = SU_HS_OUT_MAX
+					endif
+					Multithread SUChannel[] = limit(tpAmp * s.testPulse[mod(p, s.testPulseLength)], minLimit, maxLimit); AbortOnRTE
+				endfor
+
+				SetStringInWaveNote(NISUDataWave, TP_PROPERTIES_HASH, key, recursive = 1)
+				CA_StoreEntryIntoCache(key, NISUDataWave)
+				break
 		endswitch
 	endif
 End
@@ -1378,7 +1460,8 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
 					endif
 					break
-				case HARDWARE_NI_DAC:
+				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_SUTTER_DAC:
 					WAVE NIChannel = NIDataWave[i]
 					Multithread NIChannel[] =                                         \
 					            limit(tpAmp * s.testPulse[mod(p, s.testPulseLength)], \
@@ -1415,7 +1498,8 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						            limit(tpAmp * s.testPulse[p], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 					endif
 					break
-				case HARDWARE_NI_DAC:
+				case HARDWARE_NI_DAC: // intended drop through
+				case HARDWARE_SUTTER_DAC:
 					// for an index step of 1 in NIChannel, singleStimSet steps decimationFactor
 					// for an index step of 1 in singleStimset, NIChannel steps 1 / decimationFactor
 					// for decimationFactor < 1 and indexing NIChannel to DimSize(NIChannel, ROWS) - 1 (as implemented here),
@@ -1429,6 +1513,12 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 					if(s.hardwareType == HARDWARE_NI_DAC)
 						minLimit = NI_DAC_MIN
 						maxLimit = NI_DAC_MAX
+					elseif(isUnAssociated)
+						minLimit = SU_DAC_MIN
+						maxLimit = SU_DAC_MAX
+					else
+						minLimit = SU_HS_OUT_MIN
+						maxLimit = SU_HS_OUT_MAX
 					endif
 
 					MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                                                       \
@@ -1475,8 +1565,10 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 
 	// MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
 	// whereas the source data generated waves for ITC min sample rate are at 200 kHz
-	s.decimationFactor = DC_GetDecimationFactor(device, dataAcqOrTP)
-	s.samplingInterval = DAP_GetSampInt(device, dataAcqOrTP, XOP_CHANNEL_TYPE_DAC)
+	s.decimationFactor    = DC_GetDecimationFactor(device, dataAcqOrTP)
+	s.samplingIntervalDA  = DAP_GetSampInt(device, dataAcqOrTP, XOP_CHANNEL_TYPE_DAC)
+	s.samplingIntervalAD  = DAP_GetSampInt(device, dataAcqOrTP, XOP_CHANNEL_TYPE_ADC)
+	s.samplingIntervalTTL = DAP_GetSampInt(device, dataAcqOrTP, XOP_CHANNEL_TYPE_TTL)
 	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	s.hardwareType = GetHardwareType(device)
 
@@ -1679,9 +1771,9 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 			s.onsetDelayAuto = s.testPulseLength
 		endif
 
-		s.onsetDelayUser      = round(DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") / (s.samplingInterval * MICRO_TO_MILLI))
-		s.terminationDelay    = round(DAG_GetNumericalValue(device, "setvar_DataAcq_TerminationDelay") / (s.samplingInterval * MICRO_TO_MILLI))
-		s.distributedDAQDelay = round(DAG_GetNumericalValue(device, "setvar_DataAcq_dDAQDelay") / (s.samplingInterval * MICRO_TO_MILLI))
+		s.onsetDelayUser      = round(DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") / (s.samplingIntervalDA * MICRO_TO_MILLI))
+		s.terminationDelay    = round(DAG_GetNumericalValue(device, "setvar_DataAcq_TerminationDelay") / (s.samplingIntervalDA * MICRO_TO_MILLI))
+		s.distributedDAQDelay = round(DAG_GetNumericalValue(device, "setvar_DataAcq_dDAQDelay") / (s.samplingIntervalDA * MICRO_TO_MILLI))
 
 		s.onsetDelay = s.onsetDelayUser + s.onsetDelayAuto
 		DC_CalculateInsertStart(s)
@@ -1756,6 +1848,11 @@ static Function DC_DocumentHardwareProperties(device, hardwareType)
 			DC_DocumentChannelProperty(device, "Digitizer Hardware Name", INDEP_HEADSTAGE, NaN, NaN, str = str)
 			sprintf str, "%#0X", str2num(devInfoText[%DeviceSerialNumber])
 			DC_DocumentChannelProperty(device, "Digitizer Serial Numbers", INDEP_HEADSTAGE, NaN, NaN, str = str)
+			break
+		case HARDWARE_SUTTER_DAC:
+			WAVE/T devInfoText = devInfo
+			DC_DocumentChannelProperty(device, "Digitizer Hardware Name", INDEP_HEADSTAGE, NaN, NaN, str = DEVICE_NAME_NICE_SUTTER)
+			DC_DocumentChannelProperty(device, "Digitizer Serial Numbers", INDEP_HEADSTAGE, NaN, NaN, str = devInfoText[%LISTOFDEVICES])
 			break
 		default:
 			ASSERT(0, "Unknown hardware")
@@ -1860,6 +1957,9 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 
 				return [0, NaN, NaN]
 			endfor
+			break
+		case HARDWARE_SUTTER_DAC:
+			// @todo Determine what to check here
 			break
 	endswitch
 End
@@ -2188,7 +2288,7 @@ static Function DC_GetStopCollectionPoint(string device, STRUCT DataConfiguratio
 		FindValue/I=(DAQ_CHANNEL_TYPE_DAQ) DACmode
 
 		if(V_Value == -1)
-			return TIME_TP_ONLY_ON_DAQ * ONE_TO_MICRO / s.samplingInterval
+			return TIME_TP_ONLY_ON_DAQ * ONE_TO_MICRO / s.samplingIntervalDA
 		else
 			totalIncrease = DC_ReturnTotalLengthIncrease(s)
 			TTLlength     = DC_CalculateLongestSweep(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
@@ -2584,21 +2684,24 @@ static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfi
 		DEBUGPRINT("LNB entry not found: TP Baseline Fraction")
 	endif
 
-	s.samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval DA", s.dataAcqOrTP)
-	if(IsNaN(s.samplingInterval))
+	s.samplingIntervalDA  = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval DA", s.dataAcqOrTP)
+	s.samplingIntervalAD  = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval AD", s.dataAcqOrTP)
+	s.samplingIntervalTTL = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval TTL", s.dataAcqOrTP)
+	if(IsNaN(s.samplingIntervalDA))
 		DEBUGPRINT("LNB entry not found: Sampling interval DA")
-		s.samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", s.dataAcqOrTP)
-		if(IsNaN(s.samplingInterval))
+		// fallback to old LNB entry
+		s.samplingIntervalDA = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", s.dataAcqOrTP)
+		if(IsNaN(s.samplingIntervalDA))
 			DEBUGPRINT("LNB entry not found: Sampling interval")
 		endif
 	endif
+	s.samplingIntervalAD   = IsNaN(s.samplingIntervalAD) ? s.samplingIntervalDA : s.samplingIntervalAD
+	s.samplingIntervalTTL  = IsNaN(s.samplingIntervalTTL) ? s.samplingIntervalDA : s.samplingIntervalTTL
+	s.samplingIntervalDA  *= MILLI_TO_MICRO
+	s.samplingIntervalAD  *= MILLI_TO_MICRO
+	s.samplingIntervalTTL *= MILLI_TO_MICRO
 
-	if(IsNaN(s.samplingInterval))
-		s.decimationFactor = NaN
-	else
-		s.samplingInterval *= MILLI_TO_MICRO
-		s.decimationFactor  = DC_GetDecimationFactorCalc(s.samplingInterval)
-	endif
+	s.decimationFactor = IsNaN(s.samplingIntervalDA) ? NaN : DC_GetDecimationFactorCalc(s.samplingIntervalDA)
 
 	device = GetLastSettingTextIndep(textualValues, sweepNo, "Device", s.dataAcqOrTP)
 	if(IsEmpty(device))
@@ -2613,7 +2716,7 @@ static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfi
 		s.onsetDelayUser = NaN
 		DEBUGPRINT("LNB entry not found: Delay onset user")
 	else
-		s.onsetDelayUser = round(onsetDelayUserTime * MILLI_TO_MICRO / s.samplingInterval)
+		s.onsetDelayUser = round(onsetDelayUserTime * MILLI_TO_MICRO / s.samplingIntervalDA)
 	endif
 
 	onsetDelayAutoTime = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", s.dataAcqOrTP)
@@ -2621,7 +2724,7 @@ static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfi
 		s.onsetDelayAuto = NaN
 		DEBUGPRINT("LNB entry not found: Delay onset auto")
 	else
-		s.onsetDelayAuto = round(onsetDelayAutoTime * MILLI_TO_MICRO / s.samplingInterval)
+		s.onsetDelayAuto = round(onsetDelayAutoTime * MILLI_TO_MICRO / s.samplingIntervalDA)
 	endif
 
 	s.onsetDelay = s.onsetDelayUser + s.onsetDelayAuto
@@ -2631,7 +2734,7 @@ static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfi
 		s.distributedDAQDelay = NaN
 		DEBUGPRINT("LNB entry not found: Delay distributed DAQ")
 	else
-		s.distributedDAQDelay = round(distributedDAQDelayTime * MILLI_TO_MICRO / s.samplingInterval)
+		s.distributedDAQDelay = round(distributedDAQDelayTime * MILLI_TO_MICRO / s.samplingIntervalDA)
 	endif
 
 	terminationDelayTime = GetLastSettingIndep(numericalValues, sweepNo, "Delay termination", s.dataAcqOrTP)
@@ -2639,7 +2742,7 @@ static Function DC_RecreateDataConfigurationResultFromLNB_Indep(STRUCT DataConfi
 		s.terminationDelay = NaN
 		DEBUGPRINT("LNB entry not found: Delay termination")
 	else
-		s.terminationDelay = round(terminationDelayTime * MILLI_TO_MICRO / s.samplingInterval)
+		s.terminationDelay = round(terminationDelayTime * MILLI_TO_MICRO / s.samplingIntervalDA)
 	endif
 
 	s.skipAhead = GetLastSettingIndep(numericalValues, sweepNo, "Skip Ahead", s.dataAcqOrTP)
@@ -2659,7 +2762,7 @@ static Function DC_RecreateDataConfigurationResultFromLNB_TP(STRUCT DataConfigur
 
 	WAVE samplingIntervals = GetNewSamplingIntervalsAsFree()
 	samplingIntervals[%SI_TP_DAC]  = NaN
-	samplingIntervals[%SI_DAQ_DAC] = s.samplingInterval
+	samplingIntervals[%SI_DAQ_DAC] = s.samplingIntervalDA
 	samplingIntervals[%SI_TP_ADC]  = NaN
 	samplingIntervals[%SI_DAQ_ADC] = NaN
 	WAVE tpSettings = GetTPSettingsFree()

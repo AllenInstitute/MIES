@@ -158,7 +158,7 @@ static Function PS_CR1_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -239,7 +239,7 @@ static Function PS_CR2_preAcq(string device)
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = 1)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -318,7 +318,7 @@ static Function PS_CR2a_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -396,7 +396,7 @@ static Function PS_CR2b_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -476,7 +476,7 @@ static Function PS_CR3_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = 14)
 	// AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -558,7 +558,7 @@ static Function PS_CR4_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = 14)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilterRestore", var = 0)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -670,7 +670,7 @@ static Function PS_CR4a_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -781,7 +781,7 @@ static Function PS_CR4b_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -892,7 +892,7 @@ static Function PS_CR5_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1004,7 +1004,7 @@ static Function PS_CR6_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1117,7 +1117,7 @@ static Function PS_CR7_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1225,7 +1225,7 @@ static Function PS_CR8_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1332,7 +1332,7 @@ static Function PS_CR9_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1445,7 +1445,7 @@ static Function PS_CR9a_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1558,7 +1558,7 @@ static Function PS_CR9b_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1671,7 +1671,7 @@ static Function PS_CR10_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1784,7 +1784,7 @@ static Function PS_CR11_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1870,7 +1870,7 @@ static Function PS_CR12_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1954,7 +1954,7 @@ static Function PS_CR13_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2055,7 +2055,7 @@ static Function PS_CR13a_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var = 2)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2156,7 +2156,7 @@ static Function PS_CR14_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2238,7 +2238,7 @@ static Function PS_CR15_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetV", var = 45)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var = 55)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2324,7 +2324,7 @@ static Function PS_CR16_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AutobiasTargetVAtSetEnd", var = 55)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UseTrueRestingMembranePotentialVoltage", var = 0)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2406,7 +2406,7 @@ static Function PS_CR17_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2492,7 +2492,7 @@ static Function PS_CR18_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
 	// AmpBesselFilter/AmpBesselFilterRestore defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)

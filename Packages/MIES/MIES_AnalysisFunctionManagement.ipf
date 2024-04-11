@@ -16,7 +16,7 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 	string   device
 	variable eventType
 
-	variable i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet
+	variable i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet, hwIsSutter
 	variable realDataLengthAD, realDataLengthDA, sweepNo, fifoPositionAD, fifoPositionDA, sampleIntDA, sampleIntAD
 	string func, msg
 	STRUCT AnalysisFunction_V3 s
@@ -43,6 +43,8 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 		fifoPositionAD   = ROVar(GetFifoPosition(device))
 		fifoPositionDA   = HW_GetDAFifoPosition(device, DATA_ACQUISITION_MODE)
 	endif
+
+	hwIsSutter = GetHardwareType(device) == HARDWARE_SUTTER_DAC
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -135,11 +137,15 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 
 			if(valid_f1)
 				WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-				ChangeWaveLock(DAQDataWave, 1)
+				if(!hwIsSutter)
+					ChangeWaveLock(DAQDataWave, 1)
+				endif
 				ret = f1(device, eventType, DAQDataWave, i); AbortOnRTE
 			elseif(valid_f2)
 				WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-				ChangeWaveLock(DAQDataWave, 1)
+				if(!hwIsSutter)
+					ChangeWaveLock(DAQDataWave, 1)
+				endif
 				ret = f2(device, eventType, DAQDataWave, i, realDataLengthAD); AbortOnRTE
 			elseif(valid_f3)
 
@@ -181,7 +187,7 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 		if(WaveExists(dataWave))
 			ChangeWaveLock(dataWave, 0)
 		endif
-		if(WaveExists(DAQDataWave))
+		if(WaveExists(DAQDataWave) && !hwIsSutter)
 			ChangeWaveLock(DAQDataWave, 0)
 		endif
 

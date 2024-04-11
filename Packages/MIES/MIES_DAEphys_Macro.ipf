@@ -3705,7 +3705,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_TPAfterDAQ, value=0
 	PopupMenu Popup_Settings_SampIntMult, pos={246.00, 231.00}, size={189.00, 19.00}, bodyWidth=40, disable=1, proc=DAP_PopMenuProc_SampMult
 	PopupMenu Popup_Settings_SampIntMult, title="Sampling interval multiplier"
-	PopupMenu Popup_Settings_SampIntMult, help={"Multiplier for the dataacquisition sampling interval (higher values mean lower resolution). The testpulse will always be sampled at the lowest possible interval."}
+	PopupMenu Popup_Settings_SampIntMult, help={"Multiplier for the sampling interval. Higher values result in lower frequency, effectively acting as a frequency divider.\rNI and ITC hardware:\r\tAll channels sample at the set interval.\rSUTTER hardware:\r\tAD channels sample at the set interval. DA and TTL channels sample at the lowest possible interval.\rThe testpulse will always be sampled at the lowest possible interval.."}
 	PopupMenu Popup_Settings_SampIntMult, userdata(tabnum)="5"
 	PopupMenu Popup_Settings_SampIntMult, userdata(tabcontrol)="ADC"
 	PopupMenu Popup_Settings_SampIntMult, userdata(ResizeControlsInfo)=A"!!,Go!!#B)!!#AL!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -4107,7 +4107,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_ITImanualStart, userdata(tabcontrol)="ADC", value=0
 	PopupMenu Popup_Settings_FixedFreq, pos={218.00, 210.00}, size={220.00, 19.00}, bodyWidth=80, disable=1, proc=DAP_PopMenuProc_FixedSampInt
 	PopupMenu Popup_Settings_FixedFreq, title="Sampling frequency [kHz]"
-	PopupMenu Popup_Settings_FixedFreq, help={"Acquire all data with the given fixed sampling frequency. The testpulse will always be sampled at the lowest possible interval."}
+	PopupMenu Popup_Settings_FixedFreq, help={"NI and ITC hardware:\r\tAcquire all channels with the given fixed sampling frequency.\rSUTTER hardware:\r\tAD channels are acquired with the given fixed frequency.\r\tDA and TTL channels run with the maximum supported frequency\rWhen \"Maximum\" is selected the \"Sampling interval multiplier\" may be applied to reduce the frequency.\rThe testpulse will always be sampled at the highest possible frequency."}
 	PopupMenu Popup_Settings_FixedFreq, userdata(tabnum)="5"
 	PopupMenu Popup_Settings_FixedFreq, userdata(tabcontrol)="ADC"
 	PopupMenu Popup_Settings_FixedFreq, mode=1, popvalue="Maximum", value=#"DAP_GetSamplingFrequencies()"

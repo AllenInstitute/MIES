@@ -58,7 +58,11 @@ Function ValidFunc_V1(device, eventType, DAQDataWave, headStage)
 			break
 	endswitch
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 0)
+#else
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 1)
+#endif
 	CHECK_EQUAL_VAR(headstage, 0)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -68,11 +72,9 @@ Function ValidFunc_V1(device, eventType, DAQDataWave, headStage)
 	anaFuncTracker[eventType] += 1
 End
 
-Function ValidFunc_V2(device, eventType, DAQDataWave, headStage, realDataLength)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage, realDataLength
+Function ValidFunc_V2(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
+
+	variable hardwareType
 
 	CHECK_NON_EMPTY_STR(device)
 	CHECK_EQUAL_VAR(numType(eventType), 0)
@@ -86,15 +88,20 @@ Function ValidFunc_V2(device, eventType, DAQDataWave, headStage, realDataLength)
 			break
 	endswitch
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 0)
+#else
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 1)
+#endif
 	CHECK_EQUAL_VAR(headstage, 0)
 
+	hardwareType = GetHardWareType(device)
 	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_CONFIG_EVENT)
 		CHECK_EQUAL_VAR(numType(realDataLength), 2)
-	elseif(GetHardWareType(device) == HARDWARE_ITC_DAC)
+	elseif(hardwareType == HARDWARE_ITC_DAC)
 		CHECK_GE_VAR(realDataLength, 0)
 		CHECK_LT_VAR(realDataLength, DimSize(DAQDataWave, ROWS))
-	elseif(GetHardWareType(device) == HARDWARE_NI_DAC)
+	elseif(hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_SUTTER_DAC)
 		WAVE/WAVE DAQDataWaveRef = DAQDataWave
 		Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizes = DimSize(DAQDataWaveRef[p], ROWS)
 		CHECK_GE_VAR(realDataLength, 0)
@@ -123,13 +130,17 @@ Function ValidMultHS_V1(device, eventType, DAQDataWave, headStage)
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(DAQDataWave, NUMERIC_WAVE)
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop-through
+		case HARDWARE_SUTTER_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
 	endswitch
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 0)
+#else
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 1)
-
+#endif
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
 	CHECK_GE_VAR(eventType, 0)
@@ -342,7 +353,8 @@ Function ValidFunc_V3(device, s)
 					endfor
 				endif
 				break
-			case HARDWARE_NI_DAC:
+			case HARDWARE_NI_DAC: // intended drop through
+			case HARDWARE_SUTTER_DAC:
 				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, ROWS), DimSize(DAQDataWaveRef, ROWS))
 				Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizesDAQ = DimSize(DAQDataWaveRef[p], ROWS)
@@ -396,7 +408,8 @@ Function ValidFunc_V3(device, s)
 				CHECK_EQUAL_VAR(s.sampleIntervalDA, DimDelta(DAQDataWave, ROWS))
 				CHECK_EQUAL_VAR(s.sampleIntervalAD, DimDelta(DAQDataWave, ROWS))
 				break
-			case HARDWARE_NI_DAC:
+			case HARDWARE_NI_DAC: // intended drop-through
+			case HARDWARE_SUTTER_DAC:
 				WAVE/WAVE DAQDataWaveRef = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 				Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizes = DimSize(DAQDataWaveRef[p], ROWS)
 				CHECK_GE_VAR(s.lastValidRowIndexAD, 0)

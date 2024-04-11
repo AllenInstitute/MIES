@@ -24,6 +24,10 @@
 #define NIDAQMX_XOP_PRESENT
 #endif
 
+#if exists("SutterDAQScanWave")
+#define SUTTER_XOP_PRESENT
+#endif
+
 /// @name Error codes for the ITC XOP2
 /// @anchor ITCXOP2Errors
 /// @{
@@ -90,6 +94,10 @@ static Constant HW_ITC_RUNNING_STATE = 0x10
 static Constant HW_ITC_MAX_TIMEOUT   = 10
 static Constant HW_ITC_DSP_TIMEOUT   = 0x80303001
 
+static Constant SUTTER_CHANNELOFFSET_TTL      = 3
+static Constant SUTTER_ACQUISITION_FOREGROUND = 1
+static Constant SUTTER_ACQUISITION_BACKGROUND = 2
+
 /// @name Wrapper functions redirecting to the correct internal implementations depending on #HARDWARE_DAC_TYPES
 /// @{
 
@@ -117,6 +125,8 @@ Function HW_PrepareAcq(hardwareType, deviceID, mode, [data, dataFunc, config, co
 		case HARDWARE_NI_DAC:
 			return HW_NI_PrepareAcq(deviceID, mode, flags = flags)
 			break
+		case HARDWARE_SUTTER_DAC:
+			return HW_SU_PrepareAcq(deviceID, mode, flags = flags)
 	endswitch
 	return 0
 End
@@ -138,10 +148,10 @@ Function HW_SelectDevice(hardwareType, deviceID, [flags])
 		case HARDWARE_ITC_DAC:
 			return HW_ITC_SelectDevice(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC:
 			// nothing to do
 			return 0
-			break
 	endswitch
 End
 
@@ -164,6 +174,10 @@ Function HW_OpenDevice(deviceToOpen, hardwareType, [flags])
 		case HARDWARE_NI_DAC:
 			deviceID = WhichListItem(deviceToOpen, HW_NI_ListDevices())
 			HW_NI_OpenDevice(deviceToOpen, flags = flags)
+			break
+		case HARDWARE_SUTTER_DAC:
+			HW_SU_OpenDevice(flags = flags)
+			deviceID = 0
 			break
 		case HARDWARE_ITC_DAC:
 			ParseDeviceString(deviceToOpen, deviceType, deviceNumber)
@@ -200,6 +214,9 @@ Function HW_CloseDevice(hardwareType, deviceID, [flags])
 		case HARDWARE_NI_DAC:
 			HW_NI_CloseDevice(deviceID, flags = flags)
 			break
+		case HARDWARE_SUTTER_DAC:
+			HW_SU_CloseDevice(deviceID, flags = flags)
+			break
 	endswitch
 End
 
@@ -225,6 +242,9 @@ Function HW_WriteDAC(hardwareType, deviceID, channel, value, [flags])
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			HW_NI_WriteAnalogSingleAndSlow(realDeviceOrPressure, channel, value, flags = flags)
+			break
+		case HARDWARE_SUTTER_DAC:
+			HW_SU_WriteDAC(deviceID, channel, value, flags = flags)
 			break
 	endswitch
 End
@@ -252,6 +272,9 @@ Function HW_ReadADC(hardwareType, deviceID, channel, [flags])
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			return HW_NI_ReadAnalogSingleAndSlow(realDeviceOrPressure, channel, flags = flags)
+			break
+		case HARDWARE_SUTTER_DAC:
+			return HW_SU_ReadADC(deviceID, channel, flags = flags)
 			break
 	endswitch
 End
@@ -293,6 +316,8 @@ Function HW_ReadDigital(hardwareType, deviceID, channel, [line, flags])
 				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort = channel, DIOline = line, flags = flags)
 			endif
 			break
+		case HARDWARE_SUTTER_DAC:
+			ASSERT(0, "Not yet implemented")
 	endswitch
 End
 
@@ -332,6 +357,8 @@ Function HW_WriteDigital(hardwareType, deviceID, channel, value, [line, flags])
 				HW_NI_WriteDigital(realDeviceOrPressure, value, DIOPort = channel, DIOline = line, flags = flags)
 			endif
 			break
+		case HARDWARE_SUTTER_DAC:
+			ASSERT(0, "Not yet implemented")
 	endswitch
 End
 
@@ -349,7 +376,8 @@ Function HW_EnableYoking(hardwareType, deviceID, [flags])
 		case HARDWARE_ITC_DAC:
 			HW_ITC_EnableYoking(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not implemented")
 			break
 	endswitch
@@ -369,7 +397,8 @@ Function HW_DisableYoking(hardwareType, deviceID, [flags])
 		case HARDWARE_ITC_DAC:
 			HW_ITC_DisableYoking(deviceID, flags = flags)
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // intended drop through
+		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not implemented")
 			break
 	endswitch
@@ -395,6 +424,9 @@ Function HW_StopAcq(hardwareType, deviceID, [prepareForDAQ, zeroDAC, flags])
 		case HARDWARE_NI_DAC:
 			HW_NI_StopAcq(deviceID, zeroDAC = zeroDAC, flags = flags)
 			break
+		case HARDWARE_SUTTER_DAC:
+			HW_SU_StopAcq(deviceID, zeroDAC = zeroDAC, flags = flags)
+			break
 	endswitch
 End
 
@@ -408,18 +440,19 @@ End
 Function HW_IsRunning(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
 
-	string realDeviceOrPressure
+	string realDeviceOrPressure, device
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			return HW_ITC_IsRunning(deviceID, flags = flags)
-			break
 		case HARDWARE_NI_DAC:
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			return HW_NI_IsRunning(realDeviceOrPressure)
-			break
+		case HARDWARE_SUTTER_DAC:
+			device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+			return HW_SU_IsRunning(device)
 	endswitch
 End
 
@@ -444,6 +477,9 @@ Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
 			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID, flags = flags)
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			return HW_NI_GetDeviceInfo(realDeviceOrPressure, flags = flags)
+			break
+		case HARDWARE_SUTTER_DAC:
+			return GetSUDeviceInfo()
 			break
 	endswitch
 End
@@ -478,6 +514,9 @@ Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device,
 			WAVE/Z devInfo = HW_NI_GetDeviceInfo(device, flags = flags)
 			// nothing to do for NI
 			break
+		case HARDWARE_SUTTER_DAC:
+			WAVE/Z devInfo = GetSUDeviceInfo()
+			break
 		default:
 			ASSERT(0, "Unsupported hardware")
 	endswitch
@@ -496,6 +535,8 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 	deviceInfo[%DA]           = 1024
 	deviceInfo[%TTL]          = 1024
 	deviceInfo[%Rack]         = NaN
+	deviceInfo[%AuxAD]        = NaN
+	deviceInfo[%AuxDA]        = NaN
 
 	return NaN
 #endif // EVIL_KITTEN_EATING_MODE
@@ -508,6 +549,12 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 
 #ifndef NIDAQMX_XOP_PRESENT
 	if(hardwareType == HARDWARE_NI_DAC)
+		return NaN
+	endif
+#endif
+
+#ifndef SUTTER_XOP_PRESENT
+	if(hardwareType == HARDWARE_SUTTER_DAC)
 		return NaN
 	endif
 #endif
@@ -528,17 +575,30 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			deviceInfo[%AD]   = devInfoHW[%ADCCount]
-			deviceInfo[%DA]   = devInfoHW[%DACCount]
-			deviceInfo[%Rack] = ceil(min(devInfoHW[%DOCount], devInfoHW[%DICount]) / 3)
-			deviceInfo[%TTL]  = deviceInfo[%Rack] == 1 ? 4 : 8
+			deviceInfo[%AD]    = devInfoHW[%ADCCount]
+			deviceInfo[%DA]    = devInfoHW[%DACCount]
+			deviceInfo[%Rack]  = ceil(min(devInfoHW[%DOCount], devInfoHW[%DICount]) / 3)
+			deviceInfo[%TTL]   = deviceInfo[%Rack] == 1 ? 4 : 8
+			deviceInfo[%AuxAD] = NaN
+			deviceInfo[%AuxDA] = NaN
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/T devInfoHWText = devInfoHW
-			deviceInfo[%AD]   = str2num(devInfoHWText[%AI])
-			deviceInfo[%DA]   = str2num(devInfoHWText[%AO])
-			deviceInfo[%TTL]  = str2num(devInfoHWText[%DIOPortWidth])
-			deviceInfo[%Rack] = NaN
+			deviceInfo[%AD]    = str2num(devInfoHWText[%AI])
+			deviceInfo[%DA]    = str2num(devInfoHWText[%AO])
+			deviceInfo[%TTL]   = str2num(devInfoHWText[%DIOPortWidth])
+			deviceInfo[%Rack]  = NaN
+			deviceInfo[%AuxAD] = NaN
+			deviceInfo[%AuxDA] = NaN
+			break
+		case HARDWARE_SUTTER_DAC:
+			WAVE/T devInfoHWText = devInfoHW
+			deviceInfo[%AD]    = str2num(devInfoHWText[%SUMHEADSTAGES])
+			deviceInfo[%DA]    = str2num(devInfoHWText[%SUMHEADSTAGES])
+			deviceInfo[%TTL]   = str2num(devInfoHWText[%DIOPortWidth])
+			deviceInfo[%Rack]  = NaN
+			deviceInfo[%AuxAD] = str2num(devInfoHWText[%AI])
+			deviceInfo[%AuxDA] = str2num(devInfoHWText[%AO])
 			break
 	endswitch
 End
@@ -566,6 +626,11 @@ Function HW_StartAcq(hardwareType, deviceID, [triggerMode, flags, repeat])
 		case HARDWARE_NI_DAC:
 			HW_NI_StartAcq(deviceID, triggerMode, flags = flags, repeat = repeat)
 			break
+		case HARDWARE_SUTTER_DAC:
+			HW_SU_StartAcq(deviceID, flags = flags)
+			break
+		default:
+			ASSERT(0, "Unknown hardware type")
 	endswitch
 End
 
@@ -588,6 +653,11 @@ Function HW_ResetDevice(hardwareType, deviceID, [flags])
 			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			HW_NI_ResetDevice(realDeviceOrPressure, flags = flags)
 			break
+		case HARDWARE_SUTTER_DAC:
+			HW_SU_ResetDevice(flags = flags)
+			break
+		default:
+			ASSERT(0, "Unknown hardware type")
 	endswitch
 End
 
@@ -609,7 +679,7 @@ static Function HW_IsValidHardwareType(hardwareType)
 	variable hardwareType
 
 #ifndef EVIL_KITTEN_EATING_MODE
-	return hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_ITC_DAC
+	return hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_ITC_DAC || hardwareType == HARDWARE_SUTTER_DAC
 #else
 	return 1
 #endif
@@ -780,6 +850,14 @@ Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
 		case HARDWARE_ITC_DAC: // intended drop through
 		case HARDWARE_NI_DAC:
 			return fifoPositionAD
+		case HARDWARE_SUTTER_DAC:
+			WAVE/WAVE dataWave  = GetDAQDataWave(device, dataAcqOrTP)
+			WAVE      config    = GetDAQConfigWave(device)
+			WAVE      channelDA = dataWave[0]
+			WAVE      channelAD = dataWave[GetFirstADCChannelIndex(config)]
+
+			return trunc(fifoPositionAD * DimDelta(channelAD, ROWS) / DimDelta(channelDA, ROWS))
+			break
 		default:
 			ASSERT(0, "Unsupported hardware type")
 	endswitch
@@ -850,6 +928,8 @@ Function/S HW_ITC_ListDevices()
 
 #ifndef EVIL_KITTEN_EATING_MODE
 #if defined(TESTS_WITH_NI_HARDWARE)
+	return ""
+#elif defined(TESTS_WITH_SUTTER_HARDWARE)
 	return ""
 #elif defined(TESTS_WITH_ITC18USB_HARDWARE)
 	return HW_ITC_BuildDeviceString("ITC18USB", "0")
@@ -2720,6 +2800,8 @@ Function/S HW_NI_ListDevices([flags])
 	return ""
 #elif defined(TESTS_WITH_ITC1600_HARDWARE)
 	return ""
+#elif defined(TESTS_WITH_SUTTER_HARDWARE)
+	return ""
 #endif
 #endif
 
@@ -3204,5 +3286,582 @@ Function HW_NI_ResetTaskIDs(device)
 End
 
 #endif // NIDAQMX_XOP_PRESENT
+
+#ifdef SUTTER_XOP_PRESENT
+
+/// @brief Return a the serial string of the SUTTER master device if present
+///
+/// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function/S HW_SU_ListDevices([variable flags])
+
+	DEBUGPRINTSTACKINFO()
+
+#ifndef EVIL_KITTEN_EATING_MODE
+#if defined(TESTS_WITH_ITC18USB_HARDWARE)
+	return ""
+#elif defined(TESTS_WITH_ITC1600_HARDWARE)
+	return ""
+#elif defined(TESTS_WITH_NI_HARDWARE)
+	return ""
+#endif
+#endif
+
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+
+	return deviceInfo[%MASTERDEVICE]
+End
+
+Function HW_SU_CloseDevice(variable deviceID, [variable flags])
+
+	string device
+
+	DEBUGPRINTSTACKINFO()
+
+	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+	if(HW_SU_IsRunning(device))
+		HW_SU_StopAcq(deviceID, flags = flags)
+	endif
+
+	SutterDAQUSBClose()
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+	deviceInfo = ""
+End
+
+static Function HW_SU_IsRunning(string device)
+
+	return ROVar(GetSU_IsAcquisitionRunning(device))
+End
+
+/// @brief Reset device
+///
+/// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+static Function HW_SU_ResetDevice([variable flags])
+
+	DEBUGPRINTSTACKINFO()
+
+	SutterDAQReset()
+End
+
+/// @brief Opens a Sutter device, executes reset
+
+/// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_SU_OpenDevice([variable flags])
+
+	DEBUGPRINTSTACKINFO()
+
+	HW_SU_ResetDevice(flags = flags)
+End
+
+/// @see HW_GetDeviceInfo
+Function HW_SU_GetDeviceInfo(WAVE/T deviceInfo)
+
+	variable numIPAs, i, numHeadstages, numDevices
+	string serial
+	string deviceList = ""
+	string numHSList  = ""
+
+	DEBUGPRINTSTACKINFO()
+
+#ifdef AUTOMATED_TESTING
+#ifndef TESTS_WITH_SUTTER_HARDWARE
+	return NaN
+#endif
+#endif
+
+	if(!IsEmpty(deviceInfo[%NUMBEROFDACS]))
+		return NaN
+	endif
+
+	numIPAs                   = SutterDAQusbreset()
+	deviceInfo[%NUMBEROFDACS] = num2istr(numIPAs)
+	for(i = 0; i < numIPAs; i += 1)
+		serial = CleanupName(SutterDAQSN(i), 0)
+		ASSERT(strlen(serial) > 6, "Error parsing IPA serial: " + serial)
+		deviceList = AddListItem(serial, deviceList, ";", Inf)
+		strswitch(serial[6])
+			case "1":
+				numHeadstages += 1
+				numHSList      = AddListItem("1", numHSList, ";", Inf)
+				break
+			case "2":
+				numHeadstages += 2
+				numHSList      = AddListItem("2", numHSList, ";", Inf)
+				break
+			default:
+				ASSERT(0, "Error parsing IPA serial: " + serial)
+		endswitch
+	endfor
+	numDevices = ItemsInList(deviceList)
+	// @todo Check for SU MultiDevices if Master is subdev 0 (when multi device setup is available)
+	deviceInfo[%MASTERDEVICE]     = StringFromList(0, deviceList)
+	deviceInfo[%LISTOFDEVICES]    = deviceList
+	deviceInfo[%LISTOFHEADSTAGES] = numHSList
+	deviceInfo[%SUMHEADSTAGES]    = num2istr(numHeadstages)
+	deviceInfo[%AI]               = num2istr(SUTTER_AI_PER_AMP * numDevices)
+	deviceInfo[%AO]               = num2istr(SUTTER_AO_PER_AMP * numDevices)
+	deviceInfo[%DIOPortWidth]     = num2istr(SUTTER_DIO_PER_AMP)
+End
+
+/// @brief Stop scanning and waveform generation
+///
+/// @param[in] zeroDAC       [optional, defaults to false] set all DA channels to zero
+/// @param[in] flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+///
+/// @see HW_StopAcq
+Function HW_SU_StopAcq(variable deviceID, [variable zeroDAC, variable flags])
+
+	string device
+
+	DEBUGPRINTSTACKINFO()
+
+	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+	NVAR acq = $GetSU_IsAcquisitionRunning(device)
+	if(acq)
+		SutterDAQReset()
+		acq = 0
+	endif
+
+	if(zeroDAC)
+		HW_SU_ZeroDAC(deviceID, flags = flags)
+	endif
+End
+
+/// @brief Prepare for data acquisition
+///
+/// @param mode        one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param data        ITC data wave
+/// @param dataFunc    [optional, defaults to GetDAQDataWave()] override wave getter for the ITC data wave
+/// @param config      ITC config wave
+/// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
+/// @param offset      [optional, defaults to zero] offset into the data wave in points
+/// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
+
+	string device, encodeInfo
+	variable channels, i, haveTTL, unassocADCIndex, unassocDACIndex
+	variable headStage, channelNumber, amp0Type
+	variable outIndex, inIndex, outChannel, inChannel
+
+	DEBUGPRINTSTACKINFO()
+
+	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+	if(ParamIsDefault(data))
+		if(ParamIsDefault(dataFunc))
+			WAVE/WAVE SUDataWave = GetDAQDataWave(device, mode)
+		else
+			WAVE/WAVE SUDataWave = dataFunc(device)
+		endif
+	endif
+
+	if(ParamIsDefault(config))
+		if(ParamIsDefault(configFunc))
+			WAVE config = GetDAQConfigWave(device)
+		else
+			WAVE config = configFunc(device)
+		endif
+	endif
+
+	if(!ParamIsDefault(offset))
+		ASSERT(0, "Offset is not supported")
+	endif
+
+	WAVE gain        = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
+	WAVE hwGainTable = GetSUDeviceInputGains(device)
+
+	WAVE/T output = GetSUDeviceOutput(device)
+	WAVE/T input  = GetSUDeviceInput(device)
+
+	channels = DimSize(config, ROWS)
+	for(i = 0; i < channels; i += 1)
+		WAVE SUChannel = SUDataWave[i]
+
+		ASSERT(!IsFreeWave(SUChannel), "Can not work with free waves")
+
+		channelNumber = config[i][%ChannelNumber]
+		headstage     = config[i][%HEADSTAGE]
+		switch(config[i][%ChannelType])
+			case XOP_CHANNEL_TYPE_ADC:
+				EnsureLargeEnoughWave(input, indexShouldExist = inIndex)
+				EnsureLargeEnoughWave(hwGainTable, indexShouldExist = inIndex)
+				hwGainTable[inIndex][%GAINFACTOR] = gain[i]
+				hwGainTable[inIndex][%OFFSET]     = 0
+				input[inIndex][%INPUTWAVE]        = GetWavesDataFolder(SUChannel, 2)
+				if(IsNaN(headStage))
+					// unassoc ADC
+					[inChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocADC(unassocADCIndex)
+					unassocADCIndex += 1
+				else
+					[inChannel, encodeInfo] = HW_SU_GetEncodeFromHS(headstage)
+					inChannel *= 2
+					if(config[i][%CLAMPMODE] == I_CLAMP_MODE)
+						inChannel += 1
+					endif
+				endif
+				input[inIndex][%CHANNEL]    = num2istr(inChannel)
+				input[inIndex][%ENCODEINFO] = encodeInfo
+				inIndex                    += 1
+				break
+			case XOP_CHANNEL_TYPE_DAC:
+				EnsureLargeEnoughWave(output, indexShouldExist = outIndex)
+				output[outIndex][%OUTPUTWAVE] = GetWavesDataFolder(SUChannel, 2)
+				if(IsNaN(headStage))
+					// unassoc DAC
+					[outChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocDAC(unassocDACIndex)
+					unassocDACIndex += 1
+				else
+					[outChannel, encodeInfo] = HW_SU_GetEncodeFromHS(headstage)
+				endif
+				output[outIndex][%CHANNEL]    = num2istr(outChannel)
+				output[outIndex][%ENCODEINFO] = encodeInfo
+				outIndex                     += 1
+				break
+			case XOP_CHANNEL_TYPE_TTL:
+				if(!haveTTL)
+					haveTTL = 1
+					WAVE ttlComposite = GetSUCompositeTTLWave(device)
+					FastOp ttlComposite = 0
+					Redimension/N=(DimSize(SUChannel, ROWS)) ttlComposite
+				endif
+				MultiThread ttlComposite[] += SUChannel[p] * (1 << channelNumber)
+				break
+		endswitch
+	endfor
+
+	if(haveTTL)
+		WAVE/T deviceInfo = GetSUDeviceInfo()
+		amp0Type = str2num(StringFromList(0, deviceInfo[%LISTOFHEADSTAGES]))
+		sprintf encodeInfo, "00%02d-1", amp0Type
+
+		EnsureLargeEnoughWave(output, indexShouldExist = outIndex)
+		output[outIndex][%OUTPUTWAVE] = GetWavesDataFolder(ttlComposite, 2)
+		output[outIndex][%CHANNEL]    = num2istr(amp0Type - 1 + SUTTER_CHANNELOFFSET_TTL)
+		output[outIndex][%ENCODEINFO] = encodeInfo
+		outIndex                     += 1
+	endif
+	Redimension/N=(outIndex, -1) output
+	Redimension/N=(inIndex, -1) input
+	Redimension/N=(inIndex, -1) hwGainTable
+End
+
+static Function [variable channel, string encode] HW_SU_GetEncodeFromHS(variable headstage)
+
+	variable i, index, subHS, numAmps, ampType
+	variable amp = NaN
+
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+	WAVE   hsNums     = ListToNumericWave(deviceInfo[%LISTOFHEADSTAGES], ";")
+
+	for(hsInAmp : hsNums)
+		i += hsInAmp
+		if(i > headstage)
+			amp     = index
+			ampType = hsInAmp
+			subHS   = index ? headstage - sum(hsNums, 0, index - 1) : headstage
+			break
+		endif
+		index += 1
+	endfor
+
+	ASSERT(!IsNaN(amp), "Headstage " + num2istr(headstage) + " beyond available headstages on connected IPAs")
+	sprintf encode, "%02d%02d%02d", amp, ampType, subHS
+
+	return [subHS, encode]
+End
+
+static Function [variable hwChannel, string encode] HW_SU_GetEncodeFromUnassocADC(variable channelNumber)
+
+	variable amp, ampType, hwChannelOffset
+
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+	WAVE   hsNums     = ListToNumericWave(deviceInfo[%LISTOFHEADSTAGES], ";")
+	amp = trunc(channelNumber / SUTTER_AI_PER_AMP)
+	ASSERT(amp < DimSize(hsNums, ROWS), "Analog In " + num2istr(channelNumber) + " beyond available Analog Ins on connected IPAs")
+	ampType = hsNums[amp]
+	// Each headstage adds two channel in the front
+	hwChannelOffset = 2 * ampType
+	hwChannel       = channelNumber - amp * SUTTER_AI_PER_AMP + hwChannelOffset
+
+	sprintf encode, "%02d%02d%02d", amp, ampType, -1
+
+	return [hwChannel, encode]
+End
+
+static Function [variable hwChannel, string encode] HW_SU_GetEncodeFromUnassocDAC(variable channelNumber)
+
+	variable amp, ampType
+
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+	WAVE   hsNums     = ListToNumericWave(deviceInfo[%LISTOFHEADSTAGES], ";")
+	amp = trunc(channelNumber / SUTTER_AO_PER_AMP)
+	ASSERT(amp < DimSize(hsNums, ROWS), "Analog Out " + num2istr(channelNumber) + " beyond available Analog Outs on connected IPAs")
+	ampType   = hsNums[amp]
+	hwChannel = channelNumber - amp * SUTTER_AO_PER_AMP + ampType
+
+	sprintf encode, "%02d%02d%02d", amp, ampType, -1
+
+	return [hwChannel, encode]
+End
+
+Function HW_SU_StartAcq(variable deviceId, [variable flags])
+
+	string device, cmdError, cmdDone
+
+	DEBUGPRINTSTACKINFO()
+
+	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+	WAVE/T output      = GetSUDeviceOutput(device)
+	WAVE/T input       = GetSUDeviceInput(device)
+	WAVE   hwGainTable = GetSUDeviceInputGains(device)
+	HW_SU_AcquireImpl(device, input, output, hwGainTable, SUTTER_ACQUISITION_BACKGROUND)
+End
+
+Function HW_SU_ZeroDAC(variable deviceID, [variable flags])
+
+	string device, encodeInfo
+	variable i, outIndex, channels, channelNumber, headStage, outChannel, inChannel, unassocDACIndex
+
+	DEBUGPRINTSTACKINFO()
+
+	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+	WAVE   config    = GetDAQConfigWave(device)
+	WAVE/T input     = GetSUDeviceInput(device)
+	WAVE/T output    = GetSUDeviceOutput(device)
+	WAVE   channelDA = GetSutterSingleSampleDACOutputWave(device)
+	WAVE   channelAD = GetSutterSingleSampleADCInputWave(device)
+	channelDA = 0
+
+	channels = DimSize(config, ROWS)
+	for(i = 0; i < channels; i += 1)
+
+		channelNumber = config[i][%ChannelNumber]
+		headstage     = config[i][%HEADSTAGE]
+		if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC)
+			EnsureLargeEnoughWave(output, indexShouldExist = outIndex)
+			output[outIndex][%OUTPUTWAVE] = GetWavesDataFolder(channelDA, 2)
+			if(IsNaN(headStage))
+				// unassoc DAC
+				[outChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocDAC(unassocDACIndex)
+				unassocDACIndex += 1
+			else
+				[outChannel, encodeInfo] = HW_SU_GetEncodeFromHS(headstage)
+			endif
+			output[outIndex][%CHANNEL]    = num2istr(outChannel)
+			output[outIndex][%ENCODEINFO] = encodeInfo
+			outIndex                     += 1
+		endif
+	endfor
+	Redimension/N=(outIndex, -1) output
+
+	// we need to run some input as well to have the command hook from SutterDAQScanWave
+	Redimension/N=(1, -1) input
+	input[0][%INPUTWAVE] = GetWavesDataFolder(channelAD, 2)
+	[inChannel, encodeInfo] = HW_SU_GetEncodeFromHS(0)
+	inChannel            *= 2
+	input[0][%CHANNEL]    = num2istr(inChannel)
+	input[0][%ENCODEINFO] = encodeInfo
+
+	HW_SU_AcquireImpl(device, input, output, $"", SUTTER_ACQUISITION_FOREGROUND, timeout = 1)
+End
+
+Function HW_SU_ReadADC(variable deviceID, variable channel, [variable flags])
+
+	string device, encodeInfo
+	variable inChannel
+
+	DEBUGPRINTSTACKINFO()
+
+	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+	WAVE   config    = GetDAQConfigWave(device)
+	WAVE/T input     = GetSUDeviceInput(device)
+	WAVE   channelAD = GetSutterSingleSampleADCInputWave(device)
+
+	Redimension/N=(1, -1) input
+	input[0][%INPUTWAVE] = GetWavesDataFolder(channelAD, 2)
+	[inChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocADC(channel)
+	input[0][%CHANNEL]    = num2istr(inChannel)
+	input[0][%ENCODEINFO] = encodeInfo
+
+	HW_SU_AcquireImpl(device, input, $"", $"", SUTTER_ACQUISITION_FOREGROUND, timeout = 1, inputOnly = 1)
+
+	return channelAD[0]
+End
+
+Function HW_SU_WriteDAC(variable deviceID, variable channel, variable value, [variable flags])
+
+	string device, encodeInfo
+	variable outChannel, inChannel
+
+	DEBUGPRINTSTACKINFO()
+
+	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
+	WAVE   config    = GetDAQConfigWave(device)
+	WAVE/T input     = GetSUDeviceInput(device)
+	WAVE/T output    = GetSUDeviceOutput(device)
+	WAVE   channelDA = GetSutterSingleSampleDACOutputWave(device)
+	WAVE   channelAD = GetSutterSingleSampleADCInputWave(device)
+	channelDA = value
+
+	Redimension/N=(1, -1) output
+	output[0][%OUTPUTWAVE] = GetWavesDataFolder(channelDA, 2)
+	[outChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocDAC(channel)
+	output[0][%CHANNEL]    = num2istr(outChannel)
+	output[0][%ENCODEINFO] = encodeInfo
+
+	// we need to run some input as well to have the command hook from SutterDAQScanWave
+	Redimension/N=(1, -1) input
+	input[0][%INPUTWAVE] = GetWavesDataFolder(channelAD, 2)
+	[inChannel, encodeInfo] = HW_SU_GetEncodeFromHS(0)
+	inChannel            *= 2
+	input[0][%CHANNEL]    = num2istr(inChannel)
+	input[0][%ENCODEINFO] = encodeInfo
+
+	HW_SU_AcquireImpl(device, input, output, $"", SUTTER_ACQUISITION_FOREGROUND, timeout = 1)
+End
+
+/// @brief Wraps the hardware access for sutter acquisition
+/// @param device    device name
+/// @param input     input definition encoding for sutter
+/// @param output    output definition encoding for sutter, can be a null wave if inputOnly flag is set
+/// @param gain      gain wave for sutter input, can be a null wave if no gain should be set
+/// @param mode      Either SUTTER_ACQUISITION_FOREGROUND or SUTTER_ACQUISITION_BACKGROUND for foreground or background acquisition respectively
+/// @param timeout   [optional, default - required for foreground acquisition, must be > 0] time out in [s] for foreground acquisition. An ASSERT is thrown if the timeout is reached.
+///                  timeout is not used in SUTTER_ACQUISITION_BACKGROUND mode.
+/// @param inputOnly [optional, default 0] flag, when set only acquisition from ADC is run, when not set the DAC and ADC is run.
+static Function HW_SU_AcquireImpl(string device, WAVE input, WAVE/Z output, WAVE/Z gain, variable mode, [variable timeout, variable inputOnly])
+
+	string cmdError, cmdDone
+	variable to
+
+	inputOnly = ParamIsDefault(inputOnly) ? 0 : !!inputOnly
+
+	if(mode == SUTTER_ACQUISITION_FOREGROUND)
+		ASSERT(!ParamIsDefault(timeout), "Timeout argument in [s] must be set for foreground acquisition")
+		ASSERT(timeout > 0, "Timeout must be greater than zero")
+	endif
+
+	NVAR err = $GetSU_AcquisitionError(device)
+	NVAR acq = $GetSU_IsAcquisitionRunning(device)
+	ASSERT(acq == 0, "Attempt to start acquisition while acquisition still running.")
+
+	sprintf cmdDone, "HW_SU_AcqDone(\"%s\")", device
+	sprintf cmdError, "HW_SU_AcqError(\"%s\")", device
+
+	err = 0
+	acq = 1
+	if(!inputOnly)
+		ASSERT(WaveExists(output), "definition wave for output is a null wave")
+		SutterDAQWriteWave/MULT=1/T=1/R=0/RHP=0 output
+	endif
+	if(WaveExists(gain))
+		SutterDAQScanWave/MULT=1/T=1/C=0/B=1/G=gain/E=cmdError/H=cmdDone input
+	else
+		SutterDAQScanWave/MULT=1/T=1/C=0/B=1/E=cmdError/H=cmdDone input
+	endif
+	SutterDAQClock(0, 0, 1)
+
+	if(mode == SUTTER_ACQUISITION_BACKGROUND)
+		return NaN
+	endif
+
+	to = DateTime + timeout
+	do
+		DoXOPIdle
+	while(acq && err == 0 && DateTime < to)
+
+	ASSERT(err == 0, "Hardware Error on foreground acquisition")
+	ASSERT(acq == 0, "Hardware Error: Reached timeout in foreground acquisition")
+End
+
+Function HW_SU_AcqDone(string device)
+
+	NVAR acq = $GetSU_IsAcquisitionRunning(device)
+	acq = 0
+End
+
+Function HW_SU_AcqError(string device)
+
+	NVAR err = $GetSU_AcquisitionError(device)
+	NVAR acq = $GetSU_IsAcquisitionRunning(device)
+	err = 1
+	acq = 0
+End
+
+Function HW_SU_GetADCSamplePosition()
+
+	variable pos
+
+	SutterDAQReadAvailable(pos)
+
+	return pos
+End
+
+#else
+
+Function HW_SU_OpenDevice([variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function/S HW_SU_ListDevices([variable flags])
+
+	return ""
+End
+
+Function HW_SU_CloseDevice(variable deviceId, [variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+static Function HW_SU_ResetDevice([variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function HW_SU_GetDeviceInfo(WAVE/T deviceInfo)
+
+	return NaN
+End
+
+static Function HW_SU_IsRunning(string device)
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function HW_SU_StopAcq(variable deviceId, [variable zeroDAC, variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function HW_SU_StartAcq(variable deviceId, [variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function HW_SU_GetADCSamplePosition()
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function HW_SU_ZeroDAC(variable deviceID, [variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function HW_SU_ReadADC(variable deviceID, variable channel, [variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+Function HW_SU_WriteDAC(variable deviceID, variable channel, variable value, [variable flags])
+
+	DoAbortNow("SUTTER XOP is not available")
+End
+
+#endif // SUTTER_XOP_PRESENT
 
 /// @}

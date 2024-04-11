@@ -22,6 +22,8 @@ static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8
 
 static Constant DAP_WAITFORTPANALYSIS_TIMEOUT = 2
 
+static StrConstant SU_DISABLED_CONTROLS = "Popup_Settings_VC_DA;Popup_Settings_VC_AD;Popup_Settings_IC_DA;Popup_Settings_IC_AD;button_Hardware_ClearChanConn;"
+
 /// @brief Creates meta information about coupled CheckBoxes (Radio Button) controls
 ///        Used for saving/restoring the GUI state
 /// @return Free text wave with lists of coupled CheckBox controls
@@ -120,6 +122,30 @@ Function/S DAP_GetITCDeviceList()
 	return globalITCDevList
 End
 
+/// @brief Returns a list of SU devices for DAC, #NONE if there are none
+Function/S DAP_GetSUDeviceList()
+
+	string devList
+
+	SVAR globalSUDevList = $GetSUDeviceList()
+	devList = globalSUDevList
+
+	if(!isEmpty(devList) && CmpStr(devList, NONE))
+		return devList
+	endif
+
+	WAVE/T devInfo = GetSUDeviceInfo()
+	devList = devInfo[%MASTERDEVICE]
+
+	if(!IsEmpty(devList))
+		globalSUDevList = devList
+	else
+		globalSUDevList = NONE
+	endif
+
+	return globalSUDevList
+End
+
 /// @brief Returns a list of available ITC and NI devices
 ///
 /// @return list of DAC devices
@@ -135,6 +161,12 @@ Function/S DAP_GetDACDeviceList()
 	endif
 
 	devices = DAP_GetNIDeviceList()
+
+	if(CmpStr(devices, NONE))
+		list = AddListItem(devices, list, ";", Inf)
+	endif
+
+	devices = DAP_GetSUDeviceList()
 
 	if(CmpStr(devices, NONE))
 		list = AddListItem(devices, list, ";", Inf)
@@ -1628,12 +1660,16 @@ Function DAP_GetSampInt(string device, variable dataAcqOrTP, variable channelTyp
 	endif
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		if(IsDeviceNameFromSutter(device) && channelType != XOP_CHANNEL_TYPE_ADC)
+			return SI_CalculateMinSampInterval(device, dataAcqOrTP, channelType)
+		endif
+
 		fixedFreqkHzStr = DAG_GetTextualValue(device, "Popup_Settings_FixedFreq")
 		if(cmpstr(fixedFreqkHzStr, "Maximum"))
 			sampInt = 1 / (str2num(fixedFreqkHzStr) * KILO_TO_ONE) * ONE_TO_MICRO
 
 			if(!ParamIsDefault(valid))
-				valid = sampInt >= SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, channelType)
+				valid = DAP_IsSampleIntervalValid(device, channelType, sampInt)
 			endif
 
 			return sampInt
@@ -1646,6 +1682,27 @@ Function DAP_GetSampInt(string device, variable dataAcqOrTP, variable channelTyp
 	else
 		ASSERT(0, "unknown mode")
 	endif
+End
+
+static Function DAP_IsSampleIntervalValid(string device, variable channelType, variable sampInt)
+
+	if(!IsDeviceNameFromSutter(device))
+		return sampInt >= SI_CalculateMinSampInterval(device, DATA_ACQUISITION_MODE, channelType)
+	endif
+
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC: // intended drop-through
+		case XOP_CHANNEL_TYPE_TTL:
+			WAVE allowedIntervals = GetSutterDACTTLSampleInterval()
+			FindValue/Z/V=(sampInt) allowedIntervals
+			return V_value >= 0
+		case XOP_CHANNEL_TYPE_ADC:
+			WAVE allowedIntervals = GetSutterADCSampleInterval()
+			FindValue/Z/V=(sampInt) allowedIntervals
+			return V_value >= 0
+		default:
+			ASSERT(0, "Invalid channel type")
+	endswitch
 End
 
 Function DAP_UpdateSweepSetVariables(device)
@@ -1905,6 +1962,34 @@ static Function DAP_HasAscendingSweepOrdering(string device)
 	return 0
 End
 
+static Function DAP_CheckSampleInterval(string device, variable mode)
+
+	variable sampIntADC, sampIntDAC, sampIntTTL, validSampInt
+
+	sampIntDAC = DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_DAC, valid = validSampInt)
+	if(!validSampInt)
+		printf "%s: The selected sampling interval is not possible with your DAC hardware.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
+
+	sampIntADC = DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_ADC, valid = validSampInt)
+	if(!validSampInt)
+		printf "%s: The selected sampling interval is not possible with your ADC hardware.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
+
+	sampIntTTL = DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_TTL, valid = validSampInt)
+	if(!validSampInt)
+		printf "%s: The selected sampling interval is not possible with your TTL hardware.\r", device
+		ControlWindowToFront()
+		return 1
+	endif
+
+	return 0
+End
+
 /// @brief Check if all settings are valid to send a test pulse or acquire data
 ///
 /// For invalid settings an informative message is printed into the history area.
@@ -1921,8 +2006,8 @@ Function DAP_CheckSettings(device, mode)
 	variable mode
 
 	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage
-	variable ampSerial, ampChannelID, minValue, maxValue, hardwareType, hwChannel
-	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
+	variable ampSerial, ampChannelID, hardwareType
+	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo
 	variable DACchannel, ret
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
 	string list, lastStart, msg
@@ -1986,10 +2071,7 @@ Function DAP_CheckSettings(device, mode)
 		return 1
 	endif
 
-	DAP_GetSampInt(device, mode, XOP_CHANNEL_TYPE_DAC, valid = validSampInt)
-	if(!validSampInt)
-		printf "%s: The selected sampling interval is not possible with your hardware.\r", device
-		ControlWindowToFront()
+	if(DAP_CheckSampleInterval(device, mode))
 		return 1
 	endif
 
@@ -2140,70 +2222,9 @@ Function DAP_CheckSettings(device, mode)
 			endfor
 		endif
 
-		WAVE statusAsync = DAG_GetChannelState(device, CHANNEL_TYPE_ASYNC)
-		WAVE statusAD    = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
-
-		for(i = 0; i < NUM_ASYNC_CHANNELS; i += 1)
-
-			if(!statusAsync[i])
-				continue
-			endif
-
-			hwChannel = HW_ITC_CalculateDevChannelOff(device) + i
-
-			// AD channel already used
-			if(hwChannel < NUM_ASYNC_CHANNELS && statusAD[hwChannel])
-				printf "(%s) The Async channel %d is already used for DAQ.\r", device, i
-				ControlWindowToFront()
-				return 1
-			endif
-
-			// active async channel
-
-			ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
-			if(!IsFinite(DAG_GetNumericalValue(device, ctrl, index = i)))
-				printf "(%s) Please select a finite gain value for async channel %d\r", device, i
-				ControlWindowToFront()
-				return 1
-			endif
-
-			ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-			if(!DAG_GetNumericalValue(device, ctrl, index = i))
-				continue
-			endif
-
-			// with alarm enabled
-
-			ctrl     = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-			minValue = DAG_GetNumericalValue(device, ctrl, index = i)
-			if(!IsFinite(minValue))
-				printf "(%s) Please select a finite minimum value for async channel %d\r", device, i
-				ControlWindowToFront()
-				return 1
-			endif
-
-			ctrl     = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-			maxValue = DAG_GetNumericalValue(device, ctrl, index = i)
-			if(!IsFinite(maxValue))
-				printf "(%s) Please select a finite maximum value for async channel %d\r", device, i
-				ControlWindowToFront()
-				return 1
-			endif
-
-			if(!(minValue < maxValue))
-				printf "(%s) Please select a minimum value which is strictly smaller than the maximum value for async channel %d\r", device, i
-				ControlWindowToFront()
-				return 1
-			endif
-
-			if(DAG_GetNumericalValue(device, "Check_Settings_AlarmAutoRepeat"))
-				if(!DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
-					printf "(%s) Repeat sweep on async alarm can only be used with repeated acquisition enabled\r", device
-					ControlWindowToFront()
-					return 1
-				endif
-			endif
-		endfor
+		if(DAP_CheckAsyncSettings(device))
+			return 1
+		endif
 	endif
 
 	// avoid having different headstages reference the same amplifiers
@@ -2374,6 +2395,84 @@ Function DAP_CheckSettings(device, mode)
 	if(DAG_GetNumericalValue(device, "Check_Settings_NwbExport"))
 		NWB_PrepareExport(str2num(DAG_GetTextualValue(device, "Popup_Settings_NwbVersion")))
 	endif
+
+	return 0
+End
+
+static Function DAP_CheckAsyncSettings(string device)
+
+	variable i, hwChannel, minValue, maxValue, auxOffset, isADinUse
+	string ctrl
+
+	WAVE statusAsync = DAG_GetChannelState(device, CHANNEL_TYPE_ASYNC)
+	WAVE statusAD    = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
+	if(IsDeviceNameFromSutter(device))
+		WAVE deviceInfo = GetDeviceInfoWave(device)
+		auxOffset = deviceInfo[%AD]
+	endif
+
+	for(i = 0; i < NUM_ASYNC_CHANNELS; i += 1)
+
+		if(!statusAsync[i])
+			continue
+		endif
+
+		hwChannel = HW_ITC_CalculateDevChannelOff(device) + i
+
+		// AD channel already used
+		isADinUse = hwChannel + auxOffset < NUM_AD_CHANNELS ? statusAD[hwChannel + auxOffset] : 0
+		if(hwChannel < NUM_ASYNC_CHANNELS && isADinUse)
+			printf "(%s) The Async channel %d is already used for DAQ.\r", device, i
+			ControlWindowToFront()
+			return 1
+		endif
+
+		// active async channel
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+		if(!IsFinite(DAG_GetNumericalValue(device, ctrl, index = i)))
+			printf "(%s) Please select a finite gain value for async channel %d\r", device, i
+			ControlWindowToFront()
+			return 1
+		endif
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+		if(!DAG_GetNumericalValue(device, ctrl, index = i))
+			continue
+		endif
+
+		// with alarm enabled
+
+		ctrl     = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+		minValue = DAG_GetNumericalValue(device, ctrl, index = i)
+		if(!IsFinite(minValue))
+			printf "(%s) Please select a finite minimum value for async channel %d\r", device, i
+			ControlWindowToFront()
+			return 1
+		endif
+
+		ctrl     = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+		maxValue = DAG_GetNumericalValue(device, ctrl, index = i)
+		if(!IsFinite(maxValue))
+			printf "(%s) Please select a finite maximum value for async channel %d\r", device, i
+			ControlWindowToFront()
+			return 1
+		endif
+
+		if(!(minValue < maxValue))
+			printf "(%s) Please select a minimum value which is strictly smaller than the maximum value for async channel %d\r", device, i
+			ControlWindowToFront()
+			return 1
+		endif
+
+		if(DAG_GetNumericalValue(device, "Check_Settings_AlarmAutoRepeat"))
+			if(!DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
+				printf "(%s) Repeat sweep on async alarm can only be used with repeated acquisition enabled\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+		endif
+	endfor
 
 	return 0
 End
@@ -4134,6 +4233,7 @@ Function/S DAP_CreateDAEphysPanel()
 	// fetch device lists
 	DAP_GetNIDeviceList()
 	DAP_GetITCDeviceList()
+	DAP_GetSUDeviceList()
 
 	Execute "DA_Ephys()"
 	panel = GetCurrentWindow()
@@ -4529,8 +4629,8 @@ End
 
 static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceEnable])
 
-	variable i
-	string   controls
+	variable i, channels
+	string controls
 
 	if(ParamIsDefault(forceEnable))
 #ifdef EVIL_KITTEN_EATING_MODE
@@ -4543,17 +4643,35 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 	endif
 
 	if(forceEnable)
-		WAVE/Z deviceInfo = $""
-	else
-		WAVE deviceInfo = GetDeviceInfoWave(device)
-		ASSERT(IsFinite(deviceInfo[%DA]) && IsFinite(deviceInfo[%AD]) && deviceInfo[%TTL], "Could not query the device info wave")
+		EnableControls(device, SU_DISABLED_CONTROLS)
+		for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+			controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_DAC)
+			EnableControls(device, controls)
+			controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_TTL)
+			EnableControls(device, controls)
+		endfor
+		for(i = 0; i < NUM_AD_CHANNELS; i += 1)
+			controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ADC)
+			EnableControls(device, controls)
+		endfor
+
+		return NaN
 	endif
 
+	WAVE deviceInfo = GetDeviceInfoWave(device)
+	ASSERT(IsFinite(deviceInfo[%DA]) && IsFinite(deviceInfo[%AD]) && deviceInfo[%TTL], "Could not query the device info wave")
+
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_DAC)
+		channels = isNaN(deviceInfo[%AuxDA]) ? deviceInfo[%DA] : deviceInfo[%DA] + deviceInfo[%AuxDA]
+		if(i < channels)
+			EnableControls(device, controls)
+		else
+			DisableControls(device, controls)
+		endif
 
-		if(forceEnable || i < deviceInfo[%DA])
+		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_TTL)
+		if(i < deviceInfo[%TTL])
 			EnableControls(device, controls)
 		else
 			DisableControls(device, controls)
@@ -4561,21 +4679,9 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 	endfor
 
 	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
-
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ADC)
-
-		if(forceEnable || i < deviceInfo[%AD])
-			EnableControls(device, controls)
-		else
-			DisableControls(device, controls)
-		endif
-	endfor
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-
-		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_TTL)
-
-		if(forceEnable || i < deviceInfo[%TTL])
+		channels = isNaN(deviceInfo[%AuxAD]) ? deviceInfo[%AD] : deviceInfo[%AD] + deviceInfo[%AuxAD]
+		if(i < channels)
 			EnableControls(device, controls)
 		else
 			DisableControls(device, controls)
@@ -4583,15 +4689,30 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 	endfor
 
 	for(i = 0; i < NUM_ASYNC_CHANNELS; i += 1)
-
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ASYNC)
-
-		if(forceEnable || i < deviceInfo[%AD])
+		channels = isNaN(deviceInfo[%AuxAD]) ? deviceInfo[%AD] : deviceInfo[%AuxAD]
+		if(i < channels)
 			EnableControls(device, controls)
 		else
 			DisableControls(device, controls)
 		endif
 	endfor
+
+	if(IsDeviceNameFromSutter(device))
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = i)
+			if(i < deviceInfo[%DA])
+				PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", val = i)
+				PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", val = i)
+				PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", val = i)
+				PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", val = i)
+			else
+				PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+			endif
+		endfor
+		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
+		DisableControls(device, SU_DISABLED_CONTROLS)
+	endif
 End
 
 static Function/S DAP_GetControlsForChannelIndex(variable channelIndex, variable channelType)
@@ -4716,6 +4837,10 @@ static Function DAP_UnlockDevice(device)
 	WAVE TPSettings = GetTPsettings(device)
 	TPSettings[%autoTPEnable][0, NUM_HEADSTAGES - 1] = 0
 
+	if(IsDeviceNameFromSutter(device))
+		EnableControls(device, SU_DISABLED_CONTROLS)
+	endif
+
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(device))
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(device))
 
@@ -4780,6 +4905,7 @@ static Function DAP_UpdateListOfLockedDevices()
 	string ITCPanelList = WinList("ITC*", ";", "WIN:64")
 	string allPanelList = WinList("*", ";", "WIN:64")
 	string NIDevList    = DAP_GetNIDeviceList()
+	string SUPanelList  = WinList(DEVICE_SUTTER_NAME_START_CLEAN + "*", ";", "WIN:64")
 
 	numDevs = ItemsInList(NIDevList)
 	for(i = 0; i < numDevs; i += 1)
@@ -4790,7 +4916,7 @@ static Function DAP_UpdateListOfLockedDevices()
 	endfor
 
 	SVAR panelList = $GetLockedDevices()
-	panelList = ITCPanelList + NIPanelList
+	panelList = ITCPanelList + NIPanelList + SUPanelList
 End
 
 static Function DAP_UpdateChanAmpAssignStorWv(device)
@@ -5216,6 +5342,7 @@ Function ButtonProc_Hardware_rescan(ba) : ButtonControl
 
 			DAP_GetNIDeviceList()
 			DAP_GetITCDeviceList()
+			DAP_GetSUDeviceList()
 			break
 	endswitch
 

@@ -36,6 +36,15 @@ Function DQM_FIFOMonitor(s)
 		WAVE TPSettingsCalc = GetTPSettingsCalculated(device)
 
 		switch(hardwareType)
+			case HARDWARE_SUTTER_DAC:
+				if(ROVar(GetSU_AcquisitionError(device)))
+					LOG_AddEntry(PACKAGE_MIES, "hardware error", stacktrace = 1)
+					DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR, startTPAfterDAQ = 0)
+				endif
+
+				fifoLatest = HW_SU_GetADCSamplePosition()
+				isFinished = HW_GetEffectiveADCWaveLength(device, DATA_ACQUISITION_MODE) == fifoLatest
+				break
 			case HARDWARE_NI_DAC:
 
 				AssertOnAndClearRTError()

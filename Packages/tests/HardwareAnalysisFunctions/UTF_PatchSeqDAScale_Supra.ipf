@@ -94,7 +94,7 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 End
 
 static Function PS_DS_Supra1_preAcq(string device)
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -187,7 +187,7 @@ End
 static Function PS_DS_Supra2_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str = "*")
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -283,7 +283,7 @@ static Function PS_DS_Supra3_preAcq(device)
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "FinalSlopePercent", var = 100)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter(stimSet, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -378,7 +378,7 @@ static Function PS_DS_Supra4_preAcq(device)
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "FinalSlopePercent", var = 60)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter(stimSet, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -477,7 +477,7 @@ static Function PS_DS_Supra5_preAcq(device)
 	AFH_AddAnalysisParameter(stimSet, "MaximumSpikeCount", var = 6)
 	AFH_AddAnalysisParameter(stimSet, "DAScaleModifier", var = DAScaleModifierPerc)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter(stimSet, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -587,7 +587,7 @@ static Function PS_DS_Supra6_preAcq(device)
 	AFH_AddAnalysisParameter(stimSet, "MaximumSpikeCount", var = 6)
 	AFH_AddAnalysisParameter(stimSet, "DAScaleModifier", var = DAScaleModifierPerc)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter(stimSet, "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)

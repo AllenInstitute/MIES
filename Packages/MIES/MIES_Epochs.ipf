@@ -135,7 +135,7 @@ static Function EP_CollectEpochInfoDA(WAVE/T epochWave, STRUCT DataConfiguration
 	WAVE/T ec.epochWave = epochWave
 	ec.channelType         = XOP_CHANNEL_TYPE_DAC
 	ec.decimationFactor    = s.decimationFactor
-	ec.samplingInterval    = s.samplingInterval
+	ec.samplingInterval    = s.samplingIntervalDA
 	ec.tpTotalLengthPoints = s.testPulseLength
 	ec.tpPulseStartPoint   = s.tpPulseStartPoint
 	ec.tpPulseLengthPoints = s.tpPulseLengthPoints
@@ -167,16 +167,16 @@ static Function EP_CollectEpochInfoDA(WAVE/T epochWave, STRUCT DataConfiguration
 
 		// epoch for onsetDelayAuto is assumed to be a globalTPInsert which is added as epoch below
 		if(s.onsetDelayUser)
-			epochBegin = s.onsetDelayAuto * s.samplingInterval
-			epochEnd   = epochBegin + s.onsetDelayUser * s.samplingInterval
+			epochBegin = s.onsetDelayAuto * s.samplingIntervalDA
+			epochEnd   = epochBegin + s.onsetDelayUser * s.samplingIntervalDA
 
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, tags, EPOCH_SN_BL_ONSETDELAYUSER, 0)
 		endif
 
 		if(s.distributedDAQ)
-			epochBegin = s.onsetDelay * s.samplingInterval
-			epochEnd   = ec.dwStimsetBegin * s.samplingInterval
+			epochBegin = s.onsetDelay * s.samplingIntervalDA
+			epochEnd   = ec.dwStimsetBegin * s.samplingIntervalDA
 			if(epochBegin != epochEnd)
 				tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 				EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, tags, EPOCH_SN_BL_DDAQ, 0)
@@ -184,8 +184,8 @@ static Function EP_CollectEpochInfoDA(WAVE/T epochWave, STRUCT DataConfiguration
 		endif
 
 		if(s.terminationDelay)
-			epochBegin = (ec.dwStimsetBegin + ec.dwStimsetSize) * s.samplingInterval
-			epochEnd   = min(epochBegin + s.terminationDelay * s.samplingInterval, s.stopCollectionPoint * s.samplingInterval)
+			epochBegin = (ec.dwStimsetBegin + ec.dwStimsetSize) * s.samplingIntervalDA
+			epochEnd   = min(epochBegin + s.terminationDelay * s.samplingIntervalDA, s.stopCollectionPoint * s.samplingIntervalDA)
 
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin, epochEnd, tags, EPOCH_SN_BL_TERMINATIONDELAY, 0)
@@ -194,8 +194,8 @@ static Function EP_CollectEpochInfoDA(WAVE/T epochWave, STRUCT DataConfiguration
 		EP_AddEpochsFromStimSetNote(ec)
 
 		if(s.distributedDAQOptOv)
-			epochBegin = ec.dwStimsetBegin * s.samplingInterval
-			epochEnd   = (ec.dwStimsetBegin + ec.dwStimsetSize) * s.samplingInterval
+			epochBegin = ec.dwStimsetBegin * s.samplingIntervalDA
+			epochEnd   = (ec.dwStimsetBegin + ec.dwStimsetSize) * s.samplingIntervalDA
 			EP_AddEpochsFromOodDAQRegions(ec.epochWave, ec.channel, s.regions[i], epochBegin, epochEnd)
 		endif
 
@@ -206,7 +206,7 @@ static Function EP_CollectEpochInfoDA(WAVE/T epochWave, STRUCT DataConfiguration
 			EP_AddEpoch(ec.epochWave, ec.channel, ec.channelType, epochBegin * ec.samplingInterval, s.stopCollectionPoint * ec.samplingInterval, tags, EPOCH_SN_BL_GENERALTRAIL, 0)
 		endif
 
-		testPulseLength = s.testPulseLength * s.samplingInterval
+		testPulseLength = s.testPulseLength * s.samplingIntervalDA
 		if(s.globalTPInsert)
 			if(!isUnAssociated)
 				// space in ITCDataWave for the testpulse is allocated via an automatic increase
@@ -230,7 +230,7 @@ static Function EP_CollectEpochInfoTTL(WAVE/T epochWave, STRUCT DataConfiguratio
 	WAVE/T ec.epochWave = epochWave
 	ec.channelType            = XOP_CHANNEL_TYPE_TTL
 	ec.decimationFactor       = s.decimationFactor
-	ec.samplingInterval       = s.samplingInterval
+	ec.samplingInterval       = s.samplingIntervalTTL
 	ec.tpTotalLengthPoints    = NaN
 	ec.tpPulseStartPoint      = NaN
 	ec.tpPulseLengthPoints    = NaN
@@ -1650,7 +1650,7 @@ Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/T textu
 	endif
 	[plannedTime, acquiredTime] = SWS_DeterminePlannedAndAcquiredTime(channelDA, channelAD, adSize, firstUnacquiredIndex)
 	for(channelNr : s.DACList)
-		EP_AdaptEpochInfoChannelImpl(recEpochWave, channelNr, XOP_CHANNEL_TYPE_DAC, s.samplingInterval, acquiredTime, plannedTime)
+		EP_AdaptEpochInfoChannelImpl(recEpochWave, channelNr, XOP_CHANNEL_TYPE_DAC, s.samplingIntervalDA, acquiredTime, plannedTime)
 	endfor
 	EP_SortEpochs(recEpochWave)
 

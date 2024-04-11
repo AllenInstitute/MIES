@@ -232,10 +232,15 @@ End
 
 Function AdjustAnalysisParamsForPSQ(string device, string stimset)
 
-	variable samplingFrequency
+	variable samplingFrequency, multiplier
 	samplingFrequency = PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(device)
 
-	AFH_AddAnalysisParameter(stimset, "SamplingMultiplier", var = 4)
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	multiplier = 1
+#else
+	multiplier = 4
+#endif
+	AFH_AddAnalysisParameter(stimset, "SamplingMultiplier", var = multiplier)
 	AFH_AddAnalysisParameter(stimset, "SamplingFrequency", var = samplingFrequency)
 End
 

@@ -235,9 +235,9 @@ Structure AnalysisFunction_V3
 	/// one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
 	variable eventType
 
-	/// scaled and undecimated data from the DAC hardware, 2D floating-point wave
-	/// Rows has channel data, one column per channel, channels are in the order DA/AD/TTL
-	WAVE scaledDACWave
+	/// scaled and undecimated data from the DAC hardware, wave ref wave where each element is a channel wave.
+	/// Channels are in the same order as the config wave rows.
+	WAVE/WAVE scaledDACWave
 
 	/// active headstage index, `[0, NUM_HEADSTAGES[`
 	variable headStage
@@ -509,8 +509,12 @@ Structure DataConfigurationResult
 	/// One of @ref HardwareDACTypeConstants
 	variable hardwareType
 
-	/// @sa DAP_GetSampInt(), the sampling interval for DA
-	variable samplingInterval
+	/// Sampling interval for DA channels in μs, @sa DAP_GetSampInt()
+	variable samplingIntervalDA
+	/// Sampling interval for AD channels in μs, @sa DAP_GetSampInt()
+	variable samplingIntervalAD
+	/// Sampling interval for TTL channels in μs, @sa DAP_GetSampInt()
+	variable samplingIntervalTTL
 
 	/// @name Various delays in points of the DA data wave
 	/// @{

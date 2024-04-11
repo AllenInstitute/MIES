@@ -225,7 +225,7 @@ static Function PS_SE1_preAcq(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -305,7 +305,7 @@ static Function PS_SE2_preAcq(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -385,7 +385,7 @@ static Function PS_SE3_preAcq(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -464,7 +464,7 @@ static Function PS_SE4_preAcq(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -543,7 +543,7 @@ static Function PS_SE5_preAcq(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -624,7 +624,7 @@ static Function PS_SE6_preAcq(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -705,7 +705,7 @@ static Function PS_SE7_preAcq(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -784,7 +784,7 @@ static Function PS_SE7a_preAcq(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextStimSetName", str = "StimulusSetA_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -864,7 +864,7 @@ static Function PS_SE8_preAcq(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 600)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -900,7 +900,7 @@ static Function PS_SE9_preAcq(device)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "NextIndexingEndStimSetName", str = "StimulusSetB_DA_0")
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineChunkLength", var = 500)
 
-	Make/FREE asyncChannels = {2, 4}
+	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
