@@ -1152,7 +1152,7 @@ End
 /// Allows to add user epochs for not yet finished sweeps. The tree level
 /// is fixed to #EPOCH_USER_LEVEL to not collide with stock entries.
 ///
-/// @param device    device
+/// @param epochWave     epoch wave
 /// @param channelType   channel type, currently only #XOP_CHANNEL_TYPE_DAC and #XOP_CHANNEL_TYPE_TTL is supported
 /// @param channelNumber channel number
 /// @param epBegin       start time of the epoch in seconds
@@ -1160,11 +1160,10 @@ End
 /// @param tags          tags for the epoch
 /// @param shortName     [optional, defaults to auto-generated] user defined short name for the epoch, will
 ///                      be prefixed with #EPOCH_SHORTNAME_USER_PREFIX
-Function EP_AddUserEpoch(string device, variable channelType, variable channelNumber, variable epBegin, variable epEnd, string tags, [string shortName])
+Function EP_AddUserEpoch(WAVE/T epochWave, variable channelType, variable channelNumber, variable epBegin, variable epEnd, string tags, [string shortName])
 
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_TTL, "Currently only epochs for the DA and TTL channels are supported")
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	if(ParamIsDefault(shortName))
 		sprintf shortName, "%s%d", EPOCH_SHORTNAME_USER_PREFIX, EP_GetEpochCount(epochWave, channelNumber, channelType)
 	else
@@ -1172,7 +1171,7 @@ Function EP_AddUserEpoch(string device, variable channelType, variable channelNu
 		shortName = EPOCH_SHORTNAME_USER_PREFIX + shortName
 	endif
 
-	return EP_AddEpoch(epochWave, channelNumber, channelType, epBegin * ONE_TO_MICRO, epEnd * ONE_TO_MICRO, tags, shortName, EPOCH_USER_LEVEL)
+	EP_AddEpoch(epochWave, channelNumber, channelType, epBegin * ONE_TO_MICRO, epEnd * ONE_TO_MICRO, tags, shortName, EPOCH_USER_LEVEL)
 End
 
 /// @brief Adds a epoch to the epochsWave

@@ -967,7 +967,8 @@ Function StopMidSweep_V3(string device, STRUCT AnalysisFunction_V3 &s)
 		case MID_SWEEP_EVENT:
 			DAC = AFH_GetDACFromHeadstage(device, s.headstage)
 
-			EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, 0, 1e9, "key=value")
+			WAVE/T epochWave = GetEpochsWave(device)
+			EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, 0, 1e9, "key=value")
 
 			return ANALYSIS_FUNC_RET_EARLY_STOP
 	endswitch
@@ -981,7 +982,8 @@ Function AddTooLargeUserEpoch_V3(string device, STRUCT AnalysisFunction_V3 &s)
 	switch(s.eventType)
 		case PRE_SWEEP_CONFIG_EVENT:
 			DAC = AFH_GetDACFromHeadstage(device, s.headstage)
-			EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, 0, 1e9, "key=value")
+			WAVE/T epochWave = GetEpochsWave(device)
+			EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, 0, 1e9, "key=value")
 			break
 	endswitch
 End
@@ -993,7 +995,8 @@ Function AddUserEpoch_V3(string device, STRUCT AnalysisFunction_V3 &s)
 	DAC = AFH_GetDACFromHeadstage(device, s.headstage)
 
 	sprintf tags, "HS=%d;eventType=%d;", s.headstage, s.eventType
-	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, 0.5, 0.6, tags)
+	WAVE/T epochWave = GetEpochsWave(device)
+	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, 0.5, 0.6, tags)
 End
 
 Function ChangeTPSettings(device, s)
