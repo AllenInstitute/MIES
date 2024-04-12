@@ -18,9 +18,11 @@ RUN groupadd -g ${GID} -o ${UNAME} && \
 
 USER ${UNAME}
 
-RUN mkdir ~/.lftp &&                                      \
-    echo "set ssl:check-hostname false" >> ~/.lftp/rc &&  \
-    echo "set ftp:ssl-force true" >> ~/.lftp/rc &&        \
-    echo "set ftp:ssl-protect-data true" >> ~/.lftp/rc && \
-    echo "set ftp:ssl-protect-fxp true" >> ~/.lftp/rc &&  \
-    echo "set ftp:ssl-protect-list true" >> ~/.lftp/rc
+RUN mkdir ~/.lftp                                             && \
+    echo "set ssl:check-hostname false" >> ~/.lftp/rc         && \
+    echo "set ftp:ssl-force true" >> ~/.lftp/rc               && \
+    echo "set ftp:ssl-protect-data true" >> ~/.lftp/rc        && \
+    echo "set ftp:ssl-protect-fxp true" >> ~/.lftp/rc         && \
+    echo "set ftp:ssl-protect-list true" >> ~/.lftp/rc        && \
+    echo "set mirror:parallel-directories true" >> ~/.lftp/rc && \
+    echo "set mirror:parallel-transfer-count 10" >> ~/.lftp/rc
