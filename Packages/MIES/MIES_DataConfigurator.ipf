@@ -2474,8 +2474,8 @@ static Function [WAVE/D adGains] DC_RecreateDataConfigurationResultFromLNB_ADC(S
 
 	variable index, i, idx
 
-	Make/FREE/N=(NUM_DA_TTL_CHANNELS) s.ADCList
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+	Make/FREE/N=(NUM_AD_CHANNELS) s.ADCList
+	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
 		[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "ADC", i, XOP_CHANNEL_TYPE_ADC, s.dataAcqOrTP)
 		if(WaveExists(settings))
 			s.ADCList[idx] = settings[index]
@@ -2491,7 +2491,7 @@ static Function [WAVE/D adGains] DC_RecreateDataConfigurationResultFromLNB_ADC(S
 	if(WaveExists(settings))
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(IsFinite(settings[i]))
-				FindValue/V=(settings[i]) s.DACList
+				FindValue/V=(settings[i]) s.ADCList
 				if(V_row >= 0)
 					s.headstageADC[V_row] = i
 				endif
