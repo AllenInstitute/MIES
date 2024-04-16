@@ -6099,7 +6099,10 @@ Function/WAVE LoadWaveFromDisk(string name)
 
 	path = GetFolder(FunctionPath("")) + name + ".itx"
 
-	LoadWave/Q/C/T path
+	print path
+
+	LoadWave/T path
+	print V_flag, S_waveNames
 	if(!V_flag)
 		return $""
 	endif
@@ -6110,6 +6113,8 @@ Function/WAVE LoadWaveFromDisk(string name)
 
 	DFREF dfr = GetStaticDataFolder()
 	MoveWave wv, dfr
+
+	ASSERT(WaveExists(wv), "Missing wave in LoadWaveFromDisk")
 
 	return wv
 End
