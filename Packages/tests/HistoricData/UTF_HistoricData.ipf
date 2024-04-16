@@ -20,6 +20,7 @@ static StrConstant HTTP_FOLDER_URL = "https://www.byte-physics.de/Downloads/alle
 
 // keep sorted
 #include "UTF_AttemptNWB2ExportOnOldData"
+#include "UTF_EpochRecreation"
 #include "UTF_HistoricDashboard"
 #include "UTF_HistoricEpochClipping"
 #include "UTF_HistoricSweepUpgrade"
@@ -84,10 +85,11 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	traceOptions = GetDefaultTraceOptions()
 
 	// sorted list
+	list = AddListItem("UTF_AttemptNWB2ExportOnOldData.ipf", list, ";", Inf)
+	list = AddListItem("UTF_EpochRecreation.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricSweepUpgrade.ipf", list, ";", Inf)
-	list = AddListItem("UTF_AttemptNWB2ExportOnOldData.ipf", list, ";", Inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
