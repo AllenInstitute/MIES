@@ -25,4 +25,4 @@ RUN mkdir ~/.lftp                                             && \
     echo "set ftp:ssl-protect-fxp true" >> ~/.lftp/rc         && \
     echo "set ftp:ssl-protect-list true" >> ~/.lftp/rc        && \
     echo "set mirror:parallel-directories true" >> ~/.lftp/rc && \
-    echo "set mirror:parallel-transfer-count 10" >> ~/.lftp/rc
+    echo "set mirror:parallel-transfer-count 5" >> ~/.lftp/rc
