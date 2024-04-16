@@ -778,10 +778,14 @@ static Function ED_createAsyncWaveNoteTags(device, sweepCount)
 		asyncSettingsWave[0][%AlarmState][INDEP_HEADSTAGE] = alarmState
 
 		if(alarmEnabled && alarmState)
+
+#ifndef AUTOMATED_TESTING
 			beep
 			print time() + " !!!!!!!!!!!!! " + title + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
 			ControlWindowToFront()
 			beep
+#endif // AUTOMATED_TESTING
+
 			redoLastSweep = 1
 		endif
 
