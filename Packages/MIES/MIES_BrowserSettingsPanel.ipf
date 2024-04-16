@@ -1671,8 +1671,9 @@ Function BSP_AddTracesForEpochs(string win)
 		WAVE/Z/T textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
 		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
 
+		DFREF sweepDFR = BSP_GetSweepDF(win, sweepNumber)
 		// present since a2172f03 (Added generations of epoch information wave, 2019-05-22)
-		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, channelNumber, channelType)
+		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, sweepDFR, channelNumber, channelType)
 		if(!WaveExists(epochsFromLBN))
 			continue
 		endif

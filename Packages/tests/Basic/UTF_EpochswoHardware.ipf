@@ -217,7 +217,7 @@ static Function EP_GetNextEpochsHasMatch()
 
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
-	WAVE/T/Z result = EP_GetNextEpoch(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", 1)
+	WAVE/T/Z result = EP_GetNextEpoch(numericalValues, textualValues, 0, $"", XOP_CHANNEL_TYPE_DAC, 2, "EP1", 1)
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
 	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 2 * MICRO_TO_ONE)
@@ -233,7 +233,7 @@ static Function EP_GetNextEpochsWithGapHasMatch()
 
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
-	WAVE/T/Z result = EP_GetNextEpoch(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP_1a", 1, ignoreGaps = 1)
+	WAVE/T/Z result = EP_GetNextEpoch(numericalValues, textualValues, 0, $"", XOP_CHANNEL_TYPE_DAC, 2, "EP_1a", 1, ignoreGaps = 1)
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
 	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 4e-6)

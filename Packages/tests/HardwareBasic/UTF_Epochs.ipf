@@ -334,6 +334,7 @@ static Function TestEpochsGeneric(string device)
 	variable sweepNo
 
 	hwType = GetHardwareType(device)
+	DFREF deviceDFR = GetDeviceDataPath(device)
 
 	// retrieve generic information
 	sweeps  = GetListOfObjects(GetDeviceDataPath(device), DATA_SWEEP_REGEXP, fullPath = 1)
@@ -372,6 +373,8 @@ static Function TestEpochsGeneric(string device)
 
 	lastPointDA = DimSize(channelDA, ROWS)
 	endTimeDAC  = samplingInterval * lastPointDA
+
+	DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 
 	WAVE/T epochLBEntries   = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	WAVE/T setNameLBEntries = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
@@ -419,7 +422,7 @@ static Function TestEpochsGeneric(string device)
 			endif
 			REQUIRE_WAVE(sweepChannel, NUMERIC_WAVE)
 
-			WAVE/Z/T epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+			WAVE/Z/T epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, sweepDFR, channelNumber, channelType)
 			if(WB_StimsetIsFromThirdParty(setName) || !CmpStr(setName, STIMSET_TP_WHILE_DAQ))
 				CHECK_WAVE(epochChannel, NULL_WAVE)
 				continue
@@ -1057,12 +1060,17 @@ End
 static Function EP_EpochTestUnassocDA_REENTRY([str])
 	string str
 
-	variable cbState
+	variable cbState, sweepNo
+
+	sweepNo = 0
+
+	DFREF deviceDFR = GetDeviceDataPath(str)
+	DFREF sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
 
 	WAVE/T textualValues   = GetLBTextualValues(str)
 	WAVE   numericalValues = GetLBNumericalValues(str)
-	WAVE/T epochChannel0   = EP_FetchEpochs(numericalValues, textualValues, 0, 0, XOP_CHANNEL_TYPE_DAC)
-	WAVE/T epochChannel2   = EP_FetchEpochs(numericalValues, textualValues, 0, 2, XOP_CHANNEL_TYPE_DAC)
+	WAVE/T epochChannel0   = EP_FetchEpochs(numericalValues, textualValues, sweepNo, sweepDFR, 0, XOP_CHANNEL_TYPE_DAC)
+	WAVE/T epochChannel2   = EP_FetchEpochs(numericalValues, textualValues, sweepNo, sweepDFR, 2, XOP_CHANNEL_TYPE_DAC)
 	Make/FREE/T/N=(DimSize(epochChannel0, ROWS)) epochNames0 = EP_GetShortName(epochChannel0[p][%Tags])
 	Make/FREE/T/N=(DimSize(epochChannel2, ROWS)) epochNames2 = EP_GetShortName(epochChannel2[p][%Tags])
 	WAVE tpIndex = FindIndizes(epochNames0, str = "TP")
@@ -1237,8 +1245,6 @@ static Function TestEpochReceation(string device)
 	DFREF  deviceDFR       = GetDeviceDataPath(device)
 	DFREF  sweepDFR        = GetSingleSweepFolder(deviceDFR, sweepNo)
 
-	WAVE epochWave = EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, sweepNo)
-
 	WAVE/Z activeChannels = GetActiveChannels(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC)
 	CHECK_WAVE(activeChannels, FREE_WAVE | NUMERIC_WAVE)
 	for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
@@ -1246,8 +1252,8 @@ static Function TestEpochReceation(string device)
 		if(IsNaN(activeChannels[channelNumber]))
 			continue
 		endif
-		WAVE/Z/T epochChannelRef = EP_FetchEpochs(numericalValues, textualValues, sweepNo, channelNumber, XOP_CHANNEL_TYPE_DAC)
-		WAVE/Z/T epochChannelRec = EP_FetchEpochsFromRecreated(epochWave, channelNumber, XOP_CHANNEL_TYPE_DAC)
+		WAVE/Z/T epochChannelRef = EP_FetchEpochs(numericalValues, textualValues, sweepNo, sweepDFR, channelNumber, XOP_CHANNEL_TYPE_DAC)
+		WAVE/Z/T epochChannelRec = MIES_EP#EP_FetchEpochsFromRecreation(numericalValues, textualValues, sweepNo, sweepDFR, channelNumber, XOP_CHANNEL_TYPE_DAC)
 
 		if(WaveExists(epochChannelRef))
 			TestEpochReceationRemoveUserEpochs(epochChannelRef)
