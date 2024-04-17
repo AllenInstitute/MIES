@@ -142,8 +142,8 @@ jobs:
         run: |
           find "${{ steps.download.outputs.download-path }}" -mindepth 1 -maxdepth 1 -type d |\
             xargs -I {} tools/ftp-upload/flatten-files.sh "{}"
-      - name: Compress NWB artifacts
-        run: tools/ftp-upload/compress-nwb-files.sh "${{ steps.download.outputs.download-path }}"
+      - name: Compress some artifacts
+        run: tools/ftp-upload/compress-files.sh "${{ steps.download.outputs.download-path }}"
       - name: Upload artifacts using FTP
         run: |
           tools/ftp-upload/upload-files.sh \
