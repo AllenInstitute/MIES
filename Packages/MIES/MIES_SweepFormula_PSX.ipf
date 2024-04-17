@@ -1097,7 +1097,7 @@ Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectDa
 	WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
 
-	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(numericalValues, textualValues, range, sweepNo, chanType, chanNr)
+	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr)
 	ASSERT(DimSize(resolvedRanges, COLS) == 1, "psxStats does not support epoch wildcards")
 
 	numRows = DimSize(allSelectHashes, ROWS)

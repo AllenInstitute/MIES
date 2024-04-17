@@ -1145,7 +1145,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			WAVE params.data = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, params.channelNumber)
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
-			WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+			WAVE/T/Z params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
 			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
 		endif
 
@@ -1188,7 +1188,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
 			WAVE     params.data   = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, i)
-			WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, i, params.channelType)
+			WAVE/T/Z params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, i, params.channelType)
 
 			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
 
@@ -1221,7 +1221,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 				break
 			case IPNWB_CHANNEL_TYPE_DAC:
 				path = "/stimulus/presentation"
-				WAVE/T/Z params.epochs = EP_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+				WAVE/T/Z params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
 				break
 			default:
 				ASSERT_TS(0, "Unexpected channel type")

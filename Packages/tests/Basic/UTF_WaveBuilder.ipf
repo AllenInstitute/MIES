@@ -437,3 +437,49 @@ static Function CreateDependentStimsetsFromParameterWaves()
 	stimsets = SortList(stimsets, ";", 16)
 	CHECK_EQUAL_STR(stimsets, refList, case_sensitive = 0)
 End
+
+static Function CreateBrokenCustomSet()
+
+	string   setName
+	variable err
+
+	setName = ST_CreateStimSet("BrokenCustom", CHANNEL_TYPE_DAC)
+
+	Make/D customWave = p
+
+	ST_SetStimsetParameter(setName, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setName, "Type of Epoch 0", var = EPOCH_TYPE_CUSTOM)
+	ST_SetStimsetParameter(setName, "Custom epoch wave name", epochIndex = 0, str = GetWavesDataFolder(customWave, 2))
+
+	KillOrMoveToTrash(wv = customWave)
+	WAVE stimset = WB_CreateAndGetStimSet(setName)
+	CHECK_WAVE(stimset, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(stimset, ROWS), 0)
+	err = WB_GetWaveNoteEntryAsNumber(note(stimSet), STIMSET_ENTRY, key = STIMSET_ERROR_KEY)
+	CHECK_EQUAL_VAR(err, WAVEBUILDER_STATUS_ERROR)
+End
+
+static Function CreateBrokenCombinedSet()
+
+	string setName, setNameF, formula
+	variable err
+
+	setNameF = ST_CreateStimset("validSquarePulse", CHANNEL_TYPE_DAC)
+	ST_SetStimsetParameter(setNameF, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setNameF, "Total number of steps", var = 1)
+	ST_SetStimsetParameter(setNameF, "Type of Epoch 0", var = EPOCH_TYPE_SQUARE_PULSE)
+	ST_SetStimsetParameter(setNameF, "Duration", epochIndex = 0, var = 10)
+	ST_SetStimsetParameter(setNameF, "Amplitude", epochIndex = 0, var = 3)
+
+	setName = ST_CreateStimSet("BrokenCombine", CHANNEL_TYPE_DAC)
+
+	ST_SetStimsetParameter(setName, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setName, "Type of Epoch 0", var = EPOCH_TYPE_COMBINE)
+	formula = "2***" + LowerStr(setNameF) + "?"
+	ST_SetStimsetParameter(setName, "Combine epoch formula", epochIndex = 0, str = formula)
+	ST_SetStimsetParameter(setName, "Combine epoch formula version", epochIndex = 0, str = WAVEBUILDER_COMBINE_FORMULA_VER)
+
+	WAVE stimset = WB_CreateAndGetStimSet(setName)
+	err = WB_GetWaveNoteEntryAsNumber(note(stimSet), STIMSET_ENTRY, key = STIMSET_ERROR_KEY)
+	CHECK_EQUAL_VAR(err, WAVEBUILDER_STATUS_ERROR)
+End

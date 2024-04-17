@@ -11,7 +11,7 @@
 
 Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1 // building window...
-	NewPanel/K=1/W=(993, 257, 2133, 1021)
+	NewPanel/K=1/W=(709, 94, 1849, 858) as "AnalysisBrowser"
 	SetDrawLayer UserBack
 	DrawLine 5, 305, 105, 305
 	DrawLine 5, 242, 105, 242
@@ -79,6 +79,7 @@ Window AnalysisBrowser() : Panel
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	ListBox listbox_AB_Folders, labelBack=(65535, 65535, 65535)
+	ListBox listbox_AB_Folders, colorWave=root:MIES:Analysis:AnaBrowserFolderColors
 	ListBox listbox_AB_Folders, mode=4
 	Button button_AB_AddFolder, pos={7.00, 5.00}, size={100.00, 25.00}, proc=AB_ButtonProc_AddFolder
 	Button button_AB_AddFolder, title="Add folder"
@@ -92,8 +93,8 @@ Window AnalysisBrowser() : Panel
 	Button button_AB_Remove, userdata(ResizeControlsInfo)=A"!!,@C!!#?)!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_AB_Remove, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_AB_Remove, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_AB_refresh, pos={7.00, 88.00}, size={100.00, 25.00}, title="Refresh", proc=AB_ButtonProc_Refresh
-	Button button_AB_refresh, help={"Refresh stimset list"}
+	Button button_AB_refresh, pos={7.00, 88.00}, size={100.00, 25.00}, proc=AB_ButtonProc_Refresh
+	Button button_AB_refresh, title="Refresh", help={"Refresh stimset list"}
 	Button button_AB_refresh, userdata(ResizeControlsInfo)=A"!!,@C!!#?i!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_AB_refresh, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_AB_refresh, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
@@ -108,9 +109,16 @@ Window AnalysisBrowser() : Panel
 	Button button_AB_AddFiles, userdata(ResizeControlsInfo)=A"!!,@C!!#=g!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_AB_AddFiles, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_AB_AddFiles, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_load_sweepsAndStimsets, pos={6.00, 391.00}, size={100.00, 25.00}, proc=AB_ButtonProc_LoadBoth
+	Button button_load_sweepsAndStimsets, title="Load Both"
+	Button button_load_sweepsAndStimsets, help={"Open a sweep browser panel from the selected sweeps. In case an experiment or device is selected, all sweeps and stimsets are loaded from them."}
+	Button button_load_sweepsAndStimsets, userdata(ResizeControlsInfo)=A"!!,@#!!#C(J,hpW!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_load_sweepsAndStimsets, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_load_sweepsAndStimsets, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	DefineGuide splitGuide={FT, 10}, UGVL={FL, 15}
 	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
+	SetWindow kwTopWin, hook(cleanup)=AB_WindowHook
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EIJ,hu%zzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
@@ -120,5 +128,6 @@ Window AnalysisBrowser() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsGuides)="splitGuide;UGVL;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfosplitGuide)="NAME:splitGuide;WIN:AnalysisBrowser;TYPE:User;HORIZONTAL:1;POSITION:10.00;GUIDE1:FT;GUIDE2:;RELPOSITION:10;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVL)="NAME:UGVL;WIN:AnalysisBrowser;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
+	SetWindow kwTopWin, userdata(datafolder)="workFolder"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={855,573,inf,inf}" // sizeLimit requires Igor 7 or later
 EndMacro

@@ -417,8 +417,10 @@ Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable swe
 		return range
 	endif
 
+	DFREF sweepDFR = BSP_GetSweepDF(graph, sweep)
+	SFH_ASSERT(DataFolderExistsDFR(sweepDFR), "Could not determine sweepDFR")
 	regex = "^" + epochName + "$"
-	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, chanType, channel, regex)
+	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, chanType, channel, regex, sweepDFR = sweepDFR)
 	if(!WaveExists(epochs))
 		return range
 	endif
@@ -519,7 +521,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 
 		WAVE/ZZ   adaptedRange
 		WAVE/T/ZZ epochRangeNames
-		[adaptedRange, epochRangeNames] = SFH_GetNumericRangeFromEpoch(numericalValues, textualValues, setRange, sweepNo, chanType, chanNr)
+		[adaptedRange, epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, setRange, sweepNo, chanType, chanNr)
 
 		if(!WaveExists(adaptedRange) && !WaveExists(epochRangeNames))
 			continue
@@ -1357,6 +1359,7 @@ End
 ///
 /// Supports numeric ranges, epochs, and epochs with wildcards.
 ///
+/// @param graph           name of graph window
 /// @param numericalValues numeric labnotebok
 /// @param textualValues   textual labnotebok
 /// @param range           one numerical or one/multiple epoch ranges with optional wildcard, @see SFH_EvaluateRange
@@ -1366,7 +1369,7 @@ End
 ///
 /// @retval adaptedRange    2xN numeric wave with the start/stop ranges [ms]
 /// @retval epochRangeNames epoch names (wildcard expanded) in case range was textual, a null wave ref otherwise
-Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoch(WAVE numericalValues, WAVE textualValues, WAVE range, variable sweepNo, variable chanType, variable chanNr)
+Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoch(string graph, WAVE numericalValues, WAVE textualValues, WAVE range, variable sweepNo, variable chanType, variable chanNr)
 
 	string epochTag, epochShortName
 	variable numEpochs, epIndex, i, j
@@ -1388,7 +1391,9 @@ Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoc
 	WAVE/T epochPatterns = range
 	SFH_ASSERT(IsTextWave(epochPatterns) && !DimSize(epochPatterns, COLS), "Expected 1d text wave for epoch specification")
 
-	WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, chanType, chanNr, allEpochsRegex)
+	DFREF sweepDFR = BSP_GetSweepDF(graph, sweepNo)
+	SFH_ASSERT(DataFolderExistsDFR(sweepDFR), "Could not determine sweepDFR")
+	WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, chanType, chanNr, allEpochsRegex, sweepDFR = sweepDFR)
 	if(!WaveExists(epochInfo))
 		return [$"", $""]
 	endif

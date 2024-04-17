@@ -556,7 +556,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		WAVE/T/Z epochsSingleChannel = WaveRef(epochs, row = idx)
 		CHECK_WAVE(epochsSingleChannel, TEXT_WAVE)
 
-		WAVE/Z epochsLBN = EP_FetchEpochs(numericalValues, textualValues, sweep, GUIchannelNumber, params.channelType)
+		WAVE/Z epochsLBN = EP_FetchEpochs_TS(numericalValues, textualValues, sweep, GUIchannelNumber, params.channelType)
 		CHECK_WAVE(epochsLBN, TEXT_WAVE)
 		INFO("Channeltype: %s, GUI channel number %d, hardware channel number %d, TTL bit %d", s0 = StringFromList(params.channelType, CHANNEL_NAMES), n0 = GUIchannelNumber, n1 = params.channelNumber, n2 = ttlBit)
 		CHECK_EQUAL_TEXTWAVES(epochsLBN, epochsSingleChannel)

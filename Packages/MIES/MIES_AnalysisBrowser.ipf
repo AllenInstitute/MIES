@@ -2754,6 +2754,19 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 	return 0
 End
 
+/// @brief Button "Load Both"
+Function AB_ButtonProc_LoadBoth(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventcode)
+		case 2:
+			PGC_SetAndActivateControl(ba.win, "button_load_stimsets")
+			PGC_SetAndActivateControl(ba.win, "button_load_sweeps")
+	endswitch
+
+	return 0
+End
+
 /// @brief Button "Load Stimsets"
 Function AB_ButtonProc_LoadStimsets(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
