@@ -732,15 +732,8 @@ static Function TASYNC_RunOrderless()
 	endfor
 	CHECK(!timeout)
 
-	if(!timeout)
-		// There are chances the result is still in Order, so we give only a Warning
-		for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
-			if(returnOrder[i] != i)
-				WARN(0)
-				break
-			endif
-		endfor
-	endif
+	Make/FREE/N=(WORK_COUNT_GENERIC) inOrder = p
+	CHECK_NEQ_VAR(EqualWaves(returnOrder, inOrder, EQWAVES_DATA), 1)
 
 	ASYNC_Stop(timeout = 1)
 End
@@ -963,15 +956,8 @@ static Function TASYNC_OrderlessDirectStop()
 	timeout = ASYNC_Stop(timeout = THREADING_TEST_TIMEOUT)
 	CHECK(!timeout)
 
-	if(!timeout)
-		// There are chances the result is still in Order, so we give only a Warning
-		for(i = 0; i < WORK_COUNT_GENERIC; i += 1)
-			if(returnOrder[i] != i)
-				WARN(0)
-				break
-			endif
-		endfor
-	endif
+	Make/FREE/N=(WORK_COUNT_GENERIC) inOrder = p
+	CHECK_NEQ_VAR(EqualWaves(returnOrder, inOrder, EQWAVES_DATA), 1)
 End
 
 #ifndef THREADING_DISABLED
