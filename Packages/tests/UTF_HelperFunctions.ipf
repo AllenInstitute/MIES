@@ -1136,29 +1136,42 @@ Function [string baseSet, string stimsetList, string customWavePath, variable am
 	return [setNameB, stimsetList, wPath, amplitude]
 End
 
-static Function TestEpochRecreationRemoveUnsupportedUserEpochs(WAVE/T epochChannel)
+static Function TestEpochRecreationRemoveUnsupportedUserEpochs(WAVE/T epochChannel, variable type)
 
-	variable i, epochCnt
+	variable index, epochCnt
+	string shortName, supportedUserEpochsRegExp
+	string regexpUserEpochs = "^" + EPOCH_SHORTNAME_USER_PREFIX + ".*"
 
 	Make/FREE/T supportedUserEpochs = {"CR_CE", "CR_SE"}
-	supportedUserEpochs[] = EPOCH_SHORTNAME_USER_PREFIX + supportedUserEpochs[p]
-
-	epochCnt = DimSize(epochChannel, ROWS)
-	Make/FREE/T/N=(epochCnt) shortnames = EP_GetShortName(epochChannel[p][EPOCH_COL_TAGS])
-	for(i = epochCnt - 1; i >= 0; i -= 1)
-		if(GrepString(shortnames[i], "^" + EPOCH_SHORTNAME_USER_PREFIX))
-			FindValue/TEXT=shortnames[i]/TXOP=4 supportedUserEpochs
-			if(V_Value >= 0)
-				continue
-			endif
-			DeleteWavePoint(epochChannel, ROWS, i)
-		endif
+	Make/FREE/T psqChirpEpochs = {PSQ_BASELINE_CHUNK_SHORT_NAME_RE_MATCHER}
+	if(type == PSQ_CHIRP)
+		Concatenate/FREE/T/NP {psqChirpEpochs}, supportedUserEpochs
+	endif
+	supportedUserEpochs[]     = "^" + EPOCH_SHORTNAME_USER_PREFIX + supportedUserEpochs[p]
+	supportedUserEpochsRegExp = TextWaveToList(supportedUserEpochs, "|")
+	supportedUserEpochsRegExp = RemoveEnding(supportedUserEpochsRegExp, "|")
+	supportedUserEpochsRegExp = "^(?![\s\S]*" + supportedUserEpochsRegExp + ")[\s\S]*$"
+	Make/FREE/T/N=(DimSize(epochChannel, ROWS)) shortnames = EP_GetShortName(epochChannel[p][EPOCH_COL_TAGS])
+	WAVE/Z userEpochIndices = FindIndizes(shortNames, str = regexpUserEpochs, prop = PROP_GREP)
+	if(!WaveExists(userEpochIndices))
+		return NaN
+	endif
+	Make/FREE/T/N=(DimSize(userEpochIndices, ROWS)) userEpochShortNames = shortnames[userEpochIndices[p]]
+	WAVE/Z matches = FindIndizes(userEpochShortNames, str = supportedUserEpochsRegExp, prop = PROP_GREP)
+	if(!WaveExists(matches))
+		return NaN
+	endif
+	matches[] = userEpochIndices[matches[p]]
+	Sort/R matches, matches
+	for(index : matches)
+		DeleteWavePoint(epochChannel, ROWS, index)
 	endfor
 End
 
 Function TestEpochRecreation(string device, variable sweepNo)
 
-	variable channelNumber
+	variable channelNumber, index, type
+	string anaFunc
 
 	WAVE/Z numericalValues = GetLBNumericalValues(device)
 	WAVE/Z textualValues   = GetLBTextualValues(device)
@@ -1173,7 +1186,11 @@ Function TestEpochRecreation(string device, variable sweepNo)
 		WAVE/Z/T epochChannelRec = EP_FetchEpochsFromRecreated(epochWave, channelNumber, XOP_CHANNEL_TYPE_DAC)
 
 		if(WaveExists(epochChannelRef))
-			TestEpochRecreationRemoveUnsupportedUserEpochs(epochChannelRef)
+			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Generic function", channelNumber, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+			REQUIRE_WAVE(settings, TEXT_WAVE)
+			WAVE/T settingsT = settings
+			type = MapAnaFuncToConstant(settingsT[index])
+			TestEpochRecreationRemoveUnsupportedUserEpochs(epochChannelRef, type)
 			// also TP channels can be active but have no epochs
 			CHECK_EQUAL_WAVES(epochChannelRec, epochChannelRef)
 		else

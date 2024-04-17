@@ -1119,7 +1119,8 @@ Constant PSQ_CALC_METHOD_RMS = 0x2 // root-mean-square (rms)
 
 Constant PSQ_BL_FAILED = 1
 
-StrConstant PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX = "BLC"
+StrConstant PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX     = "BLC"
+StrConstant PSQ_BASELINE_CHUNK_SHORT_NAME_RE_MATCHER = "BLC[[:digit:]]+"
 /// @}
 
 /// @name PatchSeq labnotebook constants

@@ -446,7 +446,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	variable leakCurPassedAll, maxLeakCurrent, targetVThreshold
 	variable rmsShortThreshold, rmsLongThreshold
 	variable chunkPassedRMSShortOverride, chunkPassedRMSLongOverride, chunkPassedTargetVOverride, chunkPassedLeakCurOverride
-	string msg, adUnit, ctrl, key, epName, epShortName
+	string msg, adUnit, ctrl, key
 
 	STRUCT PSQ_PulseSettings ps
 	PSQ_GetPulseSettingsForType(type, ps)
@@ -605,9 +605,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 		DAC = AFH_GetDACFromHeadstage(device, i)
 		ASSERT(IsFinite(DAC), "Could not determine DAC channel number for HS " + num2istr(i) + " for device " + device)
-		epName      = "Name=Baseline Chunk;Index=" + num2istr(chunk)
-		epShortName = PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(chunk)
-		EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, chunkStartTimeMax * MILLI_TO_ONE, (chunkStartTimeMax + chunkLengthTime) * MILLI_TO_ONE, epName, shortname = epShortName)
+		PSQ_AddBaselineEpoch(epochWave, DAC, chunk, chunkStartTimeMax, chunkLengthTime)
 
 		if(chunk == 0)
 			// store baseline RMS short/long tartget V analysis parameters in labnotebook on first use
@@ -846,6 +844,22 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	else
 		ASSERT(0, "unknown baseline type")
 	endif
+End
+
+/// @brief Add base line epoch to user epochs
+///
+/// @param epochWave         4D epochs wave
+/// @param DAC               DAC channel number
+/// @param chunk             number of evaluated chunk
+/// @param chunkStartTimeMax start time of chunk in ms
+/// @param chunkLengthTime   time length of chunk in ms
+Function PSQ_AddBaselineEpoch(WAVE epochWave, variable DAC, variable chunk, variable chunkStartTimeMax, variable chunkLengthTime)
+
+	string epName, epShortName
+
+	epName      = "Name=Baseline Chunk;Index=" + num2istr(chunk)
+	epShortName = PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(chunk)
+	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, chunkStartTimeMax * MILLI_TO_ONE, (chunkStartTimeMax + chunkLengthTime) * MILLI_TO_ONE, epName, shortname = epShortName)
 End
 
 /// @brief Return the number of chunks

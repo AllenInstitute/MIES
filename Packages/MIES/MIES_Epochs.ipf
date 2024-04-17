@@ -1800,8 +1800,8 @@ End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo, variable DAC, variable headStage, variable totalOnsetDelayMS, WAVE/T epochWave)
 
-	variable index, stimsetQC, chirpCycles, spikeCheck
-	variable epBegin, epEnd
+	variable index, stimsetQC, chirpCycles, spikeCheck, baselineQC
+	variable epBegin, epEnd, chunk, chunkPassed, chunkStartTimeMax, chunkLengthTime
 	string key, params
 
 	key = "Function params (encoded)"
@@ -1810,30 +1810,46 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T
 	WAVE/T settingsT = settings
 	params = settingsT[index]
 
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	ASSERT(WaveExists(durations), "Could not find durations in LNB")
+
+	spikeCheck = AFH_GetAnalysisParamNumerical("SpikeCheck", params)
+	ASSERT(IsFinite(spikeCheck), "Invalid SpikeCheck param")
+	if(spikeCheck)
+		[epBegin, epEnd] = PSQ_CR_AddSpikeEvaluationEpoch(epochWave, DAC, headStage, durations, totalOnsetDelayMS)
+	endif
+
+	for(chunk = 0;; chunk += 1)
+		key         = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1)
+		chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = NaN)
+		if(IsNaN(chunkPassed))
+			break
+		endif
+		chunkLengthTime   = PSQ_BL_EVAL_RANGE
+		chunkStartTimeMax = chunk ? (totalOnsetDelayMS + PSQ_BL_EVAL_RANGE + WaveMax(durations)) + chunk * PSQ_BL_EVAL_RANGE : totalOnsetDelayMS
+		PSQ_AddBaselineEpoch(epochWave, DAC, chunk, chunkStartTimeMax, chunkLengthTime)
+	endfor
+
+	chirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", params)
+	ASSERT(IsFinite(chirpCycles) && chirpCycles > 0, "Invalid chirp cycles")
+	WAVE/Z/T fullCycleEpochs = PSQ_CR_GetFullCycleEpochs(numericalValues, textualValues, DAC, epochWave, chirpCycles)
+	if(!WaveExists(fullCycleEpochs))
+		return NaN
+	endif
+
 	key       = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_STIMSET_QC, query = 1)
 	stimsetQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	ASSERT(!IsNaN(stimsetQC), "Chirp was run, but no QC result found.")
+	if(IsNaN(stimsetQC))
+		// fallback
+		stimsetQC = !(chirpCycles > 1 && DimSize(fullCycleEpochs, ROWS) == 1)
+	endif
 	if(!stimsetQC)
 		return NaN
 	endif
 
-	chirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", params)
-	ASSERT(IsFinite(chirpCycles) && chirpCycles > 0, "Invalid chirp cycles")
-
-	WAVE/Z/T fullCycleEpochs = PSQ_CR_GetFullCycleEpochs(numericalValues, textualValues, DAC, epochWave, chirpCycles)
-	ASSERT(WaveExists(fullCycleEpochs) && DimSize(fullCycleEpochs, ROWS) == (chirpCycles == 1 ? 1 : 2), "Chirp resulted in successful stimset QC, but could not find cycle base epochs E1_TG_C0 && E1_TG_C" + num2istr(chirpCycles - 1))
+	ASSERT(DimSize(fullCycleEpochs, ROWS) == (chirpCycles == 1 ? 1 : 2), "Chirp resulted in successful stimset QC, but could not find cycle base epochs E1_TG_C0 && E1_TG_C" + num2istr(chirpCycles - 1))
 	[epBegin, epEnd] = PSQ_CR_AddCycleEvaluationEpoch(epochWave, fullCycleEpochs, DAC)
-
-	spikeCheck = AFH_GetAnalysisParamNumerical("SpikeCheck", params)
-	ASSERT(IsFinite(spikeCheck), "Invalid SpikeCheck param")
-	if(!spikeCheck)
-		return NaN
-	endif
-
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
-	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	ASSERT(WaveExists(durations), "Chirp spikeCheck was enabled, but could not find durations in LNB")
-	[epBegin, epEnd] = PSQ_CR_AddSpikeEvaluationEpoch(epochWave, DAC, headStage, durations, totalOnsetDelayMS)
 End
 
 /// @brief Fetches a single epoch channel from a recreated epoch wave.
