@@ -1587,7 +1587,7 @@ End
 /// @brief Return the DAScale offset for PSQ_DaScale()
 ///
 /// @return DAScale value in pA or NaN on error
-Function PSQ_DS_GetDAScaleOffset(device, headstage, opMode)
+static Function PSQ_DS_GetDAScaleOffset(device, headstage, opMode)
 	string device, opMode
 	variable headstage
 
@@ -1620,7 +1620,7 @@ End
 ///
 /// @return 1 if found at least one, zero if none and `NaN` if no such entry
 /// could be found
-Function PSQ_FoundAtLeastOneSpike(device, sweepNo)
+static Function PSQ_FoundAtLeastOneSpike(device, sweepNo)
 	string   device
 	variable sweepNo
 
