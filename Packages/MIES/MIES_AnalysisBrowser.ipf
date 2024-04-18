@@ -633,6 +633,9 @@ static Function AB_LoadDataWrapper(DFREF tmpDFR, string expFilePath, string data
 	ResetDebugOnError(debugOnError)
 
 	RemoveAllEmptyDataFolders(tmpDFR)
+	if(!DataFolderExistsDFR(tmpDFR))
+		return 0
+	endif
 
 	regexp = "(?i)" + ConvertListToRegexpWithAlternations(listOfNames)
 	list   = GetListOfObjects(tmpDFR, regexp, recursive = recursive, typeFlag = typeFlags)
