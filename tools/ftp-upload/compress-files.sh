@@ -13,4 +13,6 @@ do
   fi
 
   tar --remove-files --use-compress-program=zstd -cvf $dir/NWB.tar.zst $dir/*nwb
+
+  tar --remove-files --use-compress-program=zstd -cvf $dir/CoberturaAndJUNIT.tar.zst $dir/*xml
 done
