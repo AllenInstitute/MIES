@@ -1749,7 +1749,7 @@ static Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/
 		return recEpochWave
 	endif
 
-	[s] = DC_RecreateDataConfigurationResultFromLNB(numericalValues, textualValues, sweepDFR, sweepNo)
+	[s] = DCR_RecreateDataConfigurationResultFromLNB(numericalValues, textualValues, sweepDFR, sweepNo)
 
 	WAVE/T recEpochWave = GetEpochsWaveAsFree()
 	EP_CollectEpochInfoDA(recEpochWave, s)
