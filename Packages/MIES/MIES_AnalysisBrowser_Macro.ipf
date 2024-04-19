@@ -78,9 +78,7 @@ Window AnalysisBrowser() : Panel
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)=A"!!,FS!!#97!!#E85QF.Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	ListBox listbox_AB_Folders, labelBack=(65535, 65535, 65535)
-	ListBox listbox_AB_Folders, colorWave=root:MIES:Analysis:AnaBrowserFolderColors
-	ListBox listbox_AB_Folders, mode=4
+	ListBox listbox_AB_Folders, labelBack=(65535, 65535, 65535), mode=4
 	Button button_AB_AddFolder, pos={7.00, 5.00}, size={100.00, 25.00}, proc=AB_ButtonProc_AddFolder
 	Button button_AB_AddFolder, title="Add folder"
 	Button button_AB_AddFolder, help={"Add a new folder to the list"}
@@ -128,6 +126,5 @@ Window AnalysisBrowser() : Panel
 	SetWindow kwTopWin, userdata(ResizeControlsGuides)="splitGuide;UGVL;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfosplitGuide)="NAME:splitGuide;WIN:AnalysisBrowser;TYPE:User;HORIZONTAL:1;POSITION:10.00;GUIDE1:FT;GUIDE2:;RELPOSITION:10;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVL)="NAME:UGVL;WIN:AnalysisBrowser;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
-	SetWindow kwTopWin, userdata(datafolder)="workFolder"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={855,573,inf,inf}" // sizeLimit requires Igor 7 or later
 EndMacro
