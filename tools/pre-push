@@ -42,7 +42,7 @@ do
   then
     if [[ "$pr" == "XXXX" ]]
     then
-      git branch -m $prefix/$nextFreePR-$suffix
+      git branch -m $branch $prefix/$nextFreePR-$suffix
       echo "The branch was renamed, please try again." > /dev/stderr
       exit 1
     fi
