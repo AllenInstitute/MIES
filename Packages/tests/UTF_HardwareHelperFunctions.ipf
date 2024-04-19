@@ -672,13 +672,10 @@ End
 static Function CheckForOtherUserLBNKeys(string device, variable type)
 	string prefix
 
-	WAVE numericalKeys = GetLBNumericalKeys(device)
-	WAVE textualKeys   = GetLBTextualKeys(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
-	WAVE/Z numericalNames = MIES_LBV#LBV_GetLogbookParamNames(numericalKeys)
-	WAVE/Z textualNames   = MIES_LBV#LBV_GetLogbookParamNames(textualKeys)
-
-	WAVE/Z entries = MIES_LBV#LBV_GetAllLogbookParamNames(textualNames, numericalNames)
+	WAVE/Z entries = MIES_LBV#LBV_GetAllLogbookParamNames(textualValues, numericalValues)
 	CHECK_WAVE(entries, TEXT_WAVE)
 
 	// check that all user entries are from our analysis function
@@ -701,16 +698,13 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 	variable result, col, value
 	string unit, entry
 
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues   = GetLBTextualValues(device)
-
 	WAVE numericalKeys = GetLBNumericalKeys(device)
 	WAVE textualKeys   = GetLBTextualKeys(device)
 
-	WAVE/Z numericalNames = MIES_LBV#LBV_GetLogbookParamNames(numericalKeys)
-	WAVE/Z textualNames   = MIES_LBV#LBV_GetLogbookParamNames(textualKeys)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
-	WAVE/Z entries = MIES_LBV#LBV_GetAllLogbookParamNames(textualNames, numericalNames)
+	WAVE/Z entries = MIES_LBV#LBV_GetAllLogbookParamNames(textualValues, numericalValues)
 	CHECK_WAVE(entries, TEXT_WAVE)
 
 	WAVE/T/Z allUserEntries = GrepTextWave(entries, LABNOTEBOOK_USER_PREFIX + ".*")
