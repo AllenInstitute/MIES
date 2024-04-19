@@ -1054,6 +1054,7 @@ Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT = 31
 
 StrConstant LABNOTEBOOK_NO_TOLERANCE = "-"
 StrConstant LABNOTEBOOK_BINARY_UNIT  = "On/Off"
+StrConstant LABNOTEBOOK_NO_UNIT      = ""
 
 /// `Key` prefix for runtime added labnotebooks by ED_AddEntryToLabnotebook()
 StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
