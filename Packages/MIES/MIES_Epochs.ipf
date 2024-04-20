@@ -1784,7 +1784,9 @@ static Function EP_AddRecreatedUserEpochs(WAVE numericalValues, WAVE/T textualVa
 	totalOnsetDelayMS = s.onsetDelay * s.samplingIntervalDA * MICRO_TO_MILLI
 	key               = "Generic function"
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, firstDAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-	ASSERT(WaveExists(settings), "Unable to retrieve analysis function name from LNB")
+	if(!WaveExists(settings))
+		return NaN
+	endif
 	WAVE/T settingsT = settings
 	type = MapAnaFuncToConstant(settingsT[index])
 
