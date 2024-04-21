@@ -1539,7 +1539,7 @@ static Function AB_GUIRowIsStimsetsOnly(variable row)
 End
 
 /// @returns 0 if at least one sweep or stimset could be loaded, 1 otherwise
-static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn, variable AB_LoadType, [variable overwrite, DFREF sweepBrowserDFR, WAVE/T dfCollect])
+static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn, variable loadType, [variable overwrite, DFREF sweepBrowserDFR, WAVE/T dfCollect])
 
 	variable j, endRow, mapIndex, sweep, oneValidLoad, index
 	string device, discLocation, dataFolder, fileName, fileType
@@ -1563,7 +1563,7 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 	for(j = row; j < endRow; j += 1)
 
 		if(AB_GUIRowIsStimsetsOnly(row))
-			if(AB_LoadType != AB_LOAD_STIMSET)
+			if(loadType != AB_LOAD_STIMSET)
 				return 1
 			endif
 			device = ""
@@ -1589,7 +1589,7 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 		fileType     = map[mapIndex][%FileType]
 		fileName     = map[mapIndex][%FileName]
 
-		switch(AB_LoadType)
+		switch(loadType)
 			case AB_LOAD_STIMSET:
 				if(AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite) == 1)
 					continue
@@ -1641,14 +1641,14 @@ static Function AB_GetRowWithNextTreeView(selWave, startRow, col)
 	return numRows
 End
 
-static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
-	variable AB_LoadType
+static Function AB_LoadFromFile(loadType, [sweepBrowserDFR])
+	variable loadType
 	DFREF    sweepBrowserDFR
 
 	variable mapIndex, sweep, numRows, i, row, overwrite, oneValidLoad, index
 	string dataFolder, fileName, discLocation, fileType, device
 
-	if(AB_LoadType == AB_LOAD_SWEEP)
+	if(loadType == AB_LOAD_SWEEP)
 		ASSERT(!ParamIsDefault(sweepBrowserDFR), "create sweepBrowser DataFolder with SB_OpenSweepBrowser() prior")
 		ASSERT(IsGlobalDataFolder(sweepBrowserDFR), "sweepBrowser DataFolder does not exist")
 	endif
@@ -1669,23 +1669,23 @@ static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 		row = indizes[i]
 
 		// handle not expanded EXPERIMENT and DEVICE COLUMNS
-		switch(AB_LoadType)
+		switch(loadType)
 			case AB_LOAD_STIMSET:
-				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, AB_LoadType, overwrite = overwrite))
+				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, loadType, overwrite = overwrite))
 					oneValidLoad = 1
 					continue
 				endif
-				if(!AB_LoadFromExpandedRange(row, DEVICE_TREEVIEW_COLUMN, AB_LoadType, overwrite = overwrite))
+				if(!AB_LoadFromExpandedRange(row, DEVICE_TREEVIEW_COLUMN, loadType, overwrite = overwrite))
 					oneValidLoad = 1
 					continue
 				endif
 				break
 			case AB_LOAD_SWEEP:
-				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, AB_LoadType, sweepBrowserDFR = sweepBrowserDFR, overwrite = overwrite, dfCollect = dfCollect))
+				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, loadType, sweepBrowserDFR = sweepBrowserDFR, overwrite = overwrite, dfCollect = dfCollect))
 					oneValidLoad = 1
 					continue
 				endif
-				if(!AB_LoadFromExpandedRange(row, DEVICE_TREEVIEW_COLUMN, AB_LoadType, sweepBrowserDFR = sweepBrowserDFR, overwrite = overwrite, dfCollect = dfCollect))
+				if(!AB_LoadFromExpandedRange(row, DEVICE_TREEVIEW_COLUMN, loadType, sweepBrowserDFR = sweepBrowserDFR, overwrite = overwrite, dfCollect = dfCollect))
 					oneValidLoad = 1
 					continue
 				endif
@@ -1706,7 +1706,7 @@ static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 		discLocation = map[mapIndex][%DiscLocation]
 		fileType     = map[mapIndex][%FileType]
 
-		switch(AB_LoadType)
+		switch(loadType)
 			case AB_LOAD_STIMSET:
 				if(AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite))
 					continue
@@ -2684,6 +2684,7 @@ Function AB_BrowserStartupSettings()
 
 	HideTools/W=$panel/A
 	SetWindow $panel, userData(panelVersion)=""
+	SetWindow $panel, userData(datafolder)=""
 
 	SetCheckBoxState(panel, "checkbox_load_overwrite", CHECKBOX_UNSELECTED)
 
@@ -2692,8 +2693,8 @@ Function AB_BrowserStartupSettings()
 	SearchForInvalidControlProcs(panel)
 	print "Do not forget to increase ANALYSISBROWSER_PANEL_VERSION."
 
-	ListBox list_experiment_contents, win=$panel, listWave=$"", selWave=$""
-	ListBox listbox_AB_Folders, win=$panel, listWave=$"", selWave=$""
+	ListBox list_experiment_contents, win=$panel, listWave=$"", selWave=$"", colorWave=$""
+	ListBox listbox_AB_Folders, win=$panel, listWave=$"", selWave=$"", colorWave=$""
 
 	Execute/P/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "

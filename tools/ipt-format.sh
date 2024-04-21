@@ -27,4 +27,5 @@ echo "[format]" > config.toml
 while read -r line; do
     echo "files = \"$line\"" >> config.toml
 done < <(git ls-files ':(attr:ipt)')
-$ipt --arg-file config.toml format -i
+
+(cd $top_level && $ipt --arg-file config.toml format -i)

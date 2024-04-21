@@ -1029,27 +1029,28 @@ static Function/S PSX_BuildSweepEquivKey(variable chanType, variable chanNr)
 	return str
 End
 
-/// @brief Return the triplett channel number, channel type and sweep number from the sweep equivalence wave located in the given row/col
-static Function [variable chanNr, variable chanType, variable sweepNo] PSX_GetSweepEquivKeyAndSweep(WAVE sweepEquiv, variable row, variable col)
+/// @brief Return the triplett channel number, channel type and sweep number from the sweep equivalence wave located in the given channelNumberType and sweepIndex coordinates
+static Function [variable chanNr, variable chanType, variable sweepNo] PSX_GetSweepEquivKeyAndSweep(WAVE sweepEquiv, variable channelNumberType, variable sweepIndex)
 
 	string str, chanTypeStr, chanNrStr
 
-	str = GetDimLabel(sweepEquiv, ROWS, row)
-	ASSERT(strlen(str) > 0, "Unexpected empty row label")
+	str = GetDimLabel(sweepEquiv, ROWS, channelNumberType)
+	ASSERT(strlen(str) > 0, "Unexpected empty channelNumberType label")
 
 	SplitString/E="ChanType([[:digit:]]+)_ChanNr([[:digit:]]+)" str, chanTypeStr, chanNrStr
 
 	chanType = str2num(chanTypeStr)
 	chanNr   = str2num(chanNrStr)
 
-	return [chanNr, chanType, sweepEquiv[row][col]]
+	return [chanNr, chanType, sweepEquiv[channelNumberType][sweepIndex]]
 End
 
 /// @brief Generate the equivalence classes of selectData
 ///
 /// All selections which have the same channel number and type are in one equivalence class.
 ///
-/// The returned 2D wave has row labels from PSX_BuildSweepEquivKey() and the sweep numbers in the columns.
+/// The returned 2D wave has row labels from PSX_BuildSweepEquivKey() for the
+/// channel type/number and the sweep numbers in the columns.
 static Function/WAVE PSX_GenerateSweepEquiv(WAVE selectData)
 
 	variable numSelect, idx, i, nextFreeRow, maxCol
@@ -3522,7 +3523,7 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 
 	mainWin = GetMainWindow(win)
 
-	ApplyMacroToExistingPanel(mainWin, "PSXPanel")
+	PSX_ApplyMacroToExistingPanel(mainWin, "PSXPanel")
 
 	DFREF workDFR  = PSX_GetWorkingFolder(win)
 	DFREF comboDFR = GetPSXFolderForCombo(workDFR, 0)
@@ -5159,7 +5160,7 @@ Function PSX_PlotStartupSettings()
 End
 
 /// @brief Apply the macro `mac` onto the panel `win`
-Function ApplyMacroToExistingPanel(string win, string mac)
+Function PSX_ApplyMacroToExistingPanel(string win, string mac)
 
 	string line, currWindow
 

@@ -7043,3 +7043,13 @@ threadsafe Function SetDimensionLabelsFromWaveContents(WAVE wv, [string prefix, 
 		SetDimLabel ROWS, idx++, $str, wv
 	endfor
 End
+
+/// @brief Return true if `str` is in wildcard syntax, false if not
+Function HasWildcardSyntax(string str)
+
+	if(strlen(str) == 0)
+		return 0
+	endif
+
+	return strsearch(str, "*", 0) >= 0 || !cmpstr(str[0], "!")
+End

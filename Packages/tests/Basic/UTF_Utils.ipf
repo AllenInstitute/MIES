@@ -3,6 +3,19 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UtilsTest
 
+// UTF_TD_GENERATOR InfiniteValues
+static Function IVSN_WorksSpecialValues([variable val])
+
+	CHECK(!IsValidSweepNumber(val))
+End
+
+static Function IVSN_Works()
+
+	CHECK(!IsValidSweepNumber(INVALID_SWEEP_NUMBER))
+	CHECK(IsValidSweepNumber(0))
+	CHECK(IsValidSweepNumber(1000))
+End
+
 Function AssertionWorksWithPassingOne()
 
 	PASS()
@@ -3637,6 +3650,25 @@ Function MWWO_HandlesLockedDest()
 	WAVE dest
 	CHECK_EQUAL_VAR(Sum(dest), 0)
 	WAVE/Z src
+	CHECK_WAVE(src, NULL_WAVE)
+End
+
+Function MWWO_ReturnsNewRef()
+
+	string path
+
+	Make dest = p
+	Make src = 0
+
+	path = GetWavesDataFolder(dest, 2)
+	WAVE newDest = MoveWaveWithOverwrite(dest, src)
+
+	CHECK_WAVE(newDest, NORMAL_WAVE)
+	CHECK_EQUAL_STR(path, GetWavesDataFolder(newDest, 2))
+
+	WAVE dest
+	CHECK_EQUAL_VAR(Sum(dest), 0)
+	WAVE src
 	CHECK_WAVE(src, NULL_WAVE)
 End
 
@@ -7939,4 +7971,14 @@ static Function TestSetDimensionLabelsFromWaveContents()
 	catch
 		CHECK_NO_RTE()
 	endtry
+End
+
+static Function HWS_Works()
+
+	CHECK_EQUAL_VAR(HasWildcardSyntax(""), 0)
+	CHECK_EQUAL_VAR(HasWildcardSyntax("a"), 0)
+	CHECK_EQUAL_VAR(HasWildcardSyntax("1"), 0)
+	CHECK_EQUAL_VAR(HasWildcardSyntax("!"), 1)
+	CHECK_EQUAL_VAR(HasWildcardSyntax("!a"), 1)
+	CHECK_EQUAL_VAR(HasWildcardSyntax("a*b"), 1)
 End

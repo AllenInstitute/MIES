@@ -963,7 +963,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 			break
 		default:
 			WAVE ops = SF_GetNamedOperations()
-			ASSERT(GetRowIndex(ops, str = opName) >= 0, "List of operations with long name is out of date")
+			ASSERT(GetRowIndex(ops, str = opName) >= 0, "List of operations with long name is out of date as the following is missing: " + opName)
 			break
 	endswitch
 #endif
@@ -2539,7 +2539,7 @@ End
 
 Function SF_TabProc_Formula(STRUCT WMTabControlAction &tca) : TabControl
 
-	string mainPanel, bsPanel, json_nb, text
+	string mainPanel, bsPanel, json_nb, text, helpNotebook
 	variable jsonID
 
 	switch(tca.eventCode)
@@ -2549,7 +2549,8 @@ Function SF_TabProc_Formula(STRUCT WMTabControlAction &tca) : TabControl
 			if(tca.tab == 1)
 				PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_check")
 			elseif(tca.tab == 2)
-				BSP_UpdateHelpNotebook(mainPanel)
+				helpNotebook = BSP_GetSFHELP(mainPanel)
+				BSP_UpdateHelpNotebook(helpNotebook)
 			endif
 
 			if(!BSP_HasBoundDevice(bsPanel))
