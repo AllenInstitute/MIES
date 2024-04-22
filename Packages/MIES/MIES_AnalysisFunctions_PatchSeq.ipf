@@ -163,7 +163,7 @@ static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 static Constant PSQ_RHEOBASE_DURATION = 500
 
 /// @brief Fills `s` according to the analysis function type
-static Function PSQ_GetPulseSettingsForType(type, s)
+Function PSQ_GetPulseSettingsForType(type, s)
 	variable                  type
 	STRUCT PSQ_PulseSettings &s
 
@@ -6172,13 +6172,21 @@ static Function PSQ_CreateBaselineChunkSelectionEpochs(string device, variable h
 	endif
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
+	WAVE/T epochWave = GetEpochsWave(device)
 
 	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
 	ASSERT(IsFinite(chunkLength), "BaselineChunkLength must be finite")
 
+	return PSQ_CreateBaselineChunkSelectionEpochs_AddEpochs(epochWave, DAC, totalOnsetDelay, setName, epochIndizes, numEpochs, chunkLength)
+End
+
+Function PSQ_CreateBaselineChunkSelectionEpochs_AddEpochs(WAVE/T epochWave, variable DAC, variable totalOnsetDelayMS, string setName, WAVE epochIndizes, variable numEpochs, variable chunkLength)
+
+	variable i, wbBegin, wbEnd, duration, amplitude, epBegin, epEnd, index
+	string tags, shortName
+
 	wbBegin = 0
-	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
-	WAVE/T epochWave = GetEpochsWave(device)
+	wbEnd   = totalOnsetDelayMS * MILLI_TO_ONE
 	for(i = 0; i < numEpochs; i += 1)
 		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * MILLI_TO_ONE
 
