@@ -47,11 +47,6 @@ static Function TestEpochRecreationFromLoadedPXP([string str])
 	string file, miesPath, win, device
 	variable numObjectsLoaded, first, last, i
 
-	if(!StringEndsWith(LowerStr(str), ".pxp"))
-		PASS()
-		return NaN
-	endif
-
 	file = "input:" + str
 	PathInfo home
 

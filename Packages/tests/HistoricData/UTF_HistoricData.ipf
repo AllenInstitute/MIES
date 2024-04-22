@@ -212,16 +212,38 @@ End
 
 Function/WAVE GetHistoricDataFiles()
 
+	WAVE/T pxpFiles = GetHistoricDataFilesPXP()
+	WAVE/T nwbFiles = GetHistoricDataFilesNWB()
+
+	Concatenate/FREE/NP/T {pxpFiles, nwbFiles}, files
+
+	DownloadFilesIfRequired(files)
+	SetLabelsForDGWave(files)
+
+	return files
+End
+
+Function/WAVE GetHistoricDataFilesPXP()
+
 	Make/FREE/T files = {"C57BL6J-629713.05.01.02.pxp",                       \
 	                     "Chat-IRES-Cre-neo;Ai14-582723.15.10.01.pxp",        \
 	                     "Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp",           \
 	                     "Sst-IRES-Cre;Ai14-554002.08.06.02.pxp",             \
 	                     "Sst-IRES-Cre;Th-P2A-FlpO;Ai65-561491.09.09.02.pxp", \
 	                     "very_early_mies-data_H17.03.016.11.09.01.pxp",      \
-	                     "epoch_clipping_2022_03_08_140256.pxp",              \
-	                     "nwb2_H17.03.016.11.09.01.nwb",                      \
-	                     "C57BL6J-628261.02.01.02.nwb",                       \
-	                     "Gad2-IRES-Cre;Ai14-709273.06.02.02.nwb",            \
+	                     "epoch_clipping_2022_03_08_140256.pxp"}
+
+	DownloadFilesIfRequired(files)
+	SetLabelsForDGWave(files)
+
+	return files
+End
+
+Function/WAVE GetHistoricDataFilesNWB()
+
+	Make/FREE/T files = {"nwb2_H17.03.016.11.09.01.nwb",           \
+	                     "C57BL6J-628261.02.01.02.nwb",            \
+	                     "Gad2-IRES-Cre;Ai14-709273.06.02.02.nwb", \
 	                     "H22.03.311.11.08.01.06.nwb"}
 
 	DownloadFilesIfRequired(files)
