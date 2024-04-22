@@ -386,7 +386,7 @@ End
 /// @param anaFuncTypes    wave with the analysis function types as derived from MapAnaFuncToConstant()
 /// @param sweepNo         sweep number
 /// @param headstage       headstage
-static Function [variable anaFuncType, variable waMode] AD_GetAnalysisFunctionType(WAVE numericalValues, WAVE anaFuncTypes, variable sweepNo, variable headstage)
+Function [variable anaFuncType, variable waMode] AD_GetAnalysisFunctionType(WAVE numericalValues, WAVE anaFuncTypes, variable sweepNo, variable headstage)
 
 	string   key
 	variable passed
