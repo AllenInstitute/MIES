@@ -2270,7 +2270,6 @@ Function/WAVE WB_CustomWavesPathFromStimSet(string stimsetList)
 			continue
 		endif
 
-		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
 			if(SegWvType[j] == EPOCH_TYPE_CUSTOM)
@@ -2309,7 +2308,6 @@ static Function/WAVE WB_UpgradeCustomWaves(string stimsetList)
 
 		ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Unexpected channel type")
 
-		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
 			if(SegWvType[j] == EPOCH_TYPE_CUSTOM)
@@ -2348,7 +2346,6 @@ static Function/S WB_StimsetChildren([stimset])
 
 	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType), "Parameter Waves not found.")
 
-	ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "Dimension Label not found. Check for changed DimLabels in SegWave!")
 	numEpochs = SegWvType[%'Total number of epochs']
 
 	// search for stimsets in all formula-epochs by a regex pattern
