@@ -2273,7 +2273,7 @@ Function/WAVE WB_CustomWavesPathFromStimSet(string stimsetList)
 		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
-			if(SegWvType[j] == 7)
+			if(SegWvType[j] == EPOCH_TYPE_CUSTOM)
 				customwaves[k] = WPT[0][j][EPOCH_TYPE_CUSTOM]
 				k             += 1
 			endif
@@ -2353,7 +2353,7 @@ static Function/S WB_StimsetChildren([stimset])
 
 	// search for stimsets in all formula-epochs by a regex pattern
 	for(i = 0; i < numEpochs; i += 1)
-		if(SegWvType[i] == 8)
+		if(SegWvType[i] == EPOCH_TYPE_COMBINE)
 			formula     = WPT[6][i][EPOCH_TYPE_COMBINE]
 			numStimsets = CountSubstrings(formula, "?")
 			for(j = 0; j < numStimsets; j += 1)
