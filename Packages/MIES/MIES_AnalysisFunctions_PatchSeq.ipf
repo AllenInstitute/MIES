@@ -5267,6 +5267,8 @@ static Function PSQ_CreateTestpulseEpochs(string device, variable headstage, var
 
 	DAScale = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DAC)
 
+	WAVE/T epochWave = GetEpochsWave(device)
+
 	// 0: pre pulse baseline chunk
 	// 1: testpulse pre baseline
 	// 2: testpulse signal
@@ -5277,13 +5279,13 @@ static Function PSQ_CreateTestpulseEpochs(string device, variable headstage, var
 		// first TP epoch
 		idx = 1 + i * numTestPulses
 
-		offset = PSQ_CreateTestpulseLikeEpoch(device, DAC, setName, DAScale, offset, idx, tpIndex++)
+		offset = PSQ_CreateTestpulseLikeEpoch(epochWave, DAC, setName, DAScale, offset, idx, tpIndex++)
 	endfor
 
 	return 0
 End
 
-static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string setName, variable DAScale, variable start, variable epochIndex, variable tpIndex)
+static Function PSQ_CreateTestpulseLikeEpoch(WAVE/T epochWave, variable DAC, string setName, variable DAScale, variable start, variable epochIndex, variable tpIndex)
 	variable prePulseTP, signalTP, postPulseTP
 	variable amplitude, epBegin, epEnd
 	string shortName, tags
@@ -5306,7 +5308,6 @@ static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string
 	sprintf tags, "Type=Testpulse Like;Index=%d", tpIndex
 	sprintf shortName, "TP%d", tpIndex
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
 	// pre TP baseline
@@ -5758,9 +5759,18 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 
 	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
 
-	wbBegin = 0
-	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
 	WAVE/T epochWave = GetEpochsWave(device)
+	return PSQ_SE_CreateEpochsImpl(epochWave, DAC, totalOnsetDelay, setName, testpulseGroupSel, DAScale, numEpochs, chunkLength)
+End
+
+Function PSQ_SE_CreateEpochsImpl(WAVE/T epochWave, variable DAC, variable totalOnsetDelayMS, string setName, variable testpulseGroupSel, variable DAScale, variable numEpochs, variable chunkLength)
+
+	variable i, wbBegin, wbEnd, epBegin, epEnd, duration, amplitude
+	variable userEpochIndexBLC, userEpochTPIndexBLC
+	string tags, shortName
+
+	wbBegin = 0
+	wbEnd   = totalOnsetDelayMS * MILLI_TO_ONE
 	for(i = 0; i < numEpochs; i += 1)
 		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * MILLI_TO_ONE
 
@@ -5797,14 +5807,14 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 			epEnd   = wbEnd
 
 			// TPs start with TPx_B0
-			PSQ_CreateTestpulseLikeEpoch(device, DAC, setName, DAScale, epBegin, i, userEpochTPIndexBLC++)
+			PSQ_CreateTestpulseLikeEpoch(epochWave, DAC, setName, DAScale, epBegin, i, userEpochTPIndexBLC++)
 		endif
 	endfor
 
 	return 0
 End
 
-static Function PSQ_SE_GetTestpulseGroupSelection(string params)
+Function PSQ_SE_GetTestpulseGroupSelection(string params)
 	string str = AFH_GetAnalysisParamTextual("TestPulseGroupSelector", params, defValue = "Both")
 
 	return PSQ_SE_ParseTestpulseGroupSelection(str)
