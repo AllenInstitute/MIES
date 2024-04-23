@@ -1731,31 +1731,6 @@ Function WB_GetWaveNoteEntryAsNumber(text, entryType, [key, sweep, epoch])
 	return str2num(str)
 End
 
-/// @brief Return pulse information from a pulse train epoch
-///
-/// @param[in]  stimset            stimulus set
-/// @param[in]  sweep              sweep of the set
-/// @param[in]  epoch              epoch of the set
-/// @param[out] pulseToPulseLength pulse to pulse length [ms]
-/// @return pulse train starting times [ms]
-Function/WAVE WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epoch, pulseToPulseLength)
-	WAVE stimset
-	variable sweep, epoch
-	variable &pulseToPulseLength
-
-	string startTimesList, stimNote
-	stimNote = note(stimset)
-
-	pulseToPulseLength = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = PULSE_TO_PULSE_LENGTH_KEY)
-	ASSERT(IsFinite(pulseToPulseLength), "Non-finite " + PULSE_TO_PULSE_LENGTH_KEY)
-
-	startTimesList = WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = PULSE_START_TIMES_KEY)
-	WAVE/Z/D startTimes = ListToNumericWave(startTimesList, ",")
-	ASSERT(WaveExists(startTimes) && DimSize(startTimes, ROWS) > 0, "Found no starting times")
-
-	return startTimes
-End
-
 /// @brief Return the inflection points for trigonometric epochs
 Function/WAVE WB_GetInflectionPoints(string stimNote, variable sweep, variable epoch)
 	string inflectionPointList, functionTypeString
