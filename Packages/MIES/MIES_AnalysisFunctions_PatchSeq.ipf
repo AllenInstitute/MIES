@@ -247,8 +247,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnse
 	string device
 	variable sweepNo, type, totalOnsetDelay
 
-	variable i, level, first, last, duration
-	string key
+	variable i
 
 	WAVE/Z sweepWave = GetSweepWave(device, sweepNo)
 
@@ -259,8 +258,8 @@ static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnse
 		WAVE config = GetConfigWave(sweepWave)
 	endif
 
-	WAVE statusHS  = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
-	WAVE durations = LBN_GetNumericWave()
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	Make/FREE/WAVE/N=(NUM_HEADSTAGES) allSingleDA
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -268,7 +267,26 @@ static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnse
 			continue
 		endif
 
-		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(device, sweepWave, i, XOP_CHANNEL_TYPE_DAC, config = config)
+		allSingleDA[i] = AFH_ExtractOneDimDataFromSweep(device, sweepWave, i, XOP_CHANNEL_TYPE_DAC, config = config)
+	endfor
+
+	WAVE durations = PSQ_DeterminePulseDurationFinder(statusHS, allSingleDA, type, totalOnsetDelay)
+
+	return durations
+End
+
+Function/WAVE PSQ_DeterminePulseDurationFinder(WAVE statusHS, WAVE/WAVE allSingleDA, variable type, variable totalOnsetDelay)
+
+	variable i, first, last, level, duration
+
+	WAVE durations = LBN_GetNumericWave()
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		WAVE singleDA = allSingleDA[i]
 
 		if(type == PSQ_CHIRP)
 			// search something above/below zero from front and back
