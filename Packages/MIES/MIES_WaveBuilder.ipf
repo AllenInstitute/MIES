@@ -1731,26 +1731,6 @@ Function WB_GetWaveNoteEntryAsNumber(text, entryType, [key, sweep, epoch])
 	return str2num(str)
 End
 
-/// @brief Return the inflection points for trigonometric epochs
-Function/WAVE WB_GetInflectionPoints(string stimNote, variable sweep, variable epoch)
-	string inflectionPointList, functionTypeString
-	variable numEntries
-
-	inflectionPointList = WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = "Inflection Points")
-	WAVE/Z/D inflectionPoints = ListToNumericWave(inflectionPointList, ",")
-
-	if(!WaveExists(inflectionPoints))
-		return $""
-	endif
-
-	if(numEntries == 1 && IsNaN(inflectionPoints[0]))
-		// calculation error
-		return $""
-	endif
-
-	return inflectionPoints
-End
-
 static Function [WAVE/D pulseStartTimes, WAVE/D pulseStartIndices, WAVE/D pulseEndIndices, variable pulseToPulseLength] WB_PulseTrainSegment(STRUCT SegmentParameters &pa, variable mode)
 
 	variable startIndex, endIndex, startOffset, durationError, lastValidStartIndex
