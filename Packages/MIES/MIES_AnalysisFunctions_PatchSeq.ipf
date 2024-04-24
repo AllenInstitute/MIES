@@ -503,6 +503,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		if(type == PSQ_TRUE_REST_VM || type == PSQ_ACC_RES_SMOKE)
 			WAVE epochsWave = GetEpochsWave(device)
 		else
+			// trick to use midSweep = 0 mode of EP_GetEpochs
 			WAVE/ZZ epochsWave = $""
 		endif
 
