@@ -598,9 +598,7 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 	CheckRangeOfUserLabnotebookKeys(device, type, sweepNo)
 	CheckDAStimulusSets(device, sweepNo, type)
 
-	if(type == PSQ_CHIRP)
-		TestEpochRecreation(device, sweepNo)
-	endif
+	TestEpochRecreation(device, sweepNo)
 End
 
 /// Used for patch seq analysis functions and NextStimSetName/NextIndexingEndStimSetName analysis parameters
