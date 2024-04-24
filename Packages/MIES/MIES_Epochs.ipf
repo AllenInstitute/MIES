@@ -1416,7 +1416,7 @@ End
 /// @param sweepDFR        [optional: defaults to $""] when passed, allows to fetch also epoch from recreation
 ///
 /// @returns Text wave with epoch information, only rows fitting the input parameters are returned. Can also be a null wave.
-Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, [variable treelevel, WAVE/T epochsWave, DFREF sweepDFR])
+Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, [variable treelevel, WAVE/Z/T epochsWave, DFREF sweepDFR])
 
 	variable index, epochCnt, midSweep
 	string regexp
