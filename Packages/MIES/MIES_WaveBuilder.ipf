@@ -1731,51 +1731,6 @@ Function WB_GetWaveNoteEntryAsNumber(text, entryType, [key, sweep, epoch])
 	return str2num(str)
 End
 
-/// @brief Return pulse information from a pulse train epoch
-///
-/// @param[in]  stimset            stimulus set
-/// @param[in]  sweep              sweep of the set
-/// @param[in]  epoch              epoch of the set
-/// @param[out] pulseToPulseLength pulse to pulse length [ms]
-/// @return pulse train starting times [ms]
-Function/WAVE WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epoch, pulseToPulseLength)
-	WAVE stimset
-	variable sweep, epoch
-	variable &pulseToPulseLength
-
-	string startTimesList, stimNote
-	stimNote = note(stimset)
-
-	pulseToPulseLength = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = PULSE_TO_PULSE_LENGTH_KEY)
-	ASSERT(IsFinite(pulseToPulseLength), "Non-finite " + PULSE_TO_PULSE_LENGTH_KEY)
-
-	startTimesList = WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = PULSE_START_TIMES_KEY)
-	WAVE/Z/D startTimes = ListToNumericWave(startTimesList, ",")
-	ASSERT(WaveExists(startTimes) && DimSize(startTimes, ROWS) > 0, "Found no starting times")
-
-	return startTimes
-End
-
-/// @brief Return the inflection points for trigonometric epochs
-Function/WAVE WB_GetInflectionPoints(string stimNote, variable sweep, variable epoch)
-	string inflectionPointList, functionTypeString
-	variable numEntries
-
-	inflectionPointList = WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = "Inflection Points")
-	WAVE/Z/D inflectionPoints = ListToNumericWave(inflectionPointList, ",")
-
-	if(!WaveExists(inflectionPoints))
-		return $""
-	endif
-
-	if(numEntries == 1 && IsNaN(inflectionPoints[0]))
-		// calculation error
-		return $""
-	endif
-
-	return inflectionPoints
-End
-
 static Function [WAVE/D pulseStartTimes, WAVE/D pulseStartIndices, WAVE/D pulseEndIndices, variable pulseToPulseLength] WB_PulseTrainSegment(STRUCT SegmentParameters &pa, variable mode)
 
 	variable startIndex, endIndex, startOffset, durationError, lastValidStartIndex
@@ -2270,10 +2225,9 @@ Function/WAVE WB_CustomWavesPathFromStimSet(string stimsetList)
 			continue
 		endif
 
-		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
-			if(SegWvType[j] == 7)
+			if(SegWvType[j] == EPOCH_TYPE_CUSTOM)
 				customwaves[k] = WPT[0][j][EPOCH_TYPE_CUSTOM]
 				k             += 1
 			endif
@@ -2309,7 +2263,6 @@ static Function/WAVE WB_UpgradeCustomWaves(string stimsetList)
 
 		ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Unexpected channel type")
 
-		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
 			if(SegWvType[j] == EPOCH_TYPE_CUSTOM)
@@ -2348,12 +2301,11 @@ static Function/S WB_StimsetChildren([stimset])
 
 	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType), "Parameter Waves not found.")
 
-	ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "Dimension Label not found. Check for changed DimLabels in SegWave!")
 	numEpochs = SegWvType[%'Total number of epochs']
 
 	// search for stimsets in all formula-epochs by a regex pattern
 	for(i = 0; i < numEpochs; i += 1)
-		if(SegWvType[i] == 8)
+		if(SegWvType[i] == EPOCH_TYPE_COMBINE)
 			formula     = WPT[6][i][EPOCH_TYPE_COMBINE]
 			numStimsets = CountSubstrings(formula, "?")
 			for(j = 0; j < numStimsets; j += 1)
