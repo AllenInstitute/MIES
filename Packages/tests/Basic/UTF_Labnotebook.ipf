@@ -150,6 +150,20 @@ Function GetLastSettingFindsNaNSweep()
 	CHECK_EQUAL_WAVES(settings, settingsRef, mode = WAVE_DATA, tol = 1e-13)
 End
 
+static Function GetLastSettingFindsWithinNonConsecutiveSweepOrder()
+
+	string   key
+	variable chunkPassed
+	variable sweepNo = 41
+	DFREF    dfr     = root:Labnotebook_misc:
+
+	WAVE/SDFR=dfr numericalValuesTest
+
+	key         = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_CHUNK_PASS, chunk = 0, query = 1)
+	chunkPassed = GetLastSettingIndep(numericalValuesTest, sweepNo, key, UNKNOWN_MODE, defValue = NaN)
+	CHECK_EQUAL_VAR(chunkPassed, 0)
+End
+
 Function GetLastSettingQueryWoMatch()
 
 	variable first, last
