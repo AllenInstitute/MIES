@@ -446,7 +446,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	variable leakCurPassedAll, maxLeakCurrent, targetVThreshold
 	variable rmsShortThreshold, rmsLongThreshold
 	variable chunkPassedRMSShortOverride, chunkPassedRMSLongOverride, chunkPassedTargetVOverride, chunkPassedLeakCurOverride
-	string msg, adUnit, ctrl, key, epName, epShortName
+	string msg, adUnit, ctrl, key
 
 	STRUCT PSQ_PulseSettings ps
 	PSQ_GetPulseSettingsForType(type, ps)
@@ -596,6 +596,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	endif
 	// END TEST
 
+	WAVE/T epochWave = GetEpochsWave(device)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		if(!statusHS[i])
@@ -604,9 +605,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 		DAC = AFH_GetDACFromHeadstage(device, i)
 		ASSERT(IsFinite(DAC), "Could not determine DAC channel number for HS " + num2istr(i) + " for device " + device)
-		epName      = "Name=Baseline Chunk;Index=" + num2istr(chunk)
-		epShortName = PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(chunk)
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, chunkStartTimeMax * MILLI_TO_ONE, (chunkStartTimeMax + chunkLengthTime) * MILLI_TO_ONE, epName, shortname = epShortName)
+		PSQ_AddBaselineEpoch(epochWave, DAC, chunk, chunkStartTimeMax, chunkLengthTime)
 
 		if(chunk == 0)
 			// store baseline RMS short/long tartget V analysis parameters in labnotebook on first use
@@ -845,6 +844,22 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	else
 		ASSERT(0, "unknown baseline type")
 	endif
+End
+
+/// @brief Add base line epoch to user epochs
+///
+/// @param epochWave         4D epochs wave
+/// @param DAC               DAC channel number
+/// @param chunk             number of evaluated chunk
+/// @param chunkStartTimeMax start time of chunk in ms
+/// @param chunkLengthTime   time length of chunk in ms
+Function PSQ_AddBaselineEpoch(WAVE epochWave, variable DAC, variable chunk, variable chunkStartTimeMax, variable chunkLengthTime)
+
+	string epName, epShortName
+
+	epName      = "Name=Baseline Chunk;Index=" + num2istr(chunk)
+	epShortName = PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(chunk)
+	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, chunkStartTimeMax * MILLI_TO_ONE, (chunkStartTimeMax + chunkLengthTime) * MILLI_TO_ONE, epName, shortname = epShortName)
 End
 
 /// @brief Return the number of chunks
@@ -3598,7 +3613,8 @@ static Function PSQ_Ramp_AddEpoch(string device, variable headstage, WAVE wv, st
 	epBegin = IndexToScale(wv, first, ROWS) * MILLI_TO_ONE
 	epEnd   = IndexToScale(wv, last, ROWS) * MILLI_TO_ONE
 
-	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	WAVE/T epochWave = GetEpochsWave(device)
+	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 End
 
 /// @brief Determine if we have three passing sweeps with the same DAScale value
@@ -4670,8 +4686,7 @@ End
 ///
 /// Zero is the DA/AD wave zero.
 static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRange(string device, variable sweepNo, variable headstage)
-	variable DAC, totalOnsetDelay, chirpStart, chirpEnd
-	string tags, shortname
+	variable DAC, totalOnsetDelay
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
@@ -4694,7 +4709,28 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRang
 
 	WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, sweepNo, totalOnsetDelay)
 
-	chirpStart = totalOnsetDelay + PSQ_BL_EVAL_RANGE
+	WAVE/T epochWave = GetEpochsWave(device)
+	[epBegin, epEnd] = PSQ_CR_AddSpikeEvaluationEpoch(epochsWave, DAC, headstage, durations, totalOnsetDelay)
+
+	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
+End
+
+/// @brief Adds PSQ_Chirp spike evaluation epoch
+///
+/// @param epochsWave        4d epochs wave
+/// @param DAC               DAC number
+/// @param headstage         headstage number
+/// @param durations         pulse duration wave
+/// @param totalOnsetDelayMS totalOnsetDelay in ms
+///
+/// @retval epBegin epoch begin in s
+/// @retval epEnd   epoch end in s
+Function [variable epBegin, variable epEnd] PSQ_CR_AddSpikeEvaluationEpoch(WAVE/T epochsWave, variable DAC, variable headstage, WAVE durations, variable totalOnsetDelayMS)
+
+	variable chirpStart, chirpEnd
+	string tags, shortName
+
+	chirpStart = totalOnsetDelayMS + PSQ_BL_EVAL_RANGE
 	chirpEnd   = chirpStart + durations[headstage]
 
 	epBegin = chirpStart * MILLI_TO_ONE
@@ -4703,9 +4739,9 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRang
 	sprintf tags, "Type=Chirp spike evaluation"
 	sprintf shortName, "CR_SE"
 
-	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	EP_AddUserEpoch(epochsWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
-	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
+	return [epBegin, epEnd]
 End
 
 /// @brief Return the begin/start [ms] of the chirp bounds evaluation range
@@ -4714,7 +4750,7 @@ End
 static Function [variable epBegin, variable epEnd] PSQ_CR_GetChirpEvaluationRange(string device, variable sweepNo, variable headstage, variable requestedCycles)
 
 	variable DAC, stimsetQC
-	string name, tags, regexp, shortname, key
+	string name, tags, shortname, key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
@@ -4733,10 +4769,7 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetChirpEvaluationRang
 		return [epBegin, epEnd]
 	endif
 
-	sprintf regexp, "^(E1_TG_C%d|E1_TG_C%d)$", 0, requestedCycles - 1
-	WAVE/T/Z fullCycleEpochs = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC, \
-	                                        regexp, treelevel = 2, epochsWave = epochsWave)
-
+	WAVE/Z/T fullCycleEpochs = PSQ_CR_GetFullCycleEpochs(numericalValues, textualValues, DAC, epochsWave, requestedCycles)
 	if(!WaveExists(fullCycleEpochs))
 		printf "Could not find chirp cycles in epoch 1.\r"
 		ControlWindowToFront()
@@ -4758,15 +4791,43 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetChirpEvaluationRang
 		return [NaN, NaN]
 	endif
 
+	[epBegin, epEnd] = PSQ_CR_AddCycleEvaluationEpoch(epochsWave, fullCycleEpochs, DAC)
+
+	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
+End
+
+/// @brief Add PSQ_Chirp cycle evaluation epoch
+///
+/// @param epochsWave      4d epoch wave
+/// @param fullCycleEpochs 2d epoch wave with epochs of full cycles (sorted)
+/// @param DAC             DAC number
+///
+/// @retval epBegin epoch begin in s
+/// @retval epEnd   epoch end in s
+Function [variable epBegin, variable epEnd] PSQ_CR_AddCycleEvaluationEpoch(WAVE/T epochsWave, WAVE/T fullCycleEpochs, variable DAC)
+
+	string tags, shortName
+
 	epBegin = str2num(fullCycleEpochs[0][EPOCH_COL_STARTTIME])
 	epEnd   = str2num(fullCycleEpochs[DimSize(fullCycleEpochs, ROWS) - 1][EPOCH_COL_ENDTIME])
 
 	sprintf tags, "Type=Chirp cycles evaluation"
 	sprintf shortName, "CR_CE"
 
-	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	EP_AddUserEpoch(epochsWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
-	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]
+	return [epBegin, epEnd]
+End
+
+Function/WAVE PSQ_CR_GetFullCycleEpochs(WAVE numericalValues, WAVE/T textualValues, variable DAC, WAVE/T epochsWave, variable requestedCycles)
+
+	string regexp
+
+	sprintf regexp, "^(E1_TG_C%d|E1_TG_C%d)$", 0, requestedCycles - 1
+	WAVE/T/Z fullCycleEpochs = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC, \
+	                                        regexp, treelevel = 2, epochsWave = epochsWave)
+
+	return fullCycleEpochs
 End
 
 /// @brief Manually force the pre/post set events
@@ -5245,7 +5306,8 @@ static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string
 	sprintf tags, "Type=Testpulse Like;Index=%d", tpIndex
 	sprintf shortName, "TP%d", tpIndex
 
-	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	WAVE/T epochWave = GetEpochsWave(device)
+	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
 	// pre TP baseline
 	// same epBegin as full TP
@@ -5253,7 +5315,7 @@ static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string
 	sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", tpIndex
 	sprintf shortName, "TP%d_B0", tpIndex
 
-	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
 	// pulse TP
 	epBegin   = epEnd
@@ -5262,7 +5324,7 @@ static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string
 	sprintf tags, "Type=Testpulse Like;SubType=Pulse;Amplitude=%g;Index=%d;", amplitude, tpIndex
 	sprintf shortName, "TP%d_P", tpIndex
 
-	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
 	// post TP baseline
 	epBegin = epEnd
@@ -5270,7 +5332,7 @@ static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string
 	sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", tpIndex
 	sprintf shortName, "TP%d_B1", tpIndex
 
-	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
 	return epEnd
 End
@@ -5698,6 +5760,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 
 	wbBegin = 0
 	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
+	WAVE/T epochWave = GetEpochsWave(device)
 	for(i = 0; i < numEpochs; i += 1)
 		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * MILLI_TO_ONE
 
@@ -5727,7 +5790,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 			epEnd   = epBegin + chunkLength
 
 			[tags, shortName] = PSQ_CreateBaselineChunkSelectionStrings(userEpochIndexBLC)
-			EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+			EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 			userEpochIndexBLC += 1
 		elseif(i == 1 || i == 4 || i == 7 || i == 12 || i == 15 || i == 18)
 			epBegin = wbBegin
@@ -6115,6 +6178,7 @@ static Function PSQ_CreateBaselineChunkSelectionEpochs(string device, variable h
 
 	wbBegin = 0
 	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
+	WAVE/T epochWave = GetEpochsWave(device)
 	for(i = 0; i < numEpochs; i += 1)
 		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * MILLI_TO_ONE
 
@@ -6139,7 +6203,7 @@ static Function PSQ_CreateBaselineChunkSelectionEpochs(string device, variable h
 		epEnd   = epBegin + chunkLength
 
 		[tags, shortName] = PSQ_CreateBaselineChunkSelectionStrings(index)
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+		EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 		index += 1
 	endfor
 

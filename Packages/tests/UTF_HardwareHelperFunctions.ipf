@@ -562,8 +562,8 @@ static Function CheckAnaFuncVersion(string device, variable type)
 End
 
 Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE headstageQC)
-	string   key
-	variable type
+	string key
+	variable type, DAC, index
 
 	CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), sweepNo + 1)
 	CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(device), sweepNo)
@@ -597,6 +597,10 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 	CheckForOtherUserLBNKeys(device, type)
 	CheckRangeOfUserLabnotebookKeys(device, type, sweepNo)
 	CheckDAStimulusSets(device, sweepNo, type)
+
+	if(type == PSQ_CHIRP)
+		TestEpochRecreation(device, sweepNo)
+	endif
 End
 
 /// Used for patch seq analysis functions and NextStimSetName/NextIndexingEndStimSetName analysis parameters

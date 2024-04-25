@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=ExportToNWB
 
-/// UTF_TD_GENERATOR GetHistoricDataFiles
+/// UTF_TD_GENERATOR GetHistoricDataFilesPXP
 static Function TestExportingDataToNWB([string str])
 
 	string file, miesPath, nwbFileName

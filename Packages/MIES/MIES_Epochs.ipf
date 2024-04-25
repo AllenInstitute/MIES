@@ -1152,7 +1152,7 @@ End
 /// Allows to add user epochs for not yet finished sweeps. The tree level
 /// is fixed to #EPOCH_USER_LEVEL to not collide with stock entries.
 ///
-/// @param device    device
+/// @param epochWave     epoch wave
 /// @param channelType   channel type, currently only #XOP_CHANNEL_TYPE_DAC and #XOP_CHANNEL_TYPE_TTL is supported
 /// @param channelNumber channel number
 /// @param epBegin       start time of the epoch in seconds
@@ -1160,11 +1160,10 @@ End
 /// @param tags          tags for the epoch
 /// @param shortName     [optional, defaults to auto-generated] user defined short name for the epoch, will
 ///                      be prefixed with #EPOCH_SHORTNAME_USER_PREFIX
-Function EP_AddUserEpoch(string device, variable channelType, variable channelNumber, variable epBegin, variable epEnd, string tags, [string shortName])
+Function EP_AddUserEpoch(WAVE/T epochWave, variable channelType, variable channelNumber, variable epBegin, variable epEnd, string tags, [string shortName])
 
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_TTL, "Currently only epochs for the DA and TTL channels are supported")
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	if(ParamIsDefault(shortName))
 		sprintf shortName, "%s%d", EPOCH_SHORTNAME_USER_PREFIX, EP_GetEpochCount(epochWave, channelNumber, channelType)
 	else
@@ -1172,7 +1171,7 @@ Function EP_AddUserEpoch(string device, variable channelType, variable channelNu
 		shortName = EPOCH_SHORTNAME_USER_PREFIX + shortName
 	endif
 
-	return EP_AddEpoch(epochWave, channelNumber, channelType, epBegin * ONE_TO_MICRO, epEnd * ONE_TO_MICRO, tags, shortName, EPOCH_USER_LEVEL)
+	EP_AddEpoch(epochWave, channelNumber, channelType, epBegin * ONE_TO_MICRO, epEnd * ONE_TO_MICRO, tags, shortName, EPOCH_USER_LEVEL)
 End
 
 /// @brief Adds a epoch to the epochsWave
@@ -1753,6 +1752,7 @@ static Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/
 
 	WAVE/T recEpochWave = GetEpochsWaveAsFree()
 	EP_CollectEpochInfoDA(recEpochWave, s)
+	EP_AddRecreatedUserEpochs(numericalValues, textualValues, sweepDFR, sweepNo, s, recEpochWave)
 
 	WAVE/Z channelDA = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
 	ASSERT(WaveExists(channelDA), "Could not retrieve first DA sweep")
@@ -1772,4 +1772,107 @@ static Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/
 	CA_StoreEntryIntoCache(cacheKey, recEpochWave)
 
 	return recEpochWave
+End
+
+static Function EP_AddRecreatedUserEpochs(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
+
+	variable firstDAC, firstHS, totalOnsetDelayMS, index, type
+	string key
+
+	firstDAC          = s.DACList[0]
+	firstHS           = s.headstageDAC[0]
+	totalOnsetDelayMS = s.onsetDelay * s.samplingIntervalDA * MICRO_TO_MILLI
+	key               = "Generic function"
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, firstDAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+	if(!WaveExists(settings))
+		return NaN
+	endif
+	WAVE/T settingsT = settings
+	type = MapAnaFuncToConstant(settingsT[index])
+
+	switch(type)
+		case PSQ_CHIRP:
+			EP_AddRecreatedUserEpochs_PSQ_Chirp(numericalValues, textualValues, sweepDFR, sweepNo, firstDAC, firstHS, totalOnsetDelayMS, epochWave)
+			break
+		default:
+			DEBUGPRINT("EP_Recreation: Unsupported analysis function -> skipped.")
+			return NaN
+	endswitch
+End
+
+static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo, variable DAC, variable headStage, variable totalOnsetDelayMS, WAVE/T epochWave)
+
+	variable index, stimsetQC, chirpCycles, spikeCheck, baselineQC
+	variable epBegin, epEnd, chunk, chunkPassed, chunkStartTimeMax, chunkLengthTime
+	string key, params
+
+	key = "Function params (encoded)"
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+	ASSERT(WaveExists(settings), "EP_Recreation: Could not query analysis function parameters from LNB.")
+	WAVE/T settingsT = settings
+	params = settingsT[index]
+
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	ASSERT(WaveExists(durations), "Could not find durations in LNB")
+
+	spikeCheck = AFH_GetAnalysisParamNumerical("SpikeCheck", params)
+	ASSERT(IsFinite(spikeCheck), "Invalid SpikeCheck param")
+	if(spikeCheck)
+		[epBegin, epEnd] = PSQ_CR_AddSpikeEvaluationEpoch(epochWave, DAC, headStage, durations, totalOnsetDelayMS)
+	endif
+
+	for(chunk = 0;; chunk += 1)
+		key         = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1)
+		chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = NaN)
+		if(IsNaN(chunkPassed))
+			break
+		endif
+		chunkLengthTime   = PSQ_BL_EVAL_RANGE
+		chunkStartTimeMax = chunk ? (totalOnsetDelayMS + PSQ_BL_EVAL_RANGE + WaveMax(durations)) + chunk * PSQ_BL_EVAL_RANGE : totalOnsetDelayMS
+		PSQ_AddBaselineEpoch(epochWave, DAC, chunk, chunkStartTimeMax, chunkLengthTime)
+	endfor
+
+	chirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", params)
+	ASSERT(IsFinite(chirpCycles) && chirpCycles > 0, "Invalid chirp cycles")
+	WAVE/Z/T fullCycleEpochs = PSQ_CR_GetFullCycleEpochs(numericalValues, textualValues, DAC, epochWave, chirpCycles)
+	if(!WaveExists(fullCycleEpochs))
+		return NaN
+	endif
+
+	key       = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_STIMSET_QC, query = 1)
+	stimsetQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	if(IsNaN(stimsetQC))
+		// fallback
+		stimsetQC = !(chirpCycles > 1 && DimSize(fullCycleEpochs, ROWS) == 1)
+	endif
+	if(!stimsetQC)
+		return NaN
+	endif
+
+	ASSERT(DimSize(fullCycleEpochs, ROWS) == (chirpCycles == 1 ? 1 : 2), "Chirp resulted in successful stimset QC, but could not find cycle base epochs E1_TG_C0 && E1_TG_C" + num2istr(chirpCycles - 1))
+	[epBegin, epEnd] = PSQ_CR_AddCycleEvaluationEpoch(epochWave, fullCycleEpochs, DAC)
+End
+
+/// @brief Fetches a single epoch channel from a recreated epoch wave.
+///        The returned epoch channel wave has the same form as epoch information that was stored in the LNB returned by @ref EP_FetchEpochs
+///
+/// @param epochWave 4d epoch wave
+/// @param channelNumber GUI channel number
+/// @param channelType   channel type, one of @ref XopChannelConstants
+/// @returns epoch channel wave (2d)
+Function/WAVE EP_FetchEpochsFromRecreated(WAVE epochWave, variable channelNumber, variable channelType)
+
+	string epList
+
+	epList = EP_EpochWaveToStr(epochWave, channelNumber, channelType)
+	if(IsEmpty(epList))
+		return $""
+	endif
+	WAVE epChannel = EP_EpochStrToWave(epList)
+	if(!DimSize(epChannel, ROWS))
+		return $""
+	endif
+
+	return epChannel
 End

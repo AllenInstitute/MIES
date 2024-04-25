@@ -972,12 +972,13 @@ Function/S LoadSweeps(string winAB)
 	return StringFromList(0, WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH)))
 End
 
-/// @brief Open the given files, located relative to the symbolic path `home`, into an analysis browser
-Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets])
+/// @brief Open the given files in the analysis browser. By default files are located relative to the symbolic path `home` unless absolutePaths is set
+Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets, variable absolutePaths])
 
 	variable idx
 	string filePath, fullFilePath
 
+	absolutePaths = ParamIsDefault(absolutePaths) ? 0 : !!absolutePaths
 	if(ParamIsDefault(loadSweeps))
 		loadSweeps = 0
 	else
@@ -985,17 +986,18 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	endif
 	loadStimsets = ParamIsDefault(loadStimsets) ? 0 : !!loadStimsets
 
-	PathInfo home
-	REQUIRE_EQUAL_VAR(V_flag, 1)
+	if(absolutePaths)
+		WAVE/T filesWithPath = files
+	else
+		PathInfo home
 
-	Duplicate/FREE/T files, filesWithPath
-	filesWithPath[] = S_path + GetHFSPath(files[p])
+		Duplicate/FREE/T files, filesWithPath
+		filesWithPath[] = S_path + GetHFSPath(files[p])
+	endif
 
 	abWin = AB_OpenAnalysisBrowser(restoreSettings = 0)
-	CHECK_PROPER_STR(abWin)
 
 	for(fullFilePath : filesWithPath)
-		REQUIRE(FileExists(fullFilePath))
 		MIES_AB#AB_AddElementToSourceList(fullFilePath)
 	endfor
 
@@ -1010,8 +1012,6 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 
 	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_NON_EMPTY)
-	INFO("Trying to load files @%s", s = files)
-	CHECK_WAVE(indizes, NUMERIC_WAVE)
 
 	if(loadSweeps)
 		for(idx : indizes)
@@ -1020,7 +1020,6 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 		endfor
 
 		sweepBrowsers = WinList("*", ";", "WIN:" + num2istr(WINTYPE_GRAPH))
-		CHECK_PROPER_STR(sweepBrowsers)
 	endif
 
 	if(loadStimsets)
@@ -1134,4 +1133,163 @@ Function [string baseSet, string stimsetList, string customWavePath, variable am
 	wPath = GetWavesDataFolder(customWave, 2)
 
 	return [setNameB, stimsetList, wPath, amplitude]
+End
+
+static Function TestEpochRecreationRemoveUnsupportedUserEpochs(WAVE/T epochChannel, variable type)
+
+	variable index, epochCnt
+	string shortName, supportedUserEpochsRegExp
+	string regexpUserEpochs = "^" + EPOCH_SHORTNAME_USER_PREFIX + ".*"
+
+	Make/FREE/T supportedUserEpochs = {"^U_CR_CE$", "^U_CR_SE$"}
+	Make/FREE/T psqChirpEpochs = {PSQ_BASELINE_CHUNK_SHORT_NAME_RE_MATCHER}
+	if(type == PSQ_CHIRP)
+		Concatenate/FREE/T/NP {psqChirpEpochs}, supportedUserEpochs
+	endif
+	supportedUserEpochsRegExp = TextWaveToList(supportedUserEpochs, "|")
+	supportedUserEpochsRegExp = RemoveEnding(supportedUserEpochsRegExp, "|")
+	supportedUserEpochsRegExp = "^(?![\s\S]*" + supportedUserEpochsRegExp + ")[\s\S]*$"
+	Make/FREE/T/N=(DimSize(epochChannel, ROWS)) shortnames = EP_GetShortName(epochChannel[p][EPOCH_COL_TAGS])
+	WAVE/Z userEpochIndices = FindIndizes(shortNames, str = regexpUserEpochs, prop = PROP_GREP)
+	if(!WaveExists(userEpochIndices))
+		return NaN
+	endif
+	Make/FREE/T/N=(DimSize(userEpochIndices, ROWS)) userEpochShortNames = shortnames[userEpochIndices[p]]
+	WAVE/Z matches = FindIndizes(userEpochShortNames, str = supportedUserEpochsRegExp, prop = PROP_GREP)
+	if(!WaveExists(matches))
+		return NaN
+	endif
+	matches[] = userEpochIndices[matches[p]]
+	Sort/R matches, matches
+	for(index : matches)
+		DeleteWavePoint(epochChannel, ROWS, index)
+	endfor
+End
+
+Function TestEpochRecreation(string device, variable sweepNo)
+
+	WAVE/Z numericalValues = GetLBNumericalValues(device)
+	WAVE/Z textualValues   = GetLBTextualValues(device)
+	DFREF  deviceDFR       = GetDeviceDataPath(device)
+	DFREF  sweepDFR        = GetSingleSweepFolder(deviceDFR, sweepNo)
+
+	WAVE epochWave = MIES_EP#EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, sweepNo)
+
+	CompareEpochsOfSweep(numericalValues, textualValues, sweepNo, sweepDFR, epochWave)
+
+End
+
+/// @brief Compares epochs of all channels of a given sweep. By default equality is checked, unless historic is set.
+///        Because the epoch recreation does not support recreation of all user epochs, in @ref TestEpochRecreationRemoveUnsupportedUserEpochs a
+///        list of supported user epochs in epoch recreation is set. All other (unsupported) user epochs are removed from the reference epochs of
+///        the experiment before comparison.
+///
+/// @param numericalValues numerical labnotebook values
+/// @param textualValues   textual labnotebook values
+/// @param sweepNo         sweep number
+/// @param sweepDFR        sweep datafolder
+/// @param epochRec        4d epochs wave from recreated epochs
+/// @param historic        [optional, default 0], when set instead of equality only the existence of epochs based on the shortNames is checked.
+///                        All non-user epochs that exist in the reference epochs from the experiment must exist in the recreated epochs
+///                        All user epochs that were recreated must exist in the reference epochs from the experiment
+/// @param userEpochRef    [optional, default null] When set the user epochs from this wave are used to extend the epochs from the experiment if not already present
+///                        These epochs usually originate from exported recreated epochs used for test case @ref TestEpochRecreationShortNames
+Function CompareEpochsOfSweep(WAVE/Z numericalValues, WAVE/Z/T textualValues, variable sweepNo, DFREF sweepDFR, WAVE epochRec, [variable historic, WAVE/Z userEpochRef])
+
+	variable channelNumber, index, type
+	string anaFunc
+
+	historic = ParamIsDefault(historic) ? 0 : !!historic
+
+	for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
+
+		WAVE/Z/T epochChannelRef = EP_FetchEpochs(numericalValues, textualValues, sweepNo, sweepDFR, channelNumber, XOP_CHANNEL_TYPE_DAC)
+		WAVE/Z/T epochChannelRec = EP_FetchEpochsFromRecreated(epochRec, channelNumber, XOP_CHANNEL_TYPE_DAC)
+
+		if(WaveExists(epochChannelRef))
+			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Generic function", channelNumber, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+			if(WaveExists(settings))
+				WAVE/T settingsT = settings
+				type = MapAnaFuncToConstant(settingsT[index])
+				TestEpochRecreationRemoveUnsupportedUserEpochs(epochChannelRef, type)
+			endif
+			if(historic)
+				if(WaveExists(userEpochRef))
+					WAVE/T epochChannelRecUser = EP_FetchEpochsFromRecreated(userEpochRef, channelNumber, XOP_CHANNEL_TYPE_DAC)
+					ExtendRefEpochsWithUserEpochs(epochChannelRef, epochChannelRecUser)
+				endif
+				CompareEpochsHistoricChannel(epochChannelRef, epochChannelRec)
+			else
+				// also TP channels can be active but have no epochs
+				CHECK_EQUAL_WAVES(epochChannelRec, epochChannelRef)
+			endif
+		else
+			CHECK_WAVE(epochChannelRec, NULL_WAVE)
+		endif
+	endfor
+End
+
+/// @brief This function extends epochs of a single channel from the experiment with user epochs from a reference source if this user epochs do
+///        not exist in the epochs of the experiment. The reference source is typically a set of exported recreated epochs as implemented in test case
+///        @ref TestEpochRecreationShortNames
+///        A typical case is an experiment with data created with an old MIES version where user epochs from analysis function were not implemented.
+///        In that case the current epoch recreation creates more epochs than there were originally in the experiment.
+///        The extension from this function fulfills then two points:
+///        - the comparison as implemented in @ref CompareEpochsHistoricChannel works
+///        - changes in epoch recreation since the point of exporting the reference epochs can be found
+static Function ExtendRefEpochsWithUserEpochs(WAVE/T epochChannelRef, WAVE/T epochChannelRecRef)
+
+	variable i, numEpochs, numEpochsRef
+	string shortName
+
+	numEpochsRef = DimSize(epochChannelRef, ROWS)
+	Make/FREE/T/N=(numEpochsRef) epRefShortnames = EP_GetShortName(epochChannelRef[p][EPOCH_COL_TAGS])
+	numEpochs = DimSize(epochChannelRecRef, ROWS)
+	for(i = 0; i < numEpochs; i += 1)
+		shortName = EP_GetShortName(epochChannelRecRef[i][EPOCH_COL_TAGS])
+		if(strsearch(shortName, EPOCH_SHORTNAME_USER_PREFIX, 0) != 0)
+			continue
+		endif
+		FindValue/TEXT=shortName/TXOP=4 epRefShortnames
+		if(V_value >= 0)
+			continue
+		endif
+		Redimension/N=(numEpochsRef + 1, -1) epochChannelRef
+		epochChannelRef[numEpochsRef][] = epochChannelRecRef[i][q]
+		numEpochsRef                   += 1
+	endfor
+End
+
+/// @brief The historic epoch comparison only compares existence of epochs from shortnames if present
+static Function CompareEpochsHistoricChannel(WAVE/T epochChannelRef, WAVE/T epochChannelRec)
+
+	string shortName
+	variable i, numEpochs, numEpochsRec
+
+	numEpochs = DimSize(epochChannelRef, ROWS)
+	Make/FREE/T/N=(numEpochs) epRefShortnames = EP_GetShortName(epochChannelRef[p][EPOCH_COL_TAGS])
+	numEpochsRec = DimSize(epochChannelRec, ROWS)
+	Make/FREE/T/N=(numEpochsRec) epRecShortnames = EP_GetShortName(epochChannelRec[p][EPOCH_COL_TAGS])
+	ASSERT(numEpochs > 0, "numEpochs is zero")
+	// test if all reference epochs are also present in recreated
+	for(i = 0; i < numEpochs; i += 1)
+		shortName = epRefShortnames[i]
+		if(IsEmpty(shortName))
+			continue
+		endif
+		FindValue/TEXT=shortName/TXOP=4 epRecShortnames
+		INFO("Could not find reference epoch %s in recreated epochs.", s0 = shortName)
+		CHECK_GE_VAR(V_value, 0)
+	endfor
+	// test if all recreated user epochs are also present in reference
+	ASSERT(numEpochsRec > 0, "numEpochsRec is zero")
+	for(i = 0; i < numEpochsRec; i += 1)
+		shortName = epRecShortnames[i]
+		if(strsearch(shortName, EPOCH_SHORTNAME_USER_PREFIX, 0) != 0)
+			continue
+		endif
+		FindValue/TEXT=shortName/TXOP=4 epRefShortnames
+		INFO("Could not find recreated user epoch %s in reference epochs.", s0 = shortName)
+		CHECK_GE_VAR(V_value, 0)
+	endfor
 End
