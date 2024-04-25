@@ -1141,12 +1141,11 @@ static Function TestEpochRecreationRemoveUnsupportedUserEpochs(WAVE/T epochChann
 	string shortName, supportedUserEpochsRegExp
 	string regexpUserEpochs = "^" + EPOCH_SHORTNAME_USER_PREFIX + ".*"
 
-	Make/FREE/T supportedUserEpochs = {"CR_CE", "CR_SE"}
+	Make/FREE/T supportedUserEpochs = {"^U_CR_CE$", "^U_CR_SE$"}
 	Make/FREE/T psqChirpEpochs = {PSQ_BASELINE_CHUNK_SHORT_NAME_RE_MATCHER}
 	if(type == PSQ_CHIRP)
 		Concatenate/FREE/T/NP {psqChirpEpochs}, supportedUserEpochs
 	endif
-	supportedUserEpochs[]     = "^" + EPOCH_SHORTNAME_USER_PREFIX + supportedUserEpochs[p]
 	supportedUserEpochsRegExp = TextWaveToList(supportedUserEpochs, "|")
 	supportedUserEpochsRegExp = RemoveEnding(supportedUserEpochsRegExp, "|")
 	supportedUserEpochsRegExp = "^(?![\s\S]*" + supportedUserEpochsRegExp + ")[\s\S]*$"
