@@ -2047,7 +2047,7 @@ threadsafe Function/WAVE GetLBRowCache(values)
 	variable actual, sweepNo, first, last
 	string key, name
 
-	variable versionOfNewWave = 5
+	variable versionOfNewWave = 6
 
 	actual = WaveModCountWrapper(values)
 	name   = GetWavesDataFolder(values, 2)

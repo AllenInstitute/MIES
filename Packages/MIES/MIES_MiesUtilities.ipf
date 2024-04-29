@@ -532,28 +532,28 @@ Function/S GetPanelControl(channelIndex, channelType, controlType)
 End
 
 /// @brief Find the first and last point index of a consecutive range of
-/// values in the labnotebook
+/// values in the labnotebook, searches the range from the back
 ///
 /// @param[in]  wv                wave to search
 /// @param[in]  col               column to look for
 /// @param[in]  val               value to search
-/// @param[in]  forwardORBackward find the first(1) or last(0) range
 /// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
 /// @param[out] first             point index of the beginning of the range
 /// @param[out] last              point index of the end of the range
-threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last)
+threadsafe static Function FindRange(wv, col, val, entrySourceType, first, last)
 	WAVE wv
-	variable col, val, forwardORBackward, entrySourceType
+	variable col, val, entrySourceType
 	variable &first, &last
 
-	variable numRows, i, sourceTypeCol, firstRow, lastRow
+	variable numRows, i, j, sourceTypeCol, firstRow, lastRow, isNumeric, index
 
-	first = NaN
-	last  = NaN
+	first     = NaN
+	last      = NaN
+	isNumeric = IsNumericWave(wv)
 
 	// still correct without startLayer/endLayer coordinates
 	// as we always have sweepNumber/etc. in the first layer
-	if(IsNaN(val) && IsNumericWave(wv))
+	if(IsNaN(val) && isNumeric)
 		WAVE/Z indizesSetting = FindIndizes(wv, col = col, prop = PROP_EMPTY)
 	else
 		WAVE/Z indizesSetting = FindIndizes(wv, col = col, var = val)
@@ -563,8 +563,8 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 		return NaN
 	endif
 
+	sourceTypeCol = FindDimLabel(wv, COLS, "EntrySourceType")
 	if(IsFinite(entrySourceType))
-		sourceTypeCol = FindDimLabel(wv, COLS, "EntrySourceType")
 
 		if(sourceTypeCol >= 0) // labnotebook has a entrySourceType column
 			[firstRow, lastRow] = WaveMinAndMax(indizesSetting)
@@ -614,33 +614,33 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 		return NaN
 	endif
 
-	if(forwardORBackward)
-
-		first = indizes[0]
-		last  = indizes[0]
-
-		for(i = 1; i < numRows; i += 1)
-			// a forward search stops after the end of the first sequence
-			if(indizes[i] > last + 1)
-				return NaN
-			endif
-
-			last = indizes[i]
-		endfor
-	else
-
-		first = indizes[numRows - 1]
-		last  = indizes[numRows - 1]
-
-		for(i = numRows - 2; i >= 0; i -= 1)
-			// a backward search stops when the beginning of the last sequence was found
-			if(indizes[i] < first - 1)
-				return NaN
-			endif
-
-			first = indizes[i]
-		endfor
+	if(!IsNumeric)
+		WAVE/T wt = wv
 	endif
+
+	first = indizes[numRows - 1]
+	last  = indizes[numRows - 1]
+
+	for(i = numRows - 2; i >= 0; i -= 1)
+		index = indizes[i]
+		// a backward search stops when the beginning of the last sequence was found
+		if(index < first - 1)
+			if(IsNumeric)
+				for(j = index + 1; j < first; j += 1)
+					if(!IsNaN(wv[j][sourceTypeCol][0]))
+						return NaN
+					endif
+				endfor
+			else
+				for(j = index + 1; j < first; j += 1)
+					if(!IsEmpty(wt[j][sourceTypeCol][0]))
+						return NaN
+					endif
+				endfor
+			endif
+		endif
+		first = index
+	endfor
 End
 
 /// @brief Test helper to enforce that every query done for an INDEP_HEADSTAGE setting
@@ -1157,7 +1157,7 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 	variable settingCol, numLayers, i, sweepCol, numEntries
 	variable firstValue, lastValue, sourceTypeCol, peakResistanceCol, pulseDurationCol
 	variable testpulseBlockLength, blockType, hasValidTPPulseDurationEntry
-	variable mode
+	variable mode, sweepNoInLNB
 
 	if(!ParamIsDefault(rowIndex))
 		rowIndex = LABNOTEBOOK_MISSING_VALUE
@@ -1184,9 +1184,9 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 		return $""
 	endif
 
+	sweepCol = GetSweepColumn(values)
 	if(mode == GET_LB_MODE_NONE || mode == GET_LB_MODE_WRITE)
-		sweepCol = GetSweepColumn(values)
-		FindRange(values, sweepCol, sweepNo, 0, entrySourceType, firstValue, lastValue)
+		FindRange(values, sweepCol, sweepNo, entrySourceType, firstValue, lastValue)
 
 		if(!IsFinite(firstValue) && !IsFinite(lastValue)) // sweep number is unknown
 			return $""
@@ -1209,6 +1209,12 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 		Make/FREE/N=(numLayers) lengths
 
 		for(i = lastValue; i >= firstValue; i -= 1)
+
+			sweepNoInLNB = str2num(textualValues[i][sweepCol][0])
+			if(!IsNaN(sweepNoInLNB) && sweepNoInLNB != sweepNo)
+				continue
+			endif
+
 			if(IsFinite(entrySourceType))
 				if(!sourceTypeCol)
 					sourceTypeCol = FindDimLabel(textualValues, COLS, "EntrySourceType")
@@ -1244,6 +1250,10 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 		Make/D/FREE/N=(numLayers) status
 
 		for(i = lastValue; i >= firstValue; i -= 1)
+
+			if(!IsNaN(sweepNo) && numericalValues[i][sweepCol][0] != sweepNo)
+				continue
+			endif
 
 			if(IsFinite(entrySourceType))
 				if(!sourceTypeCol)
