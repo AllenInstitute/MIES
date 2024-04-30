@@ -280,7 +280,7 @@ Function ASYNC_IsWorkloadClassDone(string workloadClass, [variable removeClass])
 	done = (track[%$workloadClass][%INPUTCOUNT] - track[%$workloadClass][%OUTPUTCOUNT]) == 0
 
 	if(removeClass && done)
-		DeleteWavePoint(track, ROWS, index)
+		DeleteWavePoint(track, ROWS, index = index)
 	endif
 
 	return done

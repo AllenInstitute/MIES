@@ -1160,10 +1160,7 @@ static Function TestEpochRecreationRemoveUnsupportedUserEpochs(WAVE/T epochChann
 		return NaN
 	endif
 	matches[] = userEpochIndices[matches[p]]
-	Sort/R matches, matches
-	for(index : matches)
-		DeleteWavePoint(epochChannel, ROWS, index)
-	endfor
+	DeleteWavePoint(epochChannel, ROWS, indices = matches)
 End
 
 Function TestEpochRecreation(string device, variable sweepNo)

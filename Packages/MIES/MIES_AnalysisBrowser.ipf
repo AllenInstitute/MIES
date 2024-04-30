@@ -1414,8 +1414,8 @@ static Function AB_CollapseListEntry(variable row, variable col)
 			endif
 		endfor
 		if(!hasTreeView)
-			DeleteWavePoint(expBrowserSel, ROWS, i)
-			DeleteWavePoint(expBrowserList, ROWS, i)
+			DeleteWavePoint(expBrowserSel, ROWS, index = i)
+			DeleteWavePoint(expBrowserList, ROWS, index = i)
 		endif
 	endfor
 End
@@ -2529,8 +2529,8 @@ static Function AB_RemoveExperimentEntry(string win, string entry)
 		if(!CmpStr(list[i][%type][1], entry, 1))
 			mapIndex = str2num(list[i][%file][1])
 			AB_RemoveMapEntry(mapIndex)
-			DeleteWavePoint(list, ROWS, i)
-			DeleteWavePoint(sel, ROWS, i)
+			DeleteWavePoint(list, ROWS, index = i)
+			DeleteWavePoint(sel, ROWS, index = i)
 			cnt += 1
 		endif
 	endfor
@@ -2819,8 +2819,8 @@ Function AB_ButtonProc_Refresh(ba) : ButtonControl
 				entry = folderList[index]
 				if(!FileExists(entry) && !FolderExists(entry))
 					AB_RemoveExperimentEntry(ba.win, folderList[index])
-					DeleteWavePoint(folderSelection, ROWS, index)
-					DeleteWavePoint(folderList, ROWS, index)
+					DeleteWavePoint(folderSelection, ROWS, index = index)
+					DeleteWavePoint(folderList, ROWS, index = index)
 				else
 					refreshList[refreshIndex] = entry
 					refreshIndex             += 1
@@ -2894,8 +2894,8 @@ Function AB_ButtonProc_Remove(ba) : ButtonControl
 			for(i = size - 1; i >= 0; i -= 1)
 				if(folderSelection[i] == 1)
 					AB_RemoveExperimentEntry(ba.win, folderList[i])
-					DeleteWavePoint(folderSelection, ROWS, i)
-					DeleteWavePoint(folderList, ROWS, i)
+					DeleteWavePoint(folderSelection, ROWS, index = i)
+					DeleteWavePoint(folderList, ROWS, index = i)
 				endif
 			endfor
 			AB_SaveSourceListInSettings()

@@ -1152,7 +1152,7 @@ Function/WAVE GetDQMActiveDeviceList()
 			Redimension/D/N=(-1, -1) wv
 		endif
 		if(WaveVersionIsSmaller(wv, 3))
-			DeleteWavePoint(wv, COLS, 2)
+			DeleteWavePoint(wv, COLS, index = 2)
 		endif
 	else
 		Make/D/N=(0, 4) dfr:ActiveDeviceList/WAVE=wv
