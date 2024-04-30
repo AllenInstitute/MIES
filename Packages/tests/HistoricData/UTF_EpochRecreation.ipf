@@ -100,6 +100,12 @@ static Function TestEpochRecreationShortNames([string str])
 		refEpFolder = "EpochsC57"
 	elseif(!CmpStr(str, "Gad2-IRES-Cre;Ai14-709273.06.02.02.nwb"))
 		refEpFolder = "EpochsGad2"
+	elseif(!CmpStr(str, "H22.03.311.11.08.01.06.nwb"))
+		refEpFolder = "EpochsH22"
+	elseif(!CmpStr(str, "C57BL6J-629713.05.01.02.pxp"))
+		refEpFolder = "EpochsC57PXP"
+	elseif(!CmpStr(str, "Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp"))
+		refEpFolder = "EpochsPValbPXP"
 	else
 		refEpFolder = ""
 	endif
