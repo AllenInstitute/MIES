@@ -310,9 +310,9 @@ static Function/S DB_LockToDevice(win, device)
 		newWindow = "DB_" + device
 	endif
 
+	DB_SetUserData(win, device)
 	win = BSP_RenameAndSetTitle(win, newWindow)
 
-	DB_SetUserData(win, device)
 	if(windowExists(BSP_GetPanel(win)) && BSP_HasBoundDevice(win))
 		BSP_DynamicStartupSettings(win)
 		[first, last] = BSP_FirstAndLastSweepAcquired(win)
