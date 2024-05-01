@@ -2631,7 +2631,8 @@ static Function/WAVE PSQ_DS_GetPassingRheobaseSweeps(WAVE numericalValues, varia
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_ASYNC_PASS, query = 1)
 	WAVE asyncQC = GetLastSettingIndepEachSCI(numericalValues, passingRheobaseSweep, key, headstage, UNKNOWN_MODE)
 
-	WAVE allQC = LBN_GetNumericWave()
+	ASSERT(DimSize(baselineQC, ROWS) == DimSize(asyncQC, ROWS), "Mismatched row sizes")
+	Duplicate/FREE baselineQC, allQC
 
 	// we don't need to check PSQ_FMT_LBN_SAMPLING_PASS here as failing that always makes the whole SCI fail
 	allQC[] = baselineQC[p] && asyncQC[p]
