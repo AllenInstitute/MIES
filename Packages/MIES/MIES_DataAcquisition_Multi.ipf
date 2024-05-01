@@ -391,7 +391,7 @@ static Function DQM_RemoveDevice(device, deviceID)
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
 	row = DQM_GetActiveDeviceRow(deviceID)
-	DeleteWavePoint(ActiveDeviceList, ROWS, row)
+	DeleteWavePoint(ActiveDeviceList, ROWS, index = row)
 End
 
 /// @brief Return the row into `ActiveDeviceList` for the given deviceID

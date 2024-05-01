@@ -4566,15 +4566,25 @@ End
 ///
 /// @param dim dimension 0 - rows, 1 - column, 2 - layer, 3 - chunk
 ///
-/// @param index index where one point in the given dimension is deleted
-Function DeleteWavePoint(wv, dim, index)
-	WAVE wv
-	variable dim, index
+/// @param index   [optional, default n/a] index where one point in the given dimension is deleted
+/// @param indices [optional, default n/a] 1d numerical wave with indices of points to delete
+Function DeleteWavePoint(WAVE wv, variable dim, [variable index, WAVE indices])
 
 	variable size
 
+	ASSERT(ParamIsDefault(index) + ParamIsDefault(indices) == 1, "One of index or indices wave must be given as argument")
 	ASSERT(WaveExists(wv), "wave does not exist")
 	ASSERT(dim >= 0 && dim < 4, "dim must be 0, 1, 2 or 3")
+	if(!ParamIsDefault(indices))
+		ASSERT(WaveExists(indices), "indices wave is null")
+		ASSERT(IsNumericWave(indices), "indices wave must be numeric")
+		ASSERT(DimSize(indices, ROWS), "indices wave must have at least one element")
+		Sort/R {indices}, indices
+		for(index : indices)
+			DeleteWavePoint(wv, dim, index = index)
+		endfor
+		return NaN
+	endif
 	size = DimSize(wv, dim)
 	if(index >= 0 && index < size)
 		if(size > 1)
