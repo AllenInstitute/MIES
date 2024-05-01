@@ -710,7 +710,7 @@ Function/WAVE DB_FindAllDataBrowser(string device, [variable mode])
 			continue
 		endif
 
-		if(!BSP_HasMode(panel, mode))
+		if(!(BSP_GetBrowserMode(panel) & mode))
 			continue
 		endif
 

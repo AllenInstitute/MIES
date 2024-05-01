@@ -524,15 +524,14 @@ static Function/S BSP_SerializeBrowserMode(variable mode)
 	endswitch
 End
 
-Function BSP_HasMode(string win, variable mode)
+Function BSP_GetBrowserMode(string win)
 
-	string   mainPanel
-	variable foundMode
+	string mainPanel, browserModeStr
 
-	mainPanel = GetMainWindow(win)
-	foundMode = BSP_ParseBrowserMode(GetUserData(mainPanel, "", MIES_BSP_BROWSER_MODE))
+	mainPanel      = GetMainWindow(win)
+	browserModeStr = GetUserData(mainPanel, "", MIES_BSP_BROWSER_MODE)
 
-	return foundMode & mode
+	return BSP_ParseBrowserMode(browserModeStr)
 End
 
 /// @brief wrapper function for external calls
