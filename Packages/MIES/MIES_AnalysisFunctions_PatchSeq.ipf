@@ -1889,49 +1889,89 @@ static Function PSQ_DS_GatherEpochDuration(string setName, variable epochIndex)
 	return length
 End
 
-/// @brief Use SweepFormula to gather the AP frequency and DAScale data from the given sweeps
-///
-/// @param device    DAC hardware device
-/// @param headstage headstage
-/// @param sweeps    wave of sweep numbers to gather the data from
-/// @param sweepNo   current sweep
-///
-/// @retval apfreq  AP frequency data
-/// @retval DAScale DAScale data
-static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(string device, variable sweepNo, variable headstage, WAVE sweeps)
+static Function [variable start, variable stop] PSQ_DS_GetFrequencyEvalRangeForRheobaseSupra(string device, variable headstage, variable sweepNo)
 
-	variable DAC, ADC, adaptiveEpochLength, start, stop, supraSweepNo, currentSweepNo, supraEpochLength
-	string code, databrowser, key, ctrl, setName
-	string str         = ""
-	string freqDataKey = "Frequency data"
-	string daScaleKey  = "DAScale data"
+	variable DAC, supraEpochLength, adaptiveEpochLength
+	string ctrl, setName
 
-	supraSweepNo = sweeps[0]
-	DAC          = AFH_GetDACFromHeadstage(device, headstage)
-	ctrl         = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	setName      = DAG_GetTextualValue(device, ctrl, index = DAC)
-
-	adaptiveEpochLength = PSQ_DS_GatherEpochDuration(setName, 1)
+	DAC     = AFH_GetDACFromHeadstage(device, headstage)
+	ctrl    = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	setName = DAG_GetTextualValue(device, ctrl, index = DAC)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
 	DAC = AFH_GetDACFromHeadstage(device, headstage)
 
-	WAVE     DACs   = GetLastSetting(numericalValues, supraSweepNo, "DAC", DATA_ACQUISITION_MODE)
-	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, supraSweepNo, XOP_CHANNEL_TYPE_DAC, DACs[headstage], "^E1$")
+	WAVE     DACs   = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DACs[headstage], "^E1$")
 	ASSERT(WaveExists(epochs), "Could not find E1 epoch")
 	ASSERT(DimSize(epochs, ROWS) == 1, "Expected exactly one epoch")
-	supraEpochLength = str2num(epochs[0][EPOCH_COL_ENDTIME]) - str2num(epochs[0][EPOCH_COL_STARTTIME])
-	ASSERT(adaptiveEpochLength < supraEpochLength, "Adaptive epoch 1 length must be shorter than the one from supra")
+	supraEpochLength    = str2num(epochs[0][EPOCH_COL_ENDTIME]) - str2num(epochs[0][EPOCH_COL_STARTTIME])
+	adaptiveEpochLength = PSQ_DS_GatherEpochDuration(setName, 1)
+	ASSERT(adaptiveEpochLength < supraEpochLength || CheckIfClose(adaptiveEpochLength, supraEpochLength, tol = 1e-6), "Adaptive epoch 1 length must be shorter than the one from supra")
 
 	start = str2num(epochs[0][EPOCH_COL_STARTTIME])
 	stop  = start + adaptiveEpochLength
 
+	return [start, stop]
+End
+
+static Function [variable start, variable stop] PSQ_DS_GetFrequencyEvalRange(string device, variable headstage, variable sweepNo)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	WAVE     DACs   = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DACs[headstage], "^E1$")
+	ASSERT(WaveExists(epochs), "Could not find E1 epoch")
+	ASSERT(DimSize(epochs, ROWS) == 1, "Expected exactly one epoch")
+
+	start = str2num(epochs[0][EPOCH_COL_STARTTIME])
+	stop  = str2num(epochs[0][EPOCH_COL_ENDTIME])
+
+	return [start, stop]
+End
+
+/// @brief Use SweepFormula to gather the AP frequency and DAScale data from the given sweeps
+///
+/// @param device    DAC hardware device
+/// @param sweepNo   current sweep
+/// @param headstage headstage
+/// @param sweeps    wave of sweep numbers to gather the data from
+/// @param fromRheobaseSupra [optional, defaults to off] called for rheobase/supra data (on) or adaptive data (off)
+///
+/// @retval apfreq  AP frequency data
+/// @retval DAScale DAScale data
+static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(string device, variable sweepNo, variable headstage, WAVE sweeps, [variable fromRheobaseSupra])
+
+	variable ADC, start, stop, currentSweepNo, refSweepNo
+	string code, databrowser, key, ctrl, setName
+	string str         = ""
+	string freqDataKey = "Frequency data"
+	string daScaleKey  = "DAScale data"
+
+	if(ParamIsDefault(fromRheobaseSupra))
+		fromRheobaseSupra = 1
+	else
+		fromRheobaseSupra = !!fromRheobaseSupra
+	endif
+
+	if(fromRheobaseSupra)
+		refSweepNo = PSQ_GetLastPassingDAScale(device, headstage, PSQ_DS_SUPRA)
+		[start, stop] = PSQ_DS_GetFrequencyEvalRangeForRheobaseSupra(device, headstage, refSweepNo)
+	else
+		refSweepNo = sweepNo
+		[start, stop] = PSQ_DS_GetFrequencyEvalRange(device, headstage, refSweepNo)
+	endif
+
 	start *= ONE_TO_MILLI
 	stop  *= ONE_TO_MILLI
 
-	WAVE/Z ADCs = GetLastSetting(numericalValues, supraSweepNo, "ADC", DATA_ACQUISITION_MODE)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	WAVE/Z ADCs = GetLastSetting(numericalValues, refSweepNo, "ADC", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(ADCs), "Could not find the ADC labnotebook entry")
 	ADC = ADCs[headstage]
 	ASSERT(IsFinite(ADC), "Could not find an ADC for the headstage")
@@ -3366,7 +3406,7 @@ Function PSQ_DAScale(device, s)
 						WAVE/Z apfreqFromRheobaseAndSupra   = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRheobaseSupra")
 						WAVE/Z DAScalesFromRheobaseAndSupra = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRheobaseSupra")
 					else
-						[WAVE apfreqFromRheobaseAndSupra, WAVE DAScalesFromRheobaseAndSupra] = PSQ_DS_GatherFrequencyCurrentData(device, s.sweepNo, s.headstage, supraAndRheobaseSweeps)
+						[WAVE apfreqFromRheobaseAndSupra, WAVE DAScalesFromRheobaseAndSupra] = PSQ_DS_GatherFrequencyCurrentData(device, s.sweepNo, s.headstage, supraAndRheobaseSweeps, fromRheobaseSupra = 1)
 					endif
 
 					ASSERT(WaveExists(apfreqFromRheobaseAndSupra) && WaveExists(DAScalesFromRheobaseAndSupra), "Missing apfreq/DAScales wave from rheobase, supra")
