@@ -2315,6 +2315,13 @@ static Function PSQ_DS_GatherAndWriteFrequencyToLabnotebook(string device, varia
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+	WAVE baselineQC = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(IsFinite(baselineQC[headstage]) && !baselineQC[headstage])
+		return NaN
+	endif
+
 	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
 		NVAR count           = $GetCount(device)

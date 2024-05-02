@@ -216,7 +216,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	return wv
 End
 
-static Function [WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] ExtractRefValuesFromOverride(variable sweepNo)
+static Function [WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] ExtractRefValuesFromOverride(variable sweepNo, [WAVE baselineQC])
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
@@ -226,6 +226,14 @@ static Function [WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheoba
 
 	WAVE/Z apFreqFromRHSupra         = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRheobaseSupra")
 	WAVE/Z DAScalesFromRheobaseSupra = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRheobaseSupra")
+
+	if(!ParamIsDefault(baselineQC))
+		apFreqRef[] = baselineQC[p] == 1 ? apFreqRef[p] : NaN
+
+		if(!HasOneValidEntry(apFreqRef))
+			WaveClear apFreqRef
+		endif
+	endif
 
 	return [apFreqRef, apFreqFromRHSupra, DAScalesFromRheobaseSupra]
 End
@@ -332,9 +340,10 @@ static Function PS_DS_AD1_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {.075, NaN, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo, baselineQC = entries[%baselinePass])
 
-	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
+	CHECK_WAVE(apFreqRef, NULL_WAVE)
+	CHECK_WAVE(entries[%apfreq], NULL_WAVE)
 	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
 
@@ -754,7 +763,7 @@ static Function PS_DS_AD3_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.375, NaN, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo, baselineQC = entries[%baselinePass])
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
@@ -1602,7 +1611,7 @@ static Function PS_DS_AD12_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.4609374999999999, NaN, NaN, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo, baselineQC = entries[%baselinePass])
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
