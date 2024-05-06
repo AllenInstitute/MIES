@@ -512,7 +512,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		DAC       = AFH_GetDACFromHeadstage(device, headstage)
 		ASSERT(IsFinite(DAC), "Non-finite DAC")
 
-		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "U_BLS[0-9]+", treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
+		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER, treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
 		ASSERT(WaveExists(userChunkEpochs), "Could not find baseline chunk selection user epochs")
 
 		if(chunk >= DimSize(userChunkEpochs, ROWS))
