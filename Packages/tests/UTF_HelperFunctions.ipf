@@ -1011,7 +1011,7 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 
-	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
 
 	if(loadSweeps)
 		for(idx : indizes)
