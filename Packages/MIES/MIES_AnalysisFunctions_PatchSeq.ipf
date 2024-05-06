@@ -440,6 +440,17 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 	return [ret, i]
 End
 
+/// @brief Calculates the baseline chunk times
+Function [variable chunkStartTimeMax, variable chunkLengthTime] PSQ_GetBaselineChunkTimes(variable chunk, STRUCT PSQ_PulseSettings &ps, variable totalOnsetDelayMS, WAVE/Z durations)
+
+	ASSERT(!chunk || (chunk && WaveExists(durations)), "Need durations wave")
+	chunkLengthTime = chunk ? ps.postPulseChunkLength : ps.prePulseChunkLength
+	// for chunk > 0: skip onset delay, the pulse itself and one chunk of post pulse baseline
+	chunkStartTimeMax = chunk ? (totalOnsetDelayMS + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength : totalOnsetDelayMS
+
+	return [chunkStartTimeMax, chunkLengthTime]
+End
+
 /// @brief Evaluate one chunk of the baseline
 ///
 /// @param device        device
@@ -472,11 +483,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	if(!ps.usesBaselineChunkEpochs)
-		if(chunk == 0) // pre pulse baseline
-			chunkStartTimeMax = totalOnsetDelay
-			chunkLengthTime   = ps.prePulseChunkLength
-			baselineType      = PSQ_BL_PRE_PULSE
-		else // post pulse baseline
+		if(chunk)
+			// post pulse baseline
 			ASSERT(type != PSQ_PIPETTE_BATH, "Unexpected analysis function")
 
 			if(type == PSQ_DA_SCALE || type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
@@ -485,12 +493,9 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 				WAVE durations = LBN_GetNumericWave()
 				durations = ps.pulseDuration
 			endif
-
-			// skip: onset delay, the pulse itself and one chunk of post pulse baseline
-			chunkStartTimeMax = (totalOnsetDelay + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength
-			chunkLengthTime   = ps.postPulseChunkLength
-			baselineType      = PSQ_BL_POST_PULSE
 		endif
+		[chunkStartTimeMax, chunkLengthTime] = PSQ_GetBaselineChunkTimes(chunk, ps, totalOnsetDelay, durations)
+		baselineType = chunk ? PSQ_BL_POST_PULSE : PSQ_BL_PRE_PULSE
 	else
 		WAVE numericalValues = GetLBNumericalValues(device)
 		WAVE textualValues   = GetLBTextualValues(device)
