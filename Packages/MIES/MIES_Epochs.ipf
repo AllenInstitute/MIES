@@ -1015,6 +1015,7 @@ static Function [variable err, variable stimsetEndIndex] EP_AddEpochsFromStimSet
 				WaveTransform/O flip, tiInflectionPoints
 			else
 				tiInflectionPoints[] = (ec.dwStimsetBegin + IndexAfterDecimation(ec.wbOodDAQOffset + wbStimsetEpochOffset[epochNr] + wbInflectionPoints[p] + 1, ec.decimationFactor) + 1) * ec.samplingInterval
+				tiInflectionPoints[] = limit(tiInflectionPoints[p], -Inf, epochEnd)
 			endif
 			tiInflectionPoints -= epochBegin
 

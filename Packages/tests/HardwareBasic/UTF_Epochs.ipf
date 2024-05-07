@@ -573,7 +573,7 @@ static Function TestTrigonometricEpochs(WAVE/T epochChannel, WAVE DAchannel)
 		if(GetRowIndex(slice, val = 0) == 0)
 			// one of the points was zero
 			PASS()
-		else
+		elseif(epochEnd < rightx(DAChannel))
 			// if not we need at least a zero crossing
 			FindLevel/Q slice, 0
 			CHECK_EQUAL_VAR(V_flag, 0)
@@ -1218,6 +1218,22 @@ static Function EP_EpochTest18([STRUCT IUTF_mData &mData])
 End
 
 static Function EP_EpochTest18_REENTRY([STRUCT IUTF_mData &mData])
+
+	TestEpochsGeneric(mData.s0)
+End
+
+// IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+static Function EP_EpochTest19([STRUCT IUTF_mData &mData])
+
+	STRUCT DAQSettings s
+
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochSineTest_DA_0:")
+
+	AcquireData_NG(s, mData.s0)
+End
+
+static Function EP_EpochTest19_REENTRY([STRUCT IUTF_mData &mData])
 
 	TestEpochsGeneric(mData.s0)
 End
