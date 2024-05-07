@@ -8077,3 +8077,27 @@ static Function HWS_Works()
 	CHECK_EQUAL_VAR(HasWildcardSyntax("!a"), 1)
 	CHECK_EQUAL_VAR(HasWildcardSyntax("a*b"), 1)
 End
+
+static Function ConvertListToRegexpWithAlternations_Test()
+
+	string str, ref
+
+	str = ConvertListToRegexpWithAlternations("1;2;")
+	ref = "(?:\\Q1\\E|\\Q2\\E)"
+	CHECK_EQUAL_STR(ref, str)
+
+	str = ConvertListToRegexpWithAlternations("1;2;", literal = 0)
+	ref = "(?:1|2)"
+	CHECK_EQUAL_STR(ref, str)
+
+	str = ConvertListToRegexpWithAlternations("1#2#", literal = 0, sep = "#")
+	ref = "(?:1|2)"
+	CHECK_EQUAL_STR(ref, str)
+
+	try
+		str = ConvertListToRegexpWithAlternations("1#2#", sep = "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
