@@ -682,7 +682,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 			// ignore completely empty headstages
 			if(!legacyActiveADColumns)
 				searchLayer = FindDimLabel(TPStorage, LAYERS, "Headstage")
-				WAVE/Z indizes = FindIndizes(TPStorage, col = j, prop = PROP_NON_EMPTY, startLayer = searchLayer, endLayer = searchLayer)
+				WAVE/Z indizes = FindIndizes(TPStorage, col = j, prop = PROP_EMPTY | PROP_NOT, startLayer = searchLayer, endLayer = searchLayer)
 
 				if(!WaveExists(indizes))
 					continue

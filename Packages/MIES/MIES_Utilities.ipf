@@ -5467,16 +5467,31 @@ End
 /// @brief Turn a list of entries into a regular expression with alternations.
 ///
 /// Can be used for GetListOfObjects() if you know in advance which entries to filter out.
-Function/S ConvertListToRegexpWithAlternations(list)
-	string list
+///
+/// @param list    semicolon separated list of strings to match
+/// @param literal [optional, default = 1] when this flag is cleared the string elements of the list are treated as regular expressions
+/// @param sep     [optional, default = ";"] separator for list
+Function/S ConvertListToRegexpWithAlternations(string list, [variable literal, string sep])
 
 	variable i, numEntries
-	string entry
-	string regexpList = ""
+	string regexpList    = ""
+	string literalPrefix = "\\Q"
+	string literalSuffix = "\\E"
 
-	numEntries = ItemsInList(list)
+	literal = ParamIsDefault(literal) ? 1 : !!literal
+	if(ParamIsDefault(sep))
+		sep = ";"
+	else
+		ASSERT(!IsEmpty(sep), "separator can not be empty.")
+	endif
+
+	if(!literal)
+		literalPrefix = ""
+		literalSuffix = ""
+	endif
+	numEntries = ItemsInList(list, sep)
 	for(i = 0; i < numEntries; i += 1)
-		regexpList = AddListItem("\\Q" + StringFromList(i, list) + "\\E", regexpList, "|", Inf)
+		regexpList = AddListItem(literalPrefix + StringFromList(i, list, sep) + literalSuffix, regexpList, "|", Inf)
 	endfor
 
 	regexpList = "(?:" + RemoveEnding(regexpList, "|") + ")"

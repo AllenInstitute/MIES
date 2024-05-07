@@ -66,7 +66,7 @@ static Function [WAVE startT, WAVE endT, WAVE levels, WAVE/T description] Remove
 	WAVE/Z levels = ZapNans(levels_sub)
 	CHECK_WAVE(levels, NUMERIC_WAVE)
 
-	WAVE/Z indizes = FindIndizes(description_sub, prop = PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(description_sub, prop = PROP_EMPTY | PROP_NOT)
 	if(WaveExists(indizes))
 		Make/N=(DimSize(indizes, ROWS))/T/FREE description = description_sub[indizes[p]]
 	endif

@@ -1124,6 +1124,14 @@ Function FI_NumSearchWithCol1()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
+static Function FI_NumSearchWithCol1Inverted()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, prop = PROP_NOT)
+	CHECK_EQUAL_WAVES(indizes, {3, 4}, mode = WAVE_DATA)
+End
+
 Function FI_NumSearchWithColAndLayer1()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -1176,7 +1184,7 @@ Function FI_NumSearchWithColAndProp1()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
-	WAVE/Z indizes = FindIndizes(numeric, colLabel = "abcd", prop = PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(numeric, colLabel = "abcd", prop = PROP_EMPTY | PROP_NOT)
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
@@ -1200,7 +1208,7 @@ Function FI_NumSearchWithColAndProp4()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
-	WAVE/Z indizes = FindIndizes(numeric, col = 1, var = 2, prop = PROP_NOT_MATCHES_VAR_BIT_MASK)
+	WAVE/Z indizes = FindIndizes(numeric, col = 1, var = 2, prop = PROP_MATCHES_VAR_BIT_MASK | PROP_NOT)
 	CHECK_EQUAL_WAVES(indizes, {0}, mode = WAVE_DATA)
 End
 
@@ -1212,12 +1220,28 @@ Function FI_NumSearchWithColAndProp5()
 	CHECK_EQUAL_WAVES(indizes, {3}, mode = WAVE_DATA)
 End
 
+static Function FI_NumSearchWithColAndProp5Inverted()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	WAVE/Z indizes = FindIndizes(numeric, col = 1, str = "6+", prop = PROP_GREP | PROP_NOT)
+	CHECK_EQUAL_WAVES(indizes, {0, 1, 2, 4}, mode = WAVE_DATA)
+End
+
 Function FI_NumSearchWithColAndProp6()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
 	WAVE/Z indizes = FindIndizes(numeric, col = 1, str = "6*", prop = PROP_WILDCARD)
 	CHECK_EQUAL_WAVES(indizes, {3}, mode = WAVE_DATA)
+End
+
+static Function FI_NumSearchWithColAndProp6Inverted()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	WAVE/Z indizes = FindIndizes(numeric, col = 1, str = "6*", prop = PROP_WILDCARD | PROP_NOT)
+	CHECK_EQUAL_WAVES(indizes, {0, 1, 2, 4}, mode = WAVE_DATA)
 End
 
 Function FI_NumSearchWithColAndProp6a()
@@ -1304,7 +1328,7 @@ Function FI_TextSearchWithColAndProp1()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
-	WAVE/Z indizes = FindIndizes(text, colLabel = "efgh", prop = PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(text, colLabel = "efgh", prop = PROP_EMPTY | PROP_NOT)
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
@@ -1328,7 +1352,7 @@ Function FI_TextSearchWithColAndProp4()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
-	WAVE/Z indizes = FindIndizes(text, col = 1, str = "2", prop = PROP_NOT_MATCHES_VAR_BIT_MASK)
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "2", prop = PROP_MATCHES_VAR_BIT_MASK | PROP_NOT)
 	CHECK_EQUAL_WAVES(indizes, {0}, mode = WAVE_DATA)
 End
 
@@ -8052,4 +8076,28 @@ static Function HWS_Works()
 	CHECK_EQUAL_VAR(HasWildcardSyntax("!"), 1)
 	CHECK_EQUAL_VAR(HasWildcardSyntax("!a"), 1)
 	CHECK_EQUAL_VAR(HasWildcardSyntax("a*b"), 1)
+End
+
+static Function ConvertListToRegexpWithAlternations_Test()
+
+	string str, ref
+
+	str = ConvertListToRegexpWithAlternations("1;2;")
+	ref = "(?:\\Q1\\E|\\Q2\\E)"
+	CHECK_EQUAL_STR(ref, str)
+
+	str = ConvertListToRegexpWithAlternations("1;2;", literal = 0)
+	ref = "(?:1|2)"
+	CHECK_EQUAL_STR(ref, str)
+
+	str = ConvertListToRegexpWithAlternations("1#2#", literal = 0, sep = "#")
+	ref = "(?:1|2)"
+	CHECK_EQUAL_STR(ref, str)
+
+	try
+		str = ConvertListToRegexpWithAlternations("1#2#", sep = "")
+		FAIL()
+	catch
+		PASS()
+	endtry
 End

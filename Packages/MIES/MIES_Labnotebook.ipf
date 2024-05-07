@@ -110,7 +110,7 @@ End
 /// at least once, an empty string otherwise
 threadsafe static Function/S LBV_IsLabnotebookColumnFilled(WAVE values, variable col)
 
-	WAVE/Z indizes = FindIndizes(values, col = col, prop = PROP_NON_EMPTY, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
+	WAVE/Z indizes = FindIndizes(values, col = col, prop = PROP_EMPTY | PROP_NOT, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
 
 	if(WaveExists(indizes))
 		return GetDimLabel(values, COLS, col)

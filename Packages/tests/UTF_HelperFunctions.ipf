@@ -1011,7 +1011,7 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 
-	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(expBrowserList, colLabel = "file", prop = PROP_EMPTY | PROP_NOT)
 
 	if(loadSweeps)
 		for(idx : indizes)
@@ -1145,16 +1145,14 @@ static Function TestEpochRecreationRemoveUnsupportedUserEpochs(WAVE/T epochChann
 		Make/FREE/T tpEpochs = {"^U_TP[[:digit:]]+_B0$", "^U_TP[[:digit:]]+_P$", "^U_TP[[:digit:]]+_B1$", "^U_TP[[:digit:]]+$"}
 		Concatenate/FREE/T/NP {tpEpochs}, supportedUserEpochs
 	endif
-	supportedUserEpochsRegExp = TextWaveToList(supportedUserEpochs, "|")
-	supportedUserEpochsRegExp = RemoveEnding(supportedUserEpochsRegExp, "|")
-	supportedUserEpochsRegExp = "^(?![\s\S]*" + supportedUserEpochsRegExp + ")[\s\S]*$"
+	supportedUserEpochsRegExp = ConvertListToRegexpWithAlternations(RemoveEnding(TextWaveToList(supportedUserEpochs, ";"), ";"), literal = 0)
 	Make/FREE/T/N=(DimSize(epochChannel, ROWS)) shortnames = EP_GetShortName(epochChannel[p][EPOCH_COL_TAGS])
 	WAVE/Z userEpochIndices = FindIndizes(shortNames, str = regexpUserEpochs, prop = PROP_GREP)
 	if(!WaveExists(userEpochIndices))
 		return NaN
 	endif
 	Make/FREE/T/N=(DimSize(userEpochIndices, ROWS)) userEpochShortNames = shortnames[userEpochIndices[p]]
-	WAVE/Z matches = FindIndizes(userEpochShortNames, str = supportedUserEpochsRegExp, prop = PROP_GREP)
+	WAVE/Z matches = FindIndizes(userEpochShortNames, str = supportedUserEpochsRegExp, prop = PROP_GREP | PROP_NOT)
 	if(!WaveExists(matches))
 		return NaN
 	endif

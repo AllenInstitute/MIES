@@ -305,12 +305,11 @@ StrConstant NOTE_INDEX = "Index"
 ///@name   Parameters for FindIndizes
 ///@anchor FindIndizesProps
 ///@{
-Constant PROP_NON_EMPTY                = 0x01 ///< Wave entry is not NaN or ""
-Constant PROP_EMPTY                    = 0x02 ///< Wave entry is NaN or ""
-Constant PROP_MATCHES_VAR_BIT_MASK     = 0x04 ///< Wave entry matches the bitmask given in var
-Constant PROP_NOT_MATCHES_VAR_BIT_MASK = 0x08 ///< Wave entry does not match the bitmask given in var
-Constant PROP_GREP                     = 0x10 ///< Wave entry matches the regular expression given in str
-Constant PROP_WILDCARD                 = 0x20 ///< Wave entry matches the wildcard expression given in str
+Constant PROP_NOT                  = 0x01 ///< Inverts the matching
+Constant PROP_EMPTY                = 0x02 ///< Wave entry is NaN or ""
+Constant PROP_MATCHES_VAR_BIT_MASK = 0x04 ///< Wave entry matches the bitmask given in var
+Constant PROP_GREP                 = 0x08 ///< Wave entry matches the regular expression given in str
+Constant PROP_WILDCARD             = 0x10 ///< Wave entry matches the wildcard expression given in str
 ///@}
 
 /// @name Parameters for GetPanelControl and IDX_GetSetsInRange, GetSetFolder, GetSetParamFolder and GetChanneListFromITCConfig
