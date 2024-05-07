@@ -525,6 +525,10 @@ threadsafe Function CA_StoreEntryIntoCache(key, val, [options])
 
 	variable index, storeDuplicate, foundIndex
 
+#ifdef WAVECACHE_DISABLED
+	return NaN
+#endif
+
 	if(ParamIsDefault(options))
 		storeDuplicate = 1
 	else
@@ -597,6 +601,10 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	variable options
 
 	variable index, returnDuplicate
+
+#ifdef WAVECACHE_DISABLED
+	return $""
+#endif
 
 	if(ParamIsDefault(options))
 		returnDuplicate = 1
