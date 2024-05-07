@@ -1110,11 +1110,12 @@ Function EP_SortEpochs(WAVE/T epochWave)
 			Duplicate/FREE/T/RMD=[, epochCnt - 1][][channel][channelType] epochWave, epochChannel
 			Redimension/N=(-1, -1) epochChannel
 
-			Make/FREE/D/N=(DimSize(epochChannel, ROWS), DimSize(epochChannel, COLS)) epochSortColStartTime, epochSortColEndTime, epochSortColTreeLevel
+			Make/FREE/D/N=(DimSize(epochChannel, ROWS), DimSize(epochChannel, COLS)) epochSortColStartTime, epochSortColEndTime, epochSortColTreeLevel, epochSortTagCRC
 			epochSortColStartTime[] = str2numSafe(epochChannel[p][EPOCH_COL_STARTTIME])
 			epochSortColEndTime[]   = -1 * str2numSafe(epochChannel[p][EPOCH_COL_ENDTIME])
 			epochSortColTreeLevel[] = str2numSafe(epochChannel[p][EPOCH_COL_TREELEVEL])
-			SortColumns/DIML keyWaves={epochSortColStartTime, epochSortColEndTime, epochSortColTreeLevel}, sortWaves={epochChannel}
+			epochSortTagCRC[]       = StringCRC(0, epochChannel[p][EPOCH_COL_TAGS])
+			SortColumns/DIML keyWaves={epochSortColStartTime, epochSortColEndTime, epochSortColTreeLevel, epochSortTagCRC}, sortWaves={epochChannel}
 
 			// remove epochs marked for removal
 			// first column needs to be StartTime
@@ -1416,7 +1417,7 @@ End
 /// @param sweepDFR        [optional: defaults to $""] when passed, allows to fetch also epoch from recreation
 ///
 /// @returns Text wave with epoch information, only rows fitting the input parameters are returned. Can also be a null wave.
-Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, [variable treelevel, WAVE/T epochsWave, DFREF sweepDFR])
+Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname, [variable treelevel, WAVE/Z/T epochsWave, DFREF sweepDFR])
 
 	variable index, epochCnt, midSweep
 	string regexp
@@ -1776,23 +1777,49 @@ End
 
 static Function EP_AddRecreatedUserEpochs(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
 
-	variable firstDAC, firstHS, totalOnsetDelayMS, index, type
-	string key
+	variable DAC, headstage, index, type, waMode
+	string key, anaFuncName
 
-	firstDAC          = s.DACList[0]
-	firstHS           = s.headstageDAC[0]
-	totalOnsetDelayMS = s.onsetDelay * s.samplingIntervalDA * MICRO_TO_MILLI
-	key               = "Generic function"
-	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, firstDAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+	DAC = s.DACList[0]
+	key = "Generic function"
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 	if(!WaveExists(settings))
 		return NaN
 	endif
+
+	headstage = s.headstageDAC[0]
+	ASSERT(index == headstage, "Headstage number inconsistency")
+
 	WAVE/T settingsT = settings
-	type = MapAnaFuncToConstant(settingsT[index])
+	anaFuncName = settingsT[index]
+	WAVE anaFuncTypes = LBN_GetNumericWave(defValue = INVALID_ANALYSIS_FUNCTION)
+	anaFuncTypes[headstage] = MapAnaFuncToConstant(anaFuncName)
+	[type, waMode] = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
 
 	switch(type)
 		case PSQ_CHIRP:
-			EP_AddRecreatedUserEpochs_PSQ_Chirp(numericalValues, textualValues, sweepDFR, sweepNo, firstDAC, firstHS, totalOnsetDelayMS, epochWave)
+			EP_AddRecreatedUserEpochs_PSQ_Chirp(numericalValues, textualValues, waMode, sweepDFR, sweepNo, s, epochWave)
+			break
+		case PSQ_DA_SCALE:
+			EP_AddRecreatedUserEpochs_PSQ_DaScale(numericalValues, textualValues, waMode, sweepDFR, sweepNo, s, epochWave)
+			break
+		case PSQ_RHEOBASE:
+			EP_AddRecreatedUserEpochs_PSQ_Rheobase(numericalValues, textualValues, waMode, sweepDFR, sweepNo, s, epochWave)
+			break
+		case PSQ_RAMP:
+			EP_AddRecreatedUserEpochs_PSQ_Ramp(numericalValues, textualValues, waMode, sweepDFR, sweepNo, s, epochWave)
+			break
+		case PSQ_SEAL_EVALUATION:
+			EP_AddRecreatedUserEpochs_PSQ_SealEvaluation(numericalValues, textualValues, waMode, sweepDFR, sweepNo, s, epochWave)
+			break
+		case PSQ_TRUE_REST_VM:
+			EP_AddRecreatedUserEpochs_PSQ_TrueRestingMembranePotential(numericalValues, textualValues, waMode, sweepDFR, sweepNo, s, epochWave)
+			break
+		case PSQ_ACC_RES_SMOKE:
+			EP_AddRecreatedUserEpochs_PSQ_AccessResistanceSmoke(numericalValues, textualValues, waMode, sweepDFR, sweepNo, s, epochWave)
+			break
+		case PSQ_PIPETTE_BATH:
+			EP_AddRecreatedUserEpochs_PSQ_PipetteInBath(numericalValues, textualValues, waMode, sweepDFR, sweepNo, s, epochWave)
 			break
 		default:
 			DEBUGPRINT("EP_Recreation: Unsupported analysis function -> skipped.")
@@ -1800,38 +1827,164 @@ static Function EP_AddRecreatedUserEpochs(WAVE numericalValues, WAVE/T textualVa
 	endswitch
 End
 
-static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo, variable DAC, variable headStage, variable totalOnsetDelayMS, WAVE/T epochWave)
+static Function/WAVE EP_AddRecreatedUserEpochs_DetermineDurations(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable type, variable sweepNo, STRUCT DataConfigurationResult &s)
 
+	variable totalOnsetDelayMS
+	variable headstage = s.headstageDAC[0]
+	variable DAC       = s.DACList[0]
+
+	Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) statusHS
+	statusHS[headStage] = 1
+
+	Make/FREE/WAVE/N=(NUM_HEADSTAGES) allSingleDA
+	WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, DAC)
+	ASSERT(WaveExists(sweep), "Could not retrieve sweep for EpochRecreation durations")
+	allSingleDA[headstage] = sweep
+
+	totalOnsetDelayMS = s.onsetDelay * s.samplingIntervalDA * MICRO_TO_MILLI
+
+	try
+		WAVE/Z durations = PSQ_DeterminePulseDurationFinder(statusHS, allSingleDA, type, totalOnsetDelayMS)
+	catch
+		// This is related to issue https://github.com/AllenInstitute/MIES/issues/1737
+		// in the case that baseline QC failed, so the ana function aborts early and by chance the pulse was not complete when stopping
+		// Then the finder can not find the respective edges and asserts out
+		DEBUGPRINT("Could not reconstruct durations")
+	endtry
+
+	return durations
+End
+
+static Function EP_AddRecreatedUserEpochs_Baseline(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable type, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
+
+	string key, params, setName
+	variable chunk, chunkPassed, chunkStartTimeMax, chunkLengthTime, DAScale, totalOnsetDelayMS, DAC
+	variable numBLS, numEpochs, chunkLength, testpulseGroupSel
+	STRUCT PSQ_PulseSettings ps
+
+	PSQ_GetPulseSettingsForType(type, ps)
+	totalOnsetDelayMS = s.onsetDelay * s.samplingIntervalDA * MICRO_TO_MILLI
+	DAC               = s.DACList[0]
+
+	if(!ps.usesBaselineChunkEpochs)
+
+		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+		WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+		if(!WaveExists(durations))
+			WAVE/Z durations = EP_AddRecreatedUserEpochs_DetermineDurations(numericalValues, textualValues, sweepDFR, type, sweepNo, s)
+		endif
+
+		for(chunk = 0;; chunk += 1)
+			key         = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1, waMode = waMode)
+			chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = NaN)
+			if(IsNaN(chunkPassed) || (chunk && !WaveExists(durations)))
+				break
+			endif
+			[chunkStartTimeMax, chunkLengthTime] = PSQ_GetBaselineChunkTimes(chunk, ps, totalOnsetDelayMS, durations)
+			PSQ_AddBaselineEpoch(epochWave, DAC, chunk, chunkStartTimeMax, chunkLengthTime)
+		endfor
+	else
+		params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
+		if(IsEmpty(params))
+			return NaN
+		endif
+		setName   = s.setName[0]
+		numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
+		ASSERT(numEpochs > 0, "Invalid number of epochs")
+		chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
+		ASSERT(IsFinite(chunkLength), "BaselineChunkLength must be finite")
+		if(type == PSQ_ACC_RES_SMOKE)
+			Make/FREE/D epochIndizes = {0}
+		elseif(type == PSQ_TRUE_REST_VM)
+			ASSERT(numEpochs == PSQ_VM_REQUIRED_EPOCHS, "Expected numEpochs == PSQ_VM_REQUIRED_EPOCHS")
+			Make/FREE/D epochIndizes = {0, 2}
+		endif
+		if((type == PSQ_ACC_RES_SMOKE) || (type == PSQ_TRUE_REST_VM))
+			PSQ_CreateBaselineChunkSelectionEpochs_AddEpochs(epochWave, DAC, totalOnsetDelayMS, setName, epochIndizes, numEpochs, chunkLength)
+		elseif(type == PSQ_SEAL_EVALUATION)
+			ASSERT(numEpochs == PSQ_SE_REQUIRED_EPOCHS, "Expected numEpochs == PSQ_SE_REQUIRED_EPOCHS")
+			testpulseGroupSel = PSQ_SE_GetTestpulseGroupSelection(params)
+			DAScale           = s.DACAmp[0][%DASCALE]
+			PSQ_SE_CreateEpochsImpl(epochWave, DAC, totalOnsetDelayMS, setName, testpulseGroupSel, DAScale, numEpochs, chunkLength)
+		endif
+		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER, treelevel = EPOCH_USER_LEVEL, epochsWave = epochWave)
+		if(WaveExists(userChunkEpochs))
+			numBLS = DimSize(userChunkEpochs, ROWS)
+			for(chunk = 0; chunk < numBLS; chunk += 1)
+				key         = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1, waMode = waMode)
+				chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = NaN)
+				if(IsNaN(chunkPassed))
+					break
+				endif
+				chunkStartTimeMax = str2num(userChunkEpochs[chunk][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
+				chunkLengthTime   = (str2num(userChunkEpochs[chunk][EPOCH_COL_ENDTIME]) - str2num(userChunkEpochs[chunk][EPOCH_COL_STARTTIME])) * ONE_TO_MILLI
+				PSQ_AddBaselineEpoch(epochWave, DAC, chunk, chunkStartTimeMax, chunkLengthTime)
+			endfor
+		endif
+	endif
+End
+
+static Function EP_AddRecreatedUserEpochs_PSQ_DaScale(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
+
+	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_DA_SCALE, sweepNo, s, epochWave)
+End
+
+static Function EP_AddRecreatedUserEpochs_PSQ_Rheobase(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
+
+	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_RHEOBASE, sweepNo, s, epochWave)
+End
+
+static Function EP_AddRecreatedUserEpochs_PSQ_Ramp(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
+
+	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_RAMP, sweepNo, s, epochWave)
+End
+
+static Function EP_AddRecreatedUserEpochs_PSQ_PipetteInBath(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
+
+	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_PIPETTE_BATH, sweepNo, s, epochWave)
+End
+
+static Function EP_AddRecreatedUserEpochs_PSQ_SealEvaluation(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
+
+	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_SEAL_EVALUATION, sweepNo, s, epochWave)
+End
+
+static Function EP_AddRecreatedUserEpochs_PSQ_TrueRestingMembranePotential(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
+
+	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_TRUE_REST_VM, sweepNo, s, epochWave)
+End
+
+static Function EP_AddRecreatedUserEpochs_PSQ_AccessResistanceSmoke(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
+
+	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_ACC_RES_SMOKE, sweepNo, s, epochWave)
+End
+
+static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
+
+	variable DAC, headstage, totalOnsetDelayMS
 	variable index, stimsetQC, chirpCycles, spikeCheck, baselineQC
-	variable epBegin, epEnd, chunk, chunkPassed, chunkStartTimeMax, chunkLengthTime
+	variable epBegin, epEnd
 	string key, params
 
-	key = "Function params (encoded)"
-	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-	ASSERT(WaveExists(settings), "EP_Recreation: Could not query analysis function parameters from LNB.")
-	WAVE/T settingsT = settings
-	params = settingsT[index]
+	DAC    = s.DACList[0]
+	params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
+	if(IsEmpty(params))
+		return NaN
+	endif
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_PULSE_DUR, query = 1, waMode = waMode)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	ASSERT(WaveExists(durations), "Could not find durations in LNB")
 
 	spikeCheck = AFH_GetAnalysisParamNumerical("SpikeCheck", params)
 	ASSERT(IsFinite(spikeCheck), "Invalid SpikeCheck param")
+	totalOnsetDelayMS = s.onsetDelay * s.samplingIntervalDA * MICRO_TO_MILLI
 	if(spikeCheck)
+		headstage = s.headstageDAC[0]
 		[epBegin, epEnd] = PSQ_CR_AddSpikeEvaluationEpoch(epochWave, DAC, headStage, durations, totalOnsetDelayMS)
 	endif
 
-	for(chunk = 0;; chunk += 1)
-		key         = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1)
-		chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = NaN)
-		if(IsNaN(chunkPassed))
-			break
-		endif
-		chunkLengthTime   = PSQ_BL_EVAL_RANGE
-		chunkStartTimeMax = chunk ? (totalOnsetDelayMS + PSQ_BL_EVAL_RANGE + WaveMax(durations)) + chunk * PSQ_BL_EVAL_RANGE : totalOnsetDelayMS
-		PSQ_AddBaselineEpoch(epochWave, DAC, chunk, chunkStartTimeMax, chunkLengthTime)
-	endfor
+	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_CHIRP, sweepNo, s, epochWave)
 
 	chirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", params)
 	ASSERT(IsFinite(chirpCycles) && chirpCycles > 0, "Invalid chirp cycles")
@@ -1840,7 +1993,7 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T
 		return NaN
 	endif
 
-	key       = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_STIMSET_QC, query = 1)
+	key       = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_STIMSET_QC, query = 1, waMode = waMode)
 	stimsetQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	if(IsNaN(stimsetQC))
 		// fallback

@@ -1137,14 +1137,13 @@ End
 
 static Function TestEpochRecreationRemoveUnsupportedUserEpochs(WAVE/T epochChannel, variable type)
 
-	variable index, epochCnt
-	string shortName, supportedUserEpochsRegExp
+	string supportedUserEpochsRegExp
 	string regexpUserEpochs = "^" + EPOCH_SHORTNAME_USER_PREFIX + ".*"
 
-	Make/FREE/T supportedUserEpochs = {"^U_CR_CE$", "^U_CR_SE$"}
-	Make/FREE/T psqChirpEpochs = {PSQ_BASELINE_CHUNK_SHORT_NAME_RE_MATCHER}
-	if(type == PSQ_CHIRP)
-		Concatenate/FREE/T/NP {psqChirpEpochs}, supportedUserEpochs
+	Make/FREE/T supportedUserEpochs = {"^U_CR_CE$", "^U_CR_SE$", PSQ_BASELINE_CHUNK_SHORT_NAME_RE_MATCHER, "^U_BLS[[:digit:]]+$"}
+	if(type == PSQ_SEAL_EVALUATION)
+		Make/FREE/T tpEpochs = {"^U_TP[[:digit:]]+_B0$", "^U_TP[[:digit:]]+_P$", "^U_TP[[:digit:]]+_B1$", "^U_TP[[:digit:]]+$"}
+		Concatenate/FREE/T/NP {tpEpochs}, supportedUserEpochs
 	endif
 	supportedUserEpochsRegExp = TextWaveToList(supportedUserEpochs, "|")
 	supportedUserEpochsRegExp = RemoveEnding(supportedUserEpochsRegExp, "|")
@@ -1265,6 +1264,12 @@ static Function CompareEpochsHistoricChannel(WAVE/T epochChannelRef, WAVE/T epoc
 
 	numEpochs = DimSize(epochChannelRef, ROWS)
 	Make/FREE/T/N=(numEpochs) epRefShortnames = EP_GetShortName(epochChannelRef[p][EPOCH_COL_TAGS])
+	WAVE/T UniqueShortNames = GetUniqueEntries(epRefShortnames)
+	if(DimSize(UniqueShortNames, ROWS) == 1 && IsEmpty(UniqueShortNames[0]))
+		print "Note: Epochs in experiment have no shortNames, skipped CompareEpochsHistoricChannel check."
+		return NaN
+	endif
+
 	numEpochsRec = DimSize(epochChannelRec, ROWS)
 	Make/FREE/T/N=(numEpochsRec) epRecShortnames = EP_GetShortName(epochChannelRec[p][EPOCH_COL_TAGS])
 	ASSERT(numEpochs > 0, "numEpochs is zero")

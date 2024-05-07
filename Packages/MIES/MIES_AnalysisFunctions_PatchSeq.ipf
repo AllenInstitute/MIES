@@ -163,7 +163,7 @@ static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 static Constant PSQ_RHEOBASE_DURATION = 500
 
 /// @brief Fills `s` according to the analysis function type
-static Function PSQ_GetPulseSettingsForType(type, s)
+Function PSQ_GetPulseSettingsForType(type, s)
 	variable                  type
 	STRUCT PSQ_PulseSettings &s
 
@@ -247,8 +247,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnse
 	string device
 	variable sweepNo, type, totalOnsetDelay
 
-	variable i, level, first, last, duration
-	string key
+	variable i
 
 	WAVE/Z sweepWave = GetSweepWave(device, sweepNo)
 
@@ -259,8 +258,8 @@ static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnse
 		WAVE config = GetConfigWave(sweepWave)
 	endif
 
-	WAVE statusHS  = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
-	WAVE durations = LBN_GetNumericWave()
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	Make/FREE/WAVE/N=(NUM_HEADSTAGES) allSingleDA
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -268,7 +267,26 @@ static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnse
 			continue
 		endif
 
-		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(device, sweepWave, i, XOP_CHANNEL_TYPE_DAC, config = config)
+		allSingleDA[i] = AFH_ExtractOneDimDataFromSweep(device, sweepWave, i, XOP_CHANNEL_TYPE_DAC, config = config)
+	endfor
+
+	WAVE durations = PSQ_DeterminePulseDurationFinder(statusHS, allSingleDA, type, totalOnsetDelay)
+
+	return durations
+End
+
+Function/WAVE PSQ_DeterminePulseDurationFinder(WAVE statusHS, WAVE/WAVE allSingleDA, variable type, variable totalOnsetDelay)
+
+	variable i, first, last, level, duration
+
+	WAVE durations = LBN_GetNumericWave()
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		WAVE singleDA = allSingleDA[i]
 
 		if(type == PSQ_CHIRP)
 			// search something above/below zero from front and back
@@ -422,6 +440,17 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 	return [ret, i]
 End
 
+/// @brief Calculates the baseline chunk times
+Function [variable chunkStartTimeMax, variable chunkLengthTime] PSQ_GetBaselineChunkTimes(variable chunk, STRUCT PSQ_PulseSettings &ps, variable totalOnsetDelayMS, WAVE/Z durations)
+
+	ASSERT(!chunk || (chunk && WaveExists(durations)), "Need durations wave")
+	chunkLengthTime = chunk ? ps.postPulseChunkLength : ps.prePulseChunkLength
+	// for chunk > 0: skip onset delay, the pulse itself and one chunk of post pulse baseline
+	chunkStartTimeMax = chunk ? (totalOnsetDelayMS + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength : totalOnsetDelayMS
+
+	return [chunkStartTimeMax, chunkLengthTime]
+End
+
 /// @brief Evaluate one chunk of the baseline
 ///
 /// @param device        device
@@ -454,11 +483,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	if(!ps.usesBaselineChunkEpochs)
-		if(chunk == 0) // pre pulse baseline
-			chunkStartTimeMax = totalOnsetDelay
-			chunkLengthTime   = ps.prePulseChunkLength
-			baselineType      = PSQ_BL_PRE_PULSE
-		else // post pulse baseline
+		if(chunk)
+			// post pulse baseline
 			ASSERT(type != PSQ_PIPETTE_BATH, "Unexpected analysis function")
 
 			if(type == PSQ_DA_SCALE || type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
@@ -467,12 +493,9 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 				WAVE durations = LBN_GetNumericWave()
 				durations = ps.pulseDuration
 			endif
-
-			// skip: onset delay, the pulse itself and one chunk of post pulse baseline
-			chunkStartTimeMax = (totalOnsetDelay + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength
-			chunkLengthTime   = ps.postPulseChunkLength
-			baselineType      = PSQ_BL_POST_PULSE
 		endif
+		[chunkStartTimeMax, chunkLengthTime] = PSQ_GetBaselineChunkTimes(chunk, ps, totalOnsetDelay, durations)
+		baselineType = chunk ? PSQ_BL_POST_PULSE : PSQ_BL_PRE_PULSE
 	else
 		WAVE numericalValues = GetLBNumericalValues(device)
 		WAVE textualValues   = GetLBTextualValues(device)
@@ -480,6 +503,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		if(type == PSQ_TRUE_REST_VM || type == PSQ_ACC_RES_SMOKE)
 			WAVE epochsWave = GetEpochsWave(device)
 		else
+			// trick to use midSweep = 0 mode of EP_GetEpochs
 			WAVE/ZZ epochsWave = $""
 		endif
 
@@ -488,7 +512,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		DAC       = AFH_GetDACFromHeadstage(device, headstage)
 		ASSERT(IsFinite(DAC), "Non-finite DAC")
 
-		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "U_BLS[0-9]+", treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
+		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER, treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
 		ASSERT(WaveExists(userChunkEpochs), "Could not find baseline chunk selection user epochs")
 
 		if(chunk >= DimSize(userChunkEpochs, ROWS))
@@ -5267,6 +5291,8 @@ static Function PSQ_CreateTestpulseEpochs(string device, variable headstage, var
 
 	DAScale = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DAC)
 
+	WAVE/T epochWave = GetEpochsWave(device)
+
 	// 0: pre pulse baseline chunk
 	// 1: testpulse pre baseline
 	// 2: testpulse signal
@@ -5277,13 +5303,13 @@ static Function PSQ_CreateTestpulseEpochs(string device, variable headstage, var
 		// first TP epoch
 		idx = 1 + i * numTestPulses
 
-		offset = PSQ_CreateTestpulseLikeEpoch(device, DAC, setName, DAScale, offset, idx, tpIndex++)
+		offset = PSQ_CreateTestpulseLikeEpoch(epochWave, DAC, setName, DAScale, offset, idx, tpIndex++)
 	endfor
 
 	return 0
 End
 
-static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string setName, variable DAScale, variable start, variable epochIndex, variable tpIndex)
+static Function PSQ_CreateTestpulseLikeEpoch(WAVE/T epochWave, variable DAC, string setName, variable DAScale, variable start, variable epochIndex, variable tpIndex)
 	variable prePulseTP, signalTP, postPulseTP
 	variable amplitude, epBegin, epEnd
 	string shortName, tags
@@ -5306,7 +5332,6 @@ static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string
 	sprintf tags, "Type=Testpulse Like;Index=%d", tpIndex
 	sprintf shortName, "TP%d", tpIndex
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 
 	// pre TP baseline
@@ -5758,9 +5783,18 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 
 	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
 
-	wbBegin = 0
-	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
 	WAVE/T epochWave = GetEpochsWave(device)
+	return PSQ_SE_CreateEpochsImpl(epochWave, DAC, totalOnsetDelay, setName, testpulseGroupSel, DAScale, numEpochs, chunkLength)
+End
+
+Function PSQ_SE_CreateEpochsImpl(WAVE/T epochWave, variable DAC, variable totalOnsetDelayMS, string setName, variable testpulseGroupSel, variable DAScale, variable numEpochs, variable chunkLength)
+
+	variable i, wbBegin, wbEnd, epBegin, epEnd, duration, amplitude
+	variable userEpochIndexBLC, userEpochTPIndexBLC
+	string tags, shortName
+
+	wbBegin = 0
+	wbEnd   = totalOnsetDelayMS * MILLI_TO_ONE
 	for(i = 0; i < numEpochs; i += 1)
 		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * MILLI_TO_ONE
 
@@ -5797,14 +5831,14 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 			epEnd   = wbEnd
 
 			// TPs start with TPx_B0
-			PSQ_CreateTestpulseLikeEpoch(device, DAC, setName, DAScale, epBegin, i, userEpochTPIndexBLC++)
+			PSQ_CreateTestpulseLikeEpoch(epochWave, DAC, setName, DAScale, epBegin, i, userEpochTPIndexBLC++)
 		endif
 	endfor
 
 	return 0
 End
 
-static Function PSQ_SE_GetTestpulseGroupSelection(string params)
+Function PSQ_SE_GetTestpulseGroupSelection(string params)
 	string str = AFH_GetAnalysisParamTextual("TestPulseGroupSelector", params, defValue = "Both")
 
 	return PSQ_SE_ParseTestpulseGroupSelection(str)
@@ -6172,13 +6206,21 @@ static Function PSQ_CreateBaselineChunkSelectionEpochs(string device, variable h
 	endif
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
+	WAVE/T epochWave = GetEpochsWave(device)
 
 	chunkLength = AFH_GetAnalysisParamNumerical("BaselineChunkLength", params, defValue = PSQ_BL_EVAL_RANGE) * MILLI_TO_ONE
 	ASSERT(IsFinite(chunkLength), "BaselineChunkLength must be finite")
 
+	return PSQ_CreateBaselineChunkSelectionEpochs_AddEpochs(epochWave, DAC, totalOnsetDelay, setName, epochIndizes, numEpochs, chunkLength)
+End
+
+Function PSQ_CreateBaselineChunkSelectionEpochs_AddEpochs(WAVE/T epochWave, variable DAC, variable totalOnsetDelayMS, string setName, WAVE epochIndizes, variable numEpochs, variable chunkLength)
+
+	variable i, wbBegin, wbEnd, duration, amplitude, epBegin, epEnd, index
+	string tags, shortName
+
 	wbBegin = 0
-	wbEnd   = totalOnsetDelay * MILLI_TO_ONE
-	WAVE/T epochWave = GetEpochsWave(device)
+	wbEnd   = totalOnsetDelayMS * MILLI_TO_ONE
 	for(i = 0; i < numEpochs; i += 1)
 		duration = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = i) * MILLI_TO_ONE
 
