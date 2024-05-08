@@ -3629,15 +3629,24 @@ Function PSQ_Ramp(device, s)
 End
 
 static Function PSQ_Ramp_AddEpoch(string device, variable headstage, WAVE wv, string tags, string shortName, variable first, variable last)
-	variable DAC, epBegin, epEnd
+
+	variable DAC
 
 	DAC = AFH_GetDACFromHeadstage(device, headstage)
+	WAVE/T epochWave = GetEpochsWave(device)
+
+	PSQ_Ramp_AddEpochImpl(epochWave, wv, DAC, tags, shortName, first, last)
+End
+
+/// @brief device independent implementation of @ref PSQ_Ramp_AddEpoch
+Function PSQ_Ramp_AddEpochImpl(WAVE/T epochWave, WAVE wv, variable DAC, string tags, string shortName, variable first, variable last)
+
+	variable epBegin, epEnd
 
 	ASSERT(!cmpstr(WaveUnits(wv, ROWS), "ms"), "Unexpected x unit")
 	epBegin = IndexToScale(wv, first, ROWS) * MILLI_TO_ONE
 	epEnd   = IndexToScale(wv, last, ROWS) * MILLI_TO_ONE
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 End
 
