@@ -113,7 +113,7 @@
 /// ========================================================== ========== =========================== ========================================================== =======
 /// Name=Baseline Chunk;Index=x                                U_BLCx     DA, RB, RA, CR, SE, VM, AR  Baseline QC evaluation chunks                               -1
 /// Name=Baseline Chunk QC Selection;Index=x                   U_BLSx     SE, VM, AR                  Selects the chunk for Baseline QC evaluation                -1
-/// Name=DA Suppression                                        U_RA_DA    RA                          DA was suppressed in this time interval                     -1
+/// Name=DA Suppression                                        U_RA_DS    RA                          DA was suppressed in this time interval                     -1
 /// Name=Unacquired DA data                                    U_RA_UD    RA                          Interval of unacquired data                                 -1
 /// Type=Testpulse Like;Index=x                                U_TPx      PB, SE, AR                  Testpulse like region in stimset                            -1
 /// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_B0   PB, SE, AR                  Pre pulse baseline of testpulse                             -1
