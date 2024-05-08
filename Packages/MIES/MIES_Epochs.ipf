@@ -1960,7 +1960,7 @@ End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_Ramp(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
 
-	variable DAC, first, last, level, index, hwType
+	variable DAC, first, last, level, index, hwType, i, size, endBlackout
 	string key
 
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_RAMP, sweepNo, s, epochWave)
@@ -1968,27 +1968,53 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Ramp(WAVE numericalValues, WAVE/T 
 	DAC = s.DACList[0]
 	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT, query = 1, waMode = waMode)
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, UNKNOWN_MODE)
-	if(WaveExists(settings) && settings[index] == 1)
-		hwType = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE)
-		WAVE/Z sweepDA = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
-		ASSERT(WaveExists(sweepDA), "Could not retrieve sweep data for epoch recreation")
-
-		level = GetMachineEpsilon(WaveType(sweepDA))
-		FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/R=[Inf, 0]/P sweepDA, level
-		first = ceil(V_levelX)
-		if(first > DimSize(sweepDA, ROWS) - 2)
-			DEBUGPRINT("RA U_RA_DS epoch recreation: no suppressed DA region found.")
-			return NaN
-		endif
-
-		// For ITC in PSQ_Ramp the remaining time of the DA output wave is used for the epoch.
-		// The DA output wave is always the next greater power of two size of the actual needed output size
-		// Thus, the epoch is always longer than the DA channel length. It is later cut off to the actual
-		// maximum acquired time, see @ref EP_AdaptEpochInfo
-		last = hwType == HARDWARE_ITC_DAC ? DimSize(sweepDA, ROWS) : DimSize(sweepDA, ROWS) - 1
-
-		PSQ_Ramp_AddEpochImpl(epochWave, sweepDA, DAC, "Name=DA suppression", "RA_DS", first, last)
+	if(!(WaveExists(settings) && settings[index] == 1))
+		return NaN
 	endif
+
+	hwType = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE)
+
+	WAVE/Z sweepDA = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
+	ASSERT(WaveExists(sweepDA), "Could not retrieve sweep data for epoch recreation")
+
+	ASSERT(WaveMax(sweepDA) > 0, "Only positive Ramps are supported")
+	level = GetMachineEpsilon(WaveType(sweepDA))
+	FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/R=[Inf, 0]/P sweepDA, level
+	first = ceil(V_levelX)
+	if(first > DimSize(sweepDA, ROWS) - 2)
+		DEBUGPRINT("RA U_RA_DS epoch recreation: no suppressed DA region found.")
+		return NaN
+	endif
+
+	// For ITC in PSQ_Ramp the remaining time of the DA output wave is used for the epoch.
+	// The DA output wave is always the next greater power of two size of the actual needed output size
+	// Thus, the epoch is always longer than the DA channel length. It is later cut off to the actual
+	// maximum acquired time, see @ref EP_AdaptEpochInfo
+	last = hwType == HARDWARE_ITC_DAC ? DimSize(sweepDA, ROWS) : DimSize(sweepDA, ROWS) - 1
+
+	PSQ_Ramp_AddEpochImpl(epochWave, sweepDA, DAC, "Name=DA Suppression", "RA_DS", first, last)
+
+	if(hwType != HARDWARE_ITC_DAC)
+		return NaN
+	endif
+
+	WAVE/Z sweepAD = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_ADC, s.ADCList[0])
+	ASSERT(WaveExists(sweepAD), "Could not retrieve sweep data for epoch recreation")
+
+	// for ITC the AD and DA sampling interval is the same, thus the indice determined from DA can be used for AD
+	endBlackout = first
+	size        = DimSize(sweepAD, ROWS)
+	for(i = first + 1; i < size; i += 1)
+		if(sweepAD[i] != 0)
+			endBlackout = i - 1
+			break
+		endif
+	endfor
+	if(endBlackout == first)
+		return NaN
+	endif
+
+	PSQ_Ramp_AddEpochImpl(epochWave, sweepDA, DAC, "Name=Unacquired DA data", "RA_UD", first, endBlackout)
 End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_PipetteInBath(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
