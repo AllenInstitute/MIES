@@ -500,6 +500,16 @@ Function EnableThreadsafeSupport()
 	Execute/P/Q "SetIgorOption DisableThreadsafe=0"
 End
 
+/// @brief Disable wave caching support
+Function DisableWaveCache()
+	Execute/P/Q "SetIgorOption poundDefine=WAVECACHE_DISABLED"
+End
+
+/// @brief Enable wave caching support again
+Function EnableWaveCache()
+	Execute/P/Q "SetIgorOption poundUnDefine=WAVECACHE_DISABLED"
+End
+
 /// @brief Enable dangerous debugging (allows to call user-defined functions in the debugger)
 Function EnableDangerousDebugging()
 

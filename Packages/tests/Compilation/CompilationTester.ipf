@@ -66,6 +66,8 @@ Function/WAVE GetDefines()
 	                       "TESTS_WITH_ITC1600_HARDWARE",  \
 	                       "TESTS_WITH_ITC18USB_HARDWARE", \
 	                       "TESTS_WITH_NI_HARDWARE",       \
+	                       "TESTS_WITH_SUTTER_HARDWARE",   \
+	                       "WAVECACHE_DISABLED",           \
 	                       "THREADING_DISABLED"}
 
 	SetDimensionLabelsFromWaveContents(defines)
