@@ -4993,6 +4993,11 @@ Function/S PSQ_PipetteInBath_GetParams()
 	       "SamplingMultiplier:variable"
 End
 
+Function PSQ_PipetteInBath_GetNumberOfTestpulses(string params)
+
+	return AFH_GetAnalysisParamNumerical("NumberOfTestpulses", params, defValue = 3)
+End
+
 /// @brief Analysis function for determining the pipette resistance while that is located in the bath
 ///
 /// Prerequisites:
@@ -5076,7 +5081,7 @@ Function PSQ_PipetteInBath(string device, STRUCT AnalysisFunction_V3 &s)
 			PSQ_SetSamplingIntervalMultiplier(device, multiplier)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
-			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
+			expectedNumTestpulses = PSQ_PipetteInBath_GetNumberOfTestpulses(s.params)
 			ret                   = PSQ_CreateTestpulseEpochs(device, s.headstage, expectedNumTestpulses)
 			if(ret)
 				return 1
@@ -5269,12 +5274,28 @@ End
 ///
 /// @return 0 on success, 1 on failure
 static Function PSQ_CreateTestpulseEpochs(string device, variable headstage, variable numTestPulses)
-	variable DAC, prePulseTP, DAScale, tpIndex
-	variable offset, numEpochs, i, idx, totalOnsetDelay, requiredEpochs
+
+	variable DAC, totalOnsetDelay, DAScale
 	string setName
 
-	DAC     = AFH_GetDACFromHeadstage(device, headstage)
-	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
+	DAC             = AFH_GetDACFromHeadstage(device, headstage)
+	setName         = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
+	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
+	DAScale         = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DAC)
+	WAVE/T epochWave = GetEpochsWave(device)
+
+	return PSQ_CreateTestpulseEpochsImpl(epochWave, DAC, setName, totalOnsetDelay, DAScale, numTestPulses)
+End
+
+/// @brief Device independent implementation function for @ref PSQ_CreateTestpulseEpochs
+///
+/// Assumes that all sweeps in the stimset are the same.
+///
+/// @return 0 on success, 1 on failure
+Function PSQ_CreateTestpulseEpochsImpl(WAVE/T epochWave, variable DAC, string setName, variable totalOnsetDelay, variable DAScale, variable numTestPulses)
+
+	variable prePulseTP, tpIndex
+	variable offset, numEpochs, i, idx, requiredEpochs
 
 	numEpochs      = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
 	requiredEpochs = numTestPulses * 3 + 2
@@ -5285,13 +5306,7 @@ static Function PSQ_CreateTestpulseEpochs(string device, variable headstage, var
 		return 1
 	endif
 
-	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
-
 	offset = (totalOnsetDelay + ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)) * MILLI_TO_ONE
-
-	DAScale = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DAC)
-
-	WAVE/T epochWave = GetEpochsWave(device)
 
 	// 0: pre pulse baseline chunk
 	// 1: testpulse pre baseline
