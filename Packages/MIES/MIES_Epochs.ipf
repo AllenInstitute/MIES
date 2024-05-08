@@ -1886,9 +1886,7 @@ static Function EP_AddRecreatedUserEpochs_Baseline(WAVE numericalValues, WAVE/T 
 		endfor
 	else
 		params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
-		if(IsEmpty(params))
-			return NaN
-		endif
+		ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
 		setName   = s.setName[0]
 		numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
 		ASSERT(numEpochs > 0, "Invalid number of epochs")
@@ -1925,6 +1923,31 @@ static Function EP_AddRecreatedUserEpochs_Baseline(WAVE numericalValues, WAVE/T 
 	endif
 End
 
+static Function EP_AddRecreatedUserEpochs_AddTPUserEpochs(WAVE/T epochWave, STRUCT DataConfigurationResult &s, string params, variable type)
+
+	string setName
+	variable DAC, DAScale, totalOnsetDelayMS, expectedNumTestpulses
+
+	switch(type)
+		case PSQ_PIPETTE_BATH:
+			expectedNumTestpulses = PSQ_PipetteInBath_GetNumberOfTestpulses(params)
+			break
+		case PSQ_ACC_RES_SMOKE:
+			expectedNumTestpulses = PSQ_AccessResistanceSmoke_GetNumberOfTestpulses(params)
+			break
+		default:
+			ASSERT(0, "Unsupported analysis function type")
+	endswitch
+
+	DAC               = s.DACList[0]
+	setName           = s.setName[0]
+	DAScale           = s.DACAmp[0][%DASCALE]
+	totalOnsetDelayMS = s.onsetDelay * s.samplingIntervalDA * MICRO_TO_MILLI
+	if(PSQ_CreateTestpulseEpochsImpl(epochWave, DAC, setName, totalOnsetDelayMS, DAScale, expectedNumTestpulses))
+		DEBUGPRINT("Failed to recreate U_TP* epochs for PB analysis function ")
+	endif
+End
+
 static Function EP_AddRecreatedUserEpochs_PSQ_DaScale(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
 
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_DA_SCALE, sweepNo, s, epochWave)
@@ -1942,7 +1965,15 @@ End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_PipetteInBath(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
 
+	variable DAC
+	string   params
+
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_PIPETTE_BATH, sweepNo, s, epochWave)
+
+	DAC    = s.DACList[0]
+	params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
+	ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
+	EP_AddRecreatedUserEpochs_AddTPUserEpochs(epochWave, s, params, PSQ_PIPETTE_BATH)
 End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_SealEvaluation(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
@@ -1957,7 +1988,15 @@ End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_AccessResistanceSmoke(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
 
+	variable DAC
+	string   params
+
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_ACC_RES_SMOKE, sweepNo, s, epochWave)
+
+	DAC    = s.DACList[0]
+	params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
+	ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
+	EP_AddRecreatedUserEpochs_AddTPUserEpochs(epochWave, s, params, PSQ_ACC_RES_SMOKE)
 End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
@@ -1969,9 +2008,7 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T
 
 	DAC    = s.DACList[0]
 	params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
-	if(IsEmpty(params))
-		return NaN
-	endif
+	ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
 
 	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_PULSE_DUR, query = 1, waMode = waMode)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
