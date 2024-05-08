@@ -6611,6 +6611,11 @@ Function/S PSQ_AccessResistanceSmoke_GetParams()
 	       "SamplingMultiplier:variable"
 End
 
+Function PSQ_AccessResistanceSmoke_GetNumberOfTestpulses(string params)
+
+	return AFH_GetAnalysisParamNumerical("NumberOfTestpulses", params, defValue = 3)
+End
+
 /// @brief Analysis function for determining the TP resistances and their ratio
 ///
 /// Prerequisites:
@@ -6695,7 +6700,7 @@ Function PSQ_AccessResistanceSmoke(string device, STRUCT AnalysisFunction_V3 &s)
 			PSQ_SetSamplingIntervalMultiplier(device, multiplier)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
-			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
+			expectedNumTestpulses = PSQ_AccessResistanceSmoke_GetNumberOfTestpulses(s.params)
 			ret                   = PSQ_CreateTestpulseEpochs(device, s.headstage, expectedNumTestpulses)
 			if(ret)
 				return 1
