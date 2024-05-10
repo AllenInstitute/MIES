@@ -1211,12 +1211,29 @@ Function CompareEpochsOfSweep(WAVE/Z numericalValues, WAVE/Z/T textualValues, va
 				CompareEpochsHistoricChannel(epochChannelRef, epochChannelRec)
 			else
 				// also TP channels can be active but have no epochs
+				AdaptRecEpoch_U_RA_UD(epochChannelRec, epochChannelRef)
 				CHECK_EQUAL_WAVES(epochChannelRec, epochChannelRef)
 			endif
 		else
 			CHECK_WAVE(epochChannelRec, NULL_WAVE)
 		endif
 	endfor
+End
+
+static Function AdaptRecEpoch_U_RA_UD(WAVE/T epochChannelRec, WAVE/T epochChannelRef)
+
+	string shortNameRef
+
+	Make/FREE/T/N=(DimSize(epochChannelRec, ROWS)) shortnamesRec = EP_GetShortName(epochChannelRec[p][EPOCH_COL_TAGS])
+	FindValue/TEXT="U_RA_UD"/TXOP=4 shortnamesRec
+	if(V_Value == -1)
+		// Nothing to adapt
+		return NaN
+	endif
+
+	shortNameRef = EP_GetShortName(epochChannelRef[V_row][EPOCH_COL_TAGS])
+	CHECK_EQUAL_STR(shortnamesRec[V_row], shortNameRef)
+	epochChannelRec[V_row][EPOCH_COL_ENDTIME] = epochChannelRef[V_row][EPOCH_COL_ENDTIME]
 End
 
 /// @brief This function extends epochs of a single channel from the experiment with user epochs from a reference source if this user epochs do
