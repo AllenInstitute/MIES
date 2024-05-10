@@ -358,6 +358,8 @@ static Function/WAVE OOD_CreateStimSet(params)
 	return stimSetsWithOffset
 End
 
+/// @brief Here the trailing baseline is of the stimset column removed (postFeatureTime)
+///        The last feature amplitude should stay as DA signal until the whole stimset (all columns) ends
 Function/WAVE OOD_OffsetStimSetColAndCutoff(WAVE stimSet, variable column, variable offset, variable postFeaturePoints)
 
 	variable length, cutoff
@@ -376,7 +378,7 @@ Function/WAVE OOD_OffsetStimSetColAndCutoff(WAVE stimSet, variable column, varia
 	FindLevel/P/EDGE=2/Q/R=[DimSize(acc, ROWS) - 1, 0] acc, level
 
 	if(!V_flag && acc[length - 1] < level)
-		cutoff = V_levelX + postFeaturePoints
+		cutoff = round(V_levelX) + postFeaturePoints
 		Redimension/N=(cutoff) acc
 	endif
 
