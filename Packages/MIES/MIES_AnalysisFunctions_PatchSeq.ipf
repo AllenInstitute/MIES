@@ -3577,7 +3577,7 @@ Function PSQ_Ramp(device, s)
 					MultiThread scaledChannelDA[V_FIFOChunks,] = 0
 					ChangeWaveLock(scaledChannelDA, 1)
 
-					PSQ_Ramp_AddEpoch(device, s.headstage, NIChannel, "Name=DA suppression", "RA_DS", V_FIFOChunks, DimSize(NIChannel, ROWS) - 1)
+					PSQ_Ramp_AddEpoch(device, s.headstage, NIChannel, "Name=DA Suppression", "RA_DS", V_FIFOChunks, DimSize(NIChannel, ROWS) - 1)
 				endif
 			elseif(hardwareType == HARDWARE_SUTTER_DAC)
 				// the sutter XOP might prefetch upto 4096 samples
@@ -3595,7 +3595,7 @@ Function PSQ_Ramp(device, s)
 					MultiThread scaledChannelDA[fifoPos,] = 0
 					ChangeWaveLock(scaledChannelDA, 1)
 
-					PSQ_Ramp_AddEpoch(device, s.headstage, scaledChannelDA, "Name=DA suppression", "RA_DS", fifoPos, DimSize(channelDA, ROWS) - 1)
+					PSQ_Ramp_AddEpoch(device, s.headstage, scaledChannelDA, "Name=DA Suppression", "RA_DS", fifoPos, DimSize(channelDA, ROWS) - 1)
 				endif
 			else
 				ASSERT(0, "Unknown hardware type")
