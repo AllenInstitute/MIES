@@ -4153,7 +4153,7 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 		endif
 	endfor
 
-	return SFH_GetOutputForExecutorSingle(channels, graph, SF_OP_CHANNELS, discardOpStack = 1)
+	return SFH_GetOutputForExecutorSingle(channels, graph, SF_OP_CHANNELS, discardOpStack = 1, dataType = SF_DATATYPE_CHANNELS)
 End
 
 /// `sweeps()`
@@ -4168,7 +4168,7 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 
 	WAVE/Z sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
 
-	return SFH_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS, discardOpStack = 1)
+	return SFH_GetOutputForExecutorSingle(sweeps, graph, SF_OP_SWEEPS, discardOpStack = 1, dataType = SF_DATATYPE_SWEEPNO)
 End
 
 static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath, string graph)
