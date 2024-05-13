@@ -2067,6 +2067,8 @@ StrConstant SF_META_FIT_SIGMA     = "FitSigma"
 StrConstant SF_META_FIT_PARAMETER = "FitParameter"
 
 StrConstant SF_DATATYPE_SWEEP         = "SweepData"
+StrConstant SF_DATATYPE_SWEEPNO       = "SweepNumbers"
+StrConstant SF_DATATYPE_CHANNELS      = "Channels"
 StrConstant SF_DATATYPE_FINDLEVEL     = "FindLevel"
 StrConstant SF_DATATYPE_APFREQUENCY   = "ApFrequency"
 StrConstant SF_DATATYPE_LABNOTEBOOK   = "LabNotebook"
