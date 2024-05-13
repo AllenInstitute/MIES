@@ -4313,7 +4313,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
 
-	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1)
+	WAVE/WAVE selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1)
 
 	SFH_ASSERT(WaveExists(selectData), "Could not gather sweep data from select statement")
 
@@ -4321,7 +4321,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	decayTau = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 3, defValue = 15, checkFunc = IsStrictlyPositiveAndFinite)
 	amp      = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 4, defValue = -5, checkFunc = IsFinite)
 
-	WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, range, selectData, SF_OP_PSX_KERNEL)
+	WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, selectData, SF_OP_PSX_KERNEL)
 
 	numCombos = DimSize(sweepDataRef, ROWS)
 	SFH_ASSERT(numCombos > 0, "Could not fetch sweeps")
