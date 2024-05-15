@@ -103,7 +103,7 @@ End
 threadsafe static Function ASYNC_Thread()
 
 	for(;;)
-		DFREF dfr = ThreadGroupGetDFR(0, 10)
+		DFREF dfr = ThreadGroupGetDFR(MAIN_THREAD, 10)
 		if(!DataFolderExistsDFR(dfr))
 			if(GetRTError(2))
 				// Internal abort flag set, closing down
@@ -119,7 +119,7 @@ threadsafe static Function ASYNC_Thread()
 
 		DFREF dfrOut = ASYNC_Run_Worker(dfr)
 
-		TS_ThreadGroupPutDFR(0, dfrOut)
+		TS_ThreadGroupPutDFR(MAIN_THREAD, dfrOut)
 		KillDataFolder dfr
 	endfor
 End

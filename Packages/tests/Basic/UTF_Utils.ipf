@@ -8101,3 +8101,18 @@ static Function ConvertListToRegexpWithAlternations_Test()
 		PASS()
 	endtry
 End
+
+Function DC_DFREFClear_Perm_Works()
+	NewDataFolder/O test
+	DFREF dfr = :test
+	CHECK(DataFolderExistsDFR(dfr))
+	DFREFClear(dfr)
+	CHECK(!DataFolderExistsDFR(dfr))
+End
+
+Function DC_DFREFClear_Free_Works()
+	DFREF dfr = NewFreeDataFolder()
+	CHECK(DataFolderExistsDFR(dfr))
+	DFREFClear(dfr)
+	CHECK(!DataFolderExistsDFR(dfr))
+End
