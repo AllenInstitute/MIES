@@ -723,16 +723,35 @@ static Function SFH_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win
 	endfor
 End
 
+/// @brief Retrieves from an argument the datatype and the first dataset and disposes the argument
+Function [WAVE data, string dataType] SFH_ResolveDatasetElementFromJSONAndType(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist])
+
+	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
+
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+	dataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
+	WAVE/Z data = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
+
+	return [data, dataType]
+End
+
+static Function/WAVE SFH_CheckForSingleDSAndGetData(WAVE/WAVE input, variable checkExist, string opShort, variable argNum)
+
+	SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
+	WAVE/Z data = input[0]
+	SFH_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet at operation " + opShort + " arg num " + num2istr(argNum))
+	SFH_CleanUpInput(input)
+
+	return data
+End
+
 /// @brief Retrieves from an argument the first dataset and disposes the argument
 Function/WAVE SFH_ResolveDatasetElementFromJSON(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
-	SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
-	WAVE/Z data = input[0]
-	SFH_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet at operation " + opShort + " arg num " + num2istr(argNum))
-	SFH_CleanUpInput(input)
+	WAVE/Z    data  = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
 
 	return data
 End
