@@ -1886,9 +1886,7 @@ static Function EP_AddRecreatedUserEpochs_Baseline(WAVE numericalValues, WAVE/T 
 		endfor
 	else
 		params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
-		if(IsEmpty(params))
-			return NaN
-		endif
+		ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
 		setName   = s.setName[0]
 		numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
 		ASSERT(numEpochs > 0, "Invalid number of epochs")
@@ -1925,6 +1923,31 @@ static Function EP_AddRecreatedUserEpochs_Baseline(WAVE numericalValues, WAVE/T 
 	endif
 End
 
+static Function EP_AddRecreatedUserEpochs_AddTPUserEpochs(WAVE/T epochWave, STRUCT DataConfigurationResult &s, string params, variable type)
+
+	string setName
+	variable DAC, DAScale, totalOnsetDelayMS, expectedNumTestpulses
+
+	switch(type)
+		case PSQ_PIPETTE_BATH:
+			expectedNumTestpulses = PSQ_PipetteInBath_GetNumberOfTestpulses(params)
+			break
+		case PSQ_ACC_RES_SMOKE:
+			expectedNumTestpulses = PSQ_AccessResistanceSmoke_GetNumberOfTestpulses(params)
+			break
+		default:
+			ASSERT(0, "Unsupported analysis function type")
+	endswitch
+
+	DAC               = s.DACList[0]
+	setName           = s.setName[0]
+	DAScale           = s.DACAmp[0][%DASCALE]
+	totalOnsetDelayMS = s.onsetDelay * s.samplingIntervalDA * MICRO_TO_MILLI
+	if(PSQ_CreateTestpulseEpochsImpl(epochWave, DAC, setName, totalOnsetDelayMS, DAScale, expectedNumTestpulses))
+		DEBUGPRINT("Failed to recreate U_TP* epochs for PB analysis function ")
+	endif
+End
+
 static Function EP_AddRecreatedUserEpochs_PSQ_DaScale(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
 
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_DA_SCALE, sweepNo, s, epochWave)
@@ -1937,12 +1960,74 @@ End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_Ramp(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
 
+	variable DAC, first, last, level, index, hwType, i, size, endBlackout
+	string key
+
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_RAMP, sweepNo, s, epochWave)
+
+	DAC = s.DACList[0]
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT, query = 1, waMode = waMode)
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, UNKNOWN_MODE)
+	if(!(WaveExists(settings) && settings[index] == 1))
+		return NaN
+	endif
+
+	hwType = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE)
+
+	WAVE/Z sweepDA = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
+	ASSERT(WaveExists(sweepDA), "Could not retrieve sweep data for epoch recreation")
+
+	ASSERT(WaveMax(sweepDA) > 0, "Only positive Ramps are supported")
+	level = GetMachineEpsilon(WaveType(sweepDA))
+	FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/R=[Inf, 0]/P sweepDA, level
+	first = ceil(V_levelX)
+	if(first > DimSize(sweepDA, ROWS) - 2)
+		DEBUGPRINT("RA U_RA_DS epoch recreation: no suppressed DA region found.")
+		return NaN
+	endif
+
+	// For ITC in PSQ_Ramp the remaining time of the DA output wave is used for the epoch.
+	// The DA output wave is always the next greater power of two size of the actual needed output size
+	// Thus, the epoch is always longer than the DA channel length. It is later cut off to the actual
+	// maximum acquired time, see @ref EP_AdaptEpochInfo
+	last = hwType == HARDWARE_ITC_DAC ? DimSize(sweepDA, ROWS) : DimSize(sweepDA, ROWS) - 1
+
+	PSQ_Ramp_AddEpochImpl(epochWave, sweepDA, DAC, "Name=DA Suppression", "RA_DS", first, last)
+
+	if(hwType != HARDWARE_ITC_DAC)
+		return NaN
+	endif
+
+	WAVE/Z sweepAD = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_ADC, s.ADCList[0])
+	ASSERT(WaveExists(sweepAD), "Could not retrieve sweep data for epoch recreation")
+
+	// for ITC the AD and DA sampling interval is the same, thus the indice determined from DA can be used for AD
+	endBlackout = first
+	size        = DimSize(sweepAD, ROWS)
+	for(i = first + 1; i < size; i += 1)
+		if(sweepAD[i] != 0)
+			endBlackout = i - 1
+			break
+		endif
+	endfor
+	if(endBlackout == first)
+		return NaN
+	endif
+
+	PSQ_Ramp_AddEpochImpl(epochWave, sweepDA, DAC, "Name=Unacquired DA data", "RA_UD", first, endBlackout)
 End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_PipetteInBath(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
 
+	variable DAC
+	string   params
+
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_PIPETTE_BATH, sweepNo, s, epochWave)
+
+	DAC    = s.DACList[0]
+	params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
+	ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
+	EP_AddRecreatedUserEpochs_AddTPUserEpochs(epochWave, s, params, PSQ_PIPETTE_BATH)
 End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_SealEvaluation(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
@@ -1957,7 +2042,15 @@ End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_AccessResistanceSmoke(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
 
+	variable DAC
+	string   params
+
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_ACC_RES_SMOKE, sweepNo, s, epochWave)
+
+	DAC    = s.DACList[0]
+	params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
+	ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
+	EP_AddRecreatedUserEpochs_AddTPUserEpochs(epochWave, s, params, PSQ_ACC_RES_SMOKE)
 End
 
 static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T textualValues, variable waMode, DFREF sweepDFR, variable sweepNo, STRUCT DataConfigurationResult &s, WAVE/T epochWave)
@@ -1969,9 +2062,7 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T
 
 	DAC    = s.DACList[0]
 	params = AFH_GetAnaFuncParamsFromLNB(numericalValues, textualValues, sweepNo, DAC)
-	if(IsEmpty(params))
-		return NaN
-	endif
+	ASSERT(!IsEmpty(params), "Could not retrieve analysis function parameters from LNB")
 
 	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_PULSE_DUR, query = 1, waMode = waMode)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
