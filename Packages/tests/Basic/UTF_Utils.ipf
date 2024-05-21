@@ -560,6 +560,75 @@ Function GSI_ReturnsInvalidWaveRefWOMatches3()
 	WAVE/Z matches = GetSetIntersection(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
 End
+
+Function GSI_Works_Indices()
+
+	Make/FREE data1 = {1, 2, 3, 4}
+	Make/FREE data2 = {4, 5, 6}
+
+	WAVE/Z matches = GetSetIntersection(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {3}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetIntersection(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0}, mode = WAVE_DATA)
+
+	Make/FREE data1 = {1, 4, 2, 3, 4}
+	Make/FREE data2 = {4, 5, 4, 6}
+
+	WAVE/Z matches = GetSetIntersection(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {1, 4}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetIntersection(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0, 2}, mode = WAVE_DATA)
+End
+
+Function GSI_WorksText_Indices()
+
+	Make/FREE/T data1 = {"a", "b", "c", "D"}
+	Make/FREE/T data2 = {"c", "d", "e"}
+
+	WAVE/Z matches = GetSetIntersection(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {2}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetIntersection(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0}, mode = WAVE_DATA)
+
+	Make/FREE/T data1 = {"a", "b", "c", "D", "c"}
+	Make/FREE/T data2 = {"c", "d", "c", "e"}
+
+	WAVE/Z matches = GetSetIntersection(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {2, 4}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetIntersection(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0, 2}, mode = WAVE_DATA)
+End
+
+Function GSI_ReturnsInvalidWaveRefWOMatches1_indices()
+
+	Make/FREE/D/N=0 data1
+	Make/FREE/D data2
+
+	WAVE/Z matches = GetSetIntersection(data1, data2, getIndices = 1)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
+
+Function GSI_ReturnsInvalidWaveRefWOMatches2_indices()
+
+	Make/FREE/D data1
+	Make/FREE/D/N=0 data2
+
+	WAVE/Z matches = GetSetIntersection(data1, data2, getIndices = 1)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
+
+Function GSI_ReturnsInvalidWaveRefWOMatches3_indices()
+
+	Make/FREE/D data1 = p
+	Make/FREE/D data2 = -1
+
+	WAVE/Z matches = GetSetIntersection(data1, data2, getIndices = 1)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
 /// @}
 
 /// DAP_GetRAAcquisitionCycleID
