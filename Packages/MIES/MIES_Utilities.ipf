@@ -3943,10 +3943,9 @@ threadsafe Function/WAVE GetSetIntersection(WAVE wave1, WAVE wave2, [variable ge
 			endfor
 		else
 			WAVE/T resultWaveText = resultWave
-			for(i = 0; i < shortRows; i += 1)
-				strEntry    = shortWaveText[i]
+			for(strEntry : shortWaveText)
 				longWaveRow = BinarySearchText(longWave, strEntry, caseSensitive = 1)
-				if(longWaveRow >= 0 && !cmpstr(longWaveText[longWaveRow], strEntry))
+				if(longWaveRow >= 0 && !CmpStr(longWaveText[longWaveRow], strEntry))
 					resultWaveText[j++] = strEntry
 				endif
 			endfor
@@ -3961,8 +3960,7 @@ threadsafe Function/WAVE GetSetIntersection(WAVE wave1, WAVE wave2, [variable ge
 				endif
 			endfor
 		else
-			for(i = 0; i < shortRows; i += 1)
-				entry       = shortWave[i]
+			for(entry : shortWave)
 				longWaveRow = BinarySearch(longWave, entry)
 				if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
 					resultWave[j++] = entry
