@@ -3872,15 +3872,20 @@ End
 /// @brief Return a wave with the set theory style intersection of wave1 and wave2
 ///
 /// Given {1, 2, 4, 10} and {2, 5, 11} this will return {2}.
+/// Given {10, 2, 4, 2, 1} and {11, 5, 2} with getIndices = 1 this will return {1, 3}.
 ///
 /// Inspired by http://www.igorexchange.com/node/366 but adapted to modern Igor Pro
-/// It does work with text waves as well, there it performs case sensitive comparions
+/// It does work with text waves as well, there it performs case sensitive comparisons
 ///
-/// @return free wave with the set intersection or an invalid wave reference
+/// For wave1 and wave2 numerical and text waves are allowed, wave1 and wave2 must have the same type.
+///
+/// @param wave1      first wave
+/// @param wave2      second wave
+/// @param getIndices [optional, default 0] when this flag is set then the index positions of the
+///                   intersecting elements in the first wave are returned.
+/// @return free wave with the set intersection or an null wave reference
 /// if the intersection is an empty set
-threadsafe Function/WAVE GetSetIntersection(wave1, wave2)
-	WAVE wave1
-	WAVE wave2
+threadsafe Function/WAVE GetSetIntersection(WAVE wave1, WAVE wave2, [variable getIndices])
 
 	variable type, wave1Rows, wave2Rows
 	variable longRows, shortRows, entry
@@ -3889,6 +3894,8 @@ threadsafe Function/WAVE GetSetIntersection(wave1, wave2)
 
 	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                  \
 	          || (IsTextWave(wave1) && IsTextWave(wave2)), "Invalid wave type")
+
+	getIndices = ParamIsDefault(getIndices) ? 0 : !!getIndices
 
 	type = WaveType(wave1)
 	ASSERT_TS(type == WaveType(wave2), "Wave type mismatch")
@@ -3903,7 +3910,7 @@ threadsafe Function/WAVE GetSetIntersection(wave1, wave2)
 		return matches
 	endif
 
-	if(wave1Rows > wave2Rows)
+	if(wave1Rows > wave2Rows && !getIndices)
 		Duplicate/FREE wave1, longWave
 		WAVE shortWave = wave2
 		longRows  = wave1Rows
@@ -3917,31 +3924,58 @@ threadsafe Function/WAVE GetSetIntersection(wave1, wave2)
 
 	// Sort values in longWave
 	Sort/C longWave, longWave
-	Make/FREE/N=(shortRows)/Y=(type) resultWave
+	if(getIndices)
+		Make/FREE/D/N=(shortRows) indicesWave
+	else
+		Make/FREE/N=(shortRows)/Y=(type) resultWave
+	endif
 
 	if(type == 0)
-		WAVE/T shortWaveText  = shortWave
-		WAVE/T longWaveText   = longWave
-		WAVE/T resultWaveText = resultWave
-		for(i = 0; i < shortRows; i += 1)
-			strEntry    = shortWaveText[i]
-			longWaveRow = BinarySearchText(longWave, strEntry, caseSensitive = 1)
-			if(longWaveRow >= 0 && !cmpstr(longWaveText[longWaveRow], strEntry))
-				resultWaveText[j++] = strEntry
-			endif
-		endfor
+		WAVE/T shortWaveText = shortWave
+		WAVE/T longWaveText  = longWave
+		if(getIndices)
+			for(i = 0; i < shortRows; i += 1)
+				strEntry    = shortWaveText[i]
+				longWaveRow = BinarySearchText(longWave, strEntry, caseSensitive = 1)
+				if(longWaveRow >= 0)
+					indicesWave[j++] = i
+				endif
+			endfor
+		else
+			WAVE/T resultWaveText = resultWave
+			for(strEntry : shortWaveText)
+				longWaveRow = BinarySearchText(longWave, strEntry, caseSensitive = 1)
+				if(longWaveRow >= 0)
+					resultWaveText[j++] = strEntry
+				endif
+			endfor
+		endif
 	else
-		for(i = 0; i < shortRows; i += 1)
-			entry       = shortWave[i]
-			longWaveRow = BinarySearch(longWave, entry)
-			if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
-				resultWave[j++] = entry
-			endif
-		endfor
+		if(getIndices)
+			for(i = 0; i < shortRows; i += 1)
+				entry       = shortWave[i]
+				longWaveRow = BinarySearch(longWave, entry)
+				if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
+					indicesWave[j++] = i
+				endif
+			endfor
+		else
+			for(entry : shortWave)
+				longWaveRow = BinarySearch(longWave, entry)
+				if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
+					resultWave[j++] = entry
+				endif
+			endfor
+		endif
 	endif
 
 	if(j == 0)
 		return $""
+	endif
+
+	if(getIndices)
+		Redimension/N=(j) indicesWave
+		return indicesWave
 	endif
 
 	Redimension/N=(j) resultWave
