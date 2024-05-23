@@ -1180,3 +1180,37 @@ Function/S AFH_GetAnaFuncParamsFromLNB(WAVE numericalValues, WAVE/T textualValue
 
 	return WaveText(settings, row = index)
 End
+
+/// @brief Only for PSQ_RHEOBASE, returns a wave with passing and failing sweep numbers for sweepQC with all sweep numbers of the same SCI range
+///        This is a workaround and uses a different approach as for other analysis functions.
+///
+/// @param numericalValues numerical LNB
+/// @param sweepNo         sweep number
+/// @param headstage       headstage number
+/// @param sweepsSCI       numerical wave with all sweep numbers from the SCI where sweepNo is part of, @ref AFH_GetSweepsFromSameSCI
+/// @param passedSetQC     flag that indicates if for this sweepNo the setQC passed, @ref GetLastSettingIndepSCI for PSQ_FMT_LBN_SET_PASS
+///
+/// @retval passingSweeps numerical wave containing the sweep numbers of the sweeps from this SCI that passed the sweepQC
+/// @retval failingSweeps numerical wave containing the sweep numbers of the sweeps from this SCI that failed the sweepQC
+Function [WAVE passingSweeps, WAVE failingSweeps] AFH_GetRheobaseSweepsSCISweepQCSplitted(WAVE numericalValues, variable sweepNo, variable headstage, WAVE sweepsSCI, variable passedSetQC)
+
+	variable firstValid, lastValid
+	string key
+
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+	if(passedSetQC)
+		WAVE spikeDetection = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+		ASSERT(DimSize(sweepsSCI, ROWS) == DimSize(spikeDetection, ROWS), "Unexpected wave sizes")
+
+		firstValid = DimSize(spikeDetection, ROWS) - 2
+		lastValid  = DimSize(spikeDetection, ROWS) - 1
+		ASSERT(Sum(spikeDetection, firstValid, lastValid) == 1, "Unexpected spike/non-spike duo")
+		Duplicate/FREE/R=[firstValid, lastValid] sweepsSCI, passingSweeps
+		WAVE/Z failingSweeps = GetSetDifference(sweepsSCI, passingSweeps)
+	else
+		Duplicate/FREE sweepsSCI, failingSweeps
+		WAVE/Z passingSweeps
+	endif
+
+	return [passingSweeps, failingSweeps]
+End
