@@ -3296,7 +3296,7 @@ End
 static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, string jsonPath, string graph, string opShort)
 
 	variable numArgs, dataSetNum0, dataSetNum1
-	string errMsg
+	string errMsg, type1, type2, resultType
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	ASSERT(numArgs == 2, "Number of arguments must be 2 for " + opShort)
@@ -3368,7 +3368,24 @@ static Function/WAVE SF_IndexOverDataSetsForPrimitiveOperation(variable jsonId, 
 		SFH_ASSERT(0, errMsg)
 	endif
 
-	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, "")
+	type1 = JWN_GetStringFromWaveNote(arg0, SF_META_DATATYPE)
+	type2 = JWN_GetStringFromWaveNote(arg1, SF_META_DATATYPE)
+	if(!CmpStr(type1, type2))
+		if(!CmpStr(opShort, SF_OPSHORT_PLUS) || !CmpStr(opShort, SF_OPSHORT_MINUS))
+			resultType = type1
+		else
+			resultType = ""
+		endif
+	elseif(!IsEmpty(type1) && IsEmpty(type2))
+		resultType = type1
+	elseif(IsEmpty(type1) && !IsEmpty(type2))
+		resultType = type2
+	else
+		// either both empty or of different type
+		resultType = ""
+	endif
+
+	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, opShort, resultType)
 
 	SFH_CleanUpInput(arg0)
 	SFH_CleanUpInput(arg1)

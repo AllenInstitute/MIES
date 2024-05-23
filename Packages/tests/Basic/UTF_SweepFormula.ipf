@@ -4494,3 +4494,57 @@ static Function CheckAddArraysInArray()
 	Make/FREE ref = {{{16}, {8}}, {{19}, {9}}}
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 End
+
+static Function DataTypePromotionInPrimitiveOperations()
+
+	string win, device, code, type
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	code = "max(1,5) + 1"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
+
+	code = "max(1,5) - 1"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
+
+	code = "max(1,5) * 1"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
+
+	code = "max(1,5) / 1"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
+
+	code = "max(1,5) + max(1,5)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
+
+	code = "max(1,5) * max(1,5)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, "")
+
+	code = "max(1,5) / max(1,5)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, "")
+
+	code = "max(1,5) + min(1,5)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, "")
+
+	code = "min(1,5) + max(1,5)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, "")
+End
