@@ -503,6 +503,75 @@ Function GSD_ReturnsInvalidWaveRefWOMatches()
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
 End
+
+Function GSD_Works_Indices()
+
+	Make/FREE data1 = {1, 2, 3, 4}
+	Make/FREE data2 = {4, 5, 6}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0, 1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetDifference(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {1, 2}, mode = WAVE_DATA)
+
+	Make/FREE data1 = {1, 4, 2, 3, 4}
+	Make/FREE data2 = {4, 5, 4, 6}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0, 2, 3}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetDifference(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {1, 3}, mode = WAVE_DATA)
+End
+
+Function GSD_WorksText_Indices()
+
+	Make/FREE/T data1 = {"a", "b", "c", "D"}
+	Make/FREE/T data2 = {"c", "d", "e"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetDifference(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {2}, mode = WAVE_DATA)
+
+	Make/FREE/T data1 = {"a", "b", "c", "D", "c"}
+	Make/FREE/T data2 = {"c", "d", "c", "e"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetDifference(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {3}, mode = WAVE_DATA)
+End
+
+Function GSD_ReturnsInvalidWaveRefWOMatches1_indices()
+
+	Make/FREE/D/N=0 data1
+	Make/FREE/D data2
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
+
+Function GSD_ReturnsInvalidWaveRefWOMatches2_indices()
+
+	Make/FREE/D/N=0 data1
+	Make/FREE/D/N=0 data2
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
+
+Function GSD_ReturnsInvalidWaveRefWOMatches3_indices()
+
+	Make/FREE/D data1 = p
+	Make/FREE/D data2 = p
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
 /// @}
 
 /// GetSetIntersection
