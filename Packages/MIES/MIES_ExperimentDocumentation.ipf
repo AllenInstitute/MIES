@@ -279,7 +279,7 @@ Function ED_AddEntryToLabnotebook(device, key, values, [unit, tolerance, overrid
 	// we allow all entries to be NaN or empty
 
 	if(ParamIsDefault(unit))
-		unit = ""
+		unit = LABNOTEBOOK_NO_UNIT
 	endif
 
 	if(ParamIsDefault(tolerance) || !IsFinite(tolerance))

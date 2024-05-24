@@ -116,8 +116,12 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 
 	// PSQ_DA
 	// - baseline QC
-	// - needs at least $NUM_DA_SCALES passing sweeps
-	//   and for supra mode if the FinalSlopePercent parameter is present this has to be reached as well
+	// - SUB/SUPRA: needs at least $NUM_DA_SCALES passing sweeps
+	// - SUPRA: if the FinalSlopePercent parameter is present this has to be reached as well
+	// - ADAPT: - fewer than $NumInvalidSlopeSweepsAllowed invalid f-I slopes
+	//          - fISlopeReached QC or initial f-I slope QC was invalid
+	//          - measured all future DAScale values
+	//          - enough points for Fit QC
 
 	// PSQ_PB
 	// - baseline QC
@@ -477,8 +481,9 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 	DFREF    sweepDFR
 	variable headstage
 
-	string msg, key, fISlopeStr
-	variable numPasses, numRequiredPasses, finalSlopePercent
+	string msg, key, fISlopeStr, opMode
+	variable numPasses, numRequiredPasses, finalSlopePercent, slopePercentage, measuredAllFutureDAScales
+	variable numInvalidSlopeSweepsAllowed, numFailedSweeps
 
 	numPasses = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, sweepNo, headstage)
 
@@ -489,11 +494,50 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 		WAVE/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params", headstage, DATA_ACQUISITION_MODE)
 	endif
 
-	WAVE/Z DAScales = AFH_GetAnalysisParamWave("DAScales", params[headstage])
-	ASSERT(WaveExists(DASCales), "analysis function parameters don't have a DAScales entry")
-	numRequiredPasses = DimSize(DAScales, ROWS)
+	opMode = AFH_GetAnalysisParamTextual("OperationMode", params[headstage])
 
-	msg = AD_GetPerSweepFailMessage(PSQ_DA_SCALE, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = numRequiredPasses)
+	strswitch(opMode)
+		case PSQ_DS_SUB:
+		case PSQ_DS_SUPRA:
+
+			WAVE/Z DAScales = AFH_GetAnalysisParamWave("DAScales", params[headstage])
+			ASSERT(WaveExists(DASCales), "analysis function parameters don't have a DAScales entry")
+			numRequiredPasses = DimSize(DAScales, ROWS)
+
+			msg = AD_GetPerSweepFailMessage(PSQ_DA_SCALE, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = numRequiredPasses)
+			break
+		case PSQ_DS_ADAPT:
+			msg = AD_GetPerSweepFailMessage(PSQ_DA_SCALE, numericalValues, textualValues, sweepNo, sweepDFR, headstage)
+
+			if(!IsEmpty(msg))
+				return msg
+			endif
+
+			key                       = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS, query = 1)
+			measuredAllFutureDAScales = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+			if(!measuredAllFutureDAScales)
+				sprintf msg, "Could not acquire all requested future DAScale values"
+			endif
+
+			if(!IsEmpty(msg))
+				return msg
+			endif
+
+			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS, query = 1)
+			WAVE slopePasses = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+			numFailedSweeps = DimSize(slopePasses, ROWS) - Sum(slopePasses)
+
+			numInvalidSlopeSweepsAllowed = AFH_GetAnalysisParamNumerical("NumInvalidSlopeSweepsAllowed", params[headstage])
+
+			if(numFailedSweeps >= numInvalidSlopeSweepsAllowed)
+				sprintf msg, "Encountered %g sweeps with invalid slopes, but only %g are allowed.", numFailedSweeps, numInvalidSlopeSweepsAllowed
+			endif
+			break
+		default:
+			ASSERT(0, "Invalid opMode")
+	endswitch
+
 	if(!IsEmpty(msg))
 		return msg
 	endif
@@ -509,7 +553,25 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 
 		finalSlopePercent = AFH_GetAnalysisParamNumerical("FinalSlopePercent", params[headstage])
 
-		sprintf msg, "Failure as we did not reach the required fI slope (target: %g%% reached: %s%%)", finalSlopePercent, fISlopeStr
+		if(IsFinite(finalSlopePercent))
+			// Supra
+			sprintf msg, "Failure as we did not reach the required fI slope (target: %g%% reached: %s%%)", finalSlopePercent, fISlopeStr
+		else
+			// Adaptive Suprathreshold
+			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS, query = 1)
+			WAVE initialFISlopeValid = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+			if(initialFISlopeValid[headstage])
+				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_SLOPE, query = 1)
+				WAVE maxSlopeLBN = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				slopePercentage = AFH_GetAnalysisParamNumerical("SlopePercentage", params[headstage])
+				fISlope[p]      = maxSlopeLBN[headstage] * (1 - (slopePercentage * PERCENT_TO_ONE))
+				fISlopeStr      = RemoveEnding(NumericWaveToList(fISlope, "%, ", format = "%.15g"), "%, ")
+				sprintf msg, "The fit slope was not small enough for the given slope percentage (target: %g%% reached: %s%%)", slopePercentage, fISlopeStr
+			endif
+		endif
+
 		return msg
 	endif
 
@@ -726,7 +788,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 	string key, msg, str
 	string text = ""
 	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass, accessRestPass, resistanceRatio
-	variable avgCheckPass, stopReason, stimsetQC, baselineQC
+	variable avgCheckPass, stopReason, stimsetQC, baselineQC, enoughFIPointsQC
 	string perSweepFailedMessage = ""
 
 	if(!ParamIsDefault(numRequiredPasses))
@@ -854,6 +916,23 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 					sprintf text, "Sweep %d failed: Limited resolution", sweepNo
 					break
 				endif
+
+				key              = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS, query = 1)
+				enoughFIPointsQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				if(IsFinite(enoughFIPointsQC) && !enoughFIPointsQC)
+					sprintf text, "Sweep %d failed: Not enough points for fit", sweepNo
+					break
+				endif
+
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS, query = 1)
+				WAVE/Z validFitSlope = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				if(WaveExists(validFitSlope) && !validFitSlope[headstage])
+					sprintf text, "Sweep %d failed: Invalid fit slope", sweepNo
+					break
+				endif
+
 				break
 			case PSQ_PIPETTE_BATH:
 				[baselineQC, msg] = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)

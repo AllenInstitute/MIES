@@ -8,5 +8,9 @@ Constant PSQ_TEST_HEADSTAGE = 0
 #else
 Constant PSQ_TEST_HEADSTAGE = 2
 #endif
-StrConstant ZSTD_SUFFIX   = ".zst"
-Constant    TP_DURATION_S = 5
+
+StrConstant ZSTD_SUFFIX = ".zst"
+
+Constant TP_DURATION_S = 5
+
+Constant PSQ_TEST_VERY_LARGE_FREQUENCY = 1e300

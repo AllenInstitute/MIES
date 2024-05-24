@@ -38,7 +38,7 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 72
+Constant LABNOTEBOOK_VERSION = 73
 Constant RESULTS_VERSION     = 2
 /// @}
 
@@ -47,7 +47,7 @@ Constant RESULTS_VERSION     = 2
 Constant PSQ_PIPETTE_BATH_VERSION    = 4
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 2
 Constant PSQ_CHIRP_VERSION           = 13
-Constant PSQ_DA_SCALE_VERSION        = 6
+Constant PSQ_DA_SCALE_VERSION        = 7
 Constant PSQ_RAMP_VERSION            = 6
 Constant PSQ_RHEOBASE_VERSION        = 5
 Constant PSQ_SQUARE_PULSE_VERSION    = 4
@@ -1054,6 +1054,7 @@ Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT = 31
 
 StrConstant LABNOTEBOOK_NO_TOLERANCE = "-"
 StrConstant LABNOTEBOOK_BINARY_UNIT  = "On/Off"
+StrConstant LABNOTEBOOK_NO_UNIT      = ""
 
 /// `Key` prefix for runtime added labnotebooks by ED_AddEntryToLabnotebook()
 StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
@@ -1131,64 +1132,78 @@ StrConstant PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER = "^U_BLS[[:digit:]]+$"
 ///
 /// @anchor PatchSeqLabnotebookFormatStrings
 /// @{
-StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC             = "%s DAScale exceeded"
-StrConstant PSQ_FMT_LBN_STEPSIZE                   = "%s step size"
-StrConstant PSQ_FMT_LBN_STEPSIZE_FUTURE            = "%s step size (fut.)"
-StrConstant PSQ_FMT_LBN_SPIKE_DETECT               = "%s spike detected"
-StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS            = "%s spike positions"
-StrConstant PSQ_FMT_LBN_SPIKE_COUNT                = "%s spike count"
-StrConstant PSQ_FMT_LBN_FINAL_SCALE                = "%s final DAScale"
-StrConstant PSQ_FMT_LBN_INITIAL_SCALE              = "%s initial DAScale"
-StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS             = "%s Chk%d S-RMS QC"
-StrConstant PSQ_FMT_LBN_RMS_SHORT_THRESHOLD        = "%s S-RMS Threshold"
-StrConstant PSQ_FMT_LBN_RMS_LONG_PASS              = "%s Chk%d L-RMS QC"
-StrConstant PSQ_FMT_LBN_RMS_LONG_THRESHOLD         = "%s L-RMS Threshold"
-StrConstant PSQ_FMT_LBN_TARGETV                    = "%s Chk%d T-V BL"
-StrConstant PSQ_FMT_LBN_TARGETV_THRESHOLD          = "%s T-V Threshold"
-StrConstant PSQ_FMT_LBN_TARGETV_PASS               = "%s Chk%d T-V BL QC"
-StrConstant PSQ_FMT_LBN_LEAKCUR                    = "%s Chk%d Leak Current BL"
-StrConstant PSQ_FMT_LBN_LEAKCUR_PASS               = "%s Chk%d Leak Current BL QC"
-StrConstant PSQ_FMT_LBN_CHUNK_PASS                 = "%s Chk%d BL QC"
-StrConstant PSQ_FMT_LBN_BL_QC_PASS                 = "%s BL QC"
-StrConstant PSQ_FMT_LBN_SWEEP_PASS                 = "%s Sweep QC"
-StrConstant PSQ_FMT_LBN_SET_PASS                   = "%s Set QC"
-StrConstant PSQ_FMT_LBN_SAMPLING_PASS              = "%s Sampling interval QC"
-StrConstant PSQ_FMT_LBN_PULSE_DUR                  = "%s Pulse duration"
-StrConstant PSQ_FMT_LBN_SPIKE_DASCALE_ZERO         = "%s spike with zero"
-StrConstant PSQ_FMT_LBN_RB_LIMITED_RES             = "%s limited resolut."
-StrConstant PSQ_FMT_LBN_DA_fI_SLOPE                = "%s f-I slope"
-StrConstant PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS   = "%s f-I slope QC"
-StrConstant PSQ_FMT_LBN_DA_OPMODE                  = "%s operation mode"
-StrConstant PSQ_FMT_LBN_CR_RESISTANCE              = "%s input resistance"
-StrConstant PSQ_FMT_LBN_CR_INSIDE_BOUNDS           = "%s inside bounds"
-StrConstant PSQ_FMT_LBN_CR_BOUNDS_ACTION           = "%s bounds action"
-StrConstant PSQ_FMT_LBN_CR_CYCLES                  = "%s cycle x values"
-StrConstant PSQ_FMT_LBN_CR_BOUNDS_STATE            = "%s bounds state"
-StrConstant PSQ_FMT_LBN_CR_SPIKE_CHECK             = "%s spike check"
-StrConstant PSQ_FMT_LBN_CR_INIT_UOD                = "%s initial user onset delay"
-StrConstant PSQ_FMT_LBN_CR_INIT_LPF                = "%s initial low pass filter"
-StrConstant PSQ_FMT_LBN_CR_STIMSET_QC              = "%s stimset QC"
-StrConstant PSQ_FMT_LBN_SPIKE_PASS                 = "%s spike QC"
-StrConstant PSQ_FMT_LBN_PB_RESISTANCE              = "%s pipette resistance"
-StrConstant PSQ_FMT_LBN_PB_RESISTANCE_PASS         = "%s pipette resistance QC"
-StrConstant PSQ_FMT_LBN_SE_RESISTANCE_A            = "%s seal resistance A"
-StrConstant PSQ_FMT_LBN_SE_RESISTANCE_B            = "%s seal resistance B"
-StrConstant PSQ_FMT_LBN_SE_RESISTANCE_MAX          = "%s seal resistance max"
-StrConstant PSQ_FMT_LBN_SE_RESISTANCE_PASS         = "%s seal resistance QC"
-StrConstant PSQ_FMT_LBN_SE_TESTPULSE_GROUP         = "%s test pulse group"
-StrConstant PSQ_FMT_LBN_AVERAGEV                   = "%s Chk%d Average"
-StrConstant PSQ_FMT_LBN_VM_FULL_AVG                = "%s Full Average"
-StrConstant PSQ_FMT_LBN_VM_FULL_AVG_ADIFF          = "%s Full Average absolute difference"
-StrConstant PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS     = "%s Full Average absolute difference QC"
-StrConstant PSQ_FMT_LBN_VM_FULL_AVG_RDIFF          = "%s Full Average relative difference"
-StrConstant PSQ_FMT_LBN_VM_FULL_AVG_RDIFF_PASS     = "%s Full Average relative difference QC"
-StrConstant PSQ_FMT_LBN_VM_FULL_AVG_PASS           = "%s Full Average QC"
-StrConstant PSQ_FMT_LBN_AR_ACCESS_RESISTANCE       = "%s access resistance"
-StrConstant PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS  = "%s access resistance QC"
-StrConstant PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE = "%s steady state resistance"
-StrConstant PSQ_FMT_LBN_AR_RESISTANCE_RATIO        = "%s access vs steady state ratio"
-StrConstant PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS   = "%s access vs steady state ratio QC"
-StrConstant PSQ_FMT_LBN_ASYNC_PASS                 = "%s async QC"
+StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC              = "%s DAScale exceeded"
+StrConstant PSQ_FMT_LBN_STEPSIZE                    = "%s step size"
+StrConstant PSQ_FMT_LBN_STEPSIZE_FUTURE             = "%s step size (fut.)"
+StrConstant PSQ_FMT_LBN_SPIKE_DETECT                = "%s spike detected"
+StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS             = "%s spike positions"
+StrConstant PSQ_FMT_LBN_SPIKE_COUNT                 = "%s spike count"
+StrConstant PSQ_FMT_LBN_FINAL_SCALE                 = "%s final DAScale"
+StrConstant PSQ_FMT_LBN_INITIAL_SCALE               = "%s initial DAScale"
+StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS              = "%s Chk%d S-RMS QC"
+StrConstant PSQ_FMT_LBN_RMS_SHORT_THRESHOLD         = "%s S-RMS Threshold"
+StrConstant PSQ_FMT_LBN_RMS_LONG_PASS               = "%s Chk%d L-RMS QC"
+StrConstant PSQ_FMT_LBN_RMS_LONG_THRESHOLD          = "%s L-RMS Threshold"
+StrConstant PSQ_FMT_LBN_TARGETV                     = "%s Chk%d T-V BL"
+StrConstant PSQ_FMT_LBN_TARGETV_THRESHOLD           = "%s T-V Threshold"
+StrConstant PSQ_FMT_LBN_TARGETV_PASS                = "%s Chk%d T-V BL QC"
+StrConstant PSQ_FMT_LBN_LEAKCUR                     = "%s Chk%d Leak Current BL"
+StrConstant PSQ_FMT_LBN_LEAKCUR_PASS                = "%s Chk%d Leak Current BL QC"
+StrConstant PSQ_FMT_LBN_CHUNK_PASS                  = "%s Chk%d BL QC"
+StrConstant PSQ_FMT_LBN_BL_QC_PASS                  = "%s BL QC"
+StrConstant PSQ_FMT_LBN_SWEEP_PASS                  = "%s Sweep QC"
+StrConstant PSQ_FMT_LBN_SET_PASS                    = "%s Set QC"
+StrConstant PSQ_FMT_LBN_SAMPLING_PASS               = "%s Sampling interval QC"
+StrConstant PSQ_FMT_LBN_PULSE_DUR                   = "%s Pulse duration"
+StrConstant PSQ_FMT_LBN_SPIKE_DASCALE_ZERO          = "%s spike with zero"
+StrConstant PSQ_FMT_LBN_RB_LIMITED_RES              = "%s limited resolut."
+StrConstant PSQ_FMT_LBN_DA_FI_SLOPE                 = "%s f-I slope"
+StrConstant PSQ_FMT_LBN_DA_AT_FI_OFFSET             = "%s f-I offset"
+StrConstant PSQ_FMT_LBN_DA_FI_SLOPE_REACHED_PASS    = "%s f-I slope QC"
+StrConstant PSQ_FMT_LBN_DA_OPMODE                   = "%s operation mode"
+StrConstant PSQ_FMT_LBN_DA_AT_FREQ                  = "%s AP frequency"
+StrConstant PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA         = "%s AP frequency from rheobase, supra"
+StrConstant PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM      = "%s Min. norm. DAScale step"
+StrConstant PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM      = "%s Max. norm. DAScale step"
+StrConstant PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA      = "%s DAScale from rheobase, supra"
+StrConstant PSQ_FMT_LBN_DA_AT_FI_SLOPES             = "%s f-I slopes from rheobase, supra"
+StrConstant PSQ_FMT_LBN_DA_AT_FI_OFFSETS            = "%s f-I offsets from rheobase, supra"
+StrConstant PSQ_FMT_LBN_DA_AT_MAX_SLOPE             = "%s f-I maximum slope"
+StrConstant PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS      = "%s f-I slope valid QC"
+StrConstant PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS = "%s f-I initial slope valid from rheobase, supra QC"
+StrConstant PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS = "%s enough f-I pairs for line fit QC"
+StrConstant PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES       = "%s DAScale values left"
+StrConstant PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS  = "%s DAScale values left QC"
+StrConstant PSQ_FMT_LBN_CR_RESISTANCE               = "%s input resistance"
+StrConstant PSQ_FMT_LBN_CR_INSIDE_BOUNDS            = "%s inside bounds"
+StrConstant PSQ_FMT_LBN_CR_BOUNDS_ACTION            = "%s bounds action"
+StrConstant PSQ_FMT_LBN_CR_CYCLES                   = "%s cycle x values"
+StrConstant PSQ_FMT_LBN_CR_BOUNDS_STATE             = "%s bounds state"
+StrConstant PSQ_FMT_LBN_CR_SPIKE_CHECK              = "%s spike check"
+StrConstant PSQ_FMT_LBN_CR_INIT_UOD                 = "%s initial user onset delay"
+StrConstant PSQ_FMT_LBN_CR_INIT_LPF                 = "%s initial low pass filter"
+StrConstant PSQ_FMT_LBN_CR_STIMSET_QC               = "%s stimset QC"
+StrConstant PSQ_FMT_LBN_SPIKE_PASS                  = "%s spike QC"
+StrConstant PSQ_FMT_LBN_PB_RESISTANCE               = "%s pipette resistance"
+StrConstant PSQ_FMT_LBN_PB_RESISTANCE_PASS          = "%s pipette resistance QC"
+StrConstant PSQ_FMT_LBN_SE_RESISTANCE_A             = "%s seal resistance A"
+StrConstant PSQ_FMT_LBN_SE_RESISTANCE_B             = "%s seal resistance B"
+StrConstant PSQ_FMT_LBN_SE_RESISTANCE_MAX           = "%s seal resistance max"
+StrConstant PSQ_FMT_LBN_SE_RESISTANCE_PASS          = "%s seal resistance QC"
+StrConstant PSQ_FMT_LBN_SE_TESTPULSE_GROUP          = "%s test pulse group"
+StrConstant PSQ_FMT_LBN_AVERAGEV                    = "%s Chk%d Average"
+StrConstant PSQ_FMT_LBN_VM_FULL_AVG                 = "%s Full Average"
+StrConstant PSQ_FMT_LBN_VM_FULL_AVG_ADIFF           = "%s Full Average absolute difference"
+StrConstant PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS      = "%s Full Average absolute difference QC"
+StrConstant PSQ_FMT_LBN_VM_FULL_AVG_RDIFF           = "%s Full Average relative difference"
+StrConstant PSQ_FMT_LBN_VM_FULL_AVG_RDIFF_PASS      = "%s Full Average relative difference QC"
+StrConstant PSQ_FMT_LBN_VM_FULL_AVG_PASS            = "%s Full Average QC"
+StrConstant PSQ_FMT_LBN_AR_ACCESS_RESISTANCE        = "%s access resistance"
+StrConstant PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS   = "%s access resistance QC"
+StrConstant PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE  = "%s steady state resistance"
+StrConstant PSQ_FMT_LBN_AR_RESISTANCE_RATIO         = "%s access vs steady state ratio"
+StrConstant PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS    = "%s access vs steady state ratio QC"
+StrConstant PSQ_FMT_LBN_ASYNC_PASS                  = "%s async QC"
 /// @}
 
 StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
@@ -1262,9 +1277,11 @@ StrConstant PSQ_RB_FINALSCALE_FAKE_KEY  = "PSQRheobaseFinalDAScaleFake"
 
 /// @name PatchSeq DAScale
 /// @{
-Constant    PSQ_DS_OFFSETSCALE_FAKE = 23      // pA
+Constant    PSQ_DS_OFFSETSCALE_FAKE = 23              // pA
 StrConstant PSQ_DS_SUB              = "Sub"
 StrConstant PSQ_DS_SUPRA            = "Supra"
+StrConstant PSQ_DS_ADAPT            = "AdaptiveSupra"
+Constant    PSQ_DS_MAX_FREQ_OFFSET  = 2
 /// @}
 
 /// @name PatchSeq Ramp
