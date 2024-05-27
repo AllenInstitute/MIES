@@ -786,8 +786,8 @@ End
 static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string jsonPath])
 
 	string opName, str
-	variable JSONType, numArrObjElems, arrayElemJSONType, effectiveArrayDimCount, dim
-	variable colSize, layerSize, chunkSize, arrOrObjAtIndex, operationsWithScalarResultCount
+	variable i, size, JSONType, arrayElemJSONType, effectiveArrayDimCount, dim
+	variable colSize, layerSize, chunkSize, operationsWithScalarResultCount
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
@@ -828,38 +828,44 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		FindValue/V=(JSON_NULL) types
 		SFH_ASSERT(!(V_Value >= 0), "Encountered null element in array.", jsonId = jsonId)
 
-		WAVE/T/Z outT = JSON_GetTextWave(jsonID, jsonPath, ignoreErr = 1)
-		WAVE/Z   out  = JSON_GetWave(jsonID, jsonPath, waveMode = 0, ignoreErr = 1)
-		SFH_ASSERT(WaveExists(out) || WaveExists(outT), "Mixed types in array not supported.")
-
-		// Increase dimensionality of data to 4D
 		Redimension/N=(MAX_DIMENSION_COUNT) topArraySize
 		topArraySize[] = topArraySize[p] != 0 ? topArraySize[p] : 1
-		if(WaveExists(out))
-			Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 out
-		endif
-		if(WaveExists(outT))
-			Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 outT
-		endif
 
-		// Get indices of Objects and Arrays on current level
-		EXTRACT/FREE/INDX types, arrOrObjAt, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY)
-		numArrObjElems = DimSize(arrOrObjAt, ROWS)
 		Make/FREE/D/N=0 indicesOfOperationsWithScalarResult
-		// Iterate over all subarrays and objects on current level
-		for(index : arrOrObjAt)
-			WAVE subArray = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, "ExecutorSubArrayEvaluation", index, checkExist = 1)
-			SFH_ASSERT(numpnts(subArray), "Encountered subArray with zero size.")
-			// Type check, decide on type
-			if(IsNumericWave(subArray))
-				WAVE/T/Z outT = $""
-			endif
-			if(IsTextWave(subArray))
-				WAVE/Z out       = $""
-				WAVE/T subArrayT = subArray
-			endif
-			SFH_ASSERT(WaveExists(out) || WaveExists(outT), "Mixed types in array not supported.")
+		WAVE/ZZ   out
+		WAVE/T/ZZ outT
 
+		// Get indices of Objects, Arrays and Strings on current level
+		EXTRACT/FREE/INDX types, arrElemAt, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY) || (types[p] == JSON_STRING) || (types[p] == JSON_NUMERIC)
+		// Iterate over all subarrays and objects on current level
+		for(index : arrElemAt)
+			WAVE/WAVE genericElement = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, index)
+			if(DimSize(genericElement, ROWS) == 1)
+				// single dataset
+				WAVE/Z subArray = genericElement[0]
+				SFH_ASSERT(WaveExists(subArray), "no data in array element")
+				if(IsTextWave(subArray))
+					WAVE/Z numericalAttempt = SF_ConvertNonFiniteElements(subArray)
+					if(WaveExists(numericalAttempt))
+						WAVE subArray = numericalAttempt
+						[out, outT] = SF_ExecutorCreateOrCheckNumeric(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
+					else
+						[out, outT] = SF_ExecutorCreateOrCheckTextual(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
+					endif
+				elseif(IsNumericWave(subArray))
+					[out, outT] = SF_ExecutorCreateOrCheckNumeric(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
+				else
+					[out, outT] = SF_ExecutorCreateOrCheckTextual(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
+					WAVE subArrayWrapped = SFH_GetOutputForExecutor(subArray, graph, "WrappedArrayElement")
+					WAVE subArray        = subArrayWrapped
+				endif
+			else
+				// multi dataset
+				[out, outT] = SF_ExecutorCreateOrCheckTextual(out, outT, topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])
+				WAVE subArray = SFH_GetOutputForExecutor(genericElement, graph, "WrappedArrayElement")
+			endif
+
+			SFH_ASSERT(numpnts(subArray), "Encountered subArray with zero size.")
 			SFH_ASSERT(WaveDims(subArray) < MAX_DIMENSION_COUNT, "Encountered 4d sub array at " + jsonPath)
 
 			// Promote WaveNote with meta data if topArray is 1 point.
@@ -871,9 +877,15 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 				Note/K outT, note(subArray)
 			endif
 
-			// subArray will be inserted into the current array, thus the dimension will be WaveDims(subArray) + 1
-			// Thus, [1, [2]] returns the correct wave of size (2, 1) with {{1, 2}}.
-			effectiveArrayDimCount = max(effectiveArrayDimCount, WaveDims(subArray) + 1)
+			// do expand array dimensionality if
+			// - original source was a array
+			// - original source was not: a string that resolved to a scalar datum (the source string can refer to a variable that was resolved)
+			// - original source was not: a object (aka operation) that resolved to a scalar datum
+			if(types[index] == JSON_ARRAY || !((types[index] == JSON_STRING || types[index] == JSON_OBJECT || types[index] == JSON_NUMERIC) && WaveDims(subArray) == 1 && numpnts(subArray) == 1))
+				// subArray will be inserted into the current array, thus the dimension will be WaveDims(subArray) + 1
+				// Thus, [1, [2]] returns the correct wave of size (2, 1) with {{1, 2}}.
+				effectiveArrayDimCount = max(effectiveArrayDimCount, WaveDims(subArray) + 1)
+			endif
 
 			// If the whole JSON array consists of STRING or NUMERIC types then topArraySize already is of the correct size.
 			// If we encounter an Object aka operation it could return an array that is larger than a single element,
@@ -897,8 +909,11 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 					Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3]) outT
 				endif
 			endif
-			SF_PlaceSubArrayAt(out, subArray, index)
-			SF_PlaceSubArrayAt(outT, subArrayT, index)
+			if(WaveExists(out))
+				SF_PlaceSubArrayAt(out, subArray, index)
+			else
+				SF_PlaceSubArrayAt(outT, subArray, index)
+			endif
 
 			// Save indices of operation/subArray evaluations that returned scalar results
 			if(numpnts(subArray) == 1)
@@ -906,7 +921,6 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 				indicesOfOperationsWithScalarResult[operationsWithScalarResultCount] = index
 				operationsWithScalarResultCount                                     += 1
 			endif
-			arrOrObjAtIndex += 1
 		endfor
 		Redimension/N=(operationsWithScalarResultCount) indicesOfOperationsWithScalarResult
 
@@ -5560,4 +5574,50 @@ Function/WAVE SF_OperationFitImpl(WAVE xData, WAVE yData, string fitFunc, WAVE h
 	JWN_SetNumberInWaveNote(fit, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
 
 	return fit
+End
+
+static Function/WAVE SF_ConvertNonFiniteElements(WAVE/T subArray)
+
+	Make/FREE/D/N=(DimSize(subArray, ROWS), DimSize(subArray, COLS), DimSize(subArray, LAYERS), DimSize(subArray, CHUNKS)) convert
+	MultiThread convert[][][][] = SF_ConvertNonFiniteElementsImpl(subArray[p][q][r][s])
+	if(HasOneFiniteEntry(convert))
+		return $""
+	endif
+
+	return convert
+End
+
+threadsafe static Function SF_ConvertNonFiniteElementsImpl(string element)
+
+	if(!CmpStr(element, "inf"))
+		return Inf
+	elseif(!CmpStr(element, "-inf"))
+		return -Inf
+	elseif(!CmpStr(element, "NaN"))
+		return NaN
+	elseif(!CmpStr(element, "-NaN"))
+		return NaN
+	endif
+
+	return 0
+End
+
+static Function [WAVE outNum, WAVE/T outText] SF_ExecutorCreateOrCheckNumeric(WAVE/D/Z out, WAVE/T/Z outT, variable size0, variable size1, variable size2, variable size3)
+
+	SFH_ASSERT(!WaveExists(outT), "mixed array types")
+	if(!WaveExists(out))
+		Make/FREE/D/N=(size0, size1, size2, size3) out
+	endif
+
+	return [out, outT]
+End
+
+static Function [WAVE outNum, WAVE/T outText] SF_ExecutorCreateOrCheckTextual(WAVE/Z out, WAVE/T/Z outT, variable size0, variable size1, variable size2, variable size3)
+
+	SFH_ASSERT(!WaveExists(out), "mixed array types")
+	if(!WaveExists(outT))
+		Make/FREE/T/N=(size0, size1, size2, size3) outT
+	endif
+
+	return [out, outT]
 End
