@@ -1745,6 +1745,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				if(!WaveExists(wvResultY))
 					continue
 				endif
+				if(JWN_GetNumberFromWaveNote(wvResultY, SF_META_DONOTPLOT) == 1)
+					continue
+				endif
 
 				SFH_ASSERT(!(IsTextWave(wvResultY) && WaveDims(wvResultY) > 1), "Plotter got 2d+ text wave as y data.")
 
@@ -4792,6 +4795,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 	if(WaveExists(selectResult))
 		JWN_SetStringInWaveNote(selectResult, SF_META_DATATYPE, SF_DATATYPE_SELECT)
 	endif
+	JWN_SetNumberInWaveNote(filter.ranges, SF_META_DONOTPLOT, 1)
 	output[0] = selectResult
 	output[1] = filter.ranges
 
