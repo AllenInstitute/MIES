@@ -4837,6 +4837,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 	JWN_SetStringInWaveNote(filter.ranges, SF_META_DATATYPE, SF_DATATYPE_SELECTRANGE)
 	if(WaveExists(selectResult))
 		JWN_SetStringInWaveNote(selectResult, SF_META_DATATYPE, SF_DATATYPE_SELECT)
+		JWN_SetStringInWaveNote(output, SF_META_CUSTOM_LEGEND, SFH_CreateLegendFromRanges(selectResult, filter.ranges))
 	endif
 	JWN_SetNumberInWaveNote(filter.ranges, SF_META_DONOTPLOT, 1)
 
