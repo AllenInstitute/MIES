@@ -2059,6 +2059,7 @@ StrConstant SF_META_TRACECOLOR           = "/TraceColor"         // numeric wave
 StrConstant SF_META_LINESTYLE            = "/LineStyle"          // number
 StrConstant SF_META_TRACE_MODE           = "/TraceMode"          // number
 StrConstant SF_META_TRACETOFRONT         = "/TraceToFront"       // number, boolean, defaults to false (0)
+StrConstant SF_META_DONOTPLOT            = "/DoNotPlot"          // number, boolean, defaults to false (0)
 
 StrConstant SF_META_USER_GROUP = "/User/" // custom metadata for individual operations,
 // top-level group with individual entries
