@@ -1762,3 +1762,45 @@ static Function [variable type, variable waMode, variable headstage] SFH_GetAnal
 
 	return [type, waMode, headstage]
 End
+
+Function/S SFH_CreateLegendFromRanges(WAVE selectData, WAVE/WAVE ranges)
+
+	variable i, prefixPerSelect
+	string prefix    = ""
+	string legendStr = ""
+
+	if(!DimSize(ranges, ROWS))
+		return ""
+	elseif(DimSize(ranges, ROWS) == 1)
+		prefix = "All sweeps "
+	elseif(DimSize(ranges, ROWS) == DimSize(selectData, ROWS))
+		prefixPerSelect = 1
+	else
+		SFH_ASSERT(0, "selectData != ranges row number")
+	endif
+	WAVE fullRange = SFH_GetFullRange()
+
+	for(WAVE range : ranges)
+		if(!WaveExists(range))
+			continue
+		endif
+		if(prefixPerSelect)
+			sprintf prefix, "%d %s%d ", selectData[i][%SWEEP], ChannelTypeToString(selectData[i][%CHANNELTYPE]), selectData[i][%CHANNELNUMBER]
+			i += 1
+		endif
+		if(IsNumericWave(range))
+			if(EqualWaves(range, fullRange, EQWAVES_DATA))
+				sprintf legendStr, "%s\r%sfull range", legendStr, prefix
+				continue
+			endif
+			sprintf legendStr, "%s\r%s%.3f - %.3f ms", legendStr, prefix, range[0], range[1]
+		elseif(IsTextWave(range))
+			sprintf legendStr, "%s\r%sepoch %s", legendStr, prefix, WaveText(range, row = 0)
+		else
+			SFH_ASSERT(0, "Unsupported range format")
+		endif
+	endfor
+	legendStr = ReplaceString("\r", legendStr, "Ranges:\r", 1, 1)
+
+	return legendStr
+End
