@@ -360,9 +360,6 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	SFH_ASSERT(state != SF_STATE_ARRAYELEMENT, "Expected value after \",\"", jsonId = jsonId)
 
 	if(!ParamIsDefault(createdArray))
-		if(createdArrayLocal)
-			ASSERT(JSON_GetType(jsonID, "") == JSON_ARRAY, "SF Parser Error: Expected Array")
-		endif
 		createdArray = createdArrayLocal
 	endif
 

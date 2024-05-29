@@ -4453,3 +4453,44 @@ static Function CheckMixingNonFiniteAndText()
 	WAVE/T array = output[0]
 	CHECK_EQUAL_WAVES(array, {Inf, -Inf, NaN, NaN}, mode = WAVE_DATA)
 End
+
+static Function CheckAddArraysInArray()
+
+	string win, device, code
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	code = "[[1, 2] + [3, 4] + 1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	Make/FREE ref = {{5}, {7}}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA)
+
+	code = "[sweeps() + [3, 4] + 1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	Make/FREE ref = {{4}, {5}}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA)
+
+	code = "[[dataset(dataset(1) + [3, 4] + 1) + dataset(2) + [5, 6] + 1, dataset(3)] + dataset(4) + [[5, 6],[7,8]] + 1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE arrayNum = output[0]
+	Make/FREE ref = {{{23}, {15}}, {{26}, {16}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+
+	code = "var1 = dataset(0)\r[[dataset($var1 + [3, 4] + 1) + $var1 + [5, 6] + 1, $var1] + $var1 + [[5, 6],[7,8]] + 1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE arrayNum = output[0]
+	Make/FREE ref = {{{16}, {8}}, {{19}, {9}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+End
