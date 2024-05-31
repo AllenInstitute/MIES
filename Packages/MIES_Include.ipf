@@ -149,6 +149,10 @@ End
 // NWB for Igor Pro
 #include "IPNWB_Include"
 
+#if exists("SutterDAQScanWave")
+#include "IPA_Control"
+#endif
+
 // ZeroMQ procedures
 #include "ZeroMQ_Interop"
 
