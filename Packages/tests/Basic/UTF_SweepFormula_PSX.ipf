@@ -855,7 +855,7 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	input[%outOfRange]       = "0"
 
 	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {10, 0, 0, 0, NaN, NaN})
+	JWN_SetWaveInWaveNote(input, "/0/results", {10, NaN, 0, 0, NaN, NaN})
 	JWN_SetWaveInWaveNote(input, "/0/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
 	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT, \
 	                                           PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
