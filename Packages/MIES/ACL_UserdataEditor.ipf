@@ -1,5 +1,5 @@
 #pragma rtGlobals=1		// Use modern global access method.
-#pragma version = 1.0.0.0
+#pragma version = 1.0
 #pragma IgorVersion = 6		// requires Igor 6 or later
 #pragma IndependentModule=ACL_UserDataEditor
 // ********************
