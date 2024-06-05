@@ -64,6 +64,7 @@ static Constant PSX_NUM_PEAKS_MAX = 2000
 static Constant PSX_PLOT_DEFAULT_X_RANGE = 200
 
 static Constant PSX_DEFAULT_X_START_OFFSET = 2
+static Constant PSX_DEFAULT_RANGE_FACTOR   = 3
 
 static StrConstant USER_DATA_KEYBOARD_DIR = "keyboard_direction"
 
@@ -631,17 +632,23 @@ End
 /// @brief Return the x-axis range useful for displaying and extracting a single event
 static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psxEvent, variable index)
 
-	variable numEvents
+	variable numEvents, offset
 
 	numEvents = DimSize(psxEvent, ROWS)
 
 	index = limit(index, 0, numEvents - 1)
 
+	offset = PSX_DEFAULT_RANGE_FACTOR * psxEvent[index][%tau]
+
+	if(IsNaN(offset))
+		offset = PSX_DEFAULT_X_START_OFFSET
+	endif
+
 	if(index == numEvents - 1)
-		first = psxEvent[index][%peak_t] - PSX_DEFAULT_X_START_OFFSET
-		last  = psxEvent[index][%post_min_t] + PSX_DEFAULT_X_START_OFFSET
+		first = psxEvent[index][%peak_t] - offset
+		last  = psxEvent[index][%post_min_t] + offset
 	else
-		first = psxEvent[index][%peak_t] - PSX_DEFAULT_X_START_OFFSET
+		first = psxEvent[index][%peak_t] - offset
 		last  = psxEvent[index + 1][%peak_t] - 0.5
 	endif
 
