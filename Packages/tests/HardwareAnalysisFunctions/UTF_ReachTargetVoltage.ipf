@@ -57,8 +57,7 @@ static Function RTV_Works_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 2)
 
-	WAVE/Z deltaI, deltaV, resistance, resistanceErr, autobiasFromDialog
-	[deltaI, deltaV, resistance, resistanceErr, autobiasFromDialog] = GetLBNEntries_IGNORE(str, sweepNo)
+	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog] = GetLBNEntries_IGNORE(str, sweepNo)
 
 	CHECK_WAVE(deltaI, NUMERIC_WAVE)
 	CHECK_WAVE(deltaV, NUMERIC_WAVE)
@@ -92,8 +91,7 @@ static Function RTV_WorksWithIndexing_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 3)
 
-	WAVE/Z deltaI, deltaV, resistance, resistanceErr, autobiasFromDialog
-	[deltaI, deltaV, resistance, resistanceErr, autobiasFromDialog] = GetLBNEntries_IGNORE(str, 0)
+	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog] = GetLBNEntries_IGNORE(str, 0)
 
 	CHECK_WAVE(deltaI, NUMERIC_WAVE)
 	CHECK_WAVE(deltaV, NUMERIC_WAVE)

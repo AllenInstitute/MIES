@@ -419,8 +419,7 @@ static Function [WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] PSX_Analysi
 
 	WAVE sweepDataFilt = PSX_FilterSweepData(sweepData, sweepFilterLow, sweepFilterHigh)
 
-	WAVE/ZZ sweepDataFiltOff
-	[sweepDataFiltOff, offset] = PSX_OffsetSweepData(sweepDataFilt)
+	[WAVE sweepDataFiltOff, offset] = PSX_OffsetSweepData(sweepDataFilt)
 
 	if(!WaveExists(sweepDataFiltOff))
 		return [$"", $""]
@@ -4452,8 +4451,7 @@ Function/WAVE PSX_OperationPrep(variable jsonId, string jsonPath, string graph)
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_PREP, 3)
 	SetDimensionLabels(output, "Histogram;Fit;Thresholds;", ROWS)
 
-	WAVE/Z hist, fit
-	[hist, fit, threshold, dataUnit] = PSX_CalculatePeakThreshold(results, numCombos, numSDs)
+	[WAVE hist, WAVE fit, threshold, dataUnit] = PSX_CalculatePeakThreshold(results, numCombos, numSDs)
 
 	Make/FREE=1/N=1 sdThresholdX, sdThresholdY
 
@@ -4495,8 +4493,7 @@ static Function [WAVE hist, WAVE fit, variable peakThresh, string dataUnit] PSX_
 
 	WAVE hist = PSX_CreateHistogramOfDeconvSweepData(sweepDataFiltOffDeconv)
 
-	WAVE/Z coef, fit
-	[coef, fit] = PSX_FitHistogram(hist)
+	[WAVE coef, WAVE fit] = PSX_FitHistogram(hist)
 
 	if(WaveExists(coef) && WaveExists(fit))
 		peakThresh = RoundNumber(coef[3] * numSDs, 3)

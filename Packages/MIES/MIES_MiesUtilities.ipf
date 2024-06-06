@@ -8159,8 +8159,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 
 		if(doFilter)
 			UploadLogFilesPrint(" -> Filtering", verbose)
-			WAVE/Z/T uploadData = $""
-			[uploadData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
+			[WAVE/T uploadData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
 			if(!WaveExists(uploadData))
 				UploadLogFilesPrint(" -> No new entries to upload here.\r", verbose)
 				continue

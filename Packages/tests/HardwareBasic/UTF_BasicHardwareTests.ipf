@@ -528,8 +528,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([str])
 			WAVE/T/Z stimWaveChecksums        = GetLastSetting(textualValues, j, "TTL Stim Wave Checksum", DATA_ACQUISITION_MODE)
 
 			WAVE/Z stimSetLengths = GetLastSetting(textualValues, j, "TTL Stim set length", DATA_ACQUISITION_MODE)
-			WAVE/Z settings       = $""
-			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "TTL Stim set length", 1, XOP_CHANNEL_TYPE_TTL, DATA_ACQUISITION_MODE)
+			[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "TTL Stim set length", 1, XOP_CHANNEL_TYPE_TTL, DATA_ACQUISITION_MODE)
 			CHECK_WAVE(settings, TEXT_WAVE)
 			CHECK_EQUAL_VAR(index, INDEP_HEADSTAGE)
 			WAVE/T settingsT = settings

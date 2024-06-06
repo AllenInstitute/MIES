@@ -349,8 +349,7 @@ Function ST_GetStimsetParameterAsVariable(string setName, string entry, [variabl
 		return NaN
 	endif
 
-	WAVE/Z wv
-	[wv, row, col, layer] = ST_GetStimsetParameterWaveIndexTuple(setName, entry, epochIndex)
+	[WAVE wv, row, col, layer] = ST_GetStimsetParameterWaveIndexTuple(setName, entry, epochIndex)
 
 	if(WaveExists(wv) && IsNumericWave(wv))
 		return wv[row][col][layer]
@@ -380,8 +379,7 @@ Function/S ST_GetStimsetParameterAsString(string setName, string entry, [variabl
 		return ""
 	endif
 
-	WAVE/Z wv
-	[wv, row, col, layer] = ST_GetStimsetParameterWaveIndexTuple(setName, entry, epochIndex)
+	[WAVE wv, row, col, layer] = ST_GetStimsetParameterWaveIndexTuple(setName, entry, epochIndex)
 
 	WAVE/T/Z wvText = wv
 
@@ -439,8 +437,7 @@ Function ST_SetStimsetParameter(string setName, string entry, [variable epochInd
 		return 1
 	endif
 
-	WAVE/Z wv
-	[wv, row, col, layer] = ST_GetStimsetParameterWaveIndexTuple(setName, entry, epochIndex)
+	[WAVE wv, row, col, layer] = ST_GetStimsetParameterWaveIndexTuple(setName, entry, epochIndex)
 
 	if(!WaveExists(wv))
 		return 1
