@@ -5710,7 +5710,7 @@ Function/DF GetTempPath()
 	return createDFWithAllParents(GetMiesPathAsString() + ":" + TRASH_FOLDER_PREFIX)
 End
 
-/// @brief Return a unique temporary folder below the MIES hierarchy, e.g. root:mies:trash_$digit.
+/// @brief Return a unique temporary folder below the MIES hierarchy, e.g. root:mies:trash$digit.
 ///
 /// As soon as you discard the latest reference to the folder it will
 /// be slated for removal at some point in the future.

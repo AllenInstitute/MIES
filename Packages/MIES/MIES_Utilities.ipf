@@ -1500,13 +1500,7 @@ threadsafe Function/DF UniqueDataFolder(dfr, baseName)
 
 	string path
 
-	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty")
-
 	path = UniqueDataFolderName(dfr, basename)
-
-	if(isEmpty(path))
-		return $""
-	endif
 
 	NewDataFolder $path
 	return $path
@@ -1515,38 +1509,14 @@ End
 /// @brief Return an absolute unique data folder name which does not exist in dfr
 ///
 /// @param dfr      datafolder to search
-/// @param baseName first part of the datafolder, must be a *valid* Igor Pro object name
-threadsafe Function/S UniqueDataFolderName(dfr, baseName)
-	DFREF  dfr
-	string baseName
-
-	variable index, numRuns
-	string basePath, path
+/// @param baseName first part of the datafolder
+threadsafe Function/S UniqueDataFolderName(DFREF dfr, string baseName)
 
 	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty")
 	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 	ASSERT_TS(!IsFreeDatafolder(dfr), "dfr can not be a free DF")
 
-	numRuns = 10000
-	// shorten basename so that we can attach some numbers
-	baseName = baseName[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - (ceil(log(numRuns)) + 1)]
-	baseName = CleanupName(baseName, 0)
-	basePath = GetDataFolder(1, dfr)
-	path     = basePath + baseName
-
-	do
-		if(!DataFolderExists(path))
-			return path
-		endif
-
-		path = basePath + baseName + "_" + num2istr(index)
-
-		index += 1
-	while(index < numRuns)
-
-	DEBUGPRINT_TS("Could not find a unique folder with trials:", var = numRuns)
-
-	return ""
+	return GetDataFolder(1, dfr) + CreateDataObjectName(dfr, basename, 11, 0, 0)
 End
 
 /// @brief Returns a wave name not used in the given datafolder
@@ -1554,36 +1524,13 @@ End
 /// Basically a datafolder aware version of UniqueName for datafolders
 ///
 /// @param dfr 	    datafolder reference where the new datafolder should be created
-/// @param baseName first part of the wave name, might be shorted due to Igor Pro limitations
-threadsafe Function/S UniqueWaveName(dfr, baseName)
-	DFREF  dfr
-	string baseName
-
-	variable index
-	string   name
-	string   path
+/// @param baseName first part of the wave name
+threadsafe Function/S UniqueWaveName(DFREF dfr, string baseName)
 
 	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty")
 	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 
-	// shorten basename so that we can attach some numbers
-	baseName = CleanupName(baseName[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 5], 0)
-	path     = GetDataFolder(1, dfr)
-	name     = baseName
-
-	do
-		if(!WaveExists($(path + name)))
-			return name
-		endif
-
-		name = baseName + "_" + num2istr(index)
-
-		index += 1
-	while(index < 10000)
-
-	DEBUGPRINT_TS("Could not find a unique folder with 10000 trials")
-
-	return ""
+	return CreateDataObjectName(dfr, basename, 1, 0, 0)
 End
 
 /// @brief Remove a prefix from a string
