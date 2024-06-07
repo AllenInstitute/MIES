@@ -1292,7 +1292,7 @@ End
 
 static Function MouseSelectionPSX()
 
-	string browser, device, code, psxPlot
+	string browser, device, code, psxPlot, win
 
 	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
@@ -1315,7 +1315,8 @@ static Function MouseSelectionPSX()
 
 	ExecuteSweepFormulaCode(browser, code)
 
-	psxPlot = "SweepFormula_plotDatabrowser_1_#Graph0"
+	win     = SFH_GetFormulaGraphForBrowser(browser)
+	psxPlot = MIES_PSX#PSX_GetPSXGraph(win)
 	REQUIRE(WindowExists(psxPlot))
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxPlot)
