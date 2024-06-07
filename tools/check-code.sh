@@ -171,7 +171,7 @@ fi
 
 # ripgrep checks
 
-files=$(git ls-files '*.ipf' '*.sh' '*.rst' '*.dot' '*.md' ':!:**/releasenotes_template.rst')
+files=$(git ls-files '*.ipf' '*.sh' '*.rst' '*.dot' '*.md' ':!:**/releasenotes_template.rst' ':^*/IPA_Control.ipf')
 
 # from https://til.simonwillison.net/bash/finding-bom-csv-files-with-ripgrep
 matches=$(rg ${rg_opts} --multiline --encoding none '^(?-u:\xEF\xBB\xBF)' ${files})

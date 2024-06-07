@@ -4,6 +4,7 @@ exclude: |
          (?x) # verbose re
          ( # start alternations
            # not our code
+           ^Packages/MIES/IPA_Control.ipf|
            ^tools/installer/nsis|
            ^tools/installer/Shelllink|
            ^tools/installer/AccessControl|
