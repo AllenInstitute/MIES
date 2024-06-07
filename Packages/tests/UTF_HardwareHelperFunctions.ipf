@@ -1100,8 +1100,8 @@ Function OpenDatabrowser()
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = 1)
 End
 
-Function EnsureMCCIsOpen()
-	AI_FindConnectedAmps()
+Function EnsureMCCIsOpen(string device)
+	AI_FindConnectedAmps(device)
 
 	WAVE ampMCC = GetAmplifierMultiClamps()
 	WAVE ampTel = GetAmplifierTelegraphServers()
@@ -1422,7 +1422,7 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 	variable i, activeHS
 
 	if(s.amp)
-		EnsureMCCIsOpen()
+		EnsureMCCIsOpen(device)
 	endif
 
 	FetchCustomizationFunctions(s)

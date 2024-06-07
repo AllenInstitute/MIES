@@ -330,7 +330,7 @@ End
 /// @brief Return a wave with `NUM_HEADSTAGES` rows with `1` where
 ///        the given headstages is active and in the given clamp mode.
 Function/WAVE DAG_GetActiveHeadstages(string device, variable clampMode)
-	AI_AssertOnInvalidClampMode(clampMode)
+	AI_AssertOnInvalidClampMode(device, clampMode)
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 	WAVE GUIState = GetDA_EphysGuiStateNum(device)
