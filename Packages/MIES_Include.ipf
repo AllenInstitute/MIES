@@ -1,4 +1,4 @@
-#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding="UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -36,10 +36,10 @@
 #ifdef TOO_OLD_IGOR
 
 Window OpenPanelWithDocumentationLink() : Panel
-	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(435,461,735,661) as "OpenPanelWithDocumentationLink"
-	Button button0,pos={38.00,14.00},size={223.00,89.00},proc=ButtonProc_OpenMiesDocuUpdateNightly,title="Open MIES documentation for\r update instructions"
-	Button button1,pos={51.00,133.00},size={195.00,29.00},proc=ButtonProc_DownloadNightly,title="Download Igor Pro nightly build"
+	PauseUpdate; Silent 1 // building window...
+	NewPanel/K=1/W=(435, 461, 735, 661) as "OpenPanelWithDocumentationLink"
+	Button button0, pos={38.00, 14.00}, size={223.00, 89.00}, proc=ButtonProc_OpenMiesDocuUpdateNightly, title="Open MIES documentation for\r update instructions"
+	Button button1, pos={51.00, 133.00}, size={195.00, 29.00}, proc=ButtonProc_DownloadNightly, title="Download Igor Pro nightly build"
 EndMacro
 
 Function ButtonProc_OpenMiesDocuUpdateNightly(ba) : ButtonControl
@@ -68,7 +68,7 @@ static Function/S GetDownloadLink()
 	ASSERT_TS(0, "Unsupported OS")
 #endif
 
-	text = ProcedureText("", 0, "MIES_Include.ipf")
+	text         = ProcedureText("", 0, "MIES_Include.ipf")
 	lineWithLink = GrepList(text, "\\Q|IgorPro" + igorMajorVersion + os + "Nightly|\\E", 0, "\r")
 	SplitString/E=".*<(.*)>.*" lineWithLink, url
 
@@ -83,9 +83,9 @@ static Function/S GetFileNameFromURL(string url)
 
 	variable pos
 
-	pos = strsearch(url, "/", inf, 1)
+	pos = strsearch(url, "/", Inf, 1)
 
-	return url[pos + 1, inf]
+	return url[pos + 1, Inf]
 End
 
 static Function/S GetDestinationIgorPath()
@@ -103,7 +103,7 @@ Function ButtonProc_DownloadNightly(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			url = GetDownloadLink()
+			url  = GetDownloadLink()
 			path = GetDestinationIgorPath()
 			printf "Please wait while we download %s.\r", url
 			filename = GetFileNameFromURL(url)
@@ -148,6 +148,10 @@ End
 
 // NWB for Igor Pro
 #include "IPNWB_Include"
+
+#if exists("SutterDAQScanWave")
+#include "IPA_Control"
+#endif
 
 // ZeroMQ procedures
 #include "ZeroMQ_Interop"

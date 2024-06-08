@@ -71,3 +71,4 @@ Packages/Conversion/**/*.ipf ipt
 Packages/MIES/*MIES*.ipf     ipt
 Packages/doc/**/*.ipf        ipt
 Packages/tests/**/*.ipf      ipt
+Packages/MIES_Include.ipf    ipt
