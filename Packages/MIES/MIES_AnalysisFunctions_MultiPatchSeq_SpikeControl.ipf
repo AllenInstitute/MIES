@@ -340,8 +340,7 @@ static Function SC_ProcessPulses(string device, variable sweepNo, variable minim
 
 	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
-	WAVE/T/Z spikeNumbersLBN, spikePositionsLBN
-	[spikeNumbersLBN, spikePositionsLBN] = SC_GetSpikeNumbersAndPositions(device, sweepNo)
+	[WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] = SC_GetSpikeNumbersAndPositions(device, sweepNo)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS)
 	ED_AddEntryToLabnotebook(device, key, spikeNumbersLBN)

@@ -335,9 +335,7 @@ Function CONF_AutoLoader([string customIPath])
 		Abort
 	endif
 
-	WAVE/T/Z mainFileList
-	WAVE/T/Z rigFileList
-	[rigFileList, mainFileList] = SplitTextWaveBySuffix(rawFileList, EXPCONFIG_RIGFILESUFFIX)
+	[WAVE/T rigFileList, WAVE/T mainFileList] = SplitTextWaveBySuffix(rawFileList, EXPCONFIG_RIGFILESUFFIX)
 
 	Sort mainFileList, mainFileList
 	numFiles = DimSize(mainFileList, ROWS)

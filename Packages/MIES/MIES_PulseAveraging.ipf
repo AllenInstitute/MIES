@@ -736,9 +736,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		j            = 0
 		numNewSweeps = DimSize(additionalData, ROWS)
 		ASSERT(numNewSweeps > 0, "Set POST_PLOT_ADDED_SWEEPS, but found no new sweep(s) in additionlData")
-		WAVE/D/Z newSweeps
-		WAVE/T/Z newExperiments
-		[newSweeps, newExperiments] = PA_GetSweepsAndExperimentsFromIndices(win, additionalData)
+		[WAVE/D newSweeps, WAVE/T newExperiments] = PA_GetSweepsAndExperimentsFromIndices(win, additionalData)
 
 		for(i = 0; i < numNewSweeps; i += 1)
 			WAVE/Z indizesNewSweep = FindIndizes(traceData, colLabel = "SweepNumber", str = num2str(newSweeps[i]))
@@ -883,9 +881,8 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				first  = round(pulseInfos[k][%PulseStart] / DimDelta(wv, ROWS))
 				length = round(pulseToPulseLength / DimDelta(wv, ROWS))
 
-				WAVE/Z pulseWave, pulseWaveNote
-				[pulseWave, pulseWaveNote] = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, \
-				                                                            clampMode, region, k, first, length, pulseInfos)
+				[WAVE pulseWave, WAVE pulseWaveNote] = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, \
+				                                                                      clampMode, region, k, first, length, pulseInfos)
 
 				if(!WaveExists(pulseWave))
 					continue
@@ -1752,8 +1749,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				graphWasReset = WhichListItem(graph, resetGraphs, ";") != -1
 			endif
 
-			WAVE/Z averageWave
-			[averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
+			[WAVE averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
 
 			sprintf traceName, "Ovl_%s%s", PA_AVERAGE_WAVE_PREFIX, baseName
 
@@ -2294,8 +2290,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 				SetDrawLayer/K/W=$graph $PA_DRAWLAYER_SCALEBAR
 			endif
 
-			WAVE/Z averageWave
-			[averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
+			[WAVE averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
 			if(WaveExists(averageWave))
 				maximum = GetNumberFromWaveNote(averageWave, NOTE_KEY_WAVE_MAXIMUM)
 				length  = pa.yScaleBarLength * (IsFinite(maximum) ? sign(maximum) : +1)
@@ -3410,8 +3405,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 			resetImage = 0
 
-			WAVE/Z averageWave
-			[averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
+			[WAVE averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
 				graph             = PA_GetGraph(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, region, j + 1, i + 1, numActive)
@@ -3467,9 +3461,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				     || scaleChanged                                      \
 				     || layoutChanged))
 
-					WAVE/D/Z newSweeps
-					WAVE/T/Z newExperiments
-					[newSweeps, newExperiments] = PA_GetSweepsAndExperimentsFromIndices(win, additionalData)
+					[WAVE/D newSweeps, WAVE/T newExperiments] = PA_GetSweepsAndExperimentsFromIndices(win, additionalData)
 
 					newSweep = WaveMin(newSweeps)
 					WAVE setIndizes = pasi.setIndices[i][j]

@@ -1852,8 +1852,7 @@ static Function NWB_AppendLogFileToString(string path, string &str)
 		now       = GetISO8601TimeStamp()
 		firstDate = ParseISO8601TimeStamp(now[0, 9] + "T00:00:00Z")
 		lastDate  = Inf
-		WAVE/Z/T partData = $""
-		[partData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
+		[WAVE/T partData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
 		if(WaveExists(partData))
 			WAVE/WAVE splitContents = SplitLogDataBySize(partData, LOG_FILE_LINE_END, STRING_MAX_SIZE - MEGABYTE)
 			if(DimSize(splitContents, ROWS) > 1)

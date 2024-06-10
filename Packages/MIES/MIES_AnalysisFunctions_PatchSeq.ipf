@@ -6073,7 +6073,6 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRang
 
 	WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, sweepNo, totalOnsetDelay)
 
-	WAVE/T epochWave = GetEpochsWave(device)
 	[epBegin, epEnd] = PSQ_CR_AddSpikeEvaluationEpoch(epochsWave, DAC, headstage, durations, totalOnsetDelay)
 
 	return [epBegin * ONE_TO_MILLI, epEnd * ONE_TO_MILLI]

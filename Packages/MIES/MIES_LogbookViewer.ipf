@@ -468,8 +468,7 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 	variable isTimeAxis, isTextData, xPos, logbookType
 	STRUCT RGBColor s
 
-	WAVE/T/Z traces
-	[traces, lbl, unit, col] = LBV_GetPropertiesForLabnotebookEntry(keys, key)
+	[WAVE/T traces, lbl, unit, col] = LBV_GetPropertiesForLabnotebookEntry(keys, key)
 
 	if(!WaveExists(traces))
 		return NaN
@@ -609,8 +608,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 	variable xPos, layer, legacyActiveADColumns, searchLayer
 	STRUCT RGBColor s
 
-	WAVE/T/Z traces
-	[traces, lblTemplate] = LBV_GenerateTraceNames(key, NUM_HEADSTAGES)
+	[WAVE/T traces, lblTemplate] = LBV_GenerateTraceNames(key, NUM_HEADSTAGES)
 
 	list = GetListOfObjects(dfr, TP_STORAGE_REGEXP, fullPath = 1)
 
@@ -763,8 +761,7 @@ static Function LBV_AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/
 	string tagString, tmp, text, unit, lbl, name, lastTag
 	STRUCT RGBColor s
 
-	WAVE/T/Z traces
-	[traces, lbl, unit, col] = LBV_GetPropertiesForLabnotebookEntry(keys, key)
+	[WAVE/T traces, lbl, unit, col] = LBV_GetPropertiesForLabnotebookEntry(keys, key)
 
 	if(!WaveExists(traces))
 		return NaN
