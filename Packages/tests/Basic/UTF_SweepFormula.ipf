@@ -4035,3 +4035,516 @@ static Function TestOperationDataset()
 	CHECK_EQUAL_WAVES(output[1], {2, 3}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(output[2], {"abcd"}, mode = WAVE_DATA)
 End
+
+static Function TestOperationOrVariableInArray()
+
+	string win, device, code
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	// operation with simple numeric return - channels returns a (2, 1) array
+	// as elements in an outer array -> (2, 1, 2) array
+	code = "[channels(AD2), channels(DA3)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE arrayNum = output[0]
+	Make/FREE/D ref = {{{XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_DAC}}, {{2, 3}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+
+	code = "[123, channels(DA3)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE arrayNum = output[0]
+	Make/FREE/D ref = {{{123, XOP_CHANNEL_TYPE_DAC}}, {{123, 3}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+
+	code = "[channels(AD2), 123]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE arrayNum = output[0]
+	Make/FREE/D ref = {{{XOP_CHANNEL_TYPE_ADC, 123}}, {{2, 123}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+
+	code = "[\"abc\", channels(DA3)]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	code = "[channels(DA3), \"abc\"]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// operation with simple text return - channels returns a (2, 1) array
+	// as elements in an outer array -> (2, 1, 2) array
+	code = "[text(123), text(456)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE/T array = output[0]
+	Make/FREE/T refT = {"123.0000000", "456.0000000"}
+	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
+
+	code = "[\"123\", text(456)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE/T array = output[0]
+	Make/FREE/T refT = {"123", "456.0000000"}
+	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
+
+	code = "[text(123), \"456\"]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE/T array = output[0]
+	Make/FREE/T refT = {"123.0000000", "456"}
+	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
+
+	code = "[123, text(123)]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	code = "[text(123), 123]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// operation with dataset return
+	code = "[dataset(1, \"abcd\"), dataset(2, \"cdef\")]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	CHECK_WAVE(array, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+
+	Make/FREE/T wrap = {array[0]}
+	WAVE/WAVE element0 = MIES_SF#SF_ResolveDataset(wrap)
+	CHECK_WAVE(element0, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(element0, ROWS), 2)
+	CHECK_EQUAL_WAVES(element0[0], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(element0[1], {"abcd"}, mode = WAVE_DATA)
+
+	Make/FREE/T wrap = {array[1]}
+	WAVE/WAVE element1 = MIES_SF#SF_ResolveDataset(wrap)
+	CHECK_WAVE(element1, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(element1, ROWS), 2)
+	CHECK_EQUAL_WAVES(element1[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
+
+	code = "[\"text\", dataset(2, \"cdef\")]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	CHECK_WAVE(array, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+
+	CHECK_EQUAL_STR(array[0], "text")
+
+	Make/FREE/T wrap = {array[1]}
+	WAVE/WAVE element1 = MIES_SF#SF_ResolveDataset(wrap)
+	CHECK_WAVE(element1, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(element1, ROWS), 2)
+	CHECK_EQUAL_WAVES(element1[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
+
+	code = "[dataset(1, \"abcd\"), \"text\"]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	CHECK_WAVE(array, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+
+	Make/FREE/T wrap = {array[0]}
+	WAVE/WAVE element0 = MIES_SF#SF_ResolveDataset(wrap)
+	CHECK_WAVE(element0, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(element0, ROWS), 2)
+	CHECK_EQUAL_WAVES(element0[0], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(element0[1], {"abcd"}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_STR(array[1], "text")
+
+	code = "[123, dataset(1, \"abcd\")]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	code = "[dataset(1, \"abcd\"), 123]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// with variables
+	code = "var1 = channels(AD2)\r[$var1, channels(DA3)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE arrayNum = output[0]
+	Make/FREE/D ref = {{{XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_DAC}}, {{2, 3}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+
+	code = "var1 = channels(DA3)\r[channels(AD2), $var1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE arrayNum = output[0]
+	Make/FREE/D ref = {{{XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_DAC}}, {{2, 3}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+
+	code = "var1 = channels(AD2)\r[$var1, 123]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE arrayNum = output[0]
+	Make/FREE/D ref = {{{XOP_CHANNEL_TYPE_ADC, 123}}, {{2, 123}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+
+	code = "var1 = channels(DA3)\r[123, $var1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE arrayNum = output[0]
+	Make/FREE/D ref = {{{123, XOP_CHANNEL_TYPE_DAC}}, {{123, 3}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+
+	code = "var1 = channels(DA3)\r[$var1, \"abc\"]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	code = "var1 = channels(DA3)\r[\"abc\", $var1]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	code = "var1 = text(123)\r[$var1, text(456)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE/T array = output[0]
+	Make/FREE/T refT = {"123.0000000", "456.0000000"}
+	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
+
+	code = "var1 = text(456)\r[text(123), $var1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE/T array = output[0]
+	Make/FREE/T refT = {"123.0000000", "456.0000000"}
+	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
+
+	code = "var1 = text(123)\r[$var1, \"456\"]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE/T array = output[0]
+	Make/FREE/T refT = {"123.0000000", "456"}
+	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
+
+	code = "var1 = text(456)\r[\"123\", $var1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+
+	WAVE/T array = output[0]
+	Make/FREE/T refT = {"123", "456.0000000"}
+	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
+
+	code = "var1 = text(123)\r[$var1, 456]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	code = "var1 = text(123)\r[123, $var1]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	code = "var1 = dataset(1, \"abcd\")\r[$var1, dataset(2, \"cdef\")]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	CHECK_WAVE(array, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+
+	Make/FREE/T wrap = {array[0]}
+	WAVE/WAVE element0 = MIES_SF#SF_ResolveDataset(wrap)
+	CHECK_WAVE(element0, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(element0, ROWS), 2)
+	CHECK_EQUAL_WAVES(element0[0], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(element0[1], {"abcd"}, mode = WAVE_DATA)
+
+	Make/FREE/T wrap = {array[1]}
+	WAVE/WAVE element1 = MIES_SF#SF_ResolveDataset(wrap)
+	CHECK_WAVE(element1, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(element1, ROWS), 2)
+	CHECK_EQUAL_WAVES(element1[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
+
+	code = "var1 = dataset(2, \"cdef\")\r[dataset(1, \"abcd\"), $var1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	CHECK_WAVE(array, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+
+	Make/FREE/T wrap = {array[0]}
+	WAVE/WAVE element0 = MIES_SF#SF_ResolveDataset(wrap)
+	CHECK_WAVE(element0, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(element0, ROWS), 2)
+	CHECK_EQUAL_WAVES(element0[0], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(element0[1], {"abcd"}, mode = WAVE_DATA)
+
+	Make/FREE/T wrap = {array[1]}
+	WAVE/WAVE element1 = MIES_SF#SF_ResolveDataset(wrap)
+	CHECK_WAVE(element1, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(element1, ROWS), 2)
+	CHECK_EQUAL_WAVES(element1[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
+
+	code = "var1 = dataset(2, \"cdef\")\r[\"text\", $var1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	CHECK_WAVE(array, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+
+	CHECK_EQUAL_STR(array[0], "text")
+
+	Make/FREE/T wrap = {array[1]}
+	WAVE/WAVE element1 = MIES_SF#SF_ResolveDataset(wrap)
+	CHECK_WAVE(element1, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(element1, ROWS), 2)
+	CHECK_EQUAL_WAVES(element1[0], {2}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(element1[1], {"cdef"}, mode = WAVE_DATA)
+
+	code = "var1 = dataset(1, \"abcd\")\r[$var1, \"text\"]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	CHECK_WAVE(array, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(array, ROWS), 2) // array elements wrapped
+
+	Make/FREE/T wrap = {array[0]}
+	WAVE/WAVE element0 = MIES_SF#SF_ResolveDataset(wrap)
+	CHECK_WAVE(element0, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(element0, ROWS), 2)
+	CHECK_EQUAL_WAVES(element0[0], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(element0[1], {"abcd"}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_STR(array[1], "text")
+
+	code = "var1 = dataset(1, \"abcd\")\r[123, $var1]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	code = "var1 = dataset(1, \"abcd\")\r[$var1, 123]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function CheckMixingNonFiniteAndText()
+
+	string win, device, code
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	code = "[abc,abc]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	Make/FREE/T refT = {"abc", "abc"}
+	CHECK_EQUAL_WAVES(array, refT, mode = WAVE_DATA)
+
+	code = "[inf,abc]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	code = "[abc,inf]"
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	code = "[inf,inf]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	CHECK_EQUAL_WAVES(array, {Inf, Inf}, mode = WAVE_DATA)
+
+	code = "[inf,-INF, NAN, -nan]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	CHECK_EQUAL_WAVES(array, {Inf, -Inf, NaN, NaN}, mode = WAVE_DATA)
+End
+
+static Function CheckAddArraysInArray()
+
+	string win, device, code
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	code = "[[1, 2] + [3, 4] + 1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	Make/FREE ref = {{5}, {7}}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA)
+
+	code = "[sweeps() + [3, 4] + 1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE/T array = output[0]
+	Make/FREE ref = {{4}, {5}}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA)
+
+	code = "[[dataset(dataset(1) + [3, 4] + 1) + dataset(2) + [5, 6] + 1, dataset(3)] + dataset(4) + [[5, 6],[7,8]] + 1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE arrayNum = output[0]
+	Make/FREE ref = {{{23}, {15}}, {{26}, {16}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+
+	code = "var1 = dataset(0)\r[[dataset($var1 + [3, 4] + 1) + $var1 + [5, 6] + 1, $var1] + $var1 + [[5, 6],[7,8]] + 1]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
+	WAVE arrayNum = output[0]
+	Make/FREE ref = {{{16}, {8}}, {{19}, {9}}}
+	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
+End
+
+static Function DataTypePromotionInPrimitiveOperations()
+
+	string win, device, code, type
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	code = "max(1,5) + 1"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
+
+	code = "max(1,5) - 1"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
+
+	code = "max(1,5) * 1"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
+
+	code = "max(1,5) / 1"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
+
+	code = "max(1,5) + max(1,5)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, SF_DATATYPE_MAX)
+
+	code = "max(1,5) * max(1,5)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, "")
+
+	code = "max(1,5) / max(1,5)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, "")
+
+	code = "max(1,5) + min(1,5)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, "")
+
+	code = "min(1,5) + max(1,5)"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
+	CHECK_EQUAL_STR(type, "")
+End

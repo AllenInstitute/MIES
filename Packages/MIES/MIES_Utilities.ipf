@@ -4410,6 +4410,20 @@ threadsafe Function HasOneValidEntry(WAVE wv)
 	return 0
 End
 
+/// @brief Return true if wave has one finite entry (not Inf, -Inf or NaN)
+threadsafe Function HasOneFiniteEntry(WAVE wv)
+
+	if(IsFloatingPointWave(wv))
+		if(!numpnts(wv))
+			return 0
+		endif
+		WaveStats/Q/M=1 wv
+		return !!V_npnts
+	endif
+
+	ASSERT_TS(0, "Unsupported wave type")
+End
+
 /// @brief Merge two floating point waves labnotebook waves
 ///
 /// The result will hold the finite row entry of either `wv1` or `wv2`.

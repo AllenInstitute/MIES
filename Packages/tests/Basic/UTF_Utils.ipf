@@ -1906,6 +1906,40 @@ End
 /// @}
 
 /// @{
+/// HasOneFiniteEntry
+
+static Function HasOneFiniteEntry_AssertsOnInvalidType()
+
+	Make/B wv
+	try
+		HasOneFiniteEntry(wv)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function HasOneFiniteEntry_Works1()
+
+	Make/FREE/D wv = {Inf, -Inf, NaN}
+	CHECK(!HasOneFiniteEntry(wv))
+End
+
+static Function HasOneFiniteEntry_Works2()
+
+	Make/FREE/D wv = {Inf, -Inf, NaN, 0}
+	CHECK(HasOneFiniteEntry(wv))
+End
+
+static Function HasOneFiniteEntry_Works3()
+
+	Make/FREE/D/N=0 wv
+	CHECK(!HasOneFiniteEntry(wv))
+End
+
+/// @}
+
+/// @{
 /// HasOneValidEntry
 
 Function HOV_AssertsOnInvalidType()
