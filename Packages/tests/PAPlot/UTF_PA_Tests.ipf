@@ -419,6 +419,10 @@
 // data is properly NaNed on the left and right edge.
 static Constant PA_TEST_FP_EPSILON = 1E-6
 
+static StrConstant DEVICENAME_SUTTER = "IPA_E_000000"
+static StrConstant DEVICENAME_NI     = "Dev1"
+static StrConstant DEVICENAME_ITC    = "ITC"
+
 static Function TEST_BEGIN_OVERRIDE(string name)
 	TestBeginCommon()
 End
@@ -926,7 +930,9 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 	CHECK_LT_VAR(first, last)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_CLAMP_MODE)
-	CHECK(AI_IsValidClampMode(setting))
+	CHECK(AI_IsValidClampMode(DEVICENAME_ITC, setting))
+	CHECK(AI_IsValidClampMode(DEVICENAME_NI, setting))
+	CHECK(AI_IsValidClampMode(DEVICENAME_SUTTER, setting))
 
 	// no zeros inside the pulse
 	// this requires that the DA and AD channels on the hardware are connected directly when acquiring this data

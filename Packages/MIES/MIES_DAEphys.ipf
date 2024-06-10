@@ -1106,7 +1106,7 @@ Function GetHeadstageFromSettings(device, channelType, channelNumber, clampMode)
 
 	variable i, row
 
-	if(!AI_IsValidClampMode(clampMode))
+	if(!AI_IsValidClampMode(device, clampMode))
 		return NaN
 	endif
 
@@ -1748,9 +1748,12 @@ End
 Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
+	string device
+
 	switch(ba.eventcode)
 		case 2: // mouse up
-			AI_FindConnectedAmps()
+			device = ba.win
+			AI_FindConnectedAmps(device)
 			break
 	endswitch
 End
@@ -2552,7 +2555,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 
 	// needs to be at the beginning as DAP_ApplyClmpModeSavdSettngs writes into
 	// ChanAmpAssign/ChanAmpAssignUnit
-	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && AI_IsValidClampMode(clampMode))
+	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && AI_IsValidClampMode(device, clampMode))
 		DAP_ApplyClmpModeSavdSettngs(device, headstage, clampMode)
 	endif
 
@@ -2579,7 +2582,7 @@ static Function DAP_CheckHeadStage(device, headStage, mode)
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS)
 
 		AI_EnsureCorrectMode(device, headStage)
-		AI_QueryGainsUnitsForClampMode(device, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
+		[DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC] = AI_QueryGainsUnitsForClampMode(device, headStage, clampMode)
 
 		if(cmpstr(DAUnit, DAUnitMCC))
 			printf "(%s) The configured unit for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", device, DACchannel, DAUnit, DAUnitMCC
@@ -3263,7 +3266,7 @@ Function DAP_GetInfoFromControl(device, ctrl, mode, headStage)
 		ASSERT(0, "unhandled control")
 	endif
 
-	AI_AssertOnInvalidClampMode(mode)
+	AI_AssertOnInvalidClampMode(device, mode)
 End
 
 Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
@@ -3338,7 +3341,7 @@ Function DAP_ChangeHeadStageMode(device, clampMode, headstage, options)
 	string iZeroCtrl, VCctrl, ICctrl, headstageCtrl, ctrl
 	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, oldTab, oldState, newSliderPos
 
-	AI_AssertOnInvalidClampMode(clampMode)
+	AI_AssertOnInvalidClampMode(device, clampMode)
 	DAP_AbortIfUnlocked(device)
 
 	if(options != MCC_SKIP_UPDATES)
@@ -3489,7 +3492,7 @@ static Function DAP_UpdateClampmodeTabs(device, headStage, clampMode)
 
 	string highlightSpec = "\\f01\\Z11"
 
-	AI_AssertOnInvalidClampMode(clampMode)
+	AI_AssertOnInvalidClampMode(device, clampMode)
 
 	AI_SyncAmpStorageToGUI(device, headStage)
 	PGC_SetAndActivateControl(device, "tab_DataAcq_Amp", val = clampMode)
@@ -4564,7 +4567,7 @@ Function DAP_LockDevice(string win)
 	locked = 1
 	DAP_UpdateDataFolderDisplay(deviceLocked, locked)
 
-	AI_FindConnectedAmps()
+	AI_FindConnectedAmps(deviceLocked)
 	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateListOfPressureDevices()
 	headstage = str2num(GetPopupMenuString(deviceLocked, "Popup_Settings_HeadStage"))
