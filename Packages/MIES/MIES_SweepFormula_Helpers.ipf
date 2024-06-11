@@ -388,7 +388,10 @@ Function/WAVE SFH_EvaluateRange(variable jsonId, string jsonPath, string graph, 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
-		WAVE/WAVE ranges = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		WAVE/WAVE ranges    = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		WAVE      rangesTmp = SFH_MoveDatasetHigherIfCompatible(ranges)
+		WAVE      ranges    = rangesTmp
+
 		SFH_ExtendIncompleteRanges(ranges)
 
 		return ranges
@@ -1426,4 +1429,137 @@ Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoc
 	Make/FREE/T/N=(numEpochs) epochRangeNames = allEpNames[epIndices[p]]
 
 	return [adaptedRange, epochRangeNames]
+End
+
+/// @brief Attempt a resolution of a dataset based on a string input, returns null wave if not resolvable
+Function/WAVE SFH_AttemptDatasetResolve(string element)
+
+	string wName
+
+	if(strsearch(element, SF_WREF_MARKER, 0) != 0)
+		return $""
+	endif
+
+	wName = element[strlen(SF_WREF_MARKER), Inf]
+	WAVE/Z out = $wName
+	ASSERT(WaveExists(out), "Referenced wave not found: " + wName)
+
+	return out
+End
+
+/// @brief Check if data wave refers to an array
+///        Note: The check is rather weak, another option would be tagging in the wavenote by the executor?
+Function SFH_IsArray(WAVE data)
+
+	if(!IsWaveRefWave(data))
+		return 0
+	endif
+	if(!DimSize(data, ROWS) == 1)
+		return 0
+	endif
+
+	return 1
+End
+
+/// @brief Moves datasets from array elements to higher level
+///        e.g. [dataset(1, 2), dataset(3, 4)] -> dataset([1, 3], [3, 4])
+///        e.g. [dataset(1, 2, 3), dataset(4, 5, 6)] -> dataset([1, 4], [2, 5], [3, 6])
+///        e.g. [dataset(1, 2), dataset(4, 5), dataset(6, 7)] -> dataset([1, 4, 6], [2, 5, 7])
+///        Requirements that this is possible are:
+///        - all initial array elements must resolve to datasets
+///        - all dataset waves of the initial array elements must be non-null, have the same size and must be 1d
+///        - all elements of these datasets must be non-null, have the same type and the same size and must be max 3d
+///        - only numeric and text is supported as type, thus the datasets may not contain datasets themselves
+///        If none of the requirements are met the input data is returned.
+Function/WAVE SFH_MoveDatasetHigherIfCompatible(WAVE/WAVE data)
+
+	variable i, j, numOldSets, numNewSets, singleElement
+
+	if(!SFH_IsArray(data))
+		return data
+	endif
+
+	WAVE array = data[0]
+	if(!IsTextWave(array))
+		return data
+	endif
+	if(DimSize(array, COLS))
+		return data
+	endif
+
+	numOldSets = DimSize(array, ROWS)
+	Make/FREE/WAVE/N=(numOldSets) resolved
+
+	resolved[] = SFH_AttemptDatasetResolve(WaveText(array, row = p))
+
+	// check pre-conditions
+	WAVE/ZZ prevSets
+	WAVE/ZZ prevElement
+	for(WAVE/WAVE sets : resolved)
+		if(!WaveExists(sets))
+			return data
+		endif
+		if(!DimSize(sets, ROWS))
+			return data
+		endif
+
+		if(!WaveExists(prevSets))
+			WAVE prevSets = sets
+		elseif(!EqualWaves(sets, prevSets, EQWAVES_DATATYPE | EQWAVES_DIMSIZE))
+			return data
+		endif
+
+		for(WAVE element : sets)
+			if(!WaveExists(element))
+				return data
+			endif
+			if(!DimSize(element, ROWS))
+				return data
+			endif
+
+			if(!WaveExists(prevElement))
+				WAVE prevElement = element
+			elseif(!EqualWaves(element, prevElement, EQWAVES_DATATYPE | EQWAVES_DIMSIZE))
+				return data
+			endif
+		endfor
+	endfor
+
+	if(DimSize(element, CHUNKS))
+		return data
+	endif
+
+	// move datasets to higher level
+	singleElement = WaveDims(element) == 1 && DimSize(element, ROWS) == 1
+
+	Duplicate/FREE/WAVE sets, newSets
+	numNewSets = DimSize(newSets, ROWS)
+	if(IsNumericWave(element))
+		for(i = 0; i < numNewSets; i += 1)
+
+			Make/FREE/D/N=(numOldSets, DimSize(element, ROWS), DimSize(element, COLS), DimSize(element, LAYERS)) newElement
+			MultiThread newElement[][][][] = WaveRef(WaveRef(resolved, row = p), row = i)[q][r][s]
+			if(singleElement)
+				Redimension/N=(-1, 0, 0, 0) newElement
+			endif
+			newSets[i] = newElement
+		endfor
+
+		return newSets
+	endif
+
+	if(IsTextWave(element))
+		for(i = 0; i < numNewSets; i += 1)
+
+			Make/FREE/T/N=(numOldSets, DimSize(element, ROWS), DimSize(element, COLS), DimSize(element, LAYERS)) newElementT
+			MultiThread newElementT[][][][] = WaveText(WaveRef(WaveRef(resolved, row = p), row = i), row = q, col = r, layer = s)
+			if(singleElement)
+				Redimension/N=(-1, 0, 0, 0) newElementT
+			endif
+			newSets[i] = newElementT
+		endfor
+		return newSets
+	endif
+
+	return data
 End

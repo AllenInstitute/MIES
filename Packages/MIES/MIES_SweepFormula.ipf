@@ -5392,19 +5392,12 @@ End
 
 static Function/WAVE SF_ResolveDataset(WAVE input)
 
-	string wName, tmpStr
-
 	ASSERT(IsTextWave(input) && DimSize(input, ROWS) == 1 && DimSize(input, COLS) == 0, "Unknown SF argument input format")
 
-	WAVE/T wvt = input
-	ASSERT(strsearch(wvt[0], SF_WREF_MARKER, 0) == 0, "Marker not found in SF argument")
+	WAVE/Z resolve = SFH_AttemptDatasetResolve(WaveText(input, row = 0))
+	ASSERT(WaveExists(resolve), "Could not resolve dataset from wave element")
 
-	tmpStr = wvt[0]
-	wName  = tmpStr[strlen(SF_WREF_MARKER), Inf]
-	WAVE/Z out = $wName
-	ASSERT(WaveExists(out), "Referenced wave not found: " + wName)
-
-	return out
+	return resolve
 End
 
 Function/S SF_GetDefaultFormula()
