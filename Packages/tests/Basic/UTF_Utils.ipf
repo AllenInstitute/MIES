@@ -8393,3 +8393,51 @@ static Function MWF_Works()
 	CHECK_WAVE(result, FREE_WAVE)
 	CHECK(WaveRefsEqual(data, result))
 End
+
+static Function CheckMatchAgainstWildCardPatterns()
+
+	string str
+
+	Make/FREE/T/N=0 wv
+	CHECK(!MatchAgainstWildCardPatterns(wv, ""))
+	Make/FREE/T wv = {"*"}
+	CHECK(MatchAgainstWildCardPatterns(wv, ""))
+	CHECK(MatchAgainstWildCardPatterns(wv, "abc"))
+	Make/FREE/T wv = {"abc"}
+	CHECK(!MatchAgainstWildCardPatterns(wv, "def"))
+	CHECK(MatchAgainstWildCardPatterns(wv, "abc"))
+	Make/FREE/T wv = {"*abc", "def*"}
+	CHECK(MatchAgainstWildCardPatterns(wv, "defabc"))
+	CHECK(MatchAgainstWildCardPatterns(wv, "abc"))
+	CHECK(MatchAgainstWildCardPatterns(wv, "def"))
+	CHECK(!MatchAgainstWildCardPatterns(wv, "abcdef"))
+	CHECK(!MatchAgainstWildCardPatterns(wv, "123"))
+	Make/FREE/T wv = {{"abc", "def"}, {"hij", "klm"}}
+	CHECK(MatchAgainstWildCardPatterns(wv, "klm"))
+	CHECK(!MatchAgainstWildCardPatterns(wv, "*"))
+
+	Make/FREE wn
+	try
+		MatchAgainstWildCardPatterns(wn, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	WAVE wn = $""
+	try
+		MatchAgainstWildCardPatterns(wn, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/T wv = {"*"}
+	try
+		MatchAgainstWildCardPatterns(wv, str)
+		FAIL()
+	catch
+		ClearRTError()
+		PASS()
+	endtry
+End
