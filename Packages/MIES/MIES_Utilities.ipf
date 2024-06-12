@@ -7079,3 +7079,23 @@ End
 threadsafe Function DFREFClear(DFREF &dfr)
 	DFREF dfr = $""
 End
+
+/// @brief Attempts matching against a number of wildcard patterns
+///
+/// @param patterns  text wave with wildcard patterns to match against
+/// @param matchThis string that is matched
+/// @returns Returns 1 if matchThis was successfully matches, 0 otherwise
+Function MatchAgainstWildCardPatterns(WAVE/T patterns, string matchThis)
+
+	string pattern
+
+	ASSERT(IsTextWave(patterns), "argument must be text wave")
+	ASSERT(!IsNull(matchThis), "argument must not be a null tring")
+	for(pattern : patterns)
+		if(stringmatch(matchThis, pattern))
+			return 1
+		endif
+	endfor
+
+	return 0
+End
