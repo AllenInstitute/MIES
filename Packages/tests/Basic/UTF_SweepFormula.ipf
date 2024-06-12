@@ -3526,7 +3526,7 @@ static Function TestLegendShrink()
 	CHECK_EQUAL_STR(strRef, result)
 
 	str    = "\s(T000000d0_Sweep_0_AD1) Sweep 0 AD1\r\s(T000000d1_Sweep_1_AD1) Sweep 1 AD1\r\s(T000000d2_Sweep_2_AD1) operation Sweep 2 AD1"
-	strref = str
+	strref = "\s(T000000d0_Sweep_0_AD1)Sweeps 0-1 AD1\r\s(T000000d2_Sweep_2_AD1)operation Sweep 2 AD1"
 	result = MIES_SF#SF_ShrinkLegend(str)
 	CHECK_EQUAL_STR(strRef, result)
 
