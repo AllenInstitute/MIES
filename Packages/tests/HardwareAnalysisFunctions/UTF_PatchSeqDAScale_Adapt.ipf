@@ -140,8 +140,8 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 			return GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_DA_AT_FI_SLOPES:
 		case PSQ_FMT_LBN_DA_AT_FI_OFFSETS:
-		case PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA:
-		case PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA:
+		case PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT:
+		case PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			WAVE/T settings = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			return ListToNumericWave(settings[PSQ_TEST_HEADSTAGE], ";")
@@ -199,8 +199,8 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%fiSlopesFromSupra]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_SLOPES)
 	wv[%fiOffsetsFromSupra] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSETS)
 	wv[%dascale]            = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	wv[%apFreqFromRHSupra]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA)
-	wv[%dascaleFromRHSupra] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA)
+	wv[%apFreqFromRHSupra]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT)
+	wv[%dascaleFromRHSupra] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT)
 	wv[%minDaScaleNorm]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM)
 	wv[%maxDaScaleNorm]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM)
 
@@ -224,8 +224,8 @@ static Function [WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheoba
 	Duplicate/FREE/RMD=[0][0, sweepNo][FindDimLabel(overrideResults, LAYERS, "APFrequency")] overrideResults, apFreqRef
 	Redimension/N=(DimSize(apFreqRef, COLS)) apFreqRef
 
-	WAVE/Z apFreqFromRHSupra         = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRheobaseSupra")
-	WAVE/Z DAScalesFromRheobaseSupra = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRheobaseSupra")
+	WAVE/Z apFreqFromRHSupra         = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRhSuAd")
+	WAVE/Z DAScalesFromRheobaseSupra = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRhSuAd")
 
 	if(!ParamIsDefault(baselineQC))
 		apFreqRef[] = baselineQC[p] == 1 ? apFreqRef[p] : NaN
@@ -287,13 +287,13 @@ static Function PS_DS_AD1_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -392,13 +392,13 @@ static Function PS_DS_AD2_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -496,13 +496,13 @@ static Function PS_DS_AD2a_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -601,13 +601,13 @@ static Function PS_DS_AD2b_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -706,13 +706,13 @@ static Function PS_DS_AD3_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -815,13 +815,13 @@ static Function PS_DS_AD4_preAcq(string device)
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -868,13 +868,13 @@ static Function PS_DS_AD4a_preAcq(string device)
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {5})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -921,13 +921,13 @@ static Function PS_DS_AD5_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -973,14 +973,14 @@ static Function PS_DS_AD6_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 3}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	// invalid initial valid fit QC
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 15}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1077,14 +1077,14 @@ static Function PS_DS_AD7_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 3}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	// invalid initial valid fit QC but not dense enough
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {5, 8, 13, 15}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1182,13 +1182,13 @@ static Function PS_DS_AD8_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 1}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1234,13 +1234,13 @@ static Function PS_DS_AD9_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 15}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1336,13 +1336,13 @@ static Function PS_DS_AD10_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1445,13 +1445,13 @@ static Function PS_DS_AD11_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1554,13 +1554,13 @@ static Function PS_DS_AD12_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 1.5, 2.5, 3.5}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 14}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1663,13 +1663,13 @@ static Function PS_DS_AD13_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 1.2}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {5, 15}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1767,13 +1767,13 @@ static Function PS_DS_AD14_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
 	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRheobaseSupra)
 
 	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRheobaseSupra)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
