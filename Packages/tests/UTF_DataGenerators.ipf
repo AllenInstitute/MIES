@@ -211,7 +211,7 @@ static Function/WAVE TestOperationAPFrequency2Gen()
 	Make/FREE/D sweep1Result = {1, 1, 1}
 	results[0, 1] = sweep0Result
 	results[2, 3] = sweep1Result
-	note/K results, "apfrequency(data(cursors(A,B),select(channels(AD),[0,1],all)), 3, 15, time, normoversweepsmin)"
+	note/K results, "apfrequency(data(select(selrange(),selchannels(AD),selsweeps(0,1),selvis(all))), 3, 15, time, normoversweepsmin)"
 	wv[0] = results
 	SetDimLabel ROWS, 0, normoversweepsmin, wv
 
@@ -220,7 +220,7 @@ static Function/WAVE TestOperationAPFrequency2Gen()
 	Make/FREE/D sweep1Result = {0.002 / 0.003, 0.002 / 0.003, 0.002 / 0.003}
 	results[0, 1] = sweep0Result
 	results[2, 3] = sweep1Result
-	note/K results, "apfrequency(data(cursors(A,B),select(channels(AD),[0,1],all)), 3, 15, time, normoversweepsmax)"
+	note/K results, "apfrequency(data(select(selrange(),selchannels(AD),selsweeps(0,1),selvis(all))), 3, 15, time, normoversweepsmax)"
 	wv[1] = results
 	SetDimLabel ROWS, 1, normoversweepsmax, wv
 
@@ -230,7 +230,7 @@ static Function/WAVE TestOperationAPFrequency2Gen()
 	Make/FREE/D sweep1Result = {0.002 / m, 0.002 / m, 0.002 / m}
 	results[0, 1] = sweep0Result
 	results[2, 3] = sweep1Result
-	note/K results, "apfrequency(data(cursors(A,B),select(channels(AD),[0,1],all)), 3, 15, time, normoversweepsavg)"
+	note/K results, "apfrequency(data(select(selrange(),selchannels(AD),selsweeps(0,1),selvis(all))), 3, 15, time, normoversweepsavg)"
 	wv[2] = results
 	SetDimLabel ROWS, 2, normoversweepsavg, wv
 
@@ -241,11 +241,11 @@ static Function/WAVE SF_TestVariablesGen()
 
 	// note that data is called for d and e to test if variables get cleaned up, if they would, the assignment for e would fail
 	// as c and s were removed by the first data call.
-	Make/FREE/T t1FormulaAndRest = {"c=cursors(A,B)\rs=select(channels(AD),[0,1],all)\rd=data($c,$s)\re=data($c,$s)\r\r$d", "$d"}
+	Make/FREE/T t1FormulaAndRest = {"c=cursors(A,B)\rs=select(selrange($c),selchannels(AD),selsweeps(0,1),selvis(all))\rd=data($s)\re=data($s)\r\r$d", "$d"}
 	Make/FREE/T t1DimLbl = {"c", "s", "d", "e"}
 
 	// case-insensitivity
-	Make/FREE/T t2FormulaAndRest = {"c=cursors(A,B)\rs=select(channels(AD),[0,1],all)\rd=data($C,$S)\r\r$D", "$D"}
+	Make/FREE/T t2FormulaAndRest = {"c=cursors(A,B)\rs=select(selrange($c),selchannels(AD),selsweeps(0,1),selvis(all))\rd=data($S)\r\r$D", "$D"}
 	Make/FREE/T t2DimLbl = {"c", "s", "d"}
 
 	// result test
@@ -525,9 +525,9 @@ End
 
 static Function/WAVE SweepFormulaFunctionsWithSweepsArgument()
 
-	Make/FREE/T wv = {"data(cursors(A,B), select(channels(AD), sweeps()))",          \
-	                  "epochs(\"I DONT EXIST\", select(channels(DA), sweeps()))",    \
-	                  "labnotebook(\"I DONT EXIST\", select(channels(DA), sweeps()))"}
+	Make/FREE/T wv = {"data(select(selrange(), selchannels(AD), selsweeps()))",            \
+	                  "epochs(\"I DONT EXIST\", select(selchannels(DA), selsweeps()))",    \
+	                  "labnotebook(\"I DONT EXIST\", select(selchannels(DA), selsweeps()))"}
 
 	SetDimensionLabels(wv, "data;epochs;labnotebook", ROWS)
 
@@ -887,6 +887,21 @@ End
 static Function/WAVE GetASYNCThreadErrorFunctions()
 	Make/FREE/T wt = {"RunGenericWorkerAbortOnValue,FailThreadReadOutAbortOnValue,", "RunGenericWorkerRTE,FailThreadReadOutRTE,"}
 	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
+
+	return wt
+End
+
+static Function/WAVE SF_TestOperationSelectFails()
+
+	Make/FREE/T wt = {"select(1)",                                             \
+	                  "select(selrange(),selrange())",                         \
+	                  "select(selchannels(),selchannels())",                   \
+	                  "select(selsweeps(),selsweeps())",                       \
+	                  "select(selcm(all),selcm(all))",                         \
+	                  "select(selvis(),selvis())",                             \
+	                  "select(selstimset(),selstimset())",                     \
+	                  "select(selivsccsetqc(failed),selivsccsetqc(failed))",   \
+	                  "select(selivsccsweepqc(failed),selivsccsweepqc(failed))"}
 
 	return wt
 End
