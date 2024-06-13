@@ -2647,22 +2647,25 @@ static Function/WAVE PSQ_DS_FilterPassingSweeps(WAVE sweeps, WAVE sweepsQC)
 
 	sweeps[] = sweepsQC[p] == 1 ? sweeps[p] : NaN
 	WAVE/ZZ passingSweeps = ZapNaNs(sweeps)
-	ASSERT(WaveExists(passingSweeps), "passingSweeps can not be null")
 
 	return passingSweeps
 End
 
-static Function/WAVE PSQ_DS_GetPassingSupraSweeps(WAVE numericalValues, variable passingSupraSweep, variable headstage)
+static Function/WAVE PSQ_DS_GetPassingDAScaleSweeps(WAVE numericalValues, variable passingSweep, variable headstage)
 
 	string key
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, passingSupraSweep, headstage)
-	ASSERT(WaveExists(sweeps), "Missing sweeps from passing supra SCI")
+	if(!IsValidSweepNumber(passingSweep))
+		return $""
+	endif
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, passingSweep, headstage)
+	ASSERT(WaveExists(sweeps), "Missing sweeps from passing DAScale SCI")
 
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-	WAVE sweepsQC = GetLastSettingIndepEachSCI(numericalValues, passingSupraSweep, key, headstage, UNKNOWN_MODE)
+	WAVE sweepsQC = GetLastSettingIndepEachSCI(numericalValues, passingSweep, key, headstage, UNKNOWN_MODE)
 
-	WAVE passingSweeps = PSQ_DS_FilterPassingSweeps(sweeps, sweepsQC)
+	WAVE/Z passingSweeps = PSQ_DS_FilterPassingSweeps(sweeps, sweepsQC)
 
 	return passingSweeps
 End
@@ -2718,7 +2721,7 @@ static Function/WAVE PSQ_DS_GetPassingRhSuAdSweeps(string device, variable heads
 	else
 		WAVE numericalValues = GetLBNumericalValues(device)
 
-		WAVE passingSupraSweeps    = PSQ_DS_GetPassingSupraSweeps(numericalValues, passingSupraSweep, headstage)
+		WAVE passingSupraSweeps    = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, passingSupraSweep, headstage)
 		WAVE passingRheobaseSweeps = PSQ_DS_GetPassingRheobaseSweeps(numericalValues, passingRheobaseSweep, headstage)
 
 		Concatenate/NP=(ROWS)/FREE {passingRheobaseSweeps, passingSupraSweeps}, sweeps
