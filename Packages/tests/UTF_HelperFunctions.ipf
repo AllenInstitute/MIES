@@ -346,7 +346,36 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[2][0][0]   = "-"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	// Set a acquisition cycle ID
+	values[]        = NaN
+	values[0][0][0] = sweepNo
+	values[0][0][1] = sweepNo
+	keys[0][0][0]   = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]   = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	keys[2][0][0] = "-"
+
+	// Set setQC passed
+	values[]                      = NaN
+	values[0][0][INDEP_HEADSTAGE] = 1
+	keys[0][0][0]                 = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, UNKNOWN_MODE)
+
 	// textual entries
+
+	// Stimset name HS0/HS1
+	valuesTxt[]        = ""
+	valuesTxt[0][0][0] = "stimsetSweep0HS0"
+	valuesTxt[0][0][1] = "stimsetSweep0HS1"
+	keys[0][0][0]      = STIM_WAVE_NAME_KEY
+	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set some analysis function
+	valuesTxt[]        = ""
+	valuesTxt[0][0][0] = "PSQ_Chirp"
+	valuesTxt[0][0][1] = "PSQ_Chirp"
+	keys[0][0][0]      = "Generic function"
+	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// DAC 4: unassoc (old)
 	valuesTxt[]                      = ""
@@ -413,7 +442,36 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[0][0][0]   = CLAMPMODE_ENTRY_KEY
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	// Set a acquisition cycle ID
+	values[]        = NaN
+	values[0][0][0] = sweepNo
+	values[0][0][1] = sweepNo
+	keys[0][0][0]   = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]   = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	keys[2][0][0] = "-"
+
+	// Set setQC passed
+	values[]                      = NaN
+	values[0][0][INDEP_HEADSTAGE] = 1
+	keys[0][0][0]                 = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, UNKNOWN_MODE)
+
 	// textual entries
+
+	// Set some analysis function
+	valuesTxt[]        = ""
+	valuesTxt[0][0][0] = "PSQ_Chirp"
+	valuesTxt[0][0][1] = "PSQ_Chirp"
+	keys[0][0][0]      = "Generic function"
+	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Stimset name HS0/HS1
+	valuesTxt[]        = ""
+	valuesTxt[0][0][0] = "stimsetSweep1HS0"
+	valuesTxt[0][0][1] = "stimsetSweep1HS1"
+	keys[0][0][0]      = STIM_WAVE_NAME_KEY
+	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// DAC 5: unassoc (new)
 	valuesTxt[]                      = ""
