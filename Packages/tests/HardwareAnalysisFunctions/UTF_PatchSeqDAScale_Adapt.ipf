@@ -140,8 +140,8 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 			return GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_DA_AT_FI_SLOPES:
 		case PSQ_FMT_LBN_DA_AT_FI_OFFSETS:
-		case PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA:
-		case PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA:
+		case PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT:
+		case PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			WAVE/T settings = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			return ListToNumericWave(settings[PSQ_TEST_HEADSTAGE], ";")
@@ -164,8 +164,8 @@ static Function/WAVE GetWave_IGNORE()
 	              "futureDAScalesPass;fiSlopeReachedPass;enoughFIPointsPass;" + \
 	              "validSlopePass;initialValidSlopePass;"                     + \
 	              "opMode;apFreq;maxSlope;fiSlope;fiOffset;futureDAScales;"   + \
-	              "fiSlopesFromSupra;fiOffsetsFromSupra;daScale;"             + \
-	              "apFreqFromRHSupra;dascaleFromRHSupra;minDaScaleNorm;"      + \
+	              "fiSlopesFromRhSuAd;fiOffsetsFromRhSuAd;daScale;"           + \
+	              "apFreqFromRhSuAd;dascaleFromRhSuAd;minDaScaleNorm;"        + \
 	              "maxDAScaleNorm"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
@@ -189,20 +189,20 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%rmsLongPass]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS)
 	wv[%baselinePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
 
-	wv[%opMode]             = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
-	wv[%apFreq]             = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ)
-	wv[%maxSlope]           = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
-	wv[%fiSlope]            = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
-	wv[%fiOffset]           = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSET)
-	wv[%daScale]            = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	wv[%futureDAScales]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES)
-	wv[%fiSlopesFromSupra]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_SLOPES)
-	wv[%fiOffsetsFromSupra] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSETS)
-	wv[%dascale]            = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	wv[%apFreqFromRHSupra]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA)
-	wv[%dascaleFromRHSupra] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA)
-	wv[%minDaScaleNorm]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM)
-	wv[%maxDaScaleNorm]     = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM)
+	wv[%opMode]              = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	wv[%apFreq]              = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ)
+	wv[%maxSlope]            = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
+	wv[%fiSlope]             = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
+	wv[%fiOffset]            = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSET)
+	wv[%daScale]             = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
+	wv[%futureDAScales]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES)
+	wv[%fiSlopesFromRhSuAd]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_SLOPES)
+	wv[%fiOffsetsFromRhSuAd] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSETS)
+	wv[%dascale]             = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
+	wv[%apFreqFromRhSuAd]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT)
+	wv[%dascaleFromRhSuAd]   = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT)
+	wv[%minDaScaleNorm]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM)
+	wv[%maxDaScaleNorm]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM)
 
 	wv[%futureDAScalesPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS)
 	wv[%fiSlopeReachedPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
@@ -216,7 +216,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	return wv
 End
 
-static Function [WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] ExtractRefValuesFromOverride(variable sweepNo, [WAVE baselineQC])
+static Function [WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] ExtractRefValuesFromOverride(variable sweepNo, [WAVE baselineQC])
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
@@ -224,8 +224,8 @@ static Function [WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheoba
 	Duplicate/FREE/RMD=[0][0, sweepNo][FindDimLabel(overrideResults, LAYERS, "APFrequency")] overrideResults, apFreqRef
 	Redimension/N=(DimSize(apFreqRef, COLS)) apFreqRef
 
-	WAVE/Z apFreqFromRHSupra         = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRheobaseSupra")
-	WAVE/Z DAScalesFromRheobaseSupra = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRheobaseSupra")
+	WAVE/Z apFreqFromRhSuAd   = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRhSuAd")
+	WAVE/Z DAScalesFromRhSuAd = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRhSuAd")
 
 	if(!ParamIsDefault(baselineQC))
 		apFreqRef[] = baselineQC[p] == 1 ? apFreqRef[p] : NaN
@@ -235,7 +235,7 @@ static Function [WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheoba
 		endif
 	endif
 
-	return [apFreqRef, apFreqFromRHSupra, DAScalesFromRheobaseSupra]
+	return [apFreqRef, apFreqFromRhSuAd, DAScalesFromRhSuAd]
 End
 
 static Function PrintSomeValues(WAVE/WAVE entries)
@@ -252,10 +252,10 @@ static Function PrintSomeValues(WAVE/WAVE entries)
 	WAVE wv = entries[%futureDAScales]
 	print/D wv
 
-	WAVE wv = entries[%fiSlopesFromSupra]
+	WAVE wv = entries[%fiSlopesFromRhSuAd]
 	print/D wv
 
-	WAVE wv = entries[%fiOffsetsFromSupra]
+	WAVE wv = entries[%fiOffsetsFromRhSuAd]
 	print/D wv
 
 	WAVE wv = entries[%dascale]
@@ -287,13 +287,13 @@ static Function PS_DS_AD1_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -340,28 +340,28 @@ static Function PS_DS_AD1_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {.075, NaN, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo, baselineQC = entries[%baselinePass])
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo, baselineQC = entries[%baselinePass])
 
 	CHECK_WAVE(apFreqRef, NULL_WAVE)
 	CHECK_WAVE(entries[%apfreq], NULL_WAVE)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {2.999999970665357e-10, NaN, NaN}
 	Make/FREE/T futureDAScalesRef = {"3.5;4.4;", \
 	                                 "3.5;4.4;", \
 	                                 "3.5;4.4;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
 	Make/FREE/D DAScalesRef = {3.5, 3.5, 3.5}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_WAVE(entries[%fiSlope], NULL_WAVE)
 	CHECK_WAVE(entries[%fiOffset], NULL_WAVE)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -392,13 +392,13 @@ static Function PS_DS_AD2_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -445,27 +445,27 @@ static Function PS_DS_AD2_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.375}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10}
 	Make/FREE/D fiSlopeRef = {8.15217391304348e-12}
 	Make/FREE/D fiOffsetRef = {15.67391304347826}
 	Make/FREE/T futureDAScalesRef = {"5.22666666666667;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
 	Make/FREE/D DAScalesRef = {5.226666666666667}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -496,13 +496,13 @@ static Function PS_DS_AD2a_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -549,19 +549,19 @@ static Function PS_DS_AD2a_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.375, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
 	Make/FREE/D fiSlopeRef = {8.15217391304348e-12, -1.656314699792955e-11}
 	Make/FREE/D fiOffsetRef = {15.67391304347826, 16.96570048309179}
 	Make/FREE/T futureDAScalesRef = {"5.22666666666667;11.2641666666667;", "5.22666666666667;11.2641666666667;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
 	Make/FREE/D DAScalesRef = {5.226666666666667, 11.26416666666667}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -569,8 +569,8 @@ static Function PS_DS_AD2a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -601,13 +601,13 @@ static Function PS_DS_AD2b_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -654,19 +654,19 @@ static Function PS_DS_AD2b_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.1875, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
 	Make/FREE/D fiSlopeRef = {8.15217391304348e-12, -3.312629399585924e-11}
 	Make/FREE/D fiOffsetRef = {15.67391304347826, 17.83140096618358}
 	Make/FREE/T futureDAScalesRef = {"5.22666666666667;8.24541666666667;", "5.22666666666667;8.24541666666667;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
 	Make/FREE/D DAScalesRef = {5.226666666666667, 8.245416666666667}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -674,8 +674,8 @@ static Function PS_DS_AD2b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -706,13 +706,13 @@ static Function PS_DS_AD3_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -763,27 +763,27 @@ static Function PS_DS_AD3_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.375, NaN, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo, baselineQC = entries[%baselinePass])
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo, baselineQC = entries[%baselinePass])
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10, 3e-10}
 	Make/FREE/D fiSlopeRef = {NaN, 8.152173913043478e-12, -1.656314699792955e-11}
 	Make/FREE/D fiOffsetRef = {NaN, 15.67391304347826, 16.96570048309179}
 	Make/FREE/T futureDAScalesRef = {"5.22666666666667;", "5.22666666666667;11.2641666666667;", "5.22666666666667;11.2641666666667;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
 	Make/FREE/D DAScalesRef = {5.226666666666667, 5.226666666666667, 11.26416666666667}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -815,13 +815,13 @@ static Function PS_DS_AD4_preAcq(string device)
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -868,13 +868,13 @@ static Function PS_DS_AD4a_preAcq(string device)
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {5})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -921,13 +921,13 @@ static Function PS_DS_AD5_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -973,14 +973,14 @@ static Function PS_DS_AD6_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 3}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 3}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
 	// invalid initial valid fit QC
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 15}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 15}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1027,26 +1027,26 @@ static Function PS_DS_AD6_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.3586956521739131}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {4e-10}
 	Make/FREE/D fiSlopeRef = {4e-10}
 	Make/FREE/D fiOffsetRef = {3}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, NaN}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, NaN}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, NaN}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, NaN}
 	Make/FREE/D DAScalesRef = {1}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_WAVE(entries[%futureDAScales], NULL_WAVE)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -1077,14 +1077,14 @@ static Function PS_DS_AD7_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 3}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 3}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
 	// invalid initial valid fit QC but not dense enough
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {5, 8, 13, 15}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {5, 8, 13, 15}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1131,27 +1131,27 @@ static Function PS_DS_AD7_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.02372549019607843, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {5.666666666666668e-10, 9.999999999999999e-10}
 	Make/FREE/D fiSlopeRef = {5.666666666666668e-10, 9.999999999999999e-10}
 	Make/FREE/D fiOffsetRef = {-2, -8.5}
 	Make/FREE/T futureDAScalesRef = {"1.5;2.5;", "1.5;2.5;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {3e-10, 5e-10, NaN}
-	Make/FREE/D fiOffsetsFromSupraRef = {2, -2, NaN}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {3e-10, 5e-10, NaN}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {2, -2, NaN}
 	Make/FREE/D DAScalesRef = {1.5, 2.5}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -1182,13 +1182,13 @@ static Function PS_DS_AD8_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 1}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 1}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1234,13 +1234,13 @@ static Function PS_DS_AD9_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 15}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 15}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1287,27 +1287,27 @@ static Function PS_DS_AD9_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.3529411764705883, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {2e-10, NaN}
 	Make/FREE/D fiSlopeRef = {-6.666666666666667e-10, -6.666666666666667e-10}
 	Make/FREE/D fiOffsetRef = {41.66666666666667, 41.66666666666667}
 	Make/FREE/T futureDAScalesRef = {"5.35;", "5.35;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 2e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 7}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 2e-10}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 7}
 	Make/FREE/D DAScalesRef = {5.35, 5.35}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_WAVE(entries[%fiSlope], NULL_WAVE)
 	CHECK_WAVE(entries[%fiOffset], NULL_WAVE)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -1336,13 +1336,13 @@ static Function PS_DS_AD10_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1389,27 +1389,27 @@ static Function PS_DS_AD10_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.12, NaN, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {9.374999999999962e-10, 3.124999999999997e-09, 6.510416666666681e-09}
 	Make/FREE/D fiSlopeRef = {9.374999999999962e-10, 3.124999999999997e-09, 6.510416666666681e-09}
 	Make/FREE/D fiOffsetRef = {-21.49999999999984, -129.9999999999999, -314.1666666666805}
 	Make/FREE/T futureDAScalesRef = {"4.96;5.44;", "4.96;5.44;5.6704;", "4.96;5.44;5.6704;5.82246399999999;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
 	Make/FREE/D DAScalesRef = {4.96, 5.440000000000003, 5.670400000000001}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -1445,13 +1445,13 @@ static Function PS_DS_AD11_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1501,27 +1501,27 @@ static Function PS_DS_AD11_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.27, NaN, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {2e-10, 2e-10, 2e-10}
 	Make/FREE/D fiSlopeRef = {1.538081020918171e-10, 1.129800583785857e-10, 5.828789905826642e-11}
 	Make/FREE/D fiOffsetRef = {8.582356940218931, 10.67480711493808, 15.04493404429584}
 	Make/FREE/T futureDAScalesRef = {"7.69;13.0146869947276;", "7.69;13.0146869947276;19.7646869947276;", "7.69;13.0146869947276;19.7646869947276;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {2e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {7.5}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {2e-10}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {7.5}
 	Make/FREE/D DAScalesRef = {7.69, 13.0146869947276, 19.7646869947276}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -1554,13 +1554,13 @@ static Function PS_DS_AD12_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 1.5, 2.5, 3.5}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 1.5, 2.5, 3.5}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 14}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 14}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1611,27 +1611,27 @@ static Function PS_DS_AD12_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.4609374999999999, NaN, NaN, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo, baselineQC = entries[%baselinePass])
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo, baselineQC = entries[%baselinePass])
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3.416149068322985e-10, 3.416149068322985e-10, 3.416149068322985e-10, 3.416149068322985e-10}
 	Make/FREE/D fiSlopeRef = {3.416149068322985e-10, 3.416149068322985e-10, -2.376451525789897e-10, -4.078983962177433e-12}
 	Make/FREE/D fiOffsetRef = {2.043478260869549, 2.043478260869549, 40.9697542533081, 21.34276443867624}
 	Make/FREE/T futureDAScalesRef = {"6.72;8.40318181818182;", "6.72;8.40318181818182;", "6.72;8.40318181818182;5.95159090909091;", "6.72;8.40318181818182;5.95159090909091;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {2e-10, 2e-10, 1e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {8, 8, 10.5}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {2e-10, 2e-10, 1e-10}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {8, 8, 10.5}
 	Make/FREE/D DAScalesRef = {6.719999999999999, 8.403181818181814, 8.403181818181814, 5.951590909090905}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -1663,13 +1663,13 @@ static Function PS_DS_AD13_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 1.2}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 1.2}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {5, 15}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {5, 15}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1716,27 +1716,27 @@ static Function PS_DS_AD13_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.015}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {4.99999999999999e-09}
 	Make/FREE/D fiSlopeRef = {-4.999999999999928e-09}
 	Make/FREE/D fiOffsetRef = {74.99999999999918}
 	Make/FREE/T futureDAScalesRef = {"1.1;1.269;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {4.99999999999999e-09}
-	Make/FREE/D fiOffsetsFromSupraRef = {-44.9999999999999}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {4.99999999999999e-09}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {-44.9999999999999}
 	Make/FREE/D DAScalesRef = {1.1}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
@@ -1767,13 +1767,13 @@ static Function PS_DS_AD14_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSupraSweeps", {4, 5, 6, 7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRheobaseSupra = {1, 2, 3, 4}
-	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRheobaseSupra", DAScalesFromRheobaseSupra)
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
-	Make/FREE/D apFrequenciesFromRheobaseSupra = {10, 11, 13, 16}
-	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRheobaseSupra", apFrequenciesFromRheobaseSupra)
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1822,27 +1822,27 @@ static Function PS_DS_AD14_REENTRY([string str])
 	Make/FREE/D maxDAScaleNormRef = {0.375, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	[WAVE apFreqRef, WAVE apFreqFromRHSupra, WAVE DAScalesFromRheobaseSupra] = ExtractRefValuesFromOverride(sweepNo)
+	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
 
 	CHECK_EQUAL_WAVES(entries[%apfreq], apFreqRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%apFreqFromRHSupra], apFreqFromRHSupra, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%dascaleFromRHSupra], DAScalesFromRheobaseSupra, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%apFreqFromRhSuAd], apFreqFromRhSuAd, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
 	Make/FREE/D fiSlopeRef = {NaN, 8.152173913043478e-12}
 	Make/FREE/D fiOffsetRef = {NaN, 15.67391304347826}
 	Make/FREE/T futureDAScalesRef = {"5.22666666666667;", "5.22666666666667;"}
 
-	Make/FREE/D fiSlopesFromSupraRef = {1e-10, 2e-10, 3e-10}
-	Make/FREE/D fiOffsetsFromSupraRef = {9, 7, 4}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
+	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
 	Make/FREE/D DAScalesRef = {5.226666666666667, 5.22666666666667}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiOffset], fiOffsetRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_TEXTWAVES(entries[%futureDAScales], futureDAScalesRef, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopesFromSupra], fiSlopesFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
-	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromSupra], fiOffsetsFromSupraRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiSlopesFromRhSuAd], fiSlopesFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
+	CHECK_EQUAL_WAVES(entries[%fiOffsetsFromRhSuAd], fiOffsetsFromRhSuAdRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])

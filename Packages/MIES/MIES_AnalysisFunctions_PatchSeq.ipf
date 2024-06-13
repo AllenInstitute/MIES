@@ -33,86 +33,86 @@
 ///
 /// \rst
 ///
-/// ======================================== ============================================================= ======== ============ ==================================== ============ ======================
-///  Naming constant                          Description                                                   Unit     Labnotebook  Analysis function                    Per Chunk?   Headstage dependent?
-/// ======================================== ============================================================= ======== ============ ==================================== ============ ======================
-///  PSQ_FMT_LBN_SPIKE_DETECT                 The required number of spikes were detected on the sweep      On/Off   Numerical    SP, RB, RA, DA (Supra)               No           Yes
-///  PSQ_FMT_LBN_SPIKE_POSITIONS              Spike positions                                               ms       Numerical    RA, VM                               No           Yes
-///  PSQ_FMT_LBN_SPIKE_COUNT                  Spike count                                                   (none)   Numerical    DA (Supra)                           No           Yes
-///  PSQ_FMT_LBN_STEPSIZE                     Current DAScale step size                                     (none)   Numerical    SP, RB                               No           No
-///  PSQ_FMT_LBN_STEPSIZE_FUTURE              Future DAScale step size                                      (none)   Numerical    RB                                   No           No
-///  PSQ_FMT_LBN_RB_DASCALE_EXC               Range for valid DAScale values is exceeded                    On/Off   Numerical    RB                                   No           Yes
-///  PSQ_FMT_LBN_RB_LIMITED_RES               Failed due to limited DAScale resolution                      On/Off   Numerical    RB                                   No           Yes
-///  PSQ_FMT_LBN_FINAL_SCALE                  Final DAScale of the given headstage, only set on success     (none)   Numerical    SP, RB                               No           No
-///  PSQ_FMT_LBN_SPIKE_DASCALE_ZERO           Sweep spiked with DAScale of 0                                On/Off   Numerical    SP                                   No           No
-///  PSQ_FMT_LBN_INITIAL_SCALE                Initial DAScale                                               (none)   Numerical    RB, CR                               No           No
-///  PSQ_FMT_LBN_RMS_SHORT_PASS               Short RMS baseline QC result                                  On/Off   Numerical    DA, RB, RA, CR, SE, VM, AR           Yes          Yes
-///  PSQ_FMT_LBN_RMS_SHORT_THRESHOLD          Short RMS baseline threshold                                  V        Numerical    DA, RB, RA, CR, SE, VM, AR           No           Yes
-///  PSQ_FMT_LBN_RMS_LONG_PASS                Long RMS baseline QC result                                   On/Off   Numerical    DA, RB, RA, CR, SE, VM, AR           Yes          Yes
-///  PSQ_FMT_LBN_RMS_LONG_THRESHOLD           Long RMS baseline threshold                                   V        Numerical    DA, RB, RA, CR, SE, VM, AR           No           Yes
-///  PSQ_FMT_LBN_TARGETV                      Target voltage baseline                                       Volt     Numerical    DA, RB, RA, CR                       Yes          Yes
-///  PSQ_FMT_LBN_TARGETV_PASS                 Target voltage baseline QC result                             On/Off   Numerical    DA, RB, RA, CR                       Yes          Yes
-///  PSQ_FMT_LBN_TARGETV_THRESHOLD            Target voltage threshold                                      V        Numerical    DA, RB, RA, CR                       No           Yes
-///  PSQ_FMT_LBN_LEAKCUR                      Leak current                                                  Amperes  Numerical    PB, VM, AR                           Yes          Yes
-///  PSQ_FMT_LBN_LEAKCUR_PASS                 Leak current QC result                                        On/Off   Numerical    PB, VM, AR                           Yes          Yes
-///  PSQ_FMT_LBN_AVERAGEV                     Average voltage                                               Volt     Numerical    VM                                   Yes          Yes
-///  PSQ_FMT_LBN_CHUNK_PASS                   Which chunk passed/failed baseline QC                         On/Off   Numerical    DA, RB, RA, CR, PB, SE, VM, AR       Yes          Yes
-///  PSQ_FMT_LBN_BL_QC_PASS                   Pass/fail state of the complete baseline                      On/Off   Numerical    DA, RB, RA, CR, PB, SE, VM, AR       No           Yes
-///  PSQ_FMT_LBN_SWEEP_PASS                   Pass/fail state of the complete sweep                         On/Off   Numerical    DA, SP, RA, CR, PB, SE, VM, AR       No           No
-///  PSQ_FMT_LBN_SET_PASS                     Pass/fail state of the complete set                           On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM, AR   No           No
-///  PSQ_FMT_LBN_SAMPLING_PASS                Pass/fail state of the sampling interval check                On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM, AR   No           No
-///  PSQ_FMT_LBN_PULSE_DUR                    Pulse duration as determined experimentally                   ms       Numerical    RB, DA, CR                           No           Yes
-///  PSQ_FMT_LBN_SPIKE_PASS                   Pass/fail state of the spike search (No spikes → Pass)        On/Off   Numerical    CR, VM                               No           Yes
-///  PSQ_FMT_LBN_DA_fI_SLOPE                  Fitted slope in the f-I plot                                  % Hz/pA  Numerical    DA (Supra, Adapt)                    No           Yes
-///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS     Fitted slope in the f-I plot exceeds target value             On/Off   Numerical    DA (Supra, Adapt)                    No           No
-///  PSQ_FMT_LBN_DA_AT_FI_OFFSET              Fitted offset in the f-I plot                                 Hz       Numerical    DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_FREQ                   AP frequency                                                  Hz       Numerical    DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA          AP frequencies from supra sweep reevaluation                  Hz       Textual      DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA       DAScale values from supra sweep reevaluation                  (none)   Textual      DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_FI_SLOPES              Slopes in the f-I plot from supra sweep reevaluation          % Hz/pA  Textual      DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_MAX_SLOPE              Maximum encountered f-I plot slope in the SCI                 % Hz/pA  Numerical    DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS       Valid slope from f-I plot QC                                  On/Off   Numerical    DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS  Valid slope from f-I plot of supra sweep reevaluation         On/Off   Numerical    DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS  Enough f-I pairs for line fit QC                              On/Off   Numerical    DA (Adapt)                           No           No
-///  PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES        DAScale values left to acquire                                (none)   Textual      DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS   Measured all DAScale values                                   On/Off   Numerical    DA (Adapt)                           No           No
-///  PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM       Minimum DAScale step width (normalized)                       (none)   Numerical    DA (Adapt)                           No           No
-///  PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM       Maximum DAScale step width (normalized)                       (none)   Numerical    DA (Adapt)                           No           No
-///  PSQ_FMT_LBN_DA_OPMODE                    Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA/PSQ_DS_ADAPT   (none)   Textual      DA                                   No           No
-///  PSQ_FMT_LBN_CR_INSIDE_BOUNDS             AD response is inside the given bands                         On/Off   Numerical    CR                                   No           No
-///  PSQ_FMT_LBN_CR_RESISTANCE                Calculated resistance from DAScale sub threshold              Ohm      Numerical    CR                                   No           No
-///  PSQ_FMT_LBN_CR_BOUNDS_ACTION             Action according to min/max positions                         (none)   Numerical    CR                                   No           No
-///  PSQ_FMT_LBN_CR_BOUNDS_STATE              Upper and Lower bounds state according to min/max pos.        (none)   Textual      CR                                   No           No
-///  PSQ_FMT_LBN_CR_SPIKE_CHECK               Spike check was enabled/disabled                              (none)   Numerical    CR                                   No           No
-///  PSQ_FMT_LBN_CR_INIT_UOD                  Initial user onset delay                                      ms       Numerical    CR                                   No           No
-///  PSQ_FMT_LBN_CR_INIT_LPF                  Initial MCC low pass filter                                   Hz       Numerical    CR                                   No           No
-///  PSQ_FMT_LBN_CR_STIMSET_QC                Stimset valid/invalid QC state                                On/Off   Numerical    CR                                   No           No
-///  FMT_LBN_ANA_FUNC_VERSION                 Integer version of the analysis function                      (none)   Numerical    All                                  No           Yes
-///  PSQ_FMT_LBN_PB_RESISTANCE                Pipette Resistance                                            Ohm      Numerical    PB                                   No           No
-///  PSQ_FMT_LBN_PB_RESISTANCE_PASS           Pipette Resistance QC                                         On/Off   Numerical    PB                                   No           No
-///  PSQ_FMT_LBN_SE_TP_GROUP_SEL              Selected Testpulse groups: One of Both/First/Second           (none)   Textual      SE                                   No           No
-///  PSQ_FMT_LBN_SE_RESISTANCE_A              Seal Resistance of TPs in group A                             Ω        Numerical    SE                                   No           No
-///  PSQ_FMT_LBN_SE_RESISTANCE_B              Seal Resistance of TPs in group B                             Ω        Numerical    SE                                   No           No
-///  PSQ_FMT_LBN_SE_RESISTANCE_MAX            Maximum Seal Resistance of TPs in both groups                 Ω        Numerical    SE                                   No           No
-///  PSQ_FMT_LBN_SE_RESISTANCE_PASS           Seal Resistance QC                                            On/Off   Numerical    SE                                   No           No
-///  PSQ_FMT_LBN_VM_FULL_AVG                  Average voltage of all baseline chunks                        Volt     Numerical    VM                                   No           No
-///  PSQ_FMT_LBN_VM_FULL_AVG_ADIFF            Average voltage absolute difference                           Volt     Numerical    VM                                   No           No
-///  PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS       Average voltage absolute difference QC                        On/Off   Numerical    VM                                   No           No
-///  PSQ_FMT_LBN_VM_FULL_AVG_RDIFF            Average voltage relative difference                           (none)   Numerical    VM                                   No           No
-///  PSQ_FMT_LBN_VM_FULL_AVG_RDIFF_PASS       Average voltage relative difference QC                        On/Off   Numerical    VM                                   No           No
-///  PSQ_FMT_LBN_VM_FULL_AVG_PASS             Full average voltage QC result                                On/Off   Numerical    VM                                   No           No
-///  PSQ_FMT_LBN_AR_ACCESS_RESISTANCE         Access resistance of all TPs in the stimset                   Ω        Numerical    AR                                   No           No
-///  PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS    Access resistance QC                                          On/Off   Numerical    AR                                   No           No
-///  PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE   Steady state resistance of all TPs in the stimset             Ω        Numerical    AR                                   No           No
-///  PSQ_FMT_LBN_AR_RESISTANCE_RATIO          Ratio of access resistance to steady state                    (none)   Numerical    AR                                   No           No
-///  PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS     Ratio of access resistance to steady state QC                 On/Off   Numerical    AR                                   No           No
-///  PSQ_FMT_LBN_ASYNC_PASS                   Combined alarm state of all async channels                    On/Off   Numerical    All                                  No           No
-///  LBN_DELTA_I                              Delta current in pulse                                        Amperes  Numerical    RV, AD, DA (Sub)                     No           Yes
-///  LBN_DELTA_V                              Delta voltage in pulse                                        Volts    Numerical    RV, AD, DA (Sub)                     No           Yes
-///  LBN_RESISTANCE_FIT                       Fitted resistance from pulse                                  Ohm      Numerical    RV, AD, DA (Sub)                     No           Yes
-///  LBN_RESISTANCE_FIT_ERR                   Error of fitted resistance from pulse                         Ohm      Numerical    RV, AD, DA (Sub)                     No           Yes
-///  LBN_AUTOBIAS_TARGET_DIAG                 Autobias target voltage from dialog                           mV       Numerical    RV                                   No           Yes
-/// ======================================== ============================================================= ======== ============ ==================================== ============ ======================
+/// ========================================== ============================================================= ======== ============ ==================================== ============ ======================
+///  Naming constant                            Description                                                   Unit     Labnotebook  Analysis function                    Per Chunk?   Headstage dependent?
+/// ========================================== ============================================================= ======== ============ ==================================== ============ ======================
+///  PSQ_FMT_LBN_SPIKE_DETECT                   The required number of spikes were detected on the sweep      On/Off   Numerical    SP, RB, RA, DA (Supra)               No           Yes
+///  PSQ_FMT_LBN_SPIKE_POSITIONS                Spike positions                                               ms       Numerical    RA, VM                               No           Yes
+///  PSQ_FMT_LBN_SPIKE_COUNT                    Spike count                                                   (none)   Numerical    DA (Supra)                           No           Yes
+///  PSQ_FMT_LBN_STEPSIZE                       Current DAScale step size                                     (none)   Numerical    SP, RB                               No           No
+///  PSQ_FMT_LBN_STEPSIZE_FUTURE                Future DAScale step size                                      (none)   Numerical    RB                                   No           No
+///  PSQ_FMT_LBN_RB_DASCALE_EXC                 Range for valid DAScale values is exceeded                    On/Off   Numerical    RB                                   No           Yes
+///  PSQ_FMT_LBN_RB_LIMITED_RES                 Failed due to limited DAScale resolution                      On/Off   Numerical    RB                                   No           Yes
+///  PSQ_FMT_LBN_FINAL_SCALE                    Final DAScale of the given headstage, only set on success     (none)   Numerical    SP, RB                               No           No
+///  PSQ_FMT_LBN_SPIKE_DASCALE_ZERO             Sweep spiked with DAScale of 0                                On/Off   Numerical    SP                                   No           No
+///  PSQ_FMT_LBN_INITIAL_SCALE                  Initial DAScale                                               (none)   Numerical    RB, CR                               No           No
+///  PSQ_FMT_LBN_RMS_SHORT_PASS                 Short RMS baseline QC result                                  On/Off   Numerical    DA, RB, RA, CR, SE, VM, AR           Yes          Yes
+///  PSQ_FMT_LBN_RMS_SHORT_THRESHOLD            Short RMS baseline threshold                                  V        Numerical    DA, RB, RA, CR, SE, VM, AR           No           Yes
+///  PSQ_FMT_LBN_RMS_LONG_PASS                  Long RMS baseline QC result                                   On/Off   Numerical    DA, RB, RA, CR, SE, VM, AR           Yes          Yes
+///  PSQ_FMT_LBN_RMS_LONG_THRESHOLD             Long RMS baseline threshold                                   V        Numerical    DA, RB, RA, CR, SE, VM, AR           No           Yes
+///  PSQ_FMT_LBN_TARGETV                        Target voltage baseline                                       Volt     Numerical    DA, RB, RA, CR                       Yes          Yes
+///  PSQ_FMT_LBN_TARGETV_PASS                   Target voltage baseline QC result                             On/Off   Numerical    DA, RB, RA, CR                       Yes          Yes
+///  PSQ_FMT_LBN_TARGETV_THRESHOLD              Target voltage threshold                                      V        Numerical    DA, RB, RA, CR                       No           Yes
+///  PSQ_FMT_LBN_LEAKCUR                        Leak current                                                  Amperes  Numerical    PB, VM, AR                           Yes          Yes
+///  PSQ_FMT_LBN_LEAKCUR_PASS                   Leak current QC result                                        On/Off   Numerical    PB, VM, AR                           Yes          Yes
+///  PSQ_FMT_LBN_AVERAGEV                       Average voltage                                               Volt     Numerical    VM                                   Yes          Yes
+///  PSQ_FMT_LBN_CHUNK_PASS                     Which chunk passed/failed baseline QC                         On/Off   Numerical    DA, RB, RA, CR, PB, SE, VM, AR       Yes          Yes
+///  PSQ_FMT_LBN_BL_QC_PASS                     Pass/fail state of the complete baseline                      On/Off   Numerical    DA, RB, RA, CR, PB, SE, VM, AR       No           Yes
+///  PSQ_FMT_LBN_SWEEP_PASS                     Pass/fail state of the complete sweep                         On/Off   Numerical    DA, SP, RA, CR, PB, SE, VM, AR       No           No
+///  PSQ_FMT_LBN_SET_PASS                       Pass/fail state of the complete set                           On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM, AR   No           No
+///  PSQ_FMT_LBN_SAMPLING_PASS                  Pass/fail state of the sampling interval check                On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM, AR   No           No
+///  PSQ_FMT_LBN_PULSE_DUR                      Pulse duration as determined experimentally                   ms       Numerical    RB, DA, CR                           No           Yes
+///  PSQ_FMT_LBN_SPIKE_PASS                     Pass/fail state of the spike search (No spikes → Pass)        On/Off   Numerical    CR, VM                               No           Yes
+///  PSQ_FMT_LBN_DA_fI_SLOPE                    Fitted slope in the f-I plot                                  % Hz/pA  Numerical    DA (Supra, Adapt)                    No           Yes
+///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS       Fitted slope in the f-I plot exceeds target value             On/Off   Numerical    DA (Supra, Adapt)                    No           No
+///  PSQ_FMT_LBN_DA_AT_FI_OFFSET                Fitted offset in the f-I plot                                 Hz       Numerical    DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_FREQ                     AP frequency                                                  Hz       Numerical    DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT      AP frequencies from previous sweep reevaluation               Hz       Textual      DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT   DAScale values from previous sweep reevaluation               (none)   Textual      DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_FI_SLOPES                Slopes in the f-I plot from previous sweep reevaluation       % Hz/pA  Textual      DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_MAX_SLOPE                Maximum encountered f-I plot slope in the SCI                 % Hz/pA  Numerical    DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS         Valid slope from f-I plot QC                                  On/Off   Numerical    DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS    Valid slope from f-I plot of supra sweep reevaluation         On/Off   Numerical    DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS    Enough f-I pairs for line fit QC                              On/Off   Numerical    DA (Adapt)                           No           No
+///  PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES          DAScale values left to acquire                                (none)   Textual      DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS     Measured all DAScale values                                   On/Off   Numerical    DA (Adapt)                           No           No
+///  PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM         Minimum DAScale step width (normalized)                       (none)   Numerical    DA (Adapt)                           No           No
+///  PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM         Maximum DAScale step width (normalized)                       (none)   Numerical    DA (Adapt)                           No           No
+///  PSQ_FMT_LBN_DA_OPMODE                      Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA/PSQ_DS_ADAPT   (none)   Textual      DA                                   No           No
+///  PSQ_FMT_LBN_CR_INSIDE_BOUNDS               AD response is inside the given bands                         On/Off   Numerical    CR                                   No           No
+///  PSQ_FMT_LBN_CR_RESISTANCE                  Calculated resistance from DAScale sub threshold              Ohm      Numerical    CR                                   No           No
+///  PSQ_FMT_LBN_CR_BOUNDS_ACTION               Action according to min/max positions                         (none)   Numerical    CR                                   No           No
+///  PSQ_FMT_LBN_CR_BOUNDS_STATE                Upper and Lower bounds state according to min/max pos.        (none)   Textual      CR                                   No           No
+///  PSQ_FMT_LBN_CR_SPIKE_CHECK                 Spike check was enabled/disabled                              (none)   Numerical    CR                                   No           No
+///  PSQ_FMT_LBN_CR_INIT_UOD                    Initial user onset delay                                      ms       Numerical    CR                                   No           No
+///  PSQ_FMT_LBN_CR_INIT_LPF                    Initial MCC low pass filter                                   Hz       Numerical    CR                                   No           No
+///  PSQ_FMT_LBN_CR_STIMSET_QC                  Stimset valid/invalid QC state                                On/Off   Numerical    CR                                   No           No
+///  FMT_LBN_ANA_FUNC_VERSION                   Integer version of the analysis function                      (none)   Numerical    All                                  No           Yes
+///  PSQ_FMT_LBN_PB_RESISTANCE                  Pipette Resistance                                            Ohm      Numerical    PB                                   No           No
+///  PSQ_FMT_LBN_PB_RESISTANCE_PASS             Pipette Resistance QC                                         On/Off   Numerical    PB                                   No           No
+///  PSQ_FMT_LBN_SE_TP_GROUP_SEL                Selected Testpulse groups: One of Both/First/Second           (none)   Textual      SE                                   No           No
+///  PSQ_FMT_LBN_SE_RESISTANCE_A                Seal Resistance of TPs in group A                             Ω        Numerical    SE                                   No           No
+///  PSQ_FMT_LBN_SE_RESISTANCE_B                Seal Resistance of TPs in group B                             Ω        Numerical    SE                                   No           No
+///  PSQ_FMT_LBN_SE_RESISTANCE_MAX              Maximum Seal Resistance of TPs in both groups                 Ω        Numerical    SE                                   No           No
+///  PSQ_FMT_LBN_SE_RESISTANCE_PASS             Seal Resistance QC                                            On/Off   Numerical    SE                                   No           No
+///  PSQ_FMT_LBN_VM_FULL_AVG                    Average voltage of all baseline chunks                        Volt     Numerical    VM                                   No           No
+///  PSQ_FMT_LBN_VM_FULL_AVG_ADIFF              Average voltage absolute difference                           Volt     Numerical    VM                                   No           No
+///  PSQ_FMT_LBN_VM_FULL_AVG_ADIFF_PASS         Average voltage absolute difference QC                        On/Off   Numerical    VM                                   No           No
+///  PSQ_FMT_LBN_VM_FULL_AVG_RDIFF              Average voltage relative difference                           (none)   Numerical    VM                                   No           No
+///  PSQ_FMT_LBN_VM_FULL_AVG_RDIFF_PASS         Average voltage relative difference QC                        On/Off   Numerical    VM                                   No           No
+///  PSQ_FMT_LBN_VM_FULL_AVG_PASS               Full average voltage QC result                                On/Off   Numerical    VM                                   No           No
+///  PSQ_FMT_LBN_AR_ACCESS_RESISTANCE           Access resistance of all TPs in the stimset                   Ω        Numerical    AR                                   No           No
+///  PSQ_FMT_LBN_AR_ACCESS_RESISTANCE_PASS      Access resistance QC                                          On/Off   Numerical    AR                                   No           No
+///  PSQ_FMT_LBN_AR_STEADY_STATE_RESISTANCE     Steady state resistance of all TPs in the stimset             Ω        Numerical    AR                                   No           No
+///  PSQ_FMT_LBN_AR_RESISTANCE_RATIO            Ratio of access resistance to steady state                    (none)   Numerical    AR                                   No           No
+///  PSQ_FMT_LBN_AR_RESISTANCE_RATIO_PASS       Ratio of access resistance to steady state QC                 On/Off   Numerical    AR                                   No           No
+///  PSQ_FMT_LBN_ASYNC_PASS                     Combined alarm state of all async channels                    On/Off   Numerical    All                                  No           No
+///  LBN_DELTA_I                                Delta current in pulse                                        Amperes  Numerical    RV, AD, DA (Sub)                     No           Yes
+///  LBN_DELTA_V                                Delta voltage in pulse                                        Volts    Numerical    RV, AD, DA (Sub)                     No           Yes
+///  LBN_RESISTANCE_FIT                         Fitted resistance from pulse                                  Ohm      Numerical    RV, AD, DA (Sub)                     No           Yes
+///  LBN_RESISTANCE_FIT_ERR                     Error of fitted resistance from pulse                         Ohm      Numerical    RV, AD, DA (Sub)                     No           Yes
+///  LBN_AUTOBIAS_TARGET_DIAG                   Autobias target voltage from dialog                           mV       Numerical    RV                                   No           Yes
+/// ========================================== ============================================================= ======== ============ ==================================== ============ ======================
 ///
 /// Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.
 ///
@@ -1118,11 +1118,11 @@ End
 /// - 3: leak current baseline QC
 ///
 /// JSON-Wavenote:
-/// - "APFrequenciesRheobaseSupra": List of frequencies from the previous passing rheobase/supra SCI
-/// - "DAScalesRheobaseSupra": List of DAScale values from previous passing rheobase/supra SCI
+/// - "APFrequenciesRhSuAd": List of frequencies from the previous passing rheobase/supra/adaptive SCI
+/// - "DAScalesRhSuAd": List of DAScale values from previous passing rheobase/supra/adaptive SCI
 /// - "PassingSupraSweep": Sweep with passing supra set QC
 /// - "PassingRheobaseSweep": Sweep with passing rheobase set QC
-/// - "PassingRheobaseSupraSweeps": List of passing rheobase/supra SCI sweeps
+/// - "PassingRhSuAdSweeps": List of passing rheobase/supra/adaptive SCI sweeps
 ///
 /// #PSQ_CHIRP:
 ///
@@ -1889,7 +1889,7 @@ static Function PSQ_DS_GatherEpochDuration(string setName, variable epochIndex)
 	return length
 End
 
-static Function [variable start, variable stop] PSQ_DS_GetFrequencyEvalRangeForRheobaseSupra(string device, variable headstage, variable sweepNo)
+static Function [variable start, variable stop] PSQ_DS_GetFrequencyEvalRangeForRhSuAd(string device, variable headstage, variable sweepNo)
 
 	variable DAC, supraEpochLength, adaptiveEpochLength
 	string ctrl, setName
@@ -1935,15 +1935,15 @@ End
 
 /// @brief Use SweepFormula to gather the AP frequency and DAScale data from the given sweeps
 ///
-/// @param device    DAC hardware device
-/// @param sweepNo   current sweep
-/// @param headstage headstage
-/// @param sweeps    wave of sweep numbers to gather the data from
-/// @param fromRheobaseSupra [optional, defaults to off] called for rheobase/supra data (on) or adaptive data (off)
+/// @param device                    DAC hardware device
+/// @param sweepNo                   current sweep
+/// @param headstage                 headstage
+/// @param sweeps                    wave of sweep numbers to gather the data from
+/// @param fromRhSuAd [optional, defaults to off] called for rheobase/supra/previous adaptive data (on) or adaptive data (off)
 ///
 /// @retval apfreq  AP frequency data
 /// @retval DAScale DAScale data
-static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(string device, variable sweepNo, variable headstage, WAVE sweeps, [variable fromRheobaseSupra])
+static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(string device, variable sweepNo, variable headstage, WAVE sweeps, [variable fromRhSuAd])
 
 	variable ADC, start, stop, currentSweepNo, refSweepNo
 	string code, databrowser, key, ctrl, setName
@@ -1951,15 +1951,15 @@ static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(st
 	string freqDataKey = "Frequency data"
 	string daScaleKey  = "DAScale data"
 
-	if(ParamIsDefault(fromRheobaseSupra))
-		fromRheobaseSupra = 1
+	if(ParamIsDefault(fromRhSuAd))
+		fromRhSuAd = 1
 	else
-		fromRheobaseSupra = !!fromRheobaseSupra
+		fromRhSuAd = !!fromRhSuAd
 	endif
 
-	if(fromRheobaseSupra)
+	if(fromRhSuAd)
 		refSweepNo = PSQ_GetLastPassingDAScale(device, headstage, PSQ_DS_SUPRA)
-		[start, stop] = PSQ_DS_GetFrequencyEvalRangeForRheobaseSupra(device, headstage, refSweepNo)
+		[start, stop] = PSQ_DS_GetFrequencyEvalRangeForRhSuAd(device, headstage, refSweepNo)
 	else
 		refSweepNo = sweepNo
 		[start, stop] = PSQ_DS_GetFrequencyEvalRange(device, headstage, refSweepNo)
@@ -2138,21 +2138,21 @@ End
 
 /// @brief Check if the fit results from PSQ_DS_FitFrequencyCurrentData are valid
 ///
-/// @param device            DAC hardware device
-/// @param sweepNo           current sweep
-/// @param headstage         headstage
-/// @param fitOffset         fit offsets
-/// @param fitSlope          fit slopes
-/// @param fromRheobaseSupra [optional, defaults to false] if the fit offset/slope data is from the rheobase/supra threshold sweeps or not
-static Function PSQ_DS_AreFitResultsValid(string device, variable sweepNo, variable headstage, WAVE/Z fitOffset, WAVE/Z fitSlope, [variable fromRheobaseSupra])
+/// @param device                    DAC hardware device
+/// @param sweepNo                   current sweep
+/// @param headstage                 headstage
+/// @param fitOffset                 fit offsets
+/// @param fitSlope                  fit slopes
+/// @param fromRhSuAd [optional, defaults to false] if the fit offset/slope data is from the rheobase/supra threshold sweeps or not
+static Function PSQ_DS_AreFitResultsValid(string device, variable sweepNo, variable headstage, WAVE/Z fitOffset, WAVE/Z fitSlope, [variable fromRhSuAd])
 
 	variable numFits, validFit
 	string key
 
-	if(ParamIsDefault(fromRheobaseSupra))
-		fromRheobaseSupra = 0
+	if(ParamIsDefault(fromRhSuAd))
+		fromRhSuAd = 0
 	else
-		fromRheobaseSupra = !!fromRheobaseSupra
+		fromRhSuAd = !!fromRhSuAd
 	endif
 
 	if(WaveExists(fitOffset) && WaveExists(fitSlope))
@@ -2167,7 +2167,7 @@ static Function PSQ_DS_AreFitResultsValid(string device, variable sweepNo, varia
 	WAVE validFitLBN     = LBN_GetNumericWave()
 	validFitLBN[headstage] = validFit
 
-	if(fromRheobaseSupra)
+	if(fromRhSuAd)
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS)
 	else
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS)
@@ -2560,17 +2560,17 @@ static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherF
 		Make/FREE/D/N=0 futureDAScalesHistoric
 	endif
 
-	// 1. rheobase/supra sweeps reevaluated using our own epoch and stored in PRE_SET_EVENT
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA, query = 1)
-	WAVE/T DAScalesFromRheobaseAndSupraLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	WAVE   DAScalesFromRheobaseAndSupra    = ListToNumericWave(DAScalesFromRheobaseAndSupraLBN[headstage], ";")
+	// 1. rheobase/supra/adaptive sweeps reevaluated using our own epoch and stored in PRE_SET_EVENT
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT, query = 1)
+	WAVE/T DAScalesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	WAVE   DAScalesRhSuAd    = ListToNumericWave(DAScalesRhSuAdLBN[headstage], ";")
 
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA, query = 1)
-	WAVE/T apfreqFromRheobaseAndSupraLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	WAVE   apfreqFromRheobaseAndSupra    = ListToNumericWave(apfreqFromRheobaseAndSupraLBN[headstage], ";")
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT, query = 1)
+	WAVE/T apfreqRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	WAVE   apfreqRhSuAd    = ListToNumericWave(apfreqRhSuAdLBN[headstage], ";")
 
-	WAVE apFreq   = apfreqFromRheobaseAndSupra
-	WAVE DAScales = DAScalesFromRheobaseAndSupra
+	WAVE apFreq   = apfreqRhSuAd
+	WAVE DAScales = DAScalesRhSuAd
 
 	// 2. sweeps from adaptive threshold SCI (includes the current sweep)
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ, query = 1)
@@ -2690,7 +2690,7 @@ static Function/WAVE PSQ_DS_GetPassingRheobaseSweeps(WAVE numericalValues, varia
 	return passingSweeps
 End
 
-static Function/WAVE PSQ_DS_GetPassingSupraAndRheobaseSweeps(string device, variable headstage)
+static Function/WAVE PSQ_DS_GetPassingRhSuAdSweeps(string device, variable headstage, string params)
 
 	variable passingSupraSweep, passingRheobaseSweep
 
@@ -2734,7 +2734,7 @@ End
 /// Multiply by `AP Frequency` to get scaled values.
 ///
 /// @returns one on error, zero otherwise
-static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_DS_CalculateAndStoreDAScaleStepWidths(string device, variable sweepNo, WAVE apfreqFromRheobaseAndSupra, WAVE DAScalesFromRheobaseAndSupra, variable maxFrequencyChangePercent, variable dascaleStepWidthMinMaxRatio)
+static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_DS_CalculateAndStoreDAScaleStepWidths(string device, variable sweepNo, WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, variable maxFrequencyChangePercent, variable dascaleStepWidthMinMaxRatio)
 
 	variable currentSweepNo, daScaleMinStepWidth, daScaleMaxStepWidth
 	string code, databrowser, fitKey, key
@@ -2742,9 +2742,9 @@ static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStep
 
 	fitKey = "Fit result rheobase and supra"
 
-	sprintf code, "freq = [%s]\r", NumericWaveToList(apfreqFromRheobaseAndSupra, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
+	sprintf code, "freq = [%s]\r", NumericWaveToList(apfreqRhSuAd, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 	str += code
-	sprintf code, "dascale = [%s]\r", NumericWaveToList(DAScalesFromRheobaseAndSupra, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
+	sprintf code, "dascale = [%s]\r", NumericWaveToList(DAScalesRhSuAd, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 	str += code
 	sprintf code, "result = fit($dascale, $freq, fitline())\r"
 	str += code
@@ -3403,45 +3403,45 @@ Function PSQ_DAScale(device, s)
 
 					break
 				case PSQ_DS_ADAPT:
-					WAVE/Z supraAndRheobaseSweeps = PSQ_DS_GetPassingSupraAndRheobaseSweeps(device, s.headstage)
+					WAVE/Z RhSuAdSweeps = PSQ_DS_GetPassingRhSuAdSweeps(device, s.headstage, s.params)
 
-					if(!WaveExists(supraAndRheobaseSweeps))
+					if(!WaveExists(RhSuAdSweeps))
 						return 1
 					endif
 
 					if(TestOverrideActive())
-						WAVE   overrideResults              = GetOverrideResults()
-						WAVE/Z apfreqFromRheobaseAndSupra   = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRheobaseSupra")
-						WAVE/Z DAScalesFromRheobaseAndSupra = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRheobaseSupra")
+						WAVE   overrideResults = GetOverrideResults()
+						WAVE/Z apfreqRhSuAd    = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRhSuAd")
+						WAVE/Z DAScalesRhSuAd  = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRhSuAd")
 					else
-						[WAVE apfreqFromRheobaseAndSupra, WAVE DAScalesFromRheobaseAndSupra] = PSQ_DS_GatherFrequencyCurrentData(device, s.sweepNo, s.headstage, supraAndRheobaseSweeps, fromRheobaseSupra = 1)
+						[WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd] = PSQ_DS_GatherFrequencyCurrentData(device, s.sweepNo, s.headstage, RhSuAdSweeps, fromRhSuAd = 1)
 					endif
 
-					ASSERT(WaveExists(apfreqFromRheobaseAndSupra) && WaveExists(DAScalesFromRheobaseAndSupra), "Missing apfreq/DAScales wave from rheobase, supra")
+					ASSERT(WaveExists(apfreqRhSuAd) && WaveExists(DAScalesRhSuAd), "Missing apfreq/DAScales wave from rheobase, supra, adaptive")
 
-					numPoints = DimSize(apfreqFromRheobaseAndSupra, ROWS)
-					ASSERT(numPoints == DimSize(DAScalesFromRheobaseAndSupra, ROWS), "Non-matching wave sizes")
+					numPoints = DimSize(apfreqRhSuAd, ROWS)
+					ASSERT(numPoints == DimSize(DAScalesRhSuAd, ROWS), "Non-matching wave sizes")
 
 					WAVE/T apfreqLBN = LBN_GetTextWave()
-					apfreqLBN[s.headstage] = NumericWaveToList(apfreqFromRheobaseAndSupra, ";", format = "%.15g")
-					key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA)
+					apfreqLBN[s.headstage] = NumericWaveToList(apfreqRhSuAd, ";", format = "%.15g")
+					key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT)
 					ED_AddEntryToLabnotebook(device, key, apfreqLBN, overrideSweepNo = s.sweepNo, unit = "Hz")
 
 					WAVE/T DAScalesTextLBN = LBN_GetTextWave()
-					DAScalesTextLBN[s.headstage] = NumericWaveToList(DAScalesFromRheobaseAndSupra, ";", format = "%.15g")
-					key                          = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA)
+					DAScalesTextLBN[s.headstage] = NumericWaveToList(DAScalesRhSuAd, ";", format = "%.15g")
+					key                          = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT)
 					ED_AddEntryToLabnotebook(device, key, DAScalesTextLBN, overrideSweepNo = s.sweepNo)
 
-					[WAVE fitOffsetFromRheobaseAndSupra, WAVE fitSlopeFromRheobaseAndSupra, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, s.sweepNo,                                                           \
-					                                                                                                                 apfreqFromRheobaseAndSupra, DAScalesFromRheobaseAndSupra, numPointsForLineFit)
+					[WAVE fitOffsetFromRhSuAd, WAVE fitSlopeFromRhSuAd, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, s.sweepNo,                               \
+					                                                                                             apfreqRhSuAd, DAScalesRhSuAd, numPointsForLineFit)
 
-					if(!WaveExists(fitOffsetFromRheobaseAndSupra) || !WaveExists(fitSlopeFromRheobaseAndSupra))
+					if(!WaveExists(fitOffsetFromRhSuAd) || !WaveExists(fitSlopeFromRhSuAd))
 						printf "The f-I fit of the rheobase/supra data failed due to: \"%s\"\r", errMsg
 						ControlWindowToFront()
 						return 1
 					endif
 
-					[ret, daScaleStepMinNorm, daScaleStepMaxNorm] = PSQ_DS_CalculateAndStoreDAScaleStepWidths(device, s.sweepNo, apfreqFromRheobaseAndSupra, DAScalesFromRheobaseAndSupra, \
+					[ret, daScaleStepMinNorm, daScaleStepMaxNorm] = PSQ_DS_CalculateAndStoreDAScaleStepWidths(device, s.sweepNo, apfreqRhSuAd, DAScalesRhSuAd,      \
 					                                                                                          maxFrequencyChangePercent, dascaleStepWidthMinMaxRatio)
 
 					if(ret)
@@ -3454,29 +3454,29 @@ Function PSQ_DAScale(device, s)
 					cdp.daScaleStepMaxNorm = daScaleStepMaxNorm
 
 					WAVE/T fitOffsetLBN = LBN_GetTextWave()
-					fitOffsetLBN[s.headstage] = NumericWaveToList(fitOffsetFromRheobaseAndSupra, ";", format = "%.15g")
+					fitOffsetLBN[s.headstage] = NumericWaveToList(fitOffsetFromRhSuAd, ";", format = "%.15g")
 					key                       = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_OFFSETS)
 					ED_AddEntryToLabnotebook(device, key, fitOffsetLBN, overrideSweepNo = s.sweepNo, unit = "Hz")
 
 					WAVE/T fitSlopeLBN = LBN_GetTextWave()
-					fitSlopeLBN[s.headstage] = NumericWaveToList(fitSlopeFromRheobaseAndSupra, ";", format = "%.15g")
+					fitSlopeLBN[s.headstage] = NumericWaveToList(fitSlopeFromRhSuAd, ";", format = "%.15g")
 					key                      = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_SLOPES)
 					ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
 
 					WAVE maxSlopeLBN = LBN_GetNumericWave()
-					maxSlopeLBN[s.headstage] = WaveMax(fitSlopeFromRheobaseAndSupra)
+					maxSlopeLBN[s.headstage] = WaveMax(fitSlopeFromRhSuAd)
 					key                      = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
 					ED_AddEntryToLabnotebook(device, key, maxSlopeLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
 
-					WAVE/D/Z futureDAScales = PSQ_DS_GatherOvershootCorrection(cdp, apfreqFromRheobaseAndSupra, DAScalesFromRheobaseAndSupra, $"")
+					WAVE/D/Z futureDAScales = PSQ_DS_GatherOvershootCorrection(cdp, apfreqRhSuAd, DAScalesRhSuAd, $"")
 
-					if(PSQ_DS_AreFitResultsValid(device, s.sweepNo, s.headstage, fitOffsetFromRheobaseAndSupra, fitSlopeFromRheobaseAndSupra, fromRheobaseSupra = 1))
+					if(PSQ_DS_AreFitResultsValid(device, s.sweepNo, s.headstage, fitOffsetFromRhSuAd, fitSlopeFromRhSuAd, fromRhSuAd = 1))
 
 						// not calling PSQ_DS_GetDAScaleStepsNorm here as we
 						// can't query labnotebook entries from the current SCI
 						// in PRE_SET_EVENT
 
-						dascale = PSQ_DS_CalculateDAScale(cdp, fitOffsetFromRheobaseAndSupra[Inf], fitSlopeFromRheobaseAndSupra[Inf], DAScalesFromRheobaseAndSupra[Inf], apfreqFromRheobaseAndSupra[Inf])
+						dascale = PSQ_DS_CalculateDAScale(cdp, fitOffsetFromRhSuAd[Inf], fitSlopeFromRhSuAd[Inf], DAScalesRhSuAd[Inf], apfreqRhSuAd[Inf])
 
 						if(!WaveExists(futureDAScales))
 							Make/FREE/D/N=0 futureDAScales
