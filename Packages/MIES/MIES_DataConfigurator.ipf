@@ -1234,7 +1234,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 	DC_DocumentChannelProperty(device, "Amplifier change via I=0", INDEP_HEADSTAGE, NaN, NaN, var = DAG_GetNumericalValue(device, "check_Settings_AmpIEQZstep"))
 	DC_DocumentChannelProperty(device, "Skip analysis functions", INDEP_HEADSTAGE, NaN, NaN, var = DAG_GetNumericalValue(device, "Check_Settings_SkipAnalysFuncs"))
 	DC_DocumentChannelProperty(device, "Repeat sweep on async alarm", INDEP_HEADSTAGE, NaN, NaN, var = DAG_GetNumericalValue(device, "Check_Settings_AlarmAutoRepeat"))
-	DC_DocumentChannelProperty(device, "Autobias %", INDEP_HEADSTAGE, NaN, NaN, var = DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasPerc"))
+	DC_DocumentChannelProperty(device, AUTOBIAS_PERC_KEY, INDEP_HEADSTAGE, NaN, NaN, var = DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasPerc"))
 	DC_DocumentChannelProperty(device, "Autobias interval", INDEP_HEADSTAGE, NaN, NaN, var = DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasInt"))
 
 	DC_DocumentHardwareProperties(device, s.hardwareType)
