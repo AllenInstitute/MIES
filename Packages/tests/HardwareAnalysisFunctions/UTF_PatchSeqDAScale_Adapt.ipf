@@ -365,6 +365,29 @@ static Function PS_DS_AD1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascale], DAScalesRef, mode = WAVE_DATA, tol = 1e-24)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
+
+	// start again to check that PSQ_GetPreviousSetQCFailingAdaptive is working correctly
+	PGC_SetAndActivateControl(str, "DataAcquireButton")
+
+	RegisterReentryFunction("PatchSeqTestDAScaleAdapt#" + GetRTStackInfo(1))
+End
+
+static Function PS_DS_AD1_REENTRY_REENTRY([string str])
+
+	variable sweepNo, failingAdaptiveSweep
+	sweepNo = 5
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	failingAdaptiveSweep = JWN_GetNumberFromWaveNote(overrideResults, "FailingAdaptiveSweep")
+	CHECK_EQUAL_VAR(failingAdaptiveSweep, 2)
 End
 
 static Function PS_DS_AD2_preAcq(string device)

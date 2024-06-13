@@ -1123,6 +1123,7 @@ End
 /// - "PassingSupraSweep": Sweep with passing supra set QC
 /// - "PassingRheobaseSweep": Sweep with passing rheobase set QC
 /// - "PassingRhSuAdSweeps": List of passing rheobase/supra/adaptive SCI sweeps
+/// - "FailingAdaptiveSweep": Failing adaptive sweep, the very last one, of the previous SCI (*written* by PSQ_DaScale)
 ///
 /// #PSQ_CHIRP:
 ///
@@ -1612,6 +1613,58 @@ static Function PSQ_GetLastPassingLongRHSweep(string device, variable headstage,
 	endfor
 
 	return INVALID_SWEEP_NUMBER
+End
+
+/// @brief Return the previously acquired sweep number
+///
+/// But only when it fullfills all of the following conditions:
+/// - DAScale supra adaptive analysis function was run
+/// - failing set QC
+/// - all analysis parameters are the same
+/// - used same targetV autobias value
+static Function PSQ_GetPreviousSetQCFailingAdaptive(string device, variable headstage, string params)
+
+	variable sweepNo, setQC, currentAutoBiasV
+	string key, opMode
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+
+	if(!IsValidSweepNumber(sweepNo))
+		return INVALID_SWEEP_NUMBER
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	key    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE, query = 1)
+	opMode = GetLastSettingTextIndep(textualValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(cmpstr(opMode, PSQ_DS_ADAPT))
+		return INVALID_SWEEP_NUMBER
+	endif
+
+	key   = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = 0)
+
+	if(setQC)
+		return INVALID_SWEEP_NUMBER
+	endif
+
+	WAVE/T previousAnalysisParams = GetLastSetting(textualValues, sweepNo, ANALYSIS_FUNCTION_PARAMS_LBN, DATA_ACQUISITION_MODE)
+
+	if(cmpstr(previousAnalysisParams[headstage], params))
+		return INVALID_SWEEP_NUMBER
+	endif
+
+	currentAutoBiasV = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
+
+	WAVE autoBiasV = GetLastSetting(numericalValues, sweepNo, "Autobias Vcom", DATA_ACQUISITION_MODE)
+
+	if(!CheckIfClose(autoBiasV[headstage], currentAutoBiasV, tol = 1e-2))
+		return INVALID_SWEEP_NUMBER
+	endif
+
+	return sweepNo
 End
 
 static Function PSQ_DS_IsValidMode(string str)
@@ -2695,7 +2748,7 @@ End
 
 static Function/WAVE PSQ_DS_GetPassingRhSuAdSweeps(string device, variable headstage, string params)
 
-	variable passingSupraSweep, passingRheobaseSweep
+	variable passingSupraSweep, passingRheobaseSweep, failingAdaptiveSweep
 
 	passingSupraSweep = PSQ_GetLastPassingDAScale(device, headstage, PSQ_DS_SUPRA)
 
@@ -2713,18 +2766,24 @@ static Function/WAVE PSQ_DS_GetPassingRhSuAdSweeps(string device, variable heads
 		return $""
 	endif
 
+	failingAdaptiveSweep = PSQ_GetPreviousSetQCFailingAdaptive(device, headstage, params)
+
 	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
-		WAVE sweeps          = JWN_GetNumericWaveFromWaveNote(overrideResults, "/PassingRheobaseSupraSweeps")
-
-		ASSERT(WaveExists(sweeps), "Missing sweeps from passing supra SCI")
+		WAVE sweeps          = JWN_GetNumericWaveFromWaveNote(overrideResults, "/PassingRhSuAdSweeps")
+		JWN_SetNumberInWaveNote(overrideResults, "/FailingAdaptiveSweep", failingAdaptiveSweep)
 	else
 		WAVE numericalValues = GetLBNumericalValues(device)
 
-		WAVE passingSupraSweeps    = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, passingSupraSweep, headstage)
-		WAVE passingRheobaseSweeps = PSQ_DS_GetPassingRheobaseSweeps(numericalValues, passingRheobaseSweep, headstage)
+		WAVE   passingRheobaseSweeps = PSQ_DS_GetPassingRheobaseSweeps(numericalValues, passingRheobaseSweep, headstage)
+		WAVE   passingSupraSweeps    = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, passingSupraSweep, headstage)
+		WAVE/Z passingAdaptiveSweeps = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, failingAdaptiveSweep, headstage)
 
-		Concatenate/NP=(ROWS)/FREE {passingRheobaseSweeps, passingSupraSweeps}, sweeps
+		if(!WaveExists(passingAdaptiveSweeps))
+			Make/N=0/FREE passingAdaptiveSweeps
+		endif
+
+		Concatenate/NP=(ROWS)/FREE {passingRheobaseSweeps, passingSupraSweeps, passingAdaptiveSweeps}, sweeps
 	endif
 
 	return sweeps
