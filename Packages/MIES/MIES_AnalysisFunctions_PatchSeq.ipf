@@ -2591,7 +2591,7 @@ static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherF
 		WAVE baselinePassCurrentSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 		// for the current sweep we don't yet have sweep QC values, but instead we just look at the baseline QC result
-		sweepPassCurrentSCI[Inf] = baselinePassCurrentSCI
+		sweepPassCurrentSCI[Inf] = baselinePassCurrentSCI[Inf]
 
 		apfreqCurrentSCI[]  = sweepPassCurrentSCI[p] ? apfreqCurrentSCI[p] : NaN
 		DAScaleCurrentSCI[] = sweepPassCurrentSCI[p] ? DAScaleCurrentSCI[p] : NaN
