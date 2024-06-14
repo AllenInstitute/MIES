@@ -1238,7 +1238,7 @@ End
 static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData &plotMetaData, WAVE data)
 
 	variable channelNumber, channelType, sweepNo, isAveraged
-	string channelId, prefix
+	string channelId, prefix, legendPrefix
 	string traceAnnotation, annotationPrefix
 
 	prefix = RemoveEnding(ReplaceString(";", plotMetaData.opStack, " "), " ")
@@ -1248,8 +1248,15 @@ static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData &plotMetaData
 		case SF_DATATYPE_SWEEP: // fallthrough
 		case SF_DATATYPE_LABNOTEBOOK: // fallthrough
 		case SF_DATATYPE_TP:
-			sweepNo          = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
-			annotationPrefix = SF_GetAnnotationPrefix(plotMetaData.dataType)
+			sweepNo      = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+			legendPrefix = JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX)
+
+			if(!IsEmpty(legendPrefix))
+				legendPrefix = " " + legendPrefix + " "
+			endif
+
+			sprintf annotationPrefix, "%s%s", SF_GetAnnotationPrefix(plotMetaData.dataType), legendPrefix
+
 			if(IsValidSweepNumber(sweepNo))
 				channelNumber = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELNUMBER)
 				channelType   = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
@@ -1375,9 +1382,9 @@ End
 static Function/S SF_ShrinkLegend(string annotation)
 
 	string str, tracePrefix, opPrefix, sweepNum, suffix
-	string opPrefixOld, suffixOld
-	string   sweepList = ""
-	variable firstRun  = 1
+	string opPrefixOld, suffixOld, tracePrefixOld, shrunkAnnotation
+	string   sweepList
+	variable multipleSweeps
 
 	string expr = "(\\\\s\\([\\s\\S]+\\)) ([\\s\\S]*Sweep) (\\d+) ([\\s\\S]*)"
 
@@ -1386,29 +1393,51 @@ static Function/S SF_ShrinkLegend(string annotation)
 		return annotation
 	endif
 
-	SplitString/E=expr lines[0], tracePrefix, opPrefixOld, sweepNum, suffixOld
-	if(V_flag != 4)
-		return annotation
-	endif
-	sweepList = AddListItem(sweepNum, sweepList, ",")
+	shrunkAnnotation = ""
+
+	tracePrefixOld = ""
+	suffixOld      = ""
+	opPrefixOld    = ""
+	sweepList      = ""
 
 	for(line : lines)
-		if(firstRun)
-			firstRun = 0
-			continue
+		SplitString/E=expr line, tracePrefix, opPrefix, sweepNum, suffix
+		if(V_flag != 4)
+			return annotation
 		endif
 
-		SplitString/E=expr line, str, opPrefix, sweepNum, suffix
-		if(V_flag != 4 || CmpStr(opPrefixOld, opPrefix, 2) || CmpStr(suffixOld, suffix, 2))
+		if(IsEmpty(tracePrefixOld) && IsEmpty(opPrefixOld) && IsEmpty(suffixOld))
+			tracePrefixOld = tracePrefix
+			opPrefixOld    = opPrefix
+			suffixOld      = suffix
+			sweepList      = ""
+		endif
+
+		if(CmpStr(suffixOld, suffix, 2))
 			return annotation
+		endif
+
+		if(CmpStr(opPrefixOld, opPrefix, 2))
+			multipleSweeps    = ItemsInList(sweepList, ",") > 1
+			sweepList         = CompressNumericalList(sweepList, ",")
+			shrunkAnnotation += tracePrefixOld + opPrefixOld + SelectString(multipleSweeps, "", "s") + " " + sweepList + " " + suffixOld + "\r"
+
+			tracePrefixOld = tracePrefix
+			opPrefixOld    = opPrefix
+			suffixOld      = suffix
+			sweepList      = ""
 		endif
 
 		sweepList = AddListItem(sweepNum, sweepList, ",", Inf)
 	endfor
 
-	sweepList = CompressNumericalList(sweepList, ",")
+	if(!IsEmpty(sweepList))
+		multipleSweeps    = ItemsInList(sweepList, ",") > 1
+		sweepList         = CompressNumericalList(sweepList, ",")
+		shrunkAnnotation += tracePrefixOld + opPrefixOld + SelectString(multipleSweeps, "", "s") + " " + sweepList + " " + suffixOld
+	endif
 
-	return tracePrefix + opPrefixOld + "s " + sweepList + " " + suffixOld
+	return shrunkAnnotation
 End
 
 static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string winNameTemplate, string graph, variable winDisplayMode, variable numGraphs)
