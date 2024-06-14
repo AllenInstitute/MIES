@@ -23,6 +23,7 @@ static StrConstant HTTP_FOLDER_URL = "https://www.byte-physics.de/Downloads/alle
 #include "UTF_EpochRecreation"
 #include "UTF_HistoricDashboard"
 #include "UTF_HistoricEpochClipping"
+#include "UTF_HistoricSweepBrowser"
 #include "UTF_HistoricSweepUpgrade"
 
 // Entry point for UTF
@@ -89,6 +90,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_EpochRecreation.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", Inf)
+	list = AddListItem("UTF_HistoricSweepBrowser.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricSweepUpgrade.ipf", list, ";", Inf)
 
 	if(ParamIsDefault(testsuite))
@@ -233,6 +235,15 @@ Function/WAVE GetHistoricDataFilesPXP()
 	                     "very_early_mies-data_H17.03.016.11.09.01.pxp",      \
 	                     "epoch_clipping_2022_03_08_140256.pxp"}
 
+	DownloadFilesIfRequired(files)
+	SetLabelsForDGWave(files)
+
+	return files
+End
+
+Function/WAVE GetHistoricDataFilesWithTTLData()
+
+	Make/FREE/T files = {"C57BL6J-684963.02.04.01_pislocin_puff_2023_07_19_141829-compressed.nwb"}
 	DownloadFilesIfRequired(files)
 	SetLabelsForDGWave(files)
 

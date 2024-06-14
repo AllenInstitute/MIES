@@ -2684,7 +2684,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	// TTLs
 	for(i = 0; i < numBlocksTTL; i += 1)
 
-		if(tgs.visualizeEpochs && tgs.splitTTLBits)
+		if(tgs.visualizeEpochs && tgs.splitTTLBits && numBlocksEpochTTL > 0)
 			regex = DB_AXIS_PART_EPOCHS + "_" + ttlsWithBits[i]
 			WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
 			ASSERT(WaveExists(axes), "Unexpected number of matches")

@@ -1908,7 +1908,7 @@ threadsafe Function NWB_ConvertToStandardTTLBit(variable value)
 	ASSERT_TS(IsInteger(value) && value > 0, "Expected positive integer value")
 
 	bit = FindRightMostHighBit(value)
-	ASSERT_TS(bit > 0 && bit < NUM_ITC_TTL_BITS_PER_RACK, "Invalid TTL bit")
+	ASSERT_TS(bit >= 0 && bit < NUM_ITC_TTL_BITS_PER_RACK, "Invalid TTL bit")
 
 	return bit
 End
