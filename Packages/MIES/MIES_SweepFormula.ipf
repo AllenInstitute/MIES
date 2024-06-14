@@ -1704,6 +1704,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				continue
 			endif
 
+			SF_FormulaPlotterExtendResultsIfCompatible(formulaResults)
+
 			numData = DimSize(formulaResults, ROWS)
 			for(k = 0; k < numData; k += 1)
 
@@ -5421,19 +5423,12 @@ End
 
 static Function/WAVE SF_ResolveDataset(WAVE input)
 
-	string wName, tmpStr
-
 	ASSERT(IsTextWave(input) && DimSize(input, ROWS) == 1 && DimSize(input, COLS) == 0, "Unknown SF argument input format")
 
-	WAVE/T wvt = input
-	ASSERT(strsearch(wvt[0], SF_WREF_MARKER, 0) == 0, "Marker not found in SF argument")
+	WAVE/Z resolve = SFH_AttemptDatasetResolve(WaveText(input, row = 0))
+	ASSERT(WaveExists(resolve), "Could not resolve dataset from wave element")
 
-	tmpStr = wvt[0]
-	wName  = tmpStr[strlen(SF_WREF_MARKER), Inf]
-	WAVE/Z out = $wName
-	ASSERT(WaveExists(out), "Referenced wave not found: " + wName)
-
-	return out
+	return resolve
 End
 
 Function/S SF_GetDefaultFormula()
@@ -5663,4 +5658,55 @@ static Function [WAVE outNum, WAVE/T outText] SF_ExecutorCreateOrCheckTextual(WA
 	endif
 
 	return [out, outT]
+End
+
+/// @brief This function extends formulaResults if possible. For each result from a Y formula it is attempted to move datasets from inside an array outside in the form
+///        [dataset(1, 2), dataset(3, 4)] -> dataset([1, 3], [3, 4])
+///        because the plotter can iterate over datasets only at the outermost occurrence.
+///        As result the inside elements may be plottable after this transformation.
+///        algorithm details:
+///        Each Y formula result is 'repackaged' in an array and attempted to be transformed
+///        Case 1: On a failed transformation the initial array is returned.
+///        Case 2: On a successful transformation a dataset with one or more elements is returned
+///        Regarding the plotter the array of case 1 is treated as a single dataset.
+///        All the results from case 1 and case 2 are gathered in a waveref wave collectY.
+///        The X formula results are associated multiple times for case 2 if multiple datasets were returned and are
+///        gathered in a waveref wave collectX that grows identical to collectY.
+///        The formulaResults wave gets modified to store the new transformed results.
+static Function SF_FormulaPlotterExtendResultsIfCompatible(WAVE/WAVE formulaResults)
+
+	variable i, numResults
+
+	numResults = DimSize(formulaResults, ROWS)
+	if(!numResults)
+		return NaN
+	endif
+
+	WAVE/ZZ/WAVE collectX, collectY
+	for(i = 0; i < numResults; i += 1)
+
+		WAVE/Z wvResultX = formulaResults[i][%FORMULAX]
+		WAVE/Z wvResultY = formulaResults[i][%FORMULAY]
+		if(!WaveExists(wvResultY))
+			continue
+		endif
+		Make/FREE/WAVE array = {wvResultY}
+		WAVE/WAVE extended = SFH_MoveDatasetHigherIfCompatible(array)
+		if(!WaveExists(collectY))
+			WAVE/WAVE collectY = extended
+			Duplicate/FREE/WAVE extended, collectX
+			collectX[] = wvResultX
+		else
+			Concatenate/FREE/NP/WAVE {extended}, collectY
+			extended[] = wvResultX
+			Concatenate/FREE/NP/WAVE {extended}, collectX
+		endif
+	endfor
+
+	if(!WaveExists(collectY))
+		return NaN
+	endif
+	Redimension/N=(DimSize(collectY, ROWS), -1, -1, -1) formulaResults
+	formulaResults[][%FORMULAX] = collectX[p]
+	formulaResults[][%FORMULAY] = collectY[p]
 End

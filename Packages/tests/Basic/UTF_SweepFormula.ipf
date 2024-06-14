@@ -4548,3 +4548,92 @@ static Function DataTypePromotionInPrimitiveOperations()
 	type = JWN_GetStringFromWaveNote(output, SF_META_DATATYPE)
 	CHECK_EQUAL_STR(type, "")
 End
+
+static Function HelperMoveDatasetToHigherIfCompatible()
+
+	string win, device, code, type
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	code = "[dataset(1, 2), dataset(3, 4)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
+	CHECK_WAVE(moved, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(moved, ROWS), 2)
+	WAVE set0 = moved[0]
+	Make/FREE/D ref = {1, 3}
+	CHECK_EQUAL_WAVES(set0, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+	WAVE set1 = moved[1]
+	Make/FREE/D ref = {2, 4}
+	CHECK_EQUAL_WAVES(set1, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	code = "[dataset(1, 2, 3), dataset(4, 5, 6)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
+	CHECK_WAVE(moved, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(moved, ROWS), 3)
+	WAVE set0 = moved[0]
+	Make/FREE/D ref = {1, 4}
+	CHECK_EQUAL_WAVES(set0, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+	WAVE set1 = moved[1]
+	Make/FREE/D ref = {2, 5}
+	CHECK_EQUAL_WAVES(set1, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+	WAVE set2 = moved[2]
+	Make/FREE/D ref = {3, 6}
+	CHECK_EQUAL_WAVES(set2, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	code = "[dataset(1, 2), dataset(3, 4), dataset(5, 6)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
+	CHECK_WAVE(moved, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(moved, ROWS), 2)
+	WAVE set0 = moved[0]
+	Make/FREE/D ref = {1, 3, 5}
+	CHECK_EQUAL_WAVES(set0, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+	WAVE set1 = moved[1]
+	Make/FREE/D ref = {2, 4, 6}
+	CHECK_EQUAL_WAVES(set1, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	code = "[dataset([1, 2], [3, 4]), dataset([5, 6], [7, 8])]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
+	CHECK_WAVE(moved, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(moved, ROWS), 2)
+	WAVE set0 = moved[0]
+	Make/FREE/D ref = {{1, 5}, {2, 6}}
+	CHECK_EQUAL_WAVES(set0, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+	WAVE set1 = moved[1]
+	Make/FREE/D ref = {{3, 7}, {4, 8}}
+	CHECK_EQUAL_WAVES(set1, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	code = "[dataset([a, b], [c, d]), dataset([e, f], [g, h])]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
+	CHECK_WAVE(moved, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(moved, ROWS), 2)
+	WAVE set0 = moved[0]
+	Make/FREE/T refT = {{"a", "e"}, {"b", "f"}}
+	CHECK_EQUAL_WAVES(set0, refT, mode = WAVE_DATA | DIMENSION_SIZES)
+	WAVE set1 = moved[1]
+	Make/FREE/T refT = {{"c", "g"}, {"d", "h"}}
+	CHECK_EQUAL_WAVES(set1, refT, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	code = "[dataset(1, 2), dataset(3, abc)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
+	CHECK(SFH_IsArray(moved))
+
+	code = "[dataset(1, 2), dataset(3, 4, 5)]"
+	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+	CHECK(SFH_IsArray(output))
+	WAVE/WAVE moved = SFH_MoveDatasetHigherIfCompatible(output)
+	CHECK(SFH_IsArray(moved))
+End
