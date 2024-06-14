@@ -352,6 +352,28 @@ Function GSD_ExpectsSameWaveType()
 	endtry
 End
 
+static Function GSD_Expects1dWave1()
+
+	Make/FREE/D/N=(1, 10) data1
+	Make/FREE/D data2
+
+	try
+		WAVE/Z matches = GetSetDifference(data1, data2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function GSD_WorksWithNdWave2()
+
+	Make/FREE/D/N=5 data1 = p
+	Make/FREE/D/N=(1, 3) data2 = q
+
+	WAVE/Z matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_WAVES(matches, {3, 4}, mode = WAVE_DATA | DIMENSION_SIZES)
+End
+
 Function GSD_ExpectsFPWaveType()
 
 	Make/FREE/D data1
@@ -489,6 +511,29 @@ Function GSI_ExpectsSameWaveType()
 
 	Make/FREE/D data1
 	Make/FREE/R data2
+
+	try
+		WAVE/Z matches = GetSetIntersection(data1, data2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function GSI_Expects1dWave()
+
+	Make/FREE/D/N=(1, 10) data1
+	Make/FREE/D data2
+
+	try
+		WAVE/Z matches = GetSetIntersection(data1, data2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/D data1
+	Make/FREE/D/N=(1, 10) data2
 
 	try
 		WAVE/Z matches = GetSetIntersection(data1, data2)

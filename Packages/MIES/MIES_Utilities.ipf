@@ -3747,11 +3747,10 @@ threadsafe Function/WAVE GetSetUnion(WAVE wave1, WAVE wave2)
 End
 
 /// @brief Return a wave were all elements which are in both wave1 and wave2 have been removed from wave1
+///        wave1 must be 1d, the returned wave is 1d.
 ///
 /// @sa GetListDifference for string lists
-threadsafe Function/WAVE GetSetDifference(wave1, wave2)
-	WAVE wave1
-	WAVE wave2
+threadsafe Function/WAVE GetSetDifference(WAVE wave1, WAVE wave2)
 
 	variable isText, index
 
@@ -3759,6 +3758,7 @@ threadsafe Function/WAVE GetSetDifference(wave1, wave2)
 
 	ASSERT_TS((IsFloatingPointWave(wave1) && IsFloatingPointWave(wave2)) || isText, "Non matching wave types (both float or both text).")
 	ASSERT_TS(WaveType(wave1) == WaveType(wave2), "Wave type mismatch")
+	ASSERT_TS(!DimSize(wave1, COLS), "input wave1 must be 1d")
 
 	WAVE/Z result
 
@@ -3841,6 +3841,7 @@ threadsafe Function/WAVE GetSetIntersection(WAVE wave1, WAVE wave2, [variable ge
 
 	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                  \
 	          || (IsTextWave(wave1) && IsTextWave(wave2)), "Invalid wave type")
+	ASSERT_TS(!DimSize(wave1, COLS) && !DimSize(wave2, COLS), "input waves must be 1d")
 
 	getIndices = ParamIsDefault(getIndices) ? 0 : !!getIndices
 
