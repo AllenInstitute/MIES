@@ -21,6 +21,40 @@ Function CanFindAllDataBrowsers([string str])
 	CHECK_WAVE(matches, TEXT_WAVE)
 
 	CHECK_EQUAL_VAR(DimSize(matches, ROWS), 2)
+
+	WAVE/T/Z matchesAll = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_ALL)
+	CHECK_EQUAL_WAVES(matches, matchesAll)
+
+	WAVE/T/Z matchesUser = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_USER)
+	CHECK_EQUAL_WAVES(matches, matchesUser)
+
+	WAVE/T/Z matchesAuto = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_AUTOMATION)
+	CHECK_WAVE(matchesAuto, NULL_WAVE)
+
+	DB_GetBoundDataBrowser(str, mode = BROWSER_MODE_AUTOMATION)
+
+	WAVE/T/Z matchesAuto = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_AUTOMATION)
+	CHECK_WAVE(matchesAuto, TEXT_WAVE)
+
+	CHECK_EQUAL_VAR(DimSize(matchesAuto, ROWS), 1)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+Function CheckWindowTitles([string str])
+
+	string win
+
+	CreateLockedDAEphys(str)
+
+	// check window titles
+
+	win = DB_GetBoundDataBrowser(str, mode = BROWSER_MODE_USER)
+	GetWindow $win, wtitle
+	CHECK_EQUAL_STR(S_Value, "Browser with \"" + str + "\"")
+
+	win = DB_GetBoundDataBrowser(str, mode = BROWSER_MODE_AUTOMATION)
+	GetWindow $win, wtitle
+	CHECK_EQUAL_STR(S_Value, "Browser [1] with \"" + str + "\" (A*U*T*O*M*A*T*I*O*N)")
 End
 
 static Function/WAVE AllDatabrowserSubWindows()

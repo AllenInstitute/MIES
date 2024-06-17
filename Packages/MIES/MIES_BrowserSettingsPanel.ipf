@@ -476,26 +476,7 @@ static Function/S BSP_SetBrowserType(string win, string type, variable mode)
 	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER)=type
-
-	if(mode == BROWSER_MODE_USER)
-		suffix = ""
-	elseif(mode == BROWSER_MODE_AUTOMATION)
-		suffix = " (A*U*T*O*M*A*T*I*O*N)"
-	endif
-
 	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER_MODE)=BSP_SerializeBrowserMode(mode)
-
-	if(!CmpStr(type, BROWSERTYPE_SWEEPBROWSER))
-		title = SWEEPBROWSER_WINDOW_NAME
-	elseif(!CmpStr(type, BROWSERTYPE_DATABROWSER))
-		title = DATABROWSER_WINDOW_NAME
-	else
-		ASSERT(0, "Invalid type")
-	endif
-
-	title += suffix
-
-	DoWindow/T $mainPanel, title
 End
 
 static Function BSP_ParseBrowserMode(string mode)
@@ -524,15 +505,14 @@ static Function/S BSP_SerializeBrowserMode(variable mode)
 	endswitch
 End
 
-Function BSP_HasMode(string win, variable mode)
+Function BSP_GetBrowserMode(string win)
 
-	string   mainPanel
-	variable foundMode
+	string mainPanel, browserModeStr
 
-	mainPanel = GetMainWindow(win)
-	foundMode = BSP_ParseBrowserMode(GetUserData(mainPanel, "", MIES_BSP_BROWSER_MODE))
+	mainPanel      = GetMainWindow(win)
+	browserModeStr = GetUserData(mainPanel, "", MIES_BSP_BROWSER_MODE)
 
-	return foundMode & mode
+	return BSP_ParseBrowserMode(browserModeStr)
 End
 
 /// @brief wrapper function for external calls
@@ -1978,11 +1958,13 @@ End
 Function/S BSP_RenameAndSetTitle(string win, string newName)
 
 	variable numOtherBrowser
-	string   newTitle
-	string suffix = ""
+	string newTitle, suffix
+	string modeSuffix = ""
 
 	if(BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win))
 		suffix = " with \"" + BSP_GetDevice(win) + "\""
+	else
+		suffix = " "
 	endif
 
 	if(WindowExists(newName) && cmpstr(win, newName))
@@ -1992,13 +1974,18 @@ Function/S BSP_RenameAndSetTitle(string win, string newName)
 	DoWindow/W=$win/C $newName
 	win = newName
 
+	switch(BSP_GetBrowserMode(win))
+		case BROWSER_MODE_AUTOMATION:
+			modeSuffix = " (A*U*T*O*M*A*T*I*O*N)"
+			break
+	endswitch
+
 	numOtherBrowser += ItemsInList(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"))
 	numOtherBrowser += ItemsInList(WinList(DATABROWSER_WINDOW_NAME + "*", ";", "WIN:1"))
 	numOtherBrowser += ItemsInList(WinList("DB_*", ";", "WIN:1"))
 	numOtherBrowser  = max(0, numOtherBrowser - 1)
 
-	sprintf newTitle, "Browser %s%s", SelectString(numOtherBrowser, "", " [" + num2str(numOtherBrowser) + "]"), suffix
-	newTitle = RemoveEnding(newTitle, " ")
+	sprintf newTitle, "Browser%s%s%s", SelectString(numOtherBrowser, "", " [" + num2str(numOtherBrowser) + "]"), suffix, modeSuffix
 	DoWindow/T $win, newTitle
 
 	return win
