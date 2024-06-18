@@ -440,6 +440,189 @@ static Function StatsComplainsWithoutEvents()
 	endtry
 End
 
+static Function StatsRangeTesting()
+
+	string formulaGraph, browser, device, result, stateAsStr, postProc, prop
+	string error, id, comboKeyA, comboKeyB, comboKeyC, comboKeyD, ref, key, keyTxt
+	variable numComboKeys
+
+	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
+
+	// events A
+	[WAVE rangeA, WAVE selectDataA] = GetFakeRangeAndSelectData()
+	selectDataA[0][%CHANNELNUMBER] = 0
+
+	WAVE psxEventA = GetPSXEventWaveAsFree()
+	Redimension/N=(10, -1) psxEventA
+
+	comboKeyA = MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA)
+	ref       = "Range[100, 200], Sweep [1], Channel [AD0], Device [ITC16_Dev_0]"
+	CHECK_EQUAL_STR(comboKeyA, ref)
+
+	id = "myID"
+	FillEventWave_IGNORE(psxEventA, id, comboKeyA)
+
+	// events B
+	[WAVE rangeB, WAVE selectDataB] = GetFakeRangeAndSelectData()
+	rangeB                         = {101, 201}
+	selectDataB[0][%SWEEP]         = 2
+	selectDataB[0][%CHANNELNUMBER] = 0
+
+	comboKeyB = MIES_PSX#PSX_GenerateComboKey(browser, selectDataB, rangeB)
+	ref       = "Range[101, 201], Sweep [2], Channel [AD0], Device [ITC16_Dev_0]"
+	CHECK_EQUAL_STR(comboKeyB, ref)
+
+	WAVE psxEventB = GetPSXEventWaveAsFree()
+	Redimension/N=(10, -1) psxEventB
+
+	id = "myID"
+	FillEventWave_IGNORE(psxEventB, id, comboKeyB)
+
+	// events C
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+	Duplicate/FREE selectDataB, selectDataC
+	Make/T/FREE rangeC = {"E0"}
+	selectDataC[0][%SWEEP]         = 3
+	selectDataC[0][%CHANNELNUMBER] = 0
+
+	comboKeyC = MIES_PSX#PSX_GenerateComboKey(browser, selectDataC, rangeC)
+	ref       = "Range[E0], Sweep [3], Channel [AD0], Device [ITC16_Dev_0]"
+	CHECK_EQUAL_STR(comboKeyC, ref)
+
+	Make/FREE/T/N=(3, 1, 1) epochKeys
+	epochKeys[0][0][0] = EPOCHS_ENTRY_KEY
+	epochKeys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+
+	WAVE/T   epochsWave = GetEpochsWave(device)
+	variable DAC        = 2
+	epochsWave[0][EPOCH_COL_STARTTIME][DAC][XOP_CHANNEL_TYPE_DAC] = "102"
+	epochsWave[0][EPOCH_COL_ENDTIME][DAC][XOP_CHANNEL_TYPE_DAC]   = "151"
+	epochsWave[0][EPOCH_COL_TAGS][DAC][XOP_CHANNEL_TYPE_DAC]      = "ShortName=E0;stuff"
+	epochsWave[0][EPOCH_COL_TREELEVEL][DAC][XOP_CHANNEL_TYPE_DAC] = "0"
+
+	epochsWave[1][EPOCH_COL_STARTTIME][DAC][XOP_CHANNEL_TYPE_DAC] = "152"
+	epochsWave[1][EPOCH_COL_ENDTIME][DAC][XOP_CHANNEL_TYPE_DAC]   = "202"
+	epochsWave[1][EPOCH_COL_TAGS][DAC][XOP_CHANNEL_TYPE_DAC]      = "ShortName=E1;nothing"
+	epochsWave[1][EPOCH_COL_TREELEVEL][DAC][XOP_CHANNEL_TYPE_DAC] = "1"
+
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = EP_EpochWaveToStr(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC)
+	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, selectDataC[0][%SWEEP], device, DATA_ACQUISITION_MODE)
+
+	Make/T/FREE rangeD = {"E0"}
+	selectDataC[0][%SWEEP]         = 3
+	selectDataC[0][%CHANNELNUMBER] = 0
+
+	WAVE psxEventC = GetPSXEventWaveAsFree()
+	Redimension/N=(10, -1) psxEventC
+
+	id = "myID"
+	FillEventWave_IGNORE(psxEventC, id, comboKeyC)
+
+	// events D
+	Duplicate/FREE selectDataC, selectDataD
+	Make/T/FREE rangeD = {"E1"}
+
+	comboKeyD = MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeD)
+	ref       = "Range[E1], Sweep [3], Channel [AD0], Device [ITC16_Dev_0]"
+	CHECK_EQUAL_STR(comboKeyD, ref)
+
+	WAVE psxEventD = GetPSXEventWaveAsFree()
+	Redimension/N=(10, -1) psxEventD
+
+	id = "myID"
+	FillEventWave_IGNORE(psxEventD, id, comboKeyD)
+
+	Make/FREE/WAVE psxEventContainer = {psxEventA, psxEventB, psxEventC, psxEventD}
+	MIES_PSX#PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, psxEventContainer, id)
+
+	prop       = "tau"
+	stateAsStr = MIES_PSX#PSX_StateToString(PSX_ACCEPT)
+	postProc   = "nothing"
+
+	// non-matching range number with sweeps
+	try
+		WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeA, rangeB}, selectDataA, prop, stateAsStr, postProc)
+		FAIL()
+	catch
+		error = ROStr(GetSweepFormulaParseErrorMessage())
+		CHECK_EQUAL_STR(error, "The number of sweeps and ranges differ")
+	endtry
+
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeA}, selectDataA, prop, stateAsStr, postProc)
+	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
+	numComboKeys = 3
+	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
+
+	Make/T/FREE comboKeysRef = {MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA)}
+	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(results[0], SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
+
+	// different range for each sweep
+	Concatenate/NP=(ROWS) {selectDataA, selectDataB}, selectData
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeA, rangeB}, selectData, prop, stateAsStr, postProc)
+	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
+	// -> twice as many events
+	numComboKeys = 6
+	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), 6)
+
+	Make/T/FREE comboKeysRef = {MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataB, rangeB), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataB, rangeB), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataB, rangeB)}
+	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(results[0], SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
+
+	// epoch name
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeC}, selectDataC, prop, stateAsStr, postProc)
+	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
+	numComboKeys = 3
+	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
+
+	Make/T/FREE comboKeysRef = {MIES_PSX#PSX_GenerateComboKey(browser, selectDataC, rangeC), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataC, rangeC), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataC, rangeC)}
+	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(results[0], SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
+
+	// multiple epoch names
+	Make/FREE/T rangeEpoch0 = {"E0"}
+	Make/FREE/T rangeEpoch1 = {"E1"}
+	Make/FREE/T rangeEpochs = {rangeEpoch0[0], rangeEpoch1[0]}
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeEpochs}, selectDataD, prop, stateAsStr, postProc)
+	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
+	numComboKeys = 6
+	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
+
+	Make/T/FREE comboKeysRef = {MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1)}
+	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(results[0], SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
+
+	// epoch wildcards
+	Make/FREE/T rangeEpochs = {"E*"}
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeEpochs}, selectDataD, prop, stateAsStr, postProc)
+	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
+	numComboKeys = 6
+	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
+
+	Make/T/FREE comboKeysRef = {MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1)}
+	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(results[0], SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
+End
+
 static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 
 	variable jsonID
@@ -846,7 +1029,7 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	input[%outOfRange]       = "0"
 
 	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {10, 0, 0, 0, NaN, NaN})
+	JWN_SetWaveInWaveNote(input, "/0/results", {10, NaN, 0, 0, NaN, NaN})
 	JWN_SetWaveInWaveNote(input, "/0/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
 	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT, \
 	                                           PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
@@ -993,7 +1176,7 @@ End
 
 static Function StatsComplainsAboutIntersectingRanges()
 
-	string browser, device, formulaGraph, comboKey, id
+	string browser, device, formulaGraph, comboKey, id, error
 
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
@@ -1007,6 +1190,8 @@ static Function StatsComplainsAboutIntersectingRanges()
 
 	Duplicate/FREE range0, range1
 
+	Concatenate/FREE/NP=(COLS) {range0, range1}, ranges
+
 	// 2nd event wave where we shift the range
 	WAVE/Z psxEvent = CreateEventWaveInComboFolder_IGNORE(comboIndex = 1)
 	range1[] += 0.5 * (range0[1] - range0[0])
@@ -1015,10 +1200,11 @@ static Function StatsComplainsAboutIntersectingRanges()
 	FillEventWave_IGNORE(psxEvent, id, comboKey)
 
 	try
-		MIES_PSX#PSX_OperationStatsImpl(browser, id, {range0, range1}, selectData, "amp", "all", "nothing")
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, {ranges}, selectData, "amp", "all", "nothing")
 		FAIL()
 	catch
-		CHECK_NO_RTE()
+		error = ROStr(GetSweepFormulaParseErrorMessage())
+		CHECK_EQUAL_STR(error, "Can't work with multiple intersecting ranges")
 	endtry
 End
 
@@ -1072,6 +1258,14 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[4], 0, 0.01)
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
 
+	// three waves from first range, none from second
+	str = "psxKernel(dataset([50, 150], wave(\"\")), select(channels(AD6), [0, 2], all), 1, 15, -5)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 3)
+	WAVE/Z range = JWN_GetNumericWaveFromWaveNote(dataWref[2], "/Range")
+	CHECK_EQUAL_WAVES(range, {50, 150}, mode = WAVE_DATA)
+
 	// no data from select statement
 	str = "psxKernel([50, 150], select(channels(AD15), [0]), 1, 15, -5)"
 	try
@@ -1083,6 +1277,15 @@ static Function TestOperationPSXKernel()
 
 	// no data from this sweep statement
 	str = "psxKernel(ABCD, select(channels(AD6), [0, 2], all), 1, 15, -5)"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// too large decayTau
+	str = "psxKernel([50, 150], select(channels(AD15), [0]), 1, 150, -5)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1134,7 +1337,8 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	// all decay fits are successfull
-	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
@@ -1185,6 +1389,44 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	catch
 		PASS()
 	endtry
+
+	// complains with no sweep data
+	try
+		str = "psx(myID, psxKernel([150, 160], select(channels(AD6), [0, 2], all), 1, 2, -5), 2.5, 100, 0)"
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// complains without events found due to kernelAmp sign
+	overrideResults[][][%$"KernelAmpSignQC"] = NaN
+	str                                      = "psx(id, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -4))"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function PSXHandlesPartialResults()
+
+	string browser, str
+
+	browser = SetupDatabrowserWithSomeData()
+
+	Make/FREE/T combos = {"Range[25, 120], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[25, 120], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	// all decay fits are successfull
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
+	str = "psx(myID, psxKernel([25, 120], select(channels(AD6), [0, 2], all), 1, 2, -5), 2.5, 10, 0)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, browser, useVariables = 0)
+	PASS()
 End
 
 static Function TestOperationPSXTooLargeDecayTau()
@@ -1195,8 +1437,9 @@ static Function TestOperationPSXTooLargeDecayTau()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(2, combos)
 
 	// all decay fits are successfull
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%Tau]           = 1000
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%Tau]                = 1000
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
@@ -1298,8 +1541,9 @@ static Function MouseSelectionPSX()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = DB_OpenDataBrowser()
 	device  = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
@@ -1457,8 +1701,9 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	postProc = m.s0
 	logMode  = m.v0
@@ -1552,6 +1797,8 @@ static Function MouseSelectionStatsPostProcNonFinite()
 
 	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
 	overrideResults[0][%$combos[1]][%$"Tau"]        = +Inf
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -1695,6 +1942,14 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 
 	string browser, code, extAllGraph, win, trace, info, rgbValue, mainWindow, specialEventPanel
 	variable numEvents
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -1899,6 +2154,12 @@ static Function JumpToUndet()
 
 	string browser, code, psxGraph, win, mainWindow
 
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
 	browser = SetupDatabrowserWithSomeData()
 
 	code = GetTestCode("nothing")
@@ -1958,6 +2219,12 @@ static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
 	string browser, code, psxGraph, win, mainWindow, postProc, psxStatsGraph
 	variable logMode
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	postProc = m.s0
 	logMode  = m.v0
@@ -2020,6 +2287,12 @@ static Function CursorMovement()
 
 	string browser, code, psxGraph, win, mainWindow
 
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
 	browser = SetupDatabrowserWithSomeData()
 
 	code = GetTestCode("nothing")
@@ -2053,6 +2326,12 @@ End
 static Function CursorMovementStats()
 
 	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2111,8 +2390,9 @@ static Function KeyboardInteractions()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2327,8 +2607,9 @@ static Function KeyboardInteractionsStats()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2554,8 +2835,9 @@ static Function KeyboardInteractionsStatsSpecial()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2629,6 +2911,8 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
 	overrideResults[0][%$combos[1]][%$"Tau"]        = +Inf
 
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
 	browser = SetupDatabrowserWithSomeData()
 
 	code = GetTestCode("nonfinite", eventState = "all", prop = "tau")
@@ -2697,6 +2981,12 @@ static Function CheckResultsWavesForAverageFitResult()
 
 	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry
 
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
 	browser = SetupDatabrowserWithSomeData()
 
 	code = GetTestCode("nothing")
@@ -2733,6 +3023,12 @@ End
 static Function TestBlockIndexLogic()
 
 	string browser, code, psxGraph, win, mainWindow, specialEventPanel, extAllGraph
+
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2948,6 +3244,12 @@ static Function TestOperationPrep()
 
 	string win, device, code, psxCode
 
+	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
+	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
@@ -2995,8 +3297,9 @@ static Function TestStoreAndLoad()
 	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 

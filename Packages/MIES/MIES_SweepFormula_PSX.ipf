@@ -64,6 +64,7 @@ static Constant PSX_NUM_PEAKS_MAX = 2000
 static Constant PSX_PLOT_DEFAULT_X_RANGE = 200
 
 static Constant PSX_DEFAULT_X_START_OFFSET = 2
+static Constant PSX_DEFAULT_RANGE_FACTOR   = 3
 
 static StrConstant USER_DATA_KEYBOARD_DIR = "keyboard_direction"
 
@@ -86,7 +87,6 @@ static StrConstant PSX_CURSOR_TRACE = "peakY"
 static StrConstant PSX_USER_DATA_TYPE = "type"
 static StrConstant PSX_USER_DATA_PSX  = "PSX"
 
-static StrConstant PSX_JWN_COMBO_KEYS_NAME = "ComboKeys"
 static StrConstant PSX_JWN_PARAMETERS      = "Parameters"
 static StrConstant PSX_JWN_STATS_POST_PROC = "PostProcessing"
 
@@ -482,11 +482,71 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataFiltOff
 	return [peakX, peakY]
 End
 
+static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable kernelAmp, WAVE psxEvent)
+
+	variable numCrossings, idx, i, peak
+	variable overrideSignQC = NaN
+	string comboKey
+
+	if(!WaveExists(peakXUnfiltered) || !WaveExists(peakYUnfiltered))
+		return [$"", $""]
+	endif
+
+	numCrossings = DimSize(peakXUnfiltered, ROWS)
+
+	Make/FREE/D/N=(numCrossings) peakX, peakY
+
+	for(i = 0; i < numCrossings; i += 1)
+
+		peak = peakYUnfiltered[i]
+
+#ifdef AUTOMATED_TESTING
+		WAVE/Z overrideResults = GetOverrideResults()
+
+		if(WaveExists(overrideResults))
+			comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
+
+			overrideSignQC = overrideResults[i][%$comboKey][%KernelAmpSignQC]
+		endif
+#endif
+
+		if(IsNaN(overrideSignQC))
+			if(sign(peak) != sign(kernelAmp))
+				continue
+			endif
+		elseif(overrideSignQC == 0)
+			continue
+		endif
+
+		peakX[idx] = peakXUnfiltered[i]
+		peakY[idx] = peakYUnfiltered[i]
+
+		idx += 1
+	endfor
+
+	if(idx == 0)
+		return [$"", $""]
+	endif
+
+	Redimension/N=(idx) peakX, peakY
+
+	return [peakX, peakY]
+End
+
 /// @brief Analyze the peaks
-static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE peakX, WAVE peakY, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
+static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
 
 	variable i, i_time, rel_peak, peak, dc_peak_t, isi, post_min, post_min_t, pre_max, pre_max_t, numCrossings
 	variable peak_end_search
+
+	// we need to first throw away events with invalid amplitude so that
+	// we can then calculate the distance to the neighbour in peakX[i + 1] below
+
+	[WAVE peakX, WAVE peakY] = PSX_FilterEventsKernelAmpSign(peakXUnfiltered, peakYUnfiltered, kernelAmp, psxEvent)
+
+	if(!WaveExists(peakX) || !WaveExists(peakY))
+		return 1
+	endif
 
 	numCrossings = DimSize(peakX, ROWS)
 	for(i = 0; i < numCrossings; i += 1)
@@ -547,22 +607,30 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 	psxEvent[][%$"Fit result"]           = 0
 
 	psxEvent[][%tau] = PSX_FitEventDecay(sweepDataFiltOff, psxEvent, maxTauFactor, eventFit, p)
+
+	return 0
 End
 
 /// @brief Return the x-axis range useful for displaying and extracting a single event
 static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psxEvent, variable index)
 
-	variable numEvents
+	variable numEvents, offset
 
 	numEvents = DimSize(psxEvent, ROWS)
 
 	index = limit(index, 0, numEvents - 1)
 
+	offset = PSX_DEFAULT_RANGE_FACTOR * psxEvent[index][%tau]
+
+	if(IsNaN(offset))
+		offset = PSX_DEFAULT_X_START_OFFSET
+	endif
+
 	if(index == numEvents - 1)
-		first = psxEvent[index][%peak_t] - PSX_DEFAULT_X_START_OFFSET
-		last  = psxEvent[index][%post_min_t] + PSX_DEFAULT_X_START_OFFSET
+		first = psxEvent[index][%peak_t] - offset
+		last  = psxEvent[index][%post_min_t] + offset
 	else
-		first = psxEvent[index][%peak_t] - PSX_DEFAULT_X_START_OFFSET
+		first = psxEvent[index][%peak_t] - offset
 		last  = psxEvent[index + 1][%peak_t] - 0.5
 	endif
 
@@ -683,7 +751,8 @@ End
 ///
 /// LAYERS:
 /// - 0: Fit result, see GetPSXEventWaveAsFree
-/// - 1: Replacement tau, the default of NaN means don't use
+/// - 1: Replacement tau, the default of NaN means don't override
+/// - 2: Override sign check in PSX_AnalyzePeaks (0 failing, 1 passing), the default of NaN means don't override
 static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos)
 
 	variable numCombos
@@ -692,15 +761,16 @@ static Function/WAVE PSX_CreateOverrideResults(variable numEvents, WAVE/T combos
 
 	numCombos = DimSize(combos, ROWS)
 
-	Make/D/N=(numEvents, numCombos, 2) root:overrideResults/WAVE=wv
+	Make/D/N=(numEvents, numCombos, 3) root:overrideResults/WAVE=wv
 	SetDimensionLabels(wv, TextWaveToList(combos, ";"), COLS)
-	SetDimensionLabels(wv, "Fit Result;Tau", LAYERS)
+	SetDimensionLabels(wv, "Fit Result;Tau;KernelAmpSignQC", LAYERS)
 
 	wv[] = NaN
 
 	return wv
 End
 
+/// @return 0 on success, 1 otherwise
 static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDataset, variable parameterJsonID, variable sweepFilterLow, variable sweepFilterHigh, WAVE deconvFilter, variable index, WAVE/WAVE output)
 
 	string key, comboKey, psxParametersAnalyzePeaks, cacheKey
@@ -720,17 +790,30 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 	WAVE/WAVE/Z psxAnalyzePeaksFromCache = CA_TryFetchingEntryFromCache(cacheKey)
 
 	if(WaveExists(psxAnalyzePeaksFromCache))
+
+		if(DimSize(psxAnalyzePeaksFromCache, ROWS) == 0)
+			return 1
+		endif
+
 		WAVE sweepDataFiltOff       = psxAnalyzePeaksFromCache[%sweepDataFiltOff]
 		WAVE sweepDataFiltOffDeconv = psxAnalyzePeaksFromCache[%sweepDataFiltOffDeconv]
 	else
 		[WAVE sweepDataFiltOff, WAVE sweepDataFiltOffDeconv] = PSX_Analysis(sweepData, psxKernelFFT, sweepFilterLow, sweepFilterHigh, deconvFilter)
 
-		Make/FREE/WAVE/N=(2) psxAnalyzePeaks
-		SetDimensionLabels(psxAnalyzePeaks, "sweepDataFiltOff;sweepDataFiltOffDeconv", ROWS)
-		psxAnalyzePeaks[%sweepDataFiltOff]       = sweepDataFiltOff
-		psxAnalyzePeaks[%sweepDataFiltOffDeconv] = sweepDataFiltOffDeconv
+		if(!WaveExists(sweepDataFiltOff) || !WaveExists(sweepDataFiltOffDeconv))
+			Make/FREE/WAVE/N=(0) psxAnalyzePeaks
+		else
+			Make/FREE/WAVE/N=(2) psxAnalyzePeaks
+			SetDimensionLabels(psxAnalyzePeaks, "sweepDataFiltOff;sweepDataFiltOffDeconv", ROWS)
+			psxAnalyzePeaks[%sweepDataFiltOff]       = sweepDataFiltOff
+			psxAnalyzePeaks[%sweepDataFiltOffDeconv] = sweepDataFiltOffDeconv
+		endif
 
 		CA_StoreEntryIntoCache(cacheKey, psxAnalyzePeaks)
+
+		if(DimSize(psxAnalyzePeaks, ROWS) == 0)
+			return 1
+		endif
 	endif
 
 	key           = PSX_GenerateKey("sweepData", index)
@@ -741,6 +824,8 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 
 	key           = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
 	output[%$key] = sweepDataFiltOffDeconv
+
+	return 0
 End
 
 /// @brief Implementation of psx operation
@@ -749,19 +834,16 @@ End
 static Function PSX_OperationImpl(string graph, variable parameterJSONID, string id, variable peakThresh, variable maxTauFactor, WAVE riseTimeParams, variable kernelAmp, variable index, WAVE/WAVE output)
 
 	string comboKey, key, psxOperationKey, psxParametersEvents
+	variable ret
 
 	key = PSX_GenerateKey("sweepData", index)
 	WAVE sweepData = output[%$key]
 
 	key = PSX_GenerateKey("sweepDataFiltOff", index)
-	WAVE/Z sweepDataFiltOff = output[%$key]
+	WAVE sweepDataFiltOff = output[%$key]
 
 	key = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
-	WAVE/Z sweepDataFiltOffDeconv = output[%$key]
-
-	if(!WaveExists(sweepDataFiltOff) || !WaveExists(sweepDataFiltOffDeconv))
-		return NaN
-	endif
+	WAVE sweepDataFiltOffDeconv = output[%$key]
 
 	[WAVE selectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
 	ASSERT(WaveExists(selectData) && WaveExists(range), "Could not recreate select/range wave")
@@ -779,6 +861,23 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 	else
 		[WAVE peakX, WAVE peakY] = PSX_FindPeaks(sweepDataFiltOffDeconv, peakThresh)
 
+		if(WaveExists(peakX) && WaveExists(peakY))
+			WAVE psxEvent = GetPSXEventWaveAsFree()
+			WAVE eventFit = GetPSXEventFitWaveAsFree()
+
+			JWN_SetWaveNoteFromJSON(psxEvent, parameterJsonID, release = 0)
+
+			JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
+			JWN_SetStringInWaveNote(psxEvent, PSX_X_DATA_UNIT, WaveUnits(sweepData, ROWS))
+			JWN_SetStringInWaveNote(psxEvent, PSX_Y_DATA_UNIT, WaveUnits(sweepData, -1))
+
+			ret = PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakX, peakY, maxTauFactor, kernelAmp, psxEvent, eventFit)
+
+			if(ret)
+				WaveClear peakX, peakY
+			endif
+		endif
+
 		if(!WaveExists(peakX) || !WaveExists(peakY))
 			// clear entries from this combo
 			key           = PSX_GenerateKey("sweepData", index)
@@ -795,17 +894,6 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 
 			return 1
 		endif
-
-		WAVE psxEvent = GetPSXEventWaveAsFree()
-		JWN_SetWaveNoteFromJSON(psxEvent, parameterJsonID, release = 0)
-
-		WAVE eventFit = GetPSXEventFitWaveAsFree()
-
-		JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
-		JWN_SetStringInWaveNote(psxEvent, PSX_X_DATA_UNIT, WaveUnits(sweepData, ROWS))
-		JWN_SetStringInWaveNote(psxEvent, PSX_Y_DATA_UNIT, WaveUnits(sweepData, -1))
-
-		PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakX, peakY, maxTauFactor, kernelAmp, psxEvent, eventFit)
 
 		Make/FREE/WAVE/N=(4) psxOperation
 		SetDimensionLabels(psxOperation, "peakX;peakY;psxEvent;eventFit", ROWS)
@@ -877,7 +965,12 @@ static Function/WAVE PSX_GetPSXKernel(variable riseTau, variable decayTau, varia
 	endif
 
 	[WAVE psx_kernel, WAVE kernel_fft] = PSX_CreatePSXKernel(riseTau, decayTau, amp, numPoints, dt)
-	Make/FREE/WAVE result = {psx_kernel, kernel_fft}
+
+	if(!WaveExists(psx_kernel) || !WaveExists(kernel_fft))
+		Make/FREE/WAVE/N=0 result
+	else
+		Make/FREE/WAVE result = {psx_kernel, kernel_fft}
+	endif
 
 	CA_StoreEntryIntoCache(key, result)
 
@@ -903,6 +996,10 @@ static Function [WAVE kernel, WAVE kernelFFT] PSX_CreatePSXKernel(variable riseT
 	decayTau_p    = decayTau / dt
 	kernel_window = decayTau_p * 4
 	amp_prime     = (decayTau_p / riseTau_p)^(riseTau_p / (riseTau_p - decayTau_p)) // normalization factor
+
+	if(kernel_window > numPoints)
+		return [$"", $""]
+	endif
 
 	Make/FREE/N=(kernel_window) timeIndex = p
 	SetScale/P x, 0, dt, timeIndex
@@ -1084,85 +1181,42 @@ static Function/WAVE PSX_GenerateSweepEquiv(WAVE selectData)
 	return sweepEquiv
 End
 
-/// @brief Collect all resolved ranges in allResolvedRanges together with a hash of the select data
-Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectData, WAVE allResolvedRanges, WAVE/T allSelectHashes)
-
-	variable sweepNo, chanNr, chanType, numRows
-
-	sweepNo  = singleSelectData[0][%SWEEP]
-	chanNr   = singleSelectData[0][%CHANNELNUMBER]
-	chanType = singleSelectData[0][%CHANNELTYPE]
-
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
-	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
-
-	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr)
-	ASSERT(DimSize(resolvedRanges, COLS) == 1, "psxStats does not support epoch wildcards")
-
-	numRows = DimSize(allSelectHashes, ROWS)
-	Redimension/N=(numRows + 1) allSelectHashes
-	allSelectHashes[numRows] = WaveHash(singleSelectData, HASH_SHA2_256)
-
-	Concatenate/NP {resolvedRanges}, allResolvedRanges
+/// @brief Check that the 2xN wave allResolvedRanges has only
+///        non-intersecting ranges
+static Function PSX_CheckResolvedRanges(WAVE allResolvedRanges)
 
 	if(DimSize(allResolvedRanges, COLS) == 0)
-		Redimension/N=(-1, 1) allResolvedRanges
+		return NaN
 	endif
-End
 
-/// @brief Check that the 2xN wave allResolvedRanges has only
-///        non-intersecting ranges for the same select data hash
-static Function PSX_CheckResolvedRanges(WAVE allResolvedRanges, WAVE/T allSelectHashes)
+	MatrixOp/FREE allResolvedRangesTransp = allResolvedRanges^t
 
-	string selectHash
-	variable numRows, numColumns, i, idx
-
-	numRows    = DimSize(allResolvedRanges, ROWS)
-	numColumns = DimSize(allResolvedRanges, COLS)
-
-	ASSERT(numColumns == DimSize(allSelectHashes, ROWS), "Mismatched row sizes")
-
-	for(selectHash : GetUniqueEntries(allSelectHashes))
-		Make/N=(numRows, numColumns)/FREE work
-
-		for(i = 0, idx = 0; i < numColumns; i += 1)
-			if(!cmpstr(selectHash, allSelectHashes[i]))
-				work[][idx] = allResolvedRanges[p][i]
-				idx        += 1
-			endif
-		endfor
-
-		MatrixOp/FREE workTransposed = work^t
-
-		ASSERT(idx > 0, "Invalid idx after searching")
-		Redimension/N=(idx, -1) workTransposed
-
-		ASSERT(!AreIntervalsIntersecting(workTransposed), "Can't work with multiple intersecting ranges")
-	endfor
+	SFH_ASSERT(!AreIntervalsIntersecting(allResolvedRangesTransp), "Can't work with multiple intersecting ranges")
 End
 
 /// @brief Helper function of the `psxStats` operation
-static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE rangeParam, WAVE selectData, string prop, string stateAsStr, string postProc)
+static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE ranges, WAVE selectData, string prop, string stateAsStr, string postProc)
 
 	string propLabelAxis, comboKey
-	variable numRows, numCols, i, j, k, index, sweepNo, chanNr, chanType, state, numRanges, lowerBoundary, upperBoundary, temp, err
-	variable refMarker, idx
+	variable numEquivChannelNumberTypes, numEquivSweeps, i, j, k, index, sweepNo, chanNr, chanType
+	variable state, numRanges, lowerBoundary, upperBoundary, temp, err
+	variable refMarker, idx, singleRange
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_STATS, MINIMUM_WAVE_SIZE)
 
 	// create equivalence classes where chanNr/chanType are the same and only the sweep number differs
 	WAVE selectDataEquiv = PSX_GenerateSweepEquiv(selectData)
 
-	numRows = DimSize(selectDataEquiv, ROWS)
-	numCols = DimSize(selectDataEquiv, COLS)
+	numEquivChannelNumberTypes = DimSize(selectDataEquiv, ROWS)
+	numEquivSweeps             = DimSize(selectDataEquiv, COLS)
 
-	WAVE/WAVE allRanges = SplitWavesToDimension(rangeParam)
-	numRanges = DimSize(allRanges, ROWS)
-	WaveClear rangeParam
+	numRanges = DimSize(ranges, ROWS)
+	SFH_ASSERT(numRanges > 0, "Expected at least one range")
+	singleRange = (numRanges == 1)
 
-	Make/D/FREE/N=(0) allResolvedRanges
-	Make/T/FREE/N=(0) allSelectHashes
+	if(!singleRange)
+		SFH_ASSERT(DimSize(selectDataEquiv, COLS) == numRanges, "The number of sweeps and ranges differ")
+	endif
 
 	WAVE/Z eventContainerFromResults = PSX_GetEventContainerFromResults(id)
 	WAVE/Z eventContainer            = PSX_GetEventContainer(graph, requestID = id)
@@ -1170,25 +1224,47 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE) allEvents
 
 	// iteration order: different chanType/chanNr (equivalence classes), range, sweepNo
-	for(i = 0; i < numRows; i += 1)
-		for(j = 0; j < numRanges; j += 1)
-			WAVE range = allRanges[j]
+	for(i = 0; i < numEquivChannelNumberTypes; i += 1)
+		for(j = 0; j < numEquivSweeps; j += 1)
 
-			for(k = 0; k < numCols; k += 1)
+			[chanNr, chanType, sweepNo] = PSX_GetSweepEquivKeyAndSweep(selectDataEquiv, i, j)
 
-				[chanNr, chanType, sweepNo] = PSX_GetSweepEquivKeyAndSweep(selectDataEquiv, i, k)
+			if(!IsValidSweepNumber(sweepNo))
+				break
+			endif
 
-				if(!IsValidSweepNumber(sweepNo))
-					break
+			WAVE singleSelectData = SFH_NewSelectDataWave(1, 1)
+
+			singleSelectData[0][%SWEEP]         = sweepNo
+			singleSelectData[0][%CHANNELNUMBER] = chanNr
+			singleSelectData[0][%CHANNELTYPE]   = chanType
+
+			WAVE rangesForSweep = ranges[singleRange ? 0 : j]
+
+			WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+			SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
+
+			[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, rangesForSweep, sweepNo, chanType, chanNr)
+
+			if(!WaveExists(resolvedRanges))
+				continue
+			endif
+
+			PSX_CheckResolvedRanges(resolvedRanges)
+
+			numRanges = DimSize(resolvedRanges, COLS)
+			for(k = 0; k < numRanges; k += 1)
+				Duplicate/FREE/RMD=[*][k] resolvedRanges, range
+
+				if(WaveExists(epochRangeNames))
+					Make/T/FREE rangeText = {epochRangeNames[k]}
+					WAVE rangeAlt = rangeText
+				else
+					WAVE rangeAlt = range
 				endif
 
-				WAVE singleSelectData = SFH_NewSelectDataWave(1, 1)
-
-				singleSelectData[0][%SWEEP]         = sweepNo
-				singleSelectData[0][%CHANNELNUMBER] = chanNr
-				singleSelectData[0][%CHANNELTYPE]   = chanType
-
-				comboKey = PSX_GenerateComboKey(graph, singleSelectData, range)
+				comboKey = PSX_GenerateComboKey(graph, singleSelectData, rangeAlt)
 
 				WAVE/Z events = PSX_FilterEventContainer(eventContainer, comboKey)
 
@@ -1206,206 +1282,200 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 				allEvents[idx] = events
 				idx           += 1
 				WaveClear events
-
-				PSX_CollectResolvedRanges(graph, range, singleSelectData, allResolvedRanges, allSelectHashes)
-			endfor
-
-			Redimension/N=(idx) allEvents
-
-			SFH_ASSERT(DimSize(allEvents, ROWS) > 0, "Could not find any PSX events for all given combinations.")
-
-			strswitch(prop)
-				case "amp":
-					propLabelAxis = "Amplitude" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_Y_DATA_UNIT) + ")"
-					break
-				case "xpos":
-					propLabelAxis = "Event time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
-					break
-				case "xinterval":
-					propLabelAxis = "Event interval" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
-					break
-				case "tau":
-					propLabelAxis = "Decay tau" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
-					break
-				case "estate":
-					propLabelAxis = "Event manual QC" + " (enum)"
-					break
-				case "fstate":
-					propLabelAxis = "Fit manual QC" + " (enum)"
-					break
-				case "fitresult":
-					propLabelAxis = "Fit result" + " (0/1)"
-					break
-				case "risetime":
-					propLabelAxis = "Rise time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
-					break
-				default:
-					ASSERT(0, "Impossible prop")
-			endswitch
-
-			if(!cmpstr(stateAsStr, "every"))
-				WAVE allStates = PSX_GetStates()
-			else
-				Make/FREE allStates = {PSX_ParseState(stateAsStr)}
-			endif
-
-			for(state : allStates)
-
-				[WAVE resultsRaw, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] = PSX_GetStatsResults(allEvents, state, prop)
-
-				if(!WaveExists(resultsRaw))
-					continue
-				endif
-
-				strswitch(postProc)
-					case "nothing":
-						WAVE/D results = resultsRaw
-
-						JWN_SetWaveInWaveNote(results, SF_META_XVALUES, eventIndex)
-						break
-					case "stats":
-						WAVE/Z resultsRawClean = ZapNaNs(resultsRaw)
-
-						if(!WaveExists(resultsRawClean))
-							continue
-						endif
-
-						WaveStats/Q/M=2 resultsRawClean
-
-						Make/FREE/D results = {V_avg, NaN, V_adev, V_sdev, V_skew, V_kurt}
-
-						AssertonAndClearRTError()
-						StatsQuantiles/Q/Z resultsRawClean; err = GetRTError(1)
-
-						if(!err)
-							results[1] = V_Median
-						endif
-
-						WAVE/T statsLabels = ListToTextWave(PSX_STATS_LABELS, ";")
-						JWN_SetWaveInWaveNote(results, SF_META_XVALUES, statsLabels)
-						SetDimensionLabels(results, PSX_STATS_LABELS, ROWS)
-
-						// resize markers
-						Redimension/N=(DimSize(results, ROWS)) marker
-						refMarker = marker[0]
-						marker[]  = refMarker
-
-						break
-					case "nonfinite":
-						// map:
-						// -inf -> -1
-						// NaN  ->  0
-						// +inf -> +1
-						// finite -> NaN
-						Duplicate/FREE resultsRaw, results
-						Multithread results[] = resultsRaw[p] == -Inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : (resultsRaw[p] == +Inf ? +1 : NaN))
-
-						WAVE/Z resultsClean = ZapNaNs(results)
-
-						if(!WaveExists(resultsClean))
-							continue
-						endif
-
-						eventIndex[] = IsFinite(results[p]) ? eventIndex[p] : NaN
-						marker[]     = IsFinite(results[p]) ? marker[p] : NaN
-						comboKeys[]  = SelectString(IsFinite(results[p]), "", comboKeys[p])
-
-						WAVE markerClean     = ZapNaNs(marker)
-						WAVE eventIndexClean = ZapNaNs(eventIndex)
-						RemoveTextWaveEntry1D(comboKeys, "", all = 1)
-
-						// y-data will be eventIndex, and x the numeric categories of non-finiteness
-						WAVE marker  = markerClean
-						WAVE results = eventIndexClean
-						WAVE xValues = resultsClean
-
-						Redimension/D results
-
-						JWN_SetWaveInWaveNote(results, SF_META_XVALUES, xValues)
-
-						Make/FREE/T nonFiniteTickLabels = {num2str(-Inf), num2str(NaN), num2str(+Inf)}
-						JWN_SetWaveInWaveNote(results, SF_META_XTICKLABELS, nonFiniteTickLabels)
-						JWN_SetWaveInWaveNote(results, SF_META_XTICKPOSITIONS, {-1, 0, 1})
-
-						break
-					case "count":
-						MatrixOP/FREE results = numRows(resultsRaw)
-						break
-					case "hist":
-						Make/FREE/N=0/D results
-
-						// truncate the input data to get usable histogram bins
-						// using allEvents assumes that the same psxKernel was used for
-						// all input events, which sounds reasonable.
-						if(!cmpstr(prop, "tau") || !cmpstr(prop, "amp"))
-							if(!cmpstr(prop, "tau"))
-								lowerBoundary = 0
-								upperBoundary = PSX_STATS_TAU_FACTOR * JWN_GetNumberFromWaveNote(allEvents, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
-								ASSERT(IsFinite(upperBoundary) && upperBoundary > 0, "Upper boundary for tau must be finite and positive")
-							elseif(!cmpstr(prop, "amp"))
-								temp          = PSX_STATS_AMP_FACTOR * JWN_GetNumberFromWaveNote(allEvents, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/amp")
-								lowerBoundary = -abs(temp)
-								upperBoundary = +abs(temp)
-								ASSERT(IsFinite(lowerBoundary) && IsFinite(upperBoundary), "Lower/Upper boundary for amp must be finite")
-							endif
-
-							resultsRaw[] = LimitWithReplace(resultsRaw[p], lowerBoundary, upperBoundary, NaN)
-						endif
-
-						WAVE/Z resultsRawClean = ZapNaNs(resultsRaw)
-
-						if((!WaveExists(resultsRawClean) && WaveExists(resultsRaw))        \
-						   || (DimSize(resultsRawClean, ROWS) != DimSize(resultsRaw, ROWS)))
-							if(!AlreadyCalledOnce(CO_PSX_CLIPPED_STATS))
-								printf "psxStats removed out-of-range input data for histogram generation.\r"
-								ControlWindowToFront()
-							endif
-						endif
-
-						if(!WaveExists(resultsRawClean))
-							continue
-						endif
-
-						Histogram/DP/B=5/DEST=results resultsRawClean
-						break
-					case "log10":
-						MatrixOp/FREE results = log(resultsRaw)
-
-						JWN_SetWaveInWaveNote(results, SF_META_XVALUES, eventIndex)
-						break
-					default:
-						ASSERT(0, "Impossible postProc state")
-				endswitch
-
-				JWN_SetWaveInWaveNote(results, SF_META_RANGE, range)
-				// passing in sweepNo is not correct when combining data from multiple sweeps
-				// but we need it to be set to something valid so that the headstage colors work
-				// we assume therefore that all sweeps use the same active HS/AD/DAC settings
-				JWN_SetNumberInWaveNote(results, SF_META_SWEEPNO, sweepNo)
-				JWN_SetNumberInWaveNote(results, SF_META_CHANNELTYPE, chanType)
-				JWN_SetNumberInWaveNote(results, SF_META_CHANNELNUMBER, chanNr)
-
-				ASSERT(DimSize(results, ROWS) <= DimSize(marker, ROWS), "results wave got larger unexpectedly")
-				Redimension/N=(DimSize(results, ROWS)) marker, comboKeys
-
-				JWN_SetNumberInWaveNote(results, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_MARKERS)
-				JWN_SetWaveInWaveNote(results, SF_META_MOD_MARKER, marker)
-				JWN_CreatePath(results, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
-				JWN_SetWaveInWaveNote(results, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME, comboKeys)
-
-				JWN_CreatePath(results, SF_META_USER_GROUP + PSX_JWN_STATS_POST_PROC)
-				JWN_SetStringInWaveNote(results, SF_META_USER_GROUP + PSX_JWN_STATS_POST_PROC, postProc)
-
-				JWN_SetNumberInWaveNote(results, SF_META_SHOW_LEGEND, 0)
-
-				EnsureLargeEnoughWave(output, indexShouldExist = index)
-				output[index] = results
-				index        += 1
 			endfor
 		endfor
-	endfor
 
-	PSX_CheckResolvedRanges(allResolvedRanges, allSelectHashes)
+		Redimension/N=(idx) allEvents
+
+		SFH_ASSERT(DimSize(allEvents, ROWS) > 0, "Could not find any PSX events for all given combinations.")
+
+		strswitch(prop)
+			case "amp":
+				propLabelAxis = "Amplitude" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_Y_DATA_UNIT) + ")"
+				break
+			case "xpos":
+				propLabelAxis = "Event time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
+				break
+			case "xinterval":
+				propLabelAxis = "Event interval" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
+				break
+			case "tau":
+				propLabelAxis = "Decay tau" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
+				break
+			case "estate":
+				propLabelAxis = "Event manual QC" + " (enum)"
+				break
+			case "fstate":
+				propLabelAxis = "Fit manual QC" + " (enum)"
+				break
+			case "fitresult":
+				propLabelAxis = "Fit result" + " (0/1)"
+				break
+			case "risetime":
+				propLabelAxis = "Rise time" + " (" + JWN_GetStringFromWaveNote(allEvents[0], PSX_X_DATA_UNIT) + ")"
+				break
+			default:
+				ASSERT(0, "Impossible prop")
+		endswitch
+
+		if(!cmpstr(stateAsStr, "every"))
+			WAVE allStates = PSX_GetStates()
+		else
+			Make/FREE allStates = {PSX_ParseState(stateAsStr)}
+		endif
+
+		for(state : allStates)
+
+			[WAVE resultsRaw, WAVE eventIndex, WAVE marker, WAVE/T comboKeys] = PSX_GetStatsResults(allEvents, state, prop)
+
+			if(!WaveExists(resultsRaw))
+				continue
+			endif
+
+			strswitch(postProc)
+				case "nothing":
+					WAVE/D results = resultsRaw
+
+					JWN_SetWaveInWaveNote(results, SF_META_XVALUES, eventIndex)
+					break
+				case "stats":
+					WAVE/Z resultsRawClean = ZapNaNs(resultsRaw)
+
+					if(!WaveExists(resultsRawClean))
+						continue
+					endif
+
+					WaveStats/Q/M=2 resultsRawClean
+
+					Make/FREE/D results = {V_avg, NaN, V_adev, V_sdev, V_skew, V_kurt}
+
+					StatsQuantiles/Q/Z resultsRawClean
+
+					if(!V_Flag)
+						results[1] = V_Median
+					endif
+
+					WAVE/T statsLabels = ListToTextWave(PSX_STATS_LABELS, ";")
+					JWN_SetWaveInWaveNote(results, SF_META_XVALUES, statsLabels)
+					SetDimensionLabels(results, PSX_STATS_LABELS, ROWS)
+
+					// resize markers
+					Redimension/N=(DimSize(results, ROWS)) marker
+					refMarker = marker[0]
+					marker[]  = refMarker
+
+					break
+				case "nonfinite":
+					// map:
+					// -inf -> -1
+					// NaN  ->  0
+					// +inf -> +1
+					// finite -> NaN
+					Duplicate/FREE resultsRaw, results
+					Multithread results[] = resultsRaw[p] == -Inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : (resultsRaw[p] == +Inf ? +1 : NaN))
+
+					WAVE/Z resultsClean = ZapNaNs(results)
+
+					if(!WaveExists(resultsClean))
+						continue
+					endif
+
+					eventIndex[] = IsFinite(results[p]) ? eventIndex[p] : NaN
+					marker[]     = IsFinite(results[p]) ? marker[p] : NaN
+					comboKeys[]  = SelectString(IsFinite(results[p]), "", comboKeys[p])
+
+					WAVE markerClean     = ZapNaNs(marker)
+					WAVE eventIndexClean = ZapNaNs(eventIndex)
+					RemoveTextWaveEntry1D(comboKeys, "", all = 1)
+
+					// y-data will be eventIndex, and x the numeric categories of non-finiteness
+					WAVE marker  = markerClean
+					WAVE results = eventIndexClean
+					WAVE xValues = resultsClean
+
+					Redimension/D results
+
+					JWN_SetWaveInWaveNote(results, SF_META_XVALUES, xValues)
+
+					Make/FREE/T nonFiniteTickLabels = {num2str(-Inf), num2str(NaN), num2str(+Inf)}
+					JWN_SetWaveInWaveNote(results, SF_META_XTICKLABELS, nonFiniteTickLabels)
+					JWN_SetWaveInWaveNote(results, SF_META_XTICKPOSITIONS, {-1, 0, 1})
+
+					break
+				case "count":
+					MatrixOP/FREE results = numRows(resultsRaw)
+					break
+				case "hist":
+					Make/FREE/N=0/D results
+
+					// truncate the input data to get usable histogram bins
+					// using allEvents assumes that the same psxKernel was used for
+					// all input events, which sounds reasonable.
+					if(!cmpstr(prop, "tau") || !cmpstr(prop, "amp"))
+						if(!cmpstr(prop, "tau"))
+							lowerBoundary = 0
+							upperBoundary = PSX_STATS_TAU_FACTOR * JWN_GetNumberFromWaveNote(allEvents, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
+							ASSERT(IsFinite(upperBoundary) && upperBoundary > 0, "Upper boundary for tau must be finite and positive")
+						elseif(!cmpstr(prop, "amp"))
+							temp          = PSX_STATS_AMP_FACTOR * JWN_GetNumberFromWaveNote(allEvents, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/amp")
+							lowerBoundary = -abs(temp)
+							upperBoundary = +abs(temp)
+							ASSERT(IsFinite(lowerBoundary) && IsFinite(upperBoundary), "Lower/Upper boundary for amp must be finite")
+						endif
+
+						resultsRaw[] = LimitWithReplace(resultsRaw[p], lowerBoundary, upperBoundary, NaN)
+					endif
+
+					WAVE/Z resultsRawClean = ZapNaNs(resultsRaw)
+
+					if((!WaveExists(resultsRawClean) && WaveExists(resultsRaw))        \
+					   || (DimSize(resultsRawClean, ROWS) != DimSize(resultsRaw, ROWS)))
+						if(!AlreadyCalledOnce(CO_PSX_CLIPPED_STATS))
+							printf "psxStats removed out-of-range input data for histogram generation.\r"
+							ControlWindowToFront()
+						endif
+					endif
+
+					if(!WaveExists(resultsRawClean))
+						continue
+					endif
+
+					Histogram/DP/B=5/DEST=results resultsRawClean
+					break
+				case "log10":
+					MatrixOp/FREE results = log(resultsRaw)
+
+					JWN_SetWaveInWaveNote(results, SF_META_XVALUES, eventIndex)
+					break
+				default:
+					ASSERT(0, "Impossible postProc state")
+			endswitch
+
+			// passing in sweepNo is not correct as we combine data from multiple sweeps
+			// but we need it to be set to something valid so that the headstage colors work
+			// we assume therefore that all sweeps use the same active HS/AD/DAC settings
+			JWN_SetNumberInWaveNote(results, SF_META_SWEEPNO, sweepNo)
+			JWN_SetNumberInWaveNote(results, SF_META_CHANNELTYPE, chanType)
+			JWN_SetNumberInWaveNote(results, SF_META_CHANNELNUMBER, chanNr)
+
+			ASSERT(DimSize(results, ROWS) <= DimSize(marker, ROWS), "results wave got larger unexpectedly")
+			Redimension/N=(DimSize(results, ROWS)) marker, comboKeys
+
+			JWN_SetNumberInWaveNote(results, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_MARKERS)
+			JWN_SetWaveInWaveNote(results, SF_META_MOD_MARKER, marker)
+			JWN_CreatePath(results, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+			JWN_SetWaveInWaveNote(results, SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME, comboKeys)
+
+			JWN_CreatePath(results, SF_META_USER_GROUP + PSX_JWN_STATS_POST_PROC)
+			JWN_SetStringInWaveNote(results, SF_META_USER_GROUP + PSX_JWN_STATS_POST_PROC, postProc)
+
+			JWN_SetNumberInWaveNote(results, SF_META_SHOW_LEGEND, 0)
+
+			EnsureLargeEnoughWave(output, indexShouldExist = index)
+			output[index] = results
+			index        += 1
+		endfor
+	endfor
 
 	Redimension/N=(index) output
 
@@ -1643,6 +1713,12 @@ static Function PSX_UpdateSingleEventGraph(string win, variable index)
 	endif
 
 	DFREF comboDFR = PSX_GetCurrentComboFolder(win)
+
+	WAVE/WAVE eventFit = GetPSXEventFitWaveFromDFR(comboDFR)
+
+	if(!(index >= 0 && index < DimSize(eventFit, ROWS)))
+		return NaN
+	endif
 
 	PSX_UpdateDisplayedFit(comboDFR, index)
 
@@ -4192,6 +4268,18 @@ Function PSX_PostPlot(string win)
 	PSX_ApplySpecialPlotProperties(win, eventLocationTicks, eventLocationLabels)
 End
 
+static Function PSX_OperationSetDimensionLabels(WAVE/WAVE output, variable numCombos, WAVE/T labels, WAVE/T labelsTemplate)
+
+	variable i
+
+	numCombos = DimSize(output, ROWS) / PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY
+
+	for(i = 0; i < numCombos; i += 1)
+		labels[] = PSX_GenerateKey(labelsTemplate[p], i)
+		SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = i * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY)
+	endfor
+End
+
 /// @brief Implementation of the `psx` operation
 ///
 // Returns a SweepFormula dataset with n * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY
@@ -4210,7 +4298,7 @@ End
 Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
-	variable maxTauFactor, peakThresh, numFailures
+	variable maxTauFactor, peakThresh, numFailures, idx, success
 	string parameterPath, id, psxParameters, dataUnit
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
@@ -4256,15 +4344,20 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		ASSERT(DimSize(labelsTemplate, ROWS) == PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY, "Mismatched label wave")
 		Duplicate/FREE/T labelsTemplate, labels
 
-		// generate dimension labels for all potential output
-		for(i = 0; i < numCombos; i += 1)
-			labels[] = PSX_GenerateKey(labelsTemplate[p], i)
-			SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = i * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY)
-		endfor
+		PSX_OperationSetDimensionLabels(output, numCombos, labels, labelsTemplate)
 
 		for(i = 0; i < numCombos; i += 1)
-			PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilterLow, sweepFilterHigh, deconvFilter, i, output)
+			success = !PSX_OperationSweepGathering(graph, psxKernelDataset, parameterJsonID, sweepFilterLow, sweepFilterHigh, deconvFilter, idx, output)
+			idx    += success
 		endfor
+
+		numCombos = idx
+
+		if(numCombos == 0)
+			Abort
+		endif
+
+		Redimension/N=(numCombos * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY) output
 
 		[WAVE hist, WAVE fit, peakThresh, dataUnit] = PSX_CalculatePeakThreshold(output, numCombos, numberOfSDs)
 		WaveClear hist, fit
@@ -4273,8 +4366,20 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 			numFailures += PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, i, output)
 		endfor
 
-		if(numFailures == numCombos)
-			Abort
+		if(numFailures > 0)
+			// remove null waves
+			WAVE/Z outputClean = ZapNullRefs(output)
+
+			if(!WaveExists(outputClean))
+				Abort
+			endif
+
+			WAVE outputNew = MoveWaveWithOverwrite(output, outputClean)
+			WAVE output    = outputNew
+			WaveClear outputClean, outputNew
+
+			numCombos = DimSize(output, ROWS) / PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY
+			PSX_OperationSetDimensionLabels(output, numCombos, labels, labelsTemplate)
 		endif
 	catch
 		if(WaveExists(output))
@@ -4284,7 +4389,8 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		JSON_Release(parameterJsonID)
 
 		SFH_CleanUpInput(psxKernelDataset)
-		Abort
+
+		SFH_ASSERT(0, "Could not gather sweep data for psx")
 	endtry
 
 	JWN_SetWaveNoteFromJSON(output, parameterJsonID)
@@ -4308,7 +4414,7 @@ End
 // ...
 Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph)
 
-	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset
+	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
 	string parameterPath, key
 
 	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
@@ -4343,21 +4449,36 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 		WAVE/WAVE result = PSX_GetPSXKernel(riseTau, decayTau, amp, numPoints, dt, range)
 
-		Duplicate/FREE/T rawLabels, labels
-		labels[] = PSX_GenerateKey(rawLabels[p], i)
-		SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = i * PSX_KERNEL_OUTPUTWAVES_PER_ENTRY)
+		if(DimSize(result, ROWS) == 0)
+			continue
+		endif
 
-		key           = PSX_GenerateKey("psxKernel", i)
-		output[%$key] = result[0]
-		key           = PSX_GenerateKey("psxKernelFFT", i)
-		output[%$key] = result[1]
-		key           = PSX_GenerateKey("sweepData", i)
+		Duplicate/FREE/T rawLabels, labels
+		labels[] = PSX_GenerateKey(rawLabels[p], idx)
+		SetDimensionLabels(output, TextWaveToList(labels, ";"), ROWS, startPos = idx * PSX_KERNEL_OUTPUTWAVES_PER_ENTRY)
+
+		key           = PSX_GenerateKey("sweepData", idx)
 		output[%$key] = sweepData
+		key           = PSX_GenerateKey("psxKernel", idx)
+		output[%$key] = result[0]
+		key           = PSX_GenerateKey("psxKernelFFT", idx)
+		output[%$key] = result[1]
+
+		idx += 1
 	endfor
 
+	numCombos = idx
+
+	SFH_ASSERT(numCombos > 0, "Could not create psxKernel")
+
+	Redimension/N=(PSX_KERNEL_OUTPUTWAVES_PER_ENTRY * numCombos) output
+
 	parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
+
+	WAVE rangeClean = ZapNullRefs(range)
+
 	JWN_CreatePath(output, parameterPath)
-	JWN_SetWaveInWaveNote(output, parameterPath + "/range", range) // not the same as SF_META_RANGE
+	JWN_SetWaveInWaveNote(output, parameterPath + "/range", rangeClean) // not the same as SF_META_RANGE
 	JWN_SetNumberInWaveNote(output, parameterPath + "/riseTau", riseTau)
 	JWN_SetNumberInWaveNote(output, parameterPath + "/decayTau", decayTau)
 	JWN_SetNumberInWaveNote(output, parameterPath + "/amp", amp)
