@@ -1808,9 +1808,10 @@ Function P_UpdatePressureModeTabs(device, headStage)
 	string   device
 	variable headStage
 
-	WAVE     pressureWave  = P_GetPressureDataWaveRef(device)
-	variable pressureMode  = PressureWave[headStage][%Approach_Seal_BrkIn_Clear]
-	string   highlightSpec = "\\f01\\Z11"
+	WAVE     pressureWave           = P_GetPressureDataWaveRef(device)
+	variable pressureMode           = PressureWave[headStage][%Approach_Seal_BrkIn_Clear]
+	string   highlightSpec          = "\\f01\\Z11"
+	string   ctrlsDisableUserAccess = "button_DataAcq_SSSetPressureMan;setvar_DataAcq_SSPressure;button_DataAcq_PPSetPressureMan;setvar_DataAcq_PPPressure;setvar_DataAcq_PPDuration;check_DataAcq_ManPressureAll"
 
 	if(pressureMode == PRESSURE_METHOD_ATM)
 		TabControl tab_DataAcq_Pressure, win=$device, tabLabel(0)="Auto"
@@ -1826,6 +1827,14 @@ Function P_UpdatePressureModeTabs(device, headStage)
 	endif
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = pressureWave[headStage][%ManSSPressure])
+
+	WAVE pressureType = GetPressureTypeWv(device)
+
+	if(pressureType[headstage] == PRESSURE_TYPE_USER)
+		DisableControls(device, ctrlsDisableUserAccess)
+	else
+		EnableControls(device, ctrlsDisableUserAccess)
+	endif
 End
 
 /// @brief Checks if all the pressure settings for a headStage are valid

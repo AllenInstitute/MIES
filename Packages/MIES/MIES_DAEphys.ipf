@@ -4460,13 +4460,23 @@ Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 			device = cba.win
 			DAP_AbortIfUnlocked(device)
 			DAG_Update(device, cba.ctrlName, val = cba.checked)
+
+			WAVE pressureType = GetPressureTypeWv(device)
+
 			WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
-			P_RunP_ControlIfTPOFF(device)
 			headstage = PressureDataWv[0][%UserSelectedHeadStage]
+
+			if(pressureType[headstage] == PRESSURE_TYPE_MANUAL)
+				PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan")
+			endif
+
+			P_RunP_ControlIfTPOFF(device)
 			if(P_ValidatePressureSetHeadstage(device, headstage))
 				P_SetPressureValves(device, headstage, P_GetUserAccess(device, headstage, PressureDataWv[headstage][%Approach_Seal_BrkIn_Clear]))
 			endif
 			P_UpdatePressureType(device)
+
+			P_UpdatePressureModeTabs(device, headstage)
 
 			break
 	endswitch
