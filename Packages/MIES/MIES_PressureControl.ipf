@@ -1826,6 +1826,21 @@ Function P_UpdatePressureModeTabs(device, headStage)
 	endif
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = pressureWave[headStage][%ManSSPressure])
+
+	P_AdaptManualControlsForUserAccess(device, headStage)
+End
+
+Function P_AdaptManualControlsForUserAccess(string device, variable headstage)
+
+	string ctrlsDisableUserAccess = "button_DataAcq_SSSetPressureMan;setvar_DataAcq_SSPressure;button_DataAcq_PPSetPressureMan;setvar_DataAcq_PPPressure;setvar_DataAcq_PPDuration;check_DataAcq_ManPressureAll"
+
+	WAVE pressureType = GetPressureTypeWv(device)
+
+	if(pressureType[headstage] == PRESSURE_TYPE_USER)
+		DisableControls(device, ctrlsDisableUserAccess)
+	else
+		EnableControls(device, ctrlsDisableUserAccess)
+	endif
 End
 
 /// @brief Checks if all the pressure settings for a headStage are valid
@@ -2174,14 +2189,12 @@ End
 Function P_SetAllHStoAtmospheric(device)
 	string device
 
-	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
-	WAVE/Z/SDFR=dfr PressureData
+	WAVE PressureDataWv  = P_GetPressureDataWaveRef(device)
+	WAVE pressureMethods = GetColfromWavewithDimLabel(PressureDataWv, "Approach_Seal_BrkIn_Clear")
 
-	if(WaveExists(PressureData))
-		if(sum(GetColfromWavewithDimLabel(PressureData, "Approach_Seal_BrkIn_Clear")) != (PRESSURE_METHOD_ATM * NUM_HEADSTAGES)) // Only update pressure wave if pressure methods are different from atmospheric
-			PressureData[][%Approach_Seal_BrkIn_Clear] = PRESSURE_METHOD_ATM
-			P_PressureControl(device)
-		endif
+	if(sum(pressureMethods) != (PRESSURE_METHOD_ATM * NUM_HEADSTAGES)) // Only update pressure wave if pressure methods are different from atmospheric
+		PressureDataWv[][%Approach_Seal_BrkIn_Clear] = PRESSURE_METHOD_ATM
+		P_PressureControl(device)
 	endif
 End
 
