@@ -170,6 +170,7 @@ threadsafe Function/S RemoveEndingRegExp(str, endingRegExp)
 		return str
 	endif
 
+	AssertOnAndClearRTError()
 	SplitString/E=("(" + endingRegExp + ")$") str, endStr; err = GetRTError(1)
 	ASSERT_TS((V_flag == 0 || V_flag == 1) && err == 0, "Unexpected number of matches or invalid regex")
 
