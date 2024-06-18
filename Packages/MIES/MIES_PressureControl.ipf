@@ -1826,6 +1826,21 @@ Function P_UpdatePressureModeTabs(device, headStage)
 	endif
 
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = pressureWave[headStage][%ManSSPressure])
+
+	P_AdaptManualControlsForUserAccess(device, headStage)
+End
+
+Function P_AdaptManualControlsForUserAccess(string device, variable headstage)
+
+	string ctrlsDisableUserAccess = "button_DataAcq_SSSetPressureMan;setvar_DataAcq_SSPressure;button_DataAcq_PPSetPressureMan;setvar_DataAcq_PPPressure;setvar_DataAcq_PPDuration;check_DataAcq_ManPressureAll"
+
+	WAVE pressureType = GetPressureTypeWv(device)
+
+	if(pressureType[headstage] == PRESSURE_TYPE_USER)
+		DisableControls(device, ctrlsDisableUserAccess)
+	else
+		EnableControls(device, ctrlsDisableUserAccess)
+	endif
 End
 
 /// @brief Checks if all the pressure settings for a headStage are valid
