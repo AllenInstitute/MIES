@@ -1746,6 +1746,12 @@ static Function PSX_UpdateSingleEventGraph(string win, variable index)
 
 	DFREF comboDFR = PSX_GetCurrentComboFolder(win)
 
+	WAVE/WAVE eventFit = GetPSXEventFitWaveFromDFR(comboDFR)
+
+	if(!(index >= 0 && index < DimSize(eventFit, ROWS)))
+		return NaN
+	endif
+
 	PSX_UpdateDisplayedFit(comboDFR, index)
 
 	extSingleGraph = PSX_GetSingleEventGraph(win)
