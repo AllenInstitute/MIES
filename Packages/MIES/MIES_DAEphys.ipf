@@ -4453,18 +4453,20 @@ Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	variable headstage
+	string   device
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			DAP_AbortIfUnlocked(cba.win)
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
-			WAVE pressureDataWv = P_GetPressureDataWaveRef(cba.win)
-			P_RunP_ControlIfTPOFF(cba.win)
+			device = cba.win
+			DAP_AbortIfUnlocked(device)
+			DAG_Update(device, cba.ctrlName, val = cba.checked)
+			WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
+			P_RunP_ControlIfTPOFF(device)
 			headstage = PressureDataWv[0][%UserSelectedHeadStage]
-			if(P_ValidatePressureSetHeadstage(cba.win, headstage))
-				P_SetPressureValves(cba.win, headstage, P_GetUserAccess(cba.win, headstage, PressureDataWv[headstage][%Approach_Seal_BrkIn_Clear]))
+			if(P_ValidatePressureSetHeadstage(device, headstage))
+				P_SetPressureValves(device, headstage, P_GetUserAccess(device, headstage, PressureDataWv[headstage][%Approach_Seal_BrkIn_Clear]))
 			endif
-			P_UpdatePressureType(cba.win)
+			P_UpdatePressureType(device)
 
 			break
 	endswitch
