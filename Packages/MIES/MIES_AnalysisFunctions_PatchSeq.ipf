@@ -2036,9 +2036,9 @@ static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(st
 	str += code
 	sprintf code, "sweepr = [%s]\r", NumericWaveToList(sweeps, ",", trailSep = 0)
 	str += code
-	sprintf code, "sel = select(channels(AD%d), $sweepr, all)\r", ADC
+	sprintf code, "sel = select(selchannels(AD%d), selsweeps($sweepr), selvis(all))\r", ADC
 	str += code
-	sprintf code, "dat = data($trange, $sel)\r"
+	sprintf code, "dat = data(select(selrange($trange), $sel))\r"
 	str += code
 	sprintf code, "freq = merge(apfrequency($dat, 0))\r" // 0 == FULL
 	str += code
@@ -6892,7 +6892,7 @@ Function PSQ_PipetteInBath(string device, STRUCT AnalysisFunction_V3 &s)
 			ASSERT(WaveExists(baselineQCPassedLBN), "Missing baseline QC")
 			baselineQCPassed = baselineQCPassedLBN[s.headstage]
 
-			sprintf formula, "store(\"Steady state resistance\", tp(tpss(), select(channels(AD), [%d], all), [0]))", s.sweepNo
+			sprintf formula, "store(\"Steady state resistance\", tp(tpss(), select(selchannels(AD), selsweeps(%d), selvis(all)), [0]))", s.sweepNo
 			databrowser = PSQ_ExecuteSweepFormula(device, formula)
 
 			minPipetteResistance = AFH_GetAnalysisParamNumerical("MinPipetteResistance", s.params)
@@ -7358,17 +7358,17 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 			switch(testpulseGroupSel)
 				case PSQ_SE_TGS_BOTH:
 					formula = ""
-					sprintf str, "store(\"Steady state resistance (group A)\", tp(tpss(), select(channels(AD), [%d], all), [0, 4, 5, 6]))\r", s.sweepNo
+					sprintf str, "store(\"Steady state resistance (group A)\", tp(tpss(), select(selchannels(AD), selsweeps(%d), selvis(all)), [0, 4, 5, 6]))\r", s.sweepNo
 					formula += str
 					formula += "and\r"
-					sprintf str, "store(\"Steady state resistance (group B)\", tp(tpss(), select(channels(AD), [%d], all), [0, 1, 2, 3]))", s.sweepNo
+					sprintf str, "store(\"Steady state resistance (group B)\", tp(tpss(), select(selchannels(AD), selsweeps(%d), selvis(all)), [0, 1, 2, 3]))", s.sweepNo
 					formula += str
 					break
 				case PSQ_SE_TGS_FIRST:
-					sprintf formula, "store(\"Steady state resistance (group A)\", tp(tpss(), select(channels(AD), [%d], all), [0]))", s.sweepNo
+					sprintf formula, "store(\"Steady state resistance (group A)\", tp(tpss(), select(selchannels(AD), selsweeps(%d), selvis(all)), [0]))", s.sweepNo
 					break
 				case PSQ_SE_TGS_SECOND:
-					sprintf formula, "store(\"Steady state resistance (group B)\", tp(tpss(), select(channels(AD), [%d], all), [0]))", s.sweepNo
+					sprintf formula, "store(\"Steady state resistance (group B)\", tp(tpss(), select(selchannels(AD), selsweeps(%d), selvis(all)), [0]))", s.sweepNo
 					break
 				default:
 					ASSERT(0, "Invalid testpulseGroupSel: " + num2str(testpulseGroupSel))
@@ -8119,10 +8119,10 @@ static Function PSQ_VM_EvaluateAverageVoltage(string device, variable sweepNo, v
 
 	if(baselineQCPassed)
 		formula = ""
-		sprintf str, "store(\"Average U_BLS0\", avg(data(U_BLS0, select(channels(AD), [%d], all))))\r", sweepNo
+		sprintf str, "store(\"Average U_BLS0\", avg(data(select(selrange(U_BLS0),selchannels(AD), selsweeps(%d), selvis(all)))))\r", sweepNo
 		formula += str
 		formula += "and\r"
-		sprintf str, "store(\"Average U_BLS1\", avg(data(U_BLS1, select(channels(AD), [%d], all))))\r", sweepNo
+		sprintf str, "store(\"Average U_BLS1\", avg(data(select(selrange(U_BLS1),selchannels(AD), selsweeps(%d), selvis(all)))))\r", sweepNo
 		formula += str
 
 		databrowser = PSQ_ExecuteSweepFormula(device, formula)
@@ -8510,10 +8510,10 @@ Function PSQ_AccessResistanceSmoke(string device, STRUCT AnalysisFunction_V3 &s)
 
 			if(baselinePassed)
 				cmd = ""
-				sprintf str, "store(\"Steady state resistance\", tp(tpss(), select(channels(AD), [%d], all), [0]))", s.sweepNo
+				sprintf str, "store(\"Steady state resistance\", tp(tpss(), select(selchannels(AD), selsweeps(%d), selvis(all)), [0]))", s.sweepNo
 				cmd += str
 				cmd += "\r and \r"
-				sprintf str, "store(\"Peak resistance\", tp(tpinst(), select(channels(AD), [%d], all), [0]))", s.sweepNo
+				sprintf str, "store(\"Peak resistance\", tp(tpinst(), select(selchannels(AD), selsweeps(%d), selvis(all)), [0]))", s.sweepNo
 				cmd += str
 
 				databrowser = PSQ_ExecuteSweepFormula(device, cmd)
