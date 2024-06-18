@@ -2174,9 +2174,10 @@ End
 Function P_SetAllHStoAtmospheric(device)
 	string device
 
-	WAVE PressureDataWv = P_GetPressureDataWaveRef(device)
+	WAVE PressureDataWv  = P_GetPressureDataWaveRef(device)
+	WAVE pressureMethods = GetColfromWavewithDimLabel(PressureDataWv, "Approach_Seal_BrkIn_Clear")
 
-	if(sum(GetColfromWavewithDimLabel(PressureDataWv, "Approach_Seal_BrkIn_Clear")) != (PRESSURE_METHOD_ATM * NUM_HEADSTAGES)) // Only update pressure wave if pressure methods are different from atmospheric
+	if(sum(pressureMethods) != (PRESSURE_METHOD_ATM * NUM_HEADSTAGES)) // Only update pressure wave if pressure methods are different from atmospheric
 		PressureDataWv[][%Approach_Seal_BrkIn_Clear] = PRESSURE_METHOD_ATM
 		P_PressureControl(device)
 	endif
