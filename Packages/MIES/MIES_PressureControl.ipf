@@ -2174,14 +2174,11 @@ End
 Function P_SetAllHStoAtmospheric(device)
 	string device
 
-	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
-	WAVE/Z/SDFR=dfr PressureData
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(device)
 
-	if(WaveExists(PressureData))
-		if(sum(GetColfromWavewithDimLabel(PressureData, "Approach_Seal_BrkIn_Clear")) != (PRESSURE_METHOD_ATM * NUM_HEADSTAGES)) // Only update pressure wave if pressure methods are different from atmospheric
-			PressureData[][%Approach_Seal_BrkIn_Clear] = PRESSURE_METHOD_ATM
-			P_PressureControl(device)
-		endif
+	if(sum(GetColfromWavewithDimLabel(PressureDataWv, "Approach_Seal_BrkIn_Clear")) != (PRESSURE_METHOD_ATM * NUM_HEADSTAGES)) // Only update pressure wave if pressure methods are different from atmospheric
+		PressureDataWv[][%Approach_Seal_BrkIn_Clear] = PRESSURE_METHOD_ATM
+		P_PressureControl(device)
 	endif
 End
 
