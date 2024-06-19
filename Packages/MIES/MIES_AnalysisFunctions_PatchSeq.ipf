@@ -2595,16 +2595,28 @@ static Function [WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, WAVE/Z apfreqCurrentSCI
 
 	// 1. rheobase/supra/adaptive sweeps reevaluated using our own epoch and stored in PRE_SET_EVENT
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT, query = 1)
-	WAVE/T DAScalesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	WAVE   DAScalesRhSuAd    = ListToNumericWave(DAScalesRhSuAdLBN[headstage], ";")
+	WAVE/T/Z DAScalesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	// workaround issue that there is no SCI in PRE_SET_EVENT
+	if(!WaveExists(DAScalesRhSuAdLBN))
+		WAVE/T DAScalesRhSuAdLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
+	endif
+
+	WAVE DAScalesRhSuAd = ListToNumericWave(DAScalesRhSuAdLBN[headstage], ";")
 
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT, query = 1)
-	WAVE/T apfreqRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	WAVE   apfreqRhSuAd    = ListToNumericWave(apfreqRhSuAdLBN[headstage], ";")
+	WAVE/T/Z apfreqRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	// same workaround
+	if(!WaveExists(apfreqRhSuAdLBN))
+		WAVE/T apfreqRhSuAdLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
+	endif
+
+	WAVE apfreqRhSuAd = ListToNumericWave(apfreqRhSuAdLBN[headstage], ";")
 
 	// 2. sweeps from adaptive threshold SCI (includes the current sweep)
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ, query = 1)
-	WAVE/Z apfreqCurrentSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	WAVE/Z apfreqCurrentSCI  = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	WAVE/Z DAScaleCurrentSCI = GetLastSettingEachSCI(numericalValues, sweepNo, "Stim Scale Factor", headstage, DATA_ACQUISITION_MODE)
 
 	if(!WaveExists(apfreqCurrentSCI) || !WaveExists(DAScaleCurrentSCI))
