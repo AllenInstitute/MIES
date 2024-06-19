@@ -2060,6 +2060,8 @@ static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(st
 	sprintf key, "Sweep Formula store [%s]", daScaleKey
 	WAVE DaScale = PSQ_GetSweepFormulaResultWave(textualResultsValues, key)
 
+	ASSERT(EqualWaves(apfreq, DAScale, EQWAVES_DIMSIZE), "Non-matching dimension sizes when calculating APFrequency")
+
 	return [apfreq, DaScale]
 End
 
