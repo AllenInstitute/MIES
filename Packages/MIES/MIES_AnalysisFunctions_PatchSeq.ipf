@@ -1998,7 +1998,7 @@ End
 /// @retval DAScale DAScale data
 static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(string device, variable sweepNo, variable headstage, WAVE sweeps, [variable fromRhSuAd])
 
-	variable ADC, start, stop, currentSweepNo, refSweepNo
+	variable ADC, start, stop, refSweepNo
 	string code, databrowser, key, ctrl, setName
 	string str         = ""
 	string freqDataKey = "Frequency data"
@@ -2054,13 +2054,11 @@ static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(st
 
 	WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
-	currentSweepNo = AFH_GetLastSweepAcquired(device)
-
 	sprintf key, "Sweep Formula store [%s]", freqDataKey
-	WAVE apfreq = PSQ_GetSweepFormulaResultWave(textualResultsValues, key, currentSweepNo)
+	WAVE apfreq = PSQ_GetSweepFormulaResultWave(textualResultsValues, key)
 
 	sprintf key, "Sweep Formula store [%s]", daScaleKey
-	WAVE DaScale = PSQ_GetSweepFormulaResultWave(textualResultsValues, key, currentSweepNo)
+	WAVE DaScale = PSQ_GetSweepFormulaResultWave(textualResultsValues, key)
 
 	return [apfreq, DaScale]
 End
@@ -2082,7 +2080,7 @@ End
 /// @retval errMsg    error message if both `fitOffset` and `fitSlope` are null
 static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFrequencyCurrentData(string device, variable sweepNo, WAVE/Z apfreq, WAVE/Z DAScales, variable numPointsForLineFit, [variable singleFit])
 
-	variable i, numPoints, numFits, first, last, hasEnoughPoints, initialFit, currentSweepNo
+	variable i, numPoints, numFits, first, last, hasEnoughPoints, initialFit
 	string line, databrowser, key
 	string str = ""
 
@@ -2157,12 +2155,10 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 
 	WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
-	currentSweepNo = AFH_GetLastSweepAcquired(device)
-
 	Make/FREE/D/N=(numFits) fitOffset, fitSlope
 	for(i = 0; i < numFits; i += 1)
 		sprintf key, "Sweep Formula store [Fit result %d]", i
-		WAVE/Z fitResult = PSQ_GetSweepFormulaResultWave(textualResultsValues, key, currentSweepNo)
+		WAVE/Z fitResult = PSQ_GetSweepFormulaResultWave(textualResultsValues, key)
 
 		if(!WaveExists(fitResult))
 			return [$"", $"", "Fit failed due to missing fitResult wave"]
@@ -2798,7 +2794,7 @@ End
 /// @returns one on error, zero otherwise
 static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_DS_CalculateAndStoreDAScaleStepWidths(string device, variable sweepNo, WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, variable maxFrequencyChangePercent, variable dascaleStepWidthMinMaxRatio)
 
-	variable currentSweepNo, daScaleMinStepWidth, daScaleMaxStepWidth
+	variable daScaleMinStepWidth, daScaleMaxStepWidth
 	string code, databrowser, fitKey, key
 	string str = ""
 
@@ -2817,10 +2813,8 @@ static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStep
 
 	WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
-	currentSweepNo = AFH_GetLastSweepAcquired(device)
-
 	sprintf key, "Sweep Formula store [%s]", fitKey
-	WAVE/Z fitResult = PSQ_GetSweepFormulaResultWave(textualResultsValues, key, currentSweepNo)
+	WAVE/Z fitResult = PSQ_GetSweepFormulaResultWave(textualResultsValues, key)
 
 	if(!WaveExists(fitResult))
 		return [1, NaN, NaN]
@@ -6516,7 +6510,7 @@ Function PSQ_PipetteInBath(string device, STRUCT AnalysisFunction_V3 &s)
 
 			WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
-			pipetteResistance = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance]", s.sweepNo)
+			pipetteResistance = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance]")
 
 			// BEGIN TEST
 			if(TestOverrideActive())
@@ -6623,22 +6617,16 @@ Function PSQ_PipetteInBath(string device, STRUCT AnalysisFunction_V3 &s)
 	endif
 End
 
-static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, string key, variable sweepNo)
-	string valueStr, sweepChannelStr
-	variable refSweep
+/// @brief Return entries from the textual result wave written using `store` with the given `key`
+///
+/// Note: This function always returns the last entry, so this needs to be
+///       called directly after PSQ_ExecuteSweepFormula without giving control back to Igor Pro.
+static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, string key)
+	string valueStr
 
-	valueStr        = GetLastSettingTextIndep(textualResultsValues, NaN, key, SWEEP_FORMULA_RESULT)
-	sweepChannelStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula sweeps/channels", SWEEP_FORMULA_RESULT)
+	valueStr = GetLastSettingTextIndep(textualResultsValues, NaN, key, SWEEP_FORMULA_RESULT)
 
-	if(IsEmpty(sweepChannelStr))
-		Make/FREE sweeps = {NaN}
-	else
-		WAVE/T sweepChannelInfoText = ListToTextWaveMD(sweepChannelStr, 2, rowSep = ",", colSep = ";")
-		Make/FREE/N=(DimSize(sweepChannelInfoText, ROWS)) sweeps = str2num(sweepChannelInfoText[p][0])
-	endif
-
-	if(IsEmpty(valueStr) || IsNaN(GetRowIndex(sweeps, val = sweepNo)))
-		// no value for the current sweep
+	if(IsEmpty(valueStr))
 		return $""
 	endif
 
@@ -6650,9 +6638,9 @@ static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, 
 	return wv
 End
 
-static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string key, variable sweepNo)
+static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string key)
 
-	WAVE/Z wv = PSQ_GetSweepFormulaResultWave(textualResultsValues, key, sweepNo)
+	WAVE/Z wv = PSQ_GetSweepFormulaResultWave(textualResultsValues, key)
 
 	if(!WaveExists(wv))
 		return NaN
@@ -7043,8 +7031,8 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 
 			WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
-			sealResistanceA = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance (group A)]", s.sweepNo)
-			sealResistanceB = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance (group B)]", s.sweepNo)
+			sealResistanceA = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance (group A)]")
+			sealResistanceB = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance (group B)]")
 
 			// BEGIN TEST
 			if(TestOverrideActive())
@@ -7752,8 +7740,8 @@ static Function PSQ_VM_EvaluateAverageVoltage(string device, variable sweepNo, v
 
 		WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
-		avgChunk0 = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Average U_BLS0]", sweepNo)
-		avgChunk1 = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Average U_BLS1]", sweepNo)
+		avgChunk0 = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Average U_BLS0]")
+		avgChunk1 = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Average U_BLS1]")
 
 		if(TestOverrideActive())
 			WAVE overrideResults = GetOverrideResults()
@@ -8143,8 +8131,8 @@ Function PSQ_AccessResistanceSmoke(string device, STRUCT AnalysisFunction_V3 &s)
 
 				WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 
-				accessResistance      = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Peak resistance]", s.sweepNo)
-				steadyStateResistance = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance]", s.sweepNo)
+				accessResistance      = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Peak resistance]")
+				steadyStateResistance = PSQ_GetSweepFormulaResult(textualResultsValues, "Sweep Formula store [Steady state resistance]")
 
 				if(TestOverrideActive())
 					WAVE overrideResults = GetOverrideResults()
