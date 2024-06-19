@@ -2391,8 +2391,6 @@ static Function PSQ_DS_GatherAndWriteFrequencyToLabnotebook(string device, varia
 	ASSERT(DimSize(apFreqCurrent, ROWS) == 1, "Invalid apFreqCurrent sizes")
 	apFreqLBN[headstage] = apFreqCurrent[0]
 	ED_AddEntryToLabnotebook(device, key, apFreqLBN, overrideSweepNo = sweepNo, unit = "Hz")
-
-	return NaN
 End
 
 static Function PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(string device, variable sweepNo, variable headstage, variable fitSlope)
