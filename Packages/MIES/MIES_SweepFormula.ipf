@@ -1488,31 +1488,46 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 			plotGraphs[i] = win
 		endfor
 	elseif(winDisplayMode == SF_DM_SUBWINDOWS)
-		KillWindow/Z $winNameTemplate
-		NewPanel/N=$winNameTemplate/K=1/W=(150, 400, 1000, 700)
-		winNameTemplate = S_name
 
-		SF_CommonWindowSetup(winNameTemplate, graph)
+		win = winNameTemplate
+		if(WindowExists(win))
+			WAVE/T allWindows = ListToTextWave(GetAllWindows(win), ";")
+
+			for(subWindow : allWindows)
+				if(IsSubwindow(subWindow))
+					// in complex hierarchies we might kill more outer subwindows first
+					// so the inner ones might later not exist anymore
+					KillWindow/Z $subWindow
+				endif
+			endfor
+		else
+			NewPanel/N=$win/K=1/W=(150, 400, 1000, 700)
+			win = S_name
+
+			SF_CommonWindowSetup(win, graph)
+		endif
+
+		// now we have an open panel without any subwindows
 
 		if(restoreCursorInfo)
-			ShowInfo/W=$winNameTemplate
+			ShowInfo/W=$win
 		endif
 
 		// create horizontal guides (one more than graphs)
 		for(i = 0; i < numGraphs + 1; i += 1)
 			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 			guidePos   = i / numGraphs
-			DefineGuide/W=$winNameTemplate $guideName1={FT, guidePos, FB}
+			DefineGuide/W=$win $guideName1={FT, guidePos, FB}
 		endfor
 
-		DefineGuide/W=$winNameTemplate customLeft={FL, 0.0, FR}
-		DefineGuide/W=$winNameTemplate customRight={FL, 1.0, FR}
+		DefineGuide/W=$win customLeft={FL, 0.0, FR}
+		DefineGuide/W=$win customRight={FL, 1.0, FR}
 
 		// and now the subwindow graphs
 		for(i = 0; i < numGraphs; i += 1)
 			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 			guideName2 = SF_PLOTTER_GUIDENAME + num2istr(i + 1)
-			Display/HOST=$winNameTemplate/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Graph" + num2str(i))
+			Display/HOST=$win/FG=(customLeft, $guideName1, customRight, $guideName2)/N=$("Graph" + num2str(i))
 			plotGraphs[i] = winNameTemplate + "#" + S_name
 		endfor
 	endif
