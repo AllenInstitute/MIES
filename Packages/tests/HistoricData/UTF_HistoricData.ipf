@@ -88,6 +88,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	// sorted list
 	list = AddListItem("UTF_AttemptNWB2ExportOnOldData.ipf", list, ";", Inf)
 	list = AddListItem("UTF_EpochRecreation.ipf", list, ";", Inf)
+	list = AddListItem("UTF_HistoricAnalysisBrowser.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricDashboard.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricEpochClipping.ipf", list, ";", Inf)
 	list = AddListItem("UTF_HistoricSweepBrowser.ipf", list, ";", Inf)
@@ -266,6 +267,16 @@ End
 Function/WAVE GetHistoricDataFilesSweepUpgrade()
 
 	Make/FREE/T files = {"single_numeric_sweep.pxp"}
+
+	DownloadFilesIfRequired(files)
+	SetLabelsForDGWave(files)
+
+	return files
+End
+
+Function/WAVE GetHistoricDataNoData()
+
+	Make/FREE/T files = {"Labnotebook-has-sweep-but-no-data.pxp"}
 
 	DownloadFilesIfRequired(files)
 	SetLabelsForDGWave(files)
