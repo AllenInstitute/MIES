@@ -689,7 +689,7 @@ End
 static Function AB_LoadSweepsFromExperiment(discLocation, device)
 	string discLocation, device
 
-	variable highestSweepNumber, sweepNumber, numSweeps, i
+	variable highestSweepNumber, sweepNumber, numSweeps, i, numConfigWaves
 	string listSweepConfig, sweepConfig
 	WAVE/T map            = AB_GetMap(discLocation)
 	DFREF  SweepConfigDFR = GetAnalysisDeviceConfigFolder(map[%DataFolder], device)
@@ -698,7 +698,11 @@ static Function AB_LoadSweepsFromExperiment(discLocation, device)
 	// Load Sweep Config Waves
 	highestSweepNumber = AB_GetHighestPossibleSweepNum(map[%DataFolder], device)
 	if(IsFinite(highestSweepNumber))
-		AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
+		numConfigWaves = AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
+
+		if(!numConfigWaves)
+			return NaN
+		endif
 	endif
 	listSweepConfig = GetListOfObjects(sweepConfigDFR, ".*")
 
