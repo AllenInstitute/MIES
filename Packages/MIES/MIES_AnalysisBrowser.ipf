@@ -686,10 +686,10 @@ End
 /// @param discLocation  location of Experiment File on Disc.
 ///                      ID in AnalysisBrowserMap
 /// @param device        device for which to get sweeps.
-static Function/WAVE AB_LoadSweepsFromExperiment(discLocation, device)
+static Function AB_LoadSweepsFromExperiment(discLocation, device)
 	string discLocation, device
 
-	variable highestSweepNumber, sweepNumber, numSweeps, i
+	variable highestSweepNumber, sweepNumber, numSweeps, i, numConfigWaves
 	string listSweepConfig, sweepConfig
 	WAVE/T map            = AB_GetMap(discLocation)
 	DFREF  SweepConfigDFR = GetAnalysisDeviceConfigFolder(map[%DataFolder], device)
@@ -698,7 +698,11 @@ static Function/WAVE AB_LoadSweepsFromExperiment(discLocation, device)
 	// Load Sweep Config Waves
 	highestSweepNumber = AB_GetHighestPossibleSweepNum(map[%DataFolder], device)
 	if(IsFinite(highestSweepNumber))
-		AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
+		numConfigWaves = AB_LoadSweepConfigData(map[%DiscLocation], map[%DataFolder], device, highestSweepNumber)
+
+		if(!numConfigWaves)
+			return NaN
+		endif
 	endif
 	listSweepConfig = GetListOfObjects(sweepConfigDFR, ".*")
 
@@ -711,8 +715,6 @@ static Function/WAVE AB_LoadSweepsFromExperiment(discLocation, device)
 		sweeps[i]   = sweepNumber
 	endfor
 	SetNumberInWaveNote(sweeps, NOTE_INDEX, numSweeps)
-
-	return sweeps
 End
 
 /// @brief Analyse data in NWB file and sort as sweeps.
