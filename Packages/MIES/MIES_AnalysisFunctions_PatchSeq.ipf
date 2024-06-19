@@ -2589,6 +2589,31 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 	return V_Value >= 0
 End
 
+static Function [WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, WAVE/Z apfreqCurrentSCI, WAVE/Z DAScaleCurrentSCI] PSQ_DS_GetAPFreqAndDaScales(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable headstage)
+
+	string key
+
+	// 1. rheobase/supra/adaptive sweeps reevaluated using our own epoch and stored in PRE_SET_EVENT
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT, query = 1)
+	WAVE/T DAScalesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	WAVE   DAScalesRhSuAd    = ListToNumericWave(DAScalesRhSuAdLBN[headstage], ";")
+
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT, query = 1)
+	WAVE/T apfreqRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	WAVE   apfreqRhSuAd    = ListToNumericWave(apfreqRhSuAdLBN[headstage], ";")
+
+	// 2. sweeps from adaptive threshold SCI (includes the current sweep)
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ, query = 1)
+	WAVE/Z apfreqCurrentSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	WAVE/Z DAScaleCurrentSCI = GetLastSettingEachSCI(numericalValues, sweepNo, "Stim Scale Factor", headstage, DATA_ACQUISITION_MODE)
+
+	if(!WaveExists(apfreqCurrentSCI) || !WaveExists(DAScaleCurrentSCI))
+		return [apfreqRhSuAd, DAScalesRhSuAd, $"", $""]
+	endif
+
+	return [apfreqRhSuAd, DAScalesRhSuAd, apfreqCurrentSCI, DAScaleCurrentSCI]
+End
+
 static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherFutureDAScalesAndFrequency(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
 
 	string key
@@ -2605,25 +2630,9 @@ static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherF
 		Make/FREE/D/N=0 futureDAScalesHistoric
 	endif
 
-	// 1. rheobase/supra/adaptive sweeps reevaluated using our own epoch and stored in PRE_SET_EVENT
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT, query = 1)
-	WAVE/T DAScalesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	WAVE   DAScalesRhSuAd    = ListToNumericWave(DAScalesRhSuAdLBN[headstage], ";")
-
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT, query = 1)
-	WAVE/T apfreqRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	WAVE   apfreqRhSuAd    = ListToNumericWave(apfreqRhSuAdLBN[headstage], ";")
-
-	WAVE apFreq   = apfreqRhSuAd
-	WAVE DAScales = DAScalesRhSuAd
-
-	// 2. sweeps from adaptive threshold SCI (includes the current sweep)
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ, query = 1)
-	WAVE/Z apfreqCurrentSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	[WAVE apFreq, WAVE DAScales, WAVE apfreqCurrentSCI, WAVE DAScaleCurrentSCI] = PSQ_DS_GetAPFreqAndDaScales(numericalValues, textualValues, sweepNo, headstage)
 
 	if(WaveExists(apfreqCurrentSCI))
-		WAVE DAScaleCurrentSCI = GetLastSettingEachSCI(numericalValues, sweepNo, "Stim Scale Factor", headstage, DATA_ACQUISITION_MODE)
-
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 		WAVE/Z sweepPassCurrentSCI = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
