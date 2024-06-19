@@ -686,7 +686,7 @@ End
 /// @param discLocation  location of Experiment File on Disc.
 ///                      ID in AnalysisBrowserMap
 /// @param device        device for which to get sweeps.
-static Function/WAVE AB_LoadSweepsFromExperiment(discLocation, device)
+static Function AB_LoadSweepsFromExperiment(discLocation, device)
 	string discLocation, device
 
 	variable highestSweepNumber, sweepNumber, numSweeps, i
@@ -711,8 +711,6 @@ static Function/WAVE AB_LoadSweepsFromExperiment(discLocation, device)
 		sweeps[i]   = sweepNumber
 	endfor
 	SetNumberInWaveNote(sweeps, NOTE_INDEX, numSweeps)
-
-	return sweeps
 End
 
 /// @brief Analyse data in NWB file and sort as sweeps.
