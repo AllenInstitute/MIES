@@ -2187,6 +2187,93 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 	return [fitOffset, fitSlope, ""]
 End
 
+static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, variable headstage)
+
+	string line, key
+	string str = ""
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	[WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, WAVE apfreqCurrentSCI, WAVE DAScaleCurrentSCI] = PSQ_DS_GetAPFreqAndDaScales(numericalValues, textualValues, sweepNo, headstage)
+
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	WAVE/Z sweepPassCurrentSCI = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	WAVE/Z apfreqCurrentSCIClean  = PSQ_DS_FilterPassingData(apfreqCurrentSCI, sweepPassCurrentSCI)
+	WAVE/Z DAScaleCurrentSCIClean = PSQ_DS_FilterPassingData(DAScaleCurrentSCI, sweepPassCurrentSCI)
+
+	if(WaveExists(apfreqCurrentSCIClean) && WaveExists(DAScaleCurrentSCI))
+		Concatenate/NP=(ROWS)/FREE {apfreqRhSuAd, apfreqCurrentSCIClean}, apfreq
+		Concatenate/NP=(ROWS)/FREE {DAScalesRhSuAd, DAScaleCurrentSCIClean}, DAScale
+	else
+		WAVE apfreq  = apfreqRhSuAd
+		WAVE DAScale = DAScalesRhSuAd
+	endif
+
+	/// PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT
+	/// PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT
+	///
+	/// (both are already filtered for passing sweeps)
+	///
+	/// plus
+	///
+	/// PSQ_FMT_LBN_DA_AT_FREQ
+	/// \"Stim Scale Factor\"
+	///
+	/// from full SCI filtered for passing
+	sprintf line, "freq = [%s]\r", NumericWaveToList(apfreq, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
+	str += line
+
+	sprintf line, "daScale = [%s]\r", NumericWaveToList(DAScale, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
+	str += line
+
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_SLOPES, query = 1)
+	WAVE/T/Z fISlopesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	// workaround issue that there is no SCI in PRE_SET_EVENT
+	if(!WaveExists(fISlopesRhSuAdLBN))
+		WAVE/T fISlopesRhSuAdLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
+	endif
+
+	WAVE fISlopesRhSuAd = ListToNumericWave(fISlopesRhSuAdLBN[headstage], ";")
+
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE, query = 1)
+	WAVE/Z fiSlopesCurrentSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	WAVE/Z fiSlopesCurrentSCIClean = PSQ_DS_FilterPassingData(fiSlopesCurrentSCI, sweepPassCurrentSCI)
+
+	if(WaveExists(fiSlopesCurrentSCIClean))
+		Concatenate/NP=(ROWS)/FREE {fISlopesRhSuAd, fiSlopesCurrentSCIClean}, fiSlopes
+	else
+		WAVE fiSlopes = fISlopesRhSuAd
+	endif
+
+	/// PSQ_FMT_LBN_DA_AT_FI_SLOPES
+	///
+	/// (already filtered for passing sweeps)
+	///
+	/// plus
+	///
+	/// PSQ_FMT_LBN_DA_fI_SLOPE
+	///
+	/// from full SCI filtered for passing
+	sprintf line, "fiSlopes = [%s]\r", NumericWaveToList(fiSlopes, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
+	str += line
+
+	str += "\r"
+
+	str += "$freq\r"
+	str += "vs\r"
+	str += "$daScale\r\r"
+
+	str += "and\r\r"
+
+	str += "$fiSlopes\r"
+
+	PSQ_ExecuteSweepFormula(device, str)
+End
+
 /// @brief Check if the fit results from PSQ_DS_FitFrequencyCurrentData are valid
 ///
 /// @param device                    DAC hardware device
@@ -3572,6 +3659,8 @@ Function PSQ_DAScale(device, s)
 						PSQ_DS_CalculateMeasuredAllFutureDAScalesAndStoreInLabnotebook(device, s.sweepNo, s.headstage, futureDAScales)
 					endif
 
+					PSQ_DS_CreateSurveyPlotForUser(device, s.sweepNo, s.headstage)
+
 					WAVE/ZZ DAScales = futureDAScales
 					break
 			endswitch
@@ -3834,6 +3923,8 @@ Function PSQ_DAScale(device, s)
 					else
 						ASSERT(0, "Unknown PSQ_RESULTS_XXX state")
 					endif
+
+					PSQ_DS_CreateSurveyPlotForUser(device, s.sweepNo, s.headstage)
 
 					break
 				default:
