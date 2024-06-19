@@ -2386,10 +2386,6 @@ static Function PSQ_DS_GatherAndWriteFrequencyToLabnotebook(string device, varia
 		[WAVE/D apFreqCurrent, WAVE/D DAScalesCurrent] = PSQ_DS_GatherFrequencyCurrentData(device, sweepNo, headstage, {sweepNo})
 	endif
 
-	if(!WaveExists(apFreqCurrent))
-		return NaN
-	endif
-
 	WAVE apFreqLBN = LBN_GetNumericWave()
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ)
 	ASSERT(DimSize(apFreqCurrent, ROWS) == 1, "Invalid apFreqCurrent sizes")
