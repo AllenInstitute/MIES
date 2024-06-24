@@ -45,6 +45,12 @@ Function TestDashboardWithHistoricData([string str])
 
 	string abWin, sweepBrowsers, file, bsPanel, sbWin
 
+	if(!CmpStr(str, "NWB-Export-bug-two-devices.pxp"))
+		// @todo SweepBrowser is not fully multi-device compliant, see issue
+		// https://github.com/AllenInstitute/MIES/issues/2151
+		SKIP_TESTCASE()
+	endif
+
 	file = "input:" + str
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
