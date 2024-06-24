@@ -346,8 +346,8 @@ Function SB_UpdateSweepPlot(win)
 		DFREF sweepDFR   = GetAnalysisSweepPath(dataFolder, device)
 		WAVE  configWave = GetAnalysisConfigWave(dataFolder, device, sweepNo)
 
-		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, \
-		                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
+		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR,          \
+		                        axisLabelCache, traceIndex, experiment, sweepChannelSel, device, mapIndex = mapIndex)
 		AR_UpdateTracesIfReq(graph, sweepDFR, sweepNo)
 	endfor
 
@@ -648,8 +648,39 @@ Function SB_AddSweepToGraph(string win, variable index)
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
 
 	traceIndex = GetNextTraceIndex(graph)
-	CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepDFR, \
-	                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
+	CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepDFR,           \
+	                        axisLabelCache, traceIndex, experiment, sweepChannelSel, device, mapIndex = index)
 
 	AR_UpdateTracesIfReq(graph, dfr, sweepNo)
+End
+
+Function/WAVE SB_GetSweepMap(string win)
+
+	DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(win)
+	WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
+
+	return sweepMap
+End
+
+Function [WAVE/Z numericalValues, WAVE/Z textualValues] SB_GetLabNotebooks(WAVE/T sweepMap, variable mapIndex)
+
+	string dataFolder, device
+
+	dataFolder = sweepMap[mapIndex][%DataFolder]
+	device     = sweepMap[mapIndex][%Device]
+	WAVE/Z numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
+	WAVE/Z textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+
+	return [numericalValues, textualValues]
+End
+
+Function/DF SB_GetSweepDF(string win, variable mapIndex)
+
+	ASSERT(BSP_IsSweepBrowser(win), "Requires window to be a SweepBrowser")
+
+	WAVE/T sweepMap  = SB_GetSweepMap(win)
+	DFREF  deviceDFR = SB_GetSweepDataFolder(sweepMap, index = mapIndex)
+	DFREF  sweepDFR  = GetSingleSweepFolder(deviceDFR, str2num(sweepMap[mapIndex][%Sweep]))
+
+	return sweepDFR
 End
