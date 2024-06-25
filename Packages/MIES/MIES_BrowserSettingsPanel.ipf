@@ -1590,7 +1590,7 @@ Function BSP_AddTracesForEpochs(string win)
 
 	variable i, j, start_x, start_y, end_x, end_y, yOffset
 	variable headstage, yLevelOffset, level, idx, numTraces, numEpochs
-	variable sweepNumber, traceIndex, channelType, channelNumber
+	variable sweepNumber, traceIndex, channelType, channelNumber, mapIndex
 	STRUCT RGBColor c
 	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name, idPart, level_x_trace
 
@@ -1646,13 +1646,13 @@ Function BSP_AddTracesForEpochs(string win)
 		sweepNumber   = str2num(traceInfos[i][%sweepNumber])
 		channelType   = WhichListItem(traceInfos[i][%channelType], XOP_CHANNEL_NAMES)
 		channelNumber = str2num(traceInfos[i][%GUIChannelNumber])
+		mapIndex      = str2num(traceInfos[i][%SweepMapIndex])
 
-		WAVE/Z/T numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNumber)
+		DFREF sweepDFR
+		[WAVE numericalValues, WAVE textualValues, sweepDFR] = SFH_GetLabNoteBooksAndDFForSweep(win, sweepNumber, mapIndex)
 		ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
-		WAVE/Z/T textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
 		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
 
-		DFREF sweepDFR = BSP_GetSweepDF(win, sweepNumber)
 		// present since a2172f03 (Added generations of epoch information wave, 2019-05-22)
 		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, sweepDFR, channelNumber, channelType)
 		if(!WaveExists(epochsFromLBN))
@@ -2002,33 +2002,4 @@ static Function BSP_MemoryFreeMappedDF(string win)
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
 
 	AB_FreeWorkingDFs(dfList, index)
-End
-
-/// @brief Gets sweep browser data folder from sweep- or data browser window name and sweep number
-///
-/// @param[in] win sweep- or data browser window
-/// @param[in] sweepNo sweep number
-///
-/// @returns sweep data folder reference, null reference if requirements not met
-Function/DF BSP_GetSweepDF(string win, variable sweepNo)
-
-	variable isSweepBrowser
-	string   device
-
-	isSweepBrowser = BSP_IsSweepBrowser(win)
-	if(isSweepBrowser)
-		DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(win)
-		WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
-		DFREF  deviceDFR       = SB_GetSweepDataFolder(sweepMap, sweepNo = sweepNo)
-	else
-		if(!BSP_HasBoundDevice(win))
-			return $""
-		endif
-		device = BSP_GetDevice(win)
-		DFREF deviceDFR = GetDeviceDataPath(device)
-	endif
-
-	DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
-
-	return sweepDFR
 End
