@@ -352,7 +352,7 @@ threadsafe Function/S CA_TemporaryWaveKey(dims)
 		crc = StringCRC(crc, num2istr(dims[i]))
 	endfor
 
-	return num2istr(crc) + "Temporary waves Version 1"
+	return num2istr(crc) + "Temporary waves Version 2"
 End
 
 /// @brief Calculate the cache key for the hardware device info wave
