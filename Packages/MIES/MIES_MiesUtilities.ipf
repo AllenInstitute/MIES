@@ -7319,10 +7319,10 @@ threadsafe Function/WAVE FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	// * Delete all NaNs in the wave and return it
 
 	key = CA_TemporaryWaveKey({numRows, numLayers})
-	WAVE/Z matches = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+	WAVE/Z/D matches = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 
 	if(!WaveExists(matches))
-		Make/N=(numRows, numLayers)/FREE/R matches
+		Make/N=(numRows, numLayers)/FREE/D matches
 		CA_StoreEntryIntoCache(key, matches, options = CA_OPTS_NO_DUPLICATE)
 	endif
 
