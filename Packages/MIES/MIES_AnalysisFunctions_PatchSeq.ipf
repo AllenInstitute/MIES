@@ -2709,12 +2709,21 @@ static Function PSQ_DS_CalculateMeasuredAllFutureDAScalesAndStoreInLabnotebook(s
 	ED_AddEntryToLabnotebook(device, key, measuredAllFutureDAScalesLBN, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 End
 
-static Function/WAVE PSQ_DS_FilterPassingSweeps(WAVE sweeps, WAVE sweepsQC)
+/// @brief Return the entries of data which have passing state in booleanQC.
+///
+/// Both data and booleanQC are usually from the full SCI.
+static Function/WAVE PSQ_DS_FilterPassingData(WAVE/Z data, WAVE/Z booleanQC)
 
-	sweeps[] = sweepsQC[p] == 1 ? sweeps[p] : NaN
-	WAVE/ZZ passingSweeps = ZapNaNs(sweeps)
+	if(!WaveExists(data))
+		return $""
+	endif
 
-	return passingSweeps
+	ASSERT(WaveExists(booleanQC), "Expected booleanQC wave when having a valid data wave")
+
+	data[] = booleanQC[p] == 1 ? data[p] : NaN
+	WAVE/ZZ passingData = ZapNaNs(data)
+
+	return passingData
 End
 
 static Function/WAVE PSQ_DS_GetPassingDAScaleSweeps(WAVE numericalValues, variable passingSweep, variable headstage)
@@ -2731,7 +2740,7 @@ static Function/WAVE PSQ_DS_GetPassingDAScaleSweeps(WAVE numericalValues, variab
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 	WAVE sweepsQC = GetLastSettingIndepEachSCI(numericalValues, passingSweep, key, headstage, UNKNOWN_MODE)
 
-	WAVE/Z passingSweeps = PSQ_DS_FilterPassingSweeps(sweeps, sweepsQC)
+	WAVE/Z passingSweeps = PSQ_DS_FilterPassingData(sweeps, sweepsQC)
 
 	return passingSweeps
 End
@@ -2754,7 +2763,7 @@ static Function/WAVE PSQ_DS_GetPassingRheobaseSweeps(WAVE numericalValues, varia
 	// we don't need to check PSQ_FMT_LBN_SAMPLING_PASS here as failing that always makes the whole SCI fail
 	allQC[] = baselineQC[p] && asyncQC[p]
 
-	WAVE passingSweeps = PSQ_DS_FilterPassingSweeps(sweeps, allQC)
+	WAVE passingSweeps = PSQ_DS_FilterPassingData(sweeps, allQC)
 
 	return passingSweeps
 End
