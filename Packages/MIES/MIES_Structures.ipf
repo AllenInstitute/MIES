@@ -647,6 +647,7 @@ Structure ASYNC_ReadOutStruct
 EndStructure
 
 /// @brief Wraps all parameters combined for one SF select call
+///        When adapting also change @ref SF_DuplicateSelectFilter
 Structure SF_SelectParameters
 	WAVE selects
 	WAVE channels
@@ -659,4 +660,6 @@ Structure SF_SelectParameters
 	variable setQC
 	string experimentName
 	string device
+	variable expandSCI
+	variable expandRAC
 EndStructure
