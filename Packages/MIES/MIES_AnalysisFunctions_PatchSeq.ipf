@@ -2600,8 +2600,8 @@ static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherF
 	endif
 
 	if(WaveExists(apfreqCurrentSCIClean) && WaveExists(DAScaleCurrentSCIClean))
-		Concatenate/NP=(ROWS) {apfreqCurrentSCIClean}, apfreq
-		Concatenate/NP=(ROWS) {DAScaleCurrentSCIClean}, DAScales
+		Concatenate/NP=(ROWS)/FREE {apfreqCurrentSCIClean}, apfreq
+		Concatenate/NP=(ROWS)/FREE {DAScaleCurrentSCIClean}, DAScales
 
 		WAVE/D/Z futureDAScalesFromLastSweep = PSQ_DS_GatherOvershootCorrection(cdp, apfreq, DAScales, futureDAScalesHistoric)
 
