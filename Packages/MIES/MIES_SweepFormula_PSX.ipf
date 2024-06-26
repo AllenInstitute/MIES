@@ -1276,6 +1276,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 						AssertonAndClearRTError()
 						StatsQuantiles/Q/Z resultsRawClean; err = GetRTError(1)
+						KillWaves/Z W_StatsQuantiles
 
 						if(!err)
 							results[1] = V_Median
