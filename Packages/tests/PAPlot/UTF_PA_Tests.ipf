@@ -2520,7 +2520,7 @@ static Function PAT_ImagePlotMultiSweep1()
 
 				Make/FREE/D/N=(patest5.dataLength) refData
 				refData[1, patest5.dataLength / 2 + 1] = 100
-				Interpolate2/N=(patest0.dataLength)/T=1/Y=refDataInterp refData
+				Interpolate2/FREE/N=(patest0.dataLength)/T=1/Y=refDataInterp refData
 				Duplicate/FREE/RMD=[][1] iData, profileLine
 				Redimension/N=(-1) profileLine
 				CHECK_EQUAL_WAVES(refDataInterp, profileLine, mode = WAVE_DATA, tol = patest0.dataLength)
