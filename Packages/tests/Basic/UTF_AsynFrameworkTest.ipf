@@ -13,7 +13,7 @@ static Constant THREADING_TEST_TIMEOUT = 60
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	string testCase
 
-	TestCaseBeginCommon()
+	TestCaseBeginCommon(testCase)
 
 	TEST_CASE_END_OVERRIDE(testCase)
 End

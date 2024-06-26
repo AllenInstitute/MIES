@@ -765,12 +765,12 @@ Function TestEndCommon()
 	zeromq_stop()
 End
 
-Function TestCaseBeginCommon()
+Function TestCaseBeginCommon(string testcase)
 
 	AdditionalExperimentCleanup()
 End
 
-Function TestCaseEndCommon([variable restartAsyncFramework])
+Function TestCaseEndCommon(string testcase, [variable restartAsyncFramework])
 
 	restartAsyncFramework = ParamIsDefault(restartAsyncFramework) ? 0 : !!restartAsyncFramework
 

@@ -6,7 +6,7 @@
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	string testCase
 
-	TestCaseBeginCommon()
+	TestCaseBeginCommon(testCase)
 
 	KillDataFolder/Z GetWBSvdStimSetDAPath()
 
