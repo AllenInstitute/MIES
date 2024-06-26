@@ -774,6 +774,9 @@ Function TestCaseEndCommon(string testcase, [variable restartAsyncFramework])
 
 	restartAsyncFramework = ParamIsDefault(restartAsyncFramework) ? 0 : !!restartAsyncFramework
 
+	INFO("Testcase: %s", s0 = testcase)
+	CHECK_EMPTY_FOLDER()
+
 	CheckForBugMessages()
 
 	if(GetWaveTrackingMode() != UTF_WAVE_TRACKING_NONE)
