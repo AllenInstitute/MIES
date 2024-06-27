@@ -225,7 +225,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SetControlUserData(bsPanel, "check_BrowserSettings_DAC", "oldState", "")
 	EnableControls(bsPanel, "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_OVS")
 
-	ListBox list_dashboard, selRow=-1
+	ListBox list_dashboard, WIN=$bsPanel, selRow=-1
 
 	DoWindow/T $device, ""
 
