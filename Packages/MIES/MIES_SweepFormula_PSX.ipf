@@ -403,6 +403,9 @@ static Function [WAVE coef, WAVE fit] PSX_FitHistogram(WAVE input)
 	if(err > 0 || !WaveExists(fit))
 		return [$"", $""]
 	endif
+	
+	WAVE W_sigma
+	MakeWaveFree(W_sigma)
 
 	return [coefWave, MakeWaveFree(fit)]
 End
@@ -5195,4 +5198,7 @@ Function PSX_ApplyMacroToExistingPanel(string win, string mac)
 	endfor
 
 	SetActiveSubwindow $currWindow
+
+	KillVariables/Z V_flag
+	KillStrings/Z S_name
 End

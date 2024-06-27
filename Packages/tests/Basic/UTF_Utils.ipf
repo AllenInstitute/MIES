@@ -8261,6 +8261,8 @@ Function DC_DFREFClear_Perm_Works()
 	CHECK(DataFolderExistsDFR(dfr))
 	DFREFClear(dfr)
 	CHECK(!DataFolderExistsDFR(dfr))
+
+	KillDataFolder/Z test
 End
 
 Function DC_DFREFClear_Free_Works()
