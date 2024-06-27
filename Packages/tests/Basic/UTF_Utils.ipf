@@ -4981,6 +4981,8 @@ Function DFED_WorksRegular1()
 	CHECK(DataFolderExistsDFR(dfr))
 	CHECK(DataFolderExistsDFR(s.structDFR))
 	CHECK(DataFolderExistsDFR(wDfr[0]))
+
+	KillDataFolder/Z test
 End
 
 Function DFED_WorksRegular2()
@@ -4999,6 +5001,8 @@ Function DFED_WorksRegular2()
 	CHECK(DataFolderExistsDFR(dfr))
 	CHECK(DataFolderExistsDFR(s.structDFR))
 	CHECK(DataFolderExistsDFR(wDfr[0]))
+
+	KillDataFolder/Z test
 End
 
 Function DFED_WorksRegular3()
@@ -5016,6 +5020,8 @@ Function DFED_WorksRegular3()
 	CHECK(DataFolderExistsDFR(dfr))
 	CHECK(DataFolderExistsDFR(s.structDFR))
 	CHECK(DataFolderExistsDFR(wDfr[0]))
+
+	KillDataFolder/Z test
 End
 
 Function DFED_WorksRegular4()
@@ -5171,7 +5177,7 @@ Function ZWI_Works1()
 
 	variable numRows = 0
 
-	Make/N=(numRows) wv
+	Make/N=(numRows)/FREE wv
 	ZeroWaveImpl(wv)
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), numRows)
@@ -5181,7 +5187,7 @@ Function ZWI_Works2()
 
 	variable numRows = 5
 
-	Make/N=(numRows) wv = {1, 2, 3, 4, -5}
+	Make/N=(numRows)/FREE wv = {1, 2, 3, 4, -5}
 	ZeroWaveImpl(wv)
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	CHECK_EQUAL_WAVES(wv, {0, 1, 2, 3, -6})
@@ -5191,7 +5197,7 @@ Function ZWI_Works3()
 
 	variable numRows = 5
 
-	Make/N=(numRows) wv = {-1, 2, 3, 4, -5}
+	Make/N=(numRows)/FREE wv = {-1, 2, 3, 4, -5}
 	ZeroWaveImpl(wv)
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	CHECK_EQUAL_WAVES(wv, {0, 3, 4, 5, -4})
@@ -5578,7 +5584,7 @@ Function GWS_Works([WAVE wv])
 	CHECK_WAVE(wv, FREE_WAVE)
 	CHECK_GT_VAR(GetWaveSize(wv), 0)
 
-	Make/N=1 junkWave
+	Make/N=1/FREE junkWave
 	MultiThread junkWave = GetWaveSize(wv)
 	CHECK_GT_VAR(junkWave[0], 0)
 End
@@ -5623,6 +5629,8 @@ Function WMCW_ChecksPreemptiveThread()
 	CHECK_EQUAL_VAR(V_numNaNs, 0)
 	CHECK_EQUAL_VAR(V_numInfs, 0)
 	CHECK_EQUAL_VAR(V_Sum, 0)
+	
+	KillWaves/Z data
 End
 
 Function WMCW_Works1()
@@ -5632,6 +5640,8 @@ Function WMCW_Works1()
 	val   = WaveModCountWrapper(data)
 	data += 1
 	CHECK_EQUAL_VAR(val + 1, WaveModCountWrapper(data))
+
+	KillWaves/Z data
 End
 
 Function WMCW_Works2()
@@ -5695,6 +5705,8 @@ Function RDFU_Works()
 	RenameDataFolderToUniqueName(path, suffix)
 	CHECK(!DataFolderExists(path))
 	CHECK(DataFolderExists(path + suffix))
+	
+	KillDataFolder $name
 End
 
 /// @}
@@ -6706,7 +6718,7 @@ Function CFW_ChecksParameters()
 	catch
 		PASS()
 	endtry
-
+	
 	Make/FREE free
 
 	try
@@ -6722,6 +6734,8 @@ Function CFW_ChecksParameters()
 	catch
 		PASS()
 	endtry
+
+	KillWaves/Z perm
 End
 
 Function CFW_Works1()
