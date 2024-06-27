@@ -4234,7 +4234,7 @@ End
 /// @{
 
 Function STIW_TestDimensions()
-	Make testwave
+	Make/FREE testwave
 
 	SetScale/P x, 0, 0.1, testwave
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, ROWS), ScaleToIndex(testWave, 0, ROWS))
@@ -4522,9 +4522,7 @@ End
 
 static Function LTNInvalidInput()
 
-	Execute/Z "SetIgorOption DisableThreadsafe=?"
-	NVAR threadingDisabled = V_flag
-	if(threadingDisabled == 1)
+	if(QueryIgorOption("DisableThreadsafe") == 1)
 		WAVE wv = ListToNumericWave("1;totallyLegitNumber;1;", ";")
 		CHECK_RTE(1001) // Str2num;expected number
 		CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
@@ -4536,9 +4534,7 @@ End
 
 static Function LTNInvalidInputIgnored()
 
-	Execute/Z "SetIgorOption DisableThreadsafe=?"
-	NVAR threadingDisabled = V_flag
-	if(threadingDisabled == 1)
+	if(QueryIgorOption("DisableThreadsafe") == 1)
 		WAVE wv = ListToNumericWave("1;totallyLegitNumber;1;", ";", ignoreErr = 1)
 		CHECK_NO_RTE()
 		CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
@@ -7005,7 +7001,7 @@ Function JSONWaveSerializationWorksNoDimLabels()
 
 	string str
 
-	Make/D/N=1 wv
+	Make/D/N=1/FREE wv
 
 	str = WaveToJSON(wv)
 	CHECK_PROPER_STR(str)
@@ -7094,7 +7090,7 @@ Function GetMarqueeHelperWorks()
 	string win, refWin
 	variable first, last
 
-	Make/O/N=1000 data = 0.1 * p
+	Make/N=1000 data = 0.1 * p
 	SetScale/P x, 0, 0.5, data
 	Display/K=1 data
 	refWin = S_name
@@ -7154,6 +7150,9 @@ Function GetMarqueeHelperWorks()
 	[first, last] = GetMarqueeHelper("left", horiz = 1, doAssert = 0)
 	CHECK_EQUAL_VAR(first, NaN)
 	CHECK_EQUAL_VAR(last, NaN)
+	
+	KillWindow $refWin
+	KillWaves/Z data
 End
 
 Function FTWWorks()
@@ -7246,6 +7245,8 @@ Function StoreRestoreAxisProps([string str])
 
 	string win, actual, commands
 
+	DFREF saveDFR = GetDataFolderDFR()
+
 	NewDataFolder/O/S root:temp_test
 	KillWaves/A
 	KillStrings/A
@@ -7270,6 +7271,8 @@ Function StoreRestoreAxisProps([string str])
 	CHECK_EQUAL_STR(str, actual)
 
 	KillWindow $win
+
+	SetDataFolder saveDFR
 End
 
 static Function NoNullReturnFromGetValDisplayAsString()
@@ -7728,6 +7731,8 @@ static Function TestDuplicateWaveAndKeepTargetRef()
 	CHECK_EQUAL_WAVES(srcWR, tgtWR)
 	WAVE/WAVE afterTgtWR = dfr:tgtWR
 	CHECK(WaveRefsEqual(tgtWR, afterTgtWR))
+	
+	KillWaves/Z tgt, tgtT, tgtDF, tgtWR
 End
 
 static Function TestFindRightMostHighBit()

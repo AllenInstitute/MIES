@@ -1944,7 +1944,7 @@ static Function TestPlotting()
 	CHECK_EQUAL_VAR(DimSize(wvX, ROWS), 2)
 
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_NORMAL); DoUpdate
-	DFREF dfr = SFH_GetWorkingDF(sweepBrowser)
+	DFREF dfr = SF_GetBrowserDF(sweepBrowser)
 
 	WAVE wvY0 = GetSweepFormulaY(dfr, 0)
 	WAVE wvX0 = GetSweepFormulaX(dfr, 0)

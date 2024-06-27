@@ -516,6 +516,21 @@ Function EnableDangerousDebugging()
 	variable/G root:V_debugDangerously = 1
 End
 
+// Return the status of an `SetIgorOption` setting
+Function QueryIgorOption(option)
+	string option
+
+	variable state
+
+	Execute/Q "SetIgorOption " + option + "=?"
+	NVAR V_Flag
+
+	state = V_Flag
+	KillVariables/Z V_Flag
+
+	return state
+End
+
 threadsafe static Function ReportBugToLogfile(string msg, WAVE/T/Z keys, WAVE/T/Z values)
 
 	variable size
