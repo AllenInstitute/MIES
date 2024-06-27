@@ -60,7 +60,7 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	variable i, j, channelNumber, sweepNumber, clampMode
 	string name, trace
 
-	numSweeps   = 1
+	numSweeps   = 10
 	numChannels = 4
 
 	variable dataSize = 128
