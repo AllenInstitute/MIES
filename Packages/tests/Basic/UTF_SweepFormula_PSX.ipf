@@ -1435,7 +1435,7 @@ static Function/S SetupDatabrowserWithSomeData()
 	WAVE/Z sweepWave = GetSweepWave(device, 2)
 	CHECK_WAVE(sweepWave, TEXT_WAVE)
 
-	Make/WAVE/N=(DimSize(sweepWave, ROWS)) input = ResolveSweepChannel(sweepWave, p)
+	Make/FREE/WAVE/N=(DimSize(sweepWave, ROWS)) input = ResolveSweepChannel(sweepWave, p)
 	for(WAVE wv : input)
 		SetScale/P x, 25, DimDelta(wv, ROWS), wv
 	endfor
