@@ -2558,8 +2558,8 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 				endif
 				SF_FormulaPlotter(mainPanel, preProcCode)
 
-				DFREF dfr = SF_GetBrowserDF(mainPanel)
-				SVAR lastCode = $GetLastSweepFormulaCode(dfr)
+				DFREF dfr      = SF_GetBrowserDF(mainPanel)
+				SVAR  lastCode = $GetLastSweepFormulaCode(dfr)
 				lastCode = preProcCode
 
 				[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(mainPanel, rawCode)

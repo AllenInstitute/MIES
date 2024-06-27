@@ -403,7 +403,7 @@ static Function [WAVE coef, WAVE fit] PSX_FitHistogram(WAVE input)
 	if(err > 0 || !WaveExists(fit))
 		return [$"", $""]
 	endif
-	
+
 	WAVE W_sigma
 	MakeWaveFree(W_sigma)
 

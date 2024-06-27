@@ -3824,7 +3824,7 @@ Function RC_WorksWithReplacementTrace()
 
 	info = CsrInfo(A, graph)
 	CHECK_PROPER_STR(info)
-	
+
 	KillWaves/Z data
 End
 
@@ -5629,7 +5629,7 @@ Function WMCW_ChecksPreemptiveThread()
 	CHECK_EQUAL_VAR(V_numNaNs, 0)
 	CHECK_EQUAL_VAR(V_numInfs, 0)
 	CHECK_EQUAL_VAR(V_Sum, 0)
-	
+
 	KillWaves/Z data
 End
 
@@ -5705,7 +5705,7 @@ Function RDFU_Works()
 	RenameDataFolderToUniqueName(path, suffix)
 	CHECK(!DataFolderExists(path))
 	CHECK(DataFolderExists(path + suffix))
-	
+
 	KillDataFolder $name
 End
 
@@ -6718,7 +6718,7 @@ Function CFW_ChecksParameters()
 	catch
 		PASS()
 	endtry
-	
+
 	Make/FREE free
 
 	try
@@ -7210,7 +7210,7 @@ Function GetMarqueeHelperWorks()
 	[first, last] = GetMarqueeHelper("left", horiz = 1, doAssert = 0)
 	CHECK_EQUAL_VAR(first, NaN)
 	CHECK_EQUAL_VAR(last, NaN)
-	
+
 	KillWindow $refWin
 	KillWaves/Z data
 End
@@ -7791,7 +7791,7 @@ static Function TestDuplicateWaveAndKeepTargetRef()
 	CHECK_EQUAL_WAVES(srcWR, tgtWR)
 	WAVE/WAVE afterTgtWR = dfr:tgtWR
 	CHECK(WaveRefsEqual(tgtWR, afterTgtWR))
-	
+
 	KillWaves/Z tgt, tgtT, tgtDF, tgtWR
 End
 

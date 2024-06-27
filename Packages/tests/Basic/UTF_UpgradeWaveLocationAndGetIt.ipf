@@ -18,7 +18,7 @@ End
 
 static Function TEST_CASE_END_OVERRIDE(name)
 	string name
-	
+
 	KillDataFolder/Z destf
 	KillDataFolder/Z srcf
 
