@@ -922,11 +922,13 @@ static Function TestOperationLog()
 	Make/FREE wRef = {1, 2}
 	CHECK_EQUAL_WAVES(wRef, output, mode = WAVE_DATA | DIMENSION_SIZES)
 
-	Make/O testData = {1, 2}
+	Make testData = {1, 2}
 	str = "log(wave(" + GetWavesDataFolder(testData, 2) + "))"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Duplicate/FREE testData, refData
 	CHECK_EQUAL_WAVES(refData, output, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	KillWaves/Z testData
 End
 
 static Function TestOperationButterworth()
@@ -1170,7 +1172,7 @@ static Function TestOperationArea()
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	// does operate column wise
-	Make/N=(5, 2) input
+	Make/FREE/N=(5, 2) input
 	input[][0] = p
 	input[][1] = p + 1
 	array      = JSON_New()
@@ -1204,13 +1206,13 @@ static Function TestOperationSetscale()
 
 	str = "setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"
 	WAVE wv = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	Make/N=(10) waveX = p
+	Make/N=(10)/FREE waveX = p
 	SetScale x, 0, 2, "unit", waveX
 	REQUIRE_EQUAL_WAVES(waveX, wv, mode = WAVE_DATA)
 
 	str = "setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"
 	WAVE wv = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	Make/N=(10, 10) waveXY = p + q
+	Make/N=(10, 10)/FREE waveXY = p + q
 	SetScale/P x, 0, 2, "unitX", waveXY
 	SetScale/P y, 0, 4, "unitX", waveXY
 	REQUIRE_EQUAL_WAVES(waveXY, wv, mode = WAVE_DATA | WAVE_SCALING | DATA_UNITS)
@@ -1245,6 +1247,8 @@ static Function TestOperationSetscale()
 	strRef    = "1,2,0"
 	dataScale = StringByKey("FULLSCALE", WaveInfo(data, 0))
 	REQUIRE_EQUAL_STR(strRef, dataScale)
+
+	KillWaves/Z input
 End
 
 static Function TestOperationRange()
@@ -1590,8 +1594,7 @@ static Function TestOperationWave()
 
 	win = GetDataBrowserWithData()
 
-	KillWaves/Z wave0
-	Make/O/N=(10) wave0 = p
+	Make/N=(10) wave0 = p
 
 	str = "wave(wave0)"
 	WAVE wave1 = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
@@ -1607,6 +1610,8 @@ static Function TestOperationWave()
 	str = "wave()"
 	WAVE/Z wave1 = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	CHECK(!WaveExists(wave1))
+
+	KillWaves/Z wave0
 End
 
 static Function/WAVE TestOperationTPBase_TPSS_TPInst_FormulaGetter()
@@ -1786,8 +1791,8 @@ static Function TestVariousFunctions([str])
 	twoDResult = StringFromList(2, str, ":")
 
 	KillWaves/Z oneD, twoD
-	Make/D/N=5 oneD = p
-	Make/D/N=(5, 2) twoD = p + q
+	Make/FREE/D/N=5 oneD = p
+	Make/FREE/D/N=(5, 2) twoD = p + q
 
 	jsonIDOneD = JSON_NEW()
 	JSON_AddWave(jsonIDOneD, "", oneD)
@@ -1797,7 +1802,7 @@ static Function TestVariousFunctions([str])
 	// 1D
 	str = func + "(" + JSON_Dump(jsonIDOneD) + ")"
 	WAVE output1D = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	Execute "Make/O output1D_mo = {" + oneDResult + "}"
+	Execute "Make output1D_mo = {" + oneDResult + "}"
 	WAVE output1D_mo
 
 	CHECK_EQUAL_WAVES(output1D, output1D_mo, mode = WAVE_DATA, tol = 1e-8)
@@ -1805,10 +1810,12 @@ static Function TestVariousFunctions([str])
 	// 2D
 	str = func + "(" + JSON_Dump(jsonIDTwoD) + ")"
 	WAVE output2D = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	Execute "Make/O output2D_mo = {" + twoDResult + "}"
+	Execute "Make output2D_mo = {" + twoDResult + "}"
 	WAVE output2D_mo
 
 	CHECK_EQUAL_WAVES(output2D, output2D_mo, mode = WAVE_DATA, tol = 1e-8)
+
+	KillWaves/Z output1D_mo, output2D_mo
 End
 
 static Function TestPlotting()
