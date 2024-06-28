@@ -1120,7 +1120,7 @@ static Function TPDuringDAQWithTTL_REENTRY([str])
 		FindLevels/Q/N=(2) DA, 5
 		WAVE W_FindLevels
 		MakeWaveFree(W_FindLevels)
-		
+
 		CHECK(!V_flag)
 
 		// hardcode values for 10ms pulse and 25% baseline
