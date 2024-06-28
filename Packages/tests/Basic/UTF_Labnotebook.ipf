@@ -3,6 +3,43 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=LBNEntrySourceTypeHandling
 
+static Function TEST_CASE_END_OVERRIDE(string testname)
+
+	KillDataFolder/Z $LOGBOOK_WAVE_TEMP_FOLDER
+	KillWaves/Z $LBN_NUMERICAL_VALUES_NAME, $LBN_NUMERICAL_KEYS_NAME, $LBN_TEXTUAL_VALUES_NAME, $LBN_TEXTUAL_KEYS_NAME
+	TestCaseEndCommon(testname)
+End
+
+static Function/WAVE PrepareLBNNumericalValues(WAVE numericalValuesSrc)
+
+	variable numCols
+
+	WAVE/T numericalKeysTemplate = GetLBNumericalKeys("dummyDevice")
+	numCols = DimSize(numericalValuesSrc, COLS)
+	Redimension/N=(-1, numCols, -1, -1) numericalKeysTemplate
+	numericalKeysTemplate[0][] = GetDimLabel(numericalValuesSrc, COLS, q)
+
+	Duplicate/O numericalValuesSrc, $LBN_NUMERICAL_VALUES_NAME
+	Duplicate/O numericalKeysTemplate, $LBN_NUMERICAL_KEYS_NAME
+
+	return $LBN_NUMERICAL_VALUES_NAME
+End
+
+static Function/WAVE PrepareLBNTextualValues(WAVE textualValuesSrc)
+
+	variable numCols
+
+	WAVE/T textualKeysTemplate = GetLBTextualKeys("dummyDevice")
+	numCols = DimSize(textualValuesSrc, COLS)
+	Redimension/N=(-1, numCols, -1, -1) textualKeysTemplate
+	textualKeysTemplate[0][] = GetDimLabel(textualValuesSrc, COLS, q)
+
+	Duplicate/O textualValuesSrc, $LBN_TEXTUAL_VALUES_NAME
+	Duplicate/O textualKeysTemplate, $LBN_TEXTUAL_KEYS_NAME
+
+	return $LBN_TEXTUAL_VALUES_NAME
+End
+
 /// GetLastSetting with numeric wave
 /// @{
 Function GetLastSettingEntrySourceTypes()
@@ -10,40 +47,45 @@ Function GetLastSettingEntrySourceTypes()
 	DFREF dfr = root:LB_Entrysourcetype_data:
 
 	// current format with entrySourceType
-	WAVE/SDFR=dfr numericalValues
-	WAVE DAQSettings = GetLastSetting(numericalValues, 12, "DAC", DATA_ACQUISITION_MODE)
-	WAVE TPSettings  = GetLastSetting(numericalValues, 12, "DAC", TEST_PULSE_MODE)
+	WAVE/SDFR=dfr numericalValuesSrc = dfr:numericalValues
+	WAVE          numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
+	WAVE          DAQSettings        = GetLastSetting(numericalValues, 12, "DAC", DATA_ACQUISITION_MODE)
+	WAVE          TPSettings         = GetLastSetting(numericalValues, 12, "DAC", TEST_PULSE_MODE)
 
 	CHECK_EQUAL_WAVES(DAQSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(TPSettings, {NaN, 1, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	// two rows testpulse format
 	WAVE/SDFR=dfr numericalValues_old
-	WAVE/Z DAQSettings = GetLastSetting(numericalValues_old, 12, "DAC", DATA_ACQUISITION_MODE)
-	WAVE/Z TPSettings  = GetLastSetting(numericalValues_old, 12, "DAC", TEST_PULSE_MODE)
+	WAVE   numericalValues = PrepareLBNNumericalValues(numericalValues_old)
+	WAVE/Z DAQSettings     = GetLastSetting(numericalValues, 12, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z TPSettings      = GetLastSetting(numericalValues, 12, "DAC", TEST_PULSE_MODE)
 
 	CHECK_EQUAL_WAVES(DAQSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(TPSettings, {NaN, 1, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	// single row testpulse format before dd49bf
 	WAVE/SDFR=dfr numericalValues_pre_dd49bf
-	WAVE/Z DAQSettings = GetLastSetting(numericalValues_pre_dd49bf, 11, "DAC", DATA_ACQUISITION_MODE)
-	WAVE/Z TPSettings  = GetLastSetting(numericalValues_pre_dd49bf, 11, "DAC", TEST_PULSE_MODE)
+	WAVE   numericalValues = PrepareLBNNumericalValues(numericalValues_pre_dd49bf)
+	WAVE/Z DAQSettings     = GetLastSetting(numericalValues, 11, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z TPSettings      = GetLastSetting(numericalValues, 11, "DAC", TEST_PULSE_MODE)
 
 	CHECK_EQUAL_WAVES(DAQSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(TPSettings, {NaN, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/SDFR=dfr numericalValues_no_type_no_TP
-	WAVE/Z DAQSettings = GetLastSetting(numericalValues_no_type_no_TP, 0, "DAC", DATA_ACQUISITION_MODE)
-	WAVE/Z TPSettings  = GetLastSetting(numericalValues_no_type_no_TP, 0, "DAC", TEST_PULSE_MODE)
+	WAVE   numericalValues = PrepareLBNNumericalValues(numericalValues_no_type_no_TP)
+	WAVE/Z DAQSettings     = GetLastSetting(numericalValues, 0, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z TPSettings      = GetLastSetting(numericalValues, 0, "DAC", TEST_PULSE_MODE)
 
 	CHECK_EQUAL_WAVES(DAQSettings, {0, 1, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_WAVE(TPSettings, NULL_WAVE)
 
 	// contains two times sweep 0, created with sweep rollback
 	WAVE/SDFR=dfr numericalValues_with_sweep_rb
-	WAVE/Z DAQSettings = GetLastSetting(numericalValues_with_sweep_rb, 0, "DAC", DATA_ACQUISITION_MODE)
-	WAVE/Z TPSettings  = GetLastSetting(numericalValues_with_sweep_rb, 0, "DAC", TEST_PULSE_MODE)
+	WAVE   numericalValues = PrepareLBNNumericalValues(numericalValues_with_sweep_rb)
+	WAVE/Z DAQSettings     = GetLastSetting(numericalValues, 0, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z TPSettings      = GetLastSetting(numericalValues, 0, "DAC", TEST_PULSE_MODE)
 
 	CHECK_EQUAL_WAVES(DAQSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(TPSettings, {1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
@@ -51,27 +93,43 @@ Function GetLastSettingEntrySourceTypes()
 	// contains two times sweep 73, created with sweep rollback and a trailing TP
 	// and does not have entry source type information
 	WAVE/SDFR=dfr numericalValues_no_type_with_sweep_rb_with_tp
-	WAVE/Z DAQSettings = GetLastSetting(numericalValues_no_type_with_sweep_rb_with_tp, 73, "DAC", DATA_ACQUISITION_MODE)
+	WAVE   numericalValues = PrepareLBNNumericalValues(numericalValues_no_type_with_sweep_rb_with_tp)
+	WAVE/Z DAQSettings     = GetLastSetting(numericalValues, 73, "DAC", DATA_ACQUISITION_MODE)
 
-	WAVE/Z TPSettings = GetLastSetting(numericalValues_no_type_with_sweep_rb_with_tp, 73, "DAC", TEST_PULSE_MODE)
+	WAVE/Z TPSettings = GetLastSetting(numericalValues, 73, "DAC", TEST_PULSE_MODE)
 	CHECK_WAVE(TPSettings, NULL_WAVE)
 
-	WAVE/Z TPSettings = GetLastSetting(numericalValues_no_type_with_sweep_rb_with_tp, 73, "TP Steady State Resistance", TEST_PULSE_MODE)
+	WAVE/Z TPSettings = GetLastSetting(numericalValues, 73, "TP Steady State Resistance", TEST_PULSE_MODE)
 
 	CHECK_EQUAL_WAVES(DAQSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(TPSettings, {119.7, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.1)
 
 	// no entry source type and two trailing TP entries
 	WAVE/SDFR=dfr numericalValues_no_type_with_two_tp_entries
-	WAVE/Z DAQSettings = GetLastSetting(numericalValues_no_type_with_two_tp_entries, 0, "DAC", DATA_ACQUISITION_MODE)
-	WAVE/Z TPSettings  = GetLastSetting(numericalValues_no_type_with_two_tp_entries, 0, "DAC", TEST_PULSE_MODE)
+	WAVE   numericalValues = PrepareLBNNumericalValues(numericalValues_no_type_with_two_tp_entries)
+	WAVE/Z DAQSettings     = GetLastSetting(numericalValues, 0, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z TPSettings      = GetLastSetting(numericalValues, 0, "DAC", TEST_PULSE_MODE)
 
 	CHECK_EQUAL_WAVES(DAQSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(TPSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	// this entry is treated as TP
-	WAVE/Z DAQSettings = GetLastSetting(numericalValues_no_type_with_two_tp_entries, 0, "TP Steady State Resistance", DATA_ACQUISITION_MODE)
+	WAVE/Z DAQSettings = GetLastSetting(numericalValues, 0, "TP Steady State Resistance", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(DAQSettings, NULL_WAVE)
+End
+
+Function GetLastSettingFindCaseInsensitive()
+
+	DFREF dfr = root:LB_Entrysourcetype_data:
+
+	// current format with entrySourceType
+	WAVE/SDFR=dfr numericalValuesSrc = dfr:numericalValues
+	WAVE          numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
+	WAVE/Z        DAQSettingsUC      = GetLastSetting(numericalValues, 12, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z        DAQSettingsLC      = GetLastSetting(numericalValues, 12, "dac", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(DAQSettingsUC, NUMERIC_WAVE)
+	CHECK_WAVE(DAQSettingsLC, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(DAQSettingsLC, DAQSettingsUC)
 End
 
 Function GetLastSettingAbortsInvalid1()
@@ -124,8 +182,9 @@ Function GetLastSettingEmptyUnknown()
 
 	variable first, last
 
-	DFREF dfr = root:Labnotebook_misc:
-	WAVE/SDFR=dfr numericalValues
+	DFREF         dfr                = root:Labnotebook_misc:
+	WAVE/SDFR=dfr numericalValuesSrc = numericalValues
+	WAVE          numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
 
 	WAVE/Z settings = GetLastSetting(numericalValues, NaN, "I DONT EXIST", UNKNOWN_MODE)
 	CHECK_WAVE(settings, NULL_WAVE)
@@ -144,7 +203,8 @@ Function GetLastSettingFindsNaNSweep()
 
 	// check that we can find the first entries of the testpulse which have sweepNo == NaN
 	WAVE/SDFR=dfr numericalValues_nan_sweep
-	WAVE/Z settings = GetLastSetting(numericalValues_nan_sweep, NaN, "TP Steady State Resistance", TEST_PULSE_MODE)
+	WAVE   numericalValues = PrepareLBNNumericalValues(numericalValues_nan_sweep)
+	WAVE/Z settings        = GetLastSetting(numericalValues, NaN, "TP Steady State Resistance", TEST_PULSE_MODE)
 
 	Make/D/FREE settingsRef = {10.0010900497437, 10.001935005188, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
 	CHECK_EQUAL_WAVES(settings, settingsRef, mode = WAVE_DATA, tol = 1e-13)
@@ -159,8 +219,9 @@ static Function GetLastSettingFindsWithinNonConsecutiveSweepOrder()
 
 	WAVE/SDFR=dfr numericalValuesTest
 
+	WAVE numericalValues = PrepareLBNNumericalValues(numericalValuesTest)
 	key         = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_CHUNK_PASS, chunk = 0, query = 1)
-	chunkPassed = GetLastSettingIndep(numericalValuesTest, sweepNo, key, UNKNOWN_MODE, defValue = NaN)
+	chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = NaN)
 	CHECK_EQUAL_VAR(chunkPassed, 0)
 End
 
@@ -185,10 +246,11 @@ Function GetLastSettingWorks()
 	variable first, last
 	variable firstAgain, lastAgain
 
-	DFREF dfr = root:Labnotebook_misc:
-	WAVE/SDFR=dfr numericalValues
+	DFREF         dfr                = root:Labnotebook_misc:
+	WAVE/SDFR=dfr numericalValuesSrc = numericalValues
 
-	WAVE/Z settings = GetLastSetting(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE)
+	WAVE   numericalValues = PrepareLBNNumericalValues(numericalValuesSrc)
+	WAVE/Z settings        = GetLastSetting(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(settings, NUMERIC_WAVE)
 
 	first = LABNOTEBOOK_GET_RANGE
@@ -260,10 +322,11 @@ Function GetLastSettingTextEmptyUnknown()
 
 	variable first, last
 
-	DFREF dfr = root:Labnotebook_misc:
-	WAVE/SDFR=dfr textualValues
+	DFREF         dfr              = root:Labnotebook_misc:
+	WAVE/SDFR=dfr textualValuesSrc = textualValues
 
-	WAVE/Z settings = GetLastSetting(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE)
+	WAVE   textualValues = PrepareLBNTextualValues(textualValuesSrc)
+	WAVE/Z settings      = GetLastSetting(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE)
 	CHECK_WAVE(settings, NULL_WAVE)
 
 	first = LABNOTEBOOK_GET_RANGE
@@ -278,8 +341,9 @@ Function GetLastSettingTextQueryWoMatch()
 
 	variable first, last
 
-	DFREF dfr = root:Labnotebook_misc:
-	WAVE/SDFR=dfr textualValues
+	DFREF         dfr              = root:Labnotebook_misc:
+	WAVE/SDFR=dfr textualValuesSrc = textualValues
+	WAVE/T        textualValues    = PrepareLBNTextualValues(textualValuesSrc)
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
@@ -295,8 +359,9 @@ Function GetLastSettingTextWorks()
 	variable first, last
 	variable firstAgain, lastAgain
 
-	DFREF dfr = root:Labnotebook_misc:
-	WAVE/SDFR=dfr textualValues
+	DFREF         dfr              = root:Labnotebook_misc:
+	WAVE/SDFR=dfr textualValuesSrc = textualValues
+	WAVE          textualValues    = PrepareLBNTextualValues(textualValuesSrc)
 
 	WAVE/Z settings = GetLastSetting(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(settings, TEXT_WAVE)
@@ -339,13 +404,14 @@ End
 /// @{
 Function GetLastSWSTextWorksWithIndep()
 
-	DFREF dfr = root:Labnotebook_misc
-	WAVE/SDFR=dfr textualValues
+	DFREF         dfr              = root:Labnotebook_misc
+	WAVE/SDFR=dfr textualValuesSrc = textualValues
 
 	variable sweepNo
 	string   miesVersion
 
-	WAVE/Z/T settings = GetLastSweepWithSettingText(textualValues, "MIES Version", sweepNo)
+	WAVE/T   textualValues = PrepareLBNTextualValues(textualValuesSrc)
+	WAVE/Z/T settings      = GetLastSweepWithSettingText(textualValues, "MIES Version", sweepNo)
 	CHECK_WAVE(settings, TEXT_WAVE)
 	CHECK(IsValidSweepNumber(sweepNo))
 	miesVersion = settings[INDEP_HEADSTAGE]
@@ -525,7 +591,8 @@ Function RACid_Reliable()
 	string key
 	variable numSweeps = 100
 
-	WAVE numericalValues = root:Labnotebook_misc:numericalValues_large
+	WAVE numericalValuesSrc = root:Labnotebook_misc:numericalValues_large
+	WAVE numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
 
 	for(i = 1; i < numSweeps; i += 1)
 		WAVE/Z settingsNoCache = MIES_AFH#AFH_GetSweepsFromSameRACycleNC(numericalValues, i)
@@ -544,7 +611,8 @@ Function RACid_InvalidWaveRef()
 
 	variable sweepNo = 1000
 
-	WAVE numericalValues = root:Labnotebook_misc:numericalValues_large
+	WAVE numericalValuesSrc = root:Labnotebook_misc:numericalValues_large
+	WAVE numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
 
 	WAVE/Z settingsNoCache = MIES_AFH#AFH_GetSweepsFromSameRACycleNC(numericalValues, sweepNo)
 	WAVE/Z settings        = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
@@ -564,7 +632,8 @@ Function SCid_Reliable()
 	string key
 	variable numSweeps = 100
 
-	WAVE numericalValues = root:Labnotebook_CacheTest:second:numericalValues
+	WAVE numericalValuesSrc = root:Labnotebook_CacheTest:second:numericalValues
+	WAVE numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
 
 	for(i = 1; i < numSweeps; i += 1)
 		for(j = 1; j < 2; j += 1)
@@ -1207,4 +1276,32 @@ Function GFE_Works()
 
 	WAVE/Z filled = LBV_GetFilledLabnotebookEntries(textualValues)
 	CHECK_EQUAL_VAR(DimSize(filled, ROWS), DimSize(textualValues, COLS))
+End
+
+Function MultipleSameEDAdds()
+
+	string device = "dummy"
+	string entry  = "tp baseline pa"
+
+	Make/FREE/N=(3, 1)/T keys
+
+	keys[0][0] = entry
+	keys[1][0] = "pA"
+	keys[2][0] = "50"
+
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[][][0] = 1
+
+	ED_AddEntriesToLabnotebook(values, keys, 0, device, DATA_ACQUISITION_MODE)
+
+	keys[0][0] = UpperStr(entry)
+	ED_AddEntriesToLabnotebook(values, keys, 0, device, DATA_ACQUISITION_MODE)
+
+	WAVE/T keys = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, device = device)
+	Duplicate/FREE/RMD=[0][][0] keys, keyCheck
+	Redimension/E=1/N=(DimSize(keyCheck, COLS)) keyCheck
+	WAVE indices = FindIndizes(keyCheck, str = entry)
+	CHECK_WAVE(indices, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(indices, ROWS), 1)
+	CHECK_GE_VAR(indices[0], 0)
 End

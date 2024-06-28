@@ -38,7 +38,7 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 73
+Constant LABNOTEBOOK_VERSION = 74
 Constant RESULTS_VERSION     = 2
 /// @}
 
@@ -1828,6 +1828,8 @@ StrConstant LBN_NUMERICALRESULT_KEYS_NAME   = "numericalResultsKeys"
 StrConstant LBN_TEXTUALRESULT_VALUES_NAME   = "textualResultsValues"
 StrConstant LBN_TEXTUALRESULT_KEYS_NAME     = "textualResultsKeys"
 /// @}
+
+StrConstant LOGBOOK_WAVE_TEMP_FOLDER = "Temp"
 
 /// @name All available ZeroMQ message filters
 /// @anchor ZeroMQMessageFilters

@@ -29,6 +29,9 @@ static Constant PULSE_WAVE_VERSION = 4
 
 static StrConstant TP_SETTINGS_LABELS = "bufferSize;resistanceTol;sendToAllHS;baselinePerc;durationMS;amplitudeVC;amplitudeIC;autoTPEnable;autoAmpMaxCurrent;autoAmpVoltage;autoAmpVoltageRange;autoTPPercentage;autoTPInterval;autoTPCycleID"
 
+static StrConstant LOGBOOK_SUFFIX_SORTEDKEYS        = "_sorted"
+static StrConstant LOGBOOK_SUFFIX_SORTEDKEYSINDICES = "_indices"
+
 /// @brief Return a wave reference to the corresponding Logbook keys wave from an values wave input
 threadsafe Function/WAVE GetLogbookValuesFromKeys(WAVE keyWave)
 
@@ -5070,7 +5073,7 @@ End
 Function/S GetDevSpecLabNBTempFolderAS(device)
 	string device
 
-	return GetDevSpecLabNBFolderAsString(device) + ":Temp"
+	return GetDevSpecLabNBFolderAsString(device) + ":" + LOGBOOK_WAVE_TEMP_FOLDER
 End
 
 /// @brief Return the full path to the results folder, e.g. root:MIES:Results
@@ -8555,4 +8558,35 @@ Function/WAVE GetSutterADCSampleInterval()
 	SetScale d, 0, 0, "µs", rates
 
 	return rates
+End
+
+/// @brief Gets from a Logbook values wave the wave with sortedKeys and associated indices in a separate wave
+threadsafe Function [WAVE/T sortedKeys, WAVE/D indices] GetLogbookSortedKeys(WAVE values)
+
+	variable numKeys
+	string keysName, sortedKeysName, sortedKeysIndicesName, cacheKey
+
+	WAVE/T keys = GetLogbookKeysFromValues(values)
+	cacheKey = CA_GenKeyLogbookSortedKeys(keys)
+
+	DFREF dfrTmp = createDFWithAllParents(GetWavesDataFolder(keys, 1) + LOGBOOK_WAVE_TEMP_FOLDER)
+	keysName              = NameOfWave(keys)
+	sortedKeysName        = keysName + LOGBOOK_SUFFIX_SORTEDKEYS
+	sortedKeysIndicesName = keysName + LOGBOOK_SUFFIX_SORTEDKEYSINDICES
+
+	WAVE/Z/T sortedKeys = dfrTmp:$sortedKeysName
+	if(WaveExists(sortedKeys) && !CmpStr(note(sortedKeys), cacheKey))
+		WAVE indices = dfrTmp:$sortedKeysIndicesName
+		return [sortedKeys, indices]
+	endif
+
+	numKeys = DimSize(keys, COLS)
+	Make/O/T/N=(numKeys) dfrTmp:$sortedKeysName/WAVE=sortedKeys
+	Make/O/D/N=(numKeys) dfrTmp:$sortedKeysIndicesName/WAVE=indices
+	MultiThread sortedKeys[] = keys[0][p]
+	MultiThread indices[] = p
+	Sort {sortedKeys}, sortedKeys, indices
+	Note/K sortedKeys, cacheKey
+
+	return [sortedKeys, indices]
 End

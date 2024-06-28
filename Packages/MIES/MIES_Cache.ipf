@@ -183,6 +183,17 @@ threadsafe Function/S CA_GenKeyGetActiveChannels(WAVE numericalValues, WAVE text
 	return num2istr(crc) + version
 End
 
+/// @brief Cache key generator for Logbook sortedKeyWave
+threadsafe Function/S CA_GenKeyLogbookSortedKeys(WAVE keys)
+
+	string version = "Version 1"
+	variable crc
+
+	crc = CA_GetWaveModCRC(keys, 0)
+
+	return num2istr(crc) + version
+End
+
 /// @brief Cache key generator for artefact removal ranges
 Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
 	DFREF    singleSweepDFR

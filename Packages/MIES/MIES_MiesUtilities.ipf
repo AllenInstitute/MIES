@@ -1041,6 +1041,19 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 	return [$"", NaN]
 End
 
+threadsafe static Function GetLogbookSettingsColumn(WAVE values, string key)
+
+	[WAVE/T sortedKeys, WAVE indices] = GetLogbookSortedKeys(values)
+
+	return GetLogbookSettingsColumnFromSorted(sortedKeys, indices, key)
+End
+
+threadsafe static Function GetLogbookSettingsColumnFromSorted(WAVE/T sortedKeys, WAVE indices, string key)
+
+	variable index = BinarySearchText(sortedKeys, key)
+	return IsNaN(index) ? -2 : indices[index]
+End
+
 /// @brief Return a numeric/textual wave with the latest value of a setting
 ///        from the numerical/labnotebook labnotebook for the given sweep number.
 ///
@@ -1070,8 +1083,7 @@ threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceTyp
 		return $""
 	endif
 
-	settingCol = FindDimLabel(values, COLS, setting)
-
+	settingCol = GetLogbookSettingsColumn(values, setting)
 	if(settingCol < 0)
 		return $""
 	endif
