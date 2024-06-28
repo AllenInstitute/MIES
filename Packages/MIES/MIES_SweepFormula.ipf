@@ -2987,6 +2987,11 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 				MakeWaveFree(W_sigma)
 			endif
 
+			WAVE/Z W_fitConstants
+			if(WaveExists(W_fitConstants))
+				MakeWaveFree(W_fitConstants)
+			endif
+
 #ifdef AUTOMATED_TESTING
 			JWN_SetWaveInWaveNote(fitResults, "/begintrails", beginTrails)
 			JWN_SetWaveInWaveNote(fitResults, "/endtrails", endTrails)

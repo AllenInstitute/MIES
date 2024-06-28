@@ -3229,7 +3229,11 @@ End
 
 /// @brief Turn a persistent wave into a free wave
 Function/WAVE MakeWaveFree(wv)
-	WAVE wv
+	WAVE/Z wv
+	
+	if(!WaveExists(wv))
+		return $""
+	endif
 
 	DFREF dfr = NewFreeDataFolder()
 
