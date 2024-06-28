@@ -2262,7 +2262,7 @@ End
 
 Function GUE_WorksWithTextOne()
 
-	Make/T/N=1 wv
+	Make/T/N=1/FREE wv
 
 	WAVE/Z result = GetUniqueEntries(wv)
 	CHECK_EQUAL_WAVES(result, wv)
@@ -3729,7 +3729,7 @@ Function TestDecimateWithMethodDec7()
 	method           = DECIMATION_MINMAX
 	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 4)
-	Make/D/N=(newSize, 2) output = {{-10, -400, -50, -800}, {2, 2, 2, 2}}
+	Make/D/N=(newSize, 2)/FREE output = {{-10, -400, -50, -800}, {2, 2, 2, 2}}
 	// factor leaves first column untouched
 	Make/D/FREE refOutput = {{-10, -400, -50, -800}, {2, 2, 2, 2}}
 	Make/N=(1)/FREE factor = {-100}
@@ -3825,6 +3825,7 @@ Function RC_WorksWithReplacementTrace()
 	info = CsrInfo(A, graph)
 	CHECK_PROPER_STR(info)
 
+	KillWindow/Z $graph
 	KillWaves/Z data
 End
 
@@ -4743,6 +4744,8 @@ Function ReplaceWaveWithBackupNonExistingBackupIsFatal()
 	catch
 		PASS()
 	endtry
+
+	KillWaves/Z data
 End
 
 Function ReplaceWaveWithBackupNonExistingBackupIsOkay()
@@ -5003,6 +5006,7 @@ Function DFED_WorksRegular2()
 	CHECK(DataFolderExistsDFR(wDfr[0]))
 
 	KillDataFolder/Z test
+	KillDataFolder/Z test1
 End
 
 Function DFED_WorksRegular3()
@@ -5706,7 +5710,7 @@ Function RDFU_Works()
 	CHECK(!DataFolderExists(path))
 	CHECK(DataFolderExists(path + suffix))
 
-	KillDataFolder $name
+	KillDataFolder $(path + suffix)
 End
 
 /// @}
