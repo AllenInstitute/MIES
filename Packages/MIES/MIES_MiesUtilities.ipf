@@ -5167,11 +5167,18 @@ End
 /// @param TTLmode         [optional, defaults to #TTL_DAEPHYS_CHANNEL] One of @ref ActiveChannelsTTLMode.
 ///                        Does only apply to TTL channels.
 threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, [variable TTLmode])
+
 	variable i, numEntries, index
-	string key
+	string key, cacheKey
 
 	if(ParamIsDefault(TTLmode))
 		TTLmode = TTL_DAEPHYS_CHANNEL
+	endif
+
+	cacheKey = CA_GenKeyGetActiveChannels(numericalValues, textualValues, sweepNo, channelType, TTLmode)
+	WAVE/Z result = CA_TryFetchingEntryFromCache(cacheKey)
+	if(WaveExists(result))
+		return result
 	endif
 
 	switch(channelType)
@@ -5200,6 +5207,8 @@ threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualVal
 
 		channelStatus[i] = i
 	endfor
+
+	CA_StoreEntryIntoCache(cacheKey, channelStatus)
 
 	return channelStatus
 End
