@@ -1864,6 +1864,9 @@ static Function StopDAQDueToUncompiled_REENTRY([str])
 	CheckThatTestpulseRan_IGNORE(str)
 
 	CheckDAQStopReason(str, DQ_STOP_REASON_UNCOMPILED)
+
+	// remove left over from ForceRecompile()
+	KillVariables/Z V_flag
 End
 
 // Roundtrip stimsets, this also leaves the NWBv2 file lying around
