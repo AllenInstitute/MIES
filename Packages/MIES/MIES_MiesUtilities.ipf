@@ -1041,6 +1041,45 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 	return [$"", NaN]
 End
 
+threadsafe Function GetLNBSettingsColumn(WAVE values, string key)
+
+	string   cacheKey
+	variable numKeys
+
+	DFREF dfr = GetWavesDataFolderDFR(values)
+	if(IsTextWave(values))
+		WAVE/T/Z keys = dfr:$"textualKeys"
+	else
+		WAVE/T/Z keys = dfr:$"numericalKeys"
+	endif
+	if(!WaveExists(keys))
+		return FindDimLabel(values, COLS, key)
+	endif
+
+	cacheKey = CA_GenKeyLNBSortedKeys(keys)
+	WAVE/WAVE/Z result = CA_TryFetchingEntryFromCache(cacheKey, options = CA_OPTS_NO_DUPLICATE)
+	if(WaveExists(result))
+		return GetLNBSettingsColumnFromSorted(result, key)
+	endif
+	numKeys = DimSize(keys, COLS)
+	Make/FREE/T/N=(numKeys) sortedKeys
+	Make/FREE/D/N=(numKeys) indizes
+	MultiThread sortedKeys[] = keys[0][p]
+	MultiThread indizes[] = p
+	Sort/A {sortedKeys}, sortedKeys, indizes
+	Make/FREE/WAVE result = {sortedKeys, indizes}
+
+	CA_StoreEntryIntoCache(cacheKey, result)
+
+	return GetLNBSettingsColumnFromSorted(result, key)
+End
+
+threadsafe static Function GetLNBSettingsColumnFromSorted(WAVE/WAVE sortedComp, string key)
+
+	variable index = BinarySearchText(sortedComp[0], key)
+	return IsNaN(index) ? -2 : WaveRef(sortedComp, row = 1)[index]
+End
+
 /// @brief Return a numeric/textual wave with the latest value of a setting
 ///        from the numerical/labnotebook labnotebook for the given sweep number.
 ///
@@ -1070,7 +1109,7 @@ threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceTyp
 		return $""
 	endif
 
-	settingCol = FindDimLabel(values, COLS, setting)
+	settingCol = GetLNBSettingsColumn(values, setting)
 
 	if(settingCol < 0)
 		return $""
