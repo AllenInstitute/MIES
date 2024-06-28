@@ -57,7 +57,7 @@ End
 /// Add 10 sweeps from various AD/DA channels to the fake databrowser
 static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeDatabrowserWindow(string win, string device, variable channelTypeNumeric, string lbnTextKey, string lbnTextValue)
 
-	variable i, j, channelNumber, sweepNumber, clampMode
+	variable i, j, channelNumber, sweepNumber, clampMode, channelType
 	string name, trace
 
 	numSweeps   = 10
@@ -66,14 +66,14 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	variable dataSize = 128
 	variable mode     = DATA_ACQUISITION_MODE
 
-	string channelType  = StringFromList(channelTypeNumeric, XOP_CHANNEL_NAMES)
-	string channelTypeC = channelType + "C"
+	string channelTypeStr  = StringFromList(channelTypeNumeric, XOP_CHANNEL_NAMES)
+	string channelTypeStrC = channelTypeStr + "C"
 
 	WAVE/T numericalKeys   = GetLBNumericalKeys(device)
 	WAVE   numericalValues = GetLBNumericalValues(device)
 	KillWaves numericalKeys, numericalValues
 
-	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
+	Make/FREE/T/N=(1, 1) keys = {{channelTypeStrC}}
 	Make/FREE/U/I/N=(numChannels) connections = {7, 5, 3, 1}
 	Make/FREE/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
@@ -98,7 +98,7 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 			channelNumber                   = channels[i][j]
 			values[connections[j]]          = channelNumber
 			clampModeValues[connections[j]] = clampMode
-			config[j][%ChannelType]         = channelTypeNumeric
+			config[j][%ChannelType]         = XOP_CHANNEL_TYPE_ADC
 			config[j][%ChannelNumber]       = channelNumber
 		endfor
 
@@ -132,18 +132,19 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	for(i = 0; i < numSweeps; i += 1)
 		sweepNumber = i
 		for(j = 0; j < numChannels; j += 1)
-			channelNumber = channels[i][j]
+			channelNumber = config[j][%ChannelNumber]
+			channelType   = config[j][%ChannelType]
 
 			DFREF singleSweepFolder    = GetSingleSweepFolder(dfr, sweepNumber)
-			WAVE  singleColumnDataWave = GetDAQDataSingleColumnWave(singleSweepFolder, channelTypeNumeric, channelNumber)
+			WAVE  singleColumnDataWave = GetDAQDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
 			Redimension/N=(dataSize) singleColumnDataWave
 
-			trace     = "trace_" + NameOfWave(singleColumnDataWave)
+			sprintf trace, "trace_%d_%s", sweepNumber, NameOfWave(singleColumnDataWave)
 			clampMode = mod(sweepNumber, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
 
 			AppendToGraph/W=$win singleColumnDataWave/TN=$trace
 			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},                           \
-			                         {"blah", GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
+			                         {"blah", GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelTypeStr, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
 		endfor
 	endfor
 
