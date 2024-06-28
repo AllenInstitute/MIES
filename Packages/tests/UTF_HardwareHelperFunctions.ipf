@@ -950,6 +950,8 @@ static Function TestSweepReconstruction_IGNORE(string device)
 			endfor
 		endif
 	endfor
+
+	KillDataFolder/Z deviceDataBorkedUp
 End
 
 Function [string baseFolder, string nwbFile] GetUniqueNWBFileForExport(variable nwbVersion)
