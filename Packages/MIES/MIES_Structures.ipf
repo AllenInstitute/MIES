@@ -662,4 +662,6 @@ Structure SF_SelectParameters
 	string device
 	variable expandSCI
 	variable expandRAC
+	variable setCycleCount
+	variable setSweepCount
 EndStructure
