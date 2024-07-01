@@ -43,6 +43,7 @@ static StrConstant ARCHIVEDLOG_SUFFIX = "_old_"
 static StrConstant EXPCONFIG_JSON_HWDEVBLOCK = "DAQHardwareDevices"
 
 static StrConstant UPLOAD_BLOCK_USERPING = "UserPing"
+static StrConstant LNB_SORTEDKEYS        = "sortedKeys"
 
 static Constant ARCHIVE_SIZETHRESHOLD = 52428800
 
@@ -1043,22 +1044,24 @@ End
 
 threadsafe Function GetLNBSettingsColumn(WAVE values, string key)
 
-	string   cacheKey
+	string cacheKey, sortedkeyWaveName
 	variable numKeys
 
 	DFREF dfr = GetWavesDataFolderDFR(values)
 	if(IsTextWave(values))
-		WAVE/T/Z keys = dfr:$"textualKeys"
+		WAVE/Z/T keys = dfr:$"textualKeys"
+		sortedkeyWaveName = "textual" + LNB_SORTEDKEYS
 	else
-		WAVE/T/Z keys = dfr:$"numericalKeys"
+		WAVE/Z/T keys = dfr:$"numericalKeys"
+		sortedkeyWaveName = "numerical" + LNB_SORTEDKEYS
 	endif
 	if(!WaveExists(keys))
 		return FindDimLabel(values, COLS, key)
 	endif
 
 	cacheKey = CA_GenKeyLNBSortedKeys(keys)
-	WAVE/WAVE/Z result = CA_TryFetchingEntryFromCache(cacheKey, options = CA_OPTS_NO_DUPLICATE)
-	if(WaveExists(result))
+	WAVE/Z/WAVE result = dfr:$sortedkeyWaveName
+	if(WaveExists(result) && !CmpStr(note(result), cacheKey))
 		return GetLNBSettingsColumnFromSorted(result, key)
 	endif
 	numKeys = DimSize(keys, COLS)
@@ -1067,9 +1070,9 @@ threadsafe Function GetLNBSettingsColumn(WAVE values, string key)
 	MultiThread sortedKeys[] = keys[0][p]
 	MultiThread indizes[] = p
 	Sort/A {sortedKeys}, sortedKeys, indizes
-	Make/FREE/WAVE result = {sortedKeys, indizes}
 
-	CA_StoreEntryIntoCache(cacheKey, result)
+	Make/O/WAVE dfr:$sortedkeyWaveName/WAVE=result = {sortedKeys, indizes}
+	Note/K result, cacheKey
 
 	return GetLNBSettingsColumnFromSorted(result, key)
 End
