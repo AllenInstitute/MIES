@@ -3699,11 +3699,13 @@ Function PA_TraceWindowHook(s)
 		case EVENT_WINDOW_HOOK_RESIZE:
 			traceGraph = s.winName
 			Execute/P/Q/Z "PA_UpdateScaleBars(\"" + traceGraph + "\", 0)"
+			Execute/P/Q "KillVariables/Z V_flag"
 			break
 		case EVENT_WINDOW_HOOK_MENU:
 			if(!cmpstr(s.menuName, "Graph") && !cmpstr(s.menuItem, "Autoscale Axes"))
 				traceGraph = s.winName
 				Execute/P/Q/Z "PA_UpdateScaleBars(\"" + traceGraph + "\", 1)"
+				Execute/P/Q "KillVariables/Z V_flag"
 			endif
 			break
 	endswitch
