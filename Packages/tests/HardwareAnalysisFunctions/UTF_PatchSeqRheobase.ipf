@@ -210,7 +210,7 @@ static Function PS_RB1_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimSetLengths, sweepLengths, mode = WAVE_DATA)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
@@ -293,7 +293,7 @@ static Function PS_RB2_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
@@ -376,7 +376,7 @@ static Function PS_RB3_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
@@ -459,7 +459,7 @@ static Function PS_RB4_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
@@ -555,7 +555,7 @@ static Function PS_RB5_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
@@ -640,7 +640,7 @@ static Function PS_RB6_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
@@ -726,7 +726,7 @@ static Function PS_RB7_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
@@ -823,7 +823,7 @@ static Function PS_RB8_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
@@ -913,7 +913,7 @@ static Function PS_RB9_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
@@ -1001,7 +1001,7 @@ static Function PS_RB10_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
@@ -1098,7 +1098,7 @@ static Function PS_RB11_REENTRY([str])
 	CHECK_EQUAL_WAVES(stimSetLengths, sweepLengths, mode = WAVE_DATA)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	Make/N=(numEntries) durationsRef = 3
+	Make/N=(numEntries)/FREE durationsRef = 3
 	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
 
 	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)

@@ -117,12 +117,12 @@ End
 Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
-	TestCaseBeginCommon()
+	TestCaseBeginCommon(name)
 End
 
 Function TEST_CASE_END_OVERRIDE(string testcase)
 
-	TestCaseEndCommon()
+	TestCaseEndCommon(testcase)
 End
 
 Function DownloadFile(string file)

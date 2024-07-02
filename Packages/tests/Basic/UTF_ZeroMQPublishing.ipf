@@ -7,7 +7,7 @@
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 
-	TestCaseBeginCommon()
+	TestCaseBeginCommon(testname)
 
 	PrepareForPublishTest()
 End

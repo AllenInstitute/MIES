@@ -250,7 +250,7 @@ static Function Test_WaveRefNumeric()
 
 	// wrong type
 	Note/K wv
-	Make/N=1/T txtWave = "abcd"
+	Make/FREE/N=1/T txtWave = "abcd"
 	Make/FREE/WAVE/N=1 wvRef = {txtWave}
 	JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
 
@@ -329,7 +329,7 @@ static Function Test_WaveRefText()
 
 	// wrong type
 	Note/K wv
-	Make/N=1 waveDataNum = 1
+	Make/FREE/N=1 waveDataNum = 1
 	Make/FREE/WAVE/N=1 wvRef = {waveDataNum}
 	JWN_SetWaveInWaveNote(wv, "refWave", wvRef)
 

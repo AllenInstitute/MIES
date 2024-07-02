@@ -5,7 +5,7 @@
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
-	TestCaseBeginCommon()
+	TestCaseBeginCommon(name)
 End
 
 // ST_GetStimsetList

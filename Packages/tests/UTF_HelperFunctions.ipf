@@ -765,14 +765,24 @@ Function TestEndCommon()
 	zeromq_stop()
 End
 
-Function TestCaseBeginCommon()
+Function TestCaseBeginCommon(string testcase)
 
 	AdditionalExperimentCleanup()
 End
 
-Function TestCaseEndCommon([variable restartAsyncFramework])
+Function TestCaseEndCommon(string testcase, [variable restartAsyncFramework])
+
+	string contents
 
 	restartAsyncFramework = ParamIsDefault(restartAsyncFramework) ? 0 : !!restartAsyncFramework
+
+	contents = GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_WAVES)      \
+	           + GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_VAR)      \
+	           + GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_STR)      \
+	           + GetListOfObjects(GetDataFolderDFR(), ".*", recursive = 1, typeFlag = COUNTOBJECTS_DATAFOLDER)
+
+	INFO("Testcase: %s, Contents: %s", s0 = testcase, s1 = contents)
+	CHECK_EMPTY_FOLDER()
 
 	CheckForBugMessages()
 

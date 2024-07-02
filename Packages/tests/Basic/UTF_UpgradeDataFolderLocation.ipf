@@ -6,7 +6,7 @@
 static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
-	TestCaseBeginCommon()
+	TestCaseBeginCommon(name)
 
 	KillDataFolder/Z root:A1
 	KillDataFolder/Z root:B1

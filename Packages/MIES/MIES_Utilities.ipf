@@ -372,7 +372,7 @@ threadsafe static Function/S GetAllObjects(dfr, typeFlag)
 			list = WaveList("*", ";", "")
 			break
 		case COUNTOBJECTS_VAR:
-			list = VariableList("*", ";", 11)
+			list = VariableList("*", ";", 4) + VariableList("*", ";", 5)
 			break
 		case COUNTOBJECTS_STR:
 			list = StringList("*", ";")
@@ -3229,7 +3229,11 @@ End
 
 /// @brief Turn a persistent wave into a free wave
 Function/WAVE MakeWaveFree(wv)
-	WAVE wv
+	WAVE/Z wv
+
+	if(!WaveExists(wv))
+		return $""
+	endif
 
 	DFREF dfr = NewFreeDataFolder()
 
