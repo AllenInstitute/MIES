@@ -664,4 +664,6 @@ Structure SF_SelectParameters
 	variable expandRAC
 	variable setCycleCount
 	variable setSweepCount
+	variable sciIndex
+	variable racIndex
 EndStructure

@@ -101,6 +101,8 @@ static StrConstant SF_OP_SELECTEXPANDSCI     = "selexpandsci"
 static StrConstant SF_OP_SELECTEXPANDRAC     = "selexpandrac"
 static StrConstant SF_OP_SELECTSETCYCLECOUNT = "selsetcyclecount"
 static StrConstant SF_OP_SELECTSETSWEEPCOUNT = "selsetsweepcount"
+static StrConstant SF_OP_SELECTSCIINDEX      = "selsciindex"
+static StrConstant SF_OP_SELECTRACINDEX      = "selracindex"
 static StrConstant SF_OP_SELECTCM            = "selcm"
 static StrConstant SF_OP_SELECTSTIMSET       = "selstimset"
 static StrConstant SF_OP_SELECTIVSCCSWEEPQC  = "selivsccsweepqc"
@@ -214,6 +216,8 @@ static Constant SWEEPPROP_SETCYCLECOUNT = 1
 static Constant SWEEPPROP_SETSWEEPCOUNT = 2
 static Constant SWEEPPROP_END           = 3
 
+static StrConstant DB_EXPNAME_DUMMY = "|DataBrowserExperiment|"
+
 Menu "GraphPopup"
 	"Bring browser to front", /Q, SF_BringBrowserToFront()
 End
@@ -245,7 +249,8 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_FILTER,        \
 	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_SELECTVIS, SF_OP_SELECTCM, SF_OP_SELECTSTIMSET,       \
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
-	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT}
+	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
+	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX}
 
 	return wt
 End
@@ -1183,6 +1188,12 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 			break
 		case SF_OP_SELECTSETSWEEPCOUNT:
 			WAVE out = SF_OperationSelectSetSweepCount(jsonId, jsonPath, graph)
+			break
+		case SF_OP_SELECTSCIINDEX:
+			WAVE out = SF_OperationSelectSCIIndex(jsonId, jsonPath, graph)
+			break
+		case SF_OP_SELECTRACINDEX:
+			WAVE out = SF_OperationSelectRACIndex(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTCM:
 			WAVE out = SF_OperationSelectCM(jsonId, jsonPath, graph)
@@ -2296,7 +2307,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 	variable dimPosSweep, dimPosChannelNumber, dimPosChannelType, dimPosSweepMapIndex
 	variable dimPosTSweep, dimPosTChannelNumber, dimPosTChannelType, dimPosTClampMode, dimPosTExpName, dimPosTDevice, dimPosTSweepMapIndex
 	variable dimPosTNumericalValues
-	variable numTraces, fromDisplayed, clampCode, smIndexCounter, mapIndex, setCycleCount, setSweepCount
+	variable numTraces, fromDisplayed, clampCode, smIndexCounter, mapIndex, setCycleCount, setSweepCount, doStimsetMatching
 	string msg, device, singleSweepDFStr, expName, dataFolder
 	variable mapSize   = 1
 	DFREF    deviceDFR = $""
@@ -2310,6 +2321,11 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 
 	fromDisplayed  = !CmpStr(filter.vis, SF_OP_SELECTVIS_DISPLAYED)
 	isSweepBrowser = BSP_IsSweepBrowser(graph)
+
+	if(!(DimSize(filter.stimsets, ROWS) == 1 && !CmpStr(filter.stimsets[0], SF_OP_SELECT_STIMSETS_ALL)))
+		WAVE/Z indizes = FindIndizes(filter.stimsets, str = SF_OP_SELECT_STIMSETS_ALL)
+		doStimsetMatching = !WaveExists(indizes)
+	endif
 
 	if(fromDisplayed)
 		WAVE/T/Z traces = GetTraceInfos(graph)
@@ -2459,7 +2475,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 						for(l = 0; l < numTraces; l += 1)
 
 							clampCode = SF_MapClampModeToSelectCM(sweepPropertiesDisplayed[l][SWEEPPROP_CLAMPMODE])
-							if(!SF_IsValidSingleSelection(graph, filter, sweepNo, channelNumber, channelType, selectDisplayed[l][dimPosSweep], selectDisplayed[l][dimPosChannelNumber], selectDisplayed[l][dimPosChannelType], clampCode, sweepPropertiesDisplayed[l][SWEEPPROP_SETCYCLECOUNT], sweepPropertiesDisplayed[l][SWEEPPROP_SETSWEEPCOUNT]))
+							if(!SF_IsValidSingleSelection(graph, filter, sweepNo, channelNumber, channelType, selectDisplayed[l][dimPosSweep], selectDisplayed[l][dimPosChannelNumber], selectDisplayed[l][dimPosChannelType], clampCode, sweepPropertiesDisplayed[l][SWEEPPROP_SETCYCLECOUNT], sweepPropertiesDisplayed[l][SWEEPPROP_SETSWEEPCOUNT], doStimsetMatching))
 								continue
 							endif
 
@@ -2494,7 +2510,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 								setSweepCount = WaveExists(setting) ? setting[index] : NaN
 							endif
 
-							if(!SF_IsValidSingleSelection(graph, filter, sweepNo, channelNumber, channelType, sweepNo, l, channelType, clampCode, setCycleCount, setSweepCount))
+							if(!SF_IsValidSingleSelection(graph, filter, sweepNo, channelNumber, channelType, sweepNo, l, channelType, clampCode, setCycleCount, setSweepCount, doStimsetMatching))
 								continue
 							endif
 
@@ -2520,7 +2536,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 	return out
 End
 
-static Function SF_IsValidSingleSelection(string graph, STRUCT SF_SelectParameters &filter, variable filtSweepNo, variable filtChannelNumber, variable filtChannelType, variable sweepNo, variable channelNumber, variable channelType, variable clampMode, variable setCycleCount, variable setSweepCount)
+static Function SF_IsValidSingleSelection(string graph, STRUCT SF_SelectParameters &filter, variable filtSweepNo, variable filtChannelNumber, variable filtChannelType, variable sweepNo, variable channelNumber, variable channelType, variable clampMode, variable setCycleCount, variable setSweepCount, variable doStimsetMatching)
 
 	variable sweepQC, setQC
 	string setName
@@ -2541,8 +2557,7 @@ static Function SF_IsValidSingleSelection(string graph, STRUCT SF_SelectParamete
 		return 0
 	endif
 
-	WAVE/Z indizes = FindIndizes(filter.stimsets, str = SF_OP_SELECT_STIMSETS_ALL)
-	if(!WaveExists(indizes))
+	if(doStimsetMatching)
 		setName = SFH_GetStimsetName(graph, sweepNo, channelNumber, channelType)
 		if(!MatchAgainstWildCardPatterns(filter.stimsets, setName))
 			return 0
@@ -4788,6 +4803,40 @@ static Function/WAVE SF_OperationSelectSetSweepCount(variable jsonId, string jso
 	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTSETSWEEPCOUNT, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSETSWEEPCOUNT)
 End
 
+/// `selsciindex(x)` // one numeric argument
+///
+/// returns a one element numeric wave
+static Function/WAVE SF_OperationSelectSCIIndex(variable jsonId, string jsonPath, string graph)
+
+	variable value
+
+	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTSCIINDEX, 1, maxArgs = 1)
+
+	value = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_SELECTSCIINDEX, 0)
+	Make/FREE/D output = {value}
+
+	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTSCIINDEX, discardOpStack = 1, dataType = SF_DATATYPE_SELECTSCIINDEX)
+End
+
+/// `selracindex(x)` // one numeric argument
+///
+/// returns a one element numeric wave
+static Function/WAVE SF_OperationSelectRACIndex(variable jsonId, string jsonPath, string graph)
+
+	variable value
+
+	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTRACINDEX, 1, maxArgs = 1)
+
+	value = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_SELECTRACINDEX, 0)
+	Make/FREE/D output = {value}
+
+	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTRACINDEX, discardOpStack = 1, dataType = SF_DATATYPE_SELECTRACINDEX)
+End
+
 /// `seldev(device)` // device is a string with optional wildcards
 ///
 /// returns a one element text wave
@@ -4941,12 +4990,14 @@ static Function SF_InitSelectFilterUninitalized(STRUCT SF_SelectParameters &s)
 	s.clampMode = NaN
 	WAVE/Z/T    s.stimsets = $""
 	WAVE/Z/WAVE s.ranges   = $""
-	s.sweepQC   = NaN
-	s.setQC     = NaN
-	s.expandSCI = NaN
-	s.expandRAC = NaN
+	s.sweepQC       = NaN
+	s.setQC         = NaN
+	s.expandSCI     = NaN
+	s.expandRAC     = NaN
 	s.setCycleCount = NaN
 	s.setSweepCount = NaN
+	s.sciIndex      = NaN
+	s.racIndex      = NaN
 End
 
 /// `select(selectFilterOp...)`
@@ -4975,6 +5026,20 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 			continue
 		endif
 		strswitch(type)
+			case SF_DATATYPE_SELECTSCIINDEX:
+				if(IsNaN(filter.sciIndex))
+					filter.sciIndex = arg[0]
+				else
+					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTSCIINDEX + " argument.")
+				endif
+				break
+			case SF_DATATYPE_SELECTRACINDEX:
+				if(IsNaN(filter.racIndex))
+					filter.racIndex = arg[0]
+				else
+					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTRACINDEX + " argument.")
+				endif
+				break
 			case SF_DATATYPE_SELECTSETCYCLECOUNT:
 				if(IsNaN(filter.setCycleCount))
 					filter.setCycleCount = arg[0]
@@ -5097,6 +5162,14 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	WAVE/Z selectData = SF_GetSelectData(graph, filter)
 	if(WaveExists(selectData))
+		if(!IsNaN(filter.racIndex))
+			WAVE racSelectData = SF_GetSelectDataWithRACorSCIIndex(graph, selectData, filter.racIndex, SELECTDATA_MODE_RAC)
+			WAVE selectData    = racSelectData
+		endif
+		if(!IsNaN(filter.sciIndex))
+			WAVE sciSelectData = SF_GetSelectDataWithRACorSCIIndex(graph, selectData, filter.sciIndex, SELECTDATA_MODE_SCI)
+			WAVE selectData    = sciSelectData
+		endif
 		// SCI is a subset of RAC, thus if RAC and SCI is enabled then it is sufficient to extend through RAC
 		if(filter.expandRAC)
 			WAVE selectWithRACFilledUp = SF_GetSelectDataWithSCIorRAC(graph, selectData, filter, SELECTDATA_MODE_RAC)
@@ -5157,6 +5230,8 @@ static Function [STRUCT SF_SelectParameters filterDup] SF_DuplicateSelectFilter(
 	filterDup.expandRAC      = filter.expandRAC
 	filterDup.setCycleCount  = filter.setCycleCount
 	filterDup.setSweepCount  = filter.setSweepCount
+	filterDup.racIndex       = filter.racIndex
+	filterDup.sciIndex       = filter.sciIndex
 
 	return [filterDup]
 End
@@ -5213,6 +5288,175 @@ threadsafe static Function SF_GetSweepMapIndexFromIds(WAVE/T sweepMapIds, string
 	ASSERT_TS(V_row >= 0, "SweepMap id not found")
 
 	return V_row
+End
+
+static Function/WAVE SF_GetSelectDataWithRACorSCIIndex(string graph, WAVE selectData, variable index, variable mode)
+
+	variable i, numSelected, mapIndex, outIndex, headstage
+	variable sweepNo, channelNumber, channelType
+	variable isSweepBrowser = BSP_IsSweepBrowser(graph)
+
+	if(IsSweepBrowser)
+		WAVE/T sweepMap = SB_GetSweepMap(graph)
+	endif
+
+	numSelected = DimSize(selectData, ROWS)
+	// get CycleIds per select
+	Make/FREE/D/N=(numSelected) cycleIds
+	FastOp cycleIds = (NaN)
+	if(mode == SELECTDATA_MODE_SCI)
+		Make/FREE/D/N=(numSelected) headStages
+		FastOp headStages = (NaN)
+	endif
+
+	for(i = 0; i < numSelected; i += 1)
+		sweepNo = selectData[i][%SWEEP]
+		[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, selectData[i][%SWEEPMAPINDEX])
+		ASSERT(WaveExists(numericalValues), "Could not resolve numerical LNB")
+		if(mode == SELECTDATA_MODE_RAC)
+			cycleIds[i] = GetLastSettingIndep(numericalValues, sweepNo, RA_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
+		elseif(mode == SELECTDATA_MODE_SCI)
+			channelNumber = selectData[i][%CHANNELNUMBER]
+			channelType   = selectData[i][%CHANNELTYPE]
+			[WAVE settings, headstage] = GetLastSettingChannel(numericalValues, $"", sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
+			if(WaveExists(settings))
+				cycleIds[i]   = settings[headstage]
+				headStages[i] = headstage
+			endif
+		endif
+	endfor
+
+	// remove selections with no cycleId
+	for(i = 0; i < numSelected; i += 1)
+		if(!IsNaN(cycleIds[i]))
+			selectData[outIndex][] = selectData[i][q]
+			outIndex              += 1
+		endif
+	endfor
+	Redimension/N=(outIndex, -1) selectData
+	if(!outIndex)
+		return selectData
+	endif
+	WAVE cycleIdsZapped = ZapNaNs(cycleIds)
+	if(mode == SELECTDATA_MODE_SCI)
+		WAVE headStagesZapped = ZapNaNs(headStages)
+	endif
+
+	switch(mode)
+		case SELECTDATA_MODE_RAC:
+			return SF_GetSelectDataWithRACIndex(selectData, cycleIdsZapped, sweepMap, index)
+		case SELECTDATA_MODE_SCI:
+			return SF_GetSelectDataWithSCIIndex(selectData, cycleIdsZapped, headStagesZapped, sweepMap, index)
+		default:
+			ASSERT(0, "Unknown mode")
+	endswitch
+End
+
+static Function/WAVE SF_GetSelectDataWithRACIndex(WAVE selectData, WAVE cycleIds, WAVE/Z/T sweepMap, variable index)
+
+	variable i, outIndex, numSelected, currIndex
+
+	numSelected = DimSize(selectData, ROWS)
+
+	// Sort
+	Make/FREE/T/N=(numSelected) expNames, sortKeySweep, sortKeyChannelType, sortKeyChannelNumber
+	if(WaveExists(sweepMap))
+		expNames[] = sweepMap[selectData[p][%SWEEPMAPINDEX]][%FileName]
+	else
+		expNames[] = DB_EXPNAME_DUMMY
+	endif
+	sortKeySweep[]         = num2str(selectData[p][%SWEEP], "%06d")
+	sortKeyChannelType[]   = num2str(selectData[p][%CHANNELTYPE], "%02d")
+	sortKeyChannelNumber[] = num2str(selectData[p][%CHANNELNUMBER], "%02d")
+	SortColumns keyWaves={expNames, sortKeySweep, sortKeyChannelType, sortKeyChannelNumber}, sortWaves={selectData, expNames, cycleIds}
+
+	// filter by index
+	for(i = 0; i < numSelected; i += 1)
+		if(i > 0)
+			if(CmpStr(expNames[i], expNames[i - 1], 2))
+				currIndex = 0
+			elseif(cycleIds[i] != cycleIds[i - 1])
+				currIndex += 1
+			endif
+		endif
+
+		if(currIndex < index)
+			continue
+		endif
+		if(currIndex > index)
+			break
+		endif
+
+		selectData[outIndex][] = selectData[i][q]
+		outIndex              += 1
+	endfor
+	Redimension/N=(outIndex, -1) selectData
+
+	return selectData
+End
+
+static Function/WAVE SF_GetSelectDataWithSCIIndex(WAVE selectData, WAVE cycleIds, WAVE headstages, WAVE/Z/T sweepMap, variable index)
+
+	variable i, headstage, outIndex, numSelected, currIndex, hsIndex, hsIndexPrev
+
+	numSelected = DimSize(selectData, ROWS)
+
+	// Sort
+	Make/FREE/T/N=(numSelected) expNames, sortKeySweep, sortKeyChannelType, sortKeyChannelNumber
+	if(WaveExists(sweepMap))
+		expNames[] = sweepMap[selectData[p][%SWEEPMAPINDEX]][%FileName]
+	else
+		expNames[] = DB_EXPNAME_DUMMY
+	endif
+	sortKeySweep[]         = num2str(selectData[p][%SWEEP], "%06d")
+	sortKeyChannelType[]   = num2str(selectData[p][%CHANNELTYPE], "%02d")
+	sortKeyChannelNumber[] = num2str(selectData[p][%CHANNELNUMBER], "%02d")
+	SortColumns keyWaves={expNames, sortKeySweep, sortKeyChannelType, sortKeyChannelNumber}, sortWaves={selectData, expNames, cycleIds, headstages}
+
+	Duplicate/FREE selectData, selectDataTgt
+
+	WAVE uniqueHS = GetUniqueEntries(headstages)
+	for(headstage : uniqueHS)
+		currIndex   = 0
+		hsIndex     = NaN
+		hsIndexPrev = NaN
+		for(i = 0; i < numSelected; i += 1)
+			if(headstage != headstages[i])
+				continue
+			endif
+
+			if(IsNaN(hsIndexPrev))
+				hsIndexPrev = i
+			elseif(IsNaN(hsIndex))
+				hsIndex = i
+			else
+				hsIndexPrev = hsIndex
+				hsIndex     = i
+			endif
+
+			if(!IsNaN(hsIndex))
+				if(CmpStr(expNames[hsIndex], expNames[hsIndexPrev], 2))
+					currIndex = 0
+				elseif(cycleIds[hsIndex] != cycleIds[hsIndexPrev])
+					currIndex += 1
+				endif
+			endif
+
+			if(currIndex < index)
+				continue
+			endif
+			if(currIndex > index)
+				break
+			endif
+
+			selectDataTgt[outIndex][] = selectData[i][q]
+			outIndex                 += 1
+		endfor
+	endfor
+
+	Redimension/N=(outIndex, -1) selectDataTgt
+
+	return selectDataTgt
 End
 
 static Function/WAVE SF_GetAdditionalSweepsWithSameSCIorRAC(WAVE numericalValues, variable mode, variable sweepNo, variable channelType, variable channelNumber)
