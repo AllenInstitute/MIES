@@ -43,6 +43,7 @@ static StrConstant ARCHIVEDLOG_SUFFIX = "_old_"
 static StrConstant EXPCONFIG_JSON_HWDEVBLOCK = "DAQHardwareDevices"
 
 static StrConstant UPLOAD_BLOCK_USERPING = "UserPing"
+static StrConstant LNB_SORTEDKEYS        = "sortedKeys"
 
 static Constant ARCHIVE_SIZETHRESHOLD = 52428800
 
@@ -1041,6 +1042,47 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 	return [$"", NaN]
 End
 
+threadsafe Function GetLNBSettingsColumn(WAVE values, string key)
+
+	string cacheKey, sortedkeyWaveName
+	variable numKeys
+
+	DFREF dfr = GetWavesDataFolderDFR(values)
+	if(IsTextWave(values))
+		WAVE/Z/T keys = dfr:$"textualKeys"
+		sortedkeyWaveName = "textual" + LNB_SORTEDKEYS
+	else
+		WAVE/Z/T keys = dfr:$"numericalKeys"
+		sortedkeyWaveName = "numerical" + LNB_SORTEDKEYS
+	endif
+	if(!WaveExists(keys))
+		return FindDimLabel(values, COLS, key)
+	endif
+
+	cacheKey = CA_GenKeyLNBSortedKeys(keys)
+	WAVE/Z/WAVE result = dfr:$sortedkeyWaveName
+	if(WaveExists(result) && !CmpStr(note(result), cacheKey))
+		return GetLNBSettingsColumnFromSorted(result, key)
+	endif
+	numKeys = DimSize(keys, COLS)
+	Make/FREE/T/N=(numKeys) sortedKeys
+	Make/FREE/D/N=(numKeys) indizes
+	MultiThread sortedKeys[] = keys[0][p]
+	MultiThread indizes[] = p
+	Sort/A {sortedKeys}, sortedKeys, indizes
+
+	Make/O/WAVE dfr:$sortedkeyWaveName/WAVE=result = {sortedKeys, indizes}
+	Note/K result, cacheKey
+
+	return GetLNBSettingsColumnFromSorted(result, key)
+End
+
+threadsafe static Function GetLNBSettingsColumnFromSorted(WAVE/WAVE sortedComp, string key)
+
+	variable index = BinarySearchText(sortedComp[0], key)
+	return IsNaN(index) ? -2 : WaveRef(sortedComp, row = 1)[index]
+End
+
 /// @brief Return a numeric/textual wave with the latest value of a setting
 ///        from the numerical/labnotebook labnotebook for the given sweep number.
 ///
@@ -1070,7 +1112,7 @@ threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceTyp
 		return $""
 	endif
 
-	settingCol = FindDimLabel(values, COLS, setting)
+	settingCol = GetLNBSettingsColumn(values, setting)
 
 	if(settingCol < 0)
 		return $""
@@ -2858,8 +2900,10 @@ End
 /// @param traceIndex      [internal use only] set to zero on the first call in a row of successive calls
 /// @param experiment      name of the experiment the sweep stems from
 /// @param channelSelWave  channel selection wave
+/// @param device          device name
 /// @param bdi [optional, default = n/a] initialized BufferedDrawInfo structure, when given draw calls are buffered instead for later execution @sa OVS_EndIncrementalUpdate
-Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues, WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave, [STRUCT BufferedDrawInfo &bdi])
+/// @param mapIndex [optional, default = NaN] if the data originates from a sweepBrowser then the mapIndex is given here
+Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues, WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave, string device, [STRUCT BufferedDrawInfo &bdi, variable mapIndex])
 
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
@@ -2878,10 +2922,11 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
+	mapIndex = ParamIsDefault(mapIndex) ? NaN : mapIndex
 
-	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",                         \
-	                            "textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType",           \
-	                            "occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage", "GUIChannelNumber"}
+	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",                                                    \
+	                            "textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType",                                      \
+	                            "occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage", "GUIChannelNumber", "Device", "SweepMapIndex"}
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -3306,7 +3351,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                     \
 					                          num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep", \
 					                          num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage)),           \
-					                          num2istr(guiChannelNumber)})
+					                          num2istr(guiChannelNumber), device, num2str(mapIndex)})
 				endfor
 			endfor
 
@@ -5167,11 +5212,18 @@ End
 /// @param TTLmode         [optional, defaults to #TTL_DAEPHYS_CHANNEL] One of @ref ActiveChannelsTTLMode.
 ///                        Does only apply to TTL channels.
 threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, [variable TTLmode])
+
 	variable i, numEntries, index
-	string key
+	string key, cacheKey
 
 	if(ParamIsDefault(TTLmode))
 		TTLmode = TTL_DAEPHYS_CHANNEL
+	endif
+
+	cacheKey = CA_GenKeyGetActiveChannels(numericalValues, textualValues, sweepNo, channelType, TTLmode)
+	WAVE/Z result = CA_TryFetchingEntryFromCache(cacheKey)
+	if(WaveExists(result))
+		return result
 	endif
 
 	switch(channelType)
@@ -5200,6 +5252,8 @@ threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualVal
 
 		channelStatus[i] = i
 	endfor
+
+	CA_StoreEntryIntoCache(cacheKey, channelStatus)
 
 	return channelStatus
 End
@@ -7319,10 +7373,10 @@ threadsafe Function/WAVE FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	// * Delete all NaNs in the wave and return it
 
 	key = CA_TemporaryWaveKey({numRows, numLayers})
-	WAVE/Z matches = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+	WAVE/Z/D matches = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 
 	if(!WaveExists(matches))
-		Make/N=(numRows, numLayers)/FREE/R matches
+		Make/N=(numRows, numLayers)/FREE/D matches
 		CA_StoreEntryIntoCache(key, matches, options = CA_OPTS_NO_DUPLICATE)
 	endif
 

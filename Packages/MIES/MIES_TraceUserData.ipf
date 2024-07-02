@@ -152,7 +152,7 @@ Function/WAVE TUD_GetUserDataAsWave(string graph, string key, [WAVE/T keys, WAVE
 
 	if(ParamIsDefault(keys) && ParamIsDefault(values))
 		if(returnIndizes)
-			Make/N=(DimSize(result, ROWS))/FREE matches = p
+			Make/FREE/D/N=(DimSize(result, ROWS)) matches = p
 			return matches
 		else
 			return result
@@ -163,7 +163,7 @@ Function/WAVE TUD_GetUserDataAsWave(string graph, string key, [WAVE/T keys, WAVE
 
 	// both optional parameters are present
 
-	Make/N=(DimSize(result, ROWS))/FREE matches = p
+	Make/FREE/D/N=(DimSize(result, ROWS)) matches = p
 
 	ASSERT(EqualWaves(keys, values, EQWAVES_DIMSIZE) == 1, "Unexpected size")
 
