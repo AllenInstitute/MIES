@@ -270,13 +270,13 @@ static Function PS_SE1_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%testpulseGroupSel], {PSQ_SE_TGS_BOTH}, mode = WAVE_DATA)
 
-	Make/D resistanceARef = {0.6e9, 0.6e9, 0.6e9}
+	Make/FREE/D resistanceARef = {0.6e9, 0.6e9, 0.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceA], resistanceARef, mode = WAVE_DATA)
 
-	Make/D resistanceBRef = {0.8e9, 0.8e9, 0.8e9}
+	Make/FREE/D resistanceBRef = {0.8e9, 0.8e9, 0.8e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceB], resistanceBRef, mode = WAVE_DATA)
 
-	Make/D resistanceMaxRef = {0.8e9, 0.8e9, 0.8e9}
+	Make/FREE/D resistanceMaxRef = {0.8e9, 0.8e9, 0.8e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0, 0, 0}, mode = WAVE_DATA)
@@ -350,13 +350,13 @@ static Function PS_SE2_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%testpulseGroupSel], {PSQ_SE_TGS_BOTH}, mode = WAVE_DATA)
 
-	Make/D resistanceARef = {1.4e9}
+	Make/FREE/D resistanceARef = {1.4e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceA], resistanceARef, mode = WAVE_DATA)
 
-	Make/D resistanceBRef = {1.6e9}
+	Make/FREE/D resistanceBRef = {1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceB], resistanceBRef, mode = WAVE_DATA)
 
-	Make/D resistanceMaxRef = {1.6e9}
+	Make/FREE/D resistanceMaxRef = {1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
@@ -430,12 +430,12 @@ static Function PS_SE3_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%testpulseGroupSel], {PSQ_SE_TGS_FIRST}, mode = WAVE_DATA)
 
-	Make/D resistanceARef = {1.4e9}
+	Make/FREE/D resistanceARef = {1.4e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceA], resistanceARef, mode = WAVE_DATA)
 
 	CHECK_WAVE(entries[%resistanceB], NULL_WAVE)
 
-	Make/D resistanceMaxRef = {1.4e9}
+	Make/FREE/D resistanceMaxRef = {1.4e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
@@ -511,10 +511,10 @@ static Function PS_SE4_REENTRY([str])
 
 	CHECK_WAVE(entries[%resistanceA], NULL_WAVE)
 
-	Make/D resistanceBRef = {1.6e9}
+	Make/FREE/D resistanceBRef = {1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceB], resistanceBRef, mode = WAVE_DATA)
 
-	Make/D resistanceMaxRef = {1.6e9}
+	Make/FREE/D resistanceMaxRef = {1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
@@ -589,13 +589,13 @@ static Function PS_SE5_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%testpulseGroupSel], {PSQ_SE_TGS_BOTH}, mode = WAVE_DATA)
 
-	Make/D resistanceARef = {1.4e9, 1.4e9, 1.4e9}
+	Make/FREE/D resistanceARef = {1.4e9, 1.4e9, 1.4e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceA], resistanceARef, mode = WAVE_DATA)
 
-	Make/D resistanceBRef = {1.6e9, 1.6e9, 1.6e9}
+	Make/FREE/D resistanceBRef = {1.6e9, 1.6e9, 1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceB], resistanceBRef, mode = WAVE_DATA)
 
-	Make/D resistanceMaxRef = {1.6e9, 1.6e9, 1.6e9}
+	Make/FREE/D resistanceMaxRef = {1.6e9, 1.6e9, 1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
@@ -670,13 +670,13 @@ static Function PS_SE6_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%testpulseGroupSel], {PSQ_SE_TGS_BOTH}, mode = WAVE_DATA)
 
-	Make/D resistanceARef = {1.4e9, 1.4e9, 1.4e9}
+	Make/FREE/D resistanceARef = {1.4e9, 1.4e9, 1.4e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceA], resistanceARef, mode = WAVE_DATA)
 
-	Make/D resistanceBRef = {1.6e9, 1.6e9, 1.6e9}
+	Make/FREE/D resistanceBRef = {1.6e9, 1.6e9, 1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceB], resistanceBRef, mode = WAVE_DATA)
 
-	Make/D resistanceMaxRef = {1.6e9, 1.6e9, 1.6e9}
+	Make/FREE/D resistanceMaxRef = {1.6e9, 1.6e9, 1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
@@ -750,13 +750,13 @@ static Function PS_SE7_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%testpulseGroupSel], {PSQ_SE_TGS_BOTH}, mode = WAVE_DATA)
 
-	Make/D resistanceARef = {0.6e9}
+	Make/FREE/D resistanceARef = {0.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceA], resistanceARef, mode = WAVE_DATA)
 
-	Make/D resistanceBRef = {0.8e9}
+	Make/FREE/D resistanceBRef = {0.8e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceB], resistanceBRef, mode = WAVE_DATA)
 
-	Make/D resistanceMaxRef = {0.8e9}
+	Make/FREE/D resistanceMaxRef = {0.8e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {0}, mode = WAVE_DATA)
@@ -829,13 +829,13 @@ static Function PS_SE7a_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%testpulseGroupSel], {PSQ_SE_TGS_BOTH}, mode = WAVE_DATA)
 
-	Make/D resistanceARef = {1.4e9, 1.4e9, 1.4e9}
+	Make/FREE/D resistanceARef = {1.4e9, 1.4e9, 1.4e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceA], resistanceARef, mode = WAVE_DATA)
 
-	Make/D resistanceBRef = {1.6e9, 1.6e9, 1.6e9}
+	Make/FREE/D resistanceBRef = {1.6e9, 1.6e9, 1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceB], resistanceBRef, mode = WAVE_DATA)
 
-	Make/D resistanceMaxRef = {1.6e9, 1.6e9, 1.6e9}
+	Make/FREE/D resistanceMaxRef = {1.6e9, 1.6e9, 1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
@@ -945,13 +945,13 @@ static Function PS_SE9_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(entries[%testpulseGroupSel], {PSQ_SE_TGS_BOTH}, mode = WAVE_DATA)
 
-	Make/D resistanceARef = {1.4e9}
+	Make/FREE/D resistanceARef = {1.4e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceA], resistanceARef, mode = WAVE_DATA)
 
-	Make/D resistanceBRef = {1.6e9}
+	Make/FREE/D resistanceBRef = {1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceB], resistanceBRef, mode = WAVE_DATA)
 
-	Make/D resistanceMaxRef = {1.6e9}
+	Make/FREE/D resistanceMaxRef = {1.6e9}
 	CHECK_EQUAL_WAVES(entries[%resistanceMax], resistanceMaxRef, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1}, mode = WAVE_DATA)
