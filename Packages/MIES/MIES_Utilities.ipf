@@ -363,29 +363,22 @@ threadsafe static Function/S GetAllObjects(dfr, typeFlag)
 
 	string list
 
-	DFREF oldDFR = GetDataFolderDFR()
-
-	SetDataFolder dfr
-
 	switch(typeFlag)
 		case COUNTOBJECTS_WAVES:
-			list = WaveList("*", ";", "")
+			list = WaveList("*", ";", "", dfr)
 			break
 		case COUNTOBJECTS_VAR:
-			list = VariableList("*", ";", 4) + VariableList("*", ";", 5)
+			list = VariableList("*", ";", 4, dfr) + VariableList("*", ";", 5, dfr)
 			break
 		case COUNTOBJECTS_STR:
-			list = StringList("*", ";")
+			list = StringList("*", ";", dfr)
 			break
 		case COUNTOBJECTS_DATAFOLDER:
-			list = DataFolderList("*", ";")
+			list = DataFolderList("*", ";", dfr)
 			break
 		default:
-			SetDataFolder oldDFR
 			ASSERT_TS(0, "Invalid type flag")
 	endswitch
-
-	SetDataFolder oldDFR
 
 	return list
 End
