@@ -16,6 +16,15 @@ static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	Make/N=1 dfr:srcw = 12345
 End
 
+static Function TEST_CASE_END_OVERRIDE(name)
+	string name
+
+	KillDataFolder/Z destf
+	KillDataFolder/Z srcf
+
+	TestCaseEndCommon(name)
+End
+
 Function asserts_on_invalid_1()
 	STRUCT WaveLocationMod p
 
