@@ -1955,7 +1955,7 @@ End
 
 static Function HasOneFiniteEntry_AssertsOnInvalidType()
 
-	Make/B wv
+	Make/B/FREE wv
 	try
 		HasOneFiniteEntry(wv)
 		FAIL()
@@ -1989,7 +1989,7 @@ End
 
 Function HOV_AssertsOnInvalidType()
 
-	Make/B wv
+	Make/B/FREE wv
 	try
 		HasOneValidEntry(wv)
 		FAIL()
@@ -2000,7 +2000,7 @@ End
 
 Function HOV_AssertsOnEmptyWave()
 
-	Make/D/N=0 wv
+	Make/FREE/D/N=0 wv
 	try
 		HasOneValidEntry(wv)
 		FAIL()
@@ -2011,41 +2011,41 @@ End
 
 Function HOV_Works1()
 
-	Make/D/N=10 wv = NaN
+	Make/FREE/D/N=10 wv = NaN
 	CHECK(!HasOneValidEntry(wv))
 End
 
 Function HOV_Works2()
 
-	Make/D/N=10 wv = NaN
+	Make/FREE/D/N=10 wv = NaN
 	wv[9] = 1
 	CHECK(HasOneValidEntry(wv))
 End
 
 Function HOV_Works3()
 
-	Make/D/N=10 wv = NaN
+	Make/FREE/D/N=10 wv = NaN
 	wv[9] = Inf
 	CHECK(HasOneValidEntry(wv))
 End
 
 Function HOV_Works4()
 
-	Make/D/N=10 wv = NaN
+	Make/FREE/D/N=10 wv = NaN
 	wv[9] = -Inf
 	CHECK(HasOneValidEntry(wv))
 End
 
 Function HOV_WorksWithReal()
 
-	Make/R/N=10 wv = NaN
+	Make/FREE/R/N=10 wv = NaN
 	wv[9] = -Inf
 	CHECK(HasOneValidEntry(wv))
 End
 
 Function HOV_WorksWith2D()
 
-	Make/R/N=(10, 9) wv = NaN
+	Make/FREE/R/N=(10, 9) wv = NaN
 	wv[2, 3] = 4711
 	CHECK(HasOneValidEntry(wv))
 End
@@ -2216,7 +2216,7 @@ End
 
 Function GUE_WorksWithEmpty()
 
-	Make/N=0 wv
+	Make/N=0/FREE wv
 
 	WAVE/Z result = GetUniqueEntries(wv)
 	CHECK_WAVE(result, NUMERIC_WAVE, minorType = FLOAT_WAVE)
@@ -2225,7 +2225,7 @@ End
 
 Function GUE_WorksWithOne()
 
-	Make/N=1 wv
+	Make/N=1/FREE wv
 
 	WAVE/Z result = GetUniqueEntries(wv)
 	CHECK_EQUAL_WAVES(result, wv)
@@ -2233,7 +2233,7 @@ End
 
 static Function GUE_WorksWithOneNoDuplicate()
 
-	Make/N=1 wv
+	Make/N=1/FREE wv
 
 	WAVE/Z result = GetUniqueEntries(wv, dontDuplicate = 1)
 	CHECK(WaveRefsEqual(result, wv))
@@ -2241,7 +2241,7 @@ End
 
 Function GUE_BailsOutWith2D()
 
-	Make/N=(1, 2) wv
+	Make/N=(1, 2)/FREE wv
 
 	try
 		WAVE/Z result = GetUniqueEntries(wv)
@@ -2253,7 +2253,7 @@ End
 
 Function GUE_WorksWithTextEmpty()
 
-	Make/T/N=0 wv
+	Make/T/N=0/FREE wv
 
 	WAVE/Z result = GetUniqueEntries(wv)
 	CHECK_WAVE(result, TEXT_WAVE)
@@ -2262,7 +2262,7 @@ End
 
 Function GUE_WorksWithTextOne()
 
-	Make/T/N=1 wv
+	Make/T/N=1/FREE wv
 
 	WAVE/Z result = GetUniqueEntries(wv)
 	CHECK_EQUAL_WAVES(result, wv)
@@ -2270,7 +2270,7 @@ End
 
 static Function GUE_WorksWithTextOneNoDuplicate()
 
-	Make/T/N=1 wv
+	Make/T/N=1/FREE wv
 
 	WAVE/Z result = GetUniqueEntries(wv, dontDuplicate = 1)
 	CHECK(WaveRefsEqual(result, wv))
@@ -2278,7 +2278,7 @@ End
 
 Function GUE_IgnoresCase()
 
-	Make/T wv = {"a", "A"}
+	Make/T/FREE wv = {"a", "A"}
 
 	WAVE/Z result = GetUniqueEntries(wv, caseSensitive = 0)
 	CHECK_EQUAL_TEXTWAVES(result, {"a"})
@@ -2286,7 +2286,7 @@ End
 
 Function GUE_HandlesCase()
 
-	Make/T wv = {"a", "A"}
+	Make/T/FREE wv = {"a", "A"}
 
 	WAVE/Z result = GetUniqueEntries(wv, caseSensitive = 1)
 	CHECK_EQUAL_TEXTWAVES(result, {"a", "A"})
@@ -2294,7 +2294,7 @@ End
 
 Function GUE_BailsOutWithText2D()
 
-	Make/T/N=(1, 2) wv
+	Make/FREE/T/N=(1, 2) wv
 
 	try
 		WAVE/Z result = GetUniqueEntries(wv)
@@ -2339,7 +2339,7 @@ End
 
 static Function GUTE_WorksWithOneNoDuplicate()
 
-	Make/T/N=1 wv
+	Make/T/N=1/FREE wv
 
 	WAVE/Z result = MIES_UTILS#GetUniqueTextEntries(wv, dontDuplicate = 1)
 	CHECK(WaveRefsEqual(result, wv))
@@ -2382,7 +2382,7 @@ Function GetListOfObjectsWorksRE()
 
 	string result, expected
 
-	NewDataFolder/O test
+	NewDataFolder test
 
 	DFREF dfr = $"test"
 	Make dfr:abcd
@@ -2407,13 +2407,15 @@ Function GetListOfObjectsWorksRE()
 	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = ":test:abcd;"
 	CHECK_EQUAL_STR(result, expected)
+
+	KillDataFolder/Z test
 End
 
 Function GetListOfObjectsWorksWC()
 
 	string result, expected
 
-	NewDataFolder/O test
+	NewDataFolder test
 	DFREF dfr = $"test"
 	Make dfr:abcd
 	Make dfr:efgh
@@ -2437,14 +2439,16 @@ Function GetListOfObjectsWorksWC()
 	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = ":test:abcd;"
 	CHECK_EQUAL_STR(result, expected)
+
+	KillDataFolder/Z test
 End
 
 Function GetListOfObjectsWorks2()
 
 	string result, expected
 
-	NewDataFolder/O test
-	NewDataFolder/O :test:test2
+	NewDataFolder test
+	NewDataFolder :test:test2
 
 	DFREF dfr = $":test"
 	CHECK(DataFolderExistsDFR(dfr))
@@ -2483,6 +2487,8 @@ Function GetListOfObjectsWorks2()
 	result   = TrimVolatileFolderName_IGNORE(result)
 	expected = ":test:wv1;:test:wv2;"
 	CHECK_EQUAL_STR(result, expected)
+
+	KillDataFolder/Z test
 End
 
 // IUTF_TD_GENERATOR w0:CountObjectTypeFlags
@@ -2533,9 +2539,9 @@ Function GetListOfObjectsWorksWithFolder()
 
 	string result, expected
 
-	NewDataFolder/O test1
-	NewDataFolder/O :test1:test2
-	NewDataFolder/O :test1:test2:test3
+	NewDataFolder test1
+	NewDataFolder :test1:test2
+	NewDataFolder :test1:test2:test3
 
 	DFREF dfr = $":test1"
 	CHECK(DataFolderExistsDFR(dfr))
@@ -2561,6 +2567,8 @@ Function GetListOfObjectsWorksWithFolder()
 	result   = SortList(result)
 	expected = SortList(expected)
 	CHECK_EQUAL_STR(result, expected)
+
+	KillDataFolder/Z test1
 End
 
 static Function GetListOfObjectsWorksWithFreeDF()
@@ -2748,7 +2756,7 @@ Function DWP_Check2D()
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
 	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
 
-	Make/O/FREE/N=(3, 3) wv
+	Make/FREE/N=(3, 3) wv
 	wv = p + DimSize(wv, COLS) * q
 	DeleteWavePoint(wv, COLS, index = 1)
 	CHECK_EQUAL_WAVES(wv, {{0, 1, 2}, {6, 7, 8}})
@@ -2772,7 +2780,7 @@ Function DWP_Check3D()
 	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
 	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
 
-	Make/O/FREE/N=(3, 3, 3) wv
+	Make/FREE/N=(3, 3, 3) wv
 	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r
 	DeleteWavePoint(wv, COLS, index = 1)
 	CHECK_EQUAL_WAVES(wv, {{{0, 1, 2}, {6, 7, 8}}, {{9, 10, 11}, {15, 16, 17}}, {{18, 19, 20}, {24, 25, 26}}})
@@ -2783,7 +2791,7 @@ Function DWP_Check3D()
 	CHECK_EQUAL_VAR(DimSize(wv, COLS), 0)
 	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
 
-	Make/O/FREE/N=(3, 3, 3) wv
+	Make/FREE/N=(3, 3, 3) wv
 	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r
 	DeleteWavePoint(wv, LAYERS, index = 1)
 	CHECK_EQUAL_WAVES(wv, {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}})
@@ -2808,7 +2816,7 @@ Function DWP_Check4D()
 	CHECK_EQUAL_WAVES(wv, comp)
 
 	DeleteWavePoint(wv, ROWS, index = 1)
-	Make/O/FREE/N=(1, 3, 3, 3) comp
+	Make/FREE/N=(1, 3, 3, 3) comp
 	comp[][][][0] = {{{0}, {3}, {6}}, {{9}, {12}, {15}}, {{18}, {21}, {24}}}
 	comp[][][][1] = {{{27}, {30}, {33}}, {{36}, {39}, {42}}, {{45}, {48}, {51}}}
 	comp[][][][2] = {{{54}, {57}, {60}}, {{63}, {66}, {69}}, {{72}, {75}, {78}}}
@@ -2820,18 +2828,18 @@ Function DWP_Check4D()
 	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
 	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
 
-	Make/O/FREE/N=(3, 3, 3, 3) wv
+	Make/FREE/N=(3, 3, 3, 3) wv
 	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r + +DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
 
 	DeleteWavePoint(wv, COLS, index = 1)
-	Make/O/FREE/N=(3, 2, 3, 3) comp
+	Make/FREE/N=(3, 2, 3, 3) comp
 	comp[][][][0] = {{{0, 1, 2}, {6, 7, 8}}, {{9, 10, 11}, {15, 16, 17}}, {{18, 19, 20}, {24, 25, 26}}}
 	comp[][][][1] = {{{27, 28, 29}, {33, 34, 35}}, {{36, 37, 38}, {42, 43, 44}}, {{45, 46, 47}, {51, 52, 53}}}
 	comp[][][][2] = {{{54, 55, 56}, {60, 61, 62}}, {{63, 64, 65}, {69, 70, 71}}, {{72, 73, 74}, {78, 79, 80}}}
 	CHECK_EQUAL_WAVES(wv, comp)
 
 	DeleteWavePoint(wv, COLS, index = 1)
-	Make/O/FREE/N=(3, 1, 3, 3) comp
+	Make/FREE/N=(3, 1, 3, 3) comp
 	comp[][][][0] = {{{0, 1, 2}}, {{9, 10, 11}}, {{18, 19, 20}}}
 	comp[][][][1] = {{{27, 28, 29}}, {{36, 37, 38}}, {{45, 46, 47}}}
 	comp[][][][2] = {{{54, 55, 56}}, {{63, 64, 65}}, {{72, 73, 74}}}
@@ -2843,18 +2851,18 @@ Function DWP_Check4D()
 	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
 	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
 
-	Make/O/FREE/N=(3, 3, 3, 3) wv
+	Make/FREE/N=(3, 3, 3, 3) wv
 	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r + +DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
 
 	DeleteWavePoint(wv, LAYERS, index = 1)
-	Make/O/FREE/N=(3, 3, 2, 3) comp
+	Make/FREE/N=(3, 3, 2, 3) comp
 	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}}
 	comp[][][][1] = {{{27, 28, 29}, {30, 31, 32}, {33, 34, 35}}, {{45, 46, 47}, {48, 49, 50}, {51, 52, 53}}}
 	comp[][][][2] = {{{54, 55, 56}, {57, 58, 59}, {60, 61, 62}}, {{72, 73, 74}, {75, 76, 77}, {78, 79, 80}}}
 	CHECK_EQUAL_WAVES(wv, comp)
 
 	DeleteWavePoint(wv, LAYERS, index = 1)
-	Make/O/FREE/N=(3, 3, 1, 3) comp
+	Make/FREE/N=(3, 3, 1, 3) comp
 	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}}
 	comp[][][][1] = {{{27, 28, 29}, {30, 31, 32}, {33, 34, 35}}}
 	comp[][][][2] = {{{54, 55, 56}, {57, 58, 59}, {60, 61, 62}}}
@@ -2866,17 +2874,17 @@ Function DWP_Check4D()
 	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 0)
 	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
 
-	Make/O/FREE/N=(3, 3, 3, 3) wv
+	Make/FREE/N=(3, 3, 3, 3) wv
 	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r + +DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
 
 	DeleteWavePoint(wv, CHUNKS, index = 1)
-	Make/O/FREE/N=(3, 3, 3, 2) comp
+	Make/FREE/N=(3, 3, 3, 2) comp
 	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{9, 10, 11}, {12, 13, 14}, {15, 16, 17}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}}
 	comp[][][][1] = {{{54, 55, 56}, {57, 58, 59}, {60, 61, 62}}, {{63, 64, 65}, {66, 67, 68}, {69, 70, 71}}, {{72, 73, 74}, {75, 76, 77}, {78, 79, 80}}}
 	CHECK_EQUAL_WAVES(wv, comp)
 
 	DeleteWavePoint(wv, CHUNKS, index = 1)
-	Make/O/FREE/N=(3, 3, 3, 1) comp
+	Make/FREE/N=(3, 3, 3, 1) comp
 	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{9, 10, 11}, {12, 13, 14}, {15, 16, 17}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}}
 	CHECK_EQUAL_WAVES(wv, comp)
 
@@ -3636,7 +3644,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		Make/N=(100) factor
+		Make/N=(100)/FREE factor
 		DecimateWithMethod(data, output, decimationFactor, method, factor = factor); AbortOnRTE
 		FAIL()
 	catch
@@ -3658,7 +3666,7 @@ Function TestDecimateWithMethodDec1()
 	Make/FREE/D/N=(newSize) output
 
 	Make/FREE refOutput = {10, 800}
-	Make/N=(1) factor = {100}
+	Make/N=(1)/FREE factor = {100}
 
 	DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = 1, lastRowInp = 15, firstColInp = 0, lastColInp = 0, factor = factor)
 	CHECK_EQUAL_WAVES(output, refOutput, mode = WAVE_DATA)
@@ -3745,7 +3753,7 @@ Function TestDecimateWithMethodDec6()
 	method           = DECIMATION_MINMAX
 	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 4)
-	Make/D/N=(newSize, 2) output
+	Make/D/FREE/N=(newSize, 2) output
 	Make/D/FREE refOutput = {{0, 0, 0, 0}, {0.1, 4, 0.5, 8}}
 
 	DecimateWithMethod(data, output, decimationFactor, method, firstColInp = 1)
@@ -3763,10 +3771,10 @@ Function TestDecimateWithMethodDec7()
 	method           = DECIMATION_MINMAX
 	newSize          = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 4)
-	Make/D/N=(newSize, 2) output = {{-10, -400, -50, -800}, {2, 2, 2, 2}}
+	Make/D/N=(newSize, 2)/FREE output = {{-10, -400, -50, -800}, {2, 2, 2, 2}}
 	// factor leaves first column untouched
 	Make/D/FREE refOutput = {{-10, -400, -50, -800}, {2, 2, 2, 2}}
-	Make/N=(1) factor = {-100}
+	Make/N=(1)/FREE factor = {-100}
 
 	DecimateWithMethod(data, output, decimationFactor, method, factor = factor, firstColInp = 1, firstColOut = 0, lastColOut = 0)
 	CHECK_EQUAL_WAVES(output, refOutput, mode = WAVE_DATA)
@@ -3858,6 +3866,9 @@ Function RC_WorksWithReplacementTrace()
 
 	info = CsrInfo(A, graph)
 	CHECK_PROPER_STR(info)
+
+	KillWindow/Z $graph
+	KillWaves/Z data
 End
 
 /// @}
@@ -3893,6 +3904,8 @@ Function MWWO_RequiresDistinctWaves()
 		err = GetRtError(1)
 		PASS()
 	endtry
+
+	KillWaves/Z wv
 End
 
 Function MWWO_Works()
@@ -3906,6 +3919,8 @@ Function MWWO_Works()
 	CHECK_EQUAL_VAR(Sum(dest), 0)
 	WAVE/Z src
 	CHECK_WAVE(src, NULL_WAVE)
+
+	KillWaves/Z dest, src
 End
 
 Function MWWO_WorksWithFreeSource()
@@ -3919,6 +3934,8 @@ Function MWWO_WorksWithFreeSource()
 	CHECK_EQUAL_VAR(Sum(dest), 0)
 	WAVE/Z src
 	CHECK_WAVE(src, NULL_WAVE)
+
+	KillWaves/Z dest
 End
 
 Function MWWO_HandlesLockedDest()
@@ -3934,6 +3951,9 @@ Function MWWO_HandlesLockedDest()
 	CHECK_EQUAL_VAR(Sum(dest), 0)
 	WAVE/Z src
 	CHECK_WAVE(src, NULL_WAVE)
+
+	KillWindow/Z $S_name
+	KillWaves/Z dest, src
 End
 
 Function MWWO_ReturnsNewRef()
@@ -3953,6 +3973,8 @@ Function MWWO_ReturnsNewRef()
 	CHECK_EQUAL_VAR(Sum(dest), 0)
 	WAVE src
 	CHECK_WAVE(src, NULL_WAVE)
+
+	KillWaves/Z dest, src
 End
 
 Function MWWO_RecursiveWorks()
@@ -3988,6 +4010,8 @@ Function MWWO_RecursiveWorks()
 
 	CHECK_EQUAL_VAR(Sum(dest0), -128)
 	CHECK_EQUAL_VAR(Sum(dest1), -256)
+
+	KillWaves/Z dest, dest0, dest1, src, src0, src1
 End
 
 /// @}
@@ -4274,7 +4298,7 @@ End
 /// @{
 
 Function STIW_TestDimensions()
-	Make testwave
+	Make/FREE testwave
 
 	SetScale/P x, 0, 0.1, testwave
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, ROWS), ScaleToIndex(testWave, 0, ROWS))
@@ -4310,7 +4334,7 @@ Function STIW_TestAbort([var])
 
 	variable err
 
-	Make testwave
+	Make/FREE testwave
 	SetScale/P x, 0, 0.1, testwave
 
 	try
@@ -4611,6 +4635,8 @@ Function CreateBackupWaveBasics()
 	WAVE/Z bak = CreateBackupWave(data)
 	CHECK_WAVE(bak, NORMAL_WAVE)
 	CHECK_EQUAL_WAVES(bak, data)
+
+	KillWaves/Z data, bak
 End
 
 Function CreateBackupWaveCorrectNaming()
@@ -4624,6 +4650,8 @@ Function CreateBackupWaveCorrectNaming()
 	actual   = NameOfWave(bak)
 	expected = "data_bak"
 	CHECK_EQUAL_STR(actual, expected)
+
+	KillWaves/Z data, bak
 End
 
 Function CreateBackupWaveNoUnwantedRecreation()
@@ -4640,6 +4668,8 @@ Function CreateBackupWaveNoUnwantedRecreation()
 	CHECK_WAVE(bakAgain, NORMAL_WAVE)
 	CHECK(WaveRefsEqual(bak, bakAgain))
 	CHECK_EQUAL_VAR(modCount, WaveModCount(bakAgain))
+
+	KillWaves/Z data, bak
 End
 
 Function CreateBackupWaveAllowsForcingRecreation()
@@ -4654,6 +4684,8 @@ Function CreateBackupWaveAllowsForcingRecreation()
 	WAVE/Z bakAgain = CreateBackupWave(data, forceCreation = 1)
 
 	CHECK_GT_VAR(WaveModCount(bakAgain), modCount)
+
+	KillWaves/Z data, bak
 End
 
 Function/DF PrepareFolderForBackup_IGNORE()
@@ -4684,10 +4716,11 @@ Function CreateBackupWaveForAllWorks()
 
 	CHECK_EQUAL_VAR(CountElementsInFolder_IGNORE(dfr), numElements + 2)
 
-	WAVE/Z/SDFR=folder data1_bak
-	WAVE/Z/SDFR=folder data2_bak
+	WAVE/Z/SDFR=dfr data1_bak, data2_bak
 	CHECK_WAVE(data1_bak, NORMAL_WAVE)
 	CHECK_WAVE(data2_bak, NORMAL_WAVE)
+
+	KillDataFolder/Z dfr
 End
 
 Function GetBackupWaveChecksArgs()
@@ -4707,6 +4740,8 @@ Function GetBackupWaveMightReturnNull()
 	Make data
 	WAVE/Z bak = GetBackupWave(data)
 	CHECK_WAVE(bak, NULL_WAVE)
+
+	KillWaves/Z data, bak
 End
 
 Function GetBackupWaveWorks()
@@ -4718,6 +4753,8 @@ Function GetBackupWaveWorks()
 	CHECK_WAVE(bak1, NORMAL_WAVE)
 	CHECK_WAVE(bak2, NORMAL_WAVE)
 	CHECK(WaveRefsEqual(bak1, bak2))
+
+	KillWaves/Z data, bak1, bak2
 End
 
 Function ReplaceWaveWithBackupWorks()
@@ -4725,7 +4762,7 @@ Function ReplaceWaveWithBackupWorks()
 	variable originalSum
 
 	Make data = p
-	CreateBackupWave(data)
+	WAVE bak = CreateBackupWave(data)
 	originalSum = Sum(data)
 	data        = 0
 
@@ -4735,6 +4772,8 @@ Function ReplaceWaveWithBackupWorks()
 	CHECK_WAVE(dataOrig, NORMAL_WAVE)
 	CHECK_EQUAL_VAR(Sum(dataOrig), originalSum)
 	CHECK(WaveRefsEqual(data, dataOrig))
+
+	KillWaves/Z data, bak
 End
 
 Function ReplaceWaveWithBackupNonExistingBackupIsFatal()
@@ -4747,6 +4786,8 @@ Function ReplaceWaveWithBackupNonExistingBackupIsFatal()
 	catch
 		PASS()
 	endtry
+
+	KillWaves/Z data
 End
 
 Function ReplaceWaveWithBackupNonExistingBackupIsOkay()
@@ -4755,6 +4796,8 @@ Function ReplaceWaveWithBackupNonExistingBackupIsOkay()
 	Make data
 	WAVE/Z bak = ReplaceWaveWithBackup(data, nonExistingBackupIsFatal = 0)
 	CHECK_WAVE(bak, NULL_WAVE)
+
+	KillWaves/Z data, bak
 End
 
 Function ReplaceWaveWithBackupRemoval()
@@ -4766,6 +4809,8 @@ Function ReplaceWaveWithBackupRemoval()
 	// by default the backup is removed
 	WAVE/Z bak = GetBackupWave(data)
 	CHECK_WAVE(bak, NULL_WAVE)
+
+	KillWaves/Z data, bak
 End
 
 Function ReplaceWaveWithBackupKeeping()
@@ -4777,6 +4822,8 @@ Function ReplaceWaveWithBackupKeeping()
 	ReplaceWaveWithBackup(data, keepBackup = 1)
 	WAVE/Z bak = GetBackupWave(data)
 	CHECK_WAVE(bak, NORMAL_WAVE)
+
+	KillWaves/Z data, bak
 End
 
 Function ReplaceWaveWithBackupForAllNonFatal()
@@ -4785,6 +4832,8 @@ Function ReplaceWaveWithBackupForAllNonFatal()
 	variable numElements = CountElementsInFolder_IGNORE(dfr)
 	ReplaceWaveWithBackupForAll(dfr)
 	CHECK_EQUAL_VAR(CountElementsInFolder_IGNORE(dfr), numElements)
+
+	KillDataFolder/Z dfr
 End
 
 Function ReplaceWaveWithBackupForAllWorks()
@@ -4818,6 +4867,8 @@ Function ReplaceWaveWithBackupForAllWorks()
 
 	// backup waves are kept
 	CHECK_EQUAL_VAR(CountElementsInFolder_IGNORE(dfr), numElements + 2)
+
+	KillDataFolder/Z dfr
 End
 
 /// @}
@@ -4975,6 +5026,8 @@ Function DFED_WorksRegular1()
 	CHECK(DataFolderExistsDFR(dfr))
 	CHECK(DataFolderExistsDFR(s.structDFR))
 	CHECK(DataFolderExistsDFR(wDfr[0]))
+
+	KillDataFolder/Z test
 End
 
 Function DFED_WorksRegular2()
@@ -4993,6 +5046,9 @@ Function DFED_WorksRegular2()
 	CHECK(DataFolderExistsDFR(dfr))
 	CHECK(DataFolderExistsDFR(s.structDFR))
 	CHECK(DataFolderExistsDFR(wDfr[0]))
+
+	KillDataFolder/Z test
+	KillDataFolder/Z test1
 End
 
 Function DFED_WorksRegular3()
@@ -5010,6 +5066,8 @@ Function DFED_WorksRegular3()
 	CHECK(DataFolderExistsDFR(dfr))
 	CHECK(DataFolderExistsDFR(s.structDFR))
 	CHECK(DataFolderExistsDFR(wDfr[0]))
+
+	KillDataFolder/Z test
 End
 
 Function DFED_WorksRegular4()
@@ -5165,7 +5223,7 @@ Function ZWI_Works1()
 
 	variable numRows = 0
 
-	Make/N=(numRows) wv
+	Make/N=(numRows)/FREE wv
 	ZeroWaveImpl(wv)
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), numRows)
@@ -5175,7 +5233,7 @@ Function ZWI_Works2()
 
 	variable numRows = 5
 
-	Make/N=(numRows) wv = {1, 2, 3, 4, -5}
+	Make/N=(numRows)/FREE wv = {1, 2, 3, 4, -5}
 	ZeroWaveImpl(wv)
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	CHECK_EQUAL_WAVES(wv, {0, 1, 2, 3, -6})
@@ -5185,7 +5243,7 @@ Function ZWI_Works3()
 
 	variable numRows = 5
 
-	Make/N=(numRows) wv = {-1, 2, 3, 4, -5}
+	Make/N=(numRows)/FREE wv = {-1, 2, 3, 4, -5}
 	ZeroWaveImpl(wv)
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	CHECK_EQUAL_WAVES(wv, {0, 3, 4, 5, -4})
@@ -5572,7 +5630,7 @@ Function GWS_Works([WAVE wv])
 	CHECK_WAVE(wv, FREE_WAVE)
 	CHECK_GT_VAR(GetWaveSize(wv), 0)
 
-	Make/N=1 junkWave
+	Make/N=1/FREE junkWave
 	MultiThread junkWave = GetWaveSize(wv)
 	CHECK_GT_VAR(junkWave[0], 0)
 End
@@ -5617,6 +5675,8 @@ Function WMCW_ChecksPreemptiveThread()
 	CHECK_EQUAL_VAR(V_numNaNs, 0)
 	CHECK_EQUAL_VAR(V_numInfs, 0)
 	CHECK_EQUAL_VAR(V_Sum, 0)
+
+	KillWaves/Z data
 End
 
 Function WMCW_Works1()
@@ -5626,6 +5686,8 @@ Function WMCW_Works1()
 	val   = WaveModCountWrapper(data)
 	data += 1
 	CHECK_EQUAL_VAR(val + 1, WaveModCountWrapper(data))
+
+	KillWaves/Z data
 End
 
 Function WMCW_Works2()
@@ -5689,6 +5751,8 @@ Function RDFU_Works()
 	RenameDataFolderToUniqueName(path, suffix)
 	CHECK(!DataFolderExists(path))
 	CHECK(DataFolderExists(path + suffix))
+
+	KillDataFolder $(path + suffix)
 End
 
 /// @}
@@ -6716,6 +6780,8 @@ Function CFW_ChecksParameters()
 	catch
 		PASS()
 	endtry
+
+	KillWaves/Z perm
 End
 
 Function CFW_Works1()
@@ -7041,7 +7107,7 @@ Function JSONWaveSerializationWorksNoDimLabels()
 
 	string str
 
-	Make/D/N=1 wv
+	Make/D/N=1/FREE wv
 
 	str = WaveToJSON(wv)
 	CHECK_PROPER_STR(str)
@@ -7130,7 +7196,7 @@ Function GetMarqueeHelperWorks()
 	string win, refWin
 	variable first, last
 
-	Make/O/N=1000 data = 0.1 * p
+	Make/N=1000 data = 0.1 * p
 	SetScale/P x, 0, 0.5, data
 	Display/K=1 data
 	refWin = S_name
@@ -7190,6 +7256,9 @@ Function GetMarqueeHelperWorks()
 	[first, last] = GetMarqueeHelper("left", horiz = 1, doAssert = 0)
 	CHECK_EQUAL_VAR(first, NaN)
 	CHECK_EQUAL_VAR(last, NaN)
+
+	KillWindow $refWin
+	KillWaves/Z data
 End
 
 Function FTWWorks()
@@ -7282,6 +7351,8 @@ Function StoreRestoreAxisProps([string str])
 
 	string win, actual, commands
 
+	DFREF saveDFR = GetDataFolderDFR()
+
 	NewDataFolder/O/S root:temp_test
 	KillWaves/A
 	KillStrings/A
@@ -7306,6 +7377,8 @@ Function StoreRestoreAxisProps([string str])
 	CHECK_EQUAL_STR(str, actual)
 
 	KillWindow $win
+
+	SetDataFolder saveDFR
 End
 
 static Function NoNullReturnFromGetValDisplayAsString()
@@ -7764,6 +7837,8 @@ static Function TestDuplicateWaveAndKeepTargetRef()
 	CHECK_EQUAL_WAVES(srcWR, tgtWR)
 	WAVE/WAVE afterTgtWR = dfr:tgtWR
 	CHECK(WaveRefsEqual(tgtWR, afterTgtWR))
+
+	KillWaves/Z tgt, tgtT, tgtDF, tgtWR
 End
 
 static Function TestFindRightMostHighBit()
@@ -7978,8 +8053,6 @@ static Function TestSplitWavesToDimension()
 	CHECK_EQUAL_WAVES(result[1], {3, 4}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(result[2], {"a", "b"}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(result[3], {"c", "d"}, mode = WAVE_DATA)
-
-	CHECK_EMPTY_FOLDER()
 End
 
 static Function TestAreIntervalsIntersecting()
@@ -8292,6 +8365,8 @@ Function DC_DFREFClear_Perm_Works()
 	CHECK(DataFolderExistsDFR(dfr))
 	DFREFClear(dfr)
 	CHECK(!DataFolderExistsDFR(dfr))
+
+	KillDataFolder/Z test
 End
 
 Function DC_DFREFClear_Free_Works()
