@@ -8512,6 +8512,34 @@ static Function MWF_Works()
 	CHECK(WaveRefsEqual(data, result))
 End
 
+#if IgorVersion() >= 10
+
+static Function MDF_Works()
+
+	DFREF result = MakeDataFolderFree($"")
+	CHECK(!DataFolderExistsDFR(result))
+
+	NewDataFolder folder
+	DFREF dfr = folder
+	variable/G dfr:var
+	CHECK(DataFolderExistsDFR(dfr))
+	DFREF result = MakeDataFolderFree(dfr)
+	CHECK(IsFreeDataFolder(result))
+	CHECK(DataFolderRefsEqual(dfr, result))
+	CHECK_EQUAL_STR("var;", VariableList("*", ";", 4, result))
+
+	DFREF dfr = NewFreeDataFolder()
+	variable/G dfr:var
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK(IsFreeDataFolder(result))
+	DFREF result = MakeDataFolderFree(dfr)
+	CHECK(IsFreeDataFolder(result))
+	CHECK(DataFolderRefsEqual(dfr, result))
+	CHECK_EQUAL_STR("var;", VariableList("*", ";", 4, result))
+End
+
+#endif
+
 static Function CheckMatchAgainstWildCardPatterns()
 
 	string str

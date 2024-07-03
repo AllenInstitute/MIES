@@ -479,6 +479,25 @@ Function/WAVE MakeWaveFree(wv)
 	return wv
 End
 
+#if IgorVersion() >= 10
+
+/// @brief Turn a persistent datafolder into a free datafolder
+Function/DF MakeDataFolderFree(DFREF dfr)
+
+	if(!DataFolderExistsDFR(dfr))
+		return $""
+	endif
+
+	DFREF target = NewFreeDataFolder()
+
+	MoveDataFolder dfr, target
+	ASSERT(!V_flag, "MoveDataFolder error")
+
+	return dfr
+End
+
+#endif
+
 /// @brief Sets the dimension labels of a wave
 ///
 /// @param wv       Wave to add dim labels
