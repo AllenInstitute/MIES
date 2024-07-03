@@ -169,6 +169,7 @@ Function WBP_StartupSettings()
 
 	Execute/P/Q/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
+	CleanupOperationQueueResult()
 End
 
 static Constant EPOCH_HL_TYPE_LEFT  = 0x01
@@ -1416,6 +1417,7 @@ Function WBP_ButtonProc_OpenAnaFuncs(ba) : ButtonControl
 			Execute/P/Q/Z "INSERTINCLUDE \"" + baseName + "\""
 			Execute/P/Q/Z "COMPILEPROCEDURES "
 			Execute/P/Q/Z "DisplayProcedure/W=$\"" + fileName + "\""
+			CleanupOperationQueueResult()
 			break
 	endswitch
 

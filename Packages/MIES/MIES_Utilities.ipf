@@ -7074,3 +7074,17 @@ End
 threadsafe Function DFREFClear(DFREF &dfr)
 	DFREF dfr = $""
 End
+
+/// @brief Allows to remove V_flag which will be present after using the operation queue with `/Z`
+///
+/// Example usage:
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Execute/P/Q/Z "SomeFunction()"
+/// 	CleanupOperationQueueResult()
+/// \endrst
+///
+Function CleanupOperationQueueResult()
+	Execute/P/Q "KillVariables/Z V_flag"
+End

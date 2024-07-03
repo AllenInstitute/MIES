@@ -5154,6 +5154,7 @@ Function PSX_PlotStartupSettings()
 
 	Execute/P/Q/Z "DoWindow/R " + PSX_PANEL_MACRO
 	Execute/P/Q/Z "COMPILEPROCEDURES "
+	CleanupOperationQueueResult()
 End
 
 /// @brief Apply the macro `mac` onto the panel `win`
