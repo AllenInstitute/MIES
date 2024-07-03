@@ -28,8 +28,8 @@ End
 Function HAH_ReturnsZero()
 
 	string device
-	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
-	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+	Make/FREE/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/FREE/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	device = HAH_FillMockGuiStateWave(statusHS, clampModes)
 
@@ -42,8 +42,8 @@ End
 Function HAH_Works1()
 
 	string device
-	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
-	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+	Make/FREE/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/FREE/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	statusHS[0] = 1
 
@@ -58,8 +58,8 @@ End
 Function HAH_Works2()
 
 	string device
-	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
-	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+	Make/FREE/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/FREE/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	statusHS[6] = 1
 
@@ -74,8 +74,8 @@ End
 Function HAH_ChecksClampMode()
 
 	string device
-	Make/O/N=(NUM_HEADSTAGES) statusHS = 1
-	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+	Make/FREE/N=(NUM_HEADSTAGES) statusHS = 1
+	Make/FREE/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	device = HAH_FillMockGuiStateWave(statusHS, clampModes)
 
@@ -90,8 +90,8 @@ End
 Function HAH_ReturnsZeroWithClampMode()
 
 	string device
-	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
-	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+	Make/FREE/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/FREE/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	device = HAH_FillMockGuiStateWave(statusHS, clampModes)
 
@@ -104,8 +104,8 @@ End
 Function HAH_WorksWithClampMode1()
 
 	string device
-	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
-	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+	Make/FREE/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/FREE/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	statusHS[1, 2] = 1
 	clampModes[1]  = I_CLAMP_MODE
@@ -121,8 +121,8 @@ End
 Function HAH_WorksWithClampMode2()
 
 	string device
-	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
-	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+	Make/FREE/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/FREE/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	statusHS[1, 6] = 1
 	clampModes[]   = I_CLAMP_MODE
