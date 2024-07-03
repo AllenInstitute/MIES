@@ -401,3 +401,36 @@ Function/WAVE IndexAfterDecimation_Sizes()
 
 	return wv
 End
+
+Function/WAVE CountObjectTypeFlags()
+
+	Make/FREE/D input0 = {COUNTOBJECTS_WAVES}
+	Make/FREE/T result0 = {"wv1;wv2;"}
+	Make/FREE/T resultRec0 = {"wv1;wv2;wv3;wv4;"}
+
+	Make/FREE/WAVE wrapper0 = {input0, result0, resultRec0}
+
+	Make/FREE/D input1 = {COUNTOBJECTS_DATAFOLDER}
+	Make/FREE/T result1 = {"test2;"}
+	Make/FREE/T resultRec1 = {"test2;test3;"}
+
+	Make/FREE/WAVE wrapper1 = {input1, result1, resultRec1}
+
+	Make/FREE/D input2 = {COUNTOBJECTS_VAR}
+	Make/FREE/T result2 = {"var1;var2;"}
+	Make/FREE/T resultRec2 = {"var1;var2;var3;var4;"}
+
+	Make/FREE/WAVE wrapper2 = {input2, result2, resultRec2}
+
+	Make/FREE/D input3 = {COUNTOBJECTS_STR}
+	Make/FREE/T result3 = {"str1;"}
+	Make/FREE/T resultRec3 = {"str1;str2;"}
+
+	Make/FREE/WAVE wrapper3 = {input3, result3, resultRec3}
+
+	Make/FREE/WAVE wv = {wrapper0, wrapper1, wrapper2, wrapper3}
+
+	SetDimensionLabels(wv, "Waves;Datafolder;Variables;String;", ROWS)
+
+	return wv
+End

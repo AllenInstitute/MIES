@@ -2485,6 +2485,50 @@ Function GetListOfObjectsWorks2()
 	CHECK_EQUAL_STR(result, expected)
 End
 
+// IUTF_TD_GENERATOR w0:CountObjectTypeFlags
+Function GetListOfObjectsWorksTypeFlag([STRUCT IUTF_mData &md])
+
+	string result, expected, expectedRec
+	variable type
+
+	NewDataFolder test
+	NewDataFolder :test:test2
+	NewDataFolder :test:test2:test3
+
+	type        = WaveRef(md.w0, row = 0)[0]
+	expected    = WaveText(WaveRef(md.w0, row = 1), row = 0)
+	expectedRec = WaveText(WaveRef(md.w0, row = 2), row = 0)
+
+	DFREF dfr = $":test"
+	CHECK(DataFolderExistsDFR(dfr))
+
+	Make dfr:wv1
+	Make dfr:wv2
+	variable/G   dfr:var1
+	variable/G/C dfr:var2
+	string/G     dfr:str1
+
+	DFREF dfrDeep = $":test:test2"
+	CHECK(DataFolderExistsDFR(dfrDeep))
+
+	Make dfrDeep:wv3
+	Make dfrDeep:wv4
+	variable/G   dfrDeep:var3
+	variable/G/C dfrDeep:var4
+	string/G     dfrDeep:str2
+
+	result = GetListOfObjects(dfr, ".*", recursive = 0, typeFlag = type)
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, ".*", recursive = 1, typeFlag = type)
+	// sort order is implementation defined
+	result      = SortList(result)
+	expectedRec = SortList(expectedRec)
+	CHECK_EQUAL_STR(result, expectedRec)
+
+	KillDataFolder/Z test
+End
+
 Function GetListOfObjectsWorksWithFolder()
 
 	string result, expected
@@ -2547,8 +2591,6 @@ static Function GetListOfObjectsWorksWithFreeDF()
 	expected = SortList(expected)
 	CHECK_EQUAL_STR(result, expected)
 End
-
-// Not checked: typeFlag
 /// @}
 
 /// @{

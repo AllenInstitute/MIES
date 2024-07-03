@@ -372,7 +372,7 @@ threadsafe static Function/S GetAllObjects(dfr, typeFlag)
 			list = WaveList("*", ";", "")
 			break
 		case COUNTOBJECTS_VAR:
-			list = VariableList("*", ";", 11)
+			list = VariableList("*", ";", 4) + VariableList("*", ";", 5)
 			break
 		case COUNTOBJECTS_STR:
 			list = StringList("*", ";")
