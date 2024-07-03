@@ -5590,14 +5590,8 @@ Function/WAVE SF_OperationFitImpl(WAVE xData, WAVE yData, string fitFunc, WAVE h
 		return $""
 	endif
 
-	WAVE/Z fit = fit__free_
-
-	if(WaveExists(fit))
-		MakeWaveFree(fit)
-	endif
-
-	WAVE W_sigma
-	MakeWaveFree(W_sigma)
+	WAVE W_sigma = MakeWaveFree($"W_sigma")
+	WAVE fit     = MakeWaveFree($"fit__free_")
 
 	JWN_CreatePath(fit, SF_META_USER_GROUP + SF_META_FIT_PARAMETER)
 	JWN_SetWaveInWaveNote(fit, SF_META_USER_GROUP + SF_META_FIT_PARAMETER, params)

@@ -622,11 +622,8 @@ static Function PSX_FitEventDecay(WAVE sweepDataFiltOff, WAVE psxEvent, variable
 
 	AssertOnAndClearRTError()
 	CurveFit/Q/N=1/NTHR=1/M=0/W=2 exp_XOffset, kwCWave=coefWave, sweepDataFiltOff(post_min_t, n_min_t)/D/C=constraints; err = GetRTError(1)
-	WAVE/Z fit = fit__free_
 
-	if(WaveExists(fit))
-		MakeWaveFree(fit)
-	endif
+	WAVE fit = MakeWaveFree($"fit__free_")
 
 	SetDataFolder currDFR
 
