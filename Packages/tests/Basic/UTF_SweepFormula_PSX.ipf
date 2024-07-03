@@ -391,8 +391,8 @@ static Function CheckSweepEquiv()
 	Make/FREE ref = {{1, 2, 3, 4}, {5, NaN, NaN, NaN}}
 	CHECK_EQUAL_WAVES(selectDataEquiv, ref, mode = WAVE_DATA)
 
-	Make/T/N=(4) refLabels = MIES_PSX#PSX_BuildSweepEquivKey(selectData[p][%CHANNELTYPE], selectData[p][%CHANNELNUMBER])
-	Make/T/N=(4) labels = GetDimLabel(selectDataEquiv, ROWS, p)
+	Make/T/N=(4)/FREE refLabels = MIES_PSX#PSX_BuildSweepEquivKey(selectData[p][%CHANNELTYPE], selectData[p][%CHANNELNUMBER])
+	Make/T/N=(4)/FREE labels = GetDimLabel(selectDataEquiv, ROWS, p)
 	CHECK_EQUAL_WAVES(refLabels, labels, mode = WAVE_DATA)
 
 	[chanNr, chanType, sweepNo] = MIES_PSX#PSX_GetSweepEquivKeyAndSweep(selectDataEquiv, 0, 1)
@@ -951,7 +951,7 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 	// invalid sweep numbers are silently ignored
 	selectDataComboIndex2[0][%SWEEP] = -1
 
-	Concatenate/NP=(ROWS) {selectDataComboIndex0, selectDataComboIndex1, selectDataComboIndex2}, allSelectData
+	Concatenate/NP=(ROWS)/FREE {selectDataComboIndex0, selectDataComboIndex1, selectDataComboIndex2}, allSelectData
 
 	if(outOfRange)
 		refNum = CaptureHistoryStart()
@@ -1435,7 +1435,7 @@ static Function/S SetupDatabrowserWithSomeData()
 	WAVE/Z sweepWave = GetSweepWave(device, 2)
 	CHECK_WAVE(sweepWave, TEXT_WAVE)
 
-	Make/WAVE/N=(DimSize(sweepWave, ROWS)) input = ResolveSweepChannel(sweepWave, p)
+	Make/FREE/WAVE/N=(DimSize(sweepWave, ROWS)) input = ResolveSweepChannel(sweepWave, p)
 	for(WAVE wv : input)
 		SetScale/P x, 25, DimDelta(wv, ROWS), wv
 	endfor
