@@ -73,6 +73,8 @@ static Function DAB_Indexing_REENTRY([string str])
 
 	WAVE/Z selectedSweeps = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)
 	CHECK_EQUAL_WAVES(selectedSweeps, {3, 4})
+
+	KillVariables/Z V_flag
 End
 
 static Function DAB_Skipping_preAcq(string device)
