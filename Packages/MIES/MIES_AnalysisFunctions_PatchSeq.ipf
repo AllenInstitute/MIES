@@ -3644,7 +3644,8 @@ Function PSQ_DAScale(device, s)
 						Make/FREE/D/N=2 coefWave
 						CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, spikeFrequencies[]/D/X=DAScalesPlot[]; AbortOnRTE
 
-						WAVE/D/Z W_sigma
+						WAVE/D/Z W_sigma = MakeWaveFree($"W_sigma")
+
 						if(!WaveExists(W_sigma))
 							Make/FREE/D/N=2 W_sigma = NaN
 						endif
@@ -3687,6 +3688,8 @@ Function PSQ_DAScale(device, s)
 							sprintf str, "Fitted Slope: %.0W1P%%\r", fISlope[s.headstage]
 							textBoxString += str
 							TextBox/A=RB/C/N=text/W=$SPIKE_FREQ_GRAPH RemoveEnding(textBoxString, "\r")
+
+							MakeWaveFree(fitWave)
 						endif
 					catch
 						err = ClearRTError()

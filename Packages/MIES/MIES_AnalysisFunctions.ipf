@@ -855,7 +855,7 @@ Function FitResistance(string device, variable headstage, [variable showPlot, va
 
 		Make/FREE/N=2 coefWave
 		CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, storageDeltaV[][i]/D/X=storageDeltaI[][i]
-		WAVE W_sigma
+		WAVE/Z W_sigma = MakeWaveFree($"W_sigma")
 
 		storageResist[i][%Value] = coefWave[1]
 		storageResist[i][%Error] = W_sigma[1]

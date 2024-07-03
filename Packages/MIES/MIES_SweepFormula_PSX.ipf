@@ -404,6 +404,8 @@ static Function [WAVE coef, WAVE fit] PSX_FitHistogram(WAVE input)
 		return [$"", $""]
 	endif
 
+	MakeWaveFree($"W_sigma")
+
 	return [coefWave, MakeWaveFree(fit)]
 End
 
@@ -1273,6 +1275,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 						AssertonAndClearRTError()
 						StatsQuantiles/Q/Z resultsRawClean; err = GetRTError(1)
+						MakeWaveFree($"W_StatsQuantiles")
 
 						if(!err)
 							results[1] = V_Median
@@ -5191,4 +5194,7 @@ Function PSX_ApplyMacroToExistingPanel(string win, string mac)
 	endfor
 
 	SetActiveSubwindow $currWindow
+
+	KillVariables/Z V_flag
+	KillStrings/Z S_name
 End

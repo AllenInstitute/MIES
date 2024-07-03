@@ -2986,6 +2986,9 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 				fitResults[j] = fitResult
 			endfor
 
+			MakeWaveFree($"W_sigma")
+			MakeWaveFree($"W_fitConstants")
+
 #ifdef AUTOMATED_TESTING
 			JWN_SetWaveInWaveNote(fitResults, "/begintrails", beginTrails)
 			JWN_SetWaveInWaveNote(fitResults, "/endtrails", endTrails)
@@ -4286,8 +4289,11 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 #else
 	FuncFit/Q SF_LineNoiseFit, kwCWave=wCoef, input(minFreq, maxFreq)/C=wConstraints; err = GetRTError(1)
 #endif
+	MakeWaveFree($"W_sigma")
+
 	Redimension/N=1 input
 	input[0] = 0
+
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
 		SetScale/P x, ratioFreq, 1, WaveUnits(input, ROWS), input
@@ -4295,6 +4301,7 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 #else
 	SetScale/P x, wCoef[3], 1, WaveUnits(input, ROWS), input
 #endif
+
 	SetScale/P d, 0, 1, "power ratio", input
 
 	if(err)
