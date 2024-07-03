@@ -355,8 +355,6 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 End
 
 /// @brief Return a list of all objects of the given type from dfr
-///
-/// Does not work for datafolders which have a comma (`,`) in them.
 threadsafe static Function/S GetAllObjects(dfr, typeFlag)
 	DFREF    dfr
 	variable typeFlag
