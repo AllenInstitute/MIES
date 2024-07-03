@@ -533,7 +533,7 @@ static Function/DF TestSweepData(entry, device, sweep)
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(sweepWave, NORMAL_WAVE)
 
-	DFREF pxpSweepsDFR = UniqueDataFolder(GetDataFolderDFR(), "pxpSweeps")
+	DFREF pxpSweepsDFR = GetUniqueTempPath()
 	SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configWave, TTL_RESCALE_OFF, 1, targetDFR = pxpSweepsDFR)
 
 	nwbSweeps = SortList(GetListOfObjects(nwbSweepsDFR, ".*"))
