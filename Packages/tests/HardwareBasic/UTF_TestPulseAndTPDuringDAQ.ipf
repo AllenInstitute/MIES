@@ -316,7 +316,7 @@ static Function CheckTPEntriesFromLBN_REENTRY([string str])
 	WAVE/WAVE/Z entries_S2_TP = GetTPLBNEntries_IGNORE(str, 2, TEST_PULSE_MODE)
 	CHECK_WAVE(entries_S2_TP, WAVE_WAVE)
 
-	Make/N=(DimSize(entries_S2_TP, ROWS)) validWaves = WaveExists(entries_S2_TP[p])
+	Make/N=(DimSize(entries_S2_TP, ROWS))/FREE validWaves = WaveExists(entries_S2_TP[p])
 	CHECK_EQUAL_VAR(Sum(validWaves), 0)
 End
 
@@ -1046,7 +1046,7 @@ static Function CheckThatTPsCanBeFound_REENTRY([str])
 		Headstages[i]         = GetStringFromWaveNote(wv, "Headstages")
 	endfor
 
-	FindDuplicates/RT=HeadstagesNoDups Headstages
+	FindDuplicates/RT=HeadstagesNoDups/FREE Headstages
 	CHECK_EQUAL_TEXTWAVES(HeadstagesNoDups, {"0,1,"}, mode = WAVE_DATA)
 
 	Sort/A TPMarkerTestpulses, TPMarkerTestpulses
@@ -1054,10 +1054,10 @@ static Function CheckThatTPsCanBeFound_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(TPMarkerTestpulses, TPMarker, mode = WAVE_DATA)
 
-	FindDuplicates/DN=dups TPMarkerTestpulses
+	FindDuplicates/DN=dups/FREE TPMarkerTestpulses
 	CHECK_EQUAL_VAR(DimSize(dups, ROWS), 0)
 
-	FindDuplicates/DN=dups TPMarker
+	FindDuplicates/DN=dups/FREE TPMarker
 	CHECK_EQUAL_VAR(DimSize(dups, ROWS), 0)
 
 	CheckStartStopMessages("tp", "starting")
@@ -1119,6 +1119,8 @@ static Function TPDuringDAQWithTTL_REENTRY([str])
 		// testpulse/ inserted TP itself has the correct length
 		FindLevels/Q/N=(2) DA, 5
 		WAVE W_FindLevels
+		MakeWaveFree(W_FindLevels)
+
 		CHECK(!V_flag)
 
 		// hardcode values for 10ms pulse and 25% baseline
