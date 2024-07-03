@@ -8306,3 +8306,21 @@ Function DC_DFREFClear_Free_Works()
 	DFREFClear(dfr)
 	CHECK(!DataFolderExistsDFR(dfr))
 End
+
+static Function MWF_Works()
+
+	WAVE/Z result = MakeWaveFree($"")
+	CHECK_WAVE(result, NULL_WAVE)
+
+	Make data
+	CHECK_WAVE(data, NORMAL_WAVE)
+	WAVE/Z result = MakeWaveFree(data)
+	CHECK_WAVE(result, FREE_WAVE)
+	CHECK(WaveRefsEqual(data, result))
+
+	Make/FREE data
+	CHECK_WAVE(result, FREE_WAVE)
+	WAVE/Z result = MakeWaveFree(data)
+	CHECK_WAVE(result, FREE_WAVE)
+	CHECK(WaveRefsEqual(data, result))
+End
