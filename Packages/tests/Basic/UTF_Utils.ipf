@@ -4564,9 +4564,7 @@ End
 
 static Function LTNInvalidInput()
 
-	Execute/Z "SetIgorOption DisableThreadsafe=?"
-	NVAR threadingDisabled = V_flag
-	if(threadingDisabled == 1)
+	if(QueryIgorOption("DisableThreadsafe") == 1)
 		WAVE wv = ListToNumericWave("1;totallyLegitNumber;1;", ";")
 		CHECK_RTE(1001) // Str2num;expected number
 		CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
@@ -4578,9 +4576,7 @@ End
 
 static Function LTNInvalidInputIgnored()
 
-	Execute/Z "SetIgorOption DisableThreadsafe=?"
-	NVAR threadingDisabled = V_flag
-	if(threadingDisabled == 1)
+	if(QueryIgorOption("DisableThreadsafe") == 1)
 		WAVE wv = ListToNumericWave("1;totallyLegitNumber;1;", ";", ignoreErr = 1)
 		CHECK_NO_RTE()
 		CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
