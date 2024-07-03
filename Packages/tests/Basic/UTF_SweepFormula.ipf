@@ -9,7 +9,7 @@ Function/S CreateFakeSweepBrowser_IGNORE()
 
 	Display
 	win = S_name
-	DFREF dfr = GetDataFolderDFR()
+	DFREF dfr = GetUniqueTempPath()
 	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 	BSP_SetSweepBrowser(win, BROWSER_MODE_USER)
@@ -57,7 +57,7 @@ End
 /// Add 10 sweeps from various AD/DA channels to the fake databrowser
 static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeDatabrowserWindow(string win, string device, variable channelTypeNumeric, string lbnTextKey, string lbnTextValue)
 
-	variable i, j, channelNumber, sweepNumber, clampMode
+	variable i, j, channelNumber, sweepNumber, clampMode, channelType
 	string name, trace
 
 	numSweeps   = 10
@@ -66,14 +66,14 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	variable dataSize = 128
 	variable mode     = DATA_ACQUISITION_MODE
 
-	string channelType  = StringFromList(channelTypeNumeric, XOP_CHANNEL_NAMES)
-	string channelTypeC = channelType + "C"
+	string channelTypeStr  = StringFromList(channelTypeNumeric, XOP_CHANNEL_NAMES)
+	string channelTypeStrC = channelTypeStr + "C"
 
 	WAVE/T numericalKeys   = GetLBNumericalKeys(device)
 	WAVE   numericalValues = GetLBNumericalValues(device)
 	KillWaves numericalKeys, numericalValues
 
-	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
+	Make/FREE/T/N=(1, 1) keys = {{channelTypeStrC}}
 	Make/U/I/N=(numChannels) connections = {7, 5, 3, 1}
 	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
@@ -128,15 +128,19 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	for(i = 0; i < numSweeps; i += 1)
 		sweepNumber = i
 		for(j = 0; j < numChannels; j += 1)
-			name      = UniqueName("data", 1, 0)
-			trace     = "trace_" + name
+			channelNumber = config[j][%ChannelNumber]
+			channelType   = config[j][%ChannelType]
+
+			DFREF singleSweepFolder    = GetSingleSweepFolder(dfr, sweepNumber)
+			WAVE  singleColumnDataWave = GetDAQDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
+			Redimension/N=(dataSize) singleColumnDataWave
+
+			sprintf trace, "trace_%d_%s", sweepNumber, NameOfWave(singleColumnDataWave)
 			clampMode = mod(sweepNumber, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
-			Extract input, $name, q == i && r == j
-			WAVE wv = $name
-			AppendToGraph/W=$win wv/TN=$trace
-			channelNumber = channels[i][j]
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},         \
-			                         {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
+
+			AppendToGraph/W=$win singleColumnDataWave/TN=$trace
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},                              \
+			                         {"blah", GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelTypeStr, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
 		endfor
 	endfor
 
@@ -1802,9 +1806,9 @@ static Function TestPlotting()
 
 	variable minimum, maximum, i, pos
 	string win, gInfo, tmpStr, refStr
-	DFREF dfr
 
 	string sweepBrowser = CreateFakeSweepBrowser_IGNORE()
+	DFREF  dfr          = BSP_GetFolder(sweepBrowser, MIES_BSP_PANEL_FOLDER)
 	string winBase      = BSP_GetFormulaGraph(sweepBrowser)
 
 	string strArray2D         = "[range(10), range(10,20), range(10), range(10,20)]"
@@ -1827,7 +1831,6 @@ static Function TestPlotting()
 	Duplicate/FREE globalscale1D, scale1D
 
 	win = winBase + "_#Graph" + "0"
-	dfr = GetDataFolderDFR()
 
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray2D)
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
@@ -1924,15 +1927,7 @@ static Function TestPlotting()
 	CHECK_EQUAL_VAR(DimSize(wvX, ROWS), 2)
 
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_NORMAL); DoUpdate
-	win = winBase + "_0"
-	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
-	KillWindow/Z $win
-	win = winBase + "_1"
-	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
-	KillWindow/Z $win
-	win = winBase + "_2"
-	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
-	KillWindow/Z $win
+	DFREF dfr = SF_GetBrowserDF(sweepBrowser)
 
 	WAVE wvY0 = GetSweepFormulaY(dfr, 0)
 	WAVE wvX0 = GetSweepFormulaX(dfr, 0)
@@ -1946,6 +1941,16 @@ static Function TestPlotting()
 	CHECK_EQUAL_WAVES(wvY1, wvY1ref)
 	Make/FREE/D wvX1ref = {{7, 8}}
 	CHECK_EQUAL_WAVES(wvX1, wvX1ref)
+
+	win = winBase + "_0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	KillWindow/Z $win
+	win = winBase + "_1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	KillWindow/Z $win
+	win = winBase + "_2"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	KillWindow/Z $win
 
 	try
 		MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombinedPartial, dmMode = SF_DM_NORMAL)
