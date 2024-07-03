@@ -27,7 +27,7 @@ Function/S GetSweepFormulaGraph()
 	NewPanel/N=$win
 	win = S_name
 
-	DFREF workDFR = UniqueDataFolder(GetDataFolderDFR(), "psx_test")
+	DFREF workDFR = UniqueDataFolder(GetMiesPath(), "psx_test")
 
 	BSP_SetFolder(win, workDFR, MIES_PSX#PSX_GetUserDataForWorkingFolder())
 	MIES_PSX#PSX_MarkGraphForPSX(win)
@@ -125,9 +125,17 @@ End
 
 static Function [variable psxEventModCount, variable eventMarkerModCount, variable eventColorsModCount] GetModCounts(string win)
 
-	variable modCountColors, modCountMarkers
+	variable modCountColors, modCountMarkers, comboIndex
 
-	WAVE/Z/SDFR=$":psx_test:combo_0:" eventColors, eventMarker, psxEvent
+	win = GetCurrentWindow()
+	DFREF workDFR = BSP_GetFolder(win, MIES_PSX#PSX_GetUserDataForWorkingFolder(), versionCheck = 0)
+
+	comboIndex = 0
+	DFREF dfr = GetPSXFolderForCombo(workDFR, comboIndex)
+	CHECK(DataFolderExistsDFR(dfr))
+
+	WAVE/Z/SDFR=dfr psxEvent, eventColors, eventMarker
+
 	CHECK_WAVE(eventColors, NUMERIC_WAVE)
 	CHECK_WAVE(eventMarker, NUMERIC_WAVE)
 
