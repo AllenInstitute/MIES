@@ -23,7 +23,8 @@ Function/S GetSweepFormulaGraph()
 
 	numEvents = 5
 
-	NewPanel/N=$CleanupName (SF_PLOT_NAME_TEMPLATE, 0)
+	win = CleanupName(SF_PLOT_NAME_TEMPLATE, 0)
+	NewPanel/N=$win
 	win = S_name
 
 	DFREF workDFR = UniqueDataFolder(GetDataFolderDFR(), "psx_test")

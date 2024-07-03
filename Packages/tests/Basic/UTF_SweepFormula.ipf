@@ -45,7 +45,8 @@ static Function/S CreateFormulaGraphForBrowser(string browser)
 
 	string win
 
-	NewPanel/N=$CleanupName (SF_PLOT_NAME_TEMPLATE, 0)
+	win = CleanupName(SF_PLOT_NAME_TEMPLATE, 0)
+	NewPanel/N=$win
 	win = S_name
 
 	SetWindow $win, userData($SFH_USER_DATA_BROWSER)=browser
