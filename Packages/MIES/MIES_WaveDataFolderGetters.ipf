@@ -1362,10 +1362,7 @@ Function/WAVE GetLBTextualValues(device)
 	Make/T/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/WAVE=wv
 	wv = ""
 
-	SetDimLabel COLS, 0, SweepNum, wv
-	SetDimLabel COLS, 1, TimeStamp, wv
-	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
-	SetDimLabel COLS, 3, EntrySourceType, wv
+	SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
@@ -1877,10 +1874,7 @@ Function/WAVE GetLBNumericalValues(device)
 	if(!WaveExists(wv))
 		Make/D/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/WAVE=wv = NaN
 
-		SetDimLabel COLS, 0, SweepNum, wv
-		SetDimLabel COLS, 1, TimeStamp, wv
-		SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
-		SetDimLabel COLS, 3, EntrySourceType, wv
+		SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
 
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
@@ -1960,10 +1954,7 @@ Function/WAVE GetNumericalResultsValues()
 
 	Make/D/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) dfr:$name/WAVE=wv = NaN
 
-	SetDimLabel COLS, 0, SweepNum, wv
-	SetDimLabel COLS, 1, TimeStamp, wv
-	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
-	SetDimLabel COLS, 3, EntrySourceType, wv
+	SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
@@ -2057,10 +2048,7 @@ Function/WAVE GetTextualResultsValues()
 
 	Make/T/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) dfr:$name/WAVE=wv
 
-	SetDimLabel COLS, 0, SweepNum, wv
-	SetDimLabel COLS, 1, TimeStamp, wv
-	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
-	SetDimLabel COLS, 3, EntrySourceType, wv
+	SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
