@@ -3662,8 +3662,6 @@ Function TestDecimateWithMethodDec1()
 
 	DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = 1, lastRowInp = 15, firstColInp = 0, lastColInp = 0, factor = factor)
 	CHECK_EQUAL_WAVES(output, refOutput, mode = WAVE_DATA)
-	print output
-	print refoutput
 End
 
 Function TestDecimateWithMethodDec2()
