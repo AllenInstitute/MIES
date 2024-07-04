@@ -1383,6 +1383,7 @@ End
 /// - Reapplying the dimension labels as the old ones were cut off after 31 bytes
 /// - Making dimension labels valid liberal object names
 /// - Extending the row dimension to 6 for the key waves
+/// - Fixing empty column dimension labels in key waves
 static Function UpgradeLabNotebook(device)
 	string device
 
@@ -1592,6 +1593,26 @@ static Function UpgradeLabNotebook(device)
 		Redimension/N=(6, -1) textualKeys
 	endif
 	// END extending rows
+
+	// BEGIN fix missing column dimension labels in keyWaves
+	if(WaveVersionIsSmaller(numericalKeys, 74))
+		numCols = DimSize(numericalValues, COLS)
+		for(i = 0; i < numCols; i += 1)
+			if(IsEmpty(GetDimLabel(numericalValues, COLS, i)))
+				SetDimLabel COLS, i, $numericalKeys[0][i], numericalValues
+			endif
+		endfor
+	endif
+
+	if(WaveVersionIsSmaller(textualKeys, 74))
+		numCols = DimSize(textualValues, COLS)
+		for(i = 0; i < numCols; i += 1)
+			if(IsEmpty(GetDimLabel(textualValues, COLS, i)))
+				SetDimLabel COLS, i, $textualKeys[0][i], textualValues
+			endif
+		endfor
+	endif
+	// END fix missing column dimension labels in keyWaves
 
 	// we don't remove the wavenote entry as we might need to adapt the reading code
 	// in the future to handle labnotebooks with sweep rollback specially.
@@ -1846,6 +1867,52 @@ static Function SaveLBDescription_Impl(string name, variable version)
 	StoreWaveOnDisk(dup, name)
 End
 
+/// @brief Handle upgrades of the numerical/textual results logbooks in one step
+///
+/// This function is idempotent and must stay that way.
+///
+/// Supported upgrades:
+/// - Fixing empty column dimension labels in key waves
+static Function UpgradeResultsNotebook()
+
+	variable i, numCols
+
+	WAVE numericalResultValues = GetNumericalResultsValues()
+	WAVE textualResultValues   = GetTextualResultsValues()
+
+	DFREF             dfr                 = GetResultsFolder()
+	WAVE/Z/T/SDFR=dfr numericalResultKeys = $LBN_NUMERICALRESULT_KEYS_NAME
+	WAVE/Z/T/SDFR=dfr textualResultKeys   = $LBN_TEXTUALRESULT_KEYS_NAME
+	if(!WaveExists(numericalResultKeys))
+		WAVE/T numericalResultKeys = GetNumericalResultsKeys()
+	endif
+	if(!WaveExists(textualResultKeys))
+		WAVE/T textualResultKeys = GetTextualResultsKeys()
+	endif
+
+	ASSERT(DimSize(numericalResultKeys, COLS) == DimSize(numericalResultValues, COLS), "Non matching number of rows for numeric results logbook")
+	ASSERT(DimSize(textualResultKeys, COLS) == DimSize(textualResultValues, COLS), "Non matching number of rows for textual results logbook")
+
+	// BEGIN fix missing column dimension labels in keyWaves
+	if(WaveVersionIsSmaller(numericalResultKeys, 3))
+		numCols = DimSize(numericalResultValues, COLS)
+		for(i = 0; i < numCols; i += 1)
+			if(IsEmpty(GetDimLabel(numericalResultValues, COLS, i)))
+				SetDimLabel COLS, i, $numericalResultKeys[0][i], numericalResultValues
+			endif
+		endfor
+	endif
+	if(WaveVersionIsSmaller(textualResultKeys, 3))
+		numCols = DimSize(textualResultValues, COLS)
+		for(i = 0; i < numCols; i += 1)
+			if(IsEmpty(GetDimLabel(textualResultValues, COLS, i)))
+				SetDimLabel COLS, i, $textualResultKeys[0][i], textualResultValues
+			endif
+		endfor
+	endif
+	// END fix missing column dimension labels in keyWaves
+End
+
 /// @brief Return a wave reference to the numeric labnotebook keys
 ///
 /// Rows:
@@ -1909,6 +1976,7 @@ Function/WAVE GetNumericalResultsKeys()
 		return wv
 	elseif(WaveExists(wv))
 		// handle upgrade
+		UpgradeResultsNotebook()
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
@@ -2003,6 +2071,7 @@ Function/WAVE GetTextualResultsKeys()
 		return wv
 	elseif(WaveExists(wv))
 		// handle upgrade
+		UpgradeResultsNotebook()
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else

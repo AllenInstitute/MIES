@@ -38,8 +38,8 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 74
-Constant RESULTS_VERSION     = 2
+Constant LABNOTEBOOK_VERSION = 75
+Constant RESULTS_VERSION     = 3
 /// @}
 
 /// @name Analysis function versions
