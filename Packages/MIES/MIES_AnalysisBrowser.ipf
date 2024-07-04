@@ -656,7 +656,7 @@ static Function/WAVE AB_GetSweepsFromLabNotebook(dataFolder, device, [clean])
 	endif
 
 	DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
-	WAVE/SDFR=dfr numericalValues
+	WAVE/SDFR=dfr $LBN_NUMERICAL_VALUES_NAME
 
 	variable sweepCol = GetSweepColumn(numericalValues)
 	MatrixOP/FREE sweepNums = col(numericalValues, sweepCol)
@@ -1107,7 +1107,7 @@ static Function AB_LoadLabNotebookFromIgorLow(discLocation, path, device, device
 	// Supports old/new wavename mixes although these should not
 	// exist in the wild.
 
-	WAVE/Z/SDFR=$path numericalKeys
+	WAVE/Z/SDFR=$path $LBN_NUMERICAL_KEYS_NAME
 
 	if(!WaveExists(numericalKeys))
 		basepath = path + ":KeyWave"
@@ -1116,7 +1116,7 @@ static Function AB_LoadLabNotebookFromIgorLow(discLocation, path, device, device
 		endif
 	endif
 
-	WAVE/Z/SDFR=$path numericalValues
+	WAVE/Z/SDFR=$path $LBN_NUMERICAL_VALUES_NAME
 
 	if(!WaveExists(numericalValues))
 		basepath = path + ":settingsHistory"
@@ -1125,7 +1125,7 @@ static Function AB_LoadLabNotebookFromIgorLow(discLocation, path, device, device
 		endif
 	endif
 
-	WAVE/Z/SDFR=$path textualKeys
+	WAVE/Z/SDFR=$path $LBN_TEXTUAL_KEYS_NAME
 
 	if(!WaveExists(textualKeys))
 		basepath = path + ":TextDocKeyWave"
@@ -1134,7 +1134,7 @@ static Function AB_LoadLabNotebookFromIgorLow(discLocation, path, device, device
 		endif
 	endif
 
-	WAVE/Z/SDFR=$path textualValues
+	WAVE/Z/SDFR=$path $LBN_TEXTUAL_VALUES_NAME
 
 	if(!WaveExists(textualValues))
 		basepath = path + ":textDocumentation"
@@ -1213,10 +1213,10 @@ End
 static Function AB_checkLabNotebook(dfr)
 	DFREF dfr
 
-	WAVE/Z/SDFR=dfr numericalKeys
-	WAVE/Z/SDFR=dfr numericalValues
-	WAVE/Z/SDFR=dfr textualKeys
-	WAVE/Z/SDFR=dfr textualValues
+	WAVE/Z/SDFR=dfr $LBN_NUMERICAL_KEYS_NAME
+	WAVE/Z/SDFR=dfr $LBN_NUMERICAL_VALUES_NAME
+	WAVE/Z/SDFR=dfr $LBN_TEXTUAL_KEYS_NAME
+	WAVE/Z/SDFR=dfr $LBN_TEXTUAL_VALUES_NAME
 
 	if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
 		printf "Data is not in correct Format for %s\r", GetDataFolder(0, dfr)
@@ -1233,10 +1233,10 @@ static Function AB_updateLabelsInLabNotebook(dfr)
 
 	string str
 
-	WAVE/Z/SDFR=dfr numericalKeys
-	WAVE/Z/SDFR=dfr numericalValues
-	WAVE/Z/SDFR=dfr textualKeys
-	WAVE/Z/SDFR=dfr textualValues
+	WAVE/Z/SDFR=dfr $LBN_NUMERICAL_KEYS_NAME
+	WAVE/Z/SDFR=dfr $LBN_NUMERICAL_VALUES_NAME
+	WAVE/Z/SDFR=dfr $LBN_TEXTUAL_KEYS_NAME
+	WAVE/Z/SDFR=dfr $LBN_TEXTUAL_VALUES_NAME
 
 	str = GetDimLabel(textualValues, COLS, 0)
 	if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
@@ -2507,7 +2507,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	endif
 
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
-	WAVE/SDFR=dfr numericalValues
+	WAVE/SDFR=dfr $LBN_NUMERICAL_VALUES_NAME
 
 	SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configSweep, TTL_RESCALE_ON, 1, targetDFR = sweepFolder)
 	KillOrMoveToTrash(wv = sweepWave)
@@ -3479,8 +3479,8 @@ Function/S AB_GetStimsetList(string fileType, string discLocation, string dataFo
 	endif
 
 	DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
-	WAVE/SDFR=dfr   numericalValues
-	WAVE/SDFR=dfr/T textualValues
+	WAVE/SDFR=dfr   $LBN_NUMERICAL_VALUES_NAME
+	WAVE/SDFR=dfr/T $LBN_TEXTUAL_VALUES_NAME
 
 	return AB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
 End

@@ -29,6 +29,46 @@ static Constant PULSE_WAVE_VERSION = 4
 
 static StrConstant TP_SETTINGS_LABELS = "bufferSize;resistanceTol;sendToAllHS;baselinePerc;durationMS;amplitudeVC;amplitudeIC;autoTPEnable;autoAmpMaxCurrent;autoAmpVoltage;autoAmpVoltageRange;autoTPPercentage;autoTPInterval;autoTPCycleID"
 
+/// @brief Return a wave reference to the corresponding Logbook keys wave from an values wave input
+threadsafe Function/WAVE GetLogbookValuesFromKeys(WAVE keyWave)
+
+	string wName = NameOfWave(keyWave)
+	DFREF  dfr   = GetWavesDataFolderDFR(keyWave)
+
+	strswitch(wName)
+		case LBN_NUMERICAL_KEYS_NAME:
+			return dfr:$LBN_NUMERICAL_VALUES_NAME
+		case LBN_TEXTUAL_KEYS_NAME:
+			return dfr:$LBN_TEXTUAL_VALUES_NAME
+		case LBN_NUMERICALRESULT_KEYS_NAME:
+			return dfr:$LBN_NUMERICALRESULT_VALUES_NAME
+		case LBN_TEXTUALRESULT_KEYS_NAME:
+			return dfr:$LBN_TEXTUALRESULT_VALUES_NAME
+		default:
+			ASSERT_TS(0, "Can not resolve logbook values wave from key wave: " + wName)
+	endswitch
+End
+
+/// @brief Return a wave reference to the corresponding Logbook values wave from an keys wave input
+threadsafe Function/WAVE GetLogbookKeysFromValues(WAVE valuesWave)
+
+	string wName = NameOfWave(valuesWave)
+	DFREF  dfr   = GetWavesDataFolderDFR(valuesWave)
+
+	strswitch(wName)
+		case LBN_NUMERICAL_VALUES_NAME:
+			return dfr:$LBN_NUMERICAL_KEYS_NAME
+		case LBN_TEXTUAL_VALUES_NAME:
+			return dfr:$LBN_TEXTUAL_KEYS_NAME
+		case LBN_NUMERICALRESULT_VALUES_NAME:
+			return dfr:$LBN_NUMERICALRESULT_KEYS_NAME
+		case LBN_TEXTUALRESULT_VALUES_NAME:
+			return dfr:$LBN_TEXTUALRESULT_KEYS_NAME
+		default:
+			ASSERT_TS(0, "Can not resolve logbook keys wave from values wave: " + wName)
+	endswitch
+End
+
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
 /// Rows:
@@ -1301,7 +1341,7 @@ End
 Function/WAVE GetLBTextualValues(device)
 	string device
 
-	string newName = "textualValues"
+	string newName = LBN_TEXTUAL_VALUES_NAME
 	DFREF  newDFR  = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
@@ -1356,8 +1396,8 @@ static Function UpgradeLabNotebook(device)
 	// later than UpgradeWaveLocationAndGetIt from both key wave getters
 	//
 	// avoid recursion by checking the wave location first
-	WAVE/Z/T/SDFR=GetDevSpecLabNBFolder(device) numericalKeys
-	WAVE/Z/T/SDFR=GetDevSpecLabNBFolder(device) textualKeys
+	WAVE/Z/T/SDFR=GetDevSpecLabNBFolder(device) $LBN_NUMERICAL_KEYS_NAME
+	WAVE/Z/T/SDFR=GetDevSpecLabNBFolder(device) $LBN_TEXTUAL_KEYS_NAME
 
 	if(!WaveExists(numericalKeys))
 		WAVE/T numericalKeys = GetLBNumericalKeys(device)
@@ -1609,7 +1649,7 @@ Function/WAVE GetLBTextualKeys(device)
 	string device
 
 	variable versionOfNewWave = LABNOTEBOOK_VERSION
-	string   newName          = "textualKeys"
+	string   newName          = LBN_TEXTUAL_KEYS_NAME
 	DFREF    newDFR           = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
@@ -1664,7 +1704,7 @@ Function/WAVE GetLBNumericalKeys(device)
 
 	variable versionOfNewWave = LABNOTEBOOK_VERSION
 	/// @todo move the renaming stuff into one function for all four labnotebook waves
-	string newName = "numericalKeys"
+	string newName = LBN_NUMERICAL_KEYS_NAME
 	DFREF  newDFR  = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
@@ -1820,7 +1860,7 @@ End
 Function/WAVE GetLBNumericalValues(device)
 	string device
 
-	string newName = "numericalValues"
+	string newName = LBN_NUMERICAL_VALUES_NAME
 	DFREF  newDFR  = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
@@ -1860,12 +1900,12 @@ End
 /// - 4: Acquisition state, one of @ref AcquisitionStates
 /// - other columns are filled at runtime
 Function/WAVE GetNumericalResultsKeys()
-	string   name
-	variable versionOfNewWave
 
-	DFREF dfr = GetResultsFolder()
-	name = "numericalResultsKeys"
-	WAVE/T/Z/SDFR=dfr wv = $name
+	variable versionOfNewWave
+	string name = LBN_NUMERICALRESULT_KEYS_NAME
+
+	DFREF             dfr = GetResultsFolder()
+	WAVE/T/Z/SDFR=dfr wv  = $name
 	versionOfNewWave = RESULTS_VERSION
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -1904,11 +1944,11 @@ End
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
 Function/WAVE GetNumericalResultsValues()
-	string name
 
-	DFREF dfr = GetResultsFolder()
-	name = "numericalResultsValues"
-	WAVE/D/Z/SDFR=dfr wv = $name
+	string name = LBN_NUMERICALRESULT_VALUES_NAME
+
+	DFREF             dfr = GetResultsFolder()
+	WAVE/D/Z/SDFR=dfr wv  = $name
 
 	if(WaveExists(wv))
 		// upgrade will be handled in GetNumericalResultsKeys()
@@ -1957,12 +1997,12 @@ End
 ///                            The `X` is dynamic and the first argument passed.
 /// - Other columns are created and filled at runtime
 Function/WAVE GetTextualResultsKeys()
-	string   name
-	variable versionOfNewWave
 
-	DFREF dfr = GetResultsFolder()
-	name = "textualResultsKeys"
-	WAVE/T/Z/SDFR=dfr wv = $name
+	variable versionOfNewWave
+	string name = LBN_TEXTUALRESULT_KEYS_NAME
+
+	DFREF             dfr = GetResultsFolder()
+	WAVE/T/Z/SDFR=dfr wv  = $name
 	versionOfNewWave = RESULTS_VERSION
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -2001,11 +2041,11 @@ End
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
 Function/WAVE GetTextualResultsValues()
-	string name
 
-	DFREF dfr = GetResultsFolder()
-	name = "textualResultsValues"
-	WAVE/T/Z/SDFR=dfr wv = $name
+	string name = LBN_TEXTUALRESULT_VALUES_NAME
+
+	DFREF             dfr = GetResultsFolder()
+	WAVE/T/Z/SDFR=dfr wv  = $name
 
 	if(WaveExists(wv))
 		// upgrade will be handled in GetTextualResultsKeys()
@@ -5247,16 +5287,16 @@ Function/WAVE GetAnalysisResultsWave(string expFolder, variable type)
 
 	switch(type)
 		case LBN_NUMERICAL_VALUES:
-			name = "numericalResultsValues"
+			name = LBN_NUMERICALRESULT_VALUES_NAME
 			break
 		case LBN_NUMERICAL_KEYS:
-			name = "numericalResultsKeys"
+			name = LBN_NUMERICALRESULT_KEYS_NAME
 			break
 		case LBN_TEXTUAL_VALUES:
-			name = "textualResultsValues"
+			name = LBN_TEXTUALRESULT_VALUES_NAME
 			break
 		case LBN_TEXTUAL_KEYS:
-			name = "textualResultsKeys"
+			name = LBN_TEXTUALRESULT_KEYS_NAME
 			break
 		default:
 			ASSERT(0, "Invalid type")
@@ -5606,12 +5646,10 @@ End
 Function/WAVE GetAnalysLBNumericalValues(expFolder, device)
 	string expFolder, device
 
-	string newName = "numericalValues"
-
 	STRUCT WaveLocationMod p
 	p.dfr     = GetAnalysisLabNBFolder(expFolder, device)
 	p.name    = "numericValues"
-	p.newName = newName
+	p.newName = LBN_NUMERICAL_VALUES_NAME
 
 	return UpgradeWaveLocationAndGetIt(p)
 End
@@ -5620,12 +5658,10 @@ End
 Function/WAVE GetAnalysLBTextualValues(expFolder, device)
 	string expFolder, device
 
-	string newName = "textualValues"
-
 	STRUCT WaveLocationMod p
 	p.dfr     = GetAnalysisLabNBFolder(expFolder, device)
 	p.name    = "textValues"
-	p.newName = newName
+	p.newName = LBN_TEXTUAL_VALUES_NAME
 
 	return UpgradeWaveLocationAndGetIt(p)
 End
@@ -5634,12 +5670,10 @@ End
 Function/WAVE GetAnalysLBNumericalKeys(expFolder, device)
 	string expFolder, device
 
-	string newName = "numericalKeys"
-
 	STRUCT WaveLocationMod p
 	p.dfr     = GetAnalysisLabNBFolder(expFolder, device)
 	p.name    = "numericKeys"
-	p.newName = newName
+	p.newName = LBN_NUMERICAL_KEYS_NAME
 
 	return UpgradeWaveLocationAndGetIt(p)
 End
@@ -5648,12 +5682,10 @@ End
 Function/WAVE GetAnalysLBTextualKeys(expFolder, device)
 	string expFolder, device
 
-	string newName = "textualKeys"
-
 	STRUCT WaveLocationMod p
 	p.dfr     = GetAnalysisLabNBFolder(expFolder, device)
 	p.name    = "textKeys"
-	p.newName = newName
+	p.newName = LBN_TEXTUAL_KEYS_NAME
 
 	return UpgradeWaveLocationAndGetIt(p)
 End
