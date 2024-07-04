@@ -1361,10 +1361,10 @@ Function/WAVE GetLBTextualValues(device)
 
 	Make/T/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/WAVE=wv
 	wv = ""
-
 	SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
-
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	GetLBTextualKeys(device)
 
 	return wv
 End
@@ -1390,15 +1390,25 @@ static Function UpgradeLabNotebook(device)
 	variable numCols, i, col, numEntries, sourceCol
 	string list, key
 
-	WAVE   numericalValues = GetLBNumericalValues(device)
-	WAVE/T textualValues   = GetLBTextualValues(device)
-
 	// we only have to check the new place and name as we are called
 	// later than UpgradeWaveLocationAndGetIt from both key wave getters
 	//
 	// avoid recursion by checking the wave location first
-	WAVE/Z/T/SDFR=GetDevSpecLabNBFolder(device) $LBN_NUMERICAL_KEYS_NAME
-	WAVE/Z/T/SDFR=GetDevSpecLabNBFolder(device) $LBN_TEXTUAL_KEYS_NAME
+
+	DFREF dfr = GetDevSpecLabNBFolder(device)
+
+	WAVE/Z/SDFR=dfr   numericalValues = $LBN_NUMERICAL_VALUES_NAME
+	WAVE/Z/T/SDFR=dfr textualValues   = $LBN_TEXTUAL_VALUES_NAME
+
+	if(!WaveExists(numericalValues))
+		WAVE numericalValues = GetLBNumericalValues(device)
+	endif
+	if(!WaveExists(textualValues))
+		WAVE/T textualValues = GetLBTextualValues(device)
+	endif
+
+	WAVE/Z/T/SDFR=dfr numericalKeys = $LBN_NUMERICAL_KEYS_NAME
+	WAVE/Z/T/SDFR=dfr textualKeys   = $LBN_TEXTUAL_KEYS_NAME
 
 	if(!WaveExists(numericalKeys))
 		WAVE/T numericalKeys = GetLBNumericalKeys(device)
@@ -1877,10 +1887,16 @@ static Function UpgradeResultsNotebook()
 
 	variable i, numCols
 
-	WAVE numericalResultValues = GetNumericalResultsValues()
-	WAVE textualResultValues   = GetTextualResultsValues()
+	DFREF             dfr                   = GetResultsFolder()
+	WAVE/Z/SDFR=dfr   numericalResultValues = $LBN_NUMERICALRESULT_VALUES_NAME
+	WAVE/Z/T/SDFR=dfr textualResultValues   = $LBN_TEXTUALRESULT_VALUES_NAME
+	if(!WaveExists(numericalResultValues))
+		WAVE numericalResultValues = GetNumericalResultsValues()
+	endif
+	if(!WaveExists(textualResultValues))
+		WAVE/T textualResultValues = GetTextualResultsValues()
+	endif
 
-	DFREF             dfr                 = GetResultsFolder()
 	WAVE/Z/T/SDFR=dfr numericalResultKeys = $LBN_NUMERICALRESULT_KEYS_NAME
 	WAVE/Z/T/SDFR=dfr textualResultKeys   = $LBN_TEXTUALRESULT_KEYS_NAME
 	if(!WaveExists(numericalResultKeys))
@@ -1940,10 +1956,10 @@ Function/WAVE GetLBNumericalValues(device)
 
 	if(!WaveExists(wv))
 		Make/D/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/WAVE=wv = NaN
-
 		SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
-
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+		GetLBNumericalKeys(device)
 	endif
 
 	return wv
@@ -2021,10 +2037,10 @@ Function/WAVE GetNumericalResultsValues()
 	endif
 
 	Make/D/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) dfr:$name/WAVE=wv = NaN
-
 	SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
-
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	GetNumericalResultsKeys()
 
 	return wv
 End
@@ -2116,10 +2132,10 @@ Function/WAVE GetTextualResultsValues()
 	endif
 
 	Make/T/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) dfr:$name/WAVE=wv
-
 	SetDimensionLabels(wv, LABNOTEBOOK_KEYS_INITIAL, COLS)
-
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	GetTextualResultsKeys()
 
 	return wv
 End
