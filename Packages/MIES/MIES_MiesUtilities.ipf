@@ -664,8 +664,7 @@ threadsafe Function GetSweepColumn(labnotebookValues)
 	variable sweepCol
 
 	// new label
-	sweepCol = FindDimLabel(labnotebookValues, COLS, "SweepNum")
-
+	sweepCol = GetLogbookSettingsColumn(labnotebookValues, "SweepNum")
 	if(sweepCol >= 0)
 		return sweepCol
 	endif
@@ -673,15 +672,13 @@ threadsafe Function GetSweepColumn(labnotebookValues)
 	// Old label prior to 4caea03f
 	// was normally overwritten by SweepNum later in the code
 	// but not always as it turned out
-	sweepCol = FindDimLabel(labnotebookValues, COLS, "SweepNumber")
-
+	sweepCol = GetLogbookSettingsColumn(labnotebookValues, "SweepNumber")
 	if(sweepCol >= 0)
 		return sweepCol
 	endif
 
 	// text documentation waves
-	sweepCol = FindDimLabel(labnotebookValues, COLS, "Sweep #")
-
+	sweepCol = GetLogbookSettingsColumn(labnotebookValues, "Sweep #")
 	if(sweepCol >= 0)
 		return sweepCol
 	endif
@@ -1077,15 +1074,16 @@ threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceTyp
 
 	// entries before the first sweep have sweepNo == NaN
 	// we can't cache that
-	if(IsNaN(sweepNo))
-		return GetLastSettingNoCache(values, sweepNo, setting, entrySourceType)
-	elseif(!IsValidSweepNumber(sweepNo))
+	if(!IsValidSweepNumber(sweepNo) && !IsNaN(sweepNo))
 		return $""
 	endif
 
 	settingCol = GetLogbookSettingsColumn(values, setting)
 	if(settingCol < 0)
 		return $""
+	endif
+	if(IsNaN(sweepNo))
+		return GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, settingCol = settingCol)
 	endif
 
 	entrySourceTypeIndex = EntrySourceTypeMapper(entrySourceType)
@@ -1154,19 +1152,16 @@ End
 /// @param[in, out] last   [optional] see `first`
 /// @param[out] rowIndex   [optional] return the row where the setting could be
 ///                        found, otherwise it is set to #LABNOTEBOOK_MISSING_VALUE
+/// @param settingCol      [optional, default: determined by function] if the caller has already determined the setting column, it can set this argument
+///                        then GetLastSettingNoCache saves the find
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [first, last, rowIndex])
-	WAVE     values
-	variable sweepNo
-	string   setting
-	variable entrySourceType
-	variable &first, &last, &rowIndex
+threadsafe Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, string setting, variable entrySourceType, [variable &first, variable &last, variable &rowIndex, variable settingCol])
 
-	variable settingCol, numLayers, i, sweepCol, numEntries
+	variable numLayers, i, sweepCol, numEntries
 	variable firstValue, lastValue, sourceTypeCol, peakResistanceCol, pulseDurationCol
 	variable testpulseBlockLength, blockType, hasValidTPPulseDurationEntry
 	variable mode, sweepNoInLNB
@@ -1189,14 +1184,13 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 		ASSERT_TS(0, "Invalid params")
 	endif
 
-	numLayers  = DimSize(values, LAYERS)
-	settingCol = FindDimLabel(values, COLS, setting)
-
+	settingCol = ParamIsDefault(settingCol) ? FindDimLabel(values, COLS, setting) : settingCol
 	if(settingCol <= 0)
 		return $""
 	endif
 
-	sweepCol = GetSweepColumn(values)
+	numLayers = DimSize(values, LAYERS)
+	sweepCol  = GetSweepColumn(values)
 	if(mode == GET_LB_MODE_NONE || mode == GET_LB_MODE_WRITE)
 		FindRange(values, sweepCol, sweepNo, entrySourceType, firstValue, lastValue)
 

@@ -391,8 +391,9 @@ Function GetLastSWSWorksWithIndep()
 	WAVE/SDFR=dfr numericalValues_large
 
 	variable sweepNo
+	WAVE numericalValues = PrepareLBNNumericalValues(numericalValues_large)
 
-	WAVE/Z settings = GetLastSweepWithSetting(numericalValues_large, "TP Pulse Duration", sweepNo)
+	WAVE/Z settings = GetLastSweepWithSetting(numericalValues, "TP Pulse Duration", sweepNo)
 	CHECK_WAVE(settings, NUMERIC_WAVE)
 	CHECK(IsValidSweepNumber(sweepNo))
 	CHECK_EQUAL_VAR(settings[INDEP_HEADSTAGE], 104)
@@ -422,8 +423,9 @@ End
 
 Function LBNCache_InvalidSweep()
 
-	variable sweepNo         = 1000
-	WAVE     numericalValues = root:Labnotebook_CacheTest:numericalValues
+	variable sweepNo            = 1000
+	WAVE     numericalValuesSrc = root:Labnotebook_CacheTest:numericalValues
+	WAVE     numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
 
 	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(settings, NULL_WAVE)
@@ -434,8 +436,9 @@ End
 
 Function LBNCache_InvalidKey()
 
-	variable sweepNo         = 10
-	WAVE     numericalValues = root:Labnotebook_CacheTest:numericalValues
+	variable sweepNo            = 10
+	WAVE     numericalValuesSrc = root:Labnotebook_CacheTest:numericalValues
+	WAVE     numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
 
 	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "I DONT EXIST", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(settings, NULL_WAVE)
@@ -446,7 +449,9 @@ Function LBN_CacheCorrectSourceTypes1()
 	variable index
 	variable sweepNo = 1
 
-	WAVE numericalValues = root:Labnotebook_CacheTest:numericalValues
+	WAVE numericalValuesSrc = root:Labnotebook_CacheTest:numericalValues
+	WAVE numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
+
 	index = FindDimlabel(numericalValues, COLS, "DAC")
 
 	WAVE indexWave = GetLBIndexCache(numericalValues)
@@ -499,7 +504,8 @@ Function LBN_CacheCorrectSourceTypes2()
 	variable index
 	variable sweepNo = 1
 
-	WAVE numericalValues = root:Labnotebook_CacheTest:numericalValues
+	WAVE numericalValuesSrc = root:Labnotebook_CacheTest:numericalValues
+	WAVE numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
 	index = FindDimlabel(numericalValues, COLS, "DAC")
 
 	WAVE indexWave = GetLBIndexCache(numericalValues)
@@ -567,8 +573,8 @@ Function LBNCache_Reliable()
 	string key
 	variable numSweeps = 100
 
-	WAVE   numericalValues = root:Labnotebook_CacheTest:numericalValues
-	WAVE/T numericalKeys   = root:Labnotebook_CacheTest:numericalKeys
+	Duplicate root:Labnotebook_CacheTest:numericalValues, numericalValues
+	Duplicate/T root:Labnotebook_CacheTest:numericalKeys, numericalKeys
 
 	numKeys = DimSize(numericalKeys, COLS)
 
@@ -576,8 +582,8 @@ Function LBNCache_Reliable()
 
 	junkWave[1, numSweeps - 1][INITIAL_KEY_WAVE_COL_COUNT, numKeys - 1] = CompareLBNEntry(numericalValues, p, numericalKeys[0][q])
 
-	WAVE/T textualValues = root:Labnotebook_CacheTest:textualValues
-	WAVE/T textualKeys   = root:Labnotebook_CacheTest:textualKeys
+	Duplicate/T root:Labnotebook_CacheTest:textualValues, textualValues
+	Duplicate/T root:Labnotebook_CacheTest:textualKeys, textualKeys
 
 	numKeys = DimSize(textualValues, COLS)
 
@@ -654,7 +660,8 @@ Function SCid_InvalidWaveRef()
 
 	variable sweepNo = 1000
 
-	WAVE numericalValues = root:Labnotebook_CacheTest:second:numericalValues
+	WAVE numericalValuesSrc = root:Labnotebook_CacheTest:second:numericalValues
+	WAVE numericalValues    = PrepareLBNNumericalValues(numericalValuesSrc)
 
 	WAVE/Z settingsNoCache = MIES_AFH#AFH_GetSweepsFromSameSCINC(numericalValues, sweepNo, 0)
 	WAVE/Z settings        = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, 0)
