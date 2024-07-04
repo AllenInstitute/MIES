@@ -2613,7 +2613,7 @@ End
 ///
 /// Uses the "Operation Queue".
 Function ForceRecompile()
-	Execute/P/Q/Z "Silent 100"
+	Execute/P/Q "Silent 100"
 End
 
 /// @brief Parse a ISO8601 timestamp, e.g. created by GetISO8601TimeStamp(), and returns the number
