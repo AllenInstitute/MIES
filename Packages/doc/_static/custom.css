@@ -6,5 +6,7 @@ div.body {
   max-width: 100%;
 }
 
+.sphinxsidebarwrapper {  overflow-y: scroll; }
+
 /* change the cursor for zoomable images */
 a[data-lightbox] {cursor: zoom-in;}
