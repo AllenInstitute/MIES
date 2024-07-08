@@ -357,7 +357,7 @@ static Function TestEpochsGeneric(string device)
 	WAVE/T textualValues   = GetLBTextualValues(device)
 	WAVE   numericalValues = GetLBNumericalValues(device)
 
-	DFREF dfr = UniqueDataFolder(GetDataFolderDFR(), "epochTestSweepChannels")
+	DFREF dfr = GetUniqueTempPath()
 	SplitAndUpgradeSweep(numericalValues, sweepNo, sweep, config, TTL_RESCALE_ON, 1, targetDFR = dfr)
 
 	// basic check of internal epoch wave
@@ -434,7 +434,7 @@ static Function TestEpochsGeneric(string device)
 			Make/FREE/D/N=(DimSize(epochChannel, ROWS)) endT
 
 			// preserve epochs wave in CDF
-			Duplicate epochChannel, $("epochChannel_" + num2istr(channelType) + "_" + num2istr(channelNumber))
+			// Duplicate epochChannel, $("epochChannel_" + num2istr(channelType) + "_" + num2istr(channelNumber))
 
 			// does the latest end time exceed the 'acquiring part of the' DA wave?
 			endT[]        = str2num(epochChannel[p][1])

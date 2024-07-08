@@ -9,7 +9,7 @@ Function/S CreateFakeSweepBrowser_IGNORE()
 
 	Display
 	win = S_name
-	DFREF dfr = GetDataFolderDFR()
+	DFREF dfr = GetUniqueTempPath()
 	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 	BSP_SetSweepBrowser(win, BROWSER_MODE_USER)
@@ -45,7 +45,8 @@ static Function/S CreateFormulaGraphForBrowser(string browser)
 
 	string win
 
-	NewPanel/N=$CleanupName (SF_PLOT_NAME_TEMPLATE, 0)
+	win = CleanupName(SF_PLOT_NAME_TEMPLATE, 0)
+	NewPanel/N=$win
 	win = S_name
 
 	SetWindow $win, userData($SFH_USER_DATA_BROWSER)=browser
@@ -56,7 +57,7 @@ End
 /// Add 10 sweeps from various AD/DA channels to the fake databrowser
 static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeDatabrowserWindow(string win, string device, variable channelTypeNumeric, string lbnTextKey, string lbnTextValue)
 
-	variable i, j, channelNumber, sweepNumber, clampMode
+	variable i, j, channelNumber, sweepNumber, clampMode, channelType
 	string name, trace
 
 	numSweeps   = 10
@@ -65,16 +66,16 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	variable dataSize = 128
 	variable mode     = DATA_ACQUISITION_MODE
 
-	string channelType  = StringFromList(channelTypeNumeric, XOP_CHANNEL_NAMES)
-	string channelTypeC = channelType + "C"
+	string channelTypeStr  = StringFromList(channelTypeNumeric, XOP_CHANNEL_NAMES)
+	string channelTypeStrC = channelTypeStr + "C"
 
 	WAVE/T numericalKeys   = GetLBNumericalKeys(device)
 	WAVE   numericalValues = GetLBNumericalValues(device)
 	KillWaves numericalKeys, numericalValues
 
-	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
-	Make/U/I/N=(numChannels) connections = {7, 5, 3, 1}
-	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
+	Make/FREE/T/N=(1, 1) keys = {{channelTypeStrC}}
+	Make/FREE/U/I/N=(numChannels) connections = {7, 5, 3, 1}
+	Make/FREE/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) clampModeValues = NaN
 	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = lbnTextValue
@@ -117,6 +118,7 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 
 		PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
 		win = GetCurrentWindow()
+
 		REQUIRE_EQUAL_VAR(MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber), 0)
 	endfor
 
@@ -127,15 +129,19 @@ static Function [variable numSweeps, variable numChannels, WAVE/U/I channels] Fi
 	for(i = 0; i < numSweeps; i += 1)
 		sweepNumber = i
 		for(j = 0; j < numChannels; j += 1)
-			name      = UniqueName("data", 1, 0)
-			trace     = "trace_" + name
+			channelNumber = config[j][%ChannelNumber]
+			channelType   = config[j][%ChannelType]
+
+			DFREF singleSweepFolder    = GetSingleSweepFolder(dfr, sweepNumber)
+			WAVE  singleColumnDataWave = GetDAQDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
+			Redimension/N=(dataSize) singleColumnDataWave
+
+			sprintf trace, "trace_%d_%s", sweepNumber, NameOfWave(singleColumnDataWave)
 			clampMode = mod(sweepNumber, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
-			Extract input, $name, q == i && r == j
-			WAVE wv = $name
-			AppendToGraph/W=$win wv/TN=$trace
-			channelNumber = channels[i][j]
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},         \
-			                         {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
+
+			AppendToGraph/W=$win singleColumnDataWave/TN=$trace
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},                              \
+			                         {"blah", GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelTypeStr, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
 		endfor
 	endfor
 
@@ -809,7 +815,7 @@ static Function TestOperationMinMax()
 	TestOperationMinMaxHelper(win, "{\"min\":[[1,2]]}", "min([1,2])", 1)
 
 	// check limit to 2d waves for min, max, avg
-	Make/O/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
+	Make/D/N=(2, 2, 2) input = p + 2 * q + 4 * r
 	wavePath = GetWavesDataFolder(input, 2)
 	str      = "min(wave(" + wavePath + "))"
 	try
@@ -834,6 +840,8 @@ static Function TestOperationMinMax()
 	catch
 		PASS()
 	endtry
+
+	KillWaves input
 End
 
 static Function TestOperationText()
@@ -856,9 +864,8 @@ static Function TestOperationText()
 	Make/FREE/T refData = {{"5.1234567", "2.0000000"}, {"1.0000000", "3.0000000"}}
 	REQUIRE_EQUAL_WAVES(refData, output, mode = WAVE_DATA)
 
-	KillWaves/Z testData
 	// check copy of wave note on text
-	Make/O/D/N=1 testData
+	Make/D/N=1 testData
 	strRef = "WaveNoteCopyTest"
 	Note/K testData, strRef
 	wavePath = GetWavesDataFolder(testData, 2)
@@ -866,6 +873,8 @@ static Function TestOperationText()
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	str = note(output)
 	CHECK_EQUAL_STR(strRef, str)
+
+	KillWaves testData
 End
 
 static Function TestOperationLog()
@@ -909,11 +918,13 @@ static Function TestOperationLog()
 	Make/FREE wRef = {1, 2}
 	CHECK_EQUAL_WAVES(wRef, output, mode = WAVE_DATA | DIMENSION_SIZES)
 
-	Make/O testData = {1, 2}
+	Make testData = {1, 2}
 	str = "log(wave(" + GetWavesDataFolder(testData, 2) + "))"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Duplicate/FREE testData, refData
 	CHECK_EQUAL_WAVES(refData, output, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	KillWaves/Z testData
 End
 
 static Function TestOperationButterworth()
@@ -1049,6 +1060,7 @@ static Function TestOperationDifferentiateIntegrate()
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=10/U/I/FREE sourcewave = p^2
 	Differentiate/EP=0 sourcewave / D=testwave
+	MakeWaveFree(testwave)
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
 	dataType = JWN_GetStringFromWaveNote(dataRef, SF_META_DATATYPE)
@@ -1105,9 +1117,8 @@ static Function TestOperationDifferentiateIntegrate()
 	Deletepoints/M=(ROWS) 0, 1, input, output
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
 
-	KillWaves/Z testData
 	// check copy of wave note on integrate
-	Make/O/D/N=1 testData
+	Make/D/N=1 testData
 	strRef = "WaveNoteCopyTest"
 	Note/K testData, strRef
 	wavePath = GetWavesDataFolder(testData, 2)
@@ -1115,9 +1126,10 @@ static Function TestOperationDifferentiateIntegrate()
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	str = note(output)
 	CHECK_EQUAL_STR(strRef, str)
+	KillWaves/Z testData
 
 	// check copy of wave note on derivative
-	Make/O/D/N=2 testData
+	Make/D/N=2 testData
 	strRef = "WaveNoteCopyTest"
 	Note/K testData, strRef
 	wavePath = GetWavesDataFolder(testData, 2)
@@ -1125,6 +1137,7 @@ static Function TestOperationDifferentiateIntegrate()
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	str = note(output)
 	CHECK_EQUAL_STR(strRef, str)
+	KillWaves/Z testData
 End
 
 static Function TestOperationArea()
@@ -1155,7 +1168,7 @@ static Function TestOperationArea()
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	// does operate column wise
-	Make/N=(5, 2) input
+	Make/FREE/N=(5, 2) input
 	input[][0] = p
 	input[][1] = p + 1
 	array      = JSON_New()
@@ -1189,13 +1202,13 @@ static Function TestOperationSetscale()
 
 	str = "setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"
 	WAVE wv = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	Make/N=(10) waveX = p
+	Make/N=(10)/FREE waveX = p
 	SetScale x, 0, 2, "unit", waveX
 	REQUIRE_EQUAL_WAVES(waveX, wv, mode = WAVE_DATA)
 
 	str = "setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"
 	WAVE wv = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	Make/N=(10, 10) waveXY = p + q
+	Make/N=(10, 10)/FREE waveXY = p + q
 	SetScale/P x, 0, 2, "unitX", waveXY
 	SetScale/P y, 0, 4, "unitX", waveXY
 	REQUIRE_EQUAL_WAVES(waveXY, wv, mode = WAVE_DATA | WAVE_SCALING | DATA_UNITS)
@@ -1230,6 +1243,8 @@ static Function TestOperationSetscale()
 	strRef    = "1,2,0"
 	dataScale = StringByKey("FULLSCALE", WaveInfo(data, 0))
 	REQUIRE_EQUAL_STR(strRef, dataScale)
+
+	KillWaves/Z input
 End
 
 static Function TestOperationRange()
@@ -1575,8 +1590,7 @@ static Function TestOperationWave()
 
 	win = GetDataBrowserWithData()
 
-	KillWaves/Z wave0
-	Make/O/N=(10) wave0 = p
+	Make/N=(10) wave0 = p
 
 	str = "wave(wave0)"
 	WAVE wave1 = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
@@ -1592,6 +1606,8 @@ static Function TestOperationWave()
 	str = "wave()"
 	WAVE/Z wave1 = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	CHECK(!WaveExists(wave1))
+
+	KillWaves/Z wave0
 End
 
 static Function/WAVE TestOperationTPBase_TPSS_TPInst_FormulaGetter()
@@ -1771,8 +1787,8 @@ static Function TestVariousFunctions([str])
 	twoDResult = StringFromList(2, str, ":")
 
 	KillWaves/Z oneD, twoD
-	Make/D/N=5 oneD = p
-	Make/D/N=(5, 2) twoD = p + q
+	Make/FREE/D/N=5 oneD = p
+	Make/FREE/D/N=(5, 2) twoD = p + q
 
 	jsonIDOneD = JSON_NEW()
 	JSON_AddWave(jsonIDOneD, "", oneD)
@@ -1782,7 +1798,7 @@ static Function TestVariousFunctions([str])
 	// 1D
 	str = func + "(" + JSON_Dump(jsonIDOneD) + ")"
 	WAVE output1D = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	Execute "Make/O output1D_mo = {" + oneDResult + "}"
+	Execute "Make output1D_mo = {" + oneDResult + "}"
 	WAVE output1D_mo
 
 	CHECK_EQUAL_WAVES(output1D, output1D_mo, mode = WAVE_DATA, tol = 1e-8)
@@ -1790,10 +1806,12 @@ static Function TestVariousFunctions([str])
 	// 2D
 	str = func + "(" + JSON_Dump(jsonIDTwoD) + ")"
 	WAVE output2D = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	Execute "Make/O output2D_mo = {" + twoDResult + "}"
+	Execute "Make output2D_mo = {" + twoDResult + "}"
 	WAVE output2D_mo
 
 	CHECK_EQUAL_WAVES(output2D, output2D_mo, mode = WAVE_DATA, tol = 1e-8)
+
+	KillWaves/Z output1D_mo, output2D_mo
 End
 
 static Function TestPlotting()
@@ -1801,9 +1819,9 @@ static Function TestPlotting()
 
 	variable minimum, maximum, i, pos
 	string win, gInfo, tmpStr, refStr
-	DFREF dfr
 
 	string sweepBrowser = CreateFakeSweepBrowser_IGNORE()
+	DFREF  dfr          = BSP_GetFolder(sweepBrowser, MIES_BSP_PANEL_FOLDER)
 	string winBase      = BSP_GetFormulaGraph(sweepBrowser)
 
 	string strArray2D         = "[range(10), range(10,20), range(10), range(10,20)]"
@@ -1826,7 +1844,6 @@ static Function TestPlotting()
 	Duplicate/FREE globalscale1D, scale1D
 
 	win = winBase + "_#Graph" + "0"
-	dfr = GetDataFolderDFR()
 
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray2D)
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
@@ -1923,15 +1940,7 @@ static Function TestPlotting()
 	CHECK_EQUAL_VAR(DimSize(wvX, ROWS), 2)
 
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_NORMAL); DoUpdate
-	win = winBase + "_0"
-	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
-	KillWindow/Z $win
-	win = winBase + "_1"
-	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
-	KillWindow/Z $win
-	win = winBase + "_2"
-	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
-	KillWindow/Z $win
+	DFREF dfr = SF_GetBrowserDF(sweepBrowser)
 
 	WAVE wvY0 = GetSweepFormulaY(dfr, 0)
 	WAVE wvX0 = GetSweepFormulaX(dfr, 0)
@@ -1945,6 +1954,16 @@ static Function TestPlotting()
 	CHECK_EQUAL_WAVES(wvY1, wvY1ref)
 	Make/FREE/D wvX1ref = {{7, 8}}
 	CHECK_EQUAL_WAVES(wvX1, wvX1ref)
+
+	win = winBase + "_0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	KillWindow/Z $win
+	win = winBase + "_1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	KillWindow/Z $win
+	win = winBase + "_2"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	KillWindow/Z $win
 
 	try
 		MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombinedPartial, dmMode = SF_DM_NORMAL)
@@ -2053,7 +2072,7 @@ End
 static Function TestOperationSelect()
 
 	variable numChannels, sweepNo
-	string str, chanList
+	string str, chanList, wvList
 
 	variable numSweeps = 2
 	variable dataSize  = 10
@@ -2377,6 +2396,10 @@ static Function TestOperationSelect()
 	str = "select(channels(DA0),sweeps(),displayed,vc)"
 	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	CHECK_WAVE(data, NULL_WAVE)
+
+	// workaround permanent waves being present
+	wvList = GetListOfObjects(GetDataFolderDFR(), "data*")
+	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, wvList)
 End
 
 static Function CheckSweepsFromData(WAVE/WAVE dataWref, WAVE sweepRef, variable numResults, WAVE chanIndex, [WAVE ranges])
@@ -2492,7 +2515,7 @@ End
 static Function TestOperationData()
 
 	variable i, j, numChannels, sweepNo, sweepCnt, numResultsRef, clampMode
-	string str, strSelect, epochStr, name, trace
+	string str, strSelect, epochStr, name, trace, wvList
 	string win, device
 	variable mode              = DATA_ACQUISITION_MODE
 	variable numSweeps         = 2
@@ -2786,6 +2809,10 @@ static Function TestOperationData()
 	catch
 		PASS()
 	endtry
+
+	// workaround permanent waves being present
+	wvList = GetListOfObjects(GetDataFolderDFR(), "data*")
+	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, wvList)
 End
 
 Function/WAVE FakeSweepDataGeneratorPS(WAVE sweep, variable numChannels)
@@ -3763,7 +3790,7 @@ End
 
 static Function TestParseFitConstraints()
 
-	Make/D/N=0 emptyWave
+	Make/FREE/D/N=0 emptyWave
 
 	[WAVE holdWave, WAVE initialWave] = MIES_SF#SF_ParseFitConstraints($"", 0)
 	CHECK_EQUAL_WAVES(holdWave, emptyWave)

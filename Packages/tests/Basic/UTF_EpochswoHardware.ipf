@@ -30,8 +30,8 @@ static Function [WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] 
 
 	[key, keyText] = PrepareLBN_IGNORE(device)
 
-	Make/N=(1, 1)/T keys = "Epochs"
-	Make/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
+	Make/FREE/N=(1, 1)/T keys = "Epochs"
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
 	values[0][0][0] = EP_EpochWaveToStr(epochsWave, 2, XOP_CHANNEL_TYPE_DAC)
 	values[0][0][1] = EP_EpochWaveToStr(epochsWave, 3, XOP_CHANNEL_TYPE_DAC)
 

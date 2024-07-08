@@ -355,37 +355,28 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 End
 
 /// @brief Return a list of all objects of the given type from dfr
-///
-/// Does not work for datafolders which have a comma (`,`) in them.
 threadsafe static Function/S GetAllObjects(dfr, typeFlag)
 	DFREF    dfr
 	variable typeFlag
 
 	string list
 
-	DFREF oldDFR = GetDataFolderDFR()
-
-	SetDataFolder dfr
-
 	switch(typeFlag)
 		case COUNTOBJECTS_WAVES:
-			list = WaveList("*", ";", "")
+			list = WaveList("*", ";", "", dfr)
 			break
 		case COUNTOBJECTS_VAR:
-			list = VariableList("*", ";", 11)
+			list = VariableList("*", ";", 4, dfr) + VariableList("*", ";", 5, dfr)
 			break
 		case COUNTOBJECTS_STR:
-			list = StringList("*", ";")
+			list = StringList("*", ";", dfr)
 			break
 		case COUNTOBJECTS_DATAFOLDER:
-			list = DataFolderList("*", ";")
+			list = DataFolderList("*", ";", dfr)
 			break
 		default:
-			SetDataFolder oldDFR
 			ASSERT_TS(0, "Invalid type flag")
 	endswitch
-
-	SetDataFolder oldDFR
 
 	return list
 End
@@ -2622,7 +2613,7 @@ End
 ///
 /// Uses the "Operation Queue".
 Function ForceRecompile()
-	Execute/P/Q/Z "Silent 100"
+	Execute/P/Q "Silent 100"
 End
 
 /// @brief Parse a ISO8601 timestamp, e.g. created by GetISO8601TimeStamp(), and returns the number
@@ -3229,7 +3220,11 @@ End
 
 /// @brief Turn a persistent wave into a free wave
 Function/WAVE MakeWaveFree(wv)
-	WAVE wv
+	WAVE/Z wv
+
+	if(!WaveExists(wv))
+		return $""
+	endif
 
 	DFREF dfr = NewFreeDataFolder()
 
@@ -7078,4 +7073,18 @@ End
 /// @brief Clear the given datafolder reference
 threadsafe Function DFREFClear(DFREF &dfr)
 	DFREF dfr = $""
+End
+
+/// @brief Allows to remove V_flag which will be present after using the operation queue with `/Z`
+///
+/// Example usage:
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Execute/P/Q/Z "SomeFunction()"
+/// 	CleanupOperationQueueResult()
+/// \endrst
+///
+Function CleanupOperationQueueResult()
+	Execute/P/Q "KillVariables/Z V_flag"
 End

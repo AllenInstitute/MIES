@@ -501,6 +501,9 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 		ASSERT(0, "CurveFit failed with error: " + msg)
 	endtry
 
+	MakeWaveFree($"W_Sigma")
+	MakeWaveFree($"W_FitConstants")
+
 	sprintf msg, "Fit result: tau %g, V_FitError %g, V_FitQuitReason %g\r", coefWave[2], V_FitError, V_FitQuitReason
 	DEBUGPRINT(msg)
 

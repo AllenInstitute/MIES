@@ -2698,6 +2698,7 @@ Function AB_BrowserStartupSettings()
 
 	Execute/P/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
+	CleanupOperationQueueResult()
 End
 
 /// @brief Button "Expand all"

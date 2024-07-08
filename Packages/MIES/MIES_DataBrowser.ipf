@@ -258,6 +258,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	Execute/P/Z "DoWindow/R " + DATABROWSER_WINDOW_NAME
 	Execute/P/Q/Z "COMPILEPROCEDURES "
+	CleanupOperationQueueResult()
 End
 
 Function/S DB_GetMainGraph(win)

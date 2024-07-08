@@ -12,7 +12,7 @@ End
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
-	TestCaseBeginCommon()
+	TestCaseBeginCommon(name)
 
 	MoveStimsetsIntoPlace()
 End
@@ -255,7 +255,7 @@ static Function AbortsWithInvalidWaveType()
 	CHECK_EMPTY_STR(params)
 
 	try
-		Make/WAVE wv
+		Make/WAVE/FREE wv
 		AFH_AddAnalysisParameter(stimSet, "ab", wv = wv); AbortOnRTE
 		FAIL()
 	catch
@@ -278,7 +278,7 @@ static Function AbortsWithEmptyWave()
 	CHECK_EMPTY_STR(params)
 
 	try
-		Make/N=0 wv
+		Make/N=0/FREE wv
 		AFH_AddAnalysisParameter(stimSet, "ab", wv = wv); AbortOnRTE
 		FAIL()
 	catch

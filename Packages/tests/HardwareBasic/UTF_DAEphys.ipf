@@ -177,8 +177,8 @@ Function CheckStartupSettings([str])
 
 	CreateLockedDAEphys(str, unlockedDevice = unlockedDevice)
 
-	Duplicate/O GetDA_EphysGuiStateNum(str), guiStateNumRef
-	Duplicate/O GetDA_EphysGuiStateTxT(str), guiStateTxTRef
+	Duplicate/FREE GetDA_EphysGuiStateNum(str), guiStateNumRef
+	Duplicate/FREE GetDA_EphysGuiStateTxT(str), guiStateTxTRef
 
 	PGC_SetAndActivateControl(str, "button_SettingsPlus_unLockDevic")
 	unlockedDevice = GetCurrentWindow()
@@ -230,8 +230,8 @@ Function CheckStartupSettings([str])
 
 	CreateLockedDAEphys(str, unlockedDevice = unlockedDevice)
 
-	Duplicate/O GetDA_EphysGuiStateNum(str), guiStateNumNew
-	Duplicate/O GetDA_EphysGuiStateTxT(str), guiStateTxTNew
+	Duplicate/FREE GetDA_EphysGuiStateNum(str), guiStateNumNew
+	Duplicate/FREE GetDA_EphysGuiStateTxT(str), guiStateTxTNew
 
 	CHECK_EQUAL_WAVES(guiStateNumRef, guiStateNumNew, mode = WAVE_DATA | DIMENSION_LABELS)
 	CHECK_EQUAL_WAVES(guiStateTxTRef, guiStateTxTNew, mode = WAVE_DATA | DIMENSION_LABELS)
@@ -395,4 +395,7 @@ static Function ComplainsAboutVanishingEpoch_REENTRY([STRUCT IUTF_MDATA &md])
 
 	WAVE/T/Z e1 = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "E1")
 	CHECK_WAVE(e1, FREE_WAVE | TEXT_WAVE)
+
+	// remove left over from ???
+	KillVariables/Z V_flag
 End

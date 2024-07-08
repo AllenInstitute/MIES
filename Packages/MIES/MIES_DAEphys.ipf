@@ -790,6 +790,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	Execute/P/Z "DoWindow/R " + BASE_WINDOW_NAME
 	Execute/P/Q/Z "COMPILEPROCEDURES "
+	CleanupOperationQueueResult()
 End
 
 Function DAP_WindowHook(s)

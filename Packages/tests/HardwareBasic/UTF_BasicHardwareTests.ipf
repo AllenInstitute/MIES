@@ -1910,6 +1910,9 @@ static Function ExportStimsetsAndRoundtripThem([variable var])
 
 		CHECK_EQUAL_WAVES(oldWave, newWave)
 	endfor
+
+	KillDataFolder/Z old
+	KillDataFolder/Z new
 End
 
 static Function ExportIntoNWBSweepBySweep_PreAcq(string device)
@@ -2457,4 +2460,7 @@ static Function RoundTripDepStimsetsRecursionThroughSweeps_REENTRY([STRUCT IUTF_
 	WaveStats/Q baseSet
 	CHECK_EQUAL_VAR(V_max, amplitude)
 	CHECK_EQUAL_VAR(V_min, amplitude)
+
+	KillVariables/Z m_amplitude
+	KillStrings/Z m_setNameB, m_refList, m_customWavePath
 End

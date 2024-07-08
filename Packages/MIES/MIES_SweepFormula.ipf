@@ -1623,9 +1623,8 @@ End
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
 /// @param formula formula to plot
-/// @param dfr     [optional, default current] working dataFolder
 /// @param dmMode  [optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged
-static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
+static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode])
 
 	string trace, customLegend
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
@@ -1640,9 +1639,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
 	ASSERT(winDisplaymode == SF_DM_NORMAL || winDisplaymode == SF_DM_SUBWINDOWS, "Invalid display mode.")
 
-	if(ParamIsDefault(dfr))
-		dfr = GetDataFolderDFR()
-	endif
+	DFREF dfr = SF_GetBrowserDF(graph)
 
 	WAVE/T graphCode = SF_SplitCodeToGraphs(formula)
 
@@ -2547,8 +2544,6 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 				break
 			endif
 
-			DFREF dfr = SF_GetBrowserDF(mainPanel)
-
 			SVAR result = $GetSweepFormulaParseErrorMessage()
 			result = ""
 
@@ -2561,9 +2556,10 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 				if(IsEmpty(preProcCode))
 					break
 				endif
-				SF_FormulaPlotter(mainPanel, preProcCode, dfr = dfr)
+				SF_FormulaPlotter(mainPanel, preProcCode)
 
-				SVAR lastCode = $GetLastSweepFormulaCode(dfr)
+				DFREF dfr      = SF_GetBrowserDF(mainPanel)
+				SVAR  lastCode = $GetLastSweepFormulaCode(dfr)
 				lastCode = preProcCode
 
 				[WAVE/T keys, WAVE/T values] = SFH_CreateResultsWaveWithCode(mainPanel, rawCode)
@@ -2985,6 +2981,9 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 				endif
 				fitResults[j] = fitResult
 			endfor
+
+			MakeWaveFree($"W_sigma")
+			MakeWaveFree($"W_fitConstants")
 
 #ifdef AUTOMATED_TESTING
 			JWN_SetWaveInWaveNote(fitResults, "/begintrails", beginTrails)
@@ -4286,8 +4285,11 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 #else
 	FuncFit/Q SF_LineNoiseFit, kwCWave=wCoef, input(minFreq, maxFreq)/C=wConstraints; err = GetRTError(1)
 #endif
+	MakeWaveFree($"W_sigma")
+
 	Redimension/N=1 input
 	input[0] = 0
+
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
 		SetScale/P x, ratioFreq, 1, WaveUnits(input, ROWS), input
@@ -4295,6 +4297,7 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 #else
 	SetScale/P x, wCoef[3], 1, WaveUnits(input, ROWS), input
 #endif
+
 	SetScale/P d, 0, 1, "power ratio", input
 
 	if(err)
@@ -5590,14 +5593,8 @@ Function/WAVE SF_OperationFitImpl(WAVE xData, WAVE yData, string fitFunc, WAVE h
 		return $""
 	endif
 
-	WAVE/Z fit = fit__free_
-
-	if(WaveExists(fit))
-		MakeWaveFree(fit)
-	endif
-
-	WAVE W_sigma
-	MakeWaveFree(W_sigma)
+	WAVE W_sigma = MakeWaveFree($"W_sigma")
+	WAVE fit     = MakeWaveFree($"fit__free_")
 
 	JWN_CreatePath(fit, SF_META_USER_GROUP + SF_META_FIT_PARAMETER)
 	JWN_SetWaveInWaveNote(fit, SF_META_USER_GROUP + SF_META_FIT_PARAMETER, params)

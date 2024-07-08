@@ -57,8 +57,7 @@ static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 			level = V_max * AR_MIN_RANGE_FACTOR
 
 			FindLevels/Q wv, level
-			WAVE W_FindLevels
-			WAVE posLevels = MakeWaveFree(W_FindLevels)
+			WAVE posLevels = MakeWaveFree($"W_FindLevels")
 
 			index = GetNumberFromWaveNote(ranges, NOTE_INDEX)
 			total = index + V_LevelsFound
@@ -75,8 +74,7 @@ static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 			level = V_min * AR_MIN_RANGE_FACTOR
 
 			FindLevels/Q wv, level
-			WAVE W_FindLevels
-			WAVE negLevels = MakeWaveFree(W_FindLevels)
+			WAVE negLevels = MakeWaveFree($"W_FindLevels")
 
 			index = GetNumberFromWaveNote(ranges, NOTE_INDEX)
 			total = index + V_LevelsFound

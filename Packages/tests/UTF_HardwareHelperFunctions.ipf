@@ -63,7 +63,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	RegisterReentryFunction(name)
 
-	TestCaseBeginCommon()
+	TestCaseBeginCommon(name)
 
 	MoveStimsetsIntoPlace()
 
@@ -181,7 +181,7 @@ Function TEST_CASE_END_OVERRIDE(name)
 		endif
 	endif
 
-	TestCaseEndCommon(restartAsyncFramework = 1)
+	TestCaseEndCommon(name, restartAsyncFramework = 1)
 End
 
 /// @brief Checks user epochs for consistency
@@ -950,6 +950,8 @@ static Function TestSweepReconstruction_IGNORE(string device)
 			endfor
 		endif
 	endfor
+
+	KillDataFolder/Z deviceDataBorkedUp
 End
 
 Function [string baseFolder, string nwbFile] GetUniqueNWBFileForExport(variable nwbVersion)

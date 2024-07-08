@@ -404,6 +404,8 @@ static Function [WAVE coef, WAVE fit] PSX_FitHistogram(WAVE input)
 		return [$"", $""]
 	endif
 
+	MakeWaveFree($"W_sigma")
+
 	return [coefWave, MakeWaveFree(fit)]
 End
 
@@ -622,11 +624,8 @@ static Function PSX_FitEventDecay(WAVE sweepDataFiltOff, WAVE psxEvent, variable
 
 	AssertOnAndClearRTError()
 	CurveFit/Q/N=1/NTHR=1/M=0/W=2 exp_XOffset, kwCWave=coefWave, sweepDataFiltOff(post_min_t, n_min_t)/D/C=constraints; err = GetRTError(1)
-	WAVE/Z fit = fit__free_
 
-	if(WaveExists(fit))
-		MakeWaveFree(fit)
-	endif
+	WAVE fit = MakeWaveFree($"fit__free_")
 
 	SetDataFolder currDFR
 
@@ -1276,6 +1275,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 						AssertonAndClearRTError()
 						StatsQuantiles/Q/Z resultsRawClean; err = GetRTError(1)
+						MakeWaveFree($"W_StatsQuantiles")
 
 						if(!err)
 							results[1] = V_Median
@@ -5154,6 +5154,7 @@ Function PSX_PlotStartupSettings()
 
 	Execute/P/Q/Z "DoWindow/R " + PSX_PANEL_MACRO
 	Execute/P/Q/Z "COMPILEPROCEDURES "
+	CleanupOperationQueueResult()
 End
 
 /// @brief Apply the macro `mac` onto the panel `win`
@@ -5194,4 +5195,7 @@ Function PSX_ApplyMacroToExistingPanel(string win, string mac)
 	endfor
 
 	SetActiveSubwindow $currWindow
+
+	KillVariables/Z V_flag
+	KillStrings/Z S_name
 End
