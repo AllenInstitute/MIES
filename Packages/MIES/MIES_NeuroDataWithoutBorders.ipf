@@ -580,6 +580,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 					ControlWindowToFront()
 				endif
 
+				LOG_AddEntry(PACKAGE_MIES, "end")
 				return 1
 			endif
 		endif
