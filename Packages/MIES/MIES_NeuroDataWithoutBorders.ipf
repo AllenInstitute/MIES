@@ -943,7 +943,7 @@ Function NWB_PrepareExport(nwbVersion)
 	endif
 
 	if(createdNewNWBFile)
-		NWB_ExportAllData(nwbVersion, keepFileOpen = 1)
+		NWB_ExportAllData(nwbVersion, keepFileOpen = 1, verbose = 0)
 		stimsets = ST_GetStimsetList()
 		NWB_AppendStimset(nwbVersion, locationID, stimsets, GetNoCompression())
 	endif

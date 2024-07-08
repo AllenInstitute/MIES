@@ -1925,12 +1925,18 @@ End
 static Function ExportIntoNWBSweepBySweep([str])
 	string str
 
+	variable ref
+	string   history
+
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
 	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
+	ref = CaptureHistoryStart()
 	AcquireData_NG(s, str)
+	history = CaptureHistory(ref, 1)
+	CHECK_EMPTY_STR(history)
 End
 
 static Function ExportIntoNWBSweepBySweep_REENTRY([str])
