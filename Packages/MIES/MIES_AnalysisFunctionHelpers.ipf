@@ -571,6 +571,19 @@ Function/S AFH_GetListOfAnalysisParamNames(params)
 	return list
 End
 
+/// @brief Check if the given analysis parameter is present
+///
+/// @param name   parameter name
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+///
+/// @ingroup AnalysisFunctionParameterHelpers
+///
+/// @return one if present, zero otherwise
+Function AFH_IsParameterPresent(string name, string params)
+
+	return WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) >= 0
+End
+
 /// @brief Return the type of the user parameter
 ///
 /// @param name         parameter name
@@ -638,7 +651,7 @@ Function AFH_GetAnalysisParamNumerical(name, params, [defValue])
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+	if(!AFH_IsParameterPresent(name, params))
 		if(ParamIsDefault(defValue))
 			return NaN
 		endif
@@ -674,7 +687,7 @@ Function/S AFH_GetAnalysisParamTextual(name, params, [defValue, percentDecoded])
 		percentDecoded = !!percentDecoded
 	endif
 
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+	if(!AFH_IsParameterPresent(name, params))
 		if(ParamIsDefault(defValue))
 			return ""
 		endif
@@ -709,7 +722,7 @@ Function/WAVE AFH_GetAnalysisParamWave(name, params, [defValue])
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+	if(!AFH_IsParameterPresent(name, params))
 		if(ParamIsDefault(defValue))
 			return $""
 		endif
@@ -748,7 +761,7 @@ Function/WAVE AFH_GetAnalysisParamTextWave(name, params, [defValue, percentDecod
 		percentDecoded = !!percentDecoded
 	endif
 
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+	if(!AFH_IsParameterPresent(name, params))
 		if(ParamIsDefault(defValue))
 			return $""
 		endif

@@ -772,6 +772,15 @@ Function AGLAP_WorksWithType()
 	CHECK_EQUAL_STR(expected, actual)
 End
 
+Function AIPP_Works()
+
+	string params = "param1,param2:string"
+
+	CHECK(AFH_IsParameterPresent("param1", params))
+	CHECK(AFH_IsParameterPresent("param2", params))
+	CHECK(!AFH_IsParameterPresent("param3", params))
+End
+
 /// END AFH_GetListOfAnalysisParams
 /// @}
 
