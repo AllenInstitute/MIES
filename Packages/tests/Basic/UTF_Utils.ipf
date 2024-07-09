@@ -2899,6 +2899,11 @@ End
 /// TextWaveToList
 /// @{
 
+static Function/S AddTrailingSepIfReq(variable var, string sep)
+
+	return SelectString(var, "", sep)
+End
+
 Function TWTLChecksParams()
 
 	Make/FREE/T/N=1 w
@@ -2964,79 +2969,97 @@ Function TWTLChecksParams()
 	endtry
 End
 
-Function TWTLOddCases()
+// UTF_TD_GENERATOR TrailSepOptions
+Function TWTLOddCases([variable var])
 
 	Make/FREE/T/N=0 w
-	string list
+	string list, result, expected
 
-	list = TextWaveToList(w, ";")
+	list = TextWaveToList(w, ";", trailSep = var)
 	CHECK_EMPTY_STR(list)
 
-	list = TextWaveToList($"", ";")
+	list = TextWaveToList($"", ";", trailSep = var)
 	CHECK_EMPTY_STR(list)
+
+	// check default value of trailSep
+	Make/FREE/T data = {"a"}
+	result   = TextWaveToList(data, ";")
+	expected = "a;"
+	CHECK_EQUAL_STR(result, expected)
 End
 
-Function TWTL1D()
+// UTF_TD_GENERATOR TrailSepOptions
+Function TWTL1D([variable var])
 
 	Make/FREE/T/N=3 w = {"1", "2", "3"}
 
 	string list
 	string refList
 
-	refList = "1;2;3;"
-	list    = TextWaveToList(w, ";")
+	refList  = "1;2;3"
+	refList += AddTrailingSepIfReq(var, ";")
+	list     = TextWaveToList(w, ";", trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 End
 
-Function TWTL2D()
+// UTF_TD_GENERATOR TrailSepOptions
+Function TWTL2D([variable var])
 
 	Make/FREE/T/N=(3, 3) w = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
 
 	string list
 	string refList
 
-	refList = "1,4,7,;2,5,8,;3,6,9,;"
-	list    = TextWaveToList(w, ";")
+	refList  = "1,4,7,;2,5,8,;3,6,9"
+	refList += AddTrailingSepIfReq(var, ",;")
+	list     = TextWaveToList(w, ";", trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 End
 
-Function TWTL3D()
+// UTF_TD_GENERATOR TrailSepOptions
+Function TWTL3D([variable var])
 
 	Make/FREE/T/N=(2, 2, 2) w = {{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}
 
 	string list
 	string refList
 
-	refList = "1:5:,3:7:,;2:6:,4:8:,;"
-	list    = TextWaveToList(w, ";")
+	refList  = "1:5:,3:7:,;2:6:,4:8"
+	refList += AddTrailingSepIfReq(var, ":,;")
+	list     = TextWaveToList(w, ";", trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 End
 
-Function TWTL4D()
+// UTF_TD_GENERATOR TrailSepOptions
+Function TWTL4D([variable var])
 
 	Make/FREE/T/N=(2, 2, 2, 2) w = {{{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
 
 	string list
 	string refList
 
-	refList = "1/9/:5/13/:,3/11/:7/15/:,;2/10/:6/14/:,4/12/:8/16/:,;" // NOLINT
-	list    = TextWaveToList(w, ";")
+	refList  = "1/9/:5/13/:,3/11/:7/15/:,;2/10/:6/14/:,4/12/:8/16" // NOLINT
+	refList += AddTrailingSepIfReq(var, "/:,;")
+	list     = TextWaveToList(w, ";", trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 End
 
-Function TWTLCustomSepators()
+// UTF_TD_GENERATOR TrailSepOptions
+Function TWTLCustomSepators([variable var])
 
 	Make/FREE/T/N=(2, 2, 2, 2) w = {{{{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
 
 	string list
 	string refList
 
-	refList = "1d9dc5d13dcb3d11dc7d15dcba2d10dc6d14dcb4d12dc8d16dcba"
-	list    = TextWaveToList(w, "a", colSep = "b", layerSep = "c", chunkSep = "d")
+	refList  = "1d9dc5d13dcb3d11dc7d15dcba2d10dc6d14dcb4d12dc8d16"
+	refList += AddTrailingSepIfReq(var, "dcba")
+	list     = TextWaveToList(w, "a", colSep = "b", layerSep = "c", chunkSep = "d", trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 End
 
-Function TWTLStopOnEmpty()
+// UTF_TD_GENERATOR TrailSepOptions
+Function TWTLStopOnEmpty([variable var])
 
 	Make/FREE/T/N=(3, 3) w = {{"", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
 
@@ -3045,29 +3068,33 @@ Function TWTLStopOnEmpty()
 
 	// stop at first element
 	refList = ""
-	list    = TextWaveToList(w, ";", stopOnEmpty = 1)
+	list    = TextWaveToList(w, ";", stopOnEmpty = 1, trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 
 	// stop in the middle
-	w       = {"1", "", "3"}
-	refList = "1;"
-	list    = TextWaveToList(w, ";", stopOnEmpty = 1)
+	w        = {"1", "", "3"}
+	refList  = "1"
+	refList += AddTrailingSepIfReq(var, ";")
+	list     = TextWaveToList(w, ";", stopOnEmpty = 1, trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 
 	// stop at last element with partial filling
-	w       = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", ""}}
-	refList = "1,4,7,;2,5,8,;3,6,;"
-	list    = TextWaveToList(w, ";", stopOnEmpty = 1)
+	w        = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", ""}}
+	refList  = "1,4,7,;2,5,8,;3,6"
+	refList += AddTrailingSepIfReq(var, ",;")
+	list     = TextWaveToList(w, ";", stopOnEmpty = 1, trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 
 	// stop at new row
-	w       = {{"1", "", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
-	refList = "1,4,7,;"
-	list    = TextWaveToList(w, ";", stopOnEmpty = 1)
+	w        = {{"1", "", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
+	refList  = "1,4,7"
+	refList += AddTrailingSepIfReq(var, ",;")
+	list     = TextWaveToList(w, ";", stopOnEmpty = 1, trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 End
 
-Function TWTLMaxElements()
+// UTF_TD_GENERATOR TrailSepOptions
+Function TWTLMaxElements([variable var])
 
 	Make/FREE/T/N=(3, 3) w = {{"1", "2", "3"}, {"4", "5", "6"}, {"7", "8", "9"}}
 
@@ -3075,48 +3102,56 @@ Function TWTLMaxElements()
 	string refList
 
 	// empty result
-	list = TextWaveToList(w, ";", maxElements = 0)
+	list = TextWaveToList(w, ";", maxElements = 0, trailSep = var)
 	CHECK_EMPTY_STR(list)
 
 	// Only first row
-	refList = "1,4,7,;"
-	list    = TextWaveToList(w, ";", maxElements = 3)
+	refList  = "1,4,7"
+	refList += AddTrailingSepIfReq(var, ",;")
+	list     = TextWaveToList(w, ";", maxElements = 3, trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 
 	// stops in the middle of column
-	refList = "1,4,7,;2,;"
-	list    = TextWaveToList(w, ";", maxElements = 4)
+	refList  = "1,4,7,;2"
+	refList += AddTrailingSepIfReq(var, ",;")
+	list     = TextWaveToList(w, ";", maxElements = 4, trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 
 	// inf is the same as not giving it
-	refList = "1,4,7,;2,5,8,;3,6,9,;"
-	list    = TextWaveToList(w, ";", maxElements = Inf)
+	refList  = "1,4,7,;2,5,8,;3,6,9"
+	refList += AddTrailingSepIfReq(var, ",;")
+	list     = TextWaveToList(w, ";", maxElements = Inf, trailSep = var)
 	CHECK_EQUAL_STR(list, refList)
 End
 
-static Function TWTLSingleElementNDSeparators()
+// UTF_TD_GENERATOR TrailSepOptions
+static Function TWTLSingleElementNDSeparators([variable var])
 
 	string list
 	string refList
 
 	Make/FREE/T/N=(1, 1, 1, 1) wt = "test"
-	list    = TextWaveToList(wt, ";")
-	refList = "test/:,;"
+	list     = TextWaveToList(wt, ";", trailSep = var)
+	refList  = "test"
+	refList += AddTrailingSepIfReq(var, "/:,;")
 	CHECK_EQUAL_STR(list, refList)
 
 	Make/FREE/T/N=(1, 1, 1) wt = "test"
-	list    = TextWaveToList(wt, ";")
-	refList = "test:,;"
+	list     = TextWaveToList(wt, ";", trailSep = var)
+	refList  = "test"
+	refList += AddTrailingSepIfReq(var, ":,;")
 	CHECK_EQUAL_STR(list, refList)
 
 	Make/FREE/T/N=(1, 1) wt = "test"
-	list    = TextWaveToList(wt, ";")
-	refList = "test,;"
+	list     = TextWaveToList(wt, ";", trailSep = var)
+	refList  = "test"
+	refList += AddTrailingSepIfReq(var, ",;")
 	CHECK_EQUAL_STR(list, refList)
 
 	Make/FREE/T/N=(1) wt = "test"
-	list    = TextWaveToList(wt, ";")
-	refList = "test;"
+	list     = TextWaveToList(wt, ";", trailSep = var)
+	refList  = "test"
+	refList += AddTrailingSepIfReq(var, ";")
 	CHECK_EQUAL_STR(list, refList)
 End
 
@@ -3141,13 +3176,17 @@ Function/WAVE SomeTextWaves()
 	return all
 End
 
-// UTF_TD_GENERATOR SomeTextWaves
-Function TWTLRoundTrips([WAVE/Z wv])
-	string   list
-	variable dims
+// UTF_TD_GENERATOR w0:SomeTextWaves
+// UTF_TD_GENERATOR v0:TrailSepOptions
+Function TWTLRoundTrips([STRUCT IUTF_MDATA &md])
+	string list
+	variable dims, trailSep
+
+	WAVE wv = md.w0
+	trailSep = md.v0
 
 	dims = WaveExists(wv) ? max(1, WaveDims(wv)) : 1
-	list = TextWaveToList(wv, ";")
+	list = TextWaveToList(wv, ";", trailSep = trailSep)
 	WAVE/T result = ListToTextWaveMD(list, dims)
 
 	if(WaveExists(wv))
@@ -4484,31 +4523,41 @@ End
 /// NumericWaveToList
 /// @{
 
-Function NWLWorks()
+// UTF_TD_GENERATOR TrailSepOptions
+Function NWLWorks([variable var])
 
 	string expected, result
 
 	Make/FREE dataFP = {1, 1e6, -Inf, 1.5, NaN}
-	result   = NumericWaveToList(dataFP, ";")
-	expected = "1;1e+06;-inf;1.5;nan;"
+	result    = NumericWaveToList(dataFP, ";", trailSep = var)
+	expected  = "1;1e+06;-inf;1.5;nan"
+	expected += AddTrailingSepIfReq(var, ";")
 	CHECK_EQUAL_STR(result, expected)
 
 	Make/FREE dataFP = {1, 1e6, -100}
-	result   = NumericWaveToList(dataFP, ";", format = "%d")
-	expected = "1;1000000;-100;"
+	result    = NumericWaveToList(dataFP, ";", format = "%d", trailSep = var)
+	expected  = "1;1000000;-100"
+	expected += AddTrailingSepIfReq(var, ";")
 	CHECK_EQUAL_STR(result, expected)
 
 	Make/FREE dataFP = {{1, 2, 3}, {4, 5, 6}}
-	result   = NumericWaveToList(dataFP, ";")
-	expected = "1,4,;2,5,;3,6,;"
+	result    = NumericWaveToList(dataFP, ";", trailSep = var)
+	expected  = "1,4,;2,5,;3,6"
+	expected += AddTrailingSepIfReq(var, ",;")
 	CHECK_EQUAL_STR(result, expected)
 
 	Make/FREE/N=0 dataEmpty
-	result = NumericWaveToList(dataEmpty, ";")
+	result = NumericWaveToList(dataEmpty, ";", trailSep = var)
 	CHECK_EMPTY_STR(result)
 
-	result = NumericWaveToList($"", ";")
+	result = NumericWaveToList($"", ";", trailSep = var)
 	CHECK_EMPTY_STR(result)
+
+	// check default value of trailSep
+	Make/FREE data = {1}
+	result   = NumericWaveToList(data, ";")
+	expected = "1;"
+	CHECK_EQUAL_STR(result, expected)
 End
 
 Function NWLChecksInput()

@@ -434,3 +434,12 @@ Function/WAVE CountObjectTypeFlags()
 
 	return wv
 End
+
+Function/WAVE TrailSepOptions()
+
+	Make/FREE wv = {0, 1}
+
+	SetDimensionLabels(wv, "Without trailing sep;Trailing separator", ROWS)
+
+	return wv
+End
