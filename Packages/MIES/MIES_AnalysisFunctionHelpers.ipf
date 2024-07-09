@@ -761,7 +761,7 @@ Function/WAVE AFH_GetAnalysisParamTextWave(name, params, [defValue, percentDecod
 	WAVE/T wv = ListToTextWave(contents, "|")
 
 	if(percentDecoded)
-		wv = URLDecode(wv)
+		wv[] = URLDecode(wv[p])
 		return wv
 	endif
 
