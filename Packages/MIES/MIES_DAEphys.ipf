@@ -2853,7 +2853,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 		reqNames   = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
 		suppParams = ExtractAnalysisFunctionParams(stimSet)
 		suppNames  = AFH_GetListOfAnalysisParamNames(suppParams)
-		diff       = GetListDifference(reqNames, suppNames)
+		diff       = GetListDifference(reqNames, suppNames, caseSensitive = 0)
 		if(!IsEmpty(diff))
 			printf "(%s) The required analysis parameters requested by %s for stim set %s were not all supplied (missing are: %s)\r", device, func, setName, diff
 			ControlWindowToFront()
@@ -2877,7 +2877,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 			endif
 
 			// invalid types are not allowed
-			if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES) == -1)
+			if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES, ";", 0, 0) == -1)
 				printf "(%s) The required analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", device, reqName, func, setName, reqType
 				ControlWindowToFront()
 				return 1

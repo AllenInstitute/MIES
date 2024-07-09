@@ -1137,7 +1137,8 @@ static Function AFT14_PreInit(device)
 	string device
 
 	string stimSet = "AnaFuncParams1_DA_0"
-	AFH_AddAnalysisParameter(stimSet, "MyVar", str = "abcd")
+	// use all lower case name for MyVar
+	AFH_AddAnalysisParameter(stimSet, "myvar", str = "abcd")
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
 	AFH_AddAnalysisParameter(stimSet, "MyWave", wv = {1, 2, 3})
 	Make/FREE/T textData = {"a", "b", "c"}

@@ -778,6 +778,7 @@ Function AIPP_Works()
 
 	CHECK(AFH_IsParameterPresent("param1", params))
 	CHECK(AFH_IsParameterPresent("param2", params))
+	CHECK(AFH_IsParameterPresent("Param2", params))
 	CHECK(!AFH_IsParameterPresent("param3", params))
 End
 
