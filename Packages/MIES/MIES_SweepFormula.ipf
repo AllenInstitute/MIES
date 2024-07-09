@@ -2272,7 +2272,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 	variable dimPosSweep, dimPosChannelNumber, dimPosChannelType, dimPosSweepMapIndex
 	variable dimPosTSweep, dimPosTChannelNumber, dimPosTChannelType, dimPosTClampMode, dimPosTExpName, dimPosTDevice, dimPosTSweepMapIndex
 	variable dimPosTNumericalValues
-	variable numTraces, fromDisplayed, clampCode, smIndexCounter, mapIndex, setCycleCount, setSweepCount
+	variable numTraces, fromDisplayed, clampCode, smIndexCounter, mapIndex, setCycleCount, setSweepCount, doStimsetMatching
 	string msg, device, singleSweepDFStr, expName, dataFolder
 	variable mapSize   = 1
 	DFREF    deviceDFR = $""
@@ -2290,6 +2290,11 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 
 	fromDisplayed  = !CmpStr(filter.vis, SF_OP_SELECTVIS_DISPLAYED)
 	isSweepBrowser = BSP_IsSweepBrowser(graph)
+
+	if(!(DimSize(filter.stimsets, ROWS) == 1 && !CmpStr(filter.stimsets[0], "*")))
+		WAVE/Z indizes = FindIndizes(filter.stimsets, str = "*")
+		doStimsetMatching = !WaveExists(indizes)
+	endif
 
 	if(fromDisplayed)
 		WAVE/T/Z traces = GetTraceInfos(graph)
@@ -2459,7 +2464,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 						for(l = 0; l < numTraces; l += 1)
 
 							clampCode = SF_MapClampModeToSelectCM(sweepPropertiesDisplayed[l][SWEEPPROP_CLAMPMODE])
-							if(!SF_IsValidSingleSelection(graph, filter, sweepNo, channelNumber, channelType, selectDisplayed[l][dimPosSweep], selectDisplayed[l][dimPosChannelNumber], selectDisplayed[l][dimPosChannelType], clampCode, sweepPropertiesDisplayed[l][SWEEPPROP_SETCYCLECOUNT], sweepPropertiesDisplayed[l][SWEEPPROP_SETSWEEPCOUNT]))
+							if(!SF_IsValidSingleSelection(graph, filter, sweepNo, channelNumber, channelType, selectDisplayed[l][dimPosSweep], selectDisplayed[l][dimPosChannelNumber], selectDisplayed[l][dimPosChannelType], clampCode, sweepPropertiesDisplayed[l][SWEEPPROP_SETCYCLECOUNT], sweepPropertiesDisplayed[l][SWEEPPROP_SETSWEEPCOUNT], doStimsetMatching))
 								continue
 							endif
 
@@ -2494,7 +2499,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 								setSweepCount = WaveExists(setting) ? setting[index] : NaN
 							endif
 
-							if(!SF_IsValidSingleSelection(graph, filter, sweepNo, channelNumber, channelType, sweepNo, l, channelType, clampCode, setCycleCount, setSweepCount))
+							if(!SF_IsValidSingleSelection(graph, filter, sweepNo, channelNumber, channelType, sweepNo, l, channelType, clampCode, setCycleCount, setSweepCount, doStimsetMatching))
 								continue
 							endif
 
@@ -2520,7 +2525,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 	return out
 End
 
-static Function SF_IsValidSingleSelection(string graph, STRUCT SF_SelectParameters &filter, variable filtSweepNo, variable filtChannelNumber, variable filtChannelType, variable sweepNo, variable channelNumber, variable channelType, variable clampMode, variable setCycleCount, variable setSweepCount)
+static Function SF_IsValidSingleSelection(string graph, STRUCT SF_SelectParameters &filter, variable filtSweepNo, variable filtChannelNumber, variable filtChannelType, variable sweepNo, variable channelNumber, variable channelType, variable clampMode, variable setCycleCount, variable setSweepCount, variable doStimsetMatching)
 
 	variable index, sweepQC, setQC
 	string setName, matchSet
@@ -2541,8 +2546,7 @@ static Function SF_IsValidSingleSelection(string graph, STRUCT SF_SelectParamete
 		return 0
 	endif
 
-	WAVE/Z indizes = FindIndizes(filter.stimsets, str = "*")
-	if(!WaveExists(indizes))
+	if(doStimsetMatching)
 		setName = SFH_GetStimsetName(graph, sweepNo, channelNumber, channelType)
 		if(!MatchAgainstWildCardPatterns(filter.stimsets, setName))
 			return 0
