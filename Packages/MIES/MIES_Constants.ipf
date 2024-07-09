@@ -38,7 +38,7 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 75
+Constant LABNOTEBOOK_VERSION = 76
 Constant RESULTS_VERSION     = 3
 /// @}
 
@@ -47,7 +47,7 @@ Constant RESULTS_VERSION     = 3
 Constant PSQ_PIPETTE_BATH_VERSION    = 4
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 2
 Constant PSQ_CHIRP_VERSION           = 13
-Constant PSQ_DA_SCALE_VERSION        = 7
+Constant PSQ_DA_SCALE_VERSION        = 8
 Constant PSQ_RAMP_VERSION            = 6
 Constant PSQ_RHEOBASE_VERSION        = 5
 Constant PSQ_SQUARE_PULSE_VERSION    = 4
