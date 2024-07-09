@@ -176,9 +176,9 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
 			printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
-			printf "Current sweep: [%s]\r", RemoveEnding(TextWaveToList(sweeps, ";"), ";")
-			printf "DAQ: [%s]\r", RemoveEnding(TextWaveToList(daqStates, ";"), ";")
-			printf "Testpulse: [%s]\r", RemoveEnding(TextWaveToList(tpStates, ";"), ";")
+			printf "Current sweep: [%s]\r", TextWaveToList(sweeps, ";", trailSep = 0)
+			printf "DAQ: [%s]\r", TextWaveToList(daqStates, ";", trailSep = 0)
+			printf "Testpulse: [%s]\r", TextWaveToList(tpStates, ";", trailSep = 0)
 			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
 			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), GetIgorProBuildVersion()
 			print "MIES version:"

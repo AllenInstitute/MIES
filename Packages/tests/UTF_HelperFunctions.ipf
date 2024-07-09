@@ -1151,7 +1151,7 @@ static Function TestEpochRecreationRemoveUnsupportedUserEpochs(WAVE/T epochChann
 	string regexpUserEpochs = "^" + EPOCH_SHORTNAME_USER_PREFIX + ".*"
 
 	Make/FREE/T supportedUserEpochs = {"^U_CR_CE$", "^U_CR_SE$", PSQ_BASELINE_CHUNK_SHORT_NAME_RE_MATCHER, "^U_BLS[[:digit:]]+$", "^U_TP[[:digit:]]+_B0$", "^U_TP[[:digit:]]+_P$", "^U_TP[[:digit:]]+_B1$", "^U_TP[[:digit:]]+$", "^U_RA_DS$", "^U_RA_UD$"}
-	supportedUserEpochsRegExp = ConvertListToRegexpWithAlternations(RemoveEnding(TextWaveToList(supportedUserEpochs, ";"), ";"), literal = 0)
+	supportedUserEpochsRegExp = ConvertListToRegexpWithAlternations(TextWaveToList(supportedUserEpochs, ";", trailSep = 0), literal = 0)
 	Make/FREE/T/N=(DimSize(epochChannel, ROWS)) shortnames = EP_GetShortName(epochChannel[p][EPOCH_COL_TAGS])
 	WAVE/Z userEpochIndices = FindIndizes(shortNames, str = regexpUserEpochs, prop = PROP_GREP)
 	if(!WaveExists(userEpochIndices))

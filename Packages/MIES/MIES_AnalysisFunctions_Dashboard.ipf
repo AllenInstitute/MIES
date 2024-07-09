@@ -549,7 +549,7 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 	if(Sum(fISlopeReached) == 0)
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE, query = 1)
 		WAVE fISlope = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-		fISlopeStr = RemoveEnding(NumericWaveToList(fISlope, "%, ", format = "%.15g"), "%, ")
+		fISlopeStr = NumericWaveToList(fISlope, "%, ", format = "%.15g", trailSep = 0)
 
 		finalSlopePercent = AFH_GetAnalysisParamNumerical("FinalSlopePercent", params[headstage])
 
@@ -567,7 +567,7 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 
 				slopePercentage = AFH_GetAnalysisParamNumerical("SlopePercentage", params[headstage])
 				fISlope[p]      = maxSlopeLBN[headstage] * (1 - (slopePercentage * PERCENT_TO_ONE))
-				fISlopeStr      = RemoveEnding(NumericWaveToList(fISlope, "%, ", format = "%.15g"), "%, ")
+				fISlopeStr      = NumericWaveToList(fISlope, "%, ", format = "%.15g", trailSep = 0)
 				sprintf msg, "The fit slope was not small enough for the given slope percentage (target: %g%% reached: %s%%)", slopePercentage, fISlopeStr
 			endif
 		endif
@@ -586,7 +586,7 @@ static Function/S AD_GetRheobaseFailMsg(WAVE numericalValues, WAVE/T textualValu
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 	WAVE/Z spikeDetect = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	pattern = RemoveEnding(NumericWaveToList(spikeDetect, ", ", format = "%g"), ", ")
+	pattern = NumericWaveToList(spikeDetect, ", ", format = "%g", trailSep = 0)
 	pattern = SelectString(IsEmpty(pattern), pattern, "n.a.")
 
 	sprintf msg, "%s\rWe were not able to find the correct on/off spike pattern (%s)", prefix, pattern
