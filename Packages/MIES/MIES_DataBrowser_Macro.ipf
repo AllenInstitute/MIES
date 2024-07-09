@@ -11,13 +11,12 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1 // building window...
-	Display/W=(427.5, 292.25, 916.5, 664.25)/K=1
+	Display/W=(694.5, 284, 1183.5, 656)/K=1
 	Button button_BSP_open, pos={3.00, 3.00}, size={24.00, 24.00}, disable=1, proc=BSP_ButtonProc_Panel
 	Button button_BSP_open, title="<<", help={"Restore side panels"}
 	Button button_BSP_open, userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_BSP_open, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_BSP_open, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	ListBox list_dashboard, pos={37.00, 3.00}, size={50.00, 20.00}
 	SetWindow kwTopWin, hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
 	SetWindow kwTopWin, hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
 	SetWindow kwTopWin, hook(sweepScrolling)=BSP_SweepsAndMouseWheel
@@ -1270,7 +1269,7 @@ Window DataBrowser() : Graph
 	NewNotebook/F=1/N=sweepFormula_formula/W=(12, 71, 378, 529)/FG=(UGVL, UGVT, UGVR, UGVB)/HOST=#/V=0
 	Notebook kwTopWin, defaultTab=10, autoSave=1, magnification=100, showRuler=0, rulerUnits=2
 	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0, 0, 286}, spacing={0, 0, 0}, tabs={}, rulerDefaults={"Arial", 11, 0, (0, 0, 0)}
-	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)u.`Q5gp6juaS]T:ln)?Z+P&W)/A<ZkuTiY!A_!5p$Gkpdg(%S7O!>8lc2\"sb*'&->1kks^GSl)>#u$IK&=$CQ0RZ+LJRs+(0Gq>Yr#8mAOBim\\s@1*E!R>bV7p^`#(0+9lNE!(E&,'(bZlF,Dgp>r6[h.Z;JK;[\\I?1c9Or0MN8bS!oLB!]1W_->KIZF^S4k#ZcdVL'9-'!n<5Za2$W\"?^.%IK0'3$3^C%lJWR_Ogb9E,Z,naUj=j88E%K-7>4,=XS=,P=i1-E@S=c\"f^]4Ako3.="
+	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)u.`Q5gp6juaS*9@t&bWmF]6m?&i'o6\"C\\-.U0!-&9@\\dD!#6W/ZaQA2u%!K\"f\"KRaVIH;S-XHE)S!6F;<(6=sP-/2%+CIin`*rr4(7dMApi3&Lr>$qR6BQY6@JYXT':L]Nr*5`t,d`4Wb4S72pt(JPp3b2W!Ae:M-=9hepu9N),2VPYW)!)3W[M&Ij/*EZ;sJlQ9D@0+QM!4?=Z0eiCa(Zd\"+i!odL%M13^+J^[l2p?r$CpH_C3=HQ<*/cS'QMZmnB;Qq(39TH>kNAWr-ij;qs&r\\"
 	Notebook kwTopWin, zdataEnd=1
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin, userdata(tabnum)="0"
