@@ -179,6 +179,8 @@ static Constant PSQ_RHEOBASE_DURATION = 500
 // minimum frequency distance between two measurements
 static Constant PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE = 15
 
+static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC = 1.5
+
 static Constant PSQ_DA_SLOPE_PERCENTAGE_DEFAULT         = 10
 static Constant PSQ_DA_NUM_POINTS_LINE_FIT              = 2
 static Constant PSQ_DA_NUM_SWEEPS_SATURATION            = 2
@@ -2905,9 +2907,9 @@ End
 /// Multiply by `AP Frequency` to get scaled values.
 ///
 /// @returns one on error, zero otherwise
-static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_DS_CalculateAndStoreDAScaleStepWidths(string device, variable sweepNo, WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, variable maxFrequencyChangePercent, variable dascaleStepWidthMinMaxRatio)
+static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_DS_CalculateAndStoreDAScaleStepWidths(string device, variable sweepNo, WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, variable maxFrequencyChangePercent, variable dascaleStepWidthMinMaxRatio, variable fallbackDAScaleRangeFac)
 
-	variable daScaleMinStepWidth, daScaleMaxStepWidth
+	variable daScaleMinStepWidth, daScaleMaxStepWidth, minimum, maximum
 	string code, databrowser, fitKey, key
 	string str = ""
 
@@ -2956,9 +2958,16 @@ static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStep
 	// so for unity y (APFrequency) this gives:
 	// dx = mfcp / m
 	// we use the absolute value here to cope with a negative slope
-	daScaleMinStepWidth = (maxFrequencyChangePercent * PERCENT_TO_ONE) / abs(fitCoeff[%Slope])
-	daScaleMaxStepWidth = daScaleMinStepWidth * dascaleStepWidthMinMaxRatio
+	if(!CheckIfSmall(fitCoeff[%Slope]))
+		daScaleMinStepWidth = (maxFrequencyChangePercent * PERCENT_TO_ONE) / abs(fitCoeff[%Slope])
+	else
+		[minimum, maximum] = WaveMinAndMax(DAScalesRhSuAd)
+		daScaleMinStepWidth = fallbackDAScaleRangeFac * (maximum - minimum)
+	endif
 
+	ASSERT(IsFinite(daScaleMinStepWidth), "Minimum DAScale stepwidth must be finite")
+
+	daScaleMaxStepWidth = daScaleMinStepWidth * dascaleStepWidthMinMaxRatio
 	ASSERT(daScaleMinStepWidth < daScaleMaxStepWidth, "Minimum DAScale stepwidth must be smaller than maximum")
 
 	WAVE minStepWidth = LBN_GetNumericWave()
@@ -3147,6 +3156,7 @@ Function/S PSQ_DAScale_GetParams()
 	       "[BaselineRMSLongThreshold:variable],"     + \
 	       "[BaselineRMSShortThreshold:variable],"    + \
 	       "[BaselineTargetVThreshold:variable],"     + \
+	       "[DAScaleRangeFactor:variable],"           + \
 	       "[DAScaleModifier:variable],"              + \
 	       "[DaScaleStepWidthMinMaxRatio:variable],"  + \
 	       "DAScales:wave,"                           + \
@@ -3178,6 +3188,10 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "DAScaleModifier":
 			return "Percentage how the DAScale value is adapted if it is outside of the " \
 			       + "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\"."
+		case "DAScaleRangeFactor":
+			return "Fallback factor to apply to the input DAScale range for calculating "                                   \
+			       + "the DAScale minimum step width when all previous f-I data from Rheobase/Supra/Adaptive is constant. " \
+			       + "Only for \"AdaptiveSupra\"."
 		case "DaScaleStepWidthMinMaxRatio":
 			return "Number of times the maximum DAScale step width is larger than the calculated minimum. " + \
 			       "Only for \"AdaptiveSupra\"."
@@ -3250,6 +3264,7 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			break
 		case "AbsFrequencyMinDistance":
 		case "MaxFrequencyChangePercent":
+		case "DAScaleRangeFactor":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsNullOrPositiveAndFinite(val))
 				return "Invalid value"
@@ -3435,7 +3450,7 @@ Function PSQ_DAScale(device, s)
 	variable i, numberOfSpikes, samplingFrequencyPassed, numPoints, numFailedSweeps
 	variable index, ret, showPlot, V_AbortCode, V_FitError, err, enoughSweepsPassed
 	variable sweepPassed, setPassed, length, minLength, reachedFinalSlope, fitOffset, fitSlope, apfreq, enoughFIPointsPassedQC
-	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam, measuredAllFutureDAScales
+	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam, measuredAllFutureDAScales, fallbackDAScaleRangeFac
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, multiplier, asyncAlarmPassed, supraStimsetCycle
 	variable daScaleStepMinNorm, daScaleStepMaxNorm
 	string msg, stimset, key, opMode, offsetOp, textboxString, str, errMsg
@@ -3488,6 +3503,7 @@ Function PSQ_DAScale(device, s)
 			maxFrequencyChangePercent    = AFH_GetAnalysisParamNumerical("MaxFrequencyChangePercent", s.params, defValue = PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT)
 			dascaleStepWidthMinMaxRatio  = AFH_GetAnalysisParamNumerical("DaScaleStepWidthMinMaxRatio", s.params, defValue = PSQ_DA_DASCALE_STEP_WITH_MIN_MAX_FACTOR)
 			absFrequencyMinDistance      = AFH_GetAnalysisParamNumerical("AbsFrequencyMinDistance", s.params, defValue = PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE)
+			fallbackDAScaleRangeFac      = AFH_GetAnalysisParamNumerical("DAScaleRangeFactor", s.params, defValue = PSQ_DA_FALLBACK_DASCALE_RANGE_FAC)
 
 			STRUCT PSQ_DS_DAScaleParams cdp
 			PSQ_DS_InitDAScaleParams(cdp)
@@ -3610,8 +3626,8 @@ Function PSQ_DAScale(device, s)
 						return 1
 					endif
 
-					[ret, daScaleStepMinNorm, daScaleStepMaxNorm] = PSQ_DS_CalculateAndStoreDAScaleStepWidths(device, s.sweepNo, apfreqRhSuAd, DAScalesRhSuAd,      \
-					                                                                                          maxFrequencyChangePercent, dascaleStepWidthMinMaxRatio)
+					[ret, daScaleStepMinNorm, daScaleStepMaxNorm] = PSQ_DS_CalculateAndStoreDAScaleStepWidths(device, s.sweepNo, apfreqRhSuAd, DAScalesRhSuAd,                               \
+					                                                                                          maxFrequencyChangePercent, dascaleStepWidthMinMaxRatio, fallbackDAScaleRangeFac)
 
 					if(ret)
 						printf "Could not calculate DAScale step widths min/max.\r"
