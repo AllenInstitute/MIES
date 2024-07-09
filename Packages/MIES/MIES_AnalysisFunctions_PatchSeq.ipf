@@ -2071,11 +2071,11 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 
 		WAVE apfreqSlice = DuplicateSubRange(apfreq, first, last)
 		/// @todo prefer %f over %g due to https://github.com/AllenInstitute/MIES/issues/1863
-		sprintf line, "freq%d = [%s]\r", i, RemoveEnding(NumericWaveToList(apfreqSlice, ",", format = "%.15f"), ",")
+		sprintf line, "freq%d = [%s]\r", i, RemoveEnding(NumericWaveToList(apfreqSlice, ",", format = PERCENT_F_MAX_PREC), ",")
 		str += line
 
 		WAVE DaScalesSlice = DuplicateSubRange(DAScales, first, last)
-		sprintf line, "dascale%d = [%s]\r", i, RemoveEnding(NumericWaveToList(DaScalesSlice, ",", format = "%.15f"), ",")
+		sprintf line, "dascale%d = [%s]\r", i, RemoveEnding(NumericWaveToList(DaScalesSlice, ",", format = PERCENT_F_MAX_PREC), ",")
 		str += line
 	endfor
 
@@ -2742,9 +2742,9 @@ static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStep
 
 	fitKey = "Fit result rheobase and supra"
 
-	sprintf code, "freq = [%s]\r", RemoveEnding(NumericWaveToList(apfreqFromRheobaseAndSupra, ",", format = "%.15f"), ",")
+	sprintf code, "freq = [%s]\r", RemoveEnding(NumericWaveToList(apfreqFromRheobaseAndSupra, ",", format = PERCENT_F_MAX_PREC), ",")
 	str += code
-	sprintf code, "dascale = [%s]\r", RemoveEnding(NumericWaveToList(DAScalesFromRheobaseAndSupra, ",", format = "%.15f"), ",")
+	sprintf code, "dascale = [%s]\r", RemoveEnding(NumericWaveToList(DAScalesFromRheobaseAndSupra, ",", format = PERCENT_F_MAX_PREC), ",")
 	str += code
 	sprintf code, "result = fit($dascale, $freq, fitline())\r"
 	str += code
