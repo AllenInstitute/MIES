@@ -205,14 +205,7 @@ threadsafe static Function/WAVE GetUniqueTextEntries(WAVE/T wv, [variable caseSe
 	if(caseSensitive)
 		FindDuplicates/FREE/RT=result wv
 	else
-		Duplicate/T/FREE wv, result
-
-		MAKE/T/FREE/N=(numEntries) duplicates = LowerStr(wv[p])
-		FindDuplicates/FREE/INDX=index duplicates
-		numDuplicates = DimSize(index, ROWS)
-		for(i = numDuplicates - 1; i >= 0; i -= 1)
-			DeletePoints index[i], 1, result
-		endfor
+		FindDuplicates/FREE/CI/RT=result wv
 	endif
 
 	return result
