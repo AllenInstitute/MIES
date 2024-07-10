@@ -1610,6 +1610,36 @@ static Function AFT14i([str])
 	endtry
 End
 
+static Function AFT14j_PreInit(device)
+	string device
+
+	string stimSet = "AnaFuncParams1_DA_0"
+	AFH_AddAnalysisParameter(stimSet, "MyVar", str = "abcd")
+	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
+	AFH_AddAnalysisParameter(stimSet, "MyWave", wv = {1, 2, 3})
+	Make/FREE/T textData = {"a", "b", "c"}
+	AFH_AddAnalysisParameter(stimSet, "MyTextWave", wv = textData)
+
+	AFH_AddAnalysisParameter(stimSet, "UnknownVar", var = 0)
+End
+
+// parameter MyVar is present but neither required nor optional and we have a _GetParams function
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function AFT14j([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncParams1_DA_0:")
+
+	try
+		AcquireData_NG(s, str)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 // MD: mid sweep event is also called for very short stimsets
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AFT15([str])

@@ -843,6 +843,7 @@ End
 /// - Valid and matching types
 /// - Non-empty waves supplied
 /// - All required parameters are present
+/// - No additional parameters are present if some are required/optional
 /// - Valid names
 /// - Check function passes if present
 ///
@@ -898,6 +899,12 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 			// non present required parameters are an error
 			if(isReq)
 				errorMessages[index++] = name + ": is required but missing"
+				continue
+			endif
+		else
+			// present parameter is neither a required nor an optional parameter
+			if(!isOpt && !isReq && hasParamsInfo)
+				errorMessages[index++] = name + ": is present but neither required nor optional."
 				continue
 			endif
 		endif
