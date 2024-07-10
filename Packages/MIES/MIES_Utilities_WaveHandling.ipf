@@ -1249,6 +1249,37 @@ Function SearchForDuplicates(wv)
 	return WaveExists(idx) && DimSize(idx, ROWS) > 0
 End
 
+/// @brief Return the indizes of elements which need to be dropped so that no two neighbouring points are equal/both NaN
+Function/WAVE FindNeighbourDuplicates(WAVE wv)
+
+	variable numPoints, i, numDuplicates, idx
+
+	numPoints = DimSize(wv, ROWS)
+	ASSERT_TS(numPoints == numpnts(wv), "Wave must be 1D")
+
+	if(numPoints < 2)
+		return $""
+	endif
+
+	Make/FREE/D/N=(numPoints) indizes
+
+	FastOp indizes = (NaN)
+
+	for(i = 1; i < numPoints; i += 1)
+		if(EqualValuesOrBothNaN(wv[i - 1], wv[i]))
+			indizes[idx++] = i
+		endif
+	endfor
+
+	if(idx == 0)
+		return $""
+	endif
+
+	WAVE indizesClean = ZapNaNs(indizes)
+
+	return indizesClean
+End
+
 /// @brief Move the source wave to the location of the given destination wave.
 ///        The destination wave must be a permanent wave.
 ///
