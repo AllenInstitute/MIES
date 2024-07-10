@@ -38,8 +38,8 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 73
-Constant RESULTS_VERSION     = 2
+Constant LABNOTEBOOK_VERSION = 75
+Constant RESULTS_VERSION     = 3
 /// @}
 
 /// @name Analysis function versions
@@ -1808,6 +1808,28 @@ Constant LBN_NUMERICAL_VALUES = 0x2
 Constant LBN_TEXTUAL_KEYS     = 0x4
 Constant LBN_TEXTUAL_VALUES   = 0x8
 /// @}
+
+/// @name Labnotebook wave names
+///
+/// @anchor LabnotebookWaveNames
+/// @{
+StrConstant LBN_NUMERICAL_VALUES_NAME = "numericalValues"
+StrConstant LBN_NUMERICAL_KEYS_NAME   = "numericalKeys"
+StrConstant LBN_TEXTUAL_VALUES_NAME   = "textualValues"
+StrConstant LBN_TEXTUAL_KEYS_NAME     = "textualKeys"
+/// @}
+
+/// @name Labnotebook wave names
+///
+/// @anchor ResultLogbookWaveNames
+/// @{
+StrConstant LBN_NUMERICALRESULT_VALUES_NAME = "numericalResultsValues"
+StrConstant LBN_NUMERICALRESULT_KEYS_NAME   = "numericalResultsKeys"
+StrConstant LBN_TEXTUALRESULT_VALUES_NAME   = "textualResultsValues"
+StrConstant LBN_TEXTUALRESULT_KEYS_NAME     = "textualResultsKeys"
+/// @}
+
+StrConstant LOGBOOK_WAVE_TEMP_FOLDER = "Temp"
 
 /// @name All available ZeroMQ message filters
 /// @anchor ZeroMQMessageFilters

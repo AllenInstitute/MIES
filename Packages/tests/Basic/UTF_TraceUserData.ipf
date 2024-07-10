@@ -544,18 +544,19 @@ Function GetUserDataAsWaveWorksBasicIndizes()
 
 	TUD_SetUserData(graph, "trace1", "key1", "value1")
 	TUD_SetUserData(graph, "trace2", "key2", "value2")
+	MakE/FREE/D ref = {0, 1}
 
 	WAVE/Z result = TUD_GetUserDataAsWave(graph, "traceName", returnIndizes = 1)
 	CHECK_WAVE(result, NUMERIC_WAVE)
-	CHECK_EQUAL_WAVES(result, {0, 1})
+	CHECK_EQUAL_WAVES(result, ref)
 
 	WAVE/Z result = TUD_GetUserDataAsWave(graph, "key1", returnIndizes = 1)
 	CHECK_WAVE(result, NUMERIC_WAVE)
-	CHECK_EQUAL_WAVES(result, {0, 1})
+	CHECK_EQUAL_WAVES(result, ref)
 
 	WAVE/Z result = TUD_GetUserDataAsWave(graph, "key2", returnIndizes = 1)
 	CHECK_WAVE(result, NUMERIC_WAVE)
-	CHECK_EQUAL_WAVES(result, {0, 1})
+	CHECK_EQUAL_WAVES(result, ref)
 End
 
 // Test: TUD_GetUserDataAsWave
@@ -601,11 +602,13 @@ Function GetUserDataAsWaveWorksComplexIndizes()
 
 	WAVE/Z result = TUD_GetUserDataAsWave(graph, "traceName", keys = {"key1"}, values = {"value1"}, returnIndizes = 1)
 	CHECK_WAVE(result, NUMERIC_WAVE)
-	CHECK_EQUAL_WAVES(result, {0})
+	Make/FREE/D ref = {0}
+	CHECK_EQUAL_WAVES(result, ref)
 
 	WAVE/Z result = TUD_GetUserDataAsWave(graph, "traceName", keys = {"key2"}, values = {"value2"}, returnIndizes = 1)
 	CHECK_WAVE(result, NUMERIC_WAVE)
-	CHECK_EQUAL_WAVES(result, {1})
+	Make/FREE/D ref = {1}
+	CHECK_EQUAL_WAVES(result, ref)
 
 	// no traces have all properties
 	WAVE/Z result = TUD_GetUserDataAsWave(graph, "traceName", keys = {"key1", "key2"}, values = {"value1", "value2"}, returnIndizes = 1)

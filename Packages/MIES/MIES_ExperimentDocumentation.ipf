@@ -507,6 +507,8 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 	for(i = 0; i < numCols; i += 1)
 		searchStr = incomingKey[0][i]
 
+		// we do not use GetLogbookSettingsColumn here because it would generate a new sortedKeys wave each time
+		// a new key is added
 		FindValue/TXOP=4/TEXT=(searchStr)/RMD=[0][] key
 
 		if(V_col >= 0)

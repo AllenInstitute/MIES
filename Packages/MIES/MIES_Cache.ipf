@@ -168,6 +168,32 @@ Function/S CA_Deconv(wv, tau)
 	return num2istr(crc) + "Version 1"
 End
 
+/// @brief Cache key generator for GetActiveChannels
+threadsafe Function/S CA_GenKeyGetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable TTLmode)
+
+	string primitiveKey
+	string version = "Version 1"
+	variable crc
+
+	sprintf primitiveKey, "%d_%d_%d_%s", sweepNo, channelType, TTLmode, version
+	crc = CA_GetWaveModCRC(numericalValues, 0)
+	crc = CA_GetWaveModCRC(textualValues, crc)
+	crc = StringCRC(crc, primitiveKey)
+
+	return num2istr(crc) + version
+End
+
+/// @brief Cache key generator for Logbook sortedKeyWave
+threadsafe Function/S CA_GenKeyLogbookSortedKeys(WAVE keys)
+
+	string version = "Version 1"
+	variable crc
+
+	crc = CA_GetWaveModCRC(keys, 0)
+
+	return num2istr(crc) + version
+End
+
 /// @brief Cache key generator for artefact removal ranges
 Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
 	DFREF    singleSweepDFR
@@ -245,7 +271,7 @@ static Function CA_RecursiveWavemodCRC(WAVE/Z wv, [variable prevCRC])
 	return prevCRC
 End
 
-static Function CA_GetWaveModCRC(WAVE wv, variable crc)
+threadsafe static Function CA_GetWaveModCRC(WAVE wv, variable crc)
 
 	return StringCRC(crc, num2istr(ModDate(wv)) + num2istr(WaveModCountWrapper(wv)) + GetWavesDataFolder(wv, 2))
 End
@@ -352,7 +378,7 @@ threadsafe Function/S CA_TemporaryWaveKey(dims)
 		crc = StringCRC(crc, num2istr(dims[i]))
 	endfor
 
-	return num2istr(crc) + "Temporary waves Version 1"
+	return num2istr(crc) + "Temporary waves Version 2"
 End
 
 /// @brief Calculate the cache key for the hardware device info wave

@@ -503,6 +503,75 @@ Function GSD_ReturnsInvalidWaveRefWOMatches()
 	WAVE/Z matches = GetSetDifference(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
 End
+
+Function GSD_Works_Indices()
+
+	Make/FREE data1 = {1, 2, 3, 4}
+	Make/FREE data2 = {4, 5, 6}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0, 1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetDifference(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {1, 2}, mode = WAVE_DATA)
+
+	Make/FREE data1 = {1, 4, 2, 3, 4}
+	Make/FREE data2 = {4, 5, 4, 6}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0, 2, 3}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetDifference(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {1, 3}, mode = WAVE_DATA)
+End
+
+Function GSD_WorksText_Indices()
+
+	Make/FREE/T data1 = {"a", "b", "c", "D"}
+	Make/FREE/T data2 = {"c", "d", "e"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetDifference(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {2}, mode = WAVE_DATA)
+
+	Make/FREE/T data1 = {"a", "b", "c", "D", "c"}
+	Make/FREE/T data2 = {"c", "d", "c", "e"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z matches = GetSetDifference(data2, data1, getIndices = 1)
+	CHECK_EQUAL_WAVES(matches, {3}, mode = WAVE_DATA)
+End
+
+Function GSD_ReturnsInvalidWaveRefWOMatches1_indices()
+
+	Make/FREE/D/N=0 data1
+	Make/FREE/D data2
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
+
+Function GSD_ReturnsInvalidWaveRefWOMatches2_indices()
+
+	Make/FREE/D/N=0 data1
+	Make/FREE/D/N=0 data2
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
+
+Function GSD_ReturnsInvalidWaveRefWOMatches3_indices()
+
+	Make/FREE/D data1 = p
+	Make/FREE/D data2 = p
+
+	WAVE/Z matches = GetSetDifference(data1, data2, getIndices = 1)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
 /// @}
 
 /// GetSetIntersection
@@ -8392,4 +8461,52 @@ static Function MWF_Works()
 	WAVE/Z result = MakeWaveFree(data)
 	CHECK_WAVE(result, FREE_WAVE)
 	CHECK(WaveRefsEqual(data, result))
+End
+
+static Function CheckMatchAgainstWildCardPatterns()
+
+	string str
+
+	Make/FREE/T/N=0 wv
+	CHECK(!MatchAgainstWildCardPatterns(wv, ""))
+	Make/FREE/T wv = {"*"}
+	CHECK(MatchAgainstWildCardPatterns(wv, ""))
+	CHECK(MatchAgainstWildCardPatterns(wv, "abc"))
+	Make/FREE/T wv = {"abc"}
+	CHECK(!MatchAgainstWildCardPatterns(wv, "def"))
+	CHECK(MatchAgainstWildCardPatterns(wv, "abc"))
+	Make/FREE/T wv = {"*abc", "def*"}
+	CHECK(MatchAgainstWildCardPatterns(wv, "defabc"))
+	CHECK(MatchAgainstWildCardPatterns(wv, "abc"))
+	CHECK(MatchAgainstWildCardPatterns(wv, "def"))
+	CHECK(!MatchAgainstWildCardPatterns(wv, "abcdef"))
+	CHECK(!MatchAgainstWildCardPatterns(wv, "123"))
+	Make/FREE/T wv = {{"abc", "def"}, {"hij", "klm"}}
+	CHECK(MatchAgainstWildCardPatterns(wv, "klm"))
+	CHECK(!MatchAgainstWildCardPatterns(wv, "*"))
+
+	Make/FREE wn
+	try
+		MatchAgainstWildCardPatterns(wn, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	WAVE wn = $""
+	try
+		MatchAgainstWildCardPatterns(wn, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/T wv = {"*"}
+	try
+		MatchAgainstWildCardPatterns(wv, str)
+		FAIL()
+	catch
+		ClearRTError()
+		PASS()
+	endtry
 End

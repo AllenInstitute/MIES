@@ -3742,14 +3742,24 @@ threadsafe Function/WAVE GetSetUnion(WAVE wave1, WAVE wave2)
 End
 
 /// @brief Return a wave were all elements which are in both wave1 and wave2 have been removed from wave1
+///
+///        The text comparison is case insensitive.
 ///        wave1 must be 1d, the returned wave is 1d.
+///        Waves can be text or numeric, both waves must have the same type
 ///
 /// @sa GetListDifference for string lists
-threadsafe Function/WAVE GetSetDifference(WAVE wave1, WAVE wave2)
+///
+/// @param wave1      first wave
+/// @param wave2      second wave
+/// @param getIndices [optional, default 0] when this flag is set instead of the values the indices in wave1 are returned
+///
+/// @returns Wave with partial values from wave1 or numeric wave with indices of elements in wave1
+threadsafe Function/WAVE GetSetDifference(WAVE wave1, WAVE wave2, [variable getIndices])
 
 	variable isText, index
 
-	isText = (IsTextWave(wave1) && IsTextWave(wave2))
+	getIndices = ParamIsDefault(getIndices) ? 0 : !!getIndices
+	isText     = (IsTextWave(wave1) && IsTextWave(wave2))
 
 	ASSERT_TS((IsFloatingPointWave(wave1) && IsFloatingPointWave(wave2)) || isText, "Non matching wave types (both float or both text).")
 	ASSERT_TS(WaveType(wave1) == WaveType(wave2), "Wave type mismatch")
@@ -3758,9 +3768,9 @@ threadsafe Function/WAVE GetSetDifference(WAVE wave1, WAVE wave2)
 	WAVE/Z result
 
 	if(isText)
-		[result, index] = GetSetDifferenceText(wave1, wave2)
+		[result, index] = GetSetDifferenceText(wave1, wave2, getIndices)
 	else
-		[result, index] = GetSetDifferenceNumeric(wave1, wave2)
+		[result, index] = GetSetDifferenceNumeric(wave1, wave2, getIndices)
 	endif
 
 	if(index == 0)
@@ -3772,41 +3782,59 @@ threadsafe Function/WAVE GetSetDifference(WAVE wave1, WAVE wave2)
 	return result
 End
 
-threadsafe static Function [WAVE result, variable index] GetSetDifferenceNumeric(WAVE wave1, WAVE wave2)
+threadsafe static Function [WAVE result, variable index] GetSetDifferenceNumeric(WAVE wave1, WAVE wave2, variable getIndices)
+
 	variable numEntries, i, j, value
 
 	Duplicate/FREE wave1, result
 
 	numEntries = DimSize(wave1, ROWS)
-	for(i = 0; i < numEntries; i += 1)
-		value = wave1[i]
+	if(getIndices)
+		for(i = 0; i < numEntries; i += 1)
+			value = wave1[i]
 
-		FindValue/UOFV/V=(value) wave2
-		if(V_Value == -1)
-			result[j++] = value
-		endif
-	endfor
+			FindValue/UOFV/V=(value) wave2
+			if(V_Value == -1)
+				result[j++] = i
+			endif
+		endfor
+	else
+		for(value : wave1)
+			FindValue/UOFV/V=(value) wave2
+			if(V_Value == -1)
+				result[j++] = value
+			endif
+		endfor
+	endif
 
 	return [result, j]
 End
 
-threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WAVE/T wave1, WAVE/T wave2)
+threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WAVE/T wave1, WAVE/T wave2, variable getIndices)
+
 	variable numEntries, i, j
 	string str
 
-	Duplicate/FREE/T wave1, resultTxT
-
 	numEntries = DimSize(wave1, ROWS)
-	for(i = 0; i < numEntries; i += 1)
-		str = wave1[i]
-
-		FindValue/UOFV/TEXT=(str)/TXOP=4 wave2
-		if(V_Value == -1)
-			resultTxT[j++] = str
-		endif
-	endfor
-
-	WAVE result = resultTxT
+	if(getIndices)
+		Make/FREE/D/N=(numEntries) resultIndices
+		for(i = 0; i < numEntries; i += 1)
+			FindValue/UOFV/TEXT=(wave1[i])/TXOP=4 wave2
+			if(V_Value == -1)
+				resultIndices[j++] = i
+			endif
+		endfor
+		WAVE result = resultIndices
+	else
+		Duplicate/FREE/T wave1, resultTxT
+		for(str : wave1)
+			FindValue/UOFV/TEXT=(str)/TXOP=4 wave2
+			if(V_Value == -1)
+				resultTxT[j++] = str
+			endif
+		endfor
+		WAVE result = resultTxT
+	endif
 
 	return [result, j]
 End
@@ -7087,4 +7115,24 @@ End
 ///
 Function CleanupOperationQueueResult()
 	Execute/P/Q "KillVariables/Z V_flag"
+End
+
+/// @brief Attempts matching against a number of wildcard patterns
+///
+/// @param patterns  text wave with wildcard patterns to match against
+/// @param matchThis string that is matched
+/// @returns Returns 1 if matchThis was successfully matches, 0 otherwise
+Function MatchAgainstWildCardPatterns(WAVE/T patterns, string matchThis)
+
+	string pattern
+
+	ASSERT(IsTextWave(patterns), "argument must be text wave")
+	ASSERT(!IsNull(matchThis), "argument must not be a null tring")
+	for(pattern : patterns)
+		if(stringmatch(matchThis, pattern))
+			return 1
+		endif
+	endfor
+
+	return 0
 End

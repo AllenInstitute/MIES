@@ -664,8 +664,7 @@ threadsafe Function GetSweepColumn(labnotebookValues)
 	variable sweepCol
 
 	// new label
-	sweepCol = FindDimLabel(labnotebookValues, COLS, "SweepNum")
-
+	sweepCol = GetLogbookSettingsColumn(labnotebookValues, "SweepNum")
 	if(sweepCol >= 0)
 		return sweepCol
 	endif
@@ -673,15 +672,13 @@ threadsafe Function GetSweepColumn(labnotebookValues)
 	// Old label prior to 4caea03f
 	// was normally overwritten by SweepNum later in the code
 	// but not always as it turned out
-	sweepCol = FindDimLabel(labnotebookValues, COLS, "SweepNumber")
-
+	sweepCol = GetLogbookSettingsColumn(labnotebookValues, "SweepNumber")
 	if(sweepCol >= 0)
 		return sweepCol
 	endif
 
 	// text documentation waves
-	sweepCol = FindDimLabel(labnotebookValues, COLS, "Sweep #")
-
+	sweepCol = GetLogbookSettingsColumn(labnotebookValues, "Sweep #")
 	if(sweepCol >= 0)
 		return sweepCol
 	endif
@@ -1041,6 +1038,19 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 	return [$"", NaN]
 End
 
+threadsafe static Function GetLogbookSettingsColumn(WAVE values, string key)
+
+	[WAVE/T sortedKeys, WAVE indices] = GetLogbookSortedKeys(values)
+
+	return GetLogbookSettingsColumnFromSorted(sortedKeys, indices, key)
+End
+
+threadsafe static Function GetLogbookSettingsColumnFromSorted(WAVE/T sortedKeys, WAVE indices, string key)
+
+	variable index = BinarySearchText(sortedKeys, key)
+	return IsNaN(index) ? -2 : indices[index]
+End
+
 /// @brief Return a numeric/textual wave with the latest value of a setting
 ///        from the numerical/labnotebook labnotebook for the given sweep number.
 ///
@@ -1064,16 +1074,16 @@ threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceTyp
 
 	// entries before the first sweep have sweepNo == NaN
 	// we can't cache that
-	if(IsNaN(sweepNo))
-		return GetLastSettingNoCache(values, sweepNo, setting, entrySourceType)
-	elseif(!IsValidSweepNumber(sweepNo))
+	if(!IsValidSweepNumber(sweepNo) && !IsNaN(sweepNo))
 		return $""
 	endif
 
-	settingCol = FindDimLabel(values, COLS, setting)
-
+	settingCol = GetLogbookSettingsColumn(values, setting)
 	if(settingCol < 0)
 		return $""
+	endif
+	if(IsNaN(sweepNo))
+		return GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, settingCol = settingCol)
 	endif
 
 	entrySourceTypeIndex = EntrySourceTypeMapper(entrySourceType)
@@ -1142,19 +1152,16 @@ End
 /// @param[in, out] last   [optional] see `first`
 /// @param[out] rowIndex   [optional] return the row where the setting could be
 ///                        found, otherwise it is set to #LABNOTEBOOK_MISSING_VALUE
+/// @param settingCol      [optional, default: determined by function] if the caller has already determined the setting column, it can set this argument
+///                        then GetLastSettingNoCache saves the find
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [first, last, rowIndex])
-	WAVE     values
-	variable sweepNo
-	string   setting
-	variable entrySourceType
-	variable &first, &last, &rowIndex
+threadsafe Function/WAVE GetLastSettingNoCache(WAVE values, variable sweepNo, string setting, variable entrySourceType, [variable &first, variable &last, variable &rowIndex, variable settingCol])
 
-	variable settingCol, numLayers, i, sweepCol, numEntries
+	variable numLayers, i, sweepCol, numEntries
 	variable firstValue, lastValue, sourceTypeCol, peakResistanceCol, pulseDurationCol
 	variable testpulseBlockLength, blockType, hasValidTPPulseDurationEntry
 	variable mode, sweepNoInLNB
@@ -1177,14 +1184,13 @@ threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySo
 		ASSERT_TS(0, "Invalid params")
 	endif
 
-	numLayers  = DimSize(values, LAYERS)
-	settingCol = FindDimLabel(values, COLS, setting)
-
+	settingCol = ParamIsDefault(settingCol) ? FindDimLabel(values, COLS, setting) : settingCol
 	if(settingCol <= 0)
 		return $""
 	endif
 
-	sweepCol = GetSweepColumn(values)
+	numLayers = DimSize(values, LAYERS)
+	sweepCol  = GetSweepColumn(values)
 	if(mode == GET_LB_MODE_NONE || mode == GET_LB_MODE_WRITE)
 		FindRange(values, sweepCol, sweepNo, entrySourceType, firstValue, lastValue)
 
@@ -5167,11 +5173,18 @@ End
 /// @param TTLmode         [optional, defaults to #TTL_DAEPHYS_CHANNEL] One of @ref ActiveChannelsTTLMode.
 ///                        Does only apply to TTL channels.
 threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, [variable TTLmode])
+
 	variable i, numEntries, index
-	string key
+	string key, cacheKey
 
 	if(ParamIsDefault(TTLmode))
 		TTLmode = TTL_DAEPHYS_CHANNEL
+	endif
+
+	cacheKey = CA_GenKeyGetActiveChannels(numericalValues, textualValues, sweepNo, channelType, TTLmode)
+	WAVE/Z result = CA_TryFetchingEntryFromCache(cacheKey)
+	if(WaveExists(result))
+		return result
 	endif
 
 	switch(channelType)
@@ -5200,6 +5213,8 @@ threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualVal
 
 		channelStatus[i] = i
 	endfor
+
+	CA_StoreEntryIntoCache(cacheKey, channelStatus)
 
 	return channelStatus
 End
@@ -7319,10 +7334,10 @@ threadsafe Function/WAVE FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	// * Delete all NaNs in the wave and return it
 
 	key = CA_TemporaryWaveKey({numRows, numLayers})
-	WAVE/Z matches = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+	WAVE/Z/D matches = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 
 	if(!WaveExists(matches))
-		Make/N=(numRows, numLayers)/FREE/R matches
+		Make/N=(numRows, numLayers)/FREE/D matches
 		CA_StoreEntryIntoCache(key, matches, options = CA_OPTS_NO_DUPLICATE)
 	endif
 
