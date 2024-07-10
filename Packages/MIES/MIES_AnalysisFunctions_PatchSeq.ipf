@@ -2067,22 +2067,54 @@ static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(st
 	return [apfreq, DaScale]
 End
 
+static Function [WAVE apfreqFiltered, WAVE DAScalesFiltered, variable numPoints] PSQ_DS_FilterFrequencyCurrentData(WAVE apfreq, WAVE DAScales)
+
+	numPoints = DimSize(apfreq, ROWS)
+	ASSERT(numPoints == DimSize(DaScales, ROWS), "Non-matching wave sizes")
+
+	if(numPoints < PSQ_DA_NUM_POINTS_LINE_FIT)
+		return [$"", $"", 0]
+	endif
+
+	WAVE/Z indizes = FindNeighbourDuplicates(apfreq)
+
+	if(!WaveExists(indizes))
+		return [apfreq, DAScales, numPoints]
+	endif
+
+	if(DimSize(indizes, ROWS) == (numPoints - 1))
+		// we can't do any fitting with only a single point left
+		// but as the original data was all the same we can
+		// just take the first PSQ_DA_NUM_POINTS_LINE_FIT points
+		Duplicate/FREE/RMD=[0, PSQ_DA_NUM_POINTS_LINE_FIT - 1] apFreq, apFreqFiltered
+		Duplicate/FREE/RMD=[0, PSQ_DA_NUM_POINTS_LINE_FIT - 1] DAScales, DAScalesFiltered
+	else
+		Duplicate/FREE apFreq, apFreqFiltered
+		Duplicate/FREE DAScales, DAScalesFiltered
+
+		DeleteWavePoint(apFreqFiltered, ROWS, indices = indizes)
+		DeleteWavePoint(DAScalesFiltered, ROWS, indices = indizes)
+	endif
+
+	WaveClear apFreq, DASCales
+
+	numPoints = DimSize(apfreqFiltered, ROWS)
+
+	return [apfreqFiltered, DASCalesFiltered, numPoints]
+End
+
 /// @brief Fit the AP frequency and DAScale data with a line fit and return the fit results (offsets and slopes)
-///
-/// We return as many results as we can perform fits by taking `numPointsForLineFit` for
-/// one fit and continue until we don't have data anymore.
 ///
 /// @param device              DAC hardware device
 /// @param sweepNo             current sweep
 /// @param apfreq              AP frequency data
 /// @param DAScales            DAScale data
-/// @param numPointsForLineFit number of points to use for a single fit
-/// @param singleFit           [optional, defaults to false] if only a single fit should be done with the last `numPointsForLineFit` points
+/// @param singleFit           [optional, defaults to false] if only a single fit should be done
 ///
 /// @retval fitOffset offsets of all line fits
 /// @retval fitSlope  slopes of all line fits
 /// @retval errMsg    error message if both `fitOffset` and `fitSlope` are null
-static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFrequencyCurrentData(string device, variable sweepNo, WAVE/Z apfreq, WAVE/Z DAScales, variable numPointsForLineFit, [variable singleFit])
+static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFrequencyCurrentData(string device, variable sweepNo, WAVE/Z apfreq, WAVE/Z DAScales, [variable singleFit])
 
 	variable i, numPoints, numFits, first, last, hasEnoughPoints, initialFit
 	string line, databrowser, key
@@ -2094,18 +2126,18 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 		singleFit = !!singleFit
 	endif
 
-	if(!WaveExists(apfreq) && !WaveExists(DAScales))
+	if(!WaveExists(apFreq) && !WaveExists(DAScales))
 		return [$"", $"", "No apfreq/DAScales data"]
 	endif
 
-	numPoints = DimSize(apfreq, ROWS)
-	ASSERT(numPoints == DimSize(DaScales, ROWS), "Non-matching wave sizes")
+	[WAVE apfreqFiltered, WAVE DAScalesFiltered, numPoints] = PSQ_DS_FilterFrequencyCurrentData(apfreq, DAScales)
+	WaveClear apfreq, DAScales
 
-	hasEnoughPoints = (numPoints >= numPointsForLineFit)
+	hasEnoughPoints = (numPoints >= PSQ_DA_NUM_POINTS_LINE_FIT)
 
 	if(singleFit && hasEnoughPoints)
-		DeletePoints/M=(ROWS) 0, (numPoints - numPointsForLineFit), apFreq, DAScales
-		numPoints = numPointsForLineFit
+		DeletePoints/M=(ROWS) 0, (numPoints - PSQ_DA_NUM_POINTS_LINE_FIT), apFreqFiltered, DAScalesFiltered
+		numPoints = PSQ_DA_NUM_POINTS_LINE_FIT
 	endif
 
 	WAVE hasEnoughPointsLBN = LBN_GetNumericWave()
@@ -2117,19 +2149,19 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 		return [$"", $"", "Not enough points for fit"]
 	endif
 
-	numFits = (numPoints - numPointsForLineFit) + 1
+	numFits = (numPoints - PSQ_DA_NUM_POINTS_LINE_FIT) + 1
 
 	// output variables
 	for(i = 0; i < numFits; i += 1)
 		first = i
-		last  = (i + numPointsForLineFit) - 1
+		last  = (i + PSQ_DA_NUM_POINTS_LINE_FIT) - 1
 
-		WAVE apfreqSlice = DuplicateSubRange(apfreq, first, last)
+		WAVE apfreqSlice = DuplicateSubRange(apfreqFiltered, first, last)
 		/// @todo prefer %f over %g due to https://github.com/AllenInstitute/MIES/issues/1863
 		sprintf line, "freq%d = [%s]\r", i, NumericWaveToList(apfreqSlice, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 		str += line
 
-		WAVE DaScalesSlice = DuplicateSubRange(DAScales, first, last)
+		WAVE DaScalesSlice = DuplicateSubRange(DAScalesFiltered, first, last)
 		sprintf line, "dascale%d = [%s]\r", i, NumericWaveToList(DaScalesSlice, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 		str += line
 	endfor
@@ -2523,7 +2555,7 @@ End
 ///
 /// - Gather AP frequency and DAscale data
 /// - Fetch the same data from the passing rheobase/supra sweeps and previous adaptive sweeps from the same SCI
-/// - Create a new line fit for the last `numPointsForLineFit` points
+/// - Create a new line fit for the last two points with differing AP frequency
 /// - Check if the resulting fit slope is smaller than `slopePercentage`
 ///
 /// @retval futureDAScales future DAScale values including the historic ones, @see PSQ_DS_GatherFutureDAScalesAndFrequency
@@ -2543,7 +2575,7 @@ static Function [WAVE futureDAScales, variable fitOffset, variable fitSlope, var
 
 	[WAVE futureDAScales, WAVE apfreqs, WAVE DAScales] = PSQ_DS_GatherFutureDAScalesAndFrequency(device, sweepNo, headstage, cdp)
 
-	[WAVE fitOffsetAll, WAVE fitSlopeAll, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, sweepNo, apfreqs, DAScales, cdp.numPointsForLineFit, singleFit = 1)
+	[WAVE fitOffsetAll, WAVE fitSlopeAll, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, sweepNo, apfreqs, DAScales, singleFit = 1)
 
 	validFit = PSQ_DS_AreFitResultsValid(device, sweepNo, headstage, fitOffsetAll, fitSlopeAll)
 
@@ -2985,7 +3017,7 @@ End
 
 static Structure PSQ_DS_DAScaleParams
 	variable absFrequencyMinDistance, maxFrequencyChangePercent
-	variable daScaleStepMinNorm, daScaleStepMaxNorm, numPointsForLineFit, slopePercentage
+	variable daScaleStepMinNorm, daScaleStepMaxNorm, slopePercentage
 EndStructure
 
 static Function PSQ_DS_DAScaleParamsAreFinite(STRUCT PSQ_DS_DAScaleParams &cdp)
@@ -2994,7 +3026,6 @@ static Function PSQ_DS_DAScaleParamsAreFinite(STRUCT PSQ_DS_DAScaleParams &cdp)
 	       && IsFinite(cdp.maxFrequencyChangePercent) \
 	       && IsFinite(cdp.daScaleStepMinNorm)        \
 	       && IsFinite(cdp.daScaleStepMaxNorm)        \
-	       && IsFinite(cdp.numPointsForLineFit)       \
 	       && IsFinite(cdp.slopePercentage)
 End
 
@@ -3004,7 +3035,6 @@ static Function PSQ_DS_InitDAScaleParams(STRUCT PSQ_DS_DAScaleParams &cdp)
 	cdp.maxFrequencyChangePercent = NaN
 	cdp.daScaleStepMinNorm        = NaN
 	cdp.daScaleStepMaxNorm        = NaN
-	cdp.numPointsForLineFit       = NaN
 	cdp.slopePercentage           = NaN
 End
 
@@ -3169,7 +3199,6 @@ Function/S PSQ_DAScale_GetParams()
 	       "SamplingMultiplier:variable,"             + \
 	       "[ShowPlot:variable],"                     + \
 	       "[SlopePercentage:variable],"              + \
-	       "[NumPointsForLineFit:variable],"          + \
 	       "[NumInvalidSlopeSweepsAllowed:variable]," + \
 	       "[MaxFrequencyChangePercent:variable],"    + \
 	       "[NumSweepsWithSaturation:variable]"
@@ -3203,9 +3232,6 @@ Function/S PSQ_DAScale_GetHelp(string name)
 			return "The maximum allowed difference for the frequency for two consecutive measurements. "           \
 			       + "In case this value is overshot, we redo the measurement with a fitting DAScale in-between. " \
 			       + "Only for \"AdaptiveSupra\"."
-		case "NumPointsForLineFit":
-			return "Number of points from the f-I data which will be used for each line fit. " + \
-			       "Only for \"AdaptiveSupra\"."
 		case "NumSweepsWithSaturation":
 			return "Number of required consecutive passing sweeps to have passing sweep QC and f-I slope QC, defaults to 2. " + \
 			       "Only for \"AdaptiveSupra\"."
@@ -3279,12 +3305,6 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 		case "NumInvalidSlopeSweepsAllowed":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= IDX_NumberOfSweepsInSet(s.setName)))
-				return "Invalid range"
-			endif
-			break
-		case "NumPointsForLineFit":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 2 && val <= IDX_NumberOfSweepsInSet(s.setName)))
 				return "Invalid range"
 			endif
 			break
@@ -3459,7 +3479,6 @@ Function PSQ_DAScale(device, s)
 	variable daScaleModifier, chunk
 	variable numSweepsPass                = NaN
 	variable slopePercentage              = NaN
-	variable numPointsForLineFit          = NaN
 	variable numInvalidSlopeSweepsAllowed = NaN
 	variable maxFrequencyChangePercent    = NaN
 	variable numSweepsWithSaturation      = NaN
@@ -3497,7 +3516,6 @@ Function PSQ_DAScale(device, s)
 			numSweepsPass = NaN
 
 			slopePercentage              = AFH_GetAnalysisParamNumerical("SlopePercentage", s.params, defValue = PSQ_DA_SLOPE_PERCENTAGE_DEFAULT)
-			numPointsForLineFit          = AFH_GetAnalysisParamNumerical("NumPointsForLineFit", s.params, defValue = PSQ_DA_NUM_POINTS_LINE_FIT)
 			numSweepsWithSaturation      = AFH_GetAnalysisParamNumerical("NumSweepsWithSaturation", s.params, defValue = PSQ_DA_NUM_SWEEPS_SATURATION)
 			numInvalidSlopeSweepsAllowed = AFH_GetAnalysisParamNumerical("NumInvalidSlopeSweepsAllowed", s.params, defValue = PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED)
 			maxFrequencyChangePercent    = AFH_GetAnalysisParamNumerical("MaxFrequencyChangePercent", s.params, defValue = PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT)
@@ -3509,7 +3527,6 @@ Function PSQ_DAScale(device, s)
 			PSQ_DS_InitDAScaleParams(cdp)
 			cdp.maxFrequencyChangePercent = maxFrequencyChangePercent
 			cdp.absFrequencyMinDistance   = absFrequencyMinDistance
-			cdp.numPointsForLineFit       = numPointsForLineFit
 			cdp.slopePercentage           = slopePercentage
 			break
 		default:
@@ -3617,8 +3634,8 @@ Function PSQ_DAScale(device, s)
 					key                          = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT)
 					ED_AddEntryToLabnotebook(device, key, DAScalesTextLBN, overrideSweepNo = s.sweepNo)
 
-					[WAVE fitOffsetFromRhSuAd, WAVE fitSlopeFromRhSuAd, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, s.sweepNo,                               \
-					                                                                                             apfreqRhSuAd, DAScalesRhSuAd, numPointsForLineFit)
+					[WAVE fitOffsetFromRhSuAd, WAVE fitSlopeFromRhSuAd, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, s.sweepNo,          \
+					                                                                                             apfreqRhSuAd, DAScalesRhSuAd)
 
 					if(!WaveExists(fitOffsetFromRhSuAd) || !WaveExists(fitSlopeFromRhSuAd))
 						printf "The f-I fit of the rheobase/supra data failed due to: \"%s\"\r", errMsg
