@@ -2101,12 +2101,12 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 	numPoints = DimSize(apfreq, ROWS)
 	ASSERT(numPoints == DimSize(DaScales, ROWS), "Non-matching wave sizes")
 
-	if(singleFit)
+	hasEnoughPoints = (numPoints >= numPointsForLineFit)
+
+	if(singleFit && hasEnoughPoints)
 		DeletePoints/M=(ROWS) 0, (numPoints - numPointsForLineFit), apFreq, DAScales
 		numPoints = numPointsForLineFit
 	endif
-
-	hasEnoughPoints = (numPoints >= numPointsForLineFit)
 
 	WAVE hasEnoughPointsLBN = LBN_GetNumericWave()
 	key                                 = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS)
