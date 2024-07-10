@@ -2787,8 +2787,8 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 	string device, setName
 
 	string func, listOfAnalysisFunctions
-	string info, str, suppParams, suppName, suppType, reqNamesAndTypesFromFunc, reqNames, reqName
-	string diff, name, suppNames, reqType, errorMessage
+	string info, str
+	string diff, name, errorMessage
 	variable i, j, numEntries
 
 	if(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
@@ -2845,77 +2845,8 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 			continue
 		endif
 
-		// check that all required user parameters are supplied
-		// an empty list of required names is okay, this is the case when the
-		// names are not known beforehand (i.e. dynamic)
-		reqNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(func, REQUIRED_PARAMS)
-
-		reqNames   = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
-		suppParams = WB_ExtractAnalysisFunctionParams(stimSet)
-		suppNames  = AFH_GetListOfAnalysisParamNames(suppParams)
-		diff       = GetListDifference(reqNames, suppNames, caseSensitive = 0)
-		if(!IsEmpty(diff))
-			printf "(%s) The required analysis parameters requested by %s for stim set %s were not all supplied (missing are: %s)\r", device, func, setName, diff
-			ControlWindowToFront()
-			return 1
-		endif
-
-		numEntries = ItemsInList(reqNames)
-		for(j = 0; j < numEntries; j += 1)
-			reqName = StringFromList(j, reqNames)
-
-			if(!AFH_IsValidAnalysisParameter(reqName))
-				printf "(%s) The required analysis parameter %s for %s in stim set %s has the invalid name %s.\r", device, name, func, setName, reqName
-				ControlWindowToFront()
-				return 1
-			endif
-
-			reqType = AFH_GetAnalysisParamType(reqName, reqNamesAndTypesFromFunc, typeCheck = 0)
-			// no type specification is allowed
-			if(IsEmpty(reqType))
-				continue
-			endif
-
-			// invalid types are not allowed
-			if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES, ";", 0, 0) == -1)
-				printf "(%s) The required analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", device, reqName, func, setName, reqType
-				ControlWindowToFront()
-				return 1
-			endif
-
-			// non matching type
-			suppType = AFH_GetAnalysisParamType(reqName, suppParams, typeCheck = 0)
-			if(cmpstr(reqType, suppType))
-				printf "(%s) The analysis parameter %s for %s in stim set %s has type %s but the required type is %s.\r", device, reqName, func, setName, suppType, reqType
-				ControlWindowToFront()
-				return 1
-			endif
-
-			strswitch(reqType)
-				case "wave":
-					WAVE/Z wv = AFH_GetAnalysisParamWave(reqName, suppParams)
-					if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
-						printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty numeric wave.\r", device, reqName, func, setName
-						ControlWindowToFront()
-						return 1
-					endif
-					break
-				case "textwave":
-					WAVE/Z wv = AFH_GetAnalysisParamTextWave(reqName, suppParams)
-					if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
-						printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty text wave.\r", device, reqName, func, setName
-						ControlWindowToFront()
-						return 1
-					endif
-					break
-				default:
-					// do nothing
-					break
-			endswitch
-		endfor
-
 		STRUCT CheckParametersStruct s
-		s.params  = suppParams
+		s.params  = WB_ExtractAnalysisFunctionParams(stimSet)
 		s.setName = setName
 
 		errorMessage = AFH_CheckAnalysisParameter(func, s)
