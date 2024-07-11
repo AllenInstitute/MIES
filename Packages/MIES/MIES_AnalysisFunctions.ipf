@@ -990,7 +990,7 @@ End
 
 /// @brief Return a list of required parameters
 Function/S ReachTargetVoltage_GetParams()
-	return "[EnableIndexing:variable],[IndexingEndStimsetAllIC:variable]"
+	return "[EnableIndexing:variable],[IndexingEndStimsetAllIC:string]"
 End
 
 Function/S ReachTargetVoltage_GetHelp(string name)
