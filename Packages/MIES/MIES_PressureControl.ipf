@@ -1826,7 +1826,7 @@ Function P_UpdatePressureModeTabs(device, headStage)
 		TabControl tab_DataAcq_Pressure, win=$device, tabLabel(1)="Manual"
 	endif
 
-	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = pressureWave[headStage][%ManSSPressure])
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = pressureWave[headStage][%ManSSPressure], mode = PGC_MODE_SKIP_ON_DISABLED)
 
 	WAVE pressureType = GetPressureTypeWv(device)
 
