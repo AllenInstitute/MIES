@@ -158,6 +158,12 @@ threadsafe Function/S GetIgorProVersion()
 	return StringByKey("IGORFILEVERSION", GetIgorInfo(3))
 End
 
+/// @brief Return the major Igor Pro version
+threadsafe Function GetIgorProMajorVersion()
+
+	return floor(IgorVersion())
+End
+
 /// @brief Return the Igor Pro build version string
 ///
 /// This allows to distinguish different builds from the same major/minor
