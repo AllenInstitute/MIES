@@ -4477,7 +4477,7 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 	if(writeSourcePaths)
 		AddEntryIntoWaveNoteAsList(freeAverageWave, "SourceWavesForAverage", str = ReplaceString(";", WaveRefWaveToList(waveRefs, 0), "|"))
 	endif
-	SetNumberInWaveNote(freeAverageWave, NOTE_KEY_WAVE_MAXIMUM, WaveMax(freeAverageWave), format = "%.15f")
+	SetNumberInWaveNote(freeAverageWave, NOTE_KEY_WAVE_MAXIMUM, WaveMax(freeAverageWave), format = PERCENT_F_MAX_PREC)
 
 	CA_StoreEntryIntoCache(key, freeAverageWave, options = CA_OPTS_NO_DUPLICATE)
 

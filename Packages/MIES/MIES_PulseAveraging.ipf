@@ -606,8 +606,8 @@ threadsafe static Function PA_UpdateMinAndMax(WAVE wv, WAVE noteWave)
 	variable minimum, maximum
 
 	[minimum, maximum] = WaveMinAndMax(wv)
-	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MINIMUM, minimum, format = "%.15f")
-	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MAXIMUM, maximum, format = "%.15f")
+	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MINIMUM, minimum, format = PERCENT_F_MAX_PREC)
+	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MAXIMUM, maximum, format = PERCENT_F_MAX_PREC)
 End
 
 /// @brief Generate a key for a pulse
@@ -2206,7 +2206,7 @@ threadsafe static Function PA_StoreMaxAndUnitsInWaveNote(WAVE/Z w, WAVE/Z unitSo
 	endif
 
 	SetScale d, 0, 0, WaveUnits(unitSource, -1), w
-	SetNumberInWaveNote(w, NOTE_KEY_WAVE_MAXIMUM, WaveMax(w), format = "%.15f")
+	SetNumberInWaveNote(w, NOTE_KEY_WAVE_MAXIMUM, WaveMax(w), format = PERCENT_F_MAX_PREC)
 	return 0
 End
 

@@ -86,7 +86,7 @@ Function SFH_GetArgumentAsNumeric(variable jsonId, string jsonPath, string graph
 		idx = GetRowIndex(allowedValues, val = result)
 		if(IsNaN(idx))
 			sep                = ", "
-			allowedValuesAsStr = RemoveEnding(NumericWaveToList(allowedValues, sep), sep)
+			allowedValuesAsStr = NumericWaveToList(allowedValues, sep, trailSep = 0)
 			sprintf msg, "Argument #%d of operation %s: The numeric argument \"%g\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
 			SFH_ASSERT(0, msg)
 		endif
@@ -179,12 +179,12 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 		WAVE/T/Z matches = GrepTextWave(allowedValues, "(?i)^\\Q" + result + "\\E.*$")
 		if(!WaveExists(matches))
 			sep                = ", "
-			allowedValuesAsStr = RemoveEnding(TextWaveToList(allowedValues, sep), sep)
+			allowedValuesAsStr = TextWaveToList(allowedValues, sep, trailSep = 0)
 			sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
 			SFH_ASSERT(0, msg)
 		elseif(DimSize(matches, ROWS) > 1)
 			sep                = ", "
-			allowedValuesAsStr = RemoveEnding(TextWaveToList(matches, sep), sep)
+			allowedValuesAsStr = TextWaveToList(matches, sep, trailSep = 0)
 			sprintf msg, "Argument #%d of operation %s: The abbreviated text argument \"%s\" is not unique and could be (%s)", argNum, opShort, result, allowedValuesAsStr
 			SFH_ASSERT(0, msg)
 		else

@@ -3677,7 +3677,7 @@ static Function PSX_AddLegend(string win, WAVE/WAVE results)
 							ASSERT(IsNumericWave(wv), "Expected numeric wave")
 							// NumericWaveToList outputs in column-major order but we want row-major
 							MatrixOp/FREE dest = wv^t
-							str += RemoveEnding(NumericWaveToList(dest, sep), sep) + containerSep
+							str += NumericWaveToList(dest, sep, trailSep = 0) + containerSep
 						endfor
 
 						str = RemoveEnding(str, containerSep)

@@ -176,9 +176,9 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
 			printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
-			printf "Current sweep: [%s]\r", RemoveEnding(TextWaveToList(sweeps, ";"), ";")
-			printf "DAQ: [%s]\r", RemoveEnding(TextWaveToList(daqStates, ";"), ";")
-			printf "Testpulse: [%s]\r", RemoveEnding(TextWaveToList(tpStates, ";"), ";")
+			printf "Current sweep: [%s]\r", TextWaveToList(sweeps, ";", trailSep = 0)
+			printf "DAQ: [%s]\r", TextWaveToList(daqStates, ";", trailSep = 0)
+			printf "Testpulse: [%s]\r", TextWaveToList(tpStates, ";", trailSep = 0)
 			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
 			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), GetIgorProBuildVersion()
 			print "MIES version:"
@@ -2875,12 +2875,13 @@ End
 /// @param chunkSep    [optional, default = "/"] separator for chunk entries
 /// @param stopOnEmpty [optional, default = 0] when 1 stops generating the list when an empty string entry in txtWave is encountered
 /// @param maxElements [optional, defaults to inf] output only the first `maxElements` entries
+/// @param trailSep    [optional, defaults to true] add trailing separators at the very end
 ///
 /// @return string with wave entries separated as list using given separators
 ///
 /// Counterpart @see ConvertListToTextWave
 /// @see NumericWaveToList
-threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string colSep, string layerSep, string chunkSep, variable stopOnEmpty, variable maxElements])
+threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string colSep, string layerSep, string chunkSep, variable stopOnEmpty, variable maxElements, variable trailSep])
 	string entry, seps
 	string list = ""
 	variable i, j, k, l, lasti, lastj, lastk, lastl, numRows, numCols, numLayers, numChunks, count, done
@@ -2917,6 +2918,12 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 		ASSERT_TS((IsInteger(maxElements) && maxElements >= 0) || maxElements == Inf, "maxElements must be >=0 and an integer")
 	endif
 
+	if(ParamIsDefault(trailSep))
+		trailSep = 1
+	else
+		trailSep = !!trailSep
+	endif
+
 	stopOnEmpty = ParamIsDefault(stopOnEmpty) ? 0 : !!stopOnEmpty
 
 	numRows = DimSize(txtWave, ROWS)
@@ -2928,7 +2935,7 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 	numChunks = DimSize(txtWave, CHUNKS)
 
 	if(!stopOnEmpty && maxElements == Inf && !numLayers && !numChunks)
-		return WaveToListFast(txtWave, "%s", rowSep, colSep)
+		return WaveToListFast(txtWave, "%s", rowSep, colSep, trailSep)
 	endif
 
 	numColsLoop   = max(1, numCols)
@@ -2996,19 +3003,22 @@ threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string co
 		return list
 	endif
 
-	if(numChunks)
-		list += chunkSep
-	endif
+	if(trailSep)
 
-	if(numLayers)
-		list += layerSep
-	endif
+		if(numChunks)
+			list += chunkSep
+		endif
 
-	if(numCols)
-		list += colSep
-	endif
+		if(numLayers)
+			list += layerSep
+		endif
 
-	list += rowSep
+		if(numCols)
+			list += colSep
+		endif
+
+		list += rowSep
+	endif
 
 	return list
 End
@@ -3135,14 +3145,21 @@ End
 /// Counterpart @see ListToNumericWave
 /// @see TextWaveToList
 ///
-/// @param wv     numeric wave
-/// @param sep    separator
-/// @param colSep [optional, default = `,`] separator for column entries
-/// @param format [optional, defaults to `%g`] sprintf conversion specifier
-threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, string colSep])
+/// @param wv           numeric wave
+/// @param sep          separator
+/// @param colSep       [optional, default = `,`] separator for column entries
+/// @param format       [optional, defaults to `%g`] sprintf conversion specifier
+/// @param trailSep [optional, defaults to false] don't add a row separator after the last row
+threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, string colSep, variable trailSep])
 
 	if(!WaveExists(wv))
 		return ""
+	endif
+
+	if(ParamIsDefault(trailSep))
+		trailSep = 1
+	else
+		trailSep = !!trailSep
 	endif
 
 	ASSERT_TS(IsNumericWave(wv), "Expected a numeric wave")
@@ -3163,10 +3180,10 @@ threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, s
 		ASSERT_TS(!IsEmpty(colSep), "Expected a non-empty column list separator")
 	endif
 
-	return WaveToListFast(wv, format, sep, colSep)
+	return WaveToListFast(wv, format, sep, colSep, trailSep)
 End
 
-threadsafe static Function/S WaveToListFast(WAVE wv, string format, string sep, string colSep)
+threadsafe static Function/S WaveToListFast(WAVE wv, string format, string sep, string colSep, variable trailSep)
 
 	string list
 
@@ -3177,6 +3194,10 @@ threadsafe static Function/S WaveToListFast(WAVE wv, string format, string sep, 
 	endif
 
 	wfprintf list, format, wv
+
+	if(!trailSep)
+		return RemoveEnding(RemoveEnding(list, sep), colSep)
+	endif
 
 	return list
 End

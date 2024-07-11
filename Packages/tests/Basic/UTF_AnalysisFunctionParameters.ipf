@@ -913,7 +913,7 @@ static Function GenerateAnalysisFunctionTable()
 			output[idx][%Name]        = param
 			output[idx][%Type]        = type
 			output[idx][%Optionality] = NameOfWave(wv)
-			output[idx][%$"Used by"]  = RemoveEnding(TextWaveToList(funcsWithParam, ", "), ", ")
+			output[idx][%$"Used by"]  = TextWaveToList(funcsWithParam, ", ", trailSep = 0)
 			output[idx][%Help]        = help
 			idx++
 		endfor

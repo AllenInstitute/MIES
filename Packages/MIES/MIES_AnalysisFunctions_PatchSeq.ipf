@@ -1978,7 +1978,7 @@ static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(st
 
 	sprintf code, "trange = [%g, %g]\r", start, stop
 	str += code
-	sprintf code, "sweepr = [%s]\r", RemoveEnding(NumericWaveToList(sweeps, ","), ",")
+	sprintf code, "sweepr = [%s]\r", NumericWaveToList(sweeps, ",", trailSep = 0)
 	str += code
 	sprintf code, "sel = select(channels(AD%d), $sweepr, all)\r", ADC
 	str += code
@@ -2070,11 +2070,12 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 		last  = (i + numPointsForLineFit) - 1
 
 		WAVE apfreqSlice = DuplicateSubRange(apfreq, first, last)
-		sprintf line, "freq%d = [%s]\r", i, RemoveEnding(NumericWaveToList(apfreqSlice, ",", format = "%.15g"), ",")
+		/// @todo prefer %f over %g due to https://github.com/AllenInstitute/MIES/issues/1863
+		sprintf line, "freq%d = [%s]\r", i, NumericWaveToList(apfreqSlice, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 		str += line
 
 		WAVE DaScalesSlice = DuplicateSubRange(DAScales, first, last)
-		sprintf line, "dascale%d = [%s]\r", i, RemoveEnding(NumericWaveToList(DaScalesSlice, ",", format = "%.15g"), ",")
+		sprintf line, "dascale%d = [%s]\r", i, NumericWaveToList(DaScalesSlice, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 		str += line
 	endfor
 
@@ -2741,9 +2742,9 @@ static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStep
 
 	fitKey = "Fit result rheobase and supra"
 
-	sprintf code, "freq = [%s]\r", RemoveEnding(NumericWaveToList(apfreqFromRheobaseAndSupra, ",", format = "%.15g"), ",")
+	sprintf code, "freq = [%s]\r", NumericWaveToList(apfreqFromRheobaseAndSupra, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 	str += code
-	sprintf code, "dascale = [%s]\r", RemoveEnding(NumericWaveToList(DAScalesFromRheobaseAndSupra, ",", format = "%.15g"), ",")
+	sprintf code, "dascale = [%s]\r", NumericWaveToList(DAScalesFromRheobaseAndSupra, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 	str += code
 	sprintf code, "result = fit($dascale, $freq, fitline())\r"
 	str += code
