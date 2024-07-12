@@ -24,7 +24,7 @@ Constant WAVEBUILDER_PANEL_VERSION        = 14
 Constant ANALYSISBROWSER_PANEL_VERSION    = 5
 
 /// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 11
+Constant STIMSET_NOTE_VERSION = 12
 
 /// Version of the epoch information for DA+TTL data
 Constant SWEEP_EPOCH_VERSION = 9
