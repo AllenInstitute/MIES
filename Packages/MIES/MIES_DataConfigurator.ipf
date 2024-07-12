@@ -1063,7 +1063,7 @@ End
 static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurationResult &s)
 
 	variable i, startOffset, ttlOffset, singleSetLength, bitMask
-	variable ITCRackZeroChecked
+	variable ITCRackZeroChecked, minLimit, maxLimit
 
 	if(s.numTTLEntries == 0)
 		return NaN
@@ -1075,6 +1075,8 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 
 	WAVE config = GetDAQConfigWave(device)
 
+	[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_TTL, 0)
+
 	switch(s.hardwareType)
 		case HARDWARE_NI_DAC: // intended drop through
 		case HARDWARE_SUTTER_DAC:
@@ -1085,8 +1087,8 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 				WAVE TTLWaveSingle = TTLWaveNI[config[i + ttlOffset][%ChannelNumber]]
 				singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, device, DATA_ACQUISITION_MODE)
 				WAVE NIChannel = NIDataWave[i + ttlOffset]
-				MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                         \
-				            limit(TTLWaveSingle[round(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
+				MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                                       \
+				            limit(TTLWaveSingle[round(s.decimationFactor * (p - startOffset))], minLimit, maxLimit); AbortOnRTE
 			endfor
 			break
 		case HARDWARE_ITC_DAC:
@@ -1098,13 +1100,13 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 			ITCRackZeroChecked = !!DC_AreTTLsInRackChecked(device, RACK_ZERO)
 			bitMask            = 1 << NUM_ITC_TTL_BITS_PER_RACK - 1
 			if(ITCRackZeroChecked)
-				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset] =                                                         \
-				            limit(TTLWaveITC[round(s.decimationFactor * (p - startOffset))] & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset] =                                 \
+				            limit(TTLWaveITC[round(s.decimationFactor * (p - startOffset))] & bitMask, minLimit, maxLimit); AbortOnRTE
 			endif
 
 			if(DC_AreTTLsInRackChecked(device, RACK_ONE))
-				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset + ITCRackZeroChecked] =                                                                 \
-				            limit(TTLWaveITC[round(s.decimationFactor * (p - startOffset))] >> NUM_ITC_TTL_BITS_PER_RACK & bitMask, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset + ITCRackZeroChecked] =                                         \
+				            limit(TTLWaveITC[round(s.decimationFactor * (p - startOffset))] >> NUM_ITC_TTL_BITS_PER_RACK & bitMask, minLimit, maxLimit); AbortOnRTE
 			endif
 			break
 	endswitch
@@ -1378,11 +1380,13 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 
 		switch(s.hardwareType)
 			case HARDWARE_ITC_DAC:
+				[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, 0)
+
 				if(s.multiDevice)
 					Multithread ITCDataWave[][0, s.numDACEntries - 1] =                                            \
 					            limit((s.gains[q] * s.DACAmp[q][%TPAMP]) * s.testPulse[mod(p, s.testPulseLength)], \
-					                  SIGNED_INT_16BIT_MIN,                                                        \
-					                  SIGNED_INT_16BIT_MAX); AbortOnRTE
+					                  minLimit,                                                                    \
+					                  maxLimit); AbortOnRTE
 					cutOff = mod(DimSize(ITCDataWave, ROWS), s.testPulseLength)
 					if(cutOff > 0)
 						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, s.numDACEntries - 1] = 0
@@ -1390,21 +1394,23 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 				else
 					Multithread ITCDataWave[0, s.testPulseLength - 1][0, s.numDACEntries - 1] = \
 					            limit(s.gains[q] * s.DACAmp[q][%TPAMP] * s.testPulse[p],        \
-					                  SIGNED_INT_16BIT_MIN,                                     \
-					                  SIGNED_INT_16BIT_MAX); AbortOnRTE
+					                  minLimit,                                                 \
+					                  maxLimit); AbortOnRTE
 				endif
 
 				SetStringInWaveNote(ITCDataWave, TP_PROPERTIES_HASH, key, recursive = 1)
 				CA_StoreEntryIntoCache(key, ITCDataWave)
 				break
 			case HARDWARE_NI_DAC:
+				[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, 0)
+
 				for(i = 0; i < s.numDACEntries; i += 1)
 					WAVE NIChannel = NISUDataWave[i]
 					tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
 					Multithread NIChannel[0, s.testPulseLength - 1] = \
 					            limit(tpAmp * s.testPulse[p],         \
-					                  NI_DAC_MIN,                     \
-					                  NI_DAC_MAX); AbortOnRTE
+					                  minLimit,                       \
+					                  maxLimit); AbortOnRTE
 				endfor
 
 				SetStringInWaveNote(NISUDataWave, TP_PROPERTIES_HASH, key, recursive = 1)
@@ -1415,13 +1421,8 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 					WAVE SUChannel = NISUDataWave[i]
 					ASSERT(!mod(DimSize(SUChannel, ROWS), s.testPulseLength), "Sutter TP channel length is not integer multiple of test pulse length")
 					tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
-					if(IsNaN(config[i][%HEADSTAGE]))
-						minLimit = SU_DAC_MIN
-						maxLimit = SU_DAC_MAX
-					else
-						minLimit = SU_HS_OUT_MIN
-						maxLimit = SU_HS_OUT_MAX
-					endif
+
+					[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !IsNaN(config[i][%HEADSTAGE]))
 					Multithread SUChannel[] = limit(tpAmp * s.testPulse[mod(p, s.testPulseLength)], minLimit, maxLimit); AbortOnRTE
 				endfor
 
@@ -1449,12 +1450,16 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 			tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
 			ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+
+			/// @todo why not associated here
+			[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, 0)
+
 			switch(s.hardwareType)
 				case HARDWARE_ITC_DAC:
 					Multithread ITCDataWave[][i] =                                    \
 					            limit(tpAmp * s.testPulse[mod(p, s.testPulseLength)], \
-					                  SIGNED_INT_16BIT_MIN,                           \
-					                  SIGNED_INT_16BIT_MAX); AbortOnRTE
+					                  minLimit,                                       \
+					                  maxLimit); AbortOnRTE
 					cutOff = mod(DimSize(ITCDataWave, ROWS), s.testPulseLength)
 					if(cutOff > 0)
 						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
@@ -1465,8 +1470,8 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 					WAVE NIChannel = NIDataWave[i]
 					Multithread NIChannel[] =                                         \
 					            limit(tpAmp * s.testPulse[mod(p, s.testPulseLength)], \
-					                  NI_DAC_MIN,                                     \
-					                  NI_DAC_MAX); AbortOnRTE
+					                  minLimit,                                       \
+					                  maxLimit); AbortOnRTE
 					cutOff = mod(DimSize(NIChannel, ROWS), s.testPulseLength)
 					if(cutOff > 0)
 						NIChannel[DimSize(NIChannel, ROWS) - cutOff, *] = 0
@@ -1484,18 +1489,20 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 			startOffset     = s.insertStart[i]
 			isUnAssociated  = IsNaN(headstage)
 
+			[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !isUnAssociated)
+
 			switch(s.hardwareType)
 				case HARDWARE_ITC_DAC:
 					Multithread ITCDataWave[startOffset, startOffset + singleSetLength - 1][i] =                          \
 					            limit(DAScale * singleStimSet[round(s.decimationFactor * (p - startOffset))][stimsetCol], \
-					                  SIGNED_INT_16BIT_MIN,                                                               \
-					                  SIGNED_INT_16BIT_MAX); AbortOnRTE
+					                  minLimit,                                                                           \
+					                  maxLimit); AbortOnRTE
 
 					if(s.globalTPInsert && !isUnAssociated)
 						// space in ITCDataWave for the testpulse is allocated via an automatic increase
 						// of the onset delay
-						MultiThread ITCDataWave[0, s.testPulseLength - 1][i] =                                          \
-						            limit(tpAmp * s.testPulse[p], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+						MultiThread ITCDataWave[0, s.testPulseLength - 1][i] =                  \
+						            limit(tpAmp * s.testPulse[p], minLimit, maxLimit); AbortOnRTE
 					endif
 					break
 				case HARDWARE_NI_DAC: // intended drop through
@@ -1510,16 +1517,6 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 					// for ITC decimationFactor is always >= 1 since the stimSets are generated for the ITC max. sample rate
 					WAVE NIChannel = NIDataWave[i]
 					lastValidRow = DimSize(singleStimSet, ROWS) - 1
-					if(s.hardwareType == HARDWARE_NI_DAC)
-						minLimit = NI_DAC_MIN
-						maxLimit = NI_DAC_MAX
-					elseif(isUnAssociated)
-						minLimit = SU_DAC_MIN
-						maxLimit = SU_DAC_MAX
-					else
-						minLimit = SU_HS_OUT_MIN
-						maxLimit = SU_HS_OUT_MAX
-					endif
 
 					MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                                                       \
 					            limit(DAScale * singleStimSet[round(limit(s.decimationFactor * (p - startOffset), 0, lastValidRow))][stimsetCol], \

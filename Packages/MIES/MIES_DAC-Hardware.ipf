@@ -863,6 +863,48 @@ Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
 	endswitch
 End
 
+/// @brief Return the minimum/maximum voltage ranges for the given hardware and channel type
+///
+/// @param hardwareType One of @ref HardwareDACTypeConstants
+/// @param channelType  One of @ref XopChannelConstants
+/// @param isAssociated For Sutter hardware the voltage range differs for associated channels or unassociated ones
+Function [variable minimum, variable maximum] HW_GetVoltageRange(variable hardwareType, variable channelType, variable isAssociated)
+
+	switch(hardwareType)
+		case HARDWARE_NI_DAC:
+			switch(channelType)
+				case XOP_CHANNEL_TYPE_DAC:
+					return [NI_DAC_MIN, NI_DAC_MAX]
+				case XOP_CHANNEL_TYPE_ADC:
+					return [NI_ADC_MIN, NI_ADC_MAX]
+				case XOP_CHANNEL_TYPE_TTL:
+					return [NI_TTL_MIN, NI_TTL_MAX]
+				default:
+					ASSERT(0, "Not implemented")
+			endswitch
+		case HARDWARE_ITC_DAC:
+			return [SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX]
+		case HARDWARE_SUTTER_DAC:
+			if(isAssociated)
+				ASSERT(channelType != XOP_CHANNEL_TYPE_TTL, "Associated must be 0 for TTL")
+				return [SU_HS_OUT_MIN, SU_HS_OUT_MAX]
+			endif
+
+			switch(channelType)
+				case XOP_CHANNEL_TYPE_DAC:
+					return [SU_DAC_MIN, SU_DAC_MAX]
+				case XOP_CHANNEL_TYPE_ADC:
+					return [SU_ADC_MIN, SU_ADC_MAX]
+				case XOP_CHANNEL_TYPE_TTL:
+					return [SU_TTL_MIN, SU_TTL_MAX]
+				default:
+					ASSERT(0, "Not implemented")
+			endswitch
+		default:
+			ASSERT(0, "Unsupported hardware type")
+	endswitch
+End
+
 /// @}
 
 /// @name ITC
