@@ -214,7 +214,7 @@ Function AFM_UpdateAnalysisFunctionWave(device)
 	string device
 
 	variable i, j, DAC
-	string ctrl, setName, possibleFunctions, func
+	string setName, possibleFunctions, func
 
 	WAVE   statusHS          = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(device)
@@ -235,9 +235,7 @@ Function AFM_UpdateAnalysisFunctionWave(device)
 			continue
 		endif
 
-		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		// deliberately not using the GUI state wave
-		setName = GetPopupMenuString(device, ctrl)
+		setName = AFH_GetStimSetNameForHeadstage(device, i)
 
 		WAVE/Z stimSet = WB_CreateAndGetStimSet(setName)
 
