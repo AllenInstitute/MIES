@@ -106,6 +106,10 @@ Function WB_RegressionTest([string stimset])
 	epochCount = WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Epoch Count")
 	CHECK_GT_VAR(epochCount, 0)
 
+	// check number of entries in stimset
+	// version line, one for each sweep, one for each epoch per sweep, stimset line
+	CHECK_EQUAL_VAR(ItemsInList(text, "\r"), 1 + sweepCount + sweepCount * epochCount + 1)
+
 	for(i = 0; i < sweepCount; i += 1)
 		for(j = 0; j < epochCount; j += 1)
 			duration = WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, key = "Duration", sweep = i, epoch = j)
