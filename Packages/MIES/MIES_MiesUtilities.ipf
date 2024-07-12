@@ -3786,21 +3786,6 @@ Function SaveExperimentSpecial(mode)
 	endif
 End
 
-/// @brief Cleanup the experiment name
-Function/S CleanupExperimentName(expName)
-	string expName
-
-	// Remove the following suffixes:
-	// - sibling
-	// - time stamp
-	// - numerical suffixes added to prevent overwriting files
-	expName = RemoveEndingRegExp(expName, "_[[:digit:]]{4}_[[:digit:]]{2}_[[:digit:]]{2}_[[:digit:]]{6}") // example: 2015_03_25_213219
-	expName = RemoveEndingRegExp(expName, "_[[:digit:]]{1,5}")                                            // example: _1, _123
-	expName = RemoveEnding(expName, SIBLING_FILENAME_SUFFIX)
-
-	return expName
-End
-
 /// @brief Return the maximum count of the given type
 ///
 /// @param var    numeric channel types
@@ -4482,26 +4467,6 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 	CA_StoreEntryIntoCache(key, freeAverageWave, options = CA_OPTS_NO_DUPLICATE)
 
 	return ConvertFreeWaveToPermanent(freeAverageWave, averageDataFolder, wvName)
-End
-
-/// @brief Converts a free wave to a permanent wave with Overwrite
-/// @param[in] freeWave wave that should be converted to a permanent wave
-/// @param[in] dfr data folder where permanent wave is stored
-/// @param[in] wName name of permanent wave that is created
-/// @returns wave reference to the permanent wave
-Function/WAVE ConvertFreeWaveToPermanent(WAVE freeWave, DFREF dfr, string wName)
-
-	Duplicate/O freeWave, dfr:$wName/WAVE=permWave
-	return permWave
-End
-
-Function/WAVE MoveFreeWaveToPermanent(WAVE freeWave, DFREF dfr, string wvName)
-
-	wvName = UniqueWaveName(dfr, wvName)
-	MoveWave freeWave, dfr:$wvName
-	WAVE/SDFR=dfr permWave = $wvName
-
-	return permWave
 End
 
 /// @brief Zero all given traces
@@ -5488,59 +5453,6 @@ Function IsDeviceActiveWithBGTask(device, task)
 	return V_Value != -1
 End
 
-/// @brief Calculate a cryptographic hash for the file contents of path
-///
-/// @param path   absolute path to a file
-/// @param method [optional, defaults to #HASH_SHA2_256]
-///               Type of cryptographic hash function, one of @ref HASH_SHA2_256
-Function/S CalcHashForFile(path, [method])
-	string   path
-	variable method
-
-	string contents, loadedFilePath
-
-	if(ParamIsDefault(method))
-		method = HASH_SHA2_256
-	endif
-
-	ASSERT(FileExists(path), "Expected a file")
-
-	[contents, loadedFilePath] = LoadTextFile(path)
-
-	return Hash(contents, method)
-End
-
-/// @brief Check if the file paths referenced in `list` are pointing
-///        to identical files
-Function CheckIfPathsRefIdenticalFiles(list)
-	string list
-
-	variable i, numEntries
-	string path, refHash, newHash
-
-	if(ItemsInList(list, FILE_LIST_SEP) <= 1)
-		return 1
-	endif
-
-	numEntries = ItemsInList(list, FILE_LIST_SEP)
-	for(i = 0; i < numEntries; i += 1)
-		path = StringFromList(i, list, FILE_LIST_SEP)
-
-		if(i == 0)
-			refHash = CalcHashForFile(path)
-			continue
-		endif
-
-		newHash = CalcHashForFile(path)
-
-		if(cmpstr(newHash, refHash))
-			return 0
-		endif
-	endfor
-
-	return 1
-End
-
 /// @brief Remove all free axis from the given graph
 Function RemoveFreeAxisFromGraph(graph)
 	string graph
@@ -5800,68 +5712,6 @@ Function/WAVE ReplaceWaveWithBackup(WAVE wv, [variable nonExistingBackupIsFatal,
 	return wv
 End
 
-/// @brief Duplicate a source wave to a target wave and keep the target wave reference intact. Use with free/local waves.
-///        For global waves use "Duplicate/O source, target".
-///
-/// @param source source wave
-/// @param target target wave
-Function DuplicateWaveAndKeepTargetRef(WAVE/Z source, WAVE/Z target)
-
-	variable wTypeSrc, wTypeTgt
-
-	wTypeSrc = WaveType(source, 1)
-	wTypeTgt = WaveType(target, 1)
-	ASSERT(wTypeSrc != IGOR_TYPE_NULL_WAVE, "Source wave is null")
-	ASSERT(wTypeTgt != IGOR_TYPE_NULL_WAVE, "Target wave is null")
-	if(WaveRefsEqual(source, target))
-		return NaN
-	endif
-	ASSERT(wTypeTgt == wTypeSrc, "Source and Target wave have different base types")
-
-	switch(WaveDims(source))
-		case 0: // intended drop through
-		case 1:
-			Redimension/N=(DimSize(source, ROWS)) target
-			break
-		case 2:
-			Redimension/N=(DimSize(source, ROWS), DimSize(source, COLS)) target
-			break
-		case 3:
-			Redimension/N=(DimSize(source, ROWS), DimSize(source, COLS), DimSize(source, LAYERS)) target
-			break
-		case 4:
-			Redimension/N=(DimSize(source, ROWS), DimSize(source, COLS), DimSize(source, LAYERS), DimSize(source, CHUNKS)) target
-			break
-	endswitch
-
-	switch(wTypeSrc)
-		case IGOR_TYPE_TEXT_WAVE:
-			WAVE/T sourceT = source
-			WAVE/T targetT = target
-			Multithread targetT[][][][] = sourceT[p][q][r][s]
-			break
-		case IGOR_TYPE_NUMERIC_WAVE:
-			Multithread target[][][][] = source[p][q][r][s]
-			break
-		case IGOR_TYPE_DFREF_WAVE:
-			WAVE/DF sourceDF = source
-			WAVE/DF targetDF = target
-			Multithread targetDF[][][][] = sourceDF[p][q][r][s]
-			break
-		case IGOR_TYPE_WAVEREF_WAVE:
-			WAVE/WAVE sourceW = source
-			WAVE/WAVE targetW = target
-			Multithread targetW[][][][] = sourceW[p][q][r][s]
-			break
-		default:
-			ASSERT(0, "Unknown wave type")
-	endswitch
-
-	CopyScales source, target
-	CopyDimLabels source, target
-	note/K target, note(source)
-End
-
 /// @brief Returns 1 if the user cancelled, zero if SaveExperiment was called
 ///
 /// It is currently not possible to check if SaveExperiment was successfull
@@ -5916,19 +5766,6 @@ Function SaveExperimentWrapper(path, filename, [overrideInteractiveMode])
 	return 0
 End
 
-/// @brief Detects duplicate values in a 1d wave.
-///
-/// @return one if duplicates could be found, zero otherwise
-Function SearchForDuplicates(wv)
-	WAVE wv
-
-	ASSERT(WaveExists(wv), "Missing wave")
-
-	FindDuplicates/FREE/Z/INDX=idx wv
-
-	return WaveExists(idx) && DimSize(idx, ROWS) > 0
-End
-
 /// @brief Check that the device is of type ITC1600
 Function IsITC1600(device)
 	string device
@@ -5940,20 +5777,6 @@ Function IsITC1600(device)
 	ASSERT(ret, "Could not parse device")
 
 	return !cmpstr(deviceType, "ITC1600")
-End
-
-/// @brief Return a path to the program folder with trailing dir separator
-///
-/// Hardcoded as Igor does not allow to query that information.
-///
-/// Distinguishes between i386 and x64 Igor versions
-Function/S GetProgramFilesFolder()
-
-#if defined(IGOR64)
-	return "C:\\Program Files\\"
-#else
-	return "C:\\Program Files (x86)\\"
-#endif
 End
 
 /// @brief Return the default name of a electrode
@@ -6632,51 +6455,6 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 	endfor
 End
 
-/// @brief Move the source wave to the location of the given destination wave.
-///        The destination wave must be a permanent wave.
-///
-///        Workaround for `MoveWave` having no `/O` flag.
-///
-/// @param dest permanent wave
-/// @param src  wave (free or permanent)
-/// @param recursive [optional, defaults to false] Overwrite referenced waves
-///                                                in dest with the ones from src
-///                                                (wave reference waves only with matching sizes)
-///
-/// @return new wave reference to dest wave
-Function/WAVE MoveWaveWithOverwrite(dest, src, [recursive])
-	WAVE dest, src
-	variable recursive
-
-	string   path
-	variable numEntries
-
-	recursive = ParamIsDefault(recursive) ? 0 : !!recursive
-
-	ASSERT(!WaveRefsEqual(dest, src), "dest and src must be distinct waves")
-	ASSERT(!IsFreeWave(dest), "dest must be a global/permanent wave")
-
-	if(IsWaveRefWave(dest) && IsWaveRefWave(src) && recursive)
-		numEntries = numpnts(dest)
-		ASSERT(numEntries == numpnts(src), "Unmatched sizes")
-		Make/N=(numEntries)/FREE/WAVE entries
-
-		WAVE/WAVE destWaveRef = dest
-		WAVE/WAVE srcWaveRef  = src
-
-		entries[] = MoveWaveWithOverWrite(destWaveRef[p], srcWaveRef[p], recursive = 1)
-	endif
-
-	path = GetWavesDataFolder(dest, 2)
-
-	KillOrMoveToTrash(wv = dest)
-	MoveWave src, $path
-
-	WAVE dest = $path
-
-	return dest
-End
-
 /// @brief Check if the given wave is a valid ITCConfigWave
 ///
 /// The optional version parameter allows to check if the wave is at least comaptible with this version.
@@ -6904,73 +6682,6 @@ Function SetupBackgroundTasks()
 	CtrlNamedBackground P_ITC_FIFOMonitor, dialogsOK=0, period=10, proc=P_ITC_FIFOMonitorProc
 End
 
-/// @brief Zero the wave using differentiation and integration
-///
-/// Overwrites the input wave
-/// Preserves the WaveNote and adds the entry NOTE_KEY_ZEROED
-///
-/// 2D waves are zeroed along each row
-///
-/// @return 0 if nothing was done, 1 if zeroed
-threadsafe Function ZeroWave(wv)
-	WAVE wv
-
-	if(GetNumberFromWaveNote(wv, NOTE_KEY_ZEROED) == 1)
-		return 0
-	endif
-
-	ZeroWaveImpl(wv)
-
-	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
-
-	return 1
-End
-
-/// @brief Zeroes a wave in place
-threadsafe Function ZeroWaveImpl(WAVE wv)
-
-	variable numRows, offset
-
-	numRows = DimSize(wv, ROWS)
-
-	if(numRows == 0)
-		return NaN
-	endif
-
-	ASSERT_TS(IsFloatingPointWave(wv), "Can only work with floating point waves")
-
-	offset = wv[0]
-	Multithread wv = wv - offset
-End
-
-/// @brief Return the size of the decimated wave
-///
-/// Query that to create the output wave before calling DecimateWithMethod().
-///
-/// @param numRows 			number of rows in the input wave
-/// @param decimationFactor decimation factor, must be an integer and larger than 1
-/// @param method      	    one of @ref DecimationMethods
-Function GetDecimatedWaveSize(numRows, decimationFactor, method)
-	variable numRows, decimationFactor, method
-
-	variable decimatedSize
-
-	ASSERT(IsInteger(decimationFactor) && decimationFactor > 1, "decimationFactor must be an integer and larger as 1.")
-
-	switch(method)
-		case DECIMATION_NONE:
-			return numRows
-		case DECIMATION_MINMAX:
-			decimatedSize = ceil(numRows / decimationFactor)
-			// make it even
-			decimatedSize = IsEven(decimatedSize) ? decimatedSize : ++decimatedSize
-			return decimatedSize
-		default:
-			ASSERT(0, "Invalid method")
-			break
-	endswitch
-End
-
 /// @brief Decimate the the given input wave
 ///
 /// This allows to decimate a given input row range into output rows using the
@@ -7171,22 +6882,6 @@ End
 Function NewExperiment()
 
 	Execute/P/Q "NEWEXPERIMENT "
-End
-
-/// @brief Remove the volatile part of the XOP error code
-///
-/// The result is constant and can therefore be compared with constants.
-threadsafe Function ConvertXOPErrorCode(variable err)
-	// error codes -1 to 9999 are Igor Pro error codes
-	// for first loaded XOP -> xop error codes returned are in the range 10000+ up to max. 10999
-	// for second+ loaded XOP -> xop error codes returned are offsetted by n x 0x10000 per XOP instead of 10000
-
-	// Therefore, returning the code through RTE and directly through V_flag (SetOperationReturnValue):
-	err = err < 0xFFFF ? err : (err & 0xFFFF) + 10000
-
-	// Note: Getting the error message through GetRTErrMessage,
-	// GetErrMessage(code) requires the original RTE code (does not work with directly return through  V_flag).
-	return err
 End
 
 /// @brief Extended version of `FindValue`
@@ -7418,28 +7113,6 @@ threadsafe Function/WAVE FindIndizes(numericOrTextWave, [col, colLabel, var, str
 	endif
 
 	return result
-End
-
-/// @brief Searches the column colLabel in wv for an non-empty
-/// entry with a row number smaller or equal to endRow
-///
-/// Return an empty string if nothing could be found.
-///
-/// @param wv         text wave to search in
-/// @param colLabel   column label from wv
-/// @param endRow     maximum row index to consider
-Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
-	WAVE/T   wv
-	string   colLabel
-	variable endRow
-
-	WAVE/Z indizes = FindIndizes(wv, colLabel = colLabel, prop = PROP_EMPTY | PROP_NOT, endRow = endRow)
-
-	if(!WaveExists(indizes))
-		return ""
-	endif
-
-	return wv[indizes[DimSize(indizes, ROWS) - 1]][%$colLabel]
 End
 
 /// @brief Generate a default settings file in JSON format
@@ -8853,22 +8526,6 @@ Function HandleOutOfMemory(string device, string name)
 
 	DQ_StopDAQ(device, DQ_STOP_REASON_OUT_OF_MEMORY, startTPAfterDAQ = 0)
 	TP_StopTestPulse(device)
-End
-
-/// @brief Return 1 if the function was already called with that argument, and 0 otherwise
-///        As named use or create a constant in @sa CalledOnceNames
-Function AlreadyCalledOnce(string name)
-
-	NVAR var = $GetCalledOnceVariable(name)
-
-	if(var)
-		// already called
-		return 1
-	endif
-
-	var = 1
-	// not yet called
-	return 0
 End
 
 Function [WAVE/T filtered, variable lastIndex] FilterByDate(WAVE/T entries, variable first, variable last)

@@ -336,3 +336,19 @@ threadsafe Function MU_RunningInMainThread()
 End
 
 #endif
+
+/// @brief Return 1 if the function was already called with that argument, and 0 otherwise
+///        As named use or create a constant in @sa CalledOnceNames
+Function AlreadyCalledOnce(string name)
+
+	NVAR var = $GetCalledOnceVariable(name)
+
+	if(var)
+		// already called
+		return 1
+	endif
+
+	var = 1
+	// not yet called
+	return 0
+End

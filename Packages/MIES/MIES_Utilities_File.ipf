@@ -680,3 +680,85 @@ threadsafe Function MU_GetFreeDiskSpace(string path)
 End
 
 #endif
+
+/// @brief Cleanup the experiment name
+Function/S CleanupExperimentName(expName)
+	string expName
+
+	// Remove the following suffixes:
+	// - sibling
+	// - time stamp
+	// - numerical suffixes added to prevent overwriting files
+	expName = RemoveEndingRegExp(expName, "_[[:digit:]]{4}_[[:digit:]]{2}_[[:digit:]]{2}_[[:digit:]]{6}") // example: 2015_03_25_213219
+	expName = RemoveEndingRegExp(expName, "_[[:digit:]]{1,5}")                                            // example: _1, _123
+	expName = RemoveEnding(expName, SIBLING_FILENAME_SUFFIX)
+
+	return expName
+End
+
+/// @brief Calculate a cryptographic hash for the file contents of path
+///
+/// @param path   absolute path to a file
+/// @param method [optional, defaults to #HASH_SHA2_256]
+///               Type of cryptographic hash function, one of @ref HASH_SHA2_256
+Function/S CalcHashForFile(path, [method])
+	string   path
+	variable method
+
+	string contents, loadedFilePath
+
+	if(ParamIsDefault(method))
+		method = HASH_SHA2_256
+	endif
+
+	ASSERT(FileExists(path), "Expected a file")
+
+	[contents, loadedFilePath] = LoadTextFile(path)
+
+	return Hash(contents, method)
+End
+
+/// @brief Check if the file paths referenced in `list` are pointing
+///        to identical files
+Function CheckIfPathsRefIdenticalFiles(list)
+	string list
+
+	variable i, numEntries
+	string path, refHash, newHash
+
+	if(ItemsInList(list, FILE_LIST_SEP) <= 1)
+		return 1
+	endif
+
+	numEntries = ItemsInList(list, FILE_LIST_SEP)
+	for(i = 0; i < numEntries; i += 1)
+		path = StringFromList(i, list, FILE_LIST_SEP)
+
+		if(i == 0)
+			refHash = CalcHashForFile(path)
+			continue
+		endif
+
+		newHash = CalcHashForFile(path)
+
+		if(cmpstr(newHash, refHash))
+			return 0
+		endif
+	endfor
+
+	return 1
+End
+
+/// @brief Return a path to the program folder with trailing dir separator
+///
+/// Hardcoded as Igor does not allow to query that information.
+///
+/// Distinguishes between i386 and x64 Igor versions
+Function/S GetProgramFilesFolder()
+
+#if defined(IGOR64)
+	return "C:\\Program Files\\"
+#else
+	return "C:\\Program Files (x86)\\"
+#endif
+End
