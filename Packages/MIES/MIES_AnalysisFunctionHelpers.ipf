@@ -232,6 +232,17 @@ Function/S AFH_GetStimSetName(string device, variable chanNo, variable channelTy
 	return DAG_GetTextualValue(device, ctrl, index = chanNo)
 End
 
+/// @brief Convenience wrapper for AFH_GetStimSetName
+Function/S AFH_GetStimSetNameForHeadstage(string device, variable headstage)
+
+	variable DAC
+
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+	ASSERT(IsFinite(DAC), "Can't work with unassociated channels")
+
+	return AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
+End
+
 /// @brief Return a free wave with all sweep numbers (in ascending order) which
 ///        belong to the same RA cycle. Uncached version, general users should prefer
 ///        AFH_GetSweepsFromSameRACycle().
