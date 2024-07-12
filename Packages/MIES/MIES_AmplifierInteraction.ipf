@@ -948,13 +948,27 @@ Function AI_GetMode(device, headstage)
 	return MCC_GetMode()
 End
 
-/// @brief Return the DA/AD gains and the current clampmode of the selected amplifier
+/// @brief Return the DA/AD gains of the given headstage
 ///
-/// Gain is returned in mV/V for #V_CLAMP_MODE and V/mV for #I_CLAMP_MODE/#I_EQUAL_ZERO_MODE
+/// Internally we query the External Command Sensitivity of the Amplifier (MCC) GUI.
+///
+/// =========== ==========================
+///  ClampMode   MultiClampCommander GUI
+/// =========== ==========================
+///  VC          Off
+///               20 mV/V
+///              100 mV/V
+/// =========== ==========================
+///  IC          Off
+///              400 pA/V
+///                2 nA/V
+/// =========== ==========================
+///
+/// Gain is returned in mV/V for #V_CLAMP_MODE and pA/V for #I_CLAMP_MODE/#I_EQUAL_ZERO_MODE
 ///
 /// @param      device device
 /// @param      headstage  headstage [0, NUM_HEADSTAGES[
-/// @param[out] clampMode  clamp mode (expected)
+/// @param      clampMode  clamp mode
 /// @param[out] ADGain     ADC gain
 /// @param[out] DAGain     DAC gain
 static Function AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
