@@ -140,7 +140,7 @@ Function GetLastSettingAbortsInvalid1()
 	variable first = LABNOTEBOOK_GET_RANGE
 
 	try
-		MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, NaN, "My Key", UNKNOWN_MODE, first = first)
+		MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(numericalValues, NaN, "My Key", UNKNOWN_MODE, first = first)
 		FAIL()
 	catch
 		PASS()
@@ -155,7 +155,7 @@ Function GetLastSettingAbortsInvalid2()
 	variable last = LABNOTEBOOK_GET_RANGE
 
 	try
-		MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, NaN, "My Key", UNKNOWN_MODE, last = last)
+		MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(numericalValues, NaN, "My Key", UNKNOWN_MODE, last = last)
 		FAIL()
 	catch
 		PASS()
@@ -171,7 +171,7 @@ Function GetLastSettingAbortsInvalid3()
 	variable last  = -10
 
 	try
-		MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, NaN, "My Key", UNKNOWN_MODE, first = first, last = last)
+		MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(numericalValues, NaN, "My Key", UNKNOWN_MODE, first = first, last = last)
 		FAIL()
 	catch
 		PASS()
@@ -191,7 +191,7 @@ Function GetLastSettingEmptyUnknown()
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
-	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first, last = last)
+	WAVE/Z settings = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(numericalValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first, last = last)
 	CHECK_WAVE(settings, NULL_WAVE)
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
@@ -235,7 +235,7 @@ Function GetLastSettingQueryWoMatch()
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
 	// sweep is unknown
-	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
+	WAVE/Z settings = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(numericalValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK_WAVE(settings, NULL_WAVE)
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
@@ -255,14 +255,14 @@ Function GetLastSettingWorks()
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
-	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE, first = first, last = last)
+	WAVE/Z settings = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK_WAVE(settings, NUMERIC_WAVE)
 	CHECK_GE_VAR(first, 0)
 	CHECK_GE_VAR(last, 0)
 
 	firstAgain = first
 	lastAgain  = last
-	WAVE/Z settingsAgain = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE, first = firstAgain, last = lastAgain)
+	WAVE/Z settingsAgain = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE, first = firstAgain, last = lastAgain)
 	CHECK_EQUAL_WAVES(settings, settingsAgain, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(first, firstAgain)
 	CHECK_EQUAL_VAR(last, lastAgain)
@@ -280,7 +280,7 @@ Function GetLastSettingTextAborts1()
 	variable first = LABNOTEBOOK_GET_RANGE
 
 	try
-		MIES_MIESUTILS#GetLastSettingNoCache(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first)
+		MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first)
 		FAIL()
 	catch
 		PASS()
@@ -295,7 +295,7 @@ Function GetLastSettingTextAborts2()
 	variable last = LABNOTEBOOK_GET_RANGE
 
 	try
-		MIES_MIESUTILS#GetLastSettingNoCache(textualValues, NaN, "My Key", UNKNOWN_MODE, last = last)
+		MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(textualValues, NaN, "My Key", UNKNOWN_MODE, last = last)
 		FAIL()
 	catch
 		PASS()
@@ -311,7 +311,7 @@ Function GetLastSettingTextAborts3()
 	variable last  = -10
 
 	try
-		MIES_MIESUTILS#GetLastSettingNoCache(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first, last = last)
+		MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first, last = last)
 		FAIL()
 	catch
 		PASS()
@@ -331,7 +331,7 @@ Function GetLastSettingTextEmptyUnknown()
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
-	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first, last = last)
+	WAVE/Z settings = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first, last = last)
 	CHECK_WAVE(settings, NULL_WAVE)
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
@@ -348,7 +348,7 @@ Function GetLastSettingTextQueryWoMatch()
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
 	// sweep is unknown
-	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
+	WAVE/Z settings = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(textualValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK_WAVE(settings, NULL_WAVE)
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
@@ -368,14 +368,14 @@ Function GetLastSettingTextWorks()
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
-	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
+	WAVE/Z settings = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK_WAVE(settings, TEXT_WAVE)
 	CHECK_GE_VAR(first, 0)
 	CHECK_GE_VAR(last, 0)
 
 	firstAgain = first
 	lastAgain  = last
-	WAVE/Z settingsAgain = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = firstAgain, last = lastAgain)
+	WAVE/Z settingsAgain = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = firstAgain, last = lastAgain)
 	CHECK_EQUAL_WAVES(settings, settingsAgain, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(first, firstAgain)
 	CHECK_EQUAL_VAR(last, lastAgain)
@@ -555,7 +555,7 @@ End
 
 Function CompareLBNEntry(WAVE values, variable sweepNo, string key)
 
-	WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(values, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z settingsNoCache = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(values, sweepNo, key, DATA_ACQUISITION_MODE)
 	WAVE/Z settings        = GetLastSetting(values, sweepNo, key, DATA_ACQUISITION_MODE)
 
 	if(WaveExists(settingsNoCache) && WaveExists(settings))

@@ -2300,7 +2300,7 @@ static Function AB_LoadStimsetRAW(expFilePath, stimset, overwrite)
 		WB_KillStimset(stimset)
 	endif
 
-	channelType = GetStimSetType(stimset)
+	channelType = WB_GetStimSetType(stimset)
 
 	if(channeltype == CHANNEL_TYPE_UNKNOWN)
 		return 1
@@ -2347,7 +2347,7 @@ static Function AB_LoadStimsetTemplateWaves(expFilePath, stimset)
 	parameterWaves = AddListItem(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT), parameterWaves)
 	parameterWaves = AddListItem(WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE), parameterWaves)
 
-	channelType = GetStimSetType(stimset)
+	channelType = WB_GetStimSetType(stimset)
 
 	if(channeltype == CHANNEL_TYPE_UNKNOWN)
 		return 1

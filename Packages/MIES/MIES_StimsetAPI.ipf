@@ -452,7 +452,7 @@ Function ST_SetStimsetParameter(string setName, string entry, [variable epochInd
 
 		if(IsNaN(epochIndex) && !cmpstr("Analysis function (generic)", entry))
 			ASSERT(GrepString(NameOfWave(wv), "^WPT_.*"), "Unexpected wave name")
-			stimulusType = GetStimSetType(setName)
+			stimulusType = WB_GetStimSetType(setName)
 			return WB_SetAnalysisFunctionGeneric(stimulusType, str, wv)
 		endif
 

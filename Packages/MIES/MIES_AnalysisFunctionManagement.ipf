@@ -246,7 +246,7 @@ Function AFM_UpdateAnalysisFunctionWave(device)
 		endif
 
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
-			func = ExtractAnalysisFuncFromStimSet(stimSet, j)
+			func = WB_ExtractAnalysisFuncFromStimSet(stimSet, j)
 
 			if(WhichListItem(func, possibleFunctions) == -1) // not valid
 				continue
@@ -255,6 +255,6 @@ Function AFM_UpdateAnalysisFunctionWave(device)
 			analysisFunctions[i][j] = func
 		endfor
 
-		analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS] = ExtractAnalysisFunctionParams(stimSet)
+		analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS] = WB_ExtractAnalysisFunctionParams(stimSet)
 	endfor
 End

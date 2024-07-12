@@ -57,7 +57,7 @@ Function/WAVE WB_CreateAndGetStimSet(setName)
 		return $""
 	endif
 
-	type = GetStimSetType(setName)
+	type = WB_GetStimSetType(setName)
 
 	if(type == CHANNEL_TYPE_UNKNOWN)
 		return $""
@@ -121,7 +121,7 @@ Function/WAVE WB_GetWaveParamForSet(setName)
 
 	variable type
 
-	type = GetStimSetType(setName)
+	type = WB_GetStimSetType(setName)
 
 	if(type == CHANNEL_TYPE_UNKNOWN)
 		return $""
@@ -146,7 +146,7 @@ Function/WAVE WB_GetWaveTextParamForSet(setName)
 
 	variable type
 
-	type = GetStimSetType(setName)
+	type = WB_GetStimSetType(setName)
 
 	if(type == CHANNEL_TYPE_UNKNOWN)
 		return $""
@@ -171,7 +171,7 @@ Function/WAVE WB_GetSegWvTypeForSet(setName)
 
 	variable type
 
-	type = GetStimSetType(setName)
+	type = WB_GetStimSetType(setName)
 
 	if(type == CHANNEL_TYPE_UNKNOWN)
 		return $""
@@ -235,7 +235,7 @@ static Function WB_StimsetHasLatestNoteVersion(setName)
 	string   setName
 	variable type
 
-	type = GetStimSetType(setName)
+	type = WB_GetStimSetType(setName)
 
 	if(type == CHANNEL_TYPE_UNKNOWN)
 		return 0
@@ -278,7 +278,7 @@ static Function WB_ParameterWvsNewerThanStim(setName)
 		if(lastModWP > lastModStimSet || lastModWPT > lastModStimSet || lastModSegWvType > lastModStimSet)
 			return 1
 		elseif(lastModWP == lastModStimSet || lastModWPT == lastModStimSet || lastModSegWvType == lastModStimSet)
-			channelType = GetStimSetType(setName)
+			channelType = WB_GetStimSetType(setName)
 			ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Invalid channel type")
 
 			DFREF           dfr     = GetSetFolder(channelType)
@@ -362,7 +362,7 @@ Function WB_GetLastModStimSet(setName)
 	string   setname
 	variable channelType
 
-	channelType = GetStimSetType(setName)
+	channelType = WB_GetStimSetType(setName)
 
 	if(channelType == CHANNEL_TYPE_UNKNOWN)
 		return 0
@@ -426,7 +426,7 @@ static Function/WAVE WB_GetStimSet([setName])
 		WAVE/Z   WP        = WB_GetWaveParamForSet(setName)
 		WAVE/T/Z WPT       = WB_GetWaveTextParamForSet(setName)
 		WAVE/Z   SegWvType = WB_GetSegWvTypeForSet(setName)
-		channelType = GetStimSetType(setName)
+		channelType = WB_GetStimSetType(setName)
 
 		if(!WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType))
 			return $""
@@ -2255,7 +2255,7 @@ static Function/WAVE WB_UpgradeCustomWaves(string stimsetList)
 		stimset = StringFromList(i, stimsetList)
 		WAVE/Z/T WPT       = WB_GetWaveTextParamForSet(stimSet)
 		WAVE/Z   SegWvType = WB_GetSegWvTypeForSet(stimSet)
-		channelType = GetStimSetType(stimSet)
+		channelType = WB_GetStimSetType(stimSet)
 
 		if(!WaveExists(WPT) || !WaveExists(SegWvType))
 			continue
@@ -2438,7 +2438,7 @@ Function WB_StimsetExists(stimset)
 	string   stimset
 	variable channelType
 
-	channelType = GetStimSetType(stimset)
+	channelType = WB_GetStimSetType(stimset)
 
 	if(channelType == CHANNEL_TYPE_UNKNOWN)
 		return 0
@@ -2479,7 +2479,7 @@ Function WB_KillStimset(stimset)
 
 	variable channelType
 
-	channelType = GetStimSetType(stimset)
+	channelType = WB_GetStimSetType(stimset)
 
 	if(channelType == CHANNEL_TYPE_UNKNOWN)
 		return NaN
@@ -2819,4 +2819,40 @@ static Function [variable startIndex, variable endIndex, variable startOffset, v
 	actualDuration = (endIndex - startIndex) * sampleInterval
 
 	return [startIndex, endIndex, startOffset, actualDuration - duration]
+End
+
+/// @brief Return the type, #CHANNEL_TYPE_DAC, #CHANNEL_TYPE_TTL or #CHANNEL_TYPE_UNKNOWN, of the stimset
+///
+/// All callers must ensure that they can handle the unexpected #CHANNEL_TYPE_UNKNOWN properly.
+Function WB_GetStimSetType(string setName)
+
+	string setPrefix
+	variable channelType, setNumber
+
+	WB_SplitStimsetName(setName, setPrefix, channelType, setNumber)
+
+	return channelType
+End
+
+/// @brief Extract the analysis function name from the wave note of the stim set
+/// @return Analysis function for the given event type, empty string if none is set
+Function/S WB_ExtractAnalysisFuncFromStimSet(stimSet, eventType)
+	WAVE     stimSet
+	variable eventType
+
+	string eventName
+
+	eventName = StringFromList(eventType, EVENT_NAME_LIST)
+	ASSERT(!IsEmpty(eventName), "Unknown event type")
+
+	return WB_GetWaveNoteEntry(note(stimset), STIMSET_ENTRY, key = eventName)
+End
+
+/// @brief Return the analysis function parameters as comma (`,`) separated list
+///
+/// @sa GetWaveBuilderWaveTextParam() for the exact format.
+Function/S WB_ExtractAnalysisFunctionParams(stimSet)
+	WAVE stimSet
+
+	return WB_GetWaveNoteEntry(note(stimset), STIMSET_ENTRY, key = ANALYSIS_FUNCTION_PARAMS_STIMSET)
 End
