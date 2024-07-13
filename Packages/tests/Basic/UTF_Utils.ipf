@@ -2149,21 +2149,21 @@ Function GNMS_Works1()
 
 	string str = "abcd(efgh)={123.456}"
 
-	CHECK_EQUAL_VAR(MIES_UTILS#GetNumFromModifyStr(str, "abcd", "{", 0), 123.456)
+	CHECK_EQUAL_VAR(MIES_UTILS_GUI#GetNumFromModifyStr(str, "abcd", "{", 0), 123.456)
 End
 
 Function GNMS_Works2()
 
 	string str = "abcd(efgh)=(123.456, 789.10)"
 
-	CHECK_EQUAL_VAR(MIES_UTILS#GetNumFromModifyStr(str, "abcd", "(", 1), 789.10)
+	CHECK_EQUAL_VAR(MIES_UTILS_GUI#GetNumFromModifyStr(str, "abcd", "(", 1), 789.10)
 End
 
 Function GNMS_Works3()
 
 	string str = "abcdefgh(ijjk)=(1),efgh(ijk)=(2)"
 
-	CHECK_EQUAL_VAR(MIES_UTILS#GetNumFromModifyStr(str, "efgh", "(", 0), 2)
+	CHECK_EQUAL_VAR(MIES_UTILS_GUI#GetNumFromModifyStr(str, "efgh", "(", 0), 2)
 End
 
 /// @}
@@ -2410,7 +2410,7 @@ static Function GUTE_WorksWithOneNoDuplicate()
 
 	Make/T/N=1/FREE wv
 
-	WAVE/Z result = MIES_UTILS#GetUniqueTextEntries(wv, dontDuplicate = 1)
+	WAVE/Z result = MIES_UTILS_ALGORITHM#GetUniqueTextEntries(wv, dontDuplicate = 1)
 	CHECK(WaveRefsEqual(result, wv))
 End
 
@@ -6816,37 +6816,37 @@ static Function CompressNumericalList()
 
 	list = "1,2"
 	ref  = "1-2"
-	list = MIES_UTILS#CompressNumericalList(list, ",")
+	list = MIES_UTILS_ALGORITHM#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = "-1,0,1"
 	ref  = "-1-1"
-	list = MIES_UTILS#CompressNumericalList(list, ",")
+	list = MIES_UTILS_ALGORITHM#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = "1,2,3,5,6,7"
 	ref  = "1-3,5-7"
-	list = MIES_UTILS#CompressNumericalList(list, ",")
+	list = MIES_UTILS_ALGORITHM#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = ""
 	ref  = ""
-	list = MIES_UTILS#CompressNumericalList(list, ",")
+	list = MIES_UTILS_ALGORITHM#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = "1,2,2,3,3,4,6"
 	ref  = "1-4,6"
-	list = MIES_UTILS#CompressNumericalList(list, ",")
+	list = MIES_UTILS_ALGORITHM#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = "6,4,3,3,2,2,1"
 	ref  = "1-4,6"
-	list = MIES_UTILS#CompressNumericalList(list, ",")
+	list = MIES_UTILS_ALGORITHM#CompressNumericalList(list, ",")
 	CHECK_EQUAL_STR(list, ref)
 
 	list = "string"
 	try
-		list = MIES_UTILS#CompressNumericalList(list, ",")
+		list = MIES_UTILS_ALGORITHM#CompressNumericalList(list, ",")
 		FAIL()
 	catch
 		PASS()
@@ -6854,7 +6854,7 @@ static Function CompressNumericalList()
 
 	list = "1,1.5,2"
 	try
-		list = MIES_UTILS#CompressNumericalList(list, ",")
+		list = MIES_UTILS_ALGORITHM#CompressNumericalList(list, ",")
 		FAIL()
 	catch
 		PASS()
@@ -6862,7 +6862,7 @@ static Function CompressNumericalList()
 
 	list = "1,2"
 	try
-		list = MIES_UTILS#CompressNumericalList(list, "")
+		list = MIES_UTILS_ALGORITHM#CompressNumericalList(list, "")
 		FAIL()
 	catch
 		PASS()
