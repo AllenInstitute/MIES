@@ -728,7 +728,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 			if(!spikePositionsQCLBN[i])
 				sprintf msg, "spike position QC failed on HS%d, adapting DAScale", i
 				DebugPrint(msg)
-				SetDAScaleModOp(device, i, daScaleSpikePositionModifier, daScaleSpikePositionOperator)
+				SetDAScaleModOp(device, sweepNo, i, daScaleSpikePositionModifier, daScaleSpikePositionOperator)
 			endif
 
 			continue
@@ -752,7 +752,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 
 		strswitch(spikeCountStateLBN[i])
 			case SC_SPIKE_COUNT_STATE_STR_TOO_MANY:
-				SetDAScaleModOp(device, i, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator)
+				SetDAScaleModOp(device, sweepNo, i, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_MIXED:
 				printf "The spike count on headstage %d in sweep %d is mixed (some pulses have too few, others too many)\n", i, sweepNo
@@ -766,7 +766,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 					ControlWindowToFront()
 				endif
 			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW: // fallthrough-by-design
-				SetDAScaleModOp(device, i, daScaleModifier, daScaleOperator)
+				SetDAScaleModOp(device, sweepNo, i, daScaleModifier, daScaleOperator)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_GOOD:
 				// nothing to do

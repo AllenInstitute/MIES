@@ -853,8 +853,8 @@ Function FitResistance(string device, variable headstage, [variable showPlot, va
 	endif
 End
 
-/// @brief Helper for setting the DAScale
-Function SetDAScaleModOp(string device, variable headstage, variable modifier, string operator, [variable invert, variable roundTopA])
+/// @brief Helper for setting the DAScale, see also SetDAScale()
+Function SetDAScaleModOp(string device, variable sweepNo, variable headstage, variable modifier, string operator, [variable invert, variable roundTopA, variable limitCheck])
 
 	if(ParamIsDefault(invert))
 		invert = 0
@@ -868,13 +868,17 @@ Function SetDAScaleModOp(string device, variable headstage, variable modifier, s
 		roundTopA = !!roundTopA
 	endif
 
+	if(ParamIsDefault(limitCheck))
+		limitCheck = 1
+	else
+		limitCheck = !!limitCheck
+	endif
+
 	strswitch(operator)
 		case "+":
-			SetDAScale(device, headstage, offset = invert ? -modifier : modifier, roundTopA = roundTopA)
-			break
+			return SetDAScale(device, sweepNo, headstage, offset = invert ? -modifier : modifier, roundTopA = roundTopA, limitCheck = limitCheck)
 		case "*":
-			SetDAScale(device, headstage, relative = invert ? 1 / modifier : modifier, roundTopA = roundTopA)
-			break
+			return SetDAScale(device, sweepNo, headstage, relative = invert ? 1 / modifier : modifier, roundTopA = roundTopA, limitCheck = limitCheck)
 		default:
 			ASSERT(0, "Invalid operator")
 			break
@@ -883,16 +887,22 @@ End
 
 /// @brief Set the DAScale value of the given headstage
 ///
-/// @param device device
+/// The limit check assumes that the next sweep is the next sweep of the current stimset (aka has a set count + 1).
+///
+/// @param device     device
 /// @param headstage  MIES headstage
+/// @param sweepNo    Sweep number
 /// @param absolute   (optional) DAScale value in `A` (Amperes)
 /// @param relative   (optional) relative DAScale modifier
 /// @param offset     (optional) offset DAScale value
 /// @param roundTopA  (optional, defaults to false) round the set DAScale to integer pA values
-Function SetDAScale(string device, variable headstage, [variable absolute, variable relative, variable offset, variable roundTopA])
+/// @param limitCheck (optional, defaults to true) check if the new DAScale value would be out of range
+///
+/// @return 0 on sucessful limits check, 1 on out-of-range and NaN if the limits check was skipped
+Function SetDAScale(string device, variable sweepNo, variable headstage, [variable absolute, variable relative, variable offset, variable roundTopA, variable limitCheck])
 
-	variable amps, DAC
-	string DAUnit, ctrl, lbl
+	variable amps, DAC, nextStimsetColumn, DAScaleLimit, skipCountExisting, setCount
+	string DAUnit, ctrl, lbl, stimSetName
 
 	ASSERT(ParamIsDefault(absolute) + ParamIsDefault(relative) + ParamIsDefault(offset) == 2, "One of absolute, relative or offset has to be present")
 
@@ -900,6 +910,12 @@ Function SetDAScale(string device, variable headstage, [variable absolute, varia
 		roundTopA = 0
 	else
 		roundTopA = !!roundTopA
+	endif
+
+	if(ParamIsDefault(limitCheck))
+		limitCheck = 1
+	else
+		limitCheck = !!limitCheck
 	endif
 
 	DAC = AFH_GetDACFromHeadstage(device, headstage)
@@ -924,7 +940,27 @@ Function SetDAScale(string device, variable headstage, [variable absolute, varia
 
 	amps = roundTopA ? round(amps) : amps
 	ASSERT(IsFinite(amps), "Invalid non-finite value")
+
+	if(limitCheck)
+		stimSetName = AFH_GetStimSetNameForHeadstage(device, headstage)
+		WAVE numericalValues = GetLBNumericalValues(device)
+
+		nextStimsetColumn = AFH_GetNextSweepSetCount(numericalValues, sweepNo, headstage)
+
+		DAScaleLimit = DAP_GetDAScaleMax(device, headstage, stimsetName, nextStimsetColumn)
+		ASSERT(IsFinite(DAScaleLimit), "Unsupported return value from DAP_GetDataLimits")
+
+		// the border value is not valid, see DC_CheckIfDataWaveHasBorderVals
+		if(amps >= DAScaleLimit)
+			return 1
+		endif
+	endif
+
 	PGC_SetAndActivateControl(device, ctrl, val = amps)
+
+	if(limitCheck)
+		return 0
+	endif
 End
 
 /// @brief Return a list of required parameters
@@ -1016,7 +1052,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 					return 1
 				endif
 
-				SetDAScale(device, i, absolute = -20e-12)
+				SetDAScale(device, s.sweepNo, i, absolute = -20e-12)
 
 				autoBiasCheck    = ampParam[%AutoBiasEnable][0][i]
 				holdingPotential = ampParam[%AutoBiasVcom][0][i]
@@ -1155,7 +1191,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 				sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", device, i, resistanceFitted[i], targetV, amps
 				DEBUGPRINT(msg)
 
-				SetDAScale(device, i, absolute = amps)
+				SetDAScale(device, s.sweepNo, i, absolute = amps)
 			endfor
 			break
 		case POST_SET_EVENT:
