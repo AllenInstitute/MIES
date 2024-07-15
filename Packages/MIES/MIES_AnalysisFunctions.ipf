@@ -1251,7 +1251,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 				retCheckDAScale = SetDAScale(device, i, s.sweepNo, absolute = amps)
 
 				if(retCheckDAScale)
-					ComplainOutOfRangeDAScale(device, s.sweepNo, s.headstage, INVALID_ANALYSIS_FUNCTION)
+					ComplainOutOfRangeDAScale(device, s.sweepNo, INVALID_ANALYSIS_FUNCTION)
 					break
 				endif
 			endfor
@@ -1294,7 +1294,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 	endswitch
 End
 
-Function ComplainOutOfRangeDAScale(string device, variable sweepNo, variable headstage, variable anaFuncType)
+Function ComplainOutOfRangeDAScale(string device, variable sweepNo, variable anaFuncType)
 
 	variable i
 	string key
@@ -1305,10 +1305,12 @@ Function ComplainOutOfRangeDAScale(string device, variable sweepNo, variable hea
 	printf "Please adjust the \"External Command Sensitivity\" in the MultiClamp Commander application and try again.\r"
 	ControlWindowToFront()
 
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+
 	switch(anaFuncType)
 		case PSQ_CHIRP:
 			WAVE result = LBN_GetNumericWave()
-			result[headstage] = 1
+			result[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1)
 			key               = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_DASCALE_OOR)
 			ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
@@ -1319,7 +1321,6 @@ Function ComplainOutOfRangeDAScale(string device, variable sweepNo, variable hea
 			ASSERT(0, "Unknown analysis function")
 	endswitch
 
-	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		if(!statusHS[i])

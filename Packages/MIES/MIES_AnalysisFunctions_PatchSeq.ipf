@@ -6417,7 +6417,7 @@ Function PSQ_Chirp(device, s)
 		retCheckDAScale = SetDAScaleModOp(device, s.headstage, s.sweepNo, daScaleModifier, daScaleOperator, roundTopA = 1)
 
 		if(retCheckDAScale)
-			ComplainOutOfRangeDAScale(device, s.sweepNo, s.headstage, PSQ_CHIRP)
+			ComplainOutOfRangeDAScale(device, s.sweepNo, PSQ_CHIRP)
 		endif
 
 		return ANALYSIS_FUNC_RET_EARLY_STOP
@@ -6445,7 +6445,7 @@ Function PSQ_Chirp(device, s)
 				retCheckDAScale = SetDAScale(device, s.headstage, s.sweepNo, relative = scalingFactorDAScale, roundTopA = 1)
 
 				if(retCheckDAScale)
-					ComplainOutOfRangeDAScale(device, s.sweepNo, s.headstage, PSQ_CHIRP)
+					ComplainOutOfRangeDAScale(device, s.sweepNo, PSQ_CHIRP)
 					return ANALYSIS_FUNC_RET_EARLY_STOP
 				endif
 				break
