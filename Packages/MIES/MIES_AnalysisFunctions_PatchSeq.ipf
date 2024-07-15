@@ -6174,7 +6174,7 @@ Function PSQ_Chirp(device, s)
 				result[INDEP_HEADSTAGE] = initialDAScale
 				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo)
 
-				SetDAScale(device, s.headstage, s.sweepNo, absolute = initialDAScale, roundTopA = 1)
+				SetDAScale(device, s.headstage, s.sweepNo, absolute = initialDAScale, roundTopA = 1, limitCheck = 0)
 
 				WAVE result = LBN_GetNumericWave()
 				key                     = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_UOD)
