@@ -2808,7 +2808,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 	listOfAnalysisFunctions = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_ALL)
 
 	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
-		func = ExtractAnalysisFuncFromStimSet(stimSet, i)
+		func = WB_ExtractAnalysisFuncFromStimSet(stimSet, i)
 
 		if(isEmpty(func)) // none set
 			continue
@@ -2851,7 +2851,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 		reqNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(func, REQUIRED_PARAMS)
 
 		reqNames   = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
-		suppParams = ExtractAnalysisFunctionParams(stimSet)
+		suppParams = WB_ExtractAnalysisFunctionParams(stimSet)
 		suppNames  = AFH_GetListOfAnalysisParamNames(suppParams)
 		diff       = GetListDifference(reqNames, suppNames)
 		if(!IsEmpty(diff))
@@ -5490,7 +5490,7 @@ Function DAP_DeleteStimulusSet(string setName, [string device])
 		return NaN
 	endif
 
-	channelType = GetStimSetType(setName)
+	channelType = WB_GetStimSetType(setName)
 
 	if(channeltype == CHANNEL_TYPE_UNKNOWN)
 		return NaN

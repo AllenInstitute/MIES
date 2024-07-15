@@ -425,7 +425,7 @@ Function CheckLBIndexCache_IGNORE(string device)
 					setting         = GetDimLabel(values, COLS, k)
 					entrySourceType = ReverseEntrySourceTypeMapper(l)
 
-					WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(values, sweepNo, setting, entrySourceType)
+					WAVE/Z settingsNoCache = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(values, sweepNo, setting, entrySourceType)
 
 					if(!WaveExists(settingsNoCache))
 						CHECK_EQUAL_VAR(entry, LABNOTEBOOK_MISSING_VALUE)
@@ -497,8 +497,8 @@ Function CheckLBRowCache_IGNORE(string device)
 				first = LABNOTEBOOK_GET_RANGE
 				last  = LABNOTEBOOK_GET_RANGE
 
-				WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(values, sweepNo, "TimeStamp", entrySourceType, \
-				                                                              first = first, last = last)
+				WAVE/Z settingsNoCache = MIES_MIESUTILS_LOGBOOK#GetLastSettingNoCache(values, sweepNo, "TimeStamp", entrySourceType, \
+				                                                                      first = first, last = last)
 
 				CHECK_EQUAL_VAR(first, LBRowCache[j][%first][k])
 				CHECK_EQUAL_VAR(last, LBRowCache[j][%last][k])

@@ -618,3 +618,67 @@ static Function/S DAG_GetSpecificCtrlTxT(device, list)
 
 	return subtypeCtrlList
 End
+
+/// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
+static Function/WAVE GetAllDAEphysSetVarNum(device, channelType, controlType)
+	string device
+	variable channelType, controlType
+
+	variable CtrlNum = GetNumberFromType(var = channelType)
+	string ctrl
+	make/FREE/N=(CtrlNum) Wv
+	variable i
+	for(i = 0; i < CtrlNum; i += 1)
+		ctrl  = GetPanelControl(i, channelType, controlType)
+		wv[i] = GetSetVariable(device, ctrl)
+	endfor
+	return wv
+End
+
+/// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
+static Function/WAVE GetAllDAEphysSetVarTxT(device, channelType, controlType)
+	string device
+	variable channelType, controlType
+
+	variable CtrlNum = GetNumberFromType(var = channelType)
+	string ctrl
+	make/FREE/N=(CtrlNum)/T Wv
+	variable i
+	for(i = 0; i < CtrlNum; i += 1)
+		ctrl  = GetPanelControl(i, channelType, controlType)
+		wv[i] = GetSetVariableString(device, ctrl)
+	endfor
+	return wv
+End
+
+/// @brief Returns the index of all popupmenus in the DA_Ephys panel of a controlType
+static Function/WAVE GetAllDAEphysPopMenuIndex(device, channelType, controlType)
+	string device
+	variable channelType, controlType
+
+	variable CtrlNum = GetNumberFromType(var = channelType)
+	string ctrl
+	make/FREE/N=(CtrlNum) Wv
+	variable i
+	for(i = 0; i < CtrlNum; i += 1)
+		ctrl  = GetPanelControl(i, channelType, controlType)
+		wv[i] = GetPopupMenuIndex(device, ctrl)
+	endfor
+	return wv
+End
+
+/// @brief Returns the string contents of all popupmenus in the DA_Ephys panel of a controlType
+static Function/WAVE GetAllDAEphysPopMenuString(device, channelType, controlType)
+	string device
+	variable channelType, controlType
+
+	variable CtrlNum = GetNumberFromType(var = channelType)
+	string ctrl
+	make/FREE/N=(CtrlNum)/T Wv
+	variable i
+	for(i = 0; i < CtrlNum; i += 1)
+		ctrl  = GetPanelControl(i, channelType, controlType)
+		wv[i] = GetPopupMenuString(device, ctrl)
+	endfor
+	return wv
+End

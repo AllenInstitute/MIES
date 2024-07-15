@@ -28,7 +28,7 @@ static Function TestSweepUpgrade([string str])
 	CHECK_EQUAL_WAVES(sweepRef, sweep, mode = WAVE_DATA)
 
 	Make/FREE/T sweepBakRef = {"X_0:DA_0" + WAVE_BACKUP_SUFFIX, "X_0:AD_0" + WAVE_BACKUP_SUFFIX}
-	WAVE/Z/T sweepBak = MIES_MIESUTILS#GetBackupWave_TS(sweep)
+	WAVE/Z/T sweepBak = MIES_MIESUTILS_BACKUPWAVES#GetBackupWave_TS(sweep)
 	CHECK_EQUAL_WAVES(sweepBakRef, sweepBak, mode = WAVE_DATA)
 
 	WAVE/Z channel0 = ResolveSweepChannel(sweep, 0, allowFail = 1)

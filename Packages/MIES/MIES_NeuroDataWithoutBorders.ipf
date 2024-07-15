@@ -1435,7 +1435,7 @@ static Function NWB_LoadStimset(locationID, stimset, overwrite, [verbose])
 	WB_KillStimset(stimset)
 
 	// load stimsets with parameter waves
-	stimsetType = GetStimSetType(stimset)
+	stimsetType = WB_GetStimSetType(stimset)
 
 	if(stimsetType == CHANNEL_TYPE_UNKNOWN)
 		return 1
