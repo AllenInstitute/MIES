@@ -1079,7 +1079,7 @@ End
 Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 	variable sweepNo, index, i, targetV, prevActiveHS, prevSendToAllAmp
 	variable amps, result
-	variable autoBiasCheck, holdingPotential, indexing
+	variable autoBiasCheck, holdingPotential, indexing, retCheckDAScale
 	string msg, name, control
 
 	switch(s.eventType)
@@ -1106,7 +1106,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 					return 1
 				endif
 
-				SetDAScale(device, i, s.sweepNo, absolute = -20e-12)
+				SetDAScale(device, i, s.sweepNo, absolute = -20e-12, limitCheck = 0)
 
 				autoBiasCheck    = ampParam[%AutoBiasEnable][0][i]
 				holdingPotential = ampParam[%AutoBiasVcom][0][i]
@@ -1223,7 +1223,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 
 				index = targetVoltagesIndex[i]
 
-				if(index == DimSize(targetVoltages, ROWS))
+				if(index == (DimSize(targetVoltages, ROWS) - 1))
 					// reached last sweep of stimset, do nothing
 					continue
 				endif
@@ -1248,7 +1248,12 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 				sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", device, i, resistanceFitted[i], targetV, amps
 				DEBUGPRINT(msg)
 
-				SetDAScale(device, i, s.sweepNo, absolute = amps)
+				retCheckDAScale = SetDAScale(device, i, s.sweepNo, absolute = amps)
+				CheckSetDAScaleReturn(device, retCheckDAScale)
+
+				if(retCheckDAScale)
+					break
+				endif
 			endfor
 			break
 		case POST_SET_EVENT:
@@ -1287,6 +1292,50 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 			// do nothing
 			break
 	endswitch
+End
+
+Function CheckSetDAScaleReturn(string device, variable retValue)
+
+	variable i
+
+	if(!retValue)
+		return NaN
+	endif
+
+	ASSERT(GetHardwareType(device) != HARDWARE_SUTTER_DAC, "Missing support for Sutter amplififer")
+
+	printf "(%s) The DAScale value could not be set as it is out-of-range.\r", GetRTStackInfo(2)
+	printf "Please adjust the \"External Command Sensitivity\" in the MultiClamp Commander application and try again.\r"
+	ControlWindowToFront()
+
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		ForceSetEvent(device, i)
+	endfor
+
+	RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO)
+End
+
+/// @brief Manually force the pre/post set events
+///
+/// Required to do before skipping sweeps.
+/// @todo this hack must go away.
+static Function ForceSetEvent(device, headstage)
+	string   device
+	variable headstage
+
+	variable DAC
+
+	WAVE setEventFlag = GetSetEventFlag(device)
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+
+	setEventFlag[DAC][%PRE_SET_EVENT]  = 1
+	setEventFlag[DAC][%POST_SET_EVENT] = 1
 End
 
 Function/S SetControlInEvent_CheckParam(string name, STRUCT CheckParametersStruct &s)
