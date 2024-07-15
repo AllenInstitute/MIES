@@ -663,7 +663,7 @@ Function MSQ_FastRheoEst(device, s)
 					continue
 				endif
 
-				SetDAScale(device, i, absolute = MSQ_FRE_INIT_AMP_p100)
+				SetDAScale(device, i, s.sweepNo, absolute = MSQ_FRE_INIT_AMP_p100)
 			endfor
 
 			PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 0)
@@ -789,7 +789,7 @@ Function MSQ_FastRheoEst(device, s)
 					ASSERT(headstagePassed[i] != 1, "Unexpected headstage passing")
 					headstagePassed[i] = 0
 				else
-					SetDAScale(device, i, absolute = newDAScaleValue)
+					SetDAScale(device, i, s.sweepNo, absolute = newDAScaleValue)
 				endif
 			endfor
 
@@ -891,7 +891,7 @@ Function MSQ_FastRheoEst(device, s)
 						val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * PICO_TO_ONE
 					endif
 
-					SetDAScale(device, i, absolute = val)
+					SetDAScale(device, i, s.sweepNo, absolute = val)
 				endfor
 			endif
 
@@ -1256,7 +1256,7 @@ Function MSQ_DAScale(device, s)
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			SetDAScale(device, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE)
+			SetDAScale(device, i, s.sweepNo, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE)
 			DAScalesIndex[i] += 1
 		endfor
 	endif
