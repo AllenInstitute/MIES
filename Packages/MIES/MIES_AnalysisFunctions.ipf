@@ -964,7 +964,7 @@ Function SetDAScale(device, headstage, [absolute, relative, offset, roundTopA])
 	endif
 
 	DAC = AFH_GetDACFromHeadstage(device, headstage)
-	ASSERT(IsFinite(DAC), "This analysis function does not work with unassociated DA channels")
+	ASSERT(IsFinite(DAC), "Does not work with unassociated DA channels")
 
 	DAUnit = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DAC)
 
