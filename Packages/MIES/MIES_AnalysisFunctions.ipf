@@ -1082,7 +1082,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 					return 1
 				endif
 
-				SetDAScale(device, s.sweepNo, i, absolute = -20e-12)
+				SetDAScale(device, s.sweepNo, i, absolute = -20e-12, limitCheck = 0)
 
 				autoBiasCheck    = ampParam[%AutoBiasEnable][0][i]
 				holdingPotential = ampParam[%AutoBiasVcom][0][i]
@@ -1175,6 +1175,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 			WAVE deltaV     = LBN_GetNumericWave()
 			WAVE deltaI     = LBN_GetNumericWave()
 			WAVE resistance = LBN_GetNumericWave()
+			WAVE oorDAScale = LBN_GetNumericWave()
 
 			CalculateTPLikePropsFromSweep(numericalValues, textualValues, s.scaledDACWave, deltaI, deltaV, resistance)
 
@@ -1185,6 +1186,14 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 
 			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, s.sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, UNKNOWN_MODE)
 			ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
+
+#ifdef AUTOMATED_TESTING
+			WAVE/Z overrideResults = GetOverrideResults()
+
+			if(WaveExists(overrideResults))
+				resistanceFitted[] = overrideResults[p][%Resistance] * MEGA_TO_ONE
+			endif
+#endif
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1221,8 +1230,10 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 				sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", device, i, resistanceFitted[i], targetV, amps
 				DEBUGPRINT(msg)
 
-				SetDAScale(device, s.sweepNo, i, absolute = amps)
+				oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = amps)
 			endfor
+
+			ReportOutOfRangeDAScale(device, s.sweepNo, INVALID_ANALYSIS_FUNCTION, oorDAScale)
 			break
 		case POST_SET_EVENT:
 			if(!DAG_HeadstageIsHighestActive(device, s.headstage))
