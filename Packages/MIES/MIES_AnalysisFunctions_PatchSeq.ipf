@@ -4270,7 +4270,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 						ASSERT(0, "Invalid case")
 						break
 				endswitch
-				SetDAScale(device, i, absolute = DAScale * PICO_TO_ONE)
+				SetDAScale(device, s.sweepNo, i, absolute = DAScale * PICO_TO_ONE)
 			endif
 		endfor
 	endif
@@ -4411,7 +4411,7 @@ Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 0)
 
 			PSQ_StoreStepSizeInLBN(device, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_p100)
-			SetDAScale(device, s.headstage, absolute = PSQ_SP_INIT_AMP_p100)
+			SetDAScale(device, s.sweepNo, s.headstage, absolute = PSQ_SP_INIT_AMP_p100)
 
 			return 0
 
@@ -4464,7 +4464,7 @@ Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 						RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 					endif
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
-					SetDAScale(device, s.headstage, absolute = DAScale + stepsize)
+					SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p10))
 					WAVE value = LBN_GetNumericWave()
 					value[INDEP_HEADSTAGE] = DAScale
@@ -4480,7 +4480,7 @@ Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(device, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_m50)
 					stepsize = PSQ_SP_INIT_AMP_m50
-					SetDAScale(device, s.headstage, absolute = DAScale + stepsize)
+					SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize)
 				else
 					ASSERT(0, "Unknown stepsize")
 				endif
@@ -4496,7 +4496,7 @@ Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 					ASSERT(0, "Unknown stepsize")
 				endif
 
-				SetDAScale(device, s.headstage, absolute = DAScale + stepsize)
+				SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize)
 			endif
 
 			sprintf msg, "Sweep has %s\r", ToPassFail(sweepPassed)
@@ -4705,7 +4705,7 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 				endif
 			endif
 
-			SetDAScale(device, s.headstage, absolute = finalDAScale)
+			SetDAScale(device, s.sweepNo, s.headstage, absolute = finalDAScale)
 
 			return 0
 
@@ -4894,7 +4894,7 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 				break
 			endif
 
-			SetDAScale(device, s.headstage, absolute = DAScale)
+			SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale)
 			break
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
@@ -5145,7 +5145,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
 
-			SetDAScale(device, s.headstage, absolute = PSQ_RA_DASCALE_DEFAULT * PICO_TO_ONE)
+			SetDAScale(device, s.sweepNo, s.headstage, absolute = PSQ_RA_DASCALE_DEFAULT * PICO_TO_ONE)
 
 			return 0
 
@@ -6184,7 +6184,7 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 				result[INDEP_HEADSTAGE] = initialDAScale
 				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo)
 
-				SetDAScale(device, s.headstage, absolute = initialDAScale, roundTopA = 1)
+				SetDAScale(device, s.sweepNo, s.headstage, absolute = initialDAScale, roundTopA = 1)
 
 				WAVE result = LBN_GetNumericWave()
 				key                     = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_UOD)
@@ -6423,7 +6423,7 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 		// adapt DAScale and finish
 		daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
 		daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
-		SetDAScaleModOp(device, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1)
+		SetDAScaleModOp(device, s.sweepNo, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1)
 
 		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
@@ -6447,7 +6447,7 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 				break
 			case PSQ_CR_INCREASE:
 			case PSQ_CR_DECREASE: // fallthrough-by-design
-				SetDAScale(device, s.headstage, relative = scalingFactorDAScale, roundTopA = 1)
+				SetDAScale(device, s.sweepNo, s.headstage, relative = scalingFactorDAScale, roundTopA = 1)
 				break
 			default:
 				ASSERT(0, "impossible case")

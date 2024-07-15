@@ -633,7 +633,7 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 					continue
 				endif
 
-				SetDAScale(device, i, absolute = MSQ_FRE_INIT_AMP_p100)
+				SetDAScale(device, s.sweepNo, i, absolute = MSQ_FRE_INIT_AMP_p100)
 			endfor
 
 			PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 0)
@@ -759,7 +759,7 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 					ASSERT(headstagePassed[i] != 1, "Unexpected headstage passing")
 					headstagePassed[i] = 0
 				else
-					SetDAScale(device, i, absolute = newDAScaleValue)
+					SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue)
 				endif
 			endfor
 
@@ -861,7 +861,7 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 						val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * PICO_TO_ONE
 					endif
 
-					SetDAScale(device, i, absolute = val)
+					SetDAScale(device, s.sweepNo, i, absolute = val)
 				endfor
 			endif
 
@@ -1218,7 +1218,7 @@ Function MSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			SetDAScale(device, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE)
+			SetDAScale(device, s.sweepNo, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE)
 			DAScalesIndex[i] += 1
 		endfor
 	endif
