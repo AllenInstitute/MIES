@@ -42,6 +42,7 @@
 ///  PSQ_FMT_LBN_STEPSIZE                       Current DAScale step size                                     (none)   Numerical    SP, RB                               No           No
 ///  PSQ_FMT_LBN_STEPSIZE_FUTURE                Future DAScale step size                                      (none)   Numerical    RB                                   No           No
 ///  PSQ_FMT_LBN_RB_DASCALE_EXC                 Range for valid DAScale values is exceeded                    On/Off   Numerical    RB                                   No           Yes
+///  PSQ_FMT_LBN_DASCALE_OOR                    Future DAScale value is out of range                          On/Off   Numerical    CR,XXX                               Yes          Yes
 ///  PSQ_FMT_LBN_RB_LIMITED_RES                 Failed due to limited DAScale resolution                      On/Off   Numerical    RB                                   No           Yes
 ///  PSQ_FMT_LBN_FINAL_SCALE                    Final DAScale of the given headstage, only set on success     (none)   Numerical    SP, RB                               No           No
 ///  PSQ_FMT_LBN_SPIKE_DASCALE_ZERO             Sweep spiked with DAScale of 0                                On/Off   Numerical    SP                                   No           No
@@ -6041,7 +6042,7 @@ Function PSQ_Chirp(device, s)
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, scalingFactorDAScale, initLPF, ampBesselFilter
 	variable fifoTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay, asyncAlarmPassed
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck, besselFilterRestore
-	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode, stimsetPass
+	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode, stimsetPass, retCheckDAScale
 	string setName, key, msg, stimset, str, daScaleOperator
 
 	innerRelativeBound     = AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params)
@@ -6413,7 +6414,11 @@ Function PSQ_Chirp(device, s)
 		// adapt DAScale and finish
 		daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
 		daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
-		SetDAScaleModOp(device, s.headstage, s.sweepNo, daScaleModifier, daScaleOperator, roundTopA = 1)
+		retCheckDAScale = SetDAScaleModOp(device, s.headstage, s.sweepNo, daScaleModifier, daScaleOperator, roundTopA = 1)
+
+		if(retCheckDAScale)
+			ComplainOutOfRangeDAScale(device, s.sweepNo, s.headstage, PSQ_CHIRP)
+		endif
 
 		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
@@ -6437,7 +6442,12 @@ Function PSQ_Chirp(device, s)
 				break
 			case PSQ_CR_INCREASE:
 			case PSQ_CR_DECREASE: // fallthrough-by-design
-				SetDAScale(device, s.headstage, s.sweepNo, relative = scalingFactorDAScale, roundTopA = 1)
+				retCheckDAScale = SetDAScale(device, s.headstage, s.sweepNo, relative = scalingFactorDAScale, roundTopA = 1)
+
+				if(retCheckDAScale)
+					ComplainOutOfRangeDAScale(device, s.sweepNo, s.headstage, PSQ_CHIRP)
+					return ANALYSIS_FUNC_RET_EARLY_STOP
+				endif
 				break
 			default:
 				ASSERT(0, "impossible case")

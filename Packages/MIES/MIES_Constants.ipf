@@ -1138,6 +1138,7 @@ StrConstant PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER = "^U_BLS[[:digit:]]+$"
 /// @anchor PatchSeqLabnotebookFormatStrings
 /// @{
 StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC              = "%s DAScale exceeded"
+StrConstant PSQ_FMT_LBN_DASCALE_OOR                 = "%s DAScale out of range"
 StrConstant PSQ_FMT_LBN_STEPSIZE                    = "%s step size"
 StrConstant PSQ_FMT_LBN_STEPSIZE_FUTURE             = "%s step size (fut.)"
 StrConstant PSQ_FMT_LBN_SPIKE_DETECT                = "%s spike detected"

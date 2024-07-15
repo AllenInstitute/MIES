@@ -1249,9 +1249,9 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 				DEBUGPRINT(msg)
 
 				retCheckDAScale = SetDAScale(device, i, s.sweepNo, absolute = amps)
-				CheckSetDAScaleReturn(device, retCheckDAScale)
 
 				if(retCheckDAScale)
+					ComplainOutOfRangeDAScale(device, s.sweepNo, s.headstage, INVALID_ANALYSIS_FUNCTION)
 					break
 				endif
 			endfor
@@ -1294,19 +1294,30 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 	endswitch
 End
 
-Function CheckSetDAScaleReturn(string device, variable retValue)
+Function ComplainOutOfRangeDAScale(string device, variable sweepNo, variable headstage, variable anaFuncType)
 
 	variable i
+	string key
 
-	if(!retValue)
-		return NaN
-	endif
-
-	ASSERT(GetHardwareType(device) != HARDWARE_SUTTER_DAC, "Missing support for Sutter amplififer")
+	ASSERT(GetHardwareType(device) != HARDWARE_SUTTER_DAC, "Missing support for Sutter amplifier")
 
 	printf "(%s) The DAScale value could not be set as it is out-of-range.\r", GetRTStackInfo(2)
 	printf "Please adjust the \"External Command Sensitivity\" in the MultiClamp Commander application and try again.\r"
 	ControlWindowToFront()
+
+	switch(anaFuncType)
+		case PSQ_CHIRP:
+			WAVE result = LBN_GetNumericWave()
+			result[headstage] = 1
+			key               = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_DASCALE_OOR)
+			ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
+			break
+		case INVALID_ANALYSIS_FUNCTION:
+			// do nothing
+			break
+		default:
+			ASSERT(0, "Unknown analysis function")
+	endswitch
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
