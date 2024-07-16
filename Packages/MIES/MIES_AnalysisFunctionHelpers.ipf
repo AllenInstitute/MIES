@@ -571,6 +571,19 @@ Function/S AFH_GetListOfAnalysisParamNames(params)
 	return list
 End
 
+/// @brief Check if the given analysis parameter is present
+///
+/// @param name   parameter name
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+///
+/// @ingroup AnalysisFunctionParameterHelpers
+///
+/// @return one if present, zero otherwise
+Function AFH_IsParameterPresent(string name, string params)
+
+	return WhichListItem(name, AFH_GetListOfAnalysisParamNames(params), ";", 0, 0) >= 0
+End
+
 /// @brief Return the type of the user parameter
 ///
 /// @param name         parameter name
@@ -638,7 +651,7 @@ Function AFH_GetAnalysisParamNumerical(name, params, [defValue])
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+	if(!AFH_IsParameterPresent(name, params))
 		if(ParamIsDefault(defValue))
 			return NaN
 		endif
@@ -674,7 +687,7 @@ Function/S AFH_GetAnalysisParamTextual(name, params, [defValue, percentDecoded])
 		percentDecoded = !!percentDecoded
 	endif
 
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+	if(!AFH_IsParameterPresent(name, params))
 		if(ParamIsDefault(defValue))
 			return ""
 		endif
@@ -709,7 +722,7 @@ Function/WAVE AFH_GetAnalysisParamWave(name, params, [defValue])
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+	if(!AFH_IsParameterPresent(name, params))
 		if(ParamIsDefault(defValue))
 			return $""
 		endif
@@ -748,7 +761,7 @@ Function/WAVE AFH_GetAnalysisParamTextWave(name, params, [defValue, percentDecod
 		percentDecoded = !!percentDecoded
 	endif
 
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+	if(!AFH_IsParameterPresent(name, params))
 		if(ParamIsDefault(defValue))
 			return $""
 		endif
@@ -761,7 +774,7 @@ Function/WAVE AFH_GetAnalysisParamTextWave(name, params, [defValue, percentDecod
 	WAVE/T wv = ListToTextWave(contents, "|")
 
 	if(percentDecoded)
-		wv = URLDecode(wv)
+		wv[] = URLDecode(wv[p])
 		return wv
 	endif
 
@@ -783,7 +796,7 @@ End
 Function AFH_IsValidAnalysisParamType(type)
 	string type
 
-	return !IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1
+	return !IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES, ";", 0, 0) != -1
 End
 
 /// @brief Return an user parameter's value as string
@@ -863,14 +876,14 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 	for(i = 0; i < numParams; i += 1)
 		name = StringFromList(i, allNames)
 
-		if(WhichListItem(name, presentNames) == -1)
-			if(WhichListItem(name, optNames) != -1)
+		if(WhichListItem(name, presentNames, ";", 0, 0) == -1)
+			if(WhichListItem(name, optNames, ";", 0, 0) != -1)
 				// non present optional parameters should not be checked
 				continue
 			endif
 
 			// non present required parameters are an error
-			if(WhichListItem(name, reqNames) != -1)
+			if(WhichListItem(name, reqNames, ";", 0, 0) != -1)
 				errorMessages[index++] = name + ": is required but missing"
 				continue
 			endif
