@@ -2669,8 +2669,8 @@ End
 
 static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, variable headstage, variable numSweepsWithSaturation)
 
-	string   key
-	variable measuredAllFutureDAScales
+	string key
+	variable measuredAllFutureDAScales, numFound, i, numSweeps
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -2702,12 +2702,27 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 		return 0
 	endif
 
-	MatrixOP/FREE passedAndSlopeReached = sweepPassed && fISlopeReached
+	// we want numSweepsWithSaturation sweeps with passing f-I slope QC and sweep QC
+	// and there should not be sweeps with failing f-I slope QC in between
+	numSweeps = DimSize(sweepPassed, ROWS)
+	for(i = 0; i < numSweeps; i += 1)
 
-	Make/FREE/N=(numSweepsWithSaturation)/I/B match = 1
-	FindSequence/I=match passedAndSlopeReached
+		if(!sweepPassed[i])
+			continue
+		endif
 
-	return V_Value >= 0
+		// sweeps have QC passing below
+
+		if(!fiSlopeReached[i])
+			numFound = 0
+			continue
+		endif
+
+		numFound += 1
+	endfor
+
+	// numFound > numSweepsWithSaturation can happen if we have futureDAScales left to measure
+	return numFound >= numSweepsWithSaturation
 End
 
 static Function [WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, WAVE/Z apfreqCurrentSCI, WAVE/Z DAScaleCurrentSCI] PSQ_DS_GetAPFreqAndDaScales(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable headstage)
