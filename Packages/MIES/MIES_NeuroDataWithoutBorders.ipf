@@ -506,12 +506,13 @@ End
 /// @param keepFileOpen          [optional, defaults to false] keep the NWB file open after return, or close it
 /// @param overwrite             [optional, defaults to false] overwrite any existing NWB file with the same name, only
 ///                              used when overrideFilePath is passed
+/// @param verbose               [optional, defaults to true] get diagnostic output to the command line
 ///
 /// @return 0 on success, non-zero on failure
-Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite])
+Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite, verbose])
 	variable nwbVersion
 	string   overrideFilePath
-	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite
+	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite, verbose
 
 	string devicesWithContent, device, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves, createdNewNWBFile
@@ -545,6 +546,12 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		overwrite = !!overwrite
 	endif
 
+	if(ParamIsDefault(verbose))
+		verbose = 1
+	else
+		verbose = !!verbose
+	endif
+
 	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"nwbVersion", "writeStoredTP", "writeIgorHistory", "compression"}, \
 	             values = {num2str(nwbVersion), num2str(writeStoredTestPulses),                                    \
 	                       num2str(writeIgorHistory), CompressionModeToString(compressionMode)})
@@ -552,8 +559,10 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
 
 	if(IsEmpty(devicesWithContent))
-		print "No devices with acquired content found for NWB export"
-		ControlWindowToFront()
+		if(verbose)
+			print "No devices with acquired content found for NWB export"
+			ControlWindowToFront()
+		endif
 
 		LOG_AddEntry(PACKAGE_MIES, "end")
 		return 1
@@ -566,8 +575,12 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 				DeleteFile/Z overrideFilePath
 				ASSERT(!FileExists(overrideFilePath), "File could not be deleted")
 			else
-				printf "The given path %s for the NWB export points to an existing file and overwrite is disabled.\r", overrideFilePath
-				ControlWindowToFront()
+				if(verbose)
+					printf "The given path %s for the NWB export points to an existing file and overwrite is disabled.\r", overrideFilePath
+					ControlWindowToFront()
+				endif
+
+				LOG_AddEntry(PACKAGE_MIES, "end")
 				return 1
 			endif
 		endif
@@ -582,8 +595,10 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		return 1
 	endif
 
-	print "Please be patient while we export all existing acquired content of all devices to NWB"
-	ControlWindowToFront()
+	if(verbose)
+		print "Please be patient while we export all existing acquired content of all devices to NWB"
+		ControlWindowToFront()
+	endif
 
 	STRUCT NWBAsyncParameters s
 
@@ -928,7 +943,7 @@ Function NWB_PrepareExport(nwbVersion)
 	endif
 
 	if(createdNewNWBFile)
-		NWB_ExportAllData(nwbVersion, keepFileOpen = 1)
+		NWB_ExportAllData(nwbVersion, keepFileOpen = 1, verbose = 0)
 		stimsets = ST_GetStimsetList()
 		NWB_AppendStimset(nwbVersion, locationID, stimsets, GetNoCompression())
 	endif
