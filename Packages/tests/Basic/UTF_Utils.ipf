@@ -8621,3 +8621,29 @@ static Function FND_Works()
 	WAVE/Z result = FindNeighbourDuplicates({1, NaN, NaN, Inf, -Inf, Inf, Inf, 2})
 	CHECK_EQUAL_WAVES(result, {2, 6}, mode = WAVE_DATA)
 End
+
+static Function PopCount_Works()
+
+	uint64 ui
+
+	CHECK_EQUAL_VAR(PopCount(0), 0)
+	CHECK_EQUAL_VAR(PopCount(1), 1)
+	CHECK_EQUAL_VAR(PopCount(2), 1)
+	CHECK_EQUAL_VAR(PopCount(3), 2)
+	CHECK_EQUAL_VAR(PopCount(7), 3)
+	CHECK_EQUAL_VAR(PopCount(15), 4)
+	// negative numbers are represented as two's complement
+	CHECK_EQUAL_VAR(PopCount(-1), 64)
+	CHECK_EQUAL_VAR(PopCount(-2), 63)
+	CHECK_EQUAL_VAR(PopCount(-3), 63)
+	CHECK_EQUAL_VAR(PopCount(-4), 62)
+	// non-finite numbers get implicitly converted to 0x8000000000000000
+	CHECK_EQUAL_VAR(PopCount(NaN), 1)
+	CHECK_EQUAL_VAR(PopCount(Inf), 1)
+	CHECK_EQUAL_VAR(PopCount(-Inf), 1)
+	// tests when no implicit conversion takes place
+	ui = 0xAAAAAAAAAAAAAAAA
+	CHECK_EQUAL_VAR(PopCount(ui), 32)
+	ui = 0x5555555555555555
+	CHECK_EQUAL_VAR(PopCount(ui), 32)
+End

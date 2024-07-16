@@ -70,19 +70,26 @@ threadsafe Function ClearBit(var, bit)
 End
 
 /// @brief Count the number of ones in `value`
+///        Note: if the argument given is not an unsigned int64
+///        then it will be implicitly converted to an uint64.
+///        This mean e.g. for a double precision argument that
+///        the maximum number of bits for positive numbers is 53 from 2^53 - 1
+///        and for negative numbers the result is always >= 11.
 ///
-/// @param value will be truncated to an integer value
-Function PopCount(value)
-	variable value
+/// @param value will be truncated to an 64 bit unsigned integer value
+Function PopCount(uint64 value)
 
 	variable count
+	uint64   leftSideHelper
 
-	value = trunc(value)
+	if(value == 0)
+		return 0
+	endif
+
 	do
-		if(value & 1)
-			count += 1
-		endif
-		value = trunc(value / 2^1) // shift one to the right
+		leftSideHelper = value & 1
+		count         += leftSideHelper
+		value          = value >> 1
 	while(value > 0)
 
 	return count
