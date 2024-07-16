@@ -20,4 +20,4 @@ docker build --build-arg USERID=$(id -u) --build-arg GROUPID=$(id -g) -t mies-do
 
 # execute build script
 # use 'docker run -it ..' for interactive debugging
-docker run --rm -v $top_level:/home/ci mies-documentation tools/build-documentation.sh
+docker run --rm -v $top_level:/home/ci/src --workdir /home/ci/src mies-documentation tools/build-documentation.sh

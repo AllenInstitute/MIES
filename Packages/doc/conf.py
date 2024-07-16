@@ -38,7 +38,6 @@ release = version
 # theming
 html_theme = "classic"
 html_theme_options = {
-        "collapsiblesidebar": "true",
         "bodyfont" : "Helvetica, Arial, sans-serif",
         "headfont" : "Helvetica, Arial, sans-serif"
         }
