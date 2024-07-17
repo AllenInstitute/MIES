@@ -837,7 +837,15 @@ Function/S AFH_RemoveAnalysisParameter(name, params)
 	return GrepList(params, "(?i)\\Q" + name + "\\E" + ":.*", 1, ",")
 End
 
-/// @brief Check the analysis parameters according to the optionally present check function
+/// @brief Check the analysis parameters
+///
+/// The following checks are made:
+/// - Valid and matching types
+/// - Non-empty waves supplied
+/// - All required parameters are present
+/// - No additional parameters are present if some are required/optional
+/// - Valid names
+/// - Check function passes if present
 ///
 /// @param genericFunc Name of an analysis V3 function
 /// @param s           struct CheckParametersStruct with additional info
@@ -847,8 +855,8 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 	string allNames, presentNames, message, name
 	string reqNamesAndTypesFromFunc, reqNames
 	string optNamesAndTypesFromFunc, optNames
-	variable index, numParams, i, valid_f1, valid_f2
-	string header, text
+	variable index, numParams, i, valid_f1, valid_f2, isOpt, isReq, hasParamsInfo
+	string header, text, namesAndTypesFromFunc, reqType, suppType
 
 	FUNCREF AFP_PARAM_CHECK_V1 f1 = $(genericFunc + "_CheckParam")
 	FUNCREF AFP_PARAM_CHECK_V2 f2 = $(genericFunc + "_CheckParam")
@@ -856,15 +864,13 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 	valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
 	valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
 
-	if(!valid_f1 && !valid_f2)
-		return ""
-	endif
-
 	reqNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS)
 	reqNames                 = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
 
 	optNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(genericFunc, OPTIONAL_PARAMS)
 	optNames                 = AFH_GetListOfAnalysisParamNames(optNamesAndTypesFromFunc)
+
+	hasParamsInfo = !IsEmpty(optNames) || !IsEmpty(reqNames)
 
 	presentNames = AFH_GetListOfAnalysisParamNames(s.params)
 
@@ -876,16 +882,77 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 	for(i = 0; i < numParams; i += 1)
 		name = StringFromList(i, allNames)
 
+		if(!AFH_IsValidAnalysisParameter(name))
+			errorMessages[index++] = name + ": has an invalid name."
+			continue
+		endif
+
+		isOpt = (WhichListItem(name, optNames, ";", 0, 0) != -1)
+		isReq = (WhichListItem(name, reqNames, ";", 0, 0) != -1)
+
 		if(WhichListItem(name, presentNames, ";", 0, 0) == -1)
-			if(WhichListItem(name, optNames, ";", 0, 0) != -1)
+			if(isOpt)
 				// non present optional parameters should not be checked
 				continue
 			endif
 
 			// non present required parameters are an error
-			if(WhichListItem(name, reqNames, ";", 0, 0) != -1)
+			if(isReq)
 				errorMessages[index++] = name + ": is required but missing"
 				continue
+			endif
+		else
+			// present parameter is neither a required nor an optional parameter
+			if(!isOpt && !isReq && hasParamsInfo)
+				errorMessages[index++] = name + ": is present but neither required nor optional."
+				continue
+			endif
+		endif
+
+		if(hasParamsInfo)
+			if(isReq)
+				namesAndTypesFromFunc = reqNamesAndTypesFromFunc
+			elseif(isOpt)
+				namesAndTypesFromFunc = optNamesAndTypesFromFunc
+			else
+				ASSERT(0, "Invalid case")
+			endif
+
+			// empty type specifications are allowed
+			reqType = AFH_GetAnalysisParamType(name, namesAndTypesFromFunc, typeCheck = 0)
+			if(!IsEmpty(reqType))
+				// invalid types are not allowed
+				if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES) == -1)
+					errorMessages[index++] = name + ": has an invalid type."
+					continue
+				endif
+
+				// non-matching type
+				suppType = AFH_GetAnalysisParamType(name, s.params, typeCheck = 0)
+				if(cmpstr(reqType, suppType))
+					errorMessages[index++] = name + ": has an differing types (" + reqType + " vs " + suppType + ")."
+					continue
+				endif
+
+				strswitch(reqType)
+					case "wave":
+						WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
+						if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
+							errorMessages[index++] = name + ": has a non-existing or empty numeric wave."
+							continue
+						endif
+						break
+					case "textwave":
+						WAVE/Z wv = AFH_GetAnalysisParamTextWave(name, s.params)
+						if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
+							errorMessages[index++] = name + ": has a non-existing or empty text wave."
+							continue
+						endif
+						break
+					default:
+						// do nothing
+						break
+				endswitch
 			endif
 		endif
 
@@ -896,7 +963,8 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 			elseif(valid_f2)
 				message = f2(name, s); AbortOnRTE
 			else
-				ASSERT(0, "impossible case")
+				// no check function present
+				message = ""
 			endif
 
 			// allow null return string meaning no error
