@@ -2740,7 +2740,7 @@ Function/WAVE GetSweepSettingsKeyWave(device)
 	wv[%Units][52]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][52] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][53] = "Autobias %"
+	wv[%Parameter][53] = AUTOBIAS_PERC_KEY
 	wv[%Units][53]     = ""
 	wv[%Tolerance][53] = "0.1"
 
