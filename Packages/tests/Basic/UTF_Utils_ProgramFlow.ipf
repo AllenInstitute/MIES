@@ -134,3 +134,26 @@ Function CO_Works()
 End
 
 /// @}
+
+/// MiesUtils XOP functions
+/// @{
+
+#ifndef THREADING_DISABLED
+
+Function RunningInMainThread_Thread()
+
+	make/FREE data
+	multithread data = MU_RunningInMainThread()
+	CHECK_EQUAL_VAR(Sum(data), 0)
+End
+
+#endif
+
+Function RunningInMainThread_Main()
+
+	make/FREE data
+	data = MU_RunningInMainThread()
+	CHECK_EQUAL_VAR(Sum(data), 128)
+End
+
+/// @}

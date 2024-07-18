@@ -483,3 +483,20 @@ static Function CreateBrokenCombinedSet()
 	err = WB_GetWaveNoteEntryAsNumber(note(stimSet), STIMSET_ENTRY, key = STIMSET_ERROR_KEY)
 	CHECK_EQUAL_VAR(err, WAVEBUILDER_STATUS_ERROR)
 End
+
+static Function TestCaseInsensitivityWB_SplitStimsetName()
+
+	string   setPrefix
+	variable stimulusType
+	variable setNumber
+
+	WB_SplitStimsetName("formula_DA_0", setPrefix, stimulusType, setNumber)
+	CHECK_EQUAL_STR(setPrefix, "formula")
+	CHECK_EQUAL_VAR(stimulusType, CHANNEL_TYPE_DAC)
+	CHECK_EQUAL_VAR(setNumber, 0)
+
+	WB_SplitStimsetName("formula_da_0", setPrefix, stimulusType, setNumber)
+	CHECK_EQUAL_STR(setPrefix, "formula")
+	CHECK_EQUAL_VAR(stimulusType, CHANNEL_TYPE_DAC)
+	CHECK_EQUAL_VAR(setNumber, 0)
+End

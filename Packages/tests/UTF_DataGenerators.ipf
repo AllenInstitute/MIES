@@ -804,3 +804,67 @@ static Function/WAVE SW_FalseValues()
 	Make/D/FREE data = {0}
 	return data
 End
+
+static Function/WAVE InvalidSignDigits()
+
+	Make/FREE digits = {-1, NaN, Inf, -Inf}
+
+	return digits
+End
+
+static Function/WAVE GetDifferentGraphs()
+
+	string win, recMacro
+
+	Make/FREE/T/N=5/O wv
+
+	NewDataFolder/O/S root:temp_test
+	Make/O data
+	data = p
+
+	Display data
+	win = S_name
+	ModifyGraph/W=$win log(left)=0, log(bottom)=1
+	SetAxis/W=$win left, 10, 20
+	recMacro = WinRecreation(win, 0)
+	CHECK_PROPER_STR(recMacro)
+	KillWindow $win
+	wv[0] = recMacro
+
+	Display data
+	win = S_name
+	ModifyGraph/W=$win log(left)=2, log(bottom)=1
+	SetAxis/W=$win bottom, 70, 90
+	recMacro = WinRecreation(win, 0)
+	CHECK_PROPER_STR(recMacro)
+	KillWindow $win
+	wv[1] = recMacro
+
+	Display data
+	win      = S_name
+	recMacro = WinRecreation(win, 0)
+	CHECK_PROPER_STR(recMacro)
+	KillWindow $win
+	wv[2] = recMacro
+
+	Display data
+	win = S_name
+	SetAxis/A/W=$win bottom
+	// only supports the default autoscale mode
+	//	SetAxis/A=2/W=$win left
+	recMacro = WinRecreation(win, 0)
+	CHECK_PROPER_STR(recMacro)
+	KillWindow $win
+	wv[3] = recMacro
+
+	Display data
+	win      = S_name
+	recMacro = WinRecreation(win, 0)
+	CHECK_PROPER_STR(recMacro)
+	KillWindow $win
+	wv[4] = recMacro
+
+	KillWaves data
+
+	return wv
+End

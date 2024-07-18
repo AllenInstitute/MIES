@@ -1039,3 +1039,50 @@ Function JSONWaveCreatesCorrectWaveTypes([STRUCT IUTF_mData &m])
 End
 
 /// @}
+
+/// FloatWithMinSigDigits
+/// @{
+
+// UTF_TD_GENERATOR DataGenerators#InvalidSignDigits
+Function FloatWithMinSigDigitsAborts([var])
+	variable var
+	try
+		FloatWithMinSigDigits(1.234, numMinSignDigits = var)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function FloatWithMinSigDigitsWorks()
+
+	string result, expected
+
+	result   = FloatWithMinSigDigits(1.234, numMinSignDigits = 0)
+	expected = "1"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = FloatWithMinSigDigits(-1.234, numMinSignDigits = 0)
+	expected = "-1"
+	CHECK_EQUAL_STR(result, expected)
+
+	result   = FloatWithMinSigDigits(1e-2, numMinSignDigits = 2)
+	expected = "0.01"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+/// @}
+
+/// @brief Generic test against the generated conversion constants
+Function GMC_SomeVariants()
+
+	// 1 mA -> 1e-3A
+	CHECK_EQUAL_VAR(MILLI_TO_ONE, 1e-3)
+
+	// 1 MA -> 1e9 mA
+	CHECK_EQUAL_VAR(MEGA_TO_MILLI, 1e9)
+
+	CHECK_EQUAL_VAR(PETA_TO_FEMTO, 1e30)
+
+	CHECK_EQUAL_VAR(MICRO_TO_TERA, 1e-18)
+End

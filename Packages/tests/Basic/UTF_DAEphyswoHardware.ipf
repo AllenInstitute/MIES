@@ -205,3 +205,37 @@ Function CheckStimsetUpdateAndSearch([STRUCT IUTF_mData &m])
 	WAVE/T stimsetsFromMenu = GetStimsetFromUserData(device, ctrlWave)
 	CHECK_EQUAL_TEXTWAVES({"stimsetD"}, stimsetsFromMenu)
 End
+
+/// DAP_GetRAAcquisitionCycleID
+/// @{
+
+static StrConstant device = "ITC18USB_DEV_0"
+
+Function AssertOnInvalidSeed()
+	NVAR rngSeed = $GetRNGSeed(device)
+	rngSeed = NaN
+
+	try
+		MIES_DAP#DAP_GetRAAcquisitionCycleID(device)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function CreatesReproducibleResults()
+	NVAR rngSeed = $GetRNGSeed(device)
+
+	// Use GetNextRandomNumberForDevice directly
+	// as we don't have a locked device
+
+	rngSeed = 1
+	Make/FREE/N=1024/L dataInt = GetNextRandomNumberForDevice(device)
+	CHECK_EQUAL_VAR(2932874867, WaveCRC(0, dataInt))
+
+	rngSeed = 1
+	Make/FREE/N=1024/D dataDouble = GetNextRandomNumberForDevice(device)
+
+	CHECK_EQUAL_WAVES(dataInt, dataDouble, mode = WAVE_DATA)
+End
+/// @}
