@@ -27,6 +27,19 @@
 #include "UTF_UpgradeDataFolderLocation"
 #include "UTF_UpgradeWaveLocationAndGetIt"
 #include "UTF_Utils"
+#include "UTF_Utils_Algorithm"
+#include "UTF_Utils_Checks"
+#include "UTF_Utils_Conversions"
+#include "UTF_Utils_DataFolder"
+#include "UTF_Utils_File"
+#include "UTF_Utils_GUI"
+#include "UTF_Utils_List"
+#include "UTF_Utils_Numeric"
+#include "UTF_Utils_ProgramFlow"
+#include "UTF_Utils_Strings"
+#include "UTF_Utils_System"
+#include "UTF_Utils_Time"
+#include "UTF_Utils_WaveHandling"
 #include "UTF_UtilsChecks"
 #include "UTF_WaveAveraging"
 #include "UTF_WaveBuilder"
@@ -118,6 +131,19 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_UpgradeDataFolderLocation.ipf", list, ";", Inf)
 	list = AddListItem("UTF_UpgradeWaveLocationAndGetIt.ipf", list, ";", Inf)
 	list = AddListItem("UTF_Utils.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_Algorithm.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_Checks.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_Conversions.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_DataFolder.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_File.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_GUI.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_List.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_Numeric.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_ProgramFlow.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_Strings.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_System.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_Time.ipf", list, ";", Inf)
+	list = AddListItem("UTF_Utils_WaveHandling.ipf", list, ";", Inf)
 	list = AddListItem("UTF_UtilsChecks.ipf", list, ";", Inf)
 	list = AddListItem("UTF_WaveAveraging.ipf", list, ";", Inf)
 	list = AddListItem("UTF_WaveBuilder.ipf", list, ";", Inf)
