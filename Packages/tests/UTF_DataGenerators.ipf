@@ -200,7 +200,7 @@ Function/WAVE NonExistingDevices()
 	return wv
 End
 
-Function/WAVE TestOperationAPFrequency2Gen()
+static Function/WAVE TestOperationAPFrequency2Gen()
 
 	variable m
 
@@ -442,4 +442,103 @@ Function/WAVE TrailSepOptions()
 	SetDimensionLabels(wv, "Without trailing sep;Trailing separator", ROWS)
 
 	return wv
+End
+
+static Function/WAVE InvalidStoreFormulas()
+
+	Make/T/N=3/FREE wv
+
+	// invalid name
+	wv[0] = "store(\"\", [0])"
+
+	// array as name
+	wv[1] = "store([\"a\", \"b\"], [0])"
+
+	// numeric value as name
+	wv[2] = "store([1], [0])"
+
+	return wv
+End
+
+static Function/WAVE GetStoreWaves()
+
+	Make/WAVE/N=3/FREE wv
+
+	Make/FREE/D wv0 = {1234.5678}
+	wv[0] = wv0
+
+	Make/FREE wv1 = {1, 2}
+	wv[1] = wv1
+
+	Make/FREE/T wv2 = {"a", "b"}
+	wv[2] = wv2
+
+	return wv
+End
+
+static Function/WAVE TestOperationTPBase_TPSS_TPInst_FormulaGetter()
+
+	Make/FREE/T data = {"tpbase;" + SF_DATATYPE_TPBASE, "tpss;" + SF_DATATYPE_TPSS, "tpinst;" + SF_DATATYPE_TPINST}
+
+	return data
+End
+
+static Function/WAVE FuncCommandGetter()
+
+	variable i, numEntries
+	string name
+
+	// Operation: Result 1D: Result 2D
+	Make/T/FREE data = {                                                                                                                                                                                                                \
+	                    "min:0:0,1",                                                                                                                                                                                                    \
+	                    "max:4:4,5",                                                                                                                                                                                                    \
+	                    "avg:2:2,3",                                                                                                                                                                                                    \
+	                    "mean:2:2,3",                                                                                                                                                                                                   \
+	                    "rms:2.449489742783178:2.449489742783178,3.3166247903554",                                                                                                                                                      \
+	                    "variance:2.5:2.5,2.5",                                                                                                                                                                                         \
+	                    "stdev:1.58113883008419:1.58113883008419,1.58113883008419",                                                                                                                                                     \
+	                    "derivative:1,1,1,1,1:{1,1,1,1,1},{1,1,1,1,1}",                                                                                                                                                                 \
+	                    "integrate:0,0.5,2,4.5,8:{0,0.5,2,4.5,8},{0,1.5,4,7.5,12}",                                                                                                                                                     \
+	                    "log10:-inf,0,0.301029995663981,0.477121254719662,0.602059991327962:{-inf,0,0.301029995663981,0.477121254719662,0.602059991327962},{0,0.301029995663981,0.477121254719662,0.602059991327962,0.698970004336019}" \
+	                   }
+
+	numEntries = DimSize(data, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(0, data[i], ":")
+		SetDimLabel ROWS, i, $name, data
+	endfor
+
+	return data
+End
+
+static Function/WAVE InvalidInputs()
+
+	Make/FREE/T wt = {",1", " ,1", "1,,", "1, ,", "(1), ,", "1,", "(1),",           \
+	                  "1+", "1-", "1*", "1/", "1…", "(1-)", "(1+)", "(1*)", "(1/)", \
+	                  "*1", "*[1]", "*(1)", "(*1)", "[1,*1]",                       \
+	                  "/1", "/[1]", "/(1)", "(/1)", "[1,/1]",                       \
+	                  "1**1", "1//1",                                               \
+	                  "*max(1)", "max(1)**max(1)", "/max(1)", "max(1)//max(1)"}
+
+	return wt
+End
+
+static Function/WAVE SweepFormulaFunctionsWithSweepsArgument()
+
+	Make/FREE/T wv = {"data(cursors(A,B), select(channels(AD), sweeps()))",          \
+	                  "epochs(\"I DONT EXIST\", select(channels(DA), sweeps()))",    \
+	                  "labnotebook(\"I DONT EXIST\", select(channels(DA), sweeps()))"}
+
+	SetDimensionLabels(wv, "data;epochs;labnotebook", ROWS)
+
+	return wv
+End
+
+static Function/WAVE TestHelpNotebookGetter_IGNORE()
+
+	WAVE/T wt = SF_GetNamedOperations()
+
+	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
+
+	return wt
 End

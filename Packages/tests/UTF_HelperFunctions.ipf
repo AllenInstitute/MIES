@@ -1316,3 +1316,135 @@ static Function CompareEpochsHistoricChannel(WAVE/T epochChannelRef, WAVE/T epoc
 		CHECK_GE_VAR(V_value, 0)
 	endfor
 End
+
+Function ExecuteSweepFormulaInDB(string code, string win)
+	string sfFormula, bsPanel
+
+	bsPanel = BSP_GetPanel(win)
+
+	sfFormula = BSP_GetSFFormula(win)
+	ReplaceNotebookText(sfFormula, code)
+
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+
+	return GetValDisplayAsNum(bsPanel, "status_sweepFormula_parser")
+End
+
+/// @brief test two jsonIDs for equal content
+Function CHECK_EQUAL_JSON(jsonID0, jsonID1)
+	variable jsonID0, jsonID1
+
+	string jsonDump0, jsonDump1
+
+	JSONXOP_Dump/IND=2 jsonID0
+	jsonDump0 = S_Value
+	JSONXOP_Dump/IND=2 jsonID1
+	jsonDump1 = S_Value
+
+	CHECK_EQUAL_STR(jsonDump0, jsonDump1)
+End
+
+/// Add 10 sweeps from various AD/DA channels to the fake databrowser
+Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeDatabrowserWindow(string win, string device, variable channelTypeNumeric, string lbnTextKey, string lbnTextValue)
+
+	variable i, j, channelNumber, sweepNumber, clampMode, channelType
+	string name, trace
+
+	numSweeps   = 10
+	numChannels = 4
+
+	variable dataSize = 128
+	variable mode     = DATA_ACQUISITION_MODE
+
+	string channelTypeStr  = StringFromList(channelTypeNumeric, XOP_CHANNEL_NAMES)
+	string channelTypeStrC = channelTypeStr + "C"
+
+	WAVE/T numericalKeys   = GetLBNumericalKeys(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	KillWaves numericalKeys, numericalValues
+
+	Make/FREE/T/N=(1, 1) keys = {{channelTypeStrC}}
+	Make/FREE/U/I/N=(numChannels) connections = {7, 5, 3, 1}
+	Make/FREE/U/I/N=(numSweeps, numChannels) channels = q * 2
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) clampModeValues = NaN
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = lbnTextValue
+	Make/FREE/T/N=(1, 1) dacKeys = "DAC"
+	Make/FREE/T/N=(1, 1) adcKeys = "ADC"
+	Make/FREE/T/N=(1, 1) clampModeKeys = "Operating Mode"
+	Make/FREE/T/N=(1, 1) textKeys = lbnTextKey
+
+	DFREF dfr = GetDeviceDataPath(device)
+	GetDAQDeviceID(device)
+
+	for(i = 0; i < numSweeps; i += 1)
+		sweepNumber = i
+		WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+		WAVE sweep         = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+		WAVE config        = GetDAQConfigWave(device)
+		Redimension/N=(numChannels, -1) config
+		for(j = 0; j < numChannels; j += 1)
+			clampMode                       = mod(sweepNumber, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
+			channelNumber                   = channels[i][j]
+			values[connections[j]]          = channelNumber
+			clampModeValues[connections[j]] = clampMode
+			config[j][%ChannelType]         = XOP_CHANNEL_TYPE_ADC
+			config[j][%ChannelNumber]       = channelNumber
+		endfor
+
+		// create sweeps with dummy data for sweeps() operation thats called when omitting select
+		MoveWave sweep, dfr:$GetSweepWaveName(sweepNumber)
+		MoveWave config, dfr:$GetConfigWaveName(sweepNumber)
+
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values, clampModeValues
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 valuesText
+		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
+		ED_AddEntriesToLabnotebook(values, dacKeys, sweepNumber, device, mode)
+		ED_AddEntriesToLabnotebook(values, adcKeys, sweepNumber, device, mode)
+		ED_AddEntriesToLabnotebook(clampModeValues, clampModeKeys, sweepNumber, device, mode)
+		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values, clampModeValues
+		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
+		ED_AddEntriesToLabnotebook(valuesText, textKeys, sweepNumber, device, mode)
+
+		PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
+		win = GetCurrentWindow()
+
+		REQUIRE_EQUAL_VAR(MIES_DB#DB_SplitSweepsIfReq(win, sweepNumber), 0)
+	endfor
+
+	RemoveFromGraph/ALL
+	TUD_Clear(win)
+
+	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
+	for(i = 0; i < numSweeps; i += 1)
+		sweepNumber = i
+		for(j = 0; j < numChannels; j += 1)
+			channelNumber = config[j][%ChannelNumber]
+			channelType   = config[j][%ChannelType]
+
+			DFREF singleSweepFolder    = GetSingleSweepFolder(dfr, sweepNumber)
+			WAVE  singleColumnDataWave = GetDAQDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
+			Redimension/N=(dataSize) singleColumnDataWave
+
+			sprintf trace, "trace_%d_%s", sweepNumber, NameOfWave(singleColumnDataWave)
+			clampMode = mod(sweepNumber, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
+
+			AppendToGraph/W=$win singleColumnDataWave/TN=$trace
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},                              \
+			                         {"blah", GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelTypeStr, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
+		endfor
+	endfor
+
+	return [numSweeps, numChannels, channels]
+End
+
+Function [string win, string device] CreateEmptyUnlockedDataBrowserWindow()
+
+	string extWin
+
+	device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+	DFREF dfr = GetDeviceDataPath(device)
+	win = DB_OpenDataBrowser()
+	return [win, device]
+End

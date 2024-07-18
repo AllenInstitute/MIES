@@ -19,6 +19,7 @@
 #include "UTF_PGCSetAndActivateControl"
 #include "UTF_StimsetAPI"
 #include "UTF_SweepFormula"
+#include "UTF_SweepFormula_Operations"
 #include "UTF_SweepFormula_PSX"
 #include "UTF_Testpulse"
 #include "UTF_ThreadsafeDataSharing"
