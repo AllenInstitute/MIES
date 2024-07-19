@@ -2007,7 +2007,7 @@ static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(st
 	string daScaleKey  = "DAScale data"
 
 	if(ParamIsDefault(fromRhSuAd))
-		fromRhSuAd = 1
+		fromRhSuAd = 0
 	else
 		fromRhSuAd = !!fromRhSuAd
 	endif
