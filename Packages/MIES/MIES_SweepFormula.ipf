@@ -4452,7 +4452,11 @@ static Function/WAVE SF_OperationSelectSweeps(variable jsonId, string jsonPath, 
 			Concatenate/FREE/D/NP {data}, sweeps
 		endfor
 	endif
-	WAVE uniqueSweeps = GetUniqueEntries(sweeps)
+	if(WaveExists(sweeps))
+		WAVE uniqueSweeps = GetUniqueEntries(sweeps)
+	else
+		WAVE/ZZ uniqueSweeps
+	endif
 
 	return SFH_GetOutputForExecutorSingle(uniqueSweeps, graph, SF_OP_SELECTSWEEPS, discardOpStack = 1, dataType = SF_DATATYPE_SWEEPNO)
 End
