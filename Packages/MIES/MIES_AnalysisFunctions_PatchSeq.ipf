@@ -2623,7 +2623,7 @@ End
 static Function PSQ_DS_AdaptiveDetermineSweepQCResults(string device, variable sweepNo, variable headstage, variable numInvalidSlopeSweepsAllowed, variable numSweepsWithSaturation)
 
 	string key
-	variable numFailedSweeps, samplingFrequencyPassed
+	variable numInvalidSlopes, samplingFrequencyPassed
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -2648,11 +2648,11 @@ static Function PSQ_DS_AdaptiveDetermineSweepQCResults(string device, variable s
 	endif
 
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS, query = 1)
-	WAVE slopePasses = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	numFailedSweeps = DimSize(slopePasses, ROWS) - Sum(slopePasses)
-	ASSERT(IsNullOrPositiveAndFinite(numFailedSweeps), "Invalid number of failed sweeps")
+	WAVE validSlopePasses = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	numInvalidSlopes = DimSize(validSlopePasses, ROWS) - Sum(validSlopePasses)
+	ASSERT(IsNullOrPositiveAndFinite(numInvalidSlopes), "Invalid number of failed sweeps")
 
-	if(numFailedSweeps >= numInvalidSlopeSweepsAllowed)
+	if(numInvalidSlopes >= numInvalidSlopeSweepsAllowed)
 		PSQ_ForceSetEvent(device, headstage)
 		RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 		return PSQ_RESULTS_DONE
