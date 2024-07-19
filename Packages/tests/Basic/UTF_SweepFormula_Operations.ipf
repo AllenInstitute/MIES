@@ -1089,7 +1089,7 @@ static Function TestOperationAverage()
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(data[0], 2)
 
-	str = "avg(data(cursors(A,B), select(channels(AD), sweeps(), all)), in)"
+	str = "avg(data(select(selrange(),selchannels(AD),selsweeps(),selvis(all))), in)"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
 	Make/FREE/D ref = {4.5}
@@ -1097,7 +1097,7 @@ static Function TestOperationAverage()
 		CHECK_EQUAL_WAVES(data, ref, mode = WAVE_DATA)
 	endfor
 
-	str = "avg(data(cursors(A,B), select(channels(AD), sweeps(), all)), over)"
+	str = "avg(data(select(selrange(),selchannels(AD),selsweeps(),selvis(all))), over)"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
 
@@ -1763,8 +1763,9 @@ static Function TestOperationData()
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},                                                        \
-			                         {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), StringFromList(j, channelNumberList), num2istr(clampMode)})
+			WAVE numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "numericalValues", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode", "SweepMapIndex"},                                                                   \
+			                         {"blah", GetWavesDataFolder(numericalValues, 2), GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), StringFromList(j, channelNumberList), num2istr(clampMode), "NaN"})
 		endfor
 	endfor
 
@@ -2341,11 +2342,12 @@ static Function TestOperationSelect()
 	Make/FREE/N=0 sweepTemplate
 	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
 
-	Make/FREE/N=(4, 3) dataRef
+	Make/FREE/N=(4, 4) dataRef
 	dataRef[][0]     = sweepNo
 	dataRef[0, 1][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[2, 3][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
 	dataRef[][2]     = {6, 7, 2, 3}                           // AD6, AD7, DA2, DA3
+	dataRef[][3]     = NaN
 	str              = "select(selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
@@ -2353,18 +2355,20 @@ static Function TestOperationSelect()
 	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 2)
 	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 3)
 
-	Make/FREE/N=(2, 3) dataRef
+	Make/FREE/N=(2, 4) dataRef
 	dataRef[][0]  = sweepNo
 	dataRef[0][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[1][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
 	dataRef[][2]  = {6, 2}                                                                       // AD6, DA2
+	dataRef[][3]  = NaN
 	str           = "select(selchannels(2, 6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(2, 3) dataRef
+	Make/FREE/N=(2, 4) dataRef
 	dataRef[][0] = sweepNo
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 7}                                                                     // AD6, AD7
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
@@ -2372,24 +2376,27 @@ static Function TestOperationSelect()
 	str = "select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1337) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = 3
 	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {0}                                                                   // DA0 (unassoc)
+	dataRef[][3] = NaN
 	str          = "select(selchannels(DA0),selsweeps(" + num2istr(3) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = 3
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {1}                                                                   // AD1 (unassoc)
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD1),selsweeps(" + num2istr(3) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = 3
 	dataRef[][1] = WhichListItem("TTL", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {2}                                                                    // TTL2
+	dataRef[][3] = NaN
 	str          = "select(selchannels(TTL2),selsweeps(" + num2istr(3) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
@@ -2407,25 +2414,28 @@ static Function TestOperationSelect()
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	Make/FREE/N=(4, 3) dataRef
+	Make/FREE/N=(4, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}                                                             // sweep 0, 1 with 2 AD channels each
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 7, 6, 7}                                                                                             // AD6, AD7, AD6, AD7
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(2, 3) dataRef
+	Make/FREE/N=(2, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo + 1}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 6}                                                                                                    // AD6, AD6
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(6, 3) dataRef
+	Make/FREE/N=(6, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo, sweepNo + 1, sweepNo + 1, sweepNo + 1}
 	chanList     = "AD;DA;DA;AD;DA;DA;"
 	dataRef[][1] = WhichListItem(StringFromList(p, chanList), XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 2, 3, 6, 2, 3}                                                                                            // AD6, DA2, DA3, AD6, DA2, DA3
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD6, DA),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
@@ -2466,13 +2476,14 @@ static Function TestOperationSelect()
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode", "GUIChannelNumber"},                                                        \
-			                         {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode), StringFromList(j, channelNumberList)})
+			WAVE numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "numericalValues", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode", "GUIChannelNumber", "SweepMapIndex"},                                                                   \
+			                         {"blah", GetWavesDataFolder(numericalValues, 2), GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode), StringFromList(j, channelNumberList), "NaN"})
 		endfor
 	endfor
 
 	sweepNo = 0
-	Make/FREE/N=(8, 3) dataRef
+	Make/FREE/N=(8, 4) dataRef
 	dataRef[0, 3][0] = sweepNo
 	dataRef[4, 7][0] = sweepNo + 1
 	dataRef[0, 1][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
@@ -2480,24 +2491,27 @@ static Function TestOperationSelect()
 	dataRef[4, 5][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[6, 7][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
 	dataRef[][2]     = {6, 7, 2, 3, 6, 7, 2, 3}
+	dataRef[][3]     = NaN
 	str              = "select()"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(select())"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(4, 3) dataRef
+	Make/FREE/N=(4, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 7, 6, 7}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD),selsweeps(),selvis(displayed))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(selchannels(AD),selsweeps())"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(2, 3) dataRef
+	Make/FREE/N=(2, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo + 1}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 6}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD6),selsweeps(),selvis(displayed),selcm(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(select(selchannels(AD6)),selchannels(AD))"
@@ -2523,10 +2537,11 @@ static Function TestOperationSelect()
 	str = "select(select(selchannels(AD6)),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {sweepNo}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6}
+	dataRef[][3] = NaN
 	str          = "select(select(selchannels(AD6),selcm(all)),selcm(ic))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	dataRef[][0] = {sweepNo + 1}
@@ -2542,10 +2557,11 @@ static Function TestOperationSelect()
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {sweepNo}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD6),selivsccsetqc(passed))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(select(selchannels(AD6)),selivsccsetqc(passed))"
@@ -2573,17 +2589,19 @@ static Function TestOperationSelect()
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {sweepNo}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD6),selsweeps(),selvis(displayed), selcm(ic))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {sweepNo + 1}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD6),selsweeps(),selvis(displayed), selcm(vc))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
@@ -2595,14 +2613,16 @@ static Function TestOperationSelect()
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}
 	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {2, 3, 2, 3}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(DA),selsweeps())"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(6, 3) dataRef
+	Make/FREE/N=(6, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo, sweepNo + 1, sweepNo + 1, sweepNo + 1}
 	chanList     = "AD;AD;DA;AD;AD;DA;"
 	dataRef[][1] = WhichListItem(StringFromList(p, chanList), XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 7, 2, 6, 7, 2}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(DA2, AD),selsweeps())"                         // note: channels are sorted AD, DA...
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
@@ -2636,15 +2656,17 @@ static Function TestOperationSelect()
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode", "GUIChannelNumber", "AssociatedHeadstage"},                                              \
-			                         {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode), StringFromList(j, channelNumberList), num2istr(0)})
+			WAVE numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "numericalValues", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode", "GUIChannelNumber", "AssociatedHeadstage", "SweepMapIndex"},                                                         \
+			                         {"blah", GetWavesDataFolder(numericalValues, 2), GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode), StringFromList(j, channelNumberList), num2istr(0), "NaN"})
 		endfor
 	endfor
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {0}
 	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {0}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(DA0),selsweeps(),selvis(displayed))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(selchannels(DA0),selsweeps(),selvis(displayed),selcm(none))"
@@ -2654,10 +2676,11 @@ static Function TestOperationSelect()
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {0}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {1}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD1),selsweeps(),selvis(displayed))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(selchannels(AD1),selsweeps(),selvis(displayed),selcm(none))"
@@ -2667,10 +2690,11 @@ static Function TestOperationSelect()
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {0}
 	dataRef[][1] = WhichListItem("TTL", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {2}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(TTL2),selsweeps(),selvis(displayed))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	// clamp mode set filters has no effect on TTL

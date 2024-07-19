@@ -525,9 +525,9 @@ End
 
 static Function/WAVE SweepFormulaFunctionsWithSweepsArgument()
 
-	Make/FREE/T wv = {"data(cursors(A,B), select(channels(AD), sweeps()))",          \
-	                  "epochs(\"I DONT EXIST\", select(channels(DA), sweeps()))",    \
-	                  "labnotebook(\"I DONT EXIST\", select(channels(DA), sweeps()))"}
+	Make/FREE/T wv = {"data(select(selrange(), selchannels(AD), selsweeps()))",            \
+	                  "epochs(\"I DONT EXIST\", select(selchannels(DA), selsweeps()))",    \
+	                  "labnotebook(\"I DONT EXIST\", select(selchannels(DA), selsweeps()))"}
 
 	SetDimensionLabels(wv, "data;epochs;labnotebook", ROWS)
 

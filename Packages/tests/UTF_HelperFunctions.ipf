@@ -1489,8 +1489,9 @@ Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeD
 			clampMode = mod(sweepNumber, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
 
 			AppendToGraph/W=$win singleColumnDataWave/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},                              \
-			                         {"blah", GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelTypeStr, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
+			WAVE numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNumber)
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "numericalValues", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode", "SweepMapIndex"},                                         \
+			                         {"blah", GetWavesDataFolder(numericalValues, 2), GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelTypeStr, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode), "NaN"})
 		endfor
 	endfor
 

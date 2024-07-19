@@ -996,18 +996,6 @@ static Function TestSFPreprocessor()
 End
 
 // UTF_TD_GENERATOR DataGenerators#SweepFormulaFunctionsWithSweepsArgument
-static Function/WAVE SweepFormulaFunctionsWithSweepsArgument()
-
-	Make/FREE/T wv = {"data(select(selrange(), selchannels(AD), selsweeps()))",            \
-	                  "epochs(\"I DONT EXIST\", select(selchannels(DA), selsweeps()))",    \
-	                  "labnotebook(\"I DONT EXIST\", select(selchannels(DA), selsweeps()))"}
-
-	SetDimensionLabels(wv, "data;epochs;labnotebook", ROWS)
-
-	return wv
-End
-
-// UTF_TD_GENERATOR SweepFormulaFunctionsWithSweepsArgument
 static Function AvoidAssertingOutWithNoSweeps([string str])
 
 	string win, device
