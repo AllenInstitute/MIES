@@ -2538,12 +2538,17 @@ static Function PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(string device, var
 	return maxSlope
 End
 
+static Function PSQ_DS_CalculateReachedFinalSlope(variable validFit, variable fitSlope, variable maxSlope, variable slopePercentage)
+
+	return validFit && (fitSlope < maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE)))
+End
+
 static Function PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(string device, variable sweepNo, variable headstage, variable validFit, variable fitSlope, variable maxSlope, variable slopePercentage)
 
 	variable reachedFinalSlope
 	string   key
 
-	reachedFinalSlope = validFit && (fitSlope < maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE)))
+	reachedFinalSlope = PSQ_DS_CalculateReachedFinalSlope(validFit, fitSlope, maxSlope, slopePercentage)
 
 	WAVE finalSlopeLBN = LBN_GetNumericWave()
 	finalSlopeLBN[INDEP_HEADSTAGE] = reachedFinalSlope
