@@ -1665,7 +1665,7 @@ Function/WAVE SFH_GetSingleSelect(string graph, string opShort, variable sweepNo
 	singleSelect[0][%CHANNELNUMBER] = channelNumber
 	singleSelect[0][%SWEEPMAPINDEX] = NaN
 
-	WAVE/WAVE selectDataComp = SFH_CreateSFRefWave(graph, opShort, 2)
+	WAVE/WAVE selectDataComp = GetSFSelectDataComp(graph, opShort)
 	JWN_SetStringInWaveNote(selectDataComp, SF_META_DATATYPE, SF_DATATYPE_SELECTCOMP)
 	JWN_SetStringInWaveNote(singleSelect, SF_META_DATATYPE, SF_DATATYPE_SELECT)
 	JWN_SetStringInWaveNote(range, SF_META_DATATYPE, SF_DATATYPE_SELECTRANGE)

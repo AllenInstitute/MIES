@@ -5193,8 +5193,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		WAVE selectResult = selectData
 	endif
 
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_SELECT, 2)
-	SetDimensionLabels(output, "SELECTION;RANGE;", ROWS)
+	WAVE/WAVE output = GetSFSelectDataComp(graph, SF_OP_SELECT)
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SELECTCOMP)
 	JWN_SetStringInWaveNote(filter.ranges, SF_META_DATATYPE, SF_DATATYPE_SELECTRANGE)
 	if(WaveExists(selectResult))
