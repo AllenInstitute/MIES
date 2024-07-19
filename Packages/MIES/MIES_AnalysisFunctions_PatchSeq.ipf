@@ -2821,7 +2821,7 @@ static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherF
 	return [futureDAScales, apfreq, DAScales]
 End
 
-static Function PSQ_DS_CalculateMeasuredAllFutureDAScalesAndStoreInLabnotebook(string device, variable sweepNo, variable headstage, WAVE futureDAScales)
+static Function PSQ_DS_CalcFutureDAScalesAndStoreInLBN(string device, variable sweepNo, variable headstage, WAVE futureDAScales)
 
 	variable measuredAllFutureDAScales, index
 	string key, msg
@@ -3704,7 +3704,7 @@ Function PSQ_DAScale(device, s)
 					endif
 
 					if(WaveExists(futureDAScales))
-						PSQ_DS_CalculateMeasuredAllFutureDAScalesAndStoreInLabnotebook(device, s.sweepNo, s.headstage, futureDAScales)
+						PSQ_DS_CalcFutureDAScalesAndStoreInLBN(device, s.sweepNo, s.headstage, futureDAScales)
 					endif
 
 					PSQ_DS_CreateSurveyPlotForUser(device, s.sweepNo, s.headstage)
@@ -3945,7 +3945,7 @@ Function PSQ_DAScale(device, s)
 					endif
 					break
 				case PSQ_DS_ADAPT:
-					PSQ_DS_CalculateMeasuredAllFutureDAScalesAndStoreInLabnotebook(device, s.sweepNo, s.headstage, futureDAScales)
+					PSQ_DS_CalcFutureDAScalesAndStoreInLBN(device, s.sweepNo, s.headstage, futureDAScales)
 
 					ret = PSQ_DS_AdaptiveDetermineSweepQCResults(device, s.sweepNo, s.headstage, numInvalidSlopeSweepsAllowed, numSweepsWithSaturation)
 					if(ret == PSQ_RESULTS_DONE)
@@ -3963,7 +3963,7 @@ Function PSQ_DAScale(device, s)
 								Make/FREE/D DAScaleNew = {dascale}
 								Concatenate/NP=(ROWS) {DAScaleNew}, futureDAScales
 
-								PSQ_DS_CalculateMeasuredAllFutureDAScalesAndStoreInLabnotebook(device, s.sweepNo, s.headstage, futureDAScales)
+								PSQ_DS_CalcFutureDAScalesAndStoreInLBN(device, s.sweepNo, s.headstage, futureDAScales)
 							endif
 
 							DAScalesIndex[s.headstage] += 1
