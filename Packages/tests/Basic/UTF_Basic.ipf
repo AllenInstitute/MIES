@@ -135,6 +135,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", Inf)
 	list = AddListItem("UTF_StimsetAPI.ipf", list, ";", Inf)
 	list = AddListItem("UTF_SweepFormula.ipf", list, ";", Inf)
+	list = AddListItem("UTF_SweepFormula_Operations.ipf", list, ";", Inf)
 	list = AddListItem("UTF_SweepFormula_PSX.ipf", list, ";", Inf)
 	list = AddListItem("UTF_Testpulse.ipf", list, ";", Inf)
 	list = AddListItem("UTF_TraceUserData.ipf", list, ";", Inf)
