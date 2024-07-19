@@ -121,7 +121,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_DA_AT_FREQ:
 		case PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS:
-		case PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS:
+		case PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS:
 		case PSQ_FMT_LBN_DA_AT_MAX_SLOPE:
 		case PSQ_FMT_LBN_DA_AT_FI_OFFSET:
 		case PSQ_FMT_LBN_DA_FI_SLOPE:
@@ -140,10 +140,10 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 		case PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			return GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
-		case PSQ_FMT_LBN_DA_AT_FI_SLOPES:
-		case PSQ_FMT_LBN_DA_AT_FI_OFFSETS:
-		case PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT:
-		case PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT:
+		case PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES:
+		case PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS:
+		case PSQ_FMT_LBN_DA_AT_RSA_FREQ:
+		case PSQ_FMT_LBN_DA_AT_RSA_DASCALE:
 			key = CreateAnaFuncLBNKey(type, name, query = 1)
 			WAVE/T settings = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			return ListToNumericWave(settings[PSQ_TEST_HEADSTAGE], ";")
@@ -198,11 +198,11 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%fiOffset]            = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSET)
 	wv[%daScale]             = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	wv[%futureDAScales]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES)
-	wv[%fiSlopesFromRhSuAd]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_SLOPES)
-	wv[%fiOffsetsFromRhSuAd] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FI_OFFSETS)
+	wv[%fiSlopesFromRhSuAd]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES)
+	wv[%fiOffsetsFromRhSuAd] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS)
 	wv[%dascale]             = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	wv[%apFreqFromRhSuAd]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT)
-	wv[%dascaleFromRhSuAd]   = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT)
+	wv[%apFreqFromRhSuAd]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_FREQ)
+	wv[%dascaleFromRhSuAd]   = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_DASCALE)
 	wv[%minDaScaleNorm]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM)
 	wv[%maxDaScaleNorm]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM)
 
@@ -210,7 +210,7 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 	wv[%fiSlopeReachedPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	wv[%enoughFIPointsPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS)
 	wv[%validSlopePass]        = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS)
-	wv[%initialValidSlopePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS)
+	wv[%initialValidSlopePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS)
 
 	Make/FREE/N=(DimSize(wv, ROWS)) junk
 	junk[] = WaveExists(wv[p]) ? ChangeFreeWaveName(wv[p], GetDimLabel(wv, ROWS, p)) : NaN

@@ -67,12 +67,12 @@
 ///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS       Fitted slope in the f-I plot exceeds target value             On/Off   Numerical    DA (Supra, Adapt)                    No           No
 ///  PSQ_FMT_LBN_DA_AT_FI_OFFSET                Fitted offset in the f-I plot                                 Hz       Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_FREQ                     AP frequency                                                  Hz       Numerical    DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT      AP frequencies from previous sweep reevaluation               Hz       Textual      DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT   DAScale values from previous sweep reevaluation               (none)   Textual      DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_FI_SLOPES                Slopes in the f-I plot from previous sweep reevaluation       % Hz/pA  Textual      DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_RSA_FREQ                 AP frequencies from previous sweep reevaluation               Hz       Textual      DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_RSA_DASCALE              DAScale values from previous sweep reevaluation               (none)   Textual      DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES            Slopes in the f-I plot from previous sweep reevaluation       % Hz/pA  Textual      DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS     Valid slope from f-I plot QC of supra sweep reevaluation      On/Off   Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_MAX_SLOPE                Maximum encountered f-I plot slope in the SCI                 % Hz/pA  Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS         Valid slope from f-I plot QC                                  On/Off   Numerical    DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS    Valid slope from f-I plot of supra sweep reevaluation         On/Off   Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS    Enough f-I pairs for line fit QC                              On/Off   Numerical    DA (Adapt)                           No           No
 ///  PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES          DAScale values left to acquire                                (none)   Textual      DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS     Measured all DAScale values                                   On/Off   Numerical    DA (Adapt)                           No           No
@@ -2245,8 +2245,8 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 		WAVE DAScale = DAScalesRhSuAd
 	endif
 
-	/// PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT
-	/// PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT
+	/// PSQ_FMT_LBN_DA_AT_RSA_FREQ
+	/// PSQ_FMT_LBN_DA_AT_RSA_DASCALE
 	///
 	/// (both are already filtered for passing sweeps)
 	///
@@ -2262,7 +2262,7 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 	sprintf line, "daScale = [%s]\r", NumericWaveToList(DAScale, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 	str += line
 
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_SLOPES, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES, query = 1)
 	WAVE/T/Z fISlopesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	// workaround issue that there is no SCI in PRE_SET_EVENT
@@ -2283,7 +2283,7 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 		WAVE fiSlopes = fISlopesRhSuAd
 	endif
 
-	/// PSQ_FMT_LBN_DA_AT_FI_SLOPES
+	/// PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES
 	///
 	/// (already filtered for passing sweeps)
 	///
@@ -2340,7 +2340,7 @@ static Function PSQ_DS_AreFitResultsValid(string device, variable sweepNo, varia
 	validFitLBN[headstage] = validFit
 
 	if(fromRhSuAd)
-		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS)
+		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS)
 	else
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS)
 	endif
@@ -2688,7 +2688,7 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 	endif
 
 	// pass conditions
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS, query = 1)
 	WAVE initialFISlopeValid = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	if(!initialFISlopeValid[headstage])
@@ -2734,7 +2734,7 @@ static Function [WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, WAVE/Z apfreqCurrentSCI
 	string key
 
 	// 1. rheobase/supra/adaptive sweeps reevaluated using our own epoch and stored in PRE_SET_EVENT
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_DASCALE, query = 1)
 	WAVE/T/Z DAScalesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	// workaround issue that there is no SCI in PRE_SET_EVENT
@@ -2744,7 +2744,7 @@ static Function [WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, WAVE/Z apfreqCurrentSCI
 
 	WAVE DAScalesRhSuAd = ListToNumericWave(DAScalesRhSuAdLBN[headstage], ";")
 
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FREQ, query = 1)
 	WAVE/T/Z apfreqRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	// same workaround
@@ -3645,12 +3645,12 @@ Function PSQ_DAScale(device, s)
 
 					WAVE/T apfreqLBN = LBN_GetTextWave()
 					apfreqLBN[s.headstage] = NumericWaveToList(apfreqRhSuAd, ";", format = "%.15g")
-					key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA_ADAPT)
+					key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FREQ)
 					ED_AddEntryToLabnotebook(device, key, apfreqLBN, overrideSweepNo = s.sweepNo, unit = "Hz")
 
 					WAVE/T DAScalesTextLBN = LBN_GetTextWave()
 					DAScalesTextLBN[s.headstage] = NumericWaveToList(DAScalesRhSuAd, ";", format = "%.15g")
-					key                          = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA_ADAPT)
+					key                          = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_DASCALE)
 					ED_AddEntryToLabnotebook(device, key, DAScalesTextLBN, overrideSweepNo = s.sweepNo)
 
 					[WAVE fitOffsetFromRhSuAd, WAVE fitSlopeFromRhSuAd, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, s.sweepNo,          \
@@ -3676,12 +3676,12 @@ Function PSQ_DAScale(device, s)
 
 					WAVE/T fitOffsetLBN = LBN_GetTextWave()
 					fitOffsetLBN[s.headstage] = NumericWaveToList(fitOffsetFromRhSuAd, ";", format = "%.15g")
-					key                       = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_OFFSETS)
+					key                       = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS)
 					ED_AddEntryToLabnotebook(device, key, fitOffsetLBN, overrideSweepNo = s.sweepNo, unit = "Hz")
 
 					WAVE/T fitSlopeLBN = LBN_GetTextWave()
 					fitSlopeLBN[s.headstage] = NumericWaveToList(fitSlopeFromRhSuAd, ";", format = "%.15g")
-					key                      = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_SLOPES)
+					key                      = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES)
 					ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
 
 					WAVE maxSlopeLBN = LBN_GetNumericWave()

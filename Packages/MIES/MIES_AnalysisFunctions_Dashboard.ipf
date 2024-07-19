@@ -558,7 +558,7 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 			sprintf msg, "Failure as we did not reach the required fI slope (target: %g%% reached: %s%%)", finalSlopePercent, fISlopeStr
 		else
 			// Adaptive Suprathreshold
-			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS, query = 1)
+			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS, query = 1)
 			WAVE initialFISlopeValid = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 			if(initialFISlopeValid[headstage])
