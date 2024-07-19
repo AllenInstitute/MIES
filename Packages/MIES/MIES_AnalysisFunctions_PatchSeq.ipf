@@ -2527,8 +2527,7 @@ static Function PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(string device, var
 
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_SLOPE, query = 1)
 	WAVE maxSlopeAll = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	maxSlope = maxSlopeAll[headstage]
-	maxSlope = IsNaN(maxSlope) ? fitSlope : max(maxSlope, fitSlope)
+	maxSlope = max(maxSlopeAll[headstage], fitSlope)
 
 	WAVE maxSlopeLBN = LBN_GetNumericWave()
 	maxSlopeLBN[headstage] = maxSlope
