@@ -767,6 +767,69 @@ The result of `selsci` has a data type attributed.
    # when used in select enables extending the selected sweep number / channel number / channel type combination each with the sweeps of the same stimset cycle id that have the same channel number / channel type.
    selsci()
 
+selsetcyclecount
+""""""""""""""""
+
+When the operation `selsetcyclecount` is used with select it includes all selection with the specified set cycle count.
+The operation takes exactly one numerical argument.
+The operation returns a a numeric wave with a single element that has the value of the given argument.
+The result of `selsetcyclecount` has a data type attributed.
+
+`selsetcyclecount` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # when used in select includes all sweeps that have a set cycle count of 5
+   selsetcyclecount(5)
+
+selsetsweepcount
+""""""""""""""""
+
+When the operation `selsetsweepcount` is used with select it includes all selection with the specified set sweep count.
+The operation takes exactly one numerical argument.
+The operation returns a a numeric wave with a single element that has the value of the given argument.
+The result of `selsetsweepcount` has a data type attributed.
+
+`selsetsweepcount` is intended to be used with the `select()` operation.
+
+selsetsciindex
+""""""""""""""
+
+When the operation `selsetsciindex` is used with select it includes all selections that have the n-th unique stimset cycle id.
+The specific order of the stimset cycle ids before this operation is applied depends on the other select filters applied in the `select` operation.
+Selections with no stimset cycle id are discarded and not indexed.
+The stimset cycle id depends on the headstage and thus, on channel type and channel number of the specific sweep. If the other select filters result
+in selections that includes multiple headstages then the stimset cycle id order for indexing follows the selection sorting.
+Selections are sorted by the following priority list (higher to lower): experiment name, sweep number, channel type, channel number.
+The operation takes exactly one numerical argument.
+The operation returns a a numeric wave with a single element that has the value of the given argument.
+The result of `selsetsciindex` has a data type attributed.
+
+`selsetsciindex` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # Looks at all sweep starting from sweep 3 with channel AD0. Selects all sweeps that have starting from sweep 3 the third unique stimset cycle id.
+   select(selsweeps([3, inf]), selchannels(AD0), selsetsciindex(3))
+
+selsetracindex
+""""""""""""""
+
+When the operation `selsetracindex` is used with select it includes all selections that have the n-th unique repeated acquisition cycle id.
+The specific order of the repeated acquisition cycle ids before this operation is applied depends on the other select filters applied in the `select` operation.
+Selections with no repeated acquisition cycle ids are discarded and not indexed.
+The selections prior to the application of `selsetracindex` are sorted by the following priority list (higher to lower): experiment name, sweep number, channel type, channel number.
+The operation takes exactly one numerical argument.
+The operation returns a a numeric wave with a single element that has the value of the given argument.
+The result of `selsetracindex` has a data type attributed.
+
+`selsetracindex` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # Looks at all sweep starting from sweep 3 with channel AD0. Selects all sweeps that have starting from sweep 3 the third unique repeated acquisition cycle id.
+   select(selsweeps([3, inf]), selchannels(AD0), selsetracindex(3))
+
 selivsccsweepqc
 """""""""""""""
 
@@ -1450,7 +1513,7 @@ It is intended to be used with operations like `data`, `labnotebook`, `epochs`, 
 
 The function accepts any number of arguments from filter operations.
 
-Filter operations are `selchannels`, `selsweeps`, `selrange`, `selvis`, `selscm`, `selstimset`, `selivsccsetqc`, `selivsccsweepqc`, `selexp`, `seldev`, `selrac`, `selsci`, `select`.
+Filter operations are `selchannels`, `selsweeps`, `selrange`, `selvis`, `selscm`, `selstimset`, `selivsccsetqc`, `selivsccsweepqc`, `selexp`, `seldev`, `selrac`, `selsci`, `selsetcyclecount`, `selsetsweepcount`, `selsciindex`, `selracindex`, `select`.
 
 Sweeps that fit all filter criteria are taken into the selection. Each filter operation except `select` may appear once as argument.
 It is not required that the arguments have a specific order.
@@ -1466,6 +1529,10 @@ If a specific filter is not part of the arguments and none of the arguments is a
 - `selivsccsweepqc`: IVSCC SweepQC is ignored
 - `selexp`: experiment name is ignored
 - `seldev`: device name is ignored
+- `selsetcyclecount`: set cycle count is ignored
+- `selsetsweepcount`: set sweep count is ignored
+- `selsciindex`: stimset cycle id index is ignored
+- `selracindex`: repeated acquisition is index is ignored
 - `selrac`: expansion by repeated acquisition cycle is disabled
 - `selsci`: expansion by stimset cycle id is disabled
 
@@ -1480,6 +1547,10 @@ If a specific filter is not part of the arguments and there exists at least one 
 - `selivsccsweepqc`: IVSCC SweepQC is ignored
 - `selexp`: experiment name is ignored
 - `seldev`: device name is ignored
+- `selsetcyclecount`: set cycle count is ignored
+- `selsetsweepcount`: set sweep count is ignored
+- `selsciindex`: stimset cycle id index is ignored
+- `selracindex`: repeated acquisition is index is ignored
 - `selrac`: expansion by repeated acquisition cycle is disabled
 - `selsci`: expansion by stimset cycle id is disabled
 
@@ -1491,6 +1562,11 @@ only Sweep 1 AD0 remains selected because it appears in all selections.
 The range specified through `selrange` is always taken from the topmost `select`.
 
 If an experiment is specified with a wildcard pattern through `selexp` then there must be only a single matching experiment. The same applies for `seldev`. Only when the source is from a SweepBrowser with different loaded experiments then using `selexp` is senseful as e.g. for a DataBrowser the experiment is always the current experiment.
+
+The filter criteria of the select filters are orthogonal (independent of each other) except for `selsciindex`, `selracindex`, `selrac` and `selsci`.
+Internally first the orthogonal select filters are applied. Then based on the resulting selections `selsciindex`, `selracindex` is applied, then `selrac`, `selsci`.
+Intersections with additional selections from select type arguments are executed afterwards.
+This implies that created selections can not be further filtered once created (see example).
 
 When `selrac` is used then the selected sweep numbers from `selsweeps` are extended. For each sweep selected by
 `selsweeps` sweeps numbers of the same repeated acquisition cycle are added. For the new sweep numbers selections are gathered with a modified copy of the initial selection filter:
@@ -1504,8 +1580,7 @@ When `selsci` is used then first the selection is retrieved for `selsci` disable
 for the sweep number / channel number / channel type combination the sweep numbers with the same stimset cycle id are determined. For these sweeps selections with the same channel number / channel type are added.
 Finally all selections are reduced to be unique only.
 
-The expansion through `selsci` and `selrac` operates on the current select filter. Intersections with additional
-selections from select type arguments are executed afterwards.
+The expansion through `selsci` and `selrac` operates on the current select filter.
 
 The output is composite with two datasets of different type.
 The first dataset contains a N x 4 array where the columns are sweep number, channel type, GUI channel number and row index of the sweepMap. The sweepMap only exists if the window is a SweepBrowser, for DataBrowser the values are set NaN in that column.
@@ -1540,6 +1615,16 @@ If there are no matching sweeps found a null wave is returned.
    # For sel2 the SCI expansion applies to sweep 0, AD0. The selection result of the expansion is then intersected with sweep 1 AD0 that was selected through sel1.
    sel1 = select(selchannels(AD0), selsweeps(1), selvis(all))
    sel2 = select(selchannels(AD0), selsweeps(0), selvis(all), selsci(), $sel1)
+
+.. code-block:: bash
+
+   # Note that the sel2 expression does not a post-filtering of sel1
+   # instead selracindex(5) is applied to the selections resulting from
+   # the default filter setting for select for the case there is a select type argument present
+   # Then these selections are intersected from sel1
+   # Logically the intersection of the resulting selection works only for the orthogonal filter properties as a kind-of post-filter
+   sel1 = select(selsciindex(3))
+   sel2 = select(selracindex(5), $sel1)
 
 range
 """""
