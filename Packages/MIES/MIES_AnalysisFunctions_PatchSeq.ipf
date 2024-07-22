@@ -1956,8 +1956,6 @@ static Function [variable start, variable stop] PSQ_DS_GetFrequencyEvalRangeForR
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
-	DAC = AFH_GetDACFromHeadstage(device, headstage)
-
 	WAVE     DACs   = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DACs[headstage], "^E1$")
 	ASSERT(WaveExists(epochs), "Could not find E1 epoch")
