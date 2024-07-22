@@ -1086,17 +1086,23 @@ End
 /// @brief Collect all resolved ranges in allResolvedRanges together with a hash of the select data
 Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectData, WAVE allResolvedRanges, WAVE/T allSelectHashes)
 
-	variable sweepNo, chanNr, chanType, numRows
+	variable sweepNo, chanNr, chanType, numRows, mapIndex
 
 	sweepNo  = singleSelectData[0][%SWEEP]
 	chanNr   = singleSelectData[0][%CHANNELNUMBER]
 	chanType = singleSelectData[0][%CHANNELTYPE]
+	mapIndex = singleSelectData[0][%SWEEPMAPINDEX]
 
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	if(BSP_IsSweepBrowser(graph))
+		WAVE/T sweepMap = SB_GetSweepMap(graph)
+		[WAVE numericalValues, WAVE textualValues] = SB_GetLabNotebooks(sweepMap, mapIndex)
+	else
+		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	endif
 	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
 
-	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr)
+	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr, mapIndex)
 	ASSERT(DimSize(resolvedRanges, COLS) == 1, "psxStats does not support epoch wildcards")
 
 	numRows = DimSize(allSelectHashes, ROWS)
@@ -4313,7 +4319,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
 
-	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1)
+	WAVE/WAVE selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1)
 
 	SFH_ASSERT(WaveExists(selectData), "Could not gather sweep data from select statement")
 
@@ -4321,7 +4327,7 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	decayTau = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 3, defValue = 15, checkFunc = IsStrictlyPositiveAndFinite)
 	amp      = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 4, defValue = -5, checkFunc = IsFinite)
 
-	WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, range, selectData, SF_OP_PSX_KERNEL)
+	WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, selectData, SF_OP_PSX_KERNEL)
 
 	numCombos = DimSize(sweepDataRef, ROWS)
 	SFH_ASSERT(numCombos > 0, "Could not fetch sweeps")

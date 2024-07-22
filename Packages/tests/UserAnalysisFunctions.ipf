@@ -1038,7 +1038,7 @@ Function SetSweepFormula(string device, STRUCT AnalysisFunction_V3 &s)
 		case PRE_SWEEP_CONFIG_EVENT:
 			win            = DB_FindDataBrowser(device)
 			sweepFormulaNB = BSP_GetSFFormula(win)
-			sprintf code, "data(TP, select(channels(AD), [%d]))\r", s.sweepNo
+			sprintf code, "data(select(selrange(TP), selchannels(AD), selsweeps(%d)))\r", s.sweepNo
 			ReplaceNotebookText(sweepFormulaNB, code)
 			break
 		default:

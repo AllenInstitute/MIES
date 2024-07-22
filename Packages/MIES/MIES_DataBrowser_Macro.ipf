@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1 // building window...
-	Display/W=(427.5, 292.25, 916.5, 664.25)/K=1
+	Display/W=(694.5, 284, 1183.5, 656)/K=1
 	Button button_BSP_open, pos={3.00, 3.00}, size={24.00, 24.00}, disable=1, proc=BSP_ButtonProc_Panel
 	Button button_BSP_open, title="<<", help={"Restore side panels"}
 	Button button_BSP_open, userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -947,7 +947,7 @@ Window DataBrowser() : Graph
 	PopupMenu popup_DB_lockedDevices, userdata(ResizeControlsInfo)=A"!!,Dg!!#BPJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices, mode=2, popvalue="- none -", value=#"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices, mode=1, popvalue="- none -", value=#"DB_GetAllDevicesWithData()"
 	GroupBox group_enable_sweepFormula, pos={5.00, 25.00}, size={434.00, 50.00}, disable=1
 	GroupBox group_enable_sweepFormula, title="SweepFormula", userdata(tabnum)="5"
 	GroupBox group_enable_sweepFormula, userdata(tabcontrol)="Settings"
@@ -1269,7 +1269,7 @@ Window DataBrowser() : Graph
 	NewNotebook/F=1/N=sweepFormula_formula/W=(12, 71, 378, 529)/FG=(UGVL, UGVT, UGVR, UGVB)/HOST=#/V=0
 	Notebook kwTopWin, defaultTab=10, autoSave=1, magnification=100, showRuler=0, rulerUnits=2
 	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0, 0, 286}, spacing={0, 0, 0}, tabs={}, rulerDefaults={"Arial", 11, 0, (0, 0, 0)}
-	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)un`Q5gp6juaS*9:-\\LOi\"3Ld])[.hK#eE=!1`!1=@^Xod&KOHcHFV4hd75b`6!+WpoV?BghDSuQ2!&8e)8OI;FNbKI]j*sb-#s8RkQ<!B<R:<`eh\"-TY*,oXlCM0XBG3Q2ns/t+g.`T=(u\"iVCKR_0&r\\u!3R;\\D`R\\q+CdL'kjo*<d1N@@C<b@g),5AekbV7KmH6VAo\\j?[bji@Ld8tK62WW3<C@V$+OCje74\\R@`W,JaP^0b$+/Kc1c[?<;8G7WY;e`oQ%8r9,R@?g"
+	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)u.`Q5gp6juaS*9@t&bWmF]6m?&i'o6\"C\\-.U0!-&9@\\dD!#6W/ZaQA2u%!K\"f\"KRaVIH;S-XHE)S!6F;<(6=sP-/2%+CIin`*rr4(7dMApi3&Lr>$qR6BQY6@JYXT':L]Nr*5`t,d`4Wb4S72pt(JPp3b2W!Ae:M-=9hepu9N),2VPYW)!)3W[M&Ij/*EZ;sJlQ9D@0+QM!4?=Z0eiCa(Zd\"+i!odL%M13^+J^[l2p?r$CpH_C3=HQ<*/cS'QMZmnB;Qq(39TH>kNAWr-ij;qs&r\\"
 	Notebook kwTopWin, zdataEnd=1
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin, userdata(tabnum)="0"

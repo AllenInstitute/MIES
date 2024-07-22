@@ -637,3 +637,25 @@ Structure SF_PlotMetaData
 	string xAxisLabel // from SF_META_XAXISLABEL constant
 	string yAxisLabel // from SF_META_YAXISLABEL constant
 EndStructure
+
+/// @brief Wraps all parameters combined for one SF select call
+///        When adapting also change @ref SF_DuplicateSelectFilter
+Structure SF_SelectParameters
+	WAVE selects
+	WAVE channels
+	WAVE sweeps
+	string vis
+	variable clampMode
+	WAVE/T stimsets
+	WAVE ranges
+	variable sweepQC
+	variable setQC
+	string experimentName
+	string device
+	variable includeSCI
+	variable includeRAC
+	variable setCycleCount
+	variable setSweepCount
+	variable sciIndex
+	variable racIndex
+EndStructure
