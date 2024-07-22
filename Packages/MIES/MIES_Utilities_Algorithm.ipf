@@ -269,37 +269,61 @@ End
 /// @brief Return the row index of the given value, string converted to a variable, or wv
 ///
 /// Assumes wv being one dimensional
-threadsafe Function GetRowIndex(wv, [val, str, refWave])
+threadsafe Function GetRowIndex(wv, [val, str, refWave, reverseSearch])
 	WAVE     wv
 	variable val
 	string   str
 	WAVE/Z   refWave
+	variable reverseSearch
 
 	variable numEntries, i
 
 	ASSERT_TS(ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave) == 2, "Expected exactly one argument")
+
+	if(ParamIsDefault(reverseSearch))
+		reverseSearch = 0
+	else
+		reverseSearch = !!reverseSearch
+	endif
 
 	if(!ParamIsDefault(refWave))
 		ASSERT_TS(IsWaveRefWave(wv), "wv must be a wave holding wave references")
 		numEntries = DimSize(wv, ROWS)
 		WAVE/WAVE cmpWave = wv
 
-		for(i = 0; i < numEntries; i += 1)
-			if(WaveRefsEqual(cmpWave[i], refWave)                  \
-			   || (!WaveExists(cmpWave[i]) && !WaveExists(refWave)))
-				return i
-			endif
-		endfor
+		if(!reverseSearch)
+			for(i = 0; i < numEntries; i += 1)
+				if(WaveRefsEqual(cmpWave[i], refWave)                  \
+				   || (!WaveExists(cmpWave[i]) && !WaveExists(refWave)))
+					return i
+				endif
+			endfor
+		else
+			for(i = numEntries - 1; i >= 0; i -= 1)
+				if(WaveRefsEqual(cmpWave[i], refWave)                  \
+				   || (!WaveExists(cmpWave[i]) && !WaveExists(refWave)))
+					return i
+				endif
+			endfor
+		endif
 	else
 		if(IsNumericWave(wv))
 			if(!ParamIsDefault(str))
 				val = str2num(str)
 			endif
 
-			if(IsNaN(val))
-				FindValue/FNAN wv
+			if(!reverseSearch)
+				if(IsNaN(val))
+					FindValue/FNAN wv
+				else
+					FindValue/V=(val) wv
+				endif
 			else
-				FindValue/V=(val) wv
+				if(IsNaN(val))
+					FindValue/FNAN/R wv
+				else
+					FindValue/V=(val)/R wv
+				endif
 			endif
 
 			if(V_Value >= 0)
@@ -310,7 +334,11 @@ threadsafe Function GetRowIndex(wv, [val, str, refWave])
 				str = num2str(val)
 			endif
 
-			FindValue/TEXT=(str)/TXOP=4 wv
+			if(!reverseSearch)
+				FindValue/TEXT=(str)/TXOP=4 wv
+			else
+				FindValue/TEXT=(str)/TXOP=4/R wv
+			endif
 
 			if(V_Value >= 0)
 				return V_Value

@@ -210,6 +210,28 @@ static Function TestGetRowIndex()
 
 	Make/FREE/WAVE/N=0 emptyWaveRefWave
 	CHECK_EQUAL_VAR(GetRowIndex(emptyWaveRefWave, refWave = content), NaN)
+
+	// reverse numeric
+	Make/FREE floatWave = {3, 1, 2, NaN, Inf, NaN, inf, 1, 2, 3}
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = 3, reverseSearch = 1), 9)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "3", reverseSearch = 1), 9)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = NaN, reverseSearch = 1), 5)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "", reverseSearch = 1), 5)
+
+	// reverse text waves
+	Make/FREE/T textWave = {"a", "b", "c", "d", "1", "a", "b", "c", "d", "1"}
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, val = 1, reverseSearch = 1), 9)
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, str = "b", reverseSearch = 1), 6)
+
+	// reverse wave ref waves
+	Make/FREE/WAVE/N=4 waveRefWave
+	Make/FREE content
+	waveRefWave[1, 2] = content
+	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = content, reverseSearch = 1), 2)
+	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = $"", reverseSearch = 1), 3)
+
+	Make/FREE/WAVE/N=0 emptyWaveRefWave
+	CHECK_EQUAL_VAR(GetRowIndex(emptyWaveRefWave, refWave = content, reverseSearch = 1), NaN)
 End
 
 /// @}
