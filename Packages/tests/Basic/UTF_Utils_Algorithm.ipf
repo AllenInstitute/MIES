@@ -207,6 +207,9 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = content), 1)
 	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = $""), 0)
 	CHECK_EQUAL_VAR(GetRowIndex(waveRefWave, refWave = waveRefWave), NaN)
+
+	Make/FREE/WAVE/N=0 emptyWaveRefWave
+	CHECK_EQUAL_VAR(GetRowIndex(emptyWaveRefWave, refWave = content), NaN)
 End
 
 /// @}
