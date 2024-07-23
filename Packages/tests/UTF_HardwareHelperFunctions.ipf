@@ -26,9 +26,6 @@ Function TEST_BEGIN_OVERRIDE(name)
 	WAVE wv = GetAcqStateTracking()
 	KillWaves wv; AbortOnRTE
 
-	//	DisableDebugOutput()
-	//	EnableDebugoutput()
-
 	// cache the version string
 	SVAR     miesVersion      = $GetMIESVersion()
 	string/G root:miesVersion = miesVersion

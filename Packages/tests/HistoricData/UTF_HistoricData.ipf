@@ -46,7 +46,6 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 
 	// speeds up testing to start with a fresh copy
 	KillWindow/Z HistoryCarbonCopy
-	DisableDebugOutput()
 
 	if(ParamIsDefault(allowdebug))
 		debugMode = 0
