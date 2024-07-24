@@ -422,8 +422,9 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 
 	// electrode_name, only present for associated channels
 	if(IsFinite(params.electrodeNumber))
-		electrode_name     = ReadElectrodeName(filePath, channel, NWB_VERSION)
-		electrode_name_ref = num2str(params.electrodeNumber)
+		electrode_name = ReadElectrodeName(filePath, channel, NWB_VERSION)
+		WAVE/T cellElectrodeNames = GetCellElectrodeNames(device)
+		electrode_name_ref = cellElectrodeNames[params.electrodeNumber]
 		CHECK_EQUAL_STR(electrode_name, electrode_name_ref)
 	endif
 
