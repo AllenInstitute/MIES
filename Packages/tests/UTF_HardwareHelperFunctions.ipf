@@ -1442,9 +1442,7 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 	sutterRequirementCheck[] = s.aso[p] == 1 && s.hs[p] == 1
 	if(!(sum(sutterRequirementCheck) == 1 && sutterRequirementCheck[0] == 1))
 		INFO("SUTTER hardware currently supports only 1 HS")
-		CHECK(0)
-		UnRegisterIUTFMonitor()
-		Abort
+		SKIP_TESTCASE()
 	endif
 
 	WAVE deviceInfo = GetDeviceInfoWave(device)
