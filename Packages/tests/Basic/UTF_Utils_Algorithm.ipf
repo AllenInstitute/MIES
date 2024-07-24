@@ -188,13 +188,15 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(emptyWave, str = "1"), NaN)
 
 	// numeric waves
-	Make/FREE floatWave = {3, 1, 2, NaN, Inf}
+	Make/FREE floatWave = {3, 1, 2, NaN, Inf, -Inf}
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = 3), 0)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "3"), 0)
-	// @todo enable once IP bug #4894 is fixed
-	// CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = inf), 4)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = Inf), 4)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = -Inf), 5)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = NaN), 3)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = ""), 3)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "inf"), 4)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "-inf"), 5)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = 123), NaN)
 
 	// text waves
@@ -215,11 +217,15 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(emptyWaveRefWave, refWave = content), NaN)
 
 	// reverse numeric
-	Make/FREE floatWave = {3, 1, 2, NaN, Inf, NaN, inf, 1, 2, 3}
+	Make/FREE floatWave = {3, 1, 2, NaN, Inf, NaN, Inf, 1, 2, 3, -Inf, -Inf}
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = 3, reverseSearch = 1), 9)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "3", reverseSearch = 1), 9)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = NaN, reverseSearch = 1), 5)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = Inf, reverseSearch = 1), 6)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, val = -Inf, reverseSearch = 1), 11)
 	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "", reverseSearch = 1), 5)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "Inf", reverseSearch = 1), 6)
+	CHECK_EQUAL_VAR(GetRowIndex(floatWave, str = "-Inf", reverseSearch = 1), 11)
 
 	// reverse text waves
 	Make/FREE/T textWave = {"a", "b", "c", "d", "1", "a", "b", "c", "d", "1"}

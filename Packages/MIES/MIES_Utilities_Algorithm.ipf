@@ -315,12 +315,28 @@ threadsafe Function GetRowIndex(wv, [val, str, refWave, reverseSearch])
 			if(!reverseSearch)
 				if(IsNaN(val))
 					FindValue/FNAN wv
+				elseif(IsInf(val))
+					// @todo /V supports inf only in IP10
+					numEntries = numpnts(wv)
+					for(i = 0; i < numEntries; i += 1)
+						if(val == wv[i])
+							return i
+						endif
+					endfor
 				else
 					FindValue/V=(val)/T=(0) wv
 				endif
 			else
 				if(IsNaN(val))
 					FindValue/FNAN/R wv
+				elseif(IsInf(val))
+					// @todo /V supports inf only in IP10
+					numEntries = numpnts(wv)
+					for(i = numEntries - 1; i >= 0; i -= 1)
+						if(val == wv[i])
+							return i
+						endif
+					endfor
 				else
 					FindValue/V=(val)/R/T=(0) wv
 				endif
