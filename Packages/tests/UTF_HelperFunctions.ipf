@@ -42,7 +42,7 @@ Function FixupJSONConfigImplRig(variable jsonId)
 	variable serialNum, i
 
 	// replace stored serial number with present serial number
-	AI_FindConnectedAmps()
+	AI_FindConnectedAmps("")
 	WAVE ampMCC = GetAmplifierMultiClamps()
 
 	CHECK_GT_VAR(DimSize(ampMCC, ROWS), 0)
