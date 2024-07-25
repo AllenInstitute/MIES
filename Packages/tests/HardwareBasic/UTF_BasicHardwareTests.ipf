@@ -2470,3 +2470,28 @@ static Function RoundTripDepStimsetsRecursionThroughSweeps_REENTRY([STRUCT IUTF_
 	KillVariables/Z m_amplitude
 	KillStrings/Z m_setNameB, m_refList, m_customWavePath
 End
+
+static Function TestCustomElectrodeNamesInNWB_preAcq(string device)
+
+	WAVE/T cellElectrodeNames = GetCellElectrodeNames(device)
+	// must be valid HDF5 identifiers
+	cellElectrodeNames[0] = "Electric Dreams of Voltage"
+	cellElectrodeNames[1] = "Electric Dreams of Current"
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function TestCustomElectrodeNamesInNWB([string str])
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                       + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:EpochTest6_DA_0:" + \
+	                             "__HS1_DA1_AD1_CM:IC:_ST:EpochTest6_DA_0:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function TestCustomElectrodeNamesInNWB_REENTRY([string str])
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+	TestNwbExportV2()
+End
