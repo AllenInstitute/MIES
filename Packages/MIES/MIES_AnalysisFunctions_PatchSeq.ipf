@@ -3071,16 +3071,43 @@ End
 /// @brief Return the entries of data which have passing state in booleanQC.
 ///
 /// Both data and booleanQC are usually from the full SCI.
-static Function/WAVE PSQ_DS_FilterPassingData(WAVE/Z data, WAVE/Z booleanQC)
+static Function/WAVE PSQ_DS_FilterPassingData(WAVE/Z data, WAVE/Z booleanQC, [variable inBetween])
 
-	if(!WaveExists(data))
+	if(!WaveExists(data) || DimSize(data, ROWS) == 0)
 		return $""
+	endif
+
+	if(ParamIsDefault(inBetween))
+		inBetween = 0
+	else
+		inBetween = !!inBetween
 	endif
 
 	ASSERT(WaveExists(booleanQC), "Expected booleanQC wave when having a valid data wave")
 
-	data[] = booleanQC[p] == 1 ? data[p] : NaN
-	WAVE/ZZ passingData = ZapNaNs(data)
+	Duplicate/FREE data, indices
+
+	if(inBetween)
+		ASSERT(DimSize(data, ROWS) + 1 == DimSize(booleanQC, ROWS), "Umatched wave sizes for inBetween")
+		indices[] = booleanQC[p + 1] == 1 ? NaN : p
+	else
+		ASSERT(DimSize(data, ROWS) == DimSize(booleanQC, ROWS), "Umatched wave sizes for inBetween")
+		indices[] = booleanQC[p] == 1 ? NaN : p
+	endif
+
+	WAVE/Z indicesToRemove = ZapNaNs(indices)
+
+	Duplicate/FREE data, passingData
+
+	if(!WaveExists(indicesToRemove))
+		return passingData
+	endif
+
+	DeleteWavePoint(passingData, ROWS, indices = indicesToRemove)
+
+	if(DimSize(passingData, ROWS) == 0)
+		return $""
+	endif
 
 	return passingData
 End
