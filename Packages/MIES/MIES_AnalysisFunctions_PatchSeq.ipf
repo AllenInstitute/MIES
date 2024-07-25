@@ -2954,9 +2954,7 @@ End
 /// Stored in the labnotebook.
 ///
 /// Multiply by `AP Frequency` to get scaled values.
-///
-/// @returns one on error, zero otherwise
-static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_DS_CalculateAndStoreDAScaleStepWidths(string device, variable sweepNo, WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, variable maxFrequencyChangePercent, variable dascaleStepWidthMinMaxRatio, variable fallbackDAScaleRangeFac)
+static Function [variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_DS_CalculateAndStoreDAScaleStepWidths(string device, variable sweepNo, WAVE apfreqRhSuAd, WAVE DAScalesRhSuAd, variable maxFrequencyChangePercent, variable dascaleStepWidthMinMaxRatio, variable fallbackDAScaleRangeFac)
 
 	variable daScaleMinStepWidth, daScaleMaxStepWidth, minimum, maximum
 	string code, databrowser, fitKey, key
@@ -2979,16 +2977,10 @@ static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStep
 
 	sprintf key, "Sweep Formula store [%s]", fitKey
 	WAVE/Z fitResult = PSQ_GetSweepFormulaResultWave(textualResultsValues, key)
-
-	if(!WaveExists(fitResult))
-		return [1, NaN, NaN]
-	endif
+	ASSERT(WaveExists(fitResult), "Missing fitResult")
 
 	WAVE/Z fitCoeff = JWN_GetNumericWaveFromWaveNote(fitResult, SF_META_USER_GROUP + SF_META_FIT_COEFF)
-
-	if(!WaveExists(fitCoeff))
-		return [1, NaN, NaN]
-	endif
+	ASSERT(WaveExists(fitCoeff), "Missing fitResult")
 
 	WAVE/Z fitParams = JWN_GetTextWaveFromWaveNote(fitResult, SF_META_USER_GROUP + SF_META_FIT_PARAMETER)
 	ASSERT(WaveExists(fitParams), "Expected fit parameter wave")
@@ -3029,7 +3021,7 @@ static Function [variable ret, variable daScaleStepMinNorm, variable daScaleStep
 	key                           = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM)
 	ED_AddEntryToLabnotebook(device, key, maxStepWidth, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_NO_UNIT)
 
-	return [0, daScaleMinStepWidth, daScaleMaxStepWidth]
+	return [daScaleMinStepWidth, daScaleMaxStepWidth]
 End
 
 static Structure PSQ_DS_DAScaleParams
@@ -3660,14 +3652,8 @@ Function PSQ_DAScale(device, s)
 						return 1
 					endif
 
-					[ret, daScaleStepMinNorm, daScaleStepMaxNorm] = PSQ_DS_CalculateAndStoreDAScaleStepWidths(device, s.sweepNo, apfreqRhSuAd, DAScalesRhSuAd,                               \
-					                                                                                          maxFrequencyChangePercent, dascaleStepWidthMinMaxRatio, fallbackDAScaleRangeFac)
-
-					if(ret)
-						printf "Could not calculate DAScale step widths min/max.\r"
-						ControlWindowToFront()
-						return 1
-					endif
+					[daScaleStepMinNorm, daScaleStepMaxNorm] = PSQ_DS_CalculateAndStoreDAScaleStepWidths(device, s.sweepNo, apfreqRhSuAd, DAScalesRhSuAd,                               \
+					                                                                                     maxFrequencyChangePercent, dascaleStepWidthMinMaxRatio, fallbackDAScaleRangeFac)
 
 					cdp.daScaleStepMinNorm = daScaleStepMinNorm
 					cdp.daScaleStepMaxNorm = daScaleStepMaxNorm
