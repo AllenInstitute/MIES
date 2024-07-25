@@ -67,10 +67,15 @@ static Function TASYNC_Start_Stop()
 	NVAR/Z ThreadCnt = dfr:numThreads
 	CHECK(NVAR_Exists(ThreadCnt))
 	CHECK_EQUAL_VAR(ThreadCnt, ThreadProcessorCount)
-	CtrlNamedBackground _all_, status
-	CHECK_GE_VAR(strsearch(S_Info, "NAME:AsyncFramework;PROC:ASYNC_BackgroundReadOut;RUN:1;", 0), 0)
 
 	ASYNC_Stop(timeout = 1)
+End
+
+static Function TASYNC_Start_Stop_REENTRY()
+
+	CtrlNamedBackground _all_, status
+	INFO(S_Info)
+	CHECK_GE_VAR(strsearch(S_Info, "NAME:AsyncFramework;PROC:ASYNC_BackgroundReadOut;RUN:1;", 0), 0)
 End
 
 /// @brief Test to start and stop the Framework without the readout task

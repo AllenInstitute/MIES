@@ -855,7 +855,7 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	input[%outOfRange]       = "0"
 
 	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {10, 0, 0, 0, NaN, NaN})
+	JWN_SetWaveInWaveNote(input, "/0/results", {10, NaN, 0, 0, NaN, NaN})
 	JWN_SetWaveInWaveNote(input, "/0/xValues", ListToTextWave(PSX_STATS_LABELS, ";"))
 	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT, \
 	                                           PSX_MARKER_REJECT, PSX_MARKER_REJECT, PSX_MARKER_REJECT})
@@ -1057,8 +1057,14 @@ static Function TestOperationPSXKernel()
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 6)
 
-	actual   = MIES_CA#CA_WaveCRCs(dataWref, includeWaveScalingAndUnits = 1)
+	actual = MIES_CA#CA_WaveCRCs(dataWref, includeWaveScalingAndUnits = 1)
+
+#if IgorVersion() < 10
 	expected = "1323156356;3770352039;3016891533;1323156356;3770352039;3016891533;"
+#else
+	expected = "1323156356;2862587511;3016891533;1323156356;2862587511;3016891533;"
+#endif
+
 	CHECK_EQUAL_STR(expected, actual)
 
 	// check dimension labels

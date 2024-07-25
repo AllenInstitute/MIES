@@ -1273,11 +1273,10 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 						Make/FREE/D results = {V_avg, NaN, V_adev, V_sdev, V_skew, V_kurt}
 
-						AssertonAndClearRTError()
-						StatsQuantiles/Q/Z resultsRawClean; err = GetRTError(1)
+						StatsQuantiles/Q/Z resultsRawClean
 						MakeWaveFree($"W_StatsQuantiles")
 
-						if(!err)
+						if(!V_Flag)
 							results[1] = V_Median
 						endif
 
