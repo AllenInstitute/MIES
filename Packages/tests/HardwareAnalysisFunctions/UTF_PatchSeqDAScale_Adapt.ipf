@@ -945,7 +945,7 @@ static Function PS_DS_AD5_preAcq(string device)
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
-	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4})
 
 	Make/FREE/D DAScalesFromRhSuAd = {1}
 	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)

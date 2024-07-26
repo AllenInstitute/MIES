@@ -2932,6 +2932,12 @@ static Function/WAVE PSQ_DS_GetPassingRhSuAdSweeps(string device, variable heads
 		WAVE overrideResults = GetOverrideResults()
 		WAVE sweeps          = JWN_GetNumericWaveFromWaveNote(overrideResults, "/PassingRhSuAdSweeps")
 		JWN_SetNumberInWaveNote(overrideResults, "/FailingAdaptiveSweep", failingAdaptiveSweep)
+
+		// consistency checks
+		WAVE DAScalesRhSuAd = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRhSuAd")
+		ASSERT(DimSize(DAScalesRhSuAd, ROWS) == DimSize(sweeps, ROWS), "Mismatched sizes between DAScalesRhSuAd and PassingRhSuAdSweeps")
+		WAVE APFreqRhSuAd = JWN_GetNumericWaveFromWaveNote(overrideResults, "/APFrequenciesRhSuAd")
+		ASSERT(DimSize(APFreqRhSuAd, ROWS) == DimSize(sweeps, ROWS), "Mismatched sizes between APFreqRhSuAd and PassingRhSuAdSweeps")
 	else
 		WAVE numericalValues = GetLBNumericalValues(device)
 
