@@ -2528,15 +2528,16 @@ static Function PSQ_DS_GatherAndWriteFrequencyToLabnotebook(string device, varia
 	ED_AddEntryToLabnotebook(device, key, apFreqLBN, overrideSweepNo = sweepNo, unit = "Hz")
 End
 
-static Function [variable maxSlope, WAVE fitSlopes] PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(string device, variable sweepNo, variable headstage, variable fitSlope)
+static Function [variable maxSlope, WAVE fitSlopes, WAVE DAScales] PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(string device, variable sweepNo, variable headstage, variable fitSlope)
 
 	string key
 	variable idx, emptySCI
 
 	[WAVE fitSlopes, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_FI_SLOPE)
+	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_DASCALE)
 
 	if(IsNaN(fitSlope))
-		return [NaN, fitSlopes]
+		return [NaN, fitSlopes, DAScales]
 	endif
 
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -2548,7 +2549,7 @@ static Function [variable maxSlope, WAVE fitSlopes] PSQ_DS_CalculateMaxSlopeAndW
 	key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
 	ED_AddEntryToLabnotebook(device, key, maxSlopeLBN, overrideSweepNo = sweepNo, unit = "% of Hz/pA")
 
-	return [maxSlope, fitSlopes]
+	return [maxSlope, fitSlopes, DAScales]
 End
 
 /// @brief Determine the f-I slope QC
@@ -2557,21 +2558,21 @@ End
 /// - valid fit
 /// - finite slope and not PSQ_DS_SKIPPED_FI_SLOPE
 /// - slope must be slopePercentage smaller than the maximum slope
-/// - slope must be acquired later than the max slope
-static Function PSQ_DS_CalculateReachedFinalSlope(variable validFit, WAVE fitSlopes, variable fitSlope, variable maxSlope, variable slopePercentage)
+/// - slope must be acquired with a larger DAScale value than maximum slope
+static Function PSQ_DS_CalculateReachedFinalSlope(variable validFit, WAVE fitSlopes, WAVE DAScales, variable fitSlope, variable maxSlope, variable slopePercentage)
 
-	return validFit                                                            \
-	       && IsFinite(fitSlope)                                               \
-	       && (fitSlope < maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE))) \
-	       && PSQ_DS_IsValidFitSlopePosition(fitSlopes, fitSlope, maxSlope)
+	return validFit                                                                 \
+	       && IsFinite(fitSlope)                                                    \
+	       && (fitSlope < maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE)))      \
+	       && PSQ_DS_IsValidFitSlopePosition(fitSlopes, DAScales, fitSlope, maxSlope)
 End
 
-static Function PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(string device, variable sweepNo, WAVE fitSlopes, variable fitSlope, variable maxSlope, variable slopePercentage, variable validFit)
+static Function PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(string device, variable sweepNo, WAVE fitSlopes, WAVE DAScales, variable fitSlope, variable maxSlope, variable slopePercentage, variable validFit)
 
 	variable reachedFinalSlope
 	string   key
 
-	reachedFinalSlope = PSQ_DS_CalculateReachedFinalSlope(validFit, fitSlopes, fitSlope, maxSlope, slopePercentage)
+	reachedFinalSlope = PSQ_DS_CalculateReachedFinalSlope(validFit, fitSlopes, DAScales, fitSlope, maxSlope, slopePercentage)
 
 	WAVE finalSlopeLBN = LBN_GetNumericWave()
 	finalSlopeLBN[INDEP_HEADSTAGE] = reachedFinalSlope
@@ -2583,8 +2584,9 @@ End
 ///
 /// The condition is that the fitSlope is not acquired earlier than maxSlope as
 /// we want to find the case there it drops off and not where it starts to
-/// rise.
-static Function PSQ_DS_IsValidFitSlopePosition(WAVE fitSlopes, variable fitSlope, variable maxSlope)
+/// rise. We do use the DAScales values for this to ensure that measurements
+/// from overshoot correction (aka fill-in) don't have a chance of interfering.
+static Function PSQ_DS_IsValidFitSlopePosition(WAVE fitSlopes, WAVE DAScales, variable fitSlope, variable maxSlope)
 
 	variable idxMax, idxSlope
 
@@ -2594,7 +2596,7 @@ static Function PSQ_DS_IsValidFitSlopePosition(WAVE fitSlopes, variable fitSlope
 	idxSlope = GetRowIndex(fitSlopes, val = fitSlope, reverseSearch = 1)
 	ASSERT(IsFinite(idxSlope), "Could not find fitSlope in fitSlopes")
 
-	return idxSlope >= idxMax
+	return DAScales[idxSlope] > DAScales[idxMax]
 End
 
 /// @brief Evaluate the complete adaptive supra threshold sweep
@@ -2656,9 +2658,9 @@ static Function [WAVE futureDAScales, variable fitOffset, variable fitSlope, var
 		DAScale = NaN
 	endif
 
-	[maxSlope, WAVE fitSlopes] = PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(device, sweepNo, headstage, fitSlope)
+	[maxSlope, WAVE fitSlopesAll, WAVE DAScalesAll] = PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(device, sweepNo, headstage, fitSlope)
 
-	PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(device, sweepNo, fitSlopes, fitSlope, maxSlope, cdp.slopePercentage, validFit)
+	PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(device, sweepNo, fitSlopesAll, DAScalesAll, fitSlope, maxSlope, cdp.slopePercentage, validFit)
 
 	return [futureDAScales, fitOffset, fitSlope, DAScale, apfreq]
 End
@@ -3877,7 +3879,7 @@ Function PSQ_DAScale(device, s)
 					key                      = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
 					ED_AddEntryToLabnotebook(device, key, maxSlopeLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
 
-					Make/FREE/N=(DimSize(fitSlopeFromRhSuAd, ROWS)) fitSlopeQCfromRhSuAd = PSQ_DS_CalculateReachedFinalSlope(validFit, fitSlopeFromRhSuAd, fitSlopeFromRhSuAd[p], maxSlope, cdp.slopePercentage)
+					Make/FREE/N=(DimSize(fitSlopeFromRhSuAd, ROWS)) fitSlopeQCfromRhSuAd = PSQ_DS_CalculateReachedFinalSlope(validFit, fitSlopeFromRhSuAd, DAScalesRhSuAd, fitSlopeFromRhSuAd[p], maxSlope, cdp.slopePercentage)
 
 					WAVE/T fitSlopeQCLBN = LBN_GetTextWave()
 					fitSlopeQCLBN[INDEP_HEADSTAGE] = NumericWaveToList(fitSlopeQCfromRhSuAd, ";", format = "%d")
