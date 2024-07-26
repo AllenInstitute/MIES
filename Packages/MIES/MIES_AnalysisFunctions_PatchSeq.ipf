@@ -3325,7 +3325,7 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			break
 		case "NumSweepsWithSaturation":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 1 && val <= IDX_NumberOfSweepsInSet(s.setName)))
+			if(!(val >= 1))
 				return "Invalid range"
 			endif
 			break
