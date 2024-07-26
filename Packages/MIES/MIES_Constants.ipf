@@ -1172,7 +1172,9 @@ StrConstant PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM      = "%s Min. norm. DAScale ste
 StrConstant PSQ_FMT_LBN_DA_AT_RSA_DASCALE           = "%s DAScale from rheobase, supra, adaptive"
 StrConstant PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS        = "%s f-I offsets from rheobase, supra, adaptive"
 StrConstant PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES         = "%s f-I slopes from rheobase, supra, adaptive"
+StrConstant PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_PASS    = "%s f-I slope QCs from rheobase, supra, adaptive"
 StrConstant PSQ_FMT_LBN_DA_AT_RSA_FREQ              = "%s AP frequency from rheobase, supra, adaptive"
+StrConstant PSQ_FMT_LBN_DA_AT_RSA_SWEEPS            = "%s passing sweep numbers from rheobase, supra, adaptive"
 StrConstant PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS  = "%s f-I initial slope valid from rheobase, supra, adaptive QC"
 StrConstant PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS      = "%s f-I slope valid QC"
 StrConstant PSQ_FMT_LBN_CR_RESISTANCE               = "%s input resistance"
@@ -1283,6 +1285,7 @@ StrConstant PSQ_DS_SUB              = "Sub"
 StrConstant PSQ_DS_SUPRA            = "Supra"
 StrConstant PSQ_DS_ADAPT            = "AdaptiveSupra"
 Constant    PSQ_DS_MAX_FREQ_OFFSET  = 2
+Constant    PSQ_DS_SKIPPED_FI_SLOPE = -Inf
 /// @}
 
 /// @name PatchSeq Ramp
