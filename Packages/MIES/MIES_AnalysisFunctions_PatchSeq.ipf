@@ -2914,7 +2914,7 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 
 	[WAVE sweepPassed, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_SWEEP_PASS, fromRhSuAd = fromRhSuAd)
 
-	if(!WaveExists(sweepPassed) || DimSize(sweepPassed, ROWS) < numSweepsWithSaturation)
+	if(DimSize(sweepPassed, ROWS) < numSweepsWithSaturation)
 		return 0
 	endif
 
