@@ -268,7 +268,7 @@ End
 
 /// @brief Return the row index of the given value, string converted to a variable, or wv
 ///
-/// Assumes wv being one dimensional
+/// Assumes wv being one dimensional and does not use any tolerance for numerical values.
 threadsafe Function GetRowIndex(wv, [val, str, refWave, reverseSearch])
 	WAVE     wv
 	variable val
@@ -316,13 +316,13 @@ threadsafe Function GetRowIndex(wv, [val, str, refWave, reverseSearch])
 				if(IsNaN(val))
 					FindValue/FNAN wv
 				else
-					FindValue/V=(val) wv
+					FindValue/V=(val)/T=(0) wv
 				endif
 			else
 				if(IsNaN(val))
 					FindValue/FNAN/R wv
 				else
-					FindValue/V=(val)/R wv
+					FindValue/V=(val)/R/T=(0) wv
 				endif
 			endif
 

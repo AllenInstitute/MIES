@@ -155,6 +155,9 @@ End
 
 static Function TestGetRowIndex()
 
+	variable valueToSearch
+	string   strToSearch
+
 	Make/N=0/FREE emptyWave
 
 	// check number of opt parameters #1
@@ -232,6 +235,15 @@ static Function TestGetRowIndex()
 
 	Make/FREE/WAVE/N=0 emptyWaveRefWave
 	CHECK_EQUAL_VAR(GetRowIndex(emptyWaveRefWave, refWave = content, reverseSearch = 1), NaN)
+
+	// no tolerance
+	Make/FREE/D doubleWave = {1}
+	valueToSearch = 1 + 1e-12
+	strToSearch   = num2str(valueToSearch, "%.15g")
+	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, val = valueToSearch), NaN)
+	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch), NaN)
+	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, val = valueToSearch, reverseSearch = 1), NaN)
+	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch, reverseSearch = 1), NaN)
 End
 
 /// @}
