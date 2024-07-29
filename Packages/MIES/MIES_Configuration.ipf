@@ -556,7 +556,7 @@ static Function CONF_SaveDAEphys(fName)
 		fName       = HFSPathToNative(fName)
 
 		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
-		if(JSON_IsValid(saveResult))
+		if(!IsNaN(saveResult))
 			printf "Configuration saved in %s.\r", newFileName
 		endif
 		if(JSON_IsValid(prevRigJsonId) && !IsEmpty(newFileName))
