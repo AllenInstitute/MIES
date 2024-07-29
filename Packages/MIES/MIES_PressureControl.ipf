@@ -2207,7 +2207,7 @@ Function P_SetPressureMode(device, headStage, pressureMode, [pressure])
 	variable pressureMode
 	variable pressure
 
-	ASSERT(headstage < NUM_HEADSTAGES && headStage >= 0, "Select headstage number between 0 and 7")
+	ASSERT(IsValidHeadstage(headStage), "Select headstage number between 0 and 7")
 	ASSERT(pressureMode >= PRESSURE_METHOD_ATM && pressureMode <= PRESSURE_METHOD_MANUAL, "Select a pressure mode between -1 and 4")
 
 	WAVE     PressureDataWv     = P_GetPressureDataWaveRef(device)

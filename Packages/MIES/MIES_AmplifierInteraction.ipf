@@ -1083,7 +1083,7 @@ Function AI_SendToAmp(device, headStage, mode, func, value, [checkBeforeWrite, u
 	string str
 
 	ASSERT(func > MCC_BEGIN_INVALID_FUNC && func < MCC_END_INVALID_FUNC, "MCC function constant is out for range")
-	ASSERT(headStage >= 0 && headStage < NUM_HEADSTAGES, "invalid headStage index")
+	ASSERT(IsValidHeadstage(headstage), "invalid headStage index")
 	AI_AssertOnInvalidClampMode(mode)
 
 	if(ParamIsDefault(checkBeforeWrite))
