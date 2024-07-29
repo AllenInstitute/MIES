@@ -2092,7 +2092,8 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 			if(IsFinite(ampSerial))
 				if(!midExp)
 					if(warnMissingMCCSync)
-						printf "The sync MIES to MCC settings checkbox is not checked.\rRestored amplifier settings will not be applied to Multiclamp commander.\r"
+						printf "The sync MIES to MCC settings checkbox is not checked.\r"
+						printf "Restored amplifier settings will not be applied to Multiclamp commander.\r"
 						warnMissingMCCSync = 0
 					endif
 
