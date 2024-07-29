@@ -23,7 +23,6 @@
 // HFSPathToPosix
 // HFSPathToWindows
 // HFSPathToNative
-// GetSymbolicPathForDiagnosticsDirectory
 // ShowDiagnosticsDirectory
 // SanitizeFilename
 // LoadWaveFromDisk
@@ -218,3 +217,14 @@ static Function GetDayOfWeekTest()
 End
 
 /// @}
+
+static Function TestGetSymbolicPathForDiagnosticsDirectory()
+
+	string symbPath
+
+	symbPath = GetSymbolicPathForDiagnosticsDirectory()
+	CHECK_PROPER_STR(symbPath)
+
+	PathInfo $symbPath
+	CHECK(V_flag)
+End
