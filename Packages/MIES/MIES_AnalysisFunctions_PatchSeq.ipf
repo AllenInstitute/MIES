@@ -2563,6 +2563,7 @@ static Function PSQ_DS_CalculateReachedFinalSlope(variable validFit, WAVE fitSlo
 
 	return validFit                                                                 \
 	       && IsFinite(fitSlope)                                                    \
+	       && IsFinite(maxSlope)                                                    \
 	       && (fitSlope < maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE)))      \
 	       && PSQ_DS_IsValidFitSlopePosition(fitSlopes, DAScales, fitSlope, maxSlope)
 End
