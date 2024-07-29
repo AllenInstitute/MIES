@@ -2473,10 +2473,8 @@ End
 
 static Function TestCustomElectrodeNamesInNWB_preAcq(string device)
 
-	WAVE/T cellElectrodeNames = GetCellElectrodeNames(device)
-	// must be valid HDF5 identifiers
-	cellElectrodeNames[0] = "Electric Dreams of Voltage"
-	cellElectrodeNames[1] = "Electric Dreams of Current"
+	FFI_SetCellElectrodeName(device, 0, "Electric Dreams of Voltage")
+	FFI_SetCellElectrodeName(device, 1, "Electric Dreams of Current")
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1

@@ -72,3 +72,15 @@ Function/WAVE FFI_GetAvailableMessageFilters()
 
 	return wv
 End
+
+/// @brief Set the headstage/cell electrode name
+Function FFI_SetCellElectrodeName(string device, variable headstage, string name)
+
+	DAP_AbortIfUnlocked(device)
+	ASSERT(IsValidHeadstage(headstage), "Invalid headstage index")
+	ASSERT(H5_IsValidIdentifier(name), "Name of the electrode/headstage needs to be a valid HDF5 identifier")
+
+	WAVE/T cellElectrodeNames = GetCellElectrodeNames(device)
+
+	cellElectrodeNames[headstage] = name
+End
