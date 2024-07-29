@@ -735,7 +735,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 			CreateFolderOnDisk(path)
 		endif
 
-		NewPath/C/O SavePath, path
+		NewPath/C/O/Q SavePath, path
 
 		SaveExperiment/P=SavePath as filename
 
