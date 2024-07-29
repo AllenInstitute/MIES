@@ -553,6 +553,7 @@ static Function CONF_SaveDAEphys(fName)
 
 		newFileName = CONF_GetDAEphysConfigurationFileNameSuggestion(wName)
 		fName       = SelectString(IsEmpty(newFileName), newFileName, fName)
+		fName       = HFSPathToNative(fName)
 
 		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 		if(JSON_IsValid(saveResult))
@@ -561,6 +562,7 @@ static Function CONF_SaveDAEphys(fName)
 		if(JSON_IsValid(prevRigJsonId) && !IsEmpty(newFileName))
 			JSON_Release(prevRigJsonId)
 			newRigFullFilePath = GetFolder(newFileName) + GetBaseName(newFileName) + EXPCONFIG_RIGFILESUFFIX
+			newRigFullFilePath = HFSPathToNative(newRigFullFilePath)
 			saveResult         = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 			if(!IsNaN(saveResult))
 				printf "Rig configuration saved in %s.\r", newFileName
@@ -684,6 +686,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		endif
 
 		StimSetPath = CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_STIMSET_NAME)
+		StimSetPath = HFSPathToNative(StimSetPath)
 		if(!IsEmpty(StimSetPath))
 			ASSERT(FileExists(StimSetPath), "Specified StimSet file at " + StimSetPath + " not found!", extendedOutput = 0)
 			err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
