@@ -580,7 +580,7 @@ Function/S GetSymbolicPathForDiagnosticsDirectory()
 
 	userName = GetSystemUserName()
 
-	sprintf path, "C:Users:%s:AppData:Roaming:WaveMetrics:Igor Pro %s:Diagnostics:", userName, GetIgorProMajorVersion()
+	sprintf path, "C:Users:%s:AppData:Roaming:WaveMetrics:Igor Pro %d:Diagnostics:", userName, GetIgorProMajorVersion()
 
 	if(!FolderExists(path))
 		CreateFolderOnDisk(path)

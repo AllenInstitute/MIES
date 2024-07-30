@@ -553,17 +553,19 @@ static Function CONF_SaveDAEphys(fName)
 
 		newFileName = CONF_GetDAEphysConfigurationFileNameSuggestion(wName)
 		fName       = SelectString(IsEmpty(newFileName), newFileName, fName)
+		fName       = HFSPathToNative(fName)
 
 		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
-		if(JSON_IsValid(saveResult))
-			printf "Configuration saved in %s.\r", newFileName
+		if(!IsNaN(saveResult))
+			printf "Configuration saved in %s.\r", fName
 		endif
 		if(JSON_IsValid(prevRigJsonId) && !IsEmpty(newFileName))
 			JSON_Release(prevRigJsonId)
 			newRigFullFilePath = GetFolder(newFileName) + GetBaseName(newFileName) + EXPCONFIG_RIGFILESUFFIX
+			newRigFullFilePath = HFSPathToNative(newRigFullFilePath)
 			saveResult         = SaveTextFile(jsonTxt, newRigFullFilePath, fileFilter = EXPCONFIG_FILEFILTER, message = "Save Rig configuration for DA_Ephys panel", savedFileName = newFileName, showDialogOnOverwrite = 1)
 			if(!IsNaN(saveResult))
-				printf "Rig configuration saved in %s.\r", newFileName
+				printf "Rig configuration saved in %s.\r", newRigFullFilePath
 			endif
 		endif
 
@@ -684,6 +686,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		endif
 
 		StimSetPath = CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_STIMSET_NAME)
+		StimSetPath = HFSPathToNative(StimSetPath)
 		if(!IsEmpty(StimSetPath))
 			ASSERT(FileExists(StimSetPath), "Specified StimSet file at " + StimSetPath + " not found!", extendedOutput = 0)
 			err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
@@ -732,7 +735,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 			CreateFolderOnDisk(path)
 		endif
 
-		NewPath/C/O SavePath, path
+		NewPath/C/O/Q SavePath, path
 
 		SaveExperiment/P=SavePath as filename
 
@@ -2089,7 +2092,8 @@ static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
 			if(IsFinite(ampSerial))
 				if(!midExp)
 					if(warnMissingMCCSync)
-						printf "The sync MIES to MCC settings checkbox is not checked.\rRestored amplifier settings will not be applied to Multiclamp commander.\r"
+						printf "The sync MIES to MCC settings checkbox is not checked.\r"
+						printf "Restored amplifier settings will not be applied to Multiclamp commander.\r"
 						warnMissingMCCSync = 0
 					endif
 
