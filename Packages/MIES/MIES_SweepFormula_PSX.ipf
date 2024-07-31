@@ -532,14 +532,14 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 	endif
 
 	numCrossings = DimSize(peakX, ROWS)
+	Redimension/N=(numCrossings, -1) psxEvent, eventFit
+
 	for(i = 0; i < numCrossings; i += 1)
 
 		i_time = peakX[i]
 		peak   = peakY[i]
 
 		[post_min, post_min_t, pre_max, pre_max_t, rel_peak] = PSX_CalculateEventProperties(peakX, peakY, sweepDataFiltOff, i, kernelAmp)
-
-		EnsureLargeEnoughWave(psxEvent, indexShouldExist = i)
 
 		if(i == 0)
 			isi = NaN
@@ -557,8 +557,6 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 		psxEvent[i][%rel_peak]   = rel_peak
 		psxEvent[i][%isi]        = isi
 	endfor
-
-	Redimension/N=(i, -1) eventFit, psxEvent
 
 	// safe defaults
 	psxEvent[][%$"Event manual QC call"] = PSX_UNDET
