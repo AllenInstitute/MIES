@@ -91,6 +91,9 @@ Function WB_RegressionTest([string stimset])
 	WAVE/Z wv = WB_CreateAndGetStimSet(stimset)
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 
+	INFO("Stimset %s needs to only have finite entries.", s0 = stimset)
+	CHECK(!HasOneNonFiniteEntry(wv))
+
 	// parameter waves were upgraded
 	WAVE WP = WB_GetWaveParamForSet(stimset)
 	CHECK_EQUAL_VAR(MIES_WAVEGETTERS#GetWaveVersion(WP), MIES_WAVEGETTERS#GetWPVersion())
