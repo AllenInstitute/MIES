@@ -1447,12 +1447,16 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 	//   The resample method picks the closest sample point in the stimSet by using round()
 	//   The decimation factor can be < 1 (picking stimset samples one or multiple times) and > 1 (picking stimset samples or skipping it)
 	for(i = 0; i < s.numDACEntries; i += 1)
-		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-			tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
-			ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+		channel        = s.DACList[i]
+		headstage      = s.headstageDAC[i]
+		isUnAssociated = IsNaN(headstage)
+		tpAmp          = s.DACAmp[i][%TPAMP] * s.gains[i]
 
-			/// @todo why not associated here
-			[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, 0)
+		[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !isUnAssociated)
+
+		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
+			ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+			ASSERT(!isUnAssociated, "DA channel must be associated for DAQ_CHANNEL_TYPE_TP")
 
 			switch(s.hardwareType)
 				case HARDWARE_ITC_DAC:
@@ -1479,17 +1483,11 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 					break
 			endswitch
 		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-			channel   = s.DACList[i]
-			headstage = s.headstageDAC[i]
-			tpAmp     = s.DACAmp[i][%TPAMP] * s.gains[i]
-			DAScale   = s.DACAmp[i][%DASCALE] * s.gains[i]
+			DAScale = s.DACAmp[i][%DASCALE] * s.gains[i]
 			WAVE singleStimSet = s.stimSet[i]
 			singleSetLength = s.setLength[i]
 			stimsetCol      = s.setColumn[i]
 			startOffset     = s.insertStart[i]
-			isUnAssociated  = IsNaN(headstage)
-
-			[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !isUnAssociated)
 
 			switch(s.hardwareType)
 				case HARDWARE_ITC_DAC:
