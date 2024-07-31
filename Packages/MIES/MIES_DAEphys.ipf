@@ -2492,8 +2492,8 @@ static Function DAP_CheckPressureSettings(string device)
 			ADConfig = HW_NI_GetAnalogInputConfig(pressureDevice, ADC)
 
 			if((ADConfig & HW_NI_CONFIG_DIFFERENTIAL) != HW_NI_CONFIG_DIFFERENTIAL)
-				printf "(%s) The AD channel %d of the pressure device %s can not be used in differential mode.\r", device, ADC, pressureDevice
-				printf "Available modes are: %s\r", HW_NI_AnalogInputToString(ADConfig)
+				printf "(%s) The AD channel %d of the pressure device %s can not be used in differential mode, please try another channel number.\r", device, ADC, pressureDevice
+				printf "For USB-6001 devices only the channels 0 to 3 can be used in differential mode, the channels 4 to 7 are fixed in Referenced Single Ended (RSE) mode."
 				ControlWindowToFront()
 				return 1
 			endif
@@ -2509,8 +2509,8 @@ static Function DAP_CheckPressureSettings(string device)
 			ADConfig = HW_NI_GetAnalogInputConfig(userPressureDevice, ADC)
 
 			if((ADConfig & HW_NI_CONFIG_DIFFERENTIAL) != HW_NI_CONFIG_DIFFERENTIAL)
-				printf "(%s) The AD channel %d of the user pressure device %s can not be used in differential mode.\r", device, ADC, userPressureDevice
-				printf "Available modes are: %s\r", HW_NI_AnalogInputToString(ADConfig)
+				printf "(%s) The AD channel %d of the user pressure device %s can not be used in differential mode, please try another channel number.\r", device, ADC, userPressureDevice
+				printf "For USB-6001 devices only the channels 0 to 3 can be used in differential mode, the channels 4 to 7 are fixed in Referenced Single Ended (RSE) mode."
 				ControlWindowToFront()
 				return 1
 			endif
