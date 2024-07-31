@@ -483,11 +483,49 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataFiltOff
 	return [peakX, peakY]
 End
 
+static Function [variable post_min, variable post_min_t, variable pre_max, variable pre_max_t, variable rel_peak] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataFiltOff, variable index, variable kernelAmp)
+
+	variable numCrossings, i_time, peak, peak_end_search
+
+	numCrossings = DimSize(peakX, ROWS)
+
+	i_time = peakX[index]
+	peak   = peakY[index]
+
+	if(index < numCrossings - 1)
+		peak_end_search = min(i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS, peakX[index + 1])
+	else
+		peak_end_search = i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS
+	endif
+
+	WaveStats/M=1/Q/R=(i_time, peak_end_search) sweepDataFiltOff
+
+	if(kernelAmp > 0)
+		post_min   = V_max
+		post_min_t = V_maxloc
+	elseif(kernelAmp < 0)
+		post_min   = V_min
+		post_min_t = V_minloc
+	else
+		ASSERT(0, "Can't handle kernelAmp of zero")
+	endif
+
+	WaveStats/Q/R=(i_time - 2, i_time) sweepDataFiltOff
+	pre_max   = V_max
+	pre_max_t = V_maxloc
+
+	WaveStats/Q/R=(pre_max_t - 0.1, pre_max_t + 0.1) sweepDataFiltOff
+	pre_max = V_avg
+
+	rel_peak = post_min - pre_max
+
+	return [post_min, post_min_t, pre_max, pre_max_t, rel_peak]
+End
+
 /// @brief Analyze the peaks
 static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE/Z peakX, WAVE/Z peakY, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
 
-	variable i, i_time, rel_peak, peak, dc_peak_t, isi, post_min, post_min_t, pre_max, pre_max_t, numCrossings
-	variable peak_end_search
+	variable i, i_time, peak, isi, post_min, post_min_t, pre_max, pre_max_t, numCrossings, rel_peak
 
 	if(!WaveExists(peakX) || !WaveExists(peakY))
 		return 1
@@ -499,28 +537,9 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 		i_time = peakX[i]
 		peak   = peakY[i]
 
-		if(i < numCrossings - 1)
-			peak_end_search = min(i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS, peakX[i + 1])
-		else
-			peak_end_search = i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS
-		endif
-
-		WaveStats/M=1/Q/R=(i_time, peak_end_search) sweepDataFiltOff
-
-		if(kernelAmp > 0)
-			post_min   = V_max
-			post_min_t = V_maxloc
-		elseif(kernelAmp < 0)
-			post_min   = V_min
-			post_min_t = V_minloc
-		else
-			ASSERT(0, "Can't handle kernelAmp of zero")
-		endif
+		[post_min, post_min_t, pre_max, pre_max_t, rel_peak] = PSX_CalculateEventProperties(peakX, peakY, sweepDataFiltOff, i, kernelAmp)
 
 		EnsureLargeEnoughWave(psxEvent, indexShouldExist = i)
-
-		psxEvent[i][%post_min]   = post_min
-		psxEvent[i][%post_min_t] = post_min_t
 
 		if(i == 0)
 			isi = NaN
@@ -528,20 +547,15 @@ static Function PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFilt
 			isi = i_time - psxEvent[i - 1][%peak_t]
 		endif
 
-		WaveStats/Q/R=(i_time - 2, i_time) sweepDataFiltOff
-		pre_max   = V_max
-		pre_max_t = V_maxloc
-		WaveStats/Q/R=(pre_max_t - 0.1, pre_max_t + 0.1) sweepDataFiltOff
-		pre_max = V_avg
-
-		psxEvent[i][%index]  = i
-		psxEvent[i][%peak_t] = i_time
-		psxEvent[i][%peak]   = peak
-
-		psxEvent[i][%pre_max]   = pre_max
-		psxEvent[i][%pre_max_t] = pre_max_t
-		psxEvent[i][%rel_peak]  = post_min - pre_max
-		psxEvent[i][%isi]       = isi
+		psxEvent[i][%index]      = i
+		psxEvent[i][%peak_t]     = i_time
+		psxEvent[i][%peak]       = peak
+		psxEvent[i][%post_min]   = post_min
+		psxEvent[i][%post_min_t] = post_min_t
+		psxEvent[i][%pre_max]    = pre_max
+		psxEvent[i][%pre_max_t]  = pre_max_t
+		psxEvent[i][%rel_peak]   = rel_peak
+		psxEvent[i][%isi]        = isi
 	endfor
 
 	Redimension/N=(i, -1) eventFit, psxEvent
