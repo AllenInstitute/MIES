@@ -26,16 +26,26 @@ static Function TEST_CASE_END_OVERRIDE(testCase)
 	CheckForBugMessages()
 End
 
-// Copy stimset parameter waves into our own permanent location
-Function CopyParamWaves_IGNORE()
+// Copy stimset parameter waves and data waves into our own permanent location
+Function CopyParamWavesAndWaves_IGNORE()
+
+	string entry
+
 	KillDataFolder/Z root:wavebuilder_misc:DAParameterWaves
 	DuplicateDataFolder/O=2 $GetWBSvdStimSetParamDAPathAS(), root:wavebuilder_misc:DAParameterWaves
-End
 
-// Copy stimsets into our own permanent location
-Function CopyWaves_IGNORE()
+	// recreate all stimsets
+	DFREF dfr = GetWBSvdStimSetDAPath()
+	KillDataFolder/Z dfr
+
+	WAVE/T stimsets = ListToTextWave(ST_GetStimsetList(), ";")
+	for(entry : stimsets)
+		WB_CreateAndGetStimSet(entry)
+	endfor
+
 	KillDataFolder/Z root:wavebuilder_misc:DAWaves
-	DuplicateDataFolder/O=2 $GetWBSvdStimSetDAPathAsString(), root:wavebuilder_misc:DAWaves
+	DFREF dfr = GetWBSvdStimSetDAPath()
+	DuplicateDataFolder/O=2 dfr, root:wavebuilder_misc:DAWaves
 End
 
 Function/WAVE WB_FetchRefWave_IGNORE(string name)
