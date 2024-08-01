@@ -103,8 +103,12 @@ Function WB_RegressionTest([string stimset])
 
 	// check against our stimset generated with earlier versions
 	WAVE refWave = WB_FetchRefWave_IGNORE(stimset)
-	DUplicate/O refwave, root:refwave
-	duplicate/O wv, root:wv
+
+#ifdef AUTOMATED_TESTING_DEBUGGING
+	Duplicate/O refwave, root:refwave
+	Duplicate/O wv, root:wv
+#endif // AUTOMATED_TESTING_DEBUGGING
+
 	CHECK_EQUAL_WAVES(refWave, wv, mode = WAVE_DATA, tol = 1e-12)
 
 	text = note(wv)
