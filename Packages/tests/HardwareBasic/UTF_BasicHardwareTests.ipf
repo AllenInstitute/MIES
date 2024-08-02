@@ -1416,7 +1416,7 @@ static Function DataBrowserCreatesBackupsByDefault([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_DB1"                     + \
 	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
 	                             "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetC_DA_0:")
 
@@ -1433,8 +1433,6 @@ static Function DataBrowserCreatesBackupsByDefault_REENTRY([str])
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 0)
-
-	OpenDatabrowser()
 
 	WAVE  sweepWave         = GetSweepWave(str, 0)
 	DFREF sweepFolder       = GetWavesDataFolderDFR(sweepWave)

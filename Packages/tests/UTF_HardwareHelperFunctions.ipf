@@ -1092,7 +1092,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 	CHECK_EQUAL_VAR(numChunks, expectedChunkCnt)
 End
 
-Function OpenDatabrowser()
+static Function OpenDatabrowser()
 	string win, bsPanel
 
 	win     = DB_OpenDatabrowser()
