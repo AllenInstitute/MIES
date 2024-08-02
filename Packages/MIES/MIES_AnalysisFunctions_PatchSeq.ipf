@@ -1672,7 +1672,8 @@ static Function PSQ_GetPreviousSetQCFailingAdaptive(string device, variable head
 	return sweepNo
 End
 
-static Function PSQ_DS_IsValidMode(string str)
+/// @brief Return the truth that str is a valid PSQ_DAScale operation mode
+Function PSQ_DS_IsValidMode(string str)
 	return !cmpstr(str, PSQ_DS_SUB) || !cmpstr(str, PSQ_DS_SUPRA) || !cmpstr(str, PSQ_DS_ADAPT)
 End
 
