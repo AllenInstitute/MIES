@@ -268,6 +268,9 @@ static Function CheckSurveyPlot(string device, WAVE/WAVE entries)
 	WAVE DAScaleFiltered = MIES_PSQ#PSQ_DS_FilterPassingData(DAScale, sweepPass)
 	WaveClear DAScale
 
+	Duplicate/FREE DAScaleFiltered, DAScaleFilteredWithoutFirstPoint
+	DeletePoints/M=(ROWS) 0, 1, DAScaleFilteredWithoutFirstPoint
+
 	numGraphs = ItemsInList(allGraphs)
 	for(i = 0; i < numGraphs; i += 1)
 		graph     = StringFromList(i, allGraphs, ";")
@@ -282,14 +285,19 @@ static Function CheckSurveyPlot(string device, WAVE/WAVE entries)
 			Redimension/E=1/N=(-1, 0) yWave
 
 			WAVE/ZZ xWave = WaveRefIndexed(graph, 0, 2)
-			if(WaveExists(xWave))
-				Redimension/E=1/N=(-1, 0) xWave
-				// f-I vs DAScale
+			CHECK_WAVE(xWave, NUMERIC_WAVE)
+			Redimension/E=1/N=(-1, 0) xWave
+
+			if(strsearch(graph, "Graph0", 0) >= 0)
+				// frequency vs DAScale
 				CHECK_EQUAL_WAVES(DAScaleFiltered, xWave, mode = WAVE_DATA, tol = 1e-6)
 				CHECK_EQUAL_WAVES(apFreqFiltered, yWave, mode = WAVE_DATA, tol = 1e-6)
-			else
-				// f-I slopes
+			elseif(strsearch(graph, "Graph1", 0) >= 0)
+				// f-I slopes vs DAScale
+				CHECK_EQUAL_WAVES(DAScaleFilteredWithoutFirstPoint, xWave, mode = WAVE_DATA, tol = 1e-6)
 				CHECK_EQUAL_WAVES(fISlopeFiltered, yWave, mode = WAVE_DATA, tol = 1e-6)
+			else
+				ASSERT(0, "Unexpected graph name")
 			endif
 		endif
 	endfor

@@ -2286,6 +2286,10 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 	sprintf line, "daScale = [%s]\r", NumericWaveToList(DAScale, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
 	str += line
 
+	DeletePoints/M=(ROWS) 0, 1, DAScale
+	sprintf line, "daScaleWithoutFirst = [%s]\r", NumericWaveToList(DAScale, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
+	str += line
+
 	[WAVE fitSlopes, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_FI_SLOPE, filterPassing = 1, fromRhSuAd = fromRhSuAd)
 
 	/// PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES
@@ -2309,6 +2313,8 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 	str += "and\r\r"
 
 	str += "$fitSlopes\r"
+	str += "vs\r"
+	str += "$daScaleWithoutFirst\r\r"
 
 	PSQ_ExecuteSweepFormula(device, str)
 End
