@@ -810,7 +810,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 	string key, msg, str
 	string text = ""
 	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass, accessRestPass, resistanceRatio
-	variable avgCheckPass, stopReason, stimsetQC, baselineQC, enoughFIPointsQC
+	variable avgCheckPass, stopReason, stimsetQC, baselineQC, enoughFIPointsQC, oneFailingSweep
 	string perSweepFailedMessage = ""
 
 	if(!ParamIsDefault(numRequiredPasses))
@@ -836,6 +836,8 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 			perSweepFailedMessage += text + "\r"
 			continue
 		endif
+
+		oneFailingSweep = 1
 
 		stopReason = GetLastSettingIndep(numericalValues, sweepNo, "DAQ stop reason", UNKNOWN_MODE)
 		if(!IsNaN(stopReason) && stopReason != DQ_STOP_REASON_FINISHED)
@@ -1065,6 +1067,10 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 
 		perSweepFailedMessage += text + "\r"
 	endfor
+
+	if(!oneFailingSweep)
+		return ""
+	endif
 
 	if(!ParamIsDefault(numRequiredPasses))
 		sprintf msg, "Failure as we ran out of sweeps (%d passed but we needed %d).\r%s", numPasses, numRequiredPasses, perSweepFailedMessage
