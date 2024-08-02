@@ -519,6 +519,7 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 	opMode = AFH_GetAnalysisParamTextual("OperationMode", params[headstage])
 
 	strswitch(opMode)
+		case "": // handle data prior to 0ef300da (PSQ_DaScale: Add new operation mode, 2018-02-15)
 		case PSQ_DS_SUB:
 		case PSQ_DS_SUPRA:
 
