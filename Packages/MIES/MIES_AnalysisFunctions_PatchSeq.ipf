@@ -178,17 +178,7 @@ static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
 static Constant PSQ_RHEOBASE_DURATION = 500
 
-// minimum frequency distance between two measurements
-static Constant PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE = 15
-
 static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC = 1.5
-
-static Constant PSQ_DA_SLOPE_PERCENTAGE_DEFAULT         = 10
-static Constant PSQ_DA_NUM_POINTS_LINE_FIT              = 2
-static Constant PSQ_DA_NUM_SWEEPS_SATURATION            = 2
-static Constant PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED = 3
-static Constant PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT     = 20
-static Constant PSQ_DA_DASCALE_STEP_WITH_MIN_MAX_FACTOR = 3
 
 /// @name Type constants for PSQ_DS_GetLabnotebookData
 /// @anchor PSQDAScaleAdaptiveLBNTypeConstants

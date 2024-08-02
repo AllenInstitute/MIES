@@ -1286,6 +1286,16 @@ StrConstant PSQ_DS_SUPRA            = "Supra"
 StrConstant PSQ_DS_ADAPT            = "AdaptiveSupra"
 Constant    PSQ_DS_MAX_FREQ_OFFSET  = 2
 Constant    PSQ_DS_SKIPPED_FI_SLOPE = -Inf
+
+// minimum frequency distance between two measurements
+Constant PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE       = 15
+Constant PSQ_DA_SLOPE_PERCENTAGE_DEFAULT         = 10
+Constant PSQ_DA_NUM_POINTS_LINE_FIT              = 2
+Constant PSQ_DA_NUM_SWEEPS_SATURATION            = 2
+Constant PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED = 3
+Constant PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT     = 20
+Constant PSQ_DA_DASCALE_STEP_WITH_MIN_MAX_FACTOR = 3
+
 /// @}
 
 /// @name PatchSeq Ramp
