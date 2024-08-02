@@ -191,7 +191,7 @@ static Function AD_FillWaves(win, list, info)
 
 	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ, acqState
 	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid, waMode
-	string key, anaFunc, stimset, msg, device
+	string key, anaFunc, stimset, msg, device, opMode
 
 	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
 
@@ -300,6 +300,15 @@ static Function AD_FillWaves(win, list, info)
 
 			EnsureLargeEnoughWave(list, dimension = ROWS, indexShouldExist = index)
 			EnsureLargeEnoughWave(info, dimension = ROWS, indexShouldExist = index)
+
+			// decorate the analysis function name with the operation mode if present
+			if(anaFuncType == PSQ_DA_SCALE)
+				opMode = AD_GetDAScaleOperationMode(numericalValues, textualValues, sweepNo, headstage)
+
+				if(PSQ_DS_IsValidMode(opMode))
+					anaFunc += " (" + opMode + ")"
+				endif
+			endif
 
 			list[index][0] = stimset
 			list[index][1] = anaFunc
@@ -472,6 +481,19 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage, 
 
 	BUG("Unknown reason for failure")
 	return "Failure"
+End
+
+static Function/S AD_GetDAScaleOperationMode(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
+
+	WAVE/T/Z params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params (encoded)", headstage, DATA_ACQUISITION_MODE)
+
+	// fallback to old names
+	if(!WaveExists(params))
+		WAVE/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params", headstage, DATA_ACQUISITION_MODE)
+	endif
+
+	// present since 0ef300da (PSQ_DaScale: Add new operation mode, 2018-02-15)
+	return AFH_GetAnalysisParamTextual("OperationMode", params[headstage])
 End
 
 static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, sweepDFR, headstage)
