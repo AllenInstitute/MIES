@@ -75,7 +75,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.sha }}
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: List of commits to operate on

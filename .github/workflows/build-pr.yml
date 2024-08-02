@@ -1,10 +1,12 @@
-name: Build Pull Request
-run-name: Build PR ${{ github.event.number }} «${{ github.event.pull_request.title }}» (${{ github.actor}})
+name: Build Branch
+run-name: Build «${{ github.ref_name }}» (${{ github.actor}})
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
+  push:
+    branches-ignore:
+      - main
+      - release/*
+    tags-ignore:
+      - '*'
   workflow_call:
     inputs:
       is_called_workflow:
@@ -336,4 +338,4 @@ jobs:
             -u "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_USER }}" \
             -p "${{ secrets.GHA_MIES_FTP_ARTEFACT_STORAGE_PWD }}" \
             -d "${{ steps.download.outputs.download-path }}" \
-            -t "pr/$(echo "${{ github.event.pull_request.head.ref }}" | sed "s@/@_@g")/${{ github.event.pull_request.head.sha }}/${{ github.run_attempt }}"
+            -t "branch/$(echo "${{ github.ref_name }}" | sed "s@/@_@g")/${{ github.sha }}/${{ github.run_attempt }}"
