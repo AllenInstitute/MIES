@@ -1310,6 +1310,9 @@ Function ComplainOutOfRangeDAScale(string device, variable sweepNo, variable ana
 	switch(anaFuncType)
 		case PSQ_CHIRP:
 		case PSQ_RAMP:
+		case PSQ_DA_SCALE:
+		case PSQ_SQUARE_PULSE:
+		case PSQ_RHEOBASE:
 			WAVE result = LBN_GetNumericWave()
 			result[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1)
 			key                           = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_DASCALE_OOR)
@@ -1317,12 +1320,13 @@ Function ComplainOutOfRangeDAScale(string device, variable sweepNo, variable ana
 			break
 		case MSQ_FAST_RHEO_EST:
 		case MSQ_DA_SCALE:
+		case SC_SPIKE_CONTROL:
 			WAVE result = LBN_GetNumericWave()
 			result[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1)
 			key                           = CreateAnaFuncLBNKey(anaFuncType, MSQ_FMT_LBN_DASCALE_OOR)
 			ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
-		case INVALID_ANALYSIS_FUNCTION:
+		case INVALID_ANALYSIS_FUNCTION: // ReachTargetVoltage
 			// do nothing
 			break
 		default:

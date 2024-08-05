@@ -151,10 +151,11 @@ End
 
 /// @brief Return pass/fail state of the sweep
 ///
-/// This is true iff we have for the current stimulus set sweep count a passing headstage
+/// This is true iff we have for the current stimulus set sweep count a passing
+/// headstage and did not have a SetDAScale/SetDAScaleModOp out-of-range condition.
 static Function SC_GetSweepPassed(string device, variable sweepNo)
 
-	variable setSweepCount
+	variable setSweepCount, setSweepQC
 
 	WAVE headstageQCTotalPerSweepCount = SC_GetHeadstageQCForSetCount(device, sweepNo)
 
@@ -162,11 +163,12 @@ static Function SC_GetSweepPassed(string device, variable sweepNo)
 	setSweepCount = SC_GetSetSweepCount(numericalValues, sweepNo)
 
 	FindValue/RMD=[][setSweepCount]/V=(0.0) headstageQCTotalPerSweepCount
+	setSweepQC = (V_Value == -1)
 
-	// TODO
-	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo,                  \
+	                                                                      MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_OOR, p)
 
-	return V_Value == -1
+	return setSweepQC && Sum(DAScaleOOR) == 0
 End
 
 /// @brief Return 1 if we are currently acquiring the last sweep in the stimulus set, 0 otherwise
@@ -789,7 +791,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 	endif
 
 	if(retCheckDAScale)
-		ComplainOutOfRangeDAScale(device, s.sweepNo, PSQ_RAMP)
+		ComplainOutOfRangeDAScale(device, s.sweepNo, SC_SPIKE_CONTROL)
 	endif
 End
 

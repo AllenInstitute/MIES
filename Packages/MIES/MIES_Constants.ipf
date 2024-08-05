@@ -1419,7 +1419,7 @@ StrConstant MSQ_FMT_LBN_SPIKE_COUNTS_STATE  = "%s Spike counts state"
 StrConstant MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS  = "%s Ideal spike counts"
 StrConstant MSQ_FMT_LBN_RERUN_TRIAL         = "%s Rerun Trials"
 StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC     = "%s Rerun Trials exceeded"
-StrConstant PSQ_FMT_LBN_DASCALE_OOR         = "%s DAScale out of range"
+StrConstant MSQ_FMT_LBN_DASCALE_OOR         = "%s DAScale out of range"
 /// @}
 
 /// @name Workaround flags for CreateAnaFuncLBNKey()

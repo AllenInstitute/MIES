@@ -443,7 +443,7 @@ End
 ///        Searches in the complete SCI and assumes that the entries are either 0/1/NaN.
 ///
 /// @todo merge with LBN functions once these are reworked.
-static Function MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, type, str, headstage)
+Function MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, type, str, headstage)
 	WAVE numericalValues
 	variable sweepNo, type
 	string   str
@@ -1216,7 +1216,8 @@ Function MSQ_DAScale(device, s)
 			endif
 
 			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
-			Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_OOR, p)
+			Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo,                  \
+			                                                                      MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_OOR, p)
 
 			WAVE values = LBN_GetNumericWave()
 			values[INDEP_HEADSTAGE] = Sum(DAScaleOOR) == 0
@@ -1269,11 +1270,11 @@ Function MSQ_DAScale(device, s)
 
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
-			limitsCheck = (s.eventType == POST_SWEEP_EVENT)
+			limitsCheck     = (s.eventType == POST_SWEEP_EVENT)
 			retCheckDAScale = 0
 
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			retCheckDAScale = SetDAScale(device, i, s.sweepNo, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE, limitsCheck = limitsCheck)
+			retCheckDAScale   = SetDAScale(device, i, s.sweepNo, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE, limitsCheck = limitsCheck)
 			DAScalesIndex[i] += 1
 
 			if(limitsCheck && retCheckDAScale)
