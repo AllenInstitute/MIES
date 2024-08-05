@@ -163,7 +163,8 @@ static Function SC_GetSweepPassed(string device, variable sweepNo)
 
 	FindValue/RMD=[][setSweepCount]/V=(0.0) headstageQCTotalPerSweepCount
 
-	// TODO read PSQ_FMT_LBN_DASCALE_OOR
+	// TODO
+	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
 
 	return V_Value == -1
 End
