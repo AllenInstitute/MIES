@@ -165,7 +165,7 @@ static Function SC_GetSweepPassed(string device, variable sweepNo)
 	FindValue/RMD=[][setSweepCount]/V=(0.0) headstageQCTotalPerSweepCount
 	setSweepQC = (V_Value == -1)
 
-	Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo,                  \
+	Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo,                    \
 	                                                                      MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_OOR, p)
 
 	return setSweepQC && Sum(DAScaleOOR) == 0
@@ -791,7 +791,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 	endif
 
 	if(retCheckDAScale)
-		ComplainOutOfRangeDAScale(device, s.sweepNo, SC_SPIKE_CONTROL)
+		ComplainOutOfRangeDAScale(device, sweepNo, SC_SPIKE_CONTROL)
 	endif
 End
 

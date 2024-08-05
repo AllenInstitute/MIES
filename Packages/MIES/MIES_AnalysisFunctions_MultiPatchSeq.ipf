@@ -1107,7 +1107,7 @@ Function MSQ_DAScale(device, s)
 	string                      device
 	STRUCT AnalysisFunction_V3 &s
 
-	variable i, index, ret, headstagePassed, val, sweepNo
+	variable i, index, ret, headstagePassed, val, sweepNo, limitCheck, retCheckDAScale
 	string msg, key, ctrl
 
 	switch(s.eventType)
@@ -1270,14 +1270,14 @@ Function MSQ_DAScale(device, s)
 
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
-			limitsCheck     = (s.eventType == POST_SWEEP_EVENT)
+			limitCheck      = (s.eventType == POST_SWEEP_EVENT)
 			retCheckDAScale = 0
 
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			retCheckDAScale   = SetDAScale(device, i, s.sweepNo, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE, limitsCheck = limitsCheck)
+			retCheckDAScale   = SetDAScale(device, i, s.sweepNo, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE, limitCheck = limitCheck)
 			DAScalesIndex[i] += 1
 
-			if(limitsCheck && retCheckDAScale)
+			if(limitCheck && retCheckDAScale)
 				ComplainOutOfRangeDAScale(device, s.sweepNo, MSQ_DA_SCALE)
 				break
 			endif
