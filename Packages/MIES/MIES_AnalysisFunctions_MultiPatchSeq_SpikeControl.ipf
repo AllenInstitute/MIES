@@ -163,6 +163,8 @@ static Function SC_GetSweepPassed(string device, variable sweepNo)
 
 	FindValue/RMD=[][setSweepCount]/V=(0.0) headstageQCTotalPerSweepCount
 
+	// TODO read PSQ_FMT_LBN_DASCALE_OOR
+
 	return V_Value == -1
 End
 
@@ -692,6 +694,7 @@ End
 /// @brief Perform various actions on QC failures
 static Function SC_ReactToQCFailures(string device, variable sweepNo, string params)
 	variable daScaleSpikePositionModifier, daScaleModifier, daScaleTooManySpikesModifier, i, autoBiasV, autobiasModifier, prevSliderPos
+	variable retCheckDAScale
 	string daScaleOperator, daScaleSpikePositionOperator, daScaleTooManySpikesOperator
 	string key, msg
 
@@ -731,7 +734,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 			if(!spikePositionsQCLBN[i])
 				sprintf msg, "spike position QC failed on HS%d, adapting DAScale", i
 				DebugPrint(msg)
-				SetDAScaleModOp(device, i, sweepNo, daScaleSpikePositionModifier, daScaleSpikePositionOperator)
+				retCheckDAScale = SetDAScaleModOp(device, i, sweepNo, daScaleSpikePositionModifier, daScaleSpikePositionOperator)
 			endif
 
 			continue
@@ -755,7 +758,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 
 		strswitch(spikeCountStateLBN[i])
 			case SC_SPIKE_COUNT_STATE_STR_TOO_MANY:
-				SetDAScaleModOp(device, i, sweepNo, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator)
+				retCheckDAScale = SetDAScaleModOp(device, i, sweepNo, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_MIXED:
 				printf "The spike count on headstage %d in sweep %d is mixed (some pulses have too few, others too many)\n", i, sweepNo
@@ -769,7 +772,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 					ControlWindowToFront()
 				endif
 			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW: // fallthrough-by-design
-				SetDAScaleModOp(device, i, sweepNo, daScaleModifier, daScaleOperator)
+				retCheckDAScale = SetDAScaleModOp(device, i, sweepNo, daScaleModifier, daScaleOperator)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_GOOD:
 				// nothing to do
@@ -782,6 +785,10 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 
 	if(prevSliderPos != GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage"))
 		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = prevSliderPos)
+	endif
+
+	if(retCheckDAScale)
+		ComplainOutOfRangeDAScale(device, s.sweepNo, PSQ_RAMP)
 	endif
 End
 
@@ -1101,6 +1108,10 @@ Function SC_SpikeControl(device, s)
 
 			SC_ProcessPulses(device, s.sweepNo, minimumSpikePosition, idealNumberOfSpikes)
 
+			[minTrials, maxTrials] = SC_GetTrials(device, s.sweepNo, s.headstage)
+
+			SC_ReactToQCFailures(device, s.sweepNo, s.params)
+
 			// sweep QC
 			sweepPassed = SC_GetSweepPassed(device, s.sweepNo)
 
@@ -1108,10 +1119,6 @@ Function SC_SpikeControl(device, s)
 			sweepQCLBN[INDEP_HEADSTAGE] = sweepPassed
 			key                         = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(device, key, sweepQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
-
-			[minTrials, maxTrials] = SC_GetTrials(device, s.sweepNo, s.headstage)
-
-			SC_ReactToQCFailures(device, s.sweepNo, s.params)
 
 			if(!sweepPassed)
 				if(SC_CanStillSkip(maxTrials, s.params))

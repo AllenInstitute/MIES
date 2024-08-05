@@ -5143,7 +5143,12 @@ Function PSQ_Ramp(device, s)
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
 
-			SetDAScale(device, s.headstage, s.sweepNo, absolute = PSQ_RA_DASCALE_DEFAULT * PICO_TO_ONE)
+			retCheckDAScale = SetDAScale(device, s.headstage, s.sweepNo, absolute = PSQ_RA_DASCALE_DEFAULT * PICO_TO_ONE)
+
+			if(retCheckDAScale)
+				ComplainOutOfRangeDAScale(device, s.sweepNo, PSQ_RAMP)
+				return 1
+			endif
 
 			return 0
 
@@ -6175,6 +6180,7 @@ Function PSQ_Chirp(device, s)
 				result[INDEP_HEADSTAGE] = initialDAScale
 				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo)
 
+				// not checking DAScale limits as we can't do that in PRE_SET_EVENT
 				SetDAScale(device, s.headstage, s.sweepNo, absolute = initialDAScale, roundTopA = 1, limitCheck = 0)
 
 				WAVE result = LBN_GetNumericWave()

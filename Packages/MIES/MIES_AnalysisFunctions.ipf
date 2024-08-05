@@ -1297,7 +1297,7 @@ End
 Function ComplainOutOfRangeDAScale(string device, variable sweepNo, variable anaFuncType)
 
 	variable i
-	string key
+	string   key
 
 	ASSERT(GetHardwareType(device) != HARDWARE_SUTTER_DAC, "Missing support for Sutter amplifier")
 
@@ -1309,9 +1309,17 @@ Function ComplainOutOfRangeDAScale(string device, variable sweepNo, variable ana
 
 	switch(anaFuncType)
 		case PSQ_CHIRP:
+		case PSQ_RAMP:
 			WAVE result = LBN_GetNumericWave()
 			result[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1)
-			key               = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_DASCALE_OOR)
+			key                           = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_DASCALE_OOR)
+			ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
+			break
+		case MSQ_FAST_RHEO_EST:
+		case MSQ_DA_SCALE:
+			WAVE result = LBN_GetNumericWave()
+			result[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1)
+			key                           = CreateAnaFuncLBNKey(anaFuncType, MSQ_FMT_LBN_DASCALE_OOR)
 			ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
 		case INVALID_ANALYSIS_FUNCTION:

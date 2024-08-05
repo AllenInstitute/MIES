@@ -600,7 +600,7 @@ Function MSQ_FastRheoEst(device, s)
 	string                      device
 	STRUCT AnalysisFunction_V3 &s
 
-	variable totalOnsetDelay, setPassed, sweepPassed, multiplier, newDAScaleValue, found, val
+	variable totalOnsetDelay, setPassed, sweepPassed, multiplier, newDAScaleValue, found, val, retCheckDAScale
 	variable i, postDAQDAScale, postDAQDAScaleFactor, DAC, maxDAScale, allHeadstagesExceeded, minRheoOffset
 	string key, msg, ctrl
 	string stimsets = ""
@@ -663,7 +663,7 @@ Function MSQ_FastRheoEst(device, s)
 					continue
 				endif
 
-				SetDAScale(device, i, s.sweepNo, absolute = MSQ_FRE_INIT_AMP_p100)
+				SetDAScale(device, i, s.sweepNo, absolute = MSQ_FRE_INIT_AMP_p100, limitCheck = 0)
 			endfor
 
 			PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 0)
@@ -789,7 +789,12 @@ Function MSQ_FastRheoEst(device, s)
 					ASSERT(headstagePassed[i] != 1, "Unexpected headstage passing")
 					headstagePassed[i] = 0
 				else
-					SetDAScale(device, i, s.sweepNo, absolute = newDAScaleValue)
+					retCheckDAScale = SetDAScale(device, i, s.sweepNo, absolute = newDAScaleValue)
+
+					if(retCheckDAScale)
+						ComplainOutOfRangeDAScale(device, s.sweepNo, INVALID_ANALYSIS_FUNCTION)
+						break
+					endif
 				endif
 			endfor
 
@@ -855,16 +860,6 @@ Function MSQ_FastRheoEst(device, s)
 			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
 
 			WAVE numericalValues = GetLBNumericalValues(device)
-			// assuming that all headstages have the same sweeps in their SCI
-			setPassed = MSQ_NumPassesInSet(numericalValues, MSQ_FAST_RHEO_EST, s.sweepNo, s.headstage) >= 1
-
-			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
-			DEBUGPRINT(msg)
-
-			WAVE result = LBN_GetNumericWave()
-			result[INDEP_HEADSTAGE] = setPassed
-			key                     = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_SET_PASS)
-			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			postDAQDAScale = AFH_GetAnalysisParamNumerical("PostDAQDAScale", s.params)
 
@@ -891,9 +886,25 @@ Function MSQ_FastRheoEst(device, s)
 						val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * PICO_TO_ONE
 					endif
 
-					SetDAScale(device, i, s.sweepNo, absolute = val)
+					retCheckDAScale = SetDAScale(device, i, s.sweepNo, absolute = val)
+
+					if(retCheckDAScale)
+						ComplainOutOfRangeDAScale(device, s.sweepNo, INVALID_ANALYSIS_FUNCTION)
+						break
+					endif
 				endfor
 			endif
+
+			// assuming that all headstages have the same sweeps in their SCI
+			setPassed = !retCheckDAScale && (MSQ_NumPassesInSet(numericalValues, MSQ_FAST_RHEO_EST, s.sweepNo, s.headstage) >= 1)
+
+			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
+			DEBUGPRINT(msg)
+
+			WAVE result = LBN_GetNumericWave()
+			result[INDEP_HEADSTAGE] = setPassed
+			key                     = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
@@ -1204,8 +1215,11 @@ Function MSQ_DAScale(device, s)
 				return NaN
 			endif
 
+			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+			Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_OOR, p)
+
 			WAVE values = LBN_GetNumericWave()
-			values[INDEP_HEADSTAGE] = 1
+			values[INDEP_HEADSTAGE] = Sum(DAScaleOOR) == 0
 			key                     = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
 
@@ -1255,9 +1269,17 @@ Function MSQ_DAScale(device, s)
 
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
+			limitsCheck = (s.eventType == POST_SWEEP_EVENT)
+			retCheckDAScale = 0
+
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			SetDAScale(device, i, s.sweepNo, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE)
+			retCheckDAScale = SetDAScale(device, i, s.sweepNo, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE, limitsCheck = limitsCheck)
 			DAScalesIndex[i] += 1
+
+			if(limitsCheck && retCheckDAScale)
+				ComplainOutOfRangeDAScale(device, s.sweepNo, MSQ_DA_SCALE)
+				break
+			endif
 		endfor
 	endif
 End
