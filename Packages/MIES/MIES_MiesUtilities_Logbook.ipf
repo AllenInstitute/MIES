@@ -1041,7 +1041,7 @@ threadsafe Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting
 
 	variable i, numSweeps
 
-	ASSERT_TS(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(IsValidHeadstage(headstage), "Invalid headstage")
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
@@ -1083,7 +1083,7 @@ threadsafe Function/WAVE GetLastSettingTextEachRAC(numericalValues, textualValue
 
 	variable i, numSweeps
 
-	ASSERT_TS(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(IsValidHeadstage(headstage), "Invalid headstage")
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
@@ -1258,7 +1258,7 @@ threadsafe Function/WAVE GetLastSettingEachSCI(numericalValues, sweepNo, setting
 
 	variable i, numSweeps
 
-	ASSERT_TS(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(IsValidHeadstage(headstage), "Invalid headstage")
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
@@ -1300,7 +1300,7 @@ threadsafe Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValue
 
 	variable i, numSweeps
 
-	ASSERT_TS(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(IsValidHeadstage(headstage), "Invalid headstage")
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)

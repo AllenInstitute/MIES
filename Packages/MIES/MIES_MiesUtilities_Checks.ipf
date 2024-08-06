@@ -56,3 +56,11 @@ Function IsValidSamplingMultiplier(multiplier)
 
 	return IsFinite(multiplier) && WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier()) != -1
 End
+
+/// @brief Check if the given headstage index is valid
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsValidHeadstage(variable headstage)
+
+	return IsInteger(headstage) && headstage >= 0 && headstage < NUM_HEADSTAGES
+End

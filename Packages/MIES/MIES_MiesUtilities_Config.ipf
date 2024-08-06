@@ -60,7 +60,7 @@ End
 threadsafe Function/S GetDefaultElectrodeName(headstage)
 	variable headstage
 
-	ASSERT_TS(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(IsValidHeadstage(headstage), "Invalid headstage")
 
 	return num2str(headstage)
 End
