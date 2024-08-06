@@ -590,7 +590,7 @@ static Function/S TestFileExport()
 	nwbFile      = GetExperimentName() + "-V1.nwb"
 	discLocation = baseFolder + nwbFile
 
-	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath = discLocation, overwrite = 1)
+	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFullFilePath = discLocation, overwrite = 1)
 
 	[abWin, sweepBrowser] = OpenAnalysisBrowser({nwbFile})
 

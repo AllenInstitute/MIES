@@ -25,6 +25,7 @@ Function ExportEpochsFromFileToDF(string dfName)
 	KillOrMoveToTrash(dfr = root:$dfName)
 	DFREF dfr = createDFWithAllParents("root:" + dfName)
 
+	last += 1
 	for(i = first; i < last; i += 1)
 		WAVE/Z/T numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = i)
 		ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
@@ -44,48 +45,32 @@ End
 /// UTF_TD_GENERATOR GetHistoricDataFilesPXP
 static Function TestEpochRecreationFromLoadedPXP([string str])
 
-	string file, miesPath, win, device
-	variable numObjectsLoaded, first, last, i
+	string win, device, bsPanel
+	variable first, last, i
 
-	file = "input:" + str
-	PathInfo home
+	LoadMIESFolderFromPXP("input:" + str)
 
-	DFREF dfr = GetMIESPath()
-	KillDataFolder dfr
+	win     = DB_OpenDataBrowser()
+	bsPanel = BSP_GetPanel(win)
+	WAVE/T devicesWithData = ListToTextWave(ListMatch(DB_GetAllDevicesWithData(), "!" + NONE), ";")
 
-	miesPath = GetMiesPathAsString()
+	for(device : devicesWithData)
+		PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
+		win     = GetMainWindow(GetCurrentWindow())
+		bsPanel = BSP_GetPanel(win)
 
-	DFREF dfr     = NewFreeDataFolder()
-	DFREF savedDF = GetDataFolderDFR()
-	SetDataFolder dfr
-	LoadData/Q/R/P=home/S=miesPath file
-	numObjectsLoaded = V_flag
-	SetDataFolder savedDF
-	MoveDataFolder dfr, root:
-	RenameDataFolder root:$DF_NAME_FREE, $DF_NAME_MIES
+		[first, last] = BSP_FirstAndLastSweepAcquired(win)
+		CHECK_GE_VAR(last, first)
 
-	// sanity check if the test setup is ok
-	CHECK_NO_RTE()
-	CHECK_GT_VAR(numObjectsLoaded, 0)
-
-	// This is a workaround because LoadData DOES NOT LOAD WaveRef WAVES
-	// The Cache values are in the pxp present but not loaded as they are of type /WAVE
-	// PLEASE CHECK THIS, IF THIS TEST FAILS IN FUTURE HISTORIC DATA TESTS
-	CA_FlushCache()
-
-	win    = DB_OpenDataBrowser()
-	device = BSP_GetDevice(win)
-	[first, last] = BSP_FirstAndLastSweepAcquired(win)
-	CHECK_GE_VAR(last, first)
-
-	WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
-	WAVE textualValues   = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
-	for(i = first; i < last; i += 1)
-		SplitAndUpgradeSweepGlobal(device, i)
-		DFREF  sweepDFR = BSP_GetSweepDF(win, i)
-		WAVE/Z epochs   = MIES_EP#EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, i)
-		CHECK_NO_RTE()
-		CHECK_WAVE(epochs, TEXT_WAVE)
+		WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+		WAVE textualValues   = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
+		for(i = first; i < last; i += 1)
+			SplitAndUpgradeSweepGlobal(device, i)
+			DFREF  sweepDFR = BSP_GetSweepDF(win, i)
+			WAVE/Z epochs   = MIES_EP#EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, i)
+			CHECK_NO_RTE()
+			CHECK_WAVE(epochs, TEXT_WAVE)
+		endfor
 	endfor
 End
 
@@ -106,6 +91,8 @@ static Function TestEpochRecreationShortNames([string str])
 		refEpFolder = "EpochsC57PXP"
 	elseif(!CmpStr(str, "Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp"))
 		refEpFolder = "EpochsPValbPXP"
+	elseif(!CmpStr(str, "NWB-Export-bug-two-devices.pxp"))
+		refEpFolder = "NWBExportBugTwoDevices"
 	else
 		refEpFolder = ""
 	endif
@@ -116,6 +103,7 @@ static Function TestEpochRecreationShortNames([string str])
 	win = StringFromList(0, sweepBrowsers)
 	[first, last] = BSP_FirstAndLastSweepAcquired(win)
 
+	last += 1
 	for(i = first; i < last; i += 1)
 		WAVE/Z/T numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = i)
 		ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")

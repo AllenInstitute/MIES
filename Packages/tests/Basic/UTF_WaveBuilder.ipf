@@ -281,7 +281,7 @@ Function ExportAndLoadOfCustomWaves([variable var])
 	CHECK_PROPER_STR(S_path)
 	filename = UniqueFileOrFolder("home", "customWaveExportTest")
 	path     = S_path + filename
-	NWB_ExportAllStimsets(NWB_VERSION_LATEST, overrideFilePath = path)
+	MIES_NWB#NWB_ExportAllStimsets(NWB_VERSION_LATEST, path)
 
 	// check that we don't got a recreation error warning
 	history = CaptureHistory(historyRef, 1)
