@@ -466,7 +466,8 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 	variable i, j, rangeStart, rangeEnd, sweepNo, isSingleRange
 	variable chanNr, chanType, cIndex, isSweepBrowser
 	variable numSelected, index, numRanges, sweepSize, samplingInterval, samplingOffset
-	variable rangeStartIndex, rangeEndIndex
+	variable rangeStartIndex, rangeEndIndex, colorGroup
+
 	string dimLabel, device, dataFolder
 	ASSERT(WindowExists(graph), "graph window does not exist")
 
@@ -579,6 +580,9 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
+
+			colorGroup = GetUniqueInteger()
+			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_COLOR_GROUP, colorGroup)
 
 			EnsureLargeEnoughWave(output, indexShouldExist = index)
 			output[index] = rangedSweepData
