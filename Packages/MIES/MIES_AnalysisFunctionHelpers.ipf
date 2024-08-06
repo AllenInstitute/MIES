@@ -218,23 +218,29 @@ End
 
 /// @brief Return the stimset for the given channel
 ///
-/// @param device device
-/// @param chanNo	channel number (0-based)
-/// @param channelType		one of the type constants from @ref ChannelTypeAndControlConstants
+/// @param device      device
+/// @param chanNo      channel number (0-based)
+/// @param channelType one of the type constants from @ref ChannelTypeAndControlConstants
+///
 /// @return an existing stimulus set name for a DA channel
-Function/S AFH_GetStimSetName(device, chanNo, channelType)
-	string   device
-	variable chanNo
-	variable channelType
+Function/S AFH_GetStimSetName(string device, variable chanNo, variable channelType)
 
-	string ctrl, stimset
-	ctrl = GetPanelControl(chanNo, channelType, CHANNEL_CONTROL_WAVE)
-	ControlInfo/W=$device $ctrl
-	stimset = S_Value
+	string ctrl
 
-	ASSERT(!isEmpty(stimset), "Empty stimset")
+	ctrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE)
 
-	return stimset
+	return DAG_GetTextualValue(device, ctrl, index = chanNo)
+End
+
+/// @brief Convenience wrapper for AFH_GetStimSetName
+Function/S AFH_GetStimSetNameForHeadstage(string device, variable headstage)
+
+	variable DAC
+
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+	ASSERT(IsFinite(DAC), "Can't work with unassociated channels")
+
+	return AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 End
 
 /// @brief Return a free wave with all sweep numbers (in ascending order) which

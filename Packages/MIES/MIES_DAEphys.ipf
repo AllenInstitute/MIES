@@ -2868,7 +2868,7 @@ static Function DAP_CheckStimset(device, channelType, channel, headstage)
 
 	channelTypeStr = ChannelTypeToString(channelType)
 
-	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE), index = channel)
+	setName = AFH_GetStimSetName(device, channel, channelType)
 	if(!CmpStr(setName, NONE))
 		printf "(%s) Please select a stimulus set for %s channel %d referenced by headstage %g\r", device, channelTypeStr, channel, headStage
 		ControlWindowToFront()

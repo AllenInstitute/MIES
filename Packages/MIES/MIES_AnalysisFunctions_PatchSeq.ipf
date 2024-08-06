@@ -1950,12 +1950,10 @@ End
 
 static Function [variable start, variable stop] PSQ_DS_GetFrequencyEvalRangeForRhSuAd(string device, variable headstage, variable sweepNo)
 
-	variable DAC, supraEpochLength, adaptiveEpochLength
-	string ctrl, setName
+	variable supraEpochLength, adaptiveEpochLength
+	string setName
 
-	DAC     = AFH_GetDACFromHeadstage(device, headstage)
-	ctrl    = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	setName = DAG_GetTextualValue(device, ctrl, index = DAC)
+	setName = AFH_GetStimSetNameForHeadstage(device, headstage)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
@@ -7017,11 +7015,10 @@ static Function PSQ_GetSweepFormulaResult(WAVE/T textualResultsValues, string ke
 End
 
 static Function PSQ_PB_GetPrePulseBaselineDuration(string device, variable headstage)
-	variable DAC
-	string   setName
 
-	DAC     = AFH_GetDACFromHeadstage(device, headstage)
-	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
+	string setName
+
+	setName = AFH_GetStimSetNameForHeadstage(device, headstage)
 
 	return ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)
 End
@@ -7037,7 +7034,7 @@ static Function PSQ_CreateTestpulseEpochs(string device, variable headstage, var
 	string setName
 
 	DAC             = AFH_GetDACFromHeadstage(device, headstage)
-	setName         = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
+	setName         = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)
 	DAScale         = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DAC)
 	WAVE/T epochWave = GetEpochsWave(device)
@@ -7537,8 +7534,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 	variable amplitude, numEpochs, i, epBegin, epEnd, totalOnsetDelay, duration, DAScale, wbBegin, wbEnd
 	string setName, shortName, tags
 
-	DAC     = AFH_GetDACFromHeadstage(device, headstage)
-	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
+	setName = AFH_GetStimSetNameForHeadstage(device, headstage)
 
 	numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
 
@@ -7550,6 +7546,7 @@ static Function PSQ_SE_CreateEpochs(string device, variable headstage, string pa
 
 	testpulseGroupSel = PSQ_SE_GetTestpulseGroupSelection(params)
 
+	DAC     = AFH_GetDACFromHeadstage(device, headstage)
 	DAScale = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DAC)
 
 	totalOnsetDelay = GetTotalOnsetDelayFromDevice(device)

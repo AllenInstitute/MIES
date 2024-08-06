@@ -11,7 +11,7 @@ do
     exit 0
   fi
 
-  namespace=$(echo $local_ref | cut -d "/" -f 1-2)
+  namespace=$(echo $remote_ref | cut -d "/" -f 1-2)
 
   if [[ "$namespace" == "refs/tags" ]]
   then
@@ -19,7 +19,7 @@ do
     exit 0
   fi
 
-  branch=$(echo $local_ref | cut -d "/" -f 3-)
+  branch=$(echo $remote_ref | cut -d "/" -f 3-)
   prefix=$(echo $branch | cut -d "/" -f 1)
   pr=$(echo $branch | cut -d "/" -f 2| cut -d "-" -f 1)
   suffix=$(echo $branch | cut -d "/" -f 2| cut -d "-" -f 2-)

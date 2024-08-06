@@ -7,15 +7,13 @@ static Constant HEADSTAGE = 1
 
 static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                                           + \
-	                             "__HS" + num2str(HEADSTAGE) + "_DA1_AD1_CM:IC:_ST:StimulusSetA_DA_0:")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_DB0"                                                 + \
+	                             "__HS" + num2str(HEADSTAGE) + "_DA1_AD1_CM:IC:_ST:ReachTargetVoltage_DA_0:")
 
 	return [s]
 End
 
 static Function GlobalPreAcq(string device)
-
-	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "ReachTargetVoltage")
 
 	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = HEADSTAGE)
 
@@ -39,6 +37,12 @@ static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resista
 	WAVE/Z autobiasFromDialog = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_AUTOBIAS_TARGET_DIAG, HEADSTAGE, UNKNOWN_MODE)
 End
 
+static Function RTV_Works_preAcq(device)
+	string device
+
+	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "EnableIndexing", var = 0)
+End
+
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function RTV_Works([str])
 	string str
@@ -52,10 +56,10 @@ static Function RTV_Works_REENTRY([str])
 
 	variable sweepNo
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	CHECK_EQUAL_VAR(sweepNo, 4)
 
 	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog] = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -69,8 +73,8 @@ End
 static Function RTV_WorksWithIndexing_preAcq(device)
 	string device
 
-	AFH_AddAnalysisParameter("StimulusSetA_DA_0", "EnableIndexing", var = 1)
-	AFH_AddAnalysisParameter("StimulusSetA_DA_0", "IndexingEndStimsetAllIC", str = "StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "EnableIndexing", var = 1)
+	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "IndexingEndStimsetAllIC", str = "ReachTargetVoltageIndexEnd_DA_0")
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -86,10 +90,10 @@ static Function RTV_WorksWithIndexing_REENTRY([str])
 
 	variable sweepNo
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 4)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 6)
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 3)
+	CHECK_EQUAL_VAR(sweepNo, 5)
 
 	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog] = GetLBNEntries_IGNORE(str, 0)
 
@@ -99,6 +103,6 @@ static Function RTV_WorksWithIndexing_REENTRY([str])
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
 	CHECK_WAVE(autobiasFromDialog, NUMERIC_WAVE)
 
-	CHECK_EQUAL_WAVES(autobiasFromDialog, {-69, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(autobiasFromDialog, {-69, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(GetSetVariable(str, "setvar_DataAcq_AutoBiasV"), -69)
 End

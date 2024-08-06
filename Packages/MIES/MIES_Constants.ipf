@@ -1029,6 +1029,8 @@ Constant NI_DAC_MIN = -10
 Constant NI_DAC_MAX = 10
 Constant NI_ADC_MIN = -10
 Constant NI_ADC_MAX = 10
+Constant NI_TTL_MIN = 0
+Constant NI_TTL_MAX = 1
 /// @}
 
 /// @name Ranges for Sutter DAQ analog output in volts
@@ -1045,6 +1047,8 @@ Constant SU_ADC_MIN     = -10    // V
 Constant SU_ADC_MAX     = 10     // V
 Constant SU_HS_OUT_MIN  = -1     // V
 Constant SU_HS_OUT_MAX  = 1      // V
+Constant SU_TTL_MIN     = 0      // V
+Constant SU_TTL_MAX     = 1      // V
 /// @}
 
 /// Maximum length of a valid object name in bytes in Igor Pro >= 8
