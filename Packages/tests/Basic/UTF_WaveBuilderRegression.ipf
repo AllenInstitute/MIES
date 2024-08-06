@@ -26,16 +26,26 @@ static Function TEST_CASE_END_OVERRIDE(testCase)
 	CheckForBugMessages()
 End
 
-// Copy stimset parameter waves into our own permanent location
-Function CopyParamWaves_IGNORE()
+// Copy stimset parameter waves and data waves into our own permanent location
+Function CopyParamWavesAndWaves_IGNORE()
+
+	string entry
+
 	KillDataFolder/Z root:wavebuilder_misc:DAParameterWaves
 	DuplicateDataFolder/O=2 $GetWBSvdStimSetParamDAPathAS(), root:wavebuilder_misc:DAParameterWaves
-End
 
-// Copy stimsets into our own permanent location
-Function CopyWaves_IGNORE()
+	// recreate all stimsets
+	DFREF dfr = GetWBSvdStimSetDAPath()
+	KillDataFolder/Z dfr
+
+	WAVE/T stimsets = ListToTextWave(ST_GetStimsetList(), ";")
+	for(entry : stimsets)
+		WB_CreateAndGetStimSet(entry)
+	endfor
+
 	KillDataFolder/Z root:wavebuilder_misc:DAWaves
-	DuplicateDataFolder/O=2 $GetWBSvdStimSetDAPathAsString(), root:wavebuilder_misc:DAWaves
+	DFREF dfr = GetWBSvdStimSetDAPath()
+	DuplicateDataFolder/O=2 dfr, root:wavebuilder_misc:DAWaves
 End
 
 Function/WAVE WB_FetchRefWave_IGNORE(string name)
@@ -71,7 +81,7 @@ End
 // UTF_TD_GENERATOR WB_GatherStimsets
 Function WB_RegressionTest([string stimset])
 
-	variable i, j, sweepCount, duration, epochCount
+	variable i, j, sweepCount, duration, epochCount, minimum, maximum
 	string text
 
 	// stock MIES stimset
@@ -80,6 +90,9 @@ Function WB_RegressionTest([string stimset])
 	// can be rebuilt
 	WAVE/Z wv = WB_CreateAndGetStimSet(stimset)
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+
+	INFO("Stimset %s needs to only have finite entries.", s0 = stimset)
+	CHECK(!HasOneNonFiniteEntry(wv))
 
 	// parameter waves were upgraded
 	WAVE WP = WB_GetWaveParamForSet(stimset)
@@ -93,8 +106,12 @@ Function WB_RegressionTest([string stimset])
 
 	// check against our stimset generated with earlier versions
 	WAVE refWave = WB_FetchRefWave_IGNORE(stimset)
-	DUplicate/O refwave, root:refwave
-	duplicate/O wv, root:wv
+
+#ifdef AUTOMATED_TESTING_DEBUGGING
+	Duplicate/O refwave, root:refwave
+	Duplicate/O wv, root:wv
+#endif // AUTOMATED_TESTING_DEBUGGING
+
 	CHECK_EQUAL_WAVES(refWave, wv, mode = WAVE_DATA, tol = 1e-12)
 
 	text = note(wv)
@@ -157,6 +174,17 @@ Function WB_RegressionTest([string stimset])
 					break
 			endswitch
 		endfor
+
+		MatrixOP/FREE singleSweep = col(wv, i)
+
+		// check minimum/maximum
+		minimum = WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "Minimum", sweep = i)
+		MatrixOP/FREE minimumCal = minVal(singleSweep)
+		CHECK_CLOSE_VAR(minimum, minimumCal[0])
+
+		maximum = WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "Maximum", sweep = i)
+		MatrixOP/FREE maximumCal = maxVal(singleSweep)
+		CHECK_CLOSE_VAR(maximum, maximumCal[0])
 	endfor
 
 	// check ITIs

@@ -2913,6 +2913,10 @@ static Function DAP_CheckStimset(device, channelType, channel, headstage)
 			printf "(%s) The stim set %s of headstage %g is empty, but must have at least one row.\r", device, setName, headstage
 			ControlWindowToFront()
 			return 1
+		elseif(HasOneNonFiniteEntry(stimSet))
+			printf "(%s) The stim set %s of headstage %g has at least one NaN/Inf/-Inf. Please remove them.\r", device, setName, headstage
+			ControlWindowToFront()
+			return 1
 		endif
 
 		// non fatal errors which we fix ourselves
@@ -5593,4 +5597,53 @@ Function DAP_TPSettingsToGUI(string device, [string entry])
 	if(IsFinite(TPState))
 		TP_RestartTestPulse(device, TPState)
 	endif
+End
+
+/// @brief Return the minimum and maximum possible DAScale values
+///
+/// This returns the minimum and maximum values which can be used as DAScale values.
+///
+/// @param device        DAC device
+/// @param headstage     headstage
+/// @param stimsetName   name of the stimset
+/// @param stimsetColumn set sweep count of the given stimset to use for min/max calculation
+Function [variable minimum, variable maximum] DAP_GetDataLimits(string device, variable headstage, string stimsetName, variable stimsetColumn)
+
+	variable minVolt, maxVolt, gain, hardwareType, DAC, minStimset, maxStimset, activeDACIndex
+	string ctrl, text, msg
+
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+	if(IsNaN(DAC))
+		return [NaN, NaN]
+	endif
+
+	ASSERT(!WB_StimsetIsFromThirdParty(stimsetName), "Can't work with third-party stimsets")
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(stimsetName)
+	ASSERT(WaveExists(stimset), "Could not create stimset")
+
+	text       = note(stimset)
+	minStimset = WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "Minimum", sweep = stimsetColumn)
+	maxStimset = WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "Maximum", sweep = stimsetColumn)
+	ASSERT(IsFinite(minStimset) && IsFinite(maxStimset), "Invalid minimum/maximum")
+
+	hardwareType = GetHardwareType(device)
+	[minVolt, maxVolt] = HW_GetVoltageRange(hardwareType, 1)
+
+	WAVE DAQConfigWave = GetDAQConfigWave(device)
+	WAVE DACs          = GetDACListFromConfig(DAQConfigWave)
+	activeDACIndex = GetRowIndex(DACs, val = DAC)
+	ASSERT(IsFinite(activeDACIndex), "Invalid DAC")
+
+	WAVE gains = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
+	gain = gains[activeDACIndex]
+
+	sprintf msg, "minVolt %g, maxVolt %g, minStimset %g, maxStimset %g, channel gain %g\r", minVolt, maxVolt, minStimset, maxStimset, gain
+	DEBUGPRINT(msg)
+
+	/// @todo handle minStimset/maxStimset being 0 properly
+	minimum = minVolt / minStimset * 1 / gain
+	maximum = maxVolt / maxstimset * 1 / gain
+
+	return [trunc(minimum), trunc(maximum)]
 End

@@ -42,6 +42,7 @@
 ///  PSQ_FMT_LBN_STEPSIZE                       Current DAScale step size                                     (none)   Numerical    SP, RB                               No           No
 ///  PSQ_FMT_LBN_STEPSIZE_FUTURE                Future DAScale step size                                      (none)   Numerical    RB                                   No           No
 ///  PSQ_FMT_LBN_RB_DASCALE_EXC                 Range for valid DAScale values is exceeded                    On/Off   Numerical    RB                                   No           Yes
+///  PSQ_FMT_LBN_DASCALE_OOR                    Future DAScale value is out of range                          On/Off   Numerical    CR,XXX                               Yes          Yes
 ///  PSQ_FMT_LBN_RB_LIMITED_RES                 Failed due to limited DAScale resolution                      On/Off   Numerical    RB                                   No           Yes
 ///  PSQ_FMT_LBN_FINAL_SCALE                    Final DAScale of the given headstage, only set on success     (none)   Numerical    SP, RB                               No           No
 ///  PSQ_FMT_LBN_SPIKE_DASCALE_ZERO             Sweep spiked with DAScale of 0                                On/Off   Numerical    SP                                   No           No
@@ -2910,6 +2911,13 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 		endif
 	endif
 
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z DAScaleOOR = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(WaveExists(DAScaleOOR) && DAScaleOOR[headstage])
+		return 1
+	endif
+
 	[WAVE sweepPassed, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_SWEEP_PASS, fromRhSuAd = fromRhSuAd)
 
 	if(DimSize(sweepPassed, ROWS) < numSweepsWithSaturation)
@@ -3676,7 +3684,7 @@ Function PSQ_DAScale(device, s)
 	variable sweepPassed, setPassed, length, minLength, reachedFinalSlope, fitOffset, fitSlope, apfreq, enoughFIPointsPassedQC
 	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam, measuredAllFutureDAScales, fallbackDAScaleRangeFac
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, multiplier, asyncAlarmPassed, supraStimsetCycle
-	variable daScaleStepMinNorm, daScaleStepMaxNorm, maxSlope, validFit
+	variable daScaleStepMinNorm, daScaleStepMaxNorm
 	string msg, stimset, key, opMode, offsetOp, textboxString, str, errMsg
 	variable daScaleOffset
 	variable finalSlopePercent = NaN
@@ -4182,9 +4190,13 @@ Function PSQ_DAScale(device, s)
 
 			enoughSweepsPassed = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage) >= numSweepsPass
 
+			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+			WAVE/Z DAScaleOOR = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			DAScaleOORQC = !WaveExists(DAScaleOOR)
+
 			strswitch(opMode)
 				case PSQ_DS_SUB:
-					setPassed = enoughSweepsPassed
+					setPassed = enoughSweepsPassed && DAScaleOORQC
 					break
 				case PSQ_DS_SUPRA:
 					if(IsFinite(finalSlopePercent))
@@ -4192,12 +4204,12 @@ Function PSQ_DAScale(device, s)
 						WAVE fISlopeReached = GetLastSettingIndepEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 						ASSERT(WaveExists(fISlopeReached), "Missing fiSlopeReached LBN entry")
 
-						setPassed = enoughSweepsPassed && Sum(fISlopeReached) > 0
+						setPassed = enoughSweepsPassed && Sum(fISlopeReached) > 0 && DAScaleOORQC
 					else
 						sprintf msg, "Final slope percentage not present\r"
 						DEBUGPRINT(msg)
 
-						setPassed = enoughSweepsPassed
+						setPassed = enoughSweepsPassed && DAScaleOORQC
 					endif
 					break
 				case PSQ_DS_ADAPT:
@@ -4264,7 +4276,16 @@ Function PSQ_DAScale(device, s)
 						ASSERT(0, "Invalid case")
 						break
 				endswitch
-				SetDAScale(device, i, absolute = DAScale * PICO_TO_ONE)
+
+				limitCheck      = (s.eventType == POST_SWEEP_EVENT)
+				retCheckDAScale = 0
+
+				retCheckDAScale = SetDAScale(device, i, s.sweepNo, absolute = DAScale * PICO_TO_ONE, limitCheck = limitCheck)
+
+				if(limitCheck && retCheckDAScale)
+					ComplainOutOfRangeDAScale(device, s.sweepNo, MSQ_DA_SCALE)
+					break
+				endif
 			endif
 		endfor
 	endif
@@ -4362,7 +4383,7 @@ Function PSQ_SquarePulse(device, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable stepsize, DAScale, totalOnsetDelay, setPassed, sweepPassed, multiplier
-	variable val, samplingFrequencyPassed, asyncAlarmPassed, ret
+	variable val, samplingFrequencyPassed, asyncAlarmPassed, ret, retCheckDAScale
 	string key, msg
 
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
@@ -4406,7 +4427,7 @@ Function PSQ_SquarePulse(device, s)
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 0)
 
 			PSQ_StoreStepSizeInLBN(device, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_p100)
-			SetDAScale(device, s.headstage, absolute = PSQ_SP_INIT_AMP_p100)
+			SetDAScale(device, s.headstage, s.sweepNo, absolute = PSQ_SP_INIT_AMP_p100, limitCheck = 0)
 
 			return 0
 
@@ -4459,7 +4480,7 @@ Function PSQ_SquarePulse(device, s)
 						RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 					endif
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
-					SetDAScale(device, s.headstage, absolute = DAScale + stepsize)
+					retCheckDAScale = SetDAScale(device, s.headstage, s.sweepNo, absolute = DAScale + stepsize)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p10))
 					WAVE value = LBN_GetNumericWave()
 					value[INDEP_HEADSTAGE] = DAScale
@@ -4474,8 +4495,8 @@ Function PSQ_SquarePulse(device, s)
 					endif
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(device, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_m50)
-					stepsize = PSQ_SP_INIT_AMP_m50
-					SetDAScale(device, s.headstage, absolute = DAScale + stepsize)
+					stepsize        = PSQ_SP_INIT_AMP_m50
+					retCheckDAScale = SetDAScale(device, s.headstage, s.sweepNo, absolute = DAScale + stepsize)
 				else
 					ASSERT(0, "Unknown stepsize")
 				endif
@@ -4491,7 +4512,12 @@ Function PSQ_SquarePulse(device, s)
 					ASSERT(0, "Unknown stepsize")
 				endif
 
-				SetDAScale(device, s.headstage, absolute = DAScale + stepsize)
+				retCheckDAScale = SetDAScale(device, s.headstage, s.sweepNo, absolute = DAScale + stepsize)
+			endif
+
+			if(retCheckDAScale)
+				ComplainOutOfRangeDAScale(device, s.sweepNo, PSQ_RAMP)
+				sweepPassed = 0
 			endif
 
 			sprintf msg, "Sweep has %s\r", ToPassFail(sweepPassed)
@@ -4625,7 +4651,7 @@ Function PSQ_Rheobase(device, s)
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed, diff
 	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize, previousStepSize, samplingFrequencyPassed
-	variable totalOnsetDelay, asyncAlarmPassed
+	variable totalOnsetDelay, asyncAlarmPassed, retCheckDAScale
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier, chunk
 	string key, msg
 
@@ -4701,7 +4727,7 @@ Function PSQ_Rheobase(device, s)
 				endif
 			endif
 
-			SetDAScale(device, s.headstage, absolute = finalDAScale)
+			SetDAScale(device, s.headstage, s.sweepNo, absolute = finalDAScale, limitCheck = 0)
 
 			return 0
 
@@ -4890,7 +4916,16 @@ Function PSQ_Rheobase(device, s)
 				break
 			endif
 
-			SetDAScale(device, s.headstage, absolute = DAScale)
+			retCheckDAScale = SetDAScale(device, s.headstage, s.sweepNo, absolute = DAScale)
+
+			if(retCheckDAScale)
+				ComplainOutOfRangeDAScale(device, s.sweepNo, PSQ_RHEOBASE)
+
+				WAVE result = LBN_GetNumericWave()
+				key                     = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+				result[INDEP_HEADSTAGE] = 0
+				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+			endif
 			break
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
@@ -5142,7 +5177,7 @@ Function PSQ_Ramp(device, s)
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
 
-			SetDAScale(device, s.headstage, absolute = PSQ_RA_DASCALE_DEFAULT * PICO_TO_ONE)
+			SetDAScale(device, s.headstage, s.sweepNo, absolute = PSQ_RA_DASCALE_DEFAULT * PICO_TO_ONE, limitCheck = 0)
 
 			return 0
 
@@ -6041,7 +6076,7 @@ Function PSQ_Chirp(device, s)
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, scalingFactorDAScale, initLPF, ampBesselFilter
 	variable fifoTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay, asyncAlarmPassed
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck, besselFilterRestore
-	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode, stimsetPass
+	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode, stimsetPass, retCheckDAScale
 	string setName, key, msg, stimset, str, daScaleOperator
 
 	innerRelativeBound     = AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params)
@@ -6174,7 +6209,8 @@ Function PSQ_Chirp(device, s)
 				result[INDEP_HEADSTAGE] = initialDAScale
 				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo)
 
-				SetDAScale(device, s.headstage, absolute = initialDAScale, roundTopA = 1)
+				// not checking DAScale limits as we can't do that in PRE_SET_EVENT
+				SetDAScale(device, s.headstage, s.sweepNo, absolute = initialDAScale, roundTopA = 1, limitCheck = 0)
 
 				WAVE result = LBN_GetNumericWave()
 				key                     = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_UOD)
@@ -6413,7 +6449,11 @@ Function PSQ_Chirp(device, s)
 		// adapt DAScale and finish
 		daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
 		daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
-		SetDAScaleModOp(device, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1)
+		retCheckDAScale = SetDAScaleModOp(device, s.headstage, s.sweepNo, daScaleModifier, daScaleOperator, roundTopA = 1)
+
+		if(retCheckDAScale)
+			ComplainOutOfRangeDAScale(device, s.sweepNo, PSQ_CHIRP)
+		endif
 
 		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
@@ -6437,7 +6477,12 @@ Function PSQ_Chirp(device, s)
 				break
 			case PSQ_CR_INCREASE:
 			case PSQ_CR_DECREASE: // fallthrough-by-design
-				SetDAScale(device, s.headstage, relative = scalingFactorDAScale, roundTopA = 1)
+				retCheckDAScale = SetDAScale(device, s.headstage, s.sweepNo, relative = scalingFactorDAScale, roundTopA = 1)
+
+				if(retCheckDAScale)
+					ComplainOutOfRangeDAScale(device, s.sweepNo, PSQ_CHIRP)
+					return ANALYSIS_FUNC_RET_EARLY_STOP
+				endif
 				break
 			default:
 				ASSERT(0, "impossible case")
