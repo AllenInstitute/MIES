@@ -352,9 +352,13 @@ Function/WAVE SFH_AsDataSet(WAVE data)
 End
 
 /// @brief Formula "cursors(A,B)" can return NaNs if no cursor(s) are set.
-static Function SFH_ExtendIncompleteRanges(WAVE ranges)
+static Function SFH_ExtendIncompleteRanges(WAVE/WAVE ranges)
 
-	for(WAVE wv : ranges)
+	for(WAVE/Z wv : ranges)
+		if(!WaveExists(wv))
+			continue
+		endif
+
 		if(IsNumericWave(wv))
 			SFH_ASSERT(DimSize(wv, ROWS) == 2, "Numerical range must have two rows in the form [start, end].")
 			wv[0][] = IsNaN(wv[0][q]) ? -Inf : wv[0][q]

@@ -3222,7 +3222,7 @@ static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 		WAVE/T epNames   = SFH_GetEpochNamesFromInfo(epochInfo)
 		WAVE/Z epIndices = SFH_GetEpochIndicesByWildcardPatterns(epNames, epochPatterns)
 		if(!WaveExists(epIndices))
-			break
+			continue
 		endif
 
 		numEntries = DimSize(epIndices, ROWS)

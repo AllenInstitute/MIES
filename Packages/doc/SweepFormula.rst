@@ -1063,7 +1063,8 @@ psxstats
 """"""""
 
 Plot properties of the result waves of a miniature PSC/PSP classification. The
-operation combines the data from all input sweeps.
+operation combines the data from all input sweeps. Also all ranges for each
+sweep are combined.
 
 The operation allows to visualize `psx` data from the results wave or locally,
 i.e. from an `psx` operation from another formula separated by `and`. The
@@ -1084,8 +1085,8 @@ id
   Used for identifying the data to query, also from the results wave
 
 range
-  either an explicit array in milliseconds, `cursors` or a text array with one
-  or multiple epoch names, see also `data`
+  one or multiple arrays in milliseconds, epoch names/wildcards or the
+  returned values from `cursors` or `epochs`, see also `data`
 
 select
   sweep and channels to operate on from the `select` operation
