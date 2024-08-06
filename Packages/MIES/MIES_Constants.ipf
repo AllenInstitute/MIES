@@ -38,7 +38,7 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 75
+Constant LABNOTEBOOK_VERSION = 76
 Constant RESULTS_VERSION     = 3
 /// @}
 
@@ -47,7 +47,7 @@ Constant RESULTS_VERSION     = 3
 Constant PSQ_PIPETTE_BATH_VERSION    = 4
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 2
 Constant PSQ_CHIRP_VERSION           = 13
-Constant PSQ_DA_SCALE_VERSION        = 7
+Constant PSQ_DA_SCALE_VERSION        = 8
 Constant PSQ_RAMP_VERSION            = 6
 Constant PSQ_RHEOBASE_VERSION        = 5
 Constant PSQ_SQUARE_PULSE_VERSION    = 4
@@ -1162,19 +1162,21 @@ StrConstant PSQ_FMT_LBN_DA_FI_SLOPE                 = "%s f-I slope"
 StrConstant PSQ_FMT_LBN_DA_AT_FI_OFFSET             = "%s f-I offset"
 StrConstant PSQ_FMT_LBN_DA_FI_SLOPE_REACHED_PASS    = "%s f-I slope QC"
 StrConstant PSQ_FMT_LBN_DA_OPMODE                   = "%s operation mode"
-StrConstant PSQ_FMT_LBN_DA_AT_FREQ                  = "%s AP frequency"
-StrConstant PSQ_FMT_LBN_DA_AT_FREQ_RH_SUPRA         = "%s AP frequency from rheobase, supra"
-StrConstant PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM      = "%s Min. norm. DAScale step"
-StrConstant PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM      = "%s Max. norm. DAScale step"
-StrConstant PSQ_FMT_LBN_DA_AT_DASCALE_RH_SUPRA      = "%s DAScale from rheobase, supra"
-StrConstant PSQ_FMT_LBN_DA_AT_FI_SLOPES             = "%s f-I slopes from rheobase, supra"
-StrConstant PSQ_FMT_LBN_DA_AT_FI_OFFSETS            = "%s f-I offsets from rheobase, supra"
-StrConstant PSQ_FMT_LBN_DA_AT_MAX_SLOPE             = "%s f-I maximum slope"
-StrConstant PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS      = "%s f-I slope valid QC"
-StrConstant PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS = "%s f-I initial slope valid from rheobase, supra QC"
 StrConstant PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS = "%s enough f-I pairs for line fit QC"
+StrConstant PSQ_FMT_LBN_DA_AT_FREQ                  = "%s AP frequency"
 StrConstant PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES       = "%s DAScale values left"
 StrConstant PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS  = "%s DAScale values left QC"
+StrConstant PSQ_FMT_LBN_DA_AT_MAX_DASCALE_NORM      = "%s Max. norm. DAScale step"
+StrConstant PSQ_FMT_LBN_DA_AT_MAX_SLOPE             = "%s f-I maximum slope"
+StrConstant PSQ_FMT_LBN_DA_AT_MIN_DASCALE_NORM      = "%s Min. norm. DAScale step"
+StrConstant PSQ_FMT_LBN_DA_AT_RSA_DASCALE           = "%s DAScale from rheobase, supra, adaptive"
+StrConstant PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS        = "%s f-I offsets from rheobase, supra, adaptive"
+StrConstant PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES         = "%s f-I slopes from rheobase, supra, adaptive"
+StrConstant PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_PASS    = "%s f-I slope QCs from rheobase, supra, adaptive"
+StrConstant PSQ_FMT_LBN_DA_AT_RSA_FREQ              = "%s AP frequency from rheobase, supra, adaptive"
+StrConstant PSQ_FMT_LBN_DA_AT_RSA_SWEEPS            = "%s passing sweep numbers from rheobase, supra, adaptive"
+StrConstant PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS  = "%s f-I initial slope valid from rheobase, supra, adaptive QC"
+StrConstant PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS      = "%s f-I slope valid QC"
 StrConstant PSQ_FMT_LBN_CR_RESISTANCE               = "%s input resistance"
 StrConstant PSQ_FMT_LBN_CR_INSIDE_BOUNDS            = "%s inside bounds"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_ACTION            = "%s bounds action"
@@ -1283,6 +1285,17 @@ StrConstant PSQ_DS_SUB              = "Sub"
 StrConstant PSQ_DS_SUPRA            = "Supra"
 StrConstant PSQ_DS_ADAPT            = "AdaptiveSupra"
 Constant    PSQ_DS_MAX_FREQ_OFFSET  = 2
+Constant    PSQ_DS_SKIPPED_FI_SLOPE = -Inf
+
+// minimum frequency distance between two measurements
+Constant PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE       = 15
+Constant PSQ_DA_SLOPE_PERCENTAGE_DEFAULT         = 10
+Constant PSQ_DA_NUM_POINTS_LINE_FIT              = 2
+Constant PSQ_DA_NUM_SWEEPS_SATURATION            = 2
+Constant PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED = 3
+Constant PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT     = 20
+Constant PSQ_DA_DASCALE_STEP_WITH_MIN_MAX_FACTOR = 3
+
 /// @}
 
 /// @name PatchSeq Ramp

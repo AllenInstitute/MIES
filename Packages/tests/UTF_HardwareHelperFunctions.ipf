@@ -524,7 +524,8 @@ static Function CheckDashboard(string device, WAVE headstageQC)
 
 	for(i = 0; i < numEntries; i += 1)
 		message = listWave[i][%Result]
-		state   = !cmpstr(message, DASHBOARD_PASSING_MESSAGE)
+		CHECK_PROPER_STR(message)
+		state = !cmpstr(message, DASHBOARD_PASSING_MESSAGE)
 		CHECK_EQUAL_VAR(state, headstageQC[i])
 
 		if(!headstageQC[i])
@@ -1091,7 +1092,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 	CHECK_EQUAL_VAR(numChunks, expectedChunkCnt)
 End
 
-Function OpenDatabrowser()
+static Function OpenDatabrowser()
 	string win, bsPanel
 
 	win     = DB_OpenDatabrowser()
