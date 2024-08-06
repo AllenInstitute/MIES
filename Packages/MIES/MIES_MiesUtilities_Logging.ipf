@@ -26,6 +26,7 @@ Function/S GetITCXOP2Logfile()
 	return PS_GetSettingsFolder(PACKAGE_MIES) + ":ITCXOP2:Log.jsonl"
 End
 
+/// @brief Filters log file entries by data, returns a null wave if no entries were found
 Function [WAVE/T filtered, variable lastIndex] FilterByDate(WAVE/T entries, variable first, variable last)
 
 	variable firstIndex
@@ -35,7 +36,7 @@ Function [WAVE/T filtered, variable lastIndex] FilterByDate(WAVE/T entries, vari
 
 	firstIndex = FindFirstLogEntryElementByDate(entries, first)
 	lastIndex  = FindLastLogEntryElementByDate(entries, last)
-	if(lastIndex < firstIndex)
+	if(IsNaN(firstIndex) || IsNaN(lastIndex) || lastIndex < firstIndex)
 		return [$"", NaN]
 	endif
 
@@ -148,7 +149,9 @@ Function ArchiveLogFilesOnceAndKeepMonth()
 		WAVE/Z/T logData = LoadTextFileToWave(file, LOG_FILE_LINE_END)
 		if(WaveExists(logData))
 			[WAVE/T partData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
-			ArchiveLogFile(logData, file, lastIndex)
+			if(WaveExists(partData))
+				ArchiveLogFile(logData, file, lastIndex)
+			endif
 		endif
 	endfor
 End

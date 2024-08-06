@@ -210,11 +210,29 @@ static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedur
 	return 0
 End
 
+static Function ShowQuitMessage()
+
+	variable xPos, yPos
+
+	GetWindow kwFrameInner, wSizeDC
+	xPos = (V_right - V_left) / 2 - 400
+	yPos = (V_bottom - V_top) / 3
+	NewPanel/K=1/W=(xPos, yPos, xPos + 800, yPos + 75) as "Just a moment"
+	ModifyPanel fixedSize=0
+	TitleBox title_Counts, pos={0.00, 0.00}, size={800, 90.00}, title="Quitting MIES..."
+	TitleBox title_Counts, font="Courier New", fSize=72, frame=0, fStyle=1
+	TitleBox title_Counts, anchor=MC, fixedSize=1
+	DoUpdate
+End
+
 static Function IgorQuitHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
+	ShowQuitMessage()
+	zeromq_stop()
+	ArchiveLogFilesOnceAndKeepMonth()
 	IH_Cleanup()
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
