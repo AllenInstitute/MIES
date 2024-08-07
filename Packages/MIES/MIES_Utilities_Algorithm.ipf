@@ -422,6 +422,7 @@ End
 /// See also DisplayHelpTopic "Subrange Display"
 ///
 /// Example invocations:
+///
 /// \rst
 /// .. code-block:: igorpro
 ///
