@@ -182,14 +182,14 @@ static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC = 1.5
 
 /// @name Type constants for PSQ_DS_GetLabnotebookData
 /// @anchor PSQDAScaleAdaptiveLBNTypeConstants
-/// @{
+///@{
 static Constant PSQ_DS_FI_SLOPE              = 0x1
 static Constant PSQ_DS_FI_SLOPE_REACHED_PASS = 0x2
 static Constant PSQ_DS_SWEEP_PASS            = 0x3
 static Constant PSQ_DS_SWEEP                 = 0x4
 static Constant PSQ_DS_APFREQ                = 0x5
 static Constant PSQ_DS_DASCALE               = 0x6
-/// @}
+///@}
 
 /// @brief Fills `s` according to the analysis function type
 Function PSQ_GetPulseSettingsForType(type, s)

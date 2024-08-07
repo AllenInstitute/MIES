@@ -343,7 +343,7 @@ Function DAP_EphysPanelStartUpSettings()
 	Checkbox Check_TP_SendToAllHS, WIN=$device, value=1
 
 	/// needs to be in sync with GetTPSettings()
-	/// @{
+	///@{
 	WAVE TPSettingsRef = GetTPSettingsFree()
 	SetVariable SetVar_DataAcq_TPAmplitude, WIN=$device, value=_NUM:TPSettingsRef[%amplitudeVC][0]
 	SetVariable SetVar_DataAcq_TPAmplitudeIC, WIN=$device, value=_NUM:TPSettingsRef[%amplitudeIC][0]
@@ -352,7 +352,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable setvar_DataAcq_IinjMax, WIN=$device, value=_NUM:TPSettingsRef[%autoAmpMaxCurrent][0]
 	SetVariable setvar_DataAcq_targetVoltage, WIN=$device, value=_NUM:TPSettingsRef[%autoAmpVoltage][0]
 	SetVariable setvar_DataAcq_targetVoltageRange, WIN=$device, value=_NUM:TPSettingsRef[%autoAmpVoltageRange][0]
-	/// @}
+	///@}
 
 	SetVariable setvar_Settings_autoTP_int, WIN=$device, value=_NUM:0
 	SetVariable setvar_Settings_autoTP_perc, WIN=$device, value=_NUM:90

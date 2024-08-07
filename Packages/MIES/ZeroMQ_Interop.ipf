@@ -6,7 +6,7 @@
 
 /// @name Flags for zeromq_set()
 /// @anchor ZeroMQSetFlags
-/// @{
+///@{
 /// Sets the default flags (no debug, no ipv6, busy wait on receive)
 Constant ZeroMQ_SET_FLAGS_DEFAULT  = 0x1
 /// Enable debug output
@@ -19,13 +19,13 @@ Constant ZeroMQ_SET_FLAGS_NOBUSYWAITRECV = 0x8
 /// Log incoming and outgoing messages
 Constant ZeroMQ_SET_FLAGS_LOGGING = 0x10
 
-/// @}
+///@}
 
 StrConstant ZeroMQ_HEARTBEAT = "heartbeat"
 
 /// @name Error codes
 /// @anchor ZeroMQErrorCodes
-/// @{
+///@{
 Constant ZeroMQ_UNKNOWN_SET_FLAG          = 10003
 Constant ZeroMQ_INTERNAL_ERROR            = 10004
 Constant ZeroMQ_INVALID_ARG               = 10005
@@ -36,7 +36,7 @@ Constant ZeroMQ_INVALID_MESSAGE_FORMAT    = 10009
 Constant ZeroMQ_INVALID_LOGGING_TEMPLATE  = 10010
 Constant ZeroMQ_MESSAGE_FILTER_DUPLICATED = 10011
 Constant ZeroMQ_MESSAGE_FILTER_MISSING    = 10012
-/// @}
+///@}
 
 Constant REQ_SUCCESS                         =   0
 Constant REQ_UNKNOWN_ERROR                   =   1
@@ -58,7 +58,7 @@ Constant REQ_FUNCTION_ABORTED                = 107
 
 /// @name Functions which might be useful for outside callers
 /// @anchor ZeroMQInterfaceFunctions
-/// @{
+///@{
 Function ZeroMQ_WaveExists(pathToWave)
 	string pathToWave
 
@@ -98,4 +98,4 @@ Function ZeroMQ_ShowHelp(topic)
 
 	DisplayHelpTopic topic
 End
-/// @}
+///@}

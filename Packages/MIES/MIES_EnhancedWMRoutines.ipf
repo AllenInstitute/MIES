@@ -8,7 +8,7 @@
 /// Everthing in this file is copyrighted by WaveMetrics Inc.
 
 /// @name Functions taken from `Waves Average.ipf` from Igor Pro 6.3.6.4
-/// @{
+///@{
 
 /// @brief Average the given waves
 ///
@@ -277,4 +277,4 @@ threadsafe static Function x2pntWithFrac(wv, scaledDim)
 
 	return (scaledDim - DimOffset(wv, 0)) / DimDelta(wv, 0)
 End
-/// @}
+///@}

@@ -980,7 +980,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 #endif
 
 	/// @name SweepFormulaOperations
-	/// @{
+	///@{
 	strswitch(opName)
 		case SF_OP_MINUS:
 			WAVE out = SF_OperationMinus(jsonId, jsonPath, graph)
@@ -1129,7 +1129,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		default:
 			SFH_ASSERT(0, "Undefined Operation", jsonId = jsonId)
 	endswitch
-	/// @}
+	///@}
 
 	return out
 End

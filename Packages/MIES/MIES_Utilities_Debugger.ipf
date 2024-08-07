@@ -10,11 +10,11 @@
 /// @brief utility functions for debugger
 
 /// @name Debugger state constants for DisableDebugger and ResetDebuggerState
-/// @{
+///@{
 static Constant DEBUGGER_ENABLED        = 0x01
 static Constant DEBUGGER_DEBUG_ON_ERROR = 0x02
 static Constant DEBUGGER_NVAR_CHECKING  = 0x04
-/// @}
+///@}
 
 /// @brief Disable the debugger
 ///

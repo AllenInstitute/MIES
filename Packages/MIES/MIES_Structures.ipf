@@ -21,10 +21,10 @@ EndStructure
 
 Structure PostPlotSettings
 	/// @name Trace averaging settings
-	/// @{
+	///@{
 	variable averageTraces
 	DFREF averageDataFolder
-	/// @}
+	///@}
 
 	variable hideSweep
 
@@ -32,12 +32,12 @@ Structure PostPlotSettings
 	variable zeroTraces
 
 	/// @name Time alignment settings
-	/// @{
+	///@{
 	variable timeAlignment
 	variable timeAlignMode //< one of #TimeAlignmentConstants
 	string timeAlignRefTrace
 	variable timeAlignLevel
-	/// @}
+	///@}
 
 	variable visualizeEpochs
 
@@ -82,11 +82,11 @@ Structure PulseAverageSettings
 	variable pulseSortOrder
 	string imageColorScale
 
-	/// @{
+	///@{
 	/// These settings influence the extracted single pulse waves, see also
 	/// PA_GenerateAllPulseWaves().
 	variable startingPulse, endingPulse, overridePulseLength, fixedPulseLength
-	/// @}
+	///@}
 
 	DFREF dfr
 
@@ -97,7 +97,7 @@ Structure PulseAverageDeconvSettings
 	variable enable, smth, tau, range
 EndStructure
 
-/// @{
+///@{
 // This structure stores data that is used in many PA functions.
 // setIndices: 2D wave reference wave, each entry refers to a permanent setIndice wave @sa GetPulseAverageSetIndizes
 //             The size is (numActive, numActive) where numActive is the number of regions/channels
@@ -152,7 +152,7 @@ Structure PulseAverageSetIndices
 	WAVE indexHelper
 EndStructure
 
-/// @}
+///@}
 
 /// @brief Parameter to #CreateTiledChannelGraph
 Structure TiledGraphSettings
@@ -470,7 +470,7 @@ End
 /// @brief Structure to hold the result of data configuration from DC_GetConfiguration()
 Structure DataConfigurationResult
 	/// Various GUI settings
-	/// @{
+	///@{
 	variable globalTPInsert
 	variable scalingZero
 	variable indexingLocked
@@ -482,7 +482,7 @@ Structure DataConfigurationResult
 	variable multiDevice
 	variable powerSpectrum
 	WAVE statusHS
-	/// @}
+	///@}
 
 	/// What type of operation is done.
 	/// Either DAQ(`DATA_ACQUISITION_MODE`) or TP(`TEST_PULSE_MODE`)
@@ -517,13 +517,13 @@ Structure DataConfigurationResult
 	variable samplingIntervalTTL
 
 	/// @name Various delays in points of the DA data wave
-	/// @{
+	///@{
 	variable onsetDelayUser
 	variable onsetDelayAuto
 	variable onsetDelay ///< Sum of onsetDelayUser and onsetDelayAuto
 	variable distributedDAQDelay
 	variable terminationDelay
-	/// @}
+	///@}
 
 	/// @sa GetTestPulse()
 	WAVE testPulse
@@ -535,24 +535,24 @@ Structure DataConfigurationResult
 	variable tpPulseLengthPoints
 
 	/// oodDAQ optimization results, see @ref OOdDAQParams_Output
-	/// @{
+	///@{
 	WAVE offsets ///< [ms]
 	WAVE/T regions
-	/// @}
+	///@}
 
 	/// @sa SWS_GetChannelGains() with `GAIN_BEFORE_DAQ`
 	WAVE gains
 
 	/// List of active channels per type
-	/// @{
+	///@{
 	WAVE DACList
 	WAVE ADCList
 	WAVE TTLList
-	/// @}
+	///@}
 
 	/// All waves here use active channel indexing like DataConfigurationResult::DACList
 	/// and can thus be all indexed together.
-	/// @{
+	///@{
 	/// @sa GetDACAmplitudes()
 	WAVE/D DACAmp
 
@@ -572,16 +572,16 @@ Structure DataConfigurationResult
 	WAVE/D headstageDAC
 
 	/// @sa DC_CalculateChannelColumnNo()
-	/// @{
+	///@{
 	WAVE/D setColumn
 	WAVE/D TTLsetColumn
 	WAVE/D setCycleCount
 	WAVE/D TTLcycleCount
-	/// @}
+	///@}
 
 	/// Offset in points where the stimulus set starts in the DAQ data wave
 	WAVE/D insertStart
-	/// @}
+	///@}
 
 	/// Headstage of ADC if associated, `NaN` iff unassociated
 	/// Uses active channel indexing like DataConfigurationResult::ADCList

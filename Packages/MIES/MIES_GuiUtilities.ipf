@@ -1971,7 +1971,7 @@ End
 
 /// @brief Conversion between pixel <-> points
 ///
-/// @{
+///@{
 Function PointsToPixel(variable var)
 
 	return var * (ScreenResolution / 72)
@@ -1981,7 +1981,7 @@ Function PixelToPoints(variable var)
 
 	return var * (72 / ScreenResolution)
 End
-/// @}
+///@}
 
 /// @brief Checks if a window is tagged as certain type
 ///

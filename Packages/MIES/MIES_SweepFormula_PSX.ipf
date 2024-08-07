@@ -96,20 +96,20 @@ static StrConstant PSX_UD_NUM_BLOCKS = "NumberOfBlocks"
 
 /// @name State types
 /// @anchor SpecialEventPanelEventTypes
-/// @{
+///@{
 static StrConstant PSX_TUD_FIT_STATE_KEY   = "Fit State"
 static StrConstant PSX_TUD_EVENT_STATE_KEY = "Event State"
-/// @}
+///@}
 ///
 static StrConstant PSX_TUD_TRACE_HIDDEN_KEY = "traceHidden"
 static StrConstant PSX_TUD_TYPE_KEY         = "type"
 
 /// @name Trace types
 /// @anchor AllEventGraphTraceType
-/// @{
+///@{
 static StrConstant PSX_TUD_TYPE_SINGLE  = "single"
 static StrConstant PSX_TUD_TYPE_AVERAGE = "average"
-/// @}
+///@}
 
 static StrConstant PSX_TUD_COMBO_KEY   = "comboKey"
 static StrConstant PSX_TUD_COMBO_INDEX = "comboIndex"
@@ -138,11 +138,11 @@ static StrConstant PSX_PANEL_MACRO = "PSXPanel"
 
 /// @name Different ways to derive cache key from the parameters JSON
 /// @anchor PSXCacheKeyType
-/// @{
+///@{
 static Constant PSX_CACHE_KEY_EVENTS        = 0x1
 static Constant PSX_CACHE_KEY_RISETIME      = 0x2
 static Constant PSX_CACHE_KEY_ANALYZE_PEAKS = 0x3
-/// @}
+///@}
 
 static Constant EVENT_INDEX_HORIZONTAL = 0x1
 static Constant EVENT_INDEX_VERTICAL   = 0x2

@@ -30,7 +30,7 @@
 
 /// @name Error codes for the ITC XOP2
 /// @anchor ITCXOP2Errors
-/// @{
+///@{
 static Constant OLD_IGOR = 10001
 
 static Constant UNHANDLED_CPP_EXCEPTION = 10002
@@ -88,7 +88,7 @@ static Constant R_FLAG_REQUIRES_ITC1600 = 10023
 
 // Tried to access the default device, but the default device has not been set.
 static Constant THREAD_DEVICE_ID_NOT_SET = 10024
-/// @}
+///@}
 
 static Constant HW_ITC_RUNNING_STATE = 0x10
 static Constant HW_ITC_MAX_TIMEOUT   = 10
@@ -99,7 +99,7 @@ static Constant SUTTER_ACQUISITION_FOREGROUND = 1
 static Constant SUTTER_ACQUISITION_BACKGROUND = 2
 
 /// @name Wrapper functions redirecting to the correct internal implementations depending on #HARDWARE_DAC_TYPES
-/// @{
+///@{
 
 /// @brief Prepare for data acquisition
 ///
@@ -905,10 +905,10 @@ Function [variable minimum, variable maximum] HW_GetVoltageRange(variable hardwa
 	endswitch
 End
 
-/// @}
+///@}
 
 /// @name ITC
-/// @{
+///@{
 
 /// @brief Build the device string for ITC devices
 ///
@@ -2128,7 +2128,7 @@ Function/WAVE HW_ITC_TransposeAndToInt(wv)
 End
 
 /// @name Utility functions not interacting with hardware
-/// @{
+///@{
 
 /// @brief Returns the device channel offset for the given device
 ///
@@ -2244,11 +2244,11 @@ Function HW_ITC_IsValidDeviceName(deviceName)
 	return !isEmpty(deviceName)
 End
 
-/// @}
-/// @}
+///@}
+///@}
 
 /// @name NI
-/// @{
+///@{
 
 /// @brief Assert on using an invalid NI device name
 ///
@@ -3906,4 +3906,4 @@ End
 
 #endif // SUTTER_XOP_PRESENT
 
-/// @}
+///@}

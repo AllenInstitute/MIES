@@ -22,7 +22,7 @@ static Constant WB_TRIG_TYPE_COS = 1
 /// @anchor ControlDeltaIndizes
 /// The numeric values are row indizes in the waves returned by
 /// WB_GetControlWithDeltaWvs().
-/// @{
+///@{
 static Constant WB_IDX_DURATION                 = 0
 static Constant WB_IDX_AMPLITUDE                = 2
 static Constant WB_IDX_OFFSET                   = 4
@@ -40,7 +40,7 @@ static Constant WB_IDX_PT_FIRST_MIXED_FREQUENCY = 28
 static Constant WB_IDX_PT_LAST_MIXED_FREQUENCY  = 30
 static Constant WB_IDX_NUMBER_OF_PULSES         = 45
 static Constant WB_IDX_ITI                      = 99
-/// @}
+///@}
 
 static Constant DELTA_OPERATION_EXPLICIT = 6
 
@@ -1218,7 +1218,7 @@ static Function WB_InitializeSeed(WP, SegWvType, epoch, type, stepCount)
 End
 
 /// @name Functions that build wave types
-/// @{
+///@{
 static Function WB_SquareSegment(pa)
 	STRUCT SegmentParameters &pa
 
@@ -1959,7 +1959,7 @@ static Function/WAVE WB_FillWaveFromFormula(formula, channelType, sweep)
 
 	return MakeWaveFree(d)
 End
-/// @}
+///@}
 
 /// @brief Update the shorthand/stimset wave for the epoch type `Combine`
 ///
