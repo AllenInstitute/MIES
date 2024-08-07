@@ -2913,6 +2913,10 @@ static Function DAP_CheckStimset(device, channelType, channel, headstage)
 			printf "(%s) The stim set %s of headstage %g is empty, but must have at least one row.\r", device, setName, headstage
 			ControlWindowToFront()
 			return 1
+		elseif(HasOneNonFiniteEntry(stimSet))
+			printf "(%s) The stim set %s of headstage %g has at least one NaN/Inf/-Inf. Please remove them.\r", device, setName, headstage
+			ControlWindowToFront()
+			return 1
 		endif
 
 		// non fatal errors which we fix ourselves

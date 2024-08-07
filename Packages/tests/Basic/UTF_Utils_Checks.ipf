@@ -178,6 +178,46 @@ End
 
 /// @}
 
+/// HasOneNonFiniteEntry
+/// @{
+
+static Function HasOneNonFiniteEntry_AssertsOnInvalidType()
+
+	Make/B/FREE wv
+	try
+		HasOneNonFiniteEntry(wv)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function HasOneNonFiniteEntry_Works1()
+
+	Make/FREE/D wv = {1, 2, 3}
+	CHECK(!HasOneNonFiniteEntry(wv))
+End
+
+static Function HasOneNonFiniteEntry_Works2()
+
+	Make/FREE/D wv = {Inf, 0}
+	CHECK(HasOneNonFiniteEntry(wv))
+
+	Make/FREE/D wv = {-Inf, 1}
+	CHECK(HasOneNonFiniteEntry(wv))
+
+	Make/FREE/D wv = {NaN, 3}
+	CHECK(HasOneNonFiniteEntry(wv))
+End
+
+static Function HasOneNonFiniteEntry_Works3()
+
+	Make/FREE/D/N=0 wv
+	CHECK(!HasOneNonFiniteEntry(wv))
+End
+
+/// @}
+
 /// EqualValuesOrBothNaN
 /// @{
 

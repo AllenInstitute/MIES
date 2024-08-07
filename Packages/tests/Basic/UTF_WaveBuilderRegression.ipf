@@ -26,16 +26,26 @@ static Function TEST_CASE_END_OVERRIDE(testCase)
 	CheckForBugMessages()
 End
 
-// Copy stimset parameter waves into our own permanent location
-Function CopyParamWaves_IGNORE()
+// Copy stimset parameter waves and data waves into our own permanent location
+Function CopyParamWavesAndWaves_IGNORE()
+
+	string entry
+
 	KillDataFolder/Z root:wavebuilder_misc:DAParameterWaves
 	DuplicateDataFolder/O=2 $GetWBSvdStimSetParamDAPathAS(), root:wavebuilder_misc:DAParameterWaves
-End
 
-// Copy stimsets into our own permanent location
-Function CopyWaves_IGNORE()
+	// recreate all stimsets
+	DFREF dfr = GetWBSvdStimSetDAPath()
+	KillDataFolder/Z dfr
+
+	WAVE/T stimsets = ListToTextWave(ST_GetStimsetList(), ";")
+	for(entry : stimsets)
+		WB_CreateAndGetStimSet(entry)
+	endfor
+
 	KillDataFolder/Z root:wavebuilder_misc:DAWaves
-	DuplicateDataFolder/O=2 $GetWBSvdStimSetDAPathAsString(), root:wavebuilder_misc:DAWaves
+	DFREF dfr = GetWBSvdStimSetDAPath()
+	DuplicateDataFolder/O=2 dfr, root:wavebuilder_misc:DAWaves
 End
 
 Function/WAVE WB_FetchRefWave_IGNORE(string name)
@@ -81,6 +91,9 @@ Function WB_RegressionTest([string stimset])
 	WAVE/Z wv = WB_CreateAndGetStimSet(stimset)
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 
+	INFO("Stimset %s needs to only have finite entries.", s0 = stimset)
+	CHECK(!HasOneNonFiniteEntry(wv))
+
 	// parameter waves were upgraded
 	WAVE WP = WB_GetWaveParamForSet(stimset)
 	CHECK_EQUAL_VAR(MIES_WAVEGETTERS#GetWaveVersion(WP), MIES_WAVEGETTERS#GetWPVersion())
@@ -93,8 +106,12 @@ Function WB_RegressionTest([string stimset])
 
 	// check against our stimset generated with earlier versions
 	WAVE refWave = WB_FetchRefWave_IGNORE(stimset)
-	DUplicate/O refwave, root:refwave
-	duplicate/O wv, root:wv
+
+#ifdef AUTOMATED_TESTING_DEBUGGING
+	Duplicate/O refwave, root:refwave
+	Duplicate/O wv, root:wv
+#endif // AUTOMATED_TESTING_DEBUGGING
+
 	CHECK_EQUAL_WAVES(refWave, wv, mode = WAVE_DATA, tol = 1e-12)
 
 	text = note(wv)
