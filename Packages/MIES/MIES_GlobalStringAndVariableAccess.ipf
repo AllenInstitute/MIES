@@ -15,6 +15,7 @@
 ///
 /// Instead if you have a global variable named `iceCreamCounter` in `root:myfood` you
 /// would write in this file here a function like
+///
 /// \rst
 /// .. code-block:: igorpro
 ///
@@ -22,7 +23,9 @@
 /// 		return GetNVARAsString(createDFWithAllParents("root:myfood"), "iceCreamCounter")
 /// 	End
 /// \endrst
+///
 ///  and then use it in your code as
+///
 /// \rst
 /// .. code-block:: igorpro
 ///
