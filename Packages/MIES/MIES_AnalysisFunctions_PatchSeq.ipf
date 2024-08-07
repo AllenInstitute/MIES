@@ -145,7 +145,7 @@
 /// See also :ref:`epoch_time_specialities`.
 /// \endrst
 ///
-/// Textual results entries stored by the sweep formula ``store`` operation with the names ``Sweep Formula store [XXX]``:
+/// Textual results entries stored by the sweep formula `store` operation with the names `Sweep Formula store [XXX]`:
 ///
 /// \rst
 ///
