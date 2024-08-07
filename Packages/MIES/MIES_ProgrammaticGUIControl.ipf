@@ -75,7 +75,7 @@ End
 
 /// @name Prototype functions for #PGC_SetAndActivateControl
 /// @anchor PGC_SetAndActivateControlPrototypeFunctions
-/// @{
+///@{
 Function PGC_ButtonControlProcedure(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -117,7 +117,7 @@ Function PGC_ListBoxControlProcedure(lba) : ListBoxControl
 
 	ASSERT(0, "Prototype function which must not be called")
 End
-/// @}
+///@}
 
 /// @brief Wrapper for PGC_SetAndActivateControl()
 Function PGC_SetAndActivateControlStr(win, control, str)

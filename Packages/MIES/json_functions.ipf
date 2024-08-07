@@ -47,7 +47,7 @@ static Constant JSON_QFLAG_DEFAULT = 1
 #endif
 
 /// @addtogroup JSON_TYPES
-/// @{
+///@{
 Constant JSON_INVALID   = -1
 Constant JSON_OBJECT    = 0
 Constant JSON_ARRAY     = 1
@@ -55,22 +55,22 @@ Constant JSON_NUMERIC   = 2
 Constant JSON_STRING    = 3
 Constant JSON_BOOL      = 4
 Constant JSON_NULL      = 5
-/// @}
+///@}
 
 /// @addtogroup JSON_SYNC_OPTIONS
-/// @{
+///@{
 // if element in source exists, but not in target, then add element in target
 Constant JSON_SYNC_ADD_TO_TARGET = 0x0
 // if element in target exists, but not in source, then remove element in target
 Constant JSON_SYNC_REMOVE_IN_TARGET = 0x1
 // if element in source exists and in target, then overwrite element in target
 Constant JSON_SYNC_OVERWRITE_IN_TARGET = 0x2
-/// @}
+///@}
 
 static Constant IGOR_STRING_MAX_SIZE = 2147483647
 
 /// @addtogroup JSONXOP_Parse
-/// @{
+///@{
 /// @brief Parse a JSON string with the XOP
 ///
 /// @param jsonStr    string representation of the JSON object
@@ -93,10 +93,10 @@ threadsafe Function JSON_Parse(jsonStr, [ignoreErr])
 
 	return V_Value
 End
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_Dump
-/// @{
+///@{
 
 /// @brief Dump a JSON id to its string representation
 ///
@@ -123,10 +123,10 @@ threadsafe Function/S JSON_Dump(jsonID, [indent, ignoreErr])
 
 	return S_Value
 End
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_New
-/// @{
+///@{
 /// @brief register a new object
 ///
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
@@ -147,10 +147,10 @@ threadsafe Function JSON_New([ignoreErr])
 
 	return V_Value
 End
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_Release
-/// @{
+///@{
 /// @brief Release a JSON id from memory
 ///
 /// @param jsonID     numeric identifier of the main object
@@ -173,10 +173,10 @@ threadsafe Function JSON_Release(jsonID, [ignoreErr])
 
 	return 0
 End
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_Remove
-/// @{
+///@{
 /// @brief Remove a path element from a JSON string representation
 ///
 /// @param jsonID     numeric identifier of the main object
@@ -201,10 +201,10 @@ threadsafe Function JSON_Remove(jsonID, jsonPath, [ignoreErr])
 
 	return 0
 End
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_AddTree
-/// @{
+///@{
 
 /// @brief Recursively add new objects to the tree
 ///
@@ -258,9 +258,9 @@ threadsafe static Function JSON_AddTree(jsonID, jsonPath, type, ignoreErr)
 	return 0
 End
 
-/// @}
+///@}
 /// @addtogroup JSONXOP_GetKeys
-/// @{
+///@{
 /// @brief Get the name of all object members of the specified path
 ///
 /// @param jsonID     numeric identifier of the JSON object
@@ -292,10 +292,10 @@ threadsafe Function/WAVE JSON_GetKeys(jsonID, jsonPath, [esc, ignoreErr])
 
 	return result
 End
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_GetType
-/// @{
+///@{
 /// @brief get the JSON Type for an element at the given path.
 ///
 /// @param jsonID     numeric identifier of the JSON object
@@ -321,10 +321,10 @@ threadsafe Function JSON_GetType(jsonID, jsonPath, [ignoreErr])
 
 	return V_Value
 End
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_GetArraySize
-/// @{
+///@{
 /// @brief Get the number of elements in an array.
 ///
 /// @param jsonID     numeric identifier of the JSON object
@@ -349,10 +349,10 @@ threadsafe Function JSON_GetArraySize(jsonID, jsonPath, [ignoreErr])
 
 	return V_Value
 End
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_GetMaxArraySize
-/// @{
+///@{
 /// @brief Get the maximum element size for each dimension in an array
 ///
 /// @param jsonID     numeric identifier of the JSON object
@@ -377,10 +377,10 @@ threadsafe Function/WAVE JSON_GetMaxArraySize(jsonID, jsonPath, [ignoreErr])
 
 	return w
 End
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_GetValue
-/// @{
+///@{
 
 /// @brief Get new JSON object from a json path of an existing JSON object.
 ///        The original jsonID is not freed and stays valid.
@@ -564,10 +564,10 @@ threadsafe Function [UInt64 result] JSON_GetUInt64(Variable jsonID, String jsonP
 	return [result]
 End
 
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_AddValue
-/// @{
+///@{
 
 /// @brief Add a string entity to a JSON object
 ///
@@ -1061,7 +1061,7 @@ threadsafe Function JSON_SetJSON(jsonID, jsonPath, jsonID2, [ignoreErr])
 	return 0
 End
 
-/// @}
+///@}
 
 threadsafe static Function JSON_KVPairsToJSON(jsonID, jsonPath, str, ignoreErr)
 	variable jsonID, ignoreErr
@@ -1082,7 +1082,7 @@ threadsafe static Function JSON_KVPairsToJSON(jsonID, jsonPath, str, ignoreErr)
 End
 
 /// @addtogroup JSON_GetIgorInfo
-/// @{
+///@{
 
 /// @brief Return JSON with Igor information
 ///
@@ -1105,10 +1105,10 @@ threadsafe Function JSON_GetIgorInfo([ignoreErr])
 	return jsonID
 End
 
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_Version
-/// @{
+///@{
 
 /// @brief Output version information useful for issue reports
 ///
@@ -1138,10 +1138,10 @@ Function/S JSON_Version([ignoreErr])
 	return rep
 End
 
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_Exists
-/// @{
+///@{
 
 /// @brief Check if the jsonID/jsonPath is valid
 ///
@@ -1155,10 +1155,10 @@ threadsafe Function JSON_Exists(jsonID, jsonPath)
 	return JSON_GetType(jsonID, jsonPath, ignoreErr = 1) != JSON_INVALID
 End
 
-/// @}
+///@}
 
 /// @addtogroup JSONXOP_Options
-/// @{
+///@{
 
 /// @brief Disables quiet mode
 Function JSON_DisableQuietMode()
@@ -1184,10 +1184,10 @@ Function JSON_UnsetIgnoreErrors()
 	Execute/P/Q "COMPILEPROCEDURES "
 End
 
-/// @}
+///@}
 
 /// @addtogroup JSON_SyncJSON
-/// @{
+///@{
 
 /// @brief Syncs data from a source json into a target json.
 ///
@@ -1298,7 +1298,7 @@ threadsafe Function JSON_SyncJSON(variable srcJsonId, variable tgtJsonId, string
 	return 0
 End
 
-/// @}
+///@}
 
 threadsafe static Function JSON_AddArrayElementToParentIfArray(variable jsonId, string jsonPath)
 
@@ -1318,7 +1318,7 @@ threadsafe static Function JSON_CopyJSON(variable srcJsonId, variable tgtJsonId,
 End
 
 /// @addtogroup JSON_LoadSave
-/// @{
+///@{
 
 /// @brief Loads a text file and parses it to JSON, then returns jsonId
 ///
@@ -1402,10 +1402,10 @@ threadsafe Function JSON_Save(variable jsonId, string fullFilepath, [variable ig
 	return 0
 End
 
-/// @}
+///@}
 
 /// @addtogroup JSON_IsValid
-/// @{
+///@{
 
 /// @brief Check if the given JSON identifier refers to an open JSON document
 ///
@@ -1422,4 +1422,4 @@ threadsafe Function JSON_IsValid(variable jsonID)
 	return !V_flag
 End
 
-/// @}
+///@}

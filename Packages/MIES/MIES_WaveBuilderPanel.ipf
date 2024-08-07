@@ -28,10 +28,10 @@ static Constant WBP_WAVETYPE_WPT       = 0x2
 static Constant WBP_WAVETYPE_SEGWVTYPE = 0x4
 
 /// @name Parameters for WBP_TranslateControlContents()
-/// @{
+///@{
 static Constant FROM_PANEL_TO_WAVE = 0x1
 static Constant FROM_WAVE_TO_PANEL = 0x2
-/// @}
+///@}
 
 static StrConstant HIDDEN_CONTROLS_CUSTOM_COMBINE = "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_op_P70;popup_WaveBuilder_op_P71;popup_WaveBuilder_op_P72;setvar_explDeltaValues_T11;setvar_explDeltaValues_T12_DD02;setvar_explDeltaValues_T13"
 static StrConstant HIDDEN_CONTROLS_SQUARE_PULSE   = "popup_WaveBuilder_op_P71;setvar_explDeltaValues_T12_DD02"
@@ -1354,11 +1354,11 @@ End
 
 /// Wrapper functions to be used in GUI recreation macros
 /// This avoids having to hardcode the parameter values.
-/// @{
+///@{
 Function/S WBP_GetAnalysisFunctions_V3()
 	return WBP_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3)
 End
-/// @}
+///@}
 
 /// @brief Return a list of analysis functions including NONE, usable for popup menues
 ///

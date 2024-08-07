@@ -24,7 +24,7 @@
 /// \endrst
 ///
 /// Generated code from GenerateMultiplierConstants().
-/// @{
+///@{
 Constant ONE_TO_YOTTA   = 1e-24
 Constant ONE_TO_ZETTA   = 1e-21
 Constant ONE_TO_EXA     = 1e-18
@@ -445,7 +445,7 @@ Constant YOCTO_TO_PICO  = 1e-12
 Constant YOCTO_TO_FEMTO = 1e-09
 Constant YOCTO_TO_ATTO  = 1e-06
 Constant YOCTO_TO_ZEPTO = 1e-03
-/// @}
+///@}
 
 Constant ONE_TO_PERCENT = 1e+02
 Constant PERCENT_TO_ONE = 1e-02

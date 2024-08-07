@@ -17,7 +17,7 @@
 
 /// @name Constants used by pressure control
 /// @anchor PRESSURE_CONSTANTS
-/// @{
+///@{
 static StrConstant PRESSURE_CONTROLS_BUTTON_LIST   = "button_DataAcq_Approach;button_DataAcq_Seal;button_DataAcq_BreakIn;button_DataAcq_Clear;button_DataAcq_SSSetPressureMan"
 static StrConstant PRESSURE_CONTROL_TITLE_LIST     = "Approach;Seal;Break In;Clear;Apply"
 static StrConstant PRESSURE_CONTROL_CHECKBOX_LIST  = "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable;check_DataAcq_ManPressureAll"
@@ -48,7 +48,7 @@ static Constant    SEAL_RESISTANCE_THRESHOLD       = 100                        
 static Constant    ACCESS_ATM                      = 0                                                                                                                                                                 // Access constants are used to set TTL valve configuration
 static Constant    ACCESS_REGULATOR                = 1
 static Constant    ACCESS_USER                     = 2
-/// @}
+///@}
 
 /// @brief Filled by P_GetPressureForDA()
 static Structure P_PressureDA

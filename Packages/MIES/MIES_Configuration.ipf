@@ -236,10 +236,10 @@ static Constant EXPCONFIG_MIDDLEEXP_OFF = 0
 static Constant EXPCONFIG_MIDDLEEXP_ON  = 1
 
 /// @brief Parameters for CONF_GetSettingsPath()
-/// @{
+///@{
 static Constant CONF_AUTO_LOADER_GLOBAL = 0x0
 static Constant CONF_AUTO_LOADER_USER   = 0x1
-/// @}
+///@}
 
 static StrConstant CONF_AUTO_LOADER_USER_PATH = "C:ProgramData:AllenInstitute:MIES:Settings"
 

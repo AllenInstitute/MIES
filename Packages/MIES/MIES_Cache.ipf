@@ -68,7 +68,7 @@
 
 /// @name Cache key generators
 /// @anchor CacheKeyGenerators
-/// @{
+///@{
 
 /// @brief Cache key generator for recreated epochs wave
 Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
@@ -507,7 +507,7 @@ Function/S CA_GetLabnotebookNamesKey(WAVE/T/Z textualValues, WAVE/T/Z numericalV
 	return "Version 1:" + Hash(key, HASH_SHA2_256)
 End
 
-/// @}
+///@}
 
 /// @brief Make space for one new entry in the cache waves
 ///

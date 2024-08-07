@@ -422,6 +422,7 @@ End
 /// See also DisplayHelpTopic "Subrange Display"
 ///
 /// Example invocations:
+///
 /// \rst
 /// .. code-block:: igorpro
 ///
@@ -432,7 +433,7 @@ End
 /// @param dim          dimension to extract
 ///
 /// @returns 2-dim wave with the start, stop, step as columns and rows as
-///          number of elements. Returns -1 instead of `*` or ``. An invalid
+///          number of elements. Returns -1 instead of `*` or `(empty)`. An invalid
 ///          wave reference is returned on parsing errors.
 Function/WAVE ExtractFromSubrange(listOfRanges, dim)
 	string   listOfRanges

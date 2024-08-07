@@ -19,7 +19,7 @@ static Constant    ASYNC_MAX_THREADS   = 64
 static Constant    ASYNC_SLEEP_ON_WAIT = 0.01
 
 /// @name Variable names for free data folder structure
-/// @{
+///@{
 static StrConstant ASYNC_THREAD_MARKER_STR = "threadDFMarker"
 static StrConstant ASYNC_WORKERFUNC_STR    = "WorkerFunc"
 static StrConstant ASYNC_READOUTFUNC_STR   = "ReadOutFunc"
@@ -30,7 +30,7 @@ static StrConstant ASYNC_ABORTFLAG_STR     = "abortFlag"
 static StrConstant ASYNC_ERROR_STR         = "err"
 static StrConstant ASYNC_ERRORMSG_STR      = "errmsg"
 static StrConstant ASYNC_WLCOUNTER_STR     = "workloadClassCounter"
-/// @}
+///@}
 
 /// @brief Starts the Async Framework with numThreads parallel threads.
 ///

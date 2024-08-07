@@ -20,11 +20,11 @@
 /// - ProgAxes: X=0 line for images
 /// - ProgFront: Scale bars
 /// - ProgBack: Failed pulses triangles
-/// @{
+///@{
 static StrConstant PA_DRAWLAYER_XZEROLINE     = "ProgAxes"
 static StrConstant PA_DRAWLAYER_SCALEBAR      = "ProgFront"
 static StrConstant PA_DRAWLAYER_FAILED_PULSES = "ProgBack"
-/// @}
+///@}
 
 static StrConstant PA_GRAPH_PREFIX          = "PulseAverage"
 static StrConstant PA_SOURCE_WAVE_TIMESTAMP = "SOURCE_WAVE_TS"
@@ -53,10 +53,10 @@ static Constant PA_PEAK_BOX_AVERAGE = 5
 
 /// @name Pulse sort order
 /// Popupmenu indizes for the PA plot controls
-/// @{
+///@{
 static Constant PA_PULSE_SORTING_ORDER_SWEEP = 0x0
 static Constant PA_PULSE_SORTING_ORDER_PULSE = 0x1
-/// @}
+///@}
 ///
 
 static Constant PA_AVGERAGE_PLOT_LSIZE      = 1.5

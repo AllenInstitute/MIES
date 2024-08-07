@@ -239,7 +239,7 @@ End
 /// - Wave layout versions start with 1 and are integers
 /// - Rule of thumb: Raise the version if you change anything in or below the `Make` line
 /// - Wave versioning needs a special wave note style, see @ref GetNumberFromWaveNote
-/// @{
+///@{
 
 /// @brief Check if wv exists and has the correct version
 /// UTF_NOINSTRUMENTATION
@@ -484,7 +484,7 @@ Function/WAVE UpgradeWaveLocationAndGetIt(p)
 	ASSERT(0, "impossible case")
 End
 
-/// @}
+///@}
 
 /// @brief Return a wave reference to the tp result async buffer wave
 ///
@@ -1279,7 +1279,7 @@ Function/WAVE GetStimsetAcqIDHelperWave(device)
 End
 
 /// @name Experiment Documentation
-/// @{
+///@{
 
 /// @brief Return the datafolder reference to the lab notebook
 Function/DF GetLabNotebookFolder()
@@ -2969,10 +2969,10 @@ Function/WAVE GetSweepSettingsTextKeyWave(device)
 
 	return wv
 End
-/// @}
+///@}
 
 /// @name Test Pulse
-/// @{
+///@{
 
 /// @brief Return a wave reference for TPStorage
 ///
@@ -3340,10 +3340,10 @@ Function/WAVE GetTPResultsBuffer(device)
 
 	return wv
 End
-/// @}
+///@}
 
 /// @name Amplifier
-/// @{
+///@{
 
 /// @brief Return the datafolder reference to the amplifier
 ///
@@ -3761,10 +3761,10 @@ Function/WAVE GetAmplifierMultiClamps()
 
 	return wv
 End
-/// @}
+///@}
 
 /// @name Wavebuilder
-/// @{
+///@{
 
 /// @brief Returns a data folder reference to the base
 ///
@@ -4586,7 +4586,7 @@ Function/WAVE GetEpochParameterNames()
 
 	// IPT_FORMAT_OFF
 	/// Generated code, see WBP_RegenerateEpochParameterNamesCode
-	/// @{
+	///@{
 	Make/T/FREE st_0 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op"}
 	Make/T/FREE st_1 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op"}
 	Make/T/FREE st_2 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Build resolution (index)", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "High pass filter cut off", "High pass filter cut off delta", "High pass filter cut off dme", "High pass filter cut off ldel", "High pass filter cut off op", "Low pass filter cut off", "Low pass filter cut off delta", "Low pass filter cut off dme", "Low pass filter cut off ldel", "Low pass filter cut off op", "Noise filter order", "Noise filter order delta", "Noise filter order dme", "Noise filter order ldel", "Noise filter order op", "Noise Type [White, Pink, Brown]", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Random Seed", "Reseed RNG for each epoch", "Reseed RNG for each step"}
@@ -4596,7 +4596,7 @@ Function/WAVE GetEpochParameterNames()
 	Make/T/FREE st_6 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "PSC exp decay time 1/2", "PSC exp decay time 1/2 delta", "PSC exp decay time 1/2 dme", "PSC exp decay time 1/2 ldel", "PSC exp decay time 1/2 op", "PSC exp decay time 2/2", "PSC exp decay time 2/2 delta", "PSC exp decay time 2/2 dme", "PSC exp decay time 2/2 ldel", "PSC exp decay time 2/2 op", "PSC exp rise time", "PSC exp rise time delta", "PSC exp rise time dme", "PSC exp rise time ldel", "PSC exp rise time op", "PSC ratio decay times", "PSC ratio decay times delta", "PSC ratio decay times dme", "PSC ratio decay times ldel", "PSC ratio decay times op"}
 	Make/T/FREE st_7 = {"Custom epoch wave name", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op"}
 	Make/T/FREE st_8 = {"Combine epoch formula", "Combine epoch formula version"}
-	/// @}
+	///@}
 	// IPT_FORMAT_ON
 
 	Make/FREE sizes = {DimSize(st_0, ROWS), DimSize(st_1, ROWS), DimSize(st_2, ROWS), DimSize(st_3, ROWS), DimSize(st_4, ROWS), DimSize(st_5, ROWS), DimSize(st_6, ROWS), DimSize(st_7, ROWS), DimSize(st_8, ROWS)}
@@ -4623,10 +4623,10 @@ Function/WAVE GetEpochParameterNames()
 	return wv
 End
 
-/// @}
+///@}
 
 /// @name Asynchronous Measurements
-/// @{
+///@{
 
 /// @brief Return a *free* wave for the asyncSettingsWave, data wave
 ///
@@ -4778,10 +4778,10 @@ Function/WAVE GetAsyncSettingsTextKeyWave(WAVE/T settingsWave, variable channel)
 	return wv
 End
 
-/// @}
+///@}
 
 /// @name Pressure Control
-/// @{
+///@{
 
 /// @brief Returns device specific pressure folder as string
 Function/S P_GetDevicePressureFolderAS(device)
@@ -5129,7 +5129,7 @@ Function/WAVE P_PressureDataTxtWaveRef(device)
 
 	return wv
 End
-/// @}
+///@}
 
 /// @brief Return the data folder reference to the device specific lab notebook folder for temporary waves
 ///
@@ -5166,7 +5166,7 @@ Function/DF GetResultsFolder()
 End
 
 /// @name Analysis Browser
-/// @{
+///@{
 
 /// @brief Return the datafolder reference to the root folder for the analysis browser
 ///
@@ -5766,7 +5766,7 @@ Function/WAVE GetAnalysLBTextualKeys(expFolder, device)
 	return UpgradeWaveLocationAndGetIt(p)
 End
 
-/// @}
+///@}
 
 /// @brief Return the indexing storage wave
 ///
@@ -6104,7 +6104,7 @@ Function/WAVE GetDeviceMapping()
 End
 
 /// @name Getters relating to caching
-/// @{
+///@{
 /// @brief Return the datafolder reference to the wave cache
 /// UTF_NOINSTRUMENTATION
 threadsafe Function/DF GetCacheFolder()
@@ -6224,7 +6224,7 @@ threadsafe Function/WAVE GetCacheStatsWave()
 
 	return wv
 End
-/// @}
+///@}
 
 /// @brief Returns the names of the electrodes
 ///
@@ -6775,7 +6775,7 @@ Function/WAVE GetSweepBrowserMap(dfr)
 End
 
 /// @name Getters related to debugging
-/// @{
+///@{
 /// @brief Return the datafolder reference to the debug folder
 ///
 /// UTF_NOINSTRUMENTATION
@@ -6825,10 +6825,10 @@ Function/WAVE GetDebugPanelListSelWave()
 
 	return wv
 End
-/// @}
+///@}
 
 /// @name AnalysisFunctionGetters Getters used by analysis functions
-/// @{
+///@{
 
 /// @brief Return a wave reference which holds an headstage-dependent index
 ///
@@ -7068,7 +7068,7 @@ Function/WAVE GetAnalysisFuncDAScales(device, headstage)
 	return wv
 End
 
-/// @}
+///@}
 
 /// @brief Return the storage wave for the analysis functions
 ///
@@ -8072,7 +8072,7 @@ Function/WAVE GetTPSettingsLabnotebook(string device)
 End
 
 /// @name Async Framework
-/// @{
+///@{
 
 /// @brief Return wave reference to wave with data folder reference buffer for delayed readouts
 /// 1d wave for data folder references, starts with size 0
@@ -8147,7 +8147,7 @@ Function/DF GetAsyncHomeDF()
 	return createDFWithAllParents(getAsyncHomeStr())
 End
 
-/// @}
+///@}
 
 /// @brief Returns a free wave for gathering formula results
 ///
@@ -8214,7 +8214,7 @@ threadsafe Function/WAVE GetActiveChannelMapTTLHWToGUI()
 End
 
 /// @name SweepFormula PSX
-/// @{
+///@{
 
 static Constant PSX_WAVE_VERSION       = 2
 static Constant PSX_EVENT_WAVE_COLUMNS = 14
@@ -8461,7 +8461,7 @@ Function/WAVE GetPSXAcceptedAverageFitWaveFromDFR(DFREF dfr)
 	return wv
 End
 
-/// @}
+///@}
 
 /// @brief Returns a wave with the names of all log files
 Function/WAVE GetLogFileNames()
