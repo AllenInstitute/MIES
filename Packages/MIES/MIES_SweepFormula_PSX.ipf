@@ -856,7 +856,7 @@ End
 /// @brief Generate the dimension label for the output wave reference waves
 ///
 /// Used for `psx` and `psxKernel` as both hold
-/// #PSX_KERNEL_OUTPUTWAVES_PER_ENTRY` and #PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY
+/// `#PSX_KERNEL_OUTPUTWAVES_PER_ENTRY` and `#PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY`
 /// entries per input range/sweep combination.
 static Function/S PSX_GenerateKey(string name, variable index)
 
