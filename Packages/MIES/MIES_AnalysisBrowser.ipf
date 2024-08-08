@@ -3277,6 +3277,16 @@ static Function AB_LoadAllSweepsAndStimsets(string discLocation, string dataFold
 	endfor
 End
 
+static Function/S AB_ReExportGetNewFullFilePath(string fullFilePath, variable numDevices, string device)
+
+	string suffix, name
+
+	suffix = "." + GetFileSuffix(fullFilePath)
+	name   = GetFile(fullFilePath)
+	sprintf name, "%s%s-converted%s", RemoveEnding(name, suffix), SelectString(numDevices > 1, "", "-" + device), suffix
+	return GetFolder(fullFilePath) + name
+End
+
 static Function AB_ReExport(variable index, variable overwrite)
 
 	string fileName, discLocation, dataFolder, experiment, path, name, suffix
@@ -3384,10 +3394,7 @@ static Function AB_ReExport(variable index, variable overwrite)
 		endif
 
 		// Now export all that data into NWBv2
-		suffix = "." + GetFileSuffix(discLocation)
-		name   = GetFile(discLocation)
-		sprintf name, "%s%s-converted%s", RemoveEnding(name, suffix), SelectString(numDevices > 1, "", "-" + device), suffix
-		path = GetFolder(discLocation) + name
+		path = AB_ReExportGetNewFullFilePath(discLocation, numDevices, device)
 
 		ret = NWB_ExportAllData(NWB_VERSION_LATEST, overrideFullFilePath = path, writeStoredTestPulses = 1, overwrite = overwrite)
 
