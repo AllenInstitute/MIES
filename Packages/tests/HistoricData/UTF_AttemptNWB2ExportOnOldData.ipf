@@ -24,3 +24,29 @@ static Function TestExportingDataToNWB([string str])
 		CHECK_EQUAL_VAR(FileExists(nwbFileName), 1)
 	endfor
 End
+
+/// UTF_TD_GENERATOR GetHistoricDataFilesNWB
+static Function TestSweepBrowserExportToNWB([string str])
+
+	string file, win, abWin, sweepBrowsers, fileType, dataFolder, nwbFileName
+
+	file = "input:" + str
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file})
+	win = StringFromList(0, sweepBrowsers)
+
+	WAVE/T map = GetAnalysisBrowserMap()
+	fileType = map[0][%FileType]
+	if(CmpStr(fileType, ANALYSISBROWSER_FILE_TYPE_NWBv1))
+		SKIP_TESTCASE()
+	endif
+
+	MIES_AB#AB_ReExport(0, 0)
+	CHECK_NO_RTE()
+
+	dataFolder = map[0][%DataFolder]
+	WAVE/T devices = ListToTextWave(AB_GetAllDevicesForExperiment(dataFolder), ";")
+	for(device : devices)
+		nwbFileName = MIES_AB#AB_ReExportGetNewFullFilePath(map[0][%DiscLocation], DimSize(devices, ROWS), device)
+		CHECK_EQUAL_VAR(FileExists(nwbFileName), 1)
+	endfor
+End

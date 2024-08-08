@@ -257,6 +257,7 @@ Function/WAVE GetHistoricDataFilesNWB()
 	Make/FREE/T files = {"nwb2_H17.03.016.11.09.01.nwb",           \
 	                     "C57BL6J-628261.02.01.02.nwb",            \
 	                     "Gad2-IRES-Cre;Ai14-709273.06.02.02.nwb", \
+	                     "NWB_V1_single_device.nwb",               \
 	                     "H22.03.311.11.08.01.06.nwb"}
 
 	DownloadFilesIfRequired(files)
