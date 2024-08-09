@@ -148,7 +148,7 @@ Function SaveExperimentSpecial(mode)
 		KillWindow/Z HistoryCarbonCopy
 		CreateHistoryNotebook()
 
-		CloseNWBFile()
+		CloseAllNWBFiles()
 
 		NVAR sesssionStartTime = $GetSessionStartTime()
 		sesssionStartTime = DateTimeInUTC()

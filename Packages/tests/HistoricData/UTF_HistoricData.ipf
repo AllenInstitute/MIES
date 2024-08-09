@@ -233,6 +233,7 @@ Function/WAVE GetHistoricDataFilesPXP()
 	                     "Pvalb-IRES-Cre;Ai14-646904.13.03.02.pxp",           \
 	                     "Sst-IRES-Cre;Ai14-554002.08.06.02.pxp",             \
 	                     "Sst-IRES-Cre;Th-P2A-FlpO;Ai65-561491.09.09.02.pxp", \
+	                     "NWB-Export-bug-two-devices.pxp",                    \
 	                     "very_early_mies-data_H17.03.016.11.09.01.pxp",      \
 	                     "epoch_clipping_2022_03_08_140256.pxp"}
 
@@ -256,6 +257,7 @@ Function/WAVE GetHistoricDataFilesNWB()
 	Make/FREE/T files = {"nwb2_H17.03.016.11.09.01.nwb",           \
 	                     "C57BL6J-628261.02.01.02.nwb",            \
 	                     "Gad2-IRES-Cre;Ai14-709273.06.02.02.nwb", \
+	                     "NWB_V1_single_device.nwb",               \
 	                     "H22.03.311.11.08.01.06.nwb"}
 
 	DownloadFilesIfRequired(files)

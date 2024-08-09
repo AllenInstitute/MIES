@@ -2543,12 +2543,15 @@ End
 
 static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 
-	string entry, symbPath, fName, nwbFileUsedForExport, panel
+	string entry, symbPath, fName, panel
 	string pxpList, uxpList, nwbList, title
 	variable sTime
 
-	nwbFileUsedForExport = ROStr(GetNWBFilePathExport())
-	panel                = AB_GetPanelName()
+	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+	Duplicate/FREE/T devicesWithContent, activeFiles
+	activeFiles[] = ROStr(GetNWBFilePathExport(devicesWithContent[p]))
+
+	panel = AB_GetPanelName()
 
 	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
 
@@ -2571,8 +2574,9 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 		endif
 		for(fName : fileList)
 
-			if(!CmpStr(fName, nwbFileUsedForExport))
-				printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", nwbFileUsedForExport
+			FindValue/TXOP=4/TEXT=fName activeFiles
+			if(V_row >= 0)
+				printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", fName
 				ControlWindowToFront()
 				continue
 			endif
@@ -3274,6 +3278,16 @@ static Function AB_LoadAllSweepsAndStimsets(string discLocation, string dataFold
 	endfor
 End
 
+static Function/S AB_ReExportGetNewFullFilePath(string fullFilePath, variable numDevices, string device)
+
+	string suffix, name
+
+	suffix = "." + GetFileSuffix(fullFilePath)
+	name   = GetFile(fullFilePath)
+	sprintf name, "%s%s-converted%s", RemoveEnding(name, suffix), SelectString(numDevices > 1, "", "-" + device), suffix
+	return GetFolder(fullFilePath) + name
+End
+
 static Function AB_ReExport(variable index, variable overwrite)
 
 	string fileName, discLocation, dataFolder, experiment, path, name, suffix
@@ -3381,12 +3395,9 @@ static Function AB_ReExport(variable index, variable overwrite)
 		endif
 
 		// Now export all that data into NWBv2
-		suffix = "." + GetFileSuffix(discLocation)
-		name   = GetFile(discLocation)
-		sprintf name, "%s%s-converted%s", RemoveEnding(name, suffix), SelectString(numDevices > 1, "", "-" + device), suffix
-		path = GetFolder(discLocation) + name
+		path = AB_ReExportGetNewFullFilePath(discLocation, numDevices, device)
 
-		ret = NWB_ExportAllData(NWB_VERSION_LATEST, overrideFilePath = path, writeStoredTestPulses = 1, overwrite = overwrite)
+		ret = NWB_ExportAllData(NWB_VERSION_LATEST, overrideFullFilePath = path, writeStoredTestPulses = 1, overwrite = overwrite)
 
 		if(!ret)
 			printf "####\r"

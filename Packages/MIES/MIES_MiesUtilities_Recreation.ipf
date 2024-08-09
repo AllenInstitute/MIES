@@ -28,7 +28,7 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 
 	printf "Trying to resurrect missing sweeps from device %s\r", device
 
-	variable i, numEntries, sweepNo, samplingInterval
+	variable i, numEntries, sweepNo, samplingInterval, configVersion
 	string path
 
 	WAVE numericalKeys = GetLBTextualKeys(device)
@@ -99,17 +99,19 @@ Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 				continue
 			endif
 		else
-			WAVE/Z sweepWave
+			WAVE/Z/SDFR=deviceDataDFR sweepWave = $GetSweepWaveName(sweepNo)
 		endif
 
 		if(missingConfig[i])
 			WAVE configWave = RecreateConfigWaveFromLBN(device, numericalValues, textualValues, sweepNo)
 		else
-			WAVE/Z configWave
+			WAVE/Z/SDFR=deviceDataDFR configWave = $GetConfigWaveName(sweepNo)
 		endif
 
 		if(WaveExists(sweepWave) && WaveExists(configWave))
-			ASSERT(IsValidSweepAndConfig(sweepWave, configWave), "Recreation created incompatible sweep and config waves")
+			configVersion = GetWaveVersion(configWave)
+			configVersion = IsNaN(configVersion) ? 0 : configVersion
+			ASSERT(IsValidSweepAndConfig(sweepWave, configWave, configVersion = configVersion), "Recreation created incompatible sweep and config waves")
 		endif
 
 		if(WaveExists(configWave))
