@@ -86,6 +86,7 @@ static Function DCR_RecreateDataConfigurationResultFromLNB_TTL(STRUCT DataConfig
 			s.numTTLEntries = DimSize(s.TTLList, ROWS)
 		else
 			s.numTTLEntries = 0
+			Make/FREE/N=(0) s.TTLList
 		endif
 	else
 		s.numTTLEntries = 0
