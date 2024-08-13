@@ -526,22 +526,22 @@ Function/S GetSessionStartTime()
 End
 
 /// @brief Return the HDF5 file identifier for the NWB export
-Function/S GetNWBFileIDExport()
+Function/S GetNWBFileIDExport(string device)
 
-	return GetNVARAsString(GetNWBFolder(), "fileIdExport", initialValue = NaN)
+	return GetNVARAsString(GetDevicePath(device), "NWBfileIdExport", initialValue = NaN)
 End
 
 /// @brief Return the absolute path to the file for NWB export
-Function/S GetNWBFilePathExport()
+Function/S GetNWBFilePathExport(string device)
 
-	return GetSVARAsString(GetNWBFolder(), "filePathExport")
+	return GetSVARAsString(GetDevicePath(device), "NWBfilePathExport")
 End
 
 /// @brief Return the experiment session start time in NWB-speech as
 ///        read back from the NWB file.
-Function/S GetSessionStartTimeReadBack()
+Function/S GetSessionStartTimeReadBack(string device)
 
-	return GetNVARAsString(GetNWBFolder(), "sessionStartTimeReadBack", initialValue = NaN)
+	return GetNVARAsString(GetDevicePath(device), "sessionStartTimeReadBack", initialValue = NaN)
 End
 
 /// @brief Return the thread group ID for the FIFO monitor/resetting daemon

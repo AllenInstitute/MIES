@@ -131,7 +131,7 @@ Function AdditionalExperimentCleanup()
 	name = GetDataFolder(0, dfr)
 	MoveDataFolder/O=1 dfr, root:
 
-	CloseNWBFile()
+	NWB_CloseAllNWBFiles()
 	HDF5CloseFile/A/Z 0
 
 	KillDataFolder/Z root:$DF_NAME_MIES

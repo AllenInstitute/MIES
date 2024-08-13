@@ -2543,12 +2543,15 @@ End
 
 static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 
-	string entry, symbPath, fName, nwbFileUsedForExport, panel
+	string entry, symbPath, fName, panel
 	string pxpList, uxpList, nwbList, title
 	variable sTime
 
-	nwbFileUsedForExport = ROStr(GetNWBFilePathExport())
-	panel                = AB_GetPanelName()
+	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+	Duplicate/FREE/T devicesWithContent, activeFiles
+	activeFiles[] = ROStr(GetNWBFilePathExport(devicesWithContent[p]))
+
+	panel = AB_GetPanelName()
 
 	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
 
@@ -2571,8 +2574,8 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 		endif
 		for(fName : fileList)
 
-			if(!CmpStr(fName, nwbFileUsedForExport))
-				printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", nwbFileUsedForExport
+			if(!IsNaN(GetRowIndex(activeFiles, str = fName)))
+				printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", fName
 				ControlWindowToFront()
 				continue
 			endif
@@ -3386,7 +3389,7 @@ static Function AB_ReExport(variable index, variable overwrite)
 		sprintf name, "%s%s-converted%s", RemoveEnding(name, suffix), SelectString(numDevices > 1, "", "-" + device), suffix
 		path = GetFolder(discLocation) + name
 
-		ret = NWB_ExportAllData(NWB_VERSION_LATEST, overrideFilePath = path, writeStoredTestPulses = 1, overwrite = overwrite)
+		ret = NWB_ExportAllData(NWB_VERSION_LATEST, overrideFullFilePath = path, writeStoredTestPulses = 1, overwrite = overwrite)
 
 		if(!ret)
 			printf "####\r"
