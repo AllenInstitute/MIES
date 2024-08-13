@@ -314,6 +314,9 @@ threadsafe static Function/S NWB_GenerateDeviceDescription(string device, WAVE n
 		case HARDWARE_NI_DAC:
 			sprintf desc, "National Instruments Model: %s", hardwareName
 			break
+		case HARDWARE_SUTTER_DAC:
+			sprintf desc, "Sutter Instrument Company: %s", hardwareName
+			break
 		default:
 			ASSERT_TS(0, "Invalid hardwareType")
 	endswitch
