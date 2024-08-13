@@ -81,8 +81,12 @@ static Function DCR_RecreateDataConfigurationResultFromLNB_TTL(STRUCT DataConfig
 		WAVE   TTLList   = ListToNumericWave(settingsT[indep_hs_text], ";")
 		ASSERT(DimSize(TTLList, ROWS) == NUM_DA_TTL_CHANNELS, "Unexpected number of TTL channels from LNB.")
 		s.statusTTLFiltered[] = !IsNaN(TTLList[p])
-		WAVE s.TTLList = ZapNaNs(TTLList)
-		s.numTTLEntries = DimSize(s.TTLList, ROWS)
+		WAVE/Z s.TTLList = ZapNaNs(TTLList)
+		if(WaveExists(s.TTLList))
+			s.numTTLEntries = DimSize(s.TTLList, ROWS)
+		else
+			s.numTTLEntries = 0
+		endif
 	else
 		s.numTTLEntries = 0
 		Make/FREE/N=(0) s.TTLList
