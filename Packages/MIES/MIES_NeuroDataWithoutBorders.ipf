@@ -1029,7 +1029,7 @@ Function NWB_PrepareExport(variable nwbVersion, string device)
 		NWB_ExportAllData(nwbVersion, device = device, keepFileOpen = 1, verbose = 0)
 		stimsets = ST_GetStimsetList()
 		NVAR currentFileID = $GetNWBFileIDExport(device)
-		NWB_AppendStimset(nwbVersion, currentFileID, stimsets, GetNoCompression())
+		NWB_AppendStimset(nwbVersion, currentFileID, stimsets, GetChunkedCompression())
 	endif
 
 	return locationID
