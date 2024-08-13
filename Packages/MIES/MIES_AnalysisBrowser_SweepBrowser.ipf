@@ -481,6 +481,49 @@ Function/WAVE SB_GetPlainSweepList(win)
 	return sweeps
 End
 
+/// @brief Gets sweep numbers for a given device
+Function/WAVE SB_GetSweepsFromDevice(string win, string device)
+
+	variable numRows, dimDevice, dimSweeps
+
+	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
+	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
+	if(!numRows)
+		return $""
+	endif
+
+	dimDevice = FindDimlabel(map, COLS, "Device")
+	WAVE/Z devIndizes = FindIndizes(map, col = dimDevice, endRow = numRows - 1, str = device)
+	if(!WaveExists(devIndizes))
+		return $""
+	endif
+
+	dimSweeps = FindDimlabel(map, COLS, "Sweep")
+	Duplicate/FREE devIndizes, devSweeps
+	MultiThread devSweeps[] = str2num(map[devIndizes[p]][dimSweeps])
+
+	return devSweeps
+End
+
+/// @brief Gets the unique devices for which data was loaded into the sweepbrowser
+Function/WAVE SB_GetDeviceList(string win)
+
+	variable dimDevice, numRows
+
+	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
+	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
+	if(!numRows)
+		return $""
+	endif
+
+	dimDevice = FindDimlabel(map, COLS, "Device")
+	Duplicate/FREE/RMD=[0, numRows - 1][dimDevice] map, devices
+
+	WAVE/T uniqueEntries = GetUniqueEntries(devices)
+
+	return uniqueEntries
+End
+
 /// @brief Generic getter for the labnotebook waves
 ///
 /// LBT_LABNOTEBOOK:
