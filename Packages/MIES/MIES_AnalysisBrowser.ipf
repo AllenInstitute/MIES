@@ -2541,15 +2541,24 @@ static Function AB_RemoveExperimentEntry(string win, string entry)
 	AB_ResetListBoxWaves()
 End
 
+/// @brief returns currently open NWB files for data export. If no file is open returns a zero sized text wave.
+static Function/WAVE AB_GetCurrentlyOpenNWBFiles()
+
+	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+	Duplicate/FREE/T devicesWithContent, activeFiles
+	activeFiles[] = ROStr(GetNWBFilePathExport(devicesWithContent[p]))
+	RemoveTextWaveEntry1D(activeFiles, "", all = 1)
+
+	return activeFiles
+End
+
 static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 
 	string entry, symbPath, fName, panel
 	string pxpList, uxpList, nwbList, title
 	variable sTime
 
-	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
-	Duplicate/FREE/T devicesWithContent, activeFiles
-	activeFiles[] = ROStr(GetNWBFilePathExport(devicesWithContent[p]))
+	WAVE/T activeFiles = AB_GetCurrentlyOpenNWBFiles()
 
 	panel = AB_GetPanelName()
 
@@ -3432,6 +3441,15 @@ static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 	PGC_SetAndActivateControl("AnalysisBrowser", "button_expand_all", val = 1)
 
 	entry = basefolder + file
+
+	WAVE/T activeFiles = AB_GetCurrentlyOpenNWBFiles()
+	if(!IsNaN(GetRowIndex(activeFiles, str = entry)))
+		printf "Can not add dropped file because it is currently open for data export: %s\rTo close the file unlock the device in the respective acquisition panel.", entry
+		ControlWindowToFront()
+		LOG_AddEntry(PACKAGE_MIES, "end")
+		return 1
+	endif
+
 	if(AB_AddFile(entry, entry))
 		// already loaded or error
 		LOG_AddEntry(PACKAGE_MIES, "end")
