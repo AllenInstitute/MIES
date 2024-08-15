@@ -585,6 +585,7 @@ Function ASYNC_Execute(dfr)
 	DFREF dfr
 
 	variable orderIndex, size, index
+	string dest
 
 	ASSERT(ASYNC_IsThreadDF(dfr), "Invalid data folder or not a thread data folder")
 	NVAR tgID = $GetThreadGroupID()
@@ -617,6 +618,15 @@ Function ASYNC_Execute(dfr)
 	endif
 
 #ifdef THREADING_DISABLED
+	if(IsFreeDataFolder(dfr))
+		KillTrashFolders()
+		DFREF tmpdfr = GetUniqueTempPath()
+		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
+		MoveDataFolder/Z dfr, $dest
+		if(V_flag)
+			printf "ASYNC_Execute: Could not move free DF to global DF: %s to %s\r", GetDataFolder(1, dfr), dest
+		endif
+	endif
 	DFREF   result                = ASYNC_Run_Worker(dfr)
 	WAVE/DF serialExecutionBuffer = GetSerialExecutionBuffer(getAsyncHomeDF())
 	index = GetNumberFromWaveNote(serialExecutionBuffer, NOTE_INDEX)
