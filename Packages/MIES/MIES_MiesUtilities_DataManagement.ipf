@@ -90,3 +90,15 @@ threadsafe Function MoveToTrash([wv, dfr])
 		endif
 	endif
 End
+
+threadsafe Function KillTrashFolders()
+
+	string dfPath
+
+	DFREF  dfr          = GetMiesPath()
+	WAVE/T trashFolders = ListToTextWave(GetListOfObjects(dfr, TRASH_FOLDER_PREFIX + ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath = 1), ";")
+
+	for(dfPath : trashFolders)
+		KillDataFolder/Z $dfPath
+	endfor
+End

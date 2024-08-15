@@ -28,13 +28,7 @@ static Function IH_KillTemporaries()
 	KillStrings/Z dfrHW:ITCDeviceList
 
 	// try to delete all trash folders
-	trashFolders = GetListOfObjects(dfr, TRASH_FOLDER_PREFIX + ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath = 1)
-
-	numFolders = ItemsInList(trashFolders)
-	for(i = 0; i < numFolders; i += 1)
-		path = StringFromList(i, trashFolders)
-		KillDataFolder/Z $path
-	endfor
+	KillTrashFolders()
 
 	RemoveEmptyDataFolder(dfr)
 
