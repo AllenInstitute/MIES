@@ -137,7 +137,7 @@ Function DownloadFile(string file)
 	INFO("Download file %s", s0 = file)
 
 	URLRequest/O/FILE=fullFilePath/Z=1/V=1 url=url
-	CHECK(!V_Flag)
+	REQUIRE(!V_Flag)
 
 	DecompressFile(file)
 End
