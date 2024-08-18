@@ -11,7 +11,7 @@
 /// @brief __CHI__ Routines for checking the health of the
 ///        MIES installation
 
-static StrConstant CHI_NIDAQ_XOP_64_HASH = "92427feeec9d330d410452b15ff1b6da90fe8e2dd0b8362cd711358c8726706a"
+static StrConstant CHI_NIDAQ_XOP_64_HASH = "b13267a080053c07b80302212b7f73ac199e1f001d9a1b4303e2d7dce1aeb39e"
 static StrConstant CHI_JSON_XOP_VERSION  = "version-882-gad839a0"
 static StrConstant CHI_TUF_XOP_VERSION   = "version-163-g686effb"
 static StrConstant CHI_ITC_XOP_VERSION   = "latest-174-gb9915a9"
