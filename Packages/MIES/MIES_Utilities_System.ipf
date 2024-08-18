@@ -305,7 +305,7 @@ End
 Function TurnOffASLR()
 	string cmd, path
 
-	path = GetFolder(FunctionPath("")) + ":ITCXOP2:tools:Disable-ASLR-for-IP7-and-8.ps1"
+	path = GetFolder(FunctionPath("")) + ":ITCXOP2:tools:Disable-ASLR-for-Igor64.ps1"
 	ASSERT(FileExists(path), "Could not locate powershell script")
 	sprintf cmd, "powershell.exe -ExecutionPolicy Bypass \"%s\"", GetWindowsPath(path)
 	ExecuteScriptText/B/Z cmd
