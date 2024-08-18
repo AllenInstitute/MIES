@@ -314,13 +314,13 @@ Function TurnOffASLR()
 	printf "Please restart Igor Pro as normal user and execute \"Mies Panels\"->\"Check installation\" to see if ASLR is now turned off or not.\r See also https://github.com/AllenInstitute/ITCXOP2#windows-10 for further manual instructions.\r"
 End
 
-/// @brief Check if we are running on Windows 10
-Function IsWindows10()
+/// @brief Check if we are running on Windows 10/11
+Function IsWindows10Or11()
 	string info, os
 
 	info = IgorInfo(3)
 	os   = StringByKey("OS", info)
-	return GrepString(os, "^(Microsoft )?Windows 10 ")
+	return GrepString(os, "^(Microsoft )?Windows 1[01]? ")
 End
 
 /// @brief Upload the given JSON document
