@@ -3268,6 +3268,27 @@ static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 	return output
 End
 
+static Function SF_AssertOnMismatchedWaves(WAVE data0, WAVE data1, string opShort)
+
+	string msg, size0Str, size1Str
+	variable ret
+
+	ret = EqualWaves(data0, data1, EQWAVES_DIMSIZE)
+
+	if(ret)
+		return NaN
+	endif
+
+	WAVE size0 = GetWaveDimensions(data0)
+	WAVE size1 = GetWaveDimensions(data1)
+
+	size0Str = NumericWaveToList(size0, ", ", trailSep = 0)
+	size1Str = NumericWaveToList(size1, ", ", trailSep = 0)
+	sprintf msg, "%s: wave size mismatch [%s] vs [%s]", opShort, size0Str, size1Str
+
+	SFH_ASSERT(ret, msg)
+End
+
 static Function/WAVE SF_OperationMinus(variable jsonId, string jsonPath, string graph)
 
 	WAVE output = SF_IndexOverDataSetsForPrimitiveOperation(jsonId, jsonpath, graph, SF_OPSHORT_MINUS)
@@ -3296,7 +3317,7 @@ static Function/WAVE SF_OperationMinusImplDataSets(WAVE/Z data0, WAVE/Z data1)
 		CopyScales data1, result
 		return result
 	endif
-	SFH_ASSERT(EqualWaves(data0, data1, EQWAVES_DIMSIZE), "minus: wave size mismatch")
+	SF_AssertOnMismatchedWaves(data0, data1, SF_OPSHORT_MINUS)
 
 	MatrixOp/FREE result = data0 - data1
 	CopyScales data0, result
@@ -3331,7 +3352,7 @@ static Function/WAVE SF_OperationPlusImplDataSets(WAVE/Z data0, WAVE/Z data1)
 		CopyScales data1, result
 		return result
 	endif
-	SFH_ASSERT(EqualWaves(data0, data1, EQWAVES_DIMSIZE), "plus: wave size mismatch")
+	SF_AssertOnMismatchedWaves(data0, data1, SF_OPSHORT_PLUS)
 
 	MatrixOp/FREE result = data0 + data1
 	CopyScales data0, result
@@ -3466,7 +3487,7 @@ static Function/WAVE SF_OperationDivImplDataSets(WAVE/Z data0, WAVE/Z data1)
 		CopyScales data1, result
 		return result
 	endif
-	SFH_ASSERT(EqualWaves(data0, data1, EQWAVES_DIMSIZE), "div: wave size mismatch")
+	SF_AssertOnMismatchedWaves(data0, data1, SF_OPSHORT_DIV)
 
 	MatrixOp/FREE result = data0 / data1
 	CopyScales data0, result
@@ -3501,7 +3522,7 @@ static Function/WAVE SF_OperationMultImplDataSets(WAVE/Z data0, WAVE/Z data1)
 		CopyScales data1, result
 		return result
 	endif
-	SFH_ASSERT(EqualWaves(data0, data1, EQWAVES_DIMSIZE), "mult: wave size mismatch")
+	SF_AssertOnMismatchedWaves(data0, data1, SF_OPSHORT_MULT)
 
 	MatrixOp/FREE result = data0 * data1
 	CopyScales data0, result
