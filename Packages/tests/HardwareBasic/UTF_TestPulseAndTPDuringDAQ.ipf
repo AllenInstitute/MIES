@@ -795,6 +795,10 @@ static Function TPDuringDAQWithoodDAQ_PreAcq(device)
 	string device
 
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
+	// Reduce amplification to prevent border vals
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 2)
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_DAgain", val = 2)
+	PGC_SetAndActivateControl(device, "Gain_DA_02", val = 2)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -924,6 +928,10 @@ static Function TPDuringDAQTPStoreCheck_PreAcq(device)
 	string device
 
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
+	// Reduce amplification to prevent border vals
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 2)
+	PGC_SetAndActivateControl(device, "setvar_Settings_VC_DAgain", val = 2)
+	PGC_SetAndActivateControl(device, "Gain_DA_02", val = 2)
 End
 
 static Constant TP_WAIT_TIMEOUT = 5

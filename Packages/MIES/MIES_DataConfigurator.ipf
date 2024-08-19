@@ -1950,9 +1950,9 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 					return [1, V_row, V_col]
 				endif
 
-				return [0, NaN, NaN]
 			endfor
-			break
+
+			return [0, NaN, NaN]
 		case HARDWARE_SUTTER_DAC:
 			// @todo Determine what to check here
 			break
