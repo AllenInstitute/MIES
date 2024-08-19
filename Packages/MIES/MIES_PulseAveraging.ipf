@@ -3448,12 +3448,12 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				scaleChanged   = (DimOffset(img, ROWS) != refScaleLeft) || (DimOffset(img, ROWS) + (DimSize(img, ROWS) - 1) * DimDelta(img, ROWS) != refScaleRight)
 				xUnits         = WaveUnits(set2[0][0], ROWS)
 
-				Make/FREE/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(img, p)
+				WAVE oldSizes = GetWaveDimensions(img)
 				EnsureLargeEnoughWave(img, indexShouldExist = requiredEntries, dimension = COLS, initialValue = NaN)
 				Redimension/N=(refScalePoints, -1) img
 				// inclusive scale must be set after redimension
 				SetScale/P x, refScaleLeft, refScaleDelta, xUnits, img
-				Make/FREE/N=(MAX_DIMENSION_COUNT) newSizes = DimSize(img, p)
+				WAVE newSizes = GetWaveDimensions(img)
 
 				if(!(mode != POST_PLOT_ADDED_SWEEPS                       \
 				     || !EqualWaves(oldSizes, newSizes, EQWAVES_DATA)     \
