@@ -1035,7 +1035,7 @@ static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP
 	[ret, row, column] = DC_CheckIfDataWaveHasBorderVals(device, dataAcqOrTP)
 
 	if(ret)
-		printf "Error writing into DataWave in %s mode: The values at [%g, %g] are out of range. Maybe the DA/AD Gain needs adjustment?\r", SelectString(dataAcqOrTP, "DATA_ACQUISITION", "TestPulse"), row, column
+		printf "Some values in DataWave exceed device limits for %s mode (channel index %g, position %g). Maybe the DA/AD Gain needs adjustment?\r", SelectString(dataAcqOrTP, "DATA_ACQUISITION", "TestPulse"), column, row
 		ControlWindowToFront()
 		Abort
 	endif
@@ -1909,53 +1909,60 @@ End
 
 static Function [variable result, variable row, variable column] DC_CheckIfDataWaveHasBorderVals(string device, variable dataAcqOrTP)
 
+	variable i, minVal, maxVal, channelType
 	variable hardwareType = GetHardwareType(device)
+	WAVE     configWave   = GetDAQConfigWave(device)
+
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			WAVE/Z ITCDataWave = GetDAQDataWave(device, dataAcqOrTP)
 			ASSERT(WaveExists(ITCDataWave), "Missing DAQDataWave")
 			ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type: " + num2str(WaveType(ITCDataWave)))
 
-			FindValue/UOFV/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
+			// border vals are the same for all channels for ITC, so just use first
+			[minVal, maxVal] = HW_GetVoltageRange(hardwareType, configWave[0][%ChannelType], 1)
 
+			FindValue/UOFV/I=(minVal) ITCDataWave
 			if(V_Value != -1)
 				return [1, V_row, V_col]
 			endif
 
-			FindValue/UOFV/I=(SIGNED_INT_16BIT_MAX) ITCDataWave
-
+			FindValue/UOFV/I=(maxVal) ITCDataWave
 			if(V_Value != -1)
 				return [1, V_row, V_col]
 			endif
 
 			return [0, NaN, NaN]
-			break
-		case HARDWARE_NI_DAC:
-			WAVE/WAVE NIDataWave = GetDAQDataWave(device, dataAcqOrTP)
-			ASSERT(IsWaveRefWave(NIDataWave), "Unexpected wave type")
-			variable channels = numpnts(NIDataWave)
-			variable i
-			for(i = 0; i < channels; i += 1)
-				WAVE NIChannel = NIDataWave[i]
-
-				FindValue/UOFV/V=(NI_DAC_MIN)/T=1E-6 NIChannel
-
-				if(V_Value != -1)
-					return [1, V_row, V_col]
-				endif
-
-				FindValue/UOFV/V=(NI_DAC_MAX)/T=1E-6 NIChannel
-
-				if(V_Value != -1)
-					return [1, V_row, V_col]
-				endif
-
-				return [0, NaN, NaN]
-			endfor
-			break
+		case HARDWARE_NI_DAC: // intended drop through
 		case HARDWARE_SUTTER_DAC:
-			// @todo Determine what to check here
-			break
+			WAVE/WAVE dataWave = GetDAQDataWave(device, dataAcqOrTP)
+			ASSERT(IsWaveRefWave(dataWave), "Unexpected wave type")
+
+			for(WAVE channel : dataWave)
+
+				channelType = configWave[i][%ChannelType]
+				if(channelType != XOP_CHANNEL_TYPE_DAC)
+					i += 1
+					continue
+				endif
+				[minVal, maxVal] = HW_GetVoltageRange(hardwareType, channelType, !IsNaN(configWave[i][%HEADSTAGE]))
+
+				FindValue/UOFV/V=(minVal)/T=1E-6 channel
+				if(V_Value != -1)
+					return [1, V_row, i]
+				endif
+
+				FindValue/UOFV/V=(maxVal)/T=1E-6 channel
+				if(V_Value != -1)
+					return [1, V_row, i]
+				endif
+
+				i += 1
+			endfor
+
+			return [0, NaN, NaN]
+		default:
+			ASSERT(0, "Unsupported hardware type")
 	endswitch
 End
 
