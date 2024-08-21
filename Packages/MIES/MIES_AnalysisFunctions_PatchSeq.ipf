@@ -185,10 +185,11 @@ static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC = 1.5
 ///@{
 static Constant PSQ_DS_FI_SLOPE              = 0x1
 static Constant PSQ_DS_FI_SLOPE_REACHED_PASS = 0x2
-static Constant PSQ_DS_SWEEP_PASS            = 0x3
-static Constant PSQ_DS_SWEEP                 = 0x4
-static Constant PSQ_DS_APFREQ                = 0x5
-static Constant PSQ_DS_DASCALE               = 0x6
+static Constant PSQ_DS_FI_OFFSET             = 0x3
+static Constant PSQ_DS_SWEEP_PASS            = 0x4
+static Constant PSQ_DS_SWEEP                 = 0x5
+static Constant PSQ_DS_APFREQ                = 0x6
+static Constant PSQ_DS_DASCALE               = 0x7
 ///@}
 
 /// @brief Fills `s` according to the analysis function type
@@ -2725,6 +2726,8 @@ static Function [string currentSCI, string RhSuAd, variable headstageContingency
 			return [PSQ_FMT_LBN_DA_fI_SLOPE, PSQ_FMT_LBN_DA_AT_RSA_fI_SLOPES, HCM_DEPEND]
 		case PSQ_DS_FI_SLOPE_REACHED_PASS:
 			return [PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS, PSQ_FMT_LBN_DA_AT_RSA_fI_SLOPES_PASS, HCM_INDEP]
+		case PSQ_DS_FI_OFFSET:
+			return [PSQ_FMT_LBN_DA_fI_SLOPE, PSQ_FMT_LBN_DA_AT_RSA_fI_SLOPES, HCM_DEPEND]
 		case PSQ_DS_SWEEP_PASS:
 			return [PSQ_FMT_LBN_SWEEP_PASS, PSQ_FMT_LBN_DA_AT_RSA_SWEEPS, HCM_INDEP]
 		case PSQ_DS_SWEEP:
