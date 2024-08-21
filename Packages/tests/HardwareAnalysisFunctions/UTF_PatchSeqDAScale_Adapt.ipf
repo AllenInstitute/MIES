@@ -1515,7 +1515,7 @@ static Function PS_DS_AD10_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 0, 0}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {0, 1, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN}, mode = WAVE_DATA)
@@ -1534,14 +1534,14 @@ static Function PS_DS_AD10_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {9.374999999999962e-10, 3.124999999999997e-09, 6.510416666666681e-09}
-	Make/FREE/D fiSlopeRef = {9.374999999999962e-10, 3.124999999999997e-09, 6.510416666666681e-09}
-	Make/FREE/D fiOffsetRef = {-21.49999999999984, -129.9999999999999, -314.1666666666805}
-	Make/FREE/T futureDAScalesRef = {"4.96;5.44;", "4.96;5.44;5.6704;", "4.96;5.44;5.6704;5.82246399999999;"}
+	Make/FREE/D maxSlopeRef = {9.374999999999962e-10, 9.374999999999962e-10, 9.374999999999962e-10}
+	Make/FREE/D fiSlopeRef = {9.374999999999962e-10, -8.272058823073271e-10, 3.124999999999996e-10}
+	Make/FREE/D fiOffsetRef = {-21.49999999999984, 66.02941176244343, 30.16666666697915}
+	Make/FREE/T futureDAScalesRef = {"4.96;3.14666666656668;", "4.96;3.14666666656668;7.94666666656668;", "4.96;3.14666666656668;7.94666666656668;14.5466666665667;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {4.96, 5.440000000000003, 5.670400000000001}
+	Make/FREE/D DAScalesRef = {4.96, 3.146666666566679, 7.946666666566679}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1649,16 +1649,16 @@ static Function PS_DS_AD11_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
-	Make/FREE/D fiSlopeRef = {1.744186046511628e-10, 1.014061654948618e-10}
-	Make/FREE/D fiOffsetRef = {9.023255813953488, 13.6181719848567}
-	Make/FREE/T futureDAScalesRef = {"6.29333333333333;11.224;", \
-	                                 "6.29333333333333;11.224;"}
+	Make/FREE/D fiSlopeRef = {1.744186046511628e-10, 9.722222222222222e-11}
+	Make/FREE/D fiOffsetRef = {9.023255813953488, 13.88148148148148}
+	Make/FREE/T futureDAScalesRef = {"6.29333333333333;11.4361904761905;", \
+	                                 "6.29333333333333;11.4361904761905;"}
 
 	// we do have three pairs in apFrequenciesFromRhSuAd/DAScalesFromRhSuAd but a neighboring duplicate
 	// so only two valid slopes and offsets
 	Make/FREE/D fiSlopesFromRhSuAdRef = {PSQ_DS_SKIPPED_FI_SLOPE, 1.5e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {PSQ_DS_SKIPPED_FI_SLOPE, 8.5, 4}
-	Make/FREE/D DAScalesRef = {6.293333333333333, 11.224}
+	Make/FREE/D DAScalesRef = {6.293333333333333, 11.43619047619048}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1716,10 +1716,10 @@ static Function PS_DS_AD12([string str])
 
 	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
 
-	wv[][0][%APFrequency] = 25
-	wv[][1][%APFrequency] = 21   // future DAScale (8.4)
-	wv[][2][%APFrequency] = 21   // redoing future DAScale (8.4), passed f-I slope QC (1.) and got another future DAScale 5.95
-	wv[][3][%APFrequency] = 21.1 // passed f-I slope QC (2.)
+	wv[][0][%APFrequency] = 27
+	wv[][1][%APFrequency] = 20   // future DAScale (8.22)
+	wv[][2][%APFrequency] = 20   // redoing future DAScale (8.22), passed f-I slope QC (1.) and got another future DAScale 5.86
+	wv[][3][%APFrequency] = 20.1 // passed f-I slope QC (2.)
 
 	wv[][][%AsyncQC]     = 1
 	wv[][][%BaselineQC]  = 1
@@ -1764,14 +1764,13 @@ static Function PS_DS_AD12_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {3.416149068322985e-10, 3.416149068322985e-10, 3.416149068322985e-10, 3.416149068322985e-10}
-	Make/FREE/D fiSlopeRef = {3.416149068322985e-10, 3.416149068322985e-10, -2.376451525789897e-10, -4.078983962177433e-12}
-	Make/FREE/D fiOffsetRef = {2.043478260869549, 2.043478260869549, 40.9697542533081, 21.34276443867624}
-	Make/FREE/T futureDAScalesRef = {"6.72;8.40318181818182;", "6.72;8.40318181818182;", "6.72;8.40318181818182;5.95159090909091;", "6.72;8.40318181818182;5.95159090909091;"}
-
+	Make/FREE/D maxSlopeRef = {4.037267080745342e-10, 4.037267080745342e-10, 4.037267080745342e-10, 4.037267080745342e-10}
+	Make/FREE/D fiSlopeRef = {4.037267080745342e-10, 4.037267080745342e-10, -4.648501752436268e-10, -4.232032580229025e-12}
+	Make/FREE/D fiOffsetRef = {-0.1304347826086989, -0.1304347826086989, 58.23793177637171, 20.348121140308}
+	Make/FREE/T futureDAScalesRef = {"6.72;8.22586153836154;", "6.72;8.22586153836154;", "6.72;8.22586153836154;5.86293076918077;", "6.72;8.22586153836154;5.86293076918077;"}
 	Make/FREE/D fiSlopesFromRhSuAdRef = {2e-10, 2e-10, 1e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {8, 8, 10.5}
-	Make/FREE/D DAScalesRef = {6.719999999999999, 8.403181818181814, 8.403181818181814, 5.951590909090905}
+	Make/FREE/D DAScalesRef = {6.719999999999999, 8.225861538361537, 8.225861538361537, 5.86293076918077}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)

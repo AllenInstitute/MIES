@@ -2604,14 +2604,10 @@ End
 /// - Check if the resulting fit slope is smaller than `slopePercentage`
 ///
 /// @retval futureDAScales future DAScale values including the historic ones, @see PSQ_DS_GatherFutureDAScalesAndFrequency
-/// @retval fitOffset      offset of the linear curve fit
-/// @retval fitSlope       slope of the linear curve fit
-/// @retval DAScale        current DAScale value
-/// @retval apfreq         current AP frequency value
-static Function [WAVE futureDAScales, variable fitOffset, variable fitSlope, variable DAScale, variable apfreq] PSQ_DS_EvaluateAdaptiveThresholdSweep(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
+static Function [WAVE futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
 
 	string key, errMsg
-	variable maxSlope, validFit
+	variable maxSlope, validFit, fitOffset, fitSlope
 
 	WAVE textualValues   = GetLBTextualValues(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -2643,23 +2639,11 @@ static Function [WAVE futureDAScales, variable fitOffset, variable fitSlope, var
 		fitSlope  = NaN
 	endif
 
-	if(WaveExists(apfreqs))
-		apfreq = apfreqs[Inf]
-	else
-		apfreq = NaN
-	endif
-
-	if(WaveExists(DAScales))
-		DAScale = DAScales[Inf]
-	else
-		DAScale = NaN
-	endif
-
 	[maxSlope, WAVE fitSlopesAll, WAVE DAScalesAll] = PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(device, sweepNo, headstage, fitSlope)
 
 	PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(device, sweepNo, fitSlopesAll, DAScalesAll, fitSlope, maxSlope, cdp.slopePercentage, validFit)
 
-	return [futureDAScales, fitOffset, fitSlope, DAScale, apfreq]
+	return [futureDAScales]
 End
 
 /// @brief Determine from the POST_SWEEP_EVENT if the set is already finished
@@ -3222,6 +3206,43 @@ static Function [variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_D
 	return [daScaleMinStepWidth, daScaleMaxStepWidth]
 End
 
+static Function [variable fitOffset, variable fitSlope, variable DAScale, variable apfreq] PSQ_DS_GetValuesOfLargestAPFreq(string device, variable sweepNo, variable headstage)
+
+	variable emptySCI, offset, i, numEntries, maxValue, maxLoc
+
+	[WAVE apfreqAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_APFREQ)
+	ASSERT(!emptySCI, "Unexpected emptySCI")
+	[WAVE fitSlopeAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_FI_SLOPE)
+	ASSERT(!emptySCI, "Unexpected emptySCI")
+	[WAVE fitOffsetAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_FI_OFFSET)
+	ASSERT(!emptySCI, "Unexpected emptySCI")
+	[WAVE DAScaleAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_DASCALE)
+	ASSERT(!emptySCI, "Unexpected emptySCI")
+
+	// get the largest value with the highest index
+	maxValue   = -Inf
+	numEntries = DimSize(apfreqAll, ROWS)
+	for(i = numEntries - 1; i >= 0; i -= 1)
+		if(apfreqAll[i] > maxValue)
+			maxValue = apfreqAll[i]
+			maxLoc   = i
+		endif
+	endfor
+
+	// highest AP frequency is at V_maxloc
+	apfreq  = apfreqAll[maxLoc]
+	DAScale = DAScaleAll[maxLoc]
+
+	// find the rest by indexing relative from the end as we have fewer fitOffset/fitSlope entries in total
+	// but a 1:1 correspondence in the SCI data which is at the end
+	offset = DimSize(apfreqAll, ROWS) - maxLoc
+
+	fitOffset = fitOffsetAll[DimSize(fitOffsetAll, ROWS) - offset]
+	fitSlope  = fitOffsetAll[DimSize(fitSlopeAll, ROWS) - offset]
+
+	return [fitOffset, fitSlope, DAScale, apfreq]
+End
+
 static Structure PSQ_DS_DAScaleParams
 	variable absFrequencyMinDistance, maxFrequencyChangePercent
 	variable daScaleStepMinNorm, daScaleStepMaxNorm, slopePercentage
@@ -3679,7 +3700,7 @@ Function PSQ_DAScale(device, s)
 	variable sweepPassed, setPassed, length, minLength, reachedFinalSlope, fitOffset, fitSlope, apfreq, enoughFIPointsPassedQC
 	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam, measuredAllFutureDAScales, fallbackDAScaleRangeFac
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, multiplier, asyncAlarmPassed, supraStimsetCycle
-	variable daScaleStepMinNorm, daScaleStepMaxNorm, maxSlope, validFit
+	variable daScaleStepMinNorm, daScaleStepMaxNorm, maxSlope, validFit, emptySCI
 	string msg, stimset, key, opMode, offsetOp, textboxString, str, errMsg
 	variable daScaleOffset
 	variable finalSlopePercent = NaN
@@ -3955,7 +3976,7 @@ Function PSQ_DAScale(device, s)
 					cdp.daScaleStepMinNorm = daScaleStepMinNorm
 					cdp.daScaleStepMaxNorm = daScaleStepMaxNorm
 
-					[WAVE futureDAScales, fitOffset, fitSlope, DAScale, apfreq] = PSQ_DS_EvaluateAdaptiveThresholdSweep(device, s.sweepNo, s.headstage, cdp)
+					[WAVE futureDAScales] = PSQ_DS_EvaluateAdaptiveThresholdSweep(device, s.sweepNo, s.headstage, cdp)
 
 					// prepare wave for setting DAScale; DAScalesIndex is incremented when required below
 					WAVE/ZZ DAScales = futureDAScales
@@ -4158,6 +4179,7 @@ Function PSQ_DAScale(device, s)
 
 						if(sweepPassed)
 							if(measuredAllFutureDAScales)
+								[fitOffset, fitSlope, DAScale, apfreq] = PSQ_DS_GetValuesOfLargestAPFreq(device, s.sweepNo, s.headstage)
 
 								dascale = PSQ_DS_CalculateDAScale(cdp, fitOffset, fitSlope, DAScale, apfreq)
 								Make/FREE/D DAScaleNew = {dascale}

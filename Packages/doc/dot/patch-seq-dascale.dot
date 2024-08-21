@@ -209,7 +209,7 @@ QC and f-I slope QC passing?"];
 	n109 -> n100	[label=Yes];
 	n103	[label="Measured all future DAScale values?"];
 	n100 -> n103	[label=Yes];
-	n106	[label="Calculate new DAScale value by\n extrapolating fit slope and offset\n and using MaximumChangePercent - 2 as frequency distance"];
+	n106	[label="Calculate new DAScale value by\n extrapolating fit slope and offset\n and using MaximumChangePercent - 2 as frequency distance.\n Uses the fit slopes and offsets from the\n passing sweep with the highest AP frequency searching from the back."];
 	n103 -> n106	[label=Yes];
 	n108	[label="Use the next DAScale value"];
 	n103 -> n108	[label=No];
