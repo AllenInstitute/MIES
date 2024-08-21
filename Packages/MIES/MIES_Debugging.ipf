@@ -600,7 +600,7 @@ threadsafe Function BUG_TS(string msg, [WAVE/T keys, WAVE/T values])
 	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
 	bugCount  = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0, create = 1)
 	bugCount += 1
-	TSDS_Write(TSDS_BUGCOUNT, var = bugCount)
+	TSDS_WriteVar(TSDS_BUGCOUNT, bugCount)
 	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 
 	print "BUG_TS: Should never be called during automated testing."

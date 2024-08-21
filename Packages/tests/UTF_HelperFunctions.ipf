@@ -165,7 +165,7 @@ Function AdditionalExperimentCleanup()
 	KillVariables bugCount
 
 	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
-	TSDS_Write(TSDS_BUGCOUNT, var = 0)
+	TSDS_WriteVar(TSDS_BUGCOUNT, 0)
 	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 
 	KillOrMoveToTrash(wv = GetOverrideResults())
@@ -858,7 +858,7 @@ Function CheckForBugMessages()
 	endif
 
 	TUFXOP_AcquireLock/N=(TSDS_BUGCOUNT)
-	bugCount_ts = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0)
+	bugCount_ts = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0, create = 1)
 	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 
 	if(IsFinite(bugCount_ts))
@@ -873,7 +873,7 @@ Function DisableBugChecks()
 	NVAR bugCount = $GetBugCount()
 	bugCount = NaN
 
-	TSDS_Write(TSDS_BUGCOUNT, var = NaN)
+	TSDS_WriteVar(TSDS_BUGCOUNT, NaN)
 End
 
 /// @brief Exhaust all memory so that only `amountOfFreeMemoryLeft` [GB] is left
