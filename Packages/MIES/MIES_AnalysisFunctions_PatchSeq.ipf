@@ -3210,13 +3210,13 @@ static Function [variable fitOffset, variable fitSlope, variable DAScale, variab
 
 	variable emptySCI, offset, i, numEntries, maxValue, maxLoc
 
-	[WAVE apfreqAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_APFREQ)
+	[WAVE apfreqAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1)
 	ASSERT(!emptySCI, "Unexpected emptySCI")
-	[WAVE fitSlopeAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_FI_SLOPE)
+	[WAVE fitSlopeAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_FI_SLOPE, filterPassing = 1)
 	ASSERT(!emptySCI, "Unexpected emptySCI")
-	[WAVE fitOffsetAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_FI_OFFSET)
+	[WAVE fitOffsetAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_FI_OFFSET, filterPassing = 1)
 	ASSERT(!emptySCI, "Unexpected emptySCI")
-	[WAVE DAScaleAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_DASCALE)
+	[WAVE DAScaleAll, emptySCI] = PSQ_DS_GetLabnotebookData(device, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1)
 	ASSERT(!emptySCI, "Unexpected emptySCI")
 
 	// get the largest value with the highest index
