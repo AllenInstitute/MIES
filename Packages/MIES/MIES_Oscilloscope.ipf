@@ -479,7 +479,7 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 
 	STRUCT TPAnalysisInput tpInput
 	variable i, j
-	variable tpChannels, numADCs, numDACs, tpLengthPoints, tpStart, tpEnd, tpStartPos
+	variable tpChannels, numADCs, numDACs, tpLengthPointsADC, tpStart, tpEnd, tpStartPos
 	variable TPChanIndex, saveTP, clampAmp
 	variable headstage, fifoLatest, channelIndex
 	string hsList
@@ -530,10 +530,10 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 		WAVE TPSettings     = GetTPSettings(device)
 		WAVE TPSettingsCalc = GetTPSettingsCalculated(device)
 
-		tpLengthPoints = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%totalLengthPointsTP_ADC] : TPSettingsCalc[%totalLengthPointsDAQ_ADC]
+		tpLengthPointsADC = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%totalLengthPointsTP_ADC] : TPSettingsCalc[%totalLengthPointsDAQ_ADC]
 
 		// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only
-		fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
+		fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPointsADC : fifoPos
 
 		WAVE ADCs   = GetADCListFromConfig(config)
 		WAVE DACs   = GetDACListFromConfig(config)
@@ -544,33 +544,40 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 		numADCs = DimSize(ADCs, ROWS)
 
 		// note: currently this works for multiplier = 1 only, see DC_PlaceDataInDAQDataWave
-		Make/FREE/N=(tpLengthPoints) channelData
+		Make/FREE/N=(tpLengthPointsADC) channelData
 		WAVE tpInput.data = channelData
 
-		tpInput.device         = device
-		tpInput.duration       = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseLengthPointsTP_ADC] : TPSettingsCalc[%pulseLengthPointsDAQ_ADC]
-		tpInput.baselineFrac   = TPSettingsCalc[%baselineFrac]
-		tpInput.tpLengthPoints = tpLengthPoints
-		tpInput.readTimeStamp  = ticks * TICKS_TO_SECONDS
-		tpInput.activeADCs     = tpChannels
+		tpInput.device               = device
+		tpInput.tpLengthPointsADC    = tpLengthPointsADC
+		tpInput.pulseLengthPointsADC = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseLengthPointsTP_ADC] : TPSettingsCalc[%pulseLengthPointsDAQ_ADC]
+		tpInput.pulseStartPointsADC  = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseStartPointsTP_ADC] : TPSettingsCalc[%pulseStartPointsDAQ_ADC]
+		tpInput.samplingIntervalADC  = DimDelta(scaledDataWave[numDACs], ROWS)
+		tpInput.tpLengthPointsDAC    = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%totalLengthPointsTP] : TPSettingsCalc[%totalLengthPointsDAQ]
+		tpInput.pulseLengthPointsDAC = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseLengthPointsTP] : TPSettingsCalc[%pulseLengthPointsDAQ]
+		tpInput.pulseStartPointsDAC  = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseStartPointsTP] : TPSettingsCalc[%pulseStartPointsDAQ]
+		tpInput.samplingIntervalDAC  = DimDelta(scaledDataWave[0], ROWS)
+		tpInput.baselineFrac         = TPSettingsCalc[%baselineFrac]
+		tpInput.readTimeStamp        = ticks * TICKS_TO_SECONDS
+		tpInput.activeADCs           = tpChannels
+		tpInput.cycleId              = ROVAR(GetTestpulseCycleID(device))
 
-		tpStart = trunc(fifoPosGlobal / tpLengthPoints)
-		tpEnd   = trunc(fifoLatest / tpLengthPoints)
+		tpStart = trunc(fifoPosGlobal / tpLengthPointsADC)
+		tpEnd   = trunc(fifoLatest / tpLengthPointsADC)
 		ASSERT(tpStart <= tpEnd, "New fifopos is smaller than previous fifopos")
 		Make/FREE/D/N=(tpEnd - tpStart) tpMarker
 		NewRandomSeed()
 		tpMarker[] = GetUniqueInteger()
 
 		DEBUGPRINT("tpChannels: ", var = tpChannels)
-		DEBUGPRINT("tpLength: ", var = tpLengthPoints)
+		DEBUGPRINT("tpLength: ", var = tpLengthPointsADC)
 
 		for(i = tpStart; i < tpEnd; i += 1)
 
 			tpInput.measurementMarker = tpMarker[i - tpStart]
-			tpStartPos                = i * tpLengthPoints
+			tpStartPos                = i * tpLengthPointsADC
 
 			if(saveTP)
-				Make/FREE/N=(tpLengthPoints, tpChannels) StoreTPWave
+				Make/FREE/N=(tpLengthPointsADC, tpChannels) StoreTPWave
 				for(j = 0; j < tpChannels; j += 1)
 					WAVE scaledChannel = scaledDataWave[numDACs + j]
 					Multithread StoreTPWave[][j] = scaledChannel[tpStartPos + p]
@@ -579,6 +586,10 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 				TPChanIndex = 0
 				hsList      = ""
 			endif
+
+			// Use same time for all headstages
+			tpInput.timeStamp    = DateTime
+			tpInput.timeStampUTC = DateTimeInUTC()
 
 			for(j = 0; j < numADCs; j += 1)
 				if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)
@@ -622,7 +633,7 @@ Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, devi
 		endfor
 
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE && tpEnd > tpStart)
-			tpStartPos = (tpEnd - 1) * tpLengthPoints
+			tpStartPos = (tpEnd - 1) * tpLengthPointsADC
 			if(DAG_GetNumericalValue(device, "check_settings_show_power"))
 				WAVE tpOsciForPowerSpectrum = GetScaledTPTempWave(device)
 				Make/FREE/D/N=(numADCs) tpColumns
