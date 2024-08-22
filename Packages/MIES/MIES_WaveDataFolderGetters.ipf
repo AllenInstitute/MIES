@@ -164,10 +164,10 @@ Function/WAVE GetChanAmpAssignUnit(device)
 		Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/WAVE=wv
 		wv = ""
 
-		wv[0][] = "mV"
-		wv[1][] = "pA"
-		wv[2][] = "pA"
-		wv[3][] = "mV"
+		wv[0][] = GetDAChannelUnit(V_CLAMP_MODE)
+		wv[1][] = GetADChannelUnit(V_CLAMP_MODE)
+		wv[2][] = GetDAChannelUnit(I_CLAMP_MODE)
+		wv[3][] = GetADChannelUnit(I_CLAMP_MODE)
 	endif
 
 	SetDimLabel ROWS, 0, VC_DAUnit, wv
