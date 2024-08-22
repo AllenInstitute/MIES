@@ -106,45 +106,184 @@ Function TP_StoreTP(device, TPWave, tpMarker, hsList)
 	SetNumberInWaveNote(storedTP, NOTE_INDEX, index)
 End
 
+static Function TP_GetStoredTPIndex(string device, variable tpMarker)
+
+	variable numEntries
+
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
+	numEntries = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
+	if(numEntries == 0)
+		return NaN
+	endif
+
+	Make/FREE/N=(numEntries) matches
+	Multithread matches[0, numEntries - 1] = GetNumberFromWaveNote(storedTP[p], "TPMarker") == tpMarker
+	FindValue/V=1 matches
+	if(V_row == -1)
+		return NaN
+	endif
+
+	return V_row
+End
+
+static Function/WAVE TP_RecreateDACWave(variable tpLengthPointsDAC, variable pulseStartPointsDAC, variable pulseLengthPointsDAC, variable clampMode, variable clampAmp, variable samplingInterval)
+
+	Make/FREE/D/N=0 tpDAC
+	TP_CreateTestPulseWaveImpl(tpDAC, tpLengthPointsDAC, pulseStartPointsDAC, pulseLengthPointsDAC)
+	tpDAC *= clampAmp
+	SetScale/P x, 0, samplingInterval, "ms", tpDAC
+	SetScale d, 0, 0, GetADChannelUnit(clampMode), tpDAC
+
+	return tpDAC
+End
+
+static Function/WAVE TP_GetTPMetaData(WAVE tpStorage, variable tpMarker, variable headstage)
+
+	variable i
+	variable numEntries = GetNumberFromWaveNote(tpStorage, NOTE_INDEX)
+	variable numlayers  = DimSize(tpStorage, LAYERS)
+	variable dimMarker  = FindDimLabel(tpStorage, LAYERS, "TPMarker")
+
+	FindValue/RMD=[][headstage][dimMarker]/V=(tpMarker) tpStorage
+	ASSERT(V_row >= 0, "Inconsistent TP data")
+	Duplicate/FREE/RMD=[V_row][headstage][] tpStorage, tpResult
+	Redimension/E=1/N=(numLayers) tpResult
+	for(i = 0; i < numLayers; i += 1)
+		SetDimLabel ROWS, i, $GetDimLabel(tpStorage, LAYERS, i), tpResult
+	endfor
+
+	return tpResult
+End
+
+/// @brief Returns data about a stored TestPulse from a given tpMarker
+///
+/// Returns a wave reference wave with 3 entries:
+/// 0 : numeric wave with the acquired AD data of the test pulse (signal) in the format as created by @ref TP_StoreTP
+/// 1 : numeric wave with the recreated DA data of the test pulse (command)
+/// 2 : Additional information for the test pulse from creation and analysis in the format described for @ref GetTPStorage
+///     As the information is for a single TP only, the wave contains a single slice (1 row)
+///
+/// @param device     device name
+/// @param tpMarker   testpulse marker
+/// @param headstage  headstage number
+/// @param includeDAC flag, when set the DAC wave of the testpulse is recreated
+Function/WAVE TP_GetStoredTP(string device, variable tpMarker, variable headstage, variable includeDAC)
+
+	variable tpIndex
+	variable i, numlayers
+
+	ASSERT(IsValidHeadstage(headstage), "Invalid headstage number")
+	includeDAC = !!includeDAC
+
+	tpIndex = TP_GetStoredTPIndex(device, tpMarker)
+	if(IsNaN(tpIndex))
+		return $""
+	endif
+
+	WAVE/WAVE tpStored = GetStoredTestPulseWave(device)
+	WAVE      tpADC    = tpStored[tpIndex]
+
+	WAVE tpStorage = GetTPStorage(device)
+	WAVE tpResult  = TP_GetTPMetaData(tpStorage, tpMarker, headstage)
+
+	if(includeDAC)
+		WAVE tpDAC = TP_RecreateDACWave(tpResult[%TPLENGTHPOINTSDAC], tpResult[%PULSESTARTPOINTSDAC], tpResult[%PULSELENGTHPOINTSDAC], tpResult[%ClampMode], tpResult[%CLAMPAMP], tpResult[%SAMPLINGINTERVALADC])
+	else
+		WAVE/Z tpDAC = $""
+	endif
+
+	Make/FREE/WAVE tpAll = {tpADC, tpDAC, tpResult}
+
+	return tpAll
+End
+
+/// @brief Returns data about stored TestPulses from a given cycle id
+///
+/// Returns a wave reference wave with 3 entries:
+/// 0 : wave ref wave that stores numeric waves with the acquired AD data of the test pulse (signal) in the format as created by @ref TP_StoreTP
+///     The number of elements in the wave ref wave equals the number of test pulses in the cycle.
+/// 1 : numeric wave with the recreated DA data of the test pulse (command)
+///     Note: here only a single wave is recreated because the DA data for all test pulses of that cycle is identical
+/// 2 : wave ref wave that stores additional information for the test pulses from creation and analysis in the format described for @ref GetTPStorage
+///     The number of elements in the wave ref wave equals the number of test pulses in the cycle and has the same order as the signal waves from index 0.
+///     Each element is a single slice (1 row) of tpStorage.
+///
+/// If no test pulses exist for the given cycle id a null wave is returned.
+///
+/// @param device     device name
+/// @param cycleId    test pulse cycle id
+/// @param headstage  headstage number
+/// @param includeDAC flag, when set the DAC wave of the testpulse is recreated
+Function/WAVE TP_GetStoredTPsFromCycle(string device, variable cycleId, variable headstage, variable includeDAC)
+
+	variable i, numStored, numIndices
+
+	ASSERT(IsValidHeadstage(headstage), "Invalid headstage number")
+	includeDAC = !!includeDAC
+
+	WAVE/WAVE tpStored = GetStoredTestPulseWave(device)
+	numStored = GetNumberFromWaveNote(tpStored, NOTE_INDEX)
+	Make/FREE/D/N=(numStored) matchCycleId
+	matchCycleId[] = cycleId == GetNumberFromWaveNote(tpStored[p], "TPCycleID") ? p : NaN
+	WAVE/Z tpIndices = ZapNaNs(matchCycleId)
+	if(!WaveExists(tpIndices))
+		return $""
+	endif
+
+	numIndices = DimSize(tpIndices, ROWS)
+	Make/FREE/WAVE/N=(numIndices) tpsADC, tpsresult
+	for(i = 0; i < numIndices; i += 1)
+		Duplicate/FREE/RMD=[][headstage] tpStored[tpIndices[i]], tpADCSliced
+		Redimension/N=(-1) tpADCSliced
+		tpsADC[i] = tpADCSliced
+	endfor
+
+	Make/FREE/D/N=(numIndices) tpMarkers
+	tpMarkers[] = GetNumberFromWaveNote(tpsADC[p], "TPMarker")
+
+	WAVE tpStorage = GetTPStorage(device)
+	tpsResult[] = TP_GetTPMetaData(tpStorage, tpMarkers[p], headstage)
+
+	if(includeDAC)
+		Make/FREE/WAVE/N=(numIndices) tpsDAC
+		tpsDAC[] = TP_RecreateDACWave(WaveRef(tpsResult[p])[%TPLENGTHPOINTSDAC], WaveRef(tpsResult[p])[%PULSESTARTPOINTSDAC], WaveRef(tpsResult[p])[%PULSELENGTHPOINTSDAC], WaveRef(tpsResult[p])[%ClampMode], WaveRef(tpsResult[p])[%CLAMPAMP], WaveRef(tpsResult[p])[%SAMPLINGINTERVALADC])
+	else
+		WAVE/Z tpsDAC = $""
+	endif
+
+	Make/FREE/WAVE tpAll = {tpsADC, tpsDAC, tpsResult}
+
+	return tpAll
+End
+
 /// @brief Return a number of consecutive test pulses ending with the TP
 /// identified by tpMarker.
 ///
 /// The wave reference wave will have as many columns as active headstages were used.
 Function/WAVE TP_GetConsecutiveTPsUptoMarker(string device, variable tpMarker, variable number)
 
-	variable numEntries
+	variable tpIndex, tpCycleId
 
-	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
-	numEntries = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
-
-	if(numEntries == 0)
+	tpIndex = TP_GetStoredTPIndex(device, tpMarker)
+	if(IsNaN(tpIndex))
 		return $""
 	endif
 
-	Make/FREE/N=(numEntries) matches
-
-	Multithread matches[0, numEntries - 1] = GetNumberFromWaveNote(storedTP[p], "TPMarker") == tpMarker
-
-	FindValue/V=1 matches
-
-	if(V_row == -1)
+	if(number > tpIndex + 1)
+		// too few TPs available
 		return $""
 	endif
 
 	Make/FREE/N=(number)/WAVE result
 
-	if(number > V_row + 1)
-		// too few TPs available
-		return $""
-	endif
-
-	result[] = storedTP[V_row - number + 1 + p]
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
+	result[] = storedTP[tpIndex - number + 1 + p]
 
 	// check that they all belong to the same TP cycle
-	Redimension/N=(number) matches
-	matches[] = GetNumberFromWaveNote(result[0], "TPCycleID") == GetNumberFromWaveNote(result[p], "TPCycleID")
-
-	if(Sum(matches) < number)
+	Make/FREE/N=(number) matches
+	tpCycleId = GetNumberFromWaveNote(result[0], "TPCycleID")
+	matches[] = tpCycleId == GetNumberFromWaveNote(result[p], "TPCycleID")
+	if(sum(matches) < number)
 		return $""
 	endif
 

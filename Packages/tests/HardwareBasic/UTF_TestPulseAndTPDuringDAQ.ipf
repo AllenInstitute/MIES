@@ -1252,6 +1252,115 @@ static Function TPDuringDAQwithPS_PreAcq(device)
 	PGC_SetAndActivateControl(device, "check_settings_show_power", val = 1)
 End
 
+/// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function GetStoredTPTest([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_STP1_TP1"        + \
+	                             "__HS0_DA0_AD0_CM:IC:_ST:TestPulse:" + \
+	                             "__HS1_DA1_AD1_CM:VC:_ST:TestPulse:")
+
+	AcquireData_NG(s, str)
+
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+End
+
+static Function GetStoredTPTest_REENTRY([str])
+	string str
+	variable i, sweepNo, marker, cycleId, headstage, numHS
+
+	Make/FREE/D headstages = {0, 1}
+	numHS = DimSize(headstages, ROWS)
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	WaitAndCheckStoredTPs_IGNORE(str, numHS)
+
+	WAVE/Z TPStorage = GetTPStorage(str)
+	CHECK_WAVE(TPStorage, NUMERIC_WAVE)
+	marker = TPStorage[0][0][%TPMarker]
+	CHECK_NEQ_VAR(marker, NaN)
+
+	// Check GetStoredTP
+	WAVE/Z storedTPData = TP_GetStoredTP(str, NaN, 0, 1)
+	CHECK_WAVE(storedTPData, NULL_WAVE)
+
+	try
+		WAVE/Z storedTPData = TP_GetStoredTP(str, marker, NaN, 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/WAVE/N=(numHS) tpDACsRef, tpResultsRef
+	for(headstage : headstages)
+		WAVE/Z storedTPData = TP_GetStoredTP(str, marker, headstage, 1)
+		CHECK_WAVE(storedTPData, WAVE_WAVE)
+		CHECK_EQUAL_VAR(DimSize(storedTPData, ROWS), 3)
+
+		WAVE/WAVE tpData = storedTPData
+		WAVE/Z    tpADC  = tpData[0]
+		WAVE/Z    tpDAC  = tpData[1]
+		WAVE/Z    tpInfo = tpData[2]
+
+		CHECK_WAVE(tpADC, NUMERIC_WAVE)
+		CHECK_GE_VAR(DimSize(tpADC, ROWS), 1)
+		CHECK_WAVE(tpDAC, NUMERIC_WAVE)
+		CHECK_GE_VAR(DimSize(tpDAC, ROWS), 1)
+
+		WAVE tpResult = MIES_TP#TP_GetTPMetaData(tpStorage, marker, headstage)
+		CHECK_EQUAL_WAVES(tpInfo, tpResult)
+
+		tpDACsRef[i]    = tpDAC
+		tpResultsRef[i] = tpInfo
+		i              += 1
+	endfor
+
+	// Check TP_GetStoredTPsFromCycle
+	cycleId = TPStorage[0][0][%TPCycleID]
+	CHECK_NEQ_VAR(cycleId, NaN)
+
+	WAVE/Z storedTPData = TP_GetStoredTPsFromCycle(str, NaN, 0, 1)
+	CHECK_WAVE(storedTPData, NULL_WAVE)
+
+	try
+		WAVE/Z storedTPData = TP_GetStoredTPsFromCycle(str, cycleId, NaN, 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	i = 0
+	for(headstage : headstages)
+		WAVE/Z storedTPData = TP_GetStoredTPsFromCycle(str, cycleId, headstage, 1)
+		CHECK_WAVE(storedTPData, WAVE_WAVE)
+		CHECK_EQUAL_VAR(DimSize(storedTPData, ROWS), 3)
+
+		WAVE/WAVE   tpData     = storedTPData
+		WAVE/WAVE/Z tpADCs     = tpData[0]
+		WAVE/WAVE/Z tpDACs     = tpData[1]
+		WAVE/WAVE/Z tpInfoWref = tpData[2]
+
+		CHECK_WAVE(tpADCs, WAVE_WAVE)
+		CHECK_GE_VAR(DimSize(tpADCs, ROWS), 1)
+		CHECK_WAVE(tpDACs, WAVE_WAVE)
+		CHECK_GE_VAR(DimSize(tpDACs, ROWS), 1)
+		CHECK_WAVE(tpInfoWref, WAVE_WAVE)
+		CHECK_EQUAL_VAR(DimSize(tpADCs, ROWS), DimSize(tpInfoWref, ROWS))
+		CHECK_EQUAL_VAR(DimSize(tpADCs, ROWS), DimSize(tpDACs, ROWS))
+
+		WAVE tpInfo0 = tpInfoWref[0]
+		CHECK_EQUAL_WAVES(tpInfo0, tpResultsRef[i])
+		WAVE tpDAC0 = tpDACs[0]
+		CHECK_EQUAL_WAVES(tpDAC0, tpDACsRef[i])
+		i += 1
+	endfor
+End
+
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function TPDuringDAQwithPS([str])
 	string str
