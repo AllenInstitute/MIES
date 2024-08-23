@@ -466,3 +466,144 @@ static Function CheckAccessResSmoke()
 
 	JSON_Release(jsonID)
 End
+
+static Function/WAVE PrepareTPData()
+
+	WAVE tpData = GetTPAnalysisDataWave()
+	tpData[%NOW]                   = 1E6
+	tpData[%HEADSTAGE]             = 1
+	tpData[%MARKER]                = 1234
+	tpData[%NUMBER_OF_TP_CHANNELS] = 2
+	tpData[%TIMESTAMP]             = 2E6
+	tpData[%TIMESTAMPUTC]          = 3E6
+	tpData[%CLAMPMODE]             = V_CLAMP_MODE
+	tpData[%CLAMPAMP]              = 10
+	tpData[%BASELINEFRAC]          = 0.35
+	tpData[%CYCLEID]               = 456
+	tpData[%TPLENGTHPOINTSADC]     = 1500
+	tpData[%PULSELENGTHPOINTSADC]  = 500
+	tpData[%PULSESTARTPOINTSADC]   = 500
+	tpData[%SAMPLINGINTERVALADC]   = 0.002
+	tpData[%TPLENGTHPOINTSDAC]     = 1800
+	tpData[%PULSELENGTHPOINTSDAC]  = 600
+	tpData[%PULSESTARTPOINTSDAC]   = 600
+	tpData[%SAMPLINGINTERVALDAC]   = 0.002
+
+	tpData[%BASELINE]       = 2
+	tpData[%ELEVATED_SS]    = 10
+	tpData[%ELEVATED_INST]  = 11
+	tpData[%STEADYSTATERES] = 1234
+	tpData[%INSTANTRES]     = 2345
+
+	return tpData
+End
+
+static Function CheckTPData(variable jsonId)
+
+	variable var
+	string stv, daUnit, adUnit
+	variable clampMode = V_CLAMP_MODE
+
+	daUnit = GetDAChannelUnit(clampMode)
+	adUnit = GetADChannelUnit(clampMode)
+
+	var = JSON_GetVariable(jsonID, "/properties/tp marker")
+	CHECK_EQUAL_VAR(var, 1234)
+	var = JSON_GetVariable(jsonID, "/properties/headstage")
+	CHECK_EQUAL_VAR(var, 1)
+	stv = JSON_GetString(jsonID, "/properties/device")
+	CHECK_EQUAL_STR(stv, "TestDevice")
+	var = JSON_GetVariable(jsonID, "/properties/clamp mode")
+	CHECK_EQUAL_VAR(var, clampMode)
+	var = JSON_GetVariable(jsonID, "/properties/time of tp acquisition/value")
+	CHECK_EQUAL_VAR(var, 1E6)
+	stv = JSON_GetString(jsonID, "/properties/time of tp acquisition/unit")
+	CHECK_EQUAL_STR(stv, "s")
+	var = JSON_GetVariable(jsonID, "/properties/clamp amplitude/value")
+	CHECK_EQUAL_VAR(var, 10)
+	stv = JSON_GetString(jsonID, "/properties/clamp amplitude/unit")
+	CHECK_EQUAL_STR(stv, daUnit)
+	var = JSON_GetVariable(jsonID, "/properties/tp length ADC/value")
+	CHECK_EQUAL_VAR(var, 1500)
+	stv = JSON_GetString(jsonID, "/properties/tp length ADC/unit")
+	CHECK_EQUAL_STR(stv, "points")
+	var = JSON_GetVariable(jsonID, "/properties/pulse duration ADC/value")
+	CHECK_EQUAL_VAR(var, 500)
+	stv = JSON_GetString(jsonID, "/properties/pulse duration ADC/unit")
+	CHECK_EQUAL_STR(stv, "points")
+	var = JSON_GetVariable(jsonID, "/properties/pulse start point ADC/value")
+	CHECK_EQUAL_VAR(var, 500)
+	stv = JSON_GetString(jsonID, "/properties/pulse start point ADC/unit")
+	CHECK_EQUAL_STR(stv, "point")
+	var = JSON_GetVariable(jsonID, "/properties/sample interval ADC/value")
+	CHECK_EQUAL_VAR(var, 0.002)
+	stv = JSON_GetString(jsonID, "/properties/sample interval ADC/unit")
+	CHECK_EQUAL_STR(stv, "ms")
+	var = JSON_GetVariable(jsonID, "/properties/tp length DAC/value")
+	CHECK_EQUAL_VAR(var, 1800)
+	stv = JSON_GetString(jsonID, "/properties/tp length DAC/unit")
+	CHECK_EQUAL_STR(stv, "points")
+	var = JSON_GetVariable(jsonID, "/properties/pulse duration DAC/value")
+	CHECK_EQUAL_VAR(var, 600)
+	stv = JSON_GetString(jsonID, "/properties/pulse duration DAC/unit")
+	CHECK_EQUAL_STR(stv, "points")
+	var = JSON_GetVariable(jsonID, "/properties/pulse start point DAC/value")
+	CHECK_EQUAL_VAR(var, 600)
+	stv = JSON_GetString(jsonID, "/properties/pulse start point DAC/unit")
+	CHECK_EQUAL_STR(stv, "point")
+	var = JSON_GetVariable(jsonID, "/properties/sample interval DAC/value")
+	CHECK_EQUAL_VAR(var, 0.002)
+	stv = JSON_GetString(jsonID, "/properties/sample interval DAC/unit")
+	CHECK_EQUAL_STR(stv, "ms")
+	var = JSON_GetVariable(jsonID, "/properties/baseline fraction/value")
+	CHECK_EQUAL_VAR(var, 35)
+	stv = JSON_GetString(jsonID, "/properties/baseline fraction/unit")
+	CHECK_EQUAL_STR(stv, "%")
+	var = JSON_GetVariable(jsonID, "/properties/timestamp/value")
+	CHECK_EQUAL_VAR(var, 2E6)
+	stv = JSON_GetString(jsonID, "/properties/timestamp/unit")
+	CHECK_EQUAL_STR(stv, "s")
+	var = JSON_GetVariable(jsonID, "/properties/timestampUTC/value")
+	CHECK_EQUAL_VAR(var, 3E6)
+	stv = JSON_GetString(jsonID, "/properties/timestampUTC/unit")
+	CHECK_EQUAL_STR(stv, "s")
+
+	var = JSON_GetVariable(jsonID, "/properties/tp cycle id")
+	CHECK_EQUAL_VAR(var, 456)
+
+	var = JSON_GetVariable(jsonID, "/results/average baseline steady state/value")
+	CHECK_EQUAL_VAR(var, 2)
+	stv = JSON_GetString(jsonID, "/results/average baseline steady state/unit")
+	CHECK_EQUAL_STR(stv, adUnit)
+	var = JSON_GetVariable(jsonID, "/results/average tp steady state/value")
+	CHECK_EQUAL_VAR(var, 10)
+	stv = JSON_GetString(jsonID, "/results/average tp steady state/unit")
+	CHECK_EQUAL_STR(stv, adUnit)
+	var = JSON_GetVariable(jsonID, "/results/instantaneous/value")
+	CHECK_EQUAL_VAR(var, 11)
+	stv = JSON_GetString(jsonID, "/results/instantaneous/unit")
+	CHECK_EQUAL_STR(stv, adUnit)
+	var = JSON_GetVariable(jsonID, "/results/steady state resistance/value")
+	CHECK_EQUAL_VAR(var, 1234)
+	stv = JSON_GetString(jsonID, "/results/steady state resistance/unit")
+	CHECK_EQUAL_STR(stv, "MΩ")
+	var = JSON_GetVariable(jsonID, "/results/instantaneous resistance/value")
+	CHECK_EQUAL_VAR(var, 2345)
+	stv = JSON_GetString(jsonID, "/results/instantaneous resistance/unit")
+	CHECK_EQUAL_STR(stv, "MΩ")
+End
+
+// IUTF_TD_GENERATOR DataGenerators#PUB_TPFilters
+static Function CheckTPPublishing([string str])
+
+	variable jsonId
+
+	WAVE tpData = PrepareTPData()
+
+	TUFXOP_Clear/Z/N=(str)
+	PUB_TPResult("TestDevice", tpData)
+
+	jsonId = FetchAndParseMessage(str)
+	CheckTPData(jsonId)
+	JSON_Release(jsonID)
+End
