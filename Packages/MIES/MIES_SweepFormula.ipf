@@ -3520,7 +3520,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 			DFREF dfrTPAnalysis      = TP_PrepareAnalysisDF(graph, tpInput)
 			DFREF dfrTPAnalysisInput = dfrTPAnalysis:input
 			DFREF dfr                = TP_TSAnalysis(dfrTPAnalysisInput)
-			WAVE  tpOutData          = dfr:outData
+			WAVE  tpOutData          = dfr:tpData
 
 			// handle waves sent out when TP_ANALYSIS_DEBUGGING is defined
 			if(WaveExists(dfr:data) && WaveExists(dfr:colors))
