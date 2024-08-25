@@ -107,7 +107,7 @@ End
 /// identified by tpMarker.
 ///
 /// The wave reference wave will have as many columns as active headstages were used.
-Function/WAVE TP_GetStoredTPs(string device, variable tpMarker, variable number)
+Function/WAVE TP_GetConsecutiveTPsUptoMarker(string device, variable tpMarker, variable number)
 
 	variable numEntries
 
@@ -310,7 +310,7 @@ End
 /// - Active headstages
 static Function/WAVE TP_GetTPWaveForAutoTP(string device, variable marker)
 
-	WAVE/Z/WAVE TPs = TP_GetStoredTPs(device, marker, 2)
+	WAVE/Z/WAVE TPs = TP_GetConsecutiveTPsUptoMarker(device, marker, 2)
 
 	if(!WaveExists(TPs))
 		return $""
