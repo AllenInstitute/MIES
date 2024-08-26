@@ -20,16 +20,16 @@ acquisition, and analysis.
 
 ## Highlights
 
-- Acquire data on up to eight headstage on a single DAC.
-- Run up to five DACs in parallel.
-- Create arbitrarily complex stimulus sets with an easy to use GUI
+- Run up to five DACs in parallel for scalable data acquisition.
+- Acquire data on up to eight headstage on a single DAC to probe up to 56 connections at once.
+- Create arbitrarily complex stimulus sets with an intuitive GUI.
 - Export all data, including all of its metadata, into the industry-standard [NWBv2-format](https://doi.org/10.1101/523035) and read it back in
-- Run custom code during data acquisition for Automatic Experiment Control
-- Completely automate the experimental setup using configuration files
+- Run custom code during data acquisition for Automatic Experiment Control and real-time adaptability.
+- Automate experimental setup using configuration files for streamlined workflows.
 - Interact with MIES from other programming languages (Python, C++, Javascript, ...) through [ZeroMQ](https://zeromq.org/).
-- Keep track of your running experiment with comprehensive experimental metadata acquisition and browsing tools
-- Use the integrated scripting language for convenient customized on-the-fly data evaluation.
-- Fully backward compatible with every earlier MIES version
+- Track and manage your experiments with comprehensive metadata acquisition and browsing tools.
+- Leverage the integrated scripting language for flexible, on-the-fly electrophysiology data evaluation.
+- Ensure compatibility with every earlier version of MIES, protecting your previous work and workflows.
 
 ## Getting started
 
