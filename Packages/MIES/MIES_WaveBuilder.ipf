@@ -2654,6 +2654,10 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 		return ""
 	endif
 
+	if(WB_CheckStimsetContents(stimset))
+		return ""
+	endif
+
 	// we now know that the stimset is valid
 	// let's save it under the desired name and delete the temporary one
 	WB_SaveStimSetParameterWaves(setName, SegWvType, WP, WPT, stimulusType)
@@ -2686,6 +2690,17 @@ Function/WAVE WB_GetEpochLengths(string setName)
 	Make/FREE/N=(numEpochs)/D epochLengths = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = p)
 
 	return epochLengths
+End
+
+static Function WB_CheckStimsetContents(WAVE stimset)
+
+	if(HasOneNonFiniteEntry(stimset))
+		printf "The stimset contains at least one NaN/Inf/-Inf. Please remove them.\r"
+		ControlWindowToFront()
+		return 1
+	endif
+
+	return 0
 End
 
 static Function WB_CheckForEmptyEpochs(string setname)
