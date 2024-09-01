@@ -438,3 +438,12 @@ static Function CheckMatchAgainstWildCardPatterns()
 End
 
 /// @}
+
+static Function TestIsValidHeadstageWorking()
+
+	CHECK_EQUAL_VAR(IsValidHeadstage(0), 1)
+	CHECK_EQUAL_VAR(IsValidHeadstage(1), 1)
+	CHECK_EQUAL_VAR(IsValidHeadstage(NUM_HEADSTAGES - 1), 1)
+	CHECK_EQUAL_VAR(IsValidHeadstage(NaN), 0)
+	CHECK_EQUAL_VAR(IsValidHeadstage(1.5), 0)
+End
