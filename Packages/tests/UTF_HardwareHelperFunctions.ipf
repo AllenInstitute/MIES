@@ -84,7 +84,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	CHECK_EQUAL_VAR(V_flag, 0)
 
 	// remove NWB file which will be used for sweep-by-sweep export
-	CloseNwBFile()
+	NWB_CloseAllNwBFiles()
 	DeleteFile/Z GetExperimentNWBFileForExport()
 End
 
@@ -357,7 +357,7 @@ Function SaveStimsets()
 
 	string filename = GetTestStimsetFullFilePath()
 	DeleteFile filename
-	NWB_ExportAllStimsets(2, overrideFilePath = filename)
+	MIES_NWB#NWB_ExportAllStimsets(2, filename)
 End
 
 Function StopAllBackgroundTasks()

@@ -1876,7 +1876,7 @@ static Function ExportStimsetsAndRoundtripThem([variable var])
 	[baseFolder, nwbFile] = GetUniqueNWBFileForExport(var)
 	discLocation = baseFolder + nwbFile
 
-	NWB_ExportAllStimsets(var, overrideFilePath = discLocation)
+	MIES_NWB#NWB_ExportAllStimsets(var, discLocation)
 
 	GetFileFolderInfo/Q/Z discLocation
 	REQUIRE(V_IsFile)
@@ -1943,7 +1943,7 @@ static Function ExportIntoNWBSweepBySweep_REENTRY([str])
 	string experimentNwbFile, stimsets, acquisition, stimulus
 	variable fileID, nwbVersion
 
-	CloseNwbFile()
+	NWB_CloseNWBFile(str)
 	experimentNwbFile = GetExperimentNWBFileForExport()
 	REQUIRE(FileExists(experimentNwbFile))
 
@@ -2432,7 +2432,7 @@ static Function RoundTripDepStimsetsRecursionThroughSweeps_REENTRY([STRUCT IUTF_
 	fName = S_path + baseFileName
 
 	if(!CmpStr(suffix, "nwb"))
-		NWB_ExportAllData(nwbVersion, overrideFilePath = fName, writeStoredTestPulses = 1, writeIgorHistory = 1)
+		NWB_ExportAllData(nwbVersion, overrideFullFilePath = fName, writeStoredTestPulses = 1, writeIgorHistory = 1)
 	elseif(!CmpStr(suffix, "pxp"))
 		SaveExperiment/C as fName
 	else

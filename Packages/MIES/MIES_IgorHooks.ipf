@@ -116,6 +116,8 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	variable rN, kind
 	string fileName, path, type, creator
 
+	string device
+
 	// don't try cleaning up if the user never used MIES
 	if(!DataFolderExists(GetMiesPathAsString()))
 		return NaN
@@ -128,11 +130,13 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 
 	IH_KillTemporaries()
 
-	NVAR fileIDExport = $GetNWBFileIDExport()
-
-	if(H5_IsFileOpen(fileIDExport))
-		NWB_Flush(fileIDExport)
-	endif
+	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+	for(device : devicesWithContent)
+		NVAR fileIDExport = $GetNWBFileIDExport(device)
+		if(H5_IsFileOpen(fileIDExport))
+			NWB_Flush(fileIDExport)
+		endif
+	endfor
 
 	UpdateXOPLoggingTemplate()
 

@@ -6,40 +6,47 @@
 /// UTF_TD_GENERATOR GetHistoricDataFilesPXP
 static Function TestExportingDataToNWB([string str])
 
-	string file, miesPath, nwbFileName
-	variable numObjectsLoaded
+	string templateName, nwbFileName, device
 	variable nwbVersion = GetNWBVersion()
 
-	file = "input:" + str
+	LoadMIESFolderFromPXP("input:" + str)
+
 	PathInfo home
-	nwbFileName = S_path + GetBaseName(str) + ".nwb"
-
-	DFREF dfr = GetMIESPath()
-	KillDataFolder dfr
-
-	miesPath = GetMiesPathAsString()
-
-	DFREF dfr     = NewFreeDataFolder()
-	DFREF savedDF = GetDataFolderDFR()
-	SetDataFolder dfr
-	LoadData/Q/R/P=home/S=miesPath file
-	numObjectsLoaded = V_flag
-	SetDataFolder savedDF
-	MoveDataFolder dfr, root:
-	RenameDataFolder root:$DF_NAME_FREE, $DF_NAME_MIES
-
-	// sanity check if the test setup is ok
-	CHECK_NO_RTE()
-	CHECK_GT_VAR(numObjectsLoaded, 0)
-
-	// This is a workaround because LoadData DOES NOT LOAD WaveRef WAVES
-	// The Cache values are in the pxp present but not loaded as they are of type /WAVE
-	// PLEASE CHECK THIS, IF THIS TEST FAILS IN FUTURE HISTORIC DATA TESTS
-	CA_FlushCache()
-
+	templateName = S_path + GetBaseName(str)
 	// attempt export
-	NWB_ExportAllData(nwbVersion, overrideFilePath = nwbFileName, writeStoredTestPulses = 1, writeIgorHistory = 1)
+	NWB_ExportAllData(nwbVersion, overrideFileTemplate = templateName, writeStoredTestPulses = 1, writeIgorHistory = 1)
 
 	CHECK_NO_RTE()
-	CHECK_EQUAL_VAR(FileExists(nwbFileName), 1)
+
+	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+	for(device : devicesWithContent)
+		nwbFileName = templateName + MIES_NWB#NWB_GetFileNameSuffixDevice(device) + ".nwb"
+		CHECK_EQUAL_VAR(FileExists(nwbFileName), 1)
+	endfor
+End
+
+/// UTF_TD_GENERATOR GetHistoricDataFilesNWB
+static Function TestSweepBrowserExportToNWB([string str])
+
+	string file, win, abWin, sweepBrowsers, fileType, dataFolder, nwbFileName
+
+	file = "input:" + str
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file})
+	win = StringFromList(0, sweepBrowsers)
+
+	WAVE/T map = GetAnalysisBrowserMap()
+	fileType = map[0][%FileType]
+	if(CmpStr(fileType, ANALYSISBROWSER_FILE_TYPE_NWBv1))
+		SKIP_TESTCASE()
+	endif
+
+	MIES_AB#AB_ReExport(0, 0)
+	CHECK_NO_RTE()
+
+	dataFolder = map[0][%DataFolder]
+	WAVE/T devices = ListToTextWave(AB_GetAllDevicesForExperiment(dataFolder), ";")
+	for(device : devices)
+		nwbFileName = MIES_AB#AB_ReExportGetNewFullFilePath(map[0][%DiscLocation], DimSize(devices, ROWS), device)
+		CHECK_EQUAL_VAR(FileExists(nwbFileName), 1)
+	endfor
 End

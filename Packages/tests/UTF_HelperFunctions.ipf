@@ -131,7 +131,7 @@ Function AdditionalExperimentCleanup()
 	name = GetDataFolder(0, dfr)
 	MoveDataFolder/O=1 dfr, root:
 
-	CloseNWBFile()
+	NWB_CloseAllNWBFiles()
 	HDF5CloseFile/A/Z 0
 
 	KillDataFolder/Z root:$DF_NAME_MIES
@@ -1447,4 +1447,35 @@ Function [string win, string device] CreateEmptyUnlockedDataBrowserWindow()
 	DFREF dfr = GetDeviceDataPath(device)
 	win = DB_OpenDataBrowser()
 	return [win, device]
+End
+
+Function LoadMIESFolderFromPXP(string fName)
+
+	variable numObjectsLoaded
+	string   miesPath
+
+	PathInfo home
+
+	DFREF dfr = GetMIESPath()
+	KillDataFolder dfr
+
+	miesPath = GetMiesPathAsString()
+
+	DFREF dfr     = NewFreeDataFolder()
+	DFREF savedDF = GetDataFolderDFR()
+	SetDataFolder dfr
+	LoadData/Q/R/P=home/S=miesPath fName
+	numObjectsLoaded = V_flag
+	SetDataFolder savedDF
+	MoveDataFolder dfr, root:
+	RenameDataFolder root:$DF_NAME_FREE, $DF_NAME_MIES
+
+	// sanity check if the test setup is ok
+	CHECK_NO_RTE()
+	CHECK_GT_VAR(numObjectsLoaded, 0)
+
+	// This is a workaround because LoadData DOES NOT LOAD WaveRef WAVES
+	// The Cache values are in the pxp present but not loaded as they are of type /WAVE
+	// PLEASE CHECK THIS, IF THIS TEST FAILS IN FUTURE HISTORIC DATA TESTS
+	CA_FlushCache()
 End

@@ -36,6 +36,9 @@
 static Constant NWB_ASYNC_WRITING_TIMEOUT = 5
 static Constant NWB_ASYNC_MAX_ITERATIONS  = 120
 
+static StrConstant NWB_OPEN_FILTER = "NWB files (*.nwb):.nwb;"
+static StrConstant NWB_FILE_SUFFIX = ".nwb"
+
 /// @brief Return the starting time, in fractional seconds since Igor Pro epoch in UTC, of the given sweep
 ///
 /// For existing sweeps with #HIGH_PREC_SWEEP_START_KEY labnotebook entries we use the sweep wave's modification time.
@@ -92,50 +95,65 @@ static Function NWB_FirstStartTimeOfAllSweeps()
 	return oldest
 End
 
+static Function/S NWB_GetFileNameSuffixDevice(string device)
+
+	return "_" + SanitizeFilename(device)
+End
+
+static Function/S NWB_GetFileNamePrefix()
+
+	string expName = GetExperimentName()
+
+	if(!CmpStr(expName, UNTITLED_EXPERIMENT))
+		return "UntitledExperiment-" + GetTimeStamp()
+	endif
+
+	return CleanupExperimentName(expName)
+End
+
 /// @brief Return the HDF5 file identifier referring to an open NWB file
 ///        for export
 ///
-/// Open one if it does not exist yet.
+/// Create one if it does not exist yet.
 ///
-/// @param  nwbVersion        Set NWB version if new file is created
-/// @param  overrideFilePath  [optional] file path for new files to override the internal
-///                           generation algorithm
+/// @param  nwbVersion            Set NWB version if new file is created
+/// @param  device                device name
+/// @param  overrideFullFilePath  [optional] file path for new files to override the internal
+///                               generation algorithm
 ///
-/// @retval fileID            HDF5 file identifier or NaN on user abort
-/// @retval createdNewNWBFile new NWB file was created (1) or an existing opened (0)
-static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExport(variable nwbVersion, [string overrideFilePath])
-	string expName, fileName, filePath
+/// @retval fileID                HDF5 file identifier or NaN on user abort
+/// @retval createdNewNWBFile     new NWB file was created (1) or an existing opened (0)
+static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExport(variable nwbVersion, string device, [string overrideFullFilePath])
+
+	string fileName, filePath, devSuffix
 	variable refNum, oldestData
 
-	NVAR fileIDExport             = $GetNWBFileIDExport()
-	NVAR sessionStartTimeReadBack = $GetSessionStartTimeReadBack()
+	NVAR fileIDExport             = $GetNWBFileIDExport(device)
+	SVAR filePathExport           = $GetNWBFilePathExport(device)
+	NVAR sessionStartTimeReadBack = $GetSessionStartTimeReadBack(device)
 
-	SVAR filePathExport = $GetNWBFilePathExport()
-	filePath = filePathExport
-
-	if(ParamIsDefault(overrideFilePath))
+	if(ParamIsDefault(overrideFullFilePath))
 		if(H5_IsFileOpen(fileIDExport))
 			return [fileIDExport, 0]
 		endif
 
-		if(isEmpty(filePath)) // need to derive a new NWB filename
-			expName = GetExperimentName()
-
-			if(!cmpstr(expName, UNTITLED_EXPERIMENT))
-				fileName = "_" + GetTimeStamp() + ".nwb"
-				Open/D/M="Save as NWB file"/F="NWB files (*.nwb):.nwb;" refNum as fileName
-
+		WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+		devSuffix = SelectString(DimSize(devicesWithContent, ROWS) > 1, "", NWB_GetFileNameSuffixDevice(device))
+		fileName  = NWB_GetFileNamePrefix() + devSuffix + NWB_FILE_SUFFIX
+		if(IsNaN(fileIDExport))
+			if(!CmpStr(GetExperimentName(), UNTITLED_EXPERIMENT))
+				Open/D/M="Save as NWB file"/F=NWB_OPEN_FILTER refNum as fileName
 				if(isEmpty(S_fileName))
 					return [NaN, 0]
 				endif
 				filePath = S_fileName
 			else
 				PathInfo home
-				filePath = S_path + CleanupExperimentName(expName) + ".nwb"
+				filePath = S_path + fileName
 			endif
 		endif
 	else
-		filePath = overrideFilePath
+		filePath = overrideFullFilePath
 	endif
 
 	ASSERT(!IsEmpty(filePath), "filePath can not be empty")
@@ -158,7 +176,7 @@ static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExpo
 			fileIDExport   = NaN
 			DEBUGPRINT("Could not create HDF5 file")
 			// and retry
-			[fileID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
+			[fileID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device)
 			return [fileID, createdNewNWBFile]
 		endif
 
@@ -313,6 +331,9 @@ threadsafe static Function/S NWB_GenerateDeviceDescription(string device, WAVE n
 			break
 		case HARDWARE_NI_DAC:
 			sprintf desc, "National Instruments Model: %s", hardwareName
+			break
+		case HARDWARE_SUTTER_DAC:
+			sprintf desc, "Sutter Instrument Company: %s", hardwareName
 			break
 		default:
 			ASSERT_TS(0, "Invalid hardwareType")
@@ -494,12 +515,57 @@ Function NWB_WriteTestpulseData(STRUCT NWBAsyncParameters &s, variable writeStor
 	HDF5CloseGroup/Z groupID
 End
 
+/// @brief Handle a NWB file handling for overwite flag
+///
+/// @param fullFilePath full file path
+/// @param overwrite    flag that indicates if overwrite is enabled or not
+/// @param verbose      flag that indicates if verbose status messgaes are enabled
+/// @param device       [optiona, default auto-determined] device name that uses the given file
+///
+/// @return returns 1 if error occured
+static Function NWB_HandleFileOverwrite(string fullFilePath, variable overwrite, variable verbose, [string device])
+
+	string devFullFilePath
+
+	if(ParamIsDefault(device))
+		device = ""
+		WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+		for(device : devicesWithContent)
+			devFullFilePath = ROStr(GetNWBFilePathExport(device))
+			if(!CmpStr(devFullFilePath, fullFilePath))
+				break
+			endif
+		endfor
+	endif
+
+	if(FileExists(fullFilePath))
+		if(overwrite)
+			if(!IsEmpty(device))
+				NWB_CloseNWBFile(device)
+			endif
+			DeleteFile/Z fullFilePath
+			ASSERT(!FileExists(fullFilePath), "File could not be deleted")
+		else
+			if(verbose)
+				printf "The given path %s for the NWB export points to an existing file and overwrite is disabled.\r", fullFilePath
+				ControlWindowToFront()
+			endif
+
+			return 1
+		endif
+	endif
+
+	return 0
+End
+
 /// @brief Programmatically export all acquired data from all devices into a NWB file
 ///
 /// Use NWB_ExportWithDialog() for interactive export.
 ///
 /// @param nwbVersion            major NWB format version, one of 1 or 2 (aka NWB_VERSION_LATEST)
-/// @param overrideFilePath      use this file path instead of an internally derived one
+/// @param device                [optional, defaults to all devices] when set, only data for the given single device is exported
+/// @param overrideFullFilePath  [optional, defaults to auto-gen] use this full file path instead of an internally derived one, only valid when single device has data
+/// @param overrideFileTemplate  [optional, defaults to auto-gen] use this template file path instead of an internally derived one
 /// @param writeStoredTestPulses [optional, defaults to false] store the raw test pulse data
 /// @param writeIgorHistory      [optional, defaults to true] store the Igor Pro history and the log file
 /// @param compressionMode       [optional, defaults to chunked compression] One of @ref CompressionMode
@@ -509,13 +575,10 @@ End
 /// @param verbose               [optional, defaults to true] get diagnostic output to the command line
 ///
 /// @return 0 on success, non-zero on failure
-Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite, verbose])
-	variable nwbVersion
-	string   overrideFilePath
-	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite, verbose
+Function NWB_ExportAllData(variable nwbVersion, [string device, string overrideFullFilePath, string overrideFileTemplate, variable writeStoredTestPulses, variable writeIgorHistory, variable compressionMode, variable keepFileOpen, variable overwrite, variable verbose])
 
-	string devicesWithContent, device, list, name
-	variable i, j, numEntries, locationID, sweep, numWaves, createdNewNWBFile
+	string list, name, fileName
+	variable locationID, sweep, createdNewNWBFile, argCheck
 	string stimsetList = ""
 
 	if(ParamIsDefault(keepFileOpen))
@@ -552,47 +615,34 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		verbose = !!verbose
 	endif
 
+	argCheck = ParamIsDefault(overrideFullFilePath) + ParamIsDefault(overrideFileTemplate)
+	ASSERT(argCheck >= 1 && argCheck <= 2, "Either arg overrideFullFilePath or arg overrideFileTemplate must be given or none (auto-gen)")
+
 	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"nwbVersion", "writeStoredTP", "writeIgorHistory", "compression"}, \
 	             values = {num2str(nwbVersion), num2str(writeStoredTestPulses),                                    \
 	                       num2str(writeIgorHistory), CompressionModeToString(compressionMode)})
 
-	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
-
-	if(IsEmpty(devicesWithContent))
-		if(verbose)
-			print "No devices with acquired content found for NWB export"
-			ControlWindowToFront()
-		endif
-
-		LOG_AddEntry(PACKAGE_MIES, "end")
-		return 1
-	endif
-
-	if(!ParamIsDefault(overrideFilePath))
-		if(FileExists(overrideFilePath))
-			if(overwrite)
-				CloseNWBFile()
-				DeleteFile/Z overrideFilePath
-				ASSERT(!FileExists(overrideFilePath), "File could not be deleted")
-			else
-				if(verbose)
-					printf "The given path %s for the NWB export points to an existing file and overwrite is disabled.\r", overrideFilePath
-					ControlWindowToFront()
-				endif
-
-				LOG_AddEntry(PACKAGE_MIES, "end")
-				return 1
+	if(ParamIsDefault(device))
+		WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+		if(!DimSize(devicesWithContent, ROWS))
+			if(verbose)
+				print "No devices with acquired content found for NWB export"
+				ControlWindowToFront()
 			endif
-		endif
 
-		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, overrideFilePath = overrideFilePath)
+			LOG_AddEntry(PACKAGE_MIES, "end")
+			return 1
+		endif
 	else
-		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
+		Make/FREE/T devicesWithContent = {device}
 	endif
 
-	if(!IsFinite(locationID))
-		LOG_AddEntry(PACKAGE_MIES, "end")
-		return 1
+	if(!ParamIsDefault(overrideFullFilePath))
+		ASSERT(DimSize(devicesWithContent, ROWS) == 1, "Can not save all data to a single given NWB file name if multiple devices have data.")
+		if(NWB_HandleFileOverwrite(overrideFullFilePath, overwrite, verbose, device = devicesWithContent[0]))
+			LOG_AddEntry(PACKAGE_MIES, "end")
+			return 1
+		endif
 	endif
 
 	if(verbose)
@@ -603,22 +653,37 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	STRUCT NWBAsyncParameters s
 
 	// init: 1/3
-	s.sweep              = NaN
-	s.compressionMode    = compressionMode
-	s.session_start_time = ROVAR(GetSessionStartTimeReadBack())
-	s.locationID         = locationID
-	s.nwbVersion         = nwbVersion
-	s.nwbFilePath        = ROStr(GetNWBFilePathExport())
+	s.sweep           = NaN
+	s.compressionMode = compressionMode
+	s.nwbVersion      = nwbVersion
 
 	WAVE   s.numericalResultsValues = GetNumericalResultsValues()
 	WAVE/T s.numericalResultsKeys   = GetNumericalResultsKeys()
 	WAVE/T s.textualResultsValues   = GetTextualResultsValues()
 	WAVE/T s.textualResultsKeys     = GetTextualResultsKeys()
 
-	numEntries = ItemsInList(devicesWithContent)
-	for(i = 0; i < numEntries; i += 1)
-		device = StringFromList(i, devicesWithContent)
+	for(device : devicesWithContent)
 
+		if(ParamIsDefault(overrideFullFilePath) && ParamIsDefault(overrideFileTemplate))
+			[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device)
+		elseif(!ParamIsDefault(overrideFullFilePath))
+			[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device, overrideFullFilePath = overrideFullFilePath)
+		elseif(!ParamIsDefault(overrideFileTemplate))
+			fileName = overrideFileTemplate + NWB_GetFileNameSuffixDevice(device) + NWB_FILE_SUFFIX
+			if(NWB_HandleFileOverwrite(fileName, overwrite, verbose, device = device))
+				LOG_AddEntry(PACKAGE_MIES, "export_error", keys = {"reason", "overwrite", "fileName"}, values = {"NWB overwrite handling failed", num2istr(overwrite), fileName})
+				continue
+			endif
+			[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device, overrideFullFilePath = fileName)
+		endif
+		if(!IsFinite(locationID))
+			LOG_AddEntry(PACKAGE_MIES, "export_error", keys = {"reason"}, values = {"Got invalid location id (user abort or hdf5 file creation error)"})
+			continue
+		endif
+
+		s.session_start_time = ROVAR(GetSessionStartTimeReadBack(device))
+		s.nwbFilePath        = ROStr(GetNWBFilePathExport(device))
+		s.locationID         = locationID
 		// init: 2/3
 		s.device = device
 
@@ -632,16 +697,13 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 
 		NWB_AddDeviceSpecificData(s, writeStoredTestPulses)
 
-		DFREF dfr = GetDeviceDataPath(device)
-		list     = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
-		numWaves = ItemsInList(list)
+		DFREF  dfr            = GetDeviceDataPath(device)
+		WAVE/T sweepWaveNames = ListToTextWave(GetListOfObjects(dfr, DATA_SWEEP_REGEXP), ";")
+		NWB_CheckForMissingSweeps(device, sweepWaveNames)
 
-		NWB_CheckForMissingSweeps(device, ListToTextWave(list, ";"))
+		LOG_AddEntry(PACKAGE_MIES, "export", keys = {"device", "#sweeps"}, values = {device, num2istr(DimSize(sweepWaveNAmes, ROWS))})
 
-		LOG_AddEntry(PACKAGE_MIES, "export", keys = {"device", "#sweeps"}, values = {device, num2str(numWaves)})
-
-		for(j = 0; j < numWaves; j += 1)
-			name = StringFromList(j, list)
+		for(name : sweepWaveNames)
 
 			WAVE/SDFR=dfr sweepWave  = $name
 			WAVE/Z        configWave = GetConfigWave(sweepWave)
@@ -660,24 +722,25 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 			NWB_AppendSweepLowLevel(s)
 			stimsetList += AB_GetStimsetFromPanel(device, sweep)
 
-			NVAR fileIDExport = $GetNWBFileIDExport()
+			NVAR fileIDExport = $GetNWBFileIDExport(device)
 			fileIDExport = s.locationID
 		endfor
+		LOG_AddEntry(PACKAGE_MIES, "export", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize(device))})
+
+		NWB_AppendStimset(nwbVersion, s.locationID, stimsetList, compressionMode)
+
+		if(writeIgorHistory)
+			NWB_AppendIgorHistoryAndLogFile(nwbVersion, s.locationID)
+		endif
+
+		NWB_WriteResultsWaves(s)
+
+		if(!keepFileOpen)
+			NWB_CloseNWBFile(device)
+		endif
 	endfor
 
-	NWB_AppendStimset(nwbVersion, s.locationID, stimsetList, compressionMode)
-
-	if(writeIgorHistory)
-		NWB_AppendIgorHistoryAndLogFile(nwbVersion, s.locationID)
-	endif
-
-	NWB_WriteResultsWaves(s)
-
-	if(!keepFileOpen)
-		CloseNWBFile()
-	endif
-
-	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
+	LOG_AddEntry(PACKAGE_MIES, "end")
 
 	return 0
 End
@@ -756,8 +819,8 @@ End
 ///
 /// This is only approximately correct as the file is open in HDF5 and thus
 /// not everything is flushed.
-static Function NWB_GetExportedFileSize()
-	string filePathExport = ROStr(GetNWBFilePathExport())
+static Function NWB_GetExportedFileSize(string device)
+	string filePathExport = ROStr(GetNWBFilePathExport(device))
 
 	if(IsEmpty(filePathExport))
 		return NaN
@@ -769,12 +832,12 @@ End
 /// @brief Export all stimsets into NWB
 ///
 /// NWB file is closed after the function returns.
-Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
-	variable nwbVersion
-	string   overrideFilePath
+static Function NWB_ExportAllStimsets(variable nwbVersion, string overrideFullFilePath)
 
 	variable locationID, createdNewNWBFile
 	string stimsets
+	// NWB export is designed to be export per device, wherein the device DF some globals are created
+	string virtualDevice = "NWBStimsetExportTempFolder"
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
@@ -788,22 +851,22 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 		return NaN
 	endif
 
-	if(!ParamIsDefault(overrideFilePath))
-		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, overrideFilePath = overrideFilePath)
-	else
-		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
-	endif
+	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, virtualDevice, overrideFullFilePath = overrideFullFilePath)
 
 	if(!IsFinite(locationID))
+		DFREF dfr = GetDevicePath(virtualDevice)
+		KillOrMoveToTrash(dfr = dfr)
 		LOG_AddEntry(PACKAGE_MIES, "end")
 		return NaN
 	endif
-
 	print "Please be patient while we export all existing stimsets to NWB"
 	ControlWindowToFront()
 
 	NWB_AppendStimset(nwbVersion, locationID, stimsets, GetChunkedCompression())
-	CloseNWBFile()
+	NWB_CloseNWBFile(virtualDevice)
+
+	DFREF dfr = GetDevicePath(virtualDevice)
+	KillOrMoveToTrash(dfr = dfr)
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 End
@@ -815,52 +878,74 @@ End
 /// @param exportType Export all data and referenced stimsets
 ///                   (#NWB_EXPORT_DATA) or all stimsets (#NWB_EXPORT_STIMSETS)
 /// @param nwbVersion [optional, defaults to latest version] major NWB version
-Function NWB_ExportWithDialog(exportType, [nwbVersion])
-	variable exportType, nwbVersion
+Function NWB_ExportWithDialog(variable exportType, [variable nwbVersion])
 
-	string expName, path, filename
-	variable refNum, pathNeedsKilling
+	string path, filename
+	variable refNum, pathNeedsKilling, numDevices
+	string msg, fileTemplate
 
 	if(ParamIsDefault(nwbVersion))
 		nwbVersion = GetNWBVersion()
 	endif
 
-	expName = GetExperimentName()
+	fileName = NWB_GetFileNamePrefix()
 
-	if(!cmpstr(expName, UNTITLED_EXPERIMENT))
+	if(!CmpStr(GetExperimentName(), UNTITLED_EXPERIMENT))
 		PathInfo Desktop
 		if(!V_flag)
 			NewPath/Q Desktop, SpecialDirPath("Desktop", 0, 0, 0)
 		endif
 		path             = "Desktop"
 		pathNeedsKilling = 1
-
-		filename = "UntitledExperiment-" + GetTimeStamp()
 	else
-		path     = "home"
-		filename = expName
+		path = "home"
 	endif
 
-	filename += "-compressed.nwb"
+	if(exportType == NWB_EXPORT_STIMSETS)
+		filename += "-compressed" + NWB_FILE_SUFFIX
+		msg       = "Choose NWB file name to export stimsets"
+	elseif(exportType == NWB_EXPORT_DATA)
 
-	Open/D/M="Export into NWB"/F="NWB Files:.nwb;"/P=$path refNum as filename
+		WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+		numDevices = DimSize(devicesWithContent, ROWS)
+		if(numDevices == 0)
+			print "There is no device with data to export."
+			ControlWindowToFront()
+			return NaN
+		endif
+		if(numDevices == 1)
+			filename += NWB_GetFileNameSuffixDevice(devicesWithContent[0]) + "-compressed" + NWB_FILE_SUFFIX
+			sprintf msg, "Choose NWB file name to export data from %s", devicesWithContent[0]
+		else
+			filename += "-compressed" + NWB_FILE_SUFFIX
+			msg       = "Choose NWB template name to export data (device name is suffixed)"
+		endif
+	else
+		ASSERT(0, "unexpected exportType")
+	endif
+
+	Open/D/M=msg/F=NWB_OPEN_FILTER/P=$path refNum as filename
 
 	if(pathNeedsKilling)
 		KillPath/Z $path
 	endif
-
 	if(isEmpty(S_filename))
 		return NaN
 	endif
 
 	// user already acknowledged the overwriting
-	CloseNWBFile()
+	NWB_CloseAllNWBFiles()
 	DeleteFile/Z S_filename
 
 	if(exportType == NWB_EXPORT_DATA)
-		NWB_ExportAllData(nwbVersion, overrideFilePath = S_filename, writeStoredTestPulses = 1, writeIgorHistory = 1)
+		if(numDevices == 1)
+			NWB_ExportAllData(nwbVersion, overrideFullFilePath = S_filename, writeStoredTestPulses = 1, writeIgorHistory = 1)
+		else
+			fileTemplate = RemoveEnding(S_filename, NWB_FILE_SUFFIX)
+			NWB_ExportAllData(nwbVersion, overrideFileTemplate = fileTemplate, writeStoredTestPulses = 1, writeIgorHistory = 1)
+		endif
 	elseif(exportType == NWB_EXPORT_STIMSETS)
-		NWB_ExportAllStimsets(nwbVersion, overrideFilePath = S_filename)
+		NWB_ExportAllStimsets(nwbVersion, S_filename)
 	else
 		ASSERT(0, "unexpected exportType")
 	endif
@@ -930,22 +1015,21 @@ static Function NWB_AppendStimset(nwbVersion, locationID, stimsets, compressionM
 End
 
 /// @brief Prepare everything for sweep-by-sweep NWB export
-Function NWB_PrepareExport(nwbVersion)
-	variable nwbVersion
+Function NWB_PrepareExport(variable nwbVersion, string device)
 
 	variable locationID, createdNewNWBFile
 	string stimsets
 
-	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
-
+	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device)
 	if(!IsFinite(locationID))
 		return NaN
 	endif
 
 	if(createdNewNWBFile)
-		NWB_ExportAllData(nwbVersion, keepFileOpen = 1, verbose = 0)
+		NWB_ExportAllData(nwbVersion, device = device, keepFileOpen = 1, verbose = 0)
 		stimsets = ST_GetStimsetList()
-		NWB_AppendStimset(nwbVersion, locationID, stimsets, GetNoCompression())
+		NVAR currentFileID = $GetNWBFileIDExport(device)
+		NWB_AppendStimset(nwbVersion, currentFileID, stimsets, GetChunkedCompression())
 	endif
 
 	return locationID
@@ -955,7 +1039,7 @@ Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfi
 	variable locationID, createdNewNWBFile
 	string workload
 
-	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
+	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, device)
 
 	if(!IsFinite(locationID))
 		return NaN
@@ -973,7 +1057,7 @@ Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfi
 
 	s.sweep              = sweep
 	s.compressionMode    = NO_COMPRESSION
-	s.session_start_time = ROVAR(GetSessionStartTimeReadBack())
+	s.session_start_time = ROVAR(GetSessionStartTimeReadBack(device))
 	s.locationID         = locationID
 	s.nwbVersion         = nwbVersion
 
@@ -1932,4 +2016,28 @@ End
 threadsafe Function NWB_ConvertTTLBitToChannelSuffix(variable value)
 
 	return 2^value
+End
+
+/// @brief Closes all possibly open export-into-NWB files
+Function NWB_CloseAllNWBFiles()
+
+	string devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
+	CallFunctionForEachListItem(NWB_CloseNWBFile, devicesWithContent)
+End
+
+/// @brief Close a possibly open export-into-NWB file
+Function NWB_CloseNWBFile(string device)
+
+	NVAR fileID = $GetNWBFileIDExport(device)
+
+	if(IsFinite(fileID))
+		NWB_ASYNC_FinishWriting(device)
+		HDF5CloseFile/Z fileID
+		DEBUGPRINT("Trying to close the NWB file using HDF5CloseFile returned: ", var = V_flag)
+		if(!V_flag) // success
+			fileID = NaN
+			SVAR filePath = $GetNWBFilePathExport(device)
+			filepath = ""
+		endif
+	endif
 End

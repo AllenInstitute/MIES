@@ -2394,7 +2394,7 @@ Function DAP_CheckSettings(device, mode)
 	endif
 
 	if(DAG_GetNumericalValue(device, "Check_Settings_NwbExport"))
-		NWB_PrepareExport(str2num(DAG_GetTextualValue(device, "Popup_Settings_NwbVersion")))
+		NWB_PrepareExport(str2num(DAG_GetTextualValue(device, "Popup_Settings_NwbVersion")), device)
 	endif
 
 	return 0
@@ -4742,7 +4742,7 @@ static Function DAP_UnlockDevice(device)
 
 	wlName = GetWorkLoadName(WORKLOADCLASS_TP, device)
 	ASSERT(!ASYNC_WaitForWLCToFinishAndRemove(wlName, DAP_WAITFORTPANALYSIS_TIMEOUT), "TP analysis did not finish within timeout")
-	NWB_ASYNC_FinishWriting(device)
+	NWB_CloseNWBFile(device)
 
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = state)
 
@@ -4807,7 +4807,6 @@ static Function DAP_UnlockDevice(device)
 
 	lockedDevices = GetListOfLockedDevices()
 	if(IsEmpty(lockedDevices))
-		CloseNWBFile()
 
 		WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
 		ActiveDevicesTPMD = NaN

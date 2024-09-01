@@ -238,11 +238,18 @@ Function IVS_ExportAllData(filePath)
 
 	printf "Saving experiment data in NWB format to %s\r", filePath
 
-	return NWB_ExportAllData(IVS_DEFAULT_NWBVERSION, overrideFilePath = filePath, overwrite = 1)
+	return NWB_ExportAllData(IVS_DEFAULT_NWBVERSION, overrideFullFilePath = filePath, overwrite = 1)
 End
 
 Function/S IVS_ReturnNWBFileLocation()
-	SVAR path = $GetNWBFilePathExport()
+
+	string device, devicesWithContent
+
+	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
+	ASSERT(ItemsInList(devicesWithContent) == 1, "Only supported for single device operation.")
+	device = StringFromList(0, devicesWithContent)
+	SVAR path = $GetNWBFilePathExport(device)
+
 	return path
 End
 

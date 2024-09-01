@@ -207,7 +207,7 @@ static Function RoundTripDepStimsets([string str])
 	fName = S_path + baseFileName
 
 	if(!CmpStr(str, "nwb"))
-		NWB_ExportAllStimsets(nwbVersion, overrideFilePath = fName)
+		MIES_NWB#NWB_ExportAllStimsets(nwbVersion, fName)
 	elseif(!CmpStr(str, "pxp"))
 		SaveExperiment/C as fName
 	else
@@ -278,7 +278,7 @@ static Function RoundTripCustStimsets([string str])
 	fName = S_path + baseFileName
 
 	if(!CmpStr(str, "nwb"))
-		NWB_ExportAllStimsets(nwbVersion, overrideFilePath = fName)
+		MIES_NWB#NWB_ExportAllStimsets(nwbVersion, fName)
 	elseif(!CmpStr(str, "pxp"))
 		SaveExperiment/C as fName
 	else
@@ -327,7 +327,7 @@ static Function RoundTripDepStimsetsRecursion([string str])
 	fName = S_path + baseFileName
 
 	if(!CmpStr(str, "nwb"))
-		NWB_ExportAllStimsets(nwbVersion, overrideFilePath = fName)
+		MIES_NWB#NWB_ExportAllStimsets(nwbVersion, fName)
 	elseif(!CmpStr(str, "pxp"))
 		SaveExperiment/C as fName
 	else

@@ -2541,14 +2541,26 @@ static Function AB_RemoveExperimentEntry(string win, string entry)
 	AB_ResetListBoxWaves()
 End
 
+/// @brief returns currently open NWB files for data export. If no file is open returns a zero sized text wave.
+static Function/WAVE AB_GetCurrentlyOpenNWBFiles()
+
+	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
+	Duplicate/FREE/T devicesWithContent, activeFiles
+	activeFiles[] = ROStr(GetNWBFilePathExport(devicesWithContent[p]))
+	RemoveTextWaveEntry1D(activeFiles, "", all = 1)
+
+	return activeFiles
+End
+
 static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 
-	string entry, symbPath, fName, nwbFileUsedForExport, panel
+	string entry, symbPath, fName, panel
 	string pxpList, uxpList, nwbList, title
 	variable sTime
 
-	nwbFileUsedForExport = ROStr(GetNWBFilePathExport())
-	panel                = AB_GetPanelName()
+	WAVE/T activeFiles = AB_GetCurrentlyOpenNWBFiles()
+
+	panel = AB_GetPanelName()
 
 	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
 
@@ -2571,8 +2583,8 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 		endif
 		for(fName : fileList)
 
-			if(!CmpStr(fName, nwbFileUsedForExport))
-				printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", nwbFileUsedForExport
+			if(!IsNaN(GetRowIndex(activeFiles, str = fName)))
+				printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", fName
 				ControlWindowToFront()
 				continue
 			endif
@@ -3274,6 +3286,16 @@ static Function AB_LoadAllSweepsAndStimsets(string discLocation, string dataFold
 	endfor
 End
 
+static Function/S AB_ReExportGetNewFullFilePath(string fullFilePath, variable numDevices, string device)
+
+	string suffix, name
+
+	suffix = "." + GetFileSuffix(fullFilePath)
+	name   = GetFile(fullFilePath)
+	sprintf name, "%s%s-converted%s", RemoveEnding(name, suffix), SelectString(numDevices > 1, "", "-" + device), suffix
+	return GetFolder(fullFilePath) + name
+End
+
 static Function AB_ReExport(variable index, variable overwrite)
 
 	string fileName, discLocation, dataFolder, experiment, path, name, suffix
@@ -3381,12 +3403,9 @@ static Function AB_ReExport(variable index, variable overwrite)
 		endif
 
 		// Now export all that data into NWBv2
-		suffix = "." + GetFileSuffix(discLocation)
-		name   = GetFile(discLocation)
-		sprintf name, "%s%s-converted%s", RemoveEnding(name, suffix), SelectString(numDevices > 1, "", "-" + device), suffix
-		path = GetFolder(discLocation) + name
+		path = AB_ReExportGetNewFullFilePath(discLocation, numDevices, device)
 
-		ret = NWB_ExportAllData(NWB_VERSION_LATEST, overrideFilePath = path, writeStoredTestPulses = 1, overwrite = overwrite)
+		ret = NWB_ExportAllData(NWB_VERSION_LATEST, overrideFullFilePath = path, writeStoredTestPulses = 1, overwrite = overwrite)
 
 		if(!ret)
 			printf "####\r"
@@ -3422,6 +3441,15 @@ static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 	PGC_SetAndActivateControl("AnalysisBrowser", "button_expand_all", val = 1)
 
 	entry = basefolder + file
+
+	WAVE/T activeFiles = AB_GetCurrentlyOpenNWBFiles()
+	if(!IsNaN(GetRowIndex(activeFiles, str = entry)))
+		printf "Can not add dropped file because it is currently open for data export: %s\rTo close the file unlock the device in the respective acquisition panel.", entry
+		ControlWindowToFront()
+		LOG_AddEntry(PACKAGE_MIES, "end")
+		return 1
+	endif
+
 	if(AB_AddFile(entry, entry))
 		// already loaded or error
 		LOG_AddEntry(PACKAGE_MIES, "end")
