@@ -65,9 +65,16 @@ done
 # signtool does not accept a path for the certificate
 cp $top_level/tools/installer/public-key.cer public-key.cer
 
+if [ -n "$CI" ]
+then
+  maxTries=10
+else
+  maxTries=1
+fi
+
 i=0
 
-while [ $i -le 10 ]
+while [ $i -le $maxTries ]
 do
   MSYS_NO_PATHCONV=1 "$sign_tool_exe" sign    \
     /tr http://timestamp.sectigo.com          \
