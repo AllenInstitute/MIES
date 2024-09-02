@@ -86,7 +86,7 @@ jobs:
       - name: Create installer
         run: tools/create-installer.sh ${{ fromJSON('["", "dev"]')[ matrix.kind == 'dev' ] }}
       - name: Sign installer
-        run: tools/sign-installer.sh -p "${{ secrets.GHA_MIES_CERTIFICATE_PIN }}"
+        run: tools/sign-installer.sh -p '${{ secrets.GHA_MIES_CERTIFICATE_PIN }}'
       - name: upload artifacts
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
