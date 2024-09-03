@@ -1333,7 +1333,7 @@ threadsafe Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
 
 	variable col
 
-	col = FindDimLabel(labnotebookValues, COLS, setting)
+	col = GetLogbookSettingsColumn(labnotebookValues, setting)
 
 	if(col < 0)
 		return $""
