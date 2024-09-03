@@ -608,13 +608,15 @@ End
 
 static Function TestSweepFormulaCodeResults_REENTRY([string str])
 	string content, contentRef, graph, trace, bsPanel
+	variable settingsCol
 
 	WAVE/T textualResultsValues = GetTextualResultsValues()
 
-	WAVE/Z indizes = GetNonEmptyLBNRows(textualResultsValues, "Sweep Formula code")
+	[WAVE indizes, settingsCol] = GetNonEmptyLBNRows(textualResultsValues, "Sweep Formula code")
 	CHECK_WAVE(indizes, NUMERIC_WAVE)
+	CHECK_GE_VAR(settingsCol, 0)
 
-	Make/FREE/T/N=(DimSize(indizes, ROWS)) code = textualResultsValues[indizes[p]][%$"Sweep Formula code"][INDEP_HEADSTAGE]
+	Make/FREE/T/N=(DimSize(indizes, ROWS)) code = textualResultsValues[indizes[p]][settingsCol][INDEP_HEADSTAGE]
 
 	Make/FREE/T/N=(3) ref = {"data(TP, select(channels(AD), [0]))", "data(TP, select(channels(AD), [1]))", "data(TP, select(channels(AD), [2]))"}
 	CHECK_EQUAL_TEXTWAVES(ref, code, mode = WAVE_DATA)

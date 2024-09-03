@@ -5081,18 +5081,19 @@ Function/WAVE SF_GetAllOldCodeForGUI(string win) // parameter required for popup
 End
 
 static Function/WAVE SF_GetAllOldCode()
-	string entry
+	string   entry
+	variable settingsCol
 
 	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
 	entry = "Sweep Formula code"
-	WAVE/Z indizes = GetNonEmptyLBNRows(textualResultsValues, entry)
+	[WAVE indizes, settingsCol] = GetNonEmptyLBNRows(textualResultsValues, entry)
 
 	if(!WaveExists(indizes))
 		return $""
 	endif
 
-	Make/FREE/T/N=(DimSize(indizes, ROWS)) entries = textualResultsValues[indizes[p]][%$entry][INDEP_HEADSTAGE]
+	Make/FREE/T/N=(DimSize(indizes, ROWS)) entries = textualResultsValues[indizes[p]][settingsCol][INDEP_HEADSTAGE]
 
 	return GetUniqueEntries(entries)
 End

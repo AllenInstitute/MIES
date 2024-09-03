@@ -1327,20 +1327,18 @@ threadsafe Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValue
 End
 
 /// @brief Return a wave with all labnotebook rows which have a non-empty entry for setting
-threadsafe Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
-	WAVE   labnotebookValues
-	string setting
+threadsafe Function [WAVE indizes, variable settingsCol] GetNonEmptyLBNRows(WAVE labnotebookValues, string setting)
 
-	variable col
+	settingsCol = GetLogbookSettingsColumn(labnotebookValues, setting)
 
-	col = GetLogbookSettingsColumn(labnotebookValues, setting)
-
-	if(col < 0)
-		return $""
+	if(settingsCol < 0)
+		return [$"", NaN]
 	endif
 
-	return FindIndizes(labnotebookValues, col = col, prop = PROP_EMPTY | PROP_NOT,      \
-	                   startLayer = 0, endLayer = DimSize(labnotebookValues, LAYERS) - 1)
+	WAVE/Z indizes = FindIndizes(labnotebookValues, col = settingsCol, prop = PROP_EMPTY | PROP_NOT, \
+	                             startLayer = 0, endLayer = DimSize(labnotebookValues, LAYERS) - 1)
+
+	return [indizes, settingsCol]
 End
 
 /// @brief Test helper to enforce that every query done for an INDEP_HEADSTAGE setting
@@ -1511,9 +1509,9 @@ threadsafe Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 	WAVE   labnotebookValues
 	string setting
 
-	variable sweepCol
+	variable sweepCol, settingsCol
 
-	WAVE/Z indizes = GetNonEmptyLBNRows(labnotebookValues, setting)
+	[WAVE indizes, settingsCol] = GetNonEmptyLBNRows(labnotebookValues, setting)
 	if(!WaveExists(indizes))
 		return $""
 	endif
@@ -1552,18 +1550,18 @@ threadsafe Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweep
 	string    setting
 	variable &sweepNo
 
-	variable idx
+	variable idx, settingsCol
 
 	sweepNo = NaN
 	ASSERT_TS(IsNumericWave(numericalValues), "Can only work with numeric waves")
 
-	WAVE/Z indizes = GetNonEmptyLBNRows(numericalValues, setting)
+	[WAVE indizes, settingsCol] = GetNonEmptyLBNRows(numericalValues, setting)
 	if(!WaveExists(indizes))
 		return $""
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/N=(DimSize(numericalValues, LAYERS)) data = numericalValues[idx][%$setting][p]
+	Make/FREE/N=(DimSize(numericalValues, LAYERS)) data = numericalValues[idx][settingsCol][p]
 	sweepNo = numericalValues[idx][GetSweepColumn(numericalValues)][0]
 
 	return data
@@ -1615,18 +1613,18 @@ threadsafe Function/WAVE GetLastSweepWithSettingText(textualValues, setting, swe
 	string    setting
 	variable &sweepNo
 
-	variable idx
+	variable idx, settingsCol
 
 	sweepNo = NaN
 	ASSERT_TS(IsTextWave(textualValues), "Can only work with text waves")
 
-	WAVE/Z indizes = GetNonEmptyLBNRows(textualValues, setting)
+	[WAVE indizes, settingsCol] = GetNonEmptyLBNRows(textualValues, setting)
 	if(!WaveExists(indizes))
 		return $""
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/T/N=(DimSize(textualValues, LAYERS)) data = textualValues[idx][%$setting][p]
+	Make/FREE/T/N=(DimSize(textualValues, LAYERS)) data = textualValues[idx][settingsCol][p]
 	sweepNo = str2num(textualValues[idx][GetSweepColumn(textualValues)][0])
 
 	return data
