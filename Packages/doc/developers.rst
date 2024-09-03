@@ -227,6 +227,44 @@ The following labels are in use:
   - NI PCIe-6343, 2 AD/DA channels are looped
   - MCC demo amplifier only
 
+Setting up/Renewing EV certificate
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Our installer is signed with an EV (extended validation) certificate. This is done to pass through antivirus software.
+These certificates come on USB tokens which are usable for three years.
+
+The idea for the automation part is from [here](https://stackoverflow.com/a/54439759).
+Remember that you have only three tries with a false password!
+
+Renewal process
+---------------
+
+- Ask Tim to get a new certificate. Takes around 4 weeks due to heavy administration involvement.
+- Exchange the old USB token with the new one
+- Physically destroy the old USB token
+- Install SafeNet on the machine if not yet done
+- As you can't see the token when logged in via Remote Desktop (RDP) you need to workaround that:
+- Install Anydesk
+- Enable Unattended Access with a strong password
+  - Disconnect with RDP
+  - Connect with Anydesk
+  - Open SafeNet
+  - Change the password (the initial one came via email, it needs to be strong but at most 15 characters long)
+  - Don't try to change the admin password or unlock the token.
+  - Export the public certificate from the `Advanced View -> Tokens -> User certificates` and save in tools/installer/public-key.cer
+  - Get the "Container name" as well
+  - Store the new password and the new container name in a secure place
+  - Checkout the MIES branch with the new public key/certificate
+  - `./tools/create-installer.sh`
+  - `./tools/sign-installer.sh -p '[]=name'` (name is the "Container name")
+  - You should now get asked for the password in a GUI prompt, enter it.
+  - Now this should have created a signed installer, if not check the previous steps.
+  - Try with `./tools/sign-installer.sh -p '[{{password}}]=name'` this now includes also the password.
+  - Now this should have created a signed installer again, but this time without password prompt.
+  - If the last step worked, update the `GHA_MIES_CERTIFICATE_PIN` in github and make a PR.
+- Disable `Unattended Access` in Anydesk again
+- Add a calendar entry for expiration date minus 6 weeks for the certificate renewal
+
 Branch naming scheme
 ~~~~~~~~~~~~~~~~~~~~
 
