@@ -114,3 +114,29 @@ Function/WAVE FFI_QueryLogbook(string device, variable logbookType, variable swe
 
 	return settings
 End
+
+/// @brief Return all unique logbook entries from devices
+///
+/// @param device      Name of the hardware device panel, @sa GetLockedDevices()
+/// @param logbookType One of #LBT_LABNOTEBOOK or #LBT_RESULTS
+/// @param setting     Name of the entry
+///
+/// @return Numerical/Textual 1D wave or a null wave reference if nothing could be found
+Function/WAVE FFI_QueryLogbookUniqueSetting(string device, variable logbookType, string setting)
+
+	ASSERT(logbookType != LBT_TPSTORAGE, "Invalid logbook type")
+
+	WAVE/T numericalValues = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES, device = device)
+
+	WAVE/Z settings = GetUniqueSettings(numericalValues, setting)
+
+	if(WaveExists(settings))
+		return settings
+	endif
+
+	WAVE/T textualValues = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES, device = device)
+
+	WAVE/Z settings = GetUniqueSettings(textualValues, setting)
+
+	return settings
+End

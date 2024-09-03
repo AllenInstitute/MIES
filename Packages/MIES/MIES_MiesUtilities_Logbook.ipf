@@ -1534,6 +1534,50 @@ threadsafe Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 	return GetUniqueEntries(sweeps)
 End
 
+/// @brief Return a unique list of labnotebook entries of the given setting
+///
+/// @param values  numerical logbook wave
+/// @param setting name of the value to search
+threadsafe Function/WAVE GetUniqueSettings(WAVE values, string setting)
+
+	variable numMatches, settingsCol
+
+	[WAVE indizes, settingsCol] = GetNonEmptyLBNRows(values, setting)
+	if(!WaveExists(indizes))
+		return $""
+	endif
+
+	numMatches = DimSize(indizes, ROWS)
+
+	if(IsNumericWave(values))
+		Make/D/FREE/N=(numMatches, LABNOTEBOOK_LAYER_COUNT) data
+
+		Multithread data[][] = values[indizes[p]][settingsCol][q]
+
+		Redimension/N=(numMatches * LABNOTEBOOK_LAYER_COUNT)/E=1 data
+
+		WAVE dataUnique = GetUniqueEntries(data)
+
+		return ZapNaNs(dataUnique)
+	elseif(IsTextWave(values))
+		Make/T/FREE/N=(numMatches, LABNOTEBOOK_LAYER_COUNT) dataTxt
+
+		WAVE/T valuesTxt = values
+
+		Multithread dataTxt[][] = valuesTxt[indizes[p]][settingsCol][q]
+
+		Redimension/N=(numMatches * LABNOTEBOOK_LAYER_COUNT)/E=1 dataTxt
+
+		WAVE dataUnique = GetUniqueEntries(dataTxt)
+
+		RemoveTextWaveEntry1D(dataUnique, "")
+
+		return dataUnique
+	endif
+
+	ASSERT_TS(0, "Unsupported wave type")
+End
+
 /// @brief Return the last numerical value of a setting from the labnotebook
 ///        and the sweep it was set.
 ///

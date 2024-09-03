@@ -5081,21 +5081,10 @@ Function/WAVE SF_GetAllOldCodeForGUI(string win) // parameter required for popup
 End
 
 static Function/WAVE SF_GetAllOldCode()
-	string   entry
-	variable settingsCol
 
 	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
-	entry = "Sweep Formula code"
-	[WAVE indizes, settingsCol] = GetNonEmptyLBNRows(textualResultsValues, entry)
-
-	if(!WaveExists(indizes))
-		return $""
-	endif
-
-	Make/FREE/T/N=(DimSize(indizes, ROWS)) entries = textualResultsValues[indizes[p]][settingsCol][INDEP_HEADSTAGE]
-
-	return GetUniqueEntries(entries)
+	return GetUniqueSettings(textualResultsValues, "Sweep Formula code")
 End
 
 Function SF_PopMenuProc_OldCode(STRUCT WMPopupAction &pa) : PopupMenuControl
