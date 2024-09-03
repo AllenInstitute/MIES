@@ -2411,3 +2411,39 @@ static Function TPWithModelCell()
 	Make/D/FREE ref = {17.3667394014963}
 	CHECK_EQUAL_WAVES(ref, results, mode = WAVE_DATA)
 End
+
+// IUTF_TD_GENERATOR DataGenerators#GetBasicMathOperations
+static Function BasicMathMismatchedWaves([string str])
+
+	string code, win, opShort, error
+
+	win = GetDataBrowserWithData()
+
+	sprintf code, "[1, 2] %s [[1, 2]]", str
+	try
+		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	strswitch(str)
+		case "*":
+			opShort = "mult"
+			break
+		case "/":
+			opShort = "div"
+			break
+		case "+":
+			opShort = "plus"
+			break
+		case "-":
+			opShort = "minus"
+			break
+		default:
+			FAIL()
+	endswitch
+
+	error = ROStr(GetSweepFormulaParseErrorMessage())
+	CHECK_EQUAL_STR(error, opShort + ": wave size mismatch [2, 0, 0, 0] vs [1, 2, 0, 0]")
+End

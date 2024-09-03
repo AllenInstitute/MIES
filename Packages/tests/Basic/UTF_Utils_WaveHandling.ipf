@@ -1225,7 +1225,7 @@ Function RUR_Works()
 
 	WAVE dup = RemoveUnusedRows(wv)
 
-	Make/FREE/N=(MAX_DIMENSION_COUNT) dims = DimSize(dup, p)
+	WAVE dims = GetWaveDimensions(dup)
 	CHECK_EQUAL_WAVES(dims, {4, 3, 2, 0}, mode = WAVE_DATA)
 	CHECK(!WaveRefsEqual(wv, dup))
 End
@@ -1941,6 +1941,36 @@ Function ZWI_Works3()
 	ZeroWaveImpl(wv)
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	CHECK_EQUAL_WAVES(wv, {0, 3, 4, 5, -4})
+End
+
+/// @}
+
+/// GetWaveDimensions
+/// @{
+
+Function GWD_ChecksParam()
+
+	try
+		GetWaveDimensions($"")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+Function GWD_Works()
+
+	Make/FREE/N=0 wv
+	WAVE sizes = GetWaveDimensions(wv)
+	CHECK_EQUAL_WAVES(sizes, {0, 0, 0, 0}, mode = WAVE_DATA)
+
+	Make/FREE/N=(1, 2, 3, 4) wv
+	WAVE sizes = GetWaveDimensions(wv)
+	CHECK_EQUAL_WAVES(sizes, {1, 2, 3, 4}, mode = WAVE_DATA)
+
+	Make/FREE/N=(1, 2, 0, 4) wv
+	WAVE sizes = GetWaveDimensions(wv)
+	CHECK_EQUAL_WAVES(sizes, {1, 2, 0, 4}, mode = WAVE_DATA)
 End
 
 /// @}

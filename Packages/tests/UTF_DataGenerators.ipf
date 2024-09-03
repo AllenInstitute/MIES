@@ -868,3 +868,11 @@ static Function/WAVE GetDifferentGraphs()
 
 	return wv
 End
+
+static Function/WAVE GetBasicMathOperations()
+	Make/FREE/T op = {"+", "-", "*", "/"}
+
+	SetDimensionLabels(OP, "plus;minus;mult;div;", ROWS)
+
+	return op
+End

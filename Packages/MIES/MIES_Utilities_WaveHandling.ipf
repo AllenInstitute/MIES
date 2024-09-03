@@ -78,7 +78,7 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 	Make/FREE/L/N=(MAX_DIMENSION_COUNT) targetSizes = -1
 	targetSizes[dimension] = indexShouldExist
 
-	Make/FREE/L/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(wv, p)
+	WAVE oldSizes = GetWaveDimensions(wv)
 
 	Redimension/N=(targetSizes[ROWS], targetSizes[COLS], targetSizes[LAYERS], targetSizes[CHUNKS]) wv
 
@@ -115,12 +115,20 @@ Function EnsureSmallEnoughWave(wv, [maximumSize])
 		maximumSize = MAXIMUM_WAVE_SIZE
 	endif
 
-	Make/FREE/I/N=(MAX_DIMENSION_COUNT) oldSizes
-	oldSizes[] = DimSize(wv, p)
+	WAVE oldSizes = GetWaveDimensions(wv)
 
 	if(oldSizes[ROWS] > maximumSize)
 		Redimension/N=(maximumSize, -1, -1, -1) wv
 	endif
+End
+
+/// @brief Return a wave with `MAX_DIMENSION_COUNT` entries with the size of each dimension
+threadsafe Function/WAVE GetWaveDimensions(WAVE wv)
+
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+	Make/FREE/D/N=(MAX_DIMENSION_COUNT) sizes = DimSize(wv, p)
+
+	return sizes
 End
 
 /// @brief Returns the size of the wave in bytes
@@ -616,8 +624,7 @@ threadsafe Function ReduceWaveDimensionality(WAVE/Z wv, [variable minDimension])
 	minDimension = ParamIsDefault(minDimension) ? COLS : minDimension
 	ASSERT_TS(IsInteger(minDimension) && minDimension >= ROWS && minDimension < MAX_DIMENSION_COUNT, "Invalid minDimension")
 	minDimension = limit(minDimension, COLS, MAX_DIMENSION_COUNT - 1)
-	Make/FREE/N=(MAX_DIMENSION_COUNT) waveSize
-	waveSize[] = DimSize(wv, p)
+	WAVE waveSize = GetWaveDimensions(wv)
 	for(i = MAX_DIMENSION_COUNT - 1; i >= minDimension; i -= 1)
 		if(waveSize[i] == 1)
 			waveSize[i] = 0
