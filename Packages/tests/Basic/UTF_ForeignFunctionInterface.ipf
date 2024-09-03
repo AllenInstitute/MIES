@@ -15,3 +15,16 @@ static Function TestMessageFilters()
 
 	CHECK_PROPER_STR(wvNote)
 End
+
+static Function TestLogbookQuery()
+	string key, keyTxT, device
+
+	device = "ITC16USB_0_DEV"
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	WAVE/Z settings = FFI_QueryLogbook(device, LBT_LABNOTEBOOK, 0, key, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+
+	WAVE/Z settings = FFI_QueryLogbook(device, LBT_LABNOTEBOOK, 0, keyTxt, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, TEXT_WAVE)
+End
