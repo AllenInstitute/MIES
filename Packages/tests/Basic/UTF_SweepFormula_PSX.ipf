@@ -1405,8 +1405,8 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	// check dimension labels
 	Make/FREE=1/N=14/T dimlabels = GetDimLabel(dataWref, ROWS, p)
-	CHECK_EQUAL_TEXTWAVES(dimlabels, {"sweepData_0", "sweepDataFiltOff_0", "sweepDataFiltOffDeconv_0", "peakX_0", "peakY_0", "psxEvent_0", "eventFit_0", \
-	                                  "sweepData_1", "sweepDataFiltOff_1", "sweepDataFiltOffDeconv_1", "peakX_1", "peakY_1", "psxEvent_1", "eventFit_1"})
+	CHECK_EQUAL_TEXTWAVES(dimlabels, {"sweepData_0", "sweepDataOffFilt_0", "sweepDataOffFiltDeconv_0", "peakX_0", "peakY_0", "psxEvent_0", "eventFit_0", \
+	                                  "sweepData_1", "sweepDataOffFilt_1", "sweepDataOffFiltDeconv_1", "peakX_1", "peakY_1", "psxEvent_1", "eventFit_1"})
 
 	CheckEventDataHelper(dataWref, 0)
 	CheckEventDataHelper(dataWref, 1)
@@ -1620,7 +1620,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_0, psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select event 0
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOffDeconv" 80, 15e-3, 110, 5e-3
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFiltDeconv" 80, 15e-3, 110, 5e-3
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_ACCEPT, PSX_STATE_EVENT)
@@ -1634,7 +1634,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select event 1
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOffDeconv" 120, 25e-3, 200, 5e-3
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFiltDeconv" 120, 25e-3, 200, 5e-3
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_EVENT)
@@ -1647,7 +1647,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select both events top axis pair, event and fit state
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOff" 50, 0, 200, 1
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFilt" 50, 0, 200, 1
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_FIT | PSX_STATE_EVENT)
@@ -1658,7 +1658,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select nothing in both directions
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOff" 0, 1, 50, 10
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFilt" 0, 1, 50, 10
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_FIT | PSX_STATE_EVENT)
@@ -1669,7 +1669,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select nothing in x direction
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOff" 0, 0, 50, 1
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFilt" 0, 0, 50, 1
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_FIT | PSX_STATE_EVENT)
@@ -1680,7 +1680,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select nothing in y direction
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOff" 50, 1, 200, 10
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFilt" 50, 1, 200, 10
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_FIT | PSX_STATE_EVENT)
