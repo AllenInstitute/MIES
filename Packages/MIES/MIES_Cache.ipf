@@ -434,7 +434,7 @@ Function/S CA_PSXKernelOperationKey(variable riseTau, variable decayTau, variabl
 	crc = StringCRC(crc, num2strHighPrec(dt, precision = MAX_DOUBLE_PRECISION))
 	crc = WaveCRC(crc, range)
 
-	return num2istr(crc) + "PSX Kernel Version 1"
+	return num2istr(crc) + "PSX Kernel Version 2"
 End
 
 static Function/S CA_PSXBaseKey(string comboKey, string psxParameters)
@@ -452,22 +452,22 @@ End
 /// @param psxParameters JSON dump of the psx/psxKernel operation parameters
 Function/S CA_PSXEventsKey(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Events " + ":Version 1"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Events " + ":Version 2"
 End
 
 Function/S CA_PSXOperationKey(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Operation " + ":Version 1"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Operation " + ":Version 2"
 End
 
 Function/S CA_PSXRiseTimeKey(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " PSX Rise time " + ":Version 1"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " PSX Rise time " + ":Version 2"
 End
 
 Function/S CA_PSXAnalyzePeaks(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Analyze Peaks " + ":Version 1"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Analyze Peaks " + ":Version 2"
 End
 
 /// @brief Return the key for the igor info entries
