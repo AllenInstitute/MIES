@@ -764,3 +764,27 @@ Function EqualizeCheckBoxes(win, checkBoxIn, checkBoxPartner, checkBoxInState)
 	SetCheckBoxState(win, checkBoxPartner, checkBoxInState)
 	DAG_Update(win, checkBoxPartner, val = checkBoxInState)
 End
+
+Function RemoveAllControls(string win)
+
+	string control
+
+	WAVE/T controls = ListToTextWave(ControlNameList(win), ";")
+	for(control : controls)
+		KillControl/W=$win $control
+	endfor
+End
+
+Function RemoveAllDrawLayers(string win)
+
+	SetDrawLayer/W=$win/K ProgBack
+	SetDrawLayer/W=$win/K UserBack
+	SetDrawLayer/W=$win/K ProgFront
+	SetDrawLayer/W=$win/K UserFront
+	SetDrawLayer/W=$win/K Overlay
+
+	if(WinType(win) == WINTYPE_GRAPH)
+		SetDrawLayer/W=$win/K ProgAxes
+		SetDrawLayer/W=$win/K UserAxes
+	endif
+End
