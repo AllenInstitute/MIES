@@ -5352,7 +5352,7 @@ Function PSX_PlotStartupSettings()
 End
 
 /// @brief Apply the macro `mac` onto the panel `win`
-Function PSX_ApplyMacroToExistingPanel(string win, string mac)
+static Function PSX_ApplyMacroToExistingPanel(string win, string mac)
 
 	string line, currWindow
 
