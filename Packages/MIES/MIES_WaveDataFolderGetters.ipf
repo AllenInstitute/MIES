@@ -8347,14 +8347,14 @@ Function/WAVE GetPSXSweepDataWaveFromDFR(DFREF dfr)
 	return GetWaveFromFolder(dfr, "sweepData")
 End
 
-Function/WAVE GetPSXSweepDataFiltOffWaveFromDFR(DFREF dfr)
+Function/WAVE GetPSXSweepDataOffFiltWaveFromDFR(DFREF dfr)
 
-	return GetWaveFromFolder(dfr, "sweepDataFiltOff")
+	return GetWaveFromFolder(dfr, "sweepDataOffFilt")
 End
 
-Function/WAVE GetPSXSweepDataFiltOffDeconvWaveFromDFR(DFREF dfr)
+Function/WAVE GetPSXSweepDataOffFiltDeconvWaveFromDFR(DFREF dfr)
 
-	return GetWaveFromFolder(dfr, "sweepDataFiltOffDeconv")
+	return GetWaveFromFolder(dfr, "sweepDataOffFiltDeconv")
 End
 
 Function/WAVE GetPSXEventLocationLabels(DFREF dfr)
