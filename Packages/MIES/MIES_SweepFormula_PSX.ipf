@@ -5378,7 +5378,8 @@ static Function PSX_ApplyMacroToExistingPanel(string win, string mac)
 	macroCode[Inf]      = ""
 
 	currWindow = GetCurrentWindow()
-	SetActiveSubwindow $win
+	DoWindow/F $win
+	SetActiveSubwindow ##
 
 	for(line : macroCode)
 		if(IsEmpty(line))
