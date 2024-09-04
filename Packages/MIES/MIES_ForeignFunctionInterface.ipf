@@ -84,3 +84,59 @@ Function FFI_SetCellElectrodeName(string device, variable headstage, string name
 
 	cellElectrodeNames[headstage] = name
 End
+
+/// @brief Query logbook entries from devices
+///
+/// This allows to query labnotebook/results entries from associated channels.
+///
+/// @param device          Name of the hardware device panel, @sa GetLockedDevices()
+/// @param logbookType     One of #LBT_LABNOTEBOOK or #LBT_RESULTS
+/// @param sweepNo         Sweep number
+/// @param setting         Name of the entry
+/// @param entrySourceType One of #DATA_ACQUISITION_MODE/#UNKNOWN_MODE/#TEST_PULSE_MODE
+///
+/// @return Numerical/Textual wave with #LABNOTEBOOK_LAYER_COUNT rows or a null wave reference if nothing could be found
+Function/WAVE FFI_QueryLogbook(string device, variable logbookType, variable sweepNo, string setting, variable entrySourceType)
+
+	ASSERT(logbookType != LBT_TPSTORAGE, "Invalid logbook type")
+
+	WAVE/T numericalValues = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES, device = device)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
+
+	if(WaveExists(settings))
+		return settings
+	endif
+
+	WAVE/T textualValues = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES, device = device)
+
+	WAVE/Z settings = GetLastSetting(textualValues, sweepNo, setting, entrySourceType)
+
+	return settings
+End
+
+/// @brief Return all unique logbook entries from devices
+///
+/// @param device      Name of the hardware device panel, @sa GetLockedDevices()
+/// @param logbookType One of #LBT_LABNOTEBOOK or #LBT_RESULTS
+/// @param setting     Name of the entry
+///
+/// @return Numerical/Textual 1D wave or a null wave reference if nothing could be found
+Function/WAVE FFI_QueryLogbookUniqueSetting(string device, variable logbookType, string setting)
+
+	ASSERT(logbookType != LBT_TPSTORAGE, "Invalid logbook type")
+
+	WAVE/T numericalValues = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES, device = device)
+
+	WAVE/Z settings = GetUniqueSettings(numericalValues, setting)
+
+	if(WaveExists(settings))
+		return settings
+	endif
+
+	WAVE/T textualValues = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES, device = device)
+
+	WAVE/Z settings = GetUniqueSettings(textualValues, setting)
+
+	return settings
+End

@@ -1312,3 +1312,30 @@ Function MultipleSameEDAdds()
 	CHECK_EQUAL_VAR(DimSize(indices, ROWS), 1)
 	CHECK_GE_VAR(indices[0], 0)
 End
+
+Function GetUniqueSettingsWorks()
+	string key, keyTxT, device
+
+	device = "ITC16USB_0_DEV"
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	WAVE/T numericalValues = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, device = device)
+	WAVE/T textualValues   = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, device = device)
+
+	// no matches
+	WAVE/Z results = GetUniqueSettings(numericalValues, "I_DONT_EXIST")
+	CHECK_WAVE(results, NULL_WAVE)
+
+	WAVE/Z resultsTxt = GetUniqueSettings(textualValues, "I_DONT_EXIST")
+	CHECK_WAVE(resultsTxt, NULL_WAVE)
+
+	// matches
+	WAVE/Z results = GetUniqueSettings(numericalValues, key)
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	Make/D/FREE ref = {131415, 192021, 161718, 222324, 252627}
+	CHECK_EQUAL_WAVES(results, ref)
+
+	WAVE/Z resultsTxt = GetUniqueSettings(textualValues, keyTxt)
+	CHECK_WAVE(resultsTxt, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(resultsTxt, {"131415", "192021", "161718", "222324", "252627"})
+End

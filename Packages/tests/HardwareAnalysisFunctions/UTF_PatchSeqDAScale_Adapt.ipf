@@ -66,16 +66,19 @@ static Function GlobalPreAcq(string device)
 End
 
 static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
+
+	variable nameCol, typeCol
+
 	WAVE/T textualResultsValues = GetTextualResultsValues()
 
-	WAVE/Z indizesName = GetNonEmptyLBNRows(textualResultsValues, name)
-	WAVE/Z indizesType = GetNonEmptyLBNRows(textualResultsValues, "EntrySourceType")
+	[WAVE indizesName, nameCol] = GetNonEmptyLBNRows(textualResultsValues, name)
+	[WAVE indizesType, typeCol] = GetNonEmptyLBNRows(textualResultsValues, "EntrySourceType")
 
 	if(!WaveExists(indizesName) || !WaveExists(indizesType))
 		return $""
 	endif
 
-	indizesType[] = (str2numSafe(textualResultsValues[indizesType[p]][%$"EntrySourceType"][INDEP_HEADSTAGE]) == SWEEP_FORMULA_RESULT) ? indizesType[p] : NaN
+	indizesType[] = (str2numSafe(textualResultsValues[indizesType[p]][typeCol][INDEP_HEADSTAGE]) == SWEEP_FORMULA_RESULT) ? indizesType[p] : NaN
 
 	WAVE/Z indizesTypeClean = ZapNaNs(indizesType)
 
@@ -89,7 +92,7 @@ static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
 		return $""
 	endif
 
-	Make/FREE/T/N=(DimSize(indizes, ROWS)) entries = textualResultsValues[indizes[p]][%$name][INDEP_HEADSTAGE]
+	Make/FREE/T/N=(DimSize(indizes, ROWS)) entries = textualResultsValues[indizes[p]][nameCol][INDEP_HEADSTAGE]
 
 	return entries
 End
