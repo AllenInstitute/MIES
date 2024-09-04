@@ -572,7 +572,7 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/Z srcWave = dst[i]
-		ASSERT_TS(WaveExists(srcWave), "Missing wave at linear index" + num2str(i))
+		ASSERT_TS(WaveExists(srcWave), "Missing wave at linear index: " + num2str(i))
 
 		if(!ParamIsDefault(indexWave))
 			index = indexWave[i]
