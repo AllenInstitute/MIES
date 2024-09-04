@@ -1555,14 +1555,15 @@ static Function/WAVE PSX_CalculateRiseTime(WAVE psxEvent, WAVE sweepDataFiltOff,
 
 	Make/D/FREE/N=(numEvents) riseTime
 
-	riseTime[] = PSX_CalculateRiseTimeImpl(psxEvent, sweepDataFiltOff, kernelAmp, psxEvent[p][%index], lowerThreshold, upperThreshold)
+	Multithread riseTime[] = PSX_CalculateRiseTimeImpl(psxEvent, sweepDataFiltOff, kernelAmp, psxEvent[p][%index], \
+	                                                   lowerThreshold, upperThreshold)
 
 	CA_StoreEntryIntoCache(cacheKey, riseTime)
 
 	return riseTime
 End
 
-static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDataFiltOff, variable kernelAmp, variable index, variable lowerThreshold, variable upperThreshold)
+threadsafe static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDataFiltOff, variable kernelAmp, variable index, variable lowerThreshold, variable upperThreshold)
 
 	variable dY, xStart, xEnd, yStart, yEnd, xlt, xupt, lowerLevel, upperLevel, riseTime
 	variable printDebug
@@ -1599,7 +1600,7 @@ static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDataFiltOff, 
 		printDebug = 1
 	endif
 
-	ASSERT(kernelAmp != 0 && IsFinite(kernelAmp), "kernelAmp must be finite and not zero")
+	ASSERT_TS(kernelAmp != 0 && IsFinite(kernelAmp), "kernelAmp must be finite and not zero")
 	riseTime = (xlt - xupt) * sign(kernelAmp) * (-1)
 
 #ifdef DEBUGGING_ENABLED
