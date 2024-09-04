@@ -1434,14 +1434,12 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	CHECK_NO_RTE()
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
-	// complains without events found
+	// without events found we get empty waves
 	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 5000, 15, -5), 25, 100, 0)"
-	try
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
-		FAIL()
-	catch
-		PASS()
-	endtry
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	Make/FREE/N=(DimSize(dataWref, ROWS)) sizes = WaveExists(dataWref[p]) ? DimSize(dataWref[p], ROWS) : NaN
+	CHECK_EQUAL_WAVES(sizes, {500, 500, 500, NaN, NaN, NaN, NaN, 500, 500, 500, NaN, NaN, NaN, NaN})
 
 	// complains with no sweep data
 	try
@@ -1452,15 +1450,13 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 		CHECK_NO_RTE()
 	endtry
 
-	// complains without events found due to kernelAmp sign
+	// returns empty waves without events found due to kernelAmp sign
 	overrideResults[][][%$"KernelAmpSignQC"] = 0
 	str                                      = "psx(id, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -4))"
-	try
-		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
-		FAIL()
-	catch
-		PASS()
-	endtry
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	Make/FREE/N=(DimSize(dataWref, ROWS)) sizes = WaveExists(dataWref[p]) ? DimSize(dataWref[p], ROWS) : NaN
+	CHECK_EQUAL_WAVES(sizes, {500, 500, 500, NaN, NaN, NaN, NaN, 500, 500, 500, NaN, NaN, NaN, NaN})
 End
 
 static Function PSXHandlesPartialResults()

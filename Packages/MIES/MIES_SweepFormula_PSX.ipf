@@ -577,7 +577,7 @@ static Function [variable post_min, variable post_min_t, variable pre_max, varia
 End
 
 /// @brief Analyze the peaks
-static Function [WAVE peakX, WAVE peakY] PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
+static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataFiltOffDeconv, WAVE sweepDataFiltOff, WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
 
 	variable i, i_time, peak, isi, post_min, post_min_t, pre_max, pre_max_t, numCrossings, rel_peak
 
@@ -845,12 +845,9 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 End
 
 /// @brief Implementation of psx operation
-///
-/// @return 0 on success, 1 on failure
 static Function PSX_OperationImpl(string graph, variable parameterJSONID, string id, variable peakThresh, variable maxTauFactor, WAVE riseTimeParams, variable kernelAmp, variable index, WAVE/WAVE output)
 
 	string comboKey, key, psxOperationKey, psxParametersEvents
-	variable ret
 
 	key = PSX_GenerateKey("sweepData", index)
 	WAVE sweepData = output[%$key]
@@ -870,42 +867,23 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 	WAVE/Z/WAVE psxOperationFromCache = CA_TryFetchingEntryFromCache(psxOperationKey)
 
 	if(WaveExists(psxOperationFromCache))
-		WAVE peakX    = psxOperationFromCache[%peakX]
-		WAVE peakY    = psxOperationFromCache[%peakY]
-		WAVE psxEvent = psxOperationFromCache[%psxEvent]
-		WAVE eventFit = psxOperationFromCache[%eventFit]
+		WAVE/Z/D peakX    = psxOperationFromCache[%peakX]
+		WAVE/Z/D peakY    = psxOperationFromCache[%peakY]
+		WAVE/Z   psxEvent = psxOperationFromCache[%psxEvent]
+		WAVE/Z   eventFit = psxOperationFromCache[%eventFit]
 	else
 		[WAVE peakXUnfiltered, WAVE peakYUnfiltered] = PSX_FindPeaks(sweepDataFiltOffDeconv, peakThresh)
 
-		if(WaveExists(peakXUnfiltered) && WaveExists(peakYUnfiltered))
-			WAVE psxEvent = GetPSXEventWaveAsFree()
-			WAVE eventFit = GetPSXEventFitWaveAsFree()
+		WAVE psxEvent = GetPSXEventWaveAsFree()
+		WAVE eventFit = GetPSXEventFitWaveAsFree()
 
-			JWN_SetWaveNoteFromJSON(psxEvent, parameterJsonID, release = 0)
+		JWN_SetWaveNoteFromJSON(psxEvent, parameterJsonID, release = 0)
 
-			JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
-			JWN_SetStringInWaveNote(psxEvent, PSX_X_DATA_UNIT, WaveUnits(sweepData, ROWS))
-			JWN_SetStringInWaveNote(psxEvent, PSX_Y_DATA_UNIT, WaveUnits(sweepData, -1))
+		JWN_SetStringInWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE, comboKey)
+		JWN_SetStringInWaveNote(psxEvent, PSX_X_DATA_UNIT, WaveUnits(sweepData, ROWS))
+		JWN_SetStringInWaveNote(psxEvent, PSX_Y_DATA_UNIT, WaveUnits(sweepData, -1))
 
-			[WAVE peakX, WAVE peakY] = PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakXUnfiltered, peakYUnfiltered, maxTauFactor, kernelAmp, psxEvent, eventFit)
-		endif
-
-		if(!WaveExists(peakX) || !WaveExists(peakY))
-			// clear entries from this combo
-			key           = PSX_GenerateKey("sweepData", index)
-			output[%$key] = $""
-
-			key           = PSX_GenerateKey("sweepDataFiltOff", index)
-			output[%$key] = $""
-
-			key           = PSX_GenerateKey("sweepDataFiltOffDeconv", index)
-			output[%$key] = $""
-
-			printf "Could not find any events for combination: \"%s\"\r", comboKey
-			ControlWindowToFront()
-
-			return 1
-		endif
+		[WAVE peakX, WAVE peakY] = PSX_AnalyzePeaks(sweepDataFiltOffDeconv, sweepDataFiltOff, peakXUnfiltered, peakYUnfiltered, maxTauFactor, kernelAmp, psxEvent, eventFit)
 
 		Make/FREE/WAVE/N=(4) psxOperation
 		SetDimensionLabels(psxOperation, "peakX;peakY;psxEvent;eventFit", ROWS)
@@ -915,6 +893,13 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 		psxOperation[%eventFit] = eventFit
 
 		CA_StoreEntryIntoCache(psxOperationKey, psxOperation)
+	endif
+
+	if(!WaveExists(peakX) || !WaveExists(peakY))
+		WaveClear psxEvent, eventFit
+
+		printf "Could not find any events for combination: \"%s\"\r", comboKey
+		ControlWindowToFront()
 	endif
 
 	WAVE/Z psxEventFromCache = PSX_LoadEventsFromCache(comboKey, psxParametersEvents)
@@ -932,12 +917,14 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 		endif
 	endif
 
-	UpgradePSXEventWave(psxEvent)
+	if(WaveExists(psxEvent))
+		UpgradePSXEventWave(psxEvent)
 
-	WAVE riseTime = PSX_CalculateRiseTime(psxEvent, sweepDataFiltOff, parameterJsonID, kernelAmp, riseTimeParams[%$"Lower Threshold"], riseTimeParams[%$"Upper Threshold"])
-	ASSERT(DimSize(riseTime, ROWS) == DimSize(psxEvent, ROWS), "Unmatched number of rows for rise time")
-	psxEvent[][%$"Rise Time"] = riseTime[p]
-	WaveClear riseTime
+		WAVE riseTime = PSX_CalculateRiseTime(psxEvent, sweepDataFiltOff, parameterJsonID, kernelAmp, riseTimeParams[%$"Lower Threshold"], riseTimeParams[%$"Upper Threshold"])
+		ASSERT(DimSize(riseTime, ROWS) == DimSize(psxEvent, ROWS), "Unmatched number of rows for rise time")
+		psxEvent[][%$"Rise Time"] = riseTime[p]
+		WaveClear riseTime
+	endif
 
 	key           = PSX_GenerateKey("peakX", index)
 	output[%$key] = peakX
@@ -950,8 +937,6 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 
 	key           = PSX_GenerateKey("eventFit", index)
 	output[%$key] = eventFit
-
-	return 0
 End
 
 /// @brief Generate the dimension label for the output wave reference waves
@@ -4361,7 +4346,7 @@ End
 Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
-	variable maxTauFactor, peakThresh, numFailures, idx, success
+	variable maxTauFactor, peakThresh, idx, success
 	string parameterPath, id, psxParameters, dataUnit
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
@@ -4426,24 +4411,8 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		WaveClear hist, fit
 
 		for(i = 0; i < numCombos; i += 1)
-			numFailures += PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, i, output)
+			PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, i, output)
 		endfor
-
-		if(numFailures > 0)
-			// remove null waves
-			WAVE/Z outputClean = ZapNullRefs(output)
-
-			if(!WaveExists(outputClean))
-				Abort
-			endif
-
-			WAVE outputNew = MoveWaveWithOverwrite(output, outputClean)
-			WAVE output    = outputNew
-			WaveClear outputClean, outputNew
-
-			numCombos = DimSize(output, ROWS) / PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY
-			PSX_OperationSetDimensionLabels(output, numCombos, labels, labelsTemplate)
-		endif
 	catch
 		if(WaveExists(output))
 			SFH_CleanUpInput(output)
