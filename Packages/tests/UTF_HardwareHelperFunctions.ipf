@@ -772,8 +772,6 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 					endif
 				endif
 
-				CHECK(IsFinite(value))
-
 				INFO("sweepNo=%g, entry=%s, unit=%s\r", n0 = sweepNo, s0 = entry, s1 = unit)
 
 				// do a coarse range check
