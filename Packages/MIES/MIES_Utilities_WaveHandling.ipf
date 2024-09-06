@@ -537,7 +537,7 @@ End
 /// @brief Return a wave with deep copies of all referenced waves
 ///
 /// The deep copied waves will be free waves.
-/// Does not allow invalid wave references in `src`.
+/// Does allow invalid wave references in `src`.
 ///
 /// @param src       wave reference wave
 /// @param dimension [optional] copy only a single dimension, requires `index` or
@@ -572,7 +572,10 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/Z srcWave = dst[i]
-		ASSERT_TS(WaveExists(srcWave), "Missing wave at linear index: " + num2str(i))
+
+		if(!WaveExists(srcWave))
+			continue
+		endif
 
 		if(!ParamIsDefault(indexWave))
 			index = indexWave[i]

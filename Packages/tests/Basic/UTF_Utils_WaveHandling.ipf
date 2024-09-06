@@ -659,20 +659,14 @@ static Function TestDeepCopyWaveRefWave()
 	endtry
 
 	Make/FREE/WAVE/N=(1, 1) invalidSrc1
-	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(invalidSrc1); AbortOnRTE
-		FAIL()
-	catch
-		PASS()
-	endtry
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(invalidSrc1)
+	CHECK_EQUAL_WAVES(GetWaveDimensions(cpy), {1, 1, 0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(cpy[0], NULL_WAVE)
 
 	Make/FREE/WAVE/N=(1) invalidSrc2
-	try
-		WAVE/WAVE cpy = DeepCopyWaveRefWave(invalidSrc2); AbortOnRTE
-		FAIL()
-	catch
-		PASS()
-	endtry
+	WAVE/WAVE cpy = DeepCopyWaveRefWave(invalidSrc2)
+	CHECK_EQUAL_WAVES(GetWaveDimensions(cpy), {1, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(cpy[0], NULL_WAVE)
 
 	WAVE src = $""
 	try
