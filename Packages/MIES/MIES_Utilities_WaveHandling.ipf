@@ -577,13 +577,13 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 			continue
 		endif
 
-		if(!ParamIsDefault(indexWave))
-			index = indexWave[i]
-		endif
-
 		if(ParamIsDefault(dimension))
 			Duplicate/FREE srcWave, dstWave
 		else
+			if(!ParamIsDefault(indexWave))
+				index = indexWave[i]
+			endif
+
 			switch(dimension)
 				case ROWS:
 					Duplicate/FREE/R=[index][][][] srcWave, dstWave
@@ -598,6 +598,7 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 					Duplicate/FREE/R=[][][][index] srcWave, dstWave
 					break
 			endswitch
+
 			ReduceWaveDimensionality(dstWave, minDimension = dimension)
 		endif
 
