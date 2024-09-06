@@ -3206,7 +3206,7 @@ static Function [variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_D
 	return [daScaleMinStepWidth, daScaleMaxStepWidth]
 End
 
-static Function [variable fitOffset, variable fitSlope, variable DAScale, variable apfreq] PSQ_DS_GetValuesOfLargestAPFreq(string device, variable sweepNo, variable headstage)
+static Function [variable fitOffset, variable fitSlope, variable DAScale, variable apfreq] PSQ_DS_GetValuesOfLargestDAScale(string device, variable sweepNo, variable headstage)
 
 	variable emptySCI, offset, i, numEntries, maxValue, maxLoc
 
@@ -3221,21 +3221,21 @@ static Function [variable fitOffset, variable fitSlope, variable DAScale, variab
 
 	// get the largest value with the highest index
 	maxValue   = -Inf
-	numEntries = DimSize(apfreqAll, ROWS)
+	numEntries = DimSize(DAScaleAll, ROWS)
 	for(i = numEntries - 1; i >= 0; i -= 1)
-		if(apfreqAll[i] > maxValue)
-			maxValue = apfreqAll[i]
+		if(DAScaleAll[i] > maxValue)
+			maxValue = DAScaleAll[i]
 			maxLoc   = i
 		endif
 	endfor
 
-	// highest AP frequency is at V_maxloc
+	// highest DAScale/APFreq is at maxloc
 	apfreq  = apfreqAll[maxLoc]
 	DAScale = DAScaleAll[maxLoc]
 
 	// find the rest by indexing relative from the end as we have fewer fitOffset/fitSlope entries in total
 	// but a 1:1 correspondence in the SCI data which is at the end
-	offset = DimSize(apfreqAll, ROWS) - maxLoc
+	offset = DimSize(DAScaleAll, ROWS) - maxLoc
 
 	fitOffset = fitOffsetAll[DimSize(fitOffsetAll, ROWS) - offset]
 	fitSlope  = fitSlopeAll[DimSize(fitSlopeAll, ROWS) - offset]
@@ -4179,7 +4179,7 @@ Function PSQ_DAScale(device, s)
 
 						if(sweepPassed)
 							if(measuredAllFutureDAScales)
-								[fitOffset, fitSlope, DAScale, apfreq] = PSQ_DS_GetValuesOfLargestAPFreq(device, s.sweepNo, s.headstage)
+								[fitOffset, fitSlope, DAScale, apfreq] = PSQ_DS_GetValuesOfLargestDAScale(device, s.sweepNo, s.headstage)
 
 								dascale = PSQ_DS_CalculateDAScale(cdp, fitOffset, fitSlope, DAScale, apfreq)
 								Make/FREE/D DAScaleNew = {dascale}
