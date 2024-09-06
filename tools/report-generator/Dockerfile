@@ -18,9 +18,9 @@ RUN sed -ri 's/(main)/\1 contrib/g' /etc/apt/sources.list.d/debian.sources &&   
     apt-get install -y dotnet-sdk-7.0 &&                                             \
     apt-get clean
 
-RUN dotnet tool install --global --version 5.1.17 \
-        dotnet-reportgenerator-globaltool && \
-    mkdir -p /home/ci && \
+RUN dotnet tool install --global --version 5.3.9 \
+        dotnet-reportgenerator-globaltool &&     \
+    mkdir -p /home/ci &&                         \
     mv /root/.dotnet /home/ci
 
 ENTRYPOINT [ "/home/ci/.dotnet/tools/reportgenerator" ]
