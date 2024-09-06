@@ -3238,7 +3238,7 @@ static Function [variable fitOffset, variable fitSlope, variable DAScale, variab
 	offset = DimSize(apfreqAll, ROWS) - maxLoc
 
 	fitOffset = fitOffsetAll[DimSize(fitOffsetAll, ROWS) - offset]
-	fitSlope  = fitOffsetAll[DimSize(fitSlopeAll, ROWS) - offset]
+	fitSlope  = fitSlopeAll[DimSize(fitSlopeAll, ROWS) - offset]
 
 	return [fitOffset, fitSlope, DAScale, apfreq]
 End
