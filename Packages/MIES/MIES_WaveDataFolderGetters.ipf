@@ -7617,7 +7617,8 @@ End
 /// follow our usual rules so it might not exist.
 Function/WAVE GetOverrideResults()
 
-	WAVE/Z/SDFR=root: overrideResults
+	DFREF dfr = root:
+	WAVE/Z/SDFR=dfr overrideResults
 
 	return overrideResults
 End

@@ -5585,7 +5585,8 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 	[lowerValue, upperValue] = WaveMinAndMax(singleAD, chirpStart, cycleEnd)
 
 	if(TestOverrideActive())
-		WAVE/SDFR=root: overrideResults
+		WAVE overrideResults = GetOverrideResults()
+
 		NVAR count = $GetCount(device)
 		upperValueOverride = overrideResults[0][count][1]
 		lowerValueOverride = overrideResults[0][count][2]
