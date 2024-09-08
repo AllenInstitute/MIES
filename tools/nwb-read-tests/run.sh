@@ -14,7 +14,7 @@ fi
 
 top_level=$(git rev-parse --show-toplevel)
 
-list_of_files=$(find $top_level -iname "*-V2.nwb")
+list_of_files=$(git ls-files --others '**/*V2.nwb')
 
 tag="nwb-read-tests"
 
