@@ -27,8 +27,9 @@ static StrConstant ASYNC_WORKLOADCLASS_STR = "workloadClass"
 static StrConstant ASYNC_PARAMCOUNT_STR    = "paramCount"
 static StrConstant ASYNC_INORDER_STR       = "inOrder"
 static StrConstant ASYNC_ABORTFLAG_STR     = "abortFlag"
-static StrConstant ASYNC_ERROR_STR         = "err"
-static StrConstant ASYNC_ERRORMSG_STR      = "errmsg"
+static StrConstant ASYNC_RTERROR_STR       = "rtErr"
+static StrConstant ASYNC_RTERRORMSG_STR    = "rtErrMessage"
+static StrConstant ASYNC_ABORTCODE_STR     = "abortCode"
 static StrConstant ASYNC_WLCOUNTER_STR     = "workloadClassCounter"
 ///@}
 
@@ -86,13 +87,8 @@ End
 
 /// @brief Prototype function for an async readout function
 ///
-/// @param dfr     reference to returned data folder from thread
-/// @param err     error code, only set in the error case
-/// @param errmsg  error message, only set in the error case
-Function ASYNC_ReadOut(dfr, err, errmsg)
-	DFREF    dfr
-	variable err
-	string   errmsg
+/// @param ar ASYNC readout structure
+Function ASYNC_ReadOut(STRUCT ASYNC_ReadOutStruct &ar)
 End
 
 /// @brief thread function that receives data folders from the thread input queue
@@ -134,19 +130,26 @@ threadsafe static Function/DF ASYNC_Run_Worker(DFREF dfr)
 	DFREF dfrInp   = dfr:input
 	DFREF dfrAsync = dfr:async
 
-	variable/G dfrAsync:$ASYNC_ERROR_STR    = 0
-	NVAR       err                          = dfrAsync:$ASYNC_ERROR_STR
-	string/G   dfrAsync:$ASYNC_ERRORMSG_STR = ""
-	SVAR       errmsg                       = dfrAsync:$ASYNC_ERRORMSG_STR
+	variable/G dfrAsync:$ASYNC_RTERROR_STR    = 0
+	variable/G dfrAsync:$ASYNC_ABORTCODE_STR  = 0
+	string/G   dfrAsync:$ASYNC_RTERRORMSG_STR = ""
+	NVAR       rtErr                          = dfrAsync:$ASYNC_RTERROR_STR
+	NVAR       abortCode                      = dfrAsync:$ASYNC_ABORTCODE_STR
+	SVAR       rtErrMsg                       = dfrAsync:$ASYNC_RTERRORMSG_STR
 
-	err    = 0
 	dfrOut = $""
 	AssertOnAndClearRTError()
 	try
 		dfrOut = f(dfrInp); AbortOnRTE
 	catch
-		errmsg = GetRTErrMessage()
-		err    = ClearRTError()
+		rtErrMsg = GetRTErrMessage()
+		rtErr    = ClearRTError()
+		if(!rtErr)
+			rtErrMsg = ""
+		endif
+		if(V_AbortCode != ABORTCODE_ABORTONRTE)
+			abortCode = V_AbortCode
+		endif
 	endtry
 
 	if(IsFreeDatafolder(dfrOut))
@@ -168,7 +171,8 @@ Function ASYNC_ThreadReadOut()
 	variable justBuffered
 
 	variable wlcIndex, statCnt, index
-	string rterrmsg
+	string                     msg
+	STRUCT ASYNC_ReadOutStruct ar
 	NVAR tgID = $GetThreadGroupID()
 	ASSERT(!isNaN(tgID), "Async frame work is not running")
 	WAVE/DF DFREFbuffer = GetDFREFBuffer(getAsyncHomeDF())
@@ -238,19 +242,25 @@ Function ASYNC_ThreadReadOut()
 
 		track[%$workloadClass][%OUTPUTCOUNT] += 1
 
-		SVAR                  RFunc  = dfr:$ASYNC_READOUTFUNC_STR
-		FUNCREF ASYNC_ReadOut f      = $RFunc
-		NVAR                  err    = dfr:$ASYNC_ERROR_STR
-		SVAR                  errmsg = dfr:$ASYNC_ERRORMSG_STR
+		SVAR                  RFunc     = dfr:$ASYNC_READOUTFUNC_STR
+		FUNCREF ASYNC_ReadOut f         = $RFunc
+		NVAR                  rtErr     = dfr:$ASYNC_RTERROR_STR
+		SVAR                  rtErrMsg  = dfr:$ASYNC_RTERRORMSG_STR
+		NVAR                  abortCode = dfr:$ASYNC_ABORTCODE_STR
+
+		ar.dfr       = dfrOut
+		ar.rtErr     = rtErr
+		ar.rtErrMsg  = rtErrMsg
+		ar.abortCode = abortCode
 
 		statCnt += 1
 		AssertOnAndClearRTError()
 		try
-			f(dfrOut, err, errmsg); AbortOnRTE
+			f(ar); AbortOnRTE
 		catch
-			rterrmsg = GetRTErrMessage()
-			ClearRTError()
-			ASSERT(0, "ReadOut function " + RFunc + " aborted with: " + rterrmsg)
+			msg = GetRTErrMessage()
+			ASSERT(!ClearRTError(), "ReadOut function " + RFunc + " encountered an RTE: " + msg)
+			ASSERT(!V_AbortCode, "ReadOut function " + RFunc + " aborted with code: " + GetErrMessage(V_AbortCode))
 		endtry
 
 	endfor

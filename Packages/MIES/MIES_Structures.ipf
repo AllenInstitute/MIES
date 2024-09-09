@@ -637,3 +637,11 @@ Structure SF_PlotMetaData
 	string xAxisLabel // from SF_META_XAXISLABEL constant
 	string yAxisLabel // from SF_META_YAXISLABEL constant
 EndStructure
+
+/// @brief ReadOut Structure for ASYNC
+Structure ASYNC_ReadOutStruct
+	DFREF dfr // dfr with output data
+	variable rtErr // runtime error code
+	string rtErrMsg // runtime error message
+	variable abortCode // abort code
+EndStructure

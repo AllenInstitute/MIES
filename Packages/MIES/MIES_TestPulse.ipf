@@ -179,25 +179,20 @@ End
 /// results are base line level, steady state resistance, instantaneous resistance and their positions
 /// collected results for all channels of a measurement are send to TP_RecordTP(), DQ_ApplyAutoBias() when complete
 ///
-/// @param dfr output data folder from ASYNC frame work with results from workloads associated with this registered function
-///		  The output parameter in the data folder follow the definition as created in TP_TSAnalysis()
-///
-/// @param err error code of TP_TSAnalysis() function
-///
-/// @param errmsg error message of TP_TSAnalysis() function
-Function TP_ROAnalysis(dfr, err, errmsg)
-	DFREF    dfr
-	variable err
-	string   errmsg
+/// @param ar ASYNC_ReadOutStruct structure with dfr with input data
+Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 
 	variable i, j, bufSize
 	variable posMarker, posAsync, tpBufferSize
 	variable posBaseline, posSSRes, posInstRes
 	variable posElevSS, posElevInst
 
-	if(err)
-		ASSERT(0, "RTError " + num2str(err) + " in TP_Analysis thread: " + errmsg)
+	if(ar.rtErr || ar.abortCode)
+		ASSERT(!ar.rtErr, "TP analysis thread encountered RTE " + ar.rtErrMsg)
+		ASSERT(!ar.abortCode, "TP analysis thread aborted with code: " + GetErrMessage(ar.abortCode))
 	endif
+
+	DFREF dfr = ar.dfr
 
 	WAVE/SDFR=dfr inData     = outData
 	NVAR/SDFR=dfr now        = now

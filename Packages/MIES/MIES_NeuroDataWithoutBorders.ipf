@@ -366,13 +366,14 @@ threadsafe Function/DF NWB_ASYNC_Worker(DFREF dfr)
 	return $""
 End
 
-Function NWB_ASYNC_Readout(DFREF dfr, variable err, string errmsg)
+Function NWB_ASYNC_Readout(STRUCT ASYNC_ReadOutStruct &ar)
 
-	if(!err)
-		return NaN
+	if(ar.rtErr)
+		BUG("Async jobs finished with RTE: " + ar.rtErrMsg)
 	endif
-
-	BUG("Async jobs finished with: " + errmsg)
+	if(ar.abortCode)
+		BUG("Async jobs finished with Abort: " + GetErrMessage(ar.abortCode))
+	endif
 End
 
 threadsafe static Function NWB_WriteLabnoteBooksAndComments(STRUCT NWBAsyncParameters &s)

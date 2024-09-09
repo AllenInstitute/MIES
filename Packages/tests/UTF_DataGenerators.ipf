@@ -876,3 +876,17 @@ static Function/WAVE GetBasicMathOperations()
 
 	return op
 End
+
+static Function/WAVE GetASYNCReadOutErrorFunctions()
+	Make/FREE/T wt = {"FailReadOutAbort", "FailReadOut"}
+	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
+
+	return wt
+End
+
+static Function/WAVE GetASYNCThreadErrorFunctions()
+	Make/FREE/T wt = {"RunGenericWorkerAbortOnValue,FailThreadReadOutAbortOnValue,", "RunGenericWorkerRTE,FailThreadReadOutRTE,"}
+	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
+
+	return wt
+End

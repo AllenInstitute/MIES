@@ -696,6 +696,44 @@ static Function TASYNC_WorkerNoDF()
 	ASYNC_Stop(timeout = 1)
 End
 
+/// @brief Test if errors in a thread is handled properly
+// IUTF_TD_GENERATOR DataGenerators#GetASYNCThreadErrorFunctions
+static Function TASYNC_WorkerThreadErrors([string str])
+
+	string myDF, worker, roFunc
+	DFREF threadDF
+	variable endtime, timeout
+
+	worker = StringFromList(0, str, ",")
+	roFunc = StringFromList(1, str, ",")
+	ASYNC_Start(1)
+	threadDF = ASYNC_PrepareDF(worker, roFunc, "TASYNCTest")
+	ASYNC_AddParam(threadDF, var = 1)
+	Make/N=10 data
+	ASYNC_AddParam(threadDF, w = data, move = 1)
+	myDF = GetDataFolder(1)
+	ASYNC_AddParam(threadDF, str = myDF)
+
+	ASYNC_Execute(threadDF)
+
+	Make/N=0 returnOrder
+	endtime = datetime + THREADING_TEST_TIMEOUT
+	timeout = 0
+	for(;;)
+		ASYNC_ThreadReadOut()
+		if(numpnts(returnOrder) == 1)
+			break
+		endif
+		if(datetime > endtime)
+			timeout = 1
+			break
+		endif
+	endfor
+	CHECK(!timeout)
+
+	ASYNC_Stop(timeout = 1)
+End
+
 /// @brief Test if workloads are correctly processed out of order
 /// note: due to the random order there is still a tiny chance that the processing is ordered
 /// In such case a warning is given.
@@ -891,14 +929,15 @@ static Function TASYNC_RunErrorWorker()
 End
 
 /// @brief Test if a ReadOut function that generates a runtime error is properly caught.
-static Function TASYNC_RunErrorReadOut()
+// IUTF_TD_GENERATOR DataGenerators#GetASYNCReadOutErrorFunctions
+static Function TASYNC_RunErrorReadOut([string str])
 
 	string myDF
 	DFREF  threadDF
 	variable endtime, timeout
 
 	ASYNC_Start(ThreadProcessorCount)
-	threadDF = ASYNC_PrepareDF("RunGenericWorker", "FailReadOut", "TASYNCTest")
+	threadDF = ASYNC_PrepareDF("RunGenericWorker", str, "TASYNCTest")
 	ASYNC_AddParam(threadDF, var = 1)
 	Make/N=10 data
 	ASYNC_AddParam(threadDF, w = data, move = 1)
@@ -1327,15 +1366,49 @@ threadsafe Function/DF RunGenericWorker5(dfr)
 	return dfrOut
 End
 
+/// @brief Worker that aborts after one second with an AbortOnValue
+threadsafe Function/DF RunGenericWorkerAbortOnValue(DFREF dfr)
+
+	variable now
+
+	// sleep for 1s, Sleep does not work
+	// reliable here on Win7/wine
+	now = datetime
+	for(;;)
+		if(datetime > now + 1)
+			break
+		endif
+	endfor
+
+	AbortOnValue 1, 2345
+End
+
+/// @brief Worker that creates an RTE 330
+threadsafe Function/DF RunGenericWorkerRTE(DFREF dfr)
+
+	variable now
+
+	// sleep for 1s, Sleep does not work
+	// reliable here on Win7/wine
+	now = datetime
+	for(;;)
+		if(datetime > now + 1)
+			break
+		endif
+	endfor
+
+	WAVE/Z wv = $""
+	wv[0] = 0
+End
+
 /// @brief ReadOut function for combination with RunGenericWorker, order is saved in wave returnOrder
-Function RunGenericReadOut(dfr, err, errmsg)
-	DFREF    dfr
-	variable err
-	string   errmsg
+Function RunGenericReadOut(STRUCT ASYNC_ReadOutStruct &ar)
 
 	variable size
 
-	CHECK(!err)
+	CHECK_EQUAL_VAR(ar.rtErr, 0)
+	CHECK_EQUAL_VAR(ar.abortCode, 0)
+	DFREF dfr = ar.dfr
 
 	SVAR/SDFR=dfr testDF   = myDF
 	NVAR/SDFR=dfr oID      = outV
@@ -1346,14 +1419,13 @@ Function RunGenericReadOut(dfr, err, errmsg)
 End
 
 /// @brief ReadOut function for combination with RunGenericWorker2, order is saved in wave returnOrder2
-Function RunGenericReadOut2(dfr, err, errmsg)
-	DFREF    dfr
-	variable err
-	string   errmsg
+Function RunGenericReadOut2(STRUCT ASYNC_ReadOutStruct &ar)
 
 	variable size
 
-	CHECK(!err)
+	CHECK_EQUAL_VAR(ar.rtErr, 0)
+	CHECK_EQUAL_VAR(ar.abortCode, 0)
+	DFREF dfr = ar.dfr
 
 	SVAR/SDFR=dfr testDF   = myDF
 	NVAR/SDFR=dfr oID      = outV
@@ -1365,14 +1437,13 @@ End
 
 /// @brief ReadOut function for combination with RunGenericWorker, order is saved in wave returnOrder
 /// Aborts at end to trigger an exception
-Function RunGenericReadOutAbort(dfr, err, errmsg)
-	DFREF    dfr
-	variable err
-	string   errmsg
+Function RunGenericReadOutAbort(STRUCT ASYNC_ReadOutStruct &ar)
 
 	variable size
 
-	CHECK(!err)
+	CHECK_EQUAL_VAR(ar.rtErr, 0)
+	CHECK_EQUAL_VAR(ar.abortCode, 0)
+	DFREF dfr = ar.dfr
 
 	SVAR/SDFR=dfr testDF   = myDF
 	NVAR/SDFR=dfr oID      = outV
@@ -1401,12 +1472,11 @@ threadsafe Function/DF RunWorkerOfDOOM(dfr)
 End
 
 /// @brief ReadOut function for combination with RunWorkerOfDOOM, checks if Worker generated an error
-Function RunReadOutOfDOOM(dfr, err, errmsg)
-	DFREF    dfr
-	variable err
-	string   errmsg
+Function RunReadOutOfDOOM(STRUCT ASYNC_ReadOutStruct &ar)
 
-	CHECK_EQUAL_VAR(err, 330)
+	CHECK_EQUAL_VAR(ar.rtErr, 330)
+	CHECK_EQUAL_VAR(ar.abortCode, 0)
+	DFREF dfr = ar.dfr
 
 	SVAR/SDFR=dfr testDF   = myDF
 	NVAR/SDFR=dfr oID      = outV
@@ -1435,33 +1505,28 @@ threadsafe Function InfiniteWorkerHelper_IGNORE()
 End
 
 /// @brief Empty ReadOut function
-Function EmptyReadOut(dfr, err, errmsg)
-	DFREF    dfr
-	variable err
-	string   errmsg
+Function EmptyReadOut(STRUCT ASYNC_ReadOutStruct &ar)
 End
 
 /// @brief Empty ReadOut function
-Function ReadOutCheckDF(dfr, err, errmsg)
-	DFREF    dfr
-	variable err
-	string   errmsg
+Function ReadOutCheckDF(STRUCT ASYNC_ReadOutStruct &ar)
 
-	CHECK(DataFolderExistsDFR(dfr))
+	CHECK_EQUAL_VAR(ar.rtErr, 0)
+	CHECK_EQUAL_VAR(ar.abortCode, 0)
+	CHECK(DataFolderExistsDFR(ar.dfr))
 
 	WAVE returnOrder
 	Redimension/N=1 returnOrder
 End
 
 /// @brief ReadOut function for combination with RunGenericWorker that generates a runtime error 330
-Function FailReadOut(dfr, err, errmsg)
-	DFREF    dfr
-	variable err
-	string   errmsg
+Function FailReadOut(STRUCT ASYNC_ReadOutStruct &ar)
 
 	variable size
 
-	CHECK(!err)
+	CHECK_EQUAL_VAR(ar.rtErr, 0)
+	CHECK_EQUAL_VAR(ar.abortCode, 0)
+	DFREF dfr = ar.dfr
 
 	SVAR/SDFR=dfr testDF   = myDF
 	NVAR/SDFR=dfr oID      = outV
@@ -1472,4 +1537,43 @@ Function FailReadOut(dfr, err, errmsg)
 	// generate runtime error 330
 	WAVE/Z w = $""
 	w[0] = 0xCAFEBABE
+End
+
+/// @brief ReadOut function for combination with RunGenericWorker that Aborts with code 1234
+Function FailReadOutAbort(STRUCT ASYNC_ReadOutStruct &ar)
+
+	variable size
+
+	CHECK_EQUAL_VAR(ar.rtErr, 0)
+	CHECK_EQUAL_VAR(ar.abortCode, 0)
+	DFREF dfr = ar.dfr
+
+	SVAR/SDFR=dfr testDF   = myDF
+	NVAR/SDFR=dfr oID      = outV
+	WAVE          retOrder = $(testDF + "returnOrder")
+	size = numpnts(retOrder)
+	Redimension/N=(size + 1) retOrder
+	retOrder[size] = oID
+	// generate AbortCode
+	AbortOnValue 1, 1234
+End
+
+/// @brief ReadOut function for combination with RunGenericWorkerAbortOnValue that receives abortCode 2345 from thread
+Function FailThreadReadOutAbortOnValue(STRUCT ASYNC_ReadOutStruct &ar)
+
+	CHECK_EQUAL_VAR(ar.rtErr, 0)
+	CHECK_EQUAL_VAR(ar.abortCode, 2345)
+
+	WAVE returnOrder
+	Redimension/N=1 returnOrder
+End
+
+/// @brief ReadOut function for combination with RunGenericWorkerAbortOnValue that receives abortCode 2345 from thread
+Function FailThreadReadOutRTE(STRUCT ASYNC_ReadOutStruct &ar)
+
+	CHECK_EQUAL_VAR(ar.rtErr, 330)
+	CHECK_EQUAL_VAR(ar.abortCode, 0)
+
+	WAVE returnOrder
+	Redimension/N=1 returnOrder
 End
