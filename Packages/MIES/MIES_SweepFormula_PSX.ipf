@@ -251,8 +251,11 @@ static Function/WAVE PSX_FilterSweepData(WAVE sweepData, variable low, variable 
 	ASSERT(low > high, "Expected a band pass filter with low > high")
 
 	Duplicate/FREE sweepData, filtered
+	//	Duplicate/O sweepData, root:sweepData
 
-	FilterIIR/ENDV=(filtered[0])/LO=(low / samp)/HI=(high / samp)/DIM=(ROWS) filtered; err = GetRTError(1)
+	//	print low, high, samp
+	//	Abort
+	FilterIIR/ENDV=(filtered[0])/LO=(low / samp)/HI=(high / samp)/DIM=(ROWS)/ORD=6 filtered; err = GetRTError(1)
 	SFH_ASSERT(!err, "Error filtering the data, msg: " + GetErrMessage(err))
 
 	return filtered
@@ -331,6 +334,9 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	high  = deconvFilter[%$"Filter High"]
 	order = deconvFilter[%$"Filter Order"]
 
+	low  = 200
+	high = 20
+
 	if(IsNaN(low))
 		lowFrac = PSX_DECONV_FILTER_DEF_LOW
 	else
@@ -347,7 +353,7 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 		order = PSX_DECONV_FILTER_DEF_ORDER
 	endif
 
-	ASSERT(lowFrac < highFrac, "Expected a low pass filter with lowFrac < highFrac")
+	//	ASSERT(lowFrac < highFrac, "Expected a low pass filter with lowFrac < highFrac")
 
 	numPoints = DimSize(sweepData, ROWS)
 	fftSize   = DimSize(psxKernelFFT, ROWS)
@@ -364,7 +370,8 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 
 	CopyScales sweepData, Deconv
 
-	FilterFIR/ENDV={3}/LO={lowFrac, highFrac, order} Deconv
+	// todo remove low frequencies here with a bandpass filter, always bandpass
+	FilterFIR/ENDV={3}/LO={lowFrac, highFrac, order}/HI={20 / samp, 10 / samp, 7} Deconv
 
 	return Deconv
 End
