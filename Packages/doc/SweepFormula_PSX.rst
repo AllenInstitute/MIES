@@ -144,7 +144,7 @@ the selection, either fit or event state, is determined by the popup menu.
   combination (checked) or use all of them (unchecked)
 - ``Fit State/Event State``: Select the state to use as basis for selection
 - ``dblexp_peak/dblexp_XOffset``: Select the fit curve for the average fit
-- ``Onset/peak``: Select the event property to offset the events in the all
+- ``Onset/Peak/Slew``: Select the event property to offset the events in the all
   events graph to
 - ``Block size [%]``: Percentage to select what part of the events are
   displayed in the all events graph. This can help with reducing the number of

@@ -126,7 +126,7 @@ Window PSXPanel() : Panel
 	PopupMenu popup_block, mode=1, popvalue="", value=#"\"\""
 	PopupMenu popupmenu_event_offset, pos={136.00, 168.00}, size={53.00, 19.00}, proc=PSX_PopupMenuState
 	PopupMenu popupmenu_event_offset, help={"Select the time point in x direction for aligning the single event traces in the all event graph"}
-	PopupMenu popupmenu_event_offset, mode=1, popvalue="Onset", value=#"\"Onset;Peak\""
+	PopupMenu popupmenu_event_offset, mode=1, popvalue="Onset", value=#"\"Onset;Peak;Slew\""
 	DefineGuide leftMenu={FL, 0.2, FR}, horizCenter={leftMenu, 0.5, FR}
 	SetWindow kwTopWin, hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin, hook(ctrl)=PSX_AllEventGraphHook

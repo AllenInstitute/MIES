@@ -8191,18 +8191,30 @@ End
 /// @name SweepFormula PSX
 ///@{
 
-static Constant PSX_WAVE_VERSION       = 2
-static Constant PSX_EVENT_WAVE_COLUMNS = 14
+static Constant PSX_WAVE_VERSION       = 3
+static Constant PSX_EVENT_WAVE_COLUMNS = 17
 
-Function UpgradePSXEventWave(WAVE psxEvent)
+/// @brief Return the upgraded psxEvent wave
+Function/WAVE UpgradePSXEventWave(WAVE psxEvent)
 
 	if(WaveVersionIsAtLeast(psxEvent, PSX_WAVE_VERSION))
-		// latest version
+		return psxEvent
+	elseif(WaveVersionIsAtLeast(psxEvent, 2))
+
+		if(!AlreadyCalledOnce(CO_PSX_UPGRADE_EVENT))
+			print "The algorithm for psp/psc event detection was heavily overhauled, therefore we are very sorry " \
+			      + "to say that we can't upgrade your existing data."
+			ControlWindowToFront()
+		endif
+
+		return $""
 	elseif(WaveVersionIsAtLeast(psxEvent, 1))
 		SetPSXEventDimensionLabels(psxEvent)
 	else
 		ASSERT(0, "Missing upgrade path")
 	endif
+
+	return psxEvent
 End
 
 /// @brief Return a 2D events wave as free wave
@@ -8211,22 +8223,29 @@ End
 /// - count
 ///
 /// Cols:
-/// -  0/index: Event index
-/// -  1/peak_t: Event time [ms]
-/// -  2/peak: Event amplitude in deconvoluted data [y unit of data]
-/// -  3/post_min: Minimum of filtered and offsetted data in the range [time, time + 2ms]
-/// -  4/post_min_t: X location of [2]
-/// -  5/pre_max: Maximum of filtered and offsetted data in the range [time - 2ms, time], averaged over +/- 0.1 ms
-/// -  6/pre_max_t: X location of [5]
-/// -  7/rel_peak: Relative amplitude: [2] - [4]
-/// -  8/isi: Time difference to previous event [ms]
+/// -  0/index: event index
+/// -  1/deconvPeak: event amplitude in deconvoluted data [y unit of data]
+/// -  2/deconvPeak_t: deconvolved peak time [ms]
+/// -  3/peak: Maximum (positive kernel amp sign) or minimum (negative kernel amp sign) in the range of
+///            [deconvPeak_t – kernelRiseTau or devonvPeak_t of the previous event (whichever comes later),
+///             deconvPeak_t + 0.33 * kernelDecayTau or deconvPeak_t of the next event (which ever comes first)]
+///            in the filtered sweep wave
+/// -  4/peak_t: peak time
+/// -  5/baseline: Maximum (negative kernel amp sign) or minimum (positive kernel amp sign) in the range of
+///                    [peak_t – 10 * kernelRiseTau, peak_t], averaged over +/- 5 points, in the filtered sweep wave
+/// -  6/baseline_t: baseline time
+/// -  7/amplitude: Relative amplitude: [3] - [5]
+/// -  8/iei: Time difference to previous event (inter event interval) [ms]
 /// -  9/tau: Decay constant tau of exponential fit
 /// - 10/Fit manual QC call: One of @ref PSXStates
 /// - 11/Fit result: 1 for success, everything smaller than 0 is failure:
-///       - `]-10000, 0[`: CurveFit error codes
-///       - `]inf, -10000]`: Custom error codes, one of @ref FitEventDecayCustomErrors
+///   - `]-10000, 0[`: CurveFit error codes
+///   - `]-inf, -10000]`: Custom error codes, one of @ref FitEventDecayCustomErrors
 /// - 12/Event manual QC call: One of @ref PSXStates
-/// - 13/Rise Time: rise time as calculated by PSX_CalculateRiseTime()
+/// - 13/Onset time as calculated by PSX_CalculateOnsetTime
+/// - 14/Rise Time as calculated by PSX_CalculateRiseTime
+/// - 15/Slew Rate
+/// - 16/Slew Rate Time
 Function/WAVE GetPSXEventWaveAsFree()
 
 	variable versionOfWave = PSX_WAVE_VERSION
@@ -8240,22 +8259,25 @@ Function/WAVE GetPSXEventWaveAsFree()
 	return wv
 End
 
-Function SetPSXEventDimensionLabels(WAVE wv)
+static Function SetPSXEventDimensionLabels(WAVE wv)
 
 	SetDimLabel COLS, 0, index, wv
-	SetDimLabel COLS, 1, peak_t, wv
-	SetDimLabel COLS, 2, peak, wv
-	SetDimLabel COLS, 3, post_min, wv
-	SetDimLabel COLS, 4, post_min_t, wv
-	SetDimLabel COLS, 5, pre_max, wv
-	SetDimLabel COLS, 6, pre_max_t, wv
-	SetDimLabel COLS, 7, rel_peak, wv
-	SetDimLabel COLS, 8, isi, wv
+	SetDimLabel COLS, 1, deconvPeak, wv
+	SetDimLabel COLS, 2, deconvPeak_t, wv
+	SetDimLabel COLS, 3, peak, wv
+	SetDimLabel COLS, 4, peak_t, wv
+	SetDimLabel COLS, 5, baseline, wv
+	SetDimLabel COLS, 6, baseline_t, wv
+	SetDimLabel COLS, 7, amplitude, wv
+	SetDimLabel COLS, 8, iei, wv
 	SetDimLabel COLS, 9, tau, wv
 	SetDimLabel COLS, 10, $"Fit manual QC call", wv
 	SetDimLabel COLS, 11, $"Fit result", wv
 	SetDimLabel COLS, 12, $"Event manual QC call", wv
-	SetDimLabel COLS, 13, $"Rise Time", wv
+	SetDimLabel COLS, 13, $"Onset Time", wv
+	SetDimLabel COLS, 14, $"Rise Time", wv
+	SetDimLabel COLS, 15, $"Slew Rate", wv
+	SetDimLabel COLS, 16, $"Slew Rate Time", wv
 End
 
 Function/WAVE GetPSXSingleEventFitWaveFromDFR(DFREF dfr)
