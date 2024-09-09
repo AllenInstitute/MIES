@@ -2033,6 +2033,7 @@ StrConstant CO_EMPTY_DAC_LIST     = "emptyDACList"
 StrConstant CO_SF_TOO_MANY_TRACES = "SF_tooManyTraces"
 StrConstant CO_PSX_CLIPPED_STATS  = "psx_clippedStats"
 StrConstant CO_ARCHIVE_ONCE       = "ArchiveLogs"
+StrConstant CO_PSX_UPGRADE_EVENT  = "psx_updateEvent"
 ///@}
 
 /// @name Constants for SweepFormula Meta data in JSON format
@@ -2348,11 +2349,12 @@ StrConstant PSX_STATS_LABELS = "Average;Median;Average Deviation;Standard deviat
 ///@{
 Constant PSX_HORIZ_OFFSET_ONSET = 0
 Constant PSX_HORIZ_OFFSET_PEAK  = 1
+Constant PSX_HORIZ_OFFSET_SLEW  = 2
 ///@}
 
-Constant PSX_DECONV_FILTER_DEF_LOW   = 0.002
-Constant PSX_DECONV_FILTER_DEF_HIGH  = 0.004
-Constant PSX_DECONV_FILTER_DEF_ORDER = 101
+Constant PSX_DECONV_FILTER_DEF_LOW   = 500
+Constant PSX_DECONV_FILTER_DEF_HIGH  = 50
+Constant PSX_DECONV_FILTER_DEF_ORDER = 7
 
 StrConstant PSX_JWN_COMBO_KEYS_NAME = "ComboKeys"
 

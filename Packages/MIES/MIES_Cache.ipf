@@ -209,6 +209,13 @@ Function/S CA_AveragingWaveModKey(WAVE wv)
 	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
 End
 
+/// @brief Cache key generator for the tau range calculation
+///        of psx events
+Function/S CA_PSXEventGoodTauRange(WAVE wv)
+
+	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
+End
+
 /// @brief Calculated a CRC from non wave reference waves using modification data, wave modification count and wave location.
 ///        If the given wave is a wave reference wave, then the CRC is calculated recursively from
 ///        all non wave reference waves and null wave references found.
@@ -438,12 +445,7 @@ End
 
 Function/S CA_PSXOperationKey(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Operation " + ":Version 2"
-End
-
-Function/S CA_PSXRiseTimeKey(string comboKey, string psxParameters)
-
-	return CA_PSXBaseKey(comboKey, psxParameters) + " PSX Rise time " + ":Version 2"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Operation " + ":Version 3"
 End
 
 Function/S CA_PSXAnalyzePeaks(string comboKey, string psxParameters)

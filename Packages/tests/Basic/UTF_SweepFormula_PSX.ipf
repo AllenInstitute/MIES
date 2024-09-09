@@ -651,19 +651,20 @@ static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 
 	variable jsonID
 
-	CHECK_EQUAL_VAR(DimSize(psxEvent, COLS), 14) // test needs update if that fails
+	CHECK_EQUAL_VAR(DimSize(psxEvent, COLS), 17) // test needs update if that fails
 
 	psxEvent[][%index]        = p
-	psxEvent[][%peak_t]       = 100 * p
+	psxEvent[][%deconvpeak_t] = 100 * p
+	psxEvent[][%deconvpeak]   = NaN
 	psxEvent[][%peak]         = NaN
-	psxEvent[][%post_min]     = NaN
-	psxEvent[][%post_min_t]   = -10 * p
-	psxEvent[][%pre_max]      = NaN
-	psxEvent[][%pre_max_t]    = NaN
-	psxEvent[][%rel_peak]     = p == 0 ? NaN : 10 * p
-	psxEvent[][%isi]          = 1000 * p
+	psxEvent[][%peak_t]       = -10 * p
+	psxEvent[][%baseline]     = NaN
+	psxEvent[][%baseline_t]   = NaN
+	psxEvent[][%amplitude]    = p == 0 ? NaN : 10 * p
+	psxEvent[][%iei]          = 1000 * p
 	psxEvent[][%tau]          = 1e-6 * p
 	psxEvent[][%$"Rise Time"] = p == 0 ? NaN : 0.1 * p
+	// TODO fill new entries
 	// PSX_ACCEPT:1
 	// PSX_REJECT:2
 	// PSX_UNDET: 4
@@ -1231,6 +1232,27 @@ static Function StatsComplainsAboutIntersectingRanges()
 		error = ROStr(GetSweepFormulaParseErrorMessage())
 		CHECK_EQUAL_STR(error, "Can't work with multiple intersecting ranges")
 	endtry
+End
+
+/// IUTF_TD_GENERATOR s0:MIES_PSX#PSX_GetAllStatsProperties
+static Function StatsAllProperties([STRUCT IUTF_mData &m])
+
+	string browser, device, formulaGraph, comboKey, id, error, prop
+
+	prop = m.s0
+
+	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
+
+	[WAVE range, WAVE selectData] = GetFakeRangeAndSelectData()
+
+	// 1st event wave
+	WAVE/Z psxEvent = GetEventWave(comboIndex = 0)
+	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range)
+	id       = "myID"
+	FillEventWave_IGNORE(psxEvent, id, comboKey)
+
+	MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, "all", "nothing")
+	CHECK_NO_RTE()
 End
 
 Function/WAVE FakeSweepDataGeneratorPSXKernel(WAVE sweep, variable numChannels)
@@ -3240,46 +3262,58 @@ static Function TestBlockIndexLogic()
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 End
 
-static Function [variable lowerThreshold, variable upperThreshold] TestRiseTimeContainer(WAVE/WAVE dataWref)
+static Function [variable lowerThreshold, variable upperThreshold, variable diffThreshold] TestRiseTimeContainer(WAVE/WAVE dataWref)
 
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	WAVE/Z data = dataWref[0]
 	CHECK_WAVE(data, NUMERIC_WAVE)
-	CHECK_EQUAL_VAR(DimSize(data, ROWS), 2)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 3)
 
 	upperThreshold = data[%$"Upper Threshold"]
 	CHECK(BetweenZeroAndOneExc(upperThreshold))
 	lowerThreshold = data[%$"Lower Threshold"]
 	CHECK(BetweenZeroAndOneExc(lowerThreshold))
+	diffThreshold = data[%$"Differentiate Threshold"]
+	CHECK(BetweenZeroAndOneExc(lowerThreshold))
 
-	return [lowerThreshold, upperThreshold]
+	return [lowerThreshold, upperThreshold, diffThreshold]
 End
 
 static Function TestOperationRiseTime()
 
 	string win, str
-	variable lowerThreshold, upperThreshold
+	variable lowerThreshold, upperThreshold, diffThreshold
 
 	win = SetupDatabrowserWithSomeData()
 
 	str = "psxRiseTime()"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
-	[lowerThreshold, upperThreshold] = TestRiseTimeContainer(dataWref)
+	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
 	CHECK_EQUAL_VAR(lowerThreshold, 0.2)
 	CHECK_EQUAL_VAR(upperThreshold, 0.8)
+	CHECK_EQUAL_VAR(diffThreshold, 0.05)
 
 	str = "psxRiseTime(10)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
-	[lowerThreshold, upperThreshold] = TestRiseTimeContainer(dataWref)
+	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
 	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
 	CHECK_EQUAL_VAR(upperThreshold, 0.8)
+	CHECK_EQUAL_VAR(diffThreshold, 0.05)
 
 	str = "psxRiseTime(10, 90)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
-	[lowerThreshold, upperThreshold] = TestRiseTimeContainer(dataWref)
+	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
 	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
 	CHECK_EQUAL_VAR(upperThreshold, 0.9)
+	CHECK_EQUAL_VAR(diffThreshold, 0.05)
+
+	str = "psxRiseTime(10, 90, 45)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
+	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
+	CHECK_EQUAL_VAR(upperThreshold, 0.9)
+	CHECK_EQUAL_VAR(diffThreshold, 0.45)
 
 	// checks parameters
 	try
