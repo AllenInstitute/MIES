@@ -2307,3 +2307,13 @@ Constant SUTTER_MAX_MAX_TP_PULSES = 10000
 Constant INVALID_SWEEP_NUMBER = -1
 
 StrConstant PERCENT_F_MAX_PREC = "%.15f"
+
+/// @name Igor Internal Abort Codes
+///
+/// @anchor IgorAbortCodes
+///@{
+Constant ABORTCODE_ABORTONRTE    = -4
+Constant ABORTCODE_ABORT         = -3
+Constant ABORTCODE_STACKOVERFLOW = -2
+Constant ABORTCODE_USERABORT     = -1
+///@}
