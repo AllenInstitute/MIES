@@ -2067,8 +2067,16 @@ StrConstant SF_META_TRACE_MODE           = "/TraceMode"          // number
 StrConstant SF_META_TRACETOFRONT         = "/TraceToFront"       // number, boolean, defaults to false (0)
 StrConstant SF_META_DONOTPLOT            = "/DoNotPlot"          // number, boolean, defaults to false (0)
 
-StrConstant SF_META_USER_GROUP = "/User/" // custom metadata for individual operations,
-// top-level group with individual entries
+/// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
+/// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
+///
+/// To use the feature set SF_META_COLOR_GROUP for traces to a unique integer,
+/// see GetUniqueInteger(). All traces with the same integer are considered to
+/// be in the same group. A list of supported operations is in #SF_GetTraceColor().
+StrConstant SF_META_COLOR_GROUP = "/ColorGroup" // number
+
+StrConstant SF_META_USER_GROUP = "/User/" // custom metadata for individual operations, top-level group with individual entries
+
 StrConstant SF_META_FIT_COEFF     = "FitCoefficients"
 StrConstant SF_META_FIT_SIGMA     = "FitSigma"
 StrConstant SF_META_FIT_PARAMETER = "FitParameter"
