@@ -1047,46 +1047,42 @@ labnotebook
 
 .. code-block:: bash
 
-   labnotebook(string key[, array selectData [, string entrySourceType]])
+   labnotebook(array keys[, array selectData [, string entrySourceType]])
 
 The labnotebook function returns the (case insensitive) `key` entry from the
-labnotebook for the selected channel and sweep combination(s). For selectData either a single `select` or an array of `select`s can be specified.
-If an array is specified then over each selection is iterated independently.
+labnotebook for the selected channel and sweep combination(s). For selectData
+either a single `select` or an array of select's can be specified. If an array
+is specified then over each selection is iterated independently.
 The optional `entrySourceType` can be one of the constants `DataAcqModes` for data
 acquisition modes as defined in `../MIES/MIES_Constants.ipf`. If the
-`entrySourceType` is omitted it defaults to `DATA_ACQUISITION_MODE`.
+`entrySourceType` is omitted it defaults to `DATA_ACQUISITION_MODE`. Wildcard
+expressions using `*`/`!` are also supported. See :ref:`here <Table Numerical Labnotebook Description>`
+for a list of stock labnotebook entries.
 
-When the optional select argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
+When the optional select argument is omitted, `select()` is used as default
+that includes all displayed sweeps and channels.
 
-The `labnotebook` operation returns a data wave for each selected sweep/channel combination. Each data wave contains a single element, that is depending on the
-requested labnotebook entry numeric or textual.
+The `labnotebook` operation returns a data wave for each selected sweep/channel
+combination. Each data wave contains a single element, that is depending on the
+requested labnotebook entry numerical or textual.
 
-The returned data type is `SF_DATATYPE_LABNOTEBOOK`.
-If input data type is `SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred to the returned data waves.
-The default suggested x-axis values for the formula plotter are sweep numbers.
-The suggested y-axis label is the labnotebook key.
+The returned data type is `SF_DATATYPE_LABNOTEBOOK`. If input data type is
+`SF_DATATYPE_SWEEP` from the data operation the sweep meta data is transferred
+to the returned data waves. The default suggested x-axis values for the formula
+plotter are sweep numbers.
 
 .. code-block:: bash
 
-   max(
-      data(
-         select(
-            selrange(
-               cursors(A, B)
-            ),
-            selchannels(AD)
-         )
-      )
-   )
-   vs
    labnotebook(
       "set cycle count",
       select(selchannels(AD)),
       DATA_ACQUISITION_MODE
    )
 
+   labnotebook("*QC")
+
 The function searches for numeric entries in the labnotebook first and then for
-text entries. It returns a null wave if no match was found.
+text entries.
 
 findlevel
 """""""""
