@@ -1727,7 +1727,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 	string trace, customLegend
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
-	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend, tagCounter
+	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend, tagCounter, overrideMarker
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info, xAxis
@@ -2124,10 +2124,14 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
 					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
 				else
+					overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
+
+					if(!IsNaN(overrideMarker))
+						markerCode = overrideMarker
+					endif
+
 					ModifyGraph/W=$win marker($trace)=markerCode
 				endif
-
-
 
 				traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
 				traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
