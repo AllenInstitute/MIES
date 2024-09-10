@@ -1339,10 +1339,6 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 						JWN_SetWaveInWaveNote(results, SF_META_XVALUES, xValues)
 
-						Make/FREE/T nonFiniteTickLabels = {num2str(-Inf), num2str(NaN), num2str(+Inf)}
-						JWN_SetWaveInWaveNote(results, SF_META_XTICKLABELS, nonFiniteTickLabels)
-						JWN_SetWaveInWaveNote(results, SF_META_XTICKPOSITIONS, {-1, 0, 1})
-
 						break
 					case "count":
 						MatrixOP/FREE results = numRows(resultsRaw)
@@ -1438,6 +1434,10 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 			break
 		case "nonfinite":
 			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Non-finite values of " + LowerStr(propLabelAxis))
+
+			Make/FREE/T nonFiniteTickLabels = {num2str(-Inf), num2str(NaN), num2str(+Inf)}
+			JWN_SetWaveInWaveNote(output, SF_META_XTICKLABELS, nonFiniteTickLabels)
+			JWN_SetWaveInWaveNote(output, SF_META_XTICKPOSITIONS, {-1, 0, 1})
 			break
 		case "count":
 			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "NA")

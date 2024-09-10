@@ -2029,6 +2029,40 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			endif
 		endif
 
+		WAVE/Z xTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_XTICKLABELS)
+		WAVE/Z xTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_XTICKPOSITIONS)
+
+		if(WaveExists(xTickLabelsAsFree) && WaveExists(xTickPositionsAsFree))
+			DFREF dfrWork = SFH_GetWorkingDF(graph)
+			wvName = "xTickLabels_" + win + "_" + NameOfWave(formulaResults)
+			WAVE xTickLabels = MoveFreeWaveToPermanent(xTickLabelsAsFree, dfrWork, wvName)
+
+			wvName = "xTickPositions_" + win + "_" + NameOfWave(formulaResults)
+			WAVE xTickPositions = MoveFreeWaveToPermanent(xTickPositionsAsFree, dfrWork, wvName)
+
+			ModifyGraph/Z/W=$win userticks(bottom)={xTickPositions, xTickLabels}
+		endif
+
+		WAVE/Z yTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_YTICKLABELS)
+		WAVE/Z yTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_YTICKPOSITIONS)
+
+		if(WaveExists(yTickLabelsAsFree) && WaveExists(yTickPositionsAsFree))
+			DFREF dfrWork = SFH_GetWorkingDF(graph)
+			wvName = "yTickLabels_" + win + "_" + NameOfWave(formulaResults)
+			WAVE yTickLabels = MoveFreeWaveToPermanent(yTickLabelsAsFree, dfrWork, wvName)
+
+			wvName = "yTickPositions_" + win + "_" + NameOfWave(formulaResults)
+			WAVE yTickPositions = MoveFreeWaveToPermanent(yTickPositionsAsFree, dfrWork, wvName)
+
+			ModifyGraph/Z/W=$win userticks(left)={yTickPositions, yTickLabels}
+
+			Make/FREE yTickPositionsWorkaround = {0, 1}
+			if(EqualWaves(yTickPositions, yTickPositionsWorkaround, EQWAVES_DATA))
+				// @todo workaround bug 4531 so that we get tick labels even with only constant y values
+				SetAxis/W=$win/Z left, 0, 1
+			endif
+		endif
+
 		for(k = 0; k < formulaCounter; k += 1)
 			WAVE/WAVE plotFormData  = collPlotFormData[k]
 			WAVE/T    tracesInGraph = plotFormData[0]
@@ -2093,20 +2127,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 					ModifyGraph/W=$win marker($trace)=markerCode
 				endif
 
-				WAVE/Z xTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(wvY, SF_META_XTICKLABELS)
-				WAVE/Z xTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_XTICKPOSITIONS)
 
-				if(WaveExists(xTickLabelsAsFree) && WaveExists(xTickPositionsAsFree))
-					DFREF dfrWork = SFH_GetWorkingDF(graph)
-					wvName = "xTickLabels_" + NameOfWave(wvY)
-					WAVE xTickLabels = MoveFreeWaveToPermanent(xTickLabelsAsFree, dfrWork, wvName)
-
-					wvName = "xTickPositions_" + NameOfWave(wvY)
-					WAVE xTickPositions = MoveFreeWaveToPermanent(xTickPositionsAsFree, dfrWork, wvName)
-
-					xAxis = StringByKey("XAXIS", TraceInfo(win, trace, 0))
-					ModifyGraph/W=$win userticks($xAxis)={xTickPositions, xTickLabels}
-				endif
 
 				traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
 				traceToFront = IsNaN(traceToFront) ? 0 : !!traceToFront
