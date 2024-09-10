@@ -2055,8 +2055,16 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 				WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(traceColorHolder, SF_META_TRACECOLOR)
 				if(WaveExists(traceColor))
-					ASSERT(DimSize(traceColor, ROWS) == 3, "Need 3-element wave for color specification.")
-					ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
+					switch(DimSize(traceColor, ROWS))
+						case 3:
+							ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
+							break
+						case 4:
+							ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
+							break
+						default:
+							ASSERT(0, "Invalid size of trace color wave")
+					endswitch
 				endif
 
 				tagText = JWN_GetStringFromWaveNote(wvY, SF_META_TAG_TEXT)
