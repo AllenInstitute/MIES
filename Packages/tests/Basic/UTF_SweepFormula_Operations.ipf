@@ -2078,11 +2078,11 @@ static Function TestOperationPowerSpectrum()
 End
 
 static Function TestOperationLabNotebook()
-	variable i, j, sweepNumber, channelNumber, numSweeps, numChannels
-	string str, key
+	variable i, j, sweepNumber, channelNumber, numSweeps, numChannels, idx
+	string str, key, axLabel, browser, yAxisLabel
 
 	string textKey   = LABNOTEBOOK_USER_PREFIX + "TEXTKEY"
-	string textValue = "TestText"
+	string textValue = "TestText1;TestText2;"
 
 	string win, device
 
@@ -2104,12 +2104,79 @@ static Function TestOperationLabNotebook()
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
-	str = "labnotebook(" + textKey + ")"
+	str = "labnotebook(" + textKey + ", select(selchannels(AD2), selsweeps([0, 1])))"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
-	Make/FREE/T textRefData = {textValue}
-	for(WAVE/T dataT : dataRef)
-		CHECK_EQUAL_WAVES(dataT, textRefData, mode = WAVE_DATA)
+	Make/FREE/D refDataTextAnchor = {0.0}
+	for(WAVE/D data : dataRef)
+		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
+		CHECK_EQUAL_STR("TestText1\rTestText2", JWN_GetStringFromWaveNote(data, SF_META_TAG_TEXT))
+		CHECK_EQUAL_STR(textKey, JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX))
+
+		sweepNumber = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		CHECK_EQUAL_VAR(sweepNumber, idx)
+
+		WAVE xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		Make/FREE xValuesRef = {idx}
+		CHECK_EQUAL_WAVES(xValues, xValuesRef, mode = WAVE_DATA)
+		idx += 1
 	endfor
+
+	// no such key
+	str = "labnotebook(\"I_DONT_EXIST\")"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 40)
+	Make/FREE/D refDataTextAnchor = {NaN}
+	for(WAVE/D data : dataRef)
+		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
+	endfor
+
+	// multiple keys
+	str = "labnotebook([\"ADC\", \"Operating Mode\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 2)
+	WAVE firstEntry = dataRef[0]
+	Make/D/FREE refContents = {2}
+	CHECK_EQUAL_WAVES(firstEntry, refContents, mode = WAVE_DATA)
+
+	WAVE secondEntry = dataRef[1]
+	Make/D/FREE refContents = {1}
+	CHECK_EQUAL_WAVES(secondEntry, refContents, mode = WAVE_DATA)
+
+	// no match with wildcards
+	str = "labnotebook([\"eee*\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
+
+	// match with wildcard and special QC format
+	str = "labnotebook([\"*random QC\"], select(selchannels(AD0), selsweeps([0, 1, 2])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 3)
+	idx = 0
+	for(WAVE/D data : dataRef)
+		Make/D/FREE refData = {idx == 1 ? 1 : 0}
+		CHECK_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+		CHECK_EQUAL_STR("", JWN_GetStringFromWaveNote(data, SF_META_TAG_TEXT))
+		CHECK_EQUAL_STR("USER_random QC", JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX))
+
+		sweepNumber = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		CHECK_EQUAL_VAR(sweepNumber, idx)
+
+		WAVE xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		Make/FREE xValuesRef = {idx}
+		CHECK_EQUAL_WAVES(xValues, xValuesRef, mode = WAVE_DATA)
+		idx += 1
+	endfor
+
+	WAVE yTickLabels = JWN_GetTextWaveFromWaveNote(dataRef, SF_META_YTICKLABELS)
+	CHECK_EQUAL_TEXTWAVES(yTickLabels, {"Failed", "Passed"})
+
+	// key with unit
+	str = "labnotebook([\"*other KEY\"], select(selchannels(AD0), selsweeps([0])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
+
+	yAxisLabel = JWN_GetStringFromWaveNote(dataRef, SF_META_YAXISLABEL)
+	CHECK_EQUAL_STR(yAxisLabel, "Unit (Hz)")
 End
 
 static Function TestOperationLabnotebookHelper(string win, string formula, WAVE wRef)
