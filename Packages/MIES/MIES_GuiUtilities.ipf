@@ -1390,6 +1390,26 @@ Function RestoreAnnotationPositions(string graph, WAVE/T annoInfo)
 	endfor
 End
 
+/// @brief Remove the annotations given by the `regexp` from annoInfo and return the filtered wave
+Function/WAVE FilterAnnotations(WAVE/T annoInfo, string regexp)
+
+	variable i, numEntries
+	string name
+
+	Duplicate/FREE/T annoInfo, annoInfoResult
+	WaveClear annoInfo
+
+	numEntries = DimSize(annoInfoResult, ROWS)
+	for(i = numEntries - 1; i >= 0; i -= 1)
+		name = GetDimLabel(annoInfoResult, ROWS, i)
+		if(GrepString(name, regexp))
+			DeletePoints/M=(ROWS) i, 1, annoInfoResult
+		endif
+	endfor
+
+	return annoInfoResult
+End
+
 /// @brief Autoscale all vertical axes in the visible x range
 Function AutoscaleVertAxisVisXRange(graph)
 	string graph

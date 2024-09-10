@@ -1727,11 +1727,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 	string trace, customLegend
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
-	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
+	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend, tagCounter
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info, xAxis
-	string formulasRemain, yAndXFormula, xFormula, yFormula
+	string formulasRemain, yAndXFormula, xFormula, yFormula, tagText, name
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor        color
 
@@ -2059,6 +2059,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 					ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
 				endif
 
+				tagText = JWN_GetStringFromWaveNote(wvY, SF_META_TAG_TEXT)
+				if(!IsEmpty(tagText))
+					name = "tag" + num2str(tagCounter++)
+					Tag/C/N=$name/W=$win/F=0/L=0/X=0.00/Y=0.00 $trace, 0, tagText
+				endif
+
 				ModifyGraph/W=$win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
 
 				lineStyle = JWN_GetNumberFromWaveNote(wvY, SF_META_LINESTYLE)
@@ -2133,7 +2139,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			endif
 
 			if(WaveExists(annoInfos))
-				RestoreAnnotationPositions(win, annoInfos)
+				WAVE/T annoInfosFiltered = FilterAnnotations(annoInfos, "^tag.*$")
+				RestoreAnnotationPositions(win, annoInfosFiltered)
 			endif
 		endif
 	endfor
