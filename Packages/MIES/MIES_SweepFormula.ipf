@@ -2802,6 +2802,8 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TP)
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_TP, ""))
 
+	SF_SetSweepXAxisTickLabels(output, selectData)
+
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_TP)
 End
 
@@ -3205,6 +3207,8 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 	SFH_ASSERT(IsTextWave(epochPatterns), "Epoch pattern argument must be textual")
 
 	WAVE/WAVE output = SF_OperationEpochsImpl(graph, epochPatterns, selectData, epType, SF_OP_EPOCHS)
+
+	SF_SetSweepXAxisTickLabels(output, selectData)
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_EPOCHS)
 End
@@ -4617,7 +4621,27 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, string lbnKey, WA
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
 	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
 	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, lbnKey)
+
+	SF_SetSweepXAxisTickLabels(output, selectData)
+
 	return output
+End
+
+static Function SF_SetSweepXAxisTickLabels(WAVE output, WAVE/Z selectData)
+
+	variable numSelected
+
+	if(!WaveExists(selectData))
+		return NaN
+	endif
+
+	numSelected = DimSize(selectData, ROWS)
+
+	Make/FREE/N=(numSelected) xTickPositions = selectData[p][%SWEEP]
+	Make/T/FREE/N=(numSelected) xTickLabels = num2str(selectData[p][%SWEEP])
+
+	JWN_SetWaveInWaveNote(output, SF_META_XTICKPOSITIONS, xTickPositions)
+	JWN_SetWaveInWaveNote(output, SF_META_XTICKLABELS, xTickLabels)
 End
 
 static Function/WAVE SF_OperationLog(variable jsonId, string jsonPath, string graph)
