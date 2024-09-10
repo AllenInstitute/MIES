@@ -1383,9 +1383,95 @@ static Function/S SF_GetMetaDataAnnotationText(STRUCT SF_PlotMetaData &plotMetaD
 	return "\\s(" + traceName + ") " + SF_GetTraceAnnotationText(plotMetaData, data) + "\r"
 End
 
-Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data)
+static Function/WAVE SF_GenerateTraceColors(WAVE colorGroups)
+
+	variable numUniqueColors, i
+	string lbl
+
+	WAVE uniqueColorGroups = GetUniqueEntries(colorGroups)
+	numUniqueColors = DimSize(uniqueColorGroups, ROWS)
+	WAVE traceColors = GetColorWave(numUniqueColors)
+
+	for(i = 0; i < numUniqueColors; i += 1)
+		[STRUCT RGBColor s] = GetTraceColorAlternative(i)
+
+		lbl = num2str(uniqueColorGroups[i])
+		SetDimLabel ROWS, i, $lbl, traceColors
+
+		traceColors[i][%Red]   = s.red
+		traceColors[i][%Green] = s.green
+		traceColors[i][%Blue]  = s.blue
+	endfor
+
+	return traceColors
+End
+
+/// @brief Return an Nx3 wave with one color triplett for each unique trace color group
+static Function/WAVE SF_GetGroupColors(WAVE/WAVE formulaResults)
+
+	variable numFormulas, i, numUniqueColors, refColorGroup, constantChannelNumAndType
+	string lbl
+
+	numFormulas = DimSize(formulaResults, ROWS)
+
+	if(numFormulas == 0)
+		return $""
+	endif
+
+	WAVE/Z data = formulaResults[0][%FORMULAY]
+
+	if(!WaveExists(data))
+		return $""
+	endif
+
+	refColorGroup = JWN_GetNumberFromWaveNote(data, SF_META_COLOR_GROUP)
+
+	if(IsNaN(refColorGroup))
+		return $""
+	endif
+
+	Make/FREE/N=(numFormulas)/D colorGroups = JWN_GetNumberFromWaveNote(formulaResults[p][%FORMULAY], SF_META_COLOR_GROUP)
+
+	if(numFormulas == 1)
+		return SF_GenerateTraceColors(colorGroups)
+	endif
+
+	// check if the data in the y formulas is from the same channel type and number
+	Make/FREE/N=(numFormulas) channelNumbers = JWN_GetNumberFromWaveNote(formulaResults[p][%FORMULAY], SF_META_CHANNELNUMBER)
+	Make/FREE/N=(numFormulas) channelTypes = JWN_GetNumberFromWaveNote(formulaResults[p][%FORMULAY], SF_META_CHANNELTYPE)
+
+	constantChannelNumAndType = IsConstant(channelNumbers, channelNumbers[0], ignoreNaN = 0) \
+	                            && IsConstant(channelTypes, channelTypes[0], ignoreNaN = 0)
+
+	if(!constantChannelNumAndType)
+		return $""
+	endif
+
+	return SF_GenerateTraceColors(colorGroups)
+End
+
+Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data, WAVE/Z traceGroupColors)
 
 	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal, isAveraged, mapIndex
+	variable colorGroup, idx
+
+	if(WaveExists(traceGroupColors))
+		// Operations with trace group color support:
+		// - data/epochs/tp/psxKernel (via SFH_GetSweepsForFormula)
+		// - labnotebook
+
+		colorGroup = JWN_GetNumberFromWaveNote(data, SF_META_COLOR_GROUP)
+		ASSERT(IsFinite(colorGroup), "Invalid color group")
+
+		idx = FindDimLabel(traceGroupColors, ROWS, num2str(colorGroup))
+		ASSERT(idx >= 0, "Invalid color group index")
+
+		s.red   = traceGroupColors[idx][%Red]
+		s.green = traceGroupColors[idx][%Green]
+		s.blue  = traceGroupColors[idx][%Blue]
+
+		return [s]
+	endif
 
 	s.red   = 0xFFFF
 	s.green = 0x0000
@@ -1802,6 +1888,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 			SF_FormulaPlotterExtendResultsIfCompatible(formulaResults)
 
+			WAVE/Z traceGroupColors = SF_GetGroupColors(formulaResults)
+
 			numData = DimSize(formulaResults, ROWS)
 			for(k = 0; k < numData; k += 1)
 
@@ -1816,7 +1904,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 				SFH_ASSERT(!(IsTextWave(wvResultY) && WaveDims(wvResultY) > 1), "Plotter got 2d+ text wave as y data.")
 
-				[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY)
+				[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY, traceGroupColors)
 
 				if(!WaveExists(wvResultX) && !IsEmpty(plotMetaData.xAxisLabel))
 					WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
@@ -3525,7 +3613,7 @@ End
 static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, WAVE/Z selectData, variable epType, string opShort)
 
 	variable i, j, numSelected, sweepNo, chanNr, chanType, index, numEpochs, epIndex, settingsIndex, numPatterns, numEntries
-	variable hasValidData
+	variable hasValidData, colorGroup
 	string epName, epShortName, epEntry, yAxisLabel, epAxisName
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
@@ -3602,6 +3690,9 @@ static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELTYPE, chanType)
 		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELNUMBER, chanNr)
 		JWN_SetWaveInWaveNote(output[i], SF_META_XVALUES, {sweepNo})
+
+		colorGroup = GetUniqueInteger()
+		JWN_SetNumberInWaveNote(output[i], SF_META_COLOR_GROUP, colorGroup)
 
 		hasValidData = 1
 	endfor
@@ -5770,7 +5861,7 @@ End
 static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, WAVE/Z selectData, variable mode, string opShort)
 
 	variable i, numSelected, idx, lbnIndex
-	variable numOutputWaves, marker
+	variable numOutputWaves, colorGroup, marker
 	string lbnKey, refUnit, unitString
 
 	if(!WaveExists(selectData))
@@ -5792,12 +5883,14 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, W
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numOutputWaves)
 
 	for(lbnKey : allLBNKeys)
-		marker    = SFH_GetPlotMarkerCodeSelection(lbnIndex)
-		lbnIndex += 1
+		colorGroup = GetUniqueInteger()
+		marker     = SFH_GetPlotMarkerCodeSelection(lbnIndex)
+		lbnIndex  += 1
 
 		for(i = 0; i < numSelected; i += 1)
 			WAVE out = SF_OperationLabnotebookImplGetEntry(graph, selectData, i, lbnKey, mode)
 
+			JWN_SetNumberInWaveNote(out, SF_META_COLOR_GROUP, colorGroup)
 			JWN_SetNumberInWaveNote(out, SF_META_MOD_MARKER, marker)
 
 			output[idx] = out

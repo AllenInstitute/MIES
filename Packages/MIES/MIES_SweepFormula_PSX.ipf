@@ -3567,7 +3567,7 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 	WAVE sweepDataFiltOff       = GetPSXSweepDataFiltOffWaveFromDFR(comboDFR)
 	WAVE sweepDataFiltOffDeconv = GetPSXSweepDataFiltOffDeconvWaveFromDFR(comboDFR)
 
-	[STRUCT RGBColor color] = SF_GetTraceColor(graph, plotMetaData.opStack, sweepData)
+	[STRUCT RGBColor color] = SF_GetTraceColor(graph, plotMetaData.opStack, sweepData, $"")
 
 	AppendToGraph/W=$win/C=(color.red, color.green, color.blue)/L=leftFiltOff sweepDataFiltOff
 	AppendToGraph/W=$win/L=leftFiltOff peakYAtFilt vs peakX
