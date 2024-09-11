@@ -752,6 +752,32 @@ plotter are sweep numbers.
 The function searches for numeric entries in the labnotebook first and then for
 text entries.
 
+anaFuncParam
+""""""""""""
+
+.. code-block:: bash
+
+   anafuncparam(array keys[, array selectData])
+
+The `anafuncparam` function returns the values of the requested analysis function
+parameters for the selected sweeps. Wildcard expressions using `*`/`!` are also supported.
+See :ref:`here <Table Analysis function parameters>` for a list of parameters
+from analysis functions shipped with MIES.
+
+When the optional select argument is omitted, `select()` is used as default
+that includes all displayed sweeps and channels.
+
+The returned data type is `SF_DATATYPE_ANAFUNCPARAM`. The default suggested
+x-axis values for the formula plotter are sweep numbers.
+
+.. code-block:: bash
+
+   anafuncparam("SlopePercentage", select())
+
+   anafuncparam(["OperationMode", "DA*"])
+
+   anafuncparam("*")
+
 findlevel
 """""""""
 
