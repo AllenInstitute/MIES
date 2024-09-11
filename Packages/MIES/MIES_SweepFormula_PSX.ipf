@@ -254,7 +254,7 @@ static Function/WAVE PSX_FilterSweepData(WAVE sweepData, variable low, variable 
 
 //	print low, high, samp
 //	Abort
-	FilterIIR/ENDV=(filtered[0])/LO=(low / samp)/HI=(high / samp)/DIM=(ROWS)/ORD=6 filtered; err = GetRTError(1)
+	FilterIIR/LO=(low / samp)/HI=(high / samp)/DIM=(ROWS)/ORD=6 filtered; err = GetRTError(1)
 	SFH_ASSERT(!err, "Error filtering the data, msg: " + GetErrMessage(err))
 
 	return filtered
@@ -333,8 +333,8 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	high  = deconvFilter[%$"Filter High"]
 	order = deconvFilter[%$"Filter Order"]
 	
-	low  = 200
-	high = 20
+//	low  = 200
+//	high = 20
 
 	if(IsNaN(low))
 		lowFrac = PSX_DECONV_FILTER_DEF_LOW
@@ -368,9 +368,12 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	ASSERT(V_Value == -1, "Can not handle NaN in the deconvoluted wave")
 
 	CopyScales sweepData, Deconv
-	
-	// todo remove low frequencies here with a bandpass filter, always bandpass
-	FilterFIR/ENDV={3}/LO={lowFrac, highFrac, order}/HI={20/samp, 10/samp, 7} Deconv
+//	
+//	Duplicate/O deconv, root:deconv
+//	print lowFrac, highFrac, order
+//	Abort
+	// todo remove low frequencies here with a bandpass filter, always b
+	FilterFIR/LO={lowFrac, highFrac, order}/HI={200/samp, 300/samp, order} Deconv
 
 	return Deconv
 End
@@ -382,12 +385,13 @@ static Function/WAVE PSX_CreateHistogramOfDeconvSweepData(WAVE deconvSweepData)
 
 	// we take +/- 80% of the average deviation around the average value
 	WaveStats/Q deconvSweepData
-	binWidth = 0.0001
-	range    = V_adev * 0.8
+//	binWidth = 0.00005
+	range    = V_adev * 2
 	start    = V_avg - range
-	n_bins   = 2 * range / binWidth
+	n_bins   = 20
+	binWidth = 2 * range / n_bins
 
-	SFH_ASSERT(n_bins > 10, "Histogram creation failed due to too few data points")
+//	SFH_ASSERT(n_bins > 10, "Histogram creation failed due to too few data points")
 
 	Make/D/FREE/N=0 hist
 	Histogram/B={start, binWidth, n_bins}/DEST=hist deconvSweepData
@@ -4644,7 +4648,7 @@ static Function [WAVE hist, WAVE fit, variable peakThresh, string dataUnit] PSX_
 	[WAVE coef, WAVE fit] = PSX_FitHistogram(hist)
 
 	if(WaveExists(coef) && WaveExists(fit))
-		peakThresh = RoundNumber(coef[3] * numSDs, 3)
+		peakThresh = coef[3] * numSDs // RoundNumber(coef[3] * numSDs, 3)
 		dataUnit   = WaveUnits(sweepDataOffFiltDeconv, -1)
 
 		return [hist, fit, peakThresh, dataUnit]
