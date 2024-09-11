@@ -2122,6 +2122,7 @@ StrConstant SF_DATATYPE_SELECTSETCYCLECOUNT = "SelectSetCycleCount"
 StrConstant SF_DATATYPE_SELECTSETSWEEPCOUNT = "SelectSetSweepCount"
 StrConstant SF_DATATYPE_SELECTSCIINDEX      = "SelectSCIIndex"
 StrConstant SF_DATATYPE_SELECTRACINDEX      = "SelectRACIndex"
+StrConstant SF_DATATYPE_ANAFUNCPARAM        = "AnaFunc"
 
 StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
