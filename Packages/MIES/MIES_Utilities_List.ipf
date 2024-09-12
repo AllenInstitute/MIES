@@ -213,3 +213,14 @@ Function/S MergeLists(string l1, string l2, [string sep])
 
 	return l2
 End
+
+/// @brief Replace the list separator (semicolon) by a CR
+Function/S PrepareListForDisplay(string list)
+
+	if(StringEndsWith(list, ";"))
+		list = ReplaceString(";", list, "\r")
+		list = RemoveEnding(list, "\r")
+	endif
+
+	return list
+End
