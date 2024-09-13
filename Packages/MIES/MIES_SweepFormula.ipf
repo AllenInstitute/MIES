@@ -1741,7 +1741,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info, xAxis
-	string formulasRemain, yAndXFormula, xFormula, yFormula, tagText, name
+	string formulasRemain, yAndXFormula, xFormula, yFormula, tagText, name, winHook
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor        color
 
@@ -2070,6 +2070,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 				// @todo workaround bug 4531 so that we get tick labels even with only constant y values
 				SetAxis/W=$win/Z left, 0, 1
 			endif
+		endif
+
+		winHook = JWN_GetStringFromWaveNote(formulaResults, SF_META_WINDOW_HOOK)
+		if(!IsEmpty(winHook))
+			SetWindow $win, tooltipHook(SweepFormulaTraceValue)=$winHook
 		endif
 
 		for(k = 0; k < formulaCounter; k += 1)
@@ -4647,6 +4652,7 @@ static Function/WAVE SF_OperationAnaFuncParam(variable jsonId, string jsonPath, 
 	WAVE/WAVE output = SF_OperationAnaFuncParamImpl(graph, names, selectData, SF_OP_ANAFUNCPARAM)
 
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_ANAFUNCPARAM, ""))
+	JWN_SetStringInWaveNote(output, SF_META_WINDOW_HOOK, "TraceValueDisplayHook")
 
 	SF_SetSweepXAxisTickLabels(output, selectData)
 
@@ -4800,6 +4806,7 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 	WAVE/WAVE output = SF_OperationLabnotebookImpl(graph, lbnKeys, selectData, mode, SF_OP_LABNOTEBOOK)
 
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_LABNOTEBOOK, ""))
+	JWN_SetStringInWaveNote(output, SF_META_WINDOW_HOOK, "TraceValueDisplayHook")
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_LABNOTEBOOK)
 End
@@ -6156,4 +6163,64 @@ static Function SF_FormulaPlotterExtendResultsIfCompatible(WAVE/WAVE formulaResu
 	Redimension/N=(DimSize(collectY, ROWS), -1, -1, -1) formulaResults
 	formulaResults[][%FORMULAX] = collectX[p]
 	formulaResults[][%FORMULAY] = collectY[p]
+End
+
+Function TraceValueDisplayHook(STRUCT WMTooltipHookStruct &s)
+
+	string name, msg, allTraces, trace, tooltip, match, options, win, valueStr, tagText
+	variable numTraces, i
+
+	// traceName is set only for graphs and only if the mouse hovered near a trace
+	if(IsEmpty(s.traceName))
+		return 0
+	endif
+
+	win = s.winName
+
+	tooltip   = ""
+	allTraces = TraceNameList(win, ";", 1 + 2)
+
+	numTraces = ItemsInList(allTraces)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, allTraces)
+
+		sprintf options, "WINDOW:%s;ONLY:%s;DELTAX:24;DELTAY:24", win, trace
+		match = TraceFromPixel(s.mouseLoc.h, s.mouseLoc.v, options)
+
+		if(IsEmpty(match))
+			continue
+		endif
+
+		WAVE wv = TraceNameToWaveRef(win, trace)
+
+		name = JWN_GetStringFromWaveNote(wv, SF_META_LEGEND_LINE_PREFIX)
+
+		if(IsEmpty(name))
+			// not a labnotebook/analysis function parameter
+			continue
+		endif
+
+		if(IsNumericWave(wv))
+			tagText = JWN_GetStringFromWaveNote(wv, SF_META_TAG_TEXT)
+			if(IsEmpty(tagText))
+				valueStr = num2str(wv[s.row][s.column][s.layer][s.chunk])
+			else
+				valueStr = ReplaceString("\r", tagText, "\r" + ReplicateString(" ", strlen(name) + 2))
+			endif
+		elseif(IsTextWave(wv))
+			WAVE/T wvText = wv
+			valueStr = wvText[s.row][s.column][s.layer][s.chunk]
+		endif
+
+		sprintf msg, "%s: %s\r", name, valueStr
+		tooltip += msg
+	endfor
+
+	if(!IsEmpty(tooltip))
+		s.tooltip = "<pre>" + RemoveEnding(tooltip, "\r") + "</pre>"
+		s.isHtml  = 1
+		return 1
+	endif
+
+	return 0
 End
