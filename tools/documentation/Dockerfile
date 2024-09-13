@@ -1,5 +1,5 @@
 FROM debian:bookworm
-MAINTAINER Thomas Braun thomas.braun@byte-physics.de
+LABEL org.opencontainers.image.authors="Thomas Braun thomas.braun@byte-physics.de"
 
 ENV DEBIAN_FRONTEND=noninteractive
 

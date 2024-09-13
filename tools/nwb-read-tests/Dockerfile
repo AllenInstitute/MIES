@@ -1,5 +1,5 @@
-FROM debian:bullseye
-MAINTAINER Thomas Braun thomas.braun@byte-physics.de
+FROM debian:bookworm
+LABEL org.opencontainers.image.authors="Thomas Braun thomas.braun@byte-physics.de"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -10,14 +10,9 @@ RUN apt-get update &&                          \
       python3-minimal                          \
       python3-pip                              \
       python3-setuptools                       \
-      python3-wheel &&                         \
+      python3-venv                             \
+      &&                                       \
     rm -rf /var/lib/apt/lists/*
-
-ARG PACKAGE_WITH_VERSION
-
-RUN pip3 install $PACKAGE_WITH_VERSION
-
-RUN pip3 check
 
 ARG USERID
 ARG GROUPID
@@ -29,3 +24,13 @@ RUN useradd -u $USERID -g $GROUPID -ms /bin/bash ci
 USER ci
 
 WORKDIR /home/ci
+
+COPY requirements.txt .
+
+# https://stackoverflow.com/a/75696359
+RUN python -m venv --system-site-packages /home/ci/.venv && \
+    . /home/ci/.venv/bin/activate                        && \
+    pip3 install -r requirements.txt
+
+# https://stackoverflow.com/a/56286534
+ENV PATH=/home/ci/.venv/bin:${PATH}

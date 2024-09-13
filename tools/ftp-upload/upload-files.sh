@@ -49,8 +49,8 @@ top_level=$(git rev-parse --show-toplevel)
 # build containter
 echo "##[group]Build Docker container 'ftp-upload'"
 docker build \
-    --build-arg UID=$(id -u) \
-    --build-arg GID=$(id -g) \
+    --build-arg USERID=$(id -u) \
+    --build-arg GROUPID=$(id -g) \
     -t ftp-upload \
     $top_level/tools/ftp-upload
 echo "##[endgroup]"

@@ -24,17 +24,27 @@ def checkFile(path):
         print(f"The file {path} does not exist.", file=sys.stderr)
         return 1
 
-    # 1.) Validation
+    # 1.) pynwb Validation
     comp = run(["python", "-m", "pynwb.validate", path],
                stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=120)
 
     if comp.returncode != 0:
-        print(f"Validation output: {comp.stdout}", file=sys.stderr)
+        print(f"pynwb validation output: {comp.stdout}", file=sys.stderr)
         return 1
 
-    print(f"Validation output: {comp.stdout}", file=sys.stdout)
+    print(f"pynwb validation output: {comp.stdout}", file=sys.stdout)
 
-    # 2.) Read test
+    # 2.) dandi Validation
+    comp = run(["dandi", "validate", "--ignore", "(NWBI|DANDI)", path],
+               stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=120)
+
+    if comp.returncode != 0:
+        print(f"dandi validation output: {comp.stdout}", file=sys.stderr)
+        return 1
+
+    print(f"dandi validation output: {comp.stdout}", file=sys.stdout)
+
+    # 3.) Read test
     with NWBHDF5IO(path, mode='r', load_namespaces=True) as io:
         nwbfile = io.read()
 
@@ -56,7 +66,7 @@ def checkFile(path):
             print(f"epochs.treelevel: {nwbfile.epochs[:, 'treelevel']}")
             print(f"epochs.timeseries: {nwbfile.epochs[:, 'timeseries']}")
 
-    # check that pynwb/hdmf can read our object IDs
+    # 4. Check that pynwb/hdmf can read our object IDs
     with h5py.File(path, 'r') as f:
         root_object_id_hdf5 = to_str(f["/"].attrs["object_id"])
 

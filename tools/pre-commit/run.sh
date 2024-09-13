@@ -16,10 +16,10 @@ top_level=$(git rev-parse --show-toplevel)
 
 # build containter
 echo "##[group]Build Docker container 'pre-commit'"
-docker build                    \
-    --build-arg UID=$(id -u)    \
-    --build-arg GID=$(id -g)    \
-    -t pre-commit               \
+docker build                     \
+    --build-arg USERID=$(id -u)  \
+    --build-arg GROUPID=$(id -g) \
+    -t pre-commit                \
     $top_level/tools/pre-commit
 echo "##[endgroup]"
 

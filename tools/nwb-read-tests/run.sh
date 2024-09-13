@@ -14,9 +14,7 @@ fi
 
 top_level=$(git rev-parse --show-toplevel)
 
-ci_agent_home=$(echo "$top_level" | cut -d "/" -f -4)
-
-list_of_files=$(find $top_level -iname "*-V2.nwb")
+list_of_files=$(git ls-files --others '**/*V2.nwb')
 
 tag="nwb-read-tests"
 
@@ -25,8 +23,7 @@ echo "Start building Docker container \"$tag\""
 
 docker build --build-arg USERID=$(id -u)                     \
              --build-arg GROUPID=$(id -g)                    \
-             --build-arg PACKAGE_WITH_VERSION="pynwb==2.8.1" \
              -t $tag $top_level/tools/nwb-read-tests
 
 # use 'docker run -it ..' for interactive debugging
- docker run --rm -v $ci_agent_home:$ci_agent_home -v $top_level:/home/ci $tag python3 $top_level/tools/nwb-read-tests/nwbv2-read-test.py $list_of_files
+ docker run --rm --workdir /home/ci/src -v $top_level:/home/ci/src $tag python tools/nwb-read-tests/nwbv2-read-test.py $list_of_files

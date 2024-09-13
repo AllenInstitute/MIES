@@ -1,20 +1,21 @@
-FROM debian:bullseye
+FROM debian:bookworm
 LABEL org.opencontainers.image.authors="Thomas Braun thomas.braun@byte-physics.de"
 
-RUN DEBIAN_FRONTEND=noninteractive \
-    apt-get update && \
-    apt-get install -y \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update &&   \
+    apt-get install -y  \
         ca-certificates \
-        lftp \
-        openssl && \
+        lftp            \
+        openssl &&      \
     apt-get clean
 
 ARG UNAME=ci
-ARG UID=1000
-ARG GID=1000
+ARG USERID=1000
+ARG GROUPID=1000
 
-RUN groupadd -g ${GID} -o ${UNAME} && \
-    useradd -m -u ${UID} -g ${GID} -o -s /bin/bash ${UNAME}
+RUN groupadd -g ${GROUPID} -o ${UNAME} && \
+    useradd -m -u ${USERID} -g ${GROUPID} -o -s /bin/bash ${UNAME}
 
 USER ${UNAME}
 
