@@ -2066,6 +2066,7 @@ StrConstant SF_META_LINESTYLE            = "/LineStyle"          // number
 StrConstant SF_META_TRACE_MODE           = "/TraceMode"          // number
 StrConstant SF_META_TRACETOFRONT         = "/TraceToFront"       // number, boolean, defaults to false (0)
 StrConstant SF_META_DONOTPLOT            = "/DoNotPlot"          // number, boolean, defaults to false (0)
+StrConstant SF_META_WINDOW_HOOK          = "/WindowHook"         // string
 
 /// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
 /// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
