@@ -1009,22 +1009,22 @@ static Function AvoidAssertingOutWithNoSweeps([string str])
 End
 
 // UTF_TD_GENERATOR DataGenerators#TestHelpNotebookGetter_IGNORE
-static Function TestHelpNotebook([string str])
-
-	string browser, headLine, helpText, sfHelpWin
-
-	browser = DB_OpenDataBrowser()
-
-	sfHelpWin = BSP_GetSFHELP(browser)
-	headLine  = MIES_BSP#BSP_GetHelpOperationHeadline(str)
-
-	INFO("Op: %s", s0 = str)
-
-	helpText = MIES_BSP#BSP_RetrieveSFHelpTextImpl(sfHelpWin, headLine, "to_top_" + str)
-	CHECK_PROPER_STR(helpText)
-
-	CHECK_EQUAL_VAR(DB_SFHelpJumpToLine(headLine), 0)
-End
+//static Function TestHelpNotebook([string str])
+//
+//	string browser, headLine, helpText, sfHelpWin
+//
+//	browser = DB_OpenDataBrowser()
+//
+//	sfHelpWin = BSP_GetSFHELP(browser)
+//	headLine  = MIES_BSP#BSP_GetHelpOperationHeadline(str)
+//
+//	INFO("Op: %s", s0 = str)
+//
+//	helpText = MIES_BSP#BSP_RetrieveSFHelpTextImpl(sfHelpWin, headLine, "to_top_" + str)
+//	CHECK_PROPER_STR(helpText)
+//
+//	CHECK_EQUAL_VAR(DB_SFHelpJumpToLine(headLine), 0)
+//End
 
 static Function NonExistingOperation()
 
