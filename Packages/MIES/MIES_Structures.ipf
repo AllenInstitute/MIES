@@ -652,6 +652,7 @@ Structure SF_SelectParameters
 	WAVE selects
 	WAVE channels
 	WAVE sweeps
+	variable sweepsSet // flag that indicates if sweep input was set
 	string vis
 	variable clampMode
 	WAVE/T stimsets
