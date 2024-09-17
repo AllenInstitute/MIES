@@ -4986,6 +4986,7 @@ static Function SF_InitSelectFilterUninitalized(STRUCT SF_SelectParameters &s)
 	WAVE/Z s.selects  = $""
 	WAVE/Z s.channels = $""
 	WAVE/Z s.sweeps   = $""
+	s.sweepsSet = 0
 	s.vis       = ""
 	s.clampMode = NaN
 	WAVE/Z/T    s.stimsets = $""
@@ -5022,9 +5023,10 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		SFH_ASSERT(DimSize(input, ROWS) >= 1, "Expected at least one dataset")
 		type = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 		WAVE/Z arg = input[0]
-		if(CmpStr(SF_DATATYPE_SELECTCOMP, type))
+		if(!(!CmpStr(SF_DATATYPE_SELECTCOMP, type) || !CmpStr(SF_DATATYPE_SWEEPNO, type)))
 			// all regular select filters return data from a typed wave from their respective operation, that as sanity check must have valid data
 			// except data from select, where arg is a selection result that can also be a null wave
+			// and data from selsweeps
 			ASSERT(WaveExists(arg), "Expected argument with content")
 		endif
 		strswitch(type)
@@ -5113,8 +5115,9 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 				endif
 				break
 			case SF_DATATYPE_SWEEPNO:
-				if(!WaveExists(filter.sweeps))
-					WAVE filter.sweeps = arg
+				if(!filter.sweepsSet)
+					WAVE/Z filter.sweeps = arg
+					filter.sweepsSet = 1
 				else
 					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTSWEEPS + " argument.")
 				endif
@@ -5616,7 +5619,7 @@ static Function SF_SetSelectionFilterDefaults(string graph, STRUCT SF_SelectPara
 	if(!WaveExists(filter.channels))
 		WAVE filter.channels = SF_ExecuteFormula("selchannels()", graph, singleResult = 1, checkExist = 1, useVariables = 0)
 	endif
-	if(!WaveExists(filter.sweeps))
+	if(!filter.sweepsSet)
 		WAVE/Z filter.sweeps = SF_ExecuteFormula("selsweeps()", graph, singleResult = 1, useVariables = 0)
 	endif
 	if(IsEmpty(filter.vis))
