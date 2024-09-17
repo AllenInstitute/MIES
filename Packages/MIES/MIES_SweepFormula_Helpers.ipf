@@ -306,7 +306,14 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 		endif
 		SVAR error = $GetSweepFormulaParseErrorMessage()
 		error = message
+
 #ifdef AUTOMATED_TESTING_DEBUGGING
+
+#ifdef AUTOMATED_TESTING
+#if exists("INFO")
+		INFO("SFH_ASSERT: %s", s0 = error)
+#endif
+#endif
 		Debugger
 #endif
 		Abort
