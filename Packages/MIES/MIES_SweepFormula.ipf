@@ -5022,8 +5022,10 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 		SFH_ASSERT(DimSize(input, ROWS) >= 1, "Expected at least one dataset")
 		type = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
 		WAVE/Z arg = input[0]
-		if(!WaveExists(arg))
-			continue
+		if(CmpStr(SF_DATATYPE_SELECTCOMP, type))
+			// all regular select filters return data from a typed wave from their respective operation, that as sanity check must have valid data
+			// except data from select, where arg is a selection result that can also be a null wave
+			ASSERT(WaveExists(arg), "Expected argument with content")
 		endif
 		strswitch(type)
 			case SF_DATATYPE_SELECTSCIINDEX:
@@ -5141,7 +5143,7 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 			case SF_DATATYPE_SELECTCOMP:
 				selectArgPresent = 1
 				if(!WaveExists(filter.selects))
-					WAVE filter.selects = arg
+					WAVE/Z filter.selects = arg
 				else
 					WAVE/Z filter.selects = SF_GetSetIntersectionSelect(filter.selects, arg)
 				endif
@@ -5163,12 +5165,12 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 	WAVE/Z selectData = SF_GetSelectData(graph, filter)
 	if(WaveExists(selectData))
 		if(!IsNaN(filter.racIndex))
-			WAVE racSelectData = SF_GetSelectDataWithRACorSCIIndex(graph, selectData, filter.racIndex, SELECTDATA_MODE_RAC)
-			WAVE selectData    = racSelectData
+			WAVE/Z racSelectData = SF_GetSelectDataWithRACorSCIIndex(graph, selectData, filter.racIndex, SELECTDATA_MODE_RAC)
+			WAVE/Z selectData    = racSelectData
 		endif
 		if(!IsNaN(filter.sciIndex))
-			WAVE sciSelectData = SF_GetSelectDataWithRACorSCIIndex(graph, selectData, filter.sciIndex, SELECTDATA_MODE_SCI)
-			WAVE selectData    = sciSelectData
+			WAVE/Z sciSelectData = SF_GetSelectDataWithRACorSCIIndex(graph, selectData, filter.sciIndex, SELECTDATA_MODE_SCI)
+			WAVE/Z selectData    = sciSelectData
 		endif
 		// SCI is a subset of RAC, thus if RAC and SCI is enabled then it is sufficient to extend through RAC
 		if(filter.expandRAC)
@@ -5333,10 +5335,10 @@ static Function/WAVE SF_GetSelectDataWithRACorSCIIndex(string graph, WAVE select
 			outIndex              += 1
 		endif
 	endfor
-	Redimension/N=(outIndex, -1) selectData
 	if(!outIndex)
-		return selectData
+		return $""
 	endif
+	Redimension/N=(outIndex, -1) selectData
 	WAVE cycleIdsZapped = ZapNaNs(cycleIds)
 	if(mode == SELECTDATA_MODE_SCI)
 		WAVE headStagesZapped = ZapNaNs(headStages)
@@ -5390,6 +5392,9 @@ static Function/WAVE SF_GetSelectDataWithRACIndex(WAVE selectData, WAVE cycleIds
 		selectData[outIndex][] = selectData[i][q]
 		outIndex              += 1
 	endfor
+	if(!outIndex)
+		return $""
+	endif
 	Redimension/N=(outIndex, -1) selectData
 
 	return selectData
@@ -5453,7 +5458,9 @@ static Function/WAVE SF_GetSelectDataWithSCIIndex(WAVE selectData, WAVE cycleIds
 			outIndex                 += 1
 		endfor
 	endfor
-
+	if(!outIndex)
+		return $""
+	endif
 	Redimension/N=(outIndex, -1) selectDataTgt
 
 	return selectDataTgt
