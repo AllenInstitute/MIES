@@ -150,7 +150,7 @@ static Function PerformMiesTasks(outputFilePath)
 	ClearRTError()
 
 	nwbVersion = 2
-	NWB_ExportAllData(nwbVersion, overrideFilePath = outputFilePath)
+	NWB_ExportAllData(nwbVersion, overrideFullFilePath = outputFilePath)
 	HDF5CloseFile/A/Z 0
 
 	message = GetRTErrMessage()
