@@ -238,7 +238,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	if(ParamIsDefault(expectedWaveType))
 		checkWaveType = 0
 	else
-		checkWaveType = !!checkWaveType
+		checkWaveType = 1
 	endif
 
 	if(ParamIsDefault(singleResult))
