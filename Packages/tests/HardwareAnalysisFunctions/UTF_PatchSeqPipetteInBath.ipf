@@ -608,8 +608,12 @@ static Function PS_PB6_REENTRY([str])
 	CHECK_EQUAL_WAVES(entries[%resistance], resistanceRef, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%resistancePass], {1, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_WAVE(entries[%resultsSweep], NULL_WAVE)
-	CHECK_WAVE(entries[%resultsResistance], NULL_WAVE)
+	if(WaveExists(entries[%resultsSweep]))
+		CHECK_WAVE(entries[%resultsSweep], FREE_WAVE)
+		CHECK_WAVE(entries[%resultsResistance], FREE_WAVE)
+	else
+		CHECK_WAVE(entries[%resultsResistance], NULL_WAVE)
+	endif
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
