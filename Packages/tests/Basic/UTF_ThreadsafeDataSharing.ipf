@@ -22,14 +22,7 @@ End
 static Function ChecksParams()
 
 	try
-		TSDS_Write(KEY)
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	try
-		TSDS_Write("", var = 1)
+		TSDS_WriteVar("", 1)
 		FAIL()
 	catch
 		PASS()
@@ -46,11 +39,11 @@ End
 static Function WriteWorks1()
 	variable var
 
-	TSDS_Write(KEY, var = 123)
+	TSDS_WriteVar(KEY, 123)
 	var = TSDS_ReadVar(KEY)
 	CHECK_EQUAL_VAR(var, 123)
 
-	TSDS_Write(KEY, var = 567)
+	TSDS_WriteVar(KEY, 567)
 	var = TSDS_ReadVar(KEY)
 	CHECK_EQUAL_VAR(var, 567)
 End
@@ -58,24 +51,27 @@ End
 static Function ReadWorks1()
 	variable var
 
-	var = TSDS_ReadVar(KEY)
-	CHECK_EQUAL_VAR(var, NaN)
+	try
+		TSDS_ReadVar(KEY)
+		FAIL()
+	catch
+		PASS()
+	endtry
 
-	TSDS_Write(KEY, var = 123)
+	TSDS_WriteVar(KEY, 123)
 
 	var = TSDS_ReadVar(KEY)
 	CHECK_EQUAL_VAR(var, 123)
 End
 
 static Function ReadWorksWithDefault()
-	variable var
 
-	var = TSDS_ReadVar(KEY, defValue = 567)
-	CHECK_EQUAL_VAR(var, 567)
-
-	// but it is still not created
-	var = TSDS_ReadVar(KEY)
-	CHECK_EQUAL_VAR(var, NaN)
+	try
+		TSDS_ReadVar(KEY, defValue = 567)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function ReadWorksWithDefaultAndCreate()
@@ -92,8 +88,8 @@ End
 static Function ReadBrokenStorage1()
 	variable var
 
-	var = TSDS_ReadVar(KEY, create = 1)
-	CHECK_EQUAL_VAR(var, NaN)
+	var = TSDS_ReadVar(KEY, defValue = 0, create = 1)
+	CHECK_EQUAL_VAR(var, 0)
 
 	// top level has the wrong size
 	TUFXOP_GetStorage/N=KEY wv
@@ -101,15 +97,19 @@ static Function ReadBrokenStorage1()
 
 	Redimension/N=0 wv
 
-	var = TSDS_ReadVar(KEY)
-	CHECK_EQUAL_VAR(var, NaN)
+	try
+		TSDS_ReadVar(KEY)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function ReadBrokenStorage2()
 	variable var
 
-	var = TSDS_ReadVar(KEY, create = 1)
-	CHECK_EQUAL_VAR(var, NaN)
+	var = TSDS_ReadVar(KEY, defValue = 0, create = 1)
+	CHECK_EQUAL_VAR(var, 0)
 
 	// contained wave is null
 	TUFXOP_GetStorage/N=KEY wv
@@ -117,6 +117,10 @@ static Function ReadBrokenStorage2()
 
 	wv[0] = $""
 
-	var = TSDS_ReadVar(KEY)
-	CHECK_EQUAL_VAR(var, NaN)
+	try
+		TSDS_ReadVar(KEY)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End

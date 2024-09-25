@@ -26,9 +26,6 @@ Function BUG_TSWorks1()
 
 	TUFXOP_Clear/N=(TSDS_BUGCOUNT)/Q/Z
 
-	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
-	CHECK_EQUAL_VAR(bugCount, NaN)
-
 	BUG_TS("abcd")
 
 	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
@@ -48,9 +45,6 @@ Function BUG_TSWorks2()
 	variable bugCount, numThreads
 
 	TUFXOP_Clear/N=(TSDS_BUGCOUNT)/Q/Z
-
-	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
-	CHECK_EQUAL_VAR(bugCount, NaN)
 
 	numThreads = 10
 
