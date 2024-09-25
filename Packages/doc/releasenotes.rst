@@ -3,6 +3,406 @@ Release notes
 
 .. toctree::
 
+Release 2.8
+===========
+
+Controls
+--------
+
+All added, removed or renamed controls of the main GUIs are listed. These lists are intended to help upgrading the JSON
+configuration files. Controls, like GroupBox'es, which can not be read/written with the configuration code are not included.
+
+AnalysisBrowser
+~~~~~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+DA\_Ephys
+~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Databrowser
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Wavebuilder
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Sweep Formula
+-------------
+
+- Breaking change: ``vs`` is now per formula allowing different x-formulas for
+  different y-formulas in the same graph
+- Add ``merge``, ``fit``, ``fitline`` and ``dataset``
+- Add support for tweaking epoch ranges via ``epochs(ST) + [1, -2]``
+- Use datasets in output of ``epochs``
+- Ensure that all internal numeric waves are double precision
+- Keep sweep number information in derived data via operation stack
+- Use headstage trace colors for ``labnotebook``
+- ``psx``:
+
+  - Use the opposite sign of `kernelAmp` for the rise time
+  - Handle edge cases better
+  - Add ``psxDeconvFilter`` as helper operation
+  - Add support for multiple ranges
+  - Make deconvoluation more robust
+
+- ``psxStats``: Abort on intersecting ranges
+
+- Make trace colors work with swapped axis
+- Fix parser errors on valid constructs
+- Add data type forwarding for primitive operations like ``+, -, *, /``
+- Allow plotting of multi-datasets stored as array elements
+- More flexible handling of legend shrinking
+- Don't kill and recreate the main panel. This also implies that the plot
+  window is not brought to the front anymore on update.
+
+AnalysisBrowser
+---------------
+
+- Add on-the-fly upgrade to new sweep wave format
+- Fix file management when removing and restoring files in edge case
+
+DataBrowser
+-----------
+
+None
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Make the panel naming more consistent
+- Fix sorting of sweeps in overlay sweeps in edge case
+- Enhance accuracy of epoch info in display
+- Fix labnotebook/results name gathering speed for popup menu
+
+Dashboard
+~~~~~~~~~
+
+- Fix calculation of failed sweeps for Rheobase
+- Allow to select multiple individual rows
+- Decorate the analysis function name with the operation mode (``PSQ_DASCale`` only)
+
+DA\_Ephys
+---------
+
+- Add experimental support for Sutter hardware (amplifier support is pending)
+- The data format of the sweep waves has changed
+- Skip updating the DA/TTL data for oscilloscope display
+- Do not add `epoch information` to the sweep wave note
+- Fix edge-cases for TP property calculation
+- Check gain, scale and unit of unassociated DA/AD channels
+- Zero the DAC after running the testpulse for single device mode (already done for multi device)
+- Streamline analysis parameter checking and also check all present analysis
+  parameters
+- Forbid analysis parameters which are neither required nor optional.
+  The check is only done if we have required/optional parameters at all.
+- Fix out-of-bounds checking for NI hardware, we previously only looked at the first DA channel
+
+JSON Configuration
+------------------
+
+None
+
+Downsample
+----------
+
+None
+
+Analysis Functions
+------------------
+
+- Add "Adaptive Suprathreshold" operation mode for :cpp:func:`PSQ_DASCale`
+- Adapt :cpp:struct:`AnalysisFunction_V3` for Sutter hardware support
+- Avoid calling analysis functions mid sweep when the acquisition has not yet
+  started (aka fifo position is zero)
+- Make casing of user epoch ``DA Suppression`` don't depend on the hardware type for ``PSQ_Ramp``
+
+Foreign Function interface
+--------------------------
+
+- Add :cpp:func:`FFI_QueryLogbook` and :cpp:func:`FFI_QueryLogbookUniqueSetting`
+
+Pulse Average Plot
+------------------
+
+None
+
+Publisher
+---------
+
+None
+
+General
+-------
+
+- Add headstage and clampmode information in DAQ config wave
+- CheckInstallation: Check that all non-hardware XOPs are present
+- Add experimental support for MacOSX (data analysis only), needs a manual installation
+- Fix GetLastSettingTextIndepSCI
+- Fix ST_GetStimsetList incorrectly matching against saved stimsets
+- Avoid creating global objects in the current datafolder
+- Nicify documentation layout
+- Ignore case when querying analysis parameters in ``AFH_GetAnalysisXXX``` functions
+- Fix minor issues with Windows 11
+- Update EV certificate for window installer signing
+
+TUF XOP
+-------
+
+None
+
+ITC XOP 2
+----------
+
+- Avoid creating ``V_ITCError``/``V_ITCXOPError`` as global variables for ``ITCSetGlobals2``
+
+ZeroMQ XOP
+----------
+
+None
+
+MCC XOP
+-------
+
+None
+
+MIESUtils XOP
+-------------
+
+None
+
+JSON XOP
+--------
+
+- Update to version-892-g9251933
+
+Labnotebook
+-----------
+
+- Fix labnotebook querying of settings from aborted sweeps which were written
+  by analysis functions in their ``PRE_DAQ_EVENT``
+- Speedup labnotebook querying by using a sorted key wave as lookup help
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+The following new labnotebook keys denote the per channel type sampling
+intervals, the old key ``Sampling Interval`` is gone. For ITC and NI hardware
+the numerical values of all three labnotebook entries will always be the same.
+
+- ``Sampling interval DA``
+- ``Sampling interval AD``
+- ``Sampling interval TTL``
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- ``PSQ_FMT_LBN_DA_AT_FI_OFFSET``
+- ``PSQ_FMT_LBN_DA_AT_FREQ``
+- ``PSQ_FMT_LBN_DA_AT_FREQ_SUPRA``
+- ``PSQ_FMT_LBN_DA_AT_DASCALE_SUPRA``
+- ``PSQ_FMT_LBN_DA_AT_FI_SLOPES``
+- ``PSQ_FMT_LBN_DA_AT_FI_OFFSETS``
+- ``PSQ_FMT_LBN_DA_AT_MAX_SLOPE``
+- ``PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS``
+- ``PSQ_FMT_LBN_DA_AT_INIT_VALID_SLOPE_PASS``
+- ``PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS``
+- ``PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES``
+- ``PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS``
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Removed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``Sampling interval``
+
+Removed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Epoch information
+-----------------
+
+- Fix sorting to be numerically correct
+- Avoid deleting the last epoch in edge case
+- Make epoch information sample point exact (except ooDAQ regions), see `here <https://alleninstitute.github.io/MIES/epoch_information.html#time-specialities>`__
+- Allow to recreate epoch information from the labnotebook including user
+  epochs from the analysis functions (DA only). These are now automatically
+  recreated for Databrowser/Sweepbrowser display and Sweep Formula.
+- Make start/end times and inflection points for pulse train epochs sample exact
+
+NWB/IPNWB
+---------
+
+- Update list of available stimsets after loading stimsets from NWB
+- Fix epoch info export for TTL channels with ITC1600
+- Fix string type of ``nwb_version`` in NWB file to ease DANDI handling
+- Increase precision of ``SamplingRate`` in ``source`` attribute
+- Fix forgotten stimsets when storing TTL data with ITC1600 hardware from rack one
+- Fix export of custom waves referenced from stimsets we are depending on only
+- Add epoch size in points to wave note
+- Create separate NWB files for each device
+- Use chunked compression for stimsets when saving
+
+File format
+~~~~~~~~~~~
+
+- The sweep waves are now completely hardware independent. They consist of 1D
+  text waves referencing the individual channel waves, see :cpp:func:`GetSweepWave`.
+
+Pressure Control
+----------------
+
+None
+
+WaveBuilder
+-----------
+
+- Fix combine stimsets referencing multiple stimsets where one stimset name is
+  a substring of another stimset name
+- Sort the analysis parameter entries in the panel
+- Ignore case when splitting stimset names into parts
+- Fix multi-level recursive combine stimsets
+- Fix creation order when a combine stimset references a non-existing stimset
+- Enhance error reporting on failure to create stimset
+- Don't allow stimsets to have non-finite entries
+
+Work Sequencing Engine
+----------------------
+
+None
+
+Internal
+--------
+
+- Adapt FindIndizes with new property PROP_NOT to negate the matching logic
+- Add :cpp:func:`EnableWaveCache`/:cpp:func:`DisableWaveCache`
+
+- check-code.sh:
+
+  - Add check to ensure that all macros are in their own files
+  - Don't allow semicolons at end of line
+  - Check correct casing of doxygen commands
+  - Tighten function-call-in-for-loop check
+  - Bail out if we find ResizeControlsHook
+
+- Factor out macros into their own files
+- Add read/write support for wave reference waves in JSON waves notes
+- Change FindIndizes to return double precision waves
+- Split large utility ipf files into smaller files
+
+CI
+--
+
+- Disable report generation for release branches
+- Use code formatting with ``ipt``
+- Add job to compile test each commit
+- Upgrade documentation toolchain
+- Enable wave leak detection
+- Upgrade all container images to latest debian stable (bookworm)
+- Verify NWB files with DANDI (ignoring some warnings though)
+
+Tests
+-----
+
+- Add testing with ITC1600 and fix the tests
+- Introduce ``TestBeginCommon``/``TestEndCommon``/``TestCaseBeginCommon``/``TestCaseEndCommon``
+- Update to newer github action versions to avoid nodejs deprecation warning
+- Update pynwb for read tests
+
+Async Framework
+---------------
+
+Nonet
+
+Logging
+-------
+
+- Archive logfiles on Igor Pro shutdown
+- Readd timestamps to the JSON newline entries
+
+Installer
+---------
+
+- Add NWBv2 compound XOP for installations without hardware XOPs
+
 Release 2.7
 ===========
 
