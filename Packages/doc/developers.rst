@@ -62,6 +62,7 @@ Cutting a new release
    the top of ``Packages\doc\releasenotes.rst``
 -  Call ``tools\create-changelog.sh`` which generate a raw changelog and
    fill ``releasenotes.rst`` with a cleaned up version of it.
+   Work from bottom to top.
 -  Propose a pull request and get it merged
 -  Checkout the main branch
 -  Tag the current state with ``git tag Release_X.Y_*``, see ``git tag``
