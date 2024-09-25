@@ -41,3 +41,11 @@ echo "Commits which have LABNOTEBOOK_VERSION in their diff" >> changelog.txt
 echo "" >> changelog.txt
 
 git log --regexp-ignore-case --pretty="$fmt" -G LABNOTEBOOK_VERSION ${old_tag}.. $top_level/Packages/MIES/MIES_Constants.ipf >> changelog.txt
+
+echo "" >> changelog.txt
+echo "IPNWB:" >> changelog.txt
+echo "" >> changelog.txt
+
+git log --pretty="$fmt" --submodule=diff ${old_tag}.. $top_level/Packages/IPNWB >> changelog.txt
+
+echo "" >> changelog.txt

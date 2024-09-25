@@ -238,7 +238,7 @@ Function/WAVE SFH_GetArgumentAsWave(variable jsonId, string jsonPath, string gra
 	if(ParamIsDefault(expectedWaveType))
 		checkWaveType = 0
 	else
-		checkWaveType = !!checkWaveType
+		checkWaveType = 1
 	endif
 
 	if(ParamIsDefault(singleResult))
@@ -306,7 +306,14 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 		endif
 		SVAR error = $GetSweepFormulaParseErrorMessage()
 		error = message
+
 #ifdef AUTOMATED_TESTING_DEBUGGING
+
+#ifdef AUTOMATED_TESTING
+#if exists("INFO")
+		INFO("SFH_ASSERT: %s", s0 = error)
+#endif
+#endif
 		Debugger
 #endif
 		Abort
