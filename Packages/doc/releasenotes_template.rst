@@ -194,6 +194,8 @@ Work Sequencing Engine
 Internal
 --------
 
+CI
+--
 
 Tests
 -----
