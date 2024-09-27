@@ -161,10 +161,10 @@ Function/WAVE GetPossiblePathsToGit()
 
 	// Atlassian Sourcetree (Embedded git)
 	userName = GetSystemUserName()
-	paths[3] = "C::Users:" + userName + ":AppData:Local:Atlassian:SourceTree:git_local:mingw32:bin:git.exe"
+	paths[3] = "C:Users:" + userName + ":AppData:Local:Atlassian:SourceTree:git_local:mingw32:bin:git.exe"
 
 	// user installation of git for windows
-	paths[4] = "C::Users:" + userName + ":AppData:Local:Programs:Git:cmd:git.exe"
+	paths[4] = "C:Users:" + userName + ":AppData:Local:Programs:Git:cmd:git.exe"
 #elif defined(MACINTOSH)
 	Make/T/FREE paths = {"Macintosh HD:usr:bin:git"}
 #else
