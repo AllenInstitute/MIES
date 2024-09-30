@@ -2292,6 +2292,8 @@ Constant PSX_DECONV_FILTER_DEF_LOW   = 0.002
 Constant PSX_DECONV_FILTER_DEF_HIGH  = 0.004
 Constant PSX_DECONV_FILTER_DEF_ORDER = 101
 
+StrConstant PSX_JWN_COMBO_KEYS_NAME = "ComboKeys"
+
 StrConstant SF_OP_MERGE   = "merge"
 StrConstant SF_OP_FIT     = "fit"
 StrConstant SF_OP_FITLINE = "fitline"

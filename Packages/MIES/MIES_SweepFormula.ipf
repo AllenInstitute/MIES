@@ -1491,6 +1491,8 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 
 		win = winNameTemplate
 		if(WindowExists(win))
+			TUD_Clear(win, recursive = 1)
+
 			WAVE/T allWindows = ListToTextWave(GetAllWindows(win), ";")
 
 			for(subWindow : allWindows)
@@ -1500,6 +1502,9 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 					KillWindow/Z $subWindow
 				endif
 			endfor
+
+			RemoveAllControls(win)
+			RemoveAllDrawLayers(win)
 		else
 			NewPanel/N=$win/K=1/W=(150, 400, 1000, 700)
 			win = S_name
@@ -3222,7 +3227,7 @@ static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 		WAVE/T epNames   = SFH_GetEpochNamesFromInfo(epochInfo)
 		WAVE/Z epIndices = SFH_GetEpochIndicesByWildcardPatterns(epNames, epochPatterns)
 		if(!WaveExists(epIndices))
-			break
+			continue
 		endif
 
 		numEntries = DimSize(epIndices, ROWS)
