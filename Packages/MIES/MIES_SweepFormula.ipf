@@ -73,6 +73,7 @@ static StrConstant SF_OP_RMS           = "rms"
 static StrConstant SF_OP_VARIANCE      = "variance"
 static StrConstant SF_OP_STDEV         = "stdev"
 static StrConstant SF_OP_DERIVATIVE    = "derivative"
+static StrConstant SF_OP_TABLE         = "table"
 static StrConstant SF_OP_INTEGRATE     = "integrate"
 static StrConstant SF_OP_TIME          = "time"
 static StrConstant SF_OP_XVALUES       = "xvalues"
@@ -208,7 +209,7 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_CHANNELS, SF_OP_DATA, SF_OP_LABNOTEBOOK, SF_OP_WAVE, SF_OP_FINDLEVEL, SF_OP_EPOCHS, SF_OP_TP,         \
 	                  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM, SF_OP_TPSS, SF_OP_TPBASE, SF_OP_TPINST, SF_OP_TPFIT,        \
 	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_FILTER,  \
-	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET}
+	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_TABLE}
 
 	return wt
 End
@@ -1020,6 +1021,9 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_DERIVATIVE:
 			WAVE out = SF_OperationDerivative(jsonId, jsonPath, graph)
 			break
+		case SF_OP_TABLE:
+			WAVE out = SF_OperationTable(jsonID, jsonPath, graph)
+			break
 		case SF_OP_INTEGRATE:
 			WAVE out = SF_OperationIntegrate(jsonId, jsonPath, graph)
 			break
@@ -1783,6 +1787,13 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 					WAVE dummy = wvY
 					WAVE wvY   = wvX
 					WAVE wvX   = dummy
+				endif
+
+				variable useTable = !!JWN_GetNumberFromWaveNote(wvY, "Table")
+
+				if(useTable)
+					Edit/HOST=$win/FG=(FL, FT, FR, FB) wvY.d
+					continue
 				endif
 
 				if(!WaveExists(wvX))
@@ -3829,6 +3840,21 @@ static Function/WAVE SF_OperationDerivative(variable jsonId, string jsonPath, st
 	SFH_TransferFormulaDataWaveNoteAndMeta(input, output, SF_OP_DERIVATIVE, SF_DATATYPE_DERIVATIVE)
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_DERIVATIVE, clear = input)
+End
+
+static Function/WAVE SF_OperationTable(variable jsonId, string jsonPath, string graph)
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_TABLE, 1, maxArgs = 1)
+
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_DERIVATIVE, DimSize(input, ROWS))
+
+	output[] = input[p]
+
+	JWN_SetNumberInWaveNote(input, "Table", 1)
+
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_TABLE)
 End
 
 static Function/WAVE SF_OperationDerivativeImpl(WAVE/Z input)
