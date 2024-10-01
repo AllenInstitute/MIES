@@ -288,6 +288,7 @@ threadsafe Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	WAVE/Z sweeps = cache[sweepNo][%$RA_ACQ_CYCLE_ID_KEY][0]
 	if(WaveExists(sweeps))
 		if(DimSize(sweeps, ROWS) > 0) // valid cached entry
+			ChangeWaveLock(sweeps, 1)
 			return sweeps
 		else // non-existant entry
 			return $""
@@ -325,6 +326,7 @@ threadsafe Function/WAVE AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, head
 	WAVE/Z sweeps = cache[sweepNo][%$STIMSET_ACQ_CYCLE_ID_KEY][headstage]
 	if(WaveExists(sweeps))
 		if(DimSize(sweeps, ROWS) > 0) // valid cached entry
+			ChangeWaveLock(sweeps, 1)
 			return sweeps
 		else // non-existant entry
 			return $""
