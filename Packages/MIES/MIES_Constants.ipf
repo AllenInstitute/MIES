@@ -2066,35 +2066,69 @@ StrConstant SF_META_FIT_COEFF     = "FitCoefficients"
 StrConstant SF_META_FIT_SIGMA     = "FitSigma"
 StrConstant SF_META_FIT_PARAMETER = "FitParameter"
 
-StrConstant SF_DATATYPE_SWEEP         = "SweepData"
-StrConstant SF_DATATYPE_SWEEPNO       = "SweepNumbers"
-StrConstant SF_DATATYPE_CHANNELS      = "Channels"
-StrConstant SF_DATATYPE_FINDLEVEL     = "FindLevel"
-StrConstant SF_DATATYPE_APFREQUENCY   = "ApFrequency"
-StrConstant SF_DATATYPE_LABNOTEBOOK   = "LabNotebook"
-StrConstant SF_DATATYPE_BUTTERWORTH   = "Butterworth"
-StrConstant SF_DATATYPE_AREA          = "Area"
-StrConstant SF_DATATYPE_INTEGRATE     = "Integrate"
-StrConstant SF_DATATYPE_DERIVATIVE    = "Derivative"
-StrConstant SF_DATATYPE_STDEV         = "StDev"
-StrConstant SF_DATATYPE_VARIANCE      = "Variance"
-StrConstant SF_DATATYPE_RMS           = "RMS"
-StrConstant SF_DATATYPE_AVG           = "Average"
-StrConstant SF_DATATYPE_MAX           = "Max"
-StrConstant SF_DATATYPE_MIN           = "Min"
-StrConstant SF_DATATYPE_RANGE         = "Range"
-StrConstant SF_DATATYPE_EPOCHS        = "Epochs"
-StrConstant SF_DATATYPE_TP            = "TestPulse"
-StrConstant SF_DATATYPE_TPSS          = "TestPulseMode_SteadyState"
-StrConstant SF_DATATYPE_TPINST        = "TestPulseMode_Instantaneous"
-StrConstant SF_DATATYPE_TPBASE        = "TestPulseMode_Baseline"
-StrConstant SF_DATATYPE_TPFIT         = "TestPulseMode_Fit"
-StrConstant SF_DATATYPE_POWERSPECTRUM = "Powerspectrum"
-StrConstant SF_DATATYPE_PSX           = "PSX"
+StrConstant SF_DATATYPE_SWEEP              = "SweepData"
+StrConstant SF_DATATYPE_SWEEPNO            = "SweepNumbers"
+StrConstant SF_DATATYPE_CHANNELS           = "Channels"
+StrConstant SF_DATATYPE_SELECTCOMP         = "SelectionComposite"
+StrConstant SF_DATATYPE_SELECT             = "Selection"
+StrConstant SF_DATATYPE_FINDLEVEL          = "FindLevel"
+StrConstant SF_DATATYPE_APFREQUENCY        = "ApFrequency"
+StrConstant SF_DATATYPE_LABNOTEBOOK        = "LabNotebook"
+StrConstant SF_DATATYPE_BUTTERWORTH        = "Butterworth"
+StrConstant SF_DATATYPE_AREA               = "Area"
+StrConstant SF_DATATYPE_INTEGRATE          = "Integrate"
+StrConstant SF_DATATYPE_DERIVATIVE         = "Derivative"
+StrConstant SF_DATATYPE_STDEV              = "StDev"
+StrConstant SF_DATATYPE_VARIANCE           = "Variance"
+StrConstant SF_DATATYPE_RMS                = "RMS"
+StrConstant SF_DATATYPE_AVG                = "Average"
+StrConstant SF_DATATYPE_MAX                = "Max"
+StrConstant SF_DATATYPE_MIN                = "Min"
+StrConstant SF_DATATYPE_RANGE              = "Range"
+StrConstant SF_DATATYPE_EPOCHS             = "Epochs"
+StrConstant SF_DATATYPE_TP                 = "TestPulse"
+StrConstant SF_DATATYPE_TPSS               = "TestPulseMode_SteadyState"
+StrConstant SF_DATATYPE_TPINST             = "TestPulseMode_Instantaneous"
+StrConstant SF_DATATYPE_TPBASE             = "TestPulseMode_Baseline"
+StrConstant SF_DATATYPE_TPFIT              = "TestPulseMode_Fit"
+StrConstant SF_DATATYPE_POWERSPECTRUM      = "Powerspectrum"
+StrConstant SF_DATATYPE_PSX                = "PSX"
+StrConstant SF_DATATYPE_SELECTVIS          = "SelectVis"
+StrConstant SF_DATATYPE_SELECTCM           = "SelectClampMode"
+StrConstant SF_DATATYPE_SELECTSTIMSET      = "selectStimset"
+StrConstant SF_DATATYPE_SELECTIVSCCSWEEPQC = "selectIVSCCSweepQC"
+StrConstant SF_DATATYPE_SELECTIVSCCSETQC   = "selectIVSCCSetQC"
+StrConstant SF_DATATYPE_SELECTRANGE        = "selectRange"
 
 StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
 ///@}
+
+/// @name Constants for SweepFormula Clampmode codes returned by operation selcm()
+/// @anchor SFClampcodeConstants
+/// @{
+Constant SF_OP_SELECT_CLAMPCODE_ALL   = 0x0F
+Constant SF_OP_SELECT_CLAMPCODE_NONE  = 0x01
+Constant SF_OP_SELECT_CLAMPCODE_IC    = 0x02
+Constant SF_OP_SELECT_CLAMPCODE_VC    = 0x04
+Constant SF_OP_SELECT_CLAMPCODE_IZERO = 0x08
+/// @}
+
+/// @name Constants for SweepFormula IVSCC SweepQC codes returned by operation selivsccsweepqc()
+/// @anchor SFIVSCCSweepQCConstants
+/// @{
+Constant SF_OP_SELECT_IVSCCSWEEPQC_IGNORE = 0x01
+Constant SF_OP_SELECT_IVSCCSWEEPQC_PASSED = 0x02
+Constant SF_OP_SELECT_IVSCCSWEEPQC_FAILED = 0x04
+/// @}
+
+/// @name Constants for SweepFormula IVSCC SetQC codes returned by operation selivsccsetqc()
+/// @anchor SFIVSCCSetQCConstants
+/// @{
+Constant SF_OP_SELECT_IVSCCSETQC_IGNORE = 0x01
+Constant SF_OP_SELECT_IVSCCSETQC_PASSED = 0x02
+Constant SF_OP_SELECT_IVSCCSETQC_FAILED = 0x04
+/// @}
 
 /// @name Available source options for RA_SkipSweeps()
 /// @anchor SkipSweepOptions
