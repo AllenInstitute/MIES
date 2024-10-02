@@ -645,3 +645,16 @@ Structure ASYNC_ReadOutStruct
 	string rtErrMsg // runtime error message
 	variable abortCode // abort code
 EndStructure
+
+/// @brief Wraps all parameters combined for one SF select call
+Structure SF_SelectParameters
+	WAVE selects
+	WAVE channels
+	WAVE sweeps
+	string vis
+	variable clampMode
+	WAVE/T stimsets
+	WAVE ranges
+	variable sweepQC
+	variable setQC
+EndStructure

@@ -8728,3 +8728,12 @@ Function/S GetSetParamFolderAsString(channelType)
 		ASSERT(0, "unknown channelType")
 	endif
 End
+
+/// @brief returns a composite wave for select
+Function/WAVE GetSFSelectDataComp(string graph, string opShort)
+
+	WAVE/WAVE selectDataComp = SFH_CreateSFRefWave(graph, opShort, 2)
+	SetDimensionLabels(selectDataComp, "SELECTION;RANGE;", ROWS)
+
+	return selectDataComp
+End
