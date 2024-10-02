@@ -3565,7 +3565,7 @@ End
 
 static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)
 
-	WAVE/WAVE input  = SFH_GetNumericVarArgs(jsonId, jsonPath, graph, SF_OP_MIN)
+	WAVE/WAVE input  = SF_GetNumericVarArgs(jsonId, jsonPath, graph, SF_OP_MIN)
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_MIN, DimSize(input, ROWS))
 
 	output[] = SF_OperationMinImpl(input[p])
@@ -3595,15 +3595,7 @@ End
 
 static Function/WAVE SF_OperationMax(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs
-
-	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
-	SFH_ASSERT(numArgs > 0, "max requires at least one argument")
-	if(numArgs > 1)
-		WAVE/WAVE input = SF_GetArgumentTop(jsonId, jsonPath, graph, SF_OP_MAX)
-	else
-		WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, 0)
-	endif
+	WAVE/WAVE input  = SF_GetNumericVarArgs(jsonId, jsonPath, graph, SF_OP_MAX)
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_MAX, DimSize(input, ROWS))
 
 	output[] = SF_OperationMaxImpl(input[p])
@@ -5195,7 +5187,7 @@ static Function/WAVE SF_GetArgumentTop(variable jsonId, string jsonPath, string 
 	return input
 End
 
-static Function/WAVE SFH_GetNumericVarArgs(variable jsonId, string jsonPath, string graph, string opShort)
+static Function/WAVE SF_GetNumericVarArgs(variable jsonId, string jsonPath, string graph, string opShort)
 
 	variable numArgs
 
