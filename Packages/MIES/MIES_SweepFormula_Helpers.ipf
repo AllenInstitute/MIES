@@ -1714,7 +1714,7 @@ static Function SFH_GetIndepPSQEntrySCI(WAVE numericalValues, WAVE textualValues
 	variable type, waMode, headstage
 	string key
 
-	[type, waMode, headstage] = SFH_GetAnalysisFunctionType(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+	[type, waMode, headstage] = GetAnalysisFunctionType(numericalValues, textualValues, sweepNo, channelNumber, channelType)
 	if(IsNaN(type))
 		return NaN
 	endif
@@ -1728,7 +1728,7 @@ static Function SFH_GetIndepPSQEntry(WAVE numericalValues, WAVE textualValues, v
 	variable type, waMode, headstage, passed
 	string key
 
-	[type, waMode, headstage] = SFH_GetAnalysisFunctionType(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+	[type, waMode, headstage] = GetAnalysisFunctionType(numericalValues, textualValues, sweepNo, channelNumber, channelType)
 	if(IsNaN(type))
 		return NaN
 	endif
@@ -1747,41 +1747,6 @@ static Function SFH_GetIndepPSQEntry(WAVE numericalValues, WAVE textualValues, v
 
 	key = CreateAnaFuncLBNKey(type, psqLNBEntry, query = 1, waMode = waMode)
 	return GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = 0)
-End
-
-static Function [variable type, variable waMode, variable headstage] SFH_GetAnalysisFunctionType(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable channelNumber, variable channelType)
-
-	string key, anaFuncName
-	variable index, DAC
-
-	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DAC", channelNumber, channelType, DATA_ACQUISITION_MODE)
-	if(!WaveExists(settings))
-		return [NaN, NaN, NaN]
-	endif
-	DAC = settings[index]
-
-	key = "Generic function"
-	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-	if(!WaveExists(settings))
-		return [NaN, NaN, NaN]
-	endif
-	anaFuncName = WaveText(settings, row = index)
-
-	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
-	if(!WaveExists(settings))
-		return [NaN, NaN, NaN]
-	endif
-	WAVE headstageIndices = FindIndizes(settings, var = DAC)
-	if(DimSize(headstageIndices, ROWS) != 1)
-		return [NaN, NaN, NaN]
-	endif
-	headstage = headstageIndices[0]
-
-	WAVE anaFuncTypes = LBN_GetNumericWave(defValue = INVALID_ANALYSIS_FUNCTION)
-	anaFuncTypes[headstage] = MapAnaFuncToConstant(anaFuncName)
-	[type, waMode] = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
-
-	return [type, waMode, headstage]
 End
 
 Function/S SFH_CreateLegendFromRanges(WAVE selectData, WAVE/WAVE ranges)

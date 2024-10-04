@@ -1976,3 +1976,44 @@ Function GetTotalOnsetDelayFromDevice(string device)
 
 	return DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") + TPSettingsCalculated[%totalLengthMS]
 End
+
+/// @brief Retrieve the analysis function that was run for a given sweep / channelNumber / channelType
+///
+/// @param numericalValues numerical labnotebook
+/// @param textualValues   textual labnotebook
+/// @param sweepNo         sweep number
+/// @param channelNumber   channel number
+/// @param channelType     channelType
+///
+/// @retval type      analysis function type @ref SpecialAnalysisFunctionTypes
+/// @retval waMode    bit-mask of possible workarounds for CreateAnaFuncLBNKey()
+/// @retval headstage headstage where the analysis function was run on
+Function [variable type, variable waMode, variable headstage] GetAnalysisFunctionType(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable channelNumber, variable channelType)
+
+	string key, anaFuncName
+	variable index, DAC
+
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DAC", channelNumber, channelType, DATA_ACQUISITION_MODE)
+	if(!WaveExists(settings))
+		return [NaN, NaN, NaN]
+	endif
+	DAC = settings[index]
+
+	key = "Generic function"
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+	if(!WaveExists(settings))
+		return [NaN, NaN, NaN]
+	endif
+	anaFuncName = WaveText(settings, row = index)
+
+	headstage = GetHeadStageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
+	if(IsNaN(headstage))
+		return [NaN, NaN, NaN]
+	endif
+
+	WAVE anaFuncTypes = LBN_GetNumericWave(defValue = INVALID_ANALYSIS_FUNCTION)
+	anaFuncTypes[headstage] = MapAnaFuncToConstant(anaFuncName)
+	[type, waMode] = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
+
+	return [type, waMode, headstage]
+End
