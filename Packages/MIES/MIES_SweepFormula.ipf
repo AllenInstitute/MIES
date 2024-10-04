@@ -95,6 +95,8 @@ static StrConstant SF_OP_TP                 = "tp"
 static StrConstant SF_OP_STORE              = "store"
 static StrConstant SF_OP_SELECT             = "select"
 static StrConstant SF_OP_SELECTVIS          = "selvis"
+static StrConstant SF_OP_SELECTEXP          = "selexp"
+static StrConstant SF_OP_SELECTDEV          = "seldev"
 static StrConstant SF_OP_SELECTCM           = "selcm"
 static StrConstant SF_OP_SELECTSTIMSET      = "selstimset"
 static StrConstant SF_OP_SELECTIVSCCSWEEPQC = "selivsccsweepqc"
@@ -230,7 +232,7 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_STORE, SF_OP_SELECT, SF_OP_POWERSPECTRUM, SF_OP_TPSS, SF_OP_TPBASE, SF_OP_TPINST, SF_OP_TPFIT,              \
 	                  SF_OP_PSX, SF_OP_PSX_KERNEL, SF_OP_PSX_STATS, SF_OP_PSX_RISETIME, SF_OP_PSX_PREP, SF_OP_PSX_DECONV_FILTER,        \
 	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_SELECTVIS, SF_OP_SELECTCM, SF_OP_SELECTSTIMSET,       \
-	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE}
+	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV}
 
 	return wt
 End
@@ -1150,6 +1152,12 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 			break
 		case SF_OP_SELECTVIS:
 			WAVE out = SF_OperationSelectVis(jsonId, jsonPath, graph)
+			break
+		case SF_OP_SELECTEXP:
+			WAVE out = SF_OperationSelectExperiment(jsonId, jsonPath, graph)
+			break
+		case SF_OP_SELECTDEV:
+			WAVE out = SF_OperationSelectDevice(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SELECTCM:
 			WAVE out = SF_OperationSelectCM(jsonId, jsonPath, graph)
@@ -2254,7 +2262,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 	variable numSweeps, numInChannels, numActiveChannels, index
 	variable isSweepBrowser
 	variable dimPosSweep, dimPosChannelNumber, dimPosChannelType, dimPosSweepMapIndex
-	variable dimPosTSweep, dimPosTChannelNumber, dimPosTChannelType, dimPosTClampMode, dimPosTSweepMapIndex
+	variable dimPosTSweep, dimPosTChannelNumber, dimPosTChannelType, dimPosTClampMode, dimPosTExpName, dimPosTDevice, dimPosTSweepMapIndex
 	variable numTraces, fromDisplayed, clampCode, smIndexCounter, mapIndex
 	string msg, device, singleSweepDFStr, expName, dataFolder
 	variable mapSize   = 1
@@ -2297,12 +2305,22 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 		dimPosTChannelType   = FindDimLabel(traces, COLS, "channelType")
 		dimPosTChannelNumber = FindDimLabel(traces, COLS, "GUIChannelNumber")
 		dimPosTClampMode     = FindDimLabel(traces, COLS, "clampMode")
+		dimPosTExpName       = FindDimLabel(traces, COLS, "Experiment")
+		dimPosTDevice        = FindDimLabel(traces, COLS, "Device")
 		dimPosTSweepMapIndex = FindDimLabel(traces, COLS, "SweepMapIndex")
 		for(i = 0; i < numSweeps; i += 1)
 			sweepNo = sweeps[i]
 			for(j = 0; j < numTraces; j += 1)
 				sweepNoT = str2num(traces[j][dimPosTSweep])
 				if(sweepNo == sweepNoT)
+					if(isSweepBrowser)
+						if(!IsEmpty(filter.experimentName) && CmpStr(filter.experimentName, traces[j][dimPosTExpName]))
+							continue
+						endif
+						if(!IsEmpty(filter.device) && CmpStr(filter.device, traces[j][dimPosTDevice]))
+							continue
+						endif
+					endif
 					selectDisplayed[outIndex][dimPosSweep]         = sweepNo
 					selectDisplayed[outIndex][dimPosChannelType]   = WhichListItem(traces[j][dimPosTChannelType], XOP_CHANNEL_NAMES)
 					selectDisplayed[outIndex][dimPosChannelNumber] = str2num(traces[j][dimPosTChannelNumber])
@@ -2350,7 +2368,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 
 		if(!fromDisplayed)
 			if(isSweepBrowser)
-				WAVE/Z mapIndices = SF_GetSweepMapIndices(sweepMap, sweepNo, "", "")
+				WAVE/Z mapIndices = SF_GetSweepMapIndices(sweepMap, sweepNo, filter.experimentName, filter.device)
 				if(!WaveExists(mapIndices))
 					continue
 				endif
@@ -4623,6 +4641,40 @@ static Function/WAVE SF_OperationSelectVis(variable jsonId, string jsonPath, str
 	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTVIS, discardOpStack = 1, dataType = SF_DATATYPE_SELECTVIS)
 End
 
+/// `selexp(expName)` // expName is a string with optional wildcards
+///
+/// returns a one element text wave
+static Function/WAVE SF_OperationSelectExperiment(variable jsonId, string jsonPath, string graph)
+
+	string expName
+
+	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTEXP, 1, maxArgs = 1)
+
+	expName = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTEXP, 0)
+	Make/FREE/T output = {expName}
+
+	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTEXP, discardOpStack = 1, dataType = SF_DATATYPE_SELECTEXP)
+End
+
+/// `seldev(device)` // device is a string with optional wildcards
+///
+/// returns a one element text wave
+static Function/WAVE SF_OperationSelectDevice(variable jsonId, string jsonPath, string graph)
+
+	string expName
+
+	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
+
+	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTDEV, 1, maxArgs = 1)
+
+	expName = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTDEV, 0)
+	Make/FREE/T output = {expName}
+
+	return SFH_GetOutputForExecutorSingle(output, graph, SF_OP_SELECTDEV, discardOpStack = 1, dataType = SF_DATATYPE_SELECTDEV)
+End
+
 /// `selcm(mode, mode, ...)` // mode can be `ic`, `vc`, `izero`, `all`
 /// see @ref SFClampModeStrings
 ///
@@ -4773,6 +4825,8 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 	STRUCT SF_SelectParameters filter
 	variable i, numArgs, selectArgPresent
 	string type, vis
+	string expName = ""
+	string device  = ""
 
 	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 	SF_InitSelectFilterUninitalized(filter)
@@ -4787,6 +4841,20 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 			continue
 		endif
 		strswitch(type)
+			case SF_DATATYPE_SELECTDEV:
+				if(IsEmpty(device))
+					device = WaveText(arg, row = 0)
+				else
+					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTDEV + " argument.")
+				endif
+				break
+			case SF_DATATYPE_SELECTEXP:
+				if(IsEmpty(expName))
+					expName = WaveText(arg, row = 0)
+				else
+					SFH_ASSERT(0, "select allows only a single " + SF_OP_SELECTEXP + " argument.")
+				endif
+				break
 			case SF_DATATYPE_SELECTVIS:
 				if(IsEmpty(filter.vis))
 					filter.vis = WaveText(arg, row = 0)
@@ -4858,6 +4926,13 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 
 	SF_SetSelectionFilterDefaults(graph, filter, selectArgPresent)
 
+	if(!IsEmpty(expName))
+		filter.experimentName = SF_GetSelectionExperiment(graph, expName)
+	endif
+	if(!IsEmpty(device))
+		filter.device = SF_GetSelectionDevice(graph, device)
+	endif
+
 	WAVE/Z selectData = SF_GetSelectData(graph, filter)
 
 	if(!WaveExists(selectData))
@@ -4889,6 +4964,41 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_SELECT)
 End
 
+static Function/S SF_GetSelectionExperiment(string graph, string expName)
+
+	string currentExperimentName
+
+	if(BSP_IsDataBrowser(graph))
+		currentExperimentName = GetExperimentName()
+		SFH_ASSERT(stringmatch(currentExperimentName, expName), "Selected experiment does not exist")
+
+		return currentExperimentName
+	endif
+	if(BSP_IsSweepBrowser(graph))
+		return SF_MatchSweepMapColumn(graph, expName, "FileName", SF_OP_SELECTEXP)
+	endif
+
+	ASSERT(0, "Unknown browser type")
+End
+
+static Function/S SF_GetSelectionDevice(string graph, string device)
+
+	string deviceDB
+
+	if(BSP_IsDataBrowser(graph))
+		deviceDB = DB_GetDevice(graph)
+		SFH_ASSERT(!IsEmpty(deviceDB), "DataBrowser has no locked device")
+		SFH_ASSERT(stringmatch(deviceDB, device), "Selected device does not exist")
+
+		return deviceDB
+	endif
+	if(BSP_IsSweepBrowser(graph))
+		return SF_MatchSweepMapColumn(graph, device, "Device", SF_OP_SELECTDEV)
+	endif
+
+	ASSERT(0, "Unknown browser type")
+End
+
 /// @brief sets uninitialized fields of the selection filter
 static Function SF_SetSelectionFilterDefaults(string graph, STRUCT SF_SelectParameters &filter, variable includeAll)
 
@@ -4918,6 +5028,12 @@ static Function SF_SetSelectionFilterDefaults(string graph, STRUCT SF_SelectPara
 	endif
 	if(!WaveExists(filter.ranges))
 		WAVE/WAVE filter.ranges = SFH_AsDataSet(SFH_GetFullRange())
+	endif
+	if(numtype(strlen(filter.experimentName)) == 2)
+		filter.experimentName = ""
+	endif
+	if(numtype(strlen(filter.device)) == 2)
+		filter.device = ""
 	endif
 End
 

@@ -657,4 +657,6 @@ Structure SF_SelectParameters
 	WAVE ranges
 	variable sweepQC
 	variable setQC
+	string experimentName
+	string device
 EndStructure

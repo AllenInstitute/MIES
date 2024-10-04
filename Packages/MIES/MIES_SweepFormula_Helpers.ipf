@@ -608,6 +608,8 @@ static Function/WAVE SFH_GetSweepsForFormulaImpl(string graph, WAVE/WAVE selectD
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetStringInWaveNote(rangedSweepData, SF_META_DEVICE, device)
+			JWN_SetStringInWaveNote(rangedSweepData, SF_META_EXPERIMENT, experiment)
 			if(!IsNaN(mapIndex))
 				JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPMAPINDEX, mapIndex)
 			endif
