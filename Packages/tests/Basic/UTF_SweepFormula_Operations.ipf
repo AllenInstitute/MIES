@@ -2889,3 +2889,33 @@ static Function BasicMathMismatchedWaves([string str])
 	error = ROStr(GetSweepFormulaParseErrorMessage())
 	CHECK_EQUAL_STR(error, opShort + ": wave size mismatch [2, 0, 0, 0] vs [1, 2, 0, 0]")
 End
+
+static Function DefaultFormulaWorks()
+
+	variable sweepNo, numChannels
+	string str
+	string win, device
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	sweepNo = 0
+	win     = CreateFakeSweepData(win, device, sweepNo = sweepNo)
+
+	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
+	Make/FREE/N=0 sweepTemplate
+	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+
+	str = SF_GetDefaultFormula()
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	// If the default formula changes the following checks need to be adapted
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), numChannels / 2)
+	WAVE chan1 = dataWref[0]
+	WAVE chan3 = dataWref[1]
+	Duplicate/FREE/RMD=[][1] sweepRef, chan1Ref
+	Redimension/N=(-1) chan1Ref
+	Duplicate/FREE/RMD=[][3] sweepRef, chan3Ref
+	Redimension/N=(-1) chan3Ref
+	CHECK_EQUAL_WAVES(chan1, chan1Ref, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(chan3, chan3Ref, mode = WAVE_DATA)
+End
