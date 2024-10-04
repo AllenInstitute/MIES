@@ -2490,7 +2490,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 						for(l = 0; l < numTraces; l += 1)
 
 							clampCode = SF_MapClampModeToSelectCM(sweepPropertiesDisplayed[l][SWEEPPROP_CLAMPMODE])
-							if(!SF_IsValidSingleSelection(graph, filter, sweepLNBsDisplayed[l][%NUMERICAL], sweepLNBsDisplayed[l][%TEXTUAL], sweepNo, channelNumber, channelType, selectDisplayed[l][dimPosSweep], selectDisplayed[l][dimPosChannelNumber], selectDisplayed[l][dimPosChannelType], clampCode, sweepPropertiesDisplayed[l][SWEEPPROP_SETCYCLECOUNT], sweepPropertiesDisplayed[l][SWEEPPROP_SETSWEEPCOUNT], doStimsetMatching))
+							if(!SF_IsValidSingleSelection(filter, sweepLNBsDisplayed[l][%NUMERICAL], sweepLNBsDisplayed[l][%TEXTUAL], sweepNo, channelNumber, channelType, selectDisplayed[l][dimPosSweep], selectDisplayed[l][dimPosChannelNumber], selectDisplayed[l][dimPosChannelType], clampCode, sweepPropertiesDisplayed[l][SWEEPPROP_SETCYCLECOUNT], sweepPropertiesDisplayed[l][SWEEPPROP_SETSWEEPCOUNT], doStimsetMatching))
 								continue
 							endif
 
@@ -2525,7 +2525,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 								setSweepCount = WaveExists(setting) ? setting[index] : NaN
 							endif
 
-							if(!SF_IsValidSingleSelection(graph, filter, numericalValues, textualValues, sweepNo, channelNumber, channelType, sweepNo, l, channelType, clampCode, setCycleCount, setSweepCount, doStimsetMatching))
+							if(!SF_IsValidSingleSelection(filter, numericalValues, textualValues, sweepNo, channelNumber, channelType, sweepNo, l, channelType, clampCode, setCycleCount, setSweepCount, doStimsetMatching))
 								continue
 							endif
 
@@ -2551,7 +2551,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 	return out
 End
 
-static Function SF_IsValidSingleSelection(string graph, STRUCT SF_SelectParameters &filter, WAVE numericalValues, WAVE textualValues, variable filtSweepNo, variable filtChannelNumber, variable filtChannelType, variable sweepNo, variable channelNumber, variable channelType, variable clampMode, variable setCycleCount, variable setSweepCount, variable doStimsetMatching)
+static Function SF_IsValidSingleSelection(STRUCT SF_SelectParameters &filter, WAVE numericalValues, WAVE textualValues, variable filtSweepNo, variable filtChannelNumber, variable filtChannelType, variable sweepNo, variable channelNumber, variable channelType, variable clampMode, variable setCycleCount, variable setSweepCount, variable doStimsetMatching)
 
 	variable sweepQC, setQC
 	string setName
@@ -2580,14 +2580,14 @@ static Function SF_IsValidSingleSelection(string graph, STRUCT SF_SelectParamete
 	endif
 
 	if(filter.sweepQC != SF_OP_SELECT_IVSCCSWEEPQC_IGNORE)
-		sweepQC = SFH_IsSweepQCPassed(graph, sweepNo, channelNumber, channelType) == 1 ? SF_OP_SELECT_IVSCCSWEEPQC_PASSED : SF_OP_SELECT_IVSCCSWEEPQC_FAILED
+		sweepQC = SFH_IsSweepQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType) == 1 ? SF_OP_SELECT_IVSCCSWEEPQC_PASSED : SF_OP_SELECT_IVSCCSWEEPQC_FAILED
 		if(!(filter.sweepQC & sweepQC))
 			return 0
 		endif
 	endif
 
 	if(filter.setQC != SF_OP_SELECT_IVSCCSETQC_IGNORE)
-		setQC = SFH_IsSetQCPassed(graph, sweepNo, channelNumber, channelType) == 1 ? SF_OP_SELECT_IVSCCSETQC_PASSED : SF_OP_SELECT_IVSCCSETQC_FAILED
+		setQC = SFH_IsSetQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType) == 1 ? SF_OP_SELECT_IVSCCSETQC_PASSED : SF_OP_SELECT_IVSCCSETQC_FAILED
 		if(!(filter.setQC & setQC))
 			return 0
 		endif
