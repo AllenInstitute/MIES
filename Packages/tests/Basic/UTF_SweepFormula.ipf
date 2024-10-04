@@ -1367,13 +1367,15 @@ End
 
 static Function TestDefaultFormula()
 
-	string win, bsPanel
+	string win, bsPanel, winRec, str
 
 	win     = GetDataBrowserWithData()
 	bsPanel = BSP_GetPanel(win)
 
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+
+	CHECK_EQUAL_VAR(stringmatch(WinRecreation("", 0), "*Display*"), 1)
 End
 
 static Function TestParseFitConstraints()
