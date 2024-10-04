@@ -1699,48 +1699,42 @@ Function/S SFH_GetStimsetName(WAVE numericalValues, WAVE textualValues, variable
 	return WaveText(settings, row = index)
 End
 
-Function SFH_IsSetQCPassed(string graph, variable sweepNo, variable channelNumber, variable channelType)
+Function SFH_IsSetQCPassed(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType)
 
-	return SFH_GetIndepPSQEntrySCI(graph, sweepNo, channelNumber, channelType, PSQ_FMT_LBN_SET_PASS)
+	return SFH_GetIndepPSQEntrySCI(numericalValues, textualValues, sweepNo, channelNumber, channelType, PSQ_FMT_LBN_SET_PASS)
 End
 
-Function SFH_IsSweepQCPassed(string graph, variable sweepNo, variable channelNumber, variable channelType)
+Function SFH_IsSweepQCPassed(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType)
 
-	return SFH_GetIndepPSQEntry(graph, sweepNo, channelNumber, channelType, PSQ_FMT_LBN_SWEEP_PASS)
+	return SFH_GetIndepPSQEntry(numericalValues, textualValues, sweepNo, channelNumber, channelType, PSQ_FMT_LBN_SWEEP_PASS)
 End
 
-static Function SFH_GetIndepPSQEntrySCI(string graph, variable sweepNo, variable channelNumber, variable channelType, string psqLNBEntry)
+static Function SFH_GetIndepPSQEntrySCI(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType, string psqLNBEntry)
 
 	variable type, waMode, headstage
 	string key
 
-	[type, waMode, headstage] = SFH_GetAnalysisFunctionType(graph, sweepNo, channelNumber, channelType)
+	[type, waMode, headstage] = SFH_GetAnalysisFunctionType(numericalValues, textualValues, sweepNo, channelNumber, channelType)
 	if(IsNaN(type))
 		return NaN
 	endif
-
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	ASSERT(WaveExists(numericalValues), "Could not retrieve LNB")
 
 	key = CreateAnaFuncLBNKey(type, psqLNBEntry, query = 1, waMode = waMode)
 	return GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE, defValue = 0)
 End
 
-static Function SFH_GetIndepPSQEntry(string graph, variable sweepNo, variable channelNumber, variable channelType, string psqLNBEntry)
+static Function SFH_GetIndepPSQEntry(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType, string psqLNBEntry)
 
 	variable type, waMode, headstage, passed
 	string key
 
-	[type, waMode, headstage] = SFH_GetAnalysisFunctionType(graph, sweepNo, channelNumber, channelType)
+	[type, waMode, headstage] = SFH_GetAnalysisFunctionType(numericalValues, textualValues, sweepNo, channelNumber, channelType)
 	if(IsNaN(type))
 		return NaN
 	endif
 
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	ASSERT(WaveExists(numericalValues), "Could not retrieve LNB")
-
 	if(type == PSQ_RHEOBASE && !CmpStr(psqLNBEntry, PSQ_FMT_LBN_SWEEP_PASS))
-		passed = SFH_IsSetQCPassed(graph, sweepNo, channelNumber, channelType)
+		passed = SFH_IsSetQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType)
 		WAVE sweepsSCI = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 		[WAVE passingSweeps, WAVE failingSweeps] = AFH_GetRheobaseSweepsSCISweepQCSplitted(numericalValues, sweepNo, headstage, sweepsSCI, passed)
 		if(WaveExists(passingSweeps))
@@ -1755,14 +1749,10 @@ static Function SFH_GetIndepPSQEntry(string graph, variable sweepNo, variable ch
 	return GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = 0)
 End
 
-static Function [variable type, variable waMode, variable headstage] SFH_GetAnalysisFunctionType(string graph, variable sweepNo, variable channelNumber, variable channelType)
+static Function [variable type, variable waMode, variable headstage] SFH_GetAnalysisFunctionType(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable channelNumber, variable channelType)
 
 	string key, anaFuncName
 	variable index, DAC
-
-	WAVE/Z   numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	WAVE/Z/T textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
-	ASSERT(WaveExists(numericalValues) && WaveExists(textualValues), "Could not retrieve LNB")
 
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DAC", channelNumber, channelType, DATA_ACQUISITION_MODE)
 	if(!WaveExists(settings))
