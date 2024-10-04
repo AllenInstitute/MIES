@@ -6,6 +6,9 @@
 #pragma ModuleName=MIES_BROWSER_PLOTTER
 #endif
 
+/// @file MIES_Browser_Plotter.ipf
+/// @brief Functions for plotting DataBrowser/Sweepbrowser Graphs
+
 static Constant NUM_CHANNEL_TYPES     = 3
 static Constant ADC_SLOT_MULTIPLIER   = 4
 static Constant EPOCH_SLOT_MULTIPLIER = 3
@@ -56,9 +59,6 @@ static Function [string oodDAQRegionsAll, variable totalXRange] GetOodDAQFullRan
 
 	return [oodDAQRegionsAll, totalXRange]
 End
-
-/// @file MIES_Browser_Plotter.ipf
-/// @brief Functions for plotting DataBrowser/Sweepbrowser Graphs
 
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
 ///
