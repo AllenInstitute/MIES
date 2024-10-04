@@ -462,7 +462,7 @@ Function DB_UpdateSweepPlot(win)
 		WAVE config = GetConfigWave(sweepWave)
 
 		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, \
-		                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
+		                        axisLabelCache, traceIndex, experiment, sweepChannelSel, device)
 		AR_UpdateTracesIfReq(graph, dfr, sweepNo)
 	endfor
 
@@ -645,10 +645,10 @@ Function DB_AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo
 
 	if(ParamIsDefault(bdi))
 		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, \
-		                        traceIndex, experiment, sweepChannelSel)
+		                        traceIndex, experiment, sweepChannelSel, device)
 	else
 		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, \
-		                        traceIndex, experiment, sweepChannelSel, bdi = bdi)
+		                        traceIndex, experiment, sweepChannelSel, device, bdi = bdi)
 	endif
 
 	AR_UpdateTracesIfReq(graph, dfr, sweepNo)

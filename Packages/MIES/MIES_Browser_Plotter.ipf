@@ -84,8 +84,10 @@ End
 /// @param traceIndex      [internal use only] set to zero on the first call in a row of successive calls
 /// @param experiment      name of the experiment the sweep stems from
 /// @param channelSelWave  channel selection wave
+/// @param device          device name
 /// @param bdi [optional, default = n/a] initialized BufferedDrawInfo structure, when given draw calls are buffered instead for later execution @sa OVS_EndIncrementalUpdate
-Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues, WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave, [STRUCT BufferedDrawInfo &bdi])
+/// @param mapIndex [optional, default = NaN] if the data originates from a sweepBrowser then the mapIndex is given here
+Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues, WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave, string device, [STRUCT BufferedDrawInfo &bdi, variable mapIndex])
 
 	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
@@ -104,10 +106,11 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
+	mapIndex = ParamIsDefault(mapIndex) ? NaN : mapIndex
 
-	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",                         \
-	                            "textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType",           \
-	                            "occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage", "GUIChannelNumber"}
+	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",                                                    \
+	                            "textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType",                                      \
+	                            "occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage", "GUIChannelNumber", "Device", "SweepMapIndex"}
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -532,7 +535,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                     \
 					                          num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep", \
 					                          num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage)),           \
-					                          num2istr(guiChannelNumber)})
+					                          num2istr(guiChannelNumber), device, num2str(mapIndex)})
 				endfor
 			endfor
 
