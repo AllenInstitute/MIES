@@ -2194,6 +2194,44 @@ static Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dim
 	endswitch
 End
 
+/// @brief Return the matching indices of sweepMap, if expName or device is an emtpy string then it is ignored
+static Function/WAVE SF_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, string expName, string device)
+
+	WAVE/Z sweepIndices = FindIndizes(sweepMap, colLabel = "Sweep", var = sweepNo)
+	if(!WaveExists(sweepIndices))
+		return $""
+	endif
+	if(IsEmpty(expName) && IsEmpty(device))
+		return sweepIndices
+	endif
+
+	if(!IsEmpty(expName))
+		WAVE/Z/D expIndices = FindIndizes(sweepMap, colLabel = "FileName", str = expName)
+		if(!WaveExists(expIndices))
+			return $""
+		endif
+	endif
+	if(!IsEmpty(device))
+		WAVE/Z/D devIndices = FindIndizes(sweepMap, colLabel = "Device", str = device)
+		if(!WaveExists(devIndices))
+			return $""
+		endif
+	endif
+
+	if(WaveExists(expIndices) && WaveExists(devIndices))
+		WAVE/Z set1 = GetSetIntersection(sweepIndices, expIndices)
+		if(!WaveExists(set1))
+			return $""
+		endif
+
+		return GetSetIntersection(set1, devIndices)
+	elseif(WaveExists(expIndices))
+		return GetSetIntersection(sweepIndices, expIndices)
+	endif
+
+	return GetSetIntersection(sweepIndices, devIndices)
+End
+
 /// @brief Use the labnotebook information to return the active channel numbers
 ///        for a given set of sweeps
 ///
