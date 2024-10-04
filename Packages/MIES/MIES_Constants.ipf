@@ -2042,6 +2042,7 @@ StrConstant SF_META_SWEEPNO              = "/SweepNumber"        // number
 StrConstant SF_META_RANGE                = "/Range"              // numeric wave
 StrConstant SF_META_CHANNELTYPE          = "/ChannelType"        // number
 StrConstant SF_META_CHANNELNUMBER        = "/ChannelNumber"      // number
+StrConstant SF_META_SWEEPMAPINDEX        = "/SweepMapIndex"      // number
 StrConstant SF_META_ISAVERAGED           = "/IsAveraged"         // number
 StrConstant SF_META_AVERAGED_FIRST_SWEEP = "/AveragedFirstSweep" // number
 StrConstant SF_META_XVALUES              = "/XValues"            // numeric wave

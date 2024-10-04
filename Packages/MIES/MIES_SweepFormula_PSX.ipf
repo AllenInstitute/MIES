@@ -1086,17 +1086,18 @@ End
 /// @brief Collect all resolved ranges in allResolvedRanges together with a hash of the select data
 Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectData, WAVE allResolvedRanges, WAVE/T allSelectHashes)
 
-	variable sweepNo, chanNr, chanType, numRows
+	variable sweepNo, chanNr, chanType, numRows, mapIndex
 
 	sweepNo  = singleSelectData[0][%SWEEP]
 	chanNr   = singleSelectData[0][%CHANNELNUMBER]
 	chanType = singleSelectData[0][%CHANNELTYPE]
+	mapIndex = singleSelectData[0][%SWEEPMAPINDEX]
 
 	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
 	WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
 
-	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr)
+	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr, mapIndex)
 	ASSERT(DimSize(resolvedRanges, COLS) == 1, "psxStats does not support epoch wildcards")
 
 	numRows = DimSize(allSelectHashes, ROWS)
