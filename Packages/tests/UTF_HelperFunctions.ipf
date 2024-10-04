@@ -1537,8 +1537,9 @@ Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeD
 
 			AppendToGraph/W=$win singleColumnDataWave/TN=$trace
 			WAVE numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNumber)
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "numericalValues", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode", "SweepMapIndex"},                                         \
-			                         {"blah", GetWavesDataFolder(numericalValues, 2), GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelTypeStr, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode), "NaN"})
+			WAVE textualValues   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "textualValues", "numericalValues", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode", "SweepMapIndex"},                                                              \
+			                         {"blah", GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2), GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelTypeStr, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode), "NaN"})
 		endfor
 	endfor
 

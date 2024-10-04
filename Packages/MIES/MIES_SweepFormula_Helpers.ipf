@@ -1689,13 +1689,9 @@ Function/WAVE SFH_GetSingleSelect(string graph, string opShort, variable sweepNo
 	return selectDataArray
 End
 
-Function/S SFH_GetStimsetName(string graph, variable sweepNo, variable channelNumber, variable channelType)
+Function/S SFH_GetStimsetName(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType)
 
 	variable index
-
-	WAVE/Z   numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	WAVE/Z/T textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
-	ASSERT(WaveExists(numericalValues) && WaveExists(textualValues), "Could not retrieve LNB")
 
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(settings), "Could not retrieve setName")
