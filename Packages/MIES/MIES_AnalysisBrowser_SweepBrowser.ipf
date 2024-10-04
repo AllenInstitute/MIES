@@ -346,8 +346,8 @@ Function SB_UpdateSweepPlot(win)
 		DFREF sweepDFR   = GetAnalysisSweepPath(dataFolder, device)
 		WAVE  configWave = GetAnalysisConfigWave(dataFolder, device, sweepNo)
 
-		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, \
-		                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
+		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR,          \
+		                        axisLabelCache, traceIndex, experiment, sweepChannelSel, device, mapIndex = mapIndex)
 		AR_UpdateTracesIfReq(graph, sweepDFR, sweepNo)
 	endfor
 
@@ -691,8 +691,8 @@ Function SB_AddSweepToGraph(string win, variable index)
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
 
 	traceIndex = GetNextTraceIndex(graph)
-	CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepDFR, \
-	                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
+	CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepDFR,           \
+	                        axisLabelCache, traceIndex, experiment, sweepChannelSel, device, mapIndex = index)
 
 	AR_UpdateTracesIfReq(graph, dfr, sweepNo)
 End
