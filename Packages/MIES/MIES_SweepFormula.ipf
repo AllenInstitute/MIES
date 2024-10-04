@@ -5907,10 +5907,10 @@ End
 
 Function/S SF_GetDefaultFormula()
 
-	return "trange = [0, inf]\r"                          + \
-	       "sel = select(selchannels(AD), selsweeps())\r" + \
-	       "dat = data($trange, $sel)\r"                  + \
-	       "\r"                                           + \
+	return "trange = [0, inf]\r"                                            + \
+	       "sel = select(selrange($trange),selchannels(AD), selsweeps())\r" + \
+	       "dat = data($sel)\r"                                             + \
+	       "\r"                                                             + \
 	       "$dat"
 End
 
