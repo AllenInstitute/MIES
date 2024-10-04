@@ -346,22 +346,46 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[2][0][0]   = "-"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
-	// Set a acquisition cycle ID
+	// Set a acquisition cycle ID SCI
 	values[]        = NaN
-	values[0][0][0] = sweepNo
-	values[0][0][1] = sweepNo
+	values[0][0][0] = 43
+	values[0][0][1] = 45
 	keys[0][0][0]   = STIMSET_ACQ_CYCLE_ID_KEY
 	keys[2][0][0]   = "1"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
-	keys[2][0][0] = "-"
 
-	// Set setQC passed
+	// Set a repeated acquisition cycle RAC
+	values[]                      = NaN
+	values[0][0][INDEP_HEADSTAGE] = 49
+	keys[0][0][0]                 = RA_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]                 = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set set QC passed
 	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 1
 	keys[0][0][0]                 = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
+	keys[2][0][0]                 = "-"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, UNKNOWN_MODE)
 
+	// Set Set Cycle Count
+	values[]        = NaN
+	values[0][0][0] = 711
+	values[0][0][1] = 117
+	keys[0][0][0]   = "Set Cycle Count"
+	keys[2][0][0]   = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set Set Sweep Count
+	values[]        = NaN
+	values[0][0][0] = 635
+	values[0][0][1] = 251
+	keys[0][0][0]   = "Set Sweep Count"
+	keys[2][0][0]   = "0.1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
 	// textual entries
+	keys[2][0][0] = "-"
 
 	// Stimset name HS0/HS1
 	valuesTxt[]        = ""
@@ -444,20 +468,28 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 
 	// Set a acquisition cycle ID
 	values[]        = NaN
-	values[0][0][0] = sweepNo
-	values[0][0][1] = sweepNo
+	values[0][0][0] = 43
+	values[0][0][1] = 46
 	keys[0][0][0]   = STIMSET_ACQ_CYCLE_ID_KEY
 	keys[2][0][0]   = "1"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
-	keys[2][0][0] = "-"
 
-	// Set setQC passed
+	// Set a repeated acquisition cycle RAC
+	values[]                      = NaN
+	values[0][0][INDEP_HEADSTAGE] = 49
+	keys[0][0][0]                 = RA_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]                 = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set sweepQC passed
 	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 1
 	keys[0][0][0]                 = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	keys[2][0][0]                 = "-"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, UNKNOWN_MODE)
 
 	// textual entries
+	keys[2][0][0] = "-"
 
 	// Set some analysis function
 	valuesTxt[]        = ""
@@ -517,6 +549,14 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[0][0][0]   = CLAMPMODE_ENTRY_KEY
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	// Set a acquisition cycle ID SCI
+	values[]        = NaN
+	values[0][0][0] = 44
+	values[0][0][1] = 46
+	keys[0][0][0]   = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]   = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
 	// indep headstage
 	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 252627
@@ -527,6 +567,13 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	valuesTxt[0][0][INDEP_HEADSTAGE] = "252627"
 	keys[0][0][0]                    = keyTxt
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set a repeated acquisition cycle RAC
+	values[]                      = NaN
+	values[0][0][INDEP_HEADSTAGE] = 50
+	keys[0][0][0]                 = RA_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]                 = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	sweepNo = 3
 

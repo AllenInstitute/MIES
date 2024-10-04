@@ -893,15 +893,53 @@ End
 
 static Function/WAVE SF_TestOperationSelectFails()
 
-	Make/FREE/T wt = {"select(1)",                                             \
-	                  "select(selrange(),selrange())",                         \
-	                  "select(selchannels(),selchannels())",                   \
-	                  "select(selsweeps(),selsweeps())",                       \
-	                  "select(selcm(all),selcm(all))",                         \
-	                  "select(selvis(),selvis())",                             \
-	                  "select(selstimset(),selstimset())",                     \
-	                  "select(selivsccsetqc(failed),selivsccsetqc(failed))",   \
-	                  "select(selivsccsweepqc(failed),selivsccsweepqc(failed))"}
+	Make/FREE/T wt = {"select(1)",                                               \
+	                  "select(selrange(),selrange())",                           \
+	                  "select(selchannels(),selchannels())",                     \
+	                  "select(selsweeps(),selsweeps())",                         \
+	                  "select(selcm(all),selcm(all))",                           \
+	                  "select(selvis(),selvis())",                               \
+	                  "select(selstimset(),selstimset())",                       \
+	                  "select(selivsccsetqc(failed),selivsccsetqc(failed))",     \
+	                  "select(selivsccsweepqc(failed),selivsccsweepqc(failed))", \
+	                  "select(selexp(" + GetExperimentName() + "not_exist))",    \
+	                  "select(seldev(unknown_device))",                          \
+	                  "select(seldev(device),seldev(device))",                   \
+	                  "select(selexp(exp),selexp(exp))",                         \
+	                  "select(selsciindex(0),selsciindex(0))",                   \
+	                  "select(selracindex(0),selracindex(0))",                   \
+	                  "select(selsetcyclecount(0),selsetcyclecount(0))",         \
+	                  "select(selsetsweepcount(0),selsetsweepcount(0))",         \
+	                  "select(selexpandrac(0),selexpandrac(0))",                 \
+	                  "select(selexpandsci(0),selexpandsci(0))"}
+
+	Duplicate/FREE/T wt, labels
+	labels[] = CleanUpName(wt[p], 0)
+	SetDimensionLabels(wt, TextWaveToList(labels, ";"), ROWS)
+
+	return wt
+End
+
+static Function/WAVE SF_TestOperationSelSingleNumber()
+
+	Make/FREE/T wt = {"selsetcyclecount", "selsetsweepcount", "selsciindex", "selracindex"}
+	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
+
+	return wt
+End
+
+static Function/WAVE SF_TestOperationSelSingleText()
+
+	Make/FREE/T wt = {"seldev", "selexp"}
+	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
+
+	return wt
+End
+
+static Function/WAVE SF_TestOperationSelNoArg()
+
+	Make/FREE/T wt = {"selexpandrac", "selexpandsci"}
+	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
 
 	return wt
 End

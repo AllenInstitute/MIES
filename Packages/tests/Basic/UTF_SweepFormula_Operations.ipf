@@ -1335,6 +1335,113 @@ static Function TestOperationSelstimset()
 	endtry
 End
 
+// IUTF_TD_GENERATOR DataGenerators#SF_TestOperationSelSingleText
+static Function TestOperationSelSingleText([string str])
+
+	string win, device, formula
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	formula = str + "(AKAelectricRG28)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE/T ref = {"AKAelectricRG28"}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	formula = str + "()"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	formula = str + "(123)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	formula = str + "(dev1, dev2)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+// IUTF_TD_GENERATOR DataGenerators#SF_TestOperationSelNoArg
+static Function TestOperationSelNoArg([string str])
+
+	string win, device, formula
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	formula = str + "()"
+	WAVE/WAVE wref  = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE ref = {1}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	formula = str + "(123)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	formula = str + "(exp1, exp2)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+// IUTF_TD_GENERATOR DataGenerators#SF_TestOperationSelSingleNumber
+static Function TestOperationSelSingleNumber([string str])
+
+	string win, device, formula
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	formula = "selsetcyclecount(123)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE ref = {123}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	formula = str + "()"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	formula = str + "(text)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	formula = str + "(1, 2)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 static Function TestOperationSelIVSCCSweepQC()
 
 	string win, device, str
@@ -2286,18 +2393,20 @@ static Function TestOperationFit()
 	endtry
 End
 
-static Function TestOperationSelectCompareWithFullRange(string win, string formula, WAVE dataRef)
+static Function TestOperationSelectCompareWithFullRange(string win, string formula, WAVE/Z dataRef)
 
 	WAVE/WAVE comp = SF_ExecuteFormula(formula, win, useVariables = 0)
 	CHECK_WAVE(comp, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(comp, ROWS), 2)
-	WAVE      dataSel = comp[0]
+	WAVE/Z    dataSel = comp[0]
 	WAVE/WAVE rngSet  = comp[1]
 	CHECK_WAVE(rngSet, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(rngSet, ROWS), 1)
 	WAVE dataRng = rngSet[0]
-	CHECK_EQUAL_WAVES(dataRef, dataSel, mode = WAVE_DATA | DIMENSION_SIZES)
-	WAVE rngRef = SFH_GetFullRange()
+	WAVE rngRef  = SFH_GetFullRange()
+	if(WaveExists(dataRef) || WaveExists(dataSel))
+		CHECK_EQUAL_WAVES(dataRef, dataSel, mode = WAVE_DATA | DIMENSION_SIZES)
+	endif
 	CHECK_EQUAL_WAVES(rngRef, dataRng, mode = WAVE_DATA | DIMENSION_SIZES)
 End
 
@@ -2557,10 +2666,10 @@ static Function TestOperationSelect()
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	Make/FREE/N=(1, 4) dataRef
-	dataRef[][0] = {sweepNo}
+	Make/FREE/N=(2, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo + 1}                           // both sweeps have the same SCI
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {6}
+	dataRef[][2] = {6, 6}
 	dataRef[][3] = NaN
 	str          = "select(selchannels(AD6),selivsccsetqc(passed))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
@@ -2575,7 +2684,11 @@ static Function TestOperationSelect()
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6}
+	dataRef[][3] = NaN
 	str          = "select(selchannels(AD6),selivsccsweepqc(passed))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	str = "select(select(selchannels(AD6)),selivsccsweepqc(passed))"
@@ -2588,6 +2701,101 @@ static Function TestOperationSelect()
 	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
 	WAVE/Z    dataSel = comp[0]
 	CHECK_WAVE(dataSel, NULL_WAVE)
+
+	Make/FREE/N=(2, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 6}
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD6),selexp(" + GetExperimentName() + "))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selchannels(AD6),seldev(ITC16_Dev_0))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	Make/FREE/N=(2, 4) dataRef
+	dataRef[][0]  = {sweepNo}
+	dataRef[0][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[1][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
+	dataRef[][2]  = {6, 2}
+	dataRef[][3]  = NaN
+	str           = "select(selsetcyclecount(711))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selsetsweepcount(635))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	// sweep 0 and sweep 1 are set to the same SCI and the same RAC
+	Make/FREE/N=(2, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 6}
+	dataRef[][3] = NaN
+	str          = "select(selsweeps(0), selchannels(AD6), selexpandrac())"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selsweeps(0), selchannels(AD6), selexpandsci())"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	// sweepNr ChannelNumber RAC
+	// 0 6 49
+	// 0 7 49
+	// 1 6 49
+	// 1 7 49
+	// 2 6 50
+	// 2 7 50
+
+	Make/FREE/N=(4, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7, 6, 7}
+	dataRef[][3] = NaN
+	str          = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selracindex(0))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	Make/FREE/N=(2, 4) dataRef
+	dataRef[][0] = {sweepNo + 2, sweepNo + 2}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7}
+	dataRef[][3] = NaN
+	str          = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selracindex(1))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	str = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selracindex(999))"
+	TestOperationSelectCompareWithFullRange(win, str, $"")
+
+	str = "select(selsweeps(3), selvis(all), selchannels(AD), selracindex(0))"
+	TestOperationSelectCompareWithFullRange(win, str, $"")
+
+	// sweepNr ChannelNumber Headstage SCI
+	// 0 6 0 43
+	// 0 7 1 45
+	// 1 6 0 43
+	// 1 7 1 46 <- index 1 for HS1
+	// 2 6 0 44 <- index 1 for HS0
+	// 2 7 1 46 <- index 1 for HS1 (same SCI 46)
+
+	Make/FREE/N=(3, 4) dataRef
+	dataRef[][0] = {sweepNo + 2, sweepNo + 1, sweepNo + 2}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7, 7}
+	dataRef[][3] = NaN
+	str          = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selsciindex(1))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	Make/FREE/N=(3, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo + 1, sweepNo}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 6, 7}
+	dataRef[][3] = NaN
+	str          = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selsciindex(0))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	str = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selsciindex(999))"
+	TestOperationSelectCompareWithFullRange(win, str, $"")
+
+	str = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selsciindex(0),select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selsciindex(999)))"
+	TestOperationSelectCompareWithFullRange(win, str, $"")
+
+	str = "select(selsweeps(3), selvis(all), selchannels(AD), selsciindex(0))"
+	TestOperationSelectCompareWithFullRange(win, str, $"")
 
 	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {sweepNo}
