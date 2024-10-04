@@ -2195,7 +2195,15 @@ static Function SF_FormulaWaveScaleTransfer(WAVE source, WAVE dest, variable dim
 End
 
 /// @brief Return the matching indices of sweepMap, if expName or device is an emtpy string then it is ignored
-static Function/WAVE SF_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, string expName, string device)
+static Function/WAVE SF_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, string expName, string device, [string colLabel, string wildCardPattern])
+
+	variable mapSize
+
+	if(!ParamIsDefault(colLabel))
+		ASSERT(!IsEmpty(wildCardPattern), "Need a valid wildcard pattern")
+		mapSize = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+		return FindIndizes(sweepMap, colLabel = colLabel, endRow = mapSize, str = wildCardPattern, prop = PROP_WILDCARD)
+	endif
 
 	WAVE/Z sweepIndices = FindIndizes(sweepMap, colLabel = "Sweep", var = sweepNo)
 	if(!WaveExists(sweepIndices))
@@ -6253,4 +6261,23 @@ End
 static Function SF_FilterByClampModeEnabled(variable clampModeFilter, variable channelType)
 
 	return clampModeFilter != SF_OP_SELECT_CLAMPCODE_ALL && (channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC)
+End
+
+static Function/S SF_MatchSweepMapColumn(string graph, string match, string colLabel, string opShort)
+
+	variable col
+
+	WAVE/T sweepMap = SB_GetSweepMap(graph)
+	WAVE/Z indices  = SF_GetSweepMapIndices(sweepMap, NaN, "", "", colLabel = colLabel, wildCardPattern = match)
+	SFH_ASSERT(WaveExists(indices), "No match found in sweepMap in operation " + opShort)
+
+	col = FindDimlabel(sweepMap, COLS, colLabel)
+	Make/FREE/T/N=(DimSize(indices, ROWS)) entries
+	MultiThread entries[] = sweepMap[indices[p]][col]
+
+	WAVE/T uniqueEntries = GetUniqueEntries(entries)
+	SFH_ASSERT(DimSize(uniqueEntries, ROWS) < 2, "Multiple matches found in sweepMap in operation " + opShort)
+	SFH_ASSERT(DimSize(uniqueEntries, ROWS) == 1, "No match found in sweepMap in operation " + opShort)
+
+	return uniqueEntries[0]
 End
