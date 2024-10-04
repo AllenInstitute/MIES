@@ -1835,3 +1835,48 @@ Function/S SFH_CreateLegendFromRanges(WAVE selectData, WAVE/WAVE ranges)
 
 	return legendStr
 End
+
+/// @brief Function returns the correct numerical and textual LNB and sweepDFR for a given sweepNumber
+///
+/// @param graph    name of graph window
+/// @param sweepNo  sweep number
+/// @param mapIndex if graph is a SweepBrowser then a non-NaN mapIndex into sweepMap, otherwise must be NaN
+Function [WAVE numericalValues, WAVE textualValues, DFREF sweepDFR] SFH_GetLabNoteBooksAndDFForSweep(string graph, variable sweepNo, variable mapIndex)
+
+	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
+
+	if(BSP_IsSweepBrowser(graph))
+		ASSERT(!IsNaN(mapIndex), "Can not work with NaN as mapIndex")
+		DFREF sweepDFR = SB_GetSweepDF(graph, mapIndex)
+
+		return [numericalValues, textualValues, sweepDFR]
+	endif
+
+	ASSERT(IsNaN(mapIndex), "Window is DataBrowser, but got a mapIndex into a sweepMap")
+	DFREF deviceDFR = DB_GetDeviceDF(graph)
+	DFREF sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
+
+	return [numericalValues, textualValues, sweepDFR]
+End
+
+/// @brief Function returns the correct numerical and textual LNB for a given sweepNumber
+///
+/// @param graph    name of graph window
+/// @param sweepNo  sweep number
+/// @param mapIndex if graph is a SweepBrowser then a non-NaN mapIndex into sweepMap, otherwise must be NaN
+Function [WAVE numericalValues, WAVE textualValues] SFH_GetLabNoteBooksForSweep(string graph, variable sweepNo, variable mapIndex)
+
+	if(BSP_IsSweepBrowser(graph))
+		ASSERT(!IsNaN(mapIndex), "Can not work with NaN as mapIndex")
+		WAVE/T sweepMap = SB_GetSweepMap(graph)
+		[WAVE numericalValues, WAVE textualValues] = SB_GetLabNotebooks(sweepMap, mapIndex)
+
+		return [numericalValues, textualValues]
+	endif
+
+	ASSERT(IsNaN(mapIndex), "Window is DataBrowser, but got a mapIndex into a sweepMap")
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+
+	return [numericalValues, textualValues]
+End
