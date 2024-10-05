@@ -1186,6 +1186,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 				singleSelectData[0][%SWEEP]         = sweepNo
 				singleSelectData[0][%CHANNELNUMBER] = chanNr
 				singleSelectData[0][%CHANNELTYPE]   = chanType
+				singleSelectData[0][%SWEEPMAPINDEX] = NaN
 
 				comboKey = PSX_GenerateComboKey(graph, singleSelectData, range)
 
