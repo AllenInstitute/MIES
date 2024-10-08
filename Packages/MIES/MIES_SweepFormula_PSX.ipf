@@ -1175,6 +1175,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 			for(k = 0; k < numCols; k += 1)
 
+				// TODO TB
 				[chanNr, chanType, sweepNo] = PSX_GetSweepEquivKeyAndSweep(selectDataEquiv, i, k)
 
 				if(!IsValidSweepNumber(sweepNo))
@@ -2944,7 +2945,7 @@ End
 /// to the wave note of `psxEvent`.
 static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range)
 
-	variable sweepNo, channel, chanType
+	variable sweepNo, channel, chanType, mapIndex
 	string device, key, datafolder, rangeStr
 
 	ASSERT(DimSize(selectData, ROWS) == 1, "Expected selectData with only one entry")
@@ -2952,8 +2953,9 @@ static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range
 	sweepNo  = selectData[0][%SWEEP]
 	channel  = selectData[0][%CHANNELNUMBER]
 	chanType = selectData[0][%CHANNELTYPE]
+	mapIndex = selectData[0][%SWEEPMAPINDEX]
 
-	WAVE/T textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
 
 	// Introduced in 7e903ed8 (GetSweepSettingsTextWave: Add device as entry, 2023-01-03)
 	device = GetLastSettingTextIndep(textualValues, sweepNo, "Device", DATA_ACQUISITION_MODE)
