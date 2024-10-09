@@ -1184,7 +1184,7 @@ static Function TestArgSetup()
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorAPF0)
 	win = CreateFakeSweepData(win, device, sweepNo = 1, sweepGen = FakeSweepDataGeneratorAPF1)
 
-	formula = "apfrequency(data(cursors(A,B),select(channels(AD),[0,1],all)), 3, 15, time, normoversweepsmin,time)"
+	formula = "apfrequency(data(select(selrange(cursors(A,B)),selchannels(AD),selsweeps(0,1),selvis(all))), 3, 15, time, normoversweepsmin,time)"
 	WAVE/WAVE outputRef = SF_ExecuteFormula(formula, win, useVariables = 0)
 	argSetupStack = JWN_GetStringFromWaveNote(outputRef, SF_META_ARGSETUPSTACK)
 	jsonId        = JSON_Parse(argSetupStack)
@@ -1367,13 +1367,15 @@ End
 
 static Function TestDefaultFormula()
 
-	string win, bsPanel
+	string win, bsPanel, winRec, str
 
 	win     = GetDataBrowserWithData()
 	bsPanel = BSP_GetPanel(win)
 
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+
+	CHECK_EQUAL_VAR(stringmatch(WinRecreation("", 0), "*Display*"), 1)
 End
 
 static Function TestParseFitConstraints()
@@ -1435,7 +1437,7 @@ static Function TestOperationOrVariableInArray()
 
 	// operation with simple numeric return - channels returns a (2, 1) array
 	// as elements in an outer array -> (2, 1, 2) array
-	code = "[channels(AD2), channels(DA3)]"
+	code = "[selchannels(AD2), selchannels(DA3)]"
 	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
@@ -1444,7 +1446,7 @@ static Function TestOperationOrVariableInArray()
 	Make/FREE/D ref = {{{XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_DAC}}, {{2, 3}}}
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
-	code = "[123, channels(DA3)]"
+	code = "[123, selchannels(DA3)]"
 	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
@@ -1453,7 +1455,7 @@ static Function TestOperationOrVariableInArray()
 	Make/FREE/D ref = {{{123, XOP_CHANNEL_TYPE_DAC}}, {{123, 3}}}
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
-	code = "[channels(AD2), 123]"
+	code = "[selchannels(AD2), 123]"
 	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
@@ -1462,7 +1464,7 @@ static Function TestOperationOrVariableInArray()
 	Make/FREE/D ref = {{{XOP_CHANNEL_TYPE_ADC, 123}}, {{2, 123}}}
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
-	code = "[\"abc\", channels(DA3)]"
+	code = "[\"abc\", selchannels(DA3)]"
 	try
 		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
@@ -1470,7 +1472,7 @@ static Function TestOperationOrVariableInArray()
 		PASS()
 	endtry
 
-	code = "[channels(DA3), \"abc\"]"
+	code = "[selchannels(DA3), \"abc\"]"
 	try
 		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
 		FAIL()
@@ -1597,7 +1599,7 @@ static Function TestOperationOrVariableInArray()
 	endtry
 
 	// with variables
-	code = "var1 = channels(AD2)\r[$var1, channels(DA3)]"
+	code = "var1 = selchannels(AD2)\r[$var1, selchannels(DA3)]"
 	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
@@ -1606,7 +1608,7 @@ static Function TestOperationOrVariableInArray()
 	Make/FREE/D ref = {{{XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_DAC}}, {{2, 3}}}
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
-	code = "var1 = channels(DA3)\r[channels(AD2), $var1]"
+	code = "var1 = selchannels(DA3)\r[selchannels(AD2), $var1]"
 	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
@@ -1615,7 +1617,7 @@ static Function TestOperationOrVariableInArray()
 	Make/FREE/D ref = {{{XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_DAC}}, {{2, 3}}}
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
-	code = "var1 = channels(AD2)\r[$var1, 123]"
+	code = "var1 = selchannels(AD2)\r[$var1, 123]"
 	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
@@ -1624,7 +1626,7 @@ static Function TestOperationOrVariableInArray()
 	Make/FREE/D ref = {{{XOP_CHANNEL_TYPE_ADC, 123}}, {{2, 123}}}
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
-	code = "var1 = channels(DA3)\r[123, $var1]"
+	code = "var1 = selchannels(DA3)\r[123, $var1]"
 	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return
@@ -1633,7 +1635,7 @@ static Function TestOperationOrVariableInArray()
 	Make/FREE/D ref = {{{123, XOP_CHANNEL_TYPE_DAC}}, {{123, 3}}}
 	CHECK_EQUAL_WAVES(arrayNum, ref, mode = WAVE_DATA)
 
-	code = "var1 = channels(DA3)\r[$var1, \"abc\"]"
+	code = "var1 = selchannels(DA3)\r[$var1, \"abc\"]"
 	try
 		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
 		FAIL()
@@ -1641,7 +1643,7 @@ static Function TestOperationOrVariableInArray()
 		PASS()
 	endtry
 
-	code = "var1 = channels(DA3)\r[\"abc\", $var1]"
+	code = "var1 = selchannels(DA3)\r[\"abc\", $var1]"
 	try
 		WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 1)
 		FAIL()
@@ -1859,7 +1861,7 @@ static Function CheckAddArraysInArray()
 	Make/FREE ref = {{5}, {7}}
 	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA)
 
-	code = "[sweeps() + [3, 4] + 1]"
+	code = "[selsweeps() + [3, 4] + 1]"
 	WAVE/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 1) // array return

@@ -645,3 +645,28 @@ Structure ASYNC_ReadOutStruct
 	string rtErrMsg // runtime error message
 	variable abortCode // abort code
 EndStructure
+
+/// @brief Wraps all parameters combined for one SF select call
+///        When adapting also change @ref SF_DuplicateSelectFilter
+///        Initialization with uninitialized state value @see SF_InitSelectFilterUninitalized
+///        Initialization with defaults for uninitialized elements after select argument parsing @see SF_SetSelectionFilterDefaults
+Structure SF_SelectParameters
+	WAVE selects // selection wave (SF_DATATYPE_SELECT) or null if no select(...) argument appeared
+	WAVE channels // result from channels(...) (SF_DATATYPE_CHANNELS), if no argument was given result of "selchannels()"
+	WAVE sweeps // result from selsweeps(...) (SF_DATATYPE_SWEEPNO), if no argument was given result of "selsweeps()"
+	variable sweepsSet // 1 if WAVE sweeps was set due to a selsweeps(...) argument, 0 otherwise
+	string vis // result from selvis(...), if this argument was given one of SF_OP_SELECTVIS_*, if not then if a select argument was given SF_OP_SELECTVIS_ALL, SF_OP_SELECTVIS_DISPLAYED otherwise
+	variable clampMode // result from selcm(...), if this argument was given a bit combination of SF_OP_SELECT_CLAMPCODE_*, SF_OP_SELECT_CLAMPCODE_ALL otherwise
+	WAVE/T stimsets // result from setstimset(...), wildcard patterns, if this argument was not given "*"
+	WAVE ranges // result from selrange(...), if this argument was not given the full range
+	variable sweepQC // result from selivsccsweepqc(...), if this argument was given SF_OP_SELECT_IVSCCSWEEPQC_PASSED or SF_OP_SELECT_IVSCCSWEEPQC_FAILED, SF_OP_SELECT_IVSCCSWEEPQC_IGNORE otherwise
+	variable setQC // result from selivsccsetqc(...), if this argument was given SF_OP_SELECT_IVSCCSETQC_PASSED or SF_OP_SELECT_IVSCCSETQC_FAILED, SF_OP_SELECT_IVSCCSETQC_IGNORE otherwise
+	string experimentName // result from selexp(...), wildcard pattern if this argument was not given, "" otherwise
+	string device // result from seldev(...), wildcard pattern if this argument was not given, "" otherwise
+	variable expandSCI // result from selexpandsci(...), 1 if this argument was given, 0 otherwise
+	variable expandRAC // result from selexpandrac(...), 1 if this argument was given, 0 otherwise
+	variable setCycleCount // result from selsetcyclecount(x), x if this argument was given, NaN otherwise
+	variable setSweepCount // result from selsetsweepcount(x), x if this argument was given, NaN otherwise
+	variable sciIndex // result from selsciindex(x), x if this argument was given, NaN otherwise
+	variable racIndex // result from selracindex(x), x if this argument was given, NaN otherwise
+EndStructure

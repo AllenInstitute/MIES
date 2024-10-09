@@ -344,9 +344,9 @@ The returned data type is `SF_DATATYPE_AVG`.
 
    avg([1, 2, 3]) == [2]
 
-   avg(data(ST, select(channels(AD), sweeps(), all)), over)
+   avg(data(select(selrange(ST), selchannels(AD), selvis(all))), over)
 
-   avg(data(ST, select()), in)
+   avg(data(select(selrange(ST))), in)
 
 root mean square
 """"""""""""""""
@@ -521,7 +521,7 @@ For this case the operation is applied on each input data wave independently and
 
    // The sweeps in this example were sampled at 250 kHz.
    // For each data point in the sweep the time is returned.
-   time(data([0, 1000], channels(AD), sweeps())) == [0, 0.004, 0.008, 0.012, ...]
+   time(data(select(selrange([0, 1000]), selchannels(AD), selsweeps()))) == [0, 0.004, 0.008, 0.012, ...]
 
 setscale
 """"""""
@@ -558,10 +558,11 @@ For this case the operation is applied on each input data wave independently and
 
    xvalues(setscale([0, 1, 2, 3, 4], x, 0, 0.2, firkin)) == [0, 0.2, 0.4, 0.6, 0.8]
 
-channels
-""""""""
+selchannels
+"""""""""""
 
-`channels([str name]+)` converts named channels from strings to numbers.
+The operation `selchannels` allows to select channels.
+`selchannels([str name]+)` converts named channels from strings to numbers.
 
 The function accepts an arbitrary amount of channel names like `AD`, `DA` or
 `TTL` with a combination of numbers `AD1` or channel numbers alone like `2`.
@@ -571,26 +572,346 @@ The operation returns a numeric array of `[[channelType+], [channelNumber+]]` th
 row dimension the number of the input strings.
 When called without argument all channel types / channel numbers are set by setting the
 returned value for type and number to `NaN`.
+The result of `selchannels` has a data type attributed.
 
-`channels` is intended to be used with the `select()` operation.
+`selchannels` is intended to be used with the `select()` operation.
 
 .. code-block:: bash
 
-   channels([AD0,AD1, DA0, DA1]) == [[0, 0, 1, 1], [0, 1, 0, 1]]
+   selchannels([AD0, AD1, DA0, DA1]) == [[0, 0, 1, 1], [0, 1, 0, 1]]
 
    // Internally NaN is evaluated as joker for all channel types and all channel numbers
-   channels() == [[NaN], [NaN]]
+   selchannels() == [[NaN], [NaN]]
 
-sweeps
-""""""
+selsweeps
+"""""""""
 
-The operation `sweeps` return an 1d-array with the sweep numbers of all sweeps. The operation takes no arguments.
-If there are no sweeps a null wave is returned.
+The operation `selsweeps` allows to select sweeps by their number and returns an 1d-array with the sweep numbers.
+The operation accepts numbers, arrays and ranges as arguments. Any number of arguments can be specified.
+In case no argument is given, then all sweeps are returned or if there are no sweeps a null wave is returned.
+Each unique sweep number is returned only once.
+The result of `selsweeps` has a data type attributed.
+
+`selsweeps` is intended to be used with the `select()` operation.
 
 .. code-block:: bash
 
-   // For this example two sweeps were acquired
-   sweeps() == [0, 1]
+   # For this example two sweeps were acquired
+   selsweeps() == [0, 1]
+
+   selsweeps(0) == 0
+
+   selsweeps([1, 0]) == [1, 0]
+
+   selsweeps(0...2) == [0, 1]
+
+   # For this example 30 sweeps were acquired
+   selsweeps(10, [20, 24], 26...30) == [10, 20, 24, 26, 27, 28, 29]
+
+   # Each unique sweep number is returned only once
+   selsweeps(0, 0, 1) == [0, 1]
+
+selrange
+""""""""
+
+The operation `selrange` allows to specify a time interval either by epoch name or numbers in ms.
+It takes zero or one argument, an epoch name/wildcard or an array with two
+numeric values. The numeric values specify the start and end of a range.
+The operation returns a dataset with a range specification array.
+In case no argument is given, then a dataset with a full-range specification is returned.
+The result of `selrange` has a data type attributed.
+
+`selrange` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # returns a full-range
+   selrange()
+
+   # refers to epoch E1
+   selrange(E1)
+
+   # all stimset epochs
+   selrange("E*")
+
+   # refers to 30 ms to 100 ms
+   selrange([30, 100])
+
+   # refers to the range set by cursor A and B
+   selrange(cursors(A,B))
+
+selvis
+""""""
+
+The operation `selvis` allows to specify if selected data is taken from all sweeps or from the displayed sweeps only.
+It takes zero or one argument that can be either `all` or `displayed`.
+In case no argument is given, then the operation defaults to `displayed`.
+The operation returns a text wave with a single element.
+The result of `selvis` has a data type attributed.
+
+`selvis` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # refers to displayed
+   selvis()
+
+   # refers to all
+   selvis(all)
+
+   # refers displayed
+   selvis(displayed)
+
+selcm
+""""""
+
+The operation `selcm` allows to specify how select filters data for clamp mode.
+It takes between zero and any number of arguments.
+Allowed arguments are `none`, `ic`, `vc`, `izero`, `all`. If no argument is given then `selcm` defaults to `all`.
+The operation returns a a numeric value with a clamp code that is a logical ORed result of the given clamp modes.
+The result of `selcm` has a data type attributed.
+
+`selcm` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # sweep data in any clamp mode
+   selcm()
+
+   # sweep data acquired in current clamp and voltage clamp mode
+   selcm(ic, vc)
+
+   # sweep data acquired with no clamp mode (unassociated channels)
+   selcm(none)
+
+selstimset
+""""""""""
+
+The operation `selstimset` allows to specify how select filters data regarding the stimset wave name.
+It takes between zero and any number of arguments.
+Allowed arguments are strings that can contain wildcards.
+If no argument is given then `selstimset` defaults to `*`.
+The operation returns a a text wave with the stimset wave name wildcard patterns.
+The result of `selstimset` has a data type attributed.
+
+`selstimset` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # sweep data with any stimset wave name
+   selstimset()
+
+   # sweep data with all stimset wave names that start with pinky and all that end with brain
+   selstimset("pinky*", "*brain")
+
+selexp
+""""""
+
+The operation `selexp` allows to specify how select filters data regarding the experiment name.
+It takes exactly one string argument. The string that can contain wildcards.
+The operation returns a a text wave with the experiment name wildcard pattern.
+The result of `selexp` has a data type attributed.
+
+`selexp` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # sweep data from a specific experiment
+   selexp("MyFirstExperiment.pxp")
+
+   # sweep data from a specific experiment
+   selexp("MySecondExp*")
+
+seldev
+""""""
+
+The operation `seldev` allows to specify how select filters data regarding the DAC device name.
+It takes exactly one string argument. The string that can contain wildcards.
+The operation returns a a text wave with the device name wildcard pattern.
+The result of `seldev` has a data type attributed.
+
+`seldev` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # sweep data from a specific device
+   seldev("ITC18*")
+
+   # sweep data from a specific device
+   seldev("Dev*")
+
+selsetcyclecount
+""""""""""""""""
+
+When the operation `selsetcyclecount` is used with select it includes all sweeps with the specified set cycle count.
+The operation takes exactly one numerical argument.
+The operation returns a a numeric wave with a single element that has the value of the given argument.
+The result of `selsetcyclecount` has a data type attributed.
+
+`selsetcyclecount` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # sweeps that have a set cycle count of 5
+   selsetcyclecount(5)
+
+selsetsweepcount
+""""""""""""""""
+
+When the operation `selsetsweepcount` is used with select it includes all selection with the specified set sweep count.
+The operation takes exactly one numerical argument.
+The operation returns a a numeric wave with a single element that has the value of the given argument.
+The result of `selsetsweepcount` has a data type attributed.
+
+`selsetsweepcount` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # sweeps that have a set sweep count of 2
+   selsetsweepcount(2)
+
+selsciindex
+"""""""""""
+
+When the operation `selsciindex` is used with select it includes all selections that have the n-th unique stimset cycle id.
+The specific order of the stimset cycle ids before this operation is applied depends on the other select filters applied in the `select` operation.
+Selections with no stimset cycle id are discarded and not indexed.
+The stimset cycle id depends on the headstage and thus, on channel type and channel number of the specific sweep.
+The selection results are determined per headstage. Thus, if the other select filters result
+in selections include multiple headstages then the n-th unique stimset cycle id is selected for each headstage seperately.
+Selections are sorted by the following priority list (higher to lower): experiment name, sweep number, channel type, channel number.
+The operation takes exactly one numerical argument.
+The operation returns a a numeric wave with a single element that has the value of the given argument.
+The result of `selsciindex` has a data type attributed.
+
+`selsciindex` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # Looks at all sweep starting from sweep 3 with channel AD0. Selects all sweeps that have starting from sweep 3 the third unique stimset cycle id.
+   select(selsweeps([3, 1000]), selchannels(AD0), selsciindex(3))
+
+   # example, where the first three columns are the result of a selection, the last two columns are added for illustration
+   # a possible selection with a two headstage setup could be select(selvis(all), selsweeps([0, 3]), selchannels(AD))
+   Sweep ChannelType ChannelNumer Headstage StimsetCycleId
+   0     AD          6            0         43
+   0     AD          7            1         45
+   1     AD          6            0         43
+   1     AD          7            1         46
+   2     AD          6            0         44
+   2     AD          7            1         46
+
+   # if based on this selection selsciindex(0) is applied:
+   # select(selvis(all), selsweeps([0, 3]), selchannels(AD), selsciindex(0))
+   # The result is
+   Sweep ChannelType ChannelNumer Headstage StimsetCycleId
+   0     AD          6            0         43
+   1     AD          6            0         43
+   0     AD          7            1         45
+   # for headstage 0 the 0-th SCI index is 43
+   # for headstage 1 the 0-th SCI index is 45
+
+   # if based on this selection selsciindex(1) is applied:
+   # select(selvis(all), selsweeps([0, 3]), selchannels(AD), selsciindex(1))
+   # The result is
+   Sweep ChannelType ChannelNumer Headstage StimsetCycleId
+   2     AD          6            0         44
+   1     AD          7            1         46
+   2     AD          7            1         46
+   # for headstage 0 the 1-th SCI index is 44
+   # for headstage 1 the 1-th SCI index is 46
+
+selracindex
+"""""""""""
+
+When the operation `selracindex` is used with select it includes all selections that have the n-th unique repeated acquisition cycle id.
+The specific order of the repeated acquisition cycle ids before this operation is applied depends on the other select filters applied in the `select` operation.
+Selections with no repeated acquisition cycle ids are discarded and not indexed.
+The selections prior to the application of `selracindex` are sorted by the following priority list (higher to lower): experiment name, sweep number, channel type, channel number.
+The operation takes exactly one numerical argument.
+The operation returns a a numeric wave with a single element that has the value of the given argument.
+The result of `selracindex` has a data type attributed.
+
+`selracindex` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # Looks at all sweep starting from sweep 3 with channel AD0. Selects all sweeps that have starting from sweep 3 the third unique repeated acquisition cycle id.
+   select(selsweeps([3, 1000]), selchannels(AD0), selracindex(3))
+
+selexpandsci
+""""""""""""
+
+When the operation `selexpandsci` is used with select then select operates in a two-step regime.
+First the common select filters e.g. by sweep number, stimset, etc. are applied.
+Then for each of these selections the selections with the same stimset cycle id are also added.
+For example when a single sweep/channel is selected all other sweeps from the same stimset cycle id can be collected for the resulting selections.
+Intersections with additional selections from another select are applied afterwards.
+The operation takes no argument.
+The result of `selexpandsci` has a data type attributed.
+
+`selexpandsci` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # Looks at all AD channels from sweep 1 and selects all sweeps with the same stimset cycle id.
+   select(selsweeps(1), selchannels(AD), selexpandsci())
+
+selexpandrac
+""""""""""""
+
+When the operation `selexpandrac` is used with select then select operates in a two-step regime.
+First the common select filters e.g. by sweep number, stimset, etc. are applied.
+Then for each of these selections the selections with the same repeated acquisition cycle are also added.
+So for example when a single sweep/channel is selected all other sweeps from the same repeated acquisition cycle can be collected for the resulting selections.
+Intersections with additional selections from another select are applied afterwards.
+The operation takes no argument.
+The result of `selexpandrac` has a data type attributed.
+
+`selexpandrac` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # Looks at all AD channels from sweep 1 and selects all sweeps from the same repeated acquisition cycle.
+   select(selsweeps(1), selchannels(AD), selexpandrac())
+
+selivsccsweepqc
+"""""""""""""""
+
+The operation `selivsccsweepqc` allows to specify how select filters data
+regarding the sweep quality check from the IVSCC analysis functions.
+It takes between one argument that can be either `failed` or `passed`.
+The operation returns a a text wave with the argument value as string.
+The result of `selivsccsweepqc` has a data type attributed.
+
+`selivsccsweepqc` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # sweep data where the analysis function passed the sweepqc check
+   selivsccsweepqc(passed)
+
+   # sweep data where the analysis function failed the sweepqc check
+   selivsccsweepqc(failed)
+
+selivsccsetqc
+"""""""""""""
+
+The operation `selivsccsetqc` allows to specify how select filters data
+regarding the set quality check from the IVSCC analysis functions.
+It takes between one argument that can be either `failed` or `passed`.
+The operation returns a a text wave with the argument value as string.
+The result of `selivsccsetqc` has a data type attributed.
+
+`selivsccsetqc` is intended to be used with the `select()` operation.
+
+.. code-block:: bash
+
+   # sweep data where the analysis function passed the setqc check
+   selivsccsetqc(passed)
+
+   # sweep data where the analysis function failed the setqc check
+   selivsccsetqc(failed)
 
 cursors
 """""""
@@ -653,31 +974,24 @@ data
 """"
 
 The `data` operation is the core of the `SweepFormula` library. It returns sweep data from *MIES*.
-It can be called in two variants:
 
 .. code-block:: bash
 
-   data(array range[, array selectData])
+   data(selectData)
 
-   data(string epochShortName[, array selectData])
+   data([selectData, selectData, ...])
 
-The range can be either supplied explicitly using `[100, 300]` which would
-select `100 ms` to `300 ms` or by using `cursors` that also returns a range
-specification. Use `[0, inf]` to extract the full x-range. A numerical range
-applies to all sweeps.
+The operation `data` retrieves selected sweep data.
 
-Instead of a numerical range also the short names of epochs can be given including wildcard expressions. Then the range
-is determined from the epoch information of each sweep/channel/epoch data iterates over. If a specified epoch does not exist in a sweep
-that sweep data is not included in the sweep data returned. If the same epoch is resolved multiple times from wildcard expressions or
-multiple epoch names then it is included only once per sweep.
+It takes one argument that is either a `select` operation or an array of `select` operations.
 
-A given range as numbers or epoch extracts a subrange of data points from the sweep. The start and end time is converted to
+If an array of `select` operations is specified then over each selected data is iterated
+independently. Thus, one data expression can retrieve sweep data from
+multiple `select` operations.
+
+A given `selrange` in `select` as numbers or epoch extracts a subrange of data points from the sweep. The start and end time is converted to
 closest integer indices, where the included points range from `startIndex` to `endIndex - 1`. This matches the general handling
 of epochs in MIES, where the data point at the end time of an epoch is not part of the epoch range.
-
-selectData is retrieved through the `select` operation. It selects for which sweeps and channels sweep data is returned.
-`select` also allows to choose currently displayed sweeps or all existing sweeps as data source.
-When the optional selectData argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
 
 For each selected sweep/channel combination data returns a data wave. The data wave contains the sweep data for the specified range/epoch.
 If no sweep/channel was selected then the number of returned data waves is zero. Each data wave gets meta data about the originating sweep/channel added.
@@ -685,32 +999,48 @@ The returned data type is `SF_DATATYPE_SWEEP`.
 
 .. code-block:: bash
 
-   // Shows the AD channels of all displayed sweeps with the range 0 - 1s
-   data([0, 1000], select(channels(AD), sweeps()))
+   # AD channels of all displayed sweeps with the range 0 - 1s
+   data(select(selrange([0, 1000]), selchannels(AD)))
 
-   // Shows epoch "E1" range of the AD channels of all displayed sweeps
-   data("E1", select(channels(AD), sweeps()))
+   # epoch "E1" range of the AD channels of all displayed sweeps
+   data(select(selrange(E1), selchannels(AD)))
 
-   // Shows epoch "E1" range with the start offsetted by 10ms of the AD channels of all displayed sweeps
-   sel = select(channels(AD), sweeps())
-   data(epochs("E1", $sel) + [10, 0], $sel)
+   # epoch "E1" range with the start offsetted by 10ms of the AD channels of all displayed sweeps
+   sel = select(selchannels(AD))
+   rng = epochs("E1", $sel) + [10, 0]
+   data(select(selrange($rng), $sel))
 
-   // Shows sweep data from all epochs starting with "E" of the AD channels of all displayed sweeps
-   data("E*", select(channels(AD), sweeps()))
+   # sweep data from all epochs starting with "E" of the AD channels of all displayed sweeps
+   data(select(selrange("E*"), selchannels(AD)))
 
-   // Shows sweep data from all epochs starting with "E"  and "TP" of the AD channels of all displayed sweeps
-   data(["E*","TP*"], select(channels(AD), sweeps()))
+   # sweep data from all epochs starting with "E"  and "TP" of the AD channels of all displayed sweeps
+   sel1 = select(selchannels(AD))
+   sel2 = select(selrange("E*"), $sel1)
+   sel3 = select(selrange("TP*"), $sel1)
+   data([$sel2, $sel3])
 
-   // Shows sweep data from all epochs that do not start with "E"  and that do start with "TP" of the AD channels of all displayed sweeps
-   data(["!E*","TP*"], select(channels(AD), sweeps()))
+   # sweep data from all epochs that do not start with "E"  and that do start with "TP" of the AD channels of all displayed sweeps
+   sel1 = select(selchannels(AD))
+   sel2 = select(selrange("!E*"), $sel1)
+   sel3 = select(selrange("TP*"), $sel1)
+   data([$sel2, $sel3])
 
-   // No double resolve of the same epoch name: Shows sweep data from epoch "TP" of the AD channels of all displayed sweeps.
-   data(["TP","TP"], select(channels(AD), sweeps()))
+   # extract the first pulse from TTL1 as epoch and extract the AD data in that range
+   sel1 = select(selchannels(TTL1))
+   ep = epochs(E0_PT_P0, $sel1)
+   data(select(selrange($ep), selchannels(AD)))
 
-   // extract the first pulse from TTL1 as epoch and extract the AD data
-   // in that range
-   ep = epochs(E0_PT_P0, select(channels(TTL1),sweeps()))
-   data($ep,select(channels(AD),sweeps()))
+   # extract the first pulse from TTL1 as epoch with a start and end offset, then extract the AD data in that range
+   sel1 = select(selchannels(TTL1))
+   ep = epochs(E0_PT_P0, $sel1) + [50, 100]
+   data(select(selrange($ep), selchannels(AD)))
+
+   # filter by channel, clamp mode and stimset wave name, then based on that selection create one with epoch E0 and another with epoch E1 range
+   # retrieve data for these two selections
+   sel1 = select(selchannels(AD), selcm(ic), selstimsets("AD_phase0*"))
+   sel2 = select(selrange(E0), $sel1)
+   sel3 = select(selrange(E1), $sel1)
+   data([$sel2, $sel3]])
 
 labnotebook
 """""""""""
@@ -720,8 +1050,9 @@ labnotebook
    labnotebook(string key[, array selectData [, string entrySourceType]])
 
 The labnotebook function returns the (case insensitive) `key` entry from the
-labnotebook for the selected channel and sweep combination(s). The optional
-`entrySourceType` can be one of the constants `DataAcqModes` for data
+labnotebook for the selected channel and sweep combination(s). For selectData either a single `select` or an array of `select`s can be specified.
+If an array is specified then over each selection is iterated independently.
+The optional `entrySourceType` can be one of the constants `DataAcqModes` for data
 acquisition modes as defined in `../MIES/MIES_Constants.ipf`. If the
 `entrySourceType` is omitted it defaults to `DATA_ACQUISITION_MODE`.
 
@@ -739,15 +1070,18 @@ The suggested y-axis label is the labnotebook key.
 
    max(
       data(
-         cursors(A, B)
-         channels(AD),
-         sweeps()
+         select(
+            selrange(
+               cursors(A, B)
+            ),
+            selchannels(AD)
+         )
       )
    )
    vs
    labnotebook(
       "set cycle count",
-      select(channels(AD), sweeps()),
+      select(selchannels(AD)),
       DATA_ACQUISITION_MODE
    )
 
@@ -848,9 +1182,9 @@ to the user to select a reasonable range or epoch.
 
    apfrequency([10, 20, 30], 1, 15)
 
-   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
+   apfrequency(data(select(selrange(ST), selchannels(AD), selvis(all))), 3, 100, freq, normoversweepsavg, count)
 
-   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 42, time, norminsweepsmin, time)
+   apfrequency(data(select(selrange(ST), selchannels(AD), selvis(all))), 3, 42, time, norminsweepsmin, time)
 
 powerspectrum
 """""""""""""
@@ -901,11 +1235,11 @@ If input data type is `SF_DATATYPE_SWEEP` from the data operation and non-averag
 
 .. code-block:: bash
 
-   powerspectrum(data(ST,select(channels(AD),sweeps(),all)))
+   powerspectrum(data(select(selrange(ST), selchannels(AD), selvis(all))))
 
-   powerspectrum(data(ST,select(channels(AD),sweeps(),all)),dB,avg,0,100,HFT248D) // db units, averaging on, display up to 100 Hz, use HFT248D window
+   powerspectrum(data(select(selrange(ST), selchannels(AD), selvis(all))),dB,avg,0,100,HFT248D) // db units, averaging on, display up to 100 Hz, use HFT248D window
 
-   powerspectrum(data(ST,select(channels(AD),sweeps(),all)),dB,avg,60) // db units, averaging on, determine power ratio at 60 Hz
+   powerspectrum(data(select(selrange(ST), selchannels(AD), selvis(all))),dB,avg,60) // db units, averaging on, determine power ratio at 60 Hz
 
 .. _sf_op_psx:
 
@@ -965,16 +1299,12 @@ the subset of data to work on.
 
 .. code-block:: bash
 
-   psxkernel([array range, array selectData, riseTau, decayTau, amp])
+   psxkernel([array selectData, riseTau, decayTau, amp])
 
-The function accepts zero to five arguments.
-
-range
-  either an explicit array in milliseconds, `cursors` or a text array with one
-  or multiple epoch names, see also `data`, defaults to the full range.
+The function accepts zero to four arguments.
 
 select
-  sweep and channels to operate on from the `select` operation
+  selections and range to operate on from the `select` operation
 
 riseTau
   Time constant for kernel, defaults to 1
@@ -989,7 +1319,7 @@ amp
 
    psxkernel([100, 200])
    psxkernel([E0, E1]) # list of epoch names
-   psxkernel(ST, select(channels(AD10), [49, 50], all), 2, 13, 2)
+   psxkernel(select(selrange(ST), selchannels(AD10), selsweeps(49, 50), selvis(all)), 2, 13, 2)
 
 psxPrep
 """""""
@@ -1008,7 +1338,7 @@ numberOfSDs
 
 .. code-block:: bash
 
-   psxPrep(psx(psxKernel(E0, select()), 0.2, 400, 100, 12))
+   psxPrep(psx(psxKernel(select(selrange(E0))), 0.2, 400, 100, 12))
 
 psxRiseTime
 """""""""""
@@ -1075,20 +1405,16 @@ rejected -> triangle, undetermined -> square).
 
 .. code-block:: bash
 
-   psxstats(id, array range, array selectData, prop, state, [postproc])
+   psxstats(id, array selectData, prop, state, [postproc])
 
-The function accepts five or six arguments.
+The function accepts four or five arguments.
 
 id
   identifier string, must adhere to strict igor object names.
   Used for identifying the data to query, also from the results wave
 
-range
-  either an explicit array in milliseconds, `cursors` or a text array with one
-  or multiple epoch names, see also `data`
-
 select
-  sweep and channels to operate on from the `select` operation
+  selections and range to operate on from the `select` operation
 
 prop
   column of the `psx` event results waves to plot.
@@ -1131,8 +1457,8 @@ postproc
 
 .. code-block:: bash
 
-   psxstats(myID, [100, 200], select(channels(AD10), [49, 50], all), amp, accept)
-   psxstats(otherID, [E0], select(channels(AD7), 40...60, all), xpos, every, log10)
+   psxstats(myID, select(selrange(100, 200), selchannels(AD10), selsweeps([49, 50]), selvis(all)), amp, accept)
+   psxstats(otherID, select(selrange(E0), selchannels(AD7), selsweeps(40...60), selvis(all)), xpos, every, log10)
 
 fit
 """
@@ -1162,11 +1488,11 @@ Example:
    sweeps = [5, 7, 8, 10]
 
    # grab the DA data from channel 0 and epoch E1
-   selDA = select(channels(DA0), $sweeps)
+   selDA = select(selchannels(DA0), selsweeps($sweeps))
    dDA   = data("E1", $selDA)
 
    # E2 from AD channel 2
-   selAD = select(channels(AD2), $sweeps)
+   selAD = select(selchannels(AD2), selsweeps($sweeps))
    dAD   = data("E2", $selAD)
 
    # calculate minimum for the data in each sweep,
@@ -1219,48 +1545,129 @@ Utility Functions
 select
 """"""
 
-The `select` operation allows to choose a selection of sweep data from a given list of sweeps and channels.
-It is intended to be used with operations like `data`, `labnotebook`, `epochs` and `tp`.
+The `select` operation allows to choose a selection of sweep data from given filter operations.
+It is intended to be used with operations like `data`, `labnotebook`, `epochs`, `tp` and `select` itself.
 
 .. code-block:: bash
 
-   select([array channels, array sweeps[, string mode[, string clampMode]]])
+   select(filter, filter, ...)
 
-The function accepts none, two, three or four arguments.
+The function accepts any number of arguments from filter operations.
 
-channels
-  array with channel specification from `channels` operation. When channels is not specified, it defaults to `channels()`. The input channel numbers are treated as GUI channel numbers.
+Filter operations are `selchannels`, `selsweeps`, `selrange`, `selvis`, `selscm`, `selstimset`, `selivsccsetqc`, `selivsccsweepqc`, `selexp`, `seldev`, `selrac`, `selsci`, `selsetcyclecount`, `selsetsweepcount`, `selsciindex`, `selracindex`, `select`.
 
-sweeps
-  array with sweep number, typically from `sweeps` operation. When sweeps is not specified, it defaults to `sweeps()`.
+Sweeps that fit all filter criteria are taken into the selection. Each filter operation except `select` may appear once as argument.
+It is not required that the arguments have a specific order.
 
-mode
-  string specifying which sweeps are selected. Possible strings are `displayed` and `all` that refer to the currently displayed sweeps or all acquired sweeps. When mode is not specified it defaults to `displayed`.
+If a specific filter is not part of the arguments and none of the arguments is a `select` then default values are used:
+- `selchannels`: select all channels
+- `selsweeps`: select all sweep numbers
+- `selrange`: select full range
+- `selvis`: select displayed sweeps
+- `selscm`: select all clamp modes
+- `selstimset`: select all stimset wave names
+- `selivsccsetqc`: IVSCC SetQC is ignored
+- `selivsccsweepqc`: IVSCC SweepQC is ignored
+- `selexp`: experiment name is ignored
+- `seldev`: device name is ignored
+- `selsetcyclecount`: set cycle count is ignored
+- `selsetsweepcount`: set sweep count is ignored
+- `selsciindex`: stimset cycle id index is ignored
+- `selracindex`: repeated acquisition is index is ignored
+- `selexpandrac`: expansion by repeated acquisition cycle is disabled
+- `selexpandsci`: expansion by stimset cycle id is disabled
 
-clampMode
-  string specifying which clamp mode is selected. Possible strings are `all`, `vc`, `ic` and  `izero`. When clampMode is not specified it defaults to `all`. The clampMode selection is only applied for associated AD/DA channels.
+If a specific filter is not part of the arguments and there exists at least one arguments that is a `select` then these filters will be ignored:
+- `selchannels`: select all channels
+- `selsweeps`: select all sweep numbers
+- `selrange`: select full range
+- `selvis`: select all sweeps
+- `selscm`: select all clamp modes
+- `selstimset`: select all stimset wave names
+- `selivsccsetqc`: IVSCC Set QC is ignored
+- `selivsccsweepqc`: IVSCC Sweep QC is ignored
+- `selexp`: experiment name is ignored
+- `seldev`: device name is ignored
+- `selsetcyclecount`: set cycle count is ignored
+- `selsetsweepcount`: set sweep count is ignored
+- `selsciindex`: stimset cycle id index is ignored
+- `selracindex`: repeated acquisition is index is ignored
+- `selexpandrac`: expansion by repeated acquisition cycle is disabled
+- `selexpandsci`: expansion by stimset cycle id is disabled
 
-To retrieve a correct array of channels the `channels` function must be used.
+If `select` arguments appear multiple times then the resulting selection is an intersection of all sweep/channel combinations that were selected
+from all these `select` arguments.
+i.e. if one select argument has Sweep 0 AD0, Sweep 1 AD0 selected and a second select argument has Sweep 1 AD0 selected then
+only Sweep 1 AD0 remains selected because it appears in all selections.
 
-If a given channel/sweep combination does not exist it is omitted in the output.
+The range specified through `selrange` is always taken from the topmost `select`.
 
-The output is a N x 3 array where the columns are sweep number, channel type, GUI channel number.
+If an experiment is specified with a wildcard pattern through `selexp` then there must be only a single matching experiment. The same applies for `seldev`. Only when the source is from a SweepBrowser with different loaded experiments then using `selexp` is senseful as e.g. for a DataBrowser the experiment is always the current experiment.
 
-The output is sorted. The order is sweep -> channel type -> channel number.
-e.g. for two sweeps numbered 0, 1 that have channels AD0, AD1, DA6, DA7:
-`{{0, 0, 0, 0, 1, 1, 1, 1}, {0, 0, 1, 1, 0, 0, 1, 1}, {0, 1, 6, 7, 0, 1, 6, 7}}`.
+The filter criteria of the select filters are orthogonal (independent of each other) except for `selsciindex`, `selracindex`, `selexpandrac` and `selexpandsci`.
+Internally first the orthogonal select filters are applied. Then based on the resulting selections `selsciindex`, `selracindex` is applied, then `selexpandsci`, `selexpandsci`.
+Intersections with additional selections from select type arguments are executed afterwards.
+This implies that created selections can not be further filtered once created (see example).
 
-If the mode is `displayed` and no traces are displayed then a null wave is returned.
-If sweeps or channels is a null wave then select returns a null wave.
+When `selexpandrac` is used then the selected sweep numbers from `selsweeps` are extended. For each sweep selected by
+`selsweeps` sweeps numbers of the same repeated acquisition cycle are added. For the new sweep numbers selections are gathered with a modified copy of the initial selection filter:
+- `selvis` is changed to `all`
+- `selexp` is set to the experiment of the sweep number that was extended
+- `seldev` is set to the device of the sweep number that was extended
+
+The resulting selections are gathered for each additional sweep number. Finally all selections are reduced to be unique only.
+
+When `selexpandsci` is used then first the selection is retrieved for `selsci` disabled. Then for each selection
+for the sweep number / channel number / channel type combination the sweep numbers with the same stimset cycle id are determined. For these sweeps selections with the same channel number / channel type are added.
+Finally all selections are reduced to be unique only.
+
+The expansion through `selexpandsci` and `selexpandsci` operates on the current select filter.
+
+The output is composite with two datasets of different type.
+The first dataset contains a N x 4 array where the columns are sweep number, channel type, GUI channel number and row index of the sweepMap. The sweepMap only exists if the window is a SweepBrowser, for DataBrowser the values are set NaN in that column.
+The second dataset contains a dataset with range specification.
+
+The output of the N x 4 array is sorted. The order is sweep -> channel type -> channel number.
+e.g. for two sweeps numbered 0, 1 that have channels AD0, AD1, DA6, DA7 from a DataBrowser:
+`{{0, 0, 0, 0, 1, 1, 1, 1}, {0, 0, 1, 1, 0, 0, 1, 1}, {0, 1, 6, 7, 0, 1, 6, 7}, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}}`.
+
+If the mode for `selvis` is `displayed` and no traces are displayed then a null wave is returned.
 If there are no matching sweeps found a null wave is returned.
 
 .. code-block:: bash
 
    select()
-   select(channels(AD), sweeps(), all)
-   select(channels(AD4, DA), [1, 5]], all)
-   select(channels(AD2, DA5, AD0, DA6), [0, 1, 3, 7], all)
-   select(channels(AD2, DA5, AD0, DA6), [0, 1, 3, 7], all, ic)
+   select(selvis(all))
+   select(selchannels(AD4, DA), selsweeps(1, 5, 10...16), selvis(all))
+   select(selchannels(AD2, DA5, AD0, DA6), selvis(all), selcm(ic, vc))
+   select(selcm(none))
+   select(selstimset("DA_*", "*cell"), selivsccsetqc(passed))
+
+.. code-block:: bash
+
+   sel1 = select(selchannels(AD0), selcm(ic), selivsccsetqc(passed))
+   sel2 = select(selchannels(AD0), selcm(ic), selivsccsweepqc(failed))
+   sel3 = select($sel1, $sel2, selrange(cursors(A,B)))
+   sel4 = select(selsweeps(10...1000), selrange([30, 500]), $sel1, $sel2)
+   sel5 = select(selsweeps(1, 2, 3), selrange(E1), selstimset("DA_*"), $sel1, $sel2)
+
+.. code-block:: bash
+
+   # For sel2 the SCI expansion applies to sweep 0, AD0. The selection result
+   # of the expansion is then intersected with sweep 1 AD0 that was selected
+   # through sel1.
+   sel1 = select(selchannels(AD0), selsweeps(1), selvis(all))
+   sel2 = select(selchannels(AD0), selsweeps(0), selvis(all), selexpandsci(), $sel1)
+
+.. code-block:: bash
+
+   # Note that the sel2 expression does not do a post-filtering of sel1
+   # instead selracindex(5) is applied to the selections resulting from
+   # the default filter setting for select for the case there is a select type argument present
+   # Then these selections are intersected from sel1
+   # Logically the intersection of the resulting selection works only for the orthogonal filter properties as a kind-of post-filter
+   sel1 = select(selsciindex(3))
+   sel2 = select(selracindex(5), $sel1)
 
 range
 """""
@@ -1304,16 +1711,15 @@ name
   the name(s) of the epoch. The names can contain wildcard `*` and `!`.
 
 selectData
-  the second argument is a selection of sweeps and channels where the epoch information is retrieved from. It must be specified through the `select` operation. When the optional second argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
+  the second argument is a selection of sweeps and channels where the epoch information is retrieved from. It must be specified through the `select` operation. Any range specification that is part of the `select` result is ignored.
+   When the optional second argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
 
 type
   sets what information is returned. Valid types are: `range`, `name` or `treelevel`. If type is not specified then `range` is used as default.
 
 The operation returns for each selected sweep times matching epoch a data wave. The sweep meta data is transferred to the output data waves.
 If there was nothing selected the number of returned data waves is zero.
-If the selection contains channels that do not have epoch information stored, e.g. `AD`, these selections are skipped in the evaluation.
-For example if `select()` is used for the selectData argument then all channels are selected, but only for `DA` channels epoch information is stored in the labnotebook.
-Thus, there are data waves only returned for the `DA` channels.
+If the selection contains channels that do not have epoch information stored these are skipped in the evaluation. For associated AD channels the epoch information is retrieved from the associated DA channel.
 If a selection has epoch information stored in the labnotebook and the specified epoch does not exist it is skipped and thus, not included in the output waves.
 
 The output data varies depending on the requested type. Multiple epochs for one
@@ -1337,16 +1743,16 @@ The default suggested x-axis values for the formula plotter are sweep numbers. T
    epochs(ST)
 
    // two sweeps acquired with two headstages set with PulseTrain_100Hz_DA_0 and PulseTrain_150Hz_DA_0 from _2017_09_01_192934-compressed.nwb
-   epochs(ST, select(channels(AD), sweeps()), range) == [[20, 1376.01], [20, 1342.67], [20, 1376.01], [20, 1342.67]]
+   epochs(ST, select(selchannels(AD)), range) == [[20, 1376.01], [20, 1342.67], [20, 1376.01], [20, 1342.67]]
 
    // get stimset range from epochs starting with TP_ and epochs starting with E from all displayed sweeps and channels
-   epochs(["TP_*", "E*"], select(channels(AD), sweeps()))
+   epochs(["TP_*", "E*"], select(selchannels(AD)))
 
    // get stimset range from specified epochs from all displayed sweeps and channels
-   epochs(["TP_B?", "E?_*"], select(channels(AD), sweeps()))
+   epochs(["TP_B?", "E?_*"], select(selchannels(AD)))
 
    // get ranges for epochs TP_B0/TP_B1 where the start is offsetted by 5/10 ms
-   epochs(["TP_B0", "TP_B1"], select(channels(AD), sweeps())) + [[5, 10], [0, 0]]
+   epochs(["TP_B0", "TP_B1"], select(selchannels(AD))) + [[5, 10], [0, 0]]
 
 tp
 ""
@@ -1371,8 +1777,9 @@ The following tp analysis modes are supported:
 See specific subsections for more details.
 
 The second argument is a selection of sweeps and channels where the test pulse information is retrieved from.
-It must be specified through the `select` operation.
-When the optional second argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
+It can be either a single `select` or an array with `select`s. If an array of selects is specified then over each selection is iterated independently.
+If the optional second argument is omitted, `select()` is used as default that includes all displayed sweeps and channels.
+Any range specification from the `select` is ignored when used with `tp`.
 The `tp` operation pre-filters the selected sweeps, only sweeps with channel type `AD` are used.
 
 The optional argument ``ignoreTPs`` allows to ignore some of the found test-pulses. The indices are zero-based and identify the
@@ -1393,23 +1800,26 @@ If a selected sweep does not contain any test pulse then for that data wave a nu
 
 .. code-block:: bash
 
-   // Get steady state resistance from all displayed sweeps and channels
+   # Get steady state resistance from all displayed sweeps and channels
    tp(tpss())
 
-   // Get steady state resistance from all displayed sweeps and AD channels
-   tp(tpss(), select(channels(AD), sweeps()))
+   # Get steady state resistance from all displayed sweeps and AD channels
+   tp(tpss(), select(selchannels(AD)))
 
-   // Get base line level from all displayed sweeps and DA1 channel
-   tp(tpbase(), select(channels(DA1), sweeps()))
+   # Get base line level from all displayed sweeps and AD1 channel
+   tp(tpbase(), select(selchannels(AD1)))
 
-   // Get base line level from all displayed sweeps and channels ignoring test pulse 0 and 1
+   # Get base line level from all displayed sweeps with AD1 channel and all sweeps with AD2 channel
+   tp(tpbase(), [select(selchannels(AD1)), select(selchannels(AD2), selvis(all))])
+
+   # Get base line level from all displayed sweeps and channels ignoring test pulse 0 and 1
    tp(tpbase(), select(), [0, 1])
 
-   // Fit the test pulse from all displayed sweeps and channels exponentially and show the amplitude.
+   # Fit the test pulse from all displayed sweeps and channels exponentially and show the amplitude.
    tp(tpfit(exp, amp))
 
-   // Fit the test pulse from all displayed sweeps and channels double-exponentially and show the smaller tau from the two exponentials.
-   // The fitting range is changed from the default maximum of 250 ms to 500 ms if the next epoch is sufficiently long.
+   # Fit the test pulse from all displayed sweeps and channels double-exponentially and show the smaller tau from the two exponentials.
+   # The fitting range is changed from the default maximum of 250 ms to 500 ms if the next epoch is sufficiently long.
    tp(tpfit(doubleexp, tausmall, 500))
 
 tpbase
@@ -1609,7 +2019,7 @@ data points where either an X or Y value for the X, Y value pair is missing.
 
 .. code-block:: bash
 
-   min(data(TP,select(channels(AD0), 4...11,all)))
+   min(data(select(selrange(TP), selchannels(AD0), selsweeps(4...11), selvis(all))))
    vs
    1...8
 
@@ -1669,9 +2079,9 @@ The variable names are treated case-insensitive.
 .. code-block:: bash
 
    c = cursors(A,B)
-   s = select(channels(AD), sweeps(), all)
+   s = select(selrange($c), selchannels(AD), selvis(all))
 
-   data($c, $s)
+   data($s)
 
 The section containing the variable definition can contain empty lines. The first line that is not fulfilling the format for a variable definition is treated as the first line
 of the formula expression(s) section. Variable definitions can use variables that were defined in a preceding line.
@@ -1679,8 +2089,8 @@ of the formula expression(s) section. Variable definitions can use variables tha
 .. code-block:: bash
 
    c = cursors(A,B)
-   s = select(channels(AD), sweeps(), all)
-   d = data($c, $s)
+   s = select(selrange($c), selchannels(AD), selvis(all))
+   d = data($s)
 
    $d
 
@@ -1694,8 +2104,8 @@ Limitations of the current variable definition concept:
 
    # This does NOT work
    c = cursors(A,B)
-   s = select(channels(AD), sweeps(), all)
-   p = $c, $s # p is resolved to a single numerical array
+   s = select(selrange($c), selchannels(AD), selvis(all))
+   p = $s, $s # p is resolved to a single numerical array
 
    data($p) # the data operation sees a single argument
 
@@ -1845,10 +2255,10 @@ It also updates the operation stack information. There are two cases where `SFH_
 - The operation does not take an input reference wave
 - The operation returns data through `SF_GetOutputForExecutorSingle` that creates the reference wave.
 
-For operation that do not take an input reference wave that is calculated to an output reference wave the approach is to update the operation stack
+For operations that do not take an input reference wave that is calculated to an output reference wave the approach is to update the operation stack
 meta information directly through `JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_OPSHORT, ""))`.
 If `SF_GetOutputForExecutorSingle` is called then the optional parameter `opStack` should be set to the previous operation stack. For operations like
-`sweeps()` there is no previous operation, thus the parameter would be `opStack=""`.
+`selsweeps()` there is no previous operation, thus the parameter would be `opStack=""`.
 
 It should be noted that there is a difference for parsing a single first argument through `SF_GetArgument` or `SF_GetArgumentTop`.
 `SF_GetArgument` starts execution for argument 0 specifically at the `/0` JSON path location, whereas `SF_GetArgumentTop` starts execution at `/`.
@@ -1894,7 +2304,7 @@ If the following conditions are met then a suggested X-values are set in the met
      butterworth(
        integrate(
          derivative(
-           data(TP,select(channels(AD0), 4...11,all))
+           data(select(selrange(TP), selchannels(AD0), selsweeps(4...11), selvis(all)))
          )
        )
      ,4,100,4)
@@ -1949,6 +2359,6 @@ need to be shown with a different marker or line style. It also adapts the legen
 
 .. code-block:: igorpro
 
-   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 100, freq, normoversweepsavg, count)
+   apfrequency(data(select(selrange(ST), selchannels(AD), selvis(all))), 3, 100, freq, normoversweepsavg, count)
    with
-   apfrequency(data(ST, select(channels(AD), sweeps(), all)), 3, 100, time, norminsweepsavg, count)
+   apfrequency(data(select(selrange(ST), selchannels(AD), selvis(all))), 3, 100, time, norminsweepsavg, count)

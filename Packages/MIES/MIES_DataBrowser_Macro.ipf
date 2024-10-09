@@ -1269,7 +1269,7 @@ Window DataBrowser() : Graph
 	NewNotebook/F=1/N=sweepFormula_formula/W=(12, 71, 378, 529)/FG=(UGVL, UGVT, UGVR, UGVB)/HOST=#/V=0
 	Notebook kwTopWin, defaultTab=10, autoSave=1, magnification=100, showRuler=0, rulerUnits=2
 	Notebook kwTopWin, newRuler=Normal, justification=0, margins={0, 0, 286}, spacing={0, 0, 0}, tabs={}, rulerDefaults={"Arial", 11, 0, (0, 0, 0)}
-	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)un`Q5gp6juaS*9:-\\LOi\"3Ld])[.hK#eE=!1`!1=@^Xod&KOHcHFV4hd75b`6!+WpoV?BghDSuQ2!&8e)8OI;FNbKI]j*sb-#s8RkQ<!B<R:<`eh\"-TY*,oXlCM0XBG3Q2ns/t+g.`T=(u\"iVCKR_0&r\\u!3R;\\D`R\\q+CdL'kjo*<d1N@@C<b@g),5AekbV7KmH6VAo\\j?[bji@Ld8tK62WW3<C@V$+OCje74\\R@`W,JaP^0b$+/Kc1c[?<;8G7WY;e`oQ%8r9,R@?g"
+	Notebook kwTopWin, zdata="GaqDU%ejN7!Z)u.`Q5gp6jua3G)Q/*\"sO'm&d\\ZA5g0;J,s_A.LdQ^@<C$C#Otq-f1t2sC82MqA\"GB%hM\\>X0;\\a*`U()2Y1@rq'Go7Iu!s(sas8NXq[U>B>WB!4T5Vb4-6j#u22/9'T%+*K)MBlg[k2iH%'Pf\\>B^1+I(71qr()1OtC@X,fROSS$2'oL1BI]*;e5-22^oEP0X:h!2$Wok%W#\\fsJ\\a\"S-oWjcG6i_@J7pqE+b^64@4'K6P@\\4E@@4jg=Hj-!gnuth1F5o73Bs],5:;`T&HL36>\\!"
 	Notebook kwTopWin, zdataEnd=1
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin, userdata(tabnum)="0"

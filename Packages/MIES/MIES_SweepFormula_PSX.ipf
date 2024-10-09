@@ -1086,17 +1086,17 @@ End
 /// @brief Collect all resolved ranges in allResolvedRanges together with a hash of the select data
 Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectData, WAVE allResolvedRanges, WAVE/T allSelectHashes)
 
-	variable sweepNo, chanNr, chanType, numRows
+	variable sweepNo, chanNr, chanType, numRows, mapIndex
 
 	sweepNo  = singleSelectData[0][%SWEEP]
 	chanNr   = singleSelectData[0][%CHANNELNUMBER]
 	chanType = singleSelectData[0][%CHANNELTYPE]
+	mapIndex = singleSelectData[0][%SWEEPMAPINDEX]
 
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
 	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
 
-	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr)
+	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr, mapIndex)
 	ASSERT(DimSize(resolvedRanges, COLS) == 1, "psxStats does not support epoch wildcards")
 
 	numRows = DimSize(allSelectHashes, ROWS)
@@ -1175,6 +1175,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 			for(k = 0; k < numCols; k += 1)
 
+				// TODO TB
 				[chanNr, chanType, sweepNo] = PSX_GetSweepEquivKeyAndSweep(selectDataEquiv, i, k)
 
 				if(!IsValidSweepNumber(sweepNo))
@@ -1186,6 +1187,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 				singleSelectData[0][%SWEEP]         = sweepNo
 				singleSelectData[0][%CHANNELNUMBER] = chanNr
 				singleSelectData[0][%CHANNELTYPE]   = chanType
+				singleSelectData[0][%SWEEPMAPINDEX] = NaN
 
 				comboKey = PSX_GenerateComboKey(graph, singleSelectData, range)
 
@@ -2943,7 +2945,7 @@ End
 /// to the wave note of `psxEvent`.
 static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range)
 
-	variable sweepNo, channel, chanType
+	variable sweepNo, channel, chanType, mapIndex
 	string device, key, datafolder, rangeStr
 
 	ASSERT(DimSize(selectData, ROWS) == 1, "Expected selectData with only one entry")
@@ -2951,8 +2953,9 @@ static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range
 	sweepNo  = selectData[0][%SWEEP]
 	channel  = selectData[0][%CHANNELNUMBER]
 	chanType = selectData[0][%CHANNELTYPE]
+	mapIndex = selectData[0][%SWEEPMAPINDEX]
 
-	WAVE/T textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
 
 	// Introduced in 7e903ed8 (GetSweepSettingsTextWave: Add device as entry, 2023-01-03)
 	device = GetLastSettingTextIndep(textualValues, sweepNo, "Device", DATA_ACQUISITION_MODE)
@@ -4310,17 +4313,22 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset
 	string parameterPath, key
 
-	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
+	WAVE/WAVE selectDataCompArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
 
-	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1)
+	riseTau  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1, defValue = 1, checkFunc = IsStrictlyPositiveAndFinite)
+	decayTau = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 2, defValue = 15, checkFunc = IsStrictlyPositiveAndFinite)
+	amp      = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 3, defValue = -5, checkFunc = IsFinite)
+
+	SFH_ASSERT(DimSize(selectDataCompArray, ROWS) == 1, "Only supports a single selection at the moment")
+
+	WAVE/WAVE selectDataComp = selectDataCompArray[0]
+
+	WAVE/Z    selectData = selectDataComp[%SELECTION]
+	WAVE/WAVE range      = selectDataComp[%RANGE]
 
 	SFH_ASSERT(WaveExists(selectData), "Could not gather sweep data from select statement")
 
-	riseTau  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 2, defValue = 1, checkFunc = IsStrictlyPositiveAndFinite)
-	decayTau = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 3, defValue = 15, checkFunc = IsStrictlyPositiveAndFinite)
-	amp      = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 4, defValue = -5, checkFunc = IsFinite)
-
-	WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, range, selectData, SF_OP_PSX_KERNEL)
+	WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, selectDataCompArray, SF_OP_PSX_KERNEL)
 
 	numCombos = DimSize(sweepDataRef, ROWS)
 	SFH_ASSERT(numCombos > 0, "Could not fetch sweeps")
@@ -4411,17 +4419,22 @@ Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
 
-	WAVE/WAVE range = SFH_EvaluateRange(jsonId, jsonPath, graph, SF_OP_PSX_STATS, 1)
+	WAVE/WAVE/Z selectDataCompArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 1)
+	SFH_Assert(WaveExists(selectDataCompArray), "Missing select data")
 
-	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 2)
-	SFH_Assert(WaveExists(selectData), "Missing select data")
+	SFH_ASSERT(DimSize(selectDataCompArray, ROWS) == 1, "Only supports a single selection at the moment")
+
+	WAVE/WAVE selectDataComp = selectDataCompArray[0]
+
+	WAVE/Z    selectData = selectDataComp[%SELECTION]
+	WAVE/WAVE range      = selectDataComp[%RANGE]
 
 	Make/FREE/T allProps = {"amp", "xpos", "xinterval", "tau", "estate", "fstate", "fitresult", "risetime"}
-	prop = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 3, allowedValues = allProps)
+	prop = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 2, allowedValues = allProps)
 	Make/FREE/T allStates = {"accept", "reject", "undetermined", "all", "every"}
-	stateAsStr = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 4, allowedValues = allStates)
+	stateAsStr = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 3, allowedValues = allStates)
 	Make/FREE/T allPostProc = {"nothing", "stats", "count", "hist", "log10", "nonfinite"}
-	postProc = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 5, defValue = "nothing", allowedValues = allPostProc)
+	postProc = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 4, defValue = "nothing", allowedValues = allPostProc)
 
 	WAVE/WAVE output = PSX_OperationStatsImpl(graph, id, range, selectData, prop, stateAsStr, postProc)
 

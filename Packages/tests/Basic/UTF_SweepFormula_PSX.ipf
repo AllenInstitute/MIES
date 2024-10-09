@@ -1052,7 +1052,7 @@ static Function TestOperationPSXKernel()
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSXKernel)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSXKernel)
 
-	str = "psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -5)"
+	str = "psxKernel(select(selRange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 6)
@@ -1088,7 +1088,7 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
 
 	// no data from select statement
-	str = "psxKernel([50, 150], select(channels(AD15), [0]), 1, 15, -5)"
+	str = "psxKernel(select(selrange([50, 150]), selchannels(AD15), selsweeps(0)), 1, 15, -5)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1097,7 +1097,7 @@ static Function TestOperationPSXKernel()
 	endtry
 
 	// no data from this sweep statement
-	str = "psxKernel(ABCD, select(channels(AD6), [0, 2], all), 1, 15, -5)"
+	str = "psxKernel(select(selRange(ABCD), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1156,7 +1156,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, " + num2str(kernelAmp) + "), 2.5, 100, 0)"
+	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, " + num2str(kernelAmp) + "), 2.5, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 2 * 7)
@@ -1187,13 +1187,13 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	JSON_Release(jsonID)
 
 	// check that plain psx does not error out
-	str = "psx(id, psxKernel([50, 150], select(channels(AD6), [0, 2], all)))"
+	str = "psx(id, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_NO_RTE()
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
 	// complains without events found
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 5000, 15, -5), 25, 100, 0)"
+	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 5000, 15, -5), 25, 100, 0)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1218,7 +1218,7 @@ static Function TestOperationPSXTooLargeDecayTau()
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0], all), 1, 15, -5), 10, 100, 0)"
+	str = "psx(myID, psxKernel(select(selrange([50, 150]),selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5), 10, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
@@ -1324,7 +1324,7 @@ static Function MouseSelectionPSX()
 
 	browser = MIES_DB#DB_LockToDevice(browser, device)
 
-	code = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 5, 100, 0)"
+	code = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 5, 100, 0)"
 
 	// combo0 is the current one
 
@@ -1677,9 +1677,11 @@ static Function/S GetTestCode(string postProc, [string eventState, string prop])
 		prop = "xpos"
 	endif
 
-	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 1.5, 100, 0)"
+	code = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 5, 100, 0)"
+
+	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 1.5, 100, 0)"
 	code += "\r and \r"
-	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), " + prop + ", " + eventState + ", " + postProc + ")"
+	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), " + prop + ", " + eventState + ", " + postProc + ")"
 
 	return code
 End
@@ -1694,11 +1696,11 @@ static Function/WAVE GetCodeVariations()
 	code  = ""
 
 	// one sweep per operation separated with `with`
-	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0], all)), 10, 100, 0)"
+	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 10, 100, 0)"
 	code += "\r with \r"
-	code += "psx(myId, psxKernel([50, 150], select(channels(AD6), [2], all)), 2.5, 100, 0)"
+	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 2.5, 100, 0)"
 	code += "\r and \r"
-	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), xpos, all, nothing)"
+	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), xpos, all, nothing)"
 	wv[1] = code
 	code  = ""
 
@@ -2967,7 +2969,7 @@ static Function TestOperationPrep()
 
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
 
-	psxCode = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -5), 2.5, 100, 0)"
+	psxCode = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5), 2.5, 100, 0)"
 	sprintf code, "psxPrep(%s)", psxCode
 
 	WAVE/WAVE dataWref = SF_ExecuteFormula(code, win, useVariables = 0)
