@@ -13,6 +13,7 @@
 static StrConstant SFH_WORKING_DF                     = "FormulaData"
 static StrConstant SFH_ARGSETUP_OPERATION_KEY         = "Operation"
 static StrConstant SFH_ARGSETUP_EMPTY_OPERATION_VALUE = "NOOP"
+static StrConstant SFH_DEFAULT_SELECT_FORMULA         = "select()"
 
 threadsafe Function SFH_StringChecker_Prototype(string str)
 	ASSERT_TS(0, "Can't call prototype function")
@@ -928,7 +929,7 @@ Function/WAVE SFH_GetArgumentSelect(variable jsonId, string jsonPath, string gra
 		return selectArray
 	endif
 
-	WAVE selectComp = SF_ExecuteFormula("select()", graph, useVariables = 0)
+	WAVE selectComp = SF_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
 	Make/FREE/WAVE selectArray = {selectComp}
 
 	return selectArray
@@ -1027,7 +1028,7 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
-	WAVE/WAVE/Z selectData = SF_ExecuteFormula("select()", graph, useVariables = 0)
+	WAVE/WAVE/Z selectData = SF_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
 	if(WaveExists(selectData) && WaveExists(selectData[0]))
 		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData[0], ",", colSep = ";")
 	endif
