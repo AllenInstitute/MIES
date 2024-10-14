@@ -193,9 +193,10 @@ End
 /// @returns the mies version
 static Function/S CreateMiesVersion()
 
-	string path, cmd, topDir, version, gitPath
-	string userName, gitDir, fullVersionPath
+	string path, topDir, version, gitPath
+	string gitDir, fullVersionPath
 	variable refNum
+	variable ret = 1
 
 	// set path to the toplevel directory in the mies folder structure
 	path            = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
@@ -213,86 +214,14 @@ static Function/S CreateMiesVersion()
 				continue
 			endif
 
-			gitPath = HFSPathToNative(gitPath)
-			gitDir  = HFSPathToNative(gitDir)
-			topDir  = HFSPathToNative(topDir)
-
-			// git is installed, try to regenerate version.txt
-			DEBUGPRINT("Found git at: ", str = gitPath)
-
-			// delete the old version.txt so that we can be sure to get the correct one afterwards
-			DeleteFile/Z fullVersionPath
-			DEBUGPRINT("Folder is a git repository: ", str = topDir)
-
-#if defined(WINDOWS)
-			// explanation:
-			// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
-			sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/B/Z cmd
-			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-			sprintf cmd, "cmd.exe /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", topDir
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/B/Z cmd
-			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-			sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/B/Z cmd
-			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-			sprintf cmd, "cmd.exe /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", topDir
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/B/Z cmd
-			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-			// git submodule status can not be used here as submodule is currently a sh script and executing that with --git-dir does not work
-			// but we can use the helper command which outputs a slightly uglier version, but is much faster
-			// the submodule helper is shipped with git 2.7 and later, therefore its failed execution is not fatal
-			sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper status >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/B/Z cmd
-#elif defined(MACINTOSH)
-
-			sprintf cmd, "do shell script \"%s --version\"", gitPath
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/UNQ/Z cmd
-			if(V_flag)
-				printf "Missing functional git executable, please install the \"Xcode commandline tools\" via \"xcode-select --install\" in Terminal.\r"
-				ControlWindowToFront()
-				break
-			endif
-
-			sprintf cmd, "do shell script \"%s --git-dir='%s' describe --always --tags --match 'Release_*' > '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/UNQ/Z cmd
-			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-			sprintf cmd, "do shell script \"printf 'Date and time of last commit: ' >> '%sversion.txt' 2>&1\"", topDir
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/UNQ/Z cmd
-			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-			sprintf cmd, "do shell script \"%s --git-dir='%s' log -1 --pretty=format:%%cI%%n >> '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/UNQ/Z cmd
-			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-			sprintf cmd, "do shell script \"echo 'Submodule status:' >> '%sversion.txt' 2>&1\"", topDir
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/UNQ/Z cmd
-			ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-			// see comment in WINDOWS branch
-			sprintf cmd, "do shell script \"%s --git-dir='%s' submodule--helper status >> '%sversion.txt' 2>&1\"", gitPath, gitDir, topDir
-			DEBUGPRINT("Cmd to execute: ", str = cmd)
-			ExecuteScriptText/UNQ/Z cmd
-#else
-			ASSERT(0, "Unsupported OS")
-#endif
+			ret = ExecuteGitForMIESVersion(gitPath, gitDir, topDir, fullVersionPath)
 			break
 		endfor
+
+		if(ret)
+			// none of the candidates worked, fallback to use git from PATH
+			ExecuteGitForMIESVersion("git", gitDir, topDir, fullVersionPath)
+		endif
 	endif
 
 	open/R/Z refNum as fullVersionPath
@@ -321,6 +250,100 @@ static Function/S CreateMiesVersion()
 	endif
 
 	return RemoveEnding(version, "\r")
+End
+
+/// @brief Run some git commands to generate version.txt from the MIES repository
+///
+/// @param gitPathOrName   full path to a git binary on the system or plain git for using the one in PATH
+/// @param gitDir          full path to .git in the MIES repository
+/// @param topDir          full path to the toplevel folder of the MIES repository
+/// @param fullVersionPath full path to the version.txt file in the MIES repository
+///
+/// @return zero on success, aborts on failure
+static Function ExecuteGitForMIESVersion(string gitPathOrName, string gitDir, string topDir, string fullVersionPath)
+
+	string cmd, userName
+
+	gitPathOrName = HFSPathToNative(gitPathOrName)
+	gitDir        = HFSPathToNative(gitDir)
+	topDir        = HFSPathToNative(topDir)
+
+	// git is installed, try to regenerate version.txt
+	DEBUGPRINT("Found git at: ", str = gitPathOrName)
+
+	// delete the old version.txt so that we can be sure to get the correct one afterwards
+	DeleteFile/Z fullVersionPath
+	DEBUGPRINT("Folder is a git repository: ", str = topDir)
+
+#if defined(WINDOWS)
+	// explanation:
+	// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
+	sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPathOrName, gitDir, topDir
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/B/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	sprintf cmd, "cmd.exe /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", topDir
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/B/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", gitPathOrName, gitDir, topDir
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/B/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	sprintf cmd, "cmd.exe /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", topDir
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/B/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	// git submodule status can not be used here as submodule is currently a sh script and executing that with --git-dir does not work
+	// but we can use the helper command which outputs a slightly uglier version, but is much faster
+	// the submodule helper is shipped with git 2.7 and later, therefore its failed execution is not fatal
+	sprintf cmd, "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper status >> \"%sversion.txt\" 2>&1\"", gitPathOrName, gitDir, topDir
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/B/Z cmd
+#elif defined(MACINTOSH)
+
+	sprintf cmd, "do shell script \"%s --version\"", gitPathOrName
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/UNQ/Z cmd
+	if(V_flag)
+		printf "Missing functional git executable, please install the \"Xcode commandline tools\" via \"xcode-select --install\" in Terminal.\r"
+		ControlWindowToFront()
+		break
+	endif
+
+	sprintf cmd, "do shell script \"%s --git-dir='%s' describe --always --tags --match 'Release_*' > '%sversion.txt' 2>&1\"", gitPathOrName, gitDir, topDir
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/UNQ/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	sprintf cmd, "do shell script \"printf 'Date and time of last commit: ' >> '%sversion.txt' 2>&1\"", topDir
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/UNQ/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	sprintf cmd, "do shell script \"%s --git-dir='%s' log -1 --pretty=format:%%cI%%n >> '%sversion.txt' 2>&1\"", gitPathOrName, gitDir, topDir
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/UNQ/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	sprintf cmd, "do shell script \"echo 'Submodule status:' >> '%sversion.txt' 2>&1\"", topDir
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/UNQ/Z cmd
+	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+	// see comment in WINDOWS branch
+	sprintf cmd, "do shell script \"%s --git-dir='%s' submodule--helper status >> '%sversion.txt' 2>&1\"", gitPathOrName, gitDir, topDir
+	DEBUGPRINT("Cmd to execute: ", str = cmd)
+	ExecuteScriptText/UNQ/Z cmd
+#else
+	ASSERT(0, "Unsupported OS")
+#endif
+
+	return 0
 End
 
 /// @brief Returns the absolute path to the variable `runMode`
