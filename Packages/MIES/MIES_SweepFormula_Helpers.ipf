@@ -1093,7 +1093,7 @@ Function/WAVE SFH_NewSelectDataWave(variable numSweeps, variable numChannels)
 
 	ASSERT(numSweeps >= 0 && numChannels >= 0, "Invalid wave size specified")
 
-	Make/FREE/D/N=(numSweeps * numChannels, 4) selectData
+	Make/FREE/D/N=(numSweeps * numChannels, 4) selectData = NaN
 	SetDimLabel COLS, 0, SWEEP, selectData
 	SetDimLabel COLS, 1, CHANNELTYPE, selectData
 	SetDimLabel COLS, 2, CHANNELNUMBER, selectData
