@@ -77,11 +77,34 @@ Cutting a new release
 -  Create a new release on github and check that the Github Actions job
    correctly uploads the artifacts
 
+Creating a release package manually
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Open a git bash terminal by choosing Actions->"Open in terminal" in
+   SourceTree
+-  Checkout the release branch ``git checkout release/$myVersion``
+-  If none exists create one with ``git checkout -b release/$myVersion``
+-  Change to the ``tools`` directory in the worktree root folder
+-  Execute ``./create-release.sh``
+-  The release package including the version information is then
+   available as zip file
+
 Continuous integration server
 -----------------------------
 
 Our `CI server <https://github.com/AllenInstitute/MIES/actions>`__, called
 Github Actions, provides the following services for MIES:
+
+Automatic release package building
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  If a commit is added to the ``main`` or any ``release/*`` branch a CI
+   pipeline is started
+-  In this pipeline are some basic tests executed and a new installer is build.
+   The installer is uploaded to the corresponging release (``latest`` for
+   ``main``).
+-  If the commit is added to the ``main`` branch the CI will also create a new
+   version of the documentation and deploy it to Github Pages.
 
 Compilation testing
 ~~~~~~~~~~~~~~~~~~~
