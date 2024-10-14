@@ -2526,7 +2526,7 @@ threadsafe Function/WAVE PA_SpikePositionsForNonVC(WAVE wv, variable failedPulse
 		endif
 
 		AssertOnAndClearRTError()
-		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last) wv; err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last)/Q wv; err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(!err)
 			ASSERT_TS(!V_Flag, "Could not find peak but FindLevelWrapper was successfull, this is unexpected.")
