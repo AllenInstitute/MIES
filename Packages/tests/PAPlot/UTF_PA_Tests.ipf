@@ -1247,8 +1247,14 @@ static Function PAT_BasicDeconvCheck()
 
 	PA_InitSweep0(patest)
 	Make/FREE/WAVE/N=(2, 2) refData
+
+#if IgorVersion() >= 10
+	refData[0][1] = root:pa_test_deconv_ref2_IP10
+	refData[1][0] = root:pa_test_deconv_ref1_IP10
+#else
 	refData[0][1] = root:pa_test_deconv_ref2
 	refData[1][0] = root:pa_test_deconv_ref1
+#endif
 
 	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
@@ -1272,6 +1278,9 @@ static Function PAT_BasicDeconvCheck()
 			PAT_VerifyTraceAxes(graph, traceName, i + 1, j + 1, patest)
 			PAT_VerifyTraceAxesRange(graph, traceName, patest, xOnly = 1)
 			WAVE pData = TraceNameToWaveRef(graph, traceName)
+
+			INFO("i = %d, j = %d, traceName = %s", n0 = i, n1 = j, s0 = traceName)
+
 			CHECK_EQUAL_WAVES(refData[i][j], pData, mode = WAVE_DATA)
 		endfor
 	endfor
@@ -1287,8 +1296,14 @@ static Function PAT_BasicDeconvOnlyCheck()
 
 	PA_InitSweep0(patest)
 	Make/FREE/WAVE/N=(2, 2) refData
+
+#if IgorVersion() >= 10
+	refData[0][1] = root:pa_test_deconv_ref2_IP10
+	refData[1][0] = root:pa_test_deconv_ref1_IP10
+#else
 	refData[0][1] = root:pa_test_deconv_ref2
 	refData[1][0] = root:pa_test_deconv_ref1
+#endif
 
 	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_showAver", val = 1)
@@ -1315,6 +1330,9 @@ static Function PAT_BasicDeconvOnlyCheck()
 			PAT_VerifyTraceAxes(graph, traceName, i + 1, j + 1, patest)
 			PAT_VerifyTraceAxesRange(graph, traceName, patest, xOnly = 1)
 			WAVE pData = TraceNameToWaveRef(graph, traceName)
+
+			INFO("i = %d, j = %d, traceName = %s", n0 = i, n1 = j, s0 = traceName)
+
 			CHECK_EQUAL_WAVES(refData[i][j], pData, mode = WAVE_DATA)
 		endfor
 	endfor
@@ -2360,8 +2378,14 @@ static Function PAT_BasicImagePlotDeconvolution()
 
 	PA_InitSweep0(patest)
 	Make/FREE/WAVE/N=(2, 2) refData
+
+#if IgorVersion() >= 10
+	refData[0][1] = root:pa_test_deconv_ref2_IP10
+	refData[1][0] = root:pa_test_deconv_ref1_IP10
+#else
 	refData[0][1] = root:pa_test_deconv_ref2
 	refData[1][0] = root:pa_test_deconv_ref1
+#endif
 
 	[bspName, imageWin] = PAT_StartDataBrowserImage_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
