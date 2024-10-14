@@ -1027,10 +1027,10 @@ static Function/S PSX_BuildSweepEquivKey(variable chanType, variable chanNr)
 	return str
 End
 
-/// @brief Return the triplett channel number, channel type and sweep number from the sweep equivalence wave located in the given channelNumberType and sweepIndex coordinates
-static Function [variable chanNr, variable chanType, variable sweepNo] PSX_GetSweepEquivKeyAndSweep(WAVE sweepEquiv, variable channelNumberType, variable sweepIndex)
+/// @brief Return the quartett of channel number, channel type, sweep number and map index from the sweep equivalence wave located in the given channelNumberType and column coordinates
+static Function [variable chanNr, variable chanType, variable sweepNo, variable mapIndex] PSX_GetSweepEquivKeyAndValue(WAVE/T sweepEquiv, variable channelNumberType, variable sweepIndex)
 
-	string str, chanTypeStr, chanNrStr
+	string str, chanTypeStr, chanNrStr, entry, sweepNoStr, mapIndexStr
 
 	str = GetDimLabel(sweepEquiv, ROWS, channelNumberType)
 	ASSERT(strlen(str) > 0, "Unexpected empty channelNumberType label")
@@ -1040,9 +1040,25 @@ static Function [variable chanNr, variable chanType, variable sweepNo] PSX_GetSw
 	chanType = str2num(chanTypeStr)
 	chanNr   = str2num(chanNrStr)
 
-	return [chanNr, chanType, sweepEquiv[channelNumberType][sweepIndex]]
+	entry = sweepEquiv[channelNumberType][sweepIndex]
+
+	SplitString/E="(?i)SweepNo([[:digit:]]+)_MapIndex([[:digit:]]+|NaN)" entry, sweepNoStr, mapIndexStr
+
+	sweepNo  = str2num(sweepNoStr)
+	mapIndex = str2num(mapIndexStr)
+
+	return [chanNr, chanType, sweepNo, mapIndex]
 End
 
+/// @brief Build the column data used for the sweep equivalence wave
+static Function/S PSX_BuildSweepEquivValue(variable sweepNo, variable mapIndex)
+
+	string str
+
+	sprintf str, "SweepNo%d_MapIndex%g", sweepNo, mapIndex
+
+	return str
+End
 /// @brief Generate the equivalence classes of selectData
 ///
 /// All selections which have the same channel number and type are in one equivalence class.
@@ -1057,7 +1073,7 @@ static Function/WAVE PSX_GenerateSweepEquiv(WAVE selectData)
 	numSelect = DimSize(selectData, ROWS)
 	ASSERT(numSelect > 0, "Expected at least one entry in sweepData")
 
-	Make/N=(numSelect, numSelect)/FREE=1 sweepEquiv = NaN
+	Make/N=(numSelect, numSelect)/FREE=1/T sweepEquiv
 
 	for(i = 0; i < numSelect; i += 1)
 		key = PSX_BuildSweepEquivKey(selectData[i][%CHANNELTYPE], selectData[i][%CHANNELNUMBER])
@@ -1069,11 +1085,11 @@ static Function/WAVE PSX_GenerateSweepEquiv(WAVE selectData)
 			nextFreeRow += 1
 		endif
 
-		FindValue/FNAN/RMD=[idx][] sweepEquiv
+		FindValue/TXOP=4/TEXT=""/RMD=[idx][] sweepEquiv
 		ASSERT(V_col >= 0, "Not enough space")
 		maxCol = max(maxCol, V_col)
 
-		sweepEquiv[idx][V_col] = selectData[i][%SWEEP]
+		sweepEquiv[idx][V_col] = PSX_BuildSweepEquivValue(selectData[i][%SWEEP], selectData[i][%SWEEPMAPINDEX])
 	endfor
 
 	ASSERT(nextFreeRow > 0, "Could not build sweep equivalence classes")
@@ -1093,8 +1109,7 @@ Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectDa
 	chanType = singleSelectData[0][%CHANNELTYPE]
 	mapIndex = singleSelectData[0][%SWEEPMAPINDEX]
 
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
 	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
 
 	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr, mapIndex)
@@ -1147,7 +1162,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 	string propLabelAxis, comboKey
 	variable numRows, numCols, i, j, k, index, sweepNo, chanNr, chanType, state, numRanges, lowerBoundary, upperBoundary, temp, err
-	variable refMarker, idx
+	variable refMarker, idx, mapIndex
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_STATS, MINIMUM_WAVE_SIZE)
 
@@ -1176,7 +1191,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 			for(k = 0; k < numCols; k += 1)
 
-				[chanNr, chanType, sweepNo] = PSX_GetSweepEquivKeyAndSweep(selectDataEquiv, i, k)
+				[chanNr, chanType, sweepNo, mapIndex] = PSX_GetSweepEquivKeyAndValue(selectDataEquiv, i, k)
 
 				if(!IsValidSweepNumber(sweepNo))
 					break
@@ -1187,6 +1202,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 				singleSelectData[0][%SWEEP]         = sweepNo
 				singleSelectData[0][%CHANNELNUMBER] = chanNr
 				singleSelectData[0][%CHANNELTYPE]   = chanType
+				singleSelectData[0][%SWEEPMAPINDEX] = mapIndex
 
 				comboKey = PSX_GenerateComboKey(graph, singleSelectData, range)
 
@@ -2944,27 +2960,29 @@ End
 /// to the wave note of `psxEvent`.
 static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range)
 
-	variable sweepNo, channel, chanType
-	string device, key, datafolder, rangeStr
+	variable sweepNo, channel, chanType, mapIndex, isDataBrowser
+	string device, key, rangeStr, experiment
+
+	isDataBrowser = BSP_IsDataBrowser(graph)
 
 	ASSERT(DimSize(selectData, ROWS) == 1, "Expected selectData with only one entry")
 
 	sweepNo  = selectData[0][%SWEEP]
 	channel  = selectData[0][%CHANNELNUMBER]
 	chanType = selectData[0][%CHANNELTYPE]
+	mapIndex = selectData[0][%SWEEPMAPINDEX]
 
-	WAVE/T textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
 
 	// Introduced in 7e903ed8 (GetSweepSettingsTextWave: Add device as entry, 2023-01-03)
 	device = GetLastSettingTextIndep(textualValues, sweepNo, "Device", DATA_ACQUISITION_MODE)
 
 	if(IsEmpty(device))
-		if(BSP_IsDataBrowser(graph))
+		if(isDataBrowser)
 			device = BSP_GetDevice(graph)
 		else
-			// datafolder looks like: root:MIES:Analysis:my_experiment:ITC18USB_Dev_0:labnotebook
-			datafolder = GetWavesDataFolder(textualValues, 1)
-			device     = StringFromList(4, datafolder, ":")
+			WAVE/T sweepMap = SB_GetSweepMap(graph)
+			device = sweepMap[mapIndex][%Device]
 		endif
 	endif
 
@@ -2980,7 +2998,15 @@ static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range
 		ASSERT(0, "Unexpected wave type")
 	endif
 
-	sprintf key, "Range[%s], Sweep [%d], Channel [%s%d], Device [%s]", rangeStr, sweepNo, StringFromList(chanType, XOP_CHANNEL_NAMES), channel, device
+	if(isDataBrowser)
+		experiment = GetExperimentName()
+	else
+		experiment = sweepMap[mapIndex][%FileName]
+	endif
+
+	ASSERT(!IsEmpty(experiment), "Could not find the experiment of the given selectData")
+
+	sprintf key, "Range[%s], Sweep [%d], Channel [%s%d], Device [%s], Experiment [%s]", rangeStr, sweepNo, StringFromList(chanType, XOP_CHANNEL_NAMES), channel, device, experiment
 	ASSERT(strsearch(key, ":", 0) == -1, "Can't use a colon")
 
 	return key

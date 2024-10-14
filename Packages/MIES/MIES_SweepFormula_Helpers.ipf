@@ -1120,6 +1120,7 @@ Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sw
 	selectData[0][%SWEEP]         = JWN_GetNumberFromWaveNote(sweepData, SF_META_SWEEPNO)
 	selectData[0][%CHANNELTYPE]   = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELTYPE)
 	selectData[0][%CHANNELNUMBER] = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELNUMBER)
+	selectData[0][%SWEEPMAPINDEX] = JWN_GetNumberFromWaveNote(sweepData, SF_META_SWEEPMAPINDEX)
 
 	return [selectData, range]
 End
