@@ -1,15 +1,19 @@
 Developer
 =========
 
+.. _getting MIES:
+
 Getting MIES
 ------------
 
-Latest development version from main branch
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cloning the MIES repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``git clone --recurse-submodules https://github.com/AllenInstitute/MIES``
--  ``./tools/initial-repo-config.sh`` (Requires a Git Bash shell, named
-   Git terminal in SourceTree)
+-  ``./tools/initial-repo-config.sh`` (Requires a Git Bash/Terminal)
+
+If you only want to **use** MIES and not **develop** it, you can also get the source
+code via the `release package <https://github.com/AllenInstitute/MIES/releases>`__ as zip file.
 
 Building the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
