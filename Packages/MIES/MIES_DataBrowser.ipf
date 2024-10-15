@@ -462,7 +462,7 @@ Function DB_UpdateSweepPlot(win)
 		WAVE config = GetConfigWave(sweepWave)
 
 		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, \
-		                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
+		                        axisLabelCache, traceIndex, experiment, sweepChannelSel, device)
 		AR_UpdateTracesIfReq(graph, dfr, sweepNo)
 	endfor
 
@@ -645,10 +645,10 @@ Function DB_AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo
 
 	if(ParamIsDefault(bdi))
 		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, \
-		                        traceIndex, experiment, sweepChannelSel)
+		                        traceIndex, experiment, sweepChannelSel, device)
 	else
 		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, \
-		                        traceIndex, experiment, sweepChannelSel, bdi = bdi)
+		                        traceIndex, experiment, sweepChannelSel, device, bdi = bdi)
 	endif
 
 	AR_UpdateTracesIfReq(graph, dfr, sweepNo)
@@ -780,4 +780,37 @@ Function DB_SFHelpJumpToLine(string str)
 	endif
 
 	return V_flag == 0
+End
+
+Function/S DB_GetDevice(string win)
+
+	ASSERT(BSP_IsDataBrowser(win), "Requires window to be a DataBrowser")
+
+	if(!BSP_HasBoundDevice(win))
+		return ""
+	endif
+
+	return BSP_GetDevice(win)
+End
+
+Function/DF DB_GetDeviceDF(string win)
+
+	string device
+
+	device = DB_GetDevice(win)
+	if(IsEmpty(device))
+		return $""
+	endif
+
+	DFREF deviceDFR = GetDeviceDataPath(device)
+
+	return deviceDFR
+End
+
+Function/DF DB_GetSweepDF(string win, variable sweepNo)
+
+	DFREF deviceDFR = DB_GetDeviceDF(win)
+	DFREF sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
+
+	return sweepDFR
 End

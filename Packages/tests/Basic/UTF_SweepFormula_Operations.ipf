@@ -237,7 +237,7 @@ static Function StoreWorksWithMultipleDataSets()
 
 	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_ADC, textKey, textValue)
 
-	str = "store(\"ABCD\", data(cursors(A, B), select(channels(), sweeps())))"
+	str = "store(\"ABCD\", data(select(selrange(), selchannels(), selsweeps())))"
 	CHECK(ExecuteSweepFormulaInDB(str, win))
 
 	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
@@ -641,7 +641,7 @@ static Function TestOperationButterworth()
 	CHECK_EQUAL_STR(strRef, dataType)
 End
 
-static Function TestOperationChannels()
+static Function TestOperationSelChannels()
 
 	string win, str
 
@@ -650,56 +650,56 @@ static Function TestOperationChannels()
 	Make/FREE input = {{0}, {NaN}}
 	SetDimLabel COLS, 0, channelType, input
 	SetDimLabel COLS, 1, channelNumber, input
-	str = "channels(AD)"
+	str = "selchannels(AD)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{0}, {0}}
-	str = "channels(AD0)"
+	str = "selchannels(AD0)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 0}, {0, 1}}
-	str = "channels(AD0,AD1)"
+	str = "selchannels(AD0,AD1)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1}, {0, 1}}
-	str = "channels(AD0,DA1)"
+	str = "selchannels(AD0,DA1)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{1, 1}, {0, 0}}
-	str = "channels(DA0,DA0)"
+	str = "selchannels(DA0,DA0)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1}, {NaN, NaN}}
-	str = "channels(AD,DA)"
+	str = "selchannels(AD,DA)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{NaN}, {1}}
-	str = "channels(1)"
+	str = "selchannels(1)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{NaN, NaN}, {1, 3}}
-	str = "channels(1,3)"
+	str = "selchannels(1,3)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1, NaN}, {1, 2, 3}}
-	str = "channels(AD1,DA2,3)"
+	str = "selchannels(AD1,DA2,3)"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{NaN}, {NaN}}
-	str = "channels()"
+	str = "selchannels()"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
-	str = "channels(unknown)"
+	str = "selchannels(unknown)"
 	try
 		SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 		FAIL()
@@ -1089,7 +1089,7 @@ static Function TestOperationAverage()
 	CHECK_EQUAL_VAR(DimSize(data, ROWS), 1)
 	CHECK_EQUAL_VAR(data[0], 2)
 
-	str = "avg(data(cursors(A,B), select(channels(AD), sweeps(), all)), in)"
+	str = "avg(data(select(selrange(),selchannels(AD),selsweeps(),selvis(all))), in)"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
 	Make/FREE/D ref = {4.5}
@@ -1097,7 +1097,7 @@ static Function TestOperationAverage()
 		CHECK_EQUAL_WAVES(data, ref, mode = WAVE_DATA)
 	endfor
 
-	str = "avg(data(cursors(A,B), select(channels(AD), sweeps(), all)), over)"
+	str = "avg(data(select(selrange(),selchannels(AD),selsweeps(),selvis(all))), over)"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
 
@@ -1149,6 +1149,430 @@ static Function CheckSweepsMetaData(WAVE/WAVE dataWref, WAVE channelTypes, WAVE 
 	endfor
 End
 
+static Function TestOperationSelsweeps()
+
+	string win, device, str
+	variable i
+	variable numSweeps = 4
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	for(i = 0; i < numSweeps; i += 1)
+		win = CreateFakeSweepData(win, device, sweepNo = i)
+	endfor
+
+	str = "selsweeps()"
+	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(wref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
+	WAVE array = wref[0]
+	CHECK_EQUAL_WAVES(array, {0, 1, 2, 3}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selsweeps(2,3)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      array = wref[0]
+	CHECK_EQUAL_WAVES(array, {2, 3}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selsweeps(1...4)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      array = wref[0]
+	CHECK_EQUAL_WAVES(array, {1, 2, 3}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selsweeps(1...4, 0)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      array = wref[0]
+	CHECK_EQUAL_WAVES(array, {1, 2, 3, 0}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selsweeps(abc)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function TestOperationSelvis()
+
+	string win, device, str
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	str = "selvis()"
+	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(wref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
+	WAVE/T array = wref[0]
+	Make/FREE/T ref = {"displayed"}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selvis(displayed)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE/T ref = {"displayed"}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selvis(all)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE/T ref = {"all"}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selvis(invalid_option)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "selvis(123)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function TestOperationSelcm()
+
+	string win, device, str
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	str = "selcm()"
+	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(wref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
+	WAVE array = wref[0]
+	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_ALL}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selcm(all)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      array = wref[0]
+	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_ALL}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selcm(ic)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      array = wref[0]
+	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_IC}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selcm(vc)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      array = wref[0]
+	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_VC}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selcm(izero)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      array = wref[0]
+	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_IZERO}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selcm(none)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      array = wref[0]
+	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_NONE}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selcm(ic, vc)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      array = wref[0]
+	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_IC | SF_OP_SELECT_CLAMPCODE_VC}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selcm(none, ic, vc, izero)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE      array = wref[0]
+	CHECK_EQUAL_WAVES(array, {SF_OP_SELECT_CLAMPCODE_ALL}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selcm(invalid_option)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "selcm(123)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function TestOperationSelstimset()
+
+	string win, device, str
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	str = "selstimset()"
+	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(wref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
+	WAVE/T array = wref[0]
+	Make/FREE/T ref = {"*"}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selstimset(enjoy, the, silence)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE/T ref = {"enjoy", "the", "silence"}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selstimset(123)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+// IUTF_TD_GENERATOR DataGenerators#SF_TestOperationSelSingleText
+static Function TestOperationSelSingleText([string str])
+
+	string win, device, formula
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	formula = str + "(AKAelectricRG28)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE/T ref = {"AKAelectricRG28"}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	formula = str + "()"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	formula = str + "(123)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	formula = str + "(dev1, dev2)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+// IUTF_TD_GENERATOR DataGenerators#SF_TestOperationSelNoArg
+static Function TestOperationSelNoArg([string str])
+
+	string win, device, formula
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	formula = str + "()"
+	WAVE/WAVE wref  = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE ref = {1}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	formula = str + "(123)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	formula = str + "(exp1, exp2)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+// IUTF_TD_GENERATOR DataGenerators#SF_TestOperationSelSingleNumber
+static Function TestOperationSelSingleNumber([string str])
+
+	string win, device, formula
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	formula = "selsetcyclecount(123)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(formula, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE ref = {123}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	formula = str + "()"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	formula = str + "(text)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	formula = str + "(1, 2)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(formula, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function TestOperationSelIVSCCSweepQC()
+
+	string win, device, str
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	str = "selivsccsweepqc(passed)"
+	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(wref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
+	WAVE/T array = wref[0]
+	Make/FREE ref = {SF_OP_SELECT_IVSCCSWEEPQC_PASSED}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selivsccsweepqc(failed)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE ref = {SF_OP_SELECT_IVSCCSWEEPQC_FAILED}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selivsccsweepqc(invalid_option)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "selivsccsweepqc(123)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function TestOperationSelRange()
+
+	string win, device, str
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	str = "selrange()"
+	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(wref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
+	WAVE/WAVE set = wref[0]
+	CHECK_WAVE(set, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(set, ROWS), 1)
+	WAVE array = set[0]
+	WAVE ref   = SFH_GetFullRange()
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selrange([1,2])"
+	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE set  = wref[0]
+	CHECK_WAVE(set, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(set, ROWS), 1)
+	WAVE array = set[0]
+	CHECK_EQUAL_WAVES(array, {1, 2}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selrange(abc)"
+	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE set  = wref[0]
+	CHECK_WAVE(set, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(set, ROWS), 1)
+	WAVE/T arrayT = set[0]
+	Make/FREE/T refT = {"abc"}
+	CHECK_EQUAL_WAVES(arrayT, refT, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selrange(abc, def)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "selrange(123,456)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function TestOperationSelIVSCCSetQC()
+
+	string win, device, str
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	str = "selivsccsetqc(passed)"
+	WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(wref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wref, ROWS), 1)
+	WAVE/T array = wref[0]
+	Make/FREE ref = {SF_OP_SELECT_IVSCCSWEEPQC_PASSED}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selivsccsetqc(failed)"
+	WAVE/WAVE wref  = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/T    array = wref[0]
+	Make/FREE ref = {SF_OP_SELECT_IVSCCSWEEPQC_FAILED}
+	CHECK_EQUAL_WAVES(array, ref, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "selivsccsetqc(invalid_option)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	str = "selivsccsetqc(123)"
+	try
+		WAVE/WAVE wref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 static Function TestOperationData()
 
 	variable i, j, numChannels, sweepNo, sweepCnt, numResultsRef, clampMode
@@ -1198,7 +1622,7 @@ static Function TestOperationData()
 	sweepRef3[][4] = (sweepRef3[p][4] & 1 << 2) != 0
 
 	sweepCnt = 1
-	str      = "data(TestEpoch2,select(channels(TTL2),[" + num2istr(3) + "],all))"
+	str      = "data(select(selrange(TestEpoch2),selchannels(TTL2),selsweeps(" + num2istr(3) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * 1
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1208,28 +1632,28 @@ static Function TestOperationData()
 	CheckSweepsMetaData(dataWref, {3}, {2}, {3}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
-	str      = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	str      = "data(select(selrange(),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
-	str      = "data([0, inf],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	str      = "data(select(selrange([0, inf]),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
-	str      = "data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all))"
+	str      = "data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * 1
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1})
 	CheckSweepsMetaData(dataWref, {0}, {6}, {0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
-	str      = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	str      = "data(select(selrange(TestEpoch),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1239,7 +1663,7 @@ static Function TestOperationData()
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
-	str      = "data(\"Test*\",select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	str      = "data(select(selrange(\"Test*\"),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2 * 2 // 2 epochs starting with Test...
 
@@ -1258,8 +1682,8 @@ static Function TestOperationData()
 	// this part specifies to numerical range 0,2 and 0,4
 	// Selected is sweep 0, AD, channel 6 and sweep 0, AD, channel 7
 	sweepCnt  = 1
-	strSelect = "select(channels(AD),[" + num2istr(sweepNo) + "],all)"
-	str       = "data([[0,0],[2,4]]," + strSelect + ")"
+	strSelect = "select(selrange([[0,0],[2,4]]),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all))"
+	str       = "data(" + strSelect + ")"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2 * 2 // 2 ranges specified
 
@@ -1278,10 +1702,11 @@ static Function TestOperationData()
 	// This part uses a epochs operation with offset to retrieve ranges
 	// Selected is sweep 0, AD, channel 6 and sweep 0, AD, channel 7
 	// The epoch "TestEpoch" is retrieved for both and offsetted by zero.
-	sweepCnt  = 1
-	strSelect = "select(channels(AD),[" + num2istr(sweepNo) + "],all)"
-	str       = "data(epochs(\"TestEpoch\"," + strSelect + ")+[0,0]," + strSelect + ")"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	sweepCnt = 1
+	str      = "sel = select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
+	str      = str + "ep = epochs(\"TestEpoch\",$sel)+[0,0]\r"
+	str      = str + "data(select(selrange($ep),$sel))"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
 	numResultsRef = sweepCnt * numChannels / 2
 
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1293,7 +1718,7 @@ static Function TestOperationData()
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
-	str      = "data([\"TestEpoch\",\"TestEpoch1\"],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	str      = "data(select(selrange([\"TestEpoch\",\"TestEpoch1\"]),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2 * 2 // 2 epochs in array
 
@@ -1311,7 +1736,7 @@ static Function TestOperationData()
 
 	// Finds the NoShortName epoch
 	sweepCnt = 1
-	str      = "data(\"!TestEpoch*\",select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	str      = "data(select(selrange(\"!TestEpoch*\"),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 
@@ -1322,7 +1747,7 @@ static Function TestOperationData()
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 1
-	str      = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo + 1) + "],all))"
+	str      = "data(select(selrange(TestEpoch),selchannels(AD),selsweeps(" + num2istr(sweepNo + 1) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1332,7 +1757,7 @@ static Function TestOperationData()
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {1, 1}, SF_DATATYPE_SWEEP)
 
 	sweepCnt = 2
-	str      = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all))"
+	str      = "data(select(selrange(TestEpoch),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	Make/FREE/N=(numResultsRef, 2) ranges
@@ -1343,35 +1768,45 @@ static Function TestOperationData()
 
 	// FAIL Tests
 	// non existing channel
-	str = "data(TestEpoch,select(channels(AD4),[" + num2istr(sweepNo) + "],all))"
+	str = "data(select(selrange(TestEpoch),selchannels(AD4),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing sweep
-	str = "data(TestEpoch,select(channels(AD),[" + num2istr(sweepNo + 1337) + "],all))"
+	str = "data(select(selrange(TestEpoch),selchannels(AD),selsweeps(" + num2istr(sweepNo + 1337) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// non existing epoch
-	str = "data(WhatEpochIsThis,select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	str = "data(select(selrange(WhatEpochIsThis),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// empty range from epochs
-	str = "select(channels(AD),[" + num2istr(sweepNo) + "],all)"
-	str = "data(epochs(WhatEpochIsThis, " + str + "), " + str + ")"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	str = "sel = select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
+	str = str + "ep = epochs(WhatEpochIsThis, $sel)\r"
+	str = str + "data(select(selrange($ep),$sel))"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// one null range from epochs as TestEpoch1 only exists for sweepNo
-	str = "select(channels(AD6),[" + num2istr(sweepNo) + ", " + num2istr(sweepNo + 1) + "],all)"
-	str = "data(epochs([TestEpoch1], " + str + "), " + str + ")"
-	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	str = "sel = select(selchannels(AD6),selsweeps(" + num2istr(sweepNo) + ", " + num2istr(sweepNo + 1) + "),selvis(all))\r"
+	str = str + "ep = epochs(TestEpoch1, $sel)\r"
+	str = str + "data(select(selrange($ep),$sel))"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	REQUIRE_EQUAL_VAR(DimSize(dataWref[0], ROWS), 5)
 
+	str = "data(1, 2)"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
 	// range begin
-	str = "data([12, 10],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	str = "data(select(selrange([12, 10]),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1380,7 +1815,7 @@ static Function TestOperationData()
 	endtry
 
 	// range end
-	str = "data([0, 11],select(channels(AD),[" + num2istr(sweepNo) + "],all))"
+	str = "data(select(selrange([0, 11]),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all)))"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1390,11 +1825,37 @@ static Function TestOperationData()
 
 	// One sweep does not exist, it is not result of select, we end up with one sweep
 	sweepCnt = 1
-	str      = "data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1337) + "],all))"
+	str      = "data(select(selrange(),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1337) + "),selvis(all)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
 	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
+
+	sweepCnt = 1
+	str      = "sel1 = select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
+	str      = str + "sel2 = select(selrange(),selchannels(AD7),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
+	str      = str + "data([$sel1, $sel2])"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
+	numResultsRef = sweepCnt * numChannels / 2
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3})
+	CheckSweepsMetaData(dataWref, {0, 0}, {6, 7}, {0, 0}, SF_DATATYPE_SWEEP)
+
+	sweepCnt = 1
+	str      = "sel1 = select(selrange([0, 2]),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
+	str      = str + "sel2 = select(selrange([0, 4]),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))\r"
+	str      = str + "data([$sel1, $sel2])"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
+	numResultsRef = sweepCnt * numChannels / 2
+
+	Make/FREE/N=(numResultsRef, 2) ranges
+	ranges[][0]  = 0
+	ranges[][1]  = {2, 4}
+	ranges[0][0] = 0
+	ranges[0][1] = 2
+	ranges[1][0] = 0
+	ranges[1][1] = 4
+	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3}, ranges = ranges)
+	CheckSweepsMetaData(dataWref, {0, 0}, {6, 6}, {0, 0}, SF_DATATYPE_SWEEP)
 
 	// Setup graph with equivalent data
 	TUD_Clear(win)
@@ -1409,8 +1870,10 @@ static Function TestOperationData()
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},                                                        \
-			                         {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), StringFromList(j, channelNumberList), num2istr(clampMode)})
+			WAVE numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			WAVE textualValues   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "textualValues", "numericalValues", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode", "SweepMapIndex"},                                                                                        \
+			                         {"blah", GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2), GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), StringFromList(j, channelNumberList), num2istr(clampMode), "NaN"})
 		endfor
 	endfor
 
@@ -1418,12 +1881,12 @@ static Function TestOperationData()
 	dataRef[][][] = sweepRef[p]
 
 	sweepCnt = 2
-	str      = "data(cursors(A,B),select())"
+	str      = "data(select())"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 0, 2, 1, 3, 0, 2})
 	CheckSweepsMetaData(dataWref, {0, 0, 1, 1, 0, 0, 1, 1}, {6, 7, 2, 3, 6, 7, 2, 3}, {0, 0, 0, 0, 1, 1, 1, 1}, SF_DATATYPE_SWEEP)
-	str = "data(cursors(A,B))"
+	str = "data()"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 0, 2, 1, 3, 0, 2})
 	CheckSweepsMetaData(dataWref, {0, 0, 1, 1, 0, 0, 1, 1}, {6, 7, 2, 3, 6, 7, 2, 3}, {0, 0, 0, 0, 1, 1, 1, 1}, SF_DATATYPE_SWEEP)
@@ -1483,7 +1946,7 @@ static Function TestOperationPowerSpectrum()
 	win = CreateFakeSweepData(win, device, sweepNo = sweepNo, sweepGen = FakeSweepDataGeneratorPS)
 	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 1, sweepGen = FakeSweepDataGeneratorPS)
 
-	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)))"
+	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
@@ -1497,7 +1960,7 @@ static Function TestOperationPowerSpectrum()
 	strRef = "^2"
 	CHECK_EQUAL_STR(strRef, str)
 
-	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)),dB)"
+	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))),dB)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
@@ -1508,7 +1971,7 @@ static Function TestOperationPowerSpectrum()
 	strRef = "dB"
 	CHECK_EQUAL_STR(strRef, str)
 
-	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)),normalized)"
+	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))),normalized)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
@@ -1519,7 +1982,7 @@ static Function TestOperationPowerSpectrum()
 	strRef = "mean(^2)"
 	CHECK_EQUAL_STR(strRef, str)
 
-	str = "powerspectrum(data(cursors(A,B),select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all)),dB,avg)"
+	str = "powerspectrum(data(select(selrange(),selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))),dB,avg)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(2, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
@@ -1531,7 +1994,7 @@ static Function TestOperationPowerSpectrum()
 	CHECK_CLOSE_VAR(V_maxLoc, 100, tol = 0.01)
 	CHECK_CLOSE_VAR(V_max, 88, tol = 0.01)
 
-	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)),dB,noavg,100)"
+	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))),dB,noavg,100)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
@@ -1539,14 +2002,14 @@ static Function TestOperationPowerSpectrum()
 	CHECK_EQUAL_VAR(1, DimSize(data, ROWS))
 	CHECK_CLOSE_VAR(data[0], 1.32, tol = 0.01)
 
-	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)),dB,noavg,0,2000)"
+	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))),dB,noavg,0,2000)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE data = dataWref[0]
 	val = IndexToScale(data, DimSize(data, ROWS), ROWS)
 	CHECK_CLOSE_VAR(val, 2000, tol = 0.001)
 
-	str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)),dB,noavg,0,1000,HFT248D)"
+	str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))),dB,noavg,0,1000,HFT248D)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(1, DimSize(dataWref, ROWS))
 	WAVE      data     = dataWref[0]
@@ -1566,7 +2029,7 @@ static Function TestOperationPowerSpectrum()
 	endtry
 
 	try
-		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), not_exist)"
+		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), not_exist)"
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -1574,7 +2037,7 @@ static Function TestOperationPowerSpectrum()
 	endtry
 
 	try
-		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), dB, not_exist)"
+		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), dB, not_exist)"
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -1582,7 +2045,7 @@ static Function TestOperationPowerSpectrum()
 	endtry
 
 	try
-		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), dB, avg, -1)"
+		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), dB, avg, -1)"
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -1590,7 +2053,7 @@ static Function TestOperationPowerSpectrum()
 	endtry
 
 	try
-		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), dB, avg, 0, -1)"
+		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), dB, avg, 0, -1)"
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -1598,7 +2061,7 @@ static Function TestOperationPowerSpectrum()
 	endtry
 
 	try
-		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), dB, avg, 0, 1000, not_exist)"
+		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), dB, avg, 0, 1000, not_exist)"
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -1606,7 +2069,7 @@ static Function TestOperationPowerSpectrum()
 	endtry
 
 	try
-		str = "powerspectrum(data(cursors(A,B),select(channels(AD6),[" + num2istr(sweepNo) + "],all)), dB, avg, 0, 1000, Bartlet, not_exist)"
+		str = "powerspectrum(data(select(selrange(),selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))), dB, avg, 0, 1000, Bartlet, not_exist)"
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
@@ -1632,12 +2095,12 @@ static Function TestOperationLabNotebook()
 	channelsRef[] = channels[trunc(p / numChannels)][mod(p, numChannels)]
 	str           = "labnotebook(ADC)"
 	TestOperationLabnotebookHelper(win, str, channelsRef)
-	str = "labnotebook(ADC,select(channels(AD),0..." + num2istr(numSweeps) + "))"
+	str = "labnotebook(ADC,select(selchannels(AD),selsweeps(0..." + num2istr(numSweeps) + ")))"
 	TestOperationLabnotebookHelper(win, str, channelsRef)
-	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + "ADC, select(channels(AD),0..." + num2istr(numSweeps) + "),UNKNOWN_MODE)"
+	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + "ADC, select(selchannels(AD),selsweeps(0..." + num2istr(numSweeps) + ")),UNKNOWN_MODE)"
 	TestOperationLabnotebookHelper(win, str, channelsRef)
 
-	str = "labnotebook(ADC, select(channels(AD12),-1))"
+	str = "labnotebook(ADC, select(selchannels(AD12),selsweeps(-1)))"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
@@ -1697,47 +2160,47 @@ static Function TestOperationEpochs()
 	chanNr[] = mod(p, activeChannelsDA) * 2
 	CheckSweepsMetaData(dataWref, chanType, chanNr, sweeps, SF_DATATYPE_EPOCHS)
 
-	str = "epochs(\"E0_PT_P48\", select(channels(DA0), 0))"
+	str = "epochs(\"E0_PT_P48\", select(selchannels(DA0), selsweeps(0)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	Make/FREE/D refData = {500, 510}
 	WAVE data = dataWref[0]
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4), 0))"
+	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA4), selsweeps(0)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	Make/FREE/D refData = {503, 510}
 	WAVE data = dataWref[0]
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4), 0), range)"
+	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA4), selsweeps(0)), range)"
 	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D refData = {503, 510}
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4),0), treelevel)"
+	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA4), selsweeps(0)), treelevel)"
 	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/D refData = {3}
 	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", select(channels(DA4), 9), name)"
+	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA4), selsweeps(9)), name)"
 	WAVE/T dataT = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/T refDataT = {"E0_PT_P48_B"}
 	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
 
-	str = "epochs(\"NoShortName\", select(channels(DA4), 9), name)"
+	str = "epochs(\"NoShortName\", select(selchannels(DA4), selsweeps(9)), name)"
 	WAVE/T dataT = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/T refDataT = {"NoShortName"}
 	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
 
 	// works case-insensitive
-	str = "epochs(\"e0_pt_p48_B\", select(channels(DA4), 9), name)"
+	str = "epochs(\"e0_pt_p48_B\", select(selchannels(DA4), selsweeps(9)), name)"
 	WAVE/T dataT = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/FREE/T refDataT = {"E0_PT_P48_B"}
 	REQUIRE_EQUAL_WAVES(dataT, refDataT, mode = WAVE_DATA)
 
-	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), 0..." + num2istr(numSweeps) + "))"
+	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA), selsweeps(0..." + num2istr(numSweeps) + ")))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), numSweeps * activeChannelsDA)
 	Make/FREE/D refData = {503, 510}
@@ -1751,7 +2214,7 @@ static Function TestOperationEpochs()
 	sweepNumbers   = trunc(p / activeChannelsDA)
 	CheckSweepsMetaData(dataWref, channelTypes, channelNumbers, sweepNumbers, SF_DATATYPE_EPOCHS)
 
-	str = "epochs(\"E0_PT_P48_*\", select(channels(DA), 0))"
+	str = "epochs(\"E0_PT_P48_*\", select(selchannels(DA), selsweeps(0)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
 	Make/FREE/D refData = {503, 510}
@@ -1761,12 +2224,12 @@ static Function TestOperationEpochs()
 
 	// find epoch without shortname
 	epochLongName = RemoveEnding(epoch2, ";")
-	str           = "epochs(\"" + epochLongName + "\", select(channels(DA), 0))"
+	str           = "epochs(\"" + epochLongName + "\", select(selchannels(DA), selsweeps(0)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
 
 	// finds only epoch without shortname from test epochs
-	str = "epochs(\"!E0_PT_P48*\", select(channels(DA), 0))"
+	str = "epochs(\"!E0_PT_P48*\", select(selchannels(DA), selsweeps(0)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), activeChannelsDA)
 	CHECK_EQUAL_VAR(DimSize(dataWref, COLS), 0)
@@ -1779,7 +2242,7 @@ static Function TestOperationEpochs()
 
 	// the first wildcard matches both setup epochs, the second only the first setup epoch
 	// only unique epochs are returned, thus two
-	str = "epochs([\"E0_PT_*\",\"E0_PT_P48*\"], select(channels(DA), 0))"
+	str = "epochs([\"E0_PT_*\",\"E0_PT_P48*\"], select(selchannels(DA), selsweeps(0)))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 4)
 	Make/FREE/D refData = {{500, 510}, {503, 510}}
@@ -1789,22 +2252,22 @@ static Function TestOperationEpochs()
 	endfor
 
 	// channel(s) with no epochs
-	str = "epochs(\"E0_PT_P48_B\", select(channels(AD), 0..." + num2istr(numSweeps) + "))"
+	str = "epochs(\"E0_PT_P48_B\", select(selchannels(AD), selsweeps(0..." + num2istr(numSweeps) + ")))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// channels with epochs, but name that does not match any epoch
-	str = "epochs(\"does_not_exist\", select(channels(DA), 0..." + num2istr(numSweeps) + "))"
+	str = "epochs(\"does_not_exist\", select(selchannels(DA), selsweeps(0..." + num2istr(numSweeps) + ")))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// invalid sweep
-	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), " + num2istr(numSweeps) + "))"
+	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA), selsweeps(" + num2istr(numSweeps) + ")))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 0)
 
 	// invalid type
-	str = "epochs(\"E0_PT_P48_B\", select(channels(DA), 0..." + num2istr(numSweeps) + "), invalid_type)"
+	str = "epochs(\"E0_PT_P48_B\", select(selchannels(DA), selsweeps(0..." + num2istr(numSweeps) + ")), invalid_type)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1931,6 +2394,40 @@ static Function TestOperationFit()
 	endtry
 End
 
+static Function TestOperationSelectCompareWithFullRange(string win, string formula, WAVE/Z dataRef)
+
+	WAVE/WAVE comp = SF_ExecuteFormula(formula, win, useVariables = 0)
+	CHECK_WAVE(comp, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(comp, ROWS), 2)
+	WAVE/Z    dataSel = comp[0]
+	WAVE/WAVE rngSet  = comp[1]
+	CHECK_WAVE(rngSet, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(rngSet, ROWS), 1)
+	WAVE dataRng = rngSet[0]
+	WAVE rngRef  = SFH_GetFullRange()
+	if(WaveExists(dataRef) || WaveExists(dataSel))
+		CHECK_EQUAL_WAVES(dataRef, dataSel, mode = WAVE_DATA | DIMENSION_SIZES)
+	endif
+	CHECK_EQUAL_WAVES(rngRef, dataRng, mode = WAVE_DATA | DIMENSION_SIZES)
+End
+
+// UTF_TD_GENERATOR DataGenerators#SF_TestOperationSelectFails
+static Function TestOperationSelectFails([string str])
+
+	string win, device
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+	win = CreateFakeSweepData(win, device, sweepNo = 0)
+
+	try
+		WAVE/WAVE comp = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+End
+
 static Function TestOperationSelect()
 
 	variable numChannels, sweepNo
@@ -1950,125 +2447,131 @@ static Function TestOperationSelect()
 	sweepNo = 0
 
 	win = CreateFakeSweepData(win, device, sweepNo = sweepNo)
-	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 1)
-	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 2)
-	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 3)
 
 	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 	Make/FREE/N=0 sweepTemplate
 	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
 
-	Make/FREE/N=(4, 3) dataRef
+	Make/FREE/N=(4, 4) dataRef
 	dataRef[][0]     = sweepNo
 	dataRef[0, 1][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[2, 3][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
-	dataRef[][2]     = {6, 7, 2, 3}                                         // AD6, AD7, DA2, DA3
-	str              = "select(channels(),[" + num2istr(sweepNo) + "],all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][2]     = {6, 7, 2, 3}                           // AD6, AD7, DA2, DA3
+	dataRef[][3]     = NaN
+	str              = "select(selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(2, 3) dataRef
+	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 1)
+	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 2)
+	win = CreateFakeSweepData(win, device, sweepNo = sweepNo + 3)
+
+	Make/FREE/N=(2, 4) dataRef
 	dataRef[][0]  = sweepNo
 	dataRef[0][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[1][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
-	dataRef[][2]  = {6, 2}                                                   // AD6, DA2
-	str           = "select(channels(2, 6),[" + num2istr(sweepNo) + "],all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][2]  = {6, 2}                                                                       // AD6, DA2
+	dataRef[][3]  = NaN
+	str           = "select(selchannels(2, 6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(2, 3) dataRef
+	Make/FREE/N=(2, 4) dataRef
 	dataRef[][0] = sweepNo
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {6, 7}                                                 // AD6, AD7
-	str          = "select(channels(AD),[" + num2istr(sweepNo) + "],all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][2] = {6, 7}                                                                     // AD6, AD7
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
 	// non-existing sweeps are ignored
-	str = "select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1337) + "],all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	str = "select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1337) + "),selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = 3
 	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {0}                                               // DA0 (unassoc)
-	str          = "select(channels(DA0),[" + num2istr(3) + "],all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][2] = {0}                                                                   // DA0 (unassoc)
+	dataRef[][3] = NaN
+	str          = "select(selchannels(DA0),selsweeps(" + num2istr(3) + "),selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = 3
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {1}                                               // AD1 (unassoc)
-	str          = "select(channels(AD1),[" + num2istr(3) + "],all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][2] = {1}                                                                   // AD1 (unassoc)
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD1),selsweeps(" + num2istr(3) + "),selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = 3
 	dataRef[][1] = WhichListItem("TTL", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {2}                                                // TTL2
-	str          = "select(channels(TTL2),[" + num2istr(3) + "],all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][2] = {2}                                                                    // TTL2
+	dataRef[][3] = NaN
+	str          = "select(selchannels(TTL2),selsweeps(" + num2istr(3) + "),selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
 	// clamp mode set filters has no effect on TTL
-	str = "select(channels(TTL2),[" + num2istr(3) + "],all,vc)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	str = "select(selchannels(TTL2),selsweeps(" + num2istr(3) + "),selvis(all),selcm(vc))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
 	// clamp mode set filters on DA/AD
-	str = "select(channels(AD1),[" + num2istr(3) + "],all,vc)"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	CHECK_WAVE(data, NULL_WAVE)
-	str = "select(channels(DA0),[" + num2istr(3) + "],all,vc)"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	CHECK_WAVE(data, NULL_WAVE)
+	str = "select(selchannels(AD1),selsweeps(" + num2istr(3) + "),selvis(all),selcm(vc))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
+	str = "select(selchannels(DA0),selsweeps(" + num2istr(3) + "),selvis(all),selcm(vc))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	Make/FREE/N=(4, 3) dataRef
-	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}                                         // sweep 0, 1 with 2 AD channels each
+	Make/FREE/N=(4, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}                                                             // sweep 0, 1 with 2 AD channels each
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {6, 7, 6, 7}                                                                         // AD6, AD7, AD6, AD7
-	str          = "select(channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][2] = {6, 7, 6, 7}                                                                                             // AD6, AD7, AD6, AD7
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(2, 3) dataRef
+	Make/FREE/N=(2, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo + 1}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {6, 6}                                                                                // AD6, AD6
-	str          = "select(channels(AD6),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][2] = {6, 6}                                                                                                    // AD6, AD6
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(6, 3) dataRef
+	Make/FREE/N=(6, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo, sweepNo + 1, sweepNo + 1, sweepNo + 1}
 	chanList     = "AD;DA;DA;AD;DA;DA;"
 	dataRef[][1] = WhichListItem(StringFromList(p, chanList), XOP_CHANNEL_NAMES)
-	dataRef[][2] = {6, 2, 3, 6, 2, 3}                                                                        // AD6, DA2, DA3, AD6, DA2, DA3
-	str          = "select(channels(AD6, DA),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][2] = {6, 2, 3, 6, 2, 3}                                                                                            // AD6, DA2, DA3, AD6, DA2, DA3
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD6, DA),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
 	// No existing sweeps
-	str = "select(channels(AD6, DA),[" + num2istr(sweepNo + 1337) + "],all)"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE(!WaveExists(data))
+	str = "select(selchannels(AD6, DA),selsweeps(" + num2istr(sweepNo + 1337) + "),selvis(all))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
 
 	// No existing channels
-	str = "select(channels(AD0),[" + num2istr(sweepNo) + "],all)"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE(!WaveExists(data))
+	str = "select(selchannels(AD0),selsweeps(" + num2istr(sweepNo) + "),selvis(all))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	// Invalid channels
-	try
-		str = "select([0, 6],[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "],all)"
-		WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-		FAIL()
-	catch
-		PASS()
-	endtry
+	str = "select(selvis(all),selrange([1,2]))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE rngSet  = comp[1]
+	WAVE      dataRng = rngSet[0]
+	CHECK_EQUAL_WAVES(dataRng, {1, 2}, mode = WAVE_DATA | DIMENSION_SIZES)
+
+	str = "select(selvis(all),select(selrange([1,2])))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/WAVE rngSet  = comp[1]
+	WAVE      dataRng = rngSet[0]
+	CHECK_EQUAL_WAVES(dataRng, {-Inf, Inf}, mode = WAVE_DATA | DIMENSION_SIZES)
 
 	// Setup graph with equivalent data for displayed parameter
 	TUD_Clear(win)
@@ -2083,13 +2586,15 @@ static Function TestOperationSelect()
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode", "GUIChannelNumber"},                                                        \
-			                         {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode), StringFromList(j, channelNumberList)})
+			WAVE numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			WAVE textualValues   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "textualValues", "numericalValues", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode", "GUIChannelNumber", "SweepMapIndex"},                                                                                        \
+			                         {"blah", GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2), GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode), StringFromList(j, channelNumberList), "NaN"})
 		endfor
 	endfor
 
 	sweepNo = 0
-	Make/FREE/N=(8, 3) dataRef
+	Make/FREE/N=(8, 4) dataRef
 	dataRef[0, 3][0] = sweepNo
 	dataRef[4, 7][0] = sweepNo + 1
 	dataRef[0, 1][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
@@ -2097,108 +2602,251 @@ static Function TestOperationSelect()
 	dataRef[4, 5][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[6, 7][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
 	dataRef[][2]     = {6, 7, 2, 3, 6, 7, 2, 3}
+	dataRef[][3]     = NaN
 	str              = "select()"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(select())"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(4, 3) dataRef
+	Make/FREE/N=(4, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 7, 6, 7}
-	str          = "select(channels(AD),sweeps(),displayed)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD),selsweeps(),selvis(displayed))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selchannels(AD),selsweeps())"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	str = "select(channels(AD),sweeps())"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
-
-	Make/FREE/N=(2, 3) dataRef
+	Make/FREE/N=(2, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo + 1}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 6}
-	str          = "select(channels(AD6),sweeps(),displayed,all)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD6),selsweeps(),selvis(displayed),selcm(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(select(selchannels(AD6)),selchannels(AD))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(select(selchannels(AD6)),selchannels(6))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(select(selchannels(AD6)),selchannels(5))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
+	str = "select(select(selchannels(AD6)),selchannels(DA))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
+	str = "select(select(selchannels(AD6),selsweeps()),selsweeps(0,1))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(select(selchannels(AD6),selsweeps()),selsweeps(2))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
+	str = "select(select(selchannels(AD6)),selvis(displayed))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(select(selchannels(AD6)),selvis(all))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {sweepNo}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6}
-	str          = "select(channels(AD6),sweeps(),displayed, ic)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][3] = NaN
+	str          = "select(select(selchannels(AD6),selcm(all)),selcm(ic))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	dataRef[][0] = {sweepNo + 1}
+	str          = "select(select(selchannels(AD6),selcm(all)),selcm(vc))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	dataRef[][0] = {sweepNo}
+	str          = "select(select(selchannels(AD)),selstimset(stimsetSweep0HS0),selsweeps(0))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(select(selchannels(AD),selstimset(\"stimset*\")),selstimset(stimsetSweep0HS0),selsweeps(0))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(select(selchannels(AD),selstimset(\"stimsetSweep1*\")),selstimset(\"stimsetSweep0*\"),selsweeps(0))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(2, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo + 1}                           // both sweeps have the same SCI
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 6}
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD6),selivsccsetqc(passed))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(select(selchannels(AD6)),selivsccsetqc(passed))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selchannels(AD6),selsweeps(0),selivsccsetqc(failed))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
+	str = "select(select(selchannels(AD6),selivsccsetqc(passed)),selivsccsetqc(failed))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
+
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {sweepNo + 1}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6}
-	str          = "select(channels(AD6),sweeps(),displayed, vc)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD6),selivsccsweepqc(passed))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(select(selchannels(AD6)),selivsccsweepqc(passed))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selchannels(AD6),selsweeps(1),selivsccsweepqc(failed))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
+	str = "select(select(selchannels(AD6),selivsccsweepqc(passed)),selivsccsweepqc(failed))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	str = "select(channels(AD6),sweeps(),displayed, izero)"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	CHECK(!WaveExists(data))
+	Make/FREE/N=(2, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 6}
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD6),selexp(" + GetExperimentName() + "))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selchannels(AD6),seldev(ITC16_Dev_0))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	Make/FREE/N=(2, 4) dataRef
+	dataRef[][0]  = {sweepNo}
+	dataRef[0][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[1][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
+	dataRef[][2]  = {6, 2}
+	dataRef[][3]  = NaN
+	str           = "select(selsetcyclecount(711))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selsetsweepcount(635))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	// sweep 0 and sweep 1 are set to the same SCI and the same RAC
+	Make/FREE/N=(2, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 6}
+	dataRef[][3] = NaN
+	str          = "select(selsweeps(0), selchannels(AD6), selexpandrac())"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selsweeps(0), selchannels(AD6), selexpandsci())"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	// sweepNr ChannelNumber RAC
+	// 0 6 49
+	// 0 7 49
+	// 1 6 49
+	// 1 7 49
+	// 2 6 50
+	// 2 7 50
+
+	Make/FREE/N=(4, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7, 6, 7}
+	dataRef[][3] = NaN
+	str          = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selracindex(0))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	Make/FREE/N=(2, 4) dataRef
+	dataRef[][0] = {sweepNo + 2, sweepNo + 2}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7}
+	dataRef[][3] = NaN
+	str          = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selracindex(1))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	str = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selracindex(999))"
+	TestOperationSelectCompareWithFullRange(win, str, $"")
+
+	str = "select(selsweeps(3), selvis(all), selchannels(AD), selracindex(0))"
+	TestOperationSelectCompareWithFullRange(win, str, $"")
+
+	// sweepNr ChannelNumber Headstage SCI
+	// 0 6 0 43
+	// 0 7 1 45
+	// 1 6 0 43
+	// 1 7 1 46 <- index 1 for HS1
+	// 2 6 0 44 <- index 1 for HS0
+	// 2 7 1 46 <- index 1 for HS1 (same SCI 46)
+
+	Make/FREE/N=(3, 4) dataRef
+	dataRef[][0] = {sweepNo + 2, sweepNo + 1, sweepNo + 2}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 7, 7}
+	dataRef[][3] = NaN
+	str          = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selsciindex(1))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	Make/FREE/N=(3, 4) dataRef
+	dataRef[][0] = {sweepNo, sweepNo + 1, sweepNo}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6, 6, 7}
+	dataRef[][3] = NaN
+	str          = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selsciindex(0))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	str = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selsciindex(999))"
+	TestOperationSelectCompareWithFullRange(win, str, $"")
+
+	str = "select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selsciindex(0),select(selsweeps([0, 1, 2]), selvis(all), selchannels(AD), selsciindex(999)))"
+	TestOperationSelectCompareWithFullRange(win, str, $"")
+
+	str = "select(selsweeps(3), selvis(all), selchannels(AD), selsciindex(0))"
+	TestOperationSelectCompareWithFullRange(win, str, $"")
+
+	Make/FREE/N=(1, 4) dataRef
+	dataRef[][0] = {sweepNo}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6}
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD6),selsweeps(),selvis(displayed), selcm(ic))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	Make/FREE/N=(1, 4) dataRef
+	dataRef[][0] = {sweepNo + 1}
+	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
+	dataRef[][2] = {6}
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD6),selsweeps(),selvis(displayed), selcm(vc))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+
+	str = "select(selchannels(AD6),selsweeps(),selvis(displayed), selcm(izero))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
 
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}
 	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {2, 3, 2, 3}
-	str          = "select(channels(DA),sweeps())"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][3] = NaN
+	str          = "select(selchannels(DA),selsweeps())"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
-	Make/FREE/N=(6, 3) dataRef
+	Make/FREE/N=(6, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo, sweepNo + 1, sweepNo + 1, sweepNo + 1}
 	chanList     = "AD;AD;DA;AD;AD;DA;"
 	dataRef[][1] = WhichListItem(StringFromList(p, chanList), XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 7, 2, 6, 7, 2}
-	str          = "select(channels(DA2, AD),sweeps())"                               // note: channels are sorted AD, DA...
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][3] = NaN
+	str          = "select(selchannels(DA2, AD),selsweeps())"                         // note: channels are sorted AD, DA...
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
 	// No existing sweeps
-	str = "select(channels(AD6, DA),[" + num2istr(sweepNo + 1337) + "])"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE(!WaveExists(data))
+	str = "select(selchannels(AD6, DA),selsweeps(" + num2istr(sweepNo + 1337) + "))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
 
 	// No existing channels
-	str = "select(channels(AD0),[" + num2istr(sweepNo) + "])"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE(!WaveExists(data))
-
-	// Invalid channels
-	try
-		str = "select([0, 6],[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "])"
-		WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	str = "select(1)"
-	try
-		WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	str = "select(channels(AD), sweeps(), 1)"
-	try
-		WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	str = "select(channels(AD), sweeps(), all, 1)"
-	try
-		WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-		FAIL()
-	catch
-		PASS()
-	endtry
+	str = "select(selchannels(AD0),selsweeps(" + num2istr(sweepNo) + "))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
 
 	// Setup graph for unassoc DA/AD and TTL
 	numSweeps         = 1
@@ -2218,46 +2866,51 @@ static Function TestOperationSelect()
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode", "GUIChannelNumber", "AssociatedHeadstage"},                                              \
-			                         {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode), StringFromList(j, channelNumberList), num2istr(0)})
+			WAVE numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+			WAVE textualValues   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "textualValues", "numericalValues", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "clampMode", "GUIChannelNumber", "AssociatedHeadstage", "SweepMapIndex"},                                                                              \
+			                         {"blah", GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2), GetWavesDataFolder(wv, 2), "Sweep", "0", StringFromList(j, channelTypeList), StringFromList(j, channelNumberList), num2istr(sweepNo), num2istr(clampMode), StringFromList(j, channelNumberList), num2istr(0), "NaN"})
 		endfor
 	endfor
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {0}
 	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {0}
-	str          = "select(channels(DA0),sweeps(),displayed)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][3] = NaN
+	str          = "select(selchannels(DA0),selsweeps(),selvis(displayed))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selchannels(DA0),selsweeps(),selvis(displayed),selcm(none))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selchannels(DA0),selsweeps(),selvis(displayed),selcm(vc))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {0}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {1}
-	str          = "select(channels(AD1),sweeps(),displayed)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][3] = NaN
+	str          = "select(selchannels(AD1),selsweeps(),selvis(displayed))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selchannels(AD1),selsweeps(),selvis(displayed),selcm(none))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
+	str = "select(selchannels(AD1),selsweeps(),selvis(displayed),selcm(vc))"
+	WAVE/WAVE comp    = SF_ExecuteFormula(str, win, useVariables = 0)
+	WAVE/Z    dataSel = comp[0]
+	CHECK_WAVE(dataSel, NULL_WAVE)
 
-	Make/FREE/N=(1, 3) dataRef
+	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = {0}
 	dataRef[][1] = WhichListItem("TTL", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {2}
-	str          = "select(channels(TTL2),sweeps(),displayed)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
+	dataRef[][3] = NaN
+	str          = "select(selchannels(TTL2),selsweeps(),selvis(displayed))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 	// clamp mode set filters has no effect on TTL
-	str = "select(channels(TTL2),sweeps(),displayed,vc)"
-	WAVE data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_SIZES)
-
-	// clamp mode set filters on DA/AD
-	str = "select(channels(AD1),sweeps(),displayed,vc)"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	CHECK_WAVE(data, NULL_WAVE)
-	str = "select(channels(DA0),sweeps(),displayed,vc)"
-	WAVE/Z data = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
-	CHECK_WAVE(data, NULL_WAVE)
+	str = "select(selchannels(TTL2),selsweeps(),selvis(displayed),selcm(vc))"
+	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
 	// workaround permanent waves being present
 	wvList = GetListOfObjects(GetDataFolderDFR(), "data*")
@@ -2446,4 +3099,34 @@ static Function BasicMathMismatchedWaves([string str])
 
 	error = ROStr(GetSweepFormulaParseErrorMessage())
 	CHECK_EQUAL_STR(error, opShort + ": wave size mismatch [2, 0, 0, 0] vs [1, 2, 0, 0]")
+End
+
+static Function DefaultFormulaWorks()
+
+	variable sweepNo, numChannels
+	string str
+	string win, device
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	sweepNo = 0
+	win     = CreateFakeSweepData(win, device, sweepNo = sweepNo)
+
+	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
+	Make/FREE/N=0 sweepTemplate
+	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+
+	str = SF_GetDefaultFormula()
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 1)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	// If the default formula changes the following checks need to be adapted
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), numChannels / 2)
+	WAVE chan1 = dataWref[0]
+	WAVE chan3 = dataWref[1]
+	Duplicate/FREE/RMD=[][1] sweepRef, chan1Ref
+	Redimension/N=(-1) chan1Ref
+	Duplicate/FREE/RMD=[][3] sweepRef, chan3Ref
+	Redimension/N=(-1) chan3Ref
+	CHECK_EQUAL_WAVES(chan1, chan1Ref, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(chan3, chan3Ref, mode = WAVE_DATA)
 End

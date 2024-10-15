@@ -190,7 +190,7 @@ static Function AD_FillWaves(win, list, info)
 	WAVE/T list, info
 
 	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ, acqState
-	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid, waMode
+	variable index, anaFuncType, stimsetCycleID, waMode
 	string key, anaFunc, stimset, msg, device, opMode
 
 	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
@@ -353,20 +353,7 @@ static Function AD_FillWaves(win, list, info)
 
 					break
 				case PSQ_RHEOBASE:
-					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
-					if(passed)
-						WAVE spikeDetection = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-						ASSERT(DimSize(sweeps, ROWS) == DimSize(spikeDetection, ROWS), "Unexpected wave sizes")
-
-						firstValid = DimSize(spikeDetection, ROWS) - 2
-						lastValid  = DimSize(spikeDetection, ROWS) - 1
-						ASSERT(Sum(spikeDetection, firstValid, lastValid) == 1, "Unexpected spike/non-spike duo")
-						Duplicate/FREE/R=[firstValid, lastValid] sweeps, passingSweeps
-						WAVE/Z failingSweeps = GetSetDifference(sweeps, passingSweeps)
-					else
-						Duplicate/FREE sweeps, failingSweeps
-						WAVE/Z passingSweeps
-					endif
+					[WAVE passingSweeps, WAVE failingSweeps] = AFH_GetRheobaseSweepsSCISweepQCSplitted(numericalValues, sweepNo, headstage, sweeps, passed)
 					break
 #ifdef AUTOMATED_TESTING
 				case TEST_ANALYSIS_FUNCTION: // fallthrough-by-design

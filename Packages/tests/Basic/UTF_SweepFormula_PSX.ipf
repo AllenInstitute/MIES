@@ -361,44 +361,58 @@ End
 
 static Function CheckSweepEquiv()
 
-	variable sweepNo, chanType, chanNr
+	variable sweepNo, chanType, chanNr, mapIndex
 
-	WAVE selectData = SFH_NewSelectDataWave(5, 1)
+	WAVE selectData = SFH_NewSelectDataWave(6, 1)
 
 	selectData[0][%SWEEP] = 1
 	selectData[1][%SWEEP] = 2
 	selectData[2][%SWEEP] = 3
 	selectData[3][%SWEEP] = 4
 	selectData[4][%SWEEP] = 5
+	selectData[5][%SWEEP] = 5
+
+	selectData[0][%SWEEPMAPINDEX] = 0
+	selectData[1][%SWEEPMAPINDEX] = 1
+	selectData[2][%SWEEPMAPINDEX] = 2
+	selectData[3][%SWEEPMAPINDEX] = 3
+	selectData[4][%SWEEPMAPINDEX] = 4
+	// different mapIndex but same sweepNo
+	selectData[5][%SWEEPMAPINDEX] = 5
 
 	selectData[0][%CHANNELNUMBER] = 10
 	selectData[1][%CHANNELNUMBER] = 30
 	selectData[2][%CHANNELNUMBER] = 10
 	selectData[3][%CHANNELNUMBER] = 20 // same sweep but different channel number
 	selectData[4][%CHANNELNUMBER] = 10
+	selectData[5][%CHANNELNUMBER] = 10
 
 	selectData[0][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
 	selectData[1][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
 	selectData[2][%CHANNELTYPE] = XOP_CHANNEL_TYPE_TTL // same sweep bug different channel type
 	selectData[3][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
 	selectData[4][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
+	selectData[5][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
 
 	// sweep 1 and 5 are a group the rest is separate
 
 	WAVE/Z selectDataEquiv = MIES_PSX#PSX_GenerateSweepEquiv(selectData)
-	CHECK_WAVE(selectDataEquiv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+	CHECK_WAVE(selectDataEquiv, TEXT_WAVE | FREE_WAVE)
 
-	Make/FREE ref = {{1, 2, 3, 4}, {5, NaN, NaN, NaN}}
+	Make/FREE/T ref = {{"SweepNo1_MapIndex0", "SweepNo2_MapIndex1", "SweepNo3_MapIndex2", "SweepNo4_MapIndex3"}, \
+	                   {"SweepNo5_MapIndex4", "", "", ""},                                                       \
+	                   {"SweepNo5_MapIndex5", "", "", ""}}
 	CHECK_EQUAL_WAVES(selectDataEquiv, ref, mode = WAVE_DATA)
 
 	Make/T/N=(4)/FREE refLabels = MIES_PSX#PSX_BuildSweepEquivKey(selectData[p][%CHANNELTYPE], selectData[p][%CHANNELNUMBER])
 	Make/T/N=(4)/FREE labels = GetDimLabel(selectDataEquiv, ROWS, p)
 	CHECK_EQUAL_WAVES(refLabels, labels, mode = WAVE_DATA)
 
-	[chanNr, chanType, sweepNo] = MIES_PSX#PSX_GetSweepEquivKeyAndSweep(selectDataEquiv, 0, 1)
+	[chanNr, chanType, sweepNo, mapIndex] = MIES_PSX#PSX_GetSweepEquivKeyAndValue(selectDataEquiv, 0, 1)
 	CHECK_EQUAL_VAR(sweepNo, 5)
 	CHECK_EQUAL_VAR(chanType, XOP_CHANNEL_TYPE_ADC)
 	CHECK_EQUAL_VAR(chanNr, 10)
+	CHECK_EQUAL_VAR(mapIndex, 4)
 End
 
 Function [WAVE range, WAVE selectData] GetFakeRangeAndSelectData()
@@ -410,6 +424,7 @@ Function [WAVE range, WAVE selectData] GetFakeRangeAndSelectData()
 	selectData[0][%SWEEP]         = 1
 	selectData[0][%CHANNELTYPE]   = XOP_CHANNEL_TYPE_ADC
 	selectData[0][%CHANNELNUMBER] = 3
+	selectData[0][%SWEEPMAPINDEX] = NaN
 
 	return [range, selectData]
 End
@@ -664,7 +679,7 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 	Redimension/N=(10, -1) psxEvent
 
 	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range)
-	ref      = "Range[100, 200], Sweep [1], Channel [AD3], Device [ITC16_Dev_0]"
+	sprintf ref, "Range[100, 200], Sweep [1], Channel [AD3], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
 	CHECK_EQUAL_STR(comboKey, ref)
 
 	id = "myID"
@@ -1052,7 +1067,7 @@ static Function TestOperationPSXKernel()
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSXKernel)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSXKernel)
 
-	str = "psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -5)"
+	str = "psxKernel(select(selRange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 6)
@@ -1088,7 +1103,7 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
 
 	// no data from select statement
-	str = "psxKernel([50, 150], select(channels(AD15), [0]), 1, 15, -5)"
+	str = "psxKernel(select(selrange([50, 150]), selchannels(AD15), selsweeps(0)), 1, 15, -5)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1097,7 +1112,7 @@ static Function TestOperationPSXKernel()
 	endtry
 
 	// no data from this sweep statement
-	str = "psxKernel(ABCD, select(channels(AD6), [0, 2], all), 1, 15, -5)"
+	str = "psxKernel(select(selRange(ABCD), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1139,13 +1154,19 @@ End
 
 /// IUTF_TD_GENERATOR v0:GetKernelAmplitude
 static Function TestOperationPSX([STRUCT IUTF_mData &m])
-	string win, device, str
+	string win, device, str, comboKey
 	variable jsonID, kernelAmp
 
 	kernelAmp = m.v0
 
-	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
-	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	Make/FREE/T/N=2 combos
+
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	// all decay fits are successfull
@@ -1156,7 +1177,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, " + num2str(kernelAmp) + "), 2.5, 100, 0)"
+	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, " + num2str(kernelAmp) + "), 2.5, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 2 * 7)
@@ -1187,13 +1208,13 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	JSON_Release(jsonID)
 
 	// check that plain psx does not error out
-	str = "psx(id, psxKernel([50, 150], select(channels(AD6), [0, 2], all)))"
+	str = "psx(id, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_NO_RTE()
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
 	// complains without events found
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 5000, 15, -5), 25, 100, 0)"
+	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 5000, 15, -5), 25, 100, 0)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1203,10 +1224,13 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 End
 
 static Function TestOperationPSXTooLargeDecayTau()
-	string win, device, str
+	string win, device, str, comboKey
 	variable jsonID
 
-	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]"}
+	Make/FREE/T/N=1 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(2, combos)
 
 	// all decay fits are successfull
@@ -1218,7 +1242,7 @@ static Function TestOperationPSXTooLargeDecayTau()
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
 	win = CreateFakeSweepData(win, device, sweepNo = 2, sweepGen = FakeSweepDataGeneratorPSX)
 
-	str = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0], all), 1, 15, -5), 10, 100, 0)"
+	str = "psx(myID, psxKernel(select(selrange([50, 150]),selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5), 10, 100, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
@@ -1307,10 +1331,15 @@ End
 
 static Function MouseSelectionPSX()
 
-	string browser, device, code, psxPlot, win
+	string browser, device, code, psxPlot, win, comboKey
 
-	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
-	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"] = 1
@@ -1324,7 +1353,7 @@ static Function MouseSelectionPSX()
 
 	browser = MIES_DB#DB_LockToDevice(browser, device)
 
-	code = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 5, 100, 0)"
+	code = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 5, 100, 0)"
 
 	// combo0 is the current one
 
@@ -1465,11 +1494,14 @@ End
 /// UTF_TD_GENERATOR s0:SupportedPostProcForEventSelection
 static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 
-	string win, browser, code, psxGraph, psxStatsGraph, postProc
+	string win, browser, code, psxGraph, psxStatsGraph, postProc, comboKey
 	variable numEvents, logMode
 
-	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
-	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"] = 1
@@ -1553,10 +1585,13 @@ End
 
 static Function MouseSelectionStatsPostProcNonFinite()
 
-	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames, comboKey
 
-	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
-	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[1][%$combos[0]][%$"Fit Result"] = 1
@@ -1677,9 +1712,11 @@ static Function/S GetTestCode(string postProc, [string eventState, string prop])
 		prop = "xpos"
 	endif
 
-	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 1.5, 100, 0)"
+	code = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 5, 100, 0)"
+
+	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 1.5, 100, 0)"
 	code += "\r and \r"
-	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), " + prop + ", " + eventState + ", " + postProc + ")"
+	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), " + prop + ", " + eventState + ", " + postProc + ")"
 
 	return code
 End
@@ -1694,11 +1731,11 @@ static Function/WAVE GetCodeVariations()
 	code  = ""
 
 	// one sweep per operation separated with `with`
-	code  = "psx(myId, psxKernel([50, 150], select(channels(AD6), [0], all)), 10, 100, 0)"
+	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 10, 100, 0)"
 	code += "\r with \r"
-	code += "psx(myId, psxKernel([50, 150], select(channels(AD6), [2], all)), 2.5, 100, 0)"
+	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 2.5, 100, 0)"
 	code += "\r and \r"
-	code += "psxStats(myId, [50, 150], select(channels(AD6), [0, 2], all), xpos, all, nothing)"
+	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), xpos, all, nothing)"
 	wv[1] = code
 	code  = ""
 
@@ -2120,10 +2157,13 @@ End
 
 static Function KeyboardInteractions()
 
-	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames, comboKey
 
-	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
-	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"] = 1
@@ -2336,10 +2376,14 @@ End
 
 static Function KeyboardInteractionsStats()
 
-	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames, comboKey
 
-	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
-	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"] = 1
@@ -2563,10 +2607,14 @@ End
 
 static Function KeyboardInteractionsStatsSpecial()
 
-	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames, comboKey
 
-	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
-	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"] = 1
@@ -2629,10 +2677,13 @@ End
 
 static Function KeyboardInteractionsStatsPostProcNonFinite()
 
-	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames, comboKey
 
-	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
-	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[1][%$combos[0]][%$"Fit Result"] = 1
@@ -2967,7 +3018,7 @@ static Function TestOperationPrep()
 
 	win = CreateFakeSweepData(win, device, sweepNo = 0, sweepGen = FakeSweepDataGeneratorPSX)
 
-	psxCode = "psx(myID, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -5), 2.5, 100, 0)"
+	psxCode = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5), 2.5, 100, 0)"
 	sprintf code, "psxPrep(%s)", psxCode
 
 	WAVE/WAVE dataWref = SF_ExecuteFormula(code, win, useVariables = 0)
@@ -3004,10 +3055,13 @@ End
 
 static Function TestStoreAndLoad()
 
-	string browser, code, psxGraph, win, mainWindow, specialEventPanel, extAllGraph, bsPanel
+	string browser, code, psxGraph, win, mainWindow, specialEventPanel, extAllGraph, bsPanel, comboKey
 
-	Make/FREE/T combos = {"Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0]", \
-	                      "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0]"}
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	overrideResults[][][%$"Fit Result"] = 1

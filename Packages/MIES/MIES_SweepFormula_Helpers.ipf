@@ -13,6 +13,7 @@
 static StrConstant SFH_WORKING_DF                     = "FormulaData"
 static StrConstant SFH_ARGSETUP_OPERATION_KEY         = "Operation"
 static StrConstant SFH_ARGSETUP_EMPTY_OPERATION_VALUE = "NOOP"
+static StrConstant SFH_DEFAULT_SELECT_FORMULA         = "select()"
 
 threadsafe Function SFH_StringChecker_Prototype(string str)
 	ASSERT_TS(0, "Can't call prototype function")
@@ -414,9 +415,10 @@ End
 /// @param sweep     number of sweep
 /// @param chanType  type of channel
 /// @param channel   number of DA channel
+/// @param mapIndex  index in sweepMap, required if source is a SweepBrowser
 ///
 /// @returns a 1D wave with two elements, [startTime, endTime] in ms, if no epoch could be resolved [NaN, NaN] is returned
-Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable chanType, variable channel)
+Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable chanType, variable channel, variable mapIndex)
 
 	string   regex
 	variable numEpochs
@@ -426,18 +428,13 @@ Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable swe
 		return range
 	endif
 
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
-	if(!WaveExists(numericalValues))
+	DFREF sweepDFR
+	[WAVE numericalValues, WAVE textualValues, sweepDFR] = SFH_GetLabNoteBooksAndDFForSweep(graph, sweep, mapIndex)
+	if(!WaveExists(numericalValues) || !WaveExists(textualValues))
 		return range
 	endif
-
-	WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweep)
-	if(!WaveExists(textualValues))
-		return range
-	endif
-
-	DFREF sweepDFR = BSP_GetSweepDF(graph, sweep)
 	SFH_ASSERT(DataFolderExistsDFR(sweepDFR), "Could not determine sweepDFR")
+
 	regex = "^" + epochName + "$"
 	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, chanType, channel, regex, sweepDFR = sweepDFR)
 	if(!WaveExists(epochs))
@@ -455,6 +452,39 @@ Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable swe
 	return range
 End
 
+Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/Z/WAVE selectDataArray, string opShort)
+
+	if(!WaveExists(selectDataArray))
+		return $""
+	endif
+
+	WAVE/WAVE/Z result = $""
+
+	for(WAVE/Z/WAVE selectDataComp : selectDataArray)
+
+		WAVE/Z/WAVE sweepData = SFH_GetSweepsForFormulaImpl(graph, selectDataComp, opShort)
+		if(!WaveExists(sweepData))
+			continue
+		endif
+
+		if(!WaveExists(result))
+			WAVE/WAVE result = sweepData
+			continue
+		endif
+
+		Concatenate/FREE/WAVE/NP {sweepData}, result
+	endfor
+
+	if(WaveExists(result))
+		return result
+	endif
+
+	WAVE/WAVE result = SFH_CreateSFRefWave(graph, opShort, 0)
+	JWN_SetStringInWaveNote(result, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
+
+	return result
+End
+
 /// @brief Return a wave reference wave with the requested sweep data. The argument range can contain multiple datasets,
 ///        if it is a single dataset the range(s) are extracted from each selection,
 ///        if there are multiple datasets then the number of datasets must equal the number of selections,
@@ -463,27 +493,26 @@ End
 ///
 /// All wave input parameters are treated as const and are thus *not* modified.
 ///
-/// @param graph      name of databrowser graph
-/// @param range      wave ref wave with range specification defining the x-range of the extracted
-///                   data, see also SFH_EvaluateRange(), range specification per dataset can be numerical or text
-/// @param selectData channel/sweep selection, see also SFH_GetArgumentSelect()
-/// @param opShort    operation name (short)
-Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z selectData, string opShort)
+/// @param graph          name of databrowser graph
+/// @param selectDataComp channel/sweep selection composite, see also SFH_GetArgumentSelect()
+/// @param opShort        operation name (short)
+static Function/WAVE SFH_GetSweepsForFormulaImpl(string graph, WAVE/WAVE selectDataComp, string opShort)
 
 	variable i, j, rangeStart, rangeEnd, sweepNo, isSingleRange
-	variable chanNr, chanType, cIndex, isSweepBrowser
+	variable chanNr, chanType, cIndex, isSweepBrowser, mapIndex
 	variable numSelected, index, numRanges, sweepSize, samplingInterval, samplingOffset
 	variable rangeStartIndex, rangeEndIndex
-	string dimLabel, device, dataFolder
+	string dimLabel, device, experiment
 	ASSERT(WindowExists(graph), "graph window does not exist")
 
-	isSingleRange = DimSize(range, ROWS) == 1
-	if(!WaveExists(selectData) || DimSize(range, ROWS) == 0)
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
-		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
-		return output
+	WAVE/Z    selectData = selectDataComp[%SELECTION]
+	WAVE/WAVE range      = selectDataComp[%RANGE]
+
+	if(!WaveExists(selectData) || !DimSize(range, ROWS))
+		return $""
 	endif
-	SFH_ASSERT(DimSize(selectData, COLS) == 3, "Select data must have 3 columns.")
+	SFH_ASSERT(DimSize(selectData, COLS) == 4, "Select data must have 4 columns.")
+	isSingleRange = DimSize(range, ROWS) == 1
 
 	numSelected = DimSize(selectData, ROWS)
 	if(!isSingleRange)
@@ -493,14 +522,11 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numSelected)
 
 	isSweepBrowser = BSP_IsSweepBrowser(graph)
-
 	if(isSweepBrowser)
-		DFREF  sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-		WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
+		WAVE/T sweepMap = SB_GetSweepMap(graph)
 	else
-		SFH_ASSERT(BSP_HasBoundDevice(graph), "No device bound.")
-		device = BSP_GetDevice(graph)
-		DFREF deviceDFR = GetDeviceDataPath(device)
+		experiment = GetExperimentName()
+		device     = BSP_GetDevice(graph)
 	endif
 
 	for(i = 0; i < numSelected; i += 1)
@@ -511,27 +537,24 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 			continue
 		endif
 
-		sweepNo  = selectData[i][%SWEEP]
+		sweepNo = selectData[i][%SWEEP]
+		if(!isSweepBrowser && DB_SplitSweepsIfReq(graph, sweepNo))
+			continue
+		endif
 		chanNr   = selectData[i][%CHANNELNUMBER]
 		chanType = selectData[i][%CHANNELTYPE]
+		mapIndex = selectData[i][%SWEEPMAPINDEX]
 
-		if(isSweepBrowser)
-			DFREF deviceDFR = SB_GetSweepDataFolder(sweepMap, sweepNo = sweepNo)
-
-			if(!DataFolderExistsDFR(deviceDFR))
-				continue
-			endif
-		else
-			if(DB_SplitSweepsIfReq(graph, sweepNo))
-				continue
-			endif
-		endif
-
-		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-		WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		DFREF sweepDFR
+		[WAVE numericalValues, WAVE textualValues, sweepDFR] = SFH_GetLabNoteBooksAndDFForSweep(graph, sweepNo, selectData[i][%SWEEPMAPINDEX])
 		SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
-
-		DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+		if(!DataFolderExistsDFR(sweepDFR))
+			continue
+		endif
+		if(isSweepBrowser)
+			device     = sweepMap[mapIndex][%Device]
+			experiment = sweepMap[mapIndex][%FileName]
+		endif
 
 		WAVE/Z sweep = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, chanType, chanNr)
 		if(!WaveExists(sweep))
@@ -540,7 +563,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 
 		WAVE/ZZ   adaptedRange
 		WAVE/T/ZZ epochRangeNames
-		[adaptedRange, epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, setRange, sweepNo, chanType, chanNr)
+		[adaptedRange, epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, setRange, sweepNo, chanType, chanNr, mapIndex)
 
 		if(!WaveExists(adaptedRange) && !WaveExists(epochRangeNames))
 			continue
@@ -586,12 +609,20 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/WAVE range, WAVE/Z sele
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetStringInWaveNote(rangedSweepData, SF_META_DEVICE, device)
+			JWN_SetStringInWaveNote(rangedSweepData, SF_META_EXPERIMENT, experiment)
+			if(!IsNaN(mapIndex))
+				JWN_SetNumberInWaveNote(rangedSweepData, SF_META_SWEEPMAPINDEX, mapIndex)
+			endif
 
 			EnsureLargeEnoughWave(output, indexShouldExist = index)
 			output[index] = rangedSweepData
 			index        += 1
 		endfor
 	endfor
+	if(!index)
+		return $""
+	endif
 	Redimension/N=(index) output
 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_SWEEP)
@@ -723,16 +754,35 @@ static Function SFH_ConvertAllReturnDataToPermanent(WAVE/WAVE output, string win
 	endfor
 End
 
+/// @brief Retrieves from an argument the datatype and the first dataset and disposes the argument
+Function [WAVE data, string dataType] SFH_ResolveDatasetElementFromJSONAndType(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist])
+
+	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
+
+	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+	dataType = JWN_GetStringFromWaveNote(input, SF_META_DATATYPE)
+	WAVE/Z data = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
+
+	return [data, dataType]
+End
+
+static Function/WAVE SFH_CheckForSingleDSAndGetData(WAVE/WAVE input, variable checkExist, string opShort, variable argNum)
+
+	SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
+	WAVE/Z data = input[0]
+	SFH_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet at operation " + opShort + " arg num " + num2istr(argNum))
+	SFH_CleanUpInput(input)
+
+	return data
+End
+
 /// @brief Retrieves from an argument the first dataset and disposes the argument
 Function/WAVE SFH_ResolveDatasetElementFromJSON(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [variable checkExist])
 
 	checkExist = ParamIsDefault(checkExist) ? 0 : !!checkExist
 
 	WAVE/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
-	SFH_ASSERT(DimSize(input, ROWS) == 1, "Expected only a single dataSet")
-	WAVE/Z data = input[0]
-	SFH_ASSERT(!(checkExist && !WaveExists(data)), "No data in dataSet at operation " + opShort + " arg num " + num2istr(argNum))
-	SFH_CleanUpInput(input)
+	WAVE/Z    data  = SFH_CheckForSingleDSAndGetData(input, checkExist, opShort, argNum)
 
 	return data
 End
@@ -837,21 +887,52 @@ Function SFH_TransferFormulaDataWaveNoteAndMeta(WAVE/WAVE input, WAVE/WAVE outpu
 	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, xLabel)
 End
 
+/// @brief This function returns an array of select composites that are parsed from one argument
+///        that can be either a single select: select(...)
+///        or an 1d array of selects: [select(...), select(...), ...]
+///        The distinction between a single select an array of selects is done through the SF_META_DATATYPE field in the JSON wavenote
+///        select composites are of type SF_DATATYPE_SELECTCOMP, whereas arrays are untyped
+///        There is also a quick path for argNum >= numArgs, which is the case for e.g. data()
+///        For that case numArgs is 0 and select is expected at argNum 0. Then the result of "select()" is
+///        returned (as selectArray with a single element)
+///
+///        selectArray is wave reference wave containing select composite wave reference waves with SELECTION, RANGE each.
+///
+///        This allows operations with selects as arguments to iterate over different selections given by the user
 Function/WAVE SFH_GetArgumentSelect(variable jsonId, string jsonPath, string graph, string opShort, variable argNum)
 
-	string msg
+	variable numArgs
+	string   type
 
-	WAVE/Z selectData = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, opShort, argNum, defOp = "select()", singleResult = 1)
+	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
+	if(argNum < numArgs)
 
-	if(WaveExists(selectData))
-		sprintf msg, "Argument #%d of operation %s: input must have three columns", argNum, opShort
-		SFH_ASSERT(DimSize(selectData, COLS) == 3, msg)
+		WAVE/WAVE selectComp = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		type = JWN_GetStringFromWaveNote(selectComp, SF_META_DATATYPE)
+		if(!CmpStr(type, SF_DATATYPE_SELECTCOMP))
+			Make/FREE/WAVE selectArray = {selectComp}
 
-		sprintf msg, "Argument #%d of operation %s: Must be numeric ", argNum, opShort
-		SFH_ASSERT(IsNumericWave(selectData), msg)
+			return selectArray
+		endif
+
+		SFH_ASSERT(DimSize(selectComp, ROWS) == 1, "Expected a single array")
+		WAVE array = selectComp[0]
+		SFH_ASSERT(IsTextWave(array), "Expected a text wave")
+
+		Make/FREE/WAVE/N=(DimSize(array, ROWS)) selectArray = SFH_AttemptDatasetResolve(WaveText(array, row = p), checkWithSFHAssert = 1)
+		for(WAVE/Z/WAVE selectComp : selectArray)
+			ASSERT(WaveExists(selectComp), "Expected select composite")
+			type = JWN_GetStringFromWaveNote(selectComp, SF_META_DATATYPE)
+			SFH_ASSERT(!CmpStr(type, SF_DATATYPE_SELECTCOMP), "Expected select data as argument")
+		endfor
+
+		return selectArray
 	endif
 
-	return selectData
+	WAVE selectComp = SF_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
+	Make/FREE/WAVE selectArray = {selectComp}
+
+	return selectArray
 End
 
 Function/WAVE SFH_GetEpochNamesFromInfo(WAVE/T epochInfo)
@@ -947,9 +1028,9 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 
-	WAVE/Z selectData = SF_ExecuteFormula("select()", graph, singleResult = 1, useVariables = 0)
-	if(WaveExists(selectData))
-		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData, ",", colSep = ";")
+	WAVE/WAVE/Z selectData = SF_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
+	if(WaveExists(selectData) && WaveExists(selectData[0]))
+		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData[0], ",", colSep = ";")
 	endif
 
 	shPanel = LBV_GetSettingsHistoryPanel(graph)
@@ -1012,10 +1093,11 @@ Function/WAVE SFH_NewSelectDataWave(variable numSweeps, variable numChannels)
 
 	ASSERT(numSweeps >= 0 && numChannels >= 0, "Invalid wave size specified")
 
-	Make/FREE/D/N=(numSweeps * numChannels, 3) selectData
+	Make/FREE/D/N=(numSweeps * numChannels, 4) selectData = NaN
 	SetDimLabel COLS, 0, SWEEP, selectData
 	SetDimLabel COLS, 1, CHANNELTYPE, selectData
 	SetDimLabel COLS, 2, CHANNELNUMBER, selectData
+	SetDimLabel COLS, 3, SWEEPMAPINDEX, selectData
 
 	return selectData
 End
@@ -1038,6 +1120,7 @@ Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sw
 	selectData[0][%SWEEP]         = JWN_GetNumberFromWaveNote(sweepData, SF_META_SWEEPNO)
 	selectData[0][%CHANNELTYPE]   = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELTYPE)
 	selectData[0][%CHANNELNUMBER] = JWN_GetNumberFromWaveNote(sweepData, SF_META_CHANNELNUMBER)
+	selectData[0][%SWEEPMAPINDEX] = JWN_GetNumberFromWaveNote(sweepData, SF_META_SWEEPMAPINDEX)
 
 	return [selectData, range]
 End
@@ -1322,15 +1405,16 @@ End
 /// equivalent from labnotebook entries.
 Function/WAVE SFH_GetStimsetRange(string graph, WAVE data, WAVE selectData)
 
-	variable sweepNo, channel, chanType, dDAQ, oodDAQ, onsetDelay, terminationDelay, lengthInMS
+	variable sweepNo, channel, chanType, mapIndex, dDAQ, oodDAQ, onsetDelay, terminationDelay, lengthInMS
 
 	sweepNo  = selectData[0][%SWEEP]
 	channel  = selectData[0][%CHANNELNUMBER]
 	chanType = selectData[0][%CHANNELTYPE]
+	mapIndex = selectData[0][%SWEEPMAPINDEX]
 
 	// stimset epoch "ST" does not include any onset or termination delay and only the stimset epochs
 	// and it also works with dDAQ/oodDAQ
-	WAVE range = SFH_GetRangeFromEpoch(graph, "ST", sweepNo, chanType, channel)
+	WAVE range = SFH_GetRangeFromEpoch(graph, "ST", sweepNo, chanType, channel, mapIndex)
 
 	if(!SFH_IsEmptyRange(range))
 		return range
@@ -1338,7 +1422,7 @@ Function/WAVE SFH_GetStimsetRange(string graph, WAVE data, WAVE selectData)
 
 	// data prior to 13b3499d (Add short names for Epochs stored in epoch name, 2021-09-06)
 	// try the long name instead
-	WAVE range = SFH_GetRangeFromEpoch(graph, "Stimset;", sweepNo, chanType, channel)
+	WAVE range = SFH_GetRangeFromEpoch(graph, "Stimset;", sweepNo, chanType, channel, mapIndex)
 
 	if(!SFH_IsEmptyRange(range))
 		return range
@@ -1346,7 +1430,7 @@ Function/WAVE SFH_GetStimsetRange(string graph, WAVE data, WAVE selectData)
 
 	// data prior to a2172f03 (Added generations of epoch information wave, 2019-05-22)
 	// remove total onset delay and termination delay iff we have neither dDAQ nor oodDAQ enabled
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
 	ASSERT(WaveExists(numericalValues), "Missing numerical labnotebook")
 
 	// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
@@ -1385,10 +1469,11 @@ End
 /// @param sweepNo         sweep number
 /// @param chanType        channel type
 /// @param chanNr          channel number
+/// @param mapIndex        index in sweepMap if graph is a SweepBrowser
 ///
 /// @retval adaptedRange    2xN numeric wave with the start/stop ranges [ms]
 /// @retval epochRangeNames epoch names (wildcard expanded) in case range was textual, a null wave ref otherwise
-Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoch(string graph, WAVE numericalValues, WAVE textualValues, WAVE range, variable sweepNo, variable chanType, variable chanNr)
+Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoch(string graph, WAVE numericalValues, WAVE textualValues, WAVE range, variable sweepNo, variable chanType, variable chanNr, variable mapIndex)
 
 	string epochTag, epochShortName
 	variable numEpochs, epIndex, i, j
@@ -1410,7 +1495,12 @@ Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoc
 	WAVE/T epochPatterns = range
 	SFH_ASSERT(IsTextWave(epochPatterns) && !DimSize(epochPatterns, COLS), "Expected 1d text wave for epoch specification")
 
-	DFREF sweepDFR = BSP_GetSweepDF(graph, sweepNo)
+	if(BSP_IsSweepBrowser(graph))
+		DFREF sweepDFR = SB_GetSweepDF(graph, mapIndex)
+	else
+		DFREF deviceDFR = DB_GetDeviceDF(graph)
+		DFREF sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
+	endif
 	SFH_ASSERT(DataFolderExistsDFR(sweepDFR), "Could not determine sweepDFR")
 	WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, chanType, chanNr, allEpochsRegex, sweepDFR = sweepDFR)
 	if(!WaveExists(epochInfo))
@@ -1439,17 +1529,26 @@ Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoc
 End
 
 /// @brief Attempt a resolution of a dataset based on a string input, returns null wave if not resolvable
-Function/WAVE SFH_AttemptDatasetResolve(string element)
+Function/WAVE SFH_AttemptDatasetResolve(string ref, [variable checkWithSFHAssert])
 
-	string wName
+	string   wName
+	variable cond
 
-	if(strsearch(element, SF_WREF_MARKER, 0) != 0)
+	checkWithSFHAssert = ParamisDefault(checkWithSFHAssert) ? 0 : !!checkWithSFHAssert
+
+	if(strsearch(ref, SF_WREF_MARKER, 0) != 0)
 		return $""
 	endif
 
-	wName = element[strlen(SF_WREF_MARKER), Inf]
+	wName = ref[strlen(SF_WREF_MARKER), Inf]
 	WAVE/Z out = $wName
-	ASSERT(WaveExists(out), "Referenced wave not found: " + wName)
+
+	cond = WaveExists(out)
+	if(checkWithSFHAssert)
+		SFH_ASSERT(cond, "Referenced wave not found: " + wName)
+	else
+		ASSERT(cond, "Referenced wave not found: " + wName)
+	endif
 
 	return out
 End
@@ -1569,4 +1668,172 @@ Function/WAVE SFH_MoveDatasetHigherIfCompatible(WAVE/WAVE data)
 	endif
 
 	return data
+End
+
+Function/WAVE SFH_GetSingleSelect(string graph, string opShort, variable sweepNo, variable channelType, variable channelNumber, variable mapIndex)
+
+	WAVE/WAVE range        = SFH_AsDataSet(SFH_GetFullRange())
+	WAVE      singleSelect = SFH_NewSelectDataWave(1, 1)
+	singleSelect[0][%SWEEP]         = sweepNo
+	singleSelect[0][%CHANNELTYPE]   = channelType
+	singleSelect[0][%CHANNELNUMBER] = channelNumber
+	singleSelect[0][%SWEEPMAPINDEX] = mapIndex
+
+	WAVE/WAVE selectDataComp = GetSFSelectDataComp(graph, opShort)
+	JWN_SetStringInWaveNote(selectDataComp, SF_META_DATATYPE, SF_DATATYPE_SELECTCOMP)
+	JWN_SetStringInWaveNote(singleSelect, SF_META_DATATYPE, SF_DATATYPE_SELECT)
+	JWN_SetStringInWaveNote(range, SF_META_DATATYPE, SF_DATATYPE_SELECTRANGE)
+	selectDataComp[%SELECTION] = singleSelect
+	selectDataComp[%RANGE]     = range
+
+	Make/FREE/WAVE selectDataArray = {selectDataComp}
+
+	return selectDataArray
+End
+
+Function/S SFH_GetStimsetName(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType)
+
+	variable index
+
+	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
+	ASSERT(WaveExists(settings), "Could not retrieve setName")
+
+	return WaveText(settings, row = index)
+End
+
+Function SFH_IsSetQCPassed(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType)
+
+	return SFH_GetIndepPSQEntrySCI(numericalValues, textualValues, sweepNo, channelNumber, channelType, PSQ_FMT_LBN_SET_PASS)
+End
+
+Function SFH_IsSweepQCPassed(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType)
+
+	return SFH_GetIndepPSQEntry(numericalValues, textualValues, sweepNo, channelNumber, channelType, PSQ_FMT_LBN_SWEEP_PASS)
+End
+
+static Function SFH_GetIndepPSQEntrySCI(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType, string psqLNBEntry)
+
+	variable type, waMode, headstage
+	string key
+
+	[type, waMode, headstage] = GetAnalysisFunctionType(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+	if(IsNaN(type))
+		return NaN
+	endif
+
+	key = CreateAnaFuncLBNKey(type, psqLNBEntry, query = 1, waMode = waMode)
+	return GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE, defValue = 0)
+End
+
+static Function SFH_GetIndepPSQEntry(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelNumber, variable channelType, string psqLNBEntry)
+
+	variable type, waMode, headstage, passed
+	string key
+
+	[type, waMode, headstage] = GetAnalysisFunctionType(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+	if(IsNaN(type))
+		return NaN
+	endif
+
+	if(type == PSQ_RHEOBASE && !CmpStr(psqLNBEntry, PSQ_FMT_LBN_SWEEP_PASS))
+		passed = SFH_IsSetQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+		WAVE sweepsSCI = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+		[WAVE passingSweeps, WAVE failingSweeps] = AFH_GetRheobaseSweepsSCISweepQCSplitted(numericalValues, sweepNo, headstage, sweepsSCI, passed)
+		if(WaveExists(passingSweeps))
+			FindValue/V=(sweepNo) passingSweeps
+			return V_value >= 0
+		endif
+
+		return 0
+	endif
+
+	key = CreateAnaFuncLBNKey(type, psqLNBEntry, query = 1, waMode = waMode)
+	return GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = 0)
+End
+
+Function/S SFH_CreateLegendFromRanges(WAVE selectData, WAVE/WAVE ranges)
+
+	variable i, prefixPerSelect
+	string prefix    = ""
+	string legendStr = ""
+
+	if(!DimSize(ranges, ROWS))
+		return ""
+	elseif(DimSize(ranges, ROWS) == 1)
+		prefix = "All sweeps "
+	elseif(DimSize(ranges, ROWS) == DimSize(selectData, ROWS))
+		prefixPerSelect = 1
+	else
+		SFH_ASSERT(0, "selectData != ranges row number")
+	endif
+	WAVE fullRange = SFH_GetFullRange()
+
+	for(WAVE range : ranges)
+		if(!WaveExists(range))
+			continue
+		endif
+		if(prefixPerSelect)
+			sprintf prefix, "%d %s%d ", selectData[i][%SWEEP], ChannelTypeToString(selectData[i][%CHANNELTYPE]), selectData[i][%CHANNELNUMBER]
+			i += 1
+		endif
+		if(IsNumericWave(range))
+			if(SFH_IsFullRange(range))
+				sprintf legendStr, "%s\r%sfull range", legendStr, prefix
+				continue
+			endif
+			sprintf legendStr, "%s\r%s%.3f - %.3f ms", legendStr, prefix, range[0], range[1]
+		elseif(IsTextWave(range))
+			sprintf legendStr, "%s\r%sepoch %s", legendStr, prefix, WaveText(range, row = 0)
+		else
+			SFH_ASSERT(0, "Unsupported range format")
+		endif
+	endfor
+	legendStr = ReplaceString("\r", legendStr, "Ranges:\r", 1, 1)
+
+	return legendStr
+End
+
+/// @brief Function returns the correct numerical and textual LNB and sweepDFR for a given sweepNumber
+///
+/// @param graph    name of graph window
+/// @param sweepNo  sweep number
+/// @param mapIndex if graph is a SweepBrowser then a non-NaN mapIndex into sweepMap, otherwise must be NaN
+Function [WAVE numericalValues, WAVE textualValues, DFREF sweepDFR] SFH_GetLabNoteBooksAndDFForSweep(string graph, variable sweepNo, variable mapIndex)
+
+	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
+
+	if(BSP_IsSweepBrowser(graph))
+		ASSERT(!IsNaN(mapIndex), "Can not work with NaN as mapIndex")
+		DFREF sweepDFR = SB_GetSweepDF(graph, mapIndex)
+
+		return [numericalValues, textualValues, sweepDFR]
+	endif
+
+	ASSERT(IsNaN(mapIndex), "Window is DataBrowser, but got a mapIndex into a sweepMap")
+	DFREF deviceDFR = DB_GetDeviceDF(graph)
+	DFREF sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
+
+	return [numericalValues, textualValues, sweepDFR]
+End
+
+/// @brief Function returns the correct numerical and textual LNB for a given sweepNumber
+///
+/// @param graph    name of graph window
+/// @param sweepNo  sweep number
+/// @param mapIndex if graph is a SweepBrowser then a non-NaN mapIndex into sweepMap, otherwise must be NaN
+Function [WAVE numericalValues, WAVE textualValues] SFH_GetLabNoteBooksForSweep(string graph, variable sweepNo, variable mapIndex)
+
+	if(BSP_IsSweepBrowser(graph))
+		ASSERT(!IsNaN(mapIndex), "Can not work with NaN as mapIndex")
+		WAVE/T sweepMap = SB_GetSweepMap(graph)
+		[WAVE numericalValues, WAVE textualValues] = SB_GetLabNotebooks(sweepMap, mapIndex)
+
+		return [numericalValues, textualValues]
+	endif
+
+	ASSERT(IsNaN(mapIndex), "Window is DataBrowser, but got a mapIndex into a sweepMap")
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+
+	return [numericalValues, textualValues]
 End

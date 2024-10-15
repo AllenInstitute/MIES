@@ -346,7 +346,60 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[2][0][0]   = "-"
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	// Set a acquisition cycle ID SCI
+	values[]        = NaN
+	values[0][0][0] = 43
+	values[0][0][1] = 45
+	keys[0][0][0]   = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]   = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set a repeated acquisition cycle RAC
+	values[]                      = NaN
+	values[0][0][INDEP_HEADSTAGE] = 49
+	keys[0][0][0]                 = RA_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]                 = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set set QC passed
+	values[]                      = NaN
+	values[0][0][INDEP_HEADSTAGE] = 1
+	keys[0][0][0]                 = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
+	keys[2][0][0]                 = "-"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, UNKNOWN_MODE)
+
+	// Set Set Cycle Count
+	values[]        = NaN
+	values[0][0][0] = 711
+	values[0][0][1] = 117
+	keys[0][0][0]   = "Set Cycle Count"
+	keys[2][0][0]   = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set Set Sweep Count
+	values[]        = NaN
+	values[0][0][0] = 635
+	values[0][0][1] = 251
+	keys[0][0][0]   = "Set Sweep Count"
+	keys[2][0][0]   = "0.1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
 	// textual entries
+	keys[2][0][0] = "-"
+
+	// Stimset name HS0/HS1
+	valuesTxt[]        = ""
+	valuesTxt[0][0][0] = "stimsetSweep0HS0"
+	valuesTxt[0][0][1] = "stimsetSweep0HS1"
+	keys[0][0][0]      = STIM_WAVE_NAME_KEY
+	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set some analysis function
+	valuesTxt[]        = ""
+	valuesTxt[0][0][0] = "PSQ_Chirp"
+	valuesTxt[0][0][1] = "PSQ_Chirp"
+	keys[0][0][0]      = "Generic function"
+	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// DAC 4: unassoc (old)
 	valuesTxt[]                      = ""
@@ -413,7 +466,44 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[0][0][0]   = CLAMPMODE_ENTRY_KEY
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	// Set a acquisition cycle ID
+	values[]        = NaN
+	values[0][0][0] = 43
+	values[0][0][1] = 46
+	keys[0][0][0]   = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]   = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set a repeated acquisition cycle RAC
+	values[]                      = NaN
+	values[0][0][INDEP_HEADSTAGE] = 49
+	keys[0][0][0]                 = RA_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]                 = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set sweepQC passed
+	values[]                      = NaN
+	values[0][0][INDEP_HEADSTAGE] = 1
+	keys[0][0][0]                 = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	keys[2][0][0]                 = "-"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, UNKNOWN_MODE)
+
 	// textual entries
+	keys[2][0][0] = "-"
+
+	// Set some analysis function
+	valuesTxt[]        = ""
+	valuesTxt[0][0][0] = "PSQ_Chirp"
+	valuesTxt[0][0][1] = "PSQ_Chirp"
+	keys[0][0][0]      = "Generic function"
+	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Stimset name HS0/HS1
+	valuesTxt[]        = ""
+	valuesTxt[0][0][0] = "stimsetSweep1HS0"
+	valuesTxt[0][0][1] = "stimsetSweep1HS1"
+	keys[0][0][0]      = STIM_WAVE_NAME_KEY
+	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// DAC 5: unassoc (new)
 	valuesTxt[]                      = ""
@@ -459,6 +549,14 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[0][0][0]   = CLAMPMODE_ENTRY_KEY
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	// Set a acquisition cycle ID SCI
+	values[]        = NaN
+	values[0][0][0] = 44
+	values[0][0][1] = 46
+	keys[0][0][0]   = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]   = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
 	// indep headstage
 	values[]                      = NaN
 	values[0][0][INDEP_HEADSTAGE] = 252627
@@ -469,6 +567,13 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	valuesTxt[0][0][INDEP_HEADSTAGE] = "252627"
 	keys[0][0][0]                    = keyTxt
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// Set a repeated acquisition cycle RAC
+	values[]                      = NaN
+	values[0][0][INDEP_HEADSTAGE] = 50
+	keys[0][0][0]                 = RA_ACQ_CYCLE_ID_KEY
+	keys[2][0][0]                 = "1"
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	sweepNo = 3
 
@@ -1431,8 +1536,10 @@ Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeD
 			clampMode = mod(sweepNumber, 2) ? V_CLAMP_MODE : I_CLAMP_MODE
 
 			AppendToGraph/W=$win singleColumnDataWave/TN=$trace
-			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode"},                              \
-			                         {"blah", GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelTypeStr, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode)})
+			WAVE numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNumber)
+			WAVE textualValues   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "textualValues", "numericalValues", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber", "GUIChannelNumber", "clampMode", "SweepMapIndex"},                                                              \
+			                         {"blah", GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2), GetWavesDataFolder(singleColumnDataWave, 2), "Sweep", "0", channelTypeStr, num2str(channelNumber), num2str(sweepNumber), num2istr(channelNumber), num2istr(clampMode), "NaN"})
 		endfor
 	endfor
 
