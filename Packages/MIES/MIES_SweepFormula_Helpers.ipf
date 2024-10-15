@@ -1430,7 +1430,7 @@ Function/WAVE SFH_GetStimsetRange(string graph, WAVE data, WAVE selectData)
 
 	// data prior to a2172f03 (Added generations of epoch information wave, 2019-05-22)
 	// remove total onset delay and termination delay iff we have neither dDAQ nor oodDAQ enabled
-	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
+	WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
 	ASSERT(WaveExists(numericalValues), "Missing numerical labnotebook")
 
 	// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
@@ -1496,7 +1496,8 @@ Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoc
 	SFH_ASSERT(IsTextWave(epochPatterns) && !DimSize(epochPatterns, COLS), "Expected 1d text wave for epoch specification")
 
 	if(BSP_IsSweepBrowser(graph))
-		DFREF sweepDFR = SB_GetSweepDF(graph, mapIndex)
+		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+		DFREF sweepDFR        = SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
 	else
 		DFREF deviceDFR = DB_GetDeviceDF(graph)
 		DFREF sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
@@ -1800,11 +1801,13 @@ End
 /// @param mapIndex if graph is a SweepBrowser then a non-NaN mapIndex into sweepMap, otherwise must be NaN
 Function [WAVE numericalValues, WAVE textualValues, DFREF sweepDFR] SFH_GetLabNoteBooksAndDFForSweep(string graph, variable sweepNo, variable mapIndex)
 
-	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
+	WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
+	WAVE textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
 
 	if(BSP_IsSweepBrowser(graph))
 		ASSERT(!IsNaN(mapIndex), "Can not work with NaN as mapIndex")
-		DFREF sweepDFR = SB_GetSweepDF(graph, mapIndex)
+		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+		DFREF sweepDFR        = SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
 
 		return [numericalValues, textualValues, sweepDFR]
 	endif
@@ -1818,22 +1821,25 @@ End
 
 /// @brief Function returns the correct numerical and textual LNB for a given sweepNumber
 ///
-/// @param graph    name of graph window
-/// @param sweepNo  sweep number
-/// @param mapIndex if graph is a SweepBrowser then a non-NaN mapIndex into sweepMap, otherwise must be NaN
-Function [WAVE numericalValues, WAVE textualValues] SFH_GetLabNoteBooksForSweep(string graph, variable sweepNo, variable mapIndex)
+/// @param graph           name of graph window
+/// @param sweepNo         sweep number
+/// @param logbookWaveType one of @ref LabnotebookWaveTypes
+/// @param mapIndex        if graph is a SweepBrowser then a non-NaN mapIndex into sweepMap, otherwise must be NaN
+Function/WAVE SFH_GetLabNoteBookForSweep(string graph, variable sweepNo, variable mapIndex, variable logbookWaveType)
+
+	string device, datafolder
 
 	if(BSP_IsSweepBrowser(graph))
 		ASSERT(!IsNaN(mapIndex), "Can not work with NaN as mapIndex")
-		WAVE/T sweepMap = SB_GetSweepMap(graph)
-		[WAVE numericalValues, WAVE textualValues] = SB_GetLabNotebooks(sweepMap, mapIndex)
 
-		return [numericalValues, textualValues]
+		WAVE/T sweepMap = SB_GetSweepMap(graph)
+
+		datafolder = sweepMap[mapIndex][%DataFolder]
+		device     = sweepMap[mapIndex][%Device]
+
+		return SB_GetLogbookWave(graph, LBT_LABNOTEBOOK, logbookWaveType, dataFolder = dataFolder, device = device)
 	endif
 
 	ASSERT(IsNaN(mapIndex), "Window is DataBrowser, but got a mapIndex into a sweepMap")
-	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
-
-	return [numericalValues, textualValues]
+	return BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, logbookWaveType, sweepNumber = sweepNo)
 End

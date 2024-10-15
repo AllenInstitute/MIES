@@ -1421,7 +1421,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 		return [s]
 	endif
 
-	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
+	WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
 	if(!WaveExists(numericalValues))
 		return [s]
 	endif
@@ -5342,8 +5342,9 @@ static Function/WAVE SF_GetSelectDataWithRACorSCIIndex(string graph, WAVE select
 	endif
 
 	for(i = 0; i < numSelected; i += 1)
-		sweepNo = selectData[i][%SWEEP]
-		[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, selectData[i][%SWEEPMAPINDEX])
+		sweepNo  = selectData[i][%SWEEP]
+		mapIndex = selectData[i][%SWEEPMAPINDEX]
+		WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
 		ASSERT(WaveExists(numericalValues), "Could not resolve numerical LNB")
 		if(mode == SELECTDATA_MODE_RAC)
 			cycleIds[i] = GetLastSettingIndep(numericalValues, sweepNo, RA_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
@@ -5556,7 +5557,7 @@ static Function/WAVE SF_GetSelectDataWithSCIorRAC(string graph, WAVE selectData,
 	for(i = 0; i < numSelected; i += 1)
 		sweepNo  = selectData[i][%SWEEP]
 		mapIndex = selectData[i][%SWEEPMAPINDEX]
-		[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
+		WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
 		if(!WaveExists(numericalValues))
 			continue
 		endif
@@ -5770,7 +5771,7 @@ End
 
 static Function/WAVE SF_OperationLabnotebookImpl(string graph, string lbnKey, WAVE/Z selectData, variable mode, string opShort)
 
-	variable i, numSelected, index, settingsIndex
+	variable i, numSelected, index, settingsIndex, mapIndex
 	variable sweepNo, chanNr, chanType
 
 	if(!WaveExists(selectData))
@@ -5788,8 +5789,11 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, string lbnKey, WA
 		endif
 		chanNr   = selectData[i][%CHANNELNUMBER]
 		chanType = selectData[i][%CHANNELTYPE]
+		mapIndex = selectData[i][%SWEEPMAPINDEX]
 
-		[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, selectData[i][%SWEEPMAPINDEX])
+		WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
+		WAVE textualValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
+
 		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
 			continue
 		endif
