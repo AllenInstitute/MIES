@@ -241,6 +241,8 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 		numEntries = DimSize(indizes, ROWS)
 	endif
 
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+
 	for(i = 0; i < numEntries; i += 1)
 		DFREF dfr = SB_GetSweepDataPathFromIndex(sweepBrowserDFR, indizes[i])
 
