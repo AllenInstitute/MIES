@@ -183,7 +183,9 @@ Function DecompressFile(string file)
 	ASSERT(!V_flag, "Decompression error: " + S_Value)
 End
 
-static Function DownloadFilesIfRequired(WAVE/T files)
+/// @brief Ensures that the given files are available after return.
+///        Files can start with `input:`.
+Function DownloadFilesIfRequired(WAVE/T files)
 
 	string path, fullFilePath, file
 	variable i, numFiles
@@ -194,7 +196,7 @@ static Function DownloadFilesIfRequired(WAVE/T files)
 
 	numFiles = DimSize(files, ROWS)
 	for(i = 0; i < numFiles; i += 1)
-		file         = files[i]
+		file         = RemovePrefix(files[i], start = "input:")
 		fullFilePath = path + file
 
 		if(FileExists(fullFilePath))
