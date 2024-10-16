@@ -831,7 +831,6 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
 	endif
-	SFH_ASSERT(!IsEmpty(graph), "Name of graph window must not be empty.")
 
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
@@ -4426,7 +4425,6 @@ static Function/WAVE SF_OperationSelectChannels(variable jsonId, string jsonPath
 	string channelName, channelNumber
 	string regExp = "^(?i)(" + ReplaceString(";", XOP_CHANNEL_NAMES, "|") + ")([0-9]+)?$"
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph not specified.")
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	WAVE channels = SF_NewChannelsWave(numArgs ? numArgs : 1)
 	for(i = 0; i < numArgs; i += 1)
@@ -4461,8 +4459,6 @@ End
 static Function/WAVE SF_OperationSelectSweeps(variable jsonId, string jsonPath, string graph)
 
 	variable i, numArgs
-
-	SFH_ASSERT(!IsEmpty(graph), "Graph not specified.")
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	if(!numArgs)
@@ -4730,8 +4726,6 @@ static Function/WAVE SF_OperationSelectVis(variable jsonId, string jsonPath, str
 
 	string vis
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTVIS, 0, maxArgs = 1)
 
 	vis = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTVIS, 0, allowedValues = {SF_OP_SELECTVIS_DISPLAYED, SF_OP_SELECTVIS_ALL}, defValue = SF_OP_SELECTVIS_DISPLAYED)
@@ -4747,8 +4741,6 @@ static Function/WAVE SF_OperationSelectExperiment(variable jsonId, string jsonPa
 
 	string expName
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTEXP, 1, maxArgs = 1)
 
 	expName = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTEXP, 0)
@@ -4762,8 +4754,6 @@ End
 /// returns a one element numeric wave
 static Function/WAVE SF_OperationSelectExpandSCI(variable jsonId, string jsonPath, string graph)
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTEXPANDSCI, 0, maxArgs = 0)
 
 	Make/FREE/D output = {1}
@@ -4775,8 +4765,6 @@ End
 ///
 /// returns a one element numeric wave
 static Function/WAVE SF_OperationSelectExpandRAC(variable jsonId, string jsonPath, string graph)
-
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTEXPANDRAC, 0, maxArgs = 0)
 
@@ -4791,8 +4779,6 @@ End
 static Function/WAVE SF_OperationSelectSetCycleCount(variable jsonId, string jsonPath, string graph)
 
 	variable value
-
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTSETCYCLECOUNT, 1, maxArgs = 1)
 
@@ -4809,8 +4795,6 @@ static Function/WAVE SF_OperationSelectSetSweepCount(variable jsonId, string jso
 
 	variable value
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTSETSWEEPCOUNT, 1, maxArgs = 1)
 
 	value = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_SELECTSETSWEEPCOUNT, 0)
@@ -4825,8 +4809,6 @@ End
 static Function/WAVE SF_OperationSelectSCIIndex(variable jsonId, string jsonPath, string graph)
 
 	variable value
-
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTSCIINDEX, 1, maxArgs = 1)
 
@@ -4843,8 +4825,6 @@ static Function/WAVE SF_OperationSelectRACIndex(variable jsonId, string jsonPath
 
 	variable value
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTRACINDEX, 1, maxArgs = 1)
 
 	value = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_SELECTRACINDEX, 0)
@@ -4859,8 +4839,6 @@ End
 static Function/WAVE SF_OperationSelectDevice(variable jsonId, string jsonPath, string graph)
 
 	string expName
-
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTDEV, 1, maxArgs = 1)
 
@@ -4878,8 +4856,6 @@ static Function/WAVE SF_OperationSelectCM(variable jsonId, string jsonPath, stri
 
 	variable numArgs, i, mode
 	string clampMode
-
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 
 	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTCM, 0)
 	if(!numArgs)
@@ -4922,8 +4898,6 @@ static Function/WAVE SF_OperationSelectStimset(variable jsonId, string jsonPath,
 
 	variable numArgs, i
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-
 	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTSTIMSET, 0)
 
 	if(!numArgs)
@@ -4946,8 +4920,6 @@ static Function/WAVE SF_OperationSelectIVSCCSweepQC(variable jsonId, string json
 	variable mode
 	string   arg
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTIVSCCSWEEPQC, 1, maxArgs = 1)
 
 	arg  = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTIVSCCSWEEPQC, 0, allowedValues = {SF_OP_SELECT_IVSCCQC_PASSED, SF_OP_SELECT_IVSCCQC_FAILED})
@@ -4966,8 +4938,6 @@ static Function/WAVE SF_OperationSelectIVSCCSetQC(variable jsonId, string jsonPa
 	variable mode
 	string   arg
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTIVSCCSETQC, 1, maxArgs = 1)
 
 	arg  = SFH_GetArgumentAsText(jsonId, jsonPath, graph, SF_OP_SELECTIVSCCSETQC, 0, allowedValues = {SF_OP_SELECT_IVSCCQC_PASSED, SF_OP_SELECT_IVSCCQC_FAILED})
@@ -4984,8 +4954,6 @@ End
 static Function/WAVE SF_OperationSelectRange(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs
-
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 
 	numArgs = SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_SELECTRANGE, 0, maxArgs = 1)
 	if(!numArgs)
@@ -5030,7 +4998,6 @@ static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string
 	string expName = ""
 	string device  = ""
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 	SF_InitSelectFilterUninitalized(filter)
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
@@ -5679,8 +5646,6 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 
 	variable i, numArgs
 
-	SFH_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
-
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_DATA, 0, maxArgs = 1)
 	WAVE/WAVE selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_DATA, 0)
 
@@ -5702,8 +5667,6 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 
 	variable numArgs, mode
 	string lbnKey
-
-	SFH_ASSERT(!IsEmpty(graph), "Graph not specified.")
 
 	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
 	SFH_ASSERT(numArgs <= 3, "Maximum number of three arguments exceeded.")
