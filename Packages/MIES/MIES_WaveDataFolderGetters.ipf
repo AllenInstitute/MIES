@@ -759,6 +759,15 @@ threadsafe Function/S GetSweepFormulaPathAsString()
 	return GetMiesPathAsString() + ":SweepFormula"
 End
 
+/// @brief Return a Nx3 wave usable for setting trace colors
+Function/WAVE GetColorWave(variable numEntries)
+
+	Make/FREE/N=(numEntries, 3)/R traceColors
+	SetDimensionLabels(traceColors, "Red;Green;Blue", COLS)
+
+	return traceColors
+End
+
 /// @brief Returns a data folder reference to the call once folder
 threadsafe Function/DF GetCalledOncePath()
 	return createDFWithAllParents(GetCalledOncePathAsString())

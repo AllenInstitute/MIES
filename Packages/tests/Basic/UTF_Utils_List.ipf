@@ -105,3 +105,11 @@ Function RPFLI_Works()
 End
 
 /// @}
+
+Function PrepareListForDisplay_Works()
+
+	CHECK_EQUAL_STR("", PrepareListForDisplay(""))
+	CHECK_EQUAL_STR("a", PrepareListForDisplay("a"))
+	CHECK_EQUAL_STR("a;b", PrepareListForDisplay("a;b"))
+	CHECK_EQUAL_STR("a\rb", PrepareListForDisplay("a;b;"))
+End

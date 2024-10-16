@@ -2050,11 +2050,14 @@ StrConstant SF_META_AVERAGED_FIRST_SWEEP = "/AveragedFirstSweep" // number
 StrConstant SF_META_XVALUES              = "/XValues"            // numeric wave
 StrConstant SF_META_XTICKLABELS          = "/XTickLabels"        // text wave
 StrConstant SF_META_XTICKPOSITIONS       = "/XTickPositions"     // numeric wave
+StrConstant SF_META_YTICKLABELS          = "/YTickLabels"        // text wave
+StrConstant SF_META_YTICKPOSITIONS       = "/YTickPositions"     // numeric wave
 StrConstant SF_META_XAXISLABEL           = "/XAxisLabel"         // string
 StrConstant SF_META_YAXISLABEL           = "/YAxisLabel"         // string
 StrConstant SF_META_LEGEND_LINE_PREFIX   = "/LegendLinePrefix"   // string
+StrConstant SF_META_TAG_TEXT             = "/TagText"            // string
 StrConstant SF_META_OPSTACK              = "/OperationStack"     // string
-StrConstant SF_META_MOD_MARKER           = "/Marker"             // numeric wave
+StrConstant SF_META_MOD_MARKER           = "/Marker"             // numeric wave (per point) or number (all points)
 StrConstant SF_META_SHOW_LEGEND          = "/ShowLegend"         // numeric, boolean, defaults to true (1)
 StrConstant SF_META_CUSTOM_LEGEND        = "/CustomLegend"       // string with custom legend text, honours /ShowLegend
 StrConstant SF_META_ARGSETUPSTACK        = "/ArgSetupStack"      // string
@@ -2063,9 +2066,18 @@ StrConstant SF_META_LINESTYLE            = "/LineStyle"          // number
 StrConstant SF_META_TRACE_MODE           = "/TraceMode"          // number
 StrConstant SF_META_TRACETOFRONT         = "/TraceToFront"       // number, boolean, defaults to false (0)
 StrConstant SF_META_DONOTPLOT            = "/DoNotPlot"          // number, boolean, defaults to false (0)
+StrConstant SF_META_WINDOW_HOOK          = "/WindowHook"         // string
 
-StrConstant SF_META_USER_GROUP = "/User/" // custom metadata for individual operations,
-// top-level group with individual entries
+/// A color group allows to have matching colors for sweep data with the same channel type/number and sweep.
+/// It is applied before the matching headstage/average colors in #SF_GetTraceColor().
+///
+/// To use the feature set SF_META_COLOR_GROUP for traces to a unique integer,
+/// see GetUniqueInteger(). All traces with the same integer are considered to
+/// be in the same group. A list of supported operations is in #SF_GetTraceColor().
+StrConstant SF_META_COLOR_GROUP = "/ColorGroup" // number
+
+StrConstant SF_META_USER_GROUP = "/User/" // custom metadata for individual operations, top-level group with individual entries
+
 StrConstant SF_META_FIT_COEFF     = "FitCoefficients"
 StrConstant SF_META_FIT_SIGMA     = "FitSigma"
 StrConstant SF_META_FIT_PARAMETER = "FitParameter"
@@ -2111,6 +2123,7 @@ StrConstant SF_DATATYPE_SELECTSETCYCLECOUNT = "SelectSetCycleCount"
 StrConstant SF_DATATYPE_SELECTSETSWEEPCOUNT = "SelectSetSweepCount"
 StrConstant SF_DATATYPE_SELECTSCIINDEX      = "SelectSCIIndex"
 StrConstant SF_DATATYPE_SELECTRACINDEX      = "SelectRACIndex"
+StrConstant SF_DATATYPE_ANAFUNCPARAM        = "AnaFunc"
 
 StrConstant SF_WREF_MARKER     = "\"WREF@\":"
 StrConstant SF_VARIABLE_MARKER = "/SF_IsVariable" // numeric
