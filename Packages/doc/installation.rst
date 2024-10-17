@@ -151,9 +151,9 @@ install via the Installer package.
 Windows (with hardware support)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Install the `Visual C++ Redistributable package` <https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe>`__.
-
+-  Install the `Visual C++ Redistributable package <https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe>`__
 -  Quit Igor Pro
+-  Get the MIES source code, see :ref:`getting MIES`
 -  Create the following shortcuts in ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 9 User Files``
 
    -  In ``User Procedures`` a shortcut pointing to
@@ -175,9 +175,9 @@ Windows (without hardware)
 In case you don't have the hardware connected/available which some XOPs
 require, you can also install MIES without any hardware related XOPs present.
 
-Install the `Visual C++ Redistributable package` <https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe>`__.
-
+-  Install the `Visual C++ Redistributable package <https://github.com/AllenInstitute/MIES/blob/main/tools/installer/vc_redist.x64.exe>`__
 -  Quit Igor Pro
+-  Get the MIES source code, see :ref:`getting MIES`
 -  Create the following shortcuts in
    ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 9 User Files``
 
@@ -206,9 +206,7 @@ MacOSX (without hardware)
 Analysis support only. Data acquisition and NWBv2 export are not supported on MacOSx.
 
 -  Quit Igor Pro
--  Get the MIES source code, see
-   `here <https://alleninstitute.github.io/MIES/developers.html#latest-development-version-from-main-branch>`__
-   for instructions.
+-  Get the MIES source code, see :ref:`getting MIES`
 -  Create the following symlinks in
    ``/Users/$username/Documents/WaveMetrics/Igor Pro 9 User Files``
 
@@ -226,3 +224,17 @@ Analysis support only. Data acquisition and NWBv2 export are not supported on Ma
    -  In ``Igor Help Files`` a shortcut pointing to HelpFiles-IP9
 
 -  Start Igor Pro
+
+JSON Configuration folders
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+MIES supports JSON files for loading and storing panel configurations. Although it is
+possible to load files from arbitrary paths manually, one can also put the
+files into one of the following folders
+
+-  ``Packages/Settings`` in the installation location
+
+-  ``C:/ProgramData/AllenInstitute/MIES/Settings``
+
+to execute all of them via :menuselection:`MIES Panels --> Automation --> Load standard configuration`
+or by pressing :kbd:`CONTROL-1`.
