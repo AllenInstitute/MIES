@@ -230,10 +230,9 @@ static Function StoreWorksWithMultipleDataSets()
 	variable numSweeps, numChannels
 
 	device = HW_ITC_BuildDeviceString("ITC18USB", "0")
+	MarkDeviceAsLocked(device)
 
-	SVAR lockedDevices = $GetLockedDevices()
-	lockedDevices = device
-	win           = DB_GetBoundDataBrowser(device)
+	win = DB_GetBoundDataBrowser(device)
 
 	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_ADC, textKey, textValue)
 
