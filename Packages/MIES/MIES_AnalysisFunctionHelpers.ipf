@@ -1024,6 +1024,55 @@ Function AFH_AddAnalysisParameter(string setName, string name, [variable var, st
 	endif
 End
 
+/// @brief Add an analysis parameter to the given `params` string
+///
+/// Exactly one of `var`/`str`/`wv` must be given.
+///
+/// @param[in, out] params stimset name
+/// @param[in]      name   name of the parameter
+/// @param[in]      var    [optional] numeric parameter
+/// @param[in]      str    [optional] string parameter
+/// @param[in]      wv     [optional] wave parameter can be numeric or text
+Function AFH_AddAnalysisParameterToParams(string &params, string name, [variable var, string str, WAVE wv])
+
+	string type, value
+
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
+
+	if(!ParamIsDefault(var))
+		type = "variable"
+		// numbers never need URL encoding
+		value = num2str(var)
+	elseif(!ParamIsDefault(str))
+		type  = "string"
+		value = URLEncode(str)
+	elseif(!ParamIsDefault(wv))
+		ASSERT(DimSize(wv, ROWS) > 0, "Expected non-empty wave")
+		if(IsTextWave(wv))
+			type = "textwave"
+			Duplicate/T/FREE wv, wvText
+			wvText = UrlEncode(wvText)
+			value  = TextWaveToList(wvText, "|")
+		else
+			type = "wave"
+			// numbers never need URL encoding
+			value = NumericWaveToList(wv, "|", format = "%.15g")
+		endif
+	endif
+
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
+	ASSERT(!GrepString(value, "[=:,;]+"), "Broken URL encoding. Written entry contains invalid characters (one of `=:,;`)")
+	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
+
+#ifndef AUTOMATED_TESTING
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
+		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
+	endif
+#endif
+
+	params = ReplaceStringByKey(name, params, type + "=" + value, ":", ",", 0)
+End
+
 /// @brief Return a stringified version of the analysis parameter value
 ///
 /// @param name name of the parameter

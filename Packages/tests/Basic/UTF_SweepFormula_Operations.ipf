@@ -2078,11 +2078,11 @@ static Function TestOperationPowerSpectrum()
 End
 
 static Function TestOperationLabNotebook()
-	variable i, j, sweepNumber, channelNumber, numSweeps, numChannels
-	string str, key
+	variable i, j, sweepNumber, channelNumber, numSweeps, numChannels, idx
+	string str, key, axLabel, browser, yAxisLabel
 
 	string textKey   = LABNOTEBOOK_USER_PREFIX + "TEXTKEY"
-	string textValue = "TestText"
+	string textValue = "TestText1;TestText2;"
 
 	string win, device
 
@@ -2104,12 +2104,79 @@ static Function TestOperationLabNotebook()
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
 
-	str = "labnotebook(" + textKey + ")"
+	str = "labnotebook(" + textKey + ", select(selchannels(AD2), selsweeps([0, 1])))"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
-	Make/FREE/T textRefData = {textValue}
-	for(WAVE/T dataT : dataRef)
-		CHECK_EQUAL_WAVES(dataT, textRefData, mode = WAVE_DATA)
+	Make/FREE/D refDataTextAnchor = {0.0}
+	for(WAVE/D data : dataRef)
+		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
+		CHECK_EQUAL_STR("TestText1\rTestText2", JWN_GetStringFromWaveNote(data, SF_META_TAG_TEXT))
+		CHECK_EQUAL_STR(textKey, JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX))
+
+		sweepNumber = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		CHECK_EQUAL_VAR(sweepNumber, idx)
+
+		WAVE xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		Make/FREE xValuesRef = {idx}
+		CHECK_EQUAL_WAVES(xValues, xValuesRef, mode = WAVE_DATA)
+		idx += 1
 	endfor
+
+	// no such key
+	str = "labnotebook(\"I_DONT_EXIST\")"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 40)
+	Make/FREE/D refDataTextAnchor = {NaN}
+	for(WAVE/D data : dataRef)
+		CHECK_EQUAL_WAVES(data, refDataTextAnchor, mode = WAVE_DATA)
+	endfor
+
+	// multiple keys
+	str = "labnotebook([\"ADC\", \"Operating Mode\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 2)
+	WAVE firstEntry = dataRef[0]
+	Make/D/FREE refContents = {2}
+	CHECK_EQUAL_WAVES(firstEntry, refContents, mode = WAVE_DATA)
+
+	WAVE secondEntry = dataRef[1]
+	Make/D/FREE refContents = {1}
+	CHECK_EQUAL_WAVES(secondEntry, refContents, mode = WAVE_DATA)
+
+	// no match with wildcards
+	str = "labnotebook([\"eee*\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
+
+	// match with wildcard and special QC format
+	str = "labnotebook([\"*random QC\"], select(selchannels(AD0), selsweeps([0, 1, 2])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 3)
+	idx = 0
+	for(WAVE/D data : dataRef)
+		Make/D/FREE refData = {idx == 1 ? 1 : 0}
+		CHECK_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+		CHECK_EQUAL_STR("", JWN_GetStringFromWaveNote(data, SF_META_TAG_TEXT))
+		CHECK_EQUAL_STR("USER_random QC", JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX))
+
+		sweepNumber = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		CHECK_EQUAL_VAR(sweepNumber, idx)
+
+		WAVE xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		Make/FREE xValuesRef = {idx}
+		CHECK_EQUAL_WAVES(xValues, xValuesRef, mode = WAVE_DATA)
+		idx += 1
+	endfor
+
+	WAVE yTickLabels = JWN_GetTextWaveFromWaveNote(dataRef, SF_META_YTICKLABELS)
+	CHECK_EQUAL_TEXTWAVES(yTickLabels, {"Failed", "Passed"})
+
+	// key with unit
+	str = "labnotebook([\"*other KEY\"], select(selchannels(AD0), selsweeps([0])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 1)
+
+	yAxisLabel = JWN_GetStringFromWaveNote(dataRef, SF_META_YAXISLABEL)
+	CHECK_EQUAL_STR(yAxisLabel, "Unit (Hz)")
 End
 
 static Function TestOperationLabnotebookHelper(string win, string formula, WAVE wRef)
@@ -3129,4 +3196,137 @@ static Function DefaultFormulaWorks()
 	Redimension/N=(-1) chan3Ref
 	CHECK_EQUAL_WAVES(chan1, chan1Ref, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(chan3, chan3Ref, mode = WAVE_DATA)
+End
+
+static Function TestOperationAnaFuncParam()
+	variable numSweeps, numChannels, idx, sweepNo
+	string win, device, params, str, textKey, textValue
+
+	textKey   = LABNOTEBOOK_USER_PREFIX + "TEXTKEY"
+	textValue = "TestText1;TestText2;"
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_ADC, textKey, textValue)
+	win = GetCurrentWindow()
+
+	Make/FREE/T/N=(1, 1) funcParamsKey
+	funcParamsKey[0][0] = ANALYSIS_FUNCTION_PARAMS_LBN
+
+	// sweep 0
+	params = ""
+	AFH_AddAnalysisParameterToParams(params, "var", var = 123)
+	AFH_AddAnalysisParameterToParams(params, "str", str = "abcd")
+	AFH_AddAnalysisParameterToParams(params, "strList", str = "abcd;efgh;")
+	AFH_AddAnalysisParameterToParams(params, "wv", wv = {1, 2, 3})
+	AFH_AddAnalysisParameterToParams(params, "wvText", wv = ListToTextWave("hijk;lmno;", ";"))
+
+	WAVE/T funcParamsVal = LBN_GetTextWave()
+	funcParamsVal[7] = params
+	Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 funcParamsVal
+	ED_AddEntriesToLabnotebook(funcParamsVal, funcParamsKey, 0, device, DATA_ACQUISITION_MODE)
+
+	// sweep 1
+	params = ""
+	AFH_AddAnalysisParameterToParams(params, "var", var = 567)
+
+	WAVE/T funcParamsVal = LBN_GetTextWave()
+	funcParamsVal[7] = params
+	Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 funcParamsVal
+	ED_AddEntriesToLabnotebook(funcParamsVal, funcParamsKey, 1, device, DATA_ACQUISITION_MODE)
+
+	// no such key
+	str = "anaFuncParam(\"I_DONT_EXIST\")"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
+
+	// no params in sweep
+	str = "anaFuncParam(\"var\", select(selchannels(), selsweeps([2])))"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
+
+	// no wildcard match
+	str = "anaFuncParam(\"SOME NAME*\")"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
+
+	// no select data
+	str = "anaFuncParam(\"var\", select(selchannels(), selsweeps([100])))"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 0)
+
+	// single match (var)
+	str = "anaFuncParam(\"var\", select(selchannels(AD0), selsweeps()))"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 10)
+	for(WAVE/D data : dataRef)
+		if(idx == 0)
+			CHECK_EQUAL_WAVES(data, {123}, mode = WAVE_DATA)
+		elseif(idx == 1)
+			CHECK_EQUAL_WAVES(data, {567}, mode = WAVE_DATA)
+		else
+			CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
+		endif
+
+		CHECK_EQUAL_STR("var", JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX))
+
+		WAVE xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		Make/FREE xValuesRef = {idx}
+		CHECK_EQUAL_WAVES(xValues, xValuesRef, mode = WAVE_DATA)
+
+		sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		CHECK_EQUAL_VAR(sweepNo, idx)
+
+		idx += 1
+	endfor
+
+	// wildcard match (str*)
+	str = "anaFuncParam(\"str*\", select(selchannels(AD0), selsweeps([0, 1])))"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
+	idx = 0
+	Make/FREE dataPoints = {0, NaN, 0, NaN}
+	Make/FREE/T paramNames = {"str", "str", "strList", "strList"}
+	Make/FREE/T paramValues = {"abcd", "", "abcd\refgh", ""}
+	for(WAVE/D data : dataRef)
+
+		CHECK_EQUAL_WAVES(data, {dataPoints[idx]}, mode = WAVE_DATA)
+		CHECK_EQUAL_STR(paramNames[idx], JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX))
+
+		WAVE xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		Make/FREE xValuesRef = {mod(idx, 2)}
+		CHECK_EQUAL_WAVES(xValues, xValuesRef, mode = WAVE_DATA)
+
+		sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		CHECK_EQUAL_VAR(sweepNo, xValuesRef[0])
+
+		CHECK_EQUAL_STR(paramValues[idx], JWN_GetStringFromWaveNote(data, SF_META_TAG_TEXT))
+
+		idx += 1
+	endfor
+
+	// wildcard match (wv*)
+	str = "anaFuncParam(\"wv*\", select(selchannels(AD0), selsweeps([0, 1])))"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 4)
+	idx = 0
+	Make/FREE dataPoints = {0, NaN, 0, NaN}
+	Make/FREE/T paramNames = {"wv", "wv", "wvText", "wvText"}
+	Make/FREE/T paramValues = {"1\r2\r3", "", "hijk\rlmno", ""}
+	for(WAVE/D data : dataRef)
+
+		CHECK_EQUAL_WAVES(data, {dataPoints[idx]}, mode = WAVE_DATA)
+		CHECK_EQUAL_STR(paramNames[idx], JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX))
+
+		WAVE xValues = JWN_GetNumericWaveFromWaveNote(data, SF_META_XVALUES)
+		Make/FREE xValuesRef = {mod(idx, 2)}
+		CHECK_EQUAL_WAVES(xValues, xValuesRef, mode = WAVE_DATA)
+
+		sweepNo = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+		CHECK_EQUAL_VAR(sweepNo, xValuesRef[0])
+
+		CHECK_EQUAL_STR(paramValues[idx], JWN_GetStringFromWaveNote(data, SF_META_TAG_TEXT))
+
+		idx += 1
+	endfor
 End
