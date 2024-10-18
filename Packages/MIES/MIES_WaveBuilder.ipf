@@ -483,6 +483,8 @@ static Function/WAVE WB_GetStimSet([setName])
 
 		last = length - 1
 		Multithread stimSet[0, last][i] = wv[p]
+
+		WB_AppendSweepMinMax(stimSet, i, numSweeps, numEpochs)
 	endfor
 
 	if(SegWvType[98])
@@ -813,6 +815,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Sweep", var = stepCount)
 	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch", var = NaN)
 	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var = SegWvType[99], appendCR = 1)
+	// Minimum, Maximum is appended later
 
 	for(i = 0; i < numEpochs; i += 1)
 		type = SegWvType[i]
@@ -1073,6 +1076,34 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	endif
 
 	return WaveBuilderWave
+End
+
+static Function WB_AppendSweepMinMax(WAVE wv, variable sweep, variable numSweeps, variable numEpochs)
+
+	variable minimum, maximum, idx, first, last, trailSep
+	string entry
+
+	first = (sweep == 0)
+	last  = (sweep + 1 == numSweeps)
+
+	MatrixOP/FREE singleSweep = col(wv, sweep)
+
+	[minimum, maximum] = WaveMinAndMax(singleSweep)
+
+	WAVE/T wvNote = ListToTextWave(note(wv), "\r")
+	//  "Version" line preceds the first sweep
+	idx = 1 + sweep * (numEpochs + 1)
+
+	sprintf entry, "Minimum = %.15g;", minimum
+	wvNote[idx] += entry
+
+	sprintf entry, "Maximum = %.15g;", maximum
+	wvNote[idx] += entry
+
+	// append a trailing CR except for the last entry
+	trailSep = !last
+
+	Note/K wv, TextWaveToList(wvNote, "\r", trailSep = trailSep)
 End
 
 /// @brief Update the accumulated stimset duration for the mouse selection via GetEpochID()
