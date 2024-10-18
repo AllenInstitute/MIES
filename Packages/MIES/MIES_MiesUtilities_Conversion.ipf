@@ -270,3 +270,15 @@ Function MapAnaFuncToConstant(anaFunc)
 #endif
 	endswitch
 End
+
+/// @brief returns the unit string for the AD channel depending on clampmode
+threadsafe Function/S GetADChannelUnit(variable clampMode)
+
+	return SelectString(clampMode == V_CLAMP_MODE, "mV", "pA")
+End
+
+/// @brief returns the unit string for the DA channel depending on clampmode
+threadsafe Function/S GetDAChannelUnit(variable clampMode)
+
+	return SelectString(clampMode == V_CLAMP_MODE, "pA", "mV")
+End
