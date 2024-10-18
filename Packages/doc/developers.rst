@@ -1,15 +1,19 @@
 Developer
 =========
 
+.. _getting MIES:
+
 Getting MIES
 ------------
 
-Latest development version from main branch
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cloning the MIES repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``git clone --recurse-submodules https://github.com/AllenInstitute/MIES``
--  ``./tools/initial-repo-config.sh`` (Requires a Git Bash shell, named
-   Git terminal in SourceTree)
+-  ``./tools/initial-repo-config.sh`` (Requires a Git Bash/Terminal)
+
+If you only want to **use** MIES and not **develop** it, you can also get the source
+code via the `release package <https://github.com/AllenInstitute/MIES/releases>`__ as zip file.
 
 Building the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,11 +81,34 @@ Cutting a new release
 -  Create a new release on github and check that the Github Actions job
    correctly uploads the artifacts
 
+Creating a release package manually
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Open a git bash terminal by choosing Actions->"Open in terminal" in
+   SourceTree
+-  Checkout the release branch ``git checkout release/$myVersion``
+-  If none exists create one with ``git checkout -b release/$myVersion``
+-  Change to the ``tools`` directory in the worktree root folder
+-  Execute ``./create-release.sh``
+-  The release package including the version information is then
+   available as zip file
+
 Continuous integration server
 -----------------------------
 
 Our `CI server <https://github.com/AllenInstitute/MIES/actions>`__, called
 Github Actions, provides the following services for MIES:
+
+Automatic release package building
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  If a commit is added to the ``main`` or any ``release/*`` branch a CI
+   pipeline is started
+-  In this pipeline are some basic tests executed and a new installer is build.
+   The installer is uploaded to the corresponging release (``latest`` for
+   ``main``).
+-  If the commit is added to the ``main`` branch the CI will also create a new
+   version of the documentation and deploy it to Github Pages.
 
 Compilation testing
 ~~~~~~~~~~~~~~~~~~~

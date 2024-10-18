@@ -136,7 +136,7 @@ release_description=$(cat <<EOF
   "tag_name": ${tag_name},
   "target_commitish": ${target_commitish},
   "name": ${name},
-  "body": "Last updated: $(date +"%F %T%z")\n\nThe installer package should work for all users.\n\nSee [here](https://alleninstitute.github.io/MIES/releasenotes.html) for the changelog and [here](https://alleninstitute.github.io/MIES/index.html) for the documentation.",
+  "body": "Last updated: $(date +"%F %T%z")\n\nThe installer package should work for all users. Only windows users wishing to manually install the package need the zip file.\n\nSee [here](https://alleninstitute.github.io/MIES/releasenotes.html) for the changelog and [here](https://alleninstitute.github.io/MIES/index.html) for the documentation.",
   "draft":${draft},
   "prerelease": ${prerelease}
 }
