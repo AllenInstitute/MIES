@@ -74,7 +74,7 @@ Function/DF SB_GetSweepDataFolder(WAVE/T sweepMap, [variable sweepNo, variable i
 	return GetAnalysisSweepPath(dataFolder, device)
 End
 
-static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
+Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
 	DFREF    sweepBrowserDFR
 	variable mapIndex
 
@@ -721,27 +721,4 @@ Function/WAVE SB_GetSweepMap(string win)
 	WAVE/T sweepMap        = GetSweepBrowserMap(sweepBrowserDFR)
 
 	return sweepMap
-End
-
-Function [WAVE/Z numericalValues, WAVE/Z textualValues] SB_GetLabNotebooks(WAVE/T sweepMap, variable mapIndex)
-
-	string dataFolder, device
-
-	dataFolder = sweepMap[mapIndex][%DataFolder]
-	device     = sweepMap[mapIndex][%Device]
-	WAVE/Z numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
-	WAVE/Z textualValues   = GetAnalysLBTextualValues(dataFolder, device)
-
-	return [numericalValues, textualValues]
-End
-
-Function/DF SB_GetSweepDF(string win, variable mapIndex)
-
-	ASSERT(BSP_IsSweepBrowser(win), "Requires window to be a SweepBrowser")
-
-	WAVE/T sweepMap  = SB_GetSweepMap(win)
-	DFREF  deviceDFR = SB_GetSweepDataFolder(sweepMap, index = mapIndex)
-	DFREF  sweepDFR  = GetSingleSweepFolder(deviceDFR, str2num(sweepMap[mapIndex][%Sweep]))
-
-	return sweepDFR
 End

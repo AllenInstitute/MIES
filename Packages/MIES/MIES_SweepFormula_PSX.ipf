@@ -1109,7 +1109,8 @@ Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectDa
 	chanType = singleSelectData[0][%CHANNELTYPE]
 	mapIndex = singleSelectData[0][%SWEEPMAPINDEX]
 
-	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
+	WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
+	WAVE textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
 	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
 
 	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr, mapIndex)
@@ -1339,10 +1340,6 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 
 						JWN_SetWaveInWaveNote(results, SF_META_XVALUES, xValues)
 
-						Make/FREE/T nonFiniteTickLabels = {num2str(-Inf), num2str(NaN), num2str(+Inf)}
-						JWN_SetWaveInWaveNote(results, SF_META_XTICKLABELS, nonFiniteTickLabels)
-						JWN_SetWaveInWaveNote(results, SF_META_XTICKPOSITIONS, {-1, 0, 1})
-
 						break
 					case "count":
 						MatrixOP/FREE results = numRows(resultsRaw)
@@ -1438,6 +1435,10 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 			break
 		case "nonfinite":
 			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Non-finite values of " + LowerStr(propLabelAxis))
+
+			Make/FREE/T nonFiniteTickLabels = {num2str(-Inf), num2str(NaN), num2str(+Inf)}
+			JWN_SetWaveInWaveNote(output, SF_META_XTICKLABELS, nonFiniteTickLabels)
+			JWN_SetWaveInWaveNote(output, SF_META_XTICKPOSITIONS, {-1, 0, 1})
 			break
 		case "count":
 			JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "NA")
@@ -2972,7 +2973,8 @@ static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range
 	chanType = selectData[0][%CHANNELTYPE]
 	mapIndex = selectData[0][%SWEEPMAPINDEX]
 
-	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
+	WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
+	WAVE textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
 
 	// Introduced in 7e903ed8 (GetSweepSettingsTextWave: Add device as entry, 2023-01-03)
 	device = GetLastSettingTextIndep(textualValues, sweepNo, "Device", DATA_ACQUISITION_MODE)
@@ -3565,7 +3567,7 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 	WAVE sweepDataFiltOff       = GetPSXSweepDataFiltOffWaveFromDFR(comboDFR)
 	WAVE sweepDataFiltOffDeconv = GetPSXSweepDataFiltOffDeconvWaveFromDFR(comboDFR)
 
-	[STRUCT RGBColor color] = SF_GetTraceColor(graph, plotMetaData.opStack, sweepData)
+	[STRUCT RGBColor color] = SF_GetTraceColor(graph, plotMetaData.opStack, sweepData, $"")
 
 	AppendToGraph/W=$win/C=(color.red, color.green, color.blue)/L=leftFiltOff sweepDataFiltOff
 	AppendToGraph/W=$win/L=leftFiltOff peakYAtFilt vs peakX

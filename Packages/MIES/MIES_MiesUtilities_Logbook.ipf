@@ -2017,3 +2017,19 @@ Function [variable type, variable waMode, variable headstage] GetAnalysisFunctio
 
 	return [type, waMode, headstage]
 End
+
+Function ParseLogbookMode(string modeText)
+
+	strswitch(modeText)
+		case "UNKNOWN_MODE":
+			return UNKNOWN_MODE
+		case "DATA_ACQUISITION_MODE":
+			return DATA_ACQUISITION_MODE
+		case "TEST_PULSE_MODE":
+			return TEST_PULSE_MODE
+		case "NUMBER_OF_LBN_DAQ_MODES":
+			return NUMBER_OF_LBN_DAQ_MODES
+	endswitch
+
+	ASSERT(0, "Unsupported labnotebook mode")
+End

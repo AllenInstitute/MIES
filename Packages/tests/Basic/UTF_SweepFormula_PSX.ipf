@@ -743,8 +743,7 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 		CHECK_WAVE(marker, NULL_WAVE)
 	endif
 
-	WAVE/Z xTickPositionsRead = JWN_GetNumericWaveFromWaveNote(resultsRead, SF_META_XTICKPOSITIONS)
-	WAVE/Z xTickLabelsRead    = JWN_GetTextWaveFromWaveNote(resultsRead, SF_META_XTICKLABELS)
+	WAVE/Z xTickPositionsRead = JWN_GetNumericWaveFromWaveNote(output, SF_META_XTICKPOSITIONS)
 
 	if(WaveExists(xTickPositions))
 		CHECK_EQUAL_WAVES(xTickPositionsRead, xTickPositions, mode = WAVE_DATA)
@@ -752,6 +751,8 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 		CHECK_WAVE(xTickPositionsRead, NULL_WAVE)
 		CHECK_WAVE(xTickPositions, NULL_WAVE)
 	endif
+
+	WAVE/Z xTickLabelsRead = JWN_GetTextWaveFromWaveNote(output, SF_META_XTICKLABELS)
 
 	if(WaveExists(xTickLabels))
 		CHECK_EQUAL_WAVES(xTickLabelsRead, xTickLabels, mode = WAVE_DATA)

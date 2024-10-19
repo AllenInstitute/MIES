@@ -2522,44 +2522,21 @@ Function WB_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
 	string   str
 	WAVE     wv
 
-	string type, value, formattedString, params
+	string params
 
 	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
 
-	if(!ParamIsDefault(var))
-		type = "variable"
-		// numbers never need URL encoding
-		value = num2str(var)
-	elseif(!ParamIsDefault(str))
-		type  = "string"
-		value = URLEncode(str)
-	elseif(!ParamIsDefault(wv))
-		ASSERT(DimSize(wv, ROWS) > 0, "Expected non-empty wave")
-		if(IsTextWave(wv))
-			type = "textwave"
-			Duplicate/T/FREE wv, wvText
-			wvText = UrlEncode(wvText)
-			value  = TextWaveToList(wvText, "|")
-		else
-			type = "wave"
-			// numbers never need URL encoding
-			value = NumericWaveToList(wv, "|", format = "%.15g")
-		endif
-	endif
-
-	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	ASSERT(!GrepString(value, "[=:,;]+"), "Broken URL encoding. Written entry contains invalid characters (one of `=:,;`)")
-	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
-
 	params = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
 
-#ifndef AUTOMATED_TESTING
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
-		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
+	if(!ParamIsDefault(var))
+		AFH_AddAnalysisParameterToParams(params, name, var = var)
+	elseif(!ParamIsDefault(str))
+		AFH_AddAnalysisParameterToParams(params, name, str = str)
+	elseif(!ParamIsDefault(wv))
+		AFH_AddAnalysisParameterToParams(params, name, wv = wv)
 	endif
-#endif
 
-	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params, type + "=" + value, ":", ",", 0)
+	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = params
 End
 
 /// @brief Internal use only

@@ -88,6 +88,7 @@ static StrConstant SF_OP_BUTTERWORTH         = "butterworth"
 static StrConstant SF_OP_SELECTCHANNELS      = "selchannels"
 static StrConstant SF_OP_DATA                = "data"
 static StrConstant SF_OP_LABNOTEBOOK         = "labnotebook"
+static StrConstant SF_OP_ANAFUNCPARAM        = "anaFuncParam"
 static StrConstant SF_OP_WAVE                = "wave"
 static StrConstant SF_OP_FINDLEVEL           = "findlevel"
 static StrConstant SF_OP_EPOCHS              = "epochs"
@@ -250,7 +251,7 @@ Function/WAVE SF_GetNamedOperations()
 	                  SF_OP_MERGE, SF_OP_FIT, SF_OP_FITLINE, SF_OP_DATASET, SF_OP_SELECTVIS, SF_OP_SELECTCM, SF_OP_SELECTSTIMSET,       \
 	                  SF_OP_SELECTIVSCCSWEEPQC, SF_OP_SELECTIVSCCSETQC, SF_OP_SELECTRANGE, SF_OP_SELECTEXP, SF_OP_SELECTDEV,            \
 	                  SF_OP_SELECTEXPANDSCI, SF_OP_SELECTEXPANDRAC, SF_OP_SELECTSETCYCLECOUNT, SF_OP_SELECTSETSWEEPCOUNT,               \
-	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX}
+	                  SF_OP_SELECTSCIINDEX, SF_OP_SELECTRACINDEX, SF_OP_ANAFUNCPARAM}
 
 	return wt
 End
@@ -1098,6 +1099,9 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		case SF_OP_LABNOTEBOOK:
 			WAVE out = SF_OperationLabnotebook(jsonId, jsonPath, graph)
 			break
+		case SF_OP_ANAFUNCPARAM:
+			WAVE out = SF_OperationAnaFuncParam(jsonId, jsonPath, graph)
+			break
 		case SF_OP_LOG: // JSON logic debug operation
 			WAVE out = SF_OperationLog(jsonId, jsonPath, graph)
 			break
@@ -1313,6 +1317,8 @@ static Function/S SF_GetAnnotationPrefix(string dataType)
 			return "TP "
 		case SF_DATATYPE_LABNOTEBOOK:
 			return "LB "
+		case SF_DATATYPE_ANAFUNCPARAM:
+			return "AFP "
 		default:
 			ASSERT(0, "Invalid dataType")
 	endswitch
@@ -1330,6 +1336,7 @@ static Function/S SF_GetTraceAnnotationText(STRUCT SF_PlotMetaData &plotMetaData
 		case SF_DATATYPE_EPOCHS: // fallthrough
 		case SF_DATATYPE_SWEEP: // fallthrough
 		case SF_DATATYPE_LABNOTEBOOK: // fallthrough
+		case SF_DATATYPE_ANAFUNCPARAM: // fallthrough
 		case SF_DATATYPE_TP:
 			sweepNo      = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 			legendPrefix = JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX)
@@ -1383,16 +1390,103 @@ static Function/S SF_GetMetaDataAnnotationText(STRUCT SF_PlotMetaData &plotMetaD
 	return "\\s(" + traceName + ") " + SF_GetTraceAnnotationText(plotMetaData, data) + "\r"
 End
 
-Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data)
+static Function/WAVE SF_GenerateTraceColors(WAVE colorGroups)
+
+	variable numUniqueColors, i
+	string lbl
+
+	WAVE uniqueColorGroups = GetUniqueEntries(colorGroups)
+	numUniqueColors = DimSize(uniqueColorGroups, ROWS)
+	WAVE traceColors = GetColorWave(numUniqueColors)
+
+	for(i = 0; i < numUniqueColors; i += 1)
+		[STRUCT RGBColor s] = GetTraceColorAlternative(i)
+
+		lbl = num2str(uniqueColorGroups[i])
+		SetDimLabel ROWS, i, $lbl, traceColors
+
+		traceColors[i][%Red]   = s.red
+		traceColors[i][%Green] = s.green
+		traceColors[i][%Blue]  = s.blue
+	endfor
+
+	return traceColors
+End
+
+/// @brief Return an Nx3 wave with one color triplett for each unique trace color group
+static Function/WAVE SF_GetGroupColors(WAVE/WAVE formulaResults)
+
+	variable numFormulas, i, numUniqueColors, refColorGroup, constantChannelNumAndType
+	string lbl
+
+	numFormulas = DimSize(formulaResults, ROWS)
+
+	if(numFormulas == 0)
+		return $""
+	endif
+
+	WAVE/Z data = formulaResults[0][%FORMULAY]
+
+	if(!WaveExists(data))
+		return $""
+	endif
+
+	refColorGroup = JWN_GetNumberFromWaveNote(data, SF_META_COLOR_GROUP)
+
+	if(IsNaN(refColorGroup))
+		return $""
+	endif
+
+	Make/FREE/N=(numFormulas)/D colorGroups = JWN_GetNumberFromWaveNote(formulaResults[p][%FORMULAY], SF_META_COLOR_GROUP)
+
+	if(numFormulas == 1)
+		return SF_GenerateTraceColors(colorGroups)
+	endif
+
+	// check if the data in the y formulas is from the same channel type and number
+	Make/FREE/N=(numFormulas) channelNumbers = JWN_GetNumberFromWaveNote(formulaResults[p][%FORMULAY], SF_META_CHANNELNUMBER)
+	Make/FREE/N=(numFormulas) channelTypes = JWN_GetNumberFromWaveNote(formulaResults[p][%FORMULAY], SF_META_CHANNELTYPE)
+
+	constantChannelNumAndType = IsConstant(channelNumbers, channelNumbers[0], ignoreNaN = 0) \
+	                            && IsConstant(channelTypes, channelTypes[0], ignoreNaN = 0)
+
+	if(!constantChannelNumAndType)
+		return $""
+	endif
+
+	return SF_GenerateTraceColors(colorGroups)
+End
+
+Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE data, WAVE/Z traceGroupColors)
 
 	variable i, channelNumber, channelType, sweepNo, headstage, numDoInh, minVal, isAveraged, mapIndex
+	variable colorGroup, idx
+
+	if(WaveExists(traceGroupColors))
+		// Operations with trace group color support:
+		// - data/epochs/tp/psxKernel (via SFH_GetSweepsForFormula)
+		// - labnotebook
+		// - anaFuncParam
+
+		colorGroup = JWN_GetNumberFromWaveNote(data, SF_META_COLOR_GROUP)
+		ASSERT(IsFinite(colorGroup), "Invalid color group")
+
+		idx = FindDimLabel(traceGroupColors, ROWS, num2str(colorGroup))
+		ASSERT(idx >= 0, "Invalid color group index")
+
+		s.red   = traceGroupColors[idx][%Red]
+		s.green = traceGroupColors[idx][%Green]
+		s.blue  = traceGroupColors[idx][%Blue]
+
+		return [s]
+	endif
 
 	s.red   = 0xFFFF
 	s.green = 0x0000
 	s.blue  = 0x0000
 
 	Make/FREE/T stopInheritance = {SF_OPSHORT_MINUS, SF_OPSHORT_PLUS, SF_OPSHORT_DIV, SF_OPSHORT_MULT}
-	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS, SF_OP_EPOCHS, SF_OP_LABNOTEBOOK}
+	Make/FREE/T doInheritance = {SF_OP_DATA, SF_OP_TP, SF_OP_PSX, SF_OP_PSX_STATS, SF_OP_EPOCHS, SF_OP_LABNOTEBOOK, SF_OP_ANAFUNCPARAM}
 
 	WAVE/T opStackW = ListToTextWave(opStack, ";")
 	numDoInh = DimSize(doInheritance, ROWS)
@@ -1421,7 +1515,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 		return [s]
 	endif
 
-	[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
+	WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
 	if(!WaveExists(numericalValues))
 		return [s]
 	endif
@@ -1727,11 +1821,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 	string trace, customLegend
 	variable i, j, k, l, numTraces, splitTraces, splitY, splitX, numGraphs, numWins, numData, dataCnt, traceCnt
-	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend
+	variable dim1Y, dim2Y, dim1X, dim2X, winDisplayMode, showLegend, tagCounter, overrideMarker
 	variable xMxN, yMxN, xPoints, yPoints, keepUserSelection, numAnnotations, formulasAreDifferent, postPlotPSX
 	variable formulaCounter, gdIndex, markerCode, lineCode, lineStyle, traceToFront, isCategoryAxis
 	string win, wList, winNameTemplate, exWList, wName, annotation, yAxisLabel, wvName, info, xAxis
-	string formulasRemain, yAndXFormula, xFormula, yFormula
+	string formulasRemain, yAndXFormula, xFormula, yFormula, tagText, name, winHook
 	STRUCT SF_PlotMetaData plotMetaData
 	STRUCT RGBColor        color
 
@@ -1802,6 +1896,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 			SF_FormulaPlotterExtendResultsIfCompatible(formulaResults)
 
+			WAVE/Z traceGroupColors = SF_GetGroupColors(formulaResults)
+
 			numData = DimSize(formulaResults, ROWS)
 			for(k = 0; k < numData; k += 1)
 
@@ -1816,7 +1912,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 				SFH_ASSERT(!(IsTextWave(wvResultY) && WaveDims(wvResultY) > 1), "Plotter got 2d+ text wave as y data.")
 
-				[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY)
+				[color] = SF_GetTraceColor(graph, plotMetaData.opStack, wvResultY, traceGroupColors)
 
 				if(!WaveExists(wvResultX) && !IsEmpty(plotMetaData.xAxisLabel))
 					WAVE/Z wvResultX = JWN_GetNumericWaveFromWaveNote(wvResultY, SF_META_XVALUES)
@@ -2029,6 +2125,45 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			endif
 		endif
 
+		WAVE/Z xTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_XTICKLABELS)
+		WAVE/Z xTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_XTICKPOSITIONS)
+
+		if(WaveExists(xTickLabelsAsFree) && WaveExists(xTickPositionsAsFree))
+			DFREF dfrWork = SFH_GetWorkingDF(graph)
+			wvName = "xTickLabels_" + win + "_" + NameOfWave(formulaResults)
+			WAVE xTickLabels = MoveFreeWaveToPermanent(xTickLabelsAsFree, dfrWork, wvName)
+
+			wvName = "xTickPositions_" + win + "_" + NameOfWave(formulaResults)
+			WAVE xTickPositions = MoveFreeWaveToPermanent(xTickPositionsAsFree, dfrWork, wvName)
+
+			ModifyGraph/Z/W=$win userticks(bottom)={xTickPositions, xTickLabels}
+		endif
+
+		WAVE/Z yTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(formulaResults, SF_META_YTICKLABELS)
+		WAVE/Z yTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(formulaResults, SF_META_YTICKPOSITIONS)
+
+		if(WaveExists(yTickLabelsAsFree) && WaveExists(yTickPositionsAsFree))
+			DFREF dfrWork = SFH_GetWorkingDF(graph)
+			wvName = "yTickLabels_" + win + "_" + NameOfWave(formulaResults)
+			WAVE yTickLabels = MoveFreeWaveToPermanent(yTickLabelsAsFree, dfrWork, wvName)
+
+			wvName = "yTickPositions_" + win + "_" + NameOfWave(formulaResults)
+			WAVE yTickPositions = MoveFreeWaveToPermanent(yTickPositionsAsFree, dfrWork, wvName)
+
+			ModifyGraph/Z/W=$win userticks(left)={yTickPositions, yTickLabels}
+
+			Make/FREE yTickPositionsWorkaround = {0, 1}
+			if(EqualWaves(yTickPositions, yTickPositionsWorkaround, EQWAVES_DATA))
+				// @todo workaround bug 4531 so that we get tick labels even with only constant y values
+				SetAxis/W=$win/Z left, 0, 1
+			endif
+		endif
+
+		winHook = JWN_GetStringFromWaveNote(formulaResults, SF_META_WINDOW_HOOK)
+		if(!IsEmpty(winHook))
+			SetWindow $win, tooltipHook(SweepFormulaTraceValue)=$winHook
+		endif
+
 		for(k = 0; k < formulaCounter; k += 1)
 			WAVE/WAVE plotFormData  = collPlotFormData[k]
 			WAVE/T    tracesInGraph = plotFormData[0]
@@ -2055,8 +2190,22 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 
 				WAVE/Z traceColor = JWN_GetNumericWaveFromWaveNote(traceColorHolder, SF_META_TRACECOLOR)
 				if(WaveExists(traceColor))
-					ASSERT(DimSize(traceColor, ROWS) == 3, "Need 3-element wave for color specification.")
-					ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
+					switch(DimSize(traceColor, ROWS))
+						case 3:
+							ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2])
+							break
+						case 4:
+							ModifyGraph/W=$win rgb($trace)=(traceColor[0], traceColor[1], traceColor[2], traceColor[3])
+							break
+						default:
+							ASSERT(0, "Invalid size of trace color wave")
+					endswitch
+				endif
+
+				tagText = JWN_GetStringFromWaveNote(wvY, SF_META_TAG_TEXT)
+				if(!IsEmpty(tagText))
+					name = "tag" + num2str(tagCounter++)
+					Tag/C/N=$name/W=$win/F=0/L=0/X=0.00/Y=0.00 $trace, 0, tagText
 				endif
 
 				ModifyGraph/W=$win mode($trace)=SF_DeriveTraceDisplayMode(wvX, wvY)
@@ -2076,22 +2225,13 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 					ASSERT(DimSize(wvY, ROWS) == DimSize(customMarker, ROWS), "Marker size mismatch")
 					ModifyGraph/W=$win zmrkNum($trace)={customMarker}
 				else
+					overrideMarker = JWN_GetNumberFromWaveNote(wvY, SF_META_MOD_MARKER)
+
+					if(!IsNaN(overrideMarker))
+						markerCode = overrideMarker
+					endif
+
 					ModifyGraph/W=$win marker($trace)=markerCode
-				endif
-
-				WAVE/Z xTickLabelsAsFree    = JWN_GetTextWaveFromWaveNote(wvY, SF_META_XTICKLABELS)
-				WAVE/Z xTickPositionsAsFree = JWN_GetNumericWaveFromWaveNote(wvY, SF_META_XTICKPOSITIONS)
-
-				if(WaveExists(xTickLabelsAsFree) && WaveExists(xTickPositionsAsFree))
-					DFREF dfrWork = SFH_GetWorkingDF(graph)
-					wvName = "xTickLabels_" + NameOfWave(wvY)
-					WAVE xTickLabels = MoveFreeWaveToPermanent(xTickLabelsAsFree, dfrWork, wvName)
-
-					wvName = "xTickPositions_" + NameOfWave(wvY)
-					WAVE xTickPositions = MoveFreeWaveToPermanent(xTickPositionsAsFree, dfrWork, wvName)
-
-					xAxis = StringByKey("XAXIS", TraceInfo(win, trace, 0))
-					ModifyGraph/W=$win userticks($xAxis)={xTickPositions, xTickLabels}
 				endif
 
 				traceToFront = JWN_GetNumberFromWaveNote(wvY, SF_META_TRACETOFRONT)
@@ -2133,7 +2273,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			endif
 
 			if(WaveExists(annoInfos))
-				RestoreAnnotationPositions(win, annoInfos)
+				WAVE/T annoInfosFiltered = FilterAnnotations(annoInfos, "^tag.*$")
+				RestoreAnnotationPositions(win, annoInfosFiltered)
 			endif
 		endif
 	endfor
@@ -3038,6 +3179,8 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_TP)
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_TP, ""))
 
+	SF_SetSweepXAxisTickLabels(output, selectData)
+
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_TP)
 End
 
@@ -3475,13 +3618,15 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 
 	WAVE/WAVE output = SF_OperationEpochsImpl(graph, epochPatterns, selectData, epType, SF_OP_EPOCHS)
 
+	SF_SetSweepXAxisTickLabels(output, selectData)
+
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_EPOCHS)
 End
 
 static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, WAVE/Z selectData, variable epType, string opShort)
 
 	variable i, j, numSelected, sweepNo, chanNr, chanType, index, numEpochs, epIndex, settingsIndex, numPatterns, numEntries
-	variable hasValidData
+	variable hasValidData, colorGroup
 	string epName, epShortName, epEntry, yAxisLabel, epAxisName
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
@@ -3558,6 +3703,9 @@ static Function/WAVE SF_OperationEpochsImpl(string graph, WAVE/T epochPatterns, 
 		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELTYPE, chanType)
 		JWN_SetNumberInWaveNote(output[i], SF_META_CHANNELNUMBER, chanNr)
 		JWN_SetWaveInWaveNote(output[i], SF_META_XVALUES, {sweepNo})
+
+		colorGroup = GetUniqueInteger()
+		JWN_SetNumberInWaveNote(output[i], SF_META_COLOR_GROUP, colorGroup)
 
 		hasValidData = 1
 	endfor
@@ -5298,8 +5446,9 @@ static Function/WAVE SF_GetSelectDataWithRACorSCIIndex(string graph, WAVE select
 	endif
 
 	for(i = 0; i < numSelected; i += 1)
-		sweepNo = selectData[i][%SWEEP]
-		[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, selectData[i][%SWEEPMAPINDEX])
+		sweepNo  = selectData[i][%SWEEP]
+		mapIndex = selectData[i][%SWEEPMAPINDEX]
+		WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
 		ASSERT(WaveExists(numericalValues), "Could not resolve numerical LNB")
 		if(mode == SELECTDATA_MODE_RAC)
 			cycleIds[i] = GetLastSettingIndep(numericalValues, sweepNo, RA_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
@@ -5512,7 +5661,7 @@ static Function/WAVE SF_GetSelectDataWithSCIorRAC(string graph, WAVE selectData,
 	for(i = 0; i < numSelected; i += 1)
 		sweepNo  = selectData[i][%SWEEP]
 		mapIndex = selectData[i][%SWEEPMAPINDEX]
-		[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, mapIndex)
+		WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
 		if(!WaveExists(numericalValues))
 			continue
 		endif
@@ -5660,59 +5809,24 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_DATA)
 End
 
-/// `labnotebook(string key[, array selectData [, string entrySourceType]])`
-///
-/// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
-static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, string graph)
+static Function/WAVE SF_OperationAnaFuncParam(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs, mode
-	string lbnKey
+	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_ANAFUNCPARAM, 0, maxArgs = 2)
 
-	numArgs = SFH_GetNumberOfArguments(jsonID, jsonPath)
-	SFH_ASSERT(numArgs <= 3, "Maximum number of three arguments exceeded.")
-	SFH_ASSERT(numArgs >= 1, "At least one argument is required.")
+	WAVE/T names      = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_ANAFUNCPARAM, 0, singleResult = 1)
+	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_DATA, 1)
 
-	if(numArgs == 3)
-		WAVE/T wMode = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, checkExist = 1)
-		SFH_ASSERT(IsTextWave(wMode) && DimSize(wMode, ROWS) == 1 && !DimSize(wMode, COLS), "Last parameter needs to be a string.")
-		strswitch(wMode[0])
-			case "UNKNOWN_MODE":
-				mode = UNKNOWN_MODE
-				break
-			case "DATA_ACQUISITION_MODE":
-				mode = DATA_ACQUISITION_MODE
-				break
-			case "TEST_PULSE_MODE":
-				mode = TEST_PULSE_MODE
-				break
-			case "NUMBER_OF_LBN_DAQ_MODES":
-				mode = NUMBER_OF_LBN_DAQ_MODES
-				break
-			default:
-				SFH_ASSERT(0, "Undefined labnotebook mode. Use one in group DataAcqModes")
-		endswitch
-	else
-		mode = DATA_ACQUISITION_MODE
-	endif
+	WAVE/WAVE output = SF_OperationAnaFuncParamIterate(graph, names, selectData, SF_OP_ANAFUNCPARAM)
 
-	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 1)
+	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_ANAFUNCPARAM, ""))
+	JWN_SetStringInWaveNote(output, SF_META_WINDOW_HOOK, "TraceValueDisplayHook")
 
-	WAVE/T wLbnKey = SFH_ResolveDatasetElementFromJSON(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, checkExist = 1)
-	SFH_ASSERT(IsTextWave(wLbnKey) && DimSize(wLbnKey, ROWS) == 1 && !DimSize(wLbnKey, COLS), "First parameter needs to be a string labnotebook key.")
-	lbnKey = wLbnKey[0]
+	SF_SetSweepXAxisTickLabels(output, selectData)
 
-	WAVE/Z/WAVE output = SF_OperationLabnotebookIterate(graph, lbnKey, selectData, mode, SF_OP_LABNOTEBOOK)
-	if(!WaveExists(output))
-		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_LABNOTEBOOK, 0)
-		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
-	endif
-
-	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_LABNOTEBOOK, ""))
-
-	return SFH_GetOutputForExecutor(output, graph, SF_OP_LABNOTEBOOK)
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_ANAFUNCPARAM)
 End
 
-static Function/WAVE SF_OperationLabnotebookIterate(string graph, string lbnKey, WAVE/WAVE/Z selectDataArray, variable mode, string opShort)
+static Function/WAVE SF_OperationAnaFuncParamIterate(string graph, WAVE/T names, WAVE/WAVE/Z selectDataArray, string opShort)
 
 	if(!WaveExists(selectDataArray))
 		return $""
@@ -5727,7 +5841,196 @@ static Function/WAVE SF_OperationLabnotebookIterate(string graph, string lbnKey,
 		endif
 
 		WAVE/Z    selectData = selectDataComp[%SELECTION]
-		WAVE/WAVE lbnData    = SF_OperationLabnotebookImpl(graph, lbnKey, selectData, mode, opShort)
+		WAVE/WAVE sweepData  = SF_OperationAnaFuncParamImpl(graph, names, selectData, opShort)
+		if(!WaveExists(sweepData))
+			continue
+		endif
+
+		if(!WaveExists(result))
+			WAVE/WAVE result = sweepData
+			continue
+		endif
+
+		Concatenate/FREE/WAVE/NP {sweepData}, result
+	endfor
+
+	return result
+End
+
+/// Gather all requested analysis function parameters with wildcard support
+///
+/// @param names     requested analysis function parameter names, can include wildcards
+/// @param lbnParams wave reference wave, one wave per selectData entry, with
+///                  the analysis function parameter data from the labnotebook including JWN
+///                  metadata
+///
+/// @return expanded analysis function parameter names (i.e. without wildcards) which match at least in one selectData entry
+static Function/WAVE SF_OperationAnaFuncParamImplAllNames(WAVE/T names, WAVE/WAVE lbnParams)
+
+	variable i, numAvailableParams, j, numRequestedParams
+	string params, reqName, namesPerLBNEntry, gatheredNames
+
+	numAvailableParams = DimSize(lbnParams, ROWS)
+	numRequestedParams = DimSize(names, ROWS)
+
+	for(i = 0; i < numAvailableParams; i += 1)
+		WAVE/T paramsSingle = lbnParams[i]
+		params = JWN_GetStringFromWaveNote(paramsSingle, SF_META_TAG_TEXT)
+
+		gatheredNames = AFH_GetListOfAnalysisParamNames(params)
+
+		for(j = 0; j < numRequestedParams; j += 1)
+			reqName = names[j]
+
+			namesPerLBNEntry = ListMatch(gatheredNames, reqName)
+
+			if(IsEmpty(namesPerLBNEntry))
+				continue
+			endif
+
+			WAVE wv = ListToTextWave(namesPerLBNEntry, ";")
+
+			Concatenate/NP=(ROWS)/FREE {wv}, allNames
+		endfor
+	endfor
+
+	if(!WaveExists(allNames))
+		return $""
+	endif
+
+	return GetUniqueEntries(allNames)
+End
+
+static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WAVE/Z selectData, string opShort)
+
+	variable numReqNames, numFoundParams, i, j, idx, sweepNo, chanType, chanNr, colorGroup, colorGroupFound, nextFreeIndex, marker
+	string params, name, type
+
+	if(!WaveExists(selectData))
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
+		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_ANAFUNCPARAM)
+		return output
+	endif
+
+	WAVE/WAVE allParams   = SF_OperationLabnotebookImpl(graph, {ANALYSIS_FUNCTION_PARAMS_LBN}, selectData, DATA_ACQUISITION_MODE, opShort)
+	WAVE/T/Z  allReqNames = SF_OperationAnaFuncParamImplAllNames(names, allParams)
+
+	if(!WaveExists(allReqNames))
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
+		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_ANAFUNCPARAM)
+		return output
+	endif
+
+	numFoundParams = DimSize(allParams, ROWS)
+	numReqNames    = DimSize(allReqNames, ROWS)
+
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numReqNames * numFoundParams)
+
+	for(i = 0; i < numReqNames; i += 1)
+		name       = allReqNames[i]
+		colorGroup = GetUniqueInteger()
+
+		marker = SFH_GetPlotMarkerCodeSelection(i)
+
+		for(j = 0; j < numFoundParams; j += 1)
+			WAVE/T paramsSingle = allParams[j]
+			params = JWN_GetStringFromWaveNote(paramsSingle, SF_META_TAG_TEXT)
+			type   = AFH_GetAnalysisParamType(name, params, typeCheck = 0)
+
+			strswitch(type)
+				case "variable":
+					Make/FREE/D out = {AFH_GetAnalysisParamNumerical(name, params)}
+					break
+				case "string":
+				case "wave":
+				case "textwave":
+					Make/FREE/D out = {0.0}
+					JWN_SetWaveInWaveNote(out, SF_META_TRACECOLOR, {0, 0, 0, 0})
+					JWN_SetStringInWaveNote(out, SF_META_TAG_TEXT, PrepareListForDisplay(AFH_GetAnalysisParameterAsText(name, params)))
+					break
+				case "":
+					// unknown name or labnotebook entry not present
+					Make/FREE/D out = {NaN}
+					break
+				default:
+					ASSERT(0, "Unsupported parameter type: " + type)
+			endswitch
+
+			sweepNo  = JWN_GetNumberFromWaveNote(paramsSingle, SF_META_SWEEPNO)
+			chanType = JWN_GetNumberFromWaveNote(paramsSingle, SF_META_CHANNELTYPE)
+			chanNr   = JWN_GetNumberFromWaveNote(paramsSingle, SF_META_CHANNELNUMBER)
+
+			JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
+			JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
+			JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
+
+			JWN_SetStringInWaveNote(out, SF_META_LEGEND_LINE_PREFIX, name)
+			JWN_SetNumberInWaveNote(out, SF_META_COLOR_GROUP, colorGroup)
+			JWN_SetNumberInWaveNote(out, SF_META_MOD_MARKER, marker)
+
+			output[idx] = out
+			idx        += 1
+		endfor
+	endfor
+
+	Redimension/N=(idx) output
+
+	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, "Analysis function parameters")
+	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
+	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_ANAFUNCPARAM)
+
+	return output
+End
+
+/// `labnotebook(array keys[, array selectData [, string entrySourceType]])`
+///
+/// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
+static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, string graph)
+
+	variable numArgs, mode
+	string lbnKey, modeTxt
+
+	SFH_CheckArgumentCount(jsonID, jsonPath, SF_OP_LABNOTEBOOK, 1, maxArgs = 3)
+
+	Make/FREE/T allowedValuesMode = {"UNKNOWN_MODE", "DATA_ACQUISITION_MODE", "TEST_PULSE_MODE", "NUMBER_OF_LBN_DAQ_MODES"}
+	modeTxt = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 2, allowedValues = allowedValuesMode, defValue = "DATA_ACQUISITION_MODE")
+	mode    = ParseLogbookMode(modeTxt)
+
+	WAVE/Z selectData = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 1)
+
+	WAVE/T lbnKeys = SFH_GetArgumentAsWave(jsonID, jsonPath, graph, SF_OP_LABNOTEBOOK, 0, expectedWaveType = IGOR_TYPE_TEXT_WAVE, singleResult = 1)
+
+	WAVE/Z/WAVE output = SF_OperationLabnotebookIterate(graph, lbnKeys, selectData, mode, SF_OP_LABNOTEBOOK)
+	if(!WaveExists(output))
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_LABNOTEBOOK, 0)
+		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
+	endif
+
+	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_LABNOTEBOOK, ""))
+	JWN_SetStringInWaveNote(output, SF_META_WINDOW_HOOK, "TraceValueDisplayHook")
+
+	SF_SetSweepXAxisTickLabels(output, selectData)
+
+	return SFH_GetOutputForExecutor(output, graph, SF_OP_LABNOTEBOOK)
+End
+
+static Function/WAVE SF_OperationLabnotebookIterate(string graph, WAVE/T lbnKeys, WAVE/WAVE/Z selectDataArray, variable mode, string opShort)
+
+	if(!WaveExists(selectDataArray))
+		return $""
+	endif
+
+	WAVE/WAVE/Z result = $""
+
+	for(WAVE/WAVE/Z selectDataComp : selectDataArray)
+
+		if(!WaveExists(selectDataComp))
+			continue
+		endif
+
+		WAVE/Z    selectData = selectDataComp[%SELECTION]
+		WAVE/WAVE lbnData    = SF_OperationLabnotebookImpl(graph, lbnKeys, selectData, mode, opShort)
 		if(!WaveExists(lbnData))
 			continue
 		endif
@@ -5743,63 +6046,247 @@ static Function/WAVE SF_OperationLabnotebookIterate(string graph, string lbnKey,
 	return result
 End
 
-static Function/WAVE SF_OperationLabnotebookImpl(string graph, string lbnKey, WAVE/Z selectData, variable mode, string opShort)
+static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, WAVE/Z selectData, variable mode, string opShort)
 
-	variable i, numSelected, index, settingsIndex
-	variable sweepNo, chanNr, chanType
+	variable i, numSelected, idx, lbnIndex
+	variable numOutputWaves, colorGroup, marker
+	string lbnKey, refUnit, unitString
 
 	if(!WaveExists(selectData))
-		return $""
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
+		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
+		return output
 	endif
 
-	numSelected = DimSize(selectData, ROWS)
-	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numSelected)
+	WAVE/T/Z allLBNKeys = SFH_OperationLabnotebookExpandKeys(graph, LBNKeys, selectData, mode)
 
-	for(i = 0; i < numSelected; i += 1)
+	if(!WaveExists(allLBNKeys))
+		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
+		JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
+		return output
+	endif
 
-		sweepNo = selectData[i][%SWEEP]
-		if(!IsValidSweepNumber(sweepNo))
-			continue
-		endif
-		chanNr   = selectData[i][%CHANNELNUMBER]
-		chanType = selectData[i][%CHANNELTYPE]
+	numSelected    = DimSize(selectData, ROWS)
+	numOutputWaves = numSelected * DimSize(allLBNKeys, ROWS)
+	WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, numOutputWaves)
 
-		[WAVE numericalValues, WAVE textualValues] = SFH_GetLabNoteBooksForSweep(graph, sweepNo, selectData[i][%SWEEPMAPINDEX])
-		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
-			continue
-		endif
+	for(lbnKey : allLBNKeys)
+		colorGroup = GetUniqueInteger()
+		marker     = SFH_GetPlotMarkerCodeSelection(lbnIndex)
+		lbnIndex  += 1
 
-		[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, mode)
-		if(!WaveExists(settings))
-			continue
-		endif
-		if(IsNumericWave(settings))
-			Make/FREE/D outD = {settings[settingsIndex]}
-			WAVE out = outD
-		elseif(IsTextWave(settings))
-			WAVE/T settingsT = settings
-			Make/FREE/T outT = {settingsT[settingsIndex]}
-			WAVE out = outT
-		endif
+		for(i = 0; i < numSelected; i += 1)
+			WAVE out = SF_OperationLabnotebookImplGetEntry(graph, selectData, i, lbnKey, mode)
 
-		JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
-		JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
-		JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
-		JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
+			JWN_SetNumberInWaveNote(out, SF_META_COLOR_GROUP, colorGroup)
+			JWN_SetNumberInWaveNote(out, SF_META_MOD_MARKER, marker)
 
-		output[index] = out
-		index        += 1
+			output[idx] = out
+			idx        += 1
+		endfor
 	endfor
-	if(!index)
-		return $""
+
+	WAVE/T units = SF_GetLabnotebookEntryUnits(graph, allLBNKeys, selectData)
+
+	if(DimSize(units, ROWS) == 1)
+		refUnit = units[0]
+
+		if(!cmpstr(refUnit, LABNOTEBOOK_BINARY_UNIT))
+			WAVE/T/Z matches = GrepTextWave(allLBNKeys, "^.* QC$")
+
+			Make/FREE/D yTickPositions = {0, 1}
+			Make/FREE/T/N=2 yTickLabels
+
+			if(WaveExists(matches) && DimSize(matches, ROWS) == DimSize(allLBNKeys, ROWS))
+				yTickLabels[] = UpperCaseFirstChar(ToPassFail(yTickPositions[p]))
+			else
+				yTickLabels[] = UpperCaseFirstChar(ToOnOff(yTickPositions[p]))
+			endif
+
+			JWN_SetWaveInWaveNote(output, SF_META_YTICKPOSITIONS, yTickPositions)
+			JWN_SetWaveInWaveNote(output, SF_META_YTICKLABELS, yTickLabels)
+		else
+			// other specializations on labnotebook units
+
+			if(!IsEmpty(refUnit))
+				sprintf unitString, "Unit (%s)", refUnit
+				JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, unitString)
+			endif
+		endif
 	endif
-	Redimension/N=(index) output
 
 	JWN_SetStringInWaveNote(output, SF_META_DATATYPE, SF_DATATYPE_LABNOTEBOOK)
 	JWN_SetStringInWaveNote(output, SF_META_XAXISLABEL, "Sweeps")
-	JWN_SetStringInWaveNote(output, SF_META_YAXISLABEL, lbnKey)
+
+	SF_SetSweepXAxisTickLabels(output, selectData)
 
 	return output
+End
+
+static Function/WAVE SF_OperationLabnotebookImplGetEntry(string graph, WAVE selectData, variable index, string lbnKey, variable mode)
+
+	variable sweepNo, chanNr, chanType, settingsIndex, result, col, mapIndex
+	string entry
+
+	sweepNo  = selectData[index][%SWEEP]
+	chanNr   = selectData[index][%CHANNELNUMBER]
+	chanType = selectData[index][%CHANNELTYPE]
+	mapIndex = selectData[index][%SWEEPMAPINDEX]
+
+	Make/FREE/D out = {NaN}
+
+	JWN_SetNumberInWaveNote(out, SF_META_SWEEPNO, sweepNo)
+	JWN_SetNumberInWaveNote(out, SF_META_CHANNELTYPE, chanType)
+	JWN_SetNumberInWaveNote(out, SF_META_CHANNELNUMBER, chanNr)
+	JWN_SetNumberInWaveNote(out, SF_META_SWEEPMAPINDEX, mapIndex)
+	JWN_SetWaveInWaveNote(out, SF_META_XVALUES, {sweepNo})
+	JWN_SetStringInWaveNote(out, SF_META_LEGEND_LINE_PREFIX, lbnKey)
+
+	if(!IsValidSweepNumber(sweepNo))
+		return out
+	endif
+
+	WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
+	WAVE textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
+
+	[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, lbnKey, chanNr, chanType, mode)
+	if(!WaveExists(settings))
+		return out
+	endif
+
+	if(IsNumericWave(settings))
+		out[0] = {settings[settingsIndex]}
+	elseif(IsTextWave(settings))
+		out[0] = {0.0}
+		WAVE/T settingsT = settings
+
+		entry = PrepareListForDisplay(settingsT[settingsIndex])
+
+		JWN_SetWaveInWaveNote(out, SF_META_TRACECOLOR, {0, 0, 0, 0})
+		JWN_SetStringInWaveNote(out, SF_META_TAG_TEXT, entry)
+	else
+		ASSERT(0, "Invalid type")
+	endif
+
+	return out
+End
+
+static Function/S SF_GetLabnotebookEntryUnits_Impl(WAVE numericalKeys, WAVE textualKeys, string entry)
+
+	variable result, col
+	string unit
+
+	[result, unit, col] = LBN_GetEntryProperties(numericalKeys, entry)
+
+	if(!result)
+		return unit
+	endif
+
+	[result, unit, col] = LBN_GetEntryProperties(textualKeys, entry)
+
+	if(!result)
+		return unit
+	endif
+
+	return ""
+End
+
+static Function/WAVE SF_GetLabnotebookEntryUnits(string graph, WAVE/T allLBNKeys, WAVE selectData)
+
+	variable sweepNo, mapIndex
+
+	sweepNo  = selectData[0][%SWEEP]
+	mapIndex = selectData[0][%SWEEPMAPINDEX]
+
+	WAVE numericalKeys = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_KEYS)
+	WAVE textualKeys   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_KEYS)
+
+	Make/FREE/T/N=(DimSize(allLBNKeys, ROWS)) units = SF_GetLabnotebookEntryUnits_Impl(numericalKeys, textualKeys, allLBNKeys[p])
+
+	WAVE/T/Z unitsUnique = GetUniqueEntries(units)
+
+	return unitsUnique
+End
+
+static Function/WAVE SFH_OperationLabnotebookExpandKeys(string graph, WAVE/T LBNKeys, WAVE selectData, variable mode)
+
+	variable i, j, numSelected, numKeys, sweepNo
+	string key
+
+	numKeys = DimSize(LBNKeys, ROWS)
+
+	Make/FREE/N=(numKeys) hasWC = HasWildcardSyntax(LBNKeys[p])
+
+	if(IsConstant(hasWC, 0))
+		return LBNKeys
+	endif
+
+	numSelected = DimSize(selectData, ROWS)
+	for(i = 0; i < numSelected; i += 1)
+		sweepNo = selectData[i][%SWEEP]
+
+		WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+
+		WAVE/T/Z entries = LBV_GetAllLogbookParamNames(textualValues, numericalValues)
+
+		if(!WaveExists(entries))
+			continue
+		endif
+
+		Duplicate/FREE/T entries, filteredEntries
+
+		for(j = 0; j < numKeys; j += 1)
+			key = LBNKeys[j]
+			MultiThread filteredEntries = SelectString(stringmatch(entries[p], key), "", entries[p])
+		endfor
+
+		RemoveTextWaveEntry1D(filteredEntries, "", all = 1)
+
+		Concatenate/NP=(ROWS)/T/FREE {filteredEntries}, allLBNKeys
+	endfor
+
+	if(DimSize(allLBNKeys, ROWS) == 0)
+		return $""
+	endif
+
+	WAVE allLBNKeysUnique = GetUniqueEntries(allLBNKeys)
+
+	return allLBNKeysUnique
+End
+
+static Function SF_SetSweepXAxisTickLabels(WAVE output, WAVE/Z selectDataPlainOrArray)
+
+	variable numSelected
+
+	if(!WaveExists(selectDataPlainOrArray))
+		return NaN
+	endif
+
+	if(IsWaveRefWave(selectDataPlainOrArray))
+		if(DimSize(selectDataPlainOrArray, ROWS) > 1)
+			return NaN
+		endif
+
+		WAVE/WAVE selectDataArray = selectDataPlainOrArray
+
+		WAVE/WAVE singleSelectData = selectDataArray[0]
+		WAVE/Z    selectData       = singleSelectData[%SELECTION]
+
+		if(!WaveExists(selectData))
+			return NaN
+		endif
+	else
+		WAVE selectData = selectDataPlainOrArray
+	endif
+
+	numSelected = DimSize(selectData, ROWS)
+
+	Make/FREE/N=(numSelected) xTickPositions = selectData[p][%SWEEP]
+	Make/T/FREE/N=(numSelected) xTickLabels = num2str(selectData[p][%SWEEP])
+
+	JWN_SetWaveInWaveNote(output, SF_META_XTICKPOSITIONS, xTickPositions)
+	JWN_SetWaveInWaveNote(output, SF_META_XTICKLABELS, xTickLabels)
 End
 
 static Function/WAVE SF_OperationLog(variable jsonId, string jsonPath, string graph)
@@ -6988,4 +7475,64 @@ static Function/S SF_MatchSweepMapColumn(string graph, string match, string colL
 	SFH_ASSERT(DimSize(uniqueEntries, ROWS) == 1, "No match found in sweepMap in operation " + opShort)
 
 	return uniqueEntries[0]
+End
+
+Function TraceValueDisplayHook(STRUCT WMTooltipHookStruct &s)
+
+	string name, msg, allTraces, trace, tooltip, match, options, win, valueStr, tagText
+	variable numTraces, i
+
+	// traceName is set only for graphs and only if the mouse hovered near a trace
+	if(IsEmpty(s.traceName))
+		return 0
+	endif
+
+	win = s.winName
+
+	tooltip   = ""
+	allTraces = TraceNameList(win, ";", 1 + 2)
+
+	numTraces = ItemsInList(allTraces)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, allTraces)
+
+		sprintf options, "WINDOW:%s;ONLY:%s;DELTAX:24;DELTAY:24", win, trace
+		match = TraceFromPixel(s.mouseLoc.h, s.mouseLoc.v, options)
+
+		if(IsEmpty(match))
+			continue
+		endif
+
+		WAVE wv = TraceNameToWaveRef(win, trace)
+
+		name = JWN_GetStringFromWaveNote(wv, SF_META_LEGEND_LINE_PREFIX)
+
+		if(IsEmpty(name))
+			// not a labnotebook/analysis function parameter
+			continue
+		endif
+
+		if(IsNumericWave(wv))
+			tagText = JWN_GetStringFromWaveNote(wv, SF_META_TAG_TEXT)
+			if(IsEmpty(tagText))
+				valueStr = num2str(wv[s.row][s.column][s.layer][s.chunk])
+			else
+				valueStr = ReplaceString("\r", tagText, "\r" + ReplicateString(" ", strlen(name) + 2))
+			endif
+		elseif(IsTextWave(wv))
+			WAVE/T wvText = wv
+			valueStr = wvText[s.row][s.column][s.layer][s.chunk]
+		endif
+
+		sprintf msg, "%s: %s\r", name, valueStr
+		tooltip += msg
+	endfor
+
+	if(!IsEmpty(tooltip))
+		s.tooltip = "<pre>" + RemoveEnding(tooltip, "\r") + "</pre>"
+		s.isHtml  = 1
+		return 1
+	endif
+
+	return 0
 End

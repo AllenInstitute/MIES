@@ -1480,6 +1480,16 @@ Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeD
 	Make/FREE/T/N=(1, 1) clampModeKeys = "Operating Mode"
 	Make/FREE/T/N=(1, 1) textKeys = lbnTextKey
 
+	Make/FREE/T/N=(3, 1) qcKeys
+	qcKeys[0][0] = LABNOTEBOOK_USER_PREFIX + "random QC"
+	qcKeys[1][0] = LABNOTEBOOK_BINARY_UNIT
+	qcKeys[2][0] = LABNOTEBOOK_NO_TOLERANCE
+
+	Make/FREE/T/N=(3, 1) otherKey
+	otherKey[0][0] = LABNOTEBOOK_USER_PREFIX + "other key"
+	otherKey[1][0] = "Hz"
+	otherKey[2][0] = LABNOTEBOOK_NO_TOLERANCE
+
 	DFREF dfr = GetDeviceDataPath(device)
 	GetDAQDeviceID(device)
 
@@ -1511,6 +1521,18 @@ Function [variable numSweeps, variable numChannels, WAVE/U/I channels] FillFakeD
 		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values, clampModeValues
 		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
 		ED_AddEntriesToLabnotebook(valuesText, textKeys, sweepNumber, device, mode)
+
+		WAVE qcValues = LBN_GetNumericWave()
+		// 0th channel maps to HS7
+		qcValues[connections[0]] = mod(sweepNumber, 2)
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 qcValues
+		ED_AddEntriesToLabnotebook(qcValues, qcKeys, sweepNumber, device, mode)
+
+		WAVE otherValue = LBN_GetNumericWave()
+		// 1st channel maps to HS5
+		otherValue[connections[1]] = i^2
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 otherValue
+		ED_AddEntriesToLabnotebook(otherValue, otherKey, sweepNumber, device, mode)
 
 		PGC_SetAndActivateControl(BSP_GetPanel(win), "popup_DB_lockedDevices", str = device)
 		win = GetCurrentWindow()
