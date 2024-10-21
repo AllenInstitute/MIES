@@ -1618,7 +1618,8 @@ Function LoadMIESFolderFromPXP(string fName)
 	CA_FlushCache()
 End
 
-Function ExecuteSweepFormulaCode(string browser, string code)
+/// @brief Execute the given SweepFormula code in the browser and return the formula graph
+Function/S ExecuteSweepFormulaCode(string browser, string code)
 
 	string bsPanel
 
@@ -1628,4 +1629,6 @@ Function ExecuteSweepFormulaCode(string browser, string code)
 
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
 	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = NaN)
+
+	return SFH_GetFormulaGraphForBrowser(browser)
 End
