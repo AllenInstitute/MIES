@@ -24,19 +24,22 @@ static Function PUB_GetJSONTemplate(string device, variable headstage)
 End
 
 /// @brief Publish the given message as given by the JSON and the filter
-static Function PUB_Publish(variable jsonID, string messageFilter)
+threadsafe Function PUB_Publish(variable jsonID, string messageFilter, [variable releaseJSON])
 	variable err
 	string   payload
 
-	payload = JSON_Dump(jsonID)
-	JSON_Release(jsonID)
+	releaseJSON = ParamIsDefault(releaseJSON) ? 1 : !!releaseJSON
+	payload     = JSON_Dump(jsonID)
+	if(releaseJSON)
+		JSON_Release(jsonID)
+	endif
 
 	AssertOnAndClearRTError()
 	try
 		zeromq_pub_send(messageFilter, payload); AbortOnRTE
 	catch
 		err = ClearRTError()
-		BUG("Could not publish " + messageFilter + " due to: " + num2str(err))
+		BUG_TS("Could not publish " + messageFilter + " due to: " + num2str(err))
 	endtry
 End
 
@@ -641,4 +644,178 @@ Function PUB_AccessResistanceSmoke(string device, variable sweepNo, variable hea
 	PUB_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
 
 	PUB_Publish(jsonID, ANALYSIS_FUNCTION_AR)
+End
+
+threadsafe static Function PUB_AddTPResultEntry(variable jsonId, string path, variable value, string unit)
+
+	if(IsEmpty(unit))
+		JSON_AddVariable(jsonID, path, value)
+	else
+		JSON_AddTreeObject(jsonID, path)
+		JSON_AddVariable(jsonID, path + "/value", value)
+		JSON_AddString(jsonID, path + "/unit", unit)
+	endif
+End
+
+/// Filter: #ZMQ_FILTER_TPRESULT_NOW
+/// Filter: #ZMQ_FILTER_TPRESULT_1S
+/// Filter: #ZMQ_FILTER_TPRESULT_5S
+/// Filter: #ZMQ_FILTER_TPRESULT_10S
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "properties": {
+///        "baseline fraction": {
+///          "unit": "%",
+///          "value": 35
+///        },
+///        "clamp amplitude": {
+///          "unit": "mV",
+///          "value": 10
+///        },
+///        "clamp mode": 0,
+///        "device": "TestDevice",
+///        "headstage": 1,
+///        "pulse duration ADC": {
+///          "unit": "points",
+///          "value": 500
+///        },
+///        "pulse duration DAC": {
+///          "unit": "points",
+///          "value": 600
+///        },
+///        "pulse start point ADC": {
+///          "unit": "point",
+///          "value": 500
+///        },
+///        "pulse start point DAC": {
+///          "unit": "point",
+///          "value": 600
+///        },
+///        "sample interval ADC": {
+///          "unit": "ms",
+///          "value": 0.002
+///        },
+///        "sample interval DAC": {
+///          "unit": "ms",
+///          "value": 0.002
+///        },
+///        "time of tp acquisition": {
+///          "unit": "s",
+///          "value": 1000000
+///        },
+///        "timestamp": {
+///          "unit": "s",
+///          "value": 2000000
+///        },
+///        "timestampUTC": {
+///          "unit": "s",
+///          "value": 3000000
+///        },
+///        "tp cycle id": 456,
+///        "tp length ADC": {
+///          "unit": "points",
+///          "value": 1500
+///        },
+///        "tp length DAC": {
+///          "unit": "points",
+///          "value": 1800
+///        },
+///        "tp marker": 1234
+///      },
+///      "results": {
+///        "average baseline steady state": {
+///          "unit": "pA",
+///          "value": 2
+///        },
+///        "average tp steady state": {
+///          "unit": "pA",
+///          "value": 10
+///        },
+///        "instantaneous": {
+///          "unit": "pA",
+///          "value": 11
+///        },
+///        "instantaneous resistance": {
+///          "unit": "MΩ",
+///          "value": 2345
+///        },
+///        "steady state resistance": {
+///          "unit": "MΩ",
+///          "value": 1234
+///        }
+///      }
+///    }
+///
+/// \endrst
+threadsafe Function PUB_TPResult(string device, WAVE tpData)
+
+	string path
+	variable jsonId = JSON_New()
+	string   adUnit = GetADChannelUnit(tpData[%CLAMPMODE])
+	string   daUnit = GetDAChannelUnit(tpData[%CLAMPMODE])
+
+	path = "properties"
+	JSON_AddTreeObject(jsonID, path)
+	JSON_AddString(jsonID, path + "/device", device)
+	JSON_AddVariable(jsonID, path + "/tp marker", tpData[%MARKER])
+	JSON_AddVariable(jsonID, path + "/headstage", tpData[%HEADSTAGE])
+	JSON_AddVariable(jsonID, path + "/clamp mode", tpData[%CLAMPMODE])
+
+	PUB_AddTPResultEntry(jsonId, path + "/time of tp acquisition", tpData[%NOW], "s")
+	PUB_AddTPResultEntry(jsonId, path + "/clamp amplitude", tpData[%CLAMPAMP], daUnit)
+	PUB_AddTPResultEntry(jsonId, path + "/tp length ADC", tpData[%TPLENGTHPOINTSADC], "points")
+	PUB_AddTPResultEntry(jsonId, path + "/pulse duration ADC", tpData[%PULSELENGTHPOINTSADC], "points")
+	PUB_AddTPResultEntry(jsonId, path + "/pulse start point ADC", tpData[%PULSESTARTPOINTSADC], "point")
+	PUB_AddTPResultEntry(jsonId, path + "/sample interval ADC", tpData[%SAMPLINGINTERVALADC], "ms")
+	PUB_AddTPResultEntry(jsonId, path + "/tp length DAC", tpData[%TPLENGTHPOINTSDAC], "points")
+	PUB_AddTPResultEntry(jsonId, path + "/pulse duration DAC", tpData[%PULSELENGTHPOINTSDAC], "points")
+	PUB_AddTPResultEntry(jsonId, path + "/pulse start point DAC", tpData[%PULSESTARTPOINTSDAC], "point")
+	PUB_AddTPResultEntry(jsonId, path + "/sample interval DAC", tpData[%SAMPLINGINTERVALDAC], "ms")
+	PUB_AddTPResultEntry(jsonId, path + "/baseline fraction", tpData[%BASELINEFRAC] * ONE_TO_PERCENT, "%")
+	PUB_AddTPResultEntry(jsonId, path + "/timestamp", tpData[%TIMESTAMP], "s")
+	PUB_AddTPResultEntry(jsonId, path + "/timestampUTC", tpData[%TIMESTAMPUTC], "s")
+	PUB_AddTPResultEntry(jsonId, path + "/tp cycle id", tpData[%CYCLEID], "")
+
+	path = "results"
+	JSON_AddTreeObject(jsonID, path)
+	PUB_AddTPResultEntry(jsonId, path + "/average baseline steady state", tpData[%BASELINE], adUnit)
+	PUB_AddTPResultEntry(jsonId, path + "/average tp steady state", tpData[%ELEVATED_SS], adUnit)
+	PUB_AddTPResultEntry(jsonId, path + "/instantaneous", tpData[%ELEVATED_INST], adUnit)
+	PUB_AddTPResultEntry(jsonId, path + "/steady state resistance", tpData[%STEADYSTATERES], "MΩ")
+	PUB_AddTPResultEntry(jsonId, path + "/instantaneous resistance", tpData[%INSTANTRES], "MΩ")
+
+	PUB_Publish(jsonID, ZMQ_FILTER_TPRESULT_NOW, releaseJSON = 0)
+	if(PUB_CheckPublishingTime(ZMQ_FILTER_TPRESULT_1S, 1))
+		PUB_Publish(jsonID, ZMQ_FILTER_TPRESULT_1S, releaseJSON = 0)
+	endif
+	if(PUB_CheckPublishingTime(ZMQ_FILTER_TPRESULT_5S, 5))
+		PUB_Publish(jsonID, ZMQ_FILTER_TPRESULT_5S, releaseJSON = 0)
+	endif
+	if(PUB_CheckPublishingTime(ZMQ_FILTER_TPRESULT_10S, 10))
+		PUB_Publish(jsonID, ZMQ_FILTER_TPRESULT_10S, releaseJSON = 0)
+	endif
+	JSON_Release(jsonID)
+End
+
+/// @brief Updates the publishing timestamp in the TUFXOP storage and returns 1 if an update is due (0 otherwise)
+threadsafe static Function PUB_CheckPublishingTime(string pubFilter, variable period)
+
+	variable lastTime
+	variable curTime = DateTime
+
+	TUFXOP_AcquireLock/N=(pubFilter)
+	lastTime = TSDS_ReadVar(pubFilter, defValue = 0, create = 1)
+	if(lastTime + period < curTime)
+		TSDS_WriteVar(pubFilter, curTime + period)
+		TUFXOP_ReleaseLock/N=(pubFilter)
+		return 1
+	endif
+	TUFXOP_ReleaseLock/N=(pubFilter)
+
+	return 0
 End
