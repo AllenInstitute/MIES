@@ -81,7 +81,7 @@ End
 // UTF_TD_GENERATOR WB_GatherStimsets
 Function WB_RegressionTest([string stimset])
 
-	variable i, j, sweepCount, duration, epochCount
+	variable i, j, sweepCount, duration, epochCount, minimum, maximum
 	string text
 
 	// stock MIES stimset
@@ -174,6 +174,17 @@ Function WB_RegressionTest([string stimset])
 					break
 			endswitch
 		endfor
+
+		MatrixOP/FREE singleSweep = col(wv, i)
+
+		// check minimum/maximum
+		minimum = WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "Minimum", sweep = i)
+		MatrixOP/FREE minimumCal = minVal(singleSweep)
+		CHECK_CLOSE_VAR(minimum, minimumCal[0])
+
+		maximum = WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "Maximum", sweep = i)
+		MatrixOP/FREE maximumCal = maxVal(singleSweep)
+		CHECK_CLOSE_VAR(maximum, maximumCal[0])
 	endfor
 
 	// check ITIs
