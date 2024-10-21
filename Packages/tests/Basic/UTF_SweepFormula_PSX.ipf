@@ -1292,18 +1292,6 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index)
 	CHECK_EQUAL_VAR(V_numInfs, 0)
 End
 
-static Function ExecuteSweepFormulaCode(string browser, string code)
-
-	string bsPanel
-
-	SF_SetFormula(browser, code)
-
-	bsPanel = BSP_GetPanel(browser)
-
-	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
-	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = NaN)
-End
-
 static Function CheckPSXEventField(WAVE/WAVE psxEventWaves, WAVE/T colLabels, WAVE indices, variable val)
 
 	variable idx
