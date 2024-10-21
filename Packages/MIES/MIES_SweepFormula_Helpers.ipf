@@ -621,6 +621,8 @@ static Function/WAVE SFH_GetSweepsForFormulaImpl(string graph, WAVE/WAVE selectD
 			colorGroup = GetUniqueInteger()
 			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_COLOR_GROUP, colorGroup)
 
+			JWN_SetNumberInWaveNote(rangedSweepData, SF_META_TRACE_MODE, TRACE_DISPLAY_MODE_LINES)
+
 			EnsureLargeEnoughWave(output, indexShouldExist = index)
 			output[index] = rangedSweepData
 			index        += 1

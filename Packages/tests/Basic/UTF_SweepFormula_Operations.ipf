@@ -1577,8 +1577,8 @@ End
 static Function TestOperationData()
 
 	variable i, j, numChannels, sweepNo, sweepCnt, numResultsRef, clampMode
-	string str, strSelect, epochStr, name, trace, wvList
-	string win, device
+	string str, strSelect, epochStr, name, trace, wvList, traces, traceInfos
+	string win, device, winBase
 	variable mode              = DATA_ACQUISITION_MODE
 	variable numSweeps         = 2
 	variable dataSize          = 10
@@ -1910,6 +1910,22 @@ static Function TestOperationData()
 	catch
 		PASS()
 	endtry
+
+	// check that we use line style even for a couple of points
+	str     = "data(select(selrange([2, 6]), selsweeps(0), selchannels(AD6)))"
+	winBase = ExecuteSweepFormulaCode(win, str)
+	win     = winBase + "#Graph0"
+
+	traces = TraceNameList(win, ";", 1 + 2)
+	CHECK_EQUAL_VAR(ItemsInList(traces), 1)
+
+	trace = StringFromList(0, traces)
+	CHECK_PROPER_STR(trace)
+
+	traceInfos = TraceInfo(win, trace, 0)
+	CHECK_PROPER_STR(traceInfos)
+
+	CHECK(GrepString(traceInfos, "\bmode\(x\)=0\b"))
 
 	// workaround permanent waves being present
 	wvList = GetListOfObjects(GetDataFolderDFR(), "data*")
