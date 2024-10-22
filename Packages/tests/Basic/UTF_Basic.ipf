@@ -9,6 +9,7 @@
 #include "UTF_AnalysisBrowserTest"
 #include "UTF_AnalysisFunctionHelpers"
 #include "UTF_AnalysisFunctionParameters"
+#include "UTF_AnalysisFunctionPrototypes"
 #include "UTF_AsynFrameworkTest"
 #include "UTF_Configuration"
 #include "UTF_DAEphyswoHardware"
@@ -122,6 +123,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_AnalysisBrowserTest.ipf", list, ";", Inf)
 	list = AddListItem("UTF_AnalysisFunctionHelpers.ipf", list, ";", Inf)
 	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", Inf)
+	list = AddListItem("UTF_AnalysisFunctionPrototypes.ipf", list, ";", Inf)
 	list = AddListItem("UTF_AsynFrameworkTest.ipf", list, ";", Inf)
 	list = AddListItem("UTF_Debugging.ipf", list, ";", Inf)
 	list = AddListItem("UTF_Configuration.ipf", list, ";", Inf)

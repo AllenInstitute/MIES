@@ -25,6 +25,8 @@ Function AFP_ANALYSIS_FUNC_V1(device, eventType, DAQDataWave, headStage)
 	variable eventType
 	WAVE     DAQDataWave
 	variable headstage
+
+	ASSERT(0, "Prototype function which must not be called")
 End
 
 /// @deprecated Use AFP_ANALYSIS_FUNC_V3() instead
@@ -44,7 +46,7 @@ Function AFP_ANALYSIS_FUNC_V2(device, eventType, DAQDataWave, headStage, realDat
 	WAVE     DAQDataWave
 	variable headstage, realDataLength
 
-	return 0
+	ASSERT(0, "Prototype function which must not be called")
 End
 
 /// @param device device
@@ -55,13 +57,14 @@ Function AFP_ANALYSIS_FUNC_V3(device, s)
 	string                      device
 	STRUCT AnalysisFunction_V3 &s
 
-	return 0
+	ASSERT(0, "Prototype function which must not be called")
 End
 
 /// @brief Prototype function for the user supplied parameter getter functions
 ///
 Function/S AFP_PARAM_GETTER_V3()
 
+	ASSERT(0, "Prototype function which must not be called")
 End
 
 /// @brief Prototype function for the user supplied parameter help functions
@@ -69,14 +72,19 @@ End
 Function/S AFP_PARAM_HELP_GETTER_V3(name)
 	string name
 
+	ASSERT(0, "Prototype function which must not be called")
 End
 
 /// @brief Prototype function for the user supplied parameter check function (legacy signature)
 ///
 Function/S AFP_PARAM_CHECK_V1(string name, string params)
+
+	ASSERT(0, "Prototype function which must not be called")
 End
 
 /// @brief Prototype function for the user supplied parameter check function
 ///
 Function/S AFP_PARAM_CHECK_V2(string name, STRUCT CheckParametersStruct &s)
+
+	ASSERT(0, "Prototype function which must not be called")
 End
