@@ -60,7 +60,7 @@ static Function/S GetDownloadLink()
 
 	string igorMajorVersion, text, lineWithLink, url, os
 
-	igorMajorVersion = StringByKey("IGORVERS", IgorInfo(0))[0]
+	igorMajorVersion = num2istr(IgorVersion())
 
 #if defined(WINDOWS)
 	os = "Windows"
@@ -122,7 +122,7 @@ static Function AfterCompiledHook()
 	string igorMajorVersion
 
 #if defined(IGOR64)
-	igorMajorVersion = StringByKey("IGORVERS", IgorInfo(0))[0]
+	igorMajorVersion = num2istr(IgorVersion())
 	printf "Your Igor Pro %s version is too old to be usable for MIES. Please follow the download instructions at: %s\r", igorMajorVersion, IP_DOCU_UPDATE_URL
 	Execute "OpenPanelWithDocumentationLink()"
 #else
