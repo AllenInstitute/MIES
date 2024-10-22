@@ -987,7 +987,7 @@ End
 /// the next sweep if the measured resistance is smaller than 20MΩ
 Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 
-	variable sweepNo, index, i, targetV, prevActiveHS, prevSendToAllAmp
+	variable index, i, targetV, prevActiveHS, prevSendToAllAmp
 	variable amps, result
 	variable autoBiasCheck, holdingPotential, indexing
 	string msg, name, control
@@ -1106,8 +1106,6 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 			WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(device)
 			ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
 
-			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
-
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
 
@@ -1122,7 +1120,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 
 			FitResistance(device, s.headstage, showPlot = 1)
 
-			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, UNKNOWN_MODE)
+			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, s.sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, UNKNOWN_MODE)
 			ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
