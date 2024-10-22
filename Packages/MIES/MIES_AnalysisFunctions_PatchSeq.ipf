@@ -6236,7 +6236,8 @@ Function PSQ_Chirp(device, s)
 				result[INDEP_HEADSTAGE] = initialDAScale
 				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo)
 
-				SetDAScale(device, s.sweepNo, s.headstage, absolute = initialDAScale, roundTopA = 1)
+				// not checking DAScale limits as we can't do that in PRE_SET_EVENT
+				SetDAScale(device, s.sweepNo, s.headstage, absolute = initialDAScale, roundTopA = 1, limitCheck = 0)
 
 				WAVE result = LBN_GetNumericWave()
 				key                     = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_UOD)
@@ -6475,7 +6476,10 @@ Function PSQ_Chirp(device, s)
 		// adapt DAScale and finish
 		daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
 		daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
-		SetDAScaleModOp(device, s.sweepNo, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1)
+
+		WAVE oorDAScale = LBN_GetNumericWave()
+		oorDAScale[s.headstage] = SetDAScaleModOp(device, s.headstage, s.sweepNo, daScaleModifier, daScaleOperator, roundTopA = 1)
+		ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_CHIRP, oorDAScale)
 
 		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
@@ -6499,7 +6503,13 @@ Function PSQ_Chirp(device, s)
 				break
 			case PSQ_CR_INCREASE:
 			case PSQ_CR_DECREASE: // fallthrough-by-design
-				SetDAScale(device, s.sweepNo, s.headstage, relative = scalingFactorDAScale, roundTopA = 1)
+				WAVE oorDAScale = LBN_GetNumericWave()
+				oorDAScale[s.headstage] = SetDAScale(device, s.headstage, s.sweepNo, relative = scalingFactorDAScale, roundTopA = 1)
+				ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_CHIRP, oorDAScale)
+
+				if(oorDAScale[s.headstage])
+					return ANALYSIS_FUNC_RET_EARLY_STOP
+				endif
 				break
 			default:
 				ASSERT(0, "impossible case")
