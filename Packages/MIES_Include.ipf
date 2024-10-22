@@ -35,11 +35,13 @@
 
 #ifdef TOO_OLD_IGOR
 
+static StrConstant IP_DOCU_UPDATE_URL = "https://alleninstitute.github.io/MIES/installation.html#igor-pro-update-nightly"
+
 Window OpenPanelWithDocumentationLink() : Panel
 	PauseUpdate; Silent 1 // building window...
 	NewPanel/K=1/W=(435, 461, 735, 661) as "OpenPanelWithDocumentationLink"
 	Button button0, pos={38.00, 14.00}, size={223.00, 89.00}, proc=ButtonProc_OpenMiesDocuUpdateNightly, title="Open MIES documentation for\r update instructions"
-	Button button1, pos={51.00, 133.00}, size={195.00, 29.00}, proc=ButtonProc_DownloadNightly, title="Download Igor Pro nightly build"
+	Button button1, pos={51.00, 133.00}, size={195.00, 29.00}, proc=ButtonProc_DownloadNightly, title="Download required Igor Pro version"
 EndMacro
 
 Function ButtonProc_OpenMiesDocuUpdateNightly(ba) : ButtonControl
@@ -47,7 +49,7 @@ Function ButtonProc_OpenMiesDocuUpdateNightly(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			BrowseURL "https://alleninstitute.github.io/MIES/installation.html#igor-pro-update-nightly"
+			BrowseURL IP_DOCU_UPDATE_URL
 			break
 	endswitch
 
@@ -121,7 +123,7 @@ static Function AfterCompiledHook()
 
 #if defined(IGOR64)
 	igorMajorVersion = StringByKey("IGORVERS", IgorInfo(0))[0]
-	printf "Your Igor Pro %s version is too old to be usable for MIES.\r", igorMajorVersion
+	printf "Your Igor Pro %s version is too old to be usable for MIES. Please follow the download instructions at: %s\r", igorMajorVersion, IP_DOCU_UPDATE_URL
 	Execute "OpenPanelWithDocumentationLink()"
 #else
 	printf "The 32bit version of Igor Pro is not supported anymore.\r"
