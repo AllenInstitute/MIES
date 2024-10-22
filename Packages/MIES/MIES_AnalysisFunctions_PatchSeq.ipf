@@ -4753,7 +4753,7 @@ Function PSQ_Rheobase(device, s)
 				endif
 			endif
 
-			SetDAScale(device, s.sweepNo, s.headstage, absolute = finalDAScale)
+			SetDAScale(device, s.sweepNo, s.headstage, absolute = finalDAScale, limitCheck = 0)
 
 			return 0
 
@@ -4942,7 +4942,16 @@ Function PSQ_Rheobase(device, s)
 				break
 			endif
 
-			SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale)
+			WAVE oorDAScale = LBN_GetNumericWave()
+			oorDAScale[s.headstage]  = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale)
+			ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_RHEOBASE, oorDAScale)
+
+			if(oorDAScale[s.headstage])
+				WAVE result = LBN_GetNumericWave()
+				key                     = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+				result[INDEP_HEADSTAGE] = 0
+				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+			endif
 			break
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
