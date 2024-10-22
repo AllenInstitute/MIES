@@ -83,5 +83,44 @@ static Function MSQ_DS1_REENTRY([string str])
 	WAVE/Z stimScale = GetLBNSingleEntry_IGNORE(sweepNo, str, STIMSET_SCALE_FACTOR_KEY, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(stimScale, {33, 43, 53, 63, 73}, mode = WAVE_DATA)
 
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPass)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function MSQ_DS2([string str])
+
+	AFH_AddAnalysisParameter("MSQ_DAScale_DA_0", "DAScales", wv = {1000, 1500, 2000, 3000, 5000})
+
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+End
+
+static Function MSQ_DS2_REENTRY([string str])
+
+	variable sweepNo
+
+	sweepNo = 3
+
+	WAVE/Z headstageActive = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	CHECK_EQUAL_WAVES(headstageActive, {1, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	CHECK_EQUAL_WAVES(setPass, {0}, mode = WAVE_DATA)
+
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	CHECK_EQUAL_WAVES(sweepPass, {1, 1, 1, 0}, mode = WAVE_DATA)
+
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(headstagePass, {1, 1, 1, 0}, mode = WAVE_DATA)
+
+	WAVE/Z stimScale = GetLBNSingleEntry_IGNORE(sweepNo, str, STIMSET_SCALE_FACTOR_KEY, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(stimScale, {1023, 1523, 2023, 3023}, mode = WAVE_DATA, tol = 1e-12)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 1}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, setPass)
 End

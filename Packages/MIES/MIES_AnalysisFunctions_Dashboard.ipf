@@ -94,7 +94,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	endif
 
 	// MSQ_DA
-	// - always passes
+	// - Out of range DAScale
 
 	// MSQ_FRE
 	// - MSQ_FMT_LBN_DASCALE_EXC present (optional)
@@ -154,8 +154,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 
 	switch(anaFuncType)
 		case MSQ_DA_SCALE:
-			BUG("Unknown reason for failure")
-			return "Failure"
+			return AD_GetMultiDAScaleFailMsg(numericalValues, sweepNo, headstage)
 		case MSQ_FAST_RHEO_EST:
 			return AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
 		case PSQ_ACC_RES_SMOKE:
@@ -581,6 +580,21 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 		default:
 			ASSERT(0, "Invalid opMode")
 	endswitch
+
+	BUG("Unknown reason for failure")
+	return "Failure"
+End
+
+static Function/S AD_GetMultiDAScaleFailMsg(WAVE numericalValues, variable sweepNo, variable headstage)
+
+	string key
+
+	key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
+	endif
 
 	BUG("Unknown reason for failure")
 	return "Failure"
