@@ -120,6 +120,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 
 	// PSQ_DA
 	// - baseline QC
+	// - Out of range DAScale
 	// - SUB/SUPRA: needs at least $NUM_DA_SCALES passing sweeps
 	// - SUPRA: if the FinalSlopePercent parameter is present this has to be reached as well
 	// - ADAPT: - fewer than $NumInvalidSlopeSweepsAllowed invalid f-I slopes
@@ -494,6 +495,13 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 	// fallback to old names
 	if(!WaveExists(params))
 		WAVE/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params", headstage, DATA_ACQUISITION_MODE)
+	endif
+
+	key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
 	endif
 
 	opMode = AFH_GetAnalysisParamTextual("OperationMode", params[headstage])
