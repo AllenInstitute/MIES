@@ -81,7 +81,7 @@ static Function/WAVE GetLBNEntriesWave_IGNORE()
 	              + "rerunTrials_HS0;rerunTrials_HS1;rerunTrialsExceeded_HS0;rerunTrialsExceeded_HS1;"                                 \
 	              + "spikeCounts_HS0;spikeCounts_HS1;spikeCountsState_HS0;spikeCountsState_HS1;"                                       \
 	              + "spikePositions_HS0;spikePositions_HS1;spikePositionQC_HS0;spikePositionQC_HS1;spontSpikeQC_HS0;spontSpikeQC_HS1;" \
-	              + "autoBiasV_HS0;autoBiasV_HS1;"
+	              + "autoBiasV_HS0;autoBiasV_HS1;DAScaleOutOfRange_HS0;DAScaleOutOfRange_HS1;"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -134,6 +134,9 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 
 	wv[%autoBiasV_HS0] = GetLastSettingEachSCI(numericalValues, sweepNo, "Autobias Vcom", 0, DATA_ACQUISITION_MODE)
 	wv[%autoBiasV_HS1] = GetLastSettingEachSCI(numericalValues, sweepNo, "Autobias Vcom", 1, DATA_ACQUISITION_MODE)
+
+	wv[%DAScaleOutOfRange_HS0] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	wv[%DAScaleOutOfRange_HS1] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
 
 	return wv
 End
@@ -225,6 +228,9 @@ static Function SC_Test1_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0, 0, 0}, mode = WAVE_DATA)
 
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS1], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
@@ -313,6 +319,9 @@ static Function SC_Test2_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
+
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS1], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
@@ -412,6 +421,9 @@ static Function SC_Test3_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
 
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS1], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
@@ -509,6 +521,9 @@ static Function SC_Test4_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
+
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS1], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
@@ -609,6 +624,9 @@ static Function SC_Test5_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 10, 20, 30}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 10, 20, 30}, mode = WAVE_DATA)
 
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS1], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
@@ -697,6 +715,9 @@ static Function SC_Test6_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
+
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS1], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
@@ -819,6 +840,9 @@ static Function SC_Test7_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS1], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
@@ -961,6 +985,9 @@ static Function SC_Test8_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0, 0, 0}, mode = WAVE_DATA)
 
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS1], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
@@ -1054,5 +1081,103 @@ static Function SC_Test9_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%autoBiasV_HS1], NULL_WAVE)
 
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS1], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
+End
+
+static Function SC_Test10_preInit(device)
+	string device
+
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 2500)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var = 3)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var = 3)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str = "*")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var = 50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var = 10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var = 1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
+End
+
+static Function SC_Test10_preAcq(device)
+	string device
+
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val = 1)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function SC_Test10([str])
+	string str
+
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
+
+	// SPF: spike position fails
+
+	// [sweep][headstage][pulse][region]
+
+	// all sweeps, HS0: Too few (SPF)
+	// all sweeps, HS1: Good (SPF)
+
+	wv[][0][][0, 1] = ""                   // no spike
+	wv[][1][][0, 1] = "SpikePosition_ms:4"
+End
+
+static Function SC_Test10_REENTRY([str])
+	string str
+
+	variable sweepNo, autobiasV
+	string lbl, failedPulses, spikeCounts, spikePos
+
+	sweepNo = 1
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%idealSpikeCounts], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%failedPulseLevel], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%headstagePass_HS0], {0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%headstagePass_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS0], {0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS1], {0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrials_HS0], {0, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%rerunTrials_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrialsExceeded_HS0], {0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%rerunTrialsExceeded_HS1], NULL_WAVE)
+
+	spikeCounts = "P0_R0:0,;P1_R0:0,;P2_R0:0,;P3_R0:0,;P4_R0:0,;P5_R0:0,;P6_R0:0,;P7_R0:0,;P8_R0:0,;P9_R0:0,;"
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCounts_HS0], {spikeCounts, spikeCounts}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikeCounts_HS1], NULL_WAVE)
+
+	CHECK_WAVE(lbnEntries[%spikePositions_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%spikePositions_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCountsState_HS0], {SC_SPIKE_COUNT_STATE_STR_TOO_FEW, SC_SPIKE_COUNT_STATE_STR_TOO_FEW}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikeCountsState_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%spikePositionQC_HS0], {0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePositionQC_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%spontSpikeQC_HS0], {0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spontSpikeQC_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 2501}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 10}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%autoBiasV_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScaleOutOfRange_HS0], {0, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%DAScaleOutOfRange_HS1], NULL_WAVE)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
