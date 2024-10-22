@@ -2899,6 +2899,13 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 		endif
 	endif
 
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z DAScaleOOR = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(WaveExists(DAScaleOOR) && DAScaleOOR[headstage])
+		return 1
+	endif
+
 	[WAVE sweepPassed, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_SWEEP_PASS, fromRhSuAd = fromRhSuAd)
 
 	if(DimSize(sweepPassed, ROWS) < numSweepsWithSaturation)
@@ -3702,7 +3709,7 @@ Function PSQ_DAScale(device, s)
 	variable sweepPassed, setPassed, length, minLength, reachedFinalSlope, fitOffset, fitSlope, apfreq, enoughFIPointsPassedQC
 	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam, measuredAllFutureDAScales, fallbackDAScaleRangeFac
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, multiplier, asyncAlarmPassed, supraStimsetCycle
-	variable daScaleStepMinNorm, daScaleStepMaxNorm, maxSlope, validFit, emptySCI
+	variable daScaleStepMinNorm, daScaleStepMaxNorm, maxSlope, validFit, emptySCI, DAScaleOORQC, limitCheck
 	string msg, stimset, key, opMode, offsetOp, textboxString, str, errMsg
 	variable daScaleOffset
 	variable finalSlopePercent = NaN
@@ -4209,9 +4216,13 @@ Function PSQ_DAScale(device, s)
 
 			enoughSweepsPassed = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage) >= numSweepsPass
 
+			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+			WAVE/Z DAScaleOOR = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			DAScaleOORQC = !WaveExists(DAScaleOOR)
+
 			strswitch(opMode)
 				case PSQ_DS_SUB:
-					setPassed = enoughSweepsPassed
+					setPassed = enoughSweepsPassed && DAScaleOORQC
 					break
 				case PSQ_DS_SUPRA:
 					if(IsFinite(finalSlopePercent))
@@ -4219,12 +4230,12 @@ Function PSQ_DAScale(device, s)
 						WAVE fISlopeReached = GetLastSettingIndepEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 						ASSERT(WaveExists(fISlopeReached), "Missing fiSlopeReached LBN entry")
 
-						setPassed = enoughSweepsPassed && Sum(fISlopeReached) > 0
+						setPassed = enoughSweepsPassed && Sum(fISlopeReached) > 0 && DAScaleOORQC
 					else
 						sprintf msg, "Final slope percentage not present\r"
 						DEBUGPRINT(msg)
 
-						setPassed = enoughSweepsPassed
+						setPassed = enoughSweepsPassed && DAScaleOORQC
 					endif
 					break
 				case PSQ_DS_ADAPT:
@@ -4253,6 +4264,8 @@ Function PSQ_DAScale(device, s)
 
 	if(s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT)
 		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+
+		WAVE oorDAScale = LBN_GetNumericWave()
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(!statusHS[i])
@@ -4291,9 +4304,13 @@ Function PSQ_DAScale(device, s)
 						ASSERT(0, "Invalid case")
 						break
 				endswitch
-				SetDAScale(device, s.sweepNo, i, absolute = DAScale * PICO_TO_ONE)
+
+				limitCheck      = (s.eventType == POST_SWEEP_EVENT)
+				oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, i, absolute = DAScale * PICO_TO_ONE, limitCheck = limitCheck)
 			endif
 		endfor
+
+		ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_DA_SCALE, oorDAScale)
 	endif
 
 	if(s.eventType != MID_SWEEP_EVENT)
