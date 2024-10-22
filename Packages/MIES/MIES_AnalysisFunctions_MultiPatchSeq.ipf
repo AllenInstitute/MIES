@@ -571,7 +571,7 @@ End
 /// @endverbatim
 Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 
-	variable totalOnsetDelay, setPassed, sweepPassed, multiplier, newDAScaleValue, found, val
+	variable totalOnsetDelay, setPassed, sweepPassed, multiplier, newDAScaleValue, found, val, limitCheck
 	variable i, postDAQDAScale, postDAQDAScaleFactor, DAC, maxDAScale, allHeadstagesExceeded, minRheoOffset
 	string key, msg, ctrl
 	string stimsets = ""
@@ -634,7 +634,7 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 					continue
 				endif
 
-				SetDAScale(device, s.sweepNo, i, absolute = MSQ_FRE_INIT_AMP_p100)
+				SetDAScale(device, s.sweepNo, i, absolute = MSQ_FRE_INIT_AMP_p100, limitCheck = 0)
 			endfor
 
 			PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 0)
@@ -687,6 +687,7 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 			WAVE headstagePassed  = LBN_GetNumericWave()
 			WAVE finalDAScale     = LBN_GetNumericWave()
 			WAVE rangeExceededNew = LBN_GetNumericWave()
+			WAVE oorDAScale       = LBN_GetNumericWave()
 
 			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_STEPSIZE, query = 1)
 			WAVE stepSize = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
@@ -760,9 +761,12 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 					ASSERT(headstagePassed[i] != 1, "Unexpected headstage passing")
 					headstagePassed[i] = 0
 				else
-					SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue)
+					limitCheck    = !AFH_LastSweepInSet(device, s.sweepNo, s.headstage, s.eventType)
+					oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue, limitCheck = limitCheck)
 				endif
 			endfor
+
+			ReportOutOfRangeDAScale(device, s.sweepNo, MSQ_FAST_RHEO_EST, oorDAScale)
 
 			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(device, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -795,8 +799,9 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 				totalRangeExceeded[i] = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, \
 				                                                    MSQ_FMT_LBN_DASCALE_EXC, i)
 
-				sweepPassed = sweepPassed && MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, \
-				                                                         MSQ_FMT_LBN_HEADSTAGE_PASS, i)
+				sweepPassed = sweepPassed                                                                                                  \
+				              && MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_HEADSTAGE_PASS, i) \
+				              && !MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_OOR, i)
 			endfor
 
 			allHeadstagesExceeded = Sum(totalRangeExceeded) == Sum(statusHSIC)
@@ -826,8 +831,13 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
 
 			WAVE numericalValues = GetLBNumericalValues(device)
+
+			Make/N=(NUM_HEADSTAGES)/FREE oorDAScale = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo,             \
+			                                                                      MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, p)
+
 			// assuming that all headstages have the same sweeps in their SCI
-			setPassed = MSQ_NumPassesInSet(numericalValues, MSQ_FAST_RHEO_EST, s.sweepNo, s.headstage) >= 1
+			setPassed = MSQ_NumPassesInSet(numericalValues, MSQ_FAST_RHEO_EST, s.sweepNo, s.headstage) >= 1 \
+			            && Sum(oorDAScale) == 0
 
 			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
 			DEBUGPRINT(msg)
@@ -862,7 +872,8 @@ Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 						val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * PICO_TO_ONE
 					endif
 
-					SetDAScale(device, s.sweepNo, i, absolute = val)
+					// we can't check this here, as we don't know the next stimset
+					SetDAScale(device, s.sweepNo, i, absolute = val, limitCheck = 0)
 				endfor
 			endif
 
