@@ -4664,7 +4664,7 @@ End
 /// @endverbatim
 Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 
-	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed, diff
+	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed, diff, limitCheck
 	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize, previousStepSize, samplingFrequencyPassed
 	variable totalOnsetDelay, asyncAlarmPassed
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier, chunk
@@ -4742,7 +4742,7 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 				endif
 			endif
 
-			SetDAScale(device, s.sweepNo, s.headstage, absolute = finalDAScale)
+			SetDAScale(device, s.sweepNo, s.headstage, absolute = finalDAScale, limitCheck = 0)
 
 			return 0
 
@@ -4931,7 +4931,17 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 				break
 			endif
 
-			SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale)
+			WAVE oorDAScale = LBN_GetNumericWave()
+			limitCheck              = !AFH_LastSweepInSet(device, s.sweepNo, s.headstage, s.eventType)
+			oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale, limitCheck = limitCheck)
+			ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_RHEOBASE, oorDAScale)
+
+			if(oorDAScale[s.headstage])
+				WAVE result = LBN_GetNumericWave()
+				key                     = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+				result[INDEP_HEADSTAGE] = 0
+				ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+			endif
 			break
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
