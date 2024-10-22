@@ -117,6 +117,15 @@ static Function/WAVE GetStimScaleFactor_IGNORE(variable sweepNo, string device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 End
 
+static Function/WAVE GetOORDAScale_IGNORE(variable sweepNo, string device)
+
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
+End
+
 static Function PS_RB1_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 3}
@@ -201,6 +210,12 @@ static Function PS_RB1_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_WAVE(oorDAScale, NULL_WAVE)
+
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520})
 End
@@ -277,6 +292,9 @@ static Function PS_RB2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
@@ -355,6 +373,9 @@ static Function PS_RB3_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
@@ -431,6 +452,9 @@ static Function PS_RB4_REENTRY([string str])
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 0)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
@@ -522,6 +546,9 @@ static Function PS_RB5_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 1)
 
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
@@ -601,6 +628,9 @@ static Function PS_RB6_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 2)
 
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {NaN, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
@@ -677,6 +707,9 @@ static Function PS_RB7_REENTRY([string str])
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {NaN, NaN, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
@@ -772,6 +805,9 @@ static Function PS_RB8_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 3)
 
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
@@ -856,6 +892,9 @@ static Function PS_RB9_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 2)
 
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
@@ -937,6 +976,9 @@ static Function PS_RB10_REENTRY([string str])
 	CHECK_EQUAL_WAVES(limitedResolution, {1}, mode = WAVE_DATA, tol = 0.01)
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
@@ -1030,6 +1072,99 @@ static Function PS_RB11_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_WAVE(oorDAScale, NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	CheckPSQChunkTimes(str, {20, 520})
+End
+
+static Function PS_RB12_preAcq(string device)
+
+	Make/FREE asyncChannels = {2, 3}
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	SetFinalDAScale(3999e-12)
+#else
+	SetFinalDAScale(4090e-12)
+#endif
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_RB12([string str])
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
+	// baseline QC passes, async QC passes and no spikes at all
+	wv            = 0
+	wv[0, 1][][0] = 1
+	wv[0, 1][][0] = 1
+	wv[][][2]     = 1
+End
+
+static Function PS_RB12_REENTRY([string str])
+
+	variable sweepNo, setPassed, i, numEntries, onsetDelay
+	variable initialDAScale, stepsize, finalDAScale
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	sweepNo    = 0
+	numEntries = sweepNo + 1
+
+	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
+
+	key       = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 0)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1}, mode = WAVE_DATA)
+
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(baselineQCWave, {1}, mode = WAVE_DATA)
+
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {0}, mode = WAVE_DATA)
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	finalDAScale = 3999e-12
+#else
+	finalDAScale = 4090e-12
+#endif
+
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
+	Make/FREE/D/N=(numEntries) stimScaleRef = (p * PSQ_RB_DASCALE_STEP_LARGE + finalDAScale) * ONE_TO_PICO
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
+	Make/N=(numEntries)/FREE durationsRef = 3
+	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
+
+	key      = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {1}, mode = WAVE_DATA)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End

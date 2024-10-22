@@ -139,6 +139,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// PSQ_RB
 	// - baseline QC
 	// - Difference to initial DAScale larger than 60pA?
+	// - Out of range DAScale
 	// - Not enough sweeps
 
 	// PSQ_SE
@@ -619,6 +620,13 @@ End
 static Function/S AD_GetRheobaseFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
 
 	string key, prefix, msg, pattern
+
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
+	endif
 
 	prefix = AD_GetPerSweepFailMessage(PSQ_RHEOBASE, numericalValues, textualValues, sweepNo, sweepDFR, headstage)
 
