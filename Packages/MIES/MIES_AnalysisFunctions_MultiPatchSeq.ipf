@@ -600,7 +600,7 @@ Function MSQ_FastRheoEst(device, s)
 	string                      device
 	STRUCT AnalysisFunction_V3 &s
 
-	variable totalOnsetDelay, setPassed, sweepPassed, multiplier, newDAScaleValue, found, val
+	variable totalOnsetDelay, setPassed, sweepPassed, multiplier, newDAScaleValue, found, val, outOfRangeDetected
 	variable i, postDAQDAScale, postDAQDAScaleFactor, DAC, maxDAScale, allHeadstagesExceeded, minRheoOffset
 	string key, msg, ctrl
 	string stimsets = ""
@@ -716,6 +716,7 @@ Function MSQ_FastRheoEst(device, s)
 			WAVE headstagePassed  = LBN_GetNumericWave()
 			WAVE finalDAScale     = LBN_GetNumericWave()
 			WAVE rangeExceededNew = LBN_GetNumericWave()
+			WAVE oorDAScale        = LBN_GetNumericWave()
 
 			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_STEPSIZE, query = 1)
 			WAVE stepSize = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
@@ -789,9 +790,11 @@ Function MSQ_FastRheoEst(device, s)
 					ASSERT(headstagePassed[i] != 1, "Unexpected headstage passing")
 					headstagePassed[i] = 0
 				else
-					SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue)
+					oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue)
 				endif
 			endfor
+
+			ReportOutOfRangeDAScale(device, s.sweepNo, INVALID_ANALYSIS_FUNCTION, oorDAScale)
 
 			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(device, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -855,16 +858,8 @@ Function MSQ_FastRheoEst(device, s)
 			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
 
 			WAVE numericalValues = GetLBNumericalValues(device)
-			// assuming that all headstages have the same sweeps in their SCI
-			setPassed = MSQ_NumPassesInSet(numericalValues, MSQ_FAST_RHEO_EST, s.sweepNo, s.headstage) >= 1
 
-			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
-			DEBUGPRINT(msg)
-
-			WAVE result = LBN_GetNumericWave()
-			result[INDEP_HEADSTAGE] = setPassed
-			key                     = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_SET_PASS)
-			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+			WAVE oorDAScale = LBN_GetNumericWave()
 
 			postDAQDAScale = AFH_GetAnalysisParamNumerical("PostDAQDAScale", s.params)
 
@@ -891,9 +886,23 @@ Function MSQ_FastRheoEst(device, s)
 						val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * PICO_TO_ONE
 					endif
 
-					SetDAScale(device, s.sweepNo, i, absolute = val)
+					oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue)
 				endfor
 			endif
+
+			ReportOutOfRangeDAScale(device, s.sweepNo, INVALID_ANALYSIS_FUNCTION, oorDAScale)
+			outOfRangeDetected = (GetRowIndex(oorDAScale, val = 1) >= 0)
+
+			// assuming that all headstages have the same sweeps in their SCI
+			setPassed = !outOfRangeDetected && (MSQ_NumPassesInSet(numericalValues, MSQ_FAST_RHEO_EST, s.sweepNo, s.headstage) >= 1)
+
+			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
+			DEBUGPRINT(msg)
+
+			WAVE result = LBN_GetNumericWave()
+			result[INDEP_HEADSTAGE] = setPassed
+			key                     = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
