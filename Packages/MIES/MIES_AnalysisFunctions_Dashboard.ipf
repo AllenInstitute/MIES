@@ -98,14 +98,15 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 
 	// MSQ_FRE
 	// - MSQ_FMT_LBN_DASCALE_EXC present (optional)
+	// - Out of range DAScale
 	// - Not enough sweeps
 
 	// MSQ_SC
 	// - MSQ_FMT_LBN_RERUN_TRIALS_EXC present
 	// - Spike counts state
 	// - Spontaneous spiking check
-	// - Out of range DAScale
 	// - Not enough sweeps
+	// - Out of range DAScale
 
 	// PSQ_AR
 	// - baseline QC
@@ -609,6 +610,13 @@ static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepN
 
 	if(AD_LabnotebookEntryExistsAndIsTrue(daScaleExc))
 		return "Max DA scale exceeded failure"
+	endif
+
+	key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
 	endif
 
 	return "Failure as we ran out of sweeps"
