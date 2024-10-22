@@ -5146,7 +5146,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
 
-			SetDAScale(device, s.sweepNo, s.headstage, absolute = PSQ_RA_DASCALE_DEFAULT * PICO_TO_ONE)
+			SetDAScale(device, s.sweepNo, s.headstage, absolute = PSQ_RA_DASCALE_DEFAULT * PICO_TO_ONE, limitCheck = 0)
 
 			return 0
 
