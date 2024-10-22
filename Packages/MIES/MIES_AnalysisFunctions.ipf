@@ -1143,8 +1143,10 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 					continue
 				endif
 
+				WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, s.sweepNo, i)
+
 				// check initial response
-				if(index == 0 && resistanceFitted[i] <= 20e6)
+				if(DimSize(sweeps, ROWS) == 1 && resistanceFitted[i] <= 20e6)
 					amps                   = -100e-12
 					targetVoltagesIndex[i] = -1
 				else
