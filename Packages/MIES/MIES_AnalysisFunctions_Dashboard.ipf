@@ -9,6 +9,8 @@
 /// @file MIES_AnalysisFunctions_Dashboard.ipf
 /// @brief __AD__ Dashboard for pass/fail style analysis functions
 
+static StrConstant AD_OOR_DASCALE_MSG = "Failure as the future DAScale would be out of range"
+
 /// @brief Update the dashboards of all databrowsers
 Function AD_UpdateAllDatabrowser()
 
@@ -102,6 +104,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// - MSQ_FMT_LBN_RERUN_TRIALS_EXC present
 	// - Spike counts state
 	// - Spontaneous spiking check
+	// - Out of range DAScale
 	// - Not enough sweeps
 
 	// PSQ_AR
@@ -620,6 +623,13 @@ static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualVa
 
 	if(AD_LabnotebookEntryExistsAndIsTrue(trialsExceeded))
 		return "Maximum number of rerun trials exceeded"
+	endif
+
+	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
 	endif
 
 	return "Failure as we ran out of sweeps"
