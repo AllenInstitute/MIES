@@ -1293,7 +1293,9 @@ Function InitDAQSettingsFromString(s, str)
 				continue
 			endif
 
-			headstage       = ParseNumber(elem, "HS")
+			headstage = ParseNumber(elem, "HS")
+			REQUIRE(IsValidHeadstage(headstage))
+
 			s.hs[headstage] = 1
 
 			s.da[headstage] = ParseNumber(elem, "_DA")
