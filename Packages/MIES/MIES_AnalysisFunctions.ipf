@@ -1103,9 +1103,6 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 				return NaN
 			endif
 
-			WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(device)
-			ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
-
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
 
@@ -1113,7 +1110,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 			WAVE deltaI     = LBN_GetNumericWave()
 			WAVE resistance = LBN_GetNumericWave()
 
-			CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
+			CalculateTPLikePropsFromSweep(numericalValues, textualValues, s.scaledDACWave, deltaI, deltaV, resistance)
 
 			ED_AddEntryToLabnotebook(device, LBN_DELTA_I, deltaI, unit = "A")
 			ED_AddEntryToLabnotebook(device, LBN_DELTA_V, deltaV, unit = "V")
