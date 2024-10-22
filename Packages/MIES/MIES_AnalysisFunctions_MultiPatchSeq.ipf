@@ -1070,7 +1070,7 @@ End
 ///
 Function MSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
-	variable i, index, ret, headstagePassed, val, sweepNo
+	variable i, index, ret, headstagePassed, val, sweepNo, limitCheck, sweepPassed
 	string msg, key, ctrl
 
 	switch(s.eventType)
@@ -1154,32 +1154,19 @@ Function MSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
 			break
-		case POST_SWEEP_EVENT:
-
-			if(!DAG_HeadstageIsHighestActive(device, s.headstage))
-				return NaN
-			endif
-
-			WAVE values     = LBN_GetNumericWave()
-			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
-			values[0, NUM_HEADSTAGES - 1] = statusHSIC[p] ? 1 : NaN
-			key                           = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_HEADSTAGE_PASS)
-			ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
-
-			WAVE values = LBN_GetNumericWave()
-			values[INDEP_HEADSTAGE] = 1
-			key                     = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SWEEP_PASS)
-			ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
-
-			break
 		case POST_SET_EVENT:
 
 			if(!DAG_HeadstageIsHighestActive(device, s.headstage))
 				return NaN
 			endif
 
+			WAVE numericalValues = GetLBNumericalValues(device)
+
+			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SWEEP_PASS, query = 1)
+			WAVE sweepPass = GetLastSettingIndepEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+
 			WAVE values = LBN_GetNumericWave()
-			values[INDEP_HEADSTAGE] = 1
+			values[INDEP_HEADSTAGE] = IsNaN(GetRowIndex(sweepPass, val = 0))
 			key                     = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
 
@@ -1222,6 +1209,8 @@ Function MSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
+		WAVE oorDAScale = LBN_GetNumericWave()
+
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(!statusHS[i])
 				continue
@@ -1229,9 +1218,40 @@ Function MSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
+			limitCheck = (s.eventType == POST_SWEEP_EVENT) && !AFH_LastSweepInSet(device, s.sweepNo, s.headstage, s.eventType)
+
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			SetDAScale(device, s.sweepNo, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE)
+			oorDAScale[i]     = SetDAScale(device, s.sweepNo, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE, limitCheck = limitCheck)
 			DAScalesIndex[i] += 1
 		endfor
+
+		ReportOutOfRangeDAScale(device, s.sweepNo, MSQ_DA_SCALE, oorDAScale)
+
+		if(s.eventType == POST_SWEEP_EVENT)
+			WAVE numericalValues = GetLBNumericalValues(device)
+
+			Make/N=(NUM_HEADSTAGES)/FREE oorDAScale = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo,             \
+			                                                                      MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, p)
+
+			WAVE values     = LBN_GetNumericWave()
+			WAVE statusHSIC = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
+			values[0, NUM_HEADSTAGES - 1] = statusHSIC[p] ? !oorDAScale[p] : NaN
+			key                           = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_HEADSTAGE_PASS)
+			ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			sweepPassed = Sum(oorDAScale) == 0
+
+			WAVE values = LBN_GetNumericWave()
+			values[INDEP_HEADSTAGE] = sweepPassed
+			key                     = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			if(!sweepPassed)
+				WAVE values = LBN_GetNumericWave()
+				values[INDEP_HEADSTAGE] = 0
+				key                     = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SET_PASS)
+				ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
+			endif
+		endif
 	endif
 End
