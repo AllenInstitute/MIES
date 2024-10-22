@@ -6096,9 +6096,9 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 	variable InnerRelativeBound, OuterRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, scalingFactorDAScale, initLPF, ampBesselFilter
-	variable fifoTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay, asyncAlarmPassed
+	variable fifoTime, i, ret, range, chirpStart, chirpDuration, userOnsetDelay, asyncAlarmPassed, limitCheck
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck, besselFilterRestore
-	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode, stimsetPass
+	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode, stimsetPass, oorDAScalePassed
 	string setName, key, msg, stimset, str, daScaleOperator
 
 	innerRelativeBound     = AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params)
@@ -6231,7 +6231,8 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 				result[INDEP_HEADSTAGE] = initialDAScale
 				ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo)
 
-				SetDAScale(device, s.sweepNo, s.headstage, absolute = initialDAScale, roundTopA = 1)
+				// not checking DAScale limits as we can't do that in PRE_SET_EVENT
+				SetDAScale(device, s.sweepNo, s.headstage, absolute = initialDAScale, roundTopA = 1, limitCheck = 0)
 
 				WAVE result = LBN_GetNumericWave()
 				key                     = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INIT_UOD)
@@ -6292,7 +6293,16 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_CHIRP, s.sweepNo, asyncChannels)
 
-			sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1 && asyncAlarmPassed == 1 && stimsetPass == 1)
+			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+			WAVE/Z oorDAScaleLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			oorDAScalePassed = !(WaveExists(oorDAScaleLBN) ? oorDAScaleLBN[s.headstage] : 0)
+
+			sweepPassed = (baselineQCPassed == 1           \
+			               && insideBounds == 1            \
+			               && samplingFrequencyPassed == 1 \
+			               && asyncAlarmPassed == 1        \
+			               && stimsetPass == 1             \
+			               && oorDAScalePassed == 1)
 
 			if(spikeCheck)
 				sweepPassed = (sweepPassed == 1 && spikeCheckPassed == 1)
@@ -6454,6 +6464,8 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 		endif
 	endif
 
+	limitCheck = !AFH_LastSweepInSet(device, s.sweepNo, s.headstage, s.eventType)
+
 	// no early return here because we want to do baseline QC checks (and chunk creation) always
 
 	if(IsNaN(baselineQCPassed))
@@ -6470,7 +6482,10 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 		// adapt DAScale and finish
 		daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
 		daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
-		SetDAScaleModOp(device, s.sweepNo, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1)
+
+		WAVE oorDAScale = LBN_GetNumericWave()
+		oorDAScale[s.headstage] = SetDAScaleModOp(device, s.sweepNo, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1, limitCheck = limitCheck)
+		ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_CHIRP, oorDAScale)
 
 		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
@@ -6487,6 +6502,8 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 		key                     = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
 		ED_AddEntryToLabnotebook(device, key, result, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
+		WAVE oorDAScale = LBN_GetNumericWave()
+
 		switch(boundsAction)
 			case PSQ_CR_PASS:
 			case PSQ_CR_RERUN: // fallthrough-by-design
@@ -6494,11 +6511,17 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 				break
 			case PSQ_CR_INCREASE:
 			case PSQ_CR_DECREASE: // fallthrough-by-design
-				SetDAScale(device, s.sweepNo, s.headstage, relative = scalingFactorDAScale, roundTopA = 1)
+				oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, relative = scalingFactorDAScale, roundTopA = 1, limitCheck = limitCheck)
+
+				if(oorDAScale[s.headstage])
+					return ANALYSIS_FUNC_RET_EARLY_STOP
+				endif
 				break
 			default:
 				ASSERT(0, "impossible case")
 		endswitch
+
+		ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_CHIRP, oorDAScale)
 	endif
 
 	if(IsFinite(baselineQCPassed) && baselineQCPassed)
