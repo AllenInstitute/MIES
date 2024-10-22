@@ -42,6 +42,7 @@
 ///  PSQ_FMT_LBN_STEPSIZE                       Current DAScale step size                                     (none)   Numerical    SP, RB                               No           No
 ///  PSQ_FMT_LBN_STEPSIZE_FUTURE                Future DAScale step size                                      (none)   Numerical    RB                                   No           No
 ///  PSQ_FMT_LBN_RB_DASCALE_EXC                 Range for valid DAScale values is exceeded                    On/Off   Numerical    RB                                   No           Yes
+///  PSQ_FMT_LBN_DASCALE_OOR                    Future DAScale value is out of range                          On/Off   Numerical    CR,XXX                               Yes          Yes
 ///  PSQ_FMT_LBN_RB_LIMITED_RES                 Failed due to limited DAScale resolution                      On/Off   Numerical    RB                                   No           Yes
 ///  PSQ_FMT_LBN_FINAL_SCALE                    Final DAScale of the given headstage, only set on success     (none)   Numerical    SP, RB                               No           No
 ///  PSQ_FMT_LBN_SPIKE_DASCALE_ZERO             Sweep spiked with DAScale of 0                                On/Off   Numerical    SP                                   No           No

@@ -28,6 +28,7 @@
 /// MSQ_FMT_LBN_SET_PASS             Pass/fail state of the complete set                                  On/Off        Numerical    FRE, DS, SC   No      No          No          No                No
 /// MSQ_FMT_LBN_ACTIVE_HS            Active headstages in pre set event                                   On/Off        Numerical    FRE, DS       No      Yes         No          No                No
 /// MSQ_FMT_LBN_DASCALE_EXC          Allowed DAScale exceeded given limit                                 (none)        Numerical    FRE           No      Yes         No          No                No
+/// MSQ_FMT_LBN_DASCALE_OOR          Future DAScale value is out of range                                 On/Off        Numerical    FRE, DS, SC   No      Yes         No          No
 /// MSQ_FMT_LBN_PULSE_DUR            Square pulse duration                                                ms            Numerical    FRE           No      Yes         No          No                No
 /// MSQ_FMT_LBN_SPIKE_POSITIONS      Spike positions with ``P{1}_R{2}``, pulse index (``{1}``) and        (none)        Textual      SC            No      Yes         Yes         Yes               Yes
 ///                                  region (``{2}``), as key and the spike positions as value in pulse

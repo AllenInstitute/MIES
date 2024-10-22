@@ -1139,6 +1139,7 @@ StrConstant PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER = "^U_BLS[[:digit:]]+$"
 /// @anchor PatchSeqLabnotebookFormatStrings
 ///@{
 StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC              = "%s DAScale exceeded"
+StrConstant PSQ_FMT_LBN_DASCALE_OOR                 = "%s DAScale out of range"
 StrConstant PSQ_FMT_LBN_STEPSIZE                    = "%s step size"
 StrConstant PSQ_FMT_LBN_STEPSIZE_FUTURE             = "%s step size (fut.)"
 StrConstant PSQ_FMT_LBN_SPIKE_DETECT                = "%s spike detected"
@@ -1241,6 +1242,7 @@ StrConstant LBN_DELTA_V              = "Delta V"
 StrConstant LBN_RESISTANCE_FIT       = "ResistanceFromFit"
 StrConstant LBN_RESISTANCE_FIT_ERR   = "ResistanceFromFit_Err"
 StrConstant LBN_AUTOBIAS_TARGET_DIAG = "Autobias target voltage from dialog"
+StrConstant LBN_DASCALE_OUT_OF_RANGE = "DAScale out of range"
 ///@}
 
 /// @anchor PatchSeqAnalysisFunctionTypes
@@ -1419,6 +1421,7 @@ StrConstant MSQ_FMT_LBN_SPIKE_COUNTS_STATE  = "%s Spike counts state"
 StrConstant MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS  = "%s Ideal spike counts"
 StrConstant MSQ_FMT_LBN_RERUN_TRIAL         = "%s Rerun Trials"
 StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC     = "%s Rerun Trials exceeded"
+StrConstant MSQ_FMT_LBN_DASCALE_OOR         = "%s DAScale out of range"
 ///@}
 
 /// @name Workaround flags for CreateAnaFuncLBNKey()
