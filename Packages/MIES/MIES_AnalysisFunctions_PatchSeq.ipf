@@ -4450,7 +4450,7 @@ Function PSQ_SquarePulse(device, s)
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 0)
 
 			PSQ_StoreStepSizeInLBN(device, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_p100)
-			SetDAScale(device, s.sweepNo, s.headstage, absolute = PSQ_SP_INIT_AMP_p100)
+			SetDAScale(device, s.sweepNo, s.headstage, absolute = PSQ_SP_INIT_AMP_p100, limitCheck = 0)
 
 			return 0
 
@@ -4483,6 +4483,8 @@ Function PSQ_SquarePulse(device, s)
 			WAVE asyncChannels = AFH_GetAnalysisParamWave("AsyncQCChannels", s.params)
 			asyncAlarmPassed = PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(device, PSQ_SQUARE_PULSE, s.sweepNo, asyncChannels)
 
+			WAVE oorDAScale = LBN_GetNumericWave()
+
 			sweepPassed = 0
 
 			sprintf msg, "DAScale %g, stepSize %g", DAScale, stepSize
@@ -4503,7 +4505,7 @@ Function PSQ_SquarePulse(device, s)
 						RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 					endif
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
-					SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize)
+					oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p10))
 					WAVE value = LBN_GetNumericWave()
 					value[INDEP_HEADSTAGE] = DAScale
@@ -4518,8 +4520,8 @@ Function PSQ_SquarePulse(device, s)
 					endif
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(device, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_m50)
-					stepsize = PSQ_SP_INIT_AMP_m50
-					SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize)
+					stepsize        = PSQ_SP_INIT_AMP_m50
+					oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize)
 				else
 					ASSERT(0, "Unknown stepsize")
 				endif
@@ -4535,7 +4537,13 @@ Function PSQ_SquarePulse(device, s)
 					ASSERT(0, "Unknown stepsize")
 				endif
 
-				SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize)
+				oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale + stepsize)
+			endif
+
+			ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_SQUARE_PULSE, oorDAScale)
+
+			if(oorDAScale[s.headstage])
+				sweepPassed = 0
 			endif
 
 			sprintf msg, "Sweep has %s\r", ToPassFail(sweepPassed)
