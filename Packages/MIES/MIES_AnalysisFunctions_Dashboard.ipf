@@ -146,6 +146,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// - seal threshold QC
 
 	// PSQ_SP
+	// - Out of range DAScale
 	// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
 
 	// PSQ_VM
@@ -443,6 +444,13 @@ static Function/S AD_GetSquarePulseFailMsg(WAVE numericalValues, variable sweepN
 		if(DimSize(spikeWithDAScaleZeroReduced, ROWS) == PSQ_SP_MAX_DASCALE_ZERO)
 			return "Failure as we did had three spikes with a DAScale of 0.0pA."
 		endif
+	endif
+
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
 	endif
 
 	key      = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1, waMode = waMode)
