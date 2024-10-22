@@ -1010,6 +1010,36 @@ Function/S ReachTargetVoltage_CheckParam(string name, STRUCT CheckParametersStru
 	endswitch
 End
 
+/// #ReachTargetVoltage:
+///
+/// Rows:
+/// - Headstage
+///
+/// Cols:
+/// - 0: Resistance [MΩ]
+static Function/WAVE CreateOverrideResults()
+
+	variable numRows, numCols
+
+	numRows = LABNOTEBOOK_LAYER_COUNT
+	numCols = 1
+
+	WAVE/Z/D wv = GetOverrideResults()
+
+	if(WaveExists(wv))
+		ASSERT(IsNumericWave(wv), "overrideResults wave must be numeric here")
+		Redimension/D/N=(numRows, numCols) wv
+	else
+		Make/D/N=(numRows, numCols) root:overrideResults/WAVE=wv
+	endif
+
+	wv[] = 0
+
+	SetDimensionLabels(wv, "Resistance", COLS)
+
+	return wv
+End
+
 /// @brief Analysis function to experimentally determine the cell resistance by sweeping
 /// through a wave of target voltages.
 ///
