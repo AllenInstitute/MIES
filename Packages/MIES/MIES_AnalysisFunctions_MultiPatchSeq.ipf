@@ -1105,7 +1105,7 @@ Function MSQ_DAScale(device, s)
 	string                      device
 	STRUCT AnalysisFunction_V3 &s
 
-	variable i, index, ret, headstagePassed, val, sweepNo
+	variable i, index, ret, headstagePassed, val, sweepNo, limitCheck
 	string msg, key, ctrl
 
 	switch(s.eventType)
@@ -1213,8 +1213,12 @@ Function MSQ_DAScale(device, s)
 				return NaN
 			endif
 
+			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+			Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo,                  \
+			                                                                      MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_OOR, p)
+
 			WAVE values = LBN_GetNumericWave()
-			values[INDEP_HEADSTAGE] = 1
+			values[INDEP_HEADSTAGE] = Sum(DAScaleOOR) == 0
 			key                     = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
 
@@ -1257,6 +1261,8 @@ Function MSQ_DAScale(device, s)
 
 		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
+		WAVe oorDAScale = LBN_GetNumericWave()
+
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(!statusHS[i])
 				continue
@@ -1264,9 +1270,13 @@ Function MSQ_DAScale(device, s)
 
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
+			limitCheck      = (s.eventType == POST_SWEEP_EVENT)
+
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			SetDAScale(device, s.sweepNo, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE)
+			oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE, limitCheck = limitCheck)
 			DAScalesIndex[i] += 1
 		endfor
+
+		ReportOutOfRangeDAScale(device, s.sweepNo, MSQ_DA_SCALE, oorDAScale)
 	endif
 End
