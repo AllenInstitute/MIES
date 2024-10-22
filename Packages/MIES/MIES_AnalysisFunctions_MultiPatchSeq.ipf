@@ -424,7 +424,7 @@ End
 ///        Searches in the complete SCI and assumes that the entries are either 0/1/NaN.
 ///
 /// @todo merge with LBN functions once these are reworked.
-static Function MSQ_GetLBNEntryForHSSCIBool(WAVE numericalValues, variable sweepNo, variable type, string str, variable headstage)
+Function MSQ_GetLBNEntryForHSSCIBool(WAVE numericalValues, variable sweepNo, variable type, string str, variable headstage)
 
 	string key
 
