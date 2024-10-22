@@ -117,6 +117,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// - baseline QC
 	// - needs at least PSQ_CR_NUM_SWEEPS_PASS passing sweeps with the same to-full-pA rounded DAScale
 	// - spike found while none expected (optional)
+	// - Out of range DAScale
 
 	// PSQ_DA
 	// - baseline QC
@@ -686,6 +687,13 @@ static Function/S AD_GetChirpFailMsg(WAVE numericalValues, WAVE/T textualValues,
 	string key, msg, str
 	string text = ""
 	variable i, numSweeps, setPassed, maxOccurences
+
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
+	endif
 
 	msg = AD_GetPerSweepFailMessage(PSQ_CHIRP, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_CR_NUM_SWEEPS_PASS)
 
