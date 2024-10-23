@@ -4943,7 +4943,7 @@ Function PSQ_Rheobase(device, s)
 			endif
 
 			WAVE oorDAScale = LBN_GetNumericWave()
-			oorDAScale[s.headstage]  = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale)
+			oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, s.headstage, absolute = DAScale)
 			ReportOutOfRangeDAScale(device, s.sweepNo, PSQ_RHEOBASE, oorDAScale)
 
 			if(oorDAScale[s.headstage])
