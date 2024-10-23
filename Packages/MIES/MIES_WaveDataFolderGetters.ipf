@@ -164,10 +164,10 @@ Function/WAVE GetChanAmpAssignUnit(device)
 		Make/T/N=(4, NUM_HEADSTAGES) dfr:ChanAmpAssignUnit/WAVE=wv
 		wv = ""
 
-		wv[0][] = "mV"
-		wv[1][] = "pA"
-		wv[2][] = "pA"
-		wv[3][] = "mV"
+		wv[0][] = GetDAChannelUnit(V_CLAMP_MODE)
+		wv[1][] = GetADChannelUnit(V_CLAMP_MODE)
+		wv[2][] = GetDAChannelUnit(I_CLAMP_MODE)
+		wv[3][] = GetADChannelUnit(I_CLAMP_MODE)
 	endif
 
 	SetDimLabel ROWS, 0, VC_DAUnit, wv
@@ -495,22 +495,15 @@ End
 ///   - Layers:
 ///     - 0: marker
 ///     - 1: received channels
-///     - 2: now
-/// Column 1: baseline level
-/// Column 2: steady state res
-/// Column 3: instantaneous res
-/// Column 4: baseline position
-/// Column 5: steady state res position
-/// Column 6: instantaneous res position
-/// Column 7: average elevated level (steady state)
-/// Column 8: average elevated level (instantaneous)
+/// Column 1+: defined through TP_ANALYSIS_DATA_LABELS
 ///
 /// Layers:
-/// - NUM_HEADSTAGES positions with value entries at hsIndex
+/// - NUM_HEADSTAGES positions with value entries at headstage
 Function/WAVE GetTPResultAsyncBuffer(device)
 	string device
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
+	variable numCols          = ItemsInList(TP_ANALYSIS_DATA_LABELS) + 1
 
 	DFREF dfr = GetDeviceTestPulse(device)
 
@@ -518,25 +511,22 @@ Function/WAVE GetTPResultAsyncBuffer(device)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 9, -1) wv
 	else
-		Make/N=(0, 9, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/WAVE=wv
+		numCols = ItemsInList(TP_ANALYSIS_DATA_LABELS) + 1
+		if(WaveExists(wv))
+			Redimension/N=(-1, numCols, -1) wv
+		else
+			Make/N=(0, numCols, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/WAVE=wv
+		endif
+
+		FastOp wv = (NaN)
 	endif
 
 	SetDimLabel COLS, 0, ASYNCDATA, wv
-	SetDimLabel COLS, 1, BASELINE, wv
-	SetDimLabel COLS, 2, STEADYSTATERES, wv
-	SetDimLabel COLS, 3, INSTANTRES, wv
-	SetDimLabel COLS, 4, BASELINE_POS, wv
-	SetDimLabel COLS, 5, STEADYSTATERES_POS, wv
-	SetDimLabel COLS, 6, INSTANTRES_POS, wv
-	SetDimLabel COLS, 7, ELEVATED_SS, wv
-	SetDimLabel COLS, 8, ELEVATED_INST, wv
+	SetDimensionLabels(wv, TP_ANALYSIS_DATA_LABELS, COLS, startPos = 1)
 
 	SetDimLabel LAYERS, 0, MARKER, wv
 	SetDimLabel LAYERS, 1, REC_CHANNELS, wv
-	SetDimLabel LAYERS, 2, NOW, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -3027,18 +3017,28 @@ End
 ///       state is switched (aka on->off or off->on)
 /// - 29: Auto TP Baseline Fit result: One of @ref TPBaselineFitResults
 /// - 30: Auto TP Delta V [mV]
+/// - 31: Clamp Amplitude [mV] or [pA] depending on Clamp Mode
+/// - 32: Testpulse full length in points for AD channel [points]
+/// - 33: Testpulse pulse length in points for AD channel [points]
+/// - 34: Point index of pulse start for AD channel [point]
+/// - 35: Sampling interval for AD channel [ms]
+/// - 36: Testpulse full length in points for DA channel [points]
+/// - 37: Testpulse pulse length in points for DA channel [points]
+/// - 38: Point index of pulse start for DA channel [point]
+/// - 39: Sampling interval for DA channel [ms]
 Function/WAVE GetTPStorage(device)
 	string device
 
 	DFREF    dfr              = GetDeviceTestPulse(device)
-	variable versionOfNewWave = 15
+	variable versionOfNewWave = 16
+	variable numLayers        = 40
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, NUM_HEADSTAGES, 31)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, numLayers)/D wv
 
 		if(WaveVersionIsSmaller(wv, 10))
 			wv[][][17]     = NaN
@@ -3057,8 +3057,11 @@ Function/WAVE GetTPStorage(device)
 		if(WaveVersionIsSmaller(wv, 15))
 			wv[][][25, 30] = NaN
 		endif
+		if(WaveVersionIsSmaller(wv, 16))
+			wv[][][31, numLayers - 1] = NaN
+		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 31)/D dfr:TPStorage/WAVE=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, numLayers)/D dfr:TPStorage/WAVE=wv
 
 		wv = NaN
 
@@ -3098,6 +3101,18 @@ Function/WAVE GetTPStorage(device)
 	SetDimLabel LAYERS, 28, AutoTPCycleID, wv
 	SetDimLabel LAYERS, 29, AutoTPBaselineFitResult, wv
 	SetDimLabel LAYERS, 30, AutoTPDeltaV, wv
+	// Dimlabels starting from here are taken from TP_ANALYSIS_DATA_LABELS
+	// This is not required but convenient because in @ref TP_RecordTP data from TPResults (@ref GetTPResults)
+	// is transferred to tpStorage and TPResults also uses dimlabels from TP_ANALYSIS_DATA_LABELS partially.
+	SetDimLabel LAYERS, 31, CLAMPAMP, wv
+	SetDimLabel LAYERS, 32, TPLENGTHPOINTSADC, wv
+	SetDimLabel LAYERS, 33, PULSELENGTHPOINTSADC, wv
+	SetDimLabel LAYERS, 34, PULSESTARTPOINTSADC, wv
+	SetDimLabel LAYERS, 35, SAMPLINGINTERVALADC, wv
+	SetDimLabel LAYERS, 36, TPLENGTHPOINTSDAC, wv
+	SetDimLabel LAYERS, 37, PULSELENGTHPOINTSDAC, wv
+	SetDimLabel LAYERS, 38, PULSESTARTPOINTSDAC, wv
+	SetDimLabel LAYERS, 39, SAMPLINGINTERVALDAC, wv
 
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
@@ -3281,11 +3296,17 @@ End
 /// - 7: Auto TP Baseline range exceeded: True/False
 /// - 8: Auto TP Baseline fit result: One of @ref TPBaselineFitResults
 /// - 9: Auto TP Delta V: [mV]
-///
+/// - 10+: partial dim labels from TP_ANALYSIS_DATA_LABELS, originally filled in TP_TSAnalysis
 /// Columns:
 /// - NUM_HEADSTAGES
 Function/WAVE GetTPResults(string device)
-	variable version = 3
+	variable version = 4
+
+	string labels = "ResistanceInst;BaselineSteadyState;ResistanceSteadyState;ElevatedSteadyState;ElevatedInst;"                + \
+	                "AutoTPAmplitude;AutoTPBaseline;AutoTPBaselineRangeExceeded;AutoTPBaselineFitResult;AutoTPDeltaV;"          + \
+	                "NOW;HEADSTAGE;MARKER;NUMBER_OF_TP_CHANNELS;TIMESTAMP;TIMESTAMPUTC;CLAMPMODE;CLAMPAMP;BASELINEFRAC;"        + \
+	                "CYCLEID;TPLENGTHPOINTSADC;PULSELENGTHPOINTSADC;PULSESTARTPOINTSADC;SAMPLINGINTERVALADC;TPLENGTHPOINTSDAC;" + \
+	                "PULSELENGTHPOINTSDAC;PULSESTARTPOINTSDAC;SAMPLINGINTERVALDAC;"
 
 	DFREF             dfr = GetDeviceTestPulse(device)
 	WAVE/D/Z/SDFR=dfr wv  = results
@@ -3293,10 +3314,10 @@ Function/WAVE GetTPResults(string device)
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/D/N=(10, NUM_HEADSTAGES) wv
+		Redimension/D/N=(ItemsInList(labels), NUM_HEADSTAGES) wv
 		wv = NaN
 	else
-		Make/D/N=(10, NUM_HEADSTAGES) dfr:results/WAVE=wv
+		Make/D/N=(ItemsInList(labels), NUM_HEADSTAGES) dfr:results/WAVE=wv
 		wv = NaN
 
 		// initialize with the old 1D waves
@@ -3312,7 +3333,7 @@ Function/WAVE GetTPResults(string device)
 		KillOrMoveToTrash(wv = SSResistance)
 	endif
 
-	SetDimensionLabels(wv, "ResistanceInst;BaselineSteadyState;ResistanceSteadyState;ElevatedSteadyState;ElevatedInst;AutoTPAmplitude;AutoTPBaseline;AutoTPBaselineRangeExceeded;AutoTPBaselineFitResult;AutoTPDeltaV", ROWS)
+	SetDimensionLabels(wv, labels, ROWS)
 
 	SetWaveVersion(wv, version)
 
@@ -8745,4 +8766,15 @@ Function/WAVE GetSFSelectDataComp(string graph, string opShort)
 	SetDimensionLabels(selectDataComp, "SELECTION;RANGE;", ROWS)
 
 	return selectDataComp
+End
+
+/// @brief Get a free wave that can store TP analysis data
+///
+/// @returns a named (tpData) free wave
+threadsafe Function/WAVE GetTPAnalysisDataWave()
+
+	Make/FREE=1/D/N=(ItemsInList(TP_ANALYSIS_DATA_LABELS)) tpData
+	SetDimensionLabels(tpData, TP_ANALYSIS_DATA_LABELS, ROWS)
+
+	return tpData
 End

@@ -213,17 +213,33 @@ static Function CheckMessageFilters_IGNORE(string filter)
 End
 
 Function/S FetchPublishedMessage(string expectedFilter)
-	variable i
+
+	variable msgCnt, waitCnt
 	string msg, filter
 
-	for(i = 0; i < 100; i += 1)
+	variable MAX_WAITS    = 100
+	variable MAX_MESSAGES = 10000
+
+	for(;;)
 		msg = zeromq_sub_recv(filter)
 
 		if(!cmpstr(filter, expectedFilter))
 			break
 		endif
 
-		Sleep/S 0.1
+		if(IsEmpty(msg))
+			waitCnt += 1
+			if(waitCnt == MAX_WAITS)
+				break
+			endif
+			Sleep/S 0.1
+		else
+			msgCnt += 1
+			if(msgCnt == MAX_MESSAGES)
+				break
+			endif
+		endif
+
 	endfor
 
 	CHECK_EQUAL_STR(filter, expectedFilter)
