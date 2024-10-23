@@ -1273,7 +1273,7 @@ Function MSQ_DAScale(device, s)
 
 		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
-		WAVe oorDAScale = LBN_GetNumericWave()
+		WAVE oorDAScale = LBN_GetNumericWave()
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(!statusHS[i])
@@ -1282,10 +1282,10 @@ Function MSQ_DAScale(device, s)
 
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
-			limitCheck      = (s.eventType == POST_SWEEP_EVENT)
+			limitCheck = (s.eventType == POST_SWEEP_EVENT)
 
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE, limitCheck = limitCheck)
+			oorDAScale[i]     = SetDAScale(device, s.sweepNo, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE, limitCheck = limitCheck)
 			DAScalesIndex[i] += 1
 		endfor
 
