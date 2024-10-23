@@ -717,7 +717,7 @@ Function MSQ_FastRheoEst(device, s)
 			WAVE headstagePassed  = LBN_GetNumericWave()
 			WAVE finalDAScale     = LBN_GetNumericWave()
 			WAVE rangeExceededNew = LBN_GetNumericWave()
-			WAVE oorDAScale        = LBN_GetNumericWave()
+			WAVE oorDAScale       = LBN_GetNumericWave()
 
 			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_STEPSIZE, query = 1)
 			WAVE stepSize = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
@@ -791,7 +791,7 @@ Function MSQ_FastRheoEst(device, s)
 					ASSERT(headstagePassed[i] != 1, "Unexpected headstage passing")
 					headstagePassed[i] = 0
 				else
-					limitCheck = !MSQ_LastSweepInSet(device, s.sweepNo, s.headstage)
+					limitCheck    = !MSQ_LastSweepInSet(device, s.sweepNo, s.headstage)
 					oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue, limitCheck = limitCheck)
 				endif
 			endfor
@@ -830,7 +830,7 @@ Function MSQ_FastRheoEst(device, s)
 				                                                    MSQ_FMT_LBN_DASCALE_EXC, i)
 
 				sweepPassed = sweepPassed && !oorDAScale[i] && MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, \
-				                                                         MSQ_FMT_LBN_HEADSTAGE_PASS, i)
+				                                                                           MSQ_FMT_LBN_HEADSTAGE_PASS, i)
 			endfor
 
 			allHeadstagesExceeded = Sum(totalRangeExceeded) == Sum(statusHSIC)
