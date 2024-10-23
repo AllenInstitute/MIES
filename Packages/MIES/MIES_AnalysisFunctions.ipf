@@ -1012,7 +1012,7 @@ Function SetDAScale(device, sweepNo, headstage, [absolute, relative, offset, rou
 		nextStimsetColumn  = WaveExists(sweeps) ? DimSize(sweeps, ROWS) : 0
 		nextStimsetColumn += skipCountExisting
 
-		DAScaleLimit      = DAP_GetDataLimits(device, headstage, stimsetName, nextStimsetColumn)
+		DAScaleLimit = DAP_GetDataLimits(device, headstage, stimsetName, nextStimsetColumn)
 		ASSERT(IsFinite(DAScaleLimit), "Unsupported return value from DAP_GetDataLimits")
 
 		if(amps > DAScaleLimit)
