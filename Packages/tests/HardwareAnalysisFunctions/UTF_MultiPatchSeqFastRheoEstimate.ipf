@@ -139,6 +139,12 @@ static Function MSQ_FRE1_REENTRY([str])
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
 
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
