@@ -165,12 +165,11 @@ static Function SC_GetSweepPassed(string device, variable sweepNo)
 	FindValue/RMD=[][setSweepCount]/V=(0.0) headstageQCTotalPerSweepCount
 	setSweepQC = (V_Value == -1)
 
-	Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo,                    \
+	Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo,                   \
 	                                                                      SC_SPIKE_CONTROL, MSQ_FMT_LBN_DASCALE_OOR, p)
 
 	return setSweepQC && Sum(DAScaleOOR) == 0
 End
-
 
 /// @brief Given a list of pulses by their indizes, this function return only the diagonal
 /// ones which are matching the given sweep
@@ -1140,8 +1139,8 @@ Function SC_SpikeControl(device, s)
 					// work around broken XXX_SET_EVENT
 					// we are done and were not successful
 				else
-					Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo,                    \
-																						  SC_SPIKE_CONTROL, MSQ_FMT_LBN_DASCALE_OOR, p)
+					Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo,                 \
+					                                                                      SC_SPIKE_CONTROL, MSQ_FMT_LBN_DASCALE_OOR, p)
 
 					if(Sum(DAScaleOOR) == 0)
 						// still some trials left
