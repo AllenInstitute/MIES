@@ -4305,7 +4305,7 @@ Function PSQ_DAScale(device, s)
 						break
 				endswitch
 
-				limitCheck      = (s.eventType == POST_SWEEP_EVENT)
+				limitCheck              = (s.eventType == POST_SWEEP_EVENT)
 				oorDAScale[s.headstage] = SetDAScale(device, s.sweepNo, i, absolute = DAScale * PICO_TO_ONE, limitCheck = limitCheck)
 			endif
 		endfor
