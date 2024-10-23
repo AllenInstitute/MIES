@@ -1015,6 +1015,20 @@ static Function MSQ_GetLastPassingLongRHSweep(device, headstage)
 	return -1
 End
 
+/// @brief Return 1 if we are currently acquiring the last sweep in the stimulus set, 0 otherwise
+Function MSQ_LastSweepInSet(string device, variable sweepNo, variable headstage)
+
+	variable DAC, sweepsInSet
+
+	DAC         = AFH_GetHeadstageFromDAC(device, headstage)
+	sweepsInSet = IDX_NumberOfSweepsInSet(AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC))
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE sweepSetCount   = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
+
+	return (sweepSetCount[headstage] + 1) == sweepsInSet
+End
+
 /// @brief Manually force the pre/post set events
 ///
 /// Required to do before skipping sweeps.
