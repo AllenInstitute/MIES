@@ -1608,3 +1608,11 @@ Function LoadMIESFolderFromPXP(string fName)
 	// PLEASE CHECK THIS, IF THIS TEST FAILS IN FUTURE HISTORIC DATA TESTS
 	CA_FlushCache()
 End
+
+Function MarkDeviceAsLocked(string device)
+
+	REQUIRE_PROPER_STR(device)
+
+	SVAR lockedDevices = $GetLockedDevices()
+	lockedDevices = device
+End

@@ -2493,7 +2493,7 @@ End
 threadsafe Function/WAVE PA_SpikePositionsForNonVC(WAVE wv, variable failedPulsesLevel)
 
 	variable numLevels, maxNumLevels, numSpikes
-	variable first, last, i, err, idx
+	variable first, last, i, idx
 
 	// allow at most 1 pulse per ms, but at least 1
 	maxNumLevels = max(1, round(DimSize(wv, ROWS) * DimDelta(wv, ROWS)) * 2)
@@ -2525,11 +2525,9 @@ threadsafe Function/WAVE PA_SpikePositionsForNonVC(WAVE wv, variable failedPulse
 			continue
 		endif
 
-		AssertOnAndClearRTError()
-		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last)/Q wv; err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last)/Q wv
 
-		if(!err)
-			ASSERT_TS(!V_Flag, "Could not find peak but FindLevelWrapper was successfull, this is unexpected.")
+		if(!V_Flag)
 			spikePositions[idx++] = V_PeakLoc
 		endif
 	endfor

@@ -24,7 +24,7 @@ Constant WAVEBUILDER_PANEL_VERSION        = 14
 Constant ANALYSISBROWSER_PANEL_VERSION    = 5
 
 /// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 11
+Constant STIMSET_NOTE_VERSION = 12
 
 /// Version of the epoch information for DA+TTL data
 Constant SWEEP_EPOCH_VERSION = 9
@@ -755,7 +755,7 @@ Constant MAX_COMMANDLINE_LENGTH = 2500
 StrConstant WAVEBUILDER_COMBINE_FORMULA_VER = "1"
 
 /// Conversion factor between volts and bits for the AD/DA channels
-/// The ITC 16 bit range is +-10.24 V such that a value of 32000 represents exactly 10 V, thus 3200 -> 1 V.
+/// The ITC 16 bit range is +/-10.24 V such that a value of 32000 represents exactly 10 V, thus 3200 -> 1 V.
 Constant HARDWARE_ITC_BITS_PER_VOLT = 3200
 
 /// @name Trigger modes
@@ -1138,6 +1138,7 @@ StrConstant PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER = "^U_BLS[[:digit:]]+$"
 /// @anchor PatchSeqLabnotebookFormatStrings
 ///@{
 StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC              = "%s DAScale exceeded"
+StrConstant PSQ_FMT_LBN_DASCALE_OOR                 = "%s DAScale out of range"
 StrConstant PSQ_FMT_LBN_STEPSIZE                    = "%s step size"
 StrConstant PSQ_FMT_LBN_STEPSIZE_FUTURE             = "%s step size (fut.)"
 StrConstant PSQ_FMT_LBN_SPIKE_DETECT                = "%s spike detected"
@@ -1240,6 +1241,7 @@ StrConstant LBN_DELTA_V              = "Delta V"
 StrConstant LBN_RESISTANCE_FIT       = "ResistanceFromFit"
 StrConstant LBN_RESISTANCE_FIT_ERR   = "ResistanceFromFit_Err"
 StrConstant LBN_AUTOBIAS_TARGET_DIAG = "Autobias target voltage from dialog"
+StrConstant LBN_DASCALE_OUT_OF_RANGE = "DAScale out of range"
 ///@}
 
 /// @anchor PatchSeqAnalysisFunctionTypes
@@ -1418,6 +1420,7 @@ StrConstant MSQ_FMT_LBN_SPIKE_COUNTS_STATE  = "%s Spike counts state"
 StrConstant MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS  = "%s Ideal spike counts"
 StrConstant MSQ_FMT_LBN_RERUN_TRIAL         = "%s Rerun Trials"
 StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC     = "%s Rerun Trials exceeded"
+StrConstant MSQ_FMT_LBN_DASCALE_OOR         = "%s DAScale out of range"
 ///@}
 
 /// @name Workaround flags for CreateAnaFuncLBNKey()

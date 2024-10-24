@@ -28,6 +28,7 @@
 /// MSQ_FMT_LBN_SET_PASS             Pass/fail state of the complete set                                  On/Off        Numerical    FRE, DS, SC   No      No          No          No                No
 /// MSQ_FMT_LBN_ACTIVE_HS            Active headstages in pre set event                                   On/Off        Numerical    FRE, DS       No      Yes         No          No                No
 /// MSQ_FMT_LBN_DASCALE_EXC          Allowed DAScale exceeded given limit                                 (none)        Numerical    FRE           No      Yes         No          No                No
+/// MSQ_FMT_LBN_DASCALE_OOR          Future DAScale value is out of range                                 On/Off        Numerical    FRE, DS, SC   No      Yes         No          No
 /// MSQ_FMT_LBN_PULSE_DUR            Square pulse duration                                                ms            Numerical    FRE           No      Yes         No          No                No
 /// MSQ_FMT_LBN_SPIKE_POSITIONS      Spike positions with ``P{1}_R{2}``, pulse index (``{1}``) and        (none)        Textual      SC            No      Yes         Yes         Yes               Yes
 ///                                  region (``{2}``), as key and the spike positions as value in pulse
@@ -443,7 +444,7 @@ End
 ///        Searches in the complete SCI and assumes that the entries are either 0/1/NaN.
 ///
 /// @todo merge with LBN functions once these are reworked.
-static Function MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, type, str, headstage)
+Function MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, type, str, headstage)
 	WAVE numericalValues
 	variable sweepNo, type
 	string   str
@@ -600,7 +601,7 @@ Function MSQ_FastRheoEst(device, s)
 	string                      device
 	STRUCT AnalysisFunction_V3 &s
 
-	variable totalOnsetDelay, setPassed, sweepPassed, multiplier, newDAScaleValue, found, val
+	variable totalOnsetDelay, setPassed, sweepPassed, multiplier, newDAScaleValue, found, val, limitCheck
 	variable i, postDAQDAScale, postDAQDAScaleFactor, DAC, maxDAScale, allHeadstagesExceeded, minRheoOffset
 	string key, msg, ctrl
 	string stimsets = ""
@@ -663,7 +664,7 @@ Function MSQ_FastRheoEst(device, s)
 					continue
 				endif
 
-				SetDAScale(device, i, absolute = MSQ_FRE_INIT_AMP_p100)
+				SetDAScale(device, s.sweepNo, i, absolute = MSQ_FRE_INIT_AMP_p100, limitCheck = 0)
 			endfor
 
 			PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 0)
@@ -716,6 +717,7 @@ Function MSQ_FastRheoEst(device, s)
 			WAVE headstagePassed  = LBN_GetNumericWave()
 			WAVE finalDAScale     = LBN_GetNumericWave()
 			WAVE rangeExceededNew = LBN_GetNumericWave()
+			WAVE oorDAScale       = LBN_GetNumericWave()
 
 			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_STEPSIZE, query = 1)
 			WAVE stepSize = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
@@ -789,9 +791,12 @@ Function MSQ_FastRheoEst(device, s)
 					ASSERT(headstagePassed[i] != 1, "Unexpected headstage passing")
 					headstagePassed[i] = 0
 				else
-					SetDAScale(device, i, absolute = newDAScaleValue)
+					limitCheck    = !MSQ_LastSweepInSet(device, s.sweepNo, s.headstage)
+					oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue, limitCheck = limitCheck)
 				endif
 			endfor
+
+			ReportOutOfRangeDAScale(device, s.sweepNo, MSQ_FAST_RHEO_EST, oorDAScale)
 
 			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(device, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -824,8 +829,8 @@ Function MSQ_FastRheoEst(device, s)
 				totalRangeExceeded[i] = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, \
 				                                                    MSQ_FMT_LBN_DASCALE_EXC, i)
 
-				sweepPassed = sweepPassed && MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, \
-				                                                         MSQ_FMT_LBN_HEADSTAGE_PASS, i)
+				sweepPassed = sweepPassed && !oorDAScale[i] && MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, \
+				                                                                           MSQ_FMT_LBN_HEADSTAGE_PASS, i)
 			endfor
 
 			allHeadstagesExceeded = Sum(totalRangeExceeded) == Sum(statusHSIC)
@@ -855,16 +860,6 @@ Function MSQ_FastRheoEst(device, s)
 			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
 
 			WAVE numericalValues = GetLBNumericalValues(device)
-			// assuming that all headstages have the same sweeps in their SCI
-			setPassed = MSQ_NumPassesInSet(numericalValues, MSQ_FAST_RHEO_EST, s.sweepNo, s.headstage) >= 1
-
-			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
-			DEBUGPRINT(msg)
-
-			WAVE result = LBN_GetNumericWave()
-			result[INDEP_HEADSTAGE] = setPassed
-			key                     = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_SET_PASS)
-			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			postDAQDAScale = AFH_GetAnalysisParamNumerical("PostDAQDAScale", s.params)
 
@@ -891,9 +886,21 @@ Function MSQ_FastRheoEst(device, s)
 						val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * PICO_TO_ONE
 					endif
 
-					SetDAScale(device, i, absolute = val)
+					// we can't check this here, as we don't know the next stimset
+					SetDAScale(device, s.sweepNo, i, absolute = newDAScaleValue, limitCheck = 0)
 				endfor
 			endif
+
+			// assuming that all headstages have the same sweeps in their SCI
+			setPassed = (MSQ_NumPassesInSet(numericalValues, MSQ_FAST_RHEO_EST, s.sweepNo, s.headstage) >= 1)
+
+			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
+			DEBUGPRINT(msg)
+
+			WAVE result = LBN_GetNumericWave()
+			result[INDEP_HEADSTAGE] = setPassed
+			key                     = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
@@ -1005,6 +1012,20 @@ static Function MSQ_GetLastPassingLongRHSweep(device, headstage)
 	return -1
 End
 
+/// @brief Return 1 if we are currently acquiring the last sweep in the stimulus set, 0 otherwise
+Function MSQ_LastSweepInSet(string device, variable sweepNo, variable headstage)
+
+	variable DAC, sweepsInSet
+
+	DAC         = AFH_GetHeadstageFromDAC(device, headstage)
+	sweepsInSet = IDX_NumberOfSweepsInSet(AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC))
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE sweepSetCount   = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
+
+	return (sweepSetCount[headstage] + 1) == sweepsInSet
+End
+
 /// @brief Manually force the pre/post set events
 ///
 /// Required to do before skipping sweeps.
@@ -1096,7 +1117,7 @@ Function MSQ_DAScale(device, s)
 	string                      device
 	STRUCT AnalysisFunction_V3 &s
 
-	variable i, index, ret, headstagePassed, val, sweepNo
+	variable i, index, ret, headstagePassed, val, sweepNo, limitCheck
 	string msg, key, ctrl
 
 	switch(s.eventType)
@@ -1204,8 +1225,12 @@ Function MSQ_DAScale(device, s)
 				return NaN
 			endif
 
+			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+			Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo,                  \
+			                                                                      MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_OOR, p)
+
 			WAVE values = LBN_GetNumericWave()
-			values[INDEP_HEADSTAGE] = 1
+			values[INDEP_HEADSTAGE] = Sum(DAScaleOOR) == 0
 			key                     = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
 
@@ -1248,6 +1273,8 @@ Function MSQ_DAScale(device, s)
 
 		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
+		WAVE oorDAScale = LBN_GetNumericWave()
+
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(!statusHS[i])
 				continue
@@ -1255,9 +1282,13 @@ Function MSQ_DAScale(device, s)
 
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
+			limitCheck = (s.eventType == POST_SWEEP_EVENT)
+
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			SetDAScale(device, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE)
+			oorDAScale[i]     = SetDAScale(device, s.sweepNo, i, absolute = (DAScales[index] + daScaleOffset[i]) * PICO_TO_ONE, limitCheck = limitCheck)
 			DAScalesIndex[i] += 1
 		endfor
+
+		ReportOutOfRangeDAScale(device, s.sweepNo, MSQ_DA_SCALE, oorDAScale)
 	endif
 End

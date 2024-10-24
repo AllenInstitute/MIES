@@ -151,10 +151,11 @@ End
 
 /// @brief Return pass/fail state of the sweep
 ///
-/// This is true iff we have for the current stimulus set sweep count a passing headstage
+/// This is true iff we have for the current stimulus set sweep count a passing
+/// headstage and did not have a SetDAScale/SetDAScaleModOp out-of-range condition.
 static Function SC_GetSweepPassed(string device, variable sweepNo)
 
-	variable setSweepCount
+	variable setSweepCount, setSweepQC
 
 	WAVE headstageQCTotalPerSweepCount = SC_GetHeadstageQCForSetCount(device, sweepNo)
 
@@ -162,22 +163,12 @@ static Function SC_GetSweepPassed(string device, variable sweepNo)
 	setSweepCount = SC_GetSetSweepCount(numericalValues, sweepNo)
 
 	FindValue/RMD=[][setSweepCount]/V=(0.0) headstageQCTotalPerSweepCount
+	setSweepQC = (V_Value == -1)
 
-	return V_Value == -1
-End
+	Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo,                   \
+	                                                                      SC_SPIKE_CONTROL, MSQ_FMT_LBN_DASCALE_OOR, p)
 
-/// @brief Return 1 if we are currently acquiring the last sweep in the stimulus set, 0 otherwise
-static Function SC_LastSweepInSet(string device, variable sweepNo, variable headstage)
-
-	variable DAC, sweepsInSet
-
-	DAC         = AFH_GetHeadstageFromDAC(device, headstage)
-	sweepsInSet = IDX_NumberOfSweepsInSet(AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC))
-
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE sweepSetCount   = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
-
-	return (sweepSetCount[headstage] + 1) == sweepsInSet
+	return setSweepQC && Sum(DAScaleOOR) == 0
 End
 
 /// @brief Given a list of pulses by their indizes, this function return only the diagonal
@@ -708,6 +699,8 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 	WAVE textualValues   = GetLBTextualValues(device)
 	WAVE statusHS        = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
+	WAVE oorDAScale = LBN_GetNumericWave()
+
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, query = 1)
 	WAVE/T spikeCountStateLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
 
@@ -731,7 +724,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 			if(!spikePositionsQCLBN[i])
 				sprintf msg, "spike position QC failed on HS%d, adapting DAScale", i
 				DebugPrint(msg)
-				SetDAScaleModOp(device, i, daScaleSpikePositionModifier, daScaleSpikePositionOperator)
+				oorDAScale[i] = SetDAScaleModOp(device, sweepNo, i, daScaleSpikePositionModifier, daScaleSpikePositionOperator)
 			endif
 
 			continue
@@ -755,7 +748,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 
 		strswitch(spikeCountStateLBN[i])
 			case SC_SPIKE_COUNT_STATE_STR_TOO_MANY:
-				SetDAScaleModOp(device, i, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator)
+				oorDAScale[i] = SetDAScaleModOp(device, sweepNo, i, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_MIXED:
 				printf "The spike count on headstage %d in sweep %d is mixed (some pulses have too few, others too many)\n", i, sweepNo
@@ -769,7 +762,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 					ControlWindowToFront()
 				endif
 			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW: // fallthrough-by-design
-				SetDAScaleModOp(device, i, daScaleModifier, daScaleOperator)
+				oorDAScale[i] = SetDAScaleModOp(device, sweepNo, i, daScaleModifier, daScaleOperator)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_GOOD:
 				// nothing to do
@@ -783,6 +776,8 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 	if(prevSliderPos != GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage"))
 		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = prevSliderPos)
 	endif
+
+	ReportOutOfRangeDAScale(device, sweepNo, SC_SPIKE_CONTROL, oorDAScale)
 End
 
 Function/S SC_SpikeControl_GetParams()
@@ -1101,17 +1096,10 @@ Function SC_SpikeControl(device, s)
 
 			SC_ProcessPulses(device, s.sweepNo, minimumSpikePosition, idealNumberOfSpikes)
 
-			// sweep QC
-			sweepPassed = SC_GetSweepPassed(device, s.sweepNo)
-
-			WAVE sweepQCLBN = LBN_GetNumericWave()
-			sweepQCLBN[INDEP_HEADSTAGE] = sweepPassed
-			key                         = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SWEEP_PASS)
-			ED_AddEntryToLabnotebook(device, key, sweepQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
-
 			[minTrials, maxTrials] = SC_GetTrials(device, s.sweepNo, s.headstage)
 
-			SC_ReactToQCFailures(device, s.sweepNo, s.params)
+			// sweep QC
+			sweepPassed = SC_GetSweepPassed(device, s.sweepNo)
 
 			if(!sweepPassed)
 				if(SC_CanStillSkip(maxTrials, s.params))
@@ -1121,6 +1109,17 @@ Function SC_SpikeControl(device, s)
 					rerunExceededResult = 1
 				endif
 			endif
+
+			// needs to take sweep skipping into account
+			SC_ReactToQCFailures(device, s.sweepNo, s.params)
+
+			// and maybe we had a DASCale out of range so sweepPassed has changed
+			sweepPassed = SC_GetSweepPassed(device, s.sweepNo)
+
+			WAVE sweepQCLBN = LBN_GetNumericWave()
+			sweepQCLBN[INDEP_HEADSTAGE] = sweepPassed
+			key                         = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(device, key, sweepQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
@@ -1136,12 +1135,17 @@ Function SC_SpikeControl(device, s)
 				if(SC_SkipsExhausted(minTrials, s.params))
 					// if the minimum trials value has already reached the maximum
 					// allowed trials, we are done and the set has not passed
-				elseif(SC_LastSweepInSet(device, s.sweepNo, s.headstage) && !skippedBack)
+				elseif(MSQ_LastSweepInSet(device, s.sweepNo, s.headstage) && !skippedBack)
 					// work around broken XXX_SET_EVENT
 					// we are done and were not successful
 				else
-					// still some trials left
-					setPassed = NaN
+					Make/N=(NUM_HEADSTAGES)/FREE DAScaleOOR = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo,                 \
+					                                                                      SC_SPIKE_CONTROL, MSQ_FMT_LBN_DASCALE_OOR, p)
+
+					if(Sum(DAScaleOOR) == 0)
+						// still some trials left
+						setPassed = NaN
+					endif
 				endif
 			endif
 

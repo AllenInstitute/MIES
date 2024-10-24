@@ -912,8 +912,8 @@ Function FitResistance(string device, variable headstage, [variable showPlot, va
 	endif
 End
 
-/// @brief Helper for setting the DAScale
-Function SetDAScaleModOp(string device, variable headstage, variable modifier, string operator, [variable invert, variable roundTopA])
+/// @brief Helper for setting the DAScale, see also SetDAScale()
+Function SetDAScaleModOp(string device, variable sweepNo, variable headstage, variable modifier, string operator, [variable invert, variable roundTopA, variable limitCheck])
 
 	if(ParamIsDefault(invert))
 		invert = 0
@@ -927,13 +927,17 @@ Function SetDAScaleModOp(string device, variable headstage, variable modifier, s
 		roundTopA = !!roundTopA
 	endif
 
+	if(ParamIsDefault(limitCheck))
+		limitCheck = 1
+	else
+		limitCheck = !!limitCheck
+	endif
+
 	strswitch(operator)
 		case "+":
-			SetDAScale(device, headstage, offset = invert ? -modifier : modifier, roundTopA = roundTopA)
-			break
+			return SetDAScale(device, sweepNo, headstage, offset = invert ? -modifier : modifier, roundTopA = roundTopA, limitCheck = limitCheck)
 		case "*":
-			SetDAScale(device, headstage, relative = invert ? 1 / modifier : modifier, roundTopA = roundTopA)
-			break
+			return SetDAScale(device, sweepNo, headstage, relative = invert ? 1 / modifier : modifier, roundTopA = roundTopA, limitCheck = limitCheck)
 		default:
 			ASSERT(0, "Invalid operator")
 			break
@@ -942,18 +946,24 @@ End
 
 /// @brief Set the DAScale value of the given headstage
 ///
-/// @param device device
+/// The limit check assumes that the next sweep is the next sweep of the current stimset (aka has a set count + 1).
+///
+/// @param device     device
 /// @param headstage  MIES headstage
+/// @param sweepNo    Sweep number
 /// @param absolute   (optional) DAScale value in `A` (Amperes)
 /// @param relative   (optional) relative DAScale modifier
 /// @param offset     (optional) offset DAScale value
 /// @param roundTopA  (optional, defaults to false) round the set DAScale to integer pA values
-Function SetDAScale(device, headstage, [absolute, relative, offset, roundTopA])
+/// @param limitCheck (optional, defaults to true) check if the new DAScale value would be out of range
+///
+/// @return 0 on sucessful limits check, 1 on out-of-range and NaN if the limits check was skipped
+Function SetDAScale(device, sweepNo, headstage, [absolute, relative, offset, roundTopA, limitCheck])
 	string device
-	variable headstage, absolute, relative, offset, roundTopA
+	variable headstage, sweepNo, absolute, relative, offset, roundTopA, limitCheck
 
-	variable amps, DAC
-	string DAUnit, ctrl, lbl
+	variable amps, DAC, nextStimsetColumn, DAScaleLimit, skipCountExisting
+	string DAUnit, ctrl, lbl, stimSetName
 
 	ASSERT(ParamIsDefault(absolute) + ParamIsDefault(relative) + ParamIsDefault(offset) == 2, "One of absolute, relative or offset has to be present")
 
@@ -961,6 +971,12 @@ Function SetDAScale(device, headstage, [absolute, relative, offset, roundTopA])
 		roundTopA = 0
 	else
 		roundTopA = !!roundTopA
+	endif
+
+	if(ParamIsDefault(limitCheck))
+		limitCheck = 1
+	else
+		limitCheck = !!limitCheck
 	endif
 
 	DAC = AFH_GetDACFromHeadstage(device, headstage)
@@ -985,7 +1001,30 @@ Function SetDAScale(device, headstage, [absolute, relative, offset, roundTopA])
 
 	amps = roundTopA ? round(amps) : amps
 	ASSERT(IsFinite(amps), "Invalid non-finite value")
+
+	if(limitCheck)
+		stimSetName = AFH_GetStimSetNameForHeadstage(device, headstage)
+		WAVE   numericalValues = GetLBNumericalValues(device)
+		WAVE/Z sweeps          = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+
+		skipCountExisting = GetLastSettingIndep(numericalValues, sweepNo, SKIP_SWEEPS_KEY, UNKNOWN_MODE, defValue = 0)
+
+		nextStimsetColumn  = WaveExists(sweeps) ? DimSize(sweeps, ROWS) : 0
+		nextStimsetColumn += skipCountExisting
+
+		DAScaleLimit = DAP_GetDataLimits(device, headstage, stimsetName, nextStimsetColumn)
+		ASSERT(IsFinite(DAScaleLimit), "Unsupported return value from DAP_GetDataLimits")
+
+		if(amps > DAScaleLimit)
+			return 1
+		endif
+	endif
+
 	PGC_SetAndActivateControl(device, ctrl, val = amps)
+
+	if(limitCheck)
+		return 0
+	endif
 End
 
 /// @brief Return a list of required parameters
@@ -1034,6 +1073,36 @@ Function/S ReachTargetVoltage_CheckParam(string name, STRUCT CheckParametersStru
 	endswitch
 End
 
+/// #ReachTargetVoltage:
+///
+/// Rows:
+/// - Headstage
+///
+/// Cols:
+/// - 0: Resistance [MΩ]
+static Function/WAVE CreateOverrideResults()
+
+	variable numRows, numCols
+
+	numRows = LABNOTEBOOK_LAYER_COUNT
+	numCols = 1
+
+	WAVE/D/Z wv = GetOverrideResults()
+
+	if(WaveExists(wv))
+		ASSERT(IsNumericWave(wv), "overrideResults wave must be numeric here")
+		Redimension/D/N=(numRows, numCols) wv
+	else
+		Make/D/N=(numRows, numCols) root:overrideResults/WAVE=wv
+	endif
+
+	wv[] = 0
+
+	SetDimensionLabels(wv, "Resistance", COLS)
+
+	return wv
+End
+
 /// @brief Analysis function to experimentally determine the cell resistance by sweeping
 /// through a wave of target voltages.
 ///
@@ -1046,7 +1115,7 @@ End
 /// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on
 /// the next sweep if the measured resistance is smaller than 20MΩ
 Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
-	variable sweepNo, index, i, targetV, prevActiveHS, prevSendToAllAmp
+	variable index, i, targetV, prevActiveHS, prevSendToAllAmp
 	variable amps, result
 	variable autoBiasCheck, holdingPotential, indexing
 	string msg, name, control
@@ -1075,7 +1144,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 					return 1
 				endif
 
-				SetDAScale(device, i, absolute = -20e-12)
+				SetDAScale(device, s.sweepNo, i, absolute = -20e-12, limitCheck = 0)
 
 				autoBiasCheck    = ampParam[%AutoBiasEnable][0][i]
 				holdingPotential = ampParam[%AutoBiasVcom][0][i]
@@ -1165,14 +1234,13 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 			WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(device)
 			ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
 
-			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
-
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
 
 			WAVE deltaV     = LBN_GetNumericWave()
 			WAVE deltaI     = LBN_GetNumericWave()
 			WAVE resistance = LBN_GetNumericWave()
+			WAVE oorDAScale = LBN_GetNumericWave()
 
 			CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
@@ -1181,8 +1249,16 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 
 			FitResistance(device, s.headstage, showPlot = 1)
 
-			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, UNKNOWN_MODE)
+			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, s.sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, UNKNOWN_MODE)
 			ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
+
+#ifdef AUTOMATED_TESTING
+			WAVE/Z overrideResults = GetOverrideResults()
+
+			if(WaveExists(overrideResults))
+				resistanceFitted[] = overrideResults[p][%Resistance] * MEGA_TO_ONE
+			endif
+#endif
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1192,7 +1268,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 
 				index = targetVoltagesIndex[i]
 
-				if(index == DimSize(targetVoltages, ROWS))
+				if(index == (DimSize(targetVoltages, ROWS) - 1))
 					// reached last sweep of stimset, do nothing
 					continue
 				endif
@@ -1204,8 +1280,10 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 					continue
 				endif
 
+				WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, s.sweepNo, i)
+
 				// check initial response
-				if(index == 0 && resistanceFitted[i] <= 20e6)
+				if(DimSize(sweeps, ROWS) == 1 && resistanceFitted[i] <= 20e6)
 					amps                   = -100e-12
 					targetVoltagesIndex[i] = -1
 				else
@@ -1217,8 +1295,10 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 				sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", device, i, resistanceFitted[i], targetV, amps
 				DEBUGPRINT(msg)
 
-				SetDAScale(device, i, absolute = amps)
+				oorDAScale[i] = SetDAScale(device, s.sweepNo, i, absolute = amps)
 			endfor
+
+			ReportOutOfRangeDAScale(device, s.sweepNo, INVALID_ANALYSIS_FUNCTION, oorDAScale)
 			break
 		case POST_SET_EVENT:
 			if(!DAG_HeadstageIsHighestActive(device, s.headstage))
@@ -1256,6 +1336,90 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 			// do nothing
 			break
 	endswitch
+End
+
+/// @brief Report a future out of range DAScale value to the user and the labnotebook
+///
+/// Usage for a single headstage:
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///     WAVE oorDAScale = LBN_GetNumericWave()
+///     oorDAScale[s.headstage] = SetDAScale(...)
+///
+///    if(oorDAScale[s.headstage])
+///			ReportOutOfRangeDAScale(...)
+///	   endif
+/// \endrst
+Function ReportOutOfRangeDAScale(string device, variable sweepNo, variable anaFuncType, WAVE oorDAScale)
+
+	variable i
+	string   key
+
+	ASSERT(GetHardwareType(device) != HARDWARE_SUTTER_DAC, "Missing support for Sutter amplifier")
+
+	switch(anaFuncType)
+		case PSQ_CHIRP:
+		case PSQ_RAMP:
+		case PSQ_DA_SCALE:
+		case PSQ_SQUARE_PULSE:
+		case PSQ_RHEOBASE:
+			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_DASCALE_OOR)
+			ED_AddEntryToLabnotebook(device, key, oorDAScale, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
+			break
+		case MSQ_FAST_RHEO_EST:
+		case MSQ_DA_SCALE:
+		case SC_SPIKE_CONTROL:
+			key = CreateAnaFuncLBNKey(anaFuncType, MSQ_FMT_LBN_DASCALE_OOR)
+			ED_AddEntryToLabnotebook(device, key, oorDAScale, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
+			break
+		case INVALID_ANALYSIS_FUNCTION: // ReachTargetVoltage
+			ED_AddEntryToLabnotebook(device, LBN_DASCALE_OUT_OF_RANGE, oorDAScale, unit = LABNOTEBOOK_BINARY_UNIT)
+			break
+		default:
+			ASSERT(0, "Unknown analysis function")
+	endswitch
+
+	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+
+	Make/FREE/N=(NUM_HEADSTAGES) failedHS = statusHS[p] && oorDAScale[p] == 1
+
+	if(Sum(failedHS) == 0)
+		return NaN
+	endif
+
+	printf "(%s) The DAScale value could not be set as it is out-of-range.\r", GetRTStackInfo(2)
+	printf "Please adjust the \"External Command Sensitivity\" in the MultiClamp Commander application and try again.\r"
+	ControlWindowToFront()
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!failedHS[i])
+			continue
+		endif
+
+		ForceSetEvent(device, i)
+	endfor
+
+	RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO)
+End
+
+/// @brief Manually force the pre/post set events
+///
+/// Required to do before skipping sweeps.
+/// @todo this hack must go away.
+static Function ForceSetEvent(device, headstage)
+	string   device
+	variable headstage
+
+	variable DAC
+
+	WAVE setEventFlag = GetSetEventFlag(device)
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+
+	setEventFlag[DAC][%PRE_SET_EVENT]  = 1
+	setEventFlag[DAC][%POST_SET_EVENT] = 1
 End
 
 Function/S SetControlInEvent_CheckParam(string name, STRUCT CheckParametersStruct &s)
