@@ -10,6 +10,8 @@ static Function CheckThatTheyAllAssertOut()
 	funcList = FunctionList("*", ";", "WIN:MIES_AnalysisFunctionPrototypes.ipf")
 	CHECK_PROPER_STR(funcList)
 
+	funcList = GrepList(funcList, "^IUTF_TagFunc.*", 1)
+
 	WAVE/T funcs = ListToTextWave(funcList, ";")
 
 	for(func : funcs)
