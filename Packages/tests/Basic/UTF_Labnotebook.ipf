@@ -216,6 +216,10 @@ Function GetLastSettingFindsNaNSweep()
 
 	Make/D/FREE settingsRef = {10.0010900497437, 10.001935005188, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
 	CHECK_EQUAL_WAVES(settings, settingsRef, mode = WAVE_DATA, tol = 1e-13)
+
+	// and also with unknown mode
+	WAVE/Z settings = GetLastSetting(numericalValues, NaN, "TP Steady State Resistance", UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(settings, settingsRef, mode = WAVE_DATA, tol = 1e-13)
 End
 
 static Function GetLastSettingFindsWithinNonConsecutiveSweepOrder()
