@@ -166,20 +166,6 @@ static Function SC_GetSweepPassed(string device, variable sweepNo)
 	return V_Value == -1
 End
 
-/// @brief Return 1 if we are currently acquiring the last sweep in the stimulus set, 0 otherwise
-static Function SC_LastSweepInSet(string device, variable sweepNo, variable headstage)
-
-	variable DAC, sweepsInSet
-
-	DAC         = AFH_GetHeadstageFromDAC(device, headstage)
-	sweepsInSet = IDX_NumberOfSweepsInSet(AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC))
-
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE sweepSetCount   = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
-
-	return (sweepSetCount[headstage] + 1) == sweepsInSet
-End
-
 /// @brief Given a list of pulses by their indizes, this function return only the diagonal
 /// ones which are matching the given sweep
 static Function/WAVE SC_FilterPulses(WAVE/WAVE propertiesWaves, WAVE/Z indizesAll, WAVE/Z indizesSweep)
@@ -1136,7 +1122,7 @@ Function SC_SpikeControl(device, s)
 				if(SC_SkipsExhausted(minTrials, s.params))
 					// if the minimum trials value has already reached the maximum
 					// allowed trials, we are done and the set has not passed
-				elseif(SC_LastSweepInSet(device, s.sweepNo, s.headstage) && !skippedBack)
+				elseif(AFH_LastSweepInSet(device, s.sweepNo, s.headstage) && !skippedBack)
 					// work around broken XXX_SET_EVENT
 					// we are done and were not successful
 				else
