@@ -1264,16 +1264,40 @@ Function [WAVE passingSweeps, WAVE failingSweeps] AFH_GetRheobaseSweepsSCISweepQ
 	return [passingSweeps, failingSweeps]
 End
 
-/// @brief Return 1 if we are currently acquiring the last sweep in the stimulus set, 0 otherwise
-Function AFH_LastSweepInSet(string device, variable sweepNo, variable headstage)
+/// @brief Return 1 if we are currently acquiring the last sweep in the stimulus set,
+///        0 if not and NaN if it is not possible to determine
+Function AFH_LastSweepInSet(string device, variable sweepNo, variable headstage, variable eventType)
 
-	variable DAC, sweepsInSet
+	variable DAC, sweepsInSet, setCount, skipCountExisting, sweepOffset
+
+	switch(eventType)
+		case PRE_DAQ_EVENT:
+		case PRE_SWEEP_CONFIG_EVENT:
+			// no valid setup yet
+			return NaN
+		case PRE_SET_EVENT:
+		case MID_SWEEP_EVENT:
+			// we need to look at the last acquired sweep
+			sweepNo    -= 1
+			sweepOffset = 2
+			break
+		default:
+			sweepOffset = 1
+	endswitch
 
 	DAC         = AFH_GetDACFromHeadstage(device, headstage)
 	sweepsInSet = IDX_NumberOfSweepsInSet(AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC))
 
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE sweepSetCount   = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/Z sweepSetCount   = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
 
-	return (sweepSetCount[headstage] + 1) == sweepsInSet
+	if(!WaveExists(sweepSetCount))
+		setCount = 0
+	else
+		setCount = sweepSetCount[headstage]
+	endif
+
+	skipCountExisting = GetLastSettingIndep(numericalValues, sweepNo, SKIP_SWEEPS_KEY, UNKNOWN_MODE, defValue = 0)
+
+	return (setCount + sweepOffset + skipCountExisting) >= sweepsInSet
 End

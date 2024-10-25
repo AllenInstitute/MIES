@@ -1122,7 +1122,7 @@ Function SC_SpikeControl(device, s)
 				if(SC_SkipsExhausted(minTrials, s.params))
 					// if the minimum trials value has already reached the maximum
 					// allowed trials, we are done and the set has not passed
-				elseif(AFH_LastSweepInSet(device, s.sweepNo, s.headstage) && !skippedBack)
+				elseif(AFH_LastSweepInSet(device, s.sweepNo, s.headstage, s.eventType) && !skippedBack)
 					// work around broken XXX_SET_EVENT
 					// we are done and were not successful
 				else

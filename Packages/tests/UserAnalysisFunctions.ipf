@@ -1195,3 +1195,14 @@ static Function ILCUCheck_IGNORE(string device, STRUCT AnalysisFunction_V3 &s)
 		CHECK_EQUAL_VAR(s.sweepNo, 1)
 	endif
 End
+
+Function LastSweepInSetWithoutSkip(string device, STRUCT AnalysisFunction_V3 &s)
+
+	string key
+
+	sprintf key, "LastSweepInSet_Event_%s_HS_%d", StringFromList(s.eventType, EVENT_NAME_LIST), s.headstage
+
+	WAVE values = LBN_GetNumericWave()
+	values[INDEP_HEADSTAGE] = AFH_LastSweepInSet(device, s.sweepNo, s.headstage, s.eventType)
+	ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = s.sweepNo)
+End
