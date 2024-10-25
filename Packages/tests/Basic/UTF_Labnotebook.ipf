@@ -12,17 +12,25 @@ End
 
 static Function/WAVE PrepareLBNNumericalValues(WAVE numericalValuesSrc)
 
-	variable numCols
+	variable numCols, nextFreeRow, numRows
 
 	WAVE/T numericalKeysTemplate = GetLBNumericalKeys("dummyDevice")
 	numCols = DimSize(numericalValuesSrc, COLS)
 	Redimension/N=(-1, numCols, -1, -1) numericalKeysTemplate
 	numericalKeysTemplate[0][] = GetDimLabel(numericalValuesSrc, COLS, q)
 
-	Duplicate/O numericalValuesSrc, $LBN_NUMERICAL_VALUES_NAME
+	Duplicate/O numericalValuesSrc, $LBN_NUMERICAL_VALUES_NAME/WAVE=numericalValues
 	Duplicate/O numericalKeysTemplate, $LBN_NUMERICAL_KEYS_NAME
 
-	return $LBN_NUMERICAL_VALUES_NAME
+	// fixup NOTE_INDEX which is wrong due to optimizing the wave sizes for the tests
+	nextFreeRow = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	numRows     = DimSize(numericalValues, ROWS)
+
+	if(nextFreeRow > numRows)
+		SetNumberInWaveNote(numericalValues, NOTE_INDEX, numRows)
+	endif
+
+	return numericalValues
 End
 
 static Function/WAVE PrepareLBNTextualValues(WAVE textualValuesSrc)
