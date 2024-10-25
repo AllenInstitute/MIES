@@ -1269,7 +1269,7 @@ Function AFH_LastSweepInSet(string device, variable sweepNo, variable headstage)
 
 	variable DAC, sweepsInSet
 
-	DAC         = AFH_GetHeadstageFromDAC(device, headstage)
+	DAC         = AFH_GetDACFromHeadstage(device, headstage)
 	sweepsInSet = IDX_NumberOfSweepsInSet(AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC))
 
 	WAVE numericalValues = GetLBNumericalValues(device)
