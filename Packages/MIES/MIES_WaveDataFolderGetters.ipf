@@ -1396,7 +1396,7 @@ End
 static Function UpgradeLabNotebook(device)
 	string device
 
-	variable numCols, i, col, numEntries, sourceCol
+	variable numCols, i, col, numEntries, sourceCol, timeStampColumn, nextFreeRow
 	string list, key
 
 	// we only have to check the new place and name as we are called
@@ -1633,8 +1633,40 @@ static Function UpgradeLabNotebook(device)
 	endif
 	// END fix missing column dimension labels in keyWaves
 
-	// we don't remove the wavenote entry as we might need to adapt the reading code
-	// in the future to handle labnotebooks with sweep rollback specially.
+	// we don't remove the wavenote entry of sweep rollback as we might need to adapt the reading code
+	// in the future to handle labnotebooks with that specially
+
+	// BEGIN add note index
+	// Timestamp was always present in column 1, see879683fd1 (-InitiateMies: Updated comments
+	// -WaveDataFolderGetter: Updated comments, changed order to rows, columns, layers, 2014-09-12), but spelled
+	// differently prior to ec6c1ac6b (Labnotebook: Add UTC timestamps, 2015-09-18)
+	timeStampColumn = 1
+
+	if(WaveVersionIsSmaller(numericalKeys, 77))
+		nextFreeRow = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+
+		if(IsNaN(nextFreeRow))
+			FindValue/FNAN/RMD=[][timeStampColumn][0]/R numericalValues
+			if(!(V_row >= 0))
+				// labnotebook is completely full
+				V_row = DimSize(numericalValues, ROWS)
+			endif
+			SetNumberInWaveNote(numericalValues, NOTE_INDEX, V_row)
+		endif
+	endif
+
+	if(WaveVersionIsSmaller(textualKeys, 77))
+		nextFreeRow = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+
+		if(IsNaN(nextFreeRow))
+			FindValue/FNAN/RMD=[][timeStampColumn][0]/R textualValues
+			if(!(V_row >= 0))
+				V_row = DimSize(textualValues, ROWS)
+			endif
+			SetNumberInWaveNote(textualValues, NOTE_INDEX, V_row)
+		endif
+	endif
+	// END add note index
 End
 
 static Function/S FixInvalidLabnotebookKey(string name)

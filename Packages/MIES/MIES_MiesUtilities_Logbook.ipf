@@ -1368,18 +1368,30 @@ threadsafe static Function FindRange(wv, col, val, entrySourceType, first, last)
 	variable col, val, entrySourceType
 	variable &first, &last
 
-	variable numRows, i, j, sourceTypeCol, firstRow, lastRow, isNumeric, index
+	variable numRows, i, j, sourceTypeCol, firstRow, lastRow, isNumeric, index, startRow, endRow
 
 	first     = NaN
 	last      = NaN
 	isNumeric = IsNumericWave(wv)
 
+	startRow = 0
+	endRow   = GetNumberFromWaveNote(wv, NOTE_INDEX) - 1
+
+	if(IsNaN(endRow))
+		endRow = DimSize(wv, ROWS) - 1
+	endif
+
+	if(endRow < 0)
+		// empty labnotebook
+		return NaN
+	endif
+
 	// still correct without startLayer/endLayer coordinates
 	// as we always have sweepNumber/etc. in the first layer
 	if(IsNaN(val) && isNumeric)
-		WAVE/Z indizesSetting = FindIndizes(wv, col = col, prop = PROP_EMPTY)
+		WAVE/Z indizesSetting = FindIndizes(wv, col = col, prop = PROP_EMPTY, startRow = startRow, endRow = endRow)
 	else
-		WAVE/Z indizesSetting = FindIndizes(wv, col = col, var = val)
+		WAVE/Z indizesSetting = FindIndizes(wv, col = col, var = val, startRow = startRow, endRow = endRow)
 	endif
 
 	if(!WaveExists(indizesSetting))

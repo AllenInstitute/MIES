@@ -12,17 +12,25 @@ End
 
 static Function/WAVE PrepareLBNNumericalValues(WAVE numericalValuesSrc)
 
-	variable numCols
+	variable numCols, nextFreeRow, numRows
 
 	WAVE/T numericalKeysTemplate = GetLBNumericalKeys("dummyDevice")
 	numCols = DimSize(numericalValuesSrc, COLS)
 	Redimension/N=(-1, numCols, -1, -1) numericalKeysTemplate
 	numericalKeysTemplate[0][] = GetDimLabel(numericalValuesSrc, COLS, q)
 
-	Duplicate/O numericalValuesSrc, $LBN_NUMERICAL_VALUES_NAME
+	Duplicate/O numericalValuesSrc, $LBN_NUMERICAL_VALUES_NAME/WAVE=numericalValues
 	Duplicate/O numericalKeysTemplate, $LBN_NUMERICAL_KEYS_NAME
 
-	return $LBN_NUMERICAL_VALUES_NAME
+	// fixup NOTE_INDEX which is wrong due to optimizing the wave sizes for the tests
+	nextFreeRow = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	numRows     = DimSize(numericalValues, ROWS)
+
+	if(nextFreeRow > numRows)
+		SetNumberInWaveNote(numericalValues, NOTE_INDEX, numRows)
+	endif
+
+	return numericalValues
 End
 
 static Function/WAVE PrepareLBNTextualValues(WAVE textualValuesSrc)
@@ -207,6 +215,10 @@ Function GetLastSettingFindsNaNSweep()
 	WAVE/Z settings        = GetLastSetting(numericalValues, NaN, "TP Steady State Resistance", TEST_PULSE_MODE)
 
 	Make/D/FREE settingsRef = {10.0010900497437, 10.001935005188, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
+	CHECK_EQUAL_WAVES(settings, settingsRef, mode = WAVE_DATA, tol = 1e-13)
+
+	// and also with unknown mode
+	WAVE/Z settings = GetLastSetting(numericalValues, NaN, "TP Steady State Resistance", UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(settings, settingsRef, mode = WAVE_DATA, tol = 1e-13)
 End
 
@@ -1338,4 +1350,94 @@ Function GetUniqueSettingsWorks()
 	WAVE/Z resultsTxt = GetUniqueSettings(textualValues, keyTxt)
 	CHECK_WAVE(resultsTxt, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(resultsTxt, {"131415", "192021", "161718", "222324", "252627"})
+End
+
+Function LabnotebookUpgradeMissingNoteIndexNumerical()
+
+	variable idx, idxRedone
+	string device, key, keyTxt
+
+	device = "ITC16USB_0_DEV"
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	WAVE/Z   numericalValues = GetLBNumericalValues(device)
+	WAVE/T/Z numericalKeys   = GetLBNumericalKeys(device)
+
+	idx = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_GT_VAR(idx, 0)
+
+	Note/K numericalKeys
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, idx)
+
+	Note/K numericalKeys
+	Note/K numericalValues
+
+	numericalValues[][][] = NaN
+	Redimension/N=(0, -1, -1) numericalValues
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, 0)
+End
+
+Function LabnotebookUpgradeMissingNoteIndexTextual()
+
+	variable idx, idxRedone
+	string device, key, keyTxt
+
+	device = "ITC16USB_0_DEV"
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	WAVE/T/Z textualValues = GetLBTextualValues(device)
+	WAVE/T/Z textualKeys   = GetLBTextualKeys(device)
+
+	idx = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	CHECK_GT_VAR(idx, 0)
+
+	Note/K textualKeys
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, idx)
+
+	Note/K textualValues
+	Note/K textualKeys
+
+	textualValues[][][] = ""
+	Redimension/N=(0, -1, -1) textualValues
+
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	idxRedone = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(idxRedone, 0)
+End
+
+Function EmptyLabnotebookWorks()
+
+	string device
+
+	device = "ITC16USB_0_DEV"
+	WAVE/Z numericalValues = GetLBNumericalValues(device)
+	CHECK_WAVE(numericalValues, NUMERIC_WAVE)
+
+	WAVE/Z entries = GetLastSetting(numericalValues, NaN, "Sweep Number", UNKNOWN_MODE)
+	CHECK_WAVE(entries, NULL_WAVE)
+
+	WAVE/Z entries = GetLastSetting(numericalValues, 0, "Sweep Number", UNKNOWN_MODE)
+	CHECK_WAVE(entries, NULL_WAVE)
+
+	WAVE/Z textualValues = GetLBTextualValues(device)
+	CHECK_WAVE(textualValues, TEXT_WAVE)
+
+	WAVE/Z entries = GetLastSetting(textualValues, NaN, "Sweep Number", UNKNOWN_MODE)
+	CHECK_WAVE(entries, NULL_WAVE)
+
+	WAVE/Z entries = GetLastSetting(textualValues, 0, "Sweep Number", UNKNOWN_MODE)
+	CHECK_WAVE(entries, NULL_WAVE)
 End
