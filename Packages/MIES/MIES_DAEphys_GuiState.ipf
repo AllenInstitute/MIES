@@ -264,6 +264,11 @@ Function/S DAG_GetTextualValue(device, ctrl, [index])
 			ControlInfo/W=$device $fullCtrl
 		endif
 
+		if(V_flag == 0)
+			sprintf msg, "Control %s does not exist in window %s.\r", ctrl, device
+			BUG(msg)
+		endif
+
 		ctrlDim = FindDimLabel(GUIState, COLS, ctrl)
 		if(ctrlDim < 0)
 			sprintf msg, "Control entry not found in textual GUI state wave: %s\r", ctrl

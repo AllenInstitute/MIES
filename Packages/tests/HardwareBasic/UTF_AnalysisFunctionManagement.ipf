@@ -2057,3 +2057,93 @@ static Function CanModifyStimsetInPreSweepConfig_REENTRY([str])
 	WAVE/Z settingsUnique = GetUniqueEntries(settings)
 	CHECK_EQUAL_WAVES(settings, settingsUnique)
 End
+
+static Function [WAVE entryHS1, WAVE entryHS2] GetLastSweepLBNEntries(WAVE numericalValues, variable sweepNo, variable eventType)
+
+	string key
+
+	// SCI is only one sweep for HS2, so let's gather the entries from the full RAC instead
+
+	sprintf key, "USER_LastSweepInSet_Event_%s_HS_%d", StringFromList(eventType, EVENT_NAME_LIST), 1
+	WAVE/Z entriesHS1 = GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	sprintf key, "USER_LastSweepInSet_Event_%s_HS_%d", StringFromList(eventType, EVENT_NAME_LIST), 2
+	WAVE/Z entriesHS2 = GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	return [entriesHS1, entriesHS2]
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function CheckLastSweepInSetWithoutSkipping([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                                                       + \
+	                             "__HS1_DA2_AD3_CM:IC:_ST:StimulusSetA_DA_0:_AF:LastSweepInSetWithoutSkip:" + \
+	                             "__HS2_DA1_AD0_CM:IC:_ST:StimulusSetB_DA_0:_AF:LastSweepInSetWithoutSkip:")
+
+	AcquireData_NG(s, str)
+End
+
+static Function CheckLastSweepInSetWithoutSkipping_REENTRY([str])
+	string str
+
+	variable sweepNo, entry
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE textualValues   = GetLBNumericalValues(str)
+
+	sweepNo = 2
+	CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(str), sweepNo)
+
+	// PRE_DAQ_EVENT
+
+	key   = "USER_LastSweepInSet_Event_Pre DAQ_HS_1"
+	entry = GetLastSettingIndep(numericalValues, NaN, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(entry, NaN)
+
+	key   = "USER_LastSweepInSet_Event_Pre DAQ_HS_2"
+	entry = GetLastSettingIndep(numericalValues, NaN, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(entry, NaN)
+
+	[WAVE entriesHS1, WAVE entriesHS2] = GetLastSweepLBNEntries(numericalValues, sweepNo, PRE_DAQ_EVENT)
+	CHECK_WAVE(entriesHS1, NULL_WAVE)
+	CHECK_WAVE(entriesHS2, NULL_WAVE)
+
+	// PRE_SWEEP_CONFIG_EVENT
+
+	[WAVE entriesHS1, WAVE entriesHS2] = GetLastSweepLBNEntries(numericalValues, sweepNo, PRE_SWEEP_CONFIG_EVENT)
+	CHECK_WAVE(entriesHS1, NULL_WAVE)
+	CHECK_WAVE(entriesHS2, NULL_WAVE)
+
+	// PRE_SET_EVENT
+
+	[WAVE entriesHS1, WAVE entriesHS2] = GetLastSweepLBNEntries(numericalValues, sweepNo, PRE_SET_EVENT)
+	CHECK_EQUAL_WAVES(entriesHS1, {0, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entriesHS2, {1, 1, 1}, mode = WAVE_DATA)
+
+	// MID_SWEEP_EVENT
+
+	[WAVE entriesHS1, WAVE entriesHS2] = GetLastSweepLBNEntries(numericalValues, sweepNo, MID_SWEEP_EVENT)
+	CHECK_EQUAL_WAVES(entriesHS1, {0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entriesHS2, {1, 1, 1}, mode = WAVE_DATA)
+
+	// POST_SWEEP_EVENT
+
+	[WAVE entriesHS1, WAVE entriesHS2] = GetLastSweepLBNEntries(numericalValues, sweepNo, POST_SWEEP_EVENT)
+	CHECK_EQUAL_WAVES(entriesHS1, {0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entriesHS2, {1, 1, 1}, mode = WAVE_DATA)
+
+	// POST_SET_EVENT
+
+	[WAVE entriesHS1, WAVE entriesHS2] = GetLastSweepLBNEntries(numericalValues, sweepNo, POST_SET_EVENT)
+	CHECK_EQUAL_WAVES(entriesHS1, {NaN, NaN, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entriesHS2, {1, 1, 1}, mode = WAVE_DATA)
+
+	// POST_DAQ_EVENT
+
+	[WAVE entriesHS1, WAVE entriesHS2] = GetLastSweepLBNEntries(numericalValues, sweepNo, POST_DAQ_EVENT)
+	CHECK_EQUAL_WAVES(entriesHS1, {NaN, NaN, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entriesHS2, {NaN, NaN, 1}, mode = WAVE_DATA)
+End
