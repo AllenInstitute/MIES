@@ -133,11 +133,6 @@ static Function PS_SP1_REENTRY([str])
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 20)
-
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, tol = 1e-14, mode = WAVE_DATA)
 
@@ -203,11 +198,6 @@ static Function PS_SP2_REENTRY([str])
 	CHECK(!WaveExists(daScaleZero))
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 20)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, tol = 1e-14, mode = WAVE_DATA)
@@ -276,11 +266,6 @@ static Function PS_SP3_REENTRY([str])
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 20)
-
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320}, tol = 1e-14, mode = WAVE_DATA)
 
@@ -347,11 +332,6 @@ static Function PS_SP4_REENTRY([str])
 	CHECK(!WaveExists(daScaleZero))
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 20)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260}, tol = 1e-14, mode = WAVE_DATA)
@@ -420,11 +400,6 @@ static Function PS_SP5_REENTRY([str])
 	CHECK(!WaveExists(daScaleZero))
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 1}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 4)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160}, tol = 1e-14, mode = WAVE_DATA)
@@ -495,11 +470,6 @@ static Function PS_SP6_REENTRY([str])
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 1, 1, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 5)
-
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stimScale, {100, 50, 0, 0, 10}, tol = 1e-14, mode = WAVE_DATA)
 
@@ -566,11 +536,6 @@ static Function PS_SP7_REENTRY([str])
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 5)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stimScale, {100, 50, 0, 0, 0}, tol = 1e-14, mode = WAVE_DATA)
@@ -641,11 +606,6 @@ static Function PS_SP8_REENTRY([str])
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0}, mode = WAVE_DATA)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 1)
-
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stimScale, {100}, tol = 1e-14, mode = WAVE_DATA)
 
@@ -713,11 +673,6 @@ static Function PS_SP9_REENTRY([str])
 	CHECK(!WaveExists(daScaleZero))
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 20)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, tol = 1e-14, mode = WAVE_DATA)

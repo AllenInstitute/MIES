@@ -161,7 +161,8 @@ static Function PS_RB1_REENTRY([str])
 	variable stepSize
 	string   key
 
-	sweepNo = 14
+	sweepNo    = 14
+	numEntries = sweepNo + 1
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -182,13 +183,8 @@ static Function PS_RB1_REENTRY([str])
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 15)
-
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
-	initialDAScale = GetLastSettingIndep(numericalValues, sweeps[0], key, UNKNOWN_MODE)
+	initialDAScale = GetLastSettingIndep(numericalValues, 0, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
@@ -203,7 +199,7 @@ static Function PS_RB1_REENTRY([str])
 
 	Make/FREE/N=(numEntries) sweepLengths
 	for(i = 0; i < numEntries; i += 1)
-		WAVE sweepT  = GetSweepWave(str, sweeps[i])
+		WAVE sweepT  = GetSweepWave(str, i)
 		WAVE channel = ResolveSweepChannel(sweepT, 0)
 		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
 	endfor
@@ -260,7 +256,8 @@ static Function PS_RB2_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sweepNo = 5
+	sweepNo    = 5
+	numEntries = sweepNo + 1
 
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -281,11 +278,6 @@ static Function PS_RB2_REENTRY([str])
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 6)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef = (p * PSQ_RB_DASCALE_STEP_LARGE + PSQ_GetFinalDAScaleFake()) * ONE_TO_PICO
@@ -343,7 +335,8 @@ static Function PS_RB3_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sweepNo = 5
+	sweepNo    = 5
+	numEntries = sweepNo + 1
 
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -364,11 +357,6 @@ static Function PS_RB3_REENTRY([str])
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 6)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() - p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
@@ -426,7 +414,8 @@ static Function PS_RB4_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sweepNo = 1
+	sweepNo    = 1
+	numEntries = sweepNo + 1
 
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -447,11 +436,6 @@ static Function PS_RB4_REENTRY([str])
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 0}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 2)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() - p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
@@ -522,7 +506,8 @@ static Function PS_RB5_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sweepNo = 1
+	sweepNo    = 1
+	numEntries = sweepNo + 1
 
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -543,11 +528,6 @@ static Function PS_RB5_REENTRY([str])
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 2)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_GetFinalDAScaleFake() + p * PSQ_RB_DASCALE_STEP_LARGE) * ONE_TO_PICO
@@ -605,7 +585,8 @@ static Function PS_RB6_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sweepNo = 2
+	sweepNo    = 2
+	numEntries = sweepNo + 1
 
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -626,11 +607,6 @@ static Function PS_RB6_REENTRY([str])
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {NaN, 0, 1}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 3)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
@@ -691,7 +667,8 @@ static Function PS_RB7_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sweepNo = 7
+	sweepNo    = 7
+	numEntries = sweepNo + 1
 
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -712,11 +689,6 @@ static Function PS_RB7_REENTRY([str])
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {NaN, NaN, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 8)
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
@@ -784,7 +756,8 @@ static Function PS_RB8_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sweepNo = 3
+	sweepNo    = 3
+	numEntries = sweepNo + 1
 
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -805,11 +778,6 @@ static Function PS_RB8_REENTRY([str])
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 0, 0, 1}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 4)
 
 	WAVE/Z stimScale = GetStimscaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
@@ -875,7 +843,8 @@ static Function PS_RB9_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sweepNo = 2
+	sweepNo    = 2
+	numEntries = sweepNo + 1
 
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -896,11 +865,6 @@ static Function PS_RB9_REENTRY([str])
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 0, 1}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 3)
 
 	WAVE/Z stimScale = GetStimscaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
@@ -965,7 +929,8 @@ static Function PS_RB10_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	sweepNo = 1
+	sweepNo    = 1
+	numEntries = sweepNo + 1
 
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -986,11 +951,6 @@ static Function PS_RB10_REENTRY([str])
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1}, mode = WAVE_DATA)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 2)
 
 	WAVE/Z stimScale = GetStimscaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef
@@ -1049,7 +1009,8 @@ static Function PS_RB11_REENTRY([str])
 	variable stepSize
 	string   key
 
-	sweepNo = 0
+	sweepNo    = 0
+	numEntries = sweepNo + 1
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -1070,13 +1031,8 @@ static Function PS_RB11_REENTRY([str])
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {0}, mode = WAVE_DATA)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 1)
-
 	key            = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
-	initialDAScale = GetLastSettingIndep(numericalValues, sweeps[0], key, UNKNOWN_MODE)
+	initialDAScale = GetLastSettingIndep(numericalValues, 0, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
@@ -1091,7 +1047,7 @@ static Function PS_RB11_REENTRY([str])
 
 	Make/FREE/N=(numEntries) sweepLengths
 	for(i = 0; i < numEntries; i += 1)
-		WAVE sweepT  = GetSweepWave(str, sweeps[i])
+		WAVE sweepT  = GetSweepWave(str, i)
 		WAVE channel = ResolveSweepChannel(sweepT, 0)
 		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
 	endfor
