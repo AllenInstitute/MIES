@@ -786,13 +786,13 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 					case "A":
 						value = abs(value)
 						CHECK_GT_VAR(value, 0)
-						CHECK_LE_VAR(value, 200e-12)
+						CHECK_LE_VAR(value, 4000e-12)
 						break
 					case "Volts":
 					case "Volt":
 					case "V":
 						CHECK_GE_VAR(value, -0.1)
-						CHECK_LE_VAR(value, 0.1)
+						CHECK_LE_VAR(value, 1)
 						break
 					case "Ohm":
 					case "Ω":
