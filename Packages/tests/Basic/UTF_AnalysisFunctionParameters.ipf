@@ -1023,3 +1023,47 @@ Function GAPasT_Works([WAVE/T wv])
 	CHECK_EQUAL_STR(result, wv[1])
 End
 /// @}
+
+/// @name AFH_GetAnalysisParameter
+/// @{
+static Function GAP_Works()
+
+	string result
+	string params = "var:variable=123,str:string=456"
+
+	result = AFH_GetAnalysisParameter("var", params)
+	CHECK_EQUAL_STR(result, "123")
+
+	result = AFH_GetAnalysisParameter("str", params, expectedType = "string")
+	CHECK_EQUAL_STR(result, "456")
+
+	// wrong type
+	try
+		AFH_GetAnalysisParameter("var1", params, expectedType = "string")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// invalid type
+	try
+		AFH_GetAnalysisParameter("var1", params, expectedType = "abcd")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// non-existent parameter but type was given
+	try
+		AFH_GetAnalysisParameter("I_DONT_EXIST", params, expectedType = "variable")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// empty return without type
+	result = AFH_GetAnalysisParameter("I_DONT_EXIST", params)
+	CHECK_EMPTY_STR(result)
+End
+
+/// @}

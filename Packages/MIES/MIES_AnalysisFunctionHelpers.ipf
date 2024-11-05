@@ -822,7 +822,7 @@ Function/S AFH_GetAnalysisParameter(name, params, [expectedType])
 	string type, value
 
 	if(ParamIsDefault(expectedType))
-		type = AFH_GetAnalysisParamType(name, params)
+		type = AFH_GetAnalysisParamType(name, params, typeCheck = 0)
 	else
 		type = AFH_GetAnalysisParamType(name, params, expectedType = expectedType)
 	endif
