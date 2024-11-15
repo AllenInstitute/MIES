@@ -250,10 +250,10 @@ static Function/WAVE PSX_FilterSweepData(WAVE sweepData, variable low, variable 
 	ASSERT(low > high, "Expected a band pass filter with low > high")
 
 	Duplicate/FREE sweepData, filtered
-//	Duplicate/O sweepData, root:sweepData
+	//	Duplicate/O sweepData, root:sweepData
 
-//	print low, high, samp
-//	Abort
+	//	print low, high, samp
+	//	Abort
 	FilterIIR/LO=(low / samp)/HI=(high / samp)/DIM=(ROWS)/ORD=6 filtered; err = GetRTError(1)
 	SFH_ASSERT(!err, "Error filtering the data, msg: " + GetErrMessage(err))
 
@@ -332,9 +332,9 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	low   = deconvFilter[%$"Filter Low"]
 	high  = deconvFilter[%$"Filter High"]
 	order = deconvFilter[%$"Filter Order"]
-	
-//	low  = 200
-//	high = 20
+
+	//	low  = 200
+	//	high = 20
 
 	if(IsNaN(low))
 		lowFrac = PSX_DECONV_FILTER_DEF_LOW
@@ -352,7 +352,7 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 		order = PSX_DECONV_FILTER_DEF_ORDER
 	endif
 
-//	ASSERT(lowFrac < highFrac, "Expected a low pass filter with lowFrac < highFrac")
+	//	ASSERT(lowFrac < highFrac, "Expected a low pass filter with lowFrac < highFrac")
 
 	numPoints = DimSize(sweepData, ROWS)
 	fftSize   = DimSize(psxKernelFFT, ROWS)
@@ -368,12 +368,12 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	ASSERT(V_Value == -1, "Can not handle NaN in the deconvoluted wave")
 
 	CopyScales sweepData, Deconv
-//	
-//	Duplicate/O deconv, root:deconv
-//	print lowFrac, highFrac, order
-//	Abort
+	//
+	//	Duplicate/O deconv, root:deconv
+	//	print lowFrac, highFrac, order
+	//	Abort
 	// todo remove low frequencies here with a bandpass filter, always b
-	FilterFIR/LO={lowFrac, highFrac, order}/HI={200/samp, 300/samp, order} Deconv
+	FilterFIR/LO={lowFrac, highFrac, order}/HI={200 / samp, 300 / samp, order} Deconv
 
 	return Deconv
 End
@@ -385,13 +385,13 @@ static Function/WAVE PSX_CreateHistogramOfDeconvSweepData(WAVE deconvSweepData)
 
 	// we take +/- 80% of the average deviation around the average value
 	WaveStats/Q deconvSweepData
-//	binWidth = 0.00005
+	//	binWidth = 0.00005
 	range    = V_adev * 2
 	start    = V_avg - range
 	n_bins   = 20
 	binWidth = 2 * range / n_bins
 
-//	SFH_ASSERT(n_bins > 10, "Histogram creation failed due to too few data points")
+	//	SFH_ASSERT(n_bins > 10, "Histogram creation failed due to too few data points")
 
 	Make/D/FREE/N=0 hist
 	Histogram/B={start, binWidth, n_bins}/DEST=hist deconvSweepData
@@ -4648,7 +4648,7 @@ static Function [WAVE hist, WAVE fit, variable peakThresh, string dataUnit] PSX_
 	[WAVE coef, WAVE fit] = PSX_FitHistogram(hist)
 
 	if(WaveExists(coef) && WaveExists(fit))
-		peakThresh = coef[3] * numSDs // RoundNumber(coef[3] * numSDs, 3)
+		peakThresh = coef[3] * numSDs                      // RoundNumber(coef[3] * numSDs, 3)
 		dataUnit   = WaveUnits(sweepDataOffFiltDeconv, -1)
 
 		return [hist, fit, peakThresh, dataUnit]
