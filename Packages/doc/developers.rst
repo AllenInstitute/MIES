@@ -249,9 +249,13 @@ The following labels are in use:
   - ITC18-USB hardware, 2 AD/DA channels are looped
   - MCC demo amplifier only
 
-- ``NI``: Agent can execute hardware tests with NI/ITC1600 hardware
+- ``ITC1600``: Agent can execute hardware tests with ITC1600 hardware
 
   - ITC-1600 hardware with one rack, 2 AD/DA channels are looped
+  - MCC demo amplifier only
+
+- ``NI``: Agent can execute hardware tests with NI hardware
+
   - NI PCIe-6343, 2 AD/DA channels are looped
   - MCC demo amplifier only
 
