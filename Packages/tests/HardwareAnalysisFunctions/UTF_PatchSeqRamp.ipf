@@ -227,7 +227,8 @@ static Function PS_RA1_REENTRY([str])
 
 	variable sweepNo, i, numEntries, DAScale, onsetDelay
 
-	sweepNo = 1
+	sweepNo    = 1
+	numEntries = sweepNo + 1
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -259,11 +260,6 @@ static Function PS_RA1_REENTRY([str])
 	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(foundUserEpochs, {0, 0})
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 2)
-
 	WAVE/Z DAScaleWave = GetStimscaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(DAScaleWave, {PSQ_RA_DASCALE_DEFAULT, PSQ_RA_DASCALE_DEFAULT}, mode = WAVE_DATA)
 
@@ -274,7 +270,7 @@ static Function PS_RA1_REENTRY([str])
 
 	Make/FREE/N=(numEntries) sweepLengths
 	for(i = 0; i < numEntries; i += 1)
-		WAVE sweepT  = GetSweepWave(str, sweeps[i])
+		WAVE sweepT  = GetSweepWave(str, i)
 		WAVE channel = ResolveSweepChannel(sweepT, 0)
 		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
 	endfor
@@ -345,11 +341,6 @@ static Function PS_RA2_REENTRY([str])
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
 	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(foundUserEpochs, {0, 0, 0})
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 3)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(durations, {15000, 15000, 15000}, mode = WAVE_DATA, tol = 1)
@@ -422,11 +413,6 @@ static Function PS_RA2a_REENTRY([str])
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
 	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(foundUserEpochs, {1, 1})
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 2)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
 	if(TestHelperFunctions#DoInstrumentation())
@@ -515,11 +501,6 @@ static Function PS_RA3_REENTRY([str])
 	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(foundUserEpochs, {1, 1, 1})
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 3)
-
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
 	if(TestHelperFunctions#DoInstrumentation())
 		CHECK_WAVE(durations, NUMERIC_WAVE)
@@ -602,11 +583,6 @@ static Function PS_RA4_REENTRY([str])
 	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(foundUserEpochs, {1, 0, 0})
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 3)
-
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
 	if(TestHelperFunctions#DoInstrumentation())
 		CHECK_WAVE(durations, NUMERIC_WAVE)
@@ -684,11 +660,6 @@ static Function PS_RA5_REENTRY([str])
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
 	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(foundUserEpochs, {0, 1, 1})
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 3)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
 	if(TestHelperFunctions#DoInstrumentation())
@@ -782,11 +753,6 @@ static Function PS_RA6_REENTRY([str])
 	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(foundUserEpochs, {1, 0, 1, 1})
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 4)
-
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
 	if(TestHelperFunctions#DoInstrumentation())
 		CHECK_WAVE(durations, NUMERIC_WAVE)
@@ -839,7 +805,8 @@ static Function PS_RA7_REENTRY([str])
 	string str
 	variable i, sweepNo, numEntries, onsetDelay, DAScale
 
-	sweepNo = 0
+	sweepNo    = 0
+	numEntries = sweepNo + 1
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -871,11 +838,6 @@ static Function PS_RA7_REENTRY([str])
 	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(foundUserEpochs, {0})
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 1)
-
 	WAVE/Z DAScaleWave = GetStimscaleFactor_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(DAScaleWave, {PSQ_RA_DASCALE_DEFAULT}, mode = WAVE_DATA)
 
@@ -885,7 +847,7 @@ static Function PS_RA7_REENTRY([str])
 	WAVE/Z stimSetLengths = GetStimsetLengths_IGNORE(sweepNo, str)
 	Make/FREE/N=(numEntries) sweepLengths
 	for(i = 0; i < numEntries; i += 1)
-		WAVE sweepT  = GetSweepWave(str, sweeps[i])
+		WAVE sweepT  = GetSweepWave(str, i)
 		WAVE channel = ResolveSweepChannel(sweepT, 0)
 		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
 	endfor

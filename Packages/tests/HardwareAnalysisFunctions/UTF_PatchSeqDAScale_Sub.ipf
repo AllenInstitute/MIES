@@ -233,11 +233,6 @@ static Function PS_DS_Sub1_REENTRY([str])
 	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
 	CHECK_WAVE(resistanceErr, NULL_WAVE)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 5)
-
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
@@ -432,11 +427,6 @@ static Function PS_DS_Sub2_REENTRY([str])
 	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 5)
-
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
@@ -606,11 +596,6 @@ static Function PS_DS_Sub3_REENTRY([str])
 
 	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
@@ -827,11 +812,6 @@ static Function PS_DS_Sub4_REENTRY([str])
 	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 5)
-
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
@@ -980,11 +960,6 @@ static Function PS_DS_Sub5_REENTRY([str])
 	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
 	CHECK_WAVE(resistanceErr, NULL_WAVE)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 5)
-
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
@@ -1132,11 +1107,6 @@ static Function PS_DS_Sub5a_REENTRY([str])
 
 	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
 	CHECK_WAVE(resistanceErr, NULL_WAVE)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
@@ -1354,11 +1324,6 @@ static Function PS_DS_Sub6_REENTRY([str])
 	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 5)
-
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
@@ -1530,11 +1495,6 @@ static Function PS_DS_Sub7_REENTRY([str])
 
 	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 7)
 
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
@@ -1721,11 +1681,6 @@ static Function PS_DS_Sub8_REENTRY([str])
 	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 9)
-
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -50, -50, -70, -70, -70, -110, -130}
@@ -1884,11 +1839,6 @@ static Function PS_DS_Sub9_REENTRY([str])
 
 	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
 	CHECK_WAVE(resistanceErr, NULL_WAVE)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
@@ -2063,11 +2013,6 @@ static Function PS_DS_Sub10_REENTRY([str])
 
 	WAVE/Z resistanceErr = GetLBNEntries_IGNORE(str, sweepNo, LBN_RESISTANCE_FIT_ERR)
 	CHECK_WAVE(resistanceErr, NULL_WAVE)
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 1)
 
 	numEntries = DimSize(sweepPassed, ROWS)
 	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)

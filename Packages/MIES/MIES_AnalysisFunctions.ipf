@@ -29,8 +29,8 @@
 ///                                                                     analysis parameters are validated if present. With Indexing ON,
 ///                                                                     only the analysis function of the first stimset will receive
 ///                                                                     that event.
-/// Pre Sweep Config     Before the sweep is configured                 None                                                              Write
 /// Pre Set              Before a new set starts                        None                                                              Write
+/// Pre Sweep Config     Before the sweep is configured                 None                                                              Write
 /// Mid Sweep            Each time when new data is polled              Available for background DAQ only.                                Write
 ///                                                                     Will always be called at least once and
 ///                                                                     also with the full stimset acquired.
