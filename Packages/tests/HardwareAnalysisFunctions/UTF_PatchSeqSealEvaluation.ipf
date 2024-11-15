@@ -45,6 +45,7 @@ static Function GlobalPreInit(string device)
 End
 
 static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
+
 	variable nameCol, typeCol
 
 	WAVE/T textualResultsValues = GetTextualResultsValues()
@@ -75,10 +76,7 @@ static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
 	return GetUniqueEntries(entries)
 End
 
-static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name, [chunk])
-	string device
-	variable sweepNo, chunk
-	string name
+static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, string name, [variable chunk])
 
 	variable val, type
 	string key
@@ -212,8 +210,7 @@ static Function CheckBaselineChunks(string device, variable testpulseGroupSel)
 
 End
 
-static Function PS_SE1_preAcq(device)
-	string device
+static Function PS_SE1_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -234,8 +231,7 @@ static Function PS_SE1_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_SE1([str])
-	string str
+static Function PS_SE1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -249,8 +245,7 @@ static Function PS_SE1([str])
 	wv[][][3] = 0
 End
 
-static Function PS_SE1_REENTRY([str])
-	string str
+static Function PS_SE1_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts
@@ -292,8 +287,7 @@ static Function PS_SE1_REENTRY([str])
 	CheckBaselineChunks(str, PSQ_SE_TGS_BOTH)
 End
 
-static Function PS_SE2_preAcq(device)
-	string device
+static Function PS_SE2_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -314,8 +308,7 @@ static Function PS_SE2_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_SE2([str])
-	string str
+static Function PS_SE2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -329,8 +322,7 @@ static Function PS_SE2([str])
 	wv[][][3] = 1
 End
 
-static Function PS_SE2_REENTRY([str])
-	string str
+static Function PS_SE2_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts
@@ -372,8 +364,7 @@ static Function PS_SE2_REENTRY([str])
 	CheckBaselineChunks(str, PSQ_SE_TGS_BOTH)
 End
 
-static Function PS_SE3_preAcq(device)
-	string device
+static Function PS_SE3_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -394,8 +385,7 @@ static Function PS_SE3_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_SE3([str])
-	string str
+static Function PS_SE3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -409,8 +399,7 @@ static Function PS_SE3([str])
 	wv[][][3] = 1
 End
 
-static Function PS_SE3_REENTRY([str])
-	string str
+static Function PS_SE3_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts
@@ -451,8 +440,7 @@ static Function PS_SE3_REENTRY([str])
 	CheckBaselineChunks(str, PSQ_SE_TGS_FIRST)
 End
 
-static Function PS_SE4_preAcq(device)
-	string device
+static Function PS_SE4_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -473,8 +461,7 @@ static Function PS_SE4_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_SE4([str])
-	string str
+static Function PS_SE4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -488,8 +475,7 @@ static Function PS_SE4([str])
 	wv[][][3] = 1
 End
 
-static Function PS_SE4_REENTRY([str])
-	string str
+static Function PS_SE4_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts
@@ -530,8 +516,7 @@ static Function PS_SE4_REENTRY([str])
 	CheckBaselineChunks(str, PSQ_SE_TGS_SECOND)
 End
 
-static Function PS_SE5_preAcq(device)
-	string device
+static Function PS_SE5_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -552,8 +537,7 @@ static Function PS_SE5_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_SE5([str])
-	string str
+static Function PS_SE5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -568,8 +552,7 @@ static Function PS_SE5([str])
 	wv[][][3]  = 1
 End
 
-static Function PS_SE5_REENTRY([str])
-	string str
+static Function PS_SE5_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts
@@ -611,8 +594,7 @@ static Function PS_SE5_REENTRY([str])
 	CheckBaselineChunks(str, PSQ_SE_TGS_BOTH)
 End
 
-static Function PS_SE6_preAcq(device)
-	string device
+static Function PS_SE6_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -633,8 +615,7 @@ static Function PS_SE6_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_SE6([str])
-	string str
+static Function PS_SE6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -649,8 +630,7 @@ static Function PS_SE6([str])
 	wv[][][3]  = 1
 End
 
-static Function PS_SE6_REENTRY([str])
-	string str
+static Function PS_SE6_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts
@@ -692,8 +672,7 @@ static Function PS_SE6_REENTRY([str])
 	CheckBaselineChunks(str, PSQ_SE_TGS_BOTH)
 End
 
-static Function PS_SE7_preAcq(device)
-	string device
+static Function PS_SE7_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -714,8 +693,7 @@ static Function PS_SE7_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_SE7([str])
-	string str
+static Function PS_SE7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -729,8 +707,7 @@ static Function PS_SE7([str])
 	wv[][][3] = 1
 End
 
-static Function PS_SE7_REENTRY([str])
-	string str
+static Function PS_SE7_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts
@@ -772,8 +749,7 @@ static Function PS_SE7_REENTRY([str])
 	CheckBaselineChunks(str, PSQ_SE_TGS_BOTH)
 End
 
-static Function PS_SE7a_preAcq(device)
-	string device
+static Function PS_SE7a_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -793,8 +769,7 @@ static Function PS_SE7a_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_SE7a([str])
-	string str
+static Function PS_SE7a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -808,8 +783,7 @@ static Function PS_SE7a([str])
 	wv[][][3] = 0
 End
 
-static Function PS_SE7a_REENTRY([str])
-	string str
+static Function PS_SE7a_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
@@ -851,8 +825,7 @@ static Function PS_SE7a_REENTRY([str])
 	CheckBaselineChunks(str, PSQ_SE_TGS_BOTH)
 End
 
-static Function PS_SE8_preAcq(device)
-	string device
+static Function PS_SE8_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -873,8 +846,7 @@ static Function PS_SE8_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_SE8([str])
-	string str
+static Function PS_SE8([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -886,8 +858,7 @@ static Function PS_SE8([str])
 	CHECK_EQUAL_VAR(AFH_GetlastSweepAcquired(str), NaN)
 End
 
-static Function PS_SE9_preAcq(device)
-	string device
+static Function PS_SE9_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PatchSeqSealChec_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -909,8 +880,7 @@ static Function PS_SE9_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_SE9([str])
-	string str
+static Function PS_SE9([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -924,8 +894,7 @@ static Function PS_SE9([str])
 	wv[][][3] = 1
 End
 
-static Function PS_SE9_REENTRY([str])
-	string str
+static Function PS_SE9_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts

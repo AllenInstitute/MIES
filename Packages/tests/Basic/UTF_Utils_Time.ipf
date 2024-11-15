@@ -19,8 +19,7 @@
 /// @{
 
 // UTF_TD_GENERATOR DataGenerators#ISO8601_timestamps
-Function ISO8601_teststamps([str])
-	string str
+Function ISO8601_teststamps([string str])
 
 	variable secondsSinceIgorEpoch
 

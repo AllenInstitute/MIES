@@ -21,9 +21,7 @@ static Structure SBE_ExportSettings
 	variable usePulses, numPulses, preFirstPulse, postLastPulse, ADC
 EndStructure
 
-static Function SBE_FillExportSettings(win, sett)
-	string                     win
-	STRUCT SBE_ExportSettings &sett
+static Function SBE_FillExportSettings(string win, STRUCT SBE_ExportSettings &sett)
 
 	variable redistAxis
 
@@ -89,9 +87,7 @@ static Function SBE_FillExportSettings(win, sett)
 End
 
 /// @brief Return a list of possible axes for the export panel
-Function/S SBE_GetSelectedAxis(graphPopup, axisOrientation)
-	string   graphPopup
-	variable axisOrientation
+Function/S SBE_GetSelectedAxis(string graphPopup, variable axisOrientation)
 
 	string graph
 	string list = "New;"
@@ -111,8 +107,7 @@ End
 ///
 /// This function can fill in the available data for traces which are *not*
 /// shown.
-static Function SBE_AddMissingADTraceInfo(traceData)
-	WAVE/T traceData
+static Function SBE_AddMissingADTraceInfo(WAVE/T traceData)
 
 	variable numPaths, i, j, idx, cnt, sweepNumber
 	variable numEntries, headstage
@@ -181,6 +176,7 @@ static Function SBE_AddMissingADTraceInfo(traceData)
 End
 
 static Function/WAVE SBE_GetPulseStartTimesForSel()
+
 	string graph, traceName
 	variable region, idx, ADC
 
@@ -227,8 +223,7 @@ static Function/WAVE SBE_GetPulseStartTimesForSel()
 End
 
 /// @brief Display the export panel
-Function SBE_ShowExportPanel(sourceWindow)
-	string sourceWindow
+Function SBE_ShowExportPanel(string sourceWindow)
 
 	string panel = SBE_EXPORT_PANEL
 
@@ -278,8 +273,7 @@ End
 ///
 /// Creates a new graph from it or appends to an existing one.
 /// Only duplicates the main graph without external subwindows
-static Function SBE_ExportSweepBrowser(sett)
-	STRUCT SBE_ExportSettings &sett
+static Function SBE_ExportSweepBrowser(STRUCT SBE_ExportSettings &sett)
 
 	string trace, folder, newPrefix, analysisPrefix, relativeDest, win, wvName, unit, stimset
 	string graphName, graphMacro, saveDFR, traceList, line, newGraph, newWvName, traceAxis
@@ -333,10 +327,10 @@ static Function SBE_ExportSweepBrowser(sett)
 		endX       = pulseStartTimes[sett.numPulses] + sett.postLastPulse
 		clipXRange = 1
 	elseif(sett.useCursorRange)
-		xcsrA = xcsr(A, sett.sourceGraph)
-		xcsrB = xcsr(B, sett.sourceGraph)
+		xcsrA          = xcsr(A, sett.sourceGraph)
+		xcsrB          = xcsr(B, sett.sourceGraph)
 		[beginX, endX] = MinMax(xcsrA, xcsrB)
-		clipXRange = 1
+		clipXRange     = 1
 	elseif(isFinite(sett.manualRangeBegin) && IsFinite(sett.manualRangeEnd))
 		beginX     = sett.manualRangeBegin
 		endX       = sett.manualRangeEnd
@@ -564,8 +558,7 @@ static Function SBE_ExportSweepBrowser(sett)
 	Execute/P/Q "SetDataFolder " + saveDFR
 End
 
-Function SBE_PopMenu_ExportTargetAxis(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function SBE_PopMenu_ExportTargetAxis(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string popStr, win, list
 
@@ -595,8 +588,7 @@ Function SBE_PopMenu_ExportTargetAxis(pa) : PopupMenuControl
 	return 0
 End
 
-Function SBE_PopMenu_ExportTargetGraph(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function SBE_PopMenu_ExportTargetGraph(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string popStr, win
 
@@ -617,8 +609,7 @@ Function SBE_PopMenu_ExportTargetGraph(pa) : PopupMenuControl
 	return 0
 End
 
-Function SBE_ButtonProc_PerformExport(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function SBE_ButtonProc_PerformExport(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string win
 
@@ -635,8 +626,7 @@ Function SBE_ButtonProc_PerformExport(ba) : ButtonControl
 	return 0
 End
 
-Function SBE_CheckProc_UsePulseForXRange(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function SBE_CheckProc_UsePulseForXRange(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string listXManual, listXPulses, win
 
@@ -661,8 +651,7 @@ Function SBE_CheckProc_UsePulseForXRange(cba) : CheckBoxControl
 	return 0
 End
 
-Function SBE_PopMenuProc_PulsesADTrace(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function SBE_PopMenuProc_PulsesADTrace(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	variable numPulses
 

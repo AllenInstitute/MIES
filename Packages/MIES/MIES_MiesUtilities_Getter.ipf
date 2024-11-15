@@ -10,10 +10,9 @@
 /// @brief This file holds MIES utility functions that get names/objects
 
 /// @brief Returns the config wave for a given sweep wave
-Function/WAVE GetConfigWave(sweepWave)
-	WAVE sweepWave
+Function/WAVE GetConfigWave(WAVE sweepWave)
 
-	WAVE/SDFR=GetWavesDataFolderDFR(sweepWave)/Z config = $GetConfigWaveName(ExtractSweepNumber(NameOfWave(sweepWave)))
+	WAVE/Z/SDFR=GetWavesDataFolderDFR(sweepWave) config = $GetConfigWaveName(ExtractSweepNumber(NameOfWave(sweepWave)))
 
 	return config
 End
@@ -40,9 +39,7 @@ End
 ///        To convert a text sweep wave to a waveRef sweep wave use @ref TextSweepToWaveRef
 ///        The programmer has to consider if pure references to channels are good enough (TextSweepToWaveRef) or if the channels
 ///        should be duplicated.
-Function/WAVE GetSweepWave(device, sweepNo)
-	string   device
-	variable sweepNo
+Function/WAVE GetSweepWave(string device, variable sweepNo)
 
 	WAVE/Z/SDFR=GetDeviceDataPath(device) wv = $GetSweepWaveName(sweepNo)
 
@@ -50,15 +47,13 @@ Function/WAVE GetSweepWave(device, sweepNo)
 End
 
 /// @brief Return the config wave name
-Function/S GetConfigWaveName(sweepNo)
-	variable sweepNo
+Function/S GetConfigWaveName(variable sweepNo)
 
 	return "Config_" + GetSweepWaveName(sweepNo)
 End
 
 /// @brief Return the sweep wave name
-Function/S GetSweepWaveName(sweepNo)
-	variable sweepNo
+Function/S GetSweepWaveName(variable sweepNo)
 
 	return "Sweep_" + num2str(sweepNo)
 End
@@ -66,8 +61,7 @@ End
 /// @brief constructs a fifo name for NI device ADC operations from the deviceID
 ///
 /// UTF_NOINSTRUMENTATION
-Function/S GetNIFIFOName(deviceID)
-	variable deviceID
+Function/S GetNIFIFOName(variable deviceID)
 
 	return HARDWARE_NI_ADC_FIFO + num2str(deviceID)
 End
@@ -127,5 +121,6 @@ Function [WAVE sweepWave, WAVE config] GetSweepAndConfigWaveFromDevice(string de
 End
 
 Function/S GetWorkLoadName(string workload, string device)
+
 	return workload + "_" + device
 End

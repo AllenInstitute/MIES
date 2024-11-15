@@ -7,7 +7,7 @@ static Function TestMessageFilters()
 
 	string wvNote
 
-	WAVE/T/Z filters = FFI_GetAvailableMessageFilters()
+	WAVE/Z/T filters = FFI_GetAvailableMessageFilters()
 	CHECK_WAVE(filters, FREE_WAVE | TEXT_WAVE)
 	CHECK_GT_VAR(DimSize(filters, ROWS), 0)
 
@@ -17,9 +17,10 @@ static Function TestMessageFilters()
 End
 
 static Function TestLogbookQuery()
+
 	string key, keyTxT, device
 
-	device = "ITC16USB_0_DEV"
+	device        = "ITC16USB_0_DEV"
 	[key, keyTxt] = PrepareLBN_IGNORE(device)
 
 	WAVE/Z settings = FFI_QueryLogbook(device, LBT_LABNOTEBOOK, 0, key, DATA_ACQUISITION_MODE)
@@ -30,9 +31,10 @@ static Function TestLogbookQuery()
 End
 
 static Function TestLogbookQueryUnique()
+
 	string key, keyTxT, device
 
-	device = "ITC16USB_0_DEV"
+	device        = "ITC16USB_0_DEV"
 	[key, keyTxt] = PrepareLBN_IGNORE(device)
 
 	WAVE/Z settings = FFI_QueryLogbookUniqueSetting(device, LBT_LABNOTEBOOK, key)

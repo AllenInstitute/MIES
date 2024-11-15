@@ -231,8 +231,7 @@ static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExpo
 	return [fileIDExport, createdNewNWBFile]
 End
 
-static Function NWB_AddGeneratorString(fileID, nwbVersion)
-	variable fileID, nwbVersion
+static Function NWB_AddGeneratorString(variable fileID, variable nwbVersion)
 
 	EnsureValidNWBVersion(nwbVersion)
 
@@ -273,8 +272,7 @@ static Function NWB_AddGeneratorString(fileID, nwbVersion)
 	endif
 End
 
-static Function NWB_AddSpecifications(fileID, nwbVersion)
-	variable fileID, nwbVersion
+static Function NWB_AddSpecifications(variable fileID, variable nwbVersion)
 
 	EnsureValidNWBVersion(nwbVersion)
 	if(nwbVersion == 1)
@@ -284,8 +282,7 @@ static Function NWB_AddSpecifications(fileID, nwbVersion)
 	WriteSpecifications(fileID)
 End
 
-static Function NWB_ReadSessionStartTime(fileID)
-	variable fileID
+static Function NWB_ReadSessionStartTime(variable fileID)
 
 	string str = ReadTextDataSetAsString(fileID, "/session_start_time")
 
@@ -295,6 +292,7 @@ static Function NWB_ReadSessionStartTime(fileID)
 End
 
 threadsafe static Function NWB_AddDevice(STRUCT NWBAsyncParameters &s)
+
 	string deviceDesc
 
 	deviceDesc = NWB_GenerateDeviceDescription(s.device, s.numericalValues, s.textualValues)
@@ -343,6 +341,7 @@ threadsafe static Function/S NWB_GenerateDeviceDescription(string device, WAVE n
 End
 
 threadsafe Function/DF NWB_ASYNC_Worker(DFREF dfr)
+
 	string deviceDesc
 
 	STRUCT NWBAsyncParameters s
@@ -377,6 +376,7 @@ Function NWB_ASYNC_Readout(STRUCT ASYNC_ReadOutStruct &ar)
 End
 
 threadsafe static Function NWB_WriteLabnoteBooksAndComments(STRUCT NWBAsyncParameters &s)
+
 	string   path
 	variable groupID
 
@@ -432,6 +432,7 @@ threadsafe static Function NWB_WriteLabnoteBooksAndComments(STRUCT NWBAsyncParam
 End
 
 threadsafe static Function NWB_WriteResultsWaves(STRUCT NWBAsyncParameters &s)
+
 	string   path
 	variable groupID
 
@@ -471,6 +472,7 @@ static Function NWB_AddDeviceSpecificData(STRUCT NWBAsyncParameters &s, variable
 End
 
 Function NWB_WriteTestpulseData(STRUCT NWBAsyncParameters &s, variable writeStoredTestPulses)
+
 	variable groupID, i, numEntries, compressionModeStoredTP
 	string path, list, name, deviceDesc
 
@@ -785,6 +787,7 @@ Function NWB_ASYNC_FinishWriting(string device)
 End
 
 Function NWB_CheckForMissingSweeps(string device, WAVE/T sweepNames)
+
 	WAVE numericalValues = GetLBNumericalValues(device)
 
 	WAVE/Z sweepsFromLBN = GetSweepsWithSetting(numericalValues, "SweepNum")
@@ -821,6 +824,7 @@ End
 /// This is only approximately correct as the file is open in HDF5 and thus
 /// not everything is flushed.
 static Function NWB_GetExportedFileSize(string device)
+
 	string filePathExport = ROStr(GetNWBFilePathExport(device))
 
 	if(IsEmpty(filePathExport))
@@ -953,9 +957,7 @@ Function NWB_ExportWithDialog(variable exportType, [variable nwbVersion])
 End
 
 /// @brief Write the stored test pulses to the NWB file
-static Function NWB_AppendStoredTestPulses(device, nwbVersion, locationID, compressionMode)
-	string device
-	variable locationID, nwbVersion, compressionMode
+static Function NWB_AppendStoredTestPulses(string device, variable nwbVersion, variable locationID, variable compressionMode)
 
 	variable index, numZeros, i
 	string name
@@ -985,9 +987,7 @@ End
 /// @param stimsets        Single stimset as string
 ///                        or list of stimsets sparated by ;
 /// @param compressionMode Type of compression to use, one of @ref CompressionMode
-static Function NWB_AppendStimset(nwbVersion, locationID, stimsets, compressionMode)
-	variable nwbVersion, locationID, compressionMode
-	string stimsets
+static Function NWB_AppendStimset(variable nwbVersion, variable locationID, string stimsets, variable compressionMode)
 
 	variable i, numStimsets, numWaves
 
@@ -1037,6 +1037,7 @@ Function NWB_PrepareExport(variable nwbVersion, string device)
 End
 
 Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfigWave, variable sweep, variable nwbVersion)
+
 	variable locationID, createdNewNWBFile
 	string workload
 
@@ -1085,6 +1086,7 @@ Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfi
 End
 
 threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
+
 	variable groupID, numEntries, i, j, ttlBits, dac, adc, col, refTime
 	variable ttlBit, DACUnassoc, ADCUnassoc, index
 	variable dChannelType, dChannelNumber
@@ -1109,10 +1111,10 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	ASSERT_TS(WaveExists(DACs), "Labnotebook is too old for NWB export.")
 
 	// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
-	WAVE/D/Z ADCs = GetLastSetting(s.numericalValues, s.sweep, "ADC", DATA_ACQUISITION_MODE)
+	WAVE/Z/D ADCs = GetLastSetting(s.numericalValues, s.sweep, "ADC", DATA_ACQUISITION_MODE)
 
 	if(!WaveExists(ADCs))
-		WAVE/D/Z statusHS = GetLastSetting(s.numericalValues, s.sweep, "Headstage Active", DATA_ACQUISITION_MODE)
+		WAVE/Z/D statusHS = GetLastSetting(s.numericalValues, s.sweep, "Headstage Active", DATA_ACQUISITION_MODE)
 		ASSERT_TS(WaveExists(statusHS), "Labnotebook is too old for NWB export (ADCs is missing and statusHS fixup is also broken.")
 
 		WAVE configADCs = GetADCListFromConfig(s.DAQConfigWave)
@@ -1130,7 +1132,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	endif
 
 	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
-	WAVE/D/Z statusHS = GetLastSetting(s.numericalValues, s.sweep, "Headstage Active", DATA_ACQUISITION_MODE)
+	WAVE/Z/D statusHS = GetLastSetting(s.numericalValues, s.sweep, "Headstage Active", DATA_ACQUISITION_MODE)
 	if(!WaveExists(statusHS))
 		WAVE statusHS = LBN_GetNumericWave()
 		statusHS[] = IsFinite(ADCs[p]) && IsFinite(DACs[p])
@@ -1175,7 +1177,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	ASSERT_TS(Sum(statusHS, 0, NUM_HEADSTAGES - 1) >= 1, "Expected at least one active headstage.")
 
 	// 1a4b8e59 (Changes to Tango Interact, 2014-09-03)
-	WAVE/T/Z stimSets = GetLastSetting(s.textualValues, s.sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	WAVE/Z/T stimSets = GetLastSetting(s.textualValues, s.sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	ASSERT_TS(WaveExists(stimSets), "Labnotebook is too old for NWB export.")
 
 	// b1575214 (NWB: Allow documenting the physical electrode, 2016-08-05)
@@ -1245,7 +1247,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			WAVE params.data = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, params.channelNumber)
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
-			WAVE/T/Z params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+			WAVE/Z/T params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
 			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
 		endif
 
@@ -1288,7 +1290,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
 			WAVE     params.data   = GetDAQDataSingleColumnWaveNG(s.numericalValues, s.textualValues, s.sweep, sweepDFR, params.channelType, i)
-			WAVE/T/Z params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, i, params.channelType)
+			WAVE/Z/T params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, i, params.channelType)
 
 			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
 
@@ -1306,14 +1308,14 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 		endif
 
 		// unassociated channel data
-		params.clampMode       = NaN
-		params.electrodeNumber = NaN
-		params.electrodeName   = ""
+		params.clampMode               = NaN
+		params.electrodeNumber         = NaN
+		params.electrodeName           = ""
 		[dChannelType, dChannelNumber] = GetConfigWaveDims(s.DAQConfigWave)
-		params.channelType   = s.DAQConfigWave[i][dChannelType]
-		params.channelNumber = s.DAQConfigWave[i][dChannelNumber]
-		params.samplingRate  = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave, params.channelType)) * KILO_TO_ONE
-		params.stimSet       = IPNWB_PLACEHOLDER
+		params.channelType             = s.DAQConfigWave[i][dChannelType]
+		params.channelNumber           = s.DAQConfigWave[i][dChannelNumber]
+		params.samplingRate            = ConvertSamplingIntervalToRate(GetSamplingInterval(s.DAQConfigWave, params.channelType)) * KILO_TO_ONE
+		params.stimSet                 = IPNWB_PLACEHOLDER
 
 		switch(params.channelType)
 			case IPNWB_CHANNEL_TYPE_ADC:
@@ -1321,7 +1323,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 				break
 			case IPNWB_CHANNEL_TYPE_DAC:
 				path = "/stimulus/presentation"
-				WAVE/T/Z params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+				WAVE/Z/T params.epochs = EP_FetchEpochs_TS(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
 				break
 			default:
 				ASSERT_TS(0, "Unexpected channel type")
@@ -1339,8 +1341,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 End
 
 /// @brief Clear all entries which are channel specific
-threadsafe static Function NWB_ClearWriteChannelParams(s)
-	STRUCT WriteChannelParams &s
+threadsafe static Function NWB_ClearWriteChannelParams(STRUCT WriteChannelParams &s)
 
 	string device
 	variable sweep, startingTime, samplingRate, groupIndex
@@ -1374,9 +1375,7 @@ End
 /// @param locationID		                                      Open HDF5 group or file identifier
 /// @param custom_wave		                                      Wave reference to the wave that is to be saved
 /// @param compressionMode [optional, defaults to NO_COMPRESSION] Type of compression to use, one of @ref CompressionMode
-static Function NWB_WriteStimsetCustomWave(nwbVersion, locationID, custom_wave, compressionMode)
-	variable nwbVersion, locationID, compressionMode
-	WAVE custom_wave
+static Function NWB_WriteStimsetCustomWave(variable nwbVersion, variable locationID, WAVE custom_wave, variable compressionMode)
 
 	variable groupID, i, numEntries
 	string pathInNWB, custom_wave_name, path
@@ -1412,11 +1411,7 @@ static Function NWB_WriteStimsetCustomWave(nwbVersion, locationID, custom_wave, 
 	HDF5CloseGroup groupID
 End
 
-static Function NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, stimSet, customWaves, compressionMode)
-	variable nwbVersion, locationID
-	string    stimSet
-	WAVE/WAVE customWaves
-	variable  compressionMode
+static Function NWB_WriteStimsetTemplateWaves(variable nwbVersion, variable locationID, string stimSet, WAVE/WAVE customWaves, variable compressionMode)
 
 	variable groupID
 	string name, path
@@ -1501,9 +1496,7 @@ End
 /// @param overwrite    indicate whether the stored stimsets should be deleted if they exist
 ///
 /// @return 1 on error
-static Function NWB_LoadStimset(locationID, stimset, overwrite, [verbose])
-	variable locationID, overwrite, verbose
-	string stimset
+static Function NWB_LoadStimset(variable locationID, string stimset, variable overwrite, [variable verbose])
 
 	variable stimsetType
 	string NWBstimsets, WP_name, WPT_name, SegWvType_name
@@ -1592,9 +1585,7 @@ End
 /// @param overwrite   indicate whether the stored custom wave should be deleted if it exists
 ///
 /// @return 1 on error and 0 on success
-Function NWB_LoadCustomWave(locationID, fullPath, overwrite)
-	variable locationID, overwrite
-	string fullPath
+Function NWB_LoadCustomWave(variable locationID, string fullPath, variable overwrite)
 
 	string pathInNWB
 
@@ -1664,10 +1655,7 @@ End
 /// @param overwrite        [optional, defaults to false] indicate if the stored stimset should be deleted before the load.
 /// @param loadOnlyBuiltins [optional, defaults to false] load only builtin stimsets
 /// @return 1 on error and 0 on success
-Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
-	variable overwrite
-	string   fileName
-	variable loadOnlyBuiltins
+Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable loadOnlyBuiltins])
 
 	variable fileID, groupID, error, numStimsets, i, refNum
 	string stimsets, stimset, suffix, fullPath
@@ -1745,9 +1733,7 @@ End
 /// @param overwrite         indicate whether the stored stimsets should be deleted if they exist
 ///
 /// @return 1 on error and 0 on success
-Function NWB_LoadStimsets(groupID, stimsets, overwrite, [processedStimsets])
-	variable groupID, overwrite
-	string stimsets, processedStimsets
+Function NWB_LoadStimsets(variable groupID, string stimsets, variable overwrite, [string processedStimsets])
 
 	string stimset, totalStimsets, newStimsets, oldStimsets
 	variable numBefore, numMoved, numAfter, numNewStimsets, i
@@ -1789,9 +1775,7 @@ End
 /// see AB_LoadCustomWaves() for similar structure
 ///
 /// @return 1 on error and 0 on success
-Function NWB_LoadCustomWaves(groupID, stimsets, overwrite)
-	variable groupID, overwrite
-	string stimsets
+Function NWB_LoadCustomWaves(variable groupID, string stimsets, variable overwrite)
 
 	string custom_waves
 	variable numWaves, i
@@ -1810,6 +1794,7 @@ Function NWB_LoadCustomWaves(groupID, stimsets, overwrite)
 End
 
 threadsafe static Function NWB_GetTimeSeriesProperties(variable nwbVersion, WAVE/T numericalKeys, WAVE numericalValues, STRUCT WriteChannelParams &p, STRUCT TimeSeriesProperties &tsp)
+
 	InitTimeSeriesProperties(tsp, p.channelType, p.clampMode)
 
 	// unassociated channel
@@ -1862,15 +1847,7 @@ threadsafe static Function NWB_GetTimeSeriesProperties(variable nwbVersion, WAVE
 	endif
 End
 
-threadsafe static Function NWB_AddSweepDataSets(numericalKeys, numericalValues, sweep, settingsProp, nwbProp, headstage, tsp, [factor, enabledProp])
-	WAVE/T   numericalKeys
-	WAVE     numericalValues
-	variable sweep
-	string settingsProp, nwbProp
-	variable                     headstage
-	STRUCT TimeSeriesProperties &tsp
-	variable                     factor
-	string                       enabledProp
+threadsafe static Function NWB_AddSweepDataSets(WAVE/T numericalKeys, WAVE numericalValues, variable sweep, string settingsProp, string nwbProp, variable headstage, STRUCT TimeSeriesProperties &tsp, [variable factor, string enabledProp])
 
 	string unit
 	variable col, result
@@ -1905,10 +1882,7 @@ End
 /// @param locationID id of nwb file or notebooks folder
 /// @param notebook name of notebook to be loaded
 /// @param dfr igor data folder where data should be loaded into
-Function NWB_LoadLabNoteBook(locationID, notebook, dfr)
-	variable locationID
-	string   notebook
-	DFREF    dfr
+Function NWB_LoadLabNoteBook(variable locationID, string notebook, DFREF dfr)
 
 	string deviceList, path
 
@@ -1949,9 +1923,9 @@ static Function NWB_AppendLogFileToString(string path, string &str)
 
 	WAVE/Z/T logData = LoadTextFileToWave(path, LOG_FILE_LINE_END)
 	if(WaveExists(logData))
-		now       = GetISO8601TimeStamp()
-		firstDate = ParseISO8601TimeStamp(now[0, 9] + "T00:00:00Z")
-		lastDate  = Inf
+		now                          = GetISO8601TimeStamp()
+		firstDate                    = ParseISO8601TimeStamp(now[0, 9] + "T00:00:00Z")
+		lastDate                     = Inf
 		[WAVE/T partData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
 		if(WaveExists(partData))
 			WAVE/WAVE splitContents = SplitLogDataBySize(partData, LOG_FILE_LINE_END, STRING_MAX_SIZE - MEGABYTE)
@@ -1966,8 +1940,7 @@ static Function NWB_AppendLogFileToString(string path, string &str)
 	str += "\n" + LOGFILE_NWB_MARKER + "\n" + data
 End
 
-static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
-	variable nwbVersion, locationID
+static Function NWB_AppendIgorHistoryAndLogFile(variable nwbVersion, variable locationID)
 
 	variable groupID
 	string history, name

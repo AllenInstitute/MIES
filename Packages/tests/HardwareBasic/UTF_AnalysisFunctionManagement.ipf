@@ -117,6 +117,7 @@ static Function ChangeAnalysisFunctions_IGNORE()
 End
 
 Function RewriteAnalysisFunctions_IGNORE()
+
 	LoadStimsets()
 	ChangeAnalysisFunctions_IGNORE()
 	SaveStimsets()
@@ -124,8 +125,7 @@ End
 
 // invalid analysis functions
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT1([str])
-	string str
+static Function AFT1([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                    + \
@@ -139,8 +139,7 @@ static Function AFT1([str])
 	endtry
 End
 
-static Function AFT1_REENTRY([str])
-	string str
+static Function AFT1_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -152,42 +151,41 @@ static Function AFT1_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // can not call prototype analysis functions as they reside in the wrong file
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT2([str])
-	string str
+static Function AFT2([string str])
 
 	variable sweepNo
 
@@ -203,8 +201,7 @@ static Function AFT2([str])
 	endtry
 End
 
-static Function AFT2_REENTRY([str])
-	string str
+static Function AFT2_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -216,42 +213,41 @@ static Function AFT2_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // uses a valid V1 function and got calls for all events except post set
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT3([str])
-	string str
+static Function AFT3([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
@@ -259,8 +255,7 @@ static Function AFT3([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT3_REENTRY([str])
-	string str
+static Function AFT3_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -282,49 +277,48 @@ static Function AFT3_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // uses a valid V1 function and got calls for all events including post set
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT4([str])
-	string str
+static Function AFT4([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                       + \
@@ -332,8 +326,7 @@ static Function AFT4([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT4_REENTRY([str])
-	string str
+static Function AFT4_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -355,49 +348,48 @@ static Function AFT4_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // uses a valid V2 function and got calls for all events except post set
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT5([str])
-	string str
+static Function AFT5([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
@@ -405,8 +397,7 @@ static Function AFT5([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT5_REENTRY([str])
-	string str
+static Function AFT5_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -428,40 +419,39 @@ static Function AFT5_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 End
 
 // uses a valid V2 function and got calls for all events including post set
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT6([str])
-	string str
+static Function AFT6([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                       + \
@@ -469,8 +459,7 @@ static Function AFT6([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT6_REENTRY([str])
-	string str
+static Function AFT6_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -492,49 +481,48 @@ static Function AFT6_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // uses a valid V3 function and got calls for all events including post set
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT6a([str])
-	string str
+static Function AFT6a([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                       + \
@@ -542,8 +530,7 @@ static Function AFT6a([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT6a_REENTRY([str])
-	string str
+static Function AFT6a_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -565,35 +552,35 @@ static Function AFT6a_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V3", "", "", "", "", "", "", "", ""})
 End
@@ -602,8 +589,7 @@ End
 // The wavebuilder does not store other analysis functions if the generic name is set.
 // That is the reason why they are in the labnotebook but not called.
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT6b([str])
-	string str
+static Function AFT6b([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
@@ -611,8 +597,7 @@ static Function AFT6b([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT6b_REENTRY([str])
-	string str
+static Function AFT6b_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -634,50 +619,49 @@ static Function AFT6b_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V3", "", "", "", "", "", "", "", ""})
 End
 
 // ana func called for each headstage
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT7([str])
-	string str
+static Function AFT7([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                             + \
@@ -686,8 +670,7 @@ static Function AFT7([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT7_REENTRY([str])
-	string str
+static Function AFT7_REENTRY([string str])
 
 	variable sweepNo, i, numHeadstages
 	string key
@@ -719,49 +702,48 @@ static Function AFT7_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // not called if attached to TTL stimsets
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT8([str])
-	string str
+static Function AFT8([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                         + \
@@ -770,8 +752,7 @@ static Function AFT8([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT8_REENTRY([str])
-	string str
+static Function AFT8_REENTRY([string str])
 
 	variable sweepNo, i, numHeadstages
 	string key
@@ -783,42 +764,41 @@ static Function AFT8_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // does not call some ana funcs if aborted
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT9([str])
-	string str
+static Function AFT9([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                          + \
@@ -827,8 +807,7 @@ static Function AFT9([str])
 	CtrlNamedBackGround Abort_ITI_PressAcq, start=(ticks + 3), period=30, proc=StopAcq_IGNORE
 End
 
-static Function AFT9_REENTRY([str])
-	string str
+static Function AFT9_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -851,15 +830,14 @@ static Function AFT9_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V3", "", "", "", "", "", "", "", ""})
 End
 
 // DAQ works if the analysis function can not be found
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT10([str])
-	string str
+static Function AFT10([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
@@ -867,8 +845,7 @@ static Function AFT10([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT10_REENTRY([str])
-	string str
+static Function AFT10_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -880,42 +857,41 @@ static Function AFT10_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // calls correct analysis functions
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT11([str])
-	string str
+static Function AFT11([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                     + \
@@ -923,8 +899,7 @@ static Function AFT11([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT11_REENTRY([str])
-	string str
+static Function AFT11_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -947,50 +922,49 @@ static Function AFT11_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"preDAQ", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"preSet", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"preSweepConfig", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"midSweep", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"postSweep", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"postSet", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"postDAQ", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // abort early results in other analysis functions not being called
 // preDAQ
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT12([str])
-	string str
+static Function AFT12([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_FAR0"                       + \
@@ -1005,8 +979,7 @@ static Function AFT12([str])
 	endtry
 End
 
-static Function AFT12_REENTRY([str])
-	string str
+static Function AFT12_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1030,43 +1003,42 @@ static Function AFT12_REENTRY([str])
 	WAVE/T textualValues = GetLBTextualValues(str)
 
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // abort early results in other analysis functions not being called
 // midSweep
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT13([str])
-	string str
+static Function AFT13([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
@@ -1075,8 +1047,7 @@ static Function AFT13([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT13_REENTRY([str])
-	string str
+static Function AFT13_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1100,41 +1071,40 @@ static Function AFT13_REENTRY([str])
 	WAVE/T textualValues = GetLBTextualValues(str)
 
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"StopMidSweep", "StopMidSweep", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
-static Function AFT14_PreInit(device)
-	string device
+static Function AFT14_PreInit(string device)
 
 	string stimSet = "AnaFuncParams1_DA_0"
 	// use all lower case name for MyVar
@@ -1149,8 +1119,7 @@ End
 // tests also that no type parameters
 // in Params1_V3_GetParams() are okay
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14([str])
-	string str
+static Function AFT14([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
@@ -1158,8 +1127,7 @@ static Function AFT14([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT14_REENTRY([str])
-	string str
+static Function AFT14_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1183,45 +1151,44 @@ static Function AFT14_REENTRY([str])
 	WAVE/T textualValues = GetLBTextualValues(str)
 
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"Params1_V3", "", "", "", "", "", "", "", ""})
 
 	key = ANALYSIS_FUNCTION_PARAMS_LBN
-	WAVE/T/Z anaFuncParams = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncParams = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncParams, TEXT_WAVE)
 End
 
-static Function AFT14a_PreInit(device)
-	string device
+static Function AFT14a_PreInit(string device)
 
 	string stimSet = "AnaFuncParams2_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
@@ -1230,8 +1197,7 @@ End
 
 // test parameter handling with valid type string and optional parameter
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14a([str])
-	string str
+static Function AFT14a([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
@@ -1239,8 +1205,7 @@ static Function AFT14a([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT14a_REENTRY([str])
-	string str
+static Function AFT14a_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1262,8 +1227,7 @@ static Function AFT14a_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function AFT14b_PreInit(device)
-	string device
+static Function AFT14b_PreInit(string device)
 
 	string stimSet = "AnaFuncParams3_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
@@ -1271,8 +1235,7 @@ End
 
 // test parameter handling with non-matching type string
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14b([str])
-	string str
+static Function AFT14b([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
@@ -1286,8 +1249,7 @@ static Function AFT14b([str])
 	endtry
 End
 
-static Function AFT14b_REENTRY([str])
-	string str
+static Function AFT14b_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1309,8 +1271,7 @@ static Function AFT14b_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function AFT14c_PreInit(device)
-	string device
+static Function AFT14c_PreInit(string device)
 
 	string stimSet = "AnaFuncParams4_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
@@ -1318,8 +1279,7 @@ End
 
 // test parameter handling with invalid type string
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14c([str])
-	string str
+static Function AFT14c([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
@@ -1333,8 +1293,7 @@ static Function AFT14c([str])
 	endtry
 End
 
-static Function AFT14c_REENTRY([str])
-	string str
+static Function AFT14c_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1356,8 +1315,7 @@ static Function AFT14c_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function AFT14d_PreInit(device)
-	string device
+static Function AFT14d_PreInit(string device)
 
 	string stimSet = "AnaFuncParams5_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "INVALIDCONTENT")
@@ -1367,8 +1325,7 @@ End
 // test parameter handling with analysis parameter check and help function and
 // non-passing check
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14d([str])
-	string str
+static Function AFT14d([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
@@ -1382,8 +1339,7 @@ static Function AFT14d([str])
 	endtry
 End
 
-static Function AFT14d_REENTRY([str])
-	string str
+static Function AFT14d_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1405,8 +1361,7 @@ static Function AFT14d_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function AFT14e_PreInit(device)
-	string device
+static Function AFT14e_PreInit(string device)
 
 	string stimSet = "AnaFuncParams5_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
@@ -1418,8 +1373,7 @@ End
 // - Help also asserts out but that is silently ignored
 // - Asserting out is equal to not passing the check function
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14e([str])
-	string str
+static Function AFT14e([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
@@ -1433,8 +1387,7 @@ static Function AFT14e([str])
 	endtry
 End
 
-static Function AFT14e_REENTRY([str])
-	string str
+static Function AFT14e_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1456,8 +1409,7 @@ static Function AFT14e_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function AFT14f_PreInit(device)
-	string device
+static Function AFT14f_PreInit(string device)
 
 	string stimSet = "AnaFuncParams5_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
@@ -1467,8 +1419,7 @@ End
 // test parameter handling with analysis parameter check and help function
 // - Checks pass
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14f([str])
-	string str
+static Function AFT14f([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
@@ -1477,8 +1428,7 @@ static Function AFT14f([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT14f_REENTRY([str])
-	string str
+static Function AFT14f_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1500,8 +1450,7 @@ static Function AFT14f_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function AFT14g_PreInit(device)
-	string device
+static Function AFT14g_PreInit(string device)
 
 	string stimSet = "AnaFuncParams5_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
@@ -1511,8 +1460,7 @@ End
 // - Checks pass, MyNum is not present and optional and is therefore not checked
 //   (the check would assert out)
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14g([str])
-	string str
+static Function AFT14g([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
@@ -1521,8 +1469,7 @@ static Function AFT14g([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT14g_REENTRY([str])
-	string str
+static Function AFT14g_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1544,8 +1491,7 @@ static Function AFT14g_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function AFT14h_PreInit(device)
-	string device
+static Function AFT14h_PreInit(string device)
 
 	string stimSet = "AnaFuncParams6_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
@@ -1553,8 +1499,7 @@ End
 
 // test parameter handling with new analysis parameter check signature
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14h([str])
-	string str
+static Function AFT14h([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
@@ -1563,8 +1508,7 @@ static Function AFT14h([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT14h_REENTRY([str])
-	string str
+static Function AFT14h_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1586,8 +1530,7 @@ static Function AFT14h_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function AFT14i_PreInit(device)
-	string device
+static Function AFT14i_PreInit(string device)
 
 	string stimSet = "AnaFuncParams7_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyVar", var = 1)
@@ -1595,8 +1538,7 @@ End
 
 // parameter MyVar is neither required nor optional as no _GetParams is present but still checked
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14i([str])
-	string str
+static Function AFT14i([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
@@ -1610,8 +1552,7 @@ static Function AFT14i([str])
 	endtry
 End
 
-static Function AFT14j_PreInit(device)
-	string device
+static Function AFT14j_PreInit(string device)
 
 	string stimSet = "AnaFuncParams1_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyVar", str = "abcd")
@@ -1625,8 +1566,7 @@ End
 
 // parameter MyVar is present but neither required nor optional and we have a _GetParams function
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT14j([str])
-	string str
+static Function AFT14j([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_FAR0"                   + \
@@ -1642,8 +1582,7 @@ End
 
 // MD: mid sweep event is also called for very short stimsets
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT15([str])
-	string str
+static Function AFT15([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_ITP0"                     + \
@@ -1652,8 +1591,7 @@ static Function AFT15([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT15_REENTRY([str])
-	string str
+static Function AFT15_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1677,8 +1615,7 @@ End
 
 // SD: mid sweep event is also called for very short stimsets
 // UTF_TD_GENERATOR DeviceNameGeneratorMD0
-static Function AFT16([str])
-	string str
+static Function AFT16([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_ITP0"                     + \
@@ -1687,8 +1624,7 @@ static Function AFT16([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT16_REENTRY([str])
-	string str
+static Function AFT16_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1712,8 +1648,7 @@ End
 
 // Calling Abort during pre DAQ event will prevent DAQ
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT17([str])
-	string str
+static Function AFT17([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG1_FAR0"                     + \
@@ -1730,8 +1665,7 @@ static Function AFT17([str])
 	endtry
 End
 
-static Function AFT17_REENTRY([str])
-	string str
+static Function AFT17_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1757,8 +1691,7 @@ End
 // We index from AnaFuncIdx1_DA_0 to AnaFuncIdx2_DA_0
 // but only the second one has a analysis function set
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT18([str])
-	string str
+static Function AFT18([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG1_RES2"                                      + \
@@ -1767,8 +1700,7 @@ static Function AFT18([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT18_REENTRY([str])
-	string str
+static Function AFT18_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1802,8 +1734,7 @@ End
 
 // check that pre-set-event can abort
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT19([str])
-	string str
+static Function AFT19([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                          + \
@@ -1812,8 +1743,7 @@ static Function AFT19([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT19_REENTRY([str])
-	string str
+static Function AFT19_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1837,8 +1767,7 @@ End
 
 // check that pre sweep config can abort
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT19a([str])
-	string str
+static Function AFT19a([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                         + \
@@ -1847,8 +1776,7 @@ static Function AFT19a([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT19a_REENTRY([str])
-	string str
+static Function AFT19a_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1872,8 +1800,7 @@ End
 
 // check total ordering of events via timestamps
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT20([str])
-	string str
+static Function AFT20([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
@@ -1882,8 +1809,7 @@ static Function AFT20([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT20_REENTRY([str])
-	string str
+static Function AFT20_REENTRY([string str])
 
 	variable sweepNo
 
@@ -1905,8 +1831,7 @@ End
 
 // it possible to change the stimset in POST DAQ event
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT21([str])
-	string str
+static Function AFT21([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                        + \
@@ -1915,8 +1840,7 @@ static Function AFT21([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT21_REENTRY([str])
-	string str
+static Function AFT21_REENTRY([string str])
 
 	variable sweepNo
 	string stimset, expected
@@ -1927,7 +1851,7 @@ static Function AFT21_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
 	WAVE/T   textualValues = GetLBTextualValues(str)
-	WAVE/T/Z foundStimSets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	WAVE/Z/T foundStimSets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 
 	REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"AnaFuncPostDAQ_DA_0", "", "", "", "", "", "", "", ""})
@@ -1939,8 +1863,7 @@ End
 
 // POST_SET_EVENT works with only HS1 active
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function AFT22([str])
-	string str
+static Function AFT22([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                          + \
@@ -1949,8 +1872,7 @@ static Function AFT22([str])
 	AcquireData_NG(s, str)
 End
 
-static Function AFT22_REENTRY([str])
-	string str
+static Function AFT22_REENTRY([string str])
 
 	variable sweepNo
 	string   key
@@ -1973,48 +1895,47 @@ static Function AFT22_REENTRY([str])
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function CanModifyStimsetInPreSweepConfig([str])
-	string str
+static Function CanModifyStimsetInPreSweepConfig([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                        + \
@@ -2023,8 +1944,7 @@ static Function CanModifyStimsetInPreSweepConfig([str])
 	AcquireData_NG(s, str)
 End
 
-static Function CanModifyStimsetInPreSweepConfig_REENTRY([str])
-	string str
+static Function CanModifyStimsetInPreSweepConfig_REENTRY([string str])
 
 	variable sweepNo, var
 	string key, stimset
@@ -2074,8 +1994,7 @@ static Function [WAVE entryHS1, WAVE entryHS2] GetLastSweepLBNEntries(WAVE numer
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function CheckLastSweepInSetWithoutSkipping([str])
-	string str
+static Function CheckLastSweepInSetWithoutSkipping([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                                                       + \
@@ -2085,8 +2004,7 @@ static Function CheckLastSweepInSetWithoutSkipping([str])
 	AcquireData_NG(s, str)
 End
 
-static Function CheckLastSweepInSetWithoutSkipping_REENTRY([str])
-	string str
+static Function CheckLastSweepInSetWithoutSkipping_REENTRY([string str])
 
 	variable sweepNo, entry
 	string key

@@ -13,9 +13,7 @@
 ///
 /// @param device device
 /// @param forcedStop [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
-Function SWS_SaveAcquiredData(device, [forcedStop])
-	string   device
-	variable forcedStop
+Function SWS_SaveAcquiredData(string device, [variable forcedStop])
 
 	variable sweepNo, plannedTime, acquiredTime
 	string sweepName, configName
@@ -37,11 +35,11 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 	DFREF dfr = GetDeviceDataPath(device)
 
 	configName = GetConfigWaveName(sweepNo)
-	WAVE/SDFR=dfr/Z configWave = $configName
+	WAVE/Z/SDFR=dfr configWave = $configName
 	ASSERT(!WaveExists(configWave), "The config wave must not exist, name=" + configName)
 
 	sweepName = GetSweepWaveName(sweepNo)
-	WAVE/SDFR=dfr/Z sweepWave = $sweepName
+	WAVE/Z/SDFR=dfr sweepWave = $sweepName
 	ASSERT(!WaveExists(sweepWave), "The sweep wave must not exist, name=" + sweepName)
 
 	[plannedTime, acquiredTime] = SWS_ProcessDATTLChannelsOnEarlyAcqStop(device, scaledDataWave, hardwareConfigWave)
@@ -151,6 +149,7 @@ Function [variable plannedTime, variable acquiredTime] SWS_DeterminePlannedAndAc
 End
 
 static Function SWS_SweepSettingsEpochInfoToLBN(string device, variable sweepNo)
+
 	variable idx
 
 	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(device)
@@ -170,7 +169,7 @@ End
 /// @param device device name
 static Function SWS_AfterSweepDataChangeHook(string device)
 
-	WAVE/T/Z allDBs = DB_FindAllDataBrowser(device, mode = BROWSER_MODE_ALL)
+	WAVE/Z/T allDBs = DB_FindAllDataBrowser(device, mode = BROWSER_MODE_ALL)
 
 	if(!WaveExists(allDBs))
 		return NaN
@@ -223,9 +222,7 @@ End
 /// @param timing     One of @ref GainTimeParameter
 ///
 /// @see GetDAQDataWave()
-Function/WAVE SWS_GetChannelGains(device, [timing])
-	string   device
-	variable timing
+Function/WAVE SWS_GetChannelGains(string device, [variable timing])
 
 	variable numDACs, numADCs, numTTLs
 	variable numCols, hardwareType
@@ -293,8 +290,7 @@ End
 /// @brief Return the floating point type for storing the raw data
 ///
 /// The returned values are the same as for `WaveType`
-Function SWS_GetRawDataFPType(device)
-	string device
+Function SWS_GetRawDataFPType(string device)
 
 	return DAG_GetNumericalValue(device, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT
 End

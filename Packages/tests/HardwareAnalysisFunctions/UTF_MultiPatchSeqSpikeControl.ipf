@@ -140,11 +140,11 @@ End
 
 // UTF_TD_GENERATOR SpikeCountsStateValues
 static Function TestSpikeCounts([WAVE vals])
+
 	CHECK_EQUAL_VAR(MIES_SC#SC_SpikeCountsCalcDetail(vals[%minimum], vals[%maximum], vals[%idealNumber]), vals[%expectedState])
 End
 
-static Function SC_Test1_preInit(device)
-	string device
+static Function SC_Test1_preInit(string device)
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
@@ -158,8 +158,7 @@ static Function SC_Test1_preInit(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SC_Test1([str])
-	string str
+static Function SC_Test1([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -173,8 +172,7 @@ static Function SC_Test1([str])
 	wv[][][][]      += "SpontaneousSpikeMax:0.5"
 End
 
-static Function SC_Test1_REENTRY([str])
-	string str
+static Function SC_Test1_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts
@@ -228,8 +226,7 @@ static Function SC_Test1_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-static Function SC_Test2_preInit(device)
-	string device
+static Function SC_Test2_preInit(string device)
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
@@ -243,8 +240,7 @@ static Function SC_Test2_preInit(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SC_Test2([str])
-	string str
+static Function SC_Test2([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -259,8 +255,7 @@ static Function SC_Test2([str])
 	wv[][][][]         += "SpontaneousSpikeMax:0.5"
 End
 
-static Function SC_Test2_REENTRY([str])
-	string str
+static Function SC_Test2_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, spikePos
@@ -317,8 +312,7 @@ static Function SC_Test2_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function SC_Test3_preInit(device)
-	string device
+static Function SC_Test3_preInit(string device)
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
@@ -332,8 +326,7 @@ static Function SC_Test3_preInit(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SC_Test3([str])
-	string str
+static Function SC_Test3([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -348,8 +341,7 @@ static Function SC_Test3([str])
 	wv[][][][]         += "SpontaneousSpikeMax:0.5"
 End
 
-static Function SC_Test3_REENTRY([str])
-	string str
+static Function SC_Test3_REENTRY([string str])
 
 	variable sweepNo, autobiasV, hwType
 	string lbl, failedPulses, spikeCounts, spikePos
@@ -415,8 +407,7 @@ static Function SC_Test3_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function SC_Test4_preInit(device)
-	string device
+static Function SC_Test4_preInit(string device)
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
@@ -430,8 +421,7 @@ static Function SC_Test4_preInit(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SC_Test4([str])
-	string str
+static Function SC_Test4([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -446,8 +436,7 @@ static Function SC_Test4([str])
 	wv[][][][]         += "SpontaneousSpikeMax:0.5"
 End
 
-static Function SC_Test4_REENTRY([str])
-	string str
+static Function SC_Test4_REENTRY([string str])
 
 	variable sweepNo, autobiasV, hwType
 	string lbl, failedPulses, spikeCounts, spikePos
@@ -513,8 +502,7 @@ static Function SC_Test4_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function SC_Test5_preInit(device)
-	string device
+static Function SC_Test5_preInit(string device)
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
@@ -528,8 +516,7 @@ static Function SC_Test5_preInit(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SC_Test5([str])
-	string str
+static Function SC_Test5([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -545,8 +532,7 @@ static Function SC_Test5([str])
 	wv[][][][]         += "SpontaneousSpikeMax:1.5"
 End
 
-static Function SC_Test5_REENTRY([str])
-	string str
+static Function SC_Test5_REENTRY([string str])
 
 	variable sweepNo, autobiasV, hwType
 	string lbl, failedPulses, spikeCounts, spikePos
@@ -612,8 +598,7 @@ static Function SC_Test5_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-static Function SC_Test6_preInit(device)
-	string device
+static Function SC_Test6_preInit(string device)
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
@@ -627,8 +612,7 @@ static Function SC_Test6_preInit(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SC_Test6([str])
-	string str
+static Function SC_Test6([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -643,8 +627,7 @@ static Function SC_Test6([str])
 	wv[][][][]         += "SpontaneousSpikeMax:0.5"
 End
 
-static Function SC_Test6_REENTRY([str])
-	string str
+static Function SC_Test6_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, spikePos
@@ -701,8 +684,7 @@ static Function SC_Test6_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function SC_Test7_preInit(device)
-	string device
+static Function SC_Test7_preInit(string device)
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
@@ -716,8 +698,7 @@ static Function SC_Test7_preInit(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SC_Test7([str])
-	string str
+static Function SC_Test7([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -744,8 +725,7 @@ static Function SC_Test7([str])
 	wv[][][][] += ";SpontaneousSpikeMax:0.5"
 End
 
-static Function SC_Test7_REENTRY([str])
-	string str
+static Function SC_Test7_REENTRY([string str])
 
 	variable sweepNo, hwType
 	string spikeCounts, spikePos
@@ -823,8 +803,7 @@ static Function SC_Test7_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-static Function SC_Test8_preInit(device)
-	string device
+static Function SC_Test8_preInit(string device)
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 2)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "*")
@@ -838,8 +817,7 @@ static Function SC_Test8_preInit(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SC_Test8([str])
-	string str
+static Function SC_Test8([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -853,7 +831,7 @@ static Function SC_Test8([str])
 	// sweep 0, HS0: Too few (SPF)
 	// sweep 0, HS1: Good (SPF)
 
-	wv[0][0][][0, 1] = ""                   // no spike
+	wv[0][0][][0, 1] = "" // no spike
 	wv[0][1][][0, 1] = "SpikePosition_ms:4"
 
 	// sweep 1, HS0: Good (SPF)
@@ -872,13 +850,12 @@ static Function SC_Test8([str])
 	// sweep 3, HS1: Too Few (SPF)
 
 	wv[3][0][][0, 1] = "SpikePosition_ms:6.5"
-	wv[3][1][][0, 1] = ""                     // no spike
+	wv[3][1][][0, 1] = "" // no spike
 
 	wv[][][][] += ";SpontaneousSpikeMax:0.5"
 End
 
-static Function SC_Test8_REENTRY([str])
-	string str
+static Function SC_Test8_REENTRY([string str])
 
 	variable sweepNo, hwType
 	string spikeCounts, spikePos
@@ -964,8 +941,7 @@ static Function SC_Test8_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function SC_Test9_preInit(device)
-	string device
+static Function SC_Test9_preInit(string device)
 
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var = 1.5)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str = "+")
@@ -978,15 +954,13 @@ static Function SC_Test9_preInit(device)
 	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var = 1)
 End
 
-static Function SC_Test9_preAcq(device)
-	string device
+static Function SC_Test9_preAcq(string device)
 
 	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val = 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SC_Test9([str])
-	string str
+static Function SC_Test9([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1002,8 +976,7 @@ static Function SC_Test9([str])
 	wv[][0][][]         += "SpontaneousSpikeMax:0.5"
 End
 
-static Function SC_Test9_REENTRY([str])
-	string str
+static Function SC_Test9_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, spikePos

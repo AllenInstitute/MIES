@@ -13,6 +13,7 @@ static Function [STRUCT DAQSettings s] AutoTP_GetDAQSettings(string device)
 End
 
 static Function GlobalPreAcq(string device)
+
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
 End
@@ -71,7 +72,7 @@ static Function AutoTP_OptimumValues_preAcq(string device)
 	// 2 HS in IC mode
 	// both have the ideal values
 	overrideResults[][0, 1][%Factor]            = TP_BASELINE_RATIO_OPT
-	overrideResults[][0, 1][%Voltage]           = 0.015                     // V
+	overrideResults[][0, 1][%Voltage]           = 0.015 // V
 	overrideResults[][0, 1][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = 1)
@@ -125,7 +126,7 @@ static Function AutoTP_BadValues_preAcq(string device)
 	// 2 HS in IC mode
 	// both have very bad values, the fit is good
 	overrideResults[][0, 1][%Factor]            = TP_BASELINE_RATIO_LOW / 4
-	overrideResults[][0, 1][%Voltage]           = 0.020                     // V
+	overrideResults[][0, 1][%Voltage]           = 0.020 // V
 	overrideResults[][0, 1][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = 1)
@@ -176,12 +177,12 @@ static Function AutoTP_MixedOptimumBadValues_preAcq(string device)
 
 	// HS0: ideal values
 	overrideResults[][0][%Factor]            = TP_BASELINE_RATIO_OPT
-	overrideResults[][0][%Voltage]           = 0.015                     // V
+	overrideResults[][0][%Voltage]           = 0.015 // V
 	overrideResults[][0][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
 
 	// HS1: bad values
 	overrideResults[][1][%Factor]            = TP_BASELINE_RATIO_LOW / 4
-	overrideResults[][1][%Voltage]           = 0.020                     // V
+	overrideResults[][1][%Voltage]           = 0.020 // V
 	overrideResults[][1][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = 1)
@@ -195,6 +196,7 @@ End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function AutoTP_MixedOptimumBadValues([string str])
+
 	[STRUCT DAQSettings s] = AutoTP_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 End
@@ -230,7 +232,7 @@ static Function AutoTP_SpecialCases_preAcq(string device)
 
 	// 2 HS in IC mode
 	overrideResults[][0, 1][%Factor]  = TP_BASELINE_RATIO_OPT
-	overrideResults[][0, 1][%Voltage] = 0.050                 // V
+	overrideResults[][0, 1][%Voltage] = 0.050 // V
 
 	overrideResults[][0, 1][%BaselineFitResult] = TP_BASELINE_FIT_RESULT_OK
 
@@ -257,6 +259,7 @@ static Function AutoTP_SpecialCases([string str])
 End
 
 static Function AutoTP_SpecialCases_REENTRY([string str])
+
 	WAVE TPStorage = GetTPstorage(str)
 
 	WAVE/WAVE entries = GetLBNSingleEntry_IGNORE(str)

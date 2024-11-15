@@ -48,8 +48,7 @@ static Constant DELTA_OPERATION_EXPLICIT = 6
 /// in the datafolder hierarchy
 ///
 /// @return stimset wave ref or an invalid wave ref
-Function/WAVE WB_CreateAndGetStimSet(setName)
-	string setName
+Function/WAVE WB_CreateAndGetStimSet(string setName)
 
 	variable type, needToCreateStimSet
 
@@ -90,9 +89,7 @@ End
 /// @param type      indicate parameter wave (WP, WPT, or SegWvType), see @ref ParameterWaveTypes
 /// @param nwbFormat [optional, defaults to false] nwbFormat has type as suffix
 /// @return name as string
-Function/S WB_GetParameterWaveName(stimset, type, [nwbFormat])
-	string stimset
-	variable type, nwbFormat
+Function/S WB_GetParameterWaveName(string stimset, variable type, [variable nwbFormat])
 
 	string shortname, fullname
 
@@ -116,8 +113,7 @@ End
 /// @brief Return the wave `WP` for a stim set
 ///
 /// @return valid/invalid wave reference
-Function/WAVE WB_GetWaveParamForSet(setName)
-	string setName
+Function/WAVE WB_GetWaveParamForSet(string setName)
 
 	variable type
 
@@ -141,8 +137,7 @@ End
 /// @brief Return the wave `WPT` for a stim set
 ///
 /// @return valid/invalid wave reference
-Function/WAVE WB_GetWaveTextParamForSet(setName)
-	string setName
+Function/WAVE WB_GetWaveTextParamForSet(string setName)
 
 	variable type
 
@@ -166,8 +161,7 @@ End
 /// @brief Return the wave `SegmentWvType` for a stim set
 ///
 /// @return valid/invalid wave reference
-Function/WAVE WB_GetSegWvTypeForSet(setName)
-	string setName
+Function/WAVE WB_GetSegWvTypeForSet(string setName)
 
 	variable type
 
@@ -195,8 +189,7 @@ End
 ///     * the custom wave that was used to build the stimset was modified
 ///
 /// @return 1 if stimset needs to be recreated, 0 otherwise
-static Function WB_StimsetNeedsUpdate(setName)
-	string setName
+static Function WB_StimsetNeedsUpdate(string setName)
 
 	string stimsets
 	variable lastModStimSet, numWaves, numStimsets, i
@@ -231,8 +224,8 @@ static Function WB_StimsetNeedsUpdate(setName)
 End
 
 /// @brief Check if the stimset wave note has the latest version
-static Function WB_StimsetHasLatestNoteVersion(setName)
-	string   setName
+static Function WB_StimsetHasLatestNoteVersion(string setName)
+
 	variable type
 
 	type = WB_GetStimSetType(setName)
@@ -256,8 +249,7 @@ End
 /// @param setName	string containing name of stimset
 ///
 /// @return 1 if Parameter waves were modified, 0 otherwise
-static Function WB_ParameterWvsNewerThanStim(setName)
-	string setName
+static Function WB_ParameterWvsNewerThanStim(string setName)
 
 	variable lastModStimSet, lastModWP, lastModWPT, lastModSegWvType, channelType
 	string msg, WPModCount, WPTModCount, SegWvTypeModCount
@@ -311,10 +303,7 @@ End
 /// @brief Return a checksum of the stimsets and its parameter waves.
 ///
 /// Uses the entry from the stimset wave note if available.
-Function WB_GetStimsetChecksum(stimset, setName, dataAcqOrTP)
-	WAVE     stimset
-	string   setName
-	variable dataAcqOrTP
+Function WB_GetStimsetChecksum(WAVE stimset, string setName, variable dataAcqOrTP)
 
 	variable crc
 
@@ -333,9 +322,7 @@ Function WB_GetStimsetChecksum(stimset, setName, dataAcqOrTP)
 End
 
 /// @brief Calculcate the checksum of the stimsets and its parameter waves.
-static Function WB_CalculateStimsetChecksum(stimset, setName)
-	WAVE   stimset
-	string setName
+static Function WB_CalculateStimsetChecksum(WAVE stimset, string setName)
 
 	variable crc
 
@@ -358,8 +345,8 @@ End
 ///
 /// @param setName	string containing name of stimset
 /// @return date of last modification as double precision Igor date/time value
-Function WB_GetLastModStimSet(setName)
-	string   setname
+Function WB_GetLastModStimSet(string setName)
+
 	variable channelType
 
 	channelType = WB_GetStimSetType(setName)
@@ -379,6 +366,7 @@ End
 
 /// @brief Return the current stimset wave for the wavebuilder
 Function/WAVE WB_GetStimSetForWaveBuilder()
+
 	return WB_GetStimSet()
 End
 
@@ -389,8 +377,7 @@ End
 /// @param setName [optional, defaults to WaveBuilderPanel GUI settings] name of the set
 /// @return free wave with the stim set, invalid wave ref if the `WP*` parameter waves could
 /// not be found.
-static Function/WAVE WB_GetStimSet([setName])
-	string setName
+static Function/WAVE WB_GetStimSet([string setName])
 
 	variable i, numEpochs, numSweeps, numStimsets, updateEpochIDWave
 	variable last, lengthOf1DWaves, length, channelType
@@ -424,7 +411,7 @@ static Function/WAVE WB_GetStimSet([setName])
 		setName = ""
 	else
 		WAVE/Z   WP        = WB_GetWaveParamForSet(setName)
-		WAVE/T/Z WPT       = WB_GetWaveTextParamForSet(setName)
+		WAVE/Z/T WPT       = WB_GetWaveTextParamForSet(setName)
 		WAVE/Z   SegWvType = WB_GetSegWvTypeForSet(setName)
 		channelType = WB_GetStimSetType(setName)
 
@@ -540,8 +527,7 @@ End
 /// @brief Return a free wave with wave references where the values with delta reside in
 ///
 /// @sa AddDimLabelsToWP()
-static Function/WAVE WB_GetControlWithDeltaWvs(WP, SegWvType)
-	WAVE WP, SegWvType
+static Function/WAVE WB_GetControlWithDeltaWvs(WAVE WP, WAVE SegWvType)
 
 	Make/FREE/WAVE locations = {WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, SegWvType}
 	return locations
@@ -551,10 +537,7 @@ End
 /// given the index into `WP` of the value itself.
 ///
 /// @return 0 on success, 1 otherwise
-Function WB_GetDeltaDimLabel(wv, index, s)
-	WAVE                      wv
-	variable                  index
-	STRUCT DeltaControlNames &s
+Function WB_GetDeltaDimLabel(WAVE wv, variable index, STRUCT DeltaControlNames &s)
 
 	string name
 
@@ -592,12 +575,7 @@ End
 /// @param SegWvTypeOrig segment parameter wave (original)
 /// @param sweep         sweep number
 /// @param numSweeps     total number of sweeps
-static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, SegWvTypeOrig, sweep, numSweeps)
-	string setName
-	WAVE WP, WPOrig
-	WAVE SegWvType, SegWvTypeOrig
-	WAVE/T WPT
-	variable sweep, numSweeps
+static Function WB_AddDelta(string setName, WAVE WP, WAVE WPOrig, WAVE/T WPT, WAVE SegWvType, WAVE SegWvTypeOrig, variable sweep, variable numSweeps)
 
 	variable i, j
 	variable operation
@@ -686,14 +664,7 @@ End
 /// @param[in]      numSweeps     number of sweeps
 /// @param[in]      setName       name of the stimulus set (used for error reporting)
 /// @param[in]      paramName     name of the parameter (used for error reporting)
-static Function WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, numSweeps, setName, paramName)
-	variable  operation
-	variable &value
-	variable &delta
-	variable  dme
-	string    ldelta
-	variable originalValue, sweep, numSweeps
-	string setName, paramName
+static Function WB_CalculateParameterWithDelta(variable operation, variable &value, variable &delta, variable dme, string ldelta, variable originalValue, variable sweep, variable numSweeps, string setName, string paramName)
 
 	string list, entry
 	variable listDelta, numDeltaEntries
@@ -789,12 +760,7 @@ static Structure SegmentParameters
 	variable lastFreq
 EndStructure
 
-static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, channelType, updateEpochIDWave, [stimset])
-	WAVE   WP
-	WAVE/T WPT
-	WAVE   SegWvType
-	variable stepCount, numEpochs, channelType, updateEpochIDWave
-	string stimset
+static Function/WAVE WB_MakeWaveBuilderWave(WAVE WP, WAVE/T WPT, WAVE SegWvType, variable stepCount, variable numEpochs, variable channelType, variable updateEpochIDWave, [string stimset])
 
 	if(ParamIsDefault(stimset))
 		stimset = ""
@@ -1080,9 +1046,7 @@ End
 /// @param[in] epochIndex          index of the epoch
 /// @param[in] epochDuration       duration of the current segment
 /// @param[in] accumulatedDuration accumulated duration in the stimset for the first step
-static Function WB_UpdateEpochID(epochIndex, epochDuration, accumulatedDuration)
-	variable epochIndex, epochDuration
-	variable accumulatedDuration
+static Function WB_UpdateEpochID(variable epochIndex, variable epochDuration, variable accumulatedDuration)
 
 	WAVE epochID = GetEpochID()
 	if(epochIndex == 0)
@@ -1094,9 +1058,7 @@ static Function WB_UpdateEpochID(epochIndex, epochDuration, accumulatedDuration)
 End
 
 /// @brief Query the stimset wave note for the sweep/set specific ITI
-Function WB_GetITI(stimset, sweep)
-	WAVE     stimset
-	variable sweep
+Function WB_GetITI(WAVE stimset, variable sweep)
 
 	variable ITI
 
@@ -1124,9 +1086,7 @@ End
 /// @param wv          WPT wave reference
 /// @param channelType AD/DA or TTL channel type
 /// @param i           index of epoch containing custom wave
-Function WB_UpgradeCustomWaveInWPT(wv, channelType, i)
-	WAVE/T wv
-	variable channelType, i
+Function WB_UpgradeCustomWaveInWPT(WAVE/T wv, variable channelType, variable i)
 
 	string customWaveName = wv[0][i][EPOCH_TYPE_CUSTOM]
 
@@ -1156,8 +1116,7 @@ Function WB_UpgradeCustomWaveInWPT(wv, channelType, i)
 	endif
 End
 
-static Function WB_ApplyOffset(pa)
-	STRUCT SegmentParameters &pa
+static Function WB_ApplyOffset(STRUCT SegmentParameters &pa)
 
 	if(pa.offset == 0)
 		return NaN
@@ -1169,9 +1128,7 @@ static Function WB_ApplyOffset(pa)
 End
 
 /// @brief Initialize the seed value of the pseudo random number generator
-static Function WB_InitializeSeed(WP, SegWvType, epoch, type, stepCount)
-	WAVE WP, SegWvType
-	variable epoch, type, stepCount
+static Function WB_InitializeSeed(WAVE WP, WAVE SegWvType, variable epoch, variable type, variable stepCount)
 
 	variable j, randomSeed, noiseGenMode
 
@@ -1219,15 +1176,13 @@ End
 
 /// @name Functions that build wave types
 ///@{
-static Function WB_SquareSegment(pa)
-	STRUCT SegmentParameters &pa
+static Function WB_SquareSegment(STRUCT SegmentParameters &pa)
 
 	WAVE SegmentWave = GetSegmentWave(duration = pa.duration)
 	MultiThread SegmentWave = pa.amplitude
 End
 
-static Function WB_RampSegment(pa)
-	STRUCT SegmentParameters &pa
+static Function WB_RampSegment(STRUCT SegmentParameters &pa)
 
 	variable amplitudeIncrement = pa.amplitude * WAVEBUILDER_MIN_SAMPINT / pa.duration
 
@@ -1236,8 +1191,7 @@ static Function WB_RampSegment(pa)
 End
 
 /// @brief Check if the given frequency is a valid setting for the noise epoch
-Function WB_IsValidCutoffFrequency(freq)
-	variable freq
+Function WB_IsValidCutoffFrequency(variable freq)
 
 	return WB_IsValidScaledCutoffFrequency(freq / WAVEBUILDER_MIN_SAMPINT_HZ)
 End
@@ -1245,14 +1199,12 @@ End
 /// @brief Check if the given frequency is a valid setting for the noise epoch
 ///
 /// Requires a scaled frequency as input, see `DisplayHelpTopic "FilterIIR"`
-Function WB_IsValidScaledCutoffFrequency(freq)
-	variable freq
+Function WB_IsValidScaledCutoffFrequency(variable freq)
 
 	return freq > 0 && freq <= 0.5
 End
 
-static Function WB_NoiseSegment(pa)
-	STRUCT SegmentParameters &pa
+static Function WB_NoiseSegment(STRUCT SegmentParameters &pa)
 
 	variable samples, filterOrder
 	variable lowPassCutoffScaled, highPassCutoffScaled
@@ -1424,6 +1376,7 @@ End
 ///
 /// \endrst
 static Function [WAVE/D inflectionPoints, WAVE/D inflectionIndices] WB_TrigCalculateInflectionPoints(STRUCT SegmentParameters &pa, variable k0, variable k1, variable k2, variable k3)
+
 	variable i, idx, xzero, offset, lowerBound, upperBound
 
 	if(WB_CheckTrigonometricSegmentParameters(pa))
@@ -1512,17 +1465,14 @@ static Function [WAVE/D inflectionPoints, WAVE/D inflectionIndices] WB_TrigSegme
 	return [inflectionPoints, inflectionIndices]
 End
 
-static Function WB_SawToothSegment(pa)
-	STRUCT SegmentParameters &pa
+static Function WB_SawToothSegment(STRUCT SegmentParameters &pa)
 
 	WAVE SegmentWave = GetSegmentWave(duration = pa.duration)
 
 	MultiThread SegmentWave = pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p) // NOLINT
 End
 
-static Function WB_CreatePulse(wv, pulseType, amplitude, first, last)
-	WAVE wv
-	variable pulseType, amplitude, first, last
+static Function WB_CreatePulse(WAVE wv, variable pulseType, variable amplitude, variable first, variable last)
 
 	if(pulseType == WB_PULSE_TRAIN_TYPE_SQUARE)
 		wv[first, last] = amplitude
@@ -1535,8 +1485,7 @@ static Function WB_CreatePulse(wv, pulseType, amplitude, first, last)
 End
 
 /// @brief Convert the numeric epoch type to a stringified version
-Function/S WB_ToEpochTypeString(epochType)
-	variable epochType
+Function/S WB_ToEpochTypeString(variable epochType)
 
 	switch(epochType)
 		case EPOCH_TYPE_SQUARE_PULSE:
@@ -1564,8 +1513,7 @@ Function/S WB_ToEpochTypeString(epochType)
 End
 
 /// @brief Convert the stringified epoch type to a numerical one
-Function WB_ToEpochType(epochTypeStr)
-	string epochTypeStr
+Function WB_ToEpochType(string epochTypeStr)
 
 	strswitch(epochTypeStr)
 		case "Square pulse":
@@ -1648,11 +1596,7 @@ End
 /// @param key       [optional] named entry to return, not required for #VERSION_ENTRY
 /// @param sweep     [optional] number of the sweep
 /// @param epoch     [optional] number of the epoch
-Function/S WB_GetWaveNoteEntry(text, entryType, [key, sweep, epoch])
-	string   text
-	variable entryType
-	string   key
-	variable sweep, epoch
+Function/S WB_GetWaveNoteEntry(string text, variable entryType, [string key, variable sweep, variable epoch])
 
 	string match, re
 
@@ -1698,11 +1642,7 @@ Function/S WB_GetWaveNoteEntry(text, entryType, [key, sweep, epoch])
 End
 
 // @copydoc WB_GetWaveNoteEntry
-Function WB_GetWaveNoteEntryAsNumber(text, entryType, [key, sweep, epoch])
-	string   text
-	variable entryType
-	string   key
-	variable sweep, epoch
+Function WB_GetWaveNoteEntryAsNumber(string text, variable entryType, [string key, variable sweep, variable epoch])
 
 	string str
 
@@ -1781,7 +1721,7 @@ static Function [WAVE/D pulseStartTimes, WAVE/D pulseStartIndices, WAVE/D pulseE
 		pulseToPulseLength = 0
 
 		for(;;)
-			pulseStartTime += -ln(abs(enoise(1, pa.noiseGenMode))) / pa.frequency * ONE_TO_MILLI
+			pulseStartTime                                    += -ln(abs(enoise(1, pa.noiseGenMode))) / pa.frequency * ONE_TO_MILLI
 			[startIndex, endIndex, startOffset, durationError] = WB_GetIndicesForSignalDuration(pulseStartTime, pa.pulseDuration, WAVEBUILDER_MIN_SAMPINT)
 			if(endIndex >= numRows || endIndex < 0)
 				break
@@ -1892,8 +1832,7 @@ static Function [WAVE/D pulseStartTimes, WAVE/D pulseStartIndices, WAVE/D pulseE
 	return [pulseStartTimes, pulseStartIndices, pulseEndIndices, pulseToPulseLength]
 End
 
-static Function WB_PSCSegment(pa)
-	STRUCT SegmentParameters &pa
+static Function WB_PSCSegment(STRUCT SegmentParameters &pa)
 
 	variable baseline, peak
 
@@ -1915,9 +1854,7 @@ static Function WB_PSCSegment(pa)
 	MultiThread SegmentWave -= baseline
 End
 
-static Function WB_CustomWaveSegment(pa, customWave)
-	STRUCT SegmentParameters &pa
-	WAVE                      customWave
+static Function WB_CustomWaveSegment(STRUCT SegmentParameters &pa, WAVE customWave)
 
 	pa.duration = DimSize(customWave, ROWS) * WAVEBUILDER_MIN_SAMPINT
 	WAVE segmentWave = GetSegmentWave(duration = pa.duration)
@@ -1925,10 +1862,7 @@ static Function WB_CustomWaveSegment(pa, customWave)
 End
 
 /// @brief Create a wave segment as combination of existing stim sets
-static Function/WAVE WB_FillWaveFromFormula(formula, channelType, sweep)
-	string   formula
-	variable channelType
-	variable sweep
+static Function/WAVE WB_FillWaveFromFormula(string formula, variable channelType, variable sweep)
 
 	STRUCT FormulaProperties fp
 	string                   shorthandFormula
@@ -1966,6 +1900,7 @@ End
 /// The rows are sorted by creationDate of the WP/stimset wave to try to keep
 /// the shorthands constants even when new stimsets are added.
 Function WB_UpdateEpochCombineList(WAVE/T epochCombineList, variable channelType)
+
 	string list, setPath, setParamPath, entry
 	variable numEntries, i
 
@@ -1985,7 +1920,7 @@ Function WB_UpdateEpochCombineList(WAVE/T epochCombineList, variable channelType
 
 	for(i = 0; i < numEntries; i += 1)
 		entry = StringFromList(i, list)
-		WAVE/SDFR=dfr/Z stimset = $entry
+		WAVE/Z/SDFR=dfr stimset = $entry
 		WAVE/Z          WP      = WB_GetWaveParamForSet(entry)
 
 		if(WaveExists(WP))
@@ -2008,8 +1943,7 @@ End
 /// @brief Generate a unique textual representation of an index
 ///
 /// Returns the alphabet for 1-26, and then A1, B1, ..., Z1000
-static Function/S WB_GenerateUniqueLabel(idx)
-	variable idx
+static Function/S WB_GenerateUniqueLabel(variable idx)
 
 	variable number, charNum
 	string str
@@ -2091,6 +2025,7 @@ End
 
 /// @brief Replace shorthands with the real stimset names suffixed with `?`
 Function WB_FormulaSwitchToStimset(variable channelType, string formula, STRUCT FormulaProperties &fp)
+
 	string stimset, shorthand, stimsetSpec, prefix, suffix
 	variable numSets, i, stimsetFound
 
@@ -2140,9 +2075,7 @@ End
 
 /// @brief Add wave ranges to every stimset (location marked by `?`) and
 ///        add a left hand side to the formula
-static Function WB_PrepareFormulaForExecute(fp, sweep)
-	STRUCT FormulaProperties &fp
-	variable                  sweep
+static Function WB_PrepareFormulaForExecute(STRUCT FormulaProperties &fp, variable sweep)
 
 	string spec
 	sprintf spec, "[p][%d]", sweep
@@ -2277,8 +2210,7 @@ End
 /// a stimset (parent) can depend on other stimsets (child)
 ///
 /// @return non-unique list of all (child) stimsets
-static Function/S WB_StimsetChildren([stimset])
-	string stimset
+static Function/S WB_StimsetChildren([string stimset])
 
 	variable numEpochs, numStimsets, i, j
 	string formula, regex, prefix, match, suffix
@@ -2309,7 +2241,7 @@ static Function/S WB_StimsetChildren([stimset])
 			formula     = WPT[6][i][EPOCH_TYPE_COMBINE]
 			numStimsets = CountSubstrings(formula, "?")
 			for(j = 0; j < numStimsets; j += 1)
-				WAVE/T/Z wv = SearchStringBase(formula, "(.*)\\b(\\w+)\\b\\?(.*)")
+				WAVE/Z/T wv = SearchStringBase(formula, "(.*)\\b(\\w+)\\b\\?(.*)")
 				ASSERT(WaveExists(wv), "Error in formula: could not properly resolve formula to stimset")
 				formula  = wv[0] + wv[2]
 				stimsets = AddListItem(wv[1], stimsets)
@@ -2326,8 +2258,7 @@ End
 /// @param[out] knownNames	unique list of stimsets
 ///
 /// @return number of parents stimsets that were moved to child stimsets
-Function WB_StimsetFamilyNames(knownNames, [parent])
-	string parent, &knownNames
+Function WB_StimsetFamilyNames(string &knownNames, [string parent])
 
 	string children, familynames
 	variable numChildren, i, numMoved
@@ -2354,8 +2285,7 @@ End
 /// You can not recurse into a stimset that depends on itself.
 ///
 /// @return list of stimsets that derive from the input stimset
-Function/S WB_StimsetRecursion([parent, knownStimsets])
-	string parent, knownStimsets
+Function/S WB_StimsetRecursion([string parent, string knownStimsets])
 
 	string stimset, stimsetQueue
 	variable numStimsets, i, numBefore, numAfter, numMoved
@@ -2395,8 +2325,7 @@ End
 /// @param stimsetQueue	can be a list of stimsets (separated by ;) or a simple string
 ///
 /// @return list of stimsets that derive from the input stimsets
-Function/S WB_StimsetRecursionForList(stimsetQueue)
-	string stimsetQueue
+Function/S WB_StimsetRecursionForList(string stimsetQueue)
 
 	variable i, numStimsets
 	string stimset, stimsetList
@@ -2417,8 +2346,7 @@ End
 /// @brief check if parameter waves exist
 ///
 /// @return 1 if parameter waves exist, 0 otherwise
-Function WB_ParameterWavesExist(stimset)
-	string stimset
+Function WB_ParameterWavesExist(string stimset)
 
 	WAVE/Z   WP        = WB_GetWaveParamForSet(stimset)
 	WAVE/Z/T WPT       = WB_GetWaveTextParamForSet(stimset)
@@ -2434,8 +2362,8 @@ End
 /// @brief check if (custom) stimset exists
 ///
 /// @return 1 if stimset wave was found, 0 otherwise
-Function WB_StimsetExists(stimset)
-	string   stimset
+Function WB_StimsetExists(string stimset)
+
 	variable channelType
 
 	channelType = WB_GetStimSetType(stimset)
@@ -2455,8 +2383,7 @@ Function WB_StimsetExists(stimset)
 End
 
 /// @brief Kill Parameter waves for stimset
-Function WB_KillParameterWaves(stimset)
-	string stimset
+Function WB_KillParameterWaves(string stimset)
 
 	WAVE/Z   WP        = WB_GetWaveParamForSet(stimset)
 	WAVE/Z/T WPT       = WB_GetWaveTextParamForSet(stimset)
@@ -2474,8 +2401,7 @@ Function WB_KillParameterWaves(stimset)
 End
 
 /// @brief Kill (custom) stimset
-Function WB_KillStimset(stimset)
-	string stimset
+Function WB_KillStimset(string stimset)
 
 	variable channelType
 
@@ -2502,8 +2428,7 @@ End
 /// Third party stimsets don't have all parameter waves
 ///
 /// @return true if from third party, false otherwise
-Function WB_StimsetIsFromThirdParty(stimset)
-	string stimset
+Function WB_StimsetIsFromThirdParty(string stimset)
 
 	ASSERT(!IsEmpty(stimset), "Stimset name can not be empty")
 
@@ -2515,12 +2440,7 @@ Function WB_StimsetIsFromThirdParty(stimset)
 End
 
 /// @brief Internal use only
-Function WB_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
-	WAVE/T   WPT
-	string   name
-	variable var
-	string   str
-	WAVE     wv
+Function WB_AddAnalysisParameterIntoWPT(WAVE/T WPT, string name, [variable var, string str, WAVE wv])
 
 	string params
 
@@ -2541,6 +2461,7 @@ End
 
 /// @brief Internal use only
 Function WB_SetAnalysisFunctionGeneric(variable stimulusType, string analysisFunction, WAVE/T WPT)
+
 	if(stimulusType != CHANNEL_TYPE_DAC)
 		// only store analysis functions for DAC
 		return 1
@@ -2559,6 +2480,7 @@ Function WB_SetAnalysisFunctionGeneric(variable stimulusType, string analysisFun
 End
 
 static Function WB_SaveStimSetParameterWaves(string setName, WAVE SegWvType, WAVE WP, WAVE/T WPT, variable stimulusType)
+
 	string segWvTypeName, WPName, WPTName
 
 	segWvTypeName = WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
@@ -2573,6 +2495,7 @@ static Function WB_SaveStimSetParameterWaves(string setName, WAVE SegWvType, WAV
 End
 
 Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType, WAVE WP, WAVE/T WPT, variable setNumber, variable saveAsBuiltin)
+
 	string setName, genericFunc, params, errorMessage, childStimsets
 	string   tempName
 	variable i
@@ -2707,6 +2630,7 @@ End
 ///
 /// @returns complete stimulus set name or an empty string in case the basename is too long
 static Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix, variable lengthLimit])
+
 	string result
 
 	if(ParamIsDefault(suffix))
@@ -2734,6 +2658,7 @@ End
 ///
 /// Counterpart to WB_AssembleSetName()
 Function WB_SplitStimsetName(string setName, string &setPrefix, variable &stimulusType, variable &setNumber)
+
 	string stimulusTypeString, setNumberString, setPrefixString
 
 	setNumber    = NaN
@@ -2806,9 +2731,9 @@ static Function [variable startIndex, variable endIndex, variable startOffset, v
 
 	ASSERT(startTime >= 0 && duration > 0 && sampleInterval > 0, "invalid argument values")
 	[startIndex, startOffset] = RoundAndDelta(startTime / sampleInterval)
-	actualStartTime = startIndex * sampleInterval
-	[endIndex, ceilDelta] = CeilAndDelta((actualStartTime + duration) / sampleInterval)
-	actualDuration = (endIndex - startIndex) * sampleInterval
+	actualStartTime           = startIndex * sampleInterval
+	[endIndex, ceilDelta]     = CeilAndDelta((actualStartTime + duration) / sampleInterval)
+	actualDuration            = (endIndex - startIndex) * sampleInterval
 
 	return [startIndex, endIndex, startOffset, actualDuration - duration]
 End
@@ -2828,9 +2753,7 @@ End
 
 /// @brief Extract the analysis function name from the wave note of the stim set
 /// @return Analysis function for the given event type, empty string if none is set
-Function/S WB_ExtractAnalysisFuncFromStimSet(stimSet, eventType)
-	WAVE     stimSet
-	variable eventType
+Function/S WB_ExtractAnalysisFuncFromStimSet(WAVE stimSet, variable eventType)
 
 	string eventName
 
@@ -2843,8 +2766,7 @@ End
 /// @brief Return the analysis function parameters as comma (`,`) separated list
 ///
 /// @sa GetWaveBuilderWaveTextParam() for the exact format.
-Function/S WB_ExtractAnalysisFunctionParams(stimSet)
-	WAVE stimSet
+Function/S WB_ExtractAnalysisFunctionParams(WAVE stimSet)
 
 	return WB_GetWaveNoteEntry(note(stimset), STIMSET_ENTRY, key = ANALYSIS_FUNCTION_PARAMS_STIMSET)
 End

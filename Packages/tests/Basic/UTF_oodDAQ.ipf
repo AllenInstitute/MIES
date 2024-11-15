@@ -6,10 +6,7 @@
 /// @{
 /// oodDAQ regression tests
 
-static Function oodDAQStore_IGNORE(stimset, offsets, regions, index)
-	WAVE/WAVE stimset
-	WAVE offsets, regions
-	variable index
+static Function oodDAQStore_IGNORE(WAVE/WAVE stimset, WAVE offsets, WAVE regions, variable index)
 
 	variable i
 
@@ -24,8 +21,7 @@ static Function oodDAQStore_IGNORE(stimset, offsets, regions, index)
 	Duplicate/O regions, dfr:$("regions_" + num2str(index))
 End
 
-static Function/WAVE GetoodDAQ_RefWaves_IGNORE(index)
-	variable index
+static Function/WAVE GetoodDAQ_RefWaves_IGNORE(variable index)
 
 	variable i
 

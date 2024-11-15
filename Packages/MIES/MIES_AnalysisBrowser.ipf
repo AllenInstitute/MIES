@@ -85,8 +85,7 @@ End
 ///
 /// @return index into mapping wave of the newly added entry or -1 if the file
 ///         is already in the map
-static Function AB_AddMapEntry(baseFolder, discLocation)
-	string baseFolder, discLocation
+static Function AB_AddMapEntry(string baseFolder, string discLocation)
 
 	variable nextFreeIndex, fileID, nwbVersion, dim, writeIndex
 	string dataFolder, fileType, relativePath, extension
@@ -210,8 +209,7 @@ End
 
 /// @brief save deviceList to wave
 /// @return created wave.
-Function/WAVE AB_SaveDeviceList(deviceList, dataFolder)
-	string deviceList, dataFolder
+Function/WAVE AB_SaveDeviceList(string deviceList, string dataFolder)
 
 	variable numDevices
 	WAVE/T wv = GetAnalysisDeviceWave(dataFolder)
@@ -326,8 +324,7 @@ static Function AB_FileHasStimsets(WAVE/T map)
 End
 
 /// @brief function tries to load Data From discLocation.
-static Function AB_LoadFile(discLocation)
-	string discLocation
+static Function AB_LoadFile(string discLocation)
 
 	string device, deviceList
 	variable numDevices, i, highestSweepNumber
@@ -387,8 +384,7 @@ End
 ///        which this version of the analysis browser can handle.
 ///
 /// @param discLocation file to check, parameter to AB_GetMap()
-static Function AB_HasCompatibleVersion(discLocation)
-	string discLocation
+static Function AB_HasCompatibleVersion(string discLocation)
 
 	string   dataFolderPath
 	variable numWavesLoaded
@@ -429,10 +425,7 @@ static Function AB_HasCompatibleVersion(discLocation)
 	endswitch
 End
 
-static Function/S AB_GetSettingNumFiniteVals(wv, device, sweepNo, name)
-	WAVE     wv
-	variable sweepNo
-	string name, device
+static Function/S AB_GetSettingNumFiniteVals(WAVE wv, string device, variable sweepNo, string name)
 
 	variable numRows
 
@@ -512,7 +505,7 @@ static Function AB_FillListWave(string diskLocation, string fileName, string dev
 			list[index][%'#headstages'][0] = "unknown"
 		endif
 
-		WAVE/T/Z settingsText = GetLastSetting(textualValues, sweepNo, "Stim Wave Name", DATA_ACQUISITION_MODE)
+		WAVE/Z/T settingsText = GetLastSetting(textualValues, sweepNo, "Stim Wave Name", DATA_ACQUISITION_MODE)
 		numRows = WaveExists(settingsText) ? NUM_HEADSTAGES : 0
 
 		WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
@@ -648,9 +641,8 @@ End
 /// @param dataFolder    DataFolder of HDF5 or Experiment File where LabNoteBook is saved
 /// @param device        device for which to get sweeps.
 /// @param clean         Variable indicating if ouput can contain duplicate values
-static Function/WAVE AB_GetSweepsFromLabNotebook(dataFolder, device, [clean])
-	string dataFolder, device
-	variable clean
+static Function/WAVE AB_GetSweepsFromLabNotebook(string dataFolder, string device, [variable clean])
+
 	if(ParamIsDefault(clean))
 		clean = 0
 	endif
@@ -670,8 +662,7 @@ static Function/WAVE AB_GetSweepsFromLabNotebook(dataFolder, device, [clean])
 End
 
 /// @brief Returns the highest referenced sweep number from the labnotebook
-static Function AB_GetHighestPossibleSweepNum(dataFolder, device)
-	string dataFolder, device
+static Function AB_GetHighestPossibleSweepNum(string dataFolder, string device)
 
 	WAVE sweepNums = AB_GetSweepsFromLabNotebook(dataFolder, device, clean = 0)
 	WaveStats/M=1/Q sweepNums
@@ -686,8 +677,7 @@ End
 /// @param discLocation  location of Experiment File on Disc.
 ///                      ID in AnalysisBrowserMap
 /// @param device        device for which to get sweeps.
-static Function AB_LoadSweepsFromExperiment(discLocation, device)
-	string discLocation, device
+static Function AB_LoadSweepsFromExperiment(string discLocation, string device)
 
 	variable highestSweepNumber, sweepNumber, numSweeps, i, numConfigWaves
 	string listSweepConfig, sweepConfig
@@ -725,8 +715,7 @@ End
 ///                      ID in AnalysisBrowserMap
 /// @param dataFolder    datafolder of the project
 /// @param device        device for which to get sweeps.
-static Function AB_LoadSweepsFromNWB(discLocation, dataFolder, device)
-	string discLocation, dataFolder, device
+static Function AB_LoadSweepsFromNWB(string discLocation, string dataFolder, string device)
 
 	variable h5_fileID, nwbVersion
 	string channelList
@@ -754,11 +743,7 @@ End
 /// @brief Store channelList in storage wave according to index in sweeps wave
 ///
 /// @todo Update this function for the use with SweepTable
-static Function AB_StoreChannelsBySweep(groupID, nwbVersion, channelList, sweeps, storage)
-	variable groupID, nwbVersion
-	string channelList
-	WAVE/I sweeps
-	WAVE/T storage
+static Function AB_StoreChannelsBySweep(variable groupID, variable nwbVersion, string channelList, WAVE/I sweeps, WAVE/T storage)
 
 	variable numChannels, numSweeps, i, sweepNo, sweep_table_id
 	string channelString
@@ -801,8 +786,7 @@ static Function AB_StoreChannelsBySweep(groupID, nwbVersion, channelList, sweeps
 	SetNumberInWaveNote(storage, NOTE_INDEX, numSweeps)
 End
 
-static Function AB_LoadTPStorageFromIgor(expFilePath, expFolder, device)
-	string expFilePath, expFolder, device
+static Function AB_LoadTPStorageFromIgor(string expFilePath, string expFolder, string device)
 
 	string dataFolderPath, wanted, unwanted, all
 	variable numWavesLoaded
@@ -826,8 +810,7 @@ static Function AB_LoadTPStorageFromIgor(expFilePath, expFolder, device)
 	return numWavesLoaded
 End
 
-Function AB_LoadTPStorageFromNWB(nwbFilePath, expFolder, device)
-	string nwbFilePath, expFolder, device
+Function AB_LoadTPStorageFromNWB(string nwbFilePath, string expFolder, string device)
 
 	variable h5_fileID, testpulseGroup, numEntries, i
 	string dataFolderPath, list, name, groupName
@@ -853,8 +836,7 @@ Function AB_LoadTPStorageFromNWB(nwbFilePath, expFolder, device)
 	H5_CloseFile(h5_fileID)
 End
 
-static Function AB_LoadStoredTestpulsesFromNWB(nwbFilePath, expFolder, device)
-	string nwbFilePath, expFolder, device
+static Function AB_LoadStoredTestpulsesFromNWB(string nwbFilePath, string expFolder, string device)
 
 	variable h5_fileID, testpulseGroup, numEntries, i
 	string dataFolderPath, list, name, groupName
@@ -888,6 +870,7 @@ static Function AB_LoadStoredTestpulsesFromNWB(nwbFilePath, expFolder, device)
 End
 
 static Function AB_LoadResultsFromIgor(string expFilePath, string expFolder)
+
 	string   dataFolderPath
 	variable numWavesLoaded
 
@@ -900,6 +883,7 @@ static Function AB_LoadResultsFromIgor(string expFilePath, string expFolder)
 End
 
 static Function AB_LoadResultsFromNWB(string nwbFilePath, string expFolder)
+
 	variable h5_fileID, resultsGroup, numEntries, i
 	string list, name, groupName
 
@@ -938,8 +922,7 @@ static Function AB_LoadResultsFromNWB(string nwbFilePath, string expFolder)
 	H5_CloseFile(h5_fileID)
 End
 
-static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
-	string expFilePath, expFolder, device
+static Function AB_LoadUserCommentFromFile(string expFilePath, string expFolder, string device)
 
 	string   dataFolderPath
 	variable numStringsLoaded
@@ -953,8 +936,7 @@ static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 	return numStringsLoaded
 End
 
-static Function AB_LoadUserCommentAndHistoryFromNWB(nwbFilePath, expFolder, device)
-	string nwbFilePath, expFolder, device
+static Function AB_LoadUserCommentAndHistoryFromNWB(string nwbFilePath, string expFolder, string device)
 
 	string groupName, comment, datasetName, history
 	variable h5_fileID, commentGroup, version
@@ -979,8 +961,7 @@ static Function AB_LoadUserCommentAndHistoryFromNWB(nwbFilePath, expFolder, devi
 	string/G targetDFR:historyAndLogFile = history
 End
 
-static Function/S AB_LoadLabNotebook(discLocation)
-	string discLocation
+static Function/S AB_LoadLabNotebook(string discLocation)
 
 	string device, deviceList, err
 	string deviceListChecked = ""
@@ -1014,8 +995,7 @@ static Function/S AB_LoadLabNotebook(discLocation)
 	return deviceListChecked
 End
 
-static Function/S AB_LoadLabNotebookFromFile(discLocation)
-	string discLocation
+static Function/S AB_LoadLabNotebookFromFile(string discLocation)
 
 	string deviceList = ""
 	WAVE/T map        = AB_GetMap(discLocation)
@@ -1033,8 +1013,7 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 	return deviceList
 End
 
-static Function/S AB_LoadLabNotebookFromIgor(discLocation)
-	string discLocation
+static Function/S AB_LoadLabNotebookFromIgor(string discLocation)
 
 	string labNotebookWaves, labNotebookPath, type, number, path, basepath, device, str
 	string deviceList = ""
@@ -1091,9 +1070,7 @@ End
 /// @param[in] path            datafolder path which holds the labnotebooks (might not exist)
 /// @param[in] device          name of the device
 /// @param[in, out] deviceList list of loaded devices, for successful loads we add to that list
-static Function AB_LoadLabNotebookFromIgorLow(discLocation, path, device, deviceList)
-	string discLocation, path, device
-	string &deviceList
+static Function AB_LoadLabNotebookFromIgorLow(string discLocation, string path, string device, string &deviceList)
 
 	string basepath
 
@@ -1161,8 +1138,7 @@ static Function AB_LoadLabNotebookFromIgorLow(discLocation, path, device, device
 	deviceList = AddListItem(device, deviceList, ";", Inf)
 End
 
-static Function/S AB_LoadLabNotebookFromNWB(discLocation)
-	string discLocation
+static Function/S AB_LoadLabNotebookFromNWB(string discLocation)
 
 	variable numDevices, numLoaded, i
 	variable h5_fileID, h5_notebooksID
@@ -1212,8 +1188,7 @@ End
 ///@param  dfr path to labNoteBook dataFolder reference.
 ///@return 0 labNotebook does not exist.
 ///        1 labNoteBook exists. also update dimension lables
-static Function AB_checkLabNotebook(dfr)
-	DFREF dfr
+static Function AB_checkLabNotebook(DFREF dfr)
 
 	WAVE/Z/SDFR=dfr $LBN_NUMERICAL_KEYS_NAME
 	WAVE/Z/SDFR=dfr $LBN_NUMERICAL_VALUES_NAME
@@ -1230,8 +1205,7 @@ End
 
 /// @brief add dimension labels in older versions of igor-MIES and hdf5-loaded data
 ///        overwrite invalid dim labels (labnotebook waves created with versions prior to a8f0f43)
-static Function AB_updateLabelsInLabNotebook(dfr)
-	DFREF dfr
+static Function AB_updateLabelsInLabNotebook(DFREF dfr)
 
 	string str
 
@@ -1253,8 +1227,7 @@ static Function AB_updateLabelsInLabNotebook(dfr)
 	return 1
 End
 
-static Function/S AB_TranslatePath(path, expFolder)
-	string path, expFolder
+static Function/S AB_TranslatePath(string path, string expFolder)
 
 	DFREF dfr        = GetAnalysisExpFolder(expFolder)
 	NVAR  pxpVersion = $GetPxpVersionForAB(dfr)
@@ -1280,9 +1253,7 @@ static Constant LOAD_CONFIG_CHUNK_SIZE = 50
 ///
 /// The size of `LOAD_CONFIG_CHUNK_SIZE` is limited by a limitation of LoadData as this operations accepts
 /// only a stringlist of waves shorter than 400 characters.
-static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSweepNumber)
-	string expFilePath, expFolder, device
-	variable highestSweepNumber
+static Function AB_LoadSweepConfigData(string expFilePath, string expFolder, string device, variable highestSweepNumber)
 
 	string dataFolderPath, listOfWaves
 	variable numWavesLoaded, totalNumWavesLoaded
@@ -1313,8 +1284,7 @@ static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSw
 End
 
 /// @brief Expand all tree views in the given column
-static Function AB_ExpandListColumn(col)
-	variable col
+static Function AB_ExpandListColumn(variable col)
 
 	variable numRows, row, i, mask
 
@@ -1343,8 +1313,7 @@ static Function AB_ExpandListColumn(col)
 End
 
 /// @brief Collapse all tree views in the given column
-static Function AB_CollapseListColumn(col)
-	variable col
+static Function AB_CollapseListColumn(variable col)
 
 	variable numRows, row, i, mask
 
@@ -1373,8 +1342,7 @@ End
 /// @brief Set the selection bits of the experiment browser ListBox selection wave
 ///
 /// @param selBits wave returned by AB_ReturnAndClearGUISelBits
-static Function AB_SetGUISelBits(selBits)
-	WAVE selBits
+static Function AB_SetGUISelBits(WAVE selBits)
 
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 	expBrowserSel[][0] = expBrowserSel[p][0] | selBits[p]
@@ -1479,8 +1447,7 @@ static Function AB_GetListRowWithSameHash(WAVE/T list, string h)
 End
 
 /// @returns 0 if the treeview could be expanded, zero otherwise
-static Function AB_ExpandIfCollapsed(row, subSectionColumn)
-	variable row, subSectionColumn
+static Function AB_ExpandIfCollapsed(variable row, variable subSectionColumn)
 
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 
@@ -1501,6 +1468,7 @@ End
 ///
 /// @returns valid indizes wave on success
 static Function/WAVE AB_GetExpandedIndices()
+
 	variable i, row, numEntries
 
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
@@ -1624,9 +1592,7 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 End
 
 /// @brief Return the row with treeview in the column col starting from startRow
-static Function AB_GetRowWithNextTreeView(selWave, startRow, col)
-	WAVE selWave
-	variable startRow, col
+static Function AB_GetRowWithNextTreeView(WAVE selWave, variable startRow, variable col)
 
 	variable numRows, i
 	Make/FREE/N=(DimSize(selWave, COLS)) status
@@ -1643,9 +1609,7 @@ static Function AB_GetRowWithNextTreeView(selWave, startRow, col)
 	return numRows
 End
 
-static Function AB_LoadFromFile(loadType, [sweepBrowserDFR])
-	variable loadType
-	DFREF    sweepBrowserDFR
+static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 
 	variable mapIndex, sweep, numRows, i, row, overwrite, oneValidLoad, index
 	string dataFolder, fileName, discLocation, fileType, device
@@ -1740,10 +1704,12 @@ static Function AB_LoadFromFile(loadType, [sweepBrowserDFR])
 End
 
 Function AB_FreeWorkingDFs(WAVE/T relativeDFPaths, variable actualSize)
+
 	AB_FreeOrAllocWorkingDF(relativeDFPaths, actualSize, 1)
 End
 
 Function AB_AllocWorkingDFs(WAVE/T relativeDFPaths, variable actualSize)
+
 	AB_FreeOrAllocWorkingDF(relativeDFPaths, actualSize, 0)
 End
 
@@ -1781,9 +1747,7 @@ Function AB_LoadStimsetForSweep(string device, variable index, variable sweep)
 End
 
 // @brief common ASSERT statements for AB_LoadSweepFromFile and AB_LoadStimsetFromFile
-static Function AB_LoadFromFileASSERT(discLocation, dataFolder, fileType, device, sweep, overwrite)
-	string discLocation, dataFolder, fileType, device
-	variable sweep, overwrite
+static Function AB_LoadFromFileASSERT(string discLocation, string dataFolder, string fileType, string device, variable sweep, variable overwrite)
 
 	ASSERT(!isEmpty(discLocation), "Empty file or Folder name on disc")
 	ASSERT(!isEmpty(dataFolder), "Empty dataFolder")
@@ -1795,9 +1759,7 @@ static Function AB_LoadFromFileASSERT(discLocation, dataFolder, fileType, device
 End
 
 /// @returns 0 if the sweeps could be loaded, or already exists, and 1 on error
-static Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, [overwrite])
-	string discLocation, dataFolder, fileType, device
-	variable sweep, overwrite
+static Function AB_LoadSweepFromFile(string discLocation, string dataFolder, string fileType, string device, variable sweep, [variable overwrite])
 
 	string sweepFolder, sweeps, msg
 	variable h5_fileID, h5_groupID, err
@@ -1846,9 +1808,7 @@ static Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device,
 	return 0
 End
 
-static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, sweep, [overwrite])
-	string discLocation, dataFolder, fileType, device
-	variable sweep, overwrite
+static Function AB_LoadStimsetFromFile(string discLocation, string dataFolder, string fileType, string device, variable sweep, [variable overwrite])
 
 	string loadedStimsets, msg
 	variable h5_fileID, h5_groupID
@@ -1900,10 +1860,7 @@ static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, devic
 	return 0
 End
 
-static Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
-	string discLocation, device
-	DFREF    sweepDFR
-	variable sweep
+static Function AB_LoadSweepFromNWB(string discLocation, DFREF sweepDFR, string device, variable sweep)
 
 	string channelList
 	variable h5_fileID, h5_groupID, numSweeps, version
@@ -1956,11 +1913,7 @@ static Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	return 0
 End
 
-static Function AB_LoadSweepFromNWBgeneric(h5_groupID, nwbVersion, channelList, sweepDFR, configSweep)
-	variable h5_groupID, nwbVersion
-	string channelList
-	DFREF  sweepDFR
-	WAVE/I configSweep
+static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVersion, string channelList, DFREF sweepDFR, WAVE/I configSweep)
 
 	string channel, channelName
 	variable numChannels, numEntries, i
@@ -2036,7 +1989,7 @@ static Function AB_LoadSweepFromNWBgeneric(h5_groupID, nwbVersion, channelList, 
 			configSweep[numEntries][%type]   = p.channelType
 			configSweep[numEntries][%number] = p.channelNumber
 			configSweep[numEntries][%timeMS] = trunc(DimDelta(loaded, ROWS) * ONE_TO_MILLI)
-			configSweep[numEntries][3]       = -1                                           // -1 for faked Config_Sweeps Waves
+			configSweep[numEntries][3]       = -1 // -1 for faked Config_Sweeps Waves
 
 			// set unit in config_wave from WaveNote of loaded dataset
 			Note/K configSweep, AddListItem(WaveUnits(loaded, COLS), Note(configSweep), ";", Inf)
@@ -2067,8 +2020,7 @@ End
 /// @brief Sorts the faked Config Sweeps Wave to get correct display order in Sweep Browser
 ///
 /// function is oriented at MDSort()
-static Function AB_SortConfigSweeps(config)
-	WAVE/I config
+static Function AB_SortConfigSweeps(WAVE/I config)
 
 	string   wavenote = Note(config)
 	variable numRows  = DimSize(config, ROWS)
@@ -2134,7 +2086,7 @@ static Function AB_LoadSweepFromIgor(string discLocation, string expFolder, DFRE
 		numChannels = DimSize(sweepT, ROWS)
 		for(i = 0; i < numChannels; i += 1)
 			[componentsDataPath, channelName] = SplitTextSweepElement(sweepT[i])
-			sweepT[i] = channelName
+			sweepT[i]                         = channelName
 		endfor
 		channelWaveList = TextWaveToList(sweepT, ";")
 		DFREF sweepComponentsDFR = NewFreeDataFolder()
@@ -2176,9 +2128,7 @@ End
 /// @param overwrite      overwrite flag
 ///
 /// @return 1 on error and 0 on success
-static Function AB_LoadStimsetsRAW(expFilePath, stimsets, overwrite)
-	string expFilePath, stimsets
-	variable overwrite
+static Function AB_LoadStimsetsRAW(string expFilePath, string stimsets, variable overwrite)
 
 	string stimset
 	variable numStimsets, i
@@ -2211,9 +2161,7 @@ End
 /// @param overwrite          overwrite flag
 ///
 /// @return 1 on error and 0 on success
-static Function/S AB_LoadStimsets(expFilePath, stimsets, overwrite, [processedStimsets])
-	string expFilePath, stimsets, processedStimsets
-	variable overwrite
+static Function/S AB_LoadStimsets(string expFilePath, string stimsets, variable overwrite, [string processedStimsets])
 
 	string stimset, totalStimsets, newStimsets, oldStimsets
 	variable numBefore, numMoved, numAfter, numNewStimsets, i
@@ -2260,9 +2208,7 @@ End
 /// @brief Load specified stimset from Igor experiment file
 ///
 /// @return 1 on error and 0 on success
-static Function AB_LoadStimset(expFilePath, stimset, overwrite)
-	string expFilePath, stimset
-	variable overwrite
+static Function AB_LoadStimset(string expFilePath, string stimset, variable overwrite)
 
 	if(overwrite)
 		WB_KillParameterWaves(stimset)
@@ -2290,9 +2236,7 @@ static Function AB_LoadStimset(expFilePath, stimset, overwrite)
 	return 1
 End
 
-static Function AB_LoadStimsetRAW(expFilePath, stimset, overwrite)
-	string expFilePath, stimset
-	variable overwrite
+static Function AB_LoadStimsetRAW(string expFilePath, string stimset, variable overwrite)
 
 	string dataPath, data
 	variable numWavesLoaded, channelType
@@ -2335,8 +2279,7 @@ End
 /// @brief Load template waves for a specific stimset from Igor experiment file
 ///
 /// @return 1 on error and 0 on success
-static Function AB_LoadStimsetTemplateWaves(expFilePath, stimset)
-	string expFilePath, stimset
+static Function AB_LoadStimsetTemplateWaves(string expFilePath, string stimset)
 
 	variable channelType, numWavesLoaded, numStimsets, i
 	string dataPath
@@ -2387,9 +2330,7 @@ End
 /// @brief Load custom waves for specified stimset from Igor experiment file
 ///
 /// @return 1 on error and 0 on success
-static Function/S AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
-	string expFilePath, stimsets
-	variable overwrite
+static Function/S AB_LoadCustomWaves(string expFilePath, string stimsets, variable overwrite)
 
 	string dependentStimsets, stimset, custom_waves, path, customWaveName
 	variable numWaves, numStimsets, i, j, valid
@@ -2455,9 +2396,7 @@ End
 /// @brief Load specified wave from Igor Experiment file.
 ///
 /// @return 1 on error and 0 on success
-static Function AB_LoadWave(expFilePath, fullPath, overwrite)
-	string expFilePath, fullPath
-	variable overwrite
+static Function AB_LoadWave(string expFilePath, string fullPath, variable overwrite)
 
 	variable numWavesLoaded
 	string   dataFolder
@@ -2495,10 +2434,7 @@ static Function AB_LoadWave(expFilePath, fullPath, overwrite)
 	return 0
 End
 
-static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
-	string expFolder, device
-	variable sweep
-	WAVE     sweepWave
+static Function AB_SplitSweepIntoComponents(string expFolder, string device, variable sweep, WAVE sweepWave)
 
 	DFREF sweepFolder = GetAnalysisSweepDataPath(expFolder, device, sweep)
 	WAVE  configSweep = GetAnalysisConfigWave(expFolder, device, sweep)
@@ -2692,6 +2628,7 @@ static Function AB_CheckPanelVersion(string panel)
 End
 
 Function AB_BrowserStartupSettings()
+
 	string panel
 
 	panel = AB_GetPanelName()
@@ -2716,8 +2653,7 @@ Function AB_BrowserStartupSettings()
 End
 
 /// @brief Button "Expand all"
-Function AB_ButtonProc_ExpandAll(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_ExpandAll(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2:
@@ -2731,8 +2667,7 @@ Function AB_ButtonProc_ExpandAll(ba) : ButtonControl
 End
 
 /// @brief Button "Collapse all"
-Function AB_ButtonProc_CollapseAll(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_CollapseAll(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2:
@@ -2746,8 +2681,7 @@ Function AB_ButtonProc_CollapseAll(ba) : ButtonControl
 End
 
 /// @brief Button "Load Sweeps"
-Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_LoadSweeps(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable oneValidSweep
 	string   panel
@@ -2774,8 +2708,7 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 End
 
 /// @brief Button "Load Both"
-Function AB_ButtonProc_LoadBoth(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_LoadBoth(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2:
@@ -2787,8 +2720,7 @@ Function AB_ButtonProc_LoadBoth(ba) : ButtonControl
 End
 
 /// @brief Button "Load Stimsets"
-Function AB_ButtonProc_LoadStimsets(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_LoadStimsets(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable oneValidStimset
 
@@ -2807,8 +2739,7 @@ Function AB_ButtonProc_LoadStimsets(ba) : ButtonControl
 End
 
 /// @brief Button "Refresh"
-Function AB_ButtonProc_Refresh(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_Refresh(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable size, index, refreshIndex
 	string entry
@@ -2859,8 +2790,7 @@ Function AB_ButtonProc_Refresh(ba) : ButtonControl
 End
 
 /// @brief Button "Open folder(s)"
-Function AB_ButtonProc_OpenFolders(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_OpenFolders(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string symbPath, folder
 	variable size, i
@@ -2894,8 +2824,7 @@ Function AB_ButtonProc_OpenFolders(ba) : ButtonControl
 End
 
 /// @brief Button "Remove folder(s)"
-Function AB_ButtonProc_Remove(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_Remove(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable size, i
 
@@ -2923,8 +2852,7 @@ End
 
 /// @brief Button "Add folder"
 /// Display dialog box for choosing a folder and call AB_ScanFolder()
-Function AB_ButtonProc_AddFolder(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_AddFolder(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string baseFolder, folder
 	variable size
@@ -2962,8 +2890,7 @@ End
 
 /// @brief Button "Add files"
 /// Display dialog box for choosing files and call AB_AddFolder()
-Function AB_ButtonProc_AddFiles(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_AddFiles(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string baseFolder, symbPath, fileFilters, fNum, message, fileList
 	variable i, size, index
@@ -3046,8 +2973,7 @@ static Function AB_SaveSourceListInSettings()
 End
 
 /// @brief Button "Select same stim set sweeps"
-Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_SelectStimSets(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable numEntries, i
 	string selectedStimSet
@@ -3090,8 +3016,7 @@ Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
 End
 
 /// @brief main ListBox list_experiment_contents
-Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
-	STRUCT WMListboxAction &lba
+Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 
 	variable mask, numRows, row, col
 
@@ -3169,8 +3094,7 @@ static Function AB_UpdateColors()
 End
 
 /// @brief Button "Open comment NB"
-Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_OpenCommentNB(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable row, mapIndex
 	string device, fileName, dataFolder, discLocation
@@ -3223,8 +3147,7 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 	return 0
 End
 
-Function AB_ButtonProc_ResaveAsNWB(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AB_ButtonProc_ResaveAsNWB(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable row, i, index, overwrite
 	string fileType, discLocation, experiment, win
@@ -3418,9 +3341,8 @@ static Function AB_ReExport(variable index, variable overwrite)
 End
 
 /// @brief Load dropped NWB files into the analysis browser
-static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
-	variable refNum, kind
-	string file, pathName, type, creator
+static Function BeforeFileOpenHook(variable refNum, string file, string pathName, string type, string creator, variable kind)
+
 	string baseFolder, fileSuffix, entry
 	variable numEntries
 
@@ -3510,7 +3432,7 @@ Function/S AB_GetStimsetList(string fileType, string discLocation, string dataFo
 
 	DFREF dfr = GetAnalysisLabNBFolder(dataFolder, device)
 	WAVE/SDFR=dfr   $LBN_NUMERICAL_VALUES_NAME
-	WAVE/SDFR=dfr/T $LBN_TEXTUAL_VALUES_NAME
+	WAVE/T/SDFR=dfr $LBN_TEXTUAL_VALUES_NAME
 
 	return AB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
 End
@@ -3520,10 +3442,7 @@ End
 /// input numerical and textual values storage waves for current sweep
 ///
 /// @returns list of stimsets
-static Function/S AB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
-	variable sweep
-	WAVE     numericalValues
-	WAVE/T   textualValues
+static Function/S AB_GetStimsetFromSweepGeneric(variable sweep, WAVE numericalValues, WAVE/T textualValues)
 
 	variable i, j, numEntries
 	string ttlList, name
@@ -3567,9 +3486,7 @@ End
 /// numericalValues and textualValues are generated from device
 ///
 /// @returns list of stimsets
-Function/S AB_GetStimsetFromPanel(device, sweep)
-	string   device
-	variable sweep
+Function/S AB_GetStimsetFromPanel(string device, variable sweep)
 
 	WAVE   numericalValues = GetLBNumericalValues(device)
 	WAVE/T textualValues   = GetLBTextualValues(device)
@@ -3577,8 +3494,7 @@ Function/S AB_GetStimsetFromPanel(device, sweep)
 	return AB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
 End
 
-Function AB_WindowHook(s)
-	STRUCT WMWinHookStruct &s
+Function AB_WindowHook(STRUCT WMWinHookStruct &s)
 
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_KILL:

@@ -56,10 +56,7 @@
 /// @param globalVarName name of the global variable
 /// @param initialValue  initial value of the variable. Will only be used if
 /// 					 it is created. 0 by default.
-threadsafe static Function/S GetNVARAsString(dfr, globalVarName, [initialValue])
-	DFREF    dfr
-	string   globalVarName
-	variable initialValue
+threadsafe static Function/S GetNVARAsString(DFREF dfr, string globalVarName, [variable initialValue])
 
 	NVAR/Z/SDFR=dfr var = $globalVarName
 	if(!NVAR_Exists(var))
@@ -84,10 +81,7 @@ End
 /// @param globalStrName name of the global string
 /// @param initialValue  initial value of the string. Will only be used if
 /// 					 it is created. null by default.
-threadsafe static Function/S GetSVARAsString(dfr, globalStrName, [initialValue])
-	DFREF  dfr
-	string globalStrName
-	string initialValue
+threadsafe static Function/S GetSVARAsString(DFREF dfr, string globalStrName, [string initialValue])
 
 	SVAR/Z/SDFR=dfr str = $globalStrName
 	if(!SVAR_Exists(str))
@@ -109,8 +103,7 @@ End
 /// @brief Helper function to get read-only access to a global variable
 ///
 /// @param path absolute path to a global variable
-threadsafe Function ROVar(path)
-	string path
+threadsafe Function ROVar(string path)
 
 	NVAR/Z var = $path
 	ASSERT_TS(NVAR_Exists(var), "Could not recreate " + path)
@@ -121,8 +114,7 @@ End
 /// @brief Helper function to get read-only access to a global string
 ///
 /// @param path absolute path to a global string
-threadsafe Function/S ROStr(path)
-	string path
+threadsafe Function/S ROStr(string path)
 
 	SVAR/Z str = $path
 	ASSERT_TS(SVAR_Exists(str), "Could not recreate " + path)
@@ -349,15 +341,13 @@ End
 /// @brief Returns the absolute path to the variable `runMode`
 ///
 /// The variable holds one of @ref DAQRunModes.
-Function/S GetDataAcqRunMode(device)
-	string device
+Function/S GetDataAcqRunMode(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "runMode", initialValue = DAQ_NOT_RUNNING)
 End
 
 /// @brief Returns the absolute path to the device ID
-Function/S GetDAQDeviceID(device)
-	string device
+Function/S GetDAQDeviceID(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "deviceID", initialValue = NaN)
 End
@@ -366,22 +356,21 @@ End
 ///        number of data acquisition cycles performed.
 ///
 /// Count equals zero on the first sweep.
-Function/S GetCount(device)
-	string device
+Function/S GetCount(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "count", initialValue = 0)
 End
 
 /// @brief Returns the list of locked devices
 Function/S GetLockedDevices()
+
 	string device
 
 	return GetSVARAsString(GetDAQDevicesFolder(), "lockedDevices", initialValue = "")
 End
 
 /// @brief Return the absolute path to the user comment string
-Function/S GetUserComment(device)
-	string device
+Function/S GetUserComment(string device)
 
 	return GetSVARAsString(GetDevicePath(device), "userComment")
 End
@@ -395,8 +384,7 @@ End
 ///        StopCollectionPoint CAN NOT be used to determine the length of the ADC input wave.
 ///
 /// @sa GetFifoPosition()
-Function/S GetStopCollectionPoint(device)
-	string device
+Function/S GetStopCollectionPoint(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "stopCollectionPoint", initialValue = NaN)
 End
@@ -404,8 +392,7 @@ End
 /// @brief Return the ADC to monitor
 ///
 /// This is the first actice AD channel in DAQDataWave and DAQConfigWave.
-Function/S GetADChannelToMonitor(device)
-	string device
+Function/S GetADChannelToMonitor(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "ADChannelToMonitor", initialValue = NaN)
 End
@@ -422,8 +409,7 @@ End
 /// Active set count keeps track of how many steps of the largest currently
 /// selected set on all active channels still have to be done. Not counting the
 /// currently acquiring sweep.
-Function/S GetActiveSetCount(device)
-	string device
+Function/S GetActiveSetCount(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "activeSetCount", initialValue = NaN)
 End
@@ -440,8 +426,7 @@ threadsafe Function/S GetInteractiveMode()
 End
 
 /// @brief Returns the absolute path to the testpulse running modes, holds one of @ref TestPulseRunModes
-Function/S GetTestpulseRunMode(device)
-	string device
+Function/S GetTestpulseRunMode(string device)
 
 	return GetNVARAsString(GetDeviceTestPulse(device), "runMode", initialValue = TEST_PULSE_NOT_RUNNING)
 End
@@ -480,43 +465,37 @@ Function/S GetITCDeviceList()
 End
 
 /// @brief Returns the last time stamp HW_NI_RepeatAcqHook was called
-Function/S GetLastAcqHookCallTimeStamp(device)
-	string device
+Function/S GetLastAcqHookCallTimeStamp(string device)
 
 	return GetNVARAsString(GetDeviceTestPulse(device), "acqHookTimeStamp", initialValue = DateTime)
 End
 
 /// @brief Returns FIFO file reference
-Function/S GetFIFOFileRef(device)
-	string device
+Function/S GetFIFOFileRef(string device)
 
 	return GetNVARAsString(GetDeviceTestPulse(device), "FIFOFileRef", initialValue = 0)
 End
 
 /// @brief Returns TestPulse Counter for Background Task
-Function/S GetNITestPulseCounter(device)
-	string device
+Function/S GetNITestPulseCounter(string device)
 
 	return GetNVARAsString(GetDeviceTestPulse(device), "NITestPulseCounter", initialValue = 0)
 End
 
 /// @brief Returns the current NI setup string for analog in through DAQmx_Scan
-Function/S GetNI_AISetup(device)
-	string device
+Function/S GetNI_AISetup(string device)
 
 	return GetSVARAsString(GetDevicePath(device), "NI_AI_setupStr0")
 End
 
 /// @brief Returns the ADC task ID set after DAQmx_Scan in HW_NI_StartAcq
-Function/S GetNI_ADCTaskID(device)
-	string device
+Function/S GetNI_ADCTaskID(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "NI_ADC_taskID", initialValue = NaN)
 End
 
 /// @brief Returns the DAC task ID set after DAQmx_WaveFormGen in HW_NI_PrepareAcq
-Function/S GetNI_DACTaskID(device)
-	string device
+Function/S GetNI_DACTaskID(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "NI_DAC_taskID", initialValue = NaN)
 End
@@ -534,8 +513,7 @@ Function/S GetSU_AcquisitionError(string device)
 End
 
 /// @brief Returns the TTL task ID set by DAQmx_DIO_Config in HW_NI_PrepareAcq
-Function/S GetNI_TTLTaskID(device)
-	string device
+Function/S GetNI_TTLTaskID(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "NI_TTL_taskID", initialValue = NaN)
 End
@@ -568,8 +546,7 @@ Function/S GetSessionStartTimeReadBack(string device)
 End
 
 /// @brief Return the thread group ID for the FIFO monitor/resetting daemon
-threadsafe Function/S GetThreadGroupIDFIFO(device)
-	string device
+threadsafe Function/S GetThreadGroupIDFIFO(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "threadGroupIDFifo", initialValue = NaN)
 End
@@ -604,15 +581,13 @@ End
 /// 	rngSeed += 1
 /// 	variable val = GetReproducibleRandonNumber()
 /// \endrst
-Function/S GetRNGSeed(device)
-	string device
+Function/S GetRNGSeed(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "rngSeed", initialValue = NaN)
 End
 
 /// @brief Return the absolute path to the repeated acquisition cycle ID
-Function/S GetRepeatedAcquisitionCycleID(device)
-	string device
+Function/S GetRepeatedAcquisitionCycleID(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "raCycleID", initialValue = NaN)
 End
@@ -625,8 +600,7 @@ End
 /// value to have a shorter ITI than what is left over in the sweep.
 ///
 /// @sa LeftOverSweepTime()
-Function/S GetRepurposedSweepTime(device)
-	string device
+Function/S GetRepurposedSweepTime(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "additionalITI", initialValue = 0)
 End
@@ -654,8 +628,7 @@ End
 /// Only valid if called during DAQ with DATA_ACQUISITION_MODE.
 /// This value is relative to first row of the rawDACWave, so an
 /// possible offset is already included in it.
-Function/S GetFifoPosition(device)
-	string device
+Function/S GetFifoPosition(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "fifoPosition", initialValue = NaN)
 End
@@ -663,8 +636,7 @@ End
 /// @brief Return the error counter for the analysis function management
 ///
 /// Mainly used during testing to ensure that no RTE was thrown.
-Function/S GetAnalysisFuncErrorCounter(device)
-	string device
+Function/S GetAnalysisFuncErrorCounter(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "analysisFunctionErrorCounter", initialValue = 0)
 End
@@ -672,29 +644,27 @@ End
 /// @brief Return the maximum ITI of all active sets
 ///
 /// Only meaningful after preparing DAQ in DC_Configure()
-Function/S GetMaxIntertrialInterval(device)
-	string device
+Function/S GetMaxIntertrialInterval(string device)
 
 	return GetNVARAsString(GetDevicePath(device), "maxIntertrialInterval", initialValue = 0)
 End
 
 /// @brief Return the version number of the Igor experiment
 Function/S GetPxPVersion()
+
 	return GetNVARAsString(GetMiesPath(), "pxpVersion", initialValue = EXPERIMENT_VERSION)
 End
 
 /// @brief Return the version number of the Igor experiment loaded into the analysis browser
 ///
 /// @param dfr experiment folder, @sa GetAnalysisExpFolder()
-Function/S GetPxPVersionForAB(dfr)
-	DFREF dfr
+Function/S GetPxPVersionForAB(DFREF dfr)
 
 	return GetNVARAsString(dfr, "pxpVersion", initialValue = NaN)
 End
 
 /// @brief Return the JSON ID for the sweep formula
-Function/S GetSweepFormulaJSONid(dfr)
-	DFREF dfr
+Function/S GetSweepFormulaJSONid(DFREF dfr)
 
 	return GetNVARAsString(dfr, "sweepFormulaJSONid", initialValue = NaN)
 End
@@ -709,6 +679,7 @@ End
 ///
 /// Loads the stored settings on disc if required.
 Function/S GetSettingsJSONid()
+
 	string path   = GetNVARAsString(GetMiesPath(), "settingsJSONid", initialValue = NaN)
 	NVAR   JSONid = $path
 
@@ -727,6 +698,7 @@ End
 ///
 /// Holds one of @ref AcquisitionStates
 Function/S GetAcquisitionState(string device)
+
 	return GetNVARAsString(GetDevicePath(device), "acquisitionState", initialValue = AS_INACTIVE)
 End
 
@@ -734,6 +706,7 @@ End
 ///
 /// Mostly used for testing.
 Function/S GetBugCount()
+
 	return GetNVARAsString(GetMiesPath(), "bugCount", initialValue = 0)
 End
 
@@ -741,42 +714,48 @@ End
 ///
 /// Used for reexporting from NWBv1 into NWBv2, see AB_ReExport()
 Function/S GetNWBOverrideHistoryAndLogFile()
+
 	return GetSVARAsString(GetNwBFolder(), "overrideHistoryAndLogFile")
 End
 
 /// @brief Return the absolute path to the test pulse cycle ID
-Function/S GetTestpulseCycleID(device)
-	string device
+Function/S GetTestpulseCycleID(string device)
 
 	return GetNVARAsString(GetDeviceTestPulse(device), "tpCycleID", initialValue = NaN)
 End
 
 /// @brief Returns the path to the "called once" variable of the given name
 Function/S GetCalledOnceVariable(string name)
+
 	return GetNVARAsString(GetCalledOncePath(), name, initialValue = 0)
 End
 
 /// @brief Returns string path to the thread group id
 Function/S GetThreadGroupID()
+
 	return GetNVARAsString(getAsyncHomeDF(), "threadGroupID", initialValue = NaN)
 End
 
 /// @brief Returns string path to the number of threads
 Function/S GetNumThreads()
+
 	return GetNVARAsString(getAsyncHomeDF(), "numThreads", initialValue = 0)
 End
 
 /// @brief Returns string path to flag if background task was disabled
 Function/S GetTaskDisableStatus()
+
 	return GetNVARAsString(getAsyncHomeDF(), "disableTask", initialValue = 0)
 End
 
 /// @brief Returns the string path to the last successfully executed SweepFormula code
 Function/S GetLastSweepFormulaCode(DFREF dfr)
+
 	return GetSVARAsString(dfr, "lastSweepFormulaCode", initialValue = "")
 End
 
 /// @brief Returns the reference count variable of the given DF
 Function/S GetDFReferenceCount(DFREF dfr)
+
 	return GetNVARAsString(dfr, MEMORY_REFCOUNTER_DF, initialValue = 0)
 End

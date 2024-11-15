@@ -18,8 +18,7 @@ static Function CheckTestingInstallation()
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TestLocking([str])
-	string str
+static Function TestLocking([string str])
 
 	// check that we can gather the device config wave
 	KillOrMoveToTrash(dfr = GetDeviceInfoPath())
@@ -41,6 +40,7 @@ static Function EnsureEnoughDiscSpace()
 End
 
 static Function CheckThatZeroMQMessagingWorks()
+
 	PrepareForPublishTest()
 End
 

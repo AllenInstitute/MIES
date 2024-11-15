@@ -56,6 +56,7 @@ static Function FBD_CheckParams()
 End
 
 static Function FBD_Works()
+
 	variable last, first
 
 	variable lastIndex
@@ -75,8 +76,8 @@ static Function FBD_Works()
 	Make/FREE/T ref = {"{\"ts\" : \"2021-12-24T00:00:00Z\", \"stuff\" : \"abcd\"}", \
 	                   "{\"ts\" : \"2022-01-20T00:00:00Z\", \"stuff\" : \"efgh\"}"}
 
-	first = 0
-	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	first               = 0
+	last                = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
 	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, ref)
 	CHECK_EQUAL_VAR(lastIndex, 1)
@@ -85,21 +86,21 @@ static Function FBD_Works()
 	Make/FREE/T ref = {"{\"ts\" : \"2021-12-24T00:00:00Z\", \"stuff\" : \"abcd\"}", \
 	                   "{\"ts\" : \"2022-01-20T00:00:00Z\", \"stuff\" : \"efgh\"}"}
 
-	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
-	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	first               = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last                = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
 	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, ref)
 	CHECK_EQUAL_VAR(lastIndex, 1)
 
 	// will result null if nothing is in range (1)
-	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z") + 1
-	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z") - 1
+	first               = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z") + 1
+	last                = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z") - 1
 	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_WAVE(result, NULL_WAVE)
 
 	// will result null if nothing is in range (2)
-	first = ParseIsO8601TimeStamp("2020-01-01T00:00:00Z")
-	last  = ParseIsO8601TimeStamp("2020-12-31T00:00:00Z")
+	first               = ParseIsO8601TimeStamp("2020-01-01T00:00:00Z")
+	last                = ParseIsO8601TimeStamp("2020-12-31T00:00:00Z")
 	[result, lastIndex] = FilterByDate(input, first, last)
 	CHECK_WAVE(result, NULL_WAVE)
 End
@@ -123,15 +124,15 @@ static Function FBD_WorksWithInvalidTimeStamp()
 	                   "{}", "{}", "{\"ts\" : \"2022-01-20T00:00:00Z\"}", \
 	                   "{}", "{}"}
 
-	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
-	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	first               = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last                = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
 	[result, lastIndex] = FilterByDate(input2, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, ref)
 	CHECK_EQUAL_VAR(lastIndex, 7)
 
 	// left boundary
-	first = 0
-	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	first               = 0
+	last                = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
 	[result, lastIndex] = FilterByDate(input2, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, ref)
 	CHECK_EQUAL_VAR(lastIndex, 7)
@@ -142,27 +143,27 @@ static Function FBD_WorksWithInvalidTimeStamp()
 	                   "{}", "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
 	                   "{}", "{}"}
 
-	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
-	last  = Inf
+	first               = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last                = Inf
 	[result, lastIndex] = FilterByDate(input2, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, ref)
 	CHECK_EQUAL_VAR(lastIndex, DimSize(input2, ROWS) - 1)
 
 	// all invalid ts
-	first = 0
-	last  = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	first               = 0
+	last                = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
 	[result, lastIndex] = FilterByDate(input3, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, input3)
 	CHECK_EQUAL_VAR(lastIndex, DimSize(input3, ROWS) - 1)
 
-	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
-	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	first               = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last                = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
 	[result, lastIndex] = FilterByDate(input3, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, input3)
 	CHECK_EQUAL_VAR(lastIndex, DimSize(input3, ROWS) - 1)
 
-	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
-	last  = Inf
+	first               = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last                = Inf
 	[result, lastIndex] = FilterByDate(input3, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, input3)
 	CHECK_EQUAL_VAR(lastIndex, DimSize(input3, ROWS) - 1)
@@ -173,8 +174,8 @@ static Function FBD_WorksWithInvalidTimeStamp()
 	                      "{}", "{\"ts\" : \"2022-01-25T00:00:00Z\"}", \
 	                      "{}"}
 
-	first = 0
-	last  = ParseIsO8601TimeStamp("2022-01-25T00:00:00Z")
+	first               = 0
+	last                = ParseIsO8601TimeStamp("2022-01-25T00:00:00Z")
 	[result, lastIndex] = FilterByDate(input4, first, last)
 	CHECK_EQUAL_TEXTWAVES(result, input4)
 	CHECK_EQUAL_VAR(lastIndex, DimSize(input4, ROWS) - 1)

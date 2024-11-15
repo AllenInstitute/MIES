@@ -17,6 +17,7 @@ static Function [STRUCT DAQSettings s] MSQ_GetDAQSettings(string device)
 End
 
 static Function GlobalPreAcq(string device)
+
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
 
@@ -28,11 +29,7 @@ static Function GlobalPreInit(string device)
 	PASS()
 End
 
-static Function/WAVE GetLBNSingleEntry_IGNORE(sweepNo, device, str, headstage, mode)
-	variable sweepNo
-	string   device
-	variable headstage, mode
-	string str
+static Function/WAVE GetLBNSingleEntry_IGNORE(variable sweepNo, string device, string str, variable headstage, variable mode)
 
 	string key
 
@@ -59,15 +56,14 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(sweepNo, device, str, headstage, m
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_DS1([str])
-	string str
+static Function MSQ_DS1([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 End
 
-static Function MSQ_DS1_REENTRY([str])
-	string   str
+static Function MSQ_DS1_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 4

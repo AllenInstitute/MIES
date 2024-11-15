@@ -11,9 +11,7 @@
 
 /// @brief Matches `list` against the expression `matchExpr` using the given
 ///        convention in `exprType`
-threadsafe Function/S ListMatchesExpr(list, matchExpr, exprType)
-	string list, matchExpr
-	variable exprType
+threadsafe Function/S ListMatchesExpr(string list, string matchExpr, variable exprType)
 
 	switch(exprType)
 		case MATCH_REGEXP:
@@ -33,9 +31,7 @@ End
 /// @param listSep    [optional] list Separation character. default is ";"
 ///
 /// @return a list with elements ranging from itemBegin to itemEnd of the input list
-Function/S ListFromList(list, itemBegin, itemEnd, [listSep])
-	string list, listSep
-	variable itemBegin, itemEnd
+Function/S ListFromList(string list, variable itemBegin, variable itemEnd, [string listSep])
 
 	variable i, numItems, start, stop
 
@@ -75,9 +71,7 @@ End
 /// @param start	first point of the range
 /// @param step	    step size for iterating over the range
 /// @param stop 	last point of the range
-Function/S BuildList(format, start, step, stop)
-	string format
-	variable start, step, stop
+Function/S BuildList(string format, variable start, variable step, variable stop)
 
 	string str
 	string list = ""
@@ -100,9 +94,7 @@ End
 /// @param      listOfWaves list of waves with full path
 /// @param[out] baseName    Returns the common baseName if the list has one,
 ///                         otherwise this will be an empty string.
-Function WaveListHasSameWaveNames(listOfWaves, baseName)
-	string  listOfWaves
-	string &baseName
+Function WaveListHasSameWaveNames(string listOfWaves, string &baseName)
 
 	baseName = ""
 
@@ -129,6 +121,7 @@ End
 /// @brief Add a string prefix to each list item and
 /// return the new list
 threadsafe Function/S AddPrefixToEachListItem(string prefix, string list, [string sep])
+
 	string result = ""
 	variable numEntries, i
 
@@ -147,6 +140,7 @@ End
 /// @brief Add a string suffix to each list item and
 /// return the new list
 threadsafe Function/S AddSuffixToEachListItem(string suffix, string list, [string sep])
+
 	string result = ""
 	variable numEntries, i
 
@@ -167,6 +161,7 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function/S RemovePrefixFromListItem(string prefix, string list, [string listSep, variable regExp])
+
 	string result, entry
 	variable numEntries, i
 

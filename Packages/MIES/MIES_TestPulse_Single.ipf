@@ -9,15 +9,12 @@
 /// @file MIES_TestPulse_Single.ipf
 /// @brief __TPS__ Single device background test pulse functionality
 
-Function TPS_StartBackgroundTestPulse(device)
-	string device
+Function TPS_StartBackgroundTestPulse(string device)
 
 	CtrlNamedBackground $TASKNAME_TP, start
 End
 
-Function TPS_StopTestPulseSingleDevice(device, [fast])
-	string   device
-	variable fast
+Function TPS_StopTestPulseSingleDevice(string device, [variable fast])
 
 	if(ParamIsDefault(fast))
 		fast = 0
@@ -32,8 +29,7 @@ End
 /// @brief Background TP Single Device
 ///
 /// @ingroup BackgroundFunctions
-Function TPS_TestPulseFunc(s)
-	STRUCT BackgroundStruct &s
+Function TPS_TestPulseFunc(STRUCT BackgroundStruct &s)
 
 	SVAR runningDevice = $GetRunningSingleDevice()
 	// create a copy as runningDevice is killed in TPS_StopTestPulseSingleDevice
@@ -76,9 +72,7 @@ End
 /// @param device device
 /// @param fast       [optional, defaults to false] Starts TP without any checks or
 ///                   setup. Can be called after stopping it with TP_StopTestPulseFast().
-Function TPS_StartTestPulseSingleDevice(device, [fast])
-	string   device
-	variable fast
+Function TPS_StartTestPulseSingleDevice(string device, [variable fast])
 
 	variable bkg
 
@@ -135,9 +129,7 @@ End
 /// @param elapsedTime [defaults to infinity] allow to run the testpulse for the given amount
 ///                                           of seconds only.
 /// @return zero if time elapsed, one if the Testpulse was manually stopped
-Function TPS_StartTestPulseForeground(device, [elapsedTime])
-	string   device
-	variable elapsedTime
+Function TPS_StartTestPulseForeground(string device, [variable elapsedTime])
 
 	variable i, refTime, timeLeft
 	string oscilloscopeSubwindow

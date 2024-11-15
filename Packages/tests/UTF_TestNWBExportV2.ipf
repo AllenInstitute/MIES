@@ -7,6 +7,7 @@ static Constant NWB_VERSION = 2
 
 // This file does not hold test suites
 static Function NoTestSuite()
+
 	FAIL()
 End
 
@@ -14,8 +15,7 @@ End
 // `/nwb_version` attribute and the path components in `/specifications/core/X.Y.Z` and `/specifications/hdmf-common/A.B.C`
 //
 // In case that fails here check NWB_SPEC_VERSION, HDMF_SPEC_VERSION, NWB_VERSION in IPNWB
-static Function TestSpecVersions(fileID)
-	variable fileID
+static Function TestSpecVersions(variable fileID)
 
 	string groups, expected, version, group, groupVersion, namespaceVersion, globalVersion
 	string path, spec
@@ -49,8 +49,7 @@ static Function TestSpecVersions(fileID)
 	endfor
 End
 
-static Function TestHistory(fileID)
-	variable fileID
+static Function TestHistory(variable fileID)
 
 	WAVE/Z/T history = H5_LoadDataSet(fileID, "/general/data_collection")
 	CHECK_WAVE(history, TEXT_WAVE)
@@ -61,6 +60,7 @@ static Function TestHistory(fileID)
 End
 
 static Function/S TestUserComment(variable fileID, string device)
+
 	WAVE/Z/T userComment = H5_LoadDataSet(fileID, "/general/user_comment/" + device + "/userComment")
 	CHECK_WAVE(userComment, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(userComment, ROWS), 1)
@@ -68,9 +68,7 @@ static Function/S TestUserComment(variable fileID, string device)
 	return userComment[0]
 End
 
-static Function TestLabnotebooks(fileID, device)
-	variable fileID
-	string   device
+static Function TestLabnotebooks(variable fileID, string device)
 
 	string lbnDevices, prefix
 
@@ -97,6 +95,7 @@ static Function TestLabnotebooks(fileID, device)
 End
 
 static Function TestResults(variable fileID)
+
 	string prefix
 
 	WAVE   numericalValues = RemoveUnusedRows(GetNumericalResultsValues())
@@ -116,9 +115,7 @@ static Function TestResults(variable fileID)
 	CHECK_EQUAL_WAVES(textualValuesNWB, textualValues)
 End
 
-static Function TestTPStorage(fileID, device)
-	variable fileID
-	string   device
+static Function TestTPStorage(variable fileID, string device)
 
 	string prefix
 
@@ -133,9 +130,7 @@ static Function TestTPStorage(fileID, device)
 	endif
 End
 
-static Function TestStoredTestPulses(fileID, device)
-	variable fileID
-	string   device
+static Function TestStoredTestPulses(variable fileID, string device)
 
 	string prefix, datasets, dataset, idxstr
 	variable numPulses, i, numEntries, idx
@@ -168,10 +163,7 @@ static Function TestStoredTestPulses(fileID, device)
 	endfor
 End
 
-static Function TestStimsetParamWaves(fileID, device, sweeps)
-	variable fileID
-	string   device
-	WAVE     sweeps
+static Function TestStimsetParamWaves(variable fileID, string device, WAVE sweeps)
 
 	variable i, j, numEntries, sweep
 	string stimsetParamsNWB, stimset, prefix, name
@@ -189,7 +181,7 @@ static Function TestStimsetParamWaves(fileID, device, sweeps)
 			break
 		endif
 
-		WAVE/T/Z stimsets = GetLastSetting(textualValues, sweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
+		WAVE/Z/T stimsets = GetLastSetting(textualValues, sweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
 		CHECK_WAVE(stimsets, TEXT_WAVE)
 
 		for(j = 0; j < NUM_HEADSTAGES; j += 1)
@@ -224,9 +216,7 @@ static Function TestStimsetParamWaves(fileID, device, sweeps)
 	endfor
 End
 
-static Function TestTimeSeriesProperties(groupID, channel)
-	variable groupID
-	string   channel
+static Function TestTimeSeriesProperties(variable groupID, string channel)
 
 	variable numEntries, i, value, channelGroupID
 
@@ -245,12 +235,7 @@ static Function TestTimeSeriesProperties(groupID, channel)
 	HDF5CloseGroup/Z channelGroupID
 End
 
-static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep, params)
-	variable                  groupID
-	string                    device
-	string                    channel
-	variable                  sweep
-	STRUCT ReadChannelParams &params
+static Function/S GetChannelNameFromChannelType(variable groupID, string device, string channel, variable sweep, STRUCT ReadChannelParams &params)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -266,7 +251,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 
 			if(IsNaN(params.electrodeNumber))
 				[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
-				entry = settings[index]
+				entry                  = settings[index]
 			else
 				WAVE/Z settings = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
 				CHECK_WAVE(settings, NUMERIC_WAVE)
@@ -281,7 +266,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 
 			if(IsNaN(params.electrodeNumber))
 				[WAVE settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "ADC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
-				entry = settings[index]
+				entry                  = settings[index]
 			else
 				WAVE/Z settings = GetLastSetting(numericalValues, sweep, "ADC", DATA_ACQUISITION_MODE)
 				CHECK_WAVE(settings, NUMERIC_WAVE)
@@ -308,9 +293,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 	return channelName
 End
 
-static Function/WAVE LoadTimeSeriesImpl(groupID, channel, channelType)
-	variable groupID, channelType
-	string channel
+static Function/WAVE LoadTimeSeriesImpl(variable groupID, string channel, variable channelType)
 
 	switch(channelType)
 		case XOP_CHANNEL_TYPE_DAC:
@@ -328,12 +311,7 @@ static Function/WAVE LoadTimeSeriesImpl(groupID, channel, channelType)
 	endswitch
 End
 
-static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep, pxpSweepsDFR, epochs)
-	variable fileID, groupID, sweep
-	string filepath
-	string channel, device
-	DFREF  pxpSweepsDFR
-	WAVE/Z epochs
+static Function TestTimeSeries(variable fileID, string filepath, string device, variable groupID, string channel, variable sweep, DFREF pxpSweepsDFR, WAVE/Z epochs)
 
 	variable channelGroupID, starting_time, session_start_time, actual, idx, index, GUIchannelNumber, ttlBit
 	variable clampMode, gain, gain_ref, resolution, conversion, headstage, rate_ref, rate, samplingInterval, samplingInterval_ref
@@ -397,7 +375,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	elseif(params.channelType == XOP_CHANNEL_TYPE_ADC && IsNaN(params.electrodeNumber)) // unassoc AD
 		stimulus_expected = "PLACEHOLDER"
 	elseif(params.channelType == XOP_CHANNEL_TYPE_TTL)
-		WAVE/T/Z TTLStimsets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, sweep)
+		WAVE/Z/T TTLStimsets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, sweep)
 		CHECK_WAVE(TTLStimsets, TEXT_WAVE)
 
 		if(IsFinite(params.ttlBit))
@@ -554,7 +532,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		idx = FindDimlabel(epochs, ROWS, channel)
 		CHECK_GE_VAR(idx, 0)
 
-		WAVE/T/Z epochsSingleChannel = WaveRef(epochs, row = idx)
+		WAVE/Z/T epochsSingleChannel = WaveRef(epochs, row = idx)
 		CHECK_WAVE(epochsSingleChannel, TEXT_WAVE)
 
 		WAVE/Z epochsLBN = EP_FetchEpochs_TS(numericalValues, textualValues, sweep, GUIchannelNumber, params.channelType)
@@ -564,10 +542,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	endif
 End
 
-static Function/DF TestSweepData(entry, device, sweep)
-	WAVE/T   entry
-	string   device
-	variable sweep
+static Function/DF TestSweepData(WAVE/T entry, string device, variable sweep)
 
 	variable ret, i, numEntries, headstage
 	string nwbSweeps, pxpSweeps, pxpSweepsClean, name, channelTypeStr, channelNumberStr, channelSuffix
@@ -639,7 +614,7 @@ static Function/S TestFileExport()
 	string baseFolder, nwbFile, discLocation, abWin, sweepBrowser
 
 	[baseFolder, nwbFile] = GetUniqueNWBFileForExport(NWB_VERSION)
-	discLocation = baseFolder + nwbFile
+	discLocation          = baseFolder + nwbFile
 
 	KillWindow/Z $AB_GetPanelName()
 	KillOrMoveToTrash(dfr = GetAnalysisFolder())
@@ -651,9 +626,7 @@ static Function/S TestFileExport()
 	return discLocation
 End
 
-static Function TestListOfGroups(groupList, wv)
-	string groupList
-	WAVE/T wv
+static Function TestListOfGroups(string groupList, WAVE/T wv)
 
 	variable index
 	string   list
@@ -670,16 +643,17 @@ static Function TestListOfGroups(groupList, wv)
 End
 
 Function TestNwbExportV2()
+
 	string discLocation, device
 	string channel
 	variable fileID, numEntries, i, sweep, numGroups, j, groupID
 
 	discLocation = TestFileExport()
 
-	WAVE/T/Z entry = AB_GetMap(discLocation)
+	WAVE/Z/T entry = AB_GetMap(discLocation)
 	CHECK_WAVE(entry, FREE_WAVE)
 
-	WAVE/T/Z devices = GetAnalysisDeviceWave(entry[%DataFolder])
+	WAVE/Z/T devices = GetAnalysisDeviceWave(entry[%DataFolder])
 	CHECK_WAVE(devices, NORMAL_WAVE)
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(devices, NOTE_INDEX), ItemsInList(Getalldevices()))
 	WARN_EQUAL_VAR(GetNumberFromWaveNote(devices, NOTE_INDEX), 1)
@@ -696,7 +670,7 @@ Function TestNwbExportV2()
 	WAVE/Z/T stimuluses = GetAnalysisChannelStimWave(entry[%DataFolder], device)
 	CHECK_WAVE(stimuluses, TEXT_WAVE)
 
-	WAVE/WAVE/Z epochs = LoadEpochTable(discLocation)
+	WAVE/Z/WAVE epochs = LoadEpochTable(discLocation)
 
 	REQUIRE(FileExists(discLocation))
 	fileID = H5_OpenFile(discLocation)
@@ -772,8 +746,7 @@ Function TestNwbExportV2()
 End
 
 // UTF_TD_GENERATOR NWBVersionStrings
-Function TestNWBVersionStrings([str])
-	string str
+Function TestNWBVersionStrings([string str])
 
 	variable version0, version1, version2
 
@@ -785,8 +758,7 @@ Function TestNWBVersionStrings([str])
 End
 
 // UTF_TD_GENERATOR NeuroDataRefTree
-Function TestNeuroDataRefTree([str])
-	string str
+Function TestNeuroDataRefTree([string str])
 
 	string neurodata_type, ancestry
 

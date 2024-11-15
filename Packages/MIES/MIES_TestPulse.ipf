@@ -37,6 +37,7 @@ static Constant TP_SET_PRECISION          = 2
 
 /// @brief Check if the value is a valid baseline fraction
 Function TP_IsValidBaselineFraction(variable value)
+
 	return value >= TP_BASELINE_FRACTION_LOW && value <= TP_BASELINE_FRACTION_HIGH
 End
 
@@ -46,8 +47,7 @@ End
 ///
 /// @param pulseDuration duration of the high portion of the testpulse in points or time
 /// @param baselineFrac  fraction, *not* percentage, of the baseline
-static Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
-	variable pulseDuration, baselineFrac
+static Function TP_CalculateTestPulseLength(variable pulseDuration, variable baselineFrac)
 
 	ASSERT(TP_IsValidBaselineFraction(baselineFrac), "baselineFrac is out of range")
 	return pulseDuration / (1 - 2 * baselineFrac)
@@ -57,6 +57,7 @@ End
 ///
 /// Can be used when reconstructing the baseline fraction from epoch information.
 Function TP_CalculateBaselineFraction(variable pulseDuration, variable totalLength)
+
 	return (pulseDuration / totalLength - 1) / -2
 End
 
@@ -68,11 +69,7 @@ End
 /// @param hsList     list of headstage numbers in the same order as the columns of TPWave
 ///
 /// The stored test pulse waves will have column dimension labels in the format `HS_X`.
-Function TP_StoreTP(device, TPWave, tpMarker, hsList)
-	string   device
-	WAVE     TPWave
-	variable tpMarker
-	string   hsList
+Function TP_StoreTP(string device, WAVE TPWave, variable tpMarker, string hsList)
 
 	variable index, ret
 
@@ -153,8 +150,7 @@ End
 
 /// @brief Split the stored testpulse wave reference wave into single waves
 ///        for easier handling
-Function TP_SplitStoredTestPulseWave(device)
-	string device
+Function TP_SplitStoredTestPulseWave(string device)
 
 	variable numEntries, i
 
@@ -268,6 +264,7 @@ Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 End
 
 static Function/WAVE TP_CreateOverrideResults(string device, variable type)
+
 	variable numRows, numCols, numLayers
 	string labels
 
@@ -306,7 +303,7 @@ End
 /// - Active headstages
 static Function/WAVE TP_GetTPWaveForAutoTP(string device, variable marker)
 
-	WAVE/WAVE/Z TPs = TP_GetStoredTPs(device, marker, 2)
+	WAVE/Z/WAVE TPs = TP_GetStoredTPs(device, marker, 2)
 
 	if(!WaveExists(TPs))
 		return $""
@@ -318,6 +315,7 @@ static Function/WAVE TP_GetTPWaveForAutoTP(string device, variable marker)
 End
 
 static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResults, WAVE TPs)
+
 	variable idx, pulseLengthMS, tau, baseline, fac, baselineFracCand, needsUpdate
 	variable rangeExceeded, result
 	string msg
@@ -427,6 +425,7 @@ End
 /// @retval tau          time constant of the decay [ms]
 /// @retval baseline     baseline length of one pulse (same as the fitting range) [ms]
 static Function [variable result, variable tau, variable baseline] TP_AutoFitBaseline(WAVE data, variable pulseLengthMS)
+
 	variable first, last, firstPnt, lastPnt, totalLength, debugEnabled, fitQuality, referenceThreshold
 	variable V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode
 	string msg, win
@@ -533,6 +532,7 @@ End
 /// .. image:: /dot/auto-testpulse.svg
 /// \endrst
 static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, variable marker)
+
 	variable i, maximumCurrent, targetVoltage, targetVoltageTol, resistance, voltage, current
 	variable needsUpdate, lastInvocation, curTime, scalar, skipAutoBaseline
 	string msg
@@ -673,6 +673,7 @@ static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, varia
 End
 
 Function TP_AutoTPActive(string device)
+
 	WAVE settings = GetTPSettings(device)
 
 	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
@@ -686,6 +687,7 @@ Function TP_AutoTPActive(string device)
 End
 
 static Function TP_AutoTPTurnOff(string device, WAVE autoTPEnable, variable headstage, variable QC)
+
 	autoTPEnable[headstage] = 0
 
 	QC = !!QC
@@ -700,6 +702,7 @@ End
 
 /// @brief Disable Auto TP if it passed `TP_AUTO_TP_CONSECUTIVE_PASSES` times in a row.
 static Function TP_AutoDisableIfFinished(string device, WAVE TPStorage)
+
 	variable i, needsUpdate, TPState
 
 	WAVE TPSettings = GetTPSettings(device)
@@ -798,6 +801,7 @@ End
 /// @param numReqEntries Number of entries to return, supports integer values and inf
 /// @param options       [optional, default to nothing] One of @ref TPStorageQueryingOptions
 Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, string entry, variable numReqEntries, [variable options])
+
 	variable i, idx, value, entryLayer, lastValidEntry, numValidEntries, currentAutoTPCycleID, latestAutoTPCycleID
 
 	if(ParamIsDefault(options))
@@ -875,8 +879,7 @@ End
 ///
 /// @param dfrInp input data folder from the ASYNC framework, parameter input order therein follows the setup in TP_SendToAnalysis()
 ///
-threadsafe Function/DF TP_TSAnalysis(dfrInp)
-	DFREF dfrInp
+threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 
 	variable evalRange, refTime, refPoint, tpStartPoint
 	variable sampleInt
@@ -1001,6 +1004,7 @@ End
 
 /// @brief Calculates running average [box average] for all entries and all headstages
 static Function TP_CalculateAverage(WAVE TPResultsBuffer, WAVE TPResults)
+
 	variable numEntries, numLayers
 
 	MatrixOp/FREE TPResultsBufferCopy = rotateLayers(TPResultsBuffer, 1)
@@ -1026,10 +1030,7 @@ End
 /// @brief Records values from TPResults into TPStorage at defined intervals.
 ///
 /// Used for analysis of TP over time.
-static Function TP_RecordTP(device, TPResults, now, tpMarker)
-	string device
-	WAVE   TPResults
-	variable now, tpMarker
+static Function TP_RecordTP(string device, WAVE TPResults, variable now, variable tpMarker)
 
 	variable delta, i, ret, lastPressureCtrl, timestamp, cycleID
 	WAVE     TPStorage     = GetTPStorage(device)
@@ -1126,9 +1127,7 @@ static Function TP_RecordTP(device, TPResults, now, tpMarker)
 End
 
 /// @brief Threadsafe wrapper for performing CurveFits on the TPStorage wave
-threadsafe static Function TP_FitResistance(TPStorage, startRow, endRow, headstage)
-	WAVE TPStorage
-	variable startRow, endRow, headstage
+threadsafe static Function TP_FitResistance(WAVE TPStorage, variable startRow, variable endRow, variable headstage)
 
 	variable V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode
 
@@ -1160,10 +1159,7 @@ End
 /// @param device       locked device string
 /// @param TPStorage        test pulse storage wave
 /// @param endRow           last valid row index in TPStorage
-static Function TP_AnalyzeTP(device, TPStorage, endRow)
-	string   device
-	WAVE/Z   TPStorage
-	variable endRow
+static Function TP_AnalyzeTP(string device, WAVE/Z TPStorage, variable endRow)
 
 	variable i, startRow, headstage
 
@@ -1196,15 +1192,13 @@ Function TP_StopTestPulseOnAllDevices()
 End
 
 /// @sa TP_StopTestPulseWrapper
-Function TP_StopTestPulseFast(device)
-	string device
+Function TP_StopTestPulseFast(string device)
 
 	return TP_StopTestPulseWrapper(device, fast = 1)
 End
 
 /// @sa TP_StopTestPulseWrapper
-Function TP_StopTestPulse(device)
-	string device
+Function TP_StopTestPulse(string device)
 
 	return TP_StopTestPulseWrapper(device, fast = 0)
 End
@@ -1216,9 +1210,7 @@ End
 ///                   necessary steps for tear down.
 ///
 /// @return One of @ref TestPulseRunModes
-static Function TP_StopTestPulseWrapper(device, [fast])
-	string   device
-	variable fast
+static Function TP_StopTestPulseWrapper(string device, [variable fast])
 
 	variable runMode
 
@@ -1251,9 +1243,7 @@ static Function TP_StopTestPulseWrapper(device, [fast])
 End
 
 /// @brief Restarts a test pulse previously stopped with #TP_StopTestPulse
-Function TP_RestartTestPulse(device, testPulseMode, [fast])
-	string device
-	variable testPulseMode, fast
+Function TP_RestartTestPulse(string device, variable testPulseMode, [variable fast])
 
 	if(ParamIsDefault(fast))
 		fast = 0
@@ -1280,10 +1270,7 @@ End
 /// @param device  device
 /// @param runMode     Testpulse running mode, one of @ref TestPulseRunModes
 /// @param fast        [optional, defaults to false] Performs only the totally necessary steps for setup
-Function TP_Setup(device, runMode, [fast])
-	string   device
-	variable runMode
-	variable fast
+Function TP_Setup(string device, variable runMode, [variable fast])
 
 	if(ParamIsDefault(fast))
 		fast = 0
@@ -1323,8 +1310,7 @@ Function TP_Setup(device, runMode, [fast])
 End
 
 /// @brief Common setup calls for TP and TP during DAQ
-Function TP_SetupCommon(device)
-	string device
+Function TP_SetupCommon(string device)
 
 	variable now, index
 
@@ -1360,9 +1346,7 @@ Function TP_SetupCommon(device)
 End
 
 /// @brief Perform common actions after the testpulse
-Function TP_Teardown(device, [fast])
-	string   device
-	variable fast
+Function TP_Teardown(string device, [variable fast])
 
 	if(ParamIsDefault(fast))
 		fast = 0
@@ -1396,8 +1380,7 @@ Function TP_Teardown(device, [fast])
 End
 
 /// @brief Common teardown calls for TP and TP during DAQ
-Function TP_TeardownCommon(device)
-	string device
+Function TP_TeardownCommon(string device)
 
 	P_LoadPressureButtonState(device)
 
@@ -1424,8 +1407,7 @@ End
 /// @brief Check if the testpulse is running
 ///
 /// Can not be used to check for foreground TP as during foreground TP/DAQ nothing else runs.
-Function TP_CheckIfTestpulseIsRunning(device)
-	string device
+Function TP_CheckIfTestpulseIsRunning(string device)
 
 	NVAR runMode = $GetTestpulseRunMode(device)
 
@@ -1436,9 +1418,7 @@ End
 ///
 /// @param device		DA_Ephys panel name
 /// @param cycles		number of cycles that test pulse must run
-Function TP_TestPulseHasCycled(device, cycles)
-	string   device
-	variable cycles
+Function TP_TestPulseHasCycled(string device, variable cycles)
 
 	variable index, indexOnTPStart
 
@@ -1450,9 +1430,7 @@ Function TP_TestPulseHasCycled(device, cycles)
 End
 
 /// @brief Save the amplifier holding command in the TPStorage wave
-Function TP_UpdateHoldCmdInTPStorage(device, headStage)
-	string   device
-	variable headStage
+Function TP_UpdateHoldCmdInTPStorage(string device, variable headStage)
 
 	variable count, clampMode
 
@@ -1479,9 +1457,7 @@ Function TP_UpdateHoldCmdInTPStorage(device, headStage)
 End
 
 /// @brief Create the testpulse wave with the current settings
-Function TP_CreateTestPulseWave(device, dataAcqOrTP)
-	string   device
-	variable dataAcqOrTP
+Function TP_CreateTestPulseWave(string device, variable dataAcqOrTP)
 
 	variable totalLengthPoints, pulseStartPoints, pulseLengthPoints
 
@@ -1577,7 +1553,7 @@ Function TP_UpdateTPSettingsCalculatedImpl(WAVE TPSettings, WAVE samplingInterva
 	// update the calculated values
 	tpCalculated[%baselineFrac] = TPSettings[%baselinePerc][INDEP_HEADSTAGE] * PERCENT_TO_ONE
 
-	tpCalculated[%pulseLengthMS]            = TPSettings[%durationMS][INDEP_HEADSTAGE]                      // here for completeness
+	tpCalculated[%pulseLengthMS]            = TPSettings[%durationMS][INDEP_HEADSTAGE] // here for completeness
 	tpCalculated[%pulseLengthPointsTP]      = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / interTPDAC)
 	tpCalculated[%pulseLengthPointsDAQ]     = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / interDAQDAC)
 	tpCalculated[%pulseLengthPointsTP_ADC]  = trunc(tpCalculated[%pulseLengthPointsTP] * factorTP)
@@ -1633,6 +1609,7 @@ End
 ///
 /// @see DAP_TPGUISettingToWave() for the special auto TP entry handling.
 Function TP_UpdateTPLBNSettings(string device)
+
 	variable i, value
 	string lbl, entry
 
@@ -1689,8 +1666,7 @@ Function TP_UpdateTPLBNSettings(string device)
 End
 
 /// @brief Return the TP cycle ID for the given device
-static Function TP_GetTPCycleID(device)
-	string device
+static Function TP_GetTPCycleID(string device)
 
 	DAP_AbortIfUnlocked(device)
 
@@ -1699,5 +1675,6 @@ End
 
 /// @brief Return the length in points of the power spectrum generated via FFT
 threadsafe Function TP_GetPowerSpectrumLength(variable tpLength)
+
 	return 2^FindNextPower(tpLength, 2)
 End

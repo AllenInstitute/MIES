@@ -13,8 +13,7 @@
 /// @brief __RA__ Repated acquisition functionality
 
 /// @brief Recalculate the Inter trial interval (ITI) for the given device.
-static Function RA_RecalculateITI(device)
-	string device
+static Function RA_RecalculateITI(string device)
 
 	variable ITI, sweepNo
 
@@ -39,8 +38,7 @@ static Function RA_RecalculateITI(device)
 	return ITI
 End
 
-static Function RA_HandleITI_MD(device)
-	string device
+static Function RA_HandleITI_MD(string device)
 
 	variable ITI
 	string   funcList
@@ -71,9 +69,7 @@ static Function RA_HandleITI_MD(device)
 	DQM_StartBackgroundTimer(device, ITI, funcList)
 End
 
-static Function RA_WaitUntiIITIDone(device, elapsedTime)
-	string   device
-	variable elapsedTime
+static Function RA_WaitUntiIITIDone(string device, variable elapsedTime)
 
 	variable reftime, timeLeft
 	string oscilloscopeSubwindow
@@ -95,8 +91,7 @@ static Function RA_WaitUntiIITIDone(device, elapsedTime)
 	return 1
 End
 
-static Function RA_HandleITI(device)
-	string device
+static Function RA_HandleITI(string device)
 
 	variable ITI, refTime, background, aborted
 	string funcList
@@ -146,8 +141,7 @@ static Function RA_HandleITI(device)
 End
 
 /// @brief Calculate the total number of sweeps for repeated acquisition
-static Function RA_GetTotalNumberOfSweeps(device)
-	string device
+static Function RA_GetTotalNumberOfSweeps(string device)
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq_Indexing"))
 		return GetValDisplayAsNum(device, "valdisp_DataAcq_SweepsInSet")
@@ -157,8 +151,7 @@ static Function RA_GetTotalNumberOfSweeps(device)
 End
 
 /// @brief Update the "Sweeps remaining" control
-Function RA_StepSweepsRemaining(device)
-	string device
+Function RA_StepSweepsRemaining(string device)
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 		variable numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
@@ -172,8 +165,7 @@ End
 
 /// @brief Function gets called after the first sweep is already
 /// acquired and if repeated acquisition is on
-static Function RA_Start(device)
-	string device
+static Function RA_Start(string device)
 
 	variable numTotalSweeps
 
@@ -191,8 +183,7 @@ static Function RA_Start(device)
 	RA_HandleITI(device)
 End
 
-Function RA_Counter(device)
-	string device
+Function RA_Counter(string device)
 
 	variable numTotalSweeps, runMode
 	string str
@@ -242,8 +233,7 @@ Function RA_Counter(device)
 	endif
 End
 
-static Function RA_FinishAcquisition(device)
-	string device
+static Function RA_FinishAcquisition(string device)
 
 	DQ_StopDAQDeviceTimer(device)
 
@@ -254,8 +244,7 @@ static Function RA_FinishAcquisition(device)
 	DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_FINISHED)
 End
 
-static Function RA_BckgTPwithCallToRACounter(device)
-	string device
+static Function RA_BckgTPwithCallToRACounter(string device)
 
 	variable numTotalSweeps
 	NVAR count = $GetCount(device)
@@ -269,8 +258,7 @@ static Function RA_BckgTPwithCallToRACounter(device)
 	endif
 End
 
-static Function RA_StartMD(device)
-	string device
+static Function RA_StartMD(string device)
 
 	variable i, numTotalSweeps
 
@@ -289,8 +277,7 @@ static Function RA_StartMD(device)
 	RA_HandleITI_MD(device)
 End
 
-Function RA_CounterMD(device)
-	string device
+Function RA_CounterMD(string device)
 
 	variable numTotalSweeps
 	NVAR count          = $GetCount(device)
@@ -328,8 +315,7 @@ Function RA_CounterMD(device)
 	endif
 End
 
-static Function RA_BckgTPwithCallToRACounterMD(device)
-	string device
+static Function RA_BckgTPwithCallToRACounterMD(string device)
 
 	variable numTotalSweeps
 	NVAR count = $GetCount(device)
@@ -346,8 +332,7 @@ End
 /// @brief Return one if we are acquiring currently the very first sweep of a
 ///        possible repeated acquisition cycle. Zero means that we acquire a later
 ///        sweep than the first one in a repeated acquisition cycle.
-Function RA_IsFirstSweep(device)
-	string device
+Function RA_IsFirstSweep(string device)
 
 	NVAR count = $GetCount(device)
 	return !count
@@ -362,9 +347,7 @@ End
 /// @param limitToSetBorder [optional, defaults to false] Limits skipCount so
 ///                         that we don't skip further than after the last sweep of the
 ///                         stimset with the most number of sweeps.
-Function RA_SkipSweeps(device, skipCount, source, [limitToSetBorder])
-	string device
-	variable source, skipCount, limitToSetBorder
+Function RA_SkipSweeps(string device, variable skipCount, variable source, [variable limitToSetBorder])
 
 	variable sweepsInSet, recalculatedCount
 	string msg
@@ -443,9 +426,7 @@ End
 ///
 ///@param device device
 ///@param skipCount The number of sweeps to skip (forward or backwards) during repeated acquisition.
-static Function RA_SkipSweepCalc(device, skipCount)
-	string   device
-	variable skipCount
+static Function RA_SkipSweepCalc(string device, variable skipCount)
 
 	string   msg
 	variable totSweeps
@@ -464,8 +445,7 @@ static Function RA_SkipSweepCalc(device, skipCount)
 	endif
 End
 
-static Function RA_PerfInitialize(device)
-	string device
+static Function RA_PerfInitialize(string device)
 
 	KillOrMoveToTrash(wv = GetRAPerfWave(device))
 	WAVE perfWave = GetRAPerfWave(device)
@@ -473,9 +453,7 @@ static Function RA_PerfInitialize(device)
 	perfWave[0] = RelativeNowHighPrec()
 End
 
-static Function RA_PerfAddMark(device, idx)
-	string   device
-	variable idx
+static Function RA_PerfAddMark(string device, variable idx)
 
 	WAVE perfWave = GetRAPerfWave(device)
 
@@ -483,8 +461,7 @@ static Function RA_PerfAddMark(device, idx)
 	perfWave[idx] = RelativeNowHighPrec()
 End
 
-static Function RA_PerfFinish(device)
-	string device
+static Function RA_PerfFinish(string device)
 
 	WAVE perfWave = GetRAPerfWave(device)
 
@@ -510,9 +487,7 @@ End
 ///
 /// @param device  device
 /// @param multiDevice [optional, defaults to false] DAQ mode
-Function RA_ContinueOrStop(device, [multiDevice])
-	string   device
-	variable multiDevice
+Function RA_ContinueOrStop(string device, [variable multiDevice])
 
 	if(ParamIsDefault(multiDevice))
 		multiDevice = 0

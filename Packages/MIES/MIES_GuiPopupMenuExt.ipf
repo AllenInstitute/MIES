@@ -396,8 +396,7 @@ End
 ///        where PEXT_SubMenuName is used.
 ///
 /// @param subMenuNr number of current sub menu
-Function/S PEXT_SubMenuName(subMenuNr)
-	variable subMenuNr
+Function/S PEXT_SubMenuName(variable subMenuNr)
 
 	string s
 
@@ -423,8 +422,7 @@ End
 /// Callled very often (MAX_SUBMENUS^2/2).
 ///
 /// @param subMenuNr number of current sub menu
-Function/S PEXT_PopupMenuItems(subMenuNr)
-	variable subMenuNr
+Function/S PEXT_PopupMenuItems(variable subMenuNr)
 
 	variable modifiedBefore
 
@@ -485,16 +483,16 @@ End
 /// @brief Prototype for the menu item getter that is compatible with the
 ///        former popupmenu value=procedure definition.
 ///
-Function/WAVE PEXT_ITEMGETTER_WAVE_PROTO(device)
-	string device
+Function/WAVE PEXT_ITEMGETTER_WAVE_PROTO(string device)
+
 End
 
 /// @brief Prototype for the former popupaction procedure, that is only
 ///        called virtually now through the PopupContextualMenu callback.
 ///
 /// @param pa WMPopupAction structure
-Function PEXT_POPUPACTION_PROTO(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function PEXT_POPUPACTION_PROTO(STRUCT WMPopupAction &pa) : PopupMenuControl
+
 End
 
 /// @brief Generic procedure for button actions from popup extension controls
@@ -503,8 +501,7 @@ End
 ///        This getter function can either return a string or 1D text wave.
 ///
 /// @param ba WMButtonAction structure
-Function PEXT_ButtonProc(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function PEXT_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string itemGetter, itemList
 
@@ -529,7 +526,7 @@ Function PEXT_ButtonProc(ba) : ButtonControl
 			else
 				FUNCREF PEXT_ITEMGETTER_WAVE_PROTO GetItemWave = $itemGetter
 				ASSERT(FuncRefIsAssigned(FuncRefInfo(GetItemWave)), "Popup extension item getter has wrong function template format")
-				WAVE/T/Z itemWave = GetItemWave(ba.win)
+				WAVE/Z/T itemWave = GetItemWave(ba.win)
 				PEXT_VerifyAndSetMenuWave(itemWave)
 			endif
 
@@ -540,8 +537,7 @@ Function PEXT_ButtonProc(ba) : ButtonControl
 End
 
 /// @brief Verifies menu data input wave and transfers it to global
-static Function PEXT_VerifyAndSetMenuWave(menuWave)
-	WAVE/T/Z menuWave
+static Function PEXT_VerifyAndSetMenuWave(WAVE/Z/T menuWave)
 
 	variable subMenuCnt, i
 	string subItem
@@ -583,9 +579,7 @@ End
 /// @param[in] menuList 1d text wave with menu items
 /// @param[in] method [optional, default = PEXT_SUBSPLIT_DEFAULT] sets how the menu items are split to sub menus @sa PEXT_SubMenuSplitting
 /// @returns 1d text wave where each element contains a list of menu items. Each element represents a sub menu.
-Function/WAVE PEXT_SplitToSubMenus(menuList, [method])
-	WAVE/T/Z menuList
-	variable method
+Function/WAVE PEXT_SplitToSubMenus(WAVE/Z/T menuList, [variable method])
 
 	variable subMenuCnt, beginitem, endItem, i, j, numPerSubEntry
 	variable numItems, remainItems, menuPos, subIndex, subMenuLength
@@ -662,9 +656,7 @@ End
 ///
 /// @param[in] splitMenu 1d text wave with menu item lists for sub menus as returned by PEXT_SplitToSubMenus()
 /// @param[in] method [optional, default = PEXT_SUBNAMEGEN_DEFAULT] sets how the sub menu names are generated @sa PEXT_SubMenuNameGeneration
-Function PEXT_GenerateSubMenuNames(splitMenu, [method])
-	WAVE/T/Z splitMenu
-	variable method
+Function PEXT_GenerateSubMenuNames(WAVE/Z/T splitMenu, [variable method])
 
 	string subItemList, subItem
 	variable subMenuCnt, i, j

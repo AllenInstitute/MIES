@@ -43,8 +43,7 @@ End
 /// 	ResetDebuggerState(debuggerState)
 /// 	// now the debugger is in the same state as before
 /// \endrst
-Function ResetDebuggerState(debuggerState)
-	variable debuggerState
+Function ResetDebuggerState(variable debuggerState)
 
 	variable debugOnError, nvarChecking
 
@@ -72,8 +71,7 @@ End
 /// @brief Reset Debug on Error state
 ///
 /// @param debugOnError state before, usually the same value as DisableDebugOnError() returned
-Function ResetDebugOnError(debugOnError)
-	variable debugOnError
+Function ResetDebugOnError(variable debugOnError)
 
 	if(!debugOnError)
 		return NaN

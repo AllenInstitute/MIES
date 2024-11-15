@@ -41,8 +41,7 @@ Function BWO_SelectDevice()
 End
 
 /// @brief Executes blowout protocol
-Function BWO_Go(device)
-	string device
+Function BWO_Go(string device)
 
 	if(!BWO_CheckGlobalSettings(device))
 		return NaN
@@ -66,8 +65,7 @@ End
 /// @brief Checks that MIES is correctly configured for automated blowout protocol
 ///
 /// @returns one if settings are valid, zero otherwise
-static Function BWO_CheckGlobalSettings(device)
-	string device
+static Function BWO_CheckGlobalSettings(string device)
 
 	string stimSetList
 	variable PressureModeStorageCol, Connected, i
@@ -112,8 +110,7 @@ static Function BWO_CheckGlobalSettings(device)
 End
 
 /// @brief Initates test pulse
-static Function BWO_ConfigureTP(device)
-	string device
+static Function BWO_ConfigureTP(string device)
 
 	if(!TP_CheckIfTestpulseIsRunning(device))
 		PGC_SetAndActivateControl(device, "StartTestPulseButton", switchTab = 1)
@@ -123,8 +120,7 @@ static Function BWO_ConfigureTP(device)
 End
 
 /// @brief Configures data acquisition settings for blowout
-static Function BWO_SetMIESSettings(device)
-	string device
+static Function BWO_SetMIESSettings(string device)
 
 	// turn on insert TP
 	PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
@@ -142,8 +138,7 @@ static Function BWO_SetMIESSettings(device)
 End
 
 /// @brief Applies a pressure pulse to all headstages with valid pressure settings
-static Function BWO_InitParaPipetteClear(device)
-	string device
+static Function BWO_InitParaPipetteClear(string device)
 
 	variable                startTime
 	STRUCT BackgroundStruct s
@@ -162,8 +157,7 @@ static Function BWO_InitParaPipetteClear(device)
 End
 
 /// @brief Attempts to clear pipettes that have a resistance larger than MAX_RESISTANCE
-static Function BWO_CheckAndClearPipettes(device)
-	string device
+static Function BWO_CheckAndClearPipettes(string device)
 
 	variable i, j, col, initPressure, startTime, pressurePulseStartTime, pressurePulseTime
 
@@ -215,8 +209,7 @@ static Function BWO_CheckAndClearPipettes(device)
 End
 
 /// @brief Turns OFF all relevant MCC amplifier controls in I- and V-clamp modes
-static Function BWO_AllMCCCtrlsOFF(device)
-	string device
+static Function BWO_AllMCCCtrlsOFF(string device)
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_SELECTED)
 	BWO_SetClampModeAll(device, I_CLAMP_MODE)
@@ -228,9 +221,7 @@ static Function BWO_AllMCCCtrlsOFF(device)
 End
 
 /// @brief Wrapper function for setting the clamp mode on all headstages (T̶h̶o̶m̶a̶s̶ ̶p̶r̶o̶b̶a̶b̶l̶y̶ ̶w̶o̶n̶'̶t̶ ̶l̶i̶k̶e̶ ̶i̶t̶  He liked it!! :/ ).
-static Function BWO_SetClampModeAll(device, mode)
-	string   device
-	variable mode
+static Function BWO_SetClampModeAll(string device, variable mode)
 
 	switch(mode)
 		case V_CLAMP_MODE:
@@ -248,8 +239,7 @@ static Function BWO_SetClampModeAll(device, mode)
 End
 
 /// @brief Turns OFF I-clamp controls
-static Function BWO_DisableMCCIClampCtrls(device)
-	string device
+static Function BWO_DisableMCCIClampCtrls(string device)
 
 	PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnable", val = CHECKBOX_UNSELECTED)
 	PGC_SetAndActivateControl(device, "check_DatAcq_BBEnable", val = CHECKBOX_UNSELECTED)
@@ -258,8 +248,7 @@ static Function BWO_DisableMCCIClampCtrls(device)
 End
 
 /// @brief Turns OFF V-clamp controls
-static Function BWO_DisableMCCVClampCtrls(device)
-	string device
+static Function BWO_DisableMCCVClampCtrls(string device)
 
 	PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
 	PGC_SetAndActivateControl(device, "check_DatAcq_WholeCellEnable", val = CHECKBOX_UNSELECTED)
@@ -267,8 +256,7 @@ static Function BWO_DisableMCCVClampCtrls(device)
 End
 
 /// @brief Acquires blowout sweep
-static Function BWO_AcquireSweep(device)
-	string device
+static Function BWO_AcquireSweep(string device)
 
 	PGC_SetAndActivateControl(device, "Radio_ClampMode_AllIClamp", val = CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(device, "DataAcquireButton")

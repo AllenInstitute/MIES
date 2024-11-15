@@ -16,8 +16,7 @@ static Constant    CHECKBOX_CLICKED         = 1
 static Constant    RADIO3_CLICKED           = 2
 
 /// @brief Open a fresh template panel
-static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
-	string testCase
+static Function TEST_CASE_BEGIN_OVERRIDE(string testCase)
 
 	TestCaseBeginCommon(testCase)
 
@@ -26,8 +25,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 End
 
 /// @brief Cleans up failing tests
-static Function TEST_CASE_END_OVERRIDE(testCase)
-	string testCase
+static Function TEST_CASE_END_OVERRIDE(string testCase)
 
 	KillWindow/Z MainPanel
 
@@ -115,8 +113,7 @@ Function/WAVE TCONF_RadioCoupling()
 End
 
 /// @brief CheckBox proc helper to check Config_RestorePriority
-Function TCONF_CheckProc(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function TCONF_CheckProc(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string ctrlName
 
@@ -136,6 +133,7 @@ Function TCONF_CheckProc(cba) : CheckBoxControl
 End
 
 static Function TCONF_ChangeGUIValues_IGNORE()
+
 	CheckBox CheckBox, value=0
 	PopupMenu popup, popvalue="Maybe"
 	ValDisplay valdisp, value=_NUM:0
@@ -147,9 +145,7 @@ static Function TCONF_ChangeGUIValues_IGNORE()
 End
 
 /// @brief Saves a json to a text file in home path
-static Function TCONF_SaveJSON(jsonID, fName)
-	variable jsonID
-	string   fName
+static Function TCONF_SaveJSON(variable jsonID, string fName)
 
 	string   out
 	variable fnum
@@ -159,8 +155,7 @@ static Function TCONF_SaveJSON(jsonID, fName)
 End
 
 /// @brief Normalize a JSON encoded string
-static Function/S TCONF_NormalizeJSON(s)
-	string s
+static Function/S TCONF_NormalizeJSON(string s)
 
 	variable jsonID = JSON_Parse(s)
 	s = JSON_Dump(jsonID)
@@ -170,8 +165,7 @@ static Function/S TCONF_NormalizeJSON(s)
 End
 
 /// @brief helper function to compare two text files
-static Function TCONF_CompareTextFiles(fName1, fName2)
-	string fName1, fName2
+static Function TCONF_CompareTextFiles(string fName1, string fName2)
 
 	string s1, s2
 

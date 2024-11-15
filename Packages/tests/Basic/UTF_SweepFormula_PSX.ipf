@@ -1155,6 +1155,7 @@ End
 
 /// IUTF_TD_GENERATOR v0:GetKernelAmplitude
 static Function TestOperationPSX([STRUCT IUTF_mData &m])
+
 	string win, device, str, comboKey
 	variable jsonID, kernelAmp
 
@@ -1225,6 +1226,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 End
 
 static Function TestOperationPSXTooLargeDecayTau()
+
 	string win, device, str, comboKey
 	variable jsonID
 
@@ -1255,14 +1257,14 @@ static Function TestOperationPSXTooLargeDecayTau()
 	CHECK_EQUAL_WAVES(fitResult, {PSX_DECAY_FIT_ERROR, PSX_DECAY_FIT_ERROR}, mode = WAVE_DATA)
 End
 
-static Function CheckEventDataHelper(WAVE/WAVE/Z dataWref, variable index)
+static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index)
 
 	variable numEvents
 
 	WAVE/Z psxEvent = dataWref[%$"psxEvent_" + num2str(index)]
 	CHECK_WAVE(psxEvent, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 
-	WAVE/WAVE/Z eventFit = dataWref[%$"eventFit_" + num2str(index)]
+	WAVE/Z/WAVE eventFit = dataWref[%$"eventFit_" + num2str(index)]
 	CHECK_WAVE(eventFit, WAVE_WAVE)
 
 	numEvents = DimSize(psxEvent, ROWS)
@@ -1291,6 +1293,7 @@ static Function CheckEventDataHelper(WAVE/WAVE/Z dataWref, variable index)
 End
 
 static Function ExecuteSweepFormulaCode(string browser, string code)
+
 	string bsPanel
 
 	SF_SetFormula(browser, code)
@@ -1323,7 +1326,7 @@ static Function [WAVE psxEvent_0, WAVE psxEvent_1] GetPSXEventWavesHelper(string
 	DFREF workDFR = MIES_PSX#PSX_GetWorkingFolder(win)
 	CHECK(DataFolderExistsDFR(workDFR))
 
-	WAVE/DF/Z comboFolders = MIES_PSX#PSX_GetAllCombinationFolders(workDFR)
+	WAVE/Z/DF comboFolders = MIES_PSX#PSX_GetAllCombinationFolders(workDFR)
 	CHECK_WAVE(comboFolders, DATAFOLDER_WAVE)
 	CHECK_EQUAL_VAR(DimSize(comboFolders, ROWS), 2)
 
@@ -1889,7 +1892,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 
 	WAVE/WAVE singleEventWaves = ListToWaveRefWave(GetListOfObjects(singleEventDFR, ".*", fullPath = 1))
 	CHECK_EQUAL_VAR(DimSize(singleEventWaves, ROWS), 2)
-	WAVE/WAVE/Z calcAvgPack = MIES_fWaveAverage(singleEventWaves, 1, IGOR_TYPE_64BIT_FLOAT)
+	WAVE/Z/WAVE calcAvgPack = MIES_fWaveAverage(singleEventWaves, 1, IGOR_TYPE_64BIT_FLOAT)
 	CHECK_WAVE(calcAvgPack, WAVE_WAVE)
 	WAVE/Z calcAvg = calcAvgPack[0]
 	CHECK_WAVE(calcAvg, NUMERIC_WAVE, minorType = DOUBLE_WAVE)

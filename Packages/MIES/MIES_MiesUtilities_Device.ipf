@@ -92,8 +92,7 @@ End
 ///
 /// @param contentType [optional, defaults to CONTENT_TYPE_SWEEP] type of
 ///                    content to look for, one of @ref CONTENT_TYPES
-Function/S GetAllDevicesWithContent([contentType])
-	variable contentType
+Function/S GetAllDevicesWithContent([variable contentType])
 
 	variable i, numDevices
 	string deviceList, device, dataPath, testPulsePath
@@ -140,8 +139,7 @@ End
 /// @return One of @ref HardwareDACTypeConstants
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function GetHardwareType(device)
-	string device
+threadsafe Function GetHardwareType(string device)
 
 	string deviceType, deviceNumber
 	ASSERT_TS(ParseDeviceString(device, deviceType, deviceNumber), "Error parsing device string!")
@@ -182,9 +180,7 @@ End
 /// @returns one on successfull parsing, zero on error
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
-	string device
-	string &deviceType, &deviceNumber
+threadsafe Function ParseDeviceString(string device, string &deviceType, string &deviceNumber)
 
 	if(isEmpty(device))
 		return 0
@@ -224,12 +220,12 @@ End
 
 /// @brief Return the list of locked ITC1600 devices
 Function/S GetListOfLockedITC1600Devices()
+
 	return ListMatch(GetListOfLockedDevices(), "ITC1600*")
 End
 
 /// @brief Check that the device is of type ITC1600
-Function IsITC1600(device)
-	string device
+Function IsITC1600(string device)
 
 	string deviceType, deviceNumber
 	variable ret
@@ -242,8 +238,7 @@ End
 
 /// @brief Check wether the given background task is running and that the
 ///        device is active in multi device mode.
-Function IsDeviceActiveWithBGTask(device, task)
-	string device, task
+Function IsDeviceActiveWithBGTask(string device, string task)
 
 	if(!IsBackgroundTaskRunning(task))
 		return 0
@@ -283,8 +278,7 @@ Function IsDeviceActiveWithBGTask(device, task)
 End
 
 /// @brief Return the next random number using the device specific RNG seed
-Function GetNextRandomNumberForDevice(device)
-	string device
+Function GetNextRandomNumberForDevice(string device)
 
 	NVAR rngSeed = $GetRNGSeed(device)
 	ASSERT(IsFinite(rngSeed), "Invalid rngSeed")

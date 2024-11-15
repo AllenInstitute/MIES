@@ -26,10 +26,7 @@
 /// @param winFunction 		Windowing function for @ref DECIMATION_BY_SMOOTHING mode,
 ///                    		must be one of @ref FFT_WINF.
 /// @returns One on error, zero otherwise
-Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
-	WAVE/Z wv
-	variable downsampleFactor, upsampleFactor, mode
-	string winFunction
+Function Downsample(WAVE/Z wv, variable downsampleFactor, variable upsampleFactor, variable mode, [string winFunction])
 
 	variable numReconstructionSamples = -1
 
@@ -96,8 +93,7 @@ Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
 End
 
 /// @brief Compute the least common multiplier of all entries in the 1D-wave
-Function CalculateLCMOfWave(wv)
-	WAVE wv
+Function CalculateLCMOfWave(WAVE wv)
 
 	variable i, result
 	variable numRows = DimSize(wv, ROWS)
@@ -153,9 +149,7 @@ threadsafe Function/WAVE GetUniqueEntries(WAVE wv, [variable caseSensitive, vari
 End
 
 /// @brief Convenience wrapper around GetUniqueTextEntries() for string lists
-threadsafe Function/S GetUniqueTextEntriesFromList(list, [sep, caseSensitive])
-	string list, sep
-	variable caseSensitive
+threadsafe Function/S GetUniqueTextEntriesFromList(string list, [string sep, variable caseSensitive])
 
 	if(ParamIsDefault(sep))
 		sep = ";"
@@ -212,22 +206,20 @@ threadsafe static Function/WAVE GetUniqueTextEntries(WAVE/T wv, [variable caseSe
 End
 
 /// @brief Function prototype for use with #CallFunctionForEachListItem
-Function CALL_FUNCTION_LIST_PROTOTYPE(str)
-	string str
+Function CALL_FUNCTION_LIST_PROTOTYPE(string str)
+
 End
 
 /// @brief Function prototype for use with #CallFunctionForEachListItem
-threadsafe Function CALL_FUNCTION_LIST_PROTOTYPE_TS(str)
-	string str
+threadsafe Function CALL_FUNCTION_LIST_PROTOTYPE_TS(string str)
+
 End
 
 /// @brief Convenience function to call the function f with each list item
 ///
 /// The function's type must be #CALL_FUNCTION_LIST_PROTOTYPE where the return
 /// type is ignored.
-Function CallFunctionForEachListItem(f, list, [sep])
-	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE f
-	string list, sep
+Function CallFunctionForEachListItem(FUNCREF CALL_FUNCTION_LIST_PROTOTYPE f, string list, [string sep])
 
 	variable i, numEntries
 	string entry
@@ -247,9 +239,7 @@ End
 /// Compatibility wrapper for threadsafe functions `f`
 ///
 /// @see CallFunctionForEachListItem()
-threadsafe Function CallFunctionForEachListItem_TS(f, list, [sep])
-	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE_TS f
-	string list, sep
+threadsafe Function CallFunctionForEachListItem_TS(FUNCREF CALL_FUNCTION_LIST_PROTOTYPE_TS f, string list, [string sep])
 
 	variable i, numEntries
 	string entry
@@ -269,12 +259,7 @@ End
 /// @brief Return the row index of the given value, string converted to a variable, or wv
 ///
 /// Assumes wv being one dimensional and does not use any tolerance for numerical values.
-threadsafe Function GetRowIndex(wv, [val, str, refWave, reverseSearch])
-	WAVE     wv
-	variable val
-	string   str
-	WAVE/Z   refWave
-	variable reverseSearch
+threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWave, variable reverseSearch])
 
 	variable numEntries, i
 
@@ -397,9 +382,7 @@ End
 ///
 /// @param inwave The wave that will have its rows shuffled.
 /// @param noiseGenMode [optional, defaults to #NOISE_GEN_XOSHIRO] type of RNG to use
-Function InPlaceRandomShuffle(inwave, [noiseGenMode])
-	WAVE     inwave
-	variable noiseGenMode
+Function InPlaceRandomShuffle(WAVE inwave, [variable noiseGenMode])
 
 	variable i, j, emax, temp
 	variable N = DimSize(inwave, ROWS)
@@ -435,9 +418,7 @@ End
 /// @returns 2-dim wave with the start, stop, step as columns and rows as
 ///          number of elements. Returns -1 instead of `*` or `(empty)`. An invalid
 ///          wave reference is returned on parsing errors.
-Function/WAVE ExtractFromSubrange(listOfRanges, dim)
-	string   listOfRanges
-	variable dim
+Function/WAVE ExtractFromSubrange(string listOfRanges, variable dim)
 
 	variable numElements, i, start, stop, step
 	string str, rdSpec, stopStr
@@ -487,7 +468,7 @@ Function/WAVE ExtractFromSubrange(listOfRanges, dim)
 					ranges[i][2] = 1
 				endif
 			elseif(V_Flag == 3) // case 6
-				stop         = str2num(stopStr)           // case 5
+				stop         = str2num(stopStr) // case 5
 				ranges[i][0] = start
 				ranges[i][1] = IsFinite(stop) ? stop : -1
 				ranges[i][2] = step
@@ -505,6 +486,7 @@ End
 /// Given {1, 2, 10} and {2, 5, 11} this will return {1, 2, 5, 10, 11}.
 /// The order of the returned entries is not defined.
 threadsafe Function/WAVE GetSetUnion(WAVE wave1, WAVE wave2)
+
 	variable type, wave1Points, wave2Points, totalPoints
 
 	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                  \
@@ -777,6 +759,7 @@ threadsafe static Function FindLevelSingle(WAVE data, variable level, variable e
 End
 
 threadsafe static Function/WAVE FindLevelsMult(WAVE data, variable level, variable edge, variable first, variable last, variable maxNumLevels)
+
 	variable found, numLevels
 
 	Make/FREE/D/N=0 levels
@@ -814,6 +797,7 @@ End
 /// In both cases the dimension label of the each column holds the number of found levels
 /// in each data colum. This will be always 1 for FINDLEVEL_MODE_SINGLE.
 threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable edge, variable mode, [variable maxNumLevels])
+
 	variable numCols, numColsFixed, numRows, numLayers, xDelta, maxLevels, numLevels
 	variable first, last, i, xLevel, found, columnOffset
 
@@ -972,8 +956,9 @@ End
 /// From https://www.wavemetrics.com/code-snippet/binary-search-pre-sorted-text-waves by Jamie Boyd
 /// Completely reworked, fixed and removed unused features
 threadsafe Function BinarySearchText(WAVE/T theWave, string theText, [variable caseSensitive, variable startPos, variable endPos])
-	variable iPos    // the point to be compared
-	variable theCmp  // the result of the comparison
+
+	variable iPos   // the point to be compared
+	variable theCmp // the result of the comparison
 	variable firstPt
 	variable lastPt
 	variable i
@@ -1037,6 +1022,7 @@ End
 ///        and write the result into output[][col]. The result is capped to the output rows.
 ///        No window function is applied.
 threadsafe Function DoPowerSpectrum(WAVE input, WAVE output, variable col)
+
 	variable numRows = DimSize(input, ROWS)
 
 	Duplicate/FREE/RMD=[*][col] input, slice

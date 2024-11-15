@@ -15,6 +15,7 @@ static StrConstant OVS_FULL_UPDATE_NOTE = "FullUpdate"
 /// @brief This user trace menu function allows the user to select a trace
 ///        in overlay sweeps mode which should be ignored.
 Function OVS_IgnoreHeadstageInOverlay()
+
 	string graph, trace, extPanel, str, folder
 	variable headstage, sweepNo, index
 
@@ -65,8 +66,7 @@ End
 /// @brief Return a list of choices for the sweep selection popup
 ///
 /// Includes a unique list of the DA stimsets of all available sweeps
-Function/S OVS_GetSweepSelectionChoices(win)
-	string win
+Function/S OVS_GetSweepSelectionChoices(string win)
 
 	if(!OVS_IsActive(win))
 		return NONE
@@ -130,6 +130,7 @@ End
 
 /// @brief Remove all stimsets which were only acquired once, disregaring RAC/SCI, this means we just look at all sweeps
 static Function OVS_RemoveLowCountEntries(WAVE/T stimsets, WAVE/T setSweepCounts, WAVE/T dupsRemovedSetSweepCounts, WAVE/T dupsRemovedSetCycleCounts)
+
 	variable numEntries, i, j, hasRepetitions
 	string stimset, entry
 
@@ -165,8 +166,7 @@ End
 /// Requires the user data `PANEL_FOLDER` of the BrowserSettings panel
 ///
 /// @return a valid DFREF or an invalid one in case the external panel could not be found
-Function/DF OVS_GetFolder(win)
-	string win
+Function/DF OVS_GetFolder(string win)
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	if(!DataFolderExistsDFR(dfr))
@@ -301,7 +301,7 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/T stimsets = GetLastSetting(allTextualValues[i], sweeps[i], STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 		sweepSelectionChoices[i][][%Stimset] = stimsets[q]
-		WAVE/T/Z TTLStimSets = GetTTLLabnotebookEntry(allTextualValues[i], LABNOTEBOOK_TTL_STIMSETS, sweeps[i])
+		WAVE/Z/T TTLStimSets = GetTTLLabnotebookEntry(allTextualValues[i], LABNOTEBOOK_TTL_STIMSETS, sweeps[i])
 		if(WaveExists(TTLStimSets))
 			sweepSelectionChoices[i][][%TTLStimSet] = TTLStimSets[q]
 		endif
@@ -320,7 +320,7 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 
 		sweepSelectionChoices[i][][%DAStimsetAndSetSweepCount] = SelectString(IsFinite(setSweepCount[q]), "", stimsets[q] + " (" + num2str(setSweepCount[q]) + ")")
 
-		WAVE/T/Z TTLsetSweepCount = GetTTLLabnotebookEntry(allTextualValues[i], LABNOTEBOOK_TTL_SETSWEEPCOUNTS, sweeps[i])
+		WAVE/Z/T TTLsetSweepCount = GetTTLLabnotebookEntry(allTextualValues[i], LABNOTEBOOK_TTL_SETSWEEPCOUNTS, sweeps[i])
 		if(WaveExists(TTLsetSweepCount))
 			sweepSelectionChoices[i][][%TTLStimsetAndSetSweepCount] = SelectString(strlen(TTLsetSweepCount[q]) > 0, "", TTLStimsets[q] + " (" + TTLsetSweepCount[q] + ")")
 		endif
@@ -332,7 +332,7 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 			sweepSelectionChoices[i][][%DAStimsetAndSetCycleCount] = SelectString(IsFinite(setCycleCount[q]), "", stimsets[q] + " (C" + num2str(setCycleCount[q]) + ")")
 		endif
 
-		WAVE/T/Z TTLsetCycleCount = GetTTLLabnotebookEntry(allTextualValues[i], LABNOTEBOOK_TTL_SETCYCLECOUNTS, sweeps[i])
+		WAVE/Z/T TTLsetCycleCount = GetTTLLabnotebookEntry(allTextualValues[i], LABNOTEBOOK_TTL_SETCYCLECOUNTS, sweeps[i])
 		if(WaveExists(TTLsetCycleCount))
 			sweepSelectionChoices[i][][%TTLStimsetAndSetCycleCount] = SelectString(strlen(TTLsetCycleCount[q]) > 0, "", TTLStimsets[q] + " (C" + TTLsetCycleCount[q] + ")")
 		endif
@@ -350,9 +350,7 @@ End
 ///           -  #OVS_SWEEP_ALL_SWEEPNO
 ///
 /// @return invalid wave reference in case nothing is selected or numeric indizes/sweep numbers depending on mode parameter
-Function/WAVE OVS_GetSelectedSweeps(win, mode)
-	string   win
-	variable mode
+Function/WAVE OVS_GetSelectedSweeps(string win, variable mode)
 
 	ASSERT(mode == OVS_SWEEP_SELECTION_INDEX ||         \
 	       mode == OVS_SWEEP_SELECTION_SWEEPNO ||       \
@@ -398,10 +396,7 @@ End
 /// @param invertOthers [optional, default to false] set the other sweeps to !newState if true
 ///
 /// One of `sweepNo`/`index` is required.
-Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, invertOthers])
-	string win
-	variable sweepNo, index, newState, invertOthers
-	WAVE/Z sweeps
+Function OVS_ChangeSweepSelectionState(string win, variable newState, [variable sweepNo, variable index, WAVE/Z sweeps, variable invertOthers])
 
 	variable i, numEntries
 
@@ -473,16 +468,13 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 End
 
 /// checks if OVS is active.
-Function OVS_IsActive(win)
-	string win
+Function OVS_IsActive(string win)
 
 	return BSP_IsActive(win, MIES_BSP_OVS)
 End
 
 /// @brief Add `headstage` to the ignore list of the given `sweepNo/index`
-static Function OVS_AddToIgnoreList(win, headstage, [sweepNo, index])
-	string win
-	variable headstage, sweepNo, index
+static Function OVS_AddToIgnoreList(string win, variable headstage, [variable sweepNo, variable index])
 
 	if(!OVS_IsActive(win))
 		return NaN
@@ -621,8 +613,7 @@ static Function/WAVE OVS_ParseIgnoreList(string ignoreList, variable sweepNo)
 	return activeHS
 End
 
-Function OVS_CheckBoxProc_HS_Select(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function OVS_CheckBoxProc_HS_Select(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string win
 
@@ -647,9 +638,7 @@ Function OVS_CheckBoxProc_HS_Select(cba) : CheckBoxControl
 	return 0
 End
 
-static Function OVS_HighlightSweep(win, index)
-	string   win
-	variable index
+static Function OVS_HighlightSweep(string win, variable index)
 
 	variable sweepNo, i, numTraces
 	string experiment, graph, trace, msg
@@ -658,14 +647,14 @@ static Function OVS_HighlightSweep(win, index)
 	ASSERT(OVS_IsActive(win), "Highlighting is only supported if OVS is enabled")
 
 	graph = GetMainWindow(win)
-	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Sweep"})
+	WAVE/Z/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Sweep"})
 	if(!WaveExists(traces))
 		return NaN
 	endif
 
 	if(IsFinite(index))
 		[sweepNo, experiment] = OVS_GetSweepAndExperiment(win, index)
-		WAVE/T/Z highlightTraces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType", "sweepNumber", "experiment"}, values = {"Sweep", num2str(sweepNo), experiment})
+		WAVE/Z/T highlightTraces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType", "sweepNumber", "experiment"}, values = {"Sweep", num2str(sweepNo), experiment})
 
 		if(!WaveExists(highlightTraces))
 			// the to-be-highlighted traces are not plotted
@@ -682,7 +671,7 @@ static Function OVS_HighlightSweep(win, index)
 	numTraces = DimSize(traces, ROWS)
 	for(i = 0; i < numTraces; i += 1)
 		trace = traces[i]
-		[c] = ParseColorSpec(TUD_GetUserData(graph, trace, "TRACECOLOR"))
+		[c]   = ParseColorSpec(TUD_GetUserData(graph, trace, "TRACECOLOR"))
 
 		if(IsFinite(index) && IsNaN(GetRowIndex(highlightTraces, str = trace)))
 			c.alpha = c.alpha * 0.05
@@ -729,8 +718,7 @@ Function [variable sweepNo, string experiment] OVS_GetSweepAndExperiment(string 
 End
 
 /// @brief Change the selected sweep according to one of the popup menu options
-static Function OVS_ChangeSweepSelection(win, choiceString)
-	string win, choiceString
+static Function OVS_ChangeSweepSelection(string win, string choiceString)
 
 	variable i, j, numEntries, numLayers, offset, step
 	string extPanel
@@ -951,8 +939,7 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 	endif
 End
 
-Function OVS_MainListBoxProc(lba) : ListBoxControl
-	STRUCT WMListboxAction &lba
+Function OVS_MainListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 
 	string   win
 	variable index
@@ -987,8 +974,7 @@ Function OVS_MainListBoxProc(lba) : ListBoxControl
 	return 0
 End
 
-Function OVS_PopMenuProc_Select(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function OVS_PopMenuProc_Select(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -999,8 +985,7 @@ Function OVS_PopMenuProc_Select(pa) : PopupMenuControl
 	return 0
 End
 
-Function OVS_SetVarProc_SelectionRange(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function OVS_SetVarProc_SelectionRange(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	string popStr, win
 

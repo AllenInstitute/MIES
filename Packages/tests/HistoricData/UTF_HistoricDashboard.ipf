@@ -54,7 +54,7 @@ Function TestDashboardWithHistoricData([string str])
 	file = "input:" + str
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
-	sbWin = StringFromList(0, sweepBrowsers)
+	sbWin                  = StringFromList(0, sweepBrowsers)
 	CHECK_PROPER_STR(sbWin)
 	bsPanel = BSP_GetPanel(sbWin)
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = 1)
@@ -94,7 +94,7 @@ Function TestDashboardDependentControlHandling()
 	file = "input:" + files[0]
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
-	sweepBrowser = StringFromList(0, sweepBrowsers, ";")
+	sweepBrowser           = StringFromList(0, sweepBrowsers, ";")
 
 	bsPanel = BSP_GetPanel(sweepBrowser)
 	CHECK(WindowExists(bsPanel))
@@ -149,7 +149,7 @@ Function TestDashboardSelections()
 	file = "input:" + files[0]
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
-	sweepBrowser = StringFromList(0, sweepBrowsers, ";")
+	sweepBrowser           = StringFromList(0, sweepBrowsers, ";")
 
 	bsPanel = BSP_GetPanel(sweepBrowser)
 	CHECK(WindowExists(bsPanel))

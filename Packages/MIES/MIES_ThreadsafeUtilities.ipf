@@ -17,9 +17,7 @@ static Constant TS_ERROR_INVALID_TGID       = 980 // Invalid Thread Group ID or 
 /// Return `NaN` if the thread is not running anymore.
 ///
 /// Throws away anything else in the datafolder from the thread queue.
-Function TS_GetNewestFromThreadQueue(tgID, varName, [timeout_default, timeout_tries])
-	variable tgID, timeout_default, timeout_tries
-	string varName
+Function TS_GetNewestFromThreadQueue(variable tgID, string varName, [variable timeout_default, variable timeout_tries])
 
 	variable var, err, i
 
@@ -77,9 +75,7 @@ End
 /// Return an invalid wave reference if the thread is not running anymore.
 ///
 /// Throws away anything else in the datafolder from the thread queue.
-Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames, [timeout_default, timeout_tries])
-	variable tgID, timeout_default, timeout_tries
-	WAVE/T varNames
+Function/WAVE TS_GetNewestFromThreadQueueMult(variable tgID, WAVE/T varNames, [variable timeout_default, variable timeout_tries])
 
 	variable numEntries, i, j, oneValidEntry, err
 	string varName
@@ -148,9 +144,7 @@ End
 ///        if there is none.
 ///
 /// Throws away anything else in the datafolder from the thread queue.
-threadsafe Function TS_ThreadGroupGetVariable(tgID, varName)
-	variable tgID
-	string   varName
+threadsafe Function TS_ThreadGroupGetVariable(variable tgID, string varName)
 
 	variable err
 
@@ -178,10 +172,7 @@ End
 
 /// @brief Push a single variable named `varName` with value `varValue` to the
 /// thread queue
-threadsafe Function TS_ThreadGroupPutVariable(tgID, varName, varValue)
-	variable tgID
-	string   varName
-	variable varValue
+threadsafe Function TS_ThreadGroupPutVariable(variable tgID, string varName, variable varValue)
 
 	DFREF dfrSave = GetDataFolderDFR()
 	SetDataFolder NewFreeDataFolder()
@@ -196,9 +187,7 @@ End
 ///
 /// Works on a duplicate of the input DF to remove all references.
 /// dfr can be a free DF
-threadsafe Function TS_ThreadGroupPutDFR(tgID, dfr)
-	variable tgID
-	DFREF    dfr
+threadsafe Function TS_ThreadGroupPutDFR(variable tgID, DFREF dfr)
 
 	string dfrName
 
@@ -218,6 +207,7 @@ End
 
 /// @brief Returns 1 if all worker threads have finished
 Function TS_ThreadGroupFinished(variable tgID)
+
 	variable err, ret
 
 	AssertOnAndClearRTError()
@@ -230,8 +220,7 @@ End
 ///
 /// Assumes that the running worker functions finish on getting the `abort`
 /// variable sent.
-Function TS_StopThreadGroup(tgID)
-	variable tgID
+Function TS_StopThreadGroup(variable tgID)
 
 	variable numThreadsRunning
 	string   msg

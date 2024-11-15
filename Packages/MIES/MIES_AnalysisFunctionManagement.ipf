@@ -12,9 +12,7 @@
 /// @brief Call the analysis function associated with the stimset from the wavebuilder
 ///
 /// @return Valid analysis function return types, zero otherwise, see also @ref AnalysisFunctionReturnTypes
-Function AFM_CallAnalysisFunctions(device, eventType)
-	string   device
-	variable eventType
+Function AFM_CallAnalysisFunctions(string device, variable eventType)
 
 	variable i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet, hwIsSutter
 	variable realDataLengthAD, realDataLengthDA, sweepNo, fifoPositionAD, fifoPositionDA, sampleIntDA, sampleIntAD
@@ -210,8 +208,7 @@ End
 /// @brief Update the analysis function storage wave from the stimset waves notes
 ///
 /// We are called earlier than DAP_CheckSettings() so we can not rely on anything setup in a sane way.
-Function AFM_UpdateAnalysisFunctionWave(device)
-	string device
+Function AFM_UpdateAnalysisFunctionWave(string device)
 
 	variable i, j, DAC
 	string setName, possibleFunctions, func

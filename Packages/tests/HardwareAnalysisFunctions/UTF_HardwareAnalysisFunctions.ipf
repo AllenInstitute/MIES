@@ -25,6 +25,7 @@
 
 // Entry point for UTF
 Function run()
+
 	return RunWithOpts(instru = DoInstrumentation())
 End
 

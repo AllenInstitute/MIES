@@ -3,8 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=TraceUserDataTest
 
-static Function TEST_CASE_BEGIN_OVERRIDE(name)
-	string name
+static Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
 	TestCaseBeginCommon(name)
 
@@ -19,7 +18,7 @@ Function CreatesWave()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 	CHECK_WAVE(graphUserData, TEXT_WAVE)
 
 	CHECK_EQUAL_VAR(DimSize(graphUserData, COLS), 0)
@@ -29,6 +28,7 @@ Function CreatesWave()
 End
 
 Function KillGraphAndCheckEmptyUserData_IGNORE(string graph, WAVE/T graphUserData, [variable clearInstead])
+
 	variable modCount
 
 	if(ParamIsDefault(clearInstead))
@@ -62,7 +62,7 @@ Function ClearsWaveOnKillWindow()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "efgh", "ijkl")
 
@@ -90,7 +90,7 @@ Function ClearsWaveOnKillWindowRecursively()
 	Display/HOST=$panel
 	subGraph = panel + "#" + S_name
 
-	WAVE/T/Z graphUserData = GetGraphUserData(subGraph)
+	WAVE/Z/T graphUserData = GetGraphUserData(subGraph)
 
 	TUD_Init(subGraph)
 	TUD_SetUserData(subGraph, "trace1", "efgh", "ijkl")
@@ -100,6 +100,7 @@ End
 
 // Test: TUD_Clear
 Function ClearDoesHonourRecursiveFlag()
+
 	string graph, subGraph, subPanel
 	variable modCount
 
@@ -117,8 +118,8 @@ Function ClearDoesHonourRecursiveFlag()
 	TUD_Init(subGraph)
 	TUD_SetUserData(subGraph, "trace1", "efgh", "ijkl")
 
-	WAVE/T/Z graphUserData    = GetGraphUserData(graph)
-	WAVE/T/Z subGraphUserData = GetGraphUserData(subGraph)
+	WAVE/Z/T graphUserData    = GetGraphUserData(graph)
+	WAVE/Z/T subGraphUserData = GetGraphUserData(subGraph)
 
 	modCount = WaveModCount(subGraphUserData)
 
@@ -141,7 +142,7 @@ Function SetUserDataWorks()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "key", "value")
 
@@ -149,7 +150,7 @@ Function SetUserDataWorks()
 
 	// check indexing json
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
-	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
+	WAVE/Z/T traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1"})
 
 	// check wave contents
@@ -173,7 +174,7 @@ Function SetUserDataFromWaveWorks()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserDataFromWaves(graph, "trace1", {"key1", "key2"}, {"value1", "value2"})
 
@@ -181,7 +182,7 @@ Function SetUserDataFromWaveWorks()
 
 	// check indexing json
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
-	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
+	WAVE/Z/T traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1"})
 
 	// check wave contents
@@ -211,7 +212,7 @@ Function SetUserDataBothTogether()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "key1", "value1")
 	TUD_SetUserDataFromWaves(graph, "trace1", {"key2", "key3"}, {"value2", "value3"})
@@ -220,7 +221,7 @@ Function SetUserDataBothTogether()
 
 	// check indexing json
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
-	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
+	WAVE/Z/T traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1"})
 
 	// check wave contents
@@ -255,7 +256,7 @@ Function SetUserDataBothTogetherInvertedOrder()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserDataFromWaves(graph, "trace1", {"key1", "key2"}, {"value1", "value2"})
 	TUD_SetUserData(graph, "trace1", "key3", "value3")
@@ -264,7 +265,7 @@ Function SetUserDataBothTogetherInvertedOrder()
 
 	// check indexing json
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
-	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
+	WAVE/Z/T traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1"})
 
 	// check wave contents
@@ -296,7 +297,7 @@ Function GetTraceCountWorks()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	CHECK_EQUAL_VAR(TUD_GetTraceCount(graph), 0)
 
@@ -321,20 +322,20 @@ Function RegeneratesJSON()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "key", "value")
 
 	// check indexing json
 	jsonIDOld = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
-	WAVE/T/Z traces = JSON_GetKeys(jsonIDOld, "", esc = 0)
+	WAVE/Z/T traces = JSON_GetKeys(jsonIDOld, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1"})
 
 	JSON_Release(jsonIDOld)
 
 	// fetch Index JSON to trigger regeneration
 	jsonIDNew = MIES_TUD#TUD_GetIndexJSON(graphUserData)
-	WAVE/T/Z traces = JSON_GetKeys(jsonIDNew, "", esc = 0)
+	WAVE/Z/T traces = JSON_GetKeys(jsonIDNew, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1"})
 
 	CHECK(jsonIDOld != jsonIDNew)
@@ -347,7 +348,7 @@ Function GetUserDataExpectsExistingTraceAndKey()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "key", "value")
 
@@ -376,7 +377,7 @@ Function GetUserDataWorks()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserDataFromWaves(graph, "trace1", {"key1", "key2"}, {"value1", "value2"})
 	TUD_SetUserData(graph, "trace1", "key3", "value3")
@@ -403,7 +404,7 @@ Function GetAllUserDataExpectsExistingTrace()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "key", "value")
 
@@ -427,7 +428,7 @@ Function GetAllUserDataWorks()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserDataFromWaves(graph, "trace1", {"key1", "key2"}, {"value1", "value2"})
 	TUD_SetUserData(graph, "trace1", "key3", "value3")
@@ -447,7 +448,7 @@ Function GetUserDataAsWaveChecksInput()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	WAVE/Z result = TUD_GetUserDataAsWave(graph, "I DONT EXIST")
 	// no traces exist
@@ -514,7 +515,7 @@ Function GetUserDataAsWaveWorksBasic()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	WAVE/Z result = TUD_GetUserDataAsWave(graph, "traceName")
 	CHECK_WAVE(result, NULL_WAVE)
@@ -540,7 +541,7 @@ Function GetUserDataAsWaveWorksBasicIndizes()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "key1", "value1")
 	TUD_SetUserData(graph, "trace2", "key2", "value2")
@@ -564,7 +565,7 @@ Function GetUserDataAsWaveWorksComplex()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "key1", "value1")
 	TUD_SetUserData(graph, "trace2", "key2", "value2")
@@ -595,7 +596,7 @@ Function GetUserDataAsWaveWorksComplexIndizes()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "key1", "value1")
 	TUD_SetUserData(graph, "trace2", "key2", "value2")
@@ -646,10 +647,10 @@ static Function PrepareUserDataWaveForRemoval_IGNORE()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 	KillWaves/Z graphUserData
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "key1", "value1")
 	TUD_SetUserData(graph, "trace2", "key2", "value2")
@@ -660,7 +661,7 @@ static Function PrepareUserDataWaveForRemoval_IGNORE()
 	CHECK_EQUAL_TEXTWAVES(TUD_GetUserDataAsWave(graph, "traceName"), {"trace1", "trace2", "trace3"})
 
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
-	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
+	WAVE/Z/T traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1", "trace2", "trace3"})
 End
 
@@ -673,7 +674,7 @@ Function RemoveUserDataWorks()
 
 	PrepareUserDataWaveForRemoval_IGNORE()
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	// remove the first entry
 	TUD_RemoveUserData(graph, "trace1")
@@ -682,14 +683,14 @@ Function RemoveUserDataWorks()
 	CHECK_EQUAL_TEXTWAVES(TUD_GetUserDataAsWave(graph, "traceName"), {"trace2", "trace3"})
 
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
-	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
+	WAVE/Z/T traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace2", "trace3"})
 	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace2"), 0)
 	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace3"), 1)
 
 	PrepareUserDataWaveForRemoval_IGNORE()
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	// remove the second entry
 	TUD_RemoveUserData(graph, "trace2")
@@ -698,14 +699,14 @@ Function RemoveUserDataWorks()
 	CHECK_EQUAL_TEXTWAVES(TUD_GetUserDataAsWave(graph, "traceName"), {"trace1", "trace3"})
 
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
-	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
+	WAVE/Z/T traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1", "trace3"})
 	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace1"), 0)
 	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace3"), 1)
 
 	PrepareUserDataWaveForRemoval_IGNORE()
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	// remove last entry
 	TUD_RemoveUserData(graph, "trace3")
@@ -714,7 +715,7 @@ Function RemoveUserDataWorks()
 	CHECK_EQUAL_TEXTWAVES(TUD_GetUserDataAsWave(graph, "traceName"), {"trace1", "trace2"})
 
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
-	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
+	WAVE/Z/T traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1", "trace2"})
 	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace1"), 0)
 	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace2"), 1)
@@ -725,7 +726,7 @@ Function TraceIsOnGraphWorks()
 
 	SVAR graph = root:graph
 
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/Z/T graphUserData = GetGraphUserData(graph)
 
 	TUD_SetUserData(graph, "trace1", "key1", "value1")
 

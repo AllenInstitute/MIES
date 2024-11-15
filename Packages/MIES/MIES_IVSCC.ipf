@@ -24,6 +24,7 @@ static Constant    IVS_DEFAULT_HEADSTAGE  = 0
 static StrConstant IVS_DEFAULT_DEVICE     = "ITC18USB_Dev_0"
 
 Function IVS_ConfigureMCC()
+
 	string   device
 	variable headstage
 
@@ -183,6 +184,7 @@ End
 ///
 /// @sa PSQ_PipetteInBath
 Function IVS_runBaselineCheckQC()
+
 	string device, ctrl
 	variable headstage
 
@@ -198,6 +200,7 @@ End
 
 /// @brief Run the initial access resistance smoke from the WSE
 Function IVS_runInitAccessResisQC()
+
 	string device, ctrl
 	variable headstage
 
@@ -212,6 +215,7 @@ End
 
 /// @brief Run PSQ_SealEvaluation()
 Function IVS_RunGigOhmSealQC()
+
 	string device, ctrl
 	variable headstage
 
@@ -225,16 +229,13 @@ Function IVS_RunGigOhmSealQC()
 End
 
 /// @brief Loads a single stimulus for the user when using the ZMQ Proxy
-Function IVS_Load_StimSet(stim_filename)
-
-	string stim_filename
+Function IVS_Load_StimSet(string stim_filename)
 
 	print "Stimulus loading...." + stim_filename
 	NWB_LoadAllStimSets(overwrite = 1, fileName = stim_filename)
 End
 
-Function IVS_ExportAllData(filePath)
-	string filePath
+Function IVS_ExportAllData(string filePath)
 
 	printf "Saving experiment data in NWB format to %s\r", filePath
 
@@ -253,8 +254,7 @@ Function/S IVS_ReturnNWBFileLocation()
 	return path
 End
 
-Function IVS_SaveExperiment(filename)
-	string filename
+Function IVS_SaveExperiment(string filename)
 
 	variable err
 
@@ -271,9 +271,7 @@ End
 ///
 /// @param stimWaveName stimWaveName to be used
 /// @param scaleFactor  scale factor to run the stim wave at
-Function IVS_runStimWave(stimWaveName, scaleFactor)
-	string   stimWaveName
-	variable scaleFactor
+Function IVS_runStimWave(string stimWaveName, variable scaleFactor)
 
 	variable headstage
 	string device, ctrl
@@ -291,8 +289,7 @@ Function IVS_runStimWave(stimWaveName, scaleFactor)
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
-Function IVS_ButtonProc_Setup(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function IVS_ButtonProc_Setup(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -303,8 +300,7 @@ Function IVS_ButtonProc_Setup(ba) : ButtonControl
 	return 0
 End
 
-Function IVS_ButtonProc_BaselineQC(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function IVS_ButtonProc_BaselineQC(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -315,8 +311,7 @@ Function IVS_ButtonProc_BaselineQC(ba) : ButtonControl
 	return 0
 End
 
-Function IVS_ButtonProc_AccessResist(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function IVS_ButtonProc_AccessResist(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -327,8 +322,7 @@ Function IVS_ButtonProc_AccessResist(ba) : ButtonControl
 	return 0
 End
 
-Function IVS_ButtonProc_GOhmSeal(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function IVS_ButtonProc_GOhmSeal(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -340,6 +334,7 @@ Function IVS_ButtonProc_GOhmSeal(ba) : ButtonControl
 End
 
 Function IVS_CreatePanel()
+
 	Execute "IVSCCControlPanel()"
 End
 
@@ -347,9 +342,7 @@ End
 ///
 /// @return 1 if passed, 0 if not (or not yet) and
 /// asserts out on all other errors.
-Function IVS_GetSetQCForSweep(device, sweepNo)
-	string   device
-	variable sweepNo
+Function IVS_GetSetQCForSweep(string device, variable sweepNo)
 
 	string key
 	variable headstage, anaFuncType
@@ -381,9 +374,11 @@ Function IVS_GetSetQCForSweep(device, sweepNo)
 End
 
 Function IVS_EnableStoringEveryTP(string device)
+
 	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = CHECKBOX_SELECTED)
 End
 
 Function IVS_DisableStoringEveryTP(string device)
+
 	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = CHECKBOX_UNSELECTED)
 End

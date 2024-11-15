@@ -13,6 +13,7 @@
 ///
 /// Fill `payload` array with content from files
 Function AddPayloadEntriesFromFiles(variable jsonID, WAVE/T paths, [variable isBinary])
+
 	string data, fName, filepath, jsonpath
 	variable numEntries, i, offset
 
@@ -21,7 +22,7 @@ Function AddPayloadEntriesFromFiles(variable jsonID, WAVE/T paths, [variable isB
 
 	for(i = 0; i < numEntries; i += 1)
 		[data, fName] = LoadTextFile(paths[i])
-		values[i] = data
+		values[i]     = data
 
 		keys[i] = GetFile(paths[i])
 	endfor
@@ -33,6 +34,7 @@ End
 ///
 /// Fill `payload` array
 Function AddPayloadEntries(variable jsonID, WAVE/T keys, WAVE/T values, [variable isBinary])
+
 	string jsonpath
 	variable numEntries, i, offset
 

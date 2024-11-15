@@ -11,6 +11,7 @@
 /// Publishers in MIES should in general supply additional information like device/sweep number/timestamp.
 /// This function allows to autofill these entries.
 static Function PUB_GetJSONTemplate(string device, variable headstage)
+
 	variable jsonID
 
 	jsonID = JSON_New()
@@ -25,6 +26,7 @@ End
 
 /// @brief Publish the given message as given by the JSON and the filter
 static Function PUB_Publish(variable jsonID, string messageFilter)
+
 	variable err
 	string   payload
 
@@ -41,6 +43,7 @@ static Function PUB_Publish(variable jsonID, string messageFilter)
 End
 
 static Function PUB_AddLabnotebookEntriesToJSON(variable jsonID, WAVE values, WAVE keys, variable sweepNo, string key, variable headstage, variable labnotebookLayer)
+
 	variable result, col
 	string unit, path
 
@@ -88,6 +91,7 @@ End
 ///
 /// \endrst
 Function PUB_AutoBridgeBalance(string device, variable headstage, variable resistance)
+
 	variable jsonID
 
 	jsonID = PUB_GetJSONTemplate(device, headstage)
@@ -153,6 +157,7 @@ End
 ///
 /// \endrst
 Function PUB_PipetteInBath(string device, variable sweepNo, variable headstage)
+
 	variable jsonID
 	string   key
 
@@ -219,6 +224,7 @@ End
 ///
 /// \endrst
 Function PUB_SealEvaluation(string device, variable sweepNo, variable headstage)
+
 	variable jsonID
 	string   key
 
@@ -275,6 +281,7 @@ End
 ///
 /// \endrst
 Function PUB_TrueRestingMembranePotential(string device, variable sweepNo, variable headstage)
+
 	variable jsonID
 	string   key
 
@@ -314,6 +321,7 @@ End
 ///
 /// \endrst
 Function PUB_ClampModeChange(string device, variable headstage, variable oldClampMode, variable newClampMode)
+
 	variable jsonID
 	string   payload
 
@@ -349,6 +357,7 @@ End
 ///
 /// \endrst
 Function PUB_PressureMethodChange(string device, variable headstage, variable oldMethod, variable newMethod)
+
 	variable jsonID
 
 	if(EqualValuesOrBothNaN(oldMethod, newMethod))
@@ -380,6 +389,7 @@ End
 ///
 /// \endrst
 Function PUB_PressureSealedState(string device, variable headstage)
+
 	variable jsonID
 
 	jsonID = PUB_GetJSONTemplate(device, headstage)
@@ -405,6 +415,7 @@ End
 ///
 /// \endrst
 Function PUB_PressureBreakin(string device, variable headstage)
+
 	variable jsonID
 
 	jsonID = PUB_GetJSONTemplate(device, headstage)
@@ -521,6 +532,7 @@ End
 ///
 /// The strings for `daq`/`tp` are either `starting` or `stopping`.
 Function PUB_DAQStateChange(string device, variable mode, variable oldState, variable newState)
+
 	variable jsonID
 	string name, name_null
 
@@ -615,6 +627,7 @@ End
 ///
 /// \endrst
 Function PUB_AccessResistanceSmoke(string device, variable sweepNo, variable headstage)
+
 	variable jsonID
 	string   key
 

@@ -32,6 +32,7 @@ static StrConstant MSQ_SC_LBN_PREFIX  = "Spike Control"
 
 /// @brief Return the logbook type, one of @ref LogbookTypes
 Function GetLogbookType(WAVE wv)
+
 	string name
 
 	name = NameOfWave(wv)
@@ -170,6 +171,7 @@ End
 /// The slice is returned as-is if it exists already. Callers which modify the
 /// logbook are responsible to resize the slice as well.
 static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, variable colOrLayer, string suffix)
+
 	string name, entryName
 	variable col, layer
 
@@ -274,11 +276,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function GetLastSettingIndep(numericalValues, sweepNo, setting, entrySourceType, [defValue])
-	WAVE     numericalValues
-	variable sweepNo
-	string   setting
-	variable defValue, entrySourceType
+threadsafe Function GetLastSettingIndep(WAVE numericalValues, variable sweepNo, string setting, variable entrySourceType, [variable defValue])
 
 	if(ParamIsDefault(defValue))
 		defValue = NaN
@@ -300,11 +298,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceType, [defValue])
-	WAVE/T   textualValues
-	variable sweepNo
-	string setting, defValue
-	variable entrySourceType
+threadsafe Function/S GetLastSettingTextIndep(WAVE/T textualValues, variable sweepNo, string setting, variable entrySourceType, [string defValue])
 
 	ASSERT_TS(IsTextWave(textualValues), "Can only work with text waves")
 
@@ -312,7 +306,7 @@ threadsafe Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, e
 		defValue = ""
 	endif
 
-	WAVE/T/Z settings = GetLastSetting(textualValues, sweepNo, setting, entrySourceType)
+	WAVE/Z/T settings = GetLastSetting(textualValues, sweepNo, setting, entrySourceType)
 
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
@@ -329,11 +323,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
-	WAVE     numericalValues
-	variable sweepNo
-	string   setting
-	variable defValue, entrySourceType
+threadsafe Function GetLastSettingIndepRAC(WAVE numericalValues, variable sweepNo, string setting, variable entrySourceType, [variable defValue])
 
 	if(ParamIsDefault(defValue))
 		defValue = NaN
@@ -356,11 +346,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function GetLastSettingIndepSCI(numericalValues, sweepNo, setting, headstage, entrySourceType, [defValue])
-	WAVE     numericalValues
-	variable sweepNo
-	string   setting
-	variable defValue, headstage, entrySourceType
+threadsafe Function GetLastSettingIndepSCI(WAVE numericalValues, variable sweepNo, string setting, variable headstage, variable entrySourceType, [variable defValue])
 
 	if(ParamIsDefault(defValue))
 		defValue = NaN
@@ -383,19 +369,13 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/S GetLastSettingTextIndepSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType, [defValue])
-	WAVE     numericalValues
-	WAVE/T   textualValues
-	variable sweepNo
-	string   setting
-	variable headstage, entrySourceType
-	string defValue
+threadsafe Function/S GetLastSettingTextIndepSCI(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, string setting, variable headstage, variable entrySourceType, [string defValue])
 
 	if(ParamIsDefault(defValue))
 		defValue = ""
 	endif
 
-	WAVE/T/Z settings = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
+	WAVE/Z/T settings = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
 
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
@@ -411,18 +391,13 @@ End
 /// @return the headstage independent setting or `defValue`
 ///
 /// @ingroup LabnotebookQueryFunctions
-threadsafe Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
-	WAVE     numericalValues
-	WAVE/T   textualValues
-	variable sweepNo
-	string setting, defValue
-	variable entrySourceType
+threadsafe Function/S GetLastSettingTextIndepRAC(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, string setting, variable entrySourceType, [string defValue])
 
 	if(ParamIsDefault(defValue))
 		defValue = ""
 	endif
 
-	WAVE/T/Z settings = GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType)
+	WAVE/Z/T settings = GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType)
 
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
@@ -440,7 +415,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSettingChannelInternal()
-threadsafe Function [WAVE/Z settings, variable index] GetLastSettingChannel(WAVE numericalValues, WAVE/T/Z textualValues, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
+threadsafe Function [WAVE/Z settings, variable index] GetLastSettingChannel(WAVE numericalValues, WAVE/Z/T textualValues, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
 
 	[settings, index] = GetLastSettingChannelInternal(numericalValues, numericalValues, sweepNo, setting, channelNumber, channelType, entrySourceType)
 
@@ -479,6 +454,7 @@ End
 ///
 /// @sa GetLastSettingChannel
 threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE numericalValues, WAVE values, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
+
 	string entryName, settingTTL
 	variable headstage, indep
 
@@ -603,11 +579,7 @@ End
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType)
-	WAVE     values
-	variable sweepNo
-	string   setting
-	variable entrySourceType
+threadsafe Function/WAVE GetLastSetting(WAVE values, variable sweepNo, string setting, variable entrySourceType)
 
 	variable first, last, rowIndex, entrySourceTypeIndex, settingCol
 
@@ -896,12 +868,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/WAVE GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType)
-	WAVE     numericalValues
-	WAVE/T   textualValues
-	variable sweepNo
-	string   setting
-	variable entrySourceType
+threadsafe Function/WAVE GetLastSettingTextRAC(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, string setting, variable entrySourceType)
 
 	variable i, numSweeps
 
@@ -926,11 +893,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/WAVE GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceType)
-	WAVE     numericalValues
-	variable sweepNo
-	string   setting
-	variable entrySourceType
+threadsafe Function/WAVE GetLastSettingRAC(WAVE numericalValues, variable sweepNo, string setting, variable entrySourceType)
 
 	variable i, numSweeps
 
@@ -959,11 +922,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
-	WAVE     numericalValues
-	variable sweepNo
-	string   setting
-	variable entrySourceType, defValue
+threadsafe Function/WAVE GetLastSettingIndepEachRAC(WAVE numericalValues, variable sweepNo, string setting, variable entrySourceType, [variable defValue])
 
 	variable settings, numSweeps
 
@@ -995,13 +954,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
-	WAVE     numericalValues
-	WAVE/T   textualValues
-	variable sweepNo
-	string   setting
-	variable entrySourceType
-	string   defValue
+threadsafe Function/WAVE GetLastSettingTextIndepEachRAC(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, string setting, variable entrySourceType, [string defValue])
 
 	variable settings, numSweeps
 
@@ -1033,11 +986,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting
-threadsafe Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE     numericalValues
-	variable sweepNo
-	string   setting
-	variable headstage, entrySourceType
+threadsafe Function/WAVE GetLastSettingEachRAC(WAVE numericalValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)
 
 	variable i, numSweeps
 
@@ -1074,12 +1023,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/WAVE GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE     numericalValues
-	WAVE/T   textualValues
-	variable sweepNo
-	string   setting
-	variable headstage, entrySourceType
+threadsafe Function/WAVE GetLastSettingTextEachRAC(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)
 
 	variable i, numSweeps
 
@@ -1113,12 +1057,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/WAVE GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE     numericalValues
-	WAVE/T   textualValues
-	variable sweepNo
-	string   setting
-	variable headstage, entrySourceType
+threadsafe Function/WAVE GetLastSettingTextSCI(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)
 
 	variable i, numSweeps
 
@@ -1143,11 +1082,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/WAVE GetLastSettingSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE     numericalValues
-	variable sweepNo
-	string   setting
-	variable headstage, entrySourceType
+threadsafe Function/WAVE GetLastSettingSCI(WAVE numericalValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)
 
 	variable i, numSweeps
 
@@ -1176,11 +1111,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/WAVE GetLastSettingIndepEachSCI(numericalValues, sweepNo, setting, headstage, entrySourceType, [defValue])
-	WAVE     numericalValues
-	variable sweepNo
-	string   setting
-	variable headstage, entrySourceType, defValue
+threadsafe Function/WAVE GetLastSettingIndepEachSCI(WAVE numericalValues, variable sweepNo, string setting, variable headstage, variable entrySourceType, [variable defValue])
 
 	variable settings, numSweeps
 
@@ -1212,13 +1143,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/WAVE GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, headstage, setting, entrySourceType, [defValue])
-	WAVE     numericalValues
-	WAVE/T   textualValues
-	variable sweepNo
-	string   setting
-	variable headstage, entrySourceType
-	string defValue
+threadsafe Function/WAVE GetLastSettingTextIndepEachSCI(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage, string setting, variable entrySourceType, [string defValue])
 
 	variable settings, numSweeps
 
@@ -1250,11 +1175,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting
-threadsafe Function/WAVE GetLastSettingEachSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE     numericalValues
-	variable sweepNo
-	string   setting
-	variable headstage, entrySourceType
+threadsafe Function/WAVE GetLastSettingEachSCI(WAVE numericalValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)
 
 	variable i, numSweeps
 
@@ -1291,12 +1212,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-threadsafe Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
-	WAVE     numericalValues
-	WAVE/T   textualValues
-	variable sweepNo
-	string   setting
-	variable headstage, entrySourceType
+threadsafe Function/WAVE GetLastSettingTextEachSCI(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, string setting, variable headstage, variable entrySourceType)
 
 	variable i, numSweeps
 
@@ -1363,10 +1279,7 @@ End
 /// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
 /// @param[out] first             point index of the beginning of the range
 /// @param[out] last              point index of the end of the range
-threadsafe static Function FindRange(wv, col, val, entrySourceType, first, last)
-	WAVE wv
-	variable col, val, entrySourceType
-	variable &first, &last
+threadsafe static Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
 
 	variable numRows, i, j, sourceTypeCol, firstRow, lastRow, isNumeric, index, startRow, endRow
 
@@ -1480,8 +1393,7 @@ End
 
 /// @brief Returns the numerical index for the sweep number column
 /// in the settings history waves (numeric and text)
-threadsafe Function GetSweepColumn(labnotebookValues)
-	WAVE labnotebookValues
+threadsafe Function GetSweepColumn(WAVE labnotebookValues)
 
 	variable sweepCol
 
@@ -1517,9 +1429,7 @@ End
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-threadsafe Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
-	WAVE   labnotebookValues
-	string setting
+threadsafe Function/WAVE GetSweepsWithSetting(WAVE labnotebookValues, string setting)
 
 	variable sweepCol, settingsCol
 
@@ -1601,10 +1511,7 @@ End
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-threadsafe Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
-	WAVE      numericalValues
-	string    setting
-	variable &sweepNo
+threadsafe Function/WAVE GetLastSweepWithSetting(WAVE numericalValues, string setting, variable &sweepNo)
 
 	variable idx, settingsCol
 
@@ -1633,11 +1540,7 @@ End
 ///                              to return in case nothing could be found
 ///
 /// @ingroup LabnotebookQueryFunctions
-threadsafe Function GetLastSweepWithSettingIndep(numericalValues, setting, sweepNo, [defValue])
-	WAVE      numericalValues
-	string    setting
-	variable &sweepNo
-	variable  defValue
+threadsafe Function GetLastSweepWithSettingIndep(WAVE numericalValues, string setting, variable &sweepNo, [variable defValue])
 
 	if(ParamIsDefault(defValue))
 		defValue = NaN
@@ -1664,10 +1567,7 @@ End
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-threadsafe Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
-	WAVE/T    textualValues
-	string    setting
-	variable &sweepNo
+threadsafe Function/WAVE GetLastSweepWithSettingText(WAVE/T textualValues, string setting, variable &sweepNo)
 
 	variable idx, settingsCol
 
@@ -1696,17 +1596,13 @@ End
 ///                              to return in case nothing could be found
 ///
 /// @ingroup LabnotebookQueryFunctions
-threadsafe Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defValue])
-	WAVE      numericalValues
-	string    setting
-	variable &sweepNo
-	string    defValue
+threadsafe Function/S GetLastSweepWithSettingTextI(WAVE numericalValues, string setting, variable &sweepNo, [string defValue])
 
 	if(ParamIsDefault(defValue))
 		defValue = ""
 	endif
 
-	WAVE/T/Z settings = GetLastSweepWithSettingText(numericalValues, setting, sweepNo)
+	WAVE/Z/T settings = GetLastSweepWithSettingText(numericalValues, setting, sweepNo)
 
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
@@ -1721,8 +1617,7 @@ End
 /// Before dfe2d862 (Make the function AB_SplitTTLWaveIntoComponents available for all, 2015-10-07)
 /// we stored headstage independent data in either all entries or only the first one.
 /// Since that commit we store the data in `INDEP_HEADSTAGE`.
-threadsafe Function GetIndexForHeadstageIndepData(values)
-	WAVE values
+threadsafe Function GetIndexForHeadstageIndepData(WAVE values)
 
 	return DimSize(values, LAYERS) == NUM_HEADSTAGES ? 0 : INDEP_HEADSTAGE
 End
@@ -1736,9 +1631,7 @@ End
 ///
 /// New style have the format "$Name u_(AD|DA)$ChannelNumber", these include
 /// the channel type to make them more self explaining.
-threadsafe Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
-	string setting
-	variable channelNumber, channelType
+threadsafe Function/S CreateLBNUnassocKey(string setting, variable channelNumber, variable channelType)
 
 	ASSERT_TS(!IsEmpty(setting), "Expected non empty string")
 	ASSERT_TS(IsFinite(channelNumber), "Expected finite channel number")
@@ -1778,6 +1671,7 @@ End
 ///
 /// @sa CreateLBNUnassocKey()
 Function/S RemoveUnassocLBNKeySuffix(string name)
+
 	string result, suffix
 
 	SplitString/E=(LBN_UNASSOC_REGEXP) name, result, suffix
@@ -1797,9 +1691,7 @@ End
 ///        a valid wave index.
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function EntrySourceTypeMapper(entrySourceType)
-
-	variable entrySourceType
+threadsafe Function EntrySourceTypeMapper(variable entrySourceType)
 
 	return IsFinite(entrySourceType) ? ++entrySourceType : 0
 End
@@ -1808,6 +1700,7 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function ReverseEntrySourceTypeMapper(variable mapped)
+
 	return (mapped == 0 ? NaN : --mapped)
 End
 
@@ -1818,9 +1711,7 @@ End
 /// @param chunk [optional]                    Some format strings expect a chunk number
 /// @param query [optional, defaults to false] If the key is to be used for setting or querying the labnotebook
 /// @param waMode [optional, defaults to PSQ_LBN_WA_NONE] One of @ref LBNWorkAroundFlags
-Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query, waMode])
-	variable type, chunk, query, waMode
-	string formatString
+Function/S CreateAnaFuncLBNKey(variable type, string formatString, [variable chunk, variable query, variable waMode])
 
 	if(ParamIsDefault(waMode))
 		waMode = PSQ_LBN_WA_NONE
@@ -1948,13 +1839,14 @@ End
 /// @param name            One of @ref LabnotebookTTLNames
 /// @param sweep           Sweep number
 threadsafe Function/WAVE GetTTLLabnotebookEntry(WAVE/T textualValues, string name, variable sweep)
+
 	variable index
 
 	index = GetIndexForHeadstageIndepData(textualValues)
 
-	WAVE/T/Z ttlEntry         = GetLastSetting(textualValues, sweep, "TTL " + name, DATA_ACQUISITION_MODE)
-	WAVE/T/Z ttlEntryRackZero = GetLastSetting(textualValues, sweep, "TTL rack zero " + name, DATA_ACQUISITION_MODE)
-	WAVE/T/Z ttlEntryRackOne  = GetLastSetting(textualValues, sweep, "TTL rack one " + name, DATA_ACQUISITION_MODE)
+	WAVE/Z/T ttlEntry         = GetLastSetting(textualValues, sweep, "TTL " + name, DATA_ACQUISITION_MODE)
+	WAVE/Z/T ttlEntryRackZero = GetLastSetting(textualValues, sweep, "TTL rack zero " + name, DATA_ACQUISITION_MODE)
+	WAVE/Z/T ttlEntryRackOne  = GetLastSetting(textualValues, sweep, "TTL rack one " + name, DATA_ACQUISITION_MODE)
 
 	if(WaveExists(ttlEntry))
 		// NI hardware
@@ -2011,7 +1903,7 @@ Function [variable type, variable waMode, variable headstage] GetAnalysisFunctio
 	endif
 	DAC = settings[index]
 
-	key = "Generic function"
+	key                    = "Generic function"
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 	if(!WaveExists(settings))
 		return [NaN, NaN, NaN]
@@ -2025,7 +1917,7 @@ Function [variable type, variable waMode, variable headstage] GetAnalysisFunctio
 
 	WAVE anaFuncTypes = LBN_GetNumericWave(defValue = INVALID_ANALYSIS_FUNCTION)
 	anaFuncTypes[headstage] = MapAnaFuncToConstant(anaFuncName)
-	[type, waMode] = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
+	[type, waMode]          = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
 
 	return [type, waMode, headstage]
 End

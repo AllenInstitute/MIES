@@ -40,8 +40,7 @@ static StrConstant ASYNC_WLCOUNTER_STR     = "workloadClassCounter"
 /// @param disableTask [optional, default = 0] when set to 1 the background task processing readouts is not started
 ///
 /// @return 1 if ASYNC framework was started, 0 if ASYNC framework was already running, in this case the number of threads is not changed
-Function ASYNC_Start(numThreads, [disableTask])
-	variable numThreads, disableTask
+Function ASYNC_Start(variable numThreads, [variable disableTask])
 
 	variable i
 
@@ -81,8 +80,8 @@ End
 /// @param dfr reference to thread data folder
 ///
 /// @return data folder reference to output data folder
-threadsafe Function/DF ASYNC_Worker(dfr)
-	DFREF dfr
+threadsafe Function/DF ASYNC_Worker(DFREF dfr)
+
 End
 
 /// @brief Prototype function for an async readout function
@@ -167,6 +166,7 @@ End
 /// @brief Receives data from finished workloads. Calls the user defined readout function.
 /// For in order readouts this function buffers pending result data folders until they can be processed in order.
 Function ASYNC_ThreadReadOut()
+
 	variable bufferSize, i
 	variable justBuffered
 
@@ -327,8 +327,7 @@ End
 /// The function takes care to buffer results if they should be processed in order.
 ///
 /// @param s default structure for Igor background tasks
-Function ASYNC_BackgroundReadOut(s)
-	STRUCT WMBackgroundStruct &s
+Function ASYNC_BackgroundReadOut(STRUCT WMBackgroundStruct &s)
 
 	return ASYNC_ThreadReadOut()
 End
@@ -344,13 +343,7 @@ End
 /// @param str [optional, default = 0] string to be added as parameter
 /// @param move [optional, default = 0] if a wave was given as parameter and move is not zero then the wave is moved to the threads data folder
 /// @param name [optional, default = paramXXX] name of the added parameter
-Function ASYNC_AddParam(dfr, [w, var, str, move, name])
-	DFREF    dfr
-	WAVE     w
-	variable var
-	string   str
-	variable move
-	string   name
+Function ASYNC_AddParam(DFREF dfr, [WAVE w, variable var, string str, variable move, string name])
 
 	variable paramCnt
 	string   paramName
@@ -427,8 +420,7 @@ End
 /// are executed.
 ///
 /// @return 2 if ASYNC framework was not running, 1 if a timeout was encountered, 0 otherwise
-Function ASYNC_Stop([timeout, fromAssert])
-	variable timeout, fromAssert
+Function ASYNC_Stop([variable timeout, variable fromAssert])
 
 	variable i, endtime, waitResult, localtgID, outatime, err, doe, d
 	variable inputCount, outputCount
@@ -591,8 +583,7 @@ End
 /// @brief Puts a prepared thread data folder to parallel execution in another thread
 ///
 /// @param dfr data folder that is setup for thread and is to be deployed
-Function ASYNC_Execute(dfr)
-	DFREF dfr
+Function ASYNC_Execute(DFREF dfr)
 
 	variable orderIndex, size, index
 	string dest
@@ -652,8 +643,7 @@ End
 /// @brief test if data folder is marked for thread usage
 ///
 /// UTF_NOINSTRUMENTATION
-static Function ASYNC_IsThreadDF(dfr)
-	DFREF dfr
+static Function ASYNC_IsThreadDF(DFREF dfr)
 
 	NVAR/Z marker = dfr:$ASYNC_THREAD_MARKER_STR
 	if(NVAR_Exists(marker))

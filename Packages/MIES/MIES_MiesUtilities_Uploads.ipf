@@ -46,6 +46,7 @@ End
 
 /// @brief Call UploadLogFiles() if we haven't called it since at least a day.
 Function UploadLogFilesDaily()
+
 	string ts
 	variable lastWrite, now, first, last
 

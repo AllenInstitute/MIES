@@ -37,6 +37,7 @@ static Function ChecksParams()
 End
 
 static Function WriteWorks1()
+
 	variable var
 
 	TSDS_WriteVar(KEY, 123)
@@ -49,6 +50,7 @@ static Function WriteWorks1()
 End
 
 static Function ReadWorks1()
+
 	variable var
 
 	try
@@ -75,6 +77,7 @@ static Function ReadWorksWithDefault()
 End
 
 static Function ReadWorksWithDefaultAndCreate()
+
 	variable var
 
 	var = TSDS_ReadVar(KEY, defValue = 567, create = 1)
@@ -86,6 +89,7 @@ static Function ReadWorksWithDefaultAndCreate()
 End
 
 static Function ReadBrokenStorage1()
+
 	variable var
 
 	var = TSDS_ReadVar(KEY, defValue = 0, create = 1)
@@ -106,6 +110,7 @@ static Function ReadBrokenStorage1()
 End
 
 static Function ReadBrokenStorage2()
+
 	variable var
 
 	var = TSDS_ReadVar(KEY, defValue = 0, create = 1)

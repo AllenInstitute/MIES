@@ -16,10 +16,12 @@ static StrConstant SFH_ARGSETUP_EMPTY_OPERATION_VALUE = "NOOP"
 static StrConstant SFH_DEFAULT_SELECT_FORMULA         = "select()"
 
 threadsafe Function SFH_StringChecker_Prototype(string str)
+
 	ASSERT_TS(0, "Can't call prototype function")
 End
 
 threadsafe Function SFH_NumericChecker_Prototype(variable var)
+
 	ASSERT_TS(0, "Can't call prototype function")
 End
 
@@ -123,7 +125,7 @@ End
 /// The second argument `type` is optional with `steam train` as default and a list of allowed values.
 ///
 /// The text argument can be abbreviated as long as it is unique, the unabbreviated result is returned in all cases.
-Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/T/Z allowedValues, FUNCREF SFH_StringChecker_Prototype checkFunc, variable checkDefault])
+Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/Z/T allowedValues, FUNCREF SFH_StringChecker_Prototype checkFunc, variable checkDefault])
 
 	string msg, result, sep, allowedValuesAsStr
 	variable checkExist, numArgs, idx, ret
@@ -143,14 +145,14 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 
 	if(argNum < numArgs)
-		WAVE/WAVE/Z input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
+		WAVE/Z/WAVE input = SF_ResolveDatasetFromJSON(jsonId, jsonPath, graph, argNum)
 		sprintf msg, "Argument #%d of operation %s: input is a NULL wave reference", argNum, opShort
 		SFH_ASSERT(WaveExists(input), msg)
 
 		sprintf msg, "Argument #%d of operation %s: Expected only one dataset", argNum, opShort
 		SFH_ASSERT(DimSize(input, ROWS) == 1, msg)
 
-		WAVE/T/Z data = input[0]
+		WAVE/Z/T data = input[0]
 		SFH_CleanUpInput(input)
 		sprintf msg, "Argument #%d of operation %s: Is a NULL wave reference", argNum, opShort
 		SFH_ASSERT(WaveExists(data), msg)
@@ -177,7 +179,7 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 		ASSERT(WaveExists(allowedValues) && IsTextWave(allowedValues), "allowedValues must be a text wave")
 
 		// search are allowed entries and try to match a unique abbreviation
-		WAVE/T/Z matches = GrepTextWave(allowedValues, "(?i)^\\Q" + result + "\\E.*$")
+		WAVE/Z/T matches = GrepTextWave(allowedValues, "(?i)^\\Q" + result + "\\E.*$")
 		if(!WaveExists(matches))
 			sep                = ", "
 			allowedValuesAsStr = TextWaveToList(allowedValues, sep, trailSep = 0)
@@ -436,7 +438,7 @@ Function/WAVE SFH_GetRangeFromEpoch(string graph, string epochName, variable swe
 	SFH_ASSERT(DataFolderExistsDFR(sweepDFR), "Could not determine sweepDFR")
 
 	regex = "^" + epochName + "$"
-	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, chanType, channel, regex, sweepDFR = sweepDFR)
+	WAVE/Z/T epochs = EP_GetEpochs(numericalValues, textualValues, sweep, chanType, channel, regex, sweepDFR = sweepDFR)
 	if(!WaveExists(epochs))
 		return range
 	endif
@@ -458,7 +460,7 @@ Function/WAVE SFH_GetSweepsForFormula(string graph, WAVE/Z/WAVE selectDataArray,
 		return $""
 	endif
 
-	WAVE/WAVE/Z result = $""
+	WAVE/Z/WAVE result = $""
 
 	for(WAVE/Z/WAVE selectDataComp : selectDataArray)
 
@@ -563,7 +565,7 @@ static Function/WAVE SFH_GetSweepsForFormulaImpl(string graph, WAVE/WAVE selectD
 		endif
 
 		WAVE/ZZ   adaptedRange
-		WAVE/T/ZZ epochRangeNames
+		WAVE/ZZ/T epochRangeNames
 		[adaptedRange, epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, setRange, sweepNo, chanType, chanNr, mapIndex)
 
 		if(!WaveExists(adaptedRange) && !WaveExists(epochRangeNames))
@@ -1030,9 +1032,9 @@ Function [WAVE/T keys, WAVE/T values] SFH_CreateResultsWaveWithCode(string graph
 
 	values[0][%$"Sweep Formula code"][INDEP_HEADSTAGE] = NormalizeToEOL(TrimString(code), "\n")
 
-	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
+	WAVE/Z/T cursorInfos = GetCursorInfos(graph)
 
-	WAVE/WAVE/Z selectData = SF_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
+	WAVE/Z/WAVE selectData = SF_ExecuteFormula(SFH_DEFAULT_SELECT_FORMULA, graph, useVariables = 0)
 	if(WaveExists(selectData) && WaveExists(selectData[0]))
 		values[0][%$"Sweep Formula sweeps/channels"][INDEP_HEADSTAGE] = NumericWaveToList(selectData[0], ",", colSep = ";")
 	endif
@@ -1507,7 +1509,7 @@ Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpoc
 		DFREF sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
 	endif
 	SFH_ASSERT(DataFolderExistsDFR(sweepDFR), "Could not determine sweepDFR")
-	WAVE/T/Z epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, chanType, chanNr, allEpochsRegex, sweepDFR = sweepDFR)
+	WAVE/Z/T epochInfo = EP_GetEpochs(numericalValues, textualValues, sweepNo, chanType, chanNr, allEpochsRegex, sweepDFR = sweepDFR)
 	if(!WaveExists(epochInfo))
 		return [$"", $""]
 	endif

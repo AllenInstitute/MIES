@@ -903,7 +903,7 @@ static Function [variable err, variable stimsetEndIndex] EP_AddEpochsFromStimSet
 
 	[WAVE wbStimsetEpochOffset, WAVE wbStimsetEpochLength] = EP_GetStimEpochsOffsetAndLength(ec)
 	if(WaveExists(wbStimsetEpochOffset))
-		ec.wbEffectiveStimsetSize = sum(wbStimsetEpochLength)
+		ec.wbEffectiveStimsetSize                          = sum(wbStimsetEpochLength)
 		[WAVE stimepochOffsetTime, WAVE stimepochDuration] = EP_GetStimEpochsOffsetTimeAndDuration(ec, wbStimsetEpochOffset, wbStimsetEpochLength)
 	else
 		Make/FREE stimepochDuration = {ec.dwStimsetSize * ec.samplingInterval}
@@ -1237,6 +1237,7 @@ End
 /// @param acquiredTime if acquisition was stopped early time of last acquired point in AD wave, NaN otherwise
 /// @param plannedTime  time of one point after the end of the DA wave
 Function EP_WriteEpochInfoIntoSweepSettings(string device, variable sweepNo, variable acquiredTime, variable plannedTime)
+
 	variable i, numDACEntries, channel, headstage
 	string entry
 
@@ -1276,6 +1277,7 @@ End
 /// @param channel     DA/TTL channel number
 /// @param channelType channel type (DA or TTL)
 threadsafe Function/S EP_EpochWaveToStr(WAVE epochsWave, variable channel, variable channelType)
+
 	Duplicate/FREE/RMD=[][][channel][channelType] epochsWave, epochChannel
 	Redimension/N=(-1, -1, 0, 0) epochChannel
 
@@ -1437,9 +1439,9 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 
 	if(!midsweep)
 		if(DataFolderExistsDFR(sweepDFR))
-			WAVE/T/Z epochInfoChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, sweepDFR, channelNumber, channelType)
+			WAVE/Z/T epochInfoChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, sweepDFR, channelNumber, channelType)
 		else
-			WAVE/T/Z epochInfoChannel = EP_FetchEpochs_TS(numericalValues, textualValues, sweepNo, channelNumber, channelType)
+			WAVE/Z/T epochInfoChannel = EP_FetchEpochs_TS(numericalValues, textualValues, sweepNo, channelNumber, channelType)
 		endif
 		if(!WaveExists(epochInfoChannel))
 			return $""
@@ -1509,7 +1511,7 @@ End
 /// @param channelType     Type of channel @sa XopChannelConstants
 ///
 /// @return epochs wave, see GetEpochsWave() for the wave layout
-threadsafe Function/WAVE EP_FetchEpochs_TS(WAVE numericalValues, WAVE/T/Z textualValues, variable sweep, variable channelNumber, variable channelType)
+threadsafe Function/WAVE EP_FetchEpochs_TS(WAVE numericalValues, WAVE/Z/T textualValues, variable sweep, variable channelNumber, variable channelType)
 
 	WAVE/Z epochs = EP_FetchEpochsFromLNB(numericalValues, textualValues, sweep, channelNumber, channelType)
 
@@ -1526,7 +1528,7 @@ End
 /// @param channelType     Type of channel @sa XopChannelConstants
 ///
 /// @return epochs wave, see GetEpochsWave() for the wave layout
-Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualValues, variable sweep, DFREF singleSweepDFR, variable channelNumber, variable channelType)
+Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/Z/T textualValues, variable sweep, DFREF singleSweepDFR, variable channelNumber, variable channelType)
 
 	WAVE/Z epochs = EP_FetchEpochsFromLNB(numericalValues, textualValues, sweep, channelNumber, channelType)
 	if(WaveExists(epochs))
@@ -1538,7 +1540,7 @@ Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualValues, varia
 	return epochs
 End
 
-static Function/WAVE EP_FetchEpochsFromRecreation(WAVE numericalValues, WAVE/T/Z textualValues, variable sweep, DFREF singleSweepDFR, variable channelNumber, variable channelType)
+static Function/WAVE EP_FetchEpochsFromRecreation(WAVE numericalValues, WAVE/Z/T textualValues, variable sweep, DFREF singleSweepDFR, variable channelNumber, variable channelType)
 
 	string epochList
 
@@ -1570,7 +1572,7 @@ static Function/WAVE EP_FetchEpochsFromRecreation(WAVE numericalValues, WAVE/T/Z
 	return epChannel
 End
 
-threadsafe static Function/WAVE EP_FetchEpochsFromLNB(WAVE numericalValues, WAVE/T/Z textualValues, variable sweep, variable channelNumber, variable channelType)
+threadsafe static Function/WAVE EP_FetchEpochsFromLNB(WAVE numericalValues, WAVE/Z/T textualValues, variable sweep, variable channelNumber, variable channelType)
 
 	variable index
 
@@ -1618,6 +1620,7 @@ End
 
 /// @brief Append epoch information from the labnotebook to the newly cleared epoch wave
 Function EP_CopyLBNEpochsToEpochsWave(string device, variable sweepNo)
+
 	variable i, j, epochCnt, epochChannelCnt, chanType
 
 	EP_ClearEpochs(device)
@@ -1631,7 +1634,7 @@ Function EP_CopyLBNEpochsToEpochsWave(string device, variable sweepNo)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		for(chanType : channelTypes)
-			WAVE/T/Z epochChannel = EP_FetchEpochs_TS(numericalValues, textualValues, sweepNo, i, chanType)
+			WAVE/Z/T epochChannel = EP_FetchEpochs_TS(numericalValues, textualValues, sweepNo, i, chanType)
 
 			if(!WaveExists(epochChannel))
 				continue
@@ -1781,8 +1784,8 @@ static Function EP_AddRecreatedUserEpochs(WAVE numericalValues, WAVE/T textualVa
 	variable DAC, headstage, index, type, waMode
 	string key, anaFuncName
 
-	DAC = s.DACList[0]
-	key = "Generic function"
+	DAC                    = s.DACList[0]
+	key                    = "Generic function"
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 	if(!WaveExists(settings))
 		return NaN
@@ -1795,7 +1798,7 @@ static Function EP_AddRecreatedUserEpochs(WAVE numericalValues, WAVE/T textualVa
 	anaFuncName = settingsT[index]
 	WAVE anaFuncTypes = LBN_GetNumericWave(defValue = INVALID_ANALYSIS_FUNCTION)
 	anaFuncTypes[headstage] = MapAnaFuncToConstant(anaFuncName)
-	[type, waMode] = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
+	[type, waMode]          = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
 
 	switch(type)
 		case PSQ_CHIRP:
@@ -1906,7 +1909,7 @@ static Function EP_AddRecreatedUserEpochs_Baseline(WAVE numericalValues, WAVE/T 
 			DAScale           = s.DACAmp[0][%DASCALE]
 			PSQ_SE_CreateEpochsImpl(epochWave, DAC, totalOnsetDelayMS, setName, testpulseGroupSel, DAScale, numEpochs, chunkLength)
 		endif
-		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER, treelevel = EPOCH_USER_LEVEL, epochsWave = epochWave)
+		WAVE/Z/T userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER, treelevel = EPOCH_USER_LEVEL, epochsWave = epochWave)
 		if(WaveExists(userChunkEpochs))
 			numBLS = DimSize(userChunkEpochs, ROWS)
 			for(chunk = 0; chunk < numBLS; chunk += 1)
@@ -1965,8 +1968,8 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Ramp(WAVE numericalValues, WAVE/T 
 
 	EP_AddRecreatedUserEpochs_Baseline(numericalValues, textualValues, waMode, sweepDFR, PSQ_RAMP, sweepNo, s, epochWave)
 
-	DAC = s.DACList[0]
-	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT, query = 1, waMode = waMode)
+	DAC                    = s.DACList[0]
+	key                    = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT, query = 1, waMode = waMode)
 	[WAVE settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, DAC, XOP_CHANNEL_TYPE_DAC, UNKNOWN_MODE)
 	if(!(WaveExists(settings) && settings[index] == 1))
 		return NaN
@@ -2072,7 +2075,7 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T
 	ASSERT(IsFinite(spikeCheck), "Invalid SpikeCheck param")
 	totalOnsetDelayMS = s.onsetDelay * s.samplingIntervalDA * MICRO_TO_MILLI
 	if(spikeCheck)
-		headstage = s.headstageDAC[0]
+		headstage        = s.headstageDAC[0]
 		[epBegin, epEnd] = PSQ_CR_AddSpikeEvaluationEpoch(epochWave, DAC, headStage, durations, totalOnsetDelayMS)
 	endif
 

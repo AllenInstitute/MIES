@@ -6,7 +6,7 @@
 // Check the root datafolder for waves which might be present and could help debugging
 
 static Constant OODDAQ_PRECISION       = 0.001
-static Constant OTHER_EPOCHS_PRECISION = 0.050  // in ms
+static Constant OTHER_EPOCHS_PRECISION = 0.050 // in ms
 static Constant MAX_ITERATIONS         = 100000
 
 static Function GlobalPreAcq(string device)
@@ -20,8 +20,7 @@ static Function GlobalPreInit(string device)
 End
 
 /// @brief Tests if the 2D text wave e is tightly packed each row in all cols from top
-static Function TestEpochChannelTight(e)
-	WAVE/T e
+static Function TestEpochChannelTight(WAVE/T e)
 
 	variable i, j, numCols, numRows, emptyFlag
 	string s
@@ -121,10 +120,11 @@ static Function CheckFaithfullCoverage(WAVE startT_all, WAVE endT_all, WAVE matc
 End
 
 static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_all, WAVE levels_all, WAVE/T description_all)
+
 	variable i, level, epochCnt, ret, refStart, refEnd
 
 	WAVE/Z startT, endT, levels
-	WAVE/T/Z description
+	WAVE/Z/T description
 	[startT, endT, levels, description] = RemoveOodDAQEntries(startT_all, endT_all, isOodDAQ_all, levels_all, description_all)
 
 	CHECK_EQUAL_WAVES(startT, endT, mode = DIMENSION_SIZES)
@@ -510,6 +510,7 @@ static Function TestNaming(WAVE/T epochChannel)
 End
 
 static Function TestTrigonometricEpochs(WAVE/T epochChannel, WAVE DAchannel)
+
 	variable numRows, i, num, epochBegin, epochEnd
 	string shortname, epochType, levelTwoType, levelTwoNumber, levelThreeType, levelThreeNumber, refEpochType
 
@@ -584,8 +585,7 @@ End
 /// <------------- TESTS FOLLOW HERE ---------------------->
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest1([str])
-	string str
+static Function EP_EpochTest1([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
@@ -595,15 +595,13 @@ static Function EP_EpochTest1([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest1_REENTRY([str])
-	string str
+static Function EP_EpochTest1_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest2([str])
-	string str
+static Function EP_EpochTest2([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
@@ -613,15 +611,13 @@ static Function EP_EpochTest2([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest2_REENTRY([str])
-	string str
+static Function EP_EpochTest2_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest3([str])
-	string str
+static Function EP_EpochTest3([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                       + \
@@ -631,15 +627,13 @@ static Function EP_EpochTest3([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest3_REENTRY([str])
-	string str
+static Function EP_EpochTest3_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest4([str])
-	string str
+static Function EP_EpochTest4([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1"                 + \
@@ -649,15 +643,13 @@ static Function EP_EpochTest4([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest4_REENTRY([str])
-	string str
+static Function EP_EpochTest4_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest4a([str])
-	string str
+static Function EP_EpochTest4a([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_dDAQ1_DDL10"           + \
@@ -667,15 +659,13 @@ static Function EP_EpochTest4a([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest4a_REENTRY([str])
-	string str
+static Function EP_EpochTest4a_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest5([str])
-	string str
+static Function EP_EpochTest5([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
@@ -685,15 +675,13 @@ static Function EP_EpochTest5([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest5_REENTRY([str])
-	string str
+static Function EP_EpochTest5_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest6([str])
-	string str
+static Function EP_EpochTest6([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
@@ -703,15 +691,13 @@ static Function EP_EpochTest6([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest6_REENTRY([str])
-	string str
+static Function EP_EpochTest6_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest7([str])
-	string str
+static Function EP_EpochTest7([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"               + \
@@ -721,15 +707,13 @@ static Function EP_EpochTest7([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest7_REENTRY([str])
-	string str
+static Function EP_EpochTest7_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest8([str])
-	string str
+static Function EP_EpochTest8([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_OD50_TD100"            + \
@@ -739,15 +723,13 @@ static Function EP_EpochTest8([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest8_REENTRY([str])
-	string str
+static Function EP_EpochTest8_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest9([str])
-	string str
+static Function EP_EpochTest9([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_OD50_TD100"            + \
@@ -757,15 +739,13 @@ static Function EP_EpochTest9([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest9_REENTRY([str])
-	string str
+static Function EP_EpochTest9_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest10([str])
-	string str
+static Function EP_EpochTest10([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG1"                         + \
@@ -775,8 +755,7 @@ static Function EP_EpochTest10([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest10_REENTRY([str])
-	string str
+static Function EP_EpochTest10_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
@@ -787,8 +766,7 @@ static Function EP_EpochTest11_preInit(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest11([str])
-	string str
+static Function EP_EpochTest11([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG1"                         + \
@@ -798,15 +776,13 @@ static Function EP_EpochTest11([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest11_REENTRY([str])
-	string str
+static Function EP_EpochTest11_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest12([str])
-	string str
+static Function EP_EpochTest12([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                                             + \
@@ -816,15 +792,13 @@ static Function EP_EpochTest12([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest12_REENTRY([str])
-	string str
+static Function EP_EpochTest12_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest13([str])
-	string str
+static Function EP_EpochTest13([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                                                     + \
@@ -834,15 +808,13 @@ static Function EP_EpochTest13([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest13_REENTRY([str])
-	string str
+static Function EP_EpochTest13_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_TestUserEpochs([str])
-	string str
+static Function EP_TestUserEpochs([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1"                                             + \
@@ -852,8 +824,7 @@ static Function EP_TestUserEpochs([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_TestUserEpochs_REENTRY([str])
-	string str
+static Function EP_TestUserEpochs_REENTRY([string str])
 
 	variable i, j, k, nextSweep, DAC
 	string tags, shortName
@@ -863,11 +834,11 @@ static Function EP_TestUserEpochs_REENTRY([str])
 	nextSweep = GetSetVariable(str, "SetVar_Sweep")
 
 	for(i = 0; i < nextSweep; i += 1)
-		WAVE/T/Z epochLBN = GetLastSetting(textualValues, i, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+		WAVE/Z/T epochLBN = GetLastSetting(textualValues, i, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 		CHECK_WAVE(epochLBN, TEXT_WAVE)
 
 		for(j = 0; j < 2; j += 1)
-			WAVE/T/Z epochWave = EP_EpochStrToWave(epochLBN[j])
+			WAVE/Z/T epochWave = EP_EpochStrToWave(epochLBN[j])
 			CHECK_WAVE(epochWave, TEXT_WAVE)
 
 			DAC = AFH_GetDACFromHeadstage(str, j)
@@ -905,8 +876,7 @@ static Function EP_TestUserEpochs_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest14([str])
-	string str
+static Function EP_EpochTest14([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                           + \
@@ -916,15 +886,13 @@ static Function EP_EpochTest14([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest14_REENTRY([str])
-	string str
+static Function EP_EpochTest14_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest15([str])
-	string str
+static Function EP_EpochTest15([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10"     + \
@@ -933,8 +901,7 @@ static Function EP_EpochTest15([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest15_REENTRY([str])
-	string str
+static Function EP_EpochTest15_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
@@ -953,8 +920,7 @@ End
 //       equals the AD sample rate. For Sutter 10 kHz is the default maximum frequency for DA independent of the
 //       change in PreAcq.
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest16([str])
-	string str
+static Function EP_EpochTest16([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP43.59_TPD10_FFR:10:" + \
@@ -963,8 +929,7 @@ static Function EP_EpochTest16([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest16_REENTRY([str])
-	string str
+static Function EP_EpochTest16_REENTRY([string str])
 
 	WAVE/Z sweepWave = GetSweepWave(str, 0)
 	CHECK_WAVE(sweepWave, TEXT_WAVE)
@@ -980,8 +945,7 @@ End
 // This interval should appear as ST_B (stimser baseline trail)
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTest17([str])
-	string str
+static Function EP_EpochTest17([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                     + \
@@ -990,8 +954,7 @@ static Function EP_EpochTest17([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTest17_REENTRY([str])
-	string str
+static Function EP_EpochTest17_REENTRY([string str])
 
 	TestEpochsGeneric(str)
 End
@@ -1041,8 +1004,7 @@ static Function EP_EpochTestSamplingMultiplier_REENTRY([STRUCT IUTF_mData &mData
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function EP_EpochTestUnassocDA([str])
-	string str
+static Function EP_EpochTestUnassocDA([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \
@@ -1057,8 +1019,7 @@ static Function EP_EpochTestUnassocDA([str])
 	AcquireData_NG(s, str)
 End
 
-static Function EP_EpochTestUnassocDA_REENTRY([str])
-	string str
+static Function EP_EpochTestUnassocDA_REENTRY([string str])
 
 	variable cbState, sweepNo
 

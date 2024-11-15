@@ -10,6 +10,7 @@
 /// @brief This file holds MIES utility functions for ZeroMQ
 
 Function GetZeroMQXOPFlags()
+
 	return ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV
 End
 
@@ -22,6 +23,7 @@ End
 /// @return NaN if already running, otherwise it returns the number of trials
 ///         it had to iterate for an unused port.
 Function StartZeroMQSockets([variable forceRestart])
+
 	variable i, port, err, numBinds, flags, numTrials
 
 	if(ParamIsDefault(forceRestart))
@@ -88,6 +90,7 @@ End
 
 /// @brief Update the logging template used by the ZeroMQ-XOP and ITCXOP2
 Function UpdateXOPLoggingTemplate()
+
 	variable JSONid
 	string   str
 

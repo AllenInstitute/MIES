@@ -41,9 +41,7 @@ End
 /// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
 ///
 /// @exception Abort configuration failure
-Function DC_Configure(device, dataAcqOrTP, [multiDevice])
-	string device
-	variable dataAcqOrTP, multiDevice
+Function DC_Configure(string device, variable dataAcqOrTP, [variable multiDevice])
 
 	variable numActiveChannels
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
@@ -118,9 +116,7 @@ Function DC_Configure(device, dataAcqOrTP, [multiDevice])
 	endif
 End
 
-static Function DC_UpdateHSProperties(device, ADCs)
-	string device
-	WAVE   ADCs
+static Function DC_UpdateHSProperties(string device, WAVE ADCs)
 
 	variable i, numChannels, headStage
 
@@ -146,9 +142,7 @@ static Function DC_UpdateHSProperties(device, ADCs)
 End
 
 /// @brief Return the number of selected checkboxes for the given type
-static Function DC_NoOfChannelsSelected(device, type)
-	string   device
-	variable type
+static Function DC_NoOfChannelsSelected(string device, variable type)
 
 	WAVE channelState = DAG_GetChannelState(device, type)
 
@@ -159,9 +153,7 @@ End
 ///
 /// @param device  panel title
 /// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_ChannelCalcForDAQConfigWave(device, dataAcqOrTP)
-	string   device
-	variable dataAcqOrTP
+static Function DC_ChannelCalcForDAQConfigWave(string device, variable dataAcqOrTP)
 
 	variable numDACs, numADCs, numTTLsRackZero, numTTLsRackOne, numActiveHeadstages
 	variable numTTLs
@@ -210,9 +202,7 @@ End
 ///
 /// @param device  device
 /// @param rackNo      Only the ITC1600 can have two racks. For all other ITC devices RackNo = 0.
-static Function DC_AreTTLsInRackChecked(device, rackNo)
-	string   device
-	variable rackNo
+static Function DC_AreTTLsInRackChecked(string device, variable rackNo)
 
 	variable first, last
 
@@ -227,9 +217,7 @@ End
 /// @param device  device
 /// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param channelType channel type, one of @ref ChannelTypeAndControlConstants
-static Function DC_LongestOutputWave(device, dataAcqOrTP, channelType)
-	string device
-	variable dataAcqOrTP, channelType
+static Function DC_LongestOutputWave(string device, variable dataAcqOrTP, variable channelType)
 
 	variable maxNumRows, i, numEntries, numPulses, singlePulseLength
 
@@ -334,9 +322,7 @@ End
 ///
 /// @param device  panel title
 /// @param numActiveChannels number of active channels as returned by DC_ChannelCalcForDAQConfigWave()
-static Function DC_MakeDAQConfigWave(device, numActiveChannels)
-	string   device
-	variable numActiveChannels
+static Function DC_MakeDAQConfigWave(string device, variable numActiveChannels)
 
 	WAVE config = GetDAQConfigWave(device)
 
@@ -354,6 +340,7 @@ End
 /// @param s           DataConfigurationResult structure
 /// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataWave(string device, STRUCT DataConfigurationResult &s, variable dataAcqOrTP)
+
 	variable numRows, i
 
 	switch(s.hardwareType)
@@ -484,6 +471,7 @@ End
 /// @param device        panel title
 /// @param dataAcqOrTP   one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
+
 	variable numRows, col, hardwareType, decimatedNumRows, numPixels, dataPointsPerPixel
 	variable decMethod, decFactor, tpLength, numADCs, numDACs, numTTLs, decimatedSampleInterval
 	variable tpOrPowerSpectrumLength, powerSpectrum
@@ -683,9 +671,8 @@ static Function DC_InitScaledDataWave(string device, variable dataAcqOrTP)
 End
 
 /// @brief Initialize OscilloscopeData waves to NaN
-static Function DC_InitOscilloscopeDataWave(wv, numRows, sampleInterval, numDACs, numADCs, numTTLs, [type, isFourierTransform])
-	WAVE wv
-	variable numRows, sampleInterval, numDACs, numADCs, numTTLs, type, isFourierTransform
+static Function DC_InitOscilloscopeDataWave(WAVE wv, variable numRows, variable sampleInterval, variable numDACs, variable numADCs, variable numTTLs, [variable type, variable isFourierTransform])
+
 	string msg
 
 	ASSERT(numDACs > 0, "Invalid number of DACs")
@@ -726,9 +713,7 @@ End
 /// @param dataAcqOrTP    one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param channelType    one of the channel type constants from @ref ChannelTypeAndControlConstants
 /// @param DAQChannelType only return channels as active if they have the desired DAQChannel type (only respected for DA channel)
-Function/WAVE DC_GetFilteredChannelState(device, dataAcqOrTP, channelType, [DAQChannelType])
-	string device
-	variable dataAcqOrTP, channelType, DAQChannelType
+Function/WAVE DC_GetFilteredChannelState(string device, variable dataAcqOrTP, variable channelType, [variable DAQChannelType])
 
 	if(ParamIsDefault(DAQChannelType))
 		DAQChannelType = DAQ_CHANNEL_TYPE_UNKOWN
@@ -795,9 +780,7 @@ End
 ///
 /// @param device  panel title
 /// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_PlaceDataInDAQConfigWave(device, dataAcqOrTP)
-	string   device
-	variable dataAcqOrTP
+static Function DC_PlaceDataInDAQConfigWave(string device, variable dataAcqOrTP)
 
 	variable i, j, numEntries, ret, channel
 	variable col, adc, dac, headstage
@@ -939,10 +922,7 @@ End
 /// @param channelType One of @ref ChannelTypeAndControlConstants
 ///
 /// @return number of data points, *not* time
-static Function DC_CalculateLongestSweep(device, dataAcqOrTP, channelType)
-	string   device
-	variable dataAcqOrTP
-	variable channelType
+static Function DC_CalculateLongestSweep(string device, variable dataAcqOrTP, variable channelType)
 
 	return DC_CalculateGeneratedDataSize(device, dataAcqOrTP, DC_LongestOutputWave(device, dataAcqOrTP, channelType))
 End
@@ -952,10 +932,7 @@ End
 /// @param stimSet          stimset wave
 /// @param device 		 device
 /// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-Function DC_CalculateStimsetLength(stimSet, device, dataAcqOrTP)
-	WAVE     stimSet
-	string   device
-	variable dataAcqOrTP
+Function DC_CalculateStimsetLength(WAVE stimSet, string device, variable dataAcqOrTP)
 
 	return DC_CalculateGeneratedDataSize(device, dataAcqOrTP, DimSize(stimSet, ROWS))
 End
@@ -965,9 +942,7 @@ End
 /// @param device 		 device
 /// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param genLength        length of a generated data wave
-static Function DC_CalculateGeneratedDataSize(device, dataAcqOrTP, genLength)
-	string device
-	variable dataAcqOrTP, genLength
+static Function DC_CalculateGeneratedDataSize(string device, variable dataAcqOrTP, variable genLength)
 
 	variable decimationFactor
 
@@ -1001,9 +976,7 @@ End
 /// @param multiDevice       Fine tune data handling for single device (false) or multi device (true)
 ///
 /// @exception Abort configuration failure
-static Function DC_PlaceDataInDAQDataWave(device, numActiveChannels, dataAcqOrTP, multiDevice)
-	string device
-	variable numActiveChannels, dataAcqOrTP, multiDevice
+static Function DC_PlaceDataInDAQDataWave(string device, variable numActiveChannels, variable dataAcqOrTP, variable multiDevice)
 
 	variable ret, row, column
 
@@ -1113,6 +1086,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 End
 
 static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResult &s)
+
 	variable i, j, maxITI, channel, headstage, setChecksum, fingerprint, stimsetCycleID, isoodDAQMember, samplingInterval
 	string func, ctrl, str
 
@@ -1295,6 +1269,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 End
 
 static Function DC_FillSetEventFlag(string device, STRUCT DataConfigurationResult &s)
+
 	variable i, channel
 
 	WAVE config = GetDAQConfigWave(device)
@@ -1434,6 +1409,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 End
 
 static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfigurationResult &s)
+
 	variable i, tpAmp, cutOff, channel, headstage, DAScale, singleSetLength, stimsetCol, startOffset
 	variable lastValidRow, isUnAssociated, maxLimit, minLimit
 
@@ -1536,6 +1512,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 End
 
 static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string device, variable numActiveChannels, variable dataAcqOrTP, variable multiDevice)
+
 	variable channel, headstage, channelMode
 	variable scalingZero, indexingLocked, indexing
 	variable i, j, ret, setCycleCountLocal
@@ -1599,9 +1576,9 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	// test pulse length is calculated for dataAcqOrTP @ref TP_CreateTestPulseWave
 	WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 	[testPulseLength, tpPulseStartPoint, tpPulseLengthPoints] = TP_GetCreationPropertiesInPoints(TPSettingsCalc, dataAcqOrTP)
-	s.testPulseLength     = testPulseLength
-	s.tpPulseStartPoint   = tpPulseStartPoint
-	s.tpPulseLengthPoints = tpPulseLengthPoints
+	s.testPulseLength                                         = testPulseLength
+	s.tpPulseStartPoint                                       = tpPulseStartPoint
+	s.tpPulseLengthPoints                                     = tpPulseLengthPoints
 
 	s.headstageDAC[] = channelClampMode[s.DACList[p]][%DAC][%Headstage]
 	s.headstageADC[] = channelClampMode[s.ADCList[p]][%ADC][%Headstage]
@@ -1650,8 +1627,8 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 			// only call DC_CalculateChannelColumnNo for real data acquisition
 			[ret, setCycleCountLocal] = DC_CalculateChannelColumnNo(device, s.setName[i], channel, CHANNEL_TYPE_DAC)
-			s.setColumn[i]     = ret
-			s.setCycleCount[i] = setCycleCountLocal
+			s.setColumn[i]            = ret
+			s.setCycleCount[i]        = setCycleCountLocal
 		endif
 
 		if(IsFinite(headstage))
@@ -1805,17 +1782,15 @@ static Function DC_SetupConfigurationTTLstimSets(string device, STRUCT DataConfi
 		s.TTLsetLength[i] = DC_CalculateStimsetLength(s.TTLstimSet[i], device, s.dataAcqOrTP)
 
 		[col, setCycleCount] = DC_CalculateChannelColumnNo(device, s.TTLsetName[i], i, CHANNEL_TYPE_TTL)
-		s.TTLsetColumn[i]  = col
-		s.TTLcycleCount[i] = setCycleCount
+		s.TTLsetColumn[i]    = col
+		s.TTLcycleCount[i]   = setCycleCount
 	endfor
 
 	DC_MakeTTLWave(device, s)
 End
 
 /// @brief Document hardware type/name/serial number into the labnotebook
-static Function DC_DocumentHardwareProperties(device, hardwareType)
-	string   device
-	variable hardwareType
+static Function DC_DocumentHardwareProperties(string device, variable hardwareType)
 
 	string str, key
 
@@ -1859,9 +1834,7 @@ End
 /// @param device  device
 /// @param fingerprint fingerprint as returned by DC_GenerateStimsetFingerprint()
 /// @param DAC         DA channel
-static Function DC_GetStimsetAcqCycleID(device, fingerprint, DAC)
-	string device
-	variable fingerprint, DAC
+static Function DC_GetStimsetAcqCycleID(string device, variable fingerprint, variable DAC)
 
 	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(device)
 
@@ -1887,10 +1860,7 @@ End
 ///
 /// Always then this fingerprint changes, a new stimset acquisition cycle ID has
 /// to be generated.
-static Function DC_GenerateStimsetFingerprint(raCycleID, setName, setCycleCount, setChecksum)
-	variable raCycleID
-	string   setName
-	variable setChecksum, setCycleCount
+static Function DC_GenerateStimsetFingerprint(variable raCycleID, string setName, variable setCycleCount, variable setChecksum)
 
 	variable crc
 
@@ -1978,11 +1948,7 @@ End
 /// @param channelType    type of the channel
 /// @param var [optional] numeric value
 /// @param str [optional] string value
-Function DC_DocumentChannelProperty(device, entry, headstage, channelNumber, channelType, [var, str])
-	string device, entry
-	variable headstage, channelNumber, channelType
-	variable var
-	string   str
+Function DC_DocumentChannelProperty(string device, string entry, variable headstage, variable channelNumber, variable channelType, [variable var, string str])
 
 	variable colData, colKey, numCols
 	string ua_entry
@@ -2277,6 +2243,7 @@ End
 
 /// @brief Calculate the stop collection point, includes all required global adjustments
 static Function DC_GetStopCollectionPoint(string device, STRUCT DataConfigurationResult &s)
+
 	variable DAClength, TTLlength, totalIncrease
 
 	DAClength = DC_CalculateLongestSweep(device, s.dataAcqOrTP, CHANNEL_TYPE_DAC)
@@ -2312,8 +2279,7 @@ End
 
 /// @brief Returns 1 if a channel is set to TP, the check is through the
 /// stimset name from the GUI
-Function DC_GotTPChannelWhileDAQ(device)
-	string device
+Function DC_GotTPChannelWhileDAQ(string device)
 
 	variable i, numEntries
 	WAVE   statusDAFiltered = DC_GetFilteredChannelState(device, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
@@ -2341,9 +2307,7 @@ End
 /// @param headstage head stage
 ///
 /// @return One of @ref DaqChannelTypeConstants
-Function DC_GetChannelTypefromHS(device, headstage)
-	string   device
-	variable headstage
+Function DC_GetChannelTypefromHS(string device, variable headstage)
 
 	variable dac, row
 	WAVE config = GetDAQConfigWave(device)

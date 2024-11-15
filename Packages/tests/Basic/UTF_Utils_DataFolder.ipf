@@ -16,8 +16,7 @@
 /// @{
 
 // This cuts away the temporary folder in which the tests runs
-Function/S TrimVolatileFolderName_IGNORE(list)
-	string list
+Function/S TrimVolatileFolderName_IGNORE(string list)
 
 	variable pos, i, numEntries
 	string str
@@ -176,7 +175,7 @@ Function GetListOfObjectsWorksTypeFlag([STRUCT IUTF_mData &md])
 	Make dfr:wv1
 	Make dfr:wv2
 	variable/G   dfr:var1
-	variable/G/C dfr:var2
+	variable/C/G dfr:var2
 	string/G     dfr:str1
 
 	DFREF dfrDeep = $":test:test2"
@@ -185,7 +184,7 @@ Function GetListOfObjectsWorksTypeFlag([STRUCT IUTF_mData &md])
 	Make dfrDeep:wv3
 	Make dfrDeep:wv4
 	variable/G   dfrDeep:var3
-	variable/G/C dfrDeep:var4
+	variable/C/G dfrDeep:var4
 	string/G     dfrDeep:str2
 
 	result = GetListOfObjects(dfr, ".*", recursive = 0, typeFlag = type)
@@ -496,6 +495,7 @@ End
 /// @{
 
 Function RDFU_Works()
+
 	string name, suffix, path
 
 	name   = "I_DONT_EXIST"
@@ -524,6 +524,7 @@ End
 /// @{
 
 Function DC_DFREFClear_Perm_Works()
+
 	NewDataFolder/O test
 	DFREF dfr = :test
 	CHECK(DataFolderExistsDFR(dfr))
@@ -534,6 +535,7 @@ Function DC_DFREFClear_Perm_Works()
 End
 
 Function DC_DFREFClear_Free_Works()
+
 	DFREF dfr = NewFreeDataFolder()
 	CHECK(DataFolderExistsDFR(dfr))
 	DFREFClear(dfr)

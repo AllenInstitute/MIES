@@ -1284,7 +1284,7 @@ StrConstant PSQ_RB_FINALSCALE_FAKE_KEY  = "PSQRheobaseFinalDAScaleFake"
 
 /// @name PatchSeq DAScale
 ///@{
-Constant    PSQ_DS_OFFSETSCALE_FAKE = 23              // pA
+Constant    PSQ_DS_OFFSETSCALE_FAKE = 23 // pA
 StrConstant PSQ_DS_SUB              = "Sub"
 StrConstant PSQ_DS_SUPRA            = "Supra"
 StrConstant PSQ_DS_ADAPT            = "AdaptiveSupra"
@@ -2186,7 +2186,7 @@ Constant BROWSER_MODE_ALL        = 0xFF
 
 Constant THREAD_QUEUE_TRIES            = 1000
 Constant HARDWARE_ITC_FIFO_ERROR       = -1
-Constant HARDWARE_ITC_STUCK_FIFO_TICKS = 120  // 2s
+Constant HARDWARE_ITC_STUCK_FIFO_TICKS = 120 // 2s
 
 StrConstant SF_PLOT_NAME_TEMPLATE = "SweepFormula plot"
 StrConstant SFH_USER_DATA_BROWSER = "browser"

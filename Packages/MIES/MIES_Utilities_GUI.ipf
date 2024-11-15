@@ -16,10 +16,7 @@ End
 /// @brief Check if a given wave, or at least one wave from the dfr, is displayed on a graph
 ///
 /// @return one if one is displayed, zero otherwise
-Function IsWaveDisplayedOnGraph(win, [wv, dfr])
-	string win
-	WAVE/Z wv
-	DFREF  dfr
+Function IsWaveDisplayedOnGraph(string win, [WAVE/Z wv, DFREF dfr])
 
 	string traceList, trace, list
 	variable numWaves, numTraces, i
@@ -59,8 +56,7 @@ End
 ///
 /// @param graphs     semicolon separated list of graph names
 /// @param cursorName name of cursor as string
-Function KillCursorInGraphs(graphs, cursorName)
-	string graphs, cursorName
+Function KillCursorInGraphs(string graphs, string cursorName)
 
 	string graph
 	variable i, numGraphs
@@ -84,8 +80,7 @@ End
 /// @param cursorName name of cursor as string
 ///
 /// @return graph where cursor was found
-Function/S FindCursorInGraphs(graphs, cursorName)
-	string graphs, cursorName
+Function/S FindCursorInGraphs(string graphs, string cursorName)
 
 	string graph, csr
 	variable i, numGraphs
@@ -114,9 +109,7 @@ End
 /// @param[in]  graph where the cursor are
 /// @param[out] csrAx Position of cursor A
 /// @param[out] csrBx Position of cursor B
-Function GetCursorXPositionAB(graph, csrAx, csrBx)
-	string graph
-	variable &csrAx, &csrBx
+Function GetCursorXPositionAB(string graph, variable &csrAx, variable &csrBx)
 
 	string csrA, csrB
 
@@ -135,8 +128,7 @@ Function GetCursorXPositionAB(graph, csrAx, csrBx)
 End
 
 ///@brief Removes all annotations from the graph
-Function RemoveAnnotationsFromGraph(graph)
-	string graph
+Function RemoveAnnotationsFromGraph(string graph)
 
 	DeleteAnnotations/W=$graph/A
 End
@@ -149,8 +141,7 @@ End
 ///
 /// @param graph existing graph
 /// @param baseName base name of the trace, must not be empty
-Function/S UniqueTraceName(graph, baseName)
-	string graph, baseName
+Function/S UniqueTraceName(string graph, string baseName)
 
 	variable i = 1
 	variable numTrials
@@ -181,8 +172,7 @@ End
 ///
 /// @param numPoints  number of points shown
 /// @param numMarkers desired number of markers
-Function GetMarkerSkip(numPoints, numMarkers)
-	variable numPoints, numMarkers
+Function GetMarkerSkip(variable numPoints, variable numMarkers)
 
 	if(!IsFinite(numPoints) || !IsFinite(numMarkers))
 		return 1
@@ -194,8 +184,7 @@ End
 /// @brief Kill all passed windows
 ///
 /// Silently ignore errors.
-Function KillWindows(list)
-	string list
+Function KillWindows(string list)
 
 	variable numEntries, i
 
@@ -209,9 +198,7 @@ End
 ///
 /// @param graph graph
 /// @param axisOrientation One of @ref AxisOrientationConstants
-Function/S GetAllAxesWithOrientation(graph, axisOrientation)
-	string   graph
-	variable axisOrientation
+Function/S GetAllAxesWithOrientation(string graph, variable axisOrientation)
 
 	string axList, axis
 	string list = ""
@@ -237,11 +224,7 @@ End
 /// @param key      keyword
 /// @param listChar empty, `{` or `(` depending on keyword style
 /// @param item     return the given element from the extracted list
-Function GetNumFromModifyStr(info, key, listChar, item)
-	string   info
-	string   key
-	string   listChar
-	variable item
+Function GetNumFromModifyStr(string info, string key, string listChar, variable item)
 
 	string list, escapedListChar, regexp
 
@@ -267,8 +250,7 @@ End
 ///        to lowest starting value of the `axisEnab` keyword.
 ///
 /// `list` must be from one orientation, usually something returned by GetAllAxesWithOrientation()
-Function/S SortAxisList(graph, list)
-	string graph, list
+Function/S SortAxisList(string graph, string list)
 
 	variable numAxes, i
 	string axis
@@ -293,9 +275,7 @@ Function/S SortAxisList(graph, list)
 	return TextWaveToList(axisListWave, ";")
 End
 
-Function GetPlotArea(win, s)
-	string        win
-	STRUCT RectD &s
+Function GetPlotArea(string win, STRUCT RectD &s)
 
 	InitRectD(s)
 
@@ -467,9 +447,7 @@ End
 ///                        schemes to list of axes, see sortingOrder parameter of `SortList`
 /// @param listForBegin    [optional, defaults to an empty list] list of axes to move to the front of the sorted axis list
 /// @param listForEnd      [optional, defaults to an empty list] list of axes to move to the end of the sorted axis list
-Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortOrder, listForBegin, listForEnd])
-	string graph, axisRegExp, listForBegin, listForEnd
-	variable axisOffset, axisOrientation, sortOrder
+Function EquallySpaceAxis(string graph, [string axisRegExp, variable axisOffset, variable axisOrientation, variable sortOrder, string listForBegin, string listForEnd])
 
 	variable numAxes, i
 	string axes, axis, list
@@ -580,8 +558,7 @@ Function EquallySpaceAxisPA(string graph, string allAxes, string distAxes, [vari
 End
 
 /// @brief Remove all free axis from the given graph
-Function RemoveFreeAxisFromGraph(graph)
-	string graph
+Function RemoveFreeAxisFromGraph(string graph)
 
 	string list, name, info
 	variable i, numEntries
@@ -603,6 +580,7 @@ End
 
 /// @brief Remove all draw layers from the graph
 Function RemoveDrawLayers(string graph)
+
 	variable i, numLayers
 
 	Make/FREE/T layers = {"ProgBack", "UserBack", "ProgAxes", "UserAxes", "ProgFront", "UserFront", "Overlay"}
@@ -622,11 +600,7 @@ End
 /// @param dfr [optional, default: ignored] remove all traces which stem from one of the waves in dfr
 ///
 /// Only one of trace/wv/dfr may be supplied.
-Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
-	string graph
-	string trace
-	WAVE/Z wv
-	DFREF  dfr
+Function RemoveTracesFromGraph(string graph, [string trace, WAVE/Z wv, DFREF dfr])
 
 	variable i, numEntries, numOptArgs, remove_all_traces, err
 	string traceList, refTrace
@@ -681,17 +655,13 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 End
 
 /// @brief Add user data "panelVersion" to the panel
-Function AddVersionToPanel(win, version)
-	string   win
-	variable version
+Function AddVersionToPanel(string win, variable version)
 
 	SetWindow $win, userData(panelVersion)=num2str(version)
 End
 
 /// @brief Return 1 if the panel is up to date, zero otherwise
-Function HasPanelLatestVersion(win, expectedVersion)
-	string   win
-	variable expectedVersion
+Function HasPanelLatestVersion(string win, variable expectedVersion)
 
 	variable version
 
@@ -709,8 +679,7 @@ End
 /// @param win panel window as string
 /// @returns numeric panel version greater 0 and -1 if no version is present
 ///          or -2 if the windows does not exist
-Function GetPanelVersion(win)
-	string win
+Function GetPanelVersion(string win)
 
 	variable version
 
@@ -734,11 +703,7 @@ End
 /// @param checkBoxIn	ctrl checkbox ex. cba.ctrlName
 /// @param checkBoxPartner	checkbox that will be placed in opposite state
 /// @param checkBoxInState	state of the ctrl checkbox
-Function ToggleCheckBoxes(win, checkBoxIn, checkBoxPartner, checkBoxInState)
-	string   win
-	string   checkBoxIn
-	string   checkBoxPartner
-	variable checkBoxInState
+Function ToggleCheckBoxes(string win, string checkBoxIn, string checkBoxPartner, variable checkBoxInState)
 
 	SetCheckBoxState(win, checkBoxIn, checkBoxInState)
 	DAG_Update(win, checkBoxIn, val = checkBoxInState)
@@ -752,11 +717,7 @@ End
 /// @param checkBoxIn	ctrl checkbox ex. cba.ctrlName
 /// @param checkBoxPartner	checkbox that will be placed in the same state
 /// @param checkBoxInState	state of the ctrl checkbox
-Function EqualizeCheckBoxes(win, checkBoxIn, checkBoxPartner, checkBoxInState)
-	string   win
-	string   checkBoxIn
-	string   checkBoxPartner
-	variable checkBoxInState
+Function EqualizeCheckBoxes(string win, string checkBoxIn, string checkBoxPartner, variable checkBoxInState)
 
 	SetCheckBoxState(win, checkBoxIn, checkBoxInState)
 	DAG_Update(win, checkBoxIn, val = checkBoxInState)

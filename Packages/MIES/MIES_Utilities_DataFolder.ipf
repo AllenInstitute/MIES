@@ -21,10 +21,7 @@
 /// @param exprType [optional, defaults: MATCH_REGEXP] convention used for matchExpr, one of @ref MatchExpressions
 ///
 /// @returns list of object names matching matchExpr
-threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recursive, exprType])
-	DFREF  dfr
-	string matchExpr
-	variable fullPath, recursive, typeFlag, exprType
+threadsafe Function/S GetListOfObjects(DFREF dfr, string matchExpr, [variable typeFlag, variable fullPath, variable recursive, variable exprType])
 
 	variable i, numFolders
 	string name, folders, basePath, subList, freeDFName
@@ -82,9 +79,7 @@ threadsafe Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recu
 End
 
 /// @brief Return a list of all objects of the given type from dfr
-threadsafe static Function/S GetAllObjects(dfr, typeFlag)
-	DFREF    dfr
-	variable typeFlag
+threadsafe static Function/S GetAllObjects(DFREF dfr, variable typeFlag)
 
 	string list
 
@@ -142,8 +137,7 @@ End
 /// Includes fast handling of the common case that the datafolder exists.
 /// @returns reference to the datafolder
 /// UTF_NOINSTRUMENTATION
-threadsafe Function/DF createDFWithAllParents(dataFolder)
-	string dataFolder
+threadsafe Function/DF createDFWithAllParents(string dataFolder)
 
 	variable i, numItems
 	string partialPath, component
@@ -174,8 +168,7 @@ End
 ///
 /// @param dfr data folder reference to kill
 /// @returns 1 in case the folder was removed and 0 in all other cases
-Function RemoveEmptyDataFolder(dfr)
-	DFREF dfr
+Function RemoveEmptyDataFolder(DFREF dfr)
 
 	if(!DataFolderExistsDFR(dfr))
 		return 0
@@ -202,8 +195,7 @@ Function IsDataFolderEmpty(DFREF dfr)
 End
 
 /// @brief Remove all empty datafolders in the passed datafolder reference recursively including sourceDFR
-Function RemoveAllEmptyDataFolders(sourceDFR)
-	DFREF sourceDFR
+Function RemoveAllEmptyDataFolders(DFREF sourceDFR)
 
 	variable numFolder, i
 	string folder
@@ -228,9 +220,7 @@ End
 ///
 /// @param dfr 	    datafolder reference where the new datafolder should be created
 /// @param baseName first part of the datafolder, might be shortend due to Igor Pro limitations
-threadsafe Function/DF UniqueDataFolder(dfr, baseName)
-	DFREF  dfr
-	string baseName
+threadsafe Function/DF UniqueDataFolder(DFREF dfr, string baseName)
 
 	string path
 
@@ -298,5 +288,6 @@ End
 
 /// @brief Clear the given datafolder reference
 threadsafe Function DFREFClear(DFREF &dfr)
+
 	DFREF dfr = $""
 End

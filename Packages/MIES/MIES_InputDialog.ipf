@@ -24,6 +24,7 @@
 ///
 /// @return 0 on success, 1 if the user cancelled the dialog
 Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock)
+
 	string win, ctrl
 	variable i, state_var
 
@@ -84,6 +85,7 @@ static Function ID_SetTitle(string win, string title)
 End
 
 static Function/S ID_GetControl(variable index)
+
 	string ctrl
 
 	if(index < NUM_HEADSTAGES)
@@ -96,6 +98,7 @@ static Function/S ID_GetControl(variable index)
 End
 
 static Function/DF ID_GetFolder(string win)
+
 	DFREF dfr = $GetUserData(win, "", "folder")
 	ASSERT(DataFolderExistsDFR(dfr), "Missing folder user data")
 
@@ -103,6 +106,7 @@ static Function/DF ID_GetFolder(string win)
 End
 
 static Function/WAVE ID_GetWave(string win)
+
 	DFREF dfr = ID_GetFolder(win)
 
 	WAVE/WAVE waves = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullPath = 1), 1)
@@ -134,6 +138,7 @@ Function ID_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 End
 
 Function ID_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
+
 	variable idx
 
 	switch(sva.eventCode)
@@ -149,8 +154,7 @@ Function ID_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
 	endswitch
 End
 
-Function ID_PopMenuProc(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function ID_PopMenuProc(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -165,6 +169,7 @@ Function ID_PopMenuProc(pa) : PopupMenuControl
 End
 
 Function/S ID_GetPopupEntries()
+
 	string win
 
 	win = GetCurrentWindow()

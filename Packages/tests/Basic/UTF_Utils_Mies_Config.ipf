@@ -22,7 +22,7 @@ Function ITCC_WorksLegacy()
 	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_legacy
 	CHECK(IsValidConfigWave(config, version = 0))
 
-	WAVE/T/Z units = AFH_GetChannelUnits(config)
+	WAVE/Z/T units = AFH_GetChannelUnits(config)
 	CHECK_WAVE(units, TEXT_WAVE)
 	// we have one TTL channel which does not have a unit
 	CHECK_EQUAL_VAR(DimSize(units, ROWS) + 1, DimSize(config, ROWS))
@@ -61,7 +61,7 @@ Function ITCC_WorksVersion1()
 	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_Version1
 	CHECK(IsValidConfigWave(config, version = 1))
 
-	WAVE/T/Z units = AFH_GetChannelUnits(config)
+	WAVE/Z/T units = AFH_GetChannelUnits(config)
 	CHECK_WAVE(units, TEXT_WAVE)
 	// we have one TTL channel which does not have a unit
 	CHECK_EQUAL_VAR(DimSize(units, ROWS) + 1, DimSize(config, ROWS))
@@ -100,7 +100,7 @@ Function ITCC_WorksVersion2()
 	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_Version2
 	CHECK(IsValidConfigWave(config, version = 2))
 
-	WAVE/T/Z units = AFH_GetChannelUnits(config)
+	WAVE/Z/T units = AFH_GetChannelUnits(config)
 	CHECK(WaveExists(units))
 	// we have one TTL channel which does not have a unit
 	CHECK_EQUAL_VAR(DimSize(units, ROWS) + 1, DimSize(config, ROWS))

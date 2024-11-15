@@ -9,14 +9,12 @@
 /// @file MIES_AnalysisBrowser_SweepBrowser.ipf
 /// @brief __SB__  Visualization of sweep data in the analysis browser
 
-static Function/WAVE SB_GetSweepBrowserMapFromGraph(win)
-	string win
+static Function/WAVE SB_GetSweepBrowserMapFromGraph(string win)
 
 	return GetSweepBrowserMap(SB_GetSweepBrowserFolder(win))
 End
 
-Function/DF SB_GetSweepBrowserFolder(win)
-	string win
+Function/DF SB_GetSweepBrowserFolder(string win)
 
 	return BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 End
@@ -74,9 +72,7 @@ Function/DF SB_GetSweepDataFolder(WAVE/T sweepMap, [variable sweepNo, variable i
 	return GetAnalysisSweepPath(dataFolder, device)
 End
 
-Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
-	DFREF    sweepBrowserDFR
-	variable mapIndex
+Function/DF SB_GetSweepDataPathFromIndex(DFREF sweepBrowserDFR, variable mapIndex)
 
 	string device, expFolder
 	variable sweep
@@ -98,9 +94,7 @@ Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
 	return $GetAnalysisSweepDataPathAS(expFolder, device, sweep)
 End
 
-Function SB_GetIndexFromSweepDataPath(win, dataDFR)
-	string win
-	DFREF  dataDFR
+Function SB_GetIndexFromSweepDataPath(string win, DFREF dataDFR)
 
 	variable mapIndex, sweepNo
 	string device, expFolder, sweepFolder
@@ -131,8 +125,7 @@ End
 /// @brief set graph userdata similar to DB_SetUserData()
 ///
 /// @param win 	name of main window or external subwindow in SweepBrowser
-static Function SB_SetUserData(win)
-	string win
+static Function SB_SetUserData(string win)
 
 	SetWindow $win, userdata=""
 
@@ -147,10 +140,7 @@ End
 /// @param key      labnotebook key
 ///
 /// @return wave with the setting for each headstage or an invalid wave reference if the setting does not exist
-static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
-	string   graph
-	variable mapIndex
-	string   key
+static Function/WAVE SB_GetSweepPropertyFromNumLBN(string graph, variable mapIndex, string key)
 
 	string device, expFolder
 	variable sweep
@@ -178,8 +168,7 @@ End
 /// graph originated from
 ///
 /// @param graph sweep browser name
-Function/S SB_GetListOfExperiments(graph)
-	string graph
+Function/S SB_GetListOfExperiments(string graph)
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(graph)
 
@@ -232,8 +221,7 @@ End
 /// @param graph                                  name of main window or external subwindow in SweepBrowser
 /// @param channel                                type of the channel, one of #XOP_CHANNEL_NAMES
 /// @param experiment [optional, defaults to all] name of the experiment the channel wave should originate from
-Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
-	string graph, channel, experiment
+Function/WAVE SB_GetChannelInfoFromGraph(string graph, string channel, [string experiment])
 
 	variable i, j, numEntries, idx, numWaves, channelNumber
 	string list, headstage, path
@@ -307,8 +295,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 	return channelMap
 End
 
-Function SB_UpdateSweepPlot(win)
-	string win
+Function SB_UpdateSweepPlot(string win)
 
 	string device, dataFolder, graph, scPanel, lbPanel, experiment
 	variable mapIndex, i, numEntries, sweepNo, traceIndex, currentSweep
@@ -331,7 +318,7 @@ Function SB_UpdateSweepPlot(win)
 
 	WAVE axesProps = GetAxesProperties(graph)
 
-	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
+	WAVE/Z/T cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
 	TUD_Clear(graph, recursive = 0)
@@ -377,10 +364,7 @@ Function SB_UpdateSweepPlot(win)
 	SetAxesProperties(graph, axesProps)
 End
 
-Function SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
-	DFREF sweepBrowser
-	string fileName, dataFolder, device
-	variable sweep
+Function SB_AddToSweepBrowser(DFREF sweepBrowser, string fileName, string dataFolder, string device, variable sweep)
 
 	variable index
 	string sweepStr = num2str(sweep)
@@ -445,8 +429,7 @@ Function/DF SB_OpenSweepBrowser([variable mode])
 	return sweepBrowserDFR
 End
 
-Function/S SB_GetSweepList(win)
-	string win
+Function/S SB_GetSweepList(string win)
 
 	string list = "", str
 	variable numRows, i
@@ -482,8 +465,7 @@ End
 /// @brief Returns a numeric wave with all sweep numbers
 ///
 /// Can contain duplicates!
-Function/WAVE SB_GetPlainSweepList(win)
-	string win
+Function/WAVE SB_GetPlainSweepList(string win)
 
 	variable numRows
 
@@ -636,8 +618,7 @@ Function/WAVE SB_GetLogbookWave(string win, variable logbookType, variable logbo
 	endswitch
 End
 
-Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function SB_PopupMenuSelectSweep(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string win, bsPanel
 	variable newSweep, newIndex
@@ -664,8 +645,7 @@ Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 	endswitch
 End
 
-Function SB_ButtonProc_ExportTraces(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function SB_ButtonProc_ExportTraces(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string graph
 
@@ -680,6 +660,7 @@ Function SB_ButtonProc_ExportTraces(ba) : ButtonControl
 End
 
 Function SB_AddSweepToGraph(string win, variable index)
+
 	STRUCT TiledGraphSettings tgs
 
 	variable sweepNo, traceIndex

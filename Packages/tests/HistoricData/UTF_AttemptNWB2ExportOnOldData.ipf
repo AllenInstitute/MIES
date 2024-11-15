@@ -30,9 +30,9 @@ static Function TestSweepBrowserExportToNWB([string str])
 
 	string file, win, abWin, sweepBrowsers, fileType, dataFolder, nwbFileName
 
-	file = "input:" + str
+	file                   = "input:" + str
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file})
-	win = StringFromList(0, sweepBrowsers)
+	win                    = StringFromList(0, sweepBrowsers)
 
 	WAVE/T map = GetAnalysisBrowserMap()
 	fileType = map[0][%FileType]

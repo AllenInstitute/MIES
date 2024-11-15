@@ -112,11 +112,7 @@ static Constant SUTTER_ACQUISITION_BACKGROUND = 2
 /// @param configFunc   [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 /// @param offset       [optional, defaults to zero] offset into the data wave in points
-Function HW_PrepareAcq(hardwareType, deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
-	variable hardwareType, deviceID, mode
-	WAVE/Z data, config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
-	variable flags, offset
+Function HW_PrepareAcq(variable hardwareType, variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -141,8 +137,7 @@ End
 /// @param flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return 0 if sucessfull, 1 on error
-Function HW_SelectDevice(hardwareType, deviceID, [flags])
-	variable hardwareType, deviceID, flags
+Function HW_SelectDevice(variable hardwareType, variable deviceID, [variable flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -162,9 +157,7 @@ End
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return device identifier
-Function HW_OpenDevice(deviceToOpen, hardwareType, [flags])
-	string deviceToOpen
-	variable &hardwareType, flags
+Function HW_OpenDevice(string deviceToOpen, variable &hardwareType, [variable flags])
 
 	string deviceType, deviceNumber
 	variable deviceTypeIndex, deviceNumberIndex, deviceID, prelimHWType
@@ -202,8 +195,7 @@ End
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_CloseDevice(hardwareType, deviceID, [flags])
-	variable hardwareType, deviceID, flags
+Function HW_CloseDevice(variable hardwareType, variable deviceID, [variable flags])
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
@@ -227,8 +219,7 @@ End
 /// @param channel      hardware channel number
 /// @param value        value to write in volts
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_WriteDAC(hardwareType, deviceID, channel, value, [flags])
-	variable hardwareType, deviceID, channel, value, flags
+Function HW_WriteDAC(variable hardwareType, variable deviceID, variable channel, variable value, [variable flags])
 
 	string realDeviceOrPressure
 
@@ -257,8 +248,7 @@ End
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return value in volts
-Function HW_ReadADC(hardwareType, deviceID, channel, [flags])
-	variable hardwareType, deviceID, channel, flags
+Function HW_ReadADC(variable hardwareType, variable deviceID, variable channel, [variable flags])
 
 	string realDeviceOrPressure
 
@@ -290,8 +280,7 @@ End
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return bitmask denoting the state of the channel/line
-Function HW_ReadDigital(hardwareType, deviceID, channel, [line, flags])
-	variable hardwareType, deviceID, channel, line, flags
+Function HW_ReadDigital(variable hardwareType, variable deviceID, variable channel, [variable line, variable flags])
 
 	string realDeviceOrPressure
 	variable rack, xopChannel, ttlBit
@@ -331,8 +320,7 @@ End
 /// @param value        bitmask to write
 /// @param line         bit of TTL line, (only for hardware types which support single TTL writes/read)
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_WriteDigital(hardwareType, deviceID, channel, value, [line, flags])
-	variable hardwareType, deviceID, value, channel, line, flags
+Function HW_WriteDigital(variable hardwareType, variable deviceID, variable channel, variable value, [variable line, variable flags])
 
 	string realDeviceOrPressure
 	variable ttlBit, rack, xopChannel
@@ -367,8 +355,7 @@ End
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_EnableYoking(hardwareType, deviceID, [flags])
-	variable hardwareType, deviceID, flags
+Function HW_EnableYoking(variable hardwareType, variable deviceID, [variable flags])
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
@@ -388,8 +375,7 @@ End
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_DisableYoking(hardwareType, deviceID, [flags])
-	variable hardwareType, deviceID, flags
+Function HW_DisableYoking(variable hardwareType, variable deviceID, [variable flags])
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
@@ -411,8 +397,7 @@ End
 /// @param prepareForDAQ immediately prepare for the next data acquisition after stopping it
 /// @param zeroDAC       set all used DA channels to zero
 /// @param flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_StopAcq(hardwareType, deviceID, [prepareForDAQ, zeroDAC, flags])
-	variable hardwareType, deviceID, prepareForDAQ, zeroDAC, flags
+Function HW_StopAcq(variable hardwareType, variable deviceID, [variable prepareForDAQ, variable zeroDAC, variable flags])
 
 	string device
 	HW_AssertOnInvalid(hardwareType, deviceID)
@@ -437,8 +422,7 @@ End
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return one if running, zero otherwise
-Function HW_IsRunning(hardwareType, deviceID, [flags])
-	variable hardwareType, deviceID, flags
+Function HW_IsRunning(variable hardwareType, variable deviceID, [variable flags])
 
 	string realDeviceOrPressure, device
 	HW_AssertOnInvalid(hardwareType, deviceID)
@@ -463,8 +447,7 @@ End
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return free numeric/text wave with information and dimension labels
-Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
-	variable hardwareType, deviceID, flags
+Function/WAVE HW_GetDeviceInfo(variable hardwareType, variable deviceID, [variable flags])
 
 	string realDeviceOrPressure
 	HW_AssertOnInvalid(hardwareType, deviceID)
@@ -492,6 +475,7 @@ End
 /// @param device name of the device
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device, [variable flags])
+
 	variable deviceID
 
 #ifdef EVIL_KITTEN_EATING_MODE
@@ -610,8 +594,7 @@ End
 /// @param triggerMode  [optional, defaults to #HARDWARE_DAC_DEFAULT_TRIGGER] one of @ref TriggerModeStartAcq
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 /// @param repeat       [optional, default 0] for NI devices, repeats the scan after it ends
-Function HW_StartAcq(hardwareType, deviceID, [triggerMode, flags, repeat])
-	variable hardwareType, deviceID, triggerMode, flags, repeat
+Function HW_StartAcq(variable hardwareType, variable deviceID, [variable triggerMode, variable flags, variable repeat])
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
@@ -638,8 +621,7 @@ End
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ResetDevice(hardwareType, deviceID, [flags])
-	variable hardwareType, deviceID, flags
+Function HW_ResetDevice(variable hardwareType, variable deviceID, [variable flags])
 
 	string realDeviceOrPressure
 	HW_AssertOnInvalid(hardwareType, deviceID)
@@ -665,8 +647,7 @@ End
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
-Function HW_AssertOnInvalid(hardwareType, deviceID)
-	variable hardwareType, deviceID
+Function HW_AssertOnInvalid(variable hardwareType, variable deviceID)
 
 	ASSERT(HW_IsValidHardwareType(hardwareType), "Invalid hardwareType")
 	ASSERT(HW_IsValidDeviceID(deviceID), "Invalid deviceID")
@@ -675,8 +656,7 @@ End
 /// @brief Check if the given hardware type is valid
 ///
 /// Invalid here means that the value is out-of-range.
-static Function HW_IsValidHardwareType(hardwareType)
-	variable hardwareType
+static Function HW_IsValidHardwareType(variable hardwareType)
 
 #ifndef EVIL_KITTEN_EATING_MODE
 	return hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_ITC_DAC || hardwareType == HARDWARE_SUTTER_DAC
@@ -688,8 +668,7 @@ End
 /// @brief Check if the given device ID is valid
 ///
 /// Invalid here means that the value is out-of-range.
-static Function HW_IsValidDeviceID(deviceID)
-	variable deviceID
+static Function HW_IsValidDeviceID(variable deviceID)
 
 #ifndef EVIL_KITTEN_EATING_MODE
 	return deviceID >= 0 && deviceID < HARDWARE_MAX_DEVICES
@@ -704,9 +683,7 @@ End
 /// @param hardwareType   One of @ref HardwareDACTypeConstants
 /// @param deviceID       device identifier
 /// @param pressureDevice required for registering pressure control devices
-Function HW_RegisterDevice(mainDevice, hardwareType, deviceID, [pressureDevice])
-	string mainDevice, pressureDevice
-	variable hardwareType, deviceID
+Function HW_RegisterDevice(string mainDevice, variable hardwareType, variable deviceID, [string pressureDevice])
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
@@ -726,8 +703,7 @@ End
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param deviceID     device identifier
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_DeRegisterDevice(hardwareType, deviceID, [flags])
-	variable deviceID, hardwareType, flags
+Function HW_DeRegisterDevice(variable hardwareType, variable deviceID, [variable flags])
 
 	if(!HW_IsValidDeviceID(deviceID) || !HW_IsValidHardwareType(hardwareType))
 		return NaN
@@ -745,8 +721,7 @@ End
 /// @param deviceID     device identifier
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function/S HW_GetMainDeviceName(hardwareType, deviceID, [flags])
-	variable hardwareType, deviceID, flags
+Function/S HW_GetMainDeviceName(variable hardwareType, variable deviceID, [variable flags])
 
 	string mainDevice
 
@@ -777,8 +752,7 @@ End
 /// @param deviceID     device identifier
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function/S HW_GetDeviceName(hardwareType, deviceID, [flags])
-	variable hardwareType, deviceID, flags
+Function/S HW_GetDeviceName(variable hardwareType, variable deviceID, [variable flags])
 
 	string mainDevice, pressureDevice
 
@@ -915,6 +889,7 @@ End
 /// There is no corresponding function for other hardware types like NI devices
 /// because those do not have a two part device name
 Function/S HW_ITC_BuildDeviceString(string deviceType, string deviceNumber)
+
 	ASSERT(!isEmpty(deviceType) && !isEmpty(deviceNumber), "empty device type or number")
 
 	if(FindListItem(deviceType, DEVICE_TYPES_ITC) > -1)
@@ -1042,8 +1017,8 @@ End
 /// @brief Output an informative error message for the ITC XOP2 operations
 ///
 /// @return 0 on success, 1 otherwise
-threadsafe Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
-	variable flags, ITCError, ITCXOPError
+threadsafe Function HW_ITC_HandleReturnValues(variable flags, variable ITCError, variable ITCXOPError)
+
 	string msg
 
 	variable outputErrorMessage, tries
@@ -1098,8 +1073,7 @@ End
 /// @brief Return the error message for the given ITC XOP2 error code
 ///
 /// @param errCode one of @ref ITCXOP2Errors
-threadsafe static Function/S HW_ITC_GetXOPErrorMessage(errCode)
-	variable errCode
+threadsafe static Function/S HW_ITC_GetXOPErrorMessage(variable errCode)
 
 	if(errCode < FIRST_XOP_ERROR)
 		return GetErrMessage(errCode)
@@ -1191,9 +1165,7 @@ End
 /// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return ITC device ID
-Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
-	variable deviceType, deviceNumber
-	variable flags
+Function HW_ITC_OpenDevice(variable deviceType, variable deviceNumber, [variable flags])
 
 	variable deviceID, tries, i
 
@@ -1223,8 +1195,7 @@ Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
 End
 
 /// @brief Close all ITC devices
-Function HW_ITC_CloseAllDevices([flags])
-	variable flags
+Function HW_ITC_CloseAllDevices([variable flags])
 
 	variable i
 
@@ -1242,8 +1213,7 @@ Function HW_ITC_CloseAllDevices([flags])
 End
 
 /// @see HW_CloseDevice
-Function HW_ITC_CloseDevice(deviceID, [flags])
-	variable deviceID, flags
+Function HW_ITC_CloseDevice(variable deviceID, [variable flags])
 
 	variable tries
 
@@ -1271,8 +1241,7 @@ Function HW_ITC_CloseDevice(deviceID, [flags])
 End
 
 /// @see HW_SelectDevice
-Function HW_ITC_SelectDevice(deviceID, [flags])
-	variable deviceID, flags
+Function HW_ITC_SelectDevice(variable deviceID, [variable flags])
 
 	variable tries
 
@@ -1286,8 +1255,7 @@ Function HW_ITC_SelectDevice(deviceID, [flags])
 End
 
 /// @see HW_GetDeviceInfo
-Function/WAVE HW_ITC_GetDeviceInfo(deviceID, [flags])
-	variable deviceID, flags
+Function/WAVE HW_ITC_GetDeviceInfo(variable deviceID, [variable flags])
 
 	variable tries
 
@@ -1303,8 +1271,7 @@ Function/WAVE HW_ITC_GetDeviceInfo(deviceID, [flags])
 End
 
 /// @see HW_EnableYoking
-Function HW_ITC_EnableYoking(deviceID, [flags])
-	variable deviceID, flags
+Function HW_ITC_EnableYoking(variable deviceID, [variable flags])
 
 	variable tries
 
@@ -1318,8 +1285,7 @@ Function HW_ITC_EnableYoking(deviceID, [flags])
 End
 
 /// @see HW_DisableYoking
-Function HW_ITC_DisableYoking(deviceID, [flags])
-	variable deviceID, flags
+Function HW_ITC_DisableYoking(variable deviceID, [variable flags])
 
 	variable tries
 
@@ -1333,8 +1299,7 @@ Function HW_ITC_DisableYoking(deviceID, [flags])
 End
 
 /// @see HW_StopAcq (threadsafe variant)
-threadsafe Function HW_ITC_StopAcq_TS(deviceID, [prepareForDAQ, flags])
-	variable deviceID, prepareForDAQ, flags
+threadsafe Function HW_ITC_StopAcq_TS(variable deviceID, [variable prepareForDAQ, variable flags])
 
 	variable tries
 
@@ -1361,10 +1326,7 @@ End
 /// @param flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @see HW_StopAcq
-Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
-	variable deviceID, prepareForDAQ, zeroDAC, flags
-	WAVE/Z                           config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+Function HW_ITC_StopAcq(variable deviceID, [WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable prepareForDAQ, variable zeroDAC, variable flags])
 
 	variable i, numEntries, tries
 	string device
@@ -1407,8 +1369,7 @@ End
 
 /// @brief Return the deviceID of the currently selected
 ///        ITC device from the XOP
-Function HW_ITC_GetCurrentDevice([flags])
-	variable flags
+Function HW_ITC_GetCurrentDevice([variable flags])
 
 	variable tries
 
@@ -1424,8 +1385,7 @@ Function HW_ITC_GetCurrentDevice([flags])
 End
 
 /// @brief Create a fifo position wave from a DAQConfigWave
-threadsafe static Function/WAVE HW_ITC_GetFifoPosFromConfig(config_t)
-	WAVE config_t
+threadsafe static Function/WAVE HW_ITC_GetFifoPosFromConfig(WAVE config_t)
 
 	Duplicate/FREE config_t, fifoPos_t
 
@@ -1440,10 +1400,7 @@ End
 /// @param deviceID device identifier
 /// @param config   ITC config wave
 /// @param flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
-	variable deviceID
-	WAVE     config
-	variable flags
+threadsafe Function HW_ITC_ResetFifo_TS(variable deviceID, WAVE config, [variable flags])
 
 	variable tries
 
@@ -1463,11 +1420,7 @@ End
 /// @param[in] config                  [optional] ITC config wave
 /// @param configFunc    [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
 /// @param     flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
-	variable                         deviceID
-	WAVE/Z                           config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
-	variable                         flags
+Function HW_ITC_ResetFifo(variable deviceID, [WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags])
 
 	variable tries
 	string   device
@@ -1495,8 +1448,7 @@ Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 End
 
 /// @see HW_StartAcq (threadsafe variant)
-threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
-	variable deviceID, triggerMode, flags
+threadsafe Function HW_ITC_StartAcq_TS(variable deviceID, variable triggerMode, [variable flags])
 
 	variable tries
 
@@ -1522,8 +1474,7 @@ threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
 End
 
 /// @see HW_StartAcq
-Function HW_ITC_StartAcq(deviceID, triggerMode, [flags])
-	variable deviceID, triggerMode, flags
+Function HW_ITC_StartAcq(variable deviceID, variable triggerMode, [variable flags])
 
 	variable tries
 
@@ -1562,8 +1513,7 @@ End
 ///
 /// @param deviceID device identifier
 /// @param flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ITC_IsRunning(deviceID, [flags])
-	variable deviceID, flags
+Function HW_ITC_IsRunning(variable deviceID, [variable flags])
 
 	DEBUGPRINTSTACKINFO()
 
@@ -1580,8 +1530,7 @@ End
 ///
 /// @param deviceID device identifier
 /// @param flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function/WAVE HW_ITC_GetState(deviceID, [flags])
-	variable deviceID, flags
+Function/WAVE HW_ITC_GetState(variable deviceID, [variable flags])
 
 	variable tries
 
@@ -1603,8 +1552,7 @@ threadsafe static Function HW_ITC_ShouldContinue(variable tries, variable itcErr
 End
 
 /// @see HW_ReadADC
-Function HW_ITC_ReadADC(deviceID, channel, [flags])
-	variable deviceID, channel, flags
+Function HW_ITC_ReadADC(variable deviceID, variable channel, [variable flags])
 
 	variable tries
 
@@ -1620,8 +1568,7 @@ Function HW_ITC_ReadADC(deviceID, channel, [flags])
 End
 
 /// @see HW_WriteDAC
-Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
-	variable deviceID, channel, value, flags
+Function HW_ITC_WriteDAC(variable deviceID, variable channel, variable value, [variable flags])
 
 	variable tries
 
@@ -1635,8 +1582,7 @@ Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
 End
 
 /// @see HW_ReadDigital
-Function HW_ITC_ReadDigital(deviceID, xopChannel, [flags])
-	variable deviceID, xopChannel, flags
+Function HW_ITC_ReadDigital(variable deviceID, variable xopChannel, [variable flags])
 
 	variable tries
 
@@ -1652,8 +1598,7 @@ Function HW_ITC_ReadDigital(deviceID, xopChannel, [flags])
 End
 
 /// @see HW_WriteDigital
-Function HW_ITC_WriteDigital(deviceID, xopChannel, value, [flags])
-	variable deviceID, xopChannel, value, flags
+Function HW_ITC_WriteDigital(variable deviceID, variable xopChannel, variable value, [variable flags])
 
 	variable tries
 
@@ -1667,15 +1612,13 @@ Function HW_ITC_WriteDigital(deviceID, xopChannel, value, [flags])
 End
 
 /// @brief Set the debug flag of the ITC XOP to ON/OFF (threadsafe variant)
-threadsafe Function HW_ITC_DebugMode_TS(state, [flags])
-	variable state, flags
+threadsafe Function HW_ITC_DebugMode_TS(variable state, [variable flags])
 
 	ITCSetGlobals2/D=(state)/Z=1
 End
 
 /// @brief Set the debug flag of the ITC XOP to ON/OFF
-Function HW_ITC_DebugMode(state, [flags])
-	variable state, flags
+Function HW_ITC_DebugMode(variable state, [variable flags])
 
 	DEBUGPRINTSTACKINFO()
 
@@ -1692,11 +1635,7 @@ End
 /// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ITC_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
-	variable deviceID, mode
-	WAVE/Z data, config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
-	variable flags, offset
+Function HW_ITC_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
 
 	string   device
 	variable tries
@@ -1767,12 +1706,7 @@ End
 /// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return 1 if more data needs to be acquired, 0 if done. On hardware error we also return 1.
-threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, [fifoPos, flags])
-	variable deviceID
-	variable ADChannelToMonitor, stopCollectionPoint
-	WAVE      config
-	variable &fifoPos
-	variable  flags
+threadsafe Function HW_ITC_MoreData_TS(variable deviceID, variable ADChannelToMonitor, variable stopCollectionPoint, WAVE config, [variable &fifoPos, variable flags])
 
 	variable fifoPosValue, offset, ret, tries
 
@@ -1814,13 +1748,7 @@ End
 /// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return 1 if more data needs to be acquired, 0 if done. On hardware error we also return 1.
-Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoPos, flags])
-	variable deviceID
-	variable ADChannelToMonitor, stopCollectionPoint
-	WAVE/Z                           config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
-	variable                        &fifoPos
-	variable                         flags
+Function HW_ITC_MoreData(variable deviceID, [variable ADChannelToMonitor, variable stopCollectionPoint, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable &fifoPos, variable flags])
 
 	variable fifoPosValue, offset, ret, tries
 	string device
@@ -1875,6 +1803,7 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 End
 
 Function/WAVE HW_ITC_GetVersionInfo([variable flags])
+
 	variable ret, tries
 
 	do
@@ -1908,195 +1837,148 @@ Function/S HW_ITC_ListDevices()
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
-	variable flags, ITCError, ITCXOPError
+Function HW_ITC_HandleReturnValues(variable flags, variable ITCError, variable ITCXOPError)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-threadsafe static Function/S HW_ITC_GetXOPErrorMessage(errCode)
-	variable errCode
+threadsafe static Function/S HW_ITC_GetXOPErrorMessage(variable errCode)
 
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
-	variable deviceType, deviceNumber
-	variable flags
+Function HW_ITC_OpenDevice(variable deviceType, variable deviceNumber, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_CloseAllDevices([flags])
-	variable flags
+Function HW_ITC_CloseAllDevices([variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_CloseDevice(deviceID, [flags])
-	variable deviceID, flags
+Function HW_ITC_CloseDevice(variable deviceID, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_SelectDevice(deviceID, [flags])
-	variable deviceID, flags
+Function HW_ITC_SelectDevice(variable deviceID, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function/WAVE HW_ITC_GetDeviceInfo(deviceID, [flags])
-	variable deviceID, flags
+Function/WAVE HW_ITC_GetDeviceInfo(variable deviceID, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_EnableYoking(deviceID, [flags])
-	variable deviceID, flags
+Function HW_ITC_EnableYoking(variable deviceID, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_DisableYoking(deviceID, [flags])
-	variable deviceID, flags
+Function HW_ITC_DisableYoking(variable deviceID, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-threadsafe Function HW_ITC_StopAcq_TS(deviceID, [prepareForDAQ, flags])
-	variable deviceID, prepareForDAQ, flags
+threadsafe Function HW_ITC_StopAcq_TS(variable deviceID, [variable prepareForDAQ, variable flags])
 
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
-	variable deviceID, prepareForDAQ, zeroDAC, flags
-	WAVE/Z                           config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+Function HW_ITC_StopAcq(variable deviceID, [WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable prepareForDAQ, variable zeroDAC, variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_GetCurrentDevice([flags])
-	variable flags
+Function HW_ITC_GetCurrentDevice([variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-threadsafe static Function/WAVE HW_ITC_GetFifoPosFromConfig(config_t)
-	WAVE config_t
+threadsafe static Function/WAVE HW_ITC_GetFifoPosFromConfig(WAVE config_t)
 
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
-	variable deviceID
-	WAVE     config
-	variable flags
+threadsafe Function HW_ITC_ResetFifo_TS(variable deviceID, WAVE config, [variable flags])
 
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
-	variable                         deviceID
-	WAVE/Z                           config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
-	variable                         flags
+Function HW_ITC_ResetFifo(variable deviceID, [WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
-	variable deviceID, triggerMode, flags
+threadsafe Function HW_ITC_StartAcq_TS(variable deviceID, variable triggerMode, [variable flags])
 
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-Function HW_ITC_StartAcq(deviceID, triggerMode, [flags])
-	variable deviceID, triggerMode, flags
+Function HW_ITC_StartAcq(variable deviceID, variable triggerMode, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_IsRunning(deviceID, [flags])
-	variable deviceID, flags
+Function HW_ITC_IsRunning(variable deviceID, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function/WAVE HW_ITC_GetState(deviceID, [flags])
-	variable deviceID, flags
+Function/WAVE HW_ITC_GetState(variable deviceID, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_ReadADC(deviceID, channel, [flags])
-	variable deviceID, channel, flags
+Function HW_ITC_ReadADC(variable deviceID, variable channel, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
-	variable deviceID, channel, value, flags
+Function HW_ITC_WriteDAC(variable deviceID, variable channel, variable value, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_ReadDigital(deviceID, xopChannel, [flags])
-	variable deviceID, xopChannel, flags
+Function HW_ITC_ReadDigital(variable deviceID, variable xopChannel, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_WriteDigital(deviceID, xopChannel, value, [flags])
-	variable deviceID, xopChannel, value, flags
+Function HW_ITC_WriteDigital(variable deviceID, variable xopChannel, variable value, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-threadsafe Function HW_ITC_DebugMode_TS(state, [flags])
-	variable state, flags
+threadsafe Function HW_ITC_DebugMode_TS(variable state, [variable flags])
 
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-Function HW_ITC_DebugMode(state, [flags])
-	variable state, flags
+Function HW_ITC_DebugMode(variable state, [variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
-	variable deviceID, mode
-	WAVE/Z data, config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
-	variable flags, offset
+Function HW_ITC_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, [fifoPos, flags])
-	variable deviceID
-	variable ADChannelToMonitor, stopCollectionPoint
-	WAVE      config
-	variable &fifoPos
-	variable  flags
+threadsafe Function HW_ITC_MoreData_TS(variable deviceID, variable ADChannelToMonitor, variable stopCollectionPoint, WAVE config, [variable &fifoPos, variable flags])
 
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoPos, flags])
-	variable deviceID
-	variable ADChannelToMonitor, stopCollectionPoint
-	WAVE/Z                           config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
-	variable                        &fifoPos
-	variable                         flags
+Function HW_ITC_MoreData(variable deviceID, [variable ADChannelToMonitor, variable stopCollectionPoint, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable &fifoPos, variable flags])
 
 	DEBUGPRINT("Unimplemented")
 End
 
 Function/WAVE HW_ITC_GetVersionInfo([variable flags])
+
 	DEBUGPRINT("Unimplemented")
 End
 
@@ -2107,20 +1989,18 @@ End
 
 #endif
 
-Function/WAVE HW_WAVE_GETTER_PROTOTYPE(str)
-	string str
+Function/WAVE HW_WAVE_GETTER_PROTOTYPE(string str)
+
 End
 
-threadsafe Function/WAVE HW_ITC_Transpose(wv)
-	WAVE wv
+threadsafe Function/WAVE HW_ITC_Transpose(WAVE wv)
 
 	MatrixOp/FREE wv_t = wv^t
 
 	return wv_t
 End
 
-Function/WAVE HW_ITC_TransposeAndToInt(wv)
-	WAVE wv
+Function/WAVE HW_ITC_TransposeAndToInt(WAVE wv)
 
 	MatrixOp/FREE wv_t = int32(wv^t)
 
@@ -2133,8 +2013,7 @@ End
 /// @brief Returns the device channel offset for the given device
 ///
 /// @returns 16 for ITC1600 and 0 for all other types
-Function HW_ITC_CalculateDevChannelOff(device)
-	string device
+Function HW_ITC_CalculateDevChannelOff(string device)
 
 	if(IsITC1600(device))
 		return 16
@@ -2144,9 +2023,7 @@ Function HW_ITC_CalculateDevChannelOff(device)
 End
 
 /// @brief Return the `first` and `last` TTL bits/channels for the given `rack`
-threadsafe Function HW_ITC_GetRackRange(rack, first, last)
-	variable rack
-	variable &first, &last
+threadsafe Function HW_ITC_GetRackRange(variable rack, variable &first, variable &last)
 
 	if(rack == RACK_ZERO)
 		first = 0
@@ -2165,9 +2042,7 @@ End
 ///
 /// The DA_Ephys panel e.g. labels the first ttlBit of #RACK_ONE as 4, but the
 /// ITC XOP treats that as 0.
-Function HW_ITC_ClipTTLBit(device, ttlBit)
-	string   device
-	variable ttlBit
+Function HW_ITC_ClipTTLBit(string device, variable ttlBit)
 
 	if(HW_ITC_GetRackForTTLBit(device, ttlBit) == RACK_ONE)
 		return ttlBit - NUM_ITC_TTL_BITS_PER_RACK
@@ -2178,9 +2053,7 @@ End
 
 /// @brief Return the rack number for the given ttlBit (the ttlBit is
 /// called `TTL channel` in the DA Ephys panel)
-Function HW_ITC_GetRackForTTLBit(device, ttlBit)
-	string   device
-	variable ttlBit
+Function HW_ITC_GetRackForTTLBit(string device, variable ttlBit)
 
 	ASSERT(ttlBit < NUM_DA_TTL_CHANNELS, "Invalid channel index")
 
@@ -2196,9 +2069,7 @@ End
 ///
 /// Only the ITC1600 has two racks. The channel numbers differ for the
 /// different ITC device types.
-Function HW_ITC_GetITCXOPChannelForRack(device, rack)
-	string   device
-	variable rack
+Function HW_ITC_GetITCXOPChannelForRack(string device, variable rack)
 
 	if(rack == RACK_ZERO)
 		if(IsITC1600(device))
@@ -2218,8 +2089,7 @@ End
 ///
 /// - ITC1600 can have 1 or 2 racks
 /// - other device types have 1
-Function HW_ITC_GetNumberOfRacks(device)
-	string device
+Function HW_ITC_GetNumberOfRacks(string device)
 
 	WAVE deviceInfo = GetDeviceInfoWave(device)
 
@@ -2229,8 +2099,7 @@ End
 /// @brief Assert on using an invalid ITC device name
 ///
 /// @param deviceName ITC device name
-Function HW_ITC_AssertOnInvalid(deviceName)
-	string deviceName
+Function HW_ITC_AssertOnInvalid(string deviceName)
 
 	ASSERT(HW_ITC_IsValidDeviceName(deviceName), "Invalid ITC device name")
 End
@@ -2238,8 +2107,7 @@ End
 /// @brief Check wether the given ITC device name is valid
 ///
 /// Currently a device name is valid if it is not empty.
-Function HW_ITC_IsValidDeviceName(deviceName)
-	string deviceName
+Function HW_ITC_IsValidDeviceName(string deviceName)
 
 	return !isEmpty(deviceName)
 End
@@ -2253,8 +2121,7 @@ End
 /// @brief Assert on using an invalid NI device name
 ///
 /// @param deviceName NI device name
-Function HW_NI_AssertOnInvalid(deviceName)
-	string deviceName
+Function HW_NI_AssertOnInvalid(string deviceName)
 
 	ASSERT(HW_NI_IsValidDeviceName(deviceName), "Invalid NI device name")
 End
@@ -2262,8 +2129,7 @@ End
 /// @brief Check wether the given NI device name is valid
 ///
 /// Currently a device name is valid if it is not empty.
-Function HW_NI_IsValidDeviceName(deviceName)
-	string deviceName
+Function HW_NI_IsValidDeviceName(string deviceName)
 
 	return !isEmpty(deviceName)
 End
@@ -2317,8 +2183,7 @@ static Constant HW_NI_FIFO_MIN_FREE_DISK_SPACE = 960000000
 ///
 
 /// @see HW_StartAcq
-Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
-	variable deviceID, triggerMode, flags, repeat
+Function HW_NI_StartAcq(variable deviceID, variable triggerMode, [variable flags, variable repeat])
 
 	string device, realDeviceOrPressure, FIFONote, noteID, fifoName, errMsg
 	variable i, pos, endpos, channelTimeOffset, err
@@ -2379,11 +2244,7 @@ End
 /// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
-	variable deviceID, mode
-	WAVE/Z data, config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
-	variable flags, offset
+Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
 
 	string device, tempStr, realDeviceOrPressure, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
 	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize, err, minimum, maximum
@@ -2442,8 +2303,8 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 					break
 				case XOP_CHANNEL_TYPE_DAC:
 					WAVE NIChannel = NIDataWave[i]
-					wavegenStr += GetWavesDataFolder(NIChannel, 2) + ","
-					wavegenStr += num2str(config[i][%ChannelNumber]) + ","
+					wavegenStr        += GetWavesDataFolder(NIChannel, 2) + ","
+					wavegenStr        += num2str(config[i][%ChannelNumber]) + ","
 					[minimum, maximum] = WaveMinAndMax(NIChannel)
 					sprintf tempStr, "%10f", max(-10, minimum - 0.001)
 					wavegenStr += tempStr + ","
@@ -2561,9 +2422,7 @@ End
 
 /// @param device name of NI device
 /// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_OpenDevice(device, [flags])
-	string   device
-	variable flags
+Function HW_NI_OpenDevice(string device, [variable flags])
 
 	DEBUGPRINTSTACKINFO()
 
@@ -2577,6 +2436,7 @@ End
 
 /// @brief Print all available properties of all NI devices to the commandline
 Function HW_NI_PrintPropertiesOfDevices()
+
 	string device
 
 	variable numAI, numAO, numCounter, numDIO, selfCalDate
@@ -2621,9 +2481,7 @@ End
 /// @param flags   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return bitmask of variable width
-Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
-	string device
-	variable DIOPort, DIOLine, flags
+Function HW_NI_ReadDigital(string device, [variable DIOPort, variable DIOLine, variable flags])
 
 	variable taskID, ret, result, lineGrouping
 	string line
@@ -2681,9 +2539,7 @@ End
 /// @param DIOLine [optional, defaults to all lines of the port] Allows to write
 ///                only a single line instead of all bits of the port
 /// @param flags   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
-	string device
-	variable DIOPort, DIOLine, value, flags
+Function HW_NI_WriteDigital(string device, variable value, [variable DIOPort, variable DIOLine, variable flags])
 
 	variable taskID, ret, lineGrouping
 	string line
@@ -2751,9 +2607,7 @@ End
 /// @param flags   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return 0 on success, 1 otherwise
-Function HW_NI_WriteAnalogSingleAndSlow(device, channel, value, [flags])
-	string device
-	variable channel, value, flags
+Function HW_NI_WriteAnalogSingleAndSlow(string device, variable channel, variable value, [variable flags])
 
 	variable ret
 
@@ -2782,9 +2636,7 @@ End
 /// @param flags   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return volts
-Function HW_NI_ReadAnalogSingleAndSlow(device, channel, [flags])
-	string device
-	variable channel, flags
+Function HW_NI_ReadAnalogSingleAndSlow(string device, variable channel, [variable flags])
 
 	variable value
 
@@ -2832,8 +2684,7 @@ End
 /// @brief Return a list of all NI devices which can be opened
 ///
 /// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function/S HW_NI_ListDevices([flags])
-	variable flags
+Function/S HW_NI_ListDevices([variable flags])
 
 	DEBUGPRINTSTACKINFO()
 
@@ -2857,8 +2708,7 @@ End
 /// @param[in] flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @see HW_StopAcq
-Function HW_NI_StopAcq(deviceID, [zeroDAC, flags])
-	variable deviceID, zeroDAC, flags
+Function HW_NI_StopAcq(variable deviceID, [variable zeroDAC, variable flags])
 
 	string device
 
@@ -2876,8 +2726,7 @@ End
 ///
 /// @param[in] deviceID ID of the NI device
 /// @param[in] flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_StopADC(deviceID, [flags])
-	variable deviceID, flags
+Function HW_NI_StopADC(variable deviceID, [variable flags])
 
 	DEBUGPRINTSTACKINFO()
 
@@ -2906,8 +2755,7 @@ End
 ///
 /// @param[in] deviceID ID of the NI device
 /// @param[in] flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_StopDAC(deviceID, [flags])
-	variable deviceID, flags
+Function HW_NI_StopDAC(variable deviceID, [variable flags])
 
 	DEBUGPRINTSTACKINFO()
 
@@ -2935,8 +2783,7 @@ End
 ///
 /// @param[in] deviceID ID of the NI device
 /// @param[in] flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_StopTTL(deviceID, [flags])
-	variable deviceID, flags
+Function HW_NI_StopTTL(variable deviceID, [variable flags])
 
 	DEBUGPRINTSTACKINFO()
 
@@ -2964,8 +2811,7 @@ End
 ///
 /// @param[in] deviceID ID of the NI device
 /// @param[in] flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_ZeroDAC(deviceID, [flags])
-	variable deviceID, flags
+Function HW_NI_ZeroDAC(variable deviceID, [variable flags])
 
 	DEBUGPRINTSTACKINFO()
 
@@ -3000,8 +2846,7 @@ End
 /// @brief Kill the FIFO of the given NI device
 ///
 /// @param deviceID device identifier
-Function HW_NI_KillFifo(deviceID)
-	variable deviceID
+Function HW_NI_KillFifo(variable deviceID)
 
 	DEBUGPRINTSTACKINFO()
 
@@ -3035,9 +2880,7 @@ End
 ///
 /// @param device name of the NI device
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-static Function HW_NI_ResetDevice(device, [flags])
-	string   device
-	variable flags
+static Function HW_NI_ResetDevice(string device, [variable flags])
 
 	variable ret
 
@@ -3058,8 +2901,7 @@ End
 /// @brief Reset task IDs for NI hardware
 ///
 /// @param device name of the NI device
-Function HW_NI_ResetTaskIDs(device)
-	string device
+Function HW_NI_ResetTaskIDs(string device)
 
 	NVAR taskIDADC = $GetNI_ADCTaskID(device)
 	NVAR taskIDDAC = $GetNI_DACTaskID(device)
@@ -3072,8 +2914,7 @@ End
 /// @brief Check if the device is running
 ///
 /// @param device name of the NI device
-Function HW_NI_IsRunning(device)
-	string device
+Function HW_NI_IsRunning(string device)
 
 	DEBUGPRINTSTACKINFO()
 
@@ -3089,9 +2930,7 @@ End
 /// @param device name of the NI device
 /// @param force  [optional, default 0] When not zero, forces a calibration
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-static Function HW_NI_CalibrateDevice(device, [force, flags])
-	string device
-	variable force, flags
+static Function HW_NI_CalibrateDevice(string device, [variable force, variable flags])
 
 	variable ret
 
@@ -3117,8 +2956,7 @@ static Function HW_NI_CalibrateDevice(device, [force, flags])
 End
 
 /// @see HW_CloseDevice
-Function HW_NI_CloseDevice(deviceID, [flags])
-	variable deviceID, flags
+Function HW_NI_CloseDevice(variable deviceID, [variable flags])
 
 	string deviceType, deviceNumber, deviceName
 
@@ -3140,9 +2978,7 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 End
 
 /// @see HW_GetDeviceInfo
-Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
-	string   device
-	variable flags
+Function/WAVE HW_NI_GetDeviceInfo(string device, [variable flags])
 
 	DEBUGPRINTSTACKINFO()
 
@@ -3188,53 +3024,42 @@ End
 
 #else
 
-Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
-	variable deviceID, triggerMode, flags, repeat
+Function HW_NI_StartAcq(variable deviceID, variable triggerMode, [variable flags, variable repeat])
+
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
-	variable deviceID
-	variable mode
-	WAVE/Z data, config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
-	variable flags, offset
+Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
 Function/S HW_NI_GetPropertyListOfDevices(string device)
+
 	return ""
 End
 
 Function HW_NI_PrintPropertiesOfDevices()
-	DoAbortNow("NI-DAQ XOP is not available")
-End
-
-Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
-	string device
-	variable DIOPort, DIOLine, flags
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
-	string device
-	variable DIOPort, DIOLine, value, flags
+Function HW_NI_ReadDigital(string device, [variable DIOPort, variable DIOLine, variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_WriteAnalogSingleAndSlow(device, channel, value, [flags])
-	string device
-	variable channel, value, flags
+Function HW_NI_WriteDigital(string device, variable value, [variable DIOPort, variable DIOLine, variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_ReadAnalogSingleAndSlow(device, channel, [flags])
-	string device
-	variable channel, flags
+Function HW_NI_WriteAnalogSingleAndSlow(string device, variable channel, variable value, [variable flags])
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
+Function HW_NI_ReadAnalogSingleAndSlow(string device, variable channel, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
@@ -3244,85 +3069,67 @@ Function HW_NI_GetAnalogInputConfig(string device, variable channel, [variable f
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function/S HW_NI_ListDevices([flags])
-	variable flags
+Function/S HW_NI_ListDevices([variable flags])
 
 	return ""
 End
 
-Function HW_NI_StopAcq(deviceID, [zeroDAC, flags])
-	variable deviceID, zeroDAC, flags
+Function HW_NI_StopAcq(variable deviceID, [variable zeroDAC, variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_StopDAC(deviceID, [flags])
-	variable deviceID, flags
+Function HW_NI_StopDAC(variable deviceID, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_StopADC(deviceID, [flags])
-	variable deviceID, flags
+Function HW_NI_StopADC(variable deviceID, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_StopTTL(deviceID, [flags])
-	variable deviceID, flags
+Function HW_NI_StopTTL(variable deviceID, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_ZeroDAC(deviceID, [flags])
-	variable deviceID, flags
+Function HW_NI_ZeroDAC(variable deviceID, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-static Function HW_NI_ResetDevice(device, [flags])
-	string   device
-	variable flags
+static Function HW_NI_ResetDevice(string device, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-static Function HW_NI_CalibrateDevice(device, [force, flags])
-	string device
-	variable force, flags
+static Function HW_NI_CalibrateDevice(string device, [variable force, variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_IsRunning(device, [flags])
-	string   device
-	variable flags
+Function HW_NI_IsRunning(string device, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_OpenDevice(device, [flags])
-	string   device
-	variable flags
+Function HW_NI_OpenDevice(string device, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_CloseDevice(deviceID, [flags])
-	variable deviceID, flags
+Function HW_NI_CloseDevice(variable deviceID, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
-	string   device
-	variable flags
+Function/WAVE HW_NI_GetDeviceInfo(string device, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_ResetTaskIDs(device)
-	string device
+Function HW_NI_ResetTaskIDs(string device)
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
@@ -3531,10 +3338,10 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 				if(IsNaN(headStage))
 					// unassoc ADC
 					[inChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocADC(unassocADCIndex)
-					unassocADCIndex += 1
+					unassocADCIndex        += 1
 				else
 					[inChannel, encodeInfo] = HW_SU_GetEncodeFromHS(headstage)
-					inChannel *= 2
+					inChannel              *= 2
 					if(config[i][%CLAMPMODE] == I_CLAMP_MODE)
 						inChannel += 1
 					endif
@@ -3549,7 +3356,7 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 				if(IsNaN(headStage))
 					// unassoc DAC
 					[outChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocDAC(unassocDACIndex)
-					unassocDACIndex += 1
+					unassocDACIndex         += 1
 				else
 					[outChannel, encodeInfo] = HW_SU_GetEncodeFromHS(headstage)
 				endif
@@ -3683,7 +3490,7 @@ Function HW_SU_ZeroDAC(variable deviceID, [variable flags])
 			if(IsNaN(headStage))
 				// unassoc DAC
 				[outChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocDAC(unassocDACIndex)
-				unassocDACIndex += 1
+				unassocDACIndex         += 1
 			else
 				[outChannel, encodeInfo] = HW_SU_GetEncodeFromHS(headstage)
 			endif
@@ -3696,11 +3503,11 @@ Function HW_SU_ZeroDAC(variable deviceID, [variable flags])
 
 	// we need to run some input as well to have the command hook from SutterDAQScanWave
 	Redimension/N=(1, -1) input
-	input[0][%INPUTWAVE] = GetWavesDataFolder(channelAD, 2)
+	input[0][%INPUTWAVE]    = GetWavesDataFolder(channelAD, 2)
 	[inChannel, encodeInfo] = HW_SU_GetEncodeFromHS(0)
-	inChannel            *= 2
-	input[0][%CHANNEL]    = num2istr(inChannel)
-	input[0][%ENCODEINFO] = encodeInfo
+	inChannel              *= 2
+	input[0][%CHANNEL]      = num2istr(inChannel)
+	input[0][%ENCODEINFO]   = encodeInfo
 
 	HW_SU_AcquireImpl(device, input, output, $"", SUTTER_ACQUISITION_FOREGROUND, timeout = 1)
 End
@@ -3718,10 +3525,10 @@ Function HW_SU_ReadADC(variable deviceID, variable channel, [variable flags])
 	WAVE   channelAD = GetSutterSingleSampleADCInputWave(device)
 
 	Redimension/N=(1, -1) input
-	input[0][%INPUTWAVE] = GetWavesDataFolder(channelAD, 2)
+	input[0][%INPUTWAVE]    = GetWavesDataFolder(channelAD, 2)
 	[inChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocADC(channel)
-	input[0][%CHANNEL]    = num2istr(inChannel)
-	input[0][%ENCODEINFO] = encodeInfo
+	input[0][%CHANNEL]      = num2istr(inChannel)
+	input[0][%ENCODEINFO]   = encodeInfo
 
 	HW_SU_AcquireImpl(device, input, $"", $"", SUTTER_ACQUISITION_FOREGROUND, timeout = 1, inputOnly = 1)
 
@@ -3744,18 +3551,18 @@ Function HW_SU_WriteDAC(variable deviceID, variable channel, variable value, [va
 	channelDA = value
 
 	Redimension/N=(1, -1) output
-	output[0][%OUTPUTWAVE] = GetWavesDataFolder(channelDA, 2)
+	output[0][%OUTPUTWAVE]   = GetWavesDataFolder(channelDA, 2)
 	[outChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocDAC(channel)
-	output[0][%CHANNEL]    = num2istr(outChannel)
-	output[0][%ENCODEINFO] = encodeInfo
+	output[0][%CHANNEL]      = num2istr(outChannel)
+	output[0][%ENCODEINFO]   = encodeInfo
 
 	// we need to run some input as well to have the command hook from SutterDAQScanWave
 	Redimension/N=(1, -1) input
-	input[0][%INPUTWAVE] = GetWavesDataFolder(channelAD, 2)
+	input[0][%INPUTWAVE]    = GetWavesDataFolder(channelAD, 2)
 	[inChannel, encodeInfo] = HW_SU_GetEncodeFromHS(0)
-	inChannel            *= 2
-	input[0][%CHANNEL]    = num2istr(inChannel)
-	input[0][%ENCODEINFO] = encodeInfo
+	inChannel              *= 2
+	input[0][%CHANNEL]      = num2istr(inChannel)
+	input[0][%ENCODEINFO]   = encodeInfo
 
 	HW_SU_AcquireImpl(device, input, output, $"", SUTTER_ACQUISITION_FOREGROUND, timeout = 1)
 End

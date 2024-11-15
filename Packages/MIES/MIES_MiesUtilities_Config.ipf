@@ -17,8 +17,8 @@ threadsafe Function GetSamplingInterval(WAVE config, variable channelType)
 
 	ASSERT_TS(IsValidConfigWave(config, version = 0), "Expected a valid config wave")
 	[colChannelType, colChannelNumber] = GetConfigWaveDims(config)
-	colSamplingInterval = FindDimLabel(config, COLS, "SamplingInterval")
-	colSamplingInterval = colSamplingInterval == -2 ? 2 : colSamplingInterval
+	colSamplingInterval                = FindDimLabel(config, COLS, "SamplingInterval")
+	colSamplingInterval                = colSamplingInterval == -2 ? 2 : colSamplingInterval
 
 	numChannels = DimSize(config, ROWS)
 	for(i = 0; i < numChannels; i += 1)
@@ -31,8 +31,7 @@ threadsafe Function GetSamplingInterval(WAVE config, variable channelType)
 End
 
 /// @brief Returns the data offset of the sweep in points
-threadsafe Function GetDataOffset(config)
-	WAVE config
+threadsafe Function GetDataOffset(WAVE config)
 
 	ASSERT_TS(IsValidConfigWave(config, version = 1), "Expected a valid config wave")
 
@@ -48,17 +47,14 @@ End
 /// @note Please add new properties as required
 /// @param config configuration wave
 /// @param samplingInterval sampling interval in microseconds (1e-6s)
-Function UpdateSweepConfig(config, [samplingInterval])
-	WAVE     config
-	variable samplingInterval
+Function UpdateSweepConfig(WAVE config, [variable samplingInterval])
 
 	ASSERT(IsFinite(samplingInterval), "samplingInterval must be finite")
 	config[][2] = samplingInterval
 End
 
 /// @brief Return the default name of a electrode
-threadsafe Function/S GetDefaultElectrodeName(headstage)
-	variable headstage
+threadsafe Function/S GetDefaultElectrodeName(variable headstage)
 
 	ASSERT_TS(IsValidHeadstage(headstage), "Invalid headstage")
 
@@ -94,9 +90,7 @@ End
 ///
 /// @param version [optional, default=DAQ_CONFIG_WAVE_VERSION], check against a specific version
 ///                current versions known are 0 (equals NaN), 1, 2, 3
-threadsafe Function IsValidConfigWave(config, [version])
-	WAVE/Z   config
-	variable version
+threadsafe Function IsValidConfigWave(WAVE/Z config, [variable version])
 
 	variable waveVersion
 

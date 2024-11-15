@@ -16,6 +16,7 @@ static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 End
 
 static Function GlobalPreAcq(string device)
+
 	variable ret
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
@@ -38,9 +39,7 @@ static Function SetFinalDAScale(variable var)
 	SetNumberInWaveNote(overrideResults, PSQ_RB_FINALSCALE_FAKE_KEY, var)
 End
 
-static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetSpikeResults_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -49,9 +48,7 @@ static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetBaselineQCResults_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -60,9 +57,7 @@ static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo, device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetPulseDurations_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetPulseDurations_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -72,9 +67,7 @@ static Function/WAVE GetPulseDurations_IGNORE(sweepNo, device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetLimitedResolution_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetLimitedResolution_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -90,9 +83,7 @@ static Function/WAVE GetLimitedResolution_IGNORE(sweepNo, device)
 	return val
 End
 
-static Function/WAVE GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetSamplingIntervalQCResults_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -102,9 +93,7 @@ static Function/WAVE GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetAsyncQCResults_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetAsyncQCResults_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -114,18 +103,14 @@ static Function/WAVE GetAsyncQCResults_IGNORE(sweepNo, device)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetStimsetLengths_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetStimsetLengths_IGNORE(variable sweepNo, string device)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
 	return GetLastSettingEachRAC(numericalValues, sweepNo, "Stim set length", PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 End
 
-static Function/WAVE GetStimScaleFactor_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetStimScaleFactor_IGNORE(variable sweepNo, string device)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -143,8 +128,7 @@ static Function PS_RB1_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB1([str])
-	string str
+static Function PS_RB1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -154,8 +138,7 @@ static Function PS_RB1([str])
 	wv = 0
 End
 
-static Function PS_RB1_REENTRY([str])
-	string str
+static Function PS_RB1_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay, initialDAScale
 	variable stepSize
@@ -233,8 +216,7 @@ static Function PS_RB2_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB2([str])
-	string str
+static Function PS_RB2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -247,8 +229,7 @@ static Function PS_RB2([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RB2_REENTRY([str])
-	string str
+static Function PS_RB2_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale, stepsize
@@ -312,8 +293,7 @@ static Function PS_RB3_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB3([str])
-	string str
+static Function PS_RB3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -326,8 +306,7 @@ static Function PS_RB3([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RB3_REENTRY([str])
-	string str
+static Function PS_RB3_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale, stepsize
@@ -391,8 +370,7 @@ static Function PS_RB4_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB4([str])
-	string str
+static Function PS_RB4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -405,8 +383,7 @@ static Function PS_RB4([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RB4_REENTRY([str])
-	string str
+static Function PS_RB4_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale, stepsize
@@ -483,8 +460,7 @@ static Function PS_RB5_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB5([str])
-	string str
+static Function PS_RB5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -497,8 +473,7 @@ static Function PS_RB5([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RB5_REENTRY([str])
-	string str
+static Function PS_RB5_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale, stepsize
@@ -562,8 +537,7 @@ static Function PS_RB6_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB6([str])
-	string str
+static Function PS_RB6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -576,8 +550,7 @@ static Function PS_RB6([str])
 	wv[][1, 2][2] = 1
 End
 
-static Function PS_RB6_REENTRY([str])
-	string str
+static Function PS_RB6_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale, stepsize
@@ -643,8 +616,7 @@ static Function PS_RB7_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB7([str])
-	string str
+static Function PS_RB7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -658,8 +630,7 @@ static Function PS_RB7([str])
 	wv[][][2]           = 1
 End
 
-static Function PS_RB7_REENTRY([str])
-	string str
+static Function PS_RB7_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale, stepsize
@@ -729,8 +700,7 @@ static Function PS_RB8_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB8([str])
-	string str
+static Function PS_RB8([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -747,8 +717,7 @@ static Function PS_RB8([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RB8_REENTRY([str])
-	string str
+static Function PS_RB8_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale, stepsize
@@ -819,8 +788,7 @@ End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_LARGE stepsize
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB9([str])
-	string str
+static Function PS_RB9([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -834,8 +802,7 @@ static Function PS_RB9([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RB9_REENTRY([str])
-	string str
+static Function PS_RB9_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale, stepsize
@@ -905,8 +872,7 @@ End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_SMALL stepsize
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB10([str])
-	string str
+static Function PS_RB10([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -920,8 +886,7 @@ static Function PS_RB10([str])
 	wv[][][2]       = 1
 End
 
-static Function PS_RB10_REENTRY([str])
-	string str
+static Function PS_RB10_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale, stepsize
@@ -978,6 +943,7 @@ static Function PS_RB10_REENTRY([str])
 End
 
 static Function PS_RB11_preAcq(string device)
+
 	AFH_AddAnalysisParameter("Rheobase_DA_0", "SamplingFrequency", var = 10)
 
 	Make/FREE asyncChannels = {2, 3}
@@ -991,8 +957,7 @@ End
 // Same as PS_RB1 but with failing sampling frequency check
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RB11([str])
-	string str
+static Function PS_RB11([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1002,8 +967,7 @@ static Function PS_RB11([str])
 	wv = 0
 End
 
-static Function PS_RB11_REENTRY([str])
-	string str
+static Function PS_RB11_REENTRY([string str])
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay, initialDAScale
 	variable stepSize

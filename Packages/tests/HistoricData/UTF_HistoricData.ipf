@@ -29,6 +29,7 @@ static StrConstant HTTP_FOLDER_URL = "https://www.byte-physics.de/Downloads/alle
 
 // Entry point for UTF
 Function run()
+
 	return RunWithOpts(instru = DoInstrumentation())
 End
 
@@ -108,15 +109,16 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 End
 
 Function TEST_BEGIN_OVERRIDE(string name)
+
 	TestBeginCommon()
 End
 
 Function TEST_END_OVERRIDE(string name)
+
 	TestEndCommon()
 End
 
-Function TEST_CASE_BEGIN_OVERRIDE(name)
-	string name
+Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
 	TestCaseBeginCommon(name)
 End

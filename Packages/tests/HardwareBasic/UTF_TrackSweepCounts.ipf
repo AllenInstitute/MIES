@@ -16,6 +16,7 @@ static Function [STRUCT DAQSettings s] GetDAQSettings([string overrideConfig])
 End
 
 static Function GlobalPreInit(string device)
+
 	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
 	ST_SetStimsetParameter("StimulusSetC_DA_0", "Analysis function (generic)", str = "TrackSweepCount_V3")
@@ -39,8 +40,7 @@ static Structure TestSettings
 	WAVE DAQChannelTypeAD, DAQChannelTypeDA
 EndStructure
 
-static Function InitTestStructure(t)
-	STRUCT TestSettings &t
+static Function InitTestStructure(STRUCT TestSettings &t)
 
 	REQUIRE_GT_VAR(t.numSweeps, 0)
 	Make/T/FREE/N=(t.numSweeps) t.acquiredStimSets_HS0, t.acquiredStimSets_HS1
@@ -52,9 +52,7 @@ static Function InitTestStructure(t)
 	Make/FREE t.DAQChannelTypeDA = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
 End
 
-static Function AllTests(t, devices)
-	STRUCT TestSettings &t
-	string               devices
+static Function AllTests(STRUCT TestSettings &t, string devices)
 
 	string sweeps, configs, stimset, foundStimSet, device, unit
 	variable i, j, k, sweepNo, numEntries, numChannels
@@ -128,7 +126,7 @@ static Function AllTests(t, devices)
 
 			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
 			CHECK_GE_VAR(sweepNo, 0)
-			WAVE/T/Z foundStimSets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			WAVE/Z/T foundStimSets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 			REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
 
 			// HS 0
@@ -202,8 +200,7 @@ static Function AllTests(t, devices)
 	endif
 End
 
-static Function Events_Common(t)
-	STRUCT TestSettings &t
+static Function Events_Common(STRUCT TestSettings &t)
 
 	// pre DAQ at sweep 0
 	t.events_HS0[0][PRE_DAQ_EVENT] = 0
@@ -221,8 +218,7 @@ static Function Events_Common(t)
 	t.events_HS1[][POST_SWEEP_EVENT] = p
 End
 
-static Function Events_MD0_RA0_I0_L0_BKG0(t)
-	STRUCT TestSettings &t
+static Function Events_MD0_RA0_I0_L0_BKG0(STRUCT TestSettings &t)
 
 	variable sweepNo
 
@@ -237,8 +233,7 @@ static Function Events_MD0_RA0_I0_L0_BKG0(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD0
-static Function MD0_RA0_I0_L0_BKG0([str])
-	string str
+static Function MD0_RA0_I0_L0_BKG0([string str])
 
 	PrepareForPublishTest()
 
@@ -247,8 +242,7 @@ static Function MD0_RA0_I0_L0_BKG0([str])
 	AcquireData_NG(s, str)
 End
 
-static Function MD0_RA0_I0_L0_BKG0_REENTRY([str])
-	string str
+static Function MD0_RA0_I0_L0_BKG0_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -274,22 +268,19 @@ static Function MD0_RA0_I0_L0_BKG0_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_MD1_RA0_I0_L0_BKG1(t)
-	STRUCT TestSettings &t
+static Function Events_MD1_RA0_I0_L0_BKG1(STRUCT TestSettings &t)
 
 	Events_MD0_RA0_I0_L0_BKG0(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MD1_RA0_I0_L0_BKG1([str])
-	string str
+static Function MD1_RA0_I0_L0_BKG1([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
 	AcquireData_NG(s, str)
 End
 
-static Function MD1_RA0_I0_L0_BKG1_REENTRY([str])
-	string str
+static Function MD1_RA0_I0_L0_BKG1_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -312,8 +303,7 @@ static Function MD1_RA0_I0_L0_BKG1_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_MD0_RA1_I0_L0_BKG1(t)
-	STRUCT TestSettings &t
+static Function Events_MD0_RA1_I0_L0_BKG1(STRUCT TestSettings &t)
 
 	variable sweepNo
 
@@ -342,15 +332,13 @@ static Function Events_MD0_RA1_I0_L0_BKG1(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD0
-static Function MD0_RA1_I0_L0_BKG0([str])
-	string str
+static Function MD0_RA1_I0_L0_BKG0([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
 	AcquireData_NG(s, str)
 End
 
-static Function MD0_RA1_I0_L0_BKG0_REENTRY([str])
-	string str
+static Function MD0_RA1_I0_L0_BKG0_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -373,22 +361,19 @@ static Function MD0_RA1_I0_L0_BKG0_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_MD1_RA1_I0_L0_BKG1(t)
-	STRUCT TestSettings &t
+static Function Events_MD1_RA1_I0_L0_BKG1(STRUCT TestSettings &t)
 
 	Events_MD0_RA1_I0_L0_BKG1(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MD1_RA1_I0_L0_BKG1([str])
-	string str
+static Function MD1_RA1_I0_L0_BKG1([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
 	AcquireData_NG(s, str)
 End
 
-static Function MD1_RA1_I0_L0_BKG1_REENTRY([str])
-	string str
+static Function MD1_RA1_I0_L0_BKG1_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -411,8 +396,7 @@ static Function MD1_RA1_I0_L0_BKG1_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_MD1_RA1_I1_L0_BKG1(t)
-	STRUCT TestSettings &t
+static Function Events_MD1_RA1_I1_L0_BKG1(STRUCT TestSettings &t)
 
 	variable sweepNo
 
@@ -455,15 +439,13 @@ static Function Events_MD1_RA1_I1_L0_BKG1(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MD1_RA1_I1_L0_BKG1([str])
-	string str
+static Function MD1_RA1_I1_L0_BKG1([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
 	AcquireData_NG(s, str)
 End
 
-static Function MD1_RA1_I1_L0_BKG1_REENTRY([str])
-	string str
+static Function MD1_RA1_I1_L0_BKG1_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -489,22 +471,19 @@ static Function MD1_RA1_I1_L0_BKG1_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_MD0_RA1_I1_L0_BKG0(t)
-	STRUCT TestSettings &t
+static Function Events_MD0_RA1_I1_L0_BKG0(STRUCT TestSettings &t)
 
 	Events_MD1_RA1_I1_L0_BKG1(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD0
-static Function MD0_RA1_I1_L0_BKG0([str])
-	string str
+static Function MD0_RA1_I1_L0_BKG0([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
 	AcquireData_NG(s, str)
 End
 
-static Function MD0_RA1_I1_L0_BKG0_REENTRY([str])
-	string str
+static Function MD0_RA1_I1_L0_BKG0_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -530,8 +509,7 @@ static Function MD0_RA1_I1_L0_BKG0_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_MD1_RA1_I1_L1_BKG1(t)
-	STRUCT TestSettings &t
+static Function Events_MD1_RA1_I1_L1_BKG1(STRUCT TestSettings &t)
 
 	variable sweepNo
 
@@ -581,15 +559,13 @@ static Function Events_MD1_RA1_I1_L1_BKG1(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MD1_RA1_I1_L1_BKG1([str])
-	string str
+static Function MD1_RA1_I1_L1_BKG1([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
 	AcquireData_NG(s, str)
 End
 
-static Function MD1_RA1_I1_L1_BKG1_REENTRY([str])
-	string str
+static Function MD1_RA1_I1_L1_BKG1_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -614,22 +590,19 @@ static Function MD1_RA1_I1_L1_BKG1_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_MD0_RA1_I1_L1_BKG0(t)
-	STRUCT TestSettings &t
+static Function Events_MD0_RA1_I1_L1_BKG0(STRUCT TestSettings &t)
 
 	Events_MD1_RA1_I1_L1_BKG1(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD0
-static Function MD0_RA1_I1_L1_BKG0([str])
-	string str
+static Function MD0_RA1_I1_L1_BKG0([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings()
 	AcquireData_NG(s, str)
 End
 
-static Function MD0_RA1_I1_L1_BKG0_REENTRY([str])
-	string str
+static Function MD0_RA1_I1_L1_BKG0_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -654,8 +627,7 @@ static Function MD0_RA1_I1_L1_BKG0_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_RepeatSets_1(t)
-	STRUCT TestSettings &t
+static Function Events_RepeatSets_1(STRUCT TestSettings &t)
 
 	variable sweepNo
 
@@ -705,15 +677,13 @@ static Function Events_RepeatSets_1(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RepeatSets_1([str])
-	string str
+static Function RepeatSets_1([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I0_L0_BKG1_RES2")
 	AcquireData_NG(s, str)
 End
 
-static Function RepeatSets_1_REENTRY([str])
-	string str
+static Function RepeatSets_1_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -736,8 +706,7 @@ static Function RepeatSets_1_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_RepeatSets_2(t)
-	STRUCT TestSettings &t
+static Function Events_RepeatSets_2(STRUCT TestSettings &t)
 
 	variable sweepNo
 
@@ -815,15 +784,13 @@ static Function Events_RepeatSets_2(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RepeatSets_2([str])
-	string str
+static Function RepeatSets_2([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES2")
 	AcquireData_NG(s, str)
 End
 
-static Function RepeatSets_2_REENTRY([str])
-	string str
+static Function RepeatSets_2_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -853,8 +820,7 @@ static Function RepeatSets_2_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_RepeatSets_3(t)
-	STRUCT TestSettings &t
+static Function Events_RepeatSets_3(STRUCT TestSettings &t)
 
 	variable sweepNo
 
@@ -946,15 +912,13 @@ static Function Events_RepeatSets_3(t)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RepeatSets_3([str])
-	string str
+static Function RepeatSets_3([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES2")
 	AcquireData_NG(s, str)
 End
 
-static Function RepeatSets_3_REENTRY([str])
-	string str
+static Function RepeatSets_3_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -979,8 +943,7 @@ static Function RepeatSets_3_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_RepeatSets_4(t)
-	STRUCT TestSettings &t
+static Function Events_RepeatSets_4(STRUCT TestSettings &t)
 
 	variable sweepNo
 
@@ -1072,6 +1035,7 @@ static Function Events_RepeatSets_4(t)
 End
 
 static Function SwitchIndexingOrder_IGNORE(string device)
+
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), str = "StimulusSetA_DA_0")
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Wave), str = "StimulusSetB_DA_0")
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), str = "StimulusSetC_DA_0")
@@ -1084,15 +1048,13 @@ static Function RepeatSets_4_PreAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RepeatSets_4([str])
-	string str
+static Function RepeatSets_4([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES2")
 	AcquireData_NG(s, str)
 End
 
-static Function RepeatSets_4_REENTRY([str])
-	string str
+static Function RepeatSets_4_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -1117,8 +1079,7 @@ static Function RepeatSets_4_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function Events_RepeatSets_5(t)
-	STRUCT TestSettings &t
+static Function Events_RepeatSets_5(STRUCT TestSettings &t)
 
 	variable sweepNo
 
@@ -1201,15 +1162,13 @@ static Function RepeatSets_5_PreAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RepeatSets_5([str])
-	string str
+static Function RepeatSets_5([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES2")
 	AcquireData_NG(s, str)
 End
 
-static Function RepeatSets_5_REENTRY([str])
-	string str
+static Function RepeatSets_5_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -1240,8 +1199,7 @@ static Function RepeatSets_5_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function RepeatSets_6_PreAcq(device)
-	string device
+static Function RepeatSets_6_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Wave), str = "StimulusSetA_DA_0")
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), str = "StimulusSetB_DA_0")
@@ -1257,15 +1215,13 @@ End
 // test that locked indexing works when the maximum number of sweeps is
 // not in the first stimset
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RepeatSets_6([str])
-	string str
+static Function RepeatSets_6([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES1")
 	AcquireData_NG(s, str)
 End
 
-static Function RepeatSets_6_REENTRY([str])
-	string str
+static Function RepeatSets_6_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -1289,22 +1245,19 @@ static Function RepeatSets_6_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function CheckIZeroClampMode_PreAcq(device)
-	string device
+static Function CheckIZeroClampMode_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "Radio_ClampMode_1IZ", val = 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function CheckIZeroClampMode([str])
-	string str
+static Function CheckIZeroClampMode([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA0_I0_L0_BKG1_RES1")
 	AcquireData_NG(s, str)
 End
 
-static Function CheckIZeroClampMode_REENTRY([str])
-	string str
+static Function CheckIZeroClampMode_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -1332,8 +1285,7 @@ static Function CheckIZeroClampMode_REENTRY([str])
 	CHECK_EQUAL_WAVES(clampMode, {I_EQUAL_ZERO_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
-static Function Events_RepeatSets_7(t)
-	STRUCT TestSettings &t
+static Function Events_RepeatSets_7(STRUCT TestSettings &t)
 
 	variable sweepNo
 
@@ -1363,15 +1315,13 @@ End
 
 // test that all events are fired, even with TP during ITI
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RepeatSets_7([str])
-	string str
+static Function RepeatSets_7([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I0_L0_BKG1_RES1_ITI3_TPI1")
 	AcquireData_NG(s, str)
 End
 
-static Function RepeatSets_7_REENTRY([str])
-	string str
+static Function RepeatSets_7_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -1394,8 +1344,7 @@ static Function RepeatSets_7_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function RepeatSets_8_PreAcq(device)
-	string device
+static Function RepeatSets_8_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = NONE)
@@ -1407,15 +1356,13 @@ End
 // Locked Indexing with TP during DAQ
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RepeatSets_8([str])
-	string str
+static Function RepeatSets_8([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L1_BKG1_RES1")
 	AcquireData_NG(s, str)
 End
 
-static Function RepeatSets_8_REENTRY([str])
-	string str
+static Function RepeatSets_8_REENTRY([string str])
 
 	STRUCT TestSettings t
 
@@ -1441,8 +1388,7 @@ static Function RepeatSets_8_REENTRY([str])
 	AllTests(t, str)
 End
 
-static Function RepeatSets_9_PreAcq(device)
-	string device
+static Function RepeatSets_9_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = NONE)
@@ -1454,15 +1400,13 @@ End
 // Unlocked Indexing with TP during DAQ
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RepeatSets_9([str])
-	string str
+static Function RepeatSets_9([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings(overrideConfig = "MD1_RA1_I1_L0_BKG1_RES1")
 	AcquireData_NG(s, str)
 End
 
-static Function RepeatSets_9_REENTRY([str])
-	string str
+static Function RepeatSets_9_REENTRY([string str])
 
 	STRUCT TestSettings t
 

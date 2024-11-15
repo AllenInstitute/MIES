@@ -8,6 +8,7 @@
 /// @{
 
 Function BUGWorks()
+
 	variable bugCount
 
 	bugCount = ROVar(GetBugCount())
@@ -22,6 +23,7 @@ Function BUGWorks()
 End
 
 Function BUG_TSWorks1()
+
 	variable bugCount
 
 	TUFXOP_Clear/N=(TSDS_BUGCOUNT)/Q/Z
@@ -42,6 +44,7 @@ threadsafe static Function BugHelper(variable idx)
 End
 
 Function BUG_TSWorks2()
+
 	variable bugCount, numThreads
 
 	TUFXOP_Clear/N=(TSDS_BUGCOUNT)/Q/Z

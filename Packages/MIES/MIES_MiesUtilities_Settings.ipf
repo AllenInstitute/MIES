@@ -67,8 +67,7 @@ Function GenerateSettingsDefaults()
 	return JSONid
 End
 
-Function UpgradeSettings(JSONid)
-	variable JSONid
+Function UpgradeSettings(variable JSONid)
 
 	string oldPath, jsonPath
 	string documentsFolder = GetUserDocumentsFolderPath()

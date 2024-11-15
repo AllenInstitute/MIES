@@ -12,8 +12,7 @@
 
 /// @brief Return the first function from the stack trace
 ///         not located in this file.
-static Function FindFirstOutsideCaller(func, line, file)
-	string &func, &line, &file
+static Function FindFirstOutsideCaller(string &func, string &line, string &file)
 
 	string stacktrace, caller
 	variable numCallers, i
@@ -64,9 +63,7 @@ static StrConstant functionReturnMessage = "return value"
 ///
 ///@param var     numerical argument for debug output
 ///@param format  optional format string to override the default of "%g"
-Function DEBUGPRINTv(var, [format])
-	variable var
-	string   format
+Function DEBUGPRINTv(variable var, [string format])
 
 	if(ParamIsDefault(format))
 		DEBUGPRINT(functionReturnMessage, var = var)
@@ -100,9 +97,7 @@ End
 ///
 ///@param wv     wave argument for debug output
 ///@param format optional format string to override the default of "%g"
-Function/WAVE DEBUGPRINTw(wv, [format])
-	WAVE/Z wv
-	string format
+Function/WAVE DEBUGPRINTw(WAVE/Z wv, [string format])
 
 	if(ParamIsDefault(format))
 		DEBUGPRINT(functionReturnMessage, wv = wv)
@@ -135,8 +130,7 @@ End
 ///
 ///@param str     string argument for debug output
 ///@param format  optional format string to override the default of "%s"
-Function/S DEBUGPRINTs(str, [format])
-	string str, format
+Function/S DEBUGPRINTs(string str, [string format])
 
 	if(ParamIsDefault(format))
 		DEBUGPRINT(functionReturnMessage, str = str)
@@ -169,11 +163,7 @@ End
 /// @param str    string
 /// @param wv     wave (can be null)
 /// @param format format string overrides the default of "%g" for variables and "%s" for strings
-Function DEBUGPRINT(msg, [var, str, wv, format])
-	string   msg
-	variable var
-	WAVE/Z   wv
-	string str, format
+Function DEBUGPRINT(string msg, [variable var, string str, WAVE/Z wv, string format])
 
 	string file, line, func, caller, stacktrace, formatted = ""
 	variable numSuppliedOptParams, idx, numCallers
@@ -260,10 +250,7 @@ End
 /// @param var    variable
 /// @param str    string
 /// @param format format string overrides the default of "%g" for variables and "%s" for strings
-threadsafe Function DEBUGPRINT_TS(msg, [var, str, format])
-	string   msg
-	variable var
-	string str, format
+threadsafe Function DEBUGPRINT_TS(string msg, [variable var, string str, string format])
 
 	string formatted = ""
 	variable numSuppliedOptParams
@@ -330,6 +317,7 @@ End
 /// Creates a notebook with the special name "HistoryCarbonCopy"
 /// which will hold a copy of the history
 static Function CreateHistoryLog()
+
 	DoWindow/K HistoryCarbonCopy
 	NewNotebook/V=0/F=0/N=HistoryCarbonCopy
 End
@@ -357,8 +345,7 @@ End
 
 /// @brief Prints a message to the command history in debug mode,
 ///        aborts with dialog in release mode
-Function DEBUGPRINT_OR_ABORT(msg)
-	string msg
+Function DEBUGPRINT_OR_ABORT(string msg)
 
 	DEBUGPRINT(msg)
 End
@@ -382,71 +369,57 @@ End
 
 /// @brief Print the elapsed time for performance measurements in seconds
 /// @see DEBUG_TIMER_START()
-Function DEBUGPRINT_ELAPSED(referenceTime)
-	variable referenceTime
+Function DEBUGPRINT_ELAPSED(variable referenceTime)
 
 	DEBUGPRINT("timestamp: ", var = GetElapsedTime(referenceTime))
 End
 
 /// @brief Print and store the elapsed time for performance measurements
 /// @see DEBUG_TIMER_START()
-Function DEBUGPRINT_ELAPSED_WAVE(referenceTime)
-	variable referenceTime
+Function DEBUGPRINT_ELAPSED_WAVE(variable referenceTime)
 
 	StoreElapsedTime(referenceTime)
 End
 
 #else
 
-Function DEBUGPRINTv(var, [format])
-	variable var
-	string   format
+Function DEBUGPRINTv(variable var, [string format])
 
 	// do nothing
 
 	return var
 End
 
-Function/S DEBUGPRINTs(str, [format])
-	string str, format
+Function/S DEBUGPRINTs(string str, [string format])
 
 	// do nothing
 
 	return str
 End
 
-Function/WAVE DEBUGPRINTw(wv, [format])
-	WAVE/Z wv
-	string format
+Function/WAVE DEBUGPRINTw(WAVE/Z wv, [string format])
 
 	// do nothing
 
 	return wv
 End
 
-Function DEBUGPRINT(msg, [var, str, wv, format])
-	string   msg
-	variable var
-	WAVE/Z   wv
-	string str, format
+Function DEBUGPRINT(string msg, [variable var, string str, WAVE/Z wv, string format])
 
 	// do nothing
 End
 
-threadsafe Function DEBUGPRINT_TS(msg, [var, str, format])
-	string   msg
-	variable var
-	string str, format
+threadsafe Function DEBUGPRINT_TS(string msg, [variable var, string str, string format])
 
 	// do nothing
 End
 
 Function DEBUGPRINTSTACKINFO()
+
 	// do nothing
 End
 
-Function DEBUGPRINT_OR_ABORT(msg)
-	string msg
+Function DEBUGPRINT_OR_ABORT(string msg)
 
 	DoAbortNow(msg)
 End
@@ -455,58 +428,66 @@ Function DEBUG_TIMER_START()
 
 End
 
-Function DEBUGPRINT_ELAPSED(referenceTime)
-	variable referenceTime
+Function DEBUGPRINT_ELAPSED(variable referenceTime)
+
 End
 
-Function DEBUGPRINT_ELAPSED_WAVE(referenceTime)
-	variable referenceTime
+Function DEBUGPRINT_ELAPSED_WAVE(variable referenceTime)
+
 End
 #endif
 
 ///@brief Enable debug mode
 Function EnableDebugMode()
+
 	Execute/P/Q "SetIgorOption poundDefine=DEBUGGING_ENABLED"
 	Execute/P/Q "COMPILEPROCEDURES "
 End
 
 ///@brief Disable debug mode
 Function DisableDebugMode()
+
 	Execute/P/Q "SetIgorOption poundUnDefine=DEBUGGING_ENABLED"
 	Execute/P/Q "COMPILEPROCEDURES "
 End
 
 ///@brief Enable evil mode
 Function EnableEvilMode()
+
 	Execute/P/Q "SetIgorOption poundDefine=EVIL_KITTEN_EATING_MODE"
 	Execute/P/Q "COMPILEPROCEDURES "
 End
 
 ///@brief Disable evil mode
 Function DisableEvilMode()
+
 	Execute/P/Q "SetIgorOption poundUnDefine=EVIL_KITTEN_EATING_MODE"
 	Execute/P/Q "COMPILEPROCEDURES "
 End
 
 /// @brief Disable threadsafe support
 Function DisableThreadsafeSupport()
+
 	Execute/P/Q "SetIgorOption poundDefine=THREADING_DISABLED"
 	Execute/P/Q "SetIgorOption DisableThreadsafe=1"
 End
 
 /// @brief Enable threadsafe support again (default on IP startup)
 Function EnableThreadsafeSupport()
+
 	Execute/P/Q "SetIgorOption poundUnDefine=THREADING_DISABLED"
 	Execute/P/Q "SetIgorOption DisableThreadsafe=0"
 End
 
 /// @brief Disable wave caching support
 Function DisableWaveCache()
+
 	Execute/P/Q "SetIgorOption poundDefine=WAVECACHE_DISABLED"
 End
 
 /// @brief Enable wave caching support again
 Function EnableWaveCache()
+
 	Execute/P/Q "SetIgorOption poundUnDefine=WAVECACHE_DISABLED"
 End
 
@@ -517,8 +498,7 @@ Function EnableDangerousDebugging()
 End
 
 // Return the status of an `SetIgorOption` setting
-Function QueryIgorOption(option)
-	string option
+Function QueryIgorOption(string option)
 
 	variable state
 
@@ -531,7 +511,7 @@ Function QueryIgorOption(option)
 	return state
 End
 
-threadsafe static Function ReportBugToLogfile(string msg, WAVE/T/Z keys, WAVE/T/Z values)
+threadsafe static Function ReportBugToLogfile(string msg, WAVE/Z/T keys, WAVE/Z/T values)
 
 	variable size
 
@@ -587,6 +567,7 @@ End
 
 /// @brief Threadsafe variant of BUG()
 threadsafe Function BUG_TS(string msg, [WAVE/T keys, WAVE/T values])
+
 	variable bugCount
 
 	msg = RemoveEnding(msg, "\r")
@@ -638,6 +619,7 @@ End
 ///
 /// @return Number of waves not matching
 Function CheckAllDimensionLabels()
+
 	string msg, path
 	variable i, numWaves, failures
 
@@ -662,6 +644,7 @@ Function CheckAllDimensionLabels()
 End
 
 threadsafe static Function/S CheckDimensionLabels(WAVE/Z wv)
+
 	variable i, numDims, j, size, numMatches, numEntries, idx
 	string entry
 	string msg  = ""
@@ -724,6 +707,7 @@ End
 
 // see tools/functionprofiling.sh
 Function DEBUG_STOREFUNCTION()
+
 	string funcName  = GetRTStackInfo(2)
 	string callchain = GetRTStackInfo(0)
 	string caller    = StringFromList(0, callchain)

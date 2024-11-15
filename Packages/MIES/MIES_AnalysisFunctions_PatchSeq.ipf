@@ -193,9 +193,7 @@ static Constant PSQ_DS_DASCALE               = 0x7
 ///@}
 
 /// @brief Fills `s` according to the analysis function type
-Function PSQ_GetPulseSettingsForType(type, s)
-	variable                  type
-	STRUCT PSQ_PulseSettings &s
+Function PSQ_GetPulseSettingsForType(variable type, STRUCT PSQ_PulseSettings &s)
 
 	string msg
 
@@ -241,9 +239,7 @@ End
 ///
 /// We recalculate the durations on every sweep again as we can not assume that
 /// it is constant for the whole stimulus set.
-static Function/WAVE PSQ_GetPulseDurations(device, type, sweepNo, totalOnsetDelay, [forceRecalculation])
-	string device
-	variable type, sweepNo, totalOnsetDelay, forceRecalculation
+static Function/WAVE PSQ_GetPulseDurations(string device, variable type, variable sweepNo, variable totalOnsetDelay, [variable forceRecalculation])
 
 	string key
 
@@ -273,9 +269,7 @@ End
 /// @brief Determine the pulse duration on each headstage
 ///
 /// Returns the labnotebook wave as well.
-static Function/WAVE PSQ_DeterminePulseDuration(device, sweepNo, type, totalOnsetDelay)
-	string device
-	variable sweepNo, type, totalOnsetDelay
+static Function/WAVE PSQ_DeterminePulseDuration(string device, variable sweepNo, variable type, variable totalOnsetDelay)
 
 	variable i
 
@@ -365,6 +359,7 @@ static Function [variable rmsShortThreshold, variable rmsLongThreshold, variable
 End
 
 static Function PSQ_StoreThresholdsInLabnotebook(string device, variable type, variable sweepNo, variable headstage, variable rmsShortThreshold, variable rmsLongThreshold, variable targetVThreshold)
+
 	string key
 
 	WAVE values = LBN_GetNumericWave()
@@ -386,6 +381,7 @@ static Function PSQ_StoreThresholdsInLabnotebook(string device, variable type, v
 End
 
 static Function PSQ_EvaluateBaselinePassed(string device, variable type, variable sweepNo, variable headstage, variable chunk, variable ret)
+
 	variable baselineQCPassed
 	string key, msg
 
@@ -525,7 +521,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			endif
 		endif
 		[chunkStartTimeMax, chunkLengthTime] = PSQ_GetBaselineChunkTimes(chunk, ps, totalOnsetDelay, durations)
-		baselineType = chunk ? PSQ_BL_POST_PULSE : PSQ_BL_PRE_PULSE
+		baselineType                         = chunk ? PSQ_BL_POST_PULSE : PSQ_BL_PRE_PULSE
 	else
 		WAVE numericalValues = GetLBNumericalValues(device)
 		WAVE textualValues   = GetLBTextualValues(device)
@@ -542,7 +538,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		DAC       = AFH_GetDACFromHeadstage(device, headstage)
 		ASSERT(IsFinite(DAC), "Non-finite DAC")
 
-		WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER, treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
+		WAVE/Z/T userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, s.sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER, treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
 		ASSERT(WaveExists(userChunkEpochs), "Could not find baseline chunk selection user epochs")
 
 		if(chunk >= DimSize(userChunkEpochs, ROWS))
@@ -956,9 +952,7 @@ End
 
 // @brief Calculate a value from `startTime` spanning
 //        `rangeTime` milliseconds according to `method`
-static Function PSQ_Calculate(wv, column, startTime, rangeTime, method)
-	WAVE wv
-	variable column, startTime, rangeTime, method
+static Function PSQ_Calculate(WAVE wv, variable column, variable startTime, variable rangeTime, variable method)
 
 	variable rangePoints, startPoints
 
@@ -994,9 +988,7 @@ End
 
 /// @brief Return the number of already acquired sweeps from the given
 ///        stimset cycle
-static Function PSQ_NumAcquiredSweepsInSet(device, sweepNo, headstage)
-	string device
-	variable sweepNo, headstage
+static Function PSQ_NumAcquiredSweepsInSet(string device, variable sweepNo, variable headstage)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -1011,9 +1003,7 @@ End
 
 /// @brief Return the number of passed sweeps in all sweeps from the given
 ///        stimset cycle
-Function PSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
-	WAVE numericalValues
-	variable type, sweepNo, headstage
+Function PSQ_NumPassesInSet(WAVE numericalValues, variable type, variable sweepNo, variable headstage)
 
 	string key
 
@@ -1030,9 +1020,7 @@ End
 /// @brief Return the DA stimset length in ms of the given headstage
 ///
 /// @return stimset length or -1 on error
-static Function PSQ_GetDAStimsetLength(device, headstage)
-	string   device
-	variable headstage
+static Function PSQ_GetDAStimsetLength(string device, variable headstage)
 
 	string   setName
 	variable DAC
@@ -1296,7 +1284,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 			break
 		case PSQ_SEAL_EVALUATION:
 			numChunks      = 4
-			numRows        = 2                                            // upper limit
+			numRows        = 2 // upper limit
 			numCols        = IDX_NumberOfSweepsInSet(stimset)
 			layerDimLabels = "BaselineQC;ResistanceA;ResistanceB;AsyncQC"
 			break
@@ -1316,7 +1304,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 			ASSERT(0, "invalid type")
 	endswitch
 
-	WAVE/D/Z wv = GetOverrideResults()
+	WAVE/Z/D wv = GetOverrideResults()
 	numLayers = ItemsInList(layerDimLabels, ";")
 
 	if(WaveExists(wv))
@@ -1334,9 +1322,7 @@ Function/WAVE PSQ_CreateOverrideResults(string device, variable headstage, varia
 End
 
 /// @brief Store the step size in the labnotebook
-static Function PSQ_StoreStepSizeInLBN(device, type, sweepNo, stepsize, [future])
-	string device
-	variable type, sweepNo, stepsize, future
+static Function PSQ_StoreStepSizeInLBN(string device, variable type, variable sweepNo, variable stepsize, [variable future])
 
 	string key
 
@@ -1369,14 +1355,7 @@ End
 /// @param[out] numberOfSpikesFound  [optional] returns the number of spikes found
 ///
 /// @return labnotebook value wave suitable for ED_AddEntryToLabnotebook()
-static Function/WAVE PSQ_SearchForSpikes(device, type, sweepWave, headstage, offset, level, [searchEnd, numberOfSpikesReq, spikePositions, numberOfSpikesFound])
-	string   device
-	variable type
-	WAVE     sweepWave
-	variable headstage, offset, level, searchEnd
-	variable  numberOfSpikesReq
-	WAVE      spikePositions
-	variable &numberOfSpikesFound
+static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE sweepWave, variable headstage, variable offset, variable level, [variable searchEnd, variable numberOfSpikesReq, WAVE spikePositions, variable &numberOfSpikesFound])
 
 	variable first, last, overrideValue, rangeSearchLevel
 	variable minVal, maxVal, numSpikesFoundOverride
@@ -1559,6 +1538,7 @@ End
 ///
 /// @return existing sweep number or INVALID_SWEEP_NUMBER in case no such sweep could be found
 static Function PSQ_GetLastPassingLongRHSweep(string device, variable headstage, variable duration)
+
 	string key
 	variable i, j, setSweep, numSetSweeps, numEntries, sweepNo, setQC, numPassingSweeps
 
@@ -1675,12 +1655,14 @@ End
 
 /// @brief Return the truth that str is a valid PSQ_DAScale operation mode
 Function PSQ_DS_IsValidMode(string str)
+
 	return !cmpstr(str, PSQ_DS_SUB) || !cmpstr(str, PSQ_DS_SUPRA) || !cmpstr(str, PSQ_DS_ADAPT)
 End
 
 /// @brief Return the sweep number of the last sweep using the PSQ_DaScale()
 ///        analysis function, where the set passes and was in the given mode
 static Function PSQ_GetLastPassingDAScale(string device, variable headstage, string opMode)
+
 	variable numEntries, sweepNo, i, setQC
 	string key, modeKey
 
@@ -1721,7 +1703,7 @@ static Function PSQ_GetLastPassingDAScale(string device, variable headstage, str
 		// check for subthreshold operation mode
 		modeKey = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE, query = 1)
 
-		WAVE/T/Z setting = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, modeKey, headstage, UNKNOWN_MODE)
+		WAVE/Z/T setting = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, modeKey, headstage, UNKNOWN_MODE)
 
 		if(WaveExists(setting) && !cmpstr(setting[INDEP_HEADSTAGE], opMode))
 			return sweepNo
@@ -1734,6 +1716,7 @@ End
 /// @brief Return the sweep number of the last sweep using the PSQ_TrueRestingMembranePotential()
 ///        analysis function
 static Function PSQ_GetLastPassingTrueRMP(string device, variable headstage)
+
 	variable numEntries, sweepNo, i, setQC
 	string key
 
@@ -1767,9 +1750,7 @@ End
 /// @brief Return the DAScale offset for PSQ_DaScale()
 ///
 /// @return DAScale value in pA or NaN on error
-static Function PSQ_DS_GetDAScaleOffset(device, headstage, opMode)
-	string device, opMode
-	variable headstage
+static Function PSQ_DS_GetDAScaleOffset(string device, variable headstage, string opMode)
 
 	variable sweepNo
 
@@ -1802,9 +1783,7 @@ End
 ///
 /// @return 1 if found at least one, zero if none and `NaN` if no such entry
 /// could be found
-static Function PSQ_FoundAtLeastOneSpike(device, sweepNo)
-	string   device
-	variable sweepNo
+static Function PSQ_FoundAtLeastOneSpike(string device, variable sweepNo)
 
 	string key
 
@@ -1960,7 +1939,7 @@ static Function [variable start, variable stop] PSQ_DS_GetFrequencyEvalRangeForR
 	WAVE textualValues   = GetLBTextualValues(device)
 
 	WAVE     DACs   = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
-	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DACs[headstage], "^E1$")
+	WAVE/Z/T epochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DACs[headstage], "^E1$")
 	ASSERT(WaveExists(epochs), "Could not find E1 epoch")
 	ASSERT(DimSize(epochs, ROWS) == 1, "Expected exactly one epoch")
 	supraEpochLength    = str2num(epochs[0][EPOCH_COL_ENDTIME]) - str2num(epochs[0][EPOCH_COL_STARTTIME])
@@ -1979,7 +1958,7 @@ static Function [variable start, variable stop] PSQ_DS_GetFrequencyEvalRange(str
 	WAVE textualValues   = GetLBTextualValues(device)
 
 	WAVE     DACs   = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
-	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DACs[headstage], "^E1$")
+	WAVE/Z/T epochs = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DACs[headstage], "^E1$")
 	ASSERT(WaveExists(epochs), "Could not find E1 epoch")
 	ASSERT(DimSize(epochs, ROWS) == 1, "Expected exactly one epoch")
 
@@ -2014,10 +1993,10 @@ static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(st
 	endif
 
 	if(fromRhSuAd)
-		refSweepNo = PSQ_GetLastPassingDAScale(device, headstage, PSQ_DS_SUPRA)
+		refSweepNo    = PSQ_GetLastPassingDAScale(device, headstage, PSQ_DS_SUPRA)
 		[start, stop] = PSQ_DS_GetFrequencyEvalRangeForRhSuAd(device, headstage, refSweepNo)
 	else
-		refSweepNo = sweepNo
+		refSweepNo    = sweepNo
 		[start, stop] = PSQ_DS_GetFrequencyEvalRange(device, headstage, refSweepNo)
 	endif
 
@@ -2268,7 +2247,7 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
-	[WAVE apfreq, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, fromRhSuAd = fromRhSuAd)
+	[WAVE apfreq, emptySCI]  = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, fromRhSuAd = fromRhSuAd)
 	[WAVE DAScale, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, fromRhSuAd = fromRhSuAd)
 
 	/// PSQ_FMT_LBN_DA_AT_RSA_FREQ
@@ -2536,7 +2515,7 @@ static Function [variable maxSlope, WAVE fitSlopes, WAVE DAScales] PSQ_DS_Calcul
 	WAVE textualValues   = GetLBTextualValues(device)
 
 	[WAVE fitSlopes, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FI_SLOPE)
-	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE)
+	[WAVE DAScales, emptySCI]  = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE)
 
 	if(IsNaN(fitSlope))
 		return [NaN, fitSlopes, DAScales]
@@ -2940,19 +2919,19 @@ static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherF
 	WAVE textualValues   = GetLBTextualValues(device)
 
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES, query = 1)
-	WAVE/T/Z futureDAScalesHistoricLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	WAVE/Z/T futureDAScalesHistoricLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	if(WaveExists(futureDAScalesHistoricLBN))
-		WAVE/D/Z futureDAScalesHistoric = ListToNumericWave(futureDAScalesHistoricLBN[headstage], ";")
+		WAVE/Z/D futureDAScalesHistoric = ListToNumericWave(futureDAScalesHistoricLBN[headstage], ";")
 	else
 		Make/FREE/D/N=0 futureDAScalesHistoric
 	endif
 
 	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = 1)
-	[WAVE apfreq, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = 1)
+	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = 1)
 
 	if(!emptySCI)
-		WAVE/D/Z futureDAScalesFromLastSweep = PSQ_DS_GatherOvershootCorrection(cdp, apfreq, DAScales, futureDAScalesHistoric)
+		WAVE/Z/D futureDAScalesFromLastSweep = PSQ_DS_GatherOvershootCorrection(cdp, apfreq, DAScales, futureDAScalesHistoric)
 
 		if(WaveExists(futureDAScalesFromLastSweep))
 			Concatenate/FREE/NP=(ROWS) {futureDAScalesFromLastSweep}, futureDAScalesHistoric
@@ -3055,6 +3034,7 @@ static Function/WAVE PSQ_DS_GetPassingDAScaleSweeps(WAVE numericalValues, variab
 End
 
 static Function/WAVE PSQ_DS_GetPassingRheobaseSweeps(WAVE numericalValues, variable passingRheobaseSweep, variable headstage)
+
 	string key
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, passingRheobaseSweep, headstage)
@@ -3185,7 +3165,7 @@ static Function [variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_D
 	if(!CheckIfSmall(fitCoeff[%Slope]))
 		daScaleMinStepWidth = (maxFrequencyChangePercent * PERCENT_TO_ONE) / abs(fitCoeff[%Slope])
 	else
-		[minimum, maximum] = WaveMinAndMax(DAScalesRhSuAd)
+		[minimum, maximum]  = WaveMinAndMax(DAScalesRhSuAd)
 		daScaleMinStepWidth = fallbackDAScaleRangeFac * (maximum - minimum)
 	endif
 
@@ -3310,6 +3290,7 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 End
 
 static Function/S PSQ_CheckParamCommon(string name, STRUCT CheckParametersStruct &s, [variable maxThreshold])
+
 	variable val
 	string   str
 
@@ -3410,6 +3391,7 @@ End
 
 /// @brief Require parameters from stimset
 Function/S PSQ_DAScale_GetParams()
+
 	return "[AbsFrequencyMinDistance:variable],"      + \
 	       "AsyncQCChannels:wave,"                    + \
 	       "[BaselineRMSLongThreshold:variable],"     + \
@@ -3505,7 +3487,7 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
 		case "DAScales":
-			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, s.params)
+			WAVE/Z/D wv = AFH_GetAnalysisParamWave(name, s.params)
 			if(!WaveExists(wv))
 				return "Wave must exist"
 			endif
@@ -3691,9 +3673,7 @@ End
 ///
 /// @endverbatim
 ///
-Function PSQ_DAScale(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable val, totalOnsetDelay, DAScale, baselineQCPassed, passingSupraSweep
 	variable i, numberOfSpikes, samplingFrequencyPassed, numPoints, numFailedSweeps
@@ -3890,7 +3870,7 @@ Function PSQ_DAScale(device, s)
 
 					PSQ_DS_CreateSurveyPlotForUser(device, s.sweepNo, s.headstage, fromRhSuAd = 1)
 
-					WAVE/D/Z futureDAScales = PSQ_DS_GatherOvershootCorrection(cdp, apfreqRhSuAd, DAScalesRhSuAd, $"")
+					WAVE/Z/D futureDAScales = PSQ_DS_GatherOvershootCorrection(cdp, apfreqRhSuAd, DAScalesRhSuAd, $"")
 
 					validFit = PSQ_DS_AreFitResultsValid(device, s.sweepNo, s.headstage, fitOffsetFromRhSuAd, fitSlopeFromRhSuAd, fromRhSuAd = 1)
 
@@ -4086,7 +4066,7 @@ Function PSQ_DAScale(device, s)
 						Make/FREE/D/N=2 coefWave
 						CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, spikeFrequencies[]/D/X=DAScalesPlot[]; AbortOnRTE
 
-						WAVE/D/Z W_sigma = MakeWaveFree($"W_sigma")
+						WAVE/Z/D W_sigma = MakeWaveFree($"W_sigma")
 
 						if(!WaveExists(W_sigma))
 							Make/FREE/D/N=2 W_sigma = NaN
@@ -4316,6 +4296,7 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_SquarePulse_GetParams()
+
 	return "AsyncQCChannels:wave,"         + \
 	       "[SamplingFrequency:variable]," + \
 	       "SamplingMultiplier:variable"
@@ -4383,9 +4364,7 @@ End
 /// ---|     |--------------------------------------------
 ///
 /// @endverbatim
-Function PSQ_SquarePulse(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable stepsize, DAScale, totalOnsetDelay, setPassed, sweepPassed, multiplier
 	variable val, samplingFrequencyPassed, asyncAlarmPassed, ret
@@ -4569,6 +4548,7 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_Rheobase_GetParams()
+
 	return "AsyncQCChannels:wave,"                 + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
@@ -4645,9 +4625,7 @@ End
 /// ---|     |--------------------------------------------
 ///
 /// @endverbatim
-Function PSQ_Rheobase(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed, diff
 	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize, previousStepSize, samplingFrequencyPassed
@@ -4999,6 +4977,7 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_Ramp_GetParams()
+
 	return "AsyncQCChannels:wave,"                 + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
@@ -5088,9 +5067,7 @@ End
 /// ---/             |--------------------------------------------
 ///
 /// @endverbatim
-Function PSQ_Ramp(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
 	variable baselineQCPassed, finalDAScale, initialDAScale, samplingFrequencyPassed
@@ -5435,6 +5412,7 @@ End
 /// @returns result        set passing state (0/1)
 /// @returns maxOccurences maximum number of passing sets with the same DASCale value
 Function [variable result, variable maxOccurences] PSQ_CR_SetHasPassed(WAVE numericalValues, variable sweepNo, variable headstage)
+
 	variable i, numEntries, scaleFactor, index, maxValue
 	string key
 
@@ -5761,6 +5739,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 End
 
 static Function/S PSQ_CR_BoundsEvaluationModeToString(variable val)
+
 	switch(val)
 		case PSQ_CR_BEM_SYMMETRIC:
 			return "Symmetric"
@@ -5774,6 +5753,7 @@ static Function/S PSQ_CR_BoundsEvaluationModeToString(variable val)
 End
 
 static Function PSQ_CR_ParseBoundsEvaluationModeString(string str)
+
 	strswitch(str)
 		case "Symmetric":
 			return PSQ_CR_BEM_SYMMETRIC
@@ -5787,6 +5767,7 @@ static Function PSQ_CR_ParseBoundsEvaluationModeString(string str)
 End
 
 static Function PSQ_SetAutobiasTargetVIfPresent(string device, variable headstage, string params, string name)
+
 	variable value
 
 	value = AFH_GetAnalysisParamNumerical(name, params)
@@ -5800,6 +5781,7 @@ static Function PSQ_SetAutobiasTargetVIfPresent(string device, variable headstag
 End
 
 static Function PSQ_SetAutobiasTargetV(string device, variable headstage, variable value)
+
 	variable preActiveHS
 
 	preActiveHS = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
@@ -5823,6 +5805,7 @@ End
 ///
 /// @return 0 on success, 1 otherwise
 static Function PSQ_CR_SetAutobiasTargetVFromTrueRMP(string device, variable headstage, string params)
+
 	variable useTrueRestingMembPot, averageVoltage, sweepNo
 	string key
 
@@ -5898,6 +5881,7 @@ Function/S PSQ_Chirp_GetHelp(string name)
 End
 
 Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
+
 	variable val
 	string   str
 
@@ -5975,6 +5959,7 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
+
 	return "[AmpBesselFilter:variable],"                   + \
 	       "[AmpBesselFilterRestore:variable],"            + \
 	       "AsyncQCChannels:wave,"                         + \
@@ -6059,9 +6044,7 @@ End
 ///                             ~
 ///
 /// @endverbatim
-Function PSQ_Chirp(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable InnerRelativeBound, OuterRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
@@ -6451,7 +6434,7 @@ Function PSQ_Chirp(device, s)
 		// and baselineQC is not failing
 
 		[boundsAction, scalingFactorDaScale] = PSQ_CR_DetermineBoundsAction(device, s.scaledDACWave, s.headstage, s.sweepNo, chirpStart, cycleEnd, innerRelativeBound, outerRelativeBound, boundsEvaluationMode)
-		insideBounds = (boundsAction == PSQ_CR_PASS)
+		insideBounds                         = (boundsAction == PSQ_CR_PASS)
 		WAVE result = LBN_GetNumericWave()
 		result[INDEP_HEADSTAGE] = insideBounds
 		key                     = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
@@ -6500,6 +6483,7 @@ End
 ///
 /// Zero is the DA/AD wave zero.
 static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRange(string device, variable sweepNo, variable headstage)
+
 	variable DAC, totalOnsetDelay
 
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -6509,7 +6493,7 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetSpikeEvaluationRang
 
 	WAVE epochsWave = GetEpochsWave(device)
 
-	WAVE/T/Z evaluationEpoch = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC,   \
+	WAVE/Z/T evaluationEpoch = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC,   \
 	                                        "^U_CR_SE$", treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
 
 	if(WaveExists(evaluationEpoch))
@@ -6572,7 +6556,7 @@ static Function [variable epBegin, variable epEnd] PSQ_CR_GetChirpEvaluationRang
 
 	WAVE epochsWave = GetEpochsWave(device)
 
-	WAVE/T/Z evaluationEpoch = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC,   \
+	WAVE/Z/T evaluationEpoch = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC,   \
 	                                        "^U_CR_CE$", treelevel = EPOCH_USER_LEVEL, epochsWave = epochsWave)
 
 	if(WaveExists(evaluationEpoch))
@@ -6637,7 +6621,7 @@ Function/WAVE PSQ_CR_GetFullCycleEpochs(WAVE numericalValues, WAVE/T textualValu
 	string regexp
 
 	sprintf regexp, "^(E1_TG_C%d|E1_TG_C%d)$", 0, requestedCycles - 1
-	WAVE/T/Z fullCycleEpochs = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC, \
+	WAVE/Z/T fullCycleEpochs = EP_GetEpochs(numericalValues, textualValues, NaN, XOP_CHANNEL_TYPE_DAC, DAC, \
 	                                        regexp, treelevel = 2, epochsWave = epochsWave)
 
 	return fullCycleEpochs
@@ -6647,9 +6631,7 @@ End
 ///
 /// Required to do before skipping sweeps.
 /// @todo this hack must go away.
-static Function PSQ_ForceSetEvent(device, headstage)
-	string   device
-	variable headstage
+static Function PSQ_ForceSetEvent(string device, variable headstage)
 
 	variable DAC
 
@@ -6662,6 +6644,7 @@ End
 
 /// @brief Execute `code` in the SweepFormula notebook
 static Function/S PSQ_ExecuteSweepFormula(string device, string code)
+
 	string databrowser, bsPanel, sfNotebook
 
 	databrowser = DB_GetBoundDataBrowser(device, mode = BROWSER_MODE_AUTOMATION)
@@ -6685,6 +6668,7 @@ static Function PSQ_SetSamplingIntervalMultiplier(string device, variable multip
 End
 
 static Function PSQ_SetStimulusSets(string device, variable headstage, string params)
+
 	string ctrl, stimset, stimsetIndex
 	variable DAC, type, enableIndexing, tabID
 
@@ -6717,6 +6701,7 @@ static Function PSQ_SetStimulusSets(string device, variable headstage, string pa
 End
 
 Function/S PSQ_PipetteInBath_CheckParam(string name, STRUCT CheckParametersStruct &s)
+
 	variable val
 	string   str
 
@@ -6768,6 +6753,7 @@ Function/S PSQ_PipetteInBath_GetHelp(string name)
 End
 
 Function/S PSQ_PipetteInBath_GetParams()
+
 	return "AsyncQCChannels:wave,"                 + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
@@ -6823,6 +6809,7 @@ End
 ///
 /// @endverbatim
 Function PSQ_PipetteInBath(string device, STRUCT AnalysisFunction_V3 &s)
+
 	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed, asyncAlarmPassed
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
 	variable maxPipetteResistance, minPipetteResistance, expectedNumTestpulses, numTestPulses, pipetteResistance
@@ -7012,6 +6999,7 @@ End
 /// Note: This function always returns the last entry, so this needs to be
 ///       called directly after PSQ_ExecuteSweepFormula without giving control back to Igor Pro.
 static Function/WAVE PSQ_GetSweepFormulaResultWave(WAVE/T textualResultsValues, string key)
+
 	string valueStr
 
 	valueStr = GetLastSettingTextIndep(textualResultsValues, NaN, key, SWEEP_FORMULA_RESULT)
@@ -7107,6 +7095,7 @@ Function PSQ_CreateTestpulseEpochsImpl(WAVE/T epochWave, variable DAC, string se
 End
 
 static Function PSQ_CreateTestpulseLikeEpoch(WAVE/T epochWave, variable DAC, string setName, variable DAScale, variable start, variable epochIndex, variable tpIndex)
+
 	variable prePulseTP, signalTP, postPulseTP
 	variable amplitude, epBegin, epEnd
 	string shortName, tags
@@ -7160,6 +7149,7 @@ static Function PSQ_CreateTestpulseLikeEpoch(WAVE/T epochWave, variable DAC, str
 End
 
 Function/S PSQ_SealEvaluation_CheckParam(string name, STRUCT CheckParametersStruct &s)
+
 	variable val
 	string   str
 
@@ -7214,6 +7204,7 @@ Function/S PSQ_SealEvaluation_GetHelp(string name)
 End
 
 Function/S PSQ_SealEvaluation_GetParams()
+
 	return "AsyncQCChannels:wave,"                 + \
 	       "[BaselineChunkLength:variable],"       + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
@@ -7280,6 +7271,7 @@ End
 ///
 /// @endverbatim
 Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
+
 	variable multiplier, chunk, baselineQCPassed, ret, DAC, samplingFrequencyQCPassed, sealResistanceMax
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet, asyncAlarmPassed
 	variable expectedNumTestpulses, numTestPulses, sealResistanceA, sealResistanceB, sealResistanceQCPassed, testpulseGroupSel, sealThreshold
@@ -7557,6 +7549,7 @@ End
 ///
 /// @return 0 on success, 1 on failure
 static Function PSQ_SE_CreateEpochs(string device, variable headstage, string params)
+
 	variable DAC, userEpochIndexBLC, userEpochTPIndexBLC, chunkLength, testpulseGroupSel
 	variable amplitude, numEpochs, i, epBegin, epEnd, totalOnsetDelay, duration, DAScale, wbBegin, wbEnd
 	string setName, shortName, tags
@@ -7636,6 +7629,7 @@ Function PSQ_SE_CreateEpochsImpl(WAVE/T epochWave, variable DAC, variable totalO
 End
 
 Function PSQ_SE_GetTestpulseGroupSelection(string params)
+
 	string str = AFH_GetAnalysisParamTextual("TestPulseGroupSelector", params, defValue = "Both")
 
 	return PSQ_SE_ParseTestpulseGroupSelection(str)
@@ -7656,6 +7650,7 @@ static Function PSQ_SE_ParseTestpulseGroupSelection(string str)
 End
 
 Function/S PSQ_TrueRestingMembranePotential_CheckParam(string name, STRUCT CheckParametersStruct &s)
+
 	variable val
 	string   str
 
@@ -7731,6 +7726,7 @@ Function/S PSQ_TrueRestingMembranePotential_GetHelp(string name)
 End
 
 Function/S PSQ_TrueRestingMembranePotential_GetParams()
+
 	return "AsyncQCChannels:wave,"                 + \
 	       "AbsoluteVoltageDiff:variable,"         + \
 	       "[BaselineChunkLength:variable],"       + \
@@ -7783,6 +7779,7 @@ End
 ///
 /// @endverbatim
 Function PSQ_TrueRestingMembranePotential(string device, STRUCT AnalysisFunction_V3 &s)
+
 	variable multiplier, ret, preActiveHS, chunk, baselineQCPassed, spikeQCPassed, IsFinished, targetV, iti
 	variable averageVoltageQCPassed, samplingFrequencyQCPassed, setPassed, sweepPassed, DAC, level, totalOnsetDelay, ignoredTime
 	variable numSweepsFailedAllowed, averageVoltage, numSpikes, position, midsweepReturnValue, asyncAlarmPassed
@@ -7960,6 +7957,7 @@ Function PSQ_TrueRestingMembranePotential(string device, STRUCT AnalysisFunction
 End
 
 static Function [string tags, string shortName] PSQ_CreateBaselineChunkSelectionStrings(variable index)
+
 	sprintf tags, "Type=Baseline Chunk QC Selection;Index=%d", index
 	sprintf shortName, "BLS%d", index
 End
@@ -7976,6 +7974,7 @@ End
 ///
 /// @return 0 on success, 1 on failure
 static Function PSQ_CreateBaselineChunkSelectionEpochs(string device, variable headstage, string params, WAVE epochIndizes, [variable numRequiredEpochs])
+
 	variable DAC, index, chunkLength
 	variable amplitude, numEpochs, i, epBegin, epEnd, totalOnsetDelay, duration, wbBegin, wbEnd
 	string setName, shortName, tags
@@ -8060,6 +8059,7 @@ End
 ///
 /// @return One of @ref DetermineSweepQCReturns
 static Function PSQ_DetermineSweepQCResults(string device, variable type, variable sweepNo, variable headstage, variable requiredPassesInSet, variable numSweepsFailedAllowed)
+
 	variable DAC, sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, samplingFrequencyPassed, failsInSet
 	string stimset, key, msg
 
@@ -8113,6 +8113,7 @@ static Function PSQ_DetermineSweepQCResults(string device, variable type, variab
 End
 
 static Function PSQ_VM_EvaluateAverageVoltage(string device, variable sweepNo, variable headstage, string params, variable baselineQCPassed)
+
 	variable absoluteDiff, absoluteDiffAllowed, relativeDiff, relativeDiffAllowed, voltage
 	variable averageQCPassed, averageAbsoluteQCPassed, averageRelativeQCPassed, avgChunk0, avgChunk1
 	string key, databrowser, formula, str
@@ -8200,6 +8201,7 @@ static Function PSQ_VM_EvaluateAverageVoltage(string device, variable sweepNo, v
 End
 
 static Function [variable spikeQCPassed, WAVE spikePositions] PSQ_VM_CheckForSpikes(string device, variable sweepNo, variable headstage, WAVE scaledDACWave, variable level)
+
 	variable totalOnsetDelay, numberOfSpikesFound
 	string key
 
@@ -8227,6 +8229,7 @@ static Function [variable spikeQCPassed, WAVE spikePositions] PSQ_VM_CheckForSpi
 End
 
 static Function PSQ_VM_HandleFailingSpikeQC(string device, STRUCT AnalysisFunction_V3 &s, WAVE spikePositions)
+
 	variable first, last, totalOnsetDelay, ignoredTime, targetV, position, numRows, iti
 
 	WAVE sweepWave = GetSweepWave(device, s.sweepNo)
@@ -8270,6 +8273,7 @@ static Function PSQ_VM_HandleFailingSpikeQC(string device, STRUCT AnalysisFuncti
 End
 
 static Function PSQ_CheckThatAlarmIsEnabled(string device, WAVE asyncChannels)
+
 	variable chan, alarmEnabled, enabled
 	string ctrl
 
@@ -8296,6 +8300,7 @@ static Function PSQ_CheckThatAlarmIsEnabled(string device, WAVE asyncChannels)
 End
 
 static Function PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(string device, variable type, variable sweepNo, WAVE asyncChannels)
+
 	variable chan, alarmState, alarmPassed
 	string key
 
@@ -8319,6 +8324,7 @@ static Function PSQ_CheckAsyncAlarmStateAndStoreInLabnotebook(string device, var
 End
 
 Function/S PSQ_AccessResistanceSmoke_CheckParam(string name, STRUCT CheckParametersStruct &s)
+
 	variable val
 
 	strswitch(name)
@@ -8378,6 +8384,7 @@ Function/S PSQ_AccessResistanceSmoke_GetHelp(string name)
 End
 
 Function/S PSQ_AccessResistanceSmoke_GetParams()
+
 	return "AsyncQCChannels:wave,"                           + \
 	       "[BaselineChunkLength:variable],"                 + \
 	       "[BaselineRMSLongThreshold:variable],"            + \
@@ -8438,6 +8445,7 @@ End
 ///
 /// @endverbatim
 Function PSQ_AccessResistanceSmoke(string device, STRUCT AnalysisFunction_V3 &s)
+
 	variable multiplier, numTestpulses, expectedNumTestpulses, ret, accessResistance, steadyStateResistance, chunk, baselineQCPassed, numSweepsFailedAllowed
 	variable accessResistanceQC, steadyStateResistanceQC, resistanceRatioQC, sweepPassed, setPassed, baselinePassed, samplingFrequencyPassed, midsweepReturnValue
 	variable asyncAlarmPassed

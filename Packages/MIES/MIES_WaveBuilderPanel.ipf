@@ -57,7 +57,7 @@ Function WB_OpenStimulusSetInWaveBuilder()
 	headstage = str2num(TUD_GetUserData(graph, trace, "headstage"))
 	WAVE/T textualValues = $TUD_GetUserData(graph, trace, "textualValues")
 
-	WAVE/T/Z stimsetLBN = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	WAVE/Z/T stimsetLBN = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 
 	if(!WaveExists(stimsetLBN) || IsNaN(headstage))
 		printf "Context menu option \"%s\" could not find the stimulus set of the trace %s.\r", S_Value, trace
@@ -177,9 +177,7 @@ static Constant EPOCH_HL_TYPE_RIGHT = 0x02
 
 /// @brief Add epoch highlightning traces
 /// Uses fill-to-next on specially created waves added before and after the current trace
-static Function WBP_AddEpochHLTraces(dfr, epochHLType, epoch, numEpochs)
-	DFREF dfr
-	variable epochHLType, epoch, numEpochs
+static Function WBP_AddEpochHLTraces(DFREF dfr, variable epochHLType, variable epoch, variable numEpochs)
 
 	string nameBegin, nameEnd
 	variable first, last
@@ -307,9 +305,7 @@ End
 /// @brief Reponsible for adjusting controls which depend on other controls
 ///
 /// Must be called before the changed settings are written into the parameter waves.
-static Function WBP_UpdateDependentControls(checkBoxCtrl, checked)
-	string   checkBoxCtrl
-	variable checked
+static Function WBP_UpdateDependentControls(string checkBoxCtrl, variable checked)
 
 	variable val
 
@@ -413,8 +409,7 @@ static Function WBP_UpdatePanelIfAllowed()
 End
 
 /// @brief Passes the data from the WP wave to the panel
-static Function WBP_ParameterWaveToPanel(stimulusType)
-	variable stimulusType
+static Function WBP_ParameterWaveToPanel(variable stimulusType)
 
 	string list, control, data, customWaveName, allControls
 	variable segment, numEntries, i, row
@@ -467,10 +462,7 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 End
 
 /// @brief Generic wrapper for setting a control's value
-static Function WBP_SetControl(win, control, [value, str])
-	string win, control
-	variable value
-	string   str
+static Function WBP_SetControl(string win, string control, [variable value, string str])
 
 	variable controlType
 
@@ -499,8 +491,7 @@ static Function WBP_SetControl(win, control, [value, str])
 	endif
 End
 
-Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function WBP_ButtonProc_DeleteSet(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string setWaveToDelete
 
@@ -525,8 +516,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 	return 0
 End
 
-Function WBP_CheckProc(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function WBP_CheckProc(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -541,8 +531,7 @@ Function WBP_CheckProc(cba) : CheckBoxControl
 End
 
 /// @brief Additional `initialhook` called in `ACL_DisplayTab`
-Function WBP_InitialTabHook(tca)
-	STRUCT WMTabControlAction &tca
+Function WBP_InitialTabHook(STRUCT WMTabControlAction &tca)
 
 	string type
 	variable tabnum, idx
@@ -568,8 +557,7 @@ Function WBP_InitialTabHook(tca)
 End
 
 /// @brief Additional `finalhook` called in `ACL_DisplayTab`
-Function WBP_FinalTabHook(tca)
-	STRUCT WMTabControlAction &tca
+Function WBP_FinalTabHook(STRUCT WMTabControlAction &tca)
 
 	if(tca.tab != EPOCH_TYPE_PULSE_TRAIN)
 		EnableControl(panel, "SetVar_WaveBuilder_P0")
@@ -593,8 +581,7 @@ Function WBP_FinalTabHook(tca)
 	return 0
 End
 
-Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function WBP_ButtonProc_SaveSet(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string basename, setName
 	variable stimulusType, setNumber, saveAsBuiltin, ret
@@ -622,8 +609,7 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 	endswitch
 End
 
-static Function WBP_GetWaveTypeFromControl(control)
-	string control
+static Function WBP_GetWaveTypeFromControl(string control)
 
 	if(GrepString(control, WP_CONTROL_REGEXP))
 		return WBP_WAVETYPE_WP
@@ -643,8 +629,7 @@ End
 ///
 /// All entries are per epoch type and per epoch number except when the `$suffix` is `ALL`
 /// which denotes that it is a setting for the full stimset.
-static Function WBP_ExtractRowNumberFromControl(control)
-	string control
+static Function WBP_ExtractRowNumberFromControl(string control)
 
 	variable start, stop, row
 	string sep
@@ -678,10 +663,7 @@ static Function WBP_ExtractRowNumberFromControl(control)
 End
 
 /// @brief Update the named control and pass its new value into the parameter wave
-Function WBP_UpdateControlAndWave(control, [var, str])
-	string   control
-	variable var
-	string   str
+Function WBP_UpdateControlAndWave(string control, [variable var, string str])
 
 	variable stimulusType, epoch, paramRow
 
@@ -720,8 +702,7 @@ Function WBP_UpdateControlAndWave(control, [var, str])
 	endswitch
 End
 
-Function WBP_SetVarProc_UpdateParam(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function WBP_SetVarProc_UpdateParam(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -840,11 +821,11 @@ static Function WBP_ChangeWaveType()
 End
 
 Function WBP_GetStimulusType()
+
 	return ParseChannelTypeFromString(GetPopupMenuString(panel, "popup_wavebuilder_outputtype"))
 End
 
-Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function WBP_PopMenuProc_WaveType(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2:
@@ -874,8 +855,7 @@ Function/S WBP_GetListOfWaves()
 	return listOfWaves
 End
 
-Function WBP_SetVarProc_SetSearchString(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function WBP_SetVarProc_SetSearchString(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -887,8 +867,7 @@ Function WBP_SetVarProc_SetSearchString(sva) : SetVariableControl
 	return 0
 End
 
-Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function WBP_PopMenuProc_WaveToLoad(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	variable SegmentNo
 	string   win
@@ -931,14 +910,12 @@ Function/S WBP_ReturnListSavedSets()
 End
 
 /// @brief Return true if the given stimset is a builtin, false otherwise
-Function WBP_IsBuiltinStimset(setName)
-	string setName
+Function WBP_IsBuiltinStimset(string setName)
 
 	return GrepString(setName, "^MIES_.*") || !CmpStr(setName, STIMSET_TP_WHILE_DAQ)
 End
 
-static Function WBP_LoadSet(setName)
-	string setName
+static Function WBP_LoadSet(string setName)
 
 	string funcList, setPrefix
 	variable channelType, setNumber, preventUpdate
@@ -1011,8 +988,7 @@ static Function WBP_LoadSet(setName)
 	endif
 End
 
-static Function SetAnalysisFunctionIfFuncExists(win, ctrl, stimset, funcList, func)
-	string win, ctrl, stimset, funcList, func
+static Function SetAnalysisFunctionIfFuncExists(string win, string ctrl, string stimset, string funcList, string func)
 
 	string entry
 
@@ -1048,8 +1024,7 @@ static Function WBP_UpdateEpochControls()
 	endif
 End
 
-Function WBP_SetVarProc_EpochToEdit(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function WBP_SetVarProc_EpochToEdit(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -1061,8 +1036,7 @@ Function WBP_SetVarProc_EpochToEdit(sva) : SetVariableControl
 	endswitch
 End
 
-Function WBP_PopupMenu_LoadSet(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function WBP_PopupMenu_LoadSet(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string setName
 
@@ -1123,8 +1097,7 @@ Function/S WBP_ReturnFoldersList()
 	return NONE + ";root:;..;" + GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 End
 
-Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function WBP_PopMenuProc_FolderSelect(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string popStr, path
 
@@ -1161,8 +1134,7 @@ Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
 	return 0
 End
 
-Function WBP_CheckProc_PreventUpdate(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function WBP_CheckProc_PreventUpdate(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -1171,8 +1143,7 @@ Function WBP_CheckProc_PreventUpdate(cba) : CheckBoxControl
 	endswitch
 End
 
-Function WBP_PopupMenu(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function WBP_PopupMenu(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2:
@@ -1188,9 +1159,7 @@ Function WBP_PopupMenu(pa) : PopupMenuControl
 End
 
 /// @brief Convert from the row index of a delta related control to a list of control names
-static Function/S WBP_ConvertDeltaLblToCtrlNames(allControls, dimLabel)
-	string allControls
-	string dimLabel
+static Function/S WBP_ConvertDeltaLblToCtrlNames(string allControls, string dimLabel)
 
 	variable index
 
@@ -1220,8 +1189,7 @@ End
 /// is adjusted.
 ///
 /// @param control delta operation control name
-static Function WBP_AdjustDeltaControls(control)
-	string control
+static Function WBP_AdjustDeltaControls(string control)
 
 	variable deltaMode, index, row
 	string allControls, op, delta, dme, ldelta
@@ -1300,8 +1268,7 @@ static Function WBP_AdjustDeltaControls(control)
 	endswitch
 End
 
-Function WBP_ButtonProc_NewSeed(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function WBP_ButtonProc_NewSeed(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1315,8 +1282,7 @@ Function WBP_ButtonProc_NewSeed(ba) : ButtonControl
 	return 0
 End
 
-Function WBP_PopupMenu_AnalysisFunctions(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function WBP_PopupMenu_AnalysisFunctions(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -1328,6 +1294,7 @@ Function WBP_PopupMenu_AnalysisFunctions(pa) : PopupMenuControl
 End
 
 static Function WBP_UpgradePRNG()
+
 	WAVE WP = GetWaveBuilderWaveParam()
 
 	WP[%$("Noise RNG type")][][]              = NOISE_GEN_XOSHIRO
@@ -1356,6 +1323,7 @@ End
 /// This avoids having to hardcode the parameter values.
 ///@{
 Function/S WBP_GetAnalysisFunctions_V3()
+
 	return WBP_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3)
 End
 ///@}
@@ -1363,24 +1331,24 @@ End
 /// @brief Return a list of analysis functions including NONE, usable for popup menues
 ///
 /// @sa AFM_GetAnalysisFunctions
-Function/S WBP_GetAnalysisFunctions(versionBitMask)
-	variable versionBitMask
+Function/S WBP_GetAnalysisFunctions(variable versionBitMask)
 
 	return AddListItem(NONE, AFH_GetAnalysisFunctions(versionBitMask))
 End
 
 /// @brief Return a list of noise types, usable for popup menues
 Function/S WBP_GetNoiseTypes()
+
 	return NOISE_TYPES_STRINGS
 End
 
 /// @brief Return a list of build resolutions , usable for popup menues
 Function/S WBP_GetNoiseBuildResolution()
+
 	return "1;5;10;20;40;60;80;100"
 End
 
-Function WBP_ButtonProc_OpenAnaFuncs(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function WBP_ButtonProc_OpenAnaFuncs(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string userFile, baseName, fileName, func
 	variable refNum
@@ -1424,8 +1392,7 @@ Function WBP_ButtonProc_OpenAnaFuncs(ba) : ButtonControl
 	return 0
 End
 
-Function WBP_SetVarCombineEpochFormula(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function WBP_SetVarCombineEpochFormula(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	STRUCT FormulaProperties fp
 	string win, formula
@@ -1466,9 +1433,7 @@ End
 /// @param control   name of WaveBuilder GUI control
 /// @param direction one of #FROM_PANEL_TO_WAVE or #FROM_WAVE_TO_PANEL
 /// @param data      string to convert
-static Function/S WBP_TranslateControlContents(control, direction, data)
-	string control, data
-	variable direction
+static Function/S WBP_TranslateControlContents(string control, variable direction, string data)
 
 	strswitch(control)
 		case "setvar_combine_formula_T6":
@@ -1489,6 +1454,7 @@ static Function/S WBP_TranslateControlContents(control, direction, data)
 End
 
 static Function WBP_ClearFolders()
+
 	KillOrMoveToTrash(dfr = GetWaveBuilderDataPath())
 End
 
@@ -1496,8 +1462,7 @@ End
 ///
 /// The epoch selection is done on the mouseup event if there exists no marquee.
 /// This allows to still use the zooming capability.
-Function WBP_MainWindowHook(s)
-	STRUCT WMWinHookStruct &s
+Function WBP_MainWindowHook(STRUCT WMWinHookStruct &s)
 
 	string win
 	variable numEntries, i, loc
@@ -1601,12 +1566,11 @@ Function WBP_MainWindowHook(s)
 End
 
 Function/S WBP_GetFFTSpectrumPanel()
+
 	return panel + "#fftSpectrum"
 End
 
-Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
-	WAVE     segmentWave
-	variable sweep
+Function WBP_ShowFFTSpectrumIfReq(WAVE segmentWave, variable sweep)
 
 	DEBUGPRINT("sweep=", var = sweep)
 
@@ -1671,8 +1635,8 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 
 	WAVE     axesPropsMag     = GetAxesProperties(graphMag)
 	WAVE     axesPropsPhase   = GetAxesProperties(graphPhase)
-	WAVE/T/Z cursorInfosMag   = GetCursorInfos(graphMag)
-	WAVE/T/Z cursorInfosPhase = GetCursorInfos(graphPhase)
+	WAVE/Z/T cursorInfosMag   = GetCursorInfos(graphMag)
+	WAVE/Z/T cursorInfosPhase = GetCursorInfos(graphPhase)
 
 	if(sweep == 0)
 		RemoveTracesFromGraph(graphMag)
@@ -1710,8 +1674,7 @@ End
 /// @brief Delete the given analysis parameter
 ///
 /// @param name    name of the parameter
-static Function WBP_DeleteAnalysisParameter(name)
-	string name
+static Function WBP_DeleteAnalysisParameter(string name)
 
 	string params
 
@@ -1891,8 +1854,7 @@ static Function WBP_ToggleAnalysisParamGUI()
 	return 0
 End
 
-Function WBP_ButtonProc_DeleteParam(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function WBP_ButtonProc_DeleteParam(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable numEntries, i
 
@@ -1922,8 +1884,7 @@ Function WBP_ButtonProc_DeleteParam(ba) : ButtonControl
 	return 0
 End
 
-Function WBP_ButtonProc_AddParam(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function WBP_ButtonProc_AddParam(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string win, name, type
 	string value
@@ -1975,8 +1936,7 @@ Function WBP_ButtonProc_AddParam(ba) : ButtonControl
 	return 0
 End
 
-Function WBP_ButtonProc_OpenAnaParamGUI(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function WBP_ButtonProc_OpenAnaParamGUI(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1991,8 +1951,7 @@ Function WBP_ButtonProc_OpenAnaParamGUI(ba) : ButtonControl
 	return 0
 End
 
-Function WBP_ListBoxProc_AnalysisParams(lba) : ListBoxControl
-	STRUCT WMListboxAction &lba
+Function WBP_ListBoxProc_AnalysisParams(STRUCT WMListboxAction &lba) : ListBoxControl
 
 	variable numericValue
 	string stimset, win, name, value, params
@@ -2008,7 +1967,7 @@ Function WBP_ListBoxProc_AnalysisParams(lba) : ListBoxControl
 			win = lba.win
 			row = lba.row
 			col = lba.col
-			WAVE/T/Z listWave = lba.listWave
+			WAVE/Z/T listWave = lba.listWave
 			WAVE/Z   selWave  = lba.selWave
 
 			if(row < 0 || row >= DimSize(listWave, ROWS))
@@ -2033,8 +1992,7 @@ Function WBP_ListBoxProc_AnalysisParams(lba) : ListBoxControl
 	return 0
 End
 
-Function WBP_ButtonProc_LoadSet(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function WBP_ButtonProc_LoadSet(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string setName
 
@@ -2050,6 +2008,7 @@ End
 
 /// @brief Function to regenerate code for GetEpochParameterNames()
 Function/S WBP_RegenerateEpochParameterNamesCode()
+
 	variable i, numEntries
 	string list, msg
 	string code = ""
@@ -2066,6 +2025,7 @@ End
 
 /// @brief Return a list of all parameter names of the given epochType
 static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
+
 	string list, control, tab, hiddenControls
 	variable i, numEntries, tabNumber, row, index
 

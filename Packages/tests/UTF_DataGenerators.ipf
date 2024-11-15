@@ -13,6 +13,7 @@ Function/WAVE MajorNWBVersions()
 End
 
 Function/WAVE IndexingPossibilities()
+
 	Make/FREE wv = {0, 1}
 
 	SetDimensionLabels(wv, "UnlockedIndexing;LockedIndexing", ROWS)
@@ -21,6 +22,7 @@ Function/WAVE IndexingPossibilities()
 End
 
 Function/WAVE InsertedTPPossibilities()
+
 	Make/FREE wv = {0, 1}
 
 	SetDimensionLabels(wv, "NoInsertedTP;WithInsertedTP", ROWS)
@@ -45,6 +47,7 @@ Function/WAVE SingleMultiDeviceDAQ()
 End
 
 Function/WAVE DeviceNameGenerator()
+
 	return DeviceNameGeneratorMD1()
 End
 
@@ -107,6 +110,7 @@ Function/WAVE DeviceNameGeneratorMD0()
 End
 
 Function/WAVE NWBVersionStrings()
+
 	variable i, numEntries
 	string name
 
@@ -115,6 +119,7 @@ Function/WAVE NWBVersionStrings()
 End
 
 Function/WAVE NeuroDataRefTree()
+
 	variable i, numEntries
 	string name
 
@@ -126,6 +131,7 @@ Function/WAVE NeuroDataRefTree()
 End
 
 Function/WAVE SpikeCountsStateValues()
+
 	variable numEntries = 6
 	variable idx
 
@@ -274,6 +280,7 @@ static Function/WAVE SF_TestVariablesGen()
 End
 
 Function/WAVE GetMiesMacrosWithPanelType()
+
 	WAVE/T allMiesMacros = GetMIESMacros()
 
 	Make/FREE/T panelsWithoutType = {"IDM_Headstage_Panel", "IDM_Popup_Panel", "DebugPanel", "ExportSettingsPanel", "PSXPanel"}
@@ -691,17 +698,20 @@ static Function/WAVE GetLimitValues()
 End
 
 static Function/WAVE NonFiniteValues()
+
 	Make/D/FREE data = {NaN, Inf, -Inf}
 	return data
 End
 
 static Function/WAVE InvalidUnits()
+
 	Make/FREE/T result = {"", "ab", "MOhm", "xs", "sx"}
 
 	return result
 End
 
 static Function/WAVE ValidUnits()
+
 	// unitWithPrefix, prefix, numPrefix, unit
 	Make/FREE/T wv0 = {"s", "", "NaN", "s"}
 	Make/FREE/T wv1 = {"Gs", "G", "1e9", "s"}
@@ -796,11 +806,13 @@ static Function/WAVE GenerateAllPossibleWaveTypes()
 End
 
 static Function/WAVE SW_TrueValues()
+
 	Make/D/FREE data = {1, Inf, -Inf, 1e-15, -1, NaN}
 	return data
 End
 
 static Function/WAVE SW_FalseValues()
+
 	Make/D/FREE data = {0}
 	return data
 End
@@ -870,6 +882,7 @@ static Function/WAVE GetDifferentGraphs()
 End
 
 static Function/WAVE GetBasicMathOperations()
+
 	Make/FREE/T op = {"+", "-", "*", "/"}
 
 	SetDimensionLabels(OP, "plus;minus;mult;div;", ROWS)
@@ -878,6 +891,7 @@ static Function/WAVE GetBasicMathOperations()
 End
 
 static Function/WAVE GetASYNCReadOutErrorFunctions()
+
 	Make/FREE/T wt = {"FailReadOutAbort", "FailReadOut"}
 	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
 
@@ -885,6 +899,7 @@ static Function/WAVE GetASYNCReadOutErrorFunctions()
 End
 
 static Function/WAVE GetASYNCThreadErrorFunctions()
+
 	Make/FREE/T wt = {"RunGenericWorkerAbortOnValue,FailThreadReadOutAbortOnValue,", "RunGenericWorkerRTE,FailThreadReadOutRTE,"}
 	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
 

@@ -14,6 +14,7 @@ static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device, string s
 End
 
 static Function GlobalPreAcq(string device)
+
 	variable ret
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
@@ -30,10 +31,7 @@ static Function GlobalPreInit(string device)
 	ResetOverrideResults()
 End
 
-static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
-	string device
-	variable sweepNo, chunk
-	string name
+static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo, string name, [variable chunk])
 
 	string key
 
@@ -94,6 +92,7 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 End
 
 static Function PS_DS_Supra1_preAcq(string device)
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -102,8 +101,7 @@ End
 
 // The decision logic *without* FinalSlopePercent is the same as for Sub, only the plotting is different
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Supra1([str])
-	string str
+static Function PS_DS_Supra1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
 	AcquireData_NG(s, str)
@@ -122,8 +120,7 @@ static Function PS_DS_Supra1([str])
 	wv[][][3] = 1
 End
 
-static Function PS_DS_Supra1_REENTRY([str])
-	string str
+static Function PS_DS_Supra1_REENTRY([string str])
 
 	variable sweepNo, numEntries
 	string key
@@ -165,7 +162,7 @@ static Function PS_DS_Supra1_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
 
 	numEntries = DimSize(sweepPassed, ROWS)
@@ -180,6 +177,7 @@ static Function PS_DS_Supra1_REENTRY([str])
 End
 
 static Function PS_DS_Supra2_preAcq(string device)
+
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str = "*")
 
 	Make/FREE asyncChannels = {2, 3}
@@ -190,8 +188,7 @@ End
 
 // Different to PS_DS_Supra1 is that the second does not spike and a different offset operator
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Supra2([str])
-	string str
+static Function PS_DS_Supra2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
 	AcquireData_NG(s, str)
@@ -210,8 +207,7 @@ static Function PS_DS_Supra2([str])
 	wv[][][3] = 1
 End
 
-static Function PS_DS_Supra2_REENTRY([str])
-	string str
+static Function PS_DS_Supra2_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -252,7 +248,7 @@ static Function PS_DS_Supra2_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
 
 	numEntries = DimSize(sweepPassed, ROWS)
@@ -267,8 +263,7 @@ static Function PS_DS_Supra2_REENTRY([str])
 End
 
 // FinalSlopePercent present but not reached
-static Function PS_DS_Supra3_preAcq(device)
-	string device
+static Function PS_DS_Supra3_preAcq(string device)
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "FinalSlopePercent", var = 100)
@@ -280,8 +275,7 @@ static Function PS_DS_Supra3_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Supra3([str])
-	string str
+static Function PS_DS_Supra3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
 	AcquireData_NG(s, str)
@@ -300,8 +294,7 @@ static Function PS_DS_Supra3([str])
 	wv[][][3] = 1
 End
 
-static Function PS_DS_Supra3_REENTRY([str])
-	string str
+static Function PS_DS_Supra3_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -342,7 +335,7 @@ static Function PS_DS_Supra3_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
 
 	numEntries = DimSize(sweepPassed, ROWS)
@@ -357,8 +350,7 @@ static Function PS_DS_Supra3_REENTRY([str])
 End
 
 // FinalSlopePercent present and reached
-static Function PS_DS_Supra4_preAcq(device)
-	string device
+static Function PS_DS_Supra4_preAcq(string device)
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "FinalSlopePercent", var = 60)
@@ -370,8 +362,7 @@ static Function PS_DS_Supra4_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Supra4([str])
-	string str
+static Function PS_DS_Supra4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
 	AcquireData_NG(s, str)
@@ -390,8 +381,7 @@ static Function PS_DS_Supra4([str])
 	wv[][][3] = 1
 End
 
-static Function PS_DS_Supra4_REENTRY([str])
-	string str
+static Function PS_DS_Supra4_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -432,7 +422,7 @@ static Function PS_DS_Supra4_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
 
 	numEntries = DimSize(sweepPassed, ROWS)
@@ -449,8 +439,7 @@ End
 static Constant DAScaleModifierPerc = 25
 
 // MinimumSpikeCount, MaximumSpikeCount, DAScaleModifier present
-static Function PS_DS_Supra5_preAcq(device)
-	string device
+static Function PS_DS_Supra5_preAcq(string device)
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MinimumSpikeCount", var = 3)
@@ -464,8 +453,7 @@ static Function PS_DS_Supra5_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Supra5([str])
-	string str
+static Function PS_DS_Supra5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
 	AcquireData_NG(s, str)
@@ -484,8 +472,7 @@ static Function PS_DS_Supra5([str])
 	wv[][][3] = 1
 End
 
-static Function PS_DS_Supra5_REENTRY([str])
-	string str
+static Function PS_DS_Supra5_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -526,7 +513,7 @@ static Function PS_DS_Supra5_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
 
 	numEntries = DimSize(sweepPassed, ROWS)
@@ -554,8 +541,7 @@ End
 
 // MinimumSpikeCount, MaximumSpikeCount, DAScaleModifier present
 // async QC fails
-static Function PS_DS_Supra6_preAcq(device)
-	string device
+static Function PS_DS_Supra6_preAcq(string device)
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MinimumSpikeCount", var = 3)
@@ -569,8 +555,7 @@ static Function PS_DS_Supra6_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Supra6([str])
-	string str
+static Function PS_DS_Supra6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DS_SupraLong_DA_0")
 	AcquireData_NG(s, str)
@@ -587,8 +572,7 @@ static Function PS_DS_Supra6([str])
 	wv[][][3] = 0
 End
 
-static Function PS_DS_Supra6_REENTRY([str])
-	string str
+static Function PS_DS_Supra6_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -630,7 +614,7 @@ static Function PS_DS_Supra6_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
 
 	numEntries = DimSize(sweepPassed, ROWS)

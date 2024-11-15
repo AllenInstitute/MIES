@@ -74,6 +74,7 @@ static Function/WAVE ST_GetStimsetParametersEpochType(string setName, variable e
 End
 
 static Function [variable resultColumn, variable resultLayer] ST_GetResultWaveCoordinates(string setName, string entry, WAVE resultWave, variable epochIndex)
+
 	variable numEpochs, epochType, idx
 
 	WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
@@ -96,7 +97,7 @@ static Function [variable resultColumn, variable resultLayer] ST_GetResultWaveCo
 		endif
 
 		epochType = SegWvType[epochIndex]
-		WAVE/T/Z existingParams = ST_GetStimsetParametersEpochType(setName, epochType)
+		WAVE/Z/T existingParams = ST_GetStimsetParametersEpochType(setName, epochType)
 
 		if(!WaveExists(existingParams))
 			// no such epoch type
@@ -115,6 +116,7 @@ static Function [variable resultColumn, variable resultLayer] ST_GetResultWaveCo
 End
 
 static Function [WAVE wv, variable row, variable col, variable layer] ST_GetStimsetParameterWaveIndexTuple(string setName, string entry, variable epochIndex)
+
 	ST_UpgradeStimset(setName)
 
 	WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
@@ -163,6 +165,7 @@ static Function [WAVE wv, variable row, variable col, variable layer] ST_GetStim
 End
 
 static Function/S ST_ParameterStringValues(string entry)
+
 	// translate passed string values which are numeric internally
 	//                                  WBP_GetDeltaModes() WBP_GetNoiseTypes()               WBP_GetNoiseBuildResolution() WBP_GetTriggerTypes()             WBP_GetPulseTypes()
 	Make/FREE/T translateableEntries = {"^.* op$", "Noise Type [White, Pink, Brown]", "Build resolution (index)", "Trigonometric function Sin/Cos", "Pulse train type (index)"}
@@ -193,6 +196,7 @@ End
 ///
 /// @ingroup StimsetAPIFunctions
 Function/S ST_GetStimsetList([variable channelType, string searchString, string &WBstimSetList, string &thirdPartyStimSetList])
+
 	string listAll        = ""
 	string listInternal   = ""
 	string listThirdParty = ""
@@ -292,6 +296,7 @@ End
 ///
 /// @ingroup StimsetAPIFunctions
 Function ST_RemoveStimSet(string setName)
+
 	variable i, numPanels, channelType
 	string lockedDevices, device
 
@@ -337,6 +342,7 @@ End
 ///
 /// @ingroup StimsetAPIFunctions
 Function ST_GetStimsetParameterAsVariable(string setName, string entry, [variable epochIndex])
+
 	variable row, col, layer
 
 	if(ParamIsDefault(epochIndex))
@@ -366,6 +372,7 @@ End
 ///
 /// @ingroup StimsetAPIFunctions
 Function/S ST_GetStimsetParameterAsString(string setName, string entry, [variable epochIndex])
+
 	variable row, col, layer
 	string entryStringValues
 
@@ -381,7 +388,7 @@ Function/S ST_GetStimsetParameterAsString(string setName, string entry, [variabl
 
 	[WAVE wv, row, col, layer] = ST_GetStimsetParameterWaveIndexTuple(setName, entry, epochIndex)
 
-	WAVE/T/Z wvText = wv
+	WAVE/Z/T wvText = wv
 
 	if(WaveExists(wvText))
 		if(IsTextWave(wvText))
@@ -414,6 +421,7 @@ End
 ///
 /// @ingroup StimsetAPIFunctions
 Function ST_SetStimsetParameter(string setName, string entry, [variable epochIndex, variable var, string str])
+
 	variable numEpochs, epochType, row, col, layer, stimulusType
 	variable strIsGiven, varIsGiven
 	string entryStringValues

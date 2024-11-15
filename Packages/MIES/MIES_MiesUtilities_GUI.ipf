@@ -12,8 +12,7 @@
 /// @brief This file holds MIES utility functions for GUI
 
 /// @brief Return the dimension label for the special, aka non-unique, controls
-Function/S GetSpecialControlLabel(channelType, controlType)
-	variable channelType, controlType
+Function/S GetSpecialControlLabel(variable channelType, variable controlType)
 
 	return RemoveEnding(GetPanelControl(0, channelType, controlType), "_00")
 End
@@ -21,8 +20,7 @@ End
 /// @brief Returns the name of a control from the DA_EPHYS panel
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
-Function/S GetPanelControl(channelIndex, channelType, controlType)
-	variable channelIndex, channelType, controlType
+Function/S GetPanelControl(variable channelIndex, variable channelType, variable controlType)
 
 	string ctrl
 
@@ -91,6 +89,7 @@ End
 
 /// @brief Return a trace name prefix suitable for GetNextTraceIndex()
 Function/S GetTraceNamePrefix(variable traceIndex)
+
 	string name
 
 	sprintf name, "T%0*d", TRACE_NAME_NUM_DIGITS, traceIndex
@@ -139,9 +138,7 @@ End
 ///
 /// @param graph graph with sweep traces
 /// @param pps   settings
-Function TimeAlignMainWindow(graph, pps)
-	string                   graph
-	STRUCT PostPlotSettings &pps
+Function TimeAlignMainWindow(string graph, STRUCT PostPlotSettings &pps)
 
 	variable csrAx, csrBx
 
@@ -152,10 +149,9 @@ Function TimeAlignMainWindow(graph, pps)
 End
 
 /// @brief return a list of all traces relevant for TimeAlignment
-Function/S TimeAlignGetAllTraces(graph)
-	string graph
+Function/S TimeAlignGetAllTraces(string graph)
 
-	WAVE/T/Z traces = GetAllSweepTraces(graph)
+	WAVE/Z/T traces = GetAllSweepTraces(graph)
 
 	if(!WaveExists(traces))
 		return ""
@@ -168,8 +164,7 @@ End
 ///        panel settings
 ///
 /// @param win  main DB/SB graph or any subwindow panel.
-Function TimeAlignHandleCursorDisplay(win)
-	string win
+Function TimeAlignHandleCursorDisplay(string win)
 
 	string graphtrace, graph, graphs, trace, traceList, bsPanel, csrA, csrB
 	variable length, posA, posB
@@ -223,8 +218,8 @@ Function TimeAlignHandleCursorDisplay(win)
 End
 
 /// @brief Enable/Disable TimeAlignment Controls and Cursors
-Function TimeAlignUpdateControls(win)
-	string   win
+Function TimeAlignUpdateControls(string win)
+
 	variable alignMode
 
 	string bsPanel, graph
@@ -250,8 +245,7 @@ Function TimeAlignUpdateControls(win)
 	TimeAlignHandleCursorDisplay(graph)
 End
 
-Function TimeAlignCursorMovedHook(s)
-	STRUCT WMWinHookStruct &s
+Function TimeAlignCursorMovedHook(STRUCT WMWinHookStruct &s)
 
 	string trace, graphtrace, graphtraces, xAxis, yAxis, bsPanel, mainPanel
 	variable numTraces, i
@@ -307,6 +301,7 @@ End
 ///
 /// @returns graph#trace named patterns
 Function/WAVE GetAllSweepTraces(string graphs, [variable region, variable channelType, variable prefixTraces])
+
 	string graph
 	variable i, idx, numGraphs
 
@@ -372,9 +367,7 @@ End
 
 /// @brief Find the given feature in the given wave range
 /// `first` and `last` are in x coordinates and clipped to valid values
-static Function CalculateFeatureLoc(wv, mode, level, first, last)
-	WAVE wv
-	variable mode, level, first, last
+static Function CalculateFeatureLoc(WAVE wv, variable mode, variable level, variable first, variable last)
 
 	variable edgeType
 
@@ -413,9 +406,7 @@ End
 /// @param pos1x      specify start range for feature position
 /// @param pos2x      specify end range for feature position
 /// @param force      [optional, defaults to false] redo time aligment regardless of wave note
-Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
-	string graphtrace
-	variable mode, level, pos1x, pos2x, force
+Function TimeAlignmentIfReq(string graphtrace, variable mode, variable level, variable pos1x, variable pos2x, [variable force])
 
 	if(ParamIsDefault(force))
 		force = 0
@@ -519,10 +510,7 @@ End
 ///                                    cross the given level in the visible range
 /// @param level                       [optional, defaults to zero] level to be used for `ignoreAxesWithLevelCrossing=1`
 /// @param rangePerClampMode           [optional, defaults to false] use separate Y ranges per clamp mode
-Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, rangePerClampMode])
-	string   graph
-	variable ignoreAxesWithLevelCrossing
-	variable level, rangePerClampMode
+Function EqualizeVerticalAxesRanges(string graph, [variable ignoreAxesWithLevelCrossing, variable level, variable rangePerClampMode])
 
 	string axList, axis, trace
 	variable i, j, numAxes, axisOrient, xRangeBegin, xRangeEnd
@@ -557,7 +545,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 		xRangeEnd   = NaN
 	endif
 
-	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName")
+	WAVE/Z/T traces = TUD_GetUserDataAsWave(graph, "traceName")
 
 	if(!WaveExists(traces))
 		return NaN
@@ -671,8 +659,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 	endfor
 End
 
-Function UpdateSweepPlot(win)
-	string win
+Function UpdateSweepPlot(string win)
 
 	if(BSP_IsDataBrowser(win))
 		DB_UpdateSweepPlot(win)
@@ -682,8 +669,7 @@ Function UpdateSweepPlot(win)
 End
 
 /// @brief update of panel elements and related displayed graphs in BSP
-Function UpdateSettingsPanel(win)
-	string win
+Function UpdateSettingsPanel(string win)
 
 	string bsPanel
 
@@ -693,8 +679,7 @@ Function UpdateSettingsPanel(win)
 	BSP_ScaleAxes(bsPanel)
 End
 
-Function/WAVE GetPlainSweepList(win)
-	string win
+Function/WAVE GetPlainSweepList(string win)
 
 	if(BSP_IsDataBrowser(win))
 		return DB_GetPlainSweepList(win)
@@ -751,6 +736,7 @@ End
 /// @param win              graph
 /// @param index            overlay sweeps listbox index
 Function RemoveSweepFromGraph(string win, variable index)
+
 	string device, graph, dataFolder, experiment
 	string trace
 	variable sweepNo, i, numTraces
@@ -769,7 +755,7 @@ Function RemoveSweepFromGraph(string win, variable index)
 
 	[sweepNo, experiment] = OVS_GetSweepAndExperiment(graph, index)
 
-	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "tracename", keys = {"traceType", "sweepNumber", "experiment"}, \
+	WAVE/Z/T traces = TUD_GetUserDataAsWave(graph, "tracename", keys = {"traceType", "sweepNumber", "experiment"}, \
 	                                        values = {"sweep", num2str(sweepNo), experiment})
 
 	if(!WaveExists(traces))
@@ -828,7 +814,7 @@ Function UpdateSweepInGraph(string win, variable index)
 	graph = GetMainWindow(win)
 
 	WAVE     axesProps   = GetAxesProperties(graph)
-	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
+	WAVE/Z/T cursorInfos = GetCursorInfos(graph)
 
 	RemoveSweepFromGraph(win, index)
 	AddSweepToGraph(win, index)
@@ -839,8 +825,7 @@ End
 
 /// @brief Generic window hooks for storing the window
 ///        coordinates in the JSON settings file.
-Function StoreWindowCoordinatesHook(s)
-	STRUCT WMWinHookStruct &s
+Function StoreWindowCoordinatesHook(STRUCT WMWinHookStruct &s)
 
 	string win
 

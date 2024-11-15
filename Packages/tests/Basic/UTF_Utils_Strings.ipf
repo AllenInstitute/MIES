@@ -27,6 +27,7 @@ End
 
 // These tests also cover GetStringFromWaveNote()
 Function ESFP_Works()
+
 	string ref, str
 
 	ref = "123"
@@ -63,6 +64,7 @@ End
 /// @{
 
 Function PUN_Works()
+
 	string str, ref
 
 	str = PossiblyUnquoteName("", "'")
@@ -78,6 +80,7 @@ Function PUN_Works()
 End
 
 Function PUN_ChecksParams()
+
 	try
 		PossiblyUnquoteName("abcd", "")
 		FAIL()
@@ -106,8 +109,7 @@ End
 /// @{
 
 // UTF_TD_GENERATOR DataGenerators#NonFiniteValues
-Function LBP_Aborts([var])
-	variable var
+Function LBP_Aborts([variable var])
 
 	try
 		LineBreakingIntoPar("", minimumWidth = var); AbortOnRTE
@@ -118,6 +120,7 @@ Function LBP_Aborts([var])
 End
 
 Function LBP_Works()
+
 	string str, expected
 
 	str      = LineBreakingIntoPar("abcd efgh 123 one two\tfour")
@@ -252,6 +255,7 @@ End
 
 // UTF_TD_GENERATOR DataGenerators#InvalidUnits
 Function PU_Fails([string str])
+
 	string unit, prefix
 	variable numPrefix = NaN
 
@@ -269,6 +273,7 @@ End
 
 // UTF_TD_GENERATOR DataGenerators#ValidUnits
 Function PU_Works([WAVE/T wv])
+
 	string unit, prefix, unitWithPrefix
 	string refUnit, refPrefix
 	variable numPrefix, refNumPrefix
@@ -410,6 +415,7 @@ End
 
 // UTF_TD_GENERATOR DataGenerators#ETValidInput
 Function ET_Works([WAVE/T wv])
+
 	string ref, str, result
 	variable length
 
@@ -424,6 +430,7 @@ End
 
 // UTF_TD_GENERATOR DataGenerators#ETInvalidInput
 Function ET_Fails([WAVE/T wv])
+
 	string   str
 	variable length
 

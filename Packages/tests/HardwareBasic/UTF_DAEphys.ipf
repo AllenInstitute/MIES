@@ -4,16 +4,17 @@
 #pragma ModuleName=DAEphysPanel
 
 static Function GlobalPreInit(string device)
+
 	PASS()
 End
 
 static Function GlobalPreAcq(string device)
+
 	PASS()
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-Function CheckIfAllControlsReferStateWv([str])
-	string str
+Function CheckIfAllControlsReferStateWv([string str])
 
 	string list, ctrl, stri, expected, lbl, uniqueControls
 	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
@@ -165,8 +166,7 @@ Function CheckIfAllControlsReferStateWv([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-Function CheckStartupSettings([str])
-	string str
+Function CheckStartupSettings([string str])
 
 	string unlockedDevice, list, ctrl, expected, lbl
 	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
@@ -238,8 +238,7 @@ Function CheckStartupSettings([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-Function CheckStimsetPopupMetadata([str])
-	string str
+Function CheckStimsetPopupMetadata([string str])
 
 	string controls, stimsetlist, ctrl, menuExp
 	variable i, numControls, channelIndex, channelType, controlType
@@ -288,8 +287,7 @@ Function AllChannelControlsWork([string str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-Function CheckIfConfigurationRestoresMCCFilterGain([str])
-	string str
+Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	string rewrittenConfig, fName
 	variable val, gain, filterFreq, headStage, jsonID
@@ -390,10 +388,10 @@ static Function ComplainsAboutVanishingEpoch_REENTRY([STRUCT IUTF_MDATA &md])
 	CHECK_WAVE(textualValues, TEXT_WAVE)
 
 	// check that we have info for the vanished epoch
-	WAVE/T/Z e0 = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "E0")
+	WAVE/Z/T e0 = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "E0")
 	CHECK_WAVE(e0, FREE_WAVE | TEXT_WAVE)
 
-	WAVE/T/Z e1 = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "E1")
+	WAVE/Z/T e1 = EP_GetEpochs(numericalValues, textualValues, sweepNo, XOP_CHANNEL_TYPE_DAC, DAC, "E1")
 	CHECK_WAVE(e1, FREE_WAVE | TEXT_WAVE)
 
 	// remove left over from ???

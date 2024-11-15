@@ -15,6 +15,7 @@ static StrConstant PS_COORDINATE_SAVING_HOOK = "windowCoordinateSaving"
 
 /// @brief Initialize the `PackageFolder` symbolic path
 Function PS_Initialize(string package)
+
 	string folder = SpecialDirPath("Igor Preferences", 0, 0, 1) + "Packages:" + CleanupName(package, 0)
 
 	if(!FolderExists(folder))
@@ -26,15 +27,14 @@ End
 
 /// @brief This functions should return a JSON ID with the default settings
 Function PS_GenerateSettingsDefaults()
+
 	ASSERT(0, "Can not call prototype")
 End
 
 /// @brief Return a JSON ID with an opened JSON settings file
 ///
 /// Caller is responsible for releasing the document.
-Function PS_ReadSettings(package, generateDefaults)
-	string                              package
-	FUNCREF PS_GenerateSettingsDefaults generateDefaults
+Function PS_ReadSettings(string package, FUNCREF PS_GenerateSettingsDefaults generateDefaults)
 
 	string filepath, data, fName
 	variable JSONid
@@ -43,7 +43,7 @@ Function PS_ReadSettings(package, generateDefaults)
 
 	if(FileExists(filepath))
 		[data, fName] = LoadTextFile(filepath)
-		JSONid = JSON_Parse(data, ignoreErr = 1)
+		JSONid        = JSON_Parse(data, ignoreErr = 1)
 
 		if(IsFinite(JSONid))
 			return JSONid
@@ -58,9 +58,7 @@ End
 /// @brief Write the settings from `JSONid` for `package` to disc
 ///
 /// Call this function in `BeforeExperimentSaveHook` to write the settings to disc
-Function PS_WriteSettings(package, JSONid)
-	string   package
-	variable JSONid
+Function PS_WriteSettings(string package, variable JSONid)
 
 	string filepath
 
@@ -76,8 +74,7 @@ End
 ///        PS_Initialize() to exist.
 ///
 ///        The returned folder location includes a trailing colon (":")
-threadsafe Function/S PS_GetSettingsFolder_TS(package)
-	string package
+threadsafe Function/S PS_GetSettingsFolder_TS(string package)
 
 	PathInfo PackageFolder
 	ASSERT_TS(V_flag, "Missing initialization")
@@ -89,8 +86,7 @@ End
 ///        creating it when necessary.
 ///
 ///        The returned folder location includes a trailing colon (":")
-Function/S PS_GetSettingsFolder(package)
-	string package
+Function/S PS_GetSettingsFolder(string package)
 
 	PathInfo PackageFolder
 	if(V_flag)
@@ -105,8 +101,7 @@ Function/S PS_GetSettingsFolder(package)
 End
 
 /// @brief Return the absolute path to the JSON settings file for `package`
-static Function/S PS_GetSettingsFile(package)
-	string package
+static Function/S PS_GetSettingsFile(string package)
 
 	string folder
 
@@ -279,6 +274,7 @@ End
 
 /// Caller *must* invalidate JSONid after return.
 Function PS_OpenNotebook(string package, variable JSONid)
+
 	string name, path
 
 	PS_SerializeSettings(package, JSONid)
@@ -303,6 +299,7 @@ End
 /// - Incorrect is moved to the correct location only if the correct does not exists
 /// - If the correct does exist as well, the incorrect is read and appened to to the correct one
 Function PS_FixPackageLocation(string package)
+
 	string folder, incorrectFolder, incorrectPackageFile, incorrectLogFile
 	string correctPackageFile, correctLogFile, incorrectData, correctData, fName, data
 
@@ -334,8 +331,8 @@ Function PS_FixPackageLocation(string package)
 		else
 			// read the incorrect log file and append it to the correct one
 			[incorrectData, fName] = LoadTextFile(incorrectLogFile)
-			[correctData, fName] = LoadTextFile(correctLogFile)
-			data = RemoveEnding(correctData, "\n") + "\n" + incorrectData
+			[correctData, fName]   = LoadTextFile(correctLogFile)
+			data                   = RemoveEnding(correctData, "\n") + "\n" + incorrectData
 			SaveTextFile(data, correctLogFile)
 			DeleteFile incorrectLogFile
 		endif

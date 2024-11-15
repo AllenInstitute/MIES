@@ -4,8 +4,7 @@
 #pragma ModuleName=BackgroundFunctions
 
 /// @brief Background function to wait until DAQ is finished.
-Function WaitUntilDAQDone_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function WaitUntilDAQDone_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	string dev
 	variable numEntries, i
@@ -35,8 +34,7 @@ End
 ///
 /// If it is finished pushes the next two, one setup and the
 /// corresponding `Test`, testcases to the queue.
-Function WaitUntilTPDone_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function WaitUntilTPDone_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	string device
 	variable numEntries, i
@@ -62,8 +60,7 @@ Function WaitUntilTPDone_IGNORE(s)
 	return 1
 End
 
-Function StopAcqDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function StopAcqDuringITI_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -78,8 +75,7 @@ Function StopAcqDuringITI_IGNORE(s)
 	return 0
 End
 
-Function StopAcqByUnlocking_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function StopAcqByUnlocking_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -94,8 +90,7 @@ Function StopAcqByUnlocking_IGNORE(s)
 	return 0
 End
 
-Function StopAcqByUncompiled_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function StopAcqByUncompiled_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -110,8 +105,7 @@ Function StopAcqByUncompiled_IGNORE(s)
 	return 0
 End
 
-Function StartTPDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function StartTPDuringITI_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -126,8 +120,7 @@ Function StartTPDuringITI_IGNORE(s)
 	return 0
 End
 
-Function SkipToEndDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function SkipToEndDuringITI_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -142,8 +135,7 @@ Function SkipToEndDuringITI_IGNORE(s)
 	return 0
 End
 
-Function SkipSweepBackDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function SkipSweepBackDuringITI_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -159,8 +151,7 @@ Function SkipSweepBackDuringITI_IGNORE(s)
 	return 0
 End
 
-Function StopAcq_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function StopAcq_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR     devices = $GetLockedDevices()
 	string   device  = StringFromList(0, devices)
@@ -175,14 +166,12 @@ Function StopAcq_IGNORE(s)
 	return 1
 End
 
-Function JustDelay_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function JustDelay_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	return 1
 End
 
-Function AutoPipetteOffsetAndStopTP_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function AutoPipetteOffsetAndStopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -193,8 +182,7 @@ Function AutoPipetteOffsetAndStopTP_IGNORE(s)
 	return 1
 End
 
-Function StopTP_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function StopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -203,8 +191,7 @@ Function StopTP_IGNORE(s)
 	return 1
 End
 
-Function StartAcq_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function StartAcq_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -214,8 +201,7 @@ Function StartAcq_IGNORE(s)
 	return 1
 End
 
-Function ChangeStimSet_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function ChangeStimSet_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	string ctrl
 	SVAR   devices = $GetLockedDevices()
@@ -235,8 +221,7 @@ Function ChangeStimSet_IGNORE(s)
 	return 0
 End
 
-Function ClampModeDuringSweep_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function ClampModeDuringSweep_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -251,8 +236,7 @@ Function ClampModeDuringSweep_IGNORE(s)
 	return 0
 End
 
-Function ClampModeDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function ClampModeDuringITI_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -267,8 +251,7 @@ Function ClampModeDuringITI_IGNORE(s)
 	return 0
 End
 
-Function StopTPAfterFiveSeconds_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function StopTPAfterFiveSeconds_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -278,8 +261,7 @@ Function StopTPAfterFiveSeconds_IGNORE(s)
 	return 1
 End
 
-Function AddLabnotebookEntries_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function AddLabnotebookEntries_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
@@ -301,6 +283,7 @@ Function AddLabnotebookEntries_IGNORE(s)
 End
 
 Function StopTPWhenWeHaveOne(STRUCT WMBackgroundStruct &s)
+
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
 
@@ -313,6 +296,7 @@ Function StopTPWhenWeHaveOne(STRUCT WMBackgroundStruct &s)
 End
 
 Function StopTPWhenFinished(STRUCT WMBackgroundStruct &s)
+
 	SVAR   devices = $GetLockedDevices()
 	string device  = StringFromList(0, devices)
 

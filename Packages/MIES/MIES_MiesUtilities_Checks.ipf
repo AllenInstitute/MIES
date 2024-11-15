@@ -10,8 +10,7 @@
 /// @brief This file holds MIES utility functions for checks
 
 /// @brief Check if the given epoch number is valid
-Function IsValidEpochNumber(epochNo)
-	variable epochNo
+Function IsValidEpochNumber(variable epochNo)
 
 	return IsInteger(epochNo) && epochNo >= 0 && epochNo < WB_TOTAL_NUMBER_OF_EPOCHS
 End
@@ -21,9 +20,7 @@ End
 /// @param sweep         sweep wave
 /// @param config        config wave
 /// @param configVersion [optional, defaults to #DAQ_CONFIG_WAVE_VERSION] minimum required version of the config wave
-threadsafe Function IsValidSweepAndConfig(sweep, config, [configVersion])
-	WAVE/Z sweep, config
-	variable configVersion
+threadsafe Function IsValidSweepAndConfig(WAVE/Z sweep, WAVE/Z config, [variable configVersion])
 
 	if(ParamIsDefault(configVersion))
 		configVersion = DAQ_CONFIG_WAVE_VERSION
@@ -51,8 +48,7 @@ End
 /// @brief Check if the given multiplier is a valid sampling interval multiplier
 ///
 /// UTF_NOINSTRUMENTATION
-Function IsValidSamplingMultiplier(multiplier)
-	variable multiplier
+Function IsValidSamplingMultiplier(variable multiplier)
 
 	return IsFinite(multiplier) && WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier()) != -1
 End

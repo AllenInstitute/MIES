@@ -269,10 +269,11 @@ End
 ///
 /// Existing notebooks with the files are brought to the front.
 Function CONF_OpenConfigInNotebook()
+
 	variable i, numFiles
 	string path, name
 
-	WAVE/T/Z rawFileList = CONF_GetConfigFiles()
+	WAVE/Z/T rawFileList = CONF_GetConfigFiles()
 
 	if(!WaveExists(rawFileList))
 		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
@@ -325,9 +326,9 @@ Function CONF_AutoLoader([string customIPath])
 	string rigCandidate
 
 	if(ParamIsDefault(customIPath))
-		WAVE/T/Z rawFileList = CONF_GetConfigFiles()
+		WAVE/Z/T rawFileList = CONF_GetConfigFiles()
 	else
-		WAVE/T/Z rawFileList = CONF_GetConfigFiles(customIPath = customIPath)
+		WAVE/Z/T rawFileList = CONF_GetConfigFiles(customIPath = customIPath)
 	endif
 	if(!WaveExists(rawFileList))
 		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
@@ -354,8 +355,7 @@ End
 ///
 /// @param type One of #CONF_AUTO_LOADER_GLOBAL or CONF_AUTO_LOADER_USER
 /// @returns name of an igor symbolic path to the settings folder
-static Function/S CONF_GetSettingsPath(type)
-	variable type
+static Function/S CONF_GetSettingsPath(variable type)
 
 	variable numItems
 	string symbPath, path
@@ -395,8 +395,7 @@ End
 /// @brief Saves the GUI state of a window and all of its subwindows to a configuration file
 ///
 /// @param fName file name of configuration file to save configuration
-Function CONF_SaveWindow(fName)
-	string fName
+Function CONF_SaveWindow(string fName)
 
 	variable i, jsonID, saveMask, saveResult
 	string out, wName, errMsg
@@ -518,15 +517,14 @@ End
 /// @brief Saves the GUI state of a DA_Ephys panel to a configuration file
 ///
 /// @param fName file name of configuration file to store DA_Ephys configuration
-static Function CONF_SaveDAEphys(fName)
-	string fName
+static Function CONF_SaveDAEphys(string fName)
 
 	variable i, jsonID, saveMask, saveResult, prevJsonId, prevRigJsonId
 	string out, wName, errMsg, newFileName, newRigFullFilePath, jsonTxt
 
 	wName = GetMainWindow(GetCurrentWindow())
 	ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Current window is no DA_Ephys panel")
-	[prevJsonId, jsonTxt] = CONF_LoadConfigUsedForDAEphysPanel(wName)
+	[prevJsonId, jsonTxt]    = CONF_LoadConfigUsedForDAEphysPanel(wName)
 	[prevRigJsonId, jsonTxt] = CONF_LoadConfigUsedForDAEphysPanel(wName, loadRigFile = 1)
 
 	AssertOnAndClearRTError()
@@ -626,10 +624,7 @@ End
 ///                      - Opens new DA_Ephys panel
 ///
 /// @return name of the created DAEphys panel
-Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNewPanel])
-	variable jsonID
-	string   fullFilePath
-	variable middleOfExperiment, forceNewPanel
+Function/S CONF_RestoreDAEphys(variable jsonID, string fullFilePath, [variable middleOfExperiment, variable forceNewPanel])
 
 	variable i, fnum, restoreMask, numPotentialUnlocked, err, winConfigChanged, isTagged, uploadLogfiles
 	string device, getWName, jsonPath, potentialUnlockedList, winHandle, errMsg
@@ -779,8 +774,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 End
 
 /// @brief Add the config file paths and SHA-256 hashes to the panel as user data
-static Function CONF_AddConfigFileUserData(win, fullFilePath, rigFile)
-	string win, fullFilePath, rigFile
+static Function CONF_AddConfigFileUserData(string win, string fullFilePath, string rigFile)
 
 	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=fullFilePath + FILE_LIST_SEP + rigFile
 
@@ -795,8 +789,7 @@ End
 ///
 /// @param[in] str string in json format
 /// @returns jsonID of the json object
-static Function CONF_ParseJSON(str)
-	string str
+static Function CONF_ParseJSON(string str)
 
 	variable err
 
@@ -816,8 +809,7 @@ End
 ///
 /// @param jsonID  ID of existing json
 /// @returns List of active head stages
-static Function/S CONF_GetDAEphysActiveHeadstages(jsonID)
-	variable jsonID
+static Function/S CONF_GetDAEphysActiveHeadstages(variable jsonID)
 
 	WAVE hsStates = CONF_GetWaveFromSavedControlArray(jsonID, DAEPHYS_HEADSTAGECTRLARRAYPREFIX)
 	return NumericWaveToList(hsStates, ";")
@@ -826,8 +818,7 @@ End
 /// @brief Checks if EXPCONFIG_RESERVED_DATABLOCK exists in json; ASSERTion is thrown if not found.
 ///
 /// @param jsonID  ID of existing json
-static Function CONF_RequireConfigBlockExists(jsonID)
-	variable jsonID
+static Function CONF_RequireConfigBlockExists(variable jsonID)
 
 	WAVE/T ctrlGroups = JSON_GetKeys(jsonID, "")
 	FindValue/TXOP=4/TEXT=EXPCONFIG_RESERVED_DATABLOCK ctrlGroups
@@ -839,9 +830,7 @@ End
 /// @param jsonID  ID of existing json
 /// @param keyName key name of setting
 /// @returns string from member with keyname in the EXPCONFIG_RESERVED_DATABLOCK
-static Function/S CONF_GetStringFromSettings(jsonID, keyName)
-	variable jsonID
-	string   keyName
+static Function/S CONF_GetStringFromSettings(variable jsonID, string keyName)
 
 	CONF_RequireConfigBlockExists(jsonID)
 	return JSON_GetString(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName)
@@ -856,10 +845,7 @@ End
 ///                     this is returned instead
 ///
 /// @returns value of the EXPCONFIG_FIELD_CTRLVVALUE field of the control
-static Function CONF_GetVariableFromSettings(jsonID, keyName, [defaultValue])
-	variable jsonID
-	string   keyName
-	variable defaultValue
+static Function CONF_GetVariableFromSettings(variable jsonID, string keyName, [variable defaultValue])
 
 	variable val
 
@@ -884,9 +870,7 @@ End
 /// @param jsonID   ID of existing json
 /// @param niceName nice name of control
 /// @returns Path to control in json, empty string if not found
-static Function/S CONF_FindControl(jsonID, niceName)
-	variable jsonID
-	string   niceName
+static Function/S CONF_FindControl(variable jsonID, string niceName)
 
 	variable i, numWindows
 	string result
@@ -910,17 +894,15 @@ End
 /// @param basePath root of traversal start
 /// @param niceName nice name of control
 /// @returns Path to control in json, empty string if not found
-static Function/S CONF_TraversalFinder(jsonID, basePath, niceName)
-	variable jsonID
-	string basePath, niceName
+static Function/S CONF_TraversalFinder(variable jsonID, string basePath, string niceName)
 
 	variable i, numElems
 	string result
 
 	WAVE/T ctrlGroups = JSON_GetKeys(jsonID, basePath)
 
-	WAVE/T/Z ctrlSubGroups
-	WAVE/T/Z niceNames
+	WAVE/Z/T ctrlSubGroups
+	WAVE/Z/T niceNames
 	[ctrlSubGroups, niceNames] = SplitTextWaveBySuffix(ctrlGroups, EXPCONFIG_CTRLGROUP_SUFFIX)
 	FindValue/TXOP=4/TEXT=niceName niceNames
 	if(V_Value >= 0)
@@ -944,9 +926,7 @@ End
 /// @param jsonID    ID of existing json
 /// @param arrayName name of ControlArray
 /// @returns text wave with data from ControlArray
-static Function/WAVE CONF_GetWaveFromSavedControlArray(jsonID, arrayName)
-	variable jsonID
-	string   arrayName
+static Function/WAVE CONF_GetWaveFromSavedControlArray(variable jsonID, string arrayName)
 
 	string arrayPath = CONF_FindControl(jsonID, arrayName)
 	ASSERT(!IsEmpty(arrayPath), "Can not find ControlArray " + arrayName + " in config file.")
@@ -958,9 +938,7 @@ End
 /// @param jsonID   ID of existing json
 /// @param niceName nice name of control
 /// @returns value of the EXPCONFIG_FIELD_CTRLSVALUE field of the control
-static Function/S CONF_GetStringFromSavedControl(jsonID, niceName)
-	variable jsonID
-	string   niceName
+static Function/S CONF_GetStringFromSavedControl(variable jsonID, string niceName)
 
 	string ctrlPath = CONF_FindControl(jsonID, niceName)
 	ASSERT(!IsEmpty(ctrlPath), "Can not find control " + niceName + " in config file.")
@@ -972,9 +950,7 @@ End
 /// @param jsonID   ID of existing json
 /// @param niceName nice name of control
 /// @returns value of the EXPCONFIG_FIELD_CTRLVVALUE field of the control
-static Function CONF_GetVariableFromSavedControl(jsonID, niceName)
-	variable jsonID
-	string   niceName
+static Function CONF_GetVariableFromSavedControl(variable jsonID, string niceName)
 
 	string ctrlPath = CONF_FindControl(jsonID, niceName)
 	ASSERT(!IsEmpty(ctrlPath), "Can not find control " + niceName + " in config file.")
@@ -986,8 +962,7 @@ End
 ///
 /// @param[in] jsonID ID of existing json
 /// @returns Text wave with all named configuration sections
-static Function/WAVE CONF_GetWindowNames(jsonID)
-	variable jsonID
+static Function/WAVE CONF_GetWindowNames(variable jsonID)
 
 	WAVE/T ctrlGroups = JSON_GetKeys(jsonID, "")
 	RemoveTextWaveEntry1D(ctrlGroups, EXPCONFIG_RESERVED_DATABLOCK)
@@ -1000,8 +975,7 @@ End
 ///
 /// @param[in] wName Name of window
 /// @returns Text wave with two columns and in each row ControlArray name (column ARRAYNAME) and control list (column CTRLNAMELIST)
-static Function/WAVE CONF_GetControlArrayList(wName)
-	string wName
+static Function/WAVE CONF_GetControlArrayList(string wName)
 
 	string ctrlList, ctrlName, arrayName
 	variable i, numWinCtrl, col1, numCtrlArrays
@@ -1038,10 +1012,7 @@ End
 /// @param[in] ctrlData ctrlData wave, 2d four column text wave as created in CONF_JSONToWindow(). This wave is updated by this function.
 /// @param[in] jsonID json object to traverse
 /// @param[in] basePath root path for traversal
-static Function CONF_GatherControlsFromJSON(ctrlData, jsonID, basePath)
-	WAVE/T   ctrlData
-	variable jsonID
-	string   basePath
+static Function CONF_GatherControlsFromJSON(WAVE/T ctrlData, variable jsonID, string basePath)
 
 	variable i, numElems, offset
 
@@ -1050,8 +1021,8 @@ static Function CONF_GatherControlsFromJSON(ctrlData, jsonID, basePath)
 		return 0
 	endif
 
-	WAVE/T/Z ctrlSubGroups
-	WAVE/T/Z niceNames
+	WAVE/Z/T ctrlSubGroups
+	WAVE/Z/T niceNames
 	[ctrlSubGroups, niceNames] = SplitTextWaveBySuffix(ctrlGroups, EXPCONFIG_CTRLGROUP_SUFFIX)
 
 	numElems = DimSize(ctrlSubGroups, ROWS)
@@ -1078,9 +1049,8 @@ End
 /// @param restoreMask Bit mask which properties are restored from WindowControlSavingMask constants
 /// @param jsonID      ID of existing json
 /// @returns name of main window after restore
-Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
-	string wName
-	variable restoreMask, jsonID
+Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID)
+
 	string excludeList
 
 	variable i, colNiceName, colArrayName, colCtrlName, winNum, numCtrl, numWinCtrl, numGroups, numNice, offset, numWindows, numCtrlArrays, numArrayElem, isTagged
@@ -1250,8 +1220,7 @@ End
 /// @param winHandle window handle
 /// @param uKey      [optional, default = EXPCONFIG_UDATA_WINHANDLE] userdata key that stores the handle value
 /// @returns Window name of the window with the given handle; empty string if not found.
-static Function/S CONF_FindWindow(winHandle, [uKey])
-	string winHandle, uKey
+static Function/S CONF_FindWindow(string winHandle, [string uKey])
 
 	variable i, j, numWin, numSubWin
 	string wList, wName, wSubList
@@ -1283,10 +1252,7 @@ End
 /// @param ctrlName    Control name
 /// @param jsonPath    [optional, default = n/a] When given: the control is expected to be a named json object (with the control nice name)
 ///                    If not given: the jsons second level (assuming default format) is searched for the associated object. This is slower.
-static Function CONF_RestoreControl(wName, restoreMask, jsonID, ctrlName, [jsonPath])
-	string wName
-	variable restoreMask, jsonID
-	string ctrlName, jsonPath
+static Function CONF_RestoreControl(string wName, variable restoreMask, variable jsonID, string ctrlName, [string jsonPath])
 
 	string ctrlTypeName, uData, uKey, base64Key, str, wList, niceName, arrayName, arrayElemPath
 	variable i, base64Entries, ctrlType, setVarType, varTypeGlobal, val, numGroups, arrayElemType
@@ -1502,10 +1468,7 @@ End
 /// @param[in] saveMask bit pattern based configuration setting for saving @sa WindowControlSavingMask
 /// @param[in] excCtrlTypes [optional, default = ""], list of control type codes for excluded control types for saving e.g. "1;6;" to exclude all buttons and charts
 /// @returns json ID of object where all controls where serialized into
-Function CONF_AllWindowsToJSON(wName, saveMask, [excCtrlTypes])
-	string   wName
-	variable saveMask
-	string   excCtrlTypes
+Function CONF_AllWindowsToJSON(string wName, variable saveMask, [string excCtrlTypes])
 
 	string wList, curWinName, errMsg
 	variable i, numWins, jsonID, jsonIDWin
@@ -1563,10 +1526,7 @@ End
 /// @param saveMask            Bit mask which properties are saved from WindowControlSavingMask constants
 /// @param excCtrlTypes        [optional, default = ""] List of excluded control types that are ignored
 /// @returns jsonID            ID of json containing the serialized GUI data
-Function CONF_WindowToJSON(wName, saveMask, [excCtrlTypes])
-	string   wName
-	variable saveMask
-	string   excCtrlTypes
+Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes])
 
 	string ctrlList, ctrlName, radioList, tmpList, wList, cbCtrlName, coupledIndexKeys = "", excUserKeys, radioFunc, str, errMsg
 	variable numCtrl, i, j, jsonID, numCoupled, setRadioPos, ctrlType, coupledCnt, numUniqueCtrlArray, numDupCheck
@@ -1714,8 +1674,7 @@ Function CONF_WindowToJSON(wName, saveMask, [excCtrlTypes])
 	endtry
 End
 
-static Function/S CONF_GetCompleteJSONCtrlPath(path)
-	string path
+static Function/S CONF_GetCompleteJSONCtrlPath(string path)
 
 	variable i, numElems
 	string completePath = ""
@@ -1751,11 +1710,7 @@ End
 /// @param jsonID       ID of existing json
 /// @param excCtrlTypes List of excluded control types that are ignored
 /// @param excUserKeys  List of excluded keys of userdata fields that are ignored
-static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTypes, excUserKeys)
-	string wName, ctrlName
-	variable saveMask
-	variable jsonID
-	string excCtrlTypes, excUserKeys
+static Function CONF_ControlToJSON(string wName, string ctrlName, variable saveMask, variable jsonID, string excCtrlTypes, string excUserKeys)
 
 	variable ctrlType, pos, i, numUdataKeys, setVarType, arrayIndex, oldSize, preferCode, arrayElemType
 	string wList, ctrlPath, controlPath, niceName, jsonPath, udataPath, uDataKey, uData, s, arrayName, arrayElemPath
@@ -1881,7 +1836,7 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 			if(!IsEmpty(S_Userdata) && str2num(StringFromList(pos, EXPCONFIG_GUI_SUSERDATA)))
 				JSON_AddString(jsonID, udataPath, S_Userdata)
 			endif
-			WAVE/T/Z udataKeys = GetUserDataKeys(S_recreation)
+			WAVE/Z/T udataKeys = GetUserDataKeys(S_recreation)
 			numUdataKeys = WaveExists(udataKeys) ? DimSize(udataKeys, ROWS) : 0
 			for(i = 0; i < numUdataKeys; i += 1)
 				uDataKey = udataKeys[i]
@@ -1973,9 +1928,7 @@ End
 /// @param[in] device panel title of DA_Ephys panel
 /// @param[in] jsonID ID of json object with configuration data
 /// @param[in] midExp middle of experiment - uploads MCC relevant settings from panel to MCC instead
-static Function CONF_RestoreHeadstageAssociation(device, jsonID, midExp)
-	string device
-	variable jsonID, midExp
+static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID, variable midExp)
 
 	variable i, type, numRows, ampSerial, ampChannel, index, value, warnMissingMCCSync
 	string jsonPath, jsonBasePath, jsonPathAmpBlock
@@ -2143,8 +2096,7 @@ End
 /// @brief Retrieves current User Pressure settings to json
 /// @param[in] device panel title of DA_Ephys panel
 /// @returns jsonID ID of json object with user pressure configuration data
-static Function CONF_GetUserPressure(device)
-	string device
+static Function CONF_GetUserPressure(string device)
 
 	variable jsonID
 
@@ -2159,9 +2111,7 @@ End
 /// @brief Restore User Pressure settings
 /// @param[in] device panel title of DA_Ephys panel
 /// @param[in] jsonID ID of json object with configuration data
-static Function CONF_RestoreUserPressure(device, jsonID)
-	string   device
-	variable jsonID
+static Function CONF_RestoreUserPressure(string device, variable jsonID)
 
 	string jsonPath
 
@@ -2179,8 +2129,7 @@ End
 ///
 /// @param[in] device device
 /// @returns jsonID ID of json object with user pressure configuration data
-static Function CONF_GetAmplifierSettings(device)
-	string device
+static Function CONF_GetAmplifierSettings(string device)
 
 	variable jsonID, i, clampMode, ampSerial, ampChannelID, index
 	string jsonPath, amplifierDef, basePath
@@ -2326,10 +2275,7 @@ End
 /// @param[in] headStage  MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param[in] jsonID     ID of json object with configuration data
 /// @param[in] basePath   absolute path in the json file to search the entries
-static Function CONF_RestoreAmplifierSettings(device, headStage, jsonID, basePath)
-	string device
-	variable headStage, jsonID
-	string basePath
+static Function CONF_RestoreAmplifierSettings(string device, variable headStage, variable jsonID, string basePath)
 
 	variable clampMode, val, ret
 	string path
@@ -2413,8 +2359,7 @@ End
 ///
 /// @param ampSerialRef    Amplifier Serial Number to search for
 /// @param ampChannelIDRef Headstage reference number
-static Function CONF_FindAmpInList(ampSerialRef, ampChannelIDRef)
-	variable ampSerialRef, ampChannelIDRef
+static Function CONF_FindAmpInList(variable ampSerialRef, variable ampChannelIDRef)
 
 	string listOfAmps, ampDef
 	variable numAmps, i, ampSerial, ampChannelID
@@ -2433,9 +2378,7 @@ static Function CONF_FindAmpInList(ampSerialRef, ampChannelIDRef)
 	ASSERT(0, "Could not find amplifier")
 End
 
-static Function CONF_MCC_MidExp(device, headStage, jsonID)
-	string device
-	variable headStage, jsonID
+static Function CONF_MCC_MidExp(string device, variable headStage, variable jsonID)
 
 	variable settingValue, clampMode
 
@@ -2483,8 +2426,7 @@ End
 /// @param serialNum   Serial number of MCC
 /// @param winTitle    Name of MCC window
 /// @param winPosition One of 4 monitors to position MCCs in
-Function CONF_Position_MCC_Win(serialNum, winTitle, winPosition)
-	string serialNum, winTitle, winPosition
+Function CONF_Position_MCC_Win(string serialNum, string winTitle, string winPosition)
 
 	string cmd, fullPath, cmdPath
 	variable w
@@ -2583,9 +2525,7 @@ End
 /// @brief Loads, parses and joins a *_rig.json file to a main configuration file.
 /// @param[in] jsonID jsonID of main configuration
 /// @param[in] rigFileName full file path of rig file
-static Function CONF_JoinRigFile(jsonID, rigFileName)
-	variable jsonID
-	string   rigFileName
+static Function CONF_JoinRigFile(variable jsonID, string rigFileName)
 
 	string   input
 	variable jsonIDRig
@@ -2682,7 +2622,7 @@ Function CONF_UpdatePackageSettingsFromConfigFiles(variable jsonIdPkg)
 	string fName, input, fullFilePath, globalSettingsPath
 	variable jsonIdConf
 
-	WAVE/T/Z configFiles = CONF_GetConfigFiles()
+	WAVE/Z/T configFiles = CONF_GetConfigFiles()
 	if(WaveExists(configFiles))
 		globalSettingsPath = "/" + EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_GLOBALPACKAGESETTINGBLOCK
 		for(fName : configFiles)

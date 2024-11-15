@@ -17,8 +17,7 @@
 /// @param symbPath  symbolic path
 /// @param baseName  base name of the file, must not be empty
 /// @param suffix    file/folder suffix
-Function/S UniqueFileOrFolder(symbPath, baseName, [suffix])
-	string symbPath, baseName, suffix
+Function/S UniqueFileOrFolder(string symbPath, string baseName, [string suffix])
 
 	string file
 	variable i = 1
@@ -49,8 +48,7 @@ Function/S UniqueFileOrFolder(symbPath, baseName, [suffix])
 End
 
 /// @brief Return true if the given absolute path refers to an existing drive letter
-Function IsDriveValid(absPath)
-	string absPath
+Function IsDriveValid(string absPath)
 
 	string drive
 
@@ -72,8 +70,7 @@ End
 /// @brief Create a folder recursively on disk given an absolute path
 ///
 /// If you pass windows style paths using backslashes remember to always *double* them.
-Function CreateFolderOnDisk(absPath)
-	string absPath
+Function CreateFolderOnDisk(string absPath)
 
 	string path, partialPath, tempPath
 	variable numParts, i
@@ -106,8 +103,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-threadsafe Function/S GetBaseName(filePathWithSuffix, [sep])
-	string filePathWithSuffix, sep
+threadsafe Function/S GetBaseName(string filePathWithSuffix, [string sep])
 
 	if(ParamIsDefault(sep))
 		sep = ":"
@@ -123,8 +119,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-threadsafe Function/S GetFileSuffix(filePathWithSuffix, [sep])
-	string filePathWithSuffix, sep
+threadsafe Function/S GetFileSuffix(string filePathWithSuffix, [string sep])
 
 	if(ParamIsDefault(sep))
 		sep = ":"
@@ -141,8 +136,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-threadsafe Function/S GetFolder(filePathWithSuffix, [sep])
-	string filePathWithSuffix, sep
+threadsafe Function/S GetFolder(string filePathWithSuffix, [string sep])
 
 	if(ParamIsDefault(sep))
 		sep = ":"
@@ -158,8 +152,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-threadsafe Function/S GetFile(filePathWithSuffix, [sep])
-	string filePathWithSuffix, sep
+threadsafe Function/S GetFile(string filePathWithSuffix, [string sep])
 
 	if(ParamIsDefault(sep))
 		sep = ":"
@@ -169,8 +162,7 @@ threadsafe Function/S GetFile(filePathWithSuffix, [sep])
 End
 
 /// @brief Return the path converted to a windows style path
-threadsafe Function/S GetWindowsPath(path)
-	string path
+threadsafe Function/S GetWindowsPath(string path)
 
 	return ParseFilepath(5, path, "\\", 0, 0)
 End
@@ -191,8 +183,7 @@ End
 ///
 /// @return full path or an empty string if the file does not exist or the
 /// 		shortcut points to a non existing file/folder
-Function/S ResolveAlias(path, [pathName])
-	string pathName, path
+Function/S ResolveAlias(string path, [string pathName])
 
 	if(ParamIsDefault(pathName))
 		GetFileFolderInfo/Q/Z path
@@ -223,8 +214,7 @@ End
 ///		string symbPath = GetUniqueSymbolicPath()
 ///		NewPath/Q/O $symbPath, "C:"
 /// \endrst
-Function/S GetUniqueSymbolicPath([prefix])
-	string prefix
+Function/S GetUniqueSymbolicPath([string prefix])
 
 	if(ParamIsDefault(prefix))
 		prefix = "temp_"
@@ -245,8 +235,7 @@ End
 ///
 /// @param pathName igor symbolic path to search recursively
 /// @param extension [optional, defaults to all files] file suffixes to search for
-Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
-	string pathName, extension
+Function/S GetAllFilesRecursivelyFromPath(string pathName, [string extension])
 
 	string fileOrPath, folders, subFolderPathName, fileName
 	string files, allFilesList
@@ -286,7 +275,7 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 	endfor
 
 	AssertOnAndClearRTError()
-	folders = IndexedDir($pathName, -1, 1, FILE_LIST_SEP); err     = GetRTError(1)
+	folders = IndexedDir($pathName, -1, 1, FILE_LIST_SEP); err = GetRTError(1)
 	folders = folders + foldersFromAlias
 	WAVE/T wFolders = ListToTextWave(folders, FILE_LIST_SEP)
 	for(folder : wFolders)
@@ -336,9 +325,7 @@ End
 ///
 /// @param diskPath          path on disk to check
 /// @param requiredFreeSpace required free space in GB
-Function HasEnoughDiskspaceFree(diskPath, requiredFreeSpace)
-	string   diskPath
-	variable requiredFreeSpace
+Function HasEnoughDiskspaceFree(string diskPath, variable requiredFreeSpace)
 
 	variable leftOverBytes
 
@@ -352,6 +339,7 @@ End
 /// @brief Return a `/Z` flag value for the `Open` operation which works with
 /// automated testing
 Function GetOpenZFlag()
+
 #ifdef AUTOMATED_TESTING
 	return 1 // no dialog if the file does not exist
 #else
@@ -368,9 +356,7 @@ End
 /// @param[out] savedFileName [optional, default = ""] file name of the saved file
 /// @param[in] showDialogOnOverwrite [optional, default = 0] opens save file dialog, if the current fileName would cause an overwrite, to allow user to change fileName
 /// @returns NaN if file open dialog was aborted or an error was encountered, 0 otherwise
-Function SaveTextFile(data, fileName, [fileFilter, message, savedFileName, showDialogOnOverwrite])
-	string data, fileName, fileFilter, message, &savedFileName
-	variable showDialogOnOverwrite
+Function SaveTextFile(string data, string fileName, [string fileFilter, string message, string &savedFileName, variable showDialogOnOverwrite])
 
 	variable fNum, dialogCode
 
@@ -481,8 +467,7 @@ End
 /// @brief Check wether the given path points to an existing file
 ///
 /// Resolves shortcuts and symlinks recursively.
-Function FileExists(filepath)
-	string filepath
+Function FileExists(string filepath)
 
 	filepath = ResolveAlias(filepath)
 	AssertOnAndClearRTError()
@@ -496,8 +481,7 @@ Function FileExists(filepath)
 End
 
 /// @brief Check wether the given path points to an existing folder
-Function FolderExists(folderpath)
-	string folderpath
+Function FolderExists(string folderpath)
 
 	folderpath = ResolveAlias(folderpath)
 	AssertOnAndClearRTError()
@@ -511,8 +495,7 @@ Function FolderExists(folderpath)
 End
 
 /// @brief Return the file version
-Function/S GetFileVersion(filepath)
-	string filepath
+Function/S GetFileVersion(string filepath)
 
 	filepath = ResolveAlias(filepath)
 	AssertOnAndClearRTError()
@@ -552,11 +535,13 @@ End
 ///
 /// The path *must* exist.
 Function/S HFSPathToPosix(string path)
+
 	return ParseFilePath(9, path, "*", 0, 0)
 End
 
 /// @brief Convert a HFS path (`:`) to a Windows path (`\\`)
 Function/S HFSPathToWindows(string path)
+
 	return ParseFilePath(5, path, "\\", 0, 0)
 End
 
@@ -628,6 +613,7 @@ End
 /// @brief Load the wave `$name.itx` from the folder of this procedure file and store
 /// it in the static data folder.
 Function/WAVE LoadWaveFromDisk(string name)
+
 	string path
 
 	path = GetFolder(FunctionPath("")) + name + ".itx"
@@ -650,6 +636,7 @@ End
 /// @brief Store the given wave as `$name.itx` in the same folder as this
 /// procedure file on disk.
 Function StoreWaveOnDisk(WAVE wv, string name)
+
 	string path
 
 	ASSERT(IsValidObjectName(name), "Name is not a valid igor object name")
@@ -676,14 +663,14 @@ End
 #ifdef MACINTOSH
 
 threadsafe Function MU_GetFreeDiskSpace(string path)
+
 	ASSERT_TS(0, "Not implemented")
 End
 
 #endif
 
 /// @brief Cleanup the experiment name
-Function/S CleanupExperimentName(expName)
-	string expName
+Function/S CleanupExperimentName(string expName)
 
 	// Remove the following suffixes:
 	// - sibling
@@ -701,9 +688,7 @@ End
 /// @param path   absolute path to a file
 /// @param method [optional, defaults to #HASH_SHA2_256]
 ///               Type of cryptographic hash function, one of @ref HASH_SHA2_256
-Function/S CalcHashForFile(path, [method])
-	string   path
-	variable method
+Function/S CalcHashForFile(string path, [variable method])
 
 	string contents, loadedFilePath
 
@@ -720,8 +705,7 @@ End
 
 /// @brief Check if the file paths referenced in `list` are pointing
 ///        to identical files
-Function CheckIfPathsRefIdenticalFiles(list)
-	string list
+Function CheckIfPathsRefIdenticalFiles(string list)
 
 	variable i, numEntries
 	string path, refHash, newHash

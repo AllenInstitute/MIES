@@ -33,15 +33,13 @@ static Constant BSP_EPOCH_LEVELS = 5
 /// @brief return the name of the external panel depending on main window name
 ///
 /// @param mainPanel 	mainWindow panel name
-Function/S BSP_GetPanel(mainPanel)
-	string mainPanel
+Function/S BSP_GetPanel(string mainPanel)
 
 	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SUBWINDOW
 End
 
 /// @brief return the name of the WaveNote Display inside BSP
-Function/S BSP_GetNotebookSubWindow(win)
-	string win
+Function/S BSP_GetNotebookSubWindow(string win)
 
 	return BSP_GetPanel(win) + "#WaveNoteDisplay"
 End
@@ -49,26 +47,22 @@ End
 /// @brief return the name of the bottom Panel
 ///
 /// @param mainPanel 	mainWindow panel name
-Function/S BSP_GetSweepControlsPanel(mainPanel)
-	string mainPanel
+Function/S BSP_GetSweepControlsPanel(string mainPanel)
 
 	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SWEEPCONTROL
 End
 
-Function/S BSP_GetSFFormula(mainPanel)
-	string mainPanel
+Function/S BSP_GetSFFormula(string mainPanel)
 
 	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_FORMULA
 End
 
-Function/S BSP_GetSFJSON(mainPanel)
-	string mainPanel
+Function/S BSP_GetSFJSON(string mainPanel)
 
 	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_JSON
 End
 
-Function/S BSP_GetSFHELP(mainPanel)
-	string mainPanel
+Function/S BSP_GetSFHELP(string mainPanel)
 
 	string helpNotebook
 
@@ -81,8 +75,7 @@ End
 /// @brief Inits controls of BrowserSettings side Panel
 ///
 /// @param mainPanel 	mainWindow panel name
-Function BSP_InitPanel(mainPanel)
-	string mainPanel
+Function BSP_InitPanel(string mainPanel)
 
 	string graph
 
@@ -98,8 +91,7 @@ End
 /// @brief UnHides BrowserSettings side Panel
 ///
 /// @param mainPanel 	mainWindow panel name
-static Function BSP_UnHidePanel(mainPanel)
-	string mainPanel
+static Function BSP_UnHidePanel(string mainPanel)
 
 	BSP_UnHideSweepControls(mainPanel)
 	BSP_UnHideSettingsPanel(mainPanel)
@@ -108,8 +100,7 @@ static Function BSP_UnHidePanel(mainPanel)
 	BSP_MainPanelButtonToggle(mainPanel, 0)
 End
 
-static Function BSP_UnHideSettingsPanel(mainPanel)
-	string mainPanel
+static Function BSP_UnHideSettingsPanel(string mainPanel)
 
 	string bsPanel
 
@@ -125,8 +116,7 @@ End
 /// @brief open bottom Panel
 ///
 /// @param mainPanel 	mainWindow panel name
-static Function BSP_UnHideSweepControls(mainPanel)
-	string mainPanel
+static Function BSP_UnHideSweepControls(string mainPanel)
 
 	string scPanel
 
@@ -141,8 +131,7 @@ End
 /// @brief dynamic settings for bottom panel at initialization
 ///
 /// @param mainPanel 	mainWindow panel name
-static Function BSP_DynamicSweepControls(mainPanel)
-	string mainPanel
+static Function BSP_DynamicSweepControls(string mainPanel)
 
 	string scPanel
 
@@ -217,8 +206,7 @@ End
 /// @brief dynamic settings for panel initialization
 ///
 /// @param mainPanel 	mainWindow panel name
-Function BSP_DynamicStartupSettings(mainPanel)
-	string mainPanel
+Function BSP_DynamicStartupSettings(string mainPanel)
 
 	variable sweepNo
 	string bsPanel, shPanel, experiments, devices
@@ -260,8 +248,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 End
 
 /// @brief Hook function for the Sweep Formula Notebook
-Function BSP_SweepFormulaHook(s)
-	STRUCT WMWinHookStruct &s
+Function BSP_SweepFormulaHook(STRUCT WMWinHookStruct &s)
 
 	string win, bsPanel
 
@@ -286,8 +273,7 @@ End
 /// @brief Unsets all control properties that are set in BSP_DynamicStartupSettings for DataBrowser type
 ///
 /// @param mainPanel 	mainWindow panel name
-Function BSP_UnsetDynamicStartupSettings(mainPanel)
-	string mainPanel
+Function BSP_UnsetDynamicStartupSettings(string mainPanel)
 
 	string bsPanel, shPanel
 
@@ -308,8 +294,7 @@ Function BSP_UnsetDynamicStartupSettings(mainPanel)
 	EnableControls(shPanel, "popup_Device;popup_Experiment")
 End
 
-Function BSP_BindListBoxWaves(win)
-	string win
+Function BSP_BindListBoxWaves(string win)
 
 	string mainPanel, bsPanel
 
@@ -350,8 +335,7 @@ End
 ///
 /// @param win 	name of external panel or main window
 /// @returns channel selection wave
-Function/WAVE BSP_GetChannelSelectionWave(win)
-	string win
+Function/WAVE BSP_GetChannelSelectionWave(string win)
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	WAVE  wv  = GetChannelSelectionWave(dfr)
@@ -366,9 +350,7 @@ End
 /// @param versionCheck [optional, defaults to true] abort on outdated window version
 ///
 /// @return DFR to specified folder. No check for invalid folders
-Function/DF BSP_GetFolder(win, folderType, [versionCheck])
-	string win, folderType
-	variable versionCheck
+Function/DF BSP_GetFolder(string win, string folderType, [variable versionCheck])
 
 	string mainPanel
 
@@ -395,9 +377,7 @@ End
 /// @param win 			name of external panel or main window
 /// @param dfr 			DataFolder Reference to the folder
 /// @param folderType 	see the FOLDER constants in this file
-Function BSP_SetFolder(win, dfr, folderType)
-	string win, folderType
-	DFREF dfr
+Function BSP_SetFolder(string win, DFREF dfr, string folderType)
 
 	string mainPanel
 
@@ -413,8 +393,7 @@ End
 /// @param win 	name of external panel or main window
 ///
 /// @return device as string
-Function/S BSP_GetDevice(win)
-	string win
+Function/S BSP_GetDevice(string win)
 
 	string mainPanel
 
@@ -434,8 +413,7 @@ End
 ///
 /// @param win                      name of external panel or main window
 /// @param device                   bound device as string
-Function/S BSP_SetDevice(win, device)
-	string win, device
+Function/S BSP_SetDevice(string win, string device)
 
 	string mainPanel
 
@@ -451,8 +429,7 @@ End
 /// @param win 	name of external panel or main window
 ///
 /// @return D for DataBrowser or S for SweepBrowser
-Function/S BSP_GetBrowserType(win)
-	string win
+Function/S BSP_GetBrowserType(string win)
 
 	string mainPanel
 
@@ -468,6 +445,7 @@ End
 /// @param type    One of #BROWSERTYPE_DATABROWSER or #BROWSERTYPE_SWEEPBROWSER
 /// @param mode    One of @ref BrowserModes
 static Function/S BSP_SetBrowserType(string win, string type, variable mode)
+
 	string mainPanel
 
 	string title, suffix
@@ -480,6 +458,7 @@ static Function/S BSP_SetBrowserType(string win, string type, variable mode)
 End
 
 static Function BSP_ParseBrowserMode(string mode)
+
 	strswitch(mode)
 		case "User":
 			return BROWSER_MODE_USER
@@ -493,6 +472,7 @@ static Function BSP_ParseBrowserMode(string mode)
 End
 
 static Function/S BSP_SerializeBrowserMode(variable mode)
+
 	switch(mode)
 		case BROWSER_MODE_USER:
 			return "User"
@@ -528,15 +508,13 @@ Function BSP_SetSweepBrowser(string win, variable mode)
 End
 
 /// @brief wrapper function for external calls
-Function BSP_IsSweepBrowser(win)
-	string win
+Function BSP_IsSweepBrowser(string win)
 
 	return !cmpstr(BSP_GetBrowserType(win), BROWSERTYPE_SWEEPBROWSER)
 End
 
 /// @brief wrapper function for external calls
-Function BSP_IsDataBrowser(win)
-	string win
+Function BSP_IsDataBrowser(string win)
 
 	return !cmpstr(BSP_GetBrowserType(win), BROWSERTYPE_DATABROWSER)
 End
@@ -545,8 +523,7 @@ End
 ///
 /// @param win 	name of external panel or main window
 /// @return 1 if device is assigned and 0 otherwise. does not check if device is valid.
-Function BSP_HasBoundDevice(win)
-	string win
+Function BSP_HasBoundDevice(string win)
 
 	string device = BSP_GetDevice(win)
 
@@ -556,8 +533,7 @@ End
 /// @brief set the initial state of the enable/disable buttons
 ///
 /// @param win 		name of external panel or main window
-static Function BSP_InitMainCheckboxes(win)
-	string win
+static Function BSP_InitMainCheckboxes(string win)
 
 	string bsPanel
 
@@ -576,8 +552,7 @@ End
 /// @brief enable/disable the OVS buttons
 ///
 /// @param win 	specify mainPanel or bsPanel with OVS controls
-Function BSP_SetOVSControlStatus(win)
-	string win
+Function BSP_SetOVSControlStatus(string win)
 
 	string controlList = "group_properties_sweeps;popup_overlaySweeps_select;setvar_overlaySweeps_offset;"            \
 	                     + "setvar_overlaySweeps_step;check_overlaySweeps_disableHS;check_overlaySweeps_non_commula;" \
@@ -589,8 +564,7 @@ End
 /// @brief enable/disable the AR buttons
 ///
 /// @param win 	specify mainPanel or bsPanel with OVS controls
-Function BSP_SetARControlStatus(win)
-	string win
+Function BSP_SetARControlStatus(string win)
 
 	string controlList = "group_properties_artefact;setvar_cutoff_length_before;setvar_cutoff_length_after;button_RemoveRanges;check_auto_remove;check_highlightRanges;list_of_ranges1;"
 
@@ -600,8 +574,7 @@ End
 /// @brief enable/disable the SF buttons
 ///
 /// @param win 	specify mainPanel or bsPanel with OVS controls
-Function BSP_SetSFControlStatus(win)
-	string win
+Function BSP_SetSFControlStatus(string win)
 
 	string controlList
 
@@ -614,9 +587,7 @@ End
 /// @param win    		specify mainPanel or bsPanel with OVS controls
 /// @param controlList  list of controls
 /// @param status       1: enable; 0: disable
-Function BSP_SetControlStatus(win, controlList, status)
-	string win, controlList
-	variable status
+Function BSP_SetControlStatus(string win, string controlList, variable status)
 
 	string bsPanel
 
@@ -635,9 +606,7 @@ End
 ///
 /// @param mainPanel 	main Panel window
 /// @param visible 		set status of external Panel (opened: visible = 1)
-static Function BSP_MainPanelButtonToggle(mainPanel, visible)
-	string   mainPanel
-	variable visible
+static Function BSP_MainPanelButtonToggle(string mainPanel, variable visible)
 
 	string panelButton
 
@@ -671,8 +640,7 @@ static Function BSP_HidePanel(string win)
 End
 
 /// @brief panel close hook for side panel
-Function BSP_ClosePanelHook(s)
-	STRUCT WMWinHookStruct &s
+Function BSP_ClosePanelHook(STRUCT WMWinHookStruct &s)
 
 	string mainPanel
 
@@ -686,8 +654,7 @@ Function BSP_ClosePanelHook(s)
 	return 0
 End
 
-Function BSP_SweepsAndMouseWheel(s)
-	STRUCT WMWinHookStruct &s
+Function BSP_SweepsAndMouseWheel(STRUCT WMWinHookStruct &s)
 
 	string graph, scPanel, ctrl
 
@@ -720,8 +687,7 @@ Function BSP_SweepsAndMouseWheel(s)
 End
 
 /// @brief enable/disable checkbox control for side panel
-Function BSP_CheckBoxProc_ArtRemoval(cba) : CheckBoxControl
-	STRUCT WMCheckBoxAction &cba
+Function BSP_CheckBoxProc_ArtRemoval(STRUCT WMCheckBoxAction &cba) : CheckBoxControl
 
 	string mainPanel
 
@@ -737,8 +703,7 @@ Function BSP_CheckBoxProc_ArtRemoval(cba) : CheckBoxControl
 End
 
 /// @brief enable/disable checkbox control for side panel
-Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
-	STRUCT WMCheckBoxAction &cba
+Function BSP_CheckBoxProc_PerPulseAver(STRUCT WMCheckBoxAction &cba) : CheckBoxControl
 
 	string mainPanel
 
@@ -753,8 +718,7 @@ Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 End
 
 /// @brief enable/disable checkbox control for side panel
-Function BSP_CheckBoxProc_SweepFormula(cba) : CheckBoxControl
-	STRUCT WMCheckBoxAction &cba
+Function BSP_CheckBoxProc_SweepFormula(STRUCT WMCheckBoxAction &cba) : CheckBoxControl
 
 	string mainPanel
 
@@ -769,8 +733,7 @@ Function BSP_CheckBoxProc_SweepFormula(cba) : CheckBoxControl
 End
 
 /// @brief procedure for the open button of the side panel
-Function BSP_ButtonProc_Panel(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function BSP_ButtonProc_Panel(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string win
 
@@ -784,8 +747,7 @@ Function BSP_ButtonProc_Panel(ba) : ButtonControl
 	return 0
 End
 
-Function BSP_SliderProc_ChangedSetting(spa) : SliderControl
-	STRUCT WMSliderAction &spa
+Function BSP_SliderProc_ChangedSetting(STRUCT WMSliderAction &spa) : SliderControl
 
 	string win
 
@@ -797,8 +759,7 @@ Function BSP_SliderProc_ChangedSetting(spa) : SliderControl
 	return 0
 End
 
-Function BSP_TimeAlignmentProc(cba) : CheckBoxControl
-	STRUCT WMCheckBoxAction &cba
+Function BSP_TimeAlignmentProc(STRUCT WMCheckBoxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -807,8 +768,7 @@ Function BSP_TimeAlignmentProc(cba) : CheckBoxControl
 	endswitch
 End
 
-Function BSP_TimeAlignmentPopup(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function BSP_TimeAlignmentPopup(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -819,8 +779,7 @@ Function BSP_TimeAlignmentPopup(pa) : PopupMenuControl
 	return 0
 End
 
-Function BSP_TimeAlignmentLevel(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function BSP_TimeAlignmentLevel(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -833,8 +792,7 @@ Function BSP_TimeAlignmentLevel(sva) : SetVariableControl
 	return 0
 End
 
-Function BSP_DoTimeAlignment(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function BSP_DoTimeAlignment(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string graph, win
 
@@ -856,8 +814,7 @@ Function BSP_DoTimeAlignment(ba) : ButtonControl
 	return 0
 End
 
-Function BSP_CheckProc_ScaleAxes(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function BSP_CheckProc_ScaleAxes(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string ctrls, graph, bsPanel
 	variable numCtrls, i
@@ -888,8 +845,7 @@ Function BSP_CheckProc_ScaleAxes(cba) : CheckBoxControl
 	return 0
 End
 
-Function BSP_AxisScalingLevelCross(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function BSP_AxisScalingLevelCross(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	string graph, bsPanel
 
@@ -917,9 +873,7 @@ End
 /// @param lastSweepOrIndex  last available sweep(DB) or index(SB)
 ///
 /// @returns the new sweep number in case of DB or the index for SB
-static Function BSP_UpdateSweepControls(win, ctrl, firstSweepOrIndex, lastSweepOrIndex)
-	string win, ctrl
-	variable firstSweepOrIndex, lastSweepOrIndex
+static Function BSP_UpdateSweepControls(string win, string ctrl, variable firstSweepOrIndex, variable lastSweepOrIndex)
 
 	string graph, scPanel
 	variable currentSweep, newSweep, step, direction, ret
@@ -980,9 +934,7 @@ End
 /// @param win 			name of external panel or main window
 /// @param elementID 	one of MIES_BSP_* constants like MIES_BSP_PA
 /// @return 1 if setting was activated, 0 otherwise
-Function BSP_IsActive(win, elementID)
-	string   win
-	variable elementID
+Function BSP_IsActive(string win, variable elementID)
 
 	string bsPanel, control
 
@@ -1044,8 +996,7 @@ Function BSP_UpdateHelpNotebook(string helpNotebook)
 End
 
 /// @brief Return a sweep formula graph name unique for that sweepbrowser/databrowser
-Function/S BSP_GetFormulaGraph(win)
-	string win
+Function/S BSP_GetFormulaGraph(string win)
 
 	if(!BSP_HasBoundDevice(win))
 		return CleanupName(SF_PLOT_NAME_TEMPLATE, 0)
@@ -1065,10 +1016,7 @@ End
 
 /// @brief Parse a control name for the "Channel Selection Panel" and return
 ///        its channel type and number. The number will be NaN for the ALL control.
-Function BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
-	string    ctrl
-	string   &channelType
-	variable &channelNum
+Function BSP_ParseChannelSelectionControl(string ctrl, string &channelType, variable &channelNum)
 
 	string channelNumStr
 
@@ -1085,9 +1033,7 @@ End
 
 /// @brief Set the channel selection dialog controls according to the channel
 ///        selection wave
-Function BSP_ChannelSelectionWaveToGUI(panel, channelSel)
-	string panel
-	WAVE   channelSel
+Function BSP_ChannelSelectionWaveToGUI(string panel, WAVE channelSel)
 
 	string list, channelType, ctrl
 	variable channelNum, numEntries, i
@@ -1108,9 +1054,7 @@ End
 
 /// @brief Set the channel selection wave acccording to the channel selection
 ///        controls
-Function BSP_GUIToChannelSelectionWave(win, ctrl, checked)
-	string win, ctrl
-	variable checked
+Function BSP_GUIToChannelSelectionWave(string win, string ctrl, variable checked)
 
 	variable channelNum, numEntries
 	string channelType
@@ -1131,11 +1075,7 @@ End
 ///
 /// `channelSel` will be the result from BSP_FetchSelectedChannels() which is a
 /// copy of the permanent channel selection wave.
-Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, statusHS, numericalValues, sweepNo)
-	WAVE channelSel
-	WAVE ADCs, DACs, numericalValues
-	variable sweepNo
-	WAVE     statusHS
+Function BSP_RemoveDisabledChannels(WAVE channelSel, WAVE ADCs, WAVE DACs, WAVE statusHS, WAVE numericalValues, variable sweepNo)
 
 	variable numADCs, numDACs, i
 
@@ -1174,8 +1114,7 @@ Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, statusHS, numericalV
 	endfor
 End
 
-Function BSP_ScaleAxes(win)
-	string win
+Function BSP_ScaleAxes(string win)
 
 	string graph, bsPanel
 	variable visXRange, equalY, equalYIgn, level
@@ -1222,8 +1161,7 @@ Function [STRUCT TiledGraphSettings tgs] BSP_GatherTiledGraphSettings(string win
 	endif
 End
 
-Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
-	STRUCT WMCheckBoxAction &cba
+Function BSP_CheckProc_ChangedSetting(STRUCT WMCheckBoxAction &cba) : CheckBoxControl
 
 	string graph, bsPanel, ctrl
 	variable checked
@@ -1278,8 +1216,7 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	return 0
 End
 
-Function BSP_ButtonProc_RestoreData(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function BSP_ButtonProc_RestoreData(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string bspPanel, bsPanel, graph, device
 	variable numEntries, i, sweepNo
@@ -1331,8 +1268,7 @@ Function BSP_ButtonProc_RestoreData(ba) : ButtonControl
 	return 0
 End
 
-Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
-	STRUCT WMCheckBoxAction &cba
+Function BSP_CheckProc_OverlaySweeps(STRUCT WMCheckBoxAction &cba) : CheckBoxControl
 
 	string graph, bsPanel
 
@@ -1365,6 +1301,7 @@ End
 ///
 /// @returns returns the specified logbook wave or a null wave
 Function/WAVE BSP_GetLogbookWave(string win, variable logbookType, variable logbookWaveType, [variable sweepNumber, variable selectedExpDevice])
+
 	string shPanel, device, dataFolder
 
 	if(ParamIsDefault(selectedExpDevice))
@@ -1443,6 +1380,7 @@ End
 
 /// @brief Return the last and first sweep numbers
 Function [variable first, variable last] BSP_FirstAndLastSweepAcquired(string win)
+
 	string list
 
 	WAVE/Z sweeps = GetPlainSweepList(win)
@@ -1454,8 +1392,7 @@ Function [variable first, variable last] BSP_FirstAndLastSweepAcquired(string wi
 	return [sweeps[0], sweeps[DimSize(sweeps, ROWS) - 1]]
 End
 
-Function BSP_ButtonProc_ChangeSweep(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function BSP_ButtonProc_ChangeSweep(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string graph, scPanel, bsPanel
 	variable first, last, formerLast, sweepNo, overlaySweeps
@@ -1492,14 +1429,12 @@ Function BSP_ButtonProc_ChangeSweep(ba) : ButtonControl
 End
 
 // Called from ACL_DisplayTab after the new tab is selected
-Function BSP_MainTabControlFinal(tca)
-	STRUCT WMTabControlAction &tca
+Function BSP_MainTabControlFinal(STRUCT WMTabControlAction &tca)
 
 	BSP_UpdateSweepNote(tca.win)
 End
 
-Function BSP_UpdateSweepNote(win)
-	string win
+Function BSP_UpdateSweepNote(string win)
 
 	string scPanel, lbPanel, bsPanel, device, sweepNote
 	string dataFolder, graph
@@ -1554,8 +1489,7 @@ Function BSP_UpdateSweepNote(win)
 	ReplaceNotebookText(lbPanel, sweepNote)
 End
 
-static Function BSP_UnHideSettingsHistory(win)
-	string win
+static Function BSP_UnHideSettingsHistory(string win)
 
 	string settingsHistoryPanel
 
@@ -1568,6 +1502,7 @@ static Function BSP_UnHideSettingsHistory(win)
 End
 
 static Function BSP_RemoveTraces(string graph)
+
 	variable i, numEntries
 	string trace
 
@@ -1603,14 +1538,14 @@ Function BSP_AddTracesForEpochs(string win)
 	DFREF dfr = GetEpochsVisualizationFolder(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
 	BSP_RemoveTraces(win)
 
-	WAVE/T/Z traceInfosHS = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"AD", "1"})
+	WAVE/Z/T traceInfosHS = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"AD", "1"})
 	if(!WaveExists(traceInfosHS))
 		// fallback to DA traces
-		WAVE/T/Z traceInfosHS = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
+		WAVE/Z/T traceInfosHS = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
 	endif
 
-	WAVE/T/Z traceInfosUnassocDA = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "0"})
-	WAVE/T/Z traceInfosTTL       = GetTraceInfos(win, addFilterKeys = {"channelType"}, addFilterValues = {"TTL"})
+	WAVE/Z/T traceInfosUnassocDA = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "0"})
+	WAVE/Z/T traceInfosTTL       = GetTraceInfos(win, addFilterKeys = {"channelType"}, addFilterValues = {"TTL"})
 
 	if(!WaveExists(traceInfosHS) && !WaveExists(traceInfosUnassocDA) && !WaveExists(traceInfosTTL))
 		return NaN
@@ -1654,7 +1589,7 @@ Function BSP_AddTracesForEpochs(string win)
 		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
 
 		// present since a2172f03 (Added generations of epoch information wave, 2019-05-22)
-		WAVE/T/Z epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, sweepDFR, channelNumber, channelType)
+		WAVE/Z/T epochsFromLBN = EP_FetchEpochs(numericalValues, textualValues, sweepNumber, sweepDFR, channelNumber, channelType)
 		if(!WaveExists(epochsFromLBN))
 			continue
 		endif
@@ -1722,8 +1657,7 @@ Function BSP_AddTracesForEpochs(string win)
 	endfor
 End
 
-Function BSP_EpochGraphToolTip(s)
-	STRUCT WMTooltipHookStruct &s
+Function BSP_EpochGraphToolTip(STRUCT WMTooltipHookStruct &s)
 
 	variable idx, hasShortname
 	string first, last, tags, treelevel, shortname
@@ -1735,9 +1669,9 @@ Function BSP_EpochGraphToolTip(s)
 		s.isHtml  = 1
 		WAVE w = s.yWave // The trace's Y wave
 		if(WaveDims(w) > 2)
-			WAVE/T/Z epochs = $GetStringFromWaveNote(w, "EpochInfo")
+			WAVE/Z/T epochs = $GetStringFromWaveNote(w, "EpochInfo")
 			ASSERT(WaveExists(epochs), "Missing epoch info")
-			hookResult = 1                     // 1 tells Igor to use our custom tooltip
+			hookResult = 1 // 1 tells Igor to use our custom tooltip
 			idx        = w[s.row][s.column][1]
 
 			first     = num2strHighPrec(str2num(epochs[idx][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI, precision = EPOCHTIME_PRECISION, shorten = 1)
@@ -1759,8 +1693,7 @@ Function BSP_EpochGraphToolTip(s)
 	return hookResult
 End
 
-Function BSP_SFHelpWindowHook(s)
-	STRUCT WMWinHookStruct &s
+Function BSP_SFHelpWindowHook(STRUCT WMWinHookStruct &s)
 
 	string mainWin, sfWin, bspPanel, cmdStr
 	variable modMask, refContentCRC, contentCRC
@@ -1912,8 +1845,7 @@ static Function/S BSP_RetrieveSFHelpTextImpl(string win, string hlpStart, string
 	return Trimstring(S_value)
 End
 
-Function BSP_WindowHook(s)
-	STRUCT WMWinHookStruct &s
+Function BSP_WindowHook(STRUCT WMWinHookStruct &s)
 
 	string win
 

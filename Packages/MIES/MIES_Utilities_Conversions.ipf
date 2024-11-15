@@ -10,22 +10,19 @@
 /// @brief Utility functions for conversions
 
 /// @brief Convert Bytes to MiBs, a mebibyte being 2^20.
-Function ConvertFromBytesToMiB(var)
-	variable var
+Function ConvertFromBytesToMiB(variable var)
 
 	return var / 1024 / 1024
 End
 
 /// @brief Convert the sampling interval in microseconds (1e-6s) to the rate in kHz
-threadsafe Function ConvertSamplingIntervalToRate(val)
-	variable val
+threadsafe Function ConvertSamplingIntervalToRate(variable val)
 
 	return 1 / (val * MICRO_TO_ONE) * ONE_TO_KILO
 End
 
 /// @brief Convert the rate in kHz to the sampling interval in microseconds (1e-6s)
-threadsafe Function ConvertRateToSamplingInterval(val)
-	variable val
+threadsafe Function ConvertRateToSamplingInterval(variable val)
 
 	return 1 / (val * KILO_TO_ONE) * ONE_TO_MICRO
 End
@@ -45,7 +42,8 @@ End
 ///
 /// Counterpart @see ConvertListToTextWave
 /// @see NumericWaveToList
-threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string colSep, string layerSep, string chunkSep, variable stopOnEmpty, variable maxElements, variable trailSep])
+threadsafe Function/S TextWaveToList(WAVE/Z/T txtWave, string rowSep, [string colSep, string layerSep, string chunkSep, variable stopOnEmpty, variable maxElements, variable trailSep])
+
 	string entry, seps
 	string list = ""
 	variable i, j, k, l, lasti, lastj, lastk, lastl, numRows, numCols, numLayers, numChunks, count, done
@@ -209,10 +207,7 @@ End
 /// '_free_'[0][0][1][1]= {"","","",""}
 /// '_free_'[0][0][0][2]= {"6","","",""}
 /// '_free_'[0][0][1][2]= {"","","",""}
-threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, chuSep])
-	string   list
-	variable dims
-	string rowSep, colSep, laySep, chuSep
+threadsafe Function/WAVE ListToTextWaveMD(string list, variable dims, [string rowSep, string colSep, string laySep, string chuSep])
 
 	variable colSize, laySize, chuSize
 	variable rowMaxSize, colMaxSize, layMaxSize, chuMaxSize
@@ -410,8 +405,7 @@ End
 ///
 /// This allows to specify the minimum number of significant digits.
 /// The normal printf/sprintf specifier only allows the maximum number of significant digits for `%g`.
-Function/S FloatWithMinSigDigits(var, [numMinSignDigits])
-	variable var, numMinSignDigits
+Function/S FloatWithMinSigDigits(variable var, [variable numMinSignDigits])
 
 	variable numMag
 
@@ -430,22 +424,19 @@ Function/S FloatWithMinSigDigits(var, [numMinSignDigits])
 End
 
 // @brief Convert a number to the strings `Passed` (!= 0) or `Failed` (0).
-Function/S ToPassFail(passedOrFailed)
-	variable passedOrFailed
+Function/S ToPassFail(variable passedOrFailed)
 
 	return SelectString(passedOrFailed, "failed", "passed")
 End
 
 // @brief Convert a number to the strings `True` (!= 0) or `False` (0).
-Function/S ToTrueFalse(var)
-	variable var
+Function/S ToTrueFalse(variable var)
 
 	return SelectString(var, "False", "True")
 End
 
 // @brief Convert a number to the strings `On` (!= 0) or `Off` (0).
-Function/S ToOnOff(var)
-	variable var
+Function/S ToOnOff(variable var)
 
 	return SelectString(var, "Off", "On")
 End
@@ -453,8 +444,7 @@ End
 /// @brief Convert the DAQ run mode to a string
 ///
 /// @param runMode One of @ref DAQRunModes
-threadsafe Function/S DAQRunModeToString(runMode)
-	variable runMode
+threadsafe Function/S DAQRunModeToString(variable runMode)
 
 	switch(runMode)
 		case DAQ_NOT_RUNNING:
@@ -478,8 +468,7 @@ End
 /// @brief Convert the Testpulse run mode to a string
 ///
 /// @param runMode One of @ref TestPulseRunModes
-threadsafe Function/S TestPulseRunModeToString(runMode)
-	variable runMode
+threadsafe Function/S TestPulseRunModeToString(variable runMode)
 
 	runMode = ClearBit(runMode, TEST_PULSE_DURING_RA_MOD)
 
@@ -515,6 +504,7 @@ End
 ///
 /// @return string with textual number representation
 threadsafe Function/S num2strHighPrec(variable val, [variable precision, variable shorten])
+
 	string str
 
 	precision = ParamIsDefault(precision) ? 5 : precision
@@ -542,9 +532,7 @@ End
 /// numer of points in the wave.
 ///
 /// @returns an existing index in @p wv between 0 and `DimSize(wv, dim) - 1`
-Function ScaleToIndexWrapper(wv, scale, dim)
-	WAVE wv
-	variable scale, dim
+Function ScaleToIndexWrapper(WAVE wv, variable scale, variable dim)
 
 	variable index
 
@@ -567,8 +555,7 @@ End
 /// @brief Convert a hexadecimal character into a number
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function HexToNumber(ch)
-	string ch
+threadsafe Function HexToNumber(string ch)
 
 	variable var
 
@@ -583,8 +570,7 @@ End
 /// @brief Convert a number into hexadecimal
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function/S NumberToHex(var)
-	variable var
+threadsafe Function/S NumberToHex(variable var)
 
 	string str
 
@@ -600,8 +586,7 @@ End
 /// This function works on a byte level so it does not care about endianess.
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function/WAVE HexToBinary(str)
-	string str
+threadsafe Function/WAVE HexToBinary(string str)
 
 	variable length
 
@@ -788,16 +773,16 @@ Function/WAVE JSONToWave(string str, [string path])
 			ASSERT(0, "Type is not supported: " + type)
 	endswitch
 
-	WAVE/D/Z dimSizes = JSON_GetWave(jsonID, path + "/dimension/size", waveMode = 1, ignoreErr = 1)
+	WAVE/Z/D dimSizes = JSON_GetWave(jsonID, path + "/dimension/size", waveMode = 1, ignoreErr = 1)
 	ASSERT(WaveExists(dimSizes), "dimension sizes are missing")
 
 	Make/D/FREE/N=(MAX_DIMENSION_COUNT) newSizes = -1
 	newSizes[0, DimSize(dimSizes, ROWS) - 1] = dimSizes[p]
 	Redimension/N=(newSizes[0], newSizes[1], newSizes[2], newSizes[3]) data
 
-	WAVE/D/Z dimDeltas  = JSON_GetWave(jsonID, path + "/dimension/delta", waveMode = 1, ignoreErr = 1)
-	WAVE/D/Z dimOffsets = JSON_GetWave(jsonID, path + "/dimension/offset", waveMode = 1, ignoreErr = 1)
-	WAVE/T/Z dimUnits   = JSON_GetTextWave(jsonID, path + "/dimension/unit", ignoreErr = 1)
+	WAVE/Z/D dimDeltas  = JSON_GetWave(jsonID, path + "/dimension/delta", waveMode = 1, ignoreErr = 1)
+	WAVE/Z/D dimOffsets = JSON_GetWave(jsonID, path + "/dimension/offset", waveMode = 1, ignoreErr = 1)
+	WAVE/Z/T dimUnits   = JSON_GetTextWave(jsonID, path + "/dimension/unit", ignoreErr = 1)
 
 	if(WaveExists(dimDeltas) || WaveExists(dimOffsets) || WaveExists(dimUnits))
 
@@ -843,7 +828,7 @@ Function/WAVE JSONToWave(string str, [string path])
 		endfor
 	endif
 
-	WAVE/T/Z dimLabelsFull = JSON_GetTextWave(jsonID, path + "/dimension/label/full", ignoreErr = 1)
+	WAVE/Z/T dimLabelsFull = JSON_GetTextWave(jsonID, path + "/dimension/label/full", ignoreErr = 1)
 
 	if(WaveExists(dimLabelsFull))
 		for(lbl : dimLabelsFull)
@@ -852,7 +837,7 @@ Function/WAVE JSONToWave(string str, [string path])
 		endfor
 	endif
 
-	WAVE/T/Z dimLabelsEach = JSON_GetTextWave(jsonID, path + "/dimension/label/each", ignoreErr = 1)
+	WAVE/Z/T dimLabelsEach = JSON_GetTextWave(jsonID, path + "/dimension/label/each", ignoreErr = 1)
 
 	if(WaveExists(dimLabelsEach))
 		ASSERT(DimSize(dimLabelsEach, ROWS) == Sum(dimSizes), "Mismatched dimension label each wave")
@@ -866,7 +851,7 @@ Function/WAVE JSONToWave(string str, [string path])
 
 	// no way to restore the modification date
 
-	WAVE/D/Z dataFullScale = JSON_GetWave(jsonID, path + "/data/fullScale", waveMode = 1, ignoreErr = 1)
+	WAVE/Z/D dataFullScale = JSON_GetWave(jsonID, path + "/data/fullScale", waveMode = 1, ignoreErr = 1)
 
 	if(!WaveExists(dataFullScale))
 		Make/FREE/D dataFullScale = {0, 0}

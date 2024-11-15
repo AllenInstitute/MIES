@@ -102,7 +102,7 @@ threadsafe Function/WAVE JWN_GetTextWaveFromWaveNote(WAVE wv, string jsonPath)
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 
 	jsonID = JWN_GetWaveNoteAsJSON(wv)
-	WAVE/T/Z textWave = JSON_GetTextWave(jsonID, jsonPath, ignoreErr = 1)
+	WAVE/Z/T textWave = JSON_GetTextWave(jsonID, jsonPath, ignoreErr = 1)
 	JSON_Release(jsonID)
 
 	return textWave
@@ -135,6 +135,7 @@ threadsafe Function/WAVE JWN_GetWaveRefTextFromWaveNote(WAVE wv, string jsonPath
 End
 
 threadsafe static Function/WAVE JWN_GetWaveRefFromWaveNote_Impl(WAVE wv, string jsonPath, variable type)
+
 	variable jsonID, numRows
 
 	jsonID = JWN_GetWaveNoteAsJSON(wv)

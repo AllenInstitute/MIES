@@ -97,10 +97,7 @@ static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
 	return entries
 End
 
-static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
-	string   device
-	variable sweepNo
-	string   name
+static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, string name)
 
 	variable val, type
 	string key, str
@@ -402,6 +399,7 @@ static Function PS_DS_AD1([string str])
 End
 
 static Function PS_DS_AD1_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 2
@@ -533,6 +531,7 @@ static Function PS_DS_AD2([string str])
 End
 
 static Function PS_DS_AD2_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 0
@@ -640,6 +639,7 @@ static Function PS_DS_AD2a([string str])
 End
 
 static Function PS_DS_AD2a_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 1
@@ -748,6 +748,7 @@ static Function PS_DS_AD2b([string str])
 End
 
 static Function PS_DS_AD2b_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 1
@@ -858,6 +859,7 @@ static Function PS_DS_AD3([string str])
 End
 
 static Function PS_DS_AD3_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 2
@@ -1126,6 +1128,7 @@ static Function PS_DS_AD6([string str])
 End
 
 static Function PS_DS_AD6_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 0
@@ -1233,6 +1236,7 @@ static Function PS_DS_AD7([string str])
 End
 
 static Function PS_DS_AD7_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 1
@@ -1392,6 +1396,7 @@ static Function PS_DS_AD9([string str])
 End
 
 static Function PS_DS_AD9_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 1
@@ -1497,6 +1502,7 @@ static Function PS_DS_AD10([string str])
 End
 
 static Function PS_DS_AD10_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 2
@@ -1611,6 +1617,7 @@ static Function PS_DS_AD11([string str])
 End
 
 static Function PS_DS_AD11_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 1
@@ -1727,6 +1734,7 @@ static Function PS_DS_AD12([string str])
 End
 
 static Function PS_DS_AD12_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 3
@@ -1834,6 +1842,7 @@ static Function PS_DS_AD13([string str])
 End
 
 static Function PS_DS_AD13_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 0
@@ -1943,6 +1952,7 @@ static Function PS_DS_AD14([string str])
 End
 
 static Function PS_DS_AD14_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 1
@@ -2049,6 +2059,7 @@ static Function PS_DS_AD15([string str])
 End
 
 static Function PS_DS_AD15_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 2
@@ -2169,6 +2180,7 @@ static Function PS_DS_AD16([string str])
 End
 
 static Function PS_DS_AD16_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 4
@@ -2276,6 +2288,7 @@ static Function PS_DS_AD17([string str])
 End
 
 static Function PS_DS_AD17_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 0
@@ -2382,6 +2395,7 @@ static Function PS_DS_AD18([string str])
 End
 
 static Function PS_DS_AD18_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 0

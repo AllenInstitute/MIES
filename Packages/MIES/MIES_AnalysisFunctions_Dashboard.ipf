@@ -40,8 +40,7 @@ static Function AD_GetColorForResultMessage(string result)
 End
 
 /// @brief Update the dashboards of the given sweepbrowser/databrowser
-Function AD_Update(win)
-	string win
+Function AD_Update(string win)
 
 	string mainPanel
 	variable numEntries, refTime
@@ -76,6 +75,7 @@ Function AD_Update(win)
 End
 
 static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage, variable ongoingDAQ, variable waMode)
+
 	variable stopReason
 
 	if(passed)
@@ -185,9 +185,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 End
 
 /// @brief Get result list of analysis function runs
-static Function AD_FillWaves(win, list, info)
-	string win
-	WAVE/T list, info
+static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 
 	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ, acqState
 	variable index, anaFuncType, stimsetCycleID, waMode
@@ -196,8 +194,8 @@ static Function AD_FillWaves(win, list, info)
 	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
 
 	// as many sweeps as entries in numericalValuesWave/textualValuesWave
-	WAVE/WAVE/Z numericalValuesWave = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES)
-	WAVE/WAVE/Z textualValuesWave   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES)
+	WAVE/Z/WAVE numericalValuesWave = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES)
+	WAVE/Z/WAVE textualValuesWave   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES)
 
 	if(!WaveExists(numericalValuesWave) || !WaveExists(textualValuesWave) || !WaveExists(totalSweepsPresent))
 		return 0
@@ -278,8 +276,8 @@ static Function AD_FillWaves(win, list, info)
 			endif
 
 			[anaFuncType, waMode] = AD_GetAnalysisFunctionType(numericalValues, anaFuncTypes, sweepNo, headstage)
-			anaFunc = anaFuncs[headstage]
-			stimset = stimsets[headstage]
+			anaFunc               = anaFuncs[headstage]
+			stimset               = stimsets[headstage]
 
 			if(anaFuncType == INVALID_ANALYSIS_FUNCTION)
 				passed = NaN
@@ -426,10 +424,7 @@ static Function AD_LabnotebookEntryExistsAndIsTrue(WAVE/Z data)
 	return WaveExists(reduced) && Sum(reduced) > 0
 End
 
-static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage, waMode)
-	variable sweepNo
-	WAVE     numericalValues
-	variable headstage, waMode
+static Function/S AD_GetSquarePulseFailMsg(WAVE numericalValues, variable sweepNo, variable headstage, variable waMode)
 
 	string msg, key
 	variable stepSize
@@ -472,7 +467,7 @@ End
 
 static Function/S AD_GetDAScaleOperationMode(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
 
-	WAVE/T/Z params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params (encoded)", headstage, DATA_ACQUISITION_MODE)
+	WAVE/Z/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params (encoded)", headstage, DATA_ACQUISITION_MODE)
 
 	// fallback to old names
 	if(!WaveExists(params))
@@ -483,12 +478,7 @@ static Function/S AD_GetDAScaleOperationMode(WAVE numericalValues, WAVE/T textua
 	return AFH_GetAnalysisParamTextual("OperationMode", params[headstage])
 End
 
-static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, sweepDFR, headstage)
-	WAVE     numericalValues
-	WAVE/T   textualValues
-	variable sweepNo
-	DFREF    sweepDFR
-	variable headstage
+static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
 
 	string msg, key, fISlopeStr, opMode
 	variable numPasses, numRequiredPasses, finalSlopePercent, slopePercentage, measuredAllFutureDAScales
@@ -496,7 +486,7 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 
 	numPasses = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, sweepNo, headstage)
 
-	WAVE/T/Z params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params (encoded)", headstage, DATA_ACQUISITION_MODE)
+	WAVE/Z/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params (encoded)", headstage, DATA_ACQUISITION_MODE)
 
 	// fallback to old names
 	if(!WaveExists(params))
@@ -593,6 +583,7 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 End
 
 static Function/S AD_GetRheobaseFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
+
 	string key, prefix, msg, pattern
 
 	prefix = AD_GetPerSweepFailMessage(PSQ_RHEOBASE, numericalValues, textualValues, sweepNo, sweepDFR, headstage)
@@ -635,6 +626,7 @@ static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualVa
 End
 
 static Function/S AD_GetChirpFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
+
 	string key, msg, str
 	string text = ""
 	variable i, numSweeps, setPassed, maxOccurences
@@ -682,6 +674,7 @@ End
 /// @retval qc  0/1 for failing or passing, NaN in case it could not be determined
 /// @retval msg error message for the failure case
 static Function [variable qc, string msg] AD_GetBaselineFailMsg(variable anaFuncType, WAVE numericalValues, variable sweepNo, variable headstage)
+
 	variable i, chunkQC
 	string key
 
@@ -761,6 +754,7 @@ static Function [variable qc, string msg] AD_GetBaselineFailMsg(variable anaFunc
 End
 
 static Function/S AD_GetBaselineChunkFailMsg(variable anaFuncType, WAVE numericalValues, variable sweepNo, variable headstage, variable chunk, string subkey, string testname)
+
 	string key, msg
 	variable check
 
@@ -798,6 +792,7 @@ End
 ///
 /// @sa AD_GetResultMessage()
 static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numericalValues, WAVE/T textualValues, variable refSweepNo, DFREF sweepDFR, variable headstage, [variable numRequiredPasses])
+
 	string key, msg, str
 	string text = ""
 	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass, accessRestPass, resistanceRatio
@@ -1073,6 +1068,7 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 End
 
 static Function/S AD_HasAsyncQCFailed(WAVE numericalValues, WAVE/T textualValues, variable anaFuncType, variable sweepNo, variable headstage)
+
 	string key, msg, str
 	string text = ""
 	variable chan, asyncAlarm
@@ -1122,6 +1118,7 @@ End
 // Early stopped analysis functions prior to 87f9cbfa (DAQ: Add stopping reason to the labnotebook, 2021-05-13)
 // need to be handled specially as we can only see if it was stopped early or not, but not why
 static Function/S AD_HasPrematureStopLegacy(WAVE numericalValues, WAVE/T textualValues, variable anaFuncType, variable sweepNo, DFREF sweepDFR, variable headstage)
+
 	variable once
 
 	DFREF     singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
@@ -1219,11 +1216,12 @@ End
 ///
 /// Requires that the sweep is displayed.
 Function AD_PlotBounds(string browser, variable sweepNo)
+
 	string key, graph, leftAxis
 	variable outerRelativeBound, innerRelativeBound, baselineVoltage, lastX, headstage
 
 	WAVE/Z   numericalValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-	WAVE/T/Z textualValues   = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	WAVE/Z/T textualValues   = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 	ASSERT(WaveExists(numericalValues) && WaveExists(textualValues), "Missing labnotebook")
 
 	WAVE/Z statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", UNKNOWN_MODE)
@@ -1252,7 +1250,7 @@ Function AD_PlotBounds(string browser, variable sweepNo)
 
 	graph = GetMainWindow(browser)
 
-	WAVE/T/Z leftAxisMatches = TUD_GetUserDataAsWave(graph, "YAXIS",                                                 \
+	WAVE/Z/T leftAxisMatches = TUD_GetUserDataAsWave(graph, "YAXIS",                                                 \
 	                                                 keys = {"channelType", "channelNumber", "sweepNumber"},         \
 	                                                 values = {"AD", num2str(statusADC[headstage]), num2str(sweepNo)})
 	ASSERT(WaveExists(leftAxisMatches) && DimSize(leftAxisMatches, ROWS) >= 1, "Could not find sweep displayed")
@@ -1285,8 +1283,7 @@ Function AD_PlotBounds(string browser, variable sweepNo)
 	ModifyGraph/W=$graph lstyle(chirpBoundLowerMin)=7, rgb(chirpBoundLowerMin)=(0, 0, 65535)
 End
 
-Function AD_ListBoxProc(lba) : ListBoxControl
-	STRUCT WMListboxAction &lba
+Function AD_ListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 
 	switch(lba.eventCode)
 		case 3: // double click
@@ -1299,8 +1296,7 @@ Function AD_ListBoxProc(lba) : ListBoxControl
 	return 0
 End
 
-Function AD_CheckProc_PassedSweeps(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function AD_CheckProc_PassedSweeps(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -1311,8 +1307,7 @@ Function AD_CheckProc_PassedSweeps(cba) : CheckBoxControl
 	return 0
 End
 
-Function AD_CheckProc_FailedSweeps(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function AD_CheckProc_FailedSweeps(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -1323,8 +1318,7 @@ Function AD_CheckProc_FailedSweeps(cba) : CheckBoxControl
 	return 0
 End
 
-Function AD_CheckProc_Toggle(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function AD_CheckProc_Toggle(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string win
 

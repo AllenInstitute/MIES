@@ -16,6 +16,7 @@ static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 End
 
 static Function GlobalPreAcq(string device)
+
 	variable ret
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
@@ -32,10 +33,7 @@ static Function GlobalPreInit(string device)
 	ResetOverrideResults()
 End
 
-static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
-	string device
-	variable sweepNo, chunk
-	string name
+static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo, string name, [variable chunk])
 
 	string key
 
@@ -102,6 +100,7 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 End
 
 static Function PS_DS_Sub1_preAcq(string device)
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -109,8 +108,7 @@ static Function PS_DS_Sub1_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub1([str])
-	string str
+static Function PS_DS_Sub1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -120,8 +118,7 @@ static Function PS_DS_Sub1([str])
 	wv = 0
 End
 
-static Function PS_DS_Sub1_REENTRY([str])
-	string str
+static Function PS_DS_Sub1_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -218,7 +215,7 @@ static Function PS_DS_Sub1_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
@@ -246,6 +243,7 @@ static Function PS_DS_Sub1_REENTRY([str])
 End
 
 static Function PS_DS_Sub2_preAcq(string device)
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -253,8 +251,7 @@ static Function PS_DS_Sub2_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub2([str])
-	string str
+static Function PS_DS_Sub2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -266,8 +263,7 @@ static Function PS_DS_Sub2([str])
 	wv[][][3] = 1
 End
 
-static Function PS_DS_Sub2_REENTRY([str])
-	string str
+static Function PS_DS_Sub2_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -424,7 +420,7 @@ static Function PS_DS_Sub2_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	numEntries = DimSize(sweepPassed, ROWS)
@@ -440,6 +436,7 @@ static Function PS_DS_Sub2_REENTRY([str])
 End
 
 static Function PS_DS_Sub3_preAcq(string device)
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -447,8 +444,7 @@ static Function PS_DS_Sub3_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub3([str])
-	string str
+static Function PS_DS_Sub3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -462,8 +458,7 @@ static Function PS_DS_Sub3([str])
 	wv[][][3]  = 1
 End
 
-static Function PS_DS_Sub3_REENTRY([str])
-	string str
+static Function PS_DS_Sub3_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -582,7 +577,7 @@ static Function PS_DS_Sub3_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
@@ -610,6 +605,7 @@ static Function PS_DS_Sub3_REENTRY([str])
 End
 
 static Function PS_DS_Sub4_preAcq(string device)
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -617,8 +613,7 @@ static Function PS_DS_Sub4_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub4([str])
-	string str
+static Function PS_DS_Sub4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -633,8 +628,7 @@ static Function PS_DS_Sub4([str])
 	wv[][][3]                   = 1
 End
 
-static Function PS_DS_Sub4_REENTRY([str])
-	string str
+static Function PS_DS_Sub4_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -797,7 +791,7 @@ static Function PS_DS_Sub4_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
@@ -825,6 +819,7 @@ static Function PS_DS_Sub4_REENTRY([str])
 End
 
 static Function PS_DS_Sub5_preAcq(string device)
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -832,8 +827,7 @@ static Function PS_DS_Sub5_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub5([str])
-	string str
+static Function PS_DS_Sub5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -847,8 +841,7 @@ static Function PS_DS_Sub5([str])
 	wv[][][3] = 1
 End
 
-static Function PS_DS_Sub5_REENTRY([str])
-	string str
+static Function PS_DS_Sub5_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -945,7 +938,7 @@ static Function PS_DS_Sub5_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
@@ -973,6 +966,7 @@ static Function PS_DS_Sub5_REENTRY([str])
 End
 
 static Function PS_DS_Sub5a_preAcq(string device)
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -980,8 +974,7 @@ static Function PS_DS_Sub5a_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub5a([str])
-	string str
+static Function PS_DS_Sub5a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -995,8 +988,7 @@ static Function PS_DS_Sub5a([str])
 	wv[][][3]     = 1
 End
 
-static Function PS_DS_Sub5a_REENTRY([str])
-	string str
+static Function PS_DS_Sub5a_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -1093,7 +1085,7 @@ static Function PS_DS_Sub5a_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
@@ -1121,6 +1113,7 @@ static Function PS_DS_Sub5a_REENTRY([str])
 End
 
 static Function PS_DS_Sub6_preAcq(string device)
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -1128,8 +1121,7 @@ static Function PS_DS_Sub6_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub6([str])
-	string str
+static Function PS_DS_Sub6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1144,8 +1136,7 @@ static Function PS_DS_Sub6([str])
 	wv[][][3] = 1
 End
 
-static Function PS_DS_Sub6_REENTRY([str])
-	string str
+static Function PS_DS_Sub6_REENTRY([string str])
 
 	variable sweepNo, numEntries
 	string key
@@ -1309,7 +1300,7 @@ static Function PS_DS_Sub6_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
@@ -1337,6 +1328,7 @@ static Function PS_DS_Sub6_REENTRY([str])
 End
 
 static Function PS_DS_Sub7_preAcq(string device)
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -1344,8 +1336,7 @@ static Function PS_DS_Sub7_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub7([str])
-	string str
+static Function PS_DS_Sub7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1360,8 +1351,7 @@ static Function PS_DS_Sub7([str])
 	wv[][][3]      = 1
 End
 
-static Function PS_DS_Sub7_REENTRY([str])
-	string str
+static Function PS_DS_Sub7_REENTRY([string str])
 
 	variable sweepNo, numEntries
 	string key
@@ -1481,7 +1471,7 @@ static Function PS_DS_Sub7_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
@@ -1515,6 +1505,7 @@ static Function PS_DS_Sub7_REENTRY([str])
 End
 
 static Function PS_DS_Sub8_preAcq(string device)
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -1522,8 +1513,7 @@ static Function PS_DS_Sub8_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub8([str])
-	string str
+static Function PS_DS_Sub8([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1542,8 +1532,7 @@ static Function PS_DS_Sub8([str])
 	wv[][][3]   = 1
 End
 
-static Function PS_DS_Sub8_REENTRY([str])
-	string str
+static Function PS_DS_Sub8_REENTRY([string str])
 
 	variable sweepNo, numEntries
 	string key
@@ -1666,7 +1655,7 @@ static Function PS_DS_Sub8_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
@@ -1701,8 +1690,7 @@ static Function PS_DS_Sub8_REENTRY([str])
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 8)
 End
 
-static Function PS_DS_Sub9_preAcq(device)
-	string device
+static Function PS_DS_Sub9_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "BaselineRMSShortThreshold", var = 0.150)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "BaselineRMSLongThreshold", var = 0.250)
@@ -1716,8 +1704,7 @@ End
 
 // Same as PS_DS_Sub1 but with custom RMS short/long and target V thresholds
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub9([str])
-	string str
+static Function PS_DS_Sub9([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1727,8 +1714,7 @@ static Function PS_DS_Sub9([str])
 	wv = 0
 End
 
-static Function PS_DS_Sub9_REENTRY([str])
-	string str
+static Function PS_DS_Sub9_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -1825,7 +1811,7 @@ static Function PS_DS_Sub9_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)
@@ -1851,8 +1837,7 @@ static Function PS_DS_Sub9_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
-static Function PS_DS_Sub10_preAcq(device)
-	string device
+static Function PS_DS_Sub10_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Sub_DA_0", "SamplingFrequency", var = 10)
 
@@ -1864,8 +1849,7 @@ End
 
 // Same as PS_DS_Sub3, but with non-matching sampling interval
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_DS_Sub10([str])
-	string str
+static Function PS_DS_Sub10([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1879,8 +1863,7 @@ static Function PS_DS_Sub10([str])
 	wv[][][3]  = 1
 End
 
-static Function PS_DS_Sub10_REENTRY([str])
-	string str
+static Function PS_DS_Sub10_REENTRY([string str])
 
 	variable sweepNo, numEntries
 
@@ -1999,7 +1982,7 @@ static Function PS_DS_Sub10_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0}, mode = WAVE_DATA)
 
-	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
 	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z deltaI = GetLBNEntries_IGNORE(str, sweepNo, LBN_DELTA_I)

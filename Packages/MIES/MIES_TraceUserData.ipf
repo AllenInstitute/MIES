@@ -14,8 +14,7 @@
 /// receiving window hook events.
 
 /// @brief Window hook for clearing the user data of the attached graph
-Function TUD_RemoveUserDataWave(s)
-	STRUCT WMWinHookStruct &s
+Function TUD_RemoveUserDataWave(STRUCT WMWinHookStruct &s)
 
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_KILL:
@@ -32,6 +31,7 @@ End
 ///
 /// Works recursively on all child windows and calls TUD_ClearImpl on each graph.
 Function TUD_Clear(string graph, [variable recursive])
+
 	string windows, win
 	variable numEntries, i
 
@@ -197,6 +197,7 @@ End
 
 /// @brief Set the given user data for the trace of the graph
 Function TUD_SetUserData(string graph, string trace, string key, string value)
+
 	variable keyCol, row
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
@@ -222,6 +223,7 @@ End
 ///
 /// The `keys`/`values` must span a consecutive range.
 Function TUD_SetUserDataFromWaves(string graph, string trace, WAVE/T keys, WAVE/T values)
+
 	variable row, numCols, first, last, numExistingCols
 
 	ASSERT(EqualWaves(keys, values, EQWAVES_DIMSIZE) == 1, "Unexpected size")
@@ -255,6 +257,7 @@ Function TUD_SetUserDataFromWaves(string graph, string trace, WAVE/T keys, WAVE/
 End
 
 static Function TUD_GraphIsManaged(string graph)
+
 	string path = GetGraphUserDataAsString(graph)
 
 	return WaveExists($path)
@@ -276,6 +279,7 @@ End
 
 /// @brief Check if the given trace is displayed on the graph
 Function TUD_TraceIsOnGraph(string graph, string trace)
+
 	WAVE/T graphUserData = GetGraphUserData(graph)
 	return TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 0, allowMissing = 1) >= 0
 End
@@ -286,6 +290,7 @@ End
 /// with TUD_Clear() and the window is gone, this function can be used to reattach
 /// the cleanup hook to the newly created graph.
 Function TUD_Init(string graph)
+
 	string win
 
 	ASSERT(WinType(graph) == 1, "Expected graph")

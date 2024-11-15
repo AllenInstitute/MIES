@@ -18,6 +18,7 @@ static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 End
 
 static Function GlobalPreAcq(string device)
+
 	variable ret
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
@@ -32,9 +33,7 @@ static Function GlobalPreInit(string device)
 	PrepareForPublishTest()
 End
 
-static Function/WAVE GetSpikePosition_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetSpikePosition_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -45,9 +44,7 @@ static Function/WAVE GetSpikePosition_IGNORE(sweepNo, device)
 	return GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetSpikeResults_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -56,9 +53,7 @@ static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetSweepQCResults_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetSweepQCResults_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -67,9 +62,7 @@ static Function/WAVE GetSweepQCResults_IGNORE(sweepNo, device)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetSetQCResults_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetSetQCResults_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -79,9 +72,7 @@ static Function/WAVE GetSetQCResults_IGNORE(sweepNo, device)
 	return val
 End
 
-static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetBaselineQCResults_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -90,9 +81,7 @@ static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo, device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetPulseDurations_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetPulseDurations_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -102,40 +91,34 @@ static Function/WAVE GetPulseDurations_IGNORE(sweepNo, device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetStimsetLengths_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetStimsetLengths_IGNORE(variable sweepNo, string device)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
 	return GetLastSettingEachRAC(numericalValues, sweepNo, "Stim set length", PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 End
 
-static Function/WAVE GetStimScaleFactor_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetStimScaleFactor_IGNORE(variable sweepNo, string device)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
 	return GetLastSettingEachRAC(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 End
 
-static Function/WAVE GetUserEpochs_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetUserEpochs_IGNORE(variable sweepNo, string device)
 
 	variable i, j, numEntries, numEpochs
 
 	WAVE textualValues   = GetLBTextualValues(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	WAVE/T/Z results = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z/T results = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 	CHECK_WAVE(results, TEXT_WAVE)
 
 	// now filter out the user epochs
 	numEntries = DimSize(results, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		WAVE/T/Z epochWave = EP_EpochStrToWave(results[i])
+		WAVE/Z/T epochWave = EP_EpochStrToWave(results[i])
 		CHECK_WAVE(epochWave, TEXT_WAVE)
 
 		numEpochs = DimSize(epochWave, ROWS)
@@ -158,9 +141,7 @@ static Function/WAVE FindUserEpochs(WAVE/T userEpochs)
 	return foundIt
 End
 
-static Function/WAVE GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetSamplingIntervalQCResults_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -170,9 +151,7 @@ static Function/WAVE GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetAsyncQCResults_IGNORE(sweepNo, device)
-	variable sweepNo
-	string   device
+static Function/WAVE GetAsyncQCResults_IGNORE(variable sweepNo, string device)
 
 	string key
 
@@ -209,8 +188,7 @@ static Function PS_RA1_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RA1([str])
-	string str
+static Function PS_RA1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -222,8 +200,7 @@ static Function PS_RA1([str])
 	wv[][][2] = 0
 End
 
-static Function PS_RA1_REENTRY([str])
-	string str
+static Function PS_RA1_REENTRY([string str])
 
 	variable sweepNo, i, numEntries, DAScale, onsetDelay
 
@@ -253,7 +230,7 @@ static Function PS_RA1_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_WAVE(spikePositionWave, NULL_WAVE)
 
-	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
 	CHECK_WAVE(userEpochs, TEXT_WAVE)
 
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
@@ -292,8 +269,7 @@ static Function PS_RA2_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RA2([str])
-	string str
+static Function PS_RA2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -305,8 +281,7 @@ static Function PS_RA2([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA2_REENTRY([str])
-	string str
+static Function PS_RA2_REENTRY([string str])
 
 	variable sweepNo, i, numEntries
 
@@ -335,7 +310,7 @@ static Function PS_RA2_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_WAVE(spikePositionWave, NULL_WAVE)
 
-	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
 	CHECK_WAVE(userEpochs, TEXT_WAVE)
 
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
@@ -358,8 +333,7 @@ static Function PS_RA2a_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RA2a([str])
-	string str
+static Function PS_RA2a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -377,8 +351,7 @@ static Function PS_RA2a([str])
 	wv[][][2]  = 1
 End
 
-static Function PS_RA2a_REENTRY([str])
-	string str
+static Function PS_RA2a_REENTRY([string str])
 
 	variable sweepNo, i, numEntries, chunkStart, chunkEnd
 
@@ -407,7 +380,7 @@ static Function PS_RA2a_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"10000;", "10000;"}, mode = WAVE_DATA)
 
-	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
 	CHECK_WAVE(userEpochs, TEXT_WAVE)
 
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
@@ -449,8 +422,7 @@ static Function PS_RA3_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RA3([str])
-	string str
+static Function PS_RA3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -463,8 +435,7 @@ static Function PS_RA3([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA3_REENTRY([str])
-	string str
+static Function PS_RA3_REENTRY([string str])
 
 	variable sweepNo, i, numEntries
 	variable chunkStart, chunkEnd
@@ -494,7 +465,7 @@ static Function PS_RA3_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"10000;", "10000;", "10000;"}, mode = WAVE_DATA)
 
-	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
 	CHECK_WAVE(userEpochs, TEXT_WAVE)
 
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
@@ -531,8 +502,7 @@ static Function PS_RA4_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RA4([str])
-	string str
+static Function PS_RA4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -545,8 +515,7 @@ static Function PS_RA4([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA4_REENTRY([str])
-	string str
+static Function PS_RA4_REENTRY([string str])
 
 	variable sweepNo, i, numEntries
 	variable chunkStart, chunkEnd
@@ -576,7 +545,7 @@ static Function PS_RA4_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"10000;", "", ""}, mode = WAVE_DATA)
 
-	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
 	CHECK_WAVE(userEpochs, TEXT_WAVE)
 
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
@@ -609,8 +578,7 @@ static Function PS_RA5_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RA5([str])
-	string str
+static Function PS_RA5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -623,8 +591,7 @@ static Function PS_RA5([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA5_REENTRY([str])
-	string str
+static Function PS_RA5_REENTRY([string str])
 
 	variable sweepNo, i, numEntries
 	variable chunkStart, chunkEnd
@@ -654,7 +621,7 @@ static Function PS_RA5_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"", "10000;", "10000;"}, mode = WAVE_DATA)
 
-	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
 	CHECK_WAVE(userEpochs, TEXT_WAVE)
 
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
@@ -688,8 +655,7 @@ static Function PS_RA6_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RA6([str])
-	string str
+static Function PS_RA6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -715,8 +681,7 @@ static Function PS_RA6([str])
 	wv[][2, 3][2] = 1
 End
 
-static Function PS_RA6_REENTRY([str])
-	string str
+static Function PS_RA6_REENTRY([string str])
 
 	variable sweepNo, i, numEntries
 	variable chunkStart, chunkEnd
@@ -746,7 +711,7 @@ static Function PS_RA6_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"10000;", "", "10000;", "10000;"}, mode = WAVE_DATA)
 
-	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
 	CHECK_WAVE(userEpochs, TEXT_WAVE)
 
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
@@ -777,6 +742,7 @@ static Function PS_RA6_REENTRY([str])
 End
 
 static Function PS_RA7_preAcq(string device)
+
 	AFH_AddAnalysisParameter("Ramp_DA_0", "SamplingFrequency", var = 10)
 
 	Make/FREE asyncChannels = {2, 3}
@@ -788,8 +754,7 @@ End
 // Same as PS_RA2 but with failing sampling interval check
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_RA7([str])
-	string str
+static Function PS_RA7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -801,8 +766,8 @@ static Function PS_RA7([str])
 	wv[][][2]     = 1
 End
 
-static Function PS_RA7_REENTRY([str])
-	string str
+static Function PS_RA7_REENTRY([string str])
+
 	variable i, sweepNo, numEntries, onsetDelay, DAScale
 
 	sweepNo    = 0
@@ -831,7 +796,7 @@ static Function PS_RA7_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_WAVE(spikePositionWave, NULL_WAVE)
 
-	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
 	CHECK_WAVE(userEpochs, TEXT_WAVE)
 
 	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)

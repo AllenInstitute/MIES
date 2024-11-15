@@ -16,9 +16,7 @@ static Constant    YGRID            = 20
 
 static Constant CONTROL_TYPE_VALDISPLAY = 4
 
-static Function ASSERT(var, errorMsg)
-	variable var
-	string   errorMsg
+static Function ASSERT(variable var, string errorMsg)
 
 	string stracktrace, miesVersionStr, lockedDevicesStr, device
 	string stacktrace = ""
@@ -31,10 +29,7 @@ static Function ASSERT(var, errorMsg)
 	endtry
 End
 
-static Function SetValDisplay(win, control, [var, str, format])
-	string win, control
-	variable var
-	string str, format
+static Function SetValDisplay(string win, string control, [variable var, string str, string format])
 
 	string formattedString
 
@@ -62,8 +57,7 @@ static Function SetValDisplay(win, control, [var, str, format])
 	ValDisplay $control, win=$win, value=#formattedString
 End
 
-static Function/S GetValDisplayAsString(win, control)
-	string win, control
+static Function/S GetValDisplayAsString(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -71,8 +65,7 @@ static Function/S GetValDisplayAsString(win, control)
 	return S_value
 End
 
-static Function IsBackgroundTaskRunning(task)
-	string task
+static Function IsBackgroundTaskRunning(string task)
 
 	CtrlNamedBackground $task, status
 	return NumberByKey("RUN", s_info)
@@ -91,24 +84,28 @@ Function BW_StartPanel()
 End
 
 Function BW_CreatePanel()
+
 	NewPanel/K=1/N=$PANEL/W=(400, 264, 0, 0) as "MIES Background Watcher Panel"
 	SetWindow kwTopWin, hook(mainHook)=BkgWatcher#BW_WindowHook
 	ModifyPanel fixedSize=1
 End
 
 Function BW_StartTask()
+
 	CtrlNamedBackground $TASK, period=30, proc=$(GetIndependentModuleName() + "#BW_BackgroundWatchdog"), start
 	Button button_startstop_bkg, pos={0, 0}, size={14 * XGRID + XOFFS, YGRID}, proc=BkgWatcher#BW_ButtonProc_StopTask, title="Stop"
 	Button button_startstop_bkg, help={"Start/Stop the background task for updating the traffic light style controls"}
 End
 
 Function BW_StopTask()
+
 	CtrlNamedBackground $TASK, stop
 	BW_PanelUpdate()
 	Button button_startstop_bkg, proc=BkgWatcher#BW_ButtonProc_StartTask, title="Start (currently stopped)"
 End
 
 Function BW_PanelUpdate()
+
 	string taskinfo, ctrl, base, title, helpstr
 	variable tasks, state, ypos, i, runstate, colr, colg, colb, basecol
 
@@ -190,8 +187,7 @@ End
 /// @brief Helper background task for debugging
 ///
 /// @ingroup BackgroundFunctions
-Function BW_BackgroundWatchdog(s)
-	STRUCT WMBackgroundStruct &s
+Function BW_BackgroundWatchdog(STRUCT WMBackgroundStruct &s)
 
 	// stop background task if the panel was killed
 	DoWindow $PANEL
@@ -203,8 +199,7 @@ Function BW_BackgroundWatchdog(s)
 	return 0
 End
 
-Function BW_ButtonProc_ShowTask(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function BW_ButtonProc_ShowTask(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -227,8 +222,7 @@ Function BW_ButtonProc_ShowTask(ba) : ButtonControl
 	return 0
 End
 
-Function BW_ButtonProc_QuitTask(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function BW_ButtonProc_QuitTask(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -249,8 +243,7 @@ Function BW_ButtonProc_QuitTask(ba) : ButtonControl
 	return 0
 End
 
-Function BW_WindowHook(s)
-	STRUCT WMWinHookStruct &s
+Function BW_WindowHook(STRUCT WMWinHookStruct &s)
 
 	variable hookResult
 
@@ -269,8 +262,7 @@ Function BW_WindowHook(s)
 	return hookResult
 End
 
-Function BW_ButtonProc_StartTask(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function BW_ButtonProc_StartTask(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -282,8 +274,7 @@ Function BW_ButtonProc_StartTask(ba) : ButtonControl
 	return 0
 End
 
-Function BW_ButtonProc_StopTask(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function BW_ButtonProc_StopTask(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up

@@ -3,8 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=WB_Regression
 
-static Function TEST_SUITE_BEGIN_OVERRIDE(testSuite)
-	string testSuite
+static Function TEST_SUITE_BEGIN_OVERRIDE(string testSuite)
 
 	AdditionalExperimentCleanup()
 
@@ -14,14 +13,12 @@ static Function TEST_SUITE_BEGIN_OVERRIDE(testSuite)
 	DuplicateDataFolder root:wavebuilder_misc:DAParameterWaves, $GetWBSvdStimSetParamDAPathAS()
 End
 
-static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
-	string testCase
+static Function TEST_CASE_BEGIN_OVERRIDE(string testCase)
 
 	// do nothing
 End
 
-static Function TEST_CASE_END_OVERRIDE(testCase)
-	string testCase
+static Function TEST_CASE_END_OVERRIDE(string testCase)
 
 	CheckForBugMessages()
 End
@@ -53,12 +50,12 @@ Function/WAVE WB_FetchRefWave_IGNORE(string name)
 	string majorVersion = num2istr(IgorVersion())
 
 	DFREF           dfr          = root:wavebuilder_misc:DAWaves
-	WAVE/SDFR=dfr/Z overrideWave = $(name + "_IP" + majorVersion)
+	WAVE/Z/SDFR=dfr overrideWave = $(name + "_IP" + majorVersion)
 	if(WaveExists(overrideWave))
 		return overrideWave
 	endif
 
-	WAVE/SDFR=dfr/Z wv = $name
+	WAVE/Z/SDFR=dfr wv = $name
 	CHECK_WAVE(wv, NORMAL_WAVE)
 
 	return wv

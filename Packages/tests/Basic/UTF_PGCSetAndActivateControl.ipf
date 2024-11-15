@@ -5,16 +5,14 @@
 
 static StrConstant PGCT_POPUPMENU_ENTRIES = "Entry1;Entry2;Entry3"
 
-static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
-	string testCase
+static Function TEST_CASE_BEGIN_OVERRIDE(string testCase)
 
 	CreatePGCTestPanel_IGNORE()
 
 	CA_FlushCache()
 End
 
-static Function TEST_CASE_END_OVERRIDE(testCase)
-	string testCase
+static Function TEST_CASE_END_OVERRIDE(string testCase)
 
 	SVAR/Z/SDFR=root: panel
 	if(SVAR_Exists(panel))
@@ -66,8 +64,7 @@ Function CreatePGCTestPanel_IGNORE()
 	ListBox listbox_ctrl, selWave=selWave, titleWave=titleWave, mode=1, proc=PGCT_ListBoxProc
 End
 
-Function PGCT_PopMenuProc(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function PGCT_PopMenuProc(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -80,8 +77,7 @@ Function PGCT_PopMenuProc(pa) : PopupMenuControl
 	return 0
 End
 
-Function PGCT_CheckProc(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function PGCT_CheckProc(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -93,8 +89,7 @@ Function PGCT_CheckProc(cba) : CheckBoxControl
 	return 0
 End
 
-Function PGCT_SliderProc(sa) : SliderControl
-	STRUCT WMSliderAction &sa
+Function PGCT_SliderProc(STRUCT WMSliderAction &sa) : SliderControl
 
 	switch(sa.eventCode)
 		default:
@@ -108,8 +103,7 @@ Function PGCT_SliderProc(sa) : SliderControl
 	return 0
 End
 
-Function PGCT_SetVarProc(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function PGCT_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -124,8 +118,7 @@ Function PGCT_SetVarProc(sva) : SetVariableControl
 	return 0
 End
 
-Function PGCT_ButtonProc(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function PGCT_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -136,8 +129,7 @@ Function PGCT_ButtonProc(ba) : ButtonControl
 	return 0
 End
 
-Function PGCT_TabProc(tca) : TabControl
-	STRUCT WMTabControlAction &tca
+Function PGCT_TabProc(STRUCT WMTabControlAction &tca) : TabControl
 
 	switch(tca.eventCode)
 		case 2: // mouse up
@@ -149,8 +141,7 @@ Function PGCT_TabProc(tca) : TabControl
 	return 0
 End
 
-Function PGCT_ListBoxProc(lba) : ListBoxControl
-	STRUCT WMListboxAction &lba
+Function PGCT_ListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 
 	switch(lba.eventCode)
 		case 3: // double click
@@ -209,6 +200,7 @@ End
 
 // UTF_TD_GENERATOR ControlTypesWhichOnlyAcceptVar
 static Function PGCT_SettingVarWorks([string str])
+
 	SVAR/SDFR=root: panel
 
 	PGC_SetAndActivateControl(panel, str, val = 0)
@@ -344,6 +336,7 @@ End
 
 // UTF_TD_GENERATOR InvalidPopupMenuOtherIndizes
 static Function PGCT_PopupMenuOtherAbortsWithOutOfRangeVar([variable var])
+
 	variable refValue, popNum, i
 	string refString, popStr
 
@@ -374,6 +367,7 @@ End
 
 // UTF_TD_GENERATOR InvalidPopupMenuColorTableIndizes
 static Function PGCT_PopupMenuColorAbortsWithOutOfRangeVar([variable var])
+
 	variable refValue, popNum, i
 	string refString, popStr
 
@@ -578,6 +572,7 @@ End
 
 // UTF_TD_GENERATOR VariousModeFlags
 static Function PGCT_ModeFlag([variable var])
+
 	variable refState, state
 
 	SVAR/SDFR=root: panel
@@ -641,6 +636,7 @@ static Function PGCT_NonExistingWindow()
 End
 
 static Function PGCT_NonExistingControl()
+
 	SVAR/SDFR=root: panel
 
 	try

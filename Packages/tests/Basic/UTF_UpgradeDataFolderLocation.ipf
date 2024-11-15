@@ -3,8 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UTF_UpgradeDataLoc
 
-static Function TEST_CASE_BEGIN_OVERRIDE(name)
-	string name
+static Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
 	TestCaseBeginCommon(name)
 
@@ -20,8 +19,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	NewDataFolder/O root:B1:B2:B3
 End
 
-static Function TEST_CASE_END_OVERRIDE(name)
-	string name
+static Function TEST_CASE_END_OVERRIDE(string name)
 
 	KillDataFolder/Z root:A1
 	KillDataFolder/Z root:B1

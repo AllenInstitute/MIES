@@ -11,6 +11,7 @@
 
 /// @brief Get the acquisition state as string
 Function/S AS_StateToString(variable acqState)
+
 	switch(acqState)
 		case AS_INACTIVE:
 			return "AS_INACTIVE"
@@ -201,6 +202,7 @@ End
 ///
 /// Requires that they were recorded with AS_RecordStateTransition().
 Function/WAVE AS_GenerateEncounteredTransitions()
+
 	variable numEntries, i, j
 
 	WAVE acqStateTracking = GetAcqStateTracking()

@@ -15,8 +15,7 @@ static StrConstant USERDATA_SUFFIX = ")"
 static Constant AXIS_MODE_NO_LOG = 0
 
 /// @brief Show a GUI control in the given window
-Function ShowControl(win, control)
-	string win, control
+Function ShowControl(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -29,8 +28,7 @@ Function ShowControl(win, control)
 End
 
 /// @brief Show a list of GUI controls in the given window
-Function ShowControls(win, controlList)
-	string win, controlList
+Function ShowControls(string win, string controlList)
 
 	variable i
 	variable numItems = ItemsInList(controlList)
@@ -42,8 +40,7 @@ Function ShowControls(win, controlList)
 End
 
 /// @brief Hide a GUI control in the given window
-Function HideControl(win, control)
-	string win, control
+Function HideControl(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -56,8 +53,7 @@ Function HideControl(win, control)
 End
 
 /// @brief Hide a list of GUI controls in the given window
-Function HideControls(win, controlList)
-	string win, controlList
+Function HideControls(string win, string controlList)
 
 	variable i
 	variable numItems = ItemsInList(controlList)
@@ -69,8 +65,7 @@ Function HideControls(win, controlList)
 End
 
 /// @brief Enable a GUI control in the given window
-Function EnableControl(win, control)
-	string win, control
+Function EnableControl(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -83,8 +78,7 @@ Function EnableControl(win, control)
 End
 
 /// @brief Enable a list of GUI controls in the given window
-Function EnableControls(win, controlList)
-	string win, controlList
+Function EnableControls(string win, string controlList)
 
 	variable i
 	variable numItems = ItemsInList(controlList)
@@ -96,8 +90,7 @@ Function EnableControls(win, controlList)
 End
 
 /// @brief Disable a GUI control in the given window
-Function DisableControl(win, control)
-	string win, control
+Function DisableControl(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -110,8 +103,7 @@ Function DisableControl(win, control)
 End
 
 /// @brief Disable a list of GUI controls in the given window
-Function DisableControls(win, controlList)
-	string win, controlList
+Function DisableControls(string win, string controlList)
 
 	variable i
 	variable numItems = ItemsInList(controlList)
@@ -123,8 +115,7 @@ Function DisableControls(win, controlList)
 End
 
 /// @brief Set the title of a list of controls
-Function SetControlTitles(win, controlList, controlTitleList)
-	string win, controlList, controlTitleList
+Function SetControlTitles(string win, string controlList, string controlTitleList)
 
 	variable i
 	variable numItems = ItemsInList(controlList)
@@ -138,8 +129,7 @@ Function SetControlTitles(win, controlList, controlTitleList)
 End
 
 /// @brief Set the title of a control
-Function SetControlTitle(win, controlName, newTitle)
-	string win, controlName, newTitle
+Function SetControlTitle(string win, string controlName, string newTitle)
 
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -148,8 +138,7 @@ Function SetControlTitle(win, controlName, newTitle)
 End
 
 /// @brief Set the procedure of a list of controls
-Function SetControlProcedures(win, controlList, newProcedure)
-	string win, controlList, newProcedure
+Function SetControlProcedures(string win, string controlList, string newProcedure)
 
 	variable i
 	string   controlName
@@ -162,8 +151,7 @@ Function SetControlProcedures(win, controlList, newProcedure)
 End
 
 /// @brief Set the procedure of a control
-Function SetControlProcedure(win, controlName, newProcedure)
-	string win, controlName, newProcedure
+Function SetControlProcedure(string win, string controlName, string newProcedure)
 
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -176,9 +164,7 @@ End
 /// @param recMacro     recreation macro for ctrl
 /// @param supress      supress assertion that ctrl must have a title
 /// @return Returns     the title or an empty string
-Function/S GetTitle(recMacro, [supress])
-	string   recMacro
-	variable supress
+Function/S GetTitle(string recMacro, [variable supress])
 
 	string title, errorMessage
 
@@ -201,9 +187,7 @@ Function/S GetTitle(recMacro, [supress])
 End
 
 /// @brief Change color of the title of mulitple controls
-Function SetControlTitleColors(win, controlList, R, G, B)
-	string win, controlList
-	variable R, G, B
+Function SetControlTitleColors(string win, string controlList, variable R, variable G, variable B)
 
 	variable i
 	variable numItems = ItemsInList(controlList)
@@ -215,9 +199,7 @@ Function SetControlTitleColors(win, controlList, R, G, B)
 End
 
 /// @brief Change color of a control
-Function SetControlTitleColor(win, controlName, R, G, B) ///@todo store color in control user data, check for color change before applying change
-	string win, controlName
-	variable R, G, B
+Function SetControlTitleColor(string win, string controlName, variable R, variable G, variable B) ///@todo store color in control user data, check for color change before applying change
 
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -226,9 +208,7 @@ Function SetControlTitleColor(win, controlName, R, G, B) ///@todo store color in
 End
 
 /// @brief Change color of a control
-Function ChangeControlColor(win, controlName, R, G, B)
-	string win, controlName
-	variable R, G, B
+Function ChangeControlColor(string win, string controlName, variable R, variable G, variable B)
 
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -238,9 +218,7 @@ Function ChangeControlColor(win, controlName, R, G, B)
 End
 
 /// @brief Change the font color of a control
-Function ChangeControlValueColor(win, controlName, R, G, B)
-	string win, controlName
-	variable R, G, B
+Function ChangeControlValueColor(string win, string controlName, variable R, variable G, variable B)
 
 	ControlInfo/W=$win $controlName
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -250,9 +228,8 @@ Function ChangeControlValueColor(win, controlName, R, G, B)
 End
 
 /// @brief Change the font color of a list of controls
-Function ChangeControlValueColors(win, controlList, R, G, B)
-	string win, controlList
-	variable R, G, B
+Function ChangeControlValueColors(string win, string controlList, variable R, variable G, variable B)
+
 	variable i
 	variable numItems = ItemsInList(controlList)
 	string ctrl
@@ -275,9 +252,7 @@ End
 /// @param G           green
 /// @param B           blue
 /// @param Alpha defaults to opaque if not provided
-Function SetControlBckgColor(win, controlName, R, G, B, [Alpha])
-	string win, controlName
-	variable R, G, B, Alpha
+Function SetControlBckgColor(string win, string controlName, variable R, variable G, variable B, [variable Alpha])
 
 	if(paramIsDefault(Alpha))
 		Alpha = 1
@@ -291,9 +266,8 @@ Function SetControlBckgColor(win, controlName, R, G, B, [Alpha])
 End
 
 /// @brief Change the background color of a list of controls
-Function ChangeControlBckgColors(win, controlList, R, G, B)
-	string win, controlList
-	variable R, G, B
+Function ChangeControlBckgColors(string win, string controlList, variable R, variable G, variable B)
+
 	variable i
 	variable numItems = ItemsInList(controlList)
 	string ctrl
@@ -309,8 +283,8 @@ Function ChangeControlBckgColors(win, controlList, R, G, B)
 End
 
 /// @brief Returns one if the checkbox is selected or zero if it is unselected
-Function GetCheckBoxState(win, control)
-	string win, control
+Function GetCheckBoxState(string win, string control)
+
 	variable allowMissingControl
 
 	ControlInfo/W=$win $control
@@ -320,10 +294,7 @@ Function GetCheckBoxState(win, control)
 End
 
 /// @brief Set the internal number in a setvariable control
-Function SetSetVariable(win, Control, newValue, [respectLimits])
-	string win, control
-	variable newValue
-	variable respectLimits
+Function SetSetVariable(string win, string Control, variable newValue, [variable respectLimits])
 
 	if(ParamIsDefault(respectLimits))
 		respectLimits = 0
@@ -371,9 +342,7 @@ Function SetSetVariableString(string win, string control, string str, [variable 
 End
 
 /// @brief Set the state of the checkbox
-Function SetCheckBoxState(win, control, state)
-	string win, control
-	variable state
+Function SetCheckBoxState(string win, string control, variable state)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -388,9 +357,7 @@ Function SetCheckBoxState(win, control, state)
 End
 
 /// @brief Set the input limits for a setVariable control
-Function SetSetVariableLimits(win, Control, low, high, increment)
-	string win, control
-	variable low, high, increment
+Function SetSetVariableLimits(string win, string Control, variable low, variable high, variable increment)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -402,8 +369,7 @@ End
 /// @brief Returns the contents of a SetVariable
 ///
 /// UTF_NOINSTRUMENTATION
-Function GetSetVariable(win, control)
-	string win, control
+Function GetSetVariable(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -412,8 +378,7 @@ Function GetSetVariable(win, control)
 End
 
 /// @brief Returns the contents of a SetVariable with an internal string
-Function/S GetSetVariableString(win, control)
-	string win, control
+Function/S GetSetVariableString(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -426,8 +391,7 @@ Function/S GetSetVariableString(win, control)
 End
 
 /// @brief Returns the current PopupMenu item as string
-Function/S GetPopupMenuString(win, control)
-	string win, control
+Function/S GetPopupMenuString(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -440,8 +404,7 @@ Function/S GetPopupMenuString(win, control)
 End
 
 /// @brief Returns the zero-based index of a PopupMenu
-Function GetPopupMenuIndex(win, control)
-	string win, control
+Function GetPopupMenuIndex(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -451,9 +414,8 @@ Function GetPopupMenuIndex(win, control)
 End
 
 /// @brief Sets the zero-based index of the PopupMenu
-Function SetPopupMenuIndex(win, control, index)
-	string win, control
-	variable index
+Function SetPopupMenuIndex(string win, string control, variable index)
+
 	index += 1
 
 	ControlInfo/W=$win $control
@@ -465,6 +427,7 @@ End
 
 /// @brief Sets the popupmenu value
 Function SetPopupMenuVal(string win, string control, [string list, string func])
+
 	string output, allEntries
 
 	ControlInfo/W=$win $control
@@ -490,9 +453,7 @@ End
 /// @param str     popupmenu string to select. Supports wildcard character(*)
 ///
 /// @return set string with wildcard expanded
-Function/S SetPopupMenuString(win, control, str)
-	string win, control
-	string str
+Function/S SetPopupMenuString(string win, string control, string str)
 
 	string result
 
@@ -509,8 +470,7 @@ Function/S SetPopupMenuString(win, control, str)
 End
 
 /// @brief Returns the contents of a ValDisplay
-Function/S GetValDisplayAsString(win, control)
-	string win, control
+Function/S GetValDisplayAsString(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -523,8 +483,7 @@ Function/S GetValDisplayAsString(win, control)
 End
 
 /// @brief Returns the contents of a ValDisplay as a number
-Function GetValDisplayAsNum(win, control)
-	string win, control
+Function GetValDisplayAsNum(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -533,8 +492,7 @@ Function GetValDisplayAsNum(win, control)
 End
 
 /// @brief Returns the slider position
-Function GetSliderPositionIndex(win, control)
-	string win, control
+Function GetSliderPositionIndex(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -543,9 +501,7 @@ Function GetSliderPositionIndex(win, control)
 End
 
 /// @brief Sets the slider position
-Function SetSliderPositionIndex(win, control, index)
-	string win, control
-	variable index
+Function SetSliderPositionIndex(string win, string control, variable index)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -565,10 +521,7 @@ End
 /// - `var`
 /// - `var` and `format`
 /// - `str`
-Function SetValDisplay(win, control, [var, str, format])
-	string win, control
-	variable var
-	string str, format
+Function SetValDisplay(string win, string control, [variable var, string str, string format])
 
 	string formattedString
 
@@ -597,16 +550,14 @@ Function SetValDisplay(win, control, [var, str, format])
 End
 
 /// @brief Check if a given control exists
-Function ControlExists(win, control)
-	string win, control
+Function ControlExists(string win, string control)
 
 	ControlInfo/W=$win $control
 	return V_flag != 0
 End
 
 /// @brief Return the full subwindow path to the windows the control belongs to
-Function/S FindControl(control)
-	string control
+Function/S FindControl(string control)
 
 	string windows, childWindows, childWindow, win
 	variable i, j, numWindows, numChildWindows
@@ -635,8 +586,7 @@ Function/S FindControl(control)
 End
 
 /// @brief Return the full subwindow path to the given notebook
-Function/S FindNotebook(nb)
-	string nb
+Function/S FindNotebook(string nb)
 
 	string windows, childWindows, childWindow, win, leaf
 	variable i, j, numWindows, numChildWindows
@@ -670,8 +620,7 @@ End
 ///
 /// @param win	window name
 /// @param ctrl	name of the control
-Function GetTabID(win, ctrl)
-	string win, ctrl
+Function GetTabID(string win, string ctrl)
 
 	ControlInfo/W=$win $ctrl
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -685,8 +634,7 @@ End
 /// @param control name of the control
 /// @param key     user data identifier
 /// @param value   user data value
-Function SetControlUserData(win, control, key, value)
-	string win, control, key, value
+Function SetControlUserData(string win, string control, string key, string value)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -859,6 +807,7 @@ End
 ///
 /// @return minimum and maximum value of the axis range
 Function [variable minimum, variable maximum] GetAxisRange(string graph, string axis, [variable mode])
+
 	string info
 
 	if(!windowExists(graph))
@@ -901,8 +850,7 @@ End
 
 /// @brief Return the orientation of the axis as numeric value
 /// @returns one of @ref AxisOrientationConstants
-Function GetAxisOrientation(graph, axes)
-	string graph, axes
+Function GetAxisOrientation(string graph, string axes)
 
 	string orientation
 
@@ -943,6 +891,7 @@ End
 ///
 /// @return One of @ref ModifyGraphLogModes
 Function GetAxisLogMode(string graph, string axis)
+
 	string info
 
 	info = AxisInfo(graph, axis)
@@ -955,6 +904,7 @@ Function GetAxisLogMode(string graph, string axis)
 End
 
 static Function GetAxisLogModeFromInfo(string info)
+
 	string recMacro
 
 	recMacro = GetAxisRecreationMacro(info)
@@ -971,9 +921,7 @@ End
 /// @param[in] orientation [optional: default not set] filter orientation of axes see @ref AxisOrientationConstants
 /// @param[in] mode [optional: default #AXIS_RANGE_DEFAULT] filter returned axis information by mode see @ref AxisPropModeConstants
 /// @return free wave with rows = axes, cols = axes info, dimlabel of rows is axis name
-Function/WAVE GetAxesProperties(graph, [axesRegexp, orientation, mode])
-	string graph, axesRegexp
-	variable orientation, mode
+Function/WAVE GetAxesProperties(string graph, [string axesRegexp, variable orientation, variable mode])
 
 	string list, axis, recMacro, info
 	variable numAxes, i, countAxes, minimum, maximum, axisOrientation, logMode
@@ -1006,7 +954,7 @@ Function/WAVE GetAxesProperties(graph, [axesRegexp, orientation, mode])
 
 		info = AxisInfo(graph, axis)
 
-		[minimum, maximum] = GetAxisRangeFromInfo(graph, info, axis, mode)
+		[minimum, maximum]          = GetAxisRangeFromInfo(graph, info, axis, mode)
 		props[countAxes][%axisType] = axisOrientation
 		props[countAxes][%minimum]  = minimum
 		props[countAxes][%maximum]  = maximum
@@ -1036,11 +984,7 @@ End
 /// @param[in] axesRegexp [optional: default not set] filter axes names list by this optional regular expression
 /// @param[in] orientation [optional: default not set] filter orientation of axes see @ref AxisOrientationConstants
 /// @param[in] mode [optional: default 0] axis set mode see @ref AxisPropModeConstants
-Function SetAxesProperties(graph, props, [axesRegexp, orientation, mode])
-	string graph
-	WAVE   props
-	string axesRegexp
-	variable orientation, mode
+Function SetAxesProperties(string graph, WAVE props, [string axesRegexp, variable orientation, variable mode])
 
 	variable numRows, numAxes, i, minimum, maximum, axisOrientation
 	variable col, row, prevAxisMin, prevAxisMax, logMode
@@ -1118,8 +1062,7 @@ End
 
 /// @brief Returns the next axis name in a row of *consecutive*
 /// and already existing axis names
-Function/S GetNextFreeAxisName(graph, axesBaseName)
-	string graph, axesBaseName
+Function/S GetNextFreeAxisName(string graph, string axesBaseName)
 
 	variable numAxes
 
@@ -1129,8 +1072,7 @@ Function/S GetNextFreeAxisName(graph, axesBaseName)
 End
 
 /// @brief Return a unique axis name
-Function/S GetUniqueAxisName(graph, axesBaseName)
-	string graph, axesBaseName
+Function/S GetUniqueAxisName(string graph, string axesBaseName)
 
 	variable numAxes, count, i
 	string list, axis
@@ -1151,9 +1093,7 @@ End
 
 /// @brief Generic wrapper for setting a control's value
 /// pass in the value as a string, and then decide whether to change to a number based on the type of control
-Function SetGuiControlValue(win, control, value)
-	string win, control
-	string value
+Function SetGuiControlValue(string win, string control, string value)
 
 	variable controlType, variableType
 	string recMacro
@@ -1181,8 +1121,7 @@ Function SetGuiControlValue(win, control, value)
 End
 
 /// @brief Generic wrapper for getting a control's value
-Function/S GetGuiControlValue(win, control)
-	string win, control
+Function/S GetGuiControlValue(string win, string control)
 
 	string value
 	variable controlType, variableType
@@ -1216,8 +1155,7 @@ Function/S GetGuiControlValue(win, control)
 End
 
 /// @brief Generic wrapper for getting a controls state (enabled, hidden, disabled)
-Function/S GetGuiControlState(win, control)
-	string win, control
+Function/S GetGuiControlState(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -1226,9 +1164,8 @@ Function/S GetGuiControlState(win, control)
 End
 
 /// @brief Generic wrapper for setting a controls state (enabled, hidden, disabled)
-Function SetGuiControlState(win, control, controlState)
-	string win, control
-	string   controlState
+Function SetGuiControlState(string win, string control, string controlState)
+
 	variable controlType
 
 	ControlInfo/W=$win $control
@@ -1239,8 +1176,7 @@ End
 
 /// @brief Return one if the given control is disabled,
 /// zero otherwise
-Function IsControlDisabled(win, control)
-	string win, control
+Function IsControlDisabled(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -1250,8 +1186,7 @@ End
 
 /// @brief Return one if the given control is hidden,
 /// zero otherwise
-Function IsControlHidden(win, control)
-	string win, control
+Function IsControlHidden(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -1264,8 +1199,7 @@ End
 /// @param subwindow window name including subwindows, e.g. `panel#subWin1#subWin2`
 ///
 /// UTF_NOINSTRUMENTATION
-Function/S GetMainWindow(subwindow)
-	string subwindow
+Function/S GetMainWindow(string subwindow)
 
 	return StringFromList(0, subwindow, "#")
 End
@@ -1285,8 +1219,7 @@ End
 /// to RestoreCursors().
 ///
 /// The data is sorted like `CURSOR_NAMES`.
-Function/WAVE GetCursorInfos(graph)
-	string graph
+Function/WAVE GetCursorInfos(string graph)
 
 	Make/T/FREE/N=(ItemsInList(CURSOR_NAMES)) wv = CsrInfo($StringFromList(p, CURSOR_NAMES), graph)
 
@@ -1298,9 +1231,7 @@ Function/WAVE GetCursorInfos(graph)
 End
 
 /// @brief Restore the cursors from the info of GetCursorInfos().
-Function RestoreCursors(graph, cursorInfos)
-	string   graph
-	WAVE/T/Z cursorInfos
+Function RestoreCursors(string graph, WAVE/Z/T cursorInfos)
 
 	string traceList, cursorTrace, info, replacementTrace
 	variable i, numEntries, numTraces
@@ -1411,8 +1342,7 @@ Function/WAVE FilterAnnotations(WAVE/T annoInfo, string regexp)
 End
 
 /// @brief Autoscale all vertical axes in the visible x range
-Function AutoscaleVertAxisVisXRange(graph)
-	string graph
+Function AutoscaleVertAxisVisXRange(string graph)
 
 	string axList, axis
 	variable i, numAxes, axisOrient
@@ -1432,8 +1362,7 @@ End
 /// @brief Return the type of the variable of the SetVariable control
 ///
 /// @return one of @ref GetInternalSetVariableTypeReturnTypes
-Function GetInternalSetVariableType(recMacro)
-	string recMacro
+Function GetInternalSetVariableType(string recMacro)
 
 	ASSERT(strsearch(recMacro, "SetVariable", 0) != -1, "recreation macro is not from a SetVariable")
 
@@ -1452,6 +1381,7 @@ Function GetInternalSetVariableType(recMacro)
 End
 
 Function ExtractLimitsFromRecMacro(string recMacro, variable &minVal, variable &maxVal, variable &incVal)
+
 	string minStr, maxStr, incStr
 
 	minVal = NaN
@@ -1477,6 +1407,7 @@ End
 ///
 /// @sa ExtractLimitsFromRecMacro for a faster way if you already have the recreation macro
 Function ExtractLimits(string win, string control, variable &minVal, variable &maxVal, variable &incVal)
+
 	string minStr, maxStr, incStr
 
 	string   recMacro
@@ -1492,9 +1423,7 @@ End
 ///         - 1: inside limits, i.e. val lies in the range [min, max]
 ///         - NaN: no limits could be found
 ///
-Function CheckIfValueIsInsideLimits(win, control, val)
-	string win, control
-	variable val
+Function CheckIfValueIsInsideLimits(string win, string control, variable val)
 
 	variable minVal, maxVal, incVal
 
@@ -1522,9 +1451,7 @@ End
 ///
 /// @param func       name of the function
 /// @param paramIndex index of the parameter
-Function GetFunctionParameterType(func, paramIndex)
-	string   func
-	variable paramIndex
+Function GetFunctionParameterType(string func, variable paramIndex)
 
 	string funcInfo, param
 	variable numParams
@@ -1551,8 +1478,7 @@ End
 ///
 /// @param key      non-empty string (must be followed by `=` in the recreation macro)
 /// @param recMacro GUI control recreation macro as returned by `ControlInfo`
-Function/S GetValueFromRecMacro(key, recMacro)
-	string key, recMacro
+Function/S GetValueFromRecMacro(string key, string recMacro)
 
 	variable last, first
 	variable comma, cr
@@ -1595,9 +1521,7 @@ End
 ///                    but can have one.
 ///
 /// @returns 1 on error, 0 if everything is fine.
-Function SearchForInvalidControlProcs(win, [warnOnEmpty])
-	string   win
-	variable warnOnEmpty
+Function SearchForInvalidControlProcs(string win, [variable warnOnEmpty])
 
 	string controlList, control, controlProc
 	string subTypeStr, helpEntry, recMacro
@@ -1683,8 +1607,7 @@ End
 
 /// @brief Convert the function subType names for GUI control procedures
 ///        to a numeric value as used by `ControlInfo`
-Function GetNumericSubType(subType)
-	string subType
+Function GetNumericSubType(string subType)
 
 	strswitch(subType)
 		case "ButtonControl":
@@ -1717,8 +1640,7 @@ End
 /// @brief Return the numeric control type
 ///
 /// @return one of @ref GUIControlTypes
-Function GetControlType(win, control)
-	string win, control
+Function GetControlType(string win, string control)
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
@@ -1727,12 +1649,12 @@ End
 
 /// @brief Determines if control stores numeric or text data
 Function DoesControlHaveInternalString(string recMacro)
+
 	return strsearch(recMacro, "_STR:", 0) != -1
 End
 
 /// @brief Returns checkbox mode
-Function GetCheckBoxMode(win, checkBoxName)
-	string win, checkBoxName
+Function GetCheckBoxMode(string win, string checkBoxName)
 
 	variable first, mode
 	string modeString
@@ -1750,8 +1672,7 @@ End
 
 /// @brief Returns the selected row of the ListBox for some modes
 ///        without selection waves
-Function GetListBoxSelRow(win, ctrl)
-	string win, ctrl
+Function GetListBoxSelRow(string win, string ctrl)
 
 	ControlInfo/W=$win $ctrl
 	ASSERT(V_flag == 11, "Not a listbox control")
@@ -1790,9 +1711,7 @@ Function SetListBoxSelection(string win, string ctrl, variable val, variable row
 End
 
 /// @brief Check if the location `loc` is inside the rectangle `r`
-Function IsInsideRect(loc, r)
-	STRUCT Point &loc
-	STRUCT RectF &r
+Function IsInsideRect(STRUCT Point &loc, STRUCT RectF &r)
 
 	return loc.h >= r.left     \
 	       && loc.h <= r.right \
@@ -1802,9 +1721,7 @@ End
 
 /// @brief Return the coordinates of the control borders
 ///        relative to the top left corner in pixels
-Function GetControlCoordinates(win, ctrl, s)
-	string win, ctrl
-	STRUCT RectF &s
+Function GetControlCoordinates(string win, string ctrl, STRUCT RectF &s)
 
 	ControlInfo/W=$win $ctrl
 	ASSERT(V_flag != 0, "Not an existing control")
@@ -1830,8 +1747,7 @@ Function/S GetNotebookText(string win, [variable mode])
 End
 
 /// @brief Replace the contents of the notebook
-Function ReplaceNotebookText(win, text)
-	string win, text
+Function ReplaceNotebookText(string win, string text)
 
 	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
 
@@ -1842,8 +1758,7 @@ Function ReplaceNotebookText(win, text)
 End
 
 /// @brief Append to a notebook
-Function AppendToNotebookText(win, text)
-	string win, text
+Function AppendToNotebookText(string win, string text)
 
 	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
 
@@ -1856,8 +1771,7 @@ End
 /// @brief Select the end in the given notebook.
 ///
 /// The selection is the place where the user would naïvely enter new text.
-Function NotebookSelectionAtEnd(win)
-	string win
+Function NotebookSelectionAtEnd(string win)
 
 	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
 
@@ -1905,8 +1819,7 @@ End
 ///
 /// @param ctrlType ctrl type of Igor control
 /// @returns Igor name of control type
-Function/S ControlTypeToName(ctrlType)
-	variable ctrlType
+Function/S ControlTypeToName(variable ctrlType)
 
 	variable pos
 	if(numtype(ctrlType) == 2)
@@ -1923,8 +1836,7 @@ End
 ///
 /// @param ctrlName Name of Igor control
 /// @returns Igor control type number
-Function Name2ControlType(ctrlName)
-	string ctrlName
+Function Name2ControlType(string ctrlName)
 
 	variable pos
 	pos = WhichListItem(ctrlName, EXPCONFIG_GUI_CTRLLIST)
@@ -1940,8 +1852,7 @@ End
 ///
 /// @param wName window name that should be checked to be a valid host for subwindows
 /// @returns 1 if window is a valid host, 0 otherwise
-Function WindowTypeCanHaveChildren(wName)
-	string wName
+Function WindowTypeCanHaveChildren(string wName)
 
 	Make/FREE/I typeCanHaveChildren = {WINTYPE_GRAPH, WINTYPE_PANEL}
 	FindValue/I=(WinType(wName)) typeCanHaveChildren
@@ -1955,8 +1866,7 @@ End
 /// @param wName parent window name to start with
 /// @return A string containing names of windows.  This list is a semicolon separated list.  It will include the window
 ///         wName and all of its children and children of children, etc.
-Function/S GetAllWindows(wName)
-	string wName
+Function/S GetAllWindows(string wName)
 
 	string windowList = ""
 	GetAllWindowsImpl(wName, windowList)
@@ -1964,9 +1874,7 @@ Function/S GetAllWindows(wName)
 	return windowList
 End
 
-static Function GetAllWindowsImpl(wName, windowList)
-	string  wName
-	string &windowList
+static Function GetAllWindowsImpl(string wName, string &windowList)
 
 	string children
 	variable i, numChildren, err
@@ -2008,9 +1916,7 @@ End
 /// @param[in] device Window name to check
 /// @param[in] typeTag one of PANELTAG_* constants @sa panelTags
 /// returns 1 if window is a DA_Ephys panel
-Function PanelIsType(device, typeTag)
-	string device
-	string typeTag
+Function PanelIsType(string device, string typeTag)
 
 	if(!WindowExists(device))
 		return 0
@@ -2023,8 +1929,7 @@ End
 ///
 /// - Expects the ctrl to have the named user data "DefaultIncrement"
 /// - Works only on right mouse click on the title or the value field, *not* the up/down arrow buttons
-Function ShowSetVariableLimitsSelectionPopup(sva)
-	STRUCT WMSetVariableAction &sva
+Function ShowSetVariableLimitsSelectionPopup(STRUCT WMSetVariableAction &sva)
 
 	string win, ctrl, items, defaultIncrementStr, elem
 	variable minVal, maxVal, incVal, defaultIncrement, index
@@ -2198,6 +2103,7 @@ End
 /// @param value String with a list or function (what you enter with PopupMenu value=\#XXX)
 /// @param type  One of @ref PopupMenuListTypes
 Function/S GetPopupMenuList(string value, variable type)
+
 	string path, cmd
 
 	switch(type)
@@ -2264,6 +2170,7 @@ End
 
 /// @brief Query a numeric GUI control property
 Function GetControlSettingVar(string recMacro, string setting, [variable defValue])
+
 	string   match
 	variable found
 
@@ -2282,6 +2189,7 @@ End
 
 /// @brief Query a string GUI control property
 Function/S GetControlSettingStr(string recMacro, string setting, [string defValue])
+
 	string   match
 	variable found
 
@@ -2299,6 +2207,7 @@ Function/S GetControlSettingStr(string recMacro, string setting, [string defValu
 End
 
 static Function [string match, variable found] GetControlSettingImpl(string recMacro, string setting)
+
 	string str
 
 	SplitString/E=("(?i)\\Q" + setting + "\\E[[:space:]]*=[[:space:]]*([^,]+)") recMacro, str
@@ -2387,6 +2296,7 @@ End
 
 /// @brief Adjust the "Normal" ruler in the notebook so that all text is visible.
 Function ReflowNotebookText(string win)
+
 	variable width
 
 	GetWindow $win, wsizeDC

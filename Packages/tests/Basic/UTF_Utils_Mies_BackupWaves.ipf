@@ -27,6 +27,7 @@ Function CreateBackupWaveChecksArgs()
 End
 
 Function CreateBackupWaveBasics()
+
 	Make data
 	WAVE/Z bak = CreateBackupWave(data)
 	CHECK_WAVE(bak, NORMAL_WAVE)
@@ -99,6 +100,7 @@ Function/DF PrepareFolderForBackup_IGNORE()
 End
 
 Function CountElementsInFolder_IGNORE(DFREF dfr)
+
 	return CountObjectsDFR(dfr, COUNTOBJECTS_WAVES) + CountObjectsDFR(dfr, COUNTOBJECTS_VAR)      \
 	       + CountObjectsDFR(dfr, COUNTOBJECTS_STR) + CountObjectsDFR(dfr, COUNTOBJECTS_DATAFOLDER)
 End

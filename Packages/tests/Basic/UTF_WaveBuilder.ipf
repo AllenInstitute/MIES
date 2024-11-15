@@ -3,8 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=WB_Testing
 
-static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
-	string testCase
+static Function TEST_CASE_BEGIN_OVERRIDE(string testCase)
 
 	TestCaseBeginCommon(testCase)
 
@@ -78,6 +77,7 @@ Function WB_StimsetEntryParsing()
 End
 
 Function WB_StimsetRecreation1()
+
 	string setName = "Ref0_DA_0"
 
 	// stimset does not yet exist
@@ -89,7 +89,7 @@ Function WB_StimsetRecreation1()
 	WAVE/Z WP = WB_GetWaveParamForSet(setName)
 	CHECK_WAVE(WP, NORMAL_WAVE)
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(setName)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(setName)
 	CHECK_WAVE(WPT, NORMAL_WAVE)
 
 	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
@@ -100,6 +100,7 @@ Function WB_StimsetRecreation1()
 End
 
 Function WB_StimsetRecreation2()
+
 	string setName = "Ref0_DA_0"
 
 	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
@@ -108,7 +109,7 @@ Function WB_StimsetRecreation2()
 	WAVE/Z WP = WB_GetWaveParamForSet(setName)
 	CHECK_WAVE(WP, NORMAL_WAVE)
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(setName)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(setName)
 	CHECK_WAVE(WPT, NORMAL_WAVE)
 
 	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
@@ -123,6 +124,7 @@ Function WB_StimsetRecreation2()
 End
 
 Function WB_StimsetRecreation3()
+
 	string setName = "Ref0_DA_0"
 
 	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
@@ -131,7 +133,7 @@ Function WB_StimsetRecreation3()
 	WAVE/Z WP = WB_GetWaveParamForSet(setName)
 	CHECK_WAVE(WP, NORMAL_WAVE)
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(setName)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(setName)
 	CHECK_WAVE(WPT, NORMAL_WAVE)
 
 	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
@@ -154,6 +156,7 @@ Function WB_StimsetRecreation3()
 End
 
 Function WB_EditingExistingKeepsPrecision()
+
 	string panel   = "WaveBuilder"
 	string setName = "Ref6_b_DA_0"
 
@@ -198,6 +201,7 @@ Function WB_EditingExistingKeepsPrecision()
 End
 
 Function WB_CheckEpochParameters()
+
 	string newCode, existingCode
 
 	newCode      = WBP_RegenerateEpochParameterNamesCode()
@@ -213,6 +217,7 @@ Function WB_CheckEpochParameters()
 End
 
 Function WB_SaveErrorsDontDeleteExistingStimSets()
+
 	string win, setName, history
 	variable refNum, modCount
 

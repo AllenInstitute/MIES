@@ -13,6 +13,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 End
 
 static Function FetchAndParseMessage(string filter)
+
 	variable jsonID
 	string   msg
 
@@ -46,6 +47,7 @@ static Function FetchAndParseMessage(string filter)
 End
 
 static Function CheckPressureState()
+
 	string device, expected, actual
 	variable headstage, i, jsonID
 
@@ -68,6 +70,7 @@ static Function CheckPressureState()
 End
 
 static Function CheckPressureSeal()
+
 	string device, expected, actual
 	variable headstage, i, jsonID, value
 
@@ -85,6 +88,7 @@ static Function CheckPressureSeal()
 End
 
 static Function CheckClampMode()
+
 	string device, expected, actual
 	variable headstage, i, jsonID, value
 
@@ -107,6 +111,7 @@ static Function CheckClampMode()
 End
 
 static Function CheckAutoBridgeBalance()
+
 	string device, expected, actual
 	variable headstage, i, jsonID, value
 
@@ -128,6 +133,7 @@ static Function CheckAutoBridgeBalance()
 End
 
 static Function CheckPressureBreakin()
+
 	string device
 	variable headstage, i, jsonID, value
 
@@ -145,6 +151,7 @@ static Function CheckPressureBreakin()
 End
 
 static Function CheckAutoTP()
+
 	string device, expected, actual
 	variable headstage, i, jsonID, value
 
@@ -205,6 +212,7 @@ static Function CheckAutoTP()
 End
 
 static Function CheckPipetteInBath()
+
 	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
@@ -272,6 +280,7 @@ static Function CheckPipetteInBath()
 End
 
 static Function CheckSealEvaluation()
+
 	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
@@ -315,6 +324,7 @@ static Function CheckSealEvaluation()
 End
 
 static Function CheckTrueRestMembPot()
+
 	string device, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 
@@ -358,6 +368,7 @@ static Function CheckTrueRestMembPot()
 End
 
 static Function CheckDAQStateChange_DAQ()
+
 	string device, actual, expected
 	variable headstage, i, jsonID, type
 
@@ -379,6 +390,7 @@ static Function CheckDAQStateChange_DAQ()
 End
 
 static Function CheckDAQStateChange_TP()
+
 	string device, actual, expected
 	variable headstage, i, jsonID, type
 
@@ -400,6 +412,7 @@ static Function CheckDAQStateChange_TP()
 End
 
 static Function CheckAccessResSmoke()
+
 	string device, msg, expected, actual
 	variable headstage, i, jsonID, value, sweepNo
 

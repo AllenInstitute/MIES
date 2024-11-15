@@ -11,8 +11,7 @@
 /// @file UTF_HardwareHelperFunctions.ipf
 /// @brief This file holds helper functions for the hardware tests
 
-Function TEST_BEGIN_OVERRIDE(name)
-	string name
+Function TEST_BEGIN_OVERRIDE(string name)
 
 	variable needsLoading
 	string   filepath
@@ -46,11 +45,11 @@ Function TEST_BEGIN_OVERRIDE(name)
 End
 
 Function TEST_END_OVERRIDE(string name)
+
 	TestEndCommon()
 End
 
-Function TEST_CASE_BEGIN_OVERRIDE(name)
-	string name
+Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
 	variable numWindows, i
 	string list, reentryFuncName, win, experimentName
@@ -88,8 +87,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	DeleteFile/Z GetExperimentNWBFileForExport()
 End
 
-Function TEST_CASE_END_OVERRIDE(name)
-	string name
+Function TEST_CASE_END_OVERRIDE(string name)
 
 	string dev, experimentNWBFile, baseFolder, nwbFile, wlName
 	variable numEntries, i, fileID, nwbVersion, expensiveChecks
@@ -208,7 +206,7 @@ static Function CheckUserEpochsFromChunks(string dev)
 			endif
 
 			DAC = AFH_GetDACFromHeadstage(dev, j)
-			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+", treelevel = EPOCH_USER_LEVEL)
+			WAVE/Z/T userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+", treelevel = EPOCH_USER_LEVEL)
 
 			if(!WaveExists(userChunkEpochs))
 				continue
@@ -343,12 +341,13 @@ Function RegisterReentryFunction(string testcase)
 	endif
 End
 
-Function CALLABLE_PROTO(device)
-	string device
+Function CALLABLE_PROTO(string device)
+
 	FAIL()
 End
 
 Function LoadStimsets()
+
 	string filename = GetTestStimsetFullFilePath()
 	NWB_LoadAllStimsets(filename = filename, overwrite = 1)
 End
@@ -511,7 +510,7 @@ static Function CheckDashboard(string device, WAVE headstageQC)
 
 	databrowser = DB_FindDataBrowser(device)
 	DFREF    dfr      = BSP_GetFolder(databrowser, MIES_BSP_PANEL_FOLDER)
-	WAVE/T/Z listWave = GetAnaFuncDashboardListWave(dfr)
+	WAVE/Z/T listWave = GetAnaFuncDashboardListWave(dfr)
 	CHECK_WAVE(listWave, TEXT_WAVE)
 
 	// Check that we have acquired some sweeps
@@ -536,6 +535,7 @@ static Function CheckDashboard(string device, WAVE headstageQC)
 End
 
 static Function CheckAnaFuncVersion(string device, variable type)
+
 	string key
 	variable refVersion, version, sweepNo, i, idx
 
@@ -560,6 +560,7 @@ static Function CheckAnaFuncVersion(string device, variable type)
 End
 
 Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE headstageQC)
+
 	string key
 	variable type, DAC, index
 
@@ -601,6 +602,7 @@ End
 
 /// Used for patch seq analysis functions and NextStimSetName/NextIndexingEndStimSetName analysis parameters
 static Function CheckDAStimulusSets(string device, variable sweepNo, variable type)
+
 	string stimset, stimsetIndexEnd, previousStimset, expected, key, names, params
 	variable setPassed, nextStimsetPresent, indexingEndPresent, indexingState
 
@@ -626,7 +628,7 @@ static Function CheckDAStimulusSets(string device, variable sweepNo, variable ty
 	setPassed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 	CHECK(IsFinite(setPassed))
 
-	WAVE/T/Z results = GetLastSetting(textualValues, sweepNo, "Stim Wave Name", DATA_ACQUISITION_MODE)
+	WAVE/Z/T results = GetLastSetting(textualValues, sweepNo, "Stim Wave Name", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(results, TEXT_WAVE)
 	previousStimset = results[PSQ_TEST_HEADSTAGE]
 	CHECK_PROPER_STR(previousStimset)
@@ -657,6 +659,7 @@ static Function CheckDAStimulusSets(string device, variable sweepNo, variable ty
 End
 
 static Function [string stimset, string stimsetIndexEnd] GetStimsets_IGNORE(string device)
+
 	variable DAC
 	string ctrl0, ctrl1
 
@@ -670,6 +673,7 @@ static Function [string stimset, string stimsetIndexEnd] GetStimsets_IGNORE(stri
 End
 
 static Function CheckForOtherUserLBNKeys(string device, variable type)
+
 	string prefix
 
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -694,6 +698,7 @@ static Function CheckForOtherUserLBNKeys(string device, variable type)
 End
 
 static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, variable sweepNoRef)
+
 	variable numSweeps, sweepNo, numEntries, i, j, k
 	variable result, col, value
 	string unit, entry
@@ -707,7 +712,7 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 	WAVE/Z entries = MIES_LBV#LBV_GetAllLogbookParamNames(textualValues, numericalValues)
 	CHECK_WAVE(entries, TEXT_WAVE)
 
-	WAVE/T/Z allUserEntries = GrepTextWave(entries, LABNOTEBOOK_USER_PREFIX + ".*")
+	WAVE/Z/T allUserEntries = GrepTextWave(entries, LABNOTEBOOK_USER_PREFIX + ".*")
 	CHECK_WAVE(allUserEntries, TEXT_WAVE)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNoRef)
@@ -831,6 +836,7 @@ static Function CheckRangeOfUserLabnotebookKeys(string device, variable type, va
 End
 
 Function CheckPublishedMessage(string device, variable type)
+
 	string expectedFilter, msg
 	variable jsonID
 
@@ -860,6 +866,7 @@ Function CheckPublishedMessage(string device, variable type)
 End
 
 static Function TestSweepReconstruction_IGNORE(string device)
+
 	variable i, j, numEntries, sweepNo, numChannels
 	string list, nameRecon, nameOrig
 
@@ -951,6 +958,7 @@ static Function TestSweepReconstruction_IGNORE(string device)
 End
 
 Function [string baseFolder, string nwbFile] GetUniqueNWBFileForExport(variable nwbVersion)
+
 	string suffix
 
 	ASSERT(EnsureValidNWBVersion(nwbVersion), "Invalid nwb version")
@@ -980,6 +988,7 @@ Function/S GetExperimentNWBFileForExport()
 End
 
 Function CheckPSQChunkTimes(string dev, WAVE chunkTimes, [variable sweep])
+
 	string shortNameFormat
 
 	shortNameFormat = EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "%d"
@@ -1001,6 +1010,7 @@ End
 ///                         by default all sweeps in the stimset cycle are checked
 /// @param ignoreIncomplete [optional, defaults to false] ignore epochs from incomplete sweeps
 Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variable sweep, variable ignoreIncomplete])
+
 	variable size, numChunks, index, expectedChunkCnt, sweepCnt, DAC
 	variable i, j, k
 	variable startTime, endTime, startRef, endRef
@@ -1041,7 +1051,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 			DAC = AFH_GetDACFromHeadstage(dev, j)
 			REQUIRE(IsFinite(DAC))
 
-			WAVE/T/Z unacquiredEpoch = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, "UA")
+			WAVE/Z/T unacquiredEpoch = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, "UA")
 
 			if(ignoreIncomplete)
 				CHECK_WAVE(unacquiredEpoch, TEXT_WAVE)
@@ -1050,7 +1060,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 
 			// also works with full names without %d being present
 			regexp = "^" + ReplaceString("%d", shortNameFormat, "[0-9]+") + "$"
-			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, regexp, treelevel = EPOCH_USER_LEVEL)
+			WAVE/Z/T userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, regexp, treelevel = EPOCH_USER_LEVEL)
 			if(!WaveExists(userChunkEpochs))
 				continue
 			endif
@@ -1091,6 +1101,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 End
 
 static Function OpenDatabrowser()
+
 	string win, bsPanel
 
 	win     = DB_OpenDatabrowser()
@@ -1099,6 +1110,7 @@ static Function OpenDatabrowser()
 End
 
 Function EnsureMCCIsOpen()
+
 	AI_FindConnectedAmps()
 
 	WAVE ampMCC = GetAmplifierMultiClamps()
@@ -1120,10 +1132,12 @@ Structure DAQSettings
 EndStructure
 
 Function AcquireDataDoNothing(string device)
+
 	PASS()
 End
 
 static Function/S AcquireDataSelectFunction(string module, string funcName)
+
 	string funcWithModule
 
 	funcWithModule = module + "#" + funcName
@@ -1139,6 +1153,7 @@ End
 
 // assumes that the caller of the caller is an UTF test case
 static Function FetchCustomizationFunctions(STRUCT DAQSettings &s)
+
 	string funcName, stacktrace, module, testcaseInfo, preInitFunc, preAcquireFunc
 
 	stacktrace   = GetRTStackInfo(3)
@@ -1202,9 +1217,7 @@ static Function/S ParseString(string str, string name, [string defValue])
 End
 
 /// @brief Fill the #DAQSetttings structure from a specially crafted string
-Function InitDAQSettingsFromString(s, str)
-	STRUCT DAQSettings &s
-	string              str
+Function InitDAQSettingsFromString(STRUCT DAQSettings &s, string str)
 
 	variable md, ra, idx, lidx, bkg_daq, res, headstage, clampMode, ttl
 	string elem, output
@@ -1268,7 +1281,7 @@ Function InitDAQSettingsFromString(s, str)
 
 	s.tpd = ParseNumber(str, "_TPD", defValue = NaN)
 
-	WAVE/T/Z hsConfig = ListToTextWave(str, "__")
+	WAVE/Z/T hsConfig = ListToTextWave(str, "__")
 
 	if(WaveExists(hsConfig))
 		// Throw away first element as that is not a hsConfig element
@@ -1416,6 +1429,7 @@ End
 /// must be called `GlobalPreAcq`/`GlobalPreInit` and the per test case ones
 /// `${testcase}_PreAcq`/`${testcase}_PreInit`. They must all be static.
 Function AcquireData_NG(STRUCT DAQSettings &s, string device)
+
 	string ctrl
 	variable i, activeHS
 
@@ -1629,6 +1643,7 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 End
 
 Function CheckDAQStopReason(string device, variable stopReason, [variable sweepNo])
+
 	string key
 
 	key = "DAQ stop reason"
@@ -1648,6 +1663,7 @@ Function CheckDAQStopReason(string device, variable stopReason, [variable sweepN
 End
 
 Function CheckStartStopMessages(string mode, string state)
+
 	string msg, actual, expected
 	variable jsonID
 
@@ -1660,8 +1676,7 @@ Function CheckStartStopMessages(string mode, string state)
 	JSON_Release(jsonID)
 End
 
-Function GetMinSamplingInterval([unit])
-	string unit
+Function GetMinSamplingInterval([string unit])
 
 	variable factor
 
@@ -1699,6 +1714,7 @@ Function CreateLockedDAEphys(string device, [string unlockedDevice])
 End
 
 Function CreateLockedDatabrowser(string device)
+
 	string win, bsPanel
 
 	win     = DB_OpenDatabrowser()
@@ -1742,8 +1758,7 @@ threadsafe static Function FakeThreadMonitor_IGNORE(variable fixedFifoPos)
 	while(1)
 End
 
-Function UseFakeFIFOThreadWithTimeout_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function UseFakeFIFOThreadWithTimeout_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	variable fifoPos
 
@@ -1763,8 +1778,7 @@ Function UseFakeFIFOThreadWithTimeout_IGNORE(s)
 	return 0
 End
 
-Function UseFakeFIFOThreadBeingStuck_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
+Function UseFakeFIFOThreadBeingStuck_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	variable fifoPos
 

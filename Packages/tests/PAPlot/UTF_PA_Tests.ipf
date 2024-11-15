@@ -420,10 +420,12 @@
 static Constant PA_TEST_FP_EPSILON = 1E-6
 
 static Function TEST_BEGIN_OVERRIDE(string name)
+
 	TestBeginCommon()
 End
 
 static Function TEST_END_OVERRIDE(string name)
+
 	TestEndCommon()
 End
 
@@ -433,8 +435,7 @@ static Function TEST_CASE_END_OVERRIDE(string testcase)
 End
 
 // use copy of mies folder and restore it each time
-static Function TEST_CASE_BEGIN_OVERRIDE(name)
-	string name
+static Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
 	variable err
 	string   miesPath
@@ -606,14 +607,14 @@ static Function PAT_VerifyImageAxes(string graph, string traceName, variable ach
 	xLayoutCoord = multiGraphMode ? 0 : aregion - 1
 	yLayoutCoord = multiGraphMode ? 0 : achan - 1
 
-	ref_from = xLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
-	ref_to   = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_from   = xLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_to     = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
 	CHECK_GE_VAR(from, ref_from)
 	CHECK_LE_VAR(to, ref_to)
 
-	ref_to   = 100 - yLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
-	ref_from = 100 - (yLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_to     = 100 - yLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_from   = 100 - (yLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
 	CHECK_GE_VAR(from, ref_from)
 	CHECK_LE_VAR(to, ref_to)
@@ -659,15 +660,15 @@ static Function PAT_VerifyTraceAxes(string graph, string traceName, variable ach
 	xLayoutCoord = multiGraphMode ? 0 : aregion - 1
 	yLayoutCoord = multiGraphMode ? 0 : achan - 1
 
-	ref_from = xLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
-	ref_to   = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_from   = xLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_to     = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
 	CHECK_GE_VAR(from, ref_from)
 	CHECK_LE_VAR(to, ref_to)
 
-	ref_to   = 100 - yLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
-	ref_from = 100 - (yLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_to     = 100 - yLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
+	ref_from   = 100 - (yLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
 	CHECK_GE_VAR(from, ref_from)
@@ -1086,6 +1087,7 @@ static Function PA_InitSweep4(STRUCT PA_Test &patest)
 End
 
 static Function PA_InitSweep5(STRUCT PA_Test &patest)
+
 	// This is only set partially for the values that are constant for all pulses
 	patest.xUnit      = "ms"
 	patest.yUnit      = "pA"
@@ -1104,6 +1106,7 @@ static Function PA_InitSweep5(STRUCT PA_Test &patest)
 End
 
 static Function PA_InitSweep7(STRUCT PA_Test &patest)
+
 	// This is only set partially for the values that are constant for all pulses
 	patest.xUnit      = "ms"
 	patest.yUnit      = "pA"
@@ -1122,6 +1125,7 @@ static Function PA_InitSweep7(STRUCT PA_Test &patest)
 End
 
 static Function PA_InitSweep8(STRUCT PA_Test &patest)
+
 	// This is only set partially for the values that are constant for all pulses
 	patest.xUnit      = "ms"
 	patest.yUnit      = "pA"
@@ -1851,6 +1855,7 @@ static Function PAT_FailedPulseCheck1()
 End
 
 Function PAT_FailedPulseCheckVC()
+
 	string bspName, graph
 	STRUCT PA_Test patest0
 	STRUCT PA_Test patest4

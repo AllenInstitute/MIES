@@ -30,10 +30,7 @@ End
 static Function MSQ_FRE10_PreAcq(string device)
 End
 
-static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, str, headstage, mode)
-	string device
-	variable sweepNo, headstage, mode
-	string str
+static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, string str, variable headstage, variable mode)
 
 	string key
 
@@ -55,8 +52,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, str, headstage, m
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_FRE1([str])
-	string str
+static Function MSQ_FRE1([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -66,8 +62,7 @@ static Function MSQ_FRE1([str])
 	wv = 0
 End
 
-static Function MSQ_FRE1_REENTRY([str])
-	string str
+static Function MSQ_FRE1_REENTRY([string str])
 
 	variable sweepNo
 	string   lbl
@@ -143,8 +138,7 @@ static Function MSQ_FRE1_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_FRE2([str])
-	string str
+static Function MSQ_FRE2([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -155,8 +149,7 @@ static Function MSQ_FRE2([str])
 	wv = 2.5
 End
 
-static Function MSQ_FRE2_REENTRY([str])
-	string str
+static Function MSQ_FRE2_REENTRY([string str])
 
 	variable sweepNo
 	string   lbl
@@ -234,8 +227,7 @@ static Function MSQ_FRE2_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_FRE3([str])
-	string str
+static Function MSQ_FRE3([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -246,8 +238,7 @@ static Function MSQ_FRE3([str])
 	wv[1][] = 1
 End
 
-static Function MSQ_FRE3_REENTRY([str])
-	string str
+static Function MSQ_FRE3_REENTRY([string str])
 
 	variable sweepNo
 	string   lbl
@@ -323,8 +314,7 @@ static Function MSQ_FRE3_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_FRE4([str])
-	string str
+static Function MSQ_FRE4([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -338,8 +328,7 @@ static Function MSQ_FRE4([str])
 	wv[3][1] = 1
 End
 
-static Function MSQ_FRE4_REENTRY([str])
-	string str
+static Function MSQ_FRE4_REENTRY([string str])
 
 	variable sweepNo
 	string   lbl
@@ -417,8 +406,7 @@ static Function MSQ_FRE4_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_FRE5([str])
-	string str
+static Function MSQ_FRE5([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -435,8 +423,7 @@ static Function MSQ_FRE5([str])
 	wv[3][1] = 1
 End
 
-static Function MSQ_FRE5_REENTRY([str])
-	string str
+static Function MSQ_FRE5_REENTRY([string str])
 
 	variable sweepNo
 	string   lbl
@@ -524,8 +511,7 @@ End
 // only one IC and one VC headstage
 // check that VC is on again in the end
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_FRE6([str])
-	string str
+static Function MSQ_FRE6([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -538,8 +524,7 @@ static Function MSQ_FRE6([str])
 	wv[7][0] = 1
 End
 
-static Function MSQ_FRE6_REENTRY([str])
-	string str
+static Function MSQ_FRE6_REENTRY([string str])
 
 	variable sweepNo
 	string   lbl
@@ -611,12 +596,12 @@ static Function MSQ_FRE6_REENTRY([str])
 End
 
 static Function AddAnalysisParamsDAScale_IGNORE(string device)
+
 	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScale", var = 1)
 	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScaleFactor", var = 1.5)
 End
 
-static Function MSQ_FRE7_PreInit(device)
-	string device
+static Function MSQ_FRE7_PreInit(string device)
 
 	AddAnalysisParamsDAScale_IGNORE(device)
 End
@@ -624,8 +609,7 @@ End
 // one test with PostDAQDAScale and PostDAQDAScaleFactor analysis parameters
 // check dascale after DAQ
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_FRE7([str])
-	string str
+static Function MSQ_FRE7([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -642,8 +626,7 @@ static Function MSQ_FRE7([str])
 	wv[3][1] = 1
 End
 
-static Function MSQ_FRE7_REENTRY([str])
-	string str
+static Function MSQ_FRE7_REENTRY([string str])
 
 	variable sweepNo
 	string   lbl
@@ -723,8 +706,7 @@ static Function MSQ_FRE7_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
-static Function MSQ_FRE8_PreInit(device)
-	string device
+static Function MSQ_FRE8_PreInit(string device)
 
 	AddAnalysisParamsDAScale_IGNORE(device)
 End
@@ -732,8 +714,7 @@ End
 // one test with PostDAQDAScale and PostDAQDAScaleFactor analysis parameters
 // check dascale after DAQ and one headstage failed
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_FRE8([str])
-	string str
+static Function MSQ_FRE8([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -747,8 +728,7 @@ static Function MSQ_FRE8([str])
 	wv[7][0] = 1
 End
 
-static Function MSQ_FRE8_REENTRY([str])
-	string str
+static Function MSQ_FRE8_REENTRY([string str])
 
 	variable sweepNo
 	string   lbl
@@ -828,16 +808,14 @@ static Function MSQ_FRE8_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-static Function MSQ_FRE9_PreInit(device)
-	string device
+static Function MSQ_FRE9_PreInit(string device)
 
 	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "MaximumDAScale", var = 205)
 End
 
 // one test with range exceeded and MaximumDAScale analysis parameter
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_FRE9([str])
-	string str
+static Function MSQ_FRE9([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -848,8 +826,7 @@ static Function MSQ_FRE9([str])
 	wv[] = 0
 End
 
-static Function MSQ_FRE9_REENTRY([str])
-	string str
+static Function MSQ_FRE9_REENTRY([string str])
 
 	variable sweepNo
 	string   lbl
@@ -927,8 +904,7 @@ static Function MSQ_FRE9_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-static Function MSQ_FRE10_PreInit(device)
-	string device
+static Function MSQ_FRE10_PreInit(string device)
 
 	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScale", var = 1)
 	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScaleMinOffset", var = 100)
@@ -937,8 +913,7 @@ End
 
 // Using MinOffset and a scale factor
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function MSQ_FRE10([str])
-	string str
+static Function MSQ_FRE10([string str])
 
 	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -955,8 +930,7 @@ static Function MSQ_FRE10([str])
 	wv[3][1] = 1
 End
 
-static Function MSQ_FRE10_REENTRY([str])
-	string str
+static Function MSQ_FRE10_REENTRY([string str])
 
 	variable sweepNo
 	string   lbl

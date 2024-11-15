@@ -10,6 +10,7 @@
 /// @brief __DB__ Panel for browsing acquired data during acquisition
 
 Function/S DB_OpenDataBrowser([variable mode])
+
 	string win, device, devicesWithData, bsPanel
 
 	if(ParamIsDefault(mode))
@@ -44,6 +45,7 @@ End
 /// @brief Utility function to generate new window recreation macro of DataBrowser (also used for SweepBrowser)
 ///        after GUI editor adapted controls in development process
 Function DB_ResetAndStoreCurrentDBPanel()
+
 	string device, bsPanel, scPanel, shPanel, recreationCode
 	string sfJSON, descNB, helpNBWin
 
@@ -261,8 +263,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CleanupOperationQueueResult()
 End
 
-Function/S DB_GetMainGraph(win)
-	string win
+Function/S DB_GetMainGraph(string win)
 
 	return GetMainWindow(win)
 End
@@ -296,8 +297,7 @@ Function/S DB_ClearAllGraphs()
 	endfor
 End
 
-static Function/S DB_LockToDevice(win, device)
-	string win, device
+static Function/S DB_LockToDevice(string win, string device)
 
 	string newWindow
 	variable first, last
@@ -325,8 +325,7 @@ static Function/S DB_LockToDevice(win, device)
 	return win
 End
 
-static Function DB_SetUserData(win, device)
-	string win, device
+static Function DB_SetUserData(string win, string device)
 
 	SetWindow $win, userdata=""
 	BSP_SetDevice(win, device)
@@ -340,8 +339,7 @@ static Function DB_SetUserData(win, device)
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 End
 
-Function/WAVE DB_GetPlainSweepList(win)
-	string win
+Function/WAVE DB_GetPlainSweepList(string win)
 
 	string device
 
@@ -354,9 +352,7 @@ Function/WAVE DB_GetPlainSweepList(win)
 	return AFH_GetSweeps(device)
 End
 
-Function DB_UpdateLastSweepControls(win, first, last)
-	string win
-	variable first, last
+Function DB_UpdateLastSweepControls(string win, variable first, variable last)
 
 	variable formerLast
 	string   scPanel
@@ -385,8 +381,7 @@ End
 ///
 /// Only outside callers are generic external panels which must update the graph.
 /// @param win        locked databrowser
-Function DB_UpdateSweepPlot(win)
-	string win
+Function DB_UpdateSweepPlot(string win)
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
 	string device, lbPanel, scPanel, graph, experiment
@@ -407,7 +402,7 @@ Function DB_UpdateSweepPlot(win)
 
 	WAVE axesProps = GetAxesProperties(graph)
 
-	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
+	WAVE/Z/T cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
 	TUD_Clear(graph, recursive = 0)
@@ -486,6 +481,7 @@ End
 /// @param win  panel
 /// @param type One of @ref LabnotebookWaveTypes
 Function/WAVE DB_GetLBNWave(string win, variable type)
+
 	string device
 
 	device = BSP_GetDevice(win)
@@ -553,8 +549,7 @@ static Function DB_UpdateToLastSweepWrapper(string win, variable force)
 	LBV_UpdateTagsForTextualLBNEntries(win, last)
 End
 
-Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function DB_PopMenuProc_LockDBtoDevice(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string mainPanel
 
@@ -568,8 +563,7 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 	return 0
 End
 
-Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DB_SetVarProc_SweepNo(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	string   win
 	variable sweepNo
@@ -607,6 +601,7 @@ End
 /// @param index Index of the sweep
 /// @param bdi [optional, default = n/a] BufferedDrawInfo structure, when given buffered draw is used.
 Function DB_AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo &bdi])
+
 	STRUCT TiledGraphSettings tgs
 
 	variable sweepNo, traceIndex
@@ -618,7 +613,7 @@ Function DB_AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo
 	WAVE/Z numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
 	WAVE/Z textualValues   = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
 
-	[tgs] = BSP_GatherTiledGraphSettings(graph)
+	[tgs]                 = BSP_GatherTiledGraphSettings(graph)
 	[sweepNo, experiment] = OVS_GetSweepAndExperiment(win, index)
 
 	DFREF           dfr       = GetDeviceDataPath(device)
@@ -677,7 +672,7 @@ Function/S DB_FindDataBrowser(string device, [variable mode])
 		ASSERT(mode == BROWSER_MODE_USER || mode == BROWSER_MODE_AUTOMATION || mode == BROWSER_MODE_ALL, "Invalid mode")
 	endif
 
-	WAVE/T/Z matches = DB_FindAllDataBrowser(device, mode = mode)
+	WAVE/Z/T matches = DB_FindAllDataBrowser(device, mode = mode)
 
 	if(!WaveExists(matches))
 		return ""
@@ -738,6 +733,7 @@ End
 ///
 /// Creates a new one, if none is found nor bound.
 Function/S DB_GetBoundDataBrowser(string device, [variable mode])
+
 	string databrowser, bsPanel
 
 	if(ParamIsDefault(mode))

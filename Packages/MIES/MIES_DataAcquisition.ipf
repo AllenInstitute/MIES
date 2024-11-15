@@ -11,6 +11,7 @@
 
 /// @brief Stop DAQ and TP on all locked devices
 Function DQ_StopOngoingDAQAllLocked(variable stopReason)
+
 	variable i, numDev, err
 	string device
 
@@ -116,8 +117,7 @@ End
 /// This function and DQ_StopDAQDeviceTimer are used to correct the ITI for the
 /// time it took to collect data, and pre and post processing of data. It
 /// allows for a real time, start to start, ITI
-Function DQ_StartDAQDeviceTimer(device)
-	string device
+Function DQ_StartDAQDeviceTimer(string device)
 
 	string msg
 
@@ -143,8 +143,7 @@ End
 /// @brief Stop the per-device timer associated with a particular device
 ///
 /// @return time in seconds
-Function DQ_StopDAQDeviceTimer(device)
-	string device
+Function DQ_StopDAQDeviceTimer(string device)
 
 	variable timerID
 	string   msg
@@ -170,6 +169,7 @@ End
 /// Assumes that single device and multi device do not run at the same time.
 /// @return One of @ref DAQRunModes
 Function DQ_StopDAQ(string device, variable stopReason, [variable startTPAfterDAQ])
+
 	variable runMode
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
@@ -191,9 +191,7 @@ Function DQ_StopDAQ(string device, variable stopReason, [variable startTPAfterDA
 	return DAQ_NOT_RUNNING
 End
 
-Function DQ_RestartDAQ(device, dataAcqRunMode)
-	string   device
-	variable dataAcqRunMode
+Function DQ_RestartDAQ(string device, variable dataAcqRunMode)
 
 	switch(dataAcqRunMode)
 		case DAQ_NOT_RUNNING:
@@ -224,9 +222,7 @@ End
 ///
 /// @param device Locked panel with test pulse running occasionally
 /// @param TPResults  Data from TP_ROAnalysis()
-Function DQ_ApplyAutoBias(device, TPResults)
-	string device
-	WAVE   TPResults
+Function DQ_ApplyAutoBias(string device, WAVE TPResults)
 
 	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
 	variable resistance, maximumAutoBiasCurrent, lastInvocation, curTime

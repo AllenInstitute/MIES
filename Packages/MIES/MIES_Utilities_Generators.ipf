@@ -10,6 +10,7 @@
 /// @brief utility functions that generate code
 
 Function GenerateMultiplierConstants()
+
 	variable numElements, i, j, maxLength
 	string str
 

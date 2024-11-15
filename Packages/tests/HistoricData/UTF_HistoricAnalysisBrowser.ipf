@@ -116,7 +116,7 @@ static Function LoadDependentStimsetsFromPXP()
 	DownloadFilesIfRequired(files)
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadStimsets = 1)
-	formulaSet = MIES_WB#WB_StimsetChildren(stimset = "baseset_DA_0")
+	formulaSet             = MIES_WB#WB_StimsetChildren(stimset = "baseset_DA_0")
 	CHECK_EQUAL_STR(formulaSet, "formula_da_0;")
 
 	KillWindow $abWin

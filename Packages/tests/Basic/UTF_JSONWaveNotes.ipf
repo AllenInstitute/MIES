@@ -203,7 +203,7 @@ static Function Test_WaveRefNumeric()
 	WAVE/Z data = JWN_GetNumericWaveFromWaveNote(wv, "refWave/3")
 	CHECK_EQUAL_WAVES(data, wvData3, mode = WAVE_DATA | DIMENSION_SIZES)
 
-	WAVE/WAVE/Z container = JWN_GetWaveRefNumericFromWaveNote(wv, "refWave")
+	WAVE/Z/WAVE container = JWN_GetWaveRefNumericFromWaveNote(wv, "refWave")
 	CHECK_EQUAL_VAR(DimSize(container, ROWS), 4)
 	CHECK_EQUAL_VAR(DimSize(container, COLS), 0)
 
@@ -289,7 +289,7 @@ static Function Test_WaveRefText()
 	WAVE/Z data = JWN_GetTextWaveFromWaveNote(wv, "refWave/3")
 	CHECK_EQUAL_WAVES(data, wvData3, mode = WAVE_DATA)
 
-	WAVE/WAVE/Z container = JWN_GetWaveRefTextFromWaveNote(wv, "refWave")
+	WAVE/Z/WAVE container = JWN_GetWaveRefTextFromWaveNote(wv, "refWave")
 	CHECK_EQUAL_VAR(DimSize(container, ROWS), 4)
 	CHECK_EQUAL_VAR(DimSize(container, COLS), 0)
 

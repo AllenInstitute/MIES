@@ -12,8 +12,7 @@
 /// @brief Fifo monitor for DAQ Multi Device
 ///
 /// @ingroup BackgroundFunctions
-Function DQM_FIFOMonitor(s)
-	STRUCT BackgroundStruct &s
+Function DQM_FIFOMonitor(STRUCT BackgroundStruct &s)
 
 	variable deviceID, isFinished, hardwareType
 	variable i, j, err, fifoLatest, result, channel, lastTP, gotTPChannels, newSamplesCount
@@ -176,8 +175,7 @@ Function DQM_FIFOMonitor(s)
 End
 
 /// @brief Stop ongoing multi device DAQ
-Function DQM_TerminateOngoingDAQHelper(device)
-	string device
+Function DQM_TerminateOngoingDAQHelper(string device)
 
 	variable returnedHardwareType
 
@@ -219,9 +217,7 @@ End
 /// @param device      device
 /// @param initialSetupReq [optional, defaults to true] performs initialization routines
 ///                        at the very beginning of DAQ, turn off for RA
-Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
-	string   device
-	variable initialSetupReq
+Function DQM_StartDAQMultiDevice(string device, [variable initialSetupReq])
 
 	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1,                          \
 	       "Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
@@ -264,9 +260,7 @@ End
 /// @param device device
 /// @param runTime    left over time to wait in seconds
 /// @param funcList   list of functions to execute at the end of the ITI
-Function DQM_StartBackgroundTimer(device, runTime, funcList)
-	string device, funcList
-	variable runTime
+Function DQM_StartBackgroundTimer(string device, variable runTime, string funcList)
 
 	ASSERT(!isEmpty(funcList), "Empty funcList does not makse sense")
 
@@ -281,8 +275,7 @@ Function DQM_StartBackgroundTimer(device, runTime, funcList)
 End
 
 /// @brief Stop the background timer used for ITI tracking
-Function DQM_StopBackgroundTimer(device)
-	string device
+Function DQM_StopBackgroundTimer(string device)
 
 	WAVE/SDFR=GetActiveDAQDevicesTimerFolder() ActiveDevTimeParam
 
@@ -296,8 +289,7 @@ End
 /// @brief Background function for tracking ITI
 ///
 /// @ingroup BackgroundFunctions
-Function DQM_Timer(s)
-	STRUCT WMBackgroundStruct &s
+Function DQM_Timer(STRUCT WMBackgroundStruct &s)
 
 	WAVE/SDFR=GetActiveDAQDevicesTimerFolder() ActiveDevTimeParam
 	// column 0 = deviceID; column 1 = Start time; column 2 = run time; column 3 = end time
@@ -332,12 +324,11 @@ Function DQM_Timer(s)
 End
 
 static Function DQM_StartBckrdFIFOMonitor()
+
 	CtrlNamedBackground $TASKNAME_FIFOMONMD, start
 End
 
-static Function DQM_StopDataAcq(device, deviceID)
-	string   device
-	variable deviceID
+static Function DQM_StopDataAcq(string device, variable deviceID)
 
 	variable hardwareType = GetHardwareType(device)
 	if(hardwareType == HARDWARE_ITC_DAC)
@@ -349,9 +340,7 @@ static Function DQM_StopDataAcq(device, deviceID)
 	RA_ContinueOrStop(device, multiDevice = 1)
 End
 
-static Function DQM_BkrdDataAcq(device, [triggerMode])
-	string   device
-	variable triggerMode
+static Function DQM_BkrdDataAcq(string device, [variable triggerMode])
 
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
@@ -382,9 +371,7 @@ End
 ///
 /// @param device panel title
 /// @param deviceID   id of the device to be removed
-static Function DQM_RemoveDevice(device, deviceID)
-	string   device
-	variable deviceID
+static Function DQM_RemoveDevice(string device, variable deviceID)
 
 	variable row
 
@@ -413,8 +400,7 @@ End
 /// @brief Adds a device to the ActiveDeviceList
 ///
 /// @param device panel title
-static Function DQM_AddDevice(device)
-	string device
+static Function DQM_AddDevice(string device)
 
 	variable numberOfRows
 
@@ -431,9 +417,7 @@ static Function DQM_AddDevice(device)
 	ActiveDeviceList[numberOfRows][%ActiveChunk]        = NaN
 End
 
-static Function DQM_MakeOrUpdateTimerParamWave(device, listOfFunctions, startTime, RunTime, EndTime, addOrRemoveDevice)
-	string device, ListOfFunctions
-	variable startTime, RunTime, EndTime, addOrRemoveDevice
+static Function DQM_MakeOrUpdateTimerParamWave(string device, string listOfFunctions, variable startTime, variable RunTime, variable EndTime, variable addOrRemoveDevice)
 
 	variable rowToRemove = NaN
 	variable numberOfRows
@@ -476,9 +460,7 @@ static Function DQM_MakeOrUpdateTimerParamWave(device, listOfFunctions, startTim
 	ASSERT(DimSize(TimerFunctionListWave, ROWS) == DimSize(ActiveDevTimeParam, ROWS), "Number of rows in ActiveDevTimeParam and TimerFunctionListWave must be equal")
 End
 
-static Function DQM_MakeOrUpdtDevTimerTxtWv(device, listOfFunctions, rowToRemove, addOrRemoveDevice)
-	string device, listOfFunctions
-	variable rowToRemove, addOrRemoveDevice
+static Function DQM_MakeOrUpdtDevTimerTxtWv(string device, string listOfFunctions, variable rowToRemove, variable addOrRemoveDevice)
 
 	variable numberOfRows
 

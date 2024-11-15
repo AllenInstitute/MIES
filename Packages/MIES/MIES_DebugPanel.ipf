@@ -12,8 +12,7 @@
 
 static StrConstant PANEL = "DebugPanel"
 
-Function DP_DebuggingEnabledForFile(file)
-	string file
+Function DP_DebuggingEnabledForFile(string file)
 
 	if(!WindowExists(PANEL))
 		return 1
@@ -75,6 +74,7 @@ Function/S DP_OpenDebugPanel()
 End
 
 static Function DP_FillDebugPanelWaves()
+
 	string symbPath, path, allProcFiles
 
 	WAVE/T listWave    = GetDebugPanelListWave()
@@ -107,8 +107,7 @@ static Function DP_FillDebugPanelWaves()
 	listSelWave[] = listSelWave[p] | 0x20
 End
 
-Function DP_WindowHook(s)
-	STRUCT WMWinHookStruct &s
+Function DP_WindowHook(STRUCT WMWinHookStruct &s)
 
 	variable debugMode
 
@@ -122,8 +121,7 @@ Function DP_WindowHook(s)
 	return 0
 End
 
-Function DP_CheckProc_Debug(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DP_CheckProc_Debug(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string   ctrl
 	variable checked
@@ -148,8 +146,7 @@ Function DP_CheckProc_Debug(cba) : CheckBoxControl
 	return 0
 End
 
-Function DP_PopMenuProc_Selection(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function DP_PopMenuProc_Selection(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string popStr
 

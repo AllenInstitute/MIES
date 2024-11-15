@@ -7,6 +7,7 @@
 
 /// IUTF_SKIP
 Function run()
+
 	MIES_CompilationTester#runTest("CompilationTester.ipf", name = "Compilation tests", testCase = "TestCompilation", enableJU = 1)
 End
 
@@ -24,6 +25,7 @@ End
 // all finite values not equal to 0 and 0 otherwise. Return `NaN` in all other
 // cases.
 static Function GetEnvironmentVariableAsBoolean(string key)
+
 	variable value, err
 
 	value = str2num(GetEnvironmentVariable(key)); err = GetRTError(-1)
@@ -36,6 +38,7 @@ static Function GetEnvironmentVariableAsBoolean(string key)
 End
 
 Function/WAVE GetIncludes()
+
 	// keep sorted
 	Make/FREE/T includes = {"MIES_Include",                  \
 	                        "UTF_Basic",                     \

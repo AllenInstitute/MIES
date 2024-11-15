@@ -15,6 +15,7 @@
 /// The function will pull the values (PeakResistance, SteadyStateResistance, and TimeStamp) out of
 /// the TP storage wave and put them in a 3x8 wave, in a designated location where ACQ4 can then find them
 Function/WAVE FFI_ReturnTPValues()
+
 	string   lockedDevList
 	variable noLockedDevs
 	variable n

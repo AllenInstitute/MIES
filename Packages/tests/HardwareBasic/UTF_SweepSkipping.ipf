@@ -11,10 +11,12 @@ static Function [STRUCT DAQSettings s] GetDAQSettings(string mandConfig)
 End
 
 static Function GlobalPreInit(string device)
+
 	PASS()
 End
 
 static Function GlobalPreAcq(string device)
+
 	PASS()
 End
 
@@ -35,6 +37,7 @@ static Function SkipAhead([string str])
 End
 
 static Function SkipAhead_REENTRY([string str])
+
 	variable sweepNo
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
@@ -51,8 +54,7 @@ static Function SkipAhead_REENTRY([string str])
 	CHECK_EQUAL_WAVES(skipAhead, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 2}, mode = WAVE_DATA)
 End
 
-static Function SweepSkipping_PreAcq(device)
-	string device
+static Function SweepSkipping_PreAcq(string device)
 
 	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "SkipSweeps")
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "SkipSweeps")
@@ -65,15 +67,13 @@ static Function SweepSkipping_PreAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SweepSkipping([str])
-	string str
+static Function SweepSkipping([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I1_L0_BKG1")
 	AcquireData_NG(s, str)
 End
 
-static Function SweepSkipping_REENTRY([str])
-	string str
+static Function SweepSkipping_REENTRY([string str])
 
 	variable numSweeps = 4
 	variable sweepNo   = 0
@@ -84,7 +84,7 @@ static Function SweepSkipping_REENTRY([str])
 	WAVE/T textualValues   = GetLBTextualValues(str)
 	WAVE   numericalValues = GetLBNumericalValues(str)
 
-	WAVE/T/Z foundStimSets = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, headstage, DATA_ACQUISITION_MODE)
+	WAVE/Z/T foundStimSets = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, headstage, DATA_ACQUISITION_MODE)
 	REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"StimulusSetA_DA_0", "StimulusSetB_DA_0", "StimulusSetC_DA_0", "StimulusSetD_DA_0"})
 
@@ -100,8 +100,7 @@ static Function SweepSkipping_REENTRY([str])
 	CHECK_EQUAL_WAVES(skipSweepsSource, {SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO, SWEEP_SKIP_AUTO}, mode = WAVE_DATA)
 End
 
-static Function SweepSkippingAdvanced_PreAcq(device)
-	string device
+static Function SweepSkippingAdvanced_PreAcq(string device)
 
 	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "SkipSweepsAdvanced")
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "SkipSweepsAdvanced")
@@ -113,15 +112,13 @@ static Function SweepSkippingAdvanced_PreAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SweepSkippingAdvanced([str])
-	string str
+static Function SweepSkippingAdvanced([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1")
 	AcquireData_NG(s, str)
 End
 
-static Function SweepSkippingAdvanced_REENTRY([str])
-	string str
+static Function SweepSkippingAdvanced_REENTRY([string str])
 
 	variable numSweeps = 4
 	variable sweepNo   = 0
@@ -132,7 +129,7 @@ static Function SweepSkippingAdvanced_REENTRY([str])
 	WAVE/T textualValues   = GetLBTextualValues(str)
 	WAVE   numericalValues = GetLBNumericalValues(str)
 
-	WAVE/T/Z foundStimSets = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, headstage, DATA_ACQUISITION_MODE)
+	WAVE/Z/T foundStimSets = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, headstage, DATA_ACQUISITION_MODE)
 	REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"StimulusSetA_DA_0", "StimulusSetA_DA_0", "StimulusSetA_DA_0", "StimulusSetA_DA_0"})
 
@@ -184,8 +181,7 @@ static Function SkipSweepsDuringITI_REENTRY([STRUCT IUTF_MDATA &md])
 	endfor
 End
 
-static Function SkipSweepsBackDuringITI_PreAcq(device)
-	string device
+static Function SkipSweepsBackDuringITI_PreAcq(string device)
 
 	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "TrackActiveSetCountsAndEvents")
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "TrackActiveSetCountsAndEvents")
@@ -198,8 +194,7 @@ static Function SkipSweepsBackDuringITI_PreAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SkipSweepsBackDuringITI([str])
-	string str
+static Function SkipSweepsBackDuringITI([string str])
 
 	[STRUCT DAQSettings s] = GetDAQSettings("MD1_RA1_I0_L0_BKG1_RES0_GSI0_ITI5")
 	AcquireData_NG(s, str)
@@ -207,8 +202,7 @@ static Function SkipSweepsBackDuringITI([str])
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipSweepBackDuringITI_IGNORE
 End
 
-static Function SkipSweepsBackDuringITI_REENTRY([str])
-	string str
+static Function SkipSweepsBackDuringITI_REENTRY([string str])
 
 	variable numSweeps = 4
 	variable sweepNo   = 0
@@ -219,7 +213,7 @@ static Function SkipSweepsBackDuringITI_REENTRY([str])
 	WAVE/T textualValues   = GetLBTextualValues(str)
 	WAVE   numericalValues = GetLBNumericalValues(str)
 
-	WAVE/T/Z foundStimSets = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, headstage, DATA_ACQUISITION_MODE)
+	WAVE/Z/T foundStimSets = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, headstage, DATA_ACQUISITION_MODE)
 	REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"StimulusSetA_DA_0", "StimulusSetA_DA_0", "StimulusSetA_DA_0", "StimulusSetA_DA_0"})
 

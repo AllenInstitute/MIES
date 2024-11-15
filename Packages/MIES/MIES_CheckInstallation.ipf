@@ -22,15 +22,13 @@ static Structure CHI_InstallationState
 	variable numTries
 EndStructure
 
-static Function CHI_InitInstallationState(state)
-	STRUCT CHI_InstallationState &state
+static Function CHI_InitInstallationState(STRUCT CHI_InstallationState &state)
 
 	state.numErrors = 0
 	state.numTries  = 0
 End
 
-static Function CHI_CheckJSONXOPVersion(state)
-	STRUCT CHI_InstallationState &state
+static Function CHI_CheckJSONXOPVersion(STRUCT CHI_InstallationState &state)
 
 	variable id
 	string info, version
@@ -42,8 +40,7 @@ static Function CHI_CheckJSONXOPVersion(state)
 	CHI_OutputVersionCheckResult(state, "JSON", CHI_JSON_XOP_VERSION, version)
 End
 
-static Function CHI_CheckTUFXOPVersion(state)
-	STRUCT CHI_InstallationState &state
+static Function CHI_CheckTUFXOPVersion(STRUCT CHI_InstallationState &state)
 
 	variable id
 	string   version
@@ -65,12 +62,11 @@ static Function CHI_OutputVersionCheckResult(STRUCT CHI_InstallationState &state
 	endif
 End
 
-static Function CHI_CheckITCXOPVersion(state)
-	STRUCT CHI_InstallationState &state
+static Function CHI_CheckITCXOPVersion(STRUCT CHI_InstallationState &state)
 
 	string version
 
-	WAVE/T/Z versionInfo = HW_ITC_GetVersionInfo(flags = HARDWARE_PREVENT_ERROR_MESSAGE)
+	WAVE/Z/T versionInfo = HW_ITC_GetVersionInfo(flags = HARDWARE_PREVENT_ERROR_MESSAGE)
 
 	if(!WaveExists(versionInfo) || FindDimLabel(versionInfo, ROWS, "XOP") < 0)
 		version = "error querying version"
@@ -82,10 +78,7 @@ static Function CHI_CheckITCXOPVersion(state)
 End
 
 /// @brief Search list for matches of item and print the results
-static Function CHI_CheckXOP(list, item, name, state, [expectedHash])
-	string &list, item, name
-	STRUCT CHI_InstallationState &state
-	string                        expectedHash
+static Function CHI_CheckXOP(string &list, string item, string name, STRUCT CHI_InstallationState &state, [string expectedHash])
 
 	variable numMatches, i, hashMatches
 	string matches, fileVersion, filepath, existingHash, hashMsg
