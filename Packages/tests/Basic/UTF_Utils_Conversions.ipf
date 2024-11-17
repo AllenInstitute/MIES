@@ -296,6 +296,7 @@ static Function TWTLSingleElementNDSeparators([variable var])
 End
 
 Function/WAVE SomeTextWaves()
+
 	Make/WAVE/FREE/N=5 all
 
 	Make/FREE/T/N=0 wv1
@@ -319,6 +320,7 @@ End
 // UTF_TD_GENERATOR w0:SomeTextWaves
 // UTF_TD_GENERATOR v0:TrailSepOptions
 Function TWTLRoundTrips([STRUCT IUTF_MDATA &md])
+
 	string list
 	variable dims, trailSep
 
@@ -343,6 +345,7 @@ End
 
 /// @brief Fail due to null string
 Function ListToTextWaveMDFail0()
+
 	string   uninitialized
 	variable err
 
@@ -357,6 +360,7 @@ End
 
 /// @brief Fail due to wrong dims
 Function ListToTextWaveMDFail1()
+
 	try
 		WAVE/T t = ListToTextWaveMD("", 0)
 		FAIL()
@@ -535,6 +539,7 @@ End
 /// @{
 
 Function LTNWWorks()
+
 	WAVE wv = ListToNumericWave("1;1e6;-inf;1.5;NaN;", ";")
 
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
@@ -542,6 +547,7 @@ Function LTNWWorks()
 End
 
 Function LTNWWorksWithCustomSepAndFloatType()
+
 	WAVE wv = ListToNumericWave("1|1e6|-inf|1.5|NaN|", "|", type = IGOR_TYPE_32BIT_FLOAT)
 
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
@@ -549,6 +555,7 @@ Function LTNWWorksWithCustomSepAndFloatType()
 End
 
 Function LTNWWorksWithIntegerType()
+
 	WAVE wv = ListToNumericWave("1;-1;", ";", type = IGOR_TYPE_32BIT_INT)
 
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = INT32_WAVE)
@@ -556,6 +563,7 @@ Function LTNWWorksWithIntegerType()
 End
 
 Function LTNWWorksWithOnlySeps()
+
 	WAVE wv = ListToNumericWave(";;;", ";")
 
 	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
@@ -563,6 +571,7 @@ Function LTNWWorksWithOnlySeps()
 End
 
 Function LTNWRoundtripsWithNumericWaveToList()
+
 	string list
 
 	Make/FREE expected = {1, 1e6, -Inf, 1.5, NaN}
@@ -747,18 +756,21 @@ Function num2strHighPrecWorks5()
 End
 
 Function num2strHighPrecShortenWorks1()
+
 	string sref = "1.234"
 	string s    = num2strHighPrec(1.2340, precision = MAX_DOUBLE_PRECISION, shorten = 1)
 	CHECK_EQUAL_STR(s, sref)
 End
 
 Function num2strHighPrecShortenWorks2()
+
 	string sref = "1"
 	string s    = num2strHighPrec(1.0, precision = MAX_DOUBLE_PRECISION, shorten = 1)
 	CHECK_EQUAL_STR(s, sref)
 End
 
 Function num2strHighPrecShortenDoesNotEatAllZeroes()
+
 	string sref = "10"
 	string s    = num2strHighPrec(10.00, precision = MAX_DOUBLE_PRECISION, shorten = 1)
 	CHECK_EQUAL_STR(s, sref)
@@ -770,6 +782,7 @@ End
 /// @{
 
 Function STIW_TestDimensions()
+
 	Make/FREE testwave
 
 	SetScale/P x, 0, 0.1, testwave
@@ -796,13 +809,13 @@ Function STIW_TestDimensions()
 End
 
 Function/WAVE STIW_TestAbortGetter()
+
 	Make/D/FREE data = {4, -1, 0.1, NaN, Inf, -Inf}
 	return data
 End
 
 // UTF_TD_GENERATOR STIW_TestAbortGetter
-Function STIW_TestAbort([var])
-	variable var
+Function STIW_TestAbort([variable var])
 
 	variable err
 
@@ -824,6 +837,7 @@ End
 /// @{
 
 Function HexAndNumbersWorks()
+
 	string str, expected
 
 	CHECK_EQUAL_VAR(HexToNumber("0a"), 10)
@@ -1013,6 +1027,7 @@ End
 
 /// UTF_TD_GENERATOR s0:DataGenerators#GetSupportedWaveTypes
 Function JSONWaveCreatesCorrectWaveTypes([STRUCT IUTF_mData &m])
+
 	string str, typeStr
 	variable type
 
@@ -1044,8 +1059,8 @@ End
 /// @{
 
 // UTF_TD_GENERATOR DataGenerators#InvalidSignDigits
-Function FloatWithMinSigDigitsAborts([var])
-	variable var
+Function FloatWithMinSigDigitsAborts([variable var])
+
 	try
 		FloatWithMinSigDigits(1.234, numMinSignDigits = var)
 		FAIL()

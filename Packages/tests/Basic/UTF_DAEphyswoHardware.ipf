@@ -212,6 +212,7 @@ End
 static StrConstant device = "ITC18USB_DEV_0"
 
 Function AssertOnInvalidSeed()
+
 	NVAR rngSeed = $GetRNGSeed(device)
 	rngSeed = NaN
 
@@ -224,6 +225,7 @@ Function AssertOnInvalidSeed()
 End
 
 Function CreatesReproducibleResults()
+
 	NVAR rngSeed = $GetRNGSeed(device)
 
 	// Use GetNextRandomNumberForDevice directly

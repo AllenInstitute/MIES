@@ -16,8 +16,7 @@ static Constant OOD_SIGNAL_THRESHOLD = 0.1
 /// @brief returns the threshold level for ood region detection from a single column stimset
 /// @param[in] stimset 1d wave containing stimset data
 /// @return threshold level defining signal above baseline
-static Function OOD_GetThresholdLevel(stimset)
-	WAVE stimset
+static Function OOD_GetThresholdLevel(WAVE stimset)
 
 	variable minVal, maxVal
 
@@ -30,9 +29,7 @@ End
 /// @param[in] prePoints oodDAQ pre delay in points the regions get expanded at the rising edge
 /// @param[in] postPoints oodDAQ post delay in points the regions get expanded at the falling edge
 /// @return 2D wave with region information
-static Function/WAVE OOD_GetRegionsFromStimset(stimset, prePoints, postPoints)
-	WAVE stimset
-	variable prePoints, postPoints
+static Function/WAVE OOD_GetRegionsFromStimset(WAVE stimset, variable prePoints, variable postPoints)
 
 	variable size, level, expectFalling, position, rIndex
 
@@ -85,8 +82,7 @@ End
 /// @brief Reduces a 2D region wave by joining overlapping regions to one
 /// @param[in] regions 2D wave containing region data
 /// @return 2D wave with compacted regions
-static Function/WAVE OOD_CompactRegions(regions)
-	WAVE regions
+static Function/WAVE OOD_CompactRegions(WAVE regions)
 
 	variable regionNr, size, rIndex, endPoint, startPoint
 
@@ -122,8 +118,7 @@ End
 /// @brief generates regions data waves from stimsets taking the pre and post delay into account
 /// @param[in] params OOdDAQParams structure
 /// @return wave reference wave holding the 2D region waves for each stimset
-static Function/WAVE OOD_GetRegionsFromStimsets(params)
-	STRUCT OOdDAQParams &params
+static Function/WAVE OOD_GetRegionsFromStimsets(STRUCT OOdDAQParams &params)
 
 	variable stimsetNr, numSets, stimsetCol
 	variable level, expectRising, position
@@ -141,9 +136,7 @@ End
 /// @param[in] setRegions wave reference wave of 2D region waves
 /// @param[in] offsets offset wave storing the offsets per stimset
 /// @return 1D text wave with lists of regions
-static Function/WAVE OOD_GetFeatureRegions(setRegions, offsets)
-	WAVE/WAVE setRegions
-	WAVE      offsets
+static Function/WAVE OOD_GetFeatureRegions(WAVE/WAVE setRegions, WAVE offsets)
 
 	string list
 	variable setNr, regNr, regCnt
@@ -169,8 +162,7 @@ End
 /// @param setRegions wave reference wave of 2D region waves for each stimset
 //
 /// @return 1D wave with offsets for each stimset in points
-static Function/WAVE OOD_CalculateOffsetsImpl(setRegions)
-	WAVE/WAVE setRegions
+static Function/WAVE OOD_CalculateOffsetsImpl(WAVE/WAVE setRegions)
 
 	variable setNr, regNr, regCnt, baseRegCnt, baseRegNr, newOff, resAdjust
 	variable bStart, bEnd, rStart, rEnd, overlap
@@ -227,9 +219,7 @@ End
 ///
 /// @param[in] device title of the device panel
 /// @param[in] params     OOdDAQParams structure with oodDAQ setup data
-static Function OOD_CalculateOffsets(device, params)
-	string               device
-	STRUCT OOdDAQParams &params
+static Function OOD_CalculateOffsets(string device, STRUCT OOdDAQParams &params)
 
 	WAVE setRegions = OOD_GetRegionsFromStimsets(params)
 
@@ -250,9 +240,7 @@ End
 /// @param[in] last sample point number in wavebuilder scale with end of region
 /// @param[in] list list string where the element is added
 /// @return list string with added element
-static Function/S OOD_AddToRegionList(first, last, list)
-	variable first, last
-	string list
+static Function/S OOD_AddToRegionList(variable first, variable last, string list)
 
 	string str
 
@@ -263,8 +251,7 @@ End
 
 /// @brief Prints various internals useful for oodDAQ debugging, called when DEBUGGING_ENABLED is set
 /// @param[in] params OOdDAQParams structure with oodDAQ internals
-static Function OOD_Debugging(params)
-	STRUCT OOdDAQParams &params
+static Function OOD_Debugging(STRUCT OOdDAQParams &params)
 
 	variable i, numSets
 
@@ -304,15 +291,13 @@ End
 /// @param[in] device title of the device panel
 /// @param[in] params     OOdDAQParams structure with the initial settings
 /// @return one dimensional numberic wave with the offsets in points for each stimset
-Function/WAVE OOD_GetResultWaves(device, params)
-	string               device
-	STRUCT OOdDAQParams &params
+Function/WAVE OOD_GetResultWaves(string device, STRUCT OOdDAQParams &params)
 
 	string key
 
 	key = CA_DistDAQCreateCacheKey(params)
 
-	WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(key)
+	WAVE/Z/WAVE cache = CA_TryFetchingEntryFromCache(key)
 
 	if(WaveExists(cache))
 		WAVE   params.offsets = cache[%offsets]
@@ -343,8 +328,7 @@ End
 /// @param[in] params OOdDAQParams structure with the stimsets and offset information
 ///
 /// @return stimsets with offsets, one wave per offset
-static Function/WAVE OOD_CreateStimSet(params)
-	STRUCT OOdDAQParams &params
+static Function/WAVE OOD_CreateStimSet(STRUCT OOdDAQParams &params)
 
 	variable numSets
 

@@ -6,12 +6,13 @@
 static StrConstant EP_DUMMY_DEVICE = "dummy"
 
 static Function [WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] PrepareEpochsTable_IGNORE()
+
 	variable DAC
 
 	string key, keyText
 	string device = EP_DUMMY_DEVICE
 
-	WAVE/T/Z epochsWave = GetEpochsWave(device)
+	WAVE/Z/T epochsWave = GetEpochsWave(device)
 	CHECK_WAVE(epochsWave, TEXT_WAVE)
 
 	DAC = 2 // HS 0
@@ -90,11 +91,12 @@ static Function EP_GetEpochsNoMatch()
 End
 
 static Function EP_GetEpochsHasMatch()
+
 	string str, expected
 
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
-	WAVE/T/Z result = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1")
+	WAVE/Z/T result = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1")
 	CHECK_WAVE(result, TEXT_WAVE)
 
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
@@ -107,56 +109,58 @@ static Function EP_GetEpochsHasMatch()
 End
 
 static Function EP_GetEpochsIgnoresCase()
+
 	string str, expected
 
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
 	// same as in EP_GetEpochsHasMatch
-	WAVE/T/Z resultUpper = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1")
+	WAVE/Z/T resultUpper = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1")
 	CHECK_WAVE(resultUpper, TEXT_WAVE)
 
-	WAVE/T/Z resultLower = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "ep1")
+	WAVE/Z/T resultLower = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "ep1")
 	CHECK_WAVE(resultLower, TEXT_WAVE)
 
 	CHECK_EQUAL_TEXTWAVES(resultUpper, resultLower)
 End
 
 static Function EP_GetEpochsWorks()
+
 	string str, expected
 
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
 	// same as in EP_GetEpochsHasMatch
-	WAVE/T/Z result = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1")
+	WAVE/Z/T result = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1")
 	CHECK_WAVE(result, TEXT_WAVE)
 
-	WAVE/T/Z resultWithLevel = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", treeLevel = 1)
+	WAVE/Z/T resultWithLevel = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", treeLevel = 1)
 	CHECK_WAVE(resultWithLevel, TEXT_WAVE)
 
 	CHECK_EQUAL_TEXTWAVES(result, resultWithLevel)
 
 	// treeLevel NaN means all treelevels
-	WAVE/T/Z resultNaNTreeLevel = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", treeLevel = NaN)
+	WAVE/Z/T resultNaNTreeLevel = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", treeLevel = NaN)
 	CHECK_WAVE(resultNaNTreeLevel, TEXT_WAVE)
 
 	CHECK_EQUAL_TEXTWAVES(result, resultNaNTreeLevel)
 
 	// unknown treelevel
-	WAVE/T/Z resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", treeLevel = 4711)
+	WAVE/Z/T resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", treeLevel = 4711)
 	CHECK_WAVE(resultEmpty, NULL_WAVE)
 
 	// no epoch with that treelevel
-	WAVE/T/Z resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", treeLevel = 2)
+	WAVE/Z/T resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", treeLevel = 2)
 	CHECK_WAVE(resultEmpty, NULL_WAVE)
 
 	// can read epoch info from epochsWave
-	WAVE/T/Z resultFromWave = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", epochsWave = epochsWave)
+	WAVE/Z/T resultFromWave = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "EP1", epochsWave = epochsWave)
 	CHECK_WAVE(resultFromWave, TEXT_WAVE)
 
 	CHECK_EQUAL_TEXTWAVES(result, resultFromWave)
 
 	// all epochs with treeLevel 1
-	WAVE/T/Z resultAllEpochs = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, ".*", treeLevel = 1)
+	WAVE/Z/T resultAllEpochs = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, ".*", treeLevel = 1)
 	CHECK_WAVE(resultAllEpochs, TEXT_WAVE)
 
 	CHECK_EQUAL_VAR(DimSize(resultAllEpochs, ROWS), 3)
@@ -176,10 +180,10 @@ static Function EP_GetEpochsDoesNotFallbackWithShortNames()
 
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
-	WAVE/T/Z resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "someDesc")
+	WAVE/Z/T resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "someDesc")
 	CHECK_WAVE(resultEmpty, NULL_WAVE)
 
-	WAVE/T/Z resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "otherDesc")
+	WAVE/Z/T resultEmpty = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_DAC, 2, "otherDesc")
 	CHECK_WAVE(resultEmpty, NULL_WAVE)
 End
 
@@ -195,29 +199,30 @@ End
 // UTF_TD_GENERATOR OldEpochsFormats
 static Function EP_GetEpochsWorksWithoutShortNames([WAVE wv])
 
-	WAVE/T/Z result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "Inserted TP", epochsWave = wv)
+	WAVE/Z/T result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "Inserted TP", epochsWave = wv)
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 2)
 
-	WAVE/T/Z result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "Test Pulse", epochsWave = wv)
+	WAVE/Z/T result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "Test Pulse", epochsWave = wv)
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 2)
 
-	WAVE/T/Z result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "Inserted TP;Test Pulse", epochsWave = wv)
+	WAVE/Z/T result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "Inserted TP;Test Pulse", epochsWave = wv)
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 2)
 
-	WAVE/T/Z result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "STIM.*", epochsWave = wv)
+	WAVE/Z/T result = EP_GetEpochs($"", $"", NaN, XOP_CHANNEL_TYPE_DAC, 0, "STIM.*", epochsWave = wv)
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
 End
 
 static Function EP_GetNextEpochsHasMatch()
+
 	string str, expected
 
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
-	WAVE/T/Z result = EP_GetNextEpoch(numericalValues, textualValues, 0, $"", XOP_CHANNEL_TYPE_DAC, 2, "EP1", 1)
+	WAVE/Z/T result = EP_GetNextEpoch(numericalValues, textualValues, 0, $"", XOP_CHANNEL_TYPE_DAC, 2, "EP1", 1)
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
 	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 2 * MICRO_TO_ONE)
@@ -229,11 +234,12 @@ static Function EP_GetNextEpochsHasMatch()
 End
 
 static Function EP_GetNextEpochsWithGapHasMatch()
+
 	string str, expected
 
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
-	WAVE/T/Z result = EP_GetNextEpoch(numericalValues, textualValues, 0, $"", XOP_CHANNEL_TYPE_DAC, 2, "EP_1a", 1, ignoreGaps = 1)
+	WAVE/Z/T result = EP_GetNextEpoch(numericalValues, textualValues, 0, $"", XOP_CHANNEL_TYPE_DAC, 2, "EP_1a", 1, ignoreGaps = 1)
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
 	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 4e-6)
@@ -245,12 +251,13 @@ static Function EP_GetNextEpochsWithGapHasMatch()
 End
 
 static Function EP_CheckADCToDACMApping()
+
 	string str, expected
 
 	[WAVE numericalValues, WAVE/T textualValues, WAVE/T epochsWave] = PrepareEpochsTable_IGNORE()
 
 	// HS0 ADC6 -> DAC2
-	WAVE/T/Z result = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_ADC, 6, "EP_1a")
+	WAVE/Z/T result = EP_GetEpochs(numericalValues, textualValues, 0, XOP_CHANNEL_TYPE_ADC, 6, "EP_1a")
 	CHECK_WAVE(result, TEXT_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 1)
 	CHECK_EQUAL_VAR(str2num(result[0][%StartTime]), 2e-6)
@@ -292,6 +299,7 @@ static Function EP_TestSortEpochs()
 End
 
 Function RPI_WorksWithOldData()
+
 	string epochInfo
 
 	// 4e534e29 (Pulse Averaging: Pulse starting times are now read from the lab notebook, 2020-10-07)

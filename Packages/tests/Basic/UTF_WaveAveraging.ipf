@@ -57,8 +57,7 @@ Function DoesNothingWithInvalidWave()
 End
 
 /// UTF_TD_GENERATOR SupportedTypeGetter
-Function ReturnsCorrectResultWithOneWave([var])
-	variable var
+Function ReturnsCorrectResultWithOneWave([variable var])
 
 	Make/D/FREE data = {1, 2, 3, 4}
 	SetScale/P x, 0, 1, "m", data
@@ -76,8 +75,7 @@ Function ReturnsCorrectResultWithOneWave([var])
 End
 
 /// UTF_TD_GENERATOR SupportedTypeGetter
-Function PointForPointNoNans([var])
-	variable var
+Function PointForPointNoNans([variable var])
 
 	Make/D/FREE data1 = {1, 2, 3, 4}
 	Make/D/FREE data2 = {3, 4, 5, 6}
@@ -97,8 +95,7 @@ Function PointForPointNoNans([var])
 End
 
 /// UTF_TD_GENERATOR SupportedTypeGetter
-Function PointForPointWithNaNs([var])
-	variable var
+Function PointForPointWithNaNs([variable var])
 
 	Make/D/FREE data1 = {1, 2, NaN, 4}
 	Make/D/FREE data2 = {3, 4, 5, 6}
@@ -118,8 +115,7 @@ Function PointForPointWithNaNs([var])
 End
 
 /// UTF_TD_GENERATOR SupportedTypeGetter
-Function NonPointForPointNoNans([var])
-	variable var
+Function NonPointForPointNoNans([variable var])
 
 	Make/D/FREE data1 = {1, 2, 3, 4}
 	Make/D/FREE data2 = {3, 4, 5, 6, 7}
@@ -139,8 +135,7 @@ Function NonPointForPointNoNans([var])
 End
 
 /// UTF_TD_GENERATOR SupportedTypeGetter
-Function NonPointForPointWithNans([var])
-	variable var
+Function NonPointForPointWithNans([variable var])
 
 	Make/D/FREE data1 = {1, 2, NaN, 4}
 	Make/D/FREE data2 = {3, 4, 5, 6, NaN}

@@ -35,8 +35,9 @@ Function/S LBV_GetDescriptionNotebook(string win)
 	return LBV_GetSettingsHistoryPanel(win) + "#Description"
 End
 
-static Function/WAVE LBV_PopupExtFormatEntries(WAVE/T/Z entries)
-	WAVE/T/Z splittedMenu = PEXT_SplitToSubMenus(entries, method = PEXT_SUBSPLIT_ALPHA)
+static Function/WAVE LBV_PopupExtFormatEntries(WAVE/Z/T entries)
+
+	WAVE/Z/T splittedMenu = PEXT_SplitToSubMenus(entries, method = PEXT_SUBSPLIT_ALPHA)
 
 	PEXT_GenerateSubMenuNames(splittedMenu)
 
@@ -45,6 +46,7 @@ End
 
 /// @brief Returns the list of TPStorage keys
 Function/WAVE LBV_PopupExtGetTPStorageKeys(string win)
+
 	DFREF dfr = LBV_GetTPStorageLocation(win)
 
 	if(!DataFolderExistsDFR(dfr))
@@ -88,7 +90,8 @@ End
 
 /// @brief Returns the combined parameter names (non-empty) from the numerical
 ///        and textual MD key loogbook waves as 1D text wave
-Function/WAVE LBV_GetAllLogbookParamNames(WAVE/T/Z textualValues, WAVE/T/Z numericalValues)
+Function/WAVE LBV_GetAllLogbookParamNames(WAVE/Z/T textualValues, WAVE/Z/T numericalValues)
+
 	string key
 
 	if(!WaveExists(textualValues) && !WaveExists(numericalValues))
@@ -108,7 +111,8 @@ Function/WAVE LBV_GetAllLogbookParamNames(WAVE/T/Z textualValues, WAVE/T/Z numer
 	return result
 End
 
-static Function/WAVE LBV_GetAllLogbookParamNames_NoCache(WAVE/T/Z textualValues, WAVE/T/Z numericalValues)
+static Function/WAVE LBV_GetAllLogbookParamNames_NoCache(WAVE/Z/T textualValues, WAVE/Z/T numericalValues)
+
 	variable existText, existNum
 
 	WAVE/Z/T textualNames   = LBV_GetFilledLabnotebookEntries(textualValues)
@@ -143,6 +147,7 @@ End
 
 /// @brief Return a text wave with all entries from all TPStorage waves which are candidates for plotting
 Function/WAVE LBV_GetTPStorageEntries(DFREF dfr)
+
 	variable i, numEntries
 	string list
 
@@ -169,6 +174,7 @@ End
 
 /// @brief Return the datafolder reference where TPStorage waves can be found.
 static Function/DF LBV_GetTPStorageLocation(string win)
+
 	string shPanel, device, dataFolder
 
 	if(BSP_IsDataBrowser(win))
@@ -204,6 +210,7 @@ Function LBV_ButtonProc_ClearGraph(STRUCT WMButtonAction &ba) : ButtonControl
 End
 
 Function LBV_ButtonProc_SwitchXAxis(STRUCT WMButtonAction &ba) : ButtonControl
+
 	string lbGraph
 
 	switch(ba.eventCode)
@@ -217,6 +224,7 @@ Function LBV_ButtonProc_SwitchXAxis(STRUCT WMButtonAction &ba) : ButtonControl
 End
 
 Function LBV_PopMenuProc_LabNotebookAndResults(STRUCT WMPopupAction &pa) : PopupMenuControl
+
 	string key, win, lbGraph
 
 	switch(pa.eventCode)
@@ -287,6 +295,7 @@ Function [WAVE keys, WAVE values] LBV_GetLogbookWavesForEntry(string win, string
 End
 
 Function LBV_PopMenuProc_TPStorage(STRUCT WMPopupAction &pa) : PopupMenuControl
+
 	string lbGraph, key, win
 
 	switch(pa.eventCode)
@@ -317,6 +326,7 @@ Function/S LBV_GetExperiments(string win)
 End
 
 Function/S LBV_GetAllDevicesForExperiment(string win)
+
 	string dataFolder, shPanel
 	variable index
 
@@ -380,6 +390,7 @@ End
 /// @param graph       name of the graph
 /// @param traceList   list of traces in the graph
 static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
+
 	string str, trace, header, prefix
 	variable numEntries, i, headstage, hasAllEntry
 
@@ -441,6 +452,7 @@ static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 End
 
 static Function/WAVE LBV_GetTraceUserDataNames()
+
 	Make/FREE/T wv = {LBV_UD_KEY, LBV_UD_ISTEXT, LBV_UD_KEYS_WAVE, LBV_UD_VALUES_WAVE, LBV_UD_HEADSTAGE, LBV_UD_YAXIS}
 
 	return wv
@@ -462,6 +474,7 @@ End
 /// @param values labnotebook values wave (numerical or text)
 /// @param key    name of the key to add
 static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, string key)
+
 	string unit, lbl, axis, trace, text, tagString, tmp, axisBaseName
 	string traceList = ""
 	variable i, j, row, col, numRows, sweepCol, marker
@@ -532,7 +545,7 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 		                          num2str(i < NUM_HEADSTAGES ? i : NaN), \
 		                          axis})
 
-		[s] = GetHeadstageColor(i)
+		[s]    = GetHeadstageColor(i)
 		marker = i == 0 ? 39 : i
 		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue, IsTextData ? 0 : Inf), marker($trace)=marker
 		SetAxis/W=$graph/A=2 $axis
@@ -573,6 +586,7 @@ Function LBV_Update(string win)
 End
 
 Function LBV_UpdateTagsForTextualLBNEntries(string win, variable sweepNo)
+
 	string lbGraph, traceList, key, trace
 	variable i, numTraces
 
@@ -602,6 +616,7 @@ Function LBV_UpdateTagsForTextualLBNEntries(string win, variable sweepNo)
 End
 
 static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string key, [variable isTimeAxis])
+
 	string lbl, axis, trace, text, tagString, tmp, list, lblTemplate
 	string traceList, suffix, axisBasename
 	variable i, j, row, numRows, sweepCol, marker, numEntries, headstage, numCols
@@ -712,7 +727,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 			                          axis                              \
 			                         })
 
-			[s] = GetHeadstageColor(headstage)
+			[s]    = GetHeadstageColor(headstage)
 			marker = headstage == 0 ? 39 : headstage
 			ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue), marker($trace)=marker
 			SetAxis/W=$graph/A=2 $axis
@@ -733,7 +748,8 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 	EquallySpaceAxis(graph, axisRegExp = ".*" + VERT_AXIS_BASE_NAME + ".*", sortOrder = 16)
 End
 
-static Function [WAVE/T/Z traces, string name, string unit, variable col] LBV_GetPropertiesForLabnotebookEntry(WAVE/T keys, string key)
+static Function [WAVE/Z/T traces, string name, string unit, variable col] LBV_GetPropertiesForLabnotebookEntry(WAVE/T keys, string key)
+
 	variable result
 
 	[result, unit, col] = LBN_GetEntryProperties(keys, key)
@@ -757,6 +773,7 @@ static Function [WAVE/T traces, string niceName] LBV_GenerateTraceNames(string n
 End
 
 static Function LBV_AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/T values, string key, [variable firstSweep])
+
 	variable i, j, numRows, numEntries, isTimeAxis, col, sweepCol, firstRow, logbookType, lastSweep
 	string tagString, tmp, text, unit, lbl, name, lastTag
 	STRUCT RGBColor s
@@ -831,6 +848,7 @@ End
 
 /// @brief Switch the labnotebook graph x axis type (time <-> sweep numbers)
 static Function LBV_SwitchLBGraphXAxis(string graph)
+
 	string trace, dataUnits, list, wvName, info, keysToReadd, key
 	variable i, numEntries, isTimeAxis, sweepCol, isTextData, logbookType
 
@@ -918,6 +936,7 @@ End
 /// @brief Check if the x wave belonging to the first trace in the
 /// graph has a date/time scale.
 static Function LBV_CheckIfXAxisIsTime(string graph, [variable logbookType])
+
 	string list, trace, name
 
 	list = TraceNameList(graph, ";", 0 + 1)
@@ -948,6 +967,7 @@ End
 ///
 /// Assumes that wave data units are equal for all traces
 static Function LBV_SetLabNotebookBottomLabel(string graph, variable isTimeAxis)
+
 	// top: LBT_TPSTORAGE in delta time mode
 	// bottom: LBT_LABNOTEBOOK/LBT_TPSTORAGE when it is a timestamp axis
 
@@ -970,6 +990,7 @@ End
 
 // @brief Pre-select an entry if we only have one experiment and one device
 Function LBV_SelectExperimentAndDevice(string win)
+
 	string experiments, devices, shPanel
 
 	shPanel = LBV_GetSettingsHistoryPanel(win)
@@ -995,7 +1016,8 @@ Function LBV_SelectExperimentAndDevice(string win)
 	endif
 End
 
-static Function/S LBV_FormatDescription(WAVE/T/Z keys, string name)
+static Function/S LBV_FormatDescription(WAVE/Z/T keys, string name)
+
 	variable idx, i, numEntries
 	string template, result, str, text
 
@@ -1025,6 +1047,7 @@ static Function/S LBV_FormatDescription(WAVE/T/Z keys, string name)
 End
 
 Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
+
 	string win, info, list, axis, descNB, key
 	variable numEntries, i, axisOrientation, first, last, relYPos, width, yAxisHorizPos
 
@@ -1070,13 +1093,13 @@ Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
 				relYPos = 1 - (s.mouseloc.v / (s.winRect.bottom - s.winRect.top))
 
 				if(first < relYPos && relYPos < last)
-					WAVE/T/Z matches = TUD_GetUserDataAsWave(win, LBV_UD_KEY, keys = {LBV_UD_YAXIS}, values = {axis})
+					WAVE/Z/T matches = TUD_GetUserDataAsWave(win, LBV_UD_KEY, keys = {LBV_UD_YAXIS}, values = {axis})
 					ASSERT(WaveExists(matches), "Invalid key")
 					key = matches[0]
 
-					WAVE/T/Z matches = TUD_GetUserDataAsWave(win, LBV_UD_KEYS_WAVE, keys = {LBV_UD_YAXIS, LBV_UD_KEY}, values = {axis, key})
+					WAVE/Z/T matches = TUD_GetUserDataAsWave(win, LBV_UD_KEYS_WAVE, keys = {LBV_UD_YAXIS, LBV_UD_KEY}, values = {axis, key})
 					ASSERT(WaveExists(matches), "Invalid keys")
-					WAVE/T/Z keys = $matches[0]
+					WAVE/Z/T keys = $matches[0]
 
 					descNB = LBV_GetDescriptionNotebook(win)
 					ReplaceNotebookText(descNB, LBV_FormatDescription(keys, key))
@@ -1094,13 +1117,14 @@ Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
 End
 
 Function LBV_PlotAllAnalysisFunctionLBNKeys(string browser, variable anaFuncType)
+
 	string key, graph, axes, prefix
 	variable i, numEntries
 
-	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
-	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z/T textualKeys   = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z/T numericalKeys = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
-	WAVE/T/Z allKeys = LBV_GetAllLogbookParamNames(numericalkeys, textualKeys)
+	WAVE/Z/T allKeys = LBV_GetAllLogbookParamNames(numericalkeys, textualKeys)
 
 	if(!WaveExists(allKeys))
 		printf "Could not find any labnotebook keys.\r"
@@ -1112,7 +1136,7 @@ Function LBV_PlotAllAnalysisFunctionLBNKeys(string browser, variable anaFuncType
 	prefix = CreateAnaFuncLBNKey(anaFuncType, "%s", query = 1)
 	Make/FREE/T ignoredKeys = {prefix + " cycle x values"}
 
-	WAVE/T/Z anaFuncKeys = GrepTextWave(allKeys, prefix + "*")
+	WAVE/Z/T anaFuncKeys = GrepTextWave(allKeys, prefix + "*")
 
 	if(!WaveExists(anaFuncKeys))
 		printf "Could not find any labnotebook keys for analysis function.\r"
@@ -1120,7 +1144,7 @@ Function LBV_PlotAllAnalysisFunctionLBNKeys(string browser, variable anaFuncType
 		return NaN
 	endif
 
-	WAVE/T/Z keys = GetSetDifference(anaFuncKeys, ignoredKeys)
+	WAVE/Z/T keys = GetSetDifference(anaFuncKeys, ignoredKeys)
 
 	STRUCT WMPopupAction pa
 	pa.win       = LBV_GetSettingsHistoryPanel(browser)
@@ -1143,6 +1167,7 @@ End
 
 /// @brief Limit the bottom axis of the settings history graph to the selected/displayed sweeps
 static Function LBV_LimitXRangeToSelected(string browser)
+
 	variable minSweep, maxSweep, first, last
 	string graph, shPanel, scPanel, key
 
@@ -1172,7 +1197,7 @@ static Function LBV_LimitXRangeToSelected(string browser)
 	maxSweep = maxSweep + 1
 
 	if(LBV_CheckIfXAxisIsTime(graph))
-		WAVE/T/Z numericalValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
+		WAVE/Z/T numericalValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 		ASSERT(WaveExists(numericalValues), "numericalValues can not be found")
 
 		// get the timestamps of minSweep/maxSweep, moving inwards if they are empty
@@ -1205,8 +1230,7 @@ static Function LBV_LimitXRangeToSelected(string browser)
 	SetAxis/W=$graph bottom, first, last
 End
 
-Function LBV_CheckProc_XRangeSelected(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function LBV_CheckProc_XRangeSelected(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up

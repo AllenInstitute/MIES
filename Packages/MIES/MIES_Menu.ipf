@@ -163,6 +163,7 @@ End
 ///
 /// Opens a prefilled new issue on github.
 Function MEN_CreateIssueOnGithub()
+
 	string url, body, title, version, str
 	variable ref
 
@@ -222,6 +223,7 @@ Function MEN_CreateIssueOnGithub()
 End
 
 Function MEN_ClearPackageSettings()
+
 	NVAR JSONid = $GetSettingsJSONid()
 	JSON_Release(JSONId)
 
@@ -231,6 +233,7 @@ Function MEN_ClearPackageSettings()
 End
 
 Function MEN_OpenPackageSettingsAsNotebook()
+
 	NVAR JSONid = $GetSettingsJSONid()
 	PS_OpenNotebook(PACKAGE_MIES, JSONid)
 	JSONid = NaN
@@ -278,6 +281,7 @@ Function MEN_OpenITCXOP2LogFile()
 End
 
 Function MEN_DownloadStimsets()
+
 	string path
 
 	path = DND_FetchAssetFromSet(DND_STIMSET_DANDI_SET)

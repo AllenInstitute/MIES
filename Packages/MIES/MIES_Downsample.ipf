@@ -35,13 +35,14 @@ static StrConstant dataPath = "root:MIES:postExperimentProcedures:downsample:"
 static StrConstant panel    = "Downsampling"
 
 static Function/DF GetDownsampleDataFolder()
+
 	return createDFWithAllParents(dataPath)
 End
 
 static Function/WAVE GetDownsampleDataRefWave()
 
 	DFREF dfr = GetDownsampleDataFolder()
-	WAVE/WAVE/Z/SDFR=dfr dataRef
+	WAVE/Z/WAVE/SDFR=dfr dataRef
 
 	if(WaveExists(dataRef))
 		return dataRef
@@ -135,12 +136,7 @@ End
 /// @param deviceType   device type
 /// @param deviceNumber device number
 /// @returns			index of the last valid entry into the passed waves
-static Function AppendEntries(list, dataRef, rate, startIndex, deviceType, deviceNumber)
-	string deviceType, deviceNumber
-	variable  startIndex
-	WAVE/T    list
-	WAVE/WAVE dataRef
-	WAVE      rate
+static Function AppendEntries(WAVE/T list, WAVE/WAVE dataRef, WAVE rate, variable startIndex, string deviceType, string deviceNumber)
 
 	string listOfDataWaves, name
 	variable numWaves, i, idx, convrate, samplingInterval
@@ -173,8 +169,7 @@ static Function AppendEntries(list, dataRef, rate, startIndex, deviceType, devic
 End
 
 /// @brief Updates all waves holding acquired data info
-static Function UpdateDataWaves(deviceType, deviceNumber)
-	string deviceType, deviceNumber
+static Function UpdateDataWaves(string deviceType, string deviceNumber)
 
 	variable i, idx
 
@@ -190,8 +185,7 @@ static Function UpdateDataWaves(deviceType, deviceNumber)
 	Redimension/N=(idx, -1) list, dataRef, rate
 End
 
-static Function UpdateCurrentSize(win)
-	string win
+static Function UpdateCurrentSize(string win)
 
 	WAVE/WAVE dataRef = GetDownsampleDataRefWave()
 	variable i, size = 0
@@ -208,8 +202,7 @@ static Function UpdateCurrentSize(win)
 	SetValDisplay(win, valdisp_currentsize, var = size, format = "%3.0f")
 End
 
-static Function GetTargetRate(win)
-	string win
+static Function GetTargetRate(string win)
 
 	string str
 
@@ -222,8 +215,7 @@ static Function GetTargetRate(win)
 	return str2num(str)
 End
 
-static Function UpdateEstimatedSizeAfterwards(win)
-	string win
+static Function UpdateEstimatedSizeAfterwards(string win)
 
 	WAVE/WAVE dataRef = GetDownsampleDataRefWave()
 	WAVE      rate    = GetDownsampleRateWave()
@@ -245,8 +237,8 @@ static Function UpdateEstimatedSizeAfterwards(win)
 End
 
 /// @brief Disable the equalize checkbox if all data waves have the same rate
-static Function ApplyConstantRateChanges(win)
-	string win
+static Function ApplyConstantRateChanges(string win)
+
 	variable minimumRate, maximumRate
 
 	WAVE rate = GetDownsampleRateWave()
@@ -265,9 +257,7 @@ End
 /// @param win 			 panel name
 /// @param var			 variable to expand
 /// @param constantRates boolean switch, defaults to false
-static Function/S ExpandRateToList(win, var, [constantRates])
-	variable var, constantRates
-	string win
+static Function/S ExpandRateToList(string win, variable var, [variable constantRates])
 
 	variable i, count = 10
 	string list = ""
@@ -318,17 +308,14 @@ Function/S GetPopupMenuRates()
 	return ExpandRateToList(panel, maximum / CalculateLCMOfWave(uniqueRates))
 End
 
-static Function GetDecimationMethod(win)
-	string win
+static Function GetDecimationMethod(string win)
 
 	// we niftly exploit the fact that the indizes of the popup
 	// and the DECIMATION_BY_* constants have a mathematical relation
 	return 2^GetPopupMenuIndex(win, popup_decimationMethod)
 End
 
-static Function UpdateCheckBoxes(win, control, state)
-	string win, control
-	variable state
+static Function UpdateCheckBoxes(string win, string control, variable state)
 
 	variable low, high, inc
 
@@ -348,9 +335,7 @@ static Function UpdateCheckBoxes(win, control, state)
 	UpdateEstimatedSizeAfterwards(win)
 End
 
-static Function UpdatePopupMenuWindowFunction(win, [decimationMethod])
-	string   win
-	variable decimationMethod
+static Function UpdatePopupMenuWindowFunction(string win, [variable decimationMethod])
 
 	if(ParamIsDefault(decimationMethod))
 		decimationMethod = GetDecimationMethod(win)
@@ -440,8 +425,7 @@ Function CreateDownsamplePanel()
 	UpdatePopupMenuWindowFunction(panel)
 End
 
-Function DownsampleWindowHook(s)
-	STRUCT WMWinHookStruct &s
+Function DownsampleWindowHook(STRUCT WMWinHookStruct &s)
 
 	string win
 
@@ -463,8 +447,7 @@ Function DownsampleWindowHook(s)
 	return 0
 End
 
-Function CheckBoxInterpolation(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function CheckBoxInterpolation(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string win
 	switch(cba.eventCode)
@@ -478,8 +461,7 @@ Function CheckBoxInterpolation(cba) : CheckBoxControl
 	return 0
 End
 
-Function PopupMenuTargetRate(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function PopupMenuTargetRate(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 1:
@@ -495,8 +477,7 @@ Function PopupMenuTargetRate(pa) : PopupMenuControl
 	return 0
 End
 
-Function ButtonRestoreBackup(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function ButtonRestoreBackup(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string win
 	variable numWaves, i, success
@@ -533,8 +514,7 @@ Function ButtonRestoreBackup(ba) : ButtonControl
 	return 0
 End
 
-Function ButtonDoIt(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function ButtonDoIt(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable backupWaves, decimationMethod, i, numWaves, downsampleFactor, upsampleFactor
 	variable targetRate, channel, ret
@@ -596,8 +576,7 @@ Function ButtonDoIt(ba) : ButtonControl
 	return 0
 End
 
-static Function UpdatePopupMenuTargetRate(win)
-	string win
+static Function UpdatePopupMenuTargetRate(string win)
 
 	variable idx
 
@@ -609,8 +588,7 @@ static Function UpdatePopupMenuTargetRate(win)
 	SetPopupMenuIndex(win, popup_targetrate, idx)
 End
 
-static Function UpdatePanel(win, [deviceSelectionString])
-	string win, deviceSelectionString
+static Function UpdatePanel(string win, [string deviceSelectionString])
 
 	string deviceType, deviceNumber
 	variable ret
@@ -631,8 +609,7 @@ static Function UpdatePanel(win, [deviceSelectionString])
 	UpdateCurrentSize(win)
 End
 
-Function PopupMenuDeviceSelection(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function PopupMenuDeviceSelection(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string popStr, win
 	switch(pa.eventCode)
@@ -646,8 +623,7 @@ Function PopupMenuDeviceSelection(pa) : PopupMenuControl
 	return 0
 End
 
-Function PopupMenuDecimationMethod(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function PopupMenuDecimationMethod(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string win
 	switch(pa.eventCode)
@@ -660,8 +636,7 @@ Function PopupMenuDecimationMethod(pa) : PopupMenuControl
 	return 0
 End
 
-Function CheckBoxEqualizeDown(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function CheckBoxEqualizeDown(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	variable checked
 	string   win

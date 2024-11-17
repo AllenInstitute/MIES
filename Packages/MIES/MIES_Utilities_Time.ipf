@@ -15,8 +15,7 @@
 ///
 /// @param humanReadable [optional, default to false]                                Return a format viable for display in a GUI
 /// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904)
-Function/S GetTimeStamp([secondsSinceIgorEpoch, humanReadable])
-	variable secondsSinceIgorEpoch, humanReadable
+Function/S GetTimeStamp([variable secondsSinceIgorEpoch, variable humanReadable])
 
 	if(ParamIsDefault(secondsSinceIgorEpoch))
 		secondsSinceIgorEpoch = DateTime
@@ -37,6 +36,7 @@ End
 
 /// @brief Return the seconds, including fractional part, since Igor Pro epoch (1/1/1904) in UTC time zone
 threadsafe Function DateTimeInUTC()
+
 	return DateTime - date2secs(-1, -1, -1)
 End
 
@@ -45,8 +45,7 @@ End
 ///                              in UTC (or local time zone depending on `localTimeZone`)
 /// @param numFracSecondsDigits  [optional, defaults to zero] Number of sub-second digits
 /// @param localTimeZone         [optional, defaults to false] Use the local time zone instead of UTC
-threadsafe Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone])
-	variable secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone
+threadsafe Function/S GetISO8601TimeStamp([variable secondsSinceIgorEpoch, variable numFracSecondsDigits, variable localTimeZone])
 
 	string   str
 	variable timezone
@@ -89,8 +88,7 @@ End
 /// - ` `/`T` between date and time
 /// - fractional seconds
 /// - `,`/`.` as decimal separator
-threadsafe Function ParseISO8601TimeStamp(timestamp)
-	string timestamp
+threadsafe Function ParseISO8601TimeStamp(string timestamp)
 
 	string year, month, day, hour, minute, second, regexp, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute
 	variable secondsSinceEpoch, timeOffset, err
@@ -150,6 +148,7 @@ End
 
 /// @brief Stop all millisecond Igor Pro timers
 Function StopAllMSTimers()
+
 	variable i
 
 	for(i = 0; i < MAX_NUM_MS_TIMERS; i += 1)
@@ -160,6 +159,7 @@ End
 /// @brief Return a time in seconds with high precision, microsecond resolution, using an
 ///        arbitrary zero point.
 Function RelativeNowHighPrec()
+
 	return stopmstimer(-2) * MICRO_TO_ONE
 End
 
@@ -178,19 +178,18 @@ End
 /// 	StoreElapsedTime(referenceTime)
 /// \endrst
 Function GetReferenceTime()
+
 	return stopmstimer(-2)
 End
 
 /// @brief Get the elapsed time in seconds
-Function GetElapsedTime(referenceTime)
-	variable referenceTime
+Function GetElapsedTime(variable referenceTime)
 
 	return (stopmstimer(-2) - referenceTime) * MICRO_TO_ONE
 End
 
 /// @brief Store the elapsed time in a wave
-Function StoreElapsedTime(referenceTime)
-	variable referenceTime
+Function StoreElapsedTime(variable referenceTime)
 
 	variable count, elapsed
 

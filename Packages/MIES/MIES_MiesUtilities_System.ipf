@@ -8,6 +8,7 @@
 
 // @brief Common setup routine for all MIES background tasks for DAQ, TP and pressure control
 Function SetupBackgroundTasks()
+
 	CtrlNamedBackground $TASKNAME_TIMERMD, dialogsOK=0, period=6, proc=DQM_Timer
 	CtrlNamedBackground $TASKNAME_FIFOMONMD, dialogsOK=0, period=1, proc=DQM_FIFOMonitor
 	CtrlNamedBackground $TASKNAME_FIFOMON, dialogsOK=0, period=5, proc=DQS_FIFOMonitor
@@ -22,8 +23,7 @@ End
 
 /// @brief Save the current experiment under a new name and clear all/some data
 /// @param mode mode for generating the experiment name, one of @ref SaveExperimentModes
-Function SaveExperimentSpecial(mode)
-	variable mode
+Function SaveExperimentSpecial(variable mode)
 
 	variable numDevices, i, ret, pos
 	variable zeroSweepCounter, keepOtherData, showSaveDialog, useNewNWBFile
@@ -164,9 +164,7 @@ End
 /// @param filename 			   filename of the experiment *including* suffix, usually #PACKED_FILE_EXPERIMENT_SUFFIX
 /// @param overrideInteractiveMode [optional, defaults to GetInteractiveMode()] Overrides the current setting of
 ///                                the interactive mode
-Function SaveExperimentWrapper(path, filename, [overrideInteractiveMode])
-	string path, filename
-	variable overrideInteractiveMode
+Function SaveExperimentWrapper(string path, string filename, [variable overrideInteractiveMode])
 
 	variable refNum, pathNeedsKilling
 
@@ -219,6 +217,7 @@ End
 
 /// @brief Return if the function results are overriden for testing purposes
 Function TestOverrideActive()
+
 	variable numberOfOverrideWarnings
 
 	WAVE/Z overrideResults = GetOverrideResults()
@@ -237,6 +236,7 @@ Function TestOverrideActive()
 End
 
 Function HandleOutOfMemory(string device, string name)
+
 	printf "The amount of free memory is too low to increase the %s wave, please create a new experiment.\r", name
 	ControlWindowToFront()
 

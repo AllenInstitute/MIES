@@ -34,6 +34,7 @@ End
 ///
 /// Return a reproducible random number depending on the RNG seed.
 threadsafe Function GetReproducibleRandom([variable noiseGenMode])
+
 	variable randomSeed
 
 	if(ParamIsDefault(noiseGenMode))
@@ -52,19 +53,18 @@ End
 /// The returned values can *not* be used for statistical purposes
 /// as the distribution is not uniform anymore.
 Function GetUniqueInteger()
+
 	return (GetReproducibleRandom() * 2^33) & 0xFFFFFFFF
 End
 
 /// @brief Set the given bit mask in var
-threadsafe Function SetBit(var, bit)
-	variable var, bit
+threadsafe Function SetBit(variable var, variable bit)
 
 	return var | bit
 End
 
 /// @brief Clear the given bit mask in var
-threadsafe Function ClearBit(var, bit)
-	variable var, bit
+threadsafe Function ClearBit(variable var, variable bit)
 
 	return var & ~bit
 End
@@ -107,8 +107,7 @@ End
 ///
 /// @f$ x > a @f$ where @f$ x = c^p @f$ holds and @f$ x @f$ is
 /// the smallest possible value.
-threadsafe Function FindNextPower(a, p)
-	variable a, p
+threadsafe Function FindNextPower(variable a, variable p)
 
 	ASSERT_TS(p > 1, "Invalid power")
 	ASSERT_TS(a > 0, "Invalid value")
@@ -122,8 +121,7 @@ End
 ///
 /// @f$ x < a @f$ where @f$ x = c^p @f$ holds and @f$ x @f$ is
 /// the largest possible value.
-Function FindPreviousPower(a, p)
-	variable a, p
+Function FindPreviousPower(variable a, variable p)
 
 	ASSERT(p > 1, "Invalid power")
 	ASSERT(a > 0, "Invalid value")
@@ -133,8 +131,7 @@ Function FindPreviousPower(a, p)
 End
 
 /// @brief Return the alignment of the decimal number (usually a 32bit/64bit pointer)
-Function GetAlignment(val)
-	variable val
+Function GetAlignment(variable val)
 
 	variable i
 
@@ -146,8 +143,7 @@ Function GetAlignment(val)
 End
 
 /// @brief Compute the least common multiplier of two variables
-Function CalculateLCM(a, b)
-	variable a, b
+Function CalculateLCM(variable a, variable b)
 
 	return (a * b) / gcd(a, b)
 End
@@ -293,6 +289,7 @@ End
 
 /// @brief Acts like the `limit` builtin but replaces values outside the valid range instead of clipping them
 threadsafe Function LimitWithReplace(variable val, variable low, variable high, variable replacement)
+
 	return (val >= low && val <= high) ? val : replacement
 End
 

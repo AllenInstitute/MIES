@@ -20,10 +20,7 @@
 static Constant MIN_CONSECUTIVE_SAMPINT = 6
 
 /// @brief Fill the passed wave to be used as DAQConfigWave
-static Function SI_FillITCConfig(wv, results, idx, totalNumDA, totalNumAD, totalNumTTL)
-	WAVE wv, results
-	variable idx
-	variable totalNumDA, totalNumAD, totalNumTTL
+static Function SI_FillITCConfig(WAVE wv, WAVE results, variable idx, variable totalNumDA, variable totalNumAD, variable totalNumTTL)
 
 	variable first, last
 	variable numDA, numAD, numTTL
@@ -84,9 +81,7 @@ static Function SI_FillITCConfig(wv, results, idx, totalNumDA, totalNumAD, total
 End
 
 /// @brief Fill the passed wave to be used as DAQConfigWave for the exhaustive search
-static Function SI_FillITCConfigWithPerms(wv, start, value, channelType)
-	WAVE wv
-	variable start, value, channelType
+static Function SI_FillITCConfigWithPerms(WAVE wv, variable start, variable value, variable channelType)
 
 	variable idx = start
 	variable count
@@ -110,8 +105,7 @@ End
 
 /// @brief Removes invalid and duplicated entries from the
 /// generated table from #SI_CreateLookupWave
-static Function SI_CompressWave(wv)
-	WAVE wv
+static Function SI_CompressWave(WAVE wv)
 
 	variable i, j
 
@@ -139,8 +133,7 @@ static Function SI_CompressWave(wv)
 End
 
 /// @brief Sort the lookup wave
-static Function SI_SortWave(wv)
-	WAVE wv
+static Function SI_SortWave(WAVE wv)
 
 	variable type    = WaveType(wv)
 	variable numRows = DimSize(wv, ROWS)
@@ -164,9 +157,7 @@ static Function SI_SortWave(wv)
 End
 
 /// @brief Search the given active channel combination in the lookup wave
-static Function SI_FindMatchingTableEntry(wv, ac)
-	WAVE                   wv
-	STRUCT ActiveChannels &ac
+static Function SI_FindMatchingTableEntry(WAVE wv, STRUCT ActiveChannels &ac)
 
 	variable i, numRows, start
 	string key
@@ -212,9 +203,7 @@ static Function/WAVE SI_LoadMinSampIntFromDisk(string deviceType)
 End
 
 /// @brief Store the lookup wave on disc
-Function/WAVE SI_StoreMinSampIntOnDisk(wv, deviceType)
-	WAVE   wv
-	string deviceType
+Function/WAVE SI_StoreMinSampIntOnDisk(WAVE wv, string deviceType)
 
 	Duplicate wv, $("SampInt_" + deviceType)/WAVE=storedWave
 
@@ -227,9 +216,7 @@ End
 /// fill it in the passed structure
 ///
 /// @return number of active channels
-static Function SI_FillActiveChannelsStruct(device, ac)
-	string                 device
-	STRUCT ActiveChannels &ac
+static Function SI_FillActiveChannelsStruct(string device, STRUCT ActiveChannels &ac)
 
 	ASSERT(IsEven(NUM_DA_TTL_CHANNELS), "Expected even number of DA/TTL channels")
 	ASSERT(IsEven(NUM_AD_CHANNELS), "Expected even number of AD channels")
@@ -259,9 +246,7 @@ End
 ///
 /// @param device device, must be locked
 /// @param ignoreChannelOrder [optional: defaults to false] ignore the order of the active channels
-Function SI_CreateLookupWave(device, [ignoreChannelOrder])
-	string   device
-	variable ignoreChannelOrder
+Function SI_CreateLookupWave(string device, [variable ignoreChannelOrder])
 
 	variable i, j, k, numChannels, numPerms, ret, idx, numRows
 	variable totalNumDA, totalNumAD, totalNumTTL, totalNumRacks, calcSampInt
@@ -421,8 +406,7 @@ Function SI_CreateLookupWave(device, [ignoreChannelOrder])
 End
 
 /// @brief Test the preset sampling interval
-static Function SI_TestSampInt(device)
-	string device
+static Function SI_TestSampInt(string device)
 
 	variable i, sampInt, sampIntRead, numChannels, sampIntRef, iLast
 	variable numConsecutive = -1
@@ -484,15 +468,12 @@ End
 
 #else
 
-Function SI_CreateLookupWave(device, [ignoreChannelOrder])
-	string   device
-	variable ignoreChannelOrder
+Function SI_CreateLookupWave(string device, [variable ignoreChannelOrder])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function SI_TestSampInt(device)
-	string device
+static Function SI_TestSampInt(string device)
 
 	DEBUGPRINT("Unimplemented")
 End
@@ -527,8 +508,7 @@ End
 /// @sa SI_CalculateMinSampInterval
 ///
 /// @returns sampling interval in microseconds (1e-6)
-static Function SI_NI_CalculateMinSampInterval(device)
-	string device
+static Function SI_NI_CalculateMinSampInterval(string device)
 
 	WAVE channelStatus = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
 	return HARDWARE_NI_DAC_MIN_SAMPINT * MILLI_TO_MICRO * sum(channelStatus)
@@ -542,9 +522,7 @@ End
 /// @sa SI_CalculateMinSampInterval
 ///
 /// @returns sampling interval in microseconds (1e-6)
-static Function SI_ITC_CalculateMinSampInterval(device, dataAcqOrTP)
-	string   device
-	variable dataAcqOrTP
+static Function SI_ITC_CalculateMinSampInterval(string device, variable dataAcqOrTP)
 
 	variable numActiveChannels
 	string deviceType, deviceNumber
@@ -587,8 +565,7 @@ End
 ///
 /// This functions tries to load the wave from disk on the first
 /// call so this function might take a while to execute.
-static Function/WAVE SI_GetMinSampIntWave(device)
-	string device
+static Function/WAVE SI_GetMinSampIntWave(string device)
 
 	variable ret
 	string deviceType, deviceNumber
@@ -601,7 +578,7 @@ static Function/WAVE SI_GetMinSampIntWave(device)
 	strswitch(deviceType)
 		case "ITC18USB":
 		case "ITC18":
-			WAVE/SDFR=dfr/Z wv = SampInt_ITC18USB
+			WAVE/Z/SDFR=dfr wv = SampInt_ITC18USB
 
 			if(!WaveExists(wv))
 				return SI_LoadMinSampIntFromDisk("ITC18USB")
@@ -611,7 +588,7 @@ static Function/WAVE SI_GetMinSampIntWave(device)
 			break
 		case "ITC16USB":
 		case "ITC16":
-			WAVE/SDFR=dfr/Z wv = SampInt_ITC16USB
+			WAVE/Z/SDFR=dfr wv = SampInt_ITC16USB
 
 			if(!WaveExists(wv))
 				return SI_LoadMinSampIntFromDisk("ITC16USB")
@@ -620,7 +597,7 @@ static Function/WAVE SI_GetMinSampIntWave(device)
 			return wv
 			break
 		case "ITC1600":
-			WAVE/SDFR=dfr/Z wv = SampInt_ITC1600
+			WAVE/Z/SDFR=dfr wv = SampInt_ITC1600
 			if(!WaveExists(wv))
 				return SI_LoadMinSampIntFromDisk(deviceType)
 			endif

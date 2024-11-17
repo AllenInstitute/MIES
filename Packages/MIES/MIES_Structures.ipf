@@ -44,8 +44,7 @@ Structure PostPlotSettings
 	STRUCT PulseAverageSettings pulseAverSett
 EndStructure
 
-Function InitPulseAverageSettings(pa)
-	STRUCT PulseAverageSettings &pa
+Function InitPulseAverageSettings(STRUCT PulseAverageSettings &pa)
 
 	pa.enabled              = 0
 	pa.showIndividualPulses = NaN
@@ -174,8 +173,7 @@ Structure FormulaProperties
 	variable numRows, numCols /// minimum number of rows and colums in the referenced sets
 EndStructure
 
-Function InitFormulaProperties(fp)
-	STRUCT FormulaProperties &fp
+Function InitFormulaProperties(STRUCT FormulaProperties &fp)
 
 	fp.formula     = ""
 	fp.stimsetList = ""
@@ -191,11 +189,7 @@ Structure WaveLocationMod
 	string newName ///< new name of the wave (can be null/empty)
 EndStructure
 
-Function InitOOdDAQParams(params, stimSets, setColumns, preFeatureTime, postFeatureTime)
-	STRUCT OOdDAQParams &params
-	WAVE/WAVE            stimSets
-	WAVE                 setColumns
-	variable preFeatureTime, postFeatureTime
+Function InitOOdDAQParams(STRUCT OOdDAQParams &params, WAVE/WAVE stimSets, WAVE setColumns, variable preFeatureTime, variable postFeatureTime)
 
 	ASSERT(DimSize(stimSets, ROWS) >= 1, "Stimsets wave is empty")
 	ASSERT(preFeatureTime >= 0, "Unexpected pre feature time")
@@ -286,8 +280,7 @@ Structure AnalysisFunction_V3
 	variable sampleIntervalAD
 EndStructure
 
-Function InitDeltaControlNames(s)
-	STRUCT DeltaControlNames &s
+Function InitDeltaControlNames(STRUCT DeltaControlNames &s)
 
 	s.main   = ""
 	s.delta  = ""
@@ -324,8 +317,7 @@ Structure RectD
 	double right
 EndStructure
 
-Function InitRectD(s)
-	STRUCT RectD &s
+Function InitRectD(STRUCT RectD &s)
 
 	s.left   = NaN
 	s.right  = NaN

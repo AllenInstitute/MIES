@@ -131,8 +131,7 @@ End
 
 // IUTF_TD_GENERATOR v0:IndexAfterDecimation_Positions
 // IUTF_TD_GENERATOR v1:IndexAfterDecimation_Sizes
-static Function TestIndexAfterDecimation([md])
-	STRUCT IUTF_mData &md
+static Function TestIndexAfterDecimation([STRUCT IUTF_mData &md])
 
 	variable decimationFactor, srcPulseLength, srcOffset
 	variable edgeLeft, edgeLeftCalculated

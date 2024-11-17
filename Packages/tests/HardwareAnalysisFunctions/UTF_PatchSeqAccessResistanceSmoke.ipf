@@ -76,10 +76,7 @@ static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
 	return entries
 End
 
-static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
-	string   device
-	variable sweepNo
-	string   name
+static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, string name)
 
 	variable val, type
 	string key
@@ -243,6 +240,7 @@ static Function PS_AR1([string str])
 End
 
 static Function PS_AR1_REENTRY([string str])
+
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
@@ -316,6 +314,7 @@ static Function PS_AR2([string str])
 End
 
 static Function PS_AR2_REENTRY([string str])
+
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
@@ -391,6 +390,7 @@ static Function PS_AR3([string str])
 End
 
 static Function PS_AR3_REENTRY([string str])
+
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
@@ -466,6 +466,7 @@ static Function PS_AR4([string str])
 End
 
 static Function PS_AR4_REENTRY([string str])
+
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
@@ -542,6 +543,7 @@ static Function PS_AR5([string str])
 End
 
 static Function PS_AR5_REENTRY([string str])
+
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
@@ -638,6 +640,7 @@ static Function PS_AR6([string str])
 End
 
 static Function PS_AR6_REENTRY([string str])
+
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
@@ -716,6 +719,7 @@ static Function PS_AR6a([string str])
 End
 
 static Function PS_AR6a_REENTRY([string str])
+
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 
@@ -827,6 +831,7 @@ static Function PS_AR8([string str])
 End
 
 static Function PS_AR8_REENTRY([string str])
+
 	variable sweepNo
 	string stimset, expected, stimsetIndexEnd
 

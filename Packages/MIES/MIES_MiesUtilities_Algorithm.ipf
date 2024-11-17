@@ -25,12 +25,7 @@
 ///                          together with `MIES_fWaveAverage`.
 ///
 /// @return wave reference to the average wave
-Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [skipCRC, writeSourcePaths, inputAverage])
-	WAVE/WAVE waveRefs
-	DFREF     averageDataFolder
-	string    averageWaveName
-	variable skipCRC, writeSourcePaths
-	WAVE inputAverage
+Function/WAVE CalculateAverage(WAVE/WAVE waveRefs, DFREF averageDataFolder, string averageWaveName, [variable skipCRC, variable writeSourcePaths, WAVE inputAverage])
 
 	variable crc
 	string key, wvName, dataUnit
@@ -94,8 +89,7 @@ End
 /// \rst
 /// See :ref:`CalculateTPLikePropsFromSweep_doc` for the full documentation.
 /// \endrst
-Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
-	WAVE numericalValues, textualValues, sweep, deltaI, deltaV, resistance
+Function CalculateTPLikePropsFromSweep(WAVE numericalValues, WAVE textualValues, WAVE sweep, WAVE deltaI, WAVE deltaV, WAVE resistance)
 
 	variable i
 	variable DAcol, ADcol, level, low, high, baseline, elevated, firstEdge, secondEdge, sweepNo
@@ -222,12 +216,7 @@ End
 /// @param lastColOut        [optional, defaults to lastColInp] last col in *output* coordinates
 /// @param factor            [optional, defaults to none] factor which is applied to
 ///                          all input columns and written into the output columns
-Function DecimateWithMethod(input, output, decimationFactor, method, [firstRowInp, lastRowInp, firstColInp, lastColInp, firstColOut, lastColOut, factor])
-	WAVE input
-	WAVE output
-	variable decimationFactor, method
-	variable firstRowInp, lastRowInp, firstColInp, lastColInp, firstColOut, lastColOut
-	WAVE/Z factor
+Function DecimateWithMethod(WAVE input, WAVE output, variable decimationFactor, variable method, [variable firstRowInp, variable lastRowInp, variable firstColInp, variable lastColInp, variable firstColOut, variable lastColOut, WAVE/Z factor])
 
 	variable numRowsInp, numColsInp, numRowsOut, numColsOut, targetFirst, targetLast, numOutputPairs, usedColumns, usedRows
 	variable numRowsDecimated, first, last
@@ -351,9 +340,7 @@ End
 /// @param colInp           column in *input* coordinates
 /// @param colOut           column in *output* coordinates
 /// @param decimationFactor decimation factor
-threadsafe static Function DecimateMinMax(input, output, idx, firstRowInp, lastRowInp, colInp, colOut, decimationFactor)
-	WAVE input, output
-	variable idx, colInp, colOut, decimationFactor, firstRowInp, lastRowInp
+threadsafe static Function DecimateMinMax(WAVE input, WAVE output, variable idx, variable firstRowInp, variable lastRowInp, variable colInp, variable colOut, variable decimationFactor)
 
 	variable first, last, targetFirst, targetLast
 
@@ -415,24 +402,19 @@ End
 ///
 /// @returns A wave with the row indizes of the found values. An invalid wave reference if the
 /// value could not be found.
-threadsafe Function/WAVE FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow, startLayer, endLayer])
-	WAVE numericOrTextWave
-	variable col, var, prop
-	string str, colLabel
-	variable startRow, endRow
-	variable startLayer, endLayer
+threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, string colLabel, variable var, string str, variable prop, variable startRow, variable endRow, variable startLayer, variable endLayer])
 
 	variable numCols, numRows, numLayers, maskedProp
 	string key
 
-	ASSERT_TS(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2                              \
-	          || (!ParamIsDefault(prop)                                                                          \
-	              && (                                                                                           \
-	                 prop == PROP_NOT                                                                            \
-	                 || ((prop & PROP_MATCHES_VAR_BIT_MASK) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1) \
-	                 || (prop & PROP_GREP && !ParamIsDefault(str) && ParamIsDefault(var))                        \
-	                 || (prop & PROP_WILDCARD && !ParamIsDefault(str) && ParamIsDefault(var))                    \
-	                 )),                                                                                         \
+	ASSERT_TS(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2                               \
+	          || (!ParamIsDefault(prop)                                                                           \
+	              && (                                                                                            \
+	                  prop == PROP_NOT                                                                            \
+	                  || ((prop & PROP_MATCHES_VAR_BIT_MASK) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1) \
+	                  || (prop & PROP_GREP && !ParamIsDefault(str) && ParamIsDefault(var))                        \
+	                  || (prop & PROP_WILDCARD && !ParamIsDefault(str) && ParamIsDefault(var))                    \
+	                 )),                                                                                          \
 	          "Invalid combination of var/str/prop arguments")
 
 	ASSERT_TS(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
@@ -462,7 +444,7 @@ threadsafe Function/WAVE FindIndizes(numericOrTextWave, [col, colLabel, var, str
 		WAVE/T wvText = numericOrTextWave
 		WAVE/Z wv     = $""
 	else
-		WAVE/T/Z wvText = $""
+		WAVE/Z/T wvText = $""
 		WAVE     wv     = numericOrTextWave
 	endif
 

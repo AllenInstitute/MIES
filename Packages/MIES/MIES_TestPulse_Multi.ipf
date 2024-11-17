@@ -18,10 +18,7 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 /// @brief __TPM__ Multi device background test pulse functionality
 
 /// @brief Start the test pulse when MD support is activated.
-Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
-	string   device
-	variable runModifier
-	variable fast
+Function TPM_StartTPMultiDeviceLow(string device, [variable runModifier, variable fast])
 
 	if(ParamIsDefault(fast))
 		fast = 0
@@ -47,9 +44,7 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 End
 
 /// @brief Start a multi device test pulse, always done in background mode
-Function TPM_StartTestPulseMultiDevice(device, [fast])
-	string   device
-	variable fast
+Function TPM_StartTestPulseMultiDevice(string device, [variable fast])
 
 	if(ParamIsDefault(fast))
 		fast = 0
@@ -75,8 +70,7 @@ Function TPM_StartTestPulseMultiDevice(device, [fast])
 	P_InitBeforeTP(device)
 End
 
-static Function TPM_BkrdTPMD(device)
-	string device
+static Function TPM_BkrdTPMD(string device)
 
 	variable hardwareType = GetHardwareType(device)
 
@@ -107,8 +101,7 @@ End
 /// @brief Background TP Multi Device
 ///
 /// @ingroup BackgroundFunctions
-Function TPM_BkrdTPFuncMD(s)
-	STRUCT BackgroundStruct &s
+Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 
 	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
 	variable fifoLatest, lastTP, now
@@ -266,9 +259,7 @@ Function TPM_BkrdTPFuncMD(s)
 	return 0
 End
 
-Function TPM_StopTestPulseMultiDevice(device, [fast])
-	string   device
-	variable fast
+Function TPM_StopTestPulseMultiDevice(string device, [variable fast])
 
 	if(ParamIsDefault(fast))
 		fast = 0
@@ -296,13 +287,13 @@ Function TPM_StopTestPulseMultiDevice(device, [fast])
 End
 
 static Function TPM_HasActiveDevices()
+
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
 
 	return GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX) > 0
 End
 
-static Function TPM_RemoveDevice(device)
-	string device
+static Function TPM_RemoveDevice(string device)
 
 	variable idx
 	string   msg
@@ -326,8 +317,7 @@ static Function TPM_RemoveDevice(device)
 	DEBUGPRINT(msg)
 End
 
-static Function TPM_AddDevice(device)
-	string device
+static Function TPM_AddDevice(string device)
 
 	variable idx
 	string   msg

@@ -8,6 +8,7 @@
 
 /// @brief Set column dimension labels from the first row of the key wave
 Function LBN_SetDimensionLabels(WAVE/T keys, WAVE values, [variable start])
+
 	variable i, numCols
 	string text
 
@@ -38,7 +39,8 @@ End
 /// @retval result one on error, zero otherwise
 /// @retval unit   unit of the result [empty if not found]
 /// @retval col    column of the result into the keyWave [NaN if not found]
-threadsafe Function [variable result, string unit, variable col] LBN_GetEntryProperties(WAVE/T/Z keyWave, string key)
+threadsafe Function [variable result, string unit, variable col] LBN_GetEntryProperties(WAVE/Z/T keyWave, string key)
+
 	variable row
 
 	unit   = ""

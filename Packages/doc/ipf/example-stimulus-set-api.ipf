@@ -1,5 +1,6 @@
 
 Function StimsetAPIExample()
+
 	string setName, stimsets
 	variable numEpochs
 

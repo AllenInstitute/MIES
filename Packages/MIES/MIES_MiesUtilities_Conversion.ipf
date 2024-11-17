@@ -64,10 +64,7 @@ End
 /// @param var    numeric channel types
 /// @param str    string channel types
 /// @param xopVar numeric XOP channel types
-threadsafe Function GetNumberFromType([var, str, xopVar])
-	variable var
-	string   str
-	variable xopVar
+threadsafe Function GetNumberFromType([variable var, string str, variable xopVar])
 
 	ASSERT_TS(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(xopVar) == 2, "Expected exactly one parameter")
 
@@ -135,8 +132,7 @@ End
 /// @param type One of @ref ParameterWaveTypes
 ///
 /// @return name as string
-Function/S GetWaveBuilderParameterTypeName(type)
-	variable type
+Function/S GetWaveBuilderParameterTypeName(variable type)
 
 	string shortname
 
@@ -158,8 +154,7 @@ Function/S GetWaveBuilderParameterTypeName(type)
 End
 
 /// @brief Stringified short version of the clamp mode
-Function/S ConvertAmplifierModeShortStr(mode)
-	variable mode
+Function/S ConvertAmplifierModeShortStr(variable mode)
 
 	switch(mode)
 		case V_CLAMP_MODE:
@@ -178,8 +173,7 @@ Function/S ConvertAmplifierModeShortStr(mode)
 End
 
 /// @brief Stringified version of the clamp mode
-Function/S ConvertAmplifierModeToString(mode)
-	variable mode
+Function/S ConvertAmplifierModeToString(variable mode)
 
 	switch(mode)
 		case V_CLAMP_MODE:
@@ -234,8 +228,7 @@ End
 ///
 /// @return One of @ref SpecialAnalysisFunctionTypes which includes
 ///         #INVALID_ANALYSIS_FUNCTION and for CI testing #TEST_ANALYSIS_FUNCTION
-Function MapAnaFuncToConstant(anaFunc)
-	string anaFunc
+Function MapAnaFuncToConstant(string anaFunc)
 
 	strswitch(anaFunc)
 		case "PSQ_Ramp":

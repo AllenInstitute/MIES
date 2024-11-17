@@ -10,8 +10,7 @@ static Constant WORK_COUNT_GENERIC     = 200
 static Constant THREADING_TEST_TIMEOUT = 60
 
 /// @brief Stops a possibly running Async frame work due to Compilehook feature of IP8
-static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
-	string testCase
+static Function TEST_CASE_BEGIN_OVERRIDE(string testCase)
 
 	TestCaseBeginCommon(testCase)
 
@@ -19,8 +18,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 End
 
 /// @brief Cleans up failing tests
-static Function TEST_CASE_END_OVERRIDE(testCase)
-	string testCase
+static Function TEST_CASE_END_OVERRIDE(string testCase)
 
 	CtrlNamedBackground $"AsyncFramework", stop
 	variable dummy
@@ -33,6 +31,7 @@ End
 
 /// @brief Test to start Framework with zero threads
 static Function TASYNC_Start_ZeroThreads()
+
 	try
 		ASYNC_Start(0)
 		FAIL()
@@ -43,6 +42,7 @@ End
 
 /// @brief Test to start Framework with infinite threads
 static Function TASYNC_Start_InfiniteThreads()
+
 	try
 		ASYNC_Start(Inf)
 		FAIL()
@@ -1264,8 +1264,7 @@ End
 /// Worker/Readout functions follow
 
 /// @brief Generic worker with a variable runtime, the function transfers required data to the output folder
-threadsafe Function/DF RunGenericWorker(dfr)
-	DFREF dfr
+threadsafe Function/DF RunGenericWorker(DFREF dfr)
 
 	DFREF dfrOut = NewFreeDataFolder()
 
@@ -1293,16 +1292,14 @@ threadsafe Function/DF RunGenericWorker(dfr)
 End
 
 /// @brief A second generic worker, with a different name, which is identical to the first
-threadsafe Function/DF RunGenericWorker2(dfr)
-	DFREF dfr
+threadsafe Function/DF RunGenericWorker2(DFREF dfr)
 
 	return RunGenericWorker(dfr)
 End
 
 /// @brief Generic worker with a variable runtime, the function transfers required data to the output folder
 /// this worker uses a real data folder instead of an empty one
-threadsafe Function/DF RunGenericWorker3(dfr)
-	DFREF dfr
+threadsafe Function/DF RunGenericWorker3(DFREF dfr)
 
 	NewDataFolder freeroot
 	DFREF dfrOut = :freeroot
@@ -1331,14 +1328,13 @@ threadsafe Function/DF RunGenericWorker3(dfr)
 End
 
 /// @brief A worker, that return no data folder
-threadsafe Function/DF RunGenericWorker4(dfr)
-	DFREF dfr
+threadsafe Function/DF RunGenericWorker4(DFREF dfr)
+
 End
 
 /// @brief Generic worker with a fixed runtime, the function transfers required data to the output folder
 /// The fixed runtime should be > granularity of datetime
-threadsafe Function/DF RunGenericWorker5(dfr)
-	DFREF dfr
+threadsafe Function/DF RunGenericWorker5(DFREF dfr)
 
 	DFREF dfrOut = NewFreeDataFolder()
 
@@ -1455,8 +1451,7 @@ Function RunGenericReadOutAbort(STRUCT ASYNC_ReadOutStruct &ar)
 End
 
 /// @brief Worker that generates a runtime error 330
-threadsafe Function/DF RunWorkerOfDOOM(dfr)
-	DFREF dfr
+threadsafe Function/DF RunWorkerOfDOOM(DFREF dfr)
 
 	DFREF dfrOut = NewFreeDataFolder()
 
@@ -1487,8 +1482,7 @@ Function RunReadOutOfDOOM(STRUCT ASYNC_ReadOutStruct &ar)
 End
 
 /// @brief Worker that sleeps infinitely, thus blocking the thread
-threadsafe Function/DF InfiniteWorker(dfr)
-	DFREF dfr
+threadsafe Function/DF InfiniteWorker(DFREF dfr)
 
 	// some processing that has a infinite runtime
 	// We want to catch the thread abort RT on IP7
@@ -1501,6 +1495,7 @@ threadsafe Function/DF InfiniteWorker(dfr)
 End
 
 threadsafe Function InfiniteWorkerHelper_IGNORE()
+
 	Sleep/S 1
 End
 

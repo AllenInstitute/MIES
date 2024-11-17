@@ -13,6 +13,7 @@
 ///
 /// @sa GetStringFromWaveNote()
 threadsafe Function/S ExtractStringFromPair(string str, string key, [string keySep, string listSep])
+
 	if(ParamIsDefault(keySep))
 		keySep = DEFAULT_KEY_SEP
 	endif
@@ -31,6 +32,7 @@ End
 
 /// @brief Remove the surrounding quotes from the string if they are present
 Function/S PossiblyUnquoteName(string name, string quote)
+
 	variable len
 
 	if(isEmpty(name))
@@ -68,9 +70,7 @@ End
 /// @param str          string to break into lines
 /// @param minimumWidth [optional, defaults to zero] Each line, except the last one,
 ///                     will have at least this length
-Function/S LineBreakingIntoPar(str, [minimumWidth])
-	string   str
-	variable minimumWidth
+Function/S LineBreakingIntoPar(string str, [variable minimumWidth])
 
 	variable len, i, width
 	string output = ""
@@ -114,6 +114,7 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
+
 	variable length, pos, skipLength, err
 	string regExpResult
 
@@ -160,8 +161,7 @@ End
 /// In case the regular expression does not match, the string is returned unaltered.
 ///
 /// See also `DisplayHelpTopic "Regular Expressions"`.
-threadsafe Function/S RemoveEndingRegExp(str, endingRegExp)
-	string str, endingRegExp
+threadsafe Function/S RemoveEndingRegExp(string str, string endingRegExp)
 
 	string   endStr
 	variable err
@@ -239,8 +239,7 @@ End
 /// supports 6 subpatterns, specified by curly brackets in regex
 ///
 /// @returns text wave containing subpatterns of regex call
-Function/WAVE SearchStringBase(str, regex)
-	string str, regex
+Function/WAVE SearchStringBase(string str, string regex)
 
 	string command
 	variable i, numBrackets
@@ -273,8 +272,7 @@ End
 /// @brief Search for the occurence of pattern in string
 ///
 /// @returns number of occurences
-Function CountSubstrings(str, pattern)
-	string str, pattern
+Function CountSubstrings(string str, string pattern)
 
 	variable i = -1, position = -1
 
@@ -297,11 +295,7 @@ End
 ///                            see below or [1] chapter 3 for the full list
 /// @param[out] numPrefix      numerical value of the decimal multiplier
 /// @param[out] unit           unit
-threadsafe Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
-	string    unitWithPrefix
-	string   &prefix
-	variable &numPrefix
-	string   &unit
+threadsafe Function ParseUnit(string unitWithPrefix, string &prefix, variable &numPrefix, string &unit)
 
 	string expr, unitInt, prefixInt
 
@@ -325,8 +319,7 @@ End
 /// @brief Return the numerical value of a SI decimal multiplier
 ///
 /// @see ParseUnit
-threadsafe Function GetDecimalMultiplierValue(prefix)
-	string prefix
+threadsafe Function GetDecimalMultiplierValue(string prefix)
 
 	if(isEmpty(prefix))
 		return 1
@@ -378,8 +371,7 @@ End
 ///        or Unix EOLs (`\n`)
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function/S NormalizeToEOL(str, eol)
-	string str, eol
+threadsafe Function/S NormalizeToEOL(string str, string eol)
 
 	str = ReplaceString("\r\n", str, eol)
 
@@ -396,6 +388,7 @@ End
 
 /// @brief Elide the given string to the requested length
 Function/S ElideText(string str, variable returnLength)
+
 	variable length, totalLength, i, first, suffixLength
 	string ch, suffix
 

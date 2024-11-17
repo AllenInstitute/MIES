@@ -688,7 +688,7 @@ Function GSI_WorksText()
 	Make/FREE/T data1 = {"a", "b", "c", "D"}
 	Make/FREE/T data2 = {"c", "d", "e"}
 
-	WAVE/T/Z matches = GetSetIntersection(data1, data2)
+	WAVE/Z/T matches = GetSetIntersection(data1, data2)
 	CHECK_EQUAL_TEXTWAVES(matches, {"c"})
 End
 
@@ -822,8 +822,7 @@ Function FLW_RequiresNumericWave()
 End
 
 // UTF_TD_GENERATOR InfiniteValues
-Function FLW_RequiresFiniteLevel([var])
-	variable var
+Function FLW_RequiresFiniteLevel([variable var])
 
 	try
 		Make/FREE data
@@ -867,8 +866,7 @@ Function FLW_RequiresBigEnoughWave()
 End
 
 // UTF_TD_GENERATOR DataGenerators#FLW_SampleData
-Function FLW_SameResultsAsFindLevelSingle([wv])
-	WAVE wv
+Function FLW_SameResultsAsFindLevelSingle([WAVE wv])
 
 	variable i, edge, level, numCols
 
@@ -892,8 +890,7 @@ Function FLW_SameResultsAsFindLevelSingle([wv])
 End
 
 // UTF_TD_GENERATOR DataGenerators#FLW_SampleDataMulti
-Function FLW_MultiWorks([wv])
-	WAVE wv
+Function FLW_MultiWorks([WAVE wv])
 
 	variable i, edge, level
 

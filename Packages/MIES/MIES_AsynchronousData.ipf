@@ -24,9 +24,7 @@ End
 
 /// @brief Read the given asynchronous channel and return the scaled value
 ///        It is only valid to call for ITC and SUTTER when there is no acquisition running.
-Function ASD_ReadChannel(device, channel)
-	string   device
-	variable channel
+Function ASD_ReadChannel(string device, variable channel)
 
 	string ctrl
 	variable gain, deviceChannelOffset, rawChannelValue, hardwareType

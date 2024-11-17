@@ -60,12 +60,12 @@ End
 /// @brief Return true if the calling function is called recursively, i.e. it
 ///        is present multiple times in the call stack
 threadsafe Function IsFunctionCalledRecursively()
+
 	return ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(2))) > 1
 End
 
 /// @brief Wrapper function for `Abort` which honours our interactive mode setting
-Function DoAbortNow(msg)
-	string msg
+Function DoAbortNow(string msg)
 
 	DEBUGPRINTSTACKINFO()
 
@@ -84,8 +84,7 @@ Function DoAbortNow(msg)
 End
 
 /// @brief Return a nicely formatted multiline stacktrace
-threadsafe Function/S GetStackTrace([prefix])
-	string prefix
+threadsafe Function/S GetStackTrace([string prefix])
 
 	string stacktrace, entry, func, line, file, str
 	string output
@@ -141,6 +140,7 @@ End
 /// @hidecallergraph
 /// UTF_NOINSTRUMENTATION
 Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
+
 	string stracktrace, miesVersionStr, lockedDevicesStr, device
 	string stacktrace = ""
 	variable i, numLockedDevices, doCallDebugger
@@ -278,6 +278,7 @@ End
 /// @hidecallergraph
 /// UTF_NOINSTRUMENTATION
 threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedOutput])
+
 	string stacktrace
 
 	try
@@ -333,6 +334,7 @@ End
 #ifdef MACINTOSH
 
 threadsafe Function MU_RunningInMainThread()
+
 	TUFXOP_RunningInMainThread
 
 	return V_value

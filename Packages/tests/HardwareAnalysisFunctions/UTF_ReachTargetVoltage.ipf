@@ -37,22 +37,19 @@ static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resista
 	WAVE/Z autobiasFromDialog = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_AUTOBIAS_TARGET_DIAG, HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function RTV_Works_preAcq(device)
-	string device
+static Function RTV_Works_preAcq(string device)
 
 	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "EnableIndexing", var = 0)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RTV_Works([str])
-	string str
+static Function RTV_Works([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 End
 
-static Function RTV_Works_REENTRY([str])
-	string str
+static Function RTV_Works_REENTRY([string str])
 
 	variable sweepNo
 
@@ -70,23 +67,20 @@ static Function RTV_Works_REENTRY([str])
 	CHECK_WAVE(autobiasFromDialog, NULL_WAVE)
 End
 
-static Function RTV_WorksWithIndexing_preAcq(device)
-	string device
+static Function RTV_WorksWithIndexing_preAcq(string device)
 
 	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "EnableIndexing", var = 1)
 	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "IndexingEndStimsetAllIC", str = "ReachTargetVoltageIndexEnd_DA_0")
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RTV_WorksWithIndexing([str])
-	string str
+static Function RTV_WorksWithIndexing([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
 End
 
-static Function RTV_WorksWithIndexing_REENTRY([str])
-	string str
+static Function RTV_WorksWithIndexing_REENTRY([string str])
 
 	variable sweepNo
 

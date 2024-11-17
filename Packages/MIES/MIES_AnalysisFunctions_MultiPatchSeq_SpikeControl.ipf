@@ -205,6 +205,7 @@ End
 ///
 /// The value part after the `:` is only present if `data` is passed in
 static Function SC_AddPulseRegionLBNEntries(WAVE/T inputLBN, variable pulseIndex, variable region, variable headstage, [WAVE/Z data])
+
 	string str
 
 	sprintf str, "P%d_R%d", pulseIndex, region
@@ -240,6 +241,7 @@ End
 
 /// @brief Return the diagonal pulses for the given sweep
 static Function/WAVE SC_GetPulseIndizes(WAVE properties, WAVE/WAVE propertiesWaves, variable sweepNo)
+
 	variable idx, size, endRow, i, headstageProp, region, pulseIndex, sweepNoProp, pulseFailedState
 	string entry, msg
 
@@ -259,6 +261,7 @@ End
 
 /// @brief Return the spike numbers and positions in waves prepared for labnotebook writing
 static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNumbersAndPositions(string device, variable sweepNo)
+
 	variable i, idx, numFailedPulses, sweepPassed, size, numPulses
 	variable pulseIndex, region, pulseFailedState, headstageProp, sweepNoProp, numberOfSpikes
 	variable pulseStart, pulseEnd, numSpikes
@@ -322,6 +325,7 @@ End
 
 /// @brief Fetch the pulses from the PA plot and write the results into the labnotebooks
 static Function SC_ProcessPulses(string device, variable sweepNo, variable minimumSpikePosition, variable idealNumberOfSpikes)
+
 	string key
 
 	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
@@ -394,6 +398,7 @@ End
 
 /// @brief Determine the spike counts state for all headstages
 static Function/WAVE SC_SpikeCountsCalc(string device, WAVE minimum, WAVE maximum, variable idealNumberOfSpikes)
+
 	variable i
 	string   msg
 
@@ -418,6 +423,7 @@ End
 ///
 /// @return Spike counts state according to @ref SpikeCountsStateConstants stringified
 static Function/WAVE SC_SpikeCountsQC(string device, WAVE/T spikeNumbersLBN, variable idealNumberOfSpikes)
+
 	string msg, str
 	variable i
 
@@ -482,7 +488,8 @@ End
 /// @param device           device
 /// @param spikePositionsLBN    spike position of each pulse, ordered per headstage, for the current sweep
 /// @param minimumSpikePosition minimum allowed spike position
-static Function/WAVE SC_SpikePositionQC(string device, WAVE/T/Z spikePositionsLBN, variable minimumSpikePosition)
+static Function/WAVE SC_SpikePositionQC(string device, WAVE/Z/T spikePositionsLBN, variable minimumSpikePosition)
+
 	string list, msg
 	variable numPulses, i, j
 
@@ -536,6 +543,7 @@ End
 
 /// @brief Replace all points inside an oodDAQ region with NaN in the data wave
 static Function/WAVE SC_RegionBlanked(WAVE data, variable totalOnsetDelay, WAVE/T oodDAQRegion)
+
 	variable i, numEntries, first, last
 
 	numEntries = DimSize(oodDAQRegion, ROWS)
@@ -616,6 +624,7 @@ End
 
 /// @brief Determine the headstage QC result
 static Function/WAVE SC_HeadstageQC(string device, WAVE/T spikeCountStateLBN, WAVE spontaneousSpikingCheckLBN)
+
 	string msg
 
 	WAVE headstageQCLBN = LBN_GetNumericWave()
@@ -633,6 +642,7 @@ End
 
 /// @brief Determine and write the QC states to the labnotebook
 static Function SC_DetermineQCState(string device, variable sweepNo, WAVE spikeNumbersLBN, WAVE/Z spikePositionsLBN, variable minimumSpikePosition, variable idealNumberOfSpikes)
+
 	string key, msg
 
 	// spontaneous spiking check
@@ -677,6 +687,7 @@ End
 
 /// @brief Perform various actions on QC failures
 static Function SC_ReactToQCFailures(string device, variable sweepNo, string params)
+
 	variable daScaleSpikePositionModifier, daScaleModifier, daScaleTooManySpikesModifier, i, autoBiasV, autobiasModifier, prevSliderPos
 	string daScaleOperator, daScaleSpikePositionOperator, daScaleTooManySpikesOperator
 	string key, msg
@@ -746,7 +757,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 			case SC_SPIKE_COUNT_STATE_STR_MIXED:
 				printf "The spike count on headstage %d in sweep %d is mixed (some pulses have too few, others too many)\n", i, sweepNo
 				key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, query = 1)
-				WAVE/T/Z spikeCountsRAC = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, key, i, UNKNOWN_MODE)
+				WAVE/Z/T spikeCountsRAC = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, key, i, UNKNOWN_MODE)
 				ASSERT(WaveExists(spikeCountsRAC), "Expected at least one sweep")
 				WAVE/Z indizes = FindIndizes(spikeCountsRAC, str = SC_SPIKE_COUNT_STATE_STR_MIXED)
 				ASSERT(WaveExists(indizes), "Could not find at least one mixed entry")
@@ -772,6 +783,7 @@ static Function SC_ReactToQCFailures(string device, variable sweepNo, string par
 End
 
 Function/S SC_SpikeControl_GetParams()
+
 	return "AutoBiasBaselineModifier:variable,"     + \
 	       "DAScaleModifier:variable,"              + \
 	       "DAScaleOperator:string,"                + \
@@ -785,8 +797,7 @@ Function/S SC_SpikeControl_GetParams()
 	       "MinimumSpikePosition:variable"
 End
 
-Function/S SC_SpikeControl_GetHelp(name)
-	string name
+Function/S SC_SpikeControl_GetHelp(string name)
 
 	strswitch(name)
 		case "FailedPulseLevel":
@@ -953,9 +964,7 @@ End
 /// Therefore the spike position will be 110 in `PA crd` which is one point after the end of the pulse.
 ///
 /// The graphs were made with http://asciiflow.com.
-Function SC_SpikeControl(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function SC_SpikeControl(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable i, index, ret, headstagePassed, sweepPassed, val, failedPulseLevel, maxTrialsAllowed, minimumSpikePosition
 	variable DAC, setPassed, minTrials, maxTrials, skippedBack, idealNumberOfSpikes, rerunExceededResult

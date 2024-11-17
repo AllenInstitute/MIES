@@ -4,6 +4,7 @@
 #pragma ModuleName=DashboardTests
 
 static Function DAB_Indexing_preAcq(string device)
+
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Analysis function (generic)", str = "")
 	ST_SetStimsetParameter("StimulusSetB_DA_0", "Total number of steps", var = 2)
 End
@@ -20,6 +21,7 @@ static Function DAB_Indexing([string str])
 End
 
 static Function DAB_Indexing_REENTRY([string str])
+
 	variable sweepNo, index
 	string win, ref, actual, bsPanel
 
@@ -94,6 +96,7 @@ static Function DAB_Skipping([string str])
 End
 
 static Function DAB_Skipping_REENTRY([string str])
+
 	variable sweepNo, index
 	string win, ref, actual, bsPanel
 

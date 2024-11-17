@@ -12,6 +12,7 @@ static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 End
 
 static Function GlobalPreAcq(string device)
+
 	variable ret
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
@@ -74,10 +75,7 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 	return wv
 End
 
-static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
-	string   device
-	variable sweepNo
-	string   name
+static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, string name)
 
 	variable val
 	string   key
@@ -124,6 +122,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 End
 
 static Function CheckMCCLPF(string device, variable expectedValue)
+
 	variable val
 
 	val = AI_SendToAmp(device, PSQ_TEST_HEADSTAGE, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN, selectAmp = 0)
@@ -148,6 +147,7 @@ static Function CheckChirpUserEpochs(string device, WAVE baselineChunks, WAVE ch
 End
 
 static Function PS_CR1_preAcq(string device)
+
 	variable ret
 
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
@@ -167,8 +167,7 @@ End
 // BBAA but with zero value which results in PSQ_CR_RERUN
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR1([str])
-	string str
+static Function PS_CR1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -183,8 +182,7 @@ static Function PS_CR1([str])
 	wv = 0
 End
 
-static Function PS_CR1_REENTRY([str])
-	string str
+static Function PS_CR1_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -246,8 +244,7 @@ static Function PS_CR2_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR2([str])
-	string str
+static Function PS_CR2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -265,8 +262,7 @@ static Function PS_CR2([str])
 	wv[][][4] = 1
 End
 
-static Function PS_CR2_REENTRY([str])
-	string str
+static Function PS_CR2_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -325,8 +321,7 @@ static Function PS_CR2a_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR2a([str])
-	string str
+static Function PS_CR2a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -344,8 +339,7 @@ static Function PS_CR2a([str])
 	wv[][][4] = 1
 End
 
-static Function PS_CR2a_REENTRY([str])
-	string str
+static Function PS_CR2a_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -403,8 +397,7 @@ static Function PS_CR2b_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR2b([str])
-	string str
+static Function PS_CR2b([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -422,8 +415,7 @@ static Function PS_CR2b([str])
 	wv[][][4] = 1
 End
 
-static Function PS_CR2b_REENTRY([str])
-	string str
+static Function PS_CR2b_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -483,8 +475,7 @@ static Function PS_CR3_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR3([str])
-	string str
+static Function PS_CR3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -502,8 +493,7 @@ static Function PS_CR3([str])
 	wv[][][4] = 1
 End
 
-static Function PS_CR3_REENTRY([str])
-	string str
+static Function PS_CR3_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -565,8 +555,7 @@ static Function PS_CR4_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR4([str])
-	string str
+static Function PS_CR4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -611,8 +600,7 @@ static Function PS_CR4([str])
 	wv[][5][2] = -24
 End
 
-static Function PS_CR4_REENTRY([str])
-	string str
+static Function PS_CR4_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -677,8 +665,7 @@ static Function PS_CR4a_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR4a([str])
-	string str
+static Function PS_CR4a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -723,8 +710,7 @@ static Function PS_CR4a([str])
 	wv[][5][2] = 0
 End
 
-static Function PS_CR4a_REENTRY([str])
-	string str
+static Function PS_CR4a_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -788,8 +774,7 @@ static Function PS_CR4b_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR4b([str])
-	string str
+static Function PS_CR4b([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -834,8 +819,7 @@ static Function PS_CR4b([str])
 	wv[][5][2] = -24
 End
 
-static Function PS_CR4b_REENTRY([str])
-	string str
+static Function PS_CR4b_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -899,8 +883,7 @@ static Function PS_CR5_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR5([str])
-	string str
+static Function PS_CR5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -944,8 +927,7 @@ static Function PS_CR5([str])
 	wv[][5][2] = -24
 End
 
-static Function PS_CR5_REENTRY([str])
-	string str
+static Function PS_CR5_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -1011,8 +993,7 @@ static Function PS_CR6_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR6([str])
-	string str
+static Function PS_CR6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1057,8 +1038,7 @@ static Function PS_CR6([str])
 	wv[][5][2] = -24
 End
 
-static Function PS_CR6_REENTRY([str])
-	string str
+static Function PS_CR6_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -1124,8 +1104,7 @@ static Function PS_CR7_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR7([str])
-	string str
+static Function PS_CR7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1166,8 +1145,7 @@ static Function PS_CR7([str])
 	wv[][4][2] = -22
 End
 
-static Function PS_CR7_REENTRY([str])
-	string str
+static Function PS_CR7_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -1232,8 +1210,7 @@ static Function PS_CR8_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR8([str])
-	string str
+static Function PS_CR8([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1273,8 +1250,7 @@ static Function PS_CR8([str])
 	wv[][4][2] = -22
 End
 
-static Function PS_CR8_REENTRY([str])
-	string str
+static Function PS_CR8_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -1341,8 +1317,7 @@ End
 // Enough passing sweeps but not enough with the same DAScale
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR9([str])
-	string str
+static Function PS_CR9([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1387,8 +1362,7 @@ static Function PS_CR9([str])
 	wv[][5][2] = -22
 End
 
-static Function PS_CR9_REENTRY([str])
-	string str
+static Function PS_CR9_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -1454,8 +1428,7 @@ End
 // Enough passing sweeps but not enough with the same DAScale
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR9a([str])
-	string str
+static Function PS_CR9a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1500,8 +1473,7 @@ static Function PS_CR9a([str])
 	wv[][5][2] = 0
 End
 
-static Function PS_CR9a_REENTRY([str])
-	string str
+static Function PS_CR9a_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -1567,8 +1539,7 @@ End
 // Enough passing sweeps but not enough with the same DAScale
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR9b([str])
-	string str
+static Function PS_CR9b([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1613,8 +1584,7 @@ static Function PS_CR9b([str])
 	wv[][5][2] = -22
 End
 
-static Function PS_CR9b_REENTRY([str])
-	string str
+static Function PS_CR9b_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -1680,8 +1650,7 @@ End
 // Early abort as not enough sweeps with the same DASCale value pass
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR10([str])
-	string str
+static Function PS_CR10([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1722,8 +1691,7 @@ static Function PS_CR10([str])
 	wv[][4][2] = -22
 End
 
-static Function PS_CR10_REENTRY([str])
-	string str
+static Function PS_CR10_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -1791,8 +1759,7 @@ static Function PS_CR11_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR11([str])
-	string str
+static Function PS_CR11([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1812,8 +1779,7 @@ static Function PS_CR11([str])
 	wv[1,][][0] = 0
 End
 
-static Function PS_CR11_REENTRY([str])
-	string str
+static Function PS_CR11_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -1877,8 +1843,7 @@ static Function PS_CR12_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR12([str])
-	string str
+static Function PS_CR12([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1897,8 +1862,7 @@ static Function PS_CR12([str])
 	wv[][][4] = 1
 End
 
-static Function PS_CR12_REENTRY([str])
-	string str
+static Function PS_CR12_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -1963,8 +1927,7 @@ End
 // Early abort as not enough sweeps with the same DASCale value pass
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR13([str])
-	string str
+static Function PS_CR13([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1994,8 +1957,7 @@ static Function PS_CR13([str])
 	wv[][4][4] = 0
 End
 
-static Function PS_CR13_REENTRY([str])
-	string str
+static Function PS_CR13_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -2065,8 +2027,7 @@ End
 // and user onset delay
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR13a([str])
-	string str
+static Function PS_CR13a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -2096,8 +2057,7 @@ static Function PS_CR13a([str])
 	wv[][4][4] = 0
 End
 
-static Function PS_CR13a_REENTRY([str])
-	string str
+static Function PS_CR13a_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -2165,8 +2125,7 @@ End
 // Same as PS_CR1 but with failing sampling interval check
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR14([str])
-	string str
+static Function PS_CR14([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -2181,8 +2140,7 @@ static Function PS_CR14([str])
 	wv = 0
 End
 
-static Function PS_CR14_REENTRY([str])
-	string str
+static Function PS_CR14_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -2245,8 +2203,7 @@ static Function PS_CR15_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR15([str])
-	string str
+static Function PS_CR15([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -2266,8 +2223,7 @@ static Function PS_CR15([str])
 	wv[][][4] = 1
 End
 
-static Function PS_CR15_REENTRY([str])
-	string str
+static Function PS_CR15_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -2331,8 +2287,7 @@ static Function PS_CR16_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR16([str])
-	string str
+static Function PS_CR16([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -2352,8 +2307,7 @@ static Function PS_CR16([str])
 	wv[][][4] = 1
 End
 
-static Function PS_CR16_REENTRY([str])
-	string str
+static Function PS_CR16_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -2413,8 +2367,7 @@ static Function PS_CR17_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR17([str])
-	string str
+static Function PS_CR17([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -2435,8 +2388,7 @@ static Function PS_CR17([str])
 	wv[][][4] = 1
 End
 
-static Function PS_CR17_REENTRY([str])
-	string str
+static Function PS_CR17_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key
@@ -2499,8 +2451,7 @@ static Function PS_CR18_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_CR18([str])
-	string str
+static Function PS_CR18([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -2518,8 +2469,7 @@ static Function PS_CR18([str])
 	wv[][][4] = 1
 End
 
-static Function PS_CR18_REENTRY([str])
-	string str
+static Function PS_CR18_REENTRY([string str])
 
 	variable sweepNo, setPassed
 	string key

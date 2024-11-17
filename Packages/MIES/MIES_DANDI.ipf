@@ -15,6 +15,7 @@ static Function/S DND_GetDestinationIgorPath()
 End
 
 static Function/S DND_ChooseAsset(WAVE/T props)
+
 	variable idx, ret
 
 	WAVE data = GetDandiDialogWave(props)
@@ -42,6 +43,7 @@ End
 ///
 /// @return absolute path to the downloaded asset
 static Function/S DND_FetchAsset(variable setNumber, string assetID, string assetPath)
+
 	string url, refHash, downloadUrl, path, name, assetFilePath, data, fname
 	variable jsonID
 
@@ -80,6 +82,7 @@ End
 ///
 /// Example: https://api.dandiarchive.org/api/dandisets/000068/versions/draft/assets/
 static Function/WAVE DND_ParseSetReponse(string response)
+
 	string path
 	variable jsonID, numEntries, i
 
@@ -108,6 +111,7 @@ static Function/WAVE DND_ParseSetReponse(string response)
 End
 
 Function/S DND_FetchAssetFromSet(variable setNumber)
+
 	string url, assetID, name, path, data, fname, assetFilePath
 	variable numAssets, idx, i
 

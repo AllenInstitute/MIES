@@ -17,23 +17,23 @@ Function CanFindAllDataBrowsers([string str])
 	// second db
 	CreateLockedDatabrowser(str)
 
-	WAVE/T/Z matches = DB_FindAllDataBrowser(str)
+	WAVE/Z/T matches = DB_FindAllDataBrowser(str)
 	CHECK_WAVE(matches, TEXT_WAVE)
 
 	CHECK_EQUAL_VAR(DimSize(matches, ROWS), 2)
 
-	WAVE/T/Z matchesAll = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_ALL)
+	WAVE/Z/T matchesAll = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_ALL)
 	CHECK_EQUAL_WAVES(matches, matchesAll)
 
-	WAVE/T/Z matchesUser = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_USER)
+	WAVE/Z/T matchesUser = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_USER)
 	CHECK_EQUAL_WAVES(matches, matchesUser)
 
-	WAVE/T/Z matchesAuto = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_AUTOMATION)
+	WAVE/Z/T matchesAuto = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_AUTOMATION)
 	CHECK_WAVE(matchesAuto, NULL_WAVE)
 
 	DB_GetBoundDataBrowser(str, mode = BROWSER_MODE_AUTOMATION)
 
-	WAVE/T/Z matchesAuto = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_AUTOMATION)
+	WAVE/Z/T matchesAuto = DB_FindAllDataBrowser(str, mode = BROWSER_MODE_AUTOMATION)
 	CHECK_WAVE(matchesAuto, TEXT_WAVE)
 
 	CHECK_EQUAL_VAR(DimSize(matchesAuto, ROWS), 1)
@@ -63,14 +63,14 @@ static Function/WAVE AllDatabrowserSubWindows()
 
 	win = DB_OpenDatabrowser()
 
-	WAVE/T/Z allWindows = ListToTextWave(GetAllWindows(win), ";")
+	WAVE/Z/T allWindows = ListToTextWave(GetAllWindows(win), ";")
 	CHECK_WAVE(allWindows, TEXT_WAVE)
 
 	allWindows[] = StringFromList(1, allWindows[p], "#")
 
 	RemoveTextWaveEntry1D(allWindows, "", all = 1)
 
-	WAVE/T/Z allWindowsUnique = GetUniqueEntries(allWindows)
+	WAVE/Z/T allWindowsUnique = GetUniqueEntries(allWindows)
 	CHECK_WAVE(allWindowsUnique, TEXT_WAVE)
 
 	SetDimensionLabels(allWindowsUnique, TextWaveToList(allWindowsUnique, ";"), ROWS)

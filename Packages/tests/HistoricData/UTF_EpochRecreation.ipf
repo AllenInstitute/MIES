@@ -19,7 +19,7 @@ Function ExportEpochsFromFileToDF(string dfNameTemp)
 	file = S_fileName
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1, loadStimsets = 1, absolutePaths = 1)
-	win = StringFromList(0, sweepBrowsers)
+	win                    = StringFromList(0, sweepBrowsers)
 
 	WAVE/T map = MIES_SB#SB_GetSweepBrowserMapFromGraph(win)
 	if(!GetNumberFromWaveNote(map, NOTE_INDEX))
@@ -123,7 +123,7 @@ static Function TestEpochRecreationShortNames([string str])
 	file = "input:" + str
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1, loadStimsets = 1)
-	win = StringFromList(0, sweepBrowsers)
+	win                    = StringFromList(0, sweepBrowsers)
 	WAVE/T map = MIES_SB#SB_GetSweepBrowserMapFromGraph(win)
 	REQUIRE_GE_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), 0)
 	WAVE/Z/T devices = SB_GetDeviceList(win)

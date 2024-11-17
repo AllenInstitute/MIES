@@ -7,8 +7,7 @@ static StrConstant device = "ITC18USB_Dev_0"
 
 static Constant NUM_REPEATS = 10
 
-static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
-	string testCase
+static Function TEST_CASE_BEGIN_OVERRIDE(string testCase)
 
 	TestCaseBeginCommon(testcase)
 
@@ -588,6 +587,7 @@ Function AE_TextWorksIndepHeadstage()
 End
 
 Function AE_TextHasCorrectTimeStamps()
+
 	variable row, col, ts, i
 	string key = "someKey"
 
@@ -689,18 +689,22 @@ End
 /// @{
 
 Function/S AnaFunc_WrongSep_GetParams()
+
 	return "param1;param2"
 End
 
 Function/S AnaFunc_1_GetParams()
+
 	return "param1"
 End
 
 Function/S AnaFunc_WithType_GetParams()
+
 	return "param1:variable"
 End
 
 Function/S AnaFunc_WithOptionals_GetParams()
+
 	return "param1,[optParam1],param2,[optParam2]"
 End
 

@@ -96,8 +96,7 @@ Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFR
 End
 
 /// @brief Cache key generator for oodDAQ offset waves
-Function/S CA_DistDAQCreateCacheKey(params)
-	STRUCT OOdDAQParams &params
+Function/S CA_DistDAQCreateCacheKey(STRUCT OOdDAQParams &params)
 
 	variable numWaves, crc, i
 
@@ -116,10 +115,7 @@ Function/S CA_DistDAQCreateCacheKey(params)
 End
 
 /// @brief Cache key generator for @c FindLevel in PA_CalculatePulseTimes()
-Function/S CA_PulseTimes(wv, fullPath, channelNumber, totalOnsetDelay)
-	WAVE   wv
-	string fullPath
-	variable channelNumber, totalOnsetDelay
+Function/S CA_PulseTimes(WAVE wv, string fullPath, variable channelNumber, variable totalOnsetDelay)
 
 	variable crc
 
@@ -137,9 +133,7 @@ End
 /// @param wv               input wave (average)
 /// @param smoothingFactor  smoothing factor
 /// @param range_pnts       number of points (p) the smoothing was performed
-Function/S CA_SmoothDeconv(wv, smoothingFactor, range_pnts)
-	WAVE wv
-	variable smoothingFactor, range_pnts
+Function/S CA_SmoothDeconv(WAVE wv, variable smoothingFactor, variable range_pnts)
 
 	variable crc
 
@@ -155,9 +149,7 @@ End
 ///
 /// @param wv  input wave (smoothed average)
 /// @param tau convolution time
-Function/S CA_Deconv(wv, tau)
-	WAVE     wv
-	variable tau
+Function/S CA_Deconv(WAVE wv, variable tau)
 
 	variable crc
 
@@ -195,9 +187,7 @@ threadsafe Function/S CA_GenKeyLogbookSortedKeys(WAVE keys)
 End
 
 /// @brief Cache key generator for artefact removal ranges
-Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
-	DFREF    singleSweepDFR
-	variable sweepNo
+Function/S CA_ArtefactRemovalRangesKey(DFREF singleSweepDFR, variable sweepNo)
 
 	variable crc
 
@@ -208,14 +198,14 @@ Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
 End
 
 /// @brief Cache key generator for averaging
-Function/S CA_AveragingKey(waveRefs)
-	WAVE/WAVE waveRefs
+Function/S CA_AveragingKey(WAVE/WAVE waveRefs)
 
 	return CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits = 1, dims = ROWS) + "Version 6"
 End
 
 /// @brief Cache key generator for averaging info from non-free waves
 Function/S CA_AveragingWaveModKey(WAVE wv)
+
 	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
 End
 
@@ -277,9 +267,7 @@ threadsafe static Function CA_GetWaveModCRC(WAVE wv, variable crc)
 End
 
 /// @brief Calculate the CRC of all metadata of all or the given dimension
-threadsafe static Function CA_WaveScalingCRC(crc, wv, [dimension])
-	variable crc, dimension
-	WAVE wv
+threadsafe static Function CA_WaveScalingCRC(variable crc, WAVE wv, [variable dimension])
 
 	variable dims, i
 
@@ -309,9 +297,7 @@ End
 /// @param crcMode                    [optional] parameter to WaveCRC
 /// @param includeWaveScalingAndUnits [optional] include the wave scaling and units of filled dimensions
 /// @param dims                       [optional] number of dimensions to include wave scaling and units in crc
-static Function/S CA_WaveCRCs(waveRefs, [crcMode, includeWaveScalingAndUnits, dims])
-	WAVE/WAVE waveRefs
-	variable crcMode, includeWaveScalingAndUnits, dims
+static Function/S CA_WaveCRCs(WAVE/WAVE waveRefs, [variable crcMode, variable includeWaveScalingAndUnits, variable dims])
 
 	variable rows
 
@@ -345,9 +331,7 @@ End
 ///
 /// We are deliberatly not using a WaveCRC here as know that the wave is not
 /// changed in IP once loaded. Therefore using its name and ModDate is enough.
-Function/S CA_SamplingIntervalKey(lut, s)
-	WAVE                   lut
-	STRUCT ActiveChannels &s
+Function/S CA_SamplingIntervalKey(WAVE lut, STRUCT ActiveChannels &s)
 
 	variable crc
 
@@ -366,8 +350,7 @@ End
 ///        Multithread assignments
 ///
 /// Only the size is relevant, the rest is undefined.
-threadsafe Function/S CA_TemporaryWaveKey(dims)
-	WAVE dims
+threadsafe Function/S CA_TemporaryWaveKey(WAVE dims)
 
 	variable numRows, crc, i
 
@@ -382,9 +365,7 @@ threadsafe Function/S CA_TemporaryWaveKey(dims)
 End
 
 /// @brief Calculate the cache key for the hardware device info wave
-Function/S CA_HWDeviceInfoKey(device, hardwareType, deviceID)
-	string device
-	variable hardwareType, deviceID
+Function/S CA_HWDeviceInfoKey(string device, variable hardwareType, variable deviceID)
 
 	variable crc
 
@@ -406,8 +387,7 @@ End
 /// - DAGain
 /// - DACAmp[][%TPAmp] column
 /// - testPulseLength, baselineFrac
-Function/S CA_HardwareDataTPKey(s)
-	STRUCT HardwareDataTPInput &s
+Function/S CA_HardwareDataTPKey(STRUCT HardwareDataTPInput &s)
 
 	variable crc
 
@@ -425,6 +405,7 @@ Function/S CA_HardwareDataTPKey(s)
 End
 
 Function/S CA_PSXKernelOperationKey(variable riseTau, variable decayTau, variable amp, variable numPoints, variable dt, WAVE range)
+
 	variable crc
 
 	crc = StringCRC(crc, num2strHighPrec(riseTau, precision = MAX_DOUBLE_PRECISION))
@@ -487,7 +468,7 @@ threadsafe Function/S CA_IgorInfoKey(variable selector)
 End
 
 /// @brief Return the key for the filled labnotebook parameter names
-Function/S CA_GetLabnotebookNamesKey(WAVE/T/Z textualValues, WAVE/T/Z numericalValues)
+Function/S CA_GetLabnotebookNamesKey(WAVE/Z/T textualValues, WAVE/Z/T numericalValues)
 
 	string key = ""
 	variable crc
@@ -544,10 +525,7 @@ End
 ///                @ref CacheFetchOptions
 ///
 /// Existing entries with the same key are overwritten.
-threadsafe Function CA_StoreEntryIntoCache(key, val, [options])
-	string   key
-	WAVE     val
-	variable options
+threadsafe Function CA_StoreEntryIntoCache(string key, WAVE val, [variable options])
 
 	variable index, storeDuplicate, foundIndex
 
@@ -622,9 +600,7 @@ End
 ///
 /// @return A wave reference with the stored data or a invalid wave reference
 /// if nothing could be found.
-threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
-	string   key
-	variable options
+threadsafe Function/WAVE CA_TryFetchingEntryFromCache(string key, [variable options])
 
 	variable index, returnDuplicate
 
@@ -687,8 +663,7 @@ End
 /// @brief Try to delete a cache entry
 ///
 /// @return One if it could be found and deleted, zero otherwise
-Function CA_DeleteCacheEntry(key)
-	string key
+Function CA_DeleteCacheEntry(string key)
 
 	WAVE/T keys = GetCacheKeyWave()
 

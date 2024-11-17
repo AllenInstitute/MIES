@@ -61,18 +61,20 @@ End
 /// @{
 
 Function GUD_ReturnsNullWaveIfNothingFound()
+
 	string recMacro, win
 
 	Display
 	win = s_name
 
 	recMacro = WinRecreation(win, 0)
-	WAVE/T/Z userDataKeys = GetUserdataKeys(recMacro)
+	WAVE/Z/T userDataKeys = GetUserdataKeys(recMacro)
 
 	CHECK_WAVE(userDataKeys, NULL_WAVE)
 End
 
 Function GUD_ReturnsFoundEntries()
+
 	string recMacro, win
 
 	Display
@@ -87,6 +89,7 @@ Function GUD_ReturnsFoundEntries()
 End
 
 Function GUD_ReturnsFoundEntriesWithoutDuplicates()
+
 	string recMacro, win
 
 	Display
@@ -151,6 +154,7 @@ End
 /// @{
 
 Function/S CreateTestPanel_IGNORE()
+
 	string win
 
 	NewPanel/K=1
@@ -162,10 +166,11 @@ Function/S CreateTestPanel_IGNORE()
 End
 
 Function GCP_Var_Works()
+
 	string win, recMacro
 	variable var, controlType
 
-	win = CreateTestPanel_IGNORE()
+	win                     = CreateTestPanel_IGNORE()
 	[recMacro, controlType] = GetRecreationMacroAndType(win, "setVar0")
 	CHECK_EQUAL_VAR(controlType, CONTROL_TYPE_SETVARIABLE)
 
@@ -183,10 +188,11 @@ Function GCP_Var_Works()
 End
 
 Function GCP_Str_Works()
+
 	string win, ref, str, recMacro
 	variable controlType
 
-	win = CreateTestPanel_IGNORE()
+	win                     = CreateTestPanel_IGNORE()
 	[recMacro, controlType] = GetRecreationMacroAndType(win, "setVar0")
 	CHECK_EQUAL_VAR(controlType, CONTROL_TYPE_SETVARIABLE)
 
@@ -211,6 +217,7 @@ End
 /// @{
 
 Function GetMarqueeHelperWorks()
+
 	string win, refWin
 	variable first, last
 
@@ -323,7 +330,7 @@ Function StoreRestoreAxisProps([string str])
 	WAVE props = GetAxesProperties(win)
 	RemoveTracesFromGraph(win)
 
-	WAVE/SDFR=root/Z data
+	WAVE/Z/SDFR=root data
 	CHECK_WAVE(data, NORMAL_WAVE)
 	AppendToGraph/W=$win data
 

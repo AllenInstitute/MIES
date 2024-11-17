@@ -19,15 +19,13 @@ static Constant TFH_STOP_ACQ    = 0x2 ///< DAQ stopping
 ///@}
 
 /// @brief Start the FIFO reset daemon used for TP MD
-Function TFH_StartFIFOResetDeamon(hwType, deviceID)
-	variable hwType, deviceID
+Function TFH_StartFIFOResetDeamon(variable hwType, variable deviceID)
 
 	TFH_StartFIFODeamonInternal(hwType, deviceID, TFH_RESTART_ACQ)
 End
 
 /// @brief Start the FIFO stop daemon used for DAQ MD
-Function TFH_StartFIFOStopDaemon(hwType, deviceID)
-	variable hwType, deviceID
+Function TFH_StartFIFOStopDaemon(variable hwType, variable deviceID)
 
 	TFH_StartFIFODeamonInternal(hwType, deviceID, TFH_STOP_ACQ)
 End
@@ -35,8 +33,7 @@ End
 /// @brief Start the FIFO reset daemon used for TP MD
 ///
 /// We create one thread group for each device.
-static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode)
-	variable hwType, deviceID, mode
+static Function TFH_StartFIFODeamonInternal(variable hwType, variable deviceID, variable mode)
 
 	string device
 
@@ -63,8 +60,7 @@ End
 /// @brief Stop the FIFO daemon if required
 ///
 /// Sets the global `threadGroupIDFifo` to NaN afterwards.
-Function TFH_StopFIFODaemon(hwType, deviceID)
-	variable hwType, deviceID
+Function TFH_StopFIFODaemon(variable hwType, variable deviceID)
 
 	string device
 
@@ -87,9 +83,7 @@ End
 ///
 /// Pushes the following entries into the thread queue:
 /// - fifoPos:       fifo position (relative to offset)
-threadsafe static Function TFH_FifoLoop(config, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
-	WAVE config
-	variable deviceID, stopCollectionPoint, ADChannelToMonitor, mode
+threadsafe static Function TFH_FifoLoop(WAVE config, variable deviceID, variable stopCollectionPoint, variable ADChannelToMonitor, variable mode)
 
 	variable flags, moreData, fifoPos
 

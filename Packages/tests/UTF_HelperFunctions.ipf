@@ -16,8 +16,7 @@
 /// @file UTF_HelperFunctions.ipf
 /// @brief This file holds helper functions for the tests
 
-Function/S PrependExperimentFolder_IGNORE(filename)
-	string filename
+Function/S PrependExperimentFolder_IGNORE(string filename)
 
 	PathInfo home
 	CHECK(V_flag)
@@ -172,6 +171,7 @@ Function AdditionalExperimentCleanup()
 End
 
 static Function WaitForPubSubHeartbeat()
+
 	variable i, foundHeart
 	string msg, filter
 
@@ -205,7 +205,8 @@ Function PrepareForPublishTest()
 End
 
 static Function CheckMessageFilters_IGNORE(string filter)
-	WAVE/T/Z allFilters = FFI_GetAvailableMessageFilters()
+
+	WAVE/Z/T allFilters = FFI_GetAvailableMessageFilters()
 	CHECK_WAVE(allFilters, TEXT_WAVE)
 
 	FindValue/TXOP=4/TEXT=(filter) allFilters
@@ -213,6 +214,7 @@ static Function CheckMessageFilters_IGNORE(string filter)
 End
 
 Function/S FetchPublishedMessage(string expectedFilter)
+
 	variable i
 	string msg, filter
 
@@ -250,6 +252,7 @@ End
 // all finite values not equal to 0 and 0 otherwise. Return `NaN` in all other
 // cases.
 Function GetEnvironmentVariableAsBoolean(string key)
+
 	variable value
 
 	value = str2numSafe(GetEnvironmentVariable(key))
@@ -751,6 +754,7 @@ Function/S CreateFakeSweepData(string win, string device, [variable sweepNo, FUN
 End
 
 Function/S GetDataBrowserWithData()
+
 	string win, device, result
 
 	device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
@@ -766,6 +770,7 @@ Function/S GetDataBrowserWithData()
 End
 
 Function/WAVE TrackAnalysisFunctionCalls()
+
 	variable i
 
 	DFREF           dfr = root:
@@ -784,13 +789,12 @@ Function/WAVE TrackAnalysisFunctionCalls()
 	return wv
 End
 
-Function/WAVE TrackAnalysisFunctionOrder([numHeadstages])
-	variable numHeadstages
+Function/WAVE TrackAnalysisFunctionOrder([variable numHeadstages])
 
 	variable i
 
 	DFREF             dfr = root:
-	WAVE/D/Z/SDFR=dfr wv  = anaFuncOrder
+	WAVE/Z/D/SDFR=dfr wv  = anaFuncOrder
 
 	if(WaveExists(wv))
 		return wv
@@ -847,6 +851,7 @@ Function/WAVE GetTrackSweepCounts()
 End
 
 Function IsRunningInCI()
+
 	return !IsEmpty(GetEnvironmentVariable("CI"))
 End
 
@@ -860,6 +865,7 @@ static Function RetrieveAllWindowsInCI()
 End
 
 Function TestBeginCommon()
+
 	RetrieveAllWindowsInCI()
 
 	MEN_ClearPackageSettings()
@@ -905,6 +911,7 @@ Function TestCaseEndCommon(string testcase, [variable restartAsyncFramework])
 End
 
 Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable minValue, variable maxValue)
+
 	variable chan
 	string ctrl, title, unit
 
@@ -931,7 +938,8 @@ Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable m
 	endfor
 End
 
-Function/WAVE ExtractSweepsFromSFPairs(WAVE/T/Z wv)
+Function/WAVE ExtractSweepsFromSFPairs(WAVE/Z/T wv)
+
 	variable numEntries, i
 
 	if(!WaveExists(wv))
@@ -953,6 +961,7 @@ Function/WAVE ExtractSweepsFromSFPairs(WAVE/T/Z wv)
 End
 
 Function CheckForBugMessages()
+
 	variable bugCount_ts
 
 	NVAR bugCount = $GetBugCount()
@@ -984,8 +993,7 @@ End
 /// @brief Exhaust all memory so that only `amountOfFreeMemoryLeft` [GB] is left
 ///
 /// Unwise use of this function can break Igor!
-Function ExhaustMemory(amountOfFreeMemoryLeft)
-	variable amountOfFreeMemoryLeft
+Function ExhaustMemory(variable amountOfFreeMemoryLeft)
 
 	variable i, expo = 10, err
 	string str
@@ -1008,6 +1016,7 @@ Function ExhaustMemory(amountOfFreeMemoryLeft)
 End
 
 Function LoadStimsetsIfRequired()
+
 	string   filepath
 	variable needsLoading
 
@@ -1423,6 +1432,7 @@ static Function CompareEpochsHistoricChannel(WAVE/T epochChannelRef, WAVE/T epoc
 End
 
 Function ExecuteSweepFormulaInDB(string code, string win)
+
 	string sfFormula, bsPanel
 
 	bsPanel = BSP_GetPanel(win)
@@ -1437,8 +1447,7 @@ Function ExecuteSweepFormulaInDB(string code, string win)
 End
 
 /// @brief test two jsonIDs for equal content
-Function CHECK_EQUAL_JSON(jsonID0, jsonID1)
-	variable jsonID0, jsonID1
+Function CHECK_EQUAL_JSON(variable jsonID0, variable jsonID1)
 
 	string jsonDump0, jsonDump1
 

@@ -705,9 +705,9 @@ static Function DCR_RecreateDataConfigurationResultFromLNB_TP(STRUCT DataConfigu
 	TP_UpdateTPSettingsCalculatedImpl(TPSettings, samplingIntervals, tpCalculated)
 
 	[totalLengthPoints, pulseStartPoints, pulseLengthPoints] = TP_GetCreationPropertiesInPoints(tpCalculated, s.dataAcqOrTP)
-	s.testPulseLength     = totalLengthPoints
-	s.tpPulseStartPoint   = pulseStartPoints
-	s.tpPulseLengthPoints = pulseLengthPoints
+	s.testPulseLength                                        = totalLengthPoints
+	s.tpPulseStartPoint                                      = pulseStartPoints
+	s.tpPulseLengthPoints                                    = pulseLengthPoints
 
 	WAVE s.testPulse = GetTestPulseAsFree()
 	TP_CreateTestPulseWaveImpl(s.testPulse, s.testPulseLength, s.tpPulseStartPoint, s.tpPulseLengthPoints)

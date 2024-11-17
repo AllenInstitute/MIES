@@ -17,9 +17,7 @@
 /// @param channelType One of @ref XopChannelConstants
 ///
 /// @see GetDAQDataSingleColumnWave() or SplitSweepIntoComponents()
-Function/WAVE GetDAQDataSingleColumnWaves(sweepDFR, channelType)
-	DFREF    sweepDFR
-	variable channelType
+Function/WAVE GetDAQDataSingleColumnWaves(DFREF sweepDFR, variable channelType)
 
 	ASSERT(DataFolderExistsDFR(sweepDFR), "sweepDFR is invalid")
 
@@ -73,10 +71,7 @@ End
 /// @param channelNumber hardware channel number
 /// @param splitTTLBits  [optional, defaults to false] return a single bit of the TTL wave
 /// @param ttlBit        [optional] number specifying the TTL bit
-threadsafe Function/WAVE GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNumber, [splitTTLBits, ttlBit])
-	DFREF sweepDFR
-	variable channelType, channelNumber
-	variable splitTTLBits, ttlBit
+threadsafe Function/WAVE GetDAQDataSingleColumnWave(DFREF sweepDFR, variable channelType, variable channelNumber, [variable splitTTLBits, variable ttlBit])
 
 	string wvName
 
@@ -103,8 +98,7 @@ End
 /// @brief Check if the given sweep number is valid
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsValidSweepNumber(sweepNo)
-	variable sweepNo
+threadsafe Function IsValidSweepNumber(variable sweepNo)
 
 	return IsInteger(sweepNo) && sweepNo >= 0
 End
@@ -116,10 +110,7 @@ End
 /// @param index  index into `sweep`, can be queried with #AFH_GetDAQDataColumn
 ///
 /// @returns a reference to a free wave with the single channel data
-threadsafe Function/WAVE ExtractOneDimDataFromSweep(config, sweep, index)
-	WAVE     config
-	WAVE     sweep
-	variable index
+threadsafe Function/WAVE ExtractOneDimDataFromSweep(WAVE config, WAVE sweep, variable index)
 
 	ASSERT_TS(IsValidSweepAndConfig(sweep, config, configVersion = 0), "Sweep and config are not compatible")
 
@@ -272,7 +263,7 @@ threadsafe static Function SplitSweepWave(WAVE numericalValues, variable sweep, 
 	WAVE/WAVE sweepRef = CopySweepToWRef(sweepWave, configWave)
 
 	[dChannelType, dChannelNumber] = GetConfigWaveDims(configWave)
-	numRows = DimSize(configWave, ROWS)
+	numRows                        = DimSize(configWave, ROWS)
 	for(i = 0; i < numRows; i += 1)
 		WAVE/Z wv = targetDFR:$componentNames[i]
 		KillOrMoveToTrash(wv = wv)
@@ -424,7 +415,7 @@ threadsafe Function/S GetSweepComponentWaveName(WAVE config, variable channelInd
 	variable channelNumber, dChannelType, dChannelNumber
 
 	[dChannelType, dChannelNumber] = GetConfigWaveDims(config)
-	channelType = StringFromList(config[channelIndex][dChannelType], XOP_CHANNEL_NAMES)
+	channelType                    = StringFromList(config[channelIndex][dChannelType], XOP_CHANNEL_NAMES)
 	ASSERT_TS(!isEmpty(channelType), "empty channel type")
 	channelNumber = config[channelIndex][dChannelNumber]
 	ASSERT_TS(IsFinite(channelNumber), "non-finite channel number")
@@ -435,9 +426,7 @@ End
 /// @brief Update the repurposed sweep time global variable
 ///
 /// Currently only useful for handling mid sweep analysis functions.
-Function UpdateLeftOverSweepTime(device, fifoPos)
-	string   device
-	variable fifoPos
+Function UpdateLeftOverSweepTime(string device, variable fifoPos)
 
 	string msg
 
@@ -476,8 +465,7 @@ Function LeftOverSweepTime(string device, variable fifoPos)
 End
 
 /// @brief Check if the given wave is a valid DAQDataWave
-threadsafe Function IsValidSweepWave(sweep)
-	WAVE/Z sweep
+threadsafe Function IsValidSweepWave(WAVE/Z sweep)
 
 	if(!WaveExists(sweep))
 		return 0
@@ -505,9 +493,7 @@ End
 /// @brief Return the total onset delay of the given sweep from the labnotebook
 ///
 /// UTF_NOINSTRUMENTATION
-Function GetTotalOnsetDelay(numericalValues, sweepNo)
-	WAVE     numericalValues
-	variable sweepNo
+Function GetTotalOnsetDelay(WAVE numericalValues, variable sweepNo)
 
 	// present since 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
 	return GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
@@ -545,8 +531,7 @@ Function/WAVE TextSweepToWaveRef(WAVE sweepWave)
 End
 
 /// @brief Extract the sweep number from a `$something_*` string
-threadsafe Function ExtractSweepNumber(str)
-	string str
+threadsafe Function ExtractSweepNumber(string str)
 
 	variable numElements, sweepNo
 

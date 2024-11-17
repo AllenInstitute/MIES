@@ -11,6 +11,7 @@
 
 /// @brief Return the name of the experiment without the file suffix
 threadsafe Function/S GetExperimentName()
+
 	return IgorInfo(1)
 End
 
@@ -26,6 +27,7 @@ End
 /// Due to memory fragmentation you can not assume that you can still create a wave
 /// occupying as much space as returned.
 threadsafe Function GetFreeMemory()
+
 	variable freeMem
 
 #if defined(IGOR64)
@@ -44,8 +46,7 @@ End
 /// period to be reached are also running.
 ///
 /// @param task Named background task identifier, this is *not* the function set with `proc=`
-Function IsBackgroundTaskRunning(task)
-	string task
+Function IsBackgroundTaskRunning(string task)
 
 	CtrlNamedBackground $task, status
 	return NumberByKey("RUN", s_info)
@@ -56,9 +57,7 @@ End
 /// @param name         name of the keyword/setting
 /// @param globalSymbol [optional, defaults to false] `name` refers to a global
 ///                     symbol set via `poundDefine`
-Function QuerySetIgorOption(name, [globalSymbol])
-	string   name
-	variable globalSymbol
+Function QuerySetIgorOption(string name, [variable globalSymbol])
 
 	string   cmd
 	variable result
@@ -98,6 +97,7 @@ End
 ///
 /// Uses the "Operation Queue".
 Function ForceRecompile()
+
 	Execute/P/Q "Silent 100"
 End
 
@@ -115,6 +115,7 @@ End
 
 /// @brief Return an Igor-style path to the Igor Pro executable
 Function/S GetIgorExecutable()
+
 	string path = SpecialDirPath("Igor Executable", 0, 0, 0)
 
 #ifdef IGOR64
@@ -143,7 +144,7 @@ threadsafe Function/S GetIgorInfo(variable selector)
 	string key
 
 	key = CA_IgorInfoKey(selector)
-	WAVE/T/Z result = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+	WAVE/Z/T result = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 
 	if(!WaveExists(result))
 		Make/FREE/T result = {IgorInfo(selector)}
@@ -155,6 +156,7 @@ End
 
 /// @brief Return the Igor Pro version string
 threadsafe Function/S GetIgorProVersion()
+
 	return StringByKey("IGORFILEVERSION", GetIgorInfo(3))
 End
 
@@ -169,6 +171,7 @@ End
 /// This allows to distinguish different builds from the same major/minor
 /// version.
 threadsafe Function/S GetIgorProBuildVersion()
+
 	return StringByKey("BUILD", GetIgorInfo(0))
 End
 
@@ -189,14 +192,14 @@ End
 /// @brief Bring the control window (the window with the command line) to the
 ///        front of the desktop
 Function ControlWindowToFront()
+
 	DoWindow/H
 End
 
 /// @brief Execute a list of functions via the Operation Queue
 ///
 /// Special purpose function. Not intended for normal use.
-Function ExecuteListOfFunctions(funcList)
-	string funcList
+Function ExecuteListOfFunctions(string funcList)
 
 	variable i, numEntries
 	string func
@@ -216,8 +219,7 @@ End
 /// @brief High precision version of the builtin Sleep command
 ///
 /// @param var time in seconds to busy-sleep (current precision is around 0.1ms)
-Function SleepHighPrecision(var)
-	variable var
+Function SleepHighPrecision(variable var)
 
 	ASSERT(var >= 0, "Invalid duration")
 
@@ -232,8 +234,7 @@ End
 /// @brief Return the machine epsilon for the given wave type
 ///
 /// Experimentally determined with Igor Pro 7.08
-Function GetMachineEpsilon(type)
-	variable type
+Function GetMachineEpsilon(variable type)
 
 	type = ClearBit(type, IGOR_TYPE_UNSIGNED)
 	ASSERT((type & IGOR_TYPE_COMPLEX) == 0, "Complex waves are not supported")
@@ -257,6 +258,7 @@ End
 ///        a readable copy of the history starting from the time of the
 ///        notebook creation.
 Function CreateHistoryNotebook()
+
 	NewNotebook/K=2/V=0/F=0/N=HistoryCarbonCopy
 End
 
@@ -303,6 +305,7 @@ End
 ///
 /// Requires administrative privileges via UAC. Only required once for ITC hardware.
 Function TurnOffASLR()
+
 	string cmd, path
 
 	path = GetFolder(FunctionPath("")) + ":ITCXOP2:tools:Disable-ASLR-for-Igor64.ps1"
@@ -316,6 +319,7 @@ End
 
 /// @brief Check if we are running on Windows 10/11
 Function IsWindows10Or11()
+
 	string info, os
 
 	info = IgorInfo(3)
@@ -326,8 +330,7 @@ End
 /// @brief Upload the given JSON document
 ///
 /// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
-Function UploadJSONPayload(jsonID)
-	variable jsonID
+Function UploadJSONPayload(variable jsonID)
 
 	URLrequest/DSTR=(JSON_Dump(jsonID)) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
 	ASSERT(!V_Flag, "URLrequest did not succeed due to: " + S_ServerResponse)
@@ -337,6 +340,7 @@ End
 ///
 /// It allows to distinguish multiple Igor instances, but is not globally unique.
 threadsafe Function/S GetIgorInstanceID()
+
 	return Hash(IgorInfo(-102), 1)
 End
 
@@ -351,6 +355,7 @@ End
 /// \endrst
 ///
 Function CleanupOperationQueueResult()
+
 	Execute/P/Q "KillVariables/Z V_flag"
 End
 
@@ -358,6 +363,7 @@ End
 ///
 /// The result is constant and can therefore be compared with constants.
 threadsafe Function ConvertXOPErrorCode(variable err)
+
 	// error codes -1 to 9999 are Igor Pro error codes
 	// for first loaded XOP -> xop error codes returned are in the range 10000+ up to max. 10999
 	// for second+ loaded XOP -> xop error codes returned are offsetted by n x 0x10000 per XOP instead of 10000

@@ -19,10 +19,7 @@ static Constant AR_MIN_RANGE_FACTOR = 0.1
 /// - DAC
 /// - ADC
 /// - Headstage
-static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
-	DFREF    sweepDFR
-	variable sweepNo
-	WAVE     numericalValues
+static Function/WAVE AR_ComputeRanges(DFREF sweepDFR, variable sweepNo, WAVE numericalValues)
 
 	variable i, dac, adc
 	variable level, index, total
@@ -96,10 +93,7 @@ static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 	return ranges
 End
 
-static Function AR_UpdatePanel(device, ranges, sweepDFR)
-	string device
-	WAVE   ranges
-	DFREF  sweepDFR
+static Function AR_UpdatePanel(string device, WAVE ranges, DFREF sweepDFR)
 
 	AR_SetSweepFolder(device, sweepDFR)
 
@@ -113,8 +107,7 @@ static Function AR_UpdatePanel(device, ranges, sweepDFR)
 	AR_UpdateListBoxWave(device)
 End
 
-static Function AR_UpdateListBoxWave(device)
-	string device
+static Function AR_UpdateListBoxWave(string device)
 
 	variable cutoffLength_before, cutoffLength_after
 	string extPanel
@@ -132,8 +125,7 @@ static Function AR_UpdateListBoxWave(device)
 End
 
 /// @brief Remove the traces used for highlightning the to-be-removed ranges
-static Function AR_RemoveTraces(graph)
-	string graph
+static Function AR_RemoveTraces(string graph)
 
 	string traces, trace
 	variable numEntries, i
@@ -149,8 +141,7 @@ static Function AR_RemoveTraces(graph)
 End
 
 /// @brief Return a list of the traces used for highlightning the to-be-removed ranges
-static Function/S AR_GetHighlightTraces(graph)
-	string graph
+static Function/S AR_GetHighlightTraces(string graph)
 
 	WAVE/Z/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"ArtefactRemoval"})
 
@@ -161,8 +152,7 @@ static Function/S AR_GetHighlightTraces(graph)
 	return TextWaveToList(traces, ";")
 End
 
-Function AR_HighlightArtefactsEntry(graph)
-	string graph
+Function AR_HighlightArtefactsEntry(string graph)
 
 	string traces, trace, extPanel
 	variable numEntries, i, index, row
@@ -199,9 +189,7 @@ Function AR_HighlightArtefactsEntry(graph)
 	endfor
 End
 
-static Function AR_HandleRanges(graph, [removeRange])
-	string   graph
-	variable removeRange
+static Function AR_HandleRanges(string graph, [variable removeRange])
 
 	variable first, last, substituteValue
 	variable i, j, k, traceIndex, numEntries
@@ -244,7 +232,7 @@ static Function AR_HandleRanges(graph, [removeRange])
 				continue
 			endif
 
-			WAVE/T/Z leftAxisMatches = TUD_GetUserDataAsWave(graph, "YAXIS", keys = {"channelType", "channelNumber"}, \
+			WAVE/Z/T leftAxisMatches = TUD_GetUserDataAsWave(graph, "YAXIS", keys = {"channelType", "channelNumber"}, \
 			                                                 values = {"AD", num2str(j)})
 			ASSERT(WaveExists(leftAxisMatches) && DimSize(leftAxisMatches, ROWS) >= 1, "Expected one hit")
 			leftAxis = leftAxisMatches[0]
@@ -283,8 +271,7 @@ End
 /// @brief Return the datafolder reference to the folder storing the listbox wave and the artefact data wave
 ///
 /// Requires the user data `PANEL_FOLDER` of the external artefact removal panel.
-static Function/DF AR_GetFolder(device)
-	string device
+static Function/DF AR_GetFolder(string device)
 
 	if(!AR_IsActive(device))
 		return $""
@@ -296,8 +283,7 @@ End
 /// @brief Return the datafolder reference to the folder storing the single 1D sweep waves
 ///
 /// Requires the user data `AR_SWEEPFOLDER` of the external artefact removal panel.
-static Function/DF AR_GetSweepFolder(device)
-	string device
+static Function/DF AR_GetSweepFolder(string device)
 
 	if(!AR_IsActive(device))
 		return $""
@@ -307,15 +293,12 @@ static Function/DF AR_GetSweepFolder(device)
 End
 
 /// @brief Updates the `AR_SWEEPFOLDER` user data of the artefact removal panel
-static Function AR_SetSweepFolder(device, sweepDFR)
-	string device
-	DFREF  sweepDFR
+static Function AR_SetSweepFolder(string device, DFREF sweepDFR)
 
 	BSP_SetFolder(device, sweepDFR, MIES_BSP_AR_SWEEPFOLDER)
 End
 
-Function AR_MainListBoxProc(lba) : ListBoxControl
-	STRUCT WMListboxAction &lba
+Function AR_MainListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 
 	string graph
 
@@ -330,8 +313,7 @@ Function AR_MainListBoxProc(lba) : ListBoxControl
 	return 0
 End
 
-Function AR_SetVarProcCutoffLength(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function AR_SetVarProcCutoffLength(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	string graph, device
 
@@ -349,8 +331,7 @@ Function AR_SetVarProcCutoffLength(sva) : SetVariableControl
 	return 0
 End
 
-Function AR_ButtonProc_RemoveRanges(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function AR_ButtonProc_RemoveRanges(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string graph, win
 
@@ -367,10 +348,7 @@ Function AR_ButtonProc_RemoveRanges(ba) : ButtonControl
 	return 0
 End
 
-Function AR_UpdateTracesIfReq(graph, sweepFolder, sweepNo)
-	string   graph
-	variable sweepNo
-	DFREF    sweepFolder
+Function AR_UpdateTracesIfReq(string graph, DFREF sweepFolder, variable sweepNo)
 
 	string device
 
@@ -389,8 +367,7 @@ Function AR_UpdateTracesIfReq(graph, sweepFolder, sweepNo)
 	AR_HandleRanges(graph)
 End
 
-Function AR_CheckProc_Update(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function AR_CheckProc_Update(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -402,8 +379,7 @@ Function AR_CheckProc_Update(cba) : CheckBoxControl
 End
 
 /// checks if AR is active.
-Function AR_IsActive(win)
-	string win
+Function AR_IsActive(string win)
 
 	return BSP_IsActive(win, MIES_BSP_AR)
 End

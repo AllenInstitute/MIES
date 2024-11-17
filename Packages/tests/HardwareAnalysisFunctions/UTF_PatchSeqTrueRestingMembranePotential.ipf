@@ -46,10 +46,7 @@ static Function GlobalPreInit(string device)
 	PrepareForPublishTest()
 End
 
-static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name, [chunk])
-	string device
-	variable sweepNo, chunk
-	string name
+static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, string name, [variable chunk])
 
 	variable val, type
 	string key
@@ -174,8 +171,7 @@ Function CheckBaselineChunks(string device, WAVE chunkTimes)
 	CheckPSQChunkTimes(device, chunkTimes)
 End
 
-static Function PS_VM1_preAcq(device)
-	string device
+static Function PS_VM1_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -200,8 +196,7 @@ static Function PS_VM1_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM1([str])
-	string str
+static Function PS_VM1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -227,6 +222,7 @@ static Function PS_VM1([str])
 End
 
 static Function PS_VM1_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 2
@@ -277,8 +273,7 @@ static Function PS_VM1_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM2_preAcq(device)
-	string device
+static Function PS_VM2_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -303,8 +298,7 @@ static Function PS_VM2_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM2([str])
-	string str
+static Function PS_VM2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -333,6 +327,7 @@ static Function PS_VM2([str])
 End
 
 static Function PS_VM2_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 0
@@ -388,8 +383,7 @@ static Function PS_VM2_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM3_preAcq(device)
-	string device
+static Function PS_VM3_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -414,8 +408,7 @@ static Function PS_VM3_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM3([str])
-	string str
+static Function PS_VM3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -445,6 +438,7 @@ static Function PS_VM3([str])
 End
 
 static Function PS_VM3_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 2
@@ -495,8 +489,7 @@ static Function PS_VM3_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM4_preAcq(device)
-	string device
+static Function PS_VM4_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -521,8 +514,7 @@ static Function PS_VM4_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM4([str])
-	string str
+static Function PS_VM4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -551,6 +543,7 @@ static Function PS_VM4([str])
 End
 
 static Function PS_VM4_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 2
@@ -606,8 +599,7 @@ static Function PS_VM4_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM5_preAcq(device)
-	string device
+static Function PS_VM5_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -632,8 +624,7 @@ static Function PS_VM5_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM5([str])
-	string str
+static Function PS_VM5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -662,6 +653,7 @@ static Function PS_VM5([str])
 End
 
 static Function PS_VM5_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 2
@@ -717,8 +709,7 @@ static Function PS_VM5_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM5a_preAcq(device)
-	string device
+static Function PS_VM5a_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -742,8 +733,7 @@ static Function PS_VM5a_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM5a([str])
-	string str
+static Function PS_VM5a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -779,6 +769,7 @@ static Function PS_VM5a([str])
 End
 
 static Function PS_VM5a_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 2
@@ -834,8 +825,7 @@ static Function PS_VM5a_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM5b_preAcq(device)
-	string device
+static Function PS_VM5b_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -860,8 +850,7 @@ static Function PS_VM5b_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM5b([str])
-	string str
+static Function PS_VM5b([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -890,6 +879,7 @@ static Function PS_VM5b([str])
 End
 
 static Function PS_VM5b_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 0
@@ -945,8 +935,7 @@ static Function PS_VM5b_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM6_preAcq(device)
-	string device
+static Function PS_VM6_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -971,8 +960,7 @@ static Function PS_VM6_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM6([str])
-	string str
+static Function PS_VM6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1004,8 +992,7 @@ static Function PS_VM6([str])
 	CHECK_EQUAL_VAR(AFH_GetlastSweepAcquired(str), NaN)
 End
 
-static Function PS_VM7_preAcq(device)
-	string device
+static Function PS_VM7_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -1030,8 +1017,7 @@ static Function PS_VM7_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM7([str])
-	string str
+static Function PS_VM7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1060,6 +1046,7 @@ static Function PS_VM7([str])
 End
 
 static Function PS_VM7_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 0
@@ -1115,8 +1102,7 @@ static Function PS_VM7_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM7a_preAcq(device)
-	string device
+static Function PS_VM7a_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -1141,8 +1127,7 @@ static Function PS_VM7a_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM7a([str])
-	string str
+static Function PS_VM7a([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1172,6 +1157,7 @@ static Function PS_VM7a([str])
 End
 
 static Function PS_VM7a_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 1
@@ -1226,8 +1212,7 @@ static Function PS_VM7a_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM7b_preAcq(device)
-	string device
+static Function PS_VM7b_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -1252,8 +1237,7 @@ static Function PS_VM7b_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM7b([str])
-	string str
+static Function PS_VM7b([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1282,6 +1266,7 @@ static Function PS_VM7b([str])
 End
 
 static Function PS_VM7b_REENTRY([string str])
+
 	variable sweepNo
 	string stimset, stimsetIndexEnd, expected
 
@@ -1338,8 +1323,7 @@ static Function PS_VM7b_REENTRY([string str])
 	CheckBaselineChunks(str, {20, 520})
 End
 
-static Function PS_VM8_preAcq(device)
-	string device
+static Function PS_VM8_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_TrueRest_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -1365,8 +1349,7 @@ static Function PS_VM8_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_VM8([str])
-	string str
+static Function PS_VM8([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -1395,6 +1378,7 @@ static Function PS_VM8([str])
 End
 
 static Function PS_VM8_REENTRY([string str])
+
 	variable sweepNo
 
 	sweepNo = 0

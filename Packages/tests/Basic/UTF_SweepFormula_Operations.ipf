@@ -170,6 +170,7 @@ End
 
 // UTF_TD_GENERATOR DataGenerators#InvalidStoreFormulas
 static Function StoreChecksParameters([string str])
+
 	string win
 
 	win = GetDataBrowserWithData()
@@ -182,6 +183,7 @@ End
 
 // UTF_TD_GENERATOR DataGenerators#GetStoreWaves
 static Function StoreWorks([WAVE wv])
+
 	string win, results, ref
 	variable array
 
@@ -207,7 +209,7 @@ static Function StoreWorks([WAVE wv])
 	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [ABCD]", SWEEP_FORMULA_RESULT)
 	CHECK_PROPER_STR(results)
 
-	WAVE/WAVE/Z container = JSONToWave(results)
+	WAVE/Z/WAVE container = JSONToWave(results)
 	CHECK_WAVE(container, WAVE_WAVE)
 	WAVE/Z resultsWave = container[0]
 	CHECK_EQUAL_TEXTWAVES(wv, resultsWave, mode = WAVE_DATA)
@@ -221,6 +223,7 @@ static Function StoreWorks([WAVE wv])
 End
 
 static Function StoreWorksWithMultipleDataSets()
+
 	string str, results
 
 	string textKey   = LABNOTEBOOK_USER_PREFIX + "TEXTKEY"
@@ -277,8 +280,7 @@ static Function TestOperationWave()
 End
 
 // UTF_TD_GENERATOR DataGenerators#TestOperationTPBase_TPSS_TPInst_FormulaGetter
-static Function TestOperationTPBase_TPSS_TPInst([str])
-	string str
+static Function TestOperationTPBase_TPSS_TPInst([string str])
 
 	string func, formula, strRef, dataType, dataTypeRef
 	string win
@@ -404,8 +406,7 @@ static Function TestOperationTPfit()
 End
 
 // UTF_TD_GENERATOR DataGenerators#FuncCommandGetter
-static Function TestVariousFunctions([str])
-	string str
+static Function TestVariousFunctions([string str])
 
 	string func, oneDResult, twoDResult
 	variable jsonIDOneD, jsonIDTwoD
@@ -720,7 +721,7 @@ static Function TestOperationDifferentiateIntegrate()
 	str = "derivative([0,1,4,9,16,25,36,49,64,81])"
 	WAVE output = SF_ExecuteFormula(str, win, singleResult = 1, useVariables = 0)
 	Make/N=10/U/I/FREE sourcewave = p^2
-	Differentiate/EP=0 sourcewave / D=testwave
+	Differentiate/EP=0 sourcewave/D=testwave
 	MakeWaveFree(testwave)
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
@@ -2078,6 +2079,7 @@ static Function TestOperationPowerSpectrum()
 End
 
 static Function TestOperationLabNotebook()
+
 	variable i, j, sweepNumber, channelNumber, numSweeps, numChannels, idx
 	string str, key, axLabel, browser, yAxisLabel
 
@@ -2089,7 +2091,7 @@ static Function TestOperationLabNotebook()
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
 	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_ADC, textKey, textValue)
-	win = GetCurrentWindow()
+	win                                         = GetCurrentWindow()
 
 	Make/FREE/N=(numSweeps * numChannels) channelsRef
 	channelsRef[] = channels[trunc(p / numChannels)][mod(p, numChannels)]
@@ -2210,7 +2212,7 @@ static Function TestOperationEpochs()
 	textValue += "0.5100000,0.5200000," + epoch2 + ",2,"
 
 	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_DAC, textKey, textValue)
-	win = GetCurrentWindow()
+	win                                         = GetCurrentWindow()
 
 	str = "epochs(\"E0_PT_P48\")"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
@@ -2484,7 +2486,7 @@ static Function TestOperationSelectFails([string str])
 	string win, device
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
-	win = CreateFakeSweepData(win, device, sweepNo = 0)
+	win           = CreateFakeSweepData(win, device, sweepNo = 0)
 
 	try
 		WAVE/WAVE comp = SF_ExecuteFormula(str, win, useVariables = 0)
@@ -2523,7 +2525,7 @@ static Function TestOperationSelect()
 	dataRef[][0]     = sweepNo
 	dataRef[0, 1][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[2, 3][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
-	dataRef[][2]     = {6, 7, 2, 3}                           // AD6, AD7, DA2, DA3
+	dataRef[][2]     = {6, 7, 2, 3} // AD6, AD7, DA2, DA3
 	dataRef[][3]     = NaN
 	str              = "select(selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
@@ -2536,7 +2538,7 @@ static Function TestOperationSelect()
 	dataRef[][0]  = sweepNo
 	dataRef[0][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[1][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
-	dataRef[][2]  = {6, 2}                                                                       // AD6, DA2
+	dataRef[][2]  = {6, 2} // AD6, DA2
 	dataRef[][3]  = NaN
 	str           = "select(selchannels(2, 6),selsweeps(" + num2istr(sweepNo) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
@@ -2544,7 +2546,7 @@ static Function TestOperationSelect()
 	Make/FREE/N=(2, 4) dataRef
 	dataRef[][0] = sweepNo
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {6, 7}                                                                     // AD6, AD7
+	dataRef[][2] = {6, 7} // AD6, AD7
 	dataRef[][3] = NaN
 	str          = "select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
@@ -2556,7 +2558,7 @@ static Function TestOperationSelect()
 	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = 3
 	dataRef[][1] = WhichListItem("DA", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {0}                                                                   // DA0 (unassoc)
+	dataRef[][2] = {0} // DA0 (unassoc)
 	dataRef[][3] = NaN
 	str          = "select(selchannels(DA0),selsweeps(" + num2istr(3) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
@@ -2564,7 +2566,7 @@ static Function TestOperationSelect()
 	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = 3
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {1}                                                                   // AD1 (unassoc)
+	dataRef[][2] = {1} // AD1 (unassoc)
 	dataRef[][3] = NaN
 	str          = "select(selchannels(AD1),selsweeps(" + num2istr(3) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
@@ -2572,7 +2574,7 @@ static Function TestOperationSelect()
 	Make/FREE/N=(1, 4) dataRef
 	dataRef[][0] = 3
 	dataRef[][1] = WhichListItem("TTL", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {2}                                                                    // TTL2
+	dataRef[][2] = {2} // TTL2
 	dataRef[][3] = NaN
 	str          = "select(selchannels(TTL2),selsweeps(" + num2istr(3) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
@@ -2592,9 +2594,9 @@ static Function TestOperationSelect()
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
 	Make/FREE/N=(4, 4) dataRef
-	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1}                                                             // sweep 0, 1 with 2 AD channels each
+	dataRef[][0] = {sweepNo, sweepNo, sweepNo + 1, sweepNo + 1} // sweep 0, 1 with 2 AD channels each
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {6, 7, 6, 7}                                                                                             // AD6, AD7, AD6, AD7
+	dataRef[][2] = {6, 7, 6, 7}                                 // AD6, AD7, AD6, AD7
 	dataRef[][3] = NaN
 	str          = "select(selchannels(AD),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
@@ -2602,7 +2604,7 @@ static Function TestOperationSelect()
 	Make/FREE/N=(2, 4) dataRef
 	dataRef[][0] = {sweepNo, sweepNo + 1}
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
-	dataRef[][2] = {6, 6}                                                                                                    // AD6, AD6
+	dataRef[][2] = {6, 6} // AD6, AD6
 	dataRef[][3] = NaN
 	str          = "select(selchannels(AD6),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
@@ -2611,7 +2613,7 @@ static Function TestOperationSelect()
 	dataRef[][0] = {sweepNo, sweepNo, sweepNo, sweepNo + 1, sweepNo + 1, sweepNo + 1}
 	chanList     = "AD;DA;DA;AD;DA;DA;"
 	dataRef[][1] = WhichListItem(StringFromList(p, chanList), XOP_CHANNEL_NAMES)
-	dataRef[][2] = {6, 2, 3, 6, 2, 3}                                                                                            // AD6, DA2, DA3, AD6, DA2, DA3
+	dataRef[][2] = {6, 2, 3, 6, 2, 3} // AD6, DA2, DA3, AD6, DA2, DA3
 	dataRef[][3] = NaN
 	str          = "select(selchannels(AD6, DA),selsweeps(" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "),selvis(all))"
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
@@ -2736,7 +2738,7 @@ static Function TestOperationSelect()
 	CHECK_WAVE(dataSel, NULL_WAVE)
 
 	Make/FREE/N=(2, 4) dataRef
-	dataRef[][0] = {sweepNo, sweepNo + 1}                           // both sweeps have the same SCI
+	dataRef[][0] = {sweepNo, sweepNo + 1} // both sweeps have the same SCI
 	dataRef[][1] = WhichListItem("AD", XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 6}
 	dataRef[][3] = NaN
@@ -2900,7 +2902,7 @@ static Function TestOperationSelect()
 	dataRef[][1] = WhichListItem(StringFromList(p, chanList), XOP_CHANNEL_NAMES)
 	dataRef[][2] = {6, 7, 2, 6, 7, 2}
 	dataRef[][3] = NaN
-	str          = "select(selchannels(DA2, AD),selsweeps())"                         // note: channels are sorted AD, DA...
+	str          = "select(selchannels(DA2, AD),selsweeps())" // note: channels are sorted AD, DA...
 	TestOperationSelectCompareWithFullRange(win, str, dataRef)
 
 	// No existing sweeps
@@ -3032,12 +3034,12 @@ static Function TestOperationMerge()
 	CHECK_EQUAL_WAVES(wv, refWvTxt)
 
 	code = "merge(dataset())"
-	WAVE/WAVE/Z output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/Z/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
 
 	code = "merge(dataset(wave(I_DONT_EXIST)))"
-	WAVE/WAVE/Z output = SF_ExecuteFormula(code, win, useVariables = 0)
+	WAVE/Z/WAVE output = SF_ExecuteFormula(code, win, useVariables = 0)
 	CHECK_WAVE(output, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
 End
@@ -3097,6 +3099,7 @@ End
 // data acquired with model cell, 45% baseline
 // the data is the inserted TP plus 10ms flat stimset
 static Function TPWithModelCell()
+
 	string win, device, str
 
 	device = HW_ITC_BuildDeviceString("ITC18USB", "0")
@@ -3116,7 +3119,7 @@ static Function TPWithModelCell()
 	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
 
 	str = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [ss]", SWEEP_FORMULA_RESULT)
-	WAVE/WAVE/Z container = JSONToWave(str)
+	WAVE/Z/WAVE container = JSONToWave(str)
 	CHECK_WAVE(container, WAVE_WAVE)
 	WAVE/Z results = container[0]
 	CHECK_WAVE(results, NUMERIC_WAVE)
@@ -3124,7 +3127,7 @@ static Function TPWithModelCell()
 	CHECK_EQUAL_WAVES(ref, results, mode = WAVE_DATA)
 
 	str = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [inst]", SWEEP_FORMULA_RESULT)
-	WAVE/WAVE/Z container = JSONToWave(str)
+	WAVE/Z/WAVE container = JSONToWave(str)
 	CHECK_WAVE(container, WAVE_WAVE)
 	WAVE/Z results = container[0]
 	CHECK_WAVE(results, NUMERIC_WAVE)
@@ -3199,6 +3202,7 @@ static Function DefaultFormulaWorks()
 End
 
 static Function TestOperationAnaFuncParam()
+
 	variable numSweeps, numChannels, idx, sweepNo
 	string win, device, params, str, textKey, textValue
 
@@ -3208,7 +3212,7 @@ static Function TestOperationAnaFuncParam()
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
 	[numSweeps, numChannels, WAVE/U/I channels] = FillFakeDatabrowserWindow(win, device, XOP_CHANNEL_TYPE_ADC, textKey, textValue)
-	win = GetCurrentWindow()
+	win                                         = GetCurrentWindow()
 
 	Make/FREE/T/N=(1, 1) funcParamsKey
 	funcParamsKey[0][0] = ANALYSIS_FUNCTION_PARAMS_LBN

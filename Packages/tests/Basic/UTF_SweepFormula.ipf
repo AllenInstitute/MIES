@@ -185,6 +185,7 @@ static Function Transitions()
 End
 
 static Function stringHandling()
+
 	variable jsonID0, jsonID1
 
 	// basic strings
@@ -498,8 +499,7 @@ static Function TestSigns4()
 End
 
 // UTF_TD_GENERATOR DataGenerators#InvalidInputs
-static Function TestInvalidInput([str])
-	string str
+static Function TestInvalidInput([string str])
 
 	try
 		DirectToFormulaParser(str)
@@ -536,6 +536,7 @@ static Function brackets()
 End
 
 static Function array()
+
 	variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("[1]")
@@ -615,6 +616,7 @@ static Function array()
 End
 
 static Function whiteSpace()
+
 	variable jsonID0, jsonID1
 
 	jsonID0 = DirectToFormulaParser("1+(2*3)")
@@ -695,6 +697,7 @@ Function/WAVE FakeSweepDataGeneratorAPF1(WAVE sweep, variable numChannels)
 End
 
 static Function TestPlotting()
+
 	string traces
 
 	variable minimum, maximum, i, pos
@@ -1283,8 +1286,8 @@ static Function TestVariables1([WAVE wv])
 	WAVE/WAVE wRef = wv
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
-	win = CreateFakeSweepData(win, device, sweepNo = 0)
-	win = CreateFakeSweepData(win, device, sweepNo = 1)
+	win           = CreateFakeSweepData(win, device, sweepNo = 0)
+	win           = CreateFakeSweepData(win, device, sweepNo = 1)
 
 	WAVE/T formulaAndRest = wRef[0]
 

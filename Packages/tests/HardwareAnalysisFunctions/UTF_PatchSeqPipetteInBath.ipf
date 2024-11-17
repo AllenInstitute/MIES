@@ -12,6 +12,7 @@ static Function [STRUCT DAQSettings s] PS_GetDAQSettings(string device)
 End
 
 static Function GlobalPreAcq(string device)
+
 	variable ret
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
@@ -60,10 +61,7 @@ static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
 	return entries
 End
 
-static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
-	string   device
-	variable sweepNo
-	string   name
+static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, string name)
 
 	variable val, type
 	string key
@@ -166,8 +164,7 @@ static Function CheckTestPulseLikeEpochs(string device, [variable incomplete])
 	endif
 End
 
-static Function PS_PB1_preAcq(device)
-	string device
+static Function PS_PB1_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -189,8 +186,7 @@ static Function PS_PB1_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_PB1([str])
-	string str
+static Function PS_PB1([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -203,8 +199,7 @@ static Function PS_PB1([str])
 	wv[][][2] = 0
 End
 
-static Function PS_PB1_REENTRY([str])
-	string str
+static Function PS_PB1_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
@@ -236,8 +231,7 @@ static Function PS_PB1_REENTRY([str])
 	CheckTestPulseLikeEpochs(str, incomplete = 1)
 End
 
-static Function PS_PB2_preAcq(device)
-	string device
+static Function PS_PB2_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -259,8 +253,7 @@ static Function PS_PB2_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_PB2([str])
-	string str
+static Function PS_PB2([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -273,8 +266,7 @@ static Function PS_PB2([str])
 	wv[][][2] = 1
 End
 
-static Function PS_PB2_REENTRY([str])
-	string str
+static Function PS_PB2_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
@@ -307,8 +299,7 @@ static Function PS_PB2_REENTRY([str])
 	CheckTestPulseLikeEpochs(str, incomplete = 0)
 End
 
-static Function PS_PB3_preAcq(device)
-	string device
+static Function PS_PB3_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -330,8 +321,7 @@ static Function PS_PB3_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_PB3([str])
-	string str
+static Function PS_PB3([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -363,8 +353,7 @@ static Function PS_PB3([str])
 	wv[][3][2] = 0
 End
 
-static Function PS_PB3_REENTRY([str])
-	string str
+static Function PS_PB3_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
@@ -397,8 +386,7 @@ static Function PS_PB3_REENTRY([str])
 	CheckTestPulseLikeEpochs(str, incomplete = 0)
 End
 
-static Function PS_PB4_preAcq(device)
-	string device
+static Function PS_PB4_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -421,8 +409,7 @@ End
 
 // Same as PS_PB1 but has NumberOfFailedSweeps set to 2
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_PB4([str])
-	string str
+static Function PS_PB4([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -435,8 +422,7 @@ static Function PS_PB4([str])
 	wv[][][2] = 0
 End
 
-static Function PS_PB4_REENTRY([str])
-	string str
+static Function PS_PB4_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
@@ -468,8 +454,7 @@ static Function PS_PB4_REENTRY([str])
 	CheckTestPulseLikeEpochs(str, incomplete = 1)
 End
 
-static Function PS_PB5_preAcq(device)
-	string device
+static Function PS_PB5_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -491,8 +476,7 @@ static Function PS_PB5_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_PB5([str])
-	string str
+static Function PS_PB5([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -507,8 +491,7 @@ static Function PS_PB5([str])
 	wv[][][2] = 1
 End
 
-static Function PS_PB5_REENTRY([str])
-	string str
+static Function PS_PB5_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
@@ -542,8 +525,7 @@ static Function PS_PB5_REENTRY([str])
 	CheckTestPulseLikeEpochs(str, incomplete = 1)
 End
 
-static Function PS_PB6_preAcq(device)
-	string device
+static Function PS_PB6_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -565,8 +547,7 @@ static Function PS_PB6_preAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_PB6([str])
-	string str
+static Function PS_PB6([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -581,8 +562,7 @@ static Function PS_PB6([str])
 	wv[][][2] = 1
 End
 
-static Function PS_PB6_REENTRY([str])
-	string str
+static Function PS_PB6_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected
@@ -620,8 +600,7 @@ static Function PS_PB6_REENTRY([str])
 	CheckTestPulseLikeEpochs(str, incomplete = 1)
 End
 
-static Function PS_PB7_preAcq(device)
-	string device
+static Function PS_PB7_preAcq(string device)
 
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSLongThreshold", var = 0.5)
 	AFH_AddAnalysisParameter("PSQ_QC_Stimsets_DA_0", "BaselineRMSShortThreshold", var = 0.07)
@@ -647,8 +626,7 @@ End
 // Same as PS_PB2 but with failing sampling interval check
 //
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function PS_PB7([str])
-	string str
+static Function PS_PB7([string str])
 
 	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
 	AcquireData_NG(s, str)
@@ -661,8 +639,7 @@ static Function PS_PB7([str])
 	wv[][][2] = 1
 End
 
-static Function PS_PB7_REENTRY([str])
-	string str
+static Function PS_PB7_REENTRY([string str])
 
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, stimset, expected

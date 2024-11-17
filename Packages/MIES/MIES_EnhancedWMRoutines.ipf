@@ -84,7 +84,7 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 		thisDeltax    = deltax(w)
 		thisXMin      = leftx(w)
 		thisXMax      = pnt2x(w, numpnts(w) - 1)
-		XWavesAreSame = 0                        // at least 1 y wave has no x wave
+		XWavesAreSame = 0 // at least 1 y wave has no x wave
 		// 6.35: point-for-point averaging requires the deltaX of all waves to be identical.
 		if(numtype(rawDeltaX) != 0)
 			rawDeltaX = thisDeltaX // remember first deltaX before abs() below
@@ -271,9 +271,7 @@ End
 
 // We need the fractional point number but x2pnt
 // doesn't return that.
-threadsafe static Function x2pntWithFrac(wv, scaledDim)
-	WAVE     wv
-	variable scaledDim
+threadsafe static Function x2pntWithFrac(WAVE wv, variable scaledDim)
 
 	return (scaledDim - DimOffset(wv, 0)) / DimDelta(wv, 0)
 End

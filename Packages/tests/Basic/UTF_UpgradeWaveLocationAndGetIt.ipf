@@ -3,8 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UpgradeWaveLocationTesting
 
-static Function TEST_CASE_BEGIN_OVERRIDE(name)
-	string name
+static Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
 	TestCaseBeginCommon(name)
 
@@ -16,8 +15,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	Make/N=1 dfr:srcw = 12345
 End
 
-static Function TEST_CASE_END_OVERRIDE(name)
-	string name
+static Function TEST_CASE_END_OVERRIDE(string name)
 
 	KillDataFolder/Z destf
 	KillDataFolder/Z srcf
@@ -26,6 +24,7 @@ static Function TEST_CASE_END_OVERRIDE(name)
 End
 
 Function asserts_on_invalid_1()
+
 	STRUCT WaveLocationMod p
 
 	try
@@ -37,6 +36,7 @@ Function asserts_on_invalid_1()
 End
 
 Function asserts_on_invalid_2()
+
 	STRUCT WaveLocationMod p
 
 	p.dfr = root:
@@ -50,6 +50,7 @@ Function asserts_on_invalid_2()
 End
 
 Function asserts_on_invalid_3()
+
 	STRUCT WaveLocationMod p
 
 	p.name = "w"
@@ -63,6 +64,7 @@ Function asserts_on_invalid_3()
 End
 
 Function empty_wave_ref()
+
 	STRUCT WaveLocationMod p
 
 	p.name = "w"
@@ -73,6 +75,7 @@ Function empty_wave_ref()
 End
 
 Function no_trafo()
+
 	STRUCT WaveLocationMod p
 
 	p.name = "srcw"
@@ -84,6 +87,7 @@ Function no_trafo()
 End
 
 Function rename_wave_only()
+
 	STRUCT WaveLocationMod p
 
 	string newName, name
@@ -104,6 +108,7 @@ Function rename_wave_only()
 End
 
 Function rename_handles_equal_names()
+
 	STRUCT WaveLocationMod p
 
 	string newName, name
@@ -124,6 +129,7 @@ Function rename_handles_equal_names()
 End
 
 Function move_wave_only()
+
 	STRUCT WaveLocationMod p
 
 	string folder, newFolder
@@ -144,6 +150,7 @@ Function move_wave_only()
 End
 
 Function move_fails_on_non_exist_ret_src()
+
 	STRUCT WaveLocationMod p
 
 	string newFolder
@@ -168,6 +175,7 @@ Function move_fails_on_non_exist_ret_src()
 End
 
 Function move_handles_equal_folders()
+
 	STRUCT WaveLocationMod p
 
 	string folder, newFolder
@@ -188,6 +196,7 @@ Function move_handles_equal_folders()
 End
 
 Function move_rename_both_equal()
+
 	STRUCT WaveLocationMod p
 
 	string folder, newFolder
@@ -211,6 +220,7 @@ Function move_rename_both_equal()
 End
 
 Function move_rename()
+
 	STRUCT WaveLocationMod p
 
 	string folder, newFolder
@@ -240,6 +250,7 @@ Function move_rename()
 End
 
 Function move_rename_keeps_dfr()
+
 	STRUCT WaveLocationMod p
 
 	string folder, newFolder
@@ -270,11 +281,12 @@ Function move_rename_keeps_dfr()
 
 	CHECK(DataFolderExistsDFR(p.dfr))
 
-	WAVE/SDFR=tmpDFR/Z src = $name
+	WAVE/Z/SDFR=tmpDFR src = $name
 	CHECK_WAVE(src, NULL_WAVE)
 End
 
 Function return_dest_if_both_keep_src()
+
 	STRUCT WaveLocationMod p
 
 	string folder, newFolder
@@ -314,6 +326,7 @@ Function return_dest_if_both_keep_src()
 End
 
 Function fails_on_liberal_wavename()
+
 	STRUCT WaveLocationMod p
 
 	p.dfr     = srcf
@@ -329,6 +342,7 @@ Function fails_on_liberal_wavename()
 End
 
 Function fails_on_invalid_wavename()
+
 	STRUCT WaveLocationMod p
 
 	p.dfr     = srcf

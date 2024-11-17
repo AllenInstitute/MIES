@@ -224,6 +224,7 @@ Menu "GraphPopup"
 End
 
 Function SF_BringBrowserToFront()
+
 	string browser, graph
 
 	graph   = GetMainWindow(GetCurrentWindow())
@@ -394,11 +395,11 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	endfor
 
 	if(lastAction != SF_ACTION_UNINITIALIZED)
-		SFH_ASSERT(state != SF_STATE_ADDITION &&                         \
-		           state != SF_STATE_SUBTRACTION &&                      \
-		           state != SF_STATE_MULTIPLICATION &&                   \
-		           state != SF_STATE_DIVISION                            \
-		           , "Expected value after +, -, * or /", jsonId = jsonId)
+		SFH_ASSERT(state != SF_STATE_ADDITION &&                       \
+		           state != SF_STATE_SUBTRACTION &&                    \
+		           state != SF_STATE_MULTIPLICATION &&                 \
+		           state != SF_STATE_DIVISION,                         \
+		           "Expected value after +, -, * or /", jsonId = jsonId)
 	endif
 	SFH_ASSERT(state != SF_STATE_ARRAYELEMENT, "Expected value after \",\"", jsonId = jsonId)
 
@@ -445,11 +446,11 @@ static Function [variable jsonId, string jsonPath, variable lastCalculation, var
 
 	switch(action)
 		case SF_ACTION_FUNCTION:
-			parenthesisStart = strsearch(buffer, "(", 0, 0)
-			functionName     = buffer[0, parenthesisStart - 1]
+			parenthesisStart         = strsearch(buffer, "(", 0, 0)
+			functionName             = buffer[0, parenthesisStart - 1]
 			[functionName, jsonPath] = SF_ParserEvaluatePossibleSign(jsonId, indentLevel)
-			tempPath = SF_ParserAdaptSubPath(jsonId, jsonPath, functionName)
-			subId    = SF_FormulaParser(buffer[parenthesisStart + 1, Inf], createdArray = wasArrayCreated, indentLevel = indentLevel + 1)
+			tempPath                 = SF_ParserAdaptSubPath(jsonId, jsonPath, functionName)
+			subId                    = SF_FormulaParser(buffer[parenthesisStart + 1, Inf], createdArray = wasArrayCreated, indentLevel = indentLevel + 1)
 			SF_FPAddArray(jsonId, tempPath, subId, wasArrayCreated)
 			break
 		case SF_ACTION_PARENTHESIS:
@@ -872,7 +873,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 
 		Make/FREE/D/N=0 indicesOfOperationsWithScalarResult
 		WAVE/ZZ   out
-		WAVE/T/ZZ outT
+		WAVE/ZZ/T outT
 
 		// Get indices of Objects, Arrays and Strings on current level
 		EXTRACT/FREE/INDX types, arrElemAt, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY) || (types[p] == JSON_STRING) || (types[p] == JSON_NUMERIC)
@@ -1229,7 +1230,7 @@ static Function [WAVE/WAVE formulaResults, STRUCT SF_PlotMetaData plotMetaData] 
 
 	WAVE/WAVE formulaResults = GetFormulaGatherWave()
 
-	WAVE/WAVE/Z wvXRef = $""
+	WAVE/Z/WAVE wvXRef = $""
 	if(!IsEmpty(xFormula))
 		WAVE/WAVE wvXRef = SF_ExecuteFormula(xFormula, graph, useVariables = 0)
 		SFH_ASSERT(WaveExists(wvXRef), "x part of formula returned no result.")
@@ -1523,7 +1524,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 		[s] = GetHeadstageColor(NaN, channelType = channelType, channelNumber = channelNumber)
 	else
 		headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
-		[s] = GetHeadstageColor(headstage)
+		[s]       = GetHeadstageColor(headstage)
 	endif
 
 	return [s]
@@ -1638,9 +1639,9 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 		endif
 
 		if(WindowExists(win))
-			WAVE/T/Z axes     = GetAxesProperties(win)
-			WAVE/T/Z cursors  = GetCursorInfos(win)
-			WAVE/T/Z annoInfo = GetAnnotationInfo(win)
+			WAVE/Z/T axes     = GetAxesProperties(win)
+			WAVE/Z/T cursors  = GetCursorInfos(win)
+			WAVE/Z/T annoInfo = GetAnnotationInfo(win)
 
 			if(WaveExists(cursors) && winDisplayMode == SF_DM_SUBWINDOWS)
 				restoreCursorInfo = 1
@@ -1731,7 +1732,7 @@ static Function SF_CommonWindowSetup(string win, string graph)
 	DoWindow/T $win, newTitle
 End
 
-static Function/WAVE SF_GatherYUnits(WAVE/WAVE formulaResults, string explicitLbl, WAVE/T/Z yUnits)
+static Function/WAVE SF_GatherYUnits(WAVE/WAVE formulaResults, string explicitLbl, WAVE/Z/T yUnits)
 
 	variable i, size, numData
 
@@ -1853,7 +1854,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 		showLegend     = 1
 		formulaCounter = 0
 		WAVE/Z   wvX    = $""
-		WAVE/T/Z yUnits = $""
+		WAVE/Z/T yUnits = $""
 
 		formulasRemain = graphCode[j]
 
@@ -1877,7 +1878,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [variable dmMode
 			[xFormula, yFormula] = SF_SplitGraphsToFormula(yAndXFormula)
 			SFH_ASSERT(!IsEmpty(yFormula), "Could not determine y [vs x] formula pair.")
 
-			WAVE/WAVE/Z formulaResults = $""
+			WAVE/Z/WAVE formulaResults = $""
 			try
 				[formulaResults, plotMetaData] = SF_GatherFormulaResults(xFormula, yFormula, graph)
 			catch
@@ -2478,7 +2479,7 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 	endif
 
 	if(fromDisplayed)
-		WAVE/T/Z traces = GetTraceInfos(graph)
+		WAVE/Z/T traces = GetTraceInfos(graph)
 		if(!WaveExists(traces))
 			return $""
 		endif
@@ -2529,13 +2530,13 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 					WAVE textualValues   = $traces[j][dimPosTTextualValues]
 					if(!IsNaN(filter.setCycleCount))
 						[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Set Cycle Count", channelNumber, channelType, DATA_ACQUISITION_MODE)
-						setCycleCount = WaveExists(setting) ? setting[index] : NaN
+						setCycleCount         = WaveExists(setting) ? setting[index] : NaN
 					else
 						setCycleCount = NaN
 					endif
 					if(!IsNaN(filter.setSweepCount))
 						[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "Set Sweep Count", channelNumber, channelType, DATA_ACQUISITION_MODE)
-						setSweepCount = WaveExists(setting) ? setting[index] : NaN
+						setSweepCount         = WaveExists(setting) ? setting[index] : NaN
 					else
 						setSweepCount = NaN
 					endif
@@ -2655,15 +2656,15 @@ static Function/WAVE SF_GetSelectData(string graph, STRUCT SF_SelectParameters &
 
 							if(SF_FilterByClampModeEnabled(filter.clampMode, channelType))
 								[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, CLAMPMODE_ENTRY_KEY, l, channelType, DATA_ACQUISITION_MODE)
-								clampCode = WaveExists(setting) ? SF_MapClampModeToSelectCM(setting[index]) : SF_OP_SELECT_CLAMPCODE_NONE
+								clampCode             = WaveExists(setting) ? SF_MapClampModeToSelectCM(setting[index]) : SF_OP_SELECT_CLAMPCODE_NONE
 							endif
 							if(!IsNaN(filter.setCycleCount))
 								[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "Set Cycle Count", l, channelType, DATA_ACQUISITION_MODE)
-								setCycleCount = WaveExists(setting) ? setting[index] : NaN
+								setCycleCount         = WaveExists(setting) ? setting[index] : NaN
 							endif
 							if(!IsNaN(filter.setSweepCount))
 								[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "Set Sweep Count", l, channelType, DATA_ACQUISITION_MODE)
-								setSweepCount = WaveExists(setting) ? setting[index] : NaN
+								setSweepCount         = WaveExists(setting) ? setting[index] : NaN
 							endif
 
 							if(!SF_IsValidSingleSelection(filter, numericalValues, textualValues, sweepNo, channelNumber, channelType, sweepNo, l, channelType, clampCode, setCycleCount, setSweepCount, doStimsetMatching))
@@ -2929,6 +2930,7 @@ static Function SF_ParseFormulaToJSON(string formula)
 End
 
 Function SF_Update(string graph)
+
 	string bsPanel = BSP_GetPanel(graph)
 
 	if(!SF_IsActive(bsPanel))
@@ -2946,6 +2948,7 @@ End
 
 /// @brief Return the sweep formula code in raw and with all necessary preprocesssing
 Function [string raw, string preProc] SF_GetCode(string win)
+
 	string formula_nb, code
 
 	formula_nb = BSP_GetSFFormula(win)
@@ -3032,6 +3035,7 @@ Function SF_TabProc_Formula(STRUCT WMTabControlAction &tca) : TabControl
 End
 
 static Function/WAVE SF_FilterEpochs(WAVE/Z epochs, WAVE/Z ignoreTPs)
+
 	variable i, numEntries, index
 
 	if(!WaveExists(epochs))
@@ -3196,15 +3200,15 @@ static Function SF_GetTPFitQuality(WAVE residuals, WAVE sweepData, variable begi
 	return sum(residuals, beginTrail, endTrail) / (endTrailIndex - beginTrailIndex)
 End
 
-static Function/WAVE SF_OperationTPIterate(string graph, WAVE/WAVE mode, WAVE/WAVE/Z selectDataArray, WAVE/Z ignoreTPs, string opShort)
+static Function/WAVE SF_OperationTPIterate(string graph, WAVE/WAVE mode, WAVE/Z/WAVE selectDataArray, WAVE/Z ignoreTPs, string opShort)
 
 	if(!WaveExists(selectDataArray))
 		return $""
 	endif
 
-	WAVE/WAVE/Z result = $""
+	WAVE/Z/WAVE result = $""
 
-	for(WAVE/WAVE/Z selectDataComp : selectDataArray)
+	for(WAVE/Z/WAVE selectDataComp : selectDataArray)
 
 		if(!WaveExists(selectDataComp))
 			continue
@@ -3317,7 +3321,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 
 		// drop TPs which should be ignored
 		// relies on ascending sorting of start times in epochMatches
-		WAVE/T/Z epochMatches = SF_FilterEpochs(epochMatchesAll, ignoreTPs)
+		WAVE/Z/T epochMatches = SF_FilterEpochs(epochMatchesAll, ignoreTPs)
 
 		if(!WaveExists(epochMatches))
 			continue
@@ -3603,11 +3607,11 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 		epType = EPOCHS_TYPE_RANGE
 	endif
 
-	WAVE/WAVE/Z selectData      = $""
-	WAVE/WAVE/Z selectDataArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_EPOCHS, 1)
+	WAVE/Z/WAVE selectData      = $""
+	WAVE/Z/WAVE selectDataArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_EPOCHS, 1)
 	if(WaveExists(selectDataArray))
 		SFH_ASSERT(DimSize(selectDataArray, ROWS) == 1, "Expected a single select specification")
-		WAVE/WAVE/Z selectDataComp = selectDataArray[0]
+		WAVE/Z/WAVE selectDataComp = selectDataArray[0]
 		if(WaveExists(selectDataComp))
 			WAVE/Z selectData = selectDataComp[%SELECTION]
 		endif
@@ -4287,7 +4291,7 @@ static Function/WAVE SF_OperationDerivativeImpl(WAVE/Z input)
 	SFH_ASSERT(IsNumericWave(input), "derivative requires numeric input data.")
 	SFH_ASSERT(DimSize(input, ROWS) > 1, "Can not differentiate single point waves")
 	WAVE out = NewFreeWave(IGOR_TYPE_64BIT_FLOAT, 0)
-	Differentiate/DIM=(ROWS) input / D=out
+	Differentiate/DIM=(ROWS) input/D=out
 	CopyScales input, out
 	SetScale/P x, DimOffset(out, ROWS), DimDelta(out, ROWS), "d/dx", out
 
@@ -4322,7 +4326,7 @@ static Function/WAVE SF_OperationIntegrateImpl(WAVE/Z input)
 	SFH_ASSERT(IsNumericWave(input), "integrate requires numeric input data.")
 	SFH_ASSERT(DimSize(input, ROWS) > 0, "integrate input must have at least one data point")
 	WAVE out = NewFreeWave(IGOR_TYPE_64BIT_FLOAT, 0)
-	Integrate/METH=1/DIM=(ROWS) input / D=out
+	Integrate/METH=1/DIM=(ROWS) input/D=out
 	CopyScales input, out
 	SetScale/P x, DimOffset(out, ROWS), DimDelta(out, ROWS), "dx", out
 
@@ -4365,7 +4369,7 @@ static Function/WAVE SF_OperationAreaImpl(WAVE/Z input, variable zero)
 	SFH_ASSERT(DimSize(input, ROWS) >= 1, "integrate requires at least one data point.")
 
 	WAVE out_integrate = NewFreeWave(IGOR_TYPE_64BIT_FLOAT, 0)
-	Integrate/METH=1/DIM=(ROWS) input / D=out_integrate
+	Integrate/METH=1/DIM=(ROWS) input/D=out_integrate
 	Make/FREE/N=(max(1, DimSize(out_integrate, COLS)), DimSize(out_integrate, LAYERS)) out
 	Multithread out = out_integrate[DimSize(input, ROWS) - 1][p][q]
 
@@ -4610,7 +4614,7 @@ static Function/WAVE SF_OperationSelectSweeps(variable jsonId, string jsonPath, 
 
 	numArgs = SFH_GetNumberOfArguments(jsonId, jsonPath)
 	if(!numArgs)
-		WAVE/D/Z sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
+		WAVE/Z/D sweeps = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
 	else
 		for(i = 0; i < numArgs; i += 1)
 			WAVE data = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_SELECTSWEEPS, i, singleResult = 1, expectedWaveType = IGOR_TYPE_64BIT_FLOAT)
@@ -4813,6 +4817,7 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 End
 
 Function SF_LineNoiseFit(WAVE w, variable x) : FitFunc
+
 	// Formula: linear + gauss fit
 	// y0 + m * x + A * exp(-((x - x0) / sigma)^2)
 	// Coefficients:
@@ -5453,8 +5458,8 @@ static Function/WAVE SF_GetSelectDataWithRACorSCIIndex(string graph, WAVE select
 		if(mode == SELECTDATA_MODE_RAC)
 			cycleIds[i] = GetLastSettingIndep(numericalValues, sweepNo, RA_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
 		elseif(mode == SELECTDATA_MODE_SCI)
-			channelNumber = selectData[i][%CHANNELNUMBER]
-			channelType   = selectData[i][%CHANNELTYPE]
+			channelNumber              = selectData[i][%CHANNELNUMBER]
+			channelType                = selectData[i][%CHANNELTYPE]
 			[WAVE settings, headstage] = GetLastSettingChannel(numericalValues, $"", sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
 			if(WaveExists(settings))
 				cycleIds[i]   = settings[headstage]
@@ -5643,7 +5648,7 @@ static Function/WAVE SF_GetSelectDataWithSCIorRAC(string graph, WAVE selectData,
 	ASSERT(mode == SELECTDATA_MODE_SCI || mode == SELECTDATA_MODE_RAC, "Unknown SCI/RAC mode")
 
 	[STRUCT SF_SelectParameters filterDup] = SF_DuplicateSelectFilter(filter)
-	filterDup.vis = SF_OP_SELECTVIS_ALL
+	filterDup.vis                          = SF_OP_SELECTVIS_ALL
 
 	isSweepBrowser = BSP_IsSweepBrowser(graph)
 	if(isSweepBrowser)
@@ -5826,15 +5831,15 @@ static Function/WAVE SF_OperationAnaFuncParam(variable jsonId, string jsonPath, 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_ANAFUNCPARAM)
 End
 
-static Function/WAVE SF_OperationAnaFuncParamIterate(string graph, WAVE/T names, WAVE/WAVE/Z selectDataArray, string opShort)
+static Function/WAVE SF_OperationAnaFuncParamIterate(string graph, WAVE/T names, WAVE/Z/WAVE selectDataArray, string opShort)
 
 	if(!WaveExists(selectDataArray))
 		return $""
 	endif
 
-	WAVE/WAVE/Z result = $""
+	WAVE/Z/WAVE result = $""
 
-	for(WAVE/WAVE/Z selectDataComp : selectDataArray)
+	for(WAVE/Z/WAVE selectDataComp : selectDataArray)
 
 		if(!WaveExists(selectDataComp))
 			continue
@@ -5913,7 +5918,7 @@ static Function/WAVE SF_OperationAnaFuncParamImpl(string graph, WAVE/T names, WA
 	endif
 
 	WAVE/WAVE allParams   = SF_OperationLabnotebookImpl(graph, {ANALYSIS_FUNCTION_PARAMS_LBN}, selectData, DATA_ACQUISITION_MODE, opShort)
-	WAVE/T/Z  allReqNames = SF_OperationAnaFuncParamImplAllNames(names, allParams)
+	WAVE/Z/T  allReqNames = SF_OperationAnaFuncParamImplAllNames(names, allParams)
 
 	if(!WaveExists(allReqNames))
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
@@ -6015,15 +6020,15 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_LABNOTEBOOK)
 End
 
-static Function/WAVE SF_OperationLabnotebookIterate(string graph, WAVE/T lbnKeys, WAVE/WAVE/Z selectDataArray, variable mode, string opShort)
+static Function/WAVE SF_OperationLabnotebookIterate(string graph, WAVE/T lbnKeys, WAVE/Z/WAVE selectDataArray, variable mode, string opShort)
 
 	if(!WaveExists(selectDataArray))
 		return $""
 	endif
 
-	WAVE/WAVE/Z result = $""
+	WAVE/Z/WAVE result = $""
 
-	for(WAVE/WAVE/Z selectDataComp : selectDataArray)
+	for(WAVE/Z/WAVE selectDataComp : selectDataArray)
 
 		if(!WaveExists(selectDataComp))
 			continue
@@ -6058,7 +6063,7 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, W
 		return output
 	endif
 
-	WAVE/T/Z allLBNKeys = SFH_OperationLabnotebookExpandKeys(graph, LBNKeys, selectData, mode)
+	WAVE/Z/T allLBNKeys = SFH_OperationLabnotebookExpandKeys(graph, LBNKeys, selectData, mode)
 
 	if(!WaveExists(allLBNKeys))
 		WAVE/WAVE output = SFH_CreateSFRefWave(graph, opShort, 0)
@@ -6092,7 +6097,7 @@ static Function/WAVE SF_OperationLabnotebookImpl(string graph, WAVE/T LBNKeys, W
 		refUnit = units[0]
 
 		if(!cmpstr(refUnit, LABNOTEBOOK_BINARY_UNIT))
-			WAVE/T/Z matches = GrepTextWave(allLBNKeys, "^.* QC$")
+			WAVE/Z/T matches = GrepTextWave(allLBNKeys, "^.* QC$")
 
 			Make/FREE/D yTickPositions = {0, 1}
 			Make/FREE/T/N=2 yTickLabels
@@ -6203,7 +6208,7 @@ static Function/WAVE SF_GetLabnotebookEntryUnits(string graph, WAVE/T allLBNKeys
 
 	Make/FREE/T/N=(DimSize(allLBNKeys, ROWS)) units = SF_GetLabnotebookEntryUnits_Impl(numericalKeys, textualKeys, allLBNKeys[p])
 
-	WAVE/T/Z unitsUnique = GetUniqueEntries(units)
+	WAVE/Z/T unitsUnique = GetUniqueEntries(units)
 
 	return unitsUnique
 End
@@ -6228,7 +6233,7 @@ static Function/WAVE SFH_OperationLabnotebookExpandKeys(string graph, WAVE/T LBN
 		WAVE/Z textualValues   = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
 
-		WAVE/T/Z entries = LBV_GetAllLogbookParamNames(textualValues, numericalValues)
+		WAVE/Z/T entries = LBV_GetAllLogbookParamNames(textualValues, numericalValues)
 
 		if(!WaveExists(entries))
 			continue
@@ -6751,7 +6756,8 @@ static Function SF_AverageTPFromSweepImpl(WAVE tpData, WAVE tpStart, WAVE sweepD
 End
 
 Function/WAVE SF_GetAllOldCodeForGUI(string win) // parameter required for popup menu ext
-	WAVE/T/Z entries = SF_GetAllOldCode()
+
+	WAVE/Z/T entries = SF_GetAllOldCode()
 
 	if(!WaveExists(entries))
 		return $""
@@ -6759,7 +6765,7 @@ Function/WAVE SF_GetAllOldCodeForGUI(string win) // parameter required for popup
 
 	entries[] = num2str(p) + ": " + ElideText(ReplaceString("\n", entries[p], " "), 60)
 
-	WAVE/T/Z splittedMenu = PEXT_SplitToSubMenus(entries, method = PEXT_SUBSPLIT_ALPHA)
+	WAVE/Z/T splittedMenu = PEXT_SplitToSubMenus(entries, method = PEXT_SUBSPLIT_ALPHA)
 
 	PEXT_GenerateSubMenuNames(splittedMenu)
 
@@ -6786,7 +6792,7 @@ Function SF_PopMenuProc_OldCode(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 			bsPanel        = BSP_GetPanel(pa.win)
 			sweepFormulaNB = BSP_GetSFFormula(bsPanel)
-			WAVE/T/Z entries = SF_GetAllOldCode()
+			WAVE/Z/T entries = SF_GetAllOldCode()
 			// -2 as we have NONE
 			index = str2num(pa.popStr)
 			code  = entries[index]
@@ -7163,7 +7169,7 @@ Function/WAVE SF_OperationMerge(variable jsonId, string jsonPath, string graph)
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_MERGE, 1, maxArgs = 1)
 	WAVE/WAVE inputWithNull = SF_ResolveDatasetFromJSON(jsonID, jsonPath, graph, 0)
 
-	WAVE/WAVE/ZZ input = ZapNullRefs(inputWithNull)
+	WAVE/ZZ/WAVE input = ZapNullRefs(inputWithNull)
 	WaveClear inputWithNull
 
 	numElements = WaveExists(input) ? DimSize(input, ROWS) : 0
@@ -7210,7 +7216,7 @@ Function/WAVE SF_OperationDataset(variable jsonId, string jsonPath, string graph
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_DATASET)
 End
 
-static Function [WAVE/D holdWave, WAVE/D initialValues] SF_ParseFitConstraints(WAVE/T/Z constraints, variable numParameters)
+static Function [WAVE/D holdWave, WAVE/D initialValues] SF_ParseFitConstraints(WAVE/Z/T constraints, variable numParameters)
 
 	variable i, numElements, index, value
 	string indexStr, valueStr, entry
@@ -7243,7 +7249,7 @@ Function/WAVE SF_OperationFitLine(variable jsonId, string jsonPath, string graph
 
 	SFH_CheckArgumentCount(jsonId, jsonPath, SF_OP_FITLINE, 0, maxArgs = 1)
 
-	WAVE/T/Z constraints = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_FITLINE, 0, defWave = $"", singleResult = 1)
+	WAVE/Z/T constraints = SFH_GetArgumentAsWave(jsonId, jsonPath, graph, SF_OP_FITLINE, 0, defWave = $"", singleResult = 1)
 
 	[WAVE holdWave, WAVE initialValues] = SF_ParseFitConstraints(constraints, 2)
 
@@ -7349,7 +7355,7 @@ threadsafe static Function SF_ConvertNonFiniteElementsImpl(string element)
 	return 0
 End
 
-static Function [WAVE outNum, WAVE/T outText] SF_ExecutorCreateOrCheckNumeric(WAVE/D/Z out, WAVE/T/Z outT, variable size0, variable size1, variable size2, variable size3)
+static Function [WAVE outNum, WAVE/T outText] SF_ExecutorCreateOrCheckNumeric(WAVE/Z/D out, WAVE/Z/T outT, variable size0, variable size1, variable size2, variable size3)
 
 	SFH_ASSERT(!WaveExists(outT), "mixed array types")
 	if(!WaveExists(out))
@@ -7359,7 +7365,7 @@ static Function [WAVE outNum, WAVE/T outText] SF_ExecutorCreateOrCheckNumeric(WA
 	return [out, outT]
 End
 
-static Function [WAVE outNum, WAVE/T outText] SF_ExecutorCreateOrCheckTextual(WAVE/Z out, WAVE/T/Z outT, variable size0, variable size1, variable size2, variable size3)
+static Function [WAVE outNum, WAVE/T outText] SF_ExecutorCreateOrCheckTextual(WAVE/Z out, WAVE/Z/T outT, variable size0, variable size1, variable size2, variable size3)
 
 	SFH_ASSERT(!WaveExists(out), "mixed array types")
 	if(!WaveExists(outT))

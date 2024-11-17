@@ -16,9 +16,7 @@
 /// @param device    device
 /// @param useBackground [optional, defaults to background checkbox setting in the DA_Ephys
 ///                      panel]
-Function DQS_StartDAQSingleDevice(device, [useBackground])
-	string   device
-	variable useBackground
+Function DQS_StartDAQSingleDevice(string device, [variable useBackground])
 
 	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1,                          \
 	       "Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
@@ -48,8 +46,7 @@ Function DQS_StartDAQSingleDevice(device, [useBackground])
 	endif
 End
 
-Function DQS_DataAcq(device)
-	string device
+Function DQS_DataAcq(string device)
 
 	variable fifoPos, gotTPChannels, moreData
 	string oscilloscopeSubwindow = SCOPE_GetGraph(device)
@@ -90,8 +87,7 @@ End
 /// @brief Fifo monitor for DAQ Single Device
 ///
 /// @ingroup BackgroundFunctions
-Function DQS_BkrdDataAcq(device)
-	string device
+Function DQS_BkrdDataAcq(string device)
 
 	NVAR deviceID = $GetDAQDeviceID(device)
 	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags = HARDWARE_ABORT_ON_ERROR)
@@ -108,6 +104,7 @@ End
 
 /// @brief Stop single device data acquisition
 static Function DQS_StopDataAcq(string device, variable stopReason, [variable forcedStop])
+
 	if(ParamIsDefault(forcedStop))
 		forcedStop = 0
 	else
@@ -126,14 +123,14 @@ static Function DQS_StopDataAcq(string device, variable stopReason, [variable fo
 End
 
 Function DQS_StartBackgroundFifoMonitor()
+
 	CtrlNamedBackground $TASKNAME_FIFOMON, start
 End
 
 /// @brief Fifo monitor for DAQ Single Device
 ///
 /// @ingroup BackgroundFunctions
-Function DQS_FIFOMonitor(s)
-	STRUCT WMBackgroundStruct &s
+Function DQS_FIFOMonitor(STRUCT WMBackgroundStruct &s)
 
 	variable fifoPos, moreData, anaFuncReturn, result
 
@@ -170,6 +167,7 @@ Function DQS_FIFOMonitor(s)
 End
 
 Function DQS_StopBackgroundFifoMonitor()
+
 	CtrlNamedBackground $TASKNAME_FIFOMON, stop
 End
 
@@ -178,9 +176,7 @@ End
 /// @param device device
 /// @param runTime    left over time to wait in seconds
 /// @param funcList   list of functions to execute at the end of the ITI
-Function DQS_StartBackgroundTimer(device, runTime, funcList)
-	string device, funcList
-	variable runTime
+Function DQS_StartBackgroundTimer(string device, variable runTime, string funcList)
 
 	ASSERT(!isEmpty(funcList), "Empty funcList does not makse sense")
 
@@ -204,8 +200,7 @@ End
 /// @brief Keep track of time during ITI
 ///
 /// @ingroup BackgroundFunctions
-Function DQS_Timer(s)
-	STRUCT WMBackgroundStruct &s
+Function DQS_Timer(STRUCT WMBackgroundStruct &s)
 
 	variable timeLeft, elapsedTime
 

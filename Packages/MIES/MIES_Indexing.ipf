@@ -9,8 +9,7 @@
 /// @file MIES_Indexing.ipf
 /// @brief __IDX__ Indexing related functionality
 
-Function IDX_StoreStartFinishForIndexing(device)
-	string device
+Function IDX_StoreStartFinishForIndexing(string device)
 
 	variable i, j, waveIdx, indexIdx, channelType
 
@@ -21,7 +20,7 @@ Function IDX_StoreStartFinishForIndexing(device)
 		for(j = 0; j < 2; j += 1)
 			channelType = channelTypes[j]
 
-			[waveIdx, indexIdx] = IDX_GetCurrentSets(device, channelType, i)
+			[waveIdx, indexIdx]                                             = IDX_GetCurrentSets(device, channelType, i)
 			IndexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i]      = waveIdx
 			IndexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][i] = indexIdx
 		endfor
@@ -29,8 +28,7 @@ Function IDX_StoreStartFinishForIndexing(device)
 End
 
 /// @brief Resets the selected set popupmenus stored by #IDX_StoreStartFinishForIndexing
-Function IDX_ResetStartFinishForIndexing(device)
-	string device
+Function IDX_ResetStartFinishForIndexing(string device)
 
 	variable i, j, idx, channelType
 	string ctrl, stimset
@@ -56,8 +54,7 @@ Function IDX_ResetStartFinishForIndexing(device)
 End
 
 /// @brief Locked indexing, indexes all active channels at once
-static Function IDX_IndexingDoIt(device)
-	string device
+static Function IDX_IndexingDoIt(string device)
 
 	variable i
 
@@ -94,9 +91,7 @@ End
 /// @brief Indexes a single channel - used when indexing is unlocked
 ///
 /// Callers need to call DAP_UpdateDAQControls() with #REASON_STIMSET_CHANGE_DUR_DAQ.
-static Function IDX_IndexSingleChannel(device, channelType, channel)
-	string device
-	variable channelType, channel
+static Function IDX_IndexSingleChannel(string device, variable channelType, variable channel)
 
 	variable first, last
 	variable waveIdx, indexIdx
@@ -135,8 +130,7 @@ static Function IDX_IndexSingleChannel(device, channelType, channel)
 End
 
 /// @brief Sum of the largest sets for each indexing step
-Function IDX_MaxSweepsLockedIndexing(device)
-	string device
+Function IDX_MaxSweepsLockedIndexing(string device)
 
 	variable i, maxSteps
 	variable MaxCycleIndexSteps = max(IDX_MaxSets(device, CHANNEL_TYPE_DAC),   \
@@ -145,16 +139,14 @@ Function IDX_MaxSweepsLockedIndexing(device)
 	do
 		MaxSteps += max(IDX_StepsInSetWithMaxSweeps(device, i, CHANNEL_TYPE_DAC), \
 		                IDX_StepsInSetWithMaxSweeps(device, i, CHANNEL_TYPE_TTL))
-		i += 1
+		i        += 1
 	while(i < MaxCycleIndexSteps)
 
 	return MaxSteps
 End
 
 /// @brief Return the number of steps in the largest set for a particular index number
-static Function IDX_StepsInSetWithMaxSweeps(device, IndexNo, channelType)
-	string device
-	variable IndexNo, channelType
+static Function IDX_StepsInSetWithMaxSweeps(string device, variable IndexNo, variable channelType)
 
 	variable MaxSteps, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
@@ -205,9 +197,7 @@ static Function [variable waveIdx, variable indexIdx] IDX_GetCurrentSets(string 
 End
 
 /// @brief Return the number of sets on the active channel with the most sets.
-static Function IDX_MaxSets(device, channelType)
-	string   device
-	variable channelType
+static Function IDX_MaxSets(string device, variable channelType)
 
 	variable i, waveIdx, indexIdx, MaxSets
 
@@ -234,9 +224,7 @@ End
 /// @param IndexOverRide index override is the same as indexing off. some
 ///                      Functions that call this function only want the max number of steps in the
 ///                      start (active) set, when indexing is on. 1 = over ride ON
-Function IDX_MaxNoOfSweeps(device, IndexOverRide)
-	string   device
-	variable IndexOverRide
+Function IDX_MaxNoOfSweeps(string device, variable IndexOverRide)
 
 	variable MaxNoOfSweeps
 	variable i
@@ -278,8 +266,7 @@ End
 /// @brief Returns the number of sweeps in the stimulus set with the smallest number of sweeps (across all active stimulus sets).
 ///
 /// @param device device
-Function IDX_MinNoOfSweeps(device)
-	string device
+Function IDX_MinNoOfSweeps(string device)
 
 	variable MinNoOfSweeps = Inf
 	variable i
@@ -316,9 +303,7 @@ End
 /// @param lockedIndexing defaults to false, true returns just the DAC/TTL setname
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
-Function/WAVE IDX_GetSetsInRange(device, channel, channelType, lockedIndexing)
-	string device
-	variable channel, channelType, lockedIndexing
+Function/WAVE IDX_GetSetsInRange(string device, variable channel, variable channelType, variable lockedIndexing)
 
 	variable listOffset, first, last, indexStart, indexEnd
 	string waveCtrl, lastCtrl, list, msg
@@ -356,9 +341,7 @@ Function/WAVE IDX_GetSetsInRange(device, channel, channelType, lockedIndexing)
 End
 
 /// @brief Determine the number of sweeps for a DA or TTL channel
-static Function IDX_NumberOfSweepsAcrossSets(device, channel, channelType, lockedIndexing)
-	string device
-	variable channel, channelType, lockedIndexing
+static Function IDX_NumberOfSweepsAcrossSets(string device, variable channel, variable channelType, variable lockedIndexing)
 
 	variable numSweeps, numEntries, i
 	string setList
@@ -374,8 +357,7 @@ static Function IDX_NumberOfSweepsAcrossSets(device, channel, channelType, locke
 End
 
 /// @brief Return the number of sweeps
-Function IDX_NumberOfSweepsInSet(setName)
-	string setName
+Function IDX_NumberOfSweepsInSet(string setName)
 
 	if(isEmpty(setName))
 		return 0
@@ -393,9 +375,7 @@ Function IDX_NumberOfSweepsInSet(setName)
 	return max(1, DimSize(wv, COLS))
 End
 
-static Function IDX_ApplyUnLockedIndexing(device, count)
-	string   device
-	variable count
+static Function IDX_ApplyUnLockedIndexing(string device, variable count)
 
 	variable i, update
 
@@ -433,9 +413,7 @@ static Function IDX_ApplyUnLockedIndexing(device, count)
 	endif
 End
 
-static Function IDX_TotalIndexingListSteps(device, channelNumber, channelType)
-	string device
-	variable channelNumber, channelType
+static Function IDX_TotalIndexingListSteps(string device, variable channelNumber, variable channelType)
 
 	variable totalListSteps
 	variable i, first, last, minimum, maximum
@@ -456,9 +434,7 @@ static Function IDX_TotalIndexingListSteps(device, channelNumber, channelType)
 	return totalListSteps
 End
 
-Function IDX_UnlockedIndexingStepNo(device, channelNumber, channelType, count)
-	string device
-	variable channelNumber, channelType, count
+Function IDX_UnlockedIndexingStepNo(string device, variable channelNumber, variable channelType, variable count)
 
 	variable i, stepsInSummedSets, totalListSteps, direction
 	variable first, last
@@ -483,9 +459,7 @@ Function IDX_UnlockedIndexingStepNo(device, channelNumber, channelType, count)
 	return count - StepsInSummedSets
 End
 
-static Function IDX_DetIfCountIsAtSetBorder(device, count, channelNumber, channelType)
-	string device
-	variable count, channelNumber, channelType
+static Function IDX_DetIfCountIsAtSetBorder(string device, variable count, variable channelNumber, variable channelType)
 
 	variable i, stepsInSummedSets, totalListSteps, direction
 	variable first, last
@@ -514,8 +488,7 @@ static Function IDX_DetIfCountIsAtSetBorder(device, count, channelNumber, channe
 End
 
 /// @brief Calculate the active set count
-Function IDX_CalculcateActiveSetCount(device)
-	string device
+Function IDX_CalculcateActiveSetCount(string device)
 
 	variable value
 
@@ -526,9 +499,7 @@ Function IDX_CalculcateActiveSetCount(device)
 End
 
 /// @brief Extract the list of stimsets from the control user data
-static Function/WAVE IDX_GetStimsets(device, channelIdx, channelType)
-	string device
-	variable channelIdx, channelType
+static Function/WAVE IDX_GetStimsets(string device, variable channelIdx, variable channelType)
 
 	string ctrl, list
 
@@ -547,9 +518,7 @@ End
 /// @param idx       0-based index
 /// @param allowNone [optional, defaults to false] Return the `NONE` stimset for idx `0`.
 ///                  Not allowed during DAQ.
-static Function/S IDX_GetSingleStimset(listWave, idx, [allowNone])
-	WAVE/T listWave
-	variable idx, allowNone
+static Function/S IDX_GetSingleStimset(WAVE/T listWave, variable idx, [variable allowNone])
 
 	if(ParamIsDefault(allowNone))
 		allowNone = 0

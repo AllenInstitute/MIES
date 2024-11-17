@@ -13,7 +13,7 @@ static Constant ZERO_TOLERANCE = 100 // pA
 
 static StrConstant AMPLIFIER_CONTROLS_VC = "setvar_DataAcq_Hold_VC;check_DataAcq_Amp_Chain;check_DatAcq_HoldEnableVC;setvar_DataAcq_WCC;setvar_DataAcq_WCR;check_DatAcq_WholeCellEnable;setvar_DataAcq_RsCorr;setvar_DataAcq_RsPred;check_DataAcq_Amp_Chain;check_DatAcq_RsCompEnable;setvar_DataAcq_PipetteOffset_VC;button_DataAcq_FastComp_VC;button_DataAcq_SlowComp_VC;button_DataAcq_AutoPipOffset_VC"
 static StrConstant AMPLIFIER_CONTROLS_IC = "setvar_DataAcq_Hold_IC;check_DatAcq_HoldEnable;setvar_DataAcq_BB;check_DatAcq_BBEnable;setvar_DataAcq_CN;check_DatAcq_CNEnable;setvar_DataAcq_AutoBiasV;setvar_DataAcq_AutoBiasVrange;setvar_DataAcq_IbiasMax;check_DataAcq_AutoBias;setvar_DataAcq_PipetteOffset_IC;button_DataAcq_AutoBridgeBal_IC"
-static Constant    MAX_PIPETTEOFFSET     = 150                                                                                                                                                                                                                                                                                                                                                               // mV
+static Constant    MAX_PIPETTEOFFSET     = 150 // mV
 static Constant    MIN_PIPETTEOFFSET     = -150
 
 static Constant NUM_TRIES_AXON_TELEGRAPH = 10
@@ -22,8 +22,7 @@ static Constant NUM_TRIES_AXON_TELEGRAPH = 10
 #define AMPLIFIER_XOPS_PRESENT
 #endif
 
-static Function AI_InitAxonTelegraphStruct(tds)
-	STRUCT AxonTelegraph_DataStruct &tds
+static Function AI_InitAxonTelegraphStruct(STRUCT AxonTelegraph_DataStruct &tds)
 
 	tds.version = 13
 End
@@ -58,9 +57,7 @@ static Structure AxonTelegraph_DataStruct
 EndStructure
 
 /// @brief Returns the serial number of the headstage compatible with Axon* functions, @see GetChanAmpAssign
-static Function AI_GetAmpAxonSerial(device, headStage)
-	string   device
-	variable headStage
+static Function AI_GetAmpAxonSerial(string device, variable headStage)
 
 	WAVE ChanAmpAssign = GetChanAmpAssign(device)
 
@@ -68,9 +65,7 @@ static Function AI_GetAmpAxonSerial(device, headStage)
 End
 
 /// @brief Returns the serial number of the headstage compatible with MCC* functions, @see GetChanAmpAssign
-static Function/S AI_GetAmpMCCSerial(device, headStage)
-	string   device
-	variable headStage
+static Function/S AI_GetAmpMCCSerial(string device, variable headStage)
 
 	variable axonSerial
 	string   mccSerial
@@ -86,19 +81,14 @@ static Function/S AI_GetAmpMCCSerial(device, headStage)
 End
 
 ///@brief Return the channel of the currently selected head stage
-static Function AI_GetAmpChannel(device, headStage)
-	string   device
-	variable headStage
+static Function AI_GetAmpChannel(string device, variable headStage)
 
 	WAVE ChanAmpAssign = GetChanAmpAssign(device)
 
 	return ChanAmpAssign[%AmpChannelID][headStage]
 End
 
-static Function AI_IsValidSerialAndChannel([mccSerial, axonSerial, channel])
-	string   mccSerial
-	variable axonSerial
-	variable channel
+static Function AI_IsValidSerialAndChannel([string mccSerial, variable axonSerial, variable channel])
 
 	if(!ParamIsDefault(mccSerial))
 		if(isEmpty(mccSerial))
@@ -124,8 +114,7 @@ End
 ///
 /// @param clampMode clamp mode (pass `NaN` for doesn't matter)
 /// @param func      MCC function,  one of @ref AI_SendToAmpConstants
-Function AI_GetMCCScale(clampMode, func)
-	variable clampMode, func
+Function AI_GetMCCScale(variable clampMode, variable func)
 
 	if(IsFinite(clampMode))
 		AI_AssertOnInvalidClampMode(clampMode)
@@ -203,10 +192,7 @@ End
 ///                         before use, some callers might save time in doing that once themselves.
 ///
 /// @return 0 on success, 1 otherwise
-Function AI_UpdateAmpModel(device, ctrl, headStage, [value, sendToAll, checkBeforeWrite, selectAmp])
-	string device
-	string ctrl
-	variable headStage, value, sendToAll, checkBeforeWrite, selectAmp
+Function AI_UpdateAmpModel(string device, string ctrl, variable headStage, [variable value, variable sendToAll, variable checkBeforeWrite, variable selectAmp])
 
 	variable i, diff, selectedHeadstage, clampMode, oppositeMode, oldTab
 	variable runMode = TEST_PULSE_NOT_RUNNING
@@ -479,17 +465,13 @@ End
 /// @brief Convenience wrapper for #AI_UpdateAmpView
 ///
 /// Disallows setting single controls for outside callers as #AI_UpdateAmpModel should be used for that.
-Function AI_SyncAmpStorageToGUI(device, headstage)
-	string   device
-	variable headstage
+Function AI_SyncAmpStorageToGUI(string device, variable headstage)
 
 	return AI_UpdateAmpView(device, headstage)
 End
 
 /// @brief Sync the settings from the GUI to the amp storage wave and the MCC application
-Function AI_SyncGUIToAmpStorageAndMCCApp(device, headStage, clampMode)
-	string device
-	variable headStage, clampMode
+Function AI_SyncGUIToAmpStorageAndMCCApp(string device, variable headStage, variable clampMode)
 
 	string ctrl, list
 	variable i, numEntries
@@ -528,10 +510,7 @@ End
 /// @param device  device
 /// @param headStage   MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param ctrl        [optional, defaults to all controls] name of the control being updated
-static Function AI_UpdateAmpView(device, headStage, [ctrl])
-	string   device
-	variable headStage
-	string   ctrl
+static Function AI_UpdateAmpView(string device, variable headStage, [string ctrl])
 
 	string lbl, list
 	variable i, numEntries, value
@@ -575,8 +554,7 @@ static Function AI_UpdateAmpView(device, headStage, [ctrl])
 End
 
 /// @brief Convert amplifier controls to row labels for `AmpStorageWave`
-static Function/S AI_AmpStorageControlToRowLabel(ctrl)
-	string ctrl
+static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 
 	strswitch(ctrl)
 		// V-Clamp controls
@@ -656,9 +634,7 @@ static Function/S AI_AmpStorageControlToRowLabel(ctrl)
 			break
 	endswitch
 End
-Function AI_SetMIESHeadstage(device, [headstage, increment])
-	string device
-	variable headstage, increment
+Function AI_SetMIESHeadstage(string device, [variable headstage, variable increment])
 
 	if(ParamIsDefault(headstage) && ParamIsDefault(increment))
 		return NaN
@@ -677,9 +653,7 @@ End
 ///
 /// @param device device
 /// @param headStage     [optional: defaults to all active headstages]
-Function AI_ZeroAmps(device, [headStage])
-	string   device
-	variable headstage
+Function AI_ZeroAmps(string device, [variable headStage])
 
 	variable i
 	// Ensure that data in BaselineSSAvg is up to date by verifying that TP is active
@@ -705,9 +679,7 @@ End
 ///
 /// @param device device
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-static Function AI_MIESAutoPipetteOffset(device, headStage)
-	string   device
-	variable headStage
+static Function AI_MIESAutoPipetteOffset(string device, variable headStage)
 
 	variable clampMode, vDelta, offset, value
 
@@ -732,11 +704,7 @@ End
 /// @brief Query the MCC application for the gains and units of the given clamp mode
 ///
 /// Assumes that the correct amplifier is already selected!
-Function AI_QueryGainsUnitsForClampMode(device, headstage, clampMode, DAGain, ADGain, DAUnit, ADUnit)
-	string device
-	variable headstage, clampMode
-	variable &DAGain, &ADGain
-	string &DAUnit, &ADUnit
+Function AI_QueryGainsUnitsForClampMode(string device, variable headstage, variable clampMode, variable &DAGain, variable &ADGain, string &DAUnit, string &ADUnit)
 
 	DAGain = NaN
 	ADGain = NaN
@@ -758,10 +726,7 @@ End
 
 /// @brief Update the `ChanAmpAssign` and `ChanAmpAssignUnit` waves according to the passed
 /// clamp mode with the gains and units.
-Function AI_UpdateChanAmpAssign(device, headStage, clampMode, DAGain, ADGain, DAUnit, ADUnit)
-	string device
-	variable headStage, clampMode, DAGain, ADGain
-	string DAUnit, ADUnit
+Function AI_UpdateChanAmpAssign(string device, variable headStage, variable clampMode, variable DAGain, variable ADGain, string DAUnit, string ADUnit)
 
 	AI_AssertOnInvalidClampMode(clampMode)
 
@@ -787,15 +752,13 @@ Function AI_UpdateChanAmpAssign(device, headStage, clampMode, DAGain, ADGain, DA
 End
 
 /// @brief Assert on invalid clamp modes, does nothing otherwise
-Function AI_AssertOnInvalidClampMode(clampMode)
-	variable clampMode
+Function AI_AssertOnInvalidClampMode(variable clampMode)
 
 	ASSERT(AI_IsValidClampMode(clampMode), "invalid clamp mode")
 End
 
 /// @brief Return true if the given clamp mode is valid
-Function AI_IsValidClampMode(clampMode)
-	variable clampMode
+Function AI_IsValidClampMode(variable clampMode)
 
 	return clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE
 End
@@ -808,9 +771,7 @@ End
 /// For each unique serial number one MCC is opened.
 /// @param ampTitleList [optional, defaults to blank] MCC gui window title
 /// @return 1 if all unique MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened
-Function AI_OpenMCCs(ampSerialNumList, [ampTitleList])
-	string ampSerialNumList
-	string ampTitleList
+Function AI_OpenMCCs(string ampSerialNumList, [string ampTitleList])
 
 	string cmd, serialStr, title
 	variable i, j, numDups, serialNum, failedToOpenCount
@@ -883,6 +844,7 @@ End
 ///
 /// @return a 1D FREE wave containing amplifier serial numbers without leading zeroes
 static Function/WAVE AI_GetMCCSerialNumbers()
+
 	AI_FindConnectedAmps()
 	WAVE W_TelegraphServers = GetAmplifierTelegraphServers()
 	Duplicate/FREE/R=[][FindDimLabel(W_TelegraphServers, COLS, "SerialNum")] W_TelegraphServers, OpenMCCList
@@ -919,9 +881,7 @@ End
 #ifdef AMPLIFIER_XOPS_PRESENT
 
 ///@brief Returns the holding command of the amplifier
-Function AI_GetHoldingCommand(device, headstage)
-	string   device
-	variable headstage
+Function AI_GetHoldingCommand(string device, variable headstage)
 
 	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NaN
@@ -937,9 +897,7 @@ End
 /// DAP_ChangeHeadStageMode() if possible.
 ///
 /// @brief One of @ref AmplifierClampModes or NaN if no amplifier is connected
-Function AI_GetMode(device, headstage)
-	string   device
-	variable headstage
+Function AI_GetMode(string device, variable headstage)
 
 	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NaN
@@ -971,10 +929,7 @@ End
 /// @param      clampMode  clamp mode
 /// @param[out] ADGain     ADC gain
 /// @param[out] DAGain     DAC gain
-static Function AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
-	string device
-	variable headstage, clampMode
-	variable &ADGain, &DAGain
+static Function AI_RetrieveGains(string device, variable headstage, variable clampMode, variable &ADGain, variable &DAGain)
 
 	variable axonSerial = AI_GetAmpAxonSerial(device, headstage)
 	variable channel    = AI_GetAmpChannel(device, headStage)
@@ -1017,9 +972,7 @@ End
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 ///
 /// @returns one of @ref AISelectMultiClampReturnValues
-Function AI_SelectMultiClamp(device, headStage)
-	string   device
-	variable headStage
+Function AI_SelectMultiClamp(string device, variable headStage)
 
 	variable channel, axonSerial, err
 	string mccSerial
@@ -1044,10 +997,7 @@ Function AI_SelectMultiClamp(device, headStage)
 End
 
 /// @brief Set the clamp mode of user linked MCC based on the headstage number
-Function AI_SetClampMode(device, headStage, mode, [zeroStep])
-	string   device
-	variable headStage
-	variable mode, zeroStep
+Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep])
 
 	if(ParamIsDefault(zeroStep))
 		zeroStep = 0
@@ -1088,10 +1038,7 @@ End
 ///                         before use, some callers might save time in doing that once themselves.
 ///
 /// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
-Function AI_SendToAmp(device, headStage, mode, func, value, [checkBeforeWrite, usePrefixes, selectAmp])
-	string device
-	variable headStage, mode, func, value
-	variable checkBeforeWrite, usePrefixes, selectAmp
+Function AI_SendToAmp(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp])
 
 	variable ret, headstageMode, scale
 	string str
@@ -1450,9 +1397,7 @@ End
 ///                   before using, some callers might be able to skip it.
 ///
 /// @return 0 on success, 1 when the headstage does not have an amplifier connected or it could not be selected
-Function AI_EnsureCorrectMode(device, headStage, [selectAmp])
-	string device
-	variable headStage, selectAmp
+Function AI_EnsureCorrectMode(string device, variable headStage, [variable selectAmp])
 
 	variable serial, channel, storedMode, setMode, ampConnectionState
 
@@ -1493,9 +1438,7 @@ End
 ///
 /// @param device 		 device
 /// @param sweepNo           data wave sweep number
-Function AI_FillAndSendAmpliferSettings(device, sweepNo)
-	string   device
-	variable sweepNo
+Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
 
 	variable i, axonSerial, channel, ampConnState, clampMode
 	string mccSerial
@@ -1608,8 +1551,7 @@ End
 /// The data is inserted into `ChanAmpAssign` and `ChanAmpAssignUnit`
 ///
 /// @return number of connected amplifiers
-Function AI_QueryGainsFromMCC(device)
-	string device
+Function AI_QueryGainsFromMCC(string device)
 
 	variable clampMode, old_ClampMode, i, numConnAmplifiers, clampModeSwitchAllowed
 	variable DAGain, ADGain
@@ -1661,6 +1603,7 @@ End
 
 /// @brief Create the amplifier connection waves
 Function AI_FindConnectedAmps()
+
 	string list
 
 	IH_RemoveAmplifierConnWaves()
@@ -1718,24 +1661,17 @@ End
 
 #else // AMPLIFIER_XOPS_PRESENT
 
-Function AI_GetHoldingCommand(device, headstage)
-	string   device
-	variable headstage
+Function AI_GetHoldingCommand(string device, variable headstage)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_GetMode(device, headstage)
-	string   device
-	variable headstage
+Function AI_GetMode(string device, variable headstage)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
-	string device
-	variable headstage, clampMode
-	variable &ADGain, &DAGain
+static Function AI_RetrieveGains(string device, variable headstage, variable clampMode, variable &ADGain, variable &DAGain)
 
 	ADGain = NaN
 	DAGain = NaN
@@ -1748,45 +1684,32 @@ static Function AI_SwitchAxonAmpMode()
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SelectMultiClamp(device, headStage)
-	string   device
-	variable headStage
+Function AI_SelectMultiClamp(string device, variable headStage)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SetClampMode(device, headStage, mode, [zeroStep])
-	string   device
-	variable headStage
-	variable mode, zeroStep
+Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SendToAmp(device, headStage, mode, func, value, [checkBeforeWrite, usePrefixes, selectAmp])
-	string device
-	variable headStage, mode, func, value
-	variable checkBeforeWrite, usePrefixes, selectAmp
+Function AI_SendToAmp(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_EnsureCorrectMode(device, headStage, [selectAmp])
-	string device
-	variable headStage, selectAmp
+Function AI_EnsureCorrectMode(string device, variable headStage, [variable selectAmp])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_FillAndSendAmpliferSettings(device, sweepNo)
-	string   device
-	variable sweepNo
+Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_QueryGainsFromMCC(device)
-	string device
+Function AI_QueryGainsFromMCC(string device)
 
 	DEBUGPRINT("Unimplemented")
 End

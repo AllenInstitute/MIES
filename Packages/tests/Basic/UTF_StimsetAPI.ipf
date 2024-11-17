@@ -76,6 +76,7 @@ End
 
 // ST_CreateStimSet
 static Function CreateStimSetWorks()
+
 	string name, returned, ref
 
 	name     = "setA"
@@ -141,6 +142,7 @@ End
 
 // ST_RemoveStimSet
 static Function RemoveStimSetWorks()
+
 	string name, returned
 
 	name     = "setA"
@@ -158,6 +160,7 @@ End
 // ST_GetStimsetParameters
 /// @{
 static Function GetStimsetParametersWorksGlobal()
+
 	string name, returned
 
 	name     = "setA"
@@ -176,6 +179,7 @@ static Function GetStimsetParametersWorksGlobal()
 End
 
 static Function GetStimsetParametersWorksPerEpoch()
+
 	string name, returned, entry
 	variable i
 
@@ -215,6 +219,7 @@ End
 
 // ST_GetStimsetParameterAsVariable
 static Function GetStimsetParameterAsVariableWorks()
+
 	string name, returned
 
 	name     = "setA"
@@ -248,6 +253,7 @@ End
 
 // ST_GetStimsetParameterAsString
 static Function GetStimsetParameterAsStringWorks()
+
 	string name, returned, str, ref
 
 	name     = "setA"
@@ -285,6 +291,7 @@ End
 
 // ST_SetStimsetParameter
 static Function SetStimsetParameterWorks()
+
 	string name, returned, str, ref
 
 	name     = "setA"
@@ -387,6 +394,7 @@ static Function ParameterWavesAreUnchanged_IGNORE(STRUCT ParamModCounts &s)
 End
 
 static Function SetStimsetParameterChecksInput()
+
 	string name, returned
 	variable ret
 

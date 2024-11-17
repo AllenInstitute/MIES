@@ -15,20 +15,17 @@ static Constant    SCOPE_BLUE                      = 39168
 static StrConstant RES_FORMAT_STR                  = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%%%s][%d], numMinSignDigits = 2)}\\]1\\K(0, 0, 0)"
 static Constant    PRESSURE_SPECTRUM_PERCENT       = 0.05
 
-Function/S SCOPE_GetGraph(device)
-	string device
+Function/S SCOPE_GetGraph(string device)
 
 	return SCOPE_GetPanel(device) + "#oscilloscope"
 End
 
-Function/S SCOPE_GetPanel(device)
-	string device
+Function/S SCOPE_GetPanel(string device)
 
 	return device + "#Scope"
 End
 
-Function SCOPE_OpenScopeWindow(device)
-	string device
+Function SCOPE_OpenScopeWindow(string device)
 
 	string win, graph
 
@@ -48,8 +45,7 @@ Function SCOPE_OpenScopeWindow(device)
 	SetActiveSubWindow $device
 End
 
-Function SCOPE_KillScopeWindowIfRequest(device)
-	string device
+Function SCOPE_KillScopeWindowIfRequest(string device)
 
 	string win = SCOPE_GetPanel(device)
 
@@ -62,9 +58,7 @@ End
 // @param[in]  device title of panel
 // @param[out] axisMin suggested new axis minimum
 // @return 1 if axisMin has changed, 0 otherwise
-Function SCOPE_GetTPTopAxisStart(device, axisMin)
-	string    device
-	variable &axisMin
+Function SCOPE_GetTPTopAxisStart(string device, variable &axisMin)
 
 	string graph
 	variable count, latest
@@ -93,9 +87,7 @@ Function SCOPE_GetTPTopAxisStart(device, axisMin)
 	endif
 End
 
-Function SCOPE_UpdateGraph(device, dataAcqOrTP)
-	string   device
-	variable dataAcqOrTP
+Function SCOPE_UpdateGraph(string device, variable dataAcqOrTP)
 
 	variable i, numADCs, range, numDACs, statsMin, statsMax
 	variable axisMin, axisMax, spacing, additionalSpacing
@@ -193,9 +185,7 @@ static Function [variable showSteadyStateResistance, variable showPeakResistance
 	showPowerSpectrum         = DAG_GetNumericalValue(device, "check_settings_show_power")
 End
 
-Function SCOPE_CreateGraph(device, dataAcqOrTP)
-	string   device
-	variable dataAcqOrTP
+Function SCOPE_CreateGraph(string device, variable dataAcqOrTP)
 
 	string graph, color, style
 	variable i, adc, numActiveDACs, numADChannels, oneTimeInitDone, chanTPmode, scopeScaleMode
@@ -389,9 +379,7 @@ Function SCOPE_CreateGraph(device, dataAcqOrTP)
 	endif
 End
 
-Function SCOPE_SetADAxisLabel(device, dataAcqOrTP, activeHeadStage)
-	string device
-	variable dataAcqOrTP, activeHeadStage
+Function SCOPE_SetADAxisLabel(string device, variable dataAcqOrTP, variable activeHeadStage)
 
 	variable adc, i, headStage
 	variable numADChannels
@@ -473,9 +461,7 @@ End
 /// @param fifoPos     Position of the hardware DAQ fifo to keep track of
 ///                    the position which will be written next
 /// @param deviceID    device ID
-Function SCOPE_UpdateOscilloscopeData(device, dataAcqOrTP, [chunk, fifoPos, deviceID])
-	string device
-	variable dataAcqOrTP, chunk, fifoPos, deviceID
+Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [variable chunk, variable fifoPos, variable deviceID])
 
 	STRUCT TPAnalysisInput tpInput
 	variable i, j
@@ -731,9 +717,7 @@ static Function SCOPE_SU_UpdateOscilloscope(string device, variable dataAcqOrTP,
 	endif
 End
 
-static Function SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceiD, fifoPos)
-	string device
-	variable dataAcqOrTP, deviceID, fifoPos
+static Function SCOPE_NI_UpdateOscilloscope(string device, variable dataAcqOrTP, variable deviceiD, variable fifoPos)
 
 	variable i, channel, decMethod, decFactor, numCols, numFifoChannels
 	string fifoName, msg, fifoInfo
@@ -802,9 +786,7 @@ static Function SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceiD, fifoP
 	endif
 End
 
-static Function SCOPE_ITC_UpdateOscilloscope(device, dataAcqOrTP, chunk, fifoPos)
-	string device
-	variable dataAcqOrTP, chunk, fifoPos
+static Function SCOPE_ITC_UpdateOscilloscope(string device, variable dataAcqOrTP, variable chunk, variable fifoPos)
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(device)
 	variable length, first, last
@@ -896,9 +878,7 @@ End
 /// @param fifopos    fifo position
 ///
 /// @return adjusted fifo position
-static Function SCOPE_ITC_AdjustFIFOPos(device, fifopos)
-	string   device
-	variable fifopos
+static Function SCOPE_ITC_AdjustFIFOPos(string device, variable fifopos)
 
 	variable stopCollectionPoint
 

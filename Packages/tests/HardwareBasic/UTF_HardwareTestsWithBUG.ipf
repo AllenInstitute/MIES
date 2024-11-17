@@ -28,6 +28,7 @@ Function CheckSweepSavingCompatible([string str])
 End
 
 Function CheckSweepSavingCompatible_REENTRY([string str])
+
 	variable sweepNo
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)

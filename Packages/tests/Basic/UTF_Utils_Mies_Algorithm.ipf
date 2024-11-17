@@ -346,6 +346,7 @@ End
 /// @{
 
 Function FI_NumSearchWithCol1()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -354,6 +355,7 @@ Function FI_NumSearchWithCol1()
 End
 
 static Function FI_NumSearchWithCol1Inverted()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -362,6 +364,7 @@ static Function FI_NumSearchWithCol1Inverted()
 End
 
 Function FI_NumSearchWithColAndLayer1()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -370,6 +373,7 @@ Function FI_NumSearchWithColAndLayer1()
 End
 
 Function FI_NumSearchWithColAndLayer2()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -378,6 +382,7 @@ Function FI_NumSearchWithColAndLayer2()
 End
 
 Function FI_NumSearchWithCol2()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -386,6 +391,7 @@ Function FI_NumSearchWithCol2()
 End
 
 Function FI_NumSearchWithCol3()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -394,6 +400,7 @@ Function FI_NumSearchWithCol3()
 End
 
 Function FI_NumSearchWithColLabel()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -402,6 +409,7 @@ Function FI_NumSearchWithColLabel()
 End
 
 Function FI_NumSearchWithColAndStr()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -410,6 +418,7 @@ Function FI_NumSearchWithColAndStr()
 End
 
 Function FI_NumSearchWithColAndProp1()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -418,6 +427,7 @@ Function FI_NumSearchWithColAndProp1()
 End
 
 Function FI_NumSearchWithColAndProp2()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -426,6 +436,7 @@ Function FI_NumSearchWithColAndProp2()
 End
 
 Function FI_NumSearchWithColAndProp3()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -434,6 +445,7 @@ Function FI_NumSearchWithColAndProp3()
 End
 
 Function FI_NumSearchWithColAndProp4()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -442,6 +454,7 @@ Function FI_NumSearchWithColAndProp4()
 End
 
 Function FI_NumSearchWithColAndProp5()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -450,6 +463,7 @@ Function FI_NumSearchWithColAndProp5()
 End
 
 static Function FI_NumSearchWithColAndProp5Inverted()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -458,6 +472,7 @@ static Function FI_NumSearchWithColAndProp5Inverted()
 End
 
 Function FI_NumSearchWithColAndProp6()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -466,6 +481,7 @@ Function FI_NumSearchWithColAndProp6()
 End
 
 static Function FI_NumSearchWithColAndProp6Inverted()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -474,6 +490,7 @@ static Function FI_NumSearchWithColAndProp6Inverted()
 End
 
 Function FI_NumSearchWithColAndProp6a()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -482,6 +499,7 @@ Function FI_NumSearchWithColAndProp6a()
 End
 
 Function FI_NumSearchWithRestRows()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -490,6 +508,7 @@ Function FI_NumSearchWithRestRows()
 End
 
 Function FI_TextSearchWithCol1()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -498,6 +517,7 @@ Function FI_TextSearchWithCol1()
 End
 
 Function FI_TextSearchWithColAndLayer1()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -506,6 +526,7 @@ Function FI_TextSearchWithColAndLayer1()
 End
 
 Function FI_TextSearchWithColAndLayer2()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -514,6 +535,7 @@ Function FI_TextSearchWithColAndLayer2()
 End
 
 Function FI_TextSearchWithCol2()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -522,6 +544,7 @@ Function FI_TextSearchWithCol2()
 End
 
 Function FI_TextSearchWithCol3()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -530,6 +553,7 @@ Function FI_TextSearchWithCol3()
 End
 
 Function FI_TextSearchWithColLabel()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -538,6 +562,7 @@ Function FI_TextSearchWithColLabel()
 End
 
 Function FI_TextSearchWithColAndVar()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -546,6 +571,7 @@ Function FI_TextSearchWithColAndVar()
 End
 
 Function FI_TextSearchIgnoresCase()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -554,6 +580,7 @@ Function FI_TextSearchIgnoresCase()
 End
 
 Function FI_TextSearchWithColAndProp1()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -562,6 +589,7 @@ Function FI_TextSearchWithColAndProp1()
 End
 
 Function FI_TextSearchWithColAndProp2()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -570,6 +598,7 @@ Function FI_TextSearchWithColAndProp2()
 End
 
 Function FI_TextSearchWithColAndProp3()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -578,6 +607,7 @@ Function FI_TextSearchWithColAndProp3()
 End
 
 Function FI_TextSearchWithColAndProp4()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -586,6 +616,7 @@ Function FI_TextSearchWithColAndProp4()
 End
 
 Function FI_TextSearchWithColAndProp5()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -594,6 +625,7 @@ Function FI_TextSearchWithColAndProp5()
 End
 
 Function FI_TextSearchWithColAndProp6()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -602,6 +634,7 @@ Function FI_TextSearchWithColAndProp6()
 End
 
 Function FI_TextSearchWithRestRows()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
@@ -610,12 +643,14 @@ Function FI_TextSearchWithRestRows()
 End
 
 Function FI_EmptyWave()
+
 	Make/FREE/N=0 emptyWave
 	WAVE/Z indizes = FindIndizes(emptyWave, var = NaN)
 	CHECK_WAVE(indizes, NULL_WAVE)
 End
 
 Function FI_AbortsWithInvalidParams1()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -628,6 +663,7 @@ Function FI_AbortsWithInvalidParams1()
 End
 
 Function FI_AbortsWithInvalidParams2()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -640,6 +676,7 @@ Function FI_AbortsWithInvalidParams2()
 End
 
 Function FI_AbortsWithInvalidParams3()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -652,6 +689,7 @@ Function FI_AbortsWithInvalidParams3()
 End
 
 Function FI_AbortsWithInvalidParams4()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -664,6 +702,7 @@ Function FI_AbortsWithInvalidParams4()
 End
 
 Function FI_AbortsWithInvalidParams5()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -676,6 +715,7 @@ Function FI_AbortsWithInvalidParams5()
 End
 
 Function FI_AbortsWithInvalidParams6()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -688,6 +728,7 @@ Function FI_AbortsWithInvalidParams6()
 End
 
 Function FI_AbortsWithInvalidParams7()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -700,6 +741,7 @@ Function FI_AbortsWithInvalidParams7()
 End
 
 Function FI_AbortsWithInvalidParams8()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -712,6 +754,7 @@ Function FI_AbortsWithInvalidParams8()
 End
 
 Function FI_AbortsWithInvalidParams9()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -724,6 +767,7 @@ Function FI_AbortsWithInvalidParams9()
 End
 
 Function FI_AbortsWithInvalidParams10()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -736,6 +780,7 @@ Function FI_AbortsWithInvalidParams10()
 End
 
 Function FI_AbortsWithInvalidParams11()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 
@@ -769,6 +814,7 @@ Function FI_AbortsWithInvalidWave()
 End
 
 Function FI_AbortsWithInvalidRegExp()
+
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
 

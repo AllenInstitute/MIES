@@ -107,9 +107,7 @@ End
 ///
 /// @param wv          wave to redimension
 /// @param maximumSize maximum number of the rows, defaults to MAXIMUM_SIZE
-Function EnsureSmallEnoughWave(wv, [maximumSize])
-	WAVE     wv
-	variable maximumSize
+Function EnsureSmallEnoughWave(WAVE wv, [variable maximumSize])
 
 	if(ParamIsDefault(maximumSize))
 		maximumSize = MAXIMUM_WAVE_SIZE
@@ -132,8 +130,7 @@ threadsafe Function/WAVE GetWaveDimensions(WAVE wv)
 End
 
 /// @brief Returns the size of the wave in bytes
-threadsafe static Function GetWaveSizeImplementation(wv)
-	WAVE wv
+threadsafe static Function GetWaveSizeImplementation(WAVE wv)
 
 	return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
 End
@@ -142,6 +139,7 @@ End
 ///
 /// Inspired by http://www.igorexchange.com/node/1845
 threadsafe Function GetSizeOfType(WAVE wv)
+
 	variable type, size
 
 	type = WaveType(wv)
@@ -179,9 +177,7 @@ threadsafe Function GetSizeOfType(WAVE wv)
 End
 
 /// @brief Returns the size of the wave in bytes.
-threadsafe Function GetWaveSize(wv, [recursive])
-	WAVE/Z   wv
-	variable recursive
+threadsafe Function GetWaveSize(WAVE/Z wv, [variable recursive])
 
 	if(ParamIsDefault(recursive))
 		recursive = 0
@@ -217,9 +213,7 @@ End
 ///
 /// The expected wave note format is: `key1:val1;key2:val2;`
 /// UTF_NOINSTRUMENTATION
-threadsafe Function GetNumberFromWaveNote(wv, key)
-	WAVE   wv
-	string key
+threadsafe Function GetNumberFromWaveNote(WAVE wv, string key)
 
 	ASSERT_TS(WaveExists(wv), "Missing wave")
 	ASSERT_TS(!IsEmpty(key), "Empty key")
@@ -236,11 +230,7 @@ End
 ///               the conversion to string for `val`
 ///
 /// The expected wave note format is: `key1:val1;key2:val2;`
-threadsafe Function SetNumberInWaveNote(wv, key, val, [format])
-	WAVE     wv
-	string   key
-	variable val
-	string   format
+threadsafe Function SetNumberInWaveNote(WAVE wv, string key, variable val, [string format])
 
 	string str
 
@@ -268,6 +258,7 @@ End
 ///
 /// @returns the value on success. An empty string is returned if it could not be found
 threadsafe Function/S GetStringFromWaveNote(WAVE wv, string key, [string keySep, string listSep, variable recursive])
+
 	variable numEntries = numpnts(wv)
 	string result
 
@@ -293,7 +284,7 @@ threadsafe Function/S GetStringFromWaveNote(WAVE wv, string key, [string keySep,
 
 	Make/FREE/T/N=(numEntries) notes = ExtractStringFromPair(note(WaveRef(wv, row = p)), key, keySep = keySep, listSep = listSep)
 
-	WAVE/T/Z uniqueEntries = GetUniqueEntries(notes)
+	WAVE/Z/T uniqueEntries = GetUniqueEntries(notes)
 	ASSERT_TS(WaveExists(uniqueEntries), "Missing unique entries")
 
 	if(DimSize(uniqueEntries, ROWS) == 1 && !cmpstr(uniqueEntries[0], result))
@@ -351,13 +342,7 @@ End
 /// @param replaceEntry  0 (default) or 1, should existing keys named `key` be replaced (does only work reliable
 ///                      in wave note lists without carriage returns).
 /// @param format        [optional, defaults to `%g`] format string used for converting `var` to `str`
-Function AddEntryIntoWaveNoteAsList(wv, key, [var, str, appendCR, replaceEntry, format])
-	WAVE     wv
-	string   key
-	variable var
-	string   str
-	variable appendCR, replaceEntry
-	string format
+Function AddEntryIntoWaveNoteAsList(WAVE wv, string key, [variable var, string str, variable appendCR, variable replaceEntry, string format])
 
 	string formattedString, formatString
 
@@ -400,9 +385,7 @@ End
 /// Ignores spaces around the equal ("=") sign.
 ///
 /// @sa AddEntryIntoWaveNoteAsList()
-Function HasEntryInWaveNoteList(wv, key, value)
-	WAVE wv
-	string key, value
+Function HasEntryInWaveNoteList(WAVE wv, string key, string value)
 
 	return GrepString(note(wv), "\\Q" + key + "\\E\\s*=\\s*\\Q" + value + "\\E\\s*;")
 End
@@ -422,9 +405,7 @@ threadsafe Function/S UniqueWaveName(DFREF dfr, string baseName)
 End
 
 /// @brief Return a new wave from the subrange of the given 1D wave
-Function/WAVE DuplicateSubRange(wv, first, last)
-	WAVE wv
-	variable first, last
+Function/WAVE DuplicateSubRange(WAVE wv, variable first, variable last)
 
 	ASSERT(DimSize(wv, COLS) == 0, "Requires 1D wave")
 
@@ -434,9 +415,7 @@ Function/WAVE DuplicateSubRange(wv, first, last)
 End
 
 /// @brief Search the row in refWave which has the same contents as the given row in the sourceWave
-Function GetRowWithSameContent(refWave, sourceWave, row)
-	WAVE/T refWave, sourceWave
-	variable row
+Function GetRowWithSameContent(WAVE/T refWave, WAVE/T sourceWave, variable row)
 
 	variable i, j, numRows, numCols
 	numRows = DimSize(refWave, ROWS)
@@ -462,9 +441,7 @@ Function GetRowWithSameContent(refWave, sourceWave, row)
 End
 
 /// @brief Returns the column from a multidimensional wave using the dimlabel
-Function/WAVE GetColfromWavewithDimLabel(wv, dimLabel)
-	WAVE   wv
-	string dimLabel
+Function/WAVE GetColfromWavewithDimLabel(WAVE wv, string dimLabel)
 
 	variable column = FindDimLabel(wv, COLS, dimLabel)
 	ASSERT(column != -2, "dimLabel:" + dimLabel + "cannot be found")
@@ -473,8 +450,7 @@ Function/WAVE GetColfromWavewithDimLabel(wv, dimLabel)
 End
 
 /// @brief Turn a persistent wave into a free wave
-Function/WAVE MakeWaveFree(wv)
-	WAVE/Z wv
+Function/WAVE MakeWaveFree(WAVE/Z wv)
 
 	if(!WaveExists(wv))
 		return $""
@@ -512,11 +488,7 @@ End
 /// @param list     List of dimension labels, semicolon separated.
 /// @param dim      Wave dimension, see, @ref WaveDimensions
 /// @param startPos [optional, defaults to 0] First dimLabel index
-threadsafe Function SetDimensionLabels(wv, list, dim, [startPos])
-	WAVE     wv
-	string   list
-	variable dim
-	variable startPos
+threadsafe Function SetDimensionLabels(WAVE wv, string list, variable dim, [variable startPos])
 
 	string   labelName
 	variable i
@@ -641,8 +613,7 @@ End
 /// @brief Remove the dimlabels of all dimensions with data
 ///
 /// Due to no better solutions the dim labels are actually overwritten with an empty string
-Function RemoveAllDimLabels(wv)
-	WAVE/Z wv
+Function RemoveAllDimLabels(WAVE/Z wv)
 
 	variable dims, i, j, numEntries
 
@@ -677,8 +648,7 @@ End
 /// @brief Merge two floating point waves labnotebook waves
 ///
 /// The result will hold the finite row entry of either `wv1` or `wv2`.
-Function/WAVE MergeTwoWaves(wv1, wv2)
-	WAVE wv1, wv2
+Function/WAVE MergeTwoWaves(WAVE wv1, WAVE wv2)
 
 	variable numEntries, i, validEntryOne, validEntryTwo
 
@@ -710,9 +680,7 @@ Function/WAVE MergeTwoWaves(wv1, wv2)
 End
 
 /// @brief Adapt the wave lock status on the wave and its contained waves
-threadsafe Function ChangeWaveLock(wv, val)
-	WAVE/WAVE wv
-	variable  val
+threadsafe Function ChangeWaveLock(WAVE/WAVE wv, variable val)
 
 	variable numEntries, i
 
@@ -800,6 +768,7 @@ End
 ///
 /// @return 0 if at least one entry was found, 1 otherwise
 threadsafe Function RemoveTextWaveEntry1D(WAVE/T w, string entry, [variable options, variable all])
+
 	ASSERT_TS(IsTextWave(w), "Input wave must be a text wave")
 
 	variable start, foundOnce
@@ -960,6 +929,7 @@ End
 ///
 /// The order of arguments is modelled after SelectString/SelectNumber.
 threadsafe Function/WAVE SelectWave(variable condition, WAVE/Z waveIfFalse, WAVE/Z waveIfTrue)
+
 	if(!!condition != 0)
 		return waveIfTrue
 	else
@@ -1265,8 +1235,7 @@ End
 /// @brief Detects duplicate values in a 1d wave.
 ///
 /// @return one if duplicates could be found, zero otherwise
-Function SearchForDuplicates(wv)
-	WAVE wv
+Function SearchForDuplicates(WAVE wv)
 
 	ASSERT(WaveExists(wv), "Missing wave")
 
@@ -1318,9 +1287,7 @@ End
 ///                                                (wave reference waves only with matching sizes)
 ///
 /// @return new wave reference to dest wave
-Function/WAVE MoveWaveWithOverwrite(dest, src, [recursive])
-	WAVE dest, src
-	variable recursive
+Function/WAVE MoveWaveWithOverwrite(WAVE dest, WAVE src, [variable recursive])
 
 	string   path
 	variable numEntries
@@ -1359,8 +1326,7 @@ End
 /// 2D waves are zeroed along each row
 ///
 /// @return 0 if nothing was done, 1 if zeroed
-threadsafe Function ZeroWave(wv)
-	WAVE wv
+threadsafe Function ZeroWave(WAVE wv)
 
 	if(GetNumberFromWaveNote(wv, NOTE_KEY_ZEROED) == 1)
 		return 0
@@ -1397,8 +1363,7 @@ End
 /// @param numRows 			number of rows in the input wave
 /// @param decimationFactor decimation factor, must be an integer and larger than 1
 /// @param method      	    one of @ref DecimationMethods
-Function GetDecimatedWaveSize(numRows, decimationFactor, method)
-	variable numRows, decimationFactor, method
+Function GetDecimatedWaveSize(variable numRows, variable decimationFactor, variable method)
 
 	variable decimatedSize
 
@@ -1426,10 +1391,7 @@ End
 /// @param wv         text wave to search in
 /// @param colLabel   column label from wv
 /// @param endRow     maximum row index to consider
-Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
-	WAVE/T   wv
-	string   colLabel
-	variable endRow
+Function/S GetLastNonEmptyEntry(WAVE/T wv, string colLabel, variable endRow)
 
 	WAVE/Z indizes = FindIndizes(wv, colLabel = colLabel, prop = PROP_EMPTY | PROP_NOT, endRow = endRow)
 

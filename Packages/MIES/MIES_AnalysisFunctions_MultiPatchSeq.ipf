@@ -65,9 +65,7 @@ static Structure MSQ_PulseSettings
 EndStructure
 
 /// @brief Fills `s` according to the analysis function type
-static Function MSQ_GetPulseSettingsForType(type, s)
-	variable                  type
-	STRUCT MSQ_PulseSettings &s
+static Function MSQ_GetPulseSettingsForType(variable type, STRUCT MSQ_PulseSettings &s)
 
 	string msg
 
@@ -83,9 +81,7 @@ End
 
 /// Return the pulse durations from the labnotebook or calculate them before if required.
 /// For convenience unused headstages will have 0 instead of NaN in the returned wave.
-static Function/WAVE MSQ_GetPulseDurations(device, type, sweepNo, totalOnsetDelay, headstage, [useSCI, forceRecalculation])
-	string device
-	variable type, sweepNo, totalOnsetDelay, headstage, useSCI, forceRecalculation
+static Function/WAVE MSQ_GetPulseDurations(string device, variable type, variable sweepNo, variable totalOnsetDelay, variable headstage, [variable useSCI, variable forceRecalculation])
 
 	string key
 
@@ -125,9 +121,7 @@ End
 /// @brief Determine the pulse duration on each headstage
 ///
 /// Returns the labnotebook wave as well.
-static Function/WAVE MSQ_DeterminePulseDuration(device, sweepNo, totalOnsetDelay)
-	string device
-	variable sweepNo, totalOnsetDelay
+static Function/WAVE MSQ_DeterminePulseDuration(string device, variable sweepNo, variable totalOnsetDelay)
 
 	variable i, level, first, last, duration
 	string key
@@ -177,9 +171,7 @@ End
 
 /// @brief Return the number of already acquired sweeps
 ///        of the given stimset cycle ID
-static Function MSQ_NumAcquiredSweepsInSet(device, sweepNo, headstage)
-	string device
-	variable sweepNo, headstage
+static Function MSQ_NumAcquiredSweepsInSet(string device, variable sweepNo, variable headstage)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -194,9 +186,7 @@ End
 
 /// @brief Return the number of passed sweeps in all sweeps from the given
 ///        repeated acquisition cycle.
-static Function MSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
-	WAVE numericalValues
-	variable type, sweepNo, headstage
+static Function MSQ_NumPassesInSet(WAVE numericalValues, variable type, variable sweepNo, variable headstage)
 
 	string key
 
@@ -216,9 +206,7 @@ End
 /// @brief Return the DA stimset length in ms of the given headstage
 ///
 /// @return stimset length or -1 on error
-static Function MSQ_GetDAStimsetLength(device, headstage)
-	string   device
-	variable headstage
+static Function MSQ_GetDAStimsetLength(string device, variable headstage)
 
 	string   setName
 	variable DAC
@@ -276,9 +264,7 @@ End
 ///
 /// Chunks (10):
 /// - Region, 0-based
-Function/WAVE MSQ_CreateOverrideResults(device, headstage, type)
-	string device
-	variable headstage, type
+Function/WAVE MSQ_CreateOverrideResults(string device, variable headstage, variable type)
 
 	variable DAC, numCols, numRows, numLayers, numChunks, typeOfWave
 	string stimset
@@ -306,7 +292,7 @@ Function/WAVE MSQ_CreateOverrideResults(device, headstage, type)
 			numCols    = NUM_HEADSTAGES
 			numLayers  = 10
 			numChunks  = 10
-			typeOfWave = 0              // text wave
+			typeOfWave = 0 // text wave
 			break
 		default:
 			ASSERT(0, "invalid type")
@@ -331,13 +317,7 @@ End
 /// @param[in]  defaultValue    [optiona, defaults to `NaN`] the value of the other headstages in the returned wave
 ///
 /// @return labnotebook value wave suitable for ED_AddEntryToLabnotebook()
-static Function/WAVE MSQ_SearchForSpikes(device, type, sweepWave, headstage, totalOnsetDelay, [numberOfSpikes, defaultValue, spikePositions])
-	string   device
-	variable type
-	WAVE     sweepWave
-	variable headstage, totalOnsetDelay
-	variable numberOfSpikes, defaultValue
-	WAVE spikePositions
+static Function/WAVE MSQ_SearchForSpikes(string device, variable type, WAVE sweepWave, variable headstage, variable totalOnsetDelay, [variable numberOfSpikes, variable defaultValue, WAVE spikePositions])
 
 	variable level, first, last, overrideValue
 	variable minVal, maxVal
@@ -443,11 +423,7 @@ End
 ///        Searches in the complete SCI and assumes that the entries are either 0/1/NaN.
 ///
 /// @todo merge with LBN functions once these are reworked.
-static Function MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, type, str, headstage)
-	WAVE numericalValues
-	variable sweepNo, type
-	string   str
-	variable headstage
+static Function MSQ_GetLBNEntryForHSSCIBool(WAVE numericalValues, variable sweepNo, variable type, string str, variable headstage)
 
 	string key
 
@@ -469,11 +445,7 @@ End
 /// passed headstage must be valid.
 ///
 /// @todo merge with LBN functions once these are reworked.
-static Function MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, type, str, headstage)
-	WAVE numericalValues
-	variable sweepNo, type
-	string   str
-	variable headstage
+static Function MSQ_GetLBNEntryForHeadstageSCI(WAVE numericalValues, variable sweepNo, variable type, string str, variable headstage)
 
 	string   key
 	variable numEntries
@@ -496,6 +468,7 @@ End
 
 /// @brief Return a list of required parameters for MSQ_FastRheoEst()
 Function/S MSQ_FastRheoEst_GetParams()
+
 	return "MaximumDAScale:variable,"            + \
 	       "PostDAQDAScale:variable,"            + \
 	       "PostDAQDAScaleFactor:variable,"      + \
@@ -504,8 +477,7 @@ Function/S MSQ_FastRheoEst_GetParams()
 	       "SamplingMultiplier:variable"
 End
 
-Function/S MSQ_FastRheoEst_GetHelp(name)
-	string name
+Function/S MSQ_FastRheoEst_GetHelp(string name)
 
 	strswitch(name)
 		case "SamplingMultiplier":
@@ -596,9 +568,7 @@ End
 /// ---|     |--------------------------------------------
 ///
 /// @endverbatim
-Function MSQ_FastRheoEst(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function MSQ_FastRheoEst(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable totalOnsetDelay, setPassed, sweepPassed, multiplier, newDAScaleValue, found, val
 	variable i, postDAQDAScale, postDAQDAScaleFactor, DAC, maxDAScale, allHeadstagesExceeded, minRheoOffset
@@ -934,9 +904,7 @@ End
 ///
 /// @return wave with #LABNOTEBOOK_LAYER_COUNT entries, each holding the final DA Scale entry
 ///         from the previous fast rheo estimate run.
-static Function/WAVE MSQ_DS_GetDAScaleOffset(device, headstage)
-	string   device
-	variable headstage
+static Function/WAVE MSQ_DS_GetDAScaleOffset(string device, variable headstage)
 
 	variable sweepNo, i
 
@@ -968,9 +936,7 @@ End
 /// And as usual we want the *last* matching sweep.
 ///
 /// @return existing sweep number or -1 in case no such sweep could be found
-static Function MSQ_GetLastPassingLongRHSweep(device, headstage)
-	string   device
-	variable headstage
+static Function MSQ_GetLastPassingLongRHSweep(string device, variable headstage)
 
 	string key
 	variable i, numEntries, sweepNo, sweepCol
@@ -1009,9 +975,7 @@ End
 ///
 /// Required to do before skipping sweeps.
 /// @todo this hack must go away.
-static Function MSQ_ForceSetEvent(device, headstage)
-	string   device
-	variable headstage
+static Function MSQ_ForceSetEvent(string device, variable headstage)
 
 	variable DAC
 
@@ -1048,11 +1012,11 @@ End
 
 /// @brief Require parameters from stimset
 Function/S MSQ_DAScale_GetParams()
+
 	return "DAScales:wave"
 End
 
-Function/S MSQ_DAScale_GetHelp(name)
-	string name
+Function/S MSQ_DAScale_GetHelp(string name)
 
 	strswitch(name)
 		case "DAScales":
@@ -1092,9 +1056,7 @@ End
 /// .. image:: /dot/multi-patch-seq-dascale.svg
 /// \endrst
 ///
-Function MSQ_DAScale(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function MSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable i, index, ret, headstagePassed, val, sweepNo
 	string msg, key, ctrl

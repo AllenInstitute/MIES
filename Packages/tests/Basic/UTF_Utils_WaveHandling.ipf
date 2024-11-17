@@ -131,6 +131,7 @@ Function ELE_KeepsMinimumWaveSize2()
 End
 
 Function ELE_KeepsMinimumWaveSize3()
+
 	// need to check that the index MINIMUM_WAVE_SIZE is now accessible
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
 	EnsureLargeEnoughWave(wv, indexShouldExist = MINIMUM_WAVE_SIZE)
@@ -138,12 +139,14 @@ Function ELE_KeepsMinimumWaveSize3()
 End
 
 Function ELE_Returns1WithCheckMem()
+
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
 	CHECK_EQUAL_VAR(EnsureLargeEnoughWave(wv, indexShouldExist = 2^50, checkFreeMemory = 1), 1)
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), MINIMUM_WAVE_SIZE)
 End
 
 Function ELE_AbortsWithTooLargeValue()
+
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
 
 	variable err
@@ -179,6 +182,7 @@ End
 /// @{
 
 Function GLS_Works()
+
 	Make/FREE data
 
 	CHECK_EQUAL_VAR(GetLockState(data), 0)
@@ -316,6 +320,7 @@ End
 /// @{
 
 Function GSFWNR_Works()
+
 	string ref, str
 
 	// non-wave ref
@@ -385,6 +390,7 @@ End
 /// @{
 
 Function SeSt_CheckParams()
+
 	try
 		SetStringInWaveNote($"", "abcd", "123")
 		FAIL()
@@ -429,6 +435,7 @@ static Function SeSt_CheckParams2()
 End
 
 Function SeSt_Works()
+
 	string str, ref
 
 	// adds entry
@@ -786,6 +793,7 @@ End
 /// @{
 
 Function WMCW_ChecksMainThread()
+
 	variable val
 
 	Make/FREE data
@@ -825,6 +833,7 @@ Function WMCW_ChecksPreemptiveThread()
 End
 
 Function WMCW_Works1()
+
 	variable val
 
 	Make/O data
@@ -836,6 +845,7 @@ Function WMCW_Works1()
 End
 
 Function WMCW_Works2()
+
 	variable val
 
 	Make/FREE data
@@ -1151,8 +1161,7 @@ End
 /// @{
 
 // UTF_TD_GENERATOR DataGenerators#SW_TrueValues
-Function SW_WorksWithTrue([var])
-	variable var
+Function SW_WorksWithTrue([variable var])
 
 	Make/FREE a, b
 	WAVE/Z trueWave = SelectWave(var, a, b)
@@ -1161,8 +1170,7 @@ Function SW_WorksWithTrue([var])
 End
 
 // UTF_TD_GENERATOR DataGenerators#SW_FalseValues
-Function SW_WorksWithFalse([var])
-	variable var
+Function SW_WorksWithFalse([variable var])
 
 	Make/FREE a, b
 	WAVE/Z falseWave = SelectWave(var, a, b)
@@ -1423,7 +1431,7 @@ static Function TestSplitWavesToDimension()
 	Make/FREE wvData2 = {5, 6}
 	Make/FREE/WAVE wvRef = {wvData1, wvData2}
 
-	WAVE/WAVE/Z result = SplitWavesToDimension(wvRef)
+	WAVE/Z/WAVE result = SplitWavesToDimension(wvRef)
 	CHECK_WAVE(result, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
 	CHECK_EQUAL_VAR(DimSize(result, COLS), 0)
@@ -1435,7 +1443,7 @@ static Function TestSplitWavesToDimension()
 	Make/FREE/T wvDataTxt1 = {{"a", "b"}, {"c", "d"}}
 	Make/FREE/WAVE wvRef = {wvData1, wvDataTxt1}
 
-	WAVE/WAVE/Z result = SplitWavesToDimension(wvRef)
+	WAVE/Z/WAVE result = SplitWavesToDimension(wvRef)
 	CHECK_WAVE(result, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(result, ROWS), 4)
 	CHECK_EQUAL_VAR(DimSize(result, COLS), 0)
@@ -1872,6 +1880,7 @@ Function MWWO_ReturnsNewRef()
 End
 
 Function MWWO_RecursiveWorks()
+
 	variable err
 
 	Make/WAVE/N=2 dest

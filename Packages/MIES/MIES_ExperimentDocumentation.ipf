@@ -13,6 +13,7 @@
 ///
 /// @see ED_createTextNotes, ED_createWaveNote
 Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, string device, variable entrySourceType)
+
 	ED_CheckValuesAndKeys(vals, keys)
 
 	if(IsTextWave(vals))
@@ -24,6 +25,7 @@ End
 
 /// @brief Add numerical/textual entries to results
 Function ED_AddEntriesToResults(WAVE vals, WAVE/T keys, variable entrySourceType)
+
 	ED_CheckValuesAndKeys(vals, keys)
 
 	if(IsTextWave(vals))
@@ -34,6 +36,7 @@ Function ED_AddEntriesToResults(WAVE vals, WAVE/T keys, variable entrySourceType
 End
 
 static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
+
 	ASSERT(DimSize(vals, ROWS) == 1, "Mismatched row count")
 	ASSERT(DimSize(vals, COLS) == DimSize(keys, COLS), "Mismatched column count")
 	ASSERT(DimSize(vals, LAYERS) <= LABNOTEBOOK_LAYER_COUNT, "Mismatched layer count")
@@ -57,6 +60,7 @@ End
 /// @param entrySourceType       type of reporting subsystem, one of @ref DataAcqModes
 /// @param logbookType           type of the logbook, one of @ref LogbookTypes
 static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incomingTextualKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
+
 	variable rowIndex, numCols, i, lastValidIncomingLayer, state
 	string timestamp
 
@@ -177,6 +181,7 @@ End
 /// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
 /// @param logbookType             one of @ref LogbookTypes
 static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incomingNumericalKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
+
 	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp, state
 
 	if(ParamIsDefault(device))
@@ -259,11 +264,7 @@ End
 ///                        given sweep number. Mostly useful for adding
 ///                        labnotebook entries during #MID_SWEEP_EVENT for
 ///                        analysis functions.
-Function ED_AddEntryToLabnotebook(device, key, values, [unit, tolerance, overrideSweepNo])
-	string device, key
-	WAVE   values
-	string unit
-	variable tolerance, overrideSweepNo
+Function ED_AddEntryToLabnotebook(string device, string key, WAVE values, [string unit, variable tolerance, variable overrideSweepNo])
 
 	string toleranceStr
 	variable sweepNo, headstageCont
@@ -311,9 +312,7 @@ End
 /// @brief Record changed labnotebook entries compared to the last sweep to the sweep wave note
 ///
 /// Honours tolerances defined in the keywave and LABNOTEBOOK_BINARY_UNIT values
-static Function ED_WriteChangedValuesToNote(device, sweepNo)
-	string   device
-	variable sweepNo
+static Function ED_WriteChangedValuesToNote(string device, variable sweepNo)
 
 	string key, factor, unit, text, frontLabel
 	string str = ""
@@ -398,9 +397,7 @@ End
 /// Textual version.
 ///
 /// Honours tolerances defined in the keywave and LABNOTEBOOK_BINARY_UNIT values
-static Function ED_WriteChangedValuesToNoteText(device, sweepNo)
-	string   device
-	variable sweepNo
+static Function ED_WriteChangedValuesToNoteText(string device, variable sweepNo)
 
 	string key, factor, text, frontLabel, ignoreKeyList
 	string str = ""
@@ -491,6 +488,7 @@ End
 /// @retval colIndizes column indizes of the entries from incomingKey
 /// @retval rowIndex   returns the row index into values at which the new values should be written
 static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE incomingValues, WAVE/T key, WAVE values, variable logbookType)
+
 	variable numCols, numKeyRows, numKeyCols, i, j, numAdditions, idx
 	variable lastValidIncomingKeyRow, descIndex, isUserEntry, headstageCont, headstageContDesc, isUnAssoc
 	string msg, searchStr
@@ -501,7 +499,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 
 	Make/FREE/D/N=(DimSize(incomingKey, COLS)) indizes = NaN
 
-	WAVE/T/ZZ desc
+	WAVE/ZZ/T desc
 
 	numCols = DimSize(incomingKey, COLS)
 	for(i = 0; i < numCols; i += 1)
@@ -644,8 +642,7 @@ End
 /// @brief Remember the "exact" start of the sweep
 ///
 /// Should be called immediately after HW_StartAcq().
-Function ED_MarkSweepStart(device)
-	string device
+Function ED_MarkSweepStart(string device)
 
 	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(device)
 
@@ -653,9 +650,7 @@ Function ED_MarkSweepStart(device)
 End
 
 /// @brief Add sweep specific information to the labnotebook
-Function ED_createWaveNoteTags(device, sweepCount)
-	string   device
-	variable sweepCount
+Function ED_createWaveNoteTags(string device, variable sweepCount)
 
 	variable i, j, refITI, ITI
 
@@ -697,10 +692,7 @@ Function ED_createWaveNoteTags(device, sweepCount)
 End
 
 /// @brief Write the user comment from the DA_Ephys panel to the labnotebook
-Function ED_WriteUserCommentToLabNB(device, comment, sweepNo)
-	string   device
-	string   comment
-	variable sweepNo
+Function ED_WriteUserCommentToLabNB(string device, string comment, variable sweepNo)
 
 	Make/FREE/N=(3, 1)/T keys
 
@@ -715,9 +707,7 @@ Function ED_WriteUserCommentToLabNB(device, comment, sweepNo)
 End
 
 /// @brief This function is used to create wave notes for the informations found in the Asynchronous tab in the DA_Ephys panel
-static Function ED_createAsyncWaveNoteTags(device, sweepCount)
-	string   device
-	variable sweepCount
+static Function ED_createAsyncWaveNoteTags(string device, variable sweepCount)
 
 	string title, unit, str, ctrl
 	variable minSettingValue, maxSettingValue, i, scaledValue
@@ -801,8 +791,7 @@ static Function ED_createAsyncWaveNoteTags(device, sweepCount)
 End
 
 /// @brief Stores test pulse related data in the labnotebook
-Function ED_TPDocumentation(device)
-	string device
+Function ED_TPDocumentation(string device)
 
 	variable sweepNo, RTolerance
 	variable i, j
@@ -816,8 +805,8 @@ Function ED_TPDocumentation(device)
 	Make/FREE/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
 
 	// add data to TPKeyWave
-	TPKeyWave[0][0] = "TP Baseline Vm"             // current clamp
-	TPKeyWave[0][1] = "TP Baseline pA"             // voltage clamp
+	TPKeyWave[0][0] = "TP Baseline Vm" // current clamp
+	TPKeyWave[0][1] = "TP Baseline pA" // voltage clamp
 	TPKeyWave[0][2] = "TP Peak Resistance"
 	TPKeyWave[0][3] = "TP Steady State Resistance"
 	// same names as  in GetAmplifierSettingsKeyWave
@@ -844,9 +833,9 @@ Function ED_TPDocumentation(device)
 	TPKeyWave[1][11] = ""
 
 	RTolerance       = TPSettings[%resistanceTol][INDEP_HEADSTAGE]
-	TPKeyWave[2][0]  = "1"                                         // Assume a tolerance of 1 mV for V rest
-	TPKeyWave[2][1]  = "50"                                        // Assume a tolerance of 50pA for I rest
-	TPKeyWave[2][2]  = num2str(RTolerance)                         // applies the same R tolerance for the instantaneous and steady state resistance
+	TPKeyWave[2][0]  = "1"                 // Assume a tolerance of 1 mV for V rest
+	TPKeyWave[2][1]  = "50"                // Assume a tolerance of 50pA for I rest
+	TPKeyWave[2][2]  = num2str(RTolerance) // applies the same R tolerance for the instantaneous and steady state resistance
 	TPKeyWave[2][3]  = num2str(RTolerance)
 	TPKeyWave[2][4]  = "1e-12"
 	TPKeyWave[2][5]  = "1e-12"
@@ -906,6 +895,7 @@ End
 /// @param sweepNo         sweep number
 /// @param entrySourceType type of reporting subsystem, one of @ref DataAcqModes
 static Function ED_TPSettingsDocumentation(string device, variable sweepNo, variable entrySourceType)
+
 	WAVE TPSettingsLBN        = GetTPSettingsLabnotebook(device)
 	WAVE TPSettingsLBNKeyWave = GetTPSettingsLabnotebookKeyWave(device)
 

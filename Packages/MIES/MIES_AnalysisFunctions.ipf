@@ -174,30 +174,20 @@ static Constant    ITI_LOCAL        = 15                      ///< Inter-trial-i
 static Constant POST_DELAY = 150 ///< Delay after stimulation event in which no other event can occur in ms
 ///@}
 
-Function TestAnalysisFunction_V1(device, eventType, DAQDataWave, headStage)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage
+Function TestAnalysisFunction_V1(string device, variable eventType, WAVE DAQDataWave, variable headStage)
 
 	printf "Analysis function version 1 called: device %s, eventType \"%s\", headstage %d\r", device, StringFromList(eventType, EVENT_NAME_LIST), headStage
 	printf "Next sweep: %d\r", DAG_GetNumericalValue(device, "SetVar_Sweep")
 End
 
-Function TestAnalysisFunction_V2(device, eventType, DAQDataWave, headStage, realDataLength)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage, realDataLength
+Function TestAnalysisFunction_V2(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
 
 	printf "Analysis function version 2 called: device %s, eventType \"%s\", headstage %d\r", device, StringFromList(eventType, EVENT_NAME_LIST), headStage
 
 	return 0
 End
 
-Function TestAnalysisFunction_V3(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function TestAnalysisFunction_V3(string device, STRUCT AnalysisFunction_V3 &s)
 
 	string names, name, type
 	variable numEntries, i
@@ -223,7 +213,7 @@ Function TestAnalysisFunction_V3(device, s)
 				WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 				print wv
 			case "textwave":
-				WAVE/T/Z wvText = AFH_GetAnalysisParamTextWave(name, s.params)
+				WAVE/Z/T wvText = AFH_GetAnalysisParamTextWave(name, s.params)
 				print wvText
 				break
 			default:
@@ -270,9 +260,7 @@ End
 /// @brief Measure the time between mid sweep calls
 ///
 /// Used mainly for debugging.
-Function MeasureMidSweepTiming_V3(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function MeasureMidSweepTiming_V3(string device, STRUCT AnalysisFunction_V3 &s)
 
 	NVAR lastCall = $GetTemporaryVar()
 
@@ -295,11 +283,7 @@ Function MeasureMidSweepTiming_V3(device, s)
 	return 0
 End
 
-Function Enforce_VC(device, eventType, DAQDataWave, headStage, realDataLength)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage, realDataLength
+Function Enforce_VC(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
 
 	if(eventType != PRE_DAQ_EVENT)
 		return 0
@@ -316,11 +300,7 @@ Function Enforce_VC(device, eventType, DAQDataWave, headStage, realDataLength)
 	return 0
 End
 
-Function Enforce_IC(device, eventType, DAQDataWave, headStage, realDataLength)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage, realDataLength
+Function Enforce_IC(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
 
 	if(eventType != PRE_DAQ_EVENT)
 		return 0
@@ -341,11 +321,7 @@ End
 // Starts with a pop-up menu to set initial parameters and then switches holding potential midway through total number of sweeps
 
 /// @brief Force active headstages into voltage clamp
-Function SetStimConfig_Vclamp(device, eventType, DAQDataWave, headStage)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage
+Function SetStimConfig_Vclamp(string device, variable eventType, WAVE DAQDataWave, variable headStage)
 
 	setVClampMode()
 
@@ -354,11 +330,7 @@ Function SetStimConfig_Vclamp(device, eventType, DAQDataWave, headStage)
 End
 
 /// @brief Force active headstages into current clamp
-Function SetStimConfig_Iclamp(device, eventType, DAQDataWave, headStage)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage
+Function SetStimConfig_Iclamp(string device, variable eventType, WAVE DAQDataWave, variable headStage)
 
 	setIClampMode()
 
@@ -367,11 +339,7 @@ Function SetStimConfig_Iclamp(device, eventType, DAQDataWave, headStage)
 End
 
 /// @brief Change holding potential midway through stim set
-Function ChangeHoldingPotential(device, eventType, DAQDataWave, headStage)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage
+Function ChangeHoldingPotential(string device, variable eventType, WAVE DAQDataWave, variable headStage)
 
 	variable SweepsRemaining = switchHolding(VM2_LOCAL)
 
@@ -379,11 +347,7 @@ Function ChangeHoldingPotential(device, eventType, DAQDataWave, headStage)
 End
 
 /// @brief Print last Stim Set run and headstage mode and holding potential
-Function LastStimSet(device, eventType, DAQDataWave, headStage)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage
+Function LastStimSet(string device, variable eventType, WAVE DAQDataWave, variable headStage)
 
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
 
@@ -425,9 +389,7 @@ End
 /// @param Scale   Stimulus amplitude in mV
 /// @param Sweeps  Number of sweeps
 /// @param ITI     Inter-trial-interval
-Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
-	variable Vm1, scale, sweeps, ITI
-	string stimSet
+Function SetStimParam(string stimSet, variable Vm1, variable Scale, variable Sweeps, variable ITI)
 
 	setHolding(Vm1)
 	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Wave_DA_All", str = stimset)
@@ -445,8 +407,7 @@ End
 /// @brief Set holding potential for active headstages
 ///
 /// @param Vm1		   Holding potential
-Function setHolding(Vm1)
-	variable Vm1
+Function setHolding(variable Vm1)
 
 	variable i
 	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
@@ -497,8 +458,7 @@ End
 /// Switch occurs after X/2 number of data sweeps. If X!/2 switchSweep = floor(X/2)
 ///
 /// @param Vm2	Holding potential to switch to
-Function switchHolding(Vm2)
-	variable Vm2
+Function switchHolding(variable Vm2)
 
 	variable numSweeps, SweepsRemaining, switchSweep, i, clampMode
 
@@ -593,11 +553,7 @@ End
 ///        the left over time at the 20th call.
 ///
 /// This function needs to be set for Pre DAQ, Mid Sweep and Post Sweep Event.
-Function TestPrematureSweepStop(device, eventType, DAQDataWave, headStage, realDataLength)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage, realDataLength
+Function TestPrematureSweepStop(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
 
 	variable num
 	SVAR temp = $GetTemporaryString()
@@ -619,11 +575,7 @@ Function TestPrematureSweepStop(device, eventType, DAQDataWave, headStage, realD
 	return 0
 End
 
-Function preDAQ_MP_mainConfig(device, eventType, DAQDataWave, headStage, realDataLength)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage, realDataLength
+Function preDAQ_MP_mainConfig(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
 
@@ -634,11 +586,7 @@ Function preDAQ_MP_mainConfig(device, eventType, DAQDataWave, headStage, realDat
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
 End
 
-Function preDAQ_MP_IfMixed(device, eventType, DAQDataWave, headStage, realDataLength)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage, realDataLength
+Function preDAQ_MP_IfMixed(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
 
@@ -649,11 +597,7 @@ Function preDAQ_MP_IfMixed(device, eventType, DAQDataWave, headStage, realDataLe
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
 End
 
-Function preDAQ_MP_ChirpBlowout(device, eventType, DAQDataWave, headStage, realDataLength)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage, realDataLength
+Function preDAQ_MP_ChirpBlowout(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
 
@@ -673,11 +617,7 @@ End
 /// - Does currently nothing for "Mid Sweep" Event
 /// - Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)
 /// - All active headstages must be in "Current Clamp"
-Function AdjustDAScale(device, eventType, DAQDataWave, headStage, realDataLength)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage, realDataLength
+Function AdjustDAScale(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
 
 	variable val, index, DAC, ADC
 	string ctrl, msg
@@ -763,6 +703,7 @@ End
 ///
 /// Usually called by PSQ_AdjustDAScale().
 Function FitResistance(string device, variable headstage, [variable showPlot, variable anaFuncType])
+
 	variable deltaVCol, DAScaleCol, i, j, sweepNo, idx, numEntries
 	variable lastWrittenSweep, sweepPassed
 	string graph, textBoxString, trace, key
@@ -948,9 +889,7 @@ End
 /// @param relative   (optional) relative DAScale modifier
 /// @param offset     (optional) offset DAScale value
 /// @param roundTopA  (optional, defaults to false) round the set DAScale to integer pA values
-Function SetDAScale(device, headstage, [absolute, relative, offset, roundTopA])
-	string device
-	variable headstage, absolute, relative, offset, roundTopA
+Function SetDAScale(string device, variable headstage, [variable absolute, variable relative, variable offset, variable roundTopA])
 
 	variable amps, DAC
 	string DAUnit, ctrl, lbl
@@ -990,6 +929,7 @@ End
 
 /// @brief Return a list of required parameters
 Function/S ReachTargetVoltage_GetParams()
+
 	return "[EnableIndexing:variable],[IndexingEndStimsetAllIC:string]"
 End
 
@@ -1046,6 +986,7 @@ End
 /// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on
 /// the next sweep if the measured resistance is smaller than 20MΩ
 Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
+
 	variable sweepNo, index, i, targetV, prevActiveHS, prevSendToAllAmp
 	variable amps, result
 	variable autoBiasCheck, holdingPotential, indexing
@@ -1269,7 +1210,7 @@ Function/S SetControlInEvent_CheckParam(string name, STRUCT CheckParametersStruc
 		return "Must be of type \"text wave\""
 	endif
 
-	WAVE/T/Z data = AFH_GetAnalysisParamTextWave(name, s.params)
+	WAVE/Z/T data = AFH_GetAnalysisParamTextWave(name, s.params)
 
 	if(!WaveExists(data))
 		return "Does not hold anything."
@@ -1327,9 +1268,7 @@ End
 ///
 /// \endrst
 ///
-Function SetControlInEvent(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function SetControlInEvent(string device, STRUCT AnalysisFunction_V3 &s)
 
 	string guiElements, guiElem, type, valueStr, event, msg, win, windowsWithGUIElement, databrowser, str
 	variable numEntries, i, controlType, j, numTuples, numMatches, numWindows, k
@@ -1375,7 +1314,7 @@ Function SetControlInEvent(device, s)
 			endif
 		endif
 
-		WAVE/T/Z data = AFH_GetAnalysisParamTextWave(guiElem, s.params)
+		WAVE/Z/T data = AFH_GetAnalysisParamTextWave(guiElem, s.params)
 		ASSERT(WaveExists(data), "No payload")
 
 		numTuples = DimSize(data, ROWS)

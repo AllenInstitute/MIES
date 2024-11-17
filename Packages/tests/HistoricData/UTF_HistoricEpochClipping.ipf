@@ -12,7 +12,7 @@ static Function TestEpochClipping([string str])
 	file = "input:" + str
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
-	sbWin = StringFromList(0, sweepBrowsers)
+	sbWin                  = StringFromList(0, sweepBrowsers)
 	CHECK_PROPER_STR(sbWin)
 	bsPanel = BSP_GetPanel(sbWin)
 

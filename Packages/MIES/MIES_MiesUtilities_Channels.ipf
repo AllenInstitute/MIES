@@ -10,22 +10,19 @@
 /// @brief This file holds MIES utility functions for Channels
 
 /// @brief Return a list of the AD channels from the DAQ config
-threadsafe Function/WAVE GetADCListFromConfig(config)
-	WAVE config
+threadsafe Function/WAVE GetADCListFromConfig(WAVE config)
 
 	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_ADC)
 End
 
 /// @brief Return a list of the DA channels from the DAQ config
-threadsafe Function/WAVE GetDACListFromConfig(config)
-	WAVE config
+threadsafe Function/WAVE GetDACListFromConfig(WAVE config)
 
 	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_DAC)
 End
 
 /// @brief Return a list of the TTL channels from the DAQ config
-threadsafe Function/WAVE GetTTLListFromConfig(config)
-	WAVE config
+threadsafe Function/WAVE GetTTLListFromConfig(WAVE config)
 
 	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_TTL)
 End
@@ -36,9 +33,7 @@ End
 ///
 /// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
-threadsafe static Function/WAVE GetChanneListFromDAQConfigWave(config, channelType)
-	WAVE     config
-	variable channelType
+threadsafe static Function/WAVE GetChanneListFromDAQConfigWave(WAVE config, variable channelType)
 
 	variable numRows, i, j
 
@@ -66,9 +61,7 @@ End
 /// @param type to count, one of @ref DaqChannelTypeConstants
 ///
 /// @return number of types present in chanTypes
-Function GetNrOfTypedChannels(chanTypes, type)
-	WAVE     chanTypes
-	variable type
+Function GetNrOfTypedChannels(WAVE chanTypes, variable type)
 
 	variable i, numChannels, count
 
@@ -84,22 +77,19 @@ Function GetNrOfTypedChannels(chanTypes, type)
 End
 
 /// @brief Return a types of the AD channels from the ITC config
-Function/WAVE GetTTLTypesFromConfig(config)
-	WAVE config
+Function/WAVE GetTTLTypesFromConfig(WAVE config)
 
 	return GetTypeListFromITCConfig(config, XOP_CHANNEL_TYPE_TTL)
 End
 
 /// @brief Return a types of the AD channels from the ITC config
-Function/WAVE GetADCTypesFromConfig(config)
-	WAVE config
+Function/WAVE GetADCTypesFromConfig(WAVE config)
 
 	return GetTypeListFromITCConfig(config, XOP_CHANNEL_TYPE_ADC)
 End
 
 /// @brief Return a types of the DA channels from the ITC config
-Function/WAVE GetDACTypesFromConfig(config)
-	WAVE config
+Function/WAVE GetDACTypesFromConfig(WAVE config)
 
 	return GetTypeListFromITCConfig(config, XOP_CHANNEL_TYPE_DAC)
 End
@@ -110,9 +100,7 @@ End
 ///
 /// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
-static Function/WAVE GetTypeListFromITCConfig(config, channelType)
-	WAVE     config
-	variable channelType
+static Function/WAVE GetTypeListFromITCConfig(WAVE config, variable channelType)
 
 	variable numRows, i, j
 
@@ -138,8 +126,7 @@ End
 /// @param device device
 ///
 /// @return 1 if TP type present, 0 otherwise
-Function GotTPChannelsOnADCs(device)
-	string device
+Function GotTPChannelsOnADCs(string device)
 
 	WAVE config  = GetDAQConfigWave(device)
 	WAVE ADCmode = GetADCTypesFromConfig(config)
@@ -151,9 +138,7 @@ End
 /// @param numericalValues Numerical labnotebook values
 /// @param sweep           Sweep number
 /// @param channel         TTL hardware channel
-threadsafe Function GetTTLBits(numericalValues, sweep, channel)
-	WAVE numericalValues
-	variable sweep, channel
+threadsafe Function GetTTLBits(WAVE numericalValues, variable sweep, variable channel)
 
 	variable index = GetIndexForHeadstageIndepData(numericalValues)
 
@@ -200,7 +185,7 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 
 	if(hwDACType == HARDWARE_NI_DAC || hwDACType == HARDWARE_SUTTER_DAC)
 		// present since 2f56481a (DC_MakeNITTLWave: Document TTL settings and rework it completely, 2018-09-06)
-		WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
+		WAVE/Z/T ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
 		if(!WaveExists(ttlChannels))
 			return $""
 		endif

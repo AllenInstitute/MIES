@@ -31,6 +31,7 @@
 /// @{
 
 Function IE_Works()
+
 	CHECK(IsEven(0))
 	CHECK(!IsEven(-1))
 	CHECK(IsEven(-2))
@@ -40,6 +41,7 @@ End
 
 // UTF_TD_GENERATOR DataGenerators#NonFiniteValues
 Function IE_FalseWithNonFiniteValues([variable var])
+
 	CHECK(!IsEven(var))
 End
 
@@ -49,6 +51,7 @@ End
 /// @{
 
 Function IO_Works()
+
 	CHECK(!IsOdd(0))
 	CHECK(!IsOdd(-2))
 	CHECK(IsOdd(-1))
@@ -58,6 +61,7 @@ End
 
 // UTF_TD_GENERATOR DataGenerators#NonFiniteValues
 Function IO_FalseWithNonFiniteValues([variable var])
+
 	CHECK(!IsOdd(var))
 End
 
@@ -222,6 +226,7 @@ End
 /// @{
 
 Function EVOB_Works()
+
 	CHECK(!EqualValuesOrBothNaN(0, 1))
 	CHECK(EqualValuesOrBothNaN(0, 0))
 	CHECK(!EqualValuesOrBothNaN(0, NaN))
@@ -243,8 +248,7 @@ Function IC_Works()
 End
 
 // UTF_TD_GENERATOR InfiniteValues
-Function IC_WorksSpecialValues([val])
-	variable val
+Function IC_WorksSpecialValues([variable val])
 
 	Make/FREE/N=0 empty
 	CHECK_EQUAL_VAR(IsConstant(empty, val, ignoreNaN = 0), NaN)
@@ -257,6 +261,7 @@ Function IC_WorksSpecialValues([val])
 End
 
 Function IC_CheckNaNInInputWave()
+
 	// default is to ignore NaNs
 	CHECK_EQUAL_VAR(IsConstant({NaN, 0}, 0), 1)
 	CHECK_EQUAL_VAR(IsConstant({NaN, 0}, 0, ignoreNaN = 1), 1)
@@ -278,6 +283,7 @@ End
 /// @{
 
 Function IVR_Works()
+
 	string null
 
 	CHECK(IsValidRegexp(".*"))

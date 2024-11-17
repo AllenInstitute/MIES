@@ -13,6 +13,7 @@
 //   (AD depends on test setup)
 
 static Function GlobalPreAcq(string device)
+
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
 End
 
@@ -454,8 +455,7 @@ static Function DirectToFormulaParser(string code)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SF_TPTest2([str])
-	string str
+static Function SF_TPTest2([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES0"                    + \
@@ -464,8 +464,7 @@ static Function SF_TPTest2([str])
 	AcquireData_NG(s, str)
 End
 
-static Function SF_TPTest2_REENTRY([str])
-	string str
+static Function SF_TPTest2_REENTRY([string str])
 
 	string graph, dbPanel
 	string formula, dataType, strRef
@@ -561,8 +560,7 @@ static Function SF_TPTest2_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SF_TPTest([str])
-	string str
+static Function SF_TPTest([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES3"                  + \
@@ -571,8 +569,7 @@ static Function SF_TPTest([str])
 	AcquireData_NG(s, str)
 End
 
-static Function SF_TPTest_REENTRY([str])
-	string str
+static Function SF_TPTest_REENTRY([string str])
 
 	TestSweepFormulaTP(str)
 	TestSweepFormulaAnnotations(str)
@@ -584,8 +581,7 @@ static Function SF_TPTest_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SF_ButtonTest([str])
-	string str
+static Function SF_ButtonTest([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_RES3"                  + \
@@ -594,8 +590,7 @@ static Function SF_ButtonTest([str])
 	AcquireData_NG(s, str)
 End
 
-static Function SF_ButtonTest_REENTRY([str])
-	string str
+static Function SF_ButtonTest_REENTRY([string str])
 
 	TestSweepFormulaButtons(str)
 End
@@ -610,6 +605,7 @@ static Function TestSweepFormulaCodeResults([string str])
 End
 
 static Function TestSweepFormulaCodeResults_REENTRY([string str])
+
 	string content, contentRef, graph, trace, bsPanel
 	variable settingsCol
 
@@ -692,8 +688,7 @@ Function SF_InsertedTPVersusTP_preAcq(string device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SF_InsertedTPVersusTP([str])
-	string str
+static Function SF_InsertedTPVersusTP([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_GSI0_ITI10_TP1"                                        + \
@@ -703,8 +698,7 @@ static Function SF_InsertedTPVersusTP([str])
 	AcquireData_NG(s, str)
 End
 
-static Function SF_InsertedTPVersusTP_REENTRY([str])
-	string str
+static Function SF_InsertedTPVersusTP_REENTRY([string str])
 
 	string graph, formula
 	variable index
@@ -784,8 +778,7 @@ static Function SF_InsertedTPVersusTP_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function SF_UnassociatedDATTL_Epochs([str])
-	string str
+static Function SF_UnassociatedDATTL_Epochs([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                              + \

@@ -20,11 +20,7 @@
 /// @param headStage   active headstage index
 ///
 /// @return ignored
-Function AFP_ANALYSIS_FUNC_V1(device, eventType, DAQDataWave, headStage)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage
+Function AFP_ANALYSIS_FUNC_V1(string device, variable eventType, WAVE DAQDataWave, variable headStage)
 
 	ASSERT(0, "Prototype function which must not be called")
 End
@@ -40,11 +36,7 @@ End
 ///                       higher due to alignment requirements of the data acquisition hardware. `NaN` for #PRE_DAQ_EVENT events.
 ///
 /// @return see @ref AnalysisFunction_V3DescriptionTable
-Function AFP_ANALYSIS_FUNC_V2(device, eventType, DAQDataWave, headStage, realDataLength)
-	string   device
-	variable eventType
-	WAVE     DAQDataWave
-	variable headstage, realDataLength
+Function AFP_ANALYSIS_FUNC_V2(string device, variable eventType, WAVE DAQDataWave, variable headStage, variable realDataLength)
 
 	ASSERT(0, "Prototype function which must not be called")
 End
@@ -53,9 +45,7 @@ End
 /// @param s          analysis event structure
 ///
 /// @return see @ref AnalysisFunction_V3DescriptionTable
-Function AFP_ANALYSIS_FUNC_V3(device, s)
-	string                      device
-	STRUCT AnalysisFunction_V3 &s
+Function AFP_ANALYSIS_FUNC_V3(string device, STRUCT AnalysisFunction_V3 &s)
 
 	ASSERT(0, "Prototype function which must not be called")
 End
@@ -69,8 +59,7 @@ End
 
 /// @brief Prototype function for the user supplied parameter help functions
 ///
-Function/S AFP_PARAM_HELP_GETTER_V3(name)
-	string name
+Function/S AFP_PARAM_HELP_GETTER_V3(string name)
 
 	ASSERT(0, "Prototype function which must not be called")
 End

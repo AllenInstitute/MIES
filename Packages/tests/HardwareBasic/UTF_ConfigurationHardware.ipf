@@ -6,8 +6,7 @@
 static StrConstant REF_DAEPHYS_CONFIG_FILE = "DA_Ephys.json"
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RestoreDAEphysPanel([str])
-	string str
+static Function RestoreDAEphysPanel([string str])
 
 	string fName, rewrittenConfigPath
 	variable jsonID
@@ -53,7 +52,7 @@ static Function RestoreAndSaveConfiguration([string str])
 	WAVE/T wFileList = ListToTextWave(fileList, "|")
 	for(fileName : wFileList)
 		[fContent, fName] = LoadTextFile(fileName)
-		jsonId = JSON_Parse(fContent)
+		jsonId            = JSON_Parse(fContent)
 
 		if(JSON_Exists(jsonId, stimsetJsonPath))
 			FixupJSONConfigImplMain(jsonId, str)
@@ -75,7 +74,7 @@ static Function RestoreAndSaveConfiguration([string str])
 	CHECK(FileExists(workingFolder + newConfig))
 	CHECK(FileExists(workingFolder + newRigConfig))
 
-	[fContent, fName] = LoadTextFile(workingFolder + defaultRigConfig)
+	[fContent, fName]    = LoadTextFile(workingFolder + defaultRigConfig)
 	[fContentRig, fName] = LoadTextFile(workingFolder + newRigConfig)
 	CHECK_EQUAL_STR(fContent, fContentRig)
 
@@ -250,8 +249,7 @@ static Function CheckIfConfigurationRestoresDAEphysWithUnassocDA([string str])
 	CHECK_EQUAL_VAR(DAState, 0)
 End
 
-static Function CheckIfConfigurationRestoresDAEphysWithoutAmp_PreAcq(device)
-	string device
+static Function CheckIfConfigurationRestoresDAEphysWithoutAmp_PreAcq(string device)
 
 	string hs1Ctrl
 	string   unit = "testunit"

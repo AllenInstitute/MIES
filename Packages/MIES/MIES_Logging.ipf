@@ -15,6 +15,7 @@
 
 /// @brief Get the absolute path to the log file
 threadsafe Function/S LOG_GetFile(string package)
+
 	string folder
 
 	folder = PS_GetSettingsFolder_TS(package)
@@ -29,7 +30,8 @@ End
 /// - `exp`: Name of the Igor Pro experiment
 /// - `id`: Igor Pro instance identifier, see also GetIgorInstanceID()
 threadsafe static Function LOG_HasRequiredKeys(variable JSONid)
-	WAVE/T/Z keys = JSON_GetKeys(JSONid, "", ignoreErr = 1)
+
+	WAVE/Z/T keys = JSON_GetKeys(JSONid, "", ignoreErr = 1)
 
 	if(!WaveExists(keys))
 		return 0
@@ -46,6 +48,7 @@ End
 ///
 /// Caller is responsible for the JSON text memory.
 threadsafe Function LOG_GenerateEntryTemplate(string source)
+
 	variable JSONid
 
 	JSONid = JSON_New()
@@ -71,6 +74,7 @@ End
 
 /// @brief Adds the JSONid text to the logfile without any checks
 threadsafe static Function LOG_AddEntryWithoutChecks(string package, variable JSONid)
+
 	string file, str
 	variable refnum
 
@@ -125,7 +129,8 @@ End
 ///                                            values. Either both `keys` and `values` are present or none.
 /// @param values  [optional, defaults to $""] Additional key-value pairs to be written into the log file. Same size as
 ///                                            keys. Either both `keys` and `values` are present or none.
-threadsafe Function LOG_AddEntry(string package, string action, [variable stacktrace, WAVE/T/Z keys, WAVE/T/Z values])
+threadsafe Function LOG_AddEntry(string package, string action, [variable stacktrace, WAVE/Z/T keys, WAVE/Z/T values])
+
 	variable JSONid, numAdditionalEntries
 	string caller
 

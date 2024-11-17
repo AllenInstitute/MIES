@@ -65,9 +65,7 @@ End
 /// appended. If the backup wave exists and the main type of the backup wave can be overridden by Duplicate/O
 /// then the wave reference of the backup wave is kept. Otherwise the main type is changed and the wave reference
 /// is not kept (e.g. backup wave is numerical, original wave is text)
-threadsafe Function/WAVE CreateBackupWave(wv, [forceCreation])
-	WAVE     wv
-	variable forceCreation
+threadsafe Function/WAVE CreateBackupWave(WAVE wv, [variable forceCreation])
 
 	string backupname
 
@@ -97,8 +95,7 @@ threadsafe Function/WAVE CreateBackupWave(wv, [forceCreation])
 End
 
 /// @brief Return a wave reference to the possibly not existing backup wave
-Function/WAVE GetBackupWave(wv)
-	WAVE wv
+Function/WAVE GetBackupWave(WAVE wv)
 
 	string backupname
 

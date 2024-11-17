@@ -10,9 +10,7 @@
 /// @brief __DAG__ Routines dealing with the DA_Ephys GUI state waves
 
 /// @brief Records the state of the DA_ephys panel into the numerical GUI state wave
-Function DAG_RecordGuiStateNum(device, [GUIState])
-	string device
-	WAVE   GUIState
+Function DAG_RecordGuiStateNum(string device, [WAVE GUIState])
 
 	variable i, numEntries
 	string ctrlName, lbl
@@ -103,9 +101,7 @@ Function DAG_RecordGuiStateNum(device, [GUIState])
 End
 
 /// @brief Records the state of the DA_ephys panel into the textual GUI state wave
-Function DAG_RecordGuiStateTxT(device, [GUIState])
-	string device
-	WAVE   GUIState
+Function DAG_RecordGuiStateTxT(string device, [WAVE GUIState])
 
 	variable i, numEntries
 	string ctrlName, lbl
@@ -177,9 +173,7 @@ End
 ///                   entries per headstage/channel/etc.
 ///
 /// UTF_NOINSTRUMENTATION
-Function DAG_GetNumericalValue(device, ctrl, [index])
-	string device, ctrl
-	variable index
+Function DAG_GetNumericalValue(string device, string ctrl, [variable index])
 
 	variable refValue, waveIndex, ctrlDim
 	string msg
@@ -235,9 +229,7 @@ End
 /// @param ctrl       control name
 /// @param index      [optional, default to NaN] Some control entries have multiple
 ///                   entries per headstage/channel/etc.
-Function/S DAG_GetTextualValue(device, ctrl, [index])
-	string device, ctrl
-	variable index
+Function/S DAG_GetTextualValue(string device, string ctrl, [variable index])
 
 	string str, msg
 	variable waveIndex, ctrlDim
@@ -293,9 +285,7 @@ End
 ///
 /// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
 /// @param device  panel title
-Function/WAVE DAG_GetChannelState(device, type)
-	string   device
-	variable type
+Function/WAVE DAG_GetChannelState(string device, variable type)
 
 	variable numEntries, col
 
@@ -335,6 +325,7 @@ End
 /// @brief Return a wave with `NUM_HEADSTAGES` rows with `1` where
 ///        the given headstages is active and in the given clamp mode.
 Function/WAVE DAG_GetActiveHeadstages(string device, variable clampMode)
+
 	AI_AssertOnInvalidClampMode(clampMode)
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
@@ -374,9 +365,7 @@ End
 /// @param device  panel title
 /// @param channelType one of the channel type constants from @ref ChannelTypeAndControlConstants
 /// @param controlType one of the control type constants from @ref ChannelTypeAndControlConstants
-Function/WAVE DAG_GetChannelTextual(device, channelType, controlType)
-	string device
-	variable channelType, controlType
+Function/WAVE DAG_GetChannelTextual(string device, variable channelType, variable controlType)
 
 	variable numEntries
 
@@ -390,9 +379,7 @@ Function/WAVE DAG_GetChannelTextual(device, channelType, controlType)
 End
 
 /// @brief Returns the headstage State
-Function DAG_GetHeadstageState(device, headStage)
-	string   device
-	variable headStage
+Function DAG_GetHeadstageState(string device, variable headStage)
 
 	WAVE wv = GetDA_EphysGuiStateNum(device)
 	return wv[headStage][%$GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)]
@@ -400,9 +387,7 @@ End
 
 /// @returns the mode of the headstage defined in the locked DA_ephys panel,
 ///          can be V_CLAMP_MODE or I_CLAMP_MODE or NC
-Function DAG_GetHeadstageMode(device, headStage)
-	string   device
-	variable headStage // range: [0, NUM_HEADSTAGES[
+Function DAG_GetHeadstageMode(string device, variable headStage)
 
 	return GetDA_EphysGuiStateNum(device)[headStage][%HSMode]
 End
@@ -415,11 +400,7 @@ End
 /// @param controlName control name
 /// @param val         [optional] numerical value, 0-based index for popup menues
 /// @param str         [optional] textual value
-Function DAG_Update(device, controlName, [val, str])
-	string   device
-	string   controlName
-	variable val
-	string   str
+Function DAG_Update(string device, string controlName, [variable val, string str])
 
 	variable col, channelIndex, channelType, controlType
 
@@ -454,8 +435,7 @@ End
 
 /// @brief Returns a list of unique and type specific controls
 ///
-Function/S DAG_GetUniqueSpecCtrlListNum(device)
-	string device
+Function/S DAG_GetUniqueSpecCtrlListNum(string device)
 
 	ASSERT(WindowExists(device), "Missing window")
 
@@ -463,8 +443,7 @@ Function/S DAG_GetUniqueSpecCtrlListNum(device)
 End
 
 /// @brief Returns a list of unique and type specific controls with textual values
-Function/S DAG_GetUniqueSpecCtrlListTxT(device)
-	string device
+Function/S DAG_GetUniqueSpecCtrlListTxT(string device)
 
 	ASSERT(WindowExists(device), "Missing window")
 
@@ -477,9 +456,7 @@ End
 ///
 /// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
 /// @param device  panel title
-static Function/WAVE DAG_ControlStatusWave(device, type)
-	string   device
-	variable type
+static Function/WAVE DAG_ControlStatusWave(string device, variable type)
 
 	string ctrl
 	variable i, numEntries
@@ -500,8 +477,7 @@ End
 ///
 /// All callers, except the ones updating the GUIState wave,
 /// should prefer DAG_GetHeadstageMode() instead.
-static Function/WAVE DAG_GetAllHSMode(device)
-	string device
+static Function/WAVE DAG_GetAllHSMode(string device)
 
 	variable i, headStage, clampMode
 	string ctrl
@@ -518,8 +494,7 @@ static Function/WAVE DAG_GetAllHSMode(device)
 End
 
 /// @brief Parses a list of controls in the device and returns a list of unique controls
-static Function/S DAG_GetUniqueCtrlList(device)
-	string device
+static Function/S DAG_GetUniqueCtrlList(string device)
 
 	string prunedList = ""
 	string list, ctrlToRemove, ctrl
@@ -555,9 +530,7 @@ static Function/S DAG_GetUniqueCtrlList(device)
 End
 
 /// @brief Parses a list of controls and returns numeric checkBox, valDisplay, setVariable, popUpMenu, and slider controls
-static Function/S DAG_GetSpecificCtrlNum(device, list)
-	string device
-	string list
+static Function/S DAG_GetSpecificCtrlNum(string device, string list)
 
 	string subtypeCtrlList = ""
 	variable i, numEntries, controlType
@@ -591,9 +564,7 @@ static Function/S DAG_GetSpecificCtrlNum(device, list)
 End
 
 /// @brief Parses a list of controls and returns textual valDisplay, setVariable and popUpMenu controls
-static Function/S DAG_GetSpecificCtrlTxT(device, list)
-	string device
-	string list
+static Function/S DAG_GetSpecificCtrlTxT(string device, string list)
 
 	string subtypeCtrlList = ""
 	variable i, numEntries, controlType
@@ -625,9 +596,7 @@ static Function/S DAG_GetSpecificCtrlTxT(device, list)
 End
 
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
-static Function/WAVE GetAllDAEphysSetVarNum(device, channelType, controlType)
-	string device
-	variable channelType, controlType
+static Function/WAVE GetAllDAEphysSetVarNum(string device, variable channelType, variable controlType)
 
 	variable CtrlNum = GetNumberFromType(var = channelType)
 	string ctrl
@@ -641,9 +610,7 @@ static Function/WAVE GetAllDAEphysSetVarNum(device, channelType, controlType)
 End
 
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
-static Function/WAVE GetAllDAEphysSetVarTxT(device, channelType, controlType)
-	string device
-	variable channelType, controlType
+static Function/WAVE GetAllDAEphysSetVarTxT(string device, variable channelType, variable controlType)
 
 	variable CtrlNum = GetNumberFromType(var = channelType)
 	string ctrl
@@ -657,9 +624,7 @@ static Function/WAVE GetAllDAEphysSetVarTxT(device, channelType, controlType)
 End
 
 /// @brief Returns the index of all popupmenus in the DA_Ephys panel of a controlType
-static Function/WAVE GetAllDAEphysPopMenuIndex(device, channelType, controlType)
-	string device
-	variable channelType, controlType
+static Function/WAVE GetAllDAEphysPopMenuIndex(string device, variable channelType, variable controlType)
 
 	variable CtrlNum = GetNumberFromType(var = channelType)
 	string ctrl
@@ -673,9 +638,7 @@ static Function/WAVE GetAllDAEphysPopMenuIndex(device, channelType, controlType)
 End
 
 /// @brief Returns the string contents of all popupmenus in the DA_Ephys panel of a controlType
-static Function/WAVE GetAllDAEphysPopMenuString(device, channelType, controlType)
-	string device
-	variable channelType, controlType
+static Function/WAVE GetAllDAEphysPopMenuString(string device, variable channelType, variable controlType)
 
 	variable CtrlNum = GetNumberFromType(var = channelType)
 	string ctrl

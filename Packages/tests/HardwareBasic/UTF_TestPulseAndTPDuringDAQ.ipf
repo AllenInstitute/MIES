@@ -4,10 +4,12 @@
 #pragma ModuleName=TestPulseAndTPDuringDAQ
 
 static Function GlobalPreInit(string device)
+
 	PASS()
 End
 
 static Function GlobalPreAcq(string device)
+
 	PASS()
 End
 
@@ -23,6 +25,7 @@ static Function CheckCalculatedTPEntries([string str])
 End
 
 static Function CheckCalculatedTPEntries_REENTRY([string str])
+
 	variable samplingInterval, samplingIntervalMult, sweepNo, delayOnsetAuto
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -73,6 +76,7 @@ End
 /// UTF_TD_GENERATOR v0:GenerateBaselineValues
 /// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
 static Function CheckTPBaseline([STRUCT IUTF_MDATA &md])
+
 	string   device
 	variable TPbaseline
 
@@ -87,6 +91,7 @@ static Function CheckTPBaseline([STRUCT IUTF_MDATA &md])
 End
 
 static Function CheckTPBaseline_REENTRY([STRUCT IUTF_MDATA &md])
+
 	string device
 	variable i, numEntries, baselineFraction, baselineFractionRef, pulseDuration, tpLength, samplingInterval
 
@@ -205,8 +210,9 @@ static Function/WAVE GetTPLBNEntries_IGNORE(string device, variable sweepNo, var
 End
 
 static Function CheckTPEntriesFromLBN_REENTRY([string str])
+
 	// sweep 0
-	WAVE/WAVE/Z entries_S0_DAQ = GetTPLBNEntries_IGNORE(str, 0, DATA_ACQUISITION_MODE)
+	WAVE/Z/WAVE entries_S0_DAQ = GetTPLBNEntries_IGNORE(str, 0, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(entries_S0_DAQ, WAVE_WAVE)
 
 	CHECK_EQUAL_WAVES(entries_S0_DAQ[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.30}, mode = WAVE_DATA, tol = 1e-8)
@@ -227,7 +233,7 @@ static Function CheckTPEntriesFromLBN_REENTRY([string str])
 
 	CHECK_WAVE(entries_S0_DAQ[%autoTPQC], NULL_WAVE)
 
-	WAVE/WAVE/Z entries_S0_TP = GetTPLBNEntries_IGNORE(str, 0, TEST_PULSE_MODE)
+	WAVE/Z/WAVE entries_S0_TP = GetTPLBNEntries_IGNORE(str, 0, TEST_PULSE_MODE)
 	CHECK_WAVE(entries_S0_TP, WAVE_WAVE)
 
 	CHECK_EQUAL_WAVES(entries_S0_TP[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.30}, mode = WAVE_DATA, tol = 1e-8)
@@ -249,7 +255,7 @@ static Function CheckTPEntriesFromLBN_REENTRY([string str])
 	CHECK_WAVE(entries_S0_TP[%autoTPQC], NULL_WAVE)
 
 	// sweep 1
-	WAVE/WAVE/Z entries_S1_DAQ = GetTPLBNEntries_IGNORE(str, 1, DATA_ACQUISITION_MODE)
+	WAVE/Z/WAVE entries_S1_DAQ = GetTPLBNEntries_IGNORE(str, 1, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(entries_S1_DAQ, WAVE_WAVE)
 
 	CHECK_EQUAL_WAVES(entries_S1_DAQ[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.30}, mode = WAVE_DATA, tol = 1e-8)
@@ -270,7 +276,7 @@ static Function CheckTPEntriesFromLBN_REENTRY([string str])
 
 	CHECK_WAVE(entries_S1_DAQ[%autoTPQC], NULL_WAVE)
 
-	WAVE/WAVE/Z entries_S1_TP = GetTPLBNEntries_IGNORE(str, 1, TEST_PULSE_MODE)
+	WAVE/Z/WAVE entries_S1_TP = GetTPLBNEntries_IGNORE(str, 1, TEST_PULSE_MODE)
 	CHECK_WAVE(entries_S1_TP, WAVE_WAVE)
 
 	CHECK_EQUAL_WAVES(entries_S1_TP[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.30}, mode = WAVE_DATA, tol = 1e-8)
@@ -292,7 +298,7 @@ static Function CheckTPEntriesFromLBN_REENTRY([string str])
 	CHECK_WAVE(entries_S1_TP[%autoTPQC], NULL_WAVE)
 
 	// sweep 2
-	WAVE/WAVE/Z entries_S2_DAQ = GetTPLBNEntries_IGNORE(str, 2, DATA_ACQUISITION_MODE)
+	WAVE/Z/WAVE entries_S2_DAQ = GetTPLBNEntries_IGNORE(str, 2, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(entries_S2_DAQ, WAVE_WAVE)
 
 	CHECK_EQUAL_WAVES(entries_S2_DAQ[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.30}, mode = WAVE_DATA, tol = 1e-8)
@@ -313,7 +319,7 @@ static Function CheckTPEntriesFromLBN_REENTRY([string str])
 
 	CHECK_WAVE(entries_S2_DAQ[%autoTPQC], NULL_WAVE)
 
-	WAVE/WAVE/Z entries_S2_TP = GetTPLBNEntries_IGNORE(str, 2, TEST_PULSE_MODE)
+	WAVE/Z/WAVE entries_S2_TP = GetTPLBNEntries_IGNORE(str, 2, TEST_PULSE_MODE)
 	CHECK_WAVE(entries_S2_TP, WAVE_WAVE)
 
 	Make/N=(DimSize(entries_S2_TP, ROWS))/FREE validWaves = WaveExists(entries_S2_TP[p])
@@ -322,6 +328,7 @@ End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function TPCachingWorks([string str])
+
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1_SIM4_STP1"           + \
 	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:" + \
@@ -333,6 +340,7 @@ static Function TPCachingWorks([string str])
 End
 
 static Function TPCachingWorks_REENTRY([string str])
+
 	variable sweepNo, numEntries, samplingInterval, samplingIntervalMultiplier
 
 	NVAR runModeDAQ = $GetDataAcqRunMode(str)
@@ -366,6 +374,7 @@ static Function TPCachingWorks_REENTRY([string str])
 End
 
 static Function/WAVE ExtractValidValues(WAVE TPStorage, variable headstage, string entry)
+
 	variable idx
 
 	idx = FindDimLabel(TPStorage, LAYERS, entry)
@@ -378,6 +387,7 @@ static Function/WAVE ExtractValidValues(WAVE TPStorage, variable headstage, stri
 End
 
 static Function CheckTPStorage(string device)
+
 	string entry
 
 	WAVE/Z TPStorage = GetTPStorage(device)
@@ -461,6 +471,7 @@ static Function CheckTPStorage(string device)
 End
 
 static Function EnsureUnityGain(string device, variable headstage)
+
 	variable gain, mode, ret
 
 	mode = DAG_GetHeadstageMode(device, headstage)
@@ -501,6 +512,7 @@ static Function CheckTPStorage1([string str])
 End
 
 static Function CheckTPStorage1_REENTRY([string str])
+
 	CheckTPStorage(str)
 End
 
@@ -519,6 +531,7 @@ End
 
 /// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function CheckTPStorage2([string str])
+
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
 	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
@@ -528,6 +541,7 @@ static Function CheckTPStorage2([string str])
 End
 
 static Function CheckTPStorage2_REENTRY([string str])
+
 	CheckTPStorage(str)
 End
 
@@ -546,6 +560,7 @@ End
 
 /// UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function CheckTPStorage3([string str])
+
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
 	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
@@ -555,12 +570,12 @@ static Function CheckTPStorage3([string str])
 End
 
 static Function CheckTPStorage3_REENTRY([string str])
+
 	CheckTPStorage(str)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TPDuringDAQOnlyTP([str])
-	string str
+static Function TPDuringDAQOnlyTP([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"              + \
@@ -569,8 +584,7 @@ static Function TPDuringDAQOnlyTP([str])
 	AcquireData_NG(s, str)
 End
 
-static Function TPDuringDAQOnlyTP_REENTRY([str])
-	string str
+static Function TPDuringDAQOnlyTP_REENTRY([string str])
 
 	variable sweepNo, col
 	string ctrl
@@ -642,8 +656,7 @@ static Function TPDuringDAQOnlyTPAndIndexing_REENTRY([STRUCT IUTF_MDATA &md])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TPDuringDAQTPAndUnAssoc([str])
-	string str
+static Function TPDuringDAQTPAndUnAssoc([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_RES1"                      + \
@@ -653,8 +666,7 @@ static Function TPDuringDAQTPAndUnAssoc([str])
 	AcquireData_NG(s, str)
 End
 
-static Function TPDuringDAQTPAndUnAssoc_REENTRY([str])
-	string str
+static Function TPDuringDAQTPAndUnAssoc_REENTRY([string str])
 
 	variable sweepNo, col, channelTypeUnassoc, stimScaleUnassoc, stimSetLengthRef
 	string ctrl, stimsetUnassoc, stimsetUnassocRef, key
@@ -726,8 +738,7 @@ static Function TPDuringDAQTPAndUnAssoc_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TPDuringDAQ([str])
-	string str
+static Function TPDuringDAQ([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
@@ -737,8 +748,7 @@ static Function TPDuringDAQ([str])
 	AcquireData_NG(s, str)
 End
 
-static Function TPDuringDAQ_REENTRY([str])
-	string str
+static Function TPDuringDAQ_REENTRY([string str])
 
 	variable sweepNo, col, daGain
 	string ctrl
@@ -791,8 +801,7 @@ static Function TPDuringDAQ_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 End
 
-static Function TPDuringDAQWithoodDAQ_PreAcq(device)
-	string device
+static Function TPDuringDAQWithoodDAQ_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
 	// Reduce amplification to prevent border vals
@@ -802,8 +811,7 @@ static Function TPDuringDAQWithoodDAQ_PreAcq(device)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TPDuringDAQWithoodDAQ([str])
-	string str
+static Function TPDuringDAQWithoodDAQ([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"                 + \
@@ -814,8 +822,7 @@ static Function TPDuringDAQWithoodDAQ([str])
 	AcquireData_NG(s, str)
 End
 
-static Function TPDuringDAQWithoodDAQ_REENTRY([str])
-	string str
+static Function TPDuringDAQWithoodDAQ_REENTRY([string str])
 
 	variable sweepNo, col, daGain, oodDAQ
 	string ctrl
@@ -870,8 +877,7 @@ static Function TPDuringDAQWithoodDAQ_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TPDuringDAQOnlyWithoodDAQ([str])
-	string str
+static Function TPDuringDAQOnlyWithoodDAQ([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1"         + \
@@ -881,8 +887,7 @@ static Function TPDuringDAQOnlyWithoodDAQ([str])
 	AcquireData_NG(s, str)
 End
 
-static Function TPDuringDAQOnlyWithoodDAQ_REENTRY([str])
-	string str
+static Function TPDuringDAQOnlyWithoodDAQ_REENTRY([string str])
 
 	variable sweepNo, col, oodDAQ
 
@@ -924,8 +929,7 @@ static Function TPDuringDAQOnlyWithoodDAQ_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "TestPulse", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 End
 
-static Function TPDuringDAQTPStoreCheck_PreAcq(device)
-	string device
+static Function TPDuringDAQTPStoreCheck_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
 	// Reduce amplification to prevent border vals
@@ -937,8 +941,7 @@ End
 static Constant TP_WAIT_TIMEOUT = 5
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TPDuringDAQTPStoreCheck([str])
-	string str
+static Function TPDuringDAQTPStoreCheck([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_oodDAQ1_STP1"               + \
@@ -948,15 +951,12 @@ static Function TPDuringDAQTPStoreCheck([str])
 	AcquireData_NG(s, str)
 End
 
-static Function TPDuringDAQTPStoreCheck_REENTRY([str])
-	string str
+static Function TPDuringDAQTPStoreCheck_REENTRY([string str])
 
 	WaitAndCheckStoredTPs_IGNORE(str, 2)
 End
 
-static Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
-	string   device
-	variable expectedNumTPchannels
+static Function WaitAndCheckStoredTPs_IGNORE(string device, variable expectedNumTPchannels)
 
 	variable i, channel, numTPChan, numStored, numTP
 	variable tresh, m, tpLength, pulseLengthMS
@@ -999,15 +999,13 @@ static Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	endfor
 End
 
-static Function CheckThatTPsCanBeFound_PreAcq(device)
-	string device
+static Function CheckThatTPsCanBeFound_PreAcq(string device)
 
 	PrepareForPublishTest()
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function CheckThatTPsCanBeFound([str])
-	string str
+static Function CheckThatTPsCanBeFound([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1_STP1"                + \
@@ -1019,8 +1017,7 @@ static Function CheckThatTPsCanBeFound([str])
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
 End
 
-static Function CheckThatTPsCanBeFound_REENTRY([str])
-	string str
+static Function CheckThatTPsCanBeFound_REENTRY([string str])
 
 	variable duration, index, col, i
 
@@ -1073,8 +1070,7 @@ static Function CheckThatTPsCanBeFound_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TPDuringDAQWithTTL([str])
-	string str
+static Function TPDuringDAQWithTTL([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TBP25"                   + \
@@ -1085,8 +1081,7 @@ static Function TPDuringDAQWithTTL([str])
 	AcquireData_NG(s, str)
 End
 
-static Function TPDuringDAQWithTTL_REENTRY([str])
-	string str
+static Function TPDuringDAQWithTTL_REENTRY([string str])
 
 	variable sweepNo, col, tpAmplitude, daGain, i
 	string ctrl
@@ -1137,15 +1132,13 @@ static Function TPDuringDAQWithTTL_REENTRY([str])
 	endfor
 End
 
-static Function RunPowerSpectrum_PreAcq(device)
-	string device
+static Function RunPowerSpectrum_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "check_settings_show_power", val = 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function RunPowerSpectrum([str])
-	string str
+static Function RunPowerSpectrum([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1" + \
@@ -1157,8 +1150,7 @@ static Function RunPowerSpectrum([str])
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
 End
 
-static Function RunPowerSpectrum_REENTRY([str])
-	string str
+static Function RunPowerSpectrum_REENTRY([string str])
 
 	variable sweepNo
 	string   ctrl
@@ -1175,8 +1167,7 @@ static Function RunPowerSpectrum_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TestPulseCachingWorks([str])
-	string str
+static Function TestPulseCachingWorks([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_GSI0_ITI3"               + \
@@ -1186,8 +1177,7 @@ static Function TestPulseCachingWorks([str])
 	AcquireData_NG(s, str)
 End
 
-static Function TestPulseCachingWorks_REENTRY([str])
-	string str
+static Function TestPulseCachingWorks_REENTRY([string str])
 
 	variable sweepNo
 
@@ -1206,8 +1196,7 @@ static Function TestPulseCachingWorks_REENTRY([str])
 End
 
 /// UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function ExportIntoNWB([str])
-	string str
+static Function ExportIntoNWB([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP1"                     + \
@@ -1219,8 +1208,8 @@ static Function ExportIntoNWB([str])
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
 End
 
-static Function ExportIntoNWB_REENTRY([str])
-	string   str
+static Function ExportIntoNWB_REENTRY([string str])
+
 	variable sweepNo
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
@@ -1236,8 +1225,8 @@ static Function ExportIntoNWB_REENTRY([str])
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
 End
 
-static Function ExportIntoNWB_REENTRY_REENTRY([str])
-	string   str
+static Function ExportIntoNWB_REENTRY_REENTRY([string str])
+
 	variable sweepNo
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
@@ -1246,15 +1235,13 @@ static Function ExportIntoNWB_REENTRY_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
 
-static Function TPDuringDAQwithPS_PreAcq(device)
-	string device
+static Function TPDuringDAQwithPS_PreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "check_settings_show_power", val = 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
-static Function TPDuringDAQwithPS([str])
-	string str
+static Function TPDuringDAQwithPS([string str])
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1"                      + \
@@ -1265,8 +1252,7 @@ static Function TPDuringDAQwithPS([str])
 End
 
 // The general checks are done in test case TPDuringDAQ, this test case only checks the difference when power spectrum is enabled
-static Function TPDuringDAQwithPS_REENTRY([str])
-	string str
+static Function TPDuringDAQwithPS_REENTRY([string str])
 
 	variable daGain, sweepNo
 	variable tpAmp = 0 // tpAmp is zero when power spectrum is enabled
@@ -1285,6 +1271,7 @@ End
 // UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ
 // UTF_TD_GENERATOR s0:DeviceNameGenerator
 static Function TPZerosDAC([STRUCT IUTF_MDATA &md])
+
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD" + num2str(md.v0) + "_RA1_I0_L0_BKG1_TP1" + \
 	                             "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")

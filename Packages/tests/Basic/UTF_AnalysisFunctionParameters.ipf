@@ -22,7 +22,7 @@ static Function UpgradeToEncodedAnalysisParamsWorks()
 	string params, actual, expected
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	// force a wave upgrade
@@ -33,7 +33,7 @@ static Function UpgradeToEncodedAnalysisParamsWorks()
 	WPT[10][%Set][INDEP_EPOCH_TYPE] = "a:variable=1.234,b:string=hi there,c:textwave= |zz|,d:wave=1|2|3|,"
 
 	// force wave upgrade
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 	CHECK_GE_VAR(GetWaveVersion(WPT), 10)
 
@@ -52,7 +52,7 @@ static Function AbortsWithEmptyName()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -74,7 +74,7 @@ static Function AbortsWithInvalidName1()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -96,7 +96,7 @@ static Function AbortsWithInvalidName2()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -118,7 +118,7 @@ static Function AbortsWithNoData()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -140,7 +140,7 @@ static Function AbortsWithInvalidDataComb1()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -162,7 +162,7 @@ static Function AbortsWithInvalidDataComb2()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -184,7 +184,7 @@ static Function AbortsWithInvalidDataComb3()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -206,7 +206,7 @@ static Function AbortsWithInvalidDataComb4()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -228,7 +228,7 @@ static Function WorksWithPreviouslyInvalidContents()
 	string params, input, reference, expected
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -248,7 +248,7 @@ static Function AbortsWithInvalidWaveType()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -271,7 +271,7 @@ static Function AbortsWithEmptyWave()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -296,7 +296,7 @@ static Function AcceptsAllTextWaveContents()
 	string refString, val
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -315,7 +315,7 @@ static Function WorksWithVariable()
 	variable refValue, val
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -346,7 +346,7 @@ static Function WorksWithString()
 	string refString, val
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -377,7 +377,7 @@ static Function WorksWithNumericWave()
 	string refString, val
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -409,7 +409,7 @@ static Function WorksWithTextWave()
 	string refString, val
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -441,7 +441,7 @@ static Function ReplacesDuplicateEntries()
 	string refString, val
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -471,7 +471,7 @@ static Function ReturnsInvalidWaveRef()
 	string params
 	string stimSet = "AnaFuncParams1_DA_0"
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
@@ -752,6 +752,7 @@ static Function EnsureCorrectUserAnalysis()
 End
 
 static Function/WAVE GetAnalysisFunctions()
+
 	string funcs
 
 	funcs = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3, includeUserFunctions = 0)
@@ -770,6 +771,7 @@ static Function/WAVE GetAnalysisFunctions()
 End
 
 Function CheckHelpStringsOfAllAnalysisFunctions()
+
 	string genericFunc, params, names, name, help
 	variable j, numParams
 
@@ -796,6 +798,7 @@ static Function CheckAbbrevName([string func])
 End
 
 static Function [WAVE/T required, WAVE/T optional, WAVE/T mixed] GetAllAnalysisParameters_IGNORE(WAVE/T funcs)
+
 	variable numFuncs
 
 	numFuncs = DimSize(funcs, ROWS)
@@ -816,10 +819,10 @@ static Function [WAVE/T required, WAVE/T optional, WAVE/T mixed] GetAllAnalysisP
 	WAVE/Z mixedRequiredAndOptional = GetSetIntersection(allRequiredParamsUnique, allOptParamsUnique)
 	CHECK_WAVE(mixedRequiredAndOptional, TEXT_WAVE)
 
-	WAVE/T/Z allRequiredParamsUniqueNoMixed = GetSetDifference(allRequiredParamsUnique, mixedRequiredAndOptional)
+	WAVE/Z/T allRequiredParamsUniqueNoMixed = GetSetDifference(allRequiredParamsUnique, mixedRequiredAndOptional)
 	CHECK_WAVE(allRequiredParamsUniqueNoMixed, TEXT_WAVE)
 
-	WAVE/T/Z allOptParamsUniqueNoMixed = GetSetDifference(allOptParamsUnique, mixedRequiredAndOptional)
+	WAVE/Z/T allOptParamsUniqueNoMixed = GetSetDifference(allOptParamsUnique, mixedRequiredAndOptional)
 	CHECK_WAVE(allOptParamsUniqueNoMixed, TEXT_WAVE)
 
 	ChangeFreeWaveName(allRequiredParamsUniqueNoMixed, "required")

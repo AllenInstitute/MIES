@@ -134,6 +134,7 @@ End
 ///
 /// @return $"" if reconstruction failed or a free wave with the sweep data and correct metadata
 Function/WAVE RecreateSweepWaveFromBackupAndLBN(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF deviceDataDFR)
+
 	string path
 	variable samplingInterval, numChannels, channelOffset
 
@@ -145,8 +146,8 @@ Function/WAVE RecreateSweepWaveFromBackupAndLBN(WAVE numericalValues, WAVE/T tex
 
 	DFREF singleSweepFolder = $path
 
-	[WAVE DAChans, WAVE/WAVE DAWaves] = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_DAC)
-	[WAVE ADChans, WAVE/WAVE ADWaves] = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_ADC)
+	[WAVE DAChans, WAVE/WAVE DAWaves]   = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_DAC)
+	[WAVE ADChans, WAVE/WAVE ADWaves]   = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_ADC)
 	[WAVE TTLChans, WAVE/WAVE TTLWaves] = GetSingleSweepWaves(singleSweepFolder, XOP_CHANNEL_TYPE_TTL)
 
 	// check that we have found all 1D waves of one sweep
@@ -280,6 +281,7 @@ End
 
 /// @brief Set `ChannelNumber` and `ChannelType` in configWave
 static Function AddChannelPropertiesFromLBN(WAVE numericalValues, WAVE textualValues, variable sweepNo, WAVE configWave, variable channelType)
+
 	variable i, numEntries, offset
 
 	WAVE/Z channelLBN = GetActiveChannels(numericalValues, textualValues, sweepNo, channelType, TTLmode = TTL_HARDWARE_CHANNEL)
@@ -338,6 +340,7 @@ End
 
 /// @brief Set `DAQChannelType` in configWave
 static Function AddDAQChannelTypeFromLBN(WAVE numericalValues, WAVE textualValues, variable sweepNo, WAVE configWave)
+
 	variable i, numEntries, headstage, channelType, index
 
 	Make/FREE validChannelTypes = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_UNKOWN}
@@ -347,11 +350,11 @@ static Function AddDAQChannelTypeFromLBN(WAVE numericalValues, WAVE textualValue
 		switch(configWave[i][%ChannelType])
 			case XOP_CHANNEL_TYPE_DAC:
 				[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "DA ChannelType", configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
-				channelType = setting[index]
+				channelType           = setting[index]
 				break
 			case XOP_CHANNEL_TYPE_ADC:
 				[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "AD ChannelType", configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
-				channelType = setting[index]
+				channelType           = setting[index]
 				break
 			case XOP_CHANNEL_TYPE_TTL:
 				channelType = DAQ_CHANNEL_TYPE_DAQ
@@ -366,6 +369,7 @@ End
 
 /// @brief Set `Headstage` in configWave
 static Function AddHeadstageFromLBN(WAVE numericalValues, variable sweepNo, WAVE configWave)
+
 	variable i, numEntries, headstage, index
 
 	numEntries = DimSize(configWave, ROWS)
@@ -381,6 +385,7 @@ End
 
 /// @brief Set `ClampMode` in configWave
 static Function AddClampModeFromLBN(WAVE numericalValues, variable sweepNo, WAVE configWave)
+
 	variable i, numEntries, clampMode, index
 
 	numEntries = DimSize(configWave, ROWS)
@@ -396,6 +401,7 @@ End
 
 /// @brief Add wave note entry #CHANNEL_UNIT_KEY for the used channel units
 static Function AddChannelUnitFromLBN(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, WAVE configWave)
+
 	variable i, numEntries, index
 	string key
 	string unitList = ""
@@ -408,7 +414,7 @@ static Function AddChannelUnitFromLBN(WAVE numericalValues, WAVE/T textualValues
 			break
 		endif
 
-		key = StringFromList(configWave[i][%ChannelType], XOP_CHANNEL_NAMES) + " Unit"
+		key                   = StringFromList(configWave[i][%ChannelType], XOP_CHANNEL_NAMES) + " Unit"
 		[WAVE setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, key, configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
 
 		WAVE/T settingText = setting

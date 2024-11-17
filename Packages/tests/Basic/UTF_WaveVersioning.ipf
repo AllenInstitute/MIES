@@ -5,16 +5,19 @@
 
 /// @{ ExistsWithCorrectLayoutVersion
 Function EWCL_InvalidWaveRefHasNoVersion()
+
 	WAVE/Z wv = $""
 	CHECK(!MIES_WAVEGETTERS#ExistsWithCorrectLayoutVersion(wv, 1))
 End
 
 Function EWCL_NoWaveVersionIsFalse()
+
 	Make/FREE wv
 	CHECK(!MIES_WAVEGETTERS#ExistsWithCorrectLayoutVersion(wv, 1))
 End
 
 Function EWCL_Works()
+
 	Make/FREE wv
 	MIES_WAVEGETTERS#SetWaveVersion(wv, 1)
 	CHECK(MIES_WAVEGETTERS#ExistsWithCorrectLayoutVersion(wv, 1))
@@ -111,6 +114,7 @@ Function WV_IsAtLeastNull()
 End
 
 Function WV_IsAtLeastOne()
+
 	Make/FREE wv
 
 	try
@@ -122,6 +126,7 @@ Function WV_IsAtLeastOne()
 End
 
 Function WV_IsAtLeastInteger()
+
 	Make/FREE wv
 
 	try
@@ -133,6 +138,7 @@ Function WV_IsAtLeastInteger()
 End
 
 Function WV_IsAtLeast()
+
 	Make/FREE wv
 	CHECK(!MIES_WAVEGETTERS#WaveVersionIsAtLeast(wv, 1))
 
@@ -154,6 +160,7 @@ Function WV_IsSmallerNull()
 End
 
 Function WV_IsSmallerOne()
+
 	Make/FREE wv
 
 	try
@@ -165,6 +172,7 @@ Function WV_IsSmallerOne()
 End
 
 Function WV_IsSmallerInteger()
+
 	Make/FREE wv
 
 	try
@@ -176,6 +184,7 @@ Function WV_IsSmallerInteger()
 End
 
 Function WV_IsSmaller()
+
 	Make/FREE wv
 	CHECK(MIES_WAVEGETTERS#WaveVersionIsSmaller(wv, 1))
 
@@ -188,6 +197,7 @@ End
 /// @{ ClearWaveNoteExceptWaveVersion
 
 Function CWNE_ClearsNoteWithoutVersion()
+
 	string str
 
 	Make/FREE wv
@@ -200,6 +210,7 @@ Function CWNE_ClearsNoteWithoutVersion()
 End
 
 Function CWNE_ClearsNoteAndDropsInvalidVersion()
+
 	string str
 
 	Make/FREE wv
@@ -218,6 +229,7 @@ Function CWNE_ClearsNoteAndDropsInvalidVersion()
 End
 
 Function CWNE_ClearsNoteAndKeepsValidWaveVersion()
+
 	string str, ref
 
 	Make/FREE wv

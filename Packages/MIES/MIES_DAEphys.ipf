@@ -48,6 +48,7 @@ End
 /// @brief Returns a list of DAC devices for NI devices
 /// @return list of NI DAC devices, #NONE if there are none
 Function/S DAP_GetNIDeviceList()
+
 	variable i, j, numPattern, numDevices
 	string propList
 	string devList, pattern, device
@@ -193,6 +194,7 @@ End
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code.
 /// Useful when template experiment file has been overwritten.
 Function DAP_EphysPanelStartUpSettings()
+
 	string device
 
 	variable i
@@ -793,8 +795,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CleanupOperationQueueResult()
 End
 
-Function DAP_WindowHook(s)
-	STRUCT WMWinHookStruct &s
+Function DAP_WindowHook(STRUCT WMWinHookStruct &s)
 
 	string device, ctrl
 	variable sgn, i
@@ -848,6 +849,7 @@ End
 /// @brief Return a popValue string suitable for stimsets
 /// @todo rework the code to have a fixed popValue
 Function/S DAP_FormatStimSetPopupValue(variable channelType, [string searchString])
+
 	if(ParamIsDefault(searchString))
 		searchString = "*"
 	endif
@@ -859,6 +861,7 @@ Function/S DAP_FormatStimSetPopupValue(variable channelType, [string searchStrin
 End
 
 static Function DAP_UpdateDrawElements(string device, variable tab)
+
 	SetDrawLayer/W=$device/K ProgBack
 
 	switch(tab)
@@ -874,8 +877,7 @@ End
 
 /// @brief Called by ACL tab control after the tab is updated.
 /// see line 257 of ACL_TabUtilities.ipf
-Function DAP_TabControlFinalHook(tca)
-	STRUCT WMTabControlAction &tca
+Function DAP_TabControlFinalHook(STRUCT WMTabControlAction &tca)
 
 	string win
 
@@ -892,8 +894,7 @@ Function DAP_TabControlFinalHook(tca)
 	return 0
 End
 
-Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DAP_SetVarProc_Channel_Search(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	variable channelIndex, channelType, channelControl
 	variable i, isCustomSearchString, numSuppChannels
@@ -962,8 +963,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_DAorTTLCheckProc(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string device, control
 
@@ -987,8 +987,7 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 	endswitch
 End
 
-Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_Channel_All(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string device, control, lbl
 	variable i, checked, allChecked, channelIndex, channelType, controlType, numEntries
@@ -1027,8 +1026,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 End
 
 /// @brief Determines if the control refers to an "All" control
-Function DAP_IsAllControl(channelIndex)
-	variable channelIndex
+Function DAP_IsAllControl(variable channelIndex)
 
 	return channelIndex == CHANNEL_INDEX_ALL            \
 	       || channelIndex == CHANNEL_INDEX_ALL_V_CLAMP \
@@ -1039,9 +1037,7 @@ End
 ///
 /// @returns 0 if the given channel is a DA channel and not in the expected
 ///          clamp mode as determined by `controlChannelIndex`, 1 otherwise
-Function DAP_DACHasExpectedClampMode(device, controlChannelIndex, channelNumber, channelType)
-	string device
-	variable controlChannelIndex, channelNumber, channelType
+Function DAP_DACHasExpectedClampMode(string device, variable controlChannelIndex, variable channelNumber, variable channelType)
 
 	variable headstage, clampMode
 
@@ -1070,8 +1066,7 @@ Function DAP_DACHasExpectedClampMode(device, controlChannelIndex, channelNumber,
 	return 0
 End
 
-Function DAP_CheckProc_AD(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_AD(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string device, control
 
@@ -1101,9 +1096,7 @@ End
 ///
 /// This is different from what GetChannelClampMode holds as we here hold the
 /// setup information and GetChannelClampMode holds what is currently active.
-Function GetHeadstageFromSettings(device, channelType, channelNumber, clampMode)
-	string device
-	variable channelType, channelNumber, clampMode
+Function GetHeadstageFromSettings(string device, variable channelType, variable channelNumber, variable clampMode)
 
 	variable i, row
 
@@ -1132,9 +1125,7 @@ End
 
 /// @brief Adapt the state of the associated headstage on DA/AD channel change
 ///
-static Function DAP_AdaptAssocHeadstageState(device, checkboxCtrl)
-	string device
-	string checkboxCtrl
+static Function DAP_AdaptAssocHeadstageState(string device, string checkboxCtrl)
 
 	string headStageCheckBox
 	variable headstage, idx, channelType, controlType
@@ -1185,8 +1176,7 @@ static Function DAP_AdaptAssocHeadstageState(device, checkboxCtrl)
 End
 
 /// @brief Return the repeated acquisition cycle ID for the given devide.
-static Function DAP_GetRAAcquisitionCycleID(device)
-	string device
+static Function DAP_GetRAAcquisitionCycleID(string device)
 
 	DAP_AbortIfUnlocked(device)
 
@@ -1197,9 +1187,7 @@ End
 ///
 /// @param device device
 /// @param runMode    One of @ref DAQRunModes except DAQ_NOT_RUNNING
-Function DAP_OneTimeCallBeforeDAQ(device, runMode)
-	string   device
-	variable runMode
+Function DAP_OneTimeCallBeforeDAQ(string device, variable runMode)
 
 	variable i, DAC, ADC, hardwareType
 
@@ -1289,16 +1277,14 @@ Function DAP_OneTimeCallBeforeDAQ(device, runMode)
 	endif
 End
 
-static Function DAP_ResetClampModeTitle(device, ctrl)
-	string device, ctrl
+static Function DAP_ResetClampModeTitle(string device, string ctrl)
 
 	SetControlTitle(device, ctrl, "")
 	SetControlTitleColor(device, ctrl, 0, 0, 0)
 End
 
 /// @brief Enable all controls which were disabled before DAQ by #DAP_OneTimeCallBeforeDAQ
-static Function DAP_ResetGUIAfterDAQ(device)
-	string device
+static Function DAP_ResetGUIAfterDAQ(string device)
 
 	variable i, ADC, DAC
 
@@ -1343,6 +1329,7 @@ End
 /// @param forcedStop      [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled at the end
 Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable forcedStop, variable startTPAfterDAQ])
+
 	variable hardwareType, indexing
 
 	forcedStop      = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
@@ -1409,12 +1396,13 @@ Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable f
 End
 
 static Function DAP_DocumentStopReason(string device, variable stopReason)
+
 	variable sweepNo
 
 	Make/FREE/N=(3, 1)/T keys
 
 	keys[0][0] = "DAQ stop reason"
-	keys[1][0] = ""                       // @todo: use enumeration as unit once available
+	keys[1][0] = "" // @todo: use enumeration as unit once available
 	keys[2][0] = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values = NaN
@@ -1424,8 +1412,7 @@ static Function DAP_DocumentStopReason(string device, variable stopReason)
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, UNKNOWN_MODE)
 End
 
-Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_IndexingState(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string device
 
@@ -1447,8 +1434,7 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_ShowScopeWin(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string device
 
@@ -1469,9 +1455,7 @@ Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
 	return 0
 End
 
-static Function DAP_TurnOffAllChannels(device, channelType)
-	string   device
-	variable channelType
+static Function DAP_TurnOffAllChannels(string device, variable channelType)
 
 	variable i, numEntries
 	string ctrl
@@ -1490,8 +1474,7 @@ static Function DAP_TurnOffAllChannels(device, channelType)
 	endif
 End
 
-Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButtonProc_AllChanOff(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string device
 
@@ -1507,9 +1490,7 @@ Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
 End
 
 /// @brief Update the ITI for the given device
-Function DAP_UpdateITIAcrossSets(device, maxITI)
-	string   device
-	variable maxITI
+Function DAP_UpdateITIAcrossSets(string device, variable maxITI)
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq_Get_Set_ITI"))
 		PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = maxITI)
@@ -1517,8 +1498,7 @@ Function DAP_UpdateITIAcrossSets(device, maxITI)
 End
 
 /// @brief Procedure for DA/TTL popupmenus including indexing wave popupmenus
-Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function DAP_PopMenuChkProc_StimSetList(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string ctrl, list
 	string device, stimSet
@@ -1589,8 +1569,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 	return 0
 End
 
-Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DAP_SetVarProc_DA_Scale(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	variable val, channelIndex, channelType, controlType, numEntries, i
 	string device, ctrl
@@ -1706,8 +1685,7 @@ static Function DAP_IsSampleIntervalValid(string device, variable channelType, v
 	endswitch
 End
 
-Function DAP_UpdateSweepSetVariables(device)
-	string device
+Function DAP_UpdateSweepSetVariables(string device)
 
 	variable numSetRepeats
 
@@ -1728,8 +1706,7 @@ Function DAP_UpdateSweepSetVariables(device)
 	SetValDisplay(device, "valdisp_DataAcq_SweepsActiveSet", var = IDX_MaxNoOfSweeps(device, 1))
 End
 
-Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DAP_SetVarProc_TotSweepCount(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	string device
 
@@ -1746,8 +1723,7 @@ Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButtonCtrlFindConnectedAmps(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2: // mouse up
@@ -1769,6 +1745,7 @@ Function/S DAP_GetNiceAmplifierChannelList()
 End
 
 Function/S DAP_FormatTelegraphServerList(WAVE telegraphServers)
+
 	variable i, numRows
 	string str
 	string list = ""
@@ -1782,8 +1759,7 @@ Function/S DAP_FormatTelegraphServerList(WAVE telegraphServers)
 	return list
 End
 
-static Function/S DAP_GetAmplifierDef(ampSerial, ampChannel)
-	variable ampSerial, ampChannel
+static Function/S DAP_GetAmplifierDef(variable ampSerial, variable ampChannel)
 
 	string str
 
@@ -1793,9 +1769,7 @@ static Function/S DAP_GetAmplifierDef(ampSerial, ampChannel)
 End
 
 /// @brief Parse the entries which DAP_GetAmplifierDef() created
-Function DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
-	string amplifierDef
-	variable &ampSerial, &ampChannelID
+Function DAP_ParseAmplifierDef(string amplifierDef, variable &ampSerial, variable &ampChannelID)
 
 	ampSerial    = NaN
 	ampChannelID = NaN
@@ -1808,9 +1782,7 @@ Function DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
 	ASSERT(V_Flag == 2, "Unexpected amplifier popup list format")
 End
 
-Function DAP_SyncDeviceAssocSettToGUI(device, headStage)
-	string   device
-	variable headStage
+Function DAP_SyncDeviceAssocSettToGUI(string device, variable headStage)
 
 	DAP_AbortIfUnlocked(device)
 
@@ -1818,8 +1790,7 @@ Function DAP_SyncDeviceAssocSettToGUI(device, headStage)
 	P_UpdatePressureControls(device, headStage)
 End
 
-Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function DAP_PopMenuProc_Headstage(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string   device
 	variable headStage
@@ -1838,8 +1809,7 @@ Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 	return 0
 End
 
-Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function DAP_PopMenuProc_CAA(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string device
 
@@ -1856,8 +1826,7 @@ Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 	return 0
 End
 
-Function DAP_SetVarProc_CAA(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DAP_SetVarProc_CAA(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	string device
 
@@ -1892,8 +1861,7 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_ButtonProc_ClearChanCon(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButtonProc_ClearChanCon(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string device
 	variable headStage, daVC, daIC, adVC, adIC
@@ -2002,9 +1970,7 @@ End
 /// @param mode       One of @ref DataAcqModes
 ///
 /// @return 0 for valid settings, 1 for invalid settings
-Function DAP_CheckSettings(device, mode)
-	string   device
-	variable mode
+Function DAP_CheckSettings(string device, variable mode)
 
 	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage
 	variable ampSerial, ampChannelID, hardwareType
@@ -2479,6 +2445,7 @@ static Function DAP_CheckAsyncSettings(string device)
 End
 
 static Function DAP_CheckPressureSettings(string device)
+
 	variable ADConfig, ADC
 	string pressureDevice, userPressureDevice
 
@@ -2522,9 +2489,7 @@ static Function DAP_CheckPressureSettings(string device)
 End
 
 /// @brief Returns zero if everything is okay, 1 if a non-recoverable error was found and 2 on recoverable errors
-static Function DAP_CheckHeadStage(device, headStage, mode)
-	string device
-	variable headStage, mode
+static Function DAP_CheckHeadStage(string device, variable headStage, variable mode)
 
 	string unit, ADUnit, DAUnit
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, DAGain, ADGain, realMode
@@ -2783,8 +2748,7 @@ static Function DAP_CheckChannel(string device, variable channelType, variable c
 	return 0
 End
 
-static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
-	string device, setName
+static Function DAP_CheckAnalysisFunctionAndParameter(string device, string setName)
 
 	string func, listOfAnalysisFunctions
 	string info, str
@@ -2859,9 +2823,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(device, setName)
 	endfor
 End
 
-static Function DAP_CheckStimset(device, channelType, channel, headstage)
-	string device
-	variable channelType, channel, headstage
+static Function DAP_CheckStimset(string device, variable channelType, variable channel, variable headstage)
 
 	string setName, setNameEnd, channelTypeStr, str
 	variable i, numSets
@@ -2973,8 +2935,7 @@ End
 
 /// @brief Synchronizes the contents of `ChanAmpAssign` and
 /// `ChanAmpAssignUnit` to all active headstages
-static Function DAP_SyncChanAmpAssignToActiveHS(device)
-	string device
+static Function DAP_SyncChanAmpAssignToActiveHS(string device)
 
 	variable i, clampMode
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
@@ -2991,9 +2952,7 @@ static Function DAP_SyncChanAmpAssignToActiveHS(device)
 End
 
 /// @brief Reads the channel amp waves and inserts that info into the DA_EPHYS panel
-static Function DAP_ApplyClmpModeSavdSettngs(device, headStage, clampMode)
-	string device
-	variable headStage, clampMode
+static Function DAP_ApplyClmpModeSavdSettngs(string device, variable headStage, variable clampMode)
 
 	string ctrl, ADUnit, DAUnit
 	variable DAGain, ADGain
@@ -3052,9 +3011,7 @@ static Function DAP_ApplyClmpModeSavdSettngs(device, headStage, clampMode)
 	ChannelClampMode[ADCchannel][%ADC][%Headstage]                                            = headStage
 End
 
-static Function DAP_RemoveClampModeSettings(device, headStage, clampMode)
-	string device
-	variable headStage, clampMode
+static Function DAP_RemoveClampModeSettings(string device, variable headStage, variable clampMode)
 
 	string ctrl
 	variable DACchannel, ADCchannel
@@ -3090,8 +3047,7 @@ End
 /// @brief Returns the name of the checkbox control (radio button) handling the clamp mode of the given headstage or all headstages
 /// @param mode			One of the amplifier modes @ref AmplifierClampModes
 /// @param headstage	number of the headstage or one of @ref AllHeadstageModeConstants
-Function/S DAP_GetClampModeControl(mode, headstage)
-	variable mode, headstage
+Function/S DAP_GetClampModeControl(variable mode, variable headstage)
 
 	ASSERT(headStage >= CHANNEL_INDEX_ALL_I_ZERO && headStage < NUM_HEADSTAGES, "invalid headStage index")
 
@@ -3132,9 +3088,7 @@ End
 /// @param[out] mode        I_CLAMP_MODE, V_CLAMP_MODE or I_EQUAL_ZERO_MODE, the currently active mode for headstage controls
 ///                         and the clamp mode of the control for clamp mode controls
 /// @param[out] headStage   number of the headstage or one of @ref AllHeadstageModeConstants
-Function DAP_GetInfoFromControl(device, ctrl, mode, headStage)
-	string device, ctrl
-	variable &mode, &headStage
+Function DAP_GetInfoFromControl(string device, string ctrl, variable &mode, variable &headStage)
 
 	string clampMode     = "Radio_ClampMode_"
 	string headStageCtrl = "Check_DataAcqHS_"
@@ -3202,8 +3156,7 @@ Function DAP_GetInfoFromControl(device, ctrl, mode, headStage)
 	AI_AssertOnInvalidClampMode(mode)
 End
 
-Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_ClampMode(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	variable mode, headStage
 	string device, control
@@ -3235,8 +3188,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_HedstgeChck(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string device, control
 	variable checked
@@ -3267,9 +3219,7 @@ End
 /// @param clampMode  Clamp mode to activate
 /// @param headstage  Headstage [0, 8[ or use one of @ref AllHeadstageModeConstants
 /// @param options    One of @ref ClampModeChangeOptions
-Function DAP_ChangeHeadStageMode(device, clampMode, headstage, options)
-	string device
-	variable headstage, clampMode, options
+Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable headstage, variable options)
 
 	string iZeroCtrl, VCctrl, ICctrl, headstageCtrl, ctrl
 	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, oldTab, oldState, newSliderPos
@@ -3363,11 +3313,7 @@ End
 ///@param headstage		controls associated with headstage are set
 ///@param clampMode		clamp mode to activate
 ///@param delayed       indicate on the control that the change is delayed
-static Function DAP_SetAmpModeControls(device, headstage, clampMode, [delayed])
-	string   device
-	variable headstage
-	variable clampMode
-	variable delayed
+static Function DAP_SetAmpModeControls(string device, variable headstage, variable clampMode, [variable delayed])
 
 	if(ParamIsDefault(delayed))
 		delayed = 0
@@ -3402,10 +3348,7 @@ End
 /// @param headstage  Channels associated with headstage are set
 /// @param clampMode  Clamp mode to activate
 /// @param delayed    [optional, defaults to false] Indicate that this is a delayed clamp mode change
-static Function DAP_SetHeadstageChanControls(device, headstage, clampMode, [delayed])
-	string   device
-	variable headstage
-	variable clampMode, delayed
+static Function DAP_SetHeadstageChanControls(string device, variable headstage, variable clampMode, [variable delayed])
 
 	variable oppositeMode
 
@@ -3419,9 +3362,7 @@ static Function DAP_SetHeadstageChanControls(device, headstage, clampMode, [dela
 	DAP_AllChanDASettings(device, headStage, delayed = delayed)
 End
 
-static Function DAP_UpdateClampmodeTabs(device, headStage, clampMode)
-	string device
-	variable headStage, clampMode
+static Function DAP_UpdateClampmodeTabs(string device, variable headStage, variable clampMode)
 
 	string highlightSpec = "\\f01\\Z11"
 
@@ -3439,9 +3380,7 @@ static Function DAP_UpdateClampmodeTabs(device, headStage, clampMode)
 	TabControl tab_DataAcq_Amp, win=$device, tabLabel(I_EQUAL_ZERO_MODE)=SelectString(clampMode == I_EQUAL_ZERO_MODE, "", highlightSpec) + "I = 0"
 End
 
-static Function DAP_ChangeHeadstageState(device, headStageCtrl, enabled)
-	string device, headStageCtrl
-	variable enabled
+static Function DAP_ChangeHeadstageState(string device, string headStageCtrl, variable enabled)
 
 	variable clampMode, headStage, TPState, ICstate, VCstate, IZeroState
 	variable channelType, controlType, i
@@ -3512,9 +3451,7 @@ End
 ///
 /// @param device device
 /// @param mode       One of @ref ToggleAcquisitionButtonConstants
-Function DAP_ToggleAcquisitionButton(device, mode)
-	string   device
-	variable mode
+Function DAP_ToggleAcquisitionButton(string device, variable mode)
 
 	ASSERT(mode == DATA_ACQ_BUTTON_TO_STOP || mode == DATA_ACQ_BUTTON_TO_DAQ, "Invalid mode")
 
@@ -3533,9 +3470,7 @@ End
 ///
 /// @param device device
 /// @param mode       One of @ref ToggleTestpulseButtonConstants
-Function DAP_ToggleTestpulseButton(device, mode)
-	string   device
-	variable mode
+Function DAP_ToggleTestpulseButton(string device, variable mode)
 
 	ASSERT(mode == TESTPULSE_BUTTON_TO_STOP || mode == TESTPULSE_BUTTON_TO_START, "Invalid mode")
 
@@ -3550,8 +3485,7 @@ Function DAP_ToggleTestpulseButton(device, mode)
 	Button StartTestPulseButton, title=text, win=$device
 End
 
-Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButtonProc_AutoFillGain(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string   device
 	variable numConnAmplifiers
@@ -3576,8 +3510,7 @@ Function DAP_ButtonProc_AutoFillGain(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
-	STRUCT WMSliderAction &sc
+Function DAP_SliderProc_MIESHeadStage(STRUCT WMSliderAction &sc) : SliderControl
 
 	variable mode, headstage
 	string device
@@ -3606,8 +3539,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	return 0
 End
 
-Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DAP_SetVarProc_AmpCntrls(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	string device, ctrl
 	variable headStage
@@ -3626,8 +3558,7 @@ Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_ButtonProc_AmpCntrls(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButtonProc_AmpCntrls(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string device, ctrl
 	variable headStage
@@ -3645,8 +3576,7 @@ Function DAP_ButtonProc_AmpCntrls(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_AmpCntrls(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string device, ctrl
 	variable headStage
@@ -3666,8 +3596,7 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 End
 
 /// @brief Check box procedure for multiple device (MD) support
-Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_MDEnable(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	variable checked
 	string   device
@@ -3700,8 +3629,7 @@ Function DAP_HandleSingleDeviceDependentControls(string device)
 End
 
 /// @brief Controls TP Insertion into set sweeps before the sweep begins
-Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
-	STRUCT WMCheckBoxAction &cba
+Function DAP_CheckProc_InsertTP(STRUCT WMCheckBoxAction &cba) : CheckBoxControl
 
 	string device
 
@@ -3734,8 +3662,7 @@ Function DAP_UpdateOnsetDelay(string device)
 	SetValDisplay(device, "valdisp_DataAcq_OnsetDelayAuto", var = testPulseDurWithBL)
 End
 
-Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DAP_SetVarProc_TestPulseSett(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	variable TPState
 	string   device
@@ -3756,8 +3683,7 @@ Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_CheckProc_TestPulseSett(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_TestPulseSett(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string device, ctrl
 	variable saveTP, dataAcqRunMode, checked
@@ -3779,6 +3705,7 @@ Function DAP_CheckProc_TestPulseSett(cba) : CheckBoxControl
 End
 
 Function DAP_AdaptAutoTPColorAndDependent(string device)
+
 	variable runMode, hasAutoTPActive, disabledSaveTP
 
 	runMode = RoVAR(GetTestpulseRunMode(device))
@@ -3813,8 +3740,7 @@ Function DAP_UnlockAllDevices()
 	endfor
 End
 
-Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_RepeatedAcq(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -3830,9 +3756,7 @@ End
 ///        as a group where only one can be checked at a time.
 ///
 /// Write into the GUI state wave as well
-static Function DAP_ToggleCheckBoxes(win, ctrl, list, checked)
-	string win, ctrl, list
-	variable checked
+static Function DAP_ToggleCheckBoxes(string win, string ctrl, string list, variable checked)
 
 	string partner
 
@@ -3846,8 +3770,7 @@ static Function DAP_ToggleCheckBoxes(win, ctrl, list, checked)
 	SetCheckBoxState(win, partner, !checked)
 End
 
-Function DAP_CheckProc_SyncCtrl(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_SyncCtrl(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -3863,8 +3786,7 @@ Function DAP_CheckProc_SyncCtrl(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_SetVarProc_SyncCtrl(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DAP_SetVarProc_SyncCtrl(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -3877,8 +3799,7 @@ Function DAP_SetVarProc_SyncCtrl(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButtonProc_TPDAQ(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string   device
 	variable testpulseRunMode
@@ -3933,22 +3854,19 @@ Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
 End
 
 /// @brief Return the comment panel name
-Function/S DAP_GetCommentPanel(device)
-	string device
+Function/S DAP_GetCommentPanel(string device)
 
 	return device + "#" + COMMENT_PANEL
 End
 
 /// @brief Return the full window path to the comment notebook
-Function/S DAP_GetCommentNotebook(device)
-	string device
+Function/S DAP_GetCommentNotebook(string device)
 
 	return DAP_GetCommentPanel(device) + "#" + COMMENT_PANEL_NOTEBOOK
 End
 
 /// @brief Create the comment panel
-static Function DAP_OpenCommentPanel(device)
-	string device
+static Function DAP_OpenCommentPanel(string device)
 
 	string commentPanel, commentNotebook
 
@@ -3970,8 +3888,7 @@ static Function DAP_OpenCommentPanel(device)
 	ReplaceNotebookText(commentNotebook, userComment)
 End
 
-Function DAP_ButtonProc_OpenCommentNB(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButtonProc_OpenCommentNB(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string device
 
@@ -3987,10 +3904,7 @@ Function DAP_ButtonProc_OpenCommentNB(ba) : ButtonControl
 	return 0
 End
 
-static Function/S DAP_FormatCommentString(device, comment, sweepNo)
-	string   device
-	string   comment
-	variable sweepNo
+static Function/S DAP_FormatCommentString(string device, string comment, variable sweepNo)
 
 	string str, contents, commentNotebook
 	variable length
@@ -4017,8 +3931,7 @@ End
 ///        to the comment notebook and to the labnotebook.
 ///
 /// The `SetVariable` for the user comment is also cleared
-static Function DAP_AddUserComment(device)
-	string device
+static Function DAP_AddUserComment(string device)
 
 	string commentNotebook, comment, formattedComment
 	variable sweepNo
@@ -4048,8 +3961,7 @@ static Function DAP_AddUserComment(device)
 End
 
 /// @brief Make the comment notebook read-only
-Function DAP_LockCommentNotebook(device)
-	string device
+Function DAP_LockCommentNotebook(string device)
 
 	string commentPanel, commentNotebook
 
@@ -4064,8 +3976,7 @@ Function DAP_LockCommentNotebook(device)
 End
 
 /// @brief Make the comment notebook writeable
-Function DAP_UnlockCommentNotebook(device)
-	string device
+Function DAP_UnlockCommentNotebook(string device)
 
 	string commentPanel, commentNotebook
 
@@ -4081,8 +3992,7 @@ Function DAP_UnlockCommentNotebook(device)
 End
 
 /// @brief Clear the comment notebook's content and the serialized string
-Function DAP_ClearCommentNotebook(device)
-	string device
+Function DAP_ClearCommentNotebook(string device)
 
 	string commentPanel, commentNotebook
 
@@ -4106,8 +4016,7 @@ Function DAP_SerializeAllCommentNBs()
 End
 
 /// @brief Copy the contents of the comment notebook to the user comment string
-Function DAP_SerializeCommentNotebook(device)
-	string device
+Function DAP_SerializeCommentNotebook(string device)
 
 	string commentPanel, commentNotebook, text
 
@@ -4131,8 +4040,7 @@ Function DAP_SerializeCommentNotebook(device)
 	NotebookSelectionAtEnd(commentNotebook)
 End
 
-Function DAP_CommentPanelHook(s)
-	STRUCT WMWinHookStruct &s
+Function DAP_CommentPanelHook(STRUCT WMWinHookStruct &s)
 
 	string device
 
@@ -4183,8 +4091,7 @@ Function/S DAP_CreateDAEphysPanel()
 End
 
 /// @brief	Sets the locked indexing logic checkbox states
-Function DAP_CheckProc_LockedLogic(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_LockedLogic(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -4208,9 +4115,7 @@ End
 /// @return 0 if the control name could be parsed, one otherwise
 ///
 /// UTF_NOINSTRUMENTATION
-Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
-	string ctrl
-	variable &channelIndex, &channelType, &controlType
+Function DAP_ParsePanelControl(string ctrl, variable &channelIndex, variable &channelType, variable &controlType)
 
 	string elem0, elem1, elem2
 	variable numUnderlines
@@ -4323,14 +4228,12 @@ End
 /// @brief Query the device lock status
 ///
 /// @returns device lock status, 1 if unlocked, 0 if locked
-Function DAP_DeviceIsUnlocked(device)
-	string device
+Function DAP_DeviceIsUnlocked(string device)
 
 	return WhichListItem(device, GetListOfLockedDevices(), ";", 0, 0) == -1
 End
 
-Function DAP_AbortIfUnlocked(device)
-	string device
+Function DAP_AbortIfUnlocked(string device)
 
 	if(DAP_DeviceIsUnlocked(device))
 		DoAbortNow("A device must be locked (see Hardware tab) to proceed")
@@ -4339,8 +4242,7 @@ End
 
 /// @brief GUI procedure which has the only purpose
 ///        of storing the control state in the GUI state wave
-Function DAP_CheckProc_UpdateGuiState(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_UpdateGuiState(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -4351,8 +4253,7 @@ Function DAP_CheckProc_UpdateGuiState(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_SetVar_SetScale(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DAP_SetVar_SetScale(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -4369,8 +4270,7 @@ Function DAP_SetVar_SetScale(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_SetVar_UpdateGuiState(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DAP_SetVar_UpdateGuiState(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -4384,8 +4284,7 @@ Function DAP_SetVar_UpdateGuiState(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_Settings_PUser(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	variable headstage
 
@@ -4407,8 +4306,7 @@ Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_ButtonProc_LockDev(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButtonProc_LockDev(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -4420,8 +4318,7 @@ Function DAP_ButtonProc_LockDev(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_ButProc_Hrdwr_UnlckDev(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButProc_Hrdwr_UnlckDev(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -4433,9 +4330,7 @@ Function DAP_ButProc_Hrdwr_UnlckDev(ba) : ButtonControl
 	return 0
 End
 
-static Function DAP_UpdateDataFolderDisplay(device, locked)
-	string   device
-	variable locked
+static Function DAP_UpdateDataFolderDisplay(string device, variable locked)
 
 	string title
 	if(locked)
@@ -4713,16 +4608,14 @@ static Function DAP_LoadBuiltinStimsets()
 	KillPath $symbPath
 End
 
-static Function DAP_ClearWaveIfExists(wv)
-	WAVE/Z wv
+static Function DAP_ClearWaveIfExists(WAVE/Z wv)
 
 	if(WaveExists(wv))
 		Redimension/N=(0, -1, -1, -1) wv
 	endif
 End
 
-static Function DAP_UnlockDevice(device)
-	string device
+static Function DAP_UnlockDevice(string device)
 
 	variable flags, state, hardwareType
 	string lockedDevices, wlName
@@ -4834,6 +4727,7 @@ End
 
 /// @brief Update the list of locked devices
 static Function DAP_UpdateListOfLockedDevices()
+
 	variable i, numDevs, numItm
 	string NIPanelList  = ""
 	string ITCPanelList = WinList("ITC*", ";", "WIN:64")
@@ -4853,8 +4747,7 @@ static Function DAP_UpdateListOfLockedDevices()
 	panelList = ITCPanelList + NIPanelList + SUPanelList
 End
 
-static Function DAP_UpdateChanAmpAssignStorWv(device)
-	string device
+static Function DAP_UpdateChanAmpAssignStorWv(string device)
 
 	variable HeadStageNo, ampSerial, ampChannelID
 	string amplifierDef
@@ -4894,8 +4787,7 @@ static Function DAP_UpdateChanAmpAssignStorWv(device)
 	endif
 End
 
-static Function DAP_UpdateChanAmpAssignPanel(device)
-	string device
+static Function DAP_UpdateChanAmpAssignPanel(string device)
 
 	variable HeadStageNo, channel, ampSerial, ampChannelID
 	string entry
@@ -4910,26 +4802,26 @@ static Function DAP_UpdateChanAmpAssignPanel(device)
 	// VC DA settings
 	channel = ChanAmpAssign[%VC_DA][HeadStageNo]
 	Popupmenu Popup_Settings_VC_DA, win=$device, mode=(IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
-	Setvariable setvar_Settings_VC_DAgain, win=$device, value=_num:ChanAmpAssign[%VC_DAGain][HeadStageNo]
-	Setvariable SetVar_Hardware_VC_DA_Unit, win=$device, value=_str:ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo]
+	Setvariable setvar_Settings_VC_DAgain, win=$device, value=_NUM:ChanAmpAssign[%VC_DAGain][HeadStageNo]
+	Setvariable SetVar_Hardware_VC_DA_Unit, win=$device, value=_STR:ChanAmpAssignUnit[%VC_DAUnit][HeadStageNo]
 
 	// VC AD settings
 	channel = ChanAmpAssign[%VC_AD][HeadStageNo]
 	Popupmenu Popup_Settings_VC_AD, win=$device, mode=(IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
-	Setvariable setvar_Settings_VC_ADgain, win=$device, value=_num:ChanAmpAssign[%VC_ADGain][HeadStageNo]
-	Setvariable SetVar_Hardware_VC_AD_Unit, win=$device, value=_str:ChanAmpAssignUnit[%VC_ADUnit][HeadStageNo]
+	Setvariable setvar_Settings_VC_ADgain, win=$device, value=_NUM:ChanAmpAssign[%VC_ADGain][HeadStageNo]
+	Setvariable SetVar_Hardware_VC_AD_Unit, win=$device, value=_STR:ChanAmpAssignUnit[%VC_ADUnit][HeadStageNo]
 
 	// IC DA settings
 	channel = ChanAmpAssign[%IC_DA][HeadStageNo]
 	Popupmenu Popup_Settings_IC_DA, win=$device, mode=(IsFinite(channel) ? channel : NUM_DA_TTL_CHANNELS) + 1
-	Setvariable setvar_Settings_IC_DAgain, win=$device, value=_num:ChanAmpAssign[%IC_DAGain][HeadStageNo]
-	Setvariable SetVar_Hardware_IC_DA_Unit, win=$device, value=_str:ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo]
+	Setvariable setvar_Settings_IC_DAgain, win=$device, value=_NUM:ChanAmpAssign[%IC_DAGain][HeadStageNo]
+	Setvariable SetVar_Hardware_IC_DA_Unit, win=$device, value=_STR:ChanAmpAssignUnit[%IC_DAUnit][HeadStageNo]
 
 	// IC AD settings
 	channel = ChanAmpAssign[%IC_AD][HeadStageNo]
 	Popupmenu Popup_Settings_IC_AD, win=$device, mode=(IsFinite(channel) ? channel : NUM_MAX_CHANNELS) + 1
-	Setvariable setvar_Settings_IC_ADgain, win=$device, value=_num:ChanAmpAssign[%IC_ADGain][HeadStageNo]
-	Setvariable SetVar_Hardware_IC_AD_Unit, win=$device, value=_str:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
+	Setvariable setvar_Settings_IC_ADgain, win=$device, value=_NUM:ChanAmpAssign[%IC_ADGain][HeadStageNo]
+	Setvariable SetVar_Hardware_IC_AD_Unit, win=$device, value=_STR:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
 
 	ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
 	ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
@@ -4945,9 +4837,7 @@ End
 ///
 /// @param device device
 /// @param updateFlag One of @ref UpdateControlsFlags
-Function DAP_UpdateDAQControls(device, updateFlag)
-	string   device
-	variable updateFlag
+Function DAP_UpdateDAQControls(string device, variable updateFlag)
 
 	DEBUGPRINT("updateFlag", var = updateFlag)
 
@@ -4973,9 +4863,7 @@ End
 /// @param device device
 /// @param headStage  MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param delayed    [optional, defaults to false] On a delayed clamp mode change the stimulus set is not set.
-static Function DAP_AllChanDASettings(device, headStage, [delayed])
-	string device
-	variable headStage, delayed
+static Function DAP_AllChanDASettings(string device, variable headStage, [variable delayed])
 
 	string ctrl
 	variable scalar, index, indexEnd, DAC, clampMode
@@ -5022,8 +4910,7 @@ static Function DAP_AllChanDASettings(device, headStage, [delayed])
 	endif
 End
 
-Function DAP_ButtonProc_skipSweep(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButtonProc_skipSweep(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2:
@@ -5034,8 +4921,7 @@ Function DAP_ButtonProc_skipSweep(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_ButtonProc_skipBack(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DAP_ButtonProc_skipBack(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2:
@@ -5046,37 +4932,30 @@ Function DAP_ButtonProc_skipBack(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_GetskipAhead(device)
-	string device
+Function DAP_GetskipAhead(string device)
 
 	return GetDA_EphysGuiStateNum(device)[0][%SetVar_DataAcq_skipAhead]
 End
 
-Function DAP_ResetskipAhead(device)
-	string device
+Function DAP_ResetskipAhead(string device)
 
 	WAVE guiState = GetDA_EphysGuiStateNum(device)
 	guiState[0][%SetVar_DataAcq_skipAhead] = 0
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_skipAhead", val = 0)
 End
 
-Function DAP_getFilteredSkipAhead(device, skipAhead)
-	string   device
-	variable skipAhead
+Function DAP_getFilteredSkipAhead(string device, variable skipAhead)
 
 	variable maxSkipAhead = max(0, IDX_MinNoOfSweeps(device) - 1)
 	return skipAhead > maxSkipAhead ? maxSkipAhead : skipAhead
 End
 
-Function DAP_setSkipAheadLimit(device, filteredSkipAhead)
-	string   device
-	variable filteredSkipAhead
+Function DAP_setSkipAheadLimit(string device, variable filteredSkipAhead)
 
 	SetSetVariableLimits(device, "SetVar_DataAcq_skipAhead", 0, max(0, filteredSkipAhead), 1)
 End
 
-Function DAP_SetVarProc_skipAhead(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
+Function DAP_SetVarProc_skipAhead(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	switch(sva.eventCode)
 		case 1:
@@ -5090,8 +4969,7 @@ Function DAP_SetVarProc_skipAhead(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_CheckProc_RandomRA(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_RandomRA(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2:
@@ -5108,8 +4986,7 @@ Function DAP_CheckProc_RandomRA(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_CheckSkipAhead(device)
-	string device
+Function DAP_CheckSkipAhead(string device)
 
 	variable activeSkipAhead   = DAG_GetNumericalValue(device, "SetVar_DataAcq_skipAhead")
 	variable filteredSkipAhead = DAP_getFilteredSkipAhead(device, activeSkipAhead)
@@ -5122,8 +4999,7 @@ Function DAP_CheckSkipAhead(device)
 	DAP_setSkipAheadLimit(device, filteredSkipAhead)
 End
 
-Function DAP_PopMenuProc_UpdateGuiState(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function DAP_PopMenuProc_UpdateGuiState(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -5142,8 +5018,7 @@ Function/S DAP_GetSamplingMultiplier()
 	return "1;2;4;8;16;32;64"
 End
 
-Function DAP_PopMenuProc_SampMult(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function DAP_PopMenuProc_SampMult(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -5161,8 +5036,7 @@ Function DAP_PopMenuProc_SampMult(pa) : PopupMenuControl
 	return 0
 End
 
-Function DAP_CheckProc_RequireAmplifier(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_RequireAmplifier(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	variable checked
 	string   device
@@ -5184,8 +5058,7 @@ Function/S DAP_GetSamplingFrequencies()
 	return "Maximum;100;50;25;10"
 End
 
-Function DAP_PopMenuProc_FixedSampInt(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function DAP_PopMenuProc_FixedSampInt(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -5213,8 +5086,7 @@ Function/S DAP_GetOsciUpdModes()
 	return list
 End
 
-Function DAP_PopMenuProc_OsciUpdMode(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
+Function DAP_PopMenuProc_OsciUpdMode(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 	string device
 
@@ -5237,8 +5109,7 @@ Function DAP_PopMenuProc_OsciUpdMode(pa) : PopupMenuControl
 	return 0
 End
 
-Function DAP_ApplyDelayedClampModeChange(device)
-	string device
+Function DAP_ApplyDelayedClampModeChange(string device)
 
 	variable i, mode
 
@@ -5257,15 +5128,13 @@ Function DAP_ApplyDelayedClampModeChange(device)
 	DAP_ClearDelayedClampModeChange(device)
 End
 
-Function DAP_ClearDelayedClampModeChange(device)
-	string device
+Function DAP_ClearDelayedClampModeChange(string device)
 
 	WAVE GuiState = GetDA_EphysGuiStateNum(device)
 	GuiState[][%HSmode_delayed] = NaN
 End
 
-Function ButtonProc_Hardware_rescan(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function ButtonProc_Hardware_rescan(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -5283,8 +5152,7 @@ Function ButtonProc_Hardware_rescan(ba) : ButtonControl
 	return 0
 End
 
-Function DAP_CheckProc_PowerSpectrum(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
+Function DAP_CheckProc_PowerSpectrum(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	variable testPulseMode
 	string   device
@@ -5305,8 +5173,7 @@ End
 /// @brief Update the popup menus and its #USER_DATA_MENU_EXP user data after stim set changes
 ///
 /// @param device [optional, defaults to all locked devices] device
-Function DAP_UpdateDaEphysStimulusSetPopups([device])
-	string device
+Function DAP_UpdateDaEphysStimulusSetPopups([string device])
 
 	variable i, j, numPanels
 	string ctrlWave, ctrlIndexEnd, ctrlSearch, DAlist, TTLlist, listOfPanels
@@ -5392,6 +5259,7 @@ Function DAP_UpdateDaEphysStimulusSetPopups([device])
 End
 
 static Function DAP_UpdateStimulusSetPopup(string device, string ctrl, string stimsets)
+
 	string   stimset
 	variable index
 
@@ -5414,6 +5282,7 @@ End
 ///
 /// Internal use only, outside callers should use ST_RemoveStimSet()
 Function DAP_DeleteStimulusSet(string setName, [string device])
+
 	variable channelType
 
 	if(ParamIsDefault(device))
@@ -5437,6 +5306,7 @@ End
 
 /// @brief Write all TP settings from the data acquisition/settings tab to the settings wave
 Function DAP_TPSettingsToWave(string device, WAVE TPSettings)
+
 	variable i, numEntries, headstage, col
 	string ctrl, lbl
 
@@ -5497,6 +5367,7 @@ End
 
 /// @brief Write a new TP setting value to the wave
 static Function DAP_TPGUISettingToWave(string device, string ctrl, variable val)
+
 	string lbl, entry
 	variable first, last, TPState, needsTPRestart
 
@@ -5549,6 +5420,7 @@ End
 /// @param entry      [optional, defaults to all] Only update one of the entries TPSettings.
 ///                   Accepted strings are the labels from DAP_TPControlToLabel().
 Function DAP_TPSettingsToGUI(string device, [string entry])
+
 	variable i, numEntries, val, headstage, col, originalHSAll
 	string ctrl, lbl
 	variable TPState

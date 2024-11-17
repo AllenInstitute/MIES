@@ -42,8 +42,7 @@ Window OpenPanelWithDocumentationLink() : Panel
 	Button button1, pos={51.00, 133.00}, size={195.00, 29.00}, proc=ButtonProc_DownloadNightly, title="Download Igor Pro nightly build"
 EndMacro
 
-Function ButtonProc_OpenMiesDocuUpdateNightly(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function ButtonProc_OpenMiesDocuUpdateNightly(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -96,8 +95,7 @@ static Function/S GetDestinationIgorPath()
 	return path
 End
 
-Function ButtonProc_DownloadNightly(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function ButtonProc_DownloadNightly(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string url, filename, path
 

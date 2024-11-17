@@ -46,7 +46,7 @@ End
 
 static StrConstant kPackageName         = "MIES PXP to NWBv2"
 static StrConstant kPreferencesFileName = "ProcessPrefsMIESNWBv2.bin"
-static Constant    kPrefsRecordID       = 0                           // The recordID is a unique number identifying a record within the preference file.
+static Constant    kPrefsRecordID       = 0 // The recordID is a unique number identifying a record within the preference file.
 
 static Structure MultiExperimentProcessPrefs
 	uint32 version // Prefs version
@@ -58,8 +58,7 @@ EndStructure
 static Constant kPrefsVersionNumber = 102
 
 //  Loads preferences into our structure.
-static Function LoadPackagePrefs(prefs)
-	STRUCT MultiExperimentProcessPrefs &prefs
+static Function LoadPackagePrefs(STRUCT MultiExperimentProcessPrefs &prefs)
 
 	variable currentPrefsVersion = kPrefsVersionNumber
 
@@ -79,14 +78,12 @@ static Function LoadPackagePrefs(prefs)
 End
 
 //  Saves our structure to preferences.
-static Function SavePackagePrefs(prefs)
-	STRUCT MultiExperimentProcessPrefs &prefs
+static Function SavePackagePrefs(STRUCT MultiExperimentProcessPrefs &prefs)
 
 	SavePackagePreferences kPackageName, kPreferencesFileName, kPrefsRecordID, prefs
 End
 
-static Function ProcessCurrentExperiment(prefs)
-	STRUCT MultiExperimentProcessPrefs &prefs
+static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &prefs)
 
 	variable jsonID, index
 	string outputFilePath, inputFile, outputFolder
@@ -133,8 +130,7 @@ static Function ProcessCurrentExperiment(prefs)
 	StoreJSON(prefs, jsonID)
 End
 
-static Function PerformMiesTasks(outputFilePath)
-	string outputFilePath
+static Function PerformMiesTasks(string outputFilePath)
 
 	string folder, message
 	variable nwbVersion, error
@@ -164,8 +160,7 @@ static Function IsAppropriateExperiment()
 End
 
 // Returns full path to the next experiment file to be loaded or "" if we are finished.
-static Function/S FindNextExperiment(prefs)
-	STRUCT MultiExperimentProcessPrefs &prefs
+static Function/S FindNextExperiment(STRUCT MultiExperimentProcessPrefs &prefs)
 
 	variable jsonID, index
 
@@ -183,8 +178,7 @@ static Function/S FindNextExperiment(prefs)
 End
 
 // Caller needs to release json
-static Function GetJSON(prefs)
-	STRUCT MultiExperimentProcessPrefs &prefs
+static Function GetJSON(STRUCT MultiExperimentProcessPrefs &prefs)
 
 	string data, fname
 
@@ -194,9 +188,7 @@ static Function GetJSON(prefs)
 End
 
 // json will be released
-static Function StoreJSON(prefs, jsonID)
-	STRUCT MultiExperimentProcessPrefs &prefs
-	variable                            jsonID
+static Function StoreJSON(STRUCT MultiExperimentProcessPrefs &prefs, variable jsonID)
 
 	string data = JSON_Dump(jsonID, indent = 2)
 
@@ -208,8 +200,7 @@ End
 // Posts commands to Igor's operation queue to close the current experiment and open the next one.
 // Igor executes operation queue commands when it is idling - that is, when it is not running a
 // function or operation.
-static Function PostLoadNextExperiment(nextExperimentFullPath)
-	string nextExperimentFullPath
+static Function PostLoadNextExperiment(string nextExperimentFullPath)
 
 	ASSERT(FileExists(nextExperimentFullPath), "Experiment must exist")
 
@@ -225,9 +216,7 @@ End
 
 // This is the hook function that Igor calls whenever a file is opened. We use it to
 // detect the opening of an experiment and to call our ProcessCurrentExperiment function.
-static Function AfterFileOpenHook(refNum, file, pathName, type, creator, kind)
-	variable refNum, kind
-	string file, pathName, type, creator
+static Function AfterFileOpenHook(variable refNum, string file, string pathName, string type, string creator, variable kind)
 
 	STRUCT MultiExperimentProcessPrefs prefs
 
@@ -314,7 +303,7 @@ Function StartMultiExperimentProcessWrapper()
 	// 64: Ignore + and - in the alphanumeric sort so that "Text-09" sorts before "Text-10". Set options to 80 or 81.
 	files = SortList(files, FILE_LIST_SEP, 80)
 
-	WAVE/T/Z inputPXPs = ListToTextWave(files, FILE_LIST_SEP)
+	WAVE/Z/T inputPXPs = ListToTextWave(files, FILE_LIST_SEP)
 
 	jsonID = JSON_New()
 	JSON_AddWave(jsonID, "/inputFiles", inputPXPs)

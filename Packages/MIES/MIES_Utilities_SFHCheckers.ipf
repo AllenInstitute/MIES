@@ -15,6 +15,7 @@
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsValidObjectName(string name)
+
 	return NameChecker(name, 0)
 End
 
@@ -24,11 +25,13 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function IsValidLiberalObjectName(string name)
+
 	return NameChecker(name, 1)
 End
 
 /// UTF_NOINSTRUMENTATION
 threadsafe static Function NameChecker(string name, variable liberal)
+
 	return !cmpstr(name, CleanupName(name, !!liberal, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
 End
 
@@ -48,6 +51,7 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function BetweenZeroAndOneExc(variable val)
+
 	return val > 0.0 && val < 1.0
 End
 
@@ -55,6 +59,7 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function BetweenZeroAndOne(variable val)
+
 	return val >= 0.0 && val <= 1.0
 End
 
@@ -62,6 +67,7 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function BetweenZeroAndOneHoundredExc(variable val)
+
 	return val > 0.0 && val < 100.0
 End
 
@@ -69,5 +75,6 @@ End
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function BetweenZeroAndOneHoundred(variable val)
+
 	return val >= 0.0 && val <= 100.0
 End

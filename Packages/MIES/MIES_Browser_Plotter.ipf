@@ -117,7 +117,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	WAVE TTLs = GetTTLListFromConfig(config)
 
 	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
-	WAVE/D/Z statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+	WAVE/Z/D statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	if(!WaveExists(statusHS))
 		// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
 		WAVE/Z DACsFromLBN = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
@@ -197,8 +197,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 		if(oodDAQEnabled)
 			[oodDAQRegionsAll, totalOodRangeMS] = GetOodDAQFullRange(tgs, oodDAQRegions)
-			totalRangeDAPoints = totalOodRangeMS / samplingIntDA
-			numRegions         = ItemsInList(oodDAQRegionsAll)
+			totalRangeDAPoints                  = totalOodRangeMS / samplingIntDA
+			numRegions                          = ItemsInList(oodDAQRegionsAll)
 		else
 			stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length", DATA_ACQUISITION_MODE)
 			DEBUGPRINT("Stim set length (labnotebook, NaN for oodDAQ)", var = stimSetLength)
@@ -373,7 +373,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 				// 15:    TTL bits (sum) rack one
 				// 16-19: TTL bits (single) rack one
 
-				[s] = GetHeadstageColor(headstage, channelType = channelType, channelNumber = guiChannelNumber, isSplitted = isTTLSplitted)
+				[s]   = GetHeadstageColor(headstage, channelType = channelType, channelNumber = guiChannelNumber, isSplitted = isTTLSplitted)
 				first = 0
 
 				// number of horizontally distributed
@@ -725,6 +725,7 @@ End
 ///                        - POST_PLOT_ADDED_SWEEPS   -> OVS indizes of the added sweep
 ///                        Use OVS_GetSweepAndExperiment() to convert an index into a sweep/experiment pair.
 Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalData])
+
 	STRUCT TiledGraphSettings tgs
 	string                    graph
 
@@ -748,9 +749,9 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 	InitPostPlotSettings(graph, pps)
 
 	if(pps.zeroTraces)
-		WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
+		WAVE/Z/T traces = GetAllSweepTraces(graph, prefixTraces = 0)
 	else
-		WAVE/T/Z traces = $""
+		WAVE/Z/T traces = $""
 	endif
 
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
@@ -779,9 +780,7 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 	LBV_Update(win)
 End
 
-static Function InitPostPlotSettings(win, pps)
-	string                   win
-	STRUCT PostPlotSettings &pps
+static Function InitPostPlotSettings(string win, STRUCT PostPlotSettings &pps)
 
 	string bsPanel = BSP_GetPanel(win)
 
@@ -804,11 +803,7 @@ End
 /// @param averagingEnabled  switch if averaging is enabled or not
 /// @param averageDataFolder permanent datafolder where the average waves can be stored
 /// @param hideSweep         are normal channel traces hidden or not
-static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageDataFolder, hideSweep)
-	string   graph
-	variable averagingEnabled
-	DFREF    averageDataFolder
-	variable hideSweep
+static Function AverageWavesFromSameYAxisIfReq(string graph, variable averagingEnabled, DFREF averageDataFolder, variable hideSweep)
 
 	variable referenceTime, traceIndex
 	string averageWaveName, listOfWaves, listOfChannelTypes, listOfChannelNumbers, listOfHeadstages
@@ -829,7 +824,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 	endif
 
 	// remove existing average traces
-	WAVE/T/Z averageTraces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Average"})
+	WAVE/Z/T averageTraces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Average"})
 	numTraces = WaveExists(averageTraces) ? DimSize(averageTraces, ROWS) : 0
 	for(i = 0; i < numTraces; i += 1)
 		trace = averageTraces[i]
@@ -837,7 +832,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 		TUD_RemoveUserData(graph, trace)
 	endfor
 
-	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"sweep"})
+	WAVE/Z/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"sweep"})
 
 	if(!WaveExists(traces))
 		return NaN
@@ -963,10 +958,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 End
 
 /// @brief Zero all given traces
-static Function ZeroTracesIfReq(graph, traces, zeroTraces)
-	string   graph
-	variable zeroTraces
-	WAVE/T/Z traces
+static Function ZeroTracesIfReq(string graph, WAVE/Z/T traces, variable zeroTraces)
 
 	string trace
 	variable numTraces, i
@@ -1016,7 +1008,7 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	graph = GetMainWindow(win)
 	RemoveFreeAxisFromGraph(graph)
 
-	WAVE/T/Z allVerticalAxesNonUnique = TUD_GetUserDataAsWave(graph, "YAXIS")
+	WAVE/Z/T allVerticalAxesNonUnique = TUD_GetUserDataAsWave(graph, "YAXIS")
 
 	if(!WaveExists(allVerticalAxesNonUnique))
 		// empty graph
@@ -1033,23 +1025,23 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 		// (?<! is a negative look behind assertion
 		sprintf regex, ".*(?<!%s_)DA$", DB_AXIS_PART_EPOCHS
-		WAVE/T/Z DAaxes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T DAaxes = GrepWave(allVerticalAxes, regex)
 		numBlocksDA = WaveExists(DAaxes) ? DimSize(DAaxes, ROWS) : 0
 
 		sprintf regex, ".*%s_DA$", DB_AXIS_PART_EPOCHS
-		WAVE/T/Z Epochaxes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T Epochaxes = GrepWave(allVerticalAxes, regex)
 		numBlocksEpochDA = WaveExists(Epochaxes) ? DimSize(Epochaxes, ROWS) : 0
 
 		regex = ".*AD$"
-		WAVE/T/Z ADaxes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T ADaxes = GrepWave(allVerticalAxes, regex)
 		numBlocksAD = WaveExists(ADaxes) ? DimSize(ADaxes, ROWS) : 0
 
 		sprintf regex, ".*(?<!%s)_TTL$", DB_AXIS_PART_EPOCHS
-		WAVE/T/Z TTLaxes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T TTLaxes = GrepWave(allVerticalAxes, regex)
 		numBlocksTTL = WaveExists(TTLaxes) ? DimSize(TTLaxes, ROWS) : 0
 
 		sprintf regex, ".*%s_TTL$", DB_AXIS_PART_EPOCHS
-		WAVE/T/Z Epochaxes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T Epochaxes = GrepWave(allVerticalAxes, regex)
 		numBlocksEpochTTL = WaveExists(Epochaxes) ? DimSize(Epochaxes, ROWS) : 0
 
 		numBlocks = numBlocksAD + numBlocksDA + numBlocksTTL + numBlocksEpochDA + numBlocksEpochTTL
@@ -1081,7 +1073,7 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 	// unassociated DA
 
-	WAVE/T/Z unassocDANonUnique = TUD_GetUserDataAsWave(graph, "channelNumber", keys = {"channelType", "headstage"}, values = {"DA", "NaN"})
+	WAVE/Z/T unassocDANonUnique = TUD_GetUserDataAsWave(graph, "channelNumber", keys = {"channelType", "headstage"}, values = {"DA", "NaN"})
 	if(WaveExists(unassocDANonUnique))
 		WAVE/Z unassocDA = ConvertToUniqueNumber(unAssocDANonUnique, doSort = 1)
 	endif
@@ -1090,7 +1082,7 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 	// unassociated AD
 
-	WAVE/T/Z unassocADNonUnique = TUD_GetUserDataAsWave(graph, "channelNumber", keys = {"channelType", "headstage"}, values = {"AD", "NaN"})
+	WAVE/Z/T unassocADNonUnique = TUD_GetUserDataAsWave(graph, "channelNumber", keys = {"channelType", "headstage"}, values = {"AD", "NaN"})
 	if(WaveExists(unassocADNonUnique))
 		WAVE/Z unassocAD = ConvertToUniqueNumber(unassocADNonUnique, doSort = 1)
 	endif
@@ -1098,37 +1090,37 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	numBlocksUnassocAD = WaveExists(unassocAD) ? DimSize(unassocAD, ROWS) : 0
 
 	// number of headstages
-	WAVE/T/Z headstagesNonUnique = TUD_GetUserDataAsWave(graph, "headstage")
+	WAVE/Z/T headstagesNonUnique = TUD_GetUserDataAsWave(graph, "headstage")
 	WAVE/Z   headstages          = ConvertToUniqueNumber(headstagesNonUnique, doZapNaNs = 1, doSort = 1)
 
 	numBlocksHS = WaveExists(headstages) ? DimSize(headstages, ROWS) : 0
 
 	// associated DA channels
 	regex = ".*col0_DA_(?:[[:digit:]]{1,2})_HS_(?:[[:digit:]]{1,2})$"
-	WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+	WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 	numBlocksDA = WaveExists(axes) ? DimSize(axes, ROWS) : 0
 
 	// epoch info slots for associated and unassociated DA channels
 	sprintf regex, ".*col0%s_DA_(?:[[:digit:]]{1,2})_HS_(?:([[:digit:]]{1,2}|NaN))$", DB_AXIS_PART_EPOCHS
-	WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+	WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 	numBlocksEpochDA = WaveExists(axes) ? DimSize(axes, ROWS) : 0
 
 	// epoch info for TTL channels
 	if(tgs.visualizeEpochs && tgs.splitTTLbits)
 		sprintf regex, ".*col0%s_TTL_(?:[[:digit:]]{1,2})_(?:[[:digit:]])_HS_NaN$", DB_AXIS_PART_EPOCHS
-		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 		numBlocksEpochTTL = WaveExists(axes) ? DimSize(axes, ROWS) : 0
 		if(!numBlocksEpochTTL)
 			// NI Hardware
 			sprintf regex, ".*col0%s_TTL_(?:[[:digit:]]{1,2})_NaN_HS_NaN$", DB_AXIS_PART_EPOCHS
-			WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+			WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 			numBlocksEpochTTL = WaveExists(axes) ? DimSize(axes, ROWS) : 0
 		endif
 	endif
 
 	// associated AD channels
 	regex = ".*col0_AD_(?:[[:digit:]]{1,2})_HS_(?:[[:digit:]]{1,2})$"
-	WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+	WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 	numBlocksAD = WaveExists(axes) ? DimSize(axes, ROWS) : 0
 
 	// create a text wave with all plotted TTL data in the form `TTL_$channel(_$ttlBit)?`
@@ -1159,7 +1151,7 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		headstage = headstages[i]
 		// (?<! is a negative look behind assertion
 		sprintf regex, ".*(?<!%s_)DA_(?:[[:digit:]]{1,2})_HS_%d", DB_AXIS_PART_EPOCHS, headstage
-		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 
 		lastFreeAxis = last
 
@@ -1168,14 +1160,14 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 		endif
 
 		sprintf regex, ".*%s_DA_(?:[[:digit:]]{1,2})_HS_%d", DB_AXIS_PART_EPOCHS, headstage
-		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 
 		if(WaveExists(axes))
 			EnableAxis(graph, axes, EPOCH_SLOT_MULTIPLIER * spacePerSlot, first, last)
 		endif
 
 		regex = ".*AD_(?:[[:digit:]]{1,2})_HS_" + num2str(headstage)
-		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 		if(WaveExists(axes))
 			EnableAxis(graph, axes, ADC_SLOT_MULTIPLIER * spacePerSlot, first, last)
 		endif
@@ -1192,12 +1184,12 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	// unassoc DA
 	for(i = 0; i < numBlocksUnassocDA; i += 1)
 		sprintf regex, ".*(?<!%s)_DA_%d_HS_NaN", DB_AXIS_PART_EPOCHS, unassocDA[i]
-		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
 		EnableAxis(graph, axes, spacePerSlot, first, last)
 
 		sprintf regex, ".*%s_DA_%d_HS_NaN", DB_AXIS_PART_EPOCHS, unassocDA[i]
-		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 
 		if(WaveExists(axes))
 			EnableAxis(graph, axes, EPOCH_SLOT_MULTIPLIER * spacePerSlot, first, last)
@@ -1207,7 +1199,7 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 	// unassoc AD
 	for(i = 0; i < numBlocksUnassocAD; i += 1)
 		regex = ".*AD_" + num2str(unassocAD[i]) + "_HS_NaN"
-		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
 		EnableAxis(graph, axes, ADC_SLOT_MULTIPLIER * spacePerSlot, first, last)
 	endfor
@@ -1217,13 +1209,13 @@ static Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 		if(tgs.visualizeEpochs && tgs.splitTTLBits && numBlocksEpochTTL > 0)
 			regex = DB_AXIS_PART_EPOCHS + "_" + ttlsWithBits[i]
-			WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+			WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 			ASSERT(WaveExists(axes), "Unexpected number of matches")
 			EnableAxis(graph, axes, EPOCH_SLOT_MULTIPLIER * spacePerSlot, first, last)
 		endif
 
 		sprintf regex, ".*(?<!%s)_%s", DB_AXIS_PART_EPOCHS, ttlsWithBits[i]
-		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		WAVE/Z/T axes = GrepWave(allVerticalAxes, regex)
 		ASSERT(WaveExists(axes), "Unexpected number of matches")
 		EnableAxis(graph, axes, spacePerSlot, first, last)
 

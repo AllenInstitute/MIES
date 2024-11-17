@@ -65,6 +65,7 @@ End
 /// We also invalidate the stored json ID, so that on the next access
 /// it is read again.
 static Function IH_SerializeSettings()
+
 	NVAR JSONid = $GetSettingsJSONid()
 
 	PS_SerializeSettings(PACKAGE_MIES, JSONid)
@@ -77,33 +78,28 @@ End
 
 #ifdef MIES_PXP_NWB_CONVERSION_SKIP_SAVING
 
-static Function IgorBeforeNewHook(igorApplicationNameStr)
-	string igorApplicationNameStr
+static Function IgorBeforeNewHook(string igorApplicationNameStr)
 
 	ExperimentModified 0
 
 	return 0
 End
 
-static Function IgorStartOrNewHook(igorApplicationNameStr)
-	string igorApplicationNameStr
+static Function IgorStartOrNewHook(string igorApplicationNameStr)
 
 	ExperimentModified 0
 
 	return 0
 End
 
-static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
-	variable rN, kind
-	string fileName, path, type, creator
+static Function BeforeExperimentSaveHook(variable rN, string fileName, string path, string type, string creator, variable kind)
 
 	ExperimentModified 0
 
 	return 0
 End
 
-static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedures)
-	variable unsavedExp, unsavedNotebooks, unsavedProcedures
+static Function IgorBeforeQuitHook(variable unsavedExp, variable unsavedNotebooks, variable unsavedProcedures)
 
 	ExperimentModified 0
 
@@ -112,9 +108,7 @@ End
 
 #else
 
-static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
-	variable rN, kind
-	string fileName, path, type, creator
+static Function BeforeExperimentSaveHook(variable rN, string fileName, string path, string type, string creator, variable kind)
 
 	string device
 
@@ -187,8 +181,7 @@ static Function IH_Cleanup()
 	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
-static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedures)
-	variable unsavedExp, unsavedNotebooks, unsavedProcedures
+static Function IgorBeforeQuitHook(variable unsavedExp, variable unsavedNotebooks, variable unsavedProcedures)
 
 	variable err
 
@@ -223,8 +216,7 @@ static Function ShowQuitMessage()
 	DoUpdate
 End
 
-static Function IgorQuitHook(igorApplicationNameStr)
-	string igorApplicationNameStr
+static Function IgorQuitHook(string igorApplicationNameStr)
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
@@ -238,8 +230,7 @@ End
 
 /// Called before a new experiment is opened, in response to the New Experiment,
 /// Revert Experiment, or Open Experiment menu items in the File menu.
-static Function IgorBeforeNewHook(igorApplicationNameStr)
-	string igorApplicationNameStr
+static Function IgorBeforeNewHook(string igorApplicationNameStr)
 
 	variable modifiedBefore, modifiedAfter
 
@@ -268,8 +259,7 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 End
 
 /// Called when Igor is first launched and then whenever a new experiment is being created.
-static Function IgorStartOrNewHook(igorApplicationNameStr)
-	string igorApplicationNameStr
+static Function IgorStartOrNewHook(string igorApplicationNameStr)
 
 	string   miesVersion
 	variable modifiedBefore
@@ -300,10 +290,7 @@ static Function IgorStartOrNewHook(igorApplicationNameStr)
 	return 0
 End
 
-static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textChangeStr)
-	variable changeCode
-	string   procedureWindowTitleStr
-	string   textChangeStr
+static Function BeforeUncompiledHook(variable changeCode, string procedureWindowTitleStr, string textChangeStr)
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
@@ -328,6 +315,7 @@ static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textCh
 End
 
 static Function AfterCompiledHook()
+
 	ClearRTError()
 
 	variable modifiedBefore
@@ -355,6 +343,7 @@ End
 #endif
 
 Function IH_ResetScaling(STRUCT WMWinHookStruct &s)
+
 	string activeSW, graph, list, win
 	variable i, numEntries
 

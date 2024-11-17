@@ -10,9 +10,7 @@
 /// @brief This file holds MIES utility functions for data handling.
 
 /// @brief Convenience wrapper for KillOrMoveToTrashPath()
-threadsafe Function KillOrMoveToTrash([wv, dfr])
-	WAVE/Z wv
-	DFREF  dfr
+threadsafe Function KillOrMoveToTrash([WAVE/Z wv, DFREF dfr])
 
 	if(!ParamIsDefault(wv) && WaveExists(wv))
 		if(IsFreeWave(wv))
@@ -38,8 +36,7 @@ End
 /// The trash folders will be removed, if possible, from KillTemporaries().
 ///
 /// @param path absolute path to a datafolder or wave
-threadsafe Function KillOrMoveToTrashPath(path)
-	string path
+threadsafe Function KillOrMoveToTrashPath(string path)
 
 	string dest
 
@@ -65,9 +62,7 @@ threadsafe Function KillOrMoveToTrashPath(path)
 	endif
 End
 
-threadsafe Function MoveToTrash([wv, dfr])
-	WAVE/Z wv
-	DFREF  dfr
+threadsafe Function MoveToTrash([WAVE/Z wv, DFREF dfr])
 
 	string   dest
 	variable err

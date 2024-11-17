@@ -14,8 +14,7 @@
 /// @hidecallgraph
 /// @hidecallergraph
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsFinite(var)
-	variable var
+threadsafe Function IsFinite(variable var)
 
 	return numType(var) == 0
 End
@@ -25,8 +24,7 @@ End
 /// @hidecallgraph
 /// @hidecallergraph
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsNaN(var)
-	variable var
+threadsafe Function IsNaN(variable var)
 
 	return numType(var) == 2
 End
@@ -47,8 +45,7 @@ End
 /// @hidecallgraph
 /// @hidecallergraph
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsNull(str)
-	string &str
+threadsafe Function IsNull(string &str)
 
 	variable len = strlen(str)
 	return numtype(len) == 2
@@ -70,8 +67,7 @@ End
 /// @hidecallgraph
 /// @hidecallergraph
 /// UTF_NOINSTRUMENTATION
-Function WindowExists(win)
-	string win
+Function WindowExists(string win)
 
 	return WinType(win) != 0
 End
@@ -79,9 +75,7 @@ End
 /// @brief Check that the given value can be stored in the wave
 ///
 /// Does currently ignore floating point precision and ranges for integer waves
-threadsafe Function ValueCanBeWritten(wv, value)
-	WAVE/Z   wv
-	variable value
+threadsafe Function ValueCanBeWritten(WAVE/Z wv, variable value)
 
 	variable type
 
@@ -105,8 +99,7 @@ End
 
 /// @brief Returns one if var is an integer and zero otherwise
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsInteger(var)
-	variable var
+threadsafe Function IsInteger(variable var)
 
 	return IsFinite(var) && trunc(var) == var
 End
@@ -132,8 +125,7 @@ End
 /// @return 1 if pointing to prototype function, 0 otherwise
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function FuncRefIsAssigned(funcInfo)
-	string funcInfo
+threadsafe Function FuncRefIsAssigned(string funcInfo)
 
 	variable result
 
@@ -158,8 +150,7 @@ End
 /// @param strong_or_weak  [optional, defaults to strong] type of condition, can be zero for weak or 1 for strong
 ///
 /// UTF_NOINSTRUMENTATION
-Function CheckIfClose(var1, var2, [tol, strong_or_weak])
-	variable var1, var2, tol, strong_or_weak
+Function CheckIfClose(variable var1, variable var2, [variable tol, variable strong_or_weak])
 
 	if(ParamIsDefault(tol))
 		tol = 1e-8
@@ -184,9 +175,7 @@ End
 ///
 /// @param var  variable
 /// @param tol  [optional, defaults to 1e-8] tolerance
-Function CheckIfSmall(var, [tol])
-	variable var
-	variable tol
+Function CheckIfSmall(variable var, [variable tol])
 
 	if(ParamIsDefault(tol))
 		tol = 1e-8
@@ -197,32 +186,28 @@ End
 
 /// @brief Return 1 if the wave is a text wave, zero otherwise
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsTextWave(wv)
-	WAVE wv
+threadsafe Function IsTextWave(WAVE wv)
 
 	return WaveType(wv, 1) == 2
 End
 
 /// @brief Return 1 if the wave is a numeric wave, zero otherwise
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsNumericWave(wv)
-	WAVE wv
+threadsafe Function IsNumericWave(WAVE wv)
 
 	return WaveType(wv, 1) == 1
 End
 
 /// @brief Return 1 if the wave is a wave reference wave, zero otherwise
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsWaveRefWave(wv)
-	WAVE wv
+threadsafe Function IsWaveRefWave(WAVE wv)
 
 	return WaveType(wv, 1) == IGOR_TYPE_WAVEREF_WAVE
 End
 
 /// @brief Return 1 if the wave is a floating point wave
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsFloatingPointWave(wv)
-	WAVE wv
+threadsafe Function IsFloatingPointWave(WAVE wv)
 
 	variable type = WaveType(wv)
 
@@ -232,8 +217,7 @@ End
 /// @brief Return 1 if the wave is a double (64bit) precision floating point wave
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsDoubleFloatingPointWave(wv)
-	WAVE wv
+threadsafe Function IsDoubleFloatingPointWave(WAVE wv)
 
 	return WaveType(wv) & IGOR_TYPE_64BIT_FLOAT
 End
@@ -241,22 +225,19 @@ End
 /// @brief Return 1 if the wave is a single (32bit) precision floating point wave
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsSingleFloatingPointWave(wv)
-	WAVE wv
+threadsafe Function IsSingleFloatingPointWave(WAVE wv)
 
 	return WaveType(wv) & IGOR_TYPE_32BIT_FLOAT
 End
 
 /// @brief Return 1 if the wave is a global wave (not a null wave and not a free wave)
-threadsafe Function IsGlobalWave(wv)
-	WAVE wv
+threadsafe Function IsGlobalWave(WAVE wv)
 
 	return WaveType(wv, 2) == 1
 End
 
 /// @brief Return 1 if the wave is a complex wave
-threadsafe Function IsComplexWave(wv)
-	WAVE wv
+threadsafe Function IsComplexWave(WAVE wv)
 
 	return WaveType(wv) & IGOR_TYPE_COMPLEX
 End
@@ -264,8 +245,7 @@ End
 /// @brief Return true if wv is a free wave, false otherwise
 ///
 /// UTF_NOINSTRUMENTATION
-threadsafe Function IsFreeWave(wv)
-	WAVE wv
+threadsafe Function IsFreeWave(WAVE wv)
 
 	return WaveType(wv, 2) == 2
 End
@@ -331,8 +311,7 @@ End
 /// @param[in] str string to check for suffix
 /// @param[in] suffix to check for
 /// @returns 1 if str ends with suffix, 0 otherwise. If str and/or suffix are empty or null 0 is returned.
-Function StringEndsWith(str, suffix)
-	string str, suffix
+Function StringEndsWith(string str, string suffix)
 
 	variable pos
 
@@ -406,6 +385,7 @@ End
 
 /// @brief Return true if the passed regular expression is well-formed
 threadsafe Function IsValidRegexp(string regexp)
+
 	variable err, result
 
 	// GrepString and friends treat an empty regular expression as *valid*
@@ -498,8 +478,7 @@ End
 /// @brief Check if all elements of the string list are the same
 ///
 /// Returns true for lists with less than one element
-Function ListHasOnlyOneUniqueEntry(list, [sep])
-	string list, sep
+Function ListHasOnlyOneUniqueEntry(string list, [string sep])
 
 	variable numElements, i
 	string element, refElement
