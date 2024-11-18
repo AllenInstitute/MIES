@@ -39,7 +39,7 @@ concurrency:
 jobs:
 
   Ipt:
-    name: 🔎 IPT Format check
+    name: 🔎 IPT checks
     runs-on: [ self-hosted, Windows ]
     steps:
       - name: Checkout repository
@@ -49,8 +49,8 @@ jobs:
         run: curl -o ipt.exe "https://byte-physics.de/public-downloads/aistorage/transfer/ipt/0.6.0/ipt.exe"
       - name: IPT version
         run: ./ipt.exe --version
-      - name: Format code
-        run: tools/ipt-format.sh
+      - name: Format and lint code
+        run: tools/run-ipt.sh
       - name: Check for changed files
         run: git diff --name-only --ignore-submodules; git diff  --ignore-submodules --quiet
       - name: Create patch

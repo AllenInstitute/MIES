@@ -23,9 +23,8 @@ else
   ipt="ipt"
 fi
 
-echo "[format]" > config.toml
+echo "[lint]" > config.toml
 while read -r line; do
     echo "files = \"$line\"" >> config.toml
 done < <(git ls-files ':(attr:ipt)')
-
-(cd $top_level && $ipt --arg-file config.toml format -i)
+(cd $top_level && $ipt --arg-file config.toml lint -i)
