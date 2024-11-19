@@ -15,10 +15,10 @@ RUN sed -ri 's/(main)/\1 contrib/g' /etc/apt/sources.list.d/debian.sources &&   
     dpkg -i packages-microsoft-prod.deb &&                                           \
     rm packages-microsoft-prod.deb &&                                                \
     apt-get update &&                                                                \
-    apt-get install -y dotnet-sdk-7.0 &&                                             \
+    apt-get install -y dotnet-sdk-9.0 &&                                             \
     apt-get clean
 
-RUN dotnet tool install --global --version 5.3.9 \
+RUN dotnet tool install --global --version 5.4.1 \
         dotnet-reportgenerator-globaltool &&     \
     mkdir -p /home/ci &&                         \
     mv /root/.dotnet /home/ci
