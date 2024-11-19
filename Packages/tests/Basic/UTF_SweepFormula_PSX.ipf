@@ -1292,18 +1292,6 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index)
 	CHECK_EQUAL_VAR(V_numInfs, 0)
 End
 
-static Function ExecuteSweepFormulaCode(string browser, string code)
-
-	string bsPanel
-
-	SF_SetFormula(browser, code)
-
-	bsPanel = BSP_GetPanel(browser)
-
-	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
-	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = NaN)
-End
-
 static Function CheckPSXEventField(WAVE/WAVE psxEventWaves, WAVE/T colLabels, WAVE indices, variable val)
 
 	variable idx
@@ -1361,9 +1349,8 @@ static Function MouseSelectionPSX()
 
 	// combo0 is the current one
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win     = SFH_GetFormulaGraphForBrowser(browser)
 	psxPlot = MIES_PSX#PSX_GetPSXGraph(win)
 	REQUIRE(WindowExists(psxPlot))
 
@@ -1520,9 +1507,8 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 
 	// combo0 is the current one
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win           = SFH_GetFormulaGraphForBrowser(browser)
 	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
 
@@ -1611,9 +1597,8 @@ static Function MouseSelectionStatsPostProcNonFinite()
 
 	code = GetTestCode("nonfinite", eventState = "all", prop = "tau")
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win           = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow    = GetMainWindow(win)
 	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
@@ -1758,9 +1743,8 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 
 	// combo0 is the current one
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win               = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow        = GetMainWindow(win)
 	extAllGraph       = MIES_PSX#PSX_GetAllEventGraph(win)
 	specialEventPanel = MIES_PSX#PSX_GetSpecialPanel(win)
@@ -1961,9 +1945,8 @@ static Function JumpToUndet()
 
 	// combo0 is the current one
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win        = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
 	psxGraph   = MIES_PSX#PSX_GetPSXGraph(win)
 
@@ -2023,9 +2006,8 @@ static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
 	// combo0 is the current one
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win           = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow    = GetMainWindow(win)
 	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
@@ -2082,9 +2064,8 @@ static Function CursorMovement()
 
 	// combo0 is the current one
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win        = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
 	psxGraph   = MIES_PSX#PSX_GetPSXGraph(win)
 
@@ -2116,9 +2097,8 @@ static Function CursorMovementStats()
 
 	// combo0 is the current one
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win           = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow    = GetMainWindow(win)
 	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
@@ -2177,11 +2157,10 @@ static Function KeyboardInteractions()
 
 	code = GetTestCode("nothing")
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
 	DoUpdate
 
-	win           = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow    = GetMainWindow(win)
 	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
@@ -2397,9 +2376,8 @@ static Function KeyboardInteractionsStats()
 
 	code = GetTestCode("nothing")
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win           = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow    = GetMainWindow(win)
 	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
@@ -2628,9 +2606,8 @@ static Function KeyboardInteractionsStatsSpecial()
 
 	code = GetTestCode("nothing", eventState = "accept")
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win           = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow    = GetMainWindow(win)
 	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
@@ -2703,9 +2680,8 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 
 	code = GetTestCode("nonfinite", eventState = "all", prop = "tau")
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win           = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow    = GetMainWindow(win)
 	psxGraph      = MIES_PSX#PSX_GetPSXGraph(win)
 	psxStatsGraph = MIES_PSX#PSX_GetPSXStatsGraph(psxGraph)
@@ -2751,9 +2727,7 @@ static Function NoEventsAtAll()
 
 	code = "psx(psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 100, 100, 0)"
 
-	ExecuteSweepFormulaCode(browser, code)
-
-	win = SFH_GetFormulaGraphForBrowser(browser)
+	win = ExecuteSweepFormulaCode(browser, code)
 
 	try
 		psxGraph = MIES_PSX#PSX_GetPSXGraph(win)
@@ -2771,9 +2745,8 @@ static Function CheckResultsWavesForAverageFitResult()
 
 	code = GetTestCode("nothing")
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win               = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow        = GetMainWindow(win)
 	psxGraph          = MIES_PSX#PSX_GetPSXGraph(win)
 	specialEventPanel = MIES_PSX#PSX_GetSpecialPanel(win)
@@ -2808,9 +2781,8 @@ static Function TestBlockIndexLogic()
 
 	code = GetTestCode("nothing")
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win               = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow        = GetMainWindow(win)
 	psxGraph          = MIES_PSX#PSX_GetPSXGraph(win)
 	specialEventPanel = MIES_PSX#PSX_GetSpecialPanel(win)
@@ -3075,9 +3047,8 @@ static Function TestStoreAndLoad()
 
 	code = GetTestCode("nothing")
 
-	ExecuteSweepFormulaCode(browser, code)
+	win = ExecuteSweepFormulaCode(browser, code)
 
-	win        = SFH_GetFormulaGraphForBrowser(browser)
 	mainWindow = GetMainWindow(win)
 	psxGraph   = MIES_PSX#PSX_GetPSXGraph(win)
 	bsPanel    = BSP_GetPanel(browser)
