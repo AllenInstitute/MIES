@@ -2987,11 +2987,14 @@ static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range
 	// Introduced in 7e903ed8 (GetSweepSettingsTextWave: Add device as entry, 2023-01-03)
 	device = GetLastSettingTextIndep(textualValues, sweepNo, "Device", DATA_ACQUISITION_MODE)
 
+	if(!isDataBrowser)
+		WAVE/T sweepMap = SB_GetSweepMap(graph)
+	endif
+
 	if(IsEmpty(device))
 		if(isDataBrowser)
 			device = BSP_GetDevice(graph)
 		else
-			WAVE/T sweepMap = SB_GetSweepMap(graph)
 			device = sweepMap[mapIndex][%Device]
 		endif
 	endif
