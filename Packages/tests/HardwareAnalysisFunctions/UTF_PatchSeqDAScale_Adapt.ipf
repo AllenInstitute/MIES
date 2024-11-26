@@ -8,34 +8,35 @@
 ///
 /// .. Column order: test overrides, labnotebook entries, analysis parameters
 ///
-///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ====================== ================= ========================= ============================== ============================== =========================== ============================= ========================= ===================
-///  Test case    Baseline chunk0 QC   Baseline chunk [1, inf] QC   Enough rheobase/supra sweeps   Passing rheobase sweeps   Passing supra sweeps   Valid initial f-I slope QC   Valid initial f-I fit   Initial f-I data is dense enough   Failed f-I   Valid f-I slope QC   Fit f-I slope QC   Enough f-I points QC   Measured all future DAScales   Async QC   Sampling QC   Out of range DAScale   SlopePercentage   NumSweepsWithSaturation   DAScaleRangeFactor             NumInvalidSlopeSweepsAllowed   MaxFrequencyChangePercent   DaScaleStepWidthMinMaxRatio   AbsFrequencyMinDistance   SamplingFrequency
-///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ====================== ================= ========================= ============================== ============================== =========================== ============================= ========================= ===================
-///  PS_DS_AD1    -                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              -          ✓             ✓                      def               2                         def                            def                            5                           3                             2                         def
-///  PS_DS_AD2    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             ✓                      def               1                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD2a   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             ✓                      def               2                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD2b   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             ✓                      def               2                         def                            def                            25                          1.5                           2                         def
-///  PS_DS_AD3    [-,✓,✓]              ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            [-,✓,✓]              [-,✓,✓]            ✓                      [✓,-,✓]                        ✓          ✓             ✓                      def               2                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD4    ✓                    ✓                            ✓                              ✓                         -                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             ✓                      def               2                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD4a   ✓                    ✓                            ✓                              -                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             ✓                      def               2                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD5    ✓                    ✓                            -                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             ✓                      def               2                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD6    ✓                    ✓                            ✓                              ✓                         ✓                      -                            ✓                       ✓                                  ✓            -                    ✓                  ✓                      ✓                              ✓          ✓             ✓                      def               1                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD7    ✓                    ✓                            ✓                              ✓                         ✓                      -                            ✓                       -                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             ✓                      def               1                         def                            def                            10                          1.1                           2                         def
-///  PS_DS_AD8    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            -                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             ✓                      def               1                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD9    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            [-,-]                [-,-]              ✓                      ✓                              ✓          ✓             ✓                      def               3                         2                              2                              45                          3                             2                         def
-///  PS_DS_AD10   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      -                              ✓          ✓             ✓                      def               2                         def                            def                            25                          1.2                           2                         def
-///  PS_DS_AD11   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓]            ✓                      [-,-,✓]                        ✓          ✓             ✓                      60                1                         1                              1                              45                          1.2                           2                         def
+///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ========================= ============================== ============================== =========================== ============================= ========================= ===================
+///  Test case    Baseline chunk0 QC   Baseline chunk [1, inf] QC   Enough rheobase/supra sweeps   Passing rheobase sweeps   Passing supra sweeps   Valid initial f-I slope QC   Valid initial f-I fit   Initial f-I data is dense enough   Failed f-I   Valid f-I slope QC   Fit f-I slope QC   Enough f-I points QC   Measured all future DAScales   Async QC   Sampling QC   SlopePercentage   NumSweepsWithSaturation   DAScaleRangeFactor             NumInvalidSlopeSweepsAllowed   MaxFrequencyChangePercent   DaScaleStepWidthMinMaxRatio   AbsFrequencyMinDistance   SamplingFrequency
+///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ========================= ============================== ============================== =========================== ============================= ========================= ===================
+///  PS_DS_AD1    -                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              -          ✓             def               2                         def                            def                            5                           3                             2                         def
+///  PS_DS_AD1a   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              [✓,-,✓]    ✓             def               3                         def                            def                            5                           3                             2                         def                 def
+///  PS_DS_AD2    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def
+///  PS_DS_AD2a   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def
+///  PS_DS_AD2b   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          1.5                           2                         def
+///  PS_DS_AD3    [-,✓,✓]              ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            [-,✓,✓]              [-,✓,✓]            ✓                      [✓,-,✓]                        ✓          ✓             def               2                         def                            def                            25                          3                             2                         def
+///  PS_DS_AD4    ✓                    ✓                            ✓                              ✓                         -                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def
+///  PS_DS_AD4a   ✓                    ✓                            ✓                              -                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def
+///  PS_DS_AD5    ✓                    ✓                            -                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def
+///  PS_DS_AD6    ✓                    ✓                            ✓                              ✓                         ✓                      -                            ✓                       ✓                                  ✓            -                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def
+///  PS_DS_AD7    ✓                    ✓                            ✓                              ✓                         ✓                      -                            ✓                       -                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            10                          1.1                           2                         def
+///  PS_DS_AD8    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            -                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def
+///  PS_DS_AD9    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            [-,-]                [-,-]              ✓                      ✓                              ✓          ✓             def               3                         2                              2                              45                          3                             2                         def
+///  PS_DS_AD10   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      -                              ✓          ✓             def               2                         def                            def                            25                          1.2                           2                         def
+///  PS_DS_AD11   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓]            ✓                      [-,-,✓]                        ✓          ✓             60                1                         1                              1                              45                          1.2                           2                         def
+///  PS_DS_AD12   [✓,-,✓,✓]            ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓,✓]          ✓                      [-,✓-,,✓]                      ✓          ✓             def               2                         def                            def                            25                          3                             1.1                       def
 ///  PS_DS_AD12   [✓,-,✓,✓]            ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓,✓]          ✓                      [-,✓-,,✓]                      ✓          ✓             ✓                      def               2                         def                            def                            25                          3                             1.1                       def
-///  PS_DS_AD12   [✓,-,✓,✓]            ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓,✓]          ✓                      [-,✓-,,✓]                      ✓          ✓             ✓                      def               2                         def                            def                            25                          3                             1.1                       def
+///  PS_DS_AD13   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          -             def               2                         def                            def                            25                          3                             0.5                       def
 ///  PS_DS_AD13   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          -             ✓                      def               2                         def                            def                            25                          3                             0.5                       def
-///  PS_DS_AD13   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          -             ✓                      def               2                         def                            def                            25                          3                             0.5                       def
-///  PS_DS_AD14   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  [-,✓ ]       [-,✓ ]               ✓                  ✓                      ✓                              ✓          ✓             ✓                      def               1                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD15   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  [-,✓ ]       [-,✓ ]               ✓                  ✓                      [-,-,✓]                        ✓          ✓             ✓                      def               1                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD16   ✓                    [-,-,✓,-,✓]                  ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓,✓,✓]        ✓                      [✓,✓,-,✓,✓]                    ✓          ✓             ✓                      def               2                         def                            def                            25                          3                             1.1                       def
-///  PS_DS_AD17   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              ✓          ✓             ✓                      def               2                         def                            def                            25                          3                             1.1                       def
-///  PS_DS_AD18   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              ✓          ✓             ✓                      def               3                         def                            def                            25                          3                             1.1                       def
+///  PS_DS_AD14   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  [-,✓ ]       [-,✓ ]               ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def
+///  PS_DS_AD15   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  [-,✓ ]       [-,✓ ]               ✓                  ✓                      [-,-,✓]                        ✓          ✓             def               1                         def                            def                            25                          3                             2                         def
+///  PS_DS_AD16   ✓                    [-,-,✓,-,✓]                  ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓,✓,✓]        ✓                      [✓,✓,-,✓,✓]                    ✓          ✓             def               2                         def                            def                            25                          3                             1.1                       def
+///  PS_DS_AD17   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             1.1                       def
+///  PS_DS_AD18   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              ✓          ✓             def               3                         def                            def                            25                          3                             1.1                       def
 ///  PS_DS_AD19   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              ✓          ✓             -                      def               def                       def                            def                            25                          def                           def                       def
-///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ====================== ================= ========================= ============================== ============================== =========================== ============================= ========================= ===================
+///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ========================= ============================== ============================== =========================== ============================= ========================= ===================
 ///
 /// @endrst
 
@@ -365,6 +366,8 @@ static Function PS_DS_AD1_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "FailingAdaptiveSCIRange", var = Inf)
+
 	// SamplingMultiplier, SamplingFrequency use defaults
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 5)
@@ -473,7 +476,7 @@ End
 
 static Function PS_DS_AD1_REENTRY_REENTRY([string str])
 
-	variable sweepNo, failingAdaptiveSweep
+	variable sweepNo
 	sweepNo = 5
 
 	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
@@ -487,8 +490,168 @@ static Function PS_DS_AD1_REENTRY_REENTRY([string str])
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
-	failingAdaptiveSweep = JWN_GetNumberFromWaveNote(overrideResults, "FailingAdaptiveSweep")
-	CHECK_EQUAL_VAR(failingAdaptiveSweep, 2)
+	WAVE/Z passingAdSweepsFailSet = JWN_GetNumericWaveFromWaveNote(overrideResults, "PassingAdaptiveSweepFromFailingSet")
+
+	Make/FREE/D/N=0 empty
+	CHECK_EQUAL_WAVES(passingAdSweepsFailSet, empty)
+End
+
+static Function PS_DS_AD1a_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 3)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "FailingAdaptiveSCIRange", var = 2)
+
+	// SamplingMultiplier, SamplingFrequency use defaults
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 5)
+
+	// use defaults for the rest
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
+
+	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
+
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_DS_AD1a([string str])
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
+
+	// async QC passes for first sweep and third sweep only
+	wv                      = 0
+	wv[][][%APFrequency]    = 15 - 0.1 * q
+	wv[][0, 2; 2][%AsyncQC] = 1
+	wv[][][%BaselineQC]     = 1
+End
+
+static Function PS_DS_AD1a_REENTRY([string str])
+
+	variable sweepNo
+
+	sweepNo = 2
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPassFromRhSuAd], {0, 0, 0}, mode = WAVE_DATA)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
+	CheckSurveyPlot(str, entries)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	WAVE/Z passingAdSweepsFailSet = JWN_GetNumericWaveFromWaveNote(overrideResults, "PassingAdaptiveSweepFromFailingSet")
+
+	Make/FREE/D/N=0 empty
+	CHECK_EQUAL_WAVES(passingAdSweepsFailSet, empty)
+
+	PGC_SetAndActivateControl(str, "DataAcquireButton")
+	RegisterReentryFunction("PatchSeqTestDAScaleAdapt#" + GetRTStackInfo(1))
+End
+
+static Function PS_DS_AD1a_REENTRY_REENTRY([string str])
+
+	variable sweepNo
+
+	sweepNo = 5
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	WAVE/Z passingAdSweepsFailSet = JWN_GetNumericWaveFromWaveNote(overrideResults, "PassingAdaptiveSweepFromFailingSet")
+
+	CHECK_EQUAL_WAVES(passingAdSweepsFailSet, {0, 2}, mode = WAVE_DATA)
+
+	PGC_SetAndActivateControl(str, "DataAcquireButton")
+	RegisterReentryFunction("PatchSeqTestDAScaleAdapt#" + GetRTStackInfo(1))
+End
+
+static Function PS_DS_AD1a_REENTRY_REENTRY_REENTRY([string str])
+
+	variable sweepNo
+
+	sweepNo = 8
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	WAVE/Z passingAdSweepsFailSet = JWN_GetNumericWaveFromWaveNote(overrideResults, "PassingAdaptiveSweepFromFailingSet")
+
+	CHECK_EQUAL_WAVES(passingAdSweepsFailSet, {0, 2, 3, 5}, mode = WAVE_DATA)
+
+	PGC_SetAndActivateControl(str, "DataAcquireButton")
+	RegisterReentryFunction("PatchSeqTestDAScaleAdapt#" + GetRTStackInfo(1))
+End
+
+static Function PS_DS_AD1a_REENTRY_REENTRY_REENTRY_REENTRY([string str])
+
+	variable sweepNo
+
+	sweepNo = 11
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	WAVE/Z passingAdSweepsFailSet = JWN_GetNumericWaveFromWaveNote(overrideResults, "PassingAdaptiveSweepFromFailingSet")
+
+	// "FailingAdaptiveSCIRange" equals two so we don't look further back
+	CHECK_EQUAL_WAVES(passingAdSweepsFailSet, {3, 5, 6, 8}, mode = WAVE_DATA)
 End
 
 static Function PS_DS_AD2_preAcq(string device)
