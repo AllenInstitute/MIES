@@ -2963,6 +2963,27 @@ static Function [WAVE acceptColors, WAVE rejectColors, WAVE undetColors] PSX_Get
 	Make/FREE undetColors = {PSX_COLOR_UNDET_R, PSX_COLOR_UNDET_G, PSX_COLOR_UNDET_B, 0.2 * 65535}
 End
 
+static Function/S PSX_GetDevice(string graph, variable sweepNo, variable mapIndex)
+
+	string device
+
+	WAVE textualValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
+
+	// Introduced in 7e903ed8 (GetSweepSettingsTextWave: Add device as entry, 2023-01-03)
+	device = GetLastSettingTextIndep(textualValues, sweepNo, "Device", DATA_ACQUISITION_MODE)
+
+	if(!IsEmpty(device))
+		return device
+	endif
+
+	if(BSP_IsDataBrowser(graph))
+		return BSP_GetDevice(graph)
+	endif
+
+	WAVE/T sweepMap = SB_GetSweepMap(graph)
+	return sweepMap[mapIndex][%Device]
+End
+
 /// @brief Generate the unique combination key made up from `selectData` and `range`
 ///
 /// This is used in the results wave, the listbox for selection and is attached
@@ -2982,19 +3003,8 @@ static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range
 	mapIndex = selectData[0][%SWEEPMAPINDEX]
 
 	WAVE numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
-	WAVE textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
 
-	// Introduced in 7e903ed8 (GetSweepSettingsTextWave: Add device as entry, 2023-01-03)
-	device = GetLastSettingTextIndep(textualValues, sweepNo, "Device", DATA_ACQUISITION_MODE)
-
-	if(IsEmpty(device))
-		if(isDataBrowser)
-			device = BSP_GetDevice(graph)
-		else
-			WAVE/T sweepMap = SB_GetSweepMap(graph)
-			device = sweepMap[mapIndex][%Device]
-		endif
-	endif
+	device = PSX_GetDevice(graph, sweepNo, mapIndex)
 
 	ASSERT(!IsEmpty(device), "Could not find the device of the given selectData")
 
@@ -3011,6 +3021,7 @@ static Function/S PSX_GenerateComboKey(string graph, WAVE selectData, WAVE range
 	if(isDataBrowser)
 		experiment = GetExperimentName()
 	else
+		WAVE/T sweepMap = SB_GetSweepMap(graph)
 		experiment = sweepMap[mapIndex][%FileName]
 	endif
 
