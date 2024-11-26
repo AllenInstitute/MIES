@@ -650,18 +650,26 @@ static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psx
 
 	index = limit(index, 0, numEvents - 1)
 
-	offset = PSX_DEFAULT_RANGE_FACTOR * psxEvent[index][%tau]
+	// TODO calculate average tau without NaNs
+	// calculate gaussian distribution, take the tau at 2 * sigma for all events
+	// can be done once as it does not depend on accept/reject
+	// this is then used for the offset here instead of 7 * tau
+	
+	// don't store in psxEvent
+
+	offset = 7 * psxEvent[index][%tau]
 
 	if(IsNaN(offset))
 		offset = PSX_DEFAULT_X_START_OFFSET
 	endif
 
+	first = psxEvent[index][%peak_t] - 0.5
+
 	if(index == numEvents - 1)
-		first = psxEvent[index][%peak_t] - offset
-		last  = psxEvent[index][%post_min_t] + offset
+		// TODO use min take the end of the range if it is smaller
+		last  = psxEvent[index][%peak_t] + offset
 	else
-		first = psxEvent[index][%peak_t] - offset
-		last  = psxEvent[index + 1][%peak_t] - 0.5
+		last  = min(psxEvent[index][%peak_t] + offset, psxEvent[index + 1][%peak_t] - 0.5)
 	endif
 
 	return [first, last]
@@ -674,14 +682,14 @@ static Function [variable start, variable stop] PSX_GetEventFitRange(WAVE sweepD
 
 	variable calcLength, maxLength
 
-	start = psxEvent[eventIndex][%post_min_t]
+	start = psxEvent[eventIndex][%peak_t]
 
 	maxLength = 10 * JWN_GetNumberFromWaveNote(psxEvent, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
 
 	if(eventIndex == (DimSize(psxEvent, ROWS) - 1))
 		calcLength = maxLength
 	else
-		calcLength = min((psxEvent[eventIndex + 1][%post_min_t] - start) * 0.9, maxLength)
+		calcLength = min((psxEvent[eventIndex + 1][%peak_t] - start) * 0.9, maxLength)
 	endif
 
 	if(calcLength == 0)
@@ -705,10 +713,10 @@ End
 /// \endrst
 static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable maxTauFactor, WAVE/WAVE eventFit, variable eventIndex)
 
-	variable post_min_t, n_min_t, err, decayTau, fitRange, overrideTau
+	variable startTime, endTime, err, decayTau, fitRange, overrideTau
 	string comboKey
 
-	[post_min_t, n_min_t] = PSX_GetEventFitRange(sweepDataOffFilt, psxEvent, eventIndex)
+	[startTime, endTime] = PSX_GetEventFitRange(sweepDataOffFilt, psxEvent, eventIndex)
 
 	DFREF currDFR = GetDataFolderDFR()
 	SetDataFolder NewFreeDataFolder()
@@ -719,7 +727,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 	Make/FREE/D/N=3 coefWave
 
 	AssertOnAndClearRTError()
-	CurveFit/Q/N=1/NTHR=1/M=0/W=2 exp_XOffset, kwCWave=coefWave, sweepDataOffFilt(post_min_t, n_min_t)/D/C=constraints; err = GetRTError(1)
+	CurveFit/Q/N=1/NTHR=1/M=0/W=2 exp_XOffset, kwCWave=coefWave, sweepDataOffFilt(startTime, endTime)/D/C=constraints; err = GetRTError(1)
 
 	WAVE fit = MakeWaveFree($"fit__free_")
 
@@ -750,7 +758,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 		return NaN
 	endif
 
-	fitRange = n_min_t - post_min_t
+	fitRange = endTime - startTime
 
 	if(IsFinite(decayTau) && decayTau > maxTauFactor * fitRange)
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
@@ -1574,6 +1582,10 @@ threadsafe static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDa
 
 	xStart = psxEvent[index][%peak_t]
 	yStart = sweepDataOffFilt(xStart)
+	
+	// TODO calculate xEnd by searching for a minimum in [xstart, xstart + 3 times the rise time of the psxKernel]
+	// or maximum depending on kernelAmpSign
+	// write into psxEvent and call it "peak time in filtered sweep wave" this is the former post_min_t
 
 	xEnd = psxEvent[index][%post_min_t]
 	yEnd = psxEvent[index][%post_min]
@@ -1829,6 +1841,8 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 			ASSERT(WaveExists(singleEvent), "Non-existing single event wave")
 
 			[first, last] = PSX_GetSingleEventRange(psxEvent, i)
+			
+			// TODO don't have constant baseline in the end which looks like made up data, NaN it
 
 			Duplicate/FREE/R=(first, last) sweepDataOffFilt, singleEventRaw
 
@@ -1838,7 +1852,7 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 					yOffset = sweepDataOffFilt(psxEvent[i][%peak_t])
 					break
 				case PSX_HORIZ_OFFSET_PEAK:
-					xOffset = first - psxEvent[i][%post_min_t]
+					xOffset = first - psxEvent[i][%post_min_t] // TODO new value: peak time in filtered sweep wave
 					yOffset = 0
 					break
 				default:

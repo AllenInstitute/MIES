@@ -8212,14 +8212,17 @@ End
 ///
 /// Cols:
 /// -  0/index: Event index
-/// -  1/peak_t: Event time [ms]
-/// -  2/peak: Event amplitude in deconvoluted data [y unit of data]
-/// -  3/post_min: Minimum of filtered and offsetted data in the range [time, time + 2ms]
-/// -  4/post_min_t: X location of [2]
-/// -  5/pre_max: Maximum of filtered and offsetted data in the range [time - 2ms, time], averaged over +/- 0.1 ms
-/// -  6/pre_max_t: X location of [5]
-/// -  7/rel_peak: Relative amplitude: [2] - [4]
-/// -  8/isi: Time difference to previous event [ms]
+/// -  1/onset_t: Event time [ms] // TODO change to deconvolved peak time
+/// -  2/onset: Event amplitude in deconvoluted data [y unit of data]
+/// -  3/peak: ... 
+/// -  4/peak_t: X location of [3]
+///    see PSX_CalculateriseTimeImpl
+/// -  5/baseline: ...
+/// -  6/baseline_t: X location of [5]
+// TODO neg polarity (kernel amp sign) -> maximum in pre_max_t
+// minimum for positive kernel amp sign, average over +/- 5 sample points, go from [time - 4ms, time]
+/// -  7/amplitude: Relative amplitude: [3] - [5] stays the same
+/// -  8/iei: Time difference to previous event (inter event interval) [ms]
 /// -  9/tau: Decay constant tau of exponential fit
 /// - 10/Fit manual QC call: One of @ref PSXStates
 /// - 11/Fit result: 1 for success, everything smaller than 0 is failure:
@@ -8227,6 +8230,8 @@ End
 ///       - `]inf, -10000]`: Custom error codes, one of @ref FitEventDecayCustomErrors
 /// - 12/Event manual QC call: One of @ref PSXStates
 /// - 13/Rise Time: rise time as calculated by PSX_CalculateRiseTime()
+///
+/// TODO: no upgrade, clear data and let the user restart
 Function/WAVE GetPSXEventWaveAsFree()
 
 	variable versionOfWave = PSX_WAVE_VERSION
