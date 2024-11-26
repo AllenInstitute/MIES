@@ -1136,7 +1136,7 @@ End
 /// - "PassingSupraSweep": Sweep with passing supra set QC
 /// - "PassingRheobaseSweep": Sweep with passing rheobase set QC
 /// - "PassingRhSuAdSweeps": List of passing rheobase/supra/adaptive SCI sweeps
-/// - "FailingAdaptiveSweep": Failing adaptive sweep, the very last one, of the previous SCI (*written* by PSQ_DaScale)
+/// - "PassingAdaptiveSweepFromFailingSet": Passing adaptive sweeps from failing sets from previous SCIs (*written* by PSQ_DaScale)
 ///
 /// #PSQ_CHIRP:
 ///
@@ -1620,45 +1620,39 @@ static Function PSQ_GetLastPassingLongRHSweep(string device, variable headstage,
 	return INVALID_SWEEP_NUMBER
 End
 
-/// @brief Return the previously acquired sweep number
+/// @brief Return the truth that sweepNo/headstage is from an adaptive SCI with special properties
 ///
-/// But only when it fullfills all of the following conditions:
+/// Special properties:
 /// - DAScale supra adaptive analysis function was run
 /// - failing set QC
 /// - all analysis parameters are the same
 /// - used same targetV autobias value
-static Function PSQ_GetPreviousSetQCFailingAdaptive(string device, variable headstage, string params)
+static Function PSQ_IsSuitableFailingAdaptiveSweep(string device, variable sweepNo, variable headstage, string params)
 
-	variable sweepNo, setQC, currentAutoBiasV
+	variable setQC, currentAutoBiasV
 	string key, opMode, previousAnalysisParams
-
-	sweepNo = AFH_GetLastSweepAcquired(device)
-
-	if(!IsValidSweepNumber(sweepNo))
-		return INVALID_SWEEP_NUMBER
-	endif
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
 	key    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE, query = 1)
-	opMode = GetLastSettingTextIndep(textualValues, sweepNo, key, UNKNOWN_MODE)
+	opMode = GetLastSettingTextIndepSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	if(cmpstr(opMode, PSQ_DS_ADAPT))
-		return INVALID_SWEEP_NUMBER
+		return 0
 	endif
 
 	key   = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = 0)
+	setQC = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE, defValue = 0)
 
 	if(setQC)
-		return INVALID_SWEEP_NUMBER
+		return 0
 	endif
 
 	previousAnalysisParams = LBN_GetAnalysisFunctionParameters(textualValues, sweepNo, headstage)
 
 	if(cmpstr(previousAnalysisParams, params))
-		return INVALID_SWEEP_NUMBER
+		return 0
 	endif
 
 	currentAutoBiasV = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
@@ -1666,10 +1660,66 @@ static Function PSQ_GetPreviousSetQCFailingAdaptive(string device, variable head
 	WAVE autoBiasV = GetLastSetting(numericalValues, sweepNo, "Autobias Vcom", DATA_ACQUISITION_MODE)
 
 	if(!CheckIfClose(autoBiasV[headstage], currentAutoBiasV, tol = 1e-2))
-		return INVALID_SWEEP_NUMBER
+		return 0
 	endif
 
-	return sweepNo
+	return 1
+End
+
+/// @brief Return passing sweeps from failing adaptive sets
+///
+/// Look into as many previous SCIs as given in the FailingAdaptiveSCIRange analysis parameter to return the
+/// passing sweeps where the SCI fullfills the properties listed at @ref PSQ_IsSuitableFailingAdaptiveSweep()
+static Function/WAVE PSQ_GetPreviousSetQCFailingAdaptive(string device, variable headstage, string params)
+
+	variable sweepNo, failingAdaptiveSCIRange, i, sciSweepNo
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+
+	if(!IsValidSweepNumber(sweepNo))
+		return $""
+	endif
+
+	failingAdaptiveSCIRange = AFH_GetAnalysisParamNumerical("FailingAdaptiveSCIRange", params, defValue = FAILING_ADAPTIVE_SCI_RANGE_DEFAULT)
+
+	if(failingAdaptiveSCIRange == 0)
+		// turned off
+		return $""
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	// i == x: x SCIs earlier
+	sciSweepNo = sweepNo
+	for(i = 0; i < failingAdaptiveSCIRange; i++)
+		WAVE/Z sweepsSCI = AFH_GetSweepsFromSameSCI(numericalValues, sciSweepNo, headstage)
+
+		if(!WaveExists(sweepsSCI))
+			break
+		endif
+
+		sciSweepNo = WaveMin(sweepsSCI)
+		if(!PSQ_IsSuitableFailingAdaptiveSweep(device, sciSweepNo, headstage, params))
+			continue
+		endif
+
+		WAVE/ZZ passingAdaptiveSweeps = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, sciSweepNo, headstage)
+
+		if(WaveExists(passingAdaptiveSweeps))
+			Concatenate/FREE/NP=(ROWS) {passingAdaptiveSweeps}, sweeps
+		endif
+
+		sciSweepNo -= 1
+	endfor
+
+	if(!WaveExists(sweeps))
+		return $""
+	endif
+
+	// ensure that the sweeps are ordered ascending
+	Sort sweeps, sweeps
+
+	return sweeps
 End
 
 /// @brief Return the truth that str is a valid PSQ_DAScale operation mode
@@ -3052,19 +3102,20 @@ static Function/WAVE PSQ_DS_FilterPassingData(WAVE/Z data, WAVE/Z booleanQC, [va
 	return passingData
 End
 
-static Function/WAVE PSQ_DS_GetPassingDAScaleSweeps(WAVE numericalValues, variable passingSweep, variable headstage)
+/// @brief Return a wave with all passing sweeps from the SCI containing sweepNo/headstage
+static Function/WAVE PSQ_DS_GetPassingDAScaleSweeps(WAVE numericalValues, variable sweepNo, variable headstage)
 
 	string key
 
-	if(!IsValidSweepNumber(passingSweep))
+	if(!IsValidSweepNumber(sweepNo))
 		return $""
 	endif
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, passingSweep, headstage)
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 	ASSERT(WaveExists(sweeps), "Missing sweeps from passing DAScale SCI")
 
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-	WAVE sweepsQC = GetLastSettingIndepEachSCI(numericalValues, passingSweep, key, headstage, UNKNOWN_MODE)
+	WAVE sweepsQC = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	WAVE/Z passingSweeps = PSQ_DS_FilterPassingData(sweeps, sweepsQC)
 
@@ -3097,7 +3148,7 @@ End
 
 static Function/WAVE PSQ_DS_GetPassingRhSuAdSweepsAndStoreInLBN(string device, variable sweepNo, variable headstage, string params)
 
-	variable passingSupraSweep, passingRheobaseSweep, failingAdaptiveSweep
+	variable passingSupraSweep, passingRheobaseSweep
 	string key
 
 	passingSupraSweep = PSQ_GetLastPassingDAScale(device, headstage, PSQ_DS_SUPRA)
@@ -3116,12 +3167,16 @@ static Function/WAVE PSQ_DS_GetPassingRhSuAdSweepsAndStoreInLBN(string device, v
 		return $""
 	endif
 
-	failingAdaptiveSweep = PSQ_GetPreviousSetQCFailingAdaptive(device, headstage, params)
+	WAVE/ZZ passingAdSweepsFailSet = PSQ_GetPreviousSetQCFailingAdaptive(device, headstage, params)
+
+	if(!WaveExists(passingAdSweepsFailSet))
+		Make/FREE/N=0 passingAdSweepsFailSet
+	endif
 
 	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
 		WAVE sweeps          = JWN_GetNumericWaveFromWaveNote(overrideResults, "/PassingRhSuAdSweeps")
-		JWN_SetNumberInWaveNote(overrideResults, "/FailingAdaptiveSweep", failingAdaptiveSweep)
+		JWN_SetWaveInWaveNote(overrideResults, "/PassingAdaptiveSweepFromFailingSet", passingAdSweepsFailSet)
 
 		// consistency checks
 		WAVE DAScalesRhSuAd = JWN_GetNumericWaveFromWaveNote(overrideResults, "/DAScalesRhSuAd")
@@ -3131,15 +3186,10 @@ static Function/WAVE PSQ_DS_GetPassingRhSuAdSweepsAndStoreInLBN(string device, v
 	else
 		WAVE numericalValues = GetLBNumericalValues(device)
 
-		WAVE   passingRheobaseSweeps = PSQ_DS_GetPassingRheobaseSweeps(numericalValues, passingRheobaseSweep, headstage)
-		WAVE   passingSupraSweeps    = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, passingSupraSweep, headstage)
-		WAVE/Z passingAdaptiveSweeps = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, failingAdaptiveSweep, headstage)
+		WAVE passingRheobaseSweeps = PSQ_DS_GetPassingRheobaseSweeps(numericalValues, passingRheobaseSweep, headstage)
+		WAVE passingSupraSweeps    = PSQ_DS_GetPassingDAScaleSweeps(numericalValues, passingSupraSweep, headstage)
 
-		if(!WaveExists(passingAdaptiveSweeps))
-			Make/N=0/FREE passingAdaptiveSweeps
-		endif
-
-		Concatenate/NP=(ROWS)/FREE {passingRheobaseSweeps, passingSupraSweeps, passingAdaptiveSweeps}, sweeps
+		Concatenate/NP=(ROWS)/FREE {passingRheobaseSweeps, passingSupraSweeps, passingAdSweepsFailSet}, sweeps
 	endif
 
 	WAVE/T RhSuAdSweepsLBN = LBN_GetTextWave()
@@ -3439,6 +3489,7 @@ Function/S PSQ_DAScale_GetParams()
 	       "[DAScaleModifier:variable],"              + \
 	       "[DaScaleStepWidthMinMaxRatio:variable],"  + \
 	       "DAScales:wave,"                           + \
+	       "[FailingAdaptiveSCIRange:variable],"      + \
 	       "[FinalSlopePercent:variable],"            + \
 	       "[MaximumSpikeCount:variable],"            + \
 	       "[MinimumSpikeCount:variable],"            + \
@@ -3477,6 +3528,9 @@ Function/S PSQ_DAScale_GetHelp(string name)
 			return "DA Scale Factors in pA"
 		case "AbsFrequencyMinDistance":
 			return "Minimum absolute frequency distance for DAScale estimation. Only for \"AdaptiveSupra\"."
+		case "FailingAdaptiveSCIRange":
+			return "Number of stimset cycles (SCIs) we search backwards in time for failing Adaptive sets, defaults to 1. " \
+			       + "Set to 0 to turn it off and inf to look into all available SCIs. Only for \"AdaptiveSupra\"."
 		case "MaxFrequencyChangePercent":
 			return "The maximum allowed difference for the frequency for two consecutive measurements. "           \
 			       + "In case this value is overshot, we redo the measurement with a fitting DAScale in-between. " \
@@ -3548,6 +3602,12 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 		case "DaScaleStepWidthMinMaxRatio":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(IsFinite(val) && val > 1.0))
+				return "Invalid value"
+			endif
+			break
+		case "FailingAdaptiveSCIRange":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(IsNullOrPositiveAndFinite(val) || val == Inf))
 				return "Invalid value"
 			endif
 			break

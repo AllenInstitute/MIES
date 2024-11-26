@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(68,5)	analysis_function_parameters
+WAVES/T/N=(69,5)	analysis_function_parameters
 BEGIN
 	"Name"	"Type"	"Optionality"	"Used by"	"Help"
 	"AbsFrequencyMinDistance"	"variable"	"optional"	"DA"	"Minimum absolute frequency distance for DAScale estimation. Only for \"AdaptiveSupra\"."
@@ -26,6 +26,7 @@ BEGIN
 	"DaScaleTooManySpikesOperator"	"string"	"required"	"SC"	"Set the math operator to use for combining the DAScale and the too many spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 	"FailedLevel"	"variable"	"mixed"	"CR, VM"	"Absolute level for spike search"
 	"FailedPulseLevel"	"variable"	"optional"	"SC"	"[Optional, uses the already set value] Numeric level to use for the failed pulse search in the PA plot tab."
+	"FailingAdaptiveSCIRange"	"variable"	"optional"	"DA"	"Number of stimset cycles (SCIs) we search backwards in time for failing Adaptive sets, defaults to 1. Set to 0 to turn it off and inf to look into all available SCIs. Only for \"AdaptiveSupra\"."
 	"FinalSlopePercent"	"variable"	"optional"	"DA"	"As additional passing criteria the slope of the f-I plot must be larger than this value. Note: The slope is used in percent. Only for \"Supra\"."
 	"IdealNumberOfSpikesPerPulse"	"variable"	"required"	"SC"	"Ideal number of spike which should be present. Overwrites the PA plot GUI value."
 	"InnerRelativeBound"	"variable"	"required"	"CR"	"Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
