@@ -447,9 +447,9 @@ static Function PS_DS_AD1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {2.999999970665357e-10, NaN, NaN}
-	Make/FREE/T futureDAScalesRef = {"4;5;", \
-	                                 "4;5;", \
-	                                 "4;5;"}
+	Make/FREE/T futureDAScalesRef = {"FillinRhSuAd:4;RegRhSuAd:5;", \
+	                                 "FillinRhSuAd:4;RegRhSuAd:5;", \
+	                                 "FillinRhSuAd:4;RegRhSuAd:5;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
@@ -744,7 +744,7 @@ static Function PS_DS_AD2_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {3e-10}
 	Make/FREE/D fiSlopeRef = {1.000000000000014e-11}
 	Make/FREE/D fiOffsetRef = {15.59999999999999}
-	Make/FREE/T futureDAScalesRef = {"5;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:5;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
@@ -854,7 +854,7 @@ static Function PS_DS_AD2a_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
 	Make/FREE/D fiSlopeRef = {1.000000000000014e-11, -1.428571428571428e-11}
 	Make/FREE/D fiOffsetRef = {15.59999999999999, 16.81428571428572}
-	Make/FREE/T futureDAScalesRef = {"5;12;", "5;12;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:5;Reg:12;", "RegRhSuAd:5;Reg:12;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
@@ -965,7 +965,7 @@ static Function PS_DS_AD2b_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
 	Make/FREE/D fiSlopeRef = {1.000000000000014e-11, -2.5e-11}
 	Make/FREE/D fiOffsetRef = {15.59999999999999, 17.35}
-	Make/FREE/T futureDAScalesRef = {"5;9;", "5;9;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:5;Reg:9;", "RegRhSuAd:5;Reg:9;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
@@ -1080,7 +1080,7 @@ static Function PS_DS_AD3_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10, 3e-10}
 	Make/FREE/D fiSlopeRef = {NaN, 1.000000000000014e-11, -1.428571428571428e-11}
 	Make/FREE/D fiOffsetRef = {NaN, 15.59999999999999, 16.81428571428572}
-	Make/FREE/T futureDAScalesRef = {"5;", "5;12;", "5;12;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:5;", "RegRhSuAd:5;Reg:12;", "RegRhSuAd:5;Reg:12;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
@@ -1459,7 +1459,7 @@ static Function PS_DS_AD7_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {5.666666666666668e-11, 1e-10}
 	Make/FREE/D fiSlopeRef = {5.666666666666668e-11, 1e-10}
 	Make/FREE/D fiOffsetRef = {-2, -8.5}
-	Make/FREE/T futureDAScalesRef = {"15;25;", "15;25;"}
+	Make/FREE/T futureDAScalesRef = {"FillinRhSuAd:15;FillinRhSuAd:25;", "FillinRhSuAd:15;FillinRhSuAd:25;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {3e-11, 5e-11, NaN}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {2, -2, NaN}
@@ -1621,7 +1621,7 @@ static Function PS_DS_AD9_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {2e-10, NaN}
 	Make/FREE/D fiSlopeRef = {-6.666666666666667e-10, -6.666666666666667e-10}
 	Make/FREE/D fiOffsetRef = {41.66666666666667, 41.66666666666667}
-	Make/FREE/T futureDAScalesRef = {"5;", "5;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:5;", "RegRhSuAd:5;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 2e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 7}
@@ -1729,7 +1729,7 @@ static Function PS_DS_AD10_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {9e-11, 3e-10, 7.5e-10}
 	Make/FREE/D fiSlopeRef = {9e-11, 3e-10, 7.5e-10}
 	Make/FREE/D fiOffsetRef = {-20, -125, -372.5}
-	Make/FREE/T futureDAScalesRef = {"50;55;", "50;55;57;", "50;55;57;58;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:50;Reg:55;", "RegRhSuAd:50;Reg:55;Reg:57;", "RegRhSuAd:50;Reg:55;Reg:57;Reg:58;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {9.999999999999999e-12, 2e-11, 3e-11}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
@@ -1846,8 +1846,8 @@ static Function PS_DS_AD11_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {3e-11, 3e-11}
 	Make/FREE/D fiSlopeRef = {1.739130434782609e-11, 1.020408163265306e-11}
 	Make/FREE/D fiOffsetRef = {9.043478260869566, 13.57142857142857}
-	Make/FREE/T futureDAScalesRef = {"63;112;", \
-	                                 "63;112;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:63;Reg:112;", \
+	                                 "RegRhSuAd:63;Reg:112;"}
 
 	// we do have three pairs in apFrequenciesFromRhSuAd/DAScalesFromRhSuAd but a neighboring duplicate
 	// so only two valid slopes and offsets
@@ -1965,7 +1965,10 @@ static Function PS_DS_AD12_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {3.142857142857143e-10, 3.142857142857143e-10, 3.142857142857143e-10, 3.142857142857143e-10}
 	Make/FREE/D fiSlopeRef = {3.142857142857143e-10, 3.142857142857143e-10, -2e-10, -3.333333333333381e-12}
 	Make/FREE/D fiOffsetRef = {3, 3, 39, 21.3}
-	Make/FREE/T futureDAScalesRef = {"7;9;", "7;9;", "7;9;6;", "7;9;6;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:7;Reg:9;",          \
+	                                 "RegRhSuAd:7;Reg:9;",          \
+	                                 "RegRhSuAd:7;Reg:9;Fillin:6;", \
+	                                 "RegRhSuAd:7;Reg:9;Fillin:6;"}
 	Make/FREE/D fiSlopesFromRhSuAdRef = {2e-10, 2e-10, 1e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {8, 8, 10.5}
 	Make/FREE/D DAScalesRef = {7, 9, 9, 6}
@@ -2075,7 +2078,7 @@ static Function PS_DS_AD13_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {4.99999999999999e-09}
 	Make/FREE/D fiSlopeRef = {-2.50000000000002e-09}
 	Make/FREE/D fiOffsetRef = {45.00000000000023}
-	Make/FREE/T futureDAScalesRef = {"1;1;1;"}
+	Make/FREE/T futureDAScalesRef = {"FillinRhSuAd:1;RegRhSuAd:1;Fillin:1;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {4.99999999999999e-09}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {-44.9999999999999}
@@ -2187,7 +2190,7 @@ static Function PS_DS_AD14_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
 	Make/FREE/D fiSlopeRef = {NaN, 1.000000000000014e-11}
 	Make/FREE/D fiOffsetRef = {NaN, 15.59999999999999}
-	Make/FREE/T futureDAScalesRef = {"5;", "5;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:5;", "RegRhSuAd:5;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
@@ -2298,9 +2301,9 @@ static Function PS_DS_AD15_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {4.444444444444444e-11, 4.444444444444444e-11, 4.444444444444444e-11}
 	Make/FREE/D fiSlopeRef = {4.444444444444444e-11, 4.444444444444444e-11, 4.444444444444444e-11}
 	Make/FREE/D fiOffsetRef = {0.5555555555555558, 0.5555555555555558, 0.5555555555555558}
-	Make/FREE/T futureDAScalesRef = {"10;40;",     \
-	                                 "10;40;21;",  \
-	                                 "10;40;21;70;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:10;Reg:40;",                \
+	                                 "RegRhSuAd:10;Reg:40;Fillin:21;",      \
+	                                 "RegRhSuAd:10;Reg:40;Fillin:21;Reg:70;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {0, PSQ_DS_SKIPPED_FI_SLOPE, PSQ_DS_SKIPPED_FI_SLOPE}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {1, PSQ_DS_SKIPPED_FI_SLOPE, PSQ_DS_SKIPPED_FI_SLOPE}
@@ -2420,7 +2423,7 @@ static Function PS_DS_AD16_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {2e-10, NaN, 2e-10, 2e-10, 2e-10}
 	Make/FREE/D fiSlopeRef = {NaN, NaN, 1.242236024844745e-11, 1.142857142857142e-11, 2.857142857142869e-12}
 	Make/FREE/D fiOffsetRef = {NaN, NaN, 13.6, 13.6, 14.2}
-	Make/FREE/T futureDAScalesRef = {"7;", "7;", "7;14;", "7;14;", "7;14;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:7;", "RegRhSuAd:7;", "RegRhSuAd:7;Reg:14;", "RegRhSuAd:7;Reg:14;", "RegRhSuAd:7;Reg:14;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {2e-10, 2e-10, 1e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {8, 8, 10.5}
@@ -2638,7 +2641,7 @@ static Function PS_DS_AD18_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {1e-10}
 	Make/FREE/D fiSlopeRef = {1}
 	Make/FREE/D fiOffsetRef = {1}
-	Make/FREE/T futureDAScalesRef = {"5;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:5;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9}
@@ -2735,7 +2738,7 @@ static Function PS_DS_AD19_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {2.1e-12}
 	Make/FREE/D fiSlopeRef = {2.1e-12}
 	Make/FREE/D fiOffsetRef = {-58.93706293706293}
-	Make/FREE/T futureDAScalesRef = {"3572;5858;"}
+	Make/FREE/T futureDAScalesRef = {"RegRhSuAd:3572;Reg:5858;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {2e-13, 1e-13, 2e-13}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {-1, 0.5, -2}
