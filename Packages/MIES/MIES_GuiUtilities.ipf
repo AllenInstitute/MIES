@@ -2140,12 +2140,10 @@ Function ShowTraceInfoTags()
 	// Returns in S_value the state before toggling
 	DoIgorMenu/OVRD "Graph", "Show Trace Info Tags"
 	if(IsNull(S_value))
-		BUG("DoIgorMenu returned S_value as null string for \"Show Trace Info Tags\"")
 		KillWindow/Z $S_name
 		return NaN
 	endif
 	if(IsEmpty(S_value))
-		BUG("DoIgorMenu returned S_value as empty string for \"Show Trace Info Tags\"")
 		KillWindow/Z $S_name
 		return NaN
 	endif
