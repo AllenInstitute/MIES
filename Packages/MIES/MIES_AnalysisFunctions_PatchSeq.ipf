@@ -2462,7 +2462,7 @@ static Function/WAVE PSQ_DS_GatherOvershootCorrection(STRUCT PSQ_DS_DAScaleParam
 		x  = DAScales[i]
 		xp = DAScales[i + 1]
 		xs = (xp - x) / 2
-		xm = x + xs
+		xm = round(x + xs)
 
 		frac           = yp / y - 1
 		DAScaleStepMin = cdp.daScaleStepMinNorm * y
@@ -2470,7 +2470,9 @@ static Function/WAVE PSQ_DS_GatherOvershootCorrection(STRUCT PSQ_DS_DAScaleParam
 		maxFreqRelCond  = frac > (cdp.maxFrequencyChangePercent * PERCENT_TO_ONE)
 		minFreqDistCond = abs(yp - y) > cdp.absFrequencyMinDistance
 		minDaScaleCond  = xs > DAScaleStepMin
-		alreadyMeasured = WaveExists(futureDAScalesHistoric) && !IsNaN(GetRowIndex(futureDAScalesHistoric, val = xm))
+		alreadyMeasured = WaveExists(futureDAScalesHistoric) && !IsNaN(GetRowIndex(futureDAScalesHistoric, val = xm)) \
+		                  && xm != x                                                                                  \
+		                  && xm != xp
 
 		newDAScaleValue = maxFreqRelCond && minFreqDistCond && minDaScaleCond && !alreadyMeasured
 
@@ -2519,20 +2521,20 @@ static Function PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, variab
 
 	ASSERT(cdp.maxFrequencyChangePercent > PSQ_DS_MAX_FREQ_OFFSET, "Invalid PSQ_DS_MAX_FREQ_OFFSET")
 	yp = y * (1 + (cdp.maxFrequencyChangePercent - PSQ_DS_MAX_FREQ_OFFSET) * PERCENT_TO_ONE)
-	xp = (yp - a) / (m)
+	xp = round((yp - a) / (m))
 
 	sprintf msg, "result %g with a=%g, m=%g, [x, xp]=[%g, %g], [y, yp]=[%g, %g], maxFrequencyChangePercent=%g, absDAScaleStepMin=%g, absDAScaleStepMax=%g\r", xp, a, m, x, xp, y, yp, cdp.maxFrequencyChangePercent, absDAScaleStepMin, absDAScaleStepMax
 	DEBUGPRINT(msg)
 
 	if(CheckIfSmall(m) || abs(x - xp) > absDAScaleStepMax)
 		// avoid excessive too large values
-		xp = x + absDAScaleStepMax
+		xp = ceil(x + absDAScaleStepMax)
 
 		sprintf msg, "corrected result: %g\r", xp
 		DEBUGPRINT(msg)
 	elseif(abs(y - yp) < cdp.absFrequencyMinDistance)
 		// or too small values
-		xp = x + absDAScaleStepMin
+		xp = ceil(x + absDAScaleStepMin)
 
 		sprintf msg, "corrected result: %g\r", xp
 		DEBUGPRINT(msg)
