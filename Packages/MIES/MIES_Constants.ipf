@@ -1299,6 +1299,17 @@ Constant PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED = 3
 Constant PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT     = 20
 Constant PSQ_DA_DASCALE_STEP_WITH_MIN_MAX_FACTOR = 3
 Constant FAILING_ADAPTIVE_SCI_RANGE_DEFAULT      = 1
+
+/// @name Reason for adding a new DAScale value to the future wave
+/// @anchor FutureDAScaleReason
+///@{
+StrConstant PSQ_DS_AD_REGULAR_RHSUAD = "RegRhSuAd"
+StrConstant PSQ_DS_AD_REGULAR        = "Reg"
+StrConstant PSQ_DS_AD_FILLIN_RHSUAD  = "FillinRhSuAd"
+StrConstant PSQ_DS_AD_FILLIN         = "Fillin"
+///@}
+
+StrConstant PSQ_DS_AD_TYPE_SEP = ":"
 ///@}
 
 /// @name PatchSeq Ramp

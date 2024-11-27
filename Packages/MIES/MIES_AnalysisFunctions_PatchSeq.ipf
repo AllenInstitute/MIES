@@ -2430,14 +2430,36 @@ Function [variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_DS_GetDA
 	return [daScaleStepMinNorm, daScaleStepMaxNorm]
 End
 
+///@brief Build an entry like `type:DAScale` from `type` and `DAScale`
+static Function/S PSQ_DS_AD_BuildFutureDAScaleEntry(string type, variable DAScale)
+
+	ASSERT(strsearch(type, PSQ_DS_AD_TYPE_SEP, 0) == -1, "Can not use separator in type name")
+	ASSERT(IsInteger(dascale), "Expected an integer value")
+
+	return type + PSQ_DS_AD_TYPE_SEP + num2istr(DAScale)
+End
+
+///@brief Split an entry like `type:DAScale` into `type` and `DAScale`
+static Function [string type, variable DAScale] PSQ_DS_AD_ParseFutureDAScaleEntry(string DAScaleWithType)
+
+	ASSERT(ItemsInList(DAScaleWithType, PSQ_DS_AD_TYPE_SEP) == 2, "Expected two elements in DAScaleWithType")
+
+	type    = StringFromList(0, DAScaleWithType, PSQ_DS_AD_TYPE_SEP)
+	DAScale = NumberFromList(1, DAScaleWithType, sep = PSQ_DS_AD_TYPE_SEP)
+
+	return [type, DAScale]
+End
+
 /// @brief Calculate a list of DAScale values which need to be acquired in
 ///        addition so that the AP frequency differences between consecutive points is
 ///        smaller than `maxFrequencyChangePercent`.
-static Function/WAVE PSQ_DS_GatherOvershootCorrection(STRUCT PSQ_DS_DAScaleParams &cdp, WAVE apfreqParam, WAVE DAScalesParam, WAVE/Z futureDAScalesHistoric)
+///
+/// @return combined dascale with one of the types from @ref FutureDAScaleReason
+static Function/WAVE PSQ_DS_GatherDAScaleFillin(STRUCT PSQ_DS_DAScaleParams &cdp, string type, WAVE apfreqParam, WAVE DAScalesParam, WAVE/Z futureDAScalesHistoric)
 
 	variable numEntries, numIterations, x, xp, y, yp, idx, i, xm, xs, frac
 	variable maxFreqRelCond, minDaScaleCond, minFreqDistCond, alreadyMeasured, newDAScaleValue, DAScaleStepMin
-	string msg
+	string msg, entry
 
 	ASSERT(PSQ_DS_DAScaleParamsAreFinite(cdp), "Invalid cdp values")
 
@@ -2449,7 +2471,7 @@ static Function/WAVE PSQ_DS_GatherOvershootCorrection(STRUCT PSQ_DS_DAScaleParam
 	numEntries = DimSize(apfreq, ROWS)
 	ASSERT(numEntries == DimSize(DAScales, ROWS), "Non matching wave sizes")
 
-	Make/FREE/D/N=(MINIMUM_WAVE_SIZE) results
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE) results
 
 	// ensure increasing values
 	Sort apfreq, apfreq, DAScales
@@ -2474,15 +2496,23 @@ static Function/WAVE PSQ_DS_GatherOvershootCorrection(STRUCT PSQ_DS_DAScaleParam
 		newDAScaleValue = maxFreqRelCond && minFreqDistCond && minDaScaleCond
 
 		if(newDAScaleValue)
-			alreadyMeasured = WaveExists(futureDAScalesHistoric) && !IsNaN(GetRowIndex(futureDAScalesHistoric, val = xm)) \
-			                  && xm != x                                                                                  \
-			                  && xm != xp
+			alreadyMeasured = 0
+
+			if(WaveExists(futureDAScalesHistoric))
+				// we don't care about differing types for the already measured check
+				entry = "^.*" + PSQ_DS_AD_TYPE_SEP + num2istr(xm) + "$"
+				WAVE/Z foundEntries = GrepTextWave(futureDAScalesHistoric, entry)
+
+				alreadyMeasured = WaveExists(foundEntries) \
+				                  && xm != x               \
+				                  && xm != xp
+			endif
 
 			if(!alreadyMeasured)
 				EnsureLargeEnoughWave(results, indexShouldExist = idx)
 				ASSERT(yp > y, "Incorrect data ordering")
 
-				results[idx] = xm
+				results[idx] = PSQ_DS_AD_BuildFutureDAScaleEntry(type, xm)
 				idx         += 1
 			endif
 		endif
@@ -2502,14 +2532,15 @@ End
 
 /// @brief Calculate the new DAScale value for adaptive threshold using linear extrapolation
 ///
-/// @param cdp calculation parameters
-/// @param a   offset of the f-I straight line fit [Hz]
-/// @param m   its slope [% Hz/pA]
-/// @param x   DAScale of last acquired sweep [pA]
-/// @param y   frequency value of last acquired sweep [Hz]
+/// @param cdp  calculation parameters
+/// @param type one of @ref FutureDAScaleReason
+/// @param a    offset of the f-I straight line fit [Hz]
+/// @param m    its slope [% Hz/pA]
+/// @param x    DAScale of last acquired sweep [pA]
+/// @param y    frequency value of last acquired sweep [Hz]
 ///
-/// @return new DAScale value [pA]
-static Function PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, variable a, variable m, variable x, variable y)
+/// @return text wave with new DAScale value [pA] combined with one of the types from @ref FutureDAScaleReason
+static Function/WAVE PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, string type, variable a, variable m, variable x, variable y)
 
 	variable yp, xp
 	variable absDAScaleStepMin, absDAScaleStepMax
@@ -2545,7 +2576,9 @@ static Function PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, variab
 
 	ASSERT(IsFinite(xp), "Invalid calculated DaScale value")
 
-	return xp
+	Make/T/FREE DAScaleWithType = {PSQ_DS_AD_BuildFutureDAScaleEntry(type, xp)}
+
+	return DAScaleWithType
 End
 
 static Function PSQ_DS_GatherAndWriteFrequencyToLabnotebook(string device, variable sweepNo, variable headstage)
@@ -2661,7 +2694,7 @@ End
 /// - Check if the resulting fit slope is smaller than `slopePercentage`
 ///
 /// @retval futureDAScales future DAScale values including the historic ones, @see PSQ_DS_GatherFutureDAScalesAndFrequency
-static Function [WAVE futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
+static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
 
 	string key, errMsg
 	variable maxSlope, validFit, fitOffset, fitSlope
@@ -2671,7 +2704,7 @@ static Function [WAVE futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(stri
 
 	PSQ_DS_GatherAndWriteFrequencyToLabnotebook(device, sweepNo, headstage)
 
-	[WAVE futureDAScales, WAVE apfreqs, WAVE DAScales] = PSQ_DS_GatherFutureDAScalesAndFrequency(device, sweepNo, headstage, cdp)
+	[WAVE/T futureDAScales, WAVE apfreqs, WAVE DAScales] = PSQ_DS_GatherFutureDAScalesAndFrequency(device, sweepNo, headstage, cdp)
 
 	[WAVE fitOffsetAll, WAVE fitSlopeAll, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, sweepNo, apfreqs, DAScales, singleFit = 1)
 
@@ -3003,7 +3036,7 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 	return numFound >= numSweepsWithSaturation
 End
 
-static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherFutureDAScalesAndFrequency(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
+static Function [WAVE/T futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherFutureDAScalesAndFrequency(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
 
 	string   key
 	variable emptySCI
@@ -3015,37 +3048,37 @@ static Function [WAVE futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherF
 	WAVE/Z/T futureDAScalesHistoricLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	if(WaveExists(futureDAScalesHistoricLBN))
-		WAVE/Z/D futureDAScalesHistoric = ListToNumericWave(futureDAScalesHistoricLBN[headstage], ";")
+		WAVE/Z/T futureDAScalesHistoric = ListToTextWave(futureDAScalesHistoricLBN[headstage], ";")
 	else
-		Make/FREE/D/N=0 futureDAScalesHistoric
+		Make/FREE/T/N=0 futureDAScalesHistoric
 	endif
 
 	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = 1)
 	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = 1)
 
 	if(!emptySCI)
-		WAVE/Z/D futureDAScalesFromLastSweep = PSQ_DS_GatherOvershootCorrection(cdp, apfreq, DAScales, futureDAScalesHistoric)
+		WAVE/Z/T futureDAScalesFromLastSweep = PSQ_DS_GatherDAScaleFillin(cdp, PSQ_DS_AD_FILLIN, apfreq, DAScales, futureDAScalesHistoric)
 
 		if(WaveExists(futureDAScalesFromLastSweep))
-			Concatenate/FREE/NP=(ROWS) {futureDAScalesFromLastSweep}, futureDAScalesHistoric
+			Concatenate/FREE/NP=(ROWS)/T {futureDAScalesFromLastSweep}, futureDAScalesHistoric
 		endif
 	else
 		WaveClear apfreq, DAScales
 	endif
 
-	WAVE futureDAScales = futureDAScalesHistoric
+	WAVE/T futureDAScales = futureDAScalesHistoric
 	WaveClear futureDAScalesHistoric, futureDAScalesFromLastSweep
 
 	return [futureDAScales, apfreq, DAScales]
 End
 
-static Function PSQ_DS_CalcFutureDAScalesAndStoreInLBN(string device, variable sweepNo, variable headstage, WAVE futureDAScales)
+static Function PSQ_DS_CalcFutureDAScalesAndStoreInLBN(string device, variable sweepNo, variable headstage, WAVE/T futureDAScales)
 
 	variable measuredAllFutureDAScales, index
 	string key, msg
 
 	WAVE/T futureDAScalesLBN = LBN_GetTextWave()
-	futureDAScalesLBN[headstage] = NumericWaveToList(futureDAScales, ";", format = "%.15g")
+	futureDAScalesLBN[headstage] = TextWaveToList(futureDAScales, ";")
 	key                          = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES)
 	ED_AddEntryToLabnotebook(device, key, futureDAScalesLBN, overrideSweepNo = sweepNo)
 
@@ -3789,7 +3822,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam, measuredAllFutureDAScales, fallbackDAScaleRangeFac
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, multiplier, asyncAlarmPassed, supraStimsetCycle
 	variable daScaleStepMinNorm, daScaleStepMaxNorm, maxSlope, validFit, emptySCI, oorDAScaleQC, limitCheck
-	string msg, stimset, key, opMode, offsetOp, textboxString, str, errMsg
+	string msg, stimset, key, opMode, offsetOp, textboxString, str, errMsg, type
 	variable daScaleOffset
 	variable finalSlopePercent = NaN
 	variable daScaleModifier, chunk
@@ -3977,7 +4010,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 					PSQ_DS_CreateSurveyPlotForUser(device, s.sweepNo, s.headstage, fromRhSuAd = 1)
 
-					WAVE/Z/D futureDAScales = PSQ_DS_GatherOvershootCorrection(cdp, apfreqRhSuAd, DAScalesRhSuAd, $"")
+					WAVE/Z/T futureDAScales = PSQ_DS_GatherDAScaleFillin(cdp, PSQ_DS_AD_FILLIN_RHSUAD, apfreqRhSuAd, DAScalesRhSuAd, $"")
 
 					validFit = PSQ_DS_AreFitResultsValid(device, s.sweepNo, s.headstage, fitOffsetFromRhSuAd, fitSlopeFromRhSuAd, fromRhSuAd = 1)
 
@@ -4006,10 +4039,9 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 							endif
 						endif
 
-						dascale = PSQ_DS_CalculateDAScale(cdp, fitOffsetFromRhSuAd[Inf], fitSlopeFromRhSuAd[Inf], DAScalesRhSuAd[Inf], apfreqRhSuAd[Inf])
+						WAVE/T DAScaleNew = PSQ_DS_CalculateDAScale(cdp, PSQ_DS_AD_REGULAR_RHSUAD, fitOffsetFromRhSuAd[Inf], fitSlopeFromRhSuAd[Inf], DAScalesRhSuAd[Inf], apfreqRhSuAd[Inf])
 
-						Make/FREE/D DAScaleNew = {dascale}
-						Concatenate/FREE/NP=(ROWS) {DAScaleNew}, futureDAScales
+						Concatenate/FREE/NP=(ROWS)/T {DAScaleNew}, futureDAScales
 					else
 						// when the fits from RhSuAd are not valid we are already done
 					endif
@@ -4066,7 +4098,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					cdp.daScaleStepMinNorm = daScaleStepMinNorm
 					cdp.daScaleStepMaxNorm = daScaleStepMaxNorm
 
-					[WAVE futureDAScales] = PSQ_DS_EvaluateAdaptiveThresholdSweep(device, s.sweepNo, s.headstage, cdp)
+					[WAVE/T futureDAScales] = PSQ_DS_EvaluateAdaptiveThresholdSweep(device, s.sweepNo, s.headstage, cdp)
 
 					// prepare wave for setting DAScale; DAScalesIndex is incremented when required below
 					WAVE/ZZ DAScales = futureDAScales
@@ -4273,9 +4305,8 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 							if(measuredAllFutureDAScales)
 								[fitOffset, fitSlope, DAScale, apfreq] = PSQ_DS_GetValuesOfLargestDAScale(numericalValues, textualValues, s.sweepNo, s.headstage)
 
-								dascale = PSQ_DS_CalculateDAScale(cdp, fitOffset, fitSlope, DAScale, apfreq)
-								Make/FREE/D DAScaleNew = {dascale}
-								Concatenate/NP=(ROWS) {DAScaleNew}, futureDAScales
+								WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScale(cdp, PSQ_DS_AD_REGULAR, fitOffset, fitSlope, DAScale, apfreq)
+								Concatenate/NP=(ROWS)/T/FREE {DAScaleWithType}, futureDAScales
 
 								PSQ_DS_CalcFutureDAScalesAndStoreInLBN(device, s.sweepNo, s.headstage, futureDAScales)
 							endif
@@ -4380,12 +4411,25 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 				ASSERT(IsFinite(daScaleOffset), "DAScale offset is non-finite")
 				ASSERT(IsFinite(daScaleModifier), "DAScale modifier is non-finite")
 
+				strswitch(opMode)
+					case PSQ_DS_SUB:
+					case PSQ_DS_SUPRA:
+						DAScale = DAScales[index]
+						break
+					case PSQ_DS_ADAPT:
+						WAVE/T DAScaleWithType = DAScales
+						[type, DAScale] = PSQ_DS_AD_ParseFutureDAScaleEntry(DAScaleWithType[index])
+						break
+					default:
+						ASSERT(0, "Invalid opMode")
+				endswitch
+
 				strswitch(offsetOp)
 					case "+":
-						DAScale = DAScales[index] * (1 + daScaleModifier) + daScaleOffset
+						DAScale = DAScale * (1 + daScaleModifier) + daScaleOffset
 						break
 					case "*":
-						DAScale = DAScales[index] * (1 + daScaleModifier) * daScaleOffset
+						DAScale = DAScale * (1 + daScaleModifier) * daScaleOffset
 						break
 					default:
 						ASSERT(0, "Invalid case")
