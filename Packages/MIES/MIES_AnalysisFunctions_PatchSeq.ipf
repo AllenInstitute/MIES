@@ -3969,6 +3969,10 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 						// when the fits from RhSuAd are not valid we are already done
 					endif
 
+					// F: fillin
+					// R: regular
+					// X: ???
+
 					if(WaveExists(futureDAScales))
 						PSQ_DS_CalcFutureDAScalesAndStoreInLBN(device, s.sweepNo, s.headstage, futureDAScales)
 					endif
