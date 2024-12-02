@@ -1286,7 +1286,7 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 			ctrlTypeName = JSON_GetString(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLTYPE)
 			i            = WhichListItem(ctrlTypeName, EXPCONFIG_GUI_CTRLLIST)
 			ASSERT(i != -1, "Read unknown control type: " + ctrlTypeName)
-			ctrlType = str2num(StringFromList(i, EXPCONFIG_GUI_CTRLTYPES))
+			ctrlType = NumberFromList(i, EXPCONFIG_GUI_CTRLTYPES)
 			ControlInfo/W=$wName $ctrlName
 			ASSERT(abs(V_Flag) == ctrlType, "Expected control of type " + ctrlTypeName + " in window " + wName)
 		else
@@ -1796,16 +1796,16 @@ static Function CONF_ControlToJSON(string wName, string ctrlName, variable saveM
 				JSON_AddBoolean(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLVVALUE, V_Value)
 			else
 				if(saveMask & EXPCONFIG_SAVE_ONLY_RELEVANT)
-					preferCode = str2num(StringFromList(pos, EXPCONFIG_GUI_PREFERRED))
+					preferCode = NumberFromList(pos, EXPCONFIG_GUI_PREFERRED)
 				endif
 				if(preferCode == 0)
-					if(str2num(StringFromList(pos, EXPCONFIG_GUI_VVALUE)))
+					if(NumberFromList(pos, EXPCONFIG_GUI_VVALUE))
 						JSON_AddVariable(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLVVALUE, V_Value)
 					endif
-					if(str2num(StringFromList(pos, EXPCONFIG_GUI_SVALUE)))
+					if(NumberFromList(pos, EXPCONFIG_GUI_SVALUE))
 						JSON_AddString(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLSVALUE, S_Value)
 					endif
-					if(str2num(StringFromList(pos, EXPCONFIG_GUI_SDATAFOLDER)))
+					if(NumberFromList(pos, EXPCONFIG_GUI_SDATAFOLDER))
 						JSON_AddString(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLSDF, S_DataFolder)
 					endif
 				elseif(preferCode == 1)
@@ -1833,7 +1833,7 @@ static Function CONF_ControlToJSON(string wName, string ctrlName, variable saveM
 			udataPath = ctrlPath + EXPCONFIG_FIELD_CTRLUSERDATA
 			JSON_AddTreeObject(jsonID, udataPath)
 			udataPath = udataPath + "/"
-			if(!IsEmpty(S_Userdata) && str2num(StringFromList(pos, EXPCONFIG_GUI_SUSERDATA)))
+			if(!IsEmpty(S_Userdata) && NumberFromList(pos, EXPCONFIG_GUI_SUSERDATA))
 				JSON_AddString(jsonID, udataPath, S_Userdata)
 			endif
 			WAVE/Z/T udataKeys = GetUserDataKeys(S_recreation)

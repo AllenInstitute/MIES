@@ -1843,7 +1843,7 @@ Function Name2ControlType(string ctrlName)
 	if(pos < 0)
 		return NaN
 	endif
-	return str2num(StringFromList(pos, EXPCONFIG_GUI_CTRLTYPES))
+	return NumberFromList(pos, EXPCONFIG_GUI_CTRLTYPES)
 End
 
 /// @brief Checks if a certain window can act as valid host for subwindows

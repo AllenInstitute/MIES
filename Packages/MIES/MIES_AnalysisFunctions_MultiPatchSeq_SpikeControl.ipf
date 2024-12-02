@@ -549,8 +549,8 @@ static Function/WAVE SC_RegionBlanked(WAVE data, variable totalOnsetDelay, WAVE/
 	numEntries = DimSize(oodDAQRegion, ROWS)
 	Make/D/FREE/N=(numEntries) regionStart, regionEnd
 
-	regionStart[] = str2num(StringFromList(0, oodDAQRegion[p], "-")) + totalOnsetDelay
-	regionEnd[]   = str2num(StringFromList(1, oodDAQRegion[p], "-")) + totalOnsetDelay
+	regionStart[] = NumberFromList(0, oodDAQRegion[p], sep = "-") + totalOnsetDelay
+	regionEnd[]   = NumberFromList(1, oodDAQRegion[p], sep = "-") + totalOnsetDelay
 
 	for(i = 0; i < numEntries; i += 1)
 		first             = ScaleToIndex(data, regionStart[i], ROWS)

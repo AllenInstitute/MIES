@@ -3378,7 +3378,7 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 
 	if(haveTTL)
 		WAVE/T deviceInfo = GetSUDeviceInfo()
-		amp0Type = str2num(StringFromList(0, deviceInfo[%LISTOFHEADSTAGES]))
+		amp0Type = NumberFromList(0, deviceInfo[%LISTOFHEADSTAGES])
 		sprintf encodeInfo, "00%02d-1", amp0Type
 
 		EnsureLargeEnoughWave(output, indexShouldExist = outIndex)

@@ -219,3 +219,13 @@ Function/S PrepareListForDisplay(string list)
 
 	return list
 End
+
+/// @brief Return the nth list element as number
+threadsafe Function NumberFromList(variable index, string list, [string sep])
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	endif
+
+	return str2num(StringFromList(index, list, sep))
+End
