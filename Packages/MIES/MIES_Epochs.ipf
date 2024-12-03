@@ -355,10 +355,10 @@ static Function EP_AddEpochsFromOodDAQRegions(WAVE epochWave, variable channel, 
 		Make/FREE/N=(numRegions) epochIndexer
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "oodDAQ", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
-		epochIndexer[] = EP_AddEpoch(epochWave, channel, XOP_CHANNEL_TYPE_DAC, str2num(StringFromList(0, regions[p], "-")) * MILLI_TO_MICRO + stimsetBegin, \
-		                             str2num(StringFromList(1, regions[p], "-")) * MILLI_TO_MICRO + stimsetBegin,                                           \
-		                             ReplaceNumberByKey(EPOCH_OODDAQ_REGION_KEY, tags, p, STIMSETKEYNAME_SEP, EPOCHNAME_SEP),                               \
-		                             EPOCH_SN_OODAQ + num2str(p),                                                                                           \
+		epochIndexer[] = EP_AddEpoch(epochWave, channel, XOP_CHANNEL_TYPE_DAC, NumberFromList(0, regions[p], sep = "-") * MILLI_TO_MICRO + stimsetBegin, \
+		                             NumberFromList(1, regions[p], sep = "-") * MILLI_TO_MICRO + stimsetBegin,                                           \
+		                             ReplaceNumberByKey(EPOCH_OODDAQ_REGION_KEY, tags, p, STIMSETKEYNAME_SEP, EPOCHNAME_SEP),                            \
+		                             EPOCH_SN_OODAQ + num2str(p),                                                                                        \
 		                             2, lowerLimit = stimsetBegin, upperLimit = stimsetEnd)
 	endif
 End

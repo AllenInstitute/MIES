@@ -244,7 +244,7 @@ static Function [WAVE channelNumbers, WAVE/WAVE existingWaves] GetSingleSweepWav
 			continue
 		endif
 
-		channelNumber = str2num(StringFromList(1, NameOfWave(waves[i]), "_"))
+		channelNumber = NumberFromList(1, NameOfWave(waves[i]), sep = "_")
 
 		size = DimSize(channelNumbers, ROWS)
 		Redimension/N=(size + 1) channelNumbers, existingWaves

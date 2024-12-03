@@ -113,3 +113,27 @@ Function PrepareListForDisplay_Works()
 	CHECK_EQUAL_STR("a;b", PrepareListForDisplay("a;b"))
 	CHECK_EQUAL_STR("a\rb", PrepareListForDisplay("a;b;"))
 End
+
+Function NumberFromList_Works()
+
+	variable num
+
+	num = NumberFromList(0, "")
+	CHECK_EQUAL_VAR(num, NaN)
+
+	num = NumberFromList(0, "123")
+	CHECK_EQUAL_VAR(num, 123)
+
+	num = NumberFromList(1, "123;456")
+	CHECK_EQUAL_VAR(num, 456)
+
+	num = NumberFromList(2, "123;456")
+	CHECK_EQUAL_VAR(num, NaN)
+
+	// cuts off at first non-digit
+	num = NumberFromList(1, "123;456a")
+	CHECK_EQUAL_VAR(num, 456)
+
+	num = NumberFromList(1, "123|456", sep = "|")
+	CHECK_EQUAL_VAR(num, 456)
+End

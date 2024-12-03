@@ -381,7 +381,7 @@ threadsafe Function/WAVE ListToNumericWave(string list, string sep, [variable ty
 	if(ignoreErr)
 		MultiThread wv = str2numSafe(StringFromList(p, list, sep))
 	else
-		MultiThread wv = str2num(StringFromList(p, list, sep))
+		MultiThread wv = NumberFromList(p, list, sep = sep)
 	endif
 
 	return wv

@@ -479,7 +479,7 @@ static Function P_CloseDevice(string device)
 			j                          += 1
 		while(cmpstr("", ListOfHeadstagesUsingDevice) == 0)
 		j         = 0
-		headStage = str2num(StringFromList(0, ListOfHeadstagesUsingDevice))
+		headStage = NumberFromList(0, ListOfHeadstagesUsingDevice)
 		P_CloseDeviceLowLevel(device, DeviceToClose, headstage)
 	endfor
 End
@@ -508,7 +508,7 @@ static Function P_OpenDevice(string mainDevice, string pressureDevice)
 		listOfHeadstageUsingDevice = P_HeadstageUsingDevice(mainDevice, pressureDevice)
 		numEntries                 = ItemsInList(listOfHeadstageUsingDevice)
 		for(i = 0; i < numEntries; i += 1)
-			headStage = str2num(StringFromList(i, ListOfHeadstageUsingDevice))
+			headStage = NumberFromList(i, ListOfHeadstageUsingDevice)
 			WAVE PressureDataWv = P_GetPressureDataWaveRef(mainDevice)
 			PressureDataWv[headStage][%DAC_DevID]   = deviceID
 			PressureDataWv[headStage][%HW_DAC_Type] = hwType
@@ -573,7 +573,7 @@ static Function P_CloseDeviceLowLevel(string device, string deviceToClose, varia
 		numHeadstages              = ItemsInList(ListOfHeadstageUsingDevice)
 		for(i = 0; i < numHeadstages; i += 1)
 			if(cmpstr("", ListOfHeadstageUsingDevice) != 0)
-				headStage = str2num(StringFromList(i, ListOfHeadstageUsingDevice))
+				headStage = NumberFromList(i, ListOfHeadstageUsingDevice)
 				deviceID  = PressureDataWv[headstage][%DAC_DevID]
 				hwType    = pressureDataWv[headstage][%HW_DAC_Type]
 
@@ -1868,15 +1868,15 @@ Function P_PressureDisplayHighlite(string device, variable hilite)
 	endif
 
 	WAVE     PressureDataWv = P_GetPressureDataWaveRef(device)
-	variable Rz             = str2num(stringFromList(0, Zero))
-	variable Gz             = str2num(stringFromList(1, Zero))
-	variable Bz             = str2num(stringFromList(2, Zero))
-	variable Rl             = str2num(stringFromList(0, Low))
-	variable Gl             = str2num(stringFromList(1, Low))
-	variable Bl             = str2num(stringFromList(2, Low))
-	variable Rh             = str2num(stringFromList(0, High))
-	variable Gh             = str2num(stringFromList(1, High))
-	variable Bh             = str2num(stringFromList(2, High))
+	variable Rz             = NumberFromList(0, Zero)
+	variable Gz             = NumberFromList(1, Zero)
+	variable Bz             = NumberFromList(2, Zero)
+	variable Rl             = NumberFromList(0, Low)
+	variable Gl             = NumberFromList(1, Low)
+	variable Bl             = NumberFromList(2, Low)
+	variable Rh             = NumberFromList(0, High)
+	variable Gh             = NumberFromList(1, High)
+	variable Bh             = NumberFromList(2, High)
 
 	string controlName
 	sprintf controlName, "valdisp_DataAcq_P_LED_%d", pressureDataWv[0][%userSelectedHeadStage]

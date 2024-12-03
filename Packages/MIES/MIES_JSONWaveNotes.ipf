@@ -257,8 +257,8 @@ threadsafe Function JWN_SetWaveInWaveNote(WAVE wv, string jsonPath, WAVE noteWav
 	variable jsonID, idx
 	string jsonPathArray
 
-	ASSERT_TS(WaveExists(wv), "Missing wave")
-	ASSERT_TS(WaveExists(noteWave), "Missing noteWave")
+	ASSERT_TS(WaveExists(wv), "Missing wave to attach JSON wave note")
+	ASSERT_TS(WaveExists(noteWave), "Missing wave to add into the JSON wave note")
 
 	ASSERT_TS(!IsEmpty(jsonPath), "Empty jsonPath")
 

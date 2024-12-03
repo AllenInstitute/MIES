@@ -1843,7 +1843,7 @@ Function Name2ControlType(string ctrlName)
 	if(pos < 0)
 		return NaN
 	endif
-	return str2num(StringFromList(pos, EXPCONFIG_GUI_CTRLTYPES))
+	return NumberFromList(pos, EXPCONFIG_GUI_CTRLTYPES)
 End
 
 /// @brief Checks if a certain window can act as valid host for subwindows
@@ -2140,12 +2140,10 @@ Function ShowTraceInfoTags()
 	// Returns in S_value the state before toggling
 	DoIgorMenu/OVRD "Graph", "Show Trace Info Tags"
 	if(IsNull(S_value))
-		BUG("DoIgorMenu returned S_value as null string for \"Show Trace Info Tags\"")
 		KillWindow/Z $S_name
 		return NaN
 	endif
 	if(IsEmpty(S_value))
-		BUG("DoIgorMenu returned S_value as empty string for \"Show Trace Info Tags\"")
 		KillWindow/Z $S_name
 		return NaN
 	endif

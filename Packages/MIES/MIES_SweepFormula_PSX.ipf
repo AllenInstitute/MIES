@@ -3292,7 +3292,7 @@ static Function PSX_RestoreGuiState(string win)
 
 	selectedBlock = JSON_GetVariable(jsonID, "/specialEventPanel/popup_block")
 	allBlocks     = PSX_GetAllEventBlockNumbers(specialEventPanel)
-	lastBlock     = str2num(StringFromList(ItemsInList(allBlocks) - 1, allBlocks))
+	lastBlock     = NumberFromList(ItemsInList(allBlocks) - 1, allBlocks)
 	PGC_SetAndActivateControl(specialEventPanel, "popup_block", val = limit(selectedBlock, 0, lastBlock))
 
 	WAVE/T popups = PSX_GetSpecialEventPanelPopups(specialEventPanel)

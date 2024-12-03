@@ -803,7 +803,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WAVE WP, WAVE/T WPT, WAVE SegWvType,
 		params.numberOfPulses   = WP[45][i][type]
 		params.trigFuncType     = WP[53][i][type]
 		params.noiseType        = WP[54][i][type]
-		params.buildResolution  = str2num(StringFromList(WP[55][i][type], WBP_GetNoiseBuildResolution()))
+		params.buildResolution  = NumberFromList(WP[55][i][type], WBP_GetNoiseBuildResolution())
 		params.pulseType        = WP[56][i][type]
 		params.mixedFreq        = WP[41][i][type]
 		params.mixedFreqShuffle = WP[42][i][type]

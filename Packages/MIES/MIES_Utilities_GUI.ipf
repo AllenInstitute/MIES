@@ -242,7 +242,7 @@ Function GetNumFromModifyStr(string info, string key, string listChar, variable 
 		return str2num(list)
 	else
 		ASSERT(item >= 0 && item < ItemsInList(list, ","), "Invalid index")
-		return str2num(StringFromList(item, list, ","))
+		return NumberFromList(item, list, sep = ",")
 	endif
 End
 

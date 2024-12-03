@@ -48,8 +48,8 @@ static Function [string oodDAQRegionsAll, variable totalXRange] GetOodDAQFullRan
 			range            = StringFromList(j, entry)
 			oodDAQRegionsAll = AddListItem(range, oodDAQRegionsAll, ";", Inf)
 
-			xRangeStart  = str2num(StringFromList(0, range, "-"))
-			xRangeEnd    = str2num(StringFromList(1, range, "-"))
+			xRangeStart  = NumberFromList(0, range, sep = "-")
+			xRangeEnd    = NumberFromList(1, range, sep = "-")
 			totalXRange += (xRangeEnd - XRangeStart)
 		endfor
 	endfor
@@ -410,7 +410,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 								DEBUGPRINT("Stim set length (manually calculated)", var = stimSetLength)
 							endif
 
-							rangeStartDAPoints = delayOnsetUser + delayOnsetAuto + str2num(StringFromList(k, dDAQActiveHeadstageAll)) * (stimSetLength + delaydDAQ)
+							rangeStartDAPoints = delayOnsetUser + delayOnsetAuto + NumberFromList(k, dDAQActiveHeadstageAll) * (stimSetLength + delaydDAQ)
 							rangeEndDAPoints   = rangeStartDAPoints + stimSetLength
 
 							// initial total x range once, the stimsets have all the same length for dDAQ
@@ -420,8 +420,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						elseif(oodDAQEnabled)
 							/// @sa GetSweepSettingsTextKeyWave for the format
 							/// we need points here with taking the onset delays into account
-							xRangeStartMS = str2num(StringFromList(0, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
-							xRangeEndMS   = str2num(StringFromList(1, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
+							xRangeStartMS = NumberFromList(0, StringFromList(k, oodDAQRegionsAll, ";"), sep = "-")
+							xRangeEndMS   = NumberFromList(1, StringFromList(k, oodDAQRegionsAll, ";"), sep = "-")
 
 							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStartMS, xRangeEndMS
 							DEBUGPRINT(str)
