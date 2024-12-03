@@ -2470,22 +2470,25 @@ static Function/WAVE PSQ_DS_GatherOvershootCorrection(STRUCT PSQ_DS_DAScaleParam
 		maxFreqRelCond  = frac > (cdp.maxFrequencyChangePercent * PERCENT_TO_ONE)
 		minFreqDistCond = abs(yp - y) > cdp.absFrequencyMinDistance
 		minDaScaleCond  = xs > DAScaleStepMin
-		alreadyMeasured = WaveExists(futureDAScalesHistoric) && !IsNaN(GetRowIndex(futureDAScalesHistoric, val = xm)) \
-		                  && xm != x                                                                                  \
-		                  && xm != xp
 
-		newDAScaleValue = maxFreqRelCond && minFreqDistCond && minDaScaleCond && !alreadyMeasured
+		newDAScaleValue = maxFreqRelCond && minFreqDistCond && minDaScaleCond
+
+		if(newDAScaleValue)
+			alreadyMeasured = WaveExists(futureDAScalesHistoric) && !IsNaN(GetRowIndex(futureDAScalesHistoric, val = xm)) \
+			                  && xm != x                                                                                  \
+			                  && xm != xp
+
+			if(!alreadyMeasured)
+				EnsureLargeEnoughWave(results, indexShouldExist = idx)
+				ASSERT(yp > y, "Incorrect data ordering")
+
+				results[idx] = xm
+				idx         += 1
+			endif
+		endif
 
 		sprintf msg, "DAScale entry %s: xm=%g, [x, xp]=[%g, %g], [y, yp]=[%g, %g], frac=%g, maxFreqChangePerc=%g, DAScaleStepMin=%g, idx=%g, maxFreqRelCond=%s, minDaScaleCond=%s, minFreqDistCond=%s, alreadyMeasured=%s", SelectString(newDAScaleValue, "not added", "added"), xm, x, xp, y, yp, frac, cdp.maxFrequencyChangePercent, DAScaleStepMin, idx, ToTrueFalse(maxFreqRelCond), ToTrueFalse(minDaScaleCond), ToTrueFalse(minFreqDistCond), ToTrueFalse(alreadyMeasured)
 		DEBUGPRINT(msg)
-
-		if(newDAScaleValue)
-			EnsureLargeEnoughWave(results, indexShouldExist = idx)
-			ASSERT(yp > y, "Incorrect data ordering")
-
-			results[idx] = xm
-			idx         += 1
-		endif
 	endfor
 
 	if(idx == 0)
