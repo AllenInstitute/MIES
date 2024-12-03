@@ -67,6 +67,7 @@
 ///  PSQ_FMT_LBN_PULSE_DUR                      Pulse duration as determined experimentally                   ms       Numerical    RB, DA, CR                           No           Yes
 ///  PSQ_FMT_LBN_SPIKE_PASS                     Pass/fail state of the spike search (No spikes → Pass)        On/Off   Numerical    CR, VM                               No           Yes
 ///  PSQ_FMT_LBN_DA_fI_SLOPE                    Fitted slope in the f-I plot                                  % Hz/pA  Numerical    DA (Supra, Adapt)                    No           Yes
+///  PSQ_FMT_LBN_DA_AT_FI_NEG_SLOPE_PASS        Fitted slop in the f-I plot is negative                       On/Off   Numerical    DA (Adapt)                           No           No
 ///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS       Fitted slope in the f-I plot exceeds target value             On/Off   Numerical    DA (Supra, Adapt)                    No           No
 ///  PSQ_FMT_LBN_DA_AT_FI_OFFSET                Fitted offset in the f-I plot                                 Hz       Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_FREQ                     AP frequency                                                  Hz       Numerical    DA (Adapt)                           No           Yes
@@ -74,6 +75,7 @@
 ///  PSQ_FMT_LBN_DA_AT_RSA_DASCALE              DAScale values from previous sweep reevaluation               (none)   Textual      DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS           Offsets in the f-I plot from previous sweep reevaluation      Hz       Textual      DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES            Slopes in the f-I plot from previous sweep reevaluation       % Hz/pA  Textual      DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_RSA_FI_NEG_SLOPES_PASS   Fitted slop in the f-I plot is negative                       On/Off   Textual      DA (Adapt)                           No           No
 ///  PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_PASS       Slope QCs in the f-I plot from previous sweep reevaluation    On/Off   Textual      DA (Adapt)                           No           No
 ///  PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS     Valid slope from f-I plot QC of supra sweep reevaluation      On/Off   Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_MAX_SLOPE                Maximum encountered f-I plot slope in the SCI                 % Hz/pA  Numerical    DA (Adapt)                           No           Yes
@@ -188,11 +190,12 @@ static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC = 1.5
 ///@{
 static Constant PSQ_DS_FI_SLOPE              = 0x1
 static Constant PSQ_DS_FI_SLOPE_REACHED_PASS = 0x2
-static Constant PSQ_DS_FI_OFFSET             = 0x3
-static Constant PSQ_DS_SWEEP_PASS            = 0x4
-static Constant PSQ_DS_SWEEP                 = 0x5
-static Constant PSQ_DS_APFREQ                = 0x6
-static Constant PSQ_DS_DASCALE               = 0x7
+static Constant PSQ_DS_FI_NEG_SLOPE_PASS     = 0x3
+static Constant PSQ_DS_FI_OFFSET             = 0x4
+static Constant PSQ_DS_SWEEP_PASS            = 0x5
+static Constant PSQ_DS_SWEEP                 = 0x6
+static Constant PSQ_DS_APFREQ                = 0x7
+static Constant PSQ_DS_DASCALE               = 0x8
 ///@}
 
 /// @brief Fills `s` according to the analysis function type
@@ -2654,6 +2657,13 @@ static Function PSQ_DS_CalculateReachedFinalSlope(variable validFit, WAVE fitSlo
 	       && PSQ_DS_IsValidFitSlopePosition(fitSlopes, DAScales, fitSlope, maxSlope)
 End
 
+static Function PSQ_DS_CalculateNegativeSlopePass(variable validFit, variable fitSlope)
+
+	return validFit              \
+	       && IsFinite(fitSlope) \
+	       && fitSlope < 0
+End
+
 static Function PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(string device, variable sweepNo, WAVE fitSlopes, WAVE DAScales, variable fitSlope, variable maxSlope, variable slopePercentage, variable validFit)
 
 	variable reachedFinalSlope
@@ -2665,6 +2675,19 @@ static Function PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(string de
 	finalSlopeLBN[INDEP_HEADSTAGE] = reachedFinalSlope
 	key                            = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
 	ED_AddEntryToLabnotebook(device, key, finalSlopeLBN, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
+End
+
+static Function PSQ_DS_CalculateNegSlopePassAndWriteToLabnotebook(string device, variable sweepNo, variable fitSlope, variable validFit)
+
+	variable negSlopePass
+	string   key
+
+	negSlopePass = PSQ_DS_CalculateNegativeSlopePass(validFit, fitSlope)
+
+	WAVE negSlopeLBN = LBN_GetNumericWave()
+	negSlopeLBN[INDEP_HEADSTAGE] = negSlopePass
+	key                          = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_NEG_SLOPE_PASS)
+	ED_AddEntryToLabnotebook(device, key, negSlopeLBN, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 End
 
 /// @brief Check if the given fitSlope is a suitable candidate for maxSlope
@@ -2732,6 +2755,8 @@ static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(st
 	[maxSlope, WAVE fitSlopesAll, WAVE DAScalesAll] = PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(device, sweepNo, headstage, fitSlope)
 
 	PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(device, sweepNo, fitSlopesAll, DAScalesAll, fitSlope, maxSlope, cdp.slopePercentage, validFit)
+
+	PSQ_DS_CalculateNegSlopePassAndWriteToLabnotebook(device, sweepNo, fitSlope, validFit)
 
 	return [futureDAScales]
 End
@@ -2809,6 +2834,8 @@ static Function [string currentSCI, string RhSuAd, variable headstageContingency
 			return [PSQ_FMT_LBN_DA_fI_SLOPE, PSQ_FMT_LBN_DA_AT_RSA_fI_SLOPES, HCM_DEPEND]
 		case PSQ_DS_FI_SLOPE_REACHED_PASS:
 			return [PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS, PSQ_FMT_LBN_DA_AT_RSA_fI_SLOPES_PASS, HCM_INDEP]
+		case PSQ_DS_FI_NEG_SLOPE_PASS:
+			return [PSQ_FMT_LBN_DA_AT_FI_NEG_SLOPE_PASS, PSQ_FMT_LBN_DA_AT_RSA_FI_NEG_SLOPES_PASS, HCM_INDEP]
 		case PSQ_DS_FI_OFFSET:
 			return [PSQ_FMT_LBN_DA_AT_FI_OFFSET, PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS, HCM_DEPEND]
 		case PSQ_DS_SWEEP_PASS:
@@ -3525,6 +3552,7 @@ Function/S PSQ_DAScale_GetParams()
 	       "[BaselineTargetVThreshold:variable],"     + \
 	       "[DAScaleRangeFactor:variable],"           + \
 	       "[DAScaleModifier:variable],"              + \
+	       "[DAScaleNegativeSlopePercent:variable],"  + \
 	       "[DaScaleStepWidthMinMaxRatio:variable],"  + \
 	       "DAScales:wave,"                           + \
 	       "[FailingAdaptiveSCIRange:variable],"      + \
@@ -3555,6 +3583,8 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "DAScaleModifier":
 			return "Percentage how the DAScale value is adapted if it is outside of the " \
 			       + "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\"."
+		case "DAScaleNegativeSlopePercent":
+			return "Percentage to use for DAScale estimation once the f-I slopes get negative/zero. Only for \"AdaptiveSupra\"."
 		case "DAScaleRangeFactor":
 			return "Fallback factor to apply to the input DAScale range for calculating "                                   \
 			       + "the DAScale minimum step width when all previous f-I data from Rheobase/Supra/Adaptive is constant. " \
@@ -3631,6 +3661,7 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			break
 		case "AbsFrequencyMinDistance":
 		case "MaxFrequencyChangePercent":
+		case "DAScaleNegativeSlopePercent":
 		case "DAScaleRangeFactor":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsNullOrPositiveAndFinite(val))
@@ -4026,6 +4057,13 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					fitSlopeQCLBN[INDEP_HEADSTAGE] = NumericWaveToList(fitSlopeQCfromRhSuAd, ";", format = "%d")
 					key                            = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_PASS)
 					ED_AddEntryToLabnotebook(device, key, fitSlopeQCLBN, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
+
+					Make/FREE/N=(DimSize(fitSlopeFromRhSuAd, ROWS)) negFitSlopeQCfromRhSuAd = PSQ_DS_CalculateNegativeSlopePass(validFit, fitSlopeFromRhSuAd[p])
+
+					WAVE/T negFitSlopeQCLBN = LBN_GetTextWave()
+					negFitSlopeQCLBN[INDEP_HEADSTAGE] = NumericWaveToList(negFitSlopeQCfromRhSuAd, ";", format = "%d")
+					key                               = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_NEG_SLOPES_PASS)
+					ED_AddEntryToLabnotebook(device, key, negFitSlopeQCLBN, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
 					if(validFit)
 
