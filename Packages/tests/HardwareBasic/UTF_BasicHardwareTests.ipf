@@ -2445,3 +2445,82 @@ static Function TestCustomElectrodeNamesInNWB_REENTRY([string str])
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 	TestNwbExportV2()
 End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function GetDataLimitsCheckWorks([string str])
+
+	variable DAScaleLimit
+
+	// unlocked device
+	DAScaleLimit = DAP_GetDAScaleMax(str, 1, "StimulusSetA_DA_0", 0)
+	CHECK(IsNaN(DAScaleLimit))
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG1_TP1"                  + \
+	                             "__HS1_DA1_AD2_CM:IC:_ST:StimulusSetA_DA_0:")
+
+	AcquireData_NG(s, str)
+
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 120), period=60, proc=StopTP_IGNORE
+End
+
+static Function GetDataLimitsCheckWorks_REENTRY([string str])
+
+	string stimset, ctrl
+	variable DAScaleLimit, headstage, DAC, stimsetAColumnZeroLimit, stimsetAColumnOneLimit
+	variable stimsetEndingColumnZeroLimit
+
+	headstage = 1
+	DAC       = 1
+	stimset   = "StimulusSetA_DA_0"
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	stimsetAColumnZeroLimit      = 4000
+	stimsetAColumnOneLimit       = 2000
+	stimsetEndingColumnZeroLimit = 1333
+#else
+	stimsetAColumnZeroLimit      = 4095
+	stimsetAColumnOneLimit       = 2047
+	stimsetEndingColumnZeroLimit = 1365
+#endif
+
+	// unassociated/unused headstage
+	DAScaleLimit = DAP_GetDAScaleMax(str, 0, stimset, 0)
+	CHECK(IsNaN(DAScaleLimit))
+
+	// invalid setColumn
+	DAScaleLimit = DAP_GetDAScaleMax(str, headstage, stimset, 4711)
+	CHECK(IsNaN(DAScaleLimit))
+
+	DAScaleLimit = DAP_GetDAScaleMax(str, headstage, stimset, 0)
+	CHECK_EQUAL_VAR(DAScaleLimit, stimsetAColumnZeroLimit)
+
+	DAScaleLimit = DAP_GetDAScaleMax(str, headstage, stimset, 1)
+	CHECK_EQUAL_VAR(DAScaleLimit, stimsetAColumnOneLimit)
+
+	// constant zero stimset
+	stimset = "ConstantZero_DA_0"
+	ctrl    = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	PGC_SetAndActivateControl(str, ctrl, str = stimset)
+	DAScaleLimit = DAP_GetDAScaleMax(str, headstage, stimset, 0)
+	CHECK_EQUAL_VAR(DAScaleLimit, Inf)
+
+	// stimset with non-zero minimum and maximum
+	stimset = "EpochTest0_DA_0"
+	ctrl    = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	PGC_SetAndActivateControl(str, ctrl, str = stimset)
+	DAScaleLimit = DAP_GetDAScaleMax(str, headstage, stimset, 0)
+	CHECK_EQUAL_VAR(DAScaleLimit, stimsetAColumnZeroLimit)
+
+	// stimset with zero maximum
+	stimset = "IV_Curve_ending_DA_0"
+	ctrl    = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	PGC_SetAndActivateControl(str, ctrl, str = stimset)
+	DAScaleLimit = DAP_GetDAScaleMax(str, headstage, stimset, 0)
+	CHECK_EQUAL_VAR(DAScaleLimit, stimsetEndingColumnZeroLimit)
+
+	// third party
+	WB_MakeStimsetThirdParty(stimset)
+	DAScaleLimit = DAP_GetDAScaleMax(str, headstage, stimset, 0)
+	CHECK(IsNaN(DAScaleLimit))
+End
