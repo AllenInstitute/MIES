@@ -127,8 +127,6 @@ static Constant    PSX_TUD_AVERAGE_ALL_COMBO_INDEX = NaN
 
 static StrConstant PSX_AVERAGE_FIT_RESULT_DEFAULT_HELP = "No fit results available for average accept"
 
-static Constant PSX_DEFAULT_PEAK_SEARCH_RANGE_MS = 5
-
 static Constant PSX_STATS_TAU_FACTOR = 10
 static Constant PSX_STATS_AMP_FACTOR = 100
 
@@ -496,10 +494,10 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataOffFilt
 	return [peakX, peakY]
 End
 
-static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, WAVE sweepDataOffFilt, variable kernelAmp, WAVE psxEvent)
+static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, WAVE sweepDataOffFilt, variable kernelAmp, variable kernelRiseTime, WAVE psxEvent)
 
 	variable numCrossings, idx, i
-	variable post_min, post_min_t, pre_max, pre_max_t, rel_peak
+	variable peak, peak_t, baseline, baseline_t, amplitude
 	variable overrideSignQC = NaN
 	string comboKey
 
@@ -513,9 +511,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 
 	for(i = 0; i < numCrossings; i += 1)
 
-		// TODO new labels
-
-		[post_min, post_min_t, pre_max, pre_max_t, rel_peak] = PSX_CalculateEventProperties(peakXUnfiltered, peakYUnfiltered, sweepDataOffFilt, i, kernelAmp)
+		[peak, peak_t, baseline, baseline_t, amplitude] = PSX_CalculateEventProperties(peakXUnfiltered, peakYUnfiltered, sweepDataOffFilt, i, kernelAmp, kernelRiseTime)
 
 #ifdef AUTOMATED_TESTING
 		WAVE/Z overrideResults = GetOverrideResults()
@@ -528,7 +524,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 #endif
 
 		if(IsNaN(overrideSignQC))
-			if(sign(rel_peak) != sign(kernelAmp))
+			if(sign(amplitude) != sign(kernelAmp))
 				continue
 			endif
 		elseif(overrideSignQC == 0)
@@ -550,56 +546,83 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 	return [peakX, peakY]
 End
 
-		// TODO new labels
-static Function [variable post_min, variable post_min_t, variable pre_max, variable pre_max_t, variable rel_peak] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable index, variable kernelAmp)
+static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable kernelAmp, variable kernelRiseTime, variable index)
 
-	variable numCrossings, i_time, peak, peak_end_search
+	variable numCrossings, onset_t, onset, peak_end_search, highestPossible
 
 	numCrossings = DimSize(peakX, ROWS)
 
-	i_time = peakX[index]
-	peak   = peakY[index]
+	onset_t = peakX[index]
+	onset   = peakY[index]
 
 	if(index < numCrossings - 1)
-		peak_end_search = min(i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS, peakX[index + 1])
+		highestPossible = peakX[index + 1]
 	else
-		peak_end_search = i_time + PSX_DEFAULT_PEAK_SEARCH_RANGE_MS
+		highestPossible = inf
 	endif
 
-	WaveStats/M=1/Q/R=(i_time, peak_end_search) sweepDataOffFilt
+	peak_end_search = min(onset_t + 3 * kernelRiseTime, highestPossible)
 
-	// TODO new labels
+	WaveStats/M=1/Q/R=(onset_t, peak_end_search) sweepDataOffFilt
+
 	if(kernelAmp > 0)
-		post_min   = V_max
-		post_min_t = V_maxloc
+		peak   = V_min
+		peak_t = V_minloc
 	elseif(kernelAmp < 0)
-		post_min   = V_min
-		post_min_t = V_minloc
+		peak   = V_max
+		peak_t = V_maxloc
 	else
 		ASSERT(0, "Can't handle kernelAmp of zero")
 	endif
 
-	WaveStats/Q/R=(i_time - 2, i_time) sweepDataOffFilt
-	pre_max   = V_max
-	pre_max_t = V_maxloc
+	return [peak_t, peak]
+End
 
-	WaveStats/Q/R=(pre_max_t - 0.1, pre_max_t + 0.1) sweepDataOffFilt
-	pre_max = V_avg
+static Function [variable baseline_t, variable baseline] PSX_CalculateEventBaseline(WAVE sweepDataOffFilt, variable onset_t, variable kernelAmp)
 
-	rel_peak = post_min - pre_max
+	variable range
 
-	return [post_min, post_min_t, pre_max, pre_max_t, rel_peak]
+	WaveStats/M=1/Q/R=(onset_t - 4, onset_t) sweepDataOffFilt
+
+	if(kernelAmp > 0)
+		baseline_t = V_minloc
+	elseif(kernelAmp < 0)
+		baseline_t = V_maxloc
+	else
+		ASSERT(0, "Can't handle kernelAmp of zero")
+	endif
+
+	range = 5 * DimDelta(sweepDataOffFilt, ROWS)
+	WaveStats/M=1/Q/R=(baseline_t - range, baseline_t + range) sweepDataOffFilt
+	baseline = V_avg
+
+	return [baseline_t, baseline]
+End
+
+static Function [variable peak, variable peak_t, variable baseline, variable baseline_t, variable amplitude] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable kernelAmp, variable kernelRiseTime, variable index)
+
+	variable onset, onset_t
+
+	onset_t = peakX[index]
+	onset   = peakY[index]
+
+	[peak_t, peak]         = PSX_CalculateEventPeak(peakX, peakY, sweepDataOffFilt, kernelAmp, kernelRiseTime, index)
+	[baseline_t, baseline] = PSX_CalculateEventBaseline(sweepDataOffFilt, onset_t, kernelAmp)
+
+	amplitude = peak - baseline
+
+	return [peak, peak_t, baseline, baseline_t, amplitude]
 End
 
 /// @brief Analyze the peaks
-static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffFiltDeconv, WAVE sweepDataOffFilt, WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable maxTauFactor, variable kernelAmp, WAVE psxEvent, WAVE eventFit)
+static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffFiltDeconv, WAVE sweepDataOffFilt, WAVE/Z peakXUnfiltered, WAVE/Z peakYUnfiltered, variable maxTauFactor, variable kernelAmp, variable kernelRiseTime, WAVE psxEvent, WAVE eventFit)
 
-	variable i, i_time, peak, isi, post_min, post_min_t, pre_max, pre_max_t, numCrossings, rel_peak
+	variable i, numCrossings, onset, onset_t, peak, peak_t, baseline, baseline_t, amplitude, iei
 
 	// we need to first throw away events with invalid amplitude so that
 	// we can then calculate the distance to the neighbour in peakX[i + 1] below
 
-	[WAVE peakX, WAVE peakY] = PSX_FilterEventsKernelAmpSign(peakXUnfiltered, peakYUnfiltered, sweepDataOffFilt, kernelAmp, psxEvent)
+	[WAVE peakX, WAVE peakY] = PSX_FilterEventsKernelAmpSign(peakXUnfiltered, peakYUnfiltered, sweepDataOffFilt, kernelAmp, kernelRiseTime, psxEvent)
 	WaveClear peakXUnfiltered, peakYUnfiltered
 
 	if(!WaveExists(peakX) || !WaveExists(peakY))
@@ -613,27 +636,26 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 
 	for(i = 0; i < numCrossings; i += 1)
 
-		i_time = peakX[i]
-		peak   = peakY[i]
+		onset_t = peakX[i]
+		onset   = peakY[i]
 
-		// TODO new labels
-		[post_min, post_min_t, pre_max, pre_max_t, rel_peak] = PSX_CalculateEventProperties(peakX, peakY, sweepDataOffFilt, i, kernelAmp)
+		[peak, peak_t, baseline, baseline_t, amplitude] = PSX_CalculateEventProperties(peakX, peakY, sweepDataOffFilt, i, kernelAmp, kernelRiseTime)
 
 		if(i == 0)
-			isi = NaN
+			iei = NaN
 		else
-			isi = i_time - psxEvent[i - 1][%peak_t]
+			iei = onset_t - psxEvent[i - 1][%onset_t]
 		endif
 
 		psxEvent[i][%index]      = i
-		psxEvent[i][%peak_t]     = i_time
+		psxEvent[i][%onset]      = onset
+		psxEvent[i][%onset_t]    = onset_t
 		psxEvent[i][%peak]       = peak
-		psxEvent[i][%post_min]   = post_min
-		psxEvent[i][%post_min_t] = post_min_t
-		psxEvent[i][%pre_max]    = pre_max
-		psxEvent[i][%pre_max_t]  = pre_max_t
-		psxEvent[i][%rel_peak]   = rel_peak
-		psxEvent[i][%isi]        = isi
+		psxEvent[i][%peak_t]     = peak_t
+		psxEvent[i][%baseline]   = baseline
+		psxEvent[i][%baseline_t] = baseline_t
+		psxEvent[i][%amplitude]  = amplitude
+		psxEvent[i][%iei]        = iei
 	endfor
 
 	// safe defaults
@@ -647,7 +669,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 End
 
 /// @brief Return the x-axis range useful for displaying and extracting a single event
-static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psxEvent, variable index)
+static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psxEvent, WAVE sweepDataOffFilt, variable index)
 
 	variable numEvents, offset
 
@@ -671,8 +693,7 @@ static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psx
 	first = psxEvent[index][%peak_t] - 0.5
 
 	if(index == numEvents - 1)
-		// TODO use min take the end of the range if it is smaller
-		last  = psxEvent[index][%peak_t] + offset
+		last  = min(psxEvent[index][%peak_t] + offset, IndexToScale(sweepDataOffFilt, DimSize(sweepDataOffFilt, ROWS) - 1, ROWS))
 	else
 		last  = min(psxEvent[index][%peak_t] + offset, psxEvent[index + 1][%peak_t] - 0.5)
 	endif
@@ -869,7 +890,7 @@ static Function PSX_OperationSweepGathering(string graph, WAVE/WAVE psxKernelDat
 End
 
 /// @brief Implementation of psx operation
-static Function PSX_OperationImpl(string graph, variable parameterJSONID, string id, variable peakThresh, variable maxTauFactor, WAVE riseTimeParams, variable kernelAmp, variable index, WAVE/WAVE output)
+static Function PSX_OperationImpl(string graph, variable parameterJSONID, string id, variable peakThresh, variable maxTauFactor, WAVE riseTimeParams, variable kernelAmp, variable kernelRiseTau, variable index, WAVE/WAVE output)
 
 	string comboKey, key, psxOperationKey, psxParametersEvents
 
@@ -907,7 +928,10 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 		JWN_SetStringInWaveNote(psxEvent, PSX_X_DATA_UNIT, WaveUnits(sweepData, ROWS))
 		JWN_SetStringInWaveNote(psxEvent, PSX_Y_DATA_UNIT, WaveUnits(sweepData, -1))
 
-		[WAVE peakX, WAVE peakY] = PSX_AnalyzePeaks(sweepDataOffFiltDeconv, sweepDataOffFilt, peakXUnfiltered, peakYUnfiltered, maxTauFactor, kernelAmp, psxEvent, eventFit)
+		[WAVE peakX, WAVE peakY] = PSX_AnalyzePeaks(sweepDataOffFiltDeconv, sweepDataOffFilt, \
+		                                            peakXUnfiltered, peakYUnfiltered,         \
+													maxTauFactor, kernelAmp, kernelRiseTau,   \
+													psxEvent, eventFit)
 
 		Make/FREE/WAVE/N=(4) psxOperation
 		SetDimensionLabels(psxOperation, "peakX;peakY;psxEvent;eventFit", ROWS)
@@ -1043,13 +1067,13 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 
 	strswitch(prop)
 		case "amp":
-			propLabel = "rel_peak"
+			propLabel = "amplitude"
 			break
 		case "xpos":
-			propLabel = "peak_t"
+			propLabel = "onset_t"
 			break
 		case "xinterval":
-			propLabel = "isi"
+			propLabel = "iei"
 			break
 		case "tau":
 			propLabel = "tau"
@@ -1072,9 +1096,9 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 
 	// use the correct event/fit state for the property
 	strswitch(propLabel)
-		case "rel_peak":
-		case "peak_t":
-		case "isi":
+		case "amplitude":
+		case "onset_t":
+		case "iei":
 		case "Event manual QC call":
 		case "Rise Time":
 			stateType = "Event manual QC call"
@@ -1107,9 +1131,9 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 
 		Redimension/N=(numEntries) results, marker, eventIndex, comboKeys
 
-		if(!cmpstr(propLabel, "isi") && numEntries >= 2)
-			// recalculate the isi as that might have changed due to in-between events being not selected
-			Multithread results[0, numEntries - 1] = events[indizes[p]][%peak_t] - (p >= 1 ? events[indizes[p - 1]][%peak_t] : NaN)
+		if(!cmpstr(propLabel, "iei") && numEntries >= 2)
+			// recalculate the iei as that might have changed due to in-between events being not selected
+			Multithread results[0, numEntries - 1] = events[indizes[p]][%onset_t] - (p >= 1 ? events[indizes[p - 1]][%onset_t] : NaN)
 		else
 			Multithread results[] = events[indizes[p]][%$propLabel]
 		endif
@@ -1585,13 +1609,13 @@ threadsafe static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDa
 	variable printDebug
 	string   comboKey
 
-	xStart = psxEvent[index][%peak_t]
+	// onset is defined in the deconvoluted wave,
+	// so we can't use %onset as y-value
+	xStart = psxEvent[index][%onset_t]
 	yStart = sweepDataOffFilt(xStart)
 
-	// TODO move to new labels
-
-	xEnd = psxEvent[index][%post_min_t]
-	yEnd = psxEvent[index][%post_min]
+	xEnd = psxEvent[index][%peak_t]
+	yEnd = psxEvent[index][%peak]
 
 	dY = abs(yStart - yEnd)
 
@@ -1770,7 +1794,9 @@ static Function PSX_UpdateSingleEventGraph(string win, variable index)
 	PSX_UpdateSingleEventTextbox(extSingleGraph, eventIndex = index)
 
 	WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
-	[first, last] = PSX_GetSingleEventRange(psxEvent, index)
+	WAVE sweepDataOffFilt = GetPSXSweepDataOffFiltWaveFromDFR(comboDFR)
+
+	[first, last] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, index)
 
 	WAVE singleEventFit = GetPSXSingleEventFitWaveFromDFR(comboDFR)
 
@@ -1843,7 +1869,7 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 			WAVE/Z/SDFR=singleEventDFR singleEvent = $GetIndexedObjNameDFR(singleEventDFR, COUNTOBJECTS_WAVES, i)
 			ASSERT(WaveExists(singleEvent), "Non-existing single event wave")
 
-			[first, last] = PSX_GetSingleEventRange(psxEvent, i)
+			[first, last] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, i)
 
 			// TODO don't have constant baseline in the end which looks like made up data, NaN it
 
@@ -1855,7 +1881,7 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 					yOffset = sweepDataOffFilt(psxEvent[i][%peak_t])
 					break
 				case PSX_HORIZ_OFFSET_PEAK:
-					xOffset = first - psxEvent[i][%post_min_t] // TODO new value: peak time in filtered sweep wave
+					xOffset = first - psxEvent[i][%peak_t]
 					yOffset = 0
 					break
 				default:
@@ -2064,7 +2090,7 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 				WAVE psxEvent         = GetPSXEventWaveFromDFR(comboDFR)
 
 				// single event waves are zeroed in x-direction to extractStartAbs
-				[extractStartAbs, extractStopAbs] = PSX_GetSingleEventRange(psxEvent, idx)
+				[extractStartAbs, extractStopAbs] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, idx)
 				fitStartAbs                       = psxEvent[idx][%peak_t]
 				ASSERT(fitStartAbs > extractStartAbs, "Unexpected fit/extraction start positions")
 
@@ -3605,7 +3631,7 @@ static Function PSX_CreateSingleEventWaves(DFREF comboDFR, WAVE psxEvent, WAVE s
 
 	for(i = 0; i < numEvents; i += 1)
 
-		[first, last] = PSX_GetSingleEventRange(psxEvent, i)
+		[first, last] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, i)
 
 		Duplicate/FREE/R=(first, last) sweepDataOffFilt, singleEvent
 
@@ -4374,7 +4400,7 @@ End
 Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 	variable numberOfSDs, sweepFilterLow, sweepFilterHigh, parameterJsonID, numCombos, i, addedData, kernelAmp
-	variable maxTauFactor, peakThresh, idx, success
+	variable maxTauFactor, peakThresh, idx, success, kernelRiseTau
 	string parameterPath, id, psxParameters, dataUnit
 
 	id = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX, 0, checkFunc = IsValidObjectName)
@@ -4415,6 +4441,8 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 
 		kernelAmp = JWN_GetNumberFromWaveNote(psxKernelDataset, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL + "/amp")
 		ASSERT(IsFinite(kernelAmp), "psxKernel amplitude must be finite")
+		kernelRiseTau = JWN_GetNumberFromWaveNote(psxKernelDataset, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL + "/riseTau")
+		ASSERT(IsFinite(kernelAmp), "psxKernel amplitude must be finite")
 
 		WAVE/T labelsTemplate = ListToTextWave(PSX_EVENT_DIMENSION_LABELS, ";")
 		ASSERT(DimSize(labelsTemplate, ROWS) == PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY, "Mismatched label wave")
@@ -4439,7 +4467,8 @@ Function/WAVE PSX_Operation(variable jsonId, string jsonPath, string graph)
 		WaveClear hist, fit
 
 		for(i = 0; i < numCombos; i += 1)
-			PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, i, output)
+			// TODo introduce struct for some parameters
+			PSX_OperationImpl(graph, parameterJsonID, id, peakThresh, maxTauFactor, riseTime, kernelAmp, kernelRiseTau, i, output)
 		endfor
 	catch
 		if(WaveExists(output))
