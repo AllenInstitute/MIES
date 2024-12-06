@@ -8191,13 +8191,20 @@ End
 /// @name SweepFormula PSX
 ///@{
 
-static Constant PSX_WAVE_VERSION       = 2
+static Constant PSX_WAVE_VERSION       = 3
 static Constant PSX_EVENT_WAVE_COLUMNS = 14
 
 Function UpgradePSXEventWave(WAVE psxEvent)
 
 	if(WaveVersionIsAtLeast(psxEvent, PSX_WAVE_VERSION))
 		// latest version
+	elseif(WaveVersionIsAtLeast(psxEvent, 2))
+		SetPSXEventDimensionLabels(psxEvent)
+
+		print "The algorithm for psp/psc event detection was heavily overhauled, therefore we are very sorry " \
+		      + "to say that we can't upgrade your existing data. The data will be cleared now."
+		ControlWindowToFront()
+		psxEvent[][] = NaN
 	elseif(WaveVersionIsAtLeast(psxEvent, 1))
 		SetPSXEventDimensionLabels(psxEvent)
 	else
@@ -8211,27 +8218,24 @@ End
 /// - count
 ///
 /// Cols:
-/// -  0/index: Event index
-/// -  1/onset_t: Event time [ms] // TODO change to deconvolved peak time
-/// -  2/onset: Event amplitude in deconvoluted data [y unit of data]
-/// -  3/peak: ... 
-/// -  4/peak_t: X location of [3]
-///    see PSX_CalculateriseTimeImpl
-/// -  5/baseline: ...
-/// -  6/baseline_t: X location of [5]
-// TODO neg polarity (kernel amp sign) -> maximum in pre_max_t
-// minimum for positive kernel amp sign, average over +/- 5 sample points, go from [time - 4ms, time]
-/// -  7/amplitude: Relative amplitude: [3] - [5] stays the same
+/// -  0/index: event index
+/// -  1/onset: event amplitude in deconvoluted data [y unit of data]
+/// -  2/onset_t: deconvolved peak time [ms]
+/// -  3/peak: Maximum (negative kernel amp sign) or minimum (positive kernel amp sign) in the range of
+///            [onset_t, onset_t + 3 * kernelRiseTime] in the filtered sweep wave
+/// -  4/peak_t: peak time
+/// -  5/baseline: Maximum (negative kernel amp sign) or minimum (positive kernel amp sign) in the range of
+///                [onset_t - 4ms, onset_t], averaged over +/- 5 points, in the filtered sweep wave
+/// -  6/baseline_t: baseline time
+/// -  7/amplitude: Relative amplitude: [3] - [5]
 /// -  8/iei: Time difference to previous event (inter event interval) [ms]
 /// -  9/tau: Decay constant tau of exponential fit
 /// - 10/Fit manual QC call: One of @ref PSXStates
 /// - 11/Fit result: 1 for success, everything smaller than 0 is failure:
 ///       - `]-10000, 0[`: CurveFit error codes
-///       - `]inf, -10000]`: Custom error codes, one of @ref FitEventDecayCustomErrors
+///       - `]-inf, -10000]`: Custom error codes, one of @ref FitEventDecayCustomErrors
 /// - 12/Event manual QC call: One of @ref PSXStates
 /// - 13/Rise Time: rise time as calculated by PSX_CalculateRiseTime()
-///
-/// TODO: no upgrade, clear data and let the user restart
 Function/WAVE GetPSXEventWaveAsFree()
 
 	variable versionOfWave = PSX_WAVE_VERSION
@@ -8248,14 +8252,14 @@ End
 Function SetPSXEventDimensionLabels(WAVE wv)
 
 	SetDimLabel COLS, 0, index, wv
-	SetDimLabel COLS, 1, peak_t, wv
-	SetDimLabel COLS, 2, peak, wv
-	SetDimLabel COLS, 3, post_min, wv
-	SetDimLabel COLS, 4, post_min_t, wv
-	SetDimLabel COLS, 5, pre_max, wv
-	SetDimLabel COLS, 6, pre_max_t, wv
-	SetDimLabel COLS, 7, rel_peak, wv
-	SetDimLabel COLS, 8, isi, wv
+	SetDimLabel COLS, 1, onset, wv
+	SetDimLabel COLS, 2, onset_t, wv
+	SetDimLabel COLS, 3, peak, wv
+	SetDimLabel COLS, 4, peak_t, wv
+	SetDimLabel COLS, 5, baseline, wv
+	SetDimLabel COLS, 6, baseline_t, wv
+	SetDimLabel COLS, 7, amplitude, wv
+	SetDimLabel COLS, 8, iei, wv
 	SetDimLabel COLS, 9, tau, wv
 	SetDimLabel COLS, 10, $"Fit manual QC call", wv
 	SetDimLabel COLS, 11, $"Fit result", wv

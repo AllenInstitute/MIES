@@ -513,6 +513,8 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 
 	for(i = 0; i < numCrossings; i += 1)
 
+		// TODO new labels
+
 		[post_min, post_min_t, pre_max, pre_max_t, rel_peak] = PSX_CalculateEventProperties(peakXUnfiltered, peakYUnfiltered, sweepDataOffFilt, i, kernelAmp)
 
 #ifdef AUTOMATED_TESTING
@@ -548,6 +550,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 	return [peakX, peakY]
 End
 
+		// TODO new labels
 static Function [variable post_min, variable post_min_t, variable pre_max, variable pre_max_t, variable rel_peak] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable index, variable kernelAmp)
 
 	variable numCrossings, i_time, peak, peak_end_search
@@ -565,6 +568,7 @@ static Function [variable post_min, variable post_min_t, variable pre_max, varia
 
 	WaveStats/M=1/Q/R=(i_time, peak_end_search) sweepDataOffFilt
 
+	// TODO new labels
 	if(kernelAmp > 0)
 		post_min   = V_max
 		post_min_t = V_maxloc
@@ -612,6 +616,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 		i_time = peakX[i]
 		peak   = peakY[i]
 
+		// TODO new labels
 		[post_min, post_min_t, pre_max, pre_max_t, rel_peak] = PSX_CalculateEventProperties(peakX, peakY, sweepDataOffFilt, i, kernelAmp)
 
 		if(i == 0)
@@ -654,7 +659,7 @@ static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psx
 	// calculate gaussian distribution, take the tau at 2 * sigma for all events
 	// can be done once as it does not depend on accept/reject
 	// this is then used for the offset here instead of 7 * tau
-	
+
 	// don't store in psxEvent
 
 	offset = 7 * psxEvent[index][%tau]
@@ -1582,10 +1587,8 @@ threadsafe static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDa
 
 	xStart = psxEvent[index][%peak_t]
 	yStart = sweepDataOffFilt(xStart)
-	
-	// TODO calculate xEnd by searching for a minimum in [xstart, xstart + 3 times the rise time of the psxKernel]
-	// or maximum depending on kernelAmpSign
-	// write into psxEvent and call it "peak time in filtered sweep wave" this is the former post_min_t
+
+	// TODO move to new labels
 
 	xEnd = psxEvent[index][%post_min_t]
 	yEnd = psxEvent[index][%post_min]
@@ -1841,7 +1844,7 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 			ASSERT(WaveExists(singleEvent), "Non-existing single event wave")
 
 			[first, last] = PSX_GetSingleEventRange(psxEvent, i)
-			
+
 			// TODO don't have constant baseline in the end which looks like made up data, NaN it
 
 			Duplicate/FREE/R=(first, last) sweepDataOffFilt, singleEventRaw
