@@ -668,6 +668,45 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 	return [peakX, peakY]
 End
 
+static Function PSX_GetGoodTauFallback(WAVE tau)
+
+	WaveStats/M=1/Q tau
+	return V_avg * 2 * V_sdev
+End
+
+// @brief Returns a good tau which does capture a lot of the tau events
+static Function [variable tau] PSX_GetGoodTau(WAVE psxEvent)
+
+	variable numEvents, err
+
+	Duplicate/FREE/RMD=[][FindDimLabel(psxEvent, ROWS, "tau")] psxEvent, tauWithNaN
+
+	WAVE/Z tau = ZapNaNs(tauWithNaN)
+
+	if(!WaveExists(tau))
+		return NaN
+	endif
+
+	numEvents = DimSize(tau, ROWS)
+
+	if(numEvents <= 10)
+		return PSX_GetGoodTauFallback(tau)
+	endif
+
+	Make/FREE/D/N=0 hist
+	Histogram/B=5/DP/DEST=hist tau; err = GetRTError(1)
+
+	if(err)
+		return PSX_GetGoodTauFallback(tau)
+	endif
+
+	[WAVE/Z coefWave, WAVE/Z fitWave] = PSX_FitHistogram(hist)
+
+	if(!WaveExists(coefWave))
+		return PSX_GetGoodTauFallback(tau)
+	endif
+End
+
 /// @brief Return the x-axis range useful for displaying and extracting a single event
 static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psxEvent, WAVE sweepDataOffFilt, variable index)
 
