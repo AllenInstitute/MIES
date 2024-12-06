@@ -677,7 +677,7 @@ static Function PSX_GetGoodTau(WAVE psxEvent)
 
 	key = CA_PSXEventTauTwoSigma(psxEvent)
 
-	WAVE/D/ZZ result = CA_TryFetchingEntryFromCache(key)
+	WAVE/ZZ/D result = CA_TryFetchingEntryFromCache(key)
 
 	if(!WaveExists(result))
 		Make/FREE/D result = {PSX_GetGoodTauImpl(psxEvent)}
@@ -1653,7 +1653,7 @@ static Function/WAVE PSX_CalculateRiseTime(WAVE psxEvent, WAVE sweepDataOffFilt,
 	Make/D/FREE/N=(numEvents) riseTime
 
 	riseTime[] = PSX_CalculateRiseTimeImpl(psxEvent, sweepDataOffFilt, kernelAmp, psxEvent[p][%index], \
-	                                                   lowerThreshold, upperThreshold)
+	                                       lowerThreshold, upperThreshold)
 
 	CA_StoreEntryIntoCache(cacheKey, riseTime)
 
@@ -1702,13 +1702,13 @@ static Function PSX_CalculateRiseTimeImpl(WAVE psxEvent, WAVE sweepDataOffFilt, 
 	ASSERT_TS(kernelAmp != 0 && IsFinite(kernelAmp), "kernelAmp must be finite and not zero")
 	riseTime = (xlt - xupt) * sign(kernelAmp) * (-1)
 
-// #ifdef DEBUGGING_ENABLED
+	// #ifdef DEBUGGING_ENABLED
 	if(printDebug)
 		comboKey = JWN_GetStringFromWaveNote(psxEvent, PSX_EVENTS_COMBO_KEY_WAVE_NOTE)
 
 		printf "comboKey: %s, x: [%g, %g], y: [%g, %g], index: %d, dY: %g, thresholds: [%g, %g], levels: [%g, %g], risetime: %g, xlt: %g, xupt: %g\r", comboKey, xStart, xEnd, yStart, yEnd, index, dY, lowerThreshold, upperThreshold, lowerLevel, upperLevel, risetime, xlt, xupt
 	endif
-// #endif
+	// #endif
 
 	return riseTime
 End
@@ -2737,14 +2737,14 @@ static Function PSX_UpdateSingleEventTextbox(string win, [variable eventIndex])
 	Make/FREE/T/N=(8, 2) input
 
 	input[0][0] = {"Event State:", "Fit State:", "Fit Result:", "Event:", "Onset:", "IeI:", "Amp (rel.):", "Tau:", "Rise time:"}
-	input[0][1] = {PSX_StateToString(psxEvent[eventIndex][%$"Event manual QC call"]),       \
-	               PSX_StateToString(psxEvent[eventIndex][%$"Fit manual QC call"]),         \
-	               PSX_FitResultToString(psxEvent[eventIndex][%$"Fit Result"]),             \
-	               num2istr(eventIndex),                                                    \
-	               num2str(psxEvent[eventIndex][%onset_t], "%8.02f") + " [ms]",             \
-	               num2str(psxEvent[eventIndex][%iei], "%8.02f") + " [ms]",                 \
-	               num2str(psxEvent[eventIndex][%amplitude], "%8.02f") + " [" + yUnit + "]",\
-	               num2str(psxEvent[eventIndex][%tau], "%8.02f") + " [ms]",                 \
+	input[0][1] = {PSX_StateToString(psxEvent[eventIndex][%$"Event manual QC call"]),        \
+	               PSX_StateToString(psxEvent[eventIndex][%$"Fit manual QC call"]),          \
+	               PSX_FitResultToString(psxEvent[eventIndex][%$"Fit Result"]),              \
+	               num2istr(eventIndex),                                                     \
+	               num2str(psxEvent[eventIndex][%onset_t], "%8.02f") + " [ms]",              \
+	               num2str(psxEvent[eventIndex][%iei], "%8.02f") + " [ms]",                  \
+	               num2str(psxEvent[eventIndex][%amplitude], "%8.02f") + " [" + yUnit + "]", \
+	               num2str(psxEvent[eventIndex][%tau], "%8.02f") + " [ms]",                  \
 	               num2str(psxEvent[eventIndex][%$"Rise Time"], "%8.02f") + " [ms]"}
 
 	str = "\F'Consolas'" + FormatTextWaveForLegend(input)
