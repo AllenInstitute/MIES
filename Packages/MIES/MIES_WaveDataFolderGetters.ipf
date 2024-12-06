@@ -8221,8 +8221,9 @@ End
 /// -  0/index: event index
 /// -  1/onset: event amplitude in deconvoluted data [y unit of data]
 /// -  2/onset_t: deconvolved peak time [ms]
-/// -  3/peak: Maximum (negative kernel amp sign) or minimum (positive kernel amp sign) in the range of
-///            [onset_t, onset_t + 3 * kernelRiseTau] in the filtered sweep wave
+/// -  3/peak: Maximum (positive kernel amp sign) or minimum (negative kernel amp sign) in the range of
+///            [onset_t, onset_t + 3 * kernelRiseTau or the onset of the next event, which ever comes first]
+///            in the filtered sweep wave
 /// -  4/peak_t: peak time
 /// -  5/baseline: Maximum (negative kernel amp sign) or minimum (positive kernel amp sign) in the range of
 ///                [onset_t - 4ms, onset_t], averaged over +/- 5 points, in the filtered sweep wave

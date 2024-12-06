@@ -566,11 +566,11 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 	WaveStats/M=1/Q/R=(onset_t, peak_end_search) sweepDataOffFilt
 
 	if(kernelAmp > 0)
-		peak   = V_min
-		peak_t = V_minloc
-	elseif(kernelAmp < 0)
 		peak   = V_max
 		peak_t = V_maxloc
+	elseif(kernelAmp < 0)
+		peak   = V_min
+		peak_t = V_minloc
 	else
 		ASSERT(0, "Can't handle kernelAmp of zero")
 	endif
@@ -671,13 +671,30 @@ End
 static Function PSX_GetGoodTauFallback(WAVE tau)
 
 	WaveStats/M=1/Q tau
-	return V_avg * 2 * V_sdev
+	return V_avg + 2 * V_sdev
+End
+
+static Function PSX_GetGoodTau(WAVE psxEvent)
+
+	string key
+
+	key = CA_PSXEventTauTwoSigma(psxEvent)
+
+	WAVE/D/ZZ result = CA_TryFetchingEntryFromCache(key)
+
+	if(!WaveExists(result))
+		Make/FREE/D result = {PSX_GetGoodTauImpl(psxEvent)}
+
+		CA_StoreEntryIntoCache(key, result, options = CA_OPTS_NO_DUPLICATE)
+	endif
+
+	return result[0]
 End
 
 // @brief Returns a good tau which does capture a lot of the tau events
-static Function [variable tau] PSX_GetGoodTau(WAVE psxEvent)
+static Function PSX_GetGoodTauImpl(WAVE psxEvent)
 
-	variable numEvents, err
+	variable numEvents, err, xVal
 
 	Duplicate/FREE/RMD=[][FindDimLabel(psxEvent, ROWS, "tau")] psxEvent, tauWithNaN
 
@@ -700,11 +717,21 @@ static Function [variable tau] PSX_GetGoodTau(WAVE psxEvent)
 		return PSX_GetGoodTauFallback(tau)
 	endif
 
-	[WAVE/Z coefWave, WAVE/Z fitWave] = PSX_FitHistogram(hist)
+	// Gaussian peak: y = K0+K1*exp(-((x-K2)/K3)^2)
+	// with:
+	// K0 = y0
+	// K1 = A
+	// K2 = x0
+	// K3 = \sqrt{2} * sigma
+	[WAVE coefWave, WAVE fitWave] = PSX_FitHistogram(hist)
 
 	if(!WaveExists(coefWave))
 		return PSX_GetGoodTauFallback(tau)
 	endif
+
+	// two sigma away from the center
+	xVal = coefWave[2] + 2 * (coefWave[3] / sqrt(2))
+	return Gauss1D(coefWave, xVal)
 End
 
 /// @brief Return the x-axis range useful for displaying and extracting a single event
@@ -716,14 +743,7 @@ static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psx
 
 	index = limit(index, 0, numEvents - 1)
 
-	// TODO calculate average tau without NaNs
-	// calculate gaussian distribution, take the tau at 2 * sigma for all events
-	// can be done once as it does not depend on accept/reject
-	// this is then used for the offset here instead of 7 * tau
-
-	// don't store in psxEvent
-
-	offset = 7 * psxEvent[index][%tau]
+	offset = PSX_GetGoodTau(psxEvent)
 
 	if(IsNaN(offset))
 		offset = PSX_DEFAULT_X_START_OFFSET

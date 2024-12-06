@@ -209,6 +209,13 @@ Function/S CA_AveragingWaveModKey(WAVE wv)
 	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
 End
 
+/// @brief Cache key generator for the two sigma calculation for the tau
+///        of psx events
+Function/S CA_PSXEventTauTwoSigma(WAVE wv)
+
+	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
+End
+
 /// @brief Calculated a CRC from non wave reference waves using modification data, wave modification count and wave location.
 ///        If the given wave is a wave reference wave, then the CRC is calculated recursively from
 ///        all non wave reference waves and null wave references found.
