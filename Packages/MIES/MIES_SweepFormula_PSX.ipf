@@ -558,7 +558,7 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 	if(index < numCrossings - 1)
 		highestPossible = peakX[index + 1]
 	else
-		highestPossible = inf
+		highestPossible = Inf
 	endif
 
 	peak_end_search = min(onset_t + 3 * kernelRiseTime, highestPossible)
@@ -693,9 +693,9 @@ static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psx
 	first = psxEvent[index][%peak_t] - 0.5
 
 	if(index == numEvents - 1)
-		last  = min(psxEvent[index][%peak_t] + offset, IndexToScale(sweepDataOffFilt, DimSize(sweepDataOffFilt, ROWS) - 1, ROWS))
+		last = min(psxEvent[index][%peak_t] + offset, IndexToScale(sweepDataOffFilt, DimSize(sweepDataOffFilt, ROWS) - 1, ROWS))
 	else
-		last  = min(psxEvent[index][%peak_t] + offset, psxEvent[index + 1][%peak_t] - 0.5)
+		last = min(psxEvent[index][%peak_t] + offset, psxEvent[index + 1][%peak_t] - 0.5)
 	endif
 
 	return [first, last]
@@ -930,8 +930,8 @@ static Function PSX_OperationImpl(string graph, variable parameterJSONID, string
 
 		[WAVE peakX, WAVE peakY] = PSX_AnalyzePeaks(sweepDataOffFiltDeconv, sweepDataOffFilt, \
 		                                            peakXUnfiltered, peakYUnfiltered,         \
-													maxTauFactor, kernelAmp, kernelRiseTau,   \
-													psxEvent, eventFit)
+		                                            maxTauFactor, kernelAmp, kernelRiseTau,   \
+		                                            psxEvent, eventFit)
 
 		Make/FREE/WAVE/N=(4) psxOperation
 		SetDimensionLabels(psxOperation, "peakX;peakY;psxEvent;eventFit", ROWS)
@@ -1793,7 +1793,7 @@ static Function PSX_UpdateSingleEventGraph(string win, variable index)
 
 	PSX_UpdateSingleEventTextbox(extSingleGraph, eventIndex = index)
 
-	WAVE psxEvent = GetPSXEventWaveFromDFR(comboDFR)
+	WAVE psxEvent         = GetPSXEventWaveFromDFR(comboDFR)
 	WAVE sweepDataOffFilt = GetPSXSweepDataOffFiltWaveFromDFR(comboDFR)
 
 	[first, last] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, index)
