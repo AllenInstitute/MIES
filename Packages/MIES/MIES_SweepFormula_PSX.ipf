@@ -1555,6 +1555,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 						endif
 					endif
 
+
 					if(!WaveExists(resultsRawClean))
 						continue
 					endif
