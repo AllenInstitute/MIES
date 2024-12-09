@@ -366,6 +366,8 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	CopyScales sweepData, Deconv
 	FilterIIR/LO=(lowFrac)/HI=(highFrac)/ORD=(order) Deconv; err = GetRTError(0)
 
+	Duplicate/O Deconv, root:Deconv
+
 	if(err)
 		printf "Error applying deconvolution filter: %s\r", GetRTErrMessage()
 		ClearRTError()
@@ -1574,6 +1576,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 			JWN_SetNumberInWaveNote(results, SF_META_SWEEPNO, sweepNo)
 			JWN_SetNumberInWaveNote(results, SF_META_CHANNELTYPE, chanType)
 			JWN_SetNumberInWaveNote(results, SF_META_CHANNELNUMBER, chanNr)
+			JWN_SetNumberInWaveNote(results, SF_META_SWEEPMAPINDEX, mapIndex)
 
 			ASSERT(DimSize(results, ROWS) <= DimSize(marker, ROWS), "results wave got larger unexpectedly")
 			Redimension/N=(DimSize(results, ROWS)) marker, comboKeys
@@ -4666,7 +4669,7 @@ Function/WAVE PSX_OperationDeconvFilter(variable jsonId, string jsonPath, string
 
 	low   = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 0, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
 	high  = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 1, defValue = NaN, checkFunc = IsNullOrPositiveAndFinite, checkDefault = 0)
-	order = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 2, defValue = NaN, checkFunc = IsOdd, checkDefault = 0)
+	order = SFH_GetArgumentAsNumeric(jsonId, jsonPath, graph, SF_OP_PSX_DECONV_FILTER, 2, defValue = NaN, checkDefault = 0)
 
 	Make/D/FREE params = {low, high, order}
 	SetDimensionLabels(params, "Filter Low;Filter High;Filter Order", ROWS)
