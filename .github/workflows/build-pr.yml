@@ -115,8 +115,7 @@ jobs:
         run: tools/pre-commit/run.sh
 
   CompilationTest:
-    name: |
-      👩🏾‍🔬 Compilation: ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
+    name: 👩🏾‍🔬 Compilation of ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
     needs:
       - BuildInstaller
     strategy:
@@ -129,8 +128,7 @@ jobs:
             hardware: false
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
-      job_name: |
-        👩🏾‍🔬 Compilation: ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
+      job_name: 👩🏾‍🔬 Compilation of ${{ matrix.source }} ${{ fromJSON('["","with XOP"]')[matrix.hardware] }}
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: Packages/tests/Compilation/CompilationTester.pxp
       installer_artifact_name: BuildInstaller-dev-assets
@@ -139,13 +137,11 @@ jobs:
       timeout_minutes: 60
 
   CompilationEachCommitTest:
-    name: |
-      👩🏾‍🔬 Compilation: Each commit
+    name: 👩🏾‍🔬 Compilation of each commit
     if: ${{ !inputs.is_called_workflow }}
     uses: ./.github/workflows/test-igor-rebase-exec-workflow.yml
     with:
-      job_name: |
-        👩🏾‍🔬 Compilation: Each commit
+      job_name: 👩🏾‍🔬 Compilation of each commit
       overwrite_job_name: ${{ inputs.is_called_workflow || false }}
       experiment: Packages/tests/Compilation/CompilationTester.pxp
       installer_flags: "-s git"
