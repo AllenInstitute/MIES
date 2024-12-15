@@ -78,15 +78,23 @@ jobs:
           ref: ${{ github.sha }}
       - name: Initial repo config
         run: tools/initial-repo-config.sh
+      - name: Get latest release branch
+        run: |
+             CI_RELEASE_BRANCH=$(git branch --sort="version:refname" -rl "origin/release*" | tail -n1)
+             echo "CI_RELEASE_BRANCH=$CI_RELEASE_BRANCH" >> $GITHUB_ENV
+      - name: Gather base branch
+        run: |
+             CI_BASE_BRANCH=$((git merge-base --is-ancestor ${{ env.CI_RELEASE_BRANCH }} HEAD && echo "${{ env.CI_RELEASE_BRANCH }}") || echo "origin/main")
+             echo "CI_BASE_BRANCH=$CI_BASE_BRANCH" >> $GITHUB_ENV
       - name: List of commits to operate on
-        run: git log --pretty=ref origin/main..
+        run: git log --pretty=ref ${{ env.CI_BASE_BRANCH }}..
       - name: Cleanup earlier rebase invocations
         run: git rebase --quit 2>/dev/null || true
       - name: Compile check each commit with ${{ inputs.experiment }}
         run: |
              git rebase --exec "git log --pretty=ref -n1"                                                \
                         --exec "tools/clean_mies_installation.sh ${{ inputs.installer_flags }}"          \
-                        --exec "tools/autorun-test.sh -p ${{ inputs.experiment }} -v IP_9_64" origin/main
+                        --exec "tools/autorun-test.sh -p ${{ inputs.experiment }} -v IP_9_64" ${{ env.CI_BASE_BRANCH }}
       - name: Gather log files and crash dumps
         if: always()
         run: tools/gather-logfiles-and-crashdumps.sh
