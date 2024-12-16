@@ -34,7 +34,7 @@ COPY requirements.txt .
 # https://stackoverflow.com/a/75696359
 RUN python -m venv --system-site-packages /home/ci/.venv && \
     . /home/ci/.venv/bin/activate                        && \
-    pip3 install -r requirements.txt
+    pip3 install --no-deps -r requirements.txt
 
 # https://stackoverflow.com/a/56286534
 ENV PATH=${PATH}:/home/ci/.venv/bin
