@@ -3283,13 +3283,16 @@ End
 /// @brief Store the PSX panel GUI state in the window user data of `browser`
 static Function PSX_StoreGuiState(string win, string browser)
 
-	variable jsonID, childID
+	variable jsonID, childID, latestPanelVersion
 	string specialEventPanel, mainWindow, ctrl, extAllGraph
 
 	extAllGraph       = PSX_GetAllEventGraph(win)
 	specialEventPanel = PSX_GetSpecialPanel(win)
 
-	if(IsEmpty(browser)                   \
+	latestPanelVersion = HasPanelLatestVersion(win, PSX_PLOT_PANEL_VERSION)
+
+	if(!latestPanelVersion                \
+	   || IsEmpty(browser)                \
 	   || !WindowExists(browser)          \
 	   || !WindowExists(extAllGraph)      \
 	   || !WindowExists(specialEventPanel))
@@ -3648,6 +3651,8 @@ static Function PSX_CreatePSXGraphAndSubwindows(string win, string graph, STRUCT
 
 	PSX_ApplyMacroToExistingPanel(mainWin, "PSXPanel")
 
+	AddVersionToPanel(mainWin, PSX_PLOT_PANEL_VERSION)
+
 	DFREF workDFR  = PSX_GetWorkingFolder(win)
 	DFREF comboDFR = GetPSXFolderForCombo(workDFR, 0)
 
@@ -3914,6 +3919,13 @@ static Function [variable eventIndex, variable waveIndex, variable comboIndex] P
 	return [eventIndex, yPointNumber, comboIndex]
 End
 
+static Function PSX_AbortWithOldPanel(string win)
+
+	if(!HasPanelLatestVersion(win, PSX_PLOT_PANEL_VERSION))
+		DoAbortNow("Can not continue with this psx plot. The psx panel is too old to be usable. Please close it and open a new one.")
+	endif
+End
+
 /// @brief Window hook responsible for keyboard and mouse support
 ///
 /// Works with `psx` and `psxStats` graphs.
@@ -3930,10 +3942,12 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 				break
 			endif
 
-			win        = s.winName
-			eventIndex = s.pointNumber
+			win = s.winName
 
-			psxGraph = PSX_GetPSXGraph(win)
+			PSX_AbortWithOldPanel(win)
+
+			eventIndex = s.pointNumber
+			psxGraph   = PSX_GetPSXGraph(win)
 
 			if(!cmpstr(win, psxGraph))
 				PSX_UpdateSingleEventGraph(psxGraph, eventIndex)
@@ -3962,6 +3976,7 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 		case EVENT_WINDOW_HOOK_KEYBOARD:
 
 			win = s.winName
+			PSX_AbortWithOldPanel(win)
 
 			// workaround IP bug where the currently selected graph is not in s.winName
 			GetWindow $win, activeSW
@@ -4031,6 +4046,8 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 			if(WinType(win) != WINTYPE_GRAPH)
 				break
 			endif
+
+			PSX_AbortWithOldPanel(win)
 
 			// psxGraph
 			if((s.eventMod & WINDOW_HOOK_EMOD_CTRLKEYDOWN) == WINDOW_HOOK_EMOD_CTRLKEYDOWN)
