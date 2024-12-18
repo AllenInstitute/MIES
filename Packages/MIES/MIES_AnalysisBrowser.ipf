@@ -3497,6 +3497,9 @@ End
 Function AB_WindowHook(STRUCT WMWinHookStruct &s)
 
 	switch(s.eventCode)
+		case EVENT_WINDOW_HOOK_KILLVOTE:
+			AB_SaveSourceListInSettings()
+			break
 		case EVENT_WINDOW_HOOK_KILL:
 
 			AB_MemoryFreeMappedDF()
