@@ -1927,7 +1927,7 @@ static Function BSP_MemoryFreeMappedDF(string win)
 
 	variable dim, index
 
-	DFREF  sweepBrowserDFR = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	DFREF  sweepBrowserDFR = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER, versionCheck = 0)
 	WAVE/T map             = GetSweepBrowserMap(sweepBrowserDFR)
 	dim = FindDimLabel(map, COLS, "DataFolder")
 	Duplicate/FREE/RMD=[][dim] map, dfList
