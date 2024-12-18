@@ -244,18 +244,22 @@ End
 
 /// @brief Filter the sweep data
 ///
-/// @param sweepData data from a single sweep and channel *without* inserted TP
-/// @param high      high cutoff [Hz]
-/// @param low       low cutoff [Hz]
-static Function/WAVE PSX_FilterSweepData(WAVE sweepData, variable low, variable high)
+/// @param sweepDataOff data from a single sweep and channel *without* inserted TP already offsetted
+/// @param high         high cutoff [Hz]
+/// @param low          low cutoff [Hz]
+static Function/WAVE PSX_FilterSweepData(WAVE/Z sweepDataOff, variable low, variable high)
 
 	variable samp, err
 
-	samp = 1 / (deltax(sweepData) * MILLI_TO_ONE)
+	if(!WaveExists(sweepDataOff))
+		return $""
+	endif
+
+	samp = 1 / (deltax(sweepDataOff) * MILLI_TO_ONE)
 
 	ASSERT(low > high, "Expected a band pass filter with low > high")
 
-	Duplicate/FREE sweepData, filtered
+	Duplicate/FREE sweepDataOff, filtered
 
 	FilterIIR/LO=(low / samp)/HI=(high / samp)/DIM=(ROWS)/ORD=6 filtered; err = GetRTError(1)
 	SFH_ASSERT(!err, "Error filtering the data, msg: " + GetErrMessage(err))

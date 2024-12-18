@@ -772,7 +772,7 @@ Function/WAVE StatsTest_GetInput()
 	Duplicate/FREE/T template, wv6
 	WAVE/T input = wv6
 
-	input[%prop]     = "xpos"
+	input[%prop]     = "peaktime"
 	input[%state]    = "undetermined"
 	input[%postProc] = "hist"
 
@@ -820,7 +820,7 @@ Function/WAVE StatsTest_GetInput()
 	Duplicate/FREE/T template, wv10
 	WAVE/T input = wv10
 
-	input[%prop]     = "xpos"
+	input[%prop]     = "peaktime"
 	input[%state]    = "all"
 	input[%postProc] = "nonfinite"
 
@@ -1402,9 +1402,10 @@ End
 static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	string win, device, str, comboKey
-	variable jsonID, kernelAmp
+	variable jsonID, kernelAmp, kernelAmpSign
 
-	kernelAmp = m.v0
+	kernelAmp     = m.v0
+	kernelAmpSign = sign(kernelAmp)
 
 	Make/FREE/T/N=2 combos
 
@@ -1418,6 +1419,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	// all decay fits are successfull
 	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
 	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
@@ -1435,8 +1437,8 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	CHECK_EQUAL_TEXTWAVES(dimlabels, {"sweepData_0", "sweepDataOffFilt_0", "sweepDataOffFiltDeconv_0", "peakX_0", "peakY_0", "psxEvent_0", "eventFit_0", \
 	                                  "sweepData_1", "sweepDataOffFilt_1", "sweepDataOffFiltDeconv_1", "peakX_1", "peakY_1", "psxEvent_1", "eventFit_1"})
 
-	CheckEventDataHelper(dataWref, 0)
-	CheckEventDataHelper(dataWref, 1)
+	CheckEventDataHelper(dataWref, 0, kernelAmpSign)
+	CheckEventDataHelper(dataWref, 1, kernelAmpSign)
 
 	// check that we have parameters in the JSON wave note
 	jsonID = JWN_GetWaveNoteAsJSON(dataWref)
@@ -1451,7 +1453,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX_RISETIME)
 	CHECK_WAVE(params, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(params, ROWS), 2)
+	CHECK_EQUAL_VAR(DimSize(params, ROWS), 3)
 
 	JSON_Release(jsonID)
 
@@ -1462,7 +1464,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
 	// without events found we get empty waves
-	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 5000, 15, -5), 25, 100, 0)"
+	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 10, 15, -5), 250, 10, 0)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	Make/FREE/N=(DimSize(dataWref, ROWS)) sizes = WaveExists(dataWref[p]) ? DimSize(dataWref[p], ROWS) : NaN
@@ -1479,7 +1481,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	// returns empty waves without events found due to kernelAmp sign
 	overrideResults[][][%$"KernelAmpSignQC"] = 0
-	str                                      = "psx(id, psxKernel([50, 150], select(channels(AD6), [0, 2], all), 1, 15, -4))"
+	str                                      = "psx(id, psxKernel(select(selrange([50, 150]), selchannels(AD6), selvis(all), selsweeps([0, 2])), 1, 15, -4))"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	Make/FREE/N=(DimSize(dataWref, ROWS)) sizes = WaveExists(dataWref[p]) ? DimSize(dataWref[p], ROWS) : NaN
@@ -1544,7 +1546,7 @@ static Function TestOperationPSXTooLargeDecayTau()
 	CHECK_EQUAL_WAVES(fitResult, {PSX_DECAY_FIT_ERROR, PSX_DECAY_FIT_ERROR}, mode = WAVE_DATA)
 End
 
-static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index)
+static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index, variable kernelAmpSign)
 
 	variable numEvents
 
@@ -1571,12 +1573,21 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index)
 	CHECK_EQUAL_VAR(Sum(comp), numEvents)
 
 	comp = sign(psxEvent[p][%$"Rise Time"])
-	CHECK_EQUAL_VAR(Sum(comp), numEvents)
+	CHECK_EQUAL_VAR(Sum(comp), 0)
 
-	// 1 NaN for the first event only
 	WaveStats/M=0/Q psxEvent
-	CHECK_EQUAL_VAR(V_numNaNs, 1)
 	CHECK_EQUAL_VAR(V_numInfs, 0)
+
+	INFO("index = %d, V_numNaNs = %d, kernelAmpSign = %d", n0 = index, n1 = V_numNans, n2 = kernelAmpSign)
+
+	// 1 NaN for the first event only, the rest is onset Time
+	if(kernelAmpSign == 1)
+		CHECK_EQUAL_VAR(V_numNaNs, 3)
+	elseif(kernelAmpSign == -1)
+		CHECK_EQUAL_VAR(V_numNaNs, 5)
+	else
+		FAIL()
+	endif
 End
 
 static Function CheckPSXEventField(WAVE/WAVE psxEventWaves, WAVE/T colLabels, WAVE indices, variable val)
@@ -1989,7 +2000,7 @@ static Function/S GetTestCode(string postProc, [string eventState, string prop])
 	endif
 
 	if(ParamIsDefault(prop))
-		prop = "xpos"
+		prop = "peaktime"
 	endif
 
 	code = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 5, 100, 0)"
