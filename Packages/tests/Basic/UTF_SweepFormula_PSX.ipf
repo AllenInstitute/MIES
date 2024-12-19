@@ -776,7 +776,7 @@ Function/WAVE StatsTest_GetInput()
 	input[%state]    = "undetermined"
 	input[%postProc] = "hist"
 
-	JWN_SetWaveInWaveNote(input, "/results", {1, 2})
+	JWN_SetWaveInWaveNote(input, "/results", {2, 1})
 	// no xValues
 	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET})
 
@@ -788,8 +788,8 @@ Function/WAVE StatsTest_GetInput()
 	input[%state]    = "undetermined"
 	input[%postProc] = "log10"
 
-	JWN_SetWaveInWaveNote(input, "/results", {NaN, log(600 - 200), log(900 - 600)})
-	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
+	JWN_SetWaveInWaveNote(input, "/results", {log(600 - 200), log(900 - 600), NaN})
+	JWN_SetWaveInWaveNote(input, "/xValues", {6, 9, 3})
 	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
 
 	// wv8
@@ -804,7 +804,7 @@ Function/WAVE StatsTest_GetInput()
 	JWN_SetWaveInWaveNote(input, "/xValues", {1, 3, 5, 7, 9})
 	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
 
-	// wv8
+	// wv9
 	Duplicate/FREE/T template, wv9
 	WAVE/T input = wv9
 
@@ -876,7 +876,7 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	if(!cmpstr(postProc, "nonfinite"))
 		// overwrite peak_t data
-		Make/FREE/D peak_t = {10, NaN, 20, -Inf, 30, +Inf, 40, NaN, 50, -Inf}
+		Make/FREE/D peak_t = {10, 110, 20, -Inf, 30, +Inf, 40, NaN, 50, -Inf}
 		psxEvent[][%peak_t] = peak_t[p]
 	endif
 
@@ -1573,7 +1573,7 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index, varia
 	CHECK_EQUAL_VAR(Sum(comp), numEvents)
 
 	comp = sign(psxEvent[p][%$"Rise Time"])
-	CHECK_EQUAL_VAR(Sum(comp), 0)
+	CHECK_EQUAL_VAR(Sum(comp), numEvents)
 
 	WaveStats/M=0/Q psxEvent
 	CHECK_EQUAL_VAR(V_numInfs, 0)
@@ -1582,9 +1582,9 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index, varia
 
 	// 1 NaN for the first event only, the rest is onset Time
 	if(kernelAmpSign == 1)
-		CHECK_EQUAL_VAR(V_numNaNs, 3)
+		CHECK_EQUAL_VAR(V_numNaNs, 1)
 	elseif(kernelAmpSign == -1)
-		CHECK_EQUAL_VAR(V_numNaNs, 5)
+		CHECK_EQUAL_VAR(V_numNaNs, 9)
 	else
 		FAIL()
 	endif
