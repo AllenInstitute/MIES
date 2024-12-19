@@ -134,6 +134,12 @@ static Function MSQ_FRE1_REENTRY([string str])
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
 
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
@@ -223,6 +229,12 @@ static Function MSQ_FRE2_REENTRY([string str])
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
 
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
@@ -309,6 +321,12 @@ static Function MSQ_FRE3_REENTRY([string str])
 
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
@@ -401,6 +419,12 @@ static Function MSQ_FRE4_REENTRY([string str])
 
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
@@ -500,6 +524,12 @@ static Function MSQ_FRE5_REENTRY([string str])
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
 
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
@@ -591,6 +621,12 @@ static Function MSQ_FRE6_REENTRY([string str])
 
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_WAVE(oorDAScale, NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
@@ -703,6 +739,12 @@ static Function MSQ_FRE7_REENTRY([string str])
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
 
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
@@ -805,6 +847,12 @@ static Function MSQ_FRE8_REENTRY([string str])
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
 
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
@@ -900,6 +948,12 @@ static Function MSQ_FRE9_REENTRY([string str])
 
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
@@ -1007,5 +1061,129 @@ static Function MSQ_FRE10_REENTRY([string str])
 	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
 
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function MSQ_FRE11([string str])
+
+	ST_SetStimsetParameter("MSQ_FastRheoEst_DA_0", "Total number of steps", var = 50)
+
+	[STRUCT DAQSettings s] = MSQ_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE wv = MSQ_CreateOverrideResults(str, 0, MSQ_FAST_RHEO_EST)
+	// all tests fail
+	wv = 0
+End
+
+static Function MSQ_FRE11_REENTRY([string str])
+
+	variable sweepNo, numEntries
+	string lbl
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	sweepNo = 38
+#else
+	sweepNo = 39
+#endif
+
+	numEntries = sweepNo + 1
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	CHECK_EQUAL_WAVES(setPass, {0}, mode = WAVE_DATA)
+
+	Make/FREE/D/N=(numEntries) sweepPassRef = 0
+
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	CHECK_EQUAL_WAVES(sweepPass, sweepPassRef, mode = WAVE_DATA)
+
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	CHECK_EQUAL_WAVES(sweepPass, sweepPassRef, mode = WAVE_DATA)
+
+	Make/FREE/D/N=(numEntries) headstagePassRef = 0
+
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(headstagePass, headstagePassRef, mode = WAVE_DATA)
+
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(headstagePass, headstagePassRef, mode = WAVE_DATA)
+
+	Make/FREE/D/N=(numEntries) spikeDetectionWaveRef = 0
+
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, spikeDetectionWaveRef, mode = WAVE_DATA)
+
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, spikeDetectionWaveRef, mode = WAVE_DATA)
+
+	Make/FREE/D/N=(numEntries) stimScaleRef = 100 * (p + 1)
+
+	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-10)
+
+	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-10)
+
+	Make/FREE/D/N=(numEntries) stepSizesRef = 100
+
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	stepsizes *= ONE_TO_PICO
+	CHECK_EQUAL_WAVES(stepsizes, stepSizesRef, mode = WAVE_DATA)
+
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	stepsizes *= ONE_TO_PICO
+	CHECK_EQUAL_WAVES(stepsizes, stepSizesRef, mode = WAVE_DATA)
+
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
+	WaveTransform/O zapNaNs, activeHS
+	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
+
+	Make/FREE/D/N=(numEntries) rangeExceededRef = NaN
+
+	rangeExceededRef[0] = 0
+
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(rangeExceeded, rangeExceededRef, mode = WAVE_DATA)
+
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(rangeExceeded, rangeExceededRef, mode = WAVE_DATA)
+
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	CHECK_WAVE(finalDAScale, NULL_WAVE)
+
+	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	CHECK_CLOSE_VAR(DAG_GetNumericalValue(str, lbl, index = 0), Sum(stepSizesRef))
+
+	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	CHECK_CLOSE_VAR(DAG_GetNumericalValue(str, lbl, index = 1), Sum(stepSizesRef))
+
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
+
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
+	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-8)
+
+	Make/FREE/D/N=(numEntries) oorDAScaleRef = 0
+
+	oorDAScaleRef[numEntries - 1] = 1
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 0, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, oorDAScaleRef, mode = WAVE_DATA)
+
+	WAVE/Z oorDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_OOR, 1, EACH_SCI)
+	CHECK_EQUAL_WAVES(oorDAScale, oorDAScaleRef, mode = WAVE_DATA)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
