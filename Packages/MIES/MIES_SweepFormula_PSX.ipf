@@ -613,13 +613,8 @@ End
 
 static Function [variable peak, variable peak_t, variable baseline, variable baseline_t, variable amplitude] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index)
 
-	variable deconvPeak, deconvPeak_t
-
-	deconvPeak_t = peakX[index]
-	deconvPeak   = peakY[index]
-
 	[peak_t, peak]         = PSX_CalculateEventPeak(peakX, peakY, sweepDataOffFilt, kernelAmp, kernelRiseTau, kernelDecayTau, index)
-	[baseline_t, baseline] = PSX_CalculateEventBaseline(sweepDataOffFilt, deconvPeak_t, kernelAmp, kernelRiseTau)
+	[baseline_t, baseline] = PSX_CalculateEventBaseline(sweepDataOffFilt, peak_t, kernelAmp, kernelRiseTau)
 
 	amplitude = peak - baseline
 
@@ -657,7 +652,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 		if(i == 0)
 			iei = NaN
 		else
-			iei = deconvPeak_t - psxEvent[i - 1][%deconvPeak_t]
+			iei = peak_t - psxEvent[i - 1][%peak_t]
 		endif
 
 		psxEvent[i][%index]        = i
@@ -676,11 +671,6 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 	psxEvent[][%$"Fit manual QC call"]   = PSX_UNDET
 	psxEvent[][%$"Fit result"]           = 0
 
-	Multithread psxEvent[][%$"Rise Time"] = PSX_CalculateRiseTime(sweepDataOffFilt, psxEvent, kernelAmp, \
-	                                                              riseTimeParams[%$"Lower Threshold"],   \
-	                                                              riseTimeParams[%$"Upper Threshold"],   \
-	                                                              p)
-
 	Make/FREE/D/N=0 sweepDataDiff
 	Differentiate/EP=1 sweepDataOffFilt/D=sweepDataDiff
 
@@ -688,6 +678,11 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_AnalyzePeaks(WAVE sweepDataOffF
 	Multithread psxEvent[][%$"Onset Time"] = PSX_CalculateOnsetTime(sweepDataDiff, psxEvent, kernelAmp,          \
 	                                                                riseTimeParams[%$"Differentiate Threshold"], \
 	                                                                p)
+
+	Multithread psxEvent[][%$"Rise Time"] = PSX_CalculateRiseTime(sweepDataOffFilt, psxEvent, kernelAmp, \
+	                                                              riseTimeParams[%$"Lower Threshold"],   \
+	                                                              riseTimeParams[%$"Upper Threshold"],   \
+	                                                              p)
 
 	psxEvent[][%tau] = PSX_FitEventDecay(sweepDataOffFilt, psxEvent, maxTauFactor, eventFit, p)
 
@@ -1222,7 +1217,7 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 
 		if(!cmpstr(propLabel, "iei") && numEntries >= 2)
 			// recalculate the iei as that might have changed due to in-between events being not selected
-			Multithread results[0, numEntries - 1] = events[indizes[p]][%deconvPeak_t] - (p >= 1 ? events[indizes[p - 1]][%deconvPeak_t] : NaN)
+			Multithread results[0, numEntries - 1] = events[indizes[p]][%peak_t] - (p >= 1 ? events[indizes[p - 1]][%peak_t] : NaN)
 		else
 			Multithread results[] = events[indizes[p]][%$propLabel]
 		endif
@@ -1699,7 +1694,12 @@ threadsafe static Function PSX_CalculateRiseTime(WAVE sweepDataOffFilt, WAVE psx
 
 	// deconvPeak is defined in the deconvoluted wave,
 	// so we can't use %deconvPeak as y-value
-	xStart = psxEvent[index][%deconvPeak_t]
+	xStart = psxEvent[index][%$"Onset Time"]
+
+	if(IsNaN(xStart))
+		return NaN
+	endif
+
 	yStart = sweepDataOffFilt(xStart)
 
 	xEnd = psxEvent[index][%peak_t]
