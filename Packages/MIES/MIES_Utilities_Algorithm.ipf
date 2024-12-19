@@ -259,7 +259,7 @@ End
 /// @brief Return the row index of the given value, string converted to a variable, or wv
 ///
 /// Assumes wv being one dimensional and does not use any tolerance for numerical values.
-threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWave, variable reverseSearch])
+threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWave, variable reverseSearch, variable textOp])
 
 	variable numEntries, i
 
@@ -269,6 +269,10 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 		reverseSearch = 0
 	else
 		reverseSearch = !!reverseSearch
+	endif
+
+	if(ParamIsDefault(textOp))
+		textOp = 4
 	endif
 
 	if(!ParamIsDefault(refWave))
@@ -336,9 +340,9 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 			endif
 
 			if(!reverseSearch)
-				FindValue/TEXT=(str)/TXOP=4 wv
+				FindValue/TEXT=(str)/TXOP=(textOp) wv
 			else
-				FindValue/TEXT=(str)/TXOP=4/R wv
+				FindValue/TEXT=(str)/TXOP=(textOp)/R wv
 			endif
 
 			if(V_Value >= 0)
