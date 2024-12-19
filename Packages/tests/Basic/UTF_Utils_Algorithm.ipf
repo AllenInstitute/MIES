@@ -205,6 +205,15 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(textWave, str = "b"), 1)
 	CHECK_EQUAL_VAR(GetRowIndex(textWave, val = 123), NaN)
 
+	// text waves with textOp
+	Make/FREE/T textWave = {"a1", "b2", "c", "d", "1", "2"}
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, val = 1), 4)
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, val = 1, textOp = 4), 4)
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, val = 1, textOp = 0), 0)
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, str = "2"), 5)
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, str = "2", textOp = 4), 5)
+	CHECK_EQUAL_VAR(GetRowIndex(textWave, str = "2", textOp = 0), 1)
+
 	// wave ref waves
 	Make/FREE/WAVE/N=2 waveRefWave
 	Make/FREE content
