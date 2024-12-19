@@ -4,6 +4,37 @@
 SweepFormula PSC/PSP classification
 ===================================
 
+Algorithm
+^^^^^^^^^
+
+The algorithm for finding psc/psp events can be summarized as follows:
+
+- The deconvolution kernel is created by the `psxKernel` operation using the rise/decay tau and an amplitude
+- Sweep data is zeroed, filtered using a bandpass filter and then deconvoluted with the kernel
+- With the number of standard deviations passed to `psx` we then calculate the peak threshold in the
+  deconvoluted data
+- This peak threshold is then used to find the events in the deconvoluted data this gives `deconvPeak` and
+  `deoconvPeak_t`
+- Throw away events which have an amplitude with different sign as the kernel amplitude
+- Calculate `peak` and `peak_t` via taking the maximum (positive kernel amp sign) or minimum (negative kernel
+  amp sign) in the range of `[deconvPeak_t – kernelRiseTau or devonvPeak_t of the previous event (whichever
+  comes later), deconvPeak_t + 0.33 * kernelDecayTau or deconvPeak_t of the next event (which ever comes
+  first)]` in the filtered sweep wave
+- Calculate `baseline` and `baseline_t` via maximum (negative kernel amp sign) or minimum (positive kernel amp
+  sign) in the range of `[peak_t – 10 * kernelRiseTau, peak_t]`, averaged over +/- 5 points, in the filtered
+  sweep wave
+- `iei` is the time difference between two events' `peak_t` values
+- `tau` and the fit result values are calculated from an exponential fit
+- Calculate `Slew Rate` and `Slew Rate Time` via taking the maximum (positive kernel amp sign) or minimum (negative kernel
+  amp sign) in the range of `[peak_t, baseline_t]`
+- Calculate `Onset Time` using the y level crossing at differential threshold percentage from `psxRiseTime` of
+  the difference between the `Slew Rate` and filteered sweep data at `baseline_t`
+- Calculate `Rise Time` by finding the two level crossings, lower and upper thresholds from `psxRiseTime` in
+  the range `Onset Time` to `peak_t` corrected by invertred kernel amplitude sign
+
+GUI
+^^^
+
 When using the :ref:`sf_op_psx` SweepFormula operation the normal graphing is
 enhanced by various additional graphs and user interface options.
 The following graph shows the layout for a `psx` and `psxStats` operation with
@@ -144,7 +175,7 @@ the selection, either fit or event state, is determined by the popup menu.
   combination (checked) or use all of them (unchecked)
 - ``Fit State/Event State``: Select the state to use as basis for selection
 - ``dblexp_peak/dblexp_XOffset``: Select the fit curve for the average fit
-- ``Onset/peak``: Select the event property to offset the events in the all
+- ``Onset/Peak/Slew``: Select the event property to offset the events in the all
   events graph to
 - ``Block size [%]``: Percentage to select what part of the events are
   displayed in the all events graph. This can help with reducing the number of

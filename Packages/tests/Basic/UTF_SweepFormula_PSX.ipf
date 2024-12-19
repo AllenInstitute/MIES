@@ -464,23 +464,212 @@ static Function StatsComplainsWithoutEvents()
 	endtry
 End
 
+static Function StatsRangeTesting()
+
+	string formulaGraph, browser, device, result, stateAsStr, postProc, prop
+	string error, id, comboKeyA, comboKeyB, comboKeyC, comboKeyD, ref, key, keyTxt
+	variable numComboKeys
+
+	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
+
+	// events A
+	[WAVE rangeA, WAVE selectDataA] = GetFakeRangeAndSelectData()
+	selectDataA[0][%CHANNELNUMBER]  = 0
+
+	WAVE psxEventA = GetPSXEventWaveAsFree()
+	Redimension/N=(10, -1) psxEventA
+
+	comboKeyA = MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA)
+	sprintf ref, "Range[100, 200], Sweep [1], Channel [AD0], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	CHECK_EQUAL_STR(comboKeyA, ref)
+
+	id = "myID"
+	FillEventWave_IGNORE(psxEventA, id, comboKeyA)
+
+	// events B
+	[WAVE rangeB, WAVE selectDataB] = GetFakeRangeAndSelectData()
+	rangeB                          = {101, 201}
+	selectDataB[0][%SWEEP]          = 2
+	selectDataB[0][%CHANNELNUMBER]  = 0
+
+	comboKeyB = MIES_PSX#PSX_GenerateComboKey(browser, selectDataB, rangeB)
+	sprintf ref, "Range[101, 201], Sweep [2], Channel [AD0], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	CHECK_EQUAL_STR(comboKeyB, ref)
+
+	WAVE psxEventB = GetPSXEventWaveAsFree()
+	Redimension/N=(10, -1) psxEventB
+
+	id = "myID"
+	FillEventWave_IGNORE(psxEventB, id, comboKeyB)
+
+	// events C
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+	Duplicate/FREE selectDataB, selectDataC
+	Make/T/FREE rangeC = {"E0"}
+	selectDataC[0][%SWEEP]         = 3
+	selectDataC[0][%CHANNELNUMBER] = 0
+
+	comboKeyC = MIES_PSX#PSX_GenerateComboKey(browser, selectDataC, rangeC)
+	sprintf ref, "Range[E0], Sweep [3], Channel [AD0], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	CHECK_EQUAL_STR(comboKeyC, ref)
+
+	Make/FREE/T/N=(3, 1, 1) epochKeys
+	epochKeys[0][0][0] = EPOCHS_ENTRY_KEY
+	epochKeys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+
+	WAVE/T   epochsWave = GetEpochsWave(device)
+	variable DAC        = 2
+	epochsWave[0][EPOCH_COL_STARTTIME][DAC][XOP_CHANNEL_TYPE_DAC] = "102"
+	epochsWave[0][EPOCH_COL_ENDTIME][DAC][XOP_CHANNEL_TYPE_DAC]   = "151"
+	epochsWave[0][EPOCH_COL_TAGS][DAC][XOP_CHANNEL_TYPE_DAC]      = "ShortName=E0;stuff"
+	epochsWave[0][EPOCH_COL_TREELEVEL][DAC][XOP_CHANNEL_TYPE_DAC] = "0"
+
+	epochsWave[1][EPOCH_COL_STARTTIME][DAC][XOP_CHANNEL_TYPE_DAC] = "152"
+	epochsWave[1][EPOCH_COL_ENDTIME][DAC][XOP_CHANNEL_TYPE_DAC]   = "202"
+	epochsWave[1][EPOCH_COL_TAGS][DAC][XOP_CHANNEL_TYPE_DAC]      = "ShortName=E1;nothing"
+	epochsWave[1][EPOCH_COL_TREELEVEL][DAC][XOP_CHANNEL_TYPE_DAC] = "1"
+
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = EP_EpochWaveToStr(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC)
+	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, selectDataC[0][%SWEEP], device, DATA_ACQUISITION_MODE)
+
+	Make/T/FREE rangeD = {"E0"}
+	selectDataC[0][%SWEEP]         = 3
+	selectDataC[0][%CHANNELNUMBER] = 0
+
+	WAVE psxEventC = GetPSXEventWaveAsFree()
+	Redimension/N=(10, -1) psxEventC
+
+	id = "myID"
+	FillEventWave_IGNORE(psxEventC, id, comboKeyC)
+
+	// events D
+	Duplicate/FREE selectDataC, selectDataD
+	Make/T/FREE rangeD = {"E1"}
+
+	comboKeyD = MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeD)
+	sprintf ref, "Range[E1], Sweep [3], Channel [AD0], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	CHECK_EQUAL_STR(comboKeyD, ref)
+
+	WAVE psxEventD = GetPSXEventWaveAsFree()
+	Redimension/N=(10, -1) psxEventD
+
+	id = "myID"
+	FillEventWave_IGNORE(psxEventD, id, comboKeyD)
+
+	Make/FREE/WAVE psxEventContainer = {psxEventA, psxEventB, psxEventC, psxEventD}
+	MIES_PSX#PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, psxEventContainer, id)
+
+	prop       = "tau"
+	stateAsStr = MIES_PSX#PSX_StateToString(PSX_ACCEPT)
+	postProc   = "nothing"
+
+	// non-matching range number with sweeps
+	try
+		WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeA, rangeB}, selectDataA, prop, stateAsStr, postProc)
+		FAIL()
+	catch
+		error = ROStr(GetSweepFormulaParseErrorMessage())
+		CHECK_EQUAL_STR(error, "The number of sweeps and ranges differ")
+	endtry
+
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeA}, selectDataA, prop, stateAsStr, postProc)
+	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
+	numComboKeys = 3
+	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
+
+	Make/T/FREE comboKeysRef = {MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA)}
+	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(results[0], SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
+
+	// different range for each sweep
+	Concatenate/NP=(ROWS)/FREE {selectDataA, selectDataB}, selectData
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeA, rangeB}, selectData, prop, stateAsStr, postProc)
+	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
+	// -> twice as many events
+	numComboKeys = 6
+	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), 6)
+
+	Make/T/FREE comboKeysRef = {MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataA, rangeA), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataB, rangeB), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataB, rangeB), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataB, rangeB)}
+	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(results[0], SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
+
+	// epoch name
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeC}, selectDataC, prop, stateAsStr, postProc)
+	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
+	numComboKeys = 3
+	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
+
+	Make/T/FREE comboKeysRef = {MIES_PSX#PSX_GenerateComboKey(browser, selectDataC, rangeC), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataC, rangeC), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataC, rangeC)}
+	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(results[0], SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
+
+	// multiple epoch names
+	Make/FREE/T rangeEpoch0 = {"E0"}
+	Make/FREE/T rangeEpoch1 = {"E1"}
+	Make/FREE/T rangeEpochs = {rangeEpoch0[0], rangeEpoch1[0]}
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeEpochs}, selectDataD, prop, stateAsStr, postProc)
+	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
+	numComboKeys = 6
+	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
+
+	Make/T/FREE comboKeysRef = {MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1)}
+	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(results[0], SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
+
+	// epoch wildcards
+	Make/FREE/T rangeEpochs = {"E*"}
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeEpochs}, selectDataD, prop, stateAsStr, postProc)
+	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
+	numComboKeys = 6
+	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
+
+	Make/T/FREE comboKeysRef = {MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch0), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1), \
+	                            MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeEpoch1)}
+	WAVE/T comboKeys = JWN_GetTextWaveFromWaveNote(results[0], SF_META_USER_GROUP + PSX_JWN_COMBO_KEYS_NAME)
+	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
+End
+
 static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 
 	variable jsonID
 
-	CHECK_EQUAL_VAR(DimSize(psxEvent, COLS), 14) // test needs update if that fails
+	INFO("Check that the size of psxEvent is what we expect")
 
-	psxEvent[][%index]        = p
-	psxEvent[][%peak_t]       = 100 * p
-	psxEvent[][%peak]         = NaN
-	psxEvent[][%post_min]     = NaN
-	psxEvent[][%post_min_t]   = -10 * p
-	psxEvent[][%pre_max]      = NaN
-	psxEvent[][%pre_max_t]    = NaN
-	psxEvent[][%rel_peak]     = p == 0 ? NaN : 10 * p
-	psxEvent[][%isi]          = 1000 * p
-	psxEvent[][%tau]          = 1e-6 * p
-	psxEvent[][%$"Rise Time"] = p == 0 ? NaN : 0.1 * p
+	CHECK_EQUAL_VAR(DimSize(psxEvent, COLS), 17)
+
+	psxEvent[][%index]             = p
+	psxEvent[][%deconvpeak_t]      = 100 * p
+	psxEvent[][%deconvpeak]        = NaN
+	psxEvent[][%peak]              = NaN
+	psxEvent[][%peak_t]            = 10 * p
+	psxEvent[][%baseline]          = NaN
+	psxEvent[][%baseline_t]        = NaN
+	psxEvent[][%amplitude]         = p == 0 ? NaN : 10 * p
+	psxEvent[][%iei]               = 1000 * p
+	psxEvent[][%tau]               = 1e-6 * p
+	psxEvent[][%$"Rise Time"]      = p == 0 ? NaN : 0.1 * p
+	psxEvent[][%$"Onset Time"]     = p == 0 ? NaN : 0.2 * p
+	psxEvent[][%$"Slew Rate"]      = NaN
+	psxEvent[][%$"Slew Rate Time"] = p == 0 ? NaN : 200 * p
+
 	// PSX_ACCEPT:1
 	// PSX_REJECT:2
 	// PSX_UNDET: 4
@@ -583,7 +772,7 @@ Function/WAVE StatsTest_GetInput()
 	Duplicate/FREE/T template, wv6
 	WAVE/T input = wv6
 
-	input[%prop]     = "xpos"
+	input[%prop]     = "peaktime"
 	input[%state]    = "undetermined"
 	input[%postProc] = "hist"
 
@@ -599,7 +788,8 @@ Function/WAVE StatsTest_GetInput()
 	input[%state]    = "undetermined"
 	input[%postProc] = "log10"
 
-	JWN_SetWaveInWaveNote(input, "/results", {NaN, log(600 - 200), log(900 - 600)})
+	Make/FREE/D result = {NaN, log(60 - 20), log(90 - 60)}
+	JWN_SetWaveInWaveNote(input, "/results", result)
 	JWN_SetWaveInWaveNote(input, "/xValues", {2, 6, 9})
 	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
 
@@ -615,7 +805,7 @@ Function/WAVE StatsTest_GetInput()
 	JWN_SetWaveInWaveNote(input, "/xValues", {1, 3, 5, 7, 9})
 	JWN_SetWaveInWaveNote(input, "/marker", {PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET, PSX_MARKER_UNDET})
 
-	// wv8
+	// wv9
 	Duplicate/FREE/T template, wv9
 	WAVE/T input = wv9
 
@@ -631,7 +821,7 @@ Function/WAVE StatsTest_GetInput()
 	Duplicate/FREE/T template, wv10
 	WAVE/T input = wv10
 
-	input[%prop]     = "xpos"
+	input[%prop]     = "peaktime"
 	input[%state]    = "all"
 	input[%postProc] = "nonfinite"
 
@@ -907,7 +1097,7 @@ Function/WAVE StatsTestSpecialCases_GetInput()
 	input[%outOfRange]       = "0"
 
 	JWN_CreatePath(input, "/0")
-	JWN_SetWaveInWaveNote(input, "/0/results", {NaN, 200, NaN, 200})
+	JWN_SetWaveInWaveNote(input, "/0/results", {NaN, 20, NaN, 20})
 	JWN_SetWaveInWaveNote(input, "/0/xValues", {1, 3, 1, 3})
 	JWN_SetWaveInWaveNote(input, "/0/marker", {PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT, PSX_MARKER_ACCEPT})
 
@@ -1018,7 +1208,7 @@ End
 
 static Function StatsComplainsAboutIntersectingRanges()
 
-	string browser, device, formulaGraph, comboKey, id
+	string browser, device, formulaGraph, comboKey, id, error
 
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
@@ -1032,6 +1222,8 @@ static Function StatsComplainsAboutIntersectingRanges()
 
 	Duplicate/FREE range0, range1
 
+	Concatenate/FREE/NP=(COLS) {range0, range1}, ranges
+
 	// 2nd event wave where we shift the range
 	WAVE/Z psxEvent = CreateEventWaveInComboFolder_IGNORE(comboIndex = 1)
 	range1[] += 0.5 * (range0[1] - range0[0])
@@ -1040,11 +1232,43 @@ static Function StatsComplainsAboutIntersectingRanges()
 	FillEventWave_IGNORE(psxEvent, id, comboKey)
 
 	try
-		MIES_PSX#PSX_OperationStatsImpl(browser, id, {range0, range1}, selectData, "amp", "all", "nothing")
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, {ranges}, selectData, "amp", "all", "nothing")
 		FAIL()
 	catch
-		CHECK_NO_RTE()
+		error = ROStr(GetSweepFormulaParseErrorMessage())
+		CHECK_EQUAL_STR(error, "Can't work with multiple intersecting ranges")
 	endtry
+End
+
+static Function/WAVE GetAllStatsProperties()
+
+	WAVE wv = MIES_PSX#PSX_GetAllStatsProperties()
+	CHECK_WAVE(wv, TEXT_WAVE)
+
+	SetDimensionLabelsFromWaveContents(wv)
+
+	return wv
+End
+
+/// IUTF_TD_GENERATOR s0:GetAllStatsProperties
+static Function StatsAllProperties([STRUCT IUTF_mData &m])
+
+	string browser, device, formulaGraph, comboKey, id, error, prop
+
+	prop = m.s0
+
+	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
+
+	[WAVE range, WAVE selectData] = GetFakeRangeAndSelectData()
+
+	// 1st event wave
+	WAVE/Z psxEvent = GetEventWave(comboIndex = 0)
+	comboKey = MIES_PSX#PSX_GenerateComboKey(browser, selectData, range)
+	id       = "myID"
+	FillEventWave_IGNORE(psxEvent, id, comboKey)
+
+	MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, "all", "nothing")
+	CHECK_NO_RTE()
 End
 
 Function/WAVE FakeSweepDataGeneratorPSXKernel(WAVE sweep, variable numChannels)
@@ -1103,6 +1327,29 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[4], 0, 0.01)
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
 
+	// three waves from first range, none from second
+	Make/FREE/T/N=(3, 1, 1) epochKeys
+	epochKeys[0][0][0] = EPOCHS_ENTRY_KEY
+	epochKeys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
+
+	WAVE/T   epochsWave = GetEpochsWave(device)
+	variable DAC        = 2
+	epochsWave[0][EPOCH_COL_STARTTIME][DAC][XOP_CHANNEL_TYPE_DAC] = "0.050"
+	epochsWave[0][EPOCH_COL_ENDTIME][DAC][XOP_CHANNEL_TYPE_DAC]   = "0.150"
+	epochsWave[0][EPOCH_COL_TAGS][DAC][XOP_CHANNEL_TYPE_DAC]      = "ShortName=E0;stuff"
+	epochsWave[0][EPOCH_COL_TREELEVEL][DAC][XOP_CHANNEL_TYPE_DAC] = "0"
+
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = EP_EpochWaveToStr(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC)
+	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, 0, device, DATA_ACQUISITION_MODE)
+
+	str = "psxKernel(select(selrange([E0]), selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 3)
+
+	WAVE/Z/T range = JWN_GetTextWaveFromWaveNote(dataWref[2], "/Range")
+	CHECK_EQUAL_TEXTWAVES(range, {"E0"}, mode = WAVE_DATA)
+
 	// no data from select statement
 	str = "psxKernel(select(selrange([50, 150]), selchannels(AD15), selsweeps(0)), 1, 15, -5)"
 	try
@@ -1114,6 +1361,15 @@ static Function TestOperationPSXKernel()
 
 	// no data from this sweep statement
 	str = "psxKernel(select(selRange(ABCD), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 15, -5)"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// too large decayTau
+	str = "psxKernel([50, 150], select(selchannels(AD15), selsweeps([0])), 1, 150, -5)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1157,9 +1413,10 @@ End
 static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	string win, device, str, comboKey
-	variable jsonID, kernelAmp
+	variable jsonID, kernelAmp, kernelAmpSign
 
-	kernelAmp = m.v0
+	kernelAmp     = m.v0
+	kernelAmpSign = sign(kernelAmp)
 
 	Make/FREE/T/N=2 combos
 
@@ -1172,7 +1429,9 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
 	// all decay fits are successfull
-	overrideResults[][][%$"Fit Result"] = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
@@ -1186,11 +1445,11 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	// check dimension labels
 	Make/FREE=1/N=14/T dimlabels = GetDimLabel(dataWref, ROWS, p)
-	CHECK_EQUAL_TEXTWAVES(dimlabels, {"sweepData_0", "sweepDataFiltOff_0", "sweepDataFiltOffDeconv_0", "peakX_0", "peakY_0", "psxEvent_0", "eventFit_0", \
-	                                  "sweepData_1", "sweepDataFiltOff_1", "sweepDataFiltOffDeconv_1", "peakX_1", "peakY_1", "psxEvent_1", "eventFit_1"})
+	CHECK_EQUAL_TEXTWAVES(dimlabels, {"sweepData_0", "sweepDataOffFilt_0", "sweepDataOffFiltDeconv_0", "peakX_0", "peakY_0", "psxEvent_0", "eventFit_0", \
+	                                  "sweepData_1", "sweepDataOffFilt_1", "sweepDataOffFiltDeconv_1", "peakX_1", "peakY_1", "psxEvent_1", "eventFit_1"})
 
-	CheckEventDataHelper(dataWref, 0)
-	CheckEventDataHelper(dataWref, 1)
+	CheckEventDataHelper(dataWref, 0, kernelAmpSign)
+	CheckEventDataHelper(dataWref, 1, kernelAmpSign)
 
 	// check that we have parameters in the JSON wave note
 	jsonID = JWN_GetWaveNoteAsJSON(dataWref)
@@ -1205,7 +1464,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX_RISETIME)
 	CHECK_WAVE(params, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(params, ROWS), 2)
+	CHECK_EQUAL_VAR(DimSize(params, ROWS), 3)
 
 	JSON_Release(jsonID)
 
@@ -1215,14 +1474,54 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	CHECK_NO_RTE()
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 
-	// complains without events found
-	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 5000, 15, -5), 25, 100, 0)"
+	// without events found we get empty waves
+	str = "psx(myID, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 10, 15, -5), 250, 10, 0)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	Make/FREE/N=(DimSize(dataWref, ROWS)) sizes = WaveExists(dataWref[p]) ? DimSize(dataWref[p], ROWS) : NaN
+	CHECK_EQUAL_WAVES(sizes, {500, 500, 500, NaN, NaN, NaN, NaN, 500, 500, 500, NaN, NaN, NaN, NaN})
+
+	// complains with no sweep data
 	try
+		str = "psx(myID, psxKernel(select(selrange([150, 160]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 2, -5), 2.5, 100, 0)"
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
-		PASS()
+		CHECK_NO_RTE()
 	endtry
+
+	// returns empty waves without events found due to kernelAmp sign
+	overrideResults[][][%$"KernelAmpSignQC"] = 0
+	str                                      = "psx(id, psxKernel(select(selrange([50, 150]), selchannels(AD6), selvis(all), selsweeps([0, 2])), 1, 15, -4))"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	Make/FREE/N=(DimSize(dataWref, ROWS)) sizes = WaveExists(dataWref[p]) ? DimSize(dataWref[p], ROWS) : NaN
+	CHECK_EQUAL_WAVES(sizes, {500, 500, 500, NaN, NaN, NaN, NaN, 500, 500, 500, NaN, NaN, NaN, NaN})
+End
+
+static Function PSXHandlesPartialResults()
+
+	string browser, str, comboKey
+
+	browser = SetupDatabrowserWithSomeData()
+
+	Make/FREE/T/N=2 combos
+
+	sprintf comboKey, "Range[25, 120], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+
+	sprintf comboKey, "Range[25, 120], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	// all decay fits are successfull
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
+	str = "psx(myID, psxKernel(select(selrange([25, 120]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), 1, 2, -5), 2.5, 10, 0)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, browser, useVariables = 0)
+	PASS()
 End
 
 static Function TestOperationPSXTooLargeDecayTau()
@@ -1237,8 +1536,9 @@ static Function TestOperationPSXTooLargeDecayTau()
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(2, combos)
 
 	// all decay fits are successfull
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%Tau]           = 1000
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%Tau]                = 1000
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
@@ -1257,7 +1557,7 @@ static Function TestOperationPSXTooLargeDecayTau()
 	CHECK_EQUAL_WAVES(fitResult, {PSX_DECAY_FIT_ERROR, PSX_DECAY_FIT_ERROR}, mode = WAVE_DATA)
 End
 
-static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index)
+static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index, variable kernelAmpSign)
 
 	variable numEvents
 
@@ -1286,10 +1586,19 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index)
 	comp = sign(psxEvent[p][%$"Rise Time"])
 	CHECK_EQUAL_VAR(Sum(comp), numEvents)
 
-	// 1 NaN for the first event only
 	WaveStats/M=0/Q psxEvent
-	CHECK_EQUAL_VAR(V_numNaNs, 1)
 	CHECK_EQUAL_VAR(V_numInfs, 0)
+
+	INFO("index = %d, V_numNaNs = %d, kernelAmpSign = %d", n0 = index, n1 = V_numNans, n2 = kernelAmpSign)
+
+	// 1 NaN for the first event only, the rest is onset Time
+	if(kernelAmpSign == 1)
+		CHECK_EQUAL_VAR(V_numNaNs, 1)
+	elseif(kernelAmpSign == -1)
+		CHECK_EQUAL_VAR(V_numNaNs, 9)
+	else
+		FAIL()
+	endif
 End
 
 static Function CheckPSXEventField(WAVE/WAVE psxEventWaves, WAVE/T colLabels, WAVE indices, variable val)
@@ -1334,8 +1643,9 @@ static Function MouseSelectionPSX()
 
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = DB_OpenDataBrowser()
 	device  = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
@@ -1359,7 +1669,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_0, psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select event 0
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOffDeconv" 80, 15e-3, 110, 5e-3
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFiltDeconv" 80, 15e-2, 110, 5e-2
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_ACCEPT, PSX_STATE_EVENT)
@@ -1373,7 +1683,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select event 1
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOffDeconv" 120, 25e-3, 200, 5e-3
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFiltDeconv" 120, 25e-2, 200, 5e-2
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_EVENT)
@@ -1386,7 +1696,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select both events top axis pair, event and fit state
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOff" 50, 0, 200, 1
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFilt" 50, -1, 200, 11
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_FIT | PSX_STATE_EVENT)
@@ -1397,7 +1707,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select nothing in both directions
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOff" 0, 1, 50, 10
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFilt" 0, 1, 50, 10
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_FIT | PSX_STATE_EVENT)
@@ -1408,7 +1718,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select nothing in x direction
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOff" 0, 0, 50, 1
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFilt" 0, 0, 50, 1
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_FIT | PSX_STATE_EVENT)
@@ -1419,7 +1729,7 @@ static Function MouseSelectionPSX()
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
 
 	// select nothing in y direction
-	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftFiltOff" 50, 1, 200, 10
+	SetMarquee/W=$psxPlot/HAX=bottom/VAX=$"leftOffFilt" 50, 1, 200, 10
 
 	SetActiveSubwindow $psxPlot
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_FIT | PSX_STATE_EVENT)
@@ -1495,8 +1805,9 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	postProc = m.s0
 	logMode  = m.v0
@@ -1516,8 +1827,8 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2, 3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	// required for stats
 	DoUpdate
@@ -1532,8 +1843,8 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
 	// unchanged
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2, 3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	// changed
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
@@ -1542,7 +1853,7 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 
 	// select event 0 from combo 1
 	SetActiveSubwindow $psxStatsGraph
-	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 130), 0.1, AdaptForPostProc(postProc, 125)
+	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 50), 0.1, AdaptForPostProc(postProc, 80)
 
 	PSX_MouseEventSelection(PSX_REJECT, PSX_STATE_EVENT)
 
@@ -1550,27 +1861,25 @@ static Function MouseSelectionPSXStats([STRUCT IUTF_mData &m])
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
 	// unchanged
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2, 3}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_UNDET)
 
 	// changed
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_REJECT)
-
 	DoUpdate
 
 	// select all events from both combos
 	SetActiveSubwindow $psxStatsGraph
-	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 100), 1.1, AdaptForPostProc(postProc, 140)
-
+	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 50), 3.1, AdaptForPostProc(postProc, 141)
 	PSX_MouseEventSelection(PSX_UNDET, PSX_STATE_EVENT | PSX_STATE_FIT)
 
 	// refetch the changed waves after each selection
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
 	// changed
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2, 3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 End
 
 static Function MouseSelectionStatsPostProcNonFinite()
@@ -1592,6 +1901,8 @@ static Function MouseSelectionStatsPostProcNonFinite()
 
 	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
 	overrideResults[0][%$combos[1]][%$"Tau"]        = +Inf
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -1698,7 +2009,7 @@ static Function/S GetTestCode(string postProc, [string eventState, string prop])
 	endif
 
 	if(ParamIsDefault(prop))
-		prop = "xpos"
+		prop = "peaktime"
 	endif
 
 	code = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 5, 100, 0)"
@@ -1714,17 +2025,17 @@ static Function/WAVE GetCodeVariations()
 
 	string code
 
-	Make/T/N=2/FREE wv
+	Make/T/N=(2)/FREE wv
 
 	wv[0] = GetTestCode("nothing")
 	code  = ""
 
 	// one sweep per operation separated with `with`
-	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 10, 100, 0)"
+	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 2, 100, 0)"
 	code += "\r with \r"
-	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 2.5, 100, 0)"
+	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 1.5, 100, 0)"
 	code += "\r and \r"
-	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), xpos, all, nothing)"
+	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), peak, all, nothing)"
 	wv[1] = code
 	code  = ""
 
@@ -1734,8 +2045,19 @@ End
 /// IUTF_TD_GENERATOR s0:GetCodeVariations
 static Function AllEventGraph([STRUCT IUTF_mData &m])
 
-	string browser, code, extAllGraph, win, trace, info, rgbValue, mainWindow, specialEventPanel
+	string browser, code, extAllGraph, win, trace, info, rgbValue, mainWindow, specialEventPanel, comboKey
 	variable numEvents
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -1770,23 +2092,23 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 
 	WAVE/T allTraces = GetTracesHelper(extAllGraph, 1)
 
-	Make/FREE/T allTracesRef = {"T000000", "T000001",                                                        \
-	                            "T000002_averageAccept_ComboIndex0", "T000003_averageReject_ComboIndex0",    \
-	                            "T000004_averageUndetermined_ComboIndex0", "T000005_averageAll_ComboIndex0", \
-	                            "T000006_acceptAverageFit_ComboIndex0",                                      \
-	                            "T000007",                                                                   \
-	                            "T000008_averageAccept_ComboIndex1", "T000009_averageReject_ComboIndex1",    \
-	                            "T000010_averageUndetermined_ComboIndex1", "T000011_averageAll_ComboIndex1", \
-	                            "T000012_acceptAverageFit_ComboIndex1",                                      \
-	                            "T000013_averageAccept_global", "T000014_averageReject_global",              \
-	                            "T000015_averageUndetermined_global", "T000016_averageAll_global",           \
-	                            "T000017_acceptAverageFit_global"}
+	Make/FREE/T allTracesRef = {"T000000", "T000001", "T000002", "T000003",                                  \
+	                            "T000004_averageAccept_ComboIndex0", "T000005_averageReject_ComboIndex0",    \
+	                            "T000006_averageUndetermined_ComboIndex0", "T000007_averageAll_ComboIndex0", \
+	                            "T000008_acceptAverageFit_ComboIndex0",                                      \
+	                            "T000009", "T000010", "T000011",                                             \
+	                            "T000012_averageAccept_ComboIndex1", "T000013_averageReject_ComboIndex1",    \
+	                            "T000014_averageUndetermined_ComboIndex1", "T000015_averageAll_ComboIndex1", \
+	                            "T000016_acceptAverageFit_ComboIndex1",                                      \
+	                            "T000017_averageAccept_global", "T000018_averageReject_global",              \
+	                            "T000019_averageUndetermined_global", "T000020_averageAll_global",           \
+	                            "T000021_acceptAverageFit_global"}
 
 	CHECK_EQUAL_TEXTWAVES(allTracesRef, allTraces)
 
 	// currently shown traces
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000007"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000003", "T000009", "T000010", "T000011"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_UNDET)
@@ -1816,7 +2138,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_undetermined", val = 1)
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000015_averageUndetermined_global"}
+	Make/FREE/T dispTracesRef = {"T000019_averageUndetermined_global"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_UNDET)
@@ -1826,7 +2148,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_all", val = 1)
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000016_averageAll_global"}
+	Make/FREE/T dispTracesRef = {"T000020_averageAll_global"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_ALL)
@@ -1834,31 +2156,10 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	// restrict to current combo
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_restrict_events_to_current_combination", val = 1)
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000011_averageAll_ComboIndex1"}
+	Make/FREE/T dispTracesRef = {"T000015_averageAll_ComboIndex1"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_ALL)
-
-	// check average wave contents
-
-	// combo1
-
-	// all
-	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000011_averageAll_ComboIndex1")
-
-	DFREF comboDFR       = MIES_PSX#PSX_GetCurrentComboFolder(win)
-	DFREF singleEventDFR = GetPSXSingleEventFolder(comboDFR)
-
-	WAVE/WAVE singleEventWaves = ListToWaveRefWave(GetListOfObjects(singleEventDFR, ".*", fullPath = 1))
-	CHECK_EQUAL_VAR(DimSize(singleEventWaves, ROWS), 1)
-	CHECK_EQUAL_WAVES(singleEventWaves[0], averageWaveFromTrace, mode = WAVE_DATA)
-
-	// same as undet
-	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_undetermined", val = 1)
-	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_all", val = 0)
-
-	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000010_averageUndetermined_ComboIndex1")
-	CHECK_EQUAL_WAVES(singleEventWaves[0], averageWaveFromTrace, mode = WAVE_DATA)
 
 	// combo0
 	PGC_SetAndActivateControl(mainWindow, "listbox_select_combo", val = 0)
@@ -1869,13 +2170,13 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_undetermined", val = 0)
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_all", val = 1)
 
-	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000005_averageAll_ComboIndex0")
+	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000007_averageAll_ComboIndex0")
 
 	DFREF comboDFR       = MIES_PSX#PSX_GetCurrentComboFolder(win)
 	DFREF singleEventDFR = GetPSXSingleEventFolder(comboDFR)
 
 	WAVE/WAVE singleEventWaves = ListToWaveRefWave(GetListOfObjects(singleEventDFR, ".*", fullPath = 1))
-	CHECK_EQUAL_VAR(DimSize(singleEventWaves, ROWS), 2)
+	CHECK_EQUAL_VAR(DimSize(singleEventWaves, ROWS), 4)
 	WAVE/Z/WAVE calcAvgPack = MIES_fWaveAverage(singleEventWaves, 1, IGOR_TYPE_64BIT_FLOAT)
 	CHECK_WAVE(calcAvgPack, WAVE_WAVE)
 	WAVE/Z calcAvg = calcAvgPack[0]
@@ -1886,7 +2187,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_undetermined", val = 1)
 	PGC_SetAndActivateControl(specialEventPanel, "checkbox_average_events_all", val = 0)
 
-	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000004_averageUndetermined_ComboIndex0")
+	WAVE averageWaveFromTrace = TraceNameToWaveRef(extAllGraph, "T000006_averageUndetermined_ComboIndex0")
 	CHECK_EQUAL_WAVES(calcAvg, averageWaveFromTrace, mode = WAVE_DATA)
 
 	// now let's change some event/fit states
@@ -1904,7 +2205,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	MIES_PSX#PSX_UpdateEventWaves(win, val = PSX_ACCEPT, index = 1, stateType = PSX_STATE_FIT)
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000", "T000001"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000003"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, dispTraces, PSX_UNDET)
@@ -1915,7 +2216,7 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	DoUpdate
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000", "T000001"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000003"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	CheckTraceColors(extAllGraph, {"T000000"}, PSX_REJECT)
@@ -1931,13 +2232,22 @@ static Function AllEventGraph([STRUCT IUTF_mData &m])
 	PGC_SetAndActivateControl(specialEventPanel, "popupmenu_state_type", str = "Event*")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000002", "T000003"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 End
 
 static Function JumpToUndet()
 
-	string browser, code, psxGraph, win, mainWindow
+	string browser, code, psxGraph, win, mainWindow, comboKey
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -1976,8 +2286,8 @@ static Function JumpToUndet()
 
 	// find event 0 of next combo
 	PGC_SetAndActivateControl(mainWindow, "button_jump_first_undet")
-	CHECK_EQUAL_VAR(pcsr(A, psxGraph), 0)
-	CHECK_EQUAL_VAR(MIES_PSX#PSX_GetCurrentComboIndex(win), 1)
+	CHECK_EQUAL_VAR(pcsr(A, psxGraph), 2)
+	CHECK_EQUAL_VAR(MIES_PSX#PSX_GetCurrentComboIndex(win), 0)
 
 	// undet event state event 1 of combo 0
 	MIES_PSX#PSX_UpdateEventWaves(win, val = PSX_UNDET, index = 1, stateType = PSX_STATE_EVENT, comboIndex = 0)
@@ -1995,8 +2305,17 @@ End
 /// UTF_TD_GENERATOR s0:SupportedPostProcForEventSelection
 static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
-	string browser, code, psxGraph, win, mainWindow, postProc, psxStatsGraph
+	string browser, code, psxGraph, win, mainWindow, postProc, psxStatsGraph, comboKey
 	variable logMode
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	postProc = m.s0
 	logMode  = m.v0
@@ -2021,7 +2340,7 @@ static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
 	// select event 0, combo 1
 	SetActiveSubwindow $psxStatsGraph
-	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 130), 0.1, AdaptForPostProc(postProc, 125)
+	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 49), 0.1, AdaptForPostProc(postProc, 80)
 
 	PSX_JumpToEvents()
 
@@ -2030,7 +2349,7 @@ static Function JumpToSelectedEvents([STRUCT IUTF_mData &m])
 
 	// select all events
 	SetActiveSubwindow $psxStatsGraph
-	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 130), 1.1, AdaptForPostProc(postProc, 100)
+	SetMarquee/W=$psxStatsGraph/HAX=bottom/VAX=left -0.1, AdaptForPostProc(postProc, 49), 1.1, AdaptForPostProc(postProc, 100)
 
 	PSX_JumpToEvents()
 
@@ -2042,7 +2361,8 @@ static StrConstant PSXGRAPH_REF_TRACE = "PeakY"
 
 static Function CheckCurrentEvent(string win, variable comboIndex, variable eventIndex, variable waveIndex)
 
-	string singleEventGraph, annoInfo
+	string singleEventGraph, annoInfo, eventIndexStr
+	variable eventIndexAnno
 
 	INFO("win %s comboIndex %d, eventIndex %d, waveIndex %d", s0 = win, n0 = comboIndex, n1 = eventIndex, n2 = waveIndex)
 
@@ -2051,12 +2371,25 @@ static Function CheckCurrentEvent(string win, variable comboIndex, variable even
 	CHECK_EQUAL_VAR(pcsr(A, win), waveIndex)
 	CHECK_EQUAL_VAR(MIES_PSX#PSX_GetCurrentComboIndex(win), comboIndex)
 	annoInfo = AnnotationInfo(singleEventGraph, "description")
-	CHECK(GrepString(annoInfo, "Event:[[:space:]]*" + num2istr(eventIndex)))
+
+	SplitString/E="Event:[[:space:]]*([[:digit:]]+)" annoInfo, eventIndexStr
+	CHECK_EQUAL_VAR(V_flag, 1)
+	eventIndexAnno = str2num(eventIndexStr)
+	CHECK_EQUAL_VAR(eventIndexAnno, eventIndex)
 End
 
 static Function CursorMovement()
 
-	string browser, code, psxGraph, win, mainWindow
+	string browser, code, psxGraph, win, mainWindow, comboKey
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2089,7 +2422,16 @@ End
 
 static Function CursorMovementStats()
 
-	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames
+	string browser, code, psxGraph, win, mainWindow, psxStatsGraph, trace, tracenames, comboKey
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2124,7 +2466,17 @@ static Function CursorMovementStats()
 
 	Cursor/W=$psxStatsGraph/P A, $trace, 2
 
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxStatsGraph, 0, 2, 2)
+	CheckCurrentEvent(psxGraph, 0, 2, 2)
+
+	Cursor/W=$psxStatsGraph/P A, $trace, 3
+
+	CheckCurrentEvent(psxStatsGraph, 0, 3, 3)
+	CheckCurrentEvent(psxGraph, 0, 3, 3)
+
+	Cursor/W=$psxStatsGraph/P A, $trace, 4
+
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 4)
 	CheckCurrentEvent(psxGraph, 1, 0, 0)
 End
 
@@ -2150,8 +2502,9 @@ static Function KeyboardInteractions()
 	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2173,8 +2526,8 @@ static Function KeyboardInteractions()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2, 3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxGraph, UP_KEY)
 
@@ -2185,10 +2538,36 @@ static Function KeyboardInteractions()
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2, 3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxGraph, DOWN_KEY)
+
+	DoUpdate
+
+	CheckCurrentEvent(psxGraph, 0, 2, 2)
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {2, 3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
+
+	SendKey(psxGraph, DOWN_KEY)
+
+	DoUpdate
+
+	CheckCurrentEvent(psxGraph, 0, 3, 3)
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
+
+	SendKey(psxGraph, UP_KEY)
 
 	DoUpdate
 
@@ -2196,55 +2575,75 @@ static Function KeyboardInteractions()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxGraph, LEFT_KEY)
 
 	DoUpdate
 
 	// cursor changed
-	CheckCurrentEvent(psxGraph, 0, 1, 1)
+	CheckCurrentEvent(psxGraph, 0, 3, 3)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
 	// but not the event/fit states
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxGraph, LEFT_KEY)
 
 	DoUpdate
 
 	// cursor changed
-	CheckCurrentEvent(psxGraph, 0, 0, 0)
+	CheckCurrentEvent(psxGraph, 0, 2, 2)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
 	// but not the event/fit states
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxGraph, C_KEY)
 
 	DoUpdate
 
 	// only changes axis scaling
-	CheckCurrentEvent(psxGraph, 0, 0, 0)
+	CheckCurrentEvent(psxGraph, 0, 2, 2)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
 	// and not the event/fit states
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxGraph, R_KEY)
 	// we are now going backwards
-	SendKey(psxGraph, DOWN_KEY)
+	SendKey(psxGraph, UP_KEY)
+
+	DoUpdate
+
+	CheckCurrentEvent(psxGraph, 0, 1, 1)
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 2, 3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
+
+	SendKey(psxGraph, -1)
+
+	DoUpdate
+
+	// and more backwards
+	SendKey(psxGraph, LEFT_KEY)
+	SendKey(psxGraph, LEFT_KEY)
+	SendKey(psxGraph, LEFT_KEY)
+	SendKey(psxGraph, LEFT_KEY)
 
 	DoUpdate
 
@@ -2252,22 +2651,18 @@ static Function KeyboardInteractions()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 2, 3}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
-
-	SendKey(psxGraph, -1)
-
-	DoUpdate
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	// ignores unkonwn key
 	CheckCurrentEvent(psxGraph, 1, 0, 0)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 2, 3}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxGraph, E_KEY)
 
@@ -2278,8 +2673,9 @@ static Function KeyboardInteractions()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 2, 3}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
 
@@ -2294,8 +2690,9 @@ static Function KeyboardInteractions()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 2, 3}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_REJECT)
 
@@ -2308,8 +2705,9 @@ static Function KeyboardInteractions()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 2, 3}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_REJECT)
 
@@ -2323,8 +2721,9 @@ static Function KeyboardInteractions()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 2, 3}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_REJECT)
 
@@ -2337,8 +2736,9 @@ static Function KeyboardInteractions()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 2, 3}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_UNDET)
 
@@ -2351,8 +2751,9 @@ static Function KeyboardInteractions()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 2, 3}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
 End
@@ -2369,8 +2770,9 @@ static Function KeyboardInteractionsStats()
 
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2396,77 +2798,108 @@ static Function KeyboardInteractionsStats()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2, 3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
-	SendKey(psxStatsGraph, UP_KEY)
+	SendKey(psxGraph, UP_KEY)
 
 	DoUpdate
 
-	CheckCurrentEvent(psxStatsGraph, 0, 1, 1)
+	CheckCurrentEvent(psxGraph, 0, 1, 1)
 
-	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2, 3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
-	SendKey(psxStatsGraph, DOWN_KEY)
+	SendKey(psxGraph, DOWN_KEY)
 
 	DoUpdate
 
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxGraph, 0, 2, 2)
 
-	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {2, 3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
-	SendKey(psxStatsGraph, LEFT_KEY)
+	SendKey(psxGraph, DOWN_KEY)
+
+	DoUpdate
+
+	CheckCurrentEvent(psxGraph, 0, 3, 3)
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
+
+	SendKey(psxGraph, UP_KEY)
+
+	DoUpdate
+
+	CheckCurrentEvent(psxGraph, 1, 0, 0)
+
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
+
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
+
+	SendKey(psxGraph, LEFT_KEY)
 
 	DoUpdate
 
 	// cursor changed
-	CheckCurrentEvent(psxStatsGraph, 0, 1, 1)
+	CheckCurrentEvent(psxGraph, 0, 3, 3)
 
-	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
 	// but not the event/fit states
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
-	SendKey(psxStatsGraph, LEFT_KEY)
+	SendKey(psxGraph, LEFT_KEY)
 
 	DoUpdate
 
 	// cursor changed
-	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
+	CheckCurrentEvent(psxGraph, 0, 2, 2)
 
-	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
 	// but not the event/fit states
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
-	SendKey(psxStatsGraph, C_KEY)
+	SendKey(psxGraph, C_KEY)
 
 	DoUpdate
 
 	// only changes axis scaling
-	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
+	CheckCurrentEvent(psxGraph, 0, 2, 2)
 
-	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
+	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxGraph)
 
 	// and not the event/fit states
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxStatsGraph, R_KEY)
 	// we are now going backwards
+	SendKey(psxStatsGraph, DOWN_KEY)
+	SendKey(psxStatsGraph, DOWN_KEY)
+
+	CheckCurrentEvent(psxStatsGraph, 0, 0, 0)
+
 	SendKey(psxStatsGraph, DOWN_KEY)
 
 	DoUpdate
@@ -2476,40 +2909,43 @@ static Function KeyboardInteractionsStats()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	// correct for below tests assuming a certain position
 	SendKey(psxStatsGraph, RIGHT_KEY)
 	SendKey(psxStatsGraph, RIGHT_KEY)
+	SendKey(psxStatsGraph, RIGHT_KEY)
+	SendKey(psxStatsGraph, RIGHT_KEY)
 
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 4)
 
 	SendKey(psxStatsGraph, -1)
 
 	DoUpdate
 
 	// ignores unkonwn key
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 4)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxStatsGraph, E_KEY)
 
 	DoUpdate
 
 	// no cursor change
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 4)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
 
@@ -2520,12 +2956,13 @@ static Function KeyboardInteractionsStats()
 	DoUpdate
 
 	// no cursor change
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 4)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_REJECT)
 
@@ -2534,12 +2971,13 @@ static Function KeyboardInteractionsStats()
 	DoUpdate
 
 	// no cursor change
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 4)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_REJECT)
 
@@ -2549,12 +2987,13 @@ static Function KeyboardInteractionsStats()
 	DoUpdate
 
 	// no cursor change
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 4)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_REJECT)
 
@@ -2563,12 +3002,13 @@ static Function KeyboardInteractionsStats()
 	DoUpdate
 
 	// no cursor change
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 4)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_UNDET)
 
@@ -2577,12 +3017,13 @@ static Function KeyboardInteractionsStats()
 	DoUpdate
 
 	// no cursor change
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 4)
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {3}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0, 1, 2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
 End
@@ -2599,8 +3040,9 @@ static Function KeyboardInteractionsStatsSpecial()
 
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2615,6 +3057,8 @@ static Function KeyboardInteractionsStatsSpecial()
 	SetActiveSubwindow $psxGraph
 
 	SendKey(psxGraph, UP_KEY)
+	SendKey(psxGraph, DOWN_KEY)
+	SendKey(psxGraph, DOWN_KEY)
 	SendKey(psxGraph, DOWN_KEY)
 	SendKey(psxGraph, UP_KEY)
 
@@ -2638,8 +3082,9 @@ static Function KeyboardInteractionsStatsSpecial()
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1, 2, 3}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
 
 	// going one right, moves two events
 	SendKey(psxGraph, RIGHT_KEY)
@@ -2676,6 +3121,8 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	overrideResults[0][%$combos[1]][%$"Fit Result"] = 1
 	overrideResults[0][%$combos[1]][%$"Tau"]        = +Inf
 
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
+
 	browser = SetupDatabrowserWithSomeData()
 
 	code = GetTestCode("nonfinite", eventState = "all", prop = "tau")
@@ -2700,23 +3147,35 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_UNDET)
-
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0, 3}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {1, 2}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0, 1, 2, 3}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0, 1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxStatsGraph, UP_KEY)
 	SendKey(psxStatsGraph, DOWN_KEY)
+	SendKey(psxStatsGraph, DOWN_KEY)
 	SendKey(psxStatsGraph, UP_KEY)
 
-	CheckCurrentEvent(psxStatsGraph, 1, 0, 2)
+	CheckCurrentEvent(psxStatsGraph, 1, 2, 4)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0, 3}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {2}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {1}, PSX_REJECT)
+
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call", "Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {1}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {2}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {3}, PSX_REJECT)
 
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call", "Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
+	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {1}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {2}, PSX_UNDET)
 End
 
 static Function NoEventsAtAll()
@@ -2725,7 +3184,7 @@ static Function NoEventsAtAll()
 
 	browser = SetupDatabrowserWithSomeData()
 
-	code = "psx(psxKernel([50, 150], select(channels(AD6), [0, 2], all)), 100, 100, 0)"
+	code = "psx(psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all))), 100, 100, 0)"
 
 	win = ExecuteSweepFormulaCode(browser, code)
 
@@ -2739,7 +3198,16 @@ End
 
 static Function CheckResultsWavesForAverageFitResult()
 
-	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry
+	string browser, code, psxGraph, win, mainWindow, specialEventPanel, name, entry, comboKey
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2775,7 +3243,16 @@ End
 
 static Function TestBlockIndexLogic()
 
-	string browser, code, psxGraph, win, mainWindow, specialEventPanel, extAllGraph
+	string browser, code, psxGraph, win, mainWindow, specialEventPanel, extAllGraph, comboKey
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -2795,7 +3272,7 @@ static Function TestBlockIndexLogic()
 	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000007"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000003", "T000009", "T000010", "T000011"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	// 50% block size
@@ -2809,7 +3286,7 @@ static Function TestBlockIndexLogic()
 	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "0")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	// second block
@@ -2820,7 +3297,7 @@ static Function TestBlockIndexLogic()
 	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "1")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000001", "T000007"}
+	Make/FREE/T dispTracesRef = {"T000003", "T000009", "T000010", "T000011"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	// 33% block size
@@ -2830,7 +3307,7 @@ static Function TestBlockIndexLogic()
 
 	DoUpdate
 
-	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;1;2;")
+	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;1;2;3;")
 
 	// first block
 	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "0")
@@ -2858,7 +3335,20 @@ static Function TestBlockIndexLogic()
 	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "2")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000007"}
+	Make/FREE/T dispTracesRef = {"T000002"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// fourth block
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "3")
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "3")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	// while it is suprising to see four here and only one in the other blocks it
+	// works with larger event numbers from real data
+	Make/FREE/T dispTracesRef = {"T000003", "T000009", "T000010", "T000011"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	// current combination only
@@ -2869,7 +3359,7 @@ static Function TestBlockIndexLogic()
 	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000", "T000001"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001", "T000002", "T000003"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	// 50% block size
@@ -2883,7 +3373,7 @@ static Function TestBlockIndexLogic()
 	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "0")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000000"}
+	Make/FREE/T dispTracesRef = {"T000000", "T000001"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
 	// second block
@@ -2894,19 +3384,19 @@ static Function TestBlockIndexLogic()
 	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "1")
 
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
-	Make/FREE/T dispTracesRef = {"T000001"}
+	Make/FREE/T dispTracesRef = {"T000002", "T000003"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 
-	// 33% block size
+	// 20% block size
 	// reset block index
 	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "0")
 
-	PGC_SetAndActivateControl(specialEventPanel, "setvar_event_block_size", val = 33)
+	PGC_SetAndActivateControl(specialEventPanel, "setvar_event_block_size", val = 20)
 
 	DoUpdate
 
-	// two few events for 3 blocks
-	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;1;")
+	// two few events for 5 blocks
+	CHECK_EQUAL_STR(PSX_GetAllEventBlockNumbers(specialEventPanel), "0;1;2;3;")
 
 	// first block
 	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "0")
@@ -2925,48 +3415,82 @@ static Function TestBlockIndexLogic()
 	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
 	Make/FREE/T dispTracesRef = {"T000001"}
 	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// third block
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "2")
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "2")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000002"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
+
+	// fourth block
+	PGC_SetAndActivateControl(specialEventPanel, "popup_block", str = "3")
+
+	DoUpdate
+
+	CHECK_EQUAL_STR(GetPopupMenuString(specialEventPanel, "popup_block"), "3")
+
+	WAVE/T dispTraces = GetTracesHelper(extAllGraph, 1 + 2^2)
+	Make/FREE/T dispTracesRef = {"T000003"}
+	CHECK_EQUAL_TEXTWAVES(dispTracesRef, dispTraces)
 End
 
-static Function [variable lowerThreshold, variable upperThreshold] TestRiseTimeContainer(WAVE/WAVE dataWref)
+static Function [variable lowerThreshold, variable upperThreshold, variable diffThreshold] TestRiseTimeContainer(WAVE/WAVE dataWref)
 
 	CHECK_WAVE(dataWref, WAVE_WAVE)
 	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 1)
 	WAVE/Z data = dataWref[0]
 	CHECK_WAVE(data, NUMERIC_WAVE)
-	CHECK_EQUAL_VAR(DimSize(data, ROWS), 2)
+	CHECK_EQUAL_VAR(DimSize(data, ROWS), 3)
 
 	upperThreshold = data[%$"Upper Threshold"]
 	CHECK(BetweenZeroAndOneExc(upperThreshold))
 	lowerThreshold = data[%$"Lower Threshold"]
 	CHECK(BetweenZeroAndOneExc(lowerThreshold))
+	diffThreshold = data[%$"Differentiate Threshold"]
+	CHECK(BetweenZeroAndOneExc(lowerThreshold))
 
-	return [lowerThreshold, upperThreshold]
+	return [lowerThreshold, upperThreshold, diffThreshold]
 End
 
 static Function TestOperationRiseTime()
 
 	string win, str
-	variable lowerThreshold, upperThreshold
+	variable lowerThreshold, upperThreshold, diffThreshold
 
 	win = SetupDatabrowserWithSomeData()
 
 	str = "psxRiseTime()"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
-	[lowerThreshold, upperThreshold] = TestRiseTimeContainer(dataWref)
+	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
 	CHECK_EQUAL_VAR(lowerThreshold, 0.2)
 	CHECK_EQUAL_VAR(upperThreshold, 0.8)
+	CHECK_EQUAL_VAR(diffThreshold, 0.05)
 
 	str = "psxRiseTime(10)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
-	[lowerThreshold, upperThreshold] = TestRiseTimeContainer(dataWref)
+	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
 	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
 	CHECK_EQUAL_VAR(upperThreshold, 0.8)
+	CHECK_EQUAL_VAR(diffThreshold, 0.05)
 
 	str = "psxRiseTime(10, 90)"
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
-	[lowerThreshold, upperThreshold] = TestRiseTimeContainer(dataWref)
+	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
 	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
 	CHECK_EQUAL_VAR(upperThreshold, 0.9)
+	CHECK_EQUAL_VAR(diffThreshold, 0.05)
+
+	str = "psxRiseTime(10, 90, 45)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	[lowerThreshold, upperThreshold, diffThreshold] = TestRiseTimeContainer(dataWref)
+	CHECK_EQUAL_VAR(lowerThreshold, 0.1)
+	CHECK_EQUAL_VAR(upperThreshold, 0.9)
+	CHECK_EQUAL_VAR(diffThreshold, 0.45)
 
 	// checks parameters
 	try
@@ -2988,7 +3512,16 @@ End
 
 static Function TestOperationPrep()
 
-	string win, device, code, psxCode
+	string win, device, code, psxCode, comboKey
+
+	Make/FREE/T/N=2 combos
+	sprintf comboKey, "Range[50, 150], Sweep [0], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[0] = comboKey
+	sprintf comboKey, "Range[50, 150], Sweep [2], Channel [AD6], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
+	combos[1] = comboKey
+	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
+
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
 
@@ -3040,8 +3573,9 @@ static Function TestStoreAndLoad()
 	combos[1] = comboKey
 	WAVE overrideResults = MIES_PSX#PSX_CreateOverrideResults(4, combos)
 
-	overrideResults[][][%$"Fit Result"] = 1
-	overrideResults[][][%$"Tau"]        = 1
+	overrideResults[][][%$"Fit Result"]      = 1
+	overrideResults[][][%$"Tau"]             = 1
+	overrideResults[][][%$"KernelAmpSignQC"] = 1
 
 	browser = SetupDatabrowserWithSomeData()
 
@@ -3214,7 +3748,7 @@ static Function TestOperationDeconvFilter()
 	endtry
 
 	try
-		str = "psxDeconvFilter(1, 1, 2)"
+		str = "psxDeconvFilter(1, 1, -1)"
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
 	catch
