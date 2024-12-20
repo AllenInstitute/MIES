@@ -1858,6 +1858,10 @@ StrConstant PRESSURE_STATE_FILTER         = "pressure:state"
 StrConstant PRESSURE_SEALED_FILTER        = "pressure:sealed"
 StrConstant PRESSURE_BREAKIN_FILTER       = "pressure:break in"
 StrConstant AUTO_TP_FILTER                = "testpulse:autotune result"
+StrConstant ZMQ_FILTER_TPRESULT_NOW       = "testpulse:results live"
+StrConstant ZMQ_FILTER_TPRESULT_1S        = "testpulse:results 1s update"
+StrConstant ZMQ_FILTER_TPRESULT_5S        = "testpulse:results 5s update"
+StrConstant ZMQ_FILTER_TPRESULT_10S       = "testpulse:results 10s update"
 StrConstant AMPLIFIER_CLAMP_MODE_FILTER   = "amplifier:clamp mode"
 StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"
 StrConstant ANALYSIS_FUNCTION_PB          = "analysis function:pipette in bath"
@@ -2383,3 +2387,10 @@ Constant ABORTCODE_ABORT         = -3
 Constant ABORTCODE_STACKOVERFLOW = -2
 Constant ABORTCODE_USERABORT     = -1
 ///@}
+
+// If this constant with dimLabels is changed the following functions should be verified:
+//
+// TP_TSAnalysis
+// GetTPResultAsyncBuffer
+// GetTPResults (reuses same dimlabels partially)
+StrConstant TP_ANALYSIS_DATA_LABELS = "BASELINE;STEADYSTATERES;INSTANTRES;ELEVATED_SS;ELEVATED_INST;NOW;HEADSTAGE;MARKER;NUMBER_OF_TP_CHANNELS;TIMESTAMP;TIMESTAMPUTC;CLAMPMODE;CLAMPAMP;BASELINEFRAC;CYCLEID;TPLENGTHPOINTSADC;PULSELENGTHPOINTSADC;PULSESTARTPOINTSADC;SAMPLINGINTERVALADC;TPLENGTHPOINTSDAC;PULSELENGTHPOINTSDAC;PULSESTARTPOINTSDAC;SAMPLINGINTERVALDAC;"
