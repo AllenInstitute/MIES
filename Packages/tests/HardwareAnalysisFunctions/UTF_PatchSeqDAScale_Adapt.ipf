@@ -8,31 +8,32 @@
 ///
 /// .. Column order: test overrides, labnotebook entries, analysis parameters
 ///
-///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ========================= ============================== ============================== =========================== ============================= ========================= ===================
-///  Test case    Baseline chunk0 QC   Baseline chunk [1, inf] QC   Enough rheobase/supra sweeps   Passing rheobase sweeps   Passing supra sweeps   Valid initial f-I slope QC   Valid initial f-I fit   Initial f-I data is dense enough   Failed f-I   Valid f-I slope QC   Fit f-I slope QC   Enough f-I points QC   Measured all future DAScales   Async QC   Sampling QC   SlopePercentage   NumSweepsWithSaturation   DAScaleRangeFactor             NumInvalidSlopeSweepsAllowed   MaxFrequencyChangePercent   DaScaleStepWidthMinMaxRatio   AbsFrequencyMinDistance   SamplingFrequency
-///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ========================= ============================== ============================== =========================== ============================= ========================= ===================
-///  PS_DS_AD1    -                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              -          ✓             def               2                         def                            def                            5                           3                             2                         def
-///  PS_DS_AD2    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD2a   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD2b   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          1.5                           2                         def
-///  PS_DS_AD3    [-,✓,✓]              ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            [-,✓,✓]              [-,✓,✓]            ✓                      [✓,-,✓]                        ✓          ✓             def               2                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD4    ✓                    ✓                            ✓                              ✓                         -                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD4a   ✓                    ✓                            ✓                              -                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD5    ✓                    ✓                            -                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD6    ✓                    ✓                            ✓                              ✓                         ✓                      -                            ✓                       ✓                                  ✓            -                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD7    ✓                    ✓                            ✓                              ✓                         ✓                      -                            ✓                       -                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            10                          1.1                           2                         def
-///  PS_DS_AD8    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            -                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD9    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            [-,-]                [-,-]              ✓                      ✓                              ✓          ✓             def               3                         2                              2                              45                          3                             2                         def
-///  PS_DS_AD10   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      -                              ✓          ✓             def               2                         def                            def                            25                          1.2                           2                         def
-///  PS_DS_AD11   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓]            ✓                      [-,-,✓]                        ✓          ✓             60                1                         1                              1                              45                          1.2                           2                         def
-///  PS_DS_AD12   [✓,-,✓,✓]            ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓,✓]          ✓                      [-,✓-,,✓]                      ✓          ✓             def               2                         def                            def                            25                          3                             1.1                       def
-///  PS_DS_AD13   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          -             def               2                         def                            def                            25                          3                             0.5                       def
-///  PS_DS_AD14   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  [-,✓ ]       [-,✓ ]               ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD15   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  [-,✓ ]       [-,✓ ]               ✓                  ✓                      [-,-,✓]                        ✓          ✓             def               1                         def                            def                            25                          3                             2                         def
-///  PS_DS_AD16   ✓                    [-,-,✓,-,✓]                  ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓,✓,✓]        ✓                      [✓,✓,-,✓,✓]                    ✓          ✓             def               2                         def                            def                            25                          3                             1.1                       def
-///  PS_DS_AD17   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             1.1                       def
-///  PS_DS_AD18   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              ✓          ✓             def               3                         def                            def                            25                          3                             1.1                       def
-///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ========================= ============================== ============================== =========================== ============================= ========================= ===================
+///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ========================= ============================== ============================== =========================== ============================= ========================= =================== =========================
+///  Test case    Baseline chunk0 QC   Baseline chunk [1, inf] QC   Enough rheobase/supra sweeps   Passing rheobase sweeps   Passing supra sweeps   Valid initial f-I slope QC   Valid initial f-I fit   Initial f-I data is dense enough   Failed f-I   Valid f-I slope QC   Fit f-I slope QC   Enough f-I points QC   Measured all future DAScales   Async QC   Sampling QC   SlopePercentage   NumSweepsWithSaturation   DAScaleRangeFactor             NumInvalidSlopeSweepsAllowed   MaxFrequencyChangePercent   DaScaleStepWidthMinMaxRatio   AbsFrequencyMinDistance   SamplingFrequency   FailingAdaptiveSCIRange
+///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ========================= ============================== ============================== =========================== ============================= ========================= =================== =========================
+///  PS_DS_AD1    -                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              -          ✓             def               2                         def                            def                            5                           3                             2                         def                 def
+///  PS_DS_AD1a   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              [✓,-,✓]    ✓             def               3                         def                            def                            5                           3                             2                         def                 def
+///  PS_DS_AD2    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def                 def
+///  PS_DS_AD2a   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def                 def
+///  PS_DS_AD2b   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          1.5                           2                         def                 def
+///  PS_DS_AD3    [-,✓,✓]              ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            [-,✓,✓]              [-,✓,✓]            ✓                      [✓,-,✓]                        ✓          ✓             def               2                         def                            def                            25                          3                             2                         def                 def
+///  PS_DS_AD4    ✓                    ✓                            ✓                              ✓                         -                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def                 def
+///  PS_DS_AD4a   ✓                    ✓                            ✓                              -                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def                 def
+///  PS_DS_AD5    ✓                    ✓                            -                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             2                         def                 def
+///  PS_DS_AD6    ✓                    ✓                            ✓                              ✓                         ✓                      -                            ✓                       ✓                                  ✓            -                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def                 def
+///  PS_DS_AD7    ✓                    ✓                            ✓                              ✓                         ✓                      -                            ✓                       -                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            10                          1.1                           2                         def                 def
+///  PS_DS_AD8    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            -                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def                 def
+///  PS_DS_AD9    ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            [-,-]                [-,-]              ✓                      ✓                              ✓          ✓             def               3                         2                              2                              45                          3                             2                         def                 def
+///  PS_DS_AD10   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      -                              ✓          ✓             def               2                         def                            def                            25                          1.2                           2                         def                 def
+///  PS_DS_AD11   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓]            ✓                      [-,-,✓]                        ✓          ✓             60                1                         1                              1                              45                          1.2                           2                         def                 def
+///  PS_DS_AD12   [✓,-,✓,✓]            ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓,✓]          ✓                      [-,✓-,,✓]                      ✓          ✓             def               2                         def                            def                            25                          3                             1.1                       def                 def
+///  PS_DS_AD13   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    ✓                  ✓                      ✓                              ✓          -             def               2                         def                            def                            25                          3                             0.5                       def                 def
+///  PS_DS_AD14   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  [-,✓ ]       [-,✓ ]               ✓                  ✓                      ✓                              ✓          ✓             def               1                         def                            def                            25                          3                             2                         def                 def
+///  PS_DS_AD15   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  [-,✓ ]       [-,✓ ]               ✓                  ✓                      [-,-,✓]                        ✓          ✓             def               1                         def                            def                            25                          3                             2                         def                 def
+///  PS_DS_AD16   ✓                    [-,-,✓,-,✓]                  ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    [-,-,✓,✓,✓]        ✓                      [✓,✓,-,✓,✓]                    ✓          ✓             def               2                         def                            def                            25                          3                             1.1                       def                 def
+///  PS_DS_AD17   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              ✓          ✓             def               2                         def                            def                            25                          3                             1.1                       def                 def
+///  PS_DS_AD18   ✓                    ✓                            ✓                              ✓                         ✓                      ✓                            ✓                       ✓                                  ✓            ✓                    -                  ✓                      ✓                              ✓          ✓             def               3                         def                            def                            25                          3                             1.1                       def                 def
+///============= ==================== ============================ ============================== ========================= ====================== ============================ ======================= ================================== ============ ==================== ================== ====================== ============================== ========== ============= ================= ========================= ============================== ============================== =========================== ============================= ========================= =================== =========================
 ///
 /// @endrst
 
@@ -360,6 +361,8 @@ static Function PS_DS_AD1_preAcq(string device)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 2)
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
 
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "FailingAdaptiveSCIRange", var = Inf)
+
 	// SamplingMultiplier, SamplingFrequency use defaults
 
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 5)
@@ -439,13 +442,13 @@ static Function PS_DS_AD1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {2.999999970665357e-10, NaN, NaN}
-	Make/FREE/T futureDAScalesRef = {"3.5;4.4;", \
-	                                 "3.5;4.4;", \
-	                                 "3.5;4.4;"}
+	Make/FREE/T futureDAScalesRef = {"4;5;", \
+	                                 "4;5;", \
+	                                 "4;5;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {3.5, 3.5, 3.5}
+	Make/FREE/D DAScalesRef = {4, 4, 4}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_WAVE(entries[%fiSlope], NULL_WAVE)
@@ -466,7 +469,7 @@ End
 
 static Function PS_DS_AD1_REENTRY_REENTRY([string str])
 
-	variable sweepNo, failingAdaptiveSweep
+	variable sweepNo
 	sweepNo = 5
 
 	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
@@ -478,8 +481,168 @@ static Function PS_DS_AD1_REENTRY_REENTRY([string str])
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
-	failingAdaptiveSweep = JWN_GetNumberFromWaveNote(overrideResults, "FailingAdaptiveSweep")
-	CHECK_EQUAL_VAR(failingAdaptiveSweep, 2)
+	WAVE/Z passingAdSweepsFailSet = JWN_GetNumericWaveFromWaveNote(overrideResults, "PassingAdaptiveSweepFromFailingSet")
+
+	Make/FREE/D/N=0 empty
+	CHECK_EQUAL_WAVES(passingAdSweepsFailSet, empty)
+End
+
+static Function PS_DS_AD1a_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSLongThreshold", var = 0.5)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "BaselineRMSShortThreshold", var = 0.07)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AbsFrequencyMinDistance", var = 2)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "NumSweepsWithSaturation", var = 3)
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "DaScaleStepWidthMinMaxRatio", var = 3)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "FailingAdaptiveSCIRange", var = 2)
+
+	// SamplingMultiplier, SamplingFrequency use defaults
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "MaxFrequencyChangePercent", var = 5)
+
+	// use defaults for the rest
+
+	Make/FREE asyncChannels = {2, 4}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRheobaseSweep", {5})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
+	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
+
+	Make/FREE/D DAScalesFromRhSuAd = {10, 20, 30, 40}
+	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
+
+	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
+	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_DS_AD1a([string str])
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_ADAPT)
+
+	// async QC passes for first sweep and third sweep only
+	wv                      = 0
+	wv[][][%APFrequency]    = 15 - 0.1 * q
+	wv[][0, 2; 2][%AsyncQC] = 1
+	wv[][][%BaselineQC]     = 1
+End
+
+static Function PS_DS_AD1a_REENTRY([string str])
+
+	variable sweepNo
+
+	sweepNo = 2
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%asyncPass], {1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%futureDAScalesPass], {0, 1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%enoughFIPointsPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%validSlopePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPassFromRhSuAd], {0, 0, 0}, mode = WAVE_DATA)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
+	CheckSurveyPlot(str, entries)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	WAVE/Z passingAdSweepsFailSet = JWN_GetNumericWaveFromWaveNote(overrideResults, "PassingAdaptiveSweepFromFailingSet")
+
+	Make/FREE/D/N=0 empty
+	CHECK_EQUAL_WAVES(passingAdSweepsFailSet, empty)
+
+	PGC_SetAndActivateControl(str, "DataAcquireButton")
+	RegisterReentryFunction("PatchSeqTestDAScaleAdapt#" + GetRTStackInfo(1))
+End
+
+static Function PS_DS_AD1a_REENTRY_REENTRY([string str])
+
+	variable sweepNo
+
+	sweepNo = 5
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	WAVE/Z passingAdSweepsFailSet = JWN_GetNumericWaveFromWaveNote(overrideResults, "PassingAdaptiveSweepFromFailingSet")
+
+	CHECK_EQUAL_WAVES(passingAdSweepsFailSet, {0, 2}, mode = WAVE_DATA)
+
+	PGC_SetAndActivateControl(str, "DataAcquireButton")
+	RegisterReentryFunction("PatchSeqTestDAScaleAdapt#" + GetRTStackInfo(1))
+End
+
+static Function PS_DS_AD1a_REENTRY_REENTRY_REENTRY([string str])
+
+	variable sweepNo
+
+	sweepNo = 8
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	WAVE/Z passingAdSweepsFailSet = JWN_GetNumericWaveFromWaveNote(overrideResults, "PassingAdaptiveSweepFromFailingSet")
+
+	CHECK_EQUAL_WAVES(passingAdSweepsFailSet, {0, 2, 3, 5}, mode = WAVE_DATA)
+
+	PGC_SetAndActivateControl(str, "DataAcquireButton")
+	RegisterReentryFunction("PatchSeqTestDAScaleAdapt#" + GetRTStackInfo(1))
+End
+
+static Function PS_DS_AD1a_REENTRY_REENTRY_REENTRY_REENTRY([string str])
+
+	variable sweepNo
+
+	sweepNo = 11
+
+	WAVE/WAVE entries = GetEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_TEXTWAVES(entries[%opMode], {PSQ_DS_ADAPT}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z overrideResults = GetOverrideResults()
+	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
+	WAVE/Z passingAdSweepsFailSet = JWN_GetNumericWaveFromWaveNote(overrideResults, "PassingAdaptiveSweepFromFailingSet")
+
+	// "FailingAdaptiveSCIRange" equals two so we don't look further back
+	CHECK_EQUAL_WAVES(passingAdSweepsFailSet, {3, 5, 6, 8}, mode = WAVE_DATA)
 End
 
 static Function PS_DS_AD2_preAcq(string device)
@@ -570,13 +733,13 @@ static Function PS_DS_AD2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10}
-	Make/FREE/D fiSlopeRef = {8.15217391304348e-12}
-	Make/FREE/D fiOffsetRef = {15.67391304347826}
-	Make/FREE/T futureDAScalesRef = {"5.22666666666667;"}
+	Make/FREE/D fiSlopeRef = {1.000000000000014e-11}
+	Make/FREE/D fiOffsetRef = {15.59999999999999}
+	Make/FREE/T futureDAScalesRef = {"5;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {5.226666666666667}
+	Make/FREE/D DAScalesRef = {5}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -678,13 +841,13 @@ static Function PS_DS_AD2a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
-	Make/FREE/D fiSlopeRef = {8.15217391304348e-12, -1.656314699792955e-11}
-	Make/FREE/D fiOffsetRef = {15.67391304347826, 16.96570048309179}
-	Make/FREE/T futureDAScalesRef = {"5.22666666666667;11.2641666666667;", "5.22666666666667;11.2641666666667;"}
+	Make/FREE/D fiSlopeRef = {1.000000000000014e-11, -1.428571428571428e-11}
+	Make/FREE/D fiOffsetRef = {15.59999999999999, 16.81428571428572}
+	Make/FREE/T futureDAScalesRef = {"5;12;", "5;12;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {5.226666666666667, 11.26416666666667}
+	Make/FREE/D DAScalesRef = {5, 12}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -787,13 +950,13 @@ static Function PS_DS_AD2b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
-	Make/FREE/D fiSlopeRef = {8.15217391304348e-12, -3.312629399585924e-11}
-	Make/FREE/D fiOffsetRef = {15.67391304347826, 17.83140096618358}
-	Make/FREE/T futureDAScalesRef = {"5.22666666666667;8.24541666666667;", "5.22666666666667;8.24541666666667;"}
+	Make/FREE/D fiSlopeRef = {1.000000000000014e-11, -2.5e-11}
+	Make/FREE/D fiOffsetRef = {15.59999999999999, 17.35}
+	Make/FREE/T futureDAScalesRef = {"5;9;", "5;9;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {5.226666666666667, 8.245416666666667}
+	Make/FREE/D DAScalesRef = {5, 9}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -900,13 +1063,13 @@ static Function PS_DS_AD3_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10, 3e-10}
-	Make/FREE/D fiSlopeRef = {NaN, 8.152173913043478e-12, -1.656314699792955e-11}
-	Make/FREE/D fiOffsetRef = {NaN, 15.67391304347826, 16.96570048309179}
-	Make/FREE/T futureDAScalesRef = {"5.22666666666667;", "5.22666666666667;11.2641666666667;", "5.22666666666667;11.2641666666667;"}
+	Make/FREE/D fiSlopeRef = {NaN, 1.000000000000014e-11, -1.428571428571428e-11}
+	Make/FREE/D fiOffsetRef = {NaN, 15.59999999999999, 16.81428571428572}
+	Make/FREE/T futureDAScalesRef = {"5;", "5;12;", "5;12;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {5.226666666666667, 5.226666666666667, 11.26416666666667}
+	Make/FREE/D DAScalesRef = {5, 5, 12}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1213,7 +1376,7 @@ static Function PS_DS_AD7_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 3}
+	Make/FREE/D DAScalesFromRhSuAd = {10, 20, 30, 30}
 	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
 	// invalid initial valid fit QC but not dense enough
@@ -1261,10 +1424,10 @@ static Function PS_DS_AD7_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {0, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPassFromRhSuAd], {0, 0, 0}, mode = WAVE_DATA)
 
-	Make/FREE/D minDAScaleNormRef = {0.02156862745098039, NaN}
+	Make/FREE/D minDAScaleNormRef = {0.2156862745098039, NaN}
 	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	Make/FREE/D maxDAScaleNormRef = {0.02372549019607843, NaN}
+	Make/FREE/D maxDAScaleNormRef = {0.2372549019607843, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
 	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd, WAVE sweepPassedFRomRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
@@ -1274,14 +1437,14 @@ static Function PS_DS_AD7_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {5.666666666666668e-10, 9.999999999999999e-10}
-	Make/FREE/D fiSlopeRef = {5.666666666666668e-10, 9.999999999999999e-10}
+	Make/FREE/D maxSlopeRef = {5.666666666666668e-11, 1e-10}
+	Make/FREE/D fiSlopeRef = {5.666666666666668e-11, 1e-10}
 	Make/FREE/D fiOffsetRef = {-2, -8.5}
-	Make/FREE/T futureDAScalesRef = {"1.5;2.5;", "1.5;2.5;"}
+	Make/FREE/T futureDAScalesRef = {"15;25;", "15;25;"}
 
-	Make/FREE/D fiSlopesFromRhSuAdRef = {3e-10, 5e-10, NaN}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {3e-11, 5e-11, NaN}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {2, -2, NaN}
-	Make/FREE/D DAScalesRef = {1.5, 2.5}
+	Make/FREE/D DAScalesRef = {15, 25}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1437,11 +1600,11 @@ static Function PS_DS_AD9_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {2e-10, NaN}
 	Make/FREE/D fiSlopeRef = {-6.666666666666667e-10, -6.666666666666667e-10}
 	Make/FREE/D fiOffsetRef = {41.66666666666667, 41.66666666666667}
-	Make/FREE/T futureDAScalesRef = {"5.35;", "5.35;"}
+	Make/FREE/T futureDAScalesRef = {"5;", "5;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 2e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 7}
-	Make/FREE/D DAScalesRef = {5.35, 5.35}
+	Make/FREE/D DAScalesRef = {5, 5}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_WAVE(entries[%fiSlope], NULL_WAVE)
@@ -1480,7 +1643,7 @@ static Function PS_DS_AD10_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	Make/FREE/D DAScalesFromRhSuAd = {10, 20, 30, 40}
 	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
 	Make/FREE/D apFrequenciesFromRhSuAd = {10, 11, 13, 16}
@@ -1527,10 +1690,10 @@ static Function PS_DS_AD10_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPassFromRhSuAd], {0, 0, 0}, mode = WAVE_DATA)
 
-	Make/FREE/D minDAScaleNormRef = {0.1, NaN, NaN}
+	Make/FREE/D minDAScaleNormRef = {1, NaN, NaN}
 	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	Make/FREE/D maxDAScaleNormRef = {0.12, NaN, NaN}
+	Make/FREE/D maxDAScaleNormRef = {1.2, NaN, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
 	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd, WAVE sweepPassedFRomRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
@@ -1540,14 +1703,14 @@ static Function PS_DS_AD10_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {9.374999999999962e-10, 3.125000000000005e-09, 6.510416666666915e-09}
-	Make/FREE/D fiSlopeRef = {9.374999999999962e-10, 3.125000000000005e-09, 6.510416666666915e-09}
-	Make/FREE/D fiOffsetRef = {-21.49999999999984, -130.0000000000003, -314.1666666666805}
-	Make/FREE/T futureDAScalesRef = {"4.96;5.44;", "4.96;5.44;5.6704;", "4.96;5.44;5.6704;5.82246399999999;"}
+	Make/FREE/D maxSlopeRef = {9e-11, 3e-10, 7.5e-10}
+	Make/FREE/D fiSlopeRef = {9e-11, 3e-10, 7.5e-10}
+	Make/FREE/D fiOffsetRef = {-20, -125, -372.5}
+	Make/FREE/T futureDAScalesRef = {"50;55;", "50;55;57;", "50;55;57;58;"}
 
-	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {9.999999999999999e-12, 2e-11, 3e-11}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {4.96, 5.440000000000003, 5.6704}
+	Make/FREE/D DAScalesRef = {50, 55, 57}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1592,7 +1755,7 @@ static Function PS_DS_AD11_preAcq(string device)
 	JWN_SetWaveInWaveNote(overrideResults, "PassingSupraSweep", {7})
 	JWN_SetWaveInWaveNote(overrideResults, "PassingRhSuAdSweeps", {4, 5, 6, 7})
 
-	Make/FREE/D DAScalesFromRhSuAd = {1, 2, 3, 4}
+	Make/FREE/D DAScalesFromRhSuAd = {10, 20, 30, 40}
 	JWN_SetWaveInWaveNote(overrideResults, "DAScalesRhSuAd", DAScalesFromRhSuAd)
 
 	Make/FREE/D apFrequenciesFromRhSuAd = {10, 10, 13, 16}
@@ -1642,10 +1805,10 @@ static Function PS_DS_AD11_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%initialValidSlopePass], {1, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%fiSlopeReachedPassFromRhSuAd], {0, 0, 0}, mode = WAVE_DATA)
 
-	Make/FREE/D minDAScaleNormRef = {0.2142857142857143, NaN}
+	Make/FREE/D minDAScaleNormRef = {2.142857142857143, NaN}
 	CHECK_EQUAL_WAVES(entries[%minDaScaleNorm], minDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
-	Make/FREE/D maxDAScaleNormRef = {0.2571428571428571, NaN}
+	Make/FREE/D maxDAScaleNormRef = {2.571428571428571, NaN}
 	CHECK_EQUAL_WAVES(entries[%maxDaScaleNorm], maxDAScaleNormRef, mode = WAVE_DATA, tol = 1e-24)
 
 	[WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd, WAVE sweepPassedFRomRhSuAd] = ExtractRefValuesFromOverride(sweepNo)
@@ -1655,17 +1818,17 @@ static Function PS_DS_AD11_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
-	Make/FREE/D fiSlopeRef = {1.744186046511628e-10, 1.014061654948618e-10}
-	Make/FREE/D fiOffsetRef = {9.023255813953488, 13.6181719848567}
-	Make/FREE/T futureDAScalesRef = {"6.29333333333333;11.224;", \
-	                                 "6.29333333333333;11.224;"}
+	Make/FREE/D maxSlopeRef = {3e-11, 3e-11}
+	Make/FREE/D fiSlopeRef = {1.739130434782609e-11, 1.020408163265306e-11}
+	Make/FREE/D fiOffsetRef = {9.043478260869566, 13.57142857142857}
+	Make/FREE/T futureDAScalesRef = {"63;112;", \
+	                                 "63;112;"}
 
 	// we do have three pairs in apFrequenciesFromRhSuAd/DAScalesFromRhSuAd but a neighboring duplicate
 	// so only two valid slopes and offsets
-	Make/FREE/D fiSlopesFromRhSuAdRef = {PSQ_DS_SKIPPED_FI_SLOPE, 1.5e-10, 3e-10}
+	Make/FREE/D fiSlopesFromRhSuAdRef = {PSQ_DS_SKIPPED_FI_SLOPE, 1.5e-11, 3e-11}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {PSQ_DS_SKIPPED_FI_SLOPE, 8.5, 4}
-	Make/FREE/D DAScalesRef = {6.293333333333333, 11.224}
+	Make/FREE/D DAScalesRef = {63, 112}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1772,13 +1935,13 @@ static Function PS_DS_AD12_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%dascaleFromRhSuAd], DAScalesFromRhSuAd, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
-	Make/FREE/D maxSlopeRef = {3.416149068322985e-10, 3.416149068322985e-10, 3.416149068322985e-10, 3.416149068322985e-10}
-	Make/FREE/D fiSlopeRef = {3.416149068322985e-10, 3.416149068322985e-10, -2.376451525789897e-10, -4.078983962177433e-12}
-	Make/FREE/D fiOffsetRef = {2.043478260869549, 2.043478260869549, 40.9697542533081, 21.34276443867624}
-	Make/FREE/T futureDAScalesRef = {"6.72;8.40318181818182;", "6.72;8.40318181818182;", "6.72;8.40318181818182;5.95159090909091;", "6.72;8.40318181818182;5.95159090909091;"}
+	Make/FREE/D maxSlopeRef = {3.142857142857143e-10, 3.142857142857143e-10, 3.142857142857143e-10, 3.142857142857143e-10}
+	Make/FREE/D fiSlopeRef = {3.142857142857143e-10, 3.142857142857143e-10, -2e-10, -3.333333333333381e-12}
+	Make/FREE/D fiOffsetRef = {3, 3, 39, 21.3}
+	Make/FREE/T futureDAScalesRef = {"7;9;", "7;9;", "7;9;6;", "7;9;6;"}
 	Make/FREE/D fiSlopesFromRhSuAdRef = {2e-10, 2e-10, 1e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {8, 8, 10.5}
-	Make/FREE/D DAScalesRef = {6.719999999999999, 8.403181818181814, 8.403181818181814, 5.951590909090905}
+	Make/FREE/D DAScalesRef = {7, 9, 9, 6}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1881,13 +2044,13 @@ static Function PS_DS_AD13_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {4.99999999999999e-09}
-	Make/FREE/D fiSlopeRef = {-4.999999999999928e-09}
-	Make/FREE/D fiOffsetRef = {74.99999999999918}
-	Make/FREE/T futureDAScalesRef = {"1.1;1.269;"}
+	Make/FREE/D fiSlopeRef = {-2.50000000000002e-09}
+	Make/FREE/D fiOffsetRef = {45.00000000000023}
+	Make/FREE/T futureDAScalesRef = {"1;1;1;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {4.99999999999999e-09}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {-44.9999999999999}
-	Make/FREE/D DAScalesRef = {1.1}
+	Make/FREE/D DAScalesRef = {1}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -1991,13 +2154,13 @@ static Function PS_DS_AD14_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {3e-10, 3e-10}
-	Make/FREE/D fiSlopeRef = {NaN, 8.152173913043478e-12}
-	Make/FREE/D fiOffsetRef = {NaN, 15.67391304347826}
-	Make/FREE/T futureDAScalesRef = {"5.22666666666667;", "5.22666666666667;"}
+	Make/FREE/D fiSlopeRef = {NaN, 1.000000000000014e-11}
+	Make/FREE/D fiOffsetRef = {NaN, 15.59999999999999}
+	Make/FREE/T futureDAScalesRef = {"5;", "5;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10, 2e-10, 3e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9, 7, 4}
-	Make/FREE/D DAScalesRef = {5.226666666666667, 5.22666666666667}
+	Make/FREE/D DAScalesRef = {5, 5}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -2220,13 +2383,13 @@ static Function PS_DS_AD16_REENTRY([string str])
 	CHECK_EQUAL_WAVES(entries[%sweepPassFromRhSuAd], sweepPassedFRomRhSuAd, mode = WAVE_DATA)
 
 	Make/FREE/D maxSlopeRef = {2e-10, NaN, 2e-10, 2e-10, 2e-10}
-	Make/FREE/D fiSlopeRef = {NaN, NaN, 1.242236024844745e-11, 1.242236024844745e-11, 3.01318267419956e-12}
-	Make/FREE/D fiOffsetRef = {NaN, NaN, 13.56521739130434, 13.56521739130434, 14.19751412429379}
-	Make/FREE/T futureDAScalesRef = {"6.72;", "6.72;", "6.72;13.3575;", "6.72;13.3575;", "6.72;13.3575;"}
+	Make/FREE/D fiSlopeRef = {NaN, NaN, 1.242236024844745e-11, 1.142857142857142e-11, 2.857142857142869e-12}
+	Make/FREE/D fiOffsetRef = {NaN, NaN, 13.6, 13.6, 14.2}
+	Make/FREE/T futureDAScalesRef = {"7;", "7;", "7;14;", "7;14;", "7;14;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {2e-10, 2e-10, 1e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {8, 8, 10.5}
-	Make/FREE/D DAScalesRef = {6.719999999999999, 6.72, 6.72, 13.3575, 13.3575}
+	Make/FREE/D DAScalesRef = {7, 7, 7, 14, 14}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_EQUAL_WAVES(entries[%fiSlope], fiSlopeRef, mode = WAVE_DATA, tol = 1e-24)
@@ -2436,11 +2599,11 @@ static Function PS_DS_AD18_REENTRY([string str])
 	Make/FREE/D maxSlopeRef = {1e-10}
 	Make/FREE/D fiSlopeRef = {1}
 	Make/FREE/D fiOffsetRef = {1}
-	Make/FREE/T futureDAScalesRef = {"4.53;"}
+	Make/FREE/T futureDAScalesRef = {"5;"}
 
 	Make/FREE/D fiSlopesFromRhSuAdRef = {1e-10}
 	Make/FREE/D fiOffsetsFromRhSuAdRef = {9}
-	Make/FREE/D DAScalesRef = {4.529999999999999}
+	Make/FREE/D DAScalesRef = {5}
 
 	CHECK_EQUAL_WAVES(entries[%maxSlope], maxSlopeRef, mode = WAVE_DATA, tol = 1e-24)
 	CHECK_WAVE(entries[%fiSlope], NULL_WAVE)
