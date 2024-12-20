@@ -5469,3 +5469,72 @@ Function DAP_TPSettingsToGUI(string device, [string entry])
 		TP_RestartTestPulse(device, TPState)
 	endif
 End
+
+/// @brief Return the maximum possible DAScale value
+///
+/// @param device        DAC device
+/// @param headstage     headstage
+/// @param stimsetName   name of the stimset
+/// @param stimsetColumn set sweep count of the given stimset to use for min/max calculation
+Function DAP_GetDAScaleMax(string device, variable headstage, string stimsetName, variable stimsetColumn)
+
+	variable minData, maxData, gain, hardwareType, DAC, minStimset, maxStimset, activeDACIndex
+	variable result, minimum, maximum
+	string ctrl, text, msg
+
+	if(DAP_DeviceIsUnLocked(device))
+		return NaN
+	endif
+
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+	if(!IsValidHeadstage(DAC))
+		return NaN
+	endif
+
+	if(WB_StimsetIsFromThirdParty(stimsetName))
+		return NaN
+	endif
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(stimsetName)
+	ASSERT(WaveExists(stimset), "Could not create stimset")
+
+	if(stimsetColumn >= DimSize(stimset, COLS))
+		return NaN
+	endif
+
+	text       = note(stimset)
+	minStimset = WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "Minimum", sweep = stimsetColumn)
+	maxStimset = WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "Maximum", sweep = stimsetColumn)
+	ASSERT(IsFinite(minStimset) && IsFinite(maxStimset), "Invalid minimum/maximum")
+
+	hardwareType       = GetHardwareType(device)
+	[minData, maxData] = HW_GetDataRange(hardwareType, XOP_CHANNEL_TYPE_DAC, 1)
+
+	WAVE DAQConfigWave = GetDAQConfigWave(device)
+	WAVE DACs          = GetDACListFromConfig(DAQConfigWave)
+	activeDACIndex = GetRowIndex(DACs, val = DAC)
+
+	WAVE gains = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
+	gain = gains[activeDACIndex]
+	ASSERT(IsFinite(gain), "Invalid gain")
+
+	minimum = minData / (minStimset * gain)
+	maximum = maxData / (maxStimset * gain)
+
+	if(IsInf(minimum) && IsInf(maximum))
+		result = Inf
+	elseif(IsInf(minimum))
+		result = maximum
+	elseif(IsInf(maximum))
+		result = minimum
+	else
+		result = min(minimum, maximum)
+	endif
+
+	result = trunc(result)
+
+	sprintf msg, "result %g, minimum %g, maximum %g, minData %g, maxData %g, minStimset %g, maxStimset %g, channel gain %g\r", result, minimum, maximum, minData, maxData, minStimset, maxStimset, gain
+	DEBUGPRINT(msg)
+
+	return result
+End

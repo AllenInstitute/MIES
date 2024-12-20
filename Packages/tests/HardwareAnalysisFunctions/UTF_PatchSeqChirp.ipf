@@ -38,7 +38,7 @@ static Function/WAVE GetLBNEntriesWave_IGNORE()
 	string list = "sweepPass;setPass;insideBounds;baselinePass;spikePass;stimsetPass;"          \
 	              + "boundsState;boundsAction;initialDAScale;DAScale;resistance;spikeCheck;"    \
 	              + "samplingPass;autobiasTargetV;initUserOnsetDelay;userOnsetDelay;asyncPass;" \
-	              + "initLowPassFilter;lowPassFilter"
+	              + "initLowPassFilter;lowPassFilter;oorDAScale"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -71,6 +71,7 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 	wv[%asyncPass]          = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
 	wv[%initLowPassFilter]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INIT_LPF)
 	wv[%lowPassFilter]      = GetLBNSingleEntry_IGNORE(device, sweepNo, "LPF cutoff")
+	wv[%oorDAScale]         = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_DASCALE_OOR)
 
 	return wv
 End
@@ -98,6 +99,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 		case PSQ_FMT_LBN_BL_QC_PASS:
 		case PSQ_FMT_LBN_SPIKE_PASS:
 		case PSQ_FMT_LBN_PULSE_DUR:
+		case PSQ_FMT_LBN_DASCALE_OOR:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case STIMSET_SCALE_FACTOR_KEY:
@@ -219,6 +221,8 @@ static Function PS_CR1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520}, empty, empty, incomplete = 1)
@@ -299,6 +303,8 @@ static Function PS_CR2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20 + 2, 520 + 2, 2020 + 2, 2520 + 2}, {522, 854.6995}, empty)
@@ -376,6 +382,8 @@ static Function PS_CR2a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	// CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995})
 End
@@ -451,6 +459,8 @@ static Function PS_CR2b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
@@ -529,6 +539,8 @@ static Function PS_CR3_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {14, 14, 14}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
@@ -636,6 +648,8 @@ static Function PS_CR4_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {14, 14, 14, 14, 14, 14}, mode = WAVE_DATA)
 	CheckMCCLPF(str, 14)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {0, NaN, 0, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 
@@ -747,6 +761,8 @@ static Function PS_CR4a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {0, NaN, 0, NaN, NaN, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
@@ -856,6 +872,8 @@ static Function PS_CR4b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {0, NaN, 0, NaN, NaN, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
@@ -963,6 +981,8 @@ static Function PS_CR5_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {0, NaN, 0, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
@@ -1075,6 +1095,8 @@ static Function PS_CR6_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {0, NaN, 0, NaN, NaN, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
@@ -1182,6 +1204,8 @@ static Function PS_CR7_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520}, {520, 1038.854}, empty, sweep = 0)
@@ -1286,6 +1310,8 @@ static Function PS_CR8_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
@@ -1399,6 +1425,8 @@ static Function PS_CR9_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {NaN, NaN, 0, 0, NaN, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 0)
@@ -1509,6 +1537,8 @@ static Function PS_CR9a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {NaN, NaN, 0, 0, NaN, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
@@ -1621,6 +1651,8 @@ static Function PS_CR9b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {NaN, NaN, 0, 0, NaN, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 0)
@@ -1728,6 +1760,8 @@ static Function PS_CR10_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {NaN, 0, NaN, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 1038.854}, empty, sweep = 0)
@@ -1816,6 +1850,8 @@ static Function PS_CR11_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {0, 0, 0}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520}, empty, empty, incomplete = 1)
@@ -1898,6 +1934,8 @@ static Function PS_CR12_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, {520, 1519.992})
@@ -1993,6 +2031,8 @@ static Function PS_CR13_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {0, NaN, NaN, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
@@ -2094,6 +2134,8 @@ static Function PS_CR13a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {0, NaN, NaN, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20 + 2, 520 + 2}, empty, empty, sweep = 0, incomplete = 1)
@@ -2101,6 +2143,86 @@ static Function PS_CR13a_REENTRY([string str])
 	CheckChirpUserEpochs(str, {20 + 2, 520 + 2, 2020 + 2, 2520 + 2}, {520 + 2, 1038.854 + 2}, {520 + 2, 1519.992 + 2}, sweep = 2)
 	CheckChirpUserEpochs(str, {20 + 2, 520 + 2}, empty, empty, sweep = 3, incomplete = 1)
 	CheckChirpUserEpochs(str, {20 + 2, 520 + 2, 2020 + 2, 2520 + 2}, {520 + 2, 1038.854 + 2}, {520 + 2, 1519.992 + 2}, sweep = 4)
+End
+
+static Function PS_CR13b_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var = 10)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str = "*")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var = 100)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UserOnsetDelay", var = 2)
+
+	Make/FREE asyncChannels = {2, 3}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_CR13b([string str])
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
+	wv = 0
+
+	// layer 0: BL passes
+	wv[][][0] = 1
+
+	// layer 3: Spikes check during chirp passes
+	wv[][][3] = 0
+
+	// layer 4: async QC passes
+	wv[][][4] = 1
+End
+
+static Function PS_CR13b_REENTRY([string str])
+
+	variable sweepNo, setPassed
+	string key
+
+	sweepNo = 1
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%baselinePass], NULL_WAVE)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%asyncPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimsetPass], {1, 1}, mode = WAVE_DATA)
+
+	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%boundsState], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%boundsAction], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 3000}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%autobiasTargetV], {70, 70}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 70)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initUserOnsetDelay], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {2, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
+	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {0, 1}, mode = WAVE_DATA)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	Make/FREE/N=0 empty
+	CheckChirpUserEpochs(str, {20 + 2, 520 + 2}, empty, empty, sweep = 0, incomplete = 1)
+	CheckChirpUserEpochs(str, {20 + 2, 520 + 2}, empty, empty, sweep = 1, incomplete = 1)
 End
 
 // No a, b as boundsState evaluation is always passing
@@ -2176,6 +2298,8 @@ static Function PS_CR14_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
@@ -2259,6 +2383,8 @@ static Function PS_CR15_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
@@ -2344,6 +2470,8 @@ static Function PS_CR16_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520, 2020, 2520}, {520, 852.6995}, empty)
@@ -2425,6 +2553,8 @@ static Function PS_CR17_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, {20, 520}, empty, empty, sweep = 0, incomplete = 1)
@@ -2505,6 +2635,8 @@ static Function PS_CR18_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
+
+	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
