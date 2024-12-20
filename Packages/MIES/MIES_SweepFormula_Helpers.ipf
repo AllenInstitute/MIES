@@ -128,7 +128,7 @@ End
 Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph, string opShort, variable argNum, [string defValue, WAVE/Z/T allowedValues, FUNCREF SFH_StringChecker_Prototype checkFunc, variable checkDefault])
 
 	string msg, result, sep, allowedValuesAsStr
-	variable checkExist, numArgs, idx, ret
+	variable checkExist, numArgs, idx, ret, matchIndex
 
 	if(ParamIsDefault(checkDefault))
 		checkDefault = 1
@@ -178,22 +178,30 @@ Function/S SFH_GetArgumentAsText(variable jsonId, string jsonPath, string graph,
 	if(!ParamIsDefault(allowedValues))
 		ASSERT(WaveExists(allowedValues) && IsTextWave(allowedValues), "allowedValues must be a text wave")
 
-		// search are allowed entries and try to match a unique abbreviation
-		WAVE/Z/T matches = GrepTextWave(allowedValues, "(?i)^\\Q" + result + "\\E.*$")
-		if(!WaveExists(matches))
-			sep                = ", "
-			allowedValuesAsStr = TextWaveToList(allowedValues, sep, trailSep = 0)
-			sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
-			SFH_ASSERT(0, msg)
-		elseif(DimSize(matches, ROWS) > 1)
-			sep                = ", "
-			allowedValuesAsStr = TextWaveToList(matches, sep, trailSep = 0)
-			sprintf msg, "Argument #%d of operation %s: The abbreviated text argument \"%s\" is not unique and could be (%s)", argNum, opShort, result, allowedValuesAsStr
-			SFH_ASSERT(0, msg)
-		else
-			ASSERT(DimSize(matches, ROWS) == 1, "Unexpected match")
-			// replace possibly abbreviated argument with its full name
-			result = matches[0]
+		// result can be either an exact match or a unique abbreviation
+		// need to check the exact match first as otherwise we find two
+		// abbreviations when given `a` with allowedValues `a`, `aXXX`
+
+		matchIndex = GetRowIndex(allowedValues, str = result)
+
+		if(IsNaN(matchIndex))
+			// no exact match, search allowed entries and try to match a unique abbreviation
+			WAVE/Z/T matches = GrepTextWave(allowedValues, "(?i)^\\Q" + result + "\\E.*$")
+			if(!WaveExists(matches))
+				sep                = ", "
+				allowedValuesAsStr = TextWaveToList(allowedValues, sep, trailSep = 0)
+				sprintf msg, "Argument #%d of operation %s: The text argument \"%s\" is not one of the allowed values (%s)", argNum, opShort, result, allowedValuesAsStr
+				SFH_ASSERT(0, msg)
+			elseif(DimSize(matches, ROWS) > 1)
+				sep                = ", "
+				allowedValuesAsStr = TextWaveToList(matches, sep, trailSep = 0)
+				sprintf msg, "Argument #%d of operation %s: The abbreviated text argument \"%s\" is not unique and could be (%s)", argNum, opShort, result, allowedValuesAsStr
+				SFH_ASSERT(0, msg)
+			else
+				ASSERT(DimSize(matches, ROWS) == 1, "Unexpected match")
+				// replace possibly abbreviated argument with its full name
+				result = matches[0]
+			endif
 		endif
 	endif
 
@@ -362,9 +370,13 @@ Function/WAVE SFH_AsDataSet(WAVE data)
 End
 
 /// @brief Formula "cursors(A,B)" can return NaNs if no cursor(s) are set.
-static Function SFH_ExtendIncompleteRanges(WAVE ranges)
+static Function SFH_ExtendIncompleteRanges(WAVE/WAVE ranges)
 
-	for(WAVE wv : ranges)
+	for(WAVE/Z wv : ranges)
+		if(!WaveExists(wv))
+			continue
+		endif
+
 		if(IsNumericWave(wv))
 			SFH_ASSERT(DimSize(wv, ROWS) == 2, "Numerical range must have two rows in the form [start, end].")
 			wv[0][] = IsNaN(wv[0][q]) ? -Inf : wv[0][q]

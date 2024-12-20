@@ -209,6 +209,13 @@ Function/S CA_AveragingWaveModKey(WAVE wv)
 	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
 End
 
+/// @brief Cache key generator for the tau range calculation
+///        of psx events
+Function/S CA_PSXEventGoodTauRange(WAVE wv)
+
+	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
+End
+
 /// @brief Calculated a CRC from non wave reference waves using modification data, wave modification count and wave location.
 ///        If the given wave is a wave reference wave, then the CRC is calculated recursively from
 ///        all non wave reference waves and null wave references found.
@@ -415,7 +422,7 @@ Function/S CA_PSXKernelOperationKey(variable riseTau, variable decayTau, variabl
 	crc = StringCRC(crc, num2strHighPrec(dt, precision = MAX_DOUBLE_PRECISION))
 	crc = WaveCRC(crc, range)
 
-	return num2istr(crc) + "PSX Kernel Version 1"
+	return num2istr(crc) + "PSX Kernel Version 2"
 End
 
 static Function/S CA_PSXBaseKey(string comboKey, string psxParameters)
@@ -433,22 +440,17 @@ End
 /// @param psxParameters JSON dump of the psx/psxKernel operation parameters
 Function/S CA_PSXEventsKey(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Events " + ":Version 1"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Events " + ":Version 2"
 End
 
 Function/S CA_PSXOperationKey(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Operation " + ":Version 1"
-End
-
-Function/S CA_PSXRiseTimeKey(string comboKey, string psxParameters)
-
-	return CA_PSXBaseKey(comboKey, psxParameters) + " PSX Rise time " + ":Version 1"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Operation " + ":Version 3"
 End
 
 Function/S CA_PSXAnalyzePeaks(string comboKey, string psxParameters)
 
-	return CA_PSXBaseKey(comboKey, psxParameters) + " Analyze Peaks " + ":Version 1"
+	return CA_PSXBaseKey(comboKey, psxParameters) + " Analyze Peaks " + ":Version 2"
 End
 
 /// @brief Return the key for the igor info entries

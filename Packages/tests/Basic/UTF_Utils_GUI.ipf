@@ -83,3 +83,33 @@ Function FTWWorks()
 End
 
 /// @}
+
+Function TestRemoveControls()
+
+	string win
+
+	NewPanel
+	win = S_name
+
+	Button abcd
+	PopupMenu efgh
+
+	CHECK_EQUAL_STR(ControlNameList(win), "abcd;efgh;")
+	RemoveAllControls(win)
+	CHECK_EQUAL_STR(ControlNameList(win), "")
+End
+
+Function TestRemoveDrawLayers()
+
+	string win
+	Display
+	win = S_name
+
+	DrawText/W=$win 47, 475, "my text"
+
+	DrawAction/W=$win commands
+	CHECK_GT_VAR(strlen(S_recreation), 0)
+	RemoveAllDrawLayers(win)
+	DrawAction/W=$win commands
+	CHECK_EQUAL_VAR(strlen(S_recreation), 0)
+End

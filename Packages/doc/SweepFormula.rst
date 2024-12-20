@@ -1368,9 +1368,10 @@ numberOfSDs
 psxRiseTime
 """""""""""
 
-The `psxRiseTime` operation is a helper operation for `psx` to manage the lower and upper thresholds for the rise time calculation.
+The `psxRiseTime` operation is a helper operation for `psx` to manage the lower and upper thresholds for the rise time calculation
+and the differential threshold for the onset time calculcation.
 
-   psxRiseTime([lowerThreshold, upperThreshold])
+   psxRiseTime([lowerThreshold, upperThreshold, diffThreshold])
 
 The function accepts zero to two arguments.
 
@@ -1380,15 +1381,20 @@ lowerThreshold
 upperThreshold
    defaults to 80%
 
+diffThreshold
+   defaults to 5%
+
 .. code-block:: bash
 
    psxRiseTime(0.5)
    psxRiseTime(0.5, 0.9)
+   psxRiseTime(0.5, 0.9, 0.15)
 
 psxDeconvFilter
 """""""""""""""
 
 The `psxDeconvFilter` operation is a helper operation for `psx` to manage the deconvolution filter settings.
+This filter is a bandpass filter.
 
    psxDeconvFilter([lowFreq, highFreq, order])
 
@@ -1404,21 +1410,21 @@ order
    defaults to `NaN`
 
 The default values of `NaN` are replaced inside `psx`. For the order this is
-`101`, for the frequencies this is a normalized frequency which depends on the
-sampling interval of the data. Here `lowFreq` is the end of the passband and
-`highFreq` the start of the reject band see also the description of `/LO` from
-`FilterFIR`.
+`7`, for the frequencies `500` (`lowFreq`) and `50` (`highFreq`).
+Here `lowFreq` is the end and `highFreq` the start of the
+passband, see also the description of `/LO` and `/HI` from `FilterIIR`.
 
 .. code-block:: bash
 
-   psxDeconvFilter(500, 1000)
-   psxDeconvFilter(400, 600, 91)
+   psxDeconvFilter(800, 100)
+   psxDeconvFilter(400, 50, 11)
 
 psxstats
 """"""""
 
 Plot properties of the result waves of a miniature PSC/PSP classification. The
-operation combines the data from all input sweeps.
+operation combines the data from all input sweeps. Also all ranges for each
+sweep are combined.
 
 The operation allows to visualize `psx` data from the results wave or locally,
 i.e. from an `psx` operation from another formula separated by `and`. The
@@ -1443,7 +1449,8 @@ select
 
 prop
   column of the `psx` event results waves to plot.
-  Choices are: `amp`, `xpos`, `xinterval`, `tau`, `estate`, `fstate`, `fitresult`, `risetime`
+  Choices are: `amp`, `peak`, `peaktime`, `deconvpeak`, `deconvpeaktime`, `baseline`, `baselinetime`, `xinterval`,
+  `tau`, `estate`, `fstate`, `fitresult`, `slewrate`, `slewratetime`, `risetime`, `onsettime`
 
 state
   QC state to select the events.
@@ -1451,8 +1458,8 @@ state
 
   The used QC state depends on `prop`:
 
-  - Event state QC -> `amp`/`xpos`/`xinterval`/`estate`/`risetime`
   - Fit state QC -> `tau`/`fstate`/`fitresult`
+  - Event state QC for everything else
 
   The difference between `all` and `every` is that `all` plots the events from
   all possible states in **one** trace whereas `every` creates **multiple**
