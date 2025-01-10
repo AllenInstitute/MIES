@@ -1622,7 +1622,7 @@ Function/WAVE SFH_MoveDatasetHigherIfCompatible(WAVE/WAVE data)
 	// check pre-conditions
 	WAVE/ZZ prevSets
 	WAVE/ZZ prevElement
-	for(WAVE/WAVE sets : resolved)
+	for(WAVE/Z/WAVE sets : resolved)
 		if(!WaveExists(sets))
 			return data
 		endif
