@@ -23,7 +23,7 @@
 
 #pragma IgorVersion=9.00
 
-#if (NumberByKey("BUILD", IgorInfo(0)) < 56565)
+#if IgorVersion() < 10 && (NumberByKey("BUILD", IgorInfo(0)) < 56565)
 #define TOO_OLD_IGOR
 #endif
 
