@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(69,5)	analysis_function_parameters
+WAVES/T/N=(70,5)	analysis_function_parameters
 BEGIN
 	"Name"	"Type"	"Optionality"	"Used by"	"Help"
 	"AbsFrequencyMinDistance"	"variable"	"optional"	"DA"	"Minimum absolute frequency distance for DAScale estimation. Only for \"AdaptiveSupra\"."
@@ -16,6 +16,7 @@ BEGIN
 	"BaselineTargetVThreshold"	"variable"	"optional"	"CR, DA, RA, RB"	"Threshold value in mV for the target V baseline QC check (defaults to 1)"
 	"BoundsEvaluationMode"	"string"	"required"	"CR"	"Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
 	"DAScaleModifier"	"variable"	"mixed"	"CR, DA, SC"	"Modifier value to the DA Scale of headstages with spikes during chirp\rPercentage how the DAScale value is adapted if it is outside of the MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\".\rModifier value to the DA Scale of headstages for too few spikes"
+	"DAScaleNegativeSlopePercent"	"variable"	"optional"	"DA"	"Percentage to use for DAScale estimation once the f-I slopes get negative/zero. Only for \"AdaptiveSupra\"."
 	"DAScaleOperator"	"string"	"mixed"	"CR, SC"	"Set the math operator to use for combining the DAScale and the modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication).\rSet the math operator to use for combining the DAScale and the too few spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 	"DAScaleRangeFactor"	"variable"	"optional"	"DA"	"Fallback factor to apply to the input DAScale range for calculating the DAScale minimum step width when all previous f-I data from Rheobase/Supra/Adaptive is constant. Only for \"AdaptiveSupra\"."
 	"DAScales"	"wave"	"required"	"DA, DS"	"DA Scale Factors in pA"
