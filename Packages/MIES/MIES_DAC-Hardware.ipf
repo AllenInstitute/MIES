@@ -837,12 +837,14 @@ Function HW_GetDAFifoPosition(string device, variable dataAcqOrTP)
 	endswitch
 End
 
-/// @brief Return the minimum/maximum voltage ranges for the given hardware and channel type
+/// @brief Return the minimum/maximum values for the given hardware and channel type
+///
+/// The type is the natural type for the hardware, volts for NI and Sutter, and 16 bit integer values for ITC.
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param channelType  One of @ref XopChannelConstants
 /// @param isAssociated For Sutter hardware the voltage range differs for associated channels or unassociated ones
-Function [variable minimum, variable maximum] HW_GetVoltageRange(variable hardwareType, variable channelType, variable isAssociated)
+Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareType, variable channelType, variable isAssociated)
 
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:

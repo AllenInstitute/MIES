@@ -987,7 +987,7 @@ End
 /// the next sweep if the measured resistance is smaller than 20MΩ
 Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 
-	variable sweepNo, index, i, targetV, prevActiveHS, prevSendToAllAmp
+	variable index, i, targetV, prevActiveHS, prevSendToAllAmp
 	variable amps, result
 	variable autoBiasCheck, holdingPotential, indexing
 	string msg, name, control
@@ -1103,11 +1103,6 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 				return NaN
 			endif
 
-			WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(device)
-			ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
-
-			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
-
 			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE textualValues   = GetLBTextualValues(device)
 
@@ -1115,14 +1110,14 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 			WAVE deltaI     = LBN_GetNumericWave()
 			WAVE resistance = LBN_GetNumericWave()
 
-			CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
+			CalculateTPLikePropsFromSweep(numericalValues, textualValues, s.scaledDACWave, deltaI, deltaV, resistance)
 
 			ED_AddEntryToLabnotebook(device, LBN_DELTA_I, deltaI, unit = "A")
 			ED_AddEntryToLabnotebook(device, LBN_DELTA_V, deltaV, unit = "V")
 
 			FitResistance(device, s.headstage, showPlot = 1)
 
-			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, UNKNOWN_MODE)
+			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, s.sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, UNKNOWN_MODE)
 			ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -1145,8 +1140,10 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 					continue
 				endif
 
+				WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, s.sweepNo, i)
+
 				// check initial response
-				if(index == 0 && resistanceFitted[i] <= 20e6)
+				if(DimSize(sweeps, ROWS) == 1 && resistanceFitted[i] <= 20e6)
 					amps                   = -100e-12
 					targetVoltagesIndex[i] = -1
 				else

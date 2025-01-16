@@ -1632,3 +1632,11 @@ Function/S ExecuteSweepFormulaCode(string browser, string code)
 
 	return SFH_GetFormulaGraphForBrowser(browser)
 End
+
+Function MarkDeviceAsLocked(string device)
+
+	REQUIRE_PROPER_STR(device)
+
+	SVAR lockedDevices = $GetLockedDevices()
+	lockedDevices = device
+End

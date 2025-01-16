@@ -1048,7 +1048,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 
 	WAVE config = GetDAQConfigWave(device)
 
-	[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_TTL, 0)
+	[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_TTL, 0)
 
 	switch(s.hardwareType)
 		case HARDWARE_NI_DAC: // intended drop through
@@ -1355,7 +1355,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 
 		switch(s.hardwareType)
 			case HARDWARE_ITC_DAC:
-				[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, 0)
+				[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, 0)
 
 				if(s.multiDevice)
 					Multithread ITCDataWave[][0, s.numDACEntries - 1] =                                            \
@@ -1377,7 +1377,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 				CA_StoreEntryIntoCache(key, ITCDataWave)
 				break
 			case HARDWARE_NI_DAC:
-				[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, 0)
+				[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, 0)
 
 				for(i = 0; i < s.numDACEntries; i += 1)
 					WAVE NIChannel = NISUDataWave[i]
@@ -1397,7 +1397,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 					ASSERT(!mod(DimSize(SUChannel, ROWS), s.testPulseLength), "Sutter TP channel length is not integer multiple of test pulse length")
 					tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
 
-					[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !IsNaN(config[i][%HEADSTAGE]))
+					[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !IsNaN(config[i][%HEADSTAGE]))
 					Multithread SUChannel[] = limit(tpAmp * s.testPulse[mod(p, s.testPulseLength)], minLimit, maxLimit); AbortOnRTE
 				endfor
 
@@ -1428,7 +1428,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 		isUnAssociated = IsNaN(headstage)
 		tpAmp          = s.DACAmp[i][%TPAMP] * s.gains[i]
 
-		[minLimit, maxLimit] = HW_GetVoltageRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !isUnAssociated)
+		[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !isUnAssociated)
 
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 			ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
@@ -1890,7 +1890,7 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 			ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type: " + num2str(WaveType(ITCDataWave)))
 
 			// border vals are the same for all channels for ITC, so just use first
-			[minVal, maxVal] = HW_GetVoltageRange(hardwareType, configWave[0][%ChannelType], 1)
+			[minVal, maxVal] = HW_GetDataRange(hardwareType, configWave[0][%ChannelType], 1)
 
 			FindValue/UOFV/I=(minVal) ITCDataWave
 			if(V_Value != -1)
@@ -1915,7 +1915,7 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 					i += 1
 					continue
 				endif
-				[minVal, maxVal] = HW_GetVoltageRange(hardwareType, channelType, !IsNaN(configWave[i][%HEADSTAGE]))
+				[minVal, maxVal] = HW_GetDataRange(hardwareType, channelType, !IsNaN(configWave[i][%HEADSTAGE]))
 
 				FindValue/UOFV/V=(minVal)/T=1E-6 channel
 				if(V_Value != -1)
