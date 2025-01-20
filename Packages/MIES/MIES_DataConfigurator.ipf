@@ -1008,7 +1008,7 @@ static Function DC_PlaceDataInDAQDataWave(string device, variable numActiveChann
 	[ret, row, column] = DC_CheckIfDataWaveHasBorderVals(device, dataAcqOrTP)
 
 	if(ret)
-		printf "Some values in DataWave exceed device limits for %s mode (channel index %g, position %g). Maybe the DA/AD Gain needs adjustment?\r", SelectString(dataAcqOrTP, "DATA_ACQUISITION", "TestPulse"), column, row
+		printf "Some values in DataWave exceed device limits for %s mode (channel index %g, position %g). Maybe the DA scale needs adjustment?\r", SelectString(dataAcqOrTP, "DATA_ACQUISITION", "TestPulse"), column, row
 		ControlWindowToFront()
 		Abort
 	endif
