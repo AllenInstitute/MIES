@@ -1277,8 +1277,14 @@ Function SearchForDuplicates(WAVE wv)
 	return WaveExists(idx) && DimSize(idx, ROWS) > 0
 End
 
-/// @brief Return the indizes of elements which need to be dropped so that no two neighbouring points are equal/both NaN
-Function/WAVE FindNeighbourDuplicates(WAVE wv)
+threadsafe Function FindNeighbourPrototype(variable var1, variable var2)
+
+	ASSERT_TS(0, "Can't call prototype function")
+End
+
+/// @brief Return the indizes of elements which need to be dropped so that no
+/// two neighbouring points fullfil the predicate `f`
+threadsafe Function/WAVE FindNeighbourWithPredicate(WAVE wv, FUNCREF FindNeighbourPrototype pred)
 
 	variable numPoints, i, numDuplicates, idx
 
@@ -1294,7 +1300,7 @@ Function/WAVE FindNeighbourDuplicates(WAVE wv)
 	FastOp indizes = (NaN)
 
 	for(i = 1; i < numPoints; i += 1)
-		if(EqualValuesOrBothNaN(wv[i - 1], wv[i]))
+		if(pred(wv[i - 1], wv[i]))
 			indizes[idx++] = i
 		endif
 	endfor

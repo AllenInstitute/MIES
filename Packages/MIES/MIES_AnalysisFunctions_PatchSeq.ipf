@@ -2084,7 +2084,7 @@ static Function [WAVE apfreqFiltered, WAVE DAScalesFiltered, WAVE deletedIndizes
 		return [$"", $"", $"", 0]
 	endif
 
-	WAVE/Z indizes = FindNeighbourDuplicates(apfreq)
+	WAVE/Z indizes = FindNeighbourWithPredicate(apfreq, EqualValuesOrBothNaN)
 
 	if(!WaveExists(indizes))
 		return [apfreq, DAScales, $"", numPoints]
