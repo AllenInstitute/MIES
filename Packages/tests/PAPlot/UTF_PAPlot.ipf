@@ -17,7 +17,7 @@ End
 // - RunWithOpts()
 // - RunWithOpts(testsuite = "UTF_PA_Tests.ipf")
 // - RunWithOpts(testcase = "PAT_ZeroPulses")
-Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable keepDataFolder, variable enableJU])
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable keepDataFolder, variable enableJU, variable enableRegExp])
 
 	variable debugMode
 	string   traceOptions
@@ -60,6 +60,12 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 		enableJU = !!enableJU
 	endif
 
+	if(ParamIsDefault(enableRegExp))
+		enableRegExp = 0
+	else
+		enableRegExp = !!enableRegExp
+	endif
+
 	if(!instru)
 		traceWinList = ""
 	endif
@@ -75,8 +81,8 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, enableRegExp = enableRegExp, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	else
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableJU = enableJU, enableRegExp = enableRegExp, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	endif
 End
