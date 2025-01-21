@@ -24,7 +24,7 @@ static Function GlobalPreInit(string device)
 	PASS()
 End
 
-static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resistanceErr, WAVE/Z autobiasFromDialog] GetLBNEntries_IGNORE(string device, variable sweepNo, variable headstage)
+static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resistanceErr, WAVE/Z autobiasFromDialog, WAVE/Z outOfRangeDAScale] GetLBNEntries_IGNORE(string device, variable sweepNo, variable headstage)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -33,6 +33,7 @@ static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resista
 	WAVE/Z resistance         = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT, headstage, UNKNOWN_MODE)
 	WAVE/Z resistanceErr      = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_RESISTANCE_FIT_ERR, headstage, UNKNOWN_MODE)
 	WAVE/Z autobiasFromDialog = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_AUTOBIAS_TARGET_DIAG, headstage, UNKNOWN_MODE)
+	WAVE/Z outOfRangeDAScale  = GetLastSettingEachSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + LBN_DASCALE_OUT_OF_RANGE, headstage, UNKNOWN_MODE)
 End
 
 static Function RTV_Works_preAcq(string device)
@@ -56,13 +57,14 @@ static Function RTV_Works_REENTRY([string str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 5)
 
-	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog] = GetLBNEntries_IGNORE(str, sweepNo, 1)
+	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog, WAVE outOfRangeDAScale] = GetLBNEntries_IGNORE(str, sweepNo, 1)
 
 	CHECK_WAVE(deltaI, NUMERIC_WAVE)
 	CHECK_WAVE(deltaV, NUMERIC_WAVE)
 	CHECK_WAVE(resistance, NUMERIC_WAVE)
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
 	CHECK_WAVE(autobiasFromDialog, NULL_WAVE)
+	CHECK_WAVE(outOfRangeDAScale, NUMERIC_WAVE)
 End
 
 static Function RTV_WorksWithIndexing_preAcq(string device)
@@ -87,13 +89,14 @@ static Function RTV_WorksWithIndexing_REENTRY([string str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 6)
 
-	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog] = GetLBNEntries_IGNORE(str, 0, 1)
+	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog, WAVE outOfRangeDAScale] = GetLBNEntries_IGNORE(str, 0, 1)
 
 	CHECK_WAVE(deltaI, NUMERIC_WAVE)
 	CHECK_WAVE(deltaV, NUMERIC_WAVE)
 	CHECK_WAVE(resistance, NUMERIC_WAVE)
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
 	CHECK_WAVE(autobiasFromDialog, NUMERIC_WAVE)
+	CHECK_WAVE(outOfRangeDAScale, NUMERIC_WAVE)
 
 	CHECK_EQUAL_WAVES(autobiasFromDialog, {-69, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(GetSetVariable(str, "setvar_DataAcq_AutoBiasV"), -69)
@@ -135,7 +138,7 @@ static Function RTV_WorksWithMultipleHeadstages_REENTRY([string str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 5)
 
-	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog] = GetLBNEntries_IGNORE(str, sweepNo, 1)
+	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog, WAVE outOfRangeDAScale] = GetLBNEntries_IGNORE(str, sweepNo, 1)
 
 	CHECK_WAVE(deltaI, NUMERIC_WAVE)
 	CHECK_WAVE(deltaV, NUMERIC_WAVE)
@@ -143,11 +146,46 @@ static Function RTV_WorksWithMultipleHeadstages_REENTRY([string str])
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
 	CHECK_WAVE(autobiasFromDialog, NULL_WAVE)
 
-	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog] = GetLBNEntries_IGNORE(str, sweepNo, 2)
+	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog, WAVE outOfRangeDAScale] = GetLBNEntries_IGNORE(str, sweepNo, 2)
 
 	CHECK_WAVE(deltaI, NUMERIC_WAVE)
 	CHECK_WAVE(deltaV, NUMERIC_WAVE)
 	CHECK_WAVE(resistance, NUMERIC_WAVE)
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
 	CHECK_WAVE(autobiasFromDialog, NULL_WAVE)
+End
+
+static Function RTV_ReportsDAScaleOutOfRange_preAcq(string device)
+
+	AFH_AddAnalysisParameter("ReachTargetVoltage_DA_0", "EnableIndexing", var = 0)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function RTV_ReportsDAScaleOutOfRange([string str])
+
+	WAVE overrideResults = MIES_AF#CreateOverrideResults()
+
+	overrideResults[1] = 3e-6 // MOhm
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+End
+
+static Function RTV_ReportsDAScaleOutOfRange_REENTRY([string str])
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 1)
+
+	[WAVE deltaI, WAVE deltaV, WAVE resistance, WAVE resistanceErr, WAVE autobiasFromDialog, WAVE outOfRangeDAScale] = GetLBNEntries_IGNORE(str, sweepNo, 1)
+
+	CHECK_WAVE(deltaI, NUMERIC_WAVE)
+	CHECK_WAVE(deltaV, NUMERIC_WAVE)
+	CHECK_WAVE(resistance, NUMERIC_WAVE)
+	// we don't care about resistanceErr as we overwrote the resistance
+	CHECK_WAVE(autobiasFromDialog, NULL_WAVE)
+	CHECK_WAVE(outOfRangeDAScale, NUMERIC_WAVE)
 End

@@ -69,6 +69,7 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo, strin
 		case PSQ_FMT_LBN_TARGETV:
 		case PSQ_FMT_LBN_LEAKCUR:
 		case PSQ_FMT_LBN_LEAKCUR_PASS:
+		case PSQ_FMT_LBN_DASCALE_OOR:
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			break
 		case PSQ_FMT_LBN_RMS_SHORT_THRESHOLD:
@@ -172,6 +173,9 @@ static Function PS_DS_Supra1_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScale(str, PSQ_TEST_HEADSTAGE, PSQ_DS_SUB), -1)
 
+	WAVE/Z oorDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DASCALE_OOR)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
@@ -257,6 +261,9 @@ static Function PS_DS_Supra2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScale(str, PSQ_TEST_HEADSTAGE, PSQ_DS_SUB), -1)
+
+	WAVE/Z oorDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DASCALE_OOR)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
@@ -345,6 +352,9 @@ static Function PS_DS_Supra3_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScale(str, PSQ_TEST_HEADSTAGE, PSQ_DS_SUB), -1)
 
+	WAVE/Z oorDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DASCALE_OOR)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
@@ -431,6 +441,9 @@ static Function PS_DS_Supra4_REENTRY([string str])
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScale(str, PSQ_TEST_HEADSTAGE, PSQ_DS_SUB), -1)
+
+	WAVE/Z oorDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DASCALE_OOR)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
@@ -535,6 +548,9 @@ static Function PS_DS_Supra5_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScale(str, PSQ_TEST_HEADSTAGE, PSQ_DS_SUB), -1)
 
+	WAVE/Z oorDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DASCALE_OOR)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
@@ -622,6 +638,102 @@ static Function PS_DS_Supra6_REENTRY([string str])
 	CHECK_EQUAL_WAVES(stimScale, {43, 43, 43, 43, 43}, mode = WAVE_DATA, tol = 1e-14)
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScale(str, PSQ_TEST_HEADSTAGE, PSQ_DS_SUB), -1)
+
+	WAVE/Z oorDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DASCALE_OOR)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
+End
+
+static Function PS_DS_Supra7_preAcq(string device)
+
+	Make/FREE asyncChannels = {2, 3}
+	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "DAScales", wv = {1000, 1500, 1750, 2000, 5000})
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_DS_Supra7([string str])
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str, "PSQ_DaScale_Supr_DA_0")
+	AcquireData_NG(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE, opMode = PSQ_DS_SUPRA)
+	// pre pulse chunk pass
+	// second post pulse chunk pass
+	wv         = 0
+	wv[0][][0] = 1
+	wv[1][][0] = 1
+	// Spike and non-spiking
+	wv[0][][1] = mod(q, 2) == 0
+	// increasing number of spikes
+	wv[0][][2] = q + 1
+	// async QC passes
+	wv[][][3] = 1
+End
+
+static Function PS_DS_Supra7_REENTRY([string str])
+
+	variable sweepNo, numEntries
+
+	sweepNo = 3
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	WAVE/Z setPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SET_PASS)
+	CHECK_EQUAL_WAVES(setPassed, {0}, mode = WAVE_DATA)
+
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z samplingPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
+	CHECK_EQUAL_WAVES(samplingPassed, {1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	CHECK_EQUAL_WAVES(asyncPassed, {1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, baselineQCPassed)
+
+	WAVE/Z spikeDetection = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SPIKE_DETECT)
+	CHECK_EQUAL_WAVES(spikeDetection, {1, 0, 1, 0}, mode = WAVE_DATA, tol = 1e-3)
+
+	WAVE/Z spikeCount = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SPIKE_COUNT)
+	CHECK_EQUAL_WAVES(spikeCount, {1, 0, 3, 0}, mode = WAVE_DATA, tol = 1e-3)
+
+	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
+
+	WAVE spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, PSQ_TEST_HEADSTAGE)
+	CHECK_EQUAL_WAVES(spikeFreq, {1, 0, 3, 0}, mode = WAVE_DATA, tol = 1e-3)
+
+	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
+	CHECK_EQUAL_WAVES(fISlope, {0, -0.2, 0.2, 0}, mode = WAVE_DATA, tol = 1e-3)
+
+	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS)
+	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z/T opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 4)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	WAVE/Z stimScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
+	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 1000, PSQ_DS_OFFSETSCALE_FAKE + 1500, PSQ_DS_OFFSETSCALE_FAKE + 1750, PSQ_DS_OFFSETSCALE_FAKE + 2000}
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScale(str, PSQ_TEST_HEADSTAGE, PSQ_DS_SUB), -1)
+
+	WAVE/Z oorDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DASCALE_OOR)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 1}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})

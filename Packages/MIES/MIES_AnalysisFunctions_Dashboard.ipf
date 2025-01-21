@@ -9,6 +9,8 @@
 /// @file MIES_AnalysisFunctions_Dashboard.ipf
 /// @brief __AD__ Dashboard for pass/fail style analysis functions
 
+static StrConstant AD_OOR_DASCALE_MSG = "Failure as the future DAScale would be out of range"
+
 /// @brief Update the dashboards of all databrowsers
 Function AD_UpdateAllDatabrowser()
 
@@ -92,10 +94,11 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	endif
 
 	// MSQ_DA
-	// - always passes
+	// - Out of range DAScale
 
 	// MSQ_FRE
 	// - MSQ_FMT_LBN_DASCALE_EXC present (optional)
+	// - Out of range DAScale
 	// - Not enough sweeps
 
 	// MSQ_SC
@@ -103,6 +106,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// - Spike counts state
 	// - Spontaneous spiking check
 	// - Not enough sweeps
+	// - Out of range DAScale
 
 	// PSQ_AR
 	// - baseline QC
@@ -113,9 +117,11 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// - baseline QC
 	// - needs at least PSQ_CR_NUM_SWEEPS_PASS passing sweeps with the same to-full-pA rounded DAScale
 	// - spike found while none expected (optional)
+	// - Out of range DAScale
 
 	// PSQ_DA
 	// - baseline QC
+	// - Out of range DAScale
 	// - SUB/SUPRA: needs at least $NUM_DA_SCALES passing sweeps
 	// - SUPRA: if the FinalSlopePercent parameter is present this has to be reached as well
 	// - ADAPT: - fewer than $NumInvalidSlopeSweepsAllowed invalid f-I slopes
@@ -134,6 +140,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// PSQ_RB
 	// - baseline QC
 	// - Difference to initial DAScale larger than 60pA?
+	// - Out of range DAScale
 	// - Not enough sweeps
 
 	// PSQ_SE
@@ -141,6 +148,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// - seal threshold QC
 
 	// PSQ_SP
+	// - Out of range DAScale
 	// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
 
 	// PSQ_VM
@@ -150,8 +158,7 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 
 	switch(anaFuncType)
 		case MSQ_DA_SCALE:
-			BUG("Unknown reason for failure")
-			return "Failure"
+			return AD_GetMultiDAScaleFailMsg(numericalValues, sweepNo, headstage)
 		case MSQ_FAST_RHEO_EST:
 			return AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
 		case PSQ_ACC_RES_SMOKE:
@@ -441,6 +448,13 @@ static Function/S AD_GetSquarePulseFailMsg(WAVE numericalValues, variable sweepN
 		endif
 	endif
 
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
+	endif
+
 	key      = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1, waMode = waMode)
 	stepSize = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	if(!IsFinite(stepSize))
@@ -491,6 +505,13 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 	// fallback to old names
 	if(!WaveExists(params))
 		WAVE/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params", headstage, DATA_ACQUISITION_MODE)
+	endif
+
+	key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
 	endif
 
 	opMode = AFH_GetAnalysisParamTextual("OperationMode", params[headstage])
@@ -582,9 +603,31 @@ static Function/S AD_GetDAScaleFailMsg(WAVE numericalValues, WAVE/T textualValue
 	return "Failure"
 End
 
+static Function/S AD_GetMultiDAScaleFailMsg(WAVE numericalValues, variable sweepNo, variable headstage)
+
+	string key
+
+	key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
+	endif
+
+	BUG("Unknown reason for failure")
+	return "Failure"
+End
+
 static Function/S AD_GetRheobaseFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage)
 
 	string key, prefix, msg, pattern
+
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
+	endif
 
 	prefix = AD_GetPerSweepFailMessage(PSQ_RHEOBASE, numericalValues, textualValues, sweepNo, sweepDFR, headstage)
 
@@ -608,6 +651,13 @@ static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepN
 		return "Max DA scale exceeded failure"
 	endif
 
+	key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
+	endif
+
 	return "Failure as we ran out of sweeps"
 End
 
@@ -622,6 +672,13 @@ static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualVa
 		return "Maximum number of rerun trials exceeded"
 	endif
 
+	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
+	endif
+
 	return "Failure as we ran out of sweeps"
 End
 
@@ -630,6 +687,13 @@ static Function/S AD_GetChirpFailMsg(WAVE numericalValues, WAVE/T textualValues,
 	string key, msg, str
 	string text = ""
 	variable i, numSweeps, setPassed, maxOccurences
+
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDASCale = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(AD_LabnotebookEntryExistsAndIsTrue(oorDASCale))
+		return AD_OOR_DASCALE_MSG
+	endif
 
 	msg = AD_GetPerSweepFailMessage(PSQ_CHIRP, numericalValues, textualValues, sweepNo, sweepDFR, headstage, numRequiredPasses = PSQ_CR_NUM_SWEEPS_PASS)
 

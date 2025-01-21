@@ -69,6 +69,15 @@ static Function/WAVE GetStimScaleFactor_IGNORE(variable sweepNo, string device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
+static Function/WAVE GetOORDAScale_IGNORE(variable sweepNo, string device)
+
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
+End
+
 static Function PS_SP1_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 3}
@@ -126,6 +135,9 @@ static Function PS_SP1_REENTRY([string str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	Make/FREE/N=0 chunkTimes
@@ -190,6 +202,9 @@ static Function PS_SP2_REENTRY([string str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	Make/FREE/N=0 chunkTimes
@@ -256,6 +271,9 @@ static Function PS_SP3_REENTRY([string str])
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	Make/FREE/N=0 chunkTimes
 	CheckPSQChunkTimes(str, chunkTimes)
@@ -320,6 +338,9 @@ static Function PS_SP4_REENTRY([string str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, NaN, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	Make/FREE/N=0 chunkTimes
@@ -386,6 +407,9 @@ static Function PS_SP5_REENTRY([string str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	Make/FREE/N=0 chunkTimes
@@ -454,6 +478,9 @@ static Function PS_SP6_REENTRY([string str])
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, NaN, 0, NaN}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	Make/FREE/N=0 chunkTimes
 	CheckPSQChunkTimes(str, chunkTimes)
@@ -518,6 +545,9 @@ static Function PS_SP7_REENTRY([string str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	Make/FREE/N=0 chunkTimes
@@ -587,6 +617,9 @@ static Function PS_SP8_REENTRY([string str])
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12}, mode = WAVE_DATA, tol = 1e-13)
 
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0}, mode = WAVE_DATA)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	Make/FREE/N=0 chunkTimes
 	CheckPSQChunkTimes(str, chunkTimes)
@@ -652,6 +685,97 @@ static Function PS_SP9_REENTRY([string str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
+End
+
+static Function PS_SP10_preAcq(string device)
+
+	ST_SetStimsetParameter("PatchSeqSquarePu_DA_0", "Total number of steps", var = 50)
+
+	Make/FREE asyncChannels = {2, 3}
+	AFH_AddAnalysisParameter("PatchSeqSquarePu_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR DeviceNameGeneratorMD1
+static Function PS_SP10([string str])
+
+	[STRUCT DAQSettings s] = PS_GetDAQSettings(str)
+	AcquireData_NG(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
+	// no spikes
+	wv[][][0] = 0
+	wv[][][1] = 1
+End
+
+static Function PS_SP10_REENTRY([string str])
+
+	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries, numEntriesRef
+	string key
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	sweepNo       = 38
+	numEntriesRef = sweepNo + 1
+#else
+	sweepNo       = 39
+	numEntriesRef = sweepNo + 1
+#endif
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	key         = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(sweepPassed, 0)
+
+	key       = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 0)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	Make/FREE/N=(numEntriesRef) samplingIntervalQCWaveRef = 1
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, samplingIntervalQCWaveRef, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	Make/FREE/N=(numEntriesRef) asyncQCWaveRef = 1
+	CHECK_EQUAL_WAVES(asyncQCWave, asyncQCWaveRef, mode = WAVE_DATA)
+
+	key          = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
+	finalDaScale = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(finalDAScale, NaN)
+
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
+	WAVE/Z daScaleZero = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK(!WaveExists(daScaleZero))
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
+	Make/FREE/N=(numEntriesRef) spikeDetectionWaveRef = 0
+	CHECK_EQUAL_WAVES(spikeDetectionWave, spikeDetectionWaveRef, mode = WAVE_DATA)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, numEntriesRef)
+
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
+	Make/FREE/N=(numEntriesRef) stimScaleRef = 100 * (p + 1)
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, tol = 1e-14, mode = WAVE_DATA)
+
+	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
+	Make/FREE/N=(numEntriesRef) stepSizesRef = NaN
+	stepSizesRef[0] = 100e-12
+	CHECK_EQUAL_WAVES(stepSizes, stepSizesRef, mode = WAVE_DATA, tol = 1e-13)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	Make/FREE/N=(numEntriesRef) oorDAScaleRef = 0
+	oorDAScaleRef[Inf] = 1
+	CHECK_EQUAL_WAVES(oorDAScale, oorDAScaleRef, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	Make/FREE/N=0 chunkTimes
