@@ -238,6 +238,40 @@ End
 
 /// @}
 
+/// LesserValuesOrBothNaN
+/// @{
+
+Function LeVOB_Works()
+
+	CHECK(LesserEqualValuesOrBothNaN(0, 1))
+	CHECK(LesserEqualValuesOrBothNaN(0, 0))
+	CHECK(!LesserEqualValuesOrBothNaN(1, 0))
+	CHECK(!LesserEqualValuesOrBothNaN(0, NaN))
+	CHECK(!LesserEqualValuesOrBothNaN(NaN, 0))
+	CHECK(!LesserEqualValuesOrBothNaN(Inf, NaN))
+	CHECK(!LesserEqualValuesOrBothNaN(NaN, Inf))
+	CHECK(LesserEqualValuesOrBothNaN(NaN, NaN))
+End
+
+/// @}
+
+/// LargerEqualValuesOrBothNaN
+/// @{
+
+Function LaVOB_Works()
+
+	CHECK(!LargerEqualValuesOrBothNaN(0, 1))
+	CHECK(LargerEqualValuesOrBothNaN(0, 0))
+	CHECK(LargerEqualValuesOrBothNaN(1, 0))
+	CHECK(!LargerEqualValuesOrBothNaN(0, NaN))
+	CHECK(!LargerEqualValuesOrBothNaN(NaN, 0))
+	CHECK(!LargerEqualValuesOrBothNaN(Inf, NaN))
+	CHECK(!LargerEqualValuesOrBothNaN(NaN, Inf))
+	CHECK(LargerEqualValuesOrBothNaN(NaN, NaN))
+End
+
+/// @}
+
 /// IsConstant
 /// @{
 

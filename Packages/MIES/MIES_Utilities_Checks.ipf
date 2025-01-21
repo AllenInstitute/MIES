@@ -341,6 +341,22 @@ threadsafe Function EqualValuesOrBothNaN(variable left, variable right)
 	return (IsNaN(left) && IsNaN(right)) || (left == right)
 End
 
+/// @brief Check wether `val1` <= `val2` holds or both are NaN
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function LesserEqualValuesOrBothNaN(variable left, variable right)
+
+	return (IsNaN(left) && IsNaN(right)) || (left <= right)
+End
+
+/// @brief Check wether `val1` >= `val2` holds or both are NaN
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function LargerEqualValuesOrBothNaN(variable left, variable right)
+
+	return (IsNaN(left) && IsNaN(right)) || (left >= right)
+End
+
 /// @brief Checks wether `wv` is constant and has the value `val`
 ///
 /// @param wv        wave to check
