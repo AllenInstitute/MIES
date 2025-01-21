@@ -333,7 +333,7 @@ Function StringEndsWith(string str, string suffix)
 	return 0
 End
 
-/// @brief Check wether `val1` and `val2` are equal or both NaN
+/// @brief Check wether `val1` and `val2` are equal or both are NaN
 ///
 /// UTF_NOINSTRUMENTATION
 threadsafe Function EqualValuesOrBothNaN(variable left, variable right)
