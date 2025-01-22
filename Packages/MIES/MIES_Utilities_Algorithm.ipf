@@ -1216,7 +1216,7 @@ static Function TopDownSplitMerge(WAVE B, variable iBegin, variable iEnd, WAVE A
 
 	variable iMiddle
 
-	if(iEnd - iBegin <= 1) // if run size == 1
+	if((iEnd - iBegin) <= 1) // if run size == 1
 		return NaN //   consider it sorted
 	endif
 
