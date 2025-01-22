@@ -308,7 +308,7 @@ End
 /// @param sep          separator
 /// @param colSep       [optional, default = `,`] separator for column entries
 /// @param format       [optional, defaults to `%g`] sprintf conversion specifier
-/// @param trailSep [optional, defaults to false] don't add a row separator after the last row
+/// @param trailSep [optional, defaults to true] don't add a row separator after the last row
 threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, string colSep, variable trailSep])
 
 	if(!WaveExists(wv))
