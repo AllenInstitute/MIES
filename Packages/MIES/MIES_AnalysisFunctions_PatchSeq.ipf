@@ -3002,7 +3002,7 @@ End
 static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, variable headstage, variable numSweepsWithSaturation, [variable fromRhSuAd])
 
 	string key
-	variable measuredAllFutureDAScales, numFound, i, numSlopes, emptySCI
+	variable measuredAllFutureDAScales, numFound, emptySCI
 
 	if(ParamIsDefault(fromRhSuAd))
 		fromRhSuAd = 0
@@ -3047,20 +3047,33 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 
 	[WAVE fitSlopeReached, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FI_SLOPE_REACHED_PASS, fromRhSuAd = fromRhSuAd)
 
-	// slope is determined between sweeps so we have always one sweep more than slopes
-	ASSERT(DimSize(sweepPassed, ROWS) == (DimSize(fitSlopeReached, ROWS) + 1), "Unmatched sweepPassed and fitSlopeReached waves")
-
 	// we want numSweepsWithSaturation sweeps with passing f-I slope QC and sweep QC
 	// and there should not be sweeps with failing f-I slope QC in between
-	numSlopes = DimSize(fitSlopeReached, ROWS)
-	for(i = 0; i < numSlopes; i += 1)
-		// fiSlopeReached[i] holds the f-I slope QC value between sweep i and i + 1
-		if(!sweepPassed[i + 1])
+	numFound = PSQ_DS_ConsecutivePasses(sweepPassed, fitSlopeReached)
+
+	// numFound > numSweepsWithSaturation can happen if we have futureDAScales left to measure
+	return numFound >= numSweepsWithSaturation
+End
+
+/// @brief Return the number of consecutive passing labnotebook entries `checkQC` which all have `refQC` passing
+///
+/// It is assumed that `checkQC` is a value which is calculated for two neighbouring sweeps.
+static Function PSQ_DS_ConsecutivePasses(WAVE refQC, WAVE checkQC)
+
+	variable i, numFound, numCheckEntries
+
+	// refQC is determined between sweeps so we have always one sweep more than refQC
+	ASSERT(DimSize(refQC, ROWS) == (DimSize(checkQC, ROWS) + 1), "Unmatched refQC and checkQC waves")
+
+	numCheckEntries = DimSize(checkQC, ROWS)
+	for(i = 0; i < numCheckEntries; i += 1)
+		// checkQC[i] holds the value between sweep i and i + 1
+		if(!refQC[i + 1])
 			continue
 		endif
 
 		// from here on all sweeps pass
-		if(!fitSlopeReached[i])
+		if(!checkQC[i])
 			numFound = 0
 			continue
 		endif
@@ -3068,8 +3081,7 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 		numFound += 1
 	endfor
 
-	// numFound > numSweepsWithSaturation can happen if we have futureDAScales left to measure
-	return numFound >= numSweepsWithSaturation
+	return numFound
 End
 
 static Function [WAVE/T futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherFutureDAScalesAndFrequency(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
