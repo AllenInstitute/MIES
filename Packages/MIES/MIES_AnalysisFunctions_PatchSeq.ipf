@@ -66,10 +66,11 @@
 ///  PSQ_FMT_LBN_SAMPLING_PASS                  Pass/fail state of the sampling interval check                On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM, AR   No           No
 ///  PSQ_FMT_LBN_PULSE_DUR                      Pulse duration as determined experimentally                   ms       Numerical    RB, DA, CR                           No           Yes
 ///  PSQ_FMT_LBN_SPIKE_PASS                     Pass/fail state of the spike search (No spikes → Pass)        On/Off   Numerical    CR, VM                               No           Yes
-///  PSQ_FMT_LBN_DA_fI_SLOPE                    Fitted slope in the f-I plot                                  % Hz/pA  Numerical    DA (Supra, Adapt)                    No           Yes
+///  PSQ_FMT_LBN_DA_fI_SLOPE                    Fitted slope in the f-I plot                                  % Hz/pA  Numerical    DA (Supra)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_FI_NEG_SLOPE_PASS        Fitted slop in the f-I plot is negative                       On/Off   Numerical    DA (Adapt)                           No           No
 ///  PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS       Fitted slope in the f-I plot exceeds target value             On/Off   Numerical    DA (Supra, Adapt)                    No           No
 ///  PSQ_FMT_LBN_DA_AT_FI_OFFSET                Fitted offset in the f-I plot                                 Hz       Numerical    DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_FI_SLOPE                 Fitted slope in the f-I plot                                  % Hz/pA  Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_FREQ                     AP frequency                                                  Hz       Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_RSA_FREQ                 AP frequencies from previous sweep reevaluation               Hz       Textual      DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_RSA_DASCALE              DAScale values from previous sweep reevaluation               (none)   Textual      DA (Adapt)                           No           Yes
@@ -2351,7 +2352,7 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 	///
 	/// plus
 	///
-	/// PSQ_FMT_LBN_DA_fI_SLOPE
+	/// PSQ_FMT_LBN_DA_AT_fI_SLOPE
 	///
 	/// from full SCI filtered for passing
 	sprintf line, "fitSlopes = [%s]\r", NumericWaveToList(fitSlopes, ",", format = PERCENT_F_MAX_PREC, trailSep = 0)
@@ -2745,7 +2746,7 @@ static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(st
 
 		WAVE fitSlopeLBN = LBN_GetNumericWave()
 		fitSlopeLBN[headstage] = fitSlope
-		key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_FI_SLOPE)
+		key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_SLOPE)
 		ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = sweepNo, unit = "% of Hz/pA")
 	else
 		fitOffset = NaN
@@ -2831,7 +2832,7 @@ static Function [string currentSCI, string RhSuAd, variable headstageContingency
 
 	switch(type)
 		case PSQ_DS_FI_SLOPE:
-			return [PSQ_FMT_LBN_DA_fI_SLOPE, PSQ_FMT_LBN_DA_AT_RSA_fI_SLOPES, HCM_DEPEND]
+			return [PSQ_FMT_LBN_DA_AT_FI_SLOPE, PSQ_FMT_LBN_DA_AT_RSA_fI_SLOPES, HCM_DEPEND]
 		case PSQ_DS_FI_SLOPE_REACHED_PASS:
 			return [PSQ_FMT_LBN_DA_fI_SLOPE_REACHED_PASS, PSQ_FMT_LBN_DA_AT_RSA_fI_SLOPES_PASS, HCM_INDEP]
 		case PSQ_DS_FI_NEG_SLOPE_PASS:
