@@ -369,18 +369,19 @@ static Function/S CONF_GetSettingsPath(variable type)
 
 			path = RemoveListItem(numItems - 1, path, ":")
 			path = RemoveListItem(numItems - 2, path, ":") + EXPCONFIG_SETTINGS_FOLDER + ":"
-			ASSERT(FolderExists(path), "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
+
 			break
 		case CONF_AUTO_LOADER_USER:
 			path = CONF_AUTO_LOADER_USER_PATH
-			if(!FolderExists(path))
-				CreateFolderOnDisk(path)
-			endif
 			break
 		default:
 			ASSERT(0, "Invalid type parameter")
 			break
 	endswitch
+
+	if(!FolderExists(path))
+		CreateFolderOnDisk(path)
+	endif
 
 	if(FolderExists(path))
 		symbPath = "PathSettings"
