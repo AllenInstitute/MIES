@@ -72,6 +72,7 @@
 ///  PSQ_FMT_LBN_DA_AT_FREQ                     AP frequency                                                  Hz       Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_RSA_FREQ                 AP frequencies from previous sweep reevaluation               Hz       Textual      DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_RSA_DASCALE              DAScale values from previous sweep reevaluation               (none)   Textual      DA (Adapt)                           No           Yes
+///  PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS           Offsets in the f-I plot from previous sweep reevaluation      Hz       Textual      DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES            Slopes in the f-I plot from previous sweep reevaluation       % Hz/pA  Textual      DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_PASS       Slope QCs in the f-I plot from previous sweep reevaluation    On/Off   Textual      DA (Adapt)                           No           No
 ///  PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS     Valid slope from f-I plot QC of supra sweep reevaluation      On/Off   Numerical    DA (Adapt)                           No           Yes
