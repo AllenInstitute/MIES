@@ -3090,13 +3090,9 @@ static Function PSQ_DS_ConsecutivePasses(WAVE refQC, WAVE checkQC)
 	return numFound
 End
 
-static Function [WAVE/T futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherFutureDAScalesAndFrequency(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
+static Function/WAVE PSQ_DS_GetFutureDAScalesFromLBN(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable headstage)
 
-	string   key
-	variable emptySCI
-
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE textualValues   = GetLBTextualValues(device)
+	string key
 
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES, query = 1)
 	WAVE/Z/T futureDAScalesHistoricLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
@@ -3106,6 +3102,18 @@ static Function [WAVE/T futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_Gathe
 	else
 		Make/FREE/T/N=0 futureDAScalesHistoric
 	endif
+
+	return futureDAScalesHistoric
+End
+
+static Function [WAVE/T futureDAScales, WAVE apfreq, WAVE DAScales] PSQ_DS_GatherFutureDAScalesAndFrequency(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
+
+	variable emptySCI
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	WAVE/T futureDAScalesHistoric = PSQ_DS_GetFutureDAScalesFromLBN(numericalValues, textualValues, sweepNo, headstage)
 
 	[WAVE DAScales, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = 1)
 	[WAVE apfreq, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = 1)
