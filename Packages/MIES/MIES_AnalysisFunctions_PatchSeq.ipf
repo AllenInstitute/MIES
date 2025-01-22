@@ -2710,6 +2710,32 @@ static Function PSQ_DS_IsValidFitSlopePosition(WAVE fitSlopes, WAVE DAScales, va
 	return DAScales[idxSlope] > DAScales[idxMax]
 End
 
+static Function [variable fitOffset, variable fitSlope] PSQ_DS_StoreFitOffsetAndSlope(string device, variable sweepNo, variable headstage, WAVE fitOffsetAll, string lbnKeyOffset, WAVE fitSlopeAll, string lbnKeySlope)
+
+	string key
+
+	if(WaveExists(fitOffsetAll) && WaveExists(fitSlopeAll))
+		ASSERT(DimSize(fitOffsetAll, ROWS) == 1 && DimSize(fitSlopeAll, ROWS) == 1, "Expected only one fit slope/offset")
+		fitOffset = fitOffsetAll[0]
+		fitSlope  = fitSlopeAll[0]
+
+		WAVE fitOffsetLBN = LBN_GetNumericWave()
+		fitOffsetLBN[headstage] = fitOffset
+		key                     = CreateAnaFuncLBNKey(PSQ_DA_SCALE, lbnKeyOffset)
+		ED_AddEntryToLabnotebook(device, key, fitOffsetLBN, overrideSweepNo = sweepNo, unit = "Hz")
+
+		WAVE fitSlopeLBN = LBN_GetNumericWave()
+		fitSlopeLBN[headstage] = fitSlope
+		key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, lbnKeySlope)
+		ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = sweepNo, unit = "% of Hz/pA")
+	else
+		fitOffset = NaN
+		fitSlope  = NaN
+	endif
+
+	return [fitOffset, fitSlope]
+End
+
 /// @brief Evaluate the complete adaptive supra threshold sweep
 ///
 /// - Gather AP frequency and DAscale data
@@ -2731,27 +2757,9 @@ static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(st
 	[WAVE/T futureDAScales, WAVE apfreqs, WAVE DAScales] = PSQ_DS_GatherFutureDAScalesAndFrequency(device, sweepNo, headstage, cdp)
 
 	[WAVE fitOffsetAll, WAVE fitSlopeAll, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, sweepNo, apfreqs, DAScales, singleFit = 1)
+	[fitOffset, fitSlope]                         = PSQ_DS_StoreFitOffsetAndSlope(device, sweepNo, headstage, fitOffsetAll, PSQ_FMT_LBN_DA_AT_FI_OFFSET, fitSlopeAll, PSQ_FMT_LBN_DA_AT_FI_SLOPE)
 
 	validFit = PSQ_DS_AreFitResultsValid(device, sweepNo, headstage, fitOffsetAll, fitSlopeAll)
-
-	if(WaveExists(fitOffsetAll) && WaveExists(fitSlopeAll))
-		ASSERT(DimSize(fitOffsetAll, ROWS) == 1 && DimSize(fitSlopeAll, ROWS) == 1, "Expected only one fit slope/offset")
-		fitOffset = fitOffsetAll[0]
-		fitSlope  = fitSlopeAll[0]
-
-		WAVE fitOffsetLBN = LBN_GetNumericWave()
-		fitOffsetLBN[headstage] = fitOffset
-		key                     = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_OFFSET)
-		ED_AddEntryToLabnotebook(device, key, fitOffsetLBN, overrideSweepNo = sweepNo, unit = "Hz")
-
-		WAVE fitSlopeLBN = LBN_GetNumericWave()
-		fitSlopeLBN[headstage] = fitSlope
-		key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_SLOPE)
-		ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = sweepNo, unit = "% of Hz/pA")
-	else
-		fitOffset = NaN
-		fitSlope  = NaN
-	endif
 
 	[maxSlope, WAVE fitSlopesAll, WAVE DAScalesAll] = PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(device, sweepNo, headstage, fitSlope)
 
