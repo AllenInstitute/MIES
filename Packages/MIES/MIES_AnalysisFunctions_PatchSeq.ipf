@@ -62,6 +62,7 @@
 ///  PSQ_FMT_LBN_CHUNK_PASS                     Which chunk passed/failed baseline QC                         On/Off   Numerical    DA, RB, RA, CR, PB, SE, VM, AR       Yes          Yes
 ///  PSQ_FMT_LBN_BL_QC_PASS                     Pass/fail state of the complete baseline                      On/Off   Numerical    DA, RB, RA, CR, PB, SE, VM, AR       No           Yes
 ///  PSQ_FMT_LBN_SWEEP_PASS                     Pass/fail state of the complete sweep                         On/Off   Numerical    DA, SP, RA, CR, PB, SE, VM, AR       No           No
+///  PSQ_FMT_LBN_SWEEP_EXCEPT_BL_PASS           Pass/fail state of the complete sweep without baseline        On/Off   Numerical    DA (Adapt)                           No           No
 ///  PSQ_FMT_LBN_SET_PASS                       Pass/fail state of the complete set                           On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM, AR   No           No
 ///  PSQ_FMT_LBN_SAMPLING_PASS                  Pass/fail state of the sampling interval check                On/Off   Numerical    DA, RB, RA, SP, CR, PB, SE, VM, AR   No           No
 ///  PSQ_FMT_LBN_PULSE_DUR                      Pulse duration as determined experimentally                   ms       Numerical    RB, DA, CR                           No           Yes
@@ -197,6 +198,8 @@ static Constant PSQ_DS_SWEEP_PASS            = 0x5
 static Constant PSQ_DS_SWEEP                 = 0x6
 static Constant PSQ_DS_APFREQ                = 0x7
 static Constant PSQ_DS_DASCALE               = 0x8
+static Constant PSQ_DS_SWEEP_EXCEPT_BL_PASS  = 0x9
+///@}
 ///@}
 
 /// @brief Fills `s` according to the analysis function type
@@ -2849,6 +2852,9 @@ static Function [string currentSCI, string RhSuAd, variable headstageContingency
 			return [PSQ_FMT_LBN_DA_AT_FI_OFFSET, PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS, HCM_DEPEND]
 		case PSQ_DS_SWEEP_PASS:
 			return [PSQ_FMT_LBN_SWEEP_PASS, PSQ_FMT_LBN_DA_AT_RSA_SWEEPS, HCM_INDEP]
+		case PSQ_DS_SWEEP_EXCEPT_BL_PASS:
+			// we still take the normal sweep pass entries for the RhSuAd data
+			return [PSQ_FMT_LBN_SWEEP_EXCEPT_BL_PASS, PSQ_FMT_LBN_DA_AT_RSA_SWEEPS, HCM_INDEP]
 		case PSQ_DS_SWEEP:
 			return [NONE, PSQ_FMT_LBN_DA_AT_RSA_SWEEPS, HCM_INDEP]
 		case PSQ_DS_APFREQ:
@@ -3872,7 +3878,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 	variable index, ret, showPlot, V_AbortCode, V_FitError, err, enoughSweepsPassed
 	variable sweepPassed, setPassed, length, minLength, reachedFinalSlope, fitOffset, fitSlope, apfreq, enoughFIPointsPassedQC
 	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam, measuredAllFutureDAScales, fallbackDAScaleRangeFac
-	variable sweepsInSet, passesInSet, acquiredSweepsInSet, multiplier, asyncAlarmPassed, supraStimsetCycle
+	variable sweepsInSet, passesInSet, acquiredSweepsInSet, multiplier, asyncAlarmPassed, supraStimsetCycle, sweepExceptBaselinePassed
 	variable daScaleStepMinNorm, daScaleStepMaxNorm, maxSlope, validFit, emptySCI, oorDAScaleQC, limitCheck
 	string msg, stimset, key, opMode, offsetOp, textboxString, str, errMsg, type
 	variable daScaleOffset
@@ -4168,8 +4174,16 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS, query = 1)
 					enoughFIPointsPassedQC = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 
-					sweepPassed = baselineQCPassedLBN[s.headstage] && samplingFrequencyPassed && asyncAlarmPassed \
-					              && validSlopePassedQC[s.headstage] && enoughFIPointsPassedQC
+					sweepExceptBaselinePassed = samplingFrequencyPassed && asyncAlarmPassed                \
+					                            && validSlopePassedQC[s.headstage] && enoughFIPointsPassedQC
+
+					WAVE result = LBN_GetNumericWave()
+					result[INDEP_HEADSTAGE] = sweepExceptBaselinePassed
+					key                     = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_EXCEPT_BL_PASS)
+					ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+					sweepPassed = sweepExceptBaselinePassed && baselineQCPassedLBN[s.headstage]
+
 					break
 				default:
 					ASSERT(0, "Invalid opMode")

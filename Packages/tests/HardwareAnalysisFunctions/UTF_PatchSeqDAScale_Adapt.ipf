@@ -116,6 +116,7 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 
 	strswitch(name)
 		case PSQ_FMT_LBN_SWEEP_PASS:
+		case PSQ_FMT_LBN_SWEEP_EXCEPT_BL_PASS:
 		case PSQ_FMT_LBN_SAMPLING_PASS:
 		case PSQ_FMT_LBN_ASYNC_PASS:
 		case PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS:
@@ -176,8 +177,8 @@ End
 
 static Function/WAVE GetWave_IGNORE()
 
-	string list = "sweepPass;setPass;rmsShortPass;rmsLongPass;baselinePass;" + \
-	              "samplingPass;asyncPass;"                                  + \
+	string list = "sweepPass;sweepPassExceptBL;setPass;rmsShortPass;"        + \
+	              "rmsLongPass;baselinePass;samplingPass;asyncPass;"         + \
 	              "futureDAScalesPass;fiSlopeReachedPass;fiNegSlopePass;"    + \
 	              "enoughFIPointsPass;validSlopePass;initialValidSlopePass;" + \
 	              "opMode;apFreq;maxSlope;fiSlope;fiOffset;futureDAScales;"  + \
@@ -199,10 +200,11 @@ static Function/WAVE GetEntries_IGNORE(string device, variable sweepNo)
 
 	WAVE/WAVE wv = GetWave_IGNORE()
 
-	wv[%sweepPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	wv[%setPass]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
-	wv[%samplingPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
-	wv[%asyncPass]    = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
+	wv[%sweepPass]         = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	wv[%sweepPassExceptBL] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_EXCEPT_BL_PASS)
+	wv[%setPass]           = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
+	wv[%samplingPass]      = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
+	wv[%asyncPass]         = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_ASYNC_PASS)
 
 	wv[%rmsShortPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_RMS_SHORT_PASS)
 	wv[%rmsLongPass]  = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS)
@@ -423,6 +425,7 @@ static Function PS_DS_AD1_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {0, 0, 0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%rmsLongPass], NULL_WAVE)
@@ -492,6 +495,7 @@ static Function PS_DS_AD1_REENTRY_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {0, 0, 0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%oorDAScale], {0, 0, NaN}, mode = WAVE_DATA)
 
@@ -566,6 +570,7 @@ static Function PS_DS_AD1a_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 0, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1, 1}, mode = WAVE_DATA)
@@ -608,6 +613,7 @@ static Function PS_DS_AD1a_REENTRY_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
@@ -631,6 +637,7 @@ static Function PS_DS_AD1a_REENTRY_REENTRY_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
@@ -654,6 +661,7 @@ static Function PS_DS_AD1a_REENTRY_REENTRY_REENTRY_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z overrideResults = GetOverrideResults()
 	CHECK_WAVE(overrideResults, NUMERIC_WAVE)
@@ -723,6 +731,7 @@ static Function PS_DS_AD2_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1}, mode = WAVE_DATA)
@@ -835,6 +844,7 @@ static Function PS_DS_AD2a_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1}, mode = WAVE_DATA)
@@ -948,6 +958,7 @@ static Function PS_DS_AD2b_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1}, mode = WAVE_DATA)
@@ -1063,6 +1074,7 @@ static Function PS_DS_AD3_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {0, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {0, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {NaN, 1, 1}, mode = WAVE_DATA)
@@ -1336,6 +1348,7 @@ static Function PS_DS_AD6_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1}, mode = WAVE_DATA)
@@ -1448,6 +1461,7 @@ static Function PS_DS_AD7_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1}, mode = WAVE_DATA)
@@ -1612,6 +1626,7 @@ static Function PS_DS_AD9_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {0, 0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1}, mode = WAVE_DATA)
@@ -1722,6 +1737,7 @@ static Function PS_DS_AD10_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1, 1}, mode = WAVE_DATA)
@@ -1841,6 +1857,7 @@ static Function PS_DS_AD11_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1}, mode = WAVE_DATA)
@@ -1962,6 +1979,7 @@ static Function PS_DS_AD12_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 0, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, NaN, 1, 1}, mode = WAVE_DATA)
@@ -2077,6 +2095,7 @@ static Function PS_DS_AD13_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1}, mode = WAVE_DATA)
@@ -2191,6 +2210,7 @@ static Function PS_DS_AD14_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {0, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1}, mode = WAVE_DATA)
@@ -2302,6 +2322,7 @@ static Function PS_DS_AD15_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1, 1, 1}, mode = WAVE_DATA)
@@ -2427,6 +2448,7 @@ static Function PS_DS_AD16_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0, 0, 1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
 
 	// we are querying chunk0
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -2539,6 +2561,7 @@ static Function PS_DS_AD17_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%rmsLongPass], NULL_WAVE)
@@ -2650,6 +2673,7 @@ static Function PS_DS_AD18_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {0}, mode = WAVE_DATA)
 	CHECK_WAVE(entries[%rmsLongPass], NULL_WAVE)
@@ -2749,6 +2773,7 @@ static Function PS_DS_AD19_REENTRY([string str])
 
 	CHECK_EQUAL_WAVES(entries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%sweepPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries[%sweepPassExceptBL], {1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(entries[%rmsShortPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(entries[%rmsLongPass], {1}, mode = WAVE_DATA)
