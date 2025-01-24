@@ -1283,3 +1283,15 @@ static Function TestMergeSortStableInPlace()
 End
 
 /// @}
+
+static Function TestSortKeyAndData()
+
+	Make/FREE key = {3, 1, 2}
+	Make/FREE data = {-1, -2, -3}
+	[WAVE keySorted, WAVE dataSorted] = SortKeyAndData(key, data)
+
+	CHECK_EQUAL_WAVES(keySorted, {1, 2, 3})
+	CHECK_EQUAL_VAR(DimSize(KeySorted, COLS), 0)
+	CHECK_EQUAL_WAVES(dataSorted, {-2, -3, -1})
+	CHECK_EQUAL_VAR(DimSize(dataSorted, COLS), 0)
+End
