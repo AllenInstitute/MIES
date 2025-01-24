@@ -1250,3 +1250,36 @@ static Function TestSplitLogDataBySize()
 End
 
 /// @}
+
+// MergeSortStableInplace
+/// @{
+
+static Function TestMergeSortStableInPlace()
+
+	Make/FREE data = {4, 6, 1, -5, 10, 5}
+	MergeSortStableInplace(data)
+	CHECK_EQUAL_WAVES(data, {-5, 1, 4, 5, 6, 10})
+
+	Make/FREE data = {1}
+	MergeSortStableInplace(data)
+	CHECK_EQUAL_WAVES(data, {1})
+
+	Make/FREE/N=0 empty
+	MergeSortStableInplace(data)
+	Make/FREE/N=0 emptyRef
+	CHECK_EQUAL_WAVES(empty, emptyRef)
+
+	// maintains the order of neighbouring elements with the same keys
+
+	Make/FREE data = {{4, 6, 5, 5, 10, 5}, {0, 1, 2, 3, 4, 5}}
+	MergeSortStableInplace(data, col = 0)
+	CHECK_EQUAL_WAVES(data, {{4, 5, 5, 5, 6, 10}, {0, 2, 3, 5, 1, 4}})
+
+	// different column
+	Make/FREE data = {{0, 1, 2, 3, 4, 5}, {4, 6, 5, 5, 10, 5}}
+	MergeSortStableInplace(data, col = 1)
+	CHECK_EQUAL_WAVES(data, {{0, 2, 3, 5, 1, 4}, {4, 5, 5, 5, 6, 10}})
+
+End
+
+/// @}
