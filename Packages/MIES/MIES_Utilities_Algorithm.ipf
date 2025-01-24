@@ -1170,6 +1170,19 @@ Function/WAVE SplitLogDataBySize(WAVE/T logData, string sep, variable lim, [vari
 	return result
 End
 
+Function [WAVE keySorted, WAVE dataSorted] SortKeyAndData(WAVE key, WAVE data)
+
+	ASSERT(EqualWaves(key, data, EQWAVES_DIMSIZE), "Non-matching dimension sizes for key and data")
+
+	Concatenate/FREE/NP=1 {key, data}, comb
+	MergeSortStableInplace(comb, col = 0)
+
+	/// @todo workaround IP issue 4979 (singleWaves is not a free wave)
+	Make/FREE/WAVE/N=0 singleWaves
+	SplitWave/FREE/OREF=singleWaves/SDIM=(COLS) comb
+	return [singleWaves[0], singleWaves[1]]
+End
+
 /// Sort the given wave in ascending order
 /// Passing in a 2D wave also to sort all columns according to `col`
 ///
