@@ -1169,3 +1169,74 @@ Function/WAVE SplitLogDataBySize(WAVE/T logData, string sep, variable lim, [vari
 
 	return result
 End
+
+/// Sort the given wave in ascending order
+/// Passing in a 2D wave also to sort all columns according to `col`
+///
+/// Straight from wikipedia, top-down implementation, https://en.wikipedia.org/wiki/Merge_sort
+/// with the addition of `col`
+Function MergeSortStableInplace(WAVE A, [variable col])
+
+	/// Array A[] has the items to sort; array B[] is a work array.
+	variable numRows, numCols
+
+	numRows = DimSize(A, ROWS)
+	numCols = DimSize(A, COLS)
+
+	if(ParamIsDefault(col))
+		col = 0
+	else
+		ASSERT(col >= 0 && col < numCols, "col is out of range")
+	endif
+
+	if(numRows <= 1)
+		return NaN
+	endif
+
+	Duplicate/FREE A, B // one time copy of A[] to B[]
+
+	TopDownSplitMerge(A, 0, numRows, B, col) // sort data from B[] into A[]
+End
+
+// Split A[] into 2 runs, sort both runs into B[], merge both runs from B[] to A[]
+// iBegin is inclusive iEnd is exclusive (A[iEnd] is not in the set).
+static Function TopDownSplitMerge(WAVE B, variable iBegin, variable iEnd, WAVE A, variable col)
+
+	variable iMiddle
+
+	if((iEnd - iBegin) <= 1) // if run size == 1
+		return NaN //   consider it sorted
+	endif
+
+	// split the run longer than 1 item into halves
+	iMiddle = ceil((iEnd + iBegin) / 2) // iMiddle = mid point
+
+	// recursively sort both runs from array A[] into B[]
+	TopDownSplitMerge(A, iBegin, iMiddle, B, col) // sort the left  run
+	TopDownSplitMerge(A, iMiddle, iEnd, B, col) // sort the right run
+	// merge the resulting runs from array B[] into A[]
+	TopDownMerge(B, iBegin, iMiddle, iEnd, A, col)
+End
+
+// Left source half is A[ iBegin:iMiddle-1].
+// Right source half is A[iMiddle:iEnd-1   ].
+// Result is            B[ iBegin:iEnd-1   ].
+static Function TopDownMerge(WAVE B, variable iBegin, variable iMiddle, variable iEnd, WAVE A, variable col)
+
+	variable i, j, k
+
+	i = iBegin
+	j = iMiddle
+
+	// While there are elements in the left or right runs...
+	for(k = iBegin; k < iEnd; k++)
+		// If left run head exists and is <= existing right run head.
+		if(i < iMiddle && (j >= iEnd || A[i][col] <= A[j][col]))
+			B[k][] = A[i][q]
+			i      = i + 1
+		else
+			B[k][] = A[j][q]
+			j      = j + 1
+		endif
+	endfor
+End
