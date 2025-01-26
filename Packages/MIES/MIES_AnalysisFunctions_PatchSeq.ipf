@@ -2144,7 +2144,10 @@ static Function [WAVE apfreqFiltered, WAVE DAScalesFiltered, WAVE deletedIndizes
 	WAVE/Z indizes = FindNeighbourWithPredicate(apfreq, EqualValuesOrBothNaN)
 
 	if(!WaveExists(indizes))
-		return [apfreq, DAScales, $"", numPoints]
+		Duplicate/FREE apfreq, apreqFiltered
+		Duplicate/FREE DAScales, DAScalesFiltered
+
+		return [apreqFiltered, DAScalesFiltered, $"", numPoints]
 	endif
 
 	if(DimSize(indizes, ROWS) == (numPoints - 1))
