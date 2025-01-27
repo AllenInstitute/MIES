@@ -3020,6 +3020,13 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE textualValues   = GetLBTextualValues(device)
 
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
+	WAVE/Z oorDAScale = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(WaveExists(oorDAScale) && oorDAScale[headstage])
+		return 0
+	endif
+
 	if(!fromRhSuAd)
 		key                       = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS, query = 1)
 		measuredAllFutureDAScales = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -3037,13 +3044,6 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 		if(!initialFISlopeValid[headstage])
 			return 1
 		endif
-	endif
-
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DASCALE_OOR, query = 1)
-	WAVE/Z oorDAScale = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
-
-	if(WaveExists(oorDAScale) && oorDAScale[headstage])
-		return 0
 	endif
 
 	[WAVE sweepPassed, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_SWEEP_PASS, fromRhSuAd = fromRhSuAd)
