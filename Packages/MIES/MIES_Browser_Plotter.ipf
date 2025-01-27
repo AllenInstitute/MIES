@@ -485,7 +485,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 							unit = "a.u."
 						endif
 
-						axisLabel = "\Z08" + traceType + "\r(" + unit + ")"
+						axisLabel = "\Zr085" + traceType + "\r(" + unit + ")"
 
 						FindValue/TXOP=4/TEXT=(vertAxis) axisLabelCache
 						axisIndex = V_Value

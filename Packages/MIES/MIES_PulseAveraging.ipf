@@ -2980,7 +2980,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 
 			headstage = headstages[0]
 
-			sprintf str, "\\Z08\\Zr075#Pulses %g / #Swps. %d", DimSize(pulses, ROWS), DimSize(sweeps, ROWS)
+			sprintf str, "\\Zr075#Pulses %g / #Swps. %d", DimSize(pulses, ROWS), DimSize(sweeps, ROWS)
 			Textbox/W=$graph/C/N=leg/X=-5.00/Y=-5.00 str
 
 			[s] = GetTraceColor(headstage)
