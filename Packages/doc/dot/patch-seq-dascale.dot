@@ -120,8 +120,10 @@ than MaxFrequencyChangePercent.\n If this is not the case we add DAScale values 
 	n77 -> n72	[label=No];
 	n86	[label="Mark sweep as passed"];
 	n77 -> n86;
-	n86 -> "Calculate TP-like properties\nand store them in the\nlabnotebook"	[label=Supra];
-	n86 -> "Search for spikes\n(x range: pulse onset to end of pulse\ny condition: max above 0.01mV)"	[label=Sub];
+	n94 -> n104;
+	n95	[label="Fit the last two AP frequency\n and DAScale data from RhSuAd plus this SCI\n (reordered so that we fit the correct neighbours)\nignoring \
+entries with the same AP frequency\n as their right neighbour"];
+	n104 -> n95	[label=Yes];
 	"Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"";
 	"Check if only one headstage is active" -> "All checks passed";
 	"Check RMS long" -> "Add BL QC failed labnotebook entry"	[label=Failed];
@@ -129,6 +131,8 @@ than MaxFrequencyChangePercent.\n If this is not the case we add DAScale values 
 	"Add BL QC failed labnotebook entry" -> "Early Sweep stop";
 	"Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	[label=Failed];
 	"Mark chunk as passed/failed [2]" -> "Add BL QC passed labnotebook entry"	[label=Passed];
+	n86 -> "Calculate TP-like properties\nand store them in the\nlabnotebook"	[label=Supra];
+	n86 -> "Search for spikes\n(x range: pulse onset to end of pulse\ny condition: max above 0.01mV)"	[label=Sub];
 	"Calculate TP-like properties\nand store them in the\nlabnotebook" -> "Check if $NUM_DA_SCALES\nsweeps passed from RA cycle";
 	"Calculate TP-like properties\nand store them in the\nlabnotebook" -> "Optional parameter ShowPlot\nis true or missing";
 	"Search for spikes\n(x range: pulse onset to end of pulse\ny condition: max above 0.01mV)" -> "Write number of spikes\ninto labnotebook";
@@ -164,23 +168,26 @@ than MaxFrequencyChangePercent.\n If this is not the case we add DAScale values 
 	n133	[label="Add all passing sweeps from the previous SCI\n if all of the following conditions are met:\n- DAScale adaptive suprathreshold was \
 run\n- failing set QC\n-all analysis parameters are the same\n- same targetV autobias value"];
 	n110 -> n133	[label=Found];
-	n94 -> n104;
-	n95	[label="Fit the last two AP frequency\n and DAScale data from RhSuAd plus this SCI\n ignoring entries with the same AP frequency\n as their \
-right neighbour"];
-	n104 -> n95	[label=Yes];
-	"Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters" -> "Use first DAScale value";
-	n134	[label="Store list of passing RhSuAd sweeps\n in the labnotebook"];
-	n133 -> n134;
+	n122 -> "Skip to end of active set";
 	"Spike count relative to\nMin and Max?" -> "Use next DAScale value"	[label="In-between"];
 	"Spike count relative to\nMin and Max?" -> "Adapt DAScale\n by a factor of 1 - Modifier"	[label=Above];
 	"Spike count relative to\nMin and Max?" -> "Adapt DAScale\n by a factor of 1 + Modifier"	[label=Below];
 	"Create spike frequency vs DAScale (fI) data\nand peform linear regression" -> "Optional parameter ShowPlot\nis true or missing";
 	"Create spike frequency vs DAScale (fI) data\nand peform linear regression" -> "Write fI-Slope into labnotebook";
+	"Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters" -> "Use first DAScale value";
+	n124	[label="Also add passing sweeps from\n the previous \"FailingAdaptiveSCIRange\" SCIs\n which ran DAScale in adaptive mode\n and had failing \
+set QC"];
+	n133 -> n124;
+	n97	[label="Write fit slope and offset to the labnotebook"];
+	n95 -> n97	[label="Sucess?"];
+	n98	[label="Mark the fit slope as invalid in the labnotebook"];
+	n95 -> n98	[label="Failure?"];
+	n134	[label="Store list of passing RhSuAd sweeps\n in the labnotebook"];
+	n114	[label="Gather AP frequency and DAScale data\n from all RhSuAd sweeps\n but using the adaptive E1 epoch length for evaluations"];
+	n134 -> n114;
 	"Adapt DAScale\n by a factor of 1 - Modifier" -> "Use next DAScale value";
 	"Adapt DAScale\n by a factor of 1 + Modifier" -> "Use next DAScale value";
 	"Write fI-Slope into labnotebook" -> "Optional FinalSlopePercent\nparameter present?";
-	n114	[label="Gather AP frequency and DAScale data\n from all RhSuAd sweeps\n but using the adaptive E1 epoch length for evaluations"];
-	n134 -> n114;
 	"Optional FinalSlopePercent\nparameter present?" -> "Add labnotebook entry if the\ndesired fI-Slope was reached or not"	[label=Yes];
 	n116	[label="Store frequency and DAScale data\n in the labnotebook"];
 	n114 -> n116;
@@ -189,15 +196,14 @@ right neighbour"];
 	n117 -> Abort	[label=Failure];
 	n118	[label="Store the fit slope and offset\n in the labnotebook"];
 	n117 -> n118	[label=Success];
-	n97	[label="Write fit slope and offset to the labnotebook"];
-	n95 -> n97	[label="Sucess?"];
-	n98	[label="Mark the fit slope as invalid in the labnotebook"];
-	n95 -> n98	[label="Failure?"];
+	n119	[label="Calculate the maximum fit slope\n and store it in the labnotebook"];
+	n118 -> n119;
 	n101	[label="Determine if the fit slope is valid\n and store the result in the labnotebook"];
 	n97 -> n101;
 	n99	[label="Calculate the maximum slope in this SCI\n and store it in the labnotebook"];
 	n98 -> n99;
-	n101 -> n99;
+	n125	[label="Calculate negative fit slope QC\n and store in the labnotebook"];
+	n101 -> n125;
 	n102	[label="Does the current f-I slope fullfill\n all of the following conditions:\n- finite\n-SlopePercentage smaller than the max slope\n- \
 acquired with a larger DAScale value than the maxSlope"];
 	n99 -> n102;
@@ -213,10 +219,12 @@ QC and f-I slope QC passing?"];
 	n138 -> n139;
 	n112	[label="Mark set as passed"];
 	n139 -> n112	[label=Yes];
-	n109	[label="Check if the set can still pass"];
-	n139 -> n109	[label=No];
+	n141	[label="Do we have at least two passing sweeps with negative fit slope QC\n or a passing fit slope QC and then a negative fit slope QC\n \
+which are adjacent and ignoring sweeps with failed sweep QC in-between?\n"];
+	n139 -> n141	[label=No];
 	n113	[label="Skip to end of active set"];
 	n112 -> n113;
+	n109	[label="Check if the set can still pass"];
 	n111	[label="Skip to end"];
 	n109 -> n111	[label=No];
 	n100	[label="Has the sweep passed?"];
@@ -224,13 +232,12 @@ QC and f-I slope QC passing?"];
 	n103	[label="Measured all future DAScale values?"];
 	n100 -> n103	[label=Yes];
 	n106	[label="Calculate new DAScale value by\n extrapolating fit slope and offset\n and using MaximumChangePercent - 2 as frequency distance.\n \
-Uses the fit slopes and offsets from the\n passing sweep with the highest DAScale searching from the back."];
+Uses the fit slopes and offsets from the\n passing sweep with the highest DAScale searching from the back.\n Here we use the fit \
+offsets and slopes which have\n ignored sweeps with passing neg slope fit QC"];
 	n103 -> n106	[label=Yes];
 	n108	[label="Use the next DAScale value"];
 	n103 -> n108	[label=No];
 	n106 -> n108;
-	n119	[label="Calculate the maximum fit slope\n and store it in the labnotebook"];
-	n118 -> n119;
 	n128	[label="Calculate the normalized minimum and maximum\n DAScale step witdths and store them in the labnotebook"];
 	n119 -> n128;
 	n131	[label="Plot AP frequency and f-I slope both versus DAScale"];
@@ -242,10 +249,37 @@ Uses the fit slopes and offsets from the\n passing sweep with the highest DAScal
 	n135	[label="Do we have at least NumSweepsWithSaturation\n sweeps which are adjacent, ignoring sweeps with failed sweep QC,\n and have sweep \
 QC and f-I slope QC passing?"];
 	n120 -> n135	[label="Not Needed"];
-	n121 -> n106	[label=Success];
+	n127	[label="Calculate negative fit slope QCs\n and store in the labnotebook"];
+	n121 -> n127;
 	n136	[label="Skip to end of active set"];
 	n135 -> n136	[label=Yes];
+	n140	[label="Do we have at least two passing sweeps with negative fit slope QC\n or a passing fit slope QC and then a negative fit slope QC\n \
+which are adjacent and ignoring sweeps with failed sweep QC in-between?\n"];
+	n135 -> n140	[label=No];
 	n137	[label="Reuse already set DAScale value"];
 	n136 -> n137;
-	n122 -> "Skip to end of active set";
+	n124 -> n134;
+	n125 -> n99;
+	n127 -> n106	[label=Failure];
+	n129	[label="Use the analysis parameter \"DAScaleNegativeSlopePercent\"\n combined with the absolute DAScale step width\n to calculate the new \
+DAScale value\n"];
+	n127 -> n129	[label=Success];
+	n129 -> n108;
+	n146	[label="Does the fillin negative slope\n labnotebook entry exist?"];
+	n140 -> n146	[label=Yes];
+	n141 -> n109	[label=No];
+	n142	[label="Does the fillin negative slope\n labnotebook entry exist?"];
+	n141 -> n142;
+	n142 -> n112	[label=Yes];
+	n143	[label="Add a future DAScale value between the last \npositive fit slope sweep and the first negative fit slope.\n Do nothing if that  transition \
+does not exist."];
+	n142 -> n143	[label=No];
+	n145	[label="Add the fillin negative slope\n labnotebook entry"];
+	n143 -> n145;
+	n146 -> n136	[label=Yes];
+	n147	[label="Add a future DAScale value between the last \npositive fit slope sweep and the first negative fit slope.\n Do nothing if that  transition \
+does not exist."];
+	n146 -> n147	[label=No];
+	n148	[label="Add the fillin negative slope\n labnotebook entry"];
+	n147 -> n148;
 }
