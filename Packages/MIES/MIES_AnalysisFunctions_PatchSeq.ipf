@@ -47,8 +47,10 @@
 ///  PSQ_FMT_LBN_FINAL_SCALE                    Final DAScale of the given headstage, only set on success     (none)   Numerical    SP, RB                               No           No
 ///  PSQ_FMT_LBN_SPIKE_DASCALE_ZERO             Sweep spiked with DAScale of 0                                On/Off   Numerical    SP                                   No           No
 ///  PSQ_FMT_LBN_INITIAL_SCALE                  Initial DAScale                                               (none)   Numerical    RB, CR                               No           No
+///  PSQ_FMT_LBN_RMS_SHORT                      Short RMS baseline value                                      V        Numerical    DA, RB, RA, CR, SE, VM, AR           Yes          Yes
 ///  PSQ_FMT_LBN_RMS_SHORT_PASS                 Short RMS baseline QC result                                  On/Off   Numerical    DA, RB, RA, CR, SE, VM, AR           Yes          Yes
 ///  PSQ_FMT_LBN_RMS_SHORT_THRESHOLD            Short RMS baseline threshold                                  V        Numerical    DA, RB, RA, CR, SE, VM, AR           No           Yes
+///  PSQ_FMT_LBN_RMS_LONG                       Long RMS baseline value                                       V        Numerical    DA, RB, RA, CR, SE, VM, AR           Yes          Yes
 ///  PSQ_FMT_LBN_RMS_LONG_PASS                  Long RMS baseline QC result                                   On/Off   Numerical    DA, RB, RA, CR, SE, VM, AR           Yes          Yes
 ///  PSQ_FMT_LBN_RMS_LONG_THRESHOLD             Long RMS baseline threshold                                   V        Numerical    DA, RB, RA, CR, SE, VM, AR           No           Yes
 ///  PSQ_FMT_LBN_TARGETV                        Target voltage baseline                                       Volt     Numerical    DA, RB, RA, CR                       Yes          Yes
@@ -797,6 +799,20 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 		// more tests can be added here
 	endfor
+
+	if(HasOneValidEntry(rmsShort))
+		// mV -> V
+		rmsShort[] *= MILLI_TO_ONE
+		key         = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_SHORT, chunk = chunk)
+		ED_AddEntryToLabnotebook(device, key, rmsShort, unit = "Volt", overrideSweepNo = s.sweepNo)
+	endif
+
+	if(HasOneValidEntry(rmsLong))
+		// mV -> V
+		rmsLong[] *= MILLI_TO_ONE
+		key        = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_LONG, chunk = chunk)
+		ED_AddEntryToLabnotebook(device, key, rmsLong, unit = "Volt", overrideSweepNo = s.sweepNo)
+	endif
 
 	if(HasOneValidEntry(avgVoltage))
 		// mV -> V
