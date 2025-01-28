@@ -409,7 +409,8 @@ End
 ///
 /// If you use this function in analysis functions be sure to use an event which happens *before* the stimset is read,
 /// for example `PRE_DAQ_EVENT`, `PRE_SET_EVENT` or `PRE_SWEEP_CONFIG_EVENT`. The last one is always called for each
-/// sweep before it is configured.
+/// sweep before it is configured. This also means that if you change a stimset during `MID_SWEEP_EVENT` the changes
+/// will not be picked up for the current sweep.
 ///
 /// @param setName    name of the stimset
 /// @param entry      name of the parameter, can be global or epoch
