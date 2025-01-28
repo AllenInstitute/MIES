@@ -2133,57 +2133,6 @@ static Function [WAVE apfreq, WAVE DAScale] PSQ_DS_GatherFrequencyCurrentData(st
 	return [apfreq, DaScale]
 End
 
-/// @brief Filter duplicated AP frequencies out
-///
-/// @param apfreq   AP frequencies
-/// @param DAScales DA scale values
-///
-/// @retval apfreqFiltered   AP frequencies with neighbouring duplicates removed
-/// @retval DAScalesFiltered DScales values with intact indices
-/// @retval deletedIndizes   Possibly non-existing wave with the removed indizes
-/// @retval numPoints        Number of points in the apfreq/DAScales waves after filtering
-static Function [WAVE apfreqFiltered, WAVE DAScalesFiltered, WAVE deletedIndizes, variable numPoints] PSQ_DS_FilterFrequencyCurrentData(WAVE apfreq, WAVE DAScales)
-
-	numPoints = DimSize(apfreq, ROWS)
-	ASSERT(numPoints == DimSize(DaScales, ROWS), "Non-matching wave sizes")
-
-	if(numPoints < PSQ_DA_NUM_POINTS_LINE_FIT)
-		return [$"", $"", $"", 0]
-	endif
-
-	WAVE/Z indizes = FindNeighbourWithPredicate(apfreq, EqualValuesOrBothNaN)
-
-	if(!WaveExists(indizes))
-		Duplicate/FREE apfreq, apreqFiltered
-		Duplicate/FREE DAScales, DAScalesFiltered
-
-		return [apreqFiltered, DAScalesFiltered, $"", numPoints]
-	endif
-
-	if(DimSize(indizes, ROWS) == (numPoints - 1))
-		// we can't do any fitting with only a single point left
-		// but as the original data was all the same we can
-		// just take the first PSQ_DA_NUM_POINTS_LINE_FIT points
-		Duplicate/FREE/RMD=[0, PSQ_DA_NUM_POINTS_LINE_FIT - 1] apFreq, apFreqFiltered
-		Duplicate/FREE/RMD=[0, PSQ_DA_NUM_POINTS_LINE_FIT - 1] DAScales, DAScalesFiltered
-
-		Redimension/N=(numPoints - PSQ_DA_NUM_POINTS_LINE_FIT) indizes
-		indizes[] = p + PSQ_DA_NUM_POINTS_LINE_FIT
-	else
-		Duplicate/FREE apFreq, apFreqFiltered
-		Duplicate/FREE DAScales, DAScalesFiltered
-
-		DeleteWavePoint(apFreqFiltered, ROWS, indices = indizes)
-		DeleteWavePoint(DAScalesFiltered, ROWS, indices = indizes)
-	endif
-
-	WaveClear apFreq, DASCales
-
-	numPoints = DimSize(apfreqFiltered, ROWS)
-
-	return [apfreqFiltered, DASCalesFiltered, indizes, numPoints]
-End
-
 /// @brief Fit the AP frequency and DAScale data with a line fit and return the fit results (offsets and slopes)
 ///
 /// @param device                DAC hardware device
@@ -2224,19 +2173,7 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 	[WAVE DAScalesSorted, WAVE apfreqSorted] = SortKeyAndData(DAScales, apfreq)
 	WaveClear DAScales, apfreq
 
-	// original data:
-	// apfreq:  {5,  8,   9,   9,   15}
-	// DAScale: {50, 100, 130, 160, 200}
-	// numPoints = 5
-	//
-	// after filtering:
-	// apfreq:  {5,  8,   9,   15}
-	// DAScale: {50, 100, 130, 200}
-	// deletedIndizes: {3}
-	// numPoints = 4
-	[WAVE apfreqFiltered, WAVE DAScalesFiltered, WAVE deletedIndizes, numPoints] = PSQ_DS_FilterFrequencyCurrentData(apfreqSorted, DAScalesSorted)
-	WaveClear DAScalesSorted, apfreqSorted
-
+	numPoints       = DimSize(DAScalesSorted, ROWS)
 	hasEnoughPoints = (numPoints >= PSQ_DA_NUM_POINTS_LINE_FIT)
 
 	if(writeEnoughPointsLBN)
@@ -2253,27 +2190,22 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 	if(singleFit)
 		numPoints = PSQ_DA_NUM_POINTS_LINE_FIT
 
-		Duplicate/FREE/RMD=[0, PSQ_DA_NUM_POINTS_LINE_FIT - 1] apfreqFiltered, apfreqFinal
-		Duplicate/FREE/RMD=[0, PSQ_DA_NUM_POINTS_LINE_FIT - 1] DAScalesFiltered, DAScalesFinal
+		Duplicate/FREE/RMD=[0, PSQ_DA_NUM_POINTS_LINE_FIT - 1] apfreqSorted, apfreqFinal
+		Duplicate/FREE/RMD=[0, PSQ_DA_NUM_POINTS_LINE_FIT - 1] DAScalesSorted, DAScalesFinal
 
 		// now we need to grab PSQ_DA_NUM_POINTS_LINE_FIT points
 		// going from back to front starting at DAScaleRef
-		FindValue/R/V=(DAScaleRef) DAScalesFiltered
-		if(V_Value >= 0)
-			idx = V_Value
-		else
-			// but if we can't find it, because it was filtered out
-			// we take the last PSQ_DA_NUM_POINTS_LINE_FIT values
-			idx = DimSize(DAScalesFiltered, ROWS) - 1
-		endif
+		FindValue/R/V=(DAScaleRef) DAScalesSorted
+		ASSERT(V_Value >= 0, "Invalid DAScaleRef")
+		idx = V_Value
 
-		apfreqFinal[]   = apfreqFiltered[idx - PSQ_DA_NUM_POINTS_LINE_FIT + 1 + p]
-		DAScalesFinal[] = DAScalesFiltered[idx - PSQ_DA_NUM_POINTS_LINE_FIT + 1 + p]
+		apfreqFinal[]   = apfreqSorted[idx - PSQ_DA_NUM_POINTS_LINE_FIT + 1 + p]
+		DAScalesFinal[] = DAScalesSorted[idx - PSQ_DA_NUM_POINTS_LINE_FIT + 1 + p]
 	else
-		WAVE apfreqFinal   = apfreqFiltered
-		WAVE DAScalesFinal = DAScalesFiltered
+		WAVE apfreqFinal   = apfreqSorted
+		WAVE DAScalesFinal = DAScalesSorted
 	endif
-	WAVEClear DAScalesFiltered, apfreqFiltered
+	WAVEClear DAScalesSorted, apfreqSorted
 
 	numFits = (numPoints - PSQ_DA_NUM_POINTS_LINE_FIT) + 1
 
@@ -2339,15 +2271,6 @@ static Function [WAVE/D fitOffset, WAVE/D fitSlope, string errMsg] PSQ_DS_FitFre
 		fitOffset[i] = fitCoeff[%Offset]
 		fitSlope[i]  = fitCoeff[%Slope] / ONE_TO_PICO * ONE_TO_PERCENT // % Hz / pA
 	endfor
-
-	// readd NaN entries for filtered out apFreq/DAScale
-	if(!singleFit && WaveExists(deletedIndizes))
-		Sort/A deletedIndizes, deletedIndizes
-		for(elem : deletedIndizes)
-			idx = floor(elem / PSQ_DA_NUM_POINTS_LINE_FIT)
-			InsertPoints/M=(ROWS)/V=(PSQ_DS_SKIPPED_FI_SLOPE) idx, 1, fitOffset, fitSlope
-		endfor
-	endif
 
 	if(!HasOneValidEntry(fitOffset) && !HasOneValidEntry(fitSlope))
 		return [$"", $"", "All fit results are NaN"]
