@@ -1419,7 +1419,7 @@ Function LabnotebookUpgradeMissingNoteIndexTextual()
 	Note/K textualKeys
 
 	textualValues[][][] = ""
-	Redimension/N=(0, -1, -1) textualValues
+	Redimension/N=(1, -1, -1) textualValues
 
 	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
 
