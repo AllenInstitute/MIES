@@ -2386,3 +2386,5 @@ Constant ABORTCODE_ABORT         = -3
 Constant ABORTCODE_STACKOVERFLOW = -2
 Constant ABORTCODE_USERABORT     = -1
 ///@}
+
+StrConstant CONF_DEFAULT_SAVE_LOCATION = "C:MiesSave"
