@@ -803,6 +803,35 @@ Function FI_AbortsWithInvalidParams12()
 	endtry
 End
 
+Function FI_AbortsWithInvalidParams13()
+
+	Make/FREE data
+	try
+		WAVE/Z indizes = FindIndizes(data, prop = PROP_NOT)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function FI_AbortsWithInvalidParams14()
+
+	Make/FREE data
+	try
+		WAVE/Z indizes = FindIndizes(data, var = 0, prop = PROP_EMPTY)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE/Z indizes = FindIndizes(data, str = "", prop = PROP_EMPTY)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 Function FI_AbortsWithInvalidWave()
 
 	try

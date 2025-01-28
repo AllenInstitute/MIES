@@ -407,14 +407,12 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	variable numCols, numRows, numLayers, maskedProp
 	string key
 
-	ASSERT_TS(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2                               \
-	          || (!ParamIsDefault(prop)                                                                           \
-	              && (                                                                                            \
-	                  prop == PROP_NOT                                                                            \
-	                  || ((prop & PROP_MATCHES_VAR_BIT_MASK) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1) \
-	                  || (prop & PROP_GREP && !ParamIsDefault(str) && ParamIsDefault(var))                        \
-	                  || (prop & PROP_WILDCARD && !ParamIsDefault(str) && ParamIsDefault(var))                    \
-	                 )),                                                                                          \
+	ASSERT_TS((ParamIsDefault(prop) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                  \
+	          || ((prop & PROP_EMPTY) && (ParamIsDefault(var) + ParamIsDefault(str)) == 2)                \
+	          || ((prop & PROP_NOT) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                  \
+	          || ((prop & PROP_MATCHES_VAR_BIT_MASK) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1) \
+	          || ((prop & PROP_GREP) && !ParamIsDefault(str) && ParamIsDefault(var))                      \
+	          || ((prop & PROP_WILDCARD) && !ParamIsDefault(str) && ParamIsDefault(var)),                 \
 	          "Invalid combination of var/str/prop arguments")
 
 	ASSERT_TS(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
