@@ -128,7 +128,8 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		ASSERT_TS(WaveExists(ADCsFromLBN), "Labnotebook is too old for workaround.")
 
 		WAVE statusHS = LBN_GetNumericWave()
-		statusHS[] = IsFinite(ADCsFromLBN[p]) && IsFinite(DACsFromLBN[p])
+		// 562439857 (Introduce a nineth layer in the labnotebooks for storing headstage independent data, 2015-10-28)
+		statusHS[0, NUM_HEADSTAGES - 1] = IsFinite(ADCsFromLBN[p]) && IsFinite(DACsFromLBN[p])
 	endif
 
 	BSP_RemoveDisabledChannels(channelSelWave, ADCs, DACs, statusHS, numericalValues, sweepNo)
