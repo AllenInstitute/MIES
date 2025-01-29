@@ -7591,7 +7591,7 @@ End
 /// @brief Return the wave used for storing mock data for tests
 ///
 /// This wave is created by MSQ_CreateOverrideResults(),
-/// PSQ_CreateOverrideResults() or TP_CreateOverrideResults() and does also not
+/// PSQ_CreateOverrideResults(), TP_CreateOverrideResults(), CreateOverrideResults() and does also not
 /// follow our usual rules so it might not exist.
 Function/WAVE GetOverrideResults()
 
