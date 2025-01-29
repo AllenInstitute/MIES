@@ -139,3 +139,13 @@ static Function TestGetChannelInfo()
 	Make/FREE/T channelInfoRef = {{"0"}, {"root:MIES:Analysis:workFolder:AB_LoadSweepsFromIgorData:Dev1:sweep:X_0:AD_0"}, {"0"}}
 	CHECK_EQUAL_TEXTWAVES(channelInfo, channelInfoRef, mode = WAVE_DATA)
 End
+
+static Function TestLabnotebookFallbackPathsInSweepDisplay()
+
+	string abWin, sweepBrowsers, win
+
+	Make/FREE/T files = {"input:very_very_early_mies-data_Rbp4-Cre_KL100;Ai14-206137.04.02.pxp"}
+	DownloadFilesIfRequired(files)
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1)
+	CHECK_NO_RTE()
+End

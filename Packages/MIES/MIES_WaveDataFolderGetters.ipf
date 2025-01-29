@@ -1638,7 +1638,7 @@ static Function UpgradeLabNotebook(string device)
 		nextFreeRow = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
 
 		if(IsNaN(nextFreeRow))
-			FindValue/FNAN/RMD=[][timeStampColumn][0]/R textualValues
+			FindValue/TEXT=("")/RMD=[][timeStampColumn][0]/R textualValues
 			if(!(V_row >= 0))
 				V_row = DimSize(textualValues, ROWS)
 			endif
