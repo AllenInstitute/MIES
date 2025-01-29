@@ -332,8 +332,26 @@ End
 /// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
 Function UploadJSONPayload(variable jsonID)
 
-	URLrequest/DSTR=(JSON_Dump(jsonID)) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
-	ASSERT(!V_Flag, "URLrequest did not succeed due to: " + S_ServerResponse)
+	variable skip
+
+#ifdef AUTOMATED_TESTING
+	WAVE/Z overrideResults = GetOverrideResults()
+	skip = WaveExists(overrideResults) ? overrideResults[0] : 0
+#endif // AUTOMATED_TESTING
+
+	if(!skip)
+		URLRequest/Z=1/DSTR=(JSON_Dump(jsonID)) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+	else
+		V_flag           = 1
+		S_ServerResponse = "fake error"
+	endif
+
+	if(V_Flag)
+		LOG_AddEntry(PACKAGE_MIES, "URLRequest failed", keys = {"S_ServerResponse", "V_Flag"}, values = {S_ServerResponse, num2str(V_Flag)}, stacktrace = 1)
+		return 1
+	endif
+
+	return 0
 End
 
 /// @brief Returns a hex string which is unique for the given Igor Pro session

@@ -142,12 +142,7 @@ static Function UploadPing()
 
 	jsonID = GenerateJSONTemplateForUpload()
 	AddPayloadEntries(jsonID, {UPLOAD_BLOCK_USERPING}, {payload}, isBinary = 0)
-	AssertOnAndClearRTError()
-	try
-		UploadJSONPayload(jsonID); AbortOnRTE
-	catch
-		err = ClearRTError()
-	endtry
+	UploadJSONPayload(jsonID)
 	JSON_Release(jsonID)
 
 	return err
@@ -241,7 +236,7 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 
 	string logPartStr, fNamePart, file, ticket, timeStamp
 	string path, location, basePath, out
-	variable jsonID, numFiles, i, j, doFilter, isBinary, lastIndex, jsonIndex, partCnt, sumSize, fSize
+	variable ret, jsonID, numFiles, i, j, doFilter, isBinary, lastIndex, jsonIndex, partCnt, sumSize, fSize
 
 	isBinary = 1
 	verbose  = ParamIsDefault(verbose) ? 1 : !!verbose
@@ -341,8 +336,16 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		sprintf out, "Uploading %.0f MB (~%d Bytes)", sumSize / MEGABYTE, sumSize
 		UploadLogFilesPrint(out, verbose)
 		for(jsonID : jsonIDs)
-			UploadJSONPayload(jsonID)
+			ret = UploadJSONPayload(jsonID)
 			JSON_Release(jsonID)
+
+			if(ret)
+				sprintf out, "Error uploading the logfiles.\r"
+				UploadLogFilesPrint(out, verbose)
+				Make/FREE/N=(DimSize(jsonIDs, ROWS)) junk = JSON_Release(jsonIDs[p], ignoreErr = 1)
+				return NaN
+			endif
+
 			UploadLogFilesPrint(".", verbose)
 		endfor
 		UploadLogFilesPrint("\r", verbose)
