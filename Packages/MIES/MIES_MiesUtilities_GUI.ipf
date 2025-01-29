@@ -111,7 +111,7 @@ Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [variable cha
 
 	isSplitted = ParamIsDefault(isSplitted) ? 1 : !!isSplitted
 
-	if(IsFinite(headstage))
+	if(IsValidHeadstage(headstage))
 		colorIndex = headstage
 	elseif(!ParamIsDefault(channelType) && channelType == XOP_CHANNEL_TYPE_TTL)
 		// The mapping is based on ITC hardware with unsplitted and splitted TTL channels in the following index order

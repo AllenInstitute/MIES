@@ -3162,7 +3162,7 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 				endif
 				// assume that all pulses are from the same headstage
 				headstage = properties[setIndizes[0]][PA_PROPERTIES_INDEX_HEADSTAGE]
-				ASSERT(IsFinite(headstage), "Invalid headstage")
+				ASSERT(IsValidHeadstage(headstage), "Invalid headstage")
 
 				name = "colorScale_AD_" + num2str(channelNumber)
 				text = "HS" + num2str(headstage) + " (\\U)"
@@ -3214,7 +3214,7 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 					continue
 				endif
 				headstage = properties[setIndizes[0]][PA_PROPERTIES_INDEX_HEADSTAGE]
-				ASSERT(IsFinite(headstage), "Invalid headstage")
+				ASSERT(IsValidHeadstage(headstage), "Invalid headstage")
 
 				WAVE img = GetPulseAverageSetImageWave(pasi.pulseAverageDFR, channelNumber, region)
 				traceName = NameOfWave(img)

@@ -5617,7 +5617,7 @@ static Function/WAVE SF_GetAdditionalSweepsWithSameSCIorRAC(WAVE numericalValues
 
 	if(mode == SELECTDATA_MODE_SCI)
 		headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
-		if(IsNaN(headstage))
+		if(!IsValidHeadstage(headstage))
 			return $""
 		endif
 		WAVE/Z additionalSweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)

@@ -680,7 +680,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 			if(legacyActiveADColumns)
 				headstage = AFH_GetHeadstageFromActiveADC(statusADC, j)
 
-				if(IsNaN(headstage))
+				if(!IsValidHeadstage(headstage))
 					BUG("Could not derive headstage from active ADC")
 					headstage = j
 				endif
@@ -688,7 +688,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 				headstage = j
 			endif
 
-			if(IsFinite(headstage) && !channelSel[headstage][%HEADSTAGE])
+			if(IsValidHeadstage(headstage) && !channelSel[headstage][%HEADSTAGE])
 				continue
 			endif
 

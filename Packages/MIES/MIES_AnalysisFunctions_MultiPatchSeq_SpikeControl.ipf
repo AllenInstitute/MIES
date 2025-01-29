@@ -106,7 +106,7 @@ static Function/WAVE SC_GetHeadstageQCForSetCount(string device, variable sweepN
 
 		setSweepCount = SC_GetSetSweepCount(numericalValues, sweeps[i])
 
-		headstageQCTotalPerSweepCount[][setSweepCount] += IsFinite(headstageQCLBN[p]) ? headstageQCLBN[p] : NaN
+		headstageQCTotalPerSweepCount[][setSweepCount] += IsValidHeadstage(headstageQCLBN[p]) ? headstageQCLBN[p] : NaN
 	endfor
 
 #ifdef DEBUGGING_ENABLED
