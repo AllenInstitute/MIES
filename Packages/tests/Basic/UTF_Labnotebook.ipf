@@ -98,6 +98,15 @@ Function GetLastSettingEntrySourceTypes()
 	CHECK_EQUAL_WAVES(DAQSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(TPSettings, {1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
+	// no entry source otherwise the same labnotebook as above
+	WAVE/SDFR=dfr numericalValues_with_sweep_rb_no_type
+	WAVE   numericalValues = PrepareLBNNumericalValues(numericalValues_with_sweep_rb_no_type)
+	WAVE/Z DAQSettings     = GetLastSetting(numericalValues, 0, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z TPSettings      = GetLastSetting(numericalValues, 0, "DAC", TEST_PULSE_MODE)
+
+	CHECK_EQUAL_WAVES(DAQSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(TPSettings, {1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
 	// contains two times sweep 73, created with sweep rollback and a trailing TP
 	// and does not have entry source type information
 	WAVE/SDFR=dfr numericalValues_no_type_with_sweep_rb_with_tp
