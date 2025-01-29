@@ -531,7 +531,7 @@ static Function/DF TestSweepData(WAVE/T entry, string device, variable sweep)
 
 		WAVE DAC = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
 		headstage = GetRowIndex(DAC, val = str2num(channelNumberStr))
-		if(IsFinite(headstage))
+		if(IsAssociatedChannel(headstage))
 			WAVE clampMode = GetLastSetting(numericalValues, sweep, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 
 			if(clampMode[headstage] == I_EQUAL_ZERO_MODE                                          \

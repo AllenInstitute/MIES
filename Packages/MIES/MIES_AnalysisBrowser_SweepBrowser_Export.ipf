@@ -148,7 +148,7 @@ static Function SBE_AddMissingADTraceInfo(WAVE/T traceData)
 			// labnotebook layer where the ADC can be found is the headstage number
 			headstage = GetRowIndex(ADCs, val = j)
 
-			if(!IsFinite(headstage)) // unassociated ADC
+			if(!IsAssociatedChannel(headstage))
 				continue
 			endif
 

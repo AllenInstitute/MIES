@@ -129,7 +129,7 @@ static Function DC_UpdateHSProperties(string device, WAVE ADCs)
 	for(i = 0; i < numChannels; i += 1)
 		headstage = AFH_GetHeadstageFromADC(device, ADCs[i])
 
-		if(!IsFinite(headstage))
+		if(!IsAssociatedChannel(headstage))
 			continue
 		endif
 
@@ -809,7 +809,7 @@ static Function DC_PlaceDataInDAQConfigWave(string device, variable dataAcqOrTP)
 		DAQConfigWave[j][%DAQChannelType] = !CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ, 1) || dataAcqOrTP == TEST_PULSE_MODE ? DAQ_CHANNEL_TYPE_TP : DAQ_CHANNEL_TYPE_DAQ
 		headstage                         = AFH_GetHeadstageFromDAC(device, i)
 		DAQConfigWave[j][%HEADSTAGE]      = headstage
-		if(IsFinite(headstage))
+		if(IsAssociatedChannel(headstage))
 			DAQConfigWave[j][%CLAMPMODE] = DAG_GetHeadstageMode(device, headstage)
 		endif
 
@@ -834,7 +834,7 @@ static Function DC_PlaceDataInDAQConfigWave(string device, variable dataAcqOrTP)
 
 		headstage = AFH_GetHeadstageFromADC(device, i)
 
-		if(IsFinite(headstage))
+		if(IsAssociatedChannel(headstage))
 			// use the same channel type as the DAC
 			DAQConfigWave[j][%DAQChannelType] = DC_GetChannelTypefromHS(device, headstage)
 			DAQConfigWave[j][%HEADSTAGE]      = headstage
@@ -1127,7 +1127,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 		endif
 
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
-			if(IsFinite(headstage)) // associated channel
+			if(IsAssociatedChannel(headstage))
 				func = analysisFunctions[headstage][j]
 			else
 				func = ""
@@ -1144,7 +1144,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 		DC_DocumentChannelProperty(device, STIM_WAVE_NAME_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str = s.setName[i])
 		DC_DocumentChannelProperty(device, STIMSET_WAVE_NOTE_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str = NormalizeToEOL(RemoveEnding(note(s.stimSet[i]), "\r"), "\n"))
 
-		if(IsFinite(headstage)) // associated channel
+		if(IsAssociatedChannel(headstage))
 			str = analysisFunctions[headstage][ANALYSIS_FUNCTION_PARAMS]
 		else
 			str = ""
@@ -1171,7 +1171,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 		endif
 
 		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE)
-			isoodDAQMember = (s.distributedDAQOptOv && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ && IsFinite(headstage))
+			isoodDAQMember = (s.distributedDAQOptOv && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ && IsAssociatedChannel(headstage))
 			DC_DocumentChannelProperty(device, "oodDAQ member", headstage, channel, XOP_CHANNEL_TYPE_DAC, var = isoodDAQMember)
 		endif
 
@@ -1412,7 +1412,7 @@ End
 static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfigurationResult &s)
 
 	variable i, tpAmp, cutOff, channel, headstage, DAScale, singleSetLength, stimsetCol, startOffset
-	variable lastValidRow, isUnAssociated, maxLimit, minLimit
+	variable lastValidRow, isAssociated, maxLimit, minLimit
 
 	WAVE config = GetDAQConfigWave(device)
 
@@ -1424,16 +1424,16 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 	//   The resample method picks the closest sample point in the stimSet by using round()
 	//   The decimation factor can be < 1 (picking stimset samples one or multiple times) and > 1 (picking stimset samples or skipping it)
 	for(i = 0; i < s.numDACEntries; i += 1)
-		channel        = s.DACList[i]
-		headstage      = s.headstageDAC[i]
-		isUnAssociated = IsNaN(headstage)
-		tpAmp          = s.DACAmp[i][%TPAMP] * s.gains[i]
+		channel      = s.DACList[i]
+		headstage    = s.headstageDAC[i]
+		isAssociated = IsAssociatedChannel(headstage)
+		tpAmp        = s.DACAmp[i][%TPAMP] * s.gains[i]
 
-		[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !isUnAssociated)
+		[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, isAssociated)
 
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 			ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
-			ASSERT(!isUnAssociated, "DA channel must be associated for DAQ_CHANNEL_TYPE_TP")
+			ASSERT(isAssociated, "DA channel must be associated for DAQ_CHANNEL_TYPE_TP")
 
 			switch(s.hardwareType)
 				case HARDWARE_ITC_DAC:
@@ -1473,7 +1473,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 					                  minLimit,                                                                           \
 					                  maxLimit); AbortOnRTE
 
-					if(s.globalTPInsert && !isUnAssociated)
+					if(s.globalTPInsert && isAssociated)
 						// space in ITCDataWave for the testpulse is allocated via an automatic increase
 						// of the onset delay
 						MultiThread ITCDataWave[0, s.testPulseLength - 1][i] =                  \
@@ -1498,7 +1498,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 					                  minLimit,                                                                                                   \
 					                  maxLimit); AbortOnRTE
 
-					if(s.globalTPInsert && !isUnAssociated)
+					if(s.globalTPInsert && isAssociated)
 						// space in ITCDataWave for the testpulse is allocated via an automatic increase
 						// of the onset delay
 						MultiThread NIChannel[0, s.testPulseLength - 1] =                       \
@@ -1632,7 +1632,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 			s.setCycleCount[i]        = setCycleCountLocal
 		endif
 
-		if(IsFinite(headstage))
+		if(IsAssociatedChannel(headstage))
 			channelMode = ChannelClampMode[channel][%DAC][%ClampMode]
 			if(channelMode == V_CLAMP_MODE)
 				s.DACAmp[i][%TPAMP] = TPSettings[%amplitudeVC][headstage]
@@ -1641,7 +1641,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 			else
 				ASSERT(0, "Unknown clamp mode")
 			endif
-		else // unassoc channel
+		else
 			channelMode         = NaN
 			s.DACAmp[i][%TPAMP] = NaN
 		endif
@@ -1978,7 +1978,7 @@ Function DC_DocumentChannelProperty(string device, string entry, variable headst
 	ASSERT(colData >= 0, "Could not find entry in the labnotebook input waves")
 	ASSERT(colKey >= 0, "Could not find entry in the labnotebook input key waves")
 
-	if(IsFinite(headstage))
+	if(IsAssociatedChannel(headstage) || headstage == INDEP_HEADSTAGE)
 		if(!ParamIsDefault(var))
 			sweepDataLNB[0][%$entry][headstage] = var
 		elseif(!ParamIsDefault(str))
@@ -1987,7 +1987,6 @@ Function DC_DocumentChannelProperty(string device, string entry, variable headst
 		return NaN
 	endif
 
-	// headstage is not finite, so the channel is unassociated
 	ua_entry = CreateLBNUnassocKey(entry, channelNumber, channelType)
 
 	if(!ParamIsDefault(var))

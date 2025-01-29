@@ -41,7 +41,7 @@ Function OVS_IgnoreHeadstageInOverlay()
 
 	headstage = str2num(TUD_GetUserData(graph, trace, "headstage"))
 
-	if(!IsFinite(headstage))
+	if(!IsAssociatedChannel(headstage))
 		printf "Ignoring trace \"%s\" as it is not associated with a headstage.\r", trace
 		ControlWindowToFront()
 		return NaN

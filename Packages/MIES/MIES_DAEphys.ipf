@@ -1049,7 +1049,7 @@ Function DAP_DACHasExpectedClampMode(string device, variable controlChannelIndex
 
 	headstage = AFH_GetHeadstageFromDAC(device, channelNumber)
 
-	if(!IsFinite(headstage)) // unassociated AD/DA channels
+	if(!IsAssociatedChannel(headstage))
 		return 0
 	endif
 
@@ -1152,8 +1152,7 @@ static Function DAP_AdaptAssocHeadstageState(string device, string checkboxCtrl)
 		return NaN
 	endif
 
-	// headStage can be NaN for non associated DA/AD channels
-	if(!IsFinite(headStage))
+	if(!IsAssociatedChannel(headStage))
 		if(headStageFromSettingsIC == headStageFromSettingsVC)
 			// be nice to users and activate the headstage for them
 			headStage = headStageFromSettingsIC
@@ -2298,14 +2297,14 @@ Function DAP_CheckSettings(string device, variable mode)
 
 			headstage = AFH_GetHeadstageFromDAC(device, i)
 
-			if(IsFinite(headstage) && DAG_GetHeadstageMode(device, headstage) == I_EQUAL_ZERO_MODE \
+			if(IsAssociatedChannel(headstage) && DAG_GetHeadstageMode(device, headstage) == I_EQUAL_ZERO_MODE \
 			   && !cmpstr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
 				printf "(%s) When TP while DAQ is used the channel clamp mode for headstage %d can not be I=0.\r", device, headstage
 				ControlWindowToFront()
 				return 1
 			endif
 
-			if(IsNaN(headstage)) // unassoc DA
+			if(!IsAssociatedChannel(headstage))
 				if(DAP_CheckStimset(device, CHANNEL_TYPE_DAC, i, NaN))
 					return 1
 				endif
@@ -2326,7 +2325,7 @@ Function DAP_CheckSettings(string device, variable mode)
 
 			headstage = AFH_GetHeadstageFromADC(device, i)
 
-			if(IsNaN(headstage)) // unassoc AD
+			if(!IsAssociatedChannel(headstage))
 				if(DAP_CheckChannel(device, CHANNEL_TYPE_ADC, i))
 					return 1
 				endif
@@ -2856,7 +2855,7 @@ static Function DAP_CheckStimset(string device, variable channelType, variable c
 		setName = stimsets[i]
 
 		if(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
-			if(IsNaN(headstage))
+			if(!IsAssociatedChannel(headstage))
 				printf "(%s) Channel %d is an unassociated DA channel. Selection of the \"Test Pulse\" stimset for TP during DAQ is not allowed on unassociated DA channels.\r", device, channel
 				ControlWindowToFront()
 				return 1

@@ -424,7 +424,7 @@ static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 
 		headstage = str2num(TUD_GetUserData(graph, trace, LBV_UD_HEADSTAGE))
 
-		if(IsFinite(headstage))
+		if(IsAssociatedChannel(headstage))
 			if(hsMarker[headstage])
 				continue
 			endif

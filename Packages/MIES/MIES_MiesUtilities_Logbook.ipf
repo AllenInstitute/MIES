@@ -489,8 +489,7 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 	if(WaveExists(activeChannels))
 		headstage = GetRowIndex(activeChannels, val = channelNumber)
 
-		if(IsFinite(headstage))
-			// given channel was associated and active
+		if(IsAssociatedChannel(headstage))
 
 			WAVE/Z settings = GetLastSetting(values, sweepNo, setting, entrySourceType)
 
@@ -1912,7 +1911,7 @@ Function [variable type, variable waMode, variable headstage] GetAnalysisFunctio
 	anaFuncName = WaveText(settings, row = index)
 
 	headstage = GetHeadStageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
-	if(IsNaN(headstage))
+	if(!IsAssociatedChannel(headstage))
 		return [NaN, NaN, NaN]
 	endif
 

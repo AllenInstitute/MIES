@@ -453,3 +453,12 @@ static Function TestIsValidHeadstageWorking()
 	CHECK_EQUAL_VAR(IsValidHeadstage(NaN), 0)
 	CHECK_EQUAL_VAR(IsValidHeadstage(1.5), 0)
 End
+
+static Function TestIsAssociatedChannel()
+
+	CHECK_EQUAL_VAR(IsAssociatedChannel(0), 1)
+	CHECK_EQUAL_VAR(IsAssociatedChannel(1), 1)
+	CHECK_EQUAL_VAR(IsAssociatedChannel(NUM_HEADSTAGES - 1), 1)
+	CHECK_EQUAL_VAR(IsAssociatedChannel(NaN), 0)
+	CHECK_EQUAL_VAR(IsAssociatedChannel(1.5), 0)
+End

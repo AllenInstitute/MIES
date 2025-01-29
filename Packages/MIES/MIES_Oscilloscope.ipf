@@ -408,7 +408,7 @@ Function SCOPE_SetADAxisLabel(string device, variable dataAcqOrTP, variable acti
 		endif
 
 		headStage = AFH_GetHeadstageFromADC(device, adc)
-		if(isFinite(headStage))
+		if(IsAssociatedChannel(headStage))
 			labelStr = "HS" + num2str(headstage)
 		else
 			labelStr = AXIS_SCOPE_AD + num2str(adc)
