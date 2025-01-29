@@ -1164,6 +1164,13 @@ static Function RunPowerSpectrum_REENTRY([string str])
 	CHECK_EQUAL_VAR(0, sweepDataLNB[0][%$STIMSET_SCALE_FACTOR_KEY][0])
 	CHECK_EQUAL_VAR(0, sweepDataLNB[0][%$STIMSET_SCALE_FACTOR_KEY][1])
 
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	WAVE/Z powerSpectrum = GetLastSetting(numericalValues, sweepNo, "TP power spectrum", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(powerSpectrum, NULL_WAVE)
+
+	WAVE/Z powerSpectrum = GetLastSetting(numericalValues, sweepNo, "TP power spectrum", TEST_PULSE_MODE)
+	CHECK_EQUAL_WAVES(powerSpectrum, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, mode = WAVE_DATA)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1266,6 +1273,9 @@ static Function TPDuringDAQwithPS_REENTRY([string str])
 	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
 
 	CHECK_EQUAL_WAVES(stimScale, {tpAmp, daGain, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z powerSpectrum = GetLastSetting(numericalValues, sweepNo, "TP power spectrum", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(powerSpectrum, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, mode = WAVE_DATA)
 End
 
 // UTF_TD_GENERATOR v0:SingleMultiDeviceDAQ

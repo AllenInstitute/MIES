@@ -801,8 +801,8 @@ Function ED_TPDocumentation(string device)
 	WAVE TPResults  = GetTPResults(device)
 	WAVE statusHS   = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
-	Make/FREE/T/N=(3, 12) TPKeyWave
-	Make/FREE/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
+	Make/FREE/T/N=(3, 13) TPKeyWave
+	Make/FREE/N=(1, 13, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
 
 	// add data to TPKeyWave
 	TPKeyWave[0][0] = "TP Baseline Vm" // current clamp
@@ -818,6 +818,7 @@ Function ED_TPDocumentation(string device)
 	TPKeyWave[0][9]  = "DAC"
 	TPKeyWave[0][10] = "ADC"
 	TPKeyWave[0][11] = CLAMPMODE_ENTRY_KEY
+	TPKeyWave[0][12] = "TP power spectrum"
 
 	TPKeyWave[1][0]  = "mV"
 	TPKeyWave[1][1]  = "pA"
@@ -831,6 +832,7 @@ Function ED_TPDocumentation(string device)
 	TPKeyWave[1][9]  = ""
 	TPKeyWave[1][10] = ""
 	TPKeyWave[1][11] = ""
+	TPKeyWave[1][12] = LABNOTEBOOK_BINARY_UNIT
 
 	RTolerance       = TPSettings[%resistanceTol][INDEP_HEADSTAGE]
 	TPKeyWave[2][0]  = "1"                 // Assume a tolerance of 1 mV for V rest
@@ -845,6 +847,7 @@ Function ED_TPDocumentation(string device)
 	TPKeyWave[2][9]  = "0.1"
 	TPKeyWave[2][10] = "0.1"
 	TPKeyWave[2][11] = LABNOTEBOOK_NO_TOLERANCE
+	TPKeyWave[2][12] = LABNOTEBOOK_NO_TOLERANCE
 
 	TPSettingsWave[0][2][0, NUM_HEADSTAGES - 1] = TPResults[%ResistanceInst][r]
 	TPSettingsWave[0][3][0, NUM_HEADSTAGES - 1] = TPResults[%ResistanceSteadyState][r]
@@ -877,6 +880,7 @@ Function ED_TPDocumentation(string device)
 	TPSettingsWave[0][9][0, NUM_HEADSTAGES - 1]  = hsProp[r][%DAC]
 	TPSettingsWave[0][10][0, NUM_HEADSTAGES - 1] = hsProp[r][%ADC]
 	TPSettingsWave[0][11][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode]
+	TPSettingsWave[0][12][INDEP_HEADSTAGE]       = DAG_GetNumericalValue(device, "check_settings_show_power")
 
 	sweepNo = AFH_GetLastSweepAcquired(device)
 	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, device, TEST_PULSE_MODE)

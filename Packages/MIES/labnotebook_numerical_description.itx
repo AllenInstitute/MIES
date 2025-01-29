@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(195,6)	labnotebook_numerical_description
+WAVES/T/N=(196,6)	labnotebook_numerical_description
 BEGIN
 	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"SweepNum"	""	"-"	"Sweep number: Non-repeating non-negative numeric identifier for sweep time series. Increments in the order of acquisition. Starts at zero."	"ALL"	""
@@ -123,6 +123,7 @@ BEGIN
 	"Autobias"	"On/Off"	"-"	"During the inter trial interval (\"ITI\") autobias adjusts the holding current to maintain the user defined \"Autobias Vcom\" within \"Autobias Vcom variance\". The autobias evaluates a user defined part (\"Autobias (%)\") of the Testpulse baseline at the \"Autobias Interval\" (DaEphys->Settings->Amplifier)."	"DEPEND"	"IC"
 	"Sweep Rollback"	""	"0.1"	"Sweep rollback allows to remove existing sweeps by decreasing the device sweep counter. This entry documents that sweep rollback has happened and the new target sweep number. (removed)"	"INDEP"	""
 	"Skip Sweeps"	""	"0.1"	"Whenever the user issues a \"Skip Sweeps\" command this entry documents the new and to be jumped to sweep number."	"INDEP"	""
+	"TP power spectrum"	"On/Off"	"-"	"Instead of the Testpulse the power spectrum is displayed/saved during TP and TP during ITI"	"INDEP"	""
 	"Async 0 On/Off"	"On/Off"	"-"	"Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.\r\rAlarm is triggered when enabled and minimum or maximum is exceeded.\r\rThe value is stored in a new labnotebook column called \"Async AD$X: $Name\" where X is the asynchronous channel and $Name the title of the entry."	"INDEP"	"IC;VC;I=0"
 	"Async 1 On/Off"	"On/Off"	"-"	"Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.\r\rAlarm is triggered when enabled and minimum or maximum is exceeded.\r\rThe value is stored in a new labnotebook column called \"Async AD$X: $Name\" where X is the asynchronous channel and $Name the title of the entry."	"INDEP"	"IC;VC;I=0"
 	"Async 2 On/Off"	"On/Off"	"-"	"Single AD channel read at the end of the sweep. Commonly used for reading experimental hardware states. From temperature controllers, for example.\r\rAlarm is triggered when enabled and minimum or maximum is exceeded.\r\rThe value is stored in a new labnotebook column called \"Async AD$X: $Name\" where X is the asynchronous channel and $Name the title of the entry."	"INDEP"	"IC;VC;I=0"
