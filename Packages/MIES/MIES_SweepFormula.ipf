@@ -6715,6 +6715,7 @@ Function SF_button_sweepFormula_tofront(STRUCT WMButtonAction &ba) : ButtonContr
 			for(i = 0; i < numWins; i += 1)
 				wName = StringFromList(i, wList)
 				DoWindow/F $wName
+				DoIgorMenu "Control", "Retrieve Window"
 			endfor
 
 			break
