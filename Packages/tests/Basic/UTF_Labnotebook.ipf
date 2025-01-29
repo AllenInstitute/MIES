@@ -222,6 +222,22 @@ Function GetLastSettingFindsNaNSweep()
 	CHECK_EQUAL_WAVES(settings, settingsRef, mode = WAVE_DATA, tol = 1e-13)
 End
 
+Function GetLastSettingOnlyTPData()
+
+	DFREF dfr = root:Labnotebook_misc:
+
+	// check that we can find the first entries of the testpulse which have sweepNo == NaN
+	WAVE/SDFR=dfr numericalValues_only_TP
+	WAVE numericalValues = PrepareLBNNumericalValues(numericalValues_only_TP)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, NaN, "TP power spectrum", TEST_PULSE_MODE)
+	Make/D/FREE settingsRef = {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}
+	CHECK_EQUAL_WAVES(settings, settingsRef, mode = WAVE_DATA)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, NaN, "TP power spectrum", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NULL_WAVE)
+End
+
 static Function GetLastSettingFindsWithinNonConsecutiveSweepOrder()
 
 	string   key

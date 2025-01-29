@@ -1347,11 +1347,12 @@ threadsafe static Function FindRange(WAVE wv, variable col, variable val, variab
 
 	if(WaveExists(indizesSourceType)) // entrySourceType could be found
 		WAVE/Z indizes = GetSetIntersection(indizesSetting, indizesSourceType)
-		if(!WaveExists(indizes))
-			return NaN
-		endif
 	else
-		WAVE indizes = indizesSetting
+		WAVE/Z indizes = indizesSetting
+	endif
+
+	if(!WaveExists(indizes))
+		return NaN
 	endif
 
 	numRows = DimSize(indizes, ROWS)
