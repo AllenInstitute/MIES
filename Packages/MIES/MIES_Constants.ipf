@@ -21,7 +21,7 @@ Constant DAQ_CONFIG_WAVE_VERSION = 3
 Constant DA_EPHYS_PANEL_VERSION           = 64
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 51
 Constant WAVEBUILDER_PANEL_VERSION        = 14
-Constant ANALYSISBROWSER_PANEL_VERSION    = 5
+Constant ANALYSISBROWSER_PANEL_VERSION    = 6
 Constant PSX_PLOT_PANEL_VERSION           = 1
 
 /// Version of the stimset wave note
@@ -348,14 +348,15 @@ Constant CHANNEL_INDEX_ALL_I_ZERO  = -4
 ///       of a ListBox
 /// @anchor ListBoxSelectionWaveFlags
 ///@{
-Constant LISTBOX_SELECTED              = 0x01
-Constant LISTBOX_CELL_EDITABLE         = 0x02
-Constant LISTBOX_CELL_DOUBLECLICK_EDIT = 0x04
-Constant LISTBOX_SHIFT_SELECTION       = 0x08
-Constant LISTBOX_CHECKBOX_SELECTED     = 0x10
-Constant LISTBOX_CHECKBOX              = 0x20
-Constant LISTBOX_TREEVIEW_EXPANDED     = 0x10 ///< Convenience definition, equal to #LISTBOX_CHECKBOX_SELECTED
-Constant LISTBOX_TREEVIEW              = 0x40
+Constant LISTBOX_SELECTED                  = 0x01
+Constant LISTBOX_CELL_EDITABLE             = 0x02
+Constant LISTBOX_CELL_DOUBLECLICK_EDIT     = 0x04
+Constant LISTBOX_SHIFT_SELECTION           = 0x08
+Constant LISTBOX_CHECKBOX_SELECTED         = 0x10
+Constant LISTBOX_CHECKBOX                  = 0x20
+Constant LISTBOX_TREEVIEW_EXPANDED         = 0x10 ///< Convenience definition, equal to #LISTBOX_CHECKBOX_SELECTED
+Constant LISTBOX_SELECT_OR_SHIFT_SELECTION = 0x09 ///< Convenience definition: LISTBOX_SELECTED | LISTBOX_SHIFT_SELECTION
+Constant LISTBOX_TREEVIEW                  = 0x40
 ///@}
 
 Constant INITIAL_KEY_WAVE_COL_COUNT = 5
