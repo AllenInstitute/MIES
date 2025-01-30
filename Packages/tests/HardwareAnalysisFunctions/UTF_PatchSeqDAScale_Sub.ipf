@@ -64,7 +64,9 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo, strin
 		case PSQ_FMT_LBN_DA_fI_SLOPE:
 		case PSQ_FMT_LBN_PULSE_DUR:
 		case PSQ_FMT_LBN_RMS_LONG_PASS:
+		case PSQ_FMT_LBN_RMS_LONG:
 		case PSQ_FMT_LBN_RMS_SHORT_PASS:
+		case PSQ_FMT_LBN_RMS_SHORT:
 		case PSQ_FMT_LBN_SPIKE_DETECT:
 		case PSQ_FMT_LBN_SPIKE_COUNT:
 		case PSQ_FMT_LBN_TARGETV_PASS:
@@ -168,6 +170,12 @@ static Function PS_DS_Sub1_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NULL_WAVE)
 
@@ -189,6 +197,12 @@ static Function PS_DS_Sub1_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NULL_WAVE)
@@ -316,6 +330,12 @@ static Function PS_DS_Sub2_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NUMERIC_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -331,6 +351,12 @@ static Function PS_DS_Sub2_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
@@ -354,6 +380,12 @@ static Function PS_DS_Sub2_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 2)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 2)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 2)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -376,6 +408,12 @@ static Function PS_DS_Sub2_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 3)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 3)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 3)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 3)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -397,6 +435,12 @@ static Function PS_DS_Sub2_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 4)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 4)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 4)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 4)
 	CHECK_WAVE(targetV, NULL_WAVE)
@@ -514,6 +558,12 @@ static Function PS_DS_Sub3_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NUMERIC_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -536,6 +586,12 @@ static Function PS_DS_Sub3_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -557,6 +613,12 @@ static Function PS_DS_Sub3_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 2)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 2)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 2)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NULL_WAVE)
@@ -687,6 +749,12 @@ static Function PS_DS_Sub4_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NUMERIC_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -708,6 +776,12 @@ static Function PS_DS_Sub4_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
@@ -731,6 +805,12 @@ static Function PS_DS_Sub4_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 2)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 2)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 2)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -753,6 +833,12 @@ static Function PS_DS_Sub4_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 3)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 3)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 3)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 3)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -774,6 +860,12 @@ static Function PS_DS_Sub4_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 4)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 4)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 4)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 4)
 	CHECK_WAVE(targetV, NULL_WAVE)
@@ -903,6 +995,12 @@ static Function PS_DS_Sub5_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NULL_WAVE)
 
@@ -924,6 +1022,12 @@ static Function PS_DS_Sub5_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NULL_WAVE)
@@ -1053,6 +1157,12 @@ static Function PS_DS_Sub5a_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_EQUAL_WAVES(baselineTargetVPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NUMERIC_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -1074,6 +1184,12 @@ static Function PS_DS_Sub5a_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NULL_WAVE)
@@ -1205,6 +1321,12 @@ static Function PS_DS_Sub6_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NUMERIC_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -1226,6 +1348,12 @@ static Function PS_DS_Sub6_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
@@ -1249,6 +1377,12 @@ static Function PS_DS_Sub6_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 2)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 2)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 2)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -1271,6 +1405,12 @@ static Function PS_DS_Sub6_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 3)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 3)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 3)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 3)
 	CHECK_WAVE(targetV, NULL_WAVE)
 
@@ -1292,6 +1432,12 @@ static Function PS_DS_Sub6_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 4)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 4)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 4)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 4)
 	CHECK_WAVE(targetV, NULL_WAVE)
@@ -1423,6 +1569,12 @@ static Function PS_DS_Sub7_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NUMERIC_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -1445,6 +1597,12 @@ static Function PS_DS_Sub7_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -1466,6 +1624,12 @@ static Function PS_DS_Sub7_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 2)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 2)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 2)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NULL_WAVE)
@@ -1610,6 +1774,12 @@ static Function PS_DS_Sub8_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NUMERIC_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -1632,6 +1802,12 @@ static Function PS_DS_Sub8_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -1653,6 +1829,12 @@ static Function PS_DS_Sub8_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 2)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 2)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 2)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NULL_WAVE)
@@ -1791,6 +1973,12 @@ static Function PS_DS_Sub9_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NULL_WAVE)
 
@@ -1812,6 +2000,12 @@ static Function PS_DS_Sub9_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NULL_WAVE)
@@ -1943,6 +2137,12 @@ static Function PS_DS_Sub10_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 0)
+	CHECK_WAVE(baselineRMSShort, NUMERIC_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 0)
+	CHECK_WAVE(baselineRMSLong, NUMERIC_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -1965,6 +2165,12 @@ static Function PS_DS_Sub10_REENTRY([string str])
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 1)
 	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
 
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 1)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 1)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
+
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
@@ -1986,6 +2192,12 @@ static Function PS_DS_Sub10_REENTRY([string str])
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 2)
 	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
+
+	WAVE/Z baselineRMSShort = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_SHORT, chunk = 2)
+	CHECK_WAVE(baselineRMSShort, NULL_WAVE)
+
+	WAVE/Z baselineRMSLong = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG, chunk = 2)
+	CHECK_WAVE(baselineRMSLong, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NULL_WAVE)
