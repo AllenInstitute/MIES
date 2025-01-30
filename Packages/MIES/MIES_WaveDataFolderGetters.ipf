@@ -2367,7 +2367,7 @@ threadsafe Function/WAVE GetLBNidCache(WAVE numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 39
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 40
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2513,6 +2513,7 @@ End
 /// - 59: Save amplifier settings
 /// - 60: Require amplifier
 /// - 61: Skip Ahead
+/// - 62: TP power spectrum
 Function/WAVE GetSweepSettingsKeyWave(string device)
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
@@ -2530,9 +2531,9 @@ Function/WAVE GetSweepSettingsKeyWave(string device)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 62) wv
+		Redimension/N=(-1, 63) wv
 	else
-		Make/T/N=(3, 62) newDFR:$newName/WAVE=wv
+		Make/T/N=(3, 63) newDFR:$newName/WAVE=wv
 	endif
 
 	wv = ""
@@ -2788,6 +2789,10 @@ Function/WAVE GetSweepSettingsKeyWave(string device)
 	wv[%Parameter][61] = "Skip Ahead"
 	wv[%Units][61]     = ""
 	wv[%Tolerance][61] = "1"
+
+	wv[%Parameter][62] = "TP power spectrum"
+	wv[%Units][62]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][62] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

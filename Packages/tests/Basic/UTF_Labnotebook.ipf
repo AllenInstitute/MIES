@@ -98,6 +98,15 @@ Function GetLastSettingEntrySourceTypes()
 	CHECK_EQUAL_WAVES(DAQSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(TPSettings, {1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
+	// no entry source otherwise the same labnotebook as above
+	WAVE/SDFR=dfr numericalValues_with_sweep_rb_no_type
+	WAVE   numericalValues = PrepareLBNNumericalValues(numericalValues_with_sweep_rb_no_type)
+	WAVE/Z DAQSettings     = GetLastSetting(numericalValues, 0, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z TPSettings      = GetLastSetting(numericalValues, 0, "DAC", TEST_PULSE_MODE)
+
+	CHECK_EQUAL_WAVES(DAQSettings, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(TPSettings, {1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
 	// contains two times sweep 73, created with sweep rollback and a trailing TP
 	// and does not have entry source type information
 	WAVE/SDFR=dfr numericalValues_no_type_with_sweep_rb_with_tp
@@ -220,6 +229,22 @@ Function GetLastSettingFindsNaNSweep()
 	// and also with unknown mode
 	WAVE/Z settings = GetLastSetting(numericalValues, NaN, "TP Steady State Resistance", UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(settings, settingsRef, mode = WAVE_DATA, tol = 1e-13)
+End
+
+Function GetLastSettingOnlyTPData()
+
+	DFREF dfr = root:Labnotebook_misc:
+
+	// check that we can find the first entries of the testpulse which have sweepNo == NaN
+	WAVE/SDFR=dfr numericalValues_only_TP
+	WAVE numericalValues = PrepareLBNNumericalValues(numericalValues_only_TP)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, NaN, "TP power spectrum", TEST_PULSE_MODE)
+	Make/D/FREE settingsRef = {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}
+	CHECK_EQUAL_WAVES(settings, settingsRef, mode = WAVE_DATA)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, NaN, "TP power spectrum", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NULL_WAVE)
 End
 
 static Function GetLastSettingFindsWithinNonConsecutiveSweepOrder()
