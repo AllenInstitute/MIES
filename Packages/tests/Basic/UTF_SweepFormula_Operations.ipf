@@ -2159,6 +2159,18 @@ static Function TestOperationLabNotebook()
 	Make/D/FREE refContents = {1}
 	CHECK_EQUAL_WAVES(secondEntry, refContents, mode = WAVE_DATA)
 
+	// multiple keys with wildcard
+	str = "labnotebook([\"ADC\", \"Operating *\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
+	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 2)
+	WAVE firstEntry = dataRef[0]
+	Make/D/FREE refContents = {2}
+	CHECK_EQUAL_WAVES(firstEntry, refContents, mode = WAVE_DATA)
+
+	WAVE secondEntry = dataRef[1]
+	Make/D/FREE refContents = {1}
+	CHECK_EQUAL_WAVES(secondEntry, refContents, mode = WAVE_DATA)
+
 	// no match with wildcards
 	str = "labnotebook([\"eee*\"], select(selchannels(AD2), selsweeps([0])), DATA_ACQUISITION_MODE)"
 	WAVE/WAVE dataRef = SF_ExecuteFormula(str, win, useVariables = 0)
