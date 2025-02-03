@@ -155,14 +155,16 @@ End
 /// IUTF_TD_GENERATOR s1:DeviceNameGenerator
 static Function TCONF_CheckTypedPanelRestore([STRUCT IUTF_mData &md])
 
-	string win, winRestored
-	string fName = GetFolder(FunctionPath("")) + "CheckTypedPanelRestore.json"
+	string win, winRestored, rewrittenConfig, device
+	variable jsonID, needsFixup
+	string fName = PrependExperimentFolder_IGNORE("CheckTypedPanelRestore.json")
 
 	Execute/Q md.s0 + "()"
 	win = WinName(0, -1)
 	if(!CmpStr(win, BASE_WINDOW_NAME))
 		// special handling for DAEphys
 		KillWindow $win
+		device = md.s1
 		CreateLockedDAEphys(md.s1)
 		win = WinName(0, -1)
 		PGC_SetAndActivateControl(win, "check_Settings_RequireAmpConn", val = 0)
@@ -171,12 +173,20 @@ static Function TCONF_CheckTypedPanelRestore([STRUCT IUTF_mData &md])
 		PGC_SetAndActivateControl(win, "setvar_Settings_VC_DAgain", val = 20)
 		PGC_SetAndActivateControl(win, "Gain_AD_00", val = 0.0025)
 		PGC_SetAndActivateControl(win, "setvar_Settings_VC_ADgain", val = 0.0025)
+		needsFixup = 1
 	endif
+
 	CONF_SaveWindow(fName)
 	KillWindow $win
+
+	if(needsFixup)
+		[jsonID, rewrittenConfig] = FixupJSONConfig_IGNORE(fName, device)
+		JSON_Release(jsonID)
+		fName = rewrittenConfig
+	endif
+
 	CONF_RestoreWindow(fName)
 	winRestored = WinName(0, -1)
-	DeleteFile fName
 	CHECK_EQUAL_STR(win, winRestored)
 End
 

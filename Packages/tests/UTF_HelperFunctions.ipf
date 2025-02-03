@@ -908,6 +908,9 @@ Function TestCaseEndCommon(string testcase, [variable restartAsyncFramework])
 			ASYNC_Start(ThreadProcessorCount, disableTask = 1)
 		endif
 	endif
+
+	INFO("The default save location for MIES json configuration \"%s\" must not exist for the tests.", s0 = CONF_DEFAULT_SAVE_LOCATION)
+	REQUIRE(!FolderExists(CONF_DEFAULT_SAVE_LOCATION))
 End
 
 Function SetAsyncChannelProperties(string device, WAVE asyncChannels, variable minValue, variable maxValue)
