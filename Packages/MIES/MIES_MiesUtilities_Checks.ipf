@@ -60,3 +60,11 @@ threadsafe Function IsValidHeadstage(variable headstage)
 
 	return IsInteger(headstage) && headstage >= 0 && headstage < NUM_HEADSTAGES
 End
+
+/// @brief Check if the given headstage index belongs to an associated channel
+///
+/// UTF_NOINSTRUMENTATION
+threadsafe Function IsAssociatedChannel(variable headstage)
+
+	return IsValidHeadstage(headstage)
+End

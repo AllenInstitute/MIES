@@ -324,7 +324,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			endif
 
 			// ignore TP during DAQ channels
-			if(WaveExists(status) && IsFinite(headstage))
+			if(WaveExists(status) && IsValidHeadstage(headstage))
 				if(channelType == XOP_CHANNEL_TYPE_DAC                \
 				   && WaveExists(daChannelType)                       \
 				   && daChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
@@ -531,11 +531,11 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						endif
 					endif
 
-					TUD_SetUserDataFromWaves(graph, trace, userDataKeys,                                                                        \
-					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),        \
-					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                     \
-					                          num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep", \
-					                          num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage)),           \
+					TUD_SetUserDataFromWaves(graph, trace, userDataKeys,                                                                                \
+					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),                \
+					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                             \
+					                          num2str(IsValidHeadstage(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep", \
+					                          num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsValidHeadstage(headstage)),           \
 					                          num2istr(guiChannelNumber), device, num2str(mapIndex)})
 				endfor
 			endfor

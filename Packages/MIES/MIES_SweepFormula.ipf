@@ -3316,7 +3316,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 		endif
 
 		headstage = GetHeadstageForChannel(numericalValues, sweepNo, chanType, chanNr, DATA_ACQUISITION_MODE)
-		SFH_ASSERT(IsFinite(headstage), "Associated headstage must not be NaN")
+		SFH_ASSERT(IsAssociatedChannel(headstage), "Associated headstage must not be NaN")
 		[WAVE settings, settingsIndex] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, "DAC", chanNr, chanType, DATA_ACQUISITION_MODE)
 		SFH_ASSERT(WaveExists(settings), "Failed to retrieve DAC channels from LBN")
 		dacChannelNr = settings[headstage]
@@ -5617,7 +5617,7 @@ static Function/WAVE SF_GetAdditionalSweepsWithSameSCIorRAC(WAVE numericalValues
 
 	if(mode == SELECTDATA_MODE_SCI)
 		headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
-		if(IsNaN(headstage))
+		if(!IsValidHeadstage(headstage))
 			return $""
 		endif
 		WAVE/Z additionalSweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)

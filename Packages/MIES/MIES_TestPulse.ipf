@@ -1175,7 +1175,7 @@ static Function TP_AnalyzeTP(string device, WAVE/Z TPStorage, variable endRow)
 
 		headstage = TPStorage[endRow][i][%Headstage]
 
-		if(!IsFinite(headstage) || DC_GetChannelTypefromHS(device, headstage) != DAQ_CHANNEL_TYPE_TP)
+		if(!IsValidHeadstage(headstage) || DC_GetChannelTypefromHS(device, headstage) != DAQ_CHANNEL_TYPE_TP)
 			continue
 		endif
 

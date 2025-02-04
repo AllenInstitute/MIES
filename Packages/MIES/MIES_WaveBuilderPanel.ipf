@@ -59,7 +59,7 @@ Function WB_OpenStimulusSetInWaveBuilder()
 
 	WAVE/Z/T stimsetLBN = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 
-	if(!WaveExists(stimsetLBN) || IsNaN(headstage))
+	if(!WaveExists(stimsetLBN) || !IsValidHeadstage(headstage))
 		printf "Context menu option \"%s\" could not find the stimulus set of the trace %s.\r", S_Value, trace
 		ControlWindowToFront()
 		return NaN

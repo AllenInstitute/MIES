@@ -297,7 +297,7 @@ Function SCOPE_CreateGraph(string device, variable dataAcqOrTP)
 				AppendToGraph/W=$graph/R=$rightAxis/T=$AXIS_SCOPE_TP_TIME TPStorage[][headstage][%SteadyStateResistance]/TN=$steadyStateTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
 				SetAxis/W=$graph/A=2/N=1 $rightAxis
 				ModifyGraph/W=$graph fSize($rightAxis)=10, grid($rightAxis)=1, gridStyle($rightAxis)=4, gridRGB($rightAxis)=(0, 0, 0, 3277)
-				ASSERT(isFinite(headStage), "invalid headStage")
+				ASSERT(IsValidHeadstage(headStage), "invalid headStage")
 				if(isFinite(PressureData[headStage][%DAC_DevID])) // Check if pressure is enabled
 					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
 					ModifyGraph/W=$graph msize($steadyStateTrace)=1, gaps($steadyStateTrace)=0
@@ -408,7 +408,7 @@ Function SCOPE_SetADAxisLabel(string device, variable dataAcqOrTP, variable acti
 		endif
 
 		headStage = AFH_GetHeadstageFromADC(device, adc)
-		if(isFinite(headStage))
+		if(IsAssociatedChannel(headStage))
 			labelStr = "HS" + num2str(headstage)
 		else
 			labelStr = AXIS_SCOPE_AD + num2str(adc)

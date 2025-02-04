@@ -3337,8 +3337,7 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 				hwGainTable[inIndex][%GAINFACTOR] = gain[i]
 				hwGainTable[inIndex][%OFFSET]     = 0
 				input[inIndex][%INPUTWAVE]        = GetWavesDataFolder(SUChannel, 2)
-				if(IsNaN(headStage))
-					// unassoc ADC
+				if(!IsAssociatedChannel(headStage))
 					[inChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocADC(unassocADCIndex)
 					unassocADCIndex        += 1
 				else
@@ -3355,8 +3354,7 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 			case XOP_CHANNEL_TYPE_DAC:
 				EnsureLargeEnoughWave(output, indexShouldExist = outIndex)
 				output[outIndex][%OUTPUTWAVE] = GetWavesDataFolder(SUChannel, 2)
-				if(IsNaN(headStage))
-					// unassoc DAC
+				if(!IsAssociatedChannel(headStage))
 					[outChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocDAC(unassocDACIndex)
 					unassocDACIndex         += 1
 				else
@@ -3489,8 +3487,7 @@ Function HW_SU_ZeroDAC(variable deviceID, [variable flags])
 		if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC)
 			EnsureLargeEnoughWave(output, indexShouldExist = outIndex)
 			output[outIndex][%OUTPUTWAVE] = GetWavesDataFolder(channelDA, 2)
-			if(IsNaN(headStage))
-				// unassoc DAC
+			if(!IsAssociatedChannel(headStage))
 				[outChannel, encodeInfo] = HW_SU_GetEncodeFromUnassocDAC(unassocDACIndex)
 				unassocDACIndex         += 1
 			else
