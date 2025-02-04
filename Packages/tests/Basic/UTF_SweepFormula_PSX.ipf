@@ -662,13 +662,13 @@ static Function FillEventWave_IGNORE(WAVE psxEvent, string id, string comboKey)
 	psxEvent[][%peak_t]            = 10 * p
 	psxEvent[][%baseline]          = NaN
 	psxEvent[][%baseline_t]        = NaN
-	psxEvent[][%amplitude]         = p == 0 ? NaN : 10 * p
+	psxEvent[][%amplitude]         = (p == 0) ? NaN : (10 * p)
 	psxEvent[][%iei]               = 1000 * p
 	psxEvent[][%tau]               = 1e-6 * p
-	psxEvent[][%$"Rise Time"]      = p == 0 ? NaN : 0.1 * p
-	psxEvent[][%$"Onset Time"]     = p == 0 ? NaN : 0.2 * p
+	psxEvent[][%$"Rise Time"]      = (p == 0) ? NaN : (0.1 * p)
+	psxEvent[][%$"Onset Time"]     = (p == 0) ? NaN : (0.2 * p)
 	psxEvent[][%$"Slew Rate"]      = NaN
-	psxEvent[][%$"Slew Rate Time"] = p == 0 ? NaN : 200 * p
+	psxEvent[][%$"Slew Rate Time"] = (p == 0) ? NaN : (200 * p)
 
 	// PSX_ACCEPT:1
 	// PSX_REJECT:2
@@ -1561,10 +1561,10 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index, varia
 
 	variable numEvents
 
-	WAVE/Z psxEvent = dataWref[%$"psxEvent_" + num2str(index)]
+	WAVE/Z psxEvent = dataWref[%$("psxEvent_" + num2str(index))]
 	CHECK_WAVE(psxEvent, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 
-	WAVE/Z/WAVE eventFit = dataWref[%$"eventFit_" + num2str(index)]
+	WAVE/Z/WAVE eventFit = dataWref[%$("eventFit_" + num2str(index))]
 	CHECK_WAVE(eventFit, WAVE_WAVE)
 
 	numEvents = DimSize(psxEvent, ROWS)

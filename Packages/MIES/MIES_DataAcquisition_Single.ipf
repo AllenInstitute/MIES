@@ -27,7 +27,7 @@ Function DQS_StartDAQSingleDevice(string device, [variable useBackground])
 		useBackground = !!useBackground
 	endif
 
-	DAP_OneTimeCallBeforeDAQ(device, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
+	DAP_OneTimeCallBeforeDAQ(device, (useBackground == 1) ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
 
 	AssertOnAndClearRTError()
 	try

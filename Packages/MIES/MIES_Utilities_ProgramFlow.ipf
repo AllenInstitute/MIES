@@ -108,7 +108,7 @@ threadsafe Function/S GetStackTrace([string prefix])
 		output = prefix + "\r"
 	endif
 
-	for(i = 0; i < numCallers - 2; i += 1)
+	for(i = 0; i < (numCallers - 2); i += 1)
 		entry = StringFromList(i, stacktrace)
 		func  = StringFromList(0, entry, ",")
 		file  = StringFromList(1, entry, ",")

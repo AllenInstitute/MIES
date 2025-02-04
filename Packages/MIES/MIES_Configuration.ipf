@@ -1376,7 +1376,7 @@ static Function CONF_RestoreControl(string wName, variable restoreMask, variable
 					endif
 				endif
 			elseif(ctrlType == CONTROL_TYPE_POPUPMENU)
-				if(restoreMask & EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY && !(restoreMask & EXPCONFIG_SAVE_ONLY_RELEVANT))
+				if((restoreMask & EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY) && !(restoreMask & EXPCONFIG_SAVE_ONLY_RELEVANT))
 					val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_FIELD_CTRLVVALUE)
 					PGC_SetAndActivateControl(wName, ctrlName, val = val, mode = PGC_MODE_SKIP_ON_DISABLED)
 				else
@@ -1774,7 +1774,7 @@ static Function CONF_ControlToJSON(string wName, string ctrlName, variable saveM
 					JSON_AddString(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLSDF, S_DataFolder)
 				endif
 			elseif(ctrlType == CONTROL_TYPE_POPUPMENU)
-				if(saveMask & EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY || saveMask & EXPCONFIG_SAVE_ONLY_RELEVANT)
+				if((saveMask & EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY) || (saveMask & EXPCONFIG_SAVE_ONLY_RELEVANT))
 					JSON_AddString(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLSVALUE, S_Value)
 				elseif(saveMask & EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY)
 					JSON_AddVariable(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLVVALUE, V_Value)
@@ -1868,7 +1868,7 @@ static Function CONF_ControlToJSON(string wName, string ctrlName, variable saveM
 			JSON_AddTreeArray(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLARRAYVALUES)
 			oldSize = 0
 		endif
-		for(i = oldSize; i < arrayIndex + 1; i += 1)
+		for(i = oldSize; i < (arrayIndex + 1); i += 1)
 			JSON_AddNull(jsonID, ctrlPath + EXPCONFIG_FIELD_CTRLARRAYVALUES)
 		endfor
 		arrayElemPath = ctrlPath + EXPCONFIG_FIELD_CTRLARRAYVALUES + "/" + num2istr(arrayIndex)
@@ -2443,7 +2443,7 @@ Function CONF_Position_MCC_Win(string serialNum, string winTitle, string winPosi
 	endif
 
 	Make/T/FREE/N=(NUM_HEADSTAGES / 2) winNm
-	for(w = 0; w < NUM_HEADSTAGES / 2; w += 1)
+	for(w = 0; w < (NUM_HEADSTAGES / 2); w += 1)
 
 		winNm[w] = {stringfromlist(w, winTitle) + "(" + stringfromlist(w, serialNum) + ")"}
 		sprintf cmd, "\"%s\" nircmd.exe win center title \"%s\"", cmdPath, winNm[w]

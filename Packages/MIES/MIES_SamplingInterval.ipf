@@ -455,7 +455,7 @@ static Function SI_TestSampInt(string device)
 				if(numConsecutive == MIN_CONSECUTIVE_SAMPINT)
 					return sampIntRef
 				else
-					ASSERT(numConsecutive == 0 || iLast == i - 1, "Expected consecutive hits")
+					ASSERT(numConsecutive == 0 || iLast == (i - 1), "Expected consecutive hits")
 					iLast           = i
 					numConsecutive += 1
 				endif
@@ -498,7 +498,7 @@ Function SI_CalculateMinSampInterval(string device, variable dataAcqOrTP, variab
 			return SI_NI_CalculateMinSampInterval(device)
 			break
 		case HARDWARE_SUTTER_DAC:
-			return channelType == XOP_CHANNEL_TYPE_ADC ? HARDWARE_SU_MIN_SAMPINT_ADC * MILLI_TO_MICRO : HARDWARE_SU_MIN_SAMPINT_DAC * MILLI_TO_MICRO
+			return (channelType == XOP_CHANNEL_TYPE_ADC) ? (HARDWARE_SU_MIN_SAMPINT_ADC * MILLI_TO_MICRO) : (HARDWARE_SU_MIN_SAMPINT_DAC * MILLI_TO_MICRO)
 			break
 	endswitch
 End

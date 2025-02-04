@@ -119,7 +119,7 @@ Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [variable cha
 		blockSizeTTL              = NUM_ITC_TTL_BITS_PER_RACK + 1
 		activeChannelIndexAsOfITC = trunc(channelNumber / NUM_ITC_TTL_BITS_PER_RACK)
 		ttlBitAsOfITC             = mod(channelNumber, NUM_ITC_TTL_BITS_PER_RACK)
-		blockOffsetTTL            = isSplitted ? 1 + ttlBitAsOfITC : 0
+		blockOffsetTTL            = isSplitted ? (1 + ttlBitAsOfITC) : 0
 		colorIndex                = offsetTTL + activeChannelIndexAsOfITC * blockSizeTTL + blockOffsetTTL
 	else
 		colorIndex = NUM_HEADSTAGES
@@ -608,7 +608,7 @@ Function EqualizeVerticalAxesRanges(string graph, [variable ignoreAxesWithLevelC
 			if(!IsFinite(refClampMode))
 				refClampMode = clampMode
 			else
-				axisClampMode[i] = refClampMode == clampMode ? clampMode : -1
+				axisClampMode[i] = (refClampMode == clampMode) ? clampMode : -1
 			endif
 
 			WaveStats/M=2/Q/R=(xRangeBegin, xRangeEnd) wv

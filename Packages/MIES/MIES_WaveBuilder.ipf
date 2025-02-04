@@ -436,7 +436,7 @@ static Function/WAVE WB_GetStimSet([string setName])
 	for(i = 0; i < numSweeps; i += 1)
 		data[i]         = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvTypeCopy, i, numEpochs, channelType, updateEpochIDWave, stimset = setName)
 		lengthOf1DWaves = max(DimSize(data[i], ROWS), lengthOf1DWaves)
-		if(i + 1 < numSweeps)
+		if((i + 1) < numSweeps)
 			if(WB_AddDelta(setName, WPCopy, WP, WPT, SegWvTypeCopy, SegWvType, i, numSweeps))
 				return $""
 			endif
@@ -685,7 +685,7 @@ static Function WB_CalculateParameterWithDelta(variable operation, variable &val
 			break
 		case DELTA_OPERATION_LOG:
 			// ignore a delta value of exactly zero
-			delta = delta == 0 ? 0 : log(delta)
+			delta = (delta == 0) ? 0 : log(delta)
 			break
 		case DELTA_OPERATION_SQUARED:
 			delta = (delta)^2
@@ -1022,7 +1022,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WAVE WP, WAVE/T WPT, WAVE SegWvType,
 	endif
 
 	// add stimset entries at last step
-	if(stepCount + 1 == SegWvType[101])
+	if((stepCount + 1) == SegWvType[101])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Stimset")
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Sweep Count", var = SegWvType[101])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch Count", var = numEpochs)
@@ -1050,7 +1050,7 @@ static Function WB_AppendSweepMinMax(WAVE wv, variable sweep, variable numSweeps
 	string entry
 
 	first = (sweep == 0)
-	last  = (sweep + 1 == numSweeps)
+	last  = ((sweep + 1) == numSweeps)
 
 	MatrixOP/FREE singleSweep = col(wv, sweep)
 
@@ -1711,7 +1711,7 @@ static Function [WAVE/D pulseStartTimes, WAVE/D pulseStartIndices, WAVE/D pulseE
 
 	pulseToPulseLength = NaN
 
-	ASSERT(pa.poisson + pa.mixedFreq <= 1, "Only one of Mixed Frequency or poisson can be checked")
+	ASSERT((pa.poisson + pa.mixedFreq) <= 1, "Only one of Mixed Frequency or poisson can be checked")
 
 	if(!(pa.pulseDuration > 0))
 		printf "Resetting invalid pulse duration of %gms to 1ms\r", pa.pulseDuration
@@ -1841,7 +1841,7 @@ static Function [WAVE/D pulseStartTimes, WAVE/D pulseStartIndices, WAVE/D pulseE
 	Redimension/N=(idx) pulseStartTimes, pulseStartIndices, pulseEndIndices
 
 	// remove the zero part at the end
-	amplitudeStartIndex = pa.pulseType == WB_PULSE_TRAIN_TYPE_SQUARE ? lastValidStartIndex : lastValidStartIndex + 1
+	amplitudeStartIndex = (pa.pulseType == WB_PULSE_TRAIN_TYPE_SQUARE) ? lastValidStartIndex : (lastValidStartIndex + 1)
 	if(amplitudeStartIndex < DimSize(segmentWave, ROWS))
 		FindValue/V=(0)/S=(amplitudeStartIndex) segmentWave
 		if(V_Value != -1)
@@ -2337,7 +2337,7 @@ Function/S WB_StimsetRecursion([string parent, string knownStimsets])
 	// check recently added stimsets.
 	// @todo: moved parent stimsets should not be checked again and therefore moved between child and parent.
 	stimsetQueue = knownStimsets
-	for(i = 0; i < numAfter - numBefore + numMoved; i += 1)
+	for(i = 0; i < (numAfter - numBefore + numMoved); i += 1)
 		stimset = StringFromList(i, stimsetQueue)
 		// avoid first order circular references.
 		if(cmpstr(stimset, parent))
@@ -2475,7 +2475,7 @@ Function WB_AddAnalysisParameterIntoWPT(WAVE/T WPT, string name, [variable var, 
 
 	string params
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
+	ASSERT((ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv)) == 2, "Expected one of var, str or wv")
 
 	params = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
 

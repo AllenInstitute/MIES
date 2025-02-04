@@ -1107,9 +1107,9 @@ Function GetHeadstageFromSettings(string device, variable channelType, variable 
 	WAVE chanAmpAssign = GetChanAmpAssign(device)
 
 	if(channelType == XOP_CHANNEL_TYPE_ADC)
-		row = clampMode == V_CLAMP_MODE ? 2 : 2 + 4
+		row = (clampMode == V_CLAMP_MODE) ? 2 : (2 + 4)
 	elseif(channelType == XOP_CHANNEL_TYPE_DAC)
-		row = clampMode == V_CLAMP_MODE ? 0 : 0 + 4
+		row = (clampMode == V_CLAMP_MODE) ? 0 : (0 + 4)
 	else
 		ASSERT(0, "Unexpected clamp mode")
 	endif
@@ -2386,7 +2386,7 @@ static Function DAP_CheckAsyncSettings(string device)
 		hwChannel = HW_ITC_CalculateDevChannelOff(device) + i
 
 		// AD channel already used
-		isADinUse = hwChannel + auxOffset < NUM_AD_CHANNELS ? statusAD[hwChannel + auxOffset] : 0
+		isADinUse = ((hwChannel + auxOffset) < NUM_AD_CHANNELS) ? statusAD[hwChannel + auxOffset] : 0
 		if(hwChannel < NUM_ASYNC_CHANNELS && isADinUse)
 			printf "(%s) The Async channel %d is already used for DAQ.\r", device, i
 			ControlWindowToFront()
@@ -2687,7 +2687,7 @@ static Function DAP_CheckHeadStage(string device, variable headStage, variable m
 	endif
 
 #ifndef EVIL_KITTEN_EATING_MODE
-	if(DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn") && ampConnState != AMPLIFIER_CONNECTION_SUCCESS || ampConnState == AMPLIFIER_CONNECTION_MCC_FAILED)
+	if((DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn") && ampConnState != AMPLIFIER_CONNECTION_SUCCESS) || ampConnState == AMPLIFIER_CONNECTION_MCC_FAILED)
 		printf "(%s) The amplifier of the headstage %d can not be selected, please call \"Query connected Amps\" from the Hardware Tab\r", device, headStage
 		printf " and ensure that the \"Multiclamp 700B Commander\" application is open.\r"
 		ControlWindowToFront()
@@ -3028,7 +3028,7 @@ static Function DAP_RemoveClampModeSettings(string device, variable headStage, v
 	endif
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
-		ChannelClampMode[][][%Headstage] = ChannelClampMode[p][q][%Headstage] == headstage ? NaN : ChannelClampMode[p][q][%Headstage]
+		ChannelClampMode[][][%Headstage] = (ChannelClampMode[p][q][%Headstage] == headstage) ? NaN : ChannelClampMode[p][q][%Headstage]
 		return NaN
 	endif
 
@@ -3355,7 +3355,7 @@ static Function DAP_SetHeadstageChanControls(string device, variable headstage, 
 		return NaN
 	endif
 
-	oppositeMode = (clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE ? V_CLAMP_MODE : I_CLAMP_MODE)
+	oppositeMode = ((clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE) ? V_CLAMP_MODE : I_CLAMP_MODE)
 	DAP_RemoveClampModeSettings(device, headstage, oppositeMode)
 	DAP_ApplyClmpModeSavdSettngs(device, headstage, clampMode)
 	DAP_AllChanDASettings(device, headStage, delayed = delayed)
@@ -3429,7 +3429,7 @@ static Function DAP_ChangeHeadstageState(string device, string headStageCtrl, va
 		ICstate    = GetCheckBoxState(device, ICctrl)
 		IZeroState = GetCheckBoxState(device, IZeroCtrl)
 
-		if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
+		if((VCstate + ICstate + IZeroState) != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
 			PGC_SetAndActivateControl(device, VCctrl, val = CHECKBOX_SELECTED)
 		else
 			if(enabled && DAG_GetNumericalValue(device, "check_Settings_SyncMiesToMCC"))
@@ -3516,7 +3516,7 @@ Function DAP_SliderProc_MIESHeadStage(STRUCT WMSliderAction &sc) : SliderControl
 
 	// eventCode is a bitmask as opposed to a plain value
 	// compared to other controls
-	if(sc.eventCode > 0 && sc.eventCode & 0x1)
+	if(sc.eventCode > 0 && (sc.eventCode & 0x1))
 		headstage = sc.curval
 		device    = sc.win
 		DAG_Update(device, sc.ctrlName, val = headstage)
@@ -4492,7 +4492,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_DAC)
-		channels = isNaN(deviceInfo[%AuxDA]) ? deviceInfo[%DA] : deviceInfo[%DA] + deviceInfo[%AuxDA]
+		channels = isNaN(deviceInfo[%AuxDA]) ? deviceInfo[%DA] : (deviceInfo[%DA] + deviceInfo[%AuxDA])
 		if(i < channels)
 			EnableControls(device, controls)
 		else
@@ -4509,7 +4509,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 
 	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ADC)
-		channels = isNaN(deviceInfo[%AuxAD]) ? deviceInfo[%AD] : deviceInfo[%AD] + deviceInfo[%AuxAD]
+		channels = isNaN(deviceInfo[%AuxAD]) ? deviceInfo[%AD] : (deviceInfo[%AD] + deviceInfo[%AuxAD])
 		if(i < channels)
 			EnableControls(device, controls)
 		else
@@ -4946,7 +4946,7 @@ End
 Function DAP_getFilteredSkipAhead(string device, variable skipAhead)
 
 	variable maxSkipAhead = max(0, IDX_MinNoOfSweeps(device) - 1)
-	return skipAhead > maxSkipAhead ? maxSkipAhead : skipAhead
+	return (skipAhead > maxSkipAhead) ? maxSkipAhead : skipAhead
 End
 
 Function DAP_setSkipAheadLimit(string device, variable filteredSkipAhead)

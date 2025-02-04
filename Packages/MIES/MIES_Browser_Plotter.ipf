@@ -346,7 +346,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			// waves per channel type
 			for(j = 0; j < numVertWaves; j += 1)
 
-				ttlBit = channelType == XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits ? j : NaN
+				ttlBit = (channelType == XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits) ? j : NaN
 
 				if(channelType == XOP_CHANNEL_TYPE_TTL)
 					guiChannelNumber = channelMapHWToGUI[chan][IsNaN(ttlBit) ? 0 : ttlBit]

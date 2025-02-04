@@ -159,7 +159,7 @@ Function/WAVE TUD_GetUserDataAsWave(string graph, string key, [WAVE/T keys, WAVE
 		endif
 	endif
 
-	ASSERT(ParamIsDefault(keys) + ParamIsDefault(values) != 1, "Unexpected optional paramters")
+	ASSERT((ParamIsDefault(keys) + ParamIsDefault(values)) != 1, "Unexpected optional paramters")
 
 	// both optional parameters are present
 

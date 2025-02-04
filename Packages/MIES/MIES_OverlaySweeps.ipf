@@ -246,7 +246,7 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 		listBoxSelWave[][%Sweep]          = LISTBOX_CHECKBOX
 		listBoxSelWave[lastEntry][%Sweep] = LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED
 	else
-		listBoxSelWave[][%Sweep] = listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED ? LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED : LISTBOX_CHECKBOX
+		listBoxSelWave[][%Sweep] = (listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED) ? (LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED) : LISTBOX_CHECKBOX
 	endif
 
 	// we select the first sweep when doing a fullUpdate and nothing selected
@@ -434,7 +434,7 @@ Function OVS_ChangeSweepSelectionState(string win, variable newState, [variable 
 			for(i = 0; i < numEntries; i += 1)
 				sweepNo = sweeps[i]
 				FindValue/RMD=[][0]/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
-				indices1D[i] = V_Value >= 0 ? V_Value : NaN
+				indices1D[i] = (V_Value >= 0) ? V_Value : NaN
 			endfor
 
 			WAVE/Z indices = ZapNans(indices1D)

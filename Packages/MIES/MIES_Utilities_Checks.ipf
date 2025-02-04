@@ -324,7 +324,7 @@ Function StringEndsWith(string str, string suffix)
 		return 0
 	endif
 
-	if(pos == strlen(str) - strlen(suffix))
+	if(pos == (strlen(str) - strlen(suffix)))
 		return 1
 	endif
 

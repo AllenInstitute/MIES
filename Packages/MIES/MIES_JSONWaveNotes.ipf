@@ -18,7 +18,7 @@ threadsafe Function/S JWN_GetWaveNoteAsString(WAVE wv)
 	noteStr = note(wv)
 	pos     = strsearch(noteStr, WAVE_NOTE_JSON_SEPARATOR, 0)
 	len     = strlen(WAVE_NOTE_JSON_SEPARATOR)
-	if(pos >= 0 && strlen(noteStr) > pos + len)
+	if(pos >= 0 && strlen(noteStr) > (pos + len))
 		return noteStr[pos + len, Inf]
 	endif
 

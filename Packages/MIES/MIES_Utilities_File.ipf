@@ -368,7 +368,7 @@ Function SaveTextFile(string data, string fileName, [string fileFilter, string m
 	string S_fileName = fileName
 #else
 	showDialogOnOverwrite = ParamIsDefault(showDialogOnOverwrite) ? 0 : !!showDialogOnOverwrite
-	dialogCode            = showDialogOnOverwrite && FileExists(fileName) ? 1 : 2
+	dialogCode            = (showDialogOnOverwrite && FileExists(fileName)) ? 1 : 2
 	if(ParamIsDefault(fileFilter) && ParamIsDefault(message))
 		Open/D=(dialogCode) fnum as fileName
 	elseif(ParamIsDefault(fileFilter) && !ParamIsDefault(message))

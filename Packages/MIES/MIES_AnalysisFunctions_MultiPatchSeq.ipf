@@ -337,7 +337,7 @@ static Function/WAVE MSQ_SearchForSpikes(string device, variable type, WAVE swee
 	endif
 
 	WAVE spikeDetection = LBN_GetNumericWave()
-	spikeDetection = (p == headstage ? 0 : defaultValue)
+	spikeDetection = ((p == headstage) ? 0 : defaultValue)
 
 	sprintf msg, "Type %d, headstage %d, totalOnsetDelay %g, numberOfSpikes %d", type, headstage, totalOnsetDelay, numberOfSpikes
 	DEBUGPRINT(msg)

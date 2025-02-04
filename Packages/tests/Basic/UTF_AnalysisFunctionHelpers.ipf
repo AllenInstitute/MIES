@@ -22,14 +22,14 @@ End
 
 Function/WAVE AE_GenerateValidNum_IGNORE()
 
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = (p == 0 ? 0 : NaN)
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = ((p == 0) ? 0 : NaN)
 	return values
 End
 
 Function AE_ThrowsWithWrongWaveType()
 
 	try
-		Make/I/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = (p == 0 ? 0 : NaN)
+		Make/I/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = ((p == 0) ? 0 : NaN)
 		ED_AddEntryToLabnotebook(device, "a", values)
 		FAIL()
 	catch

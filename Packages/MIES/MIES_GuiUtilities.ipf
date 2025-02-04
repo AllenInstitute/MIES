@@ -1369,7 +1369,7 @@ Function GetInternalSetVariableType(string recMacro)
 	variable builtinString = (strsearch(recMacro, "_STR:\"", 0) != -1)
 	variable builtinNumber = (strsearch(recMacro, "_NUM:", 0) != -1)
 
-	ASSERT(builtinString + builtinNumber != 2, "SetVariable can not hold both numeric and string contents")
+	ASSERT((builtinString + builtinNumber) != 2, "SetVariable can not hold both numeric and string contents")
 
 	if(builtinString)
 		return SET_VARIABLE_BUILTIN_STR
@@ -2031,7 +2031,7 @@ Function DrawScaleBar(string graph, variable x0, variable y0, variable x1, varia
 			length = abs(y0 - y1)
 
 			ASSERT(!IsEmpty(unit), "empty unit")
-			subDigits = length > 1 ? 0 : abs(floor(log(length) / log(10)))
+			subDigits = (length > 1) ? 0 : abs(floor(log(length) / log(10)))
 			sprintf str, "%.*f%s%s", subDigits, length, SelectString(newlineBeforeUnit, NUMBER_UNIT_SPACE, "\r"), unit
 
 			xPos = x0 - labelOffset
@@ -2045,7 +2045,7 @@ Function DrawScaleBar(string graph, variable x0, variable y0, variable x1, varia
 			length = abs(x0 - x1)
 
 			ASSERT(!IsEmpty(unit), "empty unit")
-			subDigits = length > 1 ? 0 : abs(floor(log(length) / log(10)))
+			subDigits = (length > 1) ? 0 : abs(floor(log(length) / log(10)))
 			sprintf str, "%.*f%s%s", subDigits, length, SelectString(newlineBeforeUnit, NUMBER_UNIT_SPACE, "\r"), unit
 
 			xPos = min(x0, x1) + abs(x0 - x1) / 2
@@ -2363,7 +2363,7 @@ Function [variable first, variable last] GetMarqueeHelper(string axisName, [vari
 		doAssert = !!doAssert
 	endif
 
-	ASSERT(ParamIsDefault(horiz) + ParamIsDefault(vert) == 1, "Required exactly one of horiz/vert")
+	ASSERT((ParamIsDefault(horiz) + ParamIsDefault(vert)) == 1, "Required exactly one of horiz/vert")
 
 	if(ParamIsDefault(horiz))
 		horiz = 0

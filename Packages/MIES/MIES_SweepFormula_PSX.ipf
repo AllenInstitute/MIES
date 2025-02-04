@@ -567,7 +567,7 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 	peak_start_search = max(deconvPeak_t - PSX_PEAK_RANGE_FACTOR_LEFT * kernelRiseTau, prevDeconvPeak_t)
 
 	// upper bound
-	if(index < numCrossings - 1)
+	if(index < (numCrossings - 1))
 		nextDeconvPeak_t = peakX[index + 1]
 	else
 		nextDeconvPeak_t = Inf
@@ -745,7 +745,7 @@ static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psx
 		first = baseline
 	endif
 
-	if(index == numEvents - 1)
+	if(index == (numEvents - 1))
 		last = min(first + offset, IndexToScale(sweepDataOffFilt, DimSize(sweepDataOffFilt, ROWS) - 1, ROWS))
 	else
 		last = min(first + offset, psxEvent[index + 1][%baseline_t])
@@ -839,7 +839,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 
 	fitRange = endTime - startTime
 
-	if(IsFinite(decayTau) && decayTau > maxTauFactor * fitRange)
+	if(IsFinite(decayTau) && decayTau > (maxTauFactor * fitRange))
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
 		psxEvent[eventIndex][%$"Fit result"]         = PSX_DECAY_FIT_ERROR
 		return NaN
@@ -1217,7 +1217,7 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 
 		if(!cmpstr(propLabel, "iei") && numEntries >= 2)
 			// recalculate the iei as that might have changed due to in-between events being not selected
-			Multithread results[0, numEntries - 1] = events[indizes[p]][%peak_t] - (p >= 1 ? events[indizes[p - 1]][%peak_t] : NaN)
+			Multithread results[0, numEntries - 1] = events[indizes[p]][%peak_t] - ((p >= 1) ? events[indizes[p - 1]][%peak_t] : NaN)
 		else
 			Multithread results[] = events[indizes[p]][%$propLabel]
 		endif
@@ -1545,7 +1545,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 					// +inf -> +1
 					// finite -> NaN
 					Duplicate/FREE resultsRaw, results
-					Multithread results[] = resultsRaw[p] == -Inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : (resultsRaw[p] == +Inf ? +1 : NaN))
+					Multithread results[] = resultsRaw[p] == -Inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : ((resultsRaw[p] == +Inf) ? +1 : NaN))
 
 					WAVE/Z resultsClean = ZapNaNs(results)
 
@@ -2006,7 +2006,7 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 
 			switch(offsetMode)
 				case PSX_HORIZ_OFFSET_ONSET:
-					xOffset = IsFinite(psxEvent[i][%$"Onset Time"]) ? first - psxEvent[i][%$"Onset Time"] : 0
+					xOffset = IsFinite(psxEvent[i][%$"Onset Time"]) ? (first - psxEvent[i][%$"Onset Time"]) : 0
 					yOffset = 0
 					break
 				case PSX_HORIZ_OFFSET_PEAK:
@@ -2539,7 +2539,7 @@ static Function PSX_UpdateHideStateInAllEventGraphImpl(string win, string traceT
 	allSelected = checkboxActive[%all]
 
 	Make/FREE/N=(numEntries) hideState
-	MultiThread/NT=(numEntries < 128) hideState[] = !((str2num(currentState[p]) == PSX_ALL ? allSelected : (stateMatchPattern & str2num(currentState[p]))))
+	MultiThread/NT=(numEntries < 128) hideState[] = !(((str2num(currentState[p]) == PSX_ALL) ? allSelected : (stateMatchPattern & str2num(currentState[p]))))
 
 	ACC_HideTracesPerTrace(extAllGraph, traceNames, numEntries, hideState)
 
@@ -2576,7 +2576,7 @@ static Function PSX_UpdateBlockIndizes(string win)
 	for(i = 0; i < numBlocks; i += 1)
 		first = i * blockSize
 
-		if(i == numBlocks - 1)
+		if(i == (numBlocks - 1))
 			// take the rest of the events into the last block
 			last = numEntries - 1
 		else
@@ -2585,7 +2585,7 @@ static Function PSX_UpdateBlockIndizes(string win)
 
 		indexHelper[first, last] = TUD_SetUserData(extAllGraph, traceNames[p], PSX_TUD_BLOCK_INDEX, num2str(i))
 
-		if(last >= numEntries - 1)
+		if(last >= (numEntries - 1))
 			// assigned all events
 			// update numBlocks
 			numBlocks = i + 1

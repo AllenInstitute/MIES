@@ -208,7 +208,7 @@ Function ASYNC_ThreadReadOut()
 				SVAR workloadClass        = dfr:$ASYNC_WORKLOADCLASS_STR
 				wlcIndex = FindDimLabel(track, ROWS, workloadClass)
 				ASSERT(wlcIndex >= 0, "Could not find work load class")
-				if(workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT] == 0)
+				if((workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT]) == 0)
 					DeletePoints i, 1, DFREFbuffer
 					break
 				endif
@@ -227,7 +227,7 @@ Function ASYNC_ThreadReadOut()
 				WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
 				wlcIndex = FindDimLabel(track, ROWS, workloadClass)
 				ASSERT(wlcIndex >= 0, "Could not find work load class")
-				if(workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT] != 0)
+				if((workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT]) != 0)
 					bufferSize = numpnts(DFREFbuffer)
 					Redimension/N=(bufferSize + 1) DFREFbuffer
 					DFREFbuffer[bufferSize] = dfr

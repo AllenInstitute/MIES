@@ -240,7 +240,7 @@ static Function CheckUserEpochChunkNoOverlap(WAVE/T epochInfo)
 	variable s1, e1, s2, e2, overlap
 
 	numEpochs = DimSize(epochInfo, ROWS)
-	for(i = 0; i < numEpochs - 1; i += 1)
+	for(i = 0; i < (numEpochs - 1); i += 1)
 		s1 = str2num(epochInfo[i][EPOCH_COL_STARTTIME])
 		e1 = str2num(epochInfo[i][EPOCH_COL_ENDTIME])
 		for(j = i + 1; j < numEpochs; j += 1)
@@ -1083,7 +1083,7 @@ Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variab
 				startTime = str2num(userChunkEpochs[k][EPOCH_COL_STARTTIME])
 				endTime   = str2num(userChunkEpochs[k][EPOCH_COL_ENDTIME])
 				startRef  = times[k << 1] * MILLI_TO_ONE
-				endRef    = times[k << 1 + 1] * MILLI_TO_ONE
+				endRef    = times[(k << 1) + 1] * MILLI_TO_ONE
 
 				if(CheckIfSmall(startRef, tol = 1e-12))
 					CHECK_SMALL_VAR(startTime)

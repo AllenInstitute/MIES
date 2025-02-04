@@ -485,7 +485,7 @@ Function/S AFH_GetListOfAnalysisParams(string func, variable mode)
 
 	re = "\[.+\]"
 
-	if(mode & REQUIRED_PARAMS && mode & OPTIONAL_PARAMS)
+	if((mode & REQUIRED_PARAMS) && (mode & OPTIONAL_PARAMS))
 		return ReplaceString("[", ReplaceString("]", params, ""), "")
 	elseif(mode & REQUIRED_PARAMS)
 		return GrepList(params, re, 1, ",")
@@ -966,7 +966,7 @@ Function AFH_AddAnalysisParameter(string setName, string name, [variable var, st
 	WAVE/Z/T WPT = WB_GetWaveTextParamForSet(setName)
 	ASSERT(WaveExists(WPT), "Missing stimset")
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
+	ASSERT((ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv)) == 2, "Expected one of var, str or wv")
 
 	if(!ParamIsDefault(var))
 		return WB_AddAnalysisParameterIntoWPT(WPT, name, var = var)
@@ -990,7 +990,7 @@ Function AFH_AddAnalysisParameterToParams(string &params, string name, [variable
 
 	string type, value
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
+	ASSERT((ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv)) == 2, "Expected one of var, str or wv")
 
 	if(!ParamIsDefault(var))
 		type = "variable"

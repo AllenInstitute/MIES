@@ -311,10 +311,10 @@ static Function/WAVE EpochTestSamplingFrequencyTTL_Gen()
 	WAVE wTemp = ListToNumericWave(frequencies, ";", ignoreErr = 1)
 
 #ifdef TESTS_WITH_ITC18USB_HARDWARE
-	wTemp[] = wTemp[p] == 100 ? NaN : wTemp[p]
+	wTemp[] = (wTemp[p] == 100) ? NaN : wTemp[p]
 #else
 #ifdef TESTS_WITH_ITC1600_HARDWARE
-	wTemp[] = wTemp[p] == 100 ? NaN : wTemp[p]
+	wTemp[] = (wTemp[p] == 100) ? NaN : wTemp[p]
 #endif // TESTS_WITH_ITC1600_HARDWARE
 #endif // TESTS_WITH_ITC18USB_HARDWARE
 
@@ -330,7 +330,7 @@ static Function/WAVE EpochTestSamplingMultiplier_Gen()
 	string multipliers = DAP_GetSamplingMultiplier()
 
 	WAVE wTemp = ListToNumericWave(multipliers, ";")
-	wTemp[] = wTemp[p] == 1 ? NaN : wTemp[p]
+	wTemp[] = (wTemp[p] == 1) ? NaN : wTemp[p]
 	WAVE w = ZapNaNs(wTemp)
 
 	SetDimensionLabelsFromWaveContents(w, suffix = "x")

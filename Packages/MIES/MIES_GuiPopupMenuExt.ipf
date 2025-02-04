@@ -600,13 +600,13 @@ Function/WAVE PEXT_SplitToSubMenus(WAVE/Z/T menuList, [variable method])
 	if(method == PEXT_SUBSPLIT_DEFAULT)
 		Sort/A menuList, menuList
 		subMenuCnt = trunc(DimSize(menuList, ROWS) / numPerSubEntry) + 1
-		subMenuCnt = subMenuCnt > MAX_SUBMENUS ? MAX_SUBMENUS : subMenuCnt
+		subMenuCnt = (subMenuCnt > MAX_SUBMENUS) ? MAX_SUBMENUS : subMenuCnt
 
 		Make/FREE/T/N=(subMenuCnt) splitMenu
 
 		for(i = 0; i < subMenuCnt; i++)
 			beginItem = i * numPerSubEntry
-			endItem   = i == subMenuCnt - 1 ? DimSize(menuList, ROWS) - 1 : beginItem + numPerSubEntry - 1
+			endItem   = (i == (subMenuCnt - 1)) ? (DimSize(menuList, ROWS) - 1) : (beginItem + numPerSubEntry - 1)
 
 			for(j = beginitem; j < enditem; j++)
 				splitMenu[i] = AddListItem(menuList[j], splitMenu[i], ";", Inf)
@@ -619,7 +619,7 @@ Function/WAVE PEXT_SplitToSubMenus(WAVE/Z/T menuList, [variable method])
 		Make/FREE/T/N=(MAX_SUBMENUS) splitMenu
 		do
 			remainItems = DimSize(menuList, ROWS) - menuPos
-			if(remainItems < numPerSubEntry || subIndex == MAX_SUBMENUS - 1)
+			if(remainItems < numPerSubEntry || subIndex == (MAX_SUBMENUS - 1))
 				subMenuLength = remainItems
 			else
 				begEntry = menuList[menuPos]
@@ -682,7 +682,7 @@ Function PEXT_GenerateSubMenuNames(WAVE/Z/T splitMenu, [variable method])
 		endfor
 
 		minLen = 0
-		for(i = 0; i < 2 * subMenuCnt - 1; i++)
+		for(i = 0; i < (2 * subMenuCnt - 1); i++)
 			begEntry = subMenuBoundary[i]
 			endEntry = subMenuBoundary[i + 1]
 			endLen   = min(strlen(begEntry), strlen(endEntry))
@@ -702,7 +702,7 @@ Function PEXT_GenerateSubMenuNames(WAVE/Z/T splitMenu, [variable method])
 
 			minLen          = j
 			subMenuShort[i] = s1
-			if(i == 2 * subMenuCnt - 2)
+			if(i == (2 * subMenuCnt - 2))
 				subMenuShort[i + 1] = s2
 			endif
 		endfor

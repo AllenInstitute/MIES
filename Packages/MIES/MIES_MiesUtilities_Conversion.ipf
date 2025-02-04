@@ -66,7 +66,7 @@ End
 /// @param xopVar numeric XOP channel types
 threadsafe Function GetNumberFromType([variable var, string str, variable xopVar])
 
-	ASSERT_TS(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(xopVar) == 2, "Expected exactly one parameter")
+	ASSERT_TS((ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(xopVar)) == 2, "Expected exactly one parameter")
 
 	if(!ParamIsDefault(str))
 		strswitch(str)

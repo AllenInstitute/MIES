@@ -1372,7 +1372,7 @@ threadsafe static Function FindRange(WAVE wv, variable col, variable val, variab
 	for(i = numRows - 2; i >= 0; i -= 1)
 		index = indizes[i]
 		// a backward search stops when the beginning of the last sequence was found
-		if(index < first - 1 && sourceTypeCol >= 0)
+		if(index < (first - 1) && sourceTypeCol >= 0)
 			if(IsNumeric)
 				for(j = index + 1; j < first; j += 1)
 					if(!IsNaN(wv[j][sourceTypeCol][0]))
@@ -1619,7 +1619,7 @@ End
 /// Since that commit we store the data in `INDEP_HEADSTAGE`.
 threadsafe Function GetIndexForHeadstageIndepData(WAVE values)
 
-	return DimSize(values, LAYERS) == NUM_HEADSTAGES ? 0 : INDEP_HEADSTAGE
+	return (DimSize(values, LAYERS) == NUM_HEADSTAGES) ? 0 : INDEP_HEADSTAGE
 End
 
 /// @brief Create a labnotebook key for unassociated channels
@@ -1701,7 +1701,7 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function ReverseEntrySourceTypeMapper(variable mapped)
 
-	return (mapped == 0 ? NaN : --mapped)
+	return ((mapped == 0) ? NaN : --mapped)
 End
 
 /// @brief Return labnotebook keys for patch seq analysis functions

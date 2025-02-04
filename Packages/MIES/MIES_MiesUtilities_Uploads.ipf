@@ -27,7 +27,7 @@ Function UploadCrashDumpsDaily()
 
 		lastWrite = ParseISO8601TimeStamp(JSON_GetString(jsonID, "/diagnostics/last upload"))
 
-		if(lastWrite + SECONDS_PER_DAY > DateTimeInUTC())
+		if((lastWrite + SECONDS_PER_DAY) > DateTimeInUTC())
 			// nothing to do
 			return NaN
 		endif
@@ -60,7 +60,7 @@ Function UploadLogFilesDaily()
 		lastWrite = ParseISO8601TimeStamp(ts)
 		now       = DateTimeInUTC()
 
-		if(lastWrite + SECONDS_PER_DAY > now)
+		if((lastWrite + SECONDS_PER_DAY) > now)
 			// nothing to do
 			return NaN
 		endif
@@ -105,7 +105,7 @@ Function UploadPingPeriodically()
 
 	now      = DateTimeInUTC()
 	lastPing = ParseISO8601TimeStamp(GetUserPingTimestamp())
-	if(now - lastPing < SECONDS_PER_DAY * 7)
+	if((now - lastPing) < (SECONDS_PER_DAY * 7))
 		today       = GetDayOfWeek(now)
 		lastWeekDay = GetDayOfWeek(lastPing)
 		if(today == lastWeekDay ||                          \

@@ -423,7 +423,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([string str])
 		device = stringFromList(i, str)
 
 		hardwareType = GetHardwareType(device)
-		numRacks     = hardwareType == HARDWARE_ITC_DAC ? HW_ITC_GetNumberOfRacks(device) : NaN
+		numRacks     = (hardwareType == HARDWARE_ITC_DAC) ? HW_ITC_GetNumberOfRacks(device) : NaN
 
 		CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), numSweeps)
 		sweeps  = GetListOfObjects(GetDeviceDataPath(device), DATA_SWEEP_REGEXP, fullPath = 1)

@@ -106,9 +106,9 @@ Function/WAVE GetChanAmpAssign(string device)
 			// Use AD channels 0-3 and then 8-11 so that
 			// they are all on the same rack
 			wv[0][0, 7] = q
-			wv[2][0, 7] = q <= 3 ? q : q + 4
+			wv[2][0, 7] = (q <= 3) ? q : (q + 4)
 			wv[4][0, 7] = q
-			wv[6][0, 7] = q <= 3 ? q : q + 4
+			wv[6][0, 7] = (q <= 3) ? q : (q + 4)
 		else
 			wv[0][0, 3] = q
 			wv[2][0, 3] = q
@@ -3998,7 +3998,7 @@ Function UpgradeWaveParam(WAVE wv)
 	// upgrade to wave version 5
 	if(WaveVersionIsSmaller(wv, 5))
 		// 41: pink noise, 42: brown noise, none: white noise -> 54: noise type
-		wv[54][][EPOCH_TYPE_NOISE] = wv[41][q][EPOCH_TYPE_NOISE] == 0 && wv[42][q][EPOCH_TYPE_NOISE] == 0 ? 0 : (wv[41][q][EPOCH_TYPE_NOISE] == 1 ? 1 : 2)
+		wv[54][][EPOCH_TYPE_NOISE] = wv[41][q][EPOCH_TYPE_NOISE] == 0 && wv[42][q][EPOCH_TYPE_NOISE] == 0 ? 0 : ((wv[41][q][EPOCH_TYPE_NOISE] == 1) ? 1 : 2)
 		// adapt to changed filter order definition
 		wv[26][][EPOCH_TYPE_NOISE] = 6
 		wv[27][][EPOCH_TYPE_NOISE] = 0

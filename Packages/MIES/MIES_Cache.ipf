@@ -591,7 +591,7 @@ threadsafe static Function CA_GetCacheIndex(WAVE keys, string key)
 
 	FindValue/TXOP=4/TEXT=key/RMD=[0, numFilledRows] keys
 
-	return V_Value == -1 ? NaN : V_Value
+	return (V_Value == -1) ? NaN : V_Value
 End
 
 /// @brief Try to fetch the wave stored under key from the cache

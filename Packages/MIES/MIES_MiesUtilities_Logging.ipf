@@ -142,7 +142,7 @@ Function ArchiveLogFilesOnceAndKeepMonth()
 		if(fSize < ARCHIVE_SIZETHRESHOLD)
 			continue
 		endif
-		if(fSize > 512 * 1024 * 1024)
+		if(fSize > (512 * 1024 * 1024))
 			printf "Just a moment, archiving log file %s.\rThis is only done once.\r", file
 		endif
 
@@ -232,7 +232,7 @@ static Function SaveRemainingLog(WAVE/T logData, variable index, string fullFile
 		zeromq_set(flags)
 	endif
 
-	if(index == DimSize(logData, ROWS) - 1)
+	if(index == (DimSize(logData, ROWS) - 1))
 		DeleteFile fullFilePath
 		return NaN
 	endif

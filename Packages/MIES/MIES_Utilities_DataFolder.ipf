@@ -257,7 +257,7 @@ Function RenameDataFolderToUniqueName(string path, string suffix)
 
 	DFREF dfr = $path
 	name   = GetFile(path)
-	folder = UniqueDataFolderName($path + "::", name + suffix)
+	folder = UniqueDataFolderName($(path + "::"), name + suffix)
 	name   = GetFile(folder)
 	RenameDataFolder $path, $name
 	ASSERT_TS(!DataFolderExists(path), "Could not move it of the way.")

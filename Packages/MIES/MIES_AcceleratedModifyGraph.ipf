@@ -47,7 +47,7 @@ static Function/S GenerateValueString(variable type, variable keywordIndex, vari
 			break
 		case GEN_TYPE_WAVE:
 			for(i = 0; i < numEntryCols; i += 1)
-				sprintf str, "s%d[h%s][%d]%s", keywordIndex, indexStr, i, SelectString(i < numEntryCols - 1, "", ",")
+				sprintf str, "s%d[h%s][%d]%s", keywordIndex, indexStr, i, SelectString(i < (numEntryCols - 1), "", ",")
 				result += str
 			endfor
 
@@ -84,13 +84,13 @@ static Function GenerateAcceleratedModifyGraphCaseImpl(WAVE/T keyword, variable 
 		for(j = 0; j < numKeywords; j += 1)
 			printf "%s($w[h%s])=%s", keyword[j], indexStr, GenerateValueString(type[j], j, numEntryCols[j], indexStr)
 
-			if(j < numKeywords - 1)
+			if(j < (numKeywords - 1))
 				printf ","
 			endif
 		endfor
 
 		if(mod(i + 1, 8) == 0)
-			if(i + 1 != numEntries)
+			if((i + 1) != numEntries)
 				printf " \\"
 			endif
 

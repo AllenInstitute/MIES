@@ -535,18 +535,18 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 			endif
 		endif
 
-		TUD_SetUserDataFromWaves(graph,                                  \
-		                         trace,                                  \
-		                         userDataKeys,                           \
-		                         {key,                                   \
-		                          num2str(isTextData),                   \
-		                          GetWavesDataFolder(keys, 2),           \
-		                          GetWavesDataFolder(values, 2),         \
-		                          num2str(i < NUM_HEADSTAGES ? i : NaN), \
+		TUD_SetUserDataFromWaves(graph,                                    \
+		                         trace,                                    \
+		                         userDataKeys,                             \
+		                         {key,                                     \
+		                          num2str(isTextData),                     \
+		                          GetWavesDataFolder(keys, 2),             \
+		                          GetWavesDataFolder(values, 2),           \
+		                          num2str((i < NUM_HEADSTAGES) ? i : NaN), \
 		                          axis})
 
 		[s]    = GetHeadstageColor(i)
-		marker = i == 0 ? 39 : i
+		marker = (i == 0) ? 39 : i
 		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue, IsTextData ? 0 : Inf), marker($trace)=marker
 		SetAxis/W=$graph/A=2 $axis
 
@@ -728,7 +728,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 			                         })
 
 			[s]    = GetHeadstageColor(headstage)
-			marker = headstage == 0 ? 39 : headstage
+			marker = (headstage == 0) ? 39 : headstage
 			ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue), marker($trace)=marker
 			SetAxis/W=$graph/A=2 $axis
 		endfor

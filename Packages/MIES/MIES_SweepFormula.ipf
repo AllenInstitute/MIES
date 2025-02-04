@@ -869,7 +869,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		SFH_ASSERT(!(V_Value >= 0), "Encountered null element in array.", jsonId = jsonId)
 
 		Redimension/N=(MAX_DIMENSION_COUNT) topArraySize
-		topArraySize[] = topArraySize[p] != 0 ? topArraySize[p] : 1
+		topArraySize[] = (topArraySize[p] != 0) ? topArraySize[p] : 1
 
 		Make/FREE/D/N=0 indicesOfOperationsWithScalarResult
 		WAVE/ZZ   out
@@ -1494,7 +1494,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	Make/FREE/N=(numDoInh) findPos
 	for(i = 0; i < numDoInh; i += 1)
 		FindValue/TEXT=doInheritance[i]/TXOP=4 opStackW
-		findPos[i] = V_Value == -1 ? NaN : V_Value
+		findPos[i] = (V_Value == -1) ? NaN : V_Value
 	endfor
 	minVal = WaveMin(findPos)
 	if(IsNaN(minVal))
@@ -1511,7 +1511,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	channelType   = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
 	isAveraged    = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
 	mapIndex      = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPMAPINDEX)
-	sweepNo       = isAveraged == 1 ? JWN_GetNumberFromWaveNote(data, SF_META_AVERAGED_FIRST_SWEEP) : JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+	sweepNo       = (isAveraged == 1) ? JWN_GetNumberFromWaveNote(data, SF_META_AVERAGED_FIRST_SWEEP) : JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 	if(!IsValidSweepNumber(sweepNo))
 		return [s]
 	endif
@@ -1698,7 +1698,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 		endif
 
 		// create horizontal guides (one more than graphs)
-		for(i = 0; i < numGraphs + 1; i += 1)
+		for(i = 0; i < (numGraphs + 1); i += 1)
 			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 			guidePos   = i / numGraphs
 			DefineGuide/W=$win $guideName1={FT, guidePos, FB}
@@ -2727,14 +2727,14 @@ static Function SF_IsValidSingleSelection(STRUCT SF_SelectParameters &filter, WA
 	endif
 
 	if(filter.sweepQC != SF_OP_SELECT_IVSCCSWEEPQC_IGNORE)
-		sweepQC = SFH_IsSweepQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType) == 1 ? SF_OP_SELECT_IVSCCSWEEPQC_PASSED : SF_OP_SELECT_IVSCCSWEEPQC_FAILED
+		sweepQC = (SFH_IsSweepQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType) == 1) ? SF_OP_SELECT_IVSCCSWEEPQC_PASSED : SF_OP_SELECT_IVSCCSWEEPQC_FAILED
 		if(!(filter.sweepQC & sweepQC))
 			return 0
 		endif
 	endif
 
 	if(filter.setQC != SF_OP_SELECT_IVSCCSETQC_IGNORE)
-		setQC = SFH_IsSetQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType) == 1 ? SF_OP_SELECT_IVSCCSETQC_PASSED : SF_OP_SELECT_IVSCCSETQC_FAILED
+		setQC = (SFH_IsSetQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType) == 1) ? SF_OP_SELECT_IVSCCSETQC_PASSED : SF_OP_SELECT_IVSCCSETQC_FAILED
 		if(!(filter.setQC & setQC))
 			return 0
 		endif
@@ -3437,9 +3437,9 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 							elseif(!CmpStr(retWhat, SF_OP_TPFIT_RET_TAUSMALL))
 								fitResult = min(coefWave[2], coefWave[4])
 							elseif(!CmpStr(retWhat, SF_OP_TPFIT_RET_AMP))
-								fitResult = max(abs(coefWave[1]), abs(coefWave[3])) == abs(coefWave[1]) ? coefWave[1] : coefWave[3]
+								fitResult = (max(abs(coefWave[1]), abs(coefWave[3])) == abs(coefWave[1])) ? coefWave[1] : coefWave[3]
 							elseif(!CmpStr(retWhat, SF_OP_TPFIT_RET_MINAMP))
-								fitResult = min(abs(coefWave[1]), abs(coefWave[3])) == abs(coefWave[1]) ? coefWave[1] : coefWave[3]
+								fitResult = (min(abs(coefWave[1]), abs(coefWave[3])) == abs(coefWave[1])) ? coefWave[1] : coefWave[3]
 							endif
 						endif
 					endif
@@ -4704,7 +4704,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 	MultiThread indexHelper[] = SF_RemoveEndOfSweepNaNs(input[p])
 
 	doAvg  = !CmpStr(avg, "avg")
-	cutOff = ratioFreq == 0 ? cutOff : NaN
+	cutOff = (ratioFreq == 0) ? cutOff : NaN
 
 	if(doAvg)
 		Make/FREE/WAVE/N=(DimSize(input, ROWS)) output
@@ -6743,7 +6743,7 @@ static Function/WAVE SF_AverageTPFromSweep(WAVE/T epochMatches, WAVE sweepData)
 	Make/FREE/D/N=(numTPEpochs) tpStart = trunc(str2num(epochMatches[p][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI / sweepDelta)
 	Make/FREE/D/N=(numTPEpochs) tpDelta = trunc(str2num(epochMatches[p][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI / sweepDelta) - tpStart[p]
 	[tpDataSizeMin, tpDataSizeMax] = WaveMinAndMax(tpDelta)
-	SFH_ASSERT(tpDataSizeMax - tpDataSizeMin <= 1, "TP data size from TP epochs mismatch within sweep.")
+	SFH_ASSERT((tpDataSizeMax - tpDataSizeMin) <= 1, "TP data size from TP epochs mismatch within sweep.")
 
 	Make/FREE/D/N=(tpDataSizeMin) tpData
 	CopyScales/P sweepData, tpData

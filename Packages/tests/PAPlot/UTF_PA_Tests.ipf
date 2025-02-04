@@ -447,7 +447,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(string name)
 
 	// monkey patch the labnotebook to claim it holds IC data instead of VC
 	WAVE numericalValues = root:MIES:LabNoteBook:Dev1:numericalValues
-	MultiThread numericalValues[][%$CLAMPMODE_ENTRY_KEY][] = (numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r] == V_CLAMP_MODE ? I_CLAMP_MODE : numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r])
+	MultiThread numericalValues[][%$CLAMPMODE_ENTRY_KEY][] = ((numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r] == V_CLAMP_MODE) ? I_CLAMP_MODE : numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r])
 End
 
 static Function [string bspName, string graph] PAT_StartDataBrowser_IGNORE()
@@ -604,8 +604,8 @@ static Function PAT_VerifyImageAxes(string graph, string traceName, variable ach
 	CHECK_EQUAL_STR(yunits, ref_yunits)
 
 	layoutSize   = multiGraphMode ? 1 : patest.layoutSize
-	xLayoutCoord = multiGraphMode ? 0 : aregion - 1
-	yLayoutCoord = multiGraphMode ? 0 : achan - 1
+	xLayoutCoord = multiGraphMode ? 0 : (aregion - 1)
+	yLayoutCoord = multiGraphMode ? 0 : (achan - 1)
 
 	ref_from   = xLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
 	ref_to     = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
@@ -657,8 +657,8 @@ static Function PAT_VerifyTraceAxes(string graph, string traceName, variable ach
 	CHECK_EQUAL_STR(yunits, ref_yunits)
 
 	layoutSize   = multiGraphMode ? 1 : patest.layoutSize
-	xLayoutCoord = multiGraphMode ? 0 : aregion - 1
-	yLayoutCoord = multiGraphMode ? 0 : achan - 1
+	xLayoutCoord = multiGraphMode ? 0 : (aregion - 1)
+	yLayoutCoord = multiGraphMode ? 0 : (achan - 1)
 
 	ref_from   = xLayoutCoord * ONE_TO_PERCENT / sqrt(layoutSize)
 	ref_to     = (xLayoutCoord + 1) * ONE_TO_PERCENT / sqrt(layoutSize)
@@ -801,7 +801,7 @@ static Function PAT_CheckIfTracesAreFront(string allTraces, string frontTraces, 
 
 	for(i = 0; i < numFrontTraces; i += 1)
 		pos = WhichListItem(StringFromList(i, frontTraces), tracesInBlock)
-		if(pos < numBlockTraces - numFrontTraces)
+		if(pos < (numBlockTraces - numFrontTraces))
 			return 0
 		endif
 	endfor
@@ -1869,7 +1869,7 @@ Function PAT_FailedPulseCheckVC()
 
 	// now with VC data again
 	WAVE numericalValues = root:MIES:LabNoteBook:Dev1:numericalValues
-	MultiThread numericalValues[][%$CLAMPMODE_ENTRY_KEY][] = (numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r] == I_CLAMP_MODE ? V_CLAMP_MODE : numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r])
+	MultiThread numericalValues[][%$CLAMPMODE_ENTRY_KEY][] = ((numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r] == I_CLAMP_MODE) ? V_CLAMP_MODE : numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r])
 
 	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)

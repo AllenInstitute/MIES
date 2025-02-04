@@ -143,7 +143,7 @@ Function [variable plannedTime, variable acquiredTime] SWS_DeterminePlannedAndAc
 		return [plannedTime, NaN]
 	endif
 
-	acquiredTime = lastFifoPos ? IndexToScale(channelAD, max(lastFifoPos - 1, 0), ROWS) * MILLI_TO_ONE : 0
+	acquiredTime = lastFifoPos ? (IndexToScale(channelAD, max(lastFifoPos - 1, 0), ROWS) * MILLI_TO_ONE) : 0
 
 	return [plannedTime, acquiredTime]
 End

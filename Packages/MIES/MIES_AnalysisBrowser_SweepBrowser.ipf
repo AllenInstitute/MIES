@@ -47,7 +47,7 @@ static Function SB_GetSweepIndexFromMap(WAVE/T sweepMap, variable sweepNo)
 	V_row = dummy
 #endif // AUTOMATED_TESTING
 
-	return V_row == -1 ? NaN : V_row
+	return (V_row == -1) ? NaN : V_row
 End
 
 /// @brief Return the sweep data folder for either a given index or sweepNo

@@ -167,7 +167,7 @@ static Function P_UpdateTPStorage(string device, variable headStage)
 	old = P_FindLastSetEntry(TPStorage, count - 1, headstage, "Pressure")
 	new = PressureDataWv[headStage][%RealTimePressure][0]
 
-	TPStorage[count][headstage][%PressureChange] = (new == old ? NaN : PRESSURE_CHANGE)
+	TPStorage[count][headstage][%PressureChange] = ((new == old) ? NaN : PRESSURE_CHANGE)
 	TPStorage[count][headstage][%PressureMethod] = PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear]
 
 	old = P_FindLastSetEntry(TPStorage, count - 1, headstage, "PressureMethod")
@@ -883,9 +883,9 @@ Function P_UpdatePressureDataStorageWv(string device) /// @todo Needs to be rewo
 	PressureDataWv[settingHS][%ADC]            = GetPopupMenuIndex(device, "Popup_Settings_Pressure_AD")
 	PressureDataWv[settingHS][%ADC_Gain]       = GetSetVariable(device, "setvar_Settings_Pressure_ADgain")
 	idx                                        = GetPopupMenuIndex(device, "Popup_Settings_Pressure_TTLA")
-	PressureDataWv[settingHS][%TTL_A]          = idx == 0 ? NaN : --idx
+	PressureDataWv[settingHS][%TTL_A]          = (idx == 0) ? NaN : --idx
 	idx                                        = GetPopupMenuIndex(device, "Popup_Settings_Pressure_TTLB")
-	PressureDataWv[settingHS][%TTL_B]          = idx == 0 ? NaN : --idx
+	PressureDataWv[settingHS][%TTL_B]          = (idx == 0) ? NaN : --idx
 	PressureDataWv[userHS][%ManSSPressure]     = DAG_GetNumericalValue(device, "setvar_DataAcq_SSPressure")
 	PressureDataWv[][%PSI_air]                 = GetSetVariable(device, "setvar_Settings_InAirP")
 	PressureDataWv[][%PSI_solution]            = GetSetVariable(device, "setvar_Settings_InBathP")
@@ -1314,7 +1314,7 @@ End
 
 static Function P_FillDAQWaves(string device, variable headStage, STRUCT P_PressureDA &p)
 
-	ASSERT(p.first < p.last && p.last - p.first >= 1, "first/last mismatch")
+	ASSERT(p.first < p.last && (p.last - p.first) >= 1, "first/last mismatch")
 
 	variable hwType
 
@@ -2456,16 +2456,16 @@ Function P_UpdatePressureType(string device)
 	WAVE pressureType   = GetPressureTypeWv(device)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 	// Encode atm pressure mode
-	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_ATM ? PRESSURE_TYPE_ATM : pressureType[p]
+	pressureType[] = (pressureDataWv[p][0] == PRESSURE_METHOD_ATM) ? PRESSURE_TYPE_ATM : pressureType[p]
 	// Encode automated pressure modes
-	pressureType[] = pressureDataWv[p][0] >= PRESSURE_METHOD_APPROACH && pressureDataWv[p][0] <= PRESSURE_METHOD_CLEAR ? PRESSURE_TYPE_AUTO : pressureType[p]
+	pressureType[] = (pressureDataWv[p][0] >= PRESSURE_METHOD_APPROACH && pressureDataWv[p][0] <= PRESSURE_METHOD_CLEAR) ? PRESSURE_TYPE_AUTO : pressureType[p]
 	// Encode manual pressure mode
-	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_MANUAL ? PRESSURE_TYPE_MANUAL : pressureType[p]
+	pressureType[] = (pressureDataWv[p][0] == PRESSURE_METHOD_MANUAL) ? PRESSURE_TYPE_MANUAL : pressureType[p]
 	// Encode user access
 	headstage               = pressureDataWv[0][%userSelectedHeadStage]
-	pressureType[headstage] = P_GetUserAccess(device, headstage, pressureDataWv[headstage][0]) == ACCESS_USER ? PRESSURE_TYPE_USER : PressureType[headstage]
+	pressureType[headstage] = (P_GetUserAccess(device, headstage, pressureDataWv[headstage][0]) == ACCESS_USER) ? PRESSURE_TYPE_USER : PressureType[headstage]
 	// Encode headstages without valid pressure settings
-	pressureType[] = P_ValidatePressureSetHeadstage(device, p) == 1 ? pressureType[p] : NaN
+	pressureType[] = (P_ValidatePressureSetHeadstage(device, p) == 1) ? pressureType[p] : NaN
 End
 
 Function/S P_PressureMethodToString(variable method)

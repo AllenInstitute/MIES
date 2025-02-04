@@ -254,7 +254,7 @@ Function BSP_SweepFormulaHook(STRUCT WMWinHookStruct &s)
 
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_KEYBOARD: // keyboard
-			if(s.specialKeyCode == 200 && s.eventMod & WINDOW_HOOK_EMOD_SHIFTKEYDOWN) // Enter + Shift
+			if(s.specialKeyCode == 200 && (s.eventMod & WINDOW_HOOK_EMOD_SHIFTKEYDOWN)) // Enter + Shift
 				win     = GetMainWindow(s.winName)
 				bsPanel = BSP_GetPanel(win)
 
@@ -298,7 +298,7 @@ Function BSP_BindListBoxWaves(string win)
 
 	string mainPanel, bsPanel
 
-	ASSERT(BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win) || !BSP_IsDataBrowser(win), "DataBrowser needs bound device to bind listBox waves.")
+	ASSERT((BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win)) || !BSP_IsDataBrowser(win), "DataBrowser needs bound device to bind listBox waves.")
 
 	mainPanel = GetMainWindow(win)
 	bsPanel   = BSP_GetPanel(win)
@@ -751,7 +751,7 @@ Function BSP_SliderProc_ChangedSetting(STRUCT WMSliderAction &spa) : SliderContr
 
 	string win
 
-	if(spa.eventCode > 0 && spa.eventCode & 0x1)
+	if(spa.eventCode > 0 && (spa.eventCode & 0x1))
 		win = spa.win
 		UpdateSweepPlot(win)
 	endif
@@ -1103,7 +1103,7 @@ Function BSP_ScaleAxes(string win)
 	equalY    = GetCheckBoxState(bsPanel, "check_Display_EqualYrange") && !IsControlDisabled(bsPanel, "check_Display_EqualYrange")
 	equalYIgn = GetCheckBoxState(bsPanel, "check_Display_EqualYignore") && !IsControlDisabled(bsPanel, "check_Display_EqualYignore")
 
-	ASSERT(visXRange + equalY + equalYIgn <= 1, "Only one scaling mode is allowed to be selected")
+	ASSERT((visXRange + equalY + equalYIgn) <= 1, "Only one scaling mode is allowed to be selected")
 
 	if(visXRange)
 		AutoscaleVertAxisVisXRange(graph)

@@ -70,7 +70,7 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 	indexShouldExist *= 2
 
 	if(checkFreeMemory)
-		if(GetWaveSize(wv) * (indexShouldExist / DimSize(wv, dimension)) / 1024 / 1024 / 1024 >= GetFreeMemory())
+		if((GetWaveSize(wv) * (indexShouldExist / DimSize(wv, dimension)) / 1024 / 1024 / 1024) >= GetFreeMemory())
 			return 1
 		endif
 	endif
@@ -426,7 +426,7 @@ Function GetRowWithSameContent(WAVE/T refWave, WAVE/T sourceWave, variable row)
 	for(i = 0; i < numRows; i += 1)
 		for(j = 0; j < numCols; j += 1)
 			if(!cmpstr(refWave[i][j], sourceWave[row][j]))
-				if(j == numCols - 1)
+				if(j == (numCols - 1))
 					return i
 				endif
 
@@ -499,7 +499,7 @@ threadsafe Function SetDimensionLabels(WAVE wv, string list, variable dim, [vari
 	endif
 
 	ASSERT_TS(startPos >= 0, "Illegal negative startPos")
-	ASSERT_TS(dimlabelCount <= DimSize(wv, dim) + startPos, "Dimension label count exceeds dimension size")
+	ASSERT_TS(dimlabelCount <= (DimSize(wv, dim) + startPos), "Dimension label count exceeds dimension size")
 	for(i = 0; i < dimlabelCount; i += 1)
 		labelName = StringFromList(i, list)
 		SetDimLabel dim, i + startPos, $labelName, Wv
@@ -526,7 +526,7 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 
 	if(!ParamIsDefault(dimension))
 		ASSERT_TS(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
-		ASSERT_TS(ParamIsDefault(index) + ParamIsDefault(indexWave) == 1, "Need exactly one of parameter of type index or indexWave")
+		ASSERT_TS((ParamIsDefault(index) + ParamIsDefault(indexWave)) == 1, "Need exactly one of parameter of type index or indexWave")
 	endif
 
 	if(!ParamIsDefault(indexWave) || !ParamIsDefault(index))
@@ -725,7 +725,7 @@ Function DeleteWavePoint(WAVE wv, variable dim, [variable index, WAVE indices])
 
 	variable size
 
-	ASSERT(ParamIsDefault(index) + ParamIsDefault(indices) == 1, "One of index or indices wave must be given as argument")
+	ASSERT((ParamIsDefault(index) + ParamIsDefault(indices)) == 1, "One of index or indices wave must be given as argument")
 	ASSERT(WaveExists(wv), "wave does not exist")
 	ASSERT(dim >= 0 && dim < 4, "dim must be 0, 1, 2 or 3")
 	if(!ParamIsDefault(indices))

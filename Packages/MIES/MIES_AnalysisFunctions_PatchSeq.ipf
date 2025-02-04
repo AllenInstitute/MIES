@@ -433,7 +433,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 			// NaN: not enough data for check
 
 			// last chunk was only partially present and so can never pass
-			if(i == numBaselineChunks - 1 && s.lastKnownRowIndexAD == s.lastValidRowIndexAD)
+			if(i == (numBaselineChunks - 1) && s.lastKnownRowIndexAD == s.lastValidRowIndexAD)
 				ret = PSQ_BL_FAILED
 			endif
 
@@ -475,7 +475,7 @@ Function [variable chunkStartTimeMax, variable chunkLengthTime] PSQ_GetBaselineC
 	ASSERT(!chunk || (chunk && WaveExists(durations)), "Need durations wave")
 	chunkLengthTime = chunk ? ps.postPulseChunkLength : ps.prePulseChunkLength
 	// for chunk > 0: skip onset delay, the pulse itself and one chunk of post pulse baseline
-	chunkStartTimeMax = chunk ? (totalOnsetDelayMS + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength : totalOnsetDelayMS
+	chunkStartTimeMax = chunk ? ((totalOnsetDelayMS + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength) : totalOnsetDelayMS
 
 	return [chunkStartTimeMax, chunkLengthTime]
 End
@@ -555,7 +555,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	endif
 
 	// not enough data to evaluate
-	if(fifoInStimsetTime + totalOnsetDelay < chunkStartTimeMax + chunkLengthTime)
+	if((fifoInStimsetTime + totalOnsetDelay) < (chunkStartTimeMax + chunkLengthTime))
 		return NaN
 	endif
 
@@ -978,7 +978,7 @@ static Function PSQ_Calculate(WAVE wv, variable column, variable startTime, vari
 	startPoints = trunc(startTime / DimDelta(channel, ROWS))
 	rangePoints = max(trunc(rangeTime / DimDelta(channel, ROWS)), 1)
 
-	if(startPoints + rangePoints >= DimSize(channel, ROWS))
+	if((startPoints + rangePoints) >= DimSize(channel, ROWS))
 		rangePoints = max(trunc(DimSize(channel, ROWS) - startPoints - 1), 1)
 	endif
 
@@ -1379,7 +1379,7 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 	string msg
 
 	WAVE spikeDetection = LBN_GetNumericWave()
-	spikeDetection = (p == headstage ? 0 : NaN)
+	spikeDetection = ((p == headstage) ? 0 : NaN)
 
 	WAVE config = AFH_GetConfigWave(device, sweepWave)
 
@@ -2560,7 +2560,7 @@ static Function PSQ_DS_CalculateReachedFinalSlope(variable validFit, WAVE fitSlo
 	return validFit                                                                 \
 	       && IsFinite(fitSlope)                                                    \
 	       && IsFinite(maxSlope)                                                    \
-	       && (fitSlope < maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE)))      \
+	       && (fitSlope < (maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE))))    \
 	       && PSQ_DS_IsValidFitSlopePosition(fitSlopes, DAScales, fitSlope, maxSlope)
 End
 
@@ -3023,11 +3023,11 @@ static Function/WAVE PSQ_DS_FilterPassingData(WAVE/Z data, WAVE/Z booleanQC, [va
 	Duplicate/FREE data, indices
 
 	if(inBetween)
-		ASSERT(DimSize(data, ROWS) + 1 == DimSize(booleanQC, ROWS), "Umatched wave sizes for inBetween")
-		indices[] = booleanQC[p + 1] == 1 ? NaN : p
+		ASSERT((DimSize(data, ROWS) + 1) == DimSize(booleanQC, ROWS), "Umatched wave sizes for inBetween")
+		indices[] = (booleanQC[p + 1] == 1) ? NaN : p
 	else
 		ASSERT(DimSize(data, ROWS) == DimSize(booleanQC, ROWS), "Umatched wave sizes for inBetween")
-		indices[] = booleanQC[p] == 1 ? NaN : p
+		indices[] = (booleanQC[p] == 1) ? NaN : p
 	endif
 
 	WAVE/Z indicesToRemove = ZapNaNs(indices)
@@ -5423,7 +5423,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 
 			// recalculate pulse duration
 			PSQ_GetPulseDurations(device, PSQ_RAMP, s.sweepNo, totalOnsetDelay, forceRecalculation = 1)
-		elseif(fifoInStimsetTime > pulseStart + pulseDuration)
+		elseif(fifoInStimsetTime > (pulseStart + pulseDuration))
 			// we are past the pulse and have not found a spike
 			// write the results into the LBN
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT)

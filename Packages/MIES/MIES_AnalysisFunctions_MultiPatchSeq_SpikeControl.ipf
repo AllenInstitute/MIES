@@ -46,7 +46,7 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string dev
 	if(EqualWaves(setSweepCountPrev, setSweepCount, EQWAVES_DATA) && EqualWaves(stimsetAcqCycleIDPrev, stimsetAcqCycleID, EQWAVES_DATA))
 		trialsLBN[0, NUM_HEADSTAGES - 1] += (statusHS[p] == 1)
 	else
-		trialsLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1 ? 0 : NaN)
+		trialsLBN[0, NUM_HEADSTAGES - 1] = ((statusHS[p] == 1) ? 0 : NaN)
 	endif
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL)
@@ -1089,7 +1089,7 @@ Function SC_SpikeControl(string device, STRUCT AnalysisFunction_V3 &s)
 			ED_AddEntryToLabnotebook(device, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 			WAVE trialsLBN = LBN_GetNumericWave()
-			trialsLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1 ? 0 : NaN)
+			trialsLBN[0, NUM_HEADSTAGES - 1] = ((statusHS[p] == 1) ? 0 : NaN)
 			key                              = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL)
 			ED_AddEntryToLabnotebook(device, key, trialsLBN, overrideSweepNo = s.sweepNo)
 

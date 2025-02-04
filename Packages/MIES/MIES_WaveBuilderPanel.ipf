@@ -208,7 +208,7 @@ static Function WBP_AddEpochHLTraces(DFREF dfr, variable epochHLType, variable e
 		WAVE/SDFR=dfr waveBegin = $nameBegin
 		WAVE/SDFR=dfr waveEnd   = $nameEnd
 
-		if(epoch == numEpochs - 1)
+		if(epoch == (numEpochs - 1))
 			// no epoch to highlight right of the current one
 			return NaN
 		endif
@@ -667,7 +667,7 @@ Function WBP_UpdateControlAndWave(string control, [variable var, string str])
 
 	variable stimulusType, epoch, paramRow
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Exactly one of var/str must be given")
+	ASSERT((ParamIsDefault(var) + ParamIsDefault(str)) == 1, "Exactly one of var/str must be given")
 
 	if(!ParamIsDefault(var))
 		WBP_SetControl(panel, control, value = var)

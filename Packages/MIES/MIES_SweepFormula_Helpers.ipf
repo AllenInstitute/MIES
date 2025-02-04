@@ -608,7 +608,7 @@ static Function/WAVE SFH_GetSweepsForFormulaImpl(string graph, WAVE/WAVE selectD
 				rangeEndIndex = limit(rangeEndIndex, -Inf, sweepSize)
 			endif
 
-			SFH_ASSERT(rangeStartIndex < rangeEndIndex - 1, "Starting range must be smaller than the ending range for sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeStartIndex < (rangeEndIndex - 1), "Starting range must be smaller than the ending range for sweep " + num2istr(sweepNo) + ".")
 			SFH_ASSERT(rangeStartIndex == -Inf || (IsFinite(rangeStartIndex) && rangeStartIndex >= 0 && rangeStartIndex < sweepSize), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
 			SFH_ASSERT(rangeEndIndex == Inf || (IsFinite(rangeEndIndex) && rangeEndIndex > 0 && rangeEndIndex <= sweepSize), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/RMD=[rangeStartIndex, rangeEndIndex - 1] sweep, rangedSweepData
@@ -660,7 +660,7 @@ Function SFH_GetNumberOfArguments(variable jsonId, string jsonPath)
 		return size
 	endif
 
-	return JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL ? 0 : size
+	return (JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL) ? 0 : size
 End
 
 Function/DF SFH_GetWorkingDF(string win)

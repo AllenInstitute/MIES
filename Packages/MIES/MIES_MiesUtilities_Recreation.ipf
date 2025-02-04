@@ -376,7 +376,7 @@ static Function AddHeadstageFromLBN(WAVE numericalValues, variable sweepNo, WAVE
 	for(i = 0; i < numEntries; i += 1)
 		[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "Headstage Active", configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
 		if(WaveExists(setting))
-			configWave[i][%HEADSTAGE] = setting[index] == 1 ? index : NaN
+			configWave[i][%HEADSTAGE] = (setting[index] == 1) ? index : NaN
 		else
 			configWave[i][%HEADSTAGE] = NaN
 		endif

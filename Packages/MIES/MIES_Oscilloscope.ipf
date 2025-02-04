@@ -98,7 +98,7 @@ Function SCOPE_UpdateGraph(string device, variable dataAcqOrTP)
 	NVAR timestamp = $GetLastAcqHookCallTimeStamp(device)
 	updateInt = DAG_GetNumericalValue(device, "setvar_Settings_OsciUpdInt")
 	now       = DateTime
-	if((now - timestamp) < updateInt * MILLI_TO_ONE)
+	if((now - timestamp) < (updateInt * MILLI_TO_ONE))
 		return 0
 	endif
 	timestamp = now
@@ -225,7 +225,7 @@ Function SCOPE_CreateGraph(string device, variable dataAcqOrTP)
 	activeHeadStage  = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 
 	[axisMinTop, axisMaxTop] = GetAxisRange(graph, AXIS_SCOPE_TP_TIME, mode = AXIS_RANGE_INC_AUTOSCALED)
-	if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum && scopeScaleMode == GUI_SETTING_OSCI_SCALE_FIXED)
+	if((dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum) && scopeScaleMode == GUI_SETTING_OSCI_SCALE_FIXED)
 		WAVE previousADAxesProperties = GetAxesProperties(graph, axesRegexp = AXIS_SCOPE_AD_REGEXP, orientation = AXIS_ORIENTATION_LEFT, mode = AXIS_RANGE_INC_AUTOSCALED)
 	endif
 

@@ -562,7 +562,7 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 			deviceInfo[%AD]    = devInfoHW[%ADCCount]
 			deviceInfo[%DA]    = devInfoHW[%DACCount]
 			deviceInfo[%Rack]  = ceil(min(devInfoHW[%DOCount], devInfoHW[%DICount]) / 3)
-			deviceInfo[%TTL]   = deviceInfo[%Rack] == 1 ? 4 : 8
+			deviceInfo[%TTL]   = (deviceInfo[%Rack] == 1) ? 4 : 8
 			deviceInfo[%AuxAD] = NaN
 			deviceInfo[%AuxDA] = NaN
 			break
@@ -2037,7 +2037,7 @@ threadsafe Function HW_ITC_GetRackRange(variable rack, variable &first, variable
 		ASSERT_TS(0, "Invalid rack parameter")
 	endif
 
-	ASSERT_TS(last - first + 1 == NUM_ITC_TTL_BITS_PER_RACK, "Rack channel range must be NUM_ITC_TTL_BITS_PER_RACK for each rack")
+	ASSERT_TS((last - first + 1) == NUM_ITC_TTL_BITS_PER_RACK, "Rack channel range must be NUM_ITC_TTL_BITS_PER_RACK for each rack")
 End
 
 /// @brief Clip the ttlBit to adapt for differences in notation
@@ -2575,7 +2575,7 @@ Function HW_NI_WriteDigital(string device, variable value, [variable DIOPort, va
 
 	taskID = V_DAQmx_DIO_TaskNumber
 
-	ASSERT(log(value) / log(2) <= fDAQmx_DIO_PortWidth(device, DIOport), "value has bits sets which are higher than the number of output lines in this port")
+	ASSERT((log(value) / log(2)) <= fDAQmx_DIO_PortWidth(device, DIOport), "value has bits sets which are higher than the number of output lines in this port")
 	ret = fDAQmx_DIO_Write(device, taskID, value)
 	if(ret)
 		print fDAQmx_ErrorString()
@@ -3405,7 +3405,7 @@ static Function [variable channel, string encode] HW_SU_GetEncodeFromHS(variable
 		if(i > headstage)
 			amp     = index
 			ampType = hsInAmp
-			subHS   = index ? headstage - sum(hsNums, 0, index - 1) : headstage
+			subHS   = index ? (headstage - sum(hsNums, 0, index - 1)) : headstage
 			break
 		endif
 		index += 1

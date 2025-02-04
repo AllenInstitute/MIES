@@ -105,7 +105,7 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	// nothing to do
 
 	numCols                = DimSize(incomingTextualValues, COLS)
-	lastValidIncomingLayer = DimSize(incomingTextualValues, LAYERS) == 0 ? 0 : DimSize(incomingTextualValues, LAYERS) - 1
+	lastValidIncomingLayer = (DimSize(incomingTextualValues, LAYERS) == 0) ? 0 : (DimSize(incomingTextualValues, LAYERS) - 1)
 	for(i = 0; i < numCols; i += 1)
 		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = NormalizeToEOL(incomingTextualValues[0][i][r], "\n")
 	endfor
@@ -148,7 +148,7 @@ static Function ED_GetHeadstageContingency(WAVE values)
 	if(IsTextWave(values))
 		WAVE/T valuesText = values
 		WAVE   stats      = LBN_GetNumericWave()
-		stats[] = strlen(valuesText[p]) == 0 ? NaN : 1
+		stats[] = (strlen(valuesText[p]) == 0) ? NaN : 1
 	else
 		WAVE stats = values
 	endif
@@ -218,7 +218,7 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 	valuesDat[rowIndex] = values[rowIndex][1]
 
 	numCols                = DimSize(incomingNumericalValues, COLS)
-	lastValidIncomingLayer = DimSize(incomingNumericalValues, LAYERS) == 0 ? 0 : DimSize(incomingNumericalValues, LAYERS) - 1
+	lastValidIncomingLayer = (DimSize(incomingNumericalValues, LAYERS) == 0) ? 0 : (DimSize(incomingNumericalValues, LAYERS) - 1)
 	for(i = 0; i < numCols; i += 1)
 		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingNumericalValues[0][i][r]
 	endfor
@@ -624,7 +624,7 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		Redimension/N=(-1, numKeyCols + numAdditions, -1) key, values
 
 		// rowIndex will be zero for empty waves only and these also need dimension labels for all columns
-		LBN_SetDimensionLabels(key, values, start = (rowIndex == 0 ? 0 : numKeyCols))
+		LBN_SetDimensionLabels(key, values, start = ((rowIndex == 0) ? 0 : numKeyCols))
 	endif
 
 	if(IsNumericWave(values))
@@ -874,8 +874,8 @@ Function ED_TPDocumentation(string device)
 		TPSettingsWave[0][7][i] = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN, selectAmp = 0)
 	endfor
 
-	TPSettingsWave[0][1][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? TPResults[%BaselineSteadyState][r] : NaN
-	TPSettingsWave[0][0][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == I_CLAMP_MODE ? TPResults[%BaselineSteadyState][r] : NaN
+	TPSettingsWave[0][1][0, NUM_HEADSTAGES - 1] = (hsProp[r][%ClampMode] == V_CLAMP_MODE) ? TPResults[%BaselineSteadyState][r] : NaN
+	TPSettingsWave[0][0][0, NUM_HEADSTAGES - 1] = (hsProp[r][%ClampMode] == I_CLAMP_MODE) ? TPResults[%BaselineSteadyState][r] : NaN
 
 	TPSettingsWave[0][9][0, NUM_HEADSTAGES - 1]  = hsProp[r][%DAC]
 	TPSettingsWave[0][10][0, NUM_HEADSTAGES - 1] = hsProp[r][%ADC]

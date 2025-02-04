@@ -58,7 +58,7 @@ Function/S ListFromList(string list, variable itemBegin, variable itemEnd, [stri
 	endfor
 
 	stop = start
-	for(i = itemBegin; i < itemEnd + 1; i += 1)
+	for(i = itemBegin; i < (itemEnd + 1); i += 1)
 		stop = strsearch(list, listSep, stop) + 1
 	endfor
 

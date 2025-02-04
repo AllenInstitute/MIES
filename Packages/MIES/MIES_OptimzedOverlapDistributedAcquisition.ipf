@@ -203,7 +203,7 @@ static Function/WAVE OOD_CalculateOffsetsImpl(WAVE/WAVE setRegions)
 			endfor
 		while(overlap)
 
-		if(setNr < numSets - 1)
+		if(setNr < (numSets - 1))
 			Redimension/N=(baseRegCnt + regCnt, -1) baseRegions
 			baseRegions[baseRegCnt,][] = regions[p - baseRegCnt][q] + offsets[setNr]
 			SortColumns/KNDX={0} sortWaves={baseRegions}

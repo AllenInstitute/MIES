@@ -263,7 +263,7 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 		endif
 
 		//  points with no values added are set to NaN here:
-		MultiThread AveW = (TempNWave[p] == 0) ? NaN : AveW[p] / TempNWave[p]
+		MultiThread AveW = (TempNWave[p] == 0) ? NaN : (AveW[p] / TempNWave[p])
 
 		result = {AveW, SumW, TempNWave}
 		return result
