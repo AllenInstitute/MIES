@@ -1059,7 +1059,7 @@ Function/WAVE SplitWavesToDimension(WAVE/WAVE input, [variable sdim])
 
 		if(DimSize(wv, COLS) > 1)
 			/// @todo workaround IP issue 4979 (singleWaves is not a free wave)
-			SplitWave/NOTE/O/FREE/OREF=singleWaves/SDIM=(sdim) wv
+			SplitWave/NOTE/FREE/OREF=singleWaves/SDIM=(sdim) wv
 		else
 			Make/WAVE/FREE singleWaves = {wv}
 		endif

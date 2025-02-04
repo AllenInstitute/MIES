@@ -828,7 +828,7 @@ static Function/WAVE GetDifferentGraphs()
 
 	string win, recMacro
 
-	Make/FREE/T/N=5/O wv
+	Make/FREE/T/N=5 wv
 
 	NewDataFolder/O/S root:temp_test
 	Make/O data

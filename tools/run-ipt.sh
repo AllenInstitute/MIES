@@ -29,7 +29,6 @@ while read -r line; do
 done < <(git ls-files ':(attr:ipt)')
 
 echo "exclude = BugproneMissingSwitchDefaultCase" >> config.toml
-echo "exclude = BugproneContradictingOverrideAndFreeFlag" >> config.toml
 echo "exclude = CodeStyleDefaultPragmas" >> config.toml
 echo "exclude = CodeStyleEndIfComment" >> config.toml
 echo "exclude = ReadabilityMissingParenthesis" >> config.toml
