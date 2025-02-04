@@ -308,6 +308,8 @@ Function AR_MainListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 			graph = GetMainWindow(lba.win)
 			AR_HighlightArtefactsEntry(graph)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -326,6 +328,8 @@ Function AR_SetVarProcCutoffLength(STRUCT WMSetVariableAction &sva) : SetVariabl
 			AR_UpdateListBoxWave(device)
 			AR_HandleRanges(graph)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -342,6 +346,8 @@ Function AR_ButtonProc_RemoveRanges(STRUCT WMButtonAction &ba) : ButtonControl
 			SetCheckBoxState(win, "check_auto_remove", CHECKBOX_SELECTED)
 			UpdateSweepPlot(graph)
 			SetCheckBoxState(win, "check_auto_remove", CHECKBOX_UNSELECTED)
+			break
+		default:
 			break
 	endswitch
 
@@ -372,6 +378,8 @@ Function AR_CheckProc_Update(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			UpdateSweepPlot(cba.win)
+			break
+		default:
 			break
 	endswitch
 

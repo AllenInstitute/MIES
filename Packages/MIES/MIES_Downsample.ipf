@@ -441,6 +441,8 @@ Function DownsampleWindowHook(STRUCT WMWinHookStruct &s)
 			KillOrMoveToTrash(wv = GetDownsampleRateWave())
 			KillOrMoveToTrash(dfr = $dataPath)
 			break
+		default:
+			break
 	endswitch
 
 	// return zero so that other hooks are called as well
@@ -455,6 +457,8 @@ Function CheckBoxInterpolation(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			win = cba.win
 			ControlUpdate/W=$win $popup_targetrate
 			UpdateEstimatedSizeAfterwards(win)
+			break
+		default:
 			break
 	endswitch
 
@@ -471,6 +475,8 @@ Function PopupMenuTargetRate(STRUCT WMPopupAction &pa) : PopupMenuControl
 		case 5:
 		case 6:
 			UpdateEstimatedSizeAfterwards(pa.win)
+			break
+		default:
 			break
 	endswitch
 
@@ -508,6 +514,8 @@ Function ButtonRestoreBackup(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 
 			UpdatePanel(win)
+			break
+		default:
 			break
 	endswitch
 
@@ -571,6 +579,8 @@ Function ButtonDoIt(STRUCT WMButtonAction &ba) : ButtonControl
 			endfor
 			UpdatePanel(win)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -618,6 +628,8 @@ Function PopupMenuDeviceSelection(STRUCT WMPopupAction &pa) : PopupMenuControl
 			popStr = pa.popStr
 			UpdatePanel(win, deviceSelectionString = popStr)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -630,6 +642,8 @@ Function PopupMenuDecimationMethod(STRUCT WMPopupAction &pa) : PopupMenuControl
 		case 2: // mouse up
 			win = pa.win
 			UpdatePopupMenuWindowFunction(win, decimationMethod = 2^(pa.popNum - 1))
+			break
+		default:
 			break
 	endswitch
 
@@ -650,6 +664,8 @@ Function CheckBoxEqualizeDown(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			win              = cba.win
 			control          = cba.ctrlName
 			UpdateCheckBoxes(win, control, checked)
+			break
+		default:
 			break
 	endswitch
 

@@ -1933,7 +1933,8 @@ Function ParseLogbookMode(string modeText)
 			return TEST_PULSE_MODE
 		case "NUMBER_OF_LBN_DAQ_MODES":
 			return NUMBER_OF_LBN_DAQ_MODES
+		default:
+			ASSERT(0, "Unsupported labnotebook mode")
+			break
 	endswitch
-
-	ASSERT(0, "Unsupported labnotebook mode")
 End

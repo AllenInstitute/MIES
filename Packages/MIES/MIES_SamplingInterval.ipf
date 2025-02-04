@@ -500,6 +500,9 @@ Function SI_CalculateMinSampInterval(string device, variable dataAcqOrTP, variab
 		case HARDWARE_SUTTER_DAC:
 			return (channelType == XOP_CHANNEL_TYPE_ADC) ? (HARDWARE_SU_MIN_SAMPINT_ADC * MILLI_TO_MICRO) : (HARDWARE_SU_MIN_SAMPINT_DAC * MILLI_TO_MICRO)
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 

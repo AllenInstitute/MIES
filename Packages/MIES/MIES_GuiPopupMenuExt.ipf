@@ -532,6 +532,8 @@ Function PEXT_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 
 			PopupContextualMenu/N/ASYN=PEXT_Callback "PopupExt" + num2str(DimSize(itemListWave, ROWS))
 			break
+		default:
+			break
 	endswitch
 	return 0
 End

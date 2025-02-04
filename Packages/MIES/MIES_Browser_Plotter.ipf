@@ -307,6 +307,9 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 					numChannels = numTTLs
 					break
+				default:
+					ASSERT(0, "Unsupported channel type")
+					break
 			endswitch
 
 			if(DimSize(channelList, ROWS) == 0)

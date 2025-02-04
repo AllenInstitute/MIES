@@ -2865,6 +2865,8 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3007,6 +3009,8 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 			endtry
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3033,6 +3037,8 @@ Function SF_TabProc_Formula(STRUCT WMTabControlAction &tca) : TabControl
 				break
 			endif
 
+			break
+		default:
 			break
 	endswitch
 
@@ -4558,6 +4564,9 @@ static Function/WAVE SF_OperationSetScaleImpl(WAVE/Z input, string dim, variable
 		case "t":
 			SetScale/P t, offset, delta, unit, input
 			ASSERT(DimDelta(input, CHUNKS) == delta, "Encountered Igor Bug.")
+			break
+		default:
+			ASSERT(0, "Invalid dimension mode")
 			break
 	endswitch
 
@@ -6562,6 +6571,9 @@ static Function/WAVE SF_OperationApFrequencyImpl(WAVE/Z data, variable level, va
 			Make/FREE/D outD = {numPeaks}
 			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), "peaks [APCount]", outD
 			break
+		default:
+			ASSERT(0, "Unsupported method")
+			break
 	endswitch
 
 	if(normalize)
@@ -6718,6 +6730,8 @@ Function SF_button_sweepFormula_tofront(STRUCT WMButtonAction &ba) : ButtonContr
 			endfor
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -6807,6 +6821,8 @@ Function SF_PopMenuProc_OldCode(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 			ReplaceNotebookText(sweepFormulaNB, code)
 			PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = CHECKBOX_SELECTED)
+			break
+		default:
 			break
 	endswitch
 

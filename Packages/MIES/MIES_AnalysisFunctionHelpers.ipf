@@ -1236,7 +1236,8 @@ Function AFH_LastSweepInSet(string device, variable sweepNo, variable headstage,
 			sweepOffset = 1
 			break
 		default:
-		// do nothing
+			// do nothing
+			break
 	endswitch
 
 	DAC         = AFH_GetDACFromHeadstage(device, headstage)

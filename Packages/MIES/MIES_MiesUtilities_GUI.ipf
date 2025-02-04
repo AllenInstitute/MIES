@@ -286,6 +286,8 @@ Function TimeAlignCursorMovedHook(STRUCT WMWinHookStruct &s)
 
 			PGC_SetAndActivateControl(bsPanel, "popup_TimeAlignment_Master", str = graphtrace)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -835,6 +837,8 @@ Function StoreWindowCoordinatesHook(STRUCT WMWinHookStruct &s)
 			win = s.winName
 			NVAR JSONid = $GetSettingsJSONid()
 			PS_StoreWindowCoordinate(JSONid, win)
+			break
+		default:
 			break
 	endswitch
 

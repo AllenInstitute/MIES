@@ -217,6 +217,8 @@ Function BW_ButtonProc_ShowTask(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 			DisplayProcedure taskname
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -238,6 +240,8 @@ Function BW_ButtonProc_QuitTask(STRUCT WMButtonAction &ba) : ButtonControl
 			CtrlNamedBackground $taskname, stop
 			BW_PanelUpdate()
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -257,6 +261,8 @@ Function BW_WindowHook(STRUCT WMWinHookStruct &s)
 			BW_StopTask()
 			hookResult = 1
 			break
+		default:
+			break
 	endswitch
 
 	return hookResult
@@ -267,7 +273,8 @@ Function BW_ButtonProc_StartTask(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			BW_StartTask()
-			// click code here
+			break
+		default:
 			break
 	endswitch
 
@@ -279,6 +286,8 @@ Function BW_ButtonProc_StopTask(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			BW_StopTask()
+			break
+		default:
 			break
 	endswitch
 

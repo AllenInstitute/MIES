@@ -103,9 +103,11 @@ Function GetAnalysisFunctionVersion(variable type)
 			return MSQ_DA_SCALE_VERSION
 		case SC_SPIKE_CONTROL:
 			return SC_SPIKE_CONTROL_VERSION
+		default:
+			ASSERT(0, "Invalid type")
+			break
 	endswitch
 
-	ASSERT(0, "Invalid type")
 End
 
 Function [WAVE sweepWave, WAVE config] GetSweepAndConfigWaveFromDevice(string device, variable sweepNo)

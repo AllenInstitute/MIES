@@ -247,7 +247,8 @@ Function AI_UpdateAmpModel(string device, string ctrl, variable headStage, [vari
 		case "button_DataAcq_AutoPipOffset_VC":
 			runMode = TP_StopTestPulseFast(device)
 		default:
-		// do nothing
+			// do nothing
+			break
 	endswitch
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)

@@ -204,6 +204,8 @@ Function LBV_ButtonProc_ClearGraph(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			LBV_ClearGraph(ba.win)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -217,6 +219,8 @@ Function LBV_ButtonProc_SwitchXAxis(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			lbGraph = LBV_GetLabNoteBookGraph(ba.win)
 			LBV_SwitchLBGraphXAxis(lbGraph)
+			break
+		default:
 			break
 	endswitch
 
@@ -240,6 +244,8 @@ Function LBV_PopMenuProc_LabNotebookAndResults(STRUCT WMPopupAction &pa) : Popup
 
 			lbGraph = LBV_GetLabNoteBookGraph(win)
 			LBV_AddTraceToLBGraph(lbGraph, keys, values, key)
+			break
+		default:
 			break
 	endswitch
 
@@ -310,6 +316,8 @@ Function LBV_PopMenuProc_TPStorage(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 			DFREF dfr = LBV_GetTPStorageLocation(win)
 			LBV_AddTraceToLBGraphTPStorage(lbGraph, dfr, key)
+			break
+		default:
 			break
 	endswitch
 
@@ -1111,6 +1119,8 @@ Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
 			descNB = LBV_GetDescriptionNotebook(s.winName)
 			ReflowNotebookText(descNB)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1237,6 +1247,8 @@ Function LBV_CheckProc_XRangeSelected(STRUCT WMCheckboxAction &cba) : CheckBoxCo
 			if(cba.checked)
 				LBV_LimitXRangeToSelected(cba.win)
 			endif
+			break
+		default:
 			break
 	endswitch
 

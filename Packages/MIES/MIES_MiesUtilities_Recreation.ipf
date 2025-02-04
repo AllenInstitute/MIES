@@ -359,6 +359,9 @@ static Function AddDAQChannelTypeFromLBN(WAVE numericalValues, WAVE textualValue
 			case XOP_CHANNEL_TYPE_TTL:
 				channelType = DAQ_CHANNEL_TYPE_DAQ
 				break
+			default:
+				ASSERT(0, "Unsupported channel type")
+				break
 		endswitch
 
 		ASSERT(IsFinite(GetRowIndex(validChannelTypes, val = channelType)), "Invalid channel type")

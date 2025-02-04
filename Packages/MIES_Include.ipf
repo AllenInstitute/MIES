@@ -51,6 +51,8 @@ Function ButtonProc_OpenMiesDocuUpdateNightly(STRUCT WMButtonAction &ba) : Butto
 		case 2: // mouse up
 			BrowseURL IP_DOCU_UPDATE_URL
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -110,6 +112,8 @@ Function ButtonProc_DownloadNightly(STRUCT WMButtonAction &ba) : ButtonControl
 			filename = GetFileNameFromURL(url)
 			URLRequest/O/P=$path/FILE=filename url=url
 			PathInfo/SHOW $path
+			break
+		default:
 			break
 	endswitch
 

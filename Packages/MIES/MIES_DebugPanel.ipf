@@ -116,6 +116,8 @@ Function DP_WindowHook(STRUCT WMWinHookStruct &s)
 			debugMode = QuerySetIgorOption("DEBUGGING_ENABLED", globalSymbol = 1)
 			SetCheckBoxState(PANEL, "check_debug_mode", debugMode == 1)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -141,6 +143,8 @@ Function DP_CheckProc_Debug(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 				HW_ITC_DebugMode(checked)
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -163,6 +167,8 @@ Function DP_PopMenuProc_Selection(STRUCT WMPopupAction &pa) : PopupMenuControl
 			else
 				ASSERT(0, "unknown selection")
 			endif
+			break
+		default:
 			break
 	endswitch
 

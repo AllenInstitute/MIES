@@ -2703,6 +2703,8 @@ Function PA_CheckProc_Common(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 		case 2: // mouse up
 			PA_Update(cba.win, POST_PLOT_CONSTANT_SWEEPS)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2722,6 +2724,8 @@ Function PA_SetVarProc_Common(STRUCT WMSetVariableAction &sva) : SetVariableCont
 			endif
 			PA_Update(sva.win, POST_PLOT_CONSTANT_SWEEPS)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2733,6 +2737,8 @@ Function PA_PopMenuProc_ColorScale(STRUCT WMPopupAction &pa) : PopupMenuControl
 		case 2: // mouse up
 			PA_SetColorScale(pa.win, pa.popStr)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2743,6 +2749,8 @@ Function PA_PopMenuProc_Common(STRUCT WMPopupAction &pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			PA_Update(pa.win, POST_PLOT_CONSTANT_SWEEPS)
+			break
+		default:
 			break
 	endswitch
 
@@ -3698,6 +3706,8 @@ Function PA_TraceWindowHook(STRUCT WMWinHookStruct &s)
 				CleanupOperationQueueResult()
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3720,6 +3730,8 @@ Function PA_ImageWindowHook(STRUCT WMWinHookStruct &s)
 				Execute/P/Q/Z "PA_UpdateScaleBars(\"" + imageGraph + "\", 1)"
 				CleanupOperationQueueResult()
 			endif
+			break
+		default:
 			break
 	endswitch
 

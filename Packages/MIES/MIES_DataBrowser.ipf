@@ -558,6 +558,8 @@ Function DB_PopMenuProc_LockDBtoDevice(STRUCT WMPopupAction &pa) : PopupMenuCont
 			mainPanel = GetMainWindow(pa.win)
 			DB_LockToDevice(mainPanel, pa.popStr)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -580,6 +582,8 @@ Function DB_SetVarProc_SweepNo(STRUCT WMSetVariableAction &sva) : SetVariableCon
 			else
 				UpdateSweepPlot(win)
 			endif
+			break
+		default:
 			break
 	endswitch
 

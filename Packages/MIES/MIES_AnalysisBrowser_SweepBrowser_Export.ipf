@@ -574,6 +574,9 @@ Function SBE_PopMenu_ExportTargetAxis(STRUCT WMPopupAction &pa) : PopupMenuContr
 				case "popup_sweep_export_x_axis":
 					list = "setvar_sweep_export_new_x_name"
 					break
+				default:
+					ASSERT(0, "Unknown control name")
+					break
 			endswitch
 
 			if(!cmpstr(popStr, "New"))
@@ -582,6 +585,8 @@ Function SBE_PopMenu_ExportTargetAxis(STRUCT WMPopupAction &pa) : PopupMenuContr
 				DisableControls(win, list)
 			endif
 
+			break
+		default:
 			break
 	endswitch
 
@@ -604,6 +609,8 @@ Function SBE_PopMenu_ExportTargetGraph(STRUCT WMPopupAction &pa) : PopupMenuCont
 			endif
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -620,6 +627,8 @@ Function SBE_ButtonProc_PerformExport(STRUCT WMButtonAction &ba) : ButtonControl
 			STRUCT SBE_ExportSettings sett
 			SBE_FillExportSettings(win, sett)
 			SBE_ExportSweepBrowser(sett)
+			break
+		default:
 			break
 	endswitch
 
@@ -646,6 +655,8 @@ Function SBE_CheckProc_UsePulseForXRange(STRUCT WMCheckboxAction &cba) : CheckBo
 				DisableControls(win, listXPulses)
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -666,6 +677,8 @@ Function SBE_PopMenuProc_PulsesADTrace(STRUCT WMPopupAction &pa) : PopupMenuCont
 			numPulses = DimSize(pulseStartTimes, ROWS)
 			SetVariable setvar_sweep_export_num_pulses, win=$pa.win, limits={1, numPulses, 1}
 
+			break
+		default:
 			break
 	endswitch
 

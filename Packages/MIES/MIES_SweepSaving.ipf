@@ -282,6 +282,9 @@ Function/WAVE SWS_GetChannelGains(string device, [variable timing])
 				gain[numDACs + numADCs, *] = 1
 			endif
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 
 	return gain

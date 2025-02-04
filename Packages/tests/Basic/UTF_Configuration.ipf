@@ -127,6 +127,8 @@ Function TCONF_CheckProc(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 				priorityFlag = RADIO3_CLICKED
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0

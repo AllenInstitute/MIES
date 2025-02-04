@@ -161,6 +161,9 @@ Function CheckIfAllControlsReferStateWv([string str])
 				// undo
 				PGC_SetAndActivateControl(str, ctrl, val = oldVal)
 				break
+			default:
+				INFO("Control type = %d", n0 = V_Flag)
+				FAIL()
 		endswitch
 	endfor
 End
@@ -220,6 +223,8 @@ Function CheckStartupSettings([string str])
 
 				SetPopupMenuIndex(unlockedDevice, ctrl, 1 + enoise(2, 2))
 				break
+			default:
+				FAIL()
 		endswitch
 	endfor
 

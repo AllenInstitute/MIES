@@ -28,6 +28,4 @@ while read -r line; do
     echo "files = \"$line\"" >> config.toml
 done < <(git ls-files ':(attr:ipt)')
 
-echo "exclude = BugproneMissingSwitchDefaultCase" >> config.toml
-
 (cd $top_level && $ipt --arg-file config.toml lint -i)

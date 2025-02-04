@@ -648,6 +648,8 @@ Function SB_PopupMenuSelectSweep(STRUCT WMPopupAction &pa) : PopupMenuControl
 			endif
 
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -659,6 +661,8 @@ Function SB_ButtonProc_ExportTraces(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			graph = GetMainWindow(ba.win)
 			SBE_ShowExportPanel(graph)
+			break
+		default:
 			break
 	endswitch
 

@@ -123,7 +123,10 @@ Function HW_PrepareAcq(variable hardwareType, variable deviceID, variable mode, 
 			break
 		case HARDWARE_SUTTER_DAC:
 			return HW_SU_PrepareAcq(deviceID, mode, flags = flags)
+		default:
+			ASSERT(0, "Unsupported hardware type")
 	endswitch
+
 	return 0
 End
 
@@ -147,6 +150,9 @@ Function HW_SelectDevice(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_SUTTER_DAC:
 			// nothing to do
 			return 0
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -209,6 +215,9 @@ Function HW_CloseDevice(variable hardwareType, variable deviceID, [variable flag
 		case HARDWARE_SUTTER_DAC:
 			HW_SU_CloseDevice(deviceID, flags = flags)
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -236,6 +245,9 @@ Function HW_WriteDAC(variable hardwareType, variable deviceID, variable channel,
 			break
 		case HARDWARE_SUTTER_DAC:
 			HW_SU_WriteDAC(deviceID, channel, value, flags = flags)
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -265,6 +277,9 @@ Function HW_ReadADC(variable hardwareType, variable deviceID, variable channel, 
 			break
 		case HARDWARE_SUTTER_DAC:
 			return HW_SU_ReadADC(deviceID, channel, flags = flags)
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -307,6 +322,9 @@ Function HW_ReadDigital(variable hardwareType, variable deviceID, variable chann
 			break
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not yet implemented")
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -347,6 +365,9 @@ Function HW_WriteDigital(variable hardwareType, variable deviceID, variable chan
 			break
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not yet implemented")
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -367,6 +388,9 @@ Function HW_EnableYoking(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not implemented")
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -386,6 +410,9 @@ Function HW_DisableYoking(variable hardwareType, variable deviceID, [variable fl
 		case HARDWARE_NI_DAC: // intended drop through
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not implemented")
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -412,6 +439,9 @@ Function HW_StopAcq(variable hardwareType, variable deviceID, [variable prepareF
 		case HARDWARE_SUTTER_DAC:
 			HW_SU_StopAcq(deviceID, zeroDAC = zeroDAC, flags = flags)
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -437,6 +467,9 @@ Function HW_IsRunning(variable hardwareType, variable deviceID, [variable flags]
 		case HARDWARE_SUTTER_DAC:
 			device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 			return HW_SU_IsRunning(device)
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -463,6 +496,9 @@ Function/WAVE HW_GetDeviceInfo(variable hardwareType, variable deviceID, [variab
 			break
 		case HARDWARE_SUTTER_DAC:
 			return GetSUDeviceInfo()
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -583,6 +619,9 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 			deviceInfo[%Rack]  = NaN
 			deviceInfo[%AuxAD] = str2num(devInfoHWText[%AI])
 			deviceInfo[%AuxDA] = str2num(devInfoHWText[%AO])
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -2318,6 +2357,9 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 					TTLWaves[ttlCnt] = NIDataWave[i]
 					ttlCnt          += 1
 					break
+				default:
+					ASSERT(0, "Unsupported channel type")
+					break
 			endswitch
 		endfor
 
@@ -2369,6 +2411,9 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 				break
 			case 8:
 				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6], TTLWaves[7]} TTLStr; AbortOnRTE
+				break
+			default:
+				ASSERT(0, "Unsupported TTL count")
 				break
 		endswitch
 		NVAR taskIDTTL = $GetNI_TTLTaskID(device)
@@ -3372,6 +3417,9 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 					Redimension/N=(DimSize(SUChannel, ROWS)) ttlComposite
 				endif
 				MultiThread ttlComposite[] += SUChannel[p] * (1 << channelNumber)
+				break
+			default:
+				ASSERT(0, "Unsupported channel type")
 				break
 		endswitch
 	endfor

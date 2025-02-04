@@ -20,6 +20,8 @@ Function TUD_RemoveUserDataWave(STRUCT WMWinHookStruct &s)
 		case EVENT_WINDOW_HOOK_KILL:
 			TUD_Clear(s.winName)
 			break
+		default:
+			break
 	endswitch
 
 	// we always return zero here as other window hooks

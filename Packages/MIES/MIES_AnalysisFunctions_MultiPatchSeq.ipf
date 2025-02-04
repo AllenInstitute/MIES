@@ -528,10 +528,10 @@ Function/S MSQ_FastRheoEst_CheckParam(string name, STRUCT CheckParametersStruct 
 				return "Not valid."
 			endif
 			break
+		default:
+			// other parameters are not checked
+			return ""
 	endswitch
-
-	// other parameters are not checked
-	return ""
 End
 
 /// @brief Analysis function to find the smallest DAScale where the cell spikes
@@ -1054,10 +1054,10 @@ Function/S MSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Wave must neither have NaNs nor Infs"
 			endif
 			break
+		default:
+			// other parameters are not checked
+			return ""
 	endswitch
-
-	// other parameters are not checked
-	return ""
 End
 
 /// @brief Analysis function to apply a list of DAScale values to a range of sweeps

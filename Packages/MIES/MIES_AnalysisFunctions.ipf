@@ -278,6 +278,9 @@ Function MeasureMidSweepTiming_V3(string device, STRUCT AnalysisFunction_V3 &s)
 
 			lastCall = GetReferenceTime()
 			break
+		default:
+			// do nothing
+			break
 	endswitch
 
 	return 0

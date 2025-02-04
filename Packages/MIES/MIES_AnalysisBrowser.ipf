@@ -1008,6 +1008,9 @@ static Function/S AB_LoadLabNotebookFromFile(string discLocation)
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			deviceList = AB_LoadLabNotebookFromNWB(map[%DiscLocation])
 			break
+		default:
+			ASSERT(0, "Unsupported file type")
+			break
 	endswitch
 
 	return deviceList
@@ -2660,6 +2663,8 @@ Function AB_ButtonProc_ExpandAll(STRUCT WMButtonAction &ba) : ButtonControl
 			AB_ExpandListColumn(EXPERIMENT_TREEVIEW_COLUMN)
 			AB_ExpandListColumn(DEVICE_TREEVIEW_COLUMN)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2673,6 +2678,8 @@ Function AB_ButtonProc_CollapseAll(STRUCT WMButtonAction &ba) : ButtonControl
 			AB_CheckPanelVersion(ba.win)
 			AB_CollapseListColumn(DEVICE_TREEVIEW_COLUMN)
 			AB_CollapseListColumn(EXPERIMENT_TREEVIEW_COLUMN)
+			break
+		default:
 			break
 	endswitch
 
@@ -2701,6 +2708,8 @@ Function AB_ButtonProc_LoadSweeps(STRUCT WMButtonAction &ba) : ButtonControl
 				KillWindow $graph
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2713,6 +2722,8 @@ Function AB_ButtonProc_LoadBoth(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2:
 			PGC_SetAndActivateControl(ba.win, "button_load_stimsets")
 			PGC_SetAndActivateControl(ba.win, "button_load_sweeps")
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2731,6 +2742,8 @@ Function AB_ButtonProc_LoadStimsets(STRUCT WMButtonAction &ba) : ButtonControl
 			if(oneValidStimset)
 				WBP_CreateWaveBuilderPanel()
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -2783,6 +2796,8 @@ Function AB_ButtonProc_Refresh(STRUCT WMButtonAction &ba) : ButtonControl
 
 			AB_UpdateColors()
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2817,6 +2832,8 @@ Function AB_ButtonProc_OpenFolders(STRUCT WMButtonAction &ba) : ButtonControl
 			endfor
 			KillPath/Z $symbPath
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2843,6 +2860,8 @@ Function AB_ButtonProc_Remove(STRUCT WMButtonAction &ba) : ButtonControl
 			endfor
 			AB_SaveSourceListInSettings()
 
+			break
+		default:
 			break
 	endswitch
 
@@ -2882,6 +2901,8 @@ Function AB_ButtonProc_AddFolder(STRUCT WMButtonAction &ba) : ButtonControl
 			Make/FREE/T wFolder = {folder}
 			AB_AddExperimentEntries(ba.win, wFolder)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2919,6 +2940,8 @@ Function AB_ButtonProc_AddFiles(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 			WAVE/T selFiles = ListToTextWave(fileList, "\r")
 			AB_AddFiles(ba.win, selFiles)
+			break
+		default:
 			break
 	endswitch
 
@@ -3009,6 +3032,8 @@ Function AB_ButtonProc_SelectStimSets(STRUCT WMButtonAction &ba) : ButtonControl
 			endfor
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3056,6 +3081,8 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 			endif
 			AB_UpdateColors()
 
+			break
+		default:
 			break
 	endswitch
 
@@ -3141,6 +3168,8 @@ Function AB_ButtonProc_OpenCommentNB(STRUCT WMButtonAction &ba) : ButtonControl
 			NewNoteBook/K=1/F=0/OPTS=(2^2 + 2^3)/N=$commentNotebook/W=(0, 0, 300, 400) as titleString
 			ReplaceNotebookText(commentNotebook, comment)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3180,6 +3209,8 @@ Function AB_ButtonProc_ResaveAsNWB(STRUCT WMButtonAction &ba) : ButtonControl
 
 				AB_ReExport(i, overwrite)
 			endfor
+			break
+		default:
 			break
 	endswitch
 End
@@ -3504,6 +3535,8 @@ Function AB_WindowHook(STRUCT WMWinHookStruct &s)
 			AB_MemoryFreeMappedDF()
 			AB_RemoveEmptyWorkingDF()
 
+			break
+		default:
 			break
 	endswitch
 

@@ -633,6 +633,8 @@ Function OVS_CheckBoxProc_HS_Select(STRUCT WMCheckboxAction &cba) : CheckBoxCont
 
 			OVS_EndIncrementalUpdate(win, updateHandle)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -969,6 +971,8 @@ Function OVS_MainListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 				PostPlotTransformations(win, POST_PLOT_REMOVED_SWEEPS, additionalData = {index})
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -979,6 +983,8 @@ Function OVS_PopMenuProc_Select(STRUCT WMPopupAction &pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			OVS_ChangeSweepSelection(pa.win, pa.popStr)
+			break
+		default:
 			break
 	endswitch
 
@@ -996,6 +1002,8 @@ Function OVS_SetVarProc_SelectionRange(STRUCT WMSetVariableAction &sva) : SetVar
 			win    = sva.win
 			popStr = GetPopupMenuString(win, "popup_overlaySweeps_select")
 			OVS_ChangeSweepSelection(win, popStr)
+			break
+		default:
 			break
 	endswitch
 

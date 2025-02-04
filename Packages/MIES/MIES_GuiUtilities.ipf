@@ -869,9 +869,10 @@ Function GetAxisOrientation(string graph, string axes)
 		case "top":
 			return AXIS_ORIENTATION_TOP
 			break
+		default:
+			DoAbortNow("unknown axis type")
+			break
 	endswitch
-
-	DoAbortNow("unknown axis type")
 End
 
 /// @brief Return the recreation macro for an axis
@@ -2429,6 +2430,8 @@ Function ResizeControlsSafe(STRUCT WMWinHookStruct &s)
 			if(isFreeDFR)
 				SetDataFolder dfr
 			endif
+			break
+		default:
 			break
 	endswitch
 

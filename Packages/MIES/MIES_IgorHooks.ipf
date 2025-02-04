@@ -381,6 +381,8 @@ Function IH_ResetScaling(STRUCT WMWinHookStruct &s)
 				SetAxis/W=$win/A
 			endfor
 			break
+		default:
+			break
 	endswitch
 
 	// return zero so that other hooks are called as well

@@ -265,6 +265,8 @@ Function BSP_SweepFormulaHook(STRUCT WMWinHookStruct &s)
 			endif
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -649,6 +651,8 @@ Function BSP_ClosePanelHook(STRUCT WMWinHookStruct &s)
 			BSP_HidePanel(s.winName)
 
 			return 2 // don't kill window
+		default:
+			break
 	endswitch
 
 	return 0
@@ -681,6 +685,8 @@ Function BSP_SweepsAndMouseWheel(STRUCT WMWinHookStruct &s)
 
 			PGC_SetAndActivateControl(scPanel, ctrl)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -697,6 +703,8 @@ Function BSP_CheckBoxProc_ArtRemoval(STRUCT WMCheckBoxAction &cba) : CheckBoxCon
 			BSP_SetARControlStatus(mainPanel)
 			UpdateSweepPlot(mainPanel)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -711,6 +719,8 @@ Function BSP_CheckBoxProc_PerPulseAver(STRUCT WMCheckBoxAction &cba) : CheckBoxC
 		case 2: // mouse up
 			mainPanel = GetMainWindow(cba.win)
 			PA_Update(mainPanel, POST_PLOT_FULL_UPDATE)
+			break
+		default:
 			break
 	endswitch
 
@@ -727,6 +737,8 @@ Function BSP_CheckBoxProc_SweepFormula(STRUCT WMCheckBoxAction &cba) : CheckBoxC
 			mainPanel = GetMainWindow(cba.win)
 			BSP_SetSFControlStatus(mainPanel)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -741,6 +753,8 @@ Function BSP_ButtonProc_Panel(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			win = GetMainWindow(ba.win)
 			BSP_UnHidePanel(win)
+			break
+		default:
 			break
 	endswitch
 
@@ -765,6 +779,8 @@ Function BSP_TimeAlignmentProc(STRUCT WMCheckBoxAction &cba) : CheckBoxControl
 		case 2: // mouse up
 			UpdateSettingsPanel(cba.win)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -773,6 +789,8 @@ Function BSP_TimeAlignmentPopup(STRUCT WMPopupAction &pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			UpdateSettingsPanel(pa.win)
+			break
+		default:
 			break
 	endswitch
 
@@ -786,6 +804,8 @@ Function BSP_TimeAlignmentLevel(STRUCT WMSetVariableAction &sva) : SetVariableCo
 		case 2: // Enter key
 		case 3: // Live update
 			UpdateSettingsPanel(sva.win)
+			break
+		default:
 			break
 	endswitch
 
@@ -808,6 +828,8 @@ Function BSP_DoTimeAlignment(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 
 			PostPlotTransformations(graph, POST_PLOT_FULL_UPDATE)
+			break
+		default:
 			break
 	endswitch
 
@@ -840,6 +862,8 @@ Function BSP_CheckProc_ScaleAxes(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 			BSP_ScaleAxes(graph)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -859,6 +883,8 @@ Function BSP_AxisScalingLevelCross(STRUCT WMSetVariableAction &sva) : SetVariabl
 			if(GetCheckBoxState(bsPanel, "check_Display_EqualYignore"))
 				BSP_ScaleAxes(graph)
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -1189,6 +1215,8 @@ Function BSP_CheckProc_ChangedSetting(STRUCT WMCheckBoxAction &cba) : CheckBoxCo
 
 			UpdateSweepPlot(graph)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1241,6 +1269,8 @@ Function BSP_ButtonProc_RestoreData(STRUCT WMButtonAction &ba) : ButtonControl
 
 			UpdateSweepPlot(graph)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1258,6 +1288,8 @@ Function BSP_CheckProc_OverlaySweeps(STRUCT WMCheckBoxAction &cba) : CheckBoxCon
 			BSP_SetOVSControlStatus(bsPanel)
 			OVS_UpdatePanel(graph, fullUpdate = 1)
 
+			break
+		default:
 			break
 	endswitch
 
@@ -1405,6 +1437,8 @@ Function BSP_ButtonProc_ChangeSweep(STRUCT WMButtonAction &ba) : ButtonControl
 			if(!overlaySweeps)
 				UpdateSweepPlot(graph)
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -1721,6 +1755,8 @@ Function BSP_SFHelpWindowHook(STRUCT WMWinHookStruct &s)
 				SetWindow $mainWin, userData($BSP_USER_DATA_SF_CONTENT_CRC)=num2istr(contentCRC)
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	// return zero so that other hooks are called as well
@@ -1860,6 +1896,8 @@ Function BSP_WindowHook(STRUCT WMWinHookStruct &s)
 			endtry
 
 			break
+		default:
+			break
 	endswitch
 
 	// return zero so that other hooks are called as well
@@ -1892,6 +1930,8 @@ Function/S BSP_RenameAndSetTitle(string win, string newName)
 	switch(BSP_GetBrowserMode(win))
 		case BROWSER_MODE_AUTOMATION:
 			modeSuffix = " (A*U*T*O*M*A*T*I*O*N)"
+			break
+		default:
 			break
 	endswitch
 

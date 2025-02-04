@@ -139,6 +139,9 @@ Function DQM_FIFOMonitor(STRUCT BackgroundStruct &s)
 				endif
 
 				break
+			default:
+				ASSERT(0, "Invalid hardware mode")
+				break
 		endswitch
 
 		SCOPE_UpdateOscilloscopeData(device, DATA_ACQUISITION_MODE, deviceID = deviceID, fifoPos = fifoLatest)

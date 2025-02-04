@@ -841,6 +841,9 @@ Function/WAVE GetDAQDataWave(string device, variable mode)
 			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:$name/WAVE=wv_ni
 			WAVE wv = wv_ni
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 
 	SetStringInWaveNote(wv, TP_PROPERTIES_HASH, "n. a.")
@@ -1311,6 +1314,9 @@ Function/S GetDevSpecLabNBFolderAsString(string device)
 			break
 		case HARDWARE_ITC_DAC:
 			return GetLabNotebookFolderAsString() + ":" + deviceType + ":Device" + deviceNumber
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End

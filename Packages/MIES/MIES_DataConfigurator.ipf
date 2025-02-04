@@ -193,6 +193,9 @@ static Function DC_ChannelCalcForDAQConfigWave(string device, variable dataAcqOr
 			endif
 			return numDACs + numADCs + numTTLs
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 
 	return NaN
@@ -312,6 +315,9 @@ Function DC_CalculateDAQDataWaveLengthImpl(variable dataLength, variable hardwar
 		case HARDWARE_SUTTER_DAC: // intended drop-through
 
 			return dataLength
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 
@@ -504,6 +510,9 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 			WAVE/WAVE SUDataWave = GetDAQDataWave(device, dataAcqOrTP)
 			sampleIntervalADC = DimDelta(SUDataWave[numDACs], ROWS) * ONE_TO_MILLI
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 
 	tpLength      = (dataAcqOrTP == DATA_ACQUISITION_MODE) ? TPSettingsCalc[%totalLengthPointsDAQ_ADC] : TPSettingsCalc[%totalLengthPointsTP_ADC]
@@ -543,6 +552,9 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 			case HARDWARE_SUTTER_DAC:
 				numRows   = DimSize(SUDataWave[numDACs], ROWS)
 				pointsAcq = numRows
+				break
+			default:
+				ASSERT(0, "Unsupported hardware type")
 				break
 		endswitch
 
@@ -886,6 +898,9 @@ static Function DC_PlaceDataInDAQConfigWave(string device, variable dataAcqOrTP)
 					endif
 				endfor
 				break
+			default:
+				ASSERT(0, "Unsupported hardware type")
+				break
 		endswitch
 	endif
 
@@ -1081,6 +1096,9 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset + ITCRackZeroChecked] =                                           \
 				            limit((TTLWaveITC[round(s.decimationFactor * (p - startOffset))] >> NUM_ITC_TTL_BITS_PER_RACK) & bitMask, minLimit, maxLimit); AbortOnRTE
 			endif
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -1340,6 +1358,9 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 						FastOp NIChannel = (NaN)
 					endfor
 					break
+				default:
+					ASSERT(0, "Unsupported hardware type")
+					break
 			endswitch
 		else
 			if(IsWaveRefWave(DAQDataWave))
@@ -1405,6 +1426,9 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 				SetStringInWaveNote(NISUDataWave, TP_PROPERTIES_HASH, key, recursive = 1)
 				CA_StoreEntryIntoCache(key, NISUDataWave)
 				break
+			default:
+				ASSERT(0, "Invalid hardware type")
+				break
 		endswitch
 	endif
 End
@@ -1458,6 +1482,9 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						NIChannel[DimSize(NIChannel, ROWS) - cutOff, *] = 0
 					endif
 					break
+				default:
+					ASSERT(0, "Unsupported hardware type")
+					break
 			endswitch
 		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 			DAScale = s.DACAmp[i][%DASCALE] * s.gains[i]
@@ -1504,6 +1531,9 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						MultiThread NIChannel[0, s.testPulseLength - 1] =                       \
 						            limit(tpAmp * s.testPulse[p], minLimit, maxLimit); AbortOnRTE
 					endif
+					break
+				default:
+					ASSERT(0, "Unsupported hardware type")
 					break
 			endswitch
 		else

@@ -97,6 +97,9 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 			case CHUNKS:
 				wv[][][][oldSizes[CHUNKS],] = initialValue
 				break
+			default:
+				ASSERT_TS(0, "Unsupported dimension")
+				break
 		endswitch
 	endif
 
@@ -569,6 +572,8 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 				case CHUNKS:
 					Duplicate/FREE/R=[][][][index] srcWave, dstWave
 					break
+				default:
+					break
 			endswitch
 
 			ReduceWaveDimensionality(dstWave, minDimension = dimension)
@@ -755,6 +760,9 @@ Function DeleteWavePoint(WAVE wv, variable dim, [variable index, WAVE indices])
 					break
 				case 3:
 					Redimension/N=(-1, -1, -1, 0) wv
+					break
+				default:
+					ASSERT(0, "Invalid dimension")
 					break
 			endswitch
 		endif
@@ -1205,6 +1213,9 @@ Function DuplicateWaveAndKeepTargetRef(WAVE/Z source, WAVE/Z target)
 			break
 		case 4:
 			Redimension/N=(DimSize(source, ROWS), DimSize(source, COLS), DimSize(source, LAYERS), DimSize(source, CHUNKS)) target
+			break
+		default:
+			ASSERT(0, "Invalid wave dimension")
 			break
 	endswitch
 

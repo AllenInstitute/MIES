@@ -92,6 +92,9 @@ static Function TPM_BkrdTPMD(string device)
 		case HARDWARE_SUTTER_DAC:
 			HW_StartAcq(HARDWARE_SUTTER_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 	if(!IsBackgroundTaskRunning(TASKNAME_TPMD))
 		CtrlNamedBackground $TASKNAME_TPMD, start
@@ -244,6 +247,9 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 					ActiveDeviceList[i][%ActiveChunk] = lastTP
 				endif
 
+				break
+			default:
+				ASSERT(0, "Unsupported hardware type")
 				break
 		endswitch
 

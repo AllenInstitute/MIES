@@ -906,6 +906,9 @@ Function/S SC_SpikeControl_CheckParam(string name, STRUCT CheckParametersStruct 
 				return "Invalid value " + num2str(val)
 			endif
 			break
+		default:
+			// no checks for other parameters
+			break
 	endswitch
 
 	strswitch(name)

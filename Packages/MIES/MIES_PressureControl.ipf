@@ -2131,6 +2131,8 @@ Function ButtonProc_Approach(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			P_SetApproach(ba.win, ba.ctrlName)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2152,6 +2154,8 @@ Function ButtonProc_Seal(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			P_UpdatePressureMode(ba.win, PRESSURE_METHOD_SEAL, ba.ctrlName, 1)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2164,6 +2168,8 @@ Function ButtonProc_BreakIn(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			P_UpdatePressureMode(ba.win, PRESSURE_METHOD_BREAKIN, ba.ctrlName, 1)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2175,6 +2181,8 @@ Function ButtonProc_Clear(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			P_UpdatePressureMode(ba.win, PRESSURE_METHOD_CLEAR, ba.ctrlName, 0)
+			break
+		default:
 			break
 	endswitch
 
@@ -2207,6 +2215,8 @@ Function CheckProc_ClearEnable(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 				DisableControl(cba.win, "button_DataAcq_Clear")
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2232,6 +2242,8 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(STRUCT WMButtonAction &ba) : ButtonContr
 
 			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_dev", list = filteredList)
 			SetPopupMenuVal(ba.win, "popup_Settings_UserPressure", list = filteredList)
+			break
+		default:
 			break
 	endswitch
 
@@ -2261,6 +2273,8 @@ Function P_ButtonProc_Enable(STRUCT WMButtonAction &ba) : ButtonControl
 			P_Enable()
 			P_UpdatePressureDataStorageWv(device)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2272,6 +2286,8 @@ Function P_ButtonProc_Disable(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			P_Disable()
+			break
+		default:
 			break
 	endswitch
 
@@ -2285,6 +2301,8 @@ Function ButtonProc_DataAcq_ManPressSet(STRUCT WMButtonAction &ba) : ButtonContr
 		case 2: // mouse up
 			P_SetManual(ba.win, ba.ctrlname)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2297,6 +2315,8 @@ Function ButtonProc_ManPP(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			variable headStage = DAG_GetNumericalValue(ba.win, "slider_DataAcq_ActiveHeadstage")
 			P_ManPressurePulse(ba.win, headStage)
+			break
+		default:
 			break
 	endswitch
 
@@ -2312,6 +2332,8 @@ Function P_Check_ApproachNear(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			P_UpdatePressureDataStorageWv(cba.win)
 			P_RunP_ControlIfTPOFF(cba.win)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2324,6 +2346,8 @@ Function P_Check_SealAtm(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			DAP_AbortIfUnlocked(cba.win)
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			P_UpdatePressureDataStorageWv(cba.win)
+			break
+		default:
 			break
 	endswitch
 
@@ -2395,6 +2419,8 @@ Function P_ButtonProc_UserPressure(STRUCT WMButtonAction &ba) : ButtonControl
 			else
 				ASSERT(0, "Invalid ctrl")
 			endif
+			break
+		default:
 			break
 	endswitch
 

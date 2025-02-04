@@ -45,6 +45,8 @@ Function ValidFunc_V1(string device, variable eventType, WAVE DAQDataWave, varia
 		case HARDWARE_NI_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 	endswitch
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
@@ -75,6 +77,8 @@ Function ValidFunc_V2(string device, variable eventType, WAVE DAQDataWave, varia
 		case HARDWARE_NI_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 	endswitch
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
@@ -119,6 +123,8 @@ Function ValidMultHS_V1(string device, variable eventType, WAVE DAQDataWave, var
 		case HARDWARE_SUTTER_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 	endswitch
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
@@ -400,6 +406,8 @@ Function ValidFunc_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT] - 1)
 			CHECK_WAVE(GetSweepWave(device, s.sweepNo), TEXT_WAVE)
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 	endswitch
 
 	// the next sweep can not exist
@@ -517,9 +525,9 @@ Function/S Params5_V3_GetHelp(string name)
 		case "MyNum":
 			ASSERT(0, "trying to bug out")
 			break
+		default:
+			return ""
 	endswitch
-
-	return ""
 End
 
 Function/S Params5_V3_GetParams()
@@ -857,6 +865,8 @@ Function ModifyStimSet(string device, STRUCT AnalysisFunction_V3 &s)
 				ST_SetStimsetParameter("AnaFuncModStim_DA_0", "Duration", epochIndex = 0, var = var + 1)
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -874,6 +884,8 @@ Function StopMidSweep_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, 0, 1e9, "key=value")
 
 			return ANALYSIS_FUNC_RET_EARLY_STOP
+		default:
+			break
 	endswitch
 
 	return 0
@@ -888,6 +900,8 @@ Function AddTooLargeUserEpoch_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			DAC = AFH_GetDACFromHeadstage(device, s.headstage)
 			WAVE/T epochWave = GetEpochsWave(device)
 			EP_AddUserEpoch(epochWave, XOP_CHANNEL_TYPE_DAC, DAC, 0, 1e9, "key=value")
+			break
+		default:
 			break
 	endswitch
 End
@@ -925,7 +939,8 @@ Function ChangeTPSettings(string device, STRUCT AnalysisFunction_V3 &s)
 			endif
 			break
 		default:
-		// do nothing
+			// do nothing
+			break
 	endswitch
 End
 
@@ -946,7 +961,8 @@ Function SetSweepFormula(string device, STRUCT AnalysisFunction_V3 &s)
 			ReplaceNotebookText(sweepFormulaNB, code)
 			break
 		default:
-		// do nothing
+			// do nothing
+			break
 	endswitch
 End
 
@@ -965,6 +981,8 @@ Function BreakConfigWave(string device, STRUCT AnalysisFunction_V3 &s)
 
 				return ANALYSIS_FUNC_RET_EARLY_STOP
 			endif
+			break
+		default:
 			break
 	endswitch
 End
@@ -1008,7 +1026,8 @@ Function EnableIndexing(string device, STRUCT AnalysisFunction_V3 &s)
 			PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = CHECKBOX_SELECTED)
 			break
 		default:
-		// do nothing
+			// do nothing
+			break
 	endswitch
 End
 
@@ -1022,6 +1041,9 @@ Function AddUserEpochsForTPLike(string device, STRUCT AnalysisFunction_V3 &s)
 			if(ret)
 				return 1
 			endif
+		default:
+			// do nothing
+			break
 	endswitch
 End
 
@@ -1053,7 +1075,8 @@ Function DashboardAnaFunc(string device, STRUCT AnalysisFunction_V3 &s)
 			ED_AddEntryToLabnotebook(device, key, setPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 			break
 		default:
-		// do nothing
+			// do nothing
+			break
 	endswitch
 End
 

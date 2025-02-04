@@ -2820,6 +2820,9 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			// but actually only need if passing or not
 			dataRhSuAd[] = !!dataRhSuAd[p]
 			break
+		default:
+			// no fixup required
+			break
 	endswitch
 
 	if(filterPassing)
@@ -3609,6 +3612,8 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "The minimum/maximum spike counts are not ordered properly"
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	// check that all three are present
@@ -3621,6 +3626,8 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			   || IsNaN(AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)))
 				return "One of MinimumSpikeCount/MaximumSpikeCount/DAScaleModifier is not present"
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -3946,6 +3953,8 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 					WAVE/ZZ DAScales = futureDAScales
 					break
+				default:
+					ASSERT(0, "Invalid opMode")
 			endswitch
 
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
@@ -4264,6 +4273,8 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 		case POST_DAQ_EVENT:
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
+			break
+		default:
 			break
 	endswitch
 
@@ -5004,6 +5015,8 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
+		default:
+			break
 	endswitch
 
 	if(s.eventType != MID_SWEEP_EVENT)
@@ -5265,6 +5278,8 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 		case POST_DAQ_EVENT:
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
+			break
+		default:
 			break
 	endswitch
 
@@ -6405,6 +6420,8 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
+		default:
+			break
 	endswitch
 
 	if(s.eventType != MID_SWEEP_EVENT)
@@ -7043,6 +7060,8 @@ Function PSQ_PipetteInBath(string device, STRUCT AnalysisFunction_V3 &s)
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
+		default:
+			break
 	endswitch
 
 	if(s.eventType != MID_SWEEP_EVENT)
@@ -7626,6 +7645,8 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -8018,6 +8039,8 @@ Function PSQ_TrueRestingMembranePotential(string device, STRUCT AnalysisFunction
 
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
+			break
+		default:
 			break
 	endswitch
 
@@ -8707,6 +8730,8 @@ Function PSQ_AccessResistanceSmoke(string device, STRUCT AnalysisFunction_V3 &s)
 
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
+			break
+		default:
 			break
 	endswitch
 

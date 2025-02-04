@@ -215,6 +215,9 @@ static Function/WAVE PSX_GetCheckboxStatesFromSpecialPanel(string win, string tr
 			states[%all] = 0
 			last         = DimSize(states, ROWS) - 2
 			break
+		default:
+			ASSERT(0, "Unknown trace type")
+			break
 	endswitch
 
 	specialEventPanel = PSX_GetSpecialPanel(win)
@@ -4276,6 +4279,8 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 			browser = SFH_GetBrowserForFormulaGraph(s.winName)
 			PSX_StoreGuiState(win, browser)
 			return 0
+		default:
+			break
 	endswitch
 
 	return 0
@@ -4325,6 +4330,8 @@ Function PSX_AllEventGraphHook(STRUCT WMWinHookStruct &s)
 			PSX_ReactToKeyPressWithoutMouse(win, s.keyCode, comboIndex, eventIndex)
 
 			return 1
+			break
+		default:
 			break
 	endswitch
 End
@@ -5273,6 +5280,8 @@ Function PSX_ButtonProc_StoreEvents(STRUCT WMButtonAction &ba) : ButtonControl
 
 			PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, eventContainer, id)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5313,6 +5322,8 @@ Function PSX_ButtonProc_LoadEvents(STRUCT WMButtonAction &ba) : ButtonControl
 
 				PSX_UpdateEventWaves(graph, writeState = 0, comboIndex = i)
 			endfor
+			break
+		default:
 			break
 	endswitch
 End
@@ -5362,6 +5373,8 @@ Function PSX_ButtonProcJumpFirstUndet(STRUCT WMButtonAction &ba) : ButtonControl
 			endfor
 
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5384,6 +5397,8 @@ Function PSX_ListBoxSelectCombo(STRUCT WMListBoxAction &lba) : ListboxControl
 
 			PSX_SetCombo(lba.win, row)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5392,6 +5407,8 @@ Function PSX_CopyHelpToClipboard(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse down
 			PutScrapText ba.userData
+			break
+		default:
 			break
 	endswitch
 End
@@ -5403,6 +5420,8 @@ Function PSX_CheckboxProcSuppressUpdate(STRUCT WMCheckboxAction &cba) : Checkbox
 			if(!cba.checked)
 				PSX_UpdateAllEventGraph(cba.win, forceAverageUpdate = 1, forceSingleEventUpdate = 1)
 			endif
+			break
+		default:
 			break
 	endswitch
 End
@@ -5416,6 +5435,8 @@ Function PSX_PopupMenuState(STRUCT WMPopupAction &cba) : PopupMenuControl
 			forceSingleEventOffsetUpdate = !cmpstr(cba.ctrlName, "popupmenu_event_offset")
 			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1, forceSingleEventOffsetUpdate = forceSingleEventOffsetUpdate)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5424,6 +5445,8 @@ Function PSX_CheckboxProcAllEventPlotUpdate(STRUCT WMCheckboxAction &cba) : Chec
 	switch(cba.eventCode)
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1)
+			break
+		default:
 			break
 	endswitch
 End
@@ -5434,6 +5457,8 @@ Function PSX_CheckboxProcChangeRestrictCurrentCombo(STRUCT WMCheckboxAction &cba
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5443,6 +5468,8 @@ Function PSX_CheckboxProcFitAcceptAverage(STRUCT WMCheckboxAction &cba) : Checkb
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5451,6 +5478,8 @@ Function PSX_PopupMenuBlockNumber(STRUCT WMPopupAction &cba) : PopupMenuControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceAverageUpdate = 1)
+			break
+		default:
 			break
 	endswitch
 End
@@ -5463,6 +5492,8 @@ Function PSX_SetVarBlockSize(STRUCT WMSetVariableAction &sva) : SetVariableContr
 		case 3: // Live update
 			PSX_UpdateAllEventGraph(sva.win, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5471,6 +5502,8 @@ Function PSX_PopupFitAcceptAverageFunc(STRUCT WMPopupAction &cba) : PopupMenuCon
 	switch(cba.eventCode)
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceAverageUpdate = 1)
+			break
+		default:
 			break
 	endswitch
 End
