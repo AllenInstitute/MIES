@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_TIME
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_Time.ipf
 /// @brief utility functions for time/date related operations

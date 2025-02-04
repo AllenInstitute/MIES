@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SFH_HELPERS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_SweepFormula_Helpers.ipf
 ///
@@ -324,9 +324,9 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 #if exists("INFO")
 		INFO("SFH_ASSERT: %s", s0 = error)
 #endif
-#endif
+#endif // AUTOMATED_TESTING
 		Debugger
-#endif
+#endif // AUTOMATED_TESTING_DEBUGGING
 		Abort
 	endif
 End
@@ -687,7 +687,7 @@ Function SFH_CleanUpInput(WAVE input)
 		return NaN
 	endif
 	KillOrMoveToTrash(wv = input)
-#endif
+#endif // !SWEEPFORMULA_DEBUG
 End
 
 Function SFH_AddOpToOpStack(WAVE w, string oldStack, string opShort)
@@ -754,7 +754,7 @@ Function/WAVE SFH_GetOutputForExecutor(WAVE output, string win, string opShort, 
 
 #ifdef SWEEPFORMULA_DEBUG
 	SFH_ConvertAllReturnDataToPermanent(output, win, opShort)
-#endif
+#endif // SWEEPFORMULA_DEBUG
 
 	return wRefPath
 End

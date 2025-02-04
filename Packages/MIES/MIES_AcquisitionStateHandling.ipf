@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_ACQSTATE
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AcquisitionStateHandling.ipf
 /// @brief __AS__ Acquisition state handling
@@ -75,7 +75,7 @@ Function AS_HandlePossibleTransition(string device, variable newAcqState, [varia
 
 #ifdef AUTOMATED_TESTING
 	AS_RecordStateTransition(oldAcqState, newAcqState)
-#endif
+#endif // AUTOMATED_TESTING
 
 	if(!AS_CheckStateTransition(oldAcqState, newAcqState))
 		sprintf msg, "The state transition %s -> %s is not expected.", AS_StateToString(oldAcqState), AS_StateToString(newAcqState)

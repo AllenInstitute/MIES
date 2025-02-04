@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DAQ_SD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DataAcquisition_Single.ipf
 /// @brief __DQS__ Routines for Single Device Data acquisition

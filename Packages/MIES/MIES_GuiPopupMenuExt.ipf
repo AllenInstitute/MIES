@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_GUIPOPUPEXT
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_GuiPopupMenuExt.ipf
 /// @brief Helper functions related to GUI controls

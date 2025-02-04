@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AFM
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctionManagement.ipf
 /// @brief __AFM__ Analysis functions routines

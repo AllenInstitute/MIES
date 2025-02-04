@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_GUI
-#endif
+#endif // AUTOMATED_TESTING
 
 #include <Axis Utilities>
 

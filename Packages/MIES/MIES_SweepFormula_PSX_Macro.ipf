@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_PSXM
-#endif
+#endif // AUTOMATED_TESTING
 
 Window PSXPanel() : Panel
 	PauseUpdate; Silent 1 // building window...

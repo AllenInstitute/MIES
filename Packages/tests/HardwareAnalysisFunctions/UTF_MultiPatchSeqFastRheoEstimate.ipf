@@ -1092,7 +1092,7 @@ static Function MSQ_FRE11_REENTRY([string str])
 	sweepNo = 38
 #else
 	sweepNo = 39
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 
 	numEntries = sweepNo + 1
 

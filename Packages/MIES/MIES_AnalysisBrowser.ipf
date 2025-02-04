@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AB
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisBrowser.ipf
 /// @brief __AB__ Analysis browser

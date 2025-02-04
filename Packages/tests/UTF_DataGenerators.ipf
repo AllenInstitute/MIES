@@ -60,22 +60,22 @@ Function/WAVE DeviceNameGeneratorMD1()
 #ifdef TESTS_WITH_NI_HARDWARE
 	devList = AddListItem("Dev1", devList, ":")
 	lblList = AddListItem("NI", lblList)
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 
 #ifdef TESTS_WITH_ITC18USB_HARDWARE
 	devList = AddListItem("ITC18USB_Dev_0", devList, ":")
 	lblList = AddListItem("ITC", lblList)
-#endif
+#endif // TESTS_WITH_ITC18USB_HARDWARE
 
 #ifdef TESTS_WITH_ITC1600_HARDWARE
 	devList = AddListItem("ITC1600_Dev_0", devList, ":")
 	lblList = AddListItem("ITC1600", lblList)
-#endif
+#endif // TESTS_WITH_ITC1600_HARDWARE
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
 	devList = AddListItem("IPA_E_100170", devList, ":")
 	lblList = AddListItem("SUTTER", lblList)
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 	WAVE data = ListToTextWave(devList, ":")
 	for(i = 0; i < DimSize(data, ROWS); i += 1)
@@ -91,21 +91,21 @@ Function/WAVE DeviceNameGeneratorMD0()
 	// NI Hardware has no single device support
 	Make/FREE/T/N=0 data
 	return data
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
 	// SUTTER Hardware has no single device support
 	Make/FREE/T/N=0 data
 	return data
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 #ifdef TESTS_WITH_ITC18USB_HARDWARE
 	return DeviceNameGeneratorMD1()
-#endif
+#endif // TESTS_WITH_ITC18USB_HARDWARE
 
 #ifdef TESTS_WITH_ITC1600_HARDWARE
 	return DeviceNameGeneratorMD1()
-#endif
+#endif // TESTS_WITH_ITC1600_HARDWARE
 
 End
 
@@ -163,12 +163,12 @@ Function/WAVE GetITCDevices()
 #ifdef TESTS_WITH_NI_HARDWARE
 	Make/FREE/T/N=0 wv
 	return wv
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
 	Make/FREE/T/N=0 wv
 	return wv
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 	return DeviceNameGeneratorMD1()
 End
@@ -315,8 +315,8 @@ static Function/WAVE EpochTestSamplingFrequencyTTL_Gen()
 #else
 #ifdef TESTS_WITH_ITC1600_HARDWARE
 	wTemp[] = wTemp[p] == 100 ? NaN : wTemp[p]
-#endif
-#endif
+#endif // TESTS_WITH_ITC1600_HARDWARE
+#endif // TESTS_WITH_ITC18USB_HARDWARE
 
 	WAVE w = ZapNaNs(wTemp)
 

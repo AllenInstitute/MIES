@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_LIST
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_List.ipf
 /// @brief utility functions for lists

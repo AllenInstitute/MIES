@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_PSQ
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctions_PatchSeq.ipf
 /// @brief __PSQ__ Analysis functions for patch sequence
@@ -891,7 +891,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 #ifdef AUTOMATED_TESTING
 			repurposedTime = 0.5
-#endif
+#endif // AUTOMATED_TESTING
 			return ANALYSIS_FUNC_RET_REPURP_TIME
 		elseif(!leakCurPassedAll)
 			return ANALYSIS_FUNC_RET_EARLY_STOP
@@ -1905,7 +1905,7 @@ static Function PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(string device,
 #else
 	// dimension delta [ms]
 	actual = 1.0 / (s.sampleIntervalAD * MILLI_TO_ONE)
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 	// samplingFrequency [kHz]
 	expected = samplingFrequency * KILO_TO_ONE

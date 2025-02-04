@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SBE
-#endif
+#endif // AUTOMATED_TESTING
 
 static StrConstant SBE_EXPORT_PANEL = "ExportSettingsPanel"
 

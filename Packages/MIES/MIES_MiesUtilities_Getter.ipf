@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_GETTER
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Getter.ipf
 /// @brief This file holds MIES utility functions that get names/objects

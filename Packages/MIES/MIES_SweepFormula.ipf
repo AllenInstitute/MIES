@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SF
-#endif
+#endif // AUTOMATED_TESTING
 
 // to enable debug mode with more persistent data
 // #define SWEEPFORMULA_DEBUG
@@ -351,7 +351,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	if(DP_DebuggingEnabledForCaller())
 		printf "%sformula %s\r", indentation, formula
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 	WAVE/T wFormula = UTF8StringToTextWave(formula)
 	if(!DimSize(wFormula, ROWS))
@@ -366,7 +366,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		if(DP_DebuggingEnabledForCaller())
 			printf "%stoken %s, state %s, lastCalculation %s, ", indentation, token, PadString(SF_StringifyState(state), 25, 0x20), PadString(SF_StringifyState(lastCalculation), 25, 0x20)
 		endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 		[action, lastState, collectedSign] = SF_ParserGetActionFromState(jsonId, state, lastCalculation, IsEmpty(buffer))
 
@@ -374,7 +374,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		if(DP_DebuggingEnabledForCaller())
 			printf "action %s, lastState %s\r", PadString(SF_StringifyAction(action), 25, 0x20), PadString(SF_StringifyState(lastState), 25, 0x20)
 		endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 		if(action != SF_ACTION_SKIP && lastAction == SF_ACTION_ARRAY)
 			// If the last action was the handling of "]" from an array
@@ -840,7 +840,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		printf "%s\r", JSON_Dump(jsonID, indent = 2)
 		printf "##########################\r"
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 	// object and array evaluation
 	JSONtype = JSON_GetType(jsonID, jsonPath)
@@ -1020,7 +1020,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 			ASSERT(GetRowIndex(ops, str = opName) >= 0, "List of operations with long name is out of date as the following is missing: " + opName)
 			break
 	endswitch
-#endif
+#endif // AUTOMATED_TESTING
 
 	/// @name SweepFormulaOperations
 	///@{
@@ -3252,7 +3252,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 	if(DP_DebuggingEnabledForCaller())
 		debugMode = 1
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 	WAVE/Z selectData = SFH_FilterSelect(selectDataPreFilter, XOP_CHANNEL_TYPE_ADC)
 	if(!WaveExists(selectData))
@@ -3349,7 +3349,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 			Make/FREE/D/N=(numTPs) beginTrails, endTrails
 			beginTrails = NaN
 			endTrails   = NaN
-#endif
+#endif // AUTOMATED_TESTING
 			for(j = 0; j < numTPs; j += 1)
 
 				epBaselineTrail = EP_GetShortName(epochMatches[j][EPOCH_COL_TAGS]) + "_B1"
@@ -3370,7 +3370,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 #ifdef AUTOMATED_TESTING
 				beginTrails[j] = beginTrail
 				endTrails[j]   = endTrail
-#endif
+#endif // AUTOMATED_TESTING
 
 				if(!CmpStr(retWhat, SF_OP_TPFIT_RET_FITQUALITY))
 					Duplicate/FREE sweepData, residuals
@@ -3453,7 +3453,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 #ifdef AUTOMATED_TESTING
 			JWN_SetWaveInWaveNote(fitResults, "/begintrails", beginTrails)
 			JWN_SetWaveInWaveNote(fitResults, "/endtrails", endTrails)
-#endif
+#endif // AUTOMATED_TESTING
 
 			if(!debugMode)
 				WAVE/D out = fitResults
@@ -4740,7 +4740,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 		endif
 #else
 		output[] = SF_PowerSpectrumRatio(inputRatio[p], ratioFreq, SF_POWERSPECTRUM_RATIO_DELTAHZ)
-#endif
+#endif // DEBUGGING_ENABLED
 	endif
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_POWERSPECTRUM, clear = input)
@@ -4785,7 +4785,7 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 	endif
 #else
 	FuncFit/Q SF_LineNoiseFit, kwCWave=wCoef, input(minFreq, maxFreq)/C=wConstraints; err = GetRTError(1)
-#endif
+#endif // DEBUGGING_ENABLED
 	MakeWaveFree($"W_sigma")
 
 	Redimension/N=1 input
@@ -4797,7 +4797,7 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 	endif
 #else
 	SetScale/P x, wCoef[3], 1, WaveUnits(input, ROWS), input
-#endif
+#endif // DEBUGGING_ENABLED
 
 	SetScale/P d, 0, 1, "power ratio", input
 
@@ -4817,7 +4817,7 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 	if(DP_DebuggingEnabledForCaller())
 		printf "PS ratio, peak position, baseline, peak amplitude : %f %f %f %f\r", input[0], wCoef[3], base, wCoef[2]
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 	return input
 End
 

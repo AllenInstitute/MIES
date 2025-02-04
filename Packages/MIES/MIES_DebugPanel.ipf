@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DebugPanel.ipf
 ///

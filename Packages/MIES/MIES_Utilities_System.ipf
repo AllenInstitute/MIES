@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_SYSTEM
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_System.ipf
 /// @brief utility functions for system operations
@@ -122,7 +122,7 @@ Function/S GetIgorExecutable()
 	return path + "Igor64.exe"
 #else
 	return path + "Igor.exe"
-#endif
+#endif // IGOR64
 End
 
 /// @brief Return the number of bits of the architecture

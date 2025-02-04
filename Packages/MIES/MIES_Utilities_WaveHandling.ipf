@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_WAVEHANDLING
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_WaveHandling.ipf
 /// @brief utility functions for wave handling

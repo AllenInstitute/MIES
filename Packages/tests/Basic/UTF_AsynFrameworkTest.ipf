@@ -658,7 +658,7 @@ static Function TASYNC_StopForAssert()
 	ASYNC_Stop(timeout = 1, fromAssert = 1)
 End
 
-#endif
+#endif // !THREADING_DISABLED
 
 /// @brief Test if ASYNC_Execute triggers execution and data is returned through readout.
 /// this test uses a worker returning no data folder
@@ -1054,7 +1054,7 @@ static Function TASYNC_StopTimeOutForce()
 	PASS()
 End
 
-#endif
+#endif // !THREADING_DISABLED
 
 /// @brief Test if a direct stop after pushing mixed workloads finishes all readouts properly on stopping attempt
 static Function TASYNC_IODiffWLDirectStop()

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_P
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_PressureControl.ipf
 /// @brief __P__ Supports use of analog pressure regulators controlled via a

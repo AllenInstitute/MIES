@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_CA
-#endif
+#endif // AUTOMATED_TESTING
 
 // #define CACHE_DEBUGGING
 
@@ -533,7 +533,7 @@ threadsafe Function CA_StoreEntryIntoCache(string key, WAVE val, [variable optio
 
 #ifdef WAVECACHE_DISABLED
 	return NaN
-#endif
+#endif // WAVECACHE_DISABLED
 
 	if(ParamIsDefault(options))
 		storeDuplicate = 1
@@ -608,7 +608,7 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(string key, [variable opti
 
 #ifdef WAVECACHE_DISABLED
 	return $""
-#endif
+#endif // WAVECACHE_DISABLED
 
 	if(ParamIsDefault(options))
 		returnDuplicate = 1
@@ -623,7 +623,7 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(string key, [variable opti
 	if(!IsFinite(index))
 #ifdef CACHE_DEBUGGING
 		DEBUGPRINT_TS("Could not find a cache entry for key=", str = key)
-#endif
+#endif // CACHE_DEBUGGING
 		return $""
 	endif
 
@@ -635,7 +635,7 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(string key, [variable opti
 	if(!WaveExists(cache))
 #ifdef CACHE_DEBUGGING
 		DEBUGPRINT_TS("Could not find a valid wave for key=", str = key)
-#endif
+#endif // CACHE_DEBUGGING
 		// invalidate cache entry due to non existent wave,
 		// this can happen for unpacked experiments which don't store free waves
 		keys[index] = ""
@@ -647,7 +647,7 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(string key, [variable opti
 
 #ifdef CACHE_DEBUGGING
 	DEBUGPRINT_TS("Found cache entry for key=", str = key)
-#endif
+#endif // CACHE_DEBUGGING
 
 	if(returnDuplicate)
 		if(IsWaveRefWave(cache))

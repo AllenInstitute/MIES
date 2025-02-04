@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_DEVICE
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Device.ipf
 /// @brief This file holds MIES utility functions for Device handling

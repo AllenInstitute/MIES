@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_GUI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_GuiUtilities.ipf
 /// @brief Helper functions related to GUI controls

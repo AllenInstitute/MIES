@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_UPLOADS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Uploads.ipf
 /// @brief This file holds MIES utility functions for data upload
@@ -19,7 +19,7 @@ Function UploadCrashDumpsDaily()
 
 #ifdef AUTOMATED_TESTING
 	return NaN
-#endif
+#endif // AUTOMATED_TESTING
 
 	AssertOnAndClearRTError()
 	try
@@ -50,7 +50,7 @@ Function UploadLogFilesDaily()
 
 #ifdef AUTOMATED_TESTING
 	return NaN
-#endif
+#endif // AUTOMATED_TESTING
 
 	AssertOnAndClearRTError()
 	try
@@ -97,7 +97,7 @@ Function UploadPingPeriodically()
 
 #ifdef AUTOMATED_TESTING
 	return NaN
-#endif
+#endif // AUTOMATED_TESTING
 
 	if(!GetUserPingEnabled())
 		return NaN
@@ -210,7 +210,7 @@ Function UploadCrashDumps()
 
 #ifndef DEBUGGING_ENABLED
 	MoveFolder/P=$basePath "Diagnostics" as UniqueFileOrFolder(basePath, "Diagnostics_old")
-#endif // DEBUGGING_ENABLED
+#endif // !DEBUGGING_ENABLED
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 

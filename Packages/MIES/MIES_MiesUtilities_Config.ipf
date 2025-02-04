@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_CONFIG
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Config.ipf
 /// @brief This file holds MIES utility functions for the config wave

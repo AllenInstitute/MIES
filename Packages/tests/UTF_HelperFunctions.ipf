@@ -243,7 +243,7 @@ Function AdjustAnalysisParamsForPSQ(string device, string stimset)
 	multiplier = 1
 #else
 	multiplier = 4
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 	AFH_AddAnalysisParameter(stimset, "SamplingMultiplier", var = multiplier)
 	AFH_AddAnalysisParameter(stimset, "SamplingFrequency", var = samplingFrequency)
 End
@@ -1165,7 +1165,7 @@ Function DoExpensiveChecks()
 
 #ifdef AUTOMATED_TESTING_EXPENSIVE
 	return 1
-#endif
+#endif // AUTOMATED_TESTING_EXPENSIVE
 
 	expensive = GetEnvironmentVariableAsBoolean("CI_EXPENSIVE_CHECKS")
 

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_CHECKS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Checks.ipf
 /// @brief This file holds MIES utility functions for checks

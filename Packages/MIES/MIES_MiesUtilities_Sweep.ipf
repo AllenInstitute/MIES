@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_SWEEP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Sweep.ipf
 /// @brief This file holds MIES utility functions for working with sweeps

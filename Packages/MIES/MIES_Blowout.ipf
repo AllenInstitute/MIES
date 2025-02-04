@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_BWO
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Blowout.ipf
 /// @brief __BWO__ Automates amplifier configuration and acquisition of the sweep used to measure drift in the zero calibration of the amplifer.

@@ -41,7 +41,7 @@ static Function FetchAndParseMessage(string filter)
 	endfor
 	print "///"
 	print "/// \\endrst"
-#endif
+#endif // OUTPUT_DOCUMENTATION_JSON_DUMP
 
 	return jsonID
 End

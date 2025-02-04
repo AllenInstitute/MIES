@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_Labnotebook
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @brief Set column dimension labels from the first row of the key wave
 Function LBN_SetDimensionLabels(WAVE/T keys, WAVE values, [variable start])

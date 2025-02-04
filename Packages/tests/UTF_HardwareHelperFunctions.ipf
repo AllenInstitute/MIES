@@ -96,7 +96,7 @@ Function TEST_CASE_END_OVERRIDE(string name)
 #ifndef TESTS_WITH_NI_HARDWARE
 	DQ_StopOngoingDAQAllLocked(DQ_STOP_REASON_INVALID)
 	TP_StopTestPulseOnAllDevices()
-#endif
+#endif // !TESTS_WITH_NI_HARDWARE
 
 	expensiveChecks = DoExpensiveChecks()
 
@@ -1461,7 +1461,7 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 	endif
 
 	WAVE deviceInfo = GetDeviceInfoWave(device)
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1470,7 +1470,7 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 		if(s.hs[i] == 0)
 #ifndef TESTS_WITH_SUTTER_HARDWARE
 			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-#endif
+#endif // !TESTS_WITH_SUTTER_HARDWARE
 			continue
 		endif
 
@@ -1486,16 +1486,16 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 		PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = num2str(s.da[i]))
 		PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = num2str(s.ad[i]))
 		PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = num2str(s.ad[i]))
-#endif
+#endif // !TESTS_WITH_SUTTER_HARDWARE
 
 		if(s.aso[i] != 1)
 #ifdef TESTS_WITH_SUTTER_HARDWARE
 			INFO("Unassociated channel %d is setup on an existing HS", n0 = i)
 			CHECK_GT_VAR(i + 1, deviceInfo[%DA])
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 #ifndef TESTS_WITH_SUTTER_HARDWARE
 			PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
-#endif
+#endif // !TESTS_WITH_SUTTER_HARDWARE
 			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 			PGC_SetAndActivateControl(device, ctrl, val = 1)
 			ctrl = GetPanelControl(s.da[i], CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
@@ -1522,7 +1522,7 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 		CHECK_EQUAL_VAR(i, s.da[i])
 		INFO("Requested AD channel %d for HS %d does not match fixed AD channel of Sutter HW setup", n0 = s.ad[i], n1 = i)
 		CHECK_EQUAL_VAR(i, s.ad[i])
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 		if(s.amp && activeHS < 2)
 			// first entry is none
@@ -1698,7 +1698,7 @@ Function GetMinSamplingInterval([string unit])
 	return factor * HARDWARE_SU_MIN_SAMPINT_ADC
 #else
 	return factor * HARDWARE_ITC_MIN_SAMPINT
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 End
 
 /// @brief Open a DAEphys panel and lock it to the given device
@@ -1744,7 +1744,7 @@ Function StartFakeThreadMonitor_IGNORE(string device, variable fixedFifoPos)
 	BUG("Fake thread monitor and no threading is not supported.")
 #else
 	ThreadStart tgID, 0, FakeThreadMonitor_IGNORE(fixedFifoPos)
-#endif
+#endif // THREADING_DISABLED
 End
 
 threadsafe static Function FakeThreadMonitor_IGNORE(variable fixedFifoPos)

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DB
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DataBrowser.ipf
 /// @brief __DB__ Panel for browsing acquired data during acquisition

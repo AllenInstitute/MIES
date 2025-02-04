@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SCOPE
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Oscilloscope.ipf
 /// @brief __SCOPE__ Scope window handling for data acquisition and testpulse results
@@ -820,7 +820,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(string device, variable dataAcqOrTP
 			Cursor/W=DAQDataWaveTPMD/H=2/P A, $NameOfWave(DAQDataWave), first
 			Cursor/W=DAQDataWaveTPMD/H=2/P B, $NameOfWave(DAQDataWave), last
 		endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 		Multithread OscilloscopeData[][startOfADColumns, endOfADColumns - 1] = DAQDataWave[first + p][q] / allGain[q]
 		for(i = startOfADColumns; i < endOfADColumns; i += 1)

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_LBV
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_LogbookViewer.ipf
 /// @brief __LBV__ Panel for browsing the labnotebook and TPStorage waves

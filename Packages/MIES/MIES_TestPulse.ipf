@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_TestPulse.ipf
 /// @brief __TP__ Basic Testpulse related functionality
@@ -468,7 +468,7 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 		WAVE data      = root:AutoTPDebuggingData
 		WAVE residuals = root:Res_AutoTPDebuggingData
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 	if(!debugEnabled)
 		Duplicate/FREE data, residuals

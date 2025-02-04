@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AF
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctions.ipf
 /// @brief __AF__ Analysis functions to be called during data acquisition
@@ -1193,7 +1193,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 			if(WaveExists(overrideResults))
 				resistanceFitted[] = overrideResults[p][%Resistance] * MEGA_TO_ONE
 			endif
-#endif
+#endif // AUTOMATED_TESTING
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 

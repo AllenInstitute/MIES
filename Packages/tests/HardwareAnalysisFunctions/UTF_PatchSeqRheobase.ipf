@@ -1090,7 +1090,7 @@ static Function PS_RB12_preAcq(string device)
 	SetFinalDAScale(3999e-12)
 #else
 	SetFinalDAScale(4090e-12)
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
@@ -1142,7 +1142,7 @@ static Function PS_RB12_REENTRY([string str])
 	finalDAScale = 3999e-12
 #else
 	finalDAScale = 4090e-12
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 
 	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
 	Make/FREE/D/N=(numEntries) stimScaleRef = (p * PSQ_RB_DASCALE_STEP_LARGE + finalDAScale) * ONE_TO_PICO

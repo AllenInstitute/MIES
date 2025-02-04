@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TFM
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_ThreadedFIFOHandling.ipf
 /// @brief __TFH__ Functions related to threadsafe FIFO monitor and stop daemons
@@ -53,7 +53,7 @@ static Function TFH_StartFIFODeamonInternal(variable hwType, variable deviceID, 
 	BUG("Data acquisition with ITC hardware and no threading is not supported.")
 #else
 	ThreadStart tgID, 0, TFH_FifoLoop(config, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
-#endif
+#endif // THREADING_DISABLED
 
 End
 

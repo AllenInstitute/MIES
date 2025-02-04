@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_RECREATION
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Recreation.ipf
 /// @brief This file holds MIES utility functions for sweep and config wave recreation

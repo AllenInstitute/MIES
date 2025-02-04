@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_ID
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_InputDialog.ipf
 /// @brief __ID__ Input dialog handling for numeric entries

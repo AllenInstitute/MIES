@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_SamplingInterval.ipf
 ///
@@ -478,7 +478,7 @@ static Function SI_TestSampInt(string device)
 	DEBUGPRINT("Unimplemented")
 End
 
-#endif
+#endif // ITC_XOP_PRESENT
 
 /// @brief Calculate the minimum sampling interval
 ///

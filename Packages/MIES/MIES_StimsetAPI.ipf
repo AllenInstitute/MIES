@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_STAPI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_StimsetAPI.ipf
 /// @brief __ST__ Stimulus set API

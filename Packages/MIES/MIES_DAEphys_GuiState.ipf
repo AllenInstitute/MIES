@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DAG
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DAEphys_GuiState.ipf
 /// @brief __DAG__ Routines dealing with the DA_Ephys GUI state waves

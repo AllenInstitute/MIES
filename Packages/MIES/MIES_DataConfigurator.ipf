@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DC
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DataConfigurator.ipf
 /// @brief __DC__ Handle preparations before data acquisition or

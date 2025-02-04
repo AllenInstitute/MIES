@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_LOGBOOK
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Logbook.ipf
 /// @brief This file holds MIES utility functions for working with the various Logbooks.
@@ -1266,7 +1266,7 @@ threadsafe static Function EnforceIndependentSetting(WAVE settings)
 #ifdef AUTOMATED_TESTING
 	Duplicate/FREE/RMD=[0, NUM_HEADSTAGES - 1] settings, settingsHS
 	ASSERT_TS(!HasOneValidEntry(settingsHS) || IsConstant(settings, settings[0]), "The labnotebook query asked for independent headstage setting, but the entry has headstage dependent settings.")
-#endif
+#endif // AUTOMATED_TESTING
 End
 
 /// @brief Find the first and last point index of a consecutive range of

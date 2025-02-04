@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DOWN
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Downsample.ipf
 /// @brief Panel for downsampling acquired data

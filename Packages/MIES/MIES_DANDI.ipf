@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DANDI
-#endif
+#endif // AUTOMATED_TESTING
 
 static Function/S DND_GetDestinationIgorPath()
 

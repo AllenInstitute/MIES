@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_IH
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_IgorHooks.ipf
 /// @brief __IH__ Various hooks which influence the behaviour at certain global events
@@ -176,7 +176,7 @@ static Function IH_Cleanup()
 
 #ifdef AUTOMATED_TESTING
 	HW_ITC_CloseAllDevices()
-#endif
+#endif // AUTOMATED_TESTING
 
 	ResetDebuggerState(debuggerState)
 
@@ -342,7 +342,7 @@ static Function AfterCompiledHook()
 	endif
 End
 
-#endif
+#endif // MIES_PXP_NWB_CONVERSION_SKIP_SAVING
 
 Function IH_ResetScaling(STRUCT WMWinHookStruct &s)
 

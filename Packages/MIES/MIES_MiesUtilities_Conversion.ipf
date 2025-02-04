@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_CONVERSION
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Conversion.ipf
 /// @brief This file holds MIES utility functions for conversions
@@ -260,6 +260,6 @@ Function MapAnaFuncToConstant(string anaFunc)
 			return TEST_ANALYSIS_FUNCTION
 #else
 			return INVALID_ANALYSIS_FUNCTION
-#endif
+#endif // AUTOMATED_TESTING
 	endswitch
 End

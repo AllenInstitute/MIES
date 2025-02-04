@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TP_MD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @brief After this time in s the background task reading data from the ADC device
 /// @brief will not read multiple TP data sets subsequently to keep up if late

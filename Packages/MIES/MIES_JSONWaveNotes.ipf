@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_JSONWAVENOTE
-#endif
+#endif // AUTOMATED_TESTING
 
 static Constant JWN_DEFAULT_RELEASE = 1
 

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_NUMERIC
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_Numeric.ipf
 /// @brief utility functions for numerical operations

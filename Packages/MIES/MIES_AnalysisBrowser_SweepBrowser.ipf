@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SB
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisBrowser_SweepBrowser.ipf
 /// @brief __SB__  Visualization of sweep data in the analysis browser
@@ -45,7 +45,7 @@ static Function SB_GetSweepIndexFromMap(WAVE/T sweepMap, variable sweepNo)
 		ASSERT(V_row == -1, "Found results for multiple experiments")
 	endif
 	V_row = dummy
-#endif
+#endif // AUTOMATED_TESTING
 
 	return V_row == -1 ? NaN : V_row
 End

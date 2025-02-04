@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_IDX
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Indexing.ipf
 /// @brief __IDX__ Indexing related functionality

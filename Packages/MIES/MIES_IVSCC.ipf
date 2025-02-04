@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_IVSCC
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_IVSCC.ipf
 /// @brief __IVS__ Routines for IVSCC/PatchSeq automation

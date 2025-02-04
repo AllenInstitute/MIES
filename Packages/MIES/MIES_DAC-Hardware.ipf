@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_HW
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DAC-Hardware.ipf
 /// @brief __HW__ Low level hardware configuration and querying functions
@@ -480,7 +480,7 @@ Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device,
 
 #ifdef EVIL_KITTEN_EATING_MODE
 	return $""
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -529,19 +529,19 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 	if(hardwareType == HARDWARE_ITC_DAC)
 		return NaN
 	endif
-#endif
+#endif // !ITC_XOP_PRESENT
 
 #ifndef NIDAQMX_XOP_PRESENT
 	if(hardwareType == HARDWARE_NI_DAC)
 		return NaN
 	endif
-#endif
+#endif // !NIDAQMX_XOP_PRESENT
 
 #ifndef SUTTER_XOP_PRESENT
 	if(hardwareType == HARDWARE_SUTTER_DAC)
 		return NaN
 	endif
-#endif
+#endif // !SUTTER_XOP_PRESENT
 
 	deviceID = ROVar(GetDAQDeviceID(device))
 
@@ -662,7 +662,7 @@ static Function HW_IsValidHardwareType(variable hardwareType)
 	return hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_ITC_DAC || hardwareType == HARDWARE_SUTTER_DAC
 #else
 	return 1
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 End
 
 /// @brief Check if the given device ID is valid
@@ -674,7 +674,7 @@ static Function HW_IsValidDeviceID(variable deviceID)
 	return deviceID >= 0 && deviceID < HARDWARE_MAX_DEVICES
 #else
 	return 1
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 End
 
 /// @brief Register an opened device in our device map
@@ -955,7 +955,7 @@ Function/S HW_ITC_ListDevices()
 #elif defined(TESTS_WITH_ITC1600_HARDWARE)
 	return HW_ITC_BuildDeviceString("ITC1600", "0")
 #endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 
 	numTypes      = ItemsInList(DEVICE_TYPES_ITC)
 	numberPerType = ItemsInList(DEVICE_NUMBERS)
@@ -971,7 +971,7 @@ Function/S HW_ITC_ListDevices()
 		device = HW_ITC_BuildDeviceString(type, "0")
 		list   = AddListItem(device, list, ";", Inf)
 		continue
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 		tries = 0
 		do
@@ -1069,7 +1069,7 @@ threadsafe Function HW_ITC_HandleReturnValues(variable flags, variable ITCError,
 #else
 	ClearRTError()
 	return 0
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 End
 
 /// @brief Return the error message for the given ITC XOP2 error code
@@ -1184,7 +1184,7 @@ Function HW_ITC_OpenDevice(variable deviceType, variable deviceNumber, [variable
 			endif
 		endif
 	endfor
-#endif
+#endif // AUTOMATED_TESTING
 
 	do
 		ITCOpenDevice2/DTN=(deviceType)/Z=1 deviceNumber
@@ -1223,7 +1223,7 @@ Function HW_ITC_CloseDevice(variable deviceID, [variable flags])
 
 #ifdef AUTOMATED_TESTING
 	return NaN
-#endif
+#endif // AUTOMATED_TESTING
 
 	if(HW_ITC_SelectDevice(deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE))
 		do
@@ -1989,7 +1989,7 @@ Function HW_ITC_SetLoggingTemplate(string template, [variable flags])
 	DEBUGPRINT("Unimplemented")
 End
 
-#endif
+#endif // ITC_XOP_PRESENT
 
 Function/WAVE HW_WAVE_GETTER_PROTOTYPE(string str)
 
@@ -2339,7 +2339,7 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1 wavegenStr; AbortOnRTE
 #else
 		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1/CLK={clkStr, 0} wavegenStr; AbortOnRTE
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 		NVAR taskIDDAC = $GetNI_DACTaskID(device)
 		taskIDDAC = 1
 
@@ -2698,7 +2698,7 @@ Function/S HW_NI_ListDevices([variable flags])
 #elif defined(TESTS_WITH_SUTTER_HARDWARE)
 	return ""
 #endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 
 	return fDAQmx_DeviceNames()
 End
@@ -3155,7 +3155,7 @@ Function/S HW_SU_ListDevices([variable flags])
 #elif defined(TESTS_WITH_NI_HARDWARE)
 	return ""
 #endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 
 	WAVE/T deviceInfo = GetSUDeviceInfo()
 
@@ -3216,8 +3216,8 @@ Function HW_SU_GetDeviceInfo(WAVE/T deviceInfo)
 #ifdef AUTOMATED_TESTING
 #ifndef TESTS_WITH_SUTTER_HARDWARE
 	return NaN
-#endif
-#endif
+#endif // !TESTS_WITH_SUTTER_HARDWARE
+#endif // AUTOMATED_TESTING
 
 	if(!IsEmpty(deviceInfo[%NUMBEROFDACS]))
 		return NaN

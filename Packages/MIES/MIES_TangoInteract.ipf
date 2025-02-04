@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_TangoInteract.ipf
 ///

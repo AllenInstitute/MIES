@@ -2807,4 +2807,4 @@ static Function PAT_ImagePlotSortOrder()
 	endfor
 End
 
-#endif
+#endif // AUTOMATED_TESTING

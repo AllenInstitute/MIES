@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_IVSCCM
-#endif
+#endif // AUTOMATED_TESTING
 
 Window IVSCCControlPanel() : Panel
 	PauseUpdate; Silent 1 // building window...

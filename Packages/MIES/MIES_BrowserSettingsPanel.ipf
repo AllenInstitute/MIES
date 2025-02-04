@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_BSP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_BrowserSettingsPanel.ipf
 /// @brief __BSP__ Panel for __DB__ and __AB__ (SweepBrowser) that combines different settings in a tabcontrol.

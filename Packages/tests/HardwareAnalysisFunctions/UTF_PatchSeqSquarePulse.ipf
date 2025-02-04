@@ -727,7 +727,7 @@ static Function PS_SP10_REENTRY([string str])
 #else
 	sweepNo       = 39
 	numEntriesRef = sweepNo + 1
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 

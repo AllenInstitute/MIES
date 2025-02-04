@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_DEBUGGER
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_Debugger.ipf
 /// @brief utility functions for debugger

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_PSX
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_SweepFormula_PSX.ipf
 ///
@@ -523,7 +523,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 
 			overrideSignQC = overrideResults[i][%$comboKey][%KernelAmpSignQC]
 		endif
-#endif
+#endif // AUTOMATED_TESTING
 
 		if(IsNaN(overrideSignQC))
 			if(sign(amplitude) != sign(kernelAmp))
@@ -829,7 +829,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 			decayTau = overrideTau
 		endif
 	endif
-#endif
+#endif // AUTOMATED_TESTING
 
 	if(err)
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
@@ -1739,7 +1739,7 @@ threadsafe static Function PSX_CalculateRiseTime(WAVE sweepDataOffFilt, WAVE psx
 
 		printf "comboKey: %s, x: [%g, %g], y: [%g, %g], index: %d, dY: %g, thresholds: [%g, %g], levels: [%g, %g], risetime: %g, xlt: %g, xupt: %g\r", comboKey, xStart, xEnd, yStart, yEnd, index, dY, lowerThreshold, upperThreshold, lowerLevel, upperLevel, risetime, xlt, xupt
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 	return riseTime
 End
@@ -1775,7 +1775,7 @@ threadsafe static Function PSX_CalculateOnsetTime(WAVE sweepDataDiff, WAVE psxEv
 	DEBUGPRINT_TS(msg)
 	sprintf msg, "level = %g, [%g, %g]\r", level, slewRate_t, baseline_t
 	DEBUGPRINT_TS(msg)
-#endif
+#endif // DEBUGGING_ENABLED
 
 	// search backwards in time
 	FindLevel/R=(slewRate_t, baseline_t)/Q sweepDataDiff, level
@@ -4241,7 +4241,7 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 
 			sprintf msg, "Fit range for event %d: [%g, %g]", eventIndex, first, last
 			DEBUGPRINT(msg)
-#endif
+#endif // DEBUGGING_ENABLED
 			return 1
 		case EVENT_WINDOW_HOOK_MOUSEUP:
 			win = s.winName

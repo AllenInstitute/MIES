@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_IDM
-#endif
+#endif // AUTOMATED_TESTING
 
 Window IDM_Headstage_Panel() : Panel
 	PauseUpdate; Silent 1 // building window...

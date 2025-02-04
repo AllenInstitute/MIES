@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AFH
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctionHelpers.ipf
 /// @brief __AFH__ Helper functions for analysis function writers
@@ -1021,7 +1021,7 @@ Function AFH_AddAnalysisParameterToParams(string &params, string name, [variable
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
 		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
 	endif
-#endif
+#endif // !AUTOMATED_TESTING
 
 	params = ReplaceStringByKey(name, params, type + "=" + value, ":", ",", 0)
 End

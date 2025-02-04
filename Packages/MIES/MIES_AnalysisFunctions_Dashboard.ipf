@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctions_Dashboard.ipf
 /// @brief __AD__ Dashboard for pass/fail style analysis functions

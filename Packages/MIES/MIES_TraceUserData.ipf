@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TUD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_TraceUserData.ipf
 /// @brief This file holds helper functions to work with our own trace user data handling

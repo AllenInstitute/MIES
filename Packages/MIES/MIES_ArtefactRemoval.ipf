@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AR
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_ArtefactRemoval.ipf
 /// @brief __AR__ Functions related to artefact removal

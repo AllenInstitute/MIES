@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_PROGRAMFLOW
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_ProgramFlow.ipf
 /// @brief utility functions for program flow
@@ -340,7 +340,7 @@ threadsafe Function MU_RunningInMainThread()
 	return V_value
 End
 
-#endif
+#endif // MACINTOSH
 
 /// @brief Return 1 if the function was already called with that argument, and 0 otherwise
 ///        As named use or create a constant in @sa CalledOnceNames

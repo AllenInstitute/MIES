@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_ACC
-#endif
+#endif // AUTOMATED_TESTING
 
 static Constant ACC_MAX = 1024
 

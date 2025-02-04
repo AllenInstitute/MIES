@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_DATAFOLDER
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_DataFolder.ipf
 /// @brief utility functions for datafolder handling

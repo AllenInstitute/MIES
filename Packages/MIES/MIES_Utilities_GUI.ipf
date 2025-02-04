@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_GUI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_GUI.ipf
 /// @brief utility functions for GUI
@@ -667,7 +667,7 @@ Function HasPanelLatestVersion(string win, variable expectedVersion)
 
 #ifdef EVIL_KITTEN_EATING_MODE
 	return 1
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 	version = GetPanelVersion(GetMainWindow(win))
 

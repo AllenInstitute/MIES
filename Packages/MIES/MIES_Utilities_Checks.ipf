@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_CHECKS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_Checks.ipf
 /// @brief Utility functions that check for certain properties and return either 1 (TRUE) or 0 (FALSE)

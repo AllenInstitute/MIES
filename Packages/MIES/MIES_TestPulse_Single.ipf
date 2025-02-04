@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TP_SD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_TestPulse_Single.ipf
 /// @brief __TPS__ Single device background test pulse functionality

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_ED
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_ExperimentDocumentation.ipf
 /// @brief __ED__ Writing numerical/textual information to the labnotebook
@@ -776,7 +776,7 @@ static Function ED_createAsyncWaveNoteTags(string device, variable sweepCount)
 			print time() + " !!!!!!!!!!!!! " + title + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
 			ControlWindowToFront()
 			beep
-#endif // AUTOMATED_TESTING
+#endif // !AUTOMATED_TESTING
 
 			redoLastSweep = 1
 		endif

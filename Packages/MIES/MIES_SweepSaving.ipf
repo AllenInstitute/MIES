@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SWS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_SweepSaving.ipf
 /// @brief __SWS__ Scale and store acquired data

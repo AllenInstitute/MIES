@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_BROWSER_PLOTTER
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Browser_Plotter.ipf
 /// @brief Functions for plotting DataBrowser/Sweepbrowser Graphs

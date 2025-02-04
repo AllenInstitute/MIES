@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_ALGORITHM
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_Algorithm.ipf
 /// @brief utility functions for common algorithms

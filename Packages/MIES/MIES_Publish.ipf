@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_PUB
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @brief Get a template for publishing messages
 ///

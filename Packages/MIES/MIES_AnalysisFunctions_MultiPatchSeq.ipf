@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MSQ
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctions_MultiPatchSeq.ipf
 /// @brief __MSQ__ Analysis functions for multi patch sequence

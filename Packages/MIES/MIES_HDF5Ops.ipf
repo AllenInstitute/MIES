@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_HD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_HDF5Ops.ipf
 ///

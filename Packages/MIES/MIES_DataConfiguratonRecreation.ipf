@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DCR
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DataConfiguratonRecreation.ipf
 /// @brief __DCR__ Functions for recreating the DataConfigurationResult structure from the labnotebook

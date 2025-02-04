@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_EP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Epochs.ipf
 /// @brief __EP__ Handle code relating to epoch information

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_LOGGING
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Logging.ipf
 /// @brief This file holds MIES utility functions for logging

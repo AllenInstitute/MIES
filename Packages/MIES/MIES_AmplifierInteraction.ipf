@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AmplifierInteraction.ipf
 /// @brief __AI__ Interface with the Axon/MCC amplifiers
@@ -1579,7 +1579,7 @@ Function AI_QueryGainsFromMCC(string device)
 			MCC_SetHoldingEnable(0)
 			clampModeSwitchAllowed = 1
 		endif
-#endif
+#endif // AUTOMATED_TESTING
 
 		if(clampModeSwitchAllowed)
 			old_clampMode = clampMode
@@ -1723,4 +1723,4 @@ Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable ax
 
 	DEBUGPRINT("Unimplemented")
 End
-#endif
+#endif // AMPLIFIER_XOPS_PRESENT

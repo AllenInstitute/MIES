@@ -54,22 +54,22 @@ static Function CheckNumberOfRacksAndTTLs([string str])
 #ifdef TESTS_WITH_ITC18USB_HARDWARE
 	numRacksRef = 1
 	numTTlsRef  = 4
-#endif
+#endif // TESTS_WITH_ITC18USB_HARDWARE
 
 #ifdef TESTS_WITH_ITC1600_HARDWARE
 	numRacksRef = 2
 	numTTlsRef  = 8
-#endif
+#endif // TESTS_WITH_ITC1600_HARDWARE
 
 #ifdef TESTS_WITH_NI_HARDWARE
 	numRacksRef = NaN
 	numTTlsRef  = 32
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
 	numRacksRef = NaN
 	numTTlsRef  = 8
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 	CHECK_EQUAL_VAR(numRacksRef, deviceInfo[%RACK])
 	CHECK_EQUAL_VAR(numTTLsRef, deviceInfo[%TTL])
@@ -123,8 +123,8 @@ static Function CheckGetDeviceInfoValid([string str])
 	CHECK_EQUAL_VAR(wv[%Rack], NaN)
 #else
 	CHECK_GE_VAR(wv[%Rack], 0)
-#endif
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
+#endif // TESTS_WITH_NI_HARDWARE
 
 	CHECK_EQUAL_VAR(wv[%HardwareType], GetHardwareType(str))
 End

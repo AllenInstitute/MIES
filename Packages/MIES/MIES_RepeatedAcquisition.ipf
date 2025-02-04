@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_RA
-#endif
+#endif // AUTOMATED_TESTING
 
 /// comment in to enable repeated acquisition performance measurement code
 // #define PERFING_RA
@@ -171,7 +171,7 @@ static Function RA_Start(string device)
 
 #ifdef PERFING_RA
 	RA_PerfInitialize(device)
-#endif
+#endif // PERFING_RA
 
 	numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
 
@@ -204,7 +204,7 @@ Function RA_Counter(string device)
 
 #ifdef PERFING_RA
 	RA_PerfAddMark(device, count)
-#endif
+#endif // PERFING_RA
 
 	sprintf str, "count=%d, activeSetCount=%d\r", count, activeSetCount
 	DEBUGPRINT(str)
@@ -239,7 +239,7 @@ static Function RA_FinishAcquisition(string device)
 
 #ifdef PERFING_RA
 	RA_PerfFinish(device)
-#endif
+#endif // PERFING_RA
 
 	DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_FINISHED)
 End
@@ -264,7 +264,7 @@ static Function RA_StartMD(string device)
 
 #ifdef PERFING_RA
 	RA_PerfInitialize(device)
-#endif
+#endif // PERFING_RA
 
 	RA_StepSweepsRemaining(device)
 
@@ -298,7 +298,7 @@ Function RA_CounterMD(string device)
 
 #ifdef PERFING_RA
 	RA_PerfAddMark(device, count)
-#endif
+#endif // PERFING_RA
 
 	sprintf str, "count=%d, activeSetCount=%d\r", count, activeSetCount
 	DEBUGPRINT(str)

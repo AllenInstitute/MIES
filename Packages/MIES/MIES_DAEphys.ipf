@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DAP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DAEphys.ipf
 /// @brief __DAP__ Main data acquisition panel routines
@@ -86,7 +86,7 @@ Function/S DAP_GetNIDeviceList()
 				endif
 			endif
 		endfor
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 	endfor
 
 	if(!IsEmpty(devList))
@@ -2075,7 +2075,7 @@ Function DAP_CheckSettings(string device, variable mode)
 		ControlWindowToFront()
 		return 1
 	endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 	if(!HasPanelLatestVersion(device, DA_EPHYS_PANEL_VERSION))
 		printf "(%s) The DA_Ephys panel is too old to be usable. Please close it and open a new one.\r", device
 		ControlWindowToFront()
@@ -2482,7 +2482,7 @@ static Function DAP_CheckPressureSettings(string device)
 			endif
 		endif
 	endif
-#endif // EVIL_KITTEN_EATING_MODE
+#endif // !EVIL_KITTEN_EATING_MODE
 
 	return 0
 End
@@ -2693,7 +2693,7 @@ static Function DAP_CheckHeadStage(string device, variable headStage, variable m
 		ControlWindowToFront()
 		return 1
 	endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 
 #ifndef EVIL_KITTEN_EATING_MODE
 	if(GetHardwareType(device) == HARDWARE_NI_DAC)
@@ -2705,7 +2705,7 @@ static Function DAP_CheckHeadStage(string device, variable headStage, variable m
 			return 1
 		endif
 	endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 
 	return 0
 End
@@ -4375,7 +4375,7 @@ Function DAP_LockDevice(string win)
 		print "EVIL_KITTEN_EATING_MODE is ON: Forcing deviceID to zero"
 		ControlWindowToFront()
 		deviceID = 0
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 	endif
 
 	DisableControls(win, "button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
@@ -4466,7 +4466,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 		forceEnable = 1
 #else
 		forceEnable = 0
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 	else
 		forceEnable = !!forceEnable
 	endif

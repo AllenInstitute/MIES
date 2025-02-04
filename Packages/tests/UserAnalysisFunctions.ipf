@@ -6,7 +6,7 @@
 #ifndef AUTOMATED_TESTING
 
 #define **error** Can only be used with automated testing
-#endif
+#endif // !AUTOMATED_TESTING
 
 Function CorrectFileMarker()
 
@@ -51,7 +51,7 @@ Function ValidFunc_V1(string device, variable eventType, WAVE DAQDataWave, varia
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 0)
 #else
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 1)
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 	CHECK_EQUAL_VAR(headstage, 0)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -81,7 +81,7 @@ Function ValidFunc_V2(string device, variable eventType, WAVE DAQDataWave, varia
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 0)
 #else
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 1)
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 	CHECK_EQUAL_VAR(headstage, 0)
 
 	hardwareType = GetHardWareType(device)
@@ -125,7 +125,7 @@ Function ValidMultHS_V1(string device, variable eventType, WAVE DAQDataWave, var
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 0)
 #else
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 1)
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
 	CHECK_GE_VAR(eventType, 0)

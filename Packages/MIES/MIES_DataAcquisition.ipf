@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DAQ
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DataAcquisition.ipf
 /// @brief __DQ__ Routines for Data acquisition

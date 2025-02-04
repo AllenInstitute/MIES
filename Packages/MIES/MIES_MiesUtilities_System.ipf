@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_SYSTEM
-#endif
+#endif // AUTOMATED_TESTING
 
 // @brief Common setup routine for all MIES background tasks for DAQ, TP and pressure control
 Function SetupBackgroundTasks()
