@@ -1,3 +1,6 @@
+#pragma TextEncoding="UTF-8"
+#pragma rtGlobals=3
+#pragma rtFunctionErrors=1
 
 Function StimsetAPIExample()
 
