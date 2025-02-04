@@ -327,10 +327,38 @@ Function IsWindows10Or11()
 	return GrepString(os, "^(Microsoft )?Windows 1[01]? ")
 End
 
+Function UploadJSONPayloadAsync(variable jsonID)
+
+	DFREF threadDFR = ASYNC_PrepareDF("UploadJSONPayloadAsyncWorker", "UploadJSONPayloadAsyncReadout", WORKLOADCLASS_URL, inOrder = 0)
+
+	ASYNC_AddParam(threadDFR, var = jsonID, name = "jsonID")
+
+	ASYNC_Execute(threadDFR)
+End
+
+threadsafe Function/DF UploadJSONPayloadAsyncWorker(DFREF threadDFR)
+
+	variable jsonID, ret
+
+	jsonID = ASYNC_FetchVariable(threadDFR, "jsonID")
+
+	ret = UploadJSONPayload(jsonID)
+
+	DFREF      dfrOut        = NewFreeDataFolder()
+	variable/G dfrOut:result = ret
+
+	return dfrOut
+End
+
+Function UploadJSONPayloadAsyncReadout(STRUCT ASYNC_ReadOutStruct &ar)
+
+	// nothing to do
+End
+
 /// @brief Upload the given JSON document and release it
 ///
 /// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
-Function UploadJSONPayload(variable jsonID)
+threadsafe Function UploadJSONPayload(variable jsonID)
 
 	variable skip
 

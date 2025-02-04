@@ -7593,7 +7593,7 @@ End
 /// This wave is created by MSQ_CreateOverrideResults(),
 /// PSQ_CreateOverrideResults(), TP_CreateOverrideResults(), CreateOverrideResults() and does also not
 /// follow our usual rules so it might not exist.
-Function/WAVE GetOverrideResults()
+threadsafe Function/WAVE GetOverrideResults()
 
 	DFREF dfr = root:
 	WAVE/Z/SDFR=dfr overrideResults
