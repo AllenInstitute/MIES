@@ -104,7 +104,6 @@ static Function TestUploadJsonPayload()
 
 	jsonID = JSON_New()
 	UploadJSONPayload(jsonID)
-	JSON_Release(jsonID)
 
 	[logs, retFilename] = LoadTextFile(filename)
 	CHECK_PROPER_STR(logs)

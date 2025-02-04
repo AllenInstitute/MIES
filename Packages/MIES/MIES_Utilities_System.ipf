@@ -327,7 +327,7 @@ Function IsWindows10Or11()
 	return GrepString(os, "^(Microsoft )?Windows 1[01]? ")
 End
 
-/// @brief Upload the given JSON document
+/// @brief Upload the given JSON document and release it
 ///
 /// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
 Function UploadJSONPayload(variable jsonID)
@@ -345,6 +345,8 @@ Function UploadJSONPayload(variable jsonID)
 		V_flag           = 1
 		S_ServerResponse = "fake error"
 	endif
+
+	JSON_Release(jsonID)
 
 	if(V_Flag)
 		LOG_AddEntry(PACKAGE_MIES, "URLRequest failed", keys = {"S_ServerResponse", "V_Flag"}, values = {S_ServerResponse, num2str(V_Flag)}, stacktrace = 1)

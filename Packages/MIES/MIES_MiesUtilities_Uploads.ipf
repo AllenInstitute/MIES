@@ -143,7 +143,6 @@ static Function UploadPing()
 	jsonID = GenerateJSONTemplateForUpload()
 	AddPayloadEntries(jsonID, {UPLOAD_BLOCK_USERPING}, {payload}, isBinary = 0)
 	UploadJSONPayload(jsonID)
-	JSON_Release(jsonID)
 
 	return err
 End
@@ -215,7 +214,6 @@ Function UploadCrashDumps()
 #endif // DEBUGGING_ENABLED
 
 	UploadJSONPayload(jsonID)
-	JSON_Release(jsonID)
 
 #ifndef DEBUGGING_ENABLED
 	MoveFolder/P=$basePath "Diagnostics" as UniqueFileOrFolder(basePath, "Diagnostics_old")
@@ -337,7 +335,6 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		UploadLogFilesPrint(out, verbose)
 		for(jsonID : jsonIDs)
 			ret = UploadJSONPayload(jsonID)
-			JSON_Release(jsonID)
 
 			if(ret)
 				sprintf out, "Error uploading the logfiles.\r"
