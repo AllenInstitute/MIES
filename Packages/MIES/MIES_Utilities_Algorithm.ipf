@@ -348,6 +348,8 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 			if(V_Value >= 0)
 				return V_Value
 			endif
+		else
+			ASSERT_TS(0, "Unsupported wave type")
 		endif
 	endif
 
