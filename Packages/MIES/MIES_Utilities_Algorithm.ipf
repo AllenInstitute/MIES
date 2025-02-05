@@ -1253,3 +1253,23 @@ static Function TopDownMerge(WAVE B, variable iBegin, variable iMiddle, variable
 		endif
 	endfor
 End
+
+/// @brief Return the index of the last sequence in source
+///
+/// @todo helper function for FindSequence/R breakage in IP9, see #6435
+Function FindSequenceReverseWrapper(WAVE sequence, WAVE source)
+
+	variable foundIndex = -1
+	variable start      = 0
+
+	for(;;)
+		FindSequence/V=sequence/S=(start) source
+
+		if(V_Value < 0)
+			return foundIndex
+		endif
+
+		foundIndex = V_Value
+		start      = foundIndex + 1
+	endfor
+End

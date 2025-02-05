@@ -1295,3 +1295,25 @@ static Function TestSortKeyAndData()
 	CHECK_EQUAL_WAVES(dataSorted, {-2, -3, -1})
 	CHECK_EQUAL_VAR(DimSize(dataSorted, COLS), 0)
 End
+
+// FindSequenceReverseWrapper
+/// @{
+
+static Function TestFindSequenceReverseWrapper()
+
+	variable idx
+
+	// works
+	Make/FREE/D seq = {0, 1}
+	Make/FREE/D source = {0, 1, 0, 1}
+	idx = FindSequenceReverseWrapper(seq, source)
+	CHECK_EQUAL_VAR(idx, 2)
+
+	// no match
+	Make/FREE/D seq = {0, 0}
+	Make/FREE/D source = {0, 1, 0, 1}
+	idx = FindSequenceReverseWrapper(seq, source)
+	CHECK_EQUAL_VAR(idx, -1)
+End
+
+/// @}
