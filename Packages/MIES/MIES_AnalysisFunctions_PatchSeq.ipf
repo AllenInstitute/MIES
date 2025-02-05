@@ -3200,9 +3200,12 @@ static Function PSQ_DS_NegativefISlopePassingCriteria(WAVE numericalValues, WAVE
 	return 0
 End
 
+/// @brief Add fillin value between the last positive f-I slope and the next negative f-I slope
+///
+/// @retval zero if a value could be added, one if not
 static Function PSQ_DS_AddDAScaleFillinBetweenPosAndNegSlope(string device, variable sweepNo, variable headstage, [variable fromRhSuAd])
 
-	variable emptySCI, numFitSlopes, i, numEntries
+	variable emptySCI, numFitSlopes, idx
 	string type, msg
 	variable centerDASCale = NaN
 
@@ -3218,16 +3221,23 @@ static Function PSQ_DS_AddDAScaleFillinBetweenPosAndNegSlope(string device, vari
 	[WAVE negSlopePassed, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FI_NEG_SLOPE_PASS, fromRhSuAd = fromRhSuAd)
 	[WAVE DAScale, emptySCI]        = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, fromRhSuAd = fromRhSuAd)
 
-	numEntries = DimSize(DAScale, ROWS)
-	ASSERT(numEntries == (DimSize(negSlopePassed, ROWS) + 1), "Non-matching negSlopePassedAll and DAScale waves")
+	InsertPoints/V=(NaN) 0, 1, negSlopePassed
 
-	FindValue/R/V=(0) negSlopePassed
-	if(V_Value >= 0)
-		centerDAScale = round((DAScale[V_Value] + DAScale[V_Value + 1]) / 2)
+	ASSERT(DimSize(DAScale, ROWS) == DimSize(negSlopePassed, ROWS), "Non-matching negSlopePassed and DAScale waves")
+
+	[WAVE DAScaleSorted, WAVE negSlopePassedSorted] = SortKeyAndData(DAScale, negSlopePassed)
+	WaveClear DAScale, negSlopePassed
+
+	Make/FREE seq = {0, 1}
+	idx = FindSequenceReverseWrapper(seq, negSlopePassedSorted)
+
+	if(idx >= 0)
+		// -1 because negSlopePassedSorted is calculated for two sweeps
+		centerDAScale = round((DAScaleSorted[idx - ((idx == 0) ? 0 : 1)] + DAScaleSorted[idx]) / 2)
 	endif
 
 #ifdef DEBUGGING_ENABLED
-	sprintf msg, "centerDAScale %g: DAScales=%s; fitSlopes=%s", centerDAScale, NumericWaveToList(DAScale, ", ", trailSep = 0), NumericWaveToList(negSlopePassed, ", ", trailSep = 0)
+	sprintf msg, "centerDAScale %g: idx=%g; DAScales=%s; negSlopePassed=%s", centerDAScale, idx, NumericWaveToList(DAScaleSorted, ", ", trailSep = 0), NumericWaveToList(negSlopePassedSorted, ", ", trailSep = 0)
 	DEBUGPRINT(msg)
 #endif // DEBUGGING_ENABLED
 
@@ -3237,7 +3247,7 @@ static Function PSQ_DS_AddDAScaleFillinBetweenPosAndNegSlope(string device, vari
 		return 1
 	endif
 
-	if(IsFinite(GetRowIndex(DASCale, val = centerDAScale)))
+	if(IsFinite(GetRowIndex(DAScaleSorted, val = centerDAScale)))
 		// already measured, do nothing
 		return 1
 	endif
