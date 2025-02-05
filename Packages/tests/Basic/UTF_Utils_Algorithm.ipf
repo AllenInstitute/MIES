@@ -259,6 +259,15 @@ static Function TestGetRowIndex()
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch), NaN)
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, val = valueToSearch, reverseSearch = 1), NaN)
 	CHECK_EQUAL_VAR(GetRowIndex(doubleWave, str = strToSearch, reverseSearch = 1), NaN)
+
+	// unsupported wave type
+	try
+		Make/FREE/DF wv
+		GetRowIndex(wv, val = 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
 End
 
 /// @}
