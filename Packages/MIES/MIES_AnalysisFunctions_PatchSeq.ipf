@@ -2792,7 +2792,7 @@ static Function PSQ_DS_IsValidFitSlopePosition(WAVE fitSlopes, WAVE DAScales, va
 	return DAScales[idxSlope] > DAScales[idxMax]
 End
 
-static Function [variable fitOffset, variable fitSlope] PSQ_DS_StoreFitOffsetAndSlope(string device, variable sweepNo, variable headstage, WAVE fitOffsetAll, string lbnKeyOffset, WAVE fitSlopeAll, string lbnKeySlope)
+static Function [variable fitOffset, variable fitSlope] PSQ_DS_StoreFitOffsetAndSlope(string device, variable sweepNo, variable headstage, WAVE/Z fitOffsetAll, string lbnKeyOffset, WAVE/Z fitSlopeAll, string lbnKeySlope)
 
 	string key
 
