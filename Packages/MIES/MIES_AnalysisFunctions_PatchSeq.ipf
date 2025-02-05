@@ -3160,6 +3160,12 @@ static Function PSQ_DS_NegativefISlopePassingCriteria(WAVE numericalValues, WAVE
 
 	variable emptySCI, numFound
 
+	if(ParamIsDefault(fromRhSuAd))
+		fromRhSuAd = 0
+	else
+		fromRhSuAd = !!fromRhSuAd
+	endif
+
 	[WAVE negSlopePassed, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FI_NEG_SLOPE_PASS, fromRhSuAd = fromRhSuAd)
 
 	if(Sum(negSlopePassed) == 0)
