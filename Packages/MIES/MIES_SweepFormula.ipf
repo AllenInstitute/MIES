@@ -6244,19 +6244,18 @@ static Function/WAVE SFH_OperationLabnotebookExpandKeys(string graph, WAVE/T LBN
 			continue
 		endif
 
-		Duplicate/FREE/T entries, filteredEntries
-
 		for(j = 0; j < numKeys; j += 1)
 			key = LBNKeys[j]
-			MultiThread filteredEntries = SelectString(stringmatch(entries[p], key), "", entries[p])
+			WAVE/Z indizes = FindIndizes(entries, str = key, prop = PROP_WILDCARD)
+
+			if(WaveExists(indizes))
+				Make/FREE/N=(DimSize(indizes, ROWS))/T matches = entries[indizes[p]]
+				Concatenate/NP=(ROWS)/T/FREE {matches}, allLBNKeys
+			endif
 		endfor
-
-		RemoveTextWaveEntry1D(filteredEntries, "", all = 1)
-
-		Concatenate/NP=(ROWS)/T/FREE {filteredEntries}, allLBNKeys
 	endfor
 
-	if(DimSize(allLBNKeys, ROWS) == 0)
+	if(!WaveExists(allLBNKeys))
 		return $""
 	endif
 
