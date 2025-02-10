@@ -1008,7 +1008,7 @@ Window DataBrowser() : Graph
 	ListBox list_dashboard, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_dashboard, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_dashboard, userdata(Config_DontRestore)="1"
-	ListBox list_dashboard, userdata(Config_DontSave)="1", fSize=12, mode=4
+	ListBox list_dashboard, userdata(Config_DontSave)="1", fSize=12, mode=9
 	ListBox list_dashboard, widths={141, 109, 77}, userColumnResize=1
 	CheckBox check_BrowserSettings_DS, pos={186.00, 47.00}, size={51.00, 15.00}, disable=1, proc=AD_CheckProc_Toggle
 	CheckBox check_BrowserSettings_DS, title="enable"
