@@ -1187,8 +1187,15 @@ End
 
 Function ResetOverrideResults()
 
+	CreateOverrideResults(0)
+End
+
+Function/WAVE CreateOverrideResults(variable numRows)
+
 	KillOrMoveToTrash(wv = root:overrideResults)
-	Make/N=0 root:overrideResults
+	Make/N=(numRows) root:overrideResults/WAVE=wv
+
+	return wv
 End
 
 Function [string baseSet, string stimsetList, string customWavePath, variable amplitude] CreateDependentStimset()

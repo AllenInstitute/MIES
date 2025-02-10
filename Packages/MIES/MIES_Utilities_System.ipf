@@ -327,13 +327,61 @@ Function IsWindows10Or11()
 	return GrepString(os, "^(Microsoft )?Windows 1[01]? ")
 End
 
-/// @brief Upload the given JSON document
+Function UploadJSONPayloadAsync(variable jsonID)
+
+	DFREF threadDFR = ASYNC_PrepareDF("UploadJSONPayloadAsyncWorker", "UploadJSONPayloadAsyncReadout", WORKLOADCLASS_URL, inOrder = 0)
+
+	ASYNC_AddParam(threadDFR, var = jsonID, name = "jsonID")
+
+	ASYNC_Execute(threadDFR)
+End
+
+threadsafe Function/DF UploadJSONPayloadAsyncWorker(DFREF threadDFR)
+
+	variable jsonID, ret
+
+	jsonID = ASYNC_FetchVariable(threadDFR, "jsonID")
+
+	ret = UploadJSONPayload(jsonID)
+
+	DFREF      dfrOut        = NewFreeDataFolder()
+	variable/G dfrOut:result = ret
+
+	return dfrOut
+End
+
+Function UploadJSONPayloadAsyncReadout(STRUCT ASYNC_ReadOutStruct &ar)
+
+	// nothing to do
+End
+
+/// @brief Upload the given JSON document and release it
 ///
 /// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
-Function UploadJSONPayload(variable jsonID)
+threadsafe Function UploadJSONPayload(variable jsonID)
 
-	URLrequest/DSTR=(JSON_Dump(jsonID)) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
-	ASSERT(!V_Flag, "URLrequest did not succeed due to: " + S_ServerResponse)
+	variable skip
+
+#ifdef AUTOMATED_TESTING
+	WAVE/Z overrideResults = GetOverrideResults()
+	skip = WaveExists(overrideResults) ? overrideResults[0] : 0
+#endif // AUTOMATED_TESTING
+
+	if(!skip)
+		URLRequest/Z=1/DSTR=(JSON_Dump(jsonID)) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+	else
+		V_flag           = 1
+		S_ServerResponse = "fake error"
+	endif
+
+	JSON_Release(jsonID)
+
+	if(V_Flag)
+		LOG_AddEntry(PACKAGE_MIES, "URLRequest failed", keys = {"S_ServerResponse", "V_Flag"}, values = {S_ServerResponse, num2str(V_Flag)}, stacktrace = 1)
+		return 1
+	endif
+
+	return 0
 End
 
 /// @brief Returns a hex string which is unique for the given Igor Pro session

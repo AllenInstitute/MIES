@@ -167,6 +167,8 @@ static Function IH_Cleanup()
 
 		DFREF dfrNWB = GetNWBFolder()
 		KilLVariables/Z dfrNWB:histRefNumber
+
+		ASSERT(!ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_URL, 300), "JSON Payload upload did not finish within timeout of 300s.")
 	catch
 		ClearRTError()
 		BUG("Caught runtime error or assertion: " + num2istr(err))

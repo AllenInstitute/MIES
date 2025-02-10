@@ -25,7 +25,6 @@
 // GetASLREnabledState
 // TurnOffASLR
 // IsWindows10
-// UploadJSONPayload
 // GetIgorInstanceID
 // CleanupOperationQueueResult
 
@@ -88,4 +87,26 @@ static Function TestErrorCodeConversion()
 	CHECK_EQUAL_VAR(ConvertXOPErrorCode(convErr), 10009)
 End
 
+/// @}
+
+/// UploadJSONPayload
+/// @{
+static Function TestUploadJsonPayload()
+
+	variable jsonID
+	string filename, logs, retFilename
+
+	WAVE overrideResults = CreateOverrideResults(1)
+	overrideResults[] = 1
+
+	filename = LOG_GetFile(PACKAGE_MIES)
+	DeleteFile/Z filename
+
+	jsonID = JSON_New()
+	UploadJSONPayload(jsonID)
+
+	[logs, retFilename] = LoadTextFile(filename)
+	CHECK_PROPER_STR(logs)
+	CHECK(GrepString(logs, "\"S_ServerResponse\":\"fake error\",\"V_Flag\":\"1\",\"action\":\"URLRequest failed"))
+End
 /// @}

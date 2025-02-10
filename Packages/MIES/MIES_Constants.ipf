@@ -1671,6 +1671,7 @@ Constant POST_PLOT_FULL_UPDATE     = 0x8 ///< Forces a complete update from scra
 ///@{
 StrConstant WORKLOADCLASS_TP  = "TestPulse"
 StrConstant WORKLOADCLASS_NWB = "nwb_writing"
+StrConstant WORKLOADCLASS_URL = "json_payload_upload"
 ///@}
 
 /// @name Column numbers of epoch information

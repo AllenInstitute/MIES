@@ -32,9 +32,7 @@ Function UploadCrashDumpsDaily()
 			return NaN
 		endif
 
-		if(UploadCrashDumps())
-			printf "Crash dumps have been successfully uploaded.\r"
-		endif
+		UploadCrashDumps()
 
 		JSON_SetString(jsonID, "/diagnostics/last upload", GetIso8601TimeStamp())
 		AbortOnRTE
@@ -142,13 +140,7 @@ static Function UploadPing()
 
 	jsonID = GenerateJSONTemplateForUpload()
 	AddPayloadEntries(jsonID, {UPLOAD_BLOCK_USERPING}, {payload}, isBinary = 0)
-	AssertOnAndClearRTError()
-	try
-		UploadJSONPayload(jsonID); AbortOnRTE
-	catch
-		err = ClearRTError()
-	endtry
-	JSON_Release(jsonID)
+	UploadJSONPayloadAsync(jsonID)
 
 	return err
 End
@@ -181,8 +173,6 @@ End
 /// The uploaded files are moved out of the way afterwards.
 ///
 /// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
-///
-/// @return 1 if crash dumps had been uploaded, 0 otherwise
 Function UploadCrashDumps()
 
 	string diagSymbPath, basePath, diagPath
@@ -198,11 +188,8 @@ Function UploadCrashDumps()
 	numLogs  = DimSize(logs, ROWS)
 
 	if(!numFiles && !numLogs)
-		return 0
+		return NaN
 	endif
-
-	printf "Please wait while we upload %d crash dumps. This might take a while.\r", numFiles + numLogs
-	ControlWindowToFront()
 
 	jsonID = GenerateJSONTemplateForUpload()
 
@@ -219,8 +206,7 @@ Function UploadCrashDumps()
 	SaveTextFile(JSON_dump(jsonID, indent = 4), diagPath + ":" + UniqueFileOrFolder(basePath, "crash-dumps", suffix = ".json"))
 #endif // DEBUGGING_ENABLED
 
-	UploadJSONPayload(jsonID)
-	JSON_Release(jsonID)
+	UploadJSONPayloadAsync(jsonID)
 
 #ifndef DEBUGGING_ENABLED
 	MoveFolder/P=$basePath "Diagnostics" as UniqueFileOrFolder(basePath, "Diagnostics_old")
@@ -228,7 +214,8 @@ Function UploadCrashDumps()
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 
-	return 1
+	printf "Uploading %d crash dumps is in progress in the background.\r", numFiles + numLogs
+	ControlWindowToFront()
 End
 
 /// @brief Upload the MIES and ZeroMQ logfiles
@@ -341,15 +328,14 @@ Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate
 		sprintf out, "Uploading %.0f MB (~%d Bytes)", sumSize / MEGABYTE, sumSize
 		UploadLogFilesPrint(out, verbose)
 		for(jsonID : jsonIDs)
-			UploadJSONPayload(jsonID)
-			JSON_Release(jsonID)
+			UploadJSONPayloadAsync(jsonID)
+
 			UploadLogFilesPrint(".", verbose)
 		endfor
 		UploadLogFilesPrint("\r", verbose)
 	endif
-	UploadLogFilesPrint("Done.\r", verbose)
 
-	sprintf out, "Successfully uploaded the MIES, ZeroMQ-XOP and ITCXOP2 logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+	sprintf out, "Uploading the MIES, ZeroMQ-XOP and ITCXOP2 logfiles is in progress in the background. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
 	UploadLogFilesPrint(out, verbose)
 End
 
