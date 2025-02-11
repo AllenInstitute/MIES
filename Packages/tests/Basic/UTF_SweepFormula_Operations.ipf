@@ -328,6 +328,18 @@ static Function CheckTPFitResult(WAVE/WAVE wv, string fit, string result, variab
 	CHECK_EQUAL_VAR(trailLength, maxlength)
 End
 
+static Function TestOperationTP()
+
+	string win, formula
+
+	win = GetDataBrowserWithData()
+
+	formula = "tp(tpfit(exp, amp), select(selvis(all), selsweeps(1000)))"
+	WAVE/Z/WAVE output = SF_ExecuteFormula(formula, win, useVariables = 0)
+	CHECK_WAVE(output, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(output, ROWS), 0)
+End
+
 static Function TestOperationTPfit()
 
 	string formula, strRef, dataType, dataTypeRef

@@ -3219,8 +3219,8 @@ static Function/WAVE SF_OperationTPIterate(string graph, WAVE/WAVE mode, WAVE/Z/
 			continue
 		endif
 
-		WAVE/Z    selectData = selectDataComp[%SELECTION]
-		WAVE/WAVE sweepData  = SF_OperationTPImpl(graph, mode, selectData, ignoreTPs, opShort)
+		WAVE/Z      selectData = selectDataComp[%SELECTION]
+		WAVE/Z/WAVE sweepData  = SF_OperationTPImpl(graph, mode, selectData, ignoreTPs, opShort)
 		if(!WaveExists(sweepData))
 			continue
 		endif
