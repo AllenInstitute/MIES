@@ -83,8 +83,8 @@
 ///  PSQ_FMT_LBN_DA_AT_RSA_FI_OFFSETS_DASCALE   Offsets in the f-I plot from previous sweep reevaluation      Hz       Textual      DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_DASCALE    Slopes in the f-I plot from previous sweep reevaluation       % Hz/pA  Textual      DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_PASS       Slope QCs in the f-I plot from previous sweep reevaluation    On/Off   Textual      DA (Adapt)                           No           No
-///  PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS     Valid slope from f-I plot QC of supra sweep reevaluation      On/Off   Numerical    DA (Adapt)                           No           Yes
-///  PSQ_FMT_LBN_DA_AT_RSA_FILLIN_PASS          Acquired due to fillin from previous sweep reevaluation       On/Off   Numerical    DA (Adapt)                           No           No
+///  PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS     Valid slope from f-I plot QC of supra sweep reevaluation      On/Off   Numerical    None                                 No           Yes
+///  PSQ_FMT_LBN_DA_AT_RSA_FILLIN_PASS          Acquired due to fillin from previous sweep reevaluation       On/Off   Numerical    None                                 No           No
 ///  PSQ_FMT_LBN_DA_AT_MAX_SLOPE                Maximum encountered f-I plot slope in the SCI                 % Hz/pA  Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS         Valid slope from f-I plot QC                                  On/Off   Numerical    DA (Adapt)                           No           Yes
 ///  PSQ_FMT_LBN_DA_AT_NEG_SLOPE_FILLIN         Fillin for negative f-I slope passing is ongoing              On/Off   Numerical    DA (Adapt)                           No           No
@@ -2352,53 +2352,6 @@ static Function PSQ_DS_CreateSurveyPlotForUser(string device, variable sweepNo, 
 	PSQ_ExecuteSweepFormula(device, str)
 End
 
-/// @brief Check if the fit results from PSQ_DS_FitFrequencyCurrentData are valid
-///
-/// @param device                    DAC hardware device
-/// @param sweepNo                   current sweep
-/// @param headstage                 headstage
-/// @param fitOffset                 fit offsets
-/// @param fitSlope                  fit slopes
-/// @param fromRhSuAd [optional, defaults to false] if the fit offset/slope data is from the rheobase/supra threshold sweeps or not
-static Function PSQ_DS_AreFitResultsValid(string device, variable sweepNo, variable headstage, WAVE/Z fitOffset, WAVE/Z fitSlope, [variable fromRhSuAd])
-
-	variable numFits, validFit
-	string key, msg
-
-	if(ParamIsDefault(fromRhSuAd))
-		fromRhSuAd = 0
-	else
-		fromRhSuAd = !!fromRhSuAd
-	endif
-
-	if(WaveExists(fitOffset) && WaveExists(fitSlope))
-		numFits = DimSize(fitOffset, ROWS)
-		ASSERT(numFits == DimSize(fitSlope, ROWS), "Non-matching fitOffset/fitSlope waves sizes")
-
-		Make/FREE/N=(numFits) validFitAll = !IsNaN(fitSlope[p])
-		validFit = (Sum(validFitAll) == numFits)
-	endif
-
-#ifdef DEBUGGING_ENABLED
-	sprintf msg, "validFit %g, fitOffset %s; fitSlope %s", validFit, NumericWaveToList(fitOffset, ", ", trailSep = 0), NumericWaveToList(fitSlope, ", ", trailSep = 0)
-	DEBUGPRINT(msg)
-#endif // DEBUGGING_ENABLED
-
-	WAVE numericalValues = GetLBNumericalValues(device)
-	WAVE validFitLBN     = LBN_GetNumericWave()
-	validFitLBN[headstage] = validFit
-
-	if(fromRhSuAd)
-		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS)
-	else
-		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS)
-	endif
-
-	ED_AddEntryToLabnotebook(device, key, validFitLBN, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
-
-	return validFit
-End
-
 Function [variable daScaleStepMinNorm, variable daScaleStepMaxNorm] PSQ_DS_GetDAScaleStepsNorm(string device, variable sweepNo, variable headstage)
 
 	string key
@@ -2518,9 +2471,9 @@ static Function/WAVE PSQ_DS_GatherDAScaleFillin(STRUCT PSQ_DS_DAScaleParams &cdp
 	return results
 End
 
-static Function/WAVE PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, WAVE numericalValues, WAVE textualValues, variable sweepNo, variable headstage, [variable fromRhSuAd])
+static Function/WAVE PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, WAVE numericalValues, WAVE textualValues, variable sweepNo, variable headstage, [variable fromRhSuAd, variable alreadyDone])
 
-	variable fitOffset, fitSlope, negSlopePassed, DAScale, apfreq
+	variable fitOffset, fitSlope, negSlopePassed, DAScale, apfreq, emptySCI, DAScaleNew
 	string type
 
 	if(ParamIsDefault(fromRhSuAd))
@@ -2529,17 +2482,66 @@ static Function/WAVE PSQ_DS_CalculateDAScale(STRUCT PSQ_DS_DAScaleParams &cdp, W
 		fromRhSuAd = !!fromRhSuAd
 	endif
 
-	[fitOffset, fitSlope, negSlopePassed, DAScale, apfreq] = PSQ_DS_GetValuesOfLargestDAScale(numericalValues, textualValues, sweepNo, headstage, fromRhSuAd = fromRhSuAd)
-
-	if(negSlopePassed)
-		type = SelectString(fromRhSuAd, PSQ_DS_AD_REGULAR_POSNEG_SLOPE, PSQ_DS_AD_REGULAR_POSNEG_SLOPE_RHSUAD)
-		WAVE/T DAScaleNew = PSQ_DS_CalculateDAScaleForNegSlope(cdp, type, DAScale, apfreq)
+	if(ParamIsDefault(alreadyDone))
+		alreadyDone = 0
 	else
-		type = SelectString(fromRhSuAd, PSQ_DS_AD_REGULAR, PSQ_DS_AD_REGULAR_RHSUAD)
-		WAVE/T DAScaleNew = PSQ_DS_CalculateDAScalePlain(cdp, type, fitOffset, fitSlope, DAScale, apfreq)
+		alreadyDone = !!alreadyDone
 	endif
 
-	return DAScaleNew
+	[fitOffset, fitSlope, negSlopePassed, DAScale, apfreq] = PSQ_DS_GetValuesOfLargestDAScale(numericalValues, textualValues, sweepNo, headstage, fromRhSuAd = fromRhSuAd)
+
+	if(alreadyDone)
+		type = SelectString(fromRhSuAd, PSQ_DS_AD_FINISHED, PSQ_DS_AD_FINISHED_RHSUAD)
+		WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScaleForNegSlope(cdp, type, DAScale, apfreq)
+	elseif(negSlopePassed)
+		type = SelectString(fromRhSuAd, PSQ_DS_AD_REGULAR_POSNEG_SLOPE, PSQ_DS_AD_REGULAR_POSNEG_SLOPE_RHSUAD)
+		WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScaleForNegSlope(cdp, type, DAScale, apfreq)
+	elseif(IsNaN(fitOffset) && IsNaN(fitSlope))
+		type = SelectString(fromRhSuAd, PSQ_DS_AD_FALLBACK, PSQ_DS_AD_FALLBACK_RHSUAD)
+		WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScaleFallback(cdp, sweepNo, type, DAScale, apfreq)
+	else
+		type = SelectString(fromRhSuAd, PSQ_DS_AD_REGULAR, PSQ_DS_AD_REGULAR_RHSUAD)
+		WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScalePlain(cdp, type, fitOffset, fitSlope, DAScale, apfreq)
+	endif
+
+	// if we would suggest to acquire the same DAScale again, we do an absDAScaleStepMin step from the last DAScale value
+	[WAVE DAScaleAll, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, fromRhSuAd = fromRhSuAd)
+
+	[type, DAScaleNew] = PSQ_DS_AD_ParseFutureDAScaleEntry(DAScaleWithType[0])
+
+	if(GetRowIndex(DAScaleAll, val = DAScaleNew) > 0)
+		type = SelectString(fromRhSuAd, PSQ_DS_AD_FALLBACK, PSQ_DS_AD_FALLBACK_RHSUAD)
+		WAVE/T DAScaleWithType = PSQ_DS_CalculateDAScaleFallback(cdp, sweepNo, type, DAScaleAll[Inf], apfreq)
+	endif
+
+	return DAScaleWithType
+End
+
+static Function/WAVE PSQ_DS_CalculateDAScaleFallback(STRUCT PSQ_DS_DAScaleParams &cdp, variable sweepNo, string type, variable x, variable y)
+
+	variable absDAScaleStepMin, xp
+	string msg
+
+	ASSERT(PSQ_DS_DAScaleParamsAreFinite(cdp), "Invalid cdp values")
+
+	if(IsNaN(y))
+		// fallback to something useable but unique every time
+		y = IsNaN(y) ? (sweepNo + 1) : y
+	endif
+
+	absDAScaleStepMin = cdp.daScaleStepMinNorm * y
+	xp                = round(x + absDAScaleStepMin)
+
+	if(xp == x)
+		xp += 1
+	endif
+
+	Make/T/FREE DAScaleWithType = {PSQ_DS_AD_BuildFutureDAScaleEntry(type, xp)}
+
+	sprintf msg, "fallback DAScale %g: x=%g, y=%g, absDAScaleStepMin=%g", xp, x, y, absDAScaleStepMin
+	DEBUGPRINT(msg)
+
+	return DAScaleWithType
 End
 
 /// @brief Calculate the new DAScale value after a negative fI slope
@@ -2684,20 +2686,18 @@ End
 /// - slope must be slopePercentage smaller than the maximum slope
 /// - must not be from a fillin sweep
 /// - slope must be acquired with a larger DAScale value than maximum slope
-static Function PSQ_DS_CalculateReachedFinalSlope(variable validFit, WAVE fitSlopes, WAVE DAScales, WAVE fillinPassed, variable fitSlope, variable maxSlope, variable slopePercentage)
+static Function PSQ_DS_CalculateReachedFinalSlope(WAVE fitSlopes, WAVE DAScales, WAVE fillinPassed, variable fitSlope, variable maxSlope, variable slopePercentage)
 
-	return validFit                                                                   \
-	       && IsFinite(fitSlope)                                                      \
+	return IsFinite(fitSlope)                                                         \
 	       && IsFinite(maxSlope)                                                      \
 	       && (fitSlope < (maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE))))      \
 	       && PSQ_DS_IsValidFitSlopePosition(fitSlopes, DAScales, fitSlope, maxSlope) \
 	       && !PSQ_DS_IsFillin(fitSlopes, fillinPassed, fitSlope)
 End
 
-static Function PSQ_DS_CalculateNegativeSlopePass(variable validFit, WAVE fitSlopes, WAVE fillinPassed, variable fitSlope)
+static Function PSQ_DS_CalculateNegativeSlopePass(WAVE fitSlopes, WAVE fillinPassed, variable fitSlope)
 
-	return validFit                                             \
-	       && IsFinite(fitSlope)                                \
+	return IsFinite(fitSlope)                                   \
 	       && fitSlope <= 0                                     \
 	       && !PSQ_DS_IsFillin(fitSlopes, fillinPassed, fitSlope)
 End
@@ -2733,12 +2733,12 @@ static Function PSQ_DS_CalculateFillinQC(WAVE DAScales, variable dascale)
 	return fillinQC
 End
 
-static Function PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(string device, variable sweepNo, WAVE fitSlopes, WAVE DAScales, WAVE fillinPassed, variable fitSlope, variable maxSlope, variable slopePercentage, variable validFit)
+static Function PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(string device, variable sweepNo, WAVE fitSlopes, WAVE DAScales, WAVE fillinPassed, variable fitSlope, variable maxSlope, variable slopePercentage)
 
 	variable reachedFinalSlope
 	string   key
 
-	reachedFinalSlope = PSQ_DS_CalculateReachedFinalSlope(validFit, fitSlopes, DAScales, fillinPassed, fitSlope, maxSlope, slopePercentage)
+	reachedFinalSlope = PSQ_DS_CalculateReachedFinalSlope(fitSlopes, DAScales, fillinPassed, fitSlope, maxSlope, slopePercentage)
 
 	WAVE finalSlopeLBN = LBN_GetNumericWave()
 	finalSlopeLBN[INDEP_HEADSTAGE] = reachedFinalSlope
@@ -2746,12 +2746,12 @@ static Function PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(string de
 	ED_AddEntryToLabnotebook(device, key, finalSlopeLBN, overrideSweepNo = sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 End
 
-static Function PSQ_DS_CalculateNegSlopePassAndWriteToLabnotebook(string device, variable sweepNo, WAVE fitSlopes, WAVE fillinPassed, variable fitSlope, variable validFit)
+static Function PSQ_DS_CalculateNegSlopePassAndWriteToLabnotebook(string device, variable sweepNo, WAVE fitSlopes, WAVE fillinPassed, variable fitSlope)
 
 	variable negSlopePass
 	string   key
 
-	negSlopePass = PSQ_DS_CalculateNegativeSlopePass(validFit, fitSlopes, fillinPassed, fitSlope)
+	negSlopePass = PSQ_DS_CalculateNegativeSlopePass(fitSlopes, fillinPassed, fitSlope)
 
 	WAVE negSlopeLBN = LBN_GetNumericWave()
 	negSlopeLBN[INDEP_HEADSTAGE] = negSlopePass
@@ -2800,20 +2800,20 @@ static Function [variable fitOffset, variable fitSlope] PSQ_DS_StoreFitOffsetAnd
 		ASSERT(DimSize(fitOffsetAll, ROWS) == 1 && DimSize(fitSlopeAll, ROWS) == 1, "Expected only one fit slope/offset")
 		fitOffset = fitOffsetAll[0]
 		fitSlope  = fitSlopeAll[0]
-
-		WAVE fitOffsetLBN = LBN_GetNumericWave()
-		fitOffsetLBN[headstage] = fitOffset
-		key                     = CreateAnaFuncLBNKey(PSQ_DA_SCALE, lbnKeyOffset)
-		ED_AddEntryToLabnotebook(device, key, fitOffsetLBN, overrideSweepNo = sweepNo, unit = "Hz")
-
-		WAVE fitSlopeLBN = LBN_GetNumericWave()
-		fitSlopeLBN[headstage] = fitSlope
-		key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, lbnKeySlope)
-		ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = sweepNo, unit = "% of Hz/pA")
 	else
 		fitOffset = NaN
 		fitSlope  = NaN
 	endif
+
+	WAVE fitOffsetLBN = LBN_GetNumericWave()
+	fitOffsetLBN[headstage] = fitOffset
+	key                     = CreateAnaFuncLBNKey(PSQ_DA_SCALE, lbnKeyOffset)
+	ED_AddEntryToLabnotebook(device, key, fitOffsetLBN, overrideSweepNo = sweepNo, unit = "Hz")
+
+	WAVE fitSlopeLBN = LBN_GetNumericWave()
+	fitSlopeLBN[headstage] = fitSlope
+	key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, lbnKeySlope)
+	ED_AddEntryToLabnotebook(device, key, fitSlopeLBN, overrideSweepNo = sweepNo, unit = "% of Hz/pA")
 
 	return [fitOffset, fitSlope]
 End
@@ -2829,7 +2829,7 @@ End
 static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
 
 	string key, errMsg, msg
-	variable maxSlope, validFit, fitOffset, fitSlope, fitOffsetForDAScale, fitSlopeForDAScale, emptySCI, hasEnoughPoints
+	variable maxSlope, fitOffset, fitSlope, fitOffsetForDAScale, fitSlopeForDAScale, emptySCI, hasEnoughPoints
 
 	WAVE textualValues   = GetLBTextualValues(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -2840,8 +2840,6 @@ static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(st
 
 	[WAVE fitOffsetFromFit, WAVE fitSlopeFromFit, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, sweepNo, apfreqs, DAScales, singleFit = 1, writeEnoughPointsLBN = 1)
 	[fitOffset, fitSlope]                                 = PSQ_DS_StoreFitOffsetAndSlope(device, sweepNo, headstage, fitOffsetFromFit, PSQ_FMT_LBN_DA_AT_FI_OFFSET, fitSlopeFromFit, PSQ_FMT_LBN_DA_AT_FI_SLOPE)
-
-	validFit = PSQ_DS_AreFitResultsValid(device, sweepNo, headstage, fitOffsetFromFit, fitSlopeFromFit)
 
 #ifdef DEBUGGING_ENABLED
 	sprintf msg, "fitOffsetFromFit=(%s), fitSlopeFromFit=(%s)", NumericWaveToList(fitOffsetFromFit, ", ", trailSep = 0), NumericWaveToList(fitSlopeFromFit, ", ", trailSep = 0)
@@ -2854,12 +2852,12 @@ static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(st
 
 	[WAVE fillinPassedAll, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FILLIN_PASS)
 
-	PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(device, sweepNo, fitSlopesAll, DAScalesAll, fillInPassedAll, fitSlope, maxSlope, cdp.slopePercentage, validFit)
+	PSQ_DS_CalculateReachedFinalSlopeAndWriteToLabnotebook(device, sweepNo, fitSlopesAll, DAScalesAll, fillInPassedAll, fitSlope, maxSlope, cdp.slopePercentage)
 
-	PSQ_DS_CalculateNegSlopePassAndWriteToLabnotebook(device, sweepNo, fitSlopesAll, fillInPassedAll, fitSlope, validFit)
+	PSQ_DS_CalculateNegSlopePassAndWriteToLabnotebook(device, sweepNo, fitSlopesAll, fillInPassedAll, fitSlope)
 
-	[WAVE DAScalesForDAScale, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = 1, filterNegSlope = 1)
-	[WAVE apfreqsForDAScale, emptySCI]  = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = 1, filterNegSlope = 1)
+	[WAVE DAScalesForDAScale, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_DASCALE, filterPassing = 1, beforeSweepQCResult = 1, filterNegSlopeAndNaN = 1)
+	[WAVE apfreqsForDAScale, emptySCI]  = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ, filterPassing = 1, beforeSweepQCResult = 1, filterNegSlopeAndNaN = 1)
 
 	if(emptySCI)
 		WaveClear DAScalesForDAScale, apfreqsForDAScale
@@ -2879,10 +2877,10 @@ End
 /// @brief Determine from the POST_SWEEP_EVENT if the set is already finished
 ///
 /// We don't check here for passing/failing set QC but only if we need to continue acquisition.
-static Function PSQ_DS_AdaptiveDetermineSweepQCResults(string device, variable sweepNo, variable headstage, variable numInvalidSlopeSweepsAllowed, variable numSweepsWithSaturation)
+static Function PSQ_DS_AdaptiveDetermineSweepQCResults(string device, variable sweepNo, variable headstage, variable numSweepsWithSaturation)
 
-	string key
-	variable numInvalidSlopes, samplingFrequencyPassed
+	string   key
+	variable samplingFrequencyPassed
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
@@ -2901,17 +2899,6 @@ static Function PSQ_DS_AdaptiveDetermineSweepQCResults(string device, variable s
 	WAVE hasEnoughPoints = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	if(!IsConstant(hasEnoughPoints, 1))
-		PSQ_ForceSetEvent(device, headstage)
-		RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
-		return PSQ_RESULTS_DONE
-	endif
-
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS, query = 1)
-	WAVE validSlopePasses = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	numInvalidSlopes = DimSize(validSlopePasses, ROWS) - Sum(validSlopePasses)
-	ASSERT(IsNullOrPositiveAndFinite(numInvalidSlopes), "Invalid number of failed sweeps")
-
-	if(numInvalidSlopes >= numInvalidSlopeSweepsAllowed)
 		PSQ_ForceSetEvent(device, headstage)
 		RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 		return PSQ_RESULTS_DONE
@@ -2976,10 +2963,10 @@ static Function [string currentSCI, string RhSuAd, variable headstageContingency
 End
 
 /// @brief Return some labnotebook entries for all passing sweeps from RhSuAd and the current SCI
-static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable headstage, variable type, [variable filterPassing, variable filterNegSlope, variable beforeSweepQCResult, variable fromRhSuAd])
+static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable headstage, variable type, [variable filterPassing, variable filterNegSlopeAndNaN, variable beforeSweepQCResult, variable fromRhSuAd])
 
 	string key, keyCurrentSCI, keyRhSuAd, msg
-	variable hcmMode, idx
+	variable hcmMode, idx, numEntries
 
 	if(ParamIsDefault(fromRhSuAd))
 		fromRhSuAd = 0
@@ -2999,22 +2986,22 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 		filterPassing = !!filterPassing
 	endif
 
-	if(ParamIsDefault(filterNegSlope))
-		filterNegSlope = 0
+	if(ParamIsDefault(filterNegSlopeAndNaN))
+		filterNegSlopeAndNaN = 0
 	else
-		filterNegSlope = !!filterNegSlope
+		filterNegSlopeAndNaN = !!filterNegSlopeAndNaN
 	endif
 
 	[keyCurrentSCI, keyRhSuAd, hcmMode] = PSQ_DS_GetLabnotebookKeyConstants(type)
 
 	if(fromRhSuAd)
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, keyRhSuAd, query = 1)
-		WAVE/T dataRhSuAdLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
+		WAVE/Z/T dataRhSuAdLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
 
 		Make/FREE/N=0 dataCurrentSCI
 	else
 		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, keyRhSuAd, query = 1)
-		WAVE/T dataRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+		WAVE/Z/T dataRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 		switch(type)
 			case PSQ_DS_SWEEP:
@@ -3042,8 +3029,15 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 		endswitch
 
 		if(!WaveExists(dataCurrentSCI))
-			Make/FREE/N=0 dataCurrentSCI
+			WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+
+			numEntries = WaveExists(sweeps) ? DimSize(sweeps, ROWS) : 0
+			Make/FREE/N=(numEntries) dataCurrentSCI = NaN
 		endif
+	endif
+
+	if(!WaveExists(dataRhSuAdLBN))
+		WAVE/T dataRhSuAdLBN = LBN_GetTextWave()
 	endif
 
 	switch(hcmMode)
@@ -3059,7 +3053,6 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 
 	WAVE dataRhSuAd = ListToNumericWave(dataRhSuAdLBN[idx], ";")
 	WaveClear dataRhSuAdLBN
-	ASSERT(DimSize(dataRhSuAd, ROWS) > 0, "dataRhSuAd must not be empty")
 
 	switch(type)
 		case PSQ_DS_SWEEP_PASS:
@@ -3075,7 +3068,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 	if(filterPassing)
 		ASSERT(type != PSQ_DS_SWEEP_PASS, "Does not make sense to filter passing sweeps")
 
-		if(filterNegSlope)
+		if(filterNegSlopeAndNaN)
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_NEG_SLOPES_PASS, query = 1)
 			WAVE/Z/T negSlopesPassedRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
@@ -3087,10 +3080,25 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			WAVE negSlopesPassedRhSuAd = ListToNumericWave(negSlopesPassedRhSuAdLBN[INDEP_HEADSTAGE], ";")
 			WaveClear negSlopesPassedRhSuAdLBN
 			ASSERT(DimSize(negSlopesPassedRhSuAd, ROWS) > 0, "negSlopesPassedRhSuAd must not be empty")
-			// we want to filter out the sweeps with passing negative slope QC, so invert it
-			negSlopesPassedRhSuAd[] = !negSlopesPassedRhSuAd[p]
 
-			WAVE/Z dataRhSuAdFiltered = PSQ_DS_FilterPassingData(dataRhSuAd, negSlopesPassedRhSuAd, pairwise = 1)
+			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES, query = 1)
+			WAVE/Z/T fISlopesRhSuAdLBN = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+			if(!WaveExists(fISlopesRhSuAdLBN))
+				// fallback to the current sweep for the first sweep in the SCI
+				WAVE/T fISlopesRhSuAdLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
+			endif
+
+			WAVE fISlopesRhSuAd = ListToNumericWave(fISlopesRhSuAdLBN[headstage], ";")
+			WaveClear fISlopesRhSuAdLBN
+			ASSERT(DimSize(fISlopesRhSuAd, ROWS) > 0, "fISlopesRhSuAd must not be empty")
+
+			Duplicate/FREE negSlopesPassedRhSuAd, filterPassedRhSuAd
+
+			// we want to filter out the sweeps with passing negative slope QC, so invert it
+			filterPassedRhSuAd[] = !negSlopesPassedRhSuAd[p] && !IsNaN(fISlopesRhSuAd)
+
+			WAVE/Z dataRhSuAdFiltered = PSQ_DS_FilterPassingData(dataRhSuAd, filterPassedRhSuAd, pairwise = 1)
 		else
 			// we only store data with sweep passed for RhSuAd
 			WAVE dataRhSuAdFiltered = dataRhSuAd
@@ -3117,13 +3125,20 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 				ASSERT(WaveExists(sweepPassed), "Missing sweepPassed")
 			endif
 
-			if(filterNegSlope)
+			if(filterNegSlopeAndNaN)
 				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_NEG_SLOPE_PASS, query = 1)
 				WAVE negSlopePassed = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
+				key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FI_SLOPE, query = 1)
+				WAVE/Z fISlope = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+				if(!WaveExists(fISlope))
+					Make/FREE/N=(DimSize(negSlopePassed, ROWS)) fISlope = NaN
+				endif
+
 				Duplicate/FREE sweepPassed, filterPassed
 				// we want to filter out the sweeps with passing negative slope QC, so invert it
-				filterPassed[] = sweepPassed[p] && !negSlopePassed[p]
+				filterPassed[] = sweepPassed[p] && !negSlopePassed[p] && !IsNaN(fISlope[p])
 			else
 				WAVE filterPassed = sweepPassed
 			endif
@@ -3136,7 +3151,7 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			endif
 		endif
 	else
-		ASSERT(!filterNegSlope, "filterNegSlope requires filterPassing")
+		ASSERT(!filterNegSlopeAndNaN, "filterNegSlopeAndNaN requires filterPassing")
 
 		WAVE dataRhSuAdFiltered     = dataRhSuAd
 		WAVE dataCurrentSCIFiltered = dataCurrentSCI
@@ -3147,7 +3162,10 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 	DEBUGPRINT(msg)
 #endif // DEBUGGING_ENABLED
 
-	if(DimSize(dataCurrentSCIFiltered, ROWS) == 0)
+	if(DimSize(dataRhSuAdFiltered, ROWS) == 0       \
+	   && DimSize(dataCurrentSCIFiltered, ROWS) == 0)
+		return [$"", 1]
+	elseif(DimSize(dataCurrentSCIFiltered, ROWS) == 0)
 		return [dataRhSuAdFiltered, 1]
 	endif
 
@@ -3297,14 +3315,6 @@ static Function PSQ_DS_AdaptiveIsFinished(string device, variable sweepNo, varia
 		// still work to do
 		if(!measuredAllFutureDAScales)
 			return 0
-		endif
-
-		// pass conditions
-		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_VALID_SLOPE_PASS, query = 1)
-		WAVE initialFISlopeValid = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-
-		if(!initialFISlopeValid[headstage])
-			return 1
 		endif
 	endif
 
@@ -3748,6 +3758,7 @@ static Function [variable fitOffset, variable fitSlope, variable negSlopePassed,
 
 	// get the largest value with the highest index
 	maxValue   = -Inf
+	maxLoc     = NaN
 	numEntries = DimSize(DAScaleAll, ROWS)
 	for(i = numEntries - 1; i >= 0; i -= 1)
 		if(!sweepPassedAll[i])
@@ -3759,6 +3770,8 @@ static Function [variable fitOffset, variable fitSlope, variable negSlopePassed,
 			maxLoc   = i
 		endif
 	endfor
+
+	ASSERT(IsFinite(maxLoc), "Invalid maxLoc")
 
 	// highest DAScale/APFreq is at maxloc
 	apfreq  = apfreqAll[maxLoc]
@@ -3774,9 +3787,12 @@ static Function [variable fitOffset, variable fitSlope, variable negSlopePassed,
 		return [NaN, NaN, negSlopePassed, DAScale, apfreq]
 	endif
 
-	// no negative slope QC, use the fit offset/slope without negative slope values for regular DAScale estimation
 	[WAVE fitSlopeAll, emptySCI]  = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FI_SLOPE_DASCALE, fromRhSuAd = fromRhSuAd)
 	[WAVE fitOffsetAll, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_FI_OFFSET_DASCALE, fromRhSuAd = fromRhSuAd)
+
+	if(!WaveExists(fitSlopeAll) || !WaveExists(fitOffsetAll))
+		return [NaN, NaN, negSlopePassed, DAScale, apfreq]
+	endif
 
 	fitOffset = fitOffsetAll[DimSize(fitOffsetAll, ROWS) - offset]
 	fitSlope  = fitSlopeAll[DimSize(fitSlopeAll, ROWS) - offset]
@@ -3954,28 +3970,27 @@ End
 /// @brief Require parameters from stimset
 Function/S PSQ_DAScale_GetParams()
 
-	return "[AbsFrequencyMinDistance:variable],"      + \
-	       "AsyncQCChannels:wave,"                    + \
-	       "[BaselineRMSLongThreshold:variable],"     + \
-	       "[BaselineRMSShortThreshold:variable],"    + \
-	       "[BaselineTargetVThreshold:variable],"     + \
-	       "[DAScaleRangeFactor:variable],"           + \
-	       "[DAScaleModifier:variable],"              + \
-	       "[DAScaleNegativeSlopePercent:variable],"  + \
-	       "[DaScaleStepWidthMinMaxRatio:variable],"  + \
-	       "DAScales:wave,"                           + \
-	       "[FailingAdaptiveSCIRange:variable],"      + \
-	       "[FinalSlopePercent:variable],"            + \
-	       "[MaximumSpikeCount:variable],"            + \
-	       "[MinimumSpikeCount:variable],"            + \
-	       "[OffsetOperator:string],"                 + \
-	       "OperationMode:string,"                    + \
-	       "[SamplingFrequency:variable],"            + \
-	       "SamplingMultiplier:variable,"             + \
-	       "[ShowPlot:variable],"                     + \
-	       "[SlopePercentage:variable],"              + \
-	       "[NumInvalidSlopeSweepsAllowed:variable]," + \
-	       "[MaxFrequencyChangePercent:variable],"    + \
+	return "[AbsFrequencyMinDistance:variable],"     + \
+	       "AsyncQCChannels:wave,"                   + \
+	       "[BaselineRMSLongThreshold:variable],"    + \
+	       "[BaselineRMSShortThreshold:variable],"   + \
+	       "[BaselineTargetVThreshold:variable],"    + \
+	       "[DAScaleRangeFactor:variable],"          + \
+	       "[DAScaleModifier:variable],"             + \
+	       "[DAScaleNegativeSlopePercent:variable]," + \
+	       "[DaScaleStepWidthMinMaxRatio:variable]," + \
+	       "DAScales:wave,"                          + \
+	       "[FailingAdaptiveSCIRange:variable],"     + \
+	       "[FinalSlopePercent:variable],"           + \
+	       "[MaximumSpikeCount:variable],"           + \
+	       "[MinimumSpikeCount:variable],"           + \
+	       "[OffsetOperator:string],"                + \
+	       "OperationMode:string,"                   + \
+	       "[SamplingFrequency:variable],"           + \
+	       "SamplingMultiplier:variable,"            + \
+	       "[ShowPlot:variable],"                    + \
+	       "[SlopePercentage:variable],"             + \
+	       "[MaxFrequencyChangePercent:variable],"   + \
 	       "[NumSweepsWithSaturation:variable]"
 End
 
@@ -4015,8 +4030,6 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "NumSweepsWithSaturation":
 			return "Number of required consecutive passing sweeps to have passing sweep QC and f-I slope QC, defaults to 2. " + \
 			       "Only for \"AdaptiveSupra\"."
-		case "NumInvalidSlopeSweepsAllowed":
-			return "Number of allowed sweeps with invalid f-I fit slope. Only for \"AdaptiveSupra\"."
 		case "SlopePercentage":
 			return "Once the slope of the f-I fit is x percentage smaller "                                     \
 			       + "compared with the maximum slope, the stimset cycle is stopped. Only for \"AdaptiveSupra\"."
@@ -4087,12 +4100,6 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(IsNullOrPositiveAndFinite(val) || val == Inf))
 				return "Invalid value"
-			endif
-			break
-		case "NumInvalidSlopeSweepsAllowed":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= IDX_NumberOfSweepsInSet(s.setName)))
-				return "Invalid range"
 			endif
 			break
 		case "NumSweepsWithSaturation":
@@ -4267,13 +4274,12 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 	variable daScaleOffset
 	variable finalSlopePercent = NaN
 	variable daScaleModifier, chunk
-	variable numSweepsPass                = NaN
-	variable slopePercentage              = NaN
-	variable numInvalidSlopeSweepsAllowed = NaN
-	variable maxFrequencyChangePercent    = NaN
-	variable numSweepsWithSaturation      = NaN
-	variable dascaleStepWidthMinMaxRatio  = NaN
-	variable absFrequencyMinDistance      = NaN
+	variable numSweepsPass               = NaN
+	variable slopePercentage             = NaN
+	variable maxFrequencyChangePercent   = NaN
+	variable numSweepsWithSaturation     = NaN
+	variable dascaleStepWidthMinMaxRatio = NaN
+	variable absFrequencyMinDistance     = NaN
 
 	opMode     = AFH_GetAnalysisParamTextual("OperationMode", s.params)
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
@@ -4305,14 +4311,13 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 			numSweepsPass = NaN
 
-			slopePercentage              = AFH_GetAnalysisParamNumerical("SlopePercentage", s.params, defValue = PSQ_DA_SLOPE_PERCENTAGE_DEFAULT)
-			numSweepsWithSaturation      = AFH_GetAnalysisParamNumerical("NumSweepsWithSaturation", s.params, defValue = PSQ_DA_NUM_SWEEPS_SATURATION)
-			numInvalidSlopeSweepsAllowed = AFH_GetAnalysisParamNumerical("NumInvalidSlopeSweepsAllowed", s.params, defValue = PSQ_DA_NUM_INVALID_SLOPE_SWEEPS_ALLOWED)
-			maxFrequencyChangePercent    = AFH_GetAnalysisParamNumerical("MaxFrequencyChangePercent", s.params, defValue = PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT)
-			dascaleStepWidthMinMaxRatio  = AFH_GetAnalysisParamNumerical("DaScaleStepWidthMinMaxRatio", s.params, defValue = PSQ_DA_DASCALE_STEP_WITH_MIN_MAX_FACTOR)
-			absFrequencyMinDistance      = AFH_GetAnalysisParamNumerical("AbsFrequencyMinDistance", s.params, defValue = PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE)
-			fallbackDAScaleRangeFac      = AFH_GetAnalysisParamNumerical("DAScaleRangeFactor", s.params, defValue = PSQ_DA_FALLBACK_DASCALE_RANGE_FAC)
-			dascaleNegativeSlopePercent  = AFH_GetAnalysisParamNumerical("DAScaleNegativeSlopePercent", s.params, defValue = PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC)
+			slopePercentage             = AFH_GetAnalysisParamNumerical("SlopePercentage", s.params, defValue = PSQ_DA_SLOPE_PERCENTAGE_DEFAULT)
+			numSweepsWithSaturation     = AFH_GetAnalysisParamNumerical("NumSweepsWithSaturation", s.params, defValue = PSQ_DA_NUM_SWEEPS_SATURATION)
+			maxFrequencyChangePercent   = AFH_GetAnalysisParamNumerical("MaxFrequencyChangePercent", s.params, defValue = PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT)
+			dascaleStepWidthMinMaxRatio = AFH_GetAnalysisParamNumerical("DaScaleStepWidthMinMaxRatio", s.params, defValue = PSQ_DA_DASCALE_STEP_WITH_MIN_MAX_FACTOR)
+			absFrequencyMinDistance     = AFH_GetAnalysisParamNumerical("AbsFrequencyMinDistance", s.params, defValue = PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE)
+			fallbackDAScaleRangeFac     = AFH_GetAnalysisParamNumerical("DAScaleRangeFactor", s.params, defValue = PSQ_DA_FALLBACK_DASCALE_RANGE_FAC)
+			dascaleNegativeSlopePercent = AFH_GetAnalysisParamNumerical("DAScaleNegativeSlopePercent", s.params, defValue = PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC)
 
 			STRUCT PSQ_DS_DAScaleParams cdp
 			PSQ_DS_InitDAScaleParams(cdp)
@@ -4462,22 +4467,20 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					key                          = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FILLIN_PASS)
 					ED_AddEntryToLabnotebook(device, key, fillinQCLBN, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
-					validFit = PSQ_DS_AreFitResultsValid(device, s.sweepNo, s.headstage, fitOffsetFromRhSuAd, fitSlopeFromRhSuAd, fromRhSuAd = 1)
-
 					WAVE maxSlopeLBN = LBN_GetNumericWave()
 					maxSlope                 = WaveMax(fitSlopeFromRhSuAd)
 					maxSlopeLBN[s.headstage] = maxSlope
 					key                      = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
 					ED_AddEntryToLabnotebook(device, key, maxSlopeLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
 
-					Make/FREE/N=(DimSize(fitSlopeFromRhSuAd, ROWS)) fitSlopeQCfromRhSuAd = PSQ_DS_CalculateReachedFinalSlope(validFit, fitSlopeFromRhSuAd, DAScalesRhSuAd, fillinQCfromRhSuAd, fitSlopeFromRhSuAd[p], maxSlope, cdp.slopePercentage)
+					Make/FREE/N=(DimSize(fitSlopeFromRhSuAd, ROWS)) fitSlopeQCfromRhSuAd = PSQ_DS_CalculateReachedFinalSlope(fitSlopeFromRhSuAd, DAScalesRhSuAd, fillinQCfromRhSuAd, fitSlopeFromRhSuAd[p], maxSlope, cdp.slopePercentage)
 
 					WAVE/T fitSlopeQCLBN = LBN_GetTextWave()
 					fitSlopeQCLBN[INDEP_HEADSTAGE] = NumericWaveToList(fitSlopeQCfromRhSuAd, ";", format = "%d")
 					key                            = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_PASS)
 					ED_AddEntryToLabnotebook(device, key, fitSlopeQCLBN, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
-					Make/FREE/N=(DimSize(fitSlopeFromRhSuAd, ROWS)) negFitSlopeQCfromRhSuAd = PSQ_DS_CalculateNegativeSlopePass(validFit, fitSlopeFromRhSuAd, fillinQCfromRhSuAd, fitSlopeFromRhSuAd[p])
+					Make/FREE/N=(DimSize(fitSlopeFromRhSuAd, ROWS)) negFitSlopeQCfromRhSuAd = PSQ_DS_CalculateNegativeSlopePass(fitSlopeFromRhSuAd, fillinQCfromRhSuAd, fitSlopeFromRhSuAd[p])
 
 					WAVE/T negFitSlopeQCLBN = LBN_GetTextWave()
 					negFitSlopeQCLBN[INDEP_HEADSTAGE] = NumericWaveToList(negFitSlopeQCfromRhSuAd, ";", format = "%d")
@@ -4488,8 +4491,8 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					WAVE numericalValues = GetLBNumericalValues(device)
 					WAVE textualValues   = GetLBTextualValues(device)
 
-					[WAVE DAScalesRhSuAdForDAScale, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, s.sweepNo, s.headstage, PSQ_DS_DASCALE, filterPassing = 1, filterNegSlope = 1, fromRhSuAd = 1)
-					[WAVE apfreqRhSuAdForDAScale, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, s.sweepNo, s.headstage, PSQ_DS_APFREQ, filterPassing = 1, filterNegSlope = 1, fromRhSuAd = 1)
+					[WAVE DAScalesRhSuAdForDAScale, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, s.sweepNo, s.headstage, PSQ_DS_DASCALE, filterPassing = 1, filterNegSlopeAndNaN = 1, fromRhSuAd = 1)
+					[WAVE apfreqRhSuAdForDAScale, emptySCI]   = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, s.sweepNo, s.headstage, PSQ_DS_APFREQ, filterPassing = 1, filterNegSlopeAndNaN = 1, fromRhSuAd = 1)
 
 					[WAVE fitOffsetForDAScaleFromRhSuAd, WAVE fitSlopeForDAScaleFromRhSuAd, errMsg] = PSQ_DS_FitFrequencyCurrentData(device, s.sweepNo,                              \
 					                                                                                                                 apfreqRhSuAdForDAScale, DAScalesRhSuAdForDAScale)
@@ -4503,29 +4506,20 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					key                                = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_RSA_FI_SLOPES_DASCALE)
 					ED_AddEntryToLabnotebook(device, key, fitSlopeForDAScaleLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
 
-					if(validFit)
-						if(!WaveExists(futureDAScales))
-							if(PSQ_DS_AdaptiveIsFinished(device, s.sweepNo, s.headstage, numSweepsWithSaturation, fromRhSuAd = 1))
-								PSQ_ForceSetEvent(device, s.headstage)
-								RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
+					if(PSQ_DS_AdaptiveIsFinished(device, s.sweepNo, s.headstage, numSweepsWithSaturation, fromRhSuAd = 1))
+						PSQ_ForceSetEvent(device, s.headstage)
+						RA_SkipSweeps(device, Inf, SWEEP_SKIP_AUTO, limitToSetBorder = 1)
 
-								WAVE/ZZ DAScales
-								break
-							endif
-						endif
-
-						WAVE/T DAScaleNew = PSQ_DS_CalculateDAScale(cdp, numericalValues, textualValues, s.sweepNo, s.headstage, fromRhSuAd = 1)
-
-						Concatenate/FREE/NP=(ROWS)/T {DAScaleNew}, futureDAScales
+						WAVE/T DAScaleNew = PSQ_DS_CalculateDAScale(cdp, numericalValues, textualValues, s.sweepNo, s.headstage, fromRhSuAd = 1, alreadyDone = 1)
 					else
-						// when the fits from RhSuAd are not valid we are already done
+						WAVE/T DAScaleNew = PSQ_DS_CalculateDAScale(cdp, numericalValues, textualValues, s.sweepNo, s.headstage, fromRhSuAd = 1)
 					endif
 
-					if(WaveExists(futureDAScales))
-						PSQ_DS_CalcFutureDAScalesAndStoreInLBN(device, s.sweepNo, s.headstage, futureDAScales)
-					endif
+					Concatenate/FREE/NP=(ROWS)/T {DAScaleNew}, futureDAScales
 
-					WAVE/ZZ DAScales = futureDAScales
+					PSQ_DS_CalcFutureDAScalesAndStoreInLBN(device, s.sweepNo, s.headstage, futureDAScales)
+
+					WAVE DAScales = futureDAScales
 					break
 				default:
 					ASSERT(0, "Invalid opMode")
@@ -4579,9 +4573,6 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 					[WAVE/T futureDAScales] = PSQ_DS_EvaluateAdaptiveThresholdSweep(device, s.sweepNo, s.headstage, cdp)
 
-					key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_VALID_SLOPE_PASS, query = 1)
-					WAVE validSlopePassedQC = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
-
 					key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS, query = 1)
 					enoughFIPointsPassedQC = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 
@@ -4589,7 +4580,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					WAVE baselineChunk0Passed = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 
 					sweepExceptBLPostPulsePassed = baselineChunk0Passed[INDEP_HEADSTAGE] && samplingFrequencyPassed && asyncAlarmPassed \
-					                               && validSlopePassedQC[s.headstage] && enoughFIPointsPassedQC
+					                               && enoughFIPointsPassedQC
 
 					WAVE result = LBN_GetNumericWave()
 					result[INDEP_HEADSTAGE] = sweepExceptBLPostPulsePassed
@@ -4598,7 +4589,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 					sweepPassed = sweepExceptBLPostPulsePassed && baselineQCPassedLBN[s.headstage]
 
-					sprintf msg, "samplingFreq %s, async %s, validSlope %s, enoughFiPoints %s, baseline %s, sweepExceptBL %s, sweep %s\r", ToPassFail(samplingFrequencyPassed), ToPassFail(asyncAlarmPassed), ToPassFail(validSlopePassedQC[s.headstage]), ToPassFail(enoughFIPointsPassedQC), ToPassFail(baselineQCPassedLBN[s.headstage]), TopassFail(sweepExceptBLPostPulsePassed), ToPassFail(sweepPassed)
+					sprintf msg, "samplingFreq %s, async %s, enoughFiPoints %s, baseline %s, sweepExceptBL %s, sweep %s\r", ToPassFail(samplingFrequencyPassed), ToPassFail(asyncAlarmPassed), ToPassFail(enoughFIPointsPassedQC), ToPassFail(baselineQCPassedLBN[s.headstage]), TopassFail(sweepExceptBLPostPulsePassed), ToPassFail(sweepPassed)
 					DEBUGPRINT(msg)
 
 					break
@@ -4779,18 +4770,17 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 				case PSQ_DS_ADAPT:
 					PSQ_DS_CalcFutureDAScalesAndStoreInLBN(device, s.sweepNo, s.headstage, futureDAScales)
 
-					ret = PSQ_DS_AdaptiveDetermineSweepQCResults(device, s.sweepNo, s.headstage, numInvalidSlopeSweepsAllowed, numSweepsWithSaturation)
+					ret = PSQ_DS_AdaptiveDetermineSweepQCResults(device, s.sweepNo, s.headstage, numSweepsWithSaturation)
+
+					// refetch a possibly changed wave
+					WAVE/T futureDAScales = PSQ_DS_GetFutureDAScalesFromLBN(numericalValues, textualValues, s.sweepNo, s.headstage)
+
+					// prepare wave for setting DAScale; DAScalesIndex is incremented when required below
+					WAVE/ZZ DAScales = futureDAScales
 
 					if(ret == PSQ_RESULTS_DONE)
 						// do nothing
 					elseif(ret == PSQ_RESULTS_CONT)
-
-						// refetch a possibly changed wave
-						WAVE/T futureDAScales = PSQ_DS_GetFutureDAScalesFromLBN(numericalValues, textualValues, s.sweepNo, s.headstage)
-
-						// prepare wave for setting DAScale; DAScalesIndex is incremented when required below
-						WAVE/ZZ DAScales = futureDAScales
-
 						if(sweepPassed)
 							key                       = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_FUTURE_DASCALES_PASS, query = 1)
 							measuredAllFutureDAScales = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
@@ -4883,17 +4873,6 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(!statusHS[i])
 				continue
-			endif
-
-			if(!WaveExists(DAScales))
-				ASSERT(!cmpstr(opMode, PSQ_DS_ADAPT), "Invalid opMode")
-				// edge-case for adaptive suprathreshold:
-				// - initial data from supra had a failing fit
-				// - but was dense enough not to violate the maxFrequencyChangePercent requirement
-				// - or we already have NumSweepsWithSaturation sweeps in RhSuAd with passing f-I slope
-				// so we would be actually done, but we have to acquire at least one sweep so that we can attach data to it
-				// and in that case we just reuse the same DAScale value and then finish successfully
-				break
 			endif
 
 			index = DAScalesIndex[i]

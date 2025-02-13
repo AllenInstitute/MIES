@@ -1322,6 +1322,10 @@ StrConstant PSQ_DS_AD_FILLIN_RHSUAD               = "FillinRhSuAd"
 StrConstant PSQ_DS_AD_FILLIN                      = "Fillin"
 StrConstant PSQ_DS_AD_FILLIN_POSNEG_SLOPE_RHSUAD  = "FillinPosNegSlopeRhSuAd"
 StrConstant PSQ_DS_AD_FILLIN_POSNEG_SLOPE         = "FillinPosNegSlope"
+StrConstant PSQ_DS_AD_FALLBACK_RHSUAD             = "FallbackRhSuAd"
+StrConstant PSQ_DS_AD_FALLBACK                    = "Fallback"
+StrConstant PSQ_DS_AD_FINISHED_RHSUAD             = "FinishedRhSuAd"
+StrConstant PSQ_DS_AD_FINISHED                    = "Finished"
 ///@}
 
 StrConstant PSQ_DS_AD_TYPE_SEP = ":"
