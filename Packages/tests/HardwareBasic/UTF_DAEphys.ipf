@@ -55,6 +55,8 @@ Function CheckIfAllControlsReferStateWv([string str])
 			case CONTROL_TYPE_LISTBOX:
 			case CONTROL_TYPE_TAB:
 			case CONTROL_TYPE_VALDISPLAY:
+			case CONTROL_TYPE_GROUPBOX:
+			case CONTROL_TYPE_TITLEBOX:
 				// nothing to do
 				break
 			case CONTROL_TYPE_CHECKBOX:
@@ -199,6 +201,8 @@ Function CheckStartupSettings([string str])
 			case CONTROL_TYPE_LISTBOX:
 			case CONTROL_TYPE_TAB:
 			case CONTROL_TYPE_VALDISPLAY:
+			case CONTROL_TYPE_GROUPBOX:
+			case CONTROL_TYPE_TITLEBOX:
 				// nothing to do
 				break
 			case CONTROL_TYPE_CHECKBOX:
