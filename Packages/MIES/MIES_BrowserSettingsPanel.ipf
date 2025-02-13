@@ -876,8 +876,7 @@ End
 static Function BSP_UpdateSweepControls(string win, string ctrl, variable firstSweepOrIndex, variable lastSweepOrIndex)
 
 	string graph, scPanel
-	variable currentSweep, newSweep, step, direction, ret
-	variable firstSweep, lastSweep, firstIndex, lastIndex, currentIndex, newIndex
+	variable currentSweepOrIndex, newSweepOrIndex, step, direction
 
 	graph   = GetMainWindow(win)
 	scPanel = BSP_GetSweepControlsPanel(graph)
@@ -895,38 +894,17 @@ static Function BSP_UpdateSweepControls(string win, string ctrl, variable firstS
 		ASSERT(0, "unhandled control name")
 	endif
 
-	if(BSP_IsDataBrowser(graph))
-		firstSweep = firstSweepOrIndex
-		lastSweep  = lastSweepOrIndex
+	currentSweepOrIndex = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+	newSweepOrIndex     = currentSweepOrIndex + direction * step
+	newSweepOrIndex     = limit(newSweepOrIndex, firstSweepOrIndex, lastSweepOrIndex)
 
-		currentSweep = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
-		newSweep     = currentSweep + direction * step
-		newSweep     = limit(newSweep, firstSweep, lastSweep)
+	SetPopupMenuIndex(scPanel, "popup_SweepControl_Selector", newSweepOrIndex)
 
-		ret = newSweep
-	else
-		WAVE sweeps = SB_GetPlainSweepList(win)
-		firstIndex = 0
-		lastIndex  = DimSize(sweeps, ROWS) - 1
+	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", newSweepOrIndex)
+	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", firstSweepOrIndex, lastSweepOrIndex, step)
+	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var = lastSweepOrIndex)
 
-		currentIndex = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
-		newIndex     = currentIndex + direction * step
-		newIndex     = limit(newIndex, firstIndex, lastIndex)
-
-		newSweep   = sweeps[newIndex]
-		firstSweep = sweeps[firstIndex]
-		lastSweep  = sweeps[lastIndex]
-
-		SetPopupMenuIndex(scPanel, "popup_SweepControl_Selector", newIndex)
-
-		ret = newIndex
-	endif
-
-	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", newSweep)
-	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", firstSweep, lastSweep, step)
-	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var = lastSweep)
-
-	return ret
+	return newSweepOrIndex
 End
 
 /// @brief check if the specified setting is activated
@@ -1378,7 +1356,8 @@ Function/WAVE BSP_FetchSelectedChannels(string graph, [variable index, variable 
 	return channelSel
 End
 
-/// @brief Return the last and first sweep numbers
+/// @brief Return the last and first sweep numbers for the databrowser or the
+///        indizes for the sweepbrowser
 Function [variable first, variable last] BSP_FirstAndLastSweepAcquired(string win)
 
 	string list
@@ -1389,7 +1368,11 @@ Function [variable first, variable last] BSP_FirstAndLastSweepAcquired(string wi
 		return [NaN, NaN]
 	endif
 
-	return [sweeps[0], sweeps[DimSize(sweeps, ROWS) - 1]]
+	if(BSP_IsDataBrowser(win))
+		return [sweeps[0], sweeps[DimSize(sweeps, ROWS) - 1]]
+	endif
+
+	return [0, DimSize(sweeps, ROWS) - 1]
 End
 
 Function BSP_ButtonProc_ChangeSweep(STRUCT WMButtonAction &ba) : ButtonControl

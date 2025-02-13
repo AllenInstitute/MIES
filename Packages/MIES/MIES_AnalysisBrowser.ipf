@@ -1353,8 +1353,8 @@ static Function/WAVE AB_ReturnAndClearGUISelBits()
 
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 
-	Make/FREE/N=(DimSize(expBrowserSel, ROWS)) selBits = expBrowserSel[p][0] & LISTBOX_SELECTED
-	expBrowserSel[][0] = expBrowserSel[p][0] & ~LISTBOX_SELECTED
+	Make/FREE/N=(DimSize(expBrowserSel, ROWS)) selBits = expBrowserSel[p][0] & LISTBOX_SELECT_OR_SHIFT_SELECTION
+	expBrowserSel[][0] = expBrowserSel[p][0] & ~LISTBOX_SELECT_OR_SHIFT_SELECTION
 
 	return selBits
 End
@@ -1469,11 +1469,11 @@ End
 /// @returns valid indizes wave on success
 static Function/WAVE AB_GetExpandedIndices()
 
-	variable i, row, numEntries
+	variable i, row
 
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 	// Our mode for the listbox stores the selection bit only in the first column
-	WAVE/Z wv = FindIndizes(expBrowserSel, var = 1, prop = PROP_MATCHES_VAR_BIT_MASK)
+	WAVE/Z wv = FindIndizes(expBrowserSel, col = 0, var = LISTBOX_SELECT_OR_SHIFT_SELECTION, prop = PROP_MATCHES_VAR_BIT_MASK)
 	if(!WaveExists(wv))
 		Make/FREE/N=0 wv
 		return wv
@@ -1482,18 +1482,17 @@ static Function/WAVE AB_GetExpandedIndices()
 	// expand all selected treeviews
 	// as indizes might change during the loop run we have to determine the
 	// dimension size in the loop condition
-	numEntries = DimSize(wv, ROWS)
-	for(i = 0; i < numEntries; i += 1)
+	for(i = 0; i < DimSize(wv, ROWS); i += 1) // NOLINT
 		row = wv[i]
 
 		// we have to refetch the selected entries
 		if(!AB_ExpandIfCollapsed(row, EXPERIMENT_TREEVIEW_COLUMN))
-			WAVE wv = FindIndizes(expBrowserSel, var = 1, prop = PROP_MATCHES_VAR_BIT_MASK)
+			WAVE wv = FindIndizes(expBrowserSel, col = 0, var = LISTBOX_SELECT_OR_SHIFT_SELECTION, prop = PROP_MATCHES_VAR_BIT_MASK)
 			i = 0
 		endif
 
 		if(!AB_ExpandIfCollapsed(row, DEVICE_TREEVIEW_COLUMN))
-			WAVE wv = FindIndizes(expBrowserSel, var = 1, prop = PROP_MATCHES_VAR_BIT_MASK)
+			WAVE wv = FindIndizes(expBrowserSel, col = 0, var = LISTBOX_SELECT_OR_SHIFT_SELECTION, prop = PROP_MATCHES_VAR_BIT_MASK)
 			i = 0
 		endif
 	endfor
@@ -2750,7 +2749,7 @@ Function AB_ButtonProc_Refresh(STRUCT WMButtonAction &ba) : ButtonControl
 
 			WAVE/T folderList      = GetAnalysisBrowserGUIFolderList()
 			WAVE   folderSelection = GetAnalysisBrowserGUIFolderSelection()
-			WAVE/Z indices         = FindIndizes(folderSelection, col = 0, var = 0x1, prop = PROP_MATCHES_VAR_BIT_MASK)
+			WAVE/Z indices         = FindIndizes(folderSelection, col = 0, var = LISTBOX_SELECT_OR_SHIFT_SELECTION, prop = PROP_MATCHES_VAR_BIT_MASK)
 			if(!WaveExists(indices))
 				size = DimSize(folderList, ROWS)
 				Make/FREE/N=(size) indices
@@ -2985,7 +2984,7 @@ Function AB_ButtonProc_SelectStimSets(STRUCT WMButtonAction &ba) : ButtonControl
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 			WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 
-			WAVE/Z indizes = FindIndizes(expBrowserSel, var = 1)
+			WAVE/Z indizes = FindIndizes(expBrowserSel, col = 0, var = LISTBOX_SELECT_OR_SHIFT_SELECTION, prop = PROP_MATCHES_VAR_BIT_MASK)
 
 			if(!WaveExists(indizes) || DimSize(indizes, ROWS) != 1)
 				print "Please select exactly one row to use this feature"
@@ -3001,12 +3000,12 @@ Function AB_ButtonProc_SelectStimSets(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 
-			WAVE indizes = FindIndizes(expBrowserList, colLabel = "stim sets", str = selectedStimSet)
-			expBrowserSel[][] = expBrowserSel[p][q] & ~LISTBOX_SELECTED
+			WAVE indizes = FindIndizes(expBrowserList, col = 0, colLabel = "stim sets", str = selectedStimSet)
+			expBrowserSel[][] = expBrowserSel[p][q] & ~(LISTBOX_SELECT_OR_SHIFT_SELECTION)
 
 			numEntries = DimSize(indizes, ROWS)
 			for(i = 0; i < numEntries; i += 1)
-				expBrowserSel[indizes[i]][] = expBrowserSel[p][q] | LISTBOX_SELECTED
+				expBrowserSel[indizes[i]][] = expBrowserSel[p][q] | LISTBOX_SELECT_OR_SHIFT_SELECTION
 			endfor
 
 			break
@@ -3108,7 +3107,7 @@ Function AB_ButtonProc_OpenCommentNB(STRUCT WMButtonAction &ba) : ButtonControl
 			WAVE   expBrowserSel  = GetExperimentBrowserGUISel()
 			WAVE/T map            = GetAnalysisBrowserMap()
 
-			WAVE/Z indizes = FindIndizes(expBrowserSel, var = 1)
+			WAVE/Z indizes = FindIndizes(expBrowserSel, col = 0, var = LISTBOX_SELECT_OR_SHIFT_SELECTION, prop = PROP_MATCHES_VAR_BIT_MASK)
 
 			if(!WaveExists(indizes) || DimSize(indizes, ROWS) != 1)
 				print "Please select a sweep belonging to a device to use this feature"

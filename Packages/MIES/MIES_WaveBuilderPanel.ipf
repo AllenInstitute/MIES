@@ -1829,7 +1829,7 @@ static Function WBP_ToggleAnalysisParamGUI()
 	ListBox list_params, listWave=listWave
 	ListBox list_params, selWave=selWave
 	ListBox list_params, helpWave=helpWave
-	ListBox list_params, mode=4, widths={180, 60, 120, 60, 600}, userColumnResize=1
+	ListBox list_params, mode=9, widths={180, 60, 120, 60, 600}, userColumnResize=1
 	ListBox list_params, userdata(ResizeControlsInfo)=A"!!,I!J,hkh!!#D1!!#B1z!!#N3Bk1ct<C]MV0`V1Rzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_params, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ListBox list_params, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"

@@ -630,10 +630,16 @@ Function SB_PopupMenuSelectSweep(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = CHECKBOX_UNSELECTED)
 
-			WAVE sweeps = SB_GetPlainSweepList(win)
 			newIndex = pa.popNum - 1
-			newSweep = sweeps[newIndex]
-			SetSetVariable(win, "setvar_SweepControl_SweepNo", newSweep)
+
+			if(BSP_IsDataBrowser(win))
+				WAVE sweeps = SB_GetPlainSweepList(win)
+				newSweep = sweeps[newIndex]
+
+				SetSetVariable(win, "setvar_SweepControl_SweepNo", newSweep)
+			else
+				SetSetVariable(win, "setvar_SweepControl_SweepNo", newIndex)
+			endif
 
 			if(OVS_IsActive(win))
 				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index = newIndex)

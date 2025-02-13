@@ -21,7 +21,7 @@ Window AnalysisBrowser() : Panel
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)=A"!!,FS!!#A%!!#E8J,htSz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	ListBox list_experiment_contents, mode=4
+	ListBox list_experiment_contents, mode=9
 	ListBox list_experiment_contents, widths={40, 322, 65, 21, 94, 57, 50, 77, 159, 63, 42, 42}
 	ListBox list_experiment_contents, userColumnResize=1
 	Button button_select_same_stim_sets, pos={6.00, 151.00}, size={100.00, 30.00}, proc=AB_ButtonProc_SelectStimSets
@@ -78,7 +78,7 @@ Window AnalysisBrowser() : Panel
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)=A"!!,FS!!#97!!#E85QF.Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	ListBox listbox_AB_Folders, labelBack=(65535, 65535, 65535), mode=4
+	ListBox listbox_AB_Folders, labelBack=(65535, 65535, 65535), mode=9
 	Button button_AB_AddFolder, pos={7.00, 5.00}, size={100.00, 25.00}, proc=AB_ButtonProc_AddFolder
 	Button button_AB_AddFolder, title="Add folder"
 	Button button_AB_AddFolder, help={"Add a new folder to the list"}
