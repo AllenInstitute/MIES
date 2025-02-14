@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_CHI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_CheckInstallation.ipf
 ///
@@ -198,7 +198,7 @@ Function CHI_CheckInstallation()
 	printf "Yes\r"
 #else
 	printf "No\r"
-#endif
+#endif // DEBUGGING_ENABLED
 
 	printf "EVIL_KITTEN_EATING_MODE: "
 #ifdef EVIL_KITTEN_EATING_MODE
@@ -206,14 +206,14 @@ Function CHI_CheckInstallation()
 	printf "Yes (Very Bad)\r"
 #else
 	printf "No\r"
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 	printf "BACKGROUND_TASK_DEBUGGING: "
 #ifdef BACKGROUND_TASK_DEBUGGING
 	printf "Yes\r"
 #else
 	printf "No\r"
-#endif
+#endif // BACKGROUND_TASK_DEBUGGING
 
 	printf "THREADING_DISABLED: "
 #ifdef THREADING_DISABLED
@@ -221,7 +221,7 @@ Function CHI_CheckInstallation()
 	printf "Yes (Very Bad)\r"
 #else
 	printf "No\r"
-#endif
+#endif // THREADING_DISABLED
 
 	printf "\rChecking base installation:\r"
 
@@ -239,7 +239,7 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
-#endif
+#endif // WINDOWS
 
 	// one operation/function of each non-hardware XOP needs to be called in CheckCompilation_IGNORE()
 	CHI_CheckXOP(listOfXOPs, "JSON-64.xop", "JSON XOP", state)
@@ -249,12 +249,12 @@ Function CHI_CheckInstallation()
 #ifdef WINDOWS
 	CHI_CheckXOP(listOfXOPs, "MiesUtils-64.xop", "MiesUtils XOP", state)
 	CHI_CheckXOP(listOfXOPs, "mies-nwb2-compound-XOP-64.xop", "NWBv2 compound XOP", state)
-#endif
+#endif // WINDOWS
 
 	CHI_CheckJSONXOPVersion(state)
 #ifdef WINDOWS
 	CHI_CheckITCXOPVersion(state)
-#endif
+#endif // WINDOWS
 	CHI_CheckTUFXOPVersion(state)
 
 	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
@@ -267,7 +267,7 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", stateExtended, expectedHash = CHI_NIDAQ_XOP_64_HASH)
 
 	printf "Results: %d checks, %d number of errors\r", stateExtended.numTries, stateExtended.numErrors
-#endif
+#endif // WINDOWS
 	ControlWindowToFront()
 
 	return state.numErrors

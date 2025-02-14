@@ -151,7 +151,7 @@ then
 fi
 
 # U means non-greedy matching
-matches=$(git grep $opts -e '^(?U)[[:space:]]*for\(.*\(.*\).*\)' --and -e ';' --and --not -e ':' --and --not -e '//[[:space:]]*NOLINT$' '*/MIES_*.ipf')
+matches=$(git grep $opts -e '^(?U)[[:space:]]*for\(.*[a-z]+\(.*\).*\)' --and -e ';' --and --not -e ':' --and --not -e '//[[:space:]]*NOLINT$' '*/MIES_*.ipf')
 
 if [[ -n "$matches" ]]
 then

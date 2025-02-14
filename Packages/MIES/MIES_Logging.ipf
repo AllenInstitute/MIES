@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_LOG
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_PackageSettings.ipf
 /// @brief __LOG__ Routines for dealing with JSON log files

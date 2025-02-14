@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TSDS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_ThreadsafeDataSharing.ipf
 ///

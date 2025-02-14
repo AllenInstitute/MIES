@@ -7,7 +7,7 @@
 Constant PSQ_TEST_HEADSTAGE = 0
 #else
 Constant PSQ_TEST_HEADSTAGE = 2
-#endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 StrConstant ZSTD_SUFFIX = ".zst"
 

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SFHCheckers
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_SFHCheckers.ipf
 /// @brief Threadsafe check functions which comply with either SFH_NumericChecker_Prototype or SFH_StringChecker_Prototype

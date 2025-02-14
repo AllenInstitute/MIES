@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_BROWSER_PLOTTER
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Browser_Plotter.ipf
 /// @brief Functions for plotting DataBrowser/Sweepbrowser Graphs
@@ -307,6 +307,9 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 					numChannels = numTTLs
 					break
+				default:
+					ASSERT(0, "Unsupported channel type")
+					break
 			endswitch
 
 			if(DimSize(channelList, ROWS) == 0)
@@ -346,7 +349,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			// waves per channel type
 			for(j = 0; j < numVertWaves; j += 1)
 
-				ttlBit = channelType == XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits ? j : NaN
+				ttlBit = (channelType == XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits) ? j : NaN
 
 				if(channelType == XOP_CHANNEL_TYPE_TTL)
 					guiChannelNumber = channelMapHWToGUI[chan][IsNaN(ttlBit) ? 0 : ttlBit]

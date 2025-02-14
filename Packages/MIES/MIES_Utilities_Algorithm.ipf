@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_ALGORITHM
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_Algorithm.ipf
 /// @brief utility functions for common algorithms
@@ -80,7 +80,7 @@ Function Downsample(WAVE/Z wv, variable downsampleFactor, variable upsampleFacto
 		case DECIMATION_BY_AVERAGING:
 			// See again the Igor Manual page III-141
 			// take the next odd number
-			numReconstructionSamples = mod(downSampleFactor, 2) == 0 ? downSampleFactor + 1 : downSampleFactor
+			numReconstructionSamples = (mod(downSampleFactor, 2) == 0) ? (downSampleFactor + 1) : downSampleFactor
 			Resample/DOWN=(downsampleFactor)/UP=(upsampleFactor)/N=(numReconstructionSamples)/WINF=None wv
 			break
 		default:
@@ -263,7 +263,7 @@ threadsafe Function GetRowIndex(WAVE wv, [variable val, string str, WAVE/Z refWa
 
 	variable numEntries, i
 
-	ASSERT_TS(ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave) == 2, "Expected exactly one argument")
+	ASSERT_TS((ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave)) == 2, "Expected exactly one argument")
 
 	if(ParamIsDefault(reverseSearch))
 		reverseSearch = 0
@@ -852,7 +852,7 @@ threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable ed
 		maxLevels = WaveMax(numMaxLevels)
 		Make/D/FREE/N=(numColsFixed, maxLevels) resultMulti
 
-		resultMulti[][] = q < numMaxLevels[p] ? WaveRef(allLevels[p])[q] : NaN
+		resultMulti[][] = (q < numMaxLevels[p]) ? WaveRef(allLevels[p])[q] : NaN
 	endif
 
 	// don't use numColsFixed here as we want to have the original shape
@@ -922,7 +922,7 @@ Function [WAVE/D start, WAVE/D stop] DistributeElements(variable numElements, [v
 
 	// limit the spacing for a lot of entries
 	// we only want to use 20% for spacing in total
-	if((numElements - 1) * GRAPH_DIV_SPACING > 0.20)
+	if(((numElements - 1) * GRAPH_DIV_SPACING) > 0.20)
 		spacing = 0.20 / (numElements - 1)
 	else
 		spacing = GRAPH_DIV_SPACING
@@ -1134,7 +1134,7 @@ Function/WAVE SplitLogDataBySize(WAVE/T logData, string sep, variable lim, [vari
 
 	lineCnt       = DimSize(logData, ROWS)
 	firstPartSize = ParamIsDefault(firstPartSize) ? lim : firstPartSize
-	lastIndex     = ParamIsDefault(lastIndex) ? lineCnt - 1 : limit(lastIndex, 0, lineCnt - 1)
+	lastIndex     = ParamIsDefault(lastIndex) ? (lineCnt - 1) : limit(lastIndex, 0, lineCnt - 1)
 	sepLen        = strlen(sep)
 	Make/FREE/D/N=(lastIndex + 1) logSizes
 	MultiThread logSizes[0, lastIndex] = strlen(logData[p])

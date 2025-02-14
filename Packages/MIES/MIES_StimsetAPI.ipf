@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_STAPI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_StimsetAPI.ipf
 /// @brief __ST__ Stimulus set API
@@ -68,7 +68,7 @@ static Function/WAVE ST_GetStimsetParametersEpochType(string setName, variable e
 
 	// remove empty elements from the end
 	FindValue/TEXT=""/TXOP=4 wv
-	Redimension/N=(V_Value >= 0 ? V_Value : numpnts(wv)) wv
+	Redimension/N=((V_Value >= 0) ? V_Value : numpnts(wv)) wv
 
 	return wv
 End

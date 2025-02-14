@@ -321,7 +321,7 @@ static Function [WAVE apFreqRef, WAVE apFreqFromRhSuAd, WAVE DAScalesFromRhSuAd,
 	WAVE/Z sweepPassedFRomRhSuAd = JWN_GetNumericWaveFromWaveNote(overrideResults, "/PassingRhSuAdSweeps")
 
 	if(!ParamIsDefault(baselineQC))
-		apFreqRef[] = baselineQC[p] == 1 ? apFreqRef[p] : NaN
+		apFreqRef[] = (baselineQC[p] == 1) ? apFreqRef[p] : NaN
 
 		if(!HasOneValidEntry(apFreqRef))
 			WaveClear apFreqRef

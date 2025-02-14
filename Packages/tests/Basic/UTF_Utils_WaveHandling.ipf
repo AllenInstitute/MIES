@@ -850,7 +850,7 @@ Function WMCW_Works2()
 	CHECK_EQUAL_VAR(V_numNans, DimSize(junkWave, ROWS))
 End
 
-#endif // THREADING_DISABLED
+#endif // !THREADING_DISABLED
 
 /// @}
 

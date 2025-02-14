@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_ASYNC
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Async.ipf
 /// @brief __ASYNC__ This file holds the asynchronous execution framework
@@ -70,7 +70,7 @@ Function ASYNC_Start(variable numThreads, [variable disableTask])
 	for(i = 0; i < numThreads; i += 1)
 		ThreadStart tgID, i, ASYNC_Thread()
 	endfor
-#endif
+#endif // !THREADING_DISABLED
 
 	return 1
 End
@@ -190,7 +190,7 @@ Function ASYNC_ThreadReadOut()
 		endif
 #else
 		DFREF dfr = ThreadGroupGetDFR(tgID, 0)
-#endif
+#endif // THREADING_DISABLED
 
 		if(!DataFolderExistsDFR(dfr))
 
@@ -208,7 +208,7 @@ Function ASYNC_ThreadReadOut()
 				SVAR workloadClass        = dfr:$ASYNC_WORKLOADCLASS_STR
 				wlcIndex = FindDimLabel(track, ROWS, workloadClass)
 				ASSERT(wlcIndex >= 0, "Could not find work load class")
-				if(workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT] == 0)
+				if((workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT]) == 0)
 					DeletePoints i, 1, DFREFbuffer
 					break
 				endif
@@ -227,7 +227,7 @@ Function ASYNC_ThreadReadOut()
 				WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
 				wlcIndex = FindDimLabel(track, ROWS, workloadClass)
 				ASSERT(wlcIndex >= 0, "Could not find work load class")
-				if(workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT] != 0)
+				if((workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT]) != 0)
 					bufferSize = numpnts(DFREFbuffer)
 					Redimension/N=(bufferSize + 1) DFREFbuffer
 					DFREFbuffer[bufferSize] = dfr
@@ -480,7 +480,7 @@ Function ASYNC_Stop([variable timeout, variable fromAssert])
 			break
 		endif
 	while(waitResult != 0)
-#endif
+#endif // THREADING_DISABLED
 
 	NVAR noTask = $GetTaskDisableStatus()
 	if(!noTask)
@@ -636,7 +636,7 @@ Function ASYNC_Execute(DFREF dfr)
 	SetNumberInWaveNote(serialExecutionBuffer, NOTE_INDEX, ++index)
 #else
 	TS_ThreadGroupPutDFR(tgID, dfr)
-#endif
+#endif // THREADING_DISABLED
 
 End
 
@@ -665,7 +665,7 @@ static Function ASYNC_IsASYNCRunning()
 #else
 	AssertOnAndClearRTError()
 	waitResult = ThreadGroupWait(tgID, 0); err = GetRTError(1)
-#endif
+#endif // THREADING_DISABLED
 
 	return err == 0 && waitResult != 0
 End

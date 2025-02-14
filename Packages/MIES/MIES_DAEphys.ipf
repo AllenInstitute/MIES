@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DAP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DAEphys.ipf
 /// @brief __DAP__ Main data acquisition panel routines
@@ -86,7 +86,7 @@ Function/S DAP_GetNIDeviceList()
 				endif
 			endif
 		endfor
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 	endfor
 
 	if(!IsEmpty(devList))
@@ -841,6 +841,8 @@ Function DAP_WindowHook(STRUCT WMWinHookStruct &s)
 				endif
 			endfor
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -871,7 +873,8 @@ static Function DAP_UpdateDrawElements(string device, variable tab)
 
 			break
 		default:
-		// do nothing
+			// do nothing
+			break
 	endswitch
 End
 
@@ -958,6 +961,8 @@ Function DAP_SetVarProc_Channel_Search(STRUCT WMSetVariableAction &sva) : SetVar
 				endfor
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -983,6 +988,8 @@ Function DAP_DAorTTLCheckProc(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 				Abort
 			endtry
 
+			break
+		default:
 			break
 	endswitch
 End
@@ -1019,6 +1026,8 @@ Function DAP_CheckProc_Channel_All(STRUCT WMCheckboxAction &cba) : CheckBoxContr
 				control = GetPanelControl(i, channelType, CHANNEL_CONTROL_CHECK)
 				PGC_SetAndActivateControl(device, control, val = allChecked, mode = PGC_MODE_SKIP_ON_DISABLED)
 			endfor
+			break
+		default:
 			break
 	endswitch
 
@@ -1087,6 +1096,8 @@ Function DAP_CheckProc_AD(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			endtry
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1107,9 +1118,9 @@ Function GetHeadstageFromSettings(string device, variable channelType, variable 
 	WAVE chanAmpAssign = GetChanAmpAssign(device)
 
 	if(channelType == XOP_CHANNEL_TYPE_ADC)
-		row = clampMode == V_CLAMP_MODE ? 2 : 2 + 4
+		row = (clampMode == V_CLAMP_MODE) ? 2 : (2 + 4)
 	elseif(channelType == XOP_CHANNEL_TYPE_DAC)
-		row = clampMode == V_CLAMP_MODE ? 0 : 0 + 4
+		row = (clampMode == V_CLAMP_MODE) ? 0 : (0 + 4)
 	else
 		ASSERT(0, "Unexpected clamp mode")
 	endif
@@ -1352,6 +1363,9 @@ Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable f
 		case HARDWARE_NI_DAC:
 			HW_NI_ResetTaskIDs(device)
 			break
+		default:
+			// do nothing
+			break
 	endswitch
 
 	NVAR count = $GetCount(device)
@@ -1428,6 +1442,8 @@ Function DAP_CheckProc_IndexingState(STRUCT WMCheckboxAction &cba) : CheckBoxCon
 			endif
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1448,6 +1464,8 @@ Function DAP_CheckProc_ShowScopeWin(STRUCT WMCheckboxAction &cba) : CheckBoxCont
 			else
 				SCOPE_KillScopeWindowIfRequest(device)
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -1484,6 +1502,8 @@ Function DAP_ButtonProc_AllChanOff(STRUCT WMButtonAction &ba) : ButtonControl
 			DAP_TurnOffAllChannels(device, CHANNEL_TYPE_ADC)
 			DAP_TurnOffAllChannels(device, CHANNEL_TYPE_DAC)
 			DAP_TurnOffAllChannels(device, CHANNEL_TYPE_TTL)
+			break
+		default:
 			break
 	endswitch
 End
@@ -1564,6 +1584,8 @@ Function DAP_PopMenuChkProc_StimSetList(STRUCT WMPopupAction &pa) : PopupMenuCon
 			endif
 
 			break
+		default:
+			break
 	endswitch
 	return 0
 End
@@ -1601,6 +1623,8 @@ Function DAP_SetVarProc_DA_Scale(STRUCT WMSetVariableAction &sva) : SetVariableC
 			break
 		case 9: // mouse down
 			ShowSetVariableLimitsSelectionPopup(sva)
+			break
+		default:
 			break
 	endswitch
 
@@ -1717,6 +1741,8 @@ Function DAP_SetVarProc_TotSweepCount(STRUCT WMSetVariableAction &sva) : SetVari
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			DAP_UpdateSweepSetVariables(device)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1727,6 +1753,8 @@ Function DAP_ButtonCtrlFindConnectedAmps(STRUCT WMButtonAction &ba) : ButtonCont
 	switch(ba.eventcode)
 		case 2: // mouse up
 			AI_FindConnectedAmps()
+			break
+		default:
 			break
 	endswitch
 End
@@ -1803,6 +1831,8 @@ Function DAP_PopMenuProc_Headstage(STRUCT WMPopupAction &pa) : PopupMenuControl
 			DAP_SyncDeviceAssocSettToGUI(device, headStage)
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1819,6 +1849,8 @@ Function DAP_PopMenuProc_CAA(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 			DAP_UpdateChanAmpAssignStorWv(device)
 			P_UpdatePressureDataStorageWv(device)
+			break
+		default:
 			break
 	endswitch
 
@@ -1841,6 +1873,9 @@ Function DAP_SetVarProc_CAA(STRUCT WMSetVariableAction &sva) : SetVariableContro
 				case "setvar_DataAcq_PPDuration":
 					DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 					break
+				default:
+					// not stored in GUI state wave
+					break
 			endswitch
 
 			DAP_UpdateChanAmpAssignStorWv(device)
@@ -1853,7 +1888,12 @@ Function DAP_SetVarProc_CAA(STRUCT WMSetVariableAction &sva) : SetVariableContro
 				case "setvar_DataAcq_PPDuration":
 					ShowSetVariableLimitsSelectionPopup(sva)
 					break
+				default:
+					// not stored in GUI state wave
+					break
 			endswitch
+			break
+		default:
 			break
 	endswitch
 
@@ -1903,6 +1943,8 @@ Function DAP_ButtonProc_ClearChanCon(STRUCT WMButtonAction &ba) : ButtonControl
 			ChanAmpAssign[8, 9][headStage]    = NaN
 
 			DAP_UpdateChanAmpAssignPanel(device)
+			break
+		default:
 			break
 	endswitch
 
@@ -2075,7 +2117,7 @@ Function DAP_CheckSettings(string device, variable mode)
 		ControlWindowToFront()
 		return 1
 	endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 	if(!HasPanelLatestVersion(device, DA_EPHYS_PANEL_VERSION))
 		printf "(%s) The DA_Ephys panel is too old to be usable. Please close it and open a new one.\r", device
 		ControlWindowToFront()
@@ -2386,7 +2428,7 @@ static Function DAP_CheckAsyncSettings(string device)
 		hwChannel = HW_ITC_CalculateDevChannelOff(device) + i
 
 		// AD channel already used
-		isADinUse = hwChannel + auxOffset < NUM_AD_CHANNELS ? statusAD[hwChannel + auxOffset] : 0
+		isADinUse = ((hwChannel + auxOffset) < NUM_AD_CHANNELS) ? statusAD[hwChannel + auxOffset] : 0
 		if(hwChannel < NUM_ASYNC_CHANNELS && isADinUse)
 			printf "(%s) The Async channel %d is already used for DAQ.\r", device, i
 			ControlWindowToFront()
@@ -2482,7 +2524,7 @@ static Function DAP_CheckPressureSettings(string device)
 			endif
 		endif
 	endif
-#endif // EVIL_KITTEN_EATING_MODE
+#endif // !EVIL_KITTEN_EATING_MODE
 
 	return 0
 End
@@ -2687,13 +2729,13 @@ static Function DAP_CheckHeadStage(string device, variable headStage, variable m
 	endif
 
 #ifndef EVIL_KITTEN_EATING_MODE
-	if(DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn") && ampConnState != AMPLIFIER_CONNECTION_SUCCESS || ampConnState == AMPLIFIER_CONNECTION_MCC_FAILED)
+	if((DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn") && ampConnState != AMPLIFIER_CONNECTION_SUCCESS) || ampConnState == AMPLIFIER_CONNECTION_MCC_FAILED)
 		printf "(%s) The amplifier of the headstage %d can not be selected, please call \"Query connected Amps\" from the Hardware Tab\r", device, headStage
 		printf " and ensure that the \"Multiclamp 700B Commander\" application is open.\r"
 		ControlWindowToFront()
 		return 1
 	endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 
 #ifndef EVIL_KITTEN_EATING_MODE
 	if(GetHardwareType(device) == HARDWARE_NI_DAC)
@@ -2705,7 +2747,7 @@ static Function DAP_CheckHeadStage(string device, variable headStage, variable m
 			return 1
 		endif
 	endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 
 	return 0
 End
@@ -3028,7 +3070,7 @@ static Function DAP_RemoveClampModeSettings(string device, variable headStage, v
 	endif
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
-		ChannelClampMode[][][%Headstage] = ChannelClampMode[p][q][%Headstage] == headstage ? NaN : ChannelClampMode[p][q][%Headstage]
+		ChannelClampMode[][][%Headstage] = (ChannelClampMode[p][q][%Headstage] == headstage) ? NaN : ChannelClampMode[p][q][%Headstage]
 		return NaN
 	endif
 
@@ -3182,6 +3224,8 @@ Function DAP_CheckProc_ClampMode(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 				Abort
 			endtry
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3207,6 +3251,8 @@ Function DAP_CheckProc_HedstgeChck(STRUCT WMCheckboxAction &cba) : CheckBoxContr
 			endtry
 
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+			break
+		default:
 			break
 	endswitch
 
@@ -3355,7 +3401,7 @@ static Function DAP_SetHeadstageChanControls(string device, variable headstage, 
 		return NaN
 	endif
 
-	oppositeMode = (clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE ? V_CLAMP_MODE : I_CLAMP_MODE)
+	oppositeMode = ((clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE) ? V_CLAMP_MODE : I_CLAMP_MODE)
 	DAP_RemoveClampModeSettings(device, headstage, oppositeMode)
 	DAP_ApplyClmpModeSavdSettngs(device, headstage, clampMode)
 	DAP_AllChanDASettings(device, headStage, delayed = delayed)
@@ -3429,7 +3475,7 @@ static Function DAP_ChangeHeadstageState(string device, string headStageCtrl, va
 		ICstate    = GetCheckBoxState(device, ICctrl)
 		IZeroState = GetCheckBoxState(device, IZeroCtrl)
 
-		if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
+		if((VCstate + ICstate + IZeroState) != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
 			PGC_SetAndActivateControl(device, VCctrl, val = CHECKBOX_SELECTED)
 		else
 			if(enabled && DAG_GetNumericalValue(device, "check_Settings_SyncMiesToMCC"))
@@ -3504,6 +3550,8 @@ Function DAP_ButtonProc_AutoFillGain(STRUCT WMButtonAction &ba) : ButtonControl
 				printf "(%s) Could not find any amplifiers connected with headstages.\r", device
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3516,7 +3564,7 @@ Function DAP_SliderProc_MIESHeadStage(STRUCT WMSliderAction &sc) : SliderControl
 
 	// eventCode is a bitmask as opposed to a plain value
 	// compared to other controls
-	if(sc.eventCode > 0 && sc.eventCode & 0x1)
+	if(sc.eventCode > 0 && (sc.eventCode & 0x1))
 		headstage = sc.curval
 		device    = sc.win
 		DAG_Update(device, sc.ctrlName, val = headstage)
@@ -3552,6 +3600,8 @@ Function DAP_SetVarProc_AmpCntrls(STRUCT WMSetVariableAction &sva) : SetVariable
 			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(device, ctrl, headStage)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3569,6 +3619,8 @@ Function DAP_ButtonProc_AmpCntrls(STRUCT WMButtonAction &ba) : ButtonControl
 
 			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(device, ctrl, headstage)
+			break
+		default:
 			break
 	endswitch
 
@@ -3589,6 +3641,8 @@ Function DAP_CheckProc_AmpCntrls(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(device, ctrl, headStage)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3606,6 +3660,8 @@ Function DAP_CheckProc_MDEnable(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			checked = cba.checked
 			DAG_Update(device, cba.ctrlName, val = checked)
 			AdaptDependentControls(device, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq", CHECKBOX_UNSELECTED, checked, DEP_CTRLS_SAME)
+			break
+		default:
 			break
 	endswitch
 
@@ -3637,6 +3693,8 @@ Function DAP_CheckProc_InsertTP(STRUCT WMCheckBoxAction &cba) : CheckBoxControl
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			device = cba.win
 			DAP_UpdateOnsetDelay(cba.win)
+			break
+		default:
 			break
 	endswitch
 
@@ -3677,6 +3735,8 @@ Function DAP_SetVarProc_TestPulseSett(STRUCT WMSetVariableAction &sva) : SetVari
 
 			DAP_TPGUISettingToWave(device, sva.ctrlName, sva.dval)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3697,6 +3757,8 @@ Function DAP_CheckProc_TestPulseSett(STRUCT WMCheckboxAction &cba) : CheckBoxCon
 			DAG_Update(device, ctrl, val = checked)
 
 			DAP_TPGUISettingToWave(device, ctrl, checked)
+			break
+		default:
 			break
 	endswitch
 
@@ -3746,6 +3808,8 @@ Function DAP_CheckProc_RepeatedAcq(STRUCT WMCheckboxAction &cba) : CheckBoxContr
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			DAP_UpdateSweepSetVariables(cba.win)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3780,6 +3844,8 @@ Function DAP_CheckProc_SyncCtrl(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3792,6 +3858,8 @@ Function DAP_SetVarProc_SyncCtrl(STRUCT WMSetVariableAction &sva) : SetVariableC
 		case 2: // Enter key
 		case 3: // Live update
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
+			break
+		default:
 			break
 	endswitch
 
@@ -3847,6 +3915,8 @@ Function DAP_ButtonProc_TPDAQ(STRUCT WMButtonAction &ba) : ButtonControl
 				ASSERT(0, "invalid control")
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3897,6 +3967,8 @@ Function DAP_ButtonProc_OpenCommentNB(STRUCT WMButtonAction &ba) : ButtonControl
 
 			DAP_OpenCommentPanel(device)
 			DAP_AddUserComment(device)
+			break
+		default:
 			break
 	endswitch
 
@@ -4051,6 +4123,8 @@ Function DAP_CommentPanelHook(STRUCT WMWinHookStruct &s)
 				DAP_SerializeCommentNotebook(device)
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	// return zero so that other hooks are called as well
@@ -4101,6 +4175,8 @@ Function DAP_CheckProc_LockedLogic(STRUCT WMCheckboxAction &cba) : CheckBoxContr
 			if(cmpstr(cba.win, "check_Settings_Option_3") == 0 && cba.checked)
 				PGC_SetAndActivateControl(cba.win, "Check_DataAcq_Indexing", val = 1)
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -4247,6 +4323,8 @@ Function DAP_CheckProc_UpdateGuiState(STRUCT WMCheckboxAction &cba) : CheckBoxCo
 		case 2: // mouse up
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -4264,6 +4342,8 @@ Function DAP_SetVar_SetScale(STRUCT WMSetVariableAction &sva) : SetVariableContr
 		case 9: // mouse down
 			ShowSetVariableLimitsSelectionPopup(sva)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -4277,6 +4357,8 @@ Function DAP_SetVar_UpdateGuiState(STRUCT WMSetVariableAction &sva) : SetVariabl
 		case 3: // Live update
 		case 8: // end edit
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
+			break
+		default:
 			break
 	endswitch
 
@@ -4300,6 +4382,8 @@ Function DAP_CheckProc_Settings_PUser(STRUCT WMCheckboxAction &cba) : CheckBoxCo
 			P_UpdatePressureType(cba.win)
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -4312,6 +4396,8 @@ Function DAP_ButtonProc_LockDev(STRUCT WMButtonAction &ba) : ButtonControl
 			ba.blockReentry = 1
 			DAP_LockDevice(ba.win)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -4323,6 +4409,8 @@ Function DAP_ButProc_Hrdwr_UnlckDev(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			ba.blockReentry = 1
 			DAP_UnlockDevice(ba.win)
+			break
+		default:
 			break
 	endswitch
 
@@ -4375,7 +4463,7 @@ Function DAP_LockDevice(string win)
 		print "EVIL_KITTEN_EATING_MODE is ON: Forcing deviceID to zero"
 		ControlWindowToFront()
 		deviceID = 0
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 	endif
 
 	DisableControls(win, "button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
@@ -4466,7 +4554,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 		forceEnable = 1
 #else
 		forceEnable = 0
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 	else
 		forceEnable = !!forceEnable
 	endif
@@ -4492,7 +4580,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_DAC)
-		channels = isNaN(deviceInfo[%AuxDA]) ? deviceInfo[%DA] : deviceInfo[%DA] + deviceInfo[%AuxDA]
+		channels = isNaN(deviceInfo[%AuxDA]) ? deviceInfo[%DA] : (deviceInfo[%DA] + deviceInfo[%AuxDA])
 		if(i < channels)
 			EnableControls(device, controls)
 		else
@@ -4509,7 +4597,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 
 	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ADC)
-		channels = isNaN(deviceInfo[%AuxAD]) ? deviceInfo[%AD] : deviceInfo[%AD] + deviceInfo[%AuxAD]
+		channels = isNaN(deviceInfo[%AuxAD]) ? deviceInfo[%AD] : (deviceInfo[%AD] + deviceInfo[%AuxAD])
 		if(i < channels)
 			EnableControls(device, controls)
 		else
@@ -4577,6 +4665,9 @@ static Function/S DAP_GetControlsForChannelIndex(variable channelIndex, variable
 			controls = AddListItem(GetPanelControl(channelIndex, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
 			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_ALARM_MIN), controls, ";", Inf)
 			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_ALARM_MAX), controls, ";", Inf)
+			break
+		default:
+			ASSERT(0, "Invalid channel type")
 			break
 	endswitch
 
@@ -4915,6 +5006,8 @@ Function DAP_ButtonProc_skipSweep(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2:
 			RA_SkipSweeps(ba.win, 1, SWEEP_SKIP_USER, limitToSetBorder = 1)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -4925,6 +5018,8 @@ Function DAP_ButtonProc_skipBack(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2:
 			RA_SkipSweeps(ba.win, -1, SWEEP_SKIP_USER, limitToSetBorder = 1)
+			break
+		default:
 			break
 	endswitch
 
@@ -4946,7 +5041,7 @@ End
 Function DAP_getFilteredSkipAhead(string device, variable skipAhead)
 
 	variable maxSkipAhead = max(0, IDX_MinNoOfSweeps(device) - 1)
-	return skipAhead > maxSkipAhead ? maxSkipAhead : skipAhead
+	return (skipAhead > maxSkipAhead) ? maxSkipAhead : skipAhead
 End
 
 Function DAP_setSkipAheadLimit(string device, variable filteredSkipAhead)
@@ -4962,6 +5057,8 @@ Function DAP_SetVarProc_skipAhead(STRUCT WMSetVariableAction &sva) : SetVariable
 		case 3:
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			DAP_setSkipAheadLimit(sva.win, IDX_MinNoOfSweeps(sva.win) - 1)
+			break
+		default:
 			break
 	endswitch
 
@@ -4979,6 +5076,8 @@ Function DAP_CheckProc_RandomRA(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			else
 				EnableControl(cba.win, "SetVar_DataAcq_skipAhead")
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -5003,6 +5102,8 @@ Function DAP_PopMenuProc_UpdateGuiState(STRUCT WMPopupAction &pa) : PopupMenuCon
 	switch(pa.eventCode)
 		case 2: // mouse up
 			DAG_Update(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
+			break
+		default:
 			break
 	endswitch
 
@@ -5030,6 +5131,8 @@ Function DAP_PopMenuProc_SampMult(STRUCT WMPopupAction &pa) : PopupMenuControl
 				DisableControl(pa.win, "Popup_Settings_FixedFreq")
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -5045,6 +5148,8 @@ Function DAP_CheckProc_RequireAmplifier(STRUCT WMCheckboxAction &cba) : CheckBox
 			checked = cba.checked
 			device  = cba.win
 			DAG_Update(device, cba.ctrlName, val = checked)
+			break
+		default:
 			break
 	endswitch
 
@@ -5069,6 +5174,8 @@ Function DAP_PopMenuProc_FixedSampInt(STRUCT WMPopupAction &pa) : PopupMenuContr
 			else
 				DisableControl(pa.win, "Popup_Settings_SampIntMult")
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -5102,6 +5209,8 @@ Function DAP_PopMenuProc_OsciUpdMode(STRUCT WMPopupAction &pa) : PopupMenuContro
 			elseif(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING)
 				SCOPE_CreateGraph(device, DATA_ACQUISITION_MODE)
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -5146,6 +5255,8 @@ Function ButtonProc_Hardware_rescan(STRUCT WMButtonAction &ba) : ButtonControl
 			DAP_GetITCDeviceList()
 			DAP_GetSUDeviceList()
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -5163,6 +5274,8 @@ Function DAP_CheckProc_PowerSpectrum(STRUCT WMCheckboxAction &cba) : CheckBoxCon
 
 			testPulseMode = TP_StopTestPulse(device)
 			TP_RestartTestPulse(device, testPulseMode)
+			break
+		default:
 			break
 	endswitch
 
@@ -5359,9 +5472,10 @@ static Function/S DAP_TPControlToLabel(string ctrl)
 			return "autoTPPercentage"
 		case "setvar_Settings_autoTP_int":
 			return "autoTPInterval"
+		default:
+			ASSERT(0, "invalid control")
+			break
 	endswitch
-
-	ASSERT(0, "invalid control")
 End
 
 /// @brief Write a new TP setting value to the wave

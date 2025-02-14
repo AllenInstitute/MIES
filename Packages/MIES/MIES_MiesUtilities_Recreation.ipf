@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_RECREATION
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Recreation.ipf
 /// @brief This file holds MIES utility functions for sweep and config wave recreation
@@ -359,6 +359,9 @@ static Function AddDAQChannelTypeFromLBN(WAVE numericalValues, WAVE textualValue
 			case XOP_CHANNEL_TYPE_TTL:
 				channelType = DAQ_CHANNEL_TYPE_DAQ
 				break
+			default:
+				ASSERT(0, "Unsupported channel type")
+				break
 		endswitch
 
 		ASSERT(IsFinite(GetRowIndex(validChannelTypes, val = channelType)), "Invalid channel type")
@@ -376,7 +379,7 @@ static Function AddHeadstageFromLBN(WAVE numericalValues, variable sweepNo, WAVE
 	for(i = 0; i < numEntries; i += 1)
 		[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, "Headstage Active", configWave[i][%ChannelNumber], configWave[i][%ChannelType], DATA_ACQUISITION_MODE)
 		if(WaveExists(setting))
-			configWave[i][%HEADSTAGE] = setting[index] == 1 ? index : NaN
+			configWave[i][%HEADSTAGE] = (setting[index] == 1) ? index : NaN
 		else
 			configWave[i][%HEADSTAGE] = NaN
 		endif

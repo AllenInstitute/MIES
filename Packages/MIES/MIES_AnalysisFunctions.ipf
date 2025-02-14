@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AF
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctions.ipf
 /// @brief __AF__ Analysis functions to be called during data acquisition
@@ -277,6 +277,9 @@ Function MeasureMidSweepTiming_V3(string device, STRUCT AnalysisFunction_V3 &s)
 			endif
 
 			lastCall = GetReferenceTime()
+			break
+		default:
+			// do nothing
 			break
 	endswitch
 
@@ -662,7 +665,7 @@ Function AdjustDAScale(string device, variable eventType, WAVE DAQDataWave, vari
 		PGC_SetAndActivateControl(device, ctrl, val = DAScales[index])
 	endif
 
-	sprintf msg, "(%s, %d): DAScale = %g", device, headstage, (index < DimSize(DAScales, ROWS) ? DAScales[index] : NaN)
+	sprintf msg, "(%s, %d): DAScale = %g", device, headstage, ((index < DimSize(DAScales, ROWS)) ? DAScales[index] : NaN)
 	DEBUGPRINT(msg)
 
 	// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
@@ -878,7 +881,7 @@ Function SetDAScaleModOp(string device, variable sweepNo, variable headstage, va
 		case "+":
 			return SetDAScale(device, sweepNo, headstage, offset = invert ? -modifier : modifier, roundTopA = roundTopA, limitCheck = limitCheck)
 		case "*":
-			return SetDAScale(device, sweepNo, headstage, relative = invert ? 1 / modifier : modifier, roundTopA = roundTopA, limitCheck = limitCheck)
+			return SetDAScale(device, sweepNo, headstage, relative = invert ? (1 / modifier) : modifier, roundTopA = roundTopA, limitCheck = limitCheck)
 		default:
 			ASSERT(0, "Invalid operator")
 			break
@@ -904,7 +907,7 @@ Function SetDAScale(string device, variable sweepNo, variable headstage, [variab
 	variable amps, DAC, nextStimsetColumn, DAScaleLimit, skipCountExisting, setCount
 	string DAUnit, ctrl, lbl, stimSetName
 
-	ASSERT(ParamIsDefault(absolute) + ParamIsDefault(relative) + ParamIsDefault(offset) == 2, "One of absolute, relative or offset has to be present")
+	ASSERT((ParamIsDefault(absolute) + ParamIsDefault(relative) + ParamIsDefault(offset)) == 2, "One of absolute, relative or offset has to be present")
 
 	if(ParamIsDefault(roundTopA))
 		roundTopA = 0
@@ -1193,7 +1196,7 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 			if(WaveExists(overrideResults))
 				resistanceFitted[] = overrideResults[p][%Resistance] * MEGA_TO_ONE
 			endif
-#endif
+#endif // AUTOMATED_TESTING
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 

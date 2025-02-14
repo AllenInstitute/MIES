@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_PSQ
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctions_PatchSeq.ipf
 /// @brief __PSQ__ Analysis functions for patch sequence
@@ -433,7 +433,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 			// NaN: not enough data for check
 
 			// last chunk was only partially present and so can never pass
-			if(i == numBaselineChunks - 1 && s.lastKnownRowIndexAD == s.lastValidRowIndexAD)
+			if(i == (numBaselineChunks - 1) && s.lastKnownRowIndexAD == s.lastValidRowIndexAD)
 				ret = PSQ_BL_FAILED
 			endif
 
@@ -475,7 +475,7 @@ Function [variable chunkStartTimeMax, variable chunkLengthTime] PSQ_GetBaselineC
 	ASSERT(!chunk || (chunk && WaveExists(durations)), "Need durations wave")
 	chunkLengthTime = chunk ? ps.postPulseChunkLength : ps.prePulseChunkLength
 	// for chunk > 0: skip onset delay, the pulse itself and one chunk of post pulse baseline
-	chunkStartTimeMax = chunk ? (totalOnsetDelayMS + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength : totalOnsetDelayMS
+	chunkStartTimeMax = chunk ? ((totalOnsetDelayMS + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength) : totalOnsetDelayMS
 
 	return [chunkStartTimeMax, chunkLengthTime]
 End
@@ -555,7 +555,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	endif
 
 	// not enough data to evaluate
-	if(fifoInStimsetTime + totalOnsetDelay < chunkStartTimeMax + chunkLengthTime)
+	if((fifoInStimsetTime + totalOnsetDelay) < (chunkStartTimeMax + chunkLengthTime))
 		return NaN
 	endif
 
@@ -891,7 +891,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 #ifdef AUTOMATED_TESTING
 			repurposedTime = 0.5
-#endif
+#endif // AUTOMATED_TESTING
 			return ANALYSIS_FUNC_RET_REPURP_TIME
 		elseif(!leakCurPassedAll)
 			return ANALYSIS_FUNC_RET_EARLY_STOP
@@ -978,7 +978,7 @@ static Function PSQ_Calculate(WAVE wv, variable column, variable startTime, vari
 	startPoints = trunc(startTime / DimDelta(channel, ROWS))
 	rangePoints = max(trunc(rangeTime / DimDelta(channel, ROWS)), 1)
 
-	if(startPoints + rangePoints >= DimSize(channel, ROWS))
+	if((startPoints + rangePoints) >= DimSize(channel, ROWS))
 		rangePoints = max(trunc(DimSize(channel, ROWS) - startPoints - 1), 1)
 	endif
 
@@ -1379,7 +1379,7 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 	string msg
 
 	WAVE spikeDetection = LBN_GetNumericWave()
-	spikeDetection = (p == headstage ? 0 : NaN)
+	spikeDetection = ((p == headstage) ? 0 : NaN)
 
 	WAVE config = AFH_GetConfigWave(device, sweepWave)
 
@@ -1905,7 +1905,7 @@ static Function PSQ_CheckADSamplingFrequencyAndStoreInLabnotebook(string device,
 #else
 	// dimension delta [ms]
 	actual = 1.0 / (s.sampleIntervalAD * MILLI_TO_ONE)
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 	// samplingFrequency [kHz]
 	expected = samplingFrequency * KILO_TO_ONE
@@ -2560,7 +2560,7 @@ static Function PSQ_DS_CalculateReachedFinalSlope(variable validFit, WAVE fitSlo
 	return validFit                                                                 \
 	       && IsFinite(fitSlope)                                                    \
 	       && IsFinite(maxSlope)                                                    \
-	       && (fitSlope < maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE)))      \
+	       && (fitSlope < (maxSlope * (1 - (slopePercentage * PERCENT_TO_ONE))))    \
 	       && PSQ_DS_IsValidFitSlopePosition(fitSlopes, DAScales, fitSlope, maxSlope)
 End
 
@@ -2820,6 +2820,9 @@ static Function [WAVE data, variable emptySCI] PSQ_DS_GetLabnotebookData(WAVE nu
 			// but actually only need if passing or not
 			dataRhSuAd[] = !!dataRhSuAd[p]
 			break
+		default:
+			// no fixup required
+			break
 	endswitch
 
 	if(filterPassing)
@@ -3023,11 +3026,11 @@ static Function/WAVE PSQ_DS_FilterPassingData(WAVE/Z data, WAVE/Z booleanQC, [va
 	Duplicate/FREE data, indices
 
 	if(inBetween)
-		ASSERT(DimSize(data, ROWS) + 1 == DimSize(booleanQC, ROWS), "Umatched wave sizes for inBetween")
-		indices[] = booleanQC[p + 1] == 1 ? NaN : p
+		ASSERT((DimSize(data, ROWS) + 1) == DimSize(booleanQC, ROWS), "Umatched wave sizes for inBetween")
+		indices[] = (booleanQC[p + 1] == 1) ? NaN : p
 	else
 		ASSERT(DimSize(data, ROWS) == DimSize(booleanQC, ROWS), "Umatched wave sizes for inBetween")
-		indices[] = booleanQC[p] == 1 ? NaN : p
+		indices[] = (booleanQC[p] == 1) ? NaN : p
 	endif
 
 	WAVE/Z indicesToRemove = ZapNaNs(indices)
@@ -3609,6 +3612,8 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "The minimum/maximum spike counts are not ordered properly"
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	// check that all three are present
@@ -3621,6 +3626,8 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			   || IsNaN(AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)))
 				return "One of MinimumSpikeCount/MaximumSpikeCount/DAScaleModifier is not present"
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -3946,6 +3953,8 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 					WAVE/ZZ DAScales = futureDAScales
 					break
+				default:
+					ASSERT(0, "Invalid opMode")
 			endswitch
 
 			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
@@ -4264,6 +4273,8 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 		case POST_DAQ_EVENT:
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
+			break
+		default:
 			break
 	endswitch
 
@@ -5004,6 +5015,8 @@ Function PSQ_Rheobase(string device, STRUCT AnalysisFunction_V3 &s)
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
+		default:
+			break
 	endswitch
 
 	if(s.eventType != MID_SWEEP_EVENT)
@@ -5266,6 +5279,8 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
+		default:
+			break
 	endswitch
 
 	if(s.eventType != MID_SWEEP_EVENT)
@@ -5423,7 +5438,7 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 
 			// recalculate pulse duration
 			PSQ_GetPulseDurations(device, PSQ_RAMP, s.sweepNo, totalOnsetDelay, forceRecalculation = 1)
-		elseif(fifoInStimsetTime > pulseStart + pulseDuration)
+		elseif(fifoInStimsetTime > (pulseStart + pulseDuration))
 			// we are past the pulse and have not found a spike
 			// write the results into the LBN
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT)
@@ -6405,6 +6420,8 @@ Function PSQ_Chirp(string device, STRUCT AnalysisFunction_V3 &s)
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
+		default:
+			break
 	endswitch
 
 	if(s.eventType != MID_SWEEP_EVENT)
@@ -7043,6 +7060,8 @@ Function PSQ_PipetteInBath(string device, STRUCT AnalysisFunction_V3 &s)
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
+		default:
+			break
 	endswitch
 
 	if(s.eventType != MID_SWEEP_EVENT)
@@ -7626,6 +7645,8 @@ Function PSQ_SealEvaluation(string device, STRUCT AnalysisFunction_V3 &s)
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -8018,6 +8039,8 @@ Function PSQ_TrueRestingMembranePotential(string device, STRUCT AnalysisFunction
 
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
+			break
+		default:
 			break
 	endswitch
 
@@ -8707,6 +8730,8 @@ Function PSQ_AccessResistanceSmoke(string device, STRUCT AnalysisFunction_V3 &s)
 
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
+			break
+		default:
 			break
 	endswitch
 

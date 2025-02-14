@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DC
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DataConfigurator.ipf
 /// @brief __DC__ Handle preparations before data acquisition or
@@ -193,6 +193,9 @@ static Function DC_ChannelCalcForDAQConfigWave(string device, variable dataAcqOr
 			endif
 			return numDACs + numADCs + numTTLs
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 
 	return NaN
@@ -313,6 +316,9 @@ Function DC_CalculateDAQDataWaveLengthImpl(variable dataLength, variable hardwar
 
 			return dataLength
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 
 	return NaN
@@ -361,7 +367,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 
 			Make/FREE/N=(s.numActiveChannels) type = SWS_GetRawDataFPType(device)
 			WAVE config = GetDAQConfigWave(device)
-			type = config[p][%ChannelType] == XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
+			type = (config[p][%ChannelType] == XOP_CHANNEL_TYPE_TTL) ? (IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT) : type[p]
 			if(s.hardwareType == HARDWARE_NI_DAC)
 				NISUDataWave = DC_MakeNIChannelWave(device, dataAcqOrTP, config[p][%ChannelType], config[p][%SamplingInterval], p, type[p])
 			elseif(s.hardwareType == HARDWARE_SUTTER_DAC)
@@ -504,9 +510,12 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 			WAVE/WAVE SUDataWave = GetDAQDataWave(device, dataAcqOrTP)
 			sampleIntervalADC = DimDelta(SUDataWave[numDACs], ROWS) * ONE_TO_MILLI
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 
-	tpLength      = dataAcqOrTP == DATA_ACQUISITION_MODE ? TPSettingsCalc[%totalLengthPointsDAQ_ADC] : TPSettingsCalc[%totalLengthPointsTP_ADC]
+	tpLength      = (dataAcqOrTP == DATA_ACQUISITION_MODE) ? TPSettingsCalc[%totalLengthPointsDAQ_ADC] : TPSettingsCalc[%totalLengthPointsTP_ADC]
 	powerSpectrum = DAG_GetNumericalValue(device, "check_settings_show_power")
 	if(powerSpectrum)
 		// see DisplayHelpTopic `FFT` for the explanation of the calculation
@@ -543,6 +552,9 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 			case HARDWARE_SUTTER_DAC:
 				numRows   = DimSize(SUDataWave[numDACs], ROWS)
 				pointsAcq = numRows
+				break
+			default:
+				ASSERT(0, "Unsupported hardware type")
 				break
 		endswitch
 
@@ -603,7 +615,7 @@ static Function DC_CalculateChannelSizeForScaledData(string device, variable dat
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			return dataAcqOrTP == DATA_ACQUISITION_MODE ? ROVar(GetStopCollectionPoint(device)) : TPSettingsCalc[%totalLengthPointsTP_ADC]
+			return (dataAcqOrTP == DATA_ACQUISITION_MODE) ? ROVar(GetStopCollectionPoint(device)) : TPSettingsCalc[%totalLengthPointsTP_ADC]
 		case HARDWARE_NI_DAC: // intended-drop-through
 		case HARDWARE_SUTTER_DAC:
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -740,8 +752,8 @@ Function/WAVE DC_GetFilteredChannelState(string device, variable dataAcqOrTP, va
 				WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 
 				result[] = statusChannel[p] && (!cmpstr(allSetNames[p], STIMSET_TP_WHILE_DAQ, 1) \
-				                                ? DAQChannelType == DAQ_CHANNEL_TYPE_TP          \
-				                                : DAQChannelType == DAQ_CHANNEL_TYPE_DAQ)
+				                                ? (DAQChannelType == DAQ_CHANNEL_TYPE_TP)        \
+				                                : (DAQChannelType == DAQ_CHANNEL_TYPE_DAQ))
 
 				return result
 
@@ -806,7 +818,7 @@ static Function DC_PlaceDataInDAQConfigWave(string device, variable dataAcqOrTP)
 		DAQConfigWave[j][%ChannelType]    = XOP_CHANNEL_TYPE_DAC
 		DAQConfigWave[j][%ChannelNumber]  = i
 		unitList                          = AddListItem(DAG_GetTextualValue(device, ctrl, index = i), unitList, ",", Inf)
-		DAQConfigWave[j][%DAQChannelType] = !CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ, 1) || dataAcqOrTP == TEST_PULSE_MODE ? DAQ_CHANNEL_TYPE_TP : DAQ_CHANNEL_TYPE_DAQ
+		DAQConfigWave[j][%DAQChannelType] = (!CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ, 1) || dataAcqOrTP == TEST_PULSE_MODE) ? DAQ_CHANNEL_TYPE_TP : DAQ_CHANNEL_TYPE_DAQ
 		headstage                         = AFH_GetHeadstageFromDAC(device, i)
 		DAQConfigWave[j][%HEADSTAGE]      = headstage
 		if(IsAssociatedChannel(headstage))
@@ -885,6 +897,9 @@ static Function DC_PlaceDataInDAQConfigWave(string device, variable dataAcqOrTP)
 						j                                += 1
 					endif
 				endfor
+				break
+			default:
+				ASSERT(0, "Unsupported hardware type")
 				break
 		endswitch
 	endif
@@ -1071,16 +1086,19 @@ static Function DC_WriteTTLIntoDAQDataWave(string device, STRUCT DataConfigurati
 
 			// Place TTL waves into ITCDataWave
 			ITCRackZeroChecked = !!DC_AreTTLsInRackChecked(device, RACK_ZERO)
-			bitMask            = 1 << NUM_ITC_TTL_BITS_PER_RACK - 1
+			bitMask            = (1 << NUM_ITC_TTL_BITS_PER_RACK) - 1
 			if(ITCRackZeroChecked)
 				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset] =                                 \
 				            limit(TTLWaveITC[round(s.decimationFactor * (p - startOffset))] & bitMask, minLimit, maxLimit); AbortOnRTE
 			endif
 
 			if(DC_AreTTLsInRackChecked(device, RACK_ONE))
-				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset + ITCRackZeroChecked] =                                         \
-				            limit(TTLWaveITC[round(s.decimationFactor * (p - startOffset))] >> NUM_ITC_TTL_BITS_PER_RACK & bitMask, minLimit, maxLimit); AbortOnRTE
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlOffset + ITCRackZeroChecked] =                                           \
+				            limit((TTLWaveITC[round(s.decimationFactor * (p - startOffset))] >> NUM_ITC_TTL_BITS_PER_RACK) & bitMask, minLimit, maxLimit); AbortOnRTE
 			endif
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -1155,7 +1173,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		DC_DocumentChannelProperty(device, "DA Unit", headstage, channel, XOP_CHANNEL_TYPE_DAC, str = DAG_GetTextualValue(device, ctrl, index = channel))
 
-		DC_DocumentChannelProperty(device, STIMSET_SCALE_FACTOR_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var = s.dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ ? s.DACAmp[i][%DASCALE] : s.DACAmp[i][%TPAMP])
+		DC_DocumentChannelProperty(device, STIMSET_SCALE_FACTOR_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var = (s.dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ) ? s.DACAmp[i][%DASCALE] : s.DACAmp[i][%TPAMP])
 		DC_DocumentChannelProperty(device, "Set Sweep Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var = s.setColumn[i])
 		DC_DocumentChannelProperty(device, "Electrode", headstage, channel, XOP_CHANNEL_TYPE_DAC, str = cellElectrodeNames[headstage])
 		DC_DocumentChannelProperty(device, "Set Cycle Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var = s.setCycleCount[i])
@@ -1282,7 +1300,7 @@ static Function DC_FillSetEventFlag(string device, STRUCT DataConfigurationResul
 		channel = s.DACList[i]
 
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-			setEventFlag[channel][] = (s.setColumn[i] + 1 == IDX_NumberOfSweepsInSet(s.setName[i]))
+			setEventFlag[channel][] = ((s.setColumn[i] + 1) == IDX_NumberOfSweepsInSet(s.setName[i]))
 		endif
 	endfor
 End
@@ -1339,6 +1357,9 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 						WAVE NIChannel = NIDataWave[s.numDACEntries + i]
 						FastOp NIChannel = (NaN)
 					endfor
+					break
+				default:
+					ASSERT(0, "Unsupported hardware type")
 					break
 			endswitch
 		else
@@ -1405,6 +1426,9 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 				SetStringInWaveNote(NISUDataWave, TP_PROPERTIES_HASH, key, recursive = 1)
 				CA_StoreEntryIntoCache(key, NISUDataWave)
 				break
+			default:
+				ASSERT(0, "Invalid hardware type")
+				break
 		endswitch
 	endif
 End
@@ -1458,6 +1482,9 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						NIChannel[DimSize(NIChannel, ROWS) - cutOff, *] = 0
 					endif
 					break
+				default:
+					ASSERT(0, "Unsupported hardware type")
+					break
 			endswitch
 		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 			DAScale = s.DACAmp[i][%DASCALE] * s.gains[i]
@@ -1504,6 +1531,9 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 						MultiThread NIChannel[0, s.testPulseLength - 1] =                       \
 						            limit(tpAmp * s.testPulse[p], minLimit, maxLimit); AbortOnRTE
 					endif
+					break
+				default:
+					ASSERT(0, "Unsupported hardware type")
 					break
 			endswitch
 		else
@@ -1731,7 +1761,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 		s.setLength[] = DC_CalculateStimsetLength(s.stimSet[p], device, TEST_PULSE_MODE)
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		Duplicate/FREE s.setLength, setMode
-		setMode[]     = config[p][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP ? TEST_PULSE_MODE : DATA_ACQUISITION_MODE
+		setMode[]     = (config[p][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP) ? TEST_PULSE_MODE : DATA_ACQUISITION_MODE
 		s.setLength[] = DC_CalculateStimsetLength(s.stimSet[p], device, setMode[p])
 		WaveClear setMode
 	endif
@@ -1954,7 +1984,7 @@ Function DC_DocumentChannelProperty(string device, string entry, variable headst
 	variable colData, colKey, numCols
 	string ua_entry
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Exactly one of var or str has to be supplied")
+	ASSERT((ParamIsDefault(var) + ParamIsDefault(str)) == 1, "Exactly one of var or str has to be supplied")
 	ASSERT(!IsEmpty(entry), "Entry must be non-empty")
 
 	WAVE   sweepDataLNB       = GetSweepSettingsWave(device)

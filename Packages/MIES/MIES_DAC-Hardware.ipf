@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_HW
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DAC-Hardware.ipf
 /// @brief __HW__ Low level hardware configuration and querying functions
@@ -123,7 +123,10 @@ Function HW_PrepareAcq(variable hardwareType, variable deviceID, variable mode, 
 			break
 		case HARDWARE_SUTTER_DAC:
 			return HW_SU_PrepareAcq(deviceID, mode, flags = flags)
+		default:
+			ASSERT(0, "Unsupported hardware type")
 	endswitch
+
 	return 0
 End
 
@@ -147,6 +150,9 @@ Function HW_SelectDevice(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_SUTTER_DAC:
 			// nothing to do
 			return 0
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -209,6 +215,9 @@ Function HW_CloseDevice(variable hardwareType, variable deviceID, [variable flag
 		case HARDWARE_SUTTER_DAC:
 			HW_SU_CloseDevice(deviceID, flags = flags)
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -236,6 +245,9 @@ Function HW_WriteDAC(variable hardwareType, variable deviceID, variable channel,
 			break
 		case HARDWARE_SUTTER_DAC:
 			HW_SU_WriteDAC(deviceID, channel, value, flags = flags)
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -265,6 +277,9 @@ Function HW_ReadADC(variable hardwareType, variable deviceID, variable channel, 
 			break
 		case HARDWARE_SUTTER_DAC:
 			return HW_SU_ReadADC(deviceID, channel, flags = flags)
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -307,6 +322,9 @@ Function HW_ReadDigital(variable hardwareType, variable deviceID, variable chann
 			break
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not yet implemented")
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -347,6 +365,9 @@ Function HW_WriteDigital(variable hardwareType, variable deviceID, variable chan
 			break
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not yet implemented")
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -367,6 +388,9 @@ Function HW_EnableYoking(variable hardwareType, variable deviceID, [variable fla
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not implemented")
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -386,6 +410,9 @@ Function HW_DisableYoking(variable hardwareType, variable deviceID, [variable fl
 		case HARDWARE_NI_DAC: // intended drop through
 		case HARDWARE_SUTTER_DAC:
 			ASSERT(0, "Not implemented")
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -412,6 +439,9 @@ Function HW_StopAcq(variable hardwareType, variable deviceID, [variable prepareF
 		case HARDWARE_SUTTER_DAC:
 			HW_SU_StopAcq(deviceID, zeroDAC = zeroDAC, flags = flags)
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -437,6 +467,9 @@ Function HW_IsRunning(variable hardwareType, variable deviceID, [variable flags]
 		case HARDWARE_SUTTER_DAC:
 			device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 			return HW_SU_IsRunning(device)
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -464,6 +497,9 @@ Function/WAVE HW_GetDeviceInfo(variable hardwareType, variable deviceID, [variab
 		case HARDWARE_SUTTER_DAC:
 			return GetSUDeviceInfo()
 			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
+			break
 	endswitch
 End
 
@@ -480,7 +516,7 @@ Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device,
 
 #ifdef EVIL_KITTEN_EATING_MODE
 	return $""
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -529,19 +565,19 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 	if(hardwareType == HARDWARE_ITC_DAC)
 		return NaN
 	endif
-#endif
+#endif // !ITC_XOP_PRESENT
 
 #ifndef NIDAQMX_XOP_PRESENT
 	if(hardwareType == HARDWARE_NI_DAC)
 		return NaN
 	endif
-#endif
+#endif // !NIDAQMX_XOP_PRESENT
 
 #ifndef SUTTER_XOP_PRESENT
 	if(hardwareType == HARDWARE_SUTTER_DAC)
 		return NaN
 	endif
-#endif
+#endif // !SUTTER_XOP_PRESENT
 
 	deviceID = ROVar(GetDAQDeviceID(device))
 
@@ -562,7 +598,7 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 			deviceInfo[%AD]    = devInfoHW[%ADCCount]
 			deviceInfo[%DA]    = devInfoHW[%DACCount]
 			deviceInfo[%Rack]  = ceil(min(devInfoHW[%DOCount], devInfoHW[%DICount]) / 3)
-			deviceInfo[%TTL]   = deviceInfo[%Rack] == 1 ? 4 : 8
+			deviceInfo[%TTL]   = (deviceInfo[%Rack] == 1) ? 4 : 8
 			deviceInfo[%AuxAD] = NaN
 			deviceInfo[%AuxDA] = NaN
 			break
@@ -583,6 +619,9 @@ Function HW_WriteDeviceInfo(variable hardwareType, string device, WAVE deviceInf
 			deviceInfo[%Rack]  = NaN
 			deviceInfo[%AuxAD] = str2num(devInfoHWText[%AI])
 			deviceInfo[%AuxDA] = str2num(devInfoHWText[%AO])
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 End
@@ -662,7 +701,7 @@ static Function HW_IsValidHardwareType(variable hardwareType)
 	return hardwareType == HARDWARE_NI_DAC || hardwareType == HARDWARE_ITC_DAC || hardwareType == HARDWARE_SUTTER_DAC
 #else
 	return 1
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 End
 
 /// @brief Check if the given device ID is valid
@@ -674,7 +713,7 @@ static Function HW_IsValidDeviceID(variable deviceID)
 	return deviceID >= 0 && deviceID < HARDWARE_MAX_DEVICES
 #else
 	return 1
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 End
 
 /// @brief Register an opened device in our device map
@@ -955,7 +994,7 @@ Function/S HW_ITC_ListDevices()
 #elif defined(TESTS_WITH_ITC1600_HARDWARE)
 	return HW_ITC_BuildDeviceString("ITC1600", "0")
 #endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 
 	numTypes      = ItemsInList(DEVICE_TYPES_ITC)
 	numberPerType = ItemsInList(DEVICE_NUMBERS)
@@ -971,7 +1010,7 @@ Function/S HW_ITC_ListDevices()
 		device = HW_ITC_BuildDeviceString(type, "0")
 		list   = AddListItem(device, list, ";", Inf)
 		continue
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 		tries = 0
 		do
@@ -1069,7 +1108,7 @@ threadsafe Function HW_ITC_HandleReturnValues(variable flags, variable ITCError,
 #else
 	ClearRTError()
 	return 0
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 End
 
 /// @brief Return the error message for the given ITC XOP2 error code
@@ -1184,7 +1223,7 @@ Function HW_ITC_OpenDevice(variable deviceType, variable deviceNumber, [variable
 			endif
 		endif
 	endfor
-#endif
+#endif // AUTOMATED_TESTING
 
 	do
 		ITCOpenDevice2/DTN=(deviceType)/Z=1 deviceNumber
@@ -1223,7 +1262,7 @@ Function HW_ITC_CloseDevice(variable deviceID, [variable flags])
 
 #ifdef AUTOMATED_TESTING
 	return NaN
-#endif
+#endif // AUTOMATED_TESTING
 
 	if(HW_ITC_SelectDevice(deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE))
 		do
@@ -1989,7 +2028,7 @@ Function HW_ITC_SetLoggingTemplate(string template, [variable flags])
 	DEBUGPRINT("Unimplemented")
 End
 
-#endif
+#endif // ITC_XOP_PRESENT
 
 Function/WAVE HW_WAVE_GETTER_PROTOTYPE(string str)
 
@@ -2037,7 +2076,7 @@ threadsafe Function HW_ITC_GetRackRange(variable rack, variable &first, variable
 		ASSERT_TS(0, "Invalid rack parameter")
 	endif
 
-	ASSERT_TS(last - first + 1 == NUM_ITC_TTL_BITS_PER_RACK, "Rack channel range must be NUM_ITC_TTL_BITS_PER_RACK for each rack")
+	ASSERT_TS((last - first + 1) == NUM_ITC_TTL_BITS_PER_RACK, "Rack channel range must be NUM_ITC_TTL_BITS_PER_RACK for each rack")
 End
 
 /// @brief Clip the ttlBit to adapt for differences in notation
@@ -2318,6 +2357,9 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 					TTLWaves[ttlCnt] = NIDataWave[i]
 					ttlCnt          += 1
 					break
+				default:
+					ASSERT(0, "Unsupported channel type")
+					break
 			endswitch
 		endfor
 
@@ -2339,7 +2381,7 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1 wavegenStr; AbortOnRTE
 #else
 		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1/CLK={clkStr, 0} wavegenStr; AbortOnRTE
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 		NVAR taskIDDAC = $GetNI_DACTaskID(device)
 		taskIDDAC = 1
 
@@ -2369,6 +2411,9 @@ Function HW_NI_PrepareAcq(variable deviceID, variable mode, [WAVE/Z data, FUNCRE
 				break
 			case 8:
 				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6], TTLWaves[7]} TTLStr; AbortOnRTE
+				break
+			default:
+				ASSERT(0, "Unsupported TTL count")
 				break
 		endswitch
 		NVAR taskIDTTL = $GetNI_TTLTaskID(device)
@@ -2575,7 +2620,7 @@ Function HW_NI_WriteDigital(string device, variable value, [variable DIOPort, va
 
 	taskID = V_DAQmx_DIO_TaskNumber
 
-	ASSERT(log(value) / log(2) <= fDAQmx_DIO_PortWidth(device, DIOport), "value has bits sets which are higher than the number of output lines in this port")
+	ASSERT((log(value) / log(2)) <= fDAQmx_DIO_PortWidth(device, DIOport), "value has bits sets which are higher than the number of output lines in this port")
 	ret = fDAQmx_DIO_Write(device, taskID, value)
 	if(ret)
 		print fDAQmx_ErrorString()
@@ -2698,7 +2743,7 @@ Function/S HW_NI_ListDevices([variable flags])
 #elif defined(TESTS_WITH_SUTTER_HARDWARE)
 	return ""
 #endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 
 	return fDAQmx_DeviceNames()
 End
@@ -3155,7 +3200,7 @@ Function/S HW_SU_ListDevices([variable flags])
 #elif defined(TESTS_WITH_NI_HARDWARE)
 	return ""
 #endif
-#endif
+#endif // !EVIL_KITTEN_EATING_MODE
 
 	WAVE/T deviceInfo = GetSUDeviceInfo()
 
@@ -3216,8 +3261,8 @@ Function HW_SU_GetDeviceInfo(WAVE/T deviceInfo)
 #ifdef AUTOMATED_TESTING
 #ifndef TESTS_WITH_SUTTER_HARDWARE
 	return NaN
-#endif
-#endif
+#endif // !TESTS_WITH_SUTTER_HARDWARE
+#endif // AUTOMATED_TESTING
 
 	if(!IsEmpty(deviceInfo[%NUMBEROFDACS]))
 		return NaN
@@ -3373,6 +3418,9 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 				endif
 				MultiThread ttlComposite[] += SUChannel[p] * (1 << channelNumber)
 				break
+			default:
+				ASSERT(0, "Unsupported channel type")
+				break
 		endswitch
 	endfor
 
@@ -3405,7 +3453,7 @@ static Function [variable channel, string encode] HW_SU_GetEncodeFromHS(variable
 		if(i > headstage)
 			amp     = index
 			ampType = hsInAmp
-			subHS   = index ? headstage - sum(hsNums, 0, index - 1) : headstage
+			subHS   = index ? (headstage - sum(hsNums, 0, index - 1)) : headstage
 			break
 		endif
 		index += 1

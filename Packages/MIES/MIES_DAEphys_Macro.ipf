@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DAPM
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DAEphys_Macro.ipf
 /// @brief __DA__ DA_Ephys panel macro

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AmplifierInteraction.ipf
 /// @brief __AI__ Interface with the Axon/MCC amplifiers
@@ -230,7 +230,7 @@ Function AI_UpdateAmpModel(string device, string ctrl, variable headStage, [vari
 
 	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 	if(!sendToAll)
-		statusHS[] = (p == headStage ? 1 : 0)
+		statusHS[] = ((p == headStage) ? 1 : 0)
 	endif
 
 	if(!CheckIfValueIsInsideLimits(device, ctrl, value))
@@ -247,7 +247,8 @@ Function AI_UpdateAmpModel(string device, string ctrl, variable headStage, [vari
 		case "button_DataAcq_AutoPipOffset_VC":
 			runMode = TP_StopTestPulseFast(device)
 		default:
-		// do nothing
+			// do nothing
+			break
 	endswitch
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -887,7 +888,7 @@ Function AI_GetHoldingCommand(string device, variable headstage)
 		return NaN
 	endif
 
-	return MCC_GetHoldingEnable() ? MCC_GetHolding() * AI_GetMCCScale(MCC_GetMode(), MCC_GETHOLDING_FUNC) : 0
+	return MCC_GetHoldingEnable() ? (MCC_GetHolding() * AI_GetMCCScale(MCC_GetMode(), MCC_GETHOLDING_FUNC)) : 0
 End
 
 /// @brief Return the clamp mode of the headstage as returned by the amplifier
@@ -1579,7 +1580,7 @@ Function AI_QueryGainsFromMCC(string device)
 			MCC_SetHoldingEnable(0)
 			clampModeSwitchAllowed = 1
 		endif
-#endif
+#endif // AUTOMATED_TESTING
 
 		if(clampModeSwitchAllowed)
 			old_clampMode = clampMode
@@ -1593,7 +1594,7 @@ Function AI_QueryGainsFromMCC(string device)
 			AI_SetClampMode(device, i, old_clampMode)
 		else
 			printf "It appears that a holding potential is being applied, therefore as a precaution, "
-			printf "the gains cannot be imported for the %s.\r", ConvertAmplifierModeToString(clampMode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE)
+			printf "the gains cannot be imported for the %s.\r", ConvertAmplifierModeToString((clampMode == V_CLAMP_MODE) ? I_CLAMP_MODE : V_CLAMP_MODE)
 			printf "The gains were successfully imported for the %s on i: %d\r", ConvertAmplifierModeToString(clampMode), i
 		endif
 	endfor
@@ -1723,4 +1724,4 @@ Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable ax
 
 	DEBUGPRINT("Unimplemented")
 End
-#endif
+#endif // AMPLIFIER_XOPS_PRESENT

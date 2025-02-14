@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DPM
-#endif
+#endif // AUTOMATED_TESTING
 
 Window DebugPanel() : Panel
 	PauseUpdate; Silent 1 // building window...

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_IDX
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Indexing.ipf
 /// @brief __IDX__ Indexing related functionality
@@ -293,7 +293,7 @@ Function IDX_MinNoOfSweeps(string device)
 		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(device, i, CHANNEL_TYPE_TTL, 1))
 	endfor
 
-	return MinNoOfSweeps == Inf ? 0 : MinNoOfSweeps
+	return (MinNoOfSweeps == Inf) ? 0 : MinNoOfSweeps
 End
 
 /// @brief Returns a 1D textwave of selected set names
@@ -449,7 +449,7 @@ Function IDX_UnlockedIndexingStepNo(string device, variable channelNumber, varia
 	ASSERT(first != last, "Unexpected combo")
 
 	count     = mod(count, totalListSTeps)
-	direction = first < last ? +1 : -1
+	direction = (first < last) ? +1 : -1
 
 	for(i = 0; stepsInSummedSets <= count; i += direction)
 		stepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, first + i))
@@ -473,8 +473,8 @@ static Function IDX_DetIfCountIsAtSetBorder(string device, variable count, varia
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
 	ASSERT(first != last, "Unexpected combo")
 
-	count     = (mod(count, totalListSteps) == 0 ? totalListSteps : mod(count, totalListSTeps))
-	direction = first < last ? +1 : -1
+	count     = ((mod(count, totalListSteps) == 0) ? totalListSteps : mod(count, totalListSTeps))
+	direction = (first < last) ? +1 : -1
 
 	for(i = 0; stepsInSummedSets <= count; i += direction)
 		stepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, first + i))

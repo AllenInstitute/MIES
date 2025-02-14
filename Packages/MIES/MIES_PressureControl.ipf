@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_P
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_PressureControl.ipf
 /// @brief __P__ Supports use of analog pressure regulators controlled via a
@@ -167,7 +167,7 @@ static Function P_UpdateTPStorage(string device, variable headStage)
 	old = P_FindLastSetEntry(TPStorage, count - 1, headstage, "Pressure")
 	new = PressureDataWv[headStage][%RealTimePressure][0]
 
-	TPStorage[count][headstage][%PressureChange] = (new == old ? NaN : PRESSURE_CHANGE)
+	TPStorage[count][headstage][%PressureChange] = ((new == old) ? NaN : PRESSURE_CHANGE)
 	TPStorage[count][headstage][%PressureMethod] = PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear]
 
 	old = P_FindLastSetEntry(TPStorage, count - 1, headstage, "PressureMethod")
@@ -883,9 +883,9 @@ Function P_UpdatePressureDataStorageWv(string device) /// @todo Needs to be rewo
 	PressureDataWv[settingHS][%ADC]            = GetPopupMenuIndex(device, "Popup_Settings_Pressure_AD")
 	PressureDataWv[settingHS][%ADC_Gain]       = GetSetVariable(device, "setvar_Settings_Pressure_ADgain")
 	idx                                        = GetPopupMenuIndex(device, "Popup_Settings_Pressure_TTLA")
-	PressureDataWv[settingHS][%TTL_A]          = idx == 0 ? NaN : --idx
+	PressureDataWv[settingHS][%TTL_A]          = (idx == 0) ? NaN : --idx
 	idx                                        = GetPopupMenuIndex(device, "Popup_Settings_Pressure_TTLB")
-	PressureDataWv[settingHS][%TTL_B]          = idx == 0 ? NaN : --idx
+	PressureDataWv[settingHS][%TTL_B]          = (idx == 0) ? NaN : --idx
 	PressureDataWv[userHS][%ManSSPressure]     = DAG_GetNumericalValue(device, "setvar_DataAcq_SSPressure")
 	PressureDataWv[][%PSI_air]                 = GetSetVariable(device, "setvar_Settings_InAirP")
 	PressureDataWv[][%PSI_solution]            = GetSetVariable(device, "setvar_Settings_InBathP")
@@ -1314,7 +1314,7 @@ End
 
 static Function P_FillDAQWaves(string device, variable headStage, STRUCT P_PressureDA &p)
 
-	ASSERT(p.first < p.last && p.last - p.first >= 1, "first/last mismatch")
+	ASSERT(p.first < p.last && (p.last - p.first) >= 1, "first/last mismatch")
 
 	variable hwType
 
@@ -2131,6 +2131,8 @@ Function ButtonProc_Approach(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			P_SetApproach(ba.win, ba.ctrlName)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2152,6 +2154,8 @@ Function ButtonProc_Seal(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			P_UpdatePressureMode(ba.win, PRESSURE_METHOD_SEAL, ba.ctrlName, 1)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2164,6 +2168,8 @@ Function ButtonProc_BreakIn(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			P_UpdatePressureMode(ba.win, PRESSURE_METHOD_BREAKIN, ba.ctrlName, 1)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2175,6 +2181,8 @@ Function ButtonProc_Clear(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			P_UpdatePressureMode(ba.win, PRESSURE_METHOD_CLEAR, ba.ctrlName, 0)
+			break
+		default:
 			break
 	endswitch
 
@@ -2207,6 +2215,8 @@ Function CheckProc_ClearEnable(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 				DisableControl(cba.win, "button_DataAcq_Clear")
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2232,6 +2242,8 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(STRUCT WMButtonAction &ba) : ButtonContr
 
 			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_dev", list = filteredList)
 			SetPopupMenuVal(ba.win, "popup_Settings_UserPressure", list = filteredList)
+			break
+		default:
 			break
 	endswitch
 
@@ -2261,6 +2273,8 @@ Function P_ButtonProc_Enable(STRUCT WMButtonAction &ba) : ButtonControl
 			P_Enable()
 			P_UpdatePressureDataStorageWv(device)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2272,6 +2286,8 @@ Function P_ButtonProc_Disable(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			P_Disable()
+			break
+		default:
 			break
 	endswitch
 
@@ -2285,6 +2301,8 @@ Function ButtonProc_DataAcq_ManPressSet(STRUCT WMButtonAction &ba) : ButtonContr
 		case 2: // mouse up
 			P_SetManual(ba.win, ba.ctrlname)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2297,6 +2315,8 @@ Function ButtonProc_ManPP(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			variable headStage = DAG_GetNumericalValue(ba.win, "slider_DataAcq_ActiveHeadstage")
 			P_ManPressurePulse(ba.win, headStage)
+			break
+		default:
 			break
 	endswitch
 
@@ -2312,6 +2332,8 @@ Function P_Check_ApproachNear(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			P_UpdatePressureDataStorageWv(cba.win)
 			P_RunP_ControlIfTPOFF(cba.win)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2324,6 +2346,8 @@ Function P_Check_SealAtm(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			DAP_AbortIfUnlocked(cba.win)
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			P_UpdatePressureDataStorageWv(cba.win)
+			break
+		default:
 			break
 	endswitch
 
@@ -2396,6 +2420,8 @@ Function P_ButtonProc_UserPressure(STRUCT WMButtonAction &ba) : ButtonControl
 				ASSERT(0, "Invalid ctrl")
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2456,16 +2482,16 @@ Function P_UpdatePressureType(string device)
 	WAVE pressureType   = GetPressureTypeWv(device)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 	// Encode atm pressure mode
-	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_ATM ? PRESSURE_TYPE_ATM : pressureType[p]
+	pressureType[] = (pressureDataWv[p][0] == PRESSURE_METHOD_ATM) ? PRESSURE_TYPE_ATM : pressureType[p]
 	// Encode automated pressure modes
-	pressureType[] = pressureDataWv[p][0] >= PRESSURE_METHOD_APPROACH && pressureDataWv[p][0] <= PRESSURE_METHOD_CLEAR ? PRESSURE_TYPE_AUTO : pressureType[p]
+	pressureType[] = (pressureDataWv[p][0] >= PRESSURE_METHOD_APPROACH && pressureDataWv[p][0] <= PRESSURE_METHOD_CLEAR) ? PRESSURE_TYPE_AUTO : pressureType[p]
 	// Encode manual pressure mode
-	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_MANUAL ? PRESSURE_TYPE_MANUAL : pressureType[p]
+	pressureType[] = (pressureDataWv[p][0] == PRESSURE_METHOD_MANUAL) ? PRESSURE_TYPE_MANUAL : pressureType[p]
 	// Encode user access
 	headstage               = pressureDataWv[0][%userSelectedHeadStage]
-	pressureType[headstage] = P_GetUserAccess(device, headstage, pressureDataWv[headstage][0]) == ACCESS_USER ? PRESSURE_TYPE_USER : PressureType[headstage]
+	pressureType[headstage] = (P_GetUserAccess(device, headstage, pressureDataWv[headstage][0]) == ACCESS_USER) ? PRESSURE_TYPE_USER : PressureType[headstage]
 	// Encode headstages without valid pressure settings
-	pressureType[] = P_ValidatePressureSetHeadstage(device, p) == 1 ? pressureType[p] : NaN
+	pressureType[] = (P_ValidatePressureSetHeadstage(device, p) == 1) ? pressureType[p] : NaN
 End
 
 Function/S P_PressureMethodToString(variable method)

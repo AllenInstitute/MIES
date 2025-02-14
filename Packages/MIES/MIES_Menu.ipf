@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MENU
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Menu.ipf
 /// @brief __MEN__ Definition of the menu items
@@ -202,7 +202,7 @@ Function MEN_CreateIssueOnGithub()
 	ref = CaptureHistoryStart()
 	HW_NI_PrintPropertiesOfDevices()
 	str = CaptureHistory(ref, 1)
-#endif
+#endif // WINDOWS
 
 	body += str
 

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TS
-#endif
+#endif // AUTOMATED_TESTING
 
 static Constant TS_GET_REPEAT_TIMEOUT_IN_MS = 1
 static Constant TS_ERROR_INVALID_TGID       = 980 // Invalid Thread Group ID or index.

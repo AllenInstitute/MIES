@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_PSX
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_SweepFormula_PSX.ipf
 ///
@@ -214,6 +214,9 @@ static Function/WAVE PSX_GetCheckboxStatesFromSpecialPanel(string win, string tr
 			ctrlPrefix   = "checkbox_single_events_"
 			states[%all] = 0
 			last         = DimSize(states, ROWS) - 2
+			break
+		default:
+			ASSERT(0, "Unknown trace type")
 			break
 	endswitch
 
@@ -523,7 +526,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FilterEventsKernelAmpSign(WAVE/
 
 			overrideSignQC = overrideResults[i][%$comboKey][%KernelAmpSignQC]
 		endif
-#endif
+#endif // AUTOMATED_TESTING
 
 		if(IsNaN(overrideSignQC))
 			if(sign(amplitude) != sign(kernelAmp))
@@ -567,7 +570,7 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 	peak_start_search = max(deconvPeak_t - PSX_PEAK_RANGE_FACTOR_LEFT * kernelRiseTau, prevDeconvPeak_t)
 
 	// upper bound
-	if(index < numCrossings - 1)
+	if(index < (numCrossings - 1))
 		nextDeconvPeak_t = peakX[index + 1]
 	else
 		nextDeconvPeak_t = Inf
@@ -745,7 +748,7 @@ static Function [variable first, variable last] PSX_GetSingleEventRange(WAVE psx
 		first = baseline
 	endif
 
-	if(index == numEvents - 1)
+	if(index == (numEvents - 1))
 		last = min(first + offset, IndexToScale(sweepDataOffFilt, DimSize(sweepDataOffFilt, ROWS) - 1, ROWS))
 	else
 		last = min(first + offset, psxEvent[index + 1][%baseline_t])
@@ -829,7 +832,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 			decayTau = overrideTau
 		endif
 	endif
-#endif
+#endif // AUTOMATED_TESTING
 
 	if(err)
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
@@ -839,7 +842,7 @@ static Function PSX_FitEventDecay(WAVE sweepDataOffFilt, WAVE psxEvent, variable
 
 	fitRange = endTime - startTime
 
-	if(IsFinite(decayTau) && decayTau > maxTauFactor * fitRange)
+	if(IsFinite(decayTau) && decayTau > (maxTauFactor * fitRange))
 		psxEvent[eventIndex][%$"Fit manual QC call"] = PSX_REJECT
 		psxEvent[eventIndex][%$"Fit result"]         = PSX_DECAY_FIT_ERROR
 		return NaN
@@ -1217,7 +1220,7 @@ static Function [WAVE/D results, WAVE eventIndex, WAVE marker, WAVE/T comboKeys]
 
 		if(!cmpstr(propLabel, "iei") && numEntries >= 2)
 			// recalculate the iei as that might have changed due to in-between events being not selected
-			Multithread results[0, numEntries - 1] = events[indizes[p]][%peak_t] - (p >= 1 ? events[indizes[p - 1]][%peak_t] : NaN)
+			Multithread results[0, numEntries - 1] = events[indizes[p]][%peak_t] - ((p >= 1) ? events[indizes[p - 1]][%peak_t] : NaN)
 		else
 			Multithread results[] = events[indizes[p]][%$propLabel]
 		endif
@@ -1545,7 +1548,7 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 					// +inf -> +1
 					// finite -> NaN
 					Duplicate/FREE resultsRaw, results
-					Multithread results[] = resultsRaw[p] == -Inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : (resultsRaw[p] == +Inf ? +1 : NaN))
+					Multithread results[] = resultsRaw[p] == -Inf ? -1 : (IsNaN(resultsRaw[p]) ? 0 : ((resultsRaw[p] == +Inf) ? +1 : NaN))
 
 					WAVE/Z resultsClean = ZapNaNs(results)
 
@@ -1739,7 +1742,7 @@ threadsafe static Function PSX_CalculateRiseTime(WAVE sweepDataOffFilt, WAVE psx
 
 		printf "comboKey: %s, x: [%g, %g], y: [%g, %g], index: %d, dY: %g, thresholds: [%g, %g], levels: [%g, %g], risetime: %g, xlt: %g, xupt: %g\r", comboKey, xStart, xEnd, yStart, yEnd, index, dY, lowerThreshold, upperThreshold, lowerLevel, upperLevel, risetime, xlt, xupt
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 	return riseTime
 End
@@ -1775,7 +1778,7 @@ threadsafe static Function PSX_CalculateOnsetTime(WAVE sweepDataDiff, WAVE psxEv
 	DEBUGPRINT_TS(msg)
 	sprintf msg, "level = %g, [%g, %g]\r", level, slewRate_t, baseline_t
 	DEBUGPRINT_TS(msg)
-#endif
+#endif // DEBUGGING_ENABLED
 
 	// search backwards in time
 	FindLevel/R=(slewRate_t, baseline_t)/Q sweepDataDiff, level
@@ -2006,7 +2009,7 @@ static Function PSX_UpdateOffsetInAllEventGraph(string win)
 
 			switch(offsetMode)
 				case PSX_HORIZ_OFFSET_ONSET:
-					xOffset = IsFinite(psxEvent[i][%$"Onset Time"]) ? first - psxEvent[i][%$"Onset Time"] : 0
+					xOffset = IsFinite(psxEvent[i][%$"Onset Time"]) ? (first - psxEvent[i][%$"Onset Time"]) : 0
 					yOffset = 0
 					break
 				case PSX_HORIZ_OFFSET_PEAK:
@@ -2539,7 +2542,7 @@ static Function PSX_UpdateHideStateInAllEventGraphImpl(string win, string traceT
 	allSelected = checkboxActive[%all]
 
 	Make/FREE/N=(numEntries) hideState
-	MultiThread/NT=(numEntries < 128) hideState[] = !((str2num(currentState[p]) == PSX_ALL ? allSelected : (stateMatchPattern & str2num(currentState[p]))))
+	MultiThread/NT=(numEntries < 128) hideState[] = !(((str2num(currentState[p]) == PSX_ALL) ? allSelected : (stateMatchPattern & str2num(currentState[p]))))
 
 	ACC_HideTracesPerTrace(extAllGraph, traceNames, numEntries, hideState)
 
@@ -2576,7 +2579,7 @@ static Function PSX_UpdateBlockIndizes(string win)
 	for(i = 0; i < numBlocks; i += 1)
 		first = i * blockSize
 
-		if(i == numBlocks - 1)
+		if(i == (numBlocks - 1))
 			// take the rest of the events into the last block
 			last = numEntries - 1
 		else
@@ -2585,7 +2588,7 @@ static Function PSX_UpdateBlockIndizes(string win)
 
 		indexHelper[first, last] = TUD_SetUserData(extAllGraph, traceNames[p], PSX_TUD_BLOCK_INDEX, num2str(i))
 
-		if(last >= numEntries - 1)
+		if(last >= (numEntries - 1))
 			// assigned all events
 			// update numBlocks
 			numBlocks = i + 1
@@ -4241,7 +4244,7 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 
 			sprintf msg, "Fit range for event %d: [%g, %g]", eventIndex, first, last
 			DEBUGPRINT(msg)
-#endif
+#endif // DEBUGGING_ENABLED
 			return 1
 		case EVENT_WINDOW_HOOK_MOUSEUP:
 			win = s.winName
@@ -4276,6 +4279,8 @@ Function PSX_PlotInteractionHook(STRUCT WMWinHookStruct &s)
 			browser = SFH_GetBrowserForFormulaGraph(s.winName)
 			PSX_StoreGuiState(win, browser)
 			return 0
+		default:
+			break
 	endswitch
 
 	return 0
@@ -4325,6 +4330,8 @@ Function PSX_AllEventGraphHook(STRUCT WMWinHookStruct &s)
 			PSX_ReactToKeyPressWithoutMouse(win, s.keyCode, comboIndex, eventIndex)
 
 			return 1
+			break
+		default:
 			break
 	endswitch
 End
@@ -5273,6 +5280,8 @@ Function PSX_ButtonProc_StoreEvents(STRUCT WMButtonAction &ba) : ButtonControl
 
 			PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, eventContainer, id)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5313,6 +5322,8 @@ Function PSX_ButtonProc_LoadEvents(STRUCT WMButtonAction &ba) : ButtonControl
 
 				PSX_UpdateEventWaves(graph, writeState = 0, comboIndex = i)
 			endfor
+			break
+		default:
 			break
 	endswitch
 End
@@ -5362,6 +5373,8 @@ Function PSX_ButtonProcJumpFirstUndet(STRUCT WMButtonAction &ba) : ButtonControl
 			endfor
 
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5384,6 +5397,8 @@ Function PSX_ListBoxSelectCombo(STRUCT WMListBoxAction &lba) : ListboxControl
 
 			PSX_SetCombo(lba.win, row)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5392,6 +5407,8 @@ Function PSX_CopyHelpToClipboard(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse down
 			PutScrapText ba.userData
+			break
+		default:
 			break
 	endswitch
 End
@@ -5403,6 +5420,8 @@ Function PSX_CheckboxProcSuppressUpdate(STRUCT WMCheckboxAction &cba) : Checkbox
 			if(!cba.checked)
 				PSX_UpdateAllEventGraph(cba.win, forceAverageUpdate = 1, forceSingleEventUpdate = 1)
 			endif
+			break
+		default:
 			break
 	endswitch
 End
@@ -5416,6 +5435,8 @@ Function PSX_PopupMenuState(STRUCT WMPopupAction &cba) : PopupMenuControl
 			forceSingleEventOffsetUpdate = !cmpstr(cba.ctrlName, "popupmenu_event_offset")
 			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1, forceSingleEventOffsetUpdate = forceSingleEventOffsetUpdate)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5424,6 +5445,8 @@ Function PSX_CheckboxProcAllEventPlotUpdate(STRUCT WMCheckboxAction &cba) : Chec
 	switch(cba.eventCode)
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1)
+			break
+		default:
 			break
 	endswitch
 End
@@ -5434,6 +5457,8 @@ Function PSX_CheckboxProcChangeRestrictCurrentCombo(STRUCT WMCheckboxAction &cba
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5443,6 +5468,8 @@ Function PSX_CheckboxProcFitAcceptAverage(STRUCT WMCheckboxAction &cba) : Checkb
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceSingleEventUpdate = 1, forceAverageUpdate = 1)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5451,6 +5478,8 @@ Function PSX_PopupMenuBlockNumber(STRUCT WMPopupAction &cba) : PopupMenuControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceAverageUpdate = 1)
+			break
+		default:
 			break
 	endswitch
 End
@@ -5463,6 +5492,8 @@ Function PSX_SetVarBlockSize(STRUCT WMSetVariableAction &sva) : SetVariableContr
 		case 3: // Live update
 			PSX_UpdateAllEventGraph(sva.win, forceAverageUpdate = 1, forceBlockIndexUpdate = 1)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -5471,6 +5502,8 @@ Function PSX_PopupFitAcceptAverageFunc(STRUCT WMPopupAction &cba) : PopupMenuCon
 	switch(cba.eventCode)
 		case 2: // mouse up
 			PSX_UpdateAllEventGraph(cba.win, forceAverageUpdate = 1)
+			break
+		default:
 			break
 	endswitch
 End

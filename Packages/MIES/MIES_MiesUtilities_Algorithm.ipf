@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_ALGORITHM
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Algorithm.ipf
 /// @brief This file holds MIES utility functions implementing various algorithms
@@ -359,7 +359,7 @@ threadsafe static Function DecimateMinMax(WAVE input, WAVE output, variable idx,
 	WaveStats/Q/M=1/RMD=[first, last][colInp] input
 	ASSERT_TS(V_numINFS == 0, "INFs are not supported.")
 	ASSERT_TS(V_numNaNS == 0, "NaNs are not supported.")
-	ASSERT_TS(last - first + 1 == V_npnts && V_npnts > 0, "Range got clipped")
+	ASSERT_TS((last - first + 1) == V_npnts && V_npnts > 0, "Range got clipped")
 
 	// comment in for debugging
 	// #ifdef DEBUGGING_ENABLED
@@ -426,7 +426,7 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	numLayers = DimSize(numericOrTextWave, LAYERS)
 	ASSERT_TS(DimSize(numericOrTextWave, CHUNKS) <= 1, "No support for chunks")
 
-	ASSERT_TS(!ParamIsDefault(col) + !ParamIsDefault(colLabel) < 2, "Ambiguous input. Col and ColLabel is set.")
+	ASSERT_TS((!ParamIsDefault(col) + !ParamIsDefault(colLabel)) < 2, "Ambiguous input. Col and ColLabel is set.")
 	if(!ParamIsDefault(col))
 		// do nothing
 	elseif(!ParamIsDefault(colLabel))
@@ -523,15 +523,15 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 		if(!ParamIsDefault(prop))
 			if(prop & PROP_EMPTY)
 				if(prop & PROP_NOT)
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = numtype(wv[p][col][q]) != 2 ? p : -1
+					MultiThread matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) != 2) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = numtype(wv[p][col][q]) == 2 ? p : -1
+					MultiThread matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) == 2) ? p : -1
 				endif
 			elseif(prop & PROP_MATCHES_VAR_BIT_MASK)
 				if(prop & PROP_NOT)
 					MultiThread matches[startRow, endRow][startLayer, endLayer] = !(wv[p][col][q] & var) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = wv[p][col][q] & var ? p : -1
+					MultiThread matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] & var) ? p : -1
 				endif
 			elseif(prop & PROP_GREP)
 				if(prop & PROP_NOT)
@@ -564,7 +564,7 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 				if(prop & PROP_NOT)
 					MultiThread matches[startRow, endRow][startLayer, endLayer] = !(str2num(wvText[p][col][q]) & var) ? p : -1
 				else
-					MultiThread matches[startRow, endRow][startLayer, endLayer] = str2num(wvText[p][col][q]) & var ? p : -1
+					MultiThread matches[startRow, endRow][startLayer, endLayer] = (str2num(wvText[p][col][q]) & var) ? p : -1
 				endif
 			elseif(prop & PROP_GREP)
 				if(prop & PROP_NOT)

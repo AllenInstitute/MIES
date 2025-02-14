@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MSQ
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctions_MultiPatchSeq.ipf
 /// @brief __MSQ__ Analysis functions for multi patch sequence
@@ -337,7 +337,7 @@ static Function/WAVE MSQ_SearchForSpikes(string device, variable type, WAVE swee
 	endif
 
 	WAVE spikeDetection = LBN_GetNumericWave()
-	spikeDetection = (p == headstage ? 0 : defaultValue)
+	spikeDetection = ((p == headstage) ? 0 : defaultValue)
 
 	sprintf msg, "Type %d, headstage %d, totalOnsetDelay %g, numberOfSpikes %d", type, headstage, totalOnsetDelay, numberOfSpikes
 	DEBUGPRINT(msg)
@@ -528,10 +528,10 @@ Function/S MSQ_FastRheoEst_CheckParam(string name, STRUCT CheckParametersStruct 
 				return "Not valid."
 			endif
 			break
+		default:
+			// other parameters are not checked
+			return ""
 	endswitch
-
-	// other parameters are not checked
-	return ""
 End
 
 /// @brief Analysis function to find the smallest DAScale where the cell spikes
@@ -1054,10 +1054,10 @@ Function/S MSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 				return "Wave must neither have NaNs nor Infs"
 			endif
 			break
+		default:
+			// other parameters are not checked
+			return ""
 	endswitch
-
-	// other parameters are not checked
-	return ""
 End
 
 /// @brief Analysis function to apply a list of DAScale values to a range of sweeps

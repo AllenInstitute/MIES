@@ -51,6 +51,8 @@ Function ButtonProc_OpenMiesDocuUpdateNightly(STRUCT WMButtonAction &ba) : Butto
 		case 2: // mouse up
 			BrowseURL IP_DOCU_UPDATE_URL
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -111,6 +113,8 @@ Function ButtonProc_DownloadNightly(STRUCT WMButtonAction &ba) : ButtonControl
 			URLRequest/O/P=$path/FILE=filename url=url
 			PathInfo/SHOW $path
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -138,7 +142,7 @@ End
 
 #ifndef THREADING_DISABLED
 #include <FunctionProfiling>
-#endif
+#endif // !THREADING_DISABLED
 
 // third party includes
 #include "ACL_TabUtilities"
@@ -290,4 +294,4 @@ End
 #include "MIES_WaveBuilder_Macro"
 #include "MIES_WaveDataFolderGetters"
 
-#endif
+#endif // TOO_OLD_IGOR

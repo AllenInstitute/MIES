@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SWS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_SweepSaving.ipf
 /// @brief __SWS__ Scale and store acquired data
@@ -143,7 +143,7 @@ Function [variable plannedTime, variable acquiredTime] SWS_DeterminePlannedAndAc
 		return [plannedTime, NaN]
 	endif
 
-	acquiredTime = lastFifoPos ? IndexToScale(channelAD, max(lastFifoPos - 1, 0), ROWS) * MILLI_TO_ONE : 0
+	acquiredTime = lastFifoPos ? (IndexToScale(channelAD, max(lastFifoPos - 1, 0), ROWS) * MILLI_TO_ONE) : 0
 
 	return [plannedTime, acquiredTime]
 End
@@ -281,6 +281,9 @@ Function/WAVE SWS_GetChannelGains(string device, [variable timing])
 			if(numTTLs > 0)
 				gain[numDACs + numADCs, *] = 1
 			endif
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 

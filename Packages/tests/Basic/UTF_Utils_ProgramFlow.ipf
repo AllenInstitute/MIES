@@ -147,7 +147,7 @@ Function RunningInMainThread_Thread()
 	CHECK_EQUAL_VAR(Sum(data), 0)
 End
 
-#endif
+#endif // !THREADING_DISABLED
 
 Function RunningInMainThread_Main()
 

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_GETTER
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Getter.ipf
 /// @brief This file holds MIES utility functions that get names/objects
@@ -103,9 +103,11 @@ Function GetAnalysisFunctionVersion(variable type)
 			return MSQ_DA_SCALE_VERSION
 		case SC_SPIKE_CONTROL:
 			return SC_SPIKE_CONTROL_VERSION
+		default:
+			ASSERT(0, "Invalid type")
+			break
 	endswitch
 
-	ASSERT(0, "Invalid type")
 End
 
 Function [WAVE sweepWave, WAVE config] GetSweepAndConfigWaveFromDevice(string device, variable sweepNo)

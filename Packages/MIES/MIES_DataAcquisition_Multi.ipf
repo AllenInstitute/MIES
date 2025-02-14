@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DAQ_MD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DataAcquisition_Multi.ipf
 /// @brief __DQM__ Routines for Multi Device Data acquisition
@@ -138,6 +138,9 @@ Function DQM_FIFOMonitor(STRUCT BackgroundStruct &s)
 					endif
 				endif
 
+				break
+			default:
+				ASSERT(0, "Invalid hardware mode")
 				break
 		endswitch
 

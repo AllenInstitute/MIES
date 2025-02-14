@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_SETTINGS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_settings.ipf
 /// @brief This file holds MIES utility functions for settings management

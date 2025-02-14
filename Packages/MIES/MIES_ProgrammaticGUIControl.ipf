@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_PGC
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_ProgrammaticGUIControl.ipf
 /// @brief __PGC__ Control GUI controls from code
@@ -221,7 +221,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			ButtonProc(ba)
 			break
 		case CONTROL_TYPE_POPUPMENU:
-			ASSERT(ParamIsDefault(val) + ParamIsDefault(str) == 1, "Needs an argument")
+			ASSERT((ParamIsDefault(val) + ParamIsDefault(str)) == 1, "Needs an argument")
 
 			[popupMenuValue, popupMenuType] = ParsePopupMenuValue(S_recreation)
 
@@ -314,7 +314,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			TabProc(tca)
 			break
 		case CONTROL_TYPE_SETVARIABLE:
-			ASSERT(ParamIsDefault(val) + ParamIsDefault(str) == 1, "Needs a variable or string argument")
+			ASSERT((ParamIsDefault(val) + ParamIsDefault(str)) == 1, "Needs a variable or string argument")
 
 			if(GetControlSettingVar(S_recreation, "noEdit") == 1)
 				switch(mode)

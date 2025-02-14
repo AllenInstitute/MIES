@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_FFI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_ForeignFunctionInterface.ipf
 /// @brief __FFI__ ACQ4/ZeroMQ accessible functions

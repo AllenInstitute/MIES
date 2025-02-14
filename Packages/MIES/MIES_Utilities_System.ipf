@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_SYSTEM
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_System.ipf
 /// @brief utility functions for system operations
@@ -122,7 +122,7 @@ Function/S GetIgorExecutable()
 	return path + "Igor64.exe"
 #else
 	return path + "Igor.exe"
-#endif
+#endif // IGOR64
 End
 
 /// @brief Return the number of bits of the architecture
@@ -417,7 +417,7 @@ threadsafe Function ConvertXOPErrorCode(variable err)
 	// for second+ loaded XOP -> xop error codes returned are offsetted by n x 0x10000 per XOP instead of 10000
 
 	// Therefore, returning the code through RTE and directly through V_flag (SetOperationReturnValue):
-	err = err < 0xFFFF ? err : (err & 0xFFFF) + 10000
+	err = (err < 0xFFFF) ? err : ((err & 0xFFFF) + 10000)
 
 	// Note: Getting the error message through GetRTErrMessage,
 	// GetErrMessage(code) requires the original RTE code (does not work with directly return through  V_flag).

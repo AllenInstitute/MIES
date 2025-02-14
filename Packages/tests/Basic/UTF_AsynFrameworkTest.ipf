@@ -658,7 +658,7 @@ static Function TASYNC_StopForAssert()
 	ASYNC_Stop(timeout = 1, fromAssert = 1)
 End
 
-#endif
+#endif // !THREADING_DISABLED
 
 /// @brief Test if ASYNC_Execute triggers execution and data is returned through readout.
 /// this test uses a worker returning no data folder
@@ -868,7 +868,7 @@ static Function TASYNC_InOrderDiffWL()
 	timeout = 0
 	for(;;)
 		ASYNC_ThreadReadOut()
-		if(numpnts(returnOrder) == workCnt / 2 && numpnts(returnOrder2) == workCnt / 2)
+		if(numpnts(returnOrder) == (workCnt / 2) && numpnts(returnOrder2) == (workCnt / 2))
 			break
 		endif
 		if(endtime < datetime)
@@ -879,7 +879,7 @@ static Function TASYNC_InOrderDiffWL()
 	CHECK(!timeout)
 
 	if(!timeout)
-		for(i = 0; i < workCnt / 2; i += 1)
+		for(i = 0; i < (workCnt / 2); i += 1)
 			CHECK_EQUAL_VAR(returnOrder[i], i)
 			CHECK_EQUAL_VAR(returnOrder2[i], i)
 		endfor
@@ -1054,7 +1054,7 @@ static Function TASYNC_StopTimeOutForce()
 	PASS()
 End
 
-#endif
+#endif // !THREADING_DISABLED
 
 /// @brief Test if a direct stop after pushing mixed workloads finishes all readouts properly on stopping attempt
 static Function TASYNC_IODiffWLDirectStop()
@@ -1095,7 +1095,7 @@ static Function TASYNC_IODiffWLDirectStop()
 	CHECK(!timeout)
 
 	if(!timeout)
-		for(i = 0; i < workCnt / 2; i += 1)
+		for(i = 0; i < (workCnt / 2); i += 1)
 			CHECK_EQUAL_VAR(returnOrder[i], i)
 			CHECK_EQUAL_VAR(returnOrder2[i], i)
 		endfor
@@ -1188,15 +1188,15 @@ static Function TASYNC_RunClassDouble()
 	timeout = 0
 	for(;;)
 		ASYNC_ThreadReadOut()
-		if(numpnts(returnOrder) == workCnt / 2 && numpnts(returnOrder2) == workCnt / 2)
+		if(numpnts(returnOrder) == (workCnt / 2) && numpnts(returnOrder2) == (workCnt / 2))
 			CHECK(ASYNC_IsWorkloadClassDone("WorkLoadDoubleClass1"))
 			CHECK(ASYNC_IsWorkloadClassDone("WorkLoadDoubleClass2"))
 			break
 		endif
-		if(numpnts(returnOrder) != workCnt / 2)
+		if(numpnts(returnOrder) != (workCnt / 2))
 			CHECK(!ASYNC_IsWorkloadClassDone("WorkLoadDoubleClass1"))
 		endif
-		if(numpnts(returnOrder2) != workCnt / 2)
+		if(numpnts(returnOrder2) != (workCnt / 2))
 			CHECK(!ASYNC_IsWorkloadClassDone("WorkLoadDoubleClass2"))
 		endif
 
@@ -1354,7 +1354,7 @@ threadsafe Function/DF RunGenericWorker5(DFREF dfr)
 	// reliable here on Win7/wine
 	now = datetime
 	for(;;)
-		if(datetime > now + 1)
+		if(datetime > (now + 1))
 			break
 		endif
 	endfor
@@ -1371,7 +1371,7 @@ threadsafe Function/DF RunGenericWorkerAbortOnValue(DFREF dfr)
 	// reliable here on Win7/wine
 	now = datetime
 	for(;;)
-		if(datetime > now + 1)
+		if(datetime > (now + 1))
 			break
 		endif
 	endfor
@@ -1388,7 +1388,7 @@ threadsafe Function/DF RunGenericWorkerRTE(DFREF dfr)
 	// reliable here on Win7/wine
 	now = datetime
 	for(;;)
-		if(datetime > now + 1)
+		if(datetime > (now + 1))
 			break
 		endif
 	endfor

@@ -70,6 +70,9 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 		case INDEP_SINGLE_SCI:
 			Make/D/N=1/FREE val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 			return val
+		default:
+			INFO("Invalid mode %g", n0 = mode)
+			FAIL()
 	endswitch
 End
 

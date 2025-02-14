@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_WBPM
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_WaveBuilder_Macro.ipf
 /// @brief __WBPM__ WaveBuilder panel macro

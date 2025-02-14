@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_ASD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AsynchronousData.ipf
 /// @brief __ASD__ Support functions for the asynchronous channels

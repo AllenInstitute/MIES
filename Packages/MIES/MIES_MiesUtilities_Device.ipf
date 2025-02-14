@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_DEVICE
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Device.ipf
 /// @brief This file holds MIES utility functions for Device handling
@@ -110,21 +110,21 @@ Function/S GetAllDevicesWithContent([variable contentType])
 		dataPath      = GetDeviceDataPathAsString(device)
 		testPulsePath = GetDeviceTestPulseAsString(device)
 
-		if(contentType & CONTENT_TYPE_SWEEP                 \
+		if((contentType & CONTENT_TYPE_SWEEP)               \
 		   && DataFolderExists(dataPath)                    \
 		   && CountObjects(dataPath, COUNTOBJECTS_WAVES) > 0)
 			list = AddListItem(device, list, ";", Inf)
 			continue
 		endif
 
-		if(contentType & CONTENT_TYPE_TPSTORAGE                                   \
+		if((contentType & CONTENT_TYPE_TPSTORAGE)                                 \
 		   && DataFolderExists(testPulsePath)                                     \
 		   && ItemsInList(GetListOfObjects($testPulsePath, TP_STORAGE_REGEXP)) > 0)
 			list = AddListItem(device, list, ";", Inf)
 			continue
 		endif
 
-		if(contentType & CONTENT_TYPE_COMMENT \
+		if((contentType & CONTENT_TYPE_COMMENT) \
 		   && DeviceHasUserComments(device))
 			list = AddListItem(device, list, ";", Inf)
 			continue

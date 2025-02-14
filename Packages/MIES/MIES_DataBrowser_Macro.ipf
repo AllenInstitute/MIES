@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DBM
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DataBrowser_Macro.ipf
 /// @brief __DBM__ Macro for DataBrowser

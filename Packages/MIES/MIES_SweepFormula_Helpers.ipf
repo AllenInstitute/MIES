@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SFH_HELPERS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_SweepFormula_Helpers.ipf
 ///
@@ -324,9 +324,9 @@ Function SFH_ASSERT(variable condition, string message, [variable jsonId])
 #if exists("INFO")
 		INFO("SFH_ASSERT: %s", s0 = error)
 #endif
-#endif
+#endif // AUTOMATED_TESTING
 		Debugger
-#endif
+#endif // AUTOMATED_TESTING_DEBUGGING
 		Abort
 	endif
 End
@@ -608,7 +608,7 @@ static Function/WAVE SFH_GetSweepsForFormulaImpl(string graph, WAVE/WAVE selectD
 				rangeEndIndex = limit(rangeEndIndex, -Inf, sweepSize)
 			endif
 
-			SFH_ASSERT(rangeStartIndex < rangeEndIndex - 1, "Starting range must be smaller than the ending range for sweep " + num2istr(sweepNo) + ".")
+			SFH_ASSERT(rangeStartIndex < (rangeEndIndex - 1), "Starting range must be smaller than the ending range for sweep " + num2istr(sweepNo) + ".")
 			SFH_ASSERT(rangeStartIndex == -Inf || (IsFinite(rangeStartIndex) && rangeStartIndex >= 0 && rangeStartIndex < sweepSize), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
 			SFH_ASSERT(rangeEndIndex == Inf || (IsFinite(rangeEndIndex) && rangeEndIndex > 0 && rangeEndIndex <= sweepSize), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 			Duplicate/FREE/RMD=[rangeStartIndex, rangeEndIndex - 1] sweep, rangedSweepData
@@ -660,7 +660,7 @@ Function SFH_GetNumberOfArguments(variable jsonId, string jsonPath)
 		return size
 	endif
 
-	return JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL ? 0 : size
+	return (JSON_GetType(jsonId, jsonPath + "/0") == JSON_NULL) ? 0 : size
 End
 
 Function/DF SFH_GetWorkingDF(string win)
@@ -687,7 +687,7 @@ Function SFH_CleanUpInput(WAVE input)
 		return NaN
 	endif
 	KillOrMoveToTrash(wv = input)
-#endif
+#endif // !SWEEPFORMULA_DEBUG
 End
 
 Function SFH_AddOpToOpStack(WAVE w, string oldStack, string opShort)
@@ -754,7 +754,7 @@ Function/WAVE SFH_GetOutputForExecutor(WAVE output, string win, string opShort, 
 
 #ifdef SWEEPFORMULA_DEBUG
 	SFH_ConvertAllReturnDataToPermanent(output, win, opShort)
-#endif
+#endif // SWEEPFORMULA_DEBUG
 
 	return wRefPath
 End

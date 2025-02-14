@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_WAVEHANDLING
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_WaveHandling.ipf
 /// @brief utility functions for wave handling
@@ -70,7 +70,7 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 	indexShouldExist *= 2
 
 	if(checkFreeMemory)
-		if(GetWaveSize(wv) * (indexShouldExist / DimSize(wv, dimension)) / 1024 / 1024 / 1024 >= GetFreeMemory())
+		if((GetWaveSize(wv) * (indexShouldExist / DimSize(wv, dimension)) / 1024 / 1024 / 1024) >= GetFreeMemory())
 			return 1
 		endif
 	endif
@@ -96,6 +96,9 @@ threadsafe Function EnsureLargeEnoughWave(WAVE wv, [variable indexShouldExist, v
 				break
 			case CHUNKS:
 				wv[][][][oldSizes[CHUNKS],] = initialValue
+				break
+			default:
+				ASSERT_TS(0, "Unsupported dimension")
 				break
 		endswitch
 	endif
@@ -426,7 +429,7 @@ Function GetRowWithSameContent(WAVE/T refWave, WAVE/T sourceWave, variable row)
 	for(i = 0; i < numRows; i += 1)
 		for(j = 0; j < numCols; j += 1)
 			if(!cmpstr(refWave[i][j], sourceWave[row][j]))
-				if(j == numCols - 1)
+				if(j == (numCols - 1))
 					return i
 				endif
 
@@ -499,7 +502,7 @@ threadsafe Function SetDimensionLabels(WAVE wv, string list, variable dim, [vari
 	endif
 
 	ASSERT_TS(startPos >= 0, "Illegal negative startPos")
-	ASSERT_TS(dimlabelCount <= DimSize(wv, dim) + startPos, "Dimension label count exceeds dimension size")
+	ASSERT_TS(dimlabelCount <= (DimSize(wv, dim) + startPos), "Dimension label count exceeds dimension size")
 	for(i = 0; i < dimlabelCount; i += 1)
 		labelName = StringFromList(i, list)
 		SetDimLabel dim, i + startPos, $labelName, Wv
@@ -526,7 +529,7 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 
 	if(!ParamIsDefault(dimension))
 		ASSERT_TS(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
-		ASSERT_TS(ParamIsDefault(index) + ParamIsDefault(indexWave) == 1, "Need exactly one of parameter of type index or indexWave")
+		ASSERT_TS((ParamIsDefault(index) + ParamIsDefault(indexWave)) == 1, "Need exactly one of parameter of type index or indexWave")
 	endif
 
 	if(!ParamIsDefault(indexWave) || !ParamIsDefault(index))
@@ -568,6 +571,8 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(WAVE/WAVE src, [variable dimension,
 					break
 				case CHUNKS:
 					Duplicate/FREE/R=[][][][index] srcWave, dstWave
+					break
+				default:
 					break
 			endswitch
 
@@ -725,7 +730,7 @@ Function DeleteWavePoint(WAVE wv, variable dim, [variable index, WAVE indices])
 
 	variable size
 
-	ASSERT(ParamIsDefault(index) + ParamIsDefault(indices) == 1, "One of index or indices wave must be given as argument")
+	ASSERT((ParamIsDefault(index) + ParamIsDefault(indices)) == 1, "One of index or indices wave must be given as argument")
 	ASSERT(WaveExists(wv), "wave does not exist")
 	ASSERT(dim >= 0 && dim < 4, "dim must be 0, 1, 2 or 3")
 	if(!ParamIsDefault(indices))
@@ -755,6 +760,9 @@ Function DeleteWavePoint(WAVE wv, variable dim, [variable index, WAVE indices])
 					break
 				case 3:
 					Redimension/N=(-1, -1, -1, 0) wv
+					break
+				default:
+					ASSERT(0, "Invalid dimension")
 					break
 			endswitch
 		endif
@@ -1059,7 +1067,7 @@ Function/WAVE SplitWavesToDimension(WAVE/WAVE input, [variable sdim])
 
 		if(DimSize(wv, COLS) > 1)
 			/// @todo workaround IP issue 4979 (singleWaves is not a free wave)
-			SplitWave/NOTE/O/FREE/OREF=singleWaves/SDIM=(sdim) wv
+			SplitWave/NOTE/FREE/OREF=singleWaves/SDIM=(sdim) wv
 		else
 			Make/WAVE/FREE singleWaves = {wv}
 		endif
@@ -1205,6 +1213,9 @@ Function DuplicateWaveAndKeepTargetRef(WAVE/Z source, WAVE/Z target)
 			break
 		case 4:
 			Redimension/N=(DimSize(source, ROWS), DimSize(source, COLS), DimSize(source, LAYERS), DimSize(source, CHUNKS)) target
+			break
+		default:
+			ASSERT(0, "Invalid wave dimension")
 			break
 	endswitch
 

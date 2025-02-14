@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_GLOBALS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_GlobalStringAndVariableAccess.ipf
 ///

@@ -55,6 +55,8 @@ Function CheckIfAllControlsReferStateWv([string str])
 			case CONTROL_TYPE_LISTBOX:
 			case CONTROL_TYPE_TAB:
 			case CONTROL_TYPE_VALDISPLAY:
+			case CONTROL_TYPE_GROUPBOX:
+			case CONTROL_TYPE_TITLEBOX:
 				// nothing to do
 				break
 			case CONTROL_TYPE_CHECKBOX:
@@ -161,6 +163,9 @@ Function CheckIfAllControlsReferStateWv([string str])
 				// undo
 				PGC_SetAndActivateControl(str, ctrl, val = oldVal)
 				break
+			default:
+				INFO("Control type = %d", n0 = V_Flag)
+				FAIL()
 		endswitch
 	endfor
 End
@@ -196,6 +201,8 @@ Function CheckStartupSettings([string str])
 			case CONTROL_TYPE_LISTBOX:
 			case CONTROL_TYPE_TAB:
 			case CONTROL_TYPE_VALDISPLAY:
+			case CONTROL_TYPE_GROUPBOX:
+			case CONTROL_TYPE_TITLEBOX:
 				// nothing to do
 				break
 			case CONTROL_TYPE_CHECKBOX:
@@ -220,6 +227,8 @@ Function CheckStartupSettings([string str])
 
 				SetPopupMenuIndex(unlockedDevice, ctrl, 1 + enoise(2, 2))
 				break
+			default:
+				FAIL()
 		endswitch
 	endfor
 

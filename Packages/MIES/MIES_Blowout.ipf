@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_BWO
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Blowout.ipf
 /// @brief __BWO__ Automates amplifier configuration and acquisition of the sweep used to measure drift in the zero calibration of the amplifer.
@@ -151,7 +151,7 @@ static Function BWO_InitParaPipetteClear(string device)
 	do
 		TPM_BkrdTPFuncMD(s)
 		DoUpdate/W=$SCOPE_GetPanel (device)
-	while(ticks - startTime < 90) // wait for 1.5 seconds but update oscilloscope
+	while((ticks - startTime) < 90) // wait for 1.5 seconds but update oscilloscope
 	PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan") // turn OFF manual pressure
 	PGC_SetAndActivateControl(device, "check_DataAcq_ManPressureAll", val = CHECKBOX_UNSELECTED) // turn off apply pressure mode to all HS
 End
@@ -197,7 +197,7 @@ static Function BWO_CheckAndClearPipettes(string device)
 			endif
 			TPM_BkrdTPFuncMD(s)
 			DoUpdate/W=$SCOPE_GetPanel (device)
-		while(TPResults[%ResistanceSteadyState][i] > BWO_MAX_RESISTANCE && ticks - startTime < FIFTEEN_SECONDS) // continue if the pipette is not clear AND the timeout hasn't been exceeded
+		while(TPResults[%ResistanceSteadyState][i] > BWO_MAX_RESISTANCE && (ticks - startTime) < FIFTEEN_SECONDS) // continue if the pipette is not clear AND the timeout hasn't been exceeded
 
 		PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan") // turn off manual pressure
 		PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = 0)

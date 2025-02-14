@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TP_MD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @brief After this time in s the background task reading data from the ADC device
 /// @brief will not read multiple TP data sets subsequently to keep up if late
@@ -91,6 +91,9 @@ static Function TPM_BkrdTPMD(string device)
 			break
 		case HARDWARE_SUTTER_DAC:
 			HW_StartAcq(HARDWARE_SUTTER_DAC, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
+			break
+		default:
+			ASSERT(0, "Unsupported hardware type")
 			break
 	endswitch
 	if(!IsBackgroundTaskRunning(TASKNAME_TPMD))
@@ -244,6 +247,9 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 					ActiveDeviceList[i][%ActiveChunk] = lastTP
 				endif
 
+				break
+			default:
+				ASSERT(0, "Unsupported hardware type")
 				break
 		endswitch
 

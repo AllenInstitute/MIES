@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AB
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisBrowser.ipf
 /// @brief __AB__ Analysis browser
@@ -174,7 +174,7 @@ static Function AB_RemoveMapEntry(variable index)
 	endif
 	map[index][] = ""
 
-	if(index + 1 == GetNumberFromWaveNote(map, NOTE_INDEX))
+	if((index + 1) == GetNumberFromWaveNote(map, NOTE_INDEX))
 		SetNumberInWaveNote(map, NOTE_INDEX, index)
 	endif
 End
@@ -1008,6 +1008,9 @@ static Function/S AB_LoadLabNotebookFromFile(string discLocation)
 		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			deviceList = AB_LoadLabNotebookFromNWB(map[%DiscLocation])
 			break
+		default:
+			ASSERT(0, "Unsupported file type")
+			break
 	endswitch
 
 	return deviceList
@@ -1370,7 +1373,7 @@ static Function AB_CollapseListEntry(variable row, variable col)
 	WAVE   expBrowserSelBak  = CreateBackupWave(expBrowserSel)
 
 	mask = expBrowserSel[row][col]
-	ASSERT(mask & LISTBOX_TREEVIEW && !(mask & LISTBOX_TREEVIEW_EXPANDED), "listbox entry is not a treeview expansion node or is already collapsed")
+	ASSERT((mask & LISTBOX_TREEVIEW) && !(mask & LISTBOX_TREEVIEW_EXPANDED), "listbox entry is not a treeview expansion node or is already collapsed")
 
 	last    = AB_GetRowWithNextTreeView(expBrowserSel, row, col)
 	colSize = DimSize(expBrowserSel, COLS)
@@ -1403,14 +1406,14 @@ static Function AB_ExpandListEntry(variable row, variable col)
 	WAVE   expBrowserSelBak  = CreateBackupWave(expBrowserSel)
 
 	mask = expBrowserSel[row][col]
-	ASSERT(mask & LISTBOX_TREEVIEW && mask & LISTBOX_TREEVIEW_EXPANDED, "listbox entry is not a treeview expansion node or already expanded")
+	ASSERT((mask & LISTBOX_TREEVIEW) && (mask & LISTBOX_TREEVIEW_EXPANDED), "listbox entry is not a treeview expansion node or already expanded")
 
 	lastExpandedRow = NaN
 	last            = AB_GetRowWithNextTreeView(expBrowserSel, row, col)
 	colSize         = DimSize(expBrowserSel, COLS)
 	for(i = last - 1; i >= row; i -= 1)
 		for(j = colSize - 1; j >= col; j -= 1)
-			val = i == row && j == col ? ClearBit(mask, LISTBOX_TREEVIEW_EXPANDED) : expBrowserSel[i][j]
+			val = (i == row && j == col) ? ClearBit(mask, LISTBOX_TREEVIEW_EXPANDED) : expBrowserSel[i][j]
 			if(!(val & LISTBOX_TREEVIEW))
 				continue
 			endif
@@ -1537,7 +1540,7 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 			endif
 			device = ""
 		else
-			if(expBrowserSel[j][EXPERIMENT_TREEVIEW_COLUMN] & LISTBOX_TREEVIEW || expBrowserSel[j][DEVICE_TREEVIEW_COLUMN] & LISTBOX_TREEVIEW)
+			if((expBrowserSel[j][EXPERIMENT_TREEVIEW_COLUMN] & LISTBOX_TREEVIEW) || (expBrowserSel[j][DEVICE_TREEVIEW_COLUMN] & LISTBOX_TREEVIEW))
 				// ignore rows with tree view icons, we have them already in our list
 				continue
 			endif
@@ -1598,7 +1601,7 @@ static Function AB_GetRowWithNextTreeView(WAVE selWave, variable startRow, varia
 
 	numRows = DimSize(selWave, ROWS)
 	for(i = startRow + 1; i < numRows; i += 1)
-		status[] = (selWave[i][p] & LISTBOX_TREEVIEW ? 1 : 0)
+		status[] = ((selWave[i][p] & LISTBOX_TREEVIEW) ? 1 : 0)
 
 		if(Sum(status, 0, col) > 0)
 			return i
@@ -2033,7 +2036,7 @@ static Function AB_SortConfigSweeps(WAVE/I config)
 	Make/FREE/N=(numRows)/I/U valindex = p
 
 	//sort order: XOP_CHANNEL_TYPE_DAC = 1, XOP_CHANNEL_TYPE_ADC = 0, XOP_CHANNEL_TYPE_TTL = 3
-	MultiThread keyPrimary[] = config[p][%type] == XOP_CHANNEL_TYPE_ADC ? 2 : config[p][%type]
+	MultiThread keyPrimary[] = (config[p][%type] == XOP_CHANNEL_TYPE_ADC) ? 2 : config[p][%type]
 	MultiThread keySecondary[] = config[p][%number]
 	Sort/A {keyPrimary, keySecondary}, valindex
 
@@ -2523,7 +2526,7 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 				ControlWindowToFront()
 				continue
 			endif
-			if(sTime < stopMSTimer(-2) * MILLI_TO_ONE)
+			if(sTime < (stopMSTimer(-2) * MILLI_TO_ONE))
 				sprintf title, "%s, Reading %s", panel, GetFile(fName)
 				DoWindow/T $panel, title
 				DoUpdate/W=$panel
@@ -2660,6 +2663,8 @@ Function AB_ButtonProc_ExpandAll(STRUCT WMButtonAction &ba) : ButtonControl
 			AB_ExpandListColumn(EXPERIMENT_TREEVIEW_COLUMN)
 			AB_ExpandListColumn(DEVICE_TREEVIEW_COLUMN)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2673,6 +2678,8 @@ Function AB_ButtonProc_CollapseAll(STRUCT WMButtonAction &ba) : ButtonControl
 			AB_CheckPanelVersion(ba.win)
 			AB_CollapseListColumn(DEVICE_TREEVIEW_COLUMN)
 			AB_CollapseListColumn(EXPERIMENT_TREEVIEW_COLUMN)
+			break
+		default:
 			break
 	endswitch
 
@@ -2701,6 +2708,8 @@ Function AB_ButtonProc_LoadSweeps(STRUCT WMButtonAction &ba) : ButtonControl
 				KillWindow $graph
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2713,6 +2722,8 @@ Function AB_ButtonProc_LoadBoth(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2:
 			PGC_SetAndActivateControl(ba.win, "button_load_stimsets")
 			PGC_SetAndActivateControl(ba.win, "button_load_sweeps")
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2731,6 +2742,8 @@ Function AB_ButtonProc_LoadStimsets(STRUCT WMButtonAction &ba) : ButtonControl
 			if(oneValidStimset)
 				WBP_CreateWaveBuilderPanel()
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -2783,6 +2796,8 @@ Function AB_ButtonProc_Refresh(STRUCT WMButtonAction &ba) : ButtonControl
 
 			AB_UpdateColors()
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2817,6 +2832,8 @@ Function AB_ButtonProc_OpenFolders(STRUCT WMButtonAction &ba) : ButtonControl
 			endfor
 			KillPath/Z $symbPath
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2843,6 +2860,8 @@ Function AB_ButtonProc_Remove(STRUCT WMButtonAction &ba) : ButtonControl
 			endfor
 			AB_SaveSourceListInSettings()
 
+			break
+		default:
 			break
 	endswitch
 
@@ -2882,6 +2901,8 @@ Function AB_ButtonProc_AddFolder(STRUCT WMButtonAction &ba) : ButtonControl
 			Make/FREE/T wFolder = {folder}
 			AB_AddExperimentEntries(ba.win, wFolder)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2919,6 +2940,8 @@ Function AB_ButtonProc_AddFiles(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 			WAVE/T selFiles = ListToTextWave(fileList, "\r")
 			AB_AddFiles(ba.win, selFiles)
+			break
+		default:
 			break
 	endswitch
 
@@ -3009,6 +3032,8 @@ Function AB_ButtonProc_SelectStimSets(STRUCT WMButtonAction &ba) : ButtonControl
 			endfor
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3056,6 +3081,8 @@ Function AB_ListBoxProc_ExpBrowser(STRUCT WMListboxAction &lba) : ListBoxControl
 			endif
 			AB_UpdateColors()
 
+			break
+		default:
 			break
 	endswitch
 
@@ -3141,6 +3168,8 @@ Function AB_ButtonProc_OpenCommentNB(STRUCT WMButtonAction &ba) : ButtonControl
 			NewNoteBook/K=1/F=0/OPTS=(2^2 + 2^3)/N=$commentNotebook/W=(0, 0, 300, 400) as titleString
 			ReplaceNotebookText(commentNotebook, comment)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3180,6 +3209,8 @@ Function AB_ButtonProc_ResaveAsNWB(STRUCT WMButtonAction &ba) : ButtonControl
 
 				AB_ReExport(i, overwrite)
 			endfor
+			break
+		default:
 			break
 	endswitch
 End
@@ -3504,6 +3535,8 @@ Function AB_WindowHook(STRUCT WMWinHookStruct &s)
 			AB_MemoryFreeMappedDF()
 			AB_RemoveEmptyWorkingDF()
 
+			break
+		default:
 			break
 	endswitch
 

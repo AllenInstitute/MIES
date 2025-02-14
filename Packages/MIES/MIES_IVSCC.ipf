@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_IVSCC
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_IVSCC.ipf
 /// @brief __IVS__ Routines for IVSCC/PatchSeq automation
@@ -295,6 +295,8 @@ Function IVS_ButtonProc_Setup(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			IVS_ConfigureMCC()
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -305,6 +307,8 @@ Function IVS_ButtonProc_BaselineQC(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			IVS_runBaselineCheckQC()
+			break
+		default:
 			break
 	endswitch
 
@@ -317,6 +321,8 @@ Function IVS_ButtonProc_AccessResist(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			IVS_runInitAccessResisQC()
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -327,6 +333,8 @@ Function IVS_ButtonProc_GOhmSeal(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			IVS_RunGigOhmSealQC()
+			break
+		default:
 			break
 	endswitch
 

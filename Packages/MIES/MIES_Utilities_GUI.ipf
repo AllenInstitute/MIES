@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_GUI
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_GUI.ipf
 /// @brief utility functions for GUI
@@ -21,7 +21,7 @@ Function IsWaveDisplayedOnGraph(string win, [WAVE/Z wv, DFREF dfr])
 	string traceList, trace, list
 	variable numWaves, numTraces, i
 
-	ASSERT(ParamIsDefault(wv) + ParamIsDefault(dfr) == 1, "Expected exactly one parameter of wv and dfr")
+	ASSERT((ParamIsDefault(wv) + ParamIsDefault(dfr)) == 1, "Expected exactly one parameter of wv and dfr")
 
 	if(!ParamIsDefault(wv))
 		if(!WaveExists(wv))
@@ -355,7 +355,7 @@ Function/S FormatTextWaveForLegend(WAVE/T input)
 		for(j = 0; j < numCols; j += 1)
 			length = maxColLength[j] - totalLength[i][j]
 
-			if(j < numCols - 1)
+			if(j < (numCols - 1))
 				length += spacing
 			endif
 
@@ -608,7 +608,7 @@ Function RemoveTracesFromGraph(string graph, [string trace, WAVE/Z wv, DFREF dfr
 	numOptArgs = ParamIsDefault(trace) + ParamIsDefault(wv) + ParamIsDefault(dfr)
 	ASSERT(numOptArgs == 3 || numOptArgs == 2, "Can only accept one of the trace/wv/dfr parameters")
 
-	if(!ParamIsDefault(wv) && !WaveExists(wv) || !ParamIsDefault(dfr) && !DataFolderExistsDFR(dfr))
+	if(((!ParamIsDefault(wv) && !WaveExists(wv)) || !ParamIsDefault(dfr)) && !DataFolderExistsDFR(dfr))
 		return 0
 	endif
 
@@ -667,7 +667,7 @@ Function HasPanelLatestVersion(string win, variable expectedVersion)
 
 #ifdef EVIL_KITTEN_EATING_MODE
 	return 1
-#endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 	version = GetPanelVersion(GetMainWindow(win))
 

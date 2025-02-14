@@ -423,7 +423,7 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([string str])
 		device = stringFromList(i, str)
 
 		hardwareType = GetHardwareType(device)
-		numRacks     = hardwareType == HARDWARE_ITC_DAC ? HW_ITC_GetNumberOfRacks(device) : NaN
+		numRacks     = (hardwareType == HARDWARE_ITC_DAC) ? HW_ITC_GetNumberOfRacks(device) : NaN
 
 		CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), numSweeps)
 		sweeps  = GetListOfObjects(GetDeviceDataPath(device), DATA_SWEEP_REGEXP, fullPath = 1)
@@ -457,6 +457,8 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([string str])
 				case HARDWARE_NI_DAC:
 					CHECK_EQUAL_VAR(DimSize(config, ROWS), 3 + 3 + 4)
 					break
+				default:
+					FAIL()
 			endswitch
 
 			// check channel types
@@ -656,6 +658,8 @@ static Function UnassociatedChannelsAndTTLs_REENTRY([string str])
 					CHECK(GrepString(stimWaveChecksums[INDEP_HEADSTAGE], ";[[:digit:]]+;;[[:digit:]]+;;[[:digit:]]+;[[:digit:]]+;;"))
 					CHECK_EQUAL_TEXTWAVES(stimSetLengths, {"", "", "", "", "", "", "", "", ";158333;;154166;;168749;217499;;"})
 					break
+				default:
+					FAIL()
 			endswitch
 
 			// hardware agnostic TTL entries
@@ -2345,7 +2349,7 @@ static Function TestNIAcquisitionReliability_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1000)
 End
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 
 // IUTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
 // IUTF_TD_GENERATOR s1:DataGenerators#RoundTripStimsetFileType
@@ -2482,7 +2486,7 @@ static Function GetDataLimitsCheckWorks_REENTRY([string str])
 	stimsetAColumnZeroLimit      = 4095
 	stimsetAColumnOneLimit       = 2047
 	stimsetEndingColumnZeroLimit = 1365
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 
 	// unassociated/unused headstage
 	DAScaleLimit = DAP_GetDAScaleMax(str, 0, stimset, 0)

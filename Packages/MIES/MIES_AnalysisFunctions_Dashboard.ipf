@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctions_Dashboard.ipf
 /// @brief __AD__ Dashboard for pass/fail style analysis functions
@@ -1355,6 +1355,8 @@ Function AD_ListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 		case 5: // cell selection plus Shift key
 			AD_SelectResult(lba.win)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1366,6 +1368,8 @@ Function AD_CheckProc_PassedSweeps(STRUCT WMCheckboxAction &cba) : CheckBoxContr
 		case 2: // mouse up
 			AD_SelectResult(cba.win)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1376,6 +1380,8 @@ Function AD_CheckProc_FailedSweeps(STRUCT WMCheckboxAction &cba) : CheckBoxContr
 	switch(cba.eventCode)
 		case 2: // mouse up
 			AD_SelectResult(cba.win)
+			break
+		default:
 			break
 	endswitch
 
@@ -1399,6 +1405,8 @@ Function AD_CheckProc_Toggle(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 				DisableControls(win, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 			endif
 
+			break
+		default:
 			break
 	endswitch
 

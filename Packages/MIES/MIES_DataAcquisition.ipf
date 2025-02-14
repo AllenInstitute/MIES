@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DAQ
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DataAcquisition.ipf
 /// @brief __DQ__ Routines for Data acquisition
@@ -186,9 +186,11 @@ Function DQ_StopDAQ(string device, variable stopReason, [variable startTPAfterDA
 		case DAQ_BG_MULTI_DEVICE:
 			DQ_StopOngoingDAQ(device, stopReason, startTPAfterDAQ = startTPAfterDAQ)
 			return runMode
+		case DAQ_NOT_RUNNING:
+			return DAQ_NOT_RUNNING
+		default:
+			ASSERT(0, "Invalid run mode")
 	endswitch
-
-	return DAQ_NOT_RUNNING
 End
 
 Function DQ_RestartDAQ(string device, variable dataAcqRunMode)

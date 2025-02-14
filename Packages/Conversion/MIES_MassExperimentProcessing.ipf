@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MEP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MassExperimentProcessing.ipf
 /// @brief __MEP__ Process multiple MIES pxps to convert data into NWBv2
@@ -38,7 +38,7 @@ static StrConstant OUTPUT_FOLDER = "C:tim-data:output:"
 static StrConstant INPUT_FOLDER  = ""
 static StrConstant OUTPUT_FOLDER = ""
 
-#endif
+#endif // MEP_DEBUGGING
 
 Menu "Macros"
 	"Mass convert PXPs to NWBv2", /Q, StartMultiExperimentProcess()
@@ -342,4 +342,4 @@ Function TestMe()
 	ProcessCurrentExperiment(prefs)
 End
 
-#endif
+#endif // MEP_DEBUGGING

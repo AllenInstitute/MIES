@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_CONFIG
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Config.ipf
 /// @brief This file holds MIES utility functions for the config wave
@@ -18,7 +18,7 @@ threadsafe Function GetSamplingInterval(WAVE config, variable channelType)
 	ASSERT_TS(IsValidConfigWave(config, version = 0), "Expected a valid config wave")
 	[colChannelType, colChannelNumber] = GetConfigWaveDims(config)
 	colSamplingInterval                = FindDimLabel(config, COLS, "SamplingInterval")
-	colSamplingInterval                = colSamplingInterval == -2 ? 2 : colSamplingInterval
+	colSamplingInterval                = (colSamplingInterval == -2) ? 2 : colSamplingInterval
 
 	numChannels = DimSize(config, ROWS)
 	for(i = 0; i < numChannels; i += 1)

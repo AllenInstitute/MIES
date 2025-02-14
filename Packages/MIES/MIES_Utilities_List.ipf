@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_LIST
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_List.ipf
 /// @brief utility functions for lists
@@ -58,7 +58,7 @@ Function/S ListFromList(string list, variable itemBegin, variable itemEnd, [stri
 	endfor
 
 	stop = start
-	for(i = itemBegin; i < itemEnd + 1; i += 1)
+	for(i = itemBegin; i < (itemEnd + 1); i += 1)
 		stop = strsearch(list, listSep, stop) + 1
 	endfor
 

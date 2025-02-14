@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_LBV
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_LogbookViewer.ipf
 /// @brief __LBV__ Panel for browsing the labnotebook and TPStorage waves
@@ -204,6 +204,8 @@ Function LBV_ButtonProc_ClearGraph(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			LBV_ClearGraph(ba.win)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -217,6 +219,8 @@ Function LBV_ButtonProc_SwitchXAxis(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			lbGraph = LBV_GetLabNoteBookGraph(ba.win)
 			LBV_SwitchLBGraphXAxis(lbGraph)
+			break
+		default:
 			break
 	endswitch
 
@@ -240,6 +244,8 @@ Function LBV_PopMenuProc_LabNotebookAndResults(STRUCT WMPopupAction &pa) : Popup
 
 			lbGraph = LBV_GetLabNoteBookGraph(win)
 			LBV_AddTraceToLBGraph(lbGraph, keys, values, key)
+			break
+		default:
 			break
 	endswitch
 
@@ -310,6 +316,8 @@ Function LBV_PopMenuProc_TPStorage(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 			DFREF dfr = LBV_GetTPStorageLocation(win)
 			LBV_AddTraceToLBGraphTPStorage(lbGraph, dfr, key)
+			break
+		default:
 			break
 	endswitch
 
@@ -535,18 +543,18 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 			endif
 		endif
 
-		TUD_SetUserDataFromWaves(graph,                                  \
-		                         trace,                                  \
-		                         userDataKeys,                           \
-		                         {key,                                   \
-		                          num2str(isTextData),                   \
-		                          GetWavesDataFolder(keys, 2),           \
-		                          GetWavesDataFolder(values, 2),         \
-		                          num2str(i < NUM_HEADSTAGES ? i : NaN), \
+		TUD_SetUserDataFromWaves(graph,                                    \
+		                         trace,                                    \
+		                         userDataKeys,                             \
+		                         {key,                                     \
+		                          num2str(isTextData),                     \
+		                          GetWavesDataFolder(keys, 2),             \
+		                          GetWavesDataFolder(values, 2),           \
+		                          num2str((i < NUM_HEADSTAGES) ? i : NaN), \
 		                          axis})
 
 		[s]    = GetHeadstageColor(i)
-		marker = i == 0 ? 39 : i
+		marker = (i == 0) ? 39 : i
 		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue, IsTextData ? 0 : Inf), marker($trace)=marker
 		SetAxis/W=$graph/A=2 $axis
 
@@ -728,7 +736,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 			                         })
 
 			[s]    = GetHeadstageColor(headstage)
-			marker = headstage == 0 ? 39 : headstage
+			marker = (headstage == 0) ? 39 : headstage
 			ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue), marker($trace)=marker
 			SetAxis/W=$graph/A=2 $axis
 		endfor
@@ -1111,6 +1119,8 @@ Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
 			descNB = LBV_GetDescriptionNotebook(s.winName)
 			ReflowNotebookText(descNB)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1237,6 +1247,8 @@ Function LBV_CheckProc_XRangeSelected(STRUCT WMCheckboxAction &cba) : CheckBoxCo
 			if(cba.checked)
 				LBV_LimitXRangeToSelected(cba.win)
 			endif
+			break
+		default:
 			break
 	endswitch
 

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TUD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_TraceUserData.ipf
 /// @brief This file holds helper functions to work with our own trace user data handling
@@ -19,6 +19,8 @@ Function TUD_RemoveUserDataWave(STRUCT WMWinHookStruct &s)
 	switch(s.eventCode)
 		case EVENT_WINDOW_HOOK_KILL:
 			TUD_Clear(s.winName)
+			break
+		default:
 			break
 	endswitch
 
@@ -159,7 +161,7 @@ Function/WAVE TUD_GetUserDataAsWave(string graph, string key, [WAVE/T keys, WAVE
 		endif
 	endif
 
-	ASSERT(ParamIsDefault(keys) + ParamIsDefault(values) != 1, "Unexpected optional paramters")
+	ASSERT((ParamIsDefault(keys) + ParamIsDefault(values)) != 1, "Unexpected optional paramters")
 
 	// both optional parameters are present
 

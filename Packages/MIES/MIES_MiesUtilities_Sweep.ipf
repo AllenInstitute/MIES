@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_SWEEP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Sweep.ipf
 /// @brief This file holds MIES utility functions for working with sweeps
@@ -81,7 +81,7 @@ threadsafe Function/WAVE GetDAQDataSingleColumnWave(DFREF sweepDFR, variable cha
 		splitTTLBits = !!splitTTLBits
 	endif
 
-	ASSERT_TS(ParamIsDefault(splitTTLBits) + ParamIsDefault(ttlBit) != 1, "Expected both or none of splitTTLBits and ttlBit")
+	ASSERT_TS((ParamIsDefault(splitTTLBits) + ParamIsDefault(ttlBit)) != 1, "Expected both or none of splitTTLBits and ttlBit")
 	ASSERT_TS(channelNumber < GetNumberFromType(xopVar = channelType), "Invalid channel index")
 
 	wvName = StringFromList(channelType, XOP_CHANNEL_NAMES) + "_" + num2str(channelNumber)
@@ -250,7 +250,7 @@ threadsafe static Function AreAllSingleSweepWavesPresent(DFREF targetDFR, WAVE/T
 				chanMissing = 1
 			endif
 		endif
-		ASSERT_TS(chanPresent + chanMissing == 1, "For sweep in " + GetDataFolder(1, targetDFR) + " some single channels are missing, some are present.")
+		ASSERT_TS((chanPresent + chanMissing) == 1, "For sweep in " + GetDataFolder(1, targetDFR) + " some single channels are missing, some are present.")
 	endfor
 
 	return chanPresent

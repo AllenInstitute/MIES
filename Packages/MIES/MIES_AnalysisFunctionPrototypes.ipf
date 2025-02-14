@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_AFP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_AnalysisFunctionPrototypes.ipf
 /// @brief __AFP__ Analysis functions prototypes to be called during data acquisition

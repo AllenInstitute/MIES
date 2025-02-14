@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DAQ_SD
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DataAcquisition_Single.ipf
 /// @brief __DQS__ Routines for Single Device Data acquisition
@@ -27,7 +27,7 @@ Function DQS_StartDAQSingleDevice(string device, [variable useBackground])
 		useBackground = !!useBackground
 	endif
 
-	DAP_OneTimeCallBeforeDAQ(device, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
+	DAP_OneTimeCallBeforeDAQ(device, (useBackground == 1) ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
 
 	AssertOnAndClearRTError()
 	try

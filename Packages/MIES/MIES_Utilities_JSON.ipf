@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_JSON
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_JSON.ipf
 /// @brief utility functions for json

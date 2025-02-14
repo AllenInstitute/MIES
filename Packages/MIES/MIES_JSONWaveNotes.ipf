@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_JSONWAVENOTE
-#endif
+#endif // AUTOMATED_TESTING
 
 static Constant JWN_DEFAULT_RELEASE = 1
 
@@ -18,7 +18,7 @@ threadsafe Function/S JWN_GetWaveNoteAsString(WAVE wv)
 	noteStr = note(wv)
 	pos     = strsearch(noteStr, WAVE_NOTE_JSON_SEPARATOR, 0)
 	len     = strlen(WAVE_NOTE_JSON_SEPARATOR)
-	if(pos >= 0 && strlen(noteStr) > pos + len)
+	if(pos >= 0 && strlen(noteStr) > (pos + len))
 		return noteStr[pos + len, Inf]
 	endif
 

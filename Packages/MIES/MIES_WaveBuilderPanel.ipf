@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_WBP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_WaveBuilderPanel.ipf
 /// @brief __WBP__ Panel for creating stimulus sets
@@ -208,7 +208,7 @@ static Function WBP_AddEpochHLTraces(DFREF dfr, variable epochHLType, variable e
 		WAVE/SDFR=dfr waveBegin = $nameBegin
 		WAVE/SDFR=dfr waveEnd   = $nameEnd
 
-		if(epoch == numEpochs - 1)
+		if(epoch == (numEpochs - 1))
 			// no epoch to highlight right of the current one
 			return NaN
 		endif
@@ -511,6 +511,8 @@ Function WBP_ButtonProc_DeleteSet(STRUCT WMButtonAction &ba) : ButtonControl
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
 			PopupMenu popup_WaveBuilder_SetList, win=$panel, mode=1
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -524,6 +526,8 @@ Function WBP_CheckProc(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			WBP_UpdateDependentControls(cba.ctrlName, cba.checked)
 			WBP_UpdateControlAndWave(cba.ctrlName, var = cba.checked)
 			WBP_UpdatePanelIfAllowed()
+			break
+		default:
 			break
 	endswitch
 
@@ -574,6 +578,8 @@ Function WBP_FinalTabHook(STRUCT WMTabControlAction &tca)
 		case EPOCH_TYPE_SQUARE_PULSE:
 			HideControls(tca.win, HIDDEN_CONTROLS_SQUARE_PULSE)
 			break
+		default:
+			break
 	endswitch
 
 	CallFunctionForEachListItem(WBP_AdjustDeltaControls, ControlNameList(panel, ";", "popup_WaveBuilder_op_*"))
@@ -605,6 +611,8 @@ Function WBP_ButtonProc_SaveSet(STRUCT WMButtonAction &ba) : ButtonControl
 
 			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", DEFAULT_SET_PREFIX)
 			WBP_LoadSet(NONE)
+			break
+		default:
 			break
 	endswitch
 End
@@ -667,7 +675,7 @@ Function WBP_UpdateControlAndWave(string control, [variable var, string str])
 
 	variable stimulusType, epoch, paramRow
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Exactly one of var/str must be given")
+	ASSERT((ParamIsDefault(var) + ParamIsDefault(str)) == 1, "Exactly one of var/str must be given")
 
 	if(!ParamIsDefault(var))
 		WBP_SetControl(panel, control, value = var)
@@ -699,6 +707,9 @@ Function WBP_UpdateControlAndWave(string control, [variable var, string str])
 			WAVE SegWvType = GetSegmentTypeWave()
 			SegWvType[paramRow] = var
 			break
+		default:
+			ASSERT(0, "Invalid wavebuilder wave type")
+			break
 	endswitch
 End
 
@@ -720,6 +731,8 @@ Function WBP_SetVarProc_UpdateParam(STRUCT WMSetVariableAction &sva) : SetVariab
 			endif
 
 			WBP_UpdatePanelIfAllowed()
+			break
+		default:
 			break
 	endswitch
 
@@ -831,6 +844,8 @@ Function WBP_PopMenuProc_WaveType(STRUCT WMPopupAction &pa) : PopupMenuControl
 		case 2:
 			WBP_ChangeWaveType()
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -862,6 +877,8 @@ Function WBP_SetVarProc_SetSearchString(STRUCT WMSetVariableAction &sva) : SetVa
 		case 2: // Enter key
 		case 3: // Live update
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -890,6 +907,8 @@ Function WBP_PopMenuProc_WaveToLoad(STRUCT WMPopupAction &pa) : PopupMenuControl
 			endif
 
 			WBP_UpdatePanelIfAllowed()
+			break
+		default:
 			break
 	endswitch
 End
@@ -1033,6 +1052,8 @@ Function WBP_SetVarProc_EpochToEdit(STRUCT WMSetVariableAction &sva) : SetVariab
 			WAVE SegWvType = GetSegmentTypeWave()
 			PGC_SetAndActivateControl(panel, "WBP_WaveType", val = SegWvType[sva.dval])
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -1044,6 +1065,8 @@ Function WBP_PopupMenu_LoadSet(STRUCT WMPopupAction &pa) : PopupMenuControl
 		case 2: // mouse up
 			setName = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
 			WBP_LoadSet(setName)
+			break
+		default:
 			break
 	endswitch
 
@@ -1129,6 +1152,8 @@ Function WBP_PopMenuProc_FolderSelect(STRUCT WMPopupAction &pa) : PopupMenuContr
 			PopupMenu popup_WaveBuilder_ListOfWaves, win=$panel, mode=1
 			ControlUpdate/W=$panel popup_WaveBuilder_ListOfWaves
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1139,6 +1164,8 @@ Function WBP_CheckProc_PreventUpdate(STRUCT WMCheckboxAction &cba) : CheckBoxCon
 	switch(cba.eventCode)
 		case 2: // mouse up
 			WBP_UpdatePanelIfAllowed()
+			break
+		default:
 			break
 	endswitch
 End
@@ -1152,6 +1179,8 @@ Function WBP_PopupMenu(STRUCT WMPopupAction &pa) : PopupMenuControl
 			if(StringMatch(pa.ctrlName, "popup_WaveBuilder_op_*"))
 				WBP_AdjustDeltaControls(pa.ctrlName)
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -1277,6 +1306,8 @@ Function WBP_ButtonProc_NewSeed(STRUCT WMButtonAction &ba) : ButtonControl
 			WBP_UpgradePRNG()
 			WBP_UpdatePanelIfAllowed()
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1287,6 +1318,8 @@ Function WBP_PopupMenu_AnalysisFunctions(STRUCT WMPopupAction &pa) : PopupMenuCo
 	switch(pa.eventCode)
 		case 2: // mouse up
 			WBP_AnaFuncsToWPT()
+			break
+		default:
 			break
 	endswitch
 
@@ -1387,6 +1420,8 @@ Function WBP_ButtonProc_OpenAnaFuncs(STRUCT WMButtonAction &ba) : ButtonControl
 			Execute/P/Q/Z "DisplayProcedure/W=$\"" + fileName + "\""
 			CleanupOperationQueueResult()
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1420,6 +1455,8 @@ Function WBP_SetVarCombineEpochFormula(STRUCT WMSetVariableAction &sva) : SetVar
 			WPT[7][currentEpoch][EPOCH_TYPE_COMBINE] = WAVEBUILDER_COMBINE_FORMULA_VER
 
 			WBP_UpdatePanelIfAllowed()
+			break
+		default:
 			break
 	endswitch
 
@@ -1559,6 +1596,8 @@ Function WBP_MainWindowHook(STRUCT WMWinHookStruct &s)
 					return 1
 				endif
 			endfor
+			break
+		default:
 			break
 	endswitch
 
@@ -1879,6 +1918,8 @@ Function WBP_ButtonProc_DeleteParam(STRUCT WMButtonAction &ba) : ButtonControl
 
 			WBP_UpdateParameterWave()
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1931,6 +1972,8 @@ Function WBP_ButtonProc_AddParam(STRUCT WMButtonAction &ba) : ButtonControl
 			SetSetVariableString(win, "setvar_param_name", "")
 			ReplaceNoteBookText(win + "#nb_param_value", "")
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -1945,6 +1988,8 @@ Function WBP_ButtonProc_OpenAnaParamGUI(STRUCT WMButtonAction &ba) : ButtonContr
 			else
 				SetControlTitle(panel, "button_toggle_params", "Close parameters panel")
 			endif
+			break
+		default:
 			break
 	endswitch
 
@@ -1987,6 +2032,8 @@ Function WBP_ListBoxProc_AnalysisParams(STRUCT WMListboxAction &lba) : ListBoxCo
 			SetSetVariableString(win, "setvar_param_name", name)
 			ReplaceNoteBookText(win + "#nb_param_value", value)
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -2000,6 +2047,8 @@ Function WBP_ButtonProc_LoadSet(STRUCT WMButtonAction &ba) : ButtonControl
 		case 2: // mouse up
 			setName = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
 			WBP_LoadSet(setName)
+			break
+		default:
 			break
 	endswitch
 

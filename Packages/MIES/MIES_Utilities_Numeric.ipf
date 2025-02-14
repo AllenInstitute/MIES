@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_NUMERIC
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_Numeric.ipf
 /// @brief utility functions for numerical operations
@@ -358,5 +358,5 @@ End
 threadsafe Function IndexAfterDecimation(variable sourceIndex, variable decimationFactor)
 
 	ASSERT_TS(IsInteger(sourceIndex) && sourceIndex >= 0, "sourceIndex must be integer & >= 0")
-	return sourceIndex == 0 ? -1 : floor((sourceIndex - 0.5) / decimationFactor)
+	return (sourceIndex == 0) ? -1 : floor((sourceIndex - 0.5) / decimationFactor)
 End

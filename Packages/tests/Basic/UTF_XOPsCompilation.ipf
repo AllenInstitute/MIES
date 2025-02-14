@@ -20,5 +20,5 @@ static Function CheckCompilation_IGNORE()
 #ifdef WINDOWS
 	// NWBv2 compound
 	IPNWB_WriteCompound ""
-#endif
+#endif // WINDOWS
 End

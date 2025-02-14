@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_PS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_PackageSettings.ipf
 /// @brief __PS__ Routines for dealing with JSON settings

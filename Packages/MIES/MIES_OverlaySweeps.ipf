@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_OVS
-#endif
+#endif // AUTOMATED_TESTING
 
 Menu "TracePopup"
 	"Ignore Headstage in Overlay Sweeps", /Q, OVS_IgnoreHeadstageInOverlay()
@@ -246,7 +246,7 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 		listBoxSelWave[][%Sweep]          = LISTBOX_CHECKBOX
 		listBoxSelWave[lastEntry][%Sweep] = LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED
 	else
-		listBoxSelWave[][%Sweep] = listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED ? LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED : LISTBOX_CHECKBOX
+		listBoxSelWave[][%Sweep] = (listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED) ? (LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED) : LISTBOX_CHECKBOX
 	endif
 
 	// we select the first sweep when doing a fullUpdate and nothing selected
@@ -434,7 +434,7 @@ Function OVS_ChangeSweepSelectionState(string win, variable newState, [variable 
 			for(i = 0; i < numEntries; i += 1)
 				sweepNo = sweeps[i]
 				FindValue/RMD=[][0]/TEXT=(num2str(sweepNo))/TXOP=4 listboxWave
-				indices1D[i] = V_Value >= 0 ? V_Value : NaN
+				indices1D[i] = (V_Value >= 0) ? V_Value : NaN
 			endfor
 
 			WAVE/Z indices = ZapNans(indices1D)
@@ -632,6 +632,8 @@ Function OVS_CheckBoxProc_HS_Select(STRUCT WMCheckboxAction &cba) : CheckBoxCont
 			endif
 
 			OVS_EndIncrementalUpdate(win, updateHandle)
+			break
+		default:
 			break
 	endswitch
 
@@ -969,6 +971,8 @@ Function OVS_MainListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 				PostPlotTransformations(win, POST_PLOT_REMOVED_SWEEPS, additionalData = {index})
 			endif
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -979,6 +983,8 @@ Function OVS_PopMenuProc_Select(STRUCT WMPopupAction &pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			OVS_ChangeSweepSelection(pa.win, pa.popStr)
+			break
+		default:
 			break
 	endswitch
 
@@ -996,6 +1002,8 @@ Function OVS_SetVarProc_SelectionRange(STRUCT WMSetVariableAction &sva) : SetVar
 			win    = sva.win
 			popStr = GetPopupMenuString(win, "popup_overlaySweeps_select")
 			OVS_ChangeSweepSelection(win, popStr)
+			break
+		default:
 			break
 	endswitch
 

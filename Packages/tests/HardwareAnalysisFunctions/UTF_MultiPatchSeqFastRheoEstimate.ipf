@@ -48,6 +48,9 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 			return val
 		case SINGLE_SCI:
 			return GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+		default:
+			INFO("Invalid mode %g", n0 = mode)
+			FAIL()
 	endswitch
 End
 
@@ -1092,7 +1095,7 @@ static Function MSQ_FRE11_REENTRY([string str])
 	sweepNo = 38
 #else
 	sweepNo = 39
-#endif
+#endif // TESTS_WITH_NI_HARDWARE
 
 	numEntries = sweepNo + 1
 

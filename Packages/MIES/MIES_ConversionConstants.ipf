@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_CONV
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @name Conversion constants for decimal multiples
 ///

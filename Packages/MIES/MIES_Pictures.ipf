@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_PIC
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Pictures.ipf
 ///

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_LOGBOOK
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Logbook.ipf
 /// @brief This file holds MIES utility functions for working with the various Logbooks.
@@ -1266,7 +1266,7 @@ threadsafe static Function EnforceIndependentSetting(WAVE settings)
 #ifdef AUTOMATED_TESTING
 	Duplicate/FREE/RMD=[0, NUM_HEADSTAGES - 1] settings, settingsHS
 	ASSERT_TS(!HasOneValidEntry(settingsHS) || IsConstant(settings, settings[0]), "The labnotebook query asked for independent headstage setting, but the entry has headstage dependent settings.")
-#endif
+#endif // AUTOMATED_TESTING
 End
 
 /// @brief Find the first and last point index of a consecutive range of
@@ -1372,7 +1372,7 @@ threadsafe static Function FindRange(WAVE wv, variable col, variable val, variab
 	for(i = numRows - 2; i >= 0; i -= 1)
 		index = indizes[i]
 		// a backward search stops when the beginning of the last sequence was found
-		if(index < first - 1 && sourceTypeCol >= 0)
+		if(index < (first - 1) && sourceTypeCol >= 0)
 			if(IsNumeric)
 				for(j = index + 1; j < first; j += 1)
 					if(!IsNaN(wv[j][sourceTypeCol][0]))
@@ -1619,7 +1619,7 @@ End
 /// Since that commit we store the data in `INDEP_HEADSTAGE`.
 threadsafe Function GetIndexForHeadstageIndepData(WAVE values)
 
-	return DimSize(values, LAYERS) == NUM_HEADSTAGES ? 0 : INDEP_HEADSTAGE
+	return (DimSize(values, LAYERS) == NUM_HEADSTAGES) ? 0 : INDEP_HEADSTAGE
 End
 
 /// @brief Create a labnotebook key for unassociated channels
@@ -1701,7 +1701,7 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function ReverseEntrySourceTypeMapper(variable mapped)
 
-	return (mapped == 0 ? NaN : --mapped)
+	return ((mapped == 0) ? NaN : --mapped)
 End
 
 /// @brief Return labnotebook keys for patch seq analysis functions
@@ -1933,7 +1933,8 @@ Function ParseLogbookMode(string modeText)
 			return TEST_PULSE_MODE
 		case "NUMBER_OF_LBN_DAQ_MODES":
 			return NUMBER_OF_LBN_DAQ_MODES
+		default:
+			ASSERT(0, "Unsupported labnotebook mode")
+			break
 	endswitch
-
-	ASSERT(0, "Unsupported labnotebook mode")
 End

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_STRINGS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_Strings.ipf
 /// @brief utility functions for string handling

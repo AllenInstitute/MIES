@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_EP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Epochs.ipf
 /// @brief __EP__ Handle code relating to epoch information
@@ -205,7 +205,7 @@ static Function EP_CollectEpochInfoDA(WAVE/T epochWave, STRUCT DataConfiguration
 
 		if(s.distributedDAQOptOv)
 			epochBegin = ec.dwStimsetBegin * s.samplingIntervalDA
-			epochEnd   = err ? Inf : (ec.dwStimsetBegin + ec.dwStimsetSize) * s.samplingIntervalDA
+			epochEnd   = err ? Inf : ((ec.dwStimsetBegin + ec.dwStimsetSize) * s.samplingIntervalDA)
 			EP_AddEpochsFromOodDAQRegions(ec.epochWave, ec.channel, s.regions[i], epochBegin, epochEnd)
 		endif
 
@@ -400,7 +400,7 @@ static Function [WAVE/D stimepochOffsetTime, WAVE/D stimepochDuration] EP_GetSti
 	Make/FREE/D/N=(epochCount) stimepochDuration, stimepochOffsetTime
 
 	for(epochNr = 0; epochNr < epochCount; epochNr += 1)
-		indexInStimset               = ec.flipping ? wbFlippingIndex - wbStimsetEpochOffset[epochNr] - wbStimsetEpochLength[epochNr] : ec.wbOodDAQOffset + wbStimsetEpochOffset[epochNr]
+		indexInStimset               = ec.flipping ? (wbFlippingIndex - wbStimsetEpochOffset[epochNr] - wbStimsetEpochLength[epochNr]) : (ec.wbOodDAQOffset + wbStimsetEpochOffset[epochNr])
 		stimepochOffsetTime[epochNr] = (IndexAfterDecimation(indexInStimset, ec.decimationFactor) + 1) * ec.samplingInterval
 	endfor
 
@@ -412,7 +412,7 @@ static Function [WAVE/D stimepochOffsetTime, WAVE/D stimepochDuration] EP_GetSti
 				stimepochDuration[epochNr] = (IndexAfterDecimation(wbFlippingIndex - wbStimsetEpochOffset[epochNr], ec.decimationFactor) + 1) * ec.samplingInterval - stimepochOffsetTime[epochNr]
 			endif
 		else
-			if(epochNr < epochCount - 1)
+			if(epochNr < (epochCount - 1))
 				stimepochDuration[epochNr] = stimepochOffsetTime[epochNr + 1] - stimepochOffsetTime[epochNr]
 			else
 				stimepochDuration[epochNr] = (IndexAfterDecimation(ec.wbOodDAQOffset + wbStimsetEpochOffset[epochNr] + wbStimsetEpochLength[epochNr], ec.decimationFactor) + 1) * ec.samplingInterval - stimepochOffsetTime[epochNr]
@@ -626,7 +626,7 @@ static Function/WAVE EP_PTGetPulseStartTimes(STRUCT EP_EpochCreationData &ec, va
 
 	numPulses = DimSize(pulseStartIndices, ROWS)
 	for(pulseNr = 0; pulseNr < numPulses; pulseNr += 1)
-		indexInStimset      = ec.flipping ? wbFlippingIndex - wbStimsetEpochOffset - pulseStartIndices[pulseNr] : ec.wbOodDAQOffset + wbStimsetEpochOffset + pulseStartIndices[pulseNr]
+		indexInStimset      = ec.flipping ? (wbFlippingIndex - wbStimsetEpochOffset - pulseStartIndices[pulseNr]) : (ec.wbOodDAQOffset + wbStimsetEpochOffset + pulseStartIndices[pulseNr])
 		startTimes[pulseNr] = (IndexAfterDecimation(indexInStimset, ec.decimationFactor) + 1) * ec.samplingInterval
 
 		sprintf msg, "\rPT pulse starts: nPulse iStimOffset tStart\r %d %d %7.0f µs\r", pulseNr, indexInStimset, startTimes[pulseNr]
@@ -657,11 +657,11 @@ static Function [variable subEpochBegin, variable subEpochEnd] EP_PTAddPTPEpoch(
 
 	// Pulse-to-Pulse epoch
 	if(ec.flipping)
-		subEpochBegin = pulseNr + 1 == numPulses ? epochBegin : startTimes[pulseNr + 1]
+		subEpochBegin = ((pulseNr + 1) == numPulses) ? epochBegin : startTimes[pulseNr + 1]
 		subEpochEnd   = startTimes[pulseNr]
 	else
 		subEpochBegin = startTimes[pulseNr]
-		subEpochEnd   = pulseNr + 1 == numPulses ? epochEnd : startTimes[pulseNr + 1]
+		subEpochEnd   = ((pulseNr + 1) == numPulses) ? epochEnd : startTimes[pulseNr + 1]
 	endif
 	if(subEpochBegin >= epochEnd)
 		return [NaN, NaN]
@@ -700,7 +700,7 @@ static Function EP_PTAddPTBLTEpoch(STRUCT EP_EpochCreationData &ec, string short
 
 	// pulse-to-pulse base line trail, consider both sides as oodDAQ can introduce a base line trail on the front
 	tags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubTags, EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	if(pulseNr + 1 == numPulses)
+	if((pulseNr + 1) == numPulses)
 		if(ec.flipping && subEpochBegin > epochBegin)
 			subsubEpochBegin = epochBegin
 			subsubEpochEnd   = subEpochBegin
@@ -920,11 +920,11 @@ static Function [variable err, variable stimsetEndIndex] EP_AddEpochsFromStimSet
 	for(epochNr = 0; epochNr < epochCount; epochNr += 1)
 
 		if(ec.flipping)
-			if(wbFlippingIndex - wbStimsetEpochOffset[epochNr] - wbStimsetEpochLength[epochNr] >= ec.reducedStimsetSize)
+			if((wbFlippingIndex - wbStimsetEpochOffset[epochNr] - wbStimsetEpochLength[epochNr]) >= ec.reducedStimsetSize)
 				continue
 			endif
 		else
-			if(ec.wbOodDAQOffset + wbStimsetEpochOffset[epochNr] >= ec.reducedStimsetSize)
+			if((ec.wbOodDAQOffset + wbStimsetEpochOffset[epochNr]) >= ec.reducedStimsetSize)
 				break
 			endif
 		endif
@@ -1030,9 +1030,9 @@ static Function [variable err, variable stimsetEndIndex] EP_AddEpochsFromStimSet
 				// Half Cycle 1: 3, 4
 				// ...
 
-				hasFullCycle              = (i + 2 < numInflectionPoints)
+				hasFullCycle              = ((i + 2) < numInflectionPoints)
 				hasIncompleteCycleAtStart = (i == 0 && tiInflectionPoints[i] != 0)
-				hasIncompleteCycleAtEnd   = !hasFullCycle || (i + 1 >= numInflectionPoints)
+				hasIncompleteCycleAtEnd   = !hasFullCycle || ((i + 1) >= numInflectionPoints)
 
 				if(!hasFullCycle || hasIncompleteCycleAtStart)
 					if(hasIncompleteCycleAtStart)
@@ -1146,7 +1146,7 @@ End
 static Function EP_GetEpochCount(WAVE/T epochWave, variable channel, variable channelType)
 
 	FindValue/Z/RMD=[][][channel][channelType]/TXOP=4/TEXT="" epochWave
-	return V_row == -1 ? DimSize(epochWave, ROWS) : V_row
+	return (V_row == -1) ? DimSize(epochWave, ROWS) : V_row
 End
 
 /// @brief Add user epochs
@@ -1385,7 +1385,7 @@ Function EP_AdaptEpochInfoChannelImpl(WAVE/T epochWave, variable channelNumber, 
 			continue
 		endif
 
-		if(acquiredEpochsEndTime < startTime || abs(acquiredEpochsEndTime - startTime) <= 10^(-EPOCHTIME_PRECISION))
+		if(acquiredEpochsEndTime < startTime || abs(acquiredEpochsEndTime - startTime) <= (10^(-EPOCHTIME_PRECISION)))
 			// lies completely outside the acquired region
 			// mark it for deletion
 			epochWave[epoch][%StartTime][channelNumber][channelType] = "NaN"
@@ -1665,7 +1665,7 @@ static Function/WAVE EP_GetGaps(WAVE numericalValues, WAVE textualValues, variab
 	SetDimLabel COLS, 0, GAPBEGIN, gaps
 	SetDimLabel COLS, 1, GAPEND, gaps
 
-	for(i = 0; i < numEpochs - 1; i += 1)
+	for(i = 0; i < (numEpochs - 1); i += 1)
 
 		if(i == 0 && str2numSafe(zeroEpochs[i][EPOCH_COL_STARTTIME]) > 0)
 			gaps[index][%GAPBEGIN] = 0
@@ -1984,7 +1984,7 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Ramp(WAVE numericalValues, WAVE/T 
 	level = GetMachineEpsilon(WaveType(sweepDA))
 	FindLevel/Q/EDGE=(FINDLEVEL_EDGE_DECREASING)/R=[Inf, 0]/P sweepDA, level
 	first = ceil(V_levelX)
-	if(first > DimSize(sweepDA, ROWS) - 2)
+	if(first > (DimSize(sweepDA, ROWS) - 2))
 		DEBUGPRINT("RA U_RA_DS epoch recreation: no suppressed DA region found.")
 		return NaN
 	endif
@@ -1993,7 +1993,7 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Ramp(WAVE numericalValues, WAVE/T 
 	// The DA output wave is always the next greater power of two size of the actual needed output size
 	// Thus, the epoch is always longer than the DA channel length. It is later cut off to the actual
 	// maximum acquired time, see @ref EP_AdaptEpochInfo
-	last = hwType == HARDWARE_ITC_DAC ? DimSize(sweepDA, ROWS) : DimSize(sweepDA, ROWS) - 1
+	last = (hwType == HARDWARE_ITC_DAC) ? DimSize(sweepDA, ROWS) : (DimSize(sweepDA, ROWS) - 1)
 
 	PSQ_Ramp_AddEpochImpl(epochWave, sweepDA, DAC, "Name=DA Suppression", "RA_DS", first, last)
 
@@ -2098,7 +2098,7 @@ static Function EP_AddRecreatedUserEpochs_PSQ_Chirp(WAVE numericalValues, WAVE/T
 		return NaN
 	endif
 
-	ASSERT(DimSize(fullCycleEpochs, ROWS) == (chirpCycles == 1 ? 1 : 2), "Chirp resulted in successful stimset QC, but could not find cycle base epochs E1_TG_C0 && E1_TG_C" + num2istr(chirpCycles - 1))
+	ASSERT(DimSize(fullCycleEpochs, ROWS) == ((chirpCycles == 1) ? 1 : 2), "Chirp resulted in successful stimset QC, but could not find cycle base epochs E1_TG_C0 && E1_TG_C" + num2istr(chirpCycles - 1))
 	[epBegin, epEnd] = PSQ_CR_AddCycleEvaluationEpoch(epochWave, fullCycleEpochs, DAC)
 End
 

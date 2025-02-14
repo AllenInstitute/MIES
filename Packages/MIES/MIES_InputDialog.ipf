@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_ID
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_InputDialog.ipf
 /// @brief __ID__ Input dialog handling for numeric entries
@@ -134,6 +134,8 @@ Function ID_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 			endswitch
 			KillWindow/Z $(ba.win)
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -151,6 +153,8 @@ Function ID_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
 			WAVE data = ID_GetWave(sva.win)
 			data[idx] = sva.dval
 			break
+		default:
+			break
 	endswitch
 End
 
@@ -162,6 +166,8 @@ Function ID_PopMenuProc(STRUCT WMPopupAction &pa) : PopupMenuControl
 			data[]            = 0
 			data[%$pa.popStr] = 1
 
+			break
+		default:
 			break
 	endswitch
 

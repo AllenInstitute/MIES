@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DEBUG
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Debugging.ipf
 ///
@@ -562,7 +562,7 @@ Function BUG(string msg, [WAVE/T keys, WAVE/T values])
 	bugCount += 1
 
 	print "BUG: Should never be called during automated testing."
-#endif
+#endif // AUTOMATED_TESTING
 End
 
 /// @brief Threadsafe variant of BUG()
@@ -585,7 +585,7 @@ threadsafe Function BUG_TS(string msg, [WAVE/T keys, WAVE/T values])
 	TUFXOP_ReleaseLock/N=(TSDS_BUGCOUNT)
 
 	print "BUG_TS: Should never be called during automated testing."
-#endif
+#endif // AUTOMATED_TESTING
 End
 
 /// @brief Debug helper which creates a textwave which will hold

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_UTILS_FILE
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_Utilities_File.ipf
 /// @brief utility functions for file handling
@@ -344,7 +344,7 @@ Function GetOpenZFlag()
 	return 1 // no dialog if the file does not exist
 #else
 	return 2
-#endif
+#endif // AUTOMATED_TESTING
 End
 
 /// @brief Saves string data to a file
@@ -368,7 +368,7 @@ Function SaveTextFile(string data, string fileName, [string fileFilter, string m
 	string S_fileName = fileName
 #else
 	showDialogOnOverwrite = ParamIsDefault(showDialogOnOverwrite) ? 0 : !!showDialogOnOverwrite
-	dialogCode            = showDialogOnOverwrite && FileExists(fileName) ? 1 : 2
+	dialogCode            = (showDialogOnOverwrite && FileExists(fileName)) ? 1 : 2
 	if(ParamIsDefault(fileFilter) && ParamIsDefault(message))
 		Open/D=(dialogCode) fnum as fileName
 	elseif(ParamIsDefault(fileFilter) && !ParamIsDefault(message))
@@ -382,7 +382,7 @@ Function SaveTextFile(string data, string fileName, [string fileFilter, string m
 	if(IsEmpty(S_fileName))
 		return NaN
 	endif
-#endif
+#endif // AUTOMATED_TESTING
 
 	Open/Z fnum as S_fileName
 	ASSERT(!V_flag, "Could not open file for writing!")
@@ -667,7 +667,7 @@ threadsafe Function MU_GetFreeDiskSpace(string path)
 	ASSERT_TS(0, "Not implemented")
 End
 
-#endif
+#endif // MACINTOSH
 
 /// @brief Cleanup the experiment name
 Function/S CleanupExperimentName(string expName)

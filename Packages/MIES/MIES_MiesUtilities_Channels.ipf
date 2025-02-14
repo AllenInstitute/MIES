@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_CHANNELS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Channels.ipf
 /// @brief This file holds MIES utility functions for Channels
@@ -247,13 +247,13 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 				if(WaveExists(ttlBitsRackZero))
 					HW_ITC_GetRackRange(RACK_ZERO, first, last)
 					bits                 = ttlBitsRackZero[index]
-					entries[first, last] = (bits & (1 << p)) != 0 ? p : NaN
+					entries[first, last] = ((bits & (1 << p)) != 0) ? p : NaN
 				endif
 
 				if(WaveExists(ttlBitsRackOne))
 					HW_ITC_GetRackRange(RACK_ONE, first, last)
 					bits                 = ttlBitsRackOne[index]
-					entries[first, last] = (bits & (1 << (p - NUM_ITC_TTL_BITS_PER_RACK))) != 0 ? p : NaN
+					entries[first, last] = ((bits & (1 << (p - NUM_ITC_TTL_BITS_PER_RACK))) != 0) ? p : NaN
 				endif
 
 				return entries
@@ -273,14 +273,14 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 				HW_ITC_GetRackRange(RACK_ZERO, first, last)
 				bits                                       = ttlBitsRackZero[index]
 				hwChannel                                  = ttlChannelRackZero[index]
-				channelMapGUIToHW[first, last][%TTLBITNR]  = (bits & (1 << p)) != 0 ? p : NaN
+				channelMapGUIToHW[first, last][%TTLBITNR]  = ((bits & (1 << p)) != 0) ? p : NaN
 				channelMapGUIToHW[first, last][%HWCHANNEL] = IsNaN(channelMapGUIToHW[p][%TTLBITNR]) ? NaN : hwChannel
 			endif
 			if(haveRackOne)
 				HW_ITC_GetRackRange(RACK_ONE, first, last)
 				bits                                       = ttlBitsRackOne[index]
 				hwChannel                                  = ttlChannelRackOne[index]
-				channelMapGUIToHW[first, last][%TTLBITNR]  = (bits & (1 << (p - NUM_ITC_TTL_BITS_PER_RACK))) != 0 ? p - NUM_ITC_TTL_BITS_PER_RACK : NaN
+				channelMapGUIToHW[first, last][%TTLBITNR]  = ((bits & (1 << (p - NUM_ITC_TTL_BITS_PER_RACK))) != 0) ? (p - NUM_ITC_TTL_BITS_PER_RACK) : NaN
 				channelMapGUIToHW[first, last][%HWCHANNEL] = IsNaN(channelMapGUIToHW[p][%TTLBITNR]) ? NaN : hwChannel
 			endif
 			if(haveRackZero || haveRackOne)
@@ -300,13 +300,13 @@ threadsafe static Function/WAVE GetActiveChannelsTTL(WAVE numericalValues, WAVE 
 				HW_ITC_GetRackRange(RACK_ZERO, first, last)
 				bits                                      = ttlBitsRackZero[index]
 				hwChannel                                 = ttlChannelRackZero[index]
-				channelMapHWToGUI[hwChannel][first, last] = (bits & (1 << q)) != 0 ? q : NaN
+				channelMapHWToGUI[hwChannel][first, last] = ((bits & (1 << q)) != 0) ? q : NaN
 			endif
 			if(haveRackOne)
 				HW_ITC_GetRackRange(RACK_ONE, first, last)
 				bits                                                                                              = ttlBitsRackOne[index]
 				hwChannel                                                                                         = ttlChannelRackOne[index]
-				channelMapHWToGUI[hwChannel][first - NUM_ITC_TTL_BITS_PER_RACK, last - NUM_ITC_TTL_BITS_PER_RACK] = (bits & (1 << q)) != 0 ? q + NUM_ITC_TTL_BITS_PER_RACK : NaN
+				channelMapHWToGUI[hwChannel][first - NUM_ITC_TTL_BITS_PER_RACK, last - NUM_ITC_TTL_BITS_PER_RACK] = ((bits & (1 << q)) != 0) ? (q + NUM_ITC_TTL_BITS_PER_RACK) : NaN
 			endif
 			if(haveRackZero || haveRackOne)
 				return channelMapHWToGUI

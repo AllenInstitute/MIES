@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DAG
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_DAEphys_GuiState.ipf
 /// @brief __DAG__ Routines dealing with the DA_Ephys GUI state waves
@@ -404,7 +404,7 @@ Function DAG_Update(string device, string controlName, [variable val, string str
 
 	variable col, channelIndex, channelType, controlType
 
-	ASSERT(ParamIsDefault(val) + ParamIsDefault(str) < 2, "One or both of `val` and `str` must be passed.")
+	ASSERT((ParamIsDefault(val) + ParamIsDefault(str)) < 2, "One or both of `val` and `str` must be passed.")
 
 	if(!ParamIsDefault(val))
 		WAVE GUIState = GetDA_EphysGuiStateNum(device)

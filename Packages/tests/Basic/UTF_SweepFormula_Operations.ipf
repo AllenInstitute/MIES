@@ -1631,7 +1631,7 @@ static Function TestOperationData()
 	Make/FREE/N=0 sweepTemplate
 	WAVE sweepRef  = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
 	WAVE sweepRef3 = FakeSweepDataGeneratorDefault(sweepTemplate, 5)
-	sweepRef3[][4] = (sweepRef3[p][4] & 1 << 2) != 0
+	sweepRef3[][4] = (sweepRef3[p][4] & (1 << 2)) != 0
 
 	sweepCnt = 1
 	str      = "data(select(selrange(TestEpoch2),selchannels(TTL2),selsweeps(" + num2istr(3) + "),selvis(all)))"
@@ -1773,8 +1773,8 @@ static Function TestOperationData()
 	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 	numResultsRef = sweepCnt * numChannels / 2
 	Make/FREE/N=(numResultsRef, 2) ranges
-	ranges[][0] = p >= 2 ? rangeStart1 : rangeStart0
-	ranges[][1] = p >= 2 ? rangeEnd1 : rangeEnd0
+	ranges[][0] = (p >= 2) ? rangeStart1 : rangeStart0
+	ranges[][1] = (p >= 2) ? rangeEnd1 : rangeEnd0
 	CheckSweepsFromData(dataWref, sweepRef, numResultsref, {1, 3, 1, 3}, ranges = ranges)
 	CheckSweepsMetaData(dataWref, {0, 0, 0, 0}, {6, 7, 6, 7}, {0, 0, 1, 1}, SF_DATATYPE_SWEEP)
 
@@ -2194,7 +2194,7 @@ static Function TestOperationLabNotebook()
 	CHECK_EQUAL_VAR(DimSize(dataRef, ROWS), 3)
 	idx = 0
 	for(WAVE/D data : dataRef)
-		Make/D/FREE refData = {idx == 1 ? 1 : 0}
+		Make/D/FREE refData = {(idx == 1) ? 1 : 0}
 		CHECK_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
 		CHECK_EQUAL_STR("", JWN_GetStringFromWaveNote(data, SF_META_TAG_TEXT))
 		CHECK_EQUAL_STR("USER_random QC", JWN_GetStringFromWaveNote(data, SF_META_LEGEND_LINE_PREFIX))

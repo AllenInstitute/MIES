@@ -72,6 +72,8 @@ Function PGCT_PopMenuProc(STRUCT WMPopupAction &pa) : PopupMenuControl
 			string/G   popStr = pa.popStr
 			variable/G called = 1
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -83,6 +85,8 @@ Function PGCT_CheckProc(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 		case 2: // mouse up
 			variable/G checked = cba.checked
 			variable/G called  = 1
+			break
+		default:
 			break
 	endswitch
 
@@ -113,6 +117,8 @@ Function PGCT_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
 			string/G   sval   = sva.sval
 			variable/G called = 1
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -123,6 +129,8 @@ Function PGCT_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			variable/G called = 1
+			break
+		default:
 			break
 	endswitch
 
@@ -135,6 +143,8 @@ Function PGCT_TabProc(STRUCT WMTabControlAction &tca) : TabControl
 		case 2: // mouse up
 			variable/G tab    = tca.tab
 			variable/G called = 1
+			break
+		default:
 			break
 	endswitch
 
@@ -154,6 +164,8 @@ Function PGCT_ListBoxProc(STRUCT WMListboxAction &lba) : ListBoxControl
 			CHECK_WAVE(lba.selWave, NUMERIC_WAVE)
 			CHECK_WAVE(lba.colorWave, NUMERIC_WAVE)
 			CHECK_WAVE(lba.titleWave, TEXT_WAVE)
+			break
+		default:
 			break
 	endswitch
 

@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_SF
-#endif
+#endif // AUTOMATED_TESTING
 
 // to enable debug mode with more persistent data
 // #define SWEEPFORMULA_DEBUG
@@ -351,7 +351,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 	if(DP_DebuggingEnabledForCaller())
 		printf "%sformula %s\r", indentation, formula
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 	WAVE/T wFormula = UTF8StringToTextWave(formula)
 	if(!DimSize(wFormula, ROWS))
@@ -366,7 +366,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		if(DP_DebuggingEnabledForCaller())
 			printf "%stoken %s, state %s, lastCalculation %s, ", indentation, token, PadString(SF_StringifyState(state), 25, 0x20), PadString(SF_StringifyState(lastCalculation), 25, 0x20)
 		endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 		[action, lastState, collectedSign] = SF_ParserGetActionFromState(jsonId, state, lastCalculation, IsEmpty(buffer))
 
@@ -374,7 +374,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		if(DP_DebuggingEnabledForCaller())
 			printf "action %s, lastState %s\r", PadString(SF_StringifyAction(action), 25, 0x20), PadString(SF_StringifyState(lastState), 25, 0x20)
 		endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 		if(action != SF_ACTION_SKIP && lastAction == SF_ACTION_ARRAY)
 			// If the last action was the handling of "]" from an array
@@ -840,7 +840,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		printf "%s\r", JSON_Dump(jsonID, indent = 2)
 		printf "##########################\r"
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 	// object and array evaluation
 	JSONtype = JSON_GetType(jsonID, jsonPath)
@@ -869,7 +869,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 		SFH_ASSERT(!(V_Value >= 0), "Encountered null element in array.", jsonId = jsonId)
 
 		Redimension/N=(MAX_DIMENSION_COUNT) topArraySize
-		topArraySize[] = topArraySize[p] != 0 ? topArraySize[p] : 1
+		topArraySize[] = (topArraySize[p] != 0) ? topArraySize[p] : 1
 
 		Make/FREE/D/N=0 indicesOfOperationsWithScalarResult
 		WAVE/ZZ   out
@@ -1020,7 +1020,7 @@ static Function/WAVE SF_FormulaExecutor(string graph, variable jsonID, [string j
 			ASSERT(GetRowIndex(ops, str = opName) >= 0, "List of operations with long name is out of date as the following is missing: " + opName)
 			break
 	endswitch
-#endif
+#endif // AUTOMATED_TESTING
 
 	/// @name SweepFormulaOperations
 	///@{
@@ -1494,7 +1494,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	Make/FREE/N=(numDoInh) findPos
 	for(i = 0; i < numDoInh; i += 1)
 		FindValue/TEXT=doInheritance[i]/TXOP=4 opStackW
-		findPos[i] = V_Value == -1 ? NaN : V_Value
+		findPos[i] = (V_Value == -1) ? NaN : V_Value
 	endfor
 	minVal = WaveMin(findPos)
 	if(IsNaN(minVal))
@@ -1511,7 +1511,7 @@ Function [STRUCT RGBColor s] SF_GetTraceColor(string graph, string opStack, WAVE
 	channelType   = JWN_GetNumberFromWaveNote(data, SF_META_CHANNELTYPE)
 	isAveraged    = JWN_GetNumberFromWaveNote(data, SF_META_ISAVERAGED)
 	mapIndex      = JWN_GetNumberFromWaveNote(data, SF_META_SWEEPMAPINDEX)
-	sweepNo       = isAveraged == 1 ? JWN_GetNumberFromWaveNote(data, SF_META_AVERAGED_FIRST_SWEEP) : JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
+	sweepNo       = (isAveraged == 1) ? JWN_GetNumberFromWaveNote(data, SF_META_AVERAGED_FIRST_SWEEP) : JWN_GetNumberFromWaveNote(data, SF_META_SWEEPNO)
 	if(!IsValidSweepNumber(sweepNo))
 		return [s]
 	endif
@@ -1698,7 +1698,7 @@ static Function [WAVE/T plotGraphs, WAVE/WAVE infos] SF_PreparePlotter(string wi
 		endif
 
 		// create horizontal guides (one more than graphs)
-		for(i = 0; i < numGraphs + 1; i += 1)
+		for(i = 0; i < (numGraphs + 1); i += 1)
 			guideName1 = SF_PLOTTER_GUIDENAME + num2istr(i)
 			guidePos   = i / numGraphs
 			DefineGuide/W=$win $guideName1={FT, guidePos, FB}
@@ -2727,14 +2727,14 @@ static Function SF_IsValidSingleSelection(STRUCT SF_SelectParameters &filter, WA
 	endif
 
 	if(filter.sweepQC != SF_OP_SELECT_IVSCCSWEEPQC_IGNORE)
-		sweepQC = SFH_IsSweepQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType) == 1 ? SF_OP_SELECT_IVSCCSWEEPQC_PASSED : SF_OP_SELECT_IVSCCSWEEPQC_FAILED
+		sweepQC = (SFH_IsSweepQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType) == 1) ? SF_OP_SELECT_IVSCCSWEEPQC_PASSED : SF_OP_SELECT_IVSCCSWEEPQC_FAILED
 		if(!(filter.sweepQC & sweepQC))
 			return 0
 		endif
 	endif
 
 	if(filter.setQC != SF_OP_SELECT_IVSCCSETQC_IGNORE)
-		setQC = SFH_IsSetQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType) == 1 ? SF_OP_SELECT_IVSCCSETQC_PASSED : SF_OP_SELECT_IVSCCSETQC_FAILED
+		setQC = (SFH_IsSetQCPassed(numericalValues, textualValues, sweepNo, channelNumber, channelType) == 1) ? SF_OP_SELECT_IVSCCSETQC_PASSED : SF_OP_SELECT_IVSCCSETQC_FAILED
 		if(!(filter.setQC & setQC))
 			return 0
 		endif
@@ -2864,6 +2864,8 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 				ReplaceNotebookText(json_nb, "")
 			endif
 
+			break
+		default:
 			break
 	endswitch
 
@@ -3007,6 +3009,8 @@ Function SF_button_sweepFormula_display(STRUCT WMButtonAction &ba) : ButtonContr
 			endtry
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -3033,6 +3037,8 @@ Function SF_TabProc_Formula(STRUCT WMTabControlAction &tca) : TabControl
 				break
 			endif
 
+			break
+		default:
 			break
 	endswitch
 
@@ -3252,7 +3258,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 	if(DP_DebuggingEnabledForCaller())
 		debugMode = 1
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 	WAVE/Z selectData = SFH_FilterSelect(selectDataPreFilter, XOP_CHANNEL_TYPE_ADC)
 	if(!WaveExists(selectData))
@@ -3349,7 +3355,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 			Make/FREE/D/N=(numTPs) beginTrails, endTrails
 			beginTrails = NaN
 			endTrails   = NaN
-#endif
+#endif // AUTOMATED_TESTING
 			for(j = 0; j < numTPs; j += 1)
 
 				epBaselineTrail = EP_GetShortName(epochMatches[j][EPOCH_COL_TAGS]) + "_B1"
@@ -3370,7 +3376,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 #ifdef AUTOMATED_TESTING
 				beginTrails[j] = beginTrail
 				endTrails[j]   = endTrail
-#endif
+#endif // AUTOMATED_TESTING
 
 				if(!CmpStr(retWhat, SF_OP_TPFIT_RET_FITQUALITY))
 					Duplicate/FREE sweepData, residuals
@@ -3437,9 +3443,9 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 							elseif(!CmpStr(retWhat, SF_OP_TPFIT_RET_TAUSMALL))
 								fitResult = min(coefWave[2], coefWave[4])
 							elseif(!CmpStr(retWhat, SF_OP_TPFIT_RET_AMP))
-								fitResult = max(abs(coefWave[1]), abs(coefWave[3])) == abs(coefWave[1]) ? coefWave[1] : coefWave[3]
+								fitResult = (max(abs(coefWave[1]), abs(coefWave[3])) == abs(coefWave[1])) ? coefWave[1] : coefWave[3]
 							elseif(!CmpStr(retWhat, SF_OP_TPFIT_RET_MINAMP))
-								fitResult = min(abs(coefWave[1]), abs(coefWave[3])) == abs(coefWave[1]) ? coefWave[1] : coefWave[3]
+								fitResult = (min(abs(coefWave[1]), abs(coefWave[3])) == abs(coefWave[1])) ? coefWave[1] : coefWave[3]
 							endif
 						endif
 					endif
@@ -3453,7 +3459,7 @@ static Function/WAVE SF_OperationTPImpl(string graph, WAVE/WAVE mode, WAVE/Z sel
 #ifdef AUTOMATED_TESTING
 			JWN_SetWaveInWaveNote(fitResults, "/begintrails", beginTrails)
 			JWN_SetWaveInWaveNote(fitResults, "/endtrails", endTrails)
-#endif
+#endif // AUTOMATED_TESTING
 
 			if(!debugMode)
 				WAVE/D out = fitResults
@@ -4559,6 +4565,9 @@ static Function/WAVE SF_OperationSetScaleImpl(WAVE/Z input, string dim, variable
 			SetScale/P t, offset, delta, unit, input
 			ASSERT(DimDelta(input, CHUNKS) == delta, "Encountered Igor Bug.")
 			break
+		default:
+			ASSERT(0, "Invalid dimension mode")
+			break
 	endswitch
 
 	return input
@@ -4704,7 +4713,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 	MultiThread indexHelper[] = SF_RemoveEndOfSweepNaNs(input[p])
 
 	doAvg  = !CmpStr(avg, "avg")
-	cutOff = ratioFreq == 0 ? cutOff : NaN
+	cutOff = (ratioFreq == 0) ? cutOff : NaN
 
 	if(doAvg)
 		Make/FREE/WAVE/N=(DimSize(input, ROWS)) output
@@ -4740,7 +4749,7 @@ static Function/WAVE SF_OperationPowerSpectrum(variable jsonId, string jsonPath,
 		endif
 #else
 		output[] = SF_PowerSpectrumRatio(inputRatio[p], ratioFreq, SF_POWERSPECTRUM_RATIO_DELTAHZ)
-#endif
+#endif // DEBUGGING_ENABLED
 	endif
 
 	return SFH_GetOutputForExecutor(output, graph, SF_OP_POWERSPECTRUM, clear = input)
@@ -4785,7 +4794,7 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 	endif
 #else
 	FuncFit/Q SF_LineNoiseFit, kwCWave=wCoef, input(minFreq, maxFreq)/C=wConstraints; err = GetRTError(1)
-#endif
+#endif // DEBUGGING_ENABLED
 	MakeWaveFree($"W_sigma")
 
 	Redimension/N=1 input
@@ -4797,7 +4806,7 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 	endif
 #else
 	SetScale/P x, wCoef[3], 1, WaveUnits(input, ROWS), input
-#endif
+#endif // DEBUGGING_ENABLED
 
 	SetScale/P d, 0, 1, "power ratio", input
 
@@ -4817,7 +4826,7 @@ static Function/WAVE SF_PowerSpectrumRatio(WAVE/Z input, variable ratioFreq, var
 	if(DP_DebuggingEnabledForCaller())
 		printf "PS ratio, peak position, baseline, peak amplitude : %f %f %f %f\r", input[0], wCoef[3], base, wCoef[2]
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 	return input
 End
 
@@ -6562,6 +6571,9 @@ static Function/WAVE SF_OperationApFrequencyImpl(WAVE/Z data, variable level, va
 			Make/FREE/D outD = {numPeaks}
 			SetScale/P y, DimOffset(outD, ROWS), DimDelta(outD, ROWS), "peaks [APCount]", outD
 			break
+		default:
+			ASSERT(0, "Unsupported method")
+			break
 	endswitch
 
 	if(normalize)
@@ -6718,6 +6730,8 @@ Function SF_button_sweepFormula_tofront(STRUCT WMButtonAction &ba) : ButtonContr
 			endfor
 
 			break
+		default:
+			break
 	endswitch
 
 	return 0
@@ -6743,7 +6757,7 @@ static Function/WAVE SF_AverageTPFromSweep(WAVE/T epochMatches, WAVE sweepData)
 	Make/FREE/D/N=(numTPEpochs) tpStart = trunc(str2num(epochMatches[p][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI / sweepDelta)
 	Make/FREE/D/N=(numTPEpochs) tpDelta = trunc(str2num(epochMatches[p][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI / sweepDelta) - tpStart[p]
 	[tpDataSizeMin, tpDataSizeMax] = WaveMinAndMax(tpDelta)
-	SFH_ASSERT(tpDataSizeMax - tpDataSizeMin <= 1, "TP data size from TP epochs mismatch within sweep.")
+	SFH_ASSERT((tpDataSizeMax - tpDataSizeMin) <= 1, "TP data size from TP epochs mismatch within sweep.")
 
 	Make/FREE/D/N=(tpDataSizeMin) tpData
 	CopyScales/P sweepData, tpData
@@ -6807,6 +6821,8 @@ Function SF_PopMenuProc_OldCode(STRUCT WMPopupAction &pa) : PopupMenuControl
 
 			ReplaceNotebookText(sweepFormulaNB, code)
 			PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = CHECKBOX_SELECTED)
+			break
+		default:
 			break
 	endswitch
 

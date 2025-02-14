@@ -312,13 +312,13 @@ static Function GetHWChannelNumber(WAVE config, variable channelType, variable i
 	switch(channelType)
 		case XOP_CHANNEL_TYPE_DAC:
 			WAVE DACs = GetDACListFromConfig(config)
-			return index < DimSize(DACs, ROWS) ? DACs[index] : NaN
+			return (index < DimSize(DACs, ROWS)) ? DACs[index] : NaN
 		case XOP_CHANNEL_TYPE_ADC:
 			WAVE ADCs = GetDACListFromConfig(config)
-			return index < DimSize(ADCs, ROWS) ? ADCs[index] : NaN
+			return (index < DimSize(ADCs, ROWS)) ? ADCs[index] : NaN
 		case XOP_CHANNEL_TYPE_TTL:
 			WAVE TTLs = GetTTLListFromConfig(config)
-			return index < DimSize(TTLs, ROWS) ? TTLs[index] : NaN
+			return (index < DimSize(TTLs, ROWS)) ? TTLs[index] : NaN
 		default:
 			FAIL()
 	endswitch

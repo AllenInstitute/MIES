@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_TP
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_TestPulse.ipf
 /// @brief __TP__ Basic Testpulse related functionality
@@ -130,7 +130,7 @@ Function/WAVE TP_GetStoredTPs(string device, variable tpMarker, variable number)
 
 	Make/FREE/N=(number)/WAVE result
 
-	if(number > V_row + 1)
+	if(number > (V_row + 1))
 		// too few TPs available
 		return $""
 	endif
@@ -209,7 +209,7 @@ Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 	posElevInst = FindDimLabel(asyncBuffer, COLS, "ELEVATED_INST")
 
 	FindValue/RMD=[][posAsync][posMarker, posMarker]/V=(marker)/T=0 asyncBuffer
-	i = V_Value >= 0 ? V_Row : bufSize
+	i = (V_Value >= 0) ? V_Row : bufSize
 
 	if(i == bufSize)
 		Redimension/N=(bufSize + 1, -1, -1) asyncBuffer
@@ -468,7 +468,7 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 		WAVE data      = root:AutoTPDebuggingData
 		WAVE residuals = root:Res_AutoTPDebuggingData
 	endif
-#endif
+#endif // DEBUGGING_ENABLED
 
 	if(!debugEnabled)
 		Duplicate/FREE data, residuals
@@ -1091,10 +1091,10 @@ static Function TP_RecordTP(string device, WAVE TPResults, variable now, variabl
 	TPStorage[count][][%Headstage] = hsProp[q][%Enabled] ? q : NaN
 	TPStorage[count][][%ClampMode] = hsProp[q][%ClampMode]
 
-	TPStorage[count][][%Baseline_VC] = hsProp[q][%ClampMode] == V_CLAMP_MODE ? TPResults[%BaselineSteadyState][q] : NaN
-	TPStorage[count][][%Baseline_IC] = hsProp[q][%ClampMode] == I_CLAMP_MODE ? TPResults[%BaselineSteadyState][q] : NaN
+	TPStorage[count][][%Baseline_VC] = (hsProp[q][%ClampMode] == V_CLAMP_MODE) ? TPResults[%BaselineSteadyState][q] : NaN
+	TPStorage[count][][%Baseline_IC] = (hsProp[q][%ClampMode] == I_CLAMP_MODE) ? TPResults[%BaselineSteadyState][q] : NaN
 
-	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
+	TPStorage[count][][%DeltaTimeInSeconds] = (count > 0) ? (now - TPStorage[0][0][%TimeInSeconds]) : 0
 	TPStorage[count][][%TPMarker]           = tpMarker
 
 	cycleID                        = ROVAR(GetTestpulseCycleID(device))

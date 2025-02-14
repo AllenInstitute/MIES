@@ -4,7 +4,7 @@
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_MIESUTILS_UPLOADS
-#endif
+#endif // AUTOMATED_TESTING
 
 /// @file MIES_MiesUtilities_Uploads.ipf
 /// @brief This file holds MIES utility functions for data upload
@@ -19,7 +19,7 @@ Function UploadCrashDumpsDaily()
 
 #ifdef AUTOMATED_TESTING
 	return NaN
-#endif
+#endif // AUTOMATED_TESTING
 
 	AssertOnAndClearRTError()
 	try
@@ -27,7 +27,7 @@ Function UploadCrashDumpsDaily()
 
 		lastWrite = ParseISO8601TimeStamp(JSON_GetString(jsonID, "/diagnostics/last upload"))
 
-		if(lastWrite + SECONDS_PER_DAY > DateTimeInUTC())
+		if((lastWrite + SECONDS_PER_DAY) > DateTimeInUTC())
 			// nothing to do
 			return NaN
 		endif
@@ -50,7 +50,7 @@ Function UploadLogFilesDaily()
 
 #ifdef AUTOMATED_TESTING
 	return NaN
-#endif
+#endif // AUTOMATED_TESTING
 
 	AssertOnAndClearRTError()
 	try
@@ -60,7 +60,7 @@ Function UploadLogFilesDaily()
 		lastWrite = ParseISO8601TimeStamp(ts)
 		now       = DateTimeInUTC()
 
-		if(lastWrite + SECONDS_PER_DAY > now)
+		if((lastWrite + SECONDS_PER_DAY) > now)
 			// nothing to do
 			return NaN
 		endif
@@ -97,7 +97,7 @@ Function UploadPingPeriodically()
 
 #ifdef AUTOMATED_TESTING
 	return NaN
-#endif
+#endif // AUTOMATED_TESTING
 
 	if(!GetUserPingEnabled())
 		return NaN
@@ -105,7 +105,7 @@ Function UploadPingPeriodically()
 
 	now      = DateTimeInUTC()
 	lastPing = ParseISO8601TimeStamp(GetUserPingTimestamp())
-	if(now - lastPing < SECONDS_PER_DAY * 7)
+	if((now - lastPing) < (SECONDS_PER_DAY * 7))
 		today       = GetDayOfWeek(now)
 		lastWeekDay = GetDayOfWeek(lastPing)
 		if(today == lastWeekDay ||                          \
@@ -210,7 +210,7 @@ Function UploadCrashDumps()
 
 #ifndef DEBUGGING_ENABLED
 	MoveFolder/P=$basePath "Diagnostics" as UniqueFileOrFolder(basePath, "Diagnostics_old")
-#endif // DEBUGGING_ENABLED
+#endif // !DEBUGGING_ENABLED
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 
