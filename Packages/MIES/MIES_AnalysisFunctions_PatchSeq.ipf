@@ -192,8 +192,9 @@ static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
 static Constant PSQ_RHEOBASE_DURATION = 500
 
-static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC      = 1.5
-static Constant PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC = 50
+static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC            = 1.5
+static Constant PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC       = 50
+static Constant PSQ_DA_FALLBACK_MINIMUM_SPIKES_FOR_MAX_SLOPE = 4
 
 /// @name Type constants for PSQ_DS_GetLabnotebookData
 /// @anchor PSQDAScaleAdaptiveLBNTypeConstants
@@ -2653,7 +2654,7 @@ static Function PSQ_DS_GatherAndWriteFrequencyToLabnotebook(string device, varia
 	ED_AddEntryToLabnotebook(device, key, apFreqLBN, overrideSweepNo = sweepNo, unit = "Hz")
 End
 
-static Function [variable maxSlope, WAVE fitSlopes, WAVE DAScales] PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(string device, variable sweepNo, variable headstage, variable fitSlope)
+static Function [variable maxSlope, WAVE fitSlopes, WAVE DAScales] PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(string device, variable sweepNo, variable headstage, variable fitSlope, variable minimumSpikeCountForMaxSlope)
 
 	string key
 	variable idx, emptySCI
@@ -2668,7 +2669,9 @@ static Function [variable maxSlope, WAVE fitSlopes, WAVE DAScales] PSQ_DS_Calcul
 		return [NaN, fitSlopes, DAScales]
 	endif
 
-	maxSlope = max(WaveMax(fitSlopes), fitSlope)
+	[WAVE apfreq, emptySCI] = PSQ_DS_GetLabnotebookData(numericalValues, textualValues, sweepNo, headstage, PSQ_DS_APFREQ)
+
+	maxSlope = PSQ_DS_CalculateMaxSlope(fitSlopes, apfreq, minimumSpikeCountForMaxSlope)
 
 	WAVE maxSlopeLBN = LBN_GetNumericWave()
 	maxSlopeLBN[headstage] = maxSlope
@@ -2826,7 +2829,7 @@ End
 /// - Check if the resulting fit slope is smaller than `slopePercentage`
 ///
 /// @retval futureDAScales future DAScale values including the historic ones, @see PSQ_DS_GatherFutureDAScalesAndFrequency
-static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp)
+static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(string device, variable sweepNo, variable headstage, STRUCT PSQ_DS_DAScaleParams &cdp, variable minimumSpikeCountForMaxSlope)
 
 	string key, errMsg, msg
 	variable maxSlope, fitOffset, fitSlope, fitOffsetForDAScale, fitSlopeForDAScale, emptySCI, hasEnoughPoints
@@ -2846,7 +2849,7 @@ static Function [WAVE/T futureDAScales] PSQ_DS_EvaluateAdaptiveThresholdSweep(st
 	DEBUGPRINT(msg)
 #endif // DEBUGGING_ENABLED
 
-	[maxSlope, WAVE fitSlopesAll, WAVE DAScalesAll] = PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(device, sweepNo, headstage, fitSlope)
+	[maxSlope, WAVE fitSlopesAll, WAVE DAScalesAll] = PSQ_DS_CalculateMaxSlopeAndWriteToLabnotebook(device, sweepNo, headstage, fitSlope, minimumSpikeCountForMaxSlope)
 
 	PSQ_DS_CalculateFillinPassAndWriteToLabnotebook(device, sweepNo, DAScalesAll)
 
@@ -3800,6 +3803,17 @@ static Function [variable fitOffset, variable fitSlope, variable negSlopePassed,
 	return [fitOffset, fitSlope, negSlopePassed, DAScale, apfreq]
 End
 
+static Function PSQ_DS_CalculateMaxSlope(WAVE fitSlopes, WAVE apfreq, variable minimumSpikeCountForMaxSlope)
+
+	Duplicate/FREE apfreq, passingMinCount
+
+	passingMinCount[] = (apfreq[p] >= minimumSpikeCountForMaxSlope)
+
+	WAVE fitSlopesFiltered = PSQ_DS_FilterPassingData(fitSlopes, passingMinCount, inbetween = 1)
+
+	return WaveMax(fitSlopesFiltered)
+End
+
 static Structure PSQ_DS_DAScaleParams
 	variable absFrequencyMinDistance, maxFrequencyChangePercent, dascaleNegativeSlopePercent
 	variable daScaleStepMinNorm, daScaleStepMaxNorm, slopePercentage
@@ -3970,27 +3984,28 @@ End
 /// @brief Require parameters from stimset
 Function/S PSQ_DAScale_GetParams()
 
-	return "[AbsFrequencyMinDistance:variable],"     + \
-	       "AsyncQCChannels:wave,"                   + \
-	       "[BaselineRMSLongThreshold:variable],"    + \
-	       "[BaselineRMSShortThreshold:variable],"   + \
-	       "[BaselineTargetVThreshold:variable],"    + \
-	       "[DAScaleRangeFactor:variable],"          + \
-	       "[DAScaleModifier:variable],"             + \
-	       "[DAScaleNegativeSlopePercent:variable]," + \
-	       "[DaScaleStepWidthMinMaxRatio:variable]," + \
-	       "DAScales:wave,"                          + \
-	       "[FailingAdaptiveSCIRange:variable],"     + \
-	       "[FinalSlopePercent:variable],"           + \
-	       "[MaximumSpikeCount:variable],"           + \
-	       "[MinimumSpikeCount:variable],"           + \
-	       "[OffsetOperator:string],"                + \
-	       "OperationMode:string,"                   + \
-	       "[SamplingFrequency:variable],"           + \
-	       "SamplingMultiplier:variable,"            + \
-	       "[ShowPlot:variable],"                    + \
-	       "[SlopePercentage:variable],"             + \
-	       "[MaxFrequencyChangePercent:variable],"   + \
+	return "[AbsFrequencyMinDistance:variable],"      + \
+	       "AsyncQCChannels:wave,"                    + \
+	       "[BaselineRMSLongThreshold:variable],"     + \
+	       "[BaselineRMSShortThreshold:variable],"    + \
+	       "[BaselineTargetVThreshold:variable],"     + \
+	       "[DAScaleRangeFactor:variable],"           + \
+	       "[DAScaleModifier:variable],"              + \
+	       "[DAScaleNegativeSlopePercent:variable],"  + \
+	       "[DaScaleStepWidthMinMaxRatio:variable],"  + \
+	       "DAScales:wave,"                           + \
+	       "[FailingAdaptiveSCIRange:variable],"      + \
+	       "[FinalSlopePercent:variable],"            + \
+	       "[MaximumSpikeCount:variable],"            + \
+	       "[MinimumSpikeCount:variable],"            + \
+	       "[MinimumSpikeCountForMaxSlope:variable]," + \
+	       "[OffsetOperator:string],"                 + \
+	       "OperationMode:string,"                    + \
+	       "[SamplingFrequency:variable],"            + \
+	       "SamplingMultiplier:variable,"             + \
+	       "[ShowPlot:variable],"                     + \
+	       "[SlopePercentage:variable],"              + \
+	       "[MaxFrequencyChangePercent:variable],"    + \
 	       "[NumSweepsWithSaturation:variable]"
 End
 
@@ -4040,6 +4055,8 @@ Function/S PSQ_DAScale_GetHelp(string name)
 			return "The upper limit of the number of spikes. Only for \"Supra\"."
 		case "MinimumSpikeCount":
 			return "The lower limit of the number of spikes. Only for \"Supra\"."
+		case "MinimumSpikeCountForMaxSlope":
+			return "The minimum number of spikes required for a sweep to be considered as having the maximum f-I slope. Only for \"Adaptive\""
 		case "OffsetOperator":
 			return "Set the math operator to use for "                                    \
 			       + "combining the rheobase DAScale value from the previous run and "    \
@@ -4134,6 +4151,7 @@ Function/S PSQ_DAScale_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			endif
 			break
 		case "MinimumSpikeCount":
+		case "MinimumSpikeCountForMaxSlope":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0))
 				return "Not a positive integer or zero"
@@ -4274,12 +4292,13 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 	variable daScaleOffset
 	variable finalSlopePercent = NaN
 	variable daScaleModifier, chunk
-	variable numSweepsPass               = NaN
-	variable slopePercentage             = NaN
-	variable maxFrequencyChangePercent   = NaN
-	variable numSweepsWithSaturation     = NaN
-	variable dascaleStepWidthMinMaxRatio = NaN
-	variable absFrequencyMinDistance     = NaN
+	variable numSweepsPass                = NaN
+	variable slopePercentage              = NaN
+	variable maxFrequencyChangePercent    = NaN
+	variable numSweepsWithSaturation      = NaN
+	variable dascaleStepWidthMinMaxRatio  = NaN
+	variable absFrequencyMinDistance      = NaN
+	variable minimumSpikeCountForMaxSlope = NaN
 
 	opMode     = AFH_GetAnalysisParamTextual("OperationMode", s.params)
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
@@ -4311,13 +4330,14 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 
 			numSweepsPass = NaN
 
-			slopePercentage             = AFH_GetAnalysisParamNumerical("SlopePercentage", s.params, defValue = PSQ_DA_SLOPE_PERCENTAGE_DEFAULT)
-			numSweepsWithSaturation     = AFH_GetAnalysisParamNumerical("NumSweepsWithSaturation", s.params, defValue = PSQ_DA_NUM_SWEEPS_SATURATION)
-			maxFrequencyChangePercent   = AFH_GetAnalysisParamNumerical("MaxFrequencyChangePercent", s.params, defValue = PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT)
-			dascaleStepWidthMinMaxRatio = AFH_GetAnalysisParamNumerical("DaScaleStepWidthMinMaxRatio", s.params, defValue = PSQ_DA_DASCALE_STEP_WITH_MIN_MAX_FACTOR)
-			absFrequencyMinDistance     = AFH_GetAnalysisParamNumerical("AbsFrequencyMinDistance", s.params, defValue = PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE)
-			fallbackDAScaleRangeFac     = AFH_GetAnalysisParamNumerical("DAScaleRangeFactor", s.params, defValue = PSQ_DA_FALLBACK_DASCALE_RANGE_FAC)
-			dascaleNegativeSlopePercent = AFH_GetAnalysisParamNumerical("DAScaleNegativeSlopePercent", s.params, defValue = PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC)
+			slopePercentage              = AFH_GetAnalysisParamNumerical("SlopePercentage", s.params, defValue = PSQ_DA_SLOPE_PERCENTAGE_DEFAULT)
+			numSweepsWithSaturation      = AFH_GetAnalysisParamNumerical("NumSweepsWithSaturation", s.params, defValue = PSQ_DA_NUM_SWEEPS_SATURATION)
+			maxFrequencyChangePercent    = AFH_GetAnalysisParamNumerical("MaxFrequencyChangePercent", s.params, defValue = PSQ_DA_MAX_FREQUENCY_CHANGE_PERCENT)
+			dascaleStepWidthMinMaxRatio  = AFH_GetAnalysisParamNumerical("DaScaleStepWidthMinMaxRatio", s.params, defValue = PSQ_DA_DASCALE_STEP_WITH_MIN_MAX_FACTOR)
+			absFrequencyMinDistance      = AFH_GetAnalysisParamNumerical("AbsFrequencyMinDistance", s.params, defValue = PSQ_DA_ABS_FREQUENCY_MIN_DISTANCE)
+			fallbackDAScaleRangeFac      = AFH_GetAnalysisParamNumerical("DAScaleRangeFactor", s.params, defValue = PSQ_DA_FALLBACK_DASCALE_RANGE_FAC)
+			dascaleNegativeSlopePercent  = AFH_GetAnalysisParamNumerical("DAScaleNegativeSlopePercent", s.params, defValue = PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC)
+			minimumSpikeCountForMaxSlope = AFH_GetAnalysisParamNumerical("MinimumSpikeCountForMaxSlope", s.params, defValue = PSQ_DA_FALLBACK_MINIMUM_SPIKES_FOR_MAX_SLOPE)
 
 			STRUCT PSQ_DS_DAScaleParams cdp
 			PSQ_DS_InitDAScaleParams(cdp)
@@ -4468,7 +4488,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					ED_AddEntryToLabnotebook(device, key, fillinQCLBN, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
 					WAVE maxSlopeLBN = LBN_GetNumericWave()
-					maxSlope                 = WaveMax(fitSlopeFromRhSuAd)
+					maxSlope                 = PSQ_DS_CalculateMaxSlope(fitSlopeFromRhSuAd, apfreqRhSuAd, minimumSpikeCountForMaxSlope)
 					maxSlopeLBN[s.headstage] = maxSlope
 					key                      = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_MAX_SLOPE)
 					ED_AddEntryToLabnotebook(device, key, maxSlopeLBN, overrideSweepNo = s.sweepNo, unit = "% of Hz/pA")
@@ -4571,7 +4591,7 @@ Function PSQ_DAScale(string device, STRUCT AnalysisFunction_V3 &s)
 					cdp.daScaleStepMinNorm = daScaleStepMinNorm
 					cdp.daScaleStepMaxNorm = daScaleStepMaxNorm
 
-					[WAVE/T futureDAScales] = PSQ_DS_EvaluateAdaptiveThresholdSweep(device, s.sweepNo, s.headstage, cdp)
+					[WAVE/T futureDAScales] = PSQ_DS_EvaluateAdaptiveThresholdSweep(device, s.sweepNo, s.headstage, cdp, minimumSpikeCountForMaxSlope)
 
 					key                    = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_AT_ENOUGH_FI_POINTS_PASS, query = 1)
 					enoughFIPointsPassedQC = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
