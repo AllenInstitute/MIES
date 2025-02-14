@@ -69,6 +69,8 @@ Function AD_Update(string win)
 		selWave[][][%$LISTBOX_LAYER_FOREGROUND] = AD_GetColorForResultMessage(listWave[p][%Result])
 
 		helpWave[] = "Result:\r" + listWave[p][%Result]
+
+		ScrollListboxIntoView(mainPanel, "list_dashboard", Inf)
 	else
 		SetNumberInWaveNote(listWave, NOTE_INDEX, 0)
 	endif

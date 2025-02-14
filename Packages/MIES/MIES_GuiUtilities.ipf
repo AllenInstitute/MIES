@@ -2438,3 +2438,38 @@ Function ResizeControlsSafe(STRUCT WMWinHookStruct &s)
 	// return zero so that other hooks are called as well
 	return 0
 End
+
+/// @brief Scroll in the given ListBox the row into view
+///
+/// @retval 0 if scrolling was done, 1 if not
+Function ScrollListboxIntoView(string win, string ctrl, variable row)
+
+	variable startRow, numVisRows
+
+	ControlInfo/W=$win $ctrl
+	ASSERT(V_flag == CONTROL_TYPE_LISTBOX, "Expected a listbox")
+
+	WAVE/Z/SDFR=$S_DataFolder listWave = $S_Value
+	ASSERT(WaveExists(listWave), "Missing list wave")
+
+	ASSERT(!IsNaN(row), "Expected row to be not NaN")
+	row = limit(row, 0, DimSize(listWave, ROWS))
+
+	numVisRows = trunc(V_height / V_rowHeight)
+
+	if(row < V_startRow)
+		// move row to the first visible row
+		ListBox $ctrl, row=row, win=$win
+
+		return 0
+	endif
+
+	if(row >= (V_startRow + numVisRows))
+		// move row to the last visible row
+		ListBox $ctrl, row=(row - numVisRows + 1), win=$win
+
+		return 0
+	endif
+
+	return 1
+End

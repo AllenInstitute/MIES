@@ -386,3 +386,75 @@ static Function NoNullReturnFromGetSetVariableString()
 End
 
 /// @}
+
+/// ScrollListboxIntoView
+/// @{
+
+static Function GetTopRow_IGNORE(string win, string ctrl)
+
+	Controlinfo/W=$win $ctrl
+
+	return V_startRow
+End
+
+static Function TestScrollListboxIntoView()
+
+	string win, ctrl
+	variable topRow, ret
+
+	Make/T listWave = num2str(p)
+
+	NewPanel/N=testpanelLB
+	win = S_name
+
+	ListBox list, listWave=listWave, size={300, 100}
+	ctrl = "list"
+	DoUpdate/W=$win
+
+	try
+		ScrollListboxIntoView(win, ctrl, NaN)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	DoUpdate/W=$win
+	topRow = GetTopRow_IGNORE(win, ctrl)
+	CHECK_EQUAL_VAR(topRow, 0)
+
+	// clips to zero
+	ret = ScrollListboxIntoView(win, ctrl, -1)
+	CHECK_EQUAL_VAR(ret, 1)
+
+	DoUpdate/W=$win
+	topRow = GetTopRow_IGNORE(win, ctrl)
+	CHECK_EQUAL_VAR(topRow, 0)
+
+	// clips to available rows
+	ret = ScrollListboxIntoView(win, ctrl, 500)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	DoUpdate/W=$win
+	topRow = GetTopRow_IGNORE(win, ctrl)
+	CHECK_EQUAL_VAR(topRow, 124)
+
+	// moves to the top if lower than current
+	ret = ScrollListboxIntoView(win, ctrl, 50)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	DoUpdate/W=$win
+	topRow = GetTopRow_IGNORE(win, ctrl)
+	CHECK_EQUAL_VAR(topRow, 50)
+
+	// and to the bottom if larger
+	ret = ScrollListboxIntoView(win, ctrl, 75)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	DoUpdate/W=$win
+	topRow = GetTopRow_IGNORE(win, ctrl)
+	CHECK_EQUAL_VAR(topRow, 71)
+
+	KillOrMoveToTrash(wv = listWave)
+End
+
+/// @}
