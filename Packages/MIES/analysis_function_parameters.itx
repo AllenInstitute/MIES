@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(67,5)	analysis_function_parameters
+WAVES/T/N=(69,5)	analysis_function_parameters
 BEGIN
 	"Name"	"Type"	"Optionality"	"Used by"	"Help"
 	"AbsFrequencyMinDistance"	"variable"	"optional"	"DA"	"Minimum absolute frequency distance for DAScale estimation. Only for \"AdaptiveSupra\"."
@@ -16,6 +16,7 @@ BEGIN
 	"BaselineTargetVThreshold"	"variable"	"optional"	"CR, DA, RA, RB"	"Threshold value in mV for the target V baseline QC check (defaults to 1)"
 	"BoundsEvaluationMode"	"string"	"required"	"CR"	"Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
 	"DAScaleModifier"	"variable"	"mixed"	"CR, DA, SC"	"Modifier value to the DA Scale of headstages with spikes during chirp\rPercentage how the DAScale value is adapted if it is outside of the MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\".\rModifier value to the DA Scale of headstages for too few spikes"
+	"DAScaleNegativeSlopePercent"	"variable"	"optional"	"DA"	"Percentage to use for DAScale estimation once the f-I slopes get negative/zero. Only for \"AdaptiveSupra\"."
 	"DAScaleOperator"	"string"	"mixed"	"CR, SC"	"Set the math operator to use for combining the DAScale and the modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication).\rSet the math operator to use for combining the DAScale and the too few spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 	"DAScaleRangeFactor"	"variable"	"optional"	"DA"	"Fallback factor to apply to the input DAScale range for calculating the DAScale minimum step width when all previous f-I data from Rheobase/Supra/Adaptive is constant. Only for \"AdaptiveSupra\"."
 	"DAScales"	"wave"	"required"	"DA, DS"	"DA Scale Factors in pA"
@@ -26,6 +27,7 @@ BEGIN
 	"DaScaleTooManySpikesOperator"	"string"	"required"	"SC"	"Set the math operator to use for combining the DAScale and the too many spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 	"FailedLevel"	"variable"	"mixed"	"CR, VM"	"Absolute level for spike search"
 	"FailedPulseLevel"	"variable"	"optional"	"SC"	"[Optional, uses the already set value] Numeric level to use for the failed pulse search in the PA plot tab."
+	"FailingAdaptiveSCIRange"	"variable"	"optional"	"DA"	"Number of stimset cycles (SCIs) we search backwards in time for failing Adaptive sets, defaults to 1. Set to 0 to turn it off and inf to look into all available SCIs. Only for \"AdaptiveSupra\"."
 	"FinalSlopePercent"	"variable"	"optional"	"DA"	"As additional passing criteria the slope of the f-I plot must be larger than this value. Note: The slope is used in percent. Only for \"Supra\"."
 	"IdealNumberOfSpikesPerPulse"	"variable"	"required"	"SC"	"Ideal number of spike which should be present. Overwrites the PA plot GUI value."
 	"InnerRelativeBound"	"variable"	"required"	"CR"	"Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
@@ -39,6 +41,7 @@ BEGIN
 	"MaxPipetteResistance"	"variable"	"required"	"PB"	"Maximum allowed pipette resistance [MΩ]"
 	"MaxTrials"	"variable"	"optional"	"SC"	"[Optional, defaults to infinity] A sweep is rerun this many times on a failed headstage."
 	"MinimumSpikeCount"	"variable"	"optional"	"DA"	"The lower limit of the number of spikes. Only for \"Supra\"."
+	"MinimumSpikeCountForMaxSlope"	"variable"	"optional"	"DA"	"The minimum number of spikes required for a sweep to be considered as having the maximum f-I slope. Only for \"Adaptive\""
 	"MinimumSpikePosition"	"variable"	"required"	"SC"	"Minimum allowed spike positions in pulse active coordinate system (0 - 100)."
 	"MinPipetteResistance"	"variable"	"required"	"PB"	"Minimum allowed pipette resistance [MΩ]"
 	"NextIndexingEndStimSetName"	"string"	"optional"	"AR, PB, SE, VM"	"Next indexing end stimulus set which should be set in case of success.\r Also enables indexing."
@@ -47,7 +50,6 @@ BEGIN
 	"NumberOfFailedSweeps"	"variable"	"required"	"AR, CR, PB, SE, VM"	"Number of failed sweeps which marks the set as failed."
 	"NumberOfSpikes"	"variable"	"required"	"RA"	"Number of spikes required to be found after the pulse onset in order to label the cell as having \"spiked\"."
 	"NumberOfTestpulses"	"variable"	"required"	"AR, PB"	"Expected number of testpulses in the stimset"
-	"NumInvalidSlopeSweepsAllowed"	"variable"	"optional"	"DA"	"Number of allowed sweeps with invalid f-I fit slope. Only for \"AdaptiveSupra\"."
 	"NumSweepsWithSaturation"	"variable"	"optional"	"DA"	"Number of required consecutive passing sweeps to have passing sweep QC and f-I slope QC, defaults to 2. Only for \"AdaptiveSupra\"."
 	"OffsetOperator"	"string"	"optional"	"DA"	"Set the math operator to use for combining the rheobase DAScale value from the previous run and the DAScales values. Valid strings are \"+\" (addition) and \"*\" (multiplication). Only for \"Supra\" and defaults to \"+\"."
 	"OperationMode"	"string"	"required"	"DA"	"Operation mode of the analysis function. Can be either \"Sub\"/\"Supra\"/\"AdaptiveSupra\"."
