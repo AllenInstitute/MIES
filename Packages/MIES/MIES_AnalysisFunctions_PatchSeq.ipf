@@ -2443,11 +2443,11 @@ static Function/WAVE PSQ_DS_GatherDAScaleFillin(STRUCT PSQ_DS_DAScaleParams &cdp
 				// we don't care about differing types for the already measured check
 				entry = "^.*" + PSQ_DS_AD_TYPE_SEP + num2istr(xm) + "$"
 				WAVE/Z foundEntries = GrepTextWave(futureDAScalesHistoric, entry)
-
-				alreadyMeasured = WaveExists(foundEntries) \
-				                  && xm != x               \
-				                  && xm != xp
+			else
+				WAVE/ZZ foundEntries
 			endif
+
+			alreadyMeasured = WaveExists(foundEntries) || GetRowIndex(DAScales, val = xm) >= 0
 
 			if(!alreadyMeasured)
 				EnsureLargeEnoughWave(results, indexShouldExist = idx)
