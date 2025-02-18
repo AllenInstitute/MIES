@@ -1157,7 +1157,8 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	tpData[%PULSESTARTPOINTSDAC]   = pulseStartPointsDAC
 	tpData[%SAMPLINGINTERVALDAC]   = samplingIntervalDAC
 
-	PUB_TPResult(device, tpData)
+	Make/FREE/WAVE additionalData = {data}
+	PUB_TPResult(device, tpData, additionalData)
 
 	return dfrOut
 End
