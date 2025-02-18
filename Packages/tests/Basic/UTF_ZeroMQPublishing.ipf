@@ -568,7 +568,7 @@ static Function CheckTPData(variable jsonId)
 	CHECK_EQUAL_STR(stv, "MΩ")
 End
 
-// IUTF_TD_GENERATOR DataGenerators#PUB_TPFilters
+// IUTF_TD_GENERATOR DataGenerators#PUB_TPFiltersWithoutData
 static Function CheckTPPublishing([string str])
 
 	variable jsonId
@@ -576,9 +576,32 @@ static Function CheckTPPublishing([string str])
 	WAVE tpData = PrepareTPData()
 
 	TUFXOP_Clear/Z/N=(str)
-	PUB_TPResult("TestDevice", tpData)
+	Make/FREE/N=0/WAVE additionalData
+	PUB_TPResult("TestDevice", tpData, additionalData)
 
 	jsonId = FetchAndParseMessage(str)
 	CheckTPData(jsonId)
+	JSON_Release(jsonID)
+End
+
+static Function CheckTPPublishingWithData()
+
+	variable jsonId
+
+	WAVE tpData = PrepareTPData()
+
+	Make/FREE/N=(2, 3) data = (p + q)^2
+	Make/FREE/WAVE additionalData = {data}
+
+	PUB_TPResult("TestDevice", tpData, additionalData)
+
+	Make/FREE/WAVE/N=0 receivedData
+	jsonId = FetchAndParseMessage(ZMQ_FILTER_TPRESULT_NOW_WITH_DATA, additionalData = receivedData)
+	CheckTPData(jsonId)
+	// first two: filter and message
+	WAVE wv = receivedData[2]
+	Redimension/N=(2, 3)/E=1/S wv
+	CHECK_EQUAL_WAVES(data, wv, mode = WAVE_DATA)
+
 	JSON_Release(jsonID)
 End
