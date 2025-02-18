@@ -31,7 +31,7 @@ threadsafe Function PUB_Publish(variable jsonID, string messageFilter, [variable
 
 	releaseJSON = ParamIsDefault(releaseJSON) ? 1 : !!releaseJSON
 
-	Make/T/FREE filter  = {messageFilter}
+	Make/T/FREE filter = {messageFilter}
 	Make/T/FREE payload = {JSON_Dump(jsonID)}
 	Make/FREE/WAVE wv = {filter, payload}
 
