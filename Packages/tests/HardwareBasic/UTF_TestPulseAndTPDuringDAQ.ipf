@@ -1445,7 +1445,7 @@ End
 
 static Function TestTPPublishing_REENTRY([string str])
 
-	variable sweepNo, jsonId, var, index, dimMarker, headstage
+	variable sweepNo, jsonId, var, index, dimMarker, headstage, i, foundHS0, foundHS1
 	string filter, stv, adUnit, daUnit
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
@@ -1458,7 +1458,7 @@ static Function TestTPPublishing_REENTRY([string str])
 	WAVE tpStorage = GetTPStorage(str)
 	dimMarker = FindDimLabel(tpStorage, LAYERS, "TPMarker")
 
-	WAVE/T filters = DataGenerators#PUB_TPFilters()
+	WAVE/T filters = DataGenerators#PUB_TPFiltersWithoutData()
 	for(filter : filters)
 		jsonId = FetchAndParseMessage(filter)
 
@@ -1562,4 +1562,47 @@ static Function TestTPPublishing_REENTRY([string str])
 		stv = JSON_GetString(jsonID, "/results/instantaneous resistance/unit")
 		CHECK_EQUAL_STR(stv, "MΩ")
 	endfor
+
+	for(i = 0; i < 10; i += 1)
+		Make/FREE/N=0/WAVE receivedData
+		jsonId = FetchAndParseMessage(ZMQ_FILTER_TPRESULT_NOW_WITH_DATA, additionalData = receivedData)
+		CHECK_WAVE(receivedData, WAVE_WAVE | FREE_WAVE)
+
+		var = JSON_GetVariable(jsonID, "/properties/tp marker")
+		CHECK_NEQ_VAR(var, NaN)
+
+		WAVE/WAVE storedTP = TP_GetStoredTP(str, var, 0, 0)
+		CHECK_WAVE(storedTP, WAVE_WAVE | FREE_WAVE)
+
+		WAVE/WAVE tpAD = storedTP[0]
+		CHECK_WAVE(tpAD, NUMERIC_WAVE | FREE_WAVE)
+
+		Duplicate/FREE/RMD=[][0] tpAD, HS0
+		Duplicate/FREE/RMD=[][1] tpAD, HS1
+		Redimension/N=(-1, 0) HS0, HS1
+
+		WAVE data = receivedData[2]
+		Redimension/N=(DimSize(HS0, ROWS))/E=1/S data
+
+		var = JSON_GetVariable(jsonID, "/properties/headstage")
+		switch(var)
+			case 0:
+				CHECK(EqualWaves(data, HS0, WAVE_DATA))
+				foundHS0 = 1
+				break
+			case 1:
+				CHECK(EqualWaves(data, HS1, WAVE_DATA))
+				foundHS1 = 1
+				break
+			default:
+				FAIL()
+		endswitch
+
+		if(foundHS0 && foundHS1)
+			break
+		endif
+	endfor
+
+	CHECK(foundHS0)
+	CHECK(foundHS1)
 End
