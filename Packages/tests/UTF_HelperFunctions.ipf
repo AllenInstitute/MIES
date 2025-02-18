@@ -13,6 +13,8 @@
 #include "UTF_Constants"
 #include "UTF_DataGenerators"
 
+// #define OUTPUT_DOCUMENTATION_JSON_DUMP
+
 /// @file UTF_HelperFunctions.ipf
 /// @brief This file holds helper functions for the tests
 
@@ -170,6 +172,40 @@ Function AdditionalExperimentCleanup()
 	KillOrMoveToTrash(wv = GetOverrideResults())
 End
 
+Function FetchAndParseMessage(string expectedFilter)
+
+	variable jsonID
+
+	[WAVE/WAVE receivedData, string msg, string filter] = FetchPublishedMessage(expectedFilter)
+	CHECK_WAVE(receivedData, WAVE_WAVE)
+
+	CHECK_PROPER_STR(msg)
+
+	jsonID = JSON_Parse(msg)
+	CHECK_GE_VAR(jsonID, 0)
+
+#ifdef OUTPUT_DOCUMENTATION_JSON_DUMP
+	WAVE/T contents = ListToTextWave(JSON_Dump(jsonID, indent = 2), "\n")
+
+	contents[] = "///    " + contents[p]
+
+	print "/// Filter: #XXXX"
+	print "///"
+	print "/// Example:"
+	print "///"
+	print "/// \\rst"
+	print "/// .. code-block:: json"
+	print "///"
+	for(s : contents)
+		print s
+	endfor
+	print "///"
+	print "/// \\endrst"
+#endif // OUTPUT_DOCUMENTATION_JSON_DUMP
+
+	return jsonID
+End
+
 static Function WaitForPubSubHeartbeat()
 
 	variable i, foundHeart
@@ -213,10 +249,9 @@ static Function CheckMessageFilters_IGNORE(string filter)
 	CHECK_GE_VAR(V_Value, 0)
 End
 
-Function/S FetchPublishedMessage(string expectedFilter)
+Function [WAVE/WAVE receivedData, string msg, string filter] FetchPublishedMessage(string expectedFilter)
 
 	variable msgCnt, waitCnt
-	string msg, filter
 
 	variable MAX_WAITS    = 100
 	variable MAX_MESSAGES = 10000
@@ -255,7 +290,7 @@ Function/S FetchPublishedMessage(string expectedFilter)
 	CHECK_EQUAL_STR(filter, expectedFilter)
 	CheckMessageFilters_IGNORE(filter)
 
-	return msg
+	return [receivedData, msg, filter]
 End
 
 Function AdjustAnalysisParamsForPSQ(string device, string stimset)
