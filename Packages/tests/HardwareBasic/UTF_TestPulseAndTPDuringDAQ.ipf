@@ -1446,7 +1446,7 @@ End
 static Function TestTPPublishing_REENTRY([string str])
 
 	variable sweepNo, jsonId, var, index, dimMarker, headstage
-	string msg, filter, stv, adUnit, daUnit
+	string filter, stv, adUnit, daUnit
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
@@ -1460,8 +1460,7 @@ static Function TestTPPublishing_REENTRY([string str])
 
 	WAVE/T filters = DataGenerators#PUB_TPFilters()
 	for(filter : filters)
-		msg    = FetchPublishedMessage(filter)
-		jsonId = JSON_Parse(msg)
+		jsonId = FetchAndParseMessage(filter)
 
 		var = JSON_GetVariable(jsonID, "/properties/tp marker")
 		CHECK_NEQ_VAR(var, NaN)
