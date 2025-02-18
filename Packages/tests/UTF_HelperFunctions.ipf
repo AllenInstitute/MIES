@@ -172,12 +172,18 @@ Function AdditionalExperimentCleanup()
 	KillOrMoveToTrash(wv = GetOverrideResults())
 End
 
-Function FetchAndParseMessage(string expectedFilter)
+Function FetchAndParseMessage(string expectedFilter, [WAVE/Z/WAVE additionalData])
 
 	variable jsonID
 
 	[WAVE/WAVE receivedData, string msg, string filter] = FetchPublishedMessage(expectedFilter)
 	CHECK_WAVE(receivedData, WAVE_WAVE)
+
+	if(!ParamIsDefault(additionalData))
+		Redimension/N=(DimSize(receivedData, ROWS)) additionalData
+		additionalData[] = receivedData[p]
+		Duplicate/FREE receivedData, additionalData
+	endif
 
 	CHECK_PROPER_STR(msg)
 

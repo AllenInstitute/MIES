@@ -959,7 +959,7 @@ static Function/WAVE SF_TestOperationSelNoArg()
 	return wt
 End
 
-static Function/WAVE PUB_TPFilters()
+static Function/WAVE PUB_TPFiltersWithoutData()
 
 	Make/FREE/T wv = {ZMQ_FILTER_TPRESULT_NOW, ZMQ_FILTER_TPRESULT_1S, ZMQ_FILTER_TPRESULT_5S, ZMQ_FILTER_TPRESULT_10S}
 	SetDimensionLabels(wv, "period_now;period_1s;period_5s;period_10s", ROWS)
