@@ -222,7 +222,17 @@ Function/S FetchPublishedMessage(string expectedFilter)
 	variable MAX_MESSAGES = 10000
 
 	for(;;)
-		msg = zeromq_sub_recv(filter)
+		Make/WAVE/N=0/FREE receivedData
+		zeromq_sub_recv_multi(receivedData)
+
+		if(DimSize(receivedData, ROWS) == 0)
+			continue
+		endif
+
+		CHECK_GE_VAR(DimSize(receivedData, ROWS), 2)
+
+		filter = WaveText(receivedData[0], row = 0)
+		msg    = WaveText(receivedData[1], row = 0)
 
 		if(!cmpstr(filter, expectedFilter))
 			break
@@ -240,7 +250,6 @@ Function/S FetchPublishedMessage(string expectedFilter)
 				break
 			endif
 		endif
-
 	endfor
 
 	CHECK_EQUAL_STR(filter, expectedFilter)
