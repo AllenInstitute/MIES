@@ -25,11 +25,17 @@ static Function PUB_GetJSONTemplate(string device, variable headstage)
 End
 
 /// @brief Publish the given message as given by the JSON and the filter
-threadsafe Function PUB_Publish(variable jsonID, string messageFilter, [variable releaseJSON])
+threadsafe Function PUB_Publish(variable jsonID, string messageFilter, [variable releaseJSON, WAVE/Z additionalData])
 
 	variable err
 
 	releaseJSON = ParamIsDefault(releaseJSON) ? 1 : !!releaseJSON
+
+	if(ParamIsDefault(additionalData))
+		WAVE/ZZ additionalData
+	else
+		ASSERT_TS(IsWaveRefWave(additionalData), "Expected a wave reference wave")
+	endif
 
 	Make/T/FREE filter = {messageFilter}
 	Make/T/FREE payload = {JSON_Dump(jsonID)}
@@ -37,6 +43,10 @@ threadsafe Function PUB_Publish(variable jsonID, string messageFilter, [variable
 
 	if(releaseJSON)
 		JSON_Release(jsonID)
+	endif
+
+	if(WaveExists(additionalData))
+		Concatenate/NP=(ROWS) {additionalData}, wv
 	endif
 
 	AssertOnAndClearRTError()
@@ -677,6 +687,7 @@ End
 /// Filter: #ZMQ_FILTER_TPRESULT_1S
 /// Filter: #ZMQ_FILTER_TPRESULT_5S
 /// Filter: #ZMQ_FILTER_TPRESULT_10S
+/// Filter: #ZMQ_FILTER_TPRESULT_NOW_WITH_DATA
 ///
 /// Example:
 ///
@@ -768,7 +779,7 @@ End
 ///    }
 ///
 /// \endrst
-threadsafe Function PUB_TPResult(string device, WAVE tpData)
+threadsafe Function PUB_TPResult(string device, WAVE tpData, WAVE additionalData)
 
 	string path
 	variable jsonId = JSON_New()
@@ -806,6 +817,8 @@ threadsafe Function PUB_TPResult(string device, WAVE tpData)
 	PUB_AddTPResultEntry(jsonId, path + "/instantaneous resistance", tpData[%INSTANTRES], "MΩ")
 
 	PUB_Publish(jsonID, ZMQ_FILTER_TPRESULT_NOW, releaseJSON = 0)
+	PUB_Publish(jsonID, ZMQ_FILTER_TPRESULT_NOW_WITH_DATA, releaseJSON = 0, additionalData = additionalData)
+
 	if(PUB_CheckPublishingTime(ZMQ_FILTER_TPRESULT_1S, 1))
 		PUB_Publish(jsonID, ZMQ_FILTER_TPRESULT_1S, releaseJSON = 0)
 	endif
