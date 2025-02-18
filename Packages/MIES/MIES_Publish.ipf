@@ -28,17 +28,20 @@ End
 threadsafe Function PUB_Publish(variable jsonID, string messageFilter, [variable releaseJSON])
 
 	variable err
-	string   payload
 
 	releaseJSON = ParamIsDefault(releaseJSON) ? 1 : !!releaseJSON
-	payload     = JSON_Dump(jsonID)
+
+	Make/T/FREE filter = {messageFilter}
+	Make/T/FREE payload = {JSON_Dump(jsonID)}
+	Make/FREE/WAVE wv = {filter, payload}
+
 	if(releaseJSON)
 		JSON_Release(jsonID)
 	endif
 
 	AssertOnAndClearRTError()
 	try
-		zeromq_pub_send(messageFilter, payload); AbortOnRTE
+		zeromq_pub_send_multi(wv); AbortOnRTE
 	catch
 		err = ClearRTError()
 		BUG_TS("Could not publish " + messageFilter + " due to: " + num2str(err))
