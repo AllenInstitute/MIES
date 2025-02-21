@@ -1730,40 +1730,45 @@ End
 
 /// @}
 
-/// FindNeighbourDuplicates
+/// FindNeighbourWithPredicate
 /// @{
 
 static Function FND_Works()
 
-	WAVE/Z result = FindNeighbourDuplicates({1})
+	FUNCREF FindNeighbourPrototype pred   = EqualValuesOrBothNaN
+	WAVE/Z                         result = FindNeighbourWithPredicate({1}, pred)
 	CHECK_WAVE(result, NULL_WAVE)
 
 	Make/FREE/N=0 emptyWave
-	WAVE/Z result = FindNeighbourDuplicates(emptyWave)
+	WAVE/Z result = FindNeighbourWithPredicate(emptyWave, pred)
 	CHECK_WAVE(result, NULL_WAVE)
 
 	// no duplicates
-	WAVE/Z result = FindNeighbourDuplicates({1, 2})
+	WAVE/Z result = FindNeighbourWithPredicate({1, 2}, pred)
 	CHECK_WAVE(result, NULL_WAVE)
 
 	// duplicates but not neighbouring
-	WAVE/Z result = FindNeighbourDuplicates({1, 2, 1})
+	WAVE/Z result = FindNeighbourWithPredicate({1, 2, 1}, pred)
 	CHECK_WAVE(result, NULL_WAVE)
 
 	// easy neighbouring
-	WAVE/Z result = FindNeighbourDuplicates({1, 1})
+	WAVE/Z result = FindNeighbourWithPredicate({1, 1}, pred)
+	CHECK_EQUAL_WAVES(result, {1}, mode = WAVE_DATA)
+
+	// different predicate
+	WAVE/Z result = FindNeighbourWithPredicate({1, -1}, LargerEqualValuesOrBothNaN)
 	CHECK_EQUAL_WAVES(result, {1}, mode = WAVE_DATA)
 
 	// neighbouring chains
-	WAVE/Z result = FindNeighbourDuplicates({1, 1, 1, 1, 1, 2, 2, 2, 2, 2})
+	WAVE/Z result = FindNeighbourWithPredicate({1, 1, 1, 1, 1, 2, 2, 2, 2, 2}, pred)
 	CHECK_EQUAL_WAVES(result, {1, 2, 3, 4, 6, 7, 8, 9}, mode = WAVE_DATA)
 
 	// complex neighbouring
-	WAVE/Z result = FindNeighbourDuplicates({1, 1, 2, 3, 4, 5, 5, 5, 6, 7, 7, 7})
+	WAVE/Z result = FindNeighbourWithPredicate({1, 1, 2, 3, 4, 5, 5, 5, 6, 7, 7, 7}, pred)
 	CHECK_EQUAL_WAVES(result, {1, 6, 7, 10, 11}, mode = WAVE_DATA)
 
 	// non-finite values
-	WAVE/Z result = FindNeighbourDuplicates({1, NaN, NaN, Inf, -Inf, Inf, Inf, 2})
+	WAVE/Z result = FindNeighbourWithPredicate({1, NaN, NaN, Inf, -Inf, Inf, Inf, 2}, pred)
 	CHECK_EQUAL_WAVES(result, {2, 6}, mode = WAVE_DATA)
 End
 

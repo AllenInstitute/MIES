@@ -34,7 +34,7 @@ End
 // - RunWithOpts(testsuite = "UTF_Epochs.ipf")
 // - RunWithOpts(testcase = "EP_EpochTest7")
 // - RunWithOpts(testcase = "EP_EpochTest7", instru = 1, traceWinList = "MIES_Epochs.ipf")
-Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable ITCXOP2Debug, variable keepDataFolder, variable enableJU])
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList, variable ITCXOP2Debug, variable keepDataFolder, variable enableJU, variable enableRegExp])
 
 	variable debugMode
 	string   traceOptions
@@ -77,6 +77,12 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 		keepDataFolder = !!keepDataFolder
 	endif
 
+	if(ParamIsDefault(enableRegExp))
+		enableRegExp = 0
+	else
+		enableRegExp = !!enableRegExp
+	endif
+
 	if(ParamIsDefault(enableJU))
 		enableJU = IsRunningInCI()
 	else
@@ -115,8 +121,8 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableRegExp = enableRegExp, enableJU = enableJU, debugMode = debugMode, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	else
-		RunTest(testsuite, name = name, enableJU = enableJU, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
+		RunTest(testsuite, name = name, enableRegExp = enableRegExp, enableJU = enableJU, debugMode = debugMode, testcase = testcase, traceOptions = traceOptions, traceWinList = traceWinList, keepDataFolder = keepDataFolder, waveTrackingMode = waveTrackingMode)
 	endif
 End
