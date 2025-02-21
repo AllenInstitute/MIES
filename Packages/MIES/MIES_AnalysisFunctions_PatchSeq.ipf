@@ -4020,52 +4020,48 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
 		case "DAScaleModifier":
-			return "Percentage how the DAScale value is adapted if it is outside of the " \
-			       + "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Only for \"Supra\"."
+			return "Supra: Percentage how the DAScale value is adapted if it is outside of the " \
+			       + "MinimumSpikeCount\"/\"MaximumSpikeCount\" band."
 		case "DAScaleNegativeSlopePercent":
-			return "Percentage to use for DAScale estimation once the f-I slopes get negative/zero. Only for \"AdaptiveSupra\"."
+			return "AdaptiveSupra: Percentage to use for DAScale estimation once the f-I slopes get negative/zero."
 		case "DAScaleRangeFactor":
-			return "Fallback factor to apply to the input DAScale range for calculating "                                   \
-			       + "the DAScale minimum step width when all previous f-I data from Rheobase/Supra/Adaptive is constant. " \
-			       + "Only for \"AdaptiveSupra\"."
+			return "AdaptiveSupra: Fallback factor to apply to the input DAScale range for calculating "                  \
+			       + "the DAScale minimum step width when all previous f-I data from Rheobase/Supra/Adaptive is constant. "
 		case "DaScaleStepWidthMinMaxRatio":
-			return "Number of times the maximum DAScale step width is larger than the calculated minimum. " + \
-			       "Only for \"AdaptiveSupra\"."
+			return "AdaptiveSupra: Number of times the maximum DAScale step width is larger than the calculated minimum."
 		case "DAScales":
-			return "DA Scale Factors in pA"
+			return "Sub and Supra: DA Scale Factors in pA"
 		case "AbsFrequencyMinDistance":
-			return "Minimum absolute frequency distance for DAScale estimation. Only for \"AdaptiveSupra\"."
+			return "AdaptiveSupra: Minimum absolute frequency distance for DAScale estimation."
 		case "FailingAdaptiveSCIRange":
-			return "Number of stimset cycles (SCIs) we search backwards in time for failing Adaptive sets, defaults to 1. " \
-			       + "Set to 0 to turn it off and inf to look into all available SCIs. Only for \"AdaptiveSupra\"."
+			return "AdaptiveSupra: Number of stimset cycles (SCIs) we search backwards in time for failing Adaptive sets, defaults to 1. " \
+			       + "Set to 0 to turn it off and inf to look into all available SCIs."
 		case "MaxFrequencyChangePercent":
-			return "The maximum allowed difference for the frequency for two consecutive measurements. "           \
-			       + "In case this value is overshot, we redo the measurement with a fitting DAScale in-between. " \
-			       + "Only for \"AdaptiveSupra\"."
+			return "AdaptiveSupra: The maximum allowed difference for the frequency for two consecutive measurements. " \
+			       + "In case this value is overshot, we redo the measurement with a fitting DAScale in-between. "
 		case "NumSweepsWithSaturation":
-			return "Number of required consecutive passing sweeps to have passing sweep QC and f-I slope QC, defaults to 2. " + \
-			       "Only for \"AdaptiveSupra\"."
+			return "AdaptiveSupra: Number of required consecutive passing sweeps to have passing sweep QC and f-I slope QC, defaults to 2."
 		case "SlopePercentage":
-			return "Once the slope of the f-I fit is x percentage smaller "                                     \
-			       + "compared with the maximum slope, the stimset cycle is stopped. Only for \"AdaptiveSupra\"."
+			return "AdaptiveSupra: Once the slope of the f-I fit is x percentage smaller " \
+			       + "compared with the maximum slope, the stimset cycle is stopped."
 		case "FinalSlopePercent":
-			return "As additional passing criteria the slope of the f-I plot must be larger than this value. " \
-			       + "Note: The slope is used in percent. Only for \"Supra\"."
+			return "Supra: As additional passing criteria the slope of the f-I plot must be larger than this value. " \
+			       + "Note: The slope is used in percent."
 		case "MaximumSpikeCount":
-			return "The upper limit of the number of spikes. Only for \"Supra\"."
+			return "Supra: The upper limit of the number of spikes."
 		case "MinimumSpikeCount":
-			return "The lower limit of the number of spikes. Only for \"Supra\"."
+			return "Supra: The lower limit of the number of spikes."
 		case "MinimumSpikeCountForMaxSlope":
-			return "The minimum number of spikes required for a sweep to be considered as having the maximum f-I slope. Only for \"Adaptive\""
+			return "Adaptive: The minimum number of spikes required for a sweep to be considered as having the maximum f-I slope."
 		case "OffsetOperator":
-			return "Set the math operator to use for "                                    \
+			return "Supra: Set the math operator to use for "                             \
 			       + "combining the rheobase DAScale value from the previous run and "    \
 			       + "the DAScales values. Valid strings are \"+\" (addition) and \"*\" " \
-			       + "(multiplication). Only for \"Supra\" and defaults to \"+\"."
+			       + "(multiplication). Defaults to \"+\"."
 		case "OperationMode":
 			return "Operation mode of the analysis function. Can be either \"Sub\"/\"Supra\"/\"AdaptiveSupra\"."
 		case "ShowPlot":
-			return "Show the resistance (\"Sub\") or the f-I (\"Supra\") plot, defaults to true."
+			return "Sub and Supra: Show the resistance (\"Sub\") or the f-I (\"Supra\") plot, defaults to true."
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
