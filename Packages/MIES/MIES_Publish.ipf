@@ -913,3 +913,36 @@ threadsafe static Function PUB_CheckPublishingTime(string pubFilter, variable pe
 
 	return 0
 End
+
+/// Filter: #CONFIG_FINISHED_FILTER
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "device": null,
+///      "fileName": "fileA",
+///      "headstage": "NaN",
+///      "panelType": "DataBrowser",
+///      "rigFileName": "fileB",
+///      "sweep number": "NaN",
+///      "timestamp": "2025-02-25T15:06:19Z",
+///      "window": "Databrowser"
+///    }
+///
+/// \endrst
+Function PUB_ConfigurationFinished(string windowName, string panelType, string fileName, string rigfileName)
+
+	variable jsonID
+
+	jsonID = PUB_GetJSONTemplate("", NaN)
+
+	JSON_AddString(jsonID, "window", windowName)
+	JSON_AddString(jsonID, "panelType", panelType)
+	JSON_AddString(jsonID, "fileName", fileName)
+	JSON_AddString(jsonID, "rigFileName", rigFileName)
+
+	PUB_Publish(jsonID, CONFIG_FINISHED_FILTER)
+End

@@ -623,3 +623,36 @@ static Function CheckTPPublishing()
 		endif
 	endfor
 End
+
+static Function CheckConfigurationFinished()
+
+	string windowName, file, rigFile, panelType, actual, expected
+	variable jsonID
+
+	windowName = "Databrowser"
+	file       = "fileA"
+	rigFile    = "fileB"
+	panelType  = PANELTAG_DATABROWSER
+
+	PUB_ConfigurationFinished(windowName, panelType, file, rigFile)
+
+	jsonID = FetchAndParseMessage(CONFIG_FINISHED_FILTER)
+
+	actual   = JSON_GetString(jsonID, "/window")
+	expected = windowName
+	CHECK_EQUAL_STR(actual, expected)
+
+	actual   = JSON_GetString(jsonID, "/panelType")
+	expected = panelType
+	CHECK_EQUAL_STR(actual, expected)
+
+	actual   = JSON_GetString(jsonID, "/fileName")
+	expected = file
+	CHECK_EQUAL_STR(actual, expected)
+
+	actual   = JSON_GetString(jsonID, "/rigFileName")
+	expected = rigFile
+	CHECK_EQUAL_STR(actual, expected)
+
+	JSON_Release(jsonID)
+End
