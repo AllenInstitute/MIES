@@ -16,10 +16,17 @@ static Function PUB_GetJSONTemplate(string device, variable headstage)
 
 	jsonID = JSON_New()
 	JSON_AddTreeObject(jsonID, "")
-	JSON_AddString(jsonID, "device", device)
+
+	if(IsEmpty(device))
+		JSON_AddNull(jsonID, "device")
+		JSON_AddVariable(jsonID, "sweep number", NaN)
+	else
+		JSON_AddString(jsonID, "device", device)
+		JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(device, allowFallback = 1))
+	endif
+
 	JSON_AddVariable(jsonID, "headstage", headstage)
 	JSON_AddString(jsonID, "timestamp", GetISO8601TimeStamp())
-	JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(device, allowFallback = 1))
 
 	return jsonID
 End
