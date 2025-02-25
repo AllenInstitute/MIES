@@ -1883,7 +1883,6 @@ StrConstant LOGBOOK_WAVE_TEMP_FOLDER = "Temp"
 /// @name All available ZeroMQ message filters
 /// @anchor ZeroMQMessageFilters
 ///@{
-StrConstant IVS_PUB_FILTER                    = "ivscc"
 StrConstant PRESSURE_STATE_FILTER             = "pressure:state"
 StrConstant PRESSURE_SEALED_FILTER            = "pressure:sealed"
 StrConstant PRESSURE_BREAKIN_FILTER           = "pressure:break in"
