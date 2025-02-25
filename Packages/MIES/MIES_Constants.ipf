@@ -1899,6 +1899,7 @@ StrConstant ANALYSIS_FUNCTION_SE              = "analysis function:seal evaluati
 StrConstant ANALYSIS_FUNCTION_VM              = "analysis function:true resting membrane potential"
 StrConstant DAQ_TP_STATE_CHANGE_FILTER        = "data acquisition:state change"
 StrConstant ANALYSIS_FUNCTION_AR              = "analysis function:access resistance smoke"
+StrConstant CONFIG_FINISHED_FILTER            = "configuration:finished"
 ///@}
 
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
