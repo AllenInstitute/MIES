@@ -270,92 +270,102 @@ Function AI_UpdateAmpModel(string device, string ctrl, variable headStage, [vari
 			//V-clamp controls
 			case "setvar_DataAcq_Hold_VC":
 				rowLabel                         = "HoldingPotential"
+				clampMode                        = V_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETHOLDING_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				TP_UpdateHoldCmdInTPStorage(device, headstage)
 				break
 			case "check_DatAcq_HoldEnableVC":
 				rowLabel                         = "HoldingPotentialEnable"
+				clampMode                        = V_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETHOLDINGENABLE_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				TP_UpdateHoldCmdInTPStorage(device, headstage)
 				break
 			case "setvar_DataAcq_WCC":
 				rowLabel                         = "WholeCellCap"
+				clampMode                        = V_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETWHOLECELLCOMPCAP_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "setvar_DataAcq_WCR":
 				rowLabel                         = "WholeCellRes"
+				clampMode                        = V_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETWHOLECELLCOMPRESIST_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "button_DataAcq_WCAuto":
-				rowLabel = "WholeCellCap"
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_AUTOWHOLECELLCOMP_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
-				value                            = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPCAP_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				rowLabel  = "WholeCellCap"
+				clampMode = V_CLAMP_MODE
+				AI_SendToAmp(device, i, clampMode, MCC_AUTOWHOLECELLCOMP_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value                            = AI_SendToAmp(device, i, clampMode, MCC_GETWHOLECELLCOMPCAP_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 
 				rowLabel = "WholeCellRes"
 				AI_UpdateAmpView(device, i, ctrl = "setvar_DataAcq_WCC")
-				value                            = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPRESIST_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value                            = AI_SendToAmp(device, i, clampMode, MCC_GETWHOLECELLCOMPRESIST_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 
 				rowLabel = "WholeCellEnable"
 				AI_UpdateAmpView(device, i, ctrl = "setvar_DataAcq_WCR")
-				value                            = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPENABLE_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value                            = AI_SendToAmp(device, i, clampMode, MCC_GETWHOLECELLCOMPENABLE_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(device, i, ctrl = "check_DatAcq_WholeCellEnable")
 				break
 			case "check_DatAcq_WholeCellEnable":
 				rowLabel                         = "WholeCellEnable"
+				clampMode                        = V_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETWHOLECELLCOMPENABLE_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "setvar_DataAcq_RsCorr":
-				rowLabel = "Correction"
-				diff     = value - AmpStorageWave[%$rowLabel][0][i]
+				rowLabel  = "Correction"
+				clampMode = V_CLAMP_MODE
+				diff      = value - AmpStorageWave[%$rowLabel][0][i]
 				// abort if the corresponding value with chaining would be outside the limits
 				if(AmpStorageWave[%RSCompChaining][0][i] && !CheckIfValueIsInsideLimits(device, "setvar_DataAcq_RsPred", AmpStorageWave[%Prediction][0][i] + diff))
 					AI_UpdateAmpView(device, i, ctrl = ctrl)
 					return 1
 				endif
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETRSCOMPCORRECTION_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				if(AmpStorageWave[%RSCompChaining][0][i])
 					rowLabel                          = "Prediction"
 					AmpStorageWave[%$rowLabel][0][i] += diff
-					AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+					AI_SendToAmp(device, i, clampMode, MCC_SETRSCOMPPREDICTION_FUNC, AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 					AI_UpdateAmpView(device, i, ctrl = "setvar_DataAcq_RsPred")
 				endif
 				break
 			case "setvar_DataAcq_RsPred":
-				rowLabel = "Prediction"
-				diff     = value - AmpStorageWave[%$rowLabel][0][i]
+				rowLabel  = "Prediction"
+				clampMode = V_CLAMP_MODE
+				diff      = value - AmpStorageWave[%$rowLabel][0][i]
 				// abort if the corresponding value with chaining would be outside the limits
 				if(AmpStorageWave[%RSCompChaining][0][i] && !CheckIfValueIsInsideLimits(device, "setvar_DataAcq_RsCorr", AmpStorageWave[%Correction][0][i] + diff))
 					AI_UpdateAmpView(device, i, ctrl = ctrl)
 					return 1
 				endif
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETRSCOMPPREDICTION_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				if(AmpStorageWave[%RSCompChaining][0][i])
 					rowLabel                          = "Correction"
 					AmpStorageWave[%$rowLabel][0][i] += diff
-					AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+					AI_SendToAmp(device, i, clampMode, MCC_SETRSCOMPCORRECTION_FUNC, AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 					AI_UpdateAmpView(device, i, ctrl = "setvar_DataAcq_RsCorr")
 					// TODO msg
 				endif
 				break
 			case "check_DatAcq_RsCompEnable":
 				rowLabel                         = "RsCompEnable"
+				clampMode                        = V_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETRSCOMPENABLE_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "setvar_DataAcq_PipetteOffset_VC":
 				rowLabel                         = "PipetteOffsetVC"
+				clampMode                        = V_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "button_DataAcq_AutoPipOffset_IC":
 			case "button_DataAcq_AutoPipOffset_VC":
@@ -407,77 +417,92 @@ Function AI_UpdateAmpModel(string device, string ctrl, variable headStage, [vari
 				break
 			case "button_DataAcq_FastComp_VC":
 				rowLabel                         = "FastCapacitanceComp"
+				clampMode                        = V_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_AUTOFASTCOMP_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_AUTOFASTCOMP_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "button_DataAcq_SlowComp_VC":
 				rowLabel                         = "SlowCapacitanceComp"
+				clampMode                        = V_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_AUTOSLOWCOMP_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_AUTOSLOWCOMP_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "check_DataAcq_Amp_Chain":
 				rowLabel                         = "RSCompChaining"
+				clampMode                        = V_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpModel(device, "setvar_DataAcq_RsCorr", i, value = AmpStorageWave[%$rowLabel][0][i], selectAmp = 0)
 				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
 				rowLabel                         = "BiasCurrent"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETHOLDING_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				TP_UpdateHoldCmdInTPStorage(device, headstage)
 				break
 			case "check_DatAcq_HoldEnable":
 				rowLabel                         = "BiasCurrentEnable"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETHOLDINGENABLE_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				TP_UpdateHoldCmdInTPStorage(device, headstage)
 				break
 			case "setvar_DataAcq_BB":
 				rowLabel                         = "BridgeBalance"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETBRIDGEBALRESIST_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETBRIDGEBALRESIST_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "check_DatAcq_BBEnable":
 				rowLabel                         = "BridgeBalanceEnable"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETBRIDGEBALENABLE_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "setvar_DataAcq_CN":
 				rowLabel                         = "CapNeut"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETNEUTRALIZATIONCAP_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "check_DatAcq_CNEnable":
 				rowLabel                         = "CapNeutEnable"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETNEUTRALIZATIONENABL_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case "setvar_DataAcq_AutoBiasV":
 				rowLabel                         = "AutoBiasVcom"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
 				break
 			case "setvar_DataAcq_AutoBiasVrange":
 				rowLabel                         = "AutoBiasVcomVariance"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
 				break
 			case "setvar_DataAcq_IbiasMax":
 				rowLabel                         = "AutoBiasIbiasmax"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
 				break
 			case "check_DataAcq_AutoBias":
 				rowLabel                         = "AutoBiasEnable"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
 				break
 			case "button_DataAcq_AutoBridgeBal_IC":
-				value = AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				clampMode = I_CLAMP_MODE
+				value     = AI_SendToAmp(device, i, clampMode, MCC_AUTOBRIDGEBALANCE_FUNC, NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AI_UpdateAmpModel(device, "setvar_DataAcq_BB", i, value = value, selectAmp = 0)
 				AI_UpdateAmpModel(device, "check_DatAcq_BBEnable", i, value = 1, selectAmp = 0)
 				break
 			case "setvar_DataAcq_PipetteOffset_IC":
 				rowLabel                         = "PipetteOffsetIC"
+				clampMode                        = I_CLAMP_MODE
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			default:
 				ASSERT(0, "Unknown control " + ctrl)
