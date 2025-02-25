@@ -60,7 +60,34 @@ End
 ///
 /// See also @ref ZeroMQMessageFilters.
 ///
-/// @sa PUB_GetJSONTemplate
+/// Description of all messages:
+///
+/// \rst
+///
+/// ============================================ ==================================================== =============================================
+///  Name                                         Description                                          Publish function
+/// ============================================ ==================================================== =============================================
+///  :cpp:var:ZeroMQ_HEARTBEAT                    Every 5s for alive check                             None
+///  :cpp:var:PRESSURE_STATE_FILTER               Every pressure method change                         :cpp:func:PUB_PressureMethodChange
+///  :cpp:var:PRESSURE_SEALED_FILTER              Pressure seal reached                                :cpp:func:PUB_PressureSealedState
+///  :cpp:var:PRESSURE_BREAKIN_FILTER             Pressure breakin                                     :cpp:func:PUB_PressureBreakin
+///  :cpp:var:AUTO_TP_FILTER                      Auto TP has finished                                 :cpp:func:PUB_AutoTPResult
+///  :cpp:var:AMPLIFIER_CLAMP_MODE_FILTER         Clamp mode has changed                               :cpp:func:PUB_ClampModeChange
+///  :cpp:var:AMPLIFIER_AUTO_BRIDGE_BALANCE       Amplifier auto bridge balance was activated          :cpp:func:PUB_AutoBridgeBalance
+///  :cpp:var:ANALYSIS_FUNCTION_PB                Pipette in bath analysis function has finished       :cpp:func:PUB_PipetteInBath
+///  :cpp:var:ANALYSIS_FUNCTION_SE                Seal evaluation analysis function has finished       :cpp:func:PUB_SealEvaluation
+///  :cpp:var:ANALYSIS_FUNCTION_VM                True resting memb. potential function is finished    :cpp:func:PUB_TrueRestingMembranePotential
+///  :cpp:var:DAQ_TP_STATE_CHANGE_FILTER          Data acquisition/Test pulse started or stopped       :cpp:func:PUB_DAQStateChange
+///  :cpp:var:ANALYSIS_FUNCTION_AR                Access resistance smoke ana. function has finished   :cpp:func:PUB_AccessResistanceSmoke
+///  :cpp:var:ZMQ_FILTER_TPRESULT_NOW             TP evaluation result (all TPs)                       :cpp:func:PUB_TPResult
+///  :cpp:var:ZMQ_FILTER_TPRESULT_1s              TP evaluation result (every 1s)                      :cpp:func:PUB_TPResult
+///  :cpp:var:ZMQ_FILTER_TPRESULT_5s              TP evaluation result (every 5s)                      :cpp:func:PUB_TPResult
+///  :cpp:var:ZMQ_FILTER_TPRESULT_10s             TP evaluation result (every 10s)                     :cpp:func:PUB_TPResult
+///  :cpp:var:ZMQ_FILTER_TPRESULT_NOW_WITH_DATA   TP evaluation result with AD data (all TPs)          :cpp:func:PUB_TPResult
+/// ============================================ ==================================================== =============================================
+///
+/// \endrst
+///
 Function/WAVE FFI_GetAvailableMessageFilters()
 
 	Make/FREE/T wv = {ZeroMQ_HEARTBEAT, PRESSURE_STATE_FILTER, PRESSURE_SEALED_FILTER,                  \
