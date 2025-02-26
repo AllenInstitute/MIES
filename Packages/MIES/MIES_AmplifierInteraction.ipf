@@ -1441,7 +1441,7 @@ End
 static Function AI_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
 
 	variable ret, headstageMode, scale
-	string str
+	string str, name
 
 	ASSERT(func > MCC_BEGIN_INVALID_FUNC && func < MCC_END_INVALID_FUNC, "MCC function constant is out for range")
 	ASSERT(IsValidHeadstage(headstage), "invalid headStage index")
@@ -1523,6 +1523,11 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 				ret = AI_WriteToMCC(func, value)
 			endif
 	endswitch
+
+	if(accessType == MCC_WRITE)
+		name = AI_MapFunctionConstantToName(func, mode)
+		PUB_AmplifierSettingChange(device, headstage, mode, name, value)
+	endif
 
 	if(!IsFinite(ret))
 		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
