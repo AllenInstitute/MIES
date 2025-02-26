@@ -100,8 +100,10 @@ End
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
 static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
-	string rewrittenConfig, fName
+	string rewrittenConfig, fName, path
 	variable val, gain, filterFreq, headStage, jsonID
+
+	PrepareForPublishTest()
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")
 
@@ -118,6 +120,13 @@ static Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 	AI_WriteToAmplifier(str, headStage, V_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, gain)
 	AI_WriteToAmplifier(str, headStage + 1, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, filterFreq)
 	AI_WriteToAmplifier(str, headStage + 1, I_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, gain)
+
+	jsonID = FetchAndParseMessage(AMPLIFIER_SET_VALUE)
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/headstage"), headStage)
+	path = "/amplifier action/SetPrimarySignalLPF"
+	CHECK_EQUAL_STR(JSON_GetString(jsonID, path + "/unit"), "kHz")
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, path + "/value"), filterFreq)
+	JSON_Release(jsonID)
 
 	PGC_SetAndActivateControl(str, "check_Settings_SyncMiesToMCC", val = 1)
 

@@ -439,6 +439,9 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
 				AmpStorageWave[%$rowLabel][0][i] = value
+
+				PUB_AmplifierSettingChange(device, i, clampMode, func, value)
+
 				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_RsCorr", value = AmpStorageWave[%$rowLabel][0][i], selectAmp = 0)
 				break
 			case MCC_NO_AUTOBIAS_V_FUNC:
@@ -448,6 +451,8 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
 				AmpStorageWave[%$rowLabel][0][i] = value
+
+				PUB_AmplifierSettingChange(device, i, clampMode, func, value)
 				break
 			case MCC_AUTOBRIDGEBALANCE_FUNC:
 				clampMode = I_CLAMP_MODE
@@ -1744,6 +1749,10 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 				ret = AI_WriteToMCC(func, value)
 			endif
 	endswitch
+
+	if(accessType == MCC_WRITE)
+		PUB_AmplifierSettingChange(device, headstage, mode, func, value)
+	endif
 
 	if(!IsFinite(ret))
 		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
