@@ -1336,6 +1336,7 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 End
 
 Function AI_WriteToAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable selectAmp])
+
 	ASSERT(AI_IsSetterFunc(func), "Can only query amplifier values, use AI_WriteToAmplifier instead.")
 
 	if(ParamIsDefault(checkBeforeWrite))
@@ -1362,7 +1363,7 @@ Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, 
 	else
 		checkBeforeWrite = !!checkBeforeWrite
 	endif
-	
+
 	if(ParamIsDefault(usePrefixes))
 		usePrefixes = 0
 	else
