@@ -1745,6 +1745,10 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 			endif
 	endswitch
 
+	if(accessType == MCC_WRITE)
+		PUB_AmplifierSettingChange(device, headstage, mode, func, value)
+	endif
+
 	if(!IsFinite(ret))
 		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
 		ControlWindowToFront()

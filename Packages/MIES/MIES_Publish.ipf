@@ -946,3 +946,46 @@ Function PUB_ConfigurationFinished(string windowName, string panelType, string f
 
 	PUB_Publish(jsonID, CONFIG_FINISHED_FILTER)
 End
+
+/// Filter: #AMPLIFIER_SET_VALUE
+///
+/// The available names are listed in AI_MapFunctionConstantToName().
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "amplifier action": {
+///        "HoldingPotentialEnable": {
+///          "unit": "On/Off",
+///          "value": 1
+///        }
+///      },
+///      "clamp mode": "V_CLAMP_MODE",
+///      "device": "my_device",
+///      "headstage": 1,
+///      "sweep number": "NaN",
+///      "timestamp": "2025-03-25T16:42:21Z"
+///    }
+///
+/// \endrst
+Function PUB_AmplifierSettingChange(string device, variable headstage, variable mode, variable func, variable value)
+
+	variable jsonID
+	string path, unit, name
+
+	jsonID = PUB_GetJSONTemplate(device, headstage)
+
+	JSON_AddString(jsonID, "clamp mode", ConvertAmplifierModeToString(mode))
+
+	path = "/amplifier action"
+	JSON_AddTreeObject(jsonID, path)
+
+	unit = AI_GetUnitForFunctionConstant(func, mode)
+	name = AI_MapFunctionConstantToName(func, mode)
+	PUB_AddValueWithUnit(jsonID, path + "/" + name, value, unit)
+
+	PUB_Publish(jsonID, AMPLIFIER_SET_VALUE)
+End
