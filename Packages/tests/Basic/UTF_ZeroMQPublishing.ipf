@@ -638,3 +638,41 @@ static Function CheckConfigurationFinished()
 
 	JSON_Release(jsonID)
 End
+
+static Function CheckAmplifierSettingChange()
+
+	string device, actual, expected, name
+	variable jsonID, valActual, valExpected, headstage, mode, value
+
+	device    = "my_device"
+	headstage = 1
+	mode      = V_CLAMP_MODE
+	name      = "some entry"
+	value     = 123
+
+	PUB_AmplifierSettingChange(device, headstage, mode, name, value)
+
+	jsonID = FetchAndParseMessage(AMPLIFIER_SET_VALUE)
+
+	actual   = JSON_GetString(jsonID, "/device")
+	expected = device
+	CHECK_EQUAL_STR(actual, expected)
+
+	valActual   = JSON_GetVariable(jsonID, "/headstage")
+	valExpected = headstage
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	actual   = JSON_GetString(jsonID, "/clamp mode")
+	expected = ConvertAmplifierModeToString(mode)
+	CHECK_EQUAL_STR(actual, expected)
+
+	actual   = JSON_GetString(jsonID, "/amplifier action/name")
+	expected = name
+	CHECK_EQUAL_STR(actual, expected)
+
+	valActual   = JSON_GetVariable(jsonID, "/amplifier action/value")
+	valExpected = value
+	CHECK_EQUAL_VAR(valActual, valExpected)
+
+	JSON_Release(jsonID)
+End

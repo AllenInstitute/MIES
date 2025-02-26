@@ -74,6 +74,7 @@ End
 ///  :cpp:var:AUTO_TP_FILTER                   Auto TP has finished                                 :cpp:func:PUB_AutoTPResult
 ///  :cpp:var:AMPLIFIER_CLAMP_MODE_FILTER      Clamp mode has changed                               :cpp:func:PUB_ClampModeChange
 ///  :cpp:var:AMPLIFIER_AUTO_BRIDGE_BALANCE    Amplifier auto bridge balance was activated          :cpp:func:PUB_AutoBridgeBalance
+///  :cpp:var:AMPLIFIER_SET_VALUE              Amplifier setting was changed through MIES           :cpp:func:PUB_AmplifierSettingChange
 ///  :cpp:var:ANALYSIS_FUNCTION_PB             Pipette in bath analysis function has finished       :cpp:func:PUB_PipetteInBath
 ///  :cpp:var:ANALYSIS_FUNCTION_SE             Seal evaluation analysis function has finished       :cpp:func:PUB_SealEvaluation
 ///  :cpp:var:ANALYSIS_FUNCTION_VM             True resting memb. potential function is finished    :cpp:func:PUB_TrueRestingMembranePotential
@@ -92,7 +93,7 @@ Function/WAVE FFI_GetAvailableMessageFilters()
 	                  ANALYSIS_FUNCTION_VM, DAQ_TP_STATE_CHANGE_FILTER,                                   \
 	                  ANALYSIS_FUNCTION_AR, ZMQ_FILTER_TPRESULT_NOW, ZMQ_FILTER_TPRESULT_1S,              \
 	                  ZMQ_FILTER_TPRESULT_5S, ZMQ_FILTER_TPRESULT_10S, ZMQ_FILTER_TPRESULT_NOW_WITH_DATA, \
-	                  CONFIG_FINISHED_FILTER}
+	                  CONFIG_FINISHED_FILTER, AMPLIFIER_SET_VALUE}
 
 	Note/K wv, "Heartbeat is sent every 5 seconds."
 
