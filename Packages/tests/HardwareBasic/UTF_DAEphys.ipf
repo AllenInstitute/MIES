@@ -300,6 +300,8 @@ Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	string rewrittenConfig, fName
 	variable val, gain, filterFreq, headStage, jsonID
+	
+	PrepareForPublishTest()
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")
 
@@ -316,6 +318,12 @@ Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 	AI_WriteToAmplifier(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
 	AI_WriteToAmplifier(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
 	AI_WriteToAmplifier(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
+
+	jsonID = FetchAndParseMessage(AMPLIFIER_SET_VALUE)
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/headstage"), headStage)
+	CHECK_EQUAL_STR(JSON_GetString(jsonID, "/amplifier action/name"), "SetPrimarySignalLPF")
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/amplifier action/value"), filterFreq)
+	JSON_Release(jsonID)
 
 	PGC_SetAndActivateControl(str, "check_Settings_SyncMiesToMCC", val = 1)
 

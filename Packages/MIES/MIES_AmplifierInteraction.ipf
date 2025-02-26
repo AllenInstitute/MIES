@@ -194,11 +194,11 @@ End
 /// @param GUIWrite         [optional, defaults to false] Should the amplifier control, if available, be updated with the value
 ///
 /// @return 0 on success, 1 otherwise
-Function AI_UpdateAmpModel(string device, variable headStage, [string ctrl, variable value, variable sendToAll, variable checkBeforeWrite, variable selectAmp, variable func, variable clampMode, variable GUIWrite])
+static Function AI_UpdateAmpModel(string device, variable headStage, [string ctrl, variable value, variable sendToAll, variable checkBeforeWrite, variable selectAmp, variable func, variable clampMode, variable GUIWrite])
 
 	variable i, diff, selectedHeadstage, oppositeMode, oldTab
 	variable runMode = TEST_PULSE_NOT_RUNNING
-	string str, rowLabel
+	string str, rowLabel, name
 
 	DAP_AbortIfUnlocked(device)
 
@@ -251,7 +251,9 @@ Function AI_UpdateAmpModel(string device, variable headStage, [string ctrl, vari
 		statusHS[] = ((p == headStage) ? 1 : 0)
 	endif
 
-	if(!IsEmpty(ctrl) && !CheckIfValueIsInsideLimits(device, ctrl, value))
+	if(IsEmpty(ctrl))
+		GUIWrite = 0
+	elseif(!CheckIfValueIsInsideLimits(device, ctrl, value))
 		DEBUGPRINT("Ignoring value to set as it is out of range compared to the control limits")
 		return 1
 	endif
@@ -426,6 +428,24 @@ Function AI_UpdateAmpModel(string device, variable headStage, [string ctrl, vari
 				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_BB", value = value, selectAmp = 0)
 				AI_UpdateAmpModel(device, i, ctrl = "check_DatAcq_BBEnable", value = 1, selectAmp = 0)
 				break
+			// no GUI controls
+			case MCC_SETRSCOMPBANDWIDTH_FUNC:
+			case MCC_SETOSCKILLERENABLE_FUNC:
+			case MCC_SETFASTCOMPCAP_FUNC:
+			case MCC_SETSLOWCOMPCAP_FUNC:
+			case MCC_SETFASTCOMPTAU_FUNC:
+			case MCC_SETSLOWCOMPTAU_FUNC:
+			case MCC_SETSLOWCOMPTAUX20ENAB_FUNC:
+			case MCC_SETSLOWCURRENTINJENABL_FUNC:
+			case MCC_SETPRIMARYSIGNALGAIN_FUNC:
+			case MCC_SETSLOWCURRENTINJLEVEL_FUNC:
+			case MCC_SETSLOWCURRENTINJSETLT_FUNC:
+			case MCC_SETSECONDARYSIGNALGAIN_FUNC:
+			case MCC_SETPRIMARYSIGNALHPF_FUNC:
+			case MCC_SETPRIMARYSIGNALLPF_FUNC:
+			case MCC_SETSECONDARYSIGNALLPF_FUNC:
+					AI_SendToAmp(device, i, clampMode, func, value, checkBeforeWrite = checkBeforeWrite)
+					break
 			default:
 				ASSERT(0, "Unknown func: " + num2str(func))
 				break
@@ -437,6 +457,9 @@ Function AI_UpdateAmpModel(string device, variable headStage, [string ctrl, vari
 	endfor
 
 	TP_RestartTestPulse(device, runMode, fast = 1)
+
+	name = AI_MapFunctionConstantToName(func, clampMode)
+	PUB_AmplifierSettingChange(device, headstage, clampMode, name, value)
 
 	return 0
 End
@@ -453,7 +476,7 @@ End
 Function AI_SyncGUIToAmpStorageAndMCCApp(string device, variable headStage, variable clampMode)
 
 	string ctrl, list
-	variable i, numEntries
+	variable i, numEntries, value
 
 	DAP_AbortIfUnlocked(device)
 	AI_AssertOnInvalidClampMode(clampMode)
@@ -480,7 +503,8 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(string device, variable headStage, vari
 			continue
 		endif
 
-		AI_UpdateAmpModel(device, headStage, ctrl = ctrl, checkBeforeWrite = 1, sendToAll = 0, selectAmp = 0)
+		value = DAG_GetNumericalValue(device, ctrl)
+		AI_UpdateAmpModel(device, headStage, ctrl = ctrl, value = value, checkBeforeWrite = 1, sendToAll = 0, selectAmp = 0)
 	endfor
 End
 
@@ -1170,9 +1194,9 @@ Function/S AI_MapFunctionConstantToName(variable func, variable clampMode)
 		case MCC_SETSECONDARYSIGNALGAIN_FUNC:
 			return "SetSecondaySignalGain"
 		case MCC_SETPRIMARYSIGNALHPF_FUNC:
-			return "SetSecondaySignalHPF"
+			return "SetPrimarySignalHPF"
 		case MCC_SETPRIMARYSIGNALLPF_FUNC:
-			return "SetSecondaySignalLPF"
+			return "SetPrimarySignalLPF"
 		case MCC_SETSECONDARYSIGNALLPF_FUNC:
 			return "SetSecondaySignalLPF"
 		case MCC_NO_AMPCHAIN:
@@ -1205,6 +1229,20 @@ Function AI_IsControlFromClampMode(string ctrl, variable clampMode)
 		default:
 			ASSERT(0, "Invalid clamp mode")
 	endswitch
+End
+
+Function AI_IsNonAmplifierFunc(variable func)
+
+	switch(func)
+		case MCC_NO_AMPCHAIN:
+		case MCC_NO_AUTOBIAS_V_FUNC:
+		case MCC_NO_AUTOBIAS_VRANGE_FUNC:
+		case MCC_NO_AUTOBIAS_IBIASMAX_FUNC:
+		case MCC_NO_AUTOBIAS_ENABLE_FUNC:
+			return 1
+		default:
+			return 0
+		endswitch
 End
 
 /// @brief Return the truthness that the given @ref AI_SendToAmpConstants function is a setter or auto function
@@ -1357,7 +1395,7 @@ End
 /// @return 0 on success, 1 otherwise
 Function AI_WriteToAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable sendToAll, variable checkBeforeWrite, variable selectAmp, variable GUIWrite])
 
-	ASSERT(AI_IsSetterFunc(func), "Can only set amplifier values, use AI_ReadFromAmplifier instead.")
+	ASSERT(AI_IsSetterFunc(func) || AI_IsNonAmplifierFunc(func), "Can only set amplifier values, use AI_ReadFromAmplifier instead.")
 
 	if(ParamIsDefault(checkBeforeWrite))
 		checkBeforeWrite = 0
@@ -1386,7 +1424,7 @@ End
 
 Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp])
 
-	ASSERT(!AI_IsSetterFunc(func), "Can only query amplifier values, use AI_WriteToAmplifier instead.")
+	ASSERT(!AI_IsSetterFunc(func) || AI_IsNonAmplifierFunc(func), "Can only query amplifier values, use AI_WriteToAmplifier instead.")
 
 	if(ParamIsDefault(checkBeforeWrite))
 		checkBeforeWrite = 0
@@ -1764,11 +1802,6 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 			ASSERT(0, "Unknown function: " + num2str(func))
 			break
 	endswitch
-
-	if(AI_IsSetterFunc(func))
-		name = AI_MapFunctionConstantToName(func, mode)
-		PUB_AmplifierSettingChange(device, headstage, mode, name, value)
-	endif
 
 	if(!IsFinite(ret))
 		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
