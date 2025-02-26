@@ -85,6 +85,7 @@ End
 ///  :cpp:var:ZMQ_FILTER_TPRESULT_10s             TP evaluation result (every 10s)                     :cpp:func:PUB_TPResult
 ///  :cpp:var:ZMQ_FILTER_TPRESULT_NOW_WITH_DATA   TP evaluation result with AD data (all TPs)          :cpp:func:PUB_TPResult
 ///  :cpp:var:CONFIG_FINISHED_FILTER              JSON configuration for panel has finished            :cpp:func:PUB_ConfigurationFinished
+///  :cpp:var:AMPLIFIER_SET_VALUE                 Amplifier setting was changed through MIES           :cpp:func:PUB_AmplifierSettingChange
 /// ============================================ ==================================================== =============================================
 ///
 /// \endrst
@@ -97,7 +98,7 @@ Function/WAVE FFI_GetAvailableMessageFilters()
 	                  ANALYSIS_FUNCTION_VM, DAQ_TP_STATE_CHANGE_FILTER,                                   \
 	                  ANALYSIS_FUNCTION_AR, ZMQ_FILTER_TPRESULT_NOW, ZMQ_FILTER_TPRESULT_1S,              \
 	                  ZMQ_FILTER_TPRESULT_5S, ZMQ_FILTER_TPRESULT_10S, ZMQ_FILTER_TPRESULT_NOW_WITH_DATA, \
-	                  CONFIG_FINISHED_FILTER}
+	                  CONFIG_FINISHED_FILTER, AMPLIFIER_SET_VALUE}
 
 	Note/K wv, "Heartbeat is sent every 5 seconds."
 
