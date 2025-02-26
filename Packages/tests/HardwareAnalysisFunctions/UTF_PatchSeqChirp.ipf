@@ -20,7 +20,7 @@ static Function GlobalPreAcq(string device)
 
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
 
-	ret = AI_SendToAmp(device, PSQ_TEST_HEADSTAGE, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, LPF_BYPASS)
+	ret = AI_WriteToAmplifier(device, PSQ_TEST_HEADSTAGE, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, LPF_BYPASS)
 	REQUIRE(!ret)
 End
 
@@ -127,7 +127,7 @@ static Function CheckMCCLPF(string device, variable expectedValue)
 
 	variable val
 
-	val = AI_SendToAmp(device, PSQ_TEST_HEADSTAGE, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN, selectAmp = 0)
+	val = AI_ReadFromAmplifier(device, PSQ_TEST_HEADSTAGE, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, selectAmp = 0)
 	CHECK_EQUAL_VAR(val, expectedValue)
 End
 

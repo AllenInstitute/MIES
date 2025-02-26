@@ -1650,3 +1650,33 @@ Function MarkDeviceAsLocked(string device)
 	SVAR lockedDevices = $GetLockedDevices()
 	lockedDevices = device
 End
+
+Function/WAVE GatherProcedureCode(string filename, string regex)
+
+	WAVE/Z/T content = ListToTextWave(ProcedureText("", 0, filename), "\r")
+	CHECK_WAVE(content, TEXT_WAVE)
+
+	WAVE/Z/T results = GrepTextWave(content, regex)
+
+	return results
+End
+
+Function/WAVE ParseConstantValues(WAVE/T results)
+
+	Make/FREE/D/N=(DimSize(results, ROWS)) values
+
+	Multithread values[] = ParseConstantValues_Impl(results[p])
+
+	return values
+End
+
+threadsafe static Function ParseConstantValues_Impl(string entry)
+
+	string   str
+	variable val
+
+	SplitString/E="([[:digit:]]+)$" entry, str
+	ASSERT_TS(V_Flag == 1, "Unexpected number of matches")
+
+	return str2num(str)
+End
