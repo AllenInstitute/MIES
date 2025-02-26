@@ -1335,6 +1335,49 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 	endswitch
 End
 
+Function AI_WriteToAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable selectAmp])
+	ASSERT(AI_IsSetterFunc(func), "Can only query amplifier values, use AI_WriteToAmplifier instead.")
+
+	if(ParamIsDefault(checkBeforeWrite))
+		checkBeforeWrite = 0
+	else
+		checkBeforeWrite = !!checkBeforeWrite
+	endif
+
+	if(ParamIsDefault(selectAmp))
+		selectAmp = 1
+	else
+		selectAmp = !!selectAmp
+	endif
+
+	return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp)
+End
+
+Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp])
+
+	ASSERT(!AI_IsSetterFunc(func), "Can only query amplifier values, use AI_WriteToAmplifier instead.")
+
+	if(ParamIsDefault(checkBeforeWrite))
+		checkBeforeWrite = 0
+	else
+		checkBeforeWrite = !!checkBeforeWrite
+	endif
+	
+	if(ParamIsDefault(usePrefixes))
+		usePrefixes = 0
+	else
+		usePrefixes = !!usePrefixes
+	endif
+
+	if(ParamIsDefault(selectAmp))
+		selectAmp = 1
+	else
+		selectAmp = !!selectAmp
+	endif
+
+	return AI_SendToAmp(device, headStage, mode, func, value, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp)
+End
+
 /// @brief Generic interface to call MCC amplifier functions
 ///
 /// @param device       locked panel name to work on
@@ -1350,7 +1393,7 @@ End
 ///                         before use, some callers might save time in doing that once themselves.
 ///
 /// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
-Function AI_SendToAmp(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp])
+static Function AI_SendToAmp(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp])
 
 	variable ret, headstageMode, scale
 	string str, name
