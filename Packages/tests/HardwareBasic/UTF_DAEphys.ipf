@@ -301,6 +301,8 @@ Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 	string rewrittenConfig, fName
 	variable val, gain, filterFreq, headStage, jsonID
 
+	PrepareForPublishTest()
+
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")
 
 	STRUCT DAQSettings s
@@ -312,10 +314,10 @@ Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	gain       = 5
 	filterFreq = 6
-	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
-	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
-	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
-	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
+	AI_WriteToAmplifier(str, headStage, V_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, filterFreq)
+	AI_WriteToAmplifier(str, headStage, V_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, gain)
+	AI_WriteToAmplifier(str, headStage + 1, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, filterFreq)
+	AI_WriteToAmplifier(str, headStage + 1, I_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, gain)
 
 	PGC_SetAndActivateControl(str, "check_Settings_SyncMiesToMCC", val = 1)
 
@@ -326,10 +328,10 @@ Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	gain       = 1
 	filterFreq = 2
-	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
-	AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
-	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALLPF_FUNC, filterFreq)
-	AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, gain)
+	AI_WriteToAmplifier(str, headStage, V_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, filterFreq)
+	AI_WriteToAmplifier(str, headStage, V_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, gain)
+	AI_WriteToAmplifier(str, headStage + 1, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, filterFreq)
+	AI_WriteToAmplifier(str, headStage + 1, I_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, gain)
 
 	KillWindow $str
 
@@ -337,13 +339,13 @@ Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	gain       = 5
 	filterFreq = 6
-	val        = AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN)
+	val        = AI_ReadFromAmplifier(str, headStage, V_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC)
 	CHECK_EQUAL_VAR(val, filterFreq)
-	val = AI_SendToAmp(str, headStage, V_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
+	val = AI_ReadFromAmplifier(str, headStage, V_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC)
 	CHECK_EQUAL_VAR(val, gain)
-	val = AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALLPF_FUNC, NaN)
+	val = AI_ReadFromAmplifier(str, headStage + 1, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC)
 	CHECK_EQUAL_VAR(val, filterFreq)
-	val = AI_SendToAmp(str, headStage + 1, I_CLAMP_MODE, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
+	val = AI_ReadFromAmplifier(str, headStage + 1, I_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC)
 	CHECK_EQUAL_VAR(val, gain)
 End
 
@@ -409,8 +411,8 @@ End
 
 static Function SyncMIESMccWorksOutoftheBox_preAcq(string device)
 
-	// desync MCC and MIES
-	AI_SendToAmp(device, 0, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, 5)
+	/// desync MCC and MIES
+	MIES_AI#AI_SendToAmp(device, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_WRITE, value = 5)
 
 	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
 End
@@ -432,14 +434,213 @@ static Function SyncMIESMccWorksOutoftheBox([STRUCT IUTF_MDATA &md])
 
 	headstage = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
 	clampMode = DAG_GetHeadstageMode(device, headstage)
-	func      = MCC_GETHOLDING_FUNC
+	func      = MCC_HOLDING_FUNC
 
 	// initial read from hardware
-	actual = AI_SendToAmp(device, headstage, clampMode, func, NaN)
+	actual = AI_ReadFromAmplifier(device, headstage, clampMode, func)
 	CHECK(IsFinite(actual))
 
 	// comparison with MIES internal state in wave
 	rowLabel = "HoldingPotential"
 	expected = ampStorageWave[%$rowLabel][0][headstage]
 	CHECK_EQUAL_VAR(expected, actual)
+End
+
+static Function CheckAmplifierReadAndWrite_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR v0:GetClampModesWithoutIZero
+Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
+
+	variable refNum, headstage, func, clampMode, val, expected, actual, newValue
+	variable ret, readFunc
+	string history, device, rowLabel, ctrl, clampModeStr
+
+	if(md.v0 == V_CLAMP_MODE)
+		clampModeStr = "VC"
+	elseif(md.v0 == I_CLAMP_MODE)
+		clampModeStr = "IC"
+	else
+		INFO("Unknown clamp mode: %n", n0 = md.v0)
+		FAIL()
+	endif
+
+	device    = md.s0
+	headstage = 0
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                                                        + \
+	                             "__HS" + num2str(headstage) + "_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
+	AcquireData_NG(s, device)
+
+	clampMode = DAG_GetHeadstageMode(device, headstage)
+
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+
+	WAVE funcs = GetAmplifierFuncs()
+
+	for(func : funcs)
+		switch(func)
+			case MCC_OSCKILLERENABLE_FUNC:
+				// functions without controls
+				break
+			default:
+				ctrl = AI_MapFunctionConstantToControl(func, clampMode)
+
+				if(!AI_IsControlFromClampMode(ctrl, clampMode))
+					continue
+				endif
+				break
+		endswitch
+
+		// initial read from hardware
+		actual = AI_ReadFromAmplifier(device, headstage, clampMode, func, selectAmp = 1)
+		CHECK(IsFinite(actual))
+
+		switch(func)
+			case MCC_OSCKILLERENABLE_FUNC:
+			case MCC_AUTOBRIDGEBALANCE_FUNC:
+			case MCC_AUTOWHOLECELLCOMP_FUNC:
+			case MCC_AUTOPIPETTEOFFSET_FUNC:
+				break
+			default:
+				// comparison with MIES internal state in wave
+				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+				CHECK_PROPER_STR(rowLabel)
+				expected = ampStorageWave[%$rowLabel][0][headstage]
+				INFO("func: %d, rowLabel: %s", n0 = func, s0 = rowLabel)
+				REQUIRE_CLOSE_VAR(expected, actual, tol = 1e-3)
+				break
+		endswitch
+
+		readFunc = NaN
+
+		// writing works into
+		switch(func)
+			case MCC_PIPETTEOFFSET_FUNC:
+				newValue = 50
+				break
+			case MCC_BRIDGEBALRESIST_FUNC:
+			case MCC_HOLDING_FUNC:
+			case MCC_WHOLECELLCOMPRESIST_FUNC:
+				newValue = 100
+				break
+			case MCC_NEUTRALIZATIONCAP_FUNC:
+			case MCC_WHOLECELLCOMPCAP_FUNC:
+			case MCC_RSCOMPBANDWIDTH_FUNC:
+				newValue = 10
+				break
+			case MCC_BRIDGEBALENABLE_FUNC:
+			case MCC_HOLDINGENABLE_FUNC:
+			case MCC_NEUTRALIZATIONENABL_FUNC:
+			case MCC_WHOLECELLCOMPENABLE_FUNC:
+			case MCC_RSCOMPENABLE_FUNC:
+				newValue = 1
+				break
+			case MCC_OSCKILLERENABLE_FUNC:
+				// enabling this can result in a popup in the MCC application
+				// which we can't handle
+				newValue = 0
+				break
+			case MCC_AUTOBRIDGEBALANCE_FUNC:
+				// what we wrote earlier with MCC_BRIDGEBALRESIST_FUNC
+				newValue = 100
+				readFunc = MCC_BRIDGEBALRESIST_FUNC
+				break
+			case MCC_AUTOWHOLECELLCOMP_FUNC:
+				// dito
+				newValue = 10
+				readFunc = MCC_WHOLECELLCOMPCAP_FUNC
+				break
+			case MCC_AUTOPIPETTEOFFSET_FUNC:
+				// dito
+				newValue = 10
+				readFunc = MCC_PIPETTEOFFSET_FUNC
+				break
+			case MCC_RSCOMPCORRECTION_FUNC:
+			case MCC_RSCOMPPREDICTION_FUNC:
+				ret = AI_WriteToAmplifier(device, headstage, clampMode, MCC_NO_AMPCHAIN_FUNC, newValue, selectAmp = 0)
+				CHECK_EQUAL_VAR(ret, 0)
+				newValue = 10
+				break
+			case MCC_AUTOFASTCOMP_FUNC:
+			case MCC_AUTOSLOWCOMP_FUNC:
+				newValue = 0
+				break
+			default:
+				INFO("func: %d", n0 = func)
+				FAIL()
+		endswitch
+
+		ret = AI_WriteToAmplifier(device, headstage, clampMode, func, newValue, selectAmp = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+
+		// the hardware
+		actual   = AI_ReadFromAmplifier(device, headstage, clampMode, IsFinite(readFunc) ? readFunc : func, usePrefixes = 1, selectAmp = 0)
+		expected = newValue
+
+		switch(func)
+			case MCC_AUTOBRIDGEBALANCE_FUNC:
+			case MCC_AUTOWHOLECELLCOMP_FUNC:
+			case MCC_AUTOPIPETTEOFFSET_FUNC:
+			case MCC_RSCOMPCORRECTION_FUNC:
+				CHECK(IsFinite(actual))
+				break
+			default:
+				CHECK_CLOSE_VAR(expected, actual, tol = 1e-3)
+				break
+		endswitch
+
+		// and what we wrote into the wave
+		rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+
+		switch(func)
+			case MCC_OSCKILLERENABLE_FUNC:
+			case MCC_FASTCOMPTAU_FUNC:
+			case MCC_SLOWCOMPTAU_FUNC:
+			case MCC_AUTOPIPETTEOFFSET_FUNC:
+				CHECK_PROPER_STR(rowLabel)
+				break
+			default:
+				expected = ampStorageWave[%$rowLabel][0][headstage]
+				INFO("rowLabel %s, func %d", s0 = rowLabel, n0 = func)
+				REQUIRE_CLOSE_VAR(expected, actual, tol = 1e-3)
+				break
+		endswitch
+	endfor
+
+	// handle funcs which don't interact with the MCC
+	WAVE funcs = GetNoAmplifierFuncs()
+
+	newValue = 0
+	for(func : funcs)
+		newValue += 1
+		ret       = AI_WriteToAmplifier(device, headstage, clampMode, func, newValue, selectAmp = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+
+		rowLabel = AI_MapFunctionConstantToName(func, clampMode)
+		actual   = newValue
+		expected = ampStorageWave[%$rowLabel][0][headstage]
+		INFO("rowLabel %s, func %d", s0 = rowLabel, n0 = func)
+		REQUIRE_CLOSE_VAR(expected, actual, tol = 1e-3)
+	endfor
+End
+
+// UTF_TD_GENERATOR v0:GetClampModes
+static Function CheckAmplifierScaling([STRUCT IUTF_MDATA &md])
+
+	variable forward, backward, clampMode
+
+	clampMode = md.v0
+	WAVE funcs = GetAmplifierFuncs()
+
+	for(func : funcs)
+		forward  = AI_GetMCCScale(clampMode, func, MCC_READ)
+		backward = AI_GetMCCScale(clampMode, func, MCC_WRITE)
+
+		CHECK_EQUAL_VAR(forward * backward, 1)
+	endfor
 End
