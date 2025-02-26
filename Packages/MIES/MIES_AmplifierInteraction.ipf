@@ -181,7 +181,7 @@ End
 ///
 /// @param device       device
 /// @param ctrl             name of the amplifier control
-/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
+/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
 /// @param value            [optional: defaults to the controls value] value to set. values is in MIES units, see AI_SendToAmp()
 ///                         and there the description of `usePrefixes`.
 /// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
