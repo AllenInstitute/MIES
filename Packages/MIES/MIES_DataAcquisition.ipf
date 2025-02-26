@@ -316,8 +316,8 @@ Function DQ_ApplyAutoBias(string device, WAVE TPResults)
 		endif
 
 		DEBUGPRINT("current[A] to send=", var = current)
-		AI_UpdateAmpModel(device, headStage, ctrl = "check_DatAcq_HoldEnable", value = 1, sendToAll = 0)
-		AI_UpdateAmpModel(device, headStage, ctrl = "setvar_DataAcq_Hold_IC", value = current * ONE_TO_PICO, sendToAll = 0)
+		AI_WriteToAmplifier(device, headStage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 1, sendToAll = 0)
+		AI_WriteToAmplifier(device, headStage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, current * ONE_TO_PICO, sendToAll = 0)
 	endfor
 End
 

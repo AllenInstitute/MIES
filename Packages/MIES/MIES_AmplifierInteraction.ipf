@@ -1335,9 +1335,29 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 	endswitch
 End
 
-Function AI_WriteToAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable selectAmp])
+/// @brief Send the value to the amplifier
+///
+/// In addition the internal amplifier storage wave is updated as well and an amplifier state change message is sent
+///
+/// One of either `ctrl` or `func` plus `clampMode` is required.
+///
+/// @param device           device
+/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+/// @param mode             One of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
+/// @param func             Function to call, see @ref AI_SendToAmpConstants
+/// @param value            value to set. values is in MIES units, see AI_SendToAmp() and there the description of `usePrefixes`
+/// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
+///                         to all active headstages (true) or just to the given one (false)
+/// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
+///                         check the current value and do nothing if it is equal within some tolerance to the one written
+/// @param selectAmp        [optional, defaults to true] Select the amplifier
+///                         before use, some callers might save time in doing that once themselves.
+/// @param GUIWrite         [optional, defaults to false] Should the amplifier control, if available, be updated with the value
+///
+/// @return 0 on success, 1 otherwise
+Function AI_WriteToAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable sendToAll, variable checkBeforeWrite, variable selectAmp, variable GUIWrite])
 
-	ASSERT(AI_IsSetterFunc(func), "Can only query amplifier values, use AI_WriteToAmplifier instead.")
+	ASSERT(AI_IsSetterFunc(func), "Can only set amplifier values, use AI_ReadFromAmplifier instead.")
 
 	if(ParamIsDefault(checkBeforeWrite))
 		checkBeforeWrite = 0
@@ -1351,7 +1371,17 @@ Function AI_WriteToAmplifier(string device, variable headStage, variable mode, v
 		selectAmp = !!selectAmp
 	endif
 
-	return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp)
+	if(ParamIsDefault(GUIWrite))
+		GUIWrite = 1
+	else
+		GUIWrite = !!GUIWrite
+	endif
+
+	if(ParamIsDefault(sendToAll))
+		return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite)
+	else
+		return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = 1)
+	endif
 End
 
 Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp])
