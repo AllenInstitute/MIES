@@ -300,7 +300,7 @@ Function CheckIfConfigurationRestoresMCCFilterGain([string str])
 
 	string rewrittenConfig, fName
 	variable val, gain, filterFreq, headStage, jsonID
-	
+
 	PrepareForPublishTest()
 
 	fName = PrependExperimentFolder_IGNORE("CheckIfConfigurationRestoresMCCFilterGain.json")

@@ -444,8 +444,8 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 			case MCC_SETPRIMARYSIGNALHPF_FUNC:
 			case MCC_SETPRIMARYSIGNALLPF_FUNC:
 			case MCC_SETSECONDARYSIGNALLPF_FUNC:
-					AI_SendToAmp(device, i, clampMode, func, value, checkBeforeWrite = checkBeforeWrite)
-					break
+				AI_SendToAmp(device, i, clampMode, func, value, checkBeforeWrite = checkBeforeWrite)
+				break
 			default:
 				ASSERT(0, "Unknown func: " + num2str(func))
 				break
@@ -1242,7 +1242,7 @@ Function AI_IsNonAmplifierFunc(variable func)
 			return 1
 		default:
 			return 0
-		endswitch
+	endswitch
 End
 
 /// @brief Return the truthness that the given @ref AI_SendToAmpConstants function is a setter or auto function

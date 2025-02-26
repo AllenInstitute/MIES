@@ -3597,7 +3597,7 @@ Function DAP_SetVarProc_AmpCntrls(STRUCT WMSetVariableAction &sva) : SetVariable
 			device = sva.win
 			ctrl   = sva.ctrlName
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
-			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
+			headStage         = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 			[func, clampMode] = AI_mapcontrolNameToFunctionConstant(ctrl)
 			AI_WriteToAmplifier(device, headStage, clampMode, func, sva.dval, GUIWrite = 0)
 			break
@@ -3618,7 +3618,7 @@ Function DAP_ButtonProc_AmpCntrls(STRUCT WMButtonAction &ba) : ButtonControl
 			device = ba.win
 			ctrl   = ba.ctrlName
 
-			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
+			headStage         = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 			[func, clampMode] = AI_mapcontrolNameToFunctionConstant(ctrl)
 			AI_WriteToAmplifier(device, headstage, clampMode, func, 1, GUIWrite = 0)
 			break
@@ -3640,7 +3640,7 @@ Function DAP_CheckProc_AmpCntrls(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			ctrl   = cba.ctrlName
 
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
-			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
+			headStage         = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 			[func, clampMode] = AI_mapcontrolNameToFunctionConstant(ctrl)
 			AI_WriteToAmplifier(device, headStage, clampMode, func, cba.checked, GUIWrite = 0)
 			break
