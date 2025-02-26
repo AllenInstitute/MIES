@@ -3598,7 +3598,7 @@ Function DAP_SetVarProc_AmpCntrls(STRUCT WMSetVariableAction &sva) : SetVariable
 			ctrl   = sva.ctrlName
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
-			AI_UpdateAmpModel(device, ctrl, headStage)
+			AI_UpdateAmpModel(device, headStage, ctrl = ctrl, value = sva.dval, GUIWrite = 0)
 			break
 		default:
 			break
@@ -3618,7 +3618,7 @@ Function DAP_ButtonProc_AmpCntrls(STRUCT WMButtonAction &ba) : ButtonControl
 			ctrl   = ba.ctrlName
 
 			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
-			AI_UpdateAmpModel(device, ctrl, headstage)
+			AI_UpdateAmpModel(device, headstage, ctrl = ctrl, value = 1, GUIWrite = 0)
 			break
 		default:
 			break
@@ -3639,7 +3639,7 @@ Function DAP_CheckProc_AmpCntrls(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
-			AI_UpdateAmpModel(device, ctrl, headStage)
+			AI_UpdateAmpModel(device, headStage, ctrl = ctrl, value = cba.checked, GUIWrite = 0)
 			break
 		default:
 			break

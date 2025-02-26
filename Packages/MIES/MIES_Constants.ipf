@@ -466,7 +466,17 @@ Constant MCC_SETPRIMARYSIGNALLPF_FUNC    = 10058
 Constant MCC_GETPRIMARYSIGNALLPF_FUNC    = 10059
 Constant MCC_SETSECONDARYSIGNALLPF_FUNC  = 10060
 Constant MCC_GETSECONDARYSIGNALLPF_FUNC  = 10061
-Constant MCC_END_INVALID_FUNC            = 10062
+
+///@name Constants which don't represent MCC amplifier settings on the front panel/hardware
+///@{
+Constant MCC_NO_AMPCHAIN               = 10062
+Constant MCC_NO_AUTOBIAS_V_FUNC        = 10063
+Constant MCC_NO_AUTOBIAS_VRANGE_FUNC   = 10064
+Constant MCC_NO_AUTOBIAS_IBIASMAX_FUNC = 10065
+Constant MCC_NO_AUTOBIAS_ENABLE_FUNC   = 10066
+///@}
+
+Constant MCC_END_INVALID_FUNC = 10067
 ///@}
 
 /// Magic value for selecting "Bypass" in the bessel filter for the primary output

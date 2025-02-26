@@ -238,7 +238,7 @@ static Function P_MethodApproach(string device, variable headStage)
 		PressureDataWv[headStage][%LastPressureCommand] = P_SetAndGetPressure(device, headStage, targetP)
 		PressureDataWv[headStage][%RealTimePressure]    = PressureDataWv[headStage][%LastPressureCommand]
 		// Turn off holding
-		AI_UpdateAmpModel(device, "check_DatAcq_HoldEnableVC", headStage, value = 0)
+		AI_UpdateAmpModel(device, headStage, ctrl = "check_DatAcq_HoldEnableVC", value = 0)
 	else // Zero amps after pressure on headstage has been set
 		// If Near checkbox is checked, then zero amplifiers on approach that require zeroing
 		if(PressureDataWv[headStage][%ApproachNear])
@@ -450,10 +450,10 @@ End
 static Function P_UpdateVcom(string device, variable vCom, variable headStage)
 
 	// apply holding
-	AI_UpdateAmpModel(device, "setvar_DataAcq_Hold_VC", headStage, value = vCom)
+	AI_UpdateAmpModel(device, headStage, ctrl = "setvar_DataAcq_Hold_VC", value = vCom)
 
 	// make sure holding is enabled
-	AI_UpdateAmpModel(device, "check_DatAcq_HoldEnableVC", headStage, value = 1)
+	AI_UpdateAmpModel(device, headStage, ctrl = "check_DatAcq_HoldEnableVC", value = 1)
 End
 
 /// @brief Determines which devices to close. Ensures all DA_Ephys panels

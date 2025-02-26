@@ -6,6 +6,7 @@
 #include "UTF_HelperFunctions"
 
 // keep sorted
+#include "UTF_Amplifier"
 #include "UTF_AnalysisBrowserTest"
 #include "UTF_AnalysisFunctionHelpers"
 #include "UTF_AnalysisFunctionParameters"
@@ -121,6 +122,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	traceOptions = GetDefaultTraceOptions()
 
 	// sorted list
+	list = AddListItem("UTF_Amplifier.ipf", list, ";", Inf)
 	list = AddListItem("UTF_AnalysisBrowserTest.ipf", list, ";", Inf)
 	list = AddListItem("UTF_AnalysisFunctionHelpers.ipf", list, ";", Inf)
 	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", Inf)
