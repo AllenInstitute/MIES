@@ -406,3 +406,40 @@ static Function ComplainsAboutVanishingEpoch_REENTRY([STRUCT IUTF_MDATA &md])
 	// remove left over from ???
 	KillVariables/Z V_flag
 End
+
+static Function SyncMIESMccWorksOutoftheBox_preAcq(string device)
+
+	// desync MCC and MIES
+	AI_SendToAmp(device, 0, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, 5)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+// UTF_TD_GENERATOR s0:DeviceNameGeneratorMD1
+static Function SyncMIESMccWorksOutoftheBox([STRUCT IUTF_MDATA &md])
+
+	variable headstage, func, clampMode, val, expected, actual
+	string device, rowLabel
+
+	device = md.s0
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG1_TP0_DAQ0"             + \
+	                             "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	AcquireData_NG(s, device)
+
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+
+	headstage = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
+	clampMode = DAG_GetHeadstageMode(device, headstage)
+	func      = MCC_GETHOLDING_FUNC
+
+	// initial read from hardware
+	actual = AI_SendToAmp(device, headstage, clampMode, func, NaN)
+	CHECK(IsFinite(actual))
+
+	// comparison with MIES internal state in wave
+	rowLabel = "HoldingPotential"
+	expected = ampStorageWave[%$rowLabel][0][headstage]
+	CHECK_EQUAL_VAR(expected, actual)
+End
