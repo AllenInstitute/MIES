@@ -363,13 +363,13 @@ cryptography==44.0.0 \
     --hash=sha256:f5e7cb1e5e56ca0933b4873c0220a78b773b24d40d186b6738080b73d3d0a756 \
     --hash=sha256:f677e1268c4e23420c3acade68fac427fffcb8d19d7df95ed7ad17cdef8404f4
     # via secretstorage
-dandi==0.65.0 \
-    --hash=sha256:20aaef9e0753a795d870a6721c9e154375a93c36c0fe2be6dfbae943ad1318dd \
-    --hash=sha256:dfe1a23e24a864de4f2880c6c12eb4611fabdfd953c9f78c095c83e6dad4197f
+dandi==0.67.0 \
+    --hash=sha256:43158310123f8ff2ec304d9327bc65e8a6e801cf9ed3c8ea7e7c79dc341330f1 \
+    --hash=sha256:8c45bc071718a68016baba2865a6a267df8c65e962bf3d2f63c8cb576400f3a3
     # via -r requirements.in
-dandischema==0.10.4 \
-    --hash=sha256:34c24c1c85146ac62dd0a4858b112ea147948d90fea19b74a8725870561bc459 \
-    --hash=sha256:bef83ee03b9ee4c406a667771ca129541f1a27e9e1f0bed581eb1104ebc326aa
+dandischema==0.11.0 \
+    --hash=sha256:ad8d6f358b3512e789afc9c528a3b9cc9c83de298c3552b03c5e681cb416e865 \
+    --hash=sha256:f9784f1e83037be94bbd0104ef75ee4aefa39a46402e7f30ec0ddf9009777b3b
     # via dandi
 dnspython==2.7.0 \
     --hash=sha256:b4c34b7d10b51bcc3a5071e7b8dee77939f1e878477eeecc965e9835f63c6c86 \
@@ -551,9 +551,9 @@ importlib-metadata==8.5.0 \
     --hash=sha256:45e54197d28b7a7f1559e60b95e7c567032b602131fbd588f1497f47880aa68b \
     --hash=sha256:71522656f0abace1d072b9e5481a48f07c138e00f079c38c8f883823f9c26bd7
     # via keyring
-interleave==0.2.2 \
-    --hash=sha256:0cdc1462acad1f5d5643aa4e9c5fffa7ea874c0777f40c95cfc2a750a5065ad2 \
-    --hash=sha256:371e94071e5a7b1f62764f8a72925e2b3fe7c7c3a854cc917c42b65dfef0f737
+interleave==0.3.0 \
+    --hash=sha256:09d772693b958c0cbb11e3cd8a6b726c6995c7e12b0530a10ae31a943b458c39 \
+    --hash=sha256:4c4595e05c5c3286d306db7459972bada9a38088fb8649c1199782c8e4a60a32
     # via dandi
 isodate==0.7.2 \
     --hash=sha256:28009937d8031054830160fce6d409ed342816b543597cece116d966c6d99e15 \
@@ -1084,9 +1084,9 @@ pydantic-core==2.27.1 \
     --hash=sha256:f69ed81ab24d5a3bd93861c8c4436f54afdf8e8cc421562b0c7504cf3be58206 \
     --hash=sha256:f82d068a2d6ecfc6e054726080af69a6764a10015467d7d7b9f66d6ed5afa23b
     # via pydantic
-pynwb==2.8.3 \
-    --hash=sha256:3ed35db747caa2b511edd8b243f6112034e5dd056f965b9f89a9c5dd1756dda0 \
-    --hash=sha256:e0683a9525ae389e87341eed9bd7908d4d0a7c35def74ce5822a707cca230959
+pynwb==3.0.0 \
+    --hash=sha256:5a4c442a5c6c0a159ac92ea3364c4df3669a6cd5f06b803143bf9ecb8769d7e4 \
+    --hash=sha256:9eb88e11ab185f1769e2f1165ac5049c93a280bd705c03d1d472b873534f2887
     # via
     #   -r requirements.in
     #   dandi
