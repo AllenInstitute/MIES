@@ -802,151 +802,6 @@ static Function/S AI_GetMCCWinFilePath()
 	return "ERROR"
 End
 
-#ifdef AMPLIFIER_XOPS_PRESENT
-
-///@brief Returns the holding command of the amplifier
-Function AI_GetHoldingCommand(string device, variable headstage)
-
-	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
-		return NaN
-	endif
-
-	return MCC_GetHoldingEnable() ? (MCC_GetHolding() * AI_GetMCCScale(MCC_GetMode(), MCC_GETHOLDING_FUNC)) : 0
-End
-
-/// @brief Return the clamp mode of the headstage as returned by the amplifier
-///
-/// Should only be used during the setup phase when you don't know if the
-/// clamp mode in MIES matches already. It is always better to prefer
-/// DAP_ChangeHeadStageMode() if possible.
-///
-/// @brief One of @ref AmplifierClampModes or NaN if no amplifier is connected
-Function AI_GetMode(string device, variable headstage)
-
-	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
-		return NaN
-	endif
-
-	return MCC_GetMode()
-End
-
-/// @brief Return the DA/AD gains of the given headstage
-///
-/// Internally we query the External Command Sensitivity of the Amplifier (MCC) GUI.
-///
-/// =========== ==========================
-///  ClampMode   MultiClampCommander GUI
-/// =========== ==========================
-///  VC          Off
-///               20 mV/V
-///              100 mV/V
-/// =========== ==========================
-///  IC          Off
-///              400 pA/V
-///                2 nA/V
-/// =========== ==========================
-///
-/// Gain is returned in mV/V for #V_CLAMP_MODE and pA/V for #I_CLAMP_MODE/#I_EQUAL_ZERO_MODE
-///
-/// @param      device device
-/// @param      headstage  headstage [0, NUM_HEADSTAGES[
-/// @param      clampMode  clamp mode
-/// @param[out] ADGain     ADC gain
-/// @param[out] DAGain     DAC gain
-static Function AI_RetrieveGains(string device, variable headstage, variable clampMode, variable &ADGain, variable &DAGain)
-
-	variable axonSerial = AI_GetAmpAxonSerial(device, headstage)
-	variable channel    = AI_GetAmpChannel(device, headStage)
-
-	[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(axonSerial, channel)
-
-	ASSERT(clampMode == tds.OperatingMode, "Non matching clamp mode from MCC application")
-
-	ADGain    = tds.ScaleFactor * tds.Alpha / ONE_TO_MILLI
-	clampMode = tds.OperatingMode
-
-	if(tds.OperatingMode == V_CLAMP_MODE)
-		DAGain = tds.ExtCmdSens * ONE_TO_MILLI
-	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
-		DAGain = tds.ExtCmdSens * ONE_TO_PICO
-	endif
-End
-
-/// @brief Changes the mode of the amplifier between I-Clamp and V-Clamp depending on the currently set mode
-///
-/// Assumes that the correct amplifier is selected.
-static Function AI_SwitchAxonAmpMode()
-
-	variable mode
-
-	mode = MCC_GetMode()
-
-	if(mode == V_CLAMP_MODE)
-		MCC_SetMode(I_CLAMP_MODE)
-	elseif(mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE)
-		MCC_SetMode(V_CLAMP_MODE)
-	else
-		// do nothing
-	endif
-End
-
-/// @brief Wrapper for MCC_SelectMultiClamp700B
-///
-/// @param device device
-/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-///
-/// @returns one of @ref AISelectMultiClampReturnValues
-Function AI_SelectMultiClamp(string device, variable headStage)
-
-	variable channel, axonSerial, err
-	string mccSerial
-
-	// checking axonSerial is done as a service to the caller
-	axonSerial = AI_GetAmpAxonSerial(device, headStage)
-	mccSerial  = AI_GetAmpMCCSerial(device, headStage)
-	channel    = AI_GetAmpChannel(device, headStage)
-
-	if(!AI_IsValidSerialAndChannel(mccSerial = mccSerial, axonSerial = axonSerial, channel = channel))
-		return AMPLIFIER_CONNECTION_INVAL_SER
-	endif
-
-	AssertOnAndClearRTError()
-	MCC_SelectMultiClamp700B(mccSerial, channel); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
-
-	if(err)
-		return AMPLIFIER_CONNECTION_MCC_FAILED
-	endif
-
-	return AMPLIFIER_CONNECTION_SUCCESS
-End
-
-/// @brief Set the clamp mode of user linked MCC based on the headstage number
-Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep])
-
-	if(ParamIsDefault(zeroStep))
-		zeroStep = 0
-	else
-		zeroStep = !!zeroStep
-	endif
-
-	AI_AssertOnInvalidClampMode(mode)
-
-	if(AI_SelectMultiClamp(device, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
-		return NaN
-	endif
-
-	if(zeroStep && (mode == I_CLAMP_MODE || mode == V_CLAMP_MODE))
-		if(!IsFinite(MCC_SetMode(I_EQUAL_ZERO_MODE)))
-			printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
-		endif
-		Sleep/Q/T/C=-1 6
-	endif
-
-	if(!IsFinite(MCC_SetMode(mode)))
-		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
-	endif
-End
-
 /// @brief Map from amplifier control names to @ref AI_SendToAmpConstants constants and clamp mode
 Function [variable func, variable clampMode] AI_MapControlNameToFunctionConstant(string ctrl)
 
@@ -1371,6 +1226,151 @@ static Function/S AI_AmpStorageControlToRowLabel(string ctrl)
 			ASSERT(0, "Unknown control " + ctrl)
 			break
 	endswitch
+End
+
+#ifdef AMPLIFIER_XOPS_PRESENT
+
+///@brief Returns the holding command of the amplifier
+Function AI_GetHoldingCommand(string device, variable headstage)
+
+	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+		return NaN
+	endif
+
+	return MCC_GetHoldingEnable() ? (MCC_GetHolding() * AI_GetMCCScale(MCC_GetMode(), MCC_GETHOLDING_FUNC)) : 0
+End
+
+/// @brief Return the clamp mode of the headstage as returned by the amplifier
+///
+/// Should only be used during the setup phase when you don't know if the
+/// clamp mode in MIES matches already. It is always better to prefer
+/// DAP_ChangeHeadStageMode() if possible.
+///
+/// @brief One of @ref AmplifierClampModes or NaN if no amplifier is connected
+Function AI_GetMode(string device, variable headstage)
+
+	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+		return NaN
+	endif
+
+	return MCC_GetMode()
+End
+
+/// @brief Return the DA/AD gains of the given headstage
+///
+/// Internally we query the External Command Sensitivity of the Amplifier (MCC) GUI.
+///
+/// =========== ==========================
+///  ClampMode   MultiClampCommander GUI
+/// =========== ==========================
+///  VC          Off
+///               20 mV/V
+///              100 mV/V
+/// =========== ==========================
+///  IC          Off
+///              400 pA/V
+///                2 nA/V
+/// =========== ==========================
+///
+/// Gain is returned in mV/V for #V_CLAMP_MODE and pA/V for #I_CLAMP_MODE/#I_EQUAL_ZERO_MODE
+///
+/// @param      device device
+/// @param      headstage  headstage [0, NUM_HEADSTAGES[
+/// @param      clampMode  clamp mode
+/// @param[out] ADGain     ADC gain
+/// @param[out] DAGain     DAC gain
+static Function AI_RetrieveGains(string device, variable headstage, variable clampMode, variable &ADGain, variable &DAGain)
+
+	variable axonSerial = AI_GetAmpAxonSerial(device, headstage)
+	variable channel    = AI_GetAmpChannel(device, headStage)
+
+	[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(axonSerial, channel)
+
+	ASSERT(clampMode == tds.OperatingMode, "Non matching clamp mode from MCC application")
+
+	ADGain    = tds.ScaleFactor * tds.Alpha / ONE_TO_MILLI
+	clampMode = tds.OperatingMode
+
+	if(tds.OperatingMode == V_CLAMP_MODE)
+		DAGain = tds.ExtCmdSens * ONE_TO_MILLI
+	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
+		DAGain = tds.ExtCmdSens * ONE_TO_PICO
+	endif
+End
+
+/// @brief Changes the mode of the amplifier between I-Clamp and V-Clamp depending on the currently set mode
+///
+/// Assumes that the correct amplifier is selected.
+static Function AI_SwitchAxonAmpMode()
+
+	variable mode
+
+	mode = MCC_GetMode()
+
+	if(mode == V_CLAMP_MODE)
+		MCC_SetMode(I_CLAMP_MODE)
+	elseif(mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE)
+		MCC_SetMode(V_CLAMP_MODE)
+	else
+		// do nothing
+	endif
+End
+
+/// @brief Wrapper for MCC_SelectMultiClamp700B
+///
+/// @param device device
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
+///
+/// @returns one of @ref AISelectMultiClampReturnValues
+Function AI_SelectMultiClamp(string device, variable headStage)
+
+	variable channel, axonSerial, err
+	string mccSerial
+
+	// checking axonSerial is done as a service to the caller
+	axonSerial = AI_GetAmpAxonSerial(device, headStage)
+	mccSerial  = AI_GetAmpMCCSerial(device, headStage)
+	channel    = AI_GetAmpChannel(device, headStage)
+
+	if(!AI_IsValidSerialAndChannel(mccSerial = mccSerial, axonSerial = axonSerial, channel = channel))
+		return AMPLIFIER_CONNECTION_INVAL_SER
+	endif
+
+	AssertOnAndClearRTError()
+	MCC_SelectMultiClamp700B(mccSerial, channel); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+
+	if(err)
+		return AMPLIFIER_CONNECTION_MCC_FAILED
+	endif
+
+	return AMPLIFIER_CONNECTION_SUCCESS
+End
+
+/// @brief Set the clamp mode of user linked MCC based on the headstage number
+Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep])
+
+	if(ParamIsDefault(zeroStep))
+		zeroStep = 0
+	else
+		zeroStep = !!zeroStep
+	endif
+
+	AI_AssertOnInvalidClampMode(mode)
+
+	if(AI_SelectMultiClamp(device, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
+		return NaN
+	endif
+
+	if(zeroStep && (mode == I_CLAMP_MODE || mode == V_CLAMP_MODE))
+		if(!IsFinite(MCC_SetMode(I_EQUAL_ZERO_MODE)))
+			printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
+		endif
+		Sleep/Q/T/C=-1 6
+	endif
+
+	if(!IsFinite(MCC_SetMode(mode)))
+		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
+	endif
 End
 
 /// @brief Send the value to the amplifier
@@ -2114,6 +2114,16 @@ Function AI_SelectMultiClamp(string device, variable headStage)
 End
 
 Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep])
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp])
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function AI_WriteToAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable sendToAll, variable checkBeforeWrite, variable selectAmp, variable GUIWrite])
 
 	DEBUGPRINT("Unimplemented")
 End
