@@ -4315,6 +4315,29 @@ Function DAP_AbortIfUnlocked(string device)
 	endif
 End
 
+Function DAP_CheckProc_SyncMiesToMCC(STRUCT WMCheckboxAction &cba) : CheckBoxControl
+
+	variable headstage, clampMode
+	string device
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+
+			if(!cba.checked)
+				break
+			endif
+
+			device    = cba.win
+			headstage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
+			clampMode = DAG_GetHeadstageMode(device, headstage)
+			AI_SyncGUIToAmpStorageAndMCCApp(device, headstage, clampMode)
+			break
+		default:
+			break
+	endswitch
+End
+
 /// @brief GUI procedure which has the only purpose
 ///        of storing the control state in the GUI state wave
 Function DAP_CheckProc_UpdateGuiState(STRUCT WMCheckboxAction &cba) : CheckBoxControl
