@@ -1122,8 +1122,8 @@ Function/WAVE SFH_NewSelectDataWave(variable numSweeps, variable numChannels)
 	return selectData
 End
 
-/// @brief Recreate a **single** select data wave and range stored in the JSON wavenote from SFH_GetSweepsForFormula()
-Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sweepData)
+/// @brief Parse the range stored in the JSON wavenote from SFH_GetSweepsForFormula()
+Function/WAVE SFH_ParseSweepDataRange(WAVE sweepData)
 
 	WAVE/Z range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
 
@@ -1132,6 +1132,18 @@ Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sw
 	endif
 
 	if(!WaveExists(range) || !HasOneValidEntry(range))
+		return $""
+	endif
+
+	return range
+End
+
+/// @brief Recreate a **single** select data wave and range stored in the JSON wavenote from SFH_GetSweepsForFormula()
+Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sweepData)
+
+	WAVE/Z range = SFH_ParseSweepDataRange(sweepData)
+
+	if(!WaveExists(range))
 		return [$"", $""]
 	endif
 
