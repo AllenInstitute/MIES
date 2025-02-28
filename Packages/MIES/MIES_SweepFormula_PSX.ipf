@@ -4727,22 +4727,14 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	variable riseTau, decayTau, amp, dt, numPoints, numCombos, i, offset, idx
 	string parameterPath, key
 
-	WAVE/WAVE selectDataCompArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
+	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 0)
+	SFH_ASSERT(WaveExists(selectDataCompArray), "Could not gather sweep data from select statement")
 
 	riseTau  = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 1, defValue = 1, checkFunc = IsStrictlyPositiveAndFinite)
 	decayTau = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 2, defValue = 15, checkFunc = IsStrictlyPositiveAndFinite)
 	amp      = SFH_GetArgumentAsNumeric(jsonID, jsonPath, graph, SF_OP_PSX_KERNEL, 3, defValue = -5, checkFunc = IsFinite)
 
 	SFH_ASSERT(decayTau > riseTau, "decay tau must be strictly larger than the rise tau")
-
-	SFH_ASSERT(DimSize(selectDataCompArray, ROWS) == 1, "Only supports a single selection at the moment")
-
-	WAVE/WAVE selectDataComp = selectDataCompArray[0]
-
-	WAVE/Z    selectData = selectDataComp[%SELECTION]
-	WAVE/WAVE range      = selectDataComp[%RANGE]
-
-	SFH_ASSERT(WaveExists(selectData), "Could not gather sweep data from select statement")
 
 	WAVE/WAVE sweepDataRef = SFH_GetSweepsForFormula(graph, selectDataCompArray, SF_OP_PSX_KERNEL)
 
@@ -4754,8 +4746,21 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 	Make/FREE/T rawLabels = {"psxKernel", "psxKernelFFT", "sweepData"}
 	ASSERT(DimSize(rawLabels, ROWS) == PSX_KERNEL_OUTPUTWAVES_PER_ENTRY, "Mismatched rawLabels wave")
 
+	Make/FREE/N=(0) allResolvedRanges
+	Make/FREE/N=(0)/T allSelectHashes
+
 	for(i = 0; i < numCombos; i += 1)
-		WAVE sweepData = sweepDataRef[i]
+		WAVE/Z sweepData = sweepDataRef[i]
+		ASSERT(WaveExists(sweepData), "Can't handle invalid sweepData waves")
+
+		[WAVE singleSelectData, WAVE range] = SFH_ParseToSelectDataWaveAndRange(sweepData)
+
+		[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpochFromSingleSelect(graph, singleSelectData, range)
+
+		if(!WaveExists(resolvedRanges))
+			continue
+		endif
+
 		numPoints = DimSize(sweepData, ROWS)
 		dt        = DimDelta(sweepData, ROWS)
 
@@ -4769,6 +4774,8 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 		if(DimSize(result, ROWS) == 0)
 			continue
 		endif
+
+		PSX_CollectResolvedRanges(graph, resolvedRanges, singleSelectData, allResolvedRanges, allSelectHashes)
 
 		Duplicate/FREE/T rawLabels, labels
 		labels[] = PSX_GenerateKey(rawLabels[p], idx)
@@ -4788,14 +4795,13 @@ Function/WAVE PSX_OperationKernel(variable jsonId, string jsonPath, string graph
 
 	SFH_ASSERT(numCombos > 0, "Could not create psxKernel")
 
+	PSX_CheckResolvedRangesWithSelectHashes(allResolvedRanges, allSelectHashes)
+
 	Redimension/N=(PSX_KERNEL_OUTPUTWAVES_PER_ENTRY * numCombos) output
 
 	parameterPath = SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/" + SF_OP_PSX_KERNEL
 
-	WAVE rangeClean = ZapNullRefs(range)
-
 	JWN_CreatePath(output, parameterPath)
-	JWN_SetWaveInWaveNote(output, parameterPath + "/range", rangeClean) // not the same as SF_META_RANGE
 	JWN_SetNumberInWaveNote(output, parameterPath + "/riseTau", riseTau)
 	JWN_SetNumberInWaveNote(output, parameterPath + "/decayTau", decayTau)
 	JWN_SetNumberInWaveNote(output, parameterPath + "/amp", amp)
