@@ -4551,6 +4551,55 @@ static Function PSX_OperationSetDimensionLabels(WAVE/WAVE output, variable numCo
 	endfor
 End
 
+/// @brief Collect all resolved ranges in allResolvedRanges together with a hash of the select data
+Function PSX_CollectResolvedRanges(string graph, WAVE range, WAVE singleSelectData, WAVE allResolvedRanges, WAVE/T allSelectHashes)
+
+	variable numRows
+
+	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpochFromSingleSelect(graph, singleSelectData, range)
+
+	numRows = DimSize(allSelectHashes, ROWS)
+	Redimension/N=(numRows + 1) allSelectHashes
+	allSelectHashes[numRows] = WaveHash(singleSelectData, HASH_SHA2_256)
+
+	Concatenate/NP/FREE {resolvedRanges}, allResolvedRanges
+
+	if(DimSize(allResolvedRanges, COLS) == 0)
+		Redimension/N=(-1, 1) allResolvedRanges
+	endif
+End
+
+/// @brief Check that the 2xN wave allResolvedRanges has only
+///        non-intersecting ranges for the same select data hash
+static Function PSX_CheckResolvedRangesWithSelectHashes(WAVE allResolvedRanges, WAVE/T allSelectHashes)
+
+	string selectHash
+	variable numRows, numColumns, i, idx
+
+	numRows    = DimSize(allResolvedRanges, ROWS)
+	numColumns = DimSize(allResolvedRanges, COLS)
+
+	ASSERT(numColumns == DimSize(allSelectHashes, ROWS), "Mismatched row sizes")
+
+	for(selectHash : GetUniqueEntries(allSelectHashes))
+		Make/N=(numRows, numColumns)/FREE work
+
+		for(i = 0, idx = 0; i < numColumns; i += 1)
+			if(!cmpstr(selectHash, allSelectHashes[i]))
+				work[][idx] = allResolvedRanges[p][i]
+				idx        += 1
+			endif
+		endfor
+
+		MatrixOp/FREE workTransposed = work^t
+
+		ASSERT(idx > 0, "Invalid idx after searching")
+		Redimension/N=(idx, -1) workTransposed
+
+		ASSERT(!AreIntervalsIntersecting(workTransposed), "Can't work with multiple intersecting ranges")
+	endfor
+End
+
 /// @brief Implementation of the `psx` operation
 ///
 // Returns a SweepFormula dataset with n * PSX_OPERATION_OUTPUT_WAVES_PER_ENTRY
