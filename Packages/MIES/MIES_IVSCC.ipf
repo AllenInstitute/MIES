@@ -13,7 +13,7 @@
 /// - Listening port for the REP/ROUTER socket starts at #ZEROMQ_BIND_REP_PORT.
 /// - Listening port for the PUBLISHER socket starts at #ZEROMQ_BIND_PUB_PORT
 /// - If one of those ports is already in use, the next larger port is tried.
-/// - The publisher socket does include an automatic heartbeat message every 5 seconds. Subscribe to #ZeroMQ_HEARTBEAT if
+/// - The publisher socket does include an automatic heartbeat message every 5 seconds. Subscribe to #ZMQ_HEARTBEAT if
 ///   you want to receive that.
 /// - All available message filters can be queried via FFI_GetAvailableMessageFilters().
 /// - More information regarding the ZeroMQ-XOP is located [here](https://github.com/AllenInstitute/ZeroMQ-XOP/#readme)

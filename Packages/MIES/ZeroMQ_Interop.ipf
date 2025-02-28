@@ -1,9 +1,11 @@
-#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
-#pragma IgorVersion=8.0
+#pragma TextEncoding="UTF-8"
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
+#pragma IgorVersion=6.37
 
 // This file is part of the `ZeroMQ-XOP` project and licensed under BSD-3-Clause.
 
+/// ** Define ZeroMQ Constants (for back-compatibility) for Igor8 case. **
+#if igorVersion() >= 8
 /// @name Flags for zeromq_set()
 /// @anchor ZeroMQSetFlags
 ///@{
@@ -36,25 +38,62 @@ Constant ZeroMQ_INVALID_MESSAGE_FORMAT    = 10009
 Constant ZeroMQ_INVALID_LOGGING_TEMPLATE  = 10010
 Constant ZeroMQ_MESSAGE_FILTER_DUPLICATED = 10011
 Constant ZeroMQ_MESSAGE_FILTER_MISSING    = 10012
+Constant ZeroMQ_MESSAGE_INVALID_TYPE      = 10013
+///@}
+#endif
+
+/// @name Flags for zeromq_set()
+/// @anchor ZeroMQSetFlags
+///@{
+/// Sets the default flags (no debug, no ipv6, busy wait on receive)
+Constant ZMQ_SET_FLAGS_DEFAULT = 0x1
+/// Enable debug output
+Constant ZMQ_SET_FLAGS_DEBUG = 0x2
+/// Enable ipv6 support
+Constant ZMQ_SET_FLAGS_IPV6 = 0x4
+/// Don't do busy waiting on zeromq_server_recv() and zeromq_client_recv()
+/// instead immediately return if no messages are available.
+Constant ZMQ_SET_FLAGS_NOBUSYWAITRECV = 0x8
+/// Log incoming and outgoing messages
+Constant ZMQ_SET_FLAGS_LOGGING = 0x10
+
 ///@}
 
-Constant REQ_SUCCESS                         =   0
-Constant REQ_UNKNOWN_ERROR                   =   1
-Constant REQ_INVALID_JSON_OBJECT             =   3
-Constant REQ_INVALID_VERSION                 =   4
-Constant REQ_INVALID_OPERATION               =   5
-Constant REQ_INVALID_OPERATION_FORMAT        =   6
-Constant REQ_INVALID_MESSAGEID               =   7
-Constant REQ_OUT_OF_MEMORY                   =   8
+StrConstant ZMQ_HEARTBEAT = "heartbeat"
+
+/// @name Error codes
+/// @anchor ZeroMQErrorCodes
+///@{
+Constant ZMQ_UNKNOWN_SET_FLAG          = 10003
+Constant ZMQ_INTERNAL_ERROR            = 10004
+Constant ZMQ_INVALID_ARG               = 10005
+Constant ZMQ_HANDLER_ALREADY_RUNNING   = 10006
+Constant ZMQ_HANDLER_NO_CONNECTION     = 10007
+Constant ZMQ_MISSING_PROCEDURE_FILES   = 10008
+Constant ZMQ_INVALID_MESSAGE_FORMAT    = 10009
+Constant ZMQ_INVALID_LOGGING_TEMPLATE  = 10010
+Constant ZMQ_MESSAGE_FILTER_DUPLICATED = 10011
+Constant ZMQ_MESSAGE_FILTER_MISSING    = 10012
+Constant ZMQ_MESSAGE_INVALID_TYPE      = 10013
+///@}
+
+Constant REQ_SUCCESS                  = 0
+Constant REQ_UNKNOWN_ERROR            = 1
+Constant REQ_INVALID_JSON_OBJECT      = 3
+Constant REQ_INVALID_VERSION          = 4
+Constant REQ_INVALID_OPERATION        = 5
+Constant REQ_INVALID_OPERATION_FORMAT = 6
+Constant REQ_INVALID_MESSAGEID        = 7
+Constant REQ_OUT_OF_MEMORY            = 8
 // error codes for CallFunction class
-Constant REQ_PROC_NOT_COMPILED               = 100
-Constant REQ_NON_EXISTING_FUNCTION           = 101
-Constant REQ_TOO_FEW_FUNCTION_PARAMS         = 102
-Constant REQ_TOO_MANY_FUNCTION_PARAMS        = 103
-Constant REQ_UNSUPPORTED_FUNC_SIG            = 104
-Constant REQ_UNSUPPORTED_FUNC_RET            = 105
-Constant REQ_INVALID_PARAM_FORMAT            = 106
-Constant REQ_FUNCTION_ABORTED                = 107
+Constant REQ_PROC_NOT_COMPILED        = 100
+Constant REQ_NON_EXISTING_FUNCTION    = 101
+Constant REQ_TOO_FEW_FUNCTION_PARAMS  = 102
+Constant REQ_TOO_MANY_FUNCTION_PARAMS = 103
+Constant REQ_UNSUPPORTED_FUNC_SIG     = 104
+Constant REQ_UNSUPPORTED_FUNC_RET     = 105
+Constant REQ_INVALID_PARAM_FORMAT     = 106
+Constant REQ_FUNCTION_ABORTED         = 107
 
 /// @name Functions which might be useful for outside callers
 /// @anchor ZeroMQInterfaceFunctions
