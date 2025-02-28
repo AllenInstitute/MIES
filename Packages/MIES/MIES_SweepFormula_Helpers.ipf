@@ -1122,8 +1122,8 @@ Function/WAVE SFH_NewSelectDataWave(variable numSweeps, variable numChannels)
 	return selectData
 End
 
-/// @brief Recreate a **single** select data wave and range stored in the JSON wavenote from SFH_GetSweepsForFormula()
-Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sweepData)
+/// @brief Parse the range stored in the JSON wavenote from SFH_GetSweepsForFormula()
+Function/WAVE SFH_ParseSweepDataRange(WAVE sweepData)
 
 	WAVE/Z range = JWN_GetNumericWaveFromWaveNote(sweepData, SF_META_RANGE)
 
@@ -1132,6 +1132,18 @@ Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sw
 	endif
 
 	if(!WaveExists(range) || !HasOneValidEntry(range))
+		return $""
+	endif
+
+	return range
+End
+
+/// @brief Recreate a **single** select data wave and range stored in the JSON wavenote from SFH_GetSweepsForFormula()
+Function [WAVE selectData, WAVE range] SFH_ParseToSelectDataWaveAndRange(WAVE sweepData)
+
+	WAVE/Z range = SFH_ParseSweepDataRange(sweepData)
+
+	if(!WaveExists(range))
 		return [$"", $""]
 	endif
 
@@ -1478,6 +1490,24 @@ Function/WAVE SFH_GetStimsetRange(string graph, WAVE data, WAVE selectData)
 	return range
 End
 
+Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpochFromSingleSelect(string graph, WAVE singleSelectData, WAVE range)
+
+	variable sweepNo, chanNr, chanType, mapIndex
+
+	sweepNo  = singleSelectData[0][%SWEEP]
+	chanNr   = singleSelectData[0][%CHANNELNUMBER]
+	chanType = singleSelectData[0][%CHANNELTYPE]
+	mapIndex = singleSelectData[0][%SWEEPMAPINDEX]
+
+	WAVE/Z numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
+	WAVE/Z textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
+	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
+
+	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr, mapIndex)
+
+	return [resolvedRanges, epochRangeNames]
+End
+
 /// @brief From a single numeric/textual range wave we return a 2xN numeric range
 ///
 /// Supports numeric ranges, epochs, and epochs with wildcards.
@@ -1691,23 +1721,30 @@ Function/WAVE SFH_MoveDatasetHigherIfCompatible(WAVE/WAVE data)
 	return data
 End
 
-Function/WAVE SFH_GetSingleSelect(string graph, string opShort, variable sweepNo, variable channelType, variable channelNumber, variable mapIndex)
-
-	WAVE/WAVE range        = SFH_AsDataSet(SFH_GetFullRange())
-	WAVE      singleSelect = SFH_NewSelectDataWave(1, 1)
-	singleSelect[0][%SWEEP]         = sweepNo
-	singleSelect[0][%CHANNELTYPE]   = channelType
-	singleSelect[0][%CHANNELNUMBER] = channelNumber
-	singleSelect[0][%SWEEPMAPINDEX] = mapIndex
+Function/WAVE SFH_CreateSelectDataComp(string graph, string opShort, WAVE singleSelect, WAVE range)
 
 	WAVE/WAVE selectDataComp = GetSFSelectDataComp(graph, opShort)
 	JWN_SetStringInWaveNote(selectDataComp, SF_META_DATATYPE, SF_DATATYPE_SELECTCOMP)
 	JWN_SetStringInWaveNote(singleSelect, SF_META_DATATYPE, SF_DATATYPE_SELECT)
 	JWN_SetStringInWaveNote(range, SF_META_DATATYPE, SF_DATATYPE_SELECTRANGE)
 	selectDataComp[%SELECTION] = singleSelect
-	selectDataComp[%RANGE]     = range
+	selectDataComp[%RANGE]     = SFH_AsDataSet(range)
 
 	Make/FREE/WAVE selectDataArray = {selectDataComp}
+
+	return selectDataArray
+End
+
+Function/WAVE SFH_GetSingleSelect(string graph, string opShort, variable sweepNo, variable channelType, variable channelNumber, variable mapIndex)
+
+	WAVE range        = SFH_GetFullRange()
+	WAVE singleSelect = SFH_NewSelectDataWave(1, 1)
+	singleSelect[0][%SWEEP]         = sweepNo
+	singleSelect[0][%CHANNELTYPE]   = channelType
+	singleSelect[0][%CHANNELNUMBER] = channelNumber
+	singleSelect[0][%SWEEPMAPINDEX] = mapIndex
+
+	WAVE selectDataArray = SFH_CreateSelectDataComp(graph, opShort, singleSelect, range)
 
 	return selectDataArray
 End

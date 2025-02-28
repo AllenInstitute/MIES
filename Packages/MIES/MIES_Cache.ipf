@@ -308,6 +308,8 @@ static Function/S CA_WaveCRCs(WAVE/WAVE waveRefs, [variable crcMode, variable in
 
 	variable rows
 
+	ASSERT(IsWaveRefWave(waveRefs), "Expected a wave reference wave")
+
 	if(ParamIsDefault(crcMode))
 		crcMode = 0
 	endif
