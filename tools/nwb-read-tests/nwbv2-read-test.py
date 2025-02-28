@@ -25,7 +25,7 @@ def checkFile(path):
         return 1
 
     # 1.) pynwb Validation
-    comp = run(["python", "-m", "pynwb.validate", path],
+    comp = run(["pynwb-validate", path],
                stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=120)
 
     if comp.returncode != 0:
@@ -49,7 +49,7 @@ def checkFile(path):
         nwbfile = io.read()
 
         print(f"nwbfile: {nwbfile}")
-        print(f"ic_electrodes: {nwbfile.ic_electrodes}")
+        print(f"icephys_electrodes: {nwbfile.icephys_electrodes}")
         print(f"sweep_table: {nwbfile.sweep_table}")
         print(f"lab_meta_data: {nwbfile.lab_meta_data}")
         print(f"acquisition: {nwbfile.acquisition}")
