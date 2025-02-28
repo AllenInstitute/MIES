@@ -1490,6 +1490,24 @@ Function/WAVE SFH_GetStimsetRange(string graph, WAVE data, WAVE selectData)
 	return range
 End
 
+Function [WAVE adaptedRange, WAVE/T epochRangeNames] SFH_GetNumericRangeFromEpochFromSingleSelect(string graph, WAVE singleSelectData, WAVE range)
+
+	variable sweepNo, chanNr, chanType, mapIndex
+
+	sweepNo  = singleSelectData[0][%SWEEP]
+	chanNr   = singleSelectData[0][%CHANNELNUMBER]
+	chanType = singleSelectData[0][%CHANNELTYPE]
+	mapIndex = singleSelectData[0][%SWEEPMAPINDEX]
+
+	WAVE/Z numericalValues = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_NUMERICAL_VALUES)
+	WAVE/Z textualValues   = SFH_GetLabNoteBookForSweep(graph, sweepNo, mapIndex, LBN_TEXTUAL_VALUES)
+	SFH_ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "LBN not found for sweep " + num2istr(sweepNo))
+
+	[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpoch(graph, numericalValues, textualValues, range, sweepNo, chanType, chanNr, mapIndex)
+
+	return [resolvedRanges, epochRangeNames]
+End
+
 /// @brief From a single numeric/textual range wave we return a 2xN numeric range
 ///
 /// Supports numeric ranges, epochs, and epochs with wildcards.
