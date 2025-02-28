@@ -1316,7 +1316,7 @@ static Function TestOperationPSXKernel()
 	CHECK_GE_VAR(jsonID, 0)
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX_KERNEL)
 	CHECK_WAVE(params, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(params, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(params, ROWS), 3)
 	JSON_Release(jsonID)
 
 	// offset for sweep data is 50 due to the range above
@@ -1326,6 +1326,15 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[3], 0, 0.2)
 	CheckDimensionScaleHelper(dataWref[4], 0, 0.01)
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
+
+	str = "psxKernel([select(selRange([50, 150]), selchannels(AD6), selsweeps(0), selvis(all)), select(selRange([50, 150]), selchannels(AD6), selsweeps(2), selvis(all))], 1, 15, -5)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 6)
+
+	actual = MIES_CA#CA_WaveCRCs(dataWref, includeWaveScalingAndUnits = 1)
+	// same hashes as above with only a single select
+	CHECK_EQUAL_STR(expected, actual)
 
 	// three waves from first range, none from second
 	Make/FREE/T/N=(3, 1, 1) epochKeys
@@ -1338,6 +1347,11 @@ static Function TestOperationPSXKernel()
 	epochsWave[0][EPOCH_COL_ENDTIME][DAC][XOP_CHANNEL_TYPE_DAC]   = "0.150"
 	epochsWave[0][EPOCH_COL_TAGS][DAC][XOP_CHANNEL_TYPE_DAC]      = "ShortName=E0;stuff"
 	epochsWave[0][EPOCH_COL_TREELEVEL][DAC][XOP_CHANNEL_TYPE_DAC] = "0"
+
+	epochsWave[1][EPOCH_COL_STARTTIME][DAC][XOP_CHANNEL_TYPE_DAC] = "0.075"
+	epochsWave[1][EPOCH_COL_ENDTIME][DAC][XOP_CHANNEL_TYPE_DAC]   = "0.175"
+	epochsWave[1][EPOCH_COL_TAGS][DAC][XOP_CHANNEL_TYPE_DAC]      = "ShortName=E1;apples"
+	epochsWave[1][EPOCH_COL_TREELEVEL][DAC][XOP_CHANNEL_TYPE_DAC] = "1"
 
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = EP_EpochWaveToStr(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC)
 	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, 0, device, DATA_ACQUISITION_MODE)
@@ -1370,6 +1384,15 @@ static Function TestOperationPSXKernel()
 
 	// too large decayTau
 	str = "psxKernel([50, 150], select(selchannels(AD15), selsweeps([0])), 1, 150, -5)"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// overlapping intervals in one select statement
+	str = "psxKernel(select(selrange([E0, E1]), selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1456,7 +1479,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	CHECK_GE_VAR(jsonID, 0)
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX_KERNEL)
 	CHECK_WAVE(params, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(params, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(params, ROWS), 3)
 
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX)
 	CHECK_WAVE(params, TEXT_WAVE)
