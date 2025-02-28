@@ -1721,23 +1721,30 @@ Function/WAVE SFH_MoveDatasetHigherIfCompatible(WAVE/WAVE data)
 	return data
 End
 
-Function/WAVE SFH_GetSingleSelect(string graph, string opShort, variable sweepNo, variable channelType, variable channelNumber, variable mapIndex)
-
-	WAVE/WAVE range        = SFH_AsDataSet(SFH_GetFullRange())
-	WAVE      singleSelect = SFH_NewSelectDataWave(1, 1)
-	singleSelect[0][%SWEEP]         = sweepNo
-	singleSelect[0][%CHANNELTYPE]   = channelType
-	singleSelect[0][%CHANNELNUMBER] = channelNumber
-	singleSelect[0][%SWEEPMAPINDEX] = mapIndex
+Function/WAVE SFH_CreateSelectDataComp(string graph, string opShort, WAVE singleSelect, WAVE range)
 
 	WAVE/WAVE selectDataComp = GetSFSelectDataComp(graph, opShort)
 	JWN_SetStringInWaveNote(selectDataComp, SF_META_DATATYPE, SF_DATATYPE_SELECTCOMP)
 	JWN_SetStringInWaveNote(singleSelect, SF_META_DATATYPE, SF_DATATYPE_SELECT)
 	JWN_SetStringInWaveNote(range, SF_META_DATATYPE, SF_DATATYPE_SELECTRANGE)
 	selectDataComp[%SELECTION] = singleSelect
-	selectDataComp[%RANGE]     = range
+	selectDataComp[%RANGE]     = SFH_AsDataSet(range)
 
 	Make/FREE/WAVE selectDataArray = {selectDataComp}
+
+	return selectDataArray
+End
+
+Function/WAVE SFH_GetSingleSelect(string graph, string opShort, variable sweepNo, variable channelType, variable channelNumber, variable mapIndex)
+
+	WAVE range        = SFH_GetFullRange()
+	WAVE singleSelect = SFH_NewSelectDataWave(1, 1)
+	singleSelect[0][%SWEEP]         = sweepNo
+	singleSelect[0][%CHANNELTYPE]   = channelType
+	singleSelect[0][%CHANNELNUMBER] = channelNumber
+	singleSelect[0][%SWEEPMAPINDEX] = mapIndex
+
+	WAVE selectDataArray = SFH_CreateSelectDataComp(graph, opShort, singleSelect, range)
 
 	return selectDataArray
 End
