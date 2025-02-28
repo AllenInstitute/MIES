@@ -466,7 +466,17 @@ Constant MCC_SETPRIMARYSIGNALLPF_FUNC    = 10058
 Constant MCC_GETPRIMARYSIGNALLPF_FUNC    = 10059
 Constant MCC_SETSECONDARYSIGNALLPF_FUNC  = 10060
 Constant MCC_GETSECONDARYSIGNALLPF_FUNC  = 10061
-Constant MCC_END_INVALID_FUNC            = 10062
+
+///@name Constants which don't represent MCC amplifier settings on the front panel/hardware
+///@{
+Constant MCC_NO_AMPCHAIN               = 10062
+Constant MCC_NO_AUTOBIAS_V_FUNC        = 10063
+Constant MCC_NO_AUTOBIAS_VRANGE_FUNC   = 10064
+Constant MCC_NO_AUTOBIAS_IBIASMAX_FUNC = 10065
+Constant MCC_NO_AUTOBIAS_ENABLE_FUNC   = 10066
+///@}
+
+Constant MCC_END_INVALID_FUNC = 10067
 ///@}
 
 /// Magic value for selecting "Bypass" in the bessel filter for the primary output
@@ -1860,18 +1870,24 @@ StrConstant LOGBOOK_WAVE_TEMP_FOLDER = "Temp"
 /// @name All available ZeroMQ message filters
 /// @anchor ZeroMQMessageFilters
 ///@{
-StrConstant IVS_PUB_FILTER                = "ivscc"
-StrConstant PRESSURE_STATE_FILTER         = "pressure:state"
-StrConstant PRESSURE_SEALED_FILTER        = "pressure:sealed"
-StrConstant PRESSURE_BREAKIN_FILTER       = "pressure:break in"
-StrConstant AUTO_TP_FILTER                = "testpulse:autotune result"
-StrConstant AMPLIFIER_CLAMP_MODE_FILTER   = "amplifier:clamp mode"
-StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"
-StrConstant ANALYSIS_FUNCTION_PB          = "analysis function:pipette in bath"
-StrConstant ANALYSIS_FUNCTION_SE          = "analysis function:seal evaluation"
-StrConstant ANALYSIS_FUNCTION_VM          = "analysis function:true resting membrane potential"
-StrConstant DAQ_TP_STATE_CHANGE_FILTER    = "data acquisition:state change"
-StrConstant ANALYSIS_FUNCTION_AR          = "analysis function:access resistance smoke"
+StrConstant PRESSURE_STATE_FILTER             = "pressure:state"
+StrConstant PRESSURE_SEALED_FILTER            = "pressure:sealed"
+StrConstant PRESSURE_BREAKIN_FILTER           = "pressure:break in"
+StrConstant AUTO_TP_FILTER                    = "testpulse:autotune result"
+StrConstant ZMQ_FILTER_TPRESULT_NOW           = "testpulse:results live"
+StrConstant ZMQ_FILTER_TPRESULT_1S            = "testpulse:results 1s update"
+StrConstant ZMQ_FILTER_TPRESULT_5S            = "testpulse:results 5s update"
+StrConstant ZMQ_FILTER_TPRESULT_10S           = "testpulse:results 10s update"
+StrConstant ZMQ_FILTER_TPRESULT_NOW_WITH_DATA = "testpulse:results live with data"
+StrConstant AMPLIFIER_CLAMP_MODE_FILTER       = "amplifier:clamp mode"
+StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE     = "amplifier:auto bridge balance"
+StrConstant AMPLIFIER_SET_VALUE               = "amplifier:set value"
+StrConstant ANALYSIS_FUNCTION_PB              = "analysis function:pipette in bath"
+StrConstant ANALYSIS_FUNCTION_SE              = "analysis function:seal evaluation"
+StrConstant ANALYSIS_FUNCTION_VM              = "analysis function:true resting membrane potential"
+StrConstant DAQ_TP_STATE_CHANGE_FILTER        = "data acquisition:state change"
+StrConstant ANALYSIS_FUNCTION_AR              = "analysis function:access resistance smoke"
+StrConstant CONFIG_FINISHED_FILTER            = "configuration:finished"
 ///@}
 
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
@@ -2392,3 +2408,10 @@ Constant ABORTCODE_USERABORT     = -1
 ///@}
 
 StrConstant CONF_DEFAULT_SAVE_LOCATION = "C:MiesSave"
+
+// If this constant with dimLabels is changed the following functions should be verified:
+//
+// TP_TSAnalysis
+// GetTPResultAsyncBuffer
+// GetTPResults (reuses same dimlabels partially)
+StrConstant TP_ANALYSIS_DATA_LABELS = "BASELINE;STEADYSTATERES;INSTANTRES;ELEVATED_SS;ELEVATED_INST;NOW;HEADSTAGE;MARKER;NUMBER_OF_TP_CHANNELS;TIMESTAMP;TIMESTAMPUTC;CLAMPMODE;CLAMPAMP;BASELINEFRAC;CYCLEID;TPLENGTHPOINTSADC;PULSELENGTHPOINTSADC;PULSESTARTPOINTSADC;SAMPLINGINTERVALADC;TPLENGTHPOINTSDAC;PULSELENGTHPOINTSDAC;PULSESTARTPOINTSDAC;SAMPLINGINTERVALDAC;"

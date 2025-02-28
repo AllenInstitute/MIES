@@ -3596,7 +3596,7 @@ End
 Function DAP_SetVarProc_AmpCntrls(STRUCT WMSetVariableAction &sva) : SetVariableControl
 
 	string device, ctrl
-	variable headStage
+	variable headStage, func, clampMode
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -3604,8 +3604,9 @@ Function DAP_SetVarProc_AmpCntrls(STRUCT WMSetVariableAction &sva) : SetVariable
 			device = sva.win
 			ctrl   = sva.ctrlName
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
-			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
-			AI_UpdateAmpModel(device, ctrl, headStage)
+			headStage         = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
+			[func, clampMode] = AI_mapcontrolNameToFunctionConstant(ctrl)
+			AI_WriteToAmplifier(device, headStage, clampMode, func, sva.dval, GUIWrite = 0)
 			break
 		default:
 			break
@@ -3617,15 +3618,16 @@ End
 Function DAP_ButtonProc_AmpCntrls(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string device, ctrl
-	variable headStage
+	variable headStage, func, clampMode
 
 	switch(ba.eventCode)
 		case 2: // mouse up
 			device = ba.win
 			ctrl   = ba.ctrlName
 
-			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
-			AI_UpdateAmpModel(device, ctrl, headstage)
+			headStage         = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
+			[func, clampMode] = AI_mapcontrolNameToFunctionConstant(ctrl)
+			AI_WriteToAmplifier(device, headstage, clampMode, func, 1, GUIWrite = 0)
 			break
 		default:
 			break
@@ -3637,7 +3639,7 @@ End
 Function DAP_CheckProc_AmpCntrls(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 
 	string device, ctrl
-	variable headStage
+	variable headStage, func, clampMode
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -3645,8 +3647,9 @@ Function DAP_CheckProc_AmpCntrls(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 			ctrl   = cba.ctrlName
 
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
-			headStage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
-			AI_UpdateAmpModel(device, ctrl, headStage)
+			headStage         = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
+			[func, clampMode] = AI_mapcontrolNameToFunctionConstant(ctrl)
+			AI_WriteToAmplifier(device, headStage, clampMode, func, cba.checked, GUIWrite = 0)
 			break
 		default:
 			break
