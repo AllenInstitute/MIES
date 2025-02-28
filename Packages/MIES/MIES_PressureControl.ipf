@@ -2517,3 +2517,31 @@ Function/S P_PressureMethodToString(variable method)
 			ASSERT(0, "Unknown pressure method: " + num2str(method))
 	endswitch
 End
+
+// for external callers to set manual pressure
+Function DoPressureManual(string device, variable headstage, variable manualOnOff, variable targetPressure)
+
+	// 0) Select the headstage
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = headstage)
+
+	// 1) Set the requested pressure value on the GUI control
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = targetPressure)
+
+	// 2) Check the current pressure mode
+	variable currentMode = P_GetPressureMode(device, headstage)
+
+	// 3) If we want manual mode ON...
+	if(manualOnOff == 1)
+		// ...and we are NOT in manual mode yet, switch to manual
+		if(currentMode != PRESSURE_METHOD_MANUAL)
+			P_SetManual(device, "button_DataAcq_SSSetPressureMan")
+		endif
+	else
+		// If we want manual mode OFF...
+		// ...and we ARE currently in manual mode, switch to atmospheric (or the "off" state)
+		if(currentMode == PRESSURE_METHOD_MANUAL)
+			P_SetManual(device, "button_DataAcq_SSSetPressureMan")
+		endif
+	endif
+
+End
