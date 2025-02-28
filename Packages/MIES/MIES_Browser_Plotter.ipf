@@ -485,7 +485,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						if(hasPhysUnit)
 							unit = AFH_GetChannelUnit(config, chan, channelType)
 						else
-							unit = "a.u."
+							unit = "logical"
 						endif
 
 						axisLabel = "\Zr085" + traceType + "\r(" + unit + ")"
