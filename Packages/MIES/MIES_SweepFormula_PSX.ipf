@@ -1290,44 +1290,77 @@ static Function/S PSX_BuildSweepEquivValue(variable sweepNo, variable mapIndex)
 
 	return str
 End
+
 /// @brief Generate the equivalence classes of selectData
 ///
 /// All selections which have the same channel number and type are in one equivalence class.
 ///
 /// The returned 2D wave has row labels from PSX_BuildSweepEquivKey() for the
 /// channel type/number and the sweep numbers in the columns.
-static Function/WAVE PSX_GenerateSweepEquiv(WAVE selectData)
+static Function [WAVE/T sweepEquiv, WAVE/WAVE sweepEquivRanges] PSX_GenerateSweepEquiv(WAVE/WAVE selectDataCompArray)
 
-	variable numSelect, idx, i, nextFreeRow, maxCol
+	variable numSelectComp, numSelected, idx, i, j, nextFreeRow, maxCol, col, isSingleRange
 	string key
 
-	numSelect = DimSize(selectData, ROWS)
-	ASSERT(numSelect > 0, "Expected at least one entry in sweepData")
+	ASSERT(IsWaveRefWave(selectDataCompArray), "Expected a wave reference wave for selectDataCompArray")
 
-	Make/N=(numSelect, numSelect)/FREE=1/T sweepEquiv
+	numSelectComp = DimSize(selectDataCompArray, ROWS)
+	ASSERT(numSelectComp > 0, "Expected at least one entry in selectDataCompArray")
 
-	for(i = 0; i < numSelect; i += 1)
-		key = PSX_BuildSweepEquivKey(selectData[i][%CHANNELTYPE], selectData[i][%CHANNELNUMBER])
-		idx = FindDimLabel(sweepEquiv, ROWS, key)
+	Make/N=(MINIMUM_WAVE_SIZE, MINIMUM_WAVE_SIZE)/FREE=1/T sweepEquiv
+	Make/N=(MINIMUM_WAVE_SIZE, MINIMUM_WAVE_SIZE)/FREE=1/WAVE sweepEquivRanges
 
-		if(idx == -2)
-			SetDimLabel ROWS, nextFreeRow, $key, sweepEquiv
-			idx          = nextFreeRow
-			nextFreeRow += 1
+	for(i = 0; i < numSelectComp; i += 1)
+		WAVE/WAVE selectDataComp = selectDataCompArray[i]
+		ASSERT(IsWaveRefWave(selectDataComp), "Expected a wave reference wave for selectDataComp")
+
+		WAVE      selectData = selectDataComp[%SELECTION]
+		WAVE/WAVE range      = selectDataComp[%RANGE]
+		ASSERT(IsWaveRefWave(range), "Range must be a wave reference wave")
+
+		isSingleRange = DimSize(range, ROWS) == 1
+
+		if(!isSingleRange)
+			SFH_ASSERT(DimSize(range, ROWS) == numSelected, "Number of ranges is not equal number of selections.")
 		endif
 
-		FindValue/TXOP=4/TEXT=""/RMD=[idx][] sweepEquiv
-		ASSERT(V_col >= 0, "Not enough space")
-		maxCol = max(maxCol, V_col)
+		numSelected = DimSize(selectData, ROWS)
+		for(j = 0; j < numSelected; j += 1)
+			key = PSX_BuildSweepEquivKey(selectData[j][%CHANNELTYPE], selectData[j][%CHANNELNUMBER])
+			idx = FindDimLabel(sweepEquiv, ROWS, key)
 
-		sweepEquiv[idx][V_col] = PSX_BuildSweepEquivValue(selectData[i][%SWEEP], selectData[i][%SWEEPMAPINDEX])
+			if(idx == -2)
+				EnsureLargeEnoughWave(sweepEquiv, dimension = ROWS, indexShouldExist = nextFreeRow)
+
+				SetDimLabel ROWS, nextFreeRow, $key, sweepEquiv
+				idx          = nextFreeRow
+				nextFreeRow += 1
+			endif
+
+			FindValue/TXOP=4/TEXT=""/RMD=[idx][] sweepEquiv
+			if(V_col >= 0)
+				col = V_col
+			else
+				col = DimSize(sweepEquiv, COLS)
+				EnsureLargeEnoughWave(sweepEquiv, dimension = COLS, indexShouldExist = col)
+			endif
+
+			maxCol               = max(maxCol, col)
+			sweepEquiv[idx][col] = PSX_BuildSweepEquivValue(selectData[j][%SWEEP], selectData[j][%SWEEPMAPINDEX])
+
+			EnsureLargeEnoughWave(sweepEquivRanges, dimension = ROWS, indexShouldExist = idx)
+			EnsureLargeEnoughWave(sweepEquivRanges, dimension = COLS, indexShouldExist = col)
+
+			WAVE/Z setRange = range[isSingleRange ? 0 : i]
+			sweepEquivRanges[idx][col] = setRange
+		endfor
 	endfor
 
 	ASSERT(nextFreeRow > 0, "Could not build sweep equivalence classes")
 
-	Redimension/N=(nextFreeRow, maxCol + 1) sweepEquiv
+	Redimension/N=(nextFreeRow, maxCol + 1) sweepEquiv, sweepEquivRanges
 
-	return sweepEquiv
+	return [sweepEquiv, sweepEquivRanges]
 End
 
 /// @brief Check that the 2xN wave allResolvedRanges has only
@@ -1344,28 +1377,20 @@ static Function PSX_CheckResolvedRanges(WAVE allResolvedRanges)
 End
 
 /// @brief Helper function of the `psxStats` operation
-static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE ranges, WAVE selectData, string prop, string stateAsStr, string postProc)
+static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE selectDataCompArray, string prop, string stateAsStr, string postProc)
 
 	string propLabelAxis, comboKey
 	variable numEquivChannelNumberTypes, numEquivSweeps, i, j, k, index, sweepNo, chanNr, chanType
-	variable state, numRanges, lowerBoundary, upperBoundary, temp, err, mapIndex, singleRange
+	variable state, numRanges, lowerBoundary, upperBoundary, temp, err, mapIndex
 	variable refMarker, idx
 
 	WAVE/WAVE output = SFH_CreateSFRefWave(graph, SF_OP_PSX_STATS, MINIMUM_WAVE_SIZE)
 
 	// create equivalence classes where chanNr/chanType are the same and only the sweep number differs
-	WAVE selectDataEquiv = PSX_GenerateSweepEquiv(selectData)
+	[WAVE/T selectDataEquiv, WAVE/WAVE selectDataEquivRanges] = PSX_GenerateSweepEquiv(selectDataCompArray)
 
 	numEquivChannelNumberTypes = DimSize(selectDataEquiv, ROWS)
 	numEquivSweeps             = DimSize(selectDataEquiv, COLS)
-
-	numRanges = DimSize(ranges, ROWS)
-	SFH_ASSERT(numRanges > 0, "Expected at least one range")
-	singleRange = (numRanges == 1)
-
-	if(!singleRange)
-		SFH_ASSERT(DimSize(selectDataEquiv, COLS) == numRanges, "The number of sweeps and ranges differ")
-	endif
 
 	WAVE/Z eventContainerFromResults = PSX_GetEventContainerFromResults(id)
 	WAVE/Z eventContainer            = PSX_GetEventContainer(graph, requestID = id)
@@ -1389,9 +1414,9 @@ static Function/WAVE PSX_OperationStatsImpl(string graph, string id, WAVE/WAVE r
 			singleSelectData[0][%CHANNELTYPE]   = chanType
 			singleSelectData[0][%SWEEPMAPINDEX] = mapIndex
 
-			WAVE rangesForSweep = ranges[singleRange ? 0 : j]
+			WAVE ranges = selectDataEquivRanges[i][j]
 
-			[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpochFromSingleSelect(graph, singleSelectData, rangesForSweep)
+			[WAVE resolvedRanges, WAVE/T epochRangeNames] = SFH_GetNumericRangeFromEpochFromSingleSelect(graph, singleSelectData, ranges)
 
 			if(!WaveExists(resolvedRanges))
 				continue
@@ -4875,13 +4900,6 @@ Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 	WAVE/Z/WAVE selectDataCompArray = SFH_GetArgumentSelect(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 1)
 	SFH_Assert(WaveExists(selectDataCompArray), "Missing select data")
 
-	SFH_ASSERT(DimSize(selectDataCompArray, ROWS) == 1, "Only supports a single selection at the moment")
-
-	WAVE/WAVE selectDataComp = selectDataCompArray[0]
-
-	WAVE/Z    selectData = selectDataComp[%SELECTION]
-	WAVE/WAVE range      = selectDataComp[%RANGE]
-
 	WAVE allProps = PSX_GetAllStatsProperties()
 	prop = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 2, allowedValues = allProps)
 	Make/FREE/T allStates = {"accept", "reject", "undetermined", "all", "every"}
@@ -4889,7 +4907,7 @@ Function/WAVE PSX_OperationStats(variable jsonId, string jsonPath, string graph)
 	Make/FREE/T allPostProc = {"nothing", "stats", "count", "hist", "log10", "nonfinite"}
 	postProc = SFH_GetArgumentAsText(jsonID, jsonPath, graph, SF_OP_PSX_STATS, 4, defValue = "nothing", allowedValues = allPostProc)
 
-	WAVE/WAVE output = PSX_OperationStatsImpl(graph, id, range, selectData, prop, stateAsStr, postProc)
+	WAVE/WAVE output = PSX_OperationStatsImpl(graph, id, selectDataCompArray, prop, stateAsStr, postProc)
 
 	JWN_SetStringInWaveNote(output, SF_META_OPSTACK, AddListItem(SF_OP_PSX_STATS, ""))
 
