@@ -646,9 +646,9 @@ Function DAP_EphysPanelStartUpSettings()
 
 	SetVariable SetVar_DataAcq_Hold_VC, WIN=$device, value=_NUM:0
 	CheckBox check_DatAcq_HoldEnableVC, WIN=$device, value=0
-	SetVariable SetVar_DataAcq_WCR, WIN=$device, value=_NUM:0
+	SetVariable SetVar_DataAcq_WCR, WIN=$device, value=_NUM:1
 	CheckBox check_DatAcq_WholeCellEnable, WIN=$device, value=0
-	SetVariable SetVar_DataAcq_WCC, WIN=$device, value=_NUM:0
+	SetVariable SetVar_DataAcq_WCC, WIN=$device, value=_NUM:1
 	SetVariable SetVar_DataAcq_RsCorr, WIN=$device, value=_NUM:0
 	SetVariable SetVar_DataAcq_RsPred, WIN=$device, value=_NUM:0
 	CheckBox Check_Settings_AlarmPauseAcq, WIN=$device, value=0
