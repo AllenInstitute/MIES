@@ -4331,7 +4331,7 @@ Function DAP_CheckProc_SyncMiesToMCC(STRUCT WMCheckboxAction &cba) : CheckBoxCon
 			device    = cba.win
 			headstage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 			clampMode = DAG_GetHeadstageMode(device, headstage)
-			AI_SyncGUIToAmpStorageAndMCCApp(device, headstage, clampMode)
+			AI_SyncGUIToAmpStorageAndMCCApp(device, headstage, clampMode, force = 1)
 			break
 		default:
 			break
