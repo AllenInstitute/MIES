@@ -188,6 +188,22 @@ Function/WAVE GetChannelNumbersForDATTL()
 	return channelNumbers
 End
 
+Function/WAVE GetClampModesWithoutIZero()
+
+	Make/FREE clampModes = {V_CLAMP_MODE, I_CLAMP_MODE}
+	SetDimensionLabels(clampModes, "VC;IC;", ROWS)
+
+	return clampModes
+End
+
+Function/WAVE GetClampModes()
+
+	Make/FREE clampModes = {V_CLAMP_MODE, I_CLAMP_MODE, I_EQUAL_ZERO_MODE}
+	SetDimensionLabels(clampModes, "VC;IC;IZ;", ROWS)
+
+	return clampModes
+End
+
 Function/WAVE GetChannelTypes()
 
 	Make/FREE channelTypes = {CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
@@ -957,4 +973,34 @@ static Function/WAVE SF_TestOperationSelNoArg()
 	SetDimensionLabels(wt, TextWaveToList(wt, ";"), ROWS)
 
 	return wt
+End
+
+Function/WAVE GetAmplifierFuncs()
+
+	variable numEntries
+
+	// ]MCC_BEGIN_INVALID_FUNC, MCC_LAST_HARDWARE_FUNC]
+
+	numEntries = MCC_LAST_HARDWARE_FUNC - MCC_BEGIN_INVALID_FUNC
+
+	Make/FREE/N=(numEntries) funcs = MCC_BEGIN_INVALID_FUNC + 1 + p
+
+	CHECK_EQUAL_VAR(DimSize(funcs, ROWS), 33)
+
+	return funcs
+End
+
+Function/WAVE GetNoAmplifierFuncs()
+
+	variable numEntries
+
+	// ]MCC_LAST_HARDWARE_FUNC, MCC_END_INVALID_FUNC[
+
+	numEntries = MCC_END_INVALID_FUNC - MCC_LAST_HARDWARE_FUNC - 1
+
+	Make/FREE/N=(numEntries) funcs = MCC_LAST_HARDWARE_FUNC + 1 + p
+
+	CHECK_EQUAL_VAR(DimSize(funcs, ROWS), 5)
+
+	return funcs
 End
