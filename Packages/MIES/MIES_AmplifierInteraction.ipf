@@ -472,13 +472,19 @@ Function AI_SyncAmpStorageToGUI(string device, variable headstage)
 End
 
 /// @brief Sync the settings from the GUI to the amp storage wave and the MCC application
-Function AI_SyncGUIToAmpStorageAndMCCApp(string device, variable headStage, variable clampMode)
+Function AI_SyncGUIToAmpStorageAndMCCApp(string device, variable headStage, variable clampMode, [variable force])
 
 	string ctrl, list
-	variable i, numEntries
+	variable i, numEntries, value, checkBeforeWrite
 
 	DAP_AbortIfUnlocked(device)
 	AI_AssertOnInvalidClampMode(clampMode)
+
+	if(ParamIsDefault(force))
+		force = 0
+	else
+		force = !!force
+	endif
 
 	if(DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage") != headStage)
 		return NaN
@@ -494,6 +500,12 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(string device, variable headStage, vari
 		list = AMPLIFIER_CONTROLS_IC
 	endif
 
+	if(force)
+		checkBeforeWrite = 0
+	else
+		checkBeforeWrite = 1
+	endif
+
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = StringFromList(i, list)
@@ -502,7 +514,8 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(string device, variable headStage, vari
 			continue
 		endif
 
-		AI_UpdateAmpModel(device, ctrl, headStage, checkBeforeWrite = 1, sendToAll = 0, selectAmp = 0)
+		value = DAG_GetNumericalValue(device, ctrl)
+		AI_UpdateAmpModel(device, ctrl, headStage, value = value, checkBeforeWrite = checkBeforeWrite, sendToAll = 0, selectAmp = 0)
 	endfor
 End
 
