@@ -3,6 +3,8 @@
 ; This is an example of a multilingual installer
 ; The user can select the language on startup
 
+!pragma warning error all
+
 ;--------------------------------
 
 OutFile languages.exe
@@ -11,6 +13,7 @@ XPStyle on
 
 RequestExecutionLevel user
 
+Unicode True
 ;--------------------------------
 
 Page license
@@ -93,7 +96,7 @@ LangString Sec1Name ${LANG_KOREAN} "Korean section #1"
 LangString Sec1Name ${LANG_RUSSIAN} "Russian section #1"
 LangString Sec1Name ${LANG_SPANISH} "Spanish section #1"
 LangString Sec1Name ${LANG_SWEDISH} "Swedish section #1"
-LangString Sec1Name ${LANG_TRADCHINESE} "Trandional Chinese section #1"
+LangString Sec1Name ${LANG_TRADCHINESE} "Traditional Chinese section #1"
 LangString Sec1Name ${LANG_SIMPCHINESE} "Simplified Chinese section #1"
 LangString Sec1Name ${LANG_SLOVAK} "Slovak section #1"
 
@@ -107,7 +110,7 @@ LangString Message ${LANG_KOREAN} "Korean message"
 LangString Message ${LANG_RUSSIAN} "Russian message"
 LangString Message ${LANG_SPANISH} "Spanish message"
 LangString Message ${LANG_SWEDISH} "Swedish message"
-LangString Message ${LANG_TRADCHINESE} "Trandional Chinese message"
+LangString Message ${LANG_TRADCHINESE} "Traditional Chinese message"
 LangString Message ${LANG_SIMPCHINESE} "Simplified Chinese message"
 LangString Message ${LANG_SLOVAK} "Slovak message"
 

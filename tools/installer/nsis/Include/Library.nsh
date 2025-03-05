@@ -37,7 +37,7 @@
 !include LogicLib.nsh
 !include x64.nsh
 
-### GetParent macro, don't pass $1 or $2 as INTPUT or OUTPUT
+### GetParent macro, don't pass $1 or $2 as INPUT or OUTPUT
 !macro __InstallLib_Helper_GetParent INPUT OUTPUT
 
   # Copied from FileFunc.nsh
@@ -146,30 +146,30 @@
 
 !macroend
 
+!macro __InstallLib_Helper_CmpPackedVer64 oldhi oldlo newhi newlo jeq jle jgt
+
+  IntCmpU ${oldhi} ${newhi} "0"      "${jle}" "${jgt}"
+  IntCmpU ${oldlo} ${newlo} "${jeq}" "${jle}" "${jgt}"
+
+!macroend
+
 ### Get library version
 !macro __InstallLib_Helper_GetVersion TYPE FILE
 
-  !tempfile LIBRARY_TEMP_NSH
-
-  !ifdef NSIS_WIN32_MAKENSIS
-
-    !execute '"${NSISDIR}\Bin\LibraryLocal.exe" "${TYPE}" "${FILE}" "${LIBRARY_TEMP_NSH}"'
-
-  !else
-
-    !execute 'LibraryLocal "${TYPE}" "${FILE}" "${LIBRARY_TEMP_NSH}"'
-
-    !if ${TYPE} == 'T'
-
-      !warning "LibraryLocal currently supports TypeLibs version detection on Windows only"
-
-    !endif
-
+  !if "${TYPE}" == "D"
+   !getdllversion /NoErrors /Packed "${FILE}" LIBRARY_VERSION_
+  !else if "${TYPE}" == "T"
+    !gettlbversion /NoErrors /Packed "${FILE}" LIBRARY_VERSION_
   !endif
 
-  !include "${LIBRARY_TEMP_NSH}"
-  !delfile "${LIBRARY_TEMP_NSH}"
-  !undef LIBRARY_TEMP_NSH
+  ; Emulate the old LibraryLocal defines
+  !ifndef LIBRARY_VERSION_HIGH
+    !define LIBRARY_VERSION_FILENOTFOUND
+  !else if "${LIBRARY_VERSION_HIGH}" == ""
+    !define LIBRARY_VERSION_NONE
+    !undef LIBRARY_VERSION_HIGH
+    !undef LIBRARY_VERSION_LOW
+  !endif
 
 !macroend
 
@@ -304,9 +304,13 @@
 
       !ifndef INSTALLLIB_LIBTYPE_TLB & INSTALLLIB_LIBTYPE_REGDLLTLB
 
-        IntCmpU $R0 $R2 0 "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
-        IntCmpU $R1 $R3 "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.register_${INSTALLLIB_UNIQUE}" \
-          "installlib.upgrade_${INSTALLLIB_UNIQUE}"
+        !ifdef LIBRARY_INSTALL_EQUAL_VERSION
+          !insertmacro __InstallLib_Helper_CmpPackedVer64 $R0 $R1 $R2 $R3 "installlib.upgrade_${INSTALLLIB_UNIQUE}" \
+            "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
+        !else
+          !insertmacro __InstallLib_Helper_CmpPackedVer64 $R0 $R1 $R2 $R3 "installlib.register_${INSTALLLIB_UNIQUE}" \
+            "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
+        !endif
 
       !else
 
@@ -318,15 +322,18 @@
 
         !ifndef LIBRARY_VERSION_NONE
 
-          IntCmpU $R0 $R2 0 "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
-          IntCmpU $R1 $R3 0 "installlib.register_${INSTALLLIB_UNIQUE}" \
-            "installlib.upgrade_${INSTALLLIB_UNIQUE}"
+          !insertmacro __InstallLib_Helper_CmpPackedVer64 $R0 $R1 $R2 $R3 0 \
+            "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
 
         !else
 
-          IntCmpU $R0 $R2 0 "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
-          IntCmpU $R1 $R3 "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.register_${INSTALLLIB_UNIQUE}" \
-            "installlib.upgrade_${INSTALLLIB_UNIQUE}"
+          !ifdef LIBRARY_INSTALL_EQUAL_VERSION
+            !insertmacro __InstallLib_Helper_CmpPackedVer64 $R0 $R1 $R2 $R3 "installlib.upgrade_${INSTALLLIB_UNIQUE}" \
+              "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
+          !else
+            !insertmacro __InstallLib_Helper_CmpPackedVer64 $R0 $R1 $R2 $R3 "installlib.register_${INSTALLLIB_UNIQUE}" \
+              "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
+          !endif
 
         !endif
 
@@ -367,9 +374,13 @@
         Pop $R3
         Pop $R2
 
-        IntCmpU $R0 $R2 0 "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
-        IntCmpU $R1 $R3 "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.register_${INSTALLLIB_UNIQUE}" \
-          "installlib.upgrade_${INSTALLLIB_UNIQUE}"
+        !ifdef LIBRARY_INSTALL_EQUAL_VERSION
+          !insertmacro __InstallLib_Helper_CmpPackedVer64 $R0 $R1 $R2 $R3 "installlib.upgrade_${INSTALLLIB_UNIQUE}" \
+            "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
+        !else
+          !insertmacro __InstallLib_Helper_CmpPackedVer64 $R0 $R1 $R2 $R3 "installlib.register_${INSTALLLIB_UNIQUE}" \
+            "installlib.register_${INSTALLLIB_UNIQUE}" "installlib.upgrade_${INSTALLLIB_UNIQUE}"
+        !endif
 
         !undef LIBRARY_VERSION_HIGH
         !undef LIBRARY_VERSION_LOW
@@ -382,7 +393,7 @@
 
     !endif
 
-  !endif
+  !endif ;~LIBRARY_IGNORE_VERSION
 
   ;------------------------
   ;Upgrade
