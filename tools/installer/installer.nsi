@@ -457,9 +457,6 @@ Function DialogInstallFor910
   NoIGOR1064:
   ${NSD_OnClick} $NSD_IF_CB4 ClickedIGOR1064
 
-  ${NSD_CreateLabel} 5u 88u 100% 26u "The 32-bit version of MIES is discontinued. If you REALLY need a 32-bit version, you can grab the now unsupported version 2.3 from https://github.com/AllenInstitute/MIES/releases/tag/Release_2.3_20210908."
-  Pop $NSD_IF_Label
-
   nsDialogs::Show
 FunctionEnd
 
