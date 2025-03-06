@@ -847,14 +847,6 @@ SectionEnd
 
 function un.onInit
   !insertmacro PreventMultipleUninstaller
-  UserInfo::GetAccountType
-  pop $0
-  ${If} $0 == "admin"
-    IfSilent Next
-      MessageBox MB_OKCANCEL "Permanently remove ${APPNAME}?" IDOK Next
-    Quit
-Next:
-  ${EndIf}
   !insertmacro StopOnIgor32
   !insertmacro StopOnIgor64
 functionEnd
