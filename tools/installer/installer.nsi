@@ -200,6 +200,7 @@ Var NSD_IF_CB4
   StrLen $1 $0
   ${If} $1 <> 0
     ExecWait '$0'
+    BringToFront
   ${EndIf}
 !macroend
 
@@ -207,10 +208,12 @@ Var NSD_IF_CB4
 # this check is just for compatibility with old installations
 !define UODUID ${__LINE__}
   IfFileExists "${USERINSTDIR}\uninstall.exe" 0 UODUEnd_{UODUID}
-    IfSilent +3
+    IfSilent +4
       ExecWait "${USERINSTDIR}\uninstall.exe"
-      Goto +2
+      BringToFront
+      Goto +3
     ExecWait '"${USERINSTDIR}\uninstall.exe" /S'
+    BringToFront
   UODUEnd_{UODUID}:
 !undef UODUID
   !insertmacro WaitForUninstaller
@@ -223,6 +226,7 @@ Var NSD_IF_CB4
   StrLen $1 $0
   ${If} $1 <> 0
     ExecWait '$0'
+    BringToFront
   ${EndIf}
 !macroend
 
