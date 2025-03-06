@@ -93,6 +93,7 @@ echo "Extracted version: "$VERSIONMAJOR"."$VERSIONMINOR"."$VERSIONMINOR2
 # The no wildcard approach touches only own files, all other files will be preserved on uninstallation
 # As the lists are cloned the install and uninstall is forced to be symmetric
 cd $tmpdir
+touch installation_configuration.json
 find -type f > ../installer/$NSISINSTFILELIST
 cp ../installer/$NSISINSTFILELIST ../installer/$NSISUNINSTFILELIST
 find -type d > ../installer/$NSISINSTDIRLIST
