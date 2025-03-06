@@ -837,6 +837,25 @@ SkipASLRSetup:
         SetRegView default
       ${EndIf}
 SkipITCSetup:
+; Write out installed configuration
+  FileOpen $FILEHANDLE "$INSTDIR\Packages\installation_configuration.json" w
+  FileWrite $FILEHANDLE '{$\n'
+  FileWrite $FILEHANDLE '$\t"Installation" : {$\n'
+  IntCmp $ALLUSER 1 ConfigWriteUserAll
+    FileWrite $FILEHANDLE '$\t$\t"User" : "current",$\n'
+    Goto ConfigWriteUserEnd
+ConfigWriteUserAll:
+    FileWrite $FILEHANDLE '$\t$\t"User" : "all",$\n'
+ConfigWriteUserEnd:
+  IntCmp $XOPINST 1 ConfigWriteWithHardwareYes
+  FileWrite $FILEHANDLE '$\t$\t"WithHardware" : 0$\n'
+  Goto ConfigWriteWithHardwareEnd
+ConfigWriteWithHardwareYes:
+  FileWrite $FILEHANDLE '$\t$\t"WithHardware" : 1$\n'
+ConfigWriteWithHardwareEnd:
+  FileWrite $FILEHANDLE '$\t}$\n'
+  FileWrite $FILEHANDLE '}'
+  FileClose $FILEHANDLE
 
 SectionEnd
 
