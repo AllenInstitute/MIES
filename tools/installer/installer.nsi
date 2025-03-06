@@ -557,8 +557,9 @@ IGOR10CheckEnd:
     !insertmacro PreventMultipleInstaller
     !insertmacro StopOnIgor32
     !insertmacro StopOnIgor64
-
-    !insertmacro UninstallAttemptAdmin
+    IntCmp $ISADMIN 0 SkipAdminUninstall
+      !insertmacro UninstallAttemptAdmin
+SkipAdminUninstall:
     !insertmacro UninstallAttemptUser
 
     !insertmacro CheckAllUninstalled
