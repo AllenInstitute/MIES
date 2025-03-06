@@ -199,7 +199,9 @@ Var NSD_IF_CB4
   ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString"
   StrLen $1 $0
   ${If} $1 <> 0
-    ExecWait '$0'
+    ExecWait '$0 _?=$INSTDIR'
+    Delete "$INSTDIR\uninstall.exe"
+    RMDir $INSTDIR
     BringToFront
   ${EndIf}
 !macroend
@@ -208,15 +210,15 @@ Var NSD_IF_CB4
 # this check is just for compatibility with old installations
 !define UODUID ${__LINE__}
   IfFileExists "${USERINSTDIR}\uninstall.exe" 0 UODUEnd_{UODUID}
-    IfSilent +4
-      ExecWait "${USERINSTDIR}\uninstall.exe"
-      BringToFront
-      Goto +3
-    ExecWait '"${USERINSTDIR}\uninstall.exe" /S'
+    IfSilent +3
+      ExecWait "${USERINSTDIR}\uninstall.exe _?=${USERINSTDIR}"
+      Goto +2
+    ExecWait '"${USERINSTDIR}\uninstall.exe" /S _?=${USERINSTDIR}'
+    Delete "${USERINSTDIR}\uninstall.exe"
+    RMDir "${USERINSTDIR}"
     BringToFront
   UODUEnd_{UODUID}:
 !undef UODUID
-  !insertmacro WaitForUninstaller
 
 # this is the current check against registry
   IfSilent +3
@@ -225,7 +227,9 @@ Var NSD_IF_CB4
   ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString"
   StrLen $1 $0
   ${If} $1 <> 0
-    ExecWait '$0'
+    ExecWait '$0 _?=${USERINSTDIR}'
+    Delete "${USERINSTDIR}\uninstall.exe"
+    RMDir "${USERINSTDIR}"
     BringToFront
   ${EndIf}
 !macroend
@@ -239,11 +243,6 @@ WFUWaitUninstA_${WFPID}:
       Goto WFUWaitUninstA_${WFPID}
 WFUEndWaitUninstA_${WFPID}:
 !undef WFPID
-!macroend
-
-!macro WaitForUninstaller
-  !insertmacro WaitForProc "uninstall.exe"
-  !insertmacro WaitForProc "Un_A.exe"
 !macroend
 
 !macro CheckIgor64
@@ -560,10 +559,7 @@ IGOR10CheckEnd:
     !insertmacro StopOnIgor64
 
     !insertmacro UninstallAttemptAdmin
-    !insertmacro WaitForUninstaller
-
     !insertmacro UninstallAttemptUser
-    !insertmacro WaitForUninstaller
 
     !insertmacro CheckAllUninstalled
   ${EndIf}
