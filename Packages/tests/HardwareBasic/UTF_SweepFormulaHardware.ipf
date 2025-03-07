@@ -683,8 +683,8 @@ Function SF_InsertedTPVersusTP_preAcq(string device)
 
 	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StartAcq_IGNORE
 
-	AI_SendToAmp(device, 0, I_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, 5)
-	AI_SendToAmp(device, 1, V_CLAMP_MODE, MCC_SETPRIMARYSIGNALGAIN_FUNC, 1)
+	AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, 5)
+	AI_WriteToAmplifier(device, 1, V_CLAMP_MODE, MCC_PRIMARYSIGNALGAIN_FUNC, 1)
 End
 
 // UTF_TD_GENERATOR DeviceNameGeneratorMD1
