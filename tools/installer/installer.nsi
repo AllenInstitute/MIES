@@ -792,7 +792,7 @@ SkipVCRedistInstallation:
 
   IntCmp $ISADMIN 0 SkipASLRSetup
     IntCmp $XOPINST 0  SkipASLRSetup
-      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\Disable-ASLR-for-IP7-and-8.ps1"'
+      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\Disable-ASLR-for-Igor64.ps1"'
 SkipASLRSetup:
 
   IntCmp $ISADMIN 0 SkipITCSetup
