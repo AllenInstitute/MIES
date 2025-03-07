@@ -304,7 +304,7 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string gitDir, st
 	if(V_flag)
 		printf "Missing functional git executable, please install the \"Xcode commandline tools\" via \"xcode-select --install\" in Terminal.\r"
 		ControlWindowToFront()
-		break
+		abort
 	endif
 
 	sprintf cmd, "do shell script \"%s --git-dir='%s' describe --always --tags --match 'Release_*' > '%sversion.txt' 2>&1\"", gitPathOrName, gitDir, topDir
