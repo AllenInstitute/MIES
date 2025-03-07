@@ -85,10 +85,13 @@ A usage example can be found in `Examples\Memento.nsi`.
 ;
 ;   Usage is similar to Section.
 ;
-;     ${MementoSection} "name" "some_id"
+;     ${MementoSection} "name" "id"
+;
+;     ${MementoSectionEx} "[flags]" "name" "memento_id" "section_id"
 ;
 
 !define MementoSection "!insertmacro MementoSection"
+!define MementoSectionEx "!insertmacro MementoSectionEx"
 
 ;
 ; ${MementoSectionEnd}
@@ -97,7 +100,7 @@ A usage example can be found in `Examples\Memento.nsi`.
 ;
 ;   Usage is similar to SectionEnd.
 ;
-;     ${MementoSection} "name" "some_id"
+;     ${MementoSection} "name" "id"
 ;        # some code...
 ;     ${MementoSectionEnd}
 ;
@@ -110,7 +113,7 @@ A usage example can be found in `Examples\Memento.nsi`.
 ;
 ;   Usage is similar to Section with the /o switch.
 ;
-;     ${MementoUnselectedSection} "name" "some_id"
+;     ${MementoUnselectedSection} "name" "id"
 ;
 
 !define MementoUnselectedSection "!insertmacro MementoUnselectedSection"
@@ -122,7 +125,7 @@ A usage example can be found in `Examples\Memento.nsi`.
 ;
 ;   Usage is similar to SectionEnd.
 ;
-;     ${MementoSection} "name" "some_id"
+;     ${MementoSection} "name" "id"
 ;        # some code...
 ;     ${MementoSectionEnd}
 ;
@@ -183,6 +186,34 @@ A usage example can be found in `Examples\Memento.nsi`.
 
 !define MementoSectionSave "!insertmacro MementoSectionSave"
 
+;
+; MementoSection<ReadWrite><Int|Marker>
+;
+; Replaceable macros that allow custom storage methods to be used.
+;
+!define /IfNDef MementoSectionStorageSeparator '_'
+
+!ifmacrondef MementoSectionReadInt
+!define __MementoSectionStdRegReadWrite
+!define /IfNDef MementoSectionStoragePrefix "MementoSection"
+
+!macro MementoSectionReadInt outvar name
+ReadRegDWord ${outvar} ${MEMENTO_REGISTRY_ROOT} `${MEMENTO_REGISTRY_KEY}` `${MementoSectionStoragePrefix}${name}`
+!macroend
+
+!macro MementoSectionWriteInt name val
+WriteRegDWord ${MEMENTO_REGISTRY_ROOT} `${MEMENTO_REGISTRY_KEY}` `${MementoSectionStoragePrefix}${name}` `${val}`
+!macroend
+
+!macro MementoSectionReadMarker outvar name
+ReadRegStr ${outvar} ${MEMENTO_REGISTRY_ROOT} `${MEMENTO_REGISTRY_KEY}` `${MementoSectionStoragePrefix}${name}`
+!macroend
+
+!macro MementoSectionWriteMarker name
+WriteRegStr ${MEMENTO_REGISTRY_ROOT} `${MEMENTO_REGISTRY_KEY}` `${MementoSectionStoragePrefix}${name}` ``
+!macroend
+
+!endif
 
 #####################################
 ### Internal Defines              ###
@@ -196,15 +227,17 @@ A usage example can be found in `Examples\Memento.nsi`.
 
 !macro __MementoCheckSettings
 
-  !ifndef MEMENTO_REGISTRY_ROOT | MEMENTO_REGISTRY_KEY
+  !ifdef __MementoSectionStdRegReadWrite
+    !ifndef MEMENTO_REGISTRY_ROOT | MEMENTO_REGISTRY_KEY
 
-    !error "MEMENTO_REGISTRY_ROOT and MEMENTO_REGISTRY_KEY must be defined before using any of Memento's macros"
+      !error "MEMENTO_REGISTRY_ROOT and MEMENTO_REGISTRY_KEY must be defined before using any of Memento's macros"
 
+    !endif
   !endif
 
 !macroend
 
-!macro __MementoSection flags name id
+!macro __MementoSection flags name mementoid sectionid
 
   !insertmacro __MementoCheckSettings
 
@@ -214,11 +247,13 @@ A usage example can be found in `Examples\Memento.nsi`.
 
   !endif
 
-  !define __MementoSectionLastSectionId `${id}`
+  !define __MementoSectionLastMementoId `${mementoid}`
+  !define __MementoSectionLastSectionId `${sectionid}`
+  !define __MementoSectionLastFlags `${flags}`
 
   !verbose pop
 
-  Section ${flags} `${name}` `${id}`
+  Section ${flags} `${name}` `${sectionid}`
 
   !verbose push
   !verbose 3
@@ -229,12 +264,21 @@ A usage example can be found in `Examples\Memento.nsi`.
 ### User Macros                   ###
 #####################################
 
+!macro MementoSectionEx flags name mid sid
+  
+  !verbose push 3
+
+  !insertmacro __MementoSection `${flags}` `${name}` `${mid}` `${sid}`
+
+  !verbose pop
+
+!macroend
+
 !macro MementoSection name id
 
-  !verbose push
-  !verbose 3
+  !verbose push 3
 
-  !insertmacro __MementoSection "" `${name}` `${id}`
+  !insertmacro __MementoSection "" `${name}` `${id}` `${id}`
 
   !verbose pop
 
@@ -242,12 +286,9 @@ A usage example can be found in `Examples\Memento.nsi`.
 
 !macro MementoUnselectedSection name id
 
-  !verbose push
-  !verbose 3
+  !verbose push 3
 
-  !insertmacro __MementoSection /o `${name}` `${id}`
-
-  !define __MementoSectionUnselected
+  !insertmacro __MementoSection /o `${name}` `${id}` `${id}`
 
   !verbose pop
 
@@ -274,7 +315,7 @@ A usage example can be found in `Examples\Memento.nsi`.
   Function __MementoSectionMarkNew${__MementoSectionIndex}
 
     ClearErrors
-    ReadRegDWORD $0 ${MEMENTO_REGISTRY_ROOT} `${MEMENTO_REGISTRY_KEY}` `MementoSection_${__MementoSectionLastSectionId}`
+    !insertmacro MementoSectionReadInt $0 `${MementoSectionStorageSeparator}${__MementoSectionLastMementoId}`
 
     ${If} ${Errors}
 
@@ -290,7 +331,9 @@ A usage example can be found in `Examples\Memento.nsi`.
   Function __MementoSectionRestoreStatus${__MementoSectionIndex}
 
     ClearErrors
-    ReadRegDWORD $0 ${MEMENTO_REGISTRY_ROOT} `${MEMENTO_REGISTRY_KEY}` `MementoSection_${__MementoSectionLastSectionId}`
+    !insertmacro MementoSectionReadInt $0 `${MementoSectionStorageSeparator}${__MementoSectionLastMementoId}`
+
+    !searchparse /ignorecase /noerrors `${__MementoSectionLastFlags}-` `/o` __MementoSectionUnselected
 
     !ifndef __MementoSectionUnselected
 
@@ -331,11 +374,11 @@ A usage example can be found in `Examples\Memento.nsi`.
 
     ${If} ${SectionIsSelected} `${${__MementoSectionLastSectionId}}`
 
-      WriteRegDWORD ${MEMENTO_REGISTRY_ROOT} `${MEMENTO_REGISTRY_KEY}` `MementoSection_${__MementoSectionLastSectionId}` 1
+      !insertmacro MementoSectionWriteInt `${MementoSectionStorageSeparator}${__MementoSectionLastMementoId}` 1
 
     ${Else}
 
-      WriteRegDWORD ${MEMENTO_REGISTRY_ROOT} `${MEMENTO_REGISTRY_KEY}` `MementoSection_${__MementoSectionLastSectionId}` 0
+      !insertmacro MementoSectionWriteInt `${MementoSectionStorageSeparator}${__MementoSectionLastMementoId}` 0
 
     ${EndIf}
 
@@ -348,7 +391,9 @@ A usage example can be found in `Examples\Memento.nsi`.
   !define __MementoSectionIndex ${__MementoSectionIndexNext}
   !undef __MementoSectionIndexNext
 
+  !undef __MementoSectionLastMementoId
   !undef __MementoSectionLastSectionId
+  !undef __MementoSectionLastFlags
 
   !verbose pop
 
@@ -391,8 +436,7 @@ A usage example can be found in `Examples\Memento.nsi`.
     # check for first usage
 
     ClearErrors
-
-    ReadRegStr $0 ${MEMENTO_REGISTRY_ROOT} `${MEMENTO_REGISTRY_KEY}` MementoSectionUsed
+    !insertmacro MementoSectionReadMarker $0 `Used`
 
     ${If} ${Errors}
 
@@ -509,7 +553,7 @@ A usage example can be found in `Examples\Memento.nsi`.
 
   Push $0
 
-    WriteRegStr ${MEMENTO_REGISTRY_ROOT} `${MEMENTO_REGISTRY_KEY}` MementoSectionUsed ""
+    !insertmacro MementoSectionWriteMarker `Used`
   
     Call __MementoSectionSaveStatus1
 
