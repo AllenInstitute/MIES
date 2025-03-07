@@ -84,7 +84,7 @@ jobs:
       - name: Initial repo config
         run: tools/initial-repo-config.sh
       - name: Create release package and installer
-        run: tools/create-installer.sh ${{ fromJSON('["", "dev"]')[ matrix.kind == 'dev' ] }}
+        run: tools/create-installer.sh ${{ fromJSON('["unelevated", "unelevated"]')[ matrix.kind == 'dev' ] }}
       - name: Sign installer
         run: tools/sign-installer.sh -p '${{ secrets.GHA_MIES_CERTIFICATE_PIN }}'
       - name: upload artifacts
