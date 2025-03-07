@@ -359,6 +359,14 @@ static Function EWUIndizesWorksWithBoth()
 	CheckEvent({1, 4}, PSX_UNDET, PSX_UNDET)
 End
 
+static Function/WAVE CreateSelectDataComp()
+
+	Make/FREE/N=(2)/WAVE selectDataComp
+	SetDimensionLabels(selectDataComp, "SELECTION;RANGE;", ROWS)
+
+	return selectDataComp
+End
+
 static Function CheckSweepEquiv()
 
 	variable sweepNo, chanType, chanNr, mapIndex
@@ -389,15 +397,27 @@ static Function CheckSweepEquiv()
 
 	selectData[0][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
 	selectData[1][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
-	selectData[2][%CHANNELTYPE] = XOP_CHANNEL_TYPE_TTL // same sweep bug different channel type
+	selectData[2][%CHANNELTYPE] = XOP_CHANNEL_TYPE_TTL // same sweep but different channel type
 	selectData[3][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
 	selectData[4][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
 	selectData[5][%CHANNELTYPE] = XOP_CHANNEL_TYPE_ADC
 
 	// sweep 1 and 5 are a group the rest is separate
 
-	WAVE/Z selectDataEquiv = MIES_PSX#PSX_GenerateSweepEquiv(selectData)
+	WAVE/WAVE selectDataComp = CreateSelectDataComp()
+
+	selectDataComp[%SELECTION] = selectData
+
+	WAVE singleRange = SFH_GetFullRange()
+	selectDataComp[%RANGE] = SFH_AsDataSet(singleRange)
+
+	Make/FREE/WAVE selectDataCompArray = {selectDataComp}
+
+	[WAVE/T selectDataEquiv, WAVE/WAVE selectDataEquivRange] = MIES_PSX#PSX_GenerateSweepEquiv(selectDataCompArray)
 	CHECK_WAVE(selectDataEquiv, TEXT_WAVE | FREE_WAVE)
+	CHECK_WAVE(selectDataEquivRange, WAVE_WAVE | FREE_WAVE)
+	Make/FREE/N=(numpnts(selectDataEquivRange)) equalRange = WaveExists(selectDataEquivRange[p]) ? WaveRefsEqual(selectDataEquivRange[p], singleRange) : 1
+	CHECK(IsConstant(equalRange, 1))
 
 	Make/FREE/T ref = {{"SweepNo1_MapIndex0", "SweepNo2_MapIndex1", "SweepNo3_MapIndex2", "SweepNo4_MapIndex3"}, \
 	                   {"SweepNo5_MapIndex4", "", "", ""},                                                       \
@@ -415,7 +435,7 @@ static Function CheckSweepEquiv()
 	CHECK_EQUAL_VAR(mapIndex, 4)
 End
 
-Function [WAVE range, WAVE selectData] GetFakeRangeAndSelectData()
+Function [WAVE range, WAVE selectData, WAVE/WAVE selectDataCompArray] GetFakeRangeAndSelectData(string browser)
 
 	WAVE range      = SFH_GetEmptyRange()
 	WAVE selectData = SFH_NewSelectDataWave(1, 1)
@@ -426,7 +446,9 @@ Function [WAVE range, WAVE selectData] GetFakeRangeAndSelectData()
 	selectData[0][%CHANNELNUMBER] = 3
 	selectData[0][%SWEEPMAPINDEX] = NaN
 
-	return [range, selectData]
+	WAVE/WAVE selectDataCompArray = SFH_CreateSelectDataComp(browser, "FakeOpForTesting", selectData, range)
+
+	return [range, selectData, selectDataCompArray]
 End
 
 static Function StatsComplainsWithoutEvents()
@@ -436,7 +458,7 @@ static Function StatsComplainsWithoutEvents()
 
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
-	[WAVE range, WAVE selectData] = GetFakeRangeAndSelectData()
+	[WAVE range, WAVE selectData, WAVE/WAVE selectDataCompArray] = GetFakeRangeAndSelectData(browser)
 
 	prop       = "tau"
 	stateAsStr = MIES_PSX#PSX_StateToString(PSX_ACCEPT)
@@ -445,7 +467,7 @@ static Function StatsComplainsWithoutEvents()
 
 	// matching id but no events
 	try
-		MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, stateAsStr, postProc)
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArray, prop, stateAsStr, postProc)
 		FAIL()
 	catch
 		error = ROStr(GetSweepFormulaParseErrorMessage())
@@ -456,7 +478,7 @@ static Function StatsComplainsWithoutEvents()
 
 	// mismatched id
 	try
-		MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, stateAsStr, postProc)
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArray, prop, stateAsStr, postProc)
 		FAIL()
 	catch
 		error = ROStr(GetSweepFormulaParseErrorMessage())
@@ -473,8 +495,9 @@ static Function StatsRangeTesting()
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
 	// events A
-	[WAVE rangeA, WAVE selectDataA] = GetFakeRangeAndSelectData()
-	selectDataA[0][%CHANNELNUMBER]  = 0
+	[WAVE rangeA, WAVE selectDataA, WAVE/WAVE selectDataCompArrayA] = GetFakeRangeAndSelectData(browser)
+
+	selectDataA[0][%CHANNELNUMBER] = 0
 
 	WAVE psxEventA = GetPSXEventWaveAsFree()
 	Redimension/N=(10, -1) psxEventA
@@ -487,10 +510,10 @@ static Function StatsRangeTesting()
 	FillEventWave_IGNORE(psxEventA, id, comboKeyA)
 
 	// events B
-	[WAVE rangeB, WAVE selectDataB] = GetFakeRangeAndSelectData()
-	rangeB                          = {101, 201}
-	selectDataB[0][%SWEEP]          = 2
-	selectDataB[0][%CHANNELNUMBER]  = 0
+	[WAVE rangeB, WAVE selectDataB, WAVE/WAVE selectDataCompArrayB] = GetFakeRangeAndSelectData(browser)
+	rangeB                                                          = {101, 201}
+	selectDataB[0][%SWEEP]                                          = 2
+	selectDataB[0][%CHANNELNUMBER]                                  = 0
 
 	comboKeyB = MIES_PSX#PSX_GenerateComboKey(browser, selectDataB, rangeB)
 	sprintf ref, "Range[101, 201], Sweep [2], Channel [AD0], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
@@ -503,9 +526,15 @@ static Function StatsRangeTesting()
 	FillEventWave_IGNORE(psxEventB, id, comboKeyB)
 
 	// events C
+	[WAVE rangeNumericC, WAVE selectDataC, WAVE/WAVE selectDataCompArrayC] = GetFakeRangeAndSelectData(browser)
+	WaveClear rangeNumericC
+	selectDataB[0][%SWEEP]         = 2
+	selectDataB[0][%CHANNELNUMBER] = 0
+
 	[key, keyTxt] = PrepareLBN_IGNORE(device)
-	Duplicate/FREE selectDataB, selectDataC
 	Make/T/FREE rangeC = {"E0"}
+	WAVE/WAVE selectDataCompArray0 = selectDataCompArrayC[0]
+	selectDataCompArray0[%RANGE]   = SFH_AsDataSet(rangeC)
 	selectDataC[0][%SWEEP]         = 3
 	selectDataC[0][%CHANNELNUMBER] = 0
 
@@ -543,8 +572,15 @@ static Function StatsRangeTesting()
 	FillEventWave_IGNORE(psxEventC, id, comboKeyC)
 
 	// events D
-	Duplicate/FREE selectDataC, selectDataD
+	[WAVE rangeNumericD, WAVE selectDataD, WAVE/WAVE selectDataCompArrayD] = GetFakeRangeAndSelectData(browser)
+	WaveClear rangeNumericD
+
+	selectDataD[0][%SWEEP]         = 3
+	selectDataD[0][%CHANNELNUMBER] = 0
+
 	Make/T/FREE rangeD = {"E1"}
+	WAVE/WAVE selectDataCompArray0 = selectDataCompArrayD[0]
+	selectDataCompArray0[%RANGE] = SFH_AsDataSet(rangeD)
 
 	comboKeyD = MIES_PSX#PSX_GenerateComboKey(browser, selectDataD, rangeD)
 	sprintf ref, "Range[E1], Sweep [3], Channel [AD0], Device [ITC16_Dev_0], Experiment [%s]", GetExperimentName()
@@ -563,16 +599,22 @@ static Function StatsRangeTesting()
 	stateAsStr = MIES_PSX#PSX_StateToString(PSX_ACCEPT)
 	postProc   = "nothing"
 
+	[WAVE rangeNumericE, WAVE selectDataE, WAVE/WAVE selectDataCompArrayE] = GetFakeRangeAndSelectData(browser)
+
+	WAVE/WAVE selectDataCompArray0 = selectDataCompArrayE[0]
+	Make/WAVE/FREE rangeE = {rangeA, rangeB}
+	selectDataCompArray0[%RANGE] = rangeE
+
 	// non-matching range number with sweeps
 	try
-		WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeA, rangeB}, selectDataA, prop, stateAsStr, postProc)
+		WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArrayE, prop, stateAsStr, postProc)
 		FAIL()
 	catch
 		error = ROStr(GetSweepFormulaParseErrorMessage())
-		CHECK_EQUAL_STR(error, "The number of sweeps and ranges differ")
+		CHECK_EQUAL_STR(error, "Number of ranges is not equal number of selections.")
 	endtry
 
-	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeA}, selectDataA, prop, stateAsStr, postProc)
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArrayA, prop, stateAsStr, postProc)
 	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
 	numComboKeys = 3
 	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
@@ -584,8 +626,9 @@ static Function StatsRangeTesting()
 	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
 
 	// different range for each sweep
-	Concatenate/NP=(ROWS)/FREE {selectDataA, selectDataB}, selectData
-	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeA, rangeB}, selectData, prop, stateAsStr, postProc)
+	Make/FREE/N=(0)/WAVE selectDataCompArray
+	Concatenate/NP=(ROWS)/FREE/WAVE {selectDataCompArrayA, selectDataCompArrayB}, selectDataCompArray
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArray, prop, stateAsStr, postProc)
 	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
 	// -> twice as many events
 	numComboKeys = 6
@@ -601,7 +644,7 @@ static Function StatsRangeTesting()
 	CHECK_EQUAL_TEXTWAVES(comboKeys, comboKeysRef)
 
 	// epoch name
-	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeC}, selectDataC, prop, stateAsStr, postProc)
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArrayC, prop, stateAsStr, postProc)
 	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
 	numComboKeys = 3
 	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
@@ -616,7 +659,10 @@ static Function StatsRangeTesting()
 	Make/FREE/T rangeEpoch0 = {"E0"}
 	Make/FREE/T rangeEpoch1 = {"E1"}
 	Make/FREE/T rangeEpochs = {rangeEpoch0[0], rangeEpoch1[0]}
-	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeEpochs}, selectDataD, prop, stateAsStr, postProc)
+	WAVE/WAVE selectDataCompArray0 = selectDataCompArrayD[0]
+	selectDataCompArray0[%RANGE] = SFH_AsDataSet(rangeEpochs)
+
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArrayD, prop, stateAsStr, postProc)
 	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
 	numComboKeys = 6
 	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
@@ -632,7 +678,10 @@ static Function StatsRangeTesting()
 
 	// epoch wildcards
 	Make/FREE/T rangeEpochs = {"E*"}
-	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, {rangeEpochs}, selectDataD, prop, stateAsStr, postProc)
+	WAVE/WAVE selectDataCompArray0 = selectDataCompArrayD[0]
+	selectDataCompArray0[%RANGE] = SFH_AsDataSet(rangeEpochs)
+
+	WAVE/WAVE results = MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArrayD, prop, stateAsStr, postProc)
 	CHECK_EQUAL_VAR(DimSize(results, ROWS), 1)
 	numComboKeys = 6
 	CHECK_EQUAL_VAR(DimSize(results[0], ROWS), numComboKeys)
@@ -863,7 +912,7 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
-	[WAVE range, WAVE selectData] = GetFakeRangeAndSelectData()
+	[WAVE range, WAVE selectData, WAVE/WAVE selectDataCompArray] = GetFakeRangeAndSelectData(browser)
 
 	WAVE psxEvent = GetPSXEventWaveAsFree()
 	Redimension/N=(10, -1) psxEvent
@@ -883,7 +932,7 @@ static Function StatsWorksWithResults([STRUCT IUTF_mData &m])
 
 	MIES_PSX#PSX_StoreIntoResultsWave(browser, SFH_RESULT_TYPE_PSX_EVENTS, psxEvent, id)
 
-	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, stateAsStr, postProc)
+	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArray, prop, stateAsStr, postProc)
 	CHECK_WAVE(output, WAVE_WAVE)
 
 	Make/FREE/N=4 dims = DimSize(output, p)
@@ -1126,7 +1175,7 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
-	[WAVE range, WAVE selectData] = GetFakeRangeAndSelectData()
+	[WAVE range, WAVE selectData, WAVE/WAVE selectDataCompArray] = GetFakeRangeAndSelectData(browser)
 
 	Duplicate/FREE selectData, selectDataComboIndex0
 
@@ -1165,7 +1214,14 @@ static Function StatsWorksWithResultsSpecialCases([STRUCT IUTF_mData &m])
 		refNum = NaN
 	endif
 
-	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, allSelectData, prop, stateAsStr, postProc)
+	WAVE/WAVE selectDataComp = CreateselectDataComp()
+
+	selectDataComp[%RANGE]     = SFH_AsDataSet(range)
+	selectDataComp[%SELECTION] = allSelectData
+
+	Make/FREE/WAVE/N=(1) selectDataCompArray = {selectDataComp}
+
+	WAVE/WAVE output = MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArray, prop, stateAsStr, postProc)
 	CHECK_WAVE(output, WAVE_WAVE)
 
 	if(outOfRange)
@@ -1212,7 +1268,7 @@ static Function StatsComplainsAboutIntersectingRanges()
 
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
-	[WAVE range0, WAVE selectData] = GetFakeRangeAndSelectData()
+	[WAVE range0, WAVE selectData, WAVE/WAVE selectDataCompArray] = GetFakeRangeAndSelectData(browser)
 
 	// 1st event wave
 	WAVE/Z psxEvent = GetEventWave(comboIndex = 0)
@@ -1223,6 +1279,8 @@ static Function StatsComplainsAboutIntersectingRanges()
 	Duplicate/FREE range0, range1
 
 	Concatenate/FREE/NP=(COLS) {range0, range1}, ranges
+	WAVE/WAVE selectDataComp0 = selectDataCompArray[0]
+	selectDataComp0[%RANGE] = SFH_AsDataSet(ranges)
 
 	// 2nd event wave where we shift the range
 	WAVE/Z psxEvent = CreateEventWaveInComboFolder_IGNORE(comboIndex = 1)
@@ -1232,7 +1290,7 @@ static Function StatsComplainsAboutIntersectingRanges()
 	FillEventWave_IGNORE(psxEvent, id, comboKey)
 
 	try
-		MIES_PSX#PSX_OperationStatsImpl(browser, id, {ranges}, selectData, "amp", "all", "nothing")
+		MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArray, "amp", "all", "nothing")
 		FAIL()
 	catch
 		error = ROStr(GetSweepFormulaParseErrorMessage())
@@ -1259,7 +1317,7 @@ static Function StatsAllProperties([STRUCT IUTF_mData &m])
 
 	[browser, device, formulaGraph] = CreateFakeDataBrowserWithSweepFormulaGraph()
 
-	[WAVE range, WAVE selectData] = GetFakeRangeAndSelectData()
+	[WAVE range, WAVE selectData, WAVE/WAVE selectDataCompArray] = GetFakeRangeAndSelectData(browser)
 
 	// 1st event wave
 	WAVE/Z psxEvent = GetEventWave(comboIndex = 0)
@@ -1267,7 +1325,7 @@ static Function StatsAllProperties([STRUCT IUTF_mData &m])
 	id       = "myID"
 	FillEventWave_IGNORE(psxEvent, id, comboKey)
 
-	MIES_PSX#PSX_OperationStatsImpl(browser, id, {range}, selectData, prop, "all", "nothing")
+	MIES_PSX#PSX_OperationStatsImpl(browser, id, selectDataCompArray, prop, "all", "nothing")
 	CHECK_NO_RTE()
 End
 
@@ -1316,7 +1374,7 @@ static Function TestOperationPSXKernel()
 	CHECK_GE_VAR(jsonID, 0)
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX_KERNEL)
 	CHECK_WAVE(params, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(params, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(params, ROWS), 3)
 	JSON_Release(jsonID)
 
 	// offset for sweep data is 50 due to the range above
@@ -1326,6 +1384,15 @@ static Function TestOperationPSXKernel()
 	CheckDimensionScaleHelper(dataWref[3], 0, 0.2)
 	CheckDimensionScaleHelper(dataWref[4], 0, 0.01)
 	CheckDimensionScaleHelper(dataWref[5], 50, 0.2)
+
+	str = "psxKernel([select(selRange([50, 150]), selchannels(AD6), selsweeps(0), selvis(all)), select(selRange([50, 150]), selchannels(AD6), selsweeps(2), selvis(all))], 1, 15, -5)"
+	WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+	CHECK_WAVE(dataWref, WAVE_WAVE)
+	CHECK_EQUAL_VAR(DimSize(dataWref, ROWS), 6)
+
+	actual = MIES_CA#CA_WaveCRCs(dataWref, includeWaveScalingAndUnits = 1)
+	// same hashes as above with only a single select
+	CHECK_EQUAL_STR(expected, actual)
 
 	// three waves from first range, none from second
 	Make/FREE/T/N=(3, 1, 1) epochKeys
@@ -1338,6 +1405,11 @@ static Function TestOperationPSXKernel()
 	epochsWave[0][EPOCH_COL_ENDTIME][DAC][XOP_CHANNEL_TYPE_DAC]   = "0.150"
 	epochsWave[0][EPOCH_COL_TAGS][DAC][XOP_CHANNEL_TYPE_DAC]      = "ShortName=E0;stuff"
 	epochsWave[0][EPOCH_COL_TREELEVEL][DAC][XOP_CHANNEL_TYPE_DAC] = "0"
+
+	epochsWave[1][EPOCH_COL_STARTTIME][DAC][XOP_CHANNEL_TYPE_DAC] = "0.075"
+	epochsWave[1][EPOCH_COL_ENDTIME][DAC][XOP_CHANNEL_TYPE_DAC]   = "0.175"
+	epochsWave[1][EPOCH_COL_TAGS][DAC][XOP_CHANNEL_TYPE_DAC]      = "ShortName=E1;apples"
+	epochsWave[1][EPOCH_COL_TREELEVEL][DAC][XOP_CHANNEL_TYPE_DAC] = "1"
 
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = EP_EpochWaveToStr(epochsWave, DAC, XOP_CHANNEL_TYPE_DAC)
 	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, 0, device, DATA_ACQUISITION_MODE)
@@ -1370,6 +1442,15 @@ static Function TestOperationPSXKernel()
 
 	// too large decayTau
 	str = "psxKernel([50, 150], select(selchannels(AD15), selsweeps([0])), 1, 150, -5)"
+	try
+		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// overlapping intervals in one select statement
+	str = "psxKernel(select(selrange([E0, E1]), selchannels(AD6), selsweeps([0]), selvis(all)), 1, 15, -5)"
 	try
 		WAVE/WAVE dataWref = SF_ExecuteFormula(str, win, useVariables = 0)
 		FAIL()
@@ -1456,7 +1537,7 @@ static Function TestOperationPSX([STRUCT IUTF_mData &m])
 	CHECK_GE_VAR(jsonID, 0)
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX_KERNEL)
 	CHECK_WAVE(params, TEXT_WAVE)
-	CHECK_EQUAL_VAR(DimSize(params, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(params, ROWS), 3)
 
 	WAVE/Z params = JSON_GetKeys(jsonID, SF_META_USER_GROUP + "Parameters/" + SF_OP_PSX)
 	CHECK_WAVE(params, TEXT_WAVE)
@@ -2025,7 +2106,7 @@ static Function/WAVE GetCodeVariations()
 
 	string code
 
-	Make/T/N=(2)/FREE wv
+	Make/T/N=(3)/FREE wv
 
 	wv[0] = GetTestCode("nothing")
 	code  = ""
@@ -2037,6 +2118,15 @@ static Function/WAVE GetCodeVariations()
 	code += "\r and \r"
 	code += "psxStats(myId, select(selrange([50, 150]), selchannels(AD6), selsweeps([0, 2]), selvis(all)), peak, all, nothing)"
 	wv[1] = code
+	code  = ""
+
+	// same as code[1] but with a select array for stats
+	code  = "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all))), 2, 100, 0)"
+	code += "\r with \r"
+	code += "psx(myId, psxKernel(select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))), 1.5, 100, 0)"
+	code += "\r and \r"
+	code += "psxStats(myId, [select(selrange([50, 150]), selchannels(AD6), selsweeps([0]), selvis(all)), select(selrange([50, 150]), selchannels(AD6), selsweeps([2]), selvis(all))], peak, all, nothing)"
+	wv[2] = code
 	code  = ""
 
 	return wv
