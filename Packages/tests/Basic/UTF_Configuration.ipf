@@ -320,7 +320,10 @@ static Function TCONF_SaveNotebookAndRestore()
 	string fName      = "NotebookTest.json"
 	string nbTextRef  = "This is fine."
 	string nbTextRef2 = "This is not fine."
-	string nbText
+	string nbText, expected, actual
+	variable jsonID
+
+	PrepareForPublishTest()
 
 	DoWindow/K $wName
 	NewNotebook/N=$wName/F=0
@@ -339,6 +342,11 @@ static Function TCONF_SaveNotebookAndRestore()
 	CONF_RestoreWindow(PrependExperimentFolder_IGNORE(fName))
 	nbText = GetNotebookText(wName, mode = 2)
 	CHECK_EQUAL_STR(nbTextRef2, nbText)
+
+	jsonID   = FetchAndParseMessage(CONFIG_FINISHED_FILTER)
+	expected = wName
+	actual   = JSON_GetString(jsonID, "window")
+	CHECK_EQUAL_STR(actual, expected)
 End
 
 /// @brief Checks if every (qualified) panel has a panel type set

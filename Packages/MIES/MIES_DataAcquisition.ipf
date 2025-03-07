@@ -294,8 +294,8 @@ Function DQ_ApplyAutoBias(string device, WAVE TPResults)
 		current *= DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasPerc") * PERCENT_TO_ONE
 
 		// check if holding is enabled. If it is not, ignore holding current value.
-		if(AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN))
-			actualCurrent = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, usePrefixes = 0)
+		if(AI_ReadFromAmplifier(device, headStage, I_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC))
+			actualCurrent = AI_ReadFromAmplifier(device, headStage, I_CLAMP_MODE, MCC_HOLDING_FUNC, usePrefixes = 0)
 		else
 			actualCurrent = 0
 		endif
@@ -316,8 +316,8 @@ Function DQ_ApplyAutoBias(string device, WAVE TPResults)
 		endif
 
 		DEBUGPRINT("current[A] to send=", var = current)
-		AI_UpdateAmpModel(device, "check_DatAcq_HoldEnable", headStage, value = 1, sendToAll = 0)
-		AI_UpdateAmpModel(device, "setvar_DataAcq_Hold_IC", headstage, value = current * ONE_TO_PICO, sendToAll = 0)
+		AI_WriteToAmplifier(device, headStage, I_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC, 1, sendToAll = 0)
+		AI_WriteToAmplifier(device, headStage, I_CLAMP_MODE, MCC_HOLDING_FUNC, current * ONE_TO_PICO, sendToAll = 0)
 	endfor
 End
 
