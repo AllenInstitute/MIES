@@ -63,7 +63,6 @@ then
   echo "RequestExecutionLevel admin" > installer/$NSISREQUEST
 else
   echo "RequestExecutionLevel user" > installer/$NSISREQUEST
-  sed -i 's/\.exe/-cis.exe/' installer/$NSISOUTFILE
 fi
 
 # --- Extract Source Files ---
