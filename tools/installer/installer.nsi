@@ -42,6 +42,9 @@
 !define IGOR9DEFPATH "$PROGRAMFILES64\WaveMetrics\Igor Pro 9 Folder"
 !define IGOR10DEFPATH "$PROGRAMFILES64\WaveMetrics\Igor Pro 10 Folder"
 
+# Temp file for command execution output for ExecDos::Exec
+!define EXECDOSOUTPUT "ExecOutput.log"
+
 #Unicode true
 SetCompressor /SOLID lzma
 !include "${NSISREQUEST}"
@@ -128,11 +131,42 @@ Var NSD_IF_CB4
     Quit
 !macroend
 
-!macro FindProc result processName
-  ExecCmd::exec "%SystemRoot%\System32\tasklist /NH /FI $\"IMAGENAME eq ${processName}$\" | %SystemRoot%\System32\find /I $\"${processName}$\""
-  Pop $0 ; The handle for the process
-  ExecCmd::wait $0
+!macro FindProc result processName uid
+  ReadEnvStr $0 SYSTEMROOT
+  Push "ExecDos::End"
+; In contradiction to the docs the two empty strings at the end are mandatory. Otherwise the stack gets cleared.
+; The logfile name (third string) is put on the stack before the command output.
+; I could not get the plugin to generate any logfile output by itself.
+; Stack:
+;   <command output>
+;   ...
+;   <logfile name>
+;   <Marker> if pushed before
+; I found no way that allows piping to a second application
+  ExecDos::exec /NOUNLOAD /TOSTACK "$0\System32\tasklist.exe /NH /FI $\"IMAGENAME eq ${processName}$\"" "" ""
+  Pop $0
+  ${if} $0 <> 0
+    IfSilent +2
+      MessageBox MB_OK|MB_ICONEXCLAMATION "Can not get current task list through tasklist.exe."
+    Quit
+  ${EndIf}
+
+  ReadEnvStr $0 TEMP
+  FileOpen $4 "$0\${EXECDOSOUTPUT}" w
+  Loop_${uid}:
+    Pop $1
+    StrCmp $1 "ExecDos::End" LoopEnd_${uid}
+    FileWrite $4 $1
+    Goto Loop_${uid}
+  LoopEnd_${uid}:
+  FileClose $4
+
+  ReadEnvStr $0 SYSTEMROOT
+  ReadEnvStr $1 TEMP
+  ExecDos::exec /NOUNLOAD "$0\System32\find.exe /I $\"${processName}$\" $1\${EXECDOSOUTPUT}" "" ""
+
   Pop ${result} ; The exit code
+  Delete $1\${EXECDOSOUTPUT}
 !macroend
 
 !macro CheckAllUninstalled
@@ -165,7 +199,10 @@ Var NSD_IF_CB4
   ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString"
   StrLen $1 $0
   ${If} $1 <> 0
-    ExecWait '$0'
+    ExecWait '$0 _?=$INSTDIR'
+    Delete "$INSTDIR\uninstall.exe"
+    RMDir $INSTDIR
+    BringToFront
   ${EndIf}
 !macroend
 
@@ -174,12 +211,14 @@ Var NSD_IF_CB4
 !define UODUID ${__LINE__}
   IfFileExists "${USERINSTDIR}\uninstall.exe" 0 UODUEnd_{UODUID}
     IfSilent +3
-      ExecWait "${USERINSTDIR}\uninstall.exe"
+      ExecWait "${USERINSTDIR}\uninstall.exe _?=${USERINSTDIR}"
       Goto +2
-    ExecWait '"${USERINSTDIR}\uninstall.exe" /S'
+    ExecWait '"${USERINSTDIR}\uninstall.exe" /S _?=${USERINSTDIR}'
+    Delete "${USERINSTDIR}\uninstall.exe"
+    RMDir "${USERINSTDIR}"
+    BringToFront
   UODUEnd_{UODUID}:
 !undef UODUID
-  !insertmacro WaitForUninstaller
 
 # this is the current check against registry
   IfSilent +3
@@ -188,24 +227,22 @@ Var NSD_IF_CB4
   ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString"
   StrLen $1 $0
   ${If} $1 <> 0
-    ExecWait '$0'
+    ExecWait '$0 _?=${USERINSTDIR}'
+    Delete "${USERINSTDIR}\uninstall.exe"
+    RMDir "${USERINSTDIR}"
+    BringToFront
   ${EndIf}
 !macroend
 
 !macro WaitForProc ProcName
 !define WFPID ${__LINE__}
 WFUWaitUninstA_${WFPID}:
-    !insertmacro FindProc $processFound "${ProcName}"
+    !insertmacro FindProc $processFound "${ProcName}" ${__LINE__}
     IntCmp $processFound ${FindProc_NOT_FOUND} WFUEndWaitUninstA_${WFPID}
       Sleep 100
       Goto WFUWaitUninstA_${WFPID}
 WFUEndWaitUninstA_${WFPID}:
 !undef WFPID
-!macroend
-
-!macro WaitForUninstaller
-  !insertmacro WaitForProc "uninstall.exe"
-  !insertmacro WaitForProc "Un_A.exe"
 !macroend
 
 !macro CheckIgor64
@@ -219,7 +256,7 @@ WFUEndWaitUninstA_${WFPID}:
 !macroend
 
 !macro StopOnIgor32
-  !insertmacro FindProc $processFound "Igor.exe"
+  !insertmacro FindProc $processFound "Igor.exe" ${__LINE__}
   IntCmp $processFound ${FindProc_NOT_FOUND} +4
     IfSilent +2
       MessageBox MB_OK|MB_ICONEXCLAMATION "Igor Pro is running. Please close it first" /SD IDOK
@@ -227,7 +264,7 @@ WFUEndWaitUninstA_${WFPID}:
 !macroend
 
 !macro StopOnIgor64
-  !insertmacro FindProc $processFound "Igor64.exe"
+  !insertmacro FindProc $processFound "Igor64.exe" ${__LINE__}
   IntCmp $processFound ${FindProc_NOT_FOUND} +4
     IfSilent +2
       MessageBox MB_OK|MB_ICONEXCLAMATION "Igor Pro (64-bit) is running. Please close it first" /SD IDOK
@@ -423,9 +460,6 @@ Function DialogInstallFor910
   NoIGOR1064:
   ${NSD_OnClick} $NSD_IF_CB4 ClickedIGOR1064
 
-  ${NSD_CreateLabel} 5u 88u 100% 26u "The 32-bit version of MIES is discontinued. If you REALLY need a 32-bit version, you can grab the now unsupported version 2.3 from https://github.com/AllenInstitute/MIES/releases/tag/Release_2.3_20210908."
-  Pop $NSD_IF_Label
-
   nsDialogs::Show
 FunctionEnd
 
@@ -523,12 +557,10 @@ IGOR10CheckEnd:
     !insertmacro PreventMultipleInstaller
     !insertmacro StopOnIgor32
     !insertmacro StopOnIgor64
-
-    !insertmacro UninstallAttemptAdmin
-    !insertmacro WaitForUninstaller
-
+    IntCmp $ISADMIN 0 SkipAdminUninstall
+      !insertmacro UninstallAttemptAdmin
+SkipAdminUninstall:
     !insertmacro UninstallAttemptUser
-    !insertmacro WaitForUninstaller
 
     !insertmacro CheckAllUninstalled
   ${EndIf}
@@ -792,12 +824,24 @@ SkipVCRedistInstallation:
 
   IntCmp $ISADMIN 0 SkipASLRSetup
     IntCmp $XOPINST 0  SkipASLRSetup
-      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\Disable-ASLR-for-IP7-and-8.ps1"'
+      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\Disable-ASLR-for-Igor64.ps1"' $0
+      IntCmp $0 0 SkipASLRSetup
+        IfSilent +2
+          MessageBox MB_OK "Can not disable ASLR for Igor64.exe."
+        SetErrorlevel 1
+        Quit
+
 SkipASLRSetup:
 
   IntCmp $ISADMIN 0 SkipITCSetup
     IntCmp $XOPINST 0  SkipITCSetup
-      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\FixOffice365.ps1"'
+      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\FixOffice365.ps1"' $0
+      IntCmp $0 0 FixOffice365Done
+        IfSilent +2
+          MessageBox MB_OK "Can not apply Office365 fixes."
+        SetErrorlevel 1
+        Quit
+FixOffice365Done:
       !insertmacro WriteITCRegistry
       ${If} ${RunningX64}
         SetRegView 64
@@ -805,6 +849,25 @@ SkipASLRSetup:
         SetRegView default
       ${EndIf}
 SkipITCSetup:
+; Write out installed configuration
+  FileOpen $FILEHANDLE "$INSTDIR\Packages\installation_configuration.json" w
+  FileWrite $FILEHANDLE '{$\n'
+  FileWrite $FILEHANDLE '$\t"Installation" : {$\n'
+  IntCmp $ALLUSER 1 ConfigWriteUserAll
+    FileWrite $FILEHANDLE '$\t$\t"User" : "current",$\n'
+    Goto ConfigWriteUserEnd
+ConfigWriteUserAll:
+    FileWrite $FILEHANDLE '$\t$\t"User" : "all",$\n'
+ConfigWriteUserEnd:
+  IntCmp $XOPINST 1 ConfigWriteWithHardwareYes
+  FileWrite $FILEHANDLE '$\t$\t"WithHardware" : 0$\n'
+  Goto ConfigWriteWithHardwareEnd
+ConfigWriteWithHardwareYes:
+  FileWrite $FILEHANDLE '$\t$\t"WithHardware" : 1$\n'
+ConfigWriteWithHardwareEnd:
+  FileWrite $FILEHANDLE '$\t}$\n'
+  FileWrite $FILEHANDLE '}'
+  FileClose $FILEHANDLE
 
 SectionEnd
 
@@ -812,14 +875,6 @@ SectionEnd
 
 function un.onInit
   !insertmacro PreventMultipleUninstaller
-  UserInfo::GetAccountType
-  pop $0
-  ${If} $0 == "admin"
-    IfSilent Next
-      MessageBox MB_OKCANCEL "Permanently remove ${APPNAME}?" IDOK Next
-    Quit
-Next:
-  ${EndIf}
   !insertmacro StopOnIgor32
   !insertmacro StopOnIgor64
 functionEnd
@@ -833,9 +888,9 @@ ReadLoop:
   FileRead $FILEHANDLE $LINESTR
   IfErrors +1 +2
     Goto EndReadLoop
-  ExecCmd::exec "cmd.exe /Cdel $\"$LINESTR$\""
+  ExecDos::exec /NOUNLOAD "cmd.exe /Cdel $\"$LINESTR$\"" "" ""
   Pop $0
-  ExecCmd::wait $0
+  ExecDos::wait $0
   Pop $0
   Goto ReadLoop
 EndReadLoop:
