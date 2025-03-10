@@ -835,7 +835,13 @@ SkipASLRSetup:
 
   IntCmp $ISADMIN 0 SkipITCSetup
     IntCmp $XOPINST 0  SkipITCSetup
-      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\FixOffice365.ps1"'
+      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\FixOffice365.ps1"' $0
+      IntCmp $0 0 FixOffice365Done
+        IfSilent +2
+          MessageBox MB_OK "Can not apply Office365 fixes."
+        SetErrorlevel 1
+        Quit
+FixOffice365Done:
       !insertmacro WriteITCRegistry
       ${If} ${RunningX64}
         SetRegView 64
