@@ -16,6 +16,10 @@ static StrConstant CHI_JSON_XOP_VERSION  = "version-892-g9251933"
 static StrConstant CHI_TUF_XOP_VERSION   = "version-163-g686effb"
 static StrConstant CHI_ITC_XOP_VERSION   = "latest-174-gb9915a9"
 
+static StrConstant CHI_INSTALLCONFIG_NAME          = "installation_configuration.json"
+static Constant    CHI_INSTALLDEFAULT_WITHHARDWARE = 1
+static StrConstant CHI_INSTALLDEFAULT_ALLUSER      = "current"
+
 /// @brief Collection of counters used for installation checking
 static Structure CHI_InstallationState
 	variable numErrors
@@ -135,6 +139,83 @@ static Function CHI_CheckXOP(string &list, string item, string name, STRUCT CHI_
 	endswitch
 End
 
+/// @return JSON id or NaN if configuration file does not exist
+static Function CHI_LoadInstallationConfiguration()
+
+	string folder, fullFilePath, txt
+
+	folder       = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
+	fullFilePath = folder + CHI_INSTALLCONFIG_NAME
+	if(!FileExists(fullFilePath))
+		return NaN
+	endif
+	[txt, fullFilePath] = LoadTextFile(fullFilePath)
+	return JSON_Parse(txt, ignoreErr = 1)
+End
+
+/// @param key key in JSON tree under /Installation
+/// @param defValue [optional] default value to return if the key does not exist. Either defValue or defSValue can be given as argument, not both.
+/// @param defSValue [optional] default value to return if the key does not exist. Either defValue or defSValue can be given as argument, not both.
+/// @return either value or sValue depending on requested JSOn key, the unused result value is either Nan or "".
+static Function [variable value, string sValue] CHI_GetInstallationConfigProp(string key, [variable defValue, string defSValue])
+
+	variable jsonId, objType
+	string jPath
+
+	ASSERT((ParamIsDefault(defValue) + ParamIsDefault(defSValue)) == 1, "Either defValue or defSValue must be given")
+
+	jsonId = CHI_LoadInstallationConfiguration()
+	if(IsNaN(jsonId))
+		if(ParamIsDefault(defValue))
+			return [NaN, defSValue]
+		endif
+		return [defValue, ""]
+	endif
+
+	jPath = "/Installation/" + key
+
+	ClearRTError()
+	try
+		objType = JSON_GetType(jsonId, jPath)
+	catch
+		ASSERT(0, "The following path could not be found in installation configuration: " + jPath)
+	endtry
+	if(objType == JSON_NUMERIC)
+		value = JSON_GetVariable(jsonId, jPath)
+		JSON_Release(jsonId)
+		return [value, ""]
+	elseif(objType == JSON_STRING)
+		sValue = JSON_GetString(jsonId, jPath)
+		JSON_Release(jsonId)
+		return [NaN, sValue]
+	endif
+
+	ASSERT(0, "Unsupported JSON object type")
+End
+
+/// @return 1 if MIES was installed with hardware support, 0 otherwise
+Function CHI_IsMIESInstalledWithHardware()
+
+	variable installedWithHW
+	string   s
+
+	[installedWithHW, s] = CHI_GetInstallationConfigProp("WithHardware", defValue = CHI_INSTALLDEFAULT_WITHHARDWARE)
+
+	return installedWithHW
+End
+
+/// @return 1 if MIES was installed for all users, 0 otherwise
+Function CHI_IsMIESInstalledForAllUsers()
+
+	variable value
+	string   installType
+
+	[value, installType] = CHI_GetInstallationConfigProp("User", defSValue = CHI_INSTALLDEFAULT_ALLUSER)
+	ASSERT(!CmpStr(installType, "current") || !CmpStr(installType, "all"), "Read unknown installation type from installation configuration")
+
+	return !CmpStr(installType, "all")
+End
+
 /// @brief Check the installation and print the results to the history
 ///
 /// Currently checks that all expected/optional XOPs are installed.
@@ -144,7 +225,7 @@ Function CHI_CheckInstallation()
 
 	string symbPath, allFiles, path, extName, info, igorBuild
 	string allFilesSystem, allFilesUser, listOfXOPs
-	variable aslrEnabled, archBits
+	variable aslrEnabled, archBits, installedWithHW
 
 	symbPath = GetUniqueSymbolicPath()
 	extName  = GetIgorExtensionFolderName()
@@ -223,6 +304,11 @@ Function CHI_CheckInstallation()
 	printf "No\r"
 #endif // THREADING_DISABLED
 
+	printf "\rInstallation Configuration:\r"
+	installedWithHW = CHI_IsMIESInstalledWithHardware()
+	printf "  Installation with hardware: %s\r", ToTrueFalse(installedWithHW)
+	printf "  Installated for all users: %s\r", ToTrueFalse(CHI_IsMIESInstalledForAllUsers())
+
 	printf "\rChecking base installation:\r"
 
 	SVAR miesVersion = $GetMiesVersion()
@@ -236,9 +322,11 @@ Function CHI_CheckInstallation()
 	endif
 
 #ifdef WINDOWS
-	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
-	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
-	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
+	if(installedWithHW)
+		CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
+		CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
+		CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
+	endif
 #endif // WINDOWS
 
 	// one operation/function of each non-hardware XOP needs to be called in CheckCompilation_IGNORE()
@@ -253,7 +341,9 @@ Function CHI_CheckInstallation()
 
 	CHI_CheckJSONXOPVersion(state)
 #ifdef WINDOWS
-	CHI_CheckITCXOPVersion(state)
+	if(installedWithHW)
+		CHI_CheckITCXOPVersion(state)
+	endif
 #endif // WINDOWS
 	CHI_CheckTUFXOPVersion(state)
 
@@ -264,7 +354,9 @@ Function CHI_CheckInstallation()
 	CHI_InitInstallationState(stateExtended)
 	printf "\rChecking extended installation:\r"
 
-	CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", stateExtended, expectedHash = CHI_NIDAQ_XOP_64_HASH)
+	if(installedWithHW)
+		CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", stateExtended, expectedHash = CHI_NIDAQ_XOP_64_HASH)
+	endif
 
 	printf "Results: %d checks, %d number of errors\r", stateExtended.numTries, stateExtended.numErrors
 #endif // WINDOWS
