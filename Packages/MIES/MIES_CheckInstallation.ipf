@@ -16,6 +16,9 @@ static StrConstant CHI_JSON_XOP_VERSION  = "version-892-g9251933"
 static StrConstant CHI_TUF_XOP_VERSION   = "version-163-g686effb"
 static StrConstant CHI_ITC_XOP_VERSION   = "latest-174-gb9915a9"
 
+static StrConstant CHI_INSTALLCONFIG_NAME           = "installation_configuration.json"
+static Constant    CHI_INSTALLEDWITHHARDWAREDEFAULT = 1
+
 /// @brief Collection of counters used for installation checking
 static Structure CHI_InstallationState
 	variable numErrors
@@ -135,6 +138,37 @@ static Function CHI_CheckXOP(string &list, string item, string name, STRUCT CHI_
 	endswitch
 End
 
+/// @return JSON id or NaN if configuration file does not exist
+static Function CHI_LoadInstallationConfiguration()
+
+	string folder, fullFilePath, txt
+
+	folder       = ParseFilePath(1, FunctionPath(""), ":", 1, 1)
+	fullFilePath = folder + CHI_INSTALLCONFIG_NAME
+	if(!FileExists(fullFilePath))
+		return NaN
+	endif
+	[txt, fullFilePath] = LoadTextFile(fullFilePath)
+	return JSON_Parse(txt, ignoreErr = 1)
+End
+
+/// @return 1 if MIES was installed with hardware support, 0 otherwise
+static Function CHI_IsMIESInstalledWithHardware()
+
+	variable jsonId, installedWithHW
+
+	jsonId = CHI_LoadInstallationConfiguration()
+	if(IsNaN(jsonId))
+		return CHI_INSTALLEDWITHHARDWAREDEFAULT
+	endif
+
+	installedWithHW = JSON_GetVariable(jsonId, "/Installation/WithHardware", ignoreErr = 1)
+	JSON_Release(jsonId)
+	ASSERT(!IsNaN(installedWithHW), "Could not find key in installation configuration file.")
+
+	return installedWithHW
+End
+
 /// @brief Check the installation and print the results to the history
 ///
 /// Currently checks that all expected/optional XOPs are installed.
@@ -144,7 +178,7 @@ Function CHI_CheckInstallation()
 
 	string symbPath, allFiles, path, extName, info, igorBuild
 	string allFilesSystem, allFilesUser, listOfXOPs
-	variable aslrEnabled, archBits
+	variable aslrEnabled, archBits, installedWithHW
 
 	symbPath = GetUniqueSymbolicPath()
 	extName  = GetIgorExtensionFolderName()
@@ -235,10 +269,15 @@ Function CHI_CheckInstallation()
 		printf "Mies version info: Valid \"%s...\" (Nice!)\r", StringFromList(0, miesVersion, "\r")
 	endif
 
+	installedWithHW = CHI_IsMIESInstalledWithHardware()
+	printf "Installation with hardware: %s\r", ToTrueFalse(installedWithHW)
+
 #ifdef WINDOWS
-	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
-	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
-	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
+	if(installedWithHW)
+		CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
+		CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
+		CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
+	endif
 #endif // WINDOWS
 
 	// one operation/function of each non-hardware XOP needs to be called in CheckCompilation_IGNORE()
@@ -264,7 +303,9 @@ Function CHI_CheckInstallation()
 	CHI_InitInstallationState(stateExtended)
 	printf "\rChecking extended installation:\r"
 
-	CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", stateExtended, expectedHash = CHI_NIDAQ_XOP_64_HASH)
+	if(installedWithHW)
+		CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", stateExtended, expectedHash = CHI_NIDAQ_XOP_64_HASH)
+	endif
 
 	printf "Results: %d checks, %d number of errors\r", stateExtended.numTries, stateExtended.numErrors
 #endif // WINDOWS
