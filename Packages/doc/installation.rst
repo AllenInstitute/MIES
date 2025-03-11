@@ -132,6 +132,31 @@ If the installation was run silent then the uninstaller is also called silent.
 The user can only uninstall previous installations from himself. If the previous installation
 was done by an admin the uninstaller will ask for privilege elevation.
 
+List of Installer Return Codes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
++-------------+---------------------------------------------------------------------------------------------------------------------------------+
+| Return Code | Description                                                                                                                     |
++=============+=================================================================================================================================+
+| 0           | No Error                                                                                                                        |
+| 1           | Another instance of the installer is already running                                                                            |
+| 2           | Another instance of the uninstaller is already running                                                                          |
+| 3           | Can not retrieve list of currently running processes                                                                            |
+| 4           | The installation is run as non-admin user but a MIES installation that was installed with admin privileges is already present.  |
+| 5           | Igor.exe is currently running                                                                                                   |
+| 6           | Igor64.exe is currently running                                                                                                 |
+| 7           | MIES requires a 64-bit operating system                                                                                         |
+| 8           | Admin privileges required                                                                                                       |
+| 9           | MIES was already manually installed. It needs a manual deinstallation before it can be installed.                               |
+| 10          | Could not determine path to Igor 9 executable.                                                                                  |
+| 11          | Could not determine path to Igor 10 executable.                                                                                 |
+| 12          | The file list for deinstallation could not be written                                                                           |
+| 13          | An error occurred when trying to disable ASLR for Igor64.exe (requires for ITC XOP)                                             |
+| 14          | An error occurred when trying to apply the FixOffice365 script                                                                  |
+| 15          | The installation configuration could not be written                                                                             |
+| 740         | Admin privileges required. The installer was run as regular user with the argument /ALLUSER                                     |
++-------------+---------------------------------------------------------------------------------------------------------------------------------+
+
 Corrupted installations
 ^^^^^^^^^^^^^^^^^^^^^^^
 
