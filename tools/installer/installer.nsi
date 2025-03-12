@@ -852,7 +852,8 @@ SkipVCRedistInstallation:
 
   IntCmp $ISADMIN 0 SkipASLRSetup
     IntCmp $XOPINST 0  SkipASLRSetup
-      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\Disable-ASLR-for-Igor64.ps1"' $0
+      # This special execution is required because we need to run 64-bit powershell here
+      ExecWait '$WINDIR\sysnative\windowspowershell\v1.0\powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\Disable-ASLR-for-Igor64.ps1"' $0
       IntCmp $0 0 SkipASLRSetup
         IfSilent +2
           MessageBox MB_OK "Can not disable ASLR for Igor64.exe."
