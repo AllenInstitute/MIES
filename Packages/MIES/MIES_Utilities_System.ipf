@@ -272,6 +272,15 @@ Function/S GetHistoryNotebookText()
 	return GetNotebookText("HistoryCarbonCopy")
 End
 
+/// @brief Returns the process id of this process
+Function GetProcessId()
+
+	ExecuteScriptText/B/Z "powershell.exe -nologo -noprofile -command \"(gwmi win32_process | ? processid -eq  $pid).parentprocessid\""
+	ASSERT(!V_flag, "Error executing process")
+
+	return str2num(S_Value)
+End
+
 /// @brief Return the per application setting of ASLR for the Igor Pro executable
 ///
 /// See https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-exploit-guard/enable-exploit-protection
@@ -280,20 +289,21 @@ End
 /// @returns 0 or 1
 Function GetASLREnabledState()
 
-	string cmd, entry, list, setting, result
+	string cmd, entry, list, setting
+	variable procId
 
-	sprintf cmd, "powershell.exe -nologo -noprofile -command \"Get-ProcessMitigation -Name '%s'\"", GetWindowsPath(GetIgorExecutable())
+	sprintf cmd, "powershell.exe -nologo -noprofile -command \"Get-ProcessMitigation -Id %d\"", GetProcessId()
 
 	ExecuteScriptText/B/Z cmd
 
 	ASSERT(!V_flag, "Error executing process mitigation querying script.")
-	result = S_Value
 
 	if(IsEmpty(S_Value))
 		return 1 // assuming system default is on
 	endif
 
 	entry = GrepList(S_value, "^[[:space:]]*BottomUp", 0, "\r\n")
+	ASSERT(ItemsInList(entry, "\r\n") == 1, "Expected results only for a single process")
 
 	SplitString/E="^[[:space:]]*BottomUp[[:space:]]*: ([[:alnum:]]+)$" trimstring(entry), setting
 	ASSERT(V_flag == 1, "Unexpected string")
