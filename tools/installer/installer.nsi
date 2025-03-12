@@ -59,8 +59,7 @@
 !define ERROR_NO_IGOR10_PATH 11
 !define ERROR_CANNOT_CREATE_UNINSTALL_FILELIST 12
 !define ERROR_CANNOT_DISABLE_ASLR 13
-!define ERROR_CANNOT_FIX_OFFICE365 14
-!define ERROR_CANNOT_CREATE_INSTALLCONFIG 15
+!define ERROR_CANNOT_CREATE_INSTALLCONFIG 14
 !define ERROR_ELEVATION_REQUIRED 740
 
 #Unicode true
@@ -863,12 +862,6 @@ SkipASLRSetup:
 
   IntCmp $ISADMIN 0 SkipITCSetup
     IntCmp $XOPINST 0  SkipITCSetup
-      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\FixOffice365.ps1"' $0
-      IntCmp $0 0 FixOffice365Done
-        IfSilent +2
-          MessageBox MB_OK "Can not apply Office365 fixes."
-        !insertmacro QuitWithCode ERROR_CANNOT_FIX_OFFICE365
-FixOffice365Done:
       !insertmacro WriteITCRegistry
       ${If} ${RunningX64}
         SetRegView 64
