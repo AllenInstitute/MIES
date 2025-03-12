@@ -152,8 +152,7 @@ List of Installer Return Codes
 | 11          | Could not determine path to Igor 10 executable.                                                                                 |
 | 12          | The file list for deinstallation could not be written                                                                           |
 | 13          | An error occurred when trying to disable ASLR for Igor64.exe (requires for ITC XOP)                                             |
-| 14          | An error occurred when trying to apply the FixOffice365 script                                                                  |
-| 15          | The installation configuration could not be written                                                                             |
+| 14          | The installation configuration could not be written                                                                             |
 | 740         | Admin privileges required. The installer was run as regular user with the argument /ALLUSER                                     |
 +-------------+---------------------------------------------------------------------------------------------------------------------------------+
 
