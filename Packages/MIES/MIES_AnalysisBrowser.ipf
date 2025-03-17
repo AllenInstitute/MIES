@@ -233,7 +233,7 @@ End
 ///
 /// @return 0 if the file was loaded, or 1 if not (usually due to an error
 ///         or because it was already loaded)
-static Function AB_AddFile(string win, string discLocation, string sourceEntry)
+static Function AB_AddFile(string win, string discLocation, string sourceEntry, variable doLoadResults)
 
 	variable mapIndex
 	variable firstMapped, lastMapped, loadResults
@@ -255,7 +255,7 @@ static Function AB_AddFile(string win, string discLocation, string sourceEntry)
 	endif
 
 	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
-	AB_LoadFile(discLocation)
+	AB_LoadFile(discLocation, doLoadResults)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
 	if(lastMapped >= firstMapped)
@@ -333,7 +333,7 @@ static Function AB_FileHasStimsets(WAVE/T map)
 End
 
 /// @brief function tries to load Data From discLocation.
-static Function AB_LoadFile(string discLocation)
+static Function AB_LoadFile(string discLocation, variable doLoadResults)
 
 	string device, deviceList
 	variable numDevices, i, highestSweepNumber
@@ -344,19 +344,21 @@ static Function AB_LoadFile(string discLocation)
 		return NaN
 	endif
 
-	strswitch(map[%FileType])
-		case ANALYSISBROWSER_FILE_TYPE_IGOR:
-			AB_LoadResultsFromIgor(map[%DiscLocation], map[%DataFolder])
-			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
-			// nothing to load
-			break
-		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
-			AB_LoadResultsFromNWB(map[%DiscLocation], map[%DataFolder])
-			break
-		default:
-			ASSERT(0, "invalid file type")
-	endswitch
+	if(doLoadResults)
+		strswitch(map[%FileType])
+			case ANALYSISBROWSER_FILE_TYPE_IGOR:
+				AB_LoadResultsFromIgor(map[%DiscLocation], map[%DataFolder])
+				break
+			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+				// nothing to load
+				break
+			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
+				AB_LoadResultsFromNWB(map[%DiscLocation], map[%DataFolder])
+				break
+			default:
+				ASSERT(0, "invalid file type")
+		endswitch
+	endif
 
 	deviceList = AB_LoadLabNotebook(discLocation)
 	WAVE/T deviceWave = AB_SaveDeviceList(deviceList, map[%DataFolder])
@@ -2553,13 +2555,14 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 
 	string entry, symbPath, fName, panel
 	string pxpList, uxpList, nwbList, title
-	variable sTime
+	variable sTime, loadResults
 
 	WAVE/T activeFiles = AB_GetCurrentlyOpenNWBFiles()
 
 	panel = AB_GetPanelName()
 
 	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
+	loadResults = GetCheckBoxState(win, "check_load_results")
 
 	sTime = stopMSTimer(-2) * MILLI_TO_ONE + 1
 	for(entry : entries)
@@ -2591,7 +2594,7 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 				DoUpdate/W=$panel
 				sTime = stopMSTimer(-2) * MILLI_TO_ONE + 1
 			endif
-			AB_AddFile(win, fName, entry)
+			AB_AddFile(win, fName, entry, loadResults)
 		endfor
 	endfor
 	DoWindow/T $panel, panel
@@ -2709,6 +2712,7 @@ Function AB_BrowserStartupSettings()
 	ListBox listbox_AB_Folders, win=$panel, listWave=$"", selWave=$"", colorWave=$""
 	SetCheckBoxState(panel, "check_load_nwb", CHECKBOX_SELECTED)
 	SetCheckBoxState(panel, "check_load_pxp", CHECKBOX_UNSELECTED)
+	SetCheckBoxState(panel, "check_load_results", CHECKBOX_UNSELECTED)
 
 	Execute/P/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
@@ -3469,7 +3473,7 @@ End
 static Function BeforeFileOpenHook(variable refNum, string file, string pathName, string type, string creator, variable kind)
 
 	string baseFolder, fileSuffix, entry, win
-	variable numEntries
+	variable numEntries, loadResults
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
@@ -3486,6 +3490,7 @@ static Function BeforeFileOpenHook(variable refNum, string file, string pathName
 	// we can not add files to the map if some entries are collapsed
 	// so we have to expand all first.
 	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
+	loadResults = GetCheckBoxState(win, "check_load_results")
 
 	entry = basefolder + file
 
@@ -3497,7 +3502,7 @@ static Function BeforeFileOpenHook(variable refNum, string file, string pathName
 		return 1
 	endif
 
-	if(AB_AddFile(win, entry, entry))
+	if(AB_AddFile(win, entry, entry, loadResults))
 		// already loaded or error
 		LOG_AddEntry(PACKAGE_MIES, "end")
 		return 1
