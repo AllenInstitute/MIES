@@ -11,10 +11,11 @@
 
 Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1 // building window...
-	NewPanel/K=1/W=(296, 406, 1695, 1290) as "AnalysisBrowser"
-	ListBox list_experiment_contents, pos={120.00, 173.00}, size={1272.00, 705.00}, proc=AB_ListBoxProc_ExpBrowser
+	NewPanel/K=1/W=(1840, 127, 3239, 1090) as "AnalysisBrowser"
+	SetDrawLayer UserBack
+	ListBox list_experiment_contents, pos={120.00, 173.00}, size={1272.00, 784.00}, proc=AB_ListBoxProc_ExpBrowser
 	ListBox list_experiment_contents, help={"Various properties of the loaded sweep data"}
-	ListBox list_experiment_contents, userdata(ResizeControlsInfo)=A"!!,FU!!#A<!!#EZ!!#D@5QCca!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_experiment_contents, userdata(ResizeControlsInfo)=A"!!,FU!!#A<!!#EZ!!#DTz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_experiment_contents, mode=9
@@ -141,11 +142,18 @@ Window AnalysisBrowser() : Panel
 	GroupBox group2, userdata(ResizeControlsInfo)=A"!!,?8!!#Bk!!#@B!!#@bz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group2, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group2, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_load_results, pos={4.00, 488.00}, size={109.00, 15.00}
+	CheckBox check_load_results, title="Load result waves"
+	CheckBox check_load_results, help={"Load PXP files (Igor Experiments) when iterating over folders"}
+	CheckBox check_load_results, userdata(ResizeControlsInfo)=A"!!,?8!!#CY!!#@>!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_load_results, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox check_load_results, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_load_results, value=0
 	DefineGuide splitGuide={FT, 10}, UGVL={FL, 15}
 	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin, hook(cleanup)=AB_WindowHook
-	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EihuH/Nzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EihuH/a^]4?7zzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin, userdata(Config_PanelType)="AnalysisBrowser"
