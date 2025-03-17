@@ -2560,11 +2560,12 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 	WAVE/T activeFiles = AB_GetCurrentlyOpenNWBFiles()
 
 	panel = AB_GetPanelName()
+	DoUpdate/W=$panel
 
 	PGC_SetAndActivateControl(win, "button_expand_all", val = 1)
 	loadResults = GetCheckBoxState(win, "check_load_results")
 
-	sTime = stopMSTimer(-2) * MILLI_TO_ONE + 1
+	sTime = stopMSTimer(-2) * MICRO_TO_ONE + 1
 	for(entry : entries)
 
 		if(FolderExists(entry))
@@ -2588,11 +2589,10 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 				ControlWindowToFront()
 				continue
 			endif
-			if(sTime < (stopMSTimer(-2) * MILLI_TO_ONE))
+			if(sTime < (stopMSTimer(-2) * MICRO_TO_ONE))
 				sprintf title, "%s, Reading %s", panel, GetFile(fName)
 				DoWindow/T $panel, title
-				DoUpdate/W=$panel
-				sTime = stopMSTimer(-2) * MILLI_TO_ONE + 1
+				sTime = stopMSTimer(-2) * MICRO_TO_ONE + 1
 			endif
 			AB_AddFile(win, fName, entry, loadResults)
 		endfor
