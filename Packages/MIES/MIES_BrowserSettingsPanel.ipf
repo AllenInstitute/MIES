@@ -1878,6 +1878,7 @@ Function BSP_WindowHook(STRUCT WMWinHookStruct &s)
 
 			if(BSP_IsSweepBrowser(win))
 				BSP_MemoryFreeMappedDF(win)
+				AB_OnCloseSweepBrowserUpdatePopup(win)
 			endif
 
 			if(!BSP_HasBoundDevice(win))
