@@ -2754,13 +2754,19 @@ End
 Function AB_ButtonProc_LoadSweeps(STRUCT WMButtonAction &ba) : ButtonControl
 
 	variable oneValidSweep
-	string   panel
+	string panel, sbTitle, sbWin
 
 	switch(ba.eventcode)
 		case 2:
 			AB_CheckPanelVersion(ba.win)
 
-			DFREF dfr = SB_OpenSweepBrowser()
+			sbTitle = GetPopupMenuString(ANALYSIS_BROWSER_NAME, "popup_SweepBrowserSelect")
+			if(!CmpStr(sbTitle, "New"))
+				DFREF dfr = SB_OpenSweepBrowser()
+			else
+				sbWin = AB_GetSweepBrowserWindowFromTitle(sbTitle)
+				DFREF dfr = SB_GetSweepBrowserFolder(sbWin)
+			endif
 			oneValidSweep = AB_LoadFromFile(AB_LOAD_SWEEP, sweepBrowserDFR = dfr)
 			SVAR/SDFR=dfr graph
 			if(oneValidSweep)
@@ -3091,6 +3097,34 @@ Function AB_CheckboxProc_PXP(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 	endswitch
 
 	return 0
+End
+
+Function/S AB_GetSweepBrowserListForPopup()
+
+	string wName
+	string sbList = ""
+
+	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
+	for(wName : wList)
+		GetWindow $wName, title
+		sbList = AddListItem(S_Value, sbList, ";", Inf)
+	endfor
+	sbList = AddListItem("New", sbList)
+
+	return sbList
+End
+
+static Function/S AB_GetSweepBrowserWindowFromTitle(string winTitle)
+
+	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
+	for(wName : wList)
+		GetWindow $wName, title
+		if(!CmpStr(winTitle, S_Value, 1))
+			return wName
+		endif
+	endfor
+
+	ASSERT(0, "Could not find SweepBrowser with given title: " + winTitle)
 End
 
 /// @brief Button "Select same stim set sweeps"
@@ -3673,4 +3707,22 @@ static Function AB_CollapseAll()
 
 	AB_CollapseListColumn(DEVICE_TREEVIEW_COLUMN)
 	AB_CollapseListColumn(EXPERIMENT_TREEVIEW_COLUMN)
+End
+
+Function AB_OnCloseSweepBrowserUpdatePopup(string closingSweepBrowser)
+
+	string sbTitle, sbWin
+
+	if(!WindowExists(ANALYSIS_BROWSER_NAME))
+		return NaN
+	endif
+	sbTitle = GetPopupMenuString(ANALYSIS_BROWSER_NAME, "popup_SweepBrowserSelect")
+	if(!CmpStr(sbTitle, "New"))
+		return NaN
+	endif
+
+	sbWin = AB_GetSweepBrowserWindowFromTitle(sbTitle)
+	if(!CmpStr(sbWin, closingSweepBrowser))
+		SetPopupMenuIndex(ANALYSIS_BROWSER_NAME, "popup_SweepBrowserSelect", 0)
+	endif
 End
