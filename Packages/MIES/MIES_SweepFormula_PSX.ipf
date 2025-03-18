@@ -367,7 +367,7 @@ static Function/WAVE PSX_DeconvoluteSweepData(WAVE sweepData, WAVE/C psxKernelFF
 	// no window function on purpose
 	WAVE/C outputFFT = DoFFT(sweepData, padSize = numPoints)
 
-	Multithread outputFFT[] = outputFFT[p] / psxKernelFFT[p]
+	Multithread outputFFT[] = outputFFT[p] / (psxKernelFFT[p] + 1e-5)
 
 	IFFT/DEST=Deconv/FREE outputFFT
 
@@ -476,7 +476,7 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataOffFilt
 	Make/FREE/D/N=(numPeaksMax) peakX, peakY
 
 	for(i = 0; i < numPeaksMax; i += 1)
-		FindPeak/B=10/M=(threshold)/Q/R=(start, stop) sweepDataOffFiltDeconv
+		FindPeak/B=100/M=(threshold)/Q/R=(start, stop) sweepDataOffFiltDeconv
 
 		if(V_Flag != 0)
 			break
