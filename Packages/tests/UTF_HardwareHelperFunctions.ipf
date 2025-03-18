@@ -837,7 +837,7 @@ End
 
 Function CheckPublishedMessage(string device, variable type)
 
-	string expectedFilter, msg
+	string   expectedFilter
 	variable jsonID
 
 	switch(type)
@@ -858,9 +858,7 @@ Function CheckPublishedMessage(string device, variable type)
 			return NaN
 	endswitch
 
-	msg = FetchPublishedMessage(expectedFilter)
-	CHECK_PROPER_STR(msg)
-	jsonID = JSON_Parse(msg)
+	jsonID = FetchAndParseMessage(expectedFilter)
 	CHECK_GE_VAR(jsonID, 0)
 	JSON_Release(jsonID)
 End
@@ -1666,12 +1664,10 @@ End
 
 Function CheckStartStopMessages(string mode, string state)
 
-	string msg, actual, expected
+	string actual, expected
 	variable jsonID
 
-	msg = FetchPublishedMessage(DAQ_TP_STATE_CHANGE_FILTER)
-
-	jsonID   = JSON_Parse(msg)
+	jsonID   = FetchAndParseMessage(DAQ_TP_STATE_CHANGE_FILTER)
 	actual   = JSON_GetString(jsonID, "/" + mode)
 	expected = state
 	CHECK_EQUAL_STR(actual, expected)
