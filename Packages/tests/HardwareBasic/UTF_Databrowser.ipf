@@ -54,7 +54,7 @@ Function CheckWindowTitles([string str])
 
 	win = DB_GetBoundDataBrowser(str, mode = BROWSER_MODE_AUTOMATION)
 	GetWindow $win, wtitle
-	CHECK_EQUAL_STR(S_Value, "Browser [1] with \"" + str + "\" (A*U*T*O*M*A*T*I*O*N)")
+	CHECK_EQUAL_STR(S_Value, "Browser with \"" + str + "\" (A*U*T*O*M*A*T*I*O*N)")
 End
 
 static Function/WAVE AllDatabrowserSubWindows()
