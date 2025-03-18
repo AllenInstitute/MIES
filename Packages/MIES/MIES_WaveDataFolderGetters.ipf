@@ -494,7 +494,7 @@ End
 /// Column 8: average elevated level (instantaneous)
 ///
 /// Layers:
-/// - NUM_HEADSTAGES positions with value entries at hsIndex
+/// - NUM_HEADSTAGES
 Function/WAVE GetTPResultAsyncBuffer(string device)
 
 	variable versionOfNewWave = 1

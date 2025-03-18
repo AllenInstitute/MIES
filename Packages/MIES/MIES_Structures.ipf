@@ -303,7 +303,7 @@ Structure TPAnalysisInput
 	variable baselineFrac
 	variable tpLengthPoints
 	variable readTimeStamp
-	variable hsIndex
+	variable headstage
 	string device
 	variable measurementMarker
 	variable activeADCs

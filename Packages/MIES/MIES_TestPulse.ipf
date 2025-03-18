@@ -192,7 +192,7 @@ Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 
 	WAVE/SDFR=dfr inData     = outData
 	NVAR/SDFR=dfr now        = now
-	NVAR/SDFR=dfr hsIndex    = hsIndex
+	NVAR/SDFR=dfr headstage  = headstage
 	SVAR/SDFR=dfr device     = device
 	NVAR/SDFR=dfr marker     = marker
 	NVAR/SDFR=dfr activeADCs = activeADCs
@@ -218,11 +218,11 @@ Function TP_ROAnalysis(STRUCT ASYNC_ReadOutStruct &ar)
 		asyncBuffer[bufSize][posAsync][posMarker]     = marker
 	endif
 
-	asyncBuffer[i][posBaseline][hsIndex] = inData[%BASELINE]
-	asyncBuffer[i][posSSRes][hsIndex]    = inData[%STEADYSTATERES]
-	asyncBuffer[i][posInstRes][hsIndex]  = inData[%INSTANTRES]
-	asyncBuffer[i][posElevSS][hsIndex]   = inData[%ELEVATED_SS]
-	asyncBuffer[i][posElevInst][hsIndex] = inData[%ELEVATED_INST]
+	asyncBuffer[i][posBaseline][headstage] = inData[%BASELINE]
+	asyncBuffer[i][posSSRes][headstage]    = inData[%STEADYSTATERES]
+	asyncBuffer[i][posInstRes][headstage]  = inData[%INSTANTRES]
+	asyncBuffer[i][posElevSS][headstage]   = inData[%ELEVATED_SS]
+	asyncBuffer[i][posElevInst][headstage] = inData[%ELEVATED_INST]
 
 	asyncBuffer[i][posAsync][%NOW]           = now
 	asyncBuffer[i][posAsync][%REC_CHANNELS] += 1
@@ -894,7 +894,7 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	NVAR/SDFR=dfrInp baselineFrac     = param4
 	NVAR/SDFR=dfrInp lengthTPInPoints = param5
 	NVAR/SDFR=dfrInp now              = param6
-	NVAR/SDFR=dfrInp hsIndex          = param7
+	NVAR/SDFR=dfrInp headstage        = param7
 	SVAR/SDFR=dfrInp device           = param8
 	NVAR/SDFR=dfrInp marker           = param9
 	NVAR/SDFR=dfrInp activeADCs       = param10
@@ -994,7 +994,7 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 
 	// additional data copy
 	variable/G dfrOut:now        = now
-	variable/G dfrOut:hsIndex    = hsIndex
+	variable/G dfrOut:headstage  = headstage
 	string/G   dfrOut:device     = device
 	variable/G dfrOut:marker     = marker
 	variable/G dfrOut:activeADCs = activeADCs
@@ -1505,7 +1505,7 @@ Function/DF TP_PrepareAnalysisDF(string device, STRUCT TPAnalysisInput &tpInput)
 	ASYNC_AddParam(threadDF, var = tpInput.baselineFrac)
 	ASYNC_AddParam(threadDF, var = tpInput.tpLengthPoints)
 	ASYNC_AddParam(threadDF, var = tpInput.readTimeStamp)
-	ASYNC_AddParam(threadDF, var = tpInput.hsIndex)
+	ASYNC_AddParam(threadDF, var = tpInput.headstage)
 	ASYNC_AddParam(threadDF, str = tpInput.device)
 	ASYNC_AddParam(threadDF, var = tpInput.measurementMarker)
 	ASYNC_AddParam(threadDF, var = tpInput.activeADCs)
