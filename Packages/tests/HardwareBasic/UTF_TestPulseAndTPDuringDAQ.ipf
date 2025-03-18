@@ -476,16 +476,16 @@ static Function EnsureUnityGain(string device, variable headstage)
 
 	mode = DAG_GetHeadstageMode(device, headstage)
 
-	ret = AI_SendToAmp(device, headstage, mode, MCC_SETPRIMARYSIGNALGAIN_FUNC, 1)
+	ret = AI_WriteToAmplifier(device, headstage, mode, MCC_PRIMARYSIGNALGAIN_FUNC, 1)
 	CHECK(!ret)
 
-	ret = AI_SendToAmp(device, headstage, mode, MCC_SETSECONDARYSIGNALGAIN_FUNC, 1)
+	ret = AI_WriteToAmplifier(device, headstage, mode, MCC_SECONDARYSIGNALGAIN_FUNC, 1)
 	CHECK(!ret)
 
-	gain = AI_SendToAmp(device, headstage, mode, MCC_GETPRIMARYSIGNALGAIN_FUNC, NaN)
+	gain = AI_ReadFromAmplifier(device, headstage, mode, MCC_PRIMARYSIGNALGAIN_FUNC)
 	REQUIRE_EQUAL_VAR(gain, 1)
 
-	gain = AI_SendToAmp(device, headstage, mode, MCC_GETSECONDARYSIGNALGAIN_FUNC, NaN)
+	gain = AI_ReadFromAmplifier(device, headstage, mode, MCC_SECONDARYSIGNALGAIN_FUNC)
 	REQUIRE_EQUAL_VAR(gain, 1)
 End
 
