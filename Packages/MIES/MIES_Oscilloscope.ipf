@@ -581,7 +581,7 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 					endif
 					tpInput.clampAmp  = clampAmp
 					tpInput.clampMode = hsProp[headstage][%ClampMode]
-					tpInput.hsIndex   = headstage
+					tpInput.headstage = headstage
 
 					DEBUGPRINT("headstage: ", var = headstage)
 					DEBUGPRINT("channel: ", var = numDACs + j)
