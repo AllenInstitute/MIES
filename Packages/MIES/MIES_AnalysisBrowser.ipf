@@ -405,7 +405,7 @@ static Function AB_HasCompatibleVersion(string discLocation)
 			DFREF targetDFR = GetAnalysisExpFolder(map[%DataFolder])
 			dataFolderPath = GetMiesPathAsString()
 
-			numWavesLoaded = AB_LoadDataWrapper(targetDFR, map[%DiscLocation], dataFolderPath, "pxpVersion", typeFlags = LOAD_DATA_TYPE_NUMBERS)
+			numWavesLoaded = AB_LoadDataWrapper(targetDFR, map[%DiscLocation], dataFolderPath, "pxpVersion", typeFlags = LOAD_DATA_TYPE_NUMBERS, recursive = 0)
 
 			// no pxpVersion present
 			// we can load the file
@@ -979,7 +979,7 @@ static Function AB_LoadUserCommentFromFile(string expFilePath, string expFolder,
 	dataFolderPath = GetDevicePathAsString(device)
 	dataFolderPath = AB_TranslatePath(dataFolderPath, expFolder)
 
-	numStringsLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "userComment", typeFlags = LOAD_DATA_TYPE_STRING)
+	numStringsLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "userComment", typeFlags = LOAD_DATA_TYPE_STRING, recursive = 0)
 
 	return numStringsLoaded
 End
@@ -1322,13 +1322,13 @@ static Function AB_LoadSweepConfigData(string expFilePath, string expFolder, str
 		stop  = (i + 1) * LOAD_CONFIG_CHUNK_SIZE
 
 		listOfWaves    = BuildList("Config_Sweep_%d", start, step, stop)
-		numWavesLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, listOfWaves)
+		numWavesLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, listOfWaves, recursive = 0)
 
 		if(numWavesLoaded <= 0 && stop >= highestSweepNumber)
 			break
 		endif
+		totalNumWavesLoaded += AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, listOfWaves, recursive = 0)
 
-		totalNumWavesLoaded += numWavesLoaded
 	endfor
 
 	return totalNumWavesLoaded
@@ -2153,7 +2153,7 @@ static Function AB_LoadSweepFromIgor(string discLocation, string expFolder, DFRE
 		endfor
 		channelWaveList = TextWaveToList(sweepT, ";")
 		DFREF sweepComponentsDFR = NewFreeDataFolder()
-		numComponentsLoaded = AB_LoadDataWrapper(sweepComponentsDFR, discLocation, dataPath + ":" + componentsDataPath, channelWaveList)
+		numComponentsLoaded = AB_LoadDataWrapper(sweepComponentsDFR, discLocation, dataPath + ":" + componentsDataPath, channelWaveList, recursive = 0)
 		if(numComponentsLoaded != DimSize(sweepT, ROWS))
 			printf "Error loading all sweep components. Sweep %d of device %s and %s\r", sweep, device, discLocation
 			return 1
@@ -2326,7 +2326,7 @@ static Function AB_LoadStimsetRAW(string expFilePath, string stimset, variable o
 	dataPath = GetDataFolder(1, setDFR)
 	data     = AddListItem(stimset, "")
 
-	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, data)
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, data, recursive = 0)
 
 	if(numWavesLoaded != 1)
 		KillOrMoveToTrash(dfr = newDFR)
@@ -2363,7 +2363,7 @@ static Function AB_LoadStimsetTemplateWaves(string expFilePath, string stimset)
 
 	dataPath = GetSetParamFolderAsString(channelType)
 
-	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, parameterWaves)
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, parameterWaves, recursive = 0)
 
 	if(numWavesLoaded != 3)
 		KillOrMoveToTrash(dfr = newDFR)
