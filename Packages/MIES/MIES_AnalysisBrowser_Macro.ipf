@@ -11,10 +11,10 @@
 
 Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1 // building window...
-	NewPanel/K=1/W=(299, 119, 1698, 1082) as "AnalysisBrowser"
-	ListBox list_experiment_contents, pos={120.00, 200.00}, size={1272.00, 757.00}, proc=AB_ListBoxProc_ExpBrowser
+	NewPanel/K=1/W=(1270, 72, 2409, 613) as "AnalysisBrowser"
+	ListBox list_experiment_contents, pos={120.00, 200.00}, size={1015.00, 338.00}, proc=AB_ListBoxProc_ExpBrowser
 	ListBox list_experiment_contents, help={"Various properties of the loaded sweep data"}
-	ListBox list_experiment_contents, userdata(ResizeControlsInfo)=A"!!,FU!!#AW!!#EZ!!#DM5QCca!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_experiment_contents, userdata(ResizeControlsInfo)=A"!!,FU!!#AW!!#E8^]6a$z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_experiment_contents, userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_experiment_contents, mode=9
@@ -69,9 +69,9 @@ Window AnalysisBrowser() : Panel
 	Button button_show_resaveAsNWB, userdata(ResizeControlsInfo)=A"!!,@c!!#B_!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_show_resaveAsNWB, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_show_resaveAsNWB, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	ListBox listbox_AB_Folders, pos={120.00, 3.00}, size={1272.00, 183.00}
+	ListBox listbox_AB_Folders, pos={120.00, 3.00}, size={1015.00, 182.00}
 	ListBox listbox_AB_Folders, help={"Source folders for sweep/stimset files"}
-	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)=A"!!,FU!!#8L!!#EZ!!#AFz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)=A"!!,FU!!#8L!!#E8^]6_[z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox listbox_AB_Folders, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	ListBox listbox_AB_Folders, labelBack=(65535, 65535, 65535), mode=9
@@ -157,14 +157,13 @@ Window AnalysisBrowser() : Panel
 	SetWindow kwTopWin, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin, hook(ResizeControls)=ResizeControlsSafe
 	SetWindow kwTopWin, hook(cleanup)=AB_WindowHook
-	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EihuH/a^]4?7zzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin, userdata(Config_PanelType)="AnalysisBrowser"
 	SetWindow kwTopWin, userdata(JSONSettings_StoreCoordinates)="1"
 	SetWindow kwTopWin, userdata(JSONSettings_WindowName)="analysisbrowser"
 	SetWindow kwTopWin, userdata(ResizeControlsGuides)="splitGuide;UGVL;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfosplitGuide)="NAME:splitGuide;WIN:AnalysisBrowser;TYPE:User;HORIZONTAL:1;POSITION:10.00;GUIDE1:FT;GUIDE2:;RELPOSITION:10;"
 	SetWindow kwTopWin, userdata(ResizeControlsInfoUGVL)="NAME:UGVL;WIN:AnalysisBrowser;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={1049.25,722.25,inf,inf}" // sizeLimit requires Igor 7 or later
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)=A"!!*'\"z!!#EI?iWS\"5QCcazzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin, userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 EndMacro
