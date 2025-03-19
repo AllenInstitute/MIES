@@ -160,6 +160,15 @@ Menu "GraphMarquee"
 	"PSX: Jump to Events", /Q, PSX_JumpToEvents()
 End
 
+static Function PSX_GetFindPeakBoxSize()
+
+#ifdef AUTOMATED_TESTING
+	return 10
+#endif // AUTOMATED_TESTING
+
+	return 100
+End
+
 static Function/S PSX_GetUserDataForWorkingFolder()
 
 	return PSX_USER_DATA_WORKING_FOLDER
@@ -459,7 +468,7 @@ End
 /// @retval peakY y-coordinates of peaks
 static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataOffFiltDeconv, variable threshold, [variable numPeaksMax, variable start, variable stop])
 
-	variable i
+	variable i, boxSize
 
 	if(ParamIsDefault(numPeaksMax))
 		numPeaksMax = PSX_NUM_PEAKS_MAX
@@ -473,10 +482,12 @@ static Function [WAVE/D peakX, WAVE/D peakY] PSX_FindPeaks(WAVE sweepDataOffFilt
 		stop = rightx(sweepDataOffFiltDeconv)
 	endif
 
+	boxSize = PSX_GetFindPeakBoxSize()
+
 	Make/FREE/D/N=(numPeaksMax) peakX, peakY
 
 	for(i = 0; i < numPeaksMax; i += 1)
-		FindPeak/B=100/M=(threshold)/Q/R=(start, stop) sweepDataOffFiltDeconv
+		FindPeak/B=(boxSize)/M=(threshold)/Q/R=(start, stop) sweepDataOffFiltDeconv
 
 		if(V_Flag != 0)
 			break
