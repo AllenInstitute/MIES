@@ -59,7 +59,7 @@ static Constant PSX_KEYBOARD_DIR_LR = 1
 
 static Constant PSX_NUMBER_OF_SDS_DEFAULT = 2.5
 
-static Constant PSX_TAU_CALC_FACTOR             = 2.5
+static Constant PSX_TAU_CALC_FACTOR             = 1 // 2.5
 static Constant PSX_BASELINE_RANGE_FACTOR       = 10
 static Constant PSX_FIT_RANGE_FACTOR            = 10
 static Constant PSX_FIT_RANGE_PERC              = 0.9
@@ -572,6 +572,10 @@ static Function [variable peak_t, variable peak] PSX_CalculateEventPeak(WAVE pea
 	numCrossings = DimSize(peakX, ROWS)
 
 	deconvPeak_t = peakX[index]
+	
+	// TODO try out FindPeaks and use the latest peak
+	
+	// TODO restrict accept fit range stop point to X times kernelDecayTau
 
 	// lower bound
 	if(index > 0)
@@ -610,7 +614,9 @@ static Function [variable baseline_t, variable baseline] PSX_CalculateEventBasel
 
 	variable range
 
+	// TODO switch peak_t -> deconvPeak_t and calculate it first
 	WaveStats/M=1/Q/R=(max(peak_t - PSX_BASELINE_RANGE_FACTOR * kernelRiseTau, peak_t_prev), peak_t) sweepDataOffFilt
+
 
 	if(kernelAmp > 0)
 		baseline_t = V_minloc
@@ -628,6 +634,11 @@ static Function [variable baseline_t, variable baseline] PSX_CalculateEventBasel
 End
 
 static Function [variable peak, variable peak_t, variable baseline, variable baseline_t, variable amplitude] PSX_CalculateEventProperties(WAVE peakX, WAVE peakY, WAVE sweepDataOffFilt, variable peak_t_prev, variable kernelAmp, variable kernelRiseTau, variable kernelDecayTau, variable index)
+
+	
+//	if(index == 1)
+//		Debugger
+//	endif
 
 	[peak_t, peak]         = PSX_CalculateEventPeak(peakX, peakY, sweepDataOffFilt, kernelAmp, kernelRiseTau, kernelDecayTau, index)
 	[baseline_t, baseline] = PSX_CalculateEventBaseline(sweepDataOffFilt, peak_t_prev, peak_t, kernelAmp, kernelRiseTau)
@@ -2346,7 +2357,7 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventPea
 
 	WAVE/Z eventStopTimeClean = ZapNaNs(eventStopTime)
 	if(WaveExists(eventStopTimeClean))
-		meanStopTime = mean(eventStopTime)
+		meanStopTime = mean(eventStopTimeClean)
 	else
 		meanStopTime = Inf
 	endif
