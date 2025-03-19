@@ -1034,6 +1034,7 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	DFREF dfrOut = NewFreeDataFolder()
 
 	WAVE     data                 = ASYNC_FetchWave(dfrInp, "data")
+	WAVE     ampParamStorageSlice = ASYNC_FetchWave(dfrInp, "ampParamStorageSlice")
 	variable clampAmp             = ASYNC_FetchVariable(dfrInp, "clampAmp")
 	variable clampMode            = ASYNC_FetchVariable(dfrInp, "clampMode")
 	variable pulseLengthPointsADC = ASYNC_FetchVariable(dfrInp, "pulseLengthPointsADC")
@@ -1158,7 +1159,7 @@ threadsafe Function/DF TP_TSAnalysis(DFREF dfrInp)
 	tpData[%SAMPLINGINTERVALDAC]   = samplingIntervalDAC
 
 	Make/FREE/WAVE additionalData = {data}
-	PUB_TPResult(device, tpData, additionalData)
+	PUB_TPResult(device, tpData, ampParamStorageSlice, additionalData)
 
 	return dfrOut
 End
@@ -1661,8 +1662,15 @@ Function/DF TP_PrepareAnalysisDF(string device, STRUCT TPAnalysisInput &tpInput)
 
 	wlName = GetWorkLoadName(WORKLOADCLASS_TP, device)
 
+	WAVE ampStorage = GetAmplifierParamStorageWave(device)
+	Duplicate/FREE/RMD=[][][tpInput.headstage] ampStorage, ampParamStorageSlice
+	ASSERT(DimSize(ampParamStorageSlice, COLS) == 1, "Expected only one column")
+	ASSERT(DimSize(ampParamStorageSlice, LAYERS) == 1, "Expected only one layer")
+	Redimension/N=(-1, 0, 0)/E=1 ampParamStorageSlice
+
 	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", wlName, inOrder = 0)
 	ASYNC_AddParam(threadDF, w = tpInput.data, name = "data")
+	ASYNC_AddParam(threadDF, w = ampParamStorageSlice, name = "ampParamStorageSlice")
 	ASYNC_AddParam(threadDF, var = tpInput.clampAmp, name = "clampAmp")
 	ASYNC_AddParam(threadDF, var = tpInput.clampMode, name = "clampMode")
 	ASYNC_AddParam(threadDF, var = tpInput.pulseLengthPointsADC, name = "pulseLengthPointsADC")
