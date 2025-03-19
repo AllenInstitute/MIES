@@ -15,7 +15,8 @@ Function/S GetAllDevices()
 
 	variable i, j, numEntries, numDevices
 	string folder, number, device, folders, subFolders, subFolder
-	string path, list = ""
+	string path
+	string list = ""
 
 	string devicesFolderPath = GetDAQDevicesFolderAsString()
 	DFREF  devicesFolder     = GetDAQDevicesFolder()

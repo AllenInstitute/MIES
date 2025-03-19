@@ -1529,7 +1529,8 @@ End
 /// @returns jsonID            ID of json containing the serialized GUI data
 Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes])
 
-	string ctrlList, ctrlName, radioList, tmpList, wList, cbCtrlName, coupledIndexKeys = "", excUserKeys, radioFunc, str, errMsg
+	string ctrlList, ctrlName, radioList, tmpList, wList, cbCtrlName, excUserKeys, radioFunc, str, errMsg
+	string coupledIndexKeys = ""
 	variable numCtrl, i, j, jsonID, numCoupled, setRadioPos, ctrlType, coupledCnt, numUniqueCtrlArray, numDupCheck
 	variable rbcIndex, wType
 
