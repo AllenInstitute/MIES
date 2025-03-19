@@ -1057,7 +1057,8 @@ End
 /// Unwise use of this function can break Igor!
 Function ExhaustMemory(variable amountOfFreeMemoryLeft)
 
-	variable i, expo = 10, err
+	variable i, err
+	variable expo = 10
 	string str
 
 	for(i = expo; i >= 0;)
