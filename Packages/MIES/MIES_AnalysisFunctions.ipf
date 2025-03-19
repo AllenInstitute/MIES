@@ -564,7 +564,9 @@ Function TestPrematureSweepStop(string device, variable eventType, WAVE DAQDataW
 	if(eventType == PRE_DAQ_EVENT || eventType == POST_SWEEP_EVENT)
 		temp = "0"
 		return NaN
-	elseif(eventType == MID_SWEEP_EVENT)
+	endif
+
+	if(eventType == MID_SWEEP_EVENT)
 		num = str2numSafe(temp)
 		ASSERT(IsFinite(num), "Missing variable initialization, this analysis function must be set as pre daq, mid sweeep and post sweep")
 		num += 1
@@ -1097,13 +1099,13 @@ Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3 &s)
 				endif
 
 				if(CheckIfClose(holdingPotential, -70, tol = 1) != 1)
-					if(holdingPotential > -75 && holdingPotential < -65)
-						printf "Warning: Holding potential for headstage %d is not -70mV but is within acceptable range, targetV continuing.\r", i
-					else
+					if(!(holdingPotential > -75 && holdingPotential < -65))
 						printf "Abort: Holding potential for headstage %d is set outside of the acceptable range for targetV.\r", i
 						ControlWindowToFront()
 						return 1
 					endif
+
+					printf "Warning: Holding potential for headstage %d is not -70mV but is within acceptable range, targetV continuing.\r", i
 				endif
 			endfor
 

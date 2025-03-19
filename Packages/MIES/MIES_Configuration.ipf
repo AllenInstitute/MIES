@@ -428,11 +428,11 @@ Function CONF_SaveWindow(string fName)
 		endif
 	catch
 		errMsg = getRTErrMessage()
-		if(ClearRTError())
-			ASSERT(0, errMsg)
-		else
+		if(!(ClearRTError()))
 			Abort
 		endif
+
+		ASSERT(0, errMsg)
 	endtry
 End
 
@@ -505,12 +505,12 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 		if(JSON_IsValid(jsonID))
 			JSON_Release(jsonID)
 		endif
-		if(ClearRTError())
-			ASSERT(0, errMsg)
-		else
+		if(!(ClearRTError()))
 			printf "Configuration restore aborted at file %s.\r", fullFilePath
 			Abort
 		endif
+
+		ASSERT(0, errMsg)
 	endtry
 	JSON_Release(jsonID)
 End
@@ -570,11 +570,11 @@ static Function CONF_SaveDAEphys(string fName)
 
 	catch
 		errMsg = getRTErrMessage()
-		if(ClearRTError())
-			ASSERT(0, errMsg)
-		else
+		if(!(ClearRTError()))
 			Abort
 		endif
+
+		ASSERT(0, errMsg)
 	endtry
 End
 
@@ -766,11 +766,11 @@ Function/S CONF_RestoreDAEphys(variable jsonID, string fullFilePath, [variable m
 			SetWindow $device, hide=0, needUpdate=1
 		endif
 		errMsg = getRTErrMessage()
-		if(ClearRTError())
-			ASSERT(0, errMsg)
-		else
+		if(!(ClearRTError()))
 			Abort
 		endif
+
+		ASSERT(0, errMsg)
 	endtry
 End
 
@@ -1189,11 +1189,11 @@ Function/S CONF_JSONToWindow(string wName, variable restoreMask, variable jsonID
 			SetWindow $wName, hide=0, needUpdate=1
 		endif
 		errMsg = getRTErrMessage()
-		if(ClearRTError())
-			ASSERT(0, errMsg)
-		else
+		if(!(ClearRTError()))
 			Abort
 		endif
+
+		ASSERT(0, errMsg)
 	endtry
 
 	return wName
@@ -1507,11 +1507,11 @@ Function CONF_AllWindowsToJSON(string wName, variable saveMask, [string excCtrlT
 
 	catch
 		errMsg = getRTErrMessage()
-		if(ClearRTError())
-			ASSERT(0, errMsg)
-		else
+		if(!(ClearRTError()))
 			Abort
 		endif
+
+		ASSERT(0, errMsg)
 	endtry
 End
 
@@ -1529,7 +1529,8 @@ End
 /// @returns jsonID            ID of json containing the serialized GUI data
 Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes])
 
-	string ctrlList, ctrlName, radioList, tmpList, wList, cbCtrlName, coupledIndexKeys = "", excUserKeys, radioFunc, str, errMsg
+	string ctrlList, ctrlName, radioList, tmpList, wList, cbCtrlName, excUserKeys, radioFunc, str, errMsg
+	string coupledIndexKeys = ""
 	variable numCtrl, i, j, jsonID, numCoupled, setRadioPos, ctrlType, coupledCnt, numUniqueCtrlArray, numDupCheck
 	variable rbcIndex, wType
 
@@ -1667,11 +1668,11 @@ Function CONF_WindowToJSON(string wName, variable saveMask, [string excCtrlTypes
 
 	catch
 		errMsg = getRTErrMessage()
-		if(ClearRTError())
-			ASSERT(0, errMsg)
-		else
+		if(!(ClearRTError()))
 			Abort
 		endif
+
+		ASSERT(0, errMsg)
 	endtry
 End
 
@@ -1946,7 +1947,9 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 		type         = JSON_GetType(jsonID, jsonBasePath)
 		if(type == JSON_NULL)
 			continue
-		elseif(type == JSON_OBJECT)
+		endif
+
+		if(type == JSON_OBJECT)
 			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
 			if(JSON_GetType(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL) == JSON_NULL)
 				continue

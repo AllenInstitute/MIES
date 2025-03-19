@@ -454,11 +454,11 @@ static Function SI_TestSampInt(string device)
 
 				if(numConsecutive == MIN_CONSECUTIVE_SAMPINT)
 					return sampIntRef
-				else
-					ASSERT(numConsecutive == 0 || iLast == (i - 1), "Expected consecutive hits")
-					iLast           = i
-					numConsecutive += 1
 				endif
+
+				ASSERT(numConsecutive == 0 || iLast == (i - 1), "Expected consecutive hits")
+				iLast           = i
+				numConsecutive += 1
 			endif
 		endif
 	endfor

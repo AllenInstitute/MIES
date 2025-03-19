@@ -74,10 +74,10 @@ static Function/S AI_GetAmpMCCSerial(string device, variable headStage)
 
 	if(axonSerial == 0)
 		return "Demo"
-	else
-		sprintf mccSerial, "%08d", axonSerial
-		return mccSerial
 	endif
+
+	sprintf mccSerial, "%08d", axonSerial
+	return mccSerial
 End
 
 ///@brief Return the channel of the currently selected head stage

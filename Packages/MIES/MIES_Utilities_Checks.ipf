@@ -166,9 +166,9 @@ Function CheckIfClose(variable var1, variable var2, [variable tol, variable stro
 
 	if(strong_or_weak)
 		return d1 <= tol && d2 <= tol
-	else
-		return d1 <= tol || d2 <= tol
 	endif
+
+	return d1 <= tol || d2 <= tol
 End
 
 /// @brief Test if a variable is small using the inequality @f$  | var | < | tol |  @f$
@@ -262,7 +262,9 @@ threadsafe Function HasOneValidEntry(WAVE wv)
 
 	if(IsFloatingPointWave(wv))
 		return numType(WaveMin(wv)) != 2
-	elseif(IsTextWave(wv))
+	endif
+
+	if(IsTextWave(wv))
 		WAVE/T wvText = wv
 
 		for(str : wvText)
@@ -367,10 +369,12 @@ threadsafe Function IsConstant(WAVE wv, variable val, [variable ignoreNaN])
 
 		if(ignoreNaN)
 			return NaN
-		else
-			return IsNaN(val)
 		endif
-	elseif(V_numNans > 0)
+
+		return IsNaN(val)
+	endif
+
+	if(V_numNans > 0)
 		// we have some NaNs
 		if(!ignoreNaN)
 			// and don't ignore them, this is always false

@@ -328,9 +328,9 @@ Function/S LBV_GetExperiments(string win)
 
 	if(BSP_IsDataBrowser(win))
 		return NONE + ";" + GetExperimentName()
-	else
-		return NONE + ";" + SB_GetListOfExperiments(win)
 	endif
+
+	return NONE + ";" + SB_GetListOfExperiments(win)
 End
 
 Function/S LBV_GetAllDevicesForExperiment(string win)
@@ -338,13 +338,7 @@ Function/S LBV_GetAllDevicesForExperiment(string win)
 	string dataFolder, shPanel
 	variable index
 
-	if(BSP_IsDataBrowser(win))
-		if(BSP_HasBoundDevice(win))
-			return NONE + ";" + BSP_GetDevice(win)
-		else
-			return NONE
-		endif
-	else
+	if(!(BSP_IsDataBrowser(win)))
 		shPanel    = LBV_GetSettingsHistoryPanel(win)
 		dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
 
@@ -364,6 +358,12 @@ Function/S LBV_GetAllDevicesForExperiment(string win)
 
 		return NONE + ";" + TextWaveToList(devicesClean, ";")
 	endif
+
+	if(BSP_HasBoundDevice(win))
+		return NONE + ";" + BSP_GetDevice(win)
+	endif
+
+	return NONE
 End
 
 Function LBV_ClearGraph(string win)

@@ -287,9 +287,9 @@ threadsafe Function GetLastSettingIndep(WAVE numericalValues, variable sweepNo, 
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
-	else
-		return defValue
 	endif
+
+	return defValue
 End
 
 /// @brief Return a headstage independent setting from the textual labnotebook
@@ -311,9 +311,9 @@ threadsafe Function/S GetLastSettingTextIndep(WAVE/T textualValues, variable swe
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
-	else
-		return defValue
 	endif
+
+	return defValue
 End
 
 /// @brief Return a headstage independent setting from the numerical
@@ -334,9 +334,9 @@ threadsafe Function GetLastSettingIndepRAC(WAVE numericalValues, variable sweepN
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
-	else
-		return defValue
 	endif
+
+	return defValue
 End
 
 /// @brief Return a headstage independent setting from the numerical
@@ -357,9 +357,9 @@ threadsafe Function GetLastSettingIndepSCI(WAVE numericalValues, variable sweepN
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
-	else
-		return defValue
 	endif
+
+	return defValue
 End
 
 /// @brief Return a headstage independent setting from the textual
@@ -380,9 +380,9 @@ threadsafe Function/S GetLastSettingTextIndepSCI(WAVE numericalValues, WAVE/T te
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
-	else
-		return defValue
 	endif
+
+	return defValue
 End
 
 /// @brief Return a headstage independent setting from the numerical
@@ -402,9 +402,9 @@ threadsafe Function/S GetLastSettingTextIndepRAC(WAVE numericalValues, WAVE/T te
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
-	else
-		return defValue
 	endif
+
+	return defValue
 End
 
 /// @brief Return a numerical or text setting for the given channel
@@ -613,10 +613,10 @@ threadsafe Function/WAVE GetLastSetting(WAVE values, variable sweepNo, string se
 			WAVE/T valuesText = values
 			Make/T/FREE/N=(DimSize(values, LAYERS)) statusText = valuesText[rowIndex][settingCol][p]
 			return statusText
-		else
-			Make/D/FREE/N=(DimSize(values, LAYERS)) status = values[rowIndex][settingCol][p]
-			return status
 		endif
+
+		Make/D/FREE/N=(DimSize(values, LAYERS)) status = values[rowIndex][settingCol][p]
+		return status
 	elseif(rowIndex == LABNOTEBOOK_UNCACHED_VALUE)
 		// need to search for it
 		WAVE rowCache = GetLBRowCache(values)
@@ -1551,9 +1551,9 @@ threadsafe Function GetLastSweepWithSettingIndep(WAVE numericalValues, string se
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
-	else
-		return defValue
 	endif
+
+	return defValue
 End
 
 /// @brief Return the last textual value of a setting from the labnotebook
@@ -1607,9 +1607,9 @@ threadsafe Function/S GetLastSweepWithSettingTextI(WAVE numericalValues, string 
 	if(WaveExists(settings))
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
-	else
-		return defValue
 	endif
+
+	return defValue
 End
 
 /// @brief Return the index for headstage independent data
@@ -1790,9 +1790,9 @@ Function/S CreateAnaFuncLBNKey(variable type, string formatString, [variable chu
 
 	if(query)
 		return LABNOTEBOOK_USER_PREFIX + str
-	else
-		return str
 	endif
+
+	return str
 End
 
 /// @brief Add a labnotebook entry denoting the analysis function version

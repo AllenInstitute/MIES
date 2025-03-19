@@ -135,10 +135,10 @@ threadsafe Function/WAVE AFH_GetChannelUnits(WAVE DAQConfigWave)
 	if(IsValidConfigWave(DAQConfigWave, version = 1))
 		units = GetStringFromWaveNote(DAQConfigWave, CHANNEL_UNIT_KEY, keySep = "=")
 		return ListToTextWave(units, ",")
-	else
-		units = note(DAQConfigWave)
-		return ListToTextWave(units, ";")
 	endif
+
+	units = note(DAQConfigWave)
+	return ListToTextWave(units, ";")
 End
 
 /// @brief Return the channel unit
@@ -272,9 +272,10 @@ threadsafe Function/WAVE AFH_GetSweepsFromSameRACycle(WAVE numericalValues, vari
 		if(DimSize(sweeps, ROWS) > 0) // valid cached entry
 			ChangeWaveLock(sweeps, 1)
 			return sweeps
-		else // non-existant entry
-			return $""
 		endif
+
+		// non-existant entry
+		return $""
 	endif
 
 	// uncached entry
@@ -308,9 +309,10 @@ threadsafe Function/WAVE AFH_GetSweepsFromSameSCI(WAVE numericalValues, variable
 		if(DimSize(sweeps, ROWS) > 0) // valid cached entry
 			ChangeWaveLock(sweeps, 1)
 			return sweeps
-		else // non-existant entry
-			return $""
 		endif
+
+		// non-existant entry
+		return $""
 	endif
 
 	// uncached entry

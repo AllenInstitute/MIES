@@ -1635,12 +1635,12 @@ Function AcquireData_NG(STRUCT DAQSettings &s, string device)
 			PGC_SetAndActivateControl(device, "DataAcquireButton"); AbortOnRTE
 		endif
 	catch
-		if(s.FAR)
-			// fail hard on aborts, most likely due to memory error on HW_ITC_StartAcq
-			FAIL()
-		else
+		if(!(s.FAR))
 			Abort
 		endif
+
+		// fail hard on aborts, most likely due to memory error on HW_ITC_StartAcq
+		FAIL()
 	endtry
 End
 

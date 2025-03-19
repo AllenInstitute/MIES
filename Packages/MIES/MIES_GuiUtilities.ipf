@@ -1041,13 +1041,13 @@ Function SetAxesProperties(string graph, WAVE props, [string axesRegexp, variabl
 				logMode = AXIS_MODE_NO_LOG
 			elseif(mode == AXIS_RANGE_DEFAULT)
 				// probably just name has changed, try the axis at the current index and check if the orientation is correct
-				if(i < numRows && axisOrientation == props[i][%axisType])
-					minimum = props[i][%minimum]
-					maximum = props[i][%maximum]
-					logMode = props[i][%logMode]
-				else
+				if(!(i < numRows && axisOrientation == props[i][%axisType]))
 					continue
 				endif
+
+				minimum = props[i][%minimum]
+				maximum = props[i][%maximum]
+				logMode = props[i][%logMode]
 			else
 				ASSERT(0, "Unknown mode from AxisPropModeConstants for this function")
 			endif
@@ -1664,9 +1664,9 @@ Function GetCheckBoxMode(string win, string checkBoxName)
 	first = strsearch(S_recreation, "mode=", 0, 2)
 	if(first == -1)
 		return 0
-	else
-		sscanf S_recreation[first, first + 5], "mode=%d", mode
 	endif
+
+	sscanf S_recreation[first, first + 5], "mode=%d", mode
 	ASSERT(IsFinite(mode), "Unexpected checkbox mode")
 	return mode
 End
