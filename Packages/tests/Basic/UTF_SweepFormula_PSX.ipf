@@ -1353,9 +1353,9 @@ static Function CheckEventDataHelper(WAVE/Z/WAVE dataWref, variable index, varia
 
 	INFO("index = %d, V_numNaNs = %d, kernelAmpSign = %d", n0 = index, n1 = V_numNans, n2 = kernelAmpSign)
 
-	// 1 NaN for the first event only, the rest is onset Time
+	// 5 NaNs for the first event only, the rest is onset Time
 	if(kernelAmpSign == 1)
-		CHECK_EQUAL_VAR(V_numNaNs, 1)
+		CHECK_EQUAL_VAR(V_numNaNs, 5)
 	elseif(kernelAmpSign == -1)
 		CHECK_EQUAL_VAR(V_numNaNs, 9)
 	else
@@ -2860,6 +2860,9 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	overrideResults[1][%$combos[0]][%$"Fit Result"] = 1
 	overrideResults[1][%$combos[0]][%$"Tau"]        = -Inf
 
+	overrideResults[3][%$combos[0]][%$"Fit Result"] = 1
+	overrideResults[3][%$combos[0]][%$"Tau"]        = -Inf
+
 	overrideResults[0][%$combos[0]][%$"Fit Result"] = 0
 	overrideResults[0][%$combos[0]][%$"Tau"]        = NaN
 
@@ -2892,11 +2895,10 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 
 	[WAVE psxEvent_0, WAVE psxEvent_1] = GetPSXEventWavesHelper(psxStatsGraph)
 
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0, 3}, PSX_REJECT)
-	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {1, 2}, PSX_UNDET)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {1, 2, 3}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {0, 1, 2, 3}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0, 1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0, 1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0, 1, 2}, PSX_UNDET)
 
 	SendKey(psxStatsGraph, UP_KEY)
@@ -2904,7 +2906,7 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	SendKey(psxStatsGraph, DOWN_KEY)
 	SendKey(psxStatsGraph, UP_KEY)
 
-	CheckCurrentEvent(psxStatsGraph, 1, 2, 4)
+	CheckCurrentEvent(psxStatsGraph, 1, 0, 3)
 
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {0, 3}, PSX_REJECT)
 	CheckPSXEventField({psxEvent_0}, {"Fit manual QC call"}, {2}, PSX_UNDET)
@@ -2916,8 +2918,7 @@ static Function KeyboardInteractionsStatsPostProcNonFinite()
 	CheckPSXEventField({psxEvent_0}, {"Event manual QC call"}, {3}, PSX_REJECT)
 
 	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {0}, PSX_ACCEPT)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {1}, PSX_UNDET)
-	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {2}, PSX_REJECT)
+	CheckPSXEventField({psxEvent_1}, {"Fit manual QC call"}, {1, 2}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {0}, PSX_ACCEPT)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {1}, PSX_UNDET)
 	CheckPSXEventField({psxEvent_1}, {"Event manual QC call"}, {2}, PSX_UNDET)
