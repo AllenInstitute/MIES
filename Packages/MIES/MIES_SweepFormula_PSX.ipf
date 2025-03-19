@@ -2226,7 +2226,7 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 	numEvents = DimSize(eventIndexFromTraces, ROWS)
 
 	Make/WAVE/FREE/N=(numEvents) contAverageAll, contAverageAccept, contAverageReject, contAverageUndet
-	Make/FREE/D/N=(numEvents) eventStopTime
+	Make/FREE/D/N=(numEvents) eventStopTime, eventPeakTime
 
 	for(i = 0; i < numEvents; i += 1)
 		idx = str2num(eventIndexFromTraces[i])
@@ -2249,6 +2249,7 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 				// single event waves are zeroed in x-direction to extractStartAbs
 				[extractStartAbs, extractStopAbs] = PSX_GetSingleEventRange(psxEvent, sweepDataOffFilt, idx)
 				eventStopTime[acceptIndex]        = extractStopAbs - extractStartAbs
+				eventPeakTime[acceptIndex]        = psxEvent[idx][%peak_t] - extractStartAbs
 
 				acceptIndex += 1
 				break
@@ -2275,7 +2276,7 @@ static Function PSX_UpdateAverageTraces(string win, WAVE/T eventIndexFromTraces,
 	PSX_UpdateAverageWave(contAverageAll, numEvents, averageDFR, PSX_ALL)
 
 	Redimension/N=(acceptIndex) eventStopTime
-	PSX_FitAcceptAverage(win, averageDFR, eventStopTime)
+	PSX_FitAcceptAverage(win, averageDFR, eventPeakTime, eventStopTime)
 End
 
 /// @brief Helper function to update the average waves for the all event graph
@@ -2299,10 +2300,10 @@ static Function/DF PSX_GetAverageFolder(string win)
 	return PSX_GetWorkingFolder(win)
 End
 
-static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventStopTime)
+static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventPeakTime, WAVE eventStopTime)
 
 	string specialEventPanel, str, htmlStr, rawCode, browser, msg, fitFunc
-	variable err, numAveragePoints, start, stop, meanStopTime
+	variable err, numAveragePoints, start, stop, meanStopTime, meanPeakTime
 
 	WAVE acceptedAverageFit = GetPSXAcceptedAverageFitWaveFromDFR(averageDFR)
 
@@ -2330,12 +2331,19 @@ static Function PSX_FitAcceptAverage(string win, DFREF averageDFR, WAVE eventSto
 
 	WAVE/Z eventStopTimeClean = ZapNaNs(eventStopTime)
 	if(WaveExists(eventStopTimeClean))
-		meanStopTime = mean(eventStopTime)
+		meanStopTime = mean(eventStopTimeClean)
 	else
 		meanStopTime = Inf
 	endif
 
-	start = 0
+	WAVE/Z eventPeakTimeClean = ZapNaNs(eventPeakTime)
+	if(WaveExists(eventPeakTimeClean))
+		meanPeakTime = mean(eventPeakTime)
+	else
+		ASSERT(0, "Could not find any events with finite peak_t")
+	endif
+
+	start = 0.1 * meanPeakTime
 	stop  = min(IndexToScale(average, DimSize(average, ROWS) - 1, ROWS), meanStopTime)
 
 	AssertOnAndClearRTError()
