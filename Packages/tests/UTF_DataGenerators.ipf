@@ -732,8 +732,9 @@ static Function/WAVE ValidUnits()
 	Make/FREE/T wv0 = {"s", "", "NaN", "s"}
 	Make/FREE/T wv1 = {"Gs", "G", "1e9", "s"}
 	Make/FREE/T wv2 = {"m 	Ω", "m", "1e-3", "Ω"}
+	Make/FREE/T wv3 = {"μA", "μ", "1e-6", "A"}
 
-	Make/FREE/WAVE/N=1 result = {wv0, wv1, wv2}
+	Make/FREE/WAVE/N=1 result = {wv0, wv1, wv2, wv3}
 
 	return result
 End
