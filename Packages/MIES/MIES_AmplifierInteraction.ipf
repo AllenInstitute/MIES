@@ -715,13 +715,13 @@ Function AI_UpdateChanAmpAssign(string device, variable headStage, variable clam
 End
 
 /// @brief Assert on invalid clamp modes, does nothing otherwise
-Function AI_AssertOnInvalidClampMode(variable clampMode)
+threadsafe Function AI_AssertOnInvalidClampMode(variable clampMode)
 
-	ASSERT(AI_IsValidClampMode(clampMode), "invalid clamp mode")
+	ASSERT_TS(AI_IsValidClampMode(clampMode), "invalid clamp mode")
 End
 
 /// @brief Return true if the given clamp mode is valid
-Function AI_IsValidClampMode(variable clampMode)
+threadsafe Function AI_IsValidClampMode(variable clampMode)
 
 	return clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE
 End
@@ -842,7 +842,7 @@ static Function/S AI_GetMCCWinFilePath()
 End
 
 /// @brief Map from amplifier control names to @ref AI_SendToAmpConstants constants and clamp mode
-Function [variable func, variable clampMode] AI_MapControlNameToFunctionConstant(string ctrl)
+threadsafe Function [variable func, variable clampMode] AI_MapControlNameToFunctionConstant(string ctrl)
 
 	strswitch(ctrl)
 		// begin VC controls
@@ -904,7 +904,7 @@ Function [variable func, variable clampMode] AI_MapControlNameToFunctionConstant
 			return [MCC_PIPETTEOFFSET_FUNC, I_CLAMP_MODE]
 		// end IC controls
 		default:
-			ASSERT(0, "Unknown control " + ctrl)
+			ASSERT_TS(0, "Unknown control " + ctrl)
 			break
 	endswitch
 End
@@ -999,7 +999,7 @@ Function/S AI_MapFunctionConstantToControl(variable func, variable clampMode)
 End
 
 /// @brief Map constants from @ref AI_SendToAmpConstants to human readable names
-Function/S AI_MapFunctionConstantToName(variable func, variable clampMode)
+threadsafe Function/S AI_MapFunctionConstantToName(variable func, variable clampMode)
 
 	AI_AssertOnInvalidClampMode(clampMode)
 
@@ -1097,7 +1097,7 @@ Function/S AI_MapFunctionConstantToName(variable func, variable clampMode)
 			return "AutoBiasEnable"
 		// end others
 		default:
-			ASSERT(0, "Invalid func: " + num2str(func))
+			ASSERT_TS(0, "Invalid func: " + num2str(func))
 	endswitch
 End
 
