@@ -8422,7 +8422,8 @@ End
 ///            in the filtered sweep wave
 /// -  4/peak_t: peak time
 /// -  5/baseline: Maximum (negative kernel amp sign) or minimum (positive kernel amp sign) in the range of
-///                    [peak_t – 10 * kernelRiseTau, peak_t], averaged over +/- 5 points, in the filtered sweep wave
+///                    [peak_t – 10 * kernelRiseTau or peak_t of previous event (whichever comes later),
+///                     peak_t], averaged over +/- 5 points, in the filtered sweep wave
 /// -  6/baseline_t: baseline time
 /// -  7/amplitude: Relative amplitude: [3] - [5]
 /// -  8/iei: Time difference to previous event (inter event interval) [ms]
