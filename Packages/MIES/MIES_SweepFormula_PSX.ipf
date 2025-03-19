@@ -764,17 +764,17 @@ static Function [variable start, variable stop] PSX_GetEventFitRange(WAVE sweepD
 
 	variable calcLength, maxLength
 
-	start = psxEvent[eventIndex][%deconvPeak_t]
+	start = psxEvent[eventIndex][%peak_t]
 
 	maxLength = PSX_FIT_RANGE_FACTOR * JWN_GetNumberFromWaveNote(psxEvent, SF_META_USER_GROUP + PSX_JWN_PARAMETERS + "/psxKernel/decayTau")
 
 	if(eventIndex == (DimSize(psxEvent, ROWS) - 1))
 		calcLength = maxLength
 	else
-		calcLength = min((psxEvent[eventIndex + 1][%deconvPeak_t] - start) * PSX_FIT_RANGE_PERC, maxLength)
+		calcLength = min((psxEvent[eventIndex + 1][%peak_t] - start) * PSX_FIT_RANGE_PERC, maxLength)
 	endif
 
-	if(calcLength == 0)
+	if(calcLength <= 0)
 		calcLength = maxLength
 	endif
 
