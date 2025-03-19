@@ -46,57 +46,57 @@ Function IVS_ConfigureMCC()
 		// switch to IC
 		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, headstage), val = CHECKBOX_SELECTED)
 
-		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, 0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 0)
+		if(!initResult)
 			print "Error setting Bridge Balance Enable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, 0.0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_NEUTRALIZATIONCAP_FUNC, 0.0)
+		if(!initResult)
 			print "Error setting Neutralization Cap to 0.0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, 0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_NEUTRALIZATIONENABL_FUNC, 0)
+		if(!initResult)
 			print "Error setting Neutralization Enable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJENABL_FUNC, 0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_SLOWCURRENTINJENABL_FUNC, 0)
+		if(!initResult)
 			print "Error setting  SlowCurrentInjEnable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJLEVEL_FUNC, 0.0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_SLOWCURRENTINJLEVEL_FUNC, 0.0)
+		if(!initResult)
 			print "Error setting SlowCurrentInjLevel to 0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJSETLT_FUNC, 1)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_SLOWCURRENTINJSETLT_FUNC, 1)
+		if(!initResult)
 			print "Error setting SlowCurrentInjSetlTime to 1 second"
 			numErrors += 1
 		endif
 
 		// these commands work for both IC and VC...here's the IC part
-		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, 0.0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_HOLDING_FUNC, 0.0)
+		if(!initResult)
 			print "Error setting Holding Voltage to 0.0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC, 0)
+		if(!initResult)
 			print "Error setting Holding Enable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETOSCKILLERENABLE_FUNC, 1)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, I_CLAMP_MODE, MCC_OSCKILLERENABLE_FUNC, 1)
+		if(!initResult)
 			print "Error setting OscKillerEnable to on"
 			numErrors += 1
 		endif
@@ -105,69 +105,69 @@ Function IVS_ConfigureMCC()
 		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, headstage), val = CHECKBOX_SELECTED)
 
 		// These commands work with both current clamp and voltage clamp...so now do the voltage clamp mode
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, 0.0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC, 0.0)
+		if(!initResult)
 			print "Error setting Holding Voltage to 0.0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC, 0)
+		if(!initResult)
 			print "Error setting Holding Enable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETOSCKILLERENABLE_FUNC, 1)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_OSCKILLERENABLE_FUNC, 1)
+		if(!initResult)
 			print "Error setting OscKillerEnable to on"
 			numErrors += 1
 		endif
 
 		// Voltage Clamp Mode only settings
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, 0.0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_RSCOMPCORRECTION_FUNC, 0.0)
+		if(!initResult)
 			print "Error setting RsCompCorrection to 0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, 0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_RSCOMPENABLE_FUNC, 0)
+		if(!initResult)
 			print "Error setting RsCompEnable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, 0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_RSCOMPPREDICTION_FUNC, 0)
+		if(!initResult)
 			print "Error setting RsCompPrediction to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETSLOWCOMPTAUX20ENAB_FUNC, 0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_SLOWCOMPTAUX20ENAB_FUNC, 0)
+		if(!initResult)
 			print "Error setting SlowCompTauX20Enable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETRSCOMPBANDWIDTH_FUNC, 0.0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_RSCOMPBANDWIDTH_FUNC, 0.0)
+		if(!initResult)
 			print "Error setting RsCompBandwidth to 0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, 0.0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_WHOLECELLCOMPCAP_FUNC, 0.0)
+		if(!initResult)
 			print "Error setting WholeCellCompCap to 0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, 0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_WHOLECELLCOMPENABLE_FUNC, 0)
+		if(!initResult)
 			print "Error setting  WholeCellCompEnable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, 0)
-		if(!IsFinite(initResult))
+		initResult = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_WHOLECELLCOMPRESIST_FUNC, 0)
+		if(!initResult)
 			print "Error setting WholeCellCompResist to 0"
 			numErrors += 1
 		endif
