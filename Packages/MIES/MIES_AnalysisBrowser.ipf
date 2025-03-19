@@ -14,9 +14,10 @@
 static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 3
 
-static Constant AB_LOAD_SWEEP      = 0
-static Constant AB_LOAD_STIMSET    = 1
-static Constant AB_LOAD_TP_STORAGE = 2
+static Constant AB_LOAD_SWEEP          = 0
+static Constant AB_LOAD_STIMSET        = 1
+static Constant AB_LOAD_TP_STORAGE     = 2
+static Constant AB_LOAD_HISTORYANDLOGS = 3
 
 static StrConstant AB_UDATA_WORKINGDF = "datafolder"
 static StrConstant AB_WORKFOLDER_NAME = "workFolder"
@@ -378,7 +379,7 @@ static Function AB_LoadFile(string discLocation, variable doLoadResults)
 			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
 			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
-				AB_LoadUserCommentAndHistoryFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadUserCommentFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				break
 			default:
 				ASSERT(0, "invalid file type")
@@ -790,6 +791,85 @@ static Function AB_StoreChannelsBySweep(variable groupID, variable nwbVersion, s
 	SetNumberInWaveNote(storage, NOTE_INDEX, numSweeps)
 End
 
+static Function AB_LoadHistoryAndLogsFromFile(string discLocation, string dataFolder, string fileType, [variable overwrite])
+
+	overwrite = ParamIsDefault(overwrite) ? 0 : !!overwrite
+
+	DFREF targetDFR = GetAnalysisExpGeneralFolder(dataFolder)
+	if(overwrite)
+		KillOrMoveToTrash(dfr = targetDFR)
+	else
+		if(!IsDataFolderEmpty(targetDFR))
+			AB_ShowHistoryAndLogs(discLocation, dataFolder)
+			return 0
+		endif
+	endif
+
+	strswitch(fileType)
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			if(!AlreadyCalledOnce(CO_AB_LOADHISTORYFROMPXP))
+				print "Loading of history from Igor Pro PXP files is not supported."
+				ControlWindowToFront()
+			endif
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2: // intended fallthrough
+			AB_LoadHistoryAndLogsFromNWB(discLocation, dataFolder, fileType)
+			break
+		default:
+			ASSERT(0, "invalid file type")
+	endswitch
+
+	AB_ShowHistoryAndLogs(discLocation, dataFolder)
+End
+
+static Function AB_ShowHistoryAndLogs(string discLocation, string expFolder)
+
+	string win, title, fName
+
+	DFREF targetDFR = GetAnalysisExpGeneralFolder(expFolder)
+	fName = ParseFilePath(0, discLocation, ":", 1, 0)
+
+	WAVE/T w = targetDFR:HistoryAndLogs
+	win = CleanupName(discLocation, 0)
+	if(!WindowExists(win))
+		title = fName + "->HistoryAndLogs"
+		NewNotebook/F=0/K=1/OPTS=8/N=$win as title
+		Notebook $win, text=w[0]
+	else
+		DoWindow/F $win
+	endif
+End
+
+static Function AB_LoadHistoryAndLogsFromNWB(string nwbFilePath, string expFolder, string fileType)
+
+	variable h5_fileID, generalGroup
+	string historyName, groupName
+
+	h5_fileID = H5_OpenFile(nwbFilePath)
+
+	groupName    = "/general"
+	generalGroup = H5_OpenGroup(h5_fileID, groupName)
+
+	DFREF targetDFR = GetAnalysisExpGeneralFolder(expFolder)
+	strswitch(fileType)
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+			historyName = GetHistoryAndLogFileDatasetName(1)
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
+			historyName = GetHistoryAndLogFileDatasetName(2)
+			break
+		default:
+			ASSERT(0, "Unknown NWB file type")
+	endswitch
+
+	WAVE wv = H5_LoadDataset(generalGroup, historyName)
+	MoveWave wv, targetDFR:HistoryAndLogs
+
+	HDF5CloseGroup/Z generalGroup
+	H5_CloseFile(h5_fileID)
+End
+
 static Function AB_LoadTPStorageFromFile(string discLocation, string dataFolder, string fileType, string device, [variable overwrite])
 
 	if(ParamIsDefault(overwrite))
@@ -958,10 +1038,10 @@ static Function AB_LoadUserCommentFromFile(string expFilePath, string expFolder,
 	return numStringsLoaded
 End
 
-static Function AB_LoadUserCommentAndHistoryFromNWB(string nwbFilePath, string expFolder, string device)
+static Function AB_LoadUserCommentFromNWB(string nwbFilePath, string expFolder, string device)
 
-	string groupName, comment, datasetName, history
-	variable h5_fileID, commentGroup, version
+	string groupName, comment, datasetName
+	variable h5_fileID, commentGroup
 
 	DFREF targetDFR = GetAnalysisDeviceFolder(expFolder, device)
 	h5_fileID = H5_OpenFile(nwbFilePath)
@@ -972,15 +1052,9 @@ static Function AB_LoadUserCommentAndHistoryFromNWB(string nwbFilePath, string e
 	comment = ReadTextDataSetAsString(commentGroup, "userComment")
 	HDF5CloseGroup/Z commentGroup
 
-	version = GetNWBMajorVersion(ReadNWBVersion(h5_fileID))
-
-	datasetName = "/general/" + GetHistoryAndLogFileDatasetName(version)
-	history     = ReadTextDataSetAsString(h5_fileID, datasetName)
-
 	H5_CloseFile(h5_fileID)
 
-	string/G targetDFR:userComment       = comment
-	string/G targetDFR:historyAndLogFile = history
+	string/G targetDFR:userComment = comment
 End
 
 static Function/S AB_LoadLabNotebook(string discLocation)
@@ -1569,6 +1643,12 @@ static Function AB_LoadFromExpandedRange(variable row, variable subSectionColumn
 				endif
 				oneValidLoad = 1
 				break
+			case AB_LOAD_HISTORYANDLOGS:
+				if(AB_LoadHistoryAndLogsFromFile(discLocation, dataFolder, fileType, overwrite = overwrite) == 1)
+					continue
+				endif
+				oneValidLoad = 1
+				break
 			case AB_LOAD_SWEEP:
 				if(AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite) == 1)
 					continue
@@ -1641,6 +1721,7 @@ static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 		switch(loadType)
 			case AB_LOAD_STIMSET:
 			case AB_LOAD_TP_STORAGE:
+			case AB_LOAD_HISTORYANDLOGS:
 				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, loadType, overwrite = overwrite))
 					oneValidLoad = 1
 					continue
@@ -1698,6 +1779,12 @@ static Function AB_LoadFromFile(variable loadType, [DFREF sweepBrowserDFR])
 				break
 			case AB_LOAD_TP_STORAGE:
 				if(AB_LoadTPStorageFromFile(discLocation, dataFolder, fileType, device, overwrite = overwrite))
+					continue
+				endif
+				oneValidLoad = 1
+				break
+			case AB_LOAD_HISTORYANDLOGS:
+				if(AB_LoadHistoryAndLogsFromFile(discLocation, dataFolder, fileType, overwrite = overwrite) == 1)
 					continue
 				endif
 				oneValidLoad = 1
@@ -3643,6 +3730,20 @@ Function AB_ButtonProc_LoadTPStorage(STRUCT WMButtonAction &ba) : ButtonControl
 			AB_CheckPanelVersion(ba.win)
 
 			AB_LoadFromFile(AB_LOAD_TP_STORAGE)
+		default:
+			break
+	endswitch
+
+	return 0
+End
+
+Function AB_ButtonProc_LoadHistoryAndLogs(STRUCT WMButtonAction &ba) : ButtonControl
+
+	switch(ba.eventcode)
+		case 2:
+			AB_CheckPanelVersion(ba.win)
+
+			AB_LoadFromFile(AB_LOAD_HISTORYANDLOGS)
 		default:
 			break
 	endswitch
